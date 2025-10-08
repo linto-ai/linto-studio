@@ -1,16 +1,18 @@
 {
-  "/api/organizations/{organizationId}/tokens/": {
+  "/api/administration/tokens/": {
     "post": {
-      "tags": ["organizations admin"],
-      "summary": "Create a new machine-to-machine token for the organization",
+      "tags": ["administration"],
+      "summary": "Create an api key token for a backoffice user",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
           "required": true,
-          "description": "uuid string identifier for the organization"
+          "description": "Scope of the user, must be 'backoffice'"
         }
       ],
       "requestBody": {
@@ -27,7 +29,7 @@
                 },
                 "expires_in": {
                   "type": "string",
-                  "description": "Duration until the token expires (e.g., 30d, 12h)",
+                  "description": "Duration until the token expires (e.g., 5y, 30d, 12h)",
                   "default": "30d"
                 },
                 "metadata": {
@@ -47,7 +49,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "$ref": "#/components/schemas/M2MToken"
+                "$ref": "#/components/schemas/APIToken"
               }
             }
           }
@@ -61,16 +63,18 @@
       }
     },
     "get": {
-      "tags": ["organizations admin"],
-      "summary": "Retrieve all machine-to-machine tokens for the organization",
+      "tags": ["administration"],
+      "summary": "Retrieve all api key tokens from the platform",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
           "required": true,
-          "description": "uuid string identifier for the organization"
+          "description": "Scope of the user, must be 'backoffice'"
         }
       ],
       "responses": {
@@ -82,7 +86,7 @@
                 "type": "array",
                 "items": {
                   "type": "object",
-                  "$ref": "#/components/schemas/M2MUser"
+                  "$ref": "#/components/schemas/APIUser"
                 }
               }
             }
@@ -97,18 +101,20 @@
       }
     }
   },
-  "/api/organizations/{organizationId}/tokens/{tokenId}": {
+  "/api/administration/tokens/{tokenId}": {
     "put": {
-      "tags": ["organizations admin"],
-      "summary": "Regenerate a machine-to-machine token with a new value",
+      "tags": ["administration"],
+      "summary": "Regenerate an api key token",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
           "required": true,
-          "description": "uuid string identifier for the organization"
+          "description": "Scope of the user, must be 'backoffice'"
         },
         {
           "in": "path",
@@ -116,7 +122,7 @@
           "type": "string",
           "format": "uuid",
           "required": true,
-          "description": "uuid string identifier for the m2m token"
+          "description": "uuid string identifier for the api key"
         }
       ],
       "requestBody": {
@@ -127,7 +133,7 @@
               "properties": {
                 "expires_in": {
                   "type": "string",
-                  "description": "Duration until the token expires (e.g., 30d, 12h)",
+                  "description": "Duration until the token expires (e.g., 5y, 30d, 12h)",
                   "default": "30d"
                 }
               },
@@ -143,7 +149,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "$ref": "#/components/schemas/M2MToken"
+                "$ref": "#/components/schemas/APIToken"
               }
             }
           }
@@ -157,16 +163,18 @@
       }
     },
     "get": {
-      "tags": ["organizations admin"],
-      "summary": "Retrieve details of a specific machine-to-machine token",
+      "tags": ["administration"],
+      "summary": "Retrieve details of a specific api key",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
           "required": true,
-          "description": "uuid string identifier for the organization"
+          "description": "Scope of the user, must be 'backoffice'"
         },
         {
           "in": "path",
@@ -174,7 +182,7 @@
           "type": "string",
           "format": "uuid",
           "required": true,
-          "description": "uuid string identifier for the m2m token"
+          "description": "uuid string identifier for the api key"
         }
       ],
       "responses": {
@@ -184,7 +192,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "$ref": "#/components/schemas/M2MToken"
+                "$ref": "#/components/schemas/APIToken"
               }
             }
           }
@@ -198,16 +206,18 @@
       }
     },
     "delete": {
-      "tags": ["organizations admin"],
-      "summary": "Delete a machine-to-machine token",
+      "tags": ["administration"],
+      "summary": "Delete an api key",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
           "required": true,
-          "description": "uuid string identifier for the organization"
+          "description": "Scope of the user, must be 'backoffice'"
         },
         {
           "in": "path",
@@ -215,7 +225,7 @@
           "type": "string",
           "format": "uuid",
           "required": true,
-          "description": "uuid string identifier for the m2m token"
+          "description": "uuid string identifier for the api key"
         },
         {
           "in": "query",
@@ -237,7 +247,7 @@
                 }
               },
               "example": {
-                "message": "M2M token has been deleted"
+                "message": "Api key has been deleted"
               }
             }
           }

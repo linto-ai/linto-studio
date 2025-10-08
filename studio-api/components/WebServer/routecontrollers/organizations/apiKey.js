@@ -20,7 +20,7 @@ const { addM2mUserToOrganization } = require(
 )
 
 const TokenHandler = require(
-  `${process.cwd()}/components/WebServer/controllers/machine/token`,
+  `${process.cwd()}/components/WebServer/controllers/apikey/token`,
 )
 
 async function checkTokenBelongsToOrganization(params) {
@@ -31,7 +31,7 @@ async function checkTokenBelongsToOrganization(params) {
 
     const user = await model.users.getById(params.tokenId)
     if (user.length !== 1 || user[0].type === USER_TYPE.M2M) {
-      throw new UserError("Requested M2M not found")
+      throw new UserError("Requested API key not found")
     }
 
     const organization = await model.organizations.getById(
@@ -45,7 +45,7 @@ async function checkTokenBelongsToOrganization(params) {
           u.type === USER_TYPE.M2M,
       )
     ) {
-      throw new UserError("Request M2M id does not belong to the organization")
+      throw new UserError("Request API key does not belong to the organization")
     }
 
     return {
@@ -56,7 +56,7 @@ async function checkTokenBelongsToOrganization(params) {
     throw error
   }
 }
-async function createM2MUser(req, res, next) {
+async function createApiKey(req, res, next) {
   try {
     if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
     if (!req.body.role)
@@ -72,8 +72,8 @@ async function createM2MUser(req, res, next) {
       )
     }
 
-    let token = await TokenHandler.createM2MUser(req, role)
-    if (!token) throw new UserError("M2M user not created")
+    let token = await TokenHandler.createApiKey(req, role)
+    if (!token) throw new UserError("API key not created")
     addM2mUserToOrganization(
       req.params.organizationId,
       token.user_id.toString(),
@@ -81,7 +81,7 @@ async function createM2MUser(req, res, next) {
     )
 
     res.status(201).send({
-      message: "M2M user has been created and linked to a new organization",
+      message: "Api key has been created and linked to a new organization",
       ...token,
     })
   } catch (err) {
@@ -89,7 +89,7 @@ async function createM2MUser(req, res, next) {
   }
 }
 
-async function listM2M(req, res, next) {
+async function listApiKeyFromOrga(req, res, next) {
   try {
     if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
     const organization = await model.organizations.getById(
@@ -107,10 +107,10 @@ async function listM2M(req, res, next) {
   }
 }
 
-async function refreshM2MToken(req, res, next) {
+async function refreshApiKey(req, res, next) {
   try {
     await checkTokenBelongsToOrganization(req.params)
-    const tokens = await TokenHandler.refreshM2MToken(
+    const tokens = await TokenHandler.refreshApiKey(
       req.params.tokenId,
       req.body.expires_in,
     )
@@ -120,10 +120,10 @@ async function refreshM2MToken(req, res, next) {
   }
 }
 
-async function getM2MTokens(req, res, next) {
+async function getApiKey(req, res, next) {
   try {
     await checkTokenBelongsToOrganization(req.params)
-    const tokens = await TokenHandler.getM2MTokens(req.params.tokenId)
+    const tokens = await TokenHandler.getApiKey(req.params.tokenId)
 
     res.status(200).send(tokens)
   } catch (err) {
@@ -131,7 +131,7 @@ async function getM2MTokens(req, res, next) {
   }
 }
 
-async function deleteM2Token(req, res, next) {
+async function deleteApiKey(req, res, next) {
   try {
     const { organization } = await checkTokenBelongsToOrganization(req.params)
 
@@ -141,7 +141,7 @@ async function deleteM2Token(req, res, next) {
     const result = await model.organizations.update(organization)
     if (result.matchedCount === 0) throw new OrganizationError()
 
-    const tokens = await TokenHandler.deleteM2Token(
+    const tokens = await TokenHandler.deleteApiKey(
       req.params.tokenId,
       req.query.revoke,
     )
@@ -152,9 +152,9 @@ async function deleteM2Token(req, res, next) {
 }
 
 module.exports = {
-  createM2MUser,
-  listM2M,
-  refreshM2MToken,
-  getM2MTokens,
-  deleteM2Token,
+  createApiKey,
+  listApiKeyFromOrga,
+  refreshApiKey,
+  getApiKey,
+  deleteApiKey,
 }
