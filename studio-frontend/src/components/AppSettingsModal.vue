@@ -131,11 +131,6 @@
           :currentOrganization="currentOrganization"
           :userInfo="user" />
       </div>
-      <div v-if="selectedTab === 'members'" class="app-settings__section">
-        <UpdateOrganizationUsers
-          :currentOrganization="currentOrganization"
-          :userInfo="user" />
-      </div>
 
       <div v-if="selectedTab === 'apiTokens'" class="app-settings__section">
         <ApiTokenSettings />

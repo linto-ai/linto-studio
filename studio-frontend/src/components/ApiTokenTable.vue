@@ -2,7 +2,7 @@
   <table
     class="table-grid"
     style="grid-template-columns: auto auto 1fr 1fr 1fr auto; width: 100%">
-    <TokenTableHeader
+    <ApiTokenTableHeader
       @list_sort_by="sortBy"
       :sortListKey="sortListKey"
       :sortListDirection="sortListDirection" />
@@ -10,19 +10,34 @@
       <div class="table-loader" v-if="loading">
         <Loading />
       </div>
-      <TokenTableLine
+      <ApiTokenTableLine
         v-for="token in tokenList"
         v-model="p_selectedTokens"
         :linkTo="linkTo"
         :key="token.id"
-        :token="token" />
+        :token="token"
+        @view-token="openViewModal"
+        @delete-token="openDeleteModal" />
     </tbody>
   </table>
+  <!-- <ViewTokenModal
+    v-if="showViewModal"
+    :token="selectedToken"
+    @close="closeViewModal" />
+  <DeleteTokenModal
+    v-if="showDeleteModal"
+    :token="selectedToken"
+    @confirm-delete="confirmDelete"
+    @close="closeDeleteModal" /> -->
 </template>
+
 <script>
-import TokenTableHeader from "./TokenTableHeader.vue"
-import TokenTableLine from "./TokenTableLine.vue"
+import ApiTokenTableHeader from "./ApiTokenTableHeader.vue"
+import ApiTokenTableLine from "./ApiTokenTableLine.vue"
+// import ViewTokenModal from "./ViewTokenModal.vue"
+// import DeleteTokenModal from "./DeleteTokenModal.vue"
 import Loading from "@/components/atoms/Loading.vue"
+
 export default {
   props: {
     tokenList: {
@@ -34,7 +49,6 @@ export default {
       required: false,
     },
     value: {
-      //selectedTokens
       type: Array,
       required: true,
     },
@@ -53,12 +67,35 @@ export default {
     },
   },
   data() {
-    return {}
+    return {
+      showViewModal: false,
+      showDeleteModal: false,
+      selectedToken: null,
+    }
   },
-  mounted() {},
   methods: {
     sortBy(event) {
       this.$emit("list_sort_by", event)
+    },
+    openViewModal(token) {
+      this.selectedToken = token
+      this.showViewModal = true
+    },
+    openDeleteModal(token) {
+      this.selectedToken = token
+      this.showDeleteModal = true
+    },
+    closeViewModal() {
+      this.showViewModal = false
+      this.selectedToken = null
+    },
+    closeDeleteModal() {
+      this.showDeleteModal = false
+      this.selectedToken = null
+    },
+    confirmDelete(tokenId) {
+      this.$emit("delete-token", tokenId)
+      this.closeDeleteModal()
     },
   },
   computed: {
@@ -71,6 +108,12 @@ export default {
       },
     },
   },
-  components: { TokenTableHeader, TokenTableLine, Loading },
+  components: {
+    ApiTokenTableHeader,
+    ApiTokenTableLine,
+    // ViewTokenModal,
+    // DeleteTokenModal,
+    Loading,
+  },
 }
 </script>
