@@ -153,7 +153,7 @@ export default class ApiEventWebSocket {
       for (const media of value) {
         debugWSMedia(
           "Updating media job",
-          structuredClone(media.jobs.transcription),
+          structuredClone(media?.jobs?.transcription),
         )
         store.dispatch(
           `${this.currentMediaOrganizationId}/processing/conversations/updateMedia`,
