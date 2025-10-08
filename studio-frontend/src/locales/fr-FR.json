@@ -34,6 +34,7 @@
     "label": "Rechercher dans le texte"
   },
   "app_settings_modal": {
+    "api_tokens": "Jetons d'api",
     "account_title": "Mon compte",
     "account_information": "Informations du compte",
     "billing": "Facturation",

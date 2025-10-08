@@ -66,18 +66,24 @@
                 <span>{{ $t("app_settings_modal.organization_members") }}</span>
               </a>
             </li>
-            <is-cloud>
+            <!-- <is-cloud>
               <li :class="{ active: selectedTab === 'billing' }">
                 <a href="#" @click="selectTab('billing')">
                   <ph-icon name="credit-card" weight="bold"></ph-icon>
                   <span>{{ $t("app_settings_modal.billing") }}</span>
                 </a>
               </li>
-            </is-cloud>
+            </is-cloud> -->
             <li :class="{ active: selectedTab === 'tags' }">
               <a href="#" @click="selectTab('tags')">
                 <ph-icon name="tag" weight="bold"></ph-icon>
                 <span>{{ $t("app_settings_modal.tags") }}</span>
+              </a>
+            </li>
+            <li :class="{ active: selectedTab === 'apiTokens' }">
+              <a href="#" @click="selectTab('apiTokens')">
+                <ph-icon name="key" weight="bold"></ph-icon>
+                <span>{{ $t("app_settings_modal.api_tokens") }}</span>
               </a>
             </li>
           </ul>

@@ -33,6 +33,7 @@
     "label": "Search in transcription"
   },
   "app_settings_modal": {
+    "api_tokens": "API tokens",
     "account_title": "My account",
     "account_information": "Account information",
     "billing": "Billing",
