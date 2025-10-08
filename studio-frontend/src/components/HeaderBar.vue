@@ -19,7 +19,11 @@
         <slot name="breadcrumb-actions"></slot>
       </template>
     </Breadcrumb>
-    <LocalSwitcher class="local-switcher"></LocalSwitcher>
+    <IsMobile>
+      <template #desktop>
+        <LocalSwitcher class="local-switcher"></LocalSwitcher>
+      </template>
+    </IsMobile>
   </div>
 </template>
 <script>
@@ -30,6 +34,7 @@ import PhIcon from "./atoms/PhIcon.vue"
 import MediaExplorerStorageSize from "./MediaExplorerStorageSize.vue"
 import LocalSwitcher from "./LocalSwitcher.vue"
 import Breadcrumb from "@/components/atoms/Breadcrumb.vue"
+import IsMobile from "./atoms/IsMobile.vue"
 
 export default {
   props: {
