@@ -1,5 +1,5 @@
 {
-  "M2MToken": {
+  "APIToken": {
     "type": "object",
     "properties": {
       "message": {
@@ -8,7 +8,7 @@
       },
       "auth_token": {
         "type": "string",
-        "description": "M2M Token to use has bearer token"
+        "description": "Api Token to use has bearer token"
       },
       "user_id": {
         "type": "string",
@@ -16,7 +16,7 @@
       }
     },
     "example": {
-      "message": "M2M token has been ...",
+      "message": "API key has been ...",
       "auth_token": "eyJhbG...",
       "user_id": "68db90ced0e326b6adddcacb"
     }

@@ -3,26 +3,26 @@ const debug = require("debug")(
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
-const { UserConflict, UserError, UserUnsupportedMediaType } = require(
+const { UserUnsupportedMediaType } = require(
   `${process.cwd()}/components/WebServer/error/exception/users`,
 )
 const PLATFORM_ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
 
 const TokenHandler = require(
-  `${process.cwd()}/components/WebServer/controllers/machine/token`,
+  `${process.cwd()}/components/WebServer/controllers/apikey/token`,
 )
-async function createM2MPlatformUser(req, res, next) {
+async function createApiKeyPlatform(req, res, next) {
   try {
     req.body.role = parseInt(req.body.role)
 
     if (!PLATFORM_ROLE.isValid(req.body.role))
       throw new UserUnsupportedMediaType("Role invalid")
 
-    let token = await TokenHandler.createM2MUser(req, req.body.role)
+    let token = await TokenHandler.createApiKey(req, req.body.role)
     if (token === undefined) return res.status(500).send()
 
     res.status(201).send({
-      message: "M2M user has been created",
+      message: "API Key has been created",
       ...token,
     })
   } catch (err) {
@@ -30,7 +30,7 @@ async function createM2MPlatformUser(req, res, next) {
   }
 }
 
-async function listM2MUser(req, res, next) {
+async function listApiKey(req, res, next) {
   try {
     res.status(200).send(await model.users.listM2MUser())
   } catch (err) {
@@ -38,9 +38,9 @@ async function listM2MUser(req, res, next) {
   }
 }
 
-async function getM2MTokens(req, res, next) {
+async function getApiKey(req, res, next) {
   try {
-    const tokens = await TokenHandler.getM2MTokens(req.params.tokenId)
+    const tokens = await TokenHandler.getApiKey(req.params.tokenId)
 
     res.status(200).send(tokens)
   } catch (err) {
@@ -48,9 +48,9 @@ async function getM2MTokens(req, res, next) {
   }
 }
 
-async function refreshM2MToken(req, res, next) {
+async function refreshApiKey(req, res, next) {
   try {
-    const tokens = await TokenHandler.refreshM2MToken(
+    const tokens = await TokenHandler.refreshApiKey(
       req.params.tokenId,
       req.body.expires_in,
     )
@@ -60,9 +60,9 @@ async function refreshM2MToken(req, res, next) {
   }
 }
 
-async function deleteM2Token(req, res, next) {
+async function deleteApiKey(req, res, next) {
   try {
-    const tokens = await TokenHandler.deleteM2Token(
+    const tokens = await TokenHandler.deleteApiKey(
       req.params.tokenId,
       req.query.revoke,
     )
@@ -73,9 +73,9 @@ async function deleteM2Token(req, res, next) {
 }
 
 module.exports = {
-  createM2MPlatformUser,
-  listM2MUser,
-  getM2MTokens,
-  refreshM2MToken,
-  deleteM2Token,
+  createApiKeyPlatform,
+  listApiKey,
+  getApiKey,
+  refreshApiKey,
+  deleteApiKey,
 }
