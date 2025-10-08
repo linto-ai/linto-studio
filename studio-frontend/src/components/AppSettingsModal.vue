@@ -131,6 +131,15 @@
           :currentOrganization="currentOrganization"
           :userInfo="user" />
       </div>
+      <div v-if="selectedTab === 'members'" class="app-settings__section">
+        <UpdateOrganizationUsers
+          :currentOrganization="currentOrganization"
+          :userInfo="user" />
+      </div>
+
+      <div v-if="selectedTab === 'apiTokens'" class="app-settings__section">
+        <ApiTokenSettings />
+      </div>
       <div
         v-if="selectedTab === 'billing'"
         class="app-settings__section"
@@ -155,8 +164,9 @@ import UserSettingsPreferences from "@/components/UserSettingsPreferences.vue"
 import TagManagement from "@/components/TagManagement.vue"
 import UpdateOrganizationForm from "@/components/UpdateOrganizationForm.vue"
 import UpdateOrganizationUsers from "@/components/UpdateOrganizationUsers.vue"
-import UpdateOrganizationDeletion from "./UpdateOrganizationDeletion.vue"
-import Modal from "./molecules/Modal.vue"
+import UpdateOrganizationDeletion from "@/components/UpdateOrganizationDeletion.vue"
+import Modal from "@/components/molecules/Modal.vue"
+import ApiTokenSettings from "@/components/ApiTokenSettings.vue"
 
 export default {
   name: "AppSettingsModal",
@@ -174,6 +184,7 @@ export default {
     UpdateOrganizationUsers,
     UpdateOrganizationDeletion,
     Modal,
+    ApiTokenSettings,
   },
   data() {
     return {
