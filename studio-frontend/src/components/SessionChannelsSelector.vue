@@ -14,9 +14,9 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import CustomSelect from "./CustomSelect.vue"
+import CustomSelect from "@/components/molecules/CustomSelect.vue"
 
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 export default {
   props: {
     channels: {
@@ -52,8 +52,11 @@ export default {
       get() {
         return this.value
       },
-      set(value) {
-        this.$emit("input", value)
+      set(channelId) {
+        this.$emit(
+          "input",
+          this.channels.find((c) => c.id === channelId),
+        )
       },
     },
   },

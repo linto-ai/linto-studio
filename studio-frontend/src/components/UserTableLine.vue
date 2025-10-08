@@ -30,19 +30,19 @@
     </td>
     <td class="fit-content">
       <button @click="editUser">
-        <span class="icon edit"></span>
-        <span class="label">{{ $t("userTable.edit_button_label") }}</span>
+        <ph-icon name="pencil"></ph-icon>
+        <span class="label">{{ $t("user_table.edit_button_label") }}</span>
       </button>
     </td>
   </tr>
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import router from "../routers/app-router"
 
 import { userModelMixin } from "@/mixins/userModel"
-import Checkbox from "./Checkbox.vue"
+import Checkbox from "@/components/atoms/Checkbox.vue"
 
 export default {
   mixins: [userModelMixin],

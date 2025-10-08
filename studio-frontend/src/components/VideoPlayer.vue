@@ -28,8 +28,8 @@
   </div>
 </template>
 <script>
-import Droparea from "./Droparea.vue"
-import { bus } from "../main.js"
+import Droparea from "@/components/molecules/Droparea.vue"
+import { bus } from "@/main.js"
 
 export default {
   props: {

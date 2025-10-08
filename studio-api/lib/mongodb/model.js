@@ -41,17 +41,22 @@ class MongoModel {
     const sort = { [sortField]: sortCriteria, _id: sortCriteria }
 
     try {
+      const paginatedResultPipeline = [
+        { $sort: sort },
+        { $skip: size * page },
+        { $limit: size },
+      ]
+
+      if (!projection.skipProjection) {
+        paginatedResultPipeline.push({ $project: projection })
+      }
+
       const aggregationPipeline = [
         { $match: query },
         {
           $facet: {
             totalCount: [{ $count: "count" }],
-            paginatedResult: [
-              { $sort: sort },
-              { $skip: size * page },
-              { $limit: size },
-              { $project: projection }, // Projection for paginated results
-            ],
+            paginatedResult: paginatedResultPipeline,
           },
         },
       ]
@@ -99,6 +104,22 @@ class MongoModel {
       return {
         success: false,
         message: "Error inserting document",
+        error: error,
+      }
+    }
+  }
+
+  // Insert/Create MANY
+  async mongoInsertMany(documents) {
+    try {
+      const collection = MongoDriver.constructor.db.collection(this.collection)
+      const result = await collection.insertMany(documents)
+      return result
+    } catch (error) {
+      console.error("Error in mongoInsertMany:", error)
+      return {
+        success: false,
+        message: "Error inserting documents",
         error: error,
       }
     }

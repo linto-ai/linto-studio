@@ -1,5 +1,6 @@
 const debug = require("debug")("linto:components:IoHandler:socket-event")
 
+// Event endpoints for other components to emit events to sockets
 module.exports = function () {
   this.on("partial", (roomId, transcription) => {
     this.notify(roomId, "partial", transcription)
@@ -10,5 +11,26 @@ module.exports = function () {
 
   this.on("watch_organization", (roomId, sessions) => {
     this.notify_sessions(roomId, "session_update", sessions)
+  })
+
+  this.on("new_conversation_from_session", (session) => {
+    this.notify_sessions_created(session.organizationId, session)
+  })
+
+  this.on("new_conversation", (conversation) => {
+    this.notify_conversation_action(
+      "created",
+      conversation.organization.organizationId,
+      conversation,
+    )
+  })
+
+  this.on("conversation_deleted", (orgaIds, id, status) => {
+    this.notify_conversation_action("deleted", orgaIds, { id, status })
+  })
+
+  // MQTT broker client send this event when the connection is lost
+  this.on("borker_disconnected", () => {
+    this.brokerKo(true)
   })
 }

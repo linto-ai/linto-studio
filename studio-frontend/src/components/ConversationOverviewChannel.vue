@@ -6,8 +6,8 @@
           inputFullWidth
           :field="nameField"
           v-model="nameField.value" />
-        <button type="submit" class="btn green">
-          <span class="icon apply"></span>
+        <button type="submit" class="btn primary">
+          <ph-icon name="check" size="md" class="icon" />
           <span class="label">{{
             $t("conversation_overview.channel.apply_name")
           }}</span>
@@ -42,9 +42,9 @@ import {
   apiGetAudioFileFromConversation,
   apiUpdateConversation,
 } from "../api/conversation.js"
-import LabeledValue from "@/components/LabeledValue.vue"
+import LabeledValue from "@/components/atoms/LabeledValue.vue"
 import EMPTY_FIELD from "@/const/emptyField"
-import FormInput from "@/components/FormInput.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 import { testName } from "@/tools/fields/testName"
 
 export default {

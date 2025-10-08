@@ -1,5 +1,5 @@
 <template>
-  <div class="flex col medium-padding gap-medium">
+  <div class="flex col small-padding gap-medium">
     <SessionChannelsSelector
       v-if="channels.length > 1"
       :channels="channels"
@@ -20,11 +20,6 @@
       :field="displaySubtitlesField"
       switchDisplay
       v-model="displaySubtitlesField.value">
-      <template v-slot:content-after-label>
-        <!-- <button class="only-icon transparent">
-          <span class="icon clear-history" />
-        </button> -->
-      </template>
     </FormCheckbox>
     <div
       class="subSection flex col gap-small"
@@ -37,40 +32,49 @@
         switchDisplay
         v-model="displayWatermarkField.value">
         <template v-slot:content-after-label>
-          <button
-            class="only-icon transparent"
-            :aria-label="
-              $t('session.live_page.watermark_settings.settings_button')
-            "
-            :title="$t('session.live_page.watermark_settings.settings_button')"
-            @click="showWatermarkSettings = true">
-            <span class="icon settings" />
-          </button>
-          <button
-            class="only-icon transparent"
-            :aria-label="
-              $t('session.live_page.watermark_settings.unpin_button')
-            "
-            :title="$t('session.live_page.watermark_settings.unpin_button')"
-            @click="togglePin"
-            v-if="watermarkPinned">
-            <span class="icon pin-on" />
-          </button>
-          <button
-            class="only-icon transparent"
-            :aria-label="$t('session.live_page.watermark_settings.pin_button')"
-            :title="$t('session.live_page.watermark_settings.pin_button')"
-            @click="togglePin"
-            v-else>
-            <span class="icon pin" />
-          </button>
+          <div class="flex gap-small small-margin-left">
+            <Button
+              icon="gear"
+              variant="transparent"
+              :aria-label="
+                $t('session.live_page.watermark_settings.settings_button')
+              "
+              :title="
+                $t('session.live_page.watermark_settings.settings_button')
+              "
+              @click="showWatermarkSettings = true" />
+
+            <Button
+              icon="push-pin"
+              variant="transparent"
+              @click="togglePin"
+              :aria-label="
+                $t('session.live_page.watermark_settings.pin_button')
+              "
+              :title="$t('session.live_page.watermark_settings.unpin_button')"
+              v-if="watermarkPinned" />
+
+            <Button
+              icon="push-pin-slash"
+              variant="transparent"
+              @click="togglePin"
+              :aria-label="
+                $t('session.live_page.watermark_settings.pin_button')
+              "
+              :title="$t('session.live_page.watermark_settings.pin_button')"
+              v-else />
+          </div>
         </template>
       </FormCheckbox>
-
-      <button @click="clearSubtitles">
+      <Button
+        variant="secondary"
+        intent="destructive"
+        :label="$t('session.live_page.clear_subtitle')"
+        @click="clearSubtitles" />
+      <!-- <button @click="clearSubtitles">
         <span class="icon clear-history" />
         <span class="label">{{ $t("session.live_page.clear_subtitle") }}</span>
-      </button>
+      </button> -->
       <ModalWatermarkSettings
         v-if="showWatermarkSettings"
         @on-cancel="closeWatermarkSettings"
@@ -87,8 +91,8 @@ import EMPTY_FIELD from "@/const/emptyField"
 import { getEnv } from "@/tools/getEnv"
 import { orgaRoleMixin } from "@/mixins/orgaRole"
 
-import FormInput from "@/components/FormInput.vue"
-import FormCheckbox from "@/components/FormCheckbox.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
+import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import SessionTranslationSelection from "@/components/SessionTranslationSelection.vue"
 import SessionChannelsSelector from "@/components/SessionChannelsSelector.vue"
 import ModalWatermarkSettings from "@/components/ModalWatermarkSettings.vue"

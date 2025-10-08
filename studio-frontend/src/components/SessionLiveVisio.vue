@@ -1,5 +1,5 @@
 <template>
-  <MainContent noBreadcrumb :organizationPage="false" fullwidthContent sidebar>
+  <V2Layout :breadcrumbItems="breadcrumbItems">
     <template v-slot:sidebar>
       <SessionLiveToolbar
         :channels="channels"
@@ -24,7 +24,7 @@
       customTitle="Quick meeting"
       :selectedTranslations="selectedTranslation"
       :selectedChannel="selectedChannel" />
-  </MainContent>
+  </V2Layout>
 </template>
 <script>
 import { sessionModelMixin } from "@/mixins/sessionModel.js"
@@ -34,7 +34,8 @@ import { customDebug } from "@/tools/customDebug.js"
 import MainContent from "@/components/MainContent.vue"
 import SessionLiveToolbar from "@/components/SessionLiveToolbar.vue"
 import SessionLiveContent from "@/components/SessionLiveContent.vue"
-import StatusLed from "@/components/StatusLed.vue"
+import StatusLed from "@/components/atoms/StatusLed.vue"
+import V2Layout from "@/layouts/v2-layout.vue"
 
 export default {
   mixins: [sessionModelMixin],
@@ -88,12 +89,20 @@ export default {
         )
       return res
     },
+    breadcrumbItems() {
+      return [
+        {
+          label: this.$t("breadcrumb.quickSession"),
+        },
+      ]
+    },
   },
   components: {
     MainContent,
     SessionLiveToolbar,
     SessionLiveContent,
     StatusLed,
+    V2Layout,
   },
 }
 </script>

@@ -1,6 +1,7 @@
 <template>
   <MainContentConversation
     :conversation="conversation"
+    :breadcrumbItems="breadcrumbItems"
     :status="status"
     :dataLoaded="dataLoaded"
     :dataLoadedStatus="dataLoadedStatus"
@@ -44,34 +45,19 @@
 
     <template v-slot:breadcrumb-actions>
       <div class="flex1 flex gap-small reset-overflows align-center">
-        <router-link :to="conversationListRoute" class="btn secondary">
-          <span class="icon close"></span>
-          <span class="label">{{ $t("conversation.close_publish") }}</span>
-        </router-link>
-        <router-link
-          :to="{
-            name: 'conversations transcription',
-            params: { conversationId: conversation._id },
-          }"
-          class="btn">
-          <span class="icon back"></span>
-          <span class="label">{{ $t("conversation.return_to_editor") }}</span>
-        </router-link>
-
-        <h1
-          class="flex1 center-text text-cut"
-          style="padding-left: 1rem; padding-right: 1rem">
-          {{ conversation.name }}
-        </h1>
-        <CustomSelect
-          :valueText="$t('conversation.export.title')"
-          iconType="icon"
-          icon="upload"
-          value=""
-          :disabled="currentStatus !== 'complete' || loadingDownload"
-          :options="optionsExport"
-          buttonClass="green"
-          @input="exportConv"></CustomSelect>
+        <PopoverList
+          :items="optionsExport"
+          style="margin-left: auto"
+          @click="exportConv">
+          <template #trigger="{ open }">
+            <Button
+              icon="download"
+              variant="primary"
+              size="sm"
+              :label="$t('conversation.export.title')">
+            </Button>
+          </template>
+        </PopoverList>
       </div>
     </template>
 
@@ -104,20 +90,19 @@ import { getLLMService, apiGetMetadataLLMService } from "@/api/service.js"
 
 import getDescriptionByLanguage from "@/tools/getDescriptionByLanguage.js"
 
-import Loading from "@/components/Loading.vue"
-import Modal from "@/components/Modal.vue"
-import UserInfoInline from "@/components/UserInfoInline.vue"
+import Loading from "@/components/atoms/Loading.vue"
+import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 import AppEditor from "@/components/AppEditor.vue"
 import MainContentConversation from "@/components/MainContentConversation.vue"
 import MenuToolbox from "@/components/MenuToolbox.vue"
-import CustomSelect from "@/components/CustomSelect.vue"
-import SwitchInput from "@/components/SwitchInput.vue"
-import Tabs from "@/components/Tabs.vue"
+import CustomSelect from "@/components/molecules/CustomSelect.vue"
+import SwitchInput from "@/components/atoms/SwitchInput.vue"
+import Tabs from "@/components/molecules/Tabs.vue"
 import TranscriptionHelper from "@/components/TranscriptionHelper.vue"
 import ConversationPublishContent from "@/components/ConversationPublishContent.vue"
 import AppEditorChannelsSelector from "@/components/AppEditorChannelsSelector.vue"
-import AppEditorTranslationSelector from "../components/AppEditorTranslationSelector.vue"
-
+import AppEditorTranslationSelector from "@/components/AppEditorTranslationSelector.vue"
+import PopoverList from "@/components/atoms/PopoverList.vue"
 export default {
   mixins: [conversationMixin],
   data() {
@@ -166,34 +151,26 @@ export default {
         case "verbatim":
         case "docx":
         case "cri":
-          return {
-            actions: [
-              { value: "docx", text: this.$t("conversation.export.docx") },
-              { value: "pdf", text: this.$t("conversation.export.pdf") },
-              { value: "txt", text: this.$t("conversation.export.txt") },
-              { value: "json", text: this.$t("conversation.export.json") },
-            ],
-          }
-          break
+          return [
+            { value: "docx", text: this.$t("conversation.export.docx") },
+            { value: "pdf", text: this.$t("conversation.export.pdf") },
+            { value: "txt", text: this.$t("conversation.export.txt") },
+            { value: "json", text: this.$t("conversation.export.json") },
+          ]
 
         default:
           if (this.mardownContent) {
-            return {
-              actions: [
-                { value: "md", text: this.$t("conversation.export.md") },
-                { value: "pdf", text: this.$t("conversation.export.pdf") },
-              ],
-            }
-          }
-          return {
-            actions: [
-              { value: "docx", text: this.$t("conversation.export.docx") },
+            return [
+              { value: "md", text: this.$t("conversation.export.md") },
               { value: "pdf", text: this.$t("conversation.export.pdf") },
-              // { value: 'txt', text: $t('conversation.export.txt') },
-              // { value: 'json', text: $t('conversation.export.json') },
-            ],
+            ]
           }
-          break
+          return [
+            { value: "docx", text: this.$t("conversation.export.docx") },
+            { value: "pdf", text: this.$t("conversation.export.pdf") },
+            // { value: 'txt', text: $t('conversation.export.txt') },
+            // { value: 'json', text: $t('conversation.export.json') },
+          ]
       }
     },
     dataLoaded() {
@@ -224,7 +201,7 @@ export default {
         return {
           name: format,
           label: description,
-          icon: "text",
+          icon: "file-text",
         }
       })
 
@@ -233,7 +210,7 @@ export default {
           {
             name: "verbatim",
             label: this.$i18n.t(`publish.tabs.verbatim`),
-            icon: "text",
+            icon: "file-text",
           },
           ...res,
         ]
@@ -284,6 +261,27 @@ export default {
     generationPercentage() {
       return Number(this?.currentJob?.processing || 0)
     },
+    breadcrumbItems() {
+      return [
+        {
+          label: this.conversation?.name ?? "",
+          // to: {
+          //   name: "conversations overview",
+          //   params: { conversationId: this.conversationId },
+          // },
+        },
+        {
+          label: this.$t("breadcrumb.transcription"),
+          to: {
+            name: "conversations transcription",
+            params: { conversationId: this.conversationId },
+          },
+        },
+        {
+          label: this.$t("breadcrumb.publish"),
+        },
+      ]
+    },
   },
   methods: {
     initConversationHook() {
@@ -302,7 +300,7 @@ export default {
       await this.getJobsList(true)
       await this.pollingGeneration(true, this.activeTab)
     },
-    exportConv(value) {
+    exportConv({ value }) {
       switch (value) {
         case "docx":
           this.exportDocx()
@@ -539,7 +537,6 @@ export default {
   components: {
     TranscriptionHelper,
     Loading,
-    Modal,
     UserInfoInline,
     AppEditor,
     MainContentConversation,
@@ -553,6 +550,7 @@ export default {
     ConversationPublishContent,
     AppEditorChannelsSelector,
     AppEditorTranslationSelector,
+    PopoverList,
   },
 }
 </script>

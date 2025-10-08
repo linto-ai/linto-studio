@@ -4,7 +4,7 @@
       {{
         $tc(
           "conversation.number_of_conversations_selected",
-          selectedConversationsSize
+          selectedConversationsSize,
         )
       }}
     </span>
@@ -12,7 +12,7 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 export default {
   props: {
     selectedConversationsSize: { type: Number, required: true },

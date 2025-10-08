@@ -1,0 +1,10 @@
+@layer base {
+  .organization-selector {
+    button.select__head {
+      text-decoration: none;
+      display: flex;
+    }
+
+    border-bottom: var(--border-block);
+  }
+}

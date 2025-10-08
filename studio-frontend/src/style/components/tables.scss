@@ -1,194 +1,95 @@
-.table-grid-container {
-  background-color: var(--background-primary);
-  border: var(--border-block);
-  margin: 0;
-  border-radius: 4px;
-}
-
-table.table-grid {
-  display: grid;
-  grid-template-columns: auto 1fr 1fr 1fr 1fr auto; // need to be overwritten in the component depending on the number of columns
-  gap: 1px;
-  position: relative;
-  .fit-content {
-    width: fit-content;
-  }
-
-  .no-size {
-    width: auto;
-  }
-
-  thead,
-  tbody {
-    display: contents;
-  }
-
-  tr {
-    display: contents;
-  }
-
-  td > a {
-    white-space: wrap;
-  }
-
-  td,
-  th {
-    display: flex;
-    align-items: center;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-
-  td {
-    outline: 1px solid var(--neutral-60);
-  }
-
-  th {
-    background-color: var(--neutral-100);
-  }
-
-  .table-loader {
-    position: absolute;
+@layer base {
+  table {
+    border-spacing: 0px;
+    border: var(--border-block);
+    border-radius: 4px;
+    background-color: var(--background-secondary);
+    overflow: auto;
     width: 100%;
-    height: 100%;
-    background-color: #ffffff82;
-    z-index: 2;
-  }
-}
-
-table {
-  width: auto;
-  //table-layout: fixed;
-  border-collapse: collapse;
-  &.fullwidth {
-    width: 100%;
-  }
-
-  // select tr that has th (header row)
-  tr:has(th) {
-    border-bottom: var(--border-button);
     th {
-      padding: 5px 0.25rem;
-      font-size: 14px;
       text-transform: uppercase;
-      //color: var(--text-secondary);
-      font-weight: 600;
-      &.center {
-        text-align: center;
+      background-color: var(--background-primary-soft);
+      text-transform: none;
+
+      & > button {
+        border: none;
+        padding: 0;
+
+        &.active {
+          //text-decoration: underline;
+          font-weight: 800;
+
+          &.asc::after {
+            content: " ⯅";
+            padding-left: 0.25rem;
+            text-decoration: none !important;
+            vertical-align: top;
+          }
+
+          &.desc::after {
+            content: " ⯆";
+            padding-left: 0.25rem;
+            text-decoration: none;
+          }
+        }
       }
+    }
+
+    tr td {
+      border-top: 1px solid var(--neutral-20);
+    }
+
+    tr:nth-child(even) td {
+      background-color: var(--neutral-10);
+    }
+
+    th,
+    tr td {
+      padding: 0.5rem;
+    }
+
+    .fit-content {
+      width: fit-content;
+    }
+
+    .no-size {
+      width: auto;
     }
   }
 
-  th.no-size {
-    width: 0;
-  }
+  table.table-grid {
+    display: grid;
+    grid-template-columns: auto 1fr 1fr 1fr 1fr auto; // need to be overwritten in the component depending on the number of columns
+    //gap: 1px;
+    position: relative;
 
-  tbody {
+    thead,
+    tbody {
+      display: contents;
+    }
+
     tr {
-      &:hover {
-        background: var(--button-background-hover);
-      }
-      td {
-        padding: 5px;
-
-        .table-link {
-          font-weight: 600;
-          color: var(--text-primary);
-        }
-        &.center {
-          text-align: center;
-        }
-        .state-icon {
-          display: inline-block;
-          width: 20px;
-          height: 20px;
-          &.done {
-            @include maskImage("../public/img/state-done.svg");
-            background-color: var(--green-chart);
-          }
-          &.error {
-            @include maskImage("../public/img/state-error.svg");
-            background-color: var(--red-chart);
-          }
-          &.started,
-          &.pending {
-            @include maskImage("../public/img/state-loading.svg");
-            background-color: var(--yellow-chart);
-          }
-        }
-        &.description {
-          max-width: 200px;
-        }
-      }
-      &:first-child {
-        td {
-          padding-top: 10px;
-        }
-      }
-      &.currentuser {
-        background-color: #ddd;
-      }
+      display: contents;
     }
-  }
-}
 
-.table-header-checkbox {
-  padding-left: 5px;
-}
+    td > a {
+      white-space: wrap;
+    }
 
-button.table-header-button,
-.table-header-button.btn {
-  min-width: auto;
-}
+    td,
+    th {
+      display: flex;
+      align-items: center;
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
 
-.table-header-button {
-  background-color: transparent;
-  background-image: none;
-  box-shadow: none;
-  border: none;
-  padding: 5px 0;
-  font-size: 14px;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  font-weight: 600;
-  position: relative;
-  overflow: visible;
-
-  &.active {
-    color: var(--text-primary);
-    &:after {
-      content: "";
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      background: var(--text-primary);
-      top: 4px;
-      left: 100%;
-      margin-left: 0;
+    .table-loader {
       position: absolute;
-      @include maskImage("../public/img/line-arrow.svg");
-      @include transition(all 0.3s ease);
-      top: 50%;
-      transform: translateY(-50%);
-    }
-    &.asc {
-      &:after {
-        transform: rotate(180deg) translateY(50%);
-      }
+      width: 100%;
+      height: 100%;
+      background-color: #ffffff82;
+      z-index: 2;
     }
   }
-  &:hover {
-    background-color: transparent;
-    color: var(--text-primary);
-  }
-}
-
-td.content-size {
-  width: 1%;
-  white-space: nowrap;
-}
-
-// :has selector does not work for old version of firefox, but it's not critical feature (latest ESR of 2024 should work fine)
-tr:has(.line-selector input:checked) {
-  background-color: var(--selected-background);
 }

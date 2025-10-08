@@ -47,7 +47,10 @@ async function transcribeReq(req, res, next) {
 
     const isSingleFile =
       req.body.url || !(req.files && Array.isArray(req.files.file))
-    await transcribe(isSingleFile, req, res, next)
+    const conversation = await transcribe(isSingleFile, req, res, next)
+
+    if (this?.app?.components?.IoHandler)
+      this.app.components.IoHandler.emit("new_conversation", conversation)
   } catch (err) {
     next(err)
   }
@@ -94,11 +97,12 @@ async function transcribe(isSingleFile, req, res, next) {
       transcriptionService,
       options,
     )
-    await createConversation(processingJob, req.body)
-
-    res
-      .status(201)
-      .send({ message: "A conversation is currently being processed" })
+    const conversation = await createConversation(processingJob, req.body)
+    res.status(201).send({
+      message: "A conversation is currently being processed",
+      conversationId: conversation._id.toString(),
+    })
+    return conversation
   } catch (err) {
     next(err)
   }

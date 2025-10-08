@@ -1,17 +1,26 @@
 <template>
   <div>
-    <button
-      @click="showList = !showList"
-      :class="showList ? 'active' : ''"
-      class="invite-user-button">
-      <span class="icon plus"></span>
-      <span class="label">{{ $t("invite_user.button") }}</span>
-    </button>
-    <div
+    <!-- <div
       class="select__list invite-user-list"
       v-if="showList"
       v-click-outside="close">
-      <div class="flex col select__list__inner">
+      <div class="flex col select__list__inner"> -->
+    <Popover content-class="invite-user-list" overlay>
+      <template #trigger>
+        <Button
+          :label="$t('invite_user.button')"
+          variant="secondary"
+          size="sm"
+          @click="showList = !showList" />
+        <!-- <button
+          @click="showList = !showList"
+          :class="showList ? 'active' : ''"
+          class="invite-user-button">
+          <span class="icon plus"></span>
+          <span class="label">{{ $t("invite_user.button") }}</span>
+        </button> -->
+      </template>
+      <template #content>
         <form
           class="form-field flex col small-padding no-margin"
           @submit="inviteUser">
@@ -27,14 +36,14 @@
               id="dropdown-search-tags" />
             <button
               type="submit"
-              class="btn green"
+              class="btn primary"
               :title="
                 enable_inscription
                   ? null
                   : $t('invite_user.inscription_disabled')
               "
               :disabled="
-                this.searchMemberValue.valid && enable_inscription ? null : true
+                searchMemberValue.valid && enable_inscription ? null : true
               ">
               <span class="label">{{ $t("invite_user.invite") }}</span>
             </button>
@@ -53,8 +62,8 @@
             <button
               v-else-if="isAlreadyInvited(slotProps.user)"
               @click="removeUser(slotProps.user)"
-              class="red-border">
-              <span class="icon remove" />
+              class="tertiary outline">
+              <ph-icon name="trash"></ph-icon>
               <span class="label">
                 {{ $t("organisation.user.remove_button") }}</span
               >
@@ -65,16 +74,19 @@
             </button>
           </SearchUsersListComponent>
         </div>
-      </div>
-    </div>
+      </template>
+    </Popover>
+    <!-- </div>
+    </div> -->
   </div>
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import EMPTY_FIELD from "../const/emptyField"
 import SearchUsersListComponent from "@/components/SearchUsersList.vue"
 import { testEmail } from "@/tools/fields/testEmail"
+import Popover from "./atoms/Popover.vue"
 export default {
   props: {
     usersEmailPending: {

@@ -8,7 +8,7 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 export default {
   props: {
     conversation: { type: Object, required: true },

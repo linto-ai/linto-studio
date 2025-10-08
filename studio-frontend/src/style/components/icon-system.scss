@@ -1,0 +1,204 @@
+@layer base {
+  // Icon system based on Phosphor Icons
+  // Documentation: https://phosphoricons.com/
+
+  .icon-svg {
+    display: inline-block;
+    width: 1.5rem;
+    height: 1.5rem;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    vertical-align: middle;
+
+    // Size variants
+    &.xs {
+      width: 0.75rem;
+      height: 0.75rem;
+    }
+
+    &.sm {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    &.md {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+
+    &.lg {
+      width: 2rem;
+      height: 2rem;
+    }
+
+    &.xl {
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+
+    // Color variants
+    &.primary {
+      color: var(--primary-color);
+    }
+
+    &.secondary {
+      color: var(--secondary-color);
+    }
+
+    &.tertiary {
+      color: var(--tertiary-color);
+    }
+
+    &.success {
+      color: var(--green-chart);
+    }
+
+    &.warning {
+      color: var(--yellow-chart);
+    }
+
+    &.danger {
+      color: var(--red-chart);
+    }
+
+    // Fill variants
+    &.fill {
+      fill: currentColor;
+      stroke: none;
+    }
+
+    &.stroke {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    // Special variants
+    &.spin {
+      animation: icon-spin 2s infinite linear;
+    }
+
+    &.pulse {
+      animation: icon-pulse 1s infinite ease-in-out;
+    }
+  }
+
+  // Animation keyframes
+  @keyframes icon-spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes icon-pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.2);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  // SVG icon container
+  .icon-svg {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  // Specific icon styles for button integration
+  button,
+  .btn {
+    .icon-svg {
+      width: 1.25rem;
+      height: 1.25rem;
+
+      &.xs {
+        width: 0.75rem;
+        height: 0.75rem;
+      }
+      &.sm {
+        width: 1rem;
+        height: 1rem;
+      }
+      &.md {
+        width: 1.25rem;
+        height: 1.25rem;
+      }
+      &.lg {
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+      &.xl {
+        width: 1.75rem;
+        height: 1.75rem;
+      }
+    }
+
+    &.primary .icon-svg {
+      color: var(--primary-contrast, #fff);
+    }
+
+    &.secondary .icon-svg {
+      color: var(--primary-contrast, #fff);
+    }
+
+    &.tertiary .icon-svg {
+      color: var(--primary-contrast, #fff);
+    }
+
+    &:hover {
+      &.primary .icon-svg {
+        color: var(--primary-color);
+      }
+
+      &.secondary .icon-svg {
+        color: var(--secondary-color);
+      }
+
+      &.tertiary .icon-svg {
+        color: var(--tertiary-color);
+      }
+    }
+
+    &.primary-outline .icon-svg {
+      color: var(--primary-color);
+    }
+
+    &.secondary-outline .icon-svg {
+      color: var(--secondary-color);
+    }
+
+    &.tertiary-outline .icon-svg {
+      color: var(--tertiary-color);
+    }
+
+    &:hover {
+      &.primary-outline .icon-svg {
+        color: var(--primary-contrast, #fff);
+      }
+
+      &.secondary-outline .icon-svg {
+        color: var(--primary-contrast, #fff);
+      }
+
+      &.tertiary-outline .icon-svg {
+        color: var(--primary-contrast, #fff);
+      }
+    }
+  }
+}

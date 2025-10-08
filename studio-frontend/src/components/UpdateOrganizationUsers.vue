@@ -69,25 +69,27 @@
               }}</span>
             </td>
             <td class="content-size">
-              <button
+              <Button
                 v-if="userInfo._id === user._id"
-                @click="leaveOrganization()">
-                {{ $t("organisation.user.leave_button") }}
-              </button>
-              <button
+                size="sm"
+                variant="secondary"
+                intent="destructive"
+                :label="$t('organisation.user.leave_button')"
+                @click="leaveOrganization()" />
+
+              <Button
                 v-else-if="
                   (isAtLeastMaintainer &&
                     userRole >= user.role &&
                     userInfo._id !== user._id) ||
                   (isSystemAdministrator && isBackofficePage)
                 "
-                @click="removeFromMembers(user)"
-                class="red-border">
-                <span class="icon remove" />
-                <span class="label">{{
-                  $t("organisation.user.remove_button")
-                }}</span>
-              </button>
+                size="sm"
+                icon="trash"
+                variant="secondary"
+                intent="destructive"
+                :label="$t('organisation.user.remove_button')"
+                @click="removeFromMembers(user)" />
             </td>
           </tr>
         </tbody>
@@ -110,7 +112,7 @@
   </section>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import EMPTY_FIELD from "@/const/emptyField"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
@@ -123,7 +125,7 @@ import {
 } from "@/api/user.js"
 
 import UserInvite from "@/components/UserInvite.vue"
-import UserInfoInline from "@/components/UserInfoInline.vue"
+import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 import ArrayHeader from "@/components/ArrayHeader.vue"
 import ModalLeaveOrganization from "@/components/ModalLeaveOrganization.vue"
 import ModalRemoveUserFromOrganization from "./ModalRemoveUserFromOrganization.vue"
@@ -165,9 +167,6 @@ export default {
     }
   },
   computed: {
-    userRole() {
-      return this.$store.getters.getUserRoleInOrganization()
-    },
     sortedUsers() {
       return sortArray(
         this.orgaMembers,

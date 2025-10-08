@@ -1,22 +1,16 @@
 const debug = require("debug")(
-  "linto:conversation-manager:components:webserver:config:passport:oidc",
+  "linto:conversation-manager:components:webserver:config:passport:oidc:linagora",
 )
 const crypto = require("crypto")
 
 const axios = require("axios")
 const passport = require("passport")
-const randomstring = require("randomstring")
 
 const OAuth2Strategy = require("passport-oauth2")
-const model = require(`${process.cwd()}/lib/mongodb/models`)
-const TokenGenerator = require("../token/generator")
+const STRATEGY_NAME = "oidc"
 
-const { MultipleUserFound, DisabledUser } = require(
-  `${process.cwd()}/components/WebServer/error/exception/auth`,
-)
-
-const { populateUserToOrganization } = require(
-  `${process.cwd()}/components/WebServer/controllers/organization/utility`,
+const { generateUserToken } = require(
+  `${process.cwd()}/components/WebServer/config/passport/controllers/oidcTokenGenerator`,
 )
 
 const STRATEGY = new OAuth2Strategy(
@@ -35,7 +29,6 @@ const STRATEGY = new OAuth2Strategy(
   },
   async function (accessToken, refreshToken, profile, done) {
     try {
-      // Fetch user info from OIDC UserInfo Endpoint
       const userInfoResponse = await axios.get(
         process.env.OIDC_URL + "/oauth2/userinfo",
         {
@@ -44,56 +37,12 @@ const STRATEGY = new OAuth2Strategy(
           },
         },
       )
-      let user
-      let users = await model.users.getTokenByEmail(userInfoResponse.data.email)
-      if (users.length === 1) user = users[0]
-      else if (users?.length > 1) throw new MultipleUserFound()
-      else if (user?.suspend) throw new DisabledUser()
-      else {
-        const createdUser = await model.users.createExternal(
-          {
-            email: userInfoResponse?.data?.email,
-            lastname: userInfoResponse?.data?.family_name || "",
-            firstname: userInfoResponse?.data?.given_name || "",
-          },
-          true, // User come from an SSO, we disable the mail update
-        )
-        if (createdUser.insertedCount !== 1) throw new UserError()
-        users = await model.users.getTokenByEmail(userInfoResponse?.data?.email)
-        user = users[0]
-        populateUserToOrganization(user) // Only on user creation
-      }
-
-      if (!user.fromSSO && !user.emailIsVerified) {
-        let emailList = user.verifiedEmail
-        if (!user.verifiedEmail.includes(user.email)) {
-          emailList = user.verifiedEmail.concat(user.email)
-        }
-
-        model.users.update({
-          _id: user._id,
-          fromSso: true,
-          emailIsVerified: true,
-          verifiedEmail: emailList,
-        })
-      }
-
-      const token_salt = randomstring.generate(12)
-      let token = await model.tokens.insert(user._id, token_salt)
-
-      let expires_in = process.env.TOKEN_EXPIRES_IN || 3600
-      let tokenData = {
-        salt: token_salt,
-        tokenId: token.insertedId,
-        email: user.email,
-        userId: user._id,
-        role: user.role,
-      }
-
-      return done(
-        null,
-        TokenGenerator(tokenData, { expires_in: expires_in, refresh: false }),
+      const token = await generateUserToken(
+        userInfoResponse.data.email,
+        userInfoResponse?.data?.family_name,
+        userInfoResponse?.data?.given_name,
       )
+      return done(null, token)
     } catch (err) {
       done(err)
     }
@@ -109,7 +58,7 @@ STRATEGY.authorizationParams = function (options) {
   return params
 }
 
-passport.use("oidc", STRATEGY)
+passport.use(STRATEGY_NAME, STRATEGY)
 
 // Serialize user into session
 passport.serializeUser((user, done) => {

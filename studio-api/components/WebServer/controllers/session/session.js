@@ -4,7 +4,21 @@ const debug = require("debug")(
 const { SessionError } = require(
   `${process.cwd()}/components/WebServer/error/exception/session`,
 )
+const { Unauthorized } = require(
+  `${process.cwd()}/components/WebServer/error/exception/auth`,
+)
+
 const model = require(`${process.cwd()}/lib/mongodb/models`)
+
+async function afterProxyAccess(jsonString, req) {
+  try {
+    const session = JSON.parse(jsonString)
+    if (session.organizationId === req.params.organizationId) return jsonString
+    throw new Unauthorized()
+  } catch (err) {
+    throw err
+  }
+}
 
 async function forceQueryParams(req, next) {
   try {
@@ -67,4 +81,5 @@ module.exports = {
   forceQueryParams,
   forwardSessionAlias,
   checkTranscriberProfileAccess,
+  afterProxyAccess,
 }

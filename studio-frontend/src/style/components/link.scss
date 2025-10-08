@@ -1,0 +1,37 @@
+@layer base {
+  a {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    display: inline-flex;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-decoration: none;
+    font-weight: 500;
+    color: var(--text-color);
+
+    &:hover:not([disabled]):not(.disabled) {
+      text-decoration: underline;
+    }
+
+    &.primary {
+      color: var(--primary-color);
+    }
+
+    &.secondary {
+      color: var(--secondary-color);
+    }
+
+    &.tertiary {
+      color: var(--tertiary-color);
+    }
+  }
+
+  a.underline {
+    text-decoration: underline;
+  }
+}

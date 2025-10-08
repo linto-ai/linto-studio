@@ -442,6 +442,27 @@ class ConvoModel extends MongoModel {
     }
   }
 
+  async listProcessingConversations(organizationId) {
+    try {
+      const query = {
+        "organization.organizationId": organizationId.toString(),
+        "jobs.transcription.state": {
+          $nin: ["error", "done"],
+        },
+        "type.mode": TYPE.CANONICAL,
+      }
+      const projection = {
+        _id: 1,
+        name: 1,
+        "jobs.transcription": 1,
+      }
+      return await this.mongoRequest(query)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   // Default right is 1 (read)
   async listConvFromOrga(
     organizationId,
@@ -491,22 +512,40 @@ class ConvoModel extends MongoModel {
           $all: filter.tags.split(","),
         }
       }
-      if (filter.name) {
-        query.name = {
-          $regex: filter.name,
-          $options: "i",
-        }
-      }
       if (filter.tags && filter.filter !== "notags") {
         query.tags = {
           $all: filter.tags.split(","),
         }
       }
-      if (filter.text) {
-        query["text.raw_segment"] = {
-          $regex: filter.text,
-          $options: "i",
+
+      const searchConditions = []
+
+      if (filter?.name) {
+        searchConditions.push({
+          name: { $regex: filter.name, $options: "i" },
+        })
+      }
+
+      if (filter?.text) {
+        searchConditions.push({
+          "text.raw_segment": { $regex: filter.text, $options: "i" },
+        })
+      }
+
+      if (["pending", "processing", "queued"].includes(filter?.processing)) {
+        query["jobs.transcription.state"] = {
+          $nin: ["error", "done"],
         }
+        projection.skipProjection = true
+      } else if (filter?.processing === "done") {
+        query["jobs.transcription.state"] = "done"
+      } else if (filter?.processing === "error") {
+        query["jobs.transcription.state"] = "error"
+      }
+
+      if (searchConditions.length > 0) {
+        // Ensure conversations match at least one of the search terms
+        query.$and = [{ $or: searchConditions }]
       }
 
       if (userRole === ROLES.MEMBER) {
@@ -581,14 +620,37 @@ class ConvoModel extends MongoModel {
         }
       }
 
-      return await this.mongoAggregatePaginate(
-        query,
-        {
-          page: 0,
-          ...filter,
-        },
-        filter,
-      )
+      if (filter.tags) {
+        query.tags = {
+          $all: filter.tags.split(","),
+        }
+      }
+
+      const searchConditions = []
+      if (filter?.name) {
+        searchConditions.push({
+          name: { $regex: filter.name, $options: "i" },
+        })
+      }
+      if (filter?.text) {
+        searchConditions.push({
+          "text.raw_segment": {
+            $regex: filter.text,
+            $options: "i",
+          },
+        })
+      }
+      if (searchConditions.length > 0) {
+        query.$and = [{ $or: searchConditions }]
+      }
+
+      const projection = {
+        page: 0,
+        text: 0,
+        "jobs.transcription.job_logs": 0,
+      }
+
+      return await this.mongoAggregatePaginate(query, projection, filter)
     } catch (error) {
       console.error(error)
       return error
@@ -615,24 +677,20 @@ class ConvoModel extends MongoModel {
         "type.mode": TYPE.CANONICAL,
       }
 
-      if (filter.tags) {
-        query.tags = {
-          $all: filter.tags.split(","),
-        }
+      /* ----------------------- SEARCH name OR text ----------------------------- */
+      const favSearch = []
+      if (filter?.text) {
+        favSearch.push({
+          "text.raw_segment": { $regex: filter.text, $options: "i" },
+        })
       }
-
-      if (filter.text) {
-        query["text.raw_segment"] = {
-          $regex: filter.text,
-          $options: "i",
-        }
+      if (filter?.name) {
+        favSearch.push({
+          name: { $regex: filter.name, $options: "i" },
+        })
       }
-
-      if (filter.name) {
-        query.name = {
-          $regex: filter.name,
-          $options: "i",
-        }
+      if (favSearch.length > 0) {
+        query.$and = [{ $or: favSearch }]
       }
 
       return await this.mongoAggregatePaginate(query, projection, filter)
@@ -701,7 +759,27 @@ class ConvoModel extends MongoModel {
           }
       }
 
-      return await this.mongoRequest(query, filter)
+      /* ------------------------ TAG & SEARCH filters --------------------------- */
+      if (filter.tags) {
+        query.tags = { $all: filter.tags.split(",") }
+      }
+
+      const accSearch = []
+      if (filter?.name)
+        accSearch.push({ name: { $regex: filter.name, $options: "i" } })
+      if (filter?.text)
+        accSearch.push({
+          "text.raw_segment": { $regex: filter.text, $options: "i" },
+        })
+      if (accSearch.length > 0) query.$and = [{ $or: accSearch }]
+
+      const projectionAcc = {
+        page: 0,
+        text: 0,
+        "jobs.transcription.job_logs": 0,
+      }
+
+      return await this.mongoRequest(query, projectionAcc)
     } catch (error) {
       console.error(error)
       return error

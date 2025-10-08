@@ -6,26 +6,32 @@
     <div v-else-if="searchMemberValue.length > 0" class="">
       <div class="flex col gap-small">
         <user-info-inline
+          v-if="!onlySlot && user._id !== userInfo._id"
           :user="user"
           :userId="user._id"
           v-for="user of availableUsers"
-          v-if="user._id !== userInfo._id"
           :key="user._id">
           <slot v-bind:user="user"></slot>
         </user-info-inline>
+
+        <slot
+          v-bind:user="user"
+          v-for="user of availableUsers"
+          v-if="onlySlot && user._id !== userInfo._id"></slot>
       </div>
     </div>
   </div>
 </template>
 <script>
 import { debounceMixin } from "../mixins/debounce"
-import Loading from "@/components/Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 import { apiSearchUser } from "../api/user.js"
-import UserInfoInline from "./UserInfoInline.vue"
+import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 export default {
   props: {
     searchMemberValue: { required: true },
     currentUser: { required: true },
+    onlySlot: { type: Boolean, default: false },
   },
   mixins: [debounceMixin],
   data() {
@@ -45,7 +51,7 @@ export default {
       if (this.searchMemberValue.length > 0) {
         return this.searchUsersList.map((user) => {
           const existingUserIndex = this.currentUser.findIndex(
-            (usr) => usr._id === user._id
+            (usr) => usr._id === user._id,
           )
           if (existingUserIndex < 0) {
             return {
@@ -63,7 +69,7 @@ export default {
       return []
     },
     userInfo() {
-      return this.$store.state.userInfo
+      return this.$store.getters["user/getUserInfos"]
     },
   },
   watch: {

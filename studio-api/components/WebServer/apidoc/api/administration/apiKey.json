@@ -1,0 +1,264 @@
+{
+  "/api/administration/tokens/": {
+    "post": {
+      "tags": ["administration"],
+      "summary": "Create an api key token for a backoffice user",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
+          "required": true,
+          "description": "Scope of the user, must be 'backoffice'"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "integer"
+                },
+                "expires_in": {
+                  "type": "string",
+                  "description": "Duration until the token expires (e.g., 5y, 30d, 12h)",
+                  "default": "30d"
+                },
+                "metadata": {
+                  "type": "string",
+                  "description": "A JSON string representing metadata associated with the token"
+                }
+              },
+              "required": ["role"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/APIToken"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "get": {
+      "tags": ["administration"],
+      "summary": "Retrieve all api key tokens from the platform",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
+          "required": true,
+          "description": "Scope of the user, must be 'backoffice'"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/APIUser"
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/administration/tokens/{tokenId}": {
+    "put": {
+      "tags": ["administration"],
+      "summary": "Regenerate an api key token",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
+          "required": true,
+          "description": "Scope of the user, must be 'backoffice'"
+        },
+        {
+          "in": "path",
+          "name": "tokenId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for the api key"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "expires_in": {
+                  "type": "string",
+                  "description": "Duration until the token expires (e.g., 5y, 30d, 12h)",
+                  "default": "30d"
+                }
+              },
+              "required": ["role"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/APIToken"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "get": {
+      "tags": ["administration"],
+      "summary": "Retrieve details of a specific api key",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
+          "required": true,
+          "description": "Scope of the user, must be 'backoffice'"
+        },
+        {
+          "in": "path",
+          "name": "tokenId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for the api key"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/APIToken"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "delete": {
+      "tags": ["administration"],
+      "summary": "Delete an api key",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
+          "required": true,
+          "description": "Scope of the user, must be 'backoffice'"
+        },
+        {
+          "in": "path",
+          "name": "tokenId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for the api key"
+        },
+        {
+          "in": "query",
+          "name": "revoke",
+          "required": false,
+          "description": "Allow to disable or revoke the token. If revoke=true, it does not delete, but disables. Default to false"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Message"
+                }
+              },
+              "example": {
+                "message": "Api key has been deleted"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  }
+}

@@ -37,9 +37,9 @@
 import { bus } from "@/main.js"
 import TRANSCRIBER_PROFILES_TEMPLATES from "@/const/transcriberProfilesTemplates"
 import EMPTY_FIELD from "@/const/emptyField"
-import Tabs from "@/components/Tabs.vue"
+import Tabs from "@/components/molecules/Tabs.vue"
 import TranscriberProfileEditorPlain from "@/components/TranscriberProfileEditorPlain.vue"
-import FormCheckbox from "@/components/FormCheckbox.vue"
+import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 
 export default {
   props: {

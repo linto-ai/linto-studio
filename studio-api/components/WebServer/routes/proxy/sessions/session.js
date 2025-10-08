@@ -10,6 +10,7 @@ const {
   forceQueryParams,
   forwardSessionAlias,
   checkTranscriberProfileAccess,
+  afterProxyAccess,
 } = require(
   `${process.cwd()}/components/WebServer/controllers/session/session.js`,
 )
@@ -123,8 +124,18 @@ module.exports = (webServer) => {
             executeAfterResult: [
               (jsonString) => {
                 try {
-                  const session = JSON.parse(jsonString)
-                  if (session.visibility === "public") return jsonString
+                  let session = JSON.parse(jsonString)
+
+                  if (session.visibility === "public") {
+                    session.channels.forEach((channel) => {
+                      if (channel.streamEndpoints) {
+                        delete channel.streamEndpoints
+                      }
+                    })
+
+                    return JSON.stringify(session)
+                  }
+
                   throw new Unauthorized()
                 } catch (err) {
                   throw err
@@ -143,6 +154,7 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/sessions/:id",
             method: ["get"],
             executeBeforeResult: forwardSessionAlias,
+            executeAfterResult: [afterProxyAccess],
             forwardParams: proxyForwardParams,
           },
           {
@@ -191,7 +203,7 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/quickMeeting/:id",
             method: ["delete"],
             forwardParams: proxyForwardParams,
-            executeBeforeResult: storeQuickMeetingFromStop,
+            executeBeforeResult: storeQuickMeetingFromStop.bind(webServer),
           },
           {
             path: "/organizations/:organizationId/bots",
@@ -230,7 +242,7 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/sessions/:id",
             method: ["delete"],
             forwardParams: proxyForwardParams,
-            executeBeforeResult: storeSessionFromStop,
+            executeBeforeResult: storeSessionFromStop.bind(webServer),
           },
           {
             path: "/organizations/:organizationId/sessions/:id/stop",

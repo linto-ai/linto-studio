@@ -6,8 +6,8 @@
       <FormInput :field="matchingMail" v-model="matchingMail.value" />
 
       <div class="flex gap-small wrap">
-        <button type="submit" class="btn green">
-          <span class="icon apply"></span>
+        <button type="submit" class="btn primary">
+          <ph-icon name="check" size="md" class="icon" />
           <span class="label">{{
             $t("organisation.matching_users.update_button")
           }}</span>
@@ -37,7 +37,7 @@ import {
   apiInviteUsersMachingEmail,
 } from "@/api/organisation.js"
 
-import FormInput from "@/components/FormInput.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 
 export default {
   mixins: [formsMixin, orgaRoleMixin, platformRoleMixin],

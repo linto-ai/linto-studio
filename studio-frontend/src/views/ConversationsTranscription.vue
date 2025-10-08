@@ -1,6 +1,7 @@
 <template>
   <MainContentConversation
     :conversation="conversation"
+    :breadcrumbItems="breadcrumbItems"
     :status="status"
     :dataLoaded="dataLoaded"
     :error="error"
@@ -29,22 +30,21 @@
               type="search"
               id="transcription-search"
               v-model="transcriptionSearch" />
-            <button
+            <Button
               :title="
                 $t('conversation.search_in_transcription.exact_word_match')
               "
-              class="only-icon small only-border"
-              :class="{ 'green-border': exactMatching }"
-              @click="toggleExactMatching">
-              <span class="icon equal"></span>
-            </button>
-            <button
+              :variant="exactMatching ? 'primary' : 'secondary'"
+              @click="toggleExactMatching"
+              icon="equals" />
+
+            <Button
               v-if="transcriptionSearch"
+              variant="secondary"
+              intent="destructive"
               :title="$t('conversation.search_in_transcription.clear_search')"
-              class="only-icon small only-border"
-              @click="resetSearch">
-              <span class="icon close"></span>
-            </button>
+              @click="resetSearch"
+              icon="x" />
           </div>
 
           <SearchResultPaginator
@@ -78,26 +78,16 @@
     </template>
 
     <template v-slot:breadcrumb-actions>
-      <router-link :to="conversationListRoute" class="btn secondary">
-        <span class="icon close"></span>
-        <span class="label">{{ $t("conversation.close_editor") }}</span>
-      </router-link>
-
-      <h1
-        class="flex1 center-text text-cut"
-        style="padding-left: 1rem; padding-right: 1rem">
-        {{ name }}
-      </h1>
-
-      <router-link
+      <Button
+        style="margin-left: auto"
+        :label="$t('conversation.publish_document')"
+        icon="file"
+        variant="primary"
+        size="sm"
         :to="{
           name: 'conversations publish',
           params: { conversationId: conversation._id },
-        }"
-        class="btn green">
-        <span class="icon document"></span>
-        <span class="label">{{ $t("conversation.publish_document") }}</span>
-      </router-link>
+        }"></Button>
     </template>
 
     <div class="flex flex1">
@@ -140,15 +130,14 @@
 import moment from "moment"
 import { nextTick } from "vue"
 
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { apiPostMetadata, apiUpdateMetadata } from "@/api/metadata.js"
 import findExpressionInWordsList from "@/tools/findExpressionInWordsList.js"
 
 import { conversationMixin } from "@/mixins/conversation.js"
 
-import Loading from "@/components/Loading.vue"
-import Modal from "@/components/Modal.vue"
-import UserInfoInline from "@/components/UserInfoInline.vue"
+import Loading from "@/components/atoms/Loading.vue"
+import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 import AppEditor from "@/components/AppEditor.vue"
 import MainContentConversation from "@/components/MainContentConversation.vue"
 import HighlightsList from "@/components/HighlightsList.vue"
@@ -182,6 +171,7 @@ export default {
       turnsIndexedByid: {},
       turns: [],
       turnPages: [],
+      pendingSearchFromUrl: null,
     }
   },
   mounted() {
@@ -205,6 +195,9 @@ export default {
     bus.$on("refresh_turns", () => {
       this.setupTurns()
     })
+
+    // Apply search from URL parameter if present
+    this.applySearchFromUrl()
   },
   beforeDestroy() {
     bus.$off("open-metadata-modal")
@@ -228,10 +221,20 @@ export default {
         this.status = this.computeStatus(this.conversation?.jobs?.transcription)
       }
     },
+    status(newVal, oldVal) {
+      if (newVal === "done" && this.pendingSearchFromUrl) {
+        this.$nextTick(() => {
+          this.transcriptionSearch = this.pendingSearchFromUrl
+          this.pendingSearchFromUrl = null
+        })
+      }
+    },
     transcriptionSearch(newVal, oldVal) {
       if (newVal != oldVal) {
         bus.$emit("player-pause")
-        this.$refs.editor.searchInTranscription(newVal, this.exactMatching)
+        if (this.$refs.editor) {
+          this.$refs.editor.searchInTranscription(newVal, this.exactMatching)
+        }
       }
     },
   },
@@ -249,6 +252,20 @@ export default {
       return `${this.conversation.name.replace(/\s/g, "_")}_${moment().format(
         "YYYYMMDDHHmmss",
       )}`
+    },
+    breadcrumbItems() {
+      return [
+        {
+          label: this.conversation?.name ?? "",
+          // to: {
+          //   name: "conversations overview",
+          //   params: { conversationId: this.conversationId },
+          // },
+        },
+        {
+          label: this.$t("breadcrumb.transcription"),
+        },
+      ]
     },
   },
   methods: {
@@ -418,11 +435,23 @@ export default {
       this.currentHighlightResult = current
       this.totalHighlightResult = total
     },
+    applySearchFromUrl() {
+      const urlParams = new URLSearchParams(window.location.search)
+      const searchTerm = urlParams.get("search")
+      if (searchTerm) {
+        if (this.status === "done") {
+          this.$nextTick(() => {
+            this.transcriptionSearch = searchTerm
+          })
+        } else {
+          this.pendingSearchFromUrl = searchTerm
+        }
+      }
+    },
   },
   components: {
     TranscriptionHelper,
     Loading,
-    Modal,
     UserInfoInline,
     AppEditor,
     MainContentConversation,

@@ -2,25 +2,25 @@
   <form @submit="update">
     <section>
       <h2>
-        {{ $t("usersettings.change_password_label") }}
+        {{ $t("user_settings.change_password_label") }}
       </h2>
-      <div class="flex row" v-if="notificationShouldUpdatePassword">
+      <!-- <div class="flex row" v-if="notificationShouldUpdatePassword">
         <div class="user-settings-notification">
           <span class="content">
-            {{ $t("usersettings.update_pswd_notif") }}
+            {{ $t("user_settings.update_pswd_notif") }}
           </span>
           <button class="btn black" @click="dismissForgottenPswdNotif">
             <span class="icon close"></span>
             <span class="label">{{
-              $t("usersettings.update_pswd_notif_dismiss_btn")
+              $t("user_settings.update_pswd_notif_dismiss_btn")
             }}</span>
           </button>
         </div>
-      </div>
+      </div> -->
 
       <div class="form-field flex col">
         <label class="form-label" for="password">
-          {{ $t("usersettings.new_password_label") }}
+          {{ $t("user_settings.new_password_label") }}
         </label>
         <input type="password" v-model="newPassword.value" id="password" />
         <span class="error-field" v-if="newPassword.error !== null">
@@ -29,7 +29,7 @@
       </div>
       <div class="form-field flex col">
         <label class="form-label" for="newPasswordConfirm">
-          {{ $t("usersettings.new_password_confirmation_label") }}
+          {{ $t("user_settings.new_password_confirmation_label") }}
         </label>
         <input
           type="password"
@@ -40,18 +40,20 @@
         </span>
       </div>
       <div class="flex row">
-        <button type="submit">
-          {{ $t("usersettings.update_password_button") }}
-        </button>
+        <Button
+          type="submit"
+          variant="primary"
+          size="sm"
+          :label="$t('user_settings.update_password_button')" />
       </div>
     </section>
   </form>
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
+import { mapActions } from "vuex"
 
-import { apiUpdateUserInfo } from "@/api/user.js"
 import { apiAdminUpdateUser } from "@/api/admin.js"
 import { testPassword } from "@/tools/fields/testPassword.js"
 
@@ -82,6 +84,7 @@ export default {
   },
   mounted() {},
   methods: {
+    ...mapActions("user", ["updateUser"]),
     async update(event) {
       event?.preventDefault()
       testPassword(this.newPassword, (key) => this.$t(key))
@@ -100,7 +103,7 @@ export default {
       let req = null
 
       if (!this.isAdminPage) {
-        req = await apiUpdateUserInfo({ password: this.newPassword.value })
+        req = await this.updateUser({ password: this.newPassword.value })
       } else {
         req = await apiAdminUpdateUser(this.userInfo._id, {
           password: this.newPassword.value,
@@ -117,26 +120,16 @@ export default {
           error: null,
           valid: false,
         }
-        bus.$emit("user_settings_update", {})
         bus.$emit("app_notif", {
           status: "success",
-          message: this.$t("usersettings.notif_success"),
+          message: this.$t("user_settings.notif_success"),
         })
       } else {
         bus.$emit("app_notif", {
           status: "error",
-          message: this.$t("usersettings.notif_error"),
+          message: this.$t("user_settings.notif_error"),
         })
       }
-    },
-    async dismissForgottenPswdNotif(e) {
-      await apiUpdateUserInfo({
-        accountNotifications: {
-          updatePassword: false,
-        },
-      })
-      bus.$emit("user_settings_update", {})
-      e.preventDefault()
     },
   },
   computed: {

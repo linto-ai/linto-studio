@@ -1,24 +1,4 @@
-.list-profil-picture-container {
-  position: relative;
-  padding: 0;
-  margin: 0;
-  top: 0;
-  display: flex;
-  z-index: 2;
-  &:first-child {
-    left: 0;
-  }
-}
-
-.list-profil-picture {
-  display: inline-block;
-  width: 2rem;
-  height: 2rem;
-  @include borderRadius(2rem);
-  border: 1px solid #fff;
-  position: relative;
-}
-
+@layer base {
 .user-info-inline__avatar {
   width: 2rem;
   height: 2rem;
@@ -45,4 +25,5 @@
 
 .user-list__title {
   font-weight: 600;
+}
 }

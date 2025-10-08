@@ -7,8 +7,8 @@
         :for="flag">
         {{ label }}
       </label>
-      <!-- <button class="red-border only-icon small">
-        <span class="icon trash"></span>
+      <!-- <button class="tertiary outline only-icon small">
+        <ph-icon name="trash"></ph-icon>
       </button> -->
       <div
         class="flex row user-connected-container align-center"

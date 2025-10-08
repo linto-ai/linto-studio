@@ -13,6 +13,8 @@ const llm = require(
   `${process.cwd()}/components/WebServer/controllers/llm/index`,
 )
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
+const { exec } = require("child_process")
+const path = require("path")
 
 const { jsonToPlainText } = require("json-to-plain-text")
 
@@ -105,7 +107,6 @@ async function exportConversation(req, res, next) {
           metadata,
         )
     }
-
     switch (req.query.format) {
       case "json":
         await handleJsonFormat(res, metadata, conversation)
@@ -113,6 +114,7 @@ async function exportConversation(req, res, next) {
       case "text":
         await handleTextFormat(res, metadata, conversation)
         break
+      case "odt":
       case "docx":
       case "verbatim":
         await handleVerbatimFormat(res, req.query, conversation, metadata)
@@ -178,7 +180,7 @@ async function handleLLMService(res, query, conversation, metadata) {
         )
       } else {
         const file = await docx.generateDocxOnFormat(query, conversationExport)
-        sendFileAsResponse(res, file, query.preview)
+        sendFileAsResponse(res, file, query)
       }
     } else {
       if (
@@ -202,16 +204,42 @@ async function handleLLMService(res, query, conversation, metadata) {
     throw err
   }
 }
-
-async function sendFileAsResponse(res, file, preview = false) {
-  const validCharsRegex = /[a-zA-Z0-9-_]/g
+function convertDocxToOdt(docxPath, outputDir, callback) {
+  exec(
+    `libreoffice --headless --convert-to odt --outdir ${outputDir} ${docxPath}`,
+    (err, stdout, stderr) => {
+      if (err) return callback(err)
+      const odtPath = path.join(
+        outputDir,
+        path.basename(docxPath, ".docx") + ".odt",
+      )
+      callback(null, odtPath)
+    },
+  )
+}
+async function sendFileAsResponse(res, file, query) {
+  const validCharsRegex = /[a-zA-Z0-9-_.]/g
   let fileName = file.name.match(validCharsRegex).join("")
 
-  if (preview === "true") {
+  if (query.preview === undefined) query.preview = "false"
+  if (query.exportFormat === undefined) query.exportFormat = "docx"
+
+  if (query.preview === "true") {
     const pdf = await docx.convertToPDF(file)
     res.setHeader("Content-Type", "application/pdf")
     res.setHeader("Content-disposition", "attachment; filename=" + fileName)
     res.sendFile(pdf.path)
+  } else if (query.exportFormat === "odt") {
+    await convertDocxToOdt(file.path, "/tmp", (err, odtPath) => {
+      if (err) return res.status(500).send("ODT Conversion failed")
+
+      res.setHeader("Content-Type", "application/vnd.oasis.opendocument.text")
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename=${path.basename(odtPath)}`,
+      )
+      res.sendFile(odtPath)
+    })
   } else {
     res.setHeader("Content-Type", "application/vnd.openxmlformats")
     res.setHeader("Content-disposition", "attachment; filename=" + fileName)
@@ -268,7 +296,7 @@ async function handleVerbatimFormat(res, query, conversation, metadata) {
     created: conversation.created,
   }
   const file = await docx.generateDocxOnFormat(query, conv)
-  sendFileAsResponse(res, file, query.preview)
+  sendFileAsResponse(res, file, query)
 }
 
 async function prepareConversation(conversation, filter) {

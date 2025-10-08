@@ -20,8 +20,8 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
-import ContextMenu from "./ContextMenu.vue"
+import { bus } from "@/main.js"
+import ContextMenu from "@/components/atoms/ContextMenu.vue"
 import SessionChannelsEndpointsLine from "./SessionChannelsEndpointsLine.vue"
 
 export default {

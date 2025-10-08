@@ -1,15 +1,19 @@
 <template>
   <div>
-    <button
-      id="generate-subtitle-btn"
-      class="btn green"
+    <Button
+      :label="$t('conversation.subtitles.generate_subs')"
+      icon="plus"
+      @click="openGenerateModal"
+      v-if="canEdit"></Button>
+    <!-- <button
+      class="btn primary"
       @click="openGenerateModal"
       v-if="canEdit">
       <span class="icon new"></span>
       <span class="label">{{
         $t("conversation.subtitles.generate_subs")
       }}</span>
-    </button>
+    </button> -->
     <ModalGenerateSubtitle
       v-if="generate"
       @on-close="closeGenerateModal"></ModalGenerateSubtitle>

@@ -1,12 +1,14 @@
-.appointment-selector {
-  border: var(--border-block);
-  max-width: 20rem;
-}
+@layer base {
+  .appointment-selector {
+    border: var(--border-block);
+    max-width: 20rem;
+  }
 
-.appointment-selector.errored legend {
-  color: var(--red-chart);
-}
+  .appointment-selector.errored legend {
+    color: var(--red-chart);
+  }
 
-.appointment-selector__duration {
-  font-weight: 700;
+  .appointment-selector__duration {
+    font-weight: 700;
+  }
 }

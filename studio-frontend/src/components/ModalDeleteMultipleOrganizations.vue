@@ -1,11 +1,12 @@
 <template>
   <ModalNew
+    value
     @on-cancel="() => this.$emit('on-close')"
     @on-confirm="deleteOrganizations"
     :title="title"
     :actionBtnLabel="actionBtnLabel"
     :customClassButton="{ red: true }"
-    small>
+    size="sm">
     {{
       $tc(
         "modal_delete_multiple_organizations.content",
@@ -19,7 +20,7 @@ import { apiDeleteOrganisation } from "@/api/organisation.js"
 import bulkRequest from "@/tools/bulkRequest.js"
 import { bus } from "@/main"
 
-import ModalNew from "@/components/ModalNew.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
 
 export default {
   props: {

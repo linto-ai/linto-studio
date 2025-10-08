@@ -17,6 +17,7 @@
         v-for="conv of conversations"
         :key="conv._id + conv.last_update + conv.tags.length"
         :currentOrganizationScope="currentOrganizationScope"
+        :userInfo="userInfo"
         :conversation="conv"
         :pageSharedWith="pageSharedWith"
         :displayTags="displayTags"
@@ -35,8 +36,11 @@
       <router-link
         v-if="isAtLeastUploader"
         :title="$t('navigation.conversation.create')"
-        to="/interface/conversations/create"
-        class="btn green-border">
+        :to="{
+          name: 'conversations create',
+          params: { organizationId: currentOrganizationScope },
+        }"
+        class="btn primary-border">
         <span class="label">{{ $t("navigation.conversation.create") }}</span>
         <span class="icon new"></span>
       </router-link>
@@ -51,8 +55,8 @@
 <script>
 import { Fragment } from "vue-fragment"
 
-import Loading from "@/components/Loading.vue"
-import ConversationLineNew from "@/components/ConversationLineNew.vue"
+import Loading from "@/components/atoms/Loading.vue"
+import ConversationLine from "@/components/ConversationLine.vue"
 import ErrorPage from "./ErrorPage.vue"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 
@@ -61,7 +65,8 @@ export default {
   props: {
     conversations: { type: Array, required: false },
     loading: { type: Boolean, required: true },
-    currentOrganizationScope: { type: String, required: true },
+    currentOrganizationScope: { type: String, required: false },
+    userInfo: { type: Object, required: true },
     displayTags: { type: Boolean, default: true },
     pageSharedWith: { type: Boolean, default: false },
     indexedTags: { type: Object, required: false }, // tags indexed by id, if not provided will be fetched
@@ -92,7 +97,7 @@ export default {
   },
   components: {
     Loading,
-    ConversationLine: ConversationLineNew,
+    ConversationLine,
     ErrorPage,
   },
 }

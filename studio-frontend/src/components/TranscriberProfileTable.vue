@@ -23,7 +23,7 @@
 import { bus } from "@/main.js"
 import TranscriberProfileTableHeader from "./TranscriberProfileTableHeader.vue"
 import TranscriberProfileTableLine from "./TranscriberProfileTableLine.vue"
-import Loading from "./Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 
 export default {
   props: {

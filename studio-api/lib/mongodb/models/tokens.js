@@ -8,13 +8,14 @@ class TokenModel extends MongoModel {
     super("tokens") // define name of 'users' collection elsewhere?
   }
 
-  async insert(user_id, salt) {
+  async insert(user_id, salt, expires_in) {
     try {
       let payload = {
         userId: user_id.toString(),
         salt: salt,
         createdAt: new Date(Date.now()),
       }
+      if (expires_in) payload.expiresIn = expires_in
 
       return await this.mongoInsert(payload)
     } catch (error) {
@@ -35,6 +36,18 @@ class TokenModel extends MongoModel {
     }
   }
 
+  async getTokenByUser(userId) {
+    try {
+      const query = {
+        userId: userId,
+      }
+      return await this.mongoRequest(query)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   async getTokenById(id, userId) {
     try {
       const query = {
@@ -42,6 +55,18 @@ class TokenModel extends MongoModel {
         userId: userId,
       }
       return await this.mongoRequest(query)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async deleteAllUserTokens(userId) {
+    try {
+      const query = {
+        userId: userId,
+      }
+      return await this.mongoDeleteMany(query, true)
     } catch (error) {
       console.error(error)
       return error

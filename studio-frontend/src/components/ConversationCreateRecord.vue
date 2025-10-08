@@ -2,35 +2,16 @@
   <div
     class="flex col justify-center align-center audio-upload__record"
     @click="recording ? stopRecording() : startRecording()">
-    <div class="btn green audio-upload__record__button" v-if="!recording">
+    <div class="btn primary audio-upload__record__button" v-if="!recording">
       <span class="icon record audio-upload__record__icon"></span>
     </div>
-    <div class="btn green audio-upload__record__button" v-else>
+    <div class="btn primary audio-upload__record__button" v-else>
       <span class="icon stop audio-upload__record__icon"></span>
     </div>
     <label from for="record" class="label">
       {{ recording ? $t("conversation.recording") : $t("conversation.record") }}
     </label>
   </div>
-  <!-- <div class="flex col">
-    <div class="flex row">
-      <button
-        @click="recording ? stopRecording() : startRecording()"
-        type="button"
-        :disabled="disabled"
-        class="btn black">
-        <span class="icon record"></span>
-        <span class="label">
-          {{
-            recording ? $t("conversation.recording") : $t("conversation.record")
-          }}
-        </span>
-      </button>
-    </div>
-    <span class="error-field" v-if="audioRecFile.error !== null">
-      {{ audioRecFile.error }}
-    </span>
-  </div> -->
 </template>
 <script>
 import WebVoiceSDK from "@linto-ai/webvoicesdk"

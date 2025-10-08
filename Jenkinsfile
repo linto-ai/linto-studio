@@ -81,5 +81,19 @@ pipeline {
                 }
             }
         }
+
+        stage('Docker build for preview-saas (wip) branch') {
+            when {
+                branch 'preview-saas'
+            }
+            steps {
+                echo 'Publishing unstable'
+                script {
+                    def changedFiles = sh(returnStdout: true, script: 'git diff --name-only HEAD^ HEAD').trim()
+
+                    performBuildForFile(changedFiles, 'preview-saas')
+                }
+            }
+        }
     }
 }

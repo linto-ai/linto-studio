@@ -16,7 +16,7 @@
     <div v-if="transcriberProfiles.length === 0 && !loading" class="">
       {{ $t("organisation.transcriber_profiles.no_profiles") }}
     </div>
-    <div v-else class="table-grid-container">
+    <div v-else>
       <TranscriberProfileTable
         @list_sort_by="sortBy"
         :sortListKey="sortListKey"

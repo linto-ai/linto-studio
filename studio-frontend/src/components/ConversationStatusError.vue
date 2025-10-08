@@ -1,6 +1,6 @@
 <template>
-  <MainContent noBreadcrumb :organizationPage="false">
-    <template v-slot:breadcrumb-actions>
+  <V2Layout>
+    <!-- <template v-slot:breadcrumb-actions>
       <router-link :to="conversationListRoute" class="btn">
         <span class="icon back"></span>
         <span class="label">{{
@@ -21,7 +21,7 @@
           $t("conversation.status_page.return_to_medias_list_button")
         }}</span>
       </router-link>
-    </template>
+    </template> -->
     <div
       class="flex col flex1 gap-medium align-center conversation-status-error">
       <h2 class="center-text">
@@ -40,12 +40,12 @@
         </router-link>
       </div>
     </div>
-  </MainContent>
+  </V2Layout>
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
-import MainContent from "./MainContent.vue"
+import { bus } from "@/main.js"
+import V2Layout from "@/layouts/v2-layout.vue"
 
 // todo: fetch log from https://alpha.api.linto.ai/stt-french-generic/job-log/<job_id>
 
@@ -75,6 +75,6 @@ export default {
       const job_id = this.conversation.transcription.job_id
     },
   },
-  components: { Fragment, MainContent },
+  components: { Fragment, V2Layout },
 }
 </script>

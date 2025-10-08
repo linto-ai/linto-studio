@@ -1,3 +1,24 @@
+# 1.6.0
+
+_2025_10_08_
+
+- This version is a major improvement, with redesigned layout/workflow for simplified UI/UX
+  - User and organisation settings merged
+  - Reworking of media listing with infinite scroll and better media management
+  - Media are now sort depending of their transcription status and are updated in real time
+  - Mobile interface greatly improved
+  - Improvement of many UI components
+- Frontend architecture improvements to prepare for future technical stack upgrade (Vue 3/React)
+  - Store optimization and enhanced state management
+  - Style system refactoring and atomic composition structure
+  - Technical debt reduction by isolating unnecessary stack sections
+- Tags simplification
+  - Tags are not linked to category anymore, and can have a description field instead
+- Google and Github single sign on login are now supported (SSO)
+- Sessions connections are now tracked and saved in logs
+- Handle api key to access rest api without being connected as a user
+- A SDK is now available to wrap LinTO Studio api calls
+
 # 1.5.6
 
 _2025_06_24_

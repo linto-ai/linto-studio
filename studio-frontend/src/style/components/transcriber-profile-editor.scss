@@ -1,15 +1,16 @@
-
-.transcriber-profile-detail__footer {
+@layer base {
+  .transcriber-profile-detail__footer {
     border: var(--border-block);
-  background-color: var(--background-primary);
-  padding: 0.5rem;
-  border-radius: 4px;
-}
+    background-color: var(--background-primary);
+    padding: 0.5rem;
+    border-radius: 4px;
+  }
 
-.transcriber-profile-editor {
+  .transcriber-profile-editor {
     //height: 100%;
-}
+  }
 
-.transcriber-profile-editor__plain {
+  .transcriber-profile-editor__plain {
     max-width: none;
+  }
 }
