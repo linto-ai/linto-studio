@@ -122,7 +122,7 @@ class UsersModel extends MongoModel {
     }
   }
 
-  async createM2MUser(payload, role = ROLE.UNDEFINED) {
+  async createApiKey(payload, role = ROLE.UNDEFINED) {
     try {
       const dateTime = moment().format()
       const userPayload = {
