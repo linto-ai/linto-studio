@@ -26,13 +26,13 @@ const { updateOrganization, deleteOrganization } = require(
 )
 
 const {
-  createM2MUser,
-  listM2M,
-  getM2MTokens,
-  refreshM2MToken,
-  deleteM2Token,
+  createApiKey,
+  listApiKeyFromOrga,
+  getApiKey,
+  refreshApiKey,
+  deleteApiKey,
 } = require(
-  `${process.cwd()}/components/WebServer/routecontrollers/organizations/m2mUser.js`,
+  `${process.cwd()}/components/WebServer/routecontrollers/organizations/apiKey.js`,
 )
 
 const { transcribeReq } = require(
@@ -172,35 +172,35 @@ module.exports = (webserver) => {
       method: "post",
       requireAuth: true,
       requireOrganizationAdminAccess: true,
-      controller: createM2MUser,
+      controller: createApiKey,
     },
     {
       path: "/:organizationId/tokens/",
       method: "get",
       requireAuth: true,
       requireOrganizationAdminAccess: true,
-      controller: listM2M,
+      controller: listApiKeyFromOrga,
     },
     {
       path: "/:organizationId/tokens/:tokenId",
       method: "get",
       requireAuth: true,
       requireOrganizationAdminAccess: true,
-      controller: getM2MTokens,
+      controller: getApiKey,
     },
     {
       path: "/:organizationId/tokens/:tokenId",
       method: "put",
       requireAuth: true,
       requireOrganizationAdminAccess: true,
-      controller: refreshM2MToken,
+      controller: refreshApiKey,
     },
     {
       path: "/:organizationId/tokens/:tokenId",
       method: "delete",
       requireAuth: true,
       requireOrganizationAdminAccess: true,
-      controller: deleteM2Token,
+      controller: deleteApiKey,
     },
   ]
 }

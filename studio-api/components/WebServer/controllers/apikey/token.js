@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:components:WebServer:routecontrollers:organizations:m2m",
+  "linto:conversation-manager:components:WebServer:routecontrollers:organizations:token",
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const ms = require("ms")
@@ -9,7 +9,6 @@ const TokenGenerator = require(
 const { UserError } = require(
   `${process.cwd()}/components/WebServer/error/exception/users`,
 )
-// const ORGA_ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const PLATFORM_ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
 
 function getExpiresIn(value, defaultValue = "7d") {
@@ -28,7 +27,7 @@ function getExpiresIn(value, defaultValue = "7d") {
   return defaultValue
 }
 
-async function generateM2MToken(
+async function generateApiKeyToken(
   userId,
   token,
   expires_in = process.env.EXTENDED_TOKEN_DAYS_TIME,
@@ -60,7 +59,7 @@ async function generateM2MToken(
   }
 }
 
-async function createM2MUser(reqPayload, role = PLATFORM_ROLE.UNDEFINED) {
+async function createApiKey(reqPayload, role = PLATFORM_ROLE.UNDEFINED) {
   try {
     const { body, payload, params } = reqPayload
     let clientMetadata = {}
@@ -80,14 +79,14 @@ async function createM2MUser(reqPayload, role = PLATFORM_ROLE.UNDEFINED) {
       organizationId: params.organizationId,
     }
     const userPayload = {
-      firstname: body.name || "Virtual User",
+      firstname: body.name || "API Key",
       lastname: "",
       metadata,
     }
-    const createdUser = await model.users.createM2MUser(userPayload, role)
+    const createdUser = await model.users.createApiKey(userPayload, role)
     if (createdUser.insertedCount !== 1) throw new UserError()
 
-    return await generateM2MToken(
+    return await generateApiKeyToken(
       createdUser.insertedId.toString(),
       undefined,
       body.expires_in,
@@ -97,39 +96,39 @@ async function createM2MUser(reqPayload, role = PLATFORM_ROLE.UNDEFINED) {
   }
 }
 
-async function getM2MTokens(tokenId) {
+async function getApiKey(tokenId) {
   const tokens = await model.tokens.getTokenByUser(tokenId)
 
   return {
-    message: "M2M tokens have been retrieved",
-    ...(await generateM2MToken(tokenId, tokens[0])),
+    message: "API key tokens has been retrieved",
+    ...(await generateApiKeyToken(tokenId, tokens[0])),
   }
 }
 
-async function refreshM2MToken(tokenId, expiresIn) {
+async function refreshApiKey(tokenId, expiresIn) {
   await model.tokens.deleteAllUserTokens(tokenId)
 
   return {
-    message: "M2M token has been refreshed",
-    ...(await generateM2MToken(tokenId, undefined, expiresIn)),
+    message: "API key token has been refreshed",
+    ...(await generateApiKeyToken(tokenId, undefined, expiresIn)),
   }
 }
 
-async function deleteM2Token(tokenId, revoke = false) {
+async function deleteApiKey(tokenId, revoke = false) {
   await model.tokens.deleteAllUserTokens(tokenId)
 
   if (revoke === "true") {
-    return { message: "M2M token has been revoked" }
+    return { message: "API key token has been revoked" }
   }
 
   await model.users.delete(tokenId)
-  return { message: "M2M token has been deleted" }
+  return { message: "API key has been deleted" }
 }
 
 module.exports = {
-  createM2MUser,
-  generateM2MToken,
-  getM2MTokens,
-  refreshM2MToken,
-  deleteM2Token,
+  createApiKey,
+  generateApiKeyToken,
+  getApiKey,
+  refreshApiKey,
+  deleteApiKey,
 }
