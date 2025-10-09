@@ -32,7 +32,7 @@ async function createApiKeyPlatform(req, res, next) {
 
 async function listApiKey(req, res, next) {
   try {
-    res.status(200).send(await model.users.listM2MUser())
+    res.status(200).send(await model.users.listApiKey())
   } catch (err) {
     next(err)
   }

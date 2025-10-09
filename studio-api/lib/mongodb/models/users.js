@@ -251,7 +251,7 @@ class UsersModel extends MongoModel {
     }
   }
 
-  async listM2MUser() {
+  async listApiKey() {
     try {
       const query = {
         type: USER_TYPE.M2M,
