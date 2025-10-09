@@ -87,7 +87,7 @@
 
 <script>
 import VNodeRenderer from "@/components/atoms/VNodeRenderer.vue"
-
+import i18n from "../../i18n"
 export default {
   name: "ModalRenderer",
   components: { VNodeRenderer },
@@ -112,8 +112,8 @@ export default {
     size: { type: String, default: "md" },
     overlay: { type: Boolean, default: true },
     overlayClose: { type: Boolean, default: true },
-    textActionApply: { type: String, default: "Apply" },
-    textActionCancel: { type: String, default: "Cancel" },
+    textActionApply: { type: String, default: i18n.t("modal.apply") },
+    textActionCancel: { type: String, default: i18n.t("modal.cancel") },
     textActionDelete: { type: String, default: "Delete" },
     customClassClose: { type: String, default: "" },
     customClassActionApply: { type: String, default: "" },

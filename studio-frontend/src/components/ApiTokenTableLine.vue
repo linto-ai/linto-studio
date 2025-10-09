@@ -1,9 +1,9 @@
 <template>
   <tr>
-    <td>{{ token.name }}</td>
-    <td>{{ token.role }}</td>
-    <td>{{ formatDate(token.lastUsed) }}</td>
-    <td>{{ formatDate(token.createdDate) }}</td>
+    <td>{{ token.firstname }}</td>
+    <td>
+      <OrgaRoleSelector v-model="token.role" />
+    </td>
     <td>
       <button @click="viewToken">View</button>
       <button @click="deleteToken">Delete</button>
@@ -12,6 +12,8 @@
 </template>
 
 <script>
+import OrgaRoleSelector from "./molecules/OrgaRoleSelector.vue"
+
 export default {
   props: {
     token: {
@@ -30,6 +32,9 @@ export default {
     deleteToken() {
       this.$emit("delete-token", this.token)
     },
+  },
+  components: {
+    OrgaRoleSelector,
   },
 }
 </script>

@@ -11,6 +11,19 @@
     "error_end_time_before_start_time": "L'heure de fin doit être après l'heure de début",
     "error_past_date": "La date doit être dans le futur"
   },
+  "api_tokens_settings": {
+    "title": "Jetons d'API",
+    "create_token": "Ajouter un jeton d'API",
+    "token_created": "Jeton d'API créé avec succès",
+    "token_created_error": "Une erreur est survenue lors de la création du jeton d'API",
+    "token_name_label": "Nom",
+    "token_role_label": "Rôle",
+    "token_created_at_label": "Créé le",
+    "token_actions_label": "Actions",
+    "modal_create": {
+      "title": "Créer un jeton d'API"
+    }
+  },
   "app_editor_channels_selector": {
     "label": "Choisir un canal"
   },
@@ -722,6 +735,7 @@
     "processing_error_message": "La transcription automatique du média a rencontré une erreur"
   },
   "modal": {
+    "apply": "Appliquer",
     "cancel": "Annuler",
     "delete": "Supprimer",
     "close_title": "Fermer la modale"

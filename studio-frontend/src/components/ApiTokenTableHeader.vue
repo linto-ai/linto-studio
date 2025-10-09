@@ -2,30 +2,18 @@
   <thead>
     <tr>
       <th @click="sortBy('name')">
-        Name
+        {{ $t("api_tokens_settings.token_name_label") }}
         <span v-if="sortListKey === 'name'">
           {{ sortListDirection === "asc" ? "↑" : "↓" }}
         </span>
       </th>
       <th @click="sortBy('role')">
-        Role
+        {{ $t("api_tokens_settings.token_role_label") }}
         <span v-if="sortListKey === 'role'">
           {{ sortListDirection === "asc" ? "↑" : "↓" }}
         </span>
       </th>
-      <th @click="sortBy('lastUsed')">
-        Last Used
-        <span v-if="sortListKey === 'lastUsed'">
-          {{ sortListDirection === "asc" ? "↑" : "↓" }}
-        </span>
-      </th>
-      <th @click="sortBy('createdDate')">
-        Created Date
-        <span v-if="sortListKey === 'createdDate'">
-          {{ sortListDirection === "asc" ? "↑" : "↓" }}
-        </span>
-      </th>
-      <th>Actions</th>
+      <th>{{ $t("api_tokens_settings.token_actions_label") }}</th>
     </tr>
   </thead>
 </template>

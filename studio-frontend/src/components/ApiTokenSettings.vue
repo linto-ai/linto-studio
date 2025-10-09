@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="flex row gap-medium">
-      <h2>{{ $t("api_tokens_settings.title") }}</h2>
+      <h2 class="flex1">{{ $t("api_tokens_settings.title") }}</h2>
       <Button
         @click="createToken"
         size="sm"
@@ -31,6 +31,7 @@ import { listToken, deleteToken } from "@/api/token.js"
 import ApiTokenTable from "./ApiTokenTable.vue"
 import ModalCreateToken from "./ModalCreateToken.vue"
 import Button from "@/components/atoms/Button.vue"
+import { mapGetters } from "vuex"
 
 export default {
   props: {},
@@ -51,10 +52,15 @@ export default {
   mounted() {
     this.fetchTokens()
   },
+  computed: {
+    ...mapGetters("organizations", {
+      organizationId: "getCurrentOrganizationScope",
+    }),
+  },
   methods: {
     async fetchTokens() {
       this.loading = true
-      const response = await listToken()
+      const response = await listToken(this.organizationId)
       this.apiTokens = response
       this.loading = false
     },

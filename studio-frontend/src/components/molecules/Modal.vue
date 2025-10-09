@@ -11,6 +11,7 @@
 <script>
 import popupManager from "@/tools/popupManager"
 import ModalRenderer from "./ModalRenderer.vue"
+import i18n from "../../i18n"
 
 export default {
   name: "Modal",
@@ -29,8 +30,8 @@ export default {
     value: { type: Boolean, default: undefined },
     overlay: { type: Boolean, default: true },
     overlayClose: { type: Boolean, default: true },
-    textActionApply: { type: String, default: "Apply" },
-    textActionCancel: { type: String, default: "Cancel" },
+    textActionApply: { type: String, default: i18n.t("modal.apply") },
+    textActionCancel: { type: String, default: i18n.t("modal.cancel") },
     textActionDelete: { type: String, default: "Delete" },
     customClassClose: { type: String, default: "" },
     customClassActionApply: { type: String, default: "" },

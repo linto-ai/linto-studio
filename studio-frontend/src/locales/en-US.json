@@ -10,6 +10,19 @@
     "error_end_time_before_start_time": "The end time must be after the start time",
     "error_past_date": "The date must be in the future"
   },
+  "api_tokens_settings": {
+    "title": "API Token",
+    "create_token": "Add a token",
+    "token_created": "Token created successfully",
+    "token_created_error": "An error occurred while creating the token",
+    "token_name_label": "Name",
+    "token_role_label": "Role",
+    "token_created_at_label": "Created at",
+    "token_actions_label": "Actions",
+    "modal_create": {
+      "title": "Create a new token"
+    }
+  },
   "app_editor_channels_selector": {
     "label": "Choose a channel"
   },
@@ -714,6 +727,7 @@
     "processing_error_message": "The automatic transcription of the media encountered an error"
   },
   "modal": {
+    "apply": "Apply",
     "cancel": "Cancel",
     "close_title": "Close modal",
     "delete": "Delete"

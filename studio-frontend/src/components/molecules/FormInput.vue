@@ -9,8 +9,13 @@
 
     <div class="form-field__input-wrapper">
       <slot></slot>
+      <slot
+        v-if="$scopedSlots['custom-input']"
+        name="custom-input"
+        v-bind:id="id"
+        :disabled="disabled"></slot>
       <input
-        v-if="!textarea"
+        v-else-if="!textarea"
         :class="inputClasses"
         :type="type"
         :disabled="disabled"
