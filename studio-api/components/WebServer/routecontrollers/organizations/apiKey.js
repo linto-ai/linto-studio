@@ -101,7 +101,18 @@ async function listApiKeyFromOrga(req, res, next) {
     const m2mUsers = organization[0].users.filter(
       (u) => u.type === USER_TYPE.M2M,
     )
-    res.status(200).send(m2mUsers)
+
+    let orgaApiKeyUser = []
+    for (let luser of m2mUsers) {
+      let user = await model.users.getById(luser.userId)
+      delete luser.userId
+
+      orgaApiKeyUser.push({
+        ...user[0],
+        role: luser.role,
+      })
+    }
+    res.status(200).send(orgaApiKeyUser)
   } catch (err) {
     next(err)
   }
