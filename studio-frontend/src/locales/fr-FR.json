@@ -14,14 +14,25 @@
   "api_tokens_settings": {
     "title": "Jetons d'API",
     "create_token": "Ajouter un jeton d'API",
+    "error_fetching_token_details": "Les détails du jeton d'API n'ont pas pu être récupérés",
+    "delete_token": "Supprimer",
+    "delete_success": "Le jeton a été supprimé avec succès",
+    "delete_error": "Le jeton n'a pas pu être supprimé",
+    "view_token": "Afficher",
     "token_created": "Jeton d'API créé avec succès",
     "token_created_error": "Une erreur est survenue lors de la création du jeton d'API",
+    "token_key_label": "clé",
     "token_name_label": "Nom",
     "token_role_label": "Rôle",
     "token_created_at_label": "Créé le",
     "token_actions_label": "Actions",
     "modal_create": {
       "title": "Créer un jeton d'API"
+    },
+    "modal_delete": {
+      "title": "Supprimer le jeton d'API {name}",
+      "content": "Êtes-vous sûr de vouloir supprimer le jeton d'API {name} ?",
+      "delete_action": "Supprimer"
     }
   },
   "app_editor_channels_selector": {
@@ -549,6 +560,9 @@
     "title": "Médias favoris",
     "no_media_title": "Votre collection de médias favoris est vide",
     "no_media_subtitle": "Ajoutez des favoris en cliquant sur l'étoile dans la liste des médias."
+  },
+  "form_field": {
+    "empty_value": "–"
   },
   "footer": {
     "powered_by": "LinTO {linto_logo} par {linagora_logo}",

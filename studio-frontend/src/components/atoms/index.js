@@ -8,6 +8,7 @@ import Chip from "./Chip.vue"
 import ContextMenu from "./ContextMenu.vue"
 import LabeledValue from "./LabeledValue.vue"
 import LabeledValueSmall from "./LabeledValueSmall.vue"
+import Loading from "./Loading.vue"
 import OrganizationBadge from "./OrganizationBadge.vue"
 import Qrcode from "./Qrcode.vue"
 import Radio from "./Radio.vue"
@@ -42,6 +43,7 @@ const components = [
   ContextMenu,
   LabeledValue,
   LabeledValueSmall,
+  Loading,
   OrganizationBadge,
   Qrcode,
   Radio,

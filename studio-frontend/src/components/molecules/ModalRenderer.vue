@@ -39,7 +39,7 @@
             v-if="actionsLeftNodes.length"
             :nodes="actionsLeftNodes" />
           <Button
-            v-if="withActionDelete"
+            v-if="withActionDelete && withActionApply"
             variant="primary"
             intent="destructive"
             :disabled="disabledActionDelete || disabledActions"
@@ -72,6 +72,17 @@
               @click="apply"
               type="submit">
               {{ textActionApply || $t("modal.apply") }}
+            </Button>
+          </template>
+          <template v-else-if="withActionDelete">
+            <Button
+              variant="primary"
+              intent="destructive"
+              :disabled="disabledActionDelete || disabledActions"
+              :icon="iconActionDelete"
+              @click="deleteHandler"
+              type="button">
+              {{ textActionDelete || $t("modal.delete") }}
             </Button>
           </template>
         </div>
@@ -126,7 +137,7 @@ export default {
     disabledClose: { type: Boolean, default: false },
     iconActionApply: { type: String, default: "check" },
     iconActionCancel: { type: String, default: "x-circle" },
-    iconActionDelete: { type: String, default: "trash-circle" },
+    iconActionDelete: { type: String, default: "trash" },
     colorActionApply: { type: String, default: "primary" },
     colorActionCancel: { type: String, default: "var(--neutral-40)" },
     colorActionDelete: { type: String, default: "var(--danger-color)" },

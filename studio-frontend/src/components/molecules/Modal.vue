@@ -44,7 +44,7 @@ export default {
     disabledClose: { type: Boolean, default: false },
     iconActionApply: { type: String, default: "check" },
     iconActionCancel: { type: String, default: "x-circle" },
-    iconActionDelete: { type: String, default: "trash-circle" },
+    iconActionDelete: { type: String, default: "trash" },
     colorActionApply: { type: String, default: "primary" },
     colorActionCancel: { type: String, default: "var(--neutral-40)" },
     colorActionDelete: { type: String, default: "var(--danger-color)" },

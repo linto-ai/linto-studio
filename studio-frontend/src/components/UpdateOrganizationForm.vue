@@ -4,23 +4,13 @@
       <h2>{{ $t("organisation.general_settings") }}</h2>
       <!--Organization Name -->
       <FormInput
-        v-if="isAdmin || (isSystemAdministrator && isBackofficePage)"
+        :readonly="!(isAdmin || (isSystemAdministrator && isBackofficePage))"
         :field="orgaName"
         v-model="orgaName.value" />
-      <labeled-value
-        v-else
-        class="form-field flex col"
-        :label="$t('organisation.name_label')"
-        :value="orgaName.value" />
       <FormInput
-        v-if="isAdmin || (isSystemAdministrator && isBackofficePage)"
+        :readonly="!(isAdmin || (isSystemAdministrator && isBackofficePage))"
         :field="orgaDescription"
         v-model="orgaDescription.value" />
-      <labeled-value
-        v-else-if="orgaDescription.value !== ''"
-        class="form-field flex col"
-        :label="$t('organisation.description_label')"
-        :value="orgaDescription.value" />
 
       <Button
         type="submit"

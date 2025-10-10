@@ -13,14 +13,25 @@
   "api_tokens_settings": {
     "title": "API Token",
     "create_token": "Add a token",
+    "error_fetching_token_details": "The token details could not be retrieved",
+    "delete_token": "Delete",
+    "delete_success": "Token has been deleted successfully",
+    "delete_error": "Token could not be deleted",
+    "view_token": "Show",
     "token_created": "Token created successfully",
     "token_created_error": "An error occurred while creating the token",
+    "token_key_label": "Key",
     "token_name_label": "Name",
     "token_role_label": "Role",
     "token_created_at_label": "Created at",
     "token_actions_label": "Actions",
     "modal_create": {
       "title": "Create a new token"
+    },
+    "modal_delete": {
+      "title": "Delete api token {name}",
+      "content": "Are you sure you want to delete the token {name} ?",
+      "delete_action": "Delete"
     }
   },
   "app_editor_channels_selector": {
@@ -549,6 +560,9 @@
     "title": "Favorites media",
     "no_media_title": "Your favorite media collection is empty",
     "no_media_subtitle": "Add favorite media by clicking on the star icon on the media card."
+  },
+  "form_field": {
+    "empty_value": "–"
   },
   "footer": {
     "powered_by": "LinTO {linto_logo} by {linagora_logo}",

@@ -1,40 +1,45 @@
 <template>
-  <table
-    class="table-grid"
-    style="grid-template-columns: 1fr 1fr 1fr; width: 100%">
-    <ApiTokenTableHeader
-      @list_sort_by="sortBy"
-      :sortListKey="sortListKey"
-      :sortListDirection="sortListDirection" />
-    <tbody>
-      <div class="table-loader" v-if="loading">
-        <Loading />
-      </div>
-      <ApiTokenTableLine
-        v-for="token in tokenList"
-        v-model="p_selectedTokens"
-        :linkTo="linkTo"
-        :key="token.id"
-        :token="token"
-        @view-token="openViewModal"
-        @delete-token="openDeleteModal" />
-    </tbody>
-  </table>
-  <!-- <ViewTokenModal
-    v-if="showViewModal"
-    :token="selectedToken"
-    @close="closeViewModal" />
-  <DeleteTokenModal
-    v-if="showDeleteModal"
-    :token="selectedToken"
-    @confirm-delete="confirmDelete"
-    @close="closeDeleteModal" /> -->
+  <div>
+    <table
+      class="table-grid"
+      style="grid-template-columns: 1fr 1fr 1fr; width: 100%">
+      <ApiTokenTableHeader
+        @list_sort_by="sortBy"
+        :sortListKey="sortListKey"
+        :sortListDirection="sortListDirection" />
+      <tbody>
+        <div class="table-loader" v-if="loading">
+          <Loading />
+        </div>
+        <ApiTokenTableLine
+          v-for="token in tokenList"
+          v-model="p_selectedTokens"
+          :linkTo="linkTo"
+          :key="token.id"
+          :token="token"
+          @view-token="openViewModal"
+          @delete-token="openDeleteModal" />
+      </tbody>
+    </table>
+    <ModalViewToken
+      v-if="selectedToken"
+      v-model="showViewModal"
+      :token="selectedToken"
+      @close="closeViewModal" />
+    <ModalDeleteToken
+      v-if="selectedToken"
+      v-model="showDeleteModal"
+      :token="selectedToken"
+      @delete="confirmDelete"
+      @close="closeDeleteModal" />
+  </div>
 </template>
 
 <script>
 import ApiTokenTableHeader from "./ApiTokenTableHeader.vue"
 import ApiTokenTableLine from "./ApiTokenTableLine.vue"
-// import ViewTokenModal from "./ViewTokenModal.vue"
+import ModalDeleteToken from "./ModalDeleteToken.vue"
+import ModalViewToken from "./ModalViewToken.vue"
 // import DeleteTokenModal from "./DeleteTokenModal.vue"
 import Loading from "@/components/atoms/Loading.vue"
 
@@ -111,8 +116,8 @@ export default {
   components: {
     ApiTokenTableHeader,
     ApiTokenTableLine,
-    // ViewTokenModal,
-    // DeleteTokenModal,
+    ModalViewToken,
+    ModalDeleteToken,
     Loading,
   },
 }

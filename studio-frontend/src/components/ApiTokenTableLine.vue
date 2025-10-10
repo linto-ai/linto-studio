@@ -2,11 +2,20 @@
   <tr>
     <td>{{ token.firstname }}</td>
     <td>
-      <OrgaRoleSelector v-model="token.role" />
+      <OrgaRoleSelector v-model="token.role" readonly />
     </td>
-    <td>
-      <button @click="viewToken">View</button>
-      <button @click="deleteToken">Delete</button>
+    <td class="flex gap-small">
+      <!-- <button @click="viewToken">View</button>
+      <button @click="deleteToken">Delete</button> -->
+      <Button
+        :label="$t('api_tokens_settings.view_token')"
+        variant="secondary"
+        @click="viewToken" />
+      <Button
+        :label="$t('api_tokens_settings.delete_token')"
+        variant="secondary"
+        intent="destructive"
+        @click="deleteToken" />
     </td>
   </tr>
 </template>

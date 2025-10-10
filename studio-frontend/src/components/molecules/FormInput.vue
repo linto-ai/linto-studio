@@ -1,5 +1,5 @@
 <template>
-  <div class="form-field" :class="formFieldClasses" v-if="!readonly">
+  <div class="form-field" :class="formFieldClasses">
     <div class="form-field__header" v-if="field.label">
       <label class="form-field__label" :for="id">
         {{ field.label }}
@@ -14,6 +14,17 @@
         name="custom-input"
         v-bind:id="id"
         :disabled="disabled"></slot>
+      <component
+        :is="code ? 'pre' : 'div'"
+        v-else-if="readonly && editValue"
+        class="form-field__readonly"
+        >{{ editValue }}</component
+      >
+      <div
+        v-else-if="readonly && !editValue"
+        class="form-field__readonly empty">
+        {{ $t("form_field.empty_value") }}
+      </div>
       <input
         v-else-if="!textarea"
         :class="inputClasses"
@@ -72,7 +83,7 @@
       <span class="form-field__error">{{ field.error }}</span>
     </div>
   </div>
-  <LabeledValue v-else :label="field.label" :value="editValue" />
+  <!-- <LabeledValue v-else :label="field.label" :value="editValue" /> -->
 </template>
 <script>
 import { Fragment } from "vue-fragment"
@@ -118,6 +129,10 @@ export default {
       default: false,
     },
     inline: {
+      type: Boolean,
+      default: false,
+    },
+    code: {
       type: Boolean,
       default: false,
     },
@@ -256,6 +271,24 @@ export default {
     color: var(--text-primary, #222);
     line-height: 1.2;
     margin: 0;
+  }
+
+  .form-field__readonly {
+    padding: 0.25rem;
+    box-sizing: border-box;
+    margin: 0;
+    flex: 1;
+    align-self: center;
+
+    &.empty {
+      font-style: italic;
+    }
+  }
+
+  pre.form-field__readonly {
+    overflow: auto;
+    background-color: var(--neutral-5);
+    border: 1px solid var(--neutral-30);
   }
 
   /* Input wrapper with actions */

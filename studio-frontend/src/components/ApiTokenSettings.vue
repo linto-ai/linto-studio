@@ -27,7 +27,7 @@
 
 <script>
 import { bus } from "@/main.js"
-import { listToken, deleteToken } from "@/api/token.js"
+import { listToken, apiDeleteToken } from "@/api/token.js"
 import ApiTokenTable from "./ApiTokenTable.vue"
 import ModalCreateToken from "./ModalCreateToken.vue"
 import Button from "@/components/atoms/Button.vue"
@@ -95,18 +95,20 @@ export default {
       })
     },
     async deleteToken(tokenId) {
-      try {
-        await deleteToken(tokenId)
-        this.apiTokens = this.apiTokens.filter((token) => token.id !== tokenId)
-        bus.$emit("toast", {
-          type: "success",
+      const res = await apiDeleteToken(this.organizationId, tokenId)
+      if (res.status === "success") {
+        this.apiTokens = this.apiTokens.filter((token) => token._id !== tokenId)
+        this.$store.dispatch("system/addNotification", {
           message: this.$t("api_tokens_settings.delete_success"),
+          type: "success",
+          timeout: 5000,
         })
-      } catch (error) {
-        console.error("Error deleting token:", error)
-        bus.$emit("toast", {
-          type: "error",
+      } else {
+        console.error("Error deleting token:", res)
+        this.$store.dispatch("system/addNotification", {
           message: this.$t("api_tokens_settings.delete_error"),
+          type: "error",
+          timeout: 5000,
         })
       }
     },
