@@ -80,7 +80,7 @@
                 <span>{{ $t("app_settings_modal.tags") }}</span>
               </a>
             </li>
-            <li :class="{ active: selectedTab === 'apiTokens' }">
+            <li :class="{ active: selectedTab === 'apiTokens' }" v-if="isAdmin">
               <a href="#" @click="selectTab('apiTokens')">
                 <ph-icon name="key" weight="bold"></ph-icon>
                 <span>{{ $t("app_settings_modal.api_tokens") }}</span>
@@ -133,7 +133,7 @@
       </div>
 
       <div v-if="selectedTab === 'apiTokens'" class="app-settings__section">
-        <ApiTokenSettings />
+        <ApiTokenSettings v-if="isAdmin" />
       </div>
       <div
         v-if="selectedTab === 'billing'"
