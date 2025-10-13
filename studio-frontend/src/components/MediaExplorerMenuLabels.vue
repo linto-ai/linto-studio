@@ -78,6 +78,9 @@ export default {
       return [...this.tags]
         .sort((a, b) => a.name.localeCompare(b.name))
         .sort((a, b) => b.mediaCount - a.mediaCount)
+        .filter((tag) => {
+          return !this.selectedTagsIds.includes(tag._id)
+        })
     },
   },
   methods: {
