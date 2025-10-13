@@ -333,6 +333,7 @@ export default {
 <style lang="scss">
 .popover-trigger {
   display: flex;
+  width: fit-content;
 }
 
 .popover-wrapper {

@@ -23,6 +23,12 @@
     <FormInput :field="fieldInputError" />
     <FormInput :field="fieldInputDisabled" disabled />
     <FormInput :field="fieldInputReadonly" readonly />
+
+    <PopoverList :items="popoverItems" v-model="popoverValue" class="relative">
+      <!-- <template #trigger="{ open }">
+        <Button variant="tertiary" size="sm"> {{ popoverValue }} </Button>
+      </template> -->
+    </PopoverList>
   </div>
 </template>
 <script>
@@ -50,6 +56,29 @@ export default {
         error: null,
         value: "i'm read only",
       },
+      popoverItems: [
+        {
+          value: "select-value-1",
+          text: "Pineapple",
+          description: "Sweet and tangy tropical fruit",
+        },
+        {
+          value: "select-value-2",
+          text: "Orange",
+          description: "Citrusy and refreshing",
+        },
+        {
+          value: "select-value-3",
+          text: "Apple",
+          description: "Crisp and juicy fruit",
+        },
+        {
+          value: "select-value-4",
+          text: "Banana",
+          description: "Yellow and soft fruit",
+        },
+      ],
+      popoverValue: "select-value-1",
     }
   },
   mounted() {},

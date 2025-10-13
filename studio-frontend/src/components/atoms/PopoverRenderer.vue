@@ -89,6 +89,7 @@ export default {
     computedContentStyle() {
       return {
         width: this.computedWidth,
+        minWidth: this.widthRef.offsetWidth + "px",
         maxHeight: this.computedMaxHeight,
         overflowY: "auto",
       }

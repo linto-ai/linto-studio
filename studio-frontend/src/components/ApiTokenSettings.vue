@@ -94,10 +94,12 @@ export default {
         return this.sortDirection === "asc" ? comparison : -comparison
       })
     },
-    async deleteToken(tokenId) {
-      const res = await apiDeleteToken(this.organizationId, tokenId)
+    async deleteToken(tokenUserId) {
+      const res = await apiDeleteToken(this.organizationId, tokenUserId)
       if (res.status === "success") {
-        this.apiTokens = this.apiTokens.filter((token) => token._id !== tokenId)
+        this.apiTokens = this.apiTokens.filter(
+          (token) => token.userId !== tokenUserId,
+        )
         this.$store.dispatch("system/addNotification", {
           message: this.$t("api_tokens_settings.delete_success"),
           type: "success",

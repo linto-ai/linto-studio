@@ -51,7 +51,7 @@ export default {
   methods: {
     async fetchTokenData() {
       this.loading = true
-      const req = await apiGetToken(this.organizationId, this.token._id)
+      const req = await apiGetToken(this.organizationId, this.token.userId)
       if (req.status == "success") {
         this.tokenData = req.data
         this.keyField.value = this.tokenData.auth_token

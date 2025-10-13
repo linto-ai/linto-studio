@@ -4,7 +4,7 @@
     v-model="isOpen"
     withActionDelete
     :withActionApply="false"
-    @delete="$emit('delete', token._id)">
+    @delete="$emit('delete', token.userId)">
     {{
       $t("api_tokens_settings.modal_delete.content", {
         name: this.token.firstname,
