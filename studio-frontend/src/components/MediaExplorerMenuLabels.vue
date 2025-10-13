@@ -25,7 +25,6 @@
             :emoji="tag.emoji"
             :color="tag.color"
             :count="tag.mediaCount"
-            :active="selectedTagsIds.includes(tag._id)"
             size="xs"
             @click="handleTagClick(tag)" />
         </li>
@@ -79,9 +78,6 @@ export default {
       return [...this.tags]
         .sort((a, b) => a.name.localeCompare(b.name))
         .sort((a, b) => b.mediaCount - a.mediaCount)
-        .sort((a, b) => {
-          return this.selectedTagsIds.includes(a._id) ? -1 : 1
-        })
     },
   },
   methods: {
