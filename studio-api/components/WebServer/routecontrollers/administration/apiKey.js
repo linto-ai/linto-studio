@@ -32,7 +32,12 @@ async function createApiKeyPlatform(req, res, next) {
 
 async function listApiKey(req, res, next) {
   try {
-    res.status(200).send(await model.users.listApiKey())
+    const apiKeyUsers = (await model.users.listApiKey()).map((u) =>
+      u._id.toString(),
+    )
+    const apiKeyList = await TokenHandler.listApiKey(apiKeyUsers)
+
+    res.status(200).send(apiKeyList)
   } catch (err) {
     next(err)
   }

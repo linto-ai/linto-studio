@@ -98,21 +98,16 @@ async function listApiKeyFromOrga(req, res, next) {
     if (organization.length !== 1)
       throw new OrganizationUnsupportedMediaType("Organization not found")
 
-    const m2mUsers = organization[0].users.filter(
-      (u) => u.type === USER_TYPE.M2M,
+    const apiKeyUsers = organization[0].users
+      .filter((u) => u.type === USER_TYPE.M2M)
+      .map((u) => u.userId)
+
+    const apiKeyList = await TokenHandler.listApiKey(
+      apiKeyUsers,
+      organization[0].users,
     )
 
-    let orgaApiKeyUser = []
-    for (let luser of m2mUsers) {
-      let user = await model.users.getById(luser.userId)
-      delete luser.userId
-
-      orgaApiKeyUser.push({
-        ...user[0],
-        role: luser.role,
-      })
-    }
-    res.status(200).send(orgaApiKeyUser)
+    res.status(200).send(apiKeyList)
   } catch (err) {
     next(err)
   }

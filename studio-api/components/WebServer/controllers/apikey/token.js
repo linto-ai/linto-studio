@@ -96,6 +96,37 @@ async function createApiKey(reqPayload, role = PLATFORM_ROLE.UNDEFINED) {
   }
 }
 
+async function listApiKey(idList, orgaRoles = undefined) {
+  const projection = {
+    _id: true,
+    metadata: true,
+    firstname: true,
+    lastname: true,
+  }
+  const users = await model.users.listApiKeyList(idList, projection)
+  const tokens = await model.tokens.getTokenByList(idList)
+
+  const merged = users.map((u) => {
+    const token = tokens.find((t) => t.userId === u._id.toString())
+    const roleData = orgaRoles?.find((r) => r.userId === u._id.toString())
+
+    delete u._id
+    return {
+      userId: token.userId,
+      ...u,
+      createdAt: token.createdAt,
+      expiresAt: token.expiresAt,
+      ...(orgaRoles
+        ? {
+            type: roleData?.type || "",
+            role: roleData ? roleData.role : null,
+          }
+        : {}),
+    }
+  })
+  return merged
+}
+
 async function getApiKey(tokenId) {
   const tokens = await model.tokens.getTokenByUser(tokenId)
 
@@ -131,4 +162,5 @@ module.exports = {
   getApiKey,
   refreshApiKey,
   deleteApiKey,
+  listApiKey,
 }

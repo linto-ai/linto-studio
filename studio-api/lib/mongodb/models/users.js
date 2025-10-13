@@ -263,6 +263,23 @@ class UsersModel extends MongoModel {
     }
   }
 
+  async listApiKeyList(ids, projection = {}) {
+    try {
+      const objectIdArray = ids.map((id) => {
+        if (typeof id === "string") return this.getObjectId(id)
+        else if (typeof id === "object") return id
+      })
+      const query = {
+        _id: { $in: objectIdArray },
+        type: USER_TYPE.M2M,
+      }
+      return await this.mongoRequest(query, projection)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   async getPersonalInfo(id) {
     try {
       const query = {
