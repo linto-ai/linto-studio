@@ -32,7 +32,7 @@
             :size="size"
             v-bind="itemPropsWithoutTo(item)">
             <div class="flex col">
-              <span class="popover-list__item__name">{{
+              <span class="popover-list__item__name text-cut">{{
                 item.name || item.text
               }}</span>
               <span
@@ -61,7 +61,9 @@ export default {
      * @type {Array<ListItem>}
      * @description List of items to display in the popover
      * @property {string} id - The id of the item
+     * @property {string} value - The value of the item (value or id is required)
      * @property {string} name - The name of the item
+     * @property {string} description? - The description of the item (optional)
      * @property {string} icon? - The icon of the item (optional)
      * @property {string} iconPosition? - The position of the icon (optional, default: "left")
      * @property {string} iconWeight? - The weight of the icon (optional, default: "regular")
@@ -163,7 +165,6 @@ export default {
         // single selection: either select or deselect (null)
         const selected = this.isSelected(item)
         const updated = selected ? null : this.returnObjects ? item : item.id
-        console.log("wololo", updated)
         this.$emit("update:value", updated)
         this.$emit("input", updated)
       }
@@ -187,7 +188,7 @@ export default {
           })
         } else {
           this.$emit("click", item)
-          this.$emit("input", item.value)
+          this.$emit("input", item.value ?? item.id)
           if (this.closeOnItemClick) {
             this.$nextTick(() => {
               this.$refs.popover && this.$refs.popover.close()
@@ -277,7 +278,7 @@ export default {
     }
     if (typeof window !== "undefined") {
       window.addEventListener("resize", this.resizeListener, { passive: true })
-      window.addEventListener("keydown", this.onKeyDown)
+      //window.addEventListener("keydown", this.onKeyDown)
     }
   },
   beforeDestroy() {
@@ -319,8 +320,7 @@ export default {
       color: var(--tertiary-color);
     }
 
-    &:hover,
-    &[hovered] {
+    &:hover {
       background-color: var(--primary-color);
       color: var(--primary-contrast);
 
@@ -334,8 +334,12 @@ export default {
     }
   }
 
+  &__title {
+  }
+
   &__description {
     color: var(--text-secondary);
+    font-size: 0.9em;
   }
 }
 

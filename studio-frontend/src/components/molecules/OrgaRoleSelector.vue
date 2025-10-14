@@ -1,5 +1,5 @@
 <template>
-  <select v-model="_value" v-if="!readonly">
+  <!-- <select v-model="_value" v-if="!readonly">
     <option
       v-for="role in userRoles"
       :key="role.value"
@@ -7,11 +7,15 @@
       :disabled="userRole < role.value && !isAtLeastSystemAdministrator">
       {{ role.name }}
     </option>
-  </select>
+  </select> -->
+  <PopoverList v-if="!readonly" :items="items" v-model="_value" />
   <span v-else-if="value > maxRoleValue">
     inconsistent role value: {{ value }}
   </span>
-  <span v-else>{{ userRoles.find((ur) => ur.value === value).name }}</span>
+  <span v-else>
+    <div class="role_name">{{ currentRole.name }}</div>
+    <div class="role_description">{{ currentRole.description }}</div>
+  </span>
 </template>
 
 <script>
@@ -39,6 +43,27 @@ export default {
         this.$emit("input", value)
       },
     },
+    items() {
+      return this.userRoles.map((role) => ({
+        name: role.name,
+        description: role.description,
+        value: role.value,
+      }))
+    },
+    currentRole() {
+      return this.userRoles.find((ur) => ur.value === this.value)
+    },
   },
 }
 </script>
+
+<style lang="css">
+.role_name {
+  font-weight: 500;
+}
+
+.role_description {
+  color: var(--text-secondary);
+  font-size: 0.9em;
+}
+</style>

@@ -210,7 +210,7 @@ export default {
       if (this.isMobile) {
         return "screen"
       }
-      return "lg"
+      return "xl"
     },
     orgaName() {
       return this.currentOrganization?.name

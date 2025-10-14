@@ -931,11 +931,17 @@
   },
   "organization_role": {
     "member": "Simple membre",
+    "member_description": "Peut consulter les medias de l'organisation",
     "uploader": "Collaborateur",
+    "uploader_description": "Peut transcrire des medias dans l'organisation",
     "quick_meeting": "Collaborateur privilégié",
+    "quick_meeting_description": "Peut transcrire en direct une visio-conférence, ou un enregistrement microphone.",
     "session_operator": "Collaborateur complet",
+    "session_operator_description": "Peut créér des sessions",
     "maintainer": "Gestionnaire",
-    "administrator": "Administrateur"
+    "maintainer_description": "Peut gérer les membres de l'organisation ainsi que les medias envoyé par d'autre membres",
+    "administrator": "Administrateur",
+    "administrator_description": "A tout les droits sur l'organisation"
   },
   "publish": {
     "error_first_line": {

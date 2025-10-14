@@ -281,9 +281,17 @@ now, let's copy them over.
 
   &.fullscreen {
     width: 100%;
-    max-width: 100%;
+    max-width: calc(100% - 1rem);
     height: 100%;
-    max-height: 100%;
+    max-height: calc(100% - 1rem);
+  }
+
+  &.xl {
+    width: 1280px;
+    max-width: calc(100% - 4rem);
+    @media (max-width: 1100px) {
+      max-width: calc(100% - 1rem);
+    }
   }
 
   &.lg {

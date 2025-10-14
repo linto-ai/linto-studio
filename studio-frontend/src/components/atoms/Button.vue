@@ -8,7 +8,7 @@
     :disabled="isDisabled"
     :aria-disabled="isDisabled"
     :type="componentType === 'button' ? type : null"
-    multiline
+    :multiline="multiline"
     v-bind="$attrs"
     v-on="isDisabled ? null : $listeners">
     <ph-icon

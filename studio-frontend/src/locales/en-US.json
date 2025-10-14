@@ -929,11 +929,17 @@
   },
   "organization_role": {
     "member": "Member",
+    "member_description": "Can view the organization's media",
     "uploader": "Contributor",
+    "uploader_description": "Can transcribe media within the organization",
     "quick_meeting": "Privileged contributor",
+    "quick_meeting_description": "Can transcribe live video conferences or microphone recordings",
     "session_operator": "Full contributor",
+    "session_operator_description": "Can create sessions",
     "maintainer": "Maintainer",
-    "administrator": "Administrator"
+    "maintainer_description": "Can manage organization members and media uploaded by other members",
+    "administrator": "Administrator",
+    "administrator_description": "Has all rights over the organization"
   },
   "publish": {
     "error_first_line": {

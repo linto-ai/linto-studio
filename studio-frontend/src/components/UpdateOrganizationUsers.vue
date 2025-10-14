@@ -15,7 +15,9 @@
     <!--Organization Members -->
 
     <div v-if="sortedUsers.length > 0" class="flex row">
-      <table style="width: 100%">
+      <table
+        class="table-grid"
+        style="grid-template-columns: 1fr 1fr auto; width: 100%">
         <thead>
           <tr>
             <ArrayHeader
