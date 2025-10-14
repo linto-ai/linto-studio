@@ -1,36 +1,57 @@
 const debug = require("debug")("linto:app:webserver:middlewares:logger")
-
 const appLogger = require(`${process.cwd()}/lib/logger/logger.js`)
 const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
 
 function logger(req, res, next) {
-  let logger_message = `[${Date.now()}] - ${req.method} : ${req.url}`
-  if (req.body && Object.keys(req.body).length > 0) {
-    if (req.url == "/auth/login")
-      logger_message += ` | {"email" : ${req.body.email}}`
-    else logger_message += ` | ${JSON.stringify(req.body)}`
+  // Auto-attach request context
+  req.logContext = {
+    userId: req.payload?.data?.userId || null,
+    role: {
+      value: req.payload?.data?.role || null,
+      name: ROLE.print(req.payload?.data?.role || null),
+    },
+    service: "webserver",
   }
 
-  if (req?.payload?.data?.userId)
-    logger_message += ` | { ${ROLE.print(req.payload.data.role)} : ${req.payload.data.userId} }`
+  // Log the incoming request as structured log
+  const action = `${req.method} ${req.url}`
+  const resource = req.baseUrl || req.path
+  const message =
+    req.body && Object.keys(req.body).length > 0
+      ? req.url === "/auth/login"
+        ? JSON.stringify({ email: req.body.email })
+        : JSON.stringify(req.body)
+      : null
 
-  if (req?.payload?.data?.role > 1) appLogger.info(logger_message)
-  else appLogger.debug(logger_message)
+  const logData = {
+    ...req.logContext,
+    action,
+    resource,
+    message,
+  }
 
-  // log 400 error
+  const level = req.logContext.role > 1 ? "info" : "debug"
+  appLogger.log(level, logData.message || `${req.method} ${req.url}`, logData)
+
+  // Intercept 400+ responses with JSON body
   const originalJson = res.json
   res.json = function (body) {
-    if (body.error) {
-      appLogger.warn(body.error)
+    if (body?.error) {
+      appLogger.warn(body.error, {
+        ...req.logContext,
+        action,
+        resource,
+        message: body.error,
+      })
     }
     return originalJson.call(this, body)
   }
 
-  // log 404 error
+  // Capture 4xx/5xx responses for logging
   const originalSend = res.send
   res.send = function (body) {
     res.locals.responseBody = body
-    return originalSend.call(this, body) // Continue le comportement normal
+    return originalSend.call(this, body)
   }
 
   res.on("finish", () => {
@@ -39,7 +60,19 @@ function logger(req, res, next) {
       res.statusCode < 500 &&
       res.locals.responseBody
     ) {
-      appLogger.warn(res.locals.responseBody)
+      appLogger.warn(res.locals.responseBody, {
+        ...req.logContext,
+        action,
+        resource,
+        message: res.locals.responseBody,
+      })
+    } else if (res.statusCode >= 500) {
+      appLogger.error(res.locals.responseBody || "Internal Server Error", {
+        ...req.logContext,
+        action,
+        resource,
+        message: res.locals.responseBody,
+      })
     }
   })
 

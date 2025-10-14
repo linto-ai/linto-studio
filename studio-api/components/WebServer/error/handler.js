@@ -39,20 +39,27 @@ let init = function (webserver) {
   })
 }
 
-function formatError(req, err, serverError = false) {
-  let logger_message = `[${Date.now()}] - Handler | ${req.method} : ${req.url}`
-  if (req?.payload?.data?.userId)
-    logger_message += ` | { ${ROLE.print(req.payload.data.role)} : ${req.payload.data.userId} }`
-
-  if (req.payload?.data?.role > 1) appLogger.info(logger_message)
-  else appLogger.warn(logger_message)
-
-  if (serverError) {
-    appLogger.warn(err)
-  } else {
-    appLogger.error(err.stack) // Server error
+function formatError(req, err, isHandledError = false) {
+  const userId = req?.payload?.data?.userId || null
+  const action = `${req.method} ${req.url}`
+  const resource = req.baseUrl || req.path
+  const role = {
+    value: req.payload?.data?.role || null,
+    name: ROLE.print(req.payload?.data?.role || null),
   }
+  const logData = {
+    userId,
+    action,
+    resource,
+    message: err.message,
+    service: "webserver",
+    role: role,
+  }
+
+  if (isHandledError) appLogger.log("error", logData.message, logData)
+  else appLogger.log("warn", logData.message, logData)
 }
+
 module.exports = {
   init,
 }
