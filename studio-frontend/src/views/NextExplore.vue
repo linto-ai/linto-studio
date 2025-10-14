@@ -143,6 +143,11 @@ export default {
     },
   },
   watch: {
+    countProcessing(value) {
+      if (value == 0) {
+        this.filterStatus = "done"
+      }
+    },
     async search() {
       if (this.pageIsLoading) return
       this.loading = true
