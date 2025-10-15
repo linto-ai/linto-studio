@@ -17,7 +17,7 @@ class TokenModel extends MongoModel {
       }
       if (expires_in) {
         payload.expiresIn = expires_in
-        payload.expiresAt = new Date(Date.now() + expires_in * 1000)
+        payload.expiresAt = new Date(Date.now() + expires_in)
       }
       return await this.mongoInsert(payload)
     } catch (error) {

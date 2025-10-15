@@ -11,20 +11,16 @@ const { UserError } = require(
 )
 const PLATFORM_ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
 
-function getExpiresIn(value, defaultValue = "7d") {
-  if (value === undefined) return process.env.EXTENDED_TOKEN_DAYS_TIME || "7d"
-
-  if (!isNaN(value) && Number(value) > 0) {
-    return Number(value)
-  }
-
+function getExpiresIn(value, defaultValue = "14d") {
+  defaultValue = process.env.EXTENDED_TOKEN_DAYS_TIME || defaultValue
   try {
-    const duration = ms(value)
-    if (typeof duration === "number" && duration > 0) {
-      return value
-    }
-  } catch {}
-  return defaultValue
+    if (value === undefined) return ms(defaultValue)
+
+    if (value) return ms(value)
+    else return ms(defaultValue)
+  } catch {
+    return ms(defaultValue)
+  }
 }
 
 async function generateApiKeyToken(
