@@ -2,7 +2,7 @@
   <div>
     <table
       class="table-grid"
-      style="grid-template-columns: 1fr 1fr 1fr; width: 100%">
+      style="grid-template-columns: auto 1fr auto auto auto; width: 100%">
       <ApiTokenTableHeader
         @list_sort_by="sortBy"
         :sortListKey="sortListKey"

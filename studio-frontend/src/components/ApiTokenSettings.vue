@@ -21,7 +21,7 @@
     <ModalCreateToken
       v-model="showCreateModal"
       @close="closeCreateModal"
-      @token-created="handleTokenCreated" />
+      @handleTokenCreated="handleTokenCreated" />
   </div>
 </template>
 

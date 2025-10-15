@@ -85,6 +85,8 @@ class TokenModel extends MongoModel {
         userId: 1,
         createdAt: 1,
         expiresAt: 1,
+        expiresIn: 1,
+        _id: 0,
       })
     } catch (error) {
       console.error(error)

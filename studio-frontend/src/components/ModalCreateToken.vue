@@ -10,6 +10,39 @@
         <OrgaRoleSelector v-model="role.value" :id="slotProps.id" />
       </template>
     </FormInput>
+    <FormInput :field="stepExpiration" v-model="stepExpiration.value">
+      <template #content-after-input>
+        <select v-model="unitExpiration.value">
+          <option value="h">
+            {{
+              $tc(
+                "api_tokens_settings.expiration_steps.hour",
+                stepExpiration.value,
+              )
+            }}
+          </option>
+          <option value="d">
+            {{
+              $tc(
+                "api_tokens_settings.expiration_steps.day",
+                stepExpiration.value,
+              )
+            }}
+          </option>
+          <option value="m">
+            {{ $t("api_tokens_settings.expiration_steps.month") }}
+          </option>
+          <option value="y">
+            {{
+              $tc(
+                "api_tokens_settings.expiration_steps.year",
+                stepExpiration.value,
+              )
+            }}
+          </option>
+        </select>
+      </template>
+    </FormInput>
   </Modal>
 </template>
 <script>
@@ -20,6 +53,7 @@ import EMPTY_FIELD from "@/const/emptyField"
 import OrgaRoleSelector from "./molecules/OrgaRoleSelector.vue"
 import { apiCreateToken } from "@/api/token.js"
 import { mapGetters } from "vuex"
+import formatDateTimeToIso from "../tools/date/formatDateTimeToIso"
 
 export default {
   props: {
@@ -36,16 +70,40 @@ export default {
         value: 1,
         label: this.$t("api_tokens_settings.token_role_label"),
       },
+      stepExpiration: {
+        ...EMPTY_FIELD,
+        type: "number",
+        label: this.$t("api_tokens_settings.modal_create.expiration_label"),
+        value: 30,
+        customParams: {
+          min: 1,
+        },
+      },
+      unitExpiration: {
+        ...EMPTY_FIELD,
+        value: "d",
+      },
+      // expirationDate: {
+      //   ...EMPTY_FIELD,
+      //   value: formatDateTimeToIso(
+      //     new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
+      //   ),
+      //   label: this.$t("api_tokens_settings.token_expiration_date_label"),
+      //   type: "datetime-local",
+      //   customParams: {
+      //     min: formatDateTimeToIso(new Date()),
+      //   },
+      // },
     }
   },
   mounted() {},
   methods: {
     async createToken() {
-      console.log("create token", this.name.value, this)
-
+      const expiration = `${this.stepExpiration.value}${this.unitExpiration.value}`
       const req = await apiCreateToken(this.organizationId, {
         name: this.name.value,
         role: this.role.value,
+        expiration,
       })
 
       if (req.status == "success") {

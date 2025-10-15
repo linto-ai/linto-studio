@@ -23,6 +23,7 @@
     <FormInput :field="fieldInputError" />
     <FormInput :field="fieldInputDisabled" disabled />
     <FormInput :field="fieldInputReadonly" readonly />
+    <FormInput :field="dateTimeInput" />
 
     <PopoverList :items="popoverItems" v-model="popoverValue" class="relative">
       <!-- <template #trigger="{ open }">
@@ -34,6 +35,9 @@
 <script>
 import { bus } from "@/main.js"
 import FormInput from "../components/molecules/FormInput.vue"
+import EMPTY_FIELD from "@/const/emptyField"
+import formatDateTimeToIso from "@/tools/date/formatDateTimeToIso"
+
 export default {
   props: {},
   data() {
@@ -55,6 +59,17 @@ export default {
         label: "Type your name",
         error: null,
         value: "i'm read only",
+      },
+      dateTimeInput: {
+        ...EMPTY_FIELD,
+        value: formatDateTimeToIso(
+          new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
+        ),
+        label: "Une date dans le futur",
+        type: "datetime-local",
+        customParams: {
+          min: formatDateTimeToIso(new Date()),
+        },
       },
       popoverItems: [
         {
@@ -81,7 +96,11 @@ export default {
       popoverValue: "select-value-1",
     }
   },
-  mounted() {},
+  mounted() {
+    console.log(
+      new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toLocaleString(),
+    )
+  },
   methods: {},
   components: {
     FormInput,

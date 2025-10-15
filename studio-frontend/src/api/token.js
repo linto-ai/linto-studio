@@ -14,11 +14,14 @@ export async function listToken(organizationId) {
   return res?.data || []
 }
 
-export async function apiCreateToken(organizationId, { name, role }) {
+export async function apiCreateToken(
+  organizationId,
+  { name, role, expiration },
+) {
   const res = await sendRequest(
     `${BASE_API}/organizations/${organizationId}/tokens`,
     { method: "post" },
-    { name, role },
+    { name, role, expires_in: expiration },
     null,
   )
 

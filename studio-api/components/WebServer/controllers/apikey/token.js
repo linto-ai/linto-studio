@@ -107,11 +107,11 @@ async function listApiKey(idList, orgaRoles = undefined) {
     const roleData = orgaRoles?.find((r) => r.userId === u._id.toString())
 
     delete u._id
+
     return {
       userId: token.userId,
       ...u,
-      createdAt: token.createdAt,
-      expiresAt: token.expiresAt,
+      ...token,
       ...(orgaRoles
         ? {
             type: roleData?.type || "",

@@ -4,17 +4,31 @@
     <td>
       <OrgaRoleSelector v-model="token.role" readonly />
     </td>
+    <td>{{ formatDate(token.createdAt) }}</td>
+    <td>{{ formatDate(token.expiresAt) }}</td>
     <td class="flex gap-small">
       <!-- <button @click="viewToken">View</button>
-      <button @click="deleteToken">Delete</button> -->
+      <button @click="deleteToken">Delete</button> 
+      :label="$t('api_tokens_settings.view_token')"
+              :label="$t('api_tokens_settings.delete_token')"
+
+      -->
       <Button
-        :label="$t('api_tokens_settings.view_token')"
-        variant="secondary"
-        @click="viewToken" />
+        icon="eye"
+        variant="tertiary"
+        @click="viewToken"
+        iconWeight="regular" />
       <Button
-        :label="$t('api_tokens_settings.delete_token')"
+        icon="copy"
+        variant="tertiary"
+        @click="viewToken"
+        iconWeight="regular" />
+      <Button icon="arrows-clockwise" variant="tertiary" @click="viewToken" />
+      <Button
+        icon="trash"
         variant="secondary"
         intent="destructive"
+        iconWeight="regular"
         @click="deleteToken" />
     </td>
   </tr>

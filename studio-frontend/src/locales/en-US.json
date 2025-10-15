@@ -20,18 +20,26 @@
     "view_token": "Show",
     "token_created": "Token created successfully",
     "token_created_error": "An error occurred while creating the token",
+    "token_creation_date_label": "Created on",
+    "token_expiration_date_label": "Expires on",
     "token_key_label": "Key",
     "token_name_label": "Name",
     "token_role_label": "Role",
-    "token_created_at_label": "Created at",
     "token_actions_label": "Actions",
     "modal_create": {
-      "title": "Create a new token"
+      "title": "Create a new token",
+      "expiration_label": "Validity duration"
     },
     "modal_delete": {
       "title": "Delete api token {name}",
       "content": "Are you sure you want to delete the token {name} ?",
       "delete_action": "Delete"
+    },
+    "expiration_steps": {
+      "hour": "Hour | Hours",
+      "day": "Day | Days",
+      "month": "Month",
+      "year": "Year | Years"
     }
   },
   "app_editor_channels_selector": {

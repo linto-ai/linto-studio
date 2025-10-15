@@ -21,18 +21,26 @@
     "view_token": "Afficher",
     "token_created": "Jeton d'API créé avec succès",
     "token_created_error": "Une erreur est survenue lors de la création du jeton d'API",
+    "token_creation_date_label": "Crée le",
+    "token_expiration_date_label": "Expire le",
     "token_key_label": "clé",
     "token_name_label": "Nom",
     "token_role_label": "Rôle",
-    "token_created_at_label": "Créé le",
     "token_actions_label": "Actions",
     "modal_create": {
-      "title": "Créer un jeton d'API"
+      "title": "Créer un jeton d'API",
+      "expiration_label": "Durée de validité"
     },
     "modal_delete": {
       "title": "Supprimer le jeton d'API {name}",
       "content": "Êtes-vous sûr de vouloir supprimer le jeton d'API {name} ?",
       "delete_action": "Supprimer"
+    },
+    "expiration_steps": {
+      "hour": "Heure | Heures",
+      "day": "Jour | jours",
+      "month": "Mois",
+      "year": "Année | Années"
     }
   },
   "app_editor_channels_selector": {
@@ -935,7 +943,7 @@
     "uploader": "Collaborateur",
     "uploader_description": "Peut transcrire des medias dans l'organisation",
     "quick_meeting": "Collaborateur privilégié",
-    "quick_meeting_description": "Peut transcrire en direct une visio-conférence, ou un enregistrement microphone.",
+    "quick_meeting_description": "Peut transcrire en direct une visio-conférence, ou un enregistrement microphone",
     "session_operator": "Collaborateur complet",
     "session_operator_description": "Peut créér des sessions",
     "maintainer": "Gestionnaire",
