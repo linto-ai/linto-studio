@@ -33,25 +33,24 @@
     </div>
 
     <!-- -- -- language -- -- -->
-    <!-- todo: reactivate lang selector when supported by api-->
-    <div class="form-field flex col" v-if="isWhisper && language === '*'">
+    <div class="form-field flex col">
       <label :for="`service-${value.name}-language`">
         {{ $t("conversation.transcription.language_label") }}
       </label>
       <select
         v-model="languageField.value"
         :id="`service-${value.name}-language`">
-        <option value="*">{{ this.$i18n.t("lang.automatic") }}</option>
-        <option value="fr">{{ this.$i18n.t("lang.fr") }}</option>
-        <option value="en">{{ this.$i18n.t("lang.en") }}</option>
+        <option v-for="lang in computeLanguageList" :value="lang.value">
+           {{ lang.label }}
+        </option>
       </select>
     </div>
 
-    <LabeledValue
+    <!-- <LabeledValue
       v-else
       selectLike
       :label="$t('conversation.transcription.language_label')"
-      :value="language_formatted"></LabeledValue>
+      :value="language_formatted"></LabeledValue> -->
 
     <!-- -- -- punctuation  -- -- -->
     <div class="form-field flex col" v-if="isModelWithPunctuation">
@@ -68,7 +67,7 @@
           v-for="punctuationService of value.sub_services.punctuation"
           :key="punctuationService.service_name"
           :value="punctuationService.service_name">
-          {{ extract_locales(punctuationService.info) }}
+          {{ extractLocales(punctuationService.info) }}
         </option>
       </select>
     </div>
@@ -96,7 +95,7 @@
           v-for="diarizationService of value.sub_services.diarization"
           :key="diarizationService.service_name"
           :value="diarizationService.service_name">
-          {{ extract_locales(diarizationService.info) }}
+          {{ extractLocales(diarizationService.info) }}
         </option>
       </select>
       <select
@@ -151,18 +150,28 @@ export default {
     },
   },
   data() {
+    let defaultLang
+    try {
+      defaultLang = this?.value?.language.split(",")[0]
+    } catch (error) {
+      defaultLang = this?.value?.language
+    }
+
     return {
       diarization: { ...EMPTY_FIELD, value: "disabled" },
       punctuation: { ...EMPTY_FIELD, value: "disabled" },
       speakersNumber: { ...EMPTY_FIELD, value: "auto" },
       acoustic_value: ACOUSTIC((key) => this.$i18n.t(key)),
       audio_quality_value: AUDIO_QUALITY((key) => this.$i18n.t(key)),
-      languageField: { ...EMPTY_FIELD, value: "*" },
+      languageField: {
+        ...EMPTY_FIELD,
+        value: defaultLang,
+      },
     }
   },
   computed: {
     description() {
-      return this.extract_locales(this.value.desc)
+      return this.extractLocales(this.value.desc)
     },
     modelType() {
       return this.value.model_type
@@ -176,16 +185,13 @@ export default {
     language() {
       return this.value?.language || "*"
     },
-    language_formatted() {
-      if (!this.value.language) {
-        return this.$i18n.t("lang.automatic")
-      }
-
-      let languageNames = new Intl.DisplayNames([this.$i18n.locale], {
-        type: "language",
+    computeLanguageList() {
+      return this.value.language.split(",").map((langCode) => {
+        return {
+          value: langCode,
+          label: this.formatLanguage(langCode),
+        }
       })
-
-      return languageNames.of(this.value.language)
     },
   },
   watch: {
@@ -209,7 +215,7 @@ export default {
     removeLeadingSlash(str) {
       return str.replace(/^\/+/, "")
     },
-    extract_locales(value) {
+    extractLocales(value) {
       const lang = this.$i18n.locale.split("-")[0] || "en"
       return value[lang] || value["en"]
     },
@@ -227,6 +233,19 @@ export default {
             : this.value.language,
         }),
       )
+    },
+    formatLanguage(lang) {
+      if (lang == "*") {
+        return this.$i18n.t("lang.automatic")
+      }
+      try {
+        const languageNames = new Intl.DisplayNames([this.$i18n.locale], {
+          type: "language",
+        })
+        return languageNames.of(lang)
+      } catch (error) {
+        return lang
+      }
     },
   },
   components: { LabeledValue },
