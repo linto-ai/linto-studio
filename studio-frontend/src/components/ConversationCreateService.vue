@@ -242,7 +242,9 @@ export default {
         const languageNames = new Intl.DisplayNames([this.$i18n.locale], {
           type: "language",
         })
-        return languageNames.of(lang)
+        return languageNames
+          .of(lang)
+          .replace(/^./, (char) => char.toUpperCase())
       } catch (error) {
         return lang
       }
