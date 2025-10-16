@@ -13,7 +13,7 @@
     <div v-else class="modal-view-token__content">
       <FormInput :field="keyField" readonly code>
         <template #content-after-input>
-          <Button :icon="iconCopy" @click="copy" />
+          <CopyButton :value="keyField.value" />
         </template>
       </FormInput>
     </div>
@@ -42,12 +42,9 @@ export default {
         ...EMPTY_FIELD,
         label: this.$t("api_tokens_settings.token_key_label"),
       },
-      iconCopy: "copy",
     }
   },
-  mounted() {
-    this.fetchTokenData()
-  },
+  mounted() {},
   methods: {
     async fetchTokenData() {
       this.loading = true
@@ -60,18 +57,10 @@ export default {
       }
       this.loading = false
     },
-    copy() {
-      const value = this.keyField.value
-      navigator.clipboard.writeText(value)
-      this.iconCopy = "check"
-      setTimeout(() => {
-        this.iconCopy = "copy"
-      }, 2000)
-    },
   },
   computed: {
     title() {
-      return this.token.firstname
+      return this?.token?.firstname || ""
     },
     isOpen: {
       get() {
@@ -84,6 +73,15 @@ export default {
     ...mapGetters("organizations", {
       organizationId: "getCurrentOrganizationScope",
     }),
+  },
+  watch: {
+    token: {
+      handler() {
+        this.fetchTokenData()
+      },
+      immediate: true,
+      deep: true,
+    },
   },
   components: {
     Modal,
