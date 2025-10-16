@@ -12,15 +12,15 @@
     "error_past_date": "La date doit être dans le futur"
   },
   "api_tokens_settings": {
-    "title": "Jetons d'API",
-    "create_token": "Ajouter un jeton d'API",
-    "error_fetching_token_details": "Les détails du jeton d'API n'ont pas pu être récupérés",
+    "title": "Clés d'API",
+    "create_token": "Ajouter une clé d'API",
+    "error_fetching_token_details": "Les détails de la clé d'API n'ont pas pu être récupérés",
     "delete_token": "Supprimer",
-    "delete_success": "Le jeton a été supprimé avec succès",
-    "delete_error": "Le jeton n'a pas pu être supprimé",
+    "delete_success": "La clé a été supprimé avec succès",
+    "delete_error": "La clé n'a pas pu être supprimé",
     "view_token": "Afficher",
-    "token_created": "Jeton d'API créé avec succès",
-    "token_created_error": "Une erreur est survenue lors de la création du jeton d'API",
+    "token_created": "Clé d'API créé avec succès",
+    "token_created_error": "Une erreur est survenue lors de la création de la clé d'API",
     "token_creation_date_label": "Crée le",
     "token_expiration_date_label": "Expire le",
     "token_key_label": "clé",
@@ -28,21 +28,21 @@
     "token_role_label": "Rôle",
     "token_actions_label": "Actions",
     "modal_create": {
-      "title": "Créer un jeton d'API",
+      "title": "Créer une clé d'API",
       "expiration_label": "Durée de validité"
     },
     "modal_delete": {
-      "title": "Supprimer le jeton d'API '{name}'",
-      "content": "Êtes-vous sûr de vouloir supprimer le jeton d'API {name} ?",
+      "title": "Supprimer la clé d'API '{name}'",
+      "content": "Êtes-vous sûr de vouloir supprimer la clé d'API {name} ?",
       "delete_action": "Supprimer"
     },
     "modal_renew": {
-      "title": "Renouveler le jeton d'API '{name}'",
+      "title": "Renouveler la clé d'API '{name}'",
       "expiration_label": "Mettre à jour la durée de validité",
       "confirm": "Renouveler"
     },
     "token_renew_success": "Jeton d'API renouvelé avec succès",
-    "token_renew_error": "Une erreur est survenue lors du renouvellement du jeton"
+    "token_renew_error": "Une erreur est survenue lors du renouvellement de la clé"
   },
   "app_editor_channels_selector": {
     "label": "Choisir un canal"
@@ -67,7 +67,7 @@
     "label": "Rechercher dans le texte"
   },
   "app_settings_modal": {
-    "api_tokens": "Jetons d'api",
+    "api_tokens": "Clés d'api",
     "account_title": "Mon compte",
     "account_information": "Informations du compte",
     "billing": "Facturation",

@@ -11,15 +11,15 @@
     "error_past_date": "The date must be in the future"
   },
   "api_tokens_settings": {
-    "title": "API Token",
-    "create_token": "Add a token",
-    "error_fetching_token_details": "The token details could not be retrieved",
+    "title": "API Keys",
+    "create_token": "Add a key",
+    "error_fetching_token_details": "The key details could not be retrieved",
     "delete_token": "Delete",
     "delete_success": "Token has been deleted successfully",
     "delete_error": "Token could not be deleted",
     "view_token": "Show",
     "token_created": "Token created successfully",
-    "token_created_error": "An error occurred while creating the token",
+    "token_created_error": "An error occurred while creating the key",
     "token_creation_date_label": "Created on",
     "token_expiration_date_label": "Expires on",
     "token_key_label": "Key",
@@ -27,7 +27,7 @@
     "token_role_label": "Role",
     "token_actions_label": "Actions",
     "modal_create": {
-      "title": "Create a new token",
+      "title": "Create a new key",
       "expiration_label": "Validity duration"
     },
     "modal_delete": {
@@ -36,12 +36,12 @@
       "delete_action": "Delete"
     },
     "modal_renew": {
-      "title": "Renew api token '{name}'",
+      "title": "Renew api key '{name}'",
       "expiration_label": "Update validity duration",
       "confirm": "Renew"
     },
     "token_renew_success": "Token renewed successfully",
-    "token_renew_error": "An error occurred while renewing the token"
+    "token_renew_error": "An error occurred while renewing the key"
   },
   "app_editor_channels_selector": {
     "label": "Choose a channel"
@@ -66,7 +66,7 @@
     "label": "Search in transcription"
   },
   "app_settings_modal": {
-    "api_tokens": "API tokens",
+    "api_tokens": "API Keys",
     "account_title": "My account",
     "account_information": "Account information",
     "billing": "Billing",
