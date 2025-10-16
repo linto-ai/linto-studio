@@ -1,47 +1,34 @@
 <template>
   <Modal
-    isForm
-    :title="$t('api_tokens_settings.modal_create.title')"
+    :title="title"
     v-model="isOpen"
-    @submit="createToken">
-    <FormInput :field="name" v-model="name.value" />
-    <FormInput :field="role">
-      <template #custom-input="slotProps">
-        <OrgaRoleSelector v-model="role.value" :id="slotProps.id" />
-      </template>
-    </FormInput>
+    @submit="renewToken"
+    isForm
+    :textActionApply="$t('api_tokens_settings.modal_renew.confirm')">
     <DurationInput :field="expiration" v-model="expiration.value" />
   </Modal>
 </template>
 <script>
-import { bus } from "@/main.js"
+import { mapGetters } from "vuex"
+
 import Modal from "@/components/molecules/Modal.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
-import EMPTY_FIELD from "@/const/emptyField"
-import OrgaRoleSelector from "./molecules/OrgaRoleSelector.vue"
-import { apiCreateToken } from "@/api/token.js"
-import { mapGetters } from "vuex"
+import getDurationFromSecond from "../tools/date/getDurationFromSecond"
 import DurationInput from "@/components/molecules/DurationInput.vue"
+import EMPTY_FIELD from "@/const/emptyField"
+import { apiRenewToken } from "@/api/token"
 
 export default {
   props: {
     value: { type: Boolean, required: true },
+    token: { type: Object, required: true },
   },
   data() {
     return {
-      name: {
-        ...EMPTY_FIELD,
-        label: this.$t("api_tokens_settings.token_name_label"),
-      },
-      role: {
-        ...EMPTY_FIELD,
-        value: 1,
-        label: this.$t("api_tokens_settings.token_role_label"),
-      },
       expiration: {
         ...EMPTY_FIELD,
-        label: this.$t("api_tokens_settings.modal_create.expiration_label"),
-        value: "30d",
+        label: this.$t("api_tokens_settings.modal_renew.expiration_label"),
+        value: "0d",
         customParams: {
           min: 1,
         },
@@ -50,24 +37,22 @@ export default {
   },
   mounted() {},
   methods: {
-    async createToken() {
+    async renewToken() {
       const expiration = this.expiration.value
-      const req = await apiCreateToken(this.organizationId, {
-        name: this.name.value,
-        role: this.role.value,
+      const req = await apiRenewToken(this.organizationId, this.token.userId, {
         expiration,
       })
 
       if (req.status == "success") {
         this.$store.dispatch("system/addNotification", {
-          message: this.$t("api_tokens_settings.token_created"),
+          message: this.$t("api_tokens_settings.token_renew_success"),
           type: "success",
           timeout: 5000,
         })
-        this.$emit("handleTokenCreated", req.value)
+        this.$emit("handleTokenRenew", req.value)
       } else {
         this.$store.dispatch("system/addNotification", {
-          message: this.$t("api_tokens_settings.token_created_error"),
+          message: this.$t("api_tokens_settings.token_renew_error"),
           type: "error",
           timeout: 5000,
         })
@@ -75,6 +60,11 @@ export default {
     },
   },
   computed: {
+    title() {
+      return this.$t("api_tokens_settings.modal_renew.title", {
+        name: this.token.firstname,
+      })
+    },
     isOpen: {
       get() {
         return this.value
@@ -87,11 +77,27 @@ export default {
       organizationId: "getCurrentOrganizationScope",
     }),
   },
+  watch: {
+    token: {
+      handler(value) {
+        this.expiration.value = getDurationFromSecond(
+          value.expiresIn / 1000 || 3600,
+        )
+      },
+      immediate: true,
+      deep: true,
+    },
+  },
   components: {
     Modal,
     FormInput,
-    OrgaRoleSelector,
     DurationInput,
   },
 }
 </script>
+
+<style lang="scss" scoped>
+.modal-view-token__loading {
+  height: 50px;
+}
+</style>

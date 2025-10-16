@@ -14,7 +14,6 @@
     <ph-icon
       v-if="loading"
       name="circle-notch"
-      :weight="computedIconWeight"
       :size="size"
       class="animate-spin icon" />
     <ph-icon

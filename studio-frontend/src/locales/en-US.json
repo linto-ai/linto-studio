@@ -35,12 +35,13 @@
       "content": "Are you sure you want to delete the token {name} ?",
       "delete_action": "Delete"
     },
-    "expiration_steps": {
-      "hour": "Hour | Hours",
-      "day": "Day | Days",
-      "month": "Month",
-      "year": "Year | Years"
-    }
+    "modal_renew": {
+      "title": "Renew api token '{name}'",
+      "expiration_label": "Update validity duration",
+      "confirm": "Renew"
+    },
+    "token_renew_success": "Token renewed successfully",
+    "token_renew_error": "An error occurred while renewing the token"
   },
   "app_editor_channels_selector": {
     "label": "Choose a channel"
@@ -533,6 +534,13 @@
       "wrongFormat": "One or multiple files are not valid"
     },
     "openFileExplorer": "or choose from the file explorer"
+  },
+  "duration_input": {
+    "h": "Hour | Hours",
+    "d": "Day | Days",
+    "m": "Minute | Minutes",
+    "s": "Second | Seconds",
+    "y": "Year | Years"
   },
   "error": {
     "bug_report": "Report a bug or an issue",

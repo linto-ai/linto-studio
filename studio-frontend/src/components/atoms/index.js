@@ -32,6 +32,8 @@ import InputSelector from "./InputSelector.vue"
 import LabelInput from "./LabelInput.vue"
 import TextInput from "./TextInput.vue"
 import FilterChip from "./FilterChip.vue"
+import CopyButton from "./CopyButton.vue"
+
 const components = [
   Avatar,
   PhIcon,
@@ -67,6 +69,7 @@ const components = [
   LabelInput,
   TextInput,
   FilterChip,
+  CopyButton,
 ]
 
 const validateComponents = (c) =>

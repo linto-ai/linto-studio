@@ -18,7 +18,8 @@
           :key="token.id"
           :token="token"
           @view-token="openViewModal"
-          @delete-token="openDeleteModal" />
+          @delete-token="openDeleteModal"
+          @renew-token="openRenewModal" />
       </tbody>
     </table>
     <ModalViewToken
@@ -32,6 +33,12 @@
       :token="selectedToken"
       @delete="confirmDelete"
       @close="closeDeleteModal" />
+    <ModalRenewToken
+      v-if="selectedToken"
+      v-model="showRenewModal"
+      :token="selectedToken"
+      @handleTokenRenew="$emit('handleTokenRenew')"
+      @close="closeRenewModal" />
   </div>
 </template>
 
@@ -39,6 +46,7 @@
 import ApiTokenTableHeader from "./ApiTokenTableHeader.vue"
 import ApiTokenTableLine from "./ApiTokenTableLine.vue"
 import ModalDeleteToken from "./ModalDeleteToken.vue"
+import ModalRenewToken from "./ModalRenewToken.vue"
 import ModalViewToken from "./ModalViewToken.vue"
 // import DeleteTokenModal from "./DeleteTokenModal.vue"
 import Loading from "@/components/atoms/Loading.vue"
@@ -75,6 +83,7 @@ export default {
     return {
       showViewModal: false,
       showDeleteModal: false,
+      showRenewModal: false,
       selectedToken: null,
     }
   },
@@ -90,12 +99,20 @@ export default {
       this.selectedToken = token
       this.showDeleteModal = true
     },
+    openRenewModal(token) {
+      this.selectedToken = token
+      this.showRenewModal = true
+    },
     closeViewModal() {
       this.showViewModal = false
       this.selectedToken = null
     },
     closeDeleteModal() {
       this.showDeleteModal = false
+      this.selectedToken = null
+    },
+    closeRenewModal() {
+      this.showRenewModal = false
       this.selectedToken = null
     },
     confirmDelete(tokenId) {
@@ -118,6 +135,7 @@ export default {
     ApiTokenTableLine,
     ModalViewToken,
     ModalDeleteToken,
+    ModalRenewToken,
     Loading,
   },
 }

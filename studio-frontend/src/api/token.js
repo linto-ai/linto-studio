@@ -28,15 +28,6 @@ export async function apiCreateToken(
   return res
 }
 
-export async function apiRegenerateToken(organizationId, tokenId) {
-  const res = await sendRequest(
-    `${BASE_API}/organizations/${organizationId}/tokens/${tokenId}`,
-    { method: "put" },
-    {},
-    null,
-  )
-}
-
 export async function apiGetToken(organizationId, tokenId) {
   const res = await sendRequest(
     `${BASE_API}/organizations/${organizationId}/tokens/${tokenId}`,
@@ -53,6 +44,17 @@ export async function apiDeleteToken(organizationId, tokenId) {
     `${BASE_API}/organizations/${organizationId}/tokens/${tokenId}`,
     { method: "delete" },
     {},
+    null,
+  )
+
+  return res
+}
+
+export async function apiRenewToken(organizationId, tokenId, { expiration }) {
+  const res = await sendRequest(
+    `${BASE_API}/organizations/${organizationId}/tokens/${tokenId}`,
+    { method: "put" },
+    { expires_in: expiration },
     null,
   )
 

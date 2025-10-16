@@ -24,7 +24,7 @@
     <FormInput :field="fieldInputDisabled" disabled />
     <FormInput :field="fieldInputReadonly" readonly />
     <FormInput :field="dateTimeInput" />
-
+    <DurationInput :field="fieldDuration" v-model="fieldDuration.value" />
     <PopoverList :items="popoverItems" v-model="popoverValue" class="relative">
       <!-- <template #trigger="{ open }">
         <Button variant="tertiary" size="sm"> {{ popoverValue }} </Button>
@@ -37,6 +37,7 @@ import { bus } from "@/main.js"
 import FormInput from "../components/molecules/FormInput.vue"
 import EMPTY_FIELD from "@/const/emptyField"
 import formatDateTimeToIso from "@/tools/date/formatDateTimeToIso"
+import DurationInput from "@/components/molecules/DurationInput.vue"
 
 export default {
   props: {},
@@ -71,6 +72,10 @@ export default {
           min: formatDateTimeToIso(new Date()),
         },
       },
+      fieldDuration: {
+        label: "duration",
+        value: "7d",
+      },
       popoverItems: [
         {
           value: "select-value-1",
@@ -104,6 +109,7 @@ export default {
   methods: {},
   components: {
     FormInput,
+    DurationInput,
   },
 }
 </script>

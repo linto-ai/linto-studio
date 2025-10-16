@@ -15,6 +15,7 @@
       :sortListKey="sortKey"
       :sortListDirection="sortDirection"
       :loading="loading"
+      @handleTokenRenew="handleTokenRenew"
       @list_sort_by="handleSort"
       @delete-token="deleteToken"
       @input="updateSelectedTokens" />
@@ -82,6 +83,9 @@ export default {
         this.sortDirection = "asc"
       }
       this.sortTokens()
+    },
+    handleTokenRenew() {
+      this.fetchTokens()
     },
     sortTokens() {
       this.apiTokens.sort((a, b) => {

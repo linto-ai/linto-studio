@@ -18,12 +18,13 @@
         variant="tertiary"
         @click="viewToken"
         iconWeight="regular" />
-      <Button
+      <CopyButton :value="fetchTokenValue" />
+      <!-- <Button
         icon="copy"
         variant="tertiary"
         @click="viewToken"
-        iconWeight="regular" />
-      <Button icon="arrows-clockwise" variant="tertiary" @click="viewToken" />
+        iconWeight="regular" /> -->
+      <Button icon="arrows-clockwise" variant="tertiary" @click="renewToken" />
       <Button
         icon="trash"
         variant="secondary"
@@ -36,6 +37,8 @@
 
 <script>
 import OrgaRoleSelector from "./molecules/OrgaRoleSelector.vue"
+import { apiGetToken } from "@/api/token"
+import { mapGetters } from "vuex"
 
 export default {
   props: {
@@ -43,6 +46,16 @@ export default {
       type: Object,
       required: true,
     },
+  },
+  data() {
+    return {
+      tokenKey: "",
+    }
+  },
+  computed: {
+    ...mapGetters("organizations", {
+      organizationId: "getCurrentOrganizationScope",
+    }),
   },
   methods: {
     formatDate(date) {
@@ -54,6 +67,23 @@ export default {
     },
     deleteToken() {
       this.$emit("delete-token", this.token)
+    },
+    renewToken() {
+      this.$emit("renew-token", this.token)
+    },
+    async fetchTokenValue() {
+      const req = await apiGetToken(this.organizationId, this.token.userId)
+      if (req.status == "success") {
+        const tokenData = req.data
+        return tokenData.auth_token
+      } else {
+        this.$store.dispatch("system/addNotification", {
+          message: this.$t("api_tokens_settings.error_fetching_token_details"),
+          type: "error",
+          timeout: 5000,
+        })
+        throw new Error("Failed to fetch token details")
+      }
     },
   },
   components: {
