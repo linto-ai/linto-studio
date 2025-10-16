@@ -1,6 +1,5 @@
 const debug = require("debug")("linto:logger")
 const fs = require("fs")
-const path = require("path")
 const { createLogger, format, transports } = require("winston")
 
 const configPath =

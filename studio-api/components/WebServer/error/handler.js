@@ -1,11 +1,9 @@
 const debug = require("debug")(
   "linto:conversation-manager:components:WebServer:error:handler",
 )
-const appLogger = require(`${process.cwd()}/lib/logger/logger.js`)
+const { logger, context } = require(`${process.cwd()}/lib/logger`)
 
 const fs = require("fs")
-
-const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
 
 const JWT_DEFAULT_EXCEPTION = "UnauthorizedError" // Default JWT exception
 const EXCEPTION_FOLDER = `${process.cwd()}/components/WebServer/error/exception/`
@@ -40,24 +38,10 @@ let init = function (webserver) {
 }
 
 function formatError(req, err, isHandledError = false) {
-  const userId = req?.payload?.data?.userId || null
-  const action = `${req.method} ${req.url}`
-  const resource = req.baseUrl || req.path
-  const role = {
-    value: req.payload?.data?.role || null,
-    name: ROLE.print(req.payload?.data?.role || null),
-  }
-  const logData = {
-    userId,
-    action,
-    resource,
-    message: err.message,
-    service: "webserver",
-    role: role,
-  }
+  const ctx = context.createContext(req, err.message)
 
-  if (isHandledError) appLogger.log("error", logData.message, logData)
-  else appLogger.log("warn", logData.message, logData)
+  const level = isHandledError ? "error" : "warn"
+  logger.log(level, ctx.message, ctx)
 }
 
 module.exports = {
