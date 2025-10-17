@@ -125,9 +125,6 @@ const loadMiddlewares = (route) => {
   if (route.requireUserVisibility)
     middlewares.push(user_middlewares.isVisibility)
 
-  if (process.env.LOGGER_ENABLED === "true")
-    middlewares.push(nav_middlewares.logger)
-
   return middlewares
 }
 
@@ -288,6 +285,8 @@ const createProxyRoutes = (webServer, proxy_routes) => {
           webServer.express[method](
             basePath + path.path,
             middlewares,
+            logger,
+
             (req, res, next) => {
               if (path.executeBeforeResult) {
                 path.executeBeforeResult(req, next)

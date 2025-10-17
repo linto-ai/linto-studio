@@ -2,7 +2,8 @@ const debug = require("debug")("linto:components:socketio")
 const Component = require(`../component.js`)
 const socketIO = require("socket.io")
 const axios = require(`${process.cwd()}/lib/utility/axios`)
-const appLogger = require(`${process.cwd()}/lib/logger/logger.js`)
+// const appLogger = require(`${process.cwd()}/lib/logger/logger.js`)
+const { logger: appLogger, context } = require(`${process.cwd()}/lib/logger`)
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 

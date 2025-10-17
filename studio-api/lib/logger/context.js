@@ -37,6 +37,35 @@ async function storeCacheOrganization(organizationId) {
   })
 }
 
+function defineScope(url = "") {
+  if (!url) return "unknown"
+
+  const parts = url.toLowerCase().split("/").filter(Boolean)
+
+  if (parts[1] === "administration" || parts[1] === "transcriber_profiles")
+    return "platform"
+  if (parts[1] === "sessions") return "resource"
+
+  const orgIndex = parts.indexOf("organizations")
+  const hasOrganization = orgIndex !== -1 && parts[orgIndex + 1]
+
+  const userIndex = parts.indexOf("users")
+  const hasUser = userIndex !== -1 && parts[userIndex + 1]
+
+  const hasDeeperResource =
+    (hasOrganization && parts.length > orgIndex + 2) ||
+    (hasUser && parts.length > userIndex + 2)
+
+  const hasIdSegment = parts.some((p) => /^[0-9a-f]{6,}$|^\d+$|^{.+}$/i.test(p))
+  const looksLikeResource =
+    hasDeeperResource || (!hasOrganization && !hasUser && hasIdSegment)
+
+  if (looksLikeResource) return "resource"
+  if (hasOrganization) return "organization"
+  if (hasUser) return "user"
+  return "unknown"
+}
+
 class LoggerContext {
   constructor() {
     if (LoggerContext.instance) {
@@ -76,6 +105,7 @@ class LoggerContext {
           body: Object.keys(req.body || {}).length ? req.body : null,
           status: req.res?.statusCode || null,
         }
+        context.scope = defineScope(context.http.url)
       }
 
       if (req?.payload?.data?.userId) {
@@ -106,6 +136,7 @@ class LoggerContext {
           info: cache.organizations[organizationId],
         }
       }
+
       return context
     } catch (err) {
       return {
@@ -117,24 +148,73 @@ class LoggerContext {
     }
   }
 
-  // Optional: socket context
-  createSocketContext(socket, message, source = "socketio") {
-    const userId = socket?.decoded?.data?.userId || null
-    const roleValue = socket?.decoded?.data?.role || null
-    const roleName = P_ROLE.print(roleValue) // fixed ROLE -> P_ROLE or O_ROLE
-    const action = `SOCKET ${socket.id}`
-    const resource = socket.nsp.name || "/"
-
-    return {
+  // TODO: WIP
+  async createSocketContext(
+    socket,
+    socketEvent,
+    { source = "socketio", level = DEFAULT_LEVEL } = {},
+  ) {
+    const context = {
       source,
-      userId,
-      role: { value: roleValue, name: roleName },
-      action,
-      resource,
-      message,
+      level,
+      scope: { from: "resource", on: "session" },
+      socket: {
+        id: socket.id,
+        namespace: socket.nsp?.name || "/",
+        rooms: Array.from(socket.rooms || []), // rooms the socket joined
+        connected: socket.connected,
+        disconnected: socket.disconnected,
+      },
     }
+
+    if (socketEvent.from === "session") {
+      //TODO: fetch session data there
+      context.session = socketEvent
+      context.message = `${socket.id} ${socketEvent.action} ${socketEvent.sessionId}`
+    } else if (socketEvent.from === "organization") {
+      await storeCacheOrganization(socketEvent.organizationId)
+
+      context.organization = {
+        id: socketEvent.organizationId,
+        info: cache.organizations[socketEvent.organizationId],
+      }
+      context.message = socketEvent.message
+    } else if (socketEvent.from === "socket") {
+      context.message = socketEvent.message
+    }
+    return context
   }
 }
+
+/*
+{
+  http: {
+    method: 'GET',
+    url: '/api/organizations/688778cb980f721744a206d8',
+    body: null,
+    status: 200
+  },
+  user: {
+    id: '688778cb980f721744a206d7',
+    role: { value: 31, name: 'SUPER_ADMINISTRATOR' },
+    info: {
+      lastname: 'Houpert',
+      firstname: 'Yoann',
+      email: 'yoann.houpert@gmail.com'
+    }
+  },
+  organization: {
+    id: '688778cb980f721744a206d8',
+    role: { value: 6, name: 'ADMIN' },
+    info: { name: 'yoann.houpert@gmail.com', description: undefined }
+  },
+
+
+  level: 'info',
+  source: 'webserver',
+  scope: { from: 'organization', on: null },
+}
+*/
 
 // Export the singleton instance
 module.exports = new LoggerContext()
