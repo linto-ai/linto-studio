@@ -34,7 +34,10 @@ module.exports = function () {
 
   this.app.components["BrokerClient"].deliveryClient.on("ready", () => {
     retryConnectionOperation(
-      () => this.app.components["IoHandler"].brokerOk(),
+      () =>
+        this.app.components["IoHandler"].brokerOk(
+          "Delivery broker connection established",
+        ),
       this.app,
     )
   })
@@ -55,7 +58,10 @@ module.exports = function () {
 
   this.app.components["BrokerClient"].organizationClient.on("ready", () => {
     retryConnectionOperation(
-      () => this.app.components["IoHandler"].brokerOk(),
+      () =>
+        this.app.components["IoHandler"].brokerOk(
+          "Organization broker connection established",
+        ),
       this.app,
     )
   })

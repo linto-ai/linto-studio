@@ -1,7 +1,7 @@
 const debug = require("debug")("linto:app:webserver:middlewares:logger")
 const { logger: appLogger, context } = require(`${process.cwd()}/lib/logger`)
 
-function logger(req, res, next) {
+async function logger(req, res, next) {
   // Build structured context for the request
   const message =
     req.body && Object.keys(req.body).length > 0
@@ -10,11 +10,9 @@ function logger(req, res, next) {
         : JSON.stringify(req.body)
       : null
 
-  const ctx = context.createContext(req, message)
-  const level = ctx.user.role.value > 1 ? "info" : "debug"
-
+  const ctx = await context.createContext(req, message)
   // Log the incoming request
-  appLogger.log(level, ctx.message || `${ctx.action}`, ctx)
+  appLogger.log(ctx.level, ctx.message, ctx)
 
   // Intercept 400+ JSON responses
   const originalJson = res.json

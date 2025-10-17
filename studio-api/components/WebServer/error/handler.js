@@ -19,7 +19,7 @@ let init = function (webserver) {
 
   webserver.express.use(function (err, req, res, next) {
     if (customException.indexOf(err.name) > -1) {
-      formatError(req, err, true)
+      formatError(req, err, "warn")
 
       const status = parseInt(err.status)
       if (isNaN(status)) {
@@ -29,7 +29,7 @@ let init = function (webserver) {
       }
       return
     } else if (err) {
-      formatError(req, err, false)
+      formatError(req, err, "error")
       res.status(500).send({ message: err.message })
       return
     }
@@ -37,11 +37,9 @@ let init = function (webserver) {
   })
 }
 
-function formatError(req, err, isHandledError = false) {
-  const ctx = context.createContext(req, err.message)
-
-  const level = isHandledError ? "error" : "warn"
-  logger.log(level, ctx.message, ctx)
+async function formatError(req, err, level) {
+  const ctx = await context.createContext(req, err, { level })
+  logger.log(ctx.level, ctx.message, ctx)
 }
 
 module.exports = {

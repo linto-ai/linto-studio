@@ -352,9 +352,9 @@ class IoHandler extends Component {
     }
   }
 
-  brokerOk() {
+  brokerOk(message = "Broker connection established") {
     this.io.emit("broker_ok")
-    appLogger.info("Broker connection established")
+    appLogger.info(message)
   }
 
   brokerKo(notify = false) {
