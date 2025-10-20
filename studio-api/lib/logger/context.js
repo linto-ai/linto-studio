@@ -1,5 +1,6 @@
 const debug = require("debug")("linto:lib:logger:context")
 
+const axios = require(`${process.cwd()}/lib/utility/axios`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const P_ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
@@ -10,12 +11,11 @@ const DEFAULT_LEVEL = "info"
 const cache = {
   users: {},
   organizations: {},
+  sessions: {},
 }
 
 async function storeCacheUser(userId) {
-  if (cache.users[userId]) {
-    return cache.users[userId]
-  }
+  if (cache.users[userId]) return cache.users[userId]
 
   const user = (await model.users.getById(userId))[0]
   return (cache.users[userId] = {
@@ -26,14 +26,27 @@ async function storeCacheUser(userId) {
 }
 
 async function storeCacheOrganization(organizationId) {
-  if (cache.organizations[organizationId]) {
-    return
-  }
+  if (cache.organizations[organizationId])
+    return cache.organizations[organizationId]
 
   const organization = (await model.organizations.getById(organizationId))[0]
   return (cache.organizations[organizationId] = {
     name: organization.name,
     description: organization.description,
+  })
+}
+
+async function storeCacheSession(sessionId) {
+  if (cache.sessions[sessionId]) return cache.session[sessionId]
+
+  const session = await axios.get(
+    process.env.SESSION_API_ENDPOINT + `/sessions/${sessionId}`,
+  )
+  return (cache.sessions[sessionId] = {
+    sessionId: sessionId,
+    name: session.name,
+    organizationId: session.organizationId,
+    visibility: session.visibility,
   })
 }
 
@@ -66,6 +79,24 @@ function defineScope(url = "") {
   return "unknown"
 }
 
+function formatError(error) {
+  let normalizedMessage, errorContext
+
+  if (error instanceof Error) {
+    normalizedMessage = error.message
+    errorContext = {
+      name: error.name,
+      stack: error.stack,
+    }
+  } else if (typeof message === "object" && error !== null) {
+    normalizedMessage = JSON.stringify(error)
+  } else {
+    normalizedMessage = error || null
+  }
+
+  return { normalizedMessage, errorContext }
+}
+
 class LoggerContext {
   constructor() {
     if (LoggerContext.instance) {
@@ -79,22 +110,10 @@ class LoggerContext {
     message,
     { source = "webserver", level = DEFAULT_LEVEL } = {},
   ) {
-    let normalizedMessage, errorContext
     try {
-      if (message instanceof Error) {
-        normalizedMessage = message.message
-        errorContext = {
-          name: message.name,
-          stack: message.stack,
-        }
-      } else if (typeof message === "object" && message !== null) {
-        normalizedMessage = JSON.stringify(message)
-      } else {
-        normalizedMessage = message || null
-      }
-
       const context = { source, level }
 
+      let { normalizedMessage, errorContext } = formatError(message)
       if (normalizedMessage) context.message = normalizedMessage
       if (errorContext) context.error = errorContext
 
@@ -142,7 +161,7 @@ class LoggerContext {
       return {
         source: "system",
         level: "error",
-        message: "Error creating log context",
+        message: `Error creating log context from ${source}`,
         error: { name: err.name, stack: err.stack },
       }
     }
@@ -154,67 +173,79 @@ class LoggerContext {
     socketEvent,
     { source = "socketio", level = DEFAULT_LEVEL } = {},
   ) {
-    const context = {
+    try {
+      const context = {
+        source,
+        level,
+        scope: { from: "resource", on: "session" },
+        socket: {
+          id: socket.id,
+          namespace: socket.nsp?.name || "/",
+          rooms: Array.from(socket.rooms || []), // rooms the socket joined
+          connected: socket.connected,
+          disconnected: socket.disconnected,
+        },
+      }
+
+      if (socketEvent.error) {
+        const { normalizedMessage, errorContext } = formatError(
+          socketEvent.error,
+        )
+        if (normalizedMessage) context.message = normalizedMessage
+        if (errorContext) context.error = errorContext
+      }
+
+      if (socketEvent.from === "session") {
+        const [sessionId, channelId] = socketEvent.sessionId.split("/")
+        const session = await storeCacheSession(sessionId)
+
+        context.session = {
+          socketEvent,
+          ...session,
+        }
+
+        if (session.organizationId) {
+          await storeCacheOrganization(session.organizationId)
+          context.organization = {
+            id: session.organizationId,
+            info: cache.organizations[session.organizationId],
+          }
+        }
+
+        context.message = `${socket.id} ${socketEvent.action} ${sessionId}`
+      } else if (socketEvent.from === "organization") {
+        await storeCacheOrganization(socketEvent.organizationId)
+
+        context.organization = {
+          id: socketEvent.organizationId,
+          info: cache.organizations[socketEvent.organizationId],
+        }
+        context.message = socketEvent.message
+      } else if (socketEvent.from === "socket") {
+        context.message = socketEvent.message
+      }
+
+      return context
+    } catch (err) {
+      debug(err)
+      return {
+        source: "system",
+        level: "error",
+        message: `Error creating log context from ${source}`,
+        error: { name: err.name, stack: err.stack },
+      }
+    }
+  }
+  async createSystemContext(
+    message,
+    { source = "system", level = DEFAULT_LEVEL } = {},
+  ) {
+    return {
+      message,
       source,
       level,
-      scope: { from: "resource", on: "session" },
-      socket: {
-        id: socket.id,
-        namespace: socket.nsp?.name || "/",
-        rooms: Array.from(socket.rooms || []), // rooms the socket joined
-        connected: socket.connected,
-        disconnected: socket.disconnected,
-      },
     }
-
-    if (socketEvent.from === "session") {
-      //TODO: fetch session data there
-      context.session = socketEvent
-      context.message = `${socket.id} ${socketEvent.action} ${socketEvent.sessionId}`
-    } else if (socketEvent.from === "organization") {
-      await storeCacheOrganization(socketEvent.organizationId)
-
-      context.organization = {
-        id: socketEvent.organizationId,
-        info: cache.organizations[socketEvent.organizationId],
-      }
-      context.message = socketEvent.message
-    } else if (socketEvent.from === "socket") {
-      context.message = socketEvent.message
-    }
-    return context
   }
 }
 
-/*
-{
-  http: {
-    method: 'GET',
-    url: '/api/organizations/688778cb980f721744a206d8',
-    body: null,
-    status: 200
-  },
-  user: {
-    id: '688778cb980f721744a206d7',
-    role: { value: 31, name: 'SUPER_ADMINISTRATOR' },
-    info: {
-      lastname: 'Houpert',
-      firstname: 'Yoann',
-      email: 'yoann.houpert@gmail.com'
-    }
-  },
-  organization: {
-    id: '688778cb980f721744a206d8',
-    role: { value: 6, name: 'ADMIN' },
-    info: { name: 'yoann.houpert@gmail.com', description: undefined }
-  },
-
-
-  level: 'info',
-  source: 'webserver',
-  scope: { from: 'organization', on: null },
-}
-*/
-
-// Export the singleton instance
 module.exports = new LoggerContext()

@@ -1,5 +1,5 @@
 const debug = require("debug")("linto:app:webserver:middlewares:logger")
-const { logger: appLogger, context } = require(`${process.cwd()}/lib/logger`)
+const LogManager = require(`${process.cwd()}/lib/logger/manager`)
 
 async function logger(req, res, next) {
   // Build structured context for the request
@@ -10,16 +10,13 @@ async function logger(req, res, next) {
         : JSON.stringify(req.body)
       : null
 
-  const ctx = await context.createContext(req, message)
-  // Log the incoming request
-  appLogger.log(ctx.level, ctx.message, ctx)
+  LogManager.logWebserverEvent(req, message)
 
   // Intercept 400+ JSON responses
   const originalJson = res.json
   res.json = function (body) {
     if (body?.error) {
-      const errorCtx = context.createContext(req, body.error)
-      appLogger.warn(body.error, errorCtx)
+      LogManager.logWebserverEvent(req, body.error, { level: "warn" })
     }
     return originalJson.call(this, body)
   }
@@ -38,9 +35,7 @@ async function logger(req, res, next) {
 
     const message =
       res.locals.responseBody ?? (status >= 500 ? "Internal Server Error" : "")
-    const ctx = context.createContext(req, message)
-
-    appLogger.log(level, ctx.message, ctx)
+    LogManager.logWebserverEvent(req, message)
   })
 
   next()

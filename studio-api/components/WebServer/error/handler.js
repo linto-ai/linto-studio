@@ -1,7 +1,7 @@
 const debug = require("debug")(
   "linto:conversation-manager:components:WebServer:error:handler",
 )
-const { logger, context } = require(`${process.cwd()}/lib/logger`)
+const LogManager = require(`${process.cwd()}/lib/logger/manager`)
 
 const fs = require("fs")
 
@@ -19,7 +19,7 @@ let init = function (webserver) {
 
   webserver.express.use(function (err, req, res, next) {
     if (customException.indexOf(err.name) > -1) {
-      formatError(req, err, "warn")
+      LogManager.logWebserverEvent(req, err, { level: "warn" })
 
       const status = parseInt(err.status)
       if (isNaN(status)) {
@@ -29,17 +29,12 @@ let init = function (webserver) {
       }
       return
     } else if (err) {
-      formatError(req, err, "error")
+      LogManager.logWebserverEvent(req, err, { level: "error" })
       res.status(500).send({ message: err.message })
       return
     }
     next()
   })
-}
-
-async function formatError(req, err, level) {
-  const ctx = await context.createContext(req, err, { level })
-  logger.log(ctx.level, ctx.message, ctx)
 }
 
 module.exports = {
