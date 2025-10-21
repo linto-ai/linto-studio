@@ -945,18 +945,18 @@
     "visibility_name": "Visibilité"
   },
   "organization_role": {
-    "member": "Simple membre",
-    "member_description": "Peut consulter les medias de l'organisation",
+    "member": "Membre",
+    "member_description": "Consulter les medias de l'organisation",
     "uploader": "Collaborateur",
-    "uploader_description": "Peut transcrire des medias dans l'organisation",
-    "quick_meeting": "Collaborateur privilégié",
-    "quick_meeting_description": "Peut transcrire en direct une visio-conférence, ou un enregistrement microphone",
-    "session_operator": "Collaborateur complet",
-    "session_operator_description": "Peut créér des sessions",
-    "maintainer": "Gestionnaire",
-    "maintainer_description": "Peut gérer les membres de l'organisation ainsi que les medias envoyé par d'autre membres",
+    "uploader_description": "Envoyer et transcrire des medias",
+    "quick_meeting": "Live collaborateur",
+    "quick_meeting_description": "Transcrire en direct une visio-conférence, ou un enregistrement microphone",
+    "session_operator": "Producteur",
+    "session_operator_description": "Utilisation avancé de flux pour les transcription en direct",
+    "maintainer": "Manager",
+    "maintainer_description": "Gestion des utilisateurs",
     "administrator": "Administrateur",
-    "administrator_description": "A tout les droits sur l'organisation"
+    "administrator_description": "Tout les droits sur l'organisation"
   },
   "publish": {
     "error_first_line": {

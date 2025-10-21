@@ -945,17 +945,17 @@
   },
   "organization_role": {
     "member": "Member",
-    "member_description": "Can view the organization's media",
+    "member_description": "View the organization's media",
     "uploader": "Contributor",
-    "uploader_description": "Can transcribe media within the organization",
-    "quick_meeting": "Privileged contributor",
-    "quick_meeting_description": "Can transcribe live video conferences or microphone recordings",
+    "uploader_description": "Upload and transcribe files",
+    "quick_meeting": "Live contributor",
+    "quick_meeting_description": "Transcribe live video conferences or microphone recordings",
     "session_operator": "Full contributor",
-    "session_operator_description": "Can create sessions",
-    "maintainer": "Maintainer",
-    "maintainer_description": "Can manage organization members and media uploaded by other members",
+    "session_operator_description": "Advanced use of streams for live transcription",
+    "maintainer": "Manager",
+    "maintainer_description": "Users management",
     "administrator": "Administrator",
-    "administrator_description": "Has all rights over the organization"
+    "administrator_description": "All rights over the organization"
   },
   "publish": {
     "error_first_line": {

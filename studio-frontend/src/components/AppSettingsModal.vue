@@ -292,10 +292,14 @@ export default {
         border-radius: 4px;
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
+        border: 1px solid transparent;
+        position: relative;
+        left: 1px;
 
         &.active {
           background-color: var(--background-secondary);
-
+          border-color: var(--neutral-20);
+          border-right-color: transparent;
           a {
             color: var(--primary-hard);
             font-weight: bold;
@@ -314,9 +318,9 @@ export default {
 
   &__section {
     flex: 1;
+    border: 1px solid var(--neutral-20);
     background-color: var(--background-secondary);
     border-radius: 4px;
-    border-top-left-radius: 0;
     box-sizing: border-box;
     padding: 1em;
     //display: none;

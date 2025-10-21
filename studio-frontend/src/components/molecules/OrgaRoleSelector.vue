@@ -1,26 +1,22 @@
 <template>
-  <!-- <select v-model="_value" v-if="!readonly">
-    <option
-      v-for="role in userRoles"
-      :key="role.value"
-      :value="role.value"
-      :disabled="userRole < role.value && !isAtLeastSystemAdministrator">
-      {{ role.name }}
-    </option>
-  </select> -->
-  <PopoverList v-if="!readonly" :items="items" v-model="_value" />
-  <span v-else-if="value > maxRoleValue">
-    inconsistent role value: {{ value }}
-  </span>
-  <span v-else>
-    <div class="role_name">{{ currentRole.name }}</div>
-    <div class="role_description">{{ currentRole.description }}</div>
-  </span>
+  <Popover close-on-click-outside close-on-escape overlay>
+    <template #trigger="{ open }">
+      <slot name="trigger" :open="open">
+        <Button
+          :iconRight="open ? 'caret-up' : 'caret-down'"
+          :label="currentRole.name" />
+      </slot>
+    </template>
+    <template #content>
+      <OrgaRoleSelectorContent v-model="_value" :readonly="readonly" />
+    </template>
+  </Popover>
 </template>
 
 <script>
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
+import OrgaRoleSelectorContent from "./OrgaRoleSelectorContent.vue"
 export default {
   mixins: [orgaRoleMixin, platformRoleMixin],
   props: {
@@ -46,13 +42,16 @@ export default {
     items() {
       return this.userRoles.map((role) => ({
         name: role.name,
-        description: role.description,
+        //description: role.description,
         value: role.value,
       }))
     },
     currentRole() {
       return this.userRoles.find((ur) => ur.value === this.value)
     },
+  },
+  components: {
+    OrgaRoleSelectorContent,
   },
 }
 </script>

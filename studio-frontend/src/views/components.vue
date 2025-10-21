@@ -30,6 +30,8 @@
         <Button variant="tertiary" size="sm"> {{ popoverValue }} </Button>
       </template> -->
     </PopoverList>
+    <OrgaRoleSelector v-model="role" />
+    <OrgaRoleSelector v-model="role" readonly />
   </div>
 </template>
 <script>
@@ -38,6 +40,7 @@ import FormInput from "../components/molecules/FormInput.vue"
 import EMPTY_FIELD from "@/const/emptyField"
 import formatDateTimeToIso from "@/tools/date/formatDateTimeToIso"
 import DurationInput from "@/components/molecules/DurationInput.vue"
+import OrgaRoleSelector from "../components/molecules/OrgaRoleSelector.vue"
 
 export default {
   props: {},
@@ -99,6 +102,7 @@ export default {
         },
       ],
       popoverValue: "select-value-1",
+      role: 1,
     }
   },
   mounted() {
@@ -110,6 +114,7 @@ export default {
   components: {
     FormInput,
     DurationInput,
+    OrgaRoleSelector,
   },
 }
 </script>
