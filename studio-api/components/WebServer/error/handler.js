@@ -19,19 +19,12 @@ let init = function (webserver) {
 
   webserver.express.use(function (err, req, res, next) {
     if (customException.indexOf(err.name) > -1) {
-      LogManager.logWebserverEvent(req, err, { level: "warn" })
-
       const status = parseInt(err.status)
-      if (isNaN(status)) {
-        res.status(500).send({ message: err.message })
-      } else {
-        res.status(status).send({ message: err.message })
-      }
-      return
+
+      if (isNaN(status)) return res.status(500).send({ message: err.message })
+      else return res.status(status).send({ message: err.message })
     } else if (err) {
-      LogManager.logWebserverEvent(req, err, { level: "error" })
-      res.status(500).send({ message: err.message })
-      return
+      return res.status(500).send({ message: err.message })
     }
     next()
   })

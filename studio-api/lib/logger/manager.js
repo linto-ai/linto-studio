@@ -1,5 +1,6 @@
 const debug = require("debug")("linto:lib:logger:manager")
-// const { logger, context } = require(`${process.cwd()}/lib/logger`)
+const model = require(`${process.cwd()}/lib/mongodb/models`)
+
 const logger = require(`${process.cwd()}/lib/logger/logger`)
 const context = require(`${process.cwd()}/lib/logger/context`)
 
@@ -7,6 +8,10 @@ class LogManager {
   static async logWebserverEvent(req, message, payload = {}) {
     const ctx = await context.createContext(req, message, payload)
     logger.log(ctx)
+
+    if (ctx?.http?.method !== "GET") {
+      model.activityLog.create(ctx)
+    }
   }
 
   static async logSocketEvent(socket, event, payload = {}) {
@@ -16,7 +21,7 @@ class LogManager {
 
   static async logSystemEvent(message, payload = {}) {
     const ctx = await context.createSystemContext(message, payload)
-    logger.log(ctx)
+    if (ctx) logger.log(ctx)
   }
 }
 

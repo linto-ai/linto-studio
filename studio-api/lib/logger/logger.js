@@ -11,13 +11,24 @@ function buildFormat(transportOptions) {
   const useJson =
     (transportOptions && transportOptions.format === "json") ||
     config.format === "json"
+
   return useJson
-    ? format.combine(format.timestamp(), format.json())
+    ? format.combine(
+        // keep your timestamp from context if available, otherwise use current time
+        format((info) => {
+          info.timestamp = info.timestamp || new Date().toISOString()
+          return info
+        })(),
+        format.json(),
+      )
     : format.combine(
         transportOptions?.colorize || config.colorize
           ? format.colorize()
           : format.uncolorize(),
-        format.timestamp(),
+        format((info) => {
+          info.timestamp = info.timestamp || new Date().toISOString()
+          return info
+        })(),
         format.printf(({ timestamp, level, message, ...meta }) => {
           const metaString = Object.keys(meta).length
             ? ` ${JSON.stringify(meta)}`

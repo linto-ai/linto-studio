@@ -2,26 +2,22 @@ const debug = require("debug")("linto:app:webserver:middlewares:logger")
 const LogManager = require(`${process.cwd()}/lib/logger/manager`)
 
 async function logger(req, res, next) {
-  // Build structured context for the request
-  const message =
-    req.body && Object.keys(req.body).length > 0
-      ? req.url === "/auth/login"
-        ? JSON.stringify({ email: req.body.email })
-        : JSON.stringify(req.body)
-      : null
+  // Capture request data
+  // const requestMessage =
+  //   req.body && Object.keys(req.body).length > 0
+  //     ? req.url === "/auth/login"
+  //       ? JSON.stringify({ email: req.body.email })
+  //       : JSON.stringify(req.body)
+  //     : null
+  // debug(requestMessage)
+  // res.locals.requestMessage = requestMessage
 
-  LogManager.logWebserverEvent(req, message)
-
-  // Intercept 400+ JSON responses
   const originalJson = res.json
   res.json = function (body) {
-    if (body?.error) {
-      LogManager.logWebserverEvent(req, body.error, { level: "warn" })
-    }
+    res.locals.responseBody = body
     return originalJson.call(this, body)
   }
 
-  // Capture 4xx/5xx raw responses
   const originalSend = res.send
   res.send = function (body) {
     res.locals.responseBody = body
@@ -30,12 +26,18 @@ async function logger(req, res, next) {
 
   res.on("finish", () => {
     const status = res.statusCode
-    const level = status >= 500 ? "error" : status >= 400 ? "warn" : null
-    if (!level) return // Only log 4xx and 5xx responses
+    const level = status >= 500 ? "error" : status >= 400 ? "warn" : "info"
 
-    const message =
-      res.locals.responseBody ?? (status >= 500 ? "Internal Server Error" : "")
-    LogManager.logWebserverEvent(req, message)
+    let message = undefined
+    if (status >= 400 && res?.locals?.responseBody)
+      message = res.locals.responseBody
+    else if (status >= 400) {
+      message =
+        res.locals.responseBody ??
+        (status >= 500 ? "Internal Server Error" : "")
+    }
+
+    LogManager.logWebserverEvent(req, message, { level })
   })
 
   next()

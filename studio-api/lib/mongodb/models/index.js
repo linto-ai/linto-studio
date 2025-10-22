@@ -1,4 +1,5 @@
 module.exports = {
+  activityLog: require("./activityLog.js"),
   categories: require("./categories.js"),
   conversationExport: require("./conversationExport.js"),
   conversationSubtitles: require("./conversationSubtitles.js"),

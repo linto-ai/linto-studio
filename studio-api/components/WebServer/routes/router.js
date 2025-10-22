@@ -151,17 +151,13 @@ const createApiRoutes = (webServer, api_routes) => {
       disableAuthIfDev(route)
 
       const middlewares = loadMiddlewares(route)
+      middlewares.push(logger)
 
       methods.map((method) => {
         path_.map((path) => {
           webServer.express[method](
             level + path,
             middlewares,
-            logger,
-
-            (req, res, next) => {
-              next()
-            },
             ifHasElse(
               Array.isArray(route.controller),
               () => Object.values(route.controller),
@@ -183,6 +179,7 @@ const createProxyRoutes = (webServer, proxy_routes) => {
       if (proxyPath.disabled) return
 
       const middlewares = loadMiddlewares(proxyPath)
+      middlewares.push(logger)
 
       proxyPath.paths.forEach((path) => {
         //we alter req.payload, req.params, req.query, req.body if require

@@ -111,7 +111,7 @@ class LoggerContext {
     { source = "webserver", level = DEFAULT_LEVEL } = {},
   ) {
     try {
-      const context = { source, level }
+      const context = { source, level, timestamp: new Date().toISOString() }
 
       let { normalizedMessage, errorContext } = formatError(message)
       if (normalizedMessage) context.message = normalizedMessage
@@ -121,7 +121,7 @@ class LoggerContext {
         context.http = {
           method: req.method,
           url: req.originalUrl || req.url,
-          body: Object.keys(req.body || {}).length ? req.body : null,
+          // body: Object.keys(req.body || {}).length ? req.body : null,
           status: req.res?.statusCode || null,
         }
         context.scope = defineScope(context.http.url)
@@ -163,6 +163,7 @@ class LoggerContext {
         level: "error",
         message: `Error creating log context from ${source}`,
         error: { name: err.name, stack: err.stack },
+        timestamp: new Date().toISOString(),
       }
     }
   }
@@ -177,7 +178,7 @@ class LoggerContext {
       const context = {
         source,
         level,
-        scope: { from: "resource", on: "session" },
+        scope: "resource",
         socket: {
           id: socket.id,
           namespace: socket.nsp?.name || "/",
@@ -185,6 +186,7 @@ class LoggerContext {
           connected: socket.connected,
           disconnected: socket.disconnected,
         },
+        timestamp: new Date().toISOString(),
       }
 
       if (socketEvent.error) {
@@ -227,12 +229,12 @@ class LoggerContext {
 
       return context
     } catch (err) {
-      debug(err)
       return {
         source: "system",
         level: "error",
         message: `Error creating log context from ${source}`,
         error: { name: err.name, stack: err.stack },
+        timestamp: new Date().toISOString(),
       }
     }
   }
@@ -244,6 +246,7 @@ class LoggerContext {
       message,
       source,
       level,
+      timestamp: new Date().toISOString(),
     }
   }
 }
