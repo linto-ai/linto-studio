@@ -1,5 +1,10 @@
 <template>
-  <Popover close-on-click-outside close-on-escape overlay>
+  <Popover
+    close-on-click-outside
+    close-on-escape
+    overlay
+    v-if="!readonly"
+    ref="popover">
     <template #trigger="{ open }">
       <slot name="trigger" :open="open">
         <Button
@@ -11,6 +16,10 @@
       <OrgaRoleSelectorContent v-model="_value" :readonly="readonly" />
     </template>
   </Popover>
+  <div v-else class="role-selector-container--readonly">
+    {{ currentRole.name }}
+    <OrgaRoleSelectorContent :value="value" :readonly="readonly" />
+  </div>
 </template>
 
 <script>
@@ -37,6 +46,7 @@ export default {
       },
       set(value) {
         this.$emit("input", value)
+        this.$refs.popover && this.$refs.popover.close()
       },
     },
     items() {
@@ -64,5 +74,22 @@ export default {
 .role_description {
   color: var(--text-secondary);
   font-size: 0.9em;
+}
+
+.role-selector-container--readonly {
+  position: relative;
+
+  .role-selector {
+    display: none;
+    position: absolute;
+    background-color: white;
+    border: 1px solid;
+  }
+
+  &:hover {
+    .role-selector {
+      display: grid;
+    }
+  }
 }
 </style>

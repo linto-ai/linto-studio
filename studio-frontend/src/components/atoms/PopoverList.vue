@@ -291,7 +291,6 @@ export default {
 
 <style lang="scss">
 .popover-wrapper {
-  border: var(--border-block);
   border-radius: 4px;
   display: flex;
 }

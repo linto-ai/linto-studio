@@ -31,7 +31,7 @@
       </template> -->
     </PopoverList>
     <OrgaRoleSelector v-model="role" />
-    <OrgaRoleSelector v-model="role" readonly />
+    <!-- <OrgaRoleSelector v-model="role" readonly /> -->
   </div>
 </template>
 <script>
@@ -41,7 +41,7 @@ import EMPTY_FIELD from "@/const/emptyField"
 import formatDateTimeToIso from "@/tools/date/formatDateTimeToIso"
 import DurationInput from "@/components/molecules/DurationInput.vue"
 import OrgaRoleSelector from "../components/molecules/OrgaRoleSelector.vue"
-
+import OrgaRoleSelectorContent from "../components/molecules/OrgaRoleSelectorContent.vue"
 export default {
   props: {},
   data() {
@@ -115,6 +115,7 @@ export default {
     FormInput,
     DurationInput,
     OrgaRoleSelector,
+    OrgaRoleSelectorContent,
   },
 }
 </script>

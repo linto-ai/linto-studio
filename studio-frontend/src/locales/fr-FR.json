@@ -946,17 +946,17 @@
   },
   "organization_role": {
     "member": "Membre",
-    "member_description": "Consulter les medias de l'organisation",
+    "member_description": "Accéder et consulter les médias de l’organisation",
     "uploader": "Collaborateur",
-    "uploader_description": "Envoyer et transcrire des medias",
-    "quick_meeting": "Live collaborateur",
-    "quick_meeting_description": "Transcrire en direct une visio-conférence, ou un enregistrement microphone",
+    "uploader_description": "Importer de nouveaux médias et lancer leur transcription",
+    "quick_meeting": "Collaborateur en direct",
+    "quick_meeting_description": "Démarrer une transcription en direct pendant une visioconférence ou à partir d’un microphone",
     "session_operator": "Producteur",
-    "session_operator_description": "Utilisation avancé de flux pour les transcription en direct",
+    "session_operator_description": "Gérer et configurer des flux en direct avancés pour la transcription (si disponible dans votre organisation)",
     "maintainer": "Manager",
-    "maintainer_description": "Gestion des utilisateurs",
+    "maintainer_description": "Gérer les utilisateurs et leurs rôles au sein de l’organisation",
     "administrator": "Administrateur",
-    "administrator_description": "Tout les droits sur l'organisation"
+    "administrator_description": "Tous les droits sur l’organisation"
   },
   "publish": {
     "error_first_line": {
