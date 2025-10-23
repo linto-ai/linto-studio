@@ -16,16 +16,21 @@
       <OrgaRoleSelectorContent v-model="_value" :readonly="readonly" />
     </template>
   </Popover>
-  <div v-else class="role-selector-container--readonly">
-    {{ currentRole.name }}
-    <OrgaRoleSelectorContent :value="value" :readonly="readonly" />
-  </div>
+  <Tooltip v-else text="toto" maxWidth="400px" position="bottom">
+    <div class="role-selector-container--readonly">
+      {{ currentRole.name }}
+    </div>
+    <template #content>
+      <OrgaRoleSelectorContent v-model="_value" :readonly="readonly" />
+    </template>
+  </Tooltip>
 </template>
 
 <script>
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 import OrgaRoleSelectorContent from "./OrgaRoleSelectorContent.vue"
+import Tooltip from "../atoms/Tooltip.vue"
 export default {
   mixins: [orgaRoleMixin, platformRoleMixin],
   props: {

@@ -17,7 +17,7 @@
           v-model="_value" />
       </div>
 
-      <div class="role-selector__line__label">
+      <div class="role-selector__line__label" v-if="!readonly">
         <div class="flex align-center role-selector__line__name">
           {{ role.name }}
         </div>
@@ -47,6 +47,7 @@
 import { bus } from "@/main.js"
 
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
+import { readonly } from "vue"
 
 export default {
   mixins: [orgaRoleMixin],

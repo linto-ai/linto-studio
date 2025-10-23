@@ -20,25 +20,28 @@
     @mouseenter="onMouseEnter"
     @mouseleave="onMouseLeave">
     <slot ref="trigger"></slot>
+    <!-- v-show instead of v-if so element exist in the dom -->
     <div
-      v-if="text && text.trim() && isVisible"
+      v-if="(text && text.trim()) || $slots.content"
+      v-show="isVisible"
       ref="tooltip"
       class="tooltip-content"
       :class="[actualPosition]"
       :style="{
+        backgroundColor: backgroundColor,
         borderColor: borderColor,
         maxWidth: typeof maxWidth === 'number' ? maxWidth + 'px' : maxWidth,
         ...tooltipPosition,
       }">
-      <span
-        class="tooltip-content__inner"
-        :style="{ backgroundColor: backgroundColor, color: color }">
-        <Emoji v-if="emoji" :unified="emoji" size="16" />
-        <ph-icon v-if="icon" :name="icon" size="sm" />
-        <span class="tooltip-content__text">
-          {{ text }}
+      <slot name="content">
+        <span class="tooltip-content__inner" :style="{ color: color }">
+          <Emoji v-if="emoji" :unified="emoji" size="16" />
+          <ph-icon v-if="icon" :name="icon" size="sm" />
+          <span class="tooltip-content__text">
+            {{ text }}
+          </span>
         </span>
-      </span>
+      </slot>
     </div>
   </div>
 </template>
@@ -97,6 +100,7 @@ export default {
     return {
       tooltipPosition: {},
       isVisible: false,
+      positionIsCompute: false,
       actualPosition: "top",
     }
   },
@@ -115,7 +119,12 @@ export default {
         if (!this.$refs.container || !this.$refs.tooltip) return
 
         const containerRect = this.$refs.container.getBoundingClientRect()
+        const tooltipElement = this.$refs.tooltip
+        // trick so getBoundingClientRect() is compute
+        tooltipElement.style.display = "initial"
         const tooltipRect = this.$refs.tooltip.getBoundingClientRect()
+        tooltipElement.style.display = "none"
+
         const viewport = {
           width: window.innerWidth,
           height: window.innerHeight,
@@ -160,7 +169,6 @@ export default {
             return
           }
         }
-
         // Si aucune position idéale n'est trouvée, utiliser la position demandée avec ajustements
         const fallbackPosition = this.calculatePosition(
           containerRect,
@@ -175,6 +183,8 @@ export default {
           viewport,
           margin,
         )
+
+        this.positionIsCompute = true
       })
     },
 
@@ -279,13 +289,8 @@ export default {
       return { finalTop, finalLeft, finalWidth, finalHeight }
     },
     onMouseEnter() {
+      this.updateTooltipPosition()
       this.isVisible = true
-      // Délai pour permettre au tooltip d'être rendu avant de calculer la position
-      this.$nextTick(() => {
-        setTimeout(() => {
-          this.updateTooltipPosition()
-        }, 10)
-      })
     },
     onMouseLeave() {
       this.isVisible = false

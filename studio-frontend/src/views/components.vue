@@ -31,7 +31,8 @@
       </template> -->
     </PopoverList>
     <OrgaRoleSelector v-model="role" />
-    <!-- <OrgaRoleSelector v-model="role" readonly /> -->
+    <OrgaRoleSelector v-model="role" readonly />
+    <div style="height: 100px"></div>
   </div>
 </template>
 <script>
