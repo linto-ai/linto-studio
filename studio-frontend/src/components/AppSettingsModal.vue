@@ -133,7 +133,7 @@
       </div>
 
       <div v-if="selectedTab === 'apiTokens'" class="app-settings__section">
-        <ApiTokenSettings v-if="isAdmin" />
+        <ApiTokenSettings v-if="isAdmin" :organizationId="organizationId" />
       </div>
       <div
         v-if="selectedTab === 'billing'"
@@ -193,6 +193,7 @@ export default {
     }),
     ...mapGetters("organizations", {
       currentOrganization: "getCurrentOrganization",
+      organizationId: "getCurrentOrganizationScope",
     }),
     ...mapGetters("system", ["isMobile"]),
     isModalOpen: {

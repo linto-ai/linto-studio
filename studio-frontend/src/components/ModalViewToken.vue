@@ -32,6 +32,10 @@ export default {
   props: {
     value: { type: Boolean, required: true },
     token: { type: Object, required: true },
+    organizationId: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
@@ -70,9 +74,6 @@ export default {
         this.$emit("input", value)
       },
     },
-    ...mapGetters("organizations", {
-      organizationId: "getCurrentOrganizationScope",
-    }),
   },
   watch: {
     token: {

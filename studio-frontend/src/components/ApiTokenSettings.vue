@@ -10,6 +10,7 @@
     </div>
     <ApiTokenTable
       :tokenList="apiTokens"
+      :organizationId="organizationId"
       :linkTo="linkTo"
       :value="selectedTokens"
       :sortListKey="sortKey"
@@ -20,6 +21,7 @@
       @delete-token="deleteToken"
       @input="updateSelectedTokens" />
     <ModalCreateToken
+      :organizationId="organizationId"
       v-model="showCreateModal"
       @close="closeCreateModal"
       @handleTokenCreated="handleTokenCreated" />
@@ -35,7 +37,12 @@ import Button from "@/components/atoms/Button.vue"
 import { mapGetters } from "vuex"
 
 export default {
-  props: {},
+  props: {
+    organizationId: {
+      type: String,
+      required: true,
+    },
+  },
   data() {
     return {
       apiTokens: [],
@@ -54,9 +61,9 @@ export default {
     this.fetchTokens()
   },
   computed: {
-    ...mapGetters("organizations", {
-      organizationId: "getCurrentOrganizationScope",
-    }),
+    // ...mapGetters("organizations", {
+    //   organizationId: "getCurrentOrganizationScope",
+    // }),
   },
   methods: {
     async fetchTokens() {

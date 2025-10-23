@@ -26,6 +26,10 @@ import DurationInput from "@/components/molecules/DurationInput.vue"
 export default {
   props: {
     value: { type: Boolean, required: true },
+    organizationId: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
@@ -83,9 +87,6 @@ export default {
         this.$emit("input", value)
       },
     },
-    ...mapGetters("organizations", {
-      organizationId: "getCurrentOrganizationScope",
-    }),
   },
   components: {
     Modal,

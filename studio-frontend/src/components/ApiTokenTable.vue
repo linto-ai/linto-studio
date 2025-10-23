@@ -24,12 +24,14 @@
     </table>
     <ModalViewToken
       v-if="selectedToken"
+      :organizationId="organizationId"
       v-model="showViewModal"
       :token="selectedToken"
       @close="closeViewModal" />
     <ModalDeleteToken
       v-if="selectedToken"
       v-model="showDeleteModal"
+      :organizationId="organizationId"
       :token="selectedToken"
       @delete="confirmDelete"
       @close="closeDeleteModal" />
@@ -37,6 +39,7 @@
       v-if="selectedToken"
       v-model="showRenewModal"
       :token="selectedToken"
+      :organizationId="organizationId"
       @handleTokenRenew="$emit('handleTokenRenew')"
       @close="closeRenewModal" />
   </div>
@@ -77,6 +80,10 @@ export default {
       type: Boolean,
       required: false,
       default: false,
+    },
+    organizationId: {
+      type: String,
+      required: true,
     },
   },
   data() {
