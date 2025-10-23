@@ -190,12 +190,12 @@ class LoggerContext {
       }
 
       if (socketEvent.action === SOCKET_EVENTS.JOIN) {
-        context.socket.joinedAt = context.timestamp
+        context.socket.lastJoinedAt = context.timestamp
       } else if (
         socketEvent.action === SOCKET_EVENTS.LEAVE ||
         socketEvent.action === SOCKET_EVENTS.DISCONNECT
       ) {
-        context.socket.leftAt = context.timestamp
+        context.socket.lastLeftAt = context.timestamp
       }
 
       if (socketEvent.error) {

@@ -17,7 +17,19 @@ class ActivityLog extends MongoModel {
     }
   }
 
-  async getBySocketId(socketId, sessionId) {
+  async getBySocketId(socketId) {
+    try {
+      const query = {
+        "socket.id": socketId,
+      }
+      return await this.mongoRequest(query)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async getBySocketAndSession(socketId, sessionId) {
     try {
       const query = {
         "socket.id": socketId,
@@ -30,14 +42,14 @@ class ActivityLog extends MongoModel {
     }
   }
 
-  async socketReconnect(activity, joinedAt) {
+  async socketReconnect(activity, lastJoinedAt) {
     try {
       const operator = "$set"
       const query = { _id: activity._id }
       const payload = activity.socket
 
       payload.connectionCount = ++activity.socket.connectionCount
-      payload.joinedAt = joinedAt
+      payload.lastJoinedAt = lastJoinedAt
 
       await this.mongoUpdateOne(query, operator, { socket: payload })
     } catch (error) {

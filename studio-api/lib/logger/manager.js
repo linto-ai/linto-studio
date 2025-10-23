@@ -3,6 +3,7 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const logger = require(`${process.cwd()}/lib/logger/logger`)
 const context = require(`${process.cwd()}/lib/logger/context`)
+const { calculateWatchTime } = require(`${process.cwd()}/lib/logger/utility`)
 
 const SOCKET_EVENTS = require(`${process.cwd()}/lib/dao/log/socketEvent`)
 
@@ -29,7 +30,7 @@ class LogManager {
 
     if (ctx?.session?.sessionId) {
       const activityLog = (
-        await model.activityLog.getBySocketId(
+        await model.activityLog.getBySocketAndSession(
           ctx.socket.id,
           ctx.session.sessionId,
         )
@@ -42,31 +43,27 @@ class LogManager {
         event.action === SOCKET_EVENTS.DISCONNECT ||
         event.action === SOCKET_EVENTS.LEAVE
       ) {
-        if (activityLog && activityLog.socket.joinedAt) {
-          const joinedAt = new Date(activityLog.socket.joinedAt)
-          const durationMs = new Date(ctx.timestamp) - joinedAt
-          const durationSeconds = Math.max(0, Math.round(durationMs / 1000))
+        if (activityLog && activityLog.socket.lastJoinedAt) {
+          const payload = calculateWatchTime(activityLog, ctx)
 
-          const payload = activityLog.socket
-          payload.totalWatchTime =
-            activityLog.socket.totalWatchTime + durationSeconds
-          if (
-            payload.totalWatchTime < 300 &&
-            event.action === SOCKET_EVENTS.DISCONNECT
-          ) {
-            await model.activityLog.deleteLog(activityLog._id)
-          } else {
-            delete payload.joinedAt
-            delete payload.leftAt
-            await model.activityLog.socketLeft(activityLog, payload)
-          }
+          await model.activityLog.socketLeft(activityLog, payload)
         }
       }
     } else if (SOCKET_EVENTS.DISCONNECT) {
-      await model.activityLog.deleteAllSocketLog(
-        ctx.socket.id,
-        KEEP_LOG_WITH_WATCHTIME_OVER,
-      )
+      const activityLog = (
+        await model.activityLog.getBySocketId(ctx.socket.id)
+      )[0]
+      if (!activityLog) return
+
+      const payload = calculateWatchTime(activityLog, ctx)
+      if (payload.totalWatchTime < KEEP_LOG_WITH_WATCHTIME_OVER) {
+        await model.activityLog.deleteAllSocketLog(
+          ctx.socket.id,
+          KEEP_LOG_WITH_WATCHTIME_OVER,
+        )
+      } else {
+        await model.activityLog.socketLeft(activityLog, payload)
+      }
     }
   }
 
