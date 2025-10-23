@@ -158,6 +158,10 @@ const createApiRoutes = (webServer, api_routes) => {
           webServer.express[method](
             level + path,
             middlewares,
+
+            // (req, res, next) => {
+            //   next()
+            // },
             ifHasElse(
               Array.isArray(route.controller),
               () => Object.values(route.controller),

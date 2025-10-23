@@ -5,6 +5,7 @@ const axios = require(`${process.cwd()}/lib/utility/axios`)
 const LogManager = require(`${process.cwd()}/lib/logger/manager`)
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
+const SOCKET_EVENTS = require(`${process.cwd()}/lib/dao/log/socketEvent`)
 
 const { diffSessions, groupSessionsByOrg } = require(
   `${process.cwd()}/components/IoHandler/controllers/SessionHandling`,
@@ -20,14 +21,6 @@ const { sessionSocketAccess } = require(
   `${process.cwd()}/components/WebServer/middlewares/access/organization.js`,
 )
 
-async function registryMetrics(session, socket) {
-  model.metrics.startConnection({
-    sessionId: session.id,
-    socketId: socket.id,
-    organizationId: session.organizationId,
-  })
-}
-
 async function checkSocketAccess(socket, roomId) {
   try {
     const session = await axios.get(
@@ -35,8 +28,6 @@ async function checkSocketAccess(socket, roomId) {
     )
 
     if (session.visibility === "public") {
-      registryMetrics(session, socket)
-
       return true
     } else {
       const { isAuth, userId } = await auth_middlewares.checkSocket(socket)
@@ -57,7 +48,6 @@ async function checkSocketAccess(socket, roomId) {
         session.visibility === "organization" ||
         (session.visibility === "private" && session.owner === userId)
       ) {
-        registryMetrics(session, socket)
         return true
       } else {
         socket.emit("unauthorized")
@@ -69,7 +59,7 @@ async function checkSocketAccess(socket, roomId) {
     LogManager.logSocketEvent(
       socket,
       {
-        action: "unauthorized",
+        action: SOCKET_EVENTS.UNAUTHORIZED,
         message: `Unauthorized client connected : ${socket.id}`,
         error: err,
         from: "socket",
@@ -106,7 +96,7 @@ class IoHandler extends Component {
     // this.io.use(auth_middlewares.isAuthenticateSocket) // Used initialy to require authentication, disabling annonymous sessions
     this.io.on("connection", (socket) => {
       LogManager.logSocketEvent(socket, {
-        action: "connecting",
+        action: SOCKET_EVENTS.CONNECTING,
         message: `New client connected : ${socket.id}`,
         from: "socket",
       })
@@ -119,7 +109,7 @@ class IoHandler extends Component {
         if (!(await checkSocketAccess(socket, roomId))) return
         LogManager.logSocketEvent(socket, {
           sessionId: roomId,
-          action: "join",
+          action: SOCKET_EVENTS.JOIN,
           from: "session",
         })
         this.addSocketInRoom(roomId, socket)
@@ -128,56 +118,33 @@ class IoHandler extends Component {
       socket.on("leave_room", (roomId) => {
         LogManager.logSocketEvent(socket, {
           sessionId: roomId,
-          action: "leaves",
+          action: SOCKET_EVENTS.LEAVE,
           from: "session",
         })
         this.removeSocketFromRoom(roomId, socket)
-        model.metrics.endConnection(socket.id)
       })
 
       socket.on("watch_organization_session", (orgaId) => {
-        LogManager.logSocketEvent(socket, {
-          organizationId: orgaId,
-          action: "joins",
-          from: "organization",
-        })
         this.addSocketInOrga(orgaId, socket, "session")
       })
 
       socket.on("unwatch_organization_session", (orgaId) => {
-        LogManager.logSocketEvent(socket, {
-          organizationId: orgaId,
-          action: "leave",
-          from: "organization",
-        })
         this.removeSocketFromOrga(orgaId, socket)
-        model.metrics.endConnection(socket.id)
       })
 
       socket.on("watch_organization_media", (orgaId) => {
-        LogManager.logSocketEvent(socket, {
-          organizationId: orgaId,
-          action: "join",
-          from: "organization",
-        })
         this.addSocketInMedia(orgaId, socket)
       })
 
       socket.on("unwatch_organization_media", (orgaId) => {
-        LogManager.logSocketEvent(socket, {
-          organizationId: orgaId,
-          action: "leave",
-          from: "organization",
-        })
         this.removeSocketFromMedia(orgaId, socket)
       })
 
       socket.on("disconnect", () => {
         LogManager.logSocketEvent(socket, {
-          action: "disconnect",
+          action: SOCKET_EVENTS.DISCONNECT,
           from: "socket",
         })
-        model.metrics.endConnection(socket.id)
         this.searchAndRemoveSocketFromRooms(socket)
       })
     })
@@ -243,18 +210,7 @@ class IoHandler extends Component {
               this.memorySessions[session.id] = session.organizationId
             }
           })
-        } catch (err) {
-          LogManager.logSocketEvent(
-            socket,
-            {
-              action: "joins",
-              message: `Error getting organization ID from the orga ${orgaId}`,
-              error: err,
-              from: "socket",
-            },
-            { level: "info" },
-          )
-        }
+        } catch (err) {}
       }
     }
   }

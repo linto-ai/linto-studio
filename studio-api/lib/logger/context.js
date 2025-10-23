@@ -6,6 +6,8 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const P_ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
 const O_ROLE = require(`${process.cwd()}/lib/dao/organization/roles`)
 
+const SOCKET_EVENTS = require(`${process.cwd()}/lib/dao/log/socketEvent`)
+
 const DEFAULT_LEVEL = "info"
 
 const cache = {
@@ -37,7 +39,7 @@ async function storeCacheOrganization(organizationId) {
 }
 
 async function storeCacheSession(sessionId) {
-  if (cache.sessions[sessionId]) return cache.session[sessionId]
+  if (cache.sessions[sessionId]) return cache.sessions[sessionId]
 
   const session = await axios.get(
     process.env.SESSION_API_ENDPOINT + `/sessions/${sessionId}`,
@@ -181,12 +183,19 @@ class LoggerContext {
         scope: "resource",
         socket: {
           id: socket.id,
-          namespace: socket.nsp?.name || "/",
-          rooms: Array.from(socket.rooms || []), // rooms the socket joined
-          connected: socket.connected,
-          disconnected: socket.disconnected,
+          connectionCount: 1,
+          totalWatchTime: 0,
         },
         timestamp: new Date().toISOString(),
+      }
+
+      if (socketEvent.action === SOCKET_EVENTS.JOIN) {
+        context.socket.joinedAt = context.timestamp
+      } else if (
+        socketEvent.action === SOCKET_EVENTS.LEAVE ||
+        socketEvent.action === SOCKET_EVENTS.DISCONNECT
+      ) {
+        context.socket.leftAt = context.timestamp
       }
 
       if (socketEvent.error) {
@@ -200,11 +209,7 @@ class LoggerContext {
       if (socketEvent.from === "session") {
         const [sessionId, channelId] = socketEvent.sessionId.split("/")
         const session = await storeCacheSession(sessionId)
-
-        context.session = {
-          socketEvent,
-          ...session,
-        }
+        context.session = session
 
         if (session.organizationId) {
           await storeCacheOrganization(session.organizationId)
