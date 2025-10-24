@@ -23,11 +23,26 @@
     <FormInput :field="fieldInputError" />
     <FormInput :field="fieldInputDisabled" disabled />
     <FormInput :field="fieldInputReadonly" readonly />
+    <FormInput :field="dateTimeInput" />
+    <DurationInput :field="fieldDuration" v-model="fieldDuration.value" />
+    <PopoverList :items="popoverItems" v-model="popoverValue" class="relative">
+      <!-- <template #trigger="{ open }">
+        <Button variant="tertiary" size="sm"> {{ popoverValue }} </Button>
+      </template> -->
+    </PopoverList>
+    <OrgaRoleSelector v-model="role" />
+    <OrgaRoleSelector v-model="role" readonly />
+    <div style="height: 100px"></div>
   </div>
 </template>
 <script>
 import { bus } from "@/main.js"
 import FormInput from "../components/molecules/FormInput.vue"
+import EMPTY_FIELD from "@/const/emptyField"
+import formatDateTimeToIso from "@/tools/date/formatDateTimeToIso"
+import DurationInput from "@/components/molecules/DurationInput.vue"
+import OrgaRoleSelector from "../components/molecules/OrgaRoleSelector.vue"
+import OrgaRoleSelectorContent from "../components/molecules/OrgaRoleSelectorContent.vue"
 export default {
   props: {},
   data() {
@@ -50,12 +65,58 @@ export default {
         error: null,
         value: "i'm read only",
       },
+      dateTimeInput: {
+        ...EMPTY_FIELD,
+        value: formatDateTimeToIso(
+          new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
+        ),
+        label: "Une date dans le futur",
+        type: "datetime-local",
+        customParams: {
+          min: formatDateTimeToIso(new Date()),
+        },
+      },
+      fieldDuration: {
+        label: "duration",
+        value: "7d",
+      },
+      popoverItems: [
+        {
+          value: "select-value-1",
+          text: "Pineapple",
+          description: "Sweet and tangy tropical fruit",
+        },
+        {
+          value: "select-value-2",
+          text: "Orange",
+          description: "Citrusy and refreshing",
+        },
+        {
+          value: "select-value-3",
+          text: "Apple",
+          description: "Crisp and juicy fruit",
+        },
+        {
+          value: "select-value-4",
+          text: "Banana",
+          description: "Yellow and soft fruit",
+        },
+      ],
+      popoverValue: "select-value-1",
+      role: 1,
     }
   },
-  mounted() {},
+  mounted() {
+    console.log(
+      new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toLocaleString(),
+    )
+  },
   methods: {},
   components: {
     FormInput,
+    DurationInput,
+    OrgaRoleSelector,
+    OrgaRoleSelectorContent,
   },
 }
 </script>

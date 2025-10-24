@@ -11,20 +11,16 @@ const { UserError } = require(
 )
 const PLATFORM_ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
 
-function getExpiresIn(value, defaultValue = "7d") {
-  if (value === undefined) return process.env.EXTENDED_TOKEN_DAYS_TIME || "7d"
-
-  if (!isNaN(value) && Number(value) > 0) {
-    return Number(value)
-  }
-
+function getExpiresIn(value, defaultValue = "14d") {
+  defaultValue = process.env.EXTENDED_TOKEN_DAYS_TIME || defaultValue
   try {
-    const duration = ms(value)
-    if (typeof duration === "number" && duration > 0) {
-      return value
-    }
-  } catch {}
-  return defaultValue
+    if (value === undefined) return ms(defaultValue)
+
+    if (value) return ms(value)
+    else return ms(defaultValue)
+  } catch {
+    return ms(defaultValue)
+  }
 }
 
 async function generateApiKeyToken(
@@ -96,6 +92,37 @@ async function createApiKey(reqPayload, role = PLATFORM_ROLE.UNDEFINED) {
   }
 }
 
+async function listApiKey(idList, orgaRoles = undefined) {
+  const projection = {
+    _id: true,
+    metadata: true,
+    firstname: true,
+    lastname: true,
+  }
+  const users = await model.users.listApiKeyList(idList, projection)
+  const tokens = await model.tokens.getTokenByList(idList)
+
+  const merged = users.map((u) => {
+    const token = tokens.find((t) => t.userId === u._id.toString())
+    const roleData = orgaRoles?.find((r) => r.userId === u._id.toString())
+
+    delete u._id
+
+    return {
+      userId: token.userId,
+      ...u,
+      ...token,
+      ...(orgaRoles
+        ? {
+            type: roleData?.type || "",
+            role: roleData ? roleData.role : null,
+          }
+        : {}),
+    }
+  })
+  return merged
+}
+
 async function getApiKey(tokenId) {
   const tokens = await model.tokens.getTokenByUser(tokenId)
 
@@ -131,4 +158,5 @@ module.exports = {
   getApiKey,
   refreshApiKey,
   deleteApiKey,
+  listApiKey,
 }

@@ -15,7 +15,9 @@
     <!--Organization Members -->
 
     <div v-if="sortedUsers.length > 0" class="flex row">
-      <table style="width: 100%">
+      <table
+        class="table-grid"
+        style="grid-template-columns: 1fr 1fr auto; width: 100%">
         <thead>
           <tr>
             <ArrayHeader
@@ -42,7 +44,7 @@
               <UserInfoInline :user="user" :user-id="user._id" />
             </td>
             <td>
-              <select
+              <!-- <select
                 v-model="user.role"
                 v-if="
                   (isAtLeastMaintainer &&
@@ -66,7 +68,11 @@
               >
               <span v-else>{{
                 userRoles.find((ur) => ur.value === user.role).name
-              }}</span>
+              }}</span> -->
+              <OrgaRoleSelector
+                v-model="user.role"
+                @input="updateUserRole(user)"
+                :readonly="!canUpdateRole(user)" />
             </td>
             <td class="content-size">
               <Button
@@ -128,7 +134,9 @@ import UserInvite from "@/components/UserInvite.vue"
 import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 import ArrayHeader from "@/components/ArrayHeader.vue"
 import ModalLeaveOrganization from "@/components/ModalLeaveOrganization.vue"
-import ModalRemoveUserFromOrganization from "./ModalRemoveUserFromOrganization.vue"
+import ModalRemoveUserFromOrganization from "@/components/ModalRemoveUserFromOrganization.vue"
+import OrgaRoleSelector from "@/components/molecules/OrgaRoleSelector.vue"
+import { readonly } from "vue"
 
 export default {
   mixins: [orgaRoleMixin, platformRoleMixin],
@@ -204,7 +212,6 @@ export default {
         },
       )
       if (req.status === "success") {
-        await this.dispatchOrganization()
         this.orgaMembers.push({ ...user, role: 1 })
         this.orgaMembersIds.push(user._id)
         this.searchMemberValue = ""
@@ -273,10 +280,26 @@ export default {
       )
 
       if (req.status === "success") {
-        await this.dispatchOrganization()
+        //await this.dispatchOrganization()
+        this.orgaMembers = this.orgaMembers.map((member) => {
+          if (member._id === user._id) {
+            member.role = user.role
+          }
+          return member
+        })
       }
     },
-
+    canUpdateRole(user) {
+      if (this.isBackofficePage) {
+        return this.isSystemAdministrator
+      } else {
+        return (
+          this.isAtLeastMaintainer &&
+          this.userRole >= user.role &&
+          this.userInfo._id !== user._id
+        )
+      }
+    },
     async dispatchOrganization() {
       bus.$emit("user_orga_update")
     },
@@ -287,6 +310,7 @@ export default {
     ArrayHeader,
     ModalLeaveOrganization,
     ModalRemoveUserFromOrganization,
+    OrgaRoleSelector,
   },
 }
 </script>

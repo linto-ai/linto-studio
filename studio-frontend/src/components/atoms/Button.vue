@@ -8,13 +8,12 @@
     :disabled="isDisabled"
     :aria-disabled="isDisabled"
     :type="componentType === 'button' ? type : null"
-    multiline
+    :multiline="multiline"
     v-bind="$attrs"
     v-on="isDisabled ? null : $listeners">
     <ph-icon
       v-if="loading"
       name="circle-notch"
-      :weight="computedIconWeight"
       :size="size"
       class="animate-spin icon" />
     <ph-icon

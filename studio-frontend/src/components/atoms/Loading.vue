@@ -17,6 +17,7 @@
 <script>
 import Loading from "vue-loading-overlay"
 export default {
+  name: "Loading",
   props: {
     title: { required: false },
     background: { required: false, type: Boolean },

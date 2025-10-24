@@ -137,6 +137,7 @@ export default {
     },
     search() {
       this.debouncedFetchAllUsers()
+      this.currentPageNb = 0
     },
   },
   components: {
