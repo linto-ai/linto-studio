@@ -105,11 +105,10 @@ async function listApiKey(idList, orgaRoles = undefined) {
   const merged = users.map((u) => {
     const token = tokens.find((t) => t.userId === u._id.toString())
     const roleData = orgaRoles?.find((r) => r.userId === u._id.toString())
-
     delete u._id
 
     return {
-      userId: token.userId,
+      userId: token?.userId || roleData?.userId,
       ...u,
       ...token,
       ...(orgaRoles
