@@ -60,6 +60,18 @@ async function createSuperUser(req, res, next) {
       true,
     )
 
+    if (process.env.DISABLE_DEFAULT_ORGANIZATION_CREATION !== "true") {
+      const organizationName = user.email + "'s Organization"
+      const createdOrganization = await model.organizations.createDefault(
+        createdUser.insertedId.toString(),
+        organizationName,
+      )
+      if (createdOrganization.insertedCount !== 1) {
+        model.users.delete(createdUser.insertedId.toString())
+        throw new UserError()
+      }
+    }
+
     const mail_result = await Mailing.accountCreate(
       user.email,
       req,
