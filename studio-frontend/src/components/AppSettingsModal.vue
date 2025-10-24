@@ -66,18 +66,24 @@
                 <span>{{ $t("app_settings_modal.organization_members") }}</span>
               </a>
             </li>
-            <is-cloud>
+            <!-- <is-cloud>
               <li :class="{ active: selectedTab === 'billing' }">
                 <a href="#" @click="selectTab('billing')">
                   <ph-icon name="credit-card" weight="bold"></ph-icon>
                   <span>{{ $t("app_settings_modal.billing") }}</span>
                 </a>
               </li>
-            </is-cloud>
+            </is-cloud> -->
             <li :class="{ active: selectedTab === 'tags' }">
               <a href="#" @click="selectTab('tags')">
                 <ph-icon name="tag" weight="bold"></ph-icon>
                 <span>{{ $t("app_settings_modal.tags") }}</span>
+              </a>
+            </li>
+            <li :class="{ active: selectedTab === 'apiTokens' }" v-if="isAdmin">
+              <a href="#" @click="selectTab('apiTokens')">
+                <ph-icon name="key" weight="bold"></ph-icon>
+                <span>{{ $t("app_settings_modal.api_tokens") }}</span>
               </a>
             </li>
           </ul>
@@ -125,6 +131,10 @@
           :currentOrganization="currentOrganization"
           :userInfo="user" />
       </div>
+
+      <div v-if="selectedTab === 'apiTokens'" class="app-settings__section">
+        <ApiTokenSettings v-if="isAdmin" :organizationId="organizationId" />
+      </div>
       <div
         v-if="selectedTab === 'billing'"
         class="app-settings__section"
@@ -149,8 +159,9 @@ import UserSettingsPreferences from "@/components/UserSettingsPreferences.vue"
 import TagManagement from "@/components/TagManagement.vue"
 import UpdateOrganizationForm from "@/components/UpdateOrganizationForm.vue"
 import UpdateOrganizationUsers from "@/components/UpdateOrganizationUsers.vue"
-import UpdateOrganizationDeletion from "./UpdateOrganizationDeletion.vue"
-import Modal from "./molecules/Modal.vue"
+import UpdateOrganizationDeletion from "@/components/UpdateOrganizationDeletion.vue"
+import Modal from "@/components/molecules/Modal.vue"
+import ApiTokenSettings from "@/components/ApiTokenSettings.vue"
 
 export default {
   name: "AppSettingsModal",
@@ -168,6 +179,7 @@ export default {
     UpdateOrganizationUsers,
     UpdateOrganizationDeletion,
     Modal,
+    ApiTokenSettings,
   },
   data() {
     return {
@@ -181,6 +193,7 @@ export default {
     }),
     ...mapGetters("organizations", {
       currentOrganization: "getCurrentOrganization",
+      organizationId: "getCurrentOrganizationScope",
     }),
     ...mapGetters("system", ["isMobile"]),
     isModalOpen: {
@@ -198,7 +211,7 @@ export default {
       if (this.isMobile) {
         return "screen"
       }
-      return "lg"
+      return "xl"
     },
     orgaName() {
       return this.currentOrganization?.name
@@ -280,10 +293,14 @@ export default {
         border-radius: 4px;
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
+        border: 1px solid transparent;
+        position: relative;
+        left: 1px;
 
         &.active {
           background-color: var(--background-secondary);
-
+          border-color: var(--neutral-20);
+          border-right-color: transparent;
           a {
             color: var(--primary-hard);
             font-weight: bold;
@@ -302,9 +319,9 @@ export default {
 
   &__section {
     flex: 1;
+    border: 1px solid var(--neutral-20);
     background-color: var(--background-secondary);
     border-radius: 4px;
-    border-top-left-radius: 0;
     box-sizing: border-box;
     padding: 1em;
     //display: none;

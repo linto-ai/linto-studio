@@ -8,6 +8,7 @@ import Chip from "./Chip.vue"
 import ContextMenu from "./ContextMenu.vue"
 import LabeledValue from "./LabeledValue.vue"
 import LabeledValueSmall from "./LabeledValueSmall.vue"
+import Loading from "./Loading.vue"
 import OrganizationBadge from "./OrganizationBadge.vue"
 import Qrcode from "./Qrcode.vue"
 import Radio from "./Radio.vue"
@@ -31,6 +32,8 @@ import InputSelector from "./InputSelector.vue"
 import LabelInput from "./LabelInput.vue"
 import TextInput from "./TextInput.vue"
 import FilterChip from "./FilterChip.vue"
+import CopyButton from "./CopyButton.vue"
+
 const components = [
   Avatar,
   PhIcon,
@@ -42,6 +45,7 @@ const components = [
   ContextMenu,
   LabeledValue,
   LabeledValueSmall,
+  Loading,
   OrganizationBadge,
   Qrcode,
   Radio,
@@ -65,6 +69,7 @@ const components = [
   LabelInput,
   TextInput,
   FilterChip,
+  CopyButton,
 ]
 
 const validateComponents = (c) =>

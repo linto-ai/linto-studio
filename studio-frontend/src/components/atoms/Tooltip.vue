@@ -20,25 +20,28 @@
     @mouseenter="onMouseEnter"
     @mouseleave="onMouseLeave">
     <slot ref="trigger"></slot>
+    <!-- v-show instead of v-if so element exist in the dom -->
     <div
-      v-if="text && text.trim() && isVisible"
+      v-if="(text && text.trim()) || $slots.content"
+      v-show="isVisible"
       ref="tooltip"
       class="tooltip-content"
-      :class="[actualPosition]"
+      :class="tooltipClasses"
       :style="{
+        backgroundColor: backgroundColor,
         borderColor: borderColor,
         maxWidth: typeof maxWidth === 'number' ? maxWidth + 'px' : maxWidth,
         ...tooltipPosition,
       }">
-      <span
-        class="tooltip-content__inner"
-        :style="{ backgroundColor: backgroundColor, color: color }">
-        <Emoji v-if="emoji" :unified="emoji" size="16" />
-        <ph-icon v-if="icon" :name="icon" size="sm" />
-        <span class="tooltip-content__text">
-          {{ text }}
+      <slot name="content">
+        <span class="tooltip-content__inner" :style="{ color: color }">
+          <Emoji v-if="emoji" :unified="emoji" size="16" />
+          <ph-icon v-if="icon" :name="icon" size="sm" />
+          <span class="tooltip-content__text">
+            {{ text }}
+          </span>
         </span>
-      </span>
+      </slot>
     </div>
   </div>
 </template>
@@ -92,12 +95,19 @@ export default {
       type: [Number, String],
       default: 300,
     },
+    delay: {
+      type: [Number],
+      default: 300,
+    },
   },
   data() {
     return {
       tooltipPosition: {},
       isVisible: false,
+      positionIsCompute: false,
       actualPosition: "top",
+      debounceTimeout: null,
+      finallyVisible: false,
     }
   },
   mounted() {
@@ -105,77 +115,85 @@ export default {
     window.addEventListener("resize", this.updateTooltipPosition)
     window.addEventListener("scroll", this.updateTooltipPosition, true)
   },
+  computed: {
+    tooltipClasses() {
+      const res = []
+      res.push(this.actualPosition)
+      if (this.finallyVisible) {
+        res.push("finally-visible")
+      }
+      return res
+    },
+  },
   beforeDestroy() {
     window.removeEventListener("resize", this.updateTooltipPosition)
     window.removeEventListener("scroll", this.updateTooltipPosition, true)
   },
   methods: {
-    updateTooltipPosition() {
-      this.$nextTick(() => {
-        if (!this.$refs.container || !this.$refs.tooltip) return
+    async updateTooltipPosition() {
+      await this.$nextTick()
 
-        const containerRect = this.$refs.container.getBoundingClientRect()
-        const tooltipRect = this.$refs.tooltip.getBoundingClientRect()
-        const viewport = {
-          width: window.innerWidth,
-          height: window.innerHeight,
-        }
-        const offset = 8
-        const margin = 16 // Marge minimale par rapport aux bords du viewport
+      if (!this.$refs.container || !this.$refs.tooltip) return
 
-        // Ordre de priorité des positions selon la position demandée
-        const positionPriority = {
-          top: ["top", "bottom", "right", "left"],
-          bottom: ["bottom", "top", "right", "left"],
-          left: ["left", "right", "top", "bottom"],
-          right: ["right", "left", "top", "bottom"],
-        }
+      const containerRect = this.$refs.container.getBoundingClientRect()
+      const tooltipElement = this.$refs.tooltip
+      const tooltipRect = this.$refs.tooltip.getBoundingClientRect()
 
-        const positions = positionPriority[this.position] || [
-          "top",
-          "bottom",
-          "left",
-          "right",
-        ]
+      const viewport = {
+        width: window.innerWidth,
+        height: window.innerHeight,
+      }
+      const offset = 8
+      const margin = 16 // Marge minimale par rapport aux bords du viewport
 
-        // Tester chaque position pour trouver la meilleure
-        for (const pos of positions) {
-          const candidatePosition = this.calculatePosition(
-            containerRect,
-            tooltipRect,
-            pos,
-            offset,
-          )
+      // Ordre de priorité des positions selon la position demandée
+      const positionPriority = {
+        top: ["top", "bottom", "right", "left"],
+        bottom: ["bottom", "top", "right", "left"],
+        left: ["left", "right", "top", "bottom"],
+        right: ["right", "left", "top", "bottom"],
+      }
 
-          if (
-            this.isPositionValid(
-              candidatePosition,
-              tooltipRect,
-              viewport,
-              margin,
-            )
-          ) {
-            this.actualPosition = pos
-            this.tooltipPosition = candidatePosition
-            return
-          }
-        }
+      const positions = positionPriority[this.position] || [
+        "top",
+        "bottom",
+        "left",
+        "right",
+      ]
 
-        // Si aucune position idéale n'est trouvée, utiliser la position demandée avec ajustements
-        const fallbackPosition = this.calculatePosition(
+      // Tester chaque position pour trouver la meilleure
+      for (const pos of positions) {
+        const candidatePosition = this.calculatePosition(
           containerRect,
           tooltipRect,
-          this.position,
+          pos,
           offset,
         )
-        this.actualPosition = this.position
-        this.tooltipPosition = this.adjustPositionToViewport(
-          fallbackPosition,
-          tooltipRect,
-          viewport,
-          margin,
-        )
-      })
+
+        if (
+          this.isPositionValid(candidatePosition, tooltipRect, viewport, margin)
+        ) {
+          this.actualPosition = pos
+          this.tooltipPosition = candidatePosition
+          return
+        }
+      }
+      // Si aucune position idéale n'est trouvée, utiliser la position demandée avec ajustements
+      const fallbackPosition = this.calculatePosition(
+        containerRect,
+        tooltipRect,
+        this.position,
+        offset,
+      )
+      this.actualPosition = this.position
+      this.tooltipPosition = this.adjustPositionToViewport(
+        fallbackPosition,
+        tooltipRect,
+        viewport,
+        margin,
+      )
+
+      this.positionIsCompute = true
     },
 
     calculatePosition(containerRect, tooltipRect, position, offset) {
@@ -279,16 +297,16 @@ export default {
       return { finalTop, finalLeft, finalWidth, finalHeight }
     },
     onMouseEnter() {
-      this.isVisible = true
-      // Délai pour permettre au tooltip d'être rendu avant de calculer la position
-      this.$nextTick(() => {
-        setTimeout(() => {
-          this.updateTooltipPosition()
-        }, 10)
-      })
+      this.debounceTimeout = setTimeout(async () => {
+        this.isVisible = true
+        await this.updateTooltipPosition()
+        this.finallyVisible = true
+      }, this.delay)
     },
     onMouseLeave() {
+      clearTimeout(this.debounceTimeout)
       this.isVisible = false
+      this.finallyVisible = false
     },
   },
 }
@@ -298,6 +316,7 @@ export default {
 .tooltip-container {
   position: relative;
   display: flex;
+  cursor: help;
 }
 
 .tooltip-content {
@@ -310,6 +329,14 @@ export default {
   border: 1px solid;
   min-width: 80px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s;
+
+  &.finally-visible {
+    opacity: 1;
+    visibility: visible;
+  }
 }
 
 /* Position is now handled by JavaScript */

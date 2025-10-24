@@ -13,7 +13,15 @@
       :field="fieldSessionPermission"
       v-model="fieldSessionPermission.value"></FormCheckbox>
 
-    <button
+    <div>
+      <Button
+        v-if="isAdmin || isSystemAdministrator"
+        variant="primary"
+        @click="updateOrganization"
+        icon="check"
+        :label="$t('organisation.organization_permissions.update_button')" />
+    </div>
+    <!-- <button
       type="submit"
       class="btn primary"
       @click="updateOrganization"
@@ -22,7 +30,7 @@
       <span class="label">{{
         $t("organisation.organization_permissions.update_button")
       }}</span>
-    </button>
+    </button> -->
   </section>
 </template>
 <script>

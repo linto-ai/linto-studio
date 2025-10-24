@@ -10,6 +10,39 @@
     "error_end_time_before_start_time": "The end time must be after the start time",
     "error_past_date": "The date must be in the future"
   },
+  "api_tokens_settings": {
+    "title": "API Keys",
+    "create_token": "Add a key",
+    "error_fetching_token_details": "The key details could not be retrieved",
+    "delete_token": "Delete",
+    "delete_success": "Token has been deleted successfully",
+    "delete_error": "Token could not be deleted",
+    "view_token": "Show",
+    "token_created": "Token created successfully",
+    "token_created_error": "An error occurred while creating the key",
+    "token_creation_date_label": "Created on",
+    "token_expiration_date_label": "Expires on",
+    "token_key_label": "Key",
+    "token_name_label": "Name",
+    "token_role_label": "Role",
+    "token_actions_label": "Actions",
+    "modal_create": {
+      "title": "Create a new key",
+      "expiration_label": "Validity duration"
+    },
+    "modal_delete": {
+      "title": "Delete api token {name}",
+      "content": "Are you sure you want to delete the token {name} ?",
+      "delete_action": "Delete"
+    },
+    "modal_renew": {
+      "title": "Renew api key '{name}'",
+      "expiration_label": "Update validity duration",
+      "confirm": "Renew"
+    },
+    "token_renew_success": "Token renewed successfully",
+    "token_renew_error": "An error occurred while renewing the key"
+  },
   "app_editor_channels_selector": {
     "label": "Choose a channel"
   },
@@ -33,6 +66,7 @@
     "label": "Search in transcription"
   },
   "app_settings_modal": {
+    "api_tokens": "API Keys",
     "account_title": "My account",
     "account_information": "Account information",
     "billing": "Billing",
@@ -501,6 +535,13 @@
     },
     "openFileExplorer": "or choose from the file explorer"
   },
+  "duration_input": {
+    "h": "Hour | Hours",
+    "d": "Day | Days",
+    "m": "Minute | Minutes",
+    "s": "Second | Seconds",
+    "y": "Year | Years"
+  },
   "error": {
     "bug_report": "Report a bug or an issue",
     "server_error": {
@@ -535,6 +576,9 @@
     "title": "Favorites media",
     "no_media_title": "Your favorite media collection is empty",
     "no_media_subtitle": "Add favorite media by clicking on the star icon on the media card."
+  },
+  "form_field": {
+    "empty_value": "–"
   },
   "footer": {
     "powered_by": "LinTO {linto_logo} by {linagora_logo}",
@@ -713,6 +757,7 @@
     "processing_error_message": "The automatic transcription of the media encountered an error"
   },
   "modal": {
+    "apply": "Apply",
     "cancel": "Cancel",
     "close_title": "Close modal",
     "delete": "Delete"
@@ -900,11 +945,17 @@
   },
   "organization_role": {
     "member": "Member",
+    "member_description": "Access and view the organization's media",
     "uploader": "Contributor",
-    "quick_meeting": "Privileged contributor",
-    "session_operator": "Full contributor",
-    "maintainer": "Maintainer",
-    "administrator": "Administrator"
+    "uploader_description": "Upload new media and start transcription",
+    "quick_meeting": "Live contributor",
+    "quick_meeting_description": "Start live transcription during a video conference or from a microphone",
+    "session_operator": "Producer",
+    "session_operator_description": "Manage and configure advanced live streams for transcription (if available in your organization)",
+    "maintainer": "Manager",
+    "maintainer_description": "Manage users and their roles within the organization",
+    "administrator": "Administrator",
+    "administrator_description": "Full permissions over the organization"
   },
   "publish": {
     "error_first_line": {
