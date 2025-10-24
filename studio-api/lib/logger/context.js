@@ -189,13 +189,14 @@ class LoggerContext {
         timestamp: new Date().toISOString(),
       }
 
-      if (socketEvent.action === SOCKET_EVENTS.JOIN) {
-        context.socket.lastJoinedAt = context.timestamp
-      } else if (
-        socketEvent.action === SOCKET_EVENTS.LEAVE ||
-        socketEvent.action === SOCKET_EVENTS.DISCONNECT
-      ) {
-        context.socket.lastLeftAt = context.timestamp
+      switch (socketEvent.action) {
+        case SOCKET_EVENTS.JOIN:
+          context.socket.lastJoinedAt = context.timestamp
+          break
+        case SOCKET_EVENTS.LEAVE:
+        case SOCKET_EVENTS.DISCONNECT:
+          context.socket.lastLeftAt = context.timestamp
+          break
       }
 
       if (socketEvent.error) {

@@ -1,7 +1,4 @@
 const MongoModel = require("../model")
-const debug = require("debug")(
-  "linto:conversation-manager:models:mongodb:models:activityLog",
-)
 
 class ActivityLog extends MongoModel {
   constructor() {
@@ -22,6 +19,7 @@ class ActivityLog extends MongoModel {
       const query = {
         "socket.id": socketId,
       }
+
       return await this.mongoRequest(query)
     } catch (error) {
       console.error(error)
@@ -42,28 +40,34 @@ class ActivityLog extends MongoModel {
     }
   }
 
-  async socketReconnect(activity, lastJoinedAt) {
+  async socketReconnect(activity, timestamp) {
     try {
       const operator = "$set"
       const query = { _id: activity._id }
       const payload = activity.socket
 
       payload.connectionCount = ++activity.socket.connectionCount
-      payload.lastJoinedAt = lastJoinedAt
+      payload.lastJoinedAt = timestamp
 
-      await this.mongoUpdateOne(query, operator, { socket: payload })
+      await this.mongoUpdateOne(query, operator, {
+        socket: payload,
+        timestamp: timestamp,
+      })
     } catch (error) {
       console.error(error)
       return error
     }
   }
 
-  async socketLeft(activity, payload) {
+  async socketLeft(activity, socket, timestamp) {
     try {
       const operator = "$set"
       const query = { _id: activity._id }
 
-      await this.mongoUpdateOne(query, operator, { socket: payload })
+      await this.mongoUpdateOne(query, operator, {
+        socket: socket,
+        timestamp: timestamp,
+      })
     } catch (error) {
       console.error(error)
       return error
@@ -79,11 +83,11 @@ class ActivityLog extends MongoModel {
     }
   }
 
-  async deleteAllSocketLog(socketId, watchingDuration) {
+  async deleteAllSocketLog(socketId, underDuration) {
     try {
       const query = {
         "socket.id": socketId,
-        "socket.totalWatchTime": { $lt: watchingDuration },
+        "socket.totalWatchTime": { $lt: underDuration }, // Delete all tuple being inferior to underDuration value
       }
       await this.mongoDelete(query)
     } catch (error) {
