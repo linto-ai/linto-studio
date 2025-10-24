@@ -54,6 +54,7 @@
     <ModalCreateOrganization
       @on-confirm="newOrganization"
       @on-cancel="hideModalCreateOrganization"
+      v-model="modalCreateOrganizationIsVisible"
       v-if="modalCreateOrganizationIsVisible"></ModalCreateOrganization>
 
     <ModalDeleteMultipleOrganizations
