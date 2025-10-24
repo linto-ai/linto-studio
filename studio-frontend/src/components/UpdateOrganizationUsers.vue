@@ -212,7 +212,6 @@ export default {
         },
       )
       if (req.status === "success") {
-        await this.dispatchOrganization()
         this.orgaMembers.push({ ...user, role: 1 })
         this.orgaMembersIds.push(user._id)
         this.searchMemberValue = ""
@@ -281,7 +280,13 @@ export default {
       )
 
       if (req.status === "success") {
-        await this.dispatchOrganization()
+        //await this.dispatchOrganization()
+        this.orgaMembers = this.orgaMembers.map((member) => {
+          if (member._id === user._id) {
+            member.role = user.role
+          }
+          return member
+        })
       }
     },
     canUpdateRole(user) {
