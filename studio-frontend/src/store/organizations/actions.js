@@ -6,6 +6,7 @@ import {
 import { indexOrganizationsRoles } from "@/tools/indexOrganizationsRoles"
 import store from "@/store/index.js"
 import createMediaModule from "../modules/mediaModuleFactory"
+import { setCookie } from "@/tools/setCookie"
 
 const actions = {
   async fetchOrganizations({ commit, rootGetters }) {
@@ -33,6 +34,8 @@ const actions = {
     let organization = await apiGetOrganizationById(organizationId)
 
     const scope = `organizations/${organizationId}/conversations`
+
+    setCookie("organizationScope", organizationId, 365)
 
     if (!store.hasModule(`${organizationId}/done/conversations`)) {
       store.registerModule(
