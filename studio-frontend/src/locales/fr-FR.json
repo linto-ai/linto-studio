@@ -87,6 +87,7 @@
       "home": "Accueil",
       "users": "Utilisateurs",
       "organisations": "Organisations",
+      "tokens": "Clés d'apis",
       "transcriberProfiles": "Profils de transcription"
     },
     "user_list": {
@@ -152,6 +153,7 @@
     "shared": "Partagés",
     "subtitles": "Sous-titres",
     "tagsSettings": "Tags de {organization}",
+    "tokens": "Clés d'apis",
     "transcription": "Transcription",
     "transcriberProfiles": "Profils de transcription",
     "users": "Utilisateurs",

@@ -14,7 +14,6 @@
         <ApiTokenTableLine
           v-for="token in tokenList"
           v-model="p_selectedTokens"
-          :linkTo="linkTo"
           :key="token.id"
           :token="token"
           @view-token="openViewModal"
@@ -59,10 +58,6 @@ export default {
     tokenList: {
       type: Array,
       required: true,
-    },
-    linkTo: {
-      type: Object,
-      required: false,
     },
     value: {
       type: Array,

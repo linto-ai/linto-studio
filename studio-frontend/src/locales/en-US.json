@@ -86,6 +86,7 @@
       "home": "Home",
       "users": "Users",
       "organisations": "Organisations",
+      "tokens": "Api keys",
       "transcriberProfiles": "Transcriber Profiles"
     },
     "user_list": {
@@ -152,6 +153,7 @@
     "shared": "Shared",
     "subtitles": "Subtitles",
     "tagsSettings": "{organization} tags",
+    "tokens": "Api keys",
     "transcription": "Transcription",
     "transcriberProfiles": "Transcriber Profiles",
     "users": "Users",
