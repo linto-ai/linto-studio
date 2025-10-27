@@ -32,7 +32,11 @@
     </PopoverList>
     <OrgaRoleSelector v-model="role" />
     <OrgaRoleSelector v-model="role" readonly />
-    <div style="height: 100px"></div>
+    <GenericTable
+      :content="tableContent"
+      :columns="tableColumns"
+      sortListDirection="asc"
+      sortListKey="name" />
   </div>
 </template>
 <script>
@@ -41,8 +45,9 @@ import FormInput from "../components/molecules/FormInput.vue"
 import EMPTY_FIELD from "@/const/emptyField"
 import formatDateTimeToIso from "@/tools/date/formatDateTimeToIso"
 import DurationInput from "@/components/molecules/DurationInput.vue"
-import OrgaRoleSelector from "../components/molecules/OrgaRoleSelector.vue"
-import OrgaRoleSelectorContent from "../components/molecules/OrgaRoleSelectorContent.vue"
+import OrgaRoleSelector from "@/components/molecules/OrgaRoleSelector.vue"
+import OrgaRoleSelectorContent from "@/components/molecules/OrgaRoleSelectorContent.vue"
+import GenericTable from "@/components/molecules/GenericTable.vue"
 export default {
   props: {},
   data() {
@@ -104,6 +109,20 @@ export default {
       ],
       popoverValue: "select-value-1",
       role: 1,
+      tableContent: [
+        { _id: "1", name: "Alfred", role: 1 },
+        { _id: "2", name: "Quentin", role: 2 },
+      ],
+      tableColumns: [
+        { key: "name", label: "Nom", sortable: true, width: "auto" },
+        {
+          key: "role",
+          label: "Rôle",
+          sortable: true,
+          width: "auto",
+          component: "OrgaRoleSelectorContent",
+        },
+      ],
     }
   },
   mounted() {
@@ -117,6 +136,7 @@ export default {
     DurationInput,
     OrgaRoleSelector,
     OrgaRoleSelectorContent,
+    GenericTable,
   },
 }
 </script>

@@ -1,13 +1,22 @@
 <template>
-  <div>
-    <GenericTableHeader :columns="columns" />
-    <GenericTableLine v-for="line of content" :key="line[idKey]" :line="line" />
-  </div>
+  <table class="table-grid" :style="style">
+    <GenericTableHeader
+      @list_sort_by="sortBy"
+      :columns="columns"
+      :sortListDirection="sortListDirection"
+      :sortListKey="sortListKey" />
+    <GenericTableLine
+      v-for="line of content"
+      :key="line[idKey]"
+      :line="line"
+      :columns="columns" />
+  </table>
 </template>
 <script>
 import { bus } from "@/main.js"
 import GenericTableHeader from "./GenericTableHeader.vue"
 import GenericTableLine from "./GenericTableLine.vue"
+
 export default {
   props: {
     // { key, label, sortable, width, component}
@@ -17,7 +26,7 @@ export default {
     },
     content: {
       type: Array,
-      default: [],
+      default: () => [],
     },
     loading: {
       type: Boolean,
@@ -25,18 +34,42 @@ export default {
     },
     selectedRows: {
       type: Array,
-      default: [],
+      default: () => [],
     },
     idKey: {
       type: String,
       default: "_id",
+    },
+    sortListDirection: {
+      type: String,
+      required: true,
+    },
+    sortListKey: {
+      type: String,
+      required: true,
     },
   },
   data() {
     return {}
   },
   mounted() {},
-  methods: {},
-  components: {},
+  methods: {
+    sortBy(event) {
+      this.$emit("list_sort_by", event)
+    },
+  },
+  computed: {
+    style() {
+      return {
+        "grid-template-columns": this.columns
+          .map((column) => column.width)
+          .join(" "),
+      }
+    },
+  },
+  components: {
+    GenericTableHeader,
+    GenericTableLine,
+  },
 }
 </script>
