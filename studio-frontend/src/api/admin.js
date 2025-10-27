@@ -55,6 +55,7 @@ export async function apiGetAllUsers(
     pageSize = DEFAULT_PAGE_SIZE,
     sortField = "last_update",
     sortOrder = -1,
+    type = "user",
   } = {},
   search,
 ) {
@@ -66,7 +67,7 @@ export async function apiGetAllUsers(
       {
         method: "get",
       },
-      { page, size: pageSize, sortField, sortCriteria: sortOrder },
+      { page, size: pageSize, sortField, sortCriteria: sortOrder, type },
     )
   } else {
     res = await sendRequest(
@@ -80,6 +81,7 @@ export async function apiGetAllUsers(
         sortField,
         sortCriteria: sortOrder,
         email: search,
+        type,
       },
     )
   }
