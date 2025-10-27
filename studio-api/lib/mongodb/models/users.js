@@ -238,6 +238,13 @@ class UsersModel extends MongoModel {
         }
       }
 
+      if (filter.type) {
+        query.type = {
+          $regex: filter.type,
+          $options: "i",
+        }
+      }
+
       if (!filter) return await this.mongoRequest(query, personal_projection)
       else
         return await this.mongoAggregatePaginate(
