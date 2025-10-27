@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:components:MongoMigration:controllers:version:1.5.1:users`,
+  `linto:components:MongoMigration:controllers:version:1.6.1:users`,
 )
 
 const TYPE = require(`${process.cwd()}/lib/dao/users/types`)
