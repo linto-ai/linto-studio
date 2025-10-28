@@ -77,6 +77,10 @@ class LogManager {
       }
     }
   }
+  static async logLlmEvent(req, payload) {
+    const ctx = await context.createLlmContext(req, payload)
+    if (ctx) model.activityLog.create(ctx)
+  }
 
   static async logSystemEvent(message, payload = {}) {
     const ctx = await context.createSystemContext(message, payload)

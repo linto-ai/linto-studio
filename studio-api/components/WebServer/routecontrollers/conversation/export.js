@@ -120,16 +120,22 @@ async function exportConversation(req, res, next) {
         await handleVerbatimFormat(res, req.query, conversation, metadata)
         break
       default:
-        await handleLLMService(res, req.query, conversation, metadata)
+        await handleLLMService(req, res, req.query, conversation, metadata)
     }
   } catch (err) {
     next(err)
   }
 }
 
-async function callLlmAPI(query, conversation, metadata, conversationExport) {
+async function callLlmAPI(
+  req,
+  query,
+  conversation,
+  metadata,
+  conversationExport,
+) {
   llm
-    .request(query, conversation, metadata, conversationExport)
+    .request(req, query, conversation, metadata, conversationExport)
     .then((data) => {
       conversationExport.jobId = data
       conversationExport.status = "processing"
@@ -142,7 +148,7 @@ async function callLlmAPI(query, conversation, metadata, conversationExport) {
     })
 }
 
-async function handleLLMService(res, query, conversation, metadata) {
+async function handleLLMService(req, res, query, conversation, metadata) {
   try {
     if (query.flavor === undefined)
       throw new ConversationMetadataRequire("flavor is required")
@@ -164,7 +170,7 @@ async function handleLLMService(res, query, conversation, metadata) {
       exportResult = await model.conversationExport.create(conversationExport)
       conversationExport._id = exportResult.insertedId.toString()
 
-      callLlmAPI(query, conversation, metadata, conversationExport)
+      callLlmAPI(req, query, conversation, metadata, conversationExport)
       res.status(200).send({ status: "processing", processing: 0 })
     } else if (
       conversationExport[0].status === "done" ||

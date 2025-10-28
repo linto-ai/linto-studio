@@ -14,6 +14,7 @@ const cache = {
   users: {},
   organizations: {},
   sessions: {},
+  conversations: {},
 }
 
 async function storeCacheUser(userId) {
@@ -24,6 +25,17 @@ async function storeCacheUser(userId) {
     lastname: user.lastname,
     firstname: user.firstname,
     email: user.email,
+  })
+}
+
+async function storeCacheConversation(conversationId) {
+  if (cache.conversations[conversationId])
+    return cache.conversations[conversationId]
+
+  const conversation = (await model.conversations.getById(conversationId))[0]
+  return (cache.conversations[conversationId] = {
+    name: conversation.name,
+    organizationId: conversation.organization.organizationId,
   })
 }
 
@@ -170,7 +182,6 @@ class LoggerContext {
     }
   }
 
-  // TODO: WIP
   async createSocketContext(
     socket,
     socketEvent,
@@ -244,6 +255,49 @@ class LoggerContext {
       }
     }
   }
+
+  async createLlmContext(
+    req,
+    payload,
+    { source = "llm", level = DEFAULT_LEVEL } = {},
+  ) {
+    try {
+      const context = await this.createContext(req)
+      context.source = source
+
+      const conversation = await storeCacheConversation(
+        payload.conversationExport.convId,
+      )
+      if (!context.organization) {
+        await storeCacheOrganization(conversation.organizationId)
+        context.organization = {
+          id: conversation.organizationId,
+          info: cache.organizations[conversation.organizationId],
+        }
+      }
+
+      context.llm = {
+        conversation: {
+          id: payload.conversationExport.convId,
+          name: conversation.name,
+        },
+        query: payload.query,
+        jobId: payload.jobId,
+        contentLength: payload.contentLength,
+      }
+
+      return context
+    } catch (err) {
+      return {
+        source: "system",
+        level: "error",
+        message: `Error creating log context from llm`,
+        error: { name: err.name, stack: err.stack },
+        timestamp: new Date().toISOString(),
+      }
+    }
+  }
+
   async createSystemContext(
     message,
     { source = "system", level = DEFAULT_LEVEL } = {},
