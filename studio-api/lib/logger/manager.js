@@ -82,6 +82,11 @@ class LogManager {
     if (ctx) model.activityLog.create(ctx)
   }
 
+  static async logTranscriptionEvent(req, payload) {
+    const ctx = await context.createTranscriptionContext(req, payload)
+    if (ctx) model.activityLog.create(ctx)
+  }
+
   static async logSystemEvent(message, payload = {}) {
     const ctx = await context.createSystemContext(message, payload)
     if (ctx) logger.log(ctx)

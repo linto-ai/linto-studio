@@ -36,6 +36,10 @@ async function storeCacheConversation(conversationId) {
   return (cache.conversations[conversationId] = {
     name: conversation.name,
     organizationId: conversation.organization.organizationId,
+    duration: conversation?.metadata?.audio?.duration || 0,
+    transcription: {
+      ...(conversation?.metadata?.transcription || {}),
+    },
   })
 }
 
@@ -111,6 +115,16 @@ function formatError(error) {
   return { normalizedMessage, errorContext }
 }
 
+function logError(message, err) {
+  return {
+    source: "system",
+    level: "error",
+    message,
+    error: { name: err.name, stack: err.stack },
+    timestamp: new Date().toISOString(),
+  }
+}
+
 class LoggerContext {
   constructor() {
     if (LoggerContext.instance) {
@@ -172,13 +186,7 @@ class LoggerContext {
 
       return context
     } catch (err) {
-      return {
-        source: "system",
-        level: "error",
-        message: `Error creating log context from ${source}`,
-        error: { name: err.name, stack: err.stack },
-        timestamp: new Date().toISOString(),
-      }
+      return logError(`Error creating log context from ${source}`, err)
     }
   }
 
@@ -246,24 +254,18 @@ class LoggerContext {
 
       return context
     } catch (err) {
-      return {
-        source: "system",
-        level: "error",
-        message: `Error creating log context from ${source}`,
-        error: { name: err.name, stack: err.stack },
-        timestamp: new Date().toISOString(),
-      }
+      return logError(`Error creating log context from ${source}`, err)
     }
   }
 
   async createLlmContext(
     req,
     payload,
-    { source = "llm", level = DEFAULT_LEVEL } = {},
+    { source = "webserver", level = DEFAULT_LEVEL, activity = "llm" } = {},
   ) {
     try {
       const context = await this.createContext(req)
-      context.source = source
+      context.activity = activity
 
       const conversation = await storeCacheConversation(
         payload.conversationExport.convId,
@@ -288,13 +290,34 @@ class LoggerContext {
 
       return context
     } catch (err) {
-      return {
-        source: "system",
-        level: "error",
-        message: `Error creating log context from llm`,
-        error: { name: err.name, stack: err.stack },
-        timestamp: new Date().toISOString(),
+      return logError(`Error creating log context for ${activity}`, err)
+    }
+  }
+
+  async createTranscriptionContext(
+    req,
+    payload,
+    {
+      source = "webserver",
+      level = DEFAULT_LEVEL,
+      activity = "transcription",
+    } = {},
+  ) {
+    try {
+      const context = await this.createContext(req)
+      context.activity = activity
+
+      const conversation = await storeCacheConversation(payload.conversationId)
+      context.transcription = {
+        conversationId: payload.conversationId,
+        name: conversation.name,
+        jobId: payload.jobId,
+        transcription: conversation.transcription,
       }
+
+      return context
+    } catch (err) {
+      return logError(`Error creating log context for ${activity}`, err)
     }
   }
 
