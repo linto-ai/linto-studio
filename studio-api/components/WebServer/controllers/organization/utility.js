@@ -17,15 +17,20 @@ const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
 function countAdmin(organization, userId) {
   let adminCount = 0
   let isAdmin = false
+  let otherAdmin = []
   for (let oUser of organization.users) {
-    if (oUser.role === ROLES.ADMIN) adminCount++
-    if (oUser.userId === userId && oUser.role === ROLES.ADMIN) isAdmin = true
+    if (oUser.role === ROLES.ADMIN) {
+      adminCount++
+      if (oUser.userId === userId) isAdmin = true
+      else otherAdmin.push(oUser.userId)
+    }
   }
 
   return {
     userCount: organization.users.length,
     adminCount,
     isAdmin,
+    otherAdmin,
   }
 }
 
