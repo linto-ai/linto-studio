@@ -155,7 +155,7 @@ export async function apiGetAllTokens(
   )
 
   if (res?.data) {
-    return { count: res.data.length, list: res.data }
+    return res.data
   }
   return { count: 0, list: [] }
 }

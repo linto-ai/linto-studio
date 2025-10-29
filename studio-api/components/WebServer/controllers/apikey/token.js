@@ -93,11 +93,16 @@ async function createApiKey(reqPayload, role = PLATFORM_ROLE.UNDEFINED) {
 }
 
 async function listApiKey(idList, orgaRoles = undefined) {
+  if (idList.list) {
+    idList = idList.list.map((u) => u._id.toString())
+  }
+
   const projection = {
     _id: true,
     metadata: true,
     firstname: true,
     lastname: true,
+    role: true,
   }
   const users = await model.users.listApiKeyList(idList, projection)
   const tokens = await model.tokens.getTokenByList(idList)
@@ -114,7 +119,7 @@ async function listApiKey(idList, orgaRoles = undefined) {
       ...(orgaRoles
         ? {
             type: roleData?.type || "",
-            role: roleData ? roleData.role : null,
+            organizationRole: roleData ? roleData.role : null,
           }
         : {}),
     }
