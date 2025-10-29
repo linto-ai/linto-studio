@@ -167,6 +167,15 @@
     // margin: 0;
   }
 
+  .form-field > label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text-primary, #222);
+    line-height: 1.2;
+    margin: 0;
+  }
+
   .form-field-checkbox .form-label {
     display: inline-block;
     margin-bottom: 0;

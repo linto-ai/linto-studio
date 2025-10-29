@@ -159,3 +159,14 @@ export async function apiGetAllTokens(
   }
   return { count: 0, list: [] }
 }
+
+export async function apiCreatePlatformToken({ name, role, expiration }) {
+  const res = await sendRequest(
+    `${BASE_API}/administration/tokens`,
+    { method: "post" },
+    { name, role, expires_in: expiration },
+    null,
+  )
+
+  return res
+}

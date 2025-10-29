@@ -1,5 +1,11 @@
 <template>
   <MainContentBackoffice>
+    <template v-slot:header>
+      <HeaderTable
+        :title="$t('backoffice.token_list.title')"
+        :add_button_label="$t('backoffice.token_list.add_token_button')"
+        @on-create="showModalCreateToken" />
+    </template>
     <GenericTableRequest
       idKey="userId"
       :fetchMethod="fetchMethod"
@@ -30,6 +36,7 @@
         </div>
       </template>
     </GenericTableRequest>
+    <ModalCreateSystemToken v-model="isModalCreateTokenOpen" />
   </MainContentBackoffice>
 </template>
 <script>
@@ -40,6 +47,8 @@ import GenericTableRequest from "@/components/molecules/GenericTableRequest.vue"
 import { apiGetAllTokens } from "@/api/admin"
 import PlatformRoleSelector from "@/components/molecules/PlatformRoleSelector.vue"
 import { platformRoleMixin } from "@/mixins/platformRole"
+import HeaderTable from "@/components/HeaderTable.vue"
+import ModalCreateSystemToken from "@/components/ModalCreateSystemToken.vue"
 
 export default {
   mixins: [platformRoleMixin],
@@ -56,7 +65,7 @@ export default {
         },
         {
           key: "role",
-          label: this.$t("api_tokens_settings.token_role_label"),
+          label: this.$t("api_tokens_settings.token_platform_role_label"),
           width: "1fr",
         },
         {
@@ -78,6 +87,7 @@ export default {
       ],
       sortListDirection: "asc",
       sortListKey: "createdAt",
+      isModalCreateTokenOpen: false,
     }
   },
   mounted() {
@@ -100,12 +110,17 @@ export default {
     getValue(id) {
       return () => id
     },
+    showModalCreateToken() {
+      this.isModalCreateTokenOpen = true
+    },
   },
   components: {
     MainContentBackoffice,
     ApiTokenTable,
     GenericTableRequest,
     PlatformRoleSelector,
+    HeaderTable,
+    ModalCreateSystemToken,
   },
 }
 </script>

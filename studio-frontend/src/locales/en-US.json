@@ -25,6 +25,7 @@
     "token_key_label": "Key",
     "token_name_label": "Name",
     "token_role_label": "Role",
+    "token_platform_role_label": "Platform roles",
     "token_actions_label": "Actions",
     "modal_create": {
       "title": "Create a new key",
@@ -100,6 +101,10 @@
       "personal_organizations_shown": "Personal organisations shown",
       "personal_organizations_hidden": "Personal organisations hidden",
       "remove_organisation_button": "Delete an organisation | Delete {count} organisations"
+    },
+    "token_list": {
+      "title": "API Keys",
+      "add_token_button": "Add a system API Key"
     },
     "transcriber_profile_detail": {
       "save_button": "Save Transcriber Profile",

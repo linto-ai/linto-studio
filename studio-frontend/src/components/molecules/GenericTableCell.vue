@@ -20,14 +20,6 @@ export default {
       type: [String, Number, Boolean, Object, Array],
       required: false,
     },
-    component: {
-      type: Object,
-      required: false,
-    },
-    componentProps: {
-      type: Object,
-      required: false,
-    },
     transformValue: {
       type: Function,
       required: false,

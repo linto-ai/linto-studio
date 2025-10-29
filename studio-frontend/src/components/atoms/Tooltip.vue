@@ -315,7 +315,7 @@ export default {
 <style lang="scss" scoped>
 .tooltip-container {
   position: relative;
-  display: flex;
+  display: inline-flex;
   cursor: help;
 }
 
