@@ -2,7 +2,7 @@
   <tr>
     <td>{{ token.firstname }}</td>
     <td>
-      <OrgaRoleSelector v-model="token.role" readonly />
+      <OrgaRoleSelector v-model="token.organizationRole" readonly />
     </td>
     <td>{{ formatDate(token.createdAt) }}</td>
     <td>{{ formatDate(token.expiresAt) }}</td>

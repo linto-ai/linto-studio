@@ -1,10 +1,32 @@
 <template>
   <MainContentBackoffice>
     <GenericTableRequest
+      idKey="userId"
       :fetchMethod="fetchMethod"
       :columns="columns"
       :sortListDirection="sortListDirection"
-      :sortListKey="sortListKey" />
+      :sortListKey="sortListKey">
+      <template #cell-actions="{ value, id }" class="flex gap-small">
+        <div class="flex gap-small">
+          <Button
+            icon="eye"
+            variant="tertiary"
+            @click="viewToken(id)"
+            iconWeight="regular" />
+          <CopyButton :value="getValue(id)" />
+          <Button
+            icon="arrows-clockwise"
+            variant="tertiary"
+            @click="renewToken(id)" />
+          <Button
+            icon="trash"
+            variant="secondary"
+            intent="destructive"
+            iconWeight="regular"
+            @click="deleteToken(id)" />
+        </div>
+      </template>
+    </GenericTableRequest>
   </MainContentBackoffice>
 </template>
 <script>
@@ -43,6 +65,10 @@ export default {
           width: "auto",
           transformValue: this.formatDate,
         },
+        {
+          key: "actions",
+          width: "auto",
+        },
       ],
       sortListDirection: "asc",
       sortListKey: "createdAt",
@@ -55,6 +81,18 @@ export default {
     fetchMethod: apiGetAllTokens,
     formatDate(date) {
       return new Date(date).toLocaleDateString()
+    },
+    viewToken(id) {
+      console.log(id)
+    },
+    deleteToken(id) {
+      console.log(id)
+    },
+    renewToken(id) {
+      console.log(id)
+    },
+    getValue(id) {
+      return () => id
     },
   },
   components: {

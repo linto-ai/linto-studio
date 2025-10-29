@@ -15,7 +15,7 @@
         :line="line"
         :columns="columns">
         <template v-for="(_, slot) in $scopedSlots" #[slot]="props">
-          <slot :name="slot" v-bind="props"></slot>
+          <slot :name="slot" :id="line[idKey]" v-bind="props"></slot>
         </template>
       </GenericTableLine>
     </tbody>

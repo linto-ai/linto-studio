@@ -59,7 +59,7 @@ export default {
   props: {
     text: {
       type: String,
-      required: true,
+      required: false, // if content slot
     },
     icon: {
       type: String,
