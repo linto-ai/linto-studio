@@ -59,7 +59,6 @@ export default {
   },
   methods: {
     formatDate(date) {
-      // Implement your date formatting logic here
       return new Date(date).toLocaleDateString()
     },
     viewToken() {

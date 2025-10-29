@@ -36,7 +36,14 @@
       :content="tableContent"
       :columns="tableColumns"
       sortListDirection="asc"
-      sortListKey="name" />
+      sortListKey="name">
+      <template #cell-role="{ value }">
+        <OrgaRoleSelector v-model="value" readonly />
+      </template>
+      <template #cell-actions="{ value }">
+        <Button label="a button" />
+      </template>
+    </GenericTable>
   </div>
 </template>
 <script>
@@ -46,7 +53,6 @@ import EMPTY_FIELD from "@/const/emptyField"
 import formatDateTimeToIso from "@/tools/date/formatDateTimeToIso"
 import DurationInput from "@/components/molecules/DurationInput.vue"
 import OrgaRoleSelector from "@/components/molecules/OrgaRoleSelector.vue"
-import OrgaRoleSelectorContent from "@/components/molecules/OrgaRoleSelectorContent.vue"
 import GenericTable from "@/components/molecules/GenericTable.vue"
 export default {
   props: {},
@@ -114,13 +120,16 @@ export default {
         { _id: "2", name: "Quentin", role: 2 },
       ],
       tableColumns: [
-        { key: "name", label: "Nom", sortable: true, width: "auto" },
+        { key: "name", label: "Nom", sortable: true, width: "1fr" },
         {
           key: "role",
           label: "Rôle",
           sortable: true,
+          width: "1fr",
+        },
+        {
+          key: "actions",
           width: "auto",
-          component: "OrgaRoleSelectorContent",
         },
       ],
     }
@@ -135,7 +144,6 @@ export default {
     FormInput,
     DurationInput,
     OrgaRoleSelector,
-    OrgaRoleSelectorContent,
     GenericTable,
   },
 }

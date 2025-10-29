@@ -5,11 +5,20 @@
       :columns="columns"
       :sortListDirection="sortListDirection"
       :sortListKey="sortListKey" />
-    <GenericTableLine
-      v-for="line of content"
-      :key="line[idKey]"
-      :line="line"
-      :columns="columns" />
+    <tbody>
+      <div class="table-loader" v-if="loading">
+        <Loading />
+      </div>
+      <GenericTableLine
+        v-for="line of content"
+        :key="line[idKey]"
+        :line="line"
+        :columns="columns">
+        <template v-for="(_, slot) in $scopedSlots" #[slot]="props">
+          <slot :name="slot" v-bind="props"></slot>
+        </template>
+      </GenericTableLine>
+    </tbody>
   </table>
 </template>
 <script>
@@ -52,7 +61,9 @@ export default {
   data() {
     return {}
   },
-  mounted() {},
+  mounted() {
+    console.log("table generic", this.$scopedSlots)
+  },
   methods: {
     sortBy(event) {
       this.$emit("list_sort_by", event)

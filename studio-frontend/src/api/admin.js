@@ -132,3 +132,30 @@ export async function apiGetUserOrganizations(userId) {
   )
   return res
 }
+
+export async function apiGetAllTokens(
+  page = 0,
+  {
+    pageSize = DEFAULT_PAGE_SIZE,
+    sortField = "last_update",
+    sortOrder = -1,
+  } = {},
+) {
+  const res = await sendRequest(
+    `${BASE_API}/administration/tokens`,
+    {
+      method: "get",
+    },
+    {
+      page,
+      size: pageSize,
+      sortField,
+      sortCriteria: sortOrder,
+    },
+  )
+
+  if (res?.data) {
+    return { count: res.data.length, list: res.data }
+  }
+  return { count: 0, list: [] }
+}
