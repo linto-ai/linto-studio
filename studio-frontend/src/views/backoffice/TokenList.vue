@@ -6,6 +6,9 @@
       :columns="columns"
       :sortListDirection="sortListDirection"
       :sortListKey="sortListKey">
+      <template #cell-role="{ value }">
+        <PlatformRoleSelector v-model="value" readonly />
+      </template>
       <template #cell-actions="{ value, id }" class="flex gap-small">
         <div class="flex gap-small">
           <Button
@@ -35,8 +38,11 @@ import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import ApiTokenTable from "@/components/ApiTokenTable.vue"
 import GenericTableRequest from "@/components/molecules/GenericTableRequest.vue"
 import { apiGetAllTokens } from "@/api/admin"
+import PlatformRoleSelector from "@/components/molecules/PlatformRoleSelector.vue"
+import { platformRoleMixin } from "@/mixins/platformRole"
 
 export default {
+  mixins: [platformRoleMixin],
   props: {},
   data() {
     return {
@@ -99,6 +105,7 @@ export default {
     MainContentBackoffice,
     ApiTokenTable,
     GenericTableRequest,
+    PlatformRoleSelector,
   },
 }
 </script>

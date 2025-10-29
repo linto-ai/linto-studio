@@ -44,13 +44,7 @@
   </div>
 </template>
 <script>
-import { bus } from "@/main.js"
-
-import { orgaRoleMixin } from "@/mixins/orgaRole.js"
-import { readonly } from "vue"
-
 export default {
-  mixins: [orgaRoleMixin],
   props: {
     value: {
       type: Number,

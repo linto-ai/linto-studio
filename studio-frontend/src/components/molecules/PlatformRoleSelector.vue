@@ -1,12 +1,19 @@
 <template>
-  <SelectorDescription v-model="_value" :readonly="readonly" :items="items" />
+  <div>
+    <div class="plaform-role" v-for="role in platformRoles">
+      {{ role.label }}
+    </div>
+  </div>
 </template>
 
 <script>
-import { orgaRoleMixin } from "@/mixins/orgaRole.js"
+import { platformRoleMixin } from "@/mixins/platformRole"
+
 import SelectorDescription from "./SelectorDescription.vue"
+import Chip from "../atoms/Chip.vue"
+
 export default {
-  mixins: [orgaRoleMixin],
+  mixins: [platformRoleMixin],
   props: {
     value: {
       type: Number,
@@ -27,7 +34,14 @@ export default {
       },
     },
     items() {
-      return this.userRoles.map((role) => ({
+      console.log(
+        this.platformRoles.map((role) => ({
+          name: role.name,
+          description: role.description,
+          value: role.value,
+        })),
+      )
+      return this.platformRoles.map((role) => ({
         name: role.name,
         description: role.description,
         value: role.value,

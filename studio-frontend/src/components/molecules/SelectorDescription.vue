@@ -33,12 +33,9 @@
 </template>
 
 <script>
-import { orgaRoleMixin } from "@/mixins/orgaRole.js"
-import { platformRoleMixin } from "@/mixins/platformRole.js"
 import SelectorDescriptionContent from "./SelectorDescriptionContent.vue"
 import Tooltip from "../atoms/Tooltip.vue"
 export default {
-  mixins: [orgaRoleMixin, platformRoleMixin],
   props: {
     value: {
       type: Number,
