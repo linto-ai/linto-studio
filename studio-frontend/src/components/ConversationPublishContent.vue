@@ -25,7 +25,11 @@
       <span class="icon loading"></span>
     </div>
     <div
-      v-else-if="status === 'queued' || pdfPercentage === 'Processing 0%'"
+      v-else-if="
+        status === 'queued' ||
+        pdfPercentage === 'Processing 0%' ||
+        status !== 'processing'
+      "
       class="flex col center-text publish-main__loading align-center flex1 justify-center">
       <h2 class="center-text">{{ $t("publish.queued.title") }}</h2>
       <img
@@ -82,7 +86,7 @@ export default {
   },
   computed: {
     statusIsInError() {
-      return this.status === "error" || this.status === "unknown"
+      return this.status === "error" //|| this.status === "unknown"
     },
   },
 
