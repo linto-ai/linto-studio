@@ -1,3 +1,4 @@
+import { getCookie } from "@/tools/getCookie"
 import { getUserRoleInOrganization } from "@/tools/getUserRoleInOrganization"
 const getters = {
   getOrganizations(state) {
@@ -7,8 +8,10 @@ const getters = {
     return state.organizations[id]
   },
   getDefaultOrganizationId(state) {
+    const cookie = getCookie("organizationScope")
     const res =
       state.currentOrganizationScope ||
+      cookie ||
       Object.values(state.organizations)?.[0]._id ||
       null
     return res
