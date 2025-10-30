@@ -14,6 +14,27 @@ class ActivityLog extends MongoModel {
     }
   }
 
+  async getAll(params) {
+    try {
+      const filterKeys = ["size", "page", "sortField", "sortCriteria"]
+      const projection = { skipProjection: true }
+
+      const filter = {}
+      const query = {}
+
+      for (const [key, value] of Object.entries(params)) {
+        if (key === "userScope") continue
+
+        if (filterKeys.includes(key)) filter[key] = value
+        else query[key] = value
+      }
+      return await this.mongoAggregatePaginate(query, projection, filter)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   async getBySocketId(socketId) {
     try {
       const query = {

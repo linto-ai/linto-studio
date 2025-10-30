@@ -4,7 +4,7 @@ const { createLogger, format, transports } = require("winston")
 
 const configPath =
   process.env.WINSTON_CONFIG_PATH ||
-  `${process.cwd()}/lib/logger/winston.config.json`
+  `${process.cwd()}/config/logger/winston.config.json`
 const config = JSON.parse(fs.readFileSync(configPath, "utf8"))
 
 function buildFormat(transportOptions) {
