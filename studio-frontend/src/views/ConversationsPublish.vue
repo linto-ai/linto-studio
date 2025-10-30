@@ -48,6 +48,7 @@
         <PopoverList
           :items="optionsExport"
           style="margin-left: auto"
+          closeOnItemClick
           @click="exportConv">
           <template #trigger="{ open }">
             <Button
@@ -162,7 +163,7 @@ export default {
           if (this.mardownContent) {
             return [
               { value: "md", text: this.$t("conversation.export.md") },
-              { value: "pdf", text: this.$t("conversation.export.pdf") },
+              // { value: "pdf", text: this.$t("conversation.export.pdf") },
             ]
           }
           return [
