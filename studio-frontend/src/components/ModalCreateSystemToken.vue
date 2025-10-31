@@ -5,23 +5,9 @@
     v-model="isOpen"
     @submit="createToken">
     <FormInput :field="name" v-model="name.value" />
-    <div class="flex col gap-small form-field">
-      <label>{{
-        $t("backoffice.token_list.modal_create.platform_role")
-      }}</label>
-      <FormCheckbox
-        :field="organization_initiator_field"
-        v-model="organization_initiator_field.value" />
-      <FormCheckbox
-        :field="session_operator_field"
-        v-model="session_operator_field.value" />
-      <FormCheckbox
-        :field="system_administrator_field"
-        v-model="system_administrator_field.value" />
-      <FormCheckbox
-        :field="super_administrator_field"
-        v-model="super_administrator_field.value" />
-    </div>
+    <PlatformRoleSelector
+      :field="platformRoleField"
+      v-model="platformRoleField.value" />
     <DurationInput :field="expiration" v-model="expiration.value" />
   </Modal>
 </template>
@@ -34,9 +20,9 @@ import OrgaRoleSelector from "./molecules/OrgaRoleSelector.vue"
 import { apiCreateToken } from "@/api/token.js"
 import { mapGetters } from "vuex"
 import DurationInput from "@/components/molecules/DurationInput.vue"
-import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import { apiCreatePlatformToken } from "@/api/admin"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
+import PlatformRoleSelector from "./molecules/PlatformRoleSelector.vue"
 
 export default {
   mixins: [platformRoleMixin],
@@ -49,29 +35,9 @@ export default {
         ...EMPTY_FIELD,
         label: this.$t("api_tokens_settings.token_name_label"),
       },
-      organization_initiator_field: {
-        label: this.$t("platform_role.organization_initiator"),
-        value: false,
-        error: null,
-        disabled: false,
-      },
-      session_operator_field: {
-        label: this.$t("platform_role.session_operator"),
-        value: false,
-        error: null,
-        disabled: false,
-      },
-      system_administrator_field: {
-        label: this.$t("platform_role.system_administrator"),
-        value: false,
-        error: null,
-        disabled: false,
-      },
-      super_administrator_field: {
-        label: this.$t("platform_role.super_administrator"),
-        value: false,
-        error: null,
-        disabled: false,
+      platformRoleField: {
+        value: 1,
+        label: this.$t("backoffice.token_list.modal_create.platform_role"),
       },
       expiration: {
         ...EMPTY_FIELD,
@@ -87,20 +53,15 @@ export default {
   methods: {
     async createToken() {
       const expiration = this.expiration.value
-      const role_value = this.computeRoleValue({
-        USER: true,
-        ORGANIZATION_INITIATOR: this.organization_initiator_field.value,
-        SESSION_OPERATOR: this.session_operator_field.value,
-        SYSTEM_ADMINISTRATOR: this.system_administrator_field.value,
-        SUPER_ADMINISTRATOR: this.super_administrator_field.value,
-      })
+      const role_value = this.platformRoleField.value
 
-      const req = await apiCreatePlatformToken(this.organizationId, {
+      console.log("yop")
+      const req = await apiCreatePlatformToken({
         name: this.name.value,
         role: role_value,
         expiration,
       })
-
+      console.log("yop2")
       if (req.status == "success") {
         this.$store.dispatch("system/addNotification", {
           message: this.$t("api_tokens_settings.token_created"),
@@ -132,7 +93,7 @@ export default {
     FormInput,
     OrgaRoleSelector,
     DurationInput,
-    FormCheckbox,
+    PlatformRoleSelector,
   },
 }
 </script>
