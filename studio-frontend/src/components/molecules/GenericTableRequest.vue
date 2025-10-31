@@ -78,6 +78,10 @@ export default {
       this.totalPagesNumber = Math.ceil(req.count / 10)
       this.loading = false
     },
+    removeElement(id) {
+      this.data = this.data.filter((d) => d[this.idKey] !== id)
+      console.log("rem", this.data)
+    },
   },
   components: { GenericTable },
 }

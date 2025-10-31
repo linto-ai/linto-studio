@@ -7,6 +7,7 @@
         @on-create="showModalCreateToken" />
     </template>
     <GenericTableRequest
+      ref="table"
       idKey="userId"
       :fetchMethod="fetchMethod"
       :columns="columns"
@@ -15,28 +16,33 @@
       <template #cell-role="{ value }">
         <PlatformRoleSelector v-model="value" readonly />
       </template>
-      <template #cell-actions="{ value, id }" class="flex gap-small">
+      <template #cell-actions="{ value, id, element }" class="flex gap-small">
         <div class="flex gap-small">
           <Button
             icon="eye"
             variant="tertiary"
             @click="viewToken(id)"
             iconWeight="regular" />
-          <CopyButton :value="getValue(id)" />
+          <CopyButton :value="getValue(id, element)" />
           <Button
             icon="arrows-clockwise"
             variant="tertiary"
-            @click="renewToken(id)" />
+            @click="renewToken(id, element)" />
           <Button
             icon="trash"
             variant="secondary"
             intent="destructive"
             iconWeight="regular"
-            @click="deleteToken(id)" />
+            @click="deleteToken(id, element)" />
         </div>
       </template>
     </GenericTableRequest>
     <ModalCreateSystemToken v-model="isModalCreateTokenOpen" />
+    <ModalDeleteToken
+      v-if="selectedToken"
+      v-model="isModalDeleteTokenOpen"
+      :token="selectedToken"
+      @delete="confirmDelete" />
   </MainContentBackoffice>
 </template>
 <script>
@@ -44,11 +50,12 @@ import { bus } from "@/main.js"
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import ApiTokenTable from "@/components/ApiTokenTable.vue"
 import GenericTableRequest from "@/components/molecules/GenericTableRequest.vue"
-import { apiGetAllTokens } from "@/api/admin"
+import { apiGetAllTokens, apiDeletePlatformToken } from "@/api/admin"
 import PlatformRoleSelector from "@/components/molecules/PlatformRoleSelector.vue"
 import { platformRoleMixin } from "@/mixins/platformRole"
 import HeaderTable from "@/components/HeaderTable.vue"
 import ModalCreateSystemToken from "@/components/ModalCreateSystemToken.vue"
+import ModalDeleteToken from "@/components/ModalDeleteToken.vue"
 
 export default {
   mixins: [platformRoleMixin],
@@ -87,7 +94,9 @@ export default {
       ],
       sortListDirection: "asc",
       sortListKey: "createdAt",
+      selectedToken: null,
       isModalCreateTokenOpen: false,
+      isModalDeleteTokenOpen: false,
     }
   },
   mounted() {
@@ -101,10 +110,29 @@ export default {
     viewToken(id) {
       console.log(id)
     },
-    deleteToken(id) {
-      console.log(id)
+    deleteToken(id, element) {
+      console.log(id, element)
+
+      this.selectedToken = element
+      this.isModalDeleteTokenOpen = true
     },
-    renewToken(id) {
+    async confirmDelete() {
+      const res = await apiDeletePlatformToken(this.selectedToken.userId)
+      if (res.status === "success") {
+        this.$refs.table.removeElement(this.selectedToken.userId)
+        this.$store.dispatch("system/addNotification", {
+          message: this.$t("api_tokens_settings.delete_success"),
+          type: "success",
+        })
+      } else {
+        console.error("Error deleting token:", res)
+        this.$store.dispatch("system/addNotification", {
+          message: this.$t("api_tokens_settings.delete_error"),
+          type: "error",
+        })
+      }
+    },
+    renewToken(id, element) {
       console.log(id)
     },
     getValue(id) {
@@ -121,6 +149,7 @@ export default {
     PlatformRoleSelector,
     HeaderTable,
     ModalCreateSystemToken,
+    ModalDeleteToken,
   },
 }
 </script>

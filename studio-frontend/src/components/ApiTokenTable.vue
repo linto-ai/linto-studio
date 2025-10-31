@@ -30,7 +30,6 @@
     <ModalDeleteToken
       v-if="selectedToken"
       v-model="showDeleteModal"
-      :organizationId="organizationId"
       :token="selectedToken"
       @delete="confirmDelete"
       @close="closeDeleteModal" />

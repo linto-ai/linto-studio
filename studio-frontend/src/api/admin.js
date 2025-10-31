@@ -170,3 +170,11 @@ export async function apiCreatePlatformToken({ name, role, expiration }) {
 
   return res
 }
+
+export async function apiDeletePlatformToken(tokenId) {
+  const res = await sendRequest(
+    `${BASE_API}/administration/tokens/${tokenId}`,
+    { method: "delete" },
+  )
+  return res
+}
