@@ -178,3 +178,11 @@ export async function apiDeletePlatformToken(tokenId) {
   )
   return res
 }
+
+export async function apiGetDetailToken(tokenId) {
+  const res = await sendRequest(
+    `${BASE_API}/administration/tokens/${tokenId}`,
+    { method: "get" },
+  )
+  return res
+}

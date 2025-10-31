@@ -50,7 +50,11 @@ import { bus } from "@/main.js"
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import ApiTokenTable from "@/components/ApiTokenTable.vue"
 import GenericTableRequest from "@/components/molecules/GenericTableRequest.vue"
-import { apiGetAllTokens, apiDeletePlatformToken } from "@/api/admin"
+import {
+  apiGetAllTokens,
+  apiDeletePlatformToken,
+  apiGetDetailToken,
+} from "@/api/admin"
 import PlatformRoleSelector from "@/components/molecules/PlatformRoleSelector.vue"
 import { platformRoleMixin } from "@/mixins/platformRole"
 import HeaderTable from "@/components/HeaderTable.vue"
@@ -111,8 +115,6 @@ export default {
       console.log(id)
     },
     deleteToken(id, element) {
-      console.log(id, element)
-
       this.selectedToken = element
       this.isModalDeleteTokenOpen = true
     },
@@ -136,7 +138,14 @@ export default {
       console.log(id)
     },
     getValue(id) {
-      return () => id
+      return async () => {
+        const res = await apiGetDetailToken(id)
+        if (res.status == "success") {
+          return res.data.auth_token
+        } else {
+          throw "error getting token"
+        }
+      }
     },
     showModalCreateToken() {
       this.isModalCreateTokenOpen = true
