@@ -885,11 +885,12 @@
     "description_description": "Description de l'organisation",
     "description_label": "Description",
     "general_settings": "Réglages",
-    "leave_error_message": "Une erreur s'est produite",
     "leave_modal": {
       "action": "Quitter",
       "content": "Êtes vous sur de vouloir quitter l'organisation \"{name}\" ?",
-      "title": "Quitter l'organisation"
+      "title": "Quitter l'organisation",
+      "success_message": "Vous avez quitté l'organisation avec succès",
+      "error_message": "Une erreur s'est produite pour quitter l'organisationn"
     },
     "remove_user_modal": {
       "action": "Supprimer l'utilisateur de l'organisation",

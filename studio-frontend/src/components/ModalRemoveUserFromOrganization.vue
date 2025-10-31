@@ -1,6 +1,6 @@
 <template>
   <ModalNew
-    value
+    v-model="_value"
     @on-cancel="($event) => this.$emit('on-cancel')"
     @on-confirm="deleteUserFromOrganization"
     :title="$t('organisation.remove_user_modal.title')"
@@ -33,6 +33,10 @@ export default {
       type: Object,
       required: true,
     },
+    value: {
+      type: Boolean,
+      required: true,
+    },
   },
   data() {
     return {}
@@ -48,6 +52,16 @@ export default {
       )
 
       this.$emit("on-confirm", res)
+    },
+  },
+  computed: {
+    _value: {
+      get() {
+        return this.value
+      },
+      set(val) {
+        this.$emit("input", val)
+      },
     },
   },
   components: { Fragment, ModalNew },
