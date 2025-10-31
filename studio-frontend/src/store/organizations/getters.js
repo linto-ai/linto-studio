@@ -14,6 +14,10 @@ const getters = {
       cookie ||
       Object.values(state.organizations)?.[0]._id ||
       null
+
+    if (!state.organizations[res]) {
+      return Object.values(state.organizations)?.[0]._id
+    }
     return res
   },
   getOrganizationsAsArray(state) {

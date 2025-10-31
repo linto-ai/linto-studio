@@ -873,11 +873,12 @@
     "description_description": "The description of your organisation",
     "description_label": "Description",
     "general_settings": "General settings",
-    "leave_error_message": "An error occurred while leaving the organisation",
     "leave_modal": {
       "action": "Leave",
       "content": "Are you sure you want to leave the organisation \"{name}\" ?",
-      "title": "Leave organisation"
+      "title": "Leave organisation",
+      "success_message": "You have successfully left the organisation",
+      "error_message": "An error occurred while leaving the organisation"
     },
     "remove_user_modal": {
       "action": "Remove user from organization",

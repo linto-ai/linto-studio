@@ -44,31 +44,6 @@
               <UserInfoInline :user="user" :user-id="user._id" />
             </td>
             <td>
-              <!-- <select
-                v-model="user.role"
-                v-if="
-                  (isAtLeastMaintainer &&
-                    userRole >= user.role &&
-                    userInfo._id !== user._id) ||
-                  (isSystemAdministrator && isBackofficePage)
-                "
-                @change="updateUserRole(user)">
-                <option
-                  v-for="role in userRoles"
-                  :key="role.value"
-                  :value="role.value"
-                  :disabled="
-                    userRole < role.value && !isAtLeastSystemAdministrator
-                  ">
-                  {{ role.name }}
-                </option>
-              </select>
-              <span v-else-if="user.role > maxRoleValue">
-                inconsistent role value: {{ user.role }}</span
-              >
-              <span v-else>{{
-                userRoles.find((ur) => ur.value === user.role).name
-              }}</span> -->
               <OrgaRoleSelector
                 v-model="user.role"
                 @input="updateUserRole(user)"
@@ -103,14 +78,14 @@
     </div>
 
     <ModalLeaveOrganization
-      v-if="displayLeaveModal"
+      v-model="displayLeaveModal"
       :currentOrganization="currentOrganization"
       :currentOrganizationScope="currentOrganizationScope"
       @on-confirm="closeLeaveModal"
       @on-cancel="closeLeaveModal" />
 
     <ModalRemoveUserFromOrganization
-      v-if="displayRemoveUserModal"
+      v-model="displayRemoveUserModal"
       :currentOrganization="currentOrganization"
       :user="userToRemove"
       @on-confirm="closeRemoveFromMembersModal"
@@ -254,13 +229,8 @@ export default {
     closeLeaveModal(apiRes) {
       if (apiRes) {
         if (apiRes.status === "success") {
-          setCookie("cm_orga_scope", "")
-          window.location.href = "/"
-        } else {
-          bus.$emit("app_notif", {
-            status: "error",
-            message: this.$i18n.t("organisation.leave_error_message"),
-          })
+          // TODO: delete orga in store instead
+          location.reload()
         }
       }
       this.displayLeaveModal = false
