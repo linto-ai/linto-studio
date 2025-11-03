@@ -127,22 +127,40 @@ async function listApiKey(idList, orgaRoles = undefined) {
   return merged
 }
 
-async function getApiKey(tokenId) {
-  const tokens = await model.tokens.getTokenByUser(tokenId)
+async function getApiKeyData(tokenId, regenerate = false, expiresIn) {
+  try {
+    if (regenerate) {
+      await model.tokens.deleteAllUserTokens(tokenId)
+    }
 
-  return {
-    message: "API key tokens has been retrieved",
-    ...(await generateApiKeyToken(tokenId, tokens[0])),
+    let existingTokens = await model.tokens.getTokenByUser(tokenId)
+    const auth = await generateApiKeyToken(
+      tokenId,
+      regenerate ? undefined : existingTokens[0],
+      expiresIn,
+    )
+
+    if (regenerate) {
+      existingTokens = await model.tokens.getTokenByUser(tokenId)
+    }
+
+    const { salt, userId, ...tokenData } = existingTokens[0] || {}
+    return {
+      message: "API key tokens have been retrieved",
+      ...tokenData,
+      ...auth,
+    }
+  } catch (err) {
+    throw err
   }
 }
 
-async function refreshApiKey(tokenId, expiresIn) {
-  await model.tokens.deleteAllUserTokens(tokenId)
+async function getApiKey(tokenId) {
+  return getApiKeyData(tokenId)
+}
 
-  return {
-    message: "API key token has been refreshed",
-    ...(await generateApiKeyToken(tokenId, undefined, expiresIn)),
-  }
+async function refreshApiKey(tokenId, expiresIn) {
+  return getApiKeyData(tokenId, true, expiresIn)
 }
 
 async function deleteApiKey(tokenId, revoke = false) {
