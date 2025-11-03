@@ -193,13 +193,14 @@ class LoggerContext {
   async createSocketContext(
     socket,
     socketEvent,
-    { source = "socketio", level = DEFAULT_LEVEL } = {},
+    { source = "socketio", level = DEFAULT_LEVEL, activity = "session" } = {},
   ) {
     try {
       const context = {
         source,
         level,
         scope: "resource",
+        activity,
         socket: {
           id: socket.id,
           connectionCount: 1,
