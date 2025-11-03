@@ -11,8 +11,8 @@
       idKey="userId"
       :fetchMethod="fetchMethod"
       :columns="columns"
-      :sortListDirection="sortListDirection"
-      :sortListKey="sortListKey">
+      :initSortListDirection="sortListDirection"
+      :initSortListKey="sortListKey">
       <template #cell-role="{ value }">
         <PlatformRoleSelector v-model="value" readonly />
       </template>
@@ -42,7 +42,9 @@
       :token="selectedToken"
       :fetchFunction="fetchToken"
       v-model="isModalViewTokenOpen" />
-    <ModalCreateSystemToken v-model="isModalCreateTokenOpen" />
+    <ModalCreateSystemToken
+      v-model="isModalCreateTokenOpen"
+      @handleTokenCreated="handleTokenCreated" />
     <ModalDeleteToken
       v-if="selectedToken"
       v-model="isModalDeleteTokenOpen"
@@ -176,6 +178,9 @@ export default {
     },
     showModalCreateToken() {
       this.isModalCreateTokenOpen = true
+    },
+    handleTokenCreated() {
+      this.$refs.table.reset()
     },
   },
   components: {
