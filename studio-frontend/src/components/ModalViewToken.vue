@@ -31,11 +31,8 @@ import FormInput from "@/components/molecules/FormInput.vue"
 export default {
   props: {
     value: { type: Boolean, required: true },
+    fetchFunction: { type: Function, required: true },
     token: { type: Object, required: true },
-    organizationId: {
-      type: String,
-      required: true,
-    },
   },
   data() {
     return {
@@ -52,14 +49,16 @@ export default {
   methods: {
     async fetchTokenData() {
       this.loading = true
-      const req = await apiGetToken(this.organizationId, this.token.userId)
-      if (req.status == "success") {
-        this.tokenData = req.data
+
+      try {
+        this.tokenData = await this.fetchFunction()
         this.keyField.value = this.tokenData.auth_token
-      } else {
+      } catch (error) {
+        console.error("Error fetching token data:", error)
         this.error = this.$t("api_tokens_settings.error_fetching_token_details")
+      } finally {
+        this.loading = false
       }
-      this.loading = false
     },
   },
   computed: {

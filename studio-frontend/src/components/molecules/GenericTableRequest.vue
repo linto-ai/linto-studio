@@ -82,6 +82,14 @@ export default {
       this.data = this.data.filter((d) => d[this.idKey] !== id)
       console.log("rem", this.data)
     },
+    updateElement(id, newElement) {
+      this.data = this.data.map((d) => {
+        if (d[this.idKey] === id) {
+          return { ...d, ...newElement }
+        }
+        return d
+      })
+    },
   },
   components: { GenericTable },
 }

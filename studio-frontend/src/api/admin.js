@@ -186,3 +186,14 @@ export async function apiGetDetailToken(tokenId) {
   )
   return res
 }
+
+export async function apiRenewPlatformToken(tokenId, { expiration }) {
+  const res = await sendRequest(
+    `${BASE_API}/administration/tokens/${tokenId}`,
+    { method: "put" },
+    { expires_in: expiration },
+    null,
+  )
+
+  return res
+}

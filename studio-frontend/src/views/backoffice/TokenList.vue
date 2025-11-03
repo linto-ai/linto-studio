@@ -21,7 +21,7 @@
           <Button
             icon="eye"
             variant="tertiary"
-            @click="viewToken(id)"
+            @click="viewToken(id, element)"
             iconWeight="regular" />
           <CopyButton :value="getValue(id, element)" />
           <Button
@@ -37,12 +37,22 @@
         </div>
       </template>
     </GenericTableRequest>
+    <ModalViewToken
+      v-if="selectedToken"
+      :token="selectedToken"
+      :fetchFunction="fetchToken"
+      v-model="isModalViewTokenOpen" />
     <ModalCreateSystemToken v-model="isModalCreateTokenOpen" />
     <ModalDeleteToken
       v-if="selectedToken"
       v-model="isModalDeleteTokenOpen"
       :token="selectedToken"
       @delete="confirmDelete" />
+    <ModalRenewSystemToken
+      v-if="selectedToken"
+      v-model="isModalRenewTokenOpen"
+      :token="selectedToken"
+      @handleTokenRenew="handleTokenRenew" />
   </MainContentBackoffice>
 </template>
 <script>
@@ -60,6 +70,8 @@ import { platformRoleMixin } from "@/mixins/platformRole"
 import HeaderTable from "@/components/HeaderTable.vue"
 import ModalCreateSystemToken from "@/components/ModalCreateSystemToken.vue"
 import ModalDeleteToken from "@/components/ModalDeleteToken.vue"
+import ModalRenewSystemToken from "@/components/ModalRenewSystemToken.vue"
+import ModalViewToken from "@/components/ModalViewToken.vue"
 
 export default {
   mixins: [platformRoleMixin],
@@ -101,6 +113,8 @@ export default {
       selectedToken: null,
       isModalCreateTokenOpen: false,
       isModalDeleteTokenOpen: false,
+      isModalRenewTokenOpen: false,
+      isModalViewTokenOpen: false,
     }
   },
   mounted() {
@@ -108,11 +122,20 @@ export default {
   },
   methods: {
     fetchMethod: apiGetAllTokens,
+    async fetchToken() {
+      const req = await apiGetDetailToken(this.selectedToken.userId)
+      if (req.status == "success") {
+        return req.data
+      } else {
+        throw new Error(req.message)
+      }
+    },
     formatDate(date) {
       return new Date(date).toLocaleDateString()
     },
-    viewToken(id) {
-      console.log(id)
+    viewToken(id, element) {
+      this.selectedToken = element
+      this.isModalViewTokenOpen = true
     },
     deleteToken(id, element) {
       this.selectedToken = element
@@ -135,7 +158,11 @@ export default {
       }
     },
     renewToken(id, element) {
-      console.log(id)
+      this.selectedToken = element
+      this.isModalRenewTokenOpen = true
+    },
+    handleTokenRenew(newToken) {
+      this.$refs.table.updateElement(newToken.user_id, newToken)
     },
     getValue(id) {
       return async () => {
@@ -159,6 +186,8 @@ export default {
     HeaderTable,
     ModalCreateSystemToken,
     ModalDeleteToken,
+    ModalRenewSystemToken,
+    ModalViewToken,
   },
 }
 </script>

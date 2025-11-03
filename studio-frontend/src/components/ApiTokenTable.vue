@@ -23,9 +23,9 @@
     </table>
     <ModalViewToken
       v-if="selectedToken"
-      :organizationId="organizationId"
-      v-model="showViewModal"
+      :fetchFunction="fetchToken"
       :token="selectedToken"
+      v-model="showViewModal"
       @close="closeViewModal" />
     <ModalDeleteToken
       v-if="selectedToken"
@@ -44,6 +44,7 @@
 </template>
 
 <script>
+import { apiGetToken } from "@/api/token"
 import ApiTokenTableHeader from "./ApiTokenTableHeader.vue"
 import ApiTokenTableLine from "./ApiTokenTableLine.vue"
 import ModalDeleteToken from "./ModalDeleteToken.vue"
@@ -119,6 +120,17 @@ export default {
     confirmDelete(tokenId) {
       this.$emit("delete-token", tokenId)
       this.closeDeleteModal()
+    },
+    async fetchToken() {
+      const req = await apiGetToken(
+        this.organizationId,
+        this.selectedToken.userId,
+      )
+      if (req.status == "success") {
+        return req.data
+      } else {
+        throw new Error(req.message)
+      }
     },
   },
   computed: {
