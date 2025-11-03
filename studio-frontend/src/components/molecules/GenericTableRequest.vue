@@ -1,22 +1,29 @@
 <template>
-  <GenericTable
-    :columns="columns"
-    :content="data"
-    :loading="loading"
-    :selectedRows="selectedRows"
-    :idKey="idKey"
-    :sortListDirection="sortListDirection"
-    :sortListKey="sortListKey">
-    <template v-for="(_, slot) in $scopedSlots" #[slot]="props">
-      <slot :name="slot" v-bind="props"></slot>
-    </template>
-  </GenericTable>
+  <div>
+    <GenericTable
+      @list_sort_by="sortBy"
+      :columns="columns"
+      :content="data"
+      :loading="loading"
+      :selectedRows="selectedRows"
+      :idKey="idKey"
+      :sortListDirection="sortListDirection"
+      :sortListKey="sortListKey">
+      <template v-for="(_, slot) in $scopedSlots" #[slot]="props">
+        <slot :name="slot" v-bind="props"></slot>
+      </template>
+    </GenericTable>
+    <Pagination
+      :pages="totalPagesNumber"
+      v-model="currentPageNb"
+      v-if="count > 0"></Pagination>
+  </div>
 </template>
 <script>
 import { bus } from "@/main.js"
 import { debounceMixin } from "@/mixins/debounce.js"
 import GenericTable from "./GenericTable.vue"
-
+import Pagination from "./Pagination.vue"
 export default {
   mixins: [debounceMixin],
   props: {
@@ -36,11 +43,11 @@ export default {
       type: String,
       default: "_id",
     },
-    sortListDirection: {
+    initSortListDirection: {
       type: String,
       required: true,
     },
-    sortListKey: {
+    initSortListKey: {
       type: String,
       required: true,
     },
@@ -54,6 +61,8 @@ export default {
       currentPageNb: 0,
       search: "",
       totalPagesNumber: 0,
+      sortListDirection: this.initSortListDirection,
+      sortListKey: this.initSortListKey,
     }
   },
   mounted() {
@@ -72,7 +81,6 @@ export default {
         this.fetchData.bind(this),
         this.search,
       )
-      console.log(req)
       this.data = req.list
       this.count = req.count
       this.totalPagesNumber = Math.ceil(req.count / 10)
@@ -90,7 +98,28 @@ export default {
         return d
       })
     },
+    reset() {
+      this.currentPageNb = 0
+      this.search = ""
+      this.selectedLines = []
+      this.debouncedFetchData()
+    },
+    sortBy(key) {
+      if (key === this.sortListKey) {
+        this.sortListDirection =
+          this.sortListDirection === "desc" ? "asc" : "desc"
+      } else {
+        this.sortListDirection = "desc"
+      }
+      this.sortListKey = key
+      this.debouncedFetchData()
+    },
   },
-  components: { GenericTable },
+  watch: {
+    currentPageNb() {
+      this.debouncedFetchData()
+    },
+  },
+  components: { GenericTable, Pagination },
 }
 </script>

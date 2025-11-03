@@ -107,14 +107,16 @@ async function listApiKey(idList, orgaRoles = undefined) {
   const users = await model.users.listApiKeyList(idList, projection)
   const tokens = await model.tokens.getTokenByList(idList)
 
-  const merged = users.map((u) => {
-    const token = tokens.find((t) => t.userId === u._id.toString())
-    const roleData = orgaRoles?.find((r) => r.userId === u._id.toString())
-    delete u._id
+  const merged = idList.map((id) => {
+    const user = users.find((u) => u?._id?.toString() === id)
+    const token = tokens.find((t) => t.userId === id)
+    const roleData = orgaRoles?.find((r) => r.userId === id)
+
+    if (user) delete user._id
 
     return {
-      userId: token?.userId || roleData?.userId,
-      ...u,
+      userId: id,
+      ...user,
       ...token,
       ...(orgaRoles
         ? {
