@@ -107,10 +107,16 @@ async function listApiKey(idList, orgaRoles = undefined) {
   const users = await model.users.listApiKeyList(idList, projection)
   const tokens = await model.tokens.getTokenByList(idList)
 
+  const userMap = new Map(
+    users.filter((u) => u._id).map((u) => [u._id.toString(), u]),
+  )
+  const tokenMap = new Map(tokens.map((t) => [t.userId, t]))
+  const roleMap = new Map(orgaRoles?.map((r) => [r.userId, r]) || [])
+
   const merged = idList.map((id) => {
-    const user = users.find((u) => u?._id?.toString() === id)
-    const token = tokens.find((t) => t.userId === id)
-    const roleData = orgaRoles?.find((r) => r.userId === id)
+    const user = userMap.get(id)
+    const token = tokenMap.get(id)
+    const roleData = roleMap.get(id)
 
     if (user) delete user._id
 
@@ -126,6 +132,7 @@ async function listApiKey(idList, orgaRoles = undefined) {
         : {}),
     }
   })
+
   return merged
 }
 
