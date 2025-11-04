@@ -25,6 +25,13 @@
     </router-link>
     <router-link
       v-if="isAtLeastSystemAdministrator"
+      :to="{ name: 'backoffice-tokenList' }"
+      class="flex row align-center gap-medium tab backoffice-sidebar__link">
+      <ph-icon name="key" size="sm"></ph-icon>
+      <span class="tab__label">{{ $t("backoffice.navigation.tokens") }}</span>
+    </router-link>
+    <router-link
+      v-if="isAtLeastSystemAdministrator"
       :to="{ name: 'backoffice-transcriberProfilesList' }"
       class="flex row align-center gap-medium tab backoffice-sidebar__link">
       <ph-icon name="waves" size="sm"></ph-icon>

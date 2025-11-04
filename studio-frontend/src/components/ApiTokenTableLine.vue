@@ -2,7 +2,7 @@
   <tr>
     <td>{{ token.firstname }}</td>
     <td>
-      <OrgaRoleSelector v-model="token.role" readonly />
+      <OrgaRoleSelector v-model="token.organizationRole" readonly />
     </td>
     <td>{{ formatDate(token.createdAt) }}</td>
     <td>{{ formatDate(token.expiresAt) }}</td>
@@ -59,7 +59,6 @@ export default {
   },
   methods: {
     formatDate(date) {
-      // Implement your date formatting logic here
       return new Date(date).toLocaleDateString()
     },
     viewToken() {

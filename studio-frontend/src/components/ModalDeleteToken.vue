@@ -13,10 +13,6 @@
   </Modal>
 </template>
 <script>
-import { bus } from "@/main.js"
-import { mapGetters } from "vuex"
-
-import { apiGetToken } from "@/api/token"
 import Modal from "@/components/molecules/Modal.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
 
@@ -24,10 +20,6 @@ export default {
   props: {
     value: { type: Boolean, required: true },
     token: { type: Object, required: true },
-    organizationId: {
-      type: String,
-      required: true,
-    },
   },
   data() {
     return {}
