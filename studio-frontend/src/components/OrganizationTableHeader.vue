@@ -8,7 +8,7 @@
         eventLabel="personal"
         :sortListKey="sortListKey"
         :sortListDirection="sortListDirection">
-        <span class="icon profile" />
+        <ph-icon name="user" />
       </ArrayHeader>
       <ArrayHeader
         @list_sort_by="sortBy"

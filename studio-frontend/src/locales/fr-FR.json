@@ -11,6 +11,39 @@
     "error_end_time_before_start_time": "L'heure de fin doit être après l'heure de début",
     "error_past_date": "La date doit être dans le futur"
   },
+  "api_tokens_settings": {
+    "title": "Clés d'API",
+    "create_token": "Ajouter une clé d'API",
+    "error_fetching_token_details": "Les détails de la clé d'API n'ont pas pu être récupérés",
+    "delete_token": "Supprimer",
+    "delete_success": "La clé a été supprimé avec succès",
+    "delete_error": "La clé n'a pas pu être supprimé",
+    "view_token": "Afficher",
+    "token_created": "Clé d'API créé avec succès",
+    "token_created_error": "Une erreur est survenue lors de la création de la clé d'API",
+    "token_creation_date_label": "Crée le",
+    "token_expiration_date_label": "Expire le",
+    "token_key_label": "clé",
+    "token_name_label": "Nom",
+    "token_role_label": "Rôle",
+    "token_actions_label": "Actions",
+    "modal_create": {
+      "title": "Créer une clé d'API",
+      "expiration_label": "Durée de validité"
+    },
+    "modal_delete": {
+      "title": "Supprimer la clé d'API '{name}'",
+      "content": "Êtes-vous sûr de vouloir supprimer la clé d'API {name} ?",
+      "delete_action": "Supprimer"
+    },
+    "modal_renew": {
+      "title": "Renouveler la clé d'API '{name}'",
+      "expiration_label": "Mettre à jour la durée de validité",
+      "confirm": "Renouveler"
+    },
+    "token_renew_success": "Jeton d'API renouvelé avec succès",
+    "token_renew_error": "Une erreur est survenue lors du renouvellement de la clé"
+  },
   "app_editor_channels_selector": {
     "label": "Choisir un canal"
   },
@@ -34,6 +67,7 @@
     "label": "Rechercher dans le texte"
   },
   "app_settings_modal": {
+    "api_tokens": "Clés d'api",
     "account_title": "Mon compte",
     "account_information": "Informations du compte",
     "billing": "Facturation",
@@ -501,6 +535,12 @@
     },
     "openFileExplorer": "ou choisissez depuis l'explorateur de fichier"
   },
+  "duration_input": {
+    "h": "Heure | Heures",
+    "d": "Jour | Jours",
+    "m": "Mois",
+    "y": "Année | Années"
+  },
   "error": {
     "bug_report": "Signaler un bug ou une erreur",
     "server_error": {
@@ -535,6 +575,9 @@
     "title": "Médias favoris",
     "no_media_title": "Votre collection de médias favoris est vide",
     "no_media_subtitle": "Ajoutez des favoris en cliquant sur l'étoile dans la liste des médias."
+  },
+  "form_field": {
+    "empty_value": "–"
   },
   "footer": {
     "powered_by": "LinTO {linto_logo} par {linagora_logo}",
@@ -721,6 +764,7 @@
     "processing_error_message": "La transcription automatique du média a rencontré une erreur"
   },
   "modal": {
+    "apply": "Appliquer",
     "cancel": "Annuler",
     "delete": "Supprimer",
     "close_title": "Fermer la modale"
@@ -830,11 +874,12 @@
     "description_description": "Description de l'organisation",
     "description_label": "Description",
     "general_settings": "Réglages",
-    "leave_error_message": "Une erreur s'est produite",
     "leave_modal": {
       "action": "Quitter",
       "content": "Êtes vous sur de vouloir quitter l'organisation \"{name}\" ?",
-      "title": "Quitter l'organisation"
+      "title": "Quitter l'organisation",
+      "success_message": "Vous avez quitté l'organisation avec succès",
+      "error_message": "Une erreur s'est produite pour quitter l'organisationn"
     },
     "remove_user_modal": {
       "action": "Supprimer l'utilisateur de l'organisation",
@@ -901,12 +946,18 @@
     "visibility_name": "Visibilité"
   },
   "organization_role": {
-    "member": "Simple membre",
+    "member": "Membre",
+    "member_description": "Accéder et consulter les médias de l’organisation",
     "uploader": "Collaborateur",
-    "quick_meeting": "Collaborateur privilégié",
-    "session_operator": "Collaborateur complet",
-    "maintainer": "Gestionnaire",
-    "administrator": "Administrateur"
+    "uploader_description": "Importer de nouveaux médias et lancer leur transcription",
+    "quick_meeting": "Collaborateur en direct",
+    "quick_meeting_description": "Démarrer une transcription en direct pendant une visioconférence ou à partir d’un microphone",
+    "session_operator": "Producteur",
+    "session_operator_description": "Gérer et configurer des flux en direct avancés pour la transcription (si disponible dans votre organisation)",
+    "maintainer": "Manager",
+    "maintainer_description": "Gérer les utilisateurs et leurs rôles au sein de l’organisation",
+    "administrator": "Administrateur",
+    "administrator_description": "Tous les droits sur l’organisation"
   },
   "publish": {
     "error_first_line": {

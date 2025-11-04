@@ -7,6 +7,7 @@
 <script>
 import popupManager from "@/tools/popupManager"
 import PopoverRenderer from "./PopoverRenderer.vue"
+import POPOVER_MARGIN from "@/const/popoverMargin.js"
 
 export default {
   name: "Popover",
@@ -279,7 +280,7 @@ export default {
           break
       }
 
-      const margin = 8
+      const margin = POPOVER_MARGIN
       left = Math.max(
         margin,
         Math.min(left, viewportWidth - popoverRect.width - margin),
@@ -333,6 +334,7 @@ export default {
 <style lang="scss">
 .popover-trigger {
   display: flex;
+  width: fit-content;
 }
 
 .popover-wrapper {
@@ -340,8 +342,8 @@ export default {
 }
 
 .popover-content {
-  background: var(--neutral-10);
-  border: 1px solid var(--neutral-20);
+  background: var(--background-app);
+  border: 1px solid var(--neutral-40);
   border-radius: 2px;
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
   min-width: 120px;

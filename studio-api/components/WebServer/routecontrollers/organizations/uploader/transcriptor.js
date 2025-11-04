@@ -98,10 +98,10 @@ async function transcribe(isSingleFile, req, res, next) {
       options,
     )
     const conversation = await createConversation(processingJob, req.body)
-
-    res
-      .status(201)
-      .send({ message: "A conversation is currently being processed" })
+    res.status(201).send({
+      message: "A conversation is currently being processed",
+      conversationId: conversation._id.toString(),
+    })
     return conversation
   } catch (err) {
     next(err)

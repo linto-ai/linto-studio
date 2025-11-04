@@ -1,23 +1,6 @@
-# 1.6.0
-
-> Please run `DB_MIGRATION_TARGET=1.6.0 npm run start`
-
-- Categories + Tags refactoring
-  - All organizations have a ROOT system category.
-  - A sub-category “TAGS” inherits it. Tags are stored in this sub-category.
-  - Tags of type systems are linked to "scopeId" = "organizationId".
-- Cloud Mode
-  - FRONTEND: new env var `VUE_APP_MODE=cloud` will render saas components
-    - Lot of fixs/enhancements (prepare vue3 migration)
-  - Backend: cloud service component (handle cloud features via private saas module)
-
-# 1.5.6
-
-More information on RELEASE file in the main folder
+For details on upcoming versions, see the RELEASE file in the root directory.
 
 # 1.5.5
-
-More information on RELEASE file in the main folder
 
 - Added global platform role
 - Added global organization role

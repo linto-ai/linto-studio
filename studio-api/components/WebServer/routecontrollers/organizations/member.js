@@ -39,10 +39,13 @@ async function leaveSelfFromOrganization(req, res, next) {
     let new_users_list = organization[0].users.filter(
       (oUser) => oUser.userId !== userId,
     )
+    let owner = organization[0].owner
+    if (data.isAdmin && owner === userId) owner = data.otherAdmin[0]
 
     const result = await model.organizations.update({
       _id: req.params.organizationId,
       users: new_users_list,
+      owner: owner,
     })
 
     if (result.matchedCount === 0) throw new OrganizationError()

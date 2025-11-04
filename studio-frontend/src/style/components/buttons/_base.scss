@@ -20,14 +20,14 @@
   border-radius: var(--btn-border-radius, 4px);
   padding: var(--btn-padding, 0.5rem 1rem);
   font-size: var(--btn-font-size, 0.9rem);
-  background-color: var(--btn-bg, transparent);
+  background-color: var(--btn-bg, var(--background-primary));
   color: var(--btn-text, var(--text-primary));
   gap: 0.25em;
   max-width: 100%;
   overflow: auto;
 
   &:hover:not([disabled]):not(.disabled) {
-    background-color: var(--btn-hover-bg, var(--button-background-hover));
+    background-color: var(--btn-hover-bg, var(--background-primary));
     color: var(--btn-hover-text, var(--text-primary));
     transform: translateY(-1px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);

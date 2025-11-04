@@ -11,6 +11,7 @@ const VALIDITY_DATE = require(
 )
 
 const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
+const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
 
 const public_projection = {
   email: 1,
@@ -82,6 +83,7 @@ class UsersModel extends MongoModel {
         created: dateTime,
         last_update: dateTime,
         fromSso: false,
+        type: USER_TYPE.USER,
       }
 
       return await this.mongoInsert(adminPayload)
@@ -104,12 +106,33 @@ class UsersModel extends MongoModel {
         role: ROLE.defaultUserRole(),
         created: dateTime,
         last_update: dateTime,
+        type: USER_TYPE.USER,
       }
 
       // If SMTP is disabled, mark the email as verified
       if (process.env.SMTP_HOST === "") {
         userPayload.emailIsVerified = true
         userPayload.verifiedEmail.push(userPayload.email)
+      }
+
+      return await this.mongoInsert(userPayload)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async createApiKey(payload, role = ROLE.UNDEFINED) {
+    try {
+      const dateTime = moment().format()
+      const userPayload = {
+        ...payload,
+        created: dateTime,
+        last_update: dateTime,
+        fromSso: false,
+        private: true,
+        role: role,
+        type: USER_TYPE.M2M,
       }
 
       return await this.mongoInsert(userPayload)
@@ -215,6 +238,13 @@ class UsersModel extends MongoModel {
         }
       }
 
+      if (filter.type) {
+        query.type = {
+          $regex: filter.type,
+          $options: "i",
+        }
+      }
+
       if (!filter) return await this.mongoRequest(query, personal_projection)
       else
         return await this.mongoAggregatePaginate(
@@ -222,6 +252,35 @@ class UsersModel extends MongoModel {
           personal_projection,
           filter,
         )
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async listApiKey() {
+    try {
+      const query = {
+        type: USER_TYPE.M2M,
+      }
+      return await this.mongoRequest(query)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async listApiKeyList(ids, projection = {}) {
+    try {
+      const objectIdArray = ids.map((id) => {
+        if (typeof id === "string") return this.getObjectId(id)
+        else if (typeof id === "object") return id
+      })
+      const query = {
+        _id: { $in: objectIdArray },
+        type: USER_TYPE.M2M,
+      }
+      return await this.mongoRequest(query, projection)
     } catch (error) {
       console.error(error)
       return error

@@ -5,6 +5,7 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const PLATFORM_ROLES = require(`${process.cwd()}/lib/dao/users/platformRole`)
+const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
 
 const { OrganizationError, OrganizationUnsupportedMediaType } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
@@ -50,7 +51,13 @@ async function getOrganization(req, res, next) {
     if (lorganization.length !== 1) throw new OrganizationError()
 
     let organization = lorganization[0]
+
+    organization.users = organization.users.filter(
+      (u) => u.type !== USER_TYPE.M2M,
+    )
+
     let orgaUser = []
+
     for (let luser of organization.users) {
       let user = await model.users.getById(luser.userId)
 

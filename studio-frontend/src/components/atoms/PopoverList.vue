@@ -8,12 +8,18 @@
     ref="popover">
     <template #trigger="{ open }">
       <slot name="trigger" :open="open">
-        <Button :icon="open ? 'caret-up' : 'caret-down'" v-bind="$attrs" />
+        <Button
+          :iconRight="open ? 'caret-up' : 'caret-down'"
+          v-bind="$attrs"
+          :label="labelButton" />
       </slot>
     </template>
     <template #content>
       <div class="popover-list__content">
-        <div v-for="item in items" :key="item.id" class="popover-list__item">
+        <div
+          v-for="(item, index) in items"
+          :key="item.id"
+          class="popover-list__item">
           <Button
             :icon="itemIcon(item)"
             :icon-position="item.iconPosition || 'left'"
@@ -21,10 +27,20 @@
             :avatar="item.avatar"
             :avatar-text="item.avatarText"
             :icon-right="item.iconRight"
+            :hovered="highlightedIndex == index"
             @click="handleClickItem(item)"
             :size="size"
             v-bind="itemPropsWithoutTo(item)">
-            {{ item.name || item.text }}
+            <div class="flex col">
+              <span class="popover-list__item__name text-cut">{{
+                item.name || item.text
+              }}</span>
+              <span
+                class="popover-list__item__description"
+                v-if="item.description">
+                {{ item.description }}
+              </span>
+            </div>
           </Button>
         </div>
       </div>
@@ -45,7 +61,9 @@ export default {
      * @type {Array<ListItem>}
      * @description List of items to display in the popover
      * @property {string} id - The id of the item
+     * @property {string} value - The value of the item (value or id is required)
      * @property {string} name - The name of the item
+     * @property {string} description? - The description of the item (optional)
      * @property {string} icon? - The icon of the item (optional)
      * @property {string} iconPosition? - The position of the icon (optional, default: "left")
      * @property {string} iconWeight? - The weight of the icon (optional, default: "regular")
@@ -121,7 +139,7 @@ export default {
       if (typeof value === "object" && value !== null) {
         return value.id === item.id
       }
-      return value === item.id
+      return value === item.id || value === item.value
     },
     isSelected(item) {
       if (this.multiple) {
@@ -147,7 +165,6 @@ export default {
         // single selection: either select or deselect (null)
         const selected = this.isSelected(item)
         const updated = selected ? null : this.returnObjects ? item : item.id
-        console.log("wololo", updated)
         this.$emit("update:value", updated)
         this.$emit("input", updated)
       }
@@ -171,6 +188,7 @@ export default {
           })
         } else {
           this.$emit("click", item)
+          this.$emit("input", item.value ?? item.id)
           if (this.closeOnItemClick) {
             this.$nextTick(() => {
               this.$refs.popover && this.$refs.popover.close()
@@ -202,6 +220,41 @@ export default {
       const { to, ...itemWithoutTo } = item
       return itemWithoutTo
     },
+    onKeyDown(e) {
+      console.log("hey")
+      switch (e.key) {
+        case "ArrowDown":
+          this.highlightNext()
+          break
+        case "ArrowUp":
+          this.highlightPrevious()
+          break
+        case "Enter":
+          this.handleClickItem(this.items[this.highlightedIndex])
+          break
+        default:
+          break
+      }
+    },
+    highlightNext() {
+      if (this.highlightedIndex == this.items.length - 1) {
+        this.highlightedIndex = 0
+      } else {
+        this.highlightedIndex += 1
+      }
+    },
+    highlightPrevious() {
+      if (this.highlightedIndex == 0) {
+        this.highlightedIndex = this.items.length - 1
+      } else {
+        this.highlightedIndex -= 1
+      }
+    },
+  },
+  data() {
+    return {
+      highlightedIndex: 0,
+    }
   },
   computed: {
     /**
@@ -212,6 +265,10 @@ export default {
       if (typeof window === "undefined") return false
       return window.matchMedia("(max-width: 768px)").matches
     },
+    labelButton() {
+      const item = this.items.find((item) => this.isSame(this.value, item))
+      return item.text || item.name
+    },
   },
   mounted() {
     // Ensure reactivity on viewport resize
@@ -221,6 +278,7 @@ export default {
     }
     if (typeof window !== "undefined") {
       window.addEventListener("resize", this.resizeListener, { passive: true })
+      //window.addEventListener("keydown", this.onKeyDown)
     }
   },
   beforeDestroy() {
@@ -233,7 +291,6 @@ export default {
 
 <style lang="scss">
 .popover-wrapper {
-  border: var(--border-block);
   border-radius: 4px;
   display: flex;
 }
@@ -265,11 +322,23 @@ export default {
     &:hover {
       background-color: var(--primary-color);
       color: var(--primary-contrast);
+
+      .popover-list__item__description {
+        color: var(--primary-contrast);
+      }
     }
 
     .icon {
       background-color: transparent;
     }
+  }
+
+  &__title {
+  }
+
+  &__description {
+    color: var(--text-secondary);
+    font-size: 0.9em;
   }
 }
 

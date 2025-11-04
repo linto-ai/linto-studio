@@ -15,33 +15,47 @@ const swaggerJsdoc = require("swagger-jsdoc")
 let swaggerDocument = require("./apidoc/swagger.json")
 
 const CORS = require("cors")
-let corsOptions = {}
-if (
-  process.env.CORS_ENABLED === "true" &&
-  process.env.CORS_API_WHITELIST.length > 0
-) {
-  whitelistDomains = process.env.CORS_API_WHITELIST.split(",")
-  corsOptions = {
-    origin: function (origin, callback) {
-      if (
-        !origin ||
-        whitelistDomains.indexOf(origin) !== -1 ||
-        origin === "undefined"
-      ) {
-        callback(null, true)
-      } else {
-        callback(new Error("Not allowed by CORS"))
-      }
-    },
+let corsOptions = null
+
+if (process.env.CORS_ENABLED === "true") {
+  const whitelistRaw = process.env.CORS_API_WHITELIST || ""
+
+  if (whitelistRaw === "*") {
+    corsOptions = { origin: "*" }
+  } else if (whitelistRaw.length > 0) {
+    const whitelistDomains = whitelistRaw.split(",").map((d) => d.trim())
+
+    corsOptions = {
+      origin: function (origin, callback) {
+        if (!origin) {
+          return callback(null, true)
+        }
+
+        const allowed = whitelistDomains.some((domain) =>
+          origin.includes(domain),
+        )
+
+        if (allowed) {
+          callback(null, true)
+        } else {
+          callback(new Error("Not allowed by CORS"))
+        }
+      },
+    }
   }
 }
-
 class WebServer extends Component {
   constructor(app) {
     super(app)
     this.id = this.constructor.name
     this.app = app
     this.express = express()
+
+    if (corsOptions) {
+      this.express.use(CORS(corsOptions))
+      this.express.options("*", CORS(corsOptions)) // allow cors settings to be enable for all routes
+    }
+
     this.express.set("etag", false)
     this.express.set("trust proxy", true)
 
@@ -67,8 +81,6 @@ class WebServer extends Component {
       }),
     )
     this.express.use(cookieParser())
-    // Cross domain whitelist
-    if (process.env.CORS_ENABLED === "true") this.express.use(CORS(corsOptions))
 
     this.express.use(
       fileUpload({

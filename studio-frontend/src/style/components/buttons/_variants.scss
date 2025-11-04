@@ -52,6 +52,10 @@
   }
 }
 
+.table-header-button {
+  --btn-bg: transparent;
+}
+
 .table-header-button:hover {
   box-shadow: none;
   transform: none;

@@ -12,19 +12,25 @@ const { ConversationIdRequire, ConversationNotFound } = require(
 
 const RIGHT = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
+const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
 
 function countAdmin(organization, userId) {
   let adminCount = 0
   let isAdmin = false
+  let otherAdmin = []
   for (let oUser of organization.users) {
-    if (oUser.role === ROLES.ADMIN) adminCount++
-    if (oUser.userId === userId && oUser.role === ROLES.ADMIN) isAdmin = true
+    if (oUser.role === ROLES.ADMIN) {
+      adminCount++
+      if (oUser.userId === userId) isAdmin = true
+      else otherAdmin.push(oUser.userId)
+    }
   }
 
   return {
     userCount: organization.users.length,
     adminCount,
     isAdmin,
+    otherAdmin,
   }
 }
 
@@ -91,7 +97,7 @@ async function getOrgaIdFromReq(req) {
 }
 
 // Add user to all organization with the same email domain
-async function populateUserToOrganization(user) {
+async function populateUserToOrganization(user, role = ROLES.MEMBER) {
   const matchingMail = "@" + user.email.split("@")[1]
 
   const organizations = await model.organizations.getAll({
@@ -103,10 +109,20 @@ async function populateUserToOrganization(user) {
         .length === 0
     ) {
       let orgaCopy = JSON.parse(JSON.stringify(organization))
-      orgaCopy.users.push({ userId: user._id.toString(), role: ROLES.MEMBER })
+      orgaCopy.users.push({ userId: user._id.toString(), role: role })
       await model.organizations.update(orgaCopy)
     }
   })
+}
+
+async function addM2mUserToOrganization(orgaId, m2m_id, role = ROLES.MEMBER) {
+  const organizations = (await model.organizations.getById(orgaId))[0]
+  organizations.users.push({
+    userId: m2m_id.toString(),
+    role: role,
+    type: USER_TYPE.M2M,
+  })
+  await model.organizations.update(organizations)
 }
 
 module.exports = {
@@ -114,4 +130,5 @@ module.exports = {
   countAdmin,
   getUserConversationFromOrganization,
   populateUserToOrganization,
+  addM2mUserToOrganization,
 }

@@ -6,6 +6,7 @@
       <SessionStatus
         v-if="sessionLoaded"
         :session="session"
+        :small="isMobile"
         showName
         withText
         class="flex1" />
@@ -23,6 +24,7 @@ import isAuthenticated from "@/tools/isAuthenticated.js"
 
 import SessionStatus from "@/components/SessionStatus.vue"
 import ActionBar from "@/layouts/ActionBar.vue"
+import { mapActions, mapGetters } from "vuex"
 
 export default {
   props: {
@@ -52,6 +54,7 @@ export default {
     isAuthenticated() {
       return isAuthenticated()
     },
+    ...mapGetters("system", ["isMobile"]),
   },
   components: {
     SessionStatus,

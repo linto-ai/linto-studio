@@ -1,0 +1,24 @@
+{
+  "APIToken": {
+    "type": "object",
+    "properties": {
+      "message": {
+        "type": "string",
+        "description": "Message giving information about the operation"
+      },
+      "auth_token": {
+        "type": "string",
+        "description": "Api Token to use has bearer token"
+      },
+      "user_id": {
+        "type": "string",
+        "description": "The token id"
+      }
+    },
+    "example": {
+      "message": "API key has been ...",
+      "auth_token": "eyJhbG...",
+      "user_id": "68db90ced0e326b6adddcacb"
+    }
+  }
+}

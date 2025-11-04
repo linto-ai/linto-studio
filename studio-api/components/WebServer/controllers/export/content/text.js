@@ -51,8 +51,10 @@ function processTurn(paragraphs_content, data) {
       if (data.speakers.length === 0) {
         children.push(new TextRun(turn))
       } else {
-        // const phrasePattern = new RegExp(`\\b(${metadata.speakers.join('|')})\\b`, 'ig')
-        const phrasePattern = new RegExp(`(${data.speakers.join("|")})`, "ig")
+        const escapedSpeakers = data.speakers
+          .map((s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+          .join("|")
+        const phrasePattern = new RegExp(`(${escapedSpeakers})`, "ig")
         const segments = turn.split(phrasePattern)
 
         for (const segment of segments) {

@@ -775,6 +775,11 @@ router.beforeEach(async (to, from, next) => {
       return next({ name: "not_found" })
     }
 
+    // if 404, minimal router logic to avoid any loop crash
+    if (to.name === "not_found") {
+      return next()
+    }
+
     // Handle magic link authentication
     if (to.name === "magic-link-login") {
       return await authGuards.handleMagicLinkAuth(to, next)
@@ -864,6 +869,12 @@ router.beforeEach(async (to, from, next) => {
     return next()
   } catch (error) {
     console.error(error)
+    routerDebug("Error > redirect to not found")
+    // wait 1 s
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+    // stop loader
+    store.dispatch("system/setIsLoading", false)
+    // redirect to 404 page
     return next({ name: "not_found" })
   }
 })

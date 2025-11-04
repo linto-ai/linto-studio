@@ -406,10 +406,10 @@
     border-radius: 4px;
     border: var(--border-block);
     box-shadow: var(--shadow-block);
-    margin: 2px;
+    margin: 1px;
     background-color: var(--background-primary);
-    min-width: 21rem;
-    box-sizing: border-box;
+    min-width: 18rem;
+    //box-sizing: border-box;
     legend {
       float: left;
       width: 100%;

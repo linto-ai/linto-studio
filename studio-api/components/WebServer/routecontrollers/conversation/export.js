@@ -334,24 +334,28 @@ async function prepateData(conversation, data, format) {
   let secondsDecimals = 2
   if (format === "docx") secondsDecimals = 0
 
-  let text = conversation.text.map((turn) => {
-    let stime, etime
-    if (turn.stime) stime = turn.stime
-    else stime = turn.words[0].stime
+  let text = conversation.text
+    .map((turn) => {
+      try {
+        let stime, etime
+        if (turn.stime) stime = turn.stime
+        else stime = turn.words[0].stime
 
-    if (turn.etime) etime = turn.etime
-    else etime = turn.words[turn.words.length - 1].etime
+        if (turn.etime) etime = turn.etime
+        else etime = turn.words[turn.words.length - 1].etime
 
-    let update_turn = {
-      turn_id: turn.turn_id,
-      segment: turn.segment,
-    }
-    update_turn.speaker_id = turn.speaker_id
-    update_turn.speaker_name = speakers[turn.speaker_id]
-    update_turn.stime = secondsToHHMMSSWithDecimals(stime, secondsDecimals)
-    update_turn.etime = secondsToHHMMSSWithDecimals(etime, secondsDecimals)
-    return update_turn
-  })
+        let update_turn = {
+          turn_id: turn.turn_id,
+          segment: turn.segment,
+        }
+        update_turn.speaker_id = turn.speaker_id
+        update_turn.speaker_name = speakers[turn.speaker_id]
+        update_turn.stime = secondsToHHMMSSWithDecimals(stime, secondsDecimals)
+        update_turn.etime = secondsToHHMMSSWithDecimals(etime, secondsDecimals)
+        return update_turn
+      } catch (err) {}
+    })
+    .filter(Boolean) // remove undefined entries in case of something is unsupported or unexpected
 
   conversation.text = text
   return data
