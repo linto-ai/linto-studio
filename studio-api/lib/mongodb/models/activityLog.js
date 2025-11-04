@@ -116,6 +116,152 @@ class ActivityLog extends MongoModel {
       return error
     }
   }
+
+  async getKpiLlm(orgaId) {
+    try {
+      const query = [
+        {
+          $match: {
+            activity: "llm",
+            ...(orgaId && { "organization.id": orgaId }),
+          },
+        },
+        {
+          $group: {
+            _id: null, // 👈 Global aggregation (or remove null if you want to group per org)
+            totalGenerations: { $sum: 1 },
+            totalContentLength: { $sum: "$llm.contentLength" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            totalGenerations: 1,
+            totalContentLength: 1, // keep as bytes
+          },
+        },
+      ]
+      return await this.mongoAggregate(query)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async getKpiTranscription(orgaId) {
+    try {
+      const query = [
+        {
+          $match: {
+            activity: "transcription",
+            ...(orgaId && { "organization.id": orgaId }),
+          },
+        },
+        {
+          $group: {
+            _id: "$organization.id",
+            totalTranscriptions: { $sum: 1 },
+            totalDurationSeconds: {
+              $sum: "$transcription.conversation.transcription.duration",
+            },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            // organizationId: "$_id",
+            totalTranscriptions: 1,
+            totalDurationSeconds: 1,
+            totalHours: { $divide: ["$totalDurationSeconds", 3600] },
+          },
+        },
+      ]
+
+      return await this.mongoAggregate(query)
+    } catch (error) {
+      console.error("Error in kpiTranscription:", error)
+      return error
+    }
+  }
+
+  async getKpiSession(orgaId) {
+    try {
+      const query = [
+        {
+          $match: {
+            activity: "session",
+            ...(orgaId && { "organization.id": orgaId }),
+          },
+        },
+        {
+          $group: {
+            _id: "$organization.id",
+            totalSessions: { $sum: 1 },
+            totalWatchTimeSeconds: { $sum: "$socket.totalWatchTime" },
+            avgWatchTimeSeconds: { $avg: "$socket.totalWatchTime" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            organizationId: "$_id",
+            totalSessions: 1,
+            totalWatchTimeHours: { $divide: ["$totalWatchTimeSeconds", 3600] },
+            avgWatchTimeMinutes: { $divide: ["$avgWatchTimeSeconds", 60] },
+          },
+        },
+      ]
+
+      return await this.mongoAggregate(query)
+    } catch (error) {
+      console.error("Error in kpiSession:", error)
+      return error
+    }
+  }
+
+  async kpiSessionById(sessionId) {
+    try {
+      if (!sessionId) throw new Error("Missing sessionId")
+
+      const query = [
+        {
+          $match: {
+            activity: "session",
+            "session.sessionId": sessionId,
+          },
+        },
+        {
+          $group: {
+            _id: "$session.sessionId",
+            totalWatchTime: { $sum: "$socket.totalWatchTime" },
+            avgWatchTime: { $avg: "$socket.totalWatchTime" },
+            totalConnections: { $sum: "$socket.connectionCount" },
+            userCount: { $sum: 1 },
+            sessionInfo: { $first: "$session" },
+            organization: { $first: "$organization" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            sessionInfo: 1,
+            organization: 1,
+            totalConnections: 1,
+            userCount: 1,
+            totalWatchTimeSeconds: "$totalWatchTime",
+            totalWatchTimeMinutes: { $divide: ["$totalWatchTime", 60] },
+            totalWatchTimeHours: { $divide: ["$totalWatchTime", 3600] },
+            avgWatchTimeSeconds: "$avgWatchTime",
+          },
+        },
+      ]
+
+      return await this.mongoAggregate(query)
+    } catch (error) {
+      console.error("Error in kpiSessionById:", error)
+      return error
+    }
+  }
 }
 
 module.exports = new ActivityLog()
