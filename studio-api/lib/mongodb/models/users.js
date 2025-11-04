@@ -258,12 +258,16 @@ class UsersModel extends MongoModel {
     }
   }
 
-  async listApiKey() {
+  async listApiKey(filter = {}) {
     try {
       const query = {
         type: USER_TYPE.M2M,
       }
-      return await this.mongoRequest(query)
+      return await this.mongoAggregatePaginate(
+        query,
+        personal_projection,
+        filter,
+      )
     } catch (error) {
       console.error(error)
       return error

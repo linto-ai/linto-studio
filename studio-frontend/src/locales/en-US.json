@@ -25,6 +25,7 @@
     "token_key_label": "Key",
     "token_name_label": "Name",
     "token_role_label": "Role",
+    "token_platform_role_label": "Platform roles",
     "token_actions_label": "Actions",
     "modal_create": {
       "title": "Create a new key",
@@ -86,6 +87,7 @@
       "home": "Home",
       "users": "Users",
       "organisations": "Organisations",
+      "tokens": "Api keys",
       "transcriberProfiles": "Transcriber Profiles"
     },
     "user_list": {
@@ -99,6 +101,10 @@
       "personal_organizations_shown": "Personal organisations shown",
       "personal_organizations_hidden": "Personal organisations hidden",
       "remove_organisation_button": "Delete an organisation | Delete {count} organisations"
+    },
+    "token_list": {
+      "title": "API Keys",
+      "add_token_button": "Add a system API Key"
     },
     "transcriber_profile_detail": {
       "save_button": "Save Transcriber Profile",
@@ -152,6 +158,7 @@
     "shared": "Shared",
     "subtitles": "Subtitles",
     "tagsSettings": "{organization} tags",
+    "tokens": "Api keys",
     "transcription": "Transcription",
     "transcriberProfiles": "Transcriber Profiles",
     "users": "Users",
@@ -1418,10 +1425,15 @@
   },
   "platform_role": {
     "organization_initiator": "Organisation initiator",
+    "organization_initiator_description": "Rights to create new organizations",
     "session_operator": "Session operator",
+    "session_operator_description": "Rights to manage and configure live streams for transcription",
     "system_administrator": "System administrator",
+    "system_administrator_description": "Rights to manage users and organizations on the platform",
+    "super_administrator_description": "All rights on the platform",
     "super_administrator": "Super administrator",
     "user": "User",
+    "user_description": "Simple user of the platform",
     "suspend": "Suspended user"
   },
   "week_selector": {

@@ -32,12 +32,14 @@ async function createApiKeyPlatform(req, res, next) {
 
 async function listApiKey(req, res, next) {
   try {
-    const apiKeyUsers = (await model.users.listApiKey()).map((u) =>
-      u._id.toString(),
-    )
+    const apiKeyUsers = await model.users.listApiKey(req.query)
     const apiKeyList = await TokenHandler.listApiKey(apiKeyUsers)
 
-    res.status(200).send(apiKeyList)
+    const merged = {
+      count: apiKeyUsers.count,
+      list: apiKeyList,
+    }
+    res.status(200).send(merged)
   } catch (err) {
     next(err)
   }

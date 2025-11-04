@@ -26,6 +26,7 @@
     "token_key_label": "clé",
     "token_name_label": "Nom",
     "token_role_label": "Rôle",
+    "token_platform_role_label": "Rôles de plateforme",
     "token_actions_label": "Actions",
     "modal_create": {
       "title": "Créer une clé d'API",
@@ -87,6 +88,7 @@
       "home": "Accueil",
       "users": "Utilisateurs",
       "organisations": "Organisations",
+      "tokens": "Clés d'apis",
       "transcriberProfiles": "Profils de transcription"
     },
     "user_list": {
@@ -100,6 +102,14 @@
       "personal_organizations_shown": "organisations personnelles affichées",
       "personal_organizations_hidden": "organisations personnelles cachées",
       "remove_organisation_button": "Supprimer l'organisation | Supprimer les {count} organisations"
+    },
+    "token_list": {
+      "title": "Clés d'API",
+      "add_token_button": "Ajouter une clé d'API système",
+      "modal_create": {
+        "title": "Créer une clé d'API système",
+        "platform_role": "Rôle de plateforme"
+      }
     },
     "transcriber_profile_detail": {
       "save_button": "Enregistrer le profil",
@@ -152,6 +162,7 @@
     "shared": "Partagés",
     "subtitles": "Sous-titres",
     "tagsSettings": "Tags de {organization}",
+    "tokens": "Clés d'apis",
     "transcription": "Transcription",
     "transcriberProfiles": "Profils de transcription",
     "users": "Utilisateurs",
@@ -1427,10 +1438,15 @@
   },
   "platform_role": {
     "organization_initiator": "Initiateur d'organisation",
+    "organization_initiator_description": "Droits pour créer de nouvelles organisations",
     "session_operator": "Opérateur de session",
+    "session_operator_description": "Droits pour la gestion et la configuration des flux en direct pour la transcription",
     "system_administrator": "Administrateur système",
+    "system_administrator_description": "Droits pour la gestion des utilisateurs et des organisation sur la plateforme",
     "super_administrator": "Super administrateur",
+    "super_administrator_description": "Tous les droits sur la plateforme",
     "user": "Utilisateur",
+    "user_description": "Simple utilisateur de la plateforme",
     "suspend": "Utilisateur désactivé"
   },
   "week_selector": {

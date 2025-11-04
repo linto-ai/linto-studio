@@ -182,6 +182,23 @@ let router = new Router({
       },
     },
     {
+      path: "/backoffice/tokens",
+      name: "backoffice-tokenList",
+      components: {
+        default: () => import("../views/backoffice/TokenList.vue"),
+        ...defaultComponents,
+      },
+      defaultProps,
+      meta: {
+        backoffice: true,
+        breadcrumb: {
+          label: "breadcrumb.tokens",
+          parent: "backoffice",
+          showInBreadcrumb: true,
+        },
+      },
+    },
+    {
       path: "/backoffice/users/:userId",
       name: "backoffice-userDetail",
       components: {

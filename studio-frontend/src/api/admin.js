@@ -132,3 +132,68 @@ export async function apiGetUserOrganizations(userId) {
   )
   return res
 }
+
+export async function apiGetAllTokens(
+  page = 0,
+  {
+    pageSize = DEFAULT_PAGE_SIZE,
+    sortField = "last_update",
+    sortOrder = -1,
+  } = {},
+) {
+  const res = await sendRequest(
+    `${BASE_API}/administration/tokens`,
+    {
+      method: "get",
+    },
+    {
+      page,
+      size: pageSize,
+      sortField,
+      sortCriteria: sortOrder,
+    },
+  )
+
+  if (res?.data) {
+    return res.data
+  }
+  return { count: 0, list: [] }
+}
+
+export async function apiCreatePlatformToken({ name, role, expiration }) {
+  const res = await sendRequest(
+    `${BASE_API}/administration/tokens`,
+    { method: "post" },
+    { name, role, expires_in: expiration },
+    null,
+  )
+
+  return res
+}
+
+export async function apiDeletePlatformToken(tokenId) {
+  const res = await sendRequest(
+    `${BASE_API}/administration/tokens/${tokenId}`,
+    { method: "delete" },
+  )
+  return res
+}
+
+export async function apiGetDetailToken(tokenId) {
+  const res = await sendRequest(
+    `${BASE_API}/administration/tokens/${tokenId}`,
+    { method: "get" },
+  )
+  return res
+}
+
+export async function apiRenewPlatformToken(tokenId, { expiration }) {
+  const res = await sendRequest(
+    `${BASE_API}/administration/tokens/${tokenId}`,
+    { method: "put" },
+    { expires_in: expiration },
+    null,
+  )
+
+  return res
+}
