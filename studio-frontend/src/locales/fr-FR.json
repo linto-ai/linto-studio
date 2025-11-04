@@ -1431,10 +1431,15 @@
   },
   "platform_role": {
     "organization_initiator": "Initiateur d'organisation",
+    "organization_initiator_description": "Droits pour créer de nouvelles organisations",
     "session_operator": "Opérateur de session",
+    "session_operator_description": "Droits pour la gestion et la configuration des flux en direct pour la transcription",
     "system_administrator": "Administrateur système",
+    "system_administrator_description": "Droits pour la gestion des utilisateurs et des organisation sur la plateforme",
     "super_administrator": "Super administrateur",
+    "super_administrator_description": "Tous les droits sur la plateforme",
     "user": "Utilisateur",
+    "user_description": "Simple utilisateur de la plateforme",
     "suspend": "Utilisateur désactivé"
   },
   "week_selector": {

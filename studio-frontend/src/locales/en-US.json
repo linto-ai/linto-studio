@@ -1425,10 +1425,15 @@
   },
   "platform_role": {
     "organization_initiator": "Organisation initiator",
+    "organization_initiator_description": "Rights to create new organizations",
     "session_operator": "Session operator",
+    "session_operator_description": "Rights to manage and configure live streams for transcription",
     "system_administrator": "System administrator",
+    "system_administrator_description": "Rights to manage users and organizations on the platform",
+    "super_administrator_description": "All rights on the platform",
     "super_administrator": "Super administrator",
     "user": "User",
+    "user_description": "Simple user of the platform",
     "suspend": "Suspended user"
   },
   "week_selector": {
