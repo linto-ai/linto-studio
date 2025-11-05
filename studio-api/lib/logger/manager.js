@@ -63,18 +63,18 @@ class LogManager {
       if (!activityLog) return
 
       const socketPayload = calculateWatchTime(activityLog, ctx)
-      if (socketPayload.totalWatchTime < KEEP_LOG_WITH_WATCHTIME_OVER) {
+      /*if (socketPayload.totalWatchTime < KEEP_LOG_WITH_WATCHTIME_OVER) {
         await model.activityLog.deleteAllSocketLog(
           ctx.socket.id,
           KEEP_LOG_WITH_WATCHTIME_OVER,
         )
-      } else {
-        await model.activityLog.socketLeft(
-          activityLog,
-          socketPayload,
-          ctx.timestamp,
-        )
-      }
+      } else {*/
+      await model.activityLog.socketLeft(
+        activityLog,
+        socketPayload,
+        ctx.timestamp,
+      )
+      // }
     }
   }
   static async logLlmEvent(req, payload) {

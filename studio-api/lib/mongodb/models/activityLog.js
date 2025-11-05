@@ -218,7 +218,6 @@ class ActivityLog extends MongoModel {
       return error
     }
   }
-
   async kpiSessionById(sessionId) {
     try {
       if (!sessionId) throw new Error("Missing sessionId")
@@ -239,6 +238,34 @@ class ActivityLog extends MongoModel {
             userCount: { $sum: 1 },
             sessionInfo: { $first: "$session" },
             organization: { $first: "$organization" },
+            usersAbove5Min: {
+              $sum: {
+                $cond: [{ $gte: ["$socket.totalWatchTime", 300] }, 1, 0],
+              },
+            },
+            usersBelow5Min: {
+              $sum: {
+                $cond: [{ $lt: ["$socket.totalWatchTime", 300] }, 1, 0],
+              },
+            },
+            avgWatchTimeAbove5Min: {
+              $avg: {
+                $cond: [
+                  { $gte: ["$socket.totalWatchTime", 300] },
+                  "$socket.totalWatchTime",
+                  null,
+                ],
+              },
+            },
+            avgWatchTimeBelow5Min: {
+              $avg: {
+                $cond: [
+                  { $lt: ["$socket.totalWatchTime", 300] },
+                  "$socket.totalWatchTime",
+                  null,
+                ],
+              },
+            },
           },
         },
         {
@@ -246,12 +273,22 @@ class ActivityLog extends MongoModel {
             _id: 0,
             sessionInfo: 1,
             organization: 1,
-            totalConnections: 1,
-            userCount: 1,
+            userCount: {
+              total: "$userCount",
+              totalConnections: "$totalConnections",
+              above5Min: "$usersAbove5Min",
+              below5Min: "$usersBelow5Min",
+            },
             totalWatchTimeSeconds: "$totalWatchTime",
             totalWatchTimeMinutes: { $divide: ["$totalWatchTime", 60] },
             totalWatchTimeHours: { $divide: ["$totalWatchTime", 3600] },
             avgWatchTimeSeconds: "$avgWatchTime",
+            watchTime: {
+              avgAbove5MinSeconds: "$avgWatchTimeAbove5Min",
+              avgBelow5MinSeconds: "$avgWatchTimeBelow5Min",
+              avgAbove5MinMinutes: { $divide: ["$avgWatchTimeAbove5Min", 60] },
+              avgBelow5MinMinutes: { $divide: ["$avgWatchTimeBelow5Min", 60] },
+            },
           },
         },
       ]
