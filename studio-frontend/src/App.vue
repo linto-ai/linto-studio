@@ -106,10 +106,7 @@ export default {
       })
     })
 
-    const enableSession = getEnv("VUE_APP_ENABLE_SESSION") === "true"
-    if (enableSession) {
-      this.$apiEventWS.connect()
-    }
+    this.$apiEventWS.connect()
   },
   watch: {
     isLoading: {
