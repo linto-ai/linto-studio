@@ -1,5 +1,6 @@
 <template>
   <div class="quick-session-notif flex gap-small align-center">
+    <!-- label -->
     <div class="flex1 flex col quick-session-notif__text" v-if="isVisio">
       <div class="quick-session-notif__title">
         {{ $t("quick_session.notif.visio.title") }}
@@ -8,10 +9,25 @@
         {{ visioUrl }}
       </a>
     </div>
+
+    <div class="flex1 flex col quick-session-notif__text" v-else>
+      <div class="quick-session-notif__title">
+        {{ $t("quick_session.notif.default.title") }}
+      </div>
+    </div>
+
+    <!-- buttons -->
     <Button
+      v-if="isVisio"
       :label="$t('quick_session.notif.visio.continue_button')"
       size="sm"
       variant="secondary" />
+    <Button
+      v-else
+      :label="$t('quick_session.notif.default.continue_button')"
+      size="sm"
+      variant="secondary" />
+
     <Button
       :label="$t('quick_session.notif.visio.stop_button')"
       size="sm"
@@ -21,6 +37,8 @@
 </template>
 <script>
 import { bus } from "@/main.js"
+import { mapGetters } from "vuex"
+
 export default {
   props: {},
   data() {
@@ -30,11 +48,12 @@ export default {
   methods: {},
   computed: {
     isVisio() {
-      return true
+      return this.quickSessionBot !== null
     },
     visioUrl() {
       return "https://jitsi.linagora.com/LinTOGreatAgain"
     },
+    ...mapGetters("quickSession", ["quickSession", "quickSessionBot"]),
   },
   components: {},
 }

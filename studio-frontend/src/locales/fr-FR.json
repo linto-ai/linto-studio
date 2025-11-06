@@ -1284,6 +1284,11 @@
         "title": "Une visio-conference est en cours d'enregistrement",
         "continue_button": "Afficher la transcription",
         "stop_button": "Sauvegarder et arrêter l'enregistrement"
+      },
+      "default": {
+        "title": "Un enregistrement microphone est en cours",
+        "continue_button": "Continuer l'enregistrement",
+        "stop_button": "Sauvegarder et arrêter l'enregistrement"
       }
     }
   },
