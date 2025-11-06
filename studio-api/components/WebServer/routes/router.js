@@ -1,7 +1,7 @@
 const debug = require("debug")("linto:app:webserver:router")
 
 const auth_middlewares = require(`../config/passport/middleware`)
-const logger_middlewares = require(
+const { logger } = require(
   `${process.cwd()}/components/WebServer/middlewares/logger/logger.js`,
 )
 const conversation_middlewares = require(
@@ -125,9 +125,6 @@ const loadMiddlewares = (route) => {
   if (route.requireUserVisibility)
     middlewares.push(user_middlewares.isVisibility)
 
-  if (process.env.LOGGER_ENABLED === "true")
-    middlewares.push(nav_middlewares.logger)
-
   return middlewares
 }
 
@@ -154,17 +151,17 @@ const createApiRoutes = (webServer, api_routes) => {
       disableAuthIfDev(route)
 
       const middlewares = loadMiddlewares(route)
+      middlewares.push(logger)
 
       methods.map((method) => {
         path_.map((path) => {
           webServer.express[method](
             level + path,
             middlewares,
-            logger_middlewares.logger,
 
-            (req, res, next) => {
-              next()
-            },
+            // (req, res, next) => {
+            //   next()
+            // },
             ifHasElse(
               Array.isArray(route.controller),
               () => Object.values(route.controller),
@@ -186,6 +183,7 @@ const createProxyRoutes = (webServer, proxy_routes) => {
       if (proxyPath.disabled) return
 
       const middlewares = loadMiddlewares(proxyPath)
+      middlewares.push(logger)
 
       proxyPath.paths.forEach((path) => {
         //we alter req.payload, req.params, req.query, req.body if require
@@ -288,6 +286,8 @@ const createProxyRoutes = (webServer, proxy_routes) => {
           webServer.express[method](
             basePath + path.path,
             middlewares,
+            logger,
+
             (req, res, next) => {
               if (path.executeBeforeResult) {
                 path.executeBeforeResult(req, next)

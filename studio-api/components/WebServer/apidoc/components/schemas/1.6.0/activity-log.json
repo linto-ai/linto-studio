@@ -1,0 +1,161 @@
+{
+  "ActivityLog": {
+    "type": "object",
+    "properties": {
+      "_id": {
+        "type": "string",
+        "description": "Unique identifier of the activity log entry"
+      },
+      "source": {
+        "type": "string",
+        "description": "Origin of the log entry (e.g., webserver, gateway)"
+      },
+      "level": {
+        "type": "string",
+        "description": "Log level such as info, warn, error"
+      },
+      "createdAt": {
+        "type": "string",
+        "format": "date-time",
+        "description": "Timestamp when the log entry was created"
+      },
+      "http": {
+        "type": "object",
+        "description": "Information about the HTTP request associated with the event",
+        "properties": {
+          "method": {
+            "type": "string",
+            "description": "HTTP method used for the request"
+          },
+          "url": {
+            "type": "string",
+            "description": "Endpoint URL accessed"
+          },
+          "status": {
+            "type": "integer",
+            "description": "HTTP response status code"
+          }
+        }
+      },
+      "scope": {
+        "type": "string",
+        "description": "Logical domain or resource scope of the event"
+      },
+      "user": {
+        "type": "object",
+        "description": "Information about the user associated with this activity",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier of the user"
+          },
+          "role": {
+            "type": "object",
+            "description": "Role of the user at the time of the event",
+            "properties": {
+              "value": {
+                "type": "integer",
+                "description": "Numeric value representing the user’s role"
+              },
+              "name": {
+                "type": "string",
+                "description": "Readable name of the user role"
+              }
+            }
+          },
+          "info": {
+            "type": "object",
+            "description": "Additional user information",
+            "properties": {
+              "lastname": {
+                "type": "string",
+                "description": "User’s last name"
+              },
+              "firstname": {
+                "type": "string",
+                "description": "User’s first name"
+              },
+              "email": {
+                "type": "string",
+                "description": "User’s email address"
+              }
+            }
+          }
+        }
+      },
+      "organization": {
+        "type": "object",
+        "description": "Information about the organization involved in the action",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier of the organization"
+          },
+          "role": {
+            "type": "object",
+            "description": "Role of the user within the organization",
+            "properties": {
+              "value": {
+                "type": "integer",
+                "description": "Numeric value representing the organization role"
+              },
+              "name": {
+                "type": "string",
+                "description": "Readable name of the organization role"
+              }
+            }
+          },
+          "info": {
+            "type": "object",
+            "description": "Additional organization information",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Name of the organization"
+              },
+              "description": {
+                "type": ["string", "null"],
+                "description": "Optional description of the organization"
+              }
+            }
+          }
+        }
+      }
+    },
+    "example": {
+      "_id": "6900d62e01a4023fbb99b866",
+      "source": "webserver",
+      "level": "info",
+      "timestamp": "2025-10-28T14:41:50.801Z",
+      "http": {
+        "method": "POST",
+        "url": "/api/organizations/688778cb980f721744a206d8/conversations/create",
+        "status": 201
+      },
+      "scope": "resource",
+      "user": {
+        "id": "688778cb980f721744a206d7",
+        "role": {
+          "value": 31,
+          "name": "SUPER_ADMINISTRATOR"
+        },
+        "info": {
+          "lastname": "Demo",
+          "firstname": "User",
+          "email": "demo.user@linagora.com"
+        }
+      },
+      "organization": {
+        "id": "688778cb980f721744a206d8",
+        "role": {
+          "value": 6,
+          "name": "ADMIN"
+        },
+        "info": {
+          "name": "demo.user@linagora.com",
+          "description": null
+        }
+      }
+    }
+  }
+}

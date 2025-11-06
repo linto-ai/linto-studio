@@ -2,9 +2,10 @@ const debug = require("debug")("linto:components:socketio")
 const Component = require(`../component.js`)
 const socketIO = require("socket.io")
 const axios = require(`${process.cwd()}/lib/utility/axios`)
-const appLogger = require(`${process.cwd()}/lib/logger/logger.js`)
+const LogManager = require(`${process.cwd()}/lib/logger/manager`)
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
+const SOCKET_EVENTS = require(`${process.cwd()}/lib/dao/log/socketEvent`)
 
 const { diffSessions, groupSessionsByOrg } = require(
   `${process.cwd()}/components/IoHandler/controllers/SessionHandling`,
@@ -20,14 +21,6 @@ const { sessionSocketAccess } = require(
   `${process.cwd()}/components/WebServer/middlewares/access/organization.js`,
 )
 
-async function registryMetrics(session, socket) {
-  model.metrics.startConnection({
-    sessionId: session.id,
-    socketId: socket.id,
-    organizationId: session.organizationId,
-  })
-}
-
 async function checkSocketAccess(socket, roomId) {
   try {
     const session = await axios.get(
@@ -35,8 +28,6 @@ async function checkSocketAccess(socket, roomId) {
     )
 
     if (session.visibility === "public") {
-      registryMetrics(session, socket)
-
       return true
     } else {
       const { isAuth, userId } = await auth_middlewares.checkSocket(socket)
@@ -57,7 +48,6 @@ async function checkSocketAccess(socket, roomId) {
         session.visibility === "organization" ||
         (session.visibility === "private" && session.owner === userId)
       ) {
-        registryMetrics(session, socket)
         return true
       } else {
         socket.emit("unauthorized")
@@ -66,8 +56,15 @@ async function checkSocketAccess(socket, roomId) {
       }
     }
   } catch (err) {
-    appLogger.error(
-      `Error getting session ${roomId.split("/")[0]} from the session API: ${err}`,
+    LogManager.logSocketEvent(
+      socket,
+      {
+        action: SOCKET_EVENTS.UNAUTHORIZED,
+        message: `Unauthorized client connected : ${socket.id}`,
+        error: err,
+        from: "socket",
+      },
+      { level: "error" },
     )
     socket.emit("unauthorized")
     socket.disconnect(true)
@@ -98,7 +95,11 @@ class IoHandler extends Component {
 
     // this.io.use(auth_middlewares.isAuthenticateSocket) // Used initialy to require authentication, disabling annonymous sessions
     this.io.on("connection", (socket) => {
-      appLogger.debug(`New client connected : ${socket.id}`)
+      LogManager.logSocketEvent(socket, {
+        action: SOCKET_EVENTS.CONNECTING,
+        message: `New client connected : ${socket.id}`,
+        from: "socket",
+      })
 
       if (this.app.components["BrokerClient"].deliveryState !== "ready") {
         socket.emit("broker_ko")
@@ -106,50 +107,44 @@ class IoHandler extends Component {
 
       socket.on("join_room", async (roomId) => {
         if (!(await checkSocketAccess(socket, roomId))) return
-
-        appLogger.debug(`Client ${socket.id} joins room ${roomId}`)
+        LogManager.logSocketEvent(socket, {
+          sessionId: roomId,
+          action: SOCKET_EVENTS.JOIN,
+          from: "session",
+        })
         this.addSocketInRoom(roomId, socket)
       })
 
       socket.on("leave_room", (roomId) => {
-        appLogger.debug(`Client ${socket.id} leaves room ${roomId}`)
+        LogManager.logSocketEvent(socket, {
+          sessionId: roomId,
+          action: SOCKET_EVENTS.LEAVE,
+          from: "session",
+        })
         this.removeSocketFromRoom(roomId, socket)
-        model.metrics.endConnection(socket.id)
       })
 
       socket.on("watch_organization_session", (orgaId) => {
-        appLogger.debug(
-          `Client ${socket.id} joins watcher session of orga ${orgaId}`,
-        )
         this.addSocketInOrga(orgaId, socket, "session")
       })
 
       socket.on("unwatch_organization_session", (orgaId) => {
-        appLogger.debug(
-          `Client ${socket.id} leaves watcher session of orga ${orgaId}`,
-        )
         this.removeSocketFromOrga(orgaId, socket)
-        model.metrics.endConnection(socket.id)
       })
 
       socket.on("watch_organization_media", (orgaId) => {
-        appLogger.debug(
-          `Client ${socket.id} joins watcher for conversations status ${orgaId}`,
-        )
         this.addSocketInMedia(orgaId, socket)
       })
 
       socket.on("unwatch_organization_media", (orgaId) => {
-        appLogger.debug(
-          `Client ${socket.id} leaves watcher for conversations status ${orgaId}`,
-        )
         this.removeSocketFromMedia(orgaId, socket)
       })
 
       socket.on("disconnect", () => {
-        appLogger.debug(`Client ${socket.id} disconnected`)
-
-        model.metrics.endConnection(socket.id)
+        LogManager.logSocketEvent(socket, {
+          action: SOCKET_EVENTS.DISCONNECT,
+          from: "socket",
+        })
         this.searchAndRemoveSocketFromRooms(socket)
       })
     })
@@ -215,11 +210,7 @@ class IoHandler extends Component {
               this.memorySessions[session.id] = session.organizationId
             }
           })
-        } catch (err) {
-          appLogger.debug(
-            `Error getting organization ID from the orga ${orgaId}: ${err}`,
-          )
-        }
+        } catch (err) {}
       }
     }
   }
@@ -303,11 +294,7 @@ class IoHandler extends Component {
         try {
           if (this.memoryMedias[orgaId] !== undefined)
             this.memoryMedias[orgaId].remove(message.id)
-        } catch (err) {
-          appLogger.error(
-            `Error while removing conversation from memory: ${err}`,
-          )
-        }
+        } catch (err) {}
       } else {
         let processConv =
           await model.conversations.listProcessingConversations(orgaId)
@@ -323,7 +310,6 @@ class IoHandler extends Component {
 
   async notify_sessions_created(orgaId, session) {
     if (session.insertedId === undefined) {
-      appLogger.error(`Conversation ID is undefined`)
       return
     }
     ;["owner", "sharedWithUsers", "organization"]
@@ -352,16 +338,16 @@ class IoHandler extends Component {
     }
   }
 
-  brokerOk() {
+  brokerOk(message = "Broker connection established") {
     this.io.emit("broker_ok")
-    appLogger.info("Broker connection established")
+    LogManager.logSystemEvent(message)
   }
 
   brokerKo(notify = false) {
     if (notify) {
       this.io.emit("broker_ko")
     }
-    appLogger.error("Broker connection lost")
+    LogManager.logSystemEvent("Broker connection lost")
   }
 }
 
