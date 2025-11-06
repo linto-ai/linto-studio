@@ -52,17 +52,17 @@ services:
     networks:
       - internal
 
-  studio-dashboard:
-    container_name: studio-dashboard
-    image: linto-studio/studio-dashboard
-    build:
-      context: ./studio-dashboard
-      dockerfile: Dockerfile
-    env_file: ./studio-dashboard/.dockerenv
-    ports:
-      - "8004:80"
-    networks:
-      - internal
+  # studio-dashboard:
+  #   container_name: studio-dashboard
+  #   image: linto-studio/studio-dashboard
+  #   build:
+  #     context: ./studio-dashboard
+  #     dockerfile: Dockerfile
+  #   env_file: ./studio-dashboard/.dockerenv
+  #   ports:
+  #     - "8004:80"
+  #   networks:
+  #     - internal
 
 networks:
   internal:

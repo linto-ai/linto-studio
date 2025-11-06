@@ -346,8 +346,8 @@ class IoHandler extends Component {
   brokerKo(notify = false) {
     if (notify) {
       this.io.emit("broker_ko")
+      LogManager.logSystemEvent("Broker connection lost")
     }
-    LogManager.logSystemEvent("Broker connection lost")
   }
 }
 
