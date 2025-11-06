@@ -220,7 +220,7 @@ now, let's copy them over.
 
 .modal {
   pointer-events: all;
-  background: var(--background-secondary);
+  background: var(--background-primary);
   max-height: calc(100% - 4rem);
   border-radius: 4px;
   display: flex;
@@ -245,7 +245,7 @@ now, let's copy them over.
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: var(--background-secondary);
+      background-color: var(--background-primary);
       opacity: 0.5;
       z-index: 10;
     }
@@ -257,7 +257,7 @@ now, let's copy them over.
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: var(--background-secondary);
+      background-color: var(--background-primary);
       opacity: 0.5;
       z-index: 11;
     }
@@ -268,7 +268,7 @@ now, let's copy them over.
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: var(--background-secondary);
+    background-color: var(--background-primary);
     border-radius: 4px;
     padding: 1rem;
     box-shadow: var(--shadow-block);
@@ -340,7 +340,7 @@ now, let's copy them over.
   padding: 1rem;
   position: sticky;
   top: 0;
-  background: var(--background-secondary);
+  background: var(--background-primary);
   z-index: 1;
 
   .title {

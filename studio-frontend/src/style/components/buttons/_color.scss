@@ -22,8 +22,8 @@
       --btn-border-color: var(--danger-color);
       --btn-bg: var(--danger-color);
       --btn-text: var(--danger-contrast);
-      --btn-hover-bg: var(--primary-soft);
-      --btn-hover-text: var(--danger-soft);
+      --btn-hover-bg: var(--danger-soft);
+      --btn-hover-text: var(--danger-color);
     }
 
     &.btn--secondary {

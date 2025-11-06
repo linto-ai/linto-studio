@@ -17,7 +17,7 @@
       :displaySubtitles="displaySubtitles"
       :displayLiveTranscription="displayLiveTranscription"
       :isBottom="isBottom"
-      fromMicrophone
+      :fromMicrophone="fromMicrophone"
       @toggleMicrophone="$emit('toggleMicrophone')"
       @onSave="$emit('onSave')"
       :watermarkFrequency="watermarkFrequency"
