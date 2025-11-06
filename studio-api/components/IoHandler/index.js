@@ -101,7 +101,10 @@ class IoHandler extends Component {
         from: "socket",
       })
 
-      if (this.app.components["BrokerClient"].deliveryState !== "ready") {
+      if (
+        !this.app.components["BrokerClient"] ||
+        this.app.components["BrokerClient"].deliveryState !== "ready"
+      ) {
         socket.emit("broker_ko")
       }
 
