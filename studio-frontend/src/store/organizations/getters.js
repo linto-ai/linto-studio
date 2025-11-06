@@ -12,11 +12,11 @@ const getters = {
     const res =
       state.currentOrganizationScope ||
       cookie ||
-      Object.values(state.organizations)?.[0]._id ||
+      Object.values(state.organizations)?.[0]?._id ||
       null
 
     if (!state.organizations[res]) {
-      return Object.values(state.organizations)?.[0]._id
+      return Object.values(state.organizations)?.[0]?._id
     }
     return res
   },

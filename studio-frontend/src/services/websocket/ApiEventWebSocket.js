@@ -121,6 +121,7 @@ export default class ApiEventWebSocket {
   }
 
   subscribeMediaUpdate(organizationId) {
+    if (!this.socket) return
     this.unSubscribeMediaUdate()
     this.currentMediaOrganizationId = organizationId
     this.socket.emit("watch_organization_media", organizationId)
@@ -209,6 +210,7 @@ export default class ApiEventWebSocket {
     })
   }
   unSubscribeMediaUdate() {
+    if (!this.socket) return
     if (this.currentMediaOrganizationId) {
       this.socket.emit(
         "unwatch_organization_media",

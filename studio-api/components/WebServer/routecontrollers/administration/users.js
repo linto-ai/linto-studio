@@ -125,7 +125,7 @@ async function updateUser(req, res, next) {
     )
     if (user.length === 0) throw new UserError("User not found")
     if (ROLE.hasPlatformRoleAccess(user[0].role, ROLE.SUPER_ADMINISTRATOR))
-      throw new UserError("Cannot update that user")
+      throw new UserError("Cannot update other super admininistrator user")
 
     user[0]._id = req.params.userId
     const userUpdate = {
