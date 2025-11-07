@@ -6,7 +6,7 @@ const mjMailBody = require("./mj-body")
 const mjMailFooter = require("./mj-footer")
 const mjMailStyle = require("./mj-style")
 
-module.exports = function (Type, payload) {
+module.exports = async function (Type, payload) {
   const mailPayload = mjMailBody(Type, payload)
 
   const mailContent = `
@@ -21,10 +21,9 @@ module.exports = function (Type, payload) {
     </mj-body>
   </mjml>
   `
-  const html = mjml2html(mailContent).html
-
+  const mjmlHtml = await mjml2html(mailContent)
   return {
     title: mailPayload.title,
-    html,
+    html: mjmlHtml.html,
   }
 }

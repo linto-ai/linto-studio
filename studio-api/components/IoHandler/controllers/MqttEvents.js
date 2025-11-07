@@ -18,6 +18,9 @@ const retryConnectionOperation = (operation, app, retryCount = 0) => {
 }
 
 module.exports = function () {
+  if (!this.app.components["BrokerClient"]) {
+    return
+  }
   this.app.components["BrokerClient"].deliveryClient.on("error", () => {
     retryConnectionOperation(
       () => this.app.components["IoHandler"].brokerKo(),

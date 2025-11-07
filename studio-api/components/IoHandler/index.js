@@ -101,7 +101,10 @@ class IoHandler extends Component {
         from: "socket",
       })
 
-      if (this.app.components["BrokerClient"].deliveryState !== "ready") {
+      if (
+        !this.app.components["BrokerClient"] ||
+        this.app.components["BrokerClient"].deliveryState !== "ready"
+      ) {
         socket.emit("broker_ko")
       }
 
@@ -346,8 +349,8 @@ class IoHandler extends Component {
   brokerKo(notify = false) {
     if (notify) {
       this.io.emit("broker_ko")
+      LogManager.logSystemEvent("Broker connection lost")
     }
-    LogManager.logSystemEvent("Broker connection lost")
   }
 }
 
