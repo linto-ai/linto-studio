@@ -166,6 +166,11 @@ export default {
       await this.$store.dispatch(`${this.storeScope}/load`, {})
       this.loading = false
     },
+    "$apiEventWS.state.connexionRestored"() {
+      if (this.getCurrentScope === "organization") {
+        this.$apiEventWS.subscribeMediaUpdate(this.currentOrganizationScope)
+      }
+    },
   },
 }
 </script>

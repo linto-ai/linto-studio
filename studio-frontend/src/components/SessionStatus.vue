@@ -127,6 +127,7 @@ export default {
 
 .session-status__name {
   font-weight: 800;
+  font-size: 1.1rem;
 }
 
 .session-status__text {
