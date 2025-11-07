@@ -1449,7 +1449,9 @@
   },
   "websocket": {
     "connected": "Contenu mis à jour en temps réel",
-    "disconnected": "Contenu non mis à jour, vérifiez votre connexion internet"
+    "disconnected": "Contenu non mis à jour, vérifiez votre connexion internet",
+    "lost_connexion": "Connexion perdue, tentative de reconnexion...",
+    "restored": "Connexion restauré"
   },
   "input_selector": {
     "search_tags": "Rechercher une thématique...",

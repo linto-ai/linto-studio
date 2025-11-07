@@ -1443,7 +1443,9 @@
   },
   "websocket": {
     "connected": "Content updated in real time",
-    "disconnected": "Content not updated, check your internet connection"
+    "disconnected": "Content not updated, check your internet connection",
+    "lost_connexion": "Connection lost, attempting to reconnect...",
+    "restored": "Connection restored"
   },
   "input_selector": {
     "search_tags": "Search topics...",

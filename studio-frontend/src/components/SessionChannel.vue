@@ -354,11 +354,9 @@ export default {
     channel: {
       async handler() {
         this.loading = true
-        this.init()
-        await this.loadPreviousTranscrition()
+        await this.init()
         this.loading = false
         this.scrollToBottom()
-        this.clearSelectedTurns()
       },
       deep: true,
       immediate: true,
@@ -371,14 +369,21 @@ export default {
         this.subscribeToWebsocket()
       }
     },
+    async "$apiEventWS.state.connexionRestored"(newValue, oldValue) {
+      if (newValue) {
+        await this.init()
+      }
+    },
   },
   methods: {
-    init() {
+    async init() {
       this.partialText = ""
       this.turns = []
+      this.clearSelectedTurns()
       if (this.$apiEventWS.state.isConnected) {
         this.subscribeToWebsocket()
       }
+      await this.loadPreviousTranscrition()
       setTimeout(() => {
         this.scrollToBottom(true)
       }, 1000)

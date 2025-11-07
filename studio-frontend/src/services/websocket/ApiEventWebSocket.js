@@ -5,6 +5,7 @@ import { bus } from "@/main"
 import { getCookie } from "@/tools/getCookie"
 import { getEnv } from "@/tools/getEnv"
 import store from "@/store/index.js"
+import i18n from "@/i18n"
 
 const socketioUrl = process.env.VUE_APP_SESSION_WS
 const socketioPath = process.env.VUE_APP_SESSION_WS_PATH
@@ -15,7 +16,9 @@ export default class ApiEventWebSocket {
   constructor() {
     this.state = Vue.observable({
       isConnected: false,
-      isConnectedToSessionBroker: false,
+      connexionLost: false,
+      connexionError: false,
+      connexionRestored: false,
     })
 
     this.socket = null
@@ -27,6 +30,11 @@ export default class ApiEventWebSocket {
   }
 
   connect() {
+    if (this.state.isConnected) {
+      debugWSSession("already connected to socket.io server")
+      return Promise.resolve()
+    }
+
     return new Promise((resolve, reject) => {
       const userToken = getCookie("authToken")
       const transports = getEnv("VUE_APP_WEBSOCKET_TRANSPORTS").split(",")
@@ -37,21 +45,81 @@ export default class ApiEventWebSocket {
         },
         transports: transports,
       })
+
       this.socket.on("connect", (msg) => {
         debugWSSession("connected to socket.io server", msg)
         this.state.isConnected = true
+
+        if (this.state.connexionLost) {
+          this.handleConnexionRestored()
+        }
+
         resolve()
-
-        this.socket.on("broker_ko", () => {
-          this.isConnectedToSessionBroker = false
-          debugWSSession("broker_ko")
-        })
-
-        this.socket.on("broker_ok", () => {
-          debugWSSession("broker_ok")
-          this.isConnectedToSessionBroker = true
-        })
       })
+
+      this.socket.on("disconnect", (msg) => {
+        this.handleDisconnection()
+      })
+
+      this.socket.on("connect_error", () => {
+        this.handleError()
+      })
+
+      this.socket.on("connect_timeout", () => {
+        this.handleError()
+      })
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") {
+          if (this.state.isConnected && !this.socket.connected) {
+            this.handleDisconnection()
+          }
+        }
+      })
+    })
+  }
+
+  clearNotifs() {
+    store.dispatch("system/removeNotificationById", "websocket-error")
+    store.dispatch("system/removeNotificationById", "websocket-disconnected")
+  }
+
+  handleError() {
+    debugWSSession("connection error to socket.io server")
+    this.clearNotifs()
+    store.dispatch("system/addNotification", {
+      id: "websocket-error",
+      message: i18n.t("websocket.disconnected"),
+      timeout: 0,
+      type: "error",
+    })
+  }
+
+  handleDisconnection() {
+    debugWSSession("disconnected from socket.io server")
+    this.state.connexionLost = true
+    this.state.isConnected = false
+    this.isConnectedToSessionBroker = false
+    this.state.connexionRestored = false
+    this.clearNotifs()
+    store.dispatch("system/addNotification", {
+      id: "websocket-disconnected",
+      message: i18n.t("websocket.lost_connexion"),
+      timeout: 0,
+      type: "warning",
+    })
+
+    setTimeout(() => {
+      this.socket.connect()
+    }, 1000)
+  }
+
+  handleConnexionRestored() {
+    this.clearNotifs()
+    this.state.connexionRestored = true
+    store.dispatch("system/addNotification", {
+      message: i18n.t("websocket.restored"),
+      type: "success",
     })
   }
 
