@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import * as PhIcons from 'phosphor-vue';
+import * as PhIcons from '@phosphor-icons/vue';
 
 export default {
   name: 'PhIcon',

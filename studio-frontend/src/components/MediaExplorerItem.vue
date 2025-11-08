@@ -173,7 +173,7 @@ import PopoverList from "@/components/atoms/PopoverList.vue"
 import { userName } from "@/tools/userName"
 import userAvatar from "@/tools/userAvatar"
 
-import { PhStar } from "phosphor-vue"
+import { PhStar } from "@phosphor-icons/vue"
 
 export default {
   mixins: [mediaScopeMixin, mediaProgressMixin],

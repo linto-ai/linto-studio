@@ -1,8 +1,6 @@
 <template>
   <!-- <ActionBar> -->
   <div class="flex flex1">
-   
-      
       <SessionStatus
         v-if="sessionLoaded"
         :session="session"
@@ -11,15 +9,11 @@
         withText
         class="flex1" />
       <slot></slot>
-
-     
-   
-    </div>
   </div>
   <!-- </ActionBar> -->
 </template>
 <script>
-import { bus } from "@/main.js"
+import { bus } from "@/eventBus"
 import isAuthenticated from "@/tools/isAuthenticated.js"
 
 import SessionStatus from "@/components/SessionStatus.vue"

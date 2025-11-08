@@ -203,7 +203,7 @@
   </div>
 </template>
 <script>
-import uuidv4 from "uuid/v4.js"
+import { v4 as uuid }v4 from "uuid/v4.js"
 
 import { bus } from "@/main.js"
 

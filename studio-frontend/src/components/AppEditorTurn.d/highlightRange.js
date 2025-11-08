@@ -1,5 +1,6 @@
-import Vue, { h } from "vue"
+import { h, createApp } from "vue"
 import AppEditorHighlightDescToolbox from "@/components/AppEditorHighlightDescToolbox.vue"
+import i18n from "@/i18n"
 
 export default async function highlightRange(
   { range, category },
@@ -80,14 +81,12 @@ function highlightWord(
   toolboxDiv.style.display = "inline"
   word.appendChild(toolboxDiv)
   if (isFromHighlight && !wordHasToolbox) {
-    var toolbox = Vue.extend(AppEditorHighlightDescToolbox)
-    // find how to listen to the event, workaround for now is to use the global event bus
-    new toolbox({
-      i18n,
-      propsData: {
-        tag: range._tag,
-        category,
-      },
-    }).$mount(toolboxDiv)
+    // Vue 3: Use createApp instead of Vue.extend
+    const app = createApp(AppEditorHighlightDescToolbox, {
+      tag: range._tag,
+      category,
+    })
+    app.use(i18n)
+    app.mount(toolboxDiv)
   }
 }

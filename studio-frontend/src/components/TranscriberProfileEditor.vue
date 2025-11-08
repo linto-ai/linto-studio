@@ -2,9 +2,9 @@
   <div class="flex col transcriber-profile-editor">
     <div class="flex gap-medium align-end">
       <div class="form-field flex col">
-        <label class="form-label">{{ $t(
-          "backoffice.transcriber_profile_detail.type_label",
-        ), }}</label>
+        <label class="form-label">{{
+          $t("backoffice.transcriber_profile_detail.type_label")
+        }}</label>
         <select v-model="currentType">
           <option v-for="type in types" :key="type" :value="type">
             {{ typesLabels[type] }}
