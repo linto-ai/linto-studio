@@ -120,7 +120,10 @@ export default {
             canCancel: true,
           })
         } else {
-          this.loader.hide()
+          // Only hide if loader exists
+          if (this.loader) {
+            this.loader.hide()
+          }
         }
       },
       immediate: true,
