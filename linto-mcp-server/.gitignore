@@ -1,0 +1,10 @@
+node_modules/
+package-lock.json
+*.log
+.env
+.DS_Store
+*.mp3
+*.wav
+*.m4a
+*.flac
+test-audio/

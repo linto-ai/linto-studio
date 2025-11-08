@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "linto": {
+      "command": "node",
+      "args": [
+        "/absolute/path/to/linto-studio/linto-mcp-server/index.js"
+      ],
+      "env": {
+        "LINTO_AUTH_TOKEN": "your-auth-token-here"
+      }
+    }
+  }
+}
