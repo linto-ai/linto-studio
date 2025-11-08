@@ -41,10 +41,10 @@ export const genericSessionList = {
       for (const updatedSession of value.updated) {
         const sessionIndex = sessionIndexes[updatedSession.id]
         const currentSession = this.sessionList[sessionIndex]
-        this.$set(this.sessionList, sessionIndex, {
+        this.sessionList[sessionIndex] = {
           ...currentSession,
           ...updatedSession,
-        })
+        }
       }
     },
   },

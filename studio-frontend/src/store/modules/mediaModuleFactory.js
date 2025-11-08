@@ -126,7 +126,6 @@ export default function createMediaModule(scope, status = "done") {
         const newValue = patch ? { ...state.medias[idx], ...media } : media
 
         if (idx !== -1) {
-          // Use Vue.set to ensure reactivity
           state.medias[idx] = newValue
         }
 

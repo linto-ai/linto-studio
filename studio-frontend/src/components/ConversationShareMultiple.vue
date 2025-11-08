@@ -357,7 +357,7 @@ export default {
 
       const convIds = this.selectedConversations.map((c) => c._id)
 
-      this.$set(this.usersLoading, user._id, true)
+      this.usersLoading[user._id] = true
 
       let newUser
       if (newRight == -1) {
@@ -387,7 +387,7 @@ export default {
         console.error("error", res)
       }
 
-      this.$set(this.usersLoading, user._id, false)
+      this.usersLoading[user._id] = false
     },
     async loadUsersRights() {
       const convIds = this.selectedConversations.map((c) => c._id)

@@ -1,5 +1,3 @@
-import IsMobile from "../../components/atoms/IsMobile.vue"
-
 const state = {
   /**
    * Notifications are used to display messages to the user.

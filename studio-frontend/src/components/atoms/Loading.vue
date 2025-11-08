@@ -15,7 +15,7 @@
   </div>
 </template>
 <script>
-import { Component as VueLoadingComponent } from "vue-loading-overlay"
+import VueLoadingComponent from "vue-loading-overlay"
 export default {
   name: "Loading",
   props: {
