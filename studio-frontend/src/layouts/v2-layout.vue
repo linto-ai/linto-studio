@@ -32,7 +32,6 @@
   </div>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 import isAuthenticated from "@/tools/isAuthenticated.js"
 import { mapGetters } from "vuex"

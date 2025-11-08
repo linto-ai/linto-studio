@@ -51,7 +51,6 @@
   </div>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 import { apiGetNlpService } from "../api/service.js"
 import TagCategoryBoxHighlight from "./TagCategoryBoxHighlight.vue"
@@ -88,7 +87,7 @@ export default {
     await this.getServices()
     this.loading = false
   },
-  beforeDestroy() {},
+  beforeUnmount() {},
   computed: {
     jobs() {
       return this.conversation?.jobs
@@ -133,6 +132,6 @@ export default {
       this.closeHighlightModal()
     },
   },
-  components: { Fragment, TagCategoryBoxHighlight, AppEditorHighLightModal },
+  components: { TagCategoryBoxHighlight, AppEditorHighLightModal },
 }
 </script>

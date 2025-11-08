@@ -30,7 +30,6 @@
   </TagCategoryBox>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import uuidv4 from "uuid/v4.js"
 
 import { bus } from "@/main.js"
@@ -76,6 +75,6 @@ export default {
     },
   },
   computed: {},
-  components: { Fragment, TagCategoryBox, SwitchInput },
+  components: { TagCategoryBox, SwitchInput },
 }
 </script>

@@ -170,7 +170,7 @@ export default {
       e?.preventDefault()
     },
   },
-  beforeDestroy() {
+  beforeUnmount() {
     if (this.isModalOpen) {
       popupManager.unregister(this)
     }

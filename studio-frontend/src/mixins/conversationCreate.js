@@ -210,7 +210,7 @@ export default {
 
           if (this.audioFiles.length === 0) {
             this.formState = "success"
-            bus.$emit("app_notif", {
+            bus.emit("app_notif", {
               status: "success",
               message: this.$i18n.t("conversation.creation_success_message"),
               redirect: false,
@@ -264,11 +264,11 @@ export default {
 
           if (conversationHasBeenCreated) {
             this.formState = "success"
-            // bus.$emit("set_organization_scope", {
+            // bus.emit("set_organization_scope", {
             //   organizationId: this.conversationOrganization.value,
             // })
 
-            bus.$emit("app_notif", {
+            bus.emit("app_notif", {
               status: "success",
               message: this.$i18n.t("conversation.creation_success_message"),
               redirect: false,
@@ -291,7 +291,7 @@ export default {
       }
     },
     emitError(errorMessage) {
-      bus.$emit("app_notif", {
+      bus.emit("app_notif", {
         status: "error",
         message: errorMessage,
         timeout: null,

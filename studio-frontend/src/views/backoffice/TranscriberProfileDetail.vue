@@ -78,7 +78,7 @@ export default {
         this.transcriberProfile,
       )
       if (req.status === "success") {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "success",
           message: this.$t(
             "backoffice.transcriber_profile_detail.notif_success",
@@ -87,7 +87,7 @@ export default {
         this.transcriberProfile = req.data
         this.transcriberProfileOriginal = structuredClone(req.data)
       } else {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "error",
           message: this.$t("backoffice.transcriber_profile_detail.notif_error"),
         })
@@ -98,7 +98,7 @@ export default {
       this.loading = true
       const req = await apiDeleteTranscriberProfile(this.transcriberProfileId)
       if (req.status === "success") {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "success",
           message: this.$t(
             "backoffice.transcriber_profile_detail.notif_delete_success",
@@ -106,7 +106,7 @@ export default {
         })
         this.$router.push({ name: "backoffice-transcriberProfilesList" })
       } else {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "error",
           message: this.$t(
             "backoffice.transcriber_profile_detail.notif_delete_error",

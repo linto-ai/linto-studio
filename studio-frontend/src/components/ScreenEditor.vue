@@ -122,7 +122,7 @@ export default {
   },
   methods: {
     seekTo(stime) {
-      bus.$emit("player_set_time", { stime })
+      bus.emit("player_set_time", { stime })
     },
     addScreens(leftScreenId, rightScreenId) {
       this.$emit("addScreen", leftScreenId, rightScreenId)

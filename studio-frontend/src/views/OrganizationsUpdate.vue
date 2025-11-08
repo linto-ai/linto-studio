@@ -78,13 +78,13 @@ export default {
   },
   computed: {},
   async mounted() {
-    bus.$on("remove_organization_user", async (data) => {
+    bus.on("remove_organization_user", async (data) => {
       await this.dispatchOrganization()
       this.removeFromMembers(data.userId)
     }) // event from the modal component, TODO: use new modal component instead
   },
-  beforeDestroy() {
-    bus.$off("remove_organization_user")
+  beforeUnmount() {
+    bus.off("remove_organization_user")
   },
   methods: {
     showHelper() {
@@ -102,7 +102,7 @@ export default {
           setCookie("cm_orga_scope", "")
           window.location.href = "/"
         } else {
-          bus.$emit("app_notif", {
+          bus.emit("app_notif", {
             status: "error",
             message: this.$i18n.t("organisation.delete_error_message"),
           })

@@ -221,31 +221,31 @@ export default {
   },
   mounted() {
     this.speakersTurnsTimebox = this.getSpkTimebox()
-    bus.$on("player-audioprocess", (time) => {
+    bus.on("player-audioprocess", (time) => {
       this.updateCurrentTime(time)
     })
-    bus.$on("player-seek", (time) => {
+    bus.on("player-seek", (time) => {
       this.updateCurrentTime(time)
     })
 
-    bus.$on("refresh_spk_timebox", () => {
+    bus.on("refresh_spk_timebox", () => {
       this.speakersTurnsTimebox = this.getSpkTimebox()
-      //bus.$emit("refresh_audio_regions", this.speakersTurnsTimebox)
+      //bus.emit("refresh_audio_regions", this.speakersTurnsTimebox)
     })
-    bus.$on("player-ready", this.playerReady.bind(this))
+    bus.on("player-ready", this.playerReady.bind(this))
   },
-  beforeDestroy() {
-    bus.$off("player-audioprocess")
-    bus.$off("player-seek")
-    bus.$off("refresh_spk_timebox")
-    bus.$off("player-ready")
+  beforeUnmount() {
+    bus.off("player-audioprocess")
+    bus.off("player-seek")
+    bus.off("refresh_spk_timebox")
+    bus.off("player-ready")
 
     // turns event (should be in this component instead of appeditorturn, because of merge and split which trigger beforeDestroy on appeditorturn)
-    bus.$off("conversation_user_update")
-    bus.$off("words_updated")
-    bus.$off("segment_updated")
-    bus.$off("turn_speaker_update")
-    bus.$off("speaker_name_updated")
+    bus.off("conversation_user_update")
+    bus.off("words_updated")
+    bus.off("segment_updated")
+    bus.off("turn_speaker_update")
+    bus.off("speaker_name_updated")
   },
   methods: {
     computePageNumberOfEachWord(turnPages) {
@@ -373,7 +373,7 @@ export default {
       if (editorCurrentTime) {
         editorCurrentTime = JSON.parse(editorCurrentTime)
         if (editorCurrentTime.conversationId === this.conversationId) {
-          bus.$emit("player_set_time", { stime: editorCurrentTime.time })
+          bus.emit("player_set_time", { stime: editorCurrentTime.time })
         }
       }
     },
@@ -415,7 +415,7 @@ export default {
       return spkTimebox
     },
     showSpeakerModal() {
-      bus.$emit("showSpeakerModal")
+      bus.emit("showSpeakerModal")
     },
     updateCurrentTime(time) {
       this.currentTime = time
@@ -509,7 +509,7 @@ export default {
       const nextTurnTextLength = this.turns[baseTurnIndex + 1].segment.length
       const totalTextLenght = baseTurnTextLength + nextTurnTextLength
       if (totalTextLenght >= process.env.VUE_APP_TURN_SIZE * 2) {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "error",
           message: this.$t("conversation.turn_cant_merge"),
           //timeout: 3000,

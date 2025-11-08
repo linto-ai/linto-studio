@@ -59,7 +59,6 @@
   </table>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 import { sortArray } from "@/tools/sortList.js"
 
@@ -117,6 +116,6 @@ export default {
       this.sortListKey = key
     },
   },
-  components: { Fragment, ArrayHeader, TranscriberProfileSelectorLine },
+  components: { ArrayHeader, TranscriberProfileSelectorLine },
 }
 </script>

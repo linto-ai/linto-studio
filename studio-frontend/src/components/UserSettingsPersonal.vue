@@ -26,7 +26,6 @@
   </form>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 import { mapActions } from "vuex"
 
@@ -116,12 +115,12 @@ export default {
         }
 
         if (req.status === "success") {
-          bus.$emit("app_notif", {
+          bus.emit("app_notif", {
             status: "success",
             message: this.$t("user_settings.notif_success"),
           })
         } else {
-          bus.$emit("app_notif", {
+          bus.emit("app_notif", {
             status: "error",
             message: this.$t("user_settings.notif_error"),
           })
@@ -131,6 +130,6 @@ export default {
       return false
     },
   },
-  components: { Fragment, FormInput },
+  components: { FormInput },
 }
 </script>

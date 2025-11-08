@@ -17,14 +17,14 @@ export const genericSessionList = {
       this.subscribeToWebsocket()
     }
 
-    bus.$on(
+    bus.on(
       `websocket/orga_${this.currentOrganizationScope}_session_update`,
       this.onSessionUpdateEvent.bind(this),
     )
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.$apiEventWS.unSubscribeSessionsUpdate()
-    bus.$off(`websocket/orga_${this.currentOrganizationScope}_session_update`)
+    bus.off(`websocket/orga_${this.currentOrganizationScope}_session_update`)
   },
   methods: {
     subscribeToWebsocket() {

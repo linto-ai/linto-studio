@@ -27,7 +27,7 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex"
-import { bus } from "@/main"
+import { bus } from "@/eventBus"
 
 import { customDebug } from "@/tools/customDebug.js"
 import isAuthenticated from "@/tools/isAuthenticated.js"
@@ -97,7 +97,7 @@ export default {
     }
     window.addEventListener("resize", this._onResize, { passive: true })
     // keep compatibility with old notification system (don't use bus for new notifications)
-    bus.$on("app_notif", (data) => {
+    bus.on("app_notif", (data) => {
       this.$store.dispatch("system/addNotification", {
         message: data.message,
         type: data.status,

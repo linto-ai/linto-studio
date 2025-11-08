@@ -100,7 +100,7 @@ export default {
   },
   computed: {
     clickable() {
-      return this.$listeners.click ? "clickable" : ""
+      return this.$attrs.onClick ? "clickable" : ""
     },
     unifiedToEmoji() {
       const unified = this.emoji

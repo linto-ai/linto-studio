@@ -15,7 +15,6 @@
   </section>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 
 import LabeledValue from "@/components/atoms/LabeledValue.vue"
@@ -73,6 +72,6 @@ export default {
   },
   mounted() {},
   methods: {},
-  components: { Fragment, LabeledValue },
+  components: { LabeledValue },
 }
 </script>

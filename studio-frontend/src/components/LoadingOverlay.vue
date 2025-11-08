@@ -15,18 +15,18 @@ export default {
     }
   },
   mounted() {
-    bus.$on("loading", (data) => {
+    bus.on("loading", (data) => {
       this.title = data.title
       this.visible = true
     })
-    bus.$on("loaded", () => {
+    bus.on("loaded", () => {
       this.visible = false
     })
   },
 
-  beforeDestroy() {
-    bus.$off("loading")
-    bus.$off("loaded")
+  beforeUnmount() {
+    bus.off("loading")
+    bus.off("loaded")
   },
 }
 </script>

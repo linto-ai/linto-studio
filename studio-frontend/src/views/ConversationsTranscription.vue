@@ -175,36 +175,36 @@ export default {
     }
   },
   mounted() {
-    bus.$on("open-metadata-modal", (data) => {
+    bus.on("open-metadata-modal", (data) => {
       this.showMetadataModal = true
       this.metadataModalData = data
     })
 
-    bus.$on("segment_updated", (data) => {
+    bus.on("segment_updated", (data) => {
       this.turnsIndexedByid[data.turnId].segment = data.value
     })
 
-    bus.$on("words_updated", (data) => {
+    bus.on("words_updated", (data) => {
       this.turnsIndexedByid[data.turnId].words = data.value
     })
 
-    bus.$on("turn_speaker_update", (data) => {
+    bus.on("turn_speaker_update", (data) => {
       this.turnsIndexedByid[data.turnId].speaker_id = data.value
     })
 
-    bus.$on("refresh_turns", () => {
+    bus.on("refresh_turns", () => {
       this.setupTurns()
     })
 
     // Apply search from URL parameter if present
     this.applySearchFromUrl()
   },
-  beforeDestroy() {
-    bus.$off("open-metadata-modal")
-    bus.$off("segment_updated")
-    bus.$off("words_updated")
-    bus.$off("refresh_turns")
-    bus.$off("turn_speaker_update")
+  beforeUnmount() {
+    bus.off("open-metadata-modal")
+    bus.off("segment_updated")
+    bus.off("words_updated")
+    bus.off("refresh_turns")
+    bus.off("turn_speaker_update")
   },
   watch: {
     "conversation.speakers"(newVal, oldVal) {
@@ -231,7 +231,7 @@ export default {
     },
     transcriptionSearch(newVal, oldVal) {
       if (newVal != oldVal) {
-        bus.$emit("player-pause")
+        bus.emit("player-pause")
         if (this.$refs.editor) {
           this.$refs.editor.searchInTranscription(newVal, this.exactMatching)
         }
@@ -351,7 +351,7 @@ export default {
       )
       // Todo: only update the right metadata
       await this.fetchHightlightsCategories(this.conversationId)
-      //bus.$emit("set-metadata", fields)
+      //bus.emit("set-metadata", fields)
     },
     showHelper() {
       this.helperVisible = true

@@ -6,7 +6,6 @@
     v-bind="$attrs"
     :aria-disabled="disabled"
     :title="isIconOnly ? $attrs.ariaLabel : ''"
-    v-on="$listeners"
     @mouseenter="handleMouseEnter"
     @mouseleave="handleMouseLeave">
     <!-- Roller icon container -->
@@ -277,7 +276,7 @@ export default {
       }, this.spinDuration)
     },
   },
-  beforeDestroy() {
+  beforeUnmount() {
     // Cleanup timeout if component is destroyed
     if (this.spinTimeout) {
       clearTimeout(this.spinTimeout)

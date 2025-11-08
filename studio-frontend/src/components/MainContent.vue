@@ -4,7 +4,6 @@
   </V2Layout>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 import isAuthenticated from "@/tools/isAuthenticated.js"
 
@@ -69,7 +68,7 @@ export default {
     },
     toggleBurger() {
       this.showBurgerMenu = !this.showBurgerMenu
-      bus.$emit("toggle-burger", this.showBurgerMenu)
+      bus.emit("toggle-burger", this.showBurgerMenu)
     },
   },
   components: {

@@ -86,7 +86,6 @@
   <!-- <LabeledValue v-else :label="field.label" :value="editValue" /> -->
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 import LabeledValue from "@/components/atoms/LabeledValue.vue"
 import Button from "@/components/atoms/Button.vue"
@@ -245,7 +244,7 @@ export default {
       }
     },
   },
-  components: { Fragment, LabeledValue, Button },
+  components: { LabeledValue, Button },
 }
 </script>
 

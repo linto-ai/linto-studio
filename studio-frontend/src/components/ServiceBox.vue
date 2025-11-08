@@ -24,7 +24,6 @@
   </div>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 import SERVICE_ICONS from "../const/serviceIcons.js"
 

@@ -48,7 +48,7 @@ export default {
     document.addEventListener("click", this.handleGlobalClick, true)
     document.addEventListener("keydown", this.handleGlobalKeydown, true)
   },
-  beforeDestroy() {
+  beforeUnmount() {
     document.removeEventListener("click", this.handleGlobalClick, true)
     document.removeEventListener("keydown", this.handleGlobalKeydown, true)
   },

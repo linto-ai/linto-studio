@@ -92,7 +92,7 @@ export default {
     }
   },
   mounted() {
-    bus.$on("update_field", (data) => {
+    bus.on("update_field", (data) => {
       this.applyChangesFromWorker(data)
     })
 
@@ -112,8 +112,8 @@ export default {
 
     this.currentValue = this.startValue
   },
-  beforeDestroy() {
-    bus.$off("update_field")
+  beforeUnmount() {
+    bus.off("update_field")
   },
   computed: {
     usersConnectedNames() {
@@ -215,7 +215,7 @@ export default {
         const words = this.turnWords.filter((word) => word.words !== "")
         const stime = words[wordIndex - 1]?.stime || words[0].stime
         if (stime) {
-          bus.$emit("player_set_time", { stime })
+          bus.emit("player_set_time", { stime })
         }
       }
     },

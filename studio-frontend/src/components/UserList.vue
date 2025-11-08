@@ -13,7 +13,6 @@
   </div>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 export default {
@@ -27,6 +26,6 @@ export default {
   },
   mounted() {},
   methods: {},
-  components: { Fragment, UserInfoInline },
+  components: { UserInfoInline },
 }
 </script>

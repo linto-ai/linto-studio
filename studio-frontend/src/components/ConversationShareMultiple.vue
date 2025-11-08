@@ -232,7 +232,6 @@
 </template>
 
 <script>
-import { Fragment } from "vue-fragment"
 import RIGHTS_LIST from "@/const/rigthsList.js"
 import EMPTY_FIELD from "@/const/emptyField.js"
 import { mapActions, mapGetters } from "vuex"
@@ -378,7 +377,7 @@ export default {
       )
 
       if (res.status === "success") {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "success",
           message: this.$t("share_menu.user_right_updated"),
           redirect: false,

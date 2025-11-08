@@ -32,7 +32,7 @@ export const playerMixin = {
       duration: null,
     }
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.instanceDestroyed = true
     this.destroy()
   },

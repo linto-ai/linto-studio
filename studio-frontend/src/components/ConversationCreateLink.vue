@@ -14,7 +14,6 @@
   </div>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 import FormInput from "@/components/molecules/FormInput.vue"
 import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
@@ -54,6 +53,6 @@ export default {
       }
     },
   },
-  components: { Fragment, FormInput, FormCheckbox },
+  components: { FormInput, FormCheckbox },
 }
 </script>

@@ -18,7 +18,7 @@
 <script>
 import { apiDeleteOrganisation } from "@/api/organisation.js"
 import bulkRequest from "@/tools/bulkRequest.js"
-import { bus } from "@/main"
+import { bus } from "@/eventBus"
 
 import ModalNew from "@/components/molecules/Modal.vue"
 
@@ -47,7 +47,7 @@ export default {
         apiDeleteOrganisation,
         this.selectedOrganizations.map((_id) => [_id]),
         (count) => {
-          bus.$emit("app_notif", {
+          bus.emit("app_notif", {
             status: "loading",
             message: this.$i18n.t(
               "modal_delete_multiple_organizations.loading_notification",
@@ -61,7 +61,7 @@ export default {
 
       if (req.status === "success") {
         this.$emit("on-confirm")
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "success",
           message: this.$i18n.t(
             "modal_delete_multiple_organizations.success_notification",
@@ -69,7 +69,7 @@ export default {
           ),
         })
       } else {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "error",
           message: this.$tc(
             "modal_delete_multiple_organizations.error",

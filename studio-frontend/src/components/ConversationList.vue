@@ -53,7 +53,6 @@
 </template>
 
 <script>
-import { Fragment } from "vue-fragment"
 
 import Loading from "@/components/atoms/Loading.vue"
 import ConversationLine from "@/components/ConversationLine.vue"

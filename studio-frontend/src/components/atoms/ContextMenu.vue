@@ -12,7 +12,6 @@
   </div>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import findParentByClass from "@/tools/findParentByClass"
 import { bus } from "@/main.js"
 
@@ -102,7 +101,7 @@ export default {
     this.initObserverContent()
     this.initObserverContainer()
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.resizeObserverContent?.disconnect()
     this.resizeObserverContainer?.disconnect()
   },

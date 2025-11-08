@@ -33,7 +33,6 @@
   </thead>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 
 import ArrayHeader from "@/components/ArrayHeader.vue"
@@ -57,6 +56,6 @@ export default {
       this.$emit("list_sort_by", event)
     },
   },
-  components: { Fragment, ArrayHeader },
+  components: { ArrayHeader },
 }
 </script>

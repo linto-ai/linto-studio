@@ -75,11 +75,11 @@ export default {
     if (!this.isAtLeastSystemAdministrator) {
       this.$router.push({ name: "not_found" })
     }
-    bus.$on("user_orga_update", this.fetchOrganization)
+    bus.on("user_orga_update", this.fetchOrganization)
     this.fetchOrganization()
   },
-  beforeDestroy() {
-    bus.$off("user_orga_update", this.fetchOrganization)
+  beforeUnmount() {
+    bus.off("user_orga_update", this.fetchOrganization)
   },
   methods: {
     async fetchOrganization() {

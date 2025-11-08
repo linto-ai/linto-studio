@@ -226,7 +226,7 @@ export default {
       )
     },
     clearSubtitles() {
-      bus.$emit("clear-session-subtitles")
+      bus.emit("clear-session-subtitles")
     },
   },
   computed: {

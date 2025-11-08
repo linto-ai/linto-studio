@@ -573,7 +573,7 @@ export default {
         )
 
         if (res.status == "success") {
-          bus.$emit("app_notif", {
+          bus.emit("app_notif", {
             status: "success",
             message: this.$i18n.t("session.settings_page.success_message"),
             redirect: false,
@@ -581,7 +581,7 @@ export default {
           this.$emit("session_update", res.data)
           this.session = { ...this.session, ...res.data }
         } else {
-          bus.$emit("app_notif", {
+          bus.emit("app_notif", {
             status: "error",
             message: this.$i18n.t("session.settings_page.error_update_message"),
             redirect: false,

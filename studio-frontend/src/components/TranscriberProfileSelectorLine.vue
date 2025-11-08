@@ -65,7 +65,6 @@
   </tr>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 
 import ArrayHeader from "@/components/ArrayHeader.vue"

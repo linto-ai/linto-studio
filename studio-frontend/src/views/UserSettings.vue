@@ -128,7 +128,7 @@ export default {
         if (payload?.email) {
           await this.sendVerificationEmail()
         }
-        bus.$emit("user_settings_update", {})
+        bus.emit("user_settings_update", {})
       }
     },
     async updateVisibility(value) {
@@ -186,7 +186,7 @@ export default {
               valid: false,
             }
             this.pictureUploadLabel = "Choose a file..."
-            bus.$emit("user_settings_update", {})
+            bus.emit("user_settings_update", {})
           }
         }
       } catch (error) {

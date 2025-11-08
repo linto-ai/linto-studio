@@ -37,7 +37,6 @@
   </tr>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 import router from "../routers/app-router"
 
@@ -91,6 +90,6 @@ export default {
       },
     },
   },
-  components: { Fragment, Checkbox },
+  components: { Checkbox },
 }
 </script>

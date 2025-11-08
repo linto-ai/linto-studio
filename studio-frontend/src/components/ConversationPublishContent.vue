@@ -52,7 +52,6 @@
   </div>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import MarkdownEditor from "@/components/MardownWYSIWYGEditor.vue"
 
 export default {
@@ -87,6 +86,6 @@ export default {
   },
 
   mounted() {},
-  components: { Fragment, MarkdownEditor },
+  components: { MarkdownEditor },
 }
 </script>

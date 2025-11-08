@@ -43,7 +43,6 @@
   </ModalNew>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 
 import { apiGetNlpService } from "../api/service.js"
@@ -94,6 +93,6 @@ export default {
   //     return []
   //   },
   // },
-  components: { Fragment, ModalNew, FormInput },
+  components: { ModalNew, FormInput },
 }
 </script>

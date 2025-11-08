@@ -288,7 +288,7 @@ export default {
       })
     },
     closeToolbox() {
-      bus.$emit("close_spk_toolbox", { turnId: this.turnId })
+      bus.emit("close_spk_toolbox", { turnId: this.turnId })
     },
   },
   components: { ContextMenu, FormInput },

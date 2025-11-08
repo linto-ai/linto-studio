@@ -1,14 +1,12 @@
-<script>
-export default {
-  functional: true,
-  props: {
-    nodes: {
-      type: Array,
-      required: true,
-    },
+<script setup>
+defineProps({
+  nodes: {
+    type: Array,
+    required: true,
   },
-  render(h, { props }) {
-    return props.nodes;
-  },
-};
-</script> 
+})
+</script>
+
+<template>
+  <component v-for="(node, index) in nodes" :key="index" :is="node" />
+</template> 

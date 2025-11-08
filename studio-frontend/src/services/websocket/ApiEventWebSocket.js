@@ -1,7 +1,7 @@
 import io from "socket.io-client"
 import Vue from "vue"
 import { customDebug } from "@/tools/customDebug"
-import { bus } from "@/main"
+import { bus } from "@/eventBus"
 import { getCookie } from "@/tools/getCookie"
 import { getEnv } from "@/tools/getEnv"
 import store from "@/store/index.js"
@@ -101,10 +101,10 @@ export default class ApiEventWebSocket {
     this.unSubscribeSessionsUpdate()
     this.currentSessionOrganizationId = organizationId
     this.socket.emit("watch_organization_session", organizationId)
-    // TODO: generalize every this.socket.on(event_name) to bus.$emit(`websocket/${event_name}`)
+    // TODO: generalize every this.socket.on(event_name) to bus.emit(`websocket/${event_name}`)
     this.socket.on(`orga_${organizationId}_session_update`, (value) => {
       store.dispatch("sessions/updateSession", value)
-      bus.$emit(`websocket/orga_${organizationId}_session_update`, value)
+      bus.emit(`websocket/orga_${organizationId}_session_update`, value)
     })
   }
 

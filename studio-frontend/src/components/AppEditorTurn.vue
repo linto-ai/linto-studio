@@ -368,7 +368,7 @@ export default {
   },
   mounted() {
     this.setSpeakerName()
-    bus.$on("conversation_user_update", (data) => {
+    bus.on("conversation_user_update", (data) => {
       let changes = data.value
       if (changes.speaker_id === this.speakerId) {
         this.setSpeakerName()
@@ -376,13 +376,13 @@ export default {
       }
     })
 
-    bus.$on("words_updated", (data) => {
+    bus.on("words_updated", (data) => {
       if (data.turnId === this.turnId) {
         this.words = data.value
       }
     })
 
-    bus.$on("segment_updated", (data) => {
+    bus.on("segment_updated", (data) => {
       if (data.turnId === this.turnId) {
         this.segment = data.value
 
@@ -392,20 +392,20 @@ export default {
       }
     })
 
-    bus.$on("turn_speaker_update", (data) => {
+    bus.on("turn_speaker_update", (data) => {
       if (data.turnId === this.turnId) {
         this.speakerId = data.value
         this.setSpeakerName()
         this.displaySpeakerToolbox = false
-        bus.$emit("refresh_spk_timebox", {})
+        bus.emit("refresh_spk_timebox", {})
       }
     })
 
-    bus.$on("speaker_name_updated", (data) => {
+    bus.on("speaker_name_updated", (data) => {
       if (data.value.speaker_id === this.speakerId) {
         this.setSpeakerName()
         this.displaySpeakerToolbox = false
-        bus.$emit("refresh_spk_timebox", {})
+        bus.emit("refresh_spk_timebox", {})
       }
     })
     this.displayHighlights()

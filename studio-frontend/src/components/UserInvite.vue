@@ -87,7 +87,6 @@
   </div>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 import EMPTY_FIELD from "../const/emptyField"
 import SearchUsersListComponent from "@/components/SearchUsersList.vue"
@@ -149,6 +148,6 @@ export default {
       return this.currentUsers.find((u) => u.email === user.email)
     },
   },
-  components: { Fragment, SearchUsersListComponent },
+  components: { SearchUsersListComponent },
 }
 </script>

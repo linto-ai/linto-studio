@@ -113,7 +113,7 @@ export default {
       uploadType: "file",
     }
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.stopFile()
   },
   methods: {

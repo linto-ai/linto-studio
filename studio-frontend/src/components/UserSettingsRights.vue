@@ -38,7 +38,6 @@
   </section>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 import { apiAdminUpdateUser } from "@/api/admin.js"
 
@@ -122,12 +121,12 @@ export default {
       })
 
       if (req.status === "success") {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "success",
           message: this.$t("user_settings.role_section.notif_success"),
         })
       } else {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "error",
           message: this.$t("user_settings.role_section.notif_error"),
         })
@@ -158,12 +157,12 @@ export default {
       })
 
       if (req.status === "success") {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "success",
           message: this.$t("user_settings.role_section.notif_success"),
         })
       } else {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "error",
           message: this.$t("user_settings.role_section.notif_error"),
         })
@@ -171,6 +170,6 @@ export default {
       this.suspend_field.disabled = false
     },
   },
-  components: { Fragment, Checkbox, FormCheckbox },
+  components: { Checkbox, FormCheckbox },
 }
 </script>

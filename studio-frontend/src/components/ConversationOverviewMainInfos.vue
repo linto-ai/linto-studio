@@ -26,7 +26,6 @@
   </form>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 import { apiUpdateConversation } from "@/api/conversation"
 import EMPTY_FIELD from "@/const/emptyField"
@@ -92,7 +91,7 @@ export default {
         })
 
         if (res.status === "error") {
-          bus.$emit("app_notif", {
+          bus.emit("app_notif", {
             status: "error",
             message: this.$i18n.t(
               "conversation_overview.main_information.error_notif",
@@ -100,7 +99,7 @@ export default {
             redirect: false,
           })
         } else {
-          bus.$emit("app_notif", {
+          bus.emit("app_notif", {
             status: "success",
             message: this.$i18n.t(
               "conversation_overview.main_information.done_notif",
@@ -112,6 +111,6 @@ export default {
       return false
     },
   },
-  components: { Fragment, FormInput },
+  components: { FormInput },
 }
 </script>

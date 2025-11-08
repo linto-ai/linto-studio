@@ -94,7 +94,7 @@ export default {
     }
   },
   mounted() {},
-  beforeDestroy() {},
+  beforeUnmount() {},
   computed: {
     ...mapGetters("user", {
       userInfo: "getUserInfos",

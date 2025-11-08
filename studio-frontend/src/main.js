@@ -1,40 +1,44 @@
 import "dotenv/config"
 
-import Vue from "vue"
+import { createApp } from "vue"
 import App from "./App.vue"
 import router from "./routers/app-router.js"
 import store from "./store/index.js"
 import i18n from "./i18n"
 import Debug from "debug"
-import vClickOutside from "v-click-outside"
-import Fragment from "vue-fragment"
-import PortalVue from "portal-vue"
-//import { setDefaultEnv } from "./tools/setDefaultEnv.js"
+import eventBusPlugin, { bus } from "./eventBus.js"
 import ApiEventWebSocket from "@/services/websocket/ApiEventWebSocket.js"
 import Atoms from "./components/atoms/index.js"
 import "./filters/index.js"
 
 import Loading from "vue-loading-overlay"
+import "vue-loading-overlay/dist/css/index.css"
 
-import "vue-loading-overlay/dist/vue-loading.css"
-//setDefaultEnv() // doesn't work
-
-export const bus = new Vue()
-Vue.use(PortalVue.default)
-Vue.use(vClickOutside)
-Vue.use(Fragment.Plugin)
-Vue.use(Atoms)
-Vue.use(Loading)
-
-Vue.config.productionTip = false
-Vue.prototype.debug = Debug("Vue")
-Vue.prototype.$apiEventWS = new ApiEventWebSocket()
+// Create v-click-outside directive for Vue 3
+import { vOnClickOutside } from "@vueuse/components"
 
 Debug.enable(process.env.VUE_APP_DEBUG)
 
-new Vue({
-  router,
-  store,
-  i18n,
-  render: (h) => h(App),
-}).$mount("#app")
+const app = createApp(App)
+
+// Export bus for backwards compatibility
+export { bus }
+
+// Install plugins
+app.use(router)
+app.use(store)
+app.use(i18n)
+app.use(eventBusPlugin)
+app.use(Atoms)
+app.use(Loading)
+
+// Register global directives
+app.directive("click-outside", vOnClickOutside)
+
+// Global properties
+app.config.productionTip = false
+app.config.globalProperties.debug = Debug("Vue")
+app.config.globalProperties.$apiEventWS = new ApiEventWebSocket()
+
+// Mount app
+app.mount("#app")

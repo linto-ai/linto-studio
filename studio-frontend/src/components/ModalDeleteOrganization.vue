@@ -17,7 +17,6 @@
   </ModalNew>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 
 import { bus } from "@/main.js"
 import { apiDeleteOrganisation } from "@/api/organisation.js"
@@ -42,14 +41,14 @@ export default {
     async deleteOrganization() {
       const res = await apiDeleteOrganisation(this.currentOrganizationScope)
       if (res.status === "error") {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "error",
           message: this.$i18n.t("organisation.delete_error_message"),
           redirect: false,
         })
         this.$emit("on-cancel")
       } else {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "success",
           message: this.$i18n.t("organisation.delete_success_message"),
           redirect: false,
@@ -58,6 +57,6 @@ export default {
       }
     },
   },
-  components: { Fragment, ModalNew },
+  components: { ModalNew },
 }
 </script>

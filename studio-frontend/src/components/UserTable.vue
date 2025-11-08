@@ -20,7 +20,6 @@
   </table>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 
 import UserTableHeaders from "@/components/UserTableHeaders.vue"
@@ -72,6 +71,6 @@ export default {
       },
     },
   },
-  components: { Fragment, UserTableHeaders, UserTableLine, Loading },
+  components: { UserTableHeaders, UserTableLine, Loading },
 }
 </script>

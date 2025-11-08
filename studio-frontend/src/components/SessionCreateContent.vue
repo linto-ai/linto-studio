@@ -329,7 +329,7 @@ export default {
         metadataToApply = Object.entries(template.meta)
       } catch (error) {
         console.error(error)
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "error",
           message: this.$i18n.t("session.create_page.template_apply_error"),
           timeout: null,
@@ -342,7 +342,7 @@ export default {
       this.channels = structuredClone(channelsToApply)
       this.fieldMetadata.value = metadataToApply
 
-      bus.$emit("app_notif", {
+      bus.emit("app_notif", {
         status: "success",
         message: this.$i18n.t("session.create_page.template_apply_success"),
         redirect: false,
@@ -414,7 +414,7 @@ export default {
 
         if (res.status == "success") {
           this.formState = "success"
-          bus.$emit("app_notif", {
+          bus.emit("app_notif", {
             status: "success",
             message: this.$i18n.t(
               "session.create_page.save_as_template_success",
@@ -424,7 +424,7 @@ export default {
           this.localSessionTemplates.sessionTemplates.push(res.data)
           this.localSessionTemplates.totalItems++
         } else {
-          bus.$emit("app_notif", {
+          bus.emit("app_notif", {
             status: "error",
             message: this.$i18n.t("session.create_page.save_as_template_error"),
             timeout: null,
@@ -483,7 +483,7 @@ export default {
         })
         if (res.status == "success") {
           this.formState = "success"
-          bus.$emit("app_notif", {
+          bus.emit("app_notif", {
             status: "success",
             message: this.$i18n.t("session.create_page.success_message"),
             redirect: false,
@@ -496,7 +496,7 @@ export default {
             },
           })
         } else {
-          bus.$emit("app_notif", {
+          bus.emit("app_notif", {
             status: "error",
             message: this.$i18n.t("session.create_page.error_message"),
             timeout: null,

@@ -59,12 +59,12 @@ export default {
       this.initAudioPlayer()
     })
 
-    bus.$on("refresh_audio_regions", (data) => {
+    bus.on("refresh_audio_regions", (data) => {
       if (!this.instanceDestroyed) {
         this.updateRegions(data)
       }
     })
-    bus.$on("player_set_time", (data) => {
+    bus.on("player_set_time", (data) => {
       if (!this.instanceDestroyed) {
         this.seekTo(data.stime)
         if (this.conversationFiltered) {
@@ -81,23 +81,23 @@ export default {
       }
     })
 
-    bus.$on("player-play", () => {
+    bus.on("player-play", () => {
       if (this.player) {
         this.player.play()
       }
     })
 
-    bus.$on("player-pause", () => {
+    bus.on("player-pause", () => {
       if (this.player) {
         this.player.pause()
       }
     })
   },
-  beforeDestroy() {
-    bus.$off("refresh_audio_regions")
-    bus.$off("player_set_time")
-    bus.$off("player-play")
-    bus.$off("player-pause")
+  beforeUnmount() {
+    bus.off("refresh_audio_regions")
+    bus.off("player_set_time")
+    bus.off("player-play")
+    bus.off("player-pause")
     console.log("destroy player")
     window.removeEventListener("load", (event) => {
       this.initAudioPlayer()
@@ -217,7 +217,7 @@ export default {
           this.playerReady = true
           this.playerLoading = false
           this.duration = this.player.getDuration()
-          bus.$emit("player-ready")
+          bus.emit("player-ready")
         })
         this.player.once("decode", () => {
           //if (!this.player) return
@@ -244,7 +244,7 @@ export default {
         })
         this.player.on("seeking", (time) => {
           this.currentTime = time
-          bus.$emit("player-seek", this.currentTime)
+          bus.emit("player-seek", this.currentTime)
           if (this.conversationFiltered) {
             if (
               this.currentTime > this.currentPlaylist.etime ||
@@ -256,7 +256,7 @@ export default {
         })
 
         this.player.on("timeupdate", (time) => {
-          bus.$emit("player-audioprocess", time)
+          bus.emit("player-audioprocess", time)
           this.currentTime = time
           if (
             this.currentPlaylist.etime !== undefined &&

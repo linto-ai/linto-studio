@@ -101,7 +101,7 @@ export default {
   },
   methods: {
     handleClick() {
-      bus.$emit("player_set_time", { stime: this.screen.stime })
+      bus.emit("player_set_time", { stime: this.screen.stime })
     },
     deletescreen() {
       this.$emit("delete")

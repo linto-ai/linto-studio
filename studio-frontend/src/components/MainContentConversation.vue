@@ -42,7 +42,6 @@
   </div>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 
 import MainContent from "./MainContent.vue"
@@ -97,7 +96,7 @@ export default {
     }
   },
   mounted() {
-    bus.$on("conversation_disconnected", () => {
+    bus.on("conversation_disconnected", () => {
       this.websocketError = true
     })
   },

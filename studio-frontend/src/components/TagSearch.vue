@@ -35,7 +35,6 @@
 <script>
 import uuidv4 from "uuid/v4.js"
 
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 import {
   apiSearchCategories,
@@ -195,6 +194,6 @@ export default {
     },
   },
 
-  components: { Fragment, Loading, SwitchInput, Tag, TagCategoryBoxSelectable },
+  components: { Loading, SwitchInput, Tag, TagCategoryBoxSelectable },
 }
 </script>

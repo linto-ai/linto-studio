@@ -36,7 +36,6 @@
   </TagCategoryBox>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 import TagCategoryBox from "./TagCategoryBox.vue"
 import { workerSendMessage } from "../tools/worker-message.js"
@@ -119,6 +118,6 @@ export default {
       this.showDeleteModal = true
     },
   },
-  components: { Fragment, TagCategoryBox, ModalDeleteTagHighlight },
+  components: { TagCategoryBox, ModalDeleteTagHighlight },
 }
 </script>

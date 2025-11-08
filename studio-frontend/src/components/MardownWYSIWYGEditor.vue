@@ -61,7 +61,7 @@ export default {
     this.editor.commands.setContent(this.value)
     this.editor.on("update", this.onUpdate.bind(this))
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.editor.destroy()
   },
   methods: {

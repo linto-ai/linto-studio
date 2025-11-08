@@ -31,7 +31,6 @@
   </div>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 import EMPTY_FIELD from "@/const/emptyField"
 import { testFieldEmpty } from "@/tools/fields/testEmpty.js"
@@ -74,6 +73,6 @@ export default {
       }
     },
   },
-  components: { Fragment, FormInput, platformRoleMixin },
+  components: { FormInput, platformRoleMixin },
 }
 </script>

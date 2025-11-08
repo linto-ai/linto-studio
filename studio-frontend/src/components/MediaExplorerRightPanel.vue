@@ -193,7 +193,7 @@ export default {
 
     this.$emit("resize", this.panelWidth)
   },
-  beforeDestroy() {
+  beforeUnmount() {
     if (this.isResizing) {
       this.stopResize()
     }

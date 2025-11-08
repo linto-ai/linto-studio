@@ -1,6 +1,4 @@
-import Vue from "vue"
-import VueI18n from "vue-i18n"
-Vue.use(VueI18n)
+import { createI18n } from "vue-i18n"
 import enUS from "./locales/en-US.json"
 import frFR from "./locales/fr-FR.json"
 
@@ -43,11 +41,10 @@ function getUserLocal() {
   )
 }
 
-export default new VueI18n({
+export default createI18n({
+  legacy: false, // Use Composition API mode
   locale: getUserLocal(),
   fallbackLocale: "en-US",
   messages: loadLocaleMessages(),
-  interpolation: {
-    escapeValue: false,
-  },
+  globalInjection: true, // Allow $t in templates
 })

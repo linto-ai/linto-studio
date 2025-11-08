@@ -317,7 +317,7 @@ export default {
       window.addEventListener("resize", this.resizeListener, { passive: true })
     }
   },
-  beforeDestroy() {
+  beforeUnmount() {
     // Clear any pending timeout
     if (this.hoverTimeout) {
       clearTimeout(this.hoverTimeout)

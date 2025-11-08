@@ -105,7 +105,7 @@ export default {
     },
   },
 
-  beforeDestroy() {
+  beforeUnmount() {
     // Clean up all timers
     this.timers.forEach((timer) => clearTimeout(timer))
     this.timers.clear()

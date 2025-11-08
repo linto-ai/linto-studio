@@ -281,7 +281,7 @@ export default {
       //window.addEventListener("keydown", this.onKeyDown)
     }
   },
-  beforeDestroy() {
+  beforeUnmount() {
     if (this.resizeListener && typeof window !== "undefined") {
       window.removeEventListener("resize", this.resizeListener)
     }

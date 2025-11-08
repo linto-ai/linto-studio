@@ -140,7 +140,7 @@ export default function createMediaModule(scope, status = "done") {
       },
       deleteMedias(state, mediaIds) {
         state.medias = state.medias.filter((m) => !mediaIds.includes(m._id))
-        bus.$emit("medias/delete", mediaIds)
+        bus.emit("medias/delete", mediaIds)
       },
       setSelectedTagIds(state, ids) {
         state.selectedTagIds = ids

@@ -17,7 +17,6 @@
   </ModalNew>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 
 import { formsMixin } from "@/mixins/forms.js"
 
@@ -48,6 +47,6 @@ export default {
       this.$emit("on-confirm")
     },
   },
-  components: { Fragment, ModalNew },
+  components: { ModalNew },
 }
 </script>

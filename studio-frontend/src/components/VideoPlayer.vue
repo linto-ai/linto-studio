@@ -60,18 +60,18 @@ export default {
       }
     },
   },
-  beforeDestroy() {
+  beforeUnmount() {
     if (this.videoLoaded) {
       URL.revokeObjectURL(this.videoUrl)
     }
   },
   mounted() {
-    bus.$on("screen-enter", this.handleScreenEnter)
-    bus.$on("screen-leave", this.handleScreenLeave)
+    bus.on("screen-enter", this.handleScreenEnter)
+    bus.on("screen-leave", this.handleScreenLeave)
   },
-  beforeDestroy() {
-    bus.$off("screen-enter", this.handleScreenEnter)
-    bus.$off("screen-leave", this.handleScreenLeave)
+  beforeUnmount() {
+    bus.off("screen-enter", this.handleScreenEnter)
+    bus.off("screen-leave", this.handleScreenLeave)
   },
   methods: {
     handleScreenEnter(screen_id) {
@@ -100,7 +100,7 @@ export default {
       }
     },
     handleError(e) {
-      bus.$emit("app_notif", {
+      bus.emit("app_notif", {
         status: "error",
         message: e.msg,
         timeout: null,

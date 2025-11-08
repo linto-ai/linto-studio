@@ -220,10 +220,10 @@ export default {
             if (req.status === "success") {
               this.formState = req.status
               let newOrganizationId = req.data._id
-              bus.$emit("set_organization_scope", {
+              bus.emit("set_organization_scope", {
                 organizationId: newOrganizationId,
               })
-              bus.$emit("app_notif", {
+              bus.emit("app_notif", {
                 status: "success",
                 message: this.$i18n.t("organisation.create.success_message"),
                 redirect: false,
@@ -244,7 +244,7 @@ export default {
     handleError(req) {
       switch (req?.error?.response?.status) {
         case 409:
-          bus.$emit("app_notif", {
+          bus.emit("app_notif", {
             status: "error",
             message: this.$i18n.t("organisation.create.error_already_exists"),
             redirect: false,
@@ -252,7 +252,7 @@ export default {
 
           break
         default:
-          bus.$emit("app_notif", {
+          bus.emit("app_notif", {
             status: "error",
             message: this.$i18n.t("organisation.create.error_message"),
             redirect: false,

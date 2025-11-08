@@ -60,7 +60,6 @@
   </TagCategoryBox>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 
 import EMPTY_FIELD from "../const/emptyField"
@@ -126,13 +125,13 @@ export default {
       if (res.status == "error") {
         this.newTagName.error = "error"
       } else {
-        bus.$emit("tag-category-changed", {
+        bus.emit("tag-category-changed", {
           categoryIdTarget: this.category._id,
         })
         this.cancelAddingTag()
       }
     },
   },
-  components: { Fragment, TagCategoryBox, FormInput },
+  components: { TagCategoryBox, FormInput },
 }
 </script>

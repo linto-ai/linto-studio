@@ -31,26 +31,26 @@ export const conversationMixin = {
             event.data.params.value.speaker_id,
             event.data.params.value.speaker_name,
           )
-          bus.$emit("conversation_user_update", { ...event.data.params })
+          bus.emit("conversation_user_update", { ...event.data.params })
           break
         case "turn_speaker_update":
           this.updateSpeakerTurn(
             event.data.params.turnId,
             event.data.params.value,
           )
-          bus.$emit("turn_speaker_update", event.data.params)
+          bus.emit("turn_speaker_update", event.data.params)
           break
         case "words_updated":
-          bus.$emit("words_updated", {
+          bus.emit("words_updated", {
             ...event.data.params,
           })
           break
         case "segment_updated":
-          bus.$emit("segment_updated", {
+          bus.emit("segment_updated", {
             ...event.data.params,
           })
           if (event.data.params.origin === "websocket")
-            bus.$emit("update_field", {
+            bus.emit("update_field", {
               ...event.data.params,
               flag: `conversationTurn/${event.data.params.turnId}`,
             })
@@ -66,7 +66,7 @@ export const conversationMixin = {
             keyword: event.data.params.job ?? { state: "pending" },
           }
           this.conversation.keywords = event.data.params.keywords
-          bus.$emit("refresh_keywords", {})
+          bus.emit("refresh_keywords", {})
           break
         case "hightlight_update":
           const categoryName = event.data.params.categoryName
@@ -75,7 +75,7 @@ export const conversationMixin = {
           if (job.state === "done") {
             this.fetchHightlightsCategories(this.conversationId)
           }
-          bus.$emit("hightlight_update", { categoryName })
+          bus.emit("hightlight_update", { categoryName })
           break
         case "tag_removed_from_conversation":
           this.fetchHightlightsCategories(this.conversationId)
@@ -87,8 +87,8 @@ export const conversationMixin = {
     updateConversationTurns(events) {
       this.conversation.text = events.value
       setTimeout(() => {
-        bus.$emit("refresh_turns", {})
-        bus.$emit("refresh_spk_timebox", {})
+        bus.emit("refresh_turns", {})
+        bus.emit("refresh_spk_timebox", {})
       }, 200)
     },
     updateSpeakerName(speakerId, speakerName) {

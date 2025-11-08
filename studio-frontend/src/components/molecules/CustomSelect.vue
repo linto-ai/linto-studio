@@ -11,7 +11,6 @@
 /*
 Better to use popoverlist or native select
 */
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 
 import Checkbox from "@/components/atoms/Checkbox.vue"
@@ -45,7 +44,7 @@ export default {
     }
   },
   mounted() {},
-  beforeDestroy() {},
+  beforeUnmount() {},
   computed: {
     planOptions() {
       let res = []
@@ -68,6 +67,6 @@ export default {
       }
     },
   },
-  components: { Fragment, Checkbox, Chip, Badge, ContextMenu },
+  components: { Checkbox, Chip, Badge, ContextMenu },
 }
 </script>

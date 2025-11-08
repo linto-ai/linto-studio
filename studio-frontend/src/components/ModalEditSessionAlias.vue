@@ -91,7 +91,7 @@ export default {
           )
         }
         if (req.status === "success") {
-          bus.$emit("app_notif", {
+          bus.emit("app_notif", {
             status: "success",
             message: this.$t(
               "session.settings_page.modal_edit_session_alias.success_message",
@@ -105,7 +105,7 @@ export default {
               "session.settings_page.modal_edit_session_alias.name_already_exists",
             )
           }
-          bus.$emit("app_notif", {
+          bus.emit("app_notif", {
             status: "error",
             message: this.$t(
               "session.settings_page.modal_edit_session_alias.error_message",
@@ -122,7 +122,7 @@ export default {
         this.sessionAliases[0]._id,
       )
       if (req.status === "success") {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "success",
           message: this.$t(
             "session.settings_page.modal_edit_session_alias.delete_success_message",
@@ -130,7 +130,7 @@ export default {
           redirect: false,
         })
       } else {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "error",
           message: this.$t(
             "session.settings_page.modal_edit_session_alias.delete_error_message",

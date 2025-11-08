@@ -63,7 +63,7 @@ export async function sendRequest(
     if (req.status >= 200 && req.status < 300) {
       let msg = req.data?.message || req.data?.msg
       if (notif) {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "success",
           message: notif.message || msg,
           timeout: notif.timeout,
@@ -78,7 +78,7 @@ export async function sendRequest(
     if (error.code === "ERR_CANCELED") return
     let errMsg = error?.response?.data?.message || error.code || error.message
     if (notif) {
-      bus.$emit("app_notif", {
+      bus.emit("app_notif", {
         status: "error",
         message: errMsg,
         timeout: null,

@@ -238,7 +238,7 @@ export default {
           )
           this.orgaMembers.splice(memberIndex, 1)
         } else {
-          bus.$emit("app_notif", {
+          bus.emit("app_notif", {
             status: "error",
             message: this.$i18n.t("organisation.remove_user_error_message"),
           })
@@ -257,7 +257,7 @@ export default {
           setCookie("cm_orga_scope", "")
           window.location.href = "/"
         } else {
-          bus.$emit("app_notif", {
+          bus.emit("app_notif", {
             status: "error",
             message: this.$i18n.t("organisation.leave_error_message"),
           })
@@ -301,7 +301,7 @@ export default {
       }
     },
     async dispatchOrganization() {
-      bus.$emit("user_orga_update")
+      bus.emit("user_orga_update")
     },
   },
   components: {

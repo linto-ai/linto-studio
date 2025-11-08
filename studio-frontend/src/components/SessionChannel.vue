@@ -205,7 +205,6 @@
 <script>
 import uuidv4 from "uuid/v4.js"
 
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 
 import { sessionChannelModelMixin } from "@/mixins/sessionChannelModel.js"
@@ -318,7 +317,7 @@ export default {
 
     document.addEventListener("keydown", this.keydown)
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.$apiEventWS.unSubscribeSessionRoom()
     document.removeEventListener("keydown", this.keydown)
   },

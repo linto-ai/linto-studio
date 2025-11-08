@@ -181,7 +181,7 @@ export default {
       let newLineNumber =
         keptScreen.screen.text.length + deletedScreen.screen.text.length
       if (newLineNumber > this.versionSettings.screenLines) {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "error",
           message: this.$i18n.t(
             "conversation.subtitles.error.too_much_lines_to_merge",
@@ -196,7 +196,7 @@ export default {
       ) {
         workerSendMessage("merge_screens", { keptScreenId, deletedScreenId })
       } else {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "error",
           message: this.$i18n.t(
             "conversation.subtitles.error.cannot_merge_non_consecutive_screens",
@@ -222,7 +222,7 @@ export default {
       stime += 0.01
       etime -= 0.01
       if (etime - stime < 0.1) {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "error",
           message: this.$i18n.t(
             "conversation.subtitles.error.no_enough_place_new_screen",

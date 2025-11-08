@@ -32,7 +32,6 @@
   </ModalNew>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { mapActions, mapGetters } from "vuex"
 import { bus } from "@/main.js"
 import EMPTY_FIELD from "@/const/emptyField"
@@ -101,6 +100,6 @@ export default {
       // If validation fails, don't close the modal
     },
   },
-  components: { Fragment, FormInput, ModalNew, Button },
+  components: { FormInput, ModalNew, Button },
 }
 </script>

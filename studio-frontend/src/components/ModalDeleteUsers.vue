@@ -39,7 +39,7 @@ export default {
       if (req.status === "success") {
         this.$emit("on-confirm")
       } else {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "error",
           message: this.$tc(
             "modal_delete_users.error",

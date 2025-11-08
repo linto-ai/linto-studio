@@ -30,7 +30,7 @@
   </ModalNew>
 </template>
 <script>
-import { bus } from "@/main"
+import { bus } from "@/eventBus"
 import { formsMixin } from "@/mixins/forms.js"
 
 import { testName } from "@/tools/fields/testName.js"

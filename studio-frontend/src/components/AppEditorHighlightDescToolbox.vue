@@ -67,7 +67,7 @@ export default {
       // this.displayModal = true
       //
       //
-      bus.$emit("open-metadata-modal", {
+      bus.emit("open-metadata-modal", {
         category: this.category,
         tag: this.tag,
       })

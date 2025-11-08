@@ -37,7 +37,6 @@
   </div>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 
 import LabeledValue from "@/components/atoms/LabeledValue.vue"
@@ -103,6 +102,6 @@ export default {
     },
   },
   methods: {},
-  components: { Fragment, LabeledValue, SwitchInput, Checkbox },
+  components: { LabeledValue, SwitchInput, Checkbox },
 }
 </script>

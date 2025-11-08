@@ -172,7 +172,7 @@ export default {
       this.tabs.find((t) => (t.id = id)).label = newName
     },
     updateConversationName() {
-      bus.$emit("update_conversation_name", {})
+      bus.emit("update_conversation_name", {})
     },
     async downloadAudio() {
       this.loadingAudio = true

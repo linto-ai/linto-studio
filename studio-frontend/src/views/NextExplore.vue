@@ -101,7 +101,7 @@ export default {
   mounted() {
     this.init()
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.$apiEventWS.unSubscribeMediaUdate()
   },
   methods: {

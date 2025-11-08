@@ -35,7 +35,6 @@
 </template>
 <script>
 import uuidv4 from "uuid/v4.js"
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 import { apiSearchCategories, apiGetAllCategories } from "../api/tag.js"
 import { debounceMixin } from "../mixins/debounce"
@@ -134,6 +133,6 @@ export default {
       this.loading = false
     },
   },
-  components: { Fragment, Loading },
+  components: { Loading },
 }
 </script>

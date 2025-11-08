@@ -47,7 +47,6 @@
   </form>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { mapActions } from "vuex"
 import { bus } from "@/main.js"
 import { apiUpdateUserInfo } from "@/api/user"
@@ -140,12 +139,12 @@ export default {
         req = await apiAdminUpdateUser(this.userInfo._id, payload)
       }
       if (req.status === "success") {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "success",
           message: this.$t("user_settings.notif_success"),
         })
       } else {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "error",
           message: this.$t("user_settings.notif_error"),
         })
@@ -154,7 +153,7 @@ export default {
       return false
     },
   },
-  components: { Fragment, FormCheckbox },
+  components: { FormCheckbox },
 }
 </script>
 

@@ -52,14 +52,14 @@ export const sessionMixin = {
     // then fetch session
     if (this.session === null) this.fetchSession()
 
-    bus.$on(
+    bus.on(
       `websocket/orga_${this.organizationId}_session_update`,
       this.onSessionUpdateEvent.bind(this),
     )
   },
-  beforeDestroy() {
+  beforeUnmount() {
     //this.$apiEventWS.unSubscribeSessionsUpdate()
-    bus.$off(`websocket/orga_${this.organizationId}_session_update`)
+    bus.off(`websocket/orga_${this.organizationId}_session_update`)
   },
   methods: {
     async fetchSession() {
@@ -114,7 +114,7 @@ export const sessionMixin = {
       if (start.status === "error") {
         console.error("Error stoping session", start)
         this.isStoping = false
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "error",
           message: this.$i18n.t(
             "session.detail_page.stop_session_error_message",
@@ -124,7 +124,7 @@ export const sessionMixin = {
         return
       }
 
-      bus.$emit("app_notif", {
+      bus.emit("app_notif", {
         status: "success",
         message: this.$i18n.t("session.detail_page.stop_session_success"),
         timeout: null,
@@ -139,7 +139,7 @@ export const sessionMixin = {
 
       if (deleteSession.status === "error") {
         console.error("Error deleting session", deleteSession)
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "error",
           message: this.$i18n.t(
             "session.detail_page.delete_session_error_message",
@@ -174,14 +174,14 @@ export const sessionMixin = {
       })
       if (req.status === "error") {
         console.error("Error updating session", req)
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "error",
           message: this.$i18n.t("session.settings_page.error_update_message"),
           timeout: null,
         })
         return
       }
-      bus.$emit("app_notif", {
+      bus.emit("app_notif", {
         status: "success",
         message: this.$i18n.t("session.settings_page.success_message"),
         timeout: 3000,
@@ -202,7 +202,7 @@ export const sessionMixin = {
       if (req.status === "error") {
         console.error("Error updating session", req)
         if (!silent) {
-          bus.$emit("app_notif", {
+          bus.emit("app_notif", {
             status: "error",
             message: this.$i18n.t("session.settings_page.error_update_message"),
             timeout: null,
@@ -211,7 +211,7 @@ export const sessionMixin = {
         return
       }
       if (!silent) {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "success",
           message: this.$i18n.t("session.settings_page.success_message"),
           timeout: 3000,

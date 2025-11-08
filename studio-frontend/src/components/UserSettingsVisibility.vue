@@ -42,12 +42,12 @@ export default {
         req = await apiAdminUpdateUser(this.userInfo._id, { private: value })
       }
       if (req.status === "success") {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "success",
           message: this.$t("user_settings.notif_success"),
         })
       } else {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "error",
           message: this.$t("user_settings.notif_error"),
         })

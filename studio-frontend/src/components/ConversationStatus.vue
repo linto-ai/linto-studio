@@ -47,7 +47,6 @@
   </V2Layout>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 
 import DrawingLogo from "@/svg/Drawing.vue"
@@ -74,13 +73,13 @@ export default {
     }
   },
   mounted() {
-    bus.$on("job_transcription_update", () => {
+    bus.on("job_transcription_update", () => {
       this.steps = this.conversation?.jobs?.transcription?.steps
       this.jobState = this.conversation?.jobs?.transcription?.state
     })
   },
-  beforeDestroy() {
-    bus.$off("job_transcription_update")
+  beforeUnmount() {
+    bus.off("job_transcription_update")
   },
   computed: {
     progress() {
@@ -115,6 +114,6 @@ export default {
     },
   },
   methods: {},
-  components: { Fragment, DrawingLogo, V2Layout },
+  components: { DrawingLogo, V2Layout },
 }
 </script>

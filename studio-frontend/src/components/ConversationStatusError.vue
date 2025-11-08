@@ -43,7 +43,6 @@
   </V2Layout>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 import V2Layout from "@/layouts/v2-layout.vue"
 
@@ -75,6 +74,6 @@ export default {
       const job_id = this.conversation.transcription.job_id
     },
   },
-  components: { Fragment, V2Layout },
+  components: { V2Layout },
 }
 </script>

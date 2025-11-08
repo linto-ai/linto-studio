@@ -47,7 +47,7 @@ export default {
       )
 
       if (res.status == "success") {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "success",
           message: this.$i18n.t(
             "session.create_page.delete_template_modal.success",
@@ -56,7 +56,7 @@ export default {
         })
         this.$emit("on-confirm", res)
       } else {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "error",
           message: this.$i18n.t(
             "session.create_page.delete_template_modal.error",

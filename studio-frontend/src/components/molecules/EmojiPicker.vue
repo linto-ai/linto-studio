@@ -38,7 +38,7 @@ export default {
       })
     }
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.domElementWithListener.forEach((el) => {
       el.removeEventListener("click", this.closeEmojiPicker)
     })

@@ -27,7 +27,6 @@
   </ModalNew>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 import ModalNew from "@/components/molecules/Modal.vue"
 import ServiceBox from "./ServiceBox.vue"
@@ -86,6 +85,6 @@ export default {
       this.$emit("on-confirm", services)
     },
   },
-  components: { Fragment, ModalNew, ServiceBox },
+  components: { ModalNew, ServiceBox },
 }
 </script>

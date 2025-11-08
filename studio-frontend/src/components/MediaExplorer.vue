@@ -181,7 +181,7 @@ export default {
     }
   },
   mounted() {},
-  beforeDestroy() {
+  beforeUnmount() {
     this.cleanupObserver()
   },
   watch: {

@@ -128,7 +128,7 @@ export default {
   },
   computed: {
     clickable() {
-      return this.$listeners.click ? "clickable" : ""
+      return this.$attrs.onClick ? "clickable" : ""
     },
     borderColor() {
       return `var(--material-${this.color}-500)`

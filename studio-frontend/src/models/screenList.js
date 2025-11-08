@@ -148,7 +148,7 @@ export class ScreenList {
     }
     this.screens[screenId] = null
     this.size--
-    bus.$emit("delete_screen", { screenId })
+    bus.emit("delete_screen", { screenId })
     return screenId
   }
 

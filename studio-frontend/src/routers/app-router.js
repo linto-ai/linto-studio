@@ -1,5 +1,4 @@
-import Vue from "vue"
-import Router from "vue-router"
+import { createRouter, createWebHistory } from "vue-router"
 
 import { getEnv } from "@/tools/getEnv.js"
 import store from "@/store/index.js"
@@ -22,8 +21,6 @@ const defaultProps = {
   default: true,
   AppHeader: true,
 }
-
-Vue.use(Router)
 
 function handleGenericScope(to) {
   if (to.meta.favorites) {
@@ -153,8 +150,8 @@ const authGuards = {
   },
 }
 
-let router = new Router({
-  mode: "history",
+let router = createRouter({
+  history: createWebHistory(),
   routes: [
     { path: "/", redirect: { name: "explore" } },
     { path: "/interface", redirect: { name: "explore" } },

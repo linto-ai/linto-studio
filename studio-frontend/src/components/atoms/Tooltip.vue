@@ -125,7 +125,7 @@ export default {
       return res
     },
   },
-  beforeDestroy() {
+  beforeUnmount() {
     window.removeEventListener("resize", this.updateTooltipPosition)
     window.removeEventListener("scroll", this.updateTooltipPosition, true)
   },

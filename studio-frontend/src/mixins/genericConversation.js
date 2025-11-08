@@ -159,21 +159,21 @@ export const genericConversationMixin = {
             this.error = true
           case "disconnected":
             this.userRight = 0
-            bus.$emit("conversation_disconnected")
+            bus.emit("conversation_disconnected")
             break
           case "conversation_loaded":
             this.conversation = event.data.params
             await onLoad()
             break
           case "title_updated":
-            bus.$emit("update_field", {
+            bus.emit("update_field", {
               ...event.data.params,
               flag: "conversationName",
             })
-            bus.$emit("update_conversation_name", {})
+            bus.emit("update_conversation_name", {})
             break
           case "description_updated":
-            bus.$emit("update_field", {
+            bus.emit("update_field", {
               ...event.data.params,
               flag: "conversationDescription",
             })
@@ -199,7 +199,7 @@ export const genericConversationMixin = {
               steps: event.data.params.steps,
               job_logs: event.data.params.job_logs,
             }
-            bus.$emit("job_transcription_update", {})
+            bus.emit("job_transcription_update", {})
 
             if (transcriptionState === "done" || transcriptionState === "error")
               window.location.reload()

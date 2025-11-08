@@ -131,7 +131,7 @@ export default {
     this.getLastUpdate()
     this.getServices()
   },
-  beforeDestroy() {
+  beforeUnmount() {
     clearTimeout(this.pollingJob)
     this.activeTab = "destroyed"
   },

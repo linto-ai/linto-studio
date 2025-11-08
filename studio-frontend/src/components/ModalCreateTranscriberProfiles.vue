@@ -44,7 +44,7 @@ export default {
       if (res.status === "success") {
         this.$emit("on-confirm", res)
       } else {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "error",
           message: this.$t("modal_create_transcriber_profile.notif_error"),
         })

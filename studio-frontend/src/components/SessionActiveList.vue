@@ -16,7 +16,7 @@
   </div>
 </template>
 <script>
-import { bus } from "@/main"
+import { bus } from "@/eventBus"
 
 import { apiGetStartedSessions } from "@/api/session.js"
 import { genericSessionList } from "@/mixins/genericSessionList"

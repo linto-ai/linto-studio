@@ -13,7 +13,7 @@ export default function handleClick(e) {
       const wordElement = this.getParentWord(target)
       if (wordElement) {
         const stime = wordElement?.getAttribute("data-stime")
-        if (stime) bus.$emit("player_set_time", { stime })
+        if (stime) bus.emit("player_set_time", { stime })
         this.closeEditorToolbox()
         this.focused = this.canEdit
         this.contentEditable = this.canEdit

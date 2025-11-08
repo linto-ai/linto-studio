@@ -30,7 +30,6 @@
   </div>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 
 import { sessionModelMixin } from "@/mixins/sessionModel.js"
 import { sessionChannelModelMixin } from "../mixins/sessionChannelModel.js"
@@ -105,7 +104,7 @@ export default {
   mounted() {
     this.init()
   },
-  beforeDestroy() {},
+  beforeUnmount() {},
   computed: {
     isInError() {
       return this.channelTranscriberStatus === "errored"
@@ -129,6 +128,6 @@ export default {
       this.$emit("closeSubtitleFullscreen")
     },
   },
-  components: { Fragment, SessionChannel, Loading },
+  components: { SessionChannel, Loading },
 }
 </script>

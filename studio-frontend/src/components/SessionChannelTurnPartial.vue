@@ -6,7 +6,6 @@
     :channelLanguages="channelLanguages" />
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 
 import SessionChannelTurn from "@/components/SessionChannelTurn.vue"
@@ -45,6 +44,6 @@ export default {
     },
   },
   methods: {},
-  components: { Fragment, SessionChannelTurn },
+  components: { SessionChannelTurn },
 }
 </script>

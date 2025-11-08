@@ -134,7 +134,7 @@ export default {
         apiDeleteTranscriberProfile,
         this.selectedProfiles.map((id) => [id]),
         (count) => {
-          bus.$emit("app_notif", {
+          bus.emit("app_notif", {
             status: "loading",
             message: this.$i18n.t(
               "backoffice.transcriber_profile_list.bulk_remove_loading_notification",
@@ -147,7 +147,7 @@ export default {
       )
 
       if (req.status === "success") {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "success",
           message: this.$i18n.t(
             "backoffice.transcriber_profile_list.bulk_remove_success_notification",
@@ -156,7 +156,7 @@ export default {
         this.fetchTranscriberProfiles()
         this.selectedProfiles = []
       } else {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "error",
           message: this.$i18n.t(
             "backoffice.transcriber_profile_list.bulk_remove_error_notification",

@@ -102,7 +102,7 @@ export default {
       })
 
       if (res.status === "error") {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "error",
           message: this.$i18n.t(
             "conversation_overview.rights.orga_right_update_error",
@@ -110,7 +110,7 @@ export default {
           redirect: false,
         })
       } else {
-        bus.$emit("app_notif", {
+        bus.emit("app_notif", {
           status: "success",
           message: this.$i18n.t(
             "conversation_overview.rights.orga_right_update_success",

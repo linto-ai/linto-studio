@@ -99,12 +99,12 @@ export default {
     },
   },
   mounted() {
-    bus.$on("screen-enter", this.handleScreenEnter)
-    bus.$on("screen-leave", this.handleScreenLeave)
+    bus.on("screen-enter", this.handleScreenEnter)
+    bus.on("screen-leave", this.handleScreenLeave)
   },
-  beforeDestroy() {
-    bus.$off("screen-enter", this.handleScreenEnter)
-    bus.$off("screen-leave", this.handleScreenLeave)
+  beforeUnmount() {
+    bus.off("screen-enter", this.handleScreenEnter)
+    bus.off("screen-leave", this.handleScreenLeave)
   },
   watch: {
     playingScreenId(id) {

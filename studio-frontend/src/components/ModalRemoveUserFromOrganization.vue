@@ -17,7 +17,6 @@
   </ModalNew>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 
 import { bus } from "@/main.js"
 import { apiRemoveUserFromOrganisation } from "@/api/user.js"
@@ -50,6 +49,6 @@ export default {
       this.$emit("on-confirm", res)
     },
   },
-  components: { Fragment, ModalNew },
+  components: { ModalNew },
 }
 </script>

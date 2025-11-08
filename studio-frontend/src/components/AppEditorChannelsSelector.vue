@@ -12,7 +12,6 @@
   </div>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import CustomSelect from "@/components/molecules/CustomSelect.vue"
 
 import { bus } from "@/main.js"
@@ -57,6 +56,6 @@ export default {
   },
   mounted() {},
   methods: {},
-  components: { Fragment, CustomSelect },
+  components: { CustomSelect },
 }
 </script>

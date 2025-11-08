@@ -9,7 +9,6 @@
   </div>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 
 import Svglogo from "@/svg/Raining.vue"
@@ -21,6 +20,6 @@ export default {
   },
   mounted() {},
   methods: {},
-  components: { Fragment, Svglogo },
+  components: { Svglogo },
 }
 </script>

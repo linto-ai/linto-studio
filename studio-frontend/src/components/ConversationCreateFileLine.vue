@@ -61,7 +61,6 @@
   </li>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 
 import FormInput from "@/components/molecules/FormInput.vue"
@@ -114,6 +113,6 @@ export default {
       }
     },
   },
-  components: { Fragment, FormInput },
+  components: { FormInput },
 }
 </script>

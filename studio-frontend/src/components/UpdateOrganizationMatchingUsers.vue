@@ -102,7 +102,7 @@ export default {
       }
     },
     async dispatchOrganization() {
-      bus.$emit("user_orga_update")
+      bus.emit("user_orga_update")
     },
   },
   components: {

@@ -63,7 +63,6 @@
 <script>
 import uuidv4 from "uuid/v4.js"
 
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 
 import {
@@ -107,10 +106,10 @@ export default {
     }
   },
   mounted() {
-    bus.$on("tag-category-changed", this.updateCategory)
+    bus.on("tag-category-changed", this.updateCategory)
   },
-  beforeDestroy() {
-    bus.$off("tag-category-changed", this.updateCategory)
+  beforeUnmount() {
+    bus.off("tag-category-changed", this.updateCategory)
   },
   computed: {
     iconClass() {
@@ -173,10 +172,10 @@ export default {
       await apiUpdateTag(this.scopeId, tagId, {
         categoryId: this.category._id,
       })
-      bus.$emit("tag-category-changed", {
+      bus.emit("tag-category-changed", {
         categoryIdTarget: this.category._id,
       })
-      bus.$emit("tag-category-changed", {
+      bus.emit("tag-category-changed", {
         categoryIdTarget: categoryIdSource,
       })
     },
@@ -226,6 +225,6 @@ export default {
       }
     },
   },
-  components: { Fragment, Tag },
+  components: { Tag },
 }
 </script>

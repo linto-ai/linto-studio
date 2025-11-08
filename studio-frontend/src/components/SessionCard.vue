@@ -14,7 +14,6 @@
   </router-link>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 import { sessionModelMixin } from "@/mixins/sessionModel.js"
 import SessionStatus from "@/components/SessionStatus.vue"
@@ -29,6 +28,6 @@ export default {
   },
   mounted() {},
   methods: {},
-  components: { Fragment, SessionStatus },
+  components: { SessionStatus },
 }
 </script>

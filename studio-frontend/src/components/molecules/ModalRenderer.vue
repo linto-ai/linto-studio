@@ -163,13 +163,8 @@ export default {
       return this.isForm ? "form" : "div"
     },
     renderedDefaultSlots() {
-      // Force reactivity by accessing the controller's reactive properties
-      // This creates a dependency on the parent component's data
-      if (this.controller && this.controller.$parent) {
-        // Access all reactive data to establish dependencies
-        this.controller.$parent.$data
-        this.controller.$parent.$props
-      }
+      // Note: Vue 3 has better reactivity tracking, so explicit $parent access is not needed
+      // The controller's reactive properties are automatically tracked
       return typeof this.slots.default === "function"
         ? this.slots.default()
         : this.slots.default || []

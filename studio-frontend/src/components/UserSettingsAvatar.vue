@@ -109,12 +109,12 @@ export default {
               error: null,
               valid: false,
             }
-            bus.$emit("app_notif", {
+            bus.emit("app_notif", {
               status: "success",
               message: this.$t("user_settings.notif_success"),
             })
           } else {
-            bus.$emit("app_notif", {
+            bus.emit("app_notif", {
               status: "error",
               message: this.$t("user_settings.notif_error"),
             })

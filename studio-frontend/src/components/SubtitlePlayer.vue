@@ -64,19 +64,19 @@ export default {
   },
   async mounted() {
     await this.initAudioPlayer()
-    bus.$on("refresh_screen", (data) => {
+    bus.on("refresh_screen", (data) => {
       let region = this.getRegion(data.screenId)
       this.refreshRegion(region, this.formatScreen(data.changes))
     })
-    bus.$on("player_set_time", (data) => {
+    bus.on("player_set_time", (data) => {
       if (!this.instanceDestroyed) {
         this.seekTo(data.stime + 0.001)
       }
     })
-    bus.$on("add_screen", (data) => {
+    bus.on("add_screen", (data) => {
       this.addScreen(data.newScreen)
     })
-    bus.$on("merge_screen", (data) => {
+    bus.on("merge_screen", (data) => {
       let { screenId, deletedId } = data
       this.deleteScreen(deletedId)
       let target = this.blocks.get(screenId)
@@ -84,16 +84,16 @@ export default {
       this.deleteScreen(screenId)
       this.addScreen(target.screen)
     })
-    bus.$on("delete_screen", (data) => {
+    bus.on("delete_screen", (data) => {
       this.deleteScreen(data.screenId)
     })
   },
-  beforeDestroy() {
-    bus.$off("refresh_screen")
-    bus.$off("player_set_time")
-    bus.$off("add_screen")
-    bus.$off("merge_screen")
-    bus.$off("delete_screen")
+  beforeUnmount() {
+    bus.off("refresh_screen")
+    bus.off("player_set_time")
+    bus.off("add_screen")
+    bus.off("merge_screen")
+    bus.off("delete_screen")
   },
   methods: {
     seekFromBar(e) {
@@ -180,12 +180,12 @@ export default {
         })
         this.player.on("seeking", (time) => {
           this.currentTime = time
-          bus.$emit("player-seek", this.currentTime)
+          bus.emit("player-seek", this.currentTime)
         })
 
         this.player.on("timeupdate", (time) => {
           this.currentTime = time
-          bus.$emit("player-audioprocess", time)
+          bus.emit("player-audioprocess", time)
         })
         this.regionsPlugin.on("region-clicked", (region, e) => {
           e.stopPropagation()
@@ -230,11 +230,11 @@ export default {
         })
         this.regionsPlugin.on("region-in", (region) => {
           region.element.part.add("playing")
-          bus.$emit("screen-enter", region.id)
+          bus.emit("screen-enter", region.id)
         })
         this.regionsPlugin.on("region-out", (region) => {
           region.element?.part?.remove("playing")
-          bus.$emit("screen-leave", region.id)
+          bus.emit("screen-leave", region.id)
         })
       } catch (error) {
         console.log(error)

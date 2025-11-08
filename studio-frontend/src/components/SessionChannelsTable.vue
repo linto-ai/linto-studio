@@ -92,7 +92,6 @@
   </table>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 import ArrayHeader from "@/components/ArrayHeader.vue"
 import SessionChannelsLine from "@/components/SessionChannelsLine.vue"
@@ -133,6 +132,6 @@ export default {
       this.$emit("connectMicrophone", index)
     },
   },
-  components: { Fragment, ArrayHeader, SessionChannelsLine },
+  components: { ArrayHeader, SessionChannelsLine },
 }
 </script>
