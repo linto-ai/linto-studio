@@ -31,7 +31,8 @@ app.use(i18n)
 app.use(eventBusPlugin)
 app.use(filtersPlugin)
 app.use(Atoms)
-app.use(LoadingPlugin)
+// Temporarily disabled to debug recursion issue
+// app.use(LoadingPlugin)
 
 // Register global directives
 app.directive("click-outside", vOnClickOutside)

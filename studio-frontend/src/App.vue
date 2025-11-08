@@ -112,22 +112,23 @@ export default {
     }
   },
   watch: {
-    isLoading: {
-      handler(value) {
-        if (value) {
-          this.loader = this.$loading.show({
-            // Optional parameters
-            canCancel: true,
-          })
-        } else {
-          // Only hide if loader exists
-          if (this.loader) {
-            this.loader.hide()
-          }
-        }
-      },
-      immediate: true,
-    },
+    // Temporarily disabled to debug recursion issue
+    // isLoading: {
+    //   handler(value) {
+    //     if (value) {
+    //       this.loader = this.$loading.show({
+    //         // Optional parameters
+    //         canCancel: true,
+    //       })
+    //     } else {
+    //       // Only hide if loader exists
+    //       if (this.loader) {
+    //         this.loader.hide()
+    //       }
+    //     }
+    //   },
+    //   immediate: true,
+    // },
   },
   components: {
     AppSettingsModal,
