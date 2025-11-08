@@ -32,6 +32,5 @@ export default {
       this.$emit("updateRight", newRight)
     },
   },
-  components: { Fragment },
 }
 </script>

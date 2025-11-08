@@ -22,6 +22,5 @@ export default {
       this.$emit("remove", e)
     },
   },
-  components: { Fragment },
 }
 </script>

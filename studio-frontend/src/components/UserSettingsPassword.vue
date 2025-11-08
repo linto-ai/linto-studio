@@ -136,6 +136,5 @@ export default {
       return this.userInfo?.accountNotifications?.updatePassword ?? false
     },
   },
-  components: { Fragment },
 }
 </script>

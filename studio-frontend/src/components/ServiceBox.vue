@@ -83,6 +83,5 @@ export default {
       return value[lang] || value["en"]
     },
   },
-  components: { Fragment },
 }
 </script>

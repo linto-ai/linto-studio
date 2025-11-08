@@ -200,6 +200,5 @@ export default {
       )
     },
   },
-  components: { Fragment },
 }
 </script>

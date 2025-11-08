@@ -12,6 +12,5 @@ export default {
   },
   mounted() {},
   methods: {},
-  components: { Fragment },
 }
 </script>

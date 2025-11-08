@@ -27,6 +27,5 @@ export default {
   methods: {
     deleteMetadata() {},
   },
-  components: { Fragment },
 }
 </script>

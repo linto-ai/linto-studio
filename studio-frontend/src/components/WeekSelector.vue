@@ -83,6 +83,5 @@ export default {
       this.$emit("input", nextWeek)
     },
   },
-  components: { Fragment },
 }
 </script>

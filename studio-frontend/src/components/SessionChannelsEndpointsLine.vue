@@ -31,6 +31,5 @@ export default {
       }, 2000)
     },
   },
-  components: { Fragment },
 }
 </script>

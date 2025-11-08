@@ -87,6 +87,5 @@ export default {
       if (this.clickable) this.$emit("click", e)
     },
   },
-  components: { Fragment },
 }
 </script>

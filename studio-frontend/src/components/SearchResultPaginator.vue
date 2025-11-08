@@ -44,6 +44,5 @@ export default {
       this.$emit("nextResult")
     },
   },
-  components: { Fragment },
 }
 </script>
