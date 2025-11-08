@@ -1,4 +1,3 @@
-import Vue from "vue"
 import moment from "moment"
 import { getCookie } from "../tools/getCookie"
 import { sendRequest } from "../tools/sendRequest"
@@ -13,74 +12,55 @@ import { testName } from "../tools/fields/testName.js"
 import { testEmail } from "../tools/fields/testEmail.js"
 import { testPassword } from "../tools/fields/testPassword.js"
 import { testPasswordConfirm } from "../tools/fields/testPasswordConfirm.js"
-// Send request
 
-Vue.filter("sendRequest", sendRequest)
-
-Vue.filter("logout", logout)
-
-// Send request multipart formData
-Vue.filter("sendMultipartFormData", sendMultipartFormData)
-
-// Convert time: seconds > hh:mm:ss
-Vue.filter("timeToHMS", timeToHMS)
-
-// Convert: date > JJ/MM/YYYY
-Vue.filter("dateToJMY", function (date) {
-  let splitDate = date.split("T")
-  return splitDate[0]
-})
-
-// Convert: date > JJ/MM/YYYY - hh:mm:ss
-Vue.filter("dateToJMYHMS", function (date) {
-  let splitDate = date.split("T")
-  let fullTime = splitDate[1]
-  let splitTime = fullTime.split("+")
-  return `${splitDate[0]} - ${splitTime[0]}`
-})
-
-Vue.filter("CapitalizeFirstLetter", function (string) {
-  return capitalizeFirstLetter(string)
-})
-
-// Test if required filed is empty
-Vue.filter("testFieldEmpty", testFieldEmpty)
-
-// Test select field
-Vue.filter("testSelectField", function (obj) {
-  obj.error = null
-  obj.valid = false
-  if (typeof obj.value === "undefined") {
-    obj.value = ""
+// Vue 3: Filters are deprecated, convert to global properties and utility functions
+export const filters = {
+  sendRequest,
+  logout,
+  sendMultipartFormData,
+  timeToHMS,
+  dateToJMY: function (date) {
+    let splitDate = date.split("T")
+    return splitDate[0]
+  },
+  dateToJMYHMS: function (date) {
+    let splitDate = date.split("T")
+    let fullTime = splitDate[1]
+    let splitTime = fullTime.split("+")
+    return `${splitDate[0]} - ${splitTime[0]}`
+  },
+  CapitalizeFirstLetter: function (string) {
+    return capitalizeFirstLetter(string)
+  },
+  testFieldEmpty,
+  testSelectField: function (obj) {
+    obj.error = null
+    obj.valid = false
+    if (typeof obj.value === "undefined") {
+      obj.value = ""
+    }
+    if (obj.value === "" || obj.value.length === 0) {
+      obj.error = "This field is required"
+    } else {
+      obj.valid = true
+    }
+  },
+  testName,
+  testContent,
+  testPassword,
+  testPasswordConfirm,
+  testEmail,
+  setCookie,
+  getCookie,
+  getTimeDiffText: function (date) {
+    return moment(date).fromNow()
   }
-  if (obj.value === "" || obj.value.length === 0) {
-    obj.error = "This field is required"
-  } else {
-    obj.valid = true
+}
+
+// Vue 3 plugin to install filters as global properties
+export default {
+  install(app) {
+    // Make filters available as $filters in all components
+    app.config.globalProperties.$filters = filters
   }
-})
-
-// Test name field
-Vue.filter("testName", testName)
-
-// Test content field (title, description, etc.)
-Vue.filter("testContent", testContent)
-
-// Test password field
-Vue.filter("testPassword", testPassword)
-
-// Test confirmation password field
-Vue.filter("testPasswordConfirm", testPasswordConfirm)
-
-// Test email field
-Vue.filter("testEmail", testEmail)
-
-// Set cookie
-Vue.filter("setCookie", setCookie)
-
-// Get cookie
-Vue.filter("getCookie", getCookie)
-
-Vue.filter("getTimeDiffText", function (date) {
-  return moment(date).fromNow()
-})
+}

@@ -9,7 +9,7 @@ import Debug from "debug"
 import eventBusPlugin, { bus } from "./eventBus.js"
 import ApiEventWebSocket from "@/services/websocket/ApiEventWebSocket.js"
 import Atoms from "./components/atoms/index.js"
-import "./filters/index.js"
+import filtersPlugin from "./filters/index.js"
 
 import Loading from "vue-loading-overlay"
 import "vue-loading-overlay/dist/css/index.css"
@@ -29,6 +29,7 @@ app.use(router)
 app.use(store)
 app.use(i18n)
 app.use(eventBusPlugin)
+app.use(filtersPlugin)
 app.use(Atoms)
 app.use(Loading)
 
