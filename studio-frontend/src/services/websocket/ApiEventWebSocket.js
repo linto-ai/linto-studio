@@ -1,5 +1,5 @@
 import io from "socket.io-client"
-import Vue from "vue"
+import { reactive } from "vue"
 import { customDebug } from "@/tools/customDebug"
 import { bus } from "@/eventBus"
 import { getCookie } from "@/tools/getCookie"
@@ -13,7 +13,8 @@ const debugWSSession = customDebug("Websocket:Session:debug")
 const debugWSMedia = customDebug("Websocket:Media:debug")
 export default class ApiEventWebSocket {
   constructor() {
-    this.state = Vue.observable({
+    // Vue 3: Use reactive() instead of Vue.observable()
+    this.state = reactive({
       isConnected: false,
       isConnectedToSessionBroker: false,
     })
