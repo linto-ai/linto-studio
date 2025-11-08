@@ -34,7 +34,7 @@
   </Fragment>
 </template>
 <script>
-import { v4 as uuid }v4 from "uuid/v4.js"
+import { v4 as uuid } from "uuid"
 import { bus } from "@/main.js"
 import { apiSearchCategories, apiGetAllCategories } from "../api/tag.js"
 import { debounceMixin } from "../mixins/debounce"

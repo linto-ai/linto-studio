@@ -45,7 +45,7 @@
 </template>
 <script>
 import { bus } from "@/main.js"
-import { v4 as uuid }v4 from "uuid/v4.js"
+import { v4 as uuid } from "uuid"
 
 import { workerSendMessage } from "@/tools/worker-message.js"
 import findExpressionInWordsList from "@/tools/findExpressionInWordsList.js"

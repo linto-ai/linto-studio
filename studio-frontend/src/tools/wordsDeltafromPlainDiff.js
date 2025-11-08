@@ -1,4 +1,4 @@
-import { v4 as uuid }v4 from "uuid/v4.js"
+import { v4 as uuid } from "uuid"
 
 import { arraySum } from "./arraySum.js"
 import { countSyllabsFromWord } from "./countSyllabsFromWord.js"
