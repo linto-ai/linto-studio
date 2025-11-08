@@ -739,7 +739,7 @@ let router = createRouter({
     //   props: defaultProps,
     // },
     {
-      path: "*",
+      path: "/:pathMatch(.*)*",
       name: "not_found_redirect",
       component: () => import("../views/404.vue"),
       props: {
