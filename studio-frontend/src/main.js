@@ -11,7 +11,7 @@ import ApiEventWebSocket from "@/services/websocket/ApiEventWebSocket.js"
 import Atoms from "./components/atoms/index.js"
 import filtersPlugin from "./filters/index.js"
 
-import Loading from "vue-loading-overlay"
+import { LoadingPlugin } from "vue-loading-overlay"
 import "vue-loading-overlay/dist/css/index.css"
 
 // Create v-click-outside directive for Vue 3
@@ -31,7 +31,7 @@ app.use(i18n)
 app.use(eventBusPlugin)
 app.use(filtersPlugin)
 app.use(Atoms)
-app.use(Loading)
+app.use(LoadingPlugin)
 
 // Register global directives
 app.directive("click-outside", vOnClickOutside)
