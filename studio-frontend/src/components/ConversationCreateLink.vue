@@ -34,7 +34,7 @@ export default {
     return {
       linkFields: {
         ...EMPTY_FIELD,
-        label: this.$i18n.t("conversation_creation.url_tab.url_label"),
+        label: this.$i18n.global.t("conversation_creation.url_tab.url_label"),
         value: "",
         placeholder: "https://www.youtube.com/watch?v=YBpfClfbf0Y",
         testField: testFieldEmpty,

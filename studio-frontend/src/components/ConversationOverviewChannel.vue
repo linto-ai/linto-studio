@@ -99,13 +99,13 @@ export default {
       if (res.status === "error") {
         bus.emit("app_notif", {
           status: "error",
-          message: this.$i18n.t("conversation_overview.channel.error_notif"),
+          message: this.$i18n.global.t("conversation_overview.channel.error_notif"),
           redirect: false,
         })
       } else {
         bus.emit("app_notif", {
           status: "success",
-          message: this.$i18n.t("conversation_overview.channel.done_notif"),
+          message: this.$i18n.global.t("conversation_overview.channel.done_notif"),
           redirect: false,
         })
         this.$emit("update_channel_name", {

@@ -93,7 +93,7 @@ export default {
         if (res.status === "error") {
           bus.emit("app_notif", {
             status: "error",
-            message: this.$i18n.t(
+            message: this.$i18n.global.t(
               "conversation_overview.main_information.error_notif",
             ),
             redirect: false,
@@ -101,7 +101,7 @@ export default {
         } else {
           bus.emit("app_notif", {
             status: "success",
-            message: this.$i18n.t(
+            message: this.$i18n.global.t(
               "conversation_overview.main_information.done_notif",
             ),
             redirect: false,

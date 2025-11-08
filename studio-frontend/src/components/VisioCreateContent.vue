@@ -85,13 +85,13 @@ export default {
       visioTypeField: {
         ...EMPTY_FIELD,
         value: "jitsi",
-        label: this.$i18n.t("quick_session.setup_visio.type_label"),
+        label: this.$i18n.global.t("quick_session.setup_visio.type_label"),
       },
       visioLinkField: {
         ...EMPTY_FIELD,
         value: "",
         customParams: { placeholder: "https://meet.jit.si/..." },
-        label: this.$i18n.t("quick_session.setup_visio.link_label"),
+        label: this.$i18n.global.t("quick_session.setup_visio.link_label"),
         testField: testVisioUrl,
       },
       quickSessionSettingsField: {

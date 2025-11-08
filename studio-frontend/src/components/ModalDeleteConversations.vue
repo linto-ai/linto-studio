@@ -46,7 +46,7 @@ export default {
         )
       }
 
-      return this.$i18n.t("conversation.delete_modal_multiple_empty.title")
+      return this.$i18n.global.t("conversation.delete_modal_multiple_empty.title")
     },
     content() {
       if (this.conversationsCount > 0) {
@@ -56,7 +56,7 @@ export default {
         )
       }
 
-      return this.$i18n.t("conversation.delete_modal_multiple_empty.content")
+      return this.$i18n.global.t("conversation.delete_modal_multiple_empty.content")
     },
     button_label() {
       if (this.conversationsCount > 0) {
@@ -66,7 +66,7 @@ export default {
         )
       }
 
-      return this.$i18n.t("conversation.delete_modal_multiple_empty.button")
+      return this.$i18n.global.t("conversation.delete_modal_multiple_empty.button")
     },
   },
   mounted() {},

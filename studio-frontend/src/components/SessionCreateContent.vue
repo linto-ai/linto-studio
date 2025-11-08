@@ -201,7 +201,7 @@ export default {
       ],
       name: {
         ...EMPTY_FIELD,
-        label: this.$i18n.t("session.create_page.name_field.label"),
+        label: this.$i18n.global.t("session.create_page.name_field.label"),
         testField: testName,
       },
       fieldIsPublic: {
@@ -217,19 +217,19 @@ export default {
         options: [
           {
             name: "private",
-            label: this.$i18n.t(
+            label: this.$i18n.global.t(
               "session.settings_page.visibility_private_label",
             ),
           },
           {
             name: "organization",
-            label: this.$i18n.t(
+            label: this.$i18n.global.t(
               "session.settings_page.visibility_organization_label",
             ),
           },
           {
             name: "public",
-            label: this.$i18n.t(
+            label: this.$i18n.global.t(
               "session.settings_page.visibility_public_label",
             ),
           },
@@ -331,7 +331,7 @@ export default {
         console.error(error)
         bus.emit("app_notif", {
           status: "error",
-          message: this.$i18n.t("session.create_page.template_apply_error"),
+          message: this.$i18n.global.t("session.create_page.template_apply_error"),
           timeout: null,
         })
         this.formState = "error"
@@ -344,7 +344,7 @@ export default {
 
       bus.emit("app_notif", {
         status: "success",
-        message: this.$i18n.t("session.create_page.template_apply_success"),
+        message: this.$i18n.global.t("session.create_page.template_apply_success"),
         redirect: false,
       })
       return true
@@ -375,7 +375,7 @@ export default {
       e.preventDefault()
       this.formState = "sending"
       if (this.channels.length === 0) {
-        this.channelsError = this.$i18n.t("session.create_page.channels_error")
+        this.channelsError = this.$i18n.global.t("session.create_page.channels_error")
         this.formState = "error"
         return false
       }
@@ -416,7 +416,7 @@ export default {
           this.formState = "success"
           bus.emit("app_notif", {
             status: "success",
-            message: this.$i18n.t(
+            message: this.$i18n.global.t(
               "session.create_page.save_as_template_success",
             ),
             redirect: false,
@@ -426,7 +426,7 @@ export default {
         } else {
           bus.emit("app_notif", {
             status: "error",
-            message: this.$i18n.t("session.create_page.save_as_template_error"),
+            message: this.$i18n.global.t("session.create_page.save_as_template_error"),
             timeout: null,
           })
           this.formState = "error"
@@ -449,7 +449,7 @@ export default {
       e.preventDefault()
       this.formState = "sending"
       if (this.channels.length === 0) {
-        this.channelsError = this.$i18n.t("session.create_page.channels_error")
+        this.channelsError = this.$i18n.global.t("session.create_page.channels_error")
         this.formState = "error"
         return false
       }
@@ -485,7 +485,7 @@ export default {
           this.formState = "success"
           bus.emit("app_notif", {
             status: "success",
-            message: this.$i18n.t("session.create_page.success_message"),
+            message: this.$i18n.global.t("session.create_page.success_message"),
             redirect: false,
           })
           this.$router.push({
@@ -498,7 +498,7 @@ export default {
         } else {
           bus.emit("app_notif", {
             status: "error",
-            message: this.$i18n.t("session.create_page.error_message"),
+            message: this.$i18n.global.t("session.create_page.error_message"),
             timeout: null,
           })
           this.formState = "error"

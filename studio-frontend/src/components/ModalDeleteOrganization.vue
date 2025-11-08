@@ -43,14 +43,14 @@ export default {
       if (res.status === "error") {
         bus.emit("app_notif", {
           status: "error",
-          message: this.$i18n.t("organisation.delete_error_message"),
+          message: this.$i18n.global.t("organisation.delete_error_message"),
           redirect: false,
         })
         this.$emit("on-cancel")
       } else {
         bus.emit("app_notif", {
           status: "success",
-          message: this.$i18n.t("organisation.delete_success_message"),
+          message: this.$i18n.global.t("organisation.delete_success_message"),
           redirect: false,
         })
         this.$emit("on-confirm", res)

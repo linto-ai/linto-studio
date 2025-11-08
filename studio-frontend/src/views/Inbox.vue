@@ -100,12 +100,12 @@ export default {
       selectedOption: "created",
       options: {
         lang: [
-          { value: "created", text: this.$i18n.t("inbox.sort.created") },
+          { value: "created", text: this.$i18n.global.t("inbox.sort.created") },
           {
             value: "last_update",
-            text: this.$i18n.t("inbox.sort.last_update"),
+            text: this.$i18n.global.t("inbox.sort.last_update"),
           },
-          { value: "notags", text: this.$i18n.t("inbox.sort.notags") },
+          { value: "notags", text: this.$i18n.global.t("inbox.sort.notags") },
         ],
       },
     }

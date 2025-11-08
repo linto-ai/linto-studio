@@ -100,13 +100,13 @@ export default {
       return [
         {
           name: "started",
-          label: this.$i18n.t("session.list_page.tabs.ongoing_sessions"),
+          label: this.$i18n.global.t("session.list_page.tabs.ongoing_sessions"),
           icon: "broadcast",
           //badge: this.countActiveSessions,
         },
         {
           name: "timeline",
-          label: this.$i18n.t("session.list_page.tabs.scheduled_sessions"),
+          label: this.$i18n.global.t("session.list_page.tabs.scheduled_sessions"),
           icon: "clock",
           //badge: this.countFutureSessions,
         },

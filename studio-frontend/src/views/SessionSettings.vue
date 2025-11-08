@@ -299,19 +299,19 @@ export default {
         options: [
           {
             name: "private",
-            label: this.$i18n.t(
+            label: this.$i18n.global.t(
               "session.settings_page.visibility_private_label",
             ),
           },
           {
             name: "organization",
-            label: this.$i18n.t(
+            label: this.$i18n.global.t(
               "session.settings_page.visibility_organization_label",
             ),
           },
           {
             name: "public",
-            label: this.$i18n.t(
+            label: this.$i18n.global.t(
               "session.settings_page.visibility_public_label",
             ),
           },
@@ -575,7 +575,7 @@ export default {
         if (res.status == "success") {
           bus.emit("app_notif", {
             status: "success",
-            message: this.$i18n.t("session.settings_page.success_message"),
+            message: this.$i18n.global.t("session.settings_page.success_message"),
             redirect: false,
           })
           this.$emit("session_update", res.data)
@@ -583,7 +583,7 @@ export default {
         } else {
           bus.emit("app_notif", {
             status: "error",
-            message: this.$i18n.t("session.settings_page.error_update_message"),
+            message: this.$i18n.global.t("session.settings_page.error_update_message"),
             redirect: false,
           })
           this.formState = "error"

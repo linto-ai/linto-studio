@@ -48,7 +48,7 @@ export default {
       membersRight: {
         ...EMPTY_FIELD,
         value: 1,
-        list: RIGHTS_LIST((key) => this.$i18n.t(key)),
+        list: RIGHTS_LIST((key) => this.$i18n.global.t(key)),
       },
       fieldTranscriptionService: {
         ...EMPTY_FIELD,
@@ -62,13 +62,13 @@ export default {
         valid: true,
       },
       organizationMemberAccess: true,
-      formSubmitLabel: this.$i18n.t(
+      formSubmitLabel: this.$i18n.global.t(
         "conversation.conversation_creation_button.create",
       ),
       formState: "available",
       languages: [
-        { value: "fr", label: this.$i18n.t("lang.fr") },
-        { value: "en", label: this.$i18n.t("lang.en") },
+        { value: "fr", label: this.$i18n.global.t("lang.fr") },
+        { value: "en", label: this.$i18n.global.t("lang.en") },
       ],
       formError: null,
       debounceGetTranscriptionService: debounce(this.initTranscriptionList, 30),
@@ -123,7 +123,7 @@ export default {
       event?.preventDefault()
 
       if (this.audioFiles.length === 0) {
-        this.formError = this.$i18n.t("conversation.error.no_audio_file")
+        this.formError = this.$i18n.global.t("conversation.error.no_audio_file")
         return
       }
 
@@ -131,7 +131,7 @@ export default {
         if (this.testFields()) {
           this.formError = null
           this.formState = "sending"
-          this.formSubmitLabel = this.$i18n.t(
+          this.formSubmitLabel = this.$i18n.global.t(
             "conversation.conversation_creation_button.sending",
           )
           // scroll to top of the main element
@@ -146,7 +146,7 @@ export default {
             this.$store.dispatch("system/addNotification", {
               id: notifId,
               type: "info",
-              message: this.$i18n.t(
+              message: this.$i18n.global.t(
                 "conversation.conversation_creation_loading_multiple",
                 { count: audioFileIndex, total: total },
               ),
@@ -187,7 +187,7 @@ export default {
 
             if (!conversationHasBeenCreated) {
               this.emitError(
-                this.$i18n.t(
+                this.$i18n.global.t(
                   "conversation.conversation_creation_error_multiple_unknown",
                   {
                     count: audioFileIndex - 1,
@@ -195,7 +195,7 @@ export default {
                   },
                 ),
               )
-              this.formSubmitLabel = this.$i18n.t(
+              this.formSubmitLabel = this.$i18n.global.t(
                 "conversation.conversation_creation_button.retry",
               )
               this.formState = "available"
@@ -212,7 +212,7 @@ export default {
             this.formState = "success"
             bus.emit("app_notif", {
               status: "success",
-              message: this.$i18n.t("conversation.creation_success_message"),
+              message: this.$i18n.global.t("conversation.creation_success_message"),
               redirect: false,
               cantBeClosed: true,
             })
@@ -223,7 +223,7 @@ export default {
             })
           }
         } else {
-          this.formError = this.$i18n.t("conversation.error.form_invalid")
+          this.formError = this.$i18n.global.t("conversation.error.form_invalid")
         }
       }
       return false
@@ -237,7 +237,7 @@ export default {
         ) {
           this.formError = null
           this.formState = "sending"
-          this.formSubmitLabel = this.$i18n.t(
+          this.formSubmitLabel = this.$i18n.global.t(
             "conversation.conversation_creation_button.sending",
           )
 
@@ -270,7 +270,7 @@ export default {
 
             bus.emit("app_notif", {
               status: "success",
-              message: this.$i18n.t("conversation.creation_success_message"),
+              message: this.$i18n.global.t("conversation.creation_success_message"),
               redirect: false,
               cantBeClosed: true,
             })
@@ -280,9 +280,9 @@ export default {
             })
           } else {
             this.emitError(
-              this.$i18n.t("conversation.conversation_creation_error_unknown"),
+              this.$i18n.global.t("conversation.conversation_creation_error_unknown"),
             )
-            this.formSubmitLabel = this.$i18n.t(
+            this.formSubmitLabel = this.$i18n.global.t(
               "conversation.conversation_creation_button.retry",
             )
             this.formState = "available"

@@ -60,7 +60,7 @@ export default {
       membersRight: {
         ...EMPTY_FIELD,
         value: this.conversation.organization.membersRight,
-        list: RIGHTS_LIST((key) => this.$i18n.t(key)),
+        list: RIGHTS_LIST((key) => this.$i18n.global.t(key)),
       },
     }
   },
@@ -104,7 +104,7 @@ export default {
       if (res.status === "error") {
         bus.emit("app_notif", {
           status: "error",
-          message: this.$i18n.t(
+          message: this.$i18n.global.t(
             "conversation_overview.rights.orga_right_update_error",
           ),
           redirect: false,
@@ -112,7 +112,7 @@ export default {
       } else {
         bus.emit("app_notif", {
           status: "success",
-          message: this.$i18n.t(
+          message: this.$i18n.global.t(
             "conversation_overview.rights.orga_right_update_success",
           ),
           redirect: false,

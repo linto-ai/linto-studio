@@ -48,7 +48,7 @@ export default {
         original: [
           {
             value: "original",
-            text: this.$i18n.t(
+            text: this.$i18n.global.t(
               "app_editor_translations_selector.original_language",
             ),
           },

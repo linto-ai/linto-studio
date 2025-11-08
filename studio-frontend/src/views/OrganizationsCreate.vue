@@ -150,7 +150,7 @@ export default {
 
       orgaMembers: [],
       orgaMembersIds: [],
-      formSubmitLabel: this.$i18n.t("organisation.create.submit_label"),
+      formSubmitLabel: this.$i18n.global.t("organisation.create.submit_label"),
       formState: "available",
       sortListDirection: "asc",
       sortListKey: "user",
@@ -185,7 +185,7 @@ export default {
     },
     resetForm() {
       this.formState = "available"
-      this.formSubmitLabel = this.$i18n.t("organisation.create.submit_label")
+      this.formSubmitLabel = this.$i18n.global.t("organisation.create.submit_label")
       this.buttonDisabled = false
     },
     async createOrganization(event) {
@@ -225,7 +225,7 @@ export default {
               })
               bus.emit("app_notif", {
                 status: "success",
-                message: this.$i18n.t("organisation.create.success_message"),
+                message: this.$i18n.global.t("organisation.create.success_message"),
                 redirect: false,
               })
             } else if (req.status === "error") {
@@ -246,7 +246,7 @@ export default {
         case 409:
           bus.emit("app_notif", {
             status: "error",
-            message: this.$i18n.t("organisation.create.error_already_exists"),
+            message: this.$i18n.global.t("organisation.create.error_already_exists"),
             redirect: false,
           })
 
@@ -254,7 +254,7 @@ export default {
         default:
           bus.emit("app_notif", {
             status: "error",
-            message: this.$i18n.t("organisation.create.error_message"),
+            message: this.$i18n.global.t("organisation.create.error_message"),
             redirect: false,
           })
       }

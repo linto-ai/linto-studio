@@ -3,33 +3,33 @@ import i18n from "@/i18n"
 
 const ROLES = [
   {
-    name: i18n.t("organization_role.member"),
-    description: i18n.t("organization_role.member_description"),
+    name: i18n.global.t("organization_role.member"),
+    description: i18n.global.t("organization_role.member_description"),
     value: 1,
   },
   {
-    name: i18n.t("organization_role.uploader"),
-    description: i18n.t("organization_role.uploader_description"),
+    name: i18n.global.t("organization_role.uploader"),
+    description: i18n.global.t("organization_role.uploader_description"),
     value: 2,
   },
   {
-    name: i18n.t("organization_role.quick_meeting"),
-    description: i18n.t("organization_role.quick_meeting_description"),
+    name: i18n.global.t("organization_role.quick_meeting"),
+    description: i18n.global.t("organization_role.quick_meeting_description"),
     value: 3,
   },
   {
-    name: i18n.t("organization_role.session_operator"),
-    description: i18n.t("organization_role.session_operator_description"),
+    name: i18n.global.t("organization_role.session_operator"),
+    description: i18n.global.t("organization_role.session_operator_description"),
     value: 4,
   },
   {
-    name: i18n.t("organization_role.maintainer"),
-    description: i18n.t("organization_role.maintainer_description"),
+    name: i18n.global.t("organization_role.maintainer"),
+    description: i18n.global.t("organization_role.maintainer_description"),
     value: 5,
   },
   {
-    name: i18n.t("organization_role.administrator"),
-    description: i18n.t("organization_role.administrator_description"),
+    name: i18n.global.t("organization_role.administrator"),
+    description: i18n.global.t("organization_role.administrator_description"),
     value: 6,
   },
 ]

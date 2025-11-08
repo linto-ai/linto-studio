@@ -80,19 +80,19 @@ export default {
         action: [
           {
             value: "1",
-            text: this.$i18n.t(
+            text: this.$i18n.global.t(
               "conversation.subtitles.split_selection.no_split",
             ),
           },
           {
             value: "2",
-            text: this.$i18n.t(
+            text: this.$i18n.global.t(
               "conversation.subtitles.split_selection.split_over_two_lines",
             ),
           },
           {
             value: "3",
-            text: this.$i18n.t(
+            text: this.$i18n.global.t(
               "conversation.subtitles.split_selection.split_over_three_lines",
             ),
           },

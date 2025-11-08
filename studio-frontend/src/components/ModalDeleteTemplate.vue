@@ -49,7 +49,7 @@ export default {
       if (res.status == "success") {
         bus.emit("app_notif", {
           status: "success",
-          message: this.$i18n.t(
+          message: this.$i18n.global.t(
             "session.create_page.delete_template_modal.success",
           ),
           redirect: false,
@@ -58,7 +58,7 @@ export default {
       } else {
         bus.emit("app_notif", {
           status: "error",
-          message: this.$i18n.t(
+          message: this.$i18n.global.t(
             "session.create_page.delete_template_modal.error",
           ),
           timeout: null,

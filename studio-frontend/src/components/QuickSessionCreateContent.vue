@@ -91,7 +91,7 @@ export default {
         options: [
           {
             name: "microphone",
-            label: this.$i18n.t(
+            label: this.$i18n.global.t(
               "quick_session.creation.microphone_source_label",
             ),
           },
@@ -124,7 +124,7 @@ export default {
         testField: testQuickSessionSettings,
       },
       selectedProfile: this.transcriberProfiles[0],
-      formSubmitLabel: this.$i18n.t("quick_session.creation.submit_button"),
+      formSubmitLabel: this.$i18n.global.t("quick_session.creation.submit_button"),
 
       formError: null,
       formState: "idle",

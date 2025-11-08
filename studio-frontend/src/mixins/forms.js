@@ -25,7 +25,7 @@ export const formsMixin = {
 
       // maybe check if testField is a function and display warning if not
       if (field.required && !field.value) {
-        field.error = this.$i18n.t("error.required")
+        field.error = this.$i18n.global.t("error.required")
         return false
       }
 

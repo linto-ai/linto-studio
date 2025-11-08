@@ -49,7 +49,7 @@ export default {
         (count) => {
           bus.emit("app_notif", {
             status: "loading",
-            message: this.$i18n.t(
+            message: this.$i18n.global.t(
               "modal_delete_multiple_organizations.loading_notification",
               { count, total: this.selectedOrganizations.length },
             ),
@@ -63,7 +63,7 @@ export default {
         this.$emit("on-confirm")
         bus.emit("app_notif", {
           status: "success",
-          message: this.$i18n.t(
+          message: this.$i18n.global.t(
             "modal_delete_multiple_organizations.success_notification",
             { count: this.selectedOrganizations.length },
           ),

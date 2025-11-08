@@ -161,8 +161,8 @@ export default {
       diarization: { ...EMPTY_FIELD, value: "disabled" },
       punctuation: { ...EMPTY_FIELD, value: "disabled" },
       speakersNumber: { ...EMPTY_FIELD, value: "auto" },
-      acoustic_value: ACOUSTIC((key) => this.$i18n.t(key)),
-      audio_quality_value: AUDIO_QUALITY((key) => this.$i18n.t(key)),
+      acoustic_value: ACOUSTIC((key) => this.$i18n.global.t(key)),
+      audio_quality_value: AUDIO_QUALITY((key) => this.$i18n.global.t(key)),
       languageField: {
         ...EMPTY_FIELD,
         value: defaultLang,
@@ -236,7 +236,7 @@ export default {
     },
     formatLanguage(lang) {
       if (lang == "*") {
-        return this.$i18n.t("lang.automatic")
+        return this.$i18n.global.t("lang.automatic")
       }
       try {
         const languageNames = new Intl.DisplayNames([this.$i18n.locale], {

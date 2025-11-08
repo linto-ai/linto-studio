@@ -94,7 +94,7 @@ export default {
   methods: {
     getName(scope) {
       return (
-        CATEGORY_NAME_FROM_SCOPE((key) => this.$i18n.t(key))[scope] ??
+        CATEGORY_NAME_FROM_SCOPE((key) => this.$i18n.global.t(key))[scope] ??
         this.category.name
       )
     },

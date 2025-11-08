@@ -141,14 +141,14 @@ export default {
       fieldSubInVisio: {
         ...EMPTY_FIELD,
         value: this.value.subInVisio ?? false,
-        label: this.$i18n.t(
+        label: this.$i18n.global.t(
           "quick_session.setup_visio.display_transcription_in_visio_label",
         ),
       },
       fieldSubInStudio: {
         ...EMPTY_FIELD,
         value: this.value.subInStudio ?? false,
-        label: this.$i18n.t("quick_session.creation.live_transcription_label"),
+        label: this.$i18n.global.t("quick_session.creation.live_transcription_label"),
       },
       fieldDiarizationEnabled: {
         ...EMPTY_FIELD,
@@ -180,7 +180,7 @@ export default {
       membersRight: {
         ...EMPTY_FIELD,
         value: 1,
-        list: RIGHTS_LIST((key) => this.$i18n.t(key)),
+        list: RIGHTS_LIST((key) => this.$i18n.global.t(key)),
       },
       selectedTranslation: this.value.subSource || "original",
     }

@@ -209,7 +209,7 @@ export default {
         const resWithCri = [
           {
             name: "verbatim",
-            label: this.$i18n.t(`publish.tabs.verbatim`),
+            label: this.$i18n.global.t(`publish.tabs.verbatim`),
             icon: "file-text",
           },
           ...res,

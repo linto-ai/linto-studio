@@ -51,7 +51,7 @@ export default {
       let base = []
       base.push({
         value: "original",
-        text: this.$i18n.t(
+        text: this.$i18n.global.t(
           "session.live_page.translation_selector.original_language",
         ),
         id: "original",
@@ -60,7 +60,7 @@ export default {
       if (this.qualifiedForCrossSubtitles) {
         base.push({
           value: "crossSubtitles",
-          text: this.$i18n.t(
+          text: this.$i18n.global.t(
             "session.live_page.translation_selector.cross_translation",
           ),
           id: "crossSubtitles",

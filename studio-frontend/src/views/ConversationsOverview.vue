@@ -108,7 +108,7 @@ export default {
         error: null,
         valid: true,
       },
-      rigthsList: RIGHTS_LIST((key) => this.$i18n.t(key)),
+      rigthsList: RIGHTS_LIST((key) => this.$i18n.global.t(key)),
       status: null,
       loadingAudio: false,
     }

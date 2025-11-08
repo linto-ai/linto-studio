@@ -42,13 +42,13 @@ export default {
       )
       if (res.status === "success") {
         this.$store.dispatch("system/addNotification", {
-          message: this.$i18n.t("organisation.delete_success_message"),
+          message: this.$i18n.global.t("organisation.delete_success_message"),
           type: "success",
         })
         document.location.href = "/interface/explore"
       } else {
         this.$store.dispatch("system/addNotification", {
-          message: this.$i18n.t("organisation.delete_error_message"),
+          message: this.$i18n.global.t("organisation.delete_error_message"),
           type: "error",
         })
       }

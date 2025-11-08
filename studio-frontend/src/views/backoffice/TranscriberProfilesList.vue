@@ -136,7 +136,7 @@ export default {
         (count) => {
           bus.emit("app_notif", {
             status: "loading",
-            message: this.$i18n.t(
+            message: this.$i18n.global.t(
               "backoffice.transcriber_profile_list.bulk_remove_loading_notification",
               { count, total: this.selectedProfiles.length },
             ),
@@ -149,7 +149,7 @@ export default {
       if (req.status === "success") {
         bus.emit("app_notif", {
           status: "success",
-          message: this.$i18n.t(
+          message: this.$i18n.global.t(
             "backoffice.transcriber_profile_list.bulk_remove_success_notification",
           ),
         })
@@ -158,7 +158,7 @@ export default {
       } else {
         bus.emit("app_notif", {
           status: "error",
-          message: this.$i18n.t(
+          message: this.$i18n.global.t(
             "backoffice.transcriber_profile_list.bulk_remove_error_notification",
           ),
         })

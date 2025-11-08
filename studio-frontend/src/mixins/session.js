@@ -116,7 +116,7 @@ export const sessionMixin = {
         this.isStoping = false
         bus.emit("app_notif", {
           status: "error",
-          message: this.$i18n.t(
+          message: this.$i18n.global.t(
             "session.detail_page.stop_session_error_message",
           ),
           timeout: null,
@@ -126,7 +126,7 @@ export const sessionMixin = {
 
       bus.emit("app_notif", {
         status: "success",
-        message: this.$i18n.t("session.detail_page.stop_session_success"),
+        message: this.$i18n.global.t("session.detail_page.stop_session_success"),
         timeout: null,
       })
       this.$router.push(this.sessionListRoute)
@@ -141,7 +141,7 @@ export const sessionMixin = {
         console.error("Error deleting session", deleteSession)
         bus.emit("app_notif", {
           status: "error",
-          message: this.$i18n.t(
+          message: this.$i18n.global.t(
             "session.detail_page.delete_session_error_message",
           ),
           timeout: null,
@@ -176,14 +176,14 @@ export const sessionMixin = {
         console.error("Error updating session", req)
         bus.emit("app_notif", {
           status: "error",
-          message: this.$i18n.t("session.settings_page.error_update_message"),
+          message: this.$i18n.global.t("session.settings_page.error_update_message"),
           timeout: null,
         })
         return
       }
       bus.emit("app_notif", {
         status: "success",
-        message: this.$i18n.t("session.settings_page.success_message"),
+        message: this.$i18n.global.t("session.settings_page.success_message"),
         timeout: 3000,
       })
       this.session.visibility = visibility
@@ -204,7 +204,7 @@ export const sessionMixin = {
         if (!silent) {
           bus.emit("app_notif", {
             status: "error",
-            message: this.$i18n.t("session.settings_page.error_update_message"),
+            message: this.$i18n.global.t("session.settings_page.error_update_message"),
             timeout: null,
           })
         }
@@ -213,7 +213,7 @@ export const sessionMixin = {
       if (!silent) {
         bus.emit("app_notif", {
           status: "success",
-          message: this.$i18n.t("session.settings_page.success_message"),
+          message: this.$i18n.global.t("session.settings_page.success_message"),
           timeout: 3000,
         })
       }

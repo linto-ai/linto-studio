@@ -186,13 +186,13 @@ export default {
           },
           // {
           //   name: "microphone",
-          //   label: this.$i18n.t("conversation_creation.tabs.microphone"),
+          //   label: this.$i18n.global.t("conversation_creation.tabs.microphone"),
           //   icon: "record",
           //   img: "/img/We10X-icon-theme/vocal.svg",
           // },
           // {
           //   name: "url",
-          //   label: this.$i18n.t("conversation_creation.tabs.url"),
+          //   label: this.$i18n.global.t("conversation_creation.tabs.url"),
           //   icon: "link",
           // },
         )
@@ -219,7 +219,7 @@ export default {
         if (this.isAtLeastMeetingManager) {
           res.push({
             name: "session",
-            label: this.$i18n.t("conversation_creation.tabs.session"),
+            label: this.$i18n.global.t("conversation_creation.tabs.session"),
             icon: "plugs-connected",
             disabled: this.transcriberProfiles.length === 0 || loading,
           })

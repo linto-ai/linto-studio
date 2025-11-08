@@ -280,14 +280,14 @@ export default {
   computed: {
     ...mapGetters("userInfos", { user: "getUserInfos" }),
     rightsList() {
-      return RIGHTS_LIST((key) => this.$i18n.t(key))
+      return RIGHTS_LIST((key) => this.$i18n.global.t(key))
     },
     rightsListWithMultiple() {
       return [
-        ...RIGHTS_LIST((key) => this.$i18n.t(key), true),
+        ...RIGHTS_LIST((key) => this.$i18n.global.t(key), true),
         {
           value: -1,
-          txt: this.$i18n.t("conversation.members_right_txt.mutiple_values"),
+          txt: this.$i18n.global.t("conversation.members_right_txt.mutiple_values"),
         },
       ]
     },
@@ -417,7 +417,7 @@ export default {
       const rightItem = this.rightsList.find((item) => item.value === right)
       return rightItem
         ? rightItem.txt
-        : this.$i18n.t("conversation.members_right_txt.mutiple_values")
+        : this.$i18n.global.t("conversation.members_right_txt.mutiple_values")
     },
     canUpdateRights(user) {
       return true // TODO

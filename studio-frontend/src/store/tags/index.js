@@ -171,7 +171,7 @@ export default {
         commit(
           "system/addNotification",
           {
-            message: i18n.t("manage_tags.tag_create_notification"),
+            message: i18n.global.t("manage_tags.tag_create_notification"),
             type: "success",
           },
           { root: true },
@@ -185,7 +185,7 @@ export default {
         commit(
           "system/addNotification",
           {
-            message: i18n.t("manage_tags.error_creating_tag"),
+            message: i18n.global.t("manage_tags.error_creating_tag"),
             type: "error",
           },
           { root: true },
@@ -215,7 +215,7 @@ export default {
         commit(
           "system/addNotification",
           {
-            message: i18n.t("manage_tags.tag_update_notification"),
+            message: i18n.global.t("manage_tags.tag_update_notification"),
             type: "success",
           },
           { root: true },
@@ -226,7 +226,7 @@ export default {
         commit(
           "system/addNotification",
           {
-            message: i18n.t("manage_tags.error_updating_tag"),
+            message: i18n.global.t("manage_tags.error_updating_tag"),
             type: "error",
           },
           { root: true },
@@ -250,7 +250,7 @@ export default {
         commit(
           "system/addNotification",
           {
-            message: i18n.t("manage_tags.tag_delete_notification"),
+            message: i18n.global.t("manage_tags.tag_delete_notification"),
             type: "success",
           },
           { root: true },

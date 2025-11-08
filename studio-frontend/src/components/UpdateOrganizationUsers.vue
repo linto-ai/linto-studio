@@ -240,7 +240,7 @@ export default {
         } else {
           bus.emit("app_notif", {
             status: "error",
-            message: this.$i18n.t("organisation.remove_user_error_message"),
+            message: this.$i18n.global.t("organisation.remove_user_error_message"),
           })
         }
       }
@@ -259,7 +259,7 @@ export default {
         } else {
           bus.emit("app_notif", {
             status: "error",
-            message: this.$i18n.t("organisation.leave_error_message"),
+            message: this.$i18n.global.t("organisation.leave_error_message"),
           })
         }
       }
