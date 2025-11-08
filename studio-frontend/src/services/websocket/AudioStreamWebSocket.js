@@ -1,4 +1,4 @@
-import Vue from "vue"
+import { reactive } from "vue"
 import { customDebug } from "../../tools/customDebug"
 
 const debugWS = customDebug("Websocket:AudioStream:debug")
@@ -6,7 +6,8 @@ const debugWS = customDebug("Websocket:AudioStream:debug")
 // Websocket to session transcriber to send audio
 export default class AudioStreamWebSocket {
   constructor() {
-    this.state = Vue.observable({
+    // Vue 3: Use reactive() instead of Vue.observable()
+    this.state = reactive({
       isConnected: false,
       receivedACK: false,
     })

@@ -1,4 +1,3 @@
-import Vue from "vue"
 import {
   apiGetFavoritesConversations,
   apiGetConversationsByTags,
@@ -112,10 +111,10 @@ export default {
       const index = state.conversations.findIndex(c => c._id === conversationId);
       if (index !== -1) {
         if (conversation) {
-          Vue.set(state.conversations, index, conversation);
+          state.conversations[index] = conversation;
         } else if (updates) {
           const existing = state.conversations[index];
-          Vue.set(state.conversations, index, { ...existing, ...updates });
+          state.conversations[index] = { ...existing, ...updates };
         }
       }
     }

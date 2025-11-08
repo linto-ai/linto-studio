@@ -1,23 +1,22 @@
-import Vue from "vue"
+import { reactive } from "vue"
 
-const popupManager = new Vue({
-  data: {
-    stack: [],
+// Vue 3: Use reactive() instead of new Vue()
+const popupManager = reactive({
+  stack: [],
+
+  register(popup) {
+    if (this.stack.some((p) => p.id === popup.id)) return
+    this.stack.push(popup)
+    this.updateZIndexes()
   },
-  methods: {
-    register(popup) {
-      if (this.stack.some((p) => p.id === popup.id)) return
-      this.stack.push(popup)
-      this.updateZIndexes()
-    },
 
-    unregister(controller) {
-      const index = this.stack.findIndex((p) => p.id === controller._uid)
-      if (index !== -1) {
-        this.stack.splice(index, 1)
-      }
-      this.updateZIndexes()
-    },
+  unregister(controller) {
+    const index = this.stack.findIndex((p) => p.id === controller._uid)
+    if (index !== -1) {
+      this.stack.splice(index, 1)
+    }
+    this.updateZIndexes()
+  },
 
     handleGlobalClick(event) {
       let topPopupObject = null
@@ -132,12 +131,11 @@ const popupManager = new Vue({
       })
     },
 
-    setRendererInstance(id, instance) {
-      const popup = this.stack.find((p) => p.id === id)
-      if (popup) {
-        Vue.set(popup, "rendererInstance", instance)
-      }
-    },
+  setRendererInstance(id, instance) {
+    const popup = this.stack.find((p) => p.id === id)
+    if (popup) {
+      popup["rendererInstance"] = instance
+    }
   },
 })
 

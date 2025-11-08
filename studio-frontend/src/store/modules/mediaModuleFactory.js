@@ -6,7 +6,6 @@ import {
   apiDeleteMultipleConversation,
 } from "@/api/conversation"
 import i18n from "@/i18n"
-import Vue from "vue"
 import { bus } from "@/main.js"
 
 export default function createMediaModule(scope, status = "done") {
@@ -128,14 +127,14 @@ export default function createMediaModule(scope, status = "done") {
 
         if (idx !== -1) {
           // Use Vue.set to ensure reactivity
-          Vue.set(state.medias, idx, newValue)
+          state.medias[idx] = newValue
         }
 
         const selectedIdx = state.selectedMedias.findIndex(
           (m) => m._id === mediaId,
         )
         if (selectedIdx !== -1) {
-          Vue.set(state.selectedMedias, selectedIdx, newValue)
+          state.selectedMedias[selectedIdx] = newValue
         }
       },
       deleteMedias(state, mediaIds) {
