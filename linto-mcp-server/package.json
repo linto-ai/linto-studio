@@ -22,8 +22,9 @@
   "author": "LinTO AI",
   "license": "AGPL-3.0-or-later",
   "dependencies": {
+    "@linto-ai/linto": "file:../studio-sdk/javascript",
     "@modelcontextprotocol/sdk": "^1.0.4",
-    "@linto-ai/linto": "file:../studio-sdk/javascript"
+    "axios": "^1.13.2"
   },
   "repository": {
     "type": "git",
