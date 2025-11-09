@@ -8,3 +8,5 @@ package-lock.json
 *.m4a
 *.flac
 test-audio/
+test-audio.mp3
+*.mp3
