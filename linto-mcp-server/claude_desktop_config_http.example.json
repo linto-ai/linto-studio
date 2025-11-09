@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "linto-remote": {
+      "url": "https://mcp.linto.ai/sse",
+      "headers": {
+        "Authorization": "Bearer YOUR_LINTO_API_TOKEN_HERE"
+      }
+    }
+  }
+}

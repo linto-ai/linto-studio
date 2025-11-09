@@ -1,0 +1,38 @@
+# Node
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Tests
+test.js
+real-test.js
+api-direct-test.js
+debug-api.js
+TEST_RESULTS.md
+TEST_RESULTS_LATEST.md
+REAL_WORLD_TEST_RESULTS.md
+
+# Git
+.git
+.gitignore
+
+# Documentation
+README.md
+
+# Config examples
+claude_desktop_config.example.json
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.log
