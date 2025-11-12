@@ -18,6 +18,7 @@ export async function apiGetGenericConversationsList(
     pageSize = DEFAULT_PAGE_SIZE,
     sortField = "last_update",
     sortOrder = -1,
+    status = null,
   } = {},
   notif = null,
 ) {
@@ -34,6 +35,7 @@ export async function apiGetGenericConversationsList(
       size: pageSize,
       sortField,
       sortCriteria: sortOrder,
+      processing: status,
     },
     notif,
   )
@@ -46,6 +48,34 @@ export async function apiGetGenericConversationsList(
     getConversations.data.list.length == pageSize &&
     pageSize * page < getConversations.data.count
   return getConversations.data // {count, list, hasMore}
+}
+
+export async function apiGetGenericConversationsCount(
+  scope,
+  { tags = [], text = "", title = "", status = null } = {},
+  notif = null,
+) {
+  const getConversations = await sendRequest(
+    `${BASE_API}/${scope}`,
+    {
+      method: "get",
+    },
+    {
+      tags: tags.toString(),
+      text,
+      name: title,
+      page: 0,
+      size: 0,
+      processing: status,
+    },
+    notif,
+  )
+
+  if (getConversations.status == "error") {
+    return 0
+  }
+
+  return getConversations?.data?.count ?? 0
 }
 
 export async function apiDeleteConversation(conversationId, notif) {

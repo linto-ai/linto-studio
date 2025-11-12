@@ -7,7 +7,30 @@
       :loadingNextPage="loadingNextPage"
       enable-pagination
       class="relative"
-      @load-more="handleLoadMore" />
+      @load-more="handleLoadMore">
+      <template #header-actions v-if="getCurrentScope == 'organization'">
+        <div class="flex gap-small">
+          <FilterChip
+            v-if="countProcessing > 0 || countError > 0"
+            :label="$t('media_explorer.filter.transcribed')"
+            v-model="filterStatus"
+            chipValue="done"
+            :count="countDone" />
+          <FilterChip
+            v-if="countProcessing > 0"
+            :label="$t('media_explorer.filter.processing')"
+            v-model="filterStatus"
+            chipValue="processing"
+            :count="countProcessing" />
+          <FilterChip
+            v-if="countError > 0"
+            :label="$t('media_explorer.filter.error')"
+            v-model="filterStatus"
+            chipValue="error"
+            :count="countError" />
+        </div>
+      </template>
+    </MediaExplorer>
   </LayoutV2>
 </template>
 
@@ -20,6 +43,7 @@ import MediaExplorer from "@/components/MediaExplorer.vue"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { convRoleMixin } from "@/mixins/convRole.js"
 import { mediaScopeMixin } from "@/mixins/mediaScope"
+import { getCurrentScope } from "vue"
 
 export default {
   name: "NextExplore",
@@ -49,24 +73,81 @@ export default {
     search() {
       return this.$store.getters[`${this.storeScope}/search`]
     },
+    countDone() {
+      return this.$store.getters[
+        `${this.getCurrentOrganizationScope}/done/conversations/count`
+      ]
+    },
+    countError() {
+      return this.$store.getters[
+        `${this.getCurrentOrganizationScope}/error/conversations/count`
+      ]
+    },
+    countProcessing() {
+      return this.$store.getters[
+        `${this.getCurrentOrganizationScope}/processing/conversations/count`
+      ]
+    },
+    filterStatus: {
+      get() {
+        return this.$store.getters["organizations/getCurrentFilterStatus"]
+      },
+      set(value) {
+        this.$store.dispatch("organizations/setCurrentFilterStatus", value)
+      },
+    },
     ...mapGetters("system", { pageIsLoading: "isLoading" }),
   },
   mounted() {
     this.init()
   },
+  beforeDestroy() {
+    this.$apiEventWS.unSubscribeMediaUdate()
+  },
   methods: {
     async init() {
+      if (this.getCurrentScope === "organization") {
+        await this.initCounts()
+        this.$apiEventWS.subscribeMediaUpdate(this.currentOrganizationScope)
+        this.filterStatus = this.getStatusFromUrl()
+        window.history.replaceState({}, "", window.location.pathname)
+      }
+
       await this.$store.dispatch(`${this.storeScope}/load`, {})
+
       this.loading = false
       this.$store.dispatch("system/setIsLoading", false)
+    },
+    getStatusFromUrl() {
+      const status = this.$route.query.status
+      if (!status || ["done", "processing", "error"].indexOf(status) == "-1") {
+        return "done"
+      }
+      return status
     },
     async handleLoadMore() {
       this.loadingNextPage = true
       await this.$store.dispatch(`${this.storeScope}/loadNextPage`)
       this.loadingNextPage = false
     },
+    initCounts() {
+      this.$store.dispatch(
+        `${this.getCurrentOrganizationScope}/done/conversations/loadStatusCount`,
+      )
+      this.$store.dispatch(
+        `${this.getCurrentOrganizationScope}/processing/conversations/loadStatusCount`,
+      )
+      this.$store.dispatch(
+        `${this.getCurrentOrganizationScope}/error/conversations/loadStatusCount`,
+      )
+    },
   },
   watch: {
+    countProcessing(value) {
+      if (value == 0) {
+        this.filterStatus = "done"
+      }
+    },
     async search() {
       if (this.pageIsLoading) return
       this.loading = true
@@ -78,6 +159,17 @@ export default {
       this.loading = true
       await this.$store.dispatch(`${this.storeScope}/load`, {})
       this.loading = false
+    },
+    async filterStatus() {
+      if (this.pageIsLoading) return
+      this.loading = true
+      await this.$store.dispatch(`${this.storeScope}/load`, {})
+      this.loading = false
+    },
+    "$apiEventWS.state.connexionRestored"() {
+      if (this.getCurrentScope === "organization") {
+        this.$apiEventWS.subscribeMediaUpdate(this.currentOrganizationScope)
+      }
     },
   },
 }

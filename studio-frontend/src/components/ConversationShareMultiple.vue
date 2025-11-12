@@ -13,7 +13,7 @@
         <Button
           size="sm"
           :icon="showShareList ? 'x' : 'share-network'"
-          variant="outline"
+          variant="secondary"
           :label="$t('share_menu.button')"
           @click="open"></Button>
       </template>

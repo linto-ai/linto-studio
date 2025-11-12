@@ -18,6 +18,7 @@ class BrokerClient extends Component {
     this.id = this.constructor.name
     this.deliveryState = CONNECTING
     this.sessionState = CONNECTING
+    this.notify = true
 
     // Combined pub and subs
     this.deliveryPub = "delivery"
@@ -47,6 +48,7 @@ class BrokerClient extends Component {
 
     this.sessionPub = `session/out`
     this.sessionSubs = [`session/in/+/#`]
+
     // Initialize session client
     this.sessionClient = new MqttClient({
       pub: this.sessionPub,
@@ -55,15 +57,25 @@ class BrokerClient extends Component {
       uniqueId: "session-api",
     })
     this.sessionClient.on("ready", () => {
+      this.notify = true
       this.sessionState = READY
       this.sessionClient.publishStatus()
     })
     this.sessionClient.on("error", (err) => {
       this.sessionState = ERROR
+      if (this.notify) {
+        if (this.app.components["IoHandler"] === undefined) {
+          console.log("IoHandler not loaded yet")
+          return
+        }
+        this.app.components["IoHandler"].emit("borker_disconnected")
+        this.notify = false
+      }
     })
 
     this.organizationPub = `system/out/sessions/statuses`
     this.organizationSubs = [`system/out/sessions/statuses`]
+
     // Initialize session client
     this.organizationClient = new MqttClient({
       pub: this.organizationPub,
@@ -72,11 +84,23 @@ class BrokerClient extends Component {
       uniqueId: "organization-api",
     })
     this.organizationClient.on("ready", () => {
+      this.notify = true
+
       this.organizationState = READY
       this.organizationClient.publishStatus()
     })
     this.organizationClient.on("error", (err) => {
       this.organizationState = ERROR
+
+      if (this.app.components["IoHandler"] === undefined) {
+        console.log("IoHandler not loaded yet")
+        return
+      }
+
+      if (this.notify) {
+        this.app.components["IoHandler"].emit("borker_disconnected")
+        this.notify = false
+      }
     })
 
     this.organizationClient.subscribe(`system/out/sessions/statuses`)

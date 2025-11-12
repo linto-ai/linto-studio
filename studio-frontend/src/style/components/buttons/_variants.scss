@@ -1,6 +1,6 @@
 .btn--transparent {
   --btn-bg: transparent;
-  --btn-border: transparent;
+  --btn-border-color: transparent;
   --btn-hover-bg: rgba(0, 0, 0, 0.05);
 
   &:hover:not([disabled]):not(.disabled) {
@@ -14,12 +14,16 @@
 
 .btn--text {
   --btn-bg: transparent;
-  --btn-border: transparent;
+  --btn-border-color: transparent;
   text-decoration: underline;
   padding: 0.25rem 0.5rem;
 
   &:hover:not([disabled]):not(.disabled) {
     opacity: 0.8;
+    background-color: transparent;
+    text-decoration: underline;
+    transform: none;
+    box-shadow: none;
   }
 }
 
@@ -36,7 +40,7 @@
 .btn--link {
   --btn-bg: transparent;
   --btn-hover-bg: transparent;
-  --btn-border: transparent;
+  --btn-border-color: transparent;
   --btn-padding: 0px;
   text-decoration: none;
   --btn-animate: 0;
@@ -46,6 +50,10 @@
     box-shadow: none;
     text-decoration: underline;
   }
+}
+
+.table-header-button {
+  --btn-bg: transparent;
 }
 
 .table-header-button:hover {

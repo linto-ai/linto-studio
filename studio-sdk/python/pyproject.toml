@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "linto"
+version = "1.1.2"
+description = "Wrapper around LinTO Studio API"
+readme = "README.md"
+requires-python = ">=3.7"
+license = "AGPL-3.0-or-later"
+license-files = ["LICENSE"]
+
+authors = [
+  { name="Tom Darboux", email="tdarboux@linagora.com" },
+]
+
+dependencies = [
+  "aiohttp",
+]
+
+keywords = [
+  "STT",
+  "Whisper",
+  "Speech-to-Text",
+  "Transcript",
+  "Transcriber",
+  "Timestamps"
+]
+
+[project.urls]
+Repository = "https://github.com/linto-ai/linto-studio"
+Homepage = "https://linto.ai"
+
+[tool.setuptools.packages.find]
+where = ["."]

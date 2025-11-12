@@ -1,14 +1,14 @@
 <template>
-  <Modal v-model="isModalOpen" :with-actions="false" :title="$t('app_settings_modal.title')" :size="computedSize">
+  <Modal
+    v-model="isModalOpen"
+    :with-actions="false"
+    :title="$t('app_settings_modal.title')"
+    :size="computedSize">
     <div v-if="user.emailIsVerified === false">
       <div class="app-settings-verify-email">
         <p>{{ $t("app_settings_modal.email_not_verified") }}</p>
 
-        <Button
-          color="tertiary"
-          size="sm"
-          @click="sendVerificationEmail()"
-          >
+        <Button size="sm" @click="sendVerificationEmail()">
           <ph-icon name="paper-plane-tilt" size="md" class="icon" />
           <!-- <span
             :class="['icon', sendingEmail ? 'loading' : 'send-mail']"></span> -->
@@ -57,7 +57,7 @@
                 <ph-icon name="info" weight="bold"></ph-icon>
                 <span>{{
                   $t("app_settings_modal.organization_information")
-                  }}</span>
+                }}</span>
               </a>
             </li>
             <li :class="{ active: selectedTab === 'members' }">
@@ -66,29 +66,42 @@
                 <span>{{ $t("app_settings_modal.organization_members") }}</span>
               </a>
             </li>
-            <is-cloud>
+            <!-- <is-cloud>
               <li :class="{ active: selectedTab === 'billing' }">
                 <a href="#" @click="selectTab('billing')">
                   <ph-icon name="credit-card" weight="bold"></ph-icon>
                   <span>{{ $t("app_settings_modal.billing") }}</span>
                 </a>
               </li>
-            </is-cloud>
+            </is-cloud> -->
             <li :class="{ active: selectedTab === 'tags' }">
               <a href="#" @click="selectTab('tags')">
                 <ph-icon name="tag" weight="bold"></ph-icon>
                 <span>{{ $t("app_settings_modal.tags") }}</span>
               </a>
             </li>
+            <li :class="{ active: selectedTab === 'apiTokens' }" v-if="isAdmin">
+              <a href="#" @click="selectTab('apiTokens')">
+                <ph-icon name="key" weight="bold"></ph-icon>
+                <span>{{ $t("app_settings_modal.api_tokens") }}</span>
+              </a>
+            </li>
           </ul>
         </div>
         <div>
-          <Button :label="$t('app_settings_modal.logout')" @click="logout" icon="sign-out" color="tertiary"
+          <Button
+            :label="$t('app_settings_modal.logout')"
+            @click="logout"
+            icon="sign-out"
+            variant="secondary"
+            intent="destructive"
             size="sm"></Button>
         </div>
       </aside>
 
-      <div v-if="selectedTab === 'account-information'" class="app-settings__section">
+      <div
+        v-if="selectedTab === 'account-information'"
+        class="app-settings__section">
         <!-- <pre>{{ user }}</pre> -->
         <UserSettingsAvatar :userInfo="user" v-if="isAuthenticated" />
         <UserSettingsPersonal :userInfo="user" v-if="isAuthenticated" />
@@ -105,14 +118,26 @@
         <UserSettingsPreferences />
       </div>
 
-      <div v-if="selectedTab === 'organization-information'" class="app-settings__section">
+      <div
+        v-if="selectedTab === 'organization-information'"
+        class="app-settings__section">
         <UpdateOrganizationForm :currentOrganization="currentOrganization" />
-        <UpdateOrganizationDeletion v-if="isAdmin" :currentOrganization="currentOrganization" />
+        <UpdateOrganizationDeletion
+          v-if="isAdmin"
+          :currentOrganization="currentOrganization" />
       </div>
       <div v-if="selectedTab === 'members'" class="app-settings__section">
-        <UpdateOrganizationUsers :currentOrganization="currentOrganization" :userInfo="user" />
+        <UpdateOrganizationUsers
+          :currentOrganization="currentOrganization"
+          :userInfo="user" />
       </div>
-      <div v-if="selectedTab === 'billing'" class="app-settings__section"
+
+      <div v-if="selectedTab === 'apiTokens'" class="app-settings__section">
+        <ApiTokenSettings v-if="isAdmin" :organizationId="organizationId" />
+      </div>
+      <div
+        v-if="selectedTab === 'billing'"
+        class="app-settings__section"
         :class="{ active: selectedTab === 'billing' }"></div>
     </div>
   </Modal>
@@ -134,8 +159,9 @@ import UserSettingsPreferences from "@/components/UserSettingsPreferences.vue"
 import TagManagement from "@/components/TagManagement.vue"
 import UpdateOrganizationForm from "@/components/UpdateOrganizationForm.vue"
 import UpdateOrganizationUsers from "@/components/UpdateOrganizationUsers.vue"
-import UpdateOrganizationDeletion from "./UpdateOrganizationDeletion.vue"
-import Modal from "./molecules/Modal.vue"
+import UpdateOrganizationDeletion from "@/components/UpdateOrganizationDeletion.vue"
+import Modal from "@/components/molecules/Modal.vue"
+import ApiTokenSettings from "@/components/ApiTokenSettings.vue"
 
 export default {
   name: "AppSettingsModal",
@@ -153,6 +179,7 @@ export default {
     UpdateOrganizationUsers,
     UpdateOrganizationDeletion,
     Modal,
+    ApiTokenSettings,
   },
   data() {
     return {
@@ -166,6 +193,7 @@ export default {
     }),
     ...mapGetters("organizations", {
       currentOrganization: "getCurrentOrganization",
+      organizationId: "getCurrentOrganizationScope",
     }),
     ...mapGetters("system", ["isMobile"]),
     isModalOpen: {
@@ -183,7 +211,7 @@ export default {
       if (this.isMobile) {
         return "screen"
       }
-      return "lg"
+      return "xl"
     },
     orgaName() {
       return this.currentOrganization?.name
@@ -224,8 +252,8 @@ export default {
   &-verify-email {
     background-color: var(--background-primary);
     border-radius: 4px;
-    padding: .5em;
-    margin-bottom: .5em;
+    padding: 0.5em;
+    margin-bottom: 0.5em;
     border: 1px solid var(--red-chart);
     color: var(--red-chart);
     font-size: 14px;
@@ -250,7 +278,7 @@ export default {
       margin-bottom: 0.25rem;
     }
 
-    ul+h4 {
+    ul + h4 {
       margin-top: 1rem;
     }
 
@@ -265,10 +293,14 @@ export default {
         border-radius: 4px;
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
+        border: 1px solid transparent;
+        position: relative;
+        left: 1px;
 
         &.active {
           background-color: var(--background-secondary);
-
+          border-color: var(--neutral-20);
+          border-right-color: transparent;
           a {
             color: var(--primary-hard);
             font-weight: bold;
@@ -287,15 +319,15 @@ export default {
 
   &__section {
     flex: 1;
+    border: 1px solid var(--neutral-20);
     background-color: var(--background-secondary);
     border-radius: 4px;
-    border-top-left-radius: 0;
     box-sizing: border-box;
     padding: 1em;
     //display: none;
     overflow-y: auto;
     align-self: stretch;
-    height: min(800px, calc(100vh - 10rem));
+    height: min(800px, calc(100vh - 14rem));
 
     // &.active {
     //   display: block;
@@ -347,7 +379,7 @@ export default {
     gap: 10px;
     margin: 0.5em;
 
-    &>div {
+    & > div {
       background-color: var(--background-secondary);
       flex: 1;
       padding: 0.5em;
@@ -432,7 +464,7 @@ export default {
       }
 
       // Logout button repositioning for mobile
-      >div:last-child {
+      > div:last-child {
         margin-top: auto;
         padding-top: 1rem;
         border-top: 1px solid var(--neutral-60);

@@ -18,8 +18,10 @@ import { Fragment } from "vue-fragment"
 export default {
   name: "Radio",
   props: {
+    // global value shared by the radio button
     value: { type: [String, Object, Number], default: null },
     id: { type: String, default: "" },
+    // value which will be set when this radio is selected
     radioValue: { type: [String, Object, Number], default: null },
     disabled: { type: Boolean, default: false },
     name: { type: String, required: true },

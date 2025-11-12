@@ -1,11 +1,15 @@
 // store/modules/mediaModuleFactory.js
 
-import { apiGetGenericConversationsList } from "../../api/conversation"
+import {
+  apiGetGenericConversationsList,
+  apiGetGenericConversationsCount,
+  apiDeleteMultipleConversation,
+} from "@/api/conversation"
 import i18n from "@/i18n"
 import Vue from "vue"
 import { bus } from "@/main.js"
 
-export default function createMediaModule(scope) {
+export default function createMediaModule(scope, status = "done") {
   return {
     namespaced: true,
 
@@ -17,6 +21,10 @@ export default function createMediaModule(scope) {
       selectedTagIds: [],
       pagination: { page: 0, hasMore: true },
       count: 0,
+      countDone: 0,
+      countProcessing: 0,
+      countError: 0,
+      filterStatus: status, // done, processing, error
     }),
 
     getters: {
@@ -27,6 +35,9 @@ export default function createMediaModule(scope) {
       hasMore: (s) => s.pagination.hasMore,
       selectedTagIds: (s) => s.selectedTagIds,
       count: (s) => s.count,
+      countDone: (s) => s.countDone,
+      countProcessing: (s) => s.countProcessing,
+      countError: (s) => s.countError,
       getMediaById: (s) => (mediaId) => {
         return s.medias.find((m) => m._id === mediaId)
       },
@@ -65,9 +76,10 @@ export default function createMediaModule(scope) {
             return 31
           }
 
-          return conv.organization.membersRight
+          return conv?.organization?.membersRight || 0
         }
       },
+      getFilterStatus: (s) => s.filterStatus,
     },
 
     mutations: {
@@ -79,6 +91,9 @@ export default function createMediaModule(scope) {
       },
       appendMedias(state, medias) {
         state.medias = [...state.medias, ...medias]
+      },
+      prependMedias(state, medias) {
+        state.medias = [...medias, ...state.medias]
       },
       setSearchQuery(state, query) {
         state.searchQuery = query
@@ -107,18 +122,20 @@ export default function createMediaModule(scope) {
       setPagination(state, { page, hasMore }) {
         state.pagination = { page, hasMore }
       },
-      updateMedia(state, { mediaId, media }) {
+      updateMedia(state, { mediaId, media, patch = false }) {
         const idx = state.medias.findIndex((m) => m._id === mediaId)
+        const newValue = patch ? { ...state.medias[idx], ...media } : media
+
         if (idx !== -1) {
           // Use Vue.set to ensure reactivity
-          Vue.set(state.medias, idx, media)
+          Vue.set(state.medias, idx, newValue)
         }
 
         const selectedIdx = state.selectedMedias.findIndex(
           (m) => m._id === mediaId,
         )
         if (selectedIdx !== -1) {
-          Vue.set(state.selectedMedias, selectedIdx, media)
+          Vue.set(state.selectedMedias, selectedIdx, newValue)
         }
       },
       deleteMedias(state, mediaIds) {
@@ -141,6 +158,18 @@ export default function createMediaModule(scope) {
       setCount(state, count) {
         state.count = count
       },
+      setCountDone(state, count) {
+        state.countDone = count
+      },
+      setCountProcessing(state, count) {
+        state.countProcessing = count
+      },
+      setCountError(state, count) {
+        state.countError = count
+      },
+      setFilterStatus(state, value) {
+        console.warn("filterStatus is readOnly")
+      },
     },
 
     actions: {
@@ -154,10 +183,14 @@ export default function createMediaModule(scope) {
             text: getters.search,
             title: getters.search,
             tags: getters.selectedTagIds,
+            status: getters.getFilterStatus,
           })
 
           if (append) commit("appendMedias", data.list)
-          else commit("setMedias", data.list)
+          else {
+            commit("clearSelectedMedias")
+            commit("setMedias", data.list)
+          }
 
           commit("setCount", data.count)
 
@@ -172,11 +205,30 @@ export default function createMediaModule(scope) {
             "system/addNotification",
             {
               type: "error",
-              message: "Error fetching conversations",
+              message: "Error fetching medias",
             },
             { root: true },
           )
         }
+      },
+      async loadStatusCount({ commit, getters }) {
+        const count = await apiGetGenericConversationsCount(scope, {
+          text: getters.search,
+          title: getters.search,
+          tags: getters.selectedTagIds,
+          status: getters.getFilterStatus,
+        })
+
+        commit("setCount", count)
+      },
+      increaseCount({ commit, getters }) {
+        commit("setCount", getters.count + 1)
+      },
+      setCount({ commit, getters }, count) {
+        commit("setCount", count)
+      },
+      decreaseCount({ commit, getters }) {
+        commit("setCount", getters.count - 1)
       },
       async loadNextPage({ state, dispatch }) {
         const nextPage = state.pagination.page + 1
@@ -188,13 +240,34 @@ export default function createMediaModule(scope) {
       toggleMediaSelection({ commit }, media) {
         commit("toggleSelectedMedia", media)
       },
-      updateMedia({ commit }, { mediaId, media }) {
-        commit("updateMedia", { mediaId, media })
+      updateMedia({ commit }, { mediaId, media, patch = false }) {
+        commit("updateMedia", { mediaId, media, patch })
       },
-      async deleteMedias({ commit }, ids) {
+      async deleteMedias(
+        { commit, rootGetters, dispatch },
+        { ids, callApi = true } = {},
+      ) {
         // todo api
-        commit("deleteMedias", ids)
-        commit("clearSelectedMedias")
+        let res
+        if (callApi) {
+          res = await apiDeleteMultipleConversation(
+            rootGetters["organizations/getCurrentOrganizationScope"],
+            ids,
+          )
+        }
+        if (!callApi || (res && res.status === "success")) {
+          commit("deleteMedias", ids)
+          commit("clearSelectedMedias")
+        } else {
+          dispatch(
+            "system/addNotification",
+            {
+              type: "error",
+              message: "Error deleting medias",
+            },
+            { root: true },
+          )
+        }
       },
       async deleteSelected({ state, dispatch }) {
         const ids = state.selectedMedias.map((m) => m._id)
@@ -202,8 +275,6 @@ export default function createMediaModule(scope) {
           await dispatch("deleteMedia", ids)
         }
       },
-      addSelectedMedia({ commit, state }, media) {},
-
       setSelectedTagIds({ commit }, ids) {
         commit("setSelectedTagIds", ids)
       },
@@ -219,6 +290,12 @@ export default function createMediaModule(scope) {
       selectAll({ commit, getters }) {
         commit("setAutoselectMedias", true)
         commit("setSelectedMedias", getters["all"])
+      },
+      setFilterStatus({ commit }, status) {
+        commit("setFilterStatus", status)
+      },
+      prependMedias({ commit }, medias) {
+        commit("prependMedias", medias)
       },
     },
   }

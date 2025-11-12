@@ -5,15 +5,24 @@
       v-if="showList"
       v-click-outside="close">
       <div class="flex col select__list__inner"> -->
-    <Popover content-class="invite-user-list" overlay>
+    <Popover
+      content-class="invite-user-list"
+      overlay
+      close-on-click-outside
+      close-on-escape>
       <template #trigger>
-        <button
+        <Button
+          :label="$t('invite_user.button')"
+          variant="secondary"
+          size="sm"
+          @click="showList = !showList" />
+        <!-- <button
           @click="showList = !showList"
           :class="showList ? 'active' : ''"
           class="invite-user-button">
           <span class="icon plus"></span>
           <span class="label">{{ $t("invite_user.button") }}</span>
-        </button>
+        </button> -->
       </template>
       <template #content>
         <form
@@ -50,23 +59,25 @@
             :expanded="true"
             :currentUser="currentUsers"
             v-slot:default="slotProps">
-            <button v-if="isPending(slotProps.user)" disabled>
-              <span class="icon loading" />
-              <span class="label">{{ $t("invite_user.pending") }}</span>
-            </button>
-            <button
+            <Button
+              v-if="isPending(slotProps.user)"
+              disabled
+              loading
+              :label="$t('invite_user.pending')" />
+
+            <Button
               v-else-if="isAlreadyInvited(slotProps.user)"
-              @click="removeUser(slotProps.user)"
-              class="tertiary outline">
-              <ph-icon name="trash"></ph-icon>
-              <span class="label">
-                {{ $t("organisation.user.remove_button") }}</span
-              >
-            </button>
-            <button v-else @click="addUser(slotProps.user)">
-              <span class="icon plus" />
-              <span class="label">{{ $t("invite_user.add_user") }}</span>
-            </button>
+              variant="secondary"
+              intent="destructive"
+              icon="trash"
+              :label="$t('organisation.user.remove_button')"
+              @click="removeUser(slotProps.user)"></Button>
+
+            <Button
+              v-else
+              variant="secondary"
+              :label="$t('invite_user.add_user')"
+              @click="addUser(slotProps.user)"></Button>
           </SearchUsersListComponent>
         </div>
       </template>

@@ -42,7 +42,7 @@ async function addUserInOrganization(req, res, next) {
     if (!req.params.organizationId || !req.body.email || !req.body.role)
       throw new OrganizationUnsupportedMediaType()
 
-    if (isNaN(req.body.role) && TYPES.checkValue(req.body.role))
+    if (isNaN(req.body.role) && ROLES.checkValue(req.body.role))
       throw new OrganizationUnsupportedMediaType("Role value is not valid")
     if (ROLES.canGiveAccess(req.body.role, req.userRole))
       throw new OrganizationForbidden()
@@ -146,7 +146,7 @@ async function updateUserFromOrganization(req, res, next) {
     if (!req.params.organizationId || !req.body.userId || !req.body.role)
       throw new OrganizationUnsupportedMediaType()
 
-    if (isNaN(req.body.role) && TYPES.checkValue(req.body.role))
+    if (isNaN(req.body.role) && ROLES.checkValue(req.body.role))
       throw new OrganizationUnsupportedMediaType("Role value is not valid")
     if (ROLES.canGiveAccess(req.body.role, req.userRole))
       throw new OrganizationForbidden()
@@ -270,7 +270,7 @@ async function deleteConversationFromOrganization(req, res, next) {
           conv._id,
         )
 
-      if (conv[0]?.metadata?.audio) {
+      if (conv?.metadata?.audio) {
         deleteFile(`${getStorageFolder()}/${conv.metadata.audio.filepath}`)
       }
 
@@ -281,6 +281,15 @@ async function deleteConversationFromOrganization(req, res, next) {
       for (const category of categoryList) {
         model.categories.delete(category._id)
         model.tags.deleteAllFromCategory(category._id.toString())
+      }
+
+      if (this?.app?.components?.IoHandler) {
+        this.app.components.IoHandler.emit(
+          "conversation_deleted",
+          conv.organization.organizationId,
+          conv._id,
+          conv?.jobs?.transcription?.state,
+        )
       }
     }
 

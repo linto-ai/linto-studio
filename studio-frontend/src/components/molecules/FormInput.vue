@@ -1,5 +1,5 @@
 <template>
-  <div class="form-field" :class="formFieldClasses" v-if="!readonly">
+  <div class="form-field" :class="formFieldClasses">
     <div class="form-field__header" v-if="field.label">
       <label class="form-field__label" :for="id">
         {{ field.label }}
@@ -9,8 +9,24 @@
 
     <div class="form-field__input-wrapper">
       <slot></slot>
+      <slot
+        v-if="$scopedSlots['custom-input']"
+        name="custom-input"
+        v-bind:id="id"
+        :disabled="disabled"></slot>
+      <component
+        :is="code ? 'pre' : 'div'"
+        v-else-if="readonly && editValue"
+        class="form-field__readonly"
+        >{{ editValue }}</component
+      >
+      <div
+        v-else-if="readonly && !editValue"
+        class="form-field__readonly empty">
+        {{ $t("form_field.empty_value") }}
+      </div>
       <input
-        v-if="!textarea"
+        v-else-if="!textarea"
         :class="inputClasses"
         :type="type"
         :disabled="disabled"
@@ -67,7 +83,7 @@
       <span class="form-field__error">{{ field.error }}</span>
     </div>
   </div>
-  <LabeledValue v-else :label="field.label" :value="editValue" />
+  <!-- <LabeledValue v-else :label="field.label" :value="editValue" /> -->
 </template>
 <script>
 import { Fragment } from "vue-fragment"
@@ -113,6 +129,10 @@ export default {
       default: false,
     },
     inline: {
+      type: Boolean,
+      default: false,
+    },
+    code: {
       type: Boolean,
       default: false,
     },
@@ -253,6 +273,24 @@ export default {
     margin: 0;
   }
 
+  .form-field__readonly {
+    padding: 0.25rem;
+    box-sizing: border-box;
+    margin: 0;
+    flex: 1;
+    align-self: center;
+
+    &.empty {
+      font-style: italic;
+    }
+  }
+
+  pre.form-field__readonly {
+    overflow: auto;
+    background-color: var(--neutral-5);
+    border: 1px solid var(--neutral-30);
+  }
+
   /* Input wrapper with actions */
   &__input-wrapper {
     display: flex;
@@ -266,7 +304,7 @@ export default {
   &__textarea {
     flex: 1;
     padding: 0.75rem;
-    border: 1px solid var(--neutral-30, #ddd);
+    border: var(--border-input);
     border-radius: var(--border-radius-sm, 6px);
     font-family: inherit;
     font-size: 0.875rem;

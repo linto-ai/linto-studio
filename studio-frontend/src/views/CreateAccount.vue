@@ -128,8 +128,7 @@
       <div class="form-field flex row">
         <Button
           type="submit"
-          color="primary"
-          block
+          variant="primary"
           :label="$t('createaccount.personal_button')"
           :loading="state === 'sending'" />
       </div>
@@ -164,8 +163,7 @@
 
       <Button
         type="submit"
-        color="primary"
-        block
+        variant="primary"
         :label="$t('createaccount.create_account_button')"
         :loading="state === 'sending'" />
     </form>

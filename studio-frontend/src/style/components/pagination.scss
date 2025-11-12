@@ -47,7 +47,7 @@
 
   .pagination-btn {
     display: inline-block;
-    margin: 5px;
+    margin: 0 5px;
     width: auto;
     height: 30px;
     line-height: 30px;
@@ -58,6 +58,8 @@
     box-shadow: none;
     border: none;
     cursor: pointer;
+    padding: 0 0.5rem;
+    border-radius: 2px;
     //line-height: 0;
     &:hover {
       color: var(--primary-color);

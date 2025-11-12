@@ -31,10 +31,6 @@
 
   $primarySoft: soft-color($primaryColor, 94%);
   $primaryHard: hard-color($primaryColor);
-  $secondarySoft: soft-color($secondaryColor);
-  $secondaryHard: hard-color($secondaryColor);
-  $tertiarySoft: soft-color($redChart);
-  $tertiaryHard: hard-color($redChart);
   $yellowSoft: soft-color($yellowChart);
   $yellowHard: hard-color($yellowChart);
   $greenSoft: soft-color($greenChart);
@@ -46,33 +42,21 @@
 
   body {
     --font-family: "Noto Sans", "Arial", "Helvetica", "verdana";
+    --font-size: 14px;
     --luciole-font-family: "Luciole", "Arial", "Helvetica", "verdana";
     --background-primary: white;
     --background-secondary: white;
-
     --background-app: #f5f5f5;
 
-    --primary-color: var(--green-chart);
-    --primary-contrast: white;
-    --secondary-color: var(--blue-chart);
-    --tertiary-color: var(--red-chart);
-
+    --primary-color: #{$greenChart};
     --primary-soft: #{$primarySoft};
-    --primary-hard: #{$primaryHard};
-    --secondary-soft: #{$secondarySoft};
-    --secondary-hard: #{$secondaryHard};
-    --tertiary-soft: #{$tertiarySoft};
-    --tertiary-hard: #{$tertiaryHard};
-    --yellow-soft: #{$yellowSoft};
-    --yellow-hard: #{$yellowHard};
-    --green-soft: #{$greenSoft};
-    --green-hard: #{$greenHard};
-    --red-soft: #{$redSoft};
-    --red-hard: #{$redHard};
-    --blue-soft: #{$blueSoft};
-    --blue-hard: #{$blueHard};
-
-    --green-chart: #{$greenChart};
+    --primary-contrast: white;
+    --danger-color: #{$redChart};
+    --danger-soft: #{$redSoft};
+    --danger-contrast: white;
+    --warning-color: #{$yellowChart};
+    --warning-soft: #{$yellowSoft};
+    --red-chart: #{$redChart};
 
     --dark-100: #333;
     --dark-90: #404040;
@@ -83,15 +67,25 @@
     --dark-40: #e1e1e1;
     --dark-20: #f5f5f5;
     --dark-10: #fafafa;
-    --neutral-100: #333;
-    --neutral-90: #404040;
-    --neutral-80: #666;
-    --neutral-70: #808080;
-    --neutral-60: #c2c2c2;
-    --neutral-50: #d1d1d1;
-    --neutral-40: #e1e1e1;
-    --neutral-20: #f5f5f5;
-    --neutral-10: #fafafa;
+
+    --neutral-100: oklch(14.5% 0 0); /* quasi noir, avec une pointe de vert */
+    --neutral-90: oklch(20.5% 0 0);
+    --neutral-80: oklch(26.9% 0 0);
+    --neutral-70: oklch(37.1% 0 0);
+    --neutral-60: oklch(43.9% 0 0);
+    --neutral-50: oklch(55.6% 0 0);
+    --neutral-40: oklch(70.8% 0 0);
+    --neutral-30: oklch(87% 0 0);
+    --neutral-20: oklch(92.2% 0 0);
+    --neutral-10: oklch(97% 0 0);
+    --neutral-5: oklch(98.5% 0 0);
+    --neutral-0: #ffffff;
+
+    --shadow-1: 0px 1px 2px rgba(0, 0, 0, 0.05); /* très léger, boutons discrets */
+    --shadow-2: 0px 2px 4px rgba(0, 0, 0, 0.08); /* cartes légères */
+    --shadow-3: 0px 4px 8px rgba(0, 0, 0, 0.1); /* modals, survol de boutons */
+    --shadow-4: 0px 8px 16px rgba(0, 0, 0, 0.12); /* éléments importants, popover */
+    --shadow-5: 0px 16px 32px rgba(0, 0, 0, 0.16); /* overlay / large popups */
 
     --text-primary: var(--dark-100);
     --text-secondary: var(--dark-80);
@@ -109,21 +103,21 @@
     --background-yellow-hard: var(--yellow-hard);
     --background-green-soft: var(--green-soft);
 
+    // outdated variable, to delete (keep now for old code)
     --background-lock-turn: #e6e6e6;
     --border-lock-turn: 1px solid #848484;
 
     --background-inset-section: rgb(249, 249, 249);
     --box-shadow-inset: 0px 0px 1px 0 var(--primary-soft) inset;
 
-    --border-button: 1px solid var(--neutral-60);
-    --border-input: 1px solid var(--primary-color);
-    --border-block: 1px solid var(--neutral-40);
+    --border-button: 1px solid var(--neutral-30);
+    --border-block: 1px solid var(--neutral-20);
     --divider: 1px solid var(--primary-soft);
     --button-background: transparent;
     --button-background-hover: soft-color(var(--primary-soft), 10%);
 
     --input-background: var(--background-secondary);
-    --border-input: 1px solid var(--neutral-50);
+    --border-input: 1px solid var(--neutral-30);
     --input-focus: var(--primary-soft);
 
     --bg-highlight: #fff5a4;

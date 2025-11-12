@@ -119,9 +119,8 @@
               @click="handleDownload"
               :loading="downloadLoading"
               icon="download"
-              variant="outline"
-              size="sm"
-              class="action-button">
+              variant="secondary"
+              size="sm">
               {{
                 downloadLoading
                   ? $t("media_explorer.panel.downloading")
@@ -131,7 +130,9 @@
           </div>
         </div>
 
-        <div class="media-section" v-if="!readOnly">
+        <div
+          class="media-section"
+          v-if="!readOnly && getCurrentScope == 'organization'">
           <h4 class="section-title">
             {{ $t("media_explorer.panel.danger_zone") }}
           </h4>
@@ -143,7 +144,8 @@
               @click="handleDelete"
               :label="$t('media_explorer.delete')"
               icon="trash"
-              variant="outline"
+              variant="secondary"
+              intent="destructive"
               size="sm"
               color="tertiary" />
           </div>
@@ -482,10 +484,6 @@ export default {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
-}
-
-.action-button {
-  justify-content: flex-start;
 }
 
 .section-content-input {

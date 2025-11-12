@@ -4,14 +4,14 @@
       name="trigger"
       :open="openModal"
       :close="close"
-      :is-open="isModalOpen"
-      ></slot>
+      :is-open="isModalOpen"></slot>
   </div>
 </template>
 
 <script>
 import popupManager from "@/tools/popupManager"
 import ModalRenderer from "./ModalRenderer.vue"
+import i18n from "../../i18n"
 
 export default {
   name: "Modal",
@@ -30,8 +30,8 @@ export default {
     value: { type: Boolean, default: undefined },
     overlay: { type: Boolean, default: true },
     overlayClose: { type: Boolean, default: true },
-    textActionApply: { type: String, default: "Apply" },
-    textActionCancel: { type: String, default: "Cancel" },
+    textActionApply: { type: String, default: i18n.t("modal.apply") },
+    textActionCancel: { type: String, default: i18n.t("modal.cancel") },
     textActionDelete: { type: String, default: "Delete" },
     customClassClose: { type: String, default: "" },
     customClassActionApply: { type: String, default: "" },
@@ -42,9 +42,9 @@ export default {
     disabledActionCancel: { type: Boolean, default: false },
     disabledActionApply: { type: Boolean, default: false },
     disabledClose: { type: Boolean, default: false },
-    iconActionApply: { type: String, default: "check-circle" },
+    iconActionApply: { type: String, default: "check" },
     iconActionCancel: { type: String, default: "x-circle" },
-    iconActionDelete: { type: String, default: "trash-circle" },
+    iconActionDelete: { type: String, default: "trash" },
     colorActionApply: { type: String, default: "primary" },
     colorActionCancel: { type: String, default: "var(--neutral-40)" },
     colorActionDelete: { type: String, default: "var(--danger-color)" },
@@ -92,14 +92,14 @@ export default {
                 this.$scopedSlots.actions
                   ? this.$scopedSlots.actions()
                   : this.$slots.actions || [],
-              'actions-left': () =>
-                this.$scopedSlots['actions-left']
-                  ? this.$scopedSlots['actions-left']()
-                  : this.$slots['actions-left'] || [],
-              'actions-right': () =>
-                this.$scopedSlots['actions-right']
-                  ? this.$scopedSlots['actions-right']()
-                  : this.$slots['actions-right'] || [],
+              "actions-left": () =>
+                this.$scopedSlots["actions-left"]
+                  ? this.$scopedSlots["actions-left"]()
+                  : this.$slots["actions-left"] || [],
+              "actions-right": () =>
+                this.$scopedSlots["actions-right"]
+                  ? this.$scopedSlots["actions-right"]()
+                  : this.$slots["actions-right"] || [],
             },
             triggerEl: this.triggerEl,
           })
@@ -123,14 +123,14 @@ export default {
             this.$scopedSlots.actions
               ? this.$scopedSlots.actions()
               : this.$slots.actions || [],
-          'actions-left': () =>
-            this.$scopedSlots['actions-left']
-              ? this.$scopedSlots['actions-left']()
-              : this.$slots['actions-left'] || [],
-          'actions-right': () =>
-            this.$scopedSlots['actions-right']
-              ? this.$scopedSlots['actions-right']()
-              : this.$slots['actions-right'] || [],
+          "actions-left": () =>
+            this.$scopedSlots["actions-left"]
+              ? this.$scopedSlots["actions-left"]()
+              : this.$slots["actions-left"] || [],
+          "actions-right": () =>
+            this.$scopedSlots["actions-right"]
+              ? this.$scopedSlots["actions-right"]()
+              : this.$slots["actions-right"] || [],
         }
         popup.rendererInstance.$forceUpdate()
       }

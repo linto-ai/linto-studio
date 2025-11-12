@@ -7,12 +7,13 @@
     :style="styles"
     :disabled="isDisabled"
     :aria-disabled="isDisabled"
+    :type="componentType === 'button' ? type : null"
+    :multiline="multiline"
     v-bind="$attrs"
-    v-on="$listeners">
+    v-on="isDisabled ? null : $listeners">
     <ph-icon
       v-if="loading"
       name="circle-notch"
-      :weight="computedIconWeight"
       :size="size"
       class="animate-spin icon" />
     <ph-icon
@@ -24,10 +25,10 @@
     <span v-else-if="avatarText" class="icon">
       {{ avatarText }}
     </span>
-    <span class="label" v-if="label">
+    <span class="label flex1" v-if="label">
       <slot>{{ label }}</slot>
     </span>
-    <span class="label" v-else-if="$slots.default">
+    <span class="label flex1" v-else-if="$slots.default">
       <slot></slot>
     </span>
     <ph-icon
@@ -62,12 +63,27 @@ export default {
     iconWeight: {
       type: String,
       required: false,
-      default: "fill",
+      default: "fill", // thin, light, regular, bold, fill, duotone
     },
-    color: {
+    variant: {
       type: String,
       required: false,
-      default: "primary",
+      default: "tertiary",
+      validator: (value) =>
+        [
+          "primary",
+          "secondary",
+          "tertiary",
+          "text",
+          "transparent",
+          "link",
+        ].includes(value),
+    },
+    intent: {
+      type: String,
+      required: false,
+      default: "default",
+      validator: (value) => ["default", "destructive"].includes(value),
     },
     size: {
       type: String,
@@ -81,15 +97,15 @@ export default {
       default: "default",
       validator: (value) => ["default", "circle"].includes(value),
     },
-    variant: {
-      type: String,
-      required: false,
-      default: "solid",
-      validator: (value) =>
-        ["solid", "outline", "transparent", "text", "link", "flat"].includes(
-          value,
-        ),
-    },
+    // variant: {
+    //   type: String,
+    //   required: false,
+    //   default: "solid",
+    //   validator: (value) =>
+    //     ["solid", "outline", "transparent", "text", "link", "flat"].includes(
+    //       value,
+    //     ),
+    // },
     borderColor: {
       type: String,
       required: false,
@@ -117,6 +133,14 @@ export default {
       type: Boolean,
       default: false,
     },
+    multiline: {
+      type: Boolean,
+      default: false,
+    },
+    type: {
+      type: String,
+      default: "button", // button or submit
+    },
   },
   data() {
     return {}
@@ -133,16 +157,16 @@ export default {
         return "a"
       }
       if (this.to) {
-        return "router-link"
+        return !this.isDisabled ? "router-link" : "div"
       }
       return "button"
     },
     classes() {
       const classes = []
       classes.push("btn")
-      classes.push(`btn--${this.color}`)
-      classes.push(`btn--${this.size}`)
+      classes.push(`btn--${this.intent}`)
       classes.push(`btn--${this.variant}`)
+      classes.push(`btn--${this.size}`)
       if (this.block) {
         classes.push("btn--block")
       }

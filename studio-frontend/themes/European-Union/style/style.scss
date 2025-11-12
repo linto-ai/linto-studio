@@ -3,50 +3,23 @@
 @layer theme {
   // Don't import to avoid conflicts
   // @import "buttons.scss";
-  @import "checkbox.scss";
-  @import "forms.scss";
-  @import "select.scss";
+  // @import "checkbox.scss";
+  // @import "forms.scss";
+  // @import "select.scss";
   @import "text.scss";
-  @import "radio.scss";
-  @import "mobile/text.scss";
+  // @import "radio.scss";
+  // @import "mobile/text.scss";
 
   body {
-    --font-family: "Arial" "sans-serif";
-
+    --font-family: "Arial", "sans-serif";
+    --font-size: 15px;
     --blue-chart: #3860ed;
     --red-chart: #fe346e;
 
-    --dark-100: #26324b;
-    --dark-80: #546fa6;
-    --dark-60: #99aacc;
-
-    --neutral-100: #b9c5e9;
-    --neutral-80: #cdd5ef;
-    --neutral-60: #f3f5fb;
-    --neutral-40: #f3f5fb;
-    --neutral-20: #f8f9fd;
-    --neutral-10: #fbfbfb;
-    --neutral-soft: #e0e5f5;
-
     --primary-color: #3860ed;
     --primary-hard: #3860ed;
-    --primary-soft: #e0e5f5;
+    --primary-soft: #eef2ff;
     --primary-contrast: #fff;
-
-    --secondary-color: #ffcb7c;
-    --tertiary-color: var(--red-chart);
-
-    --background-app: var(--neutral-40);
-
-    --input-background: #f7faff;
-
-    --selected-background: #f3f5fb;
-
-    --border-block: 1px solid var(--dark-60);
-
-    // Text colors for better visibility
-    --text-primary: #26324b;
-    --text-secondary: #546fa6;
   }
 
   html[data-theme="dark"] body {

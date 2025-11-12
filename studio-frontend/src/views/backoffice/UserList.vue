@@ -27,7 +27,6 @@
         v-model="selectedUsers" />
     </div>
     <Pagination
-      v
       :pages="totalPagesNumber"
       v-model="currentPageNb"
       v-if="count > 0 && !loading"></Pagination>
@@ -137,6 +136,7 @@ export default {
     },
     search() {
       this.debouncedFetchAllUsers()
+      this.currentPageNb = 0
     },
   },
   components: {

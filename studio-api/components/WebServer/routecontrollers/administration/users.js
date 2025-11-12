@@ -60,6 +60,16 @@ async function createSuperUser(req, res, next) {
       true,
     )
 
+    const organizationName = user.email + "'s Organization"
+    const createdOrganization = await model.organizations.createDefault(
+      createdUser.insertedId.toString(),
+      organizationName,
+    )
+    if (createdOrganization.insertedCount !== 1) {
+      model.users.delete(createdUser.insertedId.toString())
+      throw new UserError()
+    }
+
     const mail_result = await Mailing.accountCreate(
       user.email,
       req,
@@ -115,7 +125,7 @@ async function updateUser(req, res, next) {
     )
     if (user.length === 0) throw new UserError("User not found")
     if (ROLE.hasPlatformRoleAccess(user[0].role, ROLE.SUPER_ADMINISTRATOR))
-      throw new UserError("Cannot update that user")
+      throw new UserError("Cannot update other super admininistrator user")
 
     user[0]._id = req.params.userId
     const userUpdate = {

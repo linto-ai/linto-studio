@@ -372,25 +372,6 @@ export default {
       font-size: 0.875rem;
     }
   }
-
-  @media (prefers-color-scheme: dark) {
-    &-link {
-      color: var(--color-text-muted-dark, #adb5bd);
-
-      &:hover {
-        color: var(--color-primary-dark, #66b3ff);
-        background-color: var(--color-bg-hover-dark, #343a40);
-      }
-    }
-
-    &-text {
-      color: var(--color-text-primary-dark, #f8f9fa);
-    }
-
-    &-separator {
-      color: var(--color-text-muted-dark, #adb5bd);
-    }
-  }
 }
 
 .breadcrumb {

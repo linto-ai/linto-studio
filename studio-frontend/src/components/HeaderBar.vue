@@ -1,7 +1,16 @@
 <template>
   <div class="flex align-center header-bar">
+    <!-- <Button
+      v-if="!sidebarOpen"
+      icon="list"
+      border-color="transparent"
+      @click.stop="toggleSidebar"
+      class="sidebar-toggle icon-only" /> -->
+
     <Button
-      :icon="sidebarOpen ? 'arrow-line-left' : 'arrow-line-right'"
+      v-if="!sidebarOpen && !fullscreen"
+      icon="sidebar-simple"
+      iconWeight="regular"
       border-color="transparent"
       @click.stop="toggleSidebar"
       class="sidebar-toggle icon-only" />
@@ -10,7 +19,11 @@
         <slot name="breadcrumb-actions"></slot>
       </template>
     </Breadcrumb>
-    <LocalSwitcher class="local-switcher"></LocalSwitcher>
+    <IsMobile>
+      <template #desktop>
+        <LocalSwitcher class="local-switcher"></LocalSwitcher>
+      </template>
+    </IsMobile>
   </div>
 </template>
 <script>
@@ -21,12 +34,18 @@ import PhIcon from "./atoms/PhIcon.vue"
 import MediaExplorerStorageSize from "./MediaExplorerStorageSize.vue"
 import LocalSwitcher from "./LocalSwitcher.vue"
 import Breadcrumb from "@/components/atoms/Breadcrumb.vue"
+import IsMobile from "./atoms/IsMobile.vue"
 
 export default {
   props: {
     breadcrumbItems: {
       type: Array,
       required: false,
+    },
+    // sidebar button hidden
+    fullscreen: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

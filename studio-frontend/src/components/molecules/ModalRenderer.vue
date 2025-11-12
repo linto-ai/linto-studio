@@ -16,13 +16,7 @@
           <span class="subtitle" v-if="subtitle">{{ subtitle }}</span>
         </div>
         <template v-if="withClose">
-          <button
-            class="btn outline only-icon sm"
-            :class="[customClassClose, { disabled: disabledClose }]"
-            @click="cancel"
-            type="button">
-            <ph-icon name="x" size="sm"></ph-icon>
-          </button>
+          <Button icon="x" size="sm" @click="cancel" type="button" />
         </template>
       </div>
       <div v-if="loading" class="modal-loading">
@@ -45,12 +39,9 @@
             v-if="actionsLeftNodes.length"
             :nodes="actionsLeftNodes" />
           <Button
-            v-if="withActionDelete"
-            variant="tertiary"
-            :class="[
-              customClassActionDelete,
-              { disabled: disabledActionDelete || disabledActions },
-            ]"
+            v-if="withActionDelete && withActionApply"
+            variant="primary"
+            intent="destructive"
             :disabled="disabledActionDelete || disabledActions"
             :icon="iconActionDelete"
             @click="deleteHandler"
@@ -65,13 +56,7 @@
             :nodes="actionsRightNodes" />
           <template v-if="withActionCancel">
             <Button
-              variant="outline"
-              color="neutral-soft"
-              :class="[
-                customClassActionCancel,
-                colorActionCancel,
-                { disabled: disabledActionCancel || disabledActions },
-              ]"
+              variant="tertiary"
               :disabled="disabledActionCancel || disabledActions"
               :icon="iconActionCancel"
               @click="cancel"
@@ -81,17 +66,23 @@
           </template>
           <template v-if="withActionApply">
             <Button
-              class="btn"
-              :class="[
-                customClassActionApply,
-                colorActionApply,
-                { disabled: disabledActionApply || disabledActions },
-              ]"
+              variant="primary"
               :disabled="disabledActionApply || disabledActions"
               :icon="iconActionApply"
               @click="apply"
               type="submit">
               {{ textActionApply || $t("modal.apply") }}
+            </Button>
+          </template>
+          <template v-else-if="withActionDelete">
+            <Button
+              variant="primary"
+              intent="destructive"
+              :disabled="disabledActionDelete || disabledActions"
+              :icon="iconActionDelete"
+              @click="deleteHandler"
+              type="button">
+              {{ textActionDelete || $t("modal.delete") }}
             </Button>
           </template>
         </div>
@@ -107,7 +98,7 @@
 
 <script>
 import VNodeRenderer from "@/components/atoms/VNodeRenderer.vue"
-
+import i18n from "../../i18n"
 export default {
   name: "ModalRenderer",
   components: { VNodeRenderer },
@@ -132,8 +123,8 @@ export default {
     size: { type: String, default: "md" },
     overlay: { type: Boolean, default: true },
     overlayClose: { type: Boolean, default: true },
-    textActionApply: { type: String, default: "Apply" },
-    textActionCancel: { type: String, default: "Cancel" },
+    textActionApply: { type: String, default: i18n.t("modal.apply") },
+    textActionCancel: { type: String, default: i18n.t("modal.cancel") },
     textActionDelete: { type: String, default: "Delete" },
     customClassClose: { type: String, default: "" },
     customClassActionApply: { type: String, default: "" },
@@ -144,9 +135,9 @@ export default {
     disabledActionCancel: { type: Boolean, default: false },
     disabledActionApply: { type: Boolean, default: false },
     disabledClose: { type: Boolean, default: false },
-    iconActionApply: { type: String, default: "check-circle" },
+    iconActionApply: { type: String, default: "check" },
     iconActionCancel: { type: String, default: "x-circle" },
-    iconActionDelete: { type: String, default: "trash-circle" },
+    iconActionDelete: { type: String, default: "trash" },
     colorActionApply: { type: String, default: "primary" },
     colorActionCancel: { type: String, default: "var(--neutral-40)" },
     colorActionDelete: { type: String, default: "var(--danger-color)" },
@@ -290,9 +281,17 @@ now, let's copy them over.
 
   &.fullscreen {
     width: 100%;
-    max-width: 100%;
+    max-width: calc(100% - 1rem);
     height: 100%;
-    max-height: 100%;
+    max-height: calc(100% - 1rem);
+  }
+
+  &.xl {
+    width: 1280px;
+    max-width: calc(100% - 4rem);
+    @media (max-width: 1100px) {
+      max-width: calc(100% - 1rem);
+    }
   }
 
   &.lg {

@@ -3,16 +3,13 @@ import { mapGetters } from "vuex"
 export const mediaScopeMixin = {
   computed: {
     storeScope() {
-      return (
-        this.getCurrentScope.replace(
-          "organization",
-          this.getCurrentOrganizationScope,
-        ) + "/conversations"
-      )
+      return this.getStoreScope
     },
     ...mapGetters("organizations", [
       "getCurrentScope",
       "getCurrentOrganizationScope",
+      "getCurrentFilterStatus",
+      "getStoreScope",
     ]),
     selectedMedias() {
       return this.$store.state[this.storeScope].selectedMedias ?? []
@@ -42,7 +39,9 @@ export const mediaScopeMixin = {
       )
     },
     deleteMedias(ids) {
-      return this.$store.dispatch(`${this.storeScope}/deleteMedias`, ids)
+      return this.$store.dispatch(`${this.storeScope}/deleteMedias`, {
+        ids: ids,
+      })
     },
     toggleSelectedTag(tag) {
       return this.$store.dispatch(

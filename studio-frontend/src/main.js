@@ -10,7 +10,7 @@ import vClickOutside from "v-click-outside"
 import Fragment from "vue-fragment"
 import PortalVue from "portal-vue"
 //import { setDefaultEnv } from "./tools/setDefaultEnv.js"
-import SessionWS from "@/models/SessionWS.js"
+import ApiEventWebSocket from "@/services/websocket/ApiEventWebSocket.js"
 import Atoms from "./components/atoms/index.js"
 import "./filters/index.js"
 
@@ -28,7 +28,7 @@ Vue.use(Loading)
 
 Vue.config.productionTip = false
 Vue.prototype.debug = Debug("Vue")
-Vue.prototype.$sessionWS = new SessionWS()
+Vue.prototype.$apiEventWS = new ApiEventWebSocket()
 
 Debug.enable(process.env.VUE_APP_DEBUG)
 

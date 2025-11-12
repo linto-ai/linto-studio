@@ -31,10 +31,6 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "@/main.js"
-
-import SessionWS from "@/models/SessionWS.js"
-import { getEnv } from "@/tools/getEnv"
 
 import { sessionModelMixin } from "@/mixins/sessionModel.js"
 import { sessionChannelModelMixin } from "../mixins/sessionChannelModel.js"

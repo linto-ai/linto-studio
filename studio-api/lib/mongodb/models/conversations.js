@@ -442,6 +442,27 @@ class ConvoModel extends MongoModel {
     }
   }
 
+  async listProcessingConversations(organizationId) {
+    try {
+      const query = {
+        "organization.organizationId": organizationId.toString(),
+        "jobs.transcription.state": {
+          $nin: ["error", "done"],
+        },
+        "type.mode": TYPE.CANONICAL,
+      }
+      const projection = {
+        _id: 1,
+        name: 1,
+        "jobs.transcription": 1,
+      }
+      return await this.mongoRequest(query)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   // Default right is 1 (read)
   async listConvFromOrga(
     organizationId,
@@ -450,7 +471,6 @@ class ConvoModel extends MongoModel {
     desiredAccess = 1,
     filter,
   ) {
-
     try {
       let projection = {
         page: 0,
@@ -510,6 +530,17 @@ class ConvoModel extends MongoModel {
         searchConditions.push({
           "text.raw_segment": { $regex: filter.text, $options: "i" },
         })
+      }
+
+      if (["pending", "processing", "queued"].includes(filter?.processing)) {
+        query["jobs.transcription.state"] = {
+          $nin: ["error", "done"],
+        }
+        projection.skipProjection = true
+      } else if (filter?.processing === "done") {
+        query["jobs.transcription.state"] = "done"
+      } else if (filter?.processing === "error") {
+        query["jobs.transcription.state"] = "error"
       }
 
       if (searchConditions.length > 0) {
@@ -734,8 +765,12 @@ class ConvoModel extends MongoModel {
       }
 
       const accSearch = []
-      if (filter?.name) accSearch.push({ name: { $regex: filter.name, $options: "i" } })
-      if (filter?.text) accSearch.push({ "text.raw_segment": { $regex: filter.text, $options: "i" } })
+      if (filter?.name)
+        accSearch.push({ name: { $regex: filter.name, $options: "i" } })
+      if (filter?.text)
+        accSearch.push({
+          "text.raw_segment": { $regex: filter.text, $options: "i" },
+        })
       if (accSearch.length > 0) query.$and = [{ $or: accSearch }]
 
       const projectionAcc = {

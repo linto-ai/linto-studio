@@ -386,20 +386,11 @@ export default {
 }
 
 function getMediabyId(rootGetters, id) {
-  const scope = rootGetters["organizations/getCurrentScope"]
-  const orgaScope = rootGetters["organizations/getCurrentOrganizationScope"]
-
-  const storePath = scope.replace("organization", orgaScope) + "/conversations"
-
+  const storePath = rootGetters["organizations/getStoreScope"]
   return rootGetters[`${storePath}/getMediaById`](id)
 }
 
 function updateMedia(rootGetters, commit, media, mediaId) {
-  const scope = rootGetters["organizations/getCurrentScope"]
-  const orgaScope = rootGetters["organizations/getCurrentOrganizationScope"]
-
-  const storePath = scope.replace("organization", orgaScope) + "/conversations"
-
-  // return rootGetters[`${storePath}/updateMedia`](media, mediaId)
+  const storePath = rootGetters["organizations/getStoreScope"]
   commit(`${storePath}/updateMedia`, { media, mediaId }, { root: true })
 }

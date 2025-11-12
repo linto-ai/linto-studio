@@ -1,5 +1,5 @@
 <template>
-  <LayoutV2 :fullscreen="isFromPublicLink">
+  <LayoutV2 :fullscreen="isMobile && !isAuthenticated">
     <template v-slot:breadcrumb-actions>
       <SessionHeader
         :sessionListRoute="sessionListRoute"
@@ -8,30 +8,28 @@
         :session="session">
         <IsMobile>
           <div class="flex gap-small">
-            <router-link
-              :to="settingsRoute"
-              class="btn secondary outline only-icon"
+            <Button
               v-if="isAtLeastMeetingManager"
-              :aria-label="$t('session.detail_page.settings_button')">
-              <ph-icon name="gear"></ph-icon>
-            </router-link>
-            <button
-              class="btn secondary outline only-icon"
-              @click="showMobileSubtitles">
-              <ph-icon name="closed-captioning"></ph-icon>
-            </button>
+              :to="settingsRoute"
+              variant="primary"
+              :aria-label="$t('session.detail_page.settings_button')"
+              :title="$t('session.detail_page.settings_button')"
+              icon="gear" />
+
+            <Button
+              @click="showMobileSubtitles"
+              variant="secondary"
+              icon="closed-captioning" />
           </div>
 
           <template #desktop>
-            <router-link
+            <Button
+              v-if="isAtLeastMeetingManager"
               :to="settingsRoute"
-              class="btn"
-              v-if="isAtLeastMeetingManager">
-              <span class="icon settings"></span>
-              <span class="label">{{
-                $t("session.detail_page.settings_button")
-              }}</span>
-            </router-link>
+              variant="primary"
+              size="sm"
+              :label="$t('session.detail_page.settings_button')"
+              icon="gear" />
           </template>
         </IsMobile>
         <!-- <template v-slot:right-button-desktop>
@@ -134,6 +132,8 @@
   </LayoutV2>
 </template>
 <script>
+import { mapGetters } from "vuex"
+
 import { sessionMixin } from "@/mixins/session.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole"
 import { microphoneMixin } from "@/mixins/microphone.js"
@@ -265,6 +265,8 @@ export default {
         )
       return res
     },
+    ...mapGetters("system", ["isMobile"]),
+    ...mapGetters("user", ["isAuthenticated"]),
   },
   components: {
     LayoutV2,

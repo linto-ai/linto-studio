@@ -19,13 +19,12 @@
         </p> -->
       </div>
       <ul>
-        <li v-for="tag in orderedTags" :key="tag._id">
+        <li v-for="tag in orderedTags" :key="tag._id" v-if="tag.mediaCount > 0">
           <ChipTag
             :name="tag.name"
             :emoji="tag.emoji"
             :color="tag.color"
             :count="tag.mediaCount"
-            :active="selectedTagsIds.includes(tag._id)"
             size="xs"
             @click="handleTagClick(tag)" />
         </li>
@@ -79,8 +78,8 @@ export default {
       return [...this.tags]
         .sort((a, b) => a.name.localeCompare(b.name))
         .sort((a, b) => b.mediaCount - a.mediaCount)
-        .sort((a, b) => {
-          return this.selectedTagsIds.includes(a._id) ? -1 : 1
+        .filter((tag) => {
+          return !this.selectedTagsIds.includes(tag._id)
         })
     },
   },

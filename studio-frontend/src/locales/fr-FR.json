@@ -11,6 +11,40 @@
     "error_end_time_before_start_time": "L'heure de fin doit être après l'heure de début",
     "error_past_date": "La date doit être dans le futur"
   },
+  "api_tokens_settings": {
+    "title": "Clés d'API",
+    "create_token": "Ajouter une clé d'API",
+    "error_fetching_token_details": "Les détails de la clé d'API n'ont pas pu être récupérés",
+    "delete_token": "Supprimer",
+    "delete_success": "La clé a été supprimé avec succès",
+    "delete_error": "La clé n'a pas pu être supprimé",
+    "view_token": "Afficher",
+    "token_created": "Clé d'API créé avec succès",
+    "token_created_error": "Une erreur est survenue lors de la création de la clé d'API",
+    "token_creation_date_label": "Crée le",
+    "token_expiration_date_label": "Expire le",
+    "token_key_label": "clé",
+    "token_name_label": "Nom",
+    "token_role_label": "Rôle",
+    "token_platform_role_label": "Rôles de plateforme",
+    "token_actions_label": "Actions",
+    "modal_create": {
+      "title": "Créer une clé d'API",
+      "expiration_label": "Durée de validité"
+    },
+    "modal_delete": {
+      "title": "Supprimer la clé d'API '{name}'",
+      "content": "Êtes-vous sûr de vouloir supprimer la clé d'API {name} ?",
+      "delete_action": "Supprimer"
+    },
+    "modal_renew": {
+      "title": "Renouveler la clé d'API '{name}'",
+      "expiration_label": "Mettre à jour la durée de validité",
+      "confirm": "Renouveler"
+    },
+    "token_renew_success": "Jeton d'API renouvelé avec succès",
+    "token_renew_error": "Une erreur est survenue lors du renouvellement de la clé"
+  },
   "app_editor_channels_selector": {
     "label": "Choisir un canal"
   },
@@ -34,6 +68,7 @@
     "label": "Rechercher dans le texte"
   },
   "app_settings_modal": {
+    "api_tokens": "Clés d'api",
     "account_title": "Mon compte",
     "account_information": "Informations du compte",
     "billing": "Facturation",
@@ -53,6 +88,7 @@
       "home": "Accueil",
       "users": "Utilisateurs",
       "organisations": "Organisations",
+      "tokens": "Clés d'apis",
       "transcriberProfiles": "Profils de transcription"
     },
     "user_list": {
@@ -67,26 +103,34 @@
       "personal_organizations_hidden": "organisations personnelles cachées",
       "remove_organisation_button": "Supprimer l'organisation | Supprimer les {count} organisations"
     },
+    "token_list": {
+      "title": "Clés d'API",
+      "add_token_button": "Ajouter une clé d'API système",
+      "modal_create": {
+        "title": "Créer une clé d'API système",
+        "platform_role": "Rôle de plateforme"
+      }
+    },
     "transcriber_profile_detail": {
-      "save_button": "Enregistrer le profile",
+      "save_button": "Enregistrer le profil",
       "reset_button": "Réinitialiser",
-      "delete_button": "Supprimer le profile",
+      "delete_button": "Supprimer le profil",
       "notif_success": "Les informations ont été mises à jour",
       "notif_error": "Une erreur est survenue lors de la mise à jour des informations",
-      "notif_delete_success": "Le profile a été supprimé",
-      "notif_delete_error": "Une erreur est survenue lors de la suppression du profile",
+      "notif_delete_success": "Le profil a été supprimé",
+      "notif_delete_error": "Une erreur est survenue lors de la suppression du profil",
       "type_label": "Type de profil",
       "quick_meeting_label": "Activé pour les quick meetings",
       "warning_global": {
-        "line_1": "Ce profile sera visible dans toutes les organisations.",
+        "line_1": "Ce profil sera visible dans toutes les organisations.",
         "line_2": "Pour gérer les profils de transcription d'une organisation, allez dans l'onglet \"Organisations\" de la barre de navigation."
       }
     },
     "transcriber_profile_list": {
-      "title": "Profiles de transcription",
-      "add_transcriber_profile_button": "Ajouter un profile de transcription",
-      "remove_transcriber_profile_button": "Supprimer le profile | Supprimer les {count} profils",
-      "bulk_remove_loading_notification": "Suppresion du profile {count} sur {total}.",
+      "title": "Profils de transcription",
+      "add_transcriber_profile_button": "Ajouter un profil de transcription",
+      "remove_transcriber_profile_button": "Supprimer le profil | Supprimer les {count} profils",
+      "bulk_remove_loading_notification": "Suppresion du profil {count} sur {total}.",
       "bulk_remove_success_notification": "Les profils ont été supprimés avec succès",
       "bulk_remove_error_notification": "Une erreur est survenue lors de la suppression des profils",
       "warning_global": {
@@ -118,6 +162,7 @@
     "shared": "Partagés",
     "subtitles": "Sous-titres",
     "tagsSettings": "Tags de {organization}",
+    "tokens": "Clés d'apis",
     "transcription": "Transcription",
     "transcriberProfiles": "Profils de transcription",
     "users": "Utilisateurs",
@@ -501,6 +546,12 @@
     },
     "openFileExplorer": "ou choisissez depuis l'explorateur de fichier"
   },
+  "duration_input": {
+    "h": "Heure | Heures",
+    "d": "Jour | Jours",
+    "m": "Mois",
+    "y": "Année | Années"
+  },
   "error": {
     "bug_report": "Signaler un bug ou une erreur",
     "server_error": {
@@ -535,6 +586,9 @@
     "title": "Médias favoris",
     "no_media_title": "Votre collection de médias favoris est vide",
     "no_media_subtitle": "Ajoutez des favoris en cliquant sur l'étoile dans la liste des médias."
+  },
+  "form_field": {
+    "empty_value": "–"
   },
   "footer": {
     "powered_by": "LinTO {linto_logo} par {linagora_logo}",
@@ -645,6 +699,10 @@
   "media_explorer": {
     "actions": "Actions",
     "favorite": "Favoris",
+    "source": {
+      "media": "Source : fichier audio",
+      "live": "Source : transcription en direct"
+    },
     "line": {
       "edit_transcription": "Transcription",
       "edit_subtitles": "Sous-titres",
@@ -652,6 +710,11 @@
       "delete": "Supprimer"
     },
     "delete": "Supprimer",
+    "filter": {
+      "transcribed": "Transcrits",
+      "processing": "En traitement",
+      "error": "Erreur"
+    },
     "share": "Partager",
     "tags_selector": {
       "title": "Filtrer par tags",
@@ -708,9 +771,11 @@
     "loading": "Chargement en cours...",
     "no_medias_selected": "Aucun média sélectionné",
     "some_medias_cannot_be_deleted": "Certains médias ne peuvent pas être supprimés",
-    "no_permission_to_delete": "Vous n'avez pas la permission de supprimer ces médias"
+    "no_permission_to_delete": "Vous n'avez pas la permission de supprimer ces médias",
+    "processing_error_message": "La transcription automatique du média a rencontré une erreur"
   },
   "modal": {
+    "apply": "Appliquer",
     "cancel": "Annuler",
     "delete": "Supprimer",
     "close_title": "Fermer la modale"
@@ -820,11 +885,12 @@
     "description_description": "Description de l'organisation",
     "description_label": "Description",
     "general_settings": "Réglages",
-    "leave_error_message": "Une erreur s'est produite",
     "leave_modal": {
       "action": "Quitter",
       "content": "Êtes vous sur de vouloir quitter l'organisation \"{name}\" ?",
-      "title": "Quitter l'organisation"
+      "title": "Quitter l'organisation",
+      "success_message": "Vous avez quitté l'organisation avec succès",
+      "error_message": "Une erreur s'est produite pour quitter l'organisationn"
     },
     "remove_user_modal": {
       "action": "Supprimer l'utilisateur de l'organisation",
@@ -891,12 +957,18 @@
     "visibility_name": "Visibilité"
   },
   "organization_role": {
-    "member": "Simple membre",
+    "member": "Membre",
+    "member_description": "Accéder et consulter les médias de l’organisation",
     "uploader": "Collaborateur",
-    "quick_meeting": "Collaborateur privilégié",
-    "session_operator": "Collaborateur complet",
-    "maintainer": "Gestionnaire",
-    "administrator": "Administrateur"
+    "uploader_description": "Importer de nouveaux médias et lancer leur transcription",
+    "quick_meeting": "Collaborateur en direct",
+    "quick_meeting_description": "Démarrer une transcription en direct pendant une visioconférence ou à partir d’un microphone",
+    "session_operator": "Producteur",
+    "session_operator_description": "Gérer et configurer des flux en direct avancés pour la transcription (si disponible dans votre organisation)",
+    "maintainer": "Manager",
+    "maintainer_description": "Gérer les utilisateurs et leurs rôles au sein de l’organisation",
+    "administrator": "Administrateur",
+    "administrator_description": "Tous les droits sur l’organisation"
   },
   "publish": {
     "error_first_line": {
@@ -1359,10 +1431,15 @@
   },
   "platform_role": {
     "organization_initiator": "Initiateur d'organisation",
+    "organization_initiator_description": "Droits pour créer de nouvelles organisations",
     "session_operator": "Opérateur de session",
+    "session_operator_description": "Droits pour la gestion et la configuration des flux en direct pour la transcription",
     "system_administrator": "Administrateur système",
+    "system_administrator_description": "Droits pour la gestion des utilisateurs et des organisation sur la plateforme",
     "super_administrator": "Super administrateur",
+    "super_administrator_description": "Tous les droits sur la plateforme",
     "user": "Utilisateur",
+    "user_description": "Simple utilisateur de la plateforme",
     "suspend": "Utilisateur désactivé"
   },
   "week_selector": {
@@ -1372,7 +1449,9 @@
   },
   "websocket": {
     "connected": "Contenu mis à jour en temps réel",
-    "disconnected": "Contenu non mis à jour, vérifiez votre connexion internet"
+    "disconnected": "Contenu non mis à jour, vérifiez votre connexion internet",
+    "lost_connexion": "Connexion perdue, tentative de reconnexion...",
+    "restored": "Connexion restaurée"
   },
   "input_selector": {
     "search_tags": "Rechercher une thématique...",

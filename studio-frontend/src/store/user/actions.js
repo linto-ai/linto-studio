@@ -53,14 +53,6 @@ const actions = {
         ...payload,
       }
       commit("setUserInfos", newValue)
-      commit(
-        "system/addNotification",
-        {
-          message: "User profile updated successfully",
-          type: "success",
-        },
-        { root: true },
-      )
     }
 
     return req

@@ -48,16 +48,14 @@
         <PopoverList
           :items="optionsExport"
           style="margin-left: auto"
+          closeOnItemClick
           @click="exportConv">
           <template #trigger="{ open }">
             <Button
               icon="download"
-              iconWeight="fill"
-              variant="outline"
-              color="neutral"
+              variant="primary"
               size="sm"
-              block>
-              {{ $t("conversation.export.title") }}
+              :label="$t('conversation.export.title')">
             </Button>
           </template>
         </PopoverList>
@@ -165,7 +163,7 @@ export default {
           if (this.mardownContent) {
             return [
               { value: "md", text: this.$t("conversation.export.md") },
-              { value: "pdf", text: this.$t("conversation.export.pdf") },
+              // { value: "pdf", text: this.$t("conversation.export.pdf") },
             ]
           }
           return [

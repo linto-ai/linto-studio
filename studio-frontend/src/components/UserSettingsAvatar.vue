@@ -24,7 +24,7 @@
         }}</span>
       </label>
       <Button
-        color="primary"
+        variant="primary"
         size="sm"
         :label="$t('user_settings.profile_avatar.update_picture_button')"
         @click="updateProfilPicture"

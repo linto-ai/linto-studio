@@ -1,6 +1,6 @@
 <template>
   <ModalNew
-    value
+    v-model="_value"
     @on-cancel="($event) => this.$emit('on-cancel')"
     @on-confirm="deleteOrganization"
     :title="$t('organisation.leave_modal.title')"
@@ -29,6 +29,10 @@ export default {
       type: Object,
       required: true,
     },
+    value: {
+      type: Boolean,
+      required: true,
+    },
   },
   data() {
     return {}
@@ -37,7 +41,28 @@ export default {
   methods: {
     async deleteOrganization() {
       const res = await apiLeaveOrganisation(this.currentOrganization._id)
-      this.$emit("on-confirm", res)
+      if (res.status == "success") {
+        this.$store.dispatch("system/addNotification", {
+          message: this.$t("organisation.leave_modal.success_message"),
+          type: "success",
+        })
+        this.$emit("on-confirm", res)
+      } else {
+        this.$store.dispatch("system/addNotification", {
+          message: this.$t("organisation.leave_modal.error_message"),
+          type: "error",
+        })
+      }
+    },
+  },
+  computed: {
+    _value: {
+      get() {
+        return this.value
+      },
+      set(val) {
+        this.$emit("input", val)
+      },
     },
   },
   components: { Fragment, ModalNew },

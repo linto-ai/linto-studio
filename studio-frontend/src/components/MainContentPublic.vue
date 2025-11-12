@@ -3,8 +3,8 @@
     <div class="login-page__container">
       <div class="login-page__container__left flex col">
         <div
-          class="login-page__decoration__header center-text flex gap-small align-center">
-          <!-- <img :src="logo" class="login-page__logo" /> -->
+          class="login-page__decoration__header center-text flex col gap-small align-center">
+          <img v-if="logo" :src="logo" class="login-page__logo" />
           <h1 class="center-text login-page__main-title">
             {{ title }}
           </h1>
@@ -83,7 +83,7 @@ export default {
       return getEnv("VUE_APP_NAME")
     },
     logo() {
-      return `/img/${getEnv("VUE_APP_LOGO")}`
+      return getEnv("VUE_APP_LOGO") ? `/img/${getEnv("VUE_APP_LOGO")}` : false
     },
   },
   components: { LocalSwitcher },
@@ -113,6 +113,10 @@ export default {
     top: 0.5rem;
     right: 0.5rem;
   }
+}
+
+.login-page__logo {
+  height: 44px;
 }
 
 .login-page__container__left {

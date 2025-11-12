@@ -10,6 +10,40 @@
     "error_end_time_before_start_time": "The end time must be after the start time",
     "error_past_date": "The date must be in the future"
   },
+  "api_tokens_settings": {
+    "title": "API Keys",
+    "create_token": "Add a key",
+    "error_fetching_token_details": "The key details could not be retrieved",
+    "delete_token": "Delete",
+    "delete_success": "Token has been deleted successfully",
+    "delete_error": "Token could not be deleted",
+    "view_token": "Show",
+    "token_created": "Token created successfully",
+    "token_created_error": "An error occurred while creating the key",
+    "token_creation_date_label": "Created on",
+    "token_expiration_date_label": "Expires on",
+    "token_key_label": "Key",
+    "token_name_label": "Name",
+    "token_role_label": "Role",
+    "token_platform_role_label": "Platform roles",
+    "token_actions_label": "Actions",
+    "modal_create": {
+      "title": "Create a new key",
+      "expiration_label": "Validity duration"
+    },
+    "modal_delete": {
+      "title": "Delete api token {name}",
+      "content": "Are you sure you want to delete the token {name} ?",
+      "delete_action": "Delete"
+    },
+    "modal_renew": {
+      "title": "Renew api key '{name}'",
+      "expiration_label": "Update validity duration",
+      "confirm": "Renew"
+    },
+    "token_renew_success": "Token renewed successfully",
+    "token_renew_error": "An error occurred while renewing the key"
+  },
   "app_editor_channels_selector": {
     "label": "Choose a channel"
   },
@@ -33,6 +67,7 @@
     "label": "Search in transcription"
   },
   "app_settings_modal": {
+    "api_tokens": "API Keys",
     "account_title": "My account",
     "account_information": "Account information",
     "billing": "Billing",
@@ -52,6 +87,7 @@
       "home": "Home",
       "users": "Users",
       "organisations": "Organisations",
+      "tokens": "Api keys",
       "transcriberProfiles": "Transcriber Profiles"
     },
     "user_list": {
@@ -65,6 +101,10 @@
       "personal_organizations_shown": "Personal organisations shown",
       "personal_organizations_hidden": "Personal organisations hidden",
       "remove_organisation_button": "Delete an organisation | Delete {count} organisations"
+    },
+    "token_list": {
+      "title": "API Keys",
+      "add_token_button": "Add a system API Key"
     },
     "transcriber_profile_detail": {
       "save_button": "Save Transcriber Profile",
@@ -118,6 +158,7 @@
     "shared": "Shared",
     "subtitles": "Subtitles",
     "tagsSettings": "{organization} tags",
+    "tokens": "Api keys",
     "transcription": "Transcription",
     "transcriberProfiles": "Transcriber Profiles",
     "users": "Users",
@@ -501,6 +542,13 @@
     },
     "openFileExplorer": "or choose from the file explorer"
   },
+  "duration_input": {
+    "h": "Hour | Hours",
+    "d": "Day | Days",
+    "m": "Minute | Minutes",
+    "s": "Second | Seconds",
+    "y": "Year | Years"
+  },
   "error": {
     "bug_report": "Report a bug or an issue",
     "server_error": {
@@ -535,6 +583,9 @@
     "title": "Favorites media",
     "no_media_title": "Your favorite media collection is empty",
     "no_media_subtitle": "Add favorite media by clicking on the star icon on the media card."
+  },
+  "form_field": {
+    "empty_value": "–"
   },
   "footer": {
     "powered_by": "LinTO {linto_logo} by {linagora_logo}",
@@ -644,6 +695,10 @@
   },
   "media_explorer": {
     "favorite": "Favorite",
+    "source": {
+      "media": "Source: audio file",
+      "live": "Source: live"
+    },
     "line": {
       "edit_transcription": "Transcription",
       "edit_subtitles": "Subtitles",
@@ -651,6 +706,11 @@
       "delete": "Delete"
     },
     "delete": "Delete",
+    "filter": {
+      "transcribed": "Transcribed",
+      "processing": "Processing",
+      "error": "Error"
+    },
     "share": "Share",
     "tags_selector": {
       "title": "Filter by topics",
@@ -700,9 +760,11 @@
     "loading": "Loading...",
     "no_medias_selected": "No media selected",
     "some_medias_cannot_be_deleted": "Some media cannot be deleted",
-    "no_permission_to_delete": "You don't have permission to delete these media"
+    "no_permission_to_delete": "You don't have permission to delete these media",
+    "processing_error_message": "The automatic transcription of the media encountered an error"
   },
   "modal": {
+    "apply": "Apply",
     "cancel": "Cancel",
     "close_title": "Close modal",
     "delete": "Delete"
@@ -818,11 +880,12 @@
     "description_description": "The description of your organisation",
     "description_label": "Description",
     "general_settings": "General settings",
-    "leave_error_message": "An error occurred while leaving the organisation",
     "leave_modal": {
       "action": "Leave",
       "content": "Are you sure you want to leave the organisation \"{name}\" ?",
-      "title": "Leave organisation"
+      "title": "Leave organisation",
+      "success_message": "You have successfully left the organisation",
+      "error_message": "An error occurred while leaving the organisation"
     },
     "remove_user_modal": {
       "action": "Remove user from organization",
@@ -890,11 +953,17 @@
   },
   "organization_role": {
     "member": "Member",
+    "member_description": "Access and view the organization's media",
     "uploader": "Contributor",
-    "quick_meeting": "Privileged contributor",
-    "session_operator": "Full contributor",
-    "maintainer": "Maintainer",
-    "administrator": "Administrator"
+    "uploader_description": "Upload new media and start transcription",
+    "quick_meeting": "Live contributor",
+    "quick_meeting_description": "Start live transcription during a video conference or from a microphone",
+    "session_operator": "Producer",
+    "session_operator_description": "Manage and configure advanced live streams for transcription (if available in your organization)",
+    "maintainer": "Manager",
+    "maintainer_description": "Manage users and their roles within the organization",
+    "administrator": "Administrator",
+    "administrator_description": "Full permissions over the organization"
   },
   "publish": {
     "error_first_line": {
@@ -1356,10 +1425,15 @@
   },
   "platform_role": {
     "organization_initiator": "Organisation initiator",
+    "organization_initiator_description": "Rights to create new organizations",
     "session_operator": "Session operator",
+    "session_operator_description": "Rights to manage and configure live streams for transcription",
     "system_administrator": "System administrator",
+    "system_administrator_description": "Rights to manage users and organizations on the platform",
+    "super_administrator_description": "All rights on the platform",
     "super_administrator": "Super administrator",
     "user": "User",
+    "user_description": "Simple user of the platform",
     "suspend": "Suspended user"
   },
   "week_selector": {
@@ -1369,7 +1443,9 @@
   },
   "websocket": {
     "connected": "Content updated in real time",
-    "disconnected": "Content not updated, check your internet connection"
+    "disconnected": "Content not updated, check your internet connection",
+    "lost_connexion": "Connection lost, attempting to reconnect...",
+    "restored": "Connection restored"
   },
   "input_selector": {
     "search_tags": "Search topics...",

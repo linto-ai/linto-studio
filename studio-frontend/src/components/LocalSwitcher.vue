@@ -4,19 +4,16 @@
     v-model="local"
     @click="setLocale"
     class="local-switcher"
-    width="ref"
     color="neutral"
     ref="popoverList">
     <template #trigger="{ open }">
-      <Button variant="outline" color="neutral" size="sm" block>
+      <Button variant="tertiary" size="sm">
         {{ localTxt }}
       </Button>
     </template>
   </PopoverList>
 </template>
 <script>
-import CustomSelect from "@/components/molecules/CustomSelect.vue"
-
 export default {
   props: {
     buttonClass: { type: String },
@@ -58,9 +55,7 @@ export default {
       this.$refs.popoverList.$refs.popover.close()
     },
   },
-  components: {
-    CustomSelect,
-  },
+  components: {},
 }
 </script>
 

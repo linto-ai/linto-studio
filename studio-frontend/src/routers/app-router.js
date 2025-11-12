@@ -194,6 +194,23 @@ let router = new Router({
       },
     },
     {
+      path: "/backoffice/tokens",
+      name: "backoffice-tokenList",
+      components: {
+        default: () => import("../views/backoffice/TokenList.vue"),
+        ...defaultComponents,
+      },
+      defaultProps,
+      meta: {
+        backoffice: true,
+        breadcrumb: {
+          label: "breadcrumb.tokens",
+          parent: "backoffice",
+          showInBreadcrumb: true,
+        },
+      },
+    },
+    {
       path: "/backoffice/users/:userId",
       name: "backoffice-userDetail",
       components: {
@@ -297,6 +314,21 @@ let router = new Router({
       defaultProps,
       meta: {
         responsive: true,
+        breadcrumb: {
+          showInBreadcrumb: false,
+        },
+      },
+    },
+    {
+      path: "/components",
+      name: "components",
+      components: {
+        default: () => import("../views/components.vue"),
+        ...componentsWithoutHeader,
+      },
+      defaultProps,
+      meta: {
+        public: true,
         breadcrumb: {
           showInBreadcrumb: false,
         },
@@ -772,6 +804,11 @@ router.beforeEach(async (to, from, next) => {
       return next({ name: "not_found" })
     }
 
+    // if 404, minimal router logic to avoid any loop crash
+    if (to.name === "not_found") {
+      return next()
+    }
+
     // Handle magic link authentication
     if (to.name === "magic-link-login") {
       return await authGuards.handleMagicLinkAuth(to, next)
@@ -803,11 +840,23 @@ router.beforeEach(async (to, from, next) => {
     // Check if user has organizations
     if (store.getters["organizations/getOrganizationLength"] === 0) {
       routerDebug("No organization")
-      logout()
-      return next({
-        name: "login",
-        query: { next: from.query.next || to.fullPath },
-      })
+
+      const platformRole = store.getters["user/getUserPlatformRole"]
+
+      // Redirect to login if user is not admin else go to backoffice
+      if (platformRole <= 1) {
+        logout()
+        return next({
+          name: "login",
+          query: { next: from.query.next || to.fullPath },
+        })
+      } else {
+        if (to.meta?.backoffice) {
+          return next()
+        }
+
+        return next({ name: "backoffice" })
+      }
     }
 
     // Handle direct "next" query parameter
@@ -865,6 +914,12 @@ router.beforeEach(async (to, from, next) => {
     return next()
   } catch (error) {
     console.error(error)
+    routerDebug("Error > redirect to not found")
+    // wait 1 s
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+    // stop loader
+    store.dispatch("system/setIsLoading", false)
+    // redirect to 404 page
     return next({ name: "not_found" })
   }
 })

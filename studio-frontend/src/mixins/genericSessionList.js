@@ -13,7 +13,7 @@ export const genericSessionList = {
   mounted() {
     this.fetchSessions()
 
-    if (this.$sessionWS.state.isConnected) {
+    if (this.$apiEventWS.state.isConnected) {
       this.subscribeToWebsocket()
     }
 
@@ -23,12 +23,12 @@ export const genericSessionList = {
     )
   },
   beforeDestroy() {
-    this.$sessionWS.unSubscribeOrganization()
+    this.$apiEventWS.unSubscribeSessionsUpdate()
     bus.$off(`websocket/orga_${this.currentOrganizationScope}_session_update`)
   },
   methods: {
     subscribeToWebsocket() {
-      this.$sessionWS.subscribeOrganization(this.currentOrganizationScope)
+      this.$apiEventWS.subscribeSessionsUpdate(this.currentOrganizationScope)
     },
     onSessionUpdateEvent(value) {
       const sessionIndexes = {}
@@ -49,7 +49,7 @@ export const genericSessionList = {
     },
   },
   watch: {
-    "$sessionWS.state.isConnected"(newValue, oldValue) {
+    "$apiEventWS.state.isConnected"(newValue, oldValue) {
       if (newValue) {
         this.subscribeToWebsocket()
       }

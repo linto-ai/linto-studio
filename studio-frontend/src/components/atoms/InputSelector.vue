@@ -629,7 +629,7 @@ export default {
     align-items: flex-start;
     min-height: 2rem;
     padding: 0.25rem 0.5rem;
-    border: 1px solid #d1d5db;
+    border: var(--border-input);
     border-radius: 0.375rem;
     background: white;
     cursor: text;

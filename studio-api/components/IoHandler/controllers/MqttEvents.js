@@ -1,6 +1,6 @@
 const debug = require("debug")("linto:components:IoHandler:mqtt-events")
 
-const retryInterval = 1000 // Retry every 5 seconds
+const retryInterval = 10000 // Retry every 10 seconds
 const maxRetries = 5 // Maximum number of retries
 
 // The BrokerClient need to know if the IoHandler is connected to the broker
@@ -18,6 +18,9 @@ const retryConnectionOperation = (operation, app, retryCount = 0) => {
 }
 
 module.exports = function () {
+  if (!this.app.components["BrokerClient"]) {
+    return
+  }
   this.app.components["BrokerClient"].deliveryClient.on("error", () => {
     retryConnectionOperation(
       () => this.app.components["IoHandler"].brokerKo(),
@@ -34,7 +37,10 @@ module.exports = function () {
 
   this.app.components["BrokerClient"].deliveryClient.on("ready", () => {
     retryConnectionOperation(
-      () => this.app.components["IoHandler"].brokerOk(),
+      () =>
+        this.app.components["IoHandler"].brokerOk(
+          "Delivery broker connection established",
+        ),
       this.app,
     )
   })
@@ -55,7 +61,10 @@ module.exports = function () {
 
   this.app.components["BrokerClient"].organizationClient.on("ready", () => {
     retryConnectionOperation(
-      () => this.app.components["IoHandler"].brokerOk(),
+      () =>
+        this.app.components["IoHandler"].brokerOk(
+          "Organization broker connection established",
+        ),
       this.app,
     )
   })

@@ -5,10 +5,9 @@
       {
         'text-input--editing': isEditing,
         'text-input--disabled': disabled,
-        'text-input--error': !!error
-      }
+        'text-input--error': !!error,
+      },
     ]">
-
     <!-- Label -->
     <label v-if="label" class="text-input__label">{{ label }}</label>
 
@@ -19,7 +18,7 @@
       @click="startEditing"
       :class="{
         'text-input__display--empty': !modelValue,
-        'text-input__display--multiline': multiline
+        'text-input__display--multiline': multiline,
       }">
       {{ displayValue || placeholder }}
     </div>
@@ -53,9 +52,13 @@
     </div>
 
     <!-- Helper / Error / Counter info line -->
-    <div class="text-input__info-line" v-if="helperText || error || (showCounter && maxLength)">
+    <div
+      class="text-input__info-line"
+      v-if="helperText || error || (showCounter && maxLength)">
       <span v-if="error" class="text-input__error">{{ errorMessage }}</span>
-      <span v-else-if="helperText" class="text-input__helper">{{ helperText }}</span>
+      <span v-else-if="helperText" class="text-input__helper">{{
+        helperText
+      }}</span>
       <span v-if="showCounter && maxLength" class="text-input__counter">
         {{ currentLength }} / {{ maxLength }}
       </span>
@@ -64,76 +67,76 @@
 </template>
 
 <script>
-import Button from './Button.vue'
+import Button from "./Button.vue"
 
 export default {
-  name: 'TextInput',
-  
+  name: "TextInput",
+
   components: {
-    Button
+    Button,
   },
-  
+
   props: {
     modelValue: {
       type: String,
-      default: ''
+      default: "",
     },
     placeholder: {
       type: String,
-      default: ''
+      default: "",
     },
     multiline: {
       type: Boolean,
-      default: false
+      default: false,
     },
     autoFocus: {
       type: Boolean,
-      default: true
+      default: true,
     },
     validateOnBlur: {
       type: Boolean,
-      default: true
+      default: true,
     },
     disabled: {
       type: Boolean,
-      default: false
+      default: false,
     },
 
     /* Optional UI enhancements */
     label: {
       type: String,
-      default: ''
+      default: "",
     },
     helperText: {
       type: String,
-      default: ''
+      default: "",
     },
     error: {
       type: [Boolean, String],
-      default: false
+      default: false,
     },
     maxLength: {
       type: Number,
-      default: null
+      default: null,
     },
     showCounter: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
 
-  emits: ['update:modelValue', 'edit-start', 'edit-cancel', 'edit-validate'],
+  emits: ["update:modelValue", "edit-start", "edit-cancel", "edit-validate"],
 
   data() {
     return {
       isEditing: false,
-      editValue: ''
+      editValue: "",
     }
   },
 
   computed: {
     displayValue() {
-      return this.modelValue || ''
+      return this.modelValue || ""
     },
 
     currentLength() {
@@ -141,20 +144,20 @@ export default {
     },
 
     errorMessage() {
-      if (typeof this.error === 'string') return this.error
-      if (this.error === true) return this.$t ? this.$t('error') : 'Error'
-      return ''
-    }
+      if (typeof this.error === "string") return this.error
+      if (this.error === true) return this.$t ? this.$t("error") : "Error"
+      return ""
+    },
   },
 
   methods: {
     startEditing() {
       if (this.disabled) return
-      
+
       this.isEditing = true
-      this.editValue = this.modelValue || ''
-      this.$emit('edit-start', this.editValue)
-      
+      this.editValue = this.modelValue || ""
+      this.$emit("edit-start", this.editValue)
+
       this.$nextTick(() => {
         if (this.autoFocus && this.$refs.inputElement) {
           this.$refs.inputElement.focus()
@@ -167,13 +170,13 @@ export default {
 
     cancelEdit() {
       this.isEditing = false
-      this.editValue = this.modelValue || ''
-      this.$emit('edit-cancel')
+      this.editValue = this.modelValue || ""
+      this.$emit("edit-cancel")
     },
 
     validateEdit() {
-      this.$emit('update:modelValue', this.editValue)
-      this.$emit('edit-validate', this.editValue)
+      this.$emit("update:modelValue", this.editValue)
+      this.$emit("edit-validate", this.editValue)
       this.isEditing = false
     },
 
@@ -198,8 +201,8 @@ export default {
       if (this.validateOnBlur) {
         this.validateEdit()
       }
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -244,7 +247,7 @@ export default {
   &__input {
     flex: 1;
     padding: 0.5rem;
-    border: 1px solid var(--neutral-30, #ddd);
+    border: var(--border-input);
     border-radius: var(--border-radius-sm, 4px);
     font-family: inherit;
     font-size: inherit;
@@ -342,4 +345,4 @@ export default {
     }
   }
 }
-</style> 
+</style>

@@ -167,6 +167,15 @@
     // margin: 0;
   }
 
+  .form-field > label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text-primary, #222);
+    line-height: 1.2;
+    margin: 0;
+  }
+
   .form-field-checkbox .form-label {
     display: inline-block;
     margin-bottom: 0;
@@ -406,10 +415,10 @@
     border-radius: 4px;
     border: var(--border-block);
     box-shadow: var(--shadow-block);
-    margin: 2px;
+    margin: 1px;
     background-color: var(--background-primary);
-    min-width: 21rem;
-    box-sizing: border-box;
+    min-width: 18rem;
+    //box-sizing: border-box;
     legend {
       float: left;
       width: 100%;

@@ -5,30 +5,28 @@
     <div
       class="session-content__action-bar flex align-center gap-medium"
       v-if="this.selectedTurns.length > 0">
-      <button
-        class="tertiary outline session-content__action-bar__reset-btn-desktop"
-        @click="clearSelectedTurns">
-        <span class="icon close"></span>
-        <span class="label">{{
-          $tc("session.detail_page.clear_turn_selection")
-        }}</span>
-      </button>
+      <IsMobile>
+        <Button
+          variant="secondary"
+          intent="destructive"
+          @click="clearSelectedTurns"
+          icon="x" />
+        <template #desktop>
+          <Button
+            icon="x"
+            variant="secondary"
+            intent="destructive"
+            :label="$tc('session.detail_page.clear_turn_selection')"
+            @click="clearSelectedTurns" />
 
-      <button
-        class="tertiary outline session-content__action-bar__reset-btn-mobile mobile only-icon"
-        @click="clearSelectedTurns">
-        <span class="icon close"></span>
-      </button>
-
-      <button
-        @click="copyTurns"
-        class="session-content__action-bar__copy-btn-desktop">
-        <span class="icon apply" v-if="copyState"></span>
-        <span class="icon copy" v-else></span>
-        <span class="label">{{
-          $tc("session.detail_page.copy_turns_text")
-        }}</span>
-      </button>
+          <Button
+            @click="copyTurns"
+            iconWeight="regular"
+            variant="secondary"
+            :label="$tc('session.detail_page.copy_turns_text')"
+            icon="copy" />
+        </template>
+      </IsMobile>
 
       <span
         class="session-content__action-bar__label-selected flex1 text-cut"
@@ -37,12 +35,13 @@
         }}</span
       >
 
-      <button
-        @click="copyTurns"
-        class="session-content__action-bar__copy-btn-mobile mobile only-icon">
-        <span class="icon apply" v-if="copyState"></span>
-        <span class="icon copy" v-else></span>
-      </button>
+      <IsMobile>
+        <Button
+          icon="copy"
+          iconWeight="regular"
+          variant="secondary"
+          @click="copyTurns" />
+      </IsMobile>
     </div>
 
     <!-- content if live transcript is disabled -->
@@ -61,40 +60,18 @@
           :title="$t('quick_session.live.pause_button')"
           :aria-label="$t('quick_session.live.pause_button')"
           icon="pause"></Button>
-        <!-- <div
-          class="btn circle only-icon primary"
-          @click="toggleMicrophone"
-          :title="$t('quick_session.live.pause_button')"
-          :aria-label="$t('quick_session.live.pause_button')"
-          v-if="isRecording">
-          <span class="icon pause"></span>
-        </div> -->
         <Button
           v-else
           @click="toggleMicrophone"
           :title="$t('quick_session.live.start_button')"
           :aria-label="$t('quick_session.live.start_button')"
           icon="play"></Button>
-        <!-- <div
-          class="btn circle only-icon"
-          @click="toggleMicrophone"
-          :title="$t('quick_session.live.start_button')"
-          :aria-label="$t('quick_session.live.start_button')"
-          v-else>
-          <span class="icon play"></span>
-        </div> -->
+
         <Button
           @click="onSave"
           :title="$t('quick_session.live.save_button')"
           :aria-label="$t('quick_session.live.save_button')"
           icon="stop"></Button>
-        <!-- <div
-          class="btn circle only-icon red"
-          @click="onSave"
-          :title="$t('quick_session.live.save_button')"
-          :aria-label="$t('quick_session.live.save_button')">
-          <span class="icon stop"></span>
-        </div> -->
       </div>
     </div>
 
@@ -319,7 +296,7 @@ export default {
     document.addEventListener("keydown", this.keydown)
   },
   beforeDestroy() {
-    this.$sessionWS.unSubscribeRoom()
+    this.$apiEventWS.unSubscribeSessionRoom()
     document.removeEventListener("keydown", this.keydown)
   },
   computed: {
@@ -354,11 +331,9 @@ export default {
     channel: {
       async handler() {
         this.loading = true
-        this.init()
-        await this.loadPreviousTranscrition()
+        await this.init()
         this.loading = false
         this.scrollToBottom()
-        this.clearSelectedTurns()
       },
       deep: true,
       immediate: true,
@@ -366,25 +341,32 @@ export default {
     displaySubtitles() {
       this.scrollToBottom(true)
     },
-    "$sessionWS.state.isConnected"(newValue, oldValue) {
+    "$apiEventWS.state.isConnected"(newValue, oldValue) {
       if (newValue) {
         this.subscribeToWebsocket()
       }
     },
+    async "$apiEventWS.state.connexionRestored"(newValue, oldValue) {
+      if (newValue) {
+        await this.init()
+      }
+    },
   },
   methods: {
-    init() {
+    async init() {
       this.partialText = ""
       this.turns = []
-      if (this.$sessionWS.state.isConnected) {
+      this.clearSelectedTurns()
+      if (this.$apiEventWS.state.isConnected) {
         this.subscribeToWebsocket()
       }
+      await this.loadPreviousTranscrition()
       setTimeout(() => {
         this.scrollToBottom(true)
       }, 1000)
     },
     subscribeToWebsocket() {
-      this.$sessionWS.subscribeRoom(
+      this.$apiEventWS.subscribeSessionRoom(
         this.sessionId,
         this.channelIndex,
         this.onPartial.bind(this),

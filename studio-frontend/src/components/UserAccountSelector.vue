@@ -35,6 +35,19 @@
     <ModalSwitchOrg
       v-model="modalOrganizationSelector"
       @close="modalOrganizationSelector = false" />
+    <!-- <Button
+      icon="sidebar-simple"
+      variant="transparent"
+      @click="toggleSidebar"></Button> -->
+    <!-- <Button
+      icon="arrow-line-left"
+      variant="transparent"
+      @click="toggleSidebar"></Button> -->
+    <Button
+      icon="caret-double-left"
+      iconWeight="regular"
+      variant="transparent"
+      @click="toggleSidebar"></Button>
   </div>
   <!-- <PopoverList
     :items="navList.userMenu"
@@ -113,6 +126,9 @@ export default {
     },
     openSettingsModal() {
       this.$store.dispatch("settings/setModalOpen", true)
+    },
+    toggleSidebar() {
+      this.$store.dispatch("system/toggleSidebar")
     },
   },
   components: {

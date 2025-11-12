@@ -85,6 +85,10 @@
 
   &.overlay-transparent {
     background-color: transparent;
+
+    .vld-background {
+      background-color: transparent;
+    }
   }
 }
 

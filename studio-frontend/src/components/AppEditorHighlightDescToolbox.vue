@@ -11,24 +11,6 @@
           :categoryName="category.name"
           :color="category.color" />
       </div>
-
-      <!-- <p v-if="metadatas.length === 0">
-        {{ $t("conversation.highlight_toolbox.no-metadata") }}
-      </p>
-
-      <component
-        v-else
-        v-for="metadata of metadatas"
-        :is="metadatasComponents[metadata.schema]"
-        :metadata="metadata"
-        :conversationId="conversationId" />
-
-      <button class="btn primary" @click="clickAddMetadata">
-        <span class="icon plus"></span>
-        <span class="label">{{
-          $t("conversation.highlight_toolbox.button-add-metadata")
-        }}</span>
-      </button> -->
     </div>
 
     <!-- <AppEditorMetadataModal

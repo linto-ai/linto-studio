@@ -1,13 +1,13 @@
 <template>
   <nav class="burger-menu">
     <div>
-      <div class="burger-menu__header flex">
+      <div class="burger-menu__header flex" v-if="isAuthenticated">
         <UserAccountSelector :backoffice="backoffice" />
       </div>
 
       <MediaExplorerMenu
-        :organizationId="currentOrganization._id"
-        v-if="!backoffice" />
+        v-if="!backoffice && isAuthenticated"
+        :organizationId="currentOrganization._id" />
 
       <MediaExplorerMenuLabels v-if="isInbox" />
 
@@ -20,10 +20,10 @@
         v-if="isAtLeastUploader"
         @click="startConversation"
         :label="$t('navigation.conversation.start')"
-        color="primary"
+        variant="primary"
         class="start-button" />
       <div class="main-footer-container">
-        <footer class="main-footer">
+        <footer class="main-footer" v-if="!logo">
           <div class="main-footer__powered-by">
             <i18n path="footer.powered_by">
               <template v-slot:linto_logo>
@@ -52,6 +52,10 @@
             }}</a>
             <span class="footer-version">v{{ appVersion }}</span>
           </div>
+        </footer>
+        <footer class="footer-logo" v-else>
+          <img :src="logo" class="footer-logo__logo" />
+          <div class="footer-logo__title">{{ title }}</div>
         </footer>
       </div>
     </div>
@@ -108,9 +112,12 @@ export default {
       currentOrganization: "getCurrentOrganization",
       currentOrganizationScope: "getCurrentOrganizationScope",
     }),
-    ...mapGetters("user", { userInfo: "getUserInfos" }),
+    ...mapGetters("user", {
+      userInfo: "getUserInfos",
+      isAuthenticated: "isAuthenticated",
+    }),
     logo() {
-      return `/img/${getEnv("VUE_APP_LOGO")}`
+      return getEnv("VUE_APP_LOGO") ? `/img/${getEnv("VUE_APP_LOGO")}` : false
     },
     organizationsList() {
       return Object.values(this.organizations)
@@ -227,8 +234,8 @@ export default {
 
   .main-footer {
     padding: 0.75rem;
-    border-top: 1px solid var(--neutral-60);
-    background-color: var(--neutral-10, #fafafa);
+    border-top: var(--border-block);
+    background-color: var(--primary-soft);
 
     &__powered-by {
       text-align: center;
@@ -311,6 +318,29 @@ export default {
     color: var(--neutral-90);
     background-color: rgba(var(--neutral-90), 0.05);
     border-radius: 2px;
+  }
+
+  .main-footer__logo {
+    height: 20px;
+  }
+}
+
+.footer-logo {
+  display: flex;
+  flex-direction: column;
+  border-top: var(--border-block);
+  background-color: var(--primary-soft);
+  padding: 0.5rem;
+  gap: 0.25rem;
+
+  .footer-logo__logo {
+    height: 40px;
+  }
+
+  .footer-logo__title {
+    text-align: center;
+    color: var(--primary-color);
+    font-weight: bold;
   }
 }
 </style>

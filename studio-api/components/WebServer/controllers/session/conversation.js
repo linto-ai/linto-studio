@@ -513,9 +513,15 @@ async function storeSessionFromStop(req, next) {
     const session = await axios.get(
       process.env.SESSION_API_ENDPOINT + `/sessions/${req.params.id}`,
     )
-    await storeSession(session, req.query.name)
+    let result = await storeSession(session, req.query.name)
 
-    model.sessionData.deleteByOrganizationAndSession(
+    if (this.app.components.IoHandler !== undefined) {
+      this.app.components.IoHandler.emit("new_conversation_from_session", {
+        organizationId: session.organizationId,
+        ...result,
+      })
+    }
+    model.sessionAlias.deleteByOrganizationAndSession(
       session.organizationId,
       req.params.id,
     )
@@ -535,7 +541,14 @@ async function storeQuickMeetingFromStop(req, next) {
         process.env.SESSION_API_ENDPOINT + `/sessions/${req.params.id}`,
       )
       if (session.owner === req.payload.data.userId) {
-        await storeSession(session, req.query.name)
+        let result = await storeSession(session, req.query.name)
+
+        if (this.app.components.IoHandler !== undefined) {
+          this.app.components.IoHandler.emit("new_conversation_from_session", {
+            organizationId: session.organizationId,
+            ...result,
+          })
+        }
         next()
       } else {
         throw new SessionError(

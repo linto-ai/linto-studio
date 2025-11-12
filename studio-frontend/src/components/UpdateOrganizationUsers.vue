@@ -15,7 +15,9 @@
     <!--Organization Members -->
 
     <div v-if="sortedUsers.length > 0" class="flex row">
-      <table style="width: 100%">
+      <table
+        class="table-grid"
+        style="grid-template-columns: 1fr 1fr auto; width: 100%">
         <thead>
           <tr>
             <ArrayHeader
@@ -42,38 +44,17 @@
               <UserInfoInline :user="user" :user-id="user._id" />
             </td>
             <td>
-              <select
+              <OrgaRoleSelector
                 v-model="user.role"
-                v-if="
-                  (isAtLeastMaintainer &&
-                    userRole >= user.role &&
-                    userInfo._id !== user._id) ||
-                  (isSystemAdministrator && isBackofficePage)
-                "
-                @change="updateUserRole(user)">
-                <option
-                  v-for="role in userRoles"
-                  :key="role.value"
-                  :value="role.value"
-                  :disabled="
-                    userRole < role.value && !isAtLeastSystemAdministrator
-                  ">
-                  {{ role.name }}
-                </option>
-              </select>
-              <span v-else-if="user.role > maxRoleValue">
-                inconsistent role value: {{ user.role }}</span
-              >
-              <span v-else>{{
-                userRoles.find((ur) => ur.value === user.role).name
-              }}</span>
+                @input="updateUserRole(user)"
+                :readonly="!canUpdateRole(user)" />
             </td>
             <td class="content-size">
               <Button
                 v-if="userInfo._id === user._id"
                 size="sm"
-                color="tertiary"
-                variant="outline"
+                variant="secondary"
+                intent="destructive"
                 :label="$t('organisation.user.leave_button')"
                 @click="leaveOrganization()" />
 
@@ -86,8 +67,8 @@
                 "
                 size="sm"
                 icon="trash"
-                color="tertiary"
-                variant="outline"
+                variant="secondary"
+                intent="destructive"
                 :label="$t('organisation.user.remove_button')"
                 @click="removeFromMembers(user)" />
             </td>
@@ -97,14 +78,14 @@
     </div>
 
     <ModalLeaveOrganization
-      v-if="displayLeaveModal"
+      v-model="displayLeaveModal"
       :currentOrganization="currentOrganization"
       :currentOrganizationScope="currentOrganizationScope"
       @on-confirm="closeLeaveModal"
       @on-cancel="closeLeaveModal" />
 
     <ModalRemoveUserFromOrganization
-      v-if="displayRemoveUserModal"
+      v-model="displayRemoveUserModal"
       :currentOrganization="currentOrganization"
       :user="userToRemove"
       @on-confirm="closeRemoveFromMembersModal"
@@ -128,7 +109,9 @@ import UserInvite from "@/components/UserInvite.vue"
 import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 import ArrayHeader from "@/components/ArrayHeader.vue"
 import ModalLeaveOrganization from "@/components/ModalLeaveOrganization.vue"
-import ModalRemoveUserFromOrganization from "./ModalRemoveUserFromOrganization.vue"
+import ModalRemoveUserFromOrganization from "@/components/ModalRemoveUserFromOrganization.vue"
+import OrgaRoleSelector from "@/components/molecules/OrgaRoleSelector.vue"
+import { readonly } from "vue"
 
 export default {
   mixins: [orgaRoleMixin, platformRoleMixin],
@@ -204,7 +187,6 @@ export default {
         },
       )
       if (req.status === "success") {
-        await this.dispatchOrganization()
         this.orgaMembers.push({ ...user, role: 1 })
         this.orgaMembersIds.push(user._id)
         this.searchMemberValue = ""
@@ -247,13 +229,8 @@ export default {
     closeLeaveModal(apiRes) {
       if (apiRes) {
         if (apiRes.status === "success") {
-          setCookie("cm_orga_scope", "")
-          window.location.href = "/"
-        } else {
-          bus.$emit("app_notif", {
-            status: "error",
-            message: this.$i18n.t("organisation.leave_error_message"),
-          })
+          // TODO: delete orga in store instead
+          location.reload()
         }
       }
       this.displayLeaveModal = false
@@ -273,10 +250,26 @@ export default {
       )
 
       if (req.status === "success") {
-        await this.dispatchOrganization()
+        //await this.dispatchOrganization()
+        this.orgaMembers = this.orgaMembers.map((member) => {
+          if (member._id === user._id) {
+            member.role = user.role
+          }
+          return member
+        })
       }
     },
-
+    canUpdateRole(user) {
+      if (this.isBackofficePage) {
+        return this.isSystemAdministrator
+      } else {
+        return (
+          this.isAtLeastMaintainer &&
+          this.userRole >= user.role &&
+          this.userInfo._id !== user._id
+        )
+      }
+    },
     async dispatchOrganization() {
       bus.$emit("user_orga_update")
     },
@@ -287,6 +280,7 @@ export default {
     ArrayHeader,
     ModalLeaveOrganization,
     ModalRemoveUserFromOrganization,
+    OrgaRoleSelector,
   },
 }
 </script>

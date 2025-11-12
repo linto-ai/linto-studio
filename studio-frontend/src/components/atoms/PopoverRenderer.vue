@@ -18,6 +18,7 @@
 
 <script>
 import VNodeRenderer from "@/components/atoms/VNodeRenderer.vue"
+import POPOVER_MARGIN from "@/const/popoverMargin.js"
 
 export default {
   name: "PopoverRenderer",
@@ -71,7 +72,7 @@ export default {
 
       const viewportHeight =
         typeof window !== "undefined" ? window.innerHeight : 800
-      const margin = 12 // space from viewport edges
+      const margin = POPOVER_MARGIN // space from viewport edges
 
       let available
       if (this.position === "bottom") {
@@ -89,6 +90,7 @@ export default {
     computedContentStyle() {
       return {
         width: this.computedWidth,
+        minWidth: this.widthRef.offsetWidth + "px",
         maxHeight: this.computedMaxHeight,
         overflowY: "auto",
       }

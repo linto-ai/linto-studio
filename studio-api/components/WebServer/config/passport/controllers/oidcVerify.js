@@ -82,7 +82,7 @@ module.exports = async function oidcVerify(
     const token_salt = randomstring.generate(12)
     let token = await model.tokens.insert(user._id, token_salt)
 
-    let expires_in = params.expires_in || process.env.TOKEN_EXPIRES_IN || 3600
+    let expires_in = params.expires_in || process.env.TOKEN_DAYS_TIME || 3600
     let tokenData = {
       salt: token_salt,
       tokenId: token.insertedId,

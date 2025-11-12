@@ -15,12 +15,6 @@
 
       <header class="panel-header">
         <div class="panel-header-title flex align-center">
-          <!-- <Button
-            @click="$emit('close')"
-            icon="arrow-line-right"
-            size="sm"
-            variant="flat"
-            color="neutral-40" /> -->
           <h3 class="panel-title">
             {{
               isMultiMode
@@ -30,12 +24,7 @@
                 : $t("media_explorer.panel.overview")
             }}
           </h3>
-          <Button
-            icon="x"
-            size="sm"
-            variant="flat"
-            color="neutral-40"
-            @click="close" />
+          <Button icon="x" variant="transparent" @click="close" />
         </div>
 
         <div class="flex panel-header-actions" v-if="!isMultiMode">
@@ -48,7 +37,8 @@
               :label="action.label"
               :icon="action.icon"
               size="sm"
-              variant="outline"
+              variant="secondary"
+              :disabled="action.disabled"
               :color="action.color || 'primary'"
               @click="handleActionClick(action)" />
           </div>
@@ -68,17 +58,18 @@
 
 <script>
 import { mediaScopeMixin } from "@/mixins/mediaScope"
+import { mediaProgressMixin } from "@/mixins/mediaProgress"
 
 import Button from "@/components/atoms/Button.vue"
-import MediaExplorerRightPanelItem from "./MediaExplorerRightPanelItem.vue"
-import MediaExplorerRightPanelMulti from "./MediaExplorerRightPanelMulti.vue"
-import ModalDeleteConversations from "./ModalDeleteConversations.vue"
+import MediaExplorerRightPanelItem from "@/components/MediaExplorerRightPanelItem.vue"
+import MediaExplorerRightPanelMulti from "@/components/MediaExplorerRightPanelMulti.vue"
+import ModalDeleteConversations from "@/components/ModalDeleteConversations.vue"
 import { mediaExplorerRightPanelMixin } from "@/mixins/mediaExplorerRightPanel.js"
-import ConversationShareMultiple from "./ConversationShareMultiple.vue"
+import ConversationShareMultiple from "@/components/ConversationShareMultiple.vue"
 
 export default {
   name: "MediaExplorerRightPanel",
-  mixins: [mediaExplorerRightPanelMixin, mediaScopeMixin],
+  mixins: [mediaExplorerRightPanelMixin, mediaScopeMixin, mediaProgressMixin],
   components: {
     Button,
     MediaExplorerRightPanelItem,
@@ -139,7 +130,7 @@ export default {
 
       const mediaId = this.selectedMediaForOverview._id
       const orgId = this.currentOrganizationScope
-
+      const status = this.selectedMediaForOverview?.jobs?.transcription?.state
       return [
         {
           id: "edit",
@@ -149,6 +140,7 @@ export default {
             name: "conversations transcription",
             params: { conversationId: mediaId, organizationId: orgId },
           },
+          disabled: status !== "done",
         },
         {
           id: "subtitles",
@@ -158,6 +150,7 @@ export default {
             name: "conversations subtitles",
             params: { conversationId: mediaId, organizationId: orgId },
           },
+          disabled: status !== "done",
         },
         {
           id: "export",
@@ -167,6 +160,7 @@ export default {
             name: "conversations publish",
             params: { conversationId: mediaId, organizationId: orgId },
           },
+          disabled: status !== "done",
         },
         // {
         //   id: "delete",
