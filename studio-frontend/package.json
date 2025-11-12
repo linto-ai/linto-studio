@@ -23,7 +23,6 @@
     "test:lint": "eslint --ext .js,.vue src",
     "format": "prettier src/ public/  --write",
     "test:format": "prettier src/ public/ --list-different",
-    "start-ws": "nodemon ./webserver/index.js",
     "test": "TEST=true ava",
     "test:coverage": "TEST=true c8 --all --reporter=html ava"
   },
@@ -99,7 +98,6 @@
     "c8": "^8.0.1",
     "crypto-browserify": "^3.12.1",
     "jsdom": "^27.2.0",
-    "nodemon": "^2.0.19",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
     "prettier": "^3.3.3",
