@@ -41,17 +41,22 @@ class MongoModel {
     const sort = { [sortField]: sortCriteria, _id: sortCriteria }
 
     try {
+      const paginatedResultPipeline = [
+        { $sort: sort },
+        { $skip: size * page },
+        { $limit: size },
+      ]
+
+      if (!projection.skipProjection) {
+        paginatedResultPipeline.push({ $project: projection })
+      }
+
       const aggregationPipeline = [
         { $match: query },
         {
           $facet: {
             totalCount: [{ $count: "count" }],
-            paginatedResult: [
-              { $sort: sort },
-              { $skip: size * page },
-              { $limit: size },
-              { $project: projection }, // Projection for paginated results
-            ],
+            paginatedResult: paginatedResultPipeline,
           },
         },
       ]
@@ -104,6 +109,22 @@ class MongoModel {
     }
   }
 
+  // Insert/Create MANY
+  async mongoInsertMany(documents) {
+    try {
+      const collection = MongoDriver.constructor.db.collection(this.collection)
+      const result = await collection.insertMany(documents)
+      return result
+    } catch (error) {
+      console.error("Error in mongoInsertMany:", error)
+      return {
+        success: false,
+        message: "Error inserting documents",
+        error: error,
+      }
+    }
+  }
+
   /**
    * Update function for mongoDB. This function will update an entry based on the "collection", the "query" and the "values" passed in parmaters.
    * @param {Object} query
@@ -145,11 +166,17 @@ class MongoModel {
     }
   }
 
-  async mongoUpdateMany(query, values) {
+  async mongoUpdateMany(query, operatorOrValues, values) {
     try {
+      const update =
+        typeof operatorOrValues === "string"
+          ? { [operatorOrValues]: values }
+          : { $set: operatorOrValues }
+
       const result = await MongoDriver.constructor.db
         .collection(this.collection)
-        .updateMany(query, { $set: values })
+        .updateMany(query, update)
+
       return result
     } catch (error) {
       debug("mongoUpdateMany error:", error)

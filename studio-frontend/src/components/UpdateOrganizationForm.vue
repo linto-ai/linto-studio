@@ -4,36 +4,26 @@
       <h2>{{ $t("organisation.general_settings") }}</h2>
       <!--Organization Name -->
       <FormInput
-        v-if="isAdmin || (isSystemAdministrator && isBackofficePage)"
+        :readonly="!(isAdmin || (isSystemAdministrator && isBackofficePage))"
         :field="orgaName"
         v-model="orgaName.value" />
-      <labeled-value
-        v-else
-        class="form-field flex col"
-        :label="$t('organisation.name_label')"
-        :value="orgaName.value" />
       <FormInput
-        v-if="isAdmin || (isSystemAdministrator && isBackofficePage)"
+        :readonly="!(isAdmin || (isSystemAdministrator && isBackofficePage))"
         :field="orgaDescription"
         v-model="orgaDescription.value" />
-      <labeled-value
-        v-else-if="orgaDescription.value !== ''"
-        class="form-field flex col"
-        :label="$t('organisation.description_label')"
-        :value="orgaDescription.value" />
-      <button
+
+      <Button
         type="submit"
-        class="btn green"
-        v-if="isAdmin || (isSystemAdministrator && isBackofficePage)">
-        <span class="icon apply"></span>
-        <span class="label">{{ $t("organisation.update_button") }}</span>
-      </button>
+        variant="primary"
+        size="sm"
+        v-if="isAdmin || (isSystemAdministrator && isBackofficePage)"
+        :label="$t('organisation.update_button')" />
     </section>
   </form>
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import { formsMixin } from "@/mixins/forms.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
@@ -46,8 +36,8 @@ import { testContent } from "@/tools/fields/testContent"
 
 import { apiUpdateOrganisation } from "@/api/organisation.js"
 
-import FormInput from "@/components/FormInput.vue"
-import LabeledValue from "@/components/LabeledValue.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
+import LabeledValue from "@/components/atoms/LabeledValue.vue"
 export default {
   mixins: [formsMixin, orgaRoleMixin, platformRoleMixin],
   props: {

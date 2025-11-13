@@ -24,36 +24,56 @@
     <td>{{ description }}</td>
     <td>{{ languages }}</td>
     <td>
-      <CustomSelect
+      <PopoverList
         v-if="translationsOptions.channels.length > 0"
-        multipleSelection
+        selection
+        multiple
         v-model="selectedTranslations"
-        :options="translationsOptions" />
-      <div v-else class="btn placeholder transparent">
-        {{ $t("session.profile_selector.translation_not_available") }}
-      </div>
+        :items="translationsOptions.channels">
+        <template #trigger="{ open }">
+          <Button
+            :icon-right="open ? 'caret-up' : 'caret-down'"
+            variant="outline"
+            color="neutral"
+            size="sm">
+            <!-- <div class="flex gap-small">
+              <Chip
+                v-for="translation in displayedTranslations"
+                :key="translation"
+                :value="translation"></Chip>
+            </div> -->
+            {{
+              $tc(
+                "session.profile_selector.n_translations_selected",
+                selectedTranslations.length,
+              )
+            }}
+          </Button>
+        </template>
+      </PopoverList>
+      <Button
+        v-else
+        size="sm"
+        disabled
+        :label="
+          $t('session.profile_selector.translation_not_available')
+        "></Button>
+      <!-- <div v-else class="btn placeholder transparent">
+        {{  }}
+      </div> -->
     </td>
-    <!-- <td class="center-text" @click="preventClick">
-      <SwitchInput
-        v-if="profile.config.hasDiarization"
-        v-model="profile.config.diarization"
-        :id="`${profile.id}-diarization`" />
-
-      <div v-else>
-        {{ $t("session.profile_selector.diarization_not_available") }}
-      </div>
-    </td> -->
   </tr>
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import ArrayHeader from "@/components/ArrayHeader.vue"
-import CustomSelect from "@/components/CustomSelect.vue"
-import Checkbox from "@/components/Checkbox.vue"
-import SwitchInput from "@/components/SwitchInput.vue"
-import Radio from "./Radio.vue"
+import CustomSelect from "@/components/molecules/CustomSelect.vue"
+import Checkbox from "@/components/atoms/Checkbox.vue"
+import SwitchInput from "@/components/atoms/SwitchInput.vue"
+import Radio from "@/components/atoms/Radio.vue"
+
 import { transcriberProfileModelMixin } from "@/mixins/transcriberProfileModel.js"
 export default {
   mixins: [transcriberProfileModelMixin],
@@ -87,7 +107,7 @@ export default {
         channels: translations
           .map((translation) => {
             return {
-              value: translation,
+              id: translation,
               text: languageNames.of(translation),
             }
           })
@@ -129,6 +149,14 @@ export default {
     },
     sortListKey() {
       return "profileSelector"
+    },
+    displayedTranslations() {
+      let languageNames = new Intl.DisplayNames([this.$i18n.locale], {
+        type: "language",
+      })
+      return this.selectedTranslations.map((translation) => {
+        return languageNames.of(translation)
+      })
     },
   },
   methods: {

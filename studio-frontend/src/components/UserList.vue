@@ -14,8 +14,8 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
-import UserInfoInline from "./UserInfoInline.vue"
+import { bus } from "@/main.js"
+import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 export default {
   props: {
     usersList: { type: Array, required: true },

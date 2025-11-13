@@ -18,31 +18,34 @@
           )
         ">
         <template v-slot:right-header>
-          <button v-if="showAllProfiles" @click="changeShowAllProfiles">
-            <span class="icon show"></span>
-            <span class="label">
-              {{ $t("backoffice.transcriber_profile_list.all_profiles_shown") }}
-            </span>
-          </button>
-          <button v-else @click="changeShowAllProfiles">
-            <span class="icon hide"></span>
-            <span class="label">
-              {{
-                $t("backoffice.transcriber_profile_list.global_profiles_shown")
-              }}
-            </span>
-          </button>
+          <Button
+            v-if="showAllProfiles"
+            @click="changeShowAllProfiles"
+            variant="secondary"
+            icon="eye"
+            iconWeight="regular"
+            :label="
+              $t('backoffice.transcriber_profile_list.all_profiles_shown')
+            " />
+          <Button
+            v-else
+            @click="changeShowAllProfiles"
+            variant="secondary"
+            icon="eye-slash"
+            iconWeight="regular"
+            :label="
+              $t('backoffice.transcriber_profile_list.global_profiles_shown')
+            " />
         </template>
       </HeaderTable>
-      <div class="fixed-notif small-margin-bottom" v-if="!showAllProfiles">
-        <div class="app-notif__message">
-          {{ $t("backoffice.transcriber_profile_list.warning_global.line_1") }}
-          <br />
-          {{ $t("backoffice.transcriber_profile_list.warning_global.line_2") }}
-        </div>
-      </div>
     </template>
-
+    <div class="fixed-notif small-margin-bottom" v-if="!showAllProfiles">
+      <div class="app-notif__message">
+        {{ $t("backoffice.transcriber_profile_list.warning_global.line_1") }}
+        <br />
+        {{ $t("backoffice.transcriber_profile_list.warning_global.line_2") }}
+      </div>
+    </div>
     <div class="backoffice-listing-container">
       <TranscriberProfileTable
         @list_sort_by="sortBy"

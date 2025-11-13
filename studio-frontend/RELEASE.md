@@ -1,3 +1,5 @@
+For details on upcoming versions, see the RELEASE file in the root directory.
+
 # 1.5.5
 
 More information on RELEASE file in the main folder

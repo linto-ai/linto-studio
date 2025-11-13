@@ -7,23 +7,17 @@
       v-model="linkFields.value"
       inputFullWidth
       class="flex1" />
-    <button class="audio-upload__link_create-btn" @click="add_link">
-      <span class="label"
-        >{{ $t("conversation_creation.url_tab.get_button") }}
-      </span>
-    </button>
-    <!-- <FormCheckbox
-      disabled
-      :field="liveFields"
-      v-model="liveFields.value"
-      switchDisplay /> -->
+    <Button
+      variant="secondary"
+      :label="$t('conversation_creation.url_tab.get_button')"
+      @click="add_link" />
   </div>
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
-import FormInput from "./FormInput.vue"
-import FormCheckbox from "./FormCheckbox.vue"
+import { bus } from "@/main.js"
+import FormInput from "@/components/molecules/FormInput.vue"
+import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import EMPTY_FIELD from "@/const/emptyField"
 import { testFieldEmpty } from "@/tools/fields/testEmpty.js"
 import { formsMixin } from "@/mixins/forms.js"

@@ -1,4 +1,5 @@
-import isSessionStarted from "../tools/isSessionStarted"
+import isSessionStarted from "@/tools/isSessionStarted"
+import { getEnv } from "@/tools/getEnv"
 
 export const sessionModelMixin = {
   data() {
@@ -86,6 +87,9 @@ export const sessionModelMixin = {
     isPublic() {
       return this?.session?.visibility === "public"
     },
+    visibility() {
+      return this?.session?.visibility ?? "private"
+    },
     sessionOrganizationId() {
       return this?.session?.organizationId
     },
@@ -98,5 +102,30 @@ export const sessionModelMixin = {
     metadata() {
       return this?.session?.meta ?? {}
     },
+    displayWatermark() {
+      return this?.session?.meta?.["@watermark"]?.display ?? false
+    },
+    watermarkContent() {
+      return (
+        this?.session?.meta?.["@watermark"]?.content ??
+        getEnv("VUE_APP_WATERMARK_CONTENT")
+      )
+    },
+    watermarkFrequency() {
+      return (
+        this?.session?.meta?.["@watermark"]?.frequency ??
+        Number(getEnv("VUE_APP_WATERMARK_FREQUENCY"))
+      )
+    },
+    watermarkDuration() {
+      return (
+        this?.session?.meta?.["@watermark"]?.duration ??
+        Number(getEnv("VUE_APP_WATERMARK_DURATION"))
+      )
+    },
+    watermarkPinned() {
+      return this?.session?.meta?.["@watermark"]?.pinned ?? false
+    },
   },
+  methods: {},
 }

@@ -13,6 +13,18 @@ const {
   CategoryError,
 } = require(`${process.cwd()}/components/WebServer/error/exception/category`)
 
+async function getSystemCategories(req, res, next) {
+  try {
+    const categories = await model.categories.getSystemCategories(
+      req.params.organizationId,
+    )
+
+    res.status(200).send(categories)
+  } catch (err) {
+    next(err)
+  }
+}
+
 async function createCategory(req, res, next) {
   try {
     // Determine the scope id based on the request path req.params.conversationId or req.params.organizationId
@@ -167,6 +179,7 @@ async function deleteCategory(req, res, next) {
 }
 
 module.exports = {
+  getSystemCategories,
   getCategory,
   createCategory,
   updateCategory,

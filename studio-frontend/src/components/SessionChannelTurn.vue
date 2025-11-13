@@ -1,8 +1,12 @@
 <template>
   <div class="channel-turn">
     <div class="flex col channel-turn__metadata">
-      <span class="channel-turn__speaker">{{ speaker }}</span>
-      <span class="channel-turn__lang">{{ lang }}</span>
+      <span class="channel-turn__speaker" v-if="speaker !== previousSpeaker">{{
+        speaker
+      }}</span>
+      <span class="channel-turn__lang" v-if="lang !== previousLang">{{
+        lang
+      }}</span>
       <span class="channel-turn__time">{{ time }}</span>
     </div>
     <div class="channel-turn__text" :selected="selected" @click="onClick">
@@ -11,13 +15,17 @@
   </div>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import getTextTurnWithTranslation from "@/tools/getTextTurnWithTranslation.js"
 export default {
   props: {
     turn: {
       type: Object,
       required: true,
+    },
+    previous: {
+      type: Object,
+      required: false,
     },
     selectedTranslations: {
       type: String,
@@ -40,7 +48,11 @@ export default {
   mounted() {},
   computed: {
     text() {
-      return getTextTurnWithTranslation(this.turn, this.selectedTranslations, this.channelLanguages)
+      return getTextTurnWithTranslation(
+        this.turn,
+        this.selectedTranslations,
+        this.channelLanguages,
+      )
     },
     speaker() {
       if (this.selectedTranslations !== "original") {
@@ -61,6 +73,26 @@ export default {
       if (!this.turn.astart) return "00:00:00"
       return new Date(
         new Date(this.turn.astart).getTime() + this.turn.start * 1000,
+      ).toLocaleTimeString()
+    },
+    previousSpeaker() {
+      if (!this.previous) return null
+      return (
+        this.previous?.locutor ||
+        this.$t("session.detail_page.undefined_speaker")
+      )
+    },
+    previousLang() {
+      if (!this.previous) return null
+      return (
+        this.previous?.lang || this.$t("session.detail_page.undefined_lang")
+      )
+    },
+    previousTime() {
+      if (!this.previous) return null
+      if (!this.previous.astart) return "00:00:00"
+      return new Date(
+        new Date(this.previous.astart).getTime() + this.previous.start * 1000,
       ).toLocaleTimeString()
     },
   },

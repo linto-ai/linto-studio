@@ -1,26 +1,35 @@
+import { mapActions, mapGetters } from "vuex"
+import i18n from "@/i18n"
+
 const ROLES = [
   {
-    name: "Member",
+    name: i18n.t("organization_role.member"),
+    description: i18n.t("organization_role.member_description"),
     value: 1,
   },
   {
-    name: "Uploader",
+    name: i18n.t("organization_role.uploader"),
+    description: i18n.t("organization_role.uploader_description"),
     value: 2,
   },
   {
-    name: "Quick meeting",
+    name: i18n.t("organization_role.quick_meeting"),
+    description: i18n.t("organization_role.quick_meeting_description"),
     value: 3,
   },
   {
-    name: "Meeting Manager",
+    name: i18n.t("organization_role.session_operator"),
+    description: i18n.t("organization_role.session_operator_description"),
     value: 4,
   },
   {
-    name: "Maintainer",
+    name: i18n.t("organization_role.maintainer"),
+    description: i18n.t("organization_role.maintainer_description"),
     value: 5,
   },
   {
-    name: "Administrator",
+    name: i18n.t("organization_role.administrator"),
+    description: i18n.t("organization_role.administrator_description"),
     value: 6,
   },
 ]
@@ -33,19 +42,25 @@ const ROLES_INDEXED_BY_VALUE = ROLES.reduce((acc, role) => {
 export const orgaRoleMixin = {
   methods: {
     isInOrganization(organizationId) {
-      return this.$store.state.rolesInOrganizations.has(organizationId)
+      return this.$store.getters["organizations/isInOrganization"](
+        organizationId,
+      )
     },
     isAtLeastMaintainerOfOrganization(organizationId) {
-      if (!this.isInOrganization(organizationId)) return false
-      return (
-        this.$store.state.rolesInOrganizations.get(organizationId).myrole >= 4
-      )
+      return this.$store.getters[
+        "organizations/isAtLeastMaintainerOfOrganization"
+      ](organizationId)
+    },
+    roleToString(role) {
+      if (role > 6 || role < 1) return this.$t("Unknown")
+      return ROLES_INDEXED_BY_VALUE[role].name
     },
   },
   computed: {
-    userRole() {
-      return this.$store.getters.getUserRoleInOrganization()
-    },
+    ...mapGetters("organizations", {
+      userRole: "getUserRoleInOrganization",
+      userOrganizations: "getOrganizationsAsArray",
+    }),
     isMember() {
       return this.userRole === 1
     },
@@ -85,13 +100,9 @@ export const orgaRoleMixin = {
     userRoles() {
       return ROLES
     },
-    roleToString() {
+    currentRoleToString() {
       if (this.userRole > 6 || this.userRole < 1) return this.$t("Unknown")
-
       return ROLES_INDEXED_BY_VALUE[this.userRole].name
-    },
-    userOrganizations() {
-      return this.$store.state.userOrganizations
     },
   },
 }

@@ -1,0 +1,48 @@
+@use "sass:map";
+$btn-sizes: (
+  xs: (
+    padding: 0.25rem 0.5rem,
+    font-size: 0.8rem,
+    icon-size: 16px,
+  ),
+  sm: (
+    padding: 0.35rem 0.75rem,
+    font-size: 0.9rem,
+    icon-size: 24px,
+  ),
+  md: (
+    padding: 0.5rem 1rem,
+    font-size: 0.9rem,
+    icon-size: 32px,
+  ),
+  lg: (
+    padding: 0.75rem 1.25rem,
+    font-size: 1.1rem,
+    icon-size: 32px,
+  ),
+  xl: (
+    padding: 1rem 1.5rem,
+    font-size: 1.2rem,
+    icon-size: 32px,
+  ),
+);
+
+@each $size, $values in $btn-sizes {
+  @debug "divider offset: #{$size}";
+  .btn--#{$size} {
+    --btn-padding: #{map.get($values, padding)};
+    --btn-font-size: #{map.get($values, font-size)};
+    --btn-icon-size: #{map.get($values, icon-size)};
+
+    &.btn--icon-only {
+      width: #{map.get($values, icon-size)};
+      height: #{map.get($values, icon-size)};
+      padding: 0;
+
+      &:hover:not([disabled]):not(.disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+    }
+  }
+}

@@ -8,10 +8,86 @@ const BASE_API = getEnv("VUE_APP_CONVO_API")
 
 const DEFAULT_PAGE_SIZE = conversationsPerPage
 
-//  -- -- -- conversations listing -- -- -- --
-//
-// TODO: Could be refactored to use the same base function for pagination (with functional programming)
+export async function apiGetGenericConversationsList(
+  scope,
+  {
+    tags = [],
+    text = "",
+    title = "",
+    page = 0,
+    pageSize = DEFAULT_PAGE_SIZE,
+    sortField = "last_update",
+    sortOrder = -1,
+    status = null,
+  } = {},
+  notif = null,
+) {
+  const getConversations = await sendRequest(
+    `${BASE_API}/${scope}`,
+    {
+      method: "get",
+    },
+    {
+      tags: tags.toString(),
+      text,
+      name: title,
+      page,
+      size: pageSize,
+      sortField,
+      sortCriteria: sortOrder,
+      processing: status,
+    },
+    notif,
+  )
 
+  if (getConversations.status == "error") {
+    throw getConversations.error
+  }
+
+  getConversations.data.hasMore =
+    getConversations.data.list.length == pageSize &&
+    pageSize * page < getConversations.data.count
+  return getConversations.data // {count, list, hasMore}
+}
+
+export async function apiGetGenericConversationsCount(
+  scope,
+  { tags = [], text = "", title = "", status = null } = {},
+  notif = null,
+) {
+  const getConversations = await sendRequest(
+    `${BASE_API}/${scope}`,
+    {
+      method: "get",
+    },
+    {
+      tags: tags.toString(),
+      text,
+      name: title,
+      page: 0,
+      size: 0,
+      processing: status,
+    },
+    notif,
+  )
+
+  if (getConversations.status == "error") {
+    return 0
+  }
+
+  return getConversations?.data?.count ?? 0
+}
+
+export async function apiDeleteConversation(conversationId, notif) {
+  return await sendRequest(
+    `${BASE_API}/conversations/${conversationId}`,
+    { method: "delete" },
+    {},
+    notif,
+  )
+}
+
+// deletes all this function...
 export async function apiGetConversationsSharedWith(
   tag,
   text,
@@ -248,15 +324,6 @@ export async function apiGetConversationLastUpdate(conversationId, notif) {
     notif,
   )
   return getConversation?.data
-}
-
-export async function apiDeleteConversation(conversationId, notif) {
-  return await sendRequest(
-    `${BASE_API}/conversations/${conversationId}`,
-    { method: "delete" },
-    {},
-    notif,
-  )
 }
 
 export async function apiDeleteMultipleConversation(

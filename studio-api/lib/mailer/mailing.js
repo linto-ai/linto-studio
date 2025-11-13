@@ -273,24 +273,24 @@ class Mailing {
   }
 
   async sendMail(TYPE, mail_data, payload) {
-    const mail_payload = this.prepareMail(TYPE, mail_data, payload)
+    const mail_payload = await this.prepareMail(TYPE, mail_data, payload)
     const mail_result = await Mailer.sendMail(mail_payload)
 
     if (!mail_result) debug("Error while send email to ", mail_payload.to)
     return mail_result
   }
 
-  prepareMail(TYPE, mail_data, payload) {
-    const html = htmlBuilder(TYPE, payload)
-    return this.generateMailPayload(mail_data, TYPE.subject, html)
+  async prepareMail(TYPE, mail_data, payload) {
+    const html = await htmlBuilder(TYPE, payload)
+    return this.generateMailPayload(html, mail_data)
   }
 
-  generateMailPayload(mail_data, subject, html) {
+  generateMailPayload(mailContent, mail_data) {
     return {
-      from: `${TYPE.TITLE_NAME} <${this.no_reply}>`,
+      from: `${process.env.APPLICATION_NAME} <${this.no_reply}>`,
       to: mail_data.email,
-      subject: `${TYPE.TITLE_NAME} - ${subject}`,
-      html: html,
+      subject: mailContent.title,
+      html: mailContent.html,
     }
   }
 }

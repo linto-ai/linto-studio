@@ -93,7 +93,7 @@
 }
 
 .publish-turn {
-  font-family: $luciole;
+  font-family: var(--luciole-font-family);
   margin-bottom: 1rem;
   text-align: justify;
 }

@@ -1,6 +1,7 @@
 <template>
   <ModalNew
-    small
+    size="sm"
+    value
     isForm
     deleteButton
     @on-delete="deleteHandler"
@@ -14,7 +15,7 @@
 
     <LabeledValue
       :label="$t('session.settings_page.modal_edit_session_alias.link_label')"
-      :value="`Studio.linto.app/6785238f0aee1be21684a9e1/sessions/${nameField.value}`" />
+      :value="publicLink" />
   </ModalNew>
 </template>
 <script>
@@ -29,9 +30,9 @@ import {
 
 import { formsMixin } from "@/mixins/forms.js"
 
-import ModalNew from "@/components/ModalNew.vue"
-import FormInput from "@/components/FormInput.vue"
-import LabeledValue from "@/components/LabeledValue.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
+import LabeledValue from "@/components/atoms/LabeledValue.vue"
 
 export default {
   mixins: [formsMixin],
@@ -63,6 +64,12 @@ export default {
     }
   },
   mounted() {},
+  computed: {
+    publicLink() {
+      const baseUrl = window.location.origin
+      return `${baseUrl}/${this.organizationId}/sessions/${this.nameField.value}`
+    },
+  },
   methods: {
     async confirm(e) {
       e?.preventDefault()

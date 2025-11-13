@@ -5,30 +5,28 @@
     <div
       class="session-content__action-bar flex align-center gap-medium"
       v-if="this.selectedTurns.length > 0">
-      <button
-        class="red-border session-content__action-bar__reset-btn-desktop"
-        @click="clearSelectedTurns">
-        <span class="icon close"></span>
-        <span class="label">{{
-          $tc("session.detail_page.clear_turn_selection")
-        }}</span>
-      </button>
+      <IsMobile>
+        <Button
+          variant="secondary"
+          intent="destructive"
+          @click="clearSelectedTurns"
+          icon="x" />
+        <template #desktop>
+          <Button
+            icon="x"
+            variant="secondary"
+            intent="destructive"
+            :label="$tc('session.detail_page.clear_turn_selection')"
+            @click="clearSelectedTurns" />
 
-      <button
-        class="red-border session-content__action-bar__reset-btn-mobile mobile only-icon"
-        @click="clearSelectedTurns">
-        <span class="icon close"></span>
-      </button>
-
-      <button
-        @click="copyTurns"
-        class="session-content__action-bar__copy-btn-desktop">
-        <span class="icon apply" v-if="copyState"></span>
-        <span class="icon copy" v-else></span>
-        <span class="label">{{
-          $tc("session.detail_page.copy_turns_text")
-        }}</span>
-      </button>
+          <Button
+            @click="copyTurns"
+            iconWeight="regular"
+            variant="secondary"
+            :label="$tc('session.detail_page.copy_turns_text')"
+            icon="copy" />
+        </template>
+      </IsMobile>
 
       <span
         class="session-content__action-bar__label-selected flex1 text-cut"
@@ -37,12 +35,13 @@
         }}</span
       >
 
-      <button
-        @click="copyTurns"
-        class="session-content__action-bar__copy-btn-mobile mobile only-icon">
-        <span class="icon apply" v-if="copyState"></span>
-        <span class="icon copy" v-else></span>
-      </button>
+      <IsMobile>
+        <Button
+          icon="copy"
+          iconWeight="regular"
+          variant="secondary"
+          @click="copyTurns" />
+      </IsMobile>
     </div>
 
     <!-- content if live transcript is disabled -->
@@ -55,29 +54,24 @@
         {{ $t("session.detail_page.live_transcript_disabled.description") }}
       </p>
       <div class="flex gap-medium" v-if="fromMicrophone">
-        <div
-          class="btn circle only-icon primary"
+        <Button
+          v-if="isRecording"
           @click="toggleMicrophone"
           :title="$t('quick_session.live.pause_button')"
           :aria-label="$t('quick_session.live.pause_button')"
-          v-if="isRecording">
-          <span class="icon pause"></span>
-        </div>
-        <div
-          class="btn circle only-icon"
+          icon="pause"></Button>
+        <Button
+          v-else
           @click="toggleMicrophone"
           :title="$t('quick_session.live.start_button')"
           :aria-label="$t('quick_session.live.start_button')"
-          v-else>
-          <span class="icon play"></span>
-        </div>
-        <div
-          class="btn circle only-icon red"
+          icon="play"></Button>
+
+        <Button
           @click="onSave"
           :title="$t('quick_session.live.save_button')"
-          :aria-label="$t('quick_session.live.save_button')">
-          <span class="icon stop"></span>
-        </div>
+          :aria-label="$t('quick_session.live.save_button')"
+          icon="stop"></Button>
       </div>
     </div>
 
@@ -88,21 +82,23 @@
       class="flex col flex1 session-content__turns reset-overflows"
       :class="{ has_subtitles: displaySubtitles }">
       <SessionChannelTurn
-        v-for="turn in previousTurns"
+        v-for="(turn, turnIndex) in previousTurns"
         v-if="displayLiveTranscription && shouldDisplayTurn(turn)"
         :key="turn.uuid"
         :channelLanguages="channelLanguages"
         :selectedTranslations="selectedTranslations"
+        :previous="turnIndex > 0 ? previousTurns[turnIndex - 1] : null"
         :turn="turn"
         :selected="selectedTurns.includes(turn.uuid)"
         @select="onSelectTurn(turn.uuid, $event)"></SessionChannelTurn>
 
       <SessionChannelTurn
-        v-for="turn in turns"
+        v-for="(turn, turnIndex) in turns"
         v-if="displayLiveTranscription && shouldDisplayTurn(turn)"
         :key="turn.uuid"
         :channelLanguages="channelLanguages"
         :selectedTranslations="selectedTranslations"
+        :previous="turnIndex > 0 ? turns[turnIndex - 1] : lastOfPreviousTurns"
         :turn="turn"
         :selected="selectedTurns.includes(turn.uuid)"
         @select="onSelectTurn(turn.uuid, $event)"></SessionChannelTurn>
@@ -110,6 +106,7 @@
       <SessionChannelTurnPartial
         v-if="displayLiveTranscription && partialText !== ''"
         ref="partial"
+        :previous="lastTurn || lastOfPreviousTurns"
         :channelLanguages="channelLanguages"
         :selectedTranslations="selectedTranslations"
         :partialObject="partialObject"
@@ -127,17 +124,26 @@
 
     <!-- Subtitles -->
     <SessionSubtitle
-      v-if="displaySubtitles"
+      v-if="displaySubtitles && !isMobile"
       :previousTurns="previousTurns"
       :partialText="partialText"
       :finalText="finalText"
       :fontSize="fontSize"
       :key="fontSize"
-      :selectedTranslations="selectedTranslations" />
+      :watermarkFrequency="watermarkFrequency"
+      :watermarkDuration="watermarkDuration"
+      :watermarkContent="watermarkContent"
+      :watermarkPinned="watermarkPinned"
+      :displayWatermark="displayWatermark" />
     <SubtitleFullscreen
-      v-if="showSubtitlesFullscreen"
+      v-if="showSubtitlesFullscreen && isMobile"
       :partialText="partialText"
       :finalText="finalText"
+      :watermarkFrequency="watermarkFrequency"
+      :watermarkDuration="watermarkDuration"
+      :watermarkContent="watermarkContent"
+      :watermarkPinned="watermarkPinned"
+      :displayWatermark="displayWatermark"
       @close="closeSubtitleFullscreen" />
     <!-- <div
       class="session-content__subtitle"
@@ -156,7 +162,7 @@
     <button
       v-if="!isBottom"
       @click="scrollToBottom(true)"
-      class="bottom-session-button bottom-session-button-desktop"
+      class="bottom-session-button bottom-session-button-desktop outline"
       :class="{ has_subtitles: displaySubtitles }">
       <span class="icon bottom-arrow"></span>
       <span class="label">{{
@@ -177,7 +183,7 @@
 import uuidv4 from "uuid/v4.js"
 
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import { sessionChannelModelMixin } from "@/mixins/sessionChannelModel.js"
 import getTextTurnWithTranslation from "@/tools/getTextTurnWithTranslation.js"
@@ -191,7 +197,7 @@ import SessionChannelTurn from "@/components/SessionChannelTurn.vue"
 import SessionChannelTurnPartial from "@/components/SessionChannelTurnPartial.vue"
 import Svglogo from "@/svg/Microphone.vue"
 import SessionSubtitle from "@/components/SessionSubtitle.vue"
-import Loading from "@/components/Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 import SubtitleFullscreen from "@/components-mobile/SubtitleFullscreen.vue"
 
 export default {
@@ -244,6 +250,26 @@ export default {
       required: false,
       default: false,
     },
+    watermarkFrequency: {
+      type: Number,
+      required: true,
+    },
+    watermarkDuration: {
+      type: Number,
+      required: true,
+    },
+    watermarkContent: {
+      type: String,
+      required: true,
+    },
+    watermarkPinned: {
+      type: Boolean,
+      required: true,
+    },
+    displayWatermark: {
+      type: Boolean,
+      required: true,
+    },
   },
   data() {
     return {
@@ -266,21 +292,16 @@ export default {
     //     uuid: uuidv4(),
     //   }
     // })
-    this.loading = false
-    this.init()
 
     document.addEventListener("keydown", this.keydown)
   },
   beforeDestroy() {
-    this.$sessionWS.unSubscribeRoom()
+    this.$apiEventWS.unSubscribeSessionRoom()
     document.removeEventListener("keydown", this.keydown)
   },
   computed: {
     channelIndex() {
       return this.channelId
-    },
-    lastTwoTurns() {
-      return this.turns.slice(-2)
     },
     style() {
       return {
@@ -295,16 +316,24 @@ export default {
         this.partialText !== ""
       )
     },
+    isMobile() {
+      // test mediaquery
+      return window.matchMedia("(max-width: 1100px)").matches
+    },
+    lastTurn() {
+      return this.turns.slice(-1)[0]
+    },
+    lastOfPreviousTurns() {
+      return this.previousTurns.slice(-1)[0]
+    },
   },
   watch: {
     channel: {
       async handler() {
         this.loading = true
-        this.init()
-        await this.loadPreviousTranscrition()
+        await this.init()
         this.loading = false
         this.scrollToBottom()
-        this.clearSelectedTurns()
       },
       deep: true,
       immediate: true,
@@ -312,25 +341,32 @@ export default {
     displaySubtitles() {
       this.scrollToBottom(true)
     },
-    "$sessionWS.state.isConnected"(newValue, oldValue) {
+    "$apiEventWS.state.isConnected"(newValue, oldValue) {
       if (newValue) {
         this.subscribeToWebsocket()
       }
     },
+    async "$apiEventWS.state.connexionRestored"(newValue, oldValue) {
+      if (newValue) {
+        await this.init()
+      }
+    },
   },
   methods: {
-    init() {
+    async init() {
       this.partialText = ""
       this.turns = []
-      if (this.$sessionWS.state.isConnected) {
+      this.clearSelectedTurns()
+      if (this.$apiEventWS.state.isConnected) {
         this.subscribeToWebsocket()
       }
+      await this.loadPreviousTranscrition()
       setTimeout(() => {
         this.scrollToBottom(true)
       }, 1000)
     },
     subscribeToWebsocket() {
-      this.$sessionWS.subscribeRoom(
+      this.$apiEventWS.subscribeSessionRoom(
         this.sessionId,
         this.channelIndex,
         this.onPartial.bind(this),

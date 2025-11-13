@@ -29,13 +29,17 @@
       <!-- SELECTION MICRO-->
       <section class="flex col gap-small">
         <div class="form-field flex col medium-margin-top">
-          <label>{{
+          <label for="microphone-selection">{{
             $t("quick_session.setup_microphone.microphone_select_label")
           }}</label>
-          <CustomSelect
-            :options="optionsDeviceList"
+          <select
             v-model="selectedDeviceId"
-            class="fullwidth" />
+            id="microphone-selection"
+            class="fullwidth">
+            <option v-for="d in optionsDeviceList" :value="d.value">
+              {{ d.text }}
+            </option>
+          </select>
         </div>
       </section>
       <!-- TEST MICROPHONE SECTION-->
@@ -82,34 +86,32 @@
         @click="trashSession">
         <span class="label">{{ $t("modal.cancel") }}</span>
       </button>
-      <!-- <button class="secondary" v-if="!microphoneWorked" @click="setupSession">
-        <span class="label">{{
-          $t("quick_session.setup_microphone.bypass")
-        }}</span>
-      </button> -->
-      <button class="btn green" type="submit" @click="setupSession">
-        <span class="icon apply"></span>
-        <span class="label">{{ l_applyLabel }} </span>
-      </button>
+
+      <Button
+        variant="primary"
+        icon="check"
+        :label="l_applyLabel"
+        type="submit"
+        @click="setupSession" />
     </div>
 
     <div class="flex medium-margin-top gap-small" v-else>
       <button class="btn secondary" @click="trashSession">
-        <span class="icon trash"></span>
+        <ph-icon name="trash"></ph-icon>
         <span class="label">
           {{ $t("quick_session.restore.trash_button") }}
         </span>
       </button>
       <button class="btn secondary" @click="saveSession">
-        <span class="icon save"></span>
+        <ph-icon name="file"></ph-icon>
         <span class="label">
           {{ $t("quick_session.restore.save_button") }}
         </span>
       </button>
 
       <div class="flex1"></div>
-      <button class="btn green" @click="setupSession" type="submit">
-        <span class="icon apply"></span>
+      <button class="btn primary" @click="setupSession" type="submit">
+        <ph-icon name="check" size="md" class="icon" />
         <span class="label">
           {{ $t("quick_session.restore.continue_button") }}
         </span>
@@ -118,14 +120,14 @@
   </div>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import { customDebug } from "@/tools/customDebug.js"
 
 import { microphoneMixin } from "@/mixins/microphone.js"
 import MainContent from "@/components/MainContent.vue"
-import CustomSelect from "@/components/CustomSelect.vue"
-import StatusLed from "@/components/StatusLed.vue"
+import CustomSelect from "@/components/molecules/CustomSelect.vue"
+import StatusLed from "@/components/atoms/StatusLed.vue"
 export default {
   mixins: [microphoneMixin],
   props: {
@@ -142,7 +144,7 @@ export default {
     return {
       waitingPermission: true,
       error: null,
-      optionsDeviceList: {},
+      optionsDeviceList: [],
       selectedDeviceId: "default",
       microphoneWorked: false,
       audioDevices: null,
@@ -157,7 +159,7 @@ export default {
   },
   computed: {
     selectedMicroName() {
-      return this.optionsDeviceList["devices"].find(
+      return this.optionsDeviceList.find(
         (device) => device.value == this.selectedDeviceId,
       ).text
     },
@@ -222,9 +224,7 @@ export default {
           value: "default",
         })
       }
-      this.optionsDeviceList = {
-        devices: [...res],
-      }
+      this.optionsDeviceList = [...res]
     },
     onVadEvent(speaking) {
       this.microphoneWorked = this.microphoneWorked || speaking

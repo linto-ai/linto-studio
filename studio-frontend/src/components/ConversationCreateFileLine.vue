@@ -5,7 +5,7 @@
       v-model="field.value"
       :disabled="disabled"
       inputFullWidth>
-      <div
+      <!-- <div
         class="flex"
         :title="$t('conversation_creation.offline.label_icon_source.file')"
         v-if="uploadType == 'file'">
@@ -36,22 +36,22 @@
           :alt="
             $t('conversation_creation.offline.label_icon_source.url')
           "></span>
-      </div>
+      </div> -->
 
-      <button
-        class="btn black"
-        @click="deleteFile"
+      <Button
         v-if="!disabled"
-        type="button">
-        <span class="icon trash"></span>
-      </button>
-      <button
+        @click="deleteFile"
         type="button"
-        class="btn black"
+        icon="trash"
+        intent="destructive"
+        variant="secondary" />
+
+      <Button
+        v-if="!disabled"
         @click="playOrStopFile"
-        v-if="!disabled">
-        <span :class="`icon ${isPlaying ? 'pause' : 'play'}`"></span>
-      </button>
+        type="button"
+        variant="secondary"
+        :icon="isPlaying ? 'pause' : 'play'" />
     </FormInput>
     <progress
       v-if="disabled"
@@ -62,9 +62,9 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
-import FormInput from "@/components/FormInput.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 
 export default {
   props: {

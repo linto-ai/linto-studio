@@ -1,50 +1,30 @@
 <template>
-  <MainContent noBreadcrumb :organizationPage="false" box>
+  <LayoutV2>
     <template v-slot:breadcrumb-actions>
-      <!-- <div class="flex flex1 gap-medium align-center justify-center">
-        <router-link :to="sessionListRoute" class="btn secondary">
-          <span class="icon back"></span>
-          <span class="label">{{
-            $t("session.detail_page.back_to_listing")
-          }}</span>
-        </router-link>
-
-        <!-- title -->
-      <!-- <SessionStatus
-          v-if="sessionLoaded"
-          :session="session"
-          withText
-          class="flex1" />
-
-        
-      </div> -->
-
       <SessionHeader
-        v-if="sessionLoaded"
         :sessionListRoute="sessionListRoute"
         :isAuthenticated="isAuthenticated"
         :sessionLoaded="sessionLoaded"
         :name="name"
         :session="session">
-        <template v-slot:right-button-desktop>
-          <router-link :to="liveRoute" class="btn">
-            <span class="icon text"></span>
-            <span class="label">{{
-              $t("session.detail_page.back_to_live")
-            }}</span>
-          </router-link>
-        </template>
-        <template v-slot:right-button-mobile>
-          <router-link
+        <IsMobile>
+          <Button
             :to="liveRoute"
-            class="btn secondary only-icon"
-            :aria-label="$t('session.detail_page.back_to_live')">
-            <span class="icon text"></span>
-          </router-link>
-        </template>
+            variant="primary"
+            :aria-label="$t('session.detail_page.back_to_live')"
+            :title="$t('session.detail_page.back_to_live')"
+            icon="text-align-left" />
+          <template #desktop>
+            <Button
+              :to="liveRoute"
+              variant="primary"
+              size="sm"
+              :label="$t('session.detail_page.back_to_live')"
+              icon="text-align-left" />
+          </template>
+        </IsMobile>
       </SessionHeader>
     </template>
-
     <div class="flex1 medium-padding" v-if="sessionLoaded">
       <h1 class="center-text">{{ name }}</h1>
       <div class="flex wrap">
@@ -56,28 +36,105 @@
             </h2>
             <FormInput :field="fieldPublicLink">
               <template v-slot:content-after-input>
-                <button class="btn" @click="copyPublicLink">
-                  <span class="icon apply" v-if="linkHasBeenCopied"></span>
-                  <span class="icon copy" v-else></span>
-                  <span class="label" v-if="linkHasBeenCopied">{{
-                    $t("session.settings_page.copy_link_button_done")
-                  }}</span>
-                  <span class="label" v-else>{{
-                    $t("session.settings_page.copy_link_button")
-                  }}</span>
-                </button>
-                <button class="btn" @click="openModalEditSessionAlias">
-                  <span class="icon edit"></span>
+                <Button
+                  variant="secondary"
+                  @click="copyPublicLink"
+                  size="sm"
+                  :icon="linkHasBeenCopied ? 'check' : 'clipboard'"
+                  :label="
+                    linkHasBeenCopied
+                      ? $t('session.settings_page.copy_link_button_done')
+                      : $t('session.settings_page.copy_link_button')
+                  " />
+
+                <Button
+                  variant="secondary"
+                  @click="openModalEditSessionAlias"
+                  size="sm"
+                  icon="pencil"
+                  :label="$t('session.settings_page.edit_alias_button')" />
+                <!-- <button class="btn" @click="openModalEditSessionAlias">
+                  <ph-icon name="pencil"></ph-icon>
                   <span class="label">{{
                     $t("session.settings_page.edit_alias_button")
                   }}</span>
-                </button>
+                </button> -->
               </template>
             </FormInput>
+
             <FormCheckbox
-              :field="fieldIsPublic"
-              v-model="fieldIsPublic.value"
-              :disabled="isActive"></FormCheckbox>
+              v-if="enableWatermark"
+              switchDisplay
+              :field="fieldDisplayWatermark"
+              v-model="fieldDisplayWatermark.value">
+              <template v-slot:content-after-label>
+                <div class="flex gap-small small-margin-left">
+                  <Button
+                    icon="gear"
+                    variant="transparent"
+                    :aria-label="
+                      $t('session.live_page.watermark_settings.settings_button')
+                    "
+                    :title="
+                      $t('session.live_page.watermark_settings.settings_button')
+                    "
+                    @click="showWatermarkSettings = true" />
+
+                  <Button
+                    icon="push-pin"
+                    variant="transparent"
+                    @click="togglePin"
+                    :aria-label="
+                      $t('session.live_page.watermark_settings.pin_button')
+                    "
+                    :title="
+                      $t('session.live_page.watermark_settings.unpin_button')
+                    "
+                    v-if="fieldWatermarkPinned.value" />
+
+                  <Button
+                    icon="push-pin-slash"
+                    variant="transparent"
+                    @click="togglePin"
+                    :aria-label="
+                      $t('session.live_page.watermark_settings.pin_button')
+                    "
+                    :title="
+                      $t('session.live_page.watermark_settings.pin_button')
+                    "
+                    v-else />
+                  <!-- <button
+                    class="only-icon transparent"
+                    :aria-label="
+                      $t('session.live_page.watermark_settings.unpin_button')
+                    "
+                    
+                    @click="togglePin"
+                    v-if="fieldWatermarkPinned.value">
+                    <span class="icon pin-on" />
+                  </button> -->
+                  <!-- <button
+                    class="only-icon transparent"
+                    :aria-label="
+                      $t('session.live_page.watermark_settings.pin_button')
+                    "
+                    :title="
+                      $t('session.live_page.watermark_settings.pin_button')
+                    "
+                    @click="togglePin"
+                    v-else>
+                    <span class="icon pin" />
+                  </button> -->
+                </div>
+              </template>
+            </FormCheckbox>
+          </section>
+          <section class="flex col gap-medium">
+            <h2>{{ $t("session.settings_page.visibility_title") }}</h2>
+            <FormRadio
+              inline
+              :field="fieldSessionVisibility"
+              v-model="fieldSessionVisibility.value" />
           </section>
           <section>
             <h2 class="flex align-center gap-medium">
@@ -116,52 +173,23 @@
         </div>
         <div class="flex col gap-medium session-settings-right align-center">
           <div class="flex col gap-medium">
-            <!-- <button
-            class="btn flex1"
-            v-if="isPending"
-            @click="startSession"
-            :disabled="isStarting">
-            <span class="icon play"></span>
-            <span class="label">{{
-              $t("session.detail_page.start_button")
-            }}</span>
-          </button> -->
-
             <!-- Delete and save -->
-            <button
-              class="btn flex1 red-border flex"
+            <Button
               v-if="isStarted && !isActive"
+              icon="stop"
+              :label="$t('session.detail_page.stop_button')"
               @click="stopSession"
-              :title="titleButtonDelete"
-              :disabled="isStoping">
-              <span class="icon stop"></span>
-              <span class="label flex1">{{
-                $t("session.detail_page.stop_button")
-              }}</span>
-            </button>
-            <!-- Force delete and save -->
-            <button
-              class="btn flex1 red-border flex"
+              variant="primary"
+              intent="destructive"
+              size="sm"></Button>
+            <Button
               v-if="isActive"
+              icon="stop"
+              :label="$t('session.detail_page.stop_force_button')"
               @click="openModalDeleteSession"
-              :title="titleButtonDelete"
-              :disabled="isStoping">
-              <span class="icon stop"></span>
-              <span class="label flex1">{{
-                $t("session.detail_page.stop_force_button")
-              }}</span>
-            </button>
-
-            <!-- <button
-            class="btn red-border flex1"
-            :disabled="isDeleting || isActive"
-            :title="titleButtonDelete"
-            @click="openModalDeleteSession">
-            <span class="icon trash"></span>
-            <span class="label">{{
-              $t("session.detail_page.delete_button")
-            }}</span>
-          </button> -->
+              variant="primary"
+              intent="destructive"
+              size="sm"></Button>
           </div>
           <Qrcode :value="publicLink" class="session-settings-qr-code" />
         </div>
@@ -190,8 +218,8 @@
           <span class="label">Reset</span>
         </button>
 
-        <button @click="updateSession" class="btn green">
-          <span class="icon apply"></span>
+        <button @click="updateSession" class="btn primary">
+          <ph-icon name="check" size="md" class="icon" />
           <span class="label">Sauvegarder</span>
         </button>
       </div>
@@ -208,11 +236,18 @@
         v-if="showModalEditSessionAlias"
         @on-cancel="closeModalEditSessionAlias"
         @on-confirm="updateSessionAlias" />
+
+      <ModalWatermarkSettings
+        v-if="showWatermarkSettings"
+        @on-cancel="closeWatermarkSettings"
+        @on-confirm="closeWatermarkSettings"
+        :field="fieldWatermarkSettings"
+        v-model="fieldWatermarkSettings.value" />
     </div>
-  </MainContent>
+  </LayoutV2>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import { sessionMixin } from "@/mixins/session.js"
 
@@ -222,13 +257,16 @@ import { formsMixin } from "@/mixins/forms.js"
 
 import isSameDateTimeWithoutSeconds from "@/tools/isSameDateTimeWithoutSeconds.js"
 import isAuthenticated from "@/tools/isAuthenticated.js"
+import { getEnv } from "@/tools/getEnv"
 
 import { apiUpdateSession } from "@/api/session.js"
 
 import SessionNotStarted from "@/components/SessionNotStarted.vue"
-import LabeledValue from "@/components/LabeledValue.vue"
-import FormInput from "@/components/FormInput.vue"
-import FormCheckbox from "@/components/FormCheckbox.vue"
+import LabeledValue from "@/components/atoms/LabeledValue.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
+import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
+import FormRadio from "@/components/molecules/FormRadio.vue"
+
 import SessionChannelsTable from "@/components/SessionChannelsTable.vue"
 import AppointmentSelector from "@/components/AppointmentSelector.vue"
 import ModalForceDeleteSession from "@/components/ModalForceDeleteSession.vue"
@@ -237,20 +275,16 @@ import SessionStatus from "@/components/SessionStatus.vue"
 import MetadataList from "@/components/MetadataList.vue"
 import SessionHeader from "@/components/SessionHeader.vue"
 import ModalEditSessionAlias from "@/components/ModalEditSessionAlias.vue"
-import Qrcode from "@/components/Qrcode.vue"
+import Qrcode from "@/components/atoms/Qrcode.vue"
+import ModalWatermarkSettings from "@/components/ModalWatermarkSettings.vue"
+import LayoutV2 from "@/layouts/v2-layout.vue"
 
 export default {
   mixins: [sessionMixin, formsMixin],
   props: {},
   data() {
     return {
-      fields: [
-        "name",
-        "fieldIsPublic",
-        "fieldAppointment",
-        "fieldAutoStop",
-        "fieldAutoStart",
-      ],
+      fields: ["name", "fieldAppointment", "fieldAutoStop", "fieldAutoStart"],
       fieldPublicLink: {
         value: null,
         error: null,
@@ -258,11 +292,52 @@ export default {
         readOnly: true,
         label: this.$t("session.settings_page.publicLink_label"),
       },
-      fieldIsPublic: {
+      fieldSessionVisibility: {
+        value: "public",
+        error: null,
+        valid: true,
+        options: [
+          {
+            name: "private",
+            label: this.$i18n.t(
+              "session.settings_page.visibility_private_label",
+            ),
+          },
+          {
+            name: "organization",
+            label: this.$i18n.t(
+              "session.settings_page.visibility_organization_label",
+            ),
+          },
+          {
+            name: "public",
+            label: this.$i18n.t(
+              "session.settings_page.visibility_public_label",
+            ),
+          },
+        ],
+      },
+      fieldDisplayWatermark: {
         value: null,
         error: null,
         valid: false,
-        label: this.$t("session.settings_page.isPublic_label"),
+        label: this.$t("session.settings_page.displayWatermark_label"),
+      },
+      fieldWatermarkSettings: {
+        value: {
+          content: null,
+          frequency: null,
+          duration: null,
+        },
+        error: null,
+        valid: false,
+        label: this.$t("session.settings_page.watermarkSettings_label"),
+      },
+      fieldWatermarkPinned: {
+        value: null,
+        error: null,
+        valid: false,
+        label: this.$t("session.settings_page.watermarkPinned_label"),
       },
       fieldAppointment: {
         ...EMPTY_FIELD,
@@ -292,12 +367,14 @@ export default {
       formState: "idle",
       localChannels: [],
       channelsHasChanged: false,
+      showWatermarkSettings: false,
     }
   },
   created() {},
   computed: {
     hasChanged() {
-      const publicChanged = this.fieldIsPublic.value !== this.isPublic
+      //const publicChanged = this.fieldIsPublic.value !== this.isPublic
+
       const autoStartChanged = this.fieldAutoStart.value !== this.autoStart
       const autoStopChanged = this.fieldAutoStop.value !== this.autoStop
       const startDateChanged = !isSameDateTimeWithoutSeconds(
@@ -311,7 +388,7 @@ export default {
       )
 
       return (
-        publicChanged ||
+        //publicChanged ||
         autoStartChanged ||
         autoStopChanged ||
         startDateChanged ||
@@ -327,6 +404,9 @@ export default {
     isAuthenticated() {
       return isAuthenticated()
     },
+    enableWatermark() {
+      return getEnv("VUE_APP_ENABLE_WATERMARK") === "true"
+    },
   },
   mounted() {},
   watch: {
@@ -341,6 +421,26 @@ export default {
       },
       deep: true,
     },
+    "fieldDisplayWatermark.value": {
+      handler(value) {
+        if (value != this.displayWatermark) {
+          this.syncWatermarkSettings({
+            display: this.fieldDisplayWatermark.value,
+            frequency: this.fieldWatermarkSettings.value.frequency,
+            duration: this.fieldWatermarkSettings.value.duration,
+            content: this.fieldWatermarkSettings.value.content,
+            pinned: this.fieldWatermarkPinned.value,
+          })
+        }
+      },
+    },
+    "fieldSessionVisibility.value": {
+      handler(value) {
+        if (value != this.visibility) {
+          this.syncVisibility(this.fieldSessionVisibility.value)
+        }
+      },
+    },
   },
   methods: {
     onSessionUpdatePostProcess(newSession) {
@@ -353,10 +453,17 @@ export default {
       this.sessionLoaded = true
     },
     initValues() {
+      this.fieldDisplayWatermark.value = this.displayWatermark
+      this.fieldWatermarkSettings.value = {
+        content: this.watermarkContent,
+        frequency: this.watermarkFrequency,
+        duration: this.watermarkDuration,
+      }
+      this.fieldWatermarkPinned.value = this.watermarkPinned
       this.fieldAutoStart.value = this.autoStart
       this.fieldAutoStop.value = this.autoStop
       this.fieldPublicLink.value = this.publicLink
-      this.fieldIsPublic.value = this.isPublic
+      this.fieldSessionVisibility.value = this.visibility
 
       this.fieldAppointment.value = [this.startTime, this.endTime]
       this.localChannels = structuredClone(this.session.channels)
@@ -400,6 +507,30 @@ export default {
         } catch (error) {}
       }, 2000)
     },
+    closeWatermarkSettings() {
+      this.syncWatermarkSettings({
+        display: this.fieldDisplayWatermark.value,
+        frequency: this.fieldWatermarkSettings.value.frequency,
+        duration: this.fieldWatermarkSettings.value.duration,
+        content: this.fieldWatermarkSettings.value.content,
+        pinned: this.fieldWatermarkPinned.value,
+      })
+      this.showWatermarkSettings = false
+    },
+    togglePin() {
+      this.fieldWatermarkPinned.value = !this.fieldWatermarkPinned.value
+      this.syncWatermarkSettings({
+        display: this.fieldDisplayWatermark.value,
+        frequency: this.fieldWatermarkSettings.value.frequency,
+        duration: this.fieldWatermarkSettings.value.duration,
+        content: this.fieldWatermarkSettings.value.content,
+        pinned: this.fieldWatermarkPinned.value,
+      })
+      this.session.meta["@watermark"].pinned = this.fieldWatermarkPinned.value
+    },
+    openWatermarkSettings() {
+      this.showWatermarkSettings = true
+    },
     resetSession() {
       this.initValues()
     },
@@ -416,6 +547,17 @@ export default {
       if (this.testFields()) {
         let newValues = {
           ...this.session,
+          meta: {
+            ...this.session.meta,
+            "@watermark": {
+              ...this?.session?.meta?.["@watermark"],
+              display: this.fieldDisplayWatermark.value,
+              frequency: this.fieldWatermarkSettings.value.frequency,
+              duration: this.fieldWatermarkSettings.value.duration,
+              content: this.fieldWatermarkSettings.value.content,
+              pinned: this.fieldWatermarkPinned.value,
+            },
+          },
           scheduleOn: startDateTime,
           endOn: endDateTime,
           autoStart: this.fieldAutoStart.value,
@@ -459,6 +601,7 @@ export default {
     LabeledValue,
     FormInput,
     FormCheckbox,
+    FormRadio,
     SessionChannelsTable,
     AppointmentSelector,
     ModalForceDeleteSession,
@@ -466,6 +609,20 @@ export default {
     SessionHeader,
     ModalEditSessionAlias,
     Qrcode,
+    ModalWatermarkSettings,
+    LayoutV2,
   },
 }
 </script>
+
+<style lang="scss" scoped>
+.topbar {
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--neutral-20);
+  background-color: var(--background-primary-soft);
+}
+</style>

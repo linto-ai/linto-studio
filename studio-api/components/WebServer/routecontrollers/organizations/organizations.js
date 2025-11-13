@@ -5,12 +5,9 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const PLATFORM_ROLES = require(`${process.cwd()}/lib/dao/users/platformRole`)
+const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
 
-const {
-  OrganizationError,
-  OrganizationUnsupportedMediaType,
-  OrganizationConflict,
-} = require(
+const { OrganizationError, OrganizationUnsupportedMediaType } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
 
@@ -34,7 +31,10 @@ async function createOrganization(req, res, next) {
     const orga_created = await model.organizations.getById(
       result.insertedId.toString(),
     )
-    return res.status(201).send(orga_created[0])
+
+    const orga = orga_created[0]
+
+    return res.status(201).send(orga)
   } catch (err) {
     next(err)
   }
@@ -51,7 +51,13 @@ async function getOrganization(req, res, next) {
     if (lorganization.length !== 1) throw new OrganizationError()
 
     let organization = lorganization[0]
+
+    organization.users = organization.users.filter(
+      (u) => u.type !== USER_TYPE.M2M,
+    )
+
     let orgaUser = []
+
     for (let luser of organization.users) {
       let user = await model.users.getById(luser.userId)
 
@@ -61,6 +67,9 @@ async function getOrganization(req, res, next) {
       })
     }
     organization.users = orgaUser
+    organization.categories = await model.categories.getSystemCategories(
+      req.params.organizationId,
+    )
     return res.status(200).send(organization)
   } catch (err) {
     next(err)

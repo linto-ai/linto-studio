@@ -1,5 +1,5 @@
 <template>
-  <div class="flex col medium-padding gap-medium">
+  <div class="flex col small-padding gap-medium">
     <SessionChannelsSelector
       v-if="channels.length > 1"
       :channels="channels"
@@ -19,24 +19,86 @@
     <FormCheckbox
       :field="displaySubtitlesField"
       switchDisplay
-      v-model="displaySubtitlesField.value" />
+      v-model="displaySubtitlesField.value">
+    </FormCheckbox>
+    <div
+      class="subSection flex col gap-small"
+      v-if="displaySubtitlesField.value">
+      <FormInput :field="fontSizeField" v-model="fontSizeField.value" />
 
-    <FormInput
-      :field="fontSizeField"
-      v-model="fontSizeField.value"
-      v-if="displaySubtitlesField.value" />
+      <FormCheckbox
+        v-if="enableWatermark && isAtLeastMeetingManager && !quickSession"
+        :field="displayWatermarkField"
+        switchDisplay
+        v-model="displayWatermarkField.value">
+        <template v-slot:content-after-label>
+          <div class="flex gap-small small-margin-left">
+            <Button
+              icon="gear"
+              variant="transparent"
+              :aria-label="
+                $t('session.live_page.watermark_settings.settings_button')
+              "
+              :title="
+                $t('session.live_page.watermark_settings.settings_button')
+              "
+              @click="showWatermarkSettings = true" />
+
+            <Button
+              icon="push-pin"
+              variant="transparent"
+              @click="togglePin"
+              :aria-label="
+                $t('session.live_page.watermark_settings.pin_button')
+              "
+              :title="$t('session.live_page.watermark_settings.unpin_button')"
+              v-if="watermarkPinned" />
+
+            <Button
+              icon="push-pin-slash"
+              variant="transparent"
+              @click="togglePin"
+              :aria-label="
+                $t('session.live_page.watermark_settings.pin_button')
+              "
+              :title="$t('session.live_page.watermark_settings.pin_button')"
+              v-else />
+          </div>
+        </template>
+      </FormCheckbox>
+      <Button
+        variant="secondary"
+        intent="destructive"
+        :label="$t('session.live_page.clear_subtitle')"
+        @click="clearSubtitles" />
+      <!-- <button @click="clearSubtitles">
+        <span class="icon clear-history" />
+        <span class="label">{{ $t("session.live_page.clear_subtitle") }}</span>
+      </button> -->
+      <ModalWatermarkSettings
+        v-if="showWatermarkSettings"
+        @on-cancel="closeWatermarkSettings"
+        @on-confirm="closeWatermarkSettings"
+        :field="watermarkSettingsField"
+        v-model="watermarkSettingsField.value" />
+    </div>
   </div>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import EMPTY_FIELD from "@/const/emptyField"
-import FormInput from "@/components/FormInput.vue"
-import FormCheckbox from "@/components/FormCheckbox.vue"
+import { getEnv } from "@/tools/getEnv"
+import { orgaRoleMixin } from "@/mixins/orgaRole"
+
+import FormInput from "@/components/molecules/FormInput.vue"
+import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import SessionTranslationSelection from "@/components/SessionTranslationSelection.vue"
 import SessionChannelsSelector from "@/components/SessionChannelsSelector.vue"
+import ModalWatermarkSettings from "@/components/ModalWatermarkSettings.vue"
 
 export default {
+  mixins: [orgaRoleMixin],
   props: {
     selectedChannel: {
       type: Object,
@@ -54,6 +116,10 @@ export default {
       type: Boolean,
       default: true,
     },
+    displayWatermark: {
+      type: Boolean,
+      default: true,
+    },
     fontSize: {
       type: String,
       default: "40",
@@ -63,6 +129,30 @@ export default {
       required: true,
     },
     qualifiedForCrossSubtitles: {
+      type: Boolean,
+      default: false,
+    },
+    watermarkFrequency: {
+      type: Number,
+      required: false,
+    },
+    watermarkDuration: {
+      type: Number,
+      required: false,
+    },
+    watermarkContent: {
+      type: String,
+      required: false,
+    },
+    displayWatermark: {
+      type: Boolean,
+      required: false,
+    },
+    watermarkPinned: {
+      type: Boolean,
+      required: false,
+    },
+    quickSession: {
       type: Boolean,
       default: false,
     },
@@ -89,15 +179,62 @@ export default {
         value: this.displayLiveTranscription,
         label: this.$t("session.detail_page.display_live_transcription_label"),
       },
+      displayWatermarkField: {
+        ...EMPTY_FIELD,
+        value: this.displayWatermark,
+        label: this.$t("session.detail_page.display_watermark_label"),
+      },
+      watermarkSettingsField: {
+        ...EMPTY_FIELD,
+        value: {
+          frequency: this.watermarkFrequency,
+          duration: this.watermarkDuration,
+          content: this.watermarkContent,
+        },
+      },
       p_selectedTranslation: this.selectedTranslation,
       p_selectedChannel: this.selectedChannel,
+      showWatermarkSettings: false,
     }
   },
   mounted() {},
-  methods: {},
+  methods: {
+    // updateWatermarkSettings({ frequency, duration, text }) {
+    //   this.$emit("updateWatermarkSettings", {
+    //     frequency,
+    //     duration,
+    //     text,
+    //     pinned: this.watermarkPinned,
+    //     display: this.displayWatermarkField.value,
+    //   })
+    //   this.closeWatermarkSettings()
+    // },
+    closeWatermarkSettings() {
+      this.showWatermarkSettings = false
+    },
+    togglePin() {
+      this.$emit(
+        "updateWatermarkSettings",
+        {
+          frequency: this.watermarkFrequency,
+          duration: this.watermarkDuration,
+          text: this.watermarkContent,
+          pinned: !this.watermarkPinned,
+          display: this.displayWatermarkField.value,
+        },
+        true,
+      )
+    },
+    clearSubtitles() {
+      bus.$emit("clear-session-subtitles")
+    },
+  },
   computed: {
     hasTranslations() {
       return this.selectedChannel?.translations?.length > 0
+    },
+    enableWatermark() {
+      return getEnv("VUE_APP_ENABLE_WATERMARK") === "true"
     },
   },
   watch: {
@@ -113,6 +250,9 @@ export default {
     displaySubtitles(value) {
       this.displaySubtitlesField.value = value
     },
+    displayWatermark(value) {
+      this.displayWatermarkField.value = value
+    },
     fontSize(value) {
       this.fontSizeField.value = value
     },
@@ -121,6 +261,15 @@ export default {
     },
     p_selectedChannel(value) {
       this.$emit("update:selectedChannel", value)
+    },
+    watermarkFrequency(value) {
+      this.watermarkSettingsField.value.frequency = value
+    },
+    watermarkDuration(value) {
+      this.watermarkSettingsField.value.duration = value
+    },
+    watermarkContent(value) {
+      this.watermarkSettingsField.value.content = value
     },
     "displayLiveTranscriptionField.value"(value) {
       this.$emit("update:displayLiveTranscription", value)
@@ -131,12 +280,39 @@ export default {
     "fontSizeField.value"(value) {
       this.$emit("update:fontSize", value)
     },
+    "displayWatermarkField.value"(value) {
+      this.$emit(
+        "updateWatermarkSettings",
+        {
+          frequency: this.watermarkFrequency,
+          duration: this.watermarkDuration,
+          content: this.watermarkContent,
+          pinned: !this.watermarkPinned,
+          display: value,
+        },
+        true,
+      )
+    },
+    "watermarkSettingsField.value"(value) {
+      this.$emit(
+        "updateWatermarkSettings",
+        {
+          frequency: value.frequency,
+          duration: value.duration,
+          content: value.content,
+          pinned: this.watermarkPinned,
+          display: this.displayWatermarkField.value,
+        },
+        true,
+      )
+    },
   },
   components: {
     FormInput,
     FormCheckbox,
     SessionTranslationSelection,
     SessionChannelsSelector,
+    ModalWatermarkSettings,
   },
 }
 </script>

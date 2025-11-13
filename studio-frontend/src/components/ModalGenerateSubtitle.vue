@@ -1,11 +1,12 @@
 <template>
   <ModalNew
+    value
     :title="$t('conversation.subtitles.generate_subs')"
     :actionBtnLabel="$t('conversation.subtitles.generate')"
     :cancelButton="false"
     @on-cancel="() => this.$emit('on-close')"
     @on-confirm="generateSubtitles"
-    small>
+    size="sm">
     <form action="">
       <FormInput :field="versionName" v-model="versionName.value" />
       <label for="splitOptions">
@@ -33,11 +34,11 @@
   </ModalNew>
 </template>
 <script>
-import ModalNew from "./ModalNew.vue"
-import FormInput from "@/components/FormInput.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 import { formsMixin } from "@/mixins/forms.js"
 import { testName } from "../tools/fields/testName"
-import CustomSelect from "./CustomSelect.vue"
+import CustomSelect from "@/components/molecules/CustomSelect.vue"
 import { workerSendMessage } from "../tools/worker-message"
 export default {
   mixins: [formsMixin],
@@ -78,26 +79,26 @@ export default {
       selectOptions: {
         action: [
           {
-            value: 1,
+            value: "1",
             text: this.$i18n.t(
-              "conversation.subtitles.split_selection.no_split"
+              "conversation.subtitles.split_selection.no_split",
             ),
           },
           {
-            value: 2,
+            value: "2",
             text: this.$i18n.t(
-              "conversation.subtitles.split_selection.split_over_two_lines"
+              "conversation.subtitles.split_selection.split_over_two_lines",
             ),
           },
           {
-            value: 3,
+            value: "3",
             text: this.$i18n.t(
-              "conversation.subtitles.split_selection.split_over_three_lines"
+              "conversation.subtitles.split_selection.split_over_three_lines",
             ),
           },
         ],
       },
-      selectedOptionValue: 1,
+      selectedOptionValue: "1",
     }
   },
   computed: {
@@ -108,7 +109,7 @@ export default {
     },
     selectedOPtion() {
       return this.selectOptions.action.find(
-        (elem) => elem.value === this.selectedOptionValue
+        (elem) => elem.value === this.selectedOptionValue,
       )
     },
   },

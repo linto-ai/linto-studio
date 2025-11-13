@@ -11,6 +11,9 @@ const DEFAULT_MEMBER_RIGHTS = 3
 const DEFAULT_SPEAKER_NAME = "Unknown speaker"
 const DEFAULT_TRANSLATION_NAME = "Automatic Translation"
 const TYPES = require(`${process.cwd()}/lib/dao/conversation/types`)
+const { storeFile } = require(
+  `${process.cwd()}/components/WebServer/controllers/files/store`,
+)
 
 const { SessionError } = require(
   `${process.cwd()}/components/WebServer/error/exception/session`,
@@ -82,32 +85,40 @@ async function initCaptionsForConversation(sessionData, name) {
     const captions = []
     name = name || session.name || ""
 
-    for (const channel of session.channels) {
+    for (let channel of session.channels) {
       const audioId = `${session.id}-${channel.id}`
       const audioFormat = channel.compressAudio ? "mp3" : "wav"
+      if (
+        !channel.compressAudio &&
+        channel.keepAudio &&
+        !(channel.meta === undefined || channel.meta === null)
+      ) {
+        try {
+          const caption = initializeCaption(
+            session,
+            channel,
+            name,
+            session.channels.length,
+          )
 
-      if (!channel.compressAudio && channel.keepAudio) {
-        const caption = initializeCaption(
-          session,
-          channel,
-          name,
-          session.channels.length,
-        )
+          caption.metadata.audio = generateAudioMetadata(audioId, audioFormat)
+          const { serviceName, endpoint, lang, config } =
+            channel.meta.transcriptionService
+          caption.metadata.transcription = {
+            serviceName,
+            endpoint,
+            lang,
+            transcriptionConfig: config,
+          }
+          caption.jobs.transcription.state = "waiting"
+          captions.push(caption)
 
-        caption.metadata.audio = generateAudioMetadata(audioId, audioFormat)
-        const { serviceName, endpoint, lang, config } =
-          channel.meta.transcriptionService
-        caption.metadata.transcription = {
-          serviceName,
-          endpoint,
-          lang,
-          transcriptionConfig: config,
-        }
-        caption.jobs.transcription.state = "waiting"
-        captions.push(caption)
-
-        if (!channel.closedCaptions) {
-          continue
+          if (!channel.closedCaptions) {
+            continue
+          }
+        } catch (err) {
+          debug("Error initializing caption for channel with keepAudio:", err)
+          // We still process the channel captions
         }
       }
 
@@ -137,16 +148,27 @@ async function initCaptionsForConversation(sessionData, name) {
       if (channel.compressAudio && channel.keepAudio)
         caption.metadata.audio = generateAudioMetadata(audioId, audioFormat)
       if (!channel.compressAudio && channel.keepAudio) {
-        caption.metadata.audio = generateAudioMetadata(
-          session.id,
-          "mp3", //we force mp3, it's encoded in studio-api
-          "audio",
-        )
+        if (channel.meta === undefined || channel.meta === null) {
+          const file = {
+            name: `${audioId}.${audioFormat}`,
+            filepath: `${process.env.VOLUME_AUDIO_SESSION_PATH}/${audioId}.${audioFormat}`,
+          }
+          const fileTransform = await storeFile(file, "audio_session")
+          caption.metadata.audio = generateAudioMetadata(
+            fileTransform.filename.split(".")[0],
+            "mp3",
+            "audio",
+          )
+        } else {
+          caption.metadata.audio = generateAudioMetadata(
+            session.id,
+            "mp3", //we force mp3, it's encoded in studio-api
+            "audio",
+          )
+        }
       }
-
       captions.push(caption)
     }
-
     return captions
   } catch (err) {
     throw err
@@ -207,24 +229,6 @@ function initializeCaption(
   return caption
 }
 
-function processChannelCaptions(channel, caption, main = true) {
-  let closedCaptions = channel.closedCaptions
-
-  for (const channel_caption of closedCaptions) {
-    let spk_id = ensureSpeaker(caption, channel_caption)
-
-    let turn = createTurn(
-      channel_caption,
-      spk_id,
-      main,
-      channel.diarization,
-      caption,
-    )
-    if (!turn) continue
-    caption.text.push(turn)
-  }
-}
-
 function ensureSpeaker(caption, channel_caption) {
   let speakerName
   if (caption.type.mode === TYPES.TRANSLATION)
@@ -250,6 +254,46 @@ function ensureSpeaker(caption, channel_caption) {
   return existingSpeaker.speaker_id
 }
 
+function processChannelCaptions(channel, caption, main = true) {
+  let closedCaptions = []
+  let offset = 0
+  channel.closedCaptions.map((segment) => {
+    if (segment.locutor === "bot" && segment.aend) {
+      // Calculate duration and add it to offset when caption was cut off
+      const startDate = new Date(segment.astart)
+      const endDate = new Date(segment.aend)
+      const durationSeconds = (endDate - startDate) / 1000
+      offset += durationSeconds
+    } else {
+      // Adjust timing for non-bot segments on multiple captions
+      if (offset > 0) {
+        segment.start = Number((segment.start + offset).toFixed(2))
+        segment.end = Number((segment.end + offset).toFixed(2))
+      }
+      closedCaptions.push(segment) // Only push non-bot segments
+    }
+  })
+
+  let prevSegmentWithTimestamps = undefined
+
+  for (const channel_caption of closedCaptions) {
+    let spk_id = ensureSpeaker(caption, channel_caption)
+    if (channel_caption.locutor === "bot") {
+      prevSegmentWithTimestamps = channel_caption
+    }
+    let turn = createTurn(
+      channel_caption,
+      spk_id,
+      main,
+      channel.diarization,
+      caption,
+      prevSegmentWithTimestamps,
+    )
+    if (!turn) continue
+    caption.text.push(turn)
+  }
+}
+
 function createTurn(
   channel_caption,
   spk_id,
@@ -257,39 +301,48 @@ function createTurn(
   diarization = false,
   caption,
 ) {
-  if (main && diarization && !channel_caption.locutor) {
-    return
-  }
-  let turn = {
-    speaker_id: spk_id,
-    turn_id: uuidv4(),
-    raw_segment: channel_caption.text,
-    segment: channel_caption.text,
-    stime: channel_caption.start,
-    etime: channel_caption.end,
-    lang: channel_caption.lang,
-    words: [],
-  }
-  if (
-    caption.type.mode === TYPES.TRANSLATION &&
-    channel_caption.translations[caption.locale]
-  ) {
-    turn.segment = channel_caption.translations[caption.locale] // || channel_caption.text
-    turn.raw_segment = channel_caption.translations[caption.locale] //|| channel_caption.text
-  } else if (
-    caption.type.mode === TYPES.TRANSLATION &&
-    !channel_caption.translations[caption.locale]
-  )
-    return
+  try {
+    if (main && diarization && !channel_caption.locutor) {
+      return
+    }
 
-  turn.raw_segment.split(" ").forEach((word) => {
-    turn.words.push({
-      wid: uuidv4(),
-      word: word,
-    })
-  })
+    let turn = {
+      speaker_id: spk_id,
+      turn_id: uuidv4(),
+      raw_segment: channel_caption.text,
+      segment: channel_caption.text,
+      stime: channel_caption.start,
+      etime: channel_caption.end,
+      lang: channel_caption.lang,
+      words: [],
+    }
 
-  return turn
+    if (
+      caption.type.mode === TYPES.TRANSLATION &&
+      channel_caption?.translations[caption.locale]
+    ) {
+      turn.segment = channel_caption.translations[caption.locale]
+      turn.raw_segment = channel_caption.translations[caption.locale]
+    } else if (
+      caption.type.mode === TYPES.TRANSLATION &&
+      !channel_caption?.translations[caption.locale]
+    ) {
+      return
+    }
+
+    if (turn.raw_segment !== undefined) {
+      turn.raw_segment.split(" ").forEach((word) => {
+        turn.words.push({
+          wid: uuidv4(),
+          word: word,
+        })
+      })
+    }
+
+    return turn
+  } catch (err) {
+    return null
+  }
 }
 
 async function storeSession(session, name = undefined) {
@@ -460,9 +513,14 @@ async function storeSessionFromStop(req, next) {
     const session = await axios.get(
       process.env.SESSION_API_ENDPOINT + `/sessions/${req.params.id}`,
     )
+    let result = await storeSession(session, req.query.name)
 
-    await storeSession(session, req.query.name)
-
+    if (this.app.components.IoHandler !== undefined) {
+      this.app.components.IoHandler.emit("new_conversation_from_session", {
+        organizationId: session.organizationId,
+        ...result,
+      })
+    }
     model.sessionAlias.deleteByOrganizationAndSession(
       session.organizationId,
       req.params.id,
@@ -483,7 +541,14 @@ async function storeQuickMeetingFromStop(req, next) {
         process.env.SESSION_API_ENDPOINT + `/sessions/${req.params.id}`,
       )
       if (session.owner === req.payload.data.userId) {
-        await storeSession(session, req.query.name)
+        let result = await storeSession(session, req.query.name)
+
+        if (this.app.components.IoHandler !== undefined) {
+          this.app.components.IoHandler.emit("new_conversation_from_session", {
+            organizationId: session.organizationId,
+            ...result,
+          })
+        }
         next()
       } else {
         throw new SessionError(

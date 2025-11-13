@@ -6,6 +6,8 @@ import {
   apiDeleteSession,
   apiGetPublicSession,
   apiGetSessionAliasesBySessionId,
+  apiUpdateSession,
+  apiPatchSession,
 } from "../api/session"
 
 import { sessionModelMixin } from "./sessionModel"
@@ -56,7 +58,7 @@ export const sessionMixin = {
     )
   },
   beforeDestroy() {
-    //this.$sessionWS.unSubscribeOrganization()
+    //this.$apiEventWS.unSubscribeSessionsUpdate()
     bus.$off(`websocket/orga_${this.organizationId}_session_update`)
   },
   methods: {
@@ -83,6 +85,7 @@ export const sessionMixin = {
       }
 
       this.session = sessionRequest.data
+      this.$store.commit("sessions/addSession", this.session)
       await this.fetchAliases()
       this.sessionLoaded = true
     },
@@ -94,7 +97,7 @@ export const sessionMixin = {
     },
     async startSession() {
       this.isStarting = true
-      const start = await apiStartSession(this.organizationId, this.sessionId)
+      const start = await apiStartSession(this.organizationId, this.id)
 
       if (start.status === "error") {
         console.error("Error starting session", start)
@@ -106,7 +109,7 @@ export const sessionMixin = {
     },
     async stopSession() {
       this.isStoping = true
-      const start = await apiDeleteSession(this.organizationId, this.sessionId)
+      const start = await apiDeleteSession(this.organizationId, this.id)
 
       if (start.status === "error") {
         console.error("Error stoping session", start)
@@ -132,10 +135,7 @@ export const sessionMixin = {
     },
     async deleteSession() {
       this.isDeleting = true
-      const deleteSession = await apiDeleteSession(
-        this.organizationId,
-        this.sessionId,
-      )
+      const deleteSession = await apiDeleteSession(this.organizationId, this.id)
 
       if (deleteSession.status === "error") {
         console.error("Error deleting session", deleteSession)
@@ -155,17 +155,74 @@ export const sessionMixin = {
       this.isDeleting = false
     },
     subscribeToWebsocket() {
-      this.$sessionWS.subscribeOrganization(this.organizationId)
+      this.$apiEventWS.subscribeSessionsUpdate(this.organizationId)
     },
     onSessionUpdateEvent(value) {
       for (const updatedSession of value.updated) {
-        if (updatedSession.id === this.sessionId) {
+        if (updatedSession.id === this.id) {
           this.session = mergeSession(this.session, updatedSession)
         }
       }
 
       if (this.onSessionUpdatePostProcess) {
         this.onSessionUpdatePostProcess(this.session)
+      }
+    },
+    async syncVisibility(visibility) {
+      let req = await apiPatchSession(this.currentOrganizationScope, this.id, {
+        visibility,
+      })
+      if (req.status === "error") {
+        console.error("Error updating session", req)
+        bus.$emit("app_notif", {
+          status: "error",
+          message: this.$i18n.t("session.settings_page.error_update_message"),
+          timeout: null,
+        })
+        return
+      }
+      bus.$emit("app_notif", {
+        status: "success",
+        message: this.$i18n.t("session.settings_page.success_message"),
+        timeout: 3000,
+      })
+      this.session.visibility = visibility
+    },
+    async syncWatermarkSettings(
+      { frequency, duration, content, pinned, display },
+      silent = false,
+    ) {
+      let req = await apiPatchSession(this.currentOrganizationScope, this.id, {
+        meta: {
+          ...this.session.meta,
+          "@watermark": { frequency, duration, content, pinned, display },
+        },
+      })
+
+      if (req.status === "error") {
+        console.error("Error updating session", req)
+        if (!silent) {
+          bus.$emit("app_notif", {
+            status: "error",
+            message: this.$i18n.t("session.settings_page.error_update_message"),
+            timeout: null,
+          })
+        }
+        return
+      }
+      if (!silent) {
+        bus.$emit("app_notif", {
+          status: "success",
+          message: this.$i18n.t("session.settings_page.success_message"),
+          timeout: 3000,
+        })
+      }
+      this.session.meta["@watermark"] = {
+        frequency,
+        duration,
+        content,
+        pinned,
+        display,
       }
     },
   },
@@ -186,7 +243,7 @@ export const sessionMixin = {
       }
     },
     readyForWSConnection() {
-      return this.sessionLoaded && this.$sessionWS.state.isConnected
+      return this.sessionLoaded && this.$apiEventWS.state.isConnected
     },
   },
   watch: {

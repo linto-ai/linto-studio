@@ -2,7 +2,7 @@
   <section>
     <form @submit="updateRoles">
       <h2 class="small-margin-bottom">
-        {{ $t("usersettings.role_section.title") }}
+        {{ $t("user_settings.role_section.title") }}
       </h2>
 
       <div class="flex col gap-small">
@@ -25,7 +25,7 @@
       </div>
 
       <button type="submit" class="medium-margin-top">
-        {{ $t("usersettings.role_section.submit_button") }}
+        {{ $t("user_settings.role_section.submit_button") }}
       </button>
     </form>
     <div class="flex col gap-small medium-margin-top">
@@ -39,11 +39,11 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { apiAdminUpdateUser } from "@/api/admin.js"
 
-import Checkbox from "@/components/Checkbox.vue"
-import FormCheckbox from "@/components/FormCheckbox.vue"
+import Checkbox from "@/components/atoms/Checkbox.vue"
+import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 
@@ -124,12 +124,12 @@ export default {
       if (req.status === "success") {
         bus.$emit("app_notif", {
           status: "success",
-          message: this.$t("usersettings.role_section.notif_success"),
+          message: this.$t("user_settings.role_section.notif_success"),
         })
       } else {
         bus.$emit("app_notif", {
           status: "error",
-          message: this.$t("usersettings.role_section.notif_error"),
+          message: this.$t("user_settings.role_section.notif_error"),
         })
       }
 
@@ -160,12 +160,12 @@ export default {
       if (req.status === "success") {
         bus.$emit("app_notif", {
           status: "success",
-          message: this.$t("usersettings.role_section.notif_success"),
+          message: this.$t("user_settings.role_section.notif_success"),
         })
       } else {
         bus.$emit("app_notif", {
           status: "error",
-          message: this.$t("usersettings.role_section.notif_error"),
+          message: this.$t("user_settings.role_section.notif_error"),
         })
       }
       this.suspend_field.disabled = false

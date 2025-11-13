@@ -35,14 +35,12 @@
       style="margin-top: 1rem">
       <div class="error-field flex1" v-if="formError">{{ formError }}</div>
       <div v-else class="flex1"></div>
-      <button
+
+      <Button
         type="submit"
-        class="btn green upload-media-button"
-        id="upload-media-button"
-        :disabled="formState === 'sending'">
-        <span class="icon apply"></span>
-        <span class="label">{{ formSubmitLabel }}</span>
-      </button>
+        variant="primary"
+        :loading="formState === 'sending'"
+        :label="formSubmitLabel"></Button>
     </div>
   </form>
 </template>
@@ -60,8 +58,8 @@ import {
 } from "@/api/session.js"
 import { testQuickSessionSettings } from "@/tools/fields/testQuickSessionSettings"
 
-import FormInput from "@/components/FormInput.vue"
-import FormCheckbox from "@/components/FormCheckbox.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
+import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import TranscriberProfileSelector from "@/components/TranscriberProfileSelector.vue"
 import QuickSessionSettings from "@/components/QuickSessionSettings.vue"
 

@@ -1,6 +1,6 @@
-# 1.5.5
+For details on upcoming versions, see the RELEASE file in the root directory.
 
-More information on RELEASE file in the main folder
+# 1.5.5
 
 - Added global platform role
 - Added global organization role

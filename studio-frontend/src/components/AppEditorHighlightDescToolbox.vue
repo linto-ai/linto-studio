@@ -11,24 +11,6 @@
           :categoryName="category.name"
           :color="category.color" />
       </div>
-
-      <!-- <p v-if="metadatas.length === 0">
-        {{ $t("conversation.highlight_toolbox.no-metadata") }}
-      </p>
-
-      <component
-        v-else
-        v-for="metadata of metadatas"
-        :is="metadatasComponents[metadata.schema]"
-        :metadata="metadata"
-        :conversationId="conversationId" />
-
-      <button class="btn green" @click="clickAddMetadata">
-        <span class="icon plus"></span>
-        <span class="label">{{
-          $t("conversation.highlight_toolbox.button-add-metadata")
-        }}</span>
-      </button> -->
     </div>
 
     <!-- <AppEditorMetadataModal
@@ -39,11 +21,11 @@
 </template>
 <script>
 import CATEGORY_NAME_FROM_SCOPE from "../const/categoryNameFromScope"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
-import ContextMenu from "./ContextMenu.vue"
-import LabeledValue from "./LabeledValue.vue"
-import Tag from "./Tag.vue"
+import ContextMenu from "@/components/atoms/ContextMenu.vue"
+import LabeledValue from "@/components/atoms/LabeledValue.vue"
+import Tag from "@/components/molecules/Tag.vue"
 import MetadataComment from "./MetadataComment.vue"
 
 export default {

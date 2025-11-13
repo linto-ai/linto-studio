@@ -1,6 +1,8 @@
-.modal-metadata__placeholder {
-  text-align: center;
-  height: 100px;
-  border: var(--border-block);
-  border-radius: 4px;
+@layer base {
+  .modal-metadata__placeholder {
+    text-align: center;
+    height: 100px;
+    border: var(--border-block);
+    border-radius: 4px;
+  }
 }

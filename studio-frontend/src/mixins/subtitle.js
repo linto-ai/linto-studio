@@ -1,5 +1,5 @@
 import CONVERSATION_FORMATS from "../const/conversationFormat.js"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { ScreenList } from "../models/screenList.js"
 import { workerConnect } from "../tools/worker-message.js"
 import { genericConversationMixin } from "./genericConversation.js"

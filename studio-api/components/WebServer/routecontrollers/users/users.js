@@ -5,9 +5,10 @@ const debug = require("debug")(
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
-const orgaUtility = require(
-  `${process.cwd()}/components/WebServer/controllers/organization/utility`,
+const TokenGenerator = require(
+  `${process.cwd()}/components/WebServer/config/passport/token/generator`,
 )
+
 const userUtility = require(
   `${process.cwd()}/components/WebServer/controllers/user/utility`,
 )
@@ -183,7 +184,8 @@ async function updateUser(req, res, next) {
         req.body.accountNotifications ||
         req.body.emailNotifications ||
         req.body.private !== undefined ||
-        req.body.password
+        req.body.password ||
+        req.body.defaultOrganization
       )
     )
       throw new UserUnsupportedMediaType()
@@ -216,6 +218,8 @@ async function updateUser(req, res, next) {
     if (req.body.lastname) user.lastname = req.body.lastname
     if (req.body.private !== undefined) user.private = req.body.private
     if (req.body.password) user.password = req.body.password
+    if (req.body.defaultOrganization)
+      user.defaultOrganization = req.body.defaultOrganization
 
     if (req.body.accountNotifications) {
       for (let key of Object.keys(req.body.accountNotifications)) {
@@ -292,6 +296,7 @@ async function recoveryAuth(req, res, next) {
         message: "An email with an authentication link has been sent to you.",
       })
     } else {
+      user[0].accountNotifications = user[0].accountNotifications ?? {}
       user[0].accountNotifications.updatePassword = true
       const updatedUser = await model.users.generateMagicLink(user[0])
       if (updatedUser.modifiedCount === 0) throw new GenerateMagicLinkError()
@@ -355,6 +360,32 @@ async function sendVerificationEmail(req, res, next) {
   }
 }
 
+async function generateExtendedAuthToken(req, res, next) {
+  try {
+    const user = await model.users.getById(req.payload.data.userId, true)
+    if (user.length !== 1) throw new UserNotFound()
+
+    const token_salt = require("randomstring").generate(12)
+    let token = await model.tokens.insert(user[0]._id, token_salt)
+
+    // Data stored in the token
+    let tokenData = {
+      salt: token_salt,
+      tokenId: token.insertedId,
+      email: user[0].email,
+      userId: user[0]._id,
+      role: user[0].role,
+    }
+
+    const userToken = TokenGenerator(tokenData, {
+      expires_in: process.env.EXTENDED_TOKEN_DAYS_TIME,
+    })
+    res.status(200).send(userToken)
+  } catch (error) {
+    next(error)
+  }
+}
+
 module.exports = {
   listUser,
   searchUser,
@@ -367,4 +398,5 @@ module.exports = {
   updateUserPicture,
   recoveryAuth,
   sendVerificationEmail,
+  generateExtendedAuthToken,
 }

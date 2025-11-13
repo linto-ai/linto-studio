@@ -13,6 +13,8 @@ const llm = require(
   `${process.cwd()}/components/WebServer/controllers/llm/index`,
 )
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
+const { exec } = require("child_process")
+const path = require("path")
 
 const { jsonToPlainText } = require("json-to-plain-text")
 
@@ -105,7 +107,6 @@ async function exportConversation(req, res, next) {
           metadata,
         )
     }
-
     switch (req.query.format) {
       case "json":
         await handleJsonFormat(res, metadata, conversation)
@@ -113,21 +114,28 @@ async function exportConversation(req, res, next) {
       case "text":
         await handleTextFormat(res, metadata, conversation)
         break
+      case "odt":
       case "docx":
       case "verbatim":
         await handleVerbatimFormat(res, req.query, conversation, metadata)
         break
       default:
-        await handleLLMService(res, req.query, conversation, metadata)
+        await handleLLMService(req, res, req.query, conversation, metadata)
     }
   } catch (err) {
     next(err)
   }
 }
 
-async function callLlmAPI(query, conversation, metadata, conversationExport) {
+async function callLlmAPI(
+  req,
+  query,
+  conversation,
+  metadata,
+  conversationExport,
+) {
   llm
-    .request(query, conversation, metadata, conversationExport)
+    .request(req, query, conversation, metadata, conversationExport)
     .then((data) => {
       conversationExport.jobId = data
       conversationExport.status = "processing"
@@ -140,7 +148,7 @@ async function callLlmAPI(query, conversation, metadata, conversationExport) {
     })
 }
 
-async function handleLLMService(res, query, conversation, metadata) {
+async function handleLLMService(req, res, query, conversation, metadata) {
   try {
     if (query.flavor === undefined)
       throw new ConversationMetadataRequire("flavor is required")
@@ -162,7 +170,7 @@ async function handleLLMService(res, query, conversation, metadata) {
       exportResult = await model.conversationExport.create(conversationExport)
       conversationExport._id = exportResult.insertedId.toString()
 
-      callLlmAPI(query, conversation, metadata, conversationExport)
+      callLlmAPI(req, query, conversation, metadata, conversationExport)
       res.status(200).send({ status: "processing", processing: 0 })
     } else if (
       conversationExport[0].status === "done" ||
@@ -178,7 +186,7 @@ async function handleLLMService(res, query, conversation, metadata) {
         )
       } else {
         const file = await docx.generateDocxOnFormat(query, conversationExport)
-        sendFileAsResponse(res, file, query.preview)
+        sendFileAsResponse(res, file, query)
       }
     } else {
       if (
@@ -202,16 +210,42 @@ async function handleLLMService(res, query, conversation, metadata) {
     throw err
   }
 }
-
-async function sendFileAsResponse(res, file, preview = false) {
-  const validCharsRegex = /[a-zA-Z0-9-_]/g
+function convertDocxToOdt(docxPath, outputDir, callback) {
+  exec(
+    `libreoffice --headless --convert-to odt --outdir ${outputDir} ${docxPath}`,
+    (err, stdout, stderr) => {
+      if (err) return callback(err)
+      const odtPath = path.join(
+        outputDir,
+        path.basename(docxPath, ".docx") + ".odt",
+      )
+      callback(null, odtPath)
+    },
+  )
+}
+async function sendFileAsResponse(res, file, query) {
+  const validCharsRegex = /[a-zA-Z0-9-_.]/g
   let fileName = file.name.match(validCharsRegex).join("")
 
-  if (preview === "true") {
+  if (query.preview === undefined) query.preview = "false"
+  if (query.exportFormat === undefined) query.exportFormat = "docx"
+
+  if (query.preview === "true") {
     const pdf = await docx.convertToPDF(file)
     res.setHeader("Content-Type", "application/pdf")
     res.setHeader("Content-disposition", "attachment; filename=" + fileName)
     res.sendFile(pdf.path)
+  } else if (query.exportFormat === "odt") {
+    await convertDocxToOdt(file.path, "/tmp", (err, odtPath) => {
+      if (err) return res.status(500).send("ODT Conversion failed")
+
+      res.setHeader("Content-Type", "application/vnd.oasis.opendocument.text")
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename=${path.basename(odtPath)}`,
+      )
+      res.sendFile(odtPath)
+    })
   } else {
     res.setHeader("Content-Type", "application/vnd.openxmlformats")
     res.setHeader("Content-disposition", "attachment; filename=" + fileName)
@@ -268,7 +302,7 @@ async function handleVerbatimFormat(res, query, conversation, metadata) {
     created: conversation.created,
   }
   const file = await docx.generateDocxOnFormat(query, conv)
-  sendFileAsResponse(res, file, query.preview)
+  sendFileAsResponse(res, file, query)
 }
 
 async function prepareConversation(conversation, filter) {
@@ -306,24 +340,28 @@ async function prepateData(conversation, data, format) {
   let secondsDecimals = 2
   if (format === "docx") secondsDecimals = 0
 
-  let text = conversation.text.map((turn) => {
-    let stime, etime
-    if (turn.stime) stime = turn.stime
-    else stime = turn.words[0].stime
+  let text = conversation.text
+    .map((turn) => {
+      try {
+        let stime, etime
+        if (turn.stime) stime = turn.stime
+        else stime = turn.words[0].stime
 
-    if (turn.etime) etime = turn.etime
-    else etime = turn.words[turn.words.length - 1].etime
+        if (turn.etime) etime = turn.etime
+        else etime = turn.words[turn.words.length - 1].etime
 
-    let update_turn = {
-      turn_id: turn.turn_id,
-      segment: turn.segment,
-    }
-    update_turn.speaker_id = turn.speaker_id
-    update_turn.speaker_name = speakers[turn.speaker_id]
-    update_turn.stime = secondsToHHMMSSWithDecimals(stime, secondsDecimals)
-    update_turn.etime = secondsToHHMMSSWithDecimals(etime, secondsDecimals)
-    return update_turn
-  })
+        let update_turn = {
+          turn_id: turn.turn_id,
+          segment: turn.segment,
+        }
+        update_turn.speaker_id = turn.speaker_id
+        update_turn.speaker_name = speakers[turn.speaker_id]
+        update_turn.stime = secondsToHHMMSSWithDecimals(stime, secondsDecimals)
+        update_turn.etime = secondsToHHMMSSWithDecimals(etime, secondsDecimals)
+        return update_turn
+      } catch (err) {}
+    })
+    .filter(Boolean) // remove undefined entries in case of something is unsupported or unexpected
 
   conversation.text = text
   return data

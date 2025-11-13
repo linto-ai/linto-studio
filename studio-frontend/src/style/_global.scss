@@ -1,8 +1,8 @@
 body {
-  font-family: $mainFont;
-  //font-family: "Architects Daughter", cursive;
+  font-family: var(--font-family);
   color: var(--text-primary);
   accent-color: var(--primary-color);
+  font-size: var(--font-size);
   font-weight: 400;
   padding: 0;
   margin: 0;
@@ -10,6 +10,9 @@ body {
   position: relative;
   z-index: 1;
   background-color: var(--background-app);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 h1,
@@ -22,7 +25,7 @@ h4 {
 }
 
 .mobile {
-  display: none;
+  display: none !important;
 }
 
 .flex.mobile {
@@ -35,6 +38,7 @@ h4 {
 
 .flex {
   display: flex;
+
   &.col {
     flex-direction: column;
 
@@ -73,6 +77,12 @@ h4 {
   &.justify-evenly {
     justify-content: space-evenly;
   }
+  &.justify-around {
+    justify-content: space-around;
+  }
+  &.justify-between {
+    justify-content: space-between;
+  }
 
   &.wrap {
     flex-wrap: wrap;
@@ -99,28 +109,30 @@ h4 {
   }
 }
 
-.flex1 {
+.flex1,
+.flex-1 {
   flex: 1;
   min-height: 0; // it force the flex to not grow bigger than the parent
   min-width: 0; // same as above
-  //overflow: auto;
-
   .fit-content {
     flex-basis: fit-content;
   }
 }
 
-.flex2 {
+.flex2,
+.flex-2 {
   flex: 2;
   overflow: auto;
 }
 
-.flex3 {
+.flex3,
+.flex-3 {
   flex: 3;
   overflow: auto;
 }
 
-.flex4 {
+.flex4,
+.flex-4 {
   flex: 4;
   overflow: auto;
 }
@@ -131,6 +143,10 @@ h4 {
 
 .hidden {
   display: none !important;
+}
+
+.absolute {
+  position: absolute;
 }
 
 .relative {
@@ -196,6 +212,14 @@ li:last-child {
   margin-bottom: var(--medium-gap);
 }
 
+.medium-margin-right {
+  margin-right: var(--medium-gap);
+}
+
+.medium-margin-left {
+  margin-left: var(--medium-gap);
+}
+
 .medium-margin {
   margin: var(--medium-gap);
 }
@@ -259,7 +283,6 @@ li:last-child {
   z-index: 10;
   border: var(--border-block);
   overflow: auto;
-  @include blockShadow;
 
   .dropDown-section {
     padding: var(--small-gap);
@@ -303,6 +326,142 @@ li:last-child {
   color: var(--text-primary);
 }
 
+.background-primary-soft {
+  background-color: var(--background-primary-soft);
+}
+
+.background-primary-hard {
+  background-color: var(--background-primary-hard);
+}
+
+.background-secondary-soft {
+  background-color: var(--background-secondary-soft);
+}
+
+.background-secondary-hard {
+  background-color: var(--background-secondary-hard);
+}
+
+.background-tertiary-soft {
+  background-color: var(--background-tertiary-soft);
+}
+
+.background-tertiary-hard {
+  background-color: var(--background-tertiary-hard);
+}
+
+.background-yellow-soft {
+  background-color: var(--background-yellow-soft);
+}
+
+.background-yellow-hard {
+  background-color: var(--background-yellow-hard);
+}
+
+.background-green-soft {
+  background-color: var(--background-green-soft);
+}
+
+.background-green-hard {
+  background-color: var(--background-green-hard);
+}
+
+.background-transparent {
+  background-color: transparent;
+}
+
+.border-0 {
+  border: 0 !important;
+}
+
+.border-1 {
+  border: 1px solid var(--border-block);
+}
+
+.border-2 {
+  border: 2px solid var(--border-block);
+}
+
+.p-0 {
+  padding: 0;
+}
+
+.p-1 {
+  padding: var(--small-gap);
+}
+
+.p-2 {
+  padding: var(--medium-gap);
+}
+
+.p-3 {
+  padding: var(--large-gap);
+}
+
+.p-4 {
+  padding: var(--xl-gap);
+}
+
+.p-5 {
+  padding: var(--xxl-gap);
+}
+
+.mb-xs {
+  margin-bottom: var(--xs-gap);
+}
+
+.mb-sm {
+  margin-bottom: var(--sm-gap);
+}
+
+.mb-md {
+  margin-bottom: var(--md-gap);
+}
+
+.mb-lg {
+  margin-bottom: var(--lg-gap);
+}
+
+.mb-xl {
+  margin-bottom: var(--xl-gap);
+}
+
+.mt-xs {
+  margin-top: var(--xs-gap);
+}
+
+.mt-sm {
+  margin-top: var(--sm-gap);
+}
+
+.mt-md {
+  margin-top: var(--md-gap);
+}
+
+.mt-lg {
+  margin-top: var(--lg-gap);
+}
+
+.mt-xl {
+  margin-top: var(--xl-gap);
+}
+
+.color-white {
+  color: white;
+}
+
+.color-black {
+  color: black;
+}
+
+.white {
+  background-color: white;
+}
+
+.black {
+  background-color: black;
+}
+
 *[data-info] {
   position: relative;
   z-index: 2;
@@ -328,7 +487,7 @@ li:last-child {
       color: #fff;
       padding: 0.25rem 0.5rem;
       white-space: nowrap;
-      @include borderRadius(5px);
+      border-radius: 4px;
     }
   }
 }

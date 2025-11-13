@@ -1,28 +1,19 @@
 <template>
   <MainContentConversation
     :conversation="conversation"
+    :breadcrumbItems="breadcrumbItems"
     :status="status"
     :dataLoaded="conversationLoaded"
     :error="error">
     <template v-slot:breadcrumb-actions>
-      <router-link :to="conversationListRoute" class="btn secondary">
-        <span class="icon close"></span>
-        <span class="label">{{ $t("conversation.close_editor") }}</span>
-      </router-link>
-
-      <h1
-        class="flex1 center-text text-cut"
-        style="padding-left: 1rem; padding-right: 1rem">
-        {{ conversation.name }}
-      </h1>
-      <div class="flex gap-small">
+      <div class="flex gap-small" style="margin-left: auto">
         <CustomSelect
           v-if="conversationLoaded"
           :value="subtitleId"
           :valueText="versionName"
           :options="versionList"
           @input="loadNewSubtitles"></CustomSelect>
-        <!-- <button class="btn green" @click="downloadSrt" v-if="screens"> -->
+        <!-- <button class="btn primary" @click="downloadSrt" v-if="screens"> -->
         <!--   <span class="icon upload"></span> -->
         <!--   <span class="label">{{ $t("conversation.export.title") }}</span> -->
         <!-- </button> -->
@@ -47,7 +38,7 @@
       :conversation="conversation"
       :userInfo="userInfo"
       :blocks="screens"
-      :canEdit="userRights.hasRightAccess(userRight, userRights.WRITE)"
+      :canEdit="canEdit"
       :conversation-users="conversationUsers"
       :users-connected="usersConnected"
       :focusFields="focusFields"
@@ -69,7 +60,7 @@ import { subtitleMixin } from "@/mixins/subtitle.js"
 
 import MainContentConversation from "@/components/MainContentConversation.vue"
 import SubtitleEditor from "@/components/SubtitleEditor.vue"
-import CustomSelect from "@/components/CustomSelect.vue"
+import CustomSelect from "@/components/molecules/CustomSelect.vue"
 export default {
   mixins: [subtitleMixin],
   data() {
@@ -91,7 +82,7 @@ export default {
           })
         } else {
           this.status = this.computeStatus(
-            this.conversation?.jobs?.transcription
+            this.conversation?.jobs?.transcription,
           )
           workerSendMessage("get_subtitle", { subtitleId: this.subtitleId })
         }
@@ -127,18 +118,39 @@ export default {
         action: action,
       }
     },
+    breadcrumbItems() {
+      return [
+        {
+          label: this.conversation?.name ?? "",
+          // to: {
+          //   name: "conversations overview",
+          //   params: { conversationId: this.conversationId },
+          // },
+        },
+        {
+          label: this.$t("breadcrumb.subtitles"),
+          to: {
+            name: "conversations subtitles",
+            params: { conversationId: this.conversationId },
+          },
+        },
+        {
+          label: this.versionName,
+        },
+      ]
+    },
   },
   methods: {
     async downloadSubtitles(type) {
       let req = await apiGetFileFromConversationSubtitle(
         this.conversation._id,
         this.subtitleId,
-        type
+        type,
       )
 
       if (req?.status === "success") {
         const file = URL.createObjectURL(
-          new Blob([req?.data], { type: "text/plain" })
+          new Blob([req?.data], { type: "text/plain" }),
         )
         const link = document.createElement("a")
         link.href = file
@@ -173,7 +185,7 @@ export default {
           status: "error",
           message: this.$i18n.t(
             "conversation.subtitles.error.too_much_lines_to_merge",
-            { maxLines: this.versionSettings.screenLines }
+            { maxLines: this.versionSettings.screenLines },
           ),
           timout: null,
           redirect: false,
@@ -187,7 +199,7 @@ export default {
         bus.$emit("app_notif", {
           status: "error",
           message: this.$i18n.t(
-            "conversation.subtitles.error.cannot_merge_non_consecutive_screens"
+            "conversation.subtitles.error.cannot_merge_non_consecutive_screens",
           ),
           timout: null,
           redirect: false,
@@ -213,7 +225,7 @@ export default {
         bus.$emit("app_notif", {
           status: "error",
           message: this.$i18n.t(
-            "conversation.subtitles.error.no_enough_place_new_screen"
+            "conversation.subtitles.error.no_enough_place_new_screen",
           ),
           timout: null,
           redirect: false,

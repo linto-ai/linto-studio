@@ -1,45 +1,53 @@
 <template>
-  <MainContent noBreadcrumb :organizationPage="false" fullwidthContent sidebar>
+  <LayoutV2 :fullscreen="isMobile && !isAuthenticated">
     <template v-slot:breadcrumb-actions>
       <SessionHeader
         :sessionListRoute="sessionListRoute"
         :sessionLoaded="sessionLoaded"
         :name="name"
         :session="session">
-        <template v-slot:right-button-desktop>
-          <router-link
-            :to="settingsRoute"
-            class="btn"
-            v-if="isAtLeastMaintainer">
-            <span class="icon settings"></span>
-            <span class="label">{{
-              $t("session.detail_page.settings_button")
-            }}</span>
-          </router-link>
+        <IsMobile>
+          <div class="flex gap-small">
+            <Button
+              v-if="isAtLeastMeetingManager"
+              :to="settingsRoute"
+              variant="primary"
+              :aria-label="$t('session.detail_page.settings_button')"
+              :title="$t('session.detail_page.settings_button')"
+              icon="gear" />
+
+            <Button
+              @click="showMobileSubtitles"
+              variant="secondary"
+              icon="closed-captioning" />
+          </div>
+
+          <template #desktop>
+            <Button
+              v-if="isAtLeastMeetingManager"
+              :to="settingsRoute"
+              variant="primary"
+              size="sm"
+              :label="$t('session.detail_page.settings_button')"
+              icon="gear" />
+          </template>
+        </IsMobile>
+        <!-- <template v-slot:right-button-desktop>
+          
         </template>
         <template v-slot:right-button-mobile>
           <div class="flex gap-small">
-            <router-link
-              :to="settingsRoute"
-              class="btn secondary only-icon"
-              v-if="isAtLeastMaintainer"
-              :aria-label="$t('session.detail_page.settings_button')">
-              <span class="icon settings"></span>
-            </router-link>
-            <button
-              class="btn secondary only-icon"
-              @click="showMobileSubtitles">
-              <span class="icon subtitle"></span>
-            </button>
+            
           </div>
-        </template>
+        </template> -->
       </SessionHeader>
     </template>
 
     <template v-slot:sidebar>
-      <h1 v-if="sessionLoaded" class="center-text session-live__title">
+      <div class="sidebar-divider"></div>
+      <!-- <h1 v-if="sessionLoaded" class="center-text session-live__title">
         {{ name }}
-      </h1>
+      </h1> -->
       <SessionLiveMicrophoneStatus
         v-if="useMicrophone && sessionLoaded"
         @toggle-microphone="toggleMicrophone"
@@ -55,15 +63,25 @@
           })
         }}
       </div>
-      <SessionLiveToolbar
-        v-if="sessionLoaded"
-        :channels="channels"
-        :qualifiedForCrossSubtitles="qualifiedForCrossSubtitles"
-        v-bind:selectedTranslation.sync="selectedTranslation"
-        v-bind:displayLiveTranscription.sync="displayLiveTranscription"
-        v-bind:displaySubtitles.sync="displaySubtitles"
-        v-bind:fontSize.sync="fontSize"
-        v-bind:selectedChannel.sync="selectedChannel" />
+      <IsMobile>
+        <template #desktop>
+          <SessionLiveToolbar
+            v-if="sessionLoaded"
+            :channels="channels"
+            :qualifiedForCrossSubtitles="qualifiedForCrossSubtitles"
+            v-bind:selectedTranslation.sync="selectedTranslation"
+            v-bind:displayLiveTranscription.sync="displayLiveTranscription"
+            v-bind:displaySubtitles.sync="displaySubtitles"
+            v-bind:fontSize.sync="fontSize"
+            v-bind:selectedChannel.sync="selectedChannel"
+            :watermarkContent="watermarkContent"
+            :watermarkDuration="watermarkDuration"
+            :watermarkFrequency="watermarkFrequency"
+            :displayWatermark="displayWatermark"
+            :watermarkPinned="watermarkPinned"
+            @updateWatermarkSettings="syncWatermarkSettings" />
+        </template>
+      </IsMobile>
     </template>
 
     <div class="relative flex flex1 col">
@@ -86,20 +104,24 @@
         :displaySubtitles="displaySubtitles"
         :displayLiveTranscription="displayLiveTranscription"
         :session="session"
-        :selectedChannel="selectedChannel" />
-
-      <SessionDropdownChannelSelector
-        class="mobile"
-        v-if="sessionLoaded"
-        :channels="channels"
-        :qualifiedForCrossSubtitles="qualifiedForCrossSubtitles"
-        v-bind:selectedChannel.sync="selectedChannel"
-        v-bind:selectedTranslation.sync="selectedTranslation" />
-
+        :selectedChannel="selectedChannel"
+        :displayWatermark="displayWatermark"
+        :watermarkFrequency="watermarkFrequency"
+        :watermarkDuration="watermarkDuration"
+        :watermarkContent="watermarkContent"
+        :watermarkPinned="watermarkPinned" />
+      <IsMobile>
+        <SessionDropdownChannelSelector
+          v-if="sessionLoaded"
+          :channels="channels"
+          :qualifiedForCrossSubtitles="qualifiedForCrossSubtitles"
+          v-bind:selectedChannel.sync="selectedChannel"
+          v-bind:selectedTranslation.sync="selectedTranslation" />
+      </IsMobile>
       <ModalNew
-        noAction
+        :withActions="false"
         title="Setup microphone"
-        v-if="showMicrophoneSetup"
+        v-model="showMicrophoneSetup"
         @on-cancel="cancelRecordSettings">
         <SessionSetupMicrophone
           :applyLabel="$t('session.microphone_apply_button')"
@@ -107,29 +129,34 @@
           @trash-session="cancelRecordSettings"></SessionSetupMicrophone>
       </ModalNew>
     </div>
-  </MainContent>
+  </LayoutV2>
 </template>
 <script>
+import { mapGetters } from "vuex"
+
 import { sessionMixin } from "@/mixins/session.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole"
 import { microphoneMixin } from "@/mixins/microphone.js"
 import { sessionMicrophoneMixin } from "@/mixins/sessionMicrophone.js"
+
+import { getEnv } from "@/tools/getEnv"
 
 import MainContent from "@/components/MainContent.vue"
 import SessionNotStarted from "@/components/SessionNotStarted.vue"
 import SessionChannelsSelector from "@/components/SessionChannelsSelector.vue"
 import SessionTranslationSelection from "@/components/SessionTranslationSelection.vue"
 import SessionLiveContent from "@/components/SessionLiveContent.vue"
-import Loading from "@/components/Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 import SessionEnded from "@/components/SessionEnded.vue"
 import SessionStatus from "@/components/SessionStatus.vue"
 import SessionLiveToolbar from "@/components/SessionLiveToolbar.vue"
-import ModalNew from "@/components/ModalNew.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
 import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
 import SessionLiveMicrophoneStatus from "@/components/SessionLiveMicrophoneStatus.vue"
 import SessionHeader from "@/components/SessionHeader.vue"
-
+import LayoutV2 from "@/layouts/v2-layout.vue"
 import SessionDropdownChannelSelector from "@/components-mobile/SessionDropdownChannelSelector.vue"
+import IsMobile from "../components/atoms/IsMobile.vue"
 export default {
   mixins: [
     sessionMixin,
@@ -238,9 +265,11 @@ export default {
         )
       return res
     },
+    ...mapGetters("system", ["isMobile"]),
+    ...mapGetters("user", ["isAuthenticated"]),
   },
   components: {
-    MainContent,
+    LayoutV2,
     SessionNotStarted,
     SessionChannelsSelector,
     SessionTranslationSelection,

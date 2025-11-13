@@ -25,9 +25,9 @@
         </li>
       </ul>
     </div>
-    <GenerateSubtitleButton
+    <!-- <GenerateSubtitleButton
       v-if="!subtitleAvailable"
-      :canEdit="canEdit"></GenerateSubtitleButton>
+      :canEdit="canEdit"></GenerateSubtitleButton> -->
   </div>
 </template>
 <script>

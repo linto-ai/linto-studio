@@ -19,7 +19,7 @@
     ></FormInput>
     <div>
       <button class="only-icon" @click="deleteRow">
-        <span class="icon trash"></span>
+        <ph-icon name="trash"></ph-icon>
       </button>
     </div>
   </div>
@@ -27,7 +27,7 @@
 <script>
 import { bus } from "@/main.js"
 import EMPTY_FIELD from "@/const/emptyField"
-import FormInput from "@/components/FormInput.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 
 export default {
   props: {

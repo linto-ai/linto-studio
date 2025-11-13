@@ -42,7 +42,7 @@ async function addUserInOrganization(req, res, next) {
     if (!req.params.organizationId || !req.body.email || !req.body.role)
       throw new OrganizationUnsupportedMediaType()
 
-    if (isNaN(req.body.role) && TYPES.checkValue(req.body.role))
+    if (isNaN(req.body.role) && ROLES.checkValue(req.body.role))
       throw new OrganizationUnsupportedMediaType("Role value is not valid")
     if (ROLES.canGiveAccess(req.body.role, req.userRole))
       throw new OrganizationForbidden()
@@ -68,7 +68,9 @@ async function addUserInOrganization(req, res, next) {
       // Create new user personal organization
       if (createdUser.insertedCount !== 1) throw new UserError()
       userId = createdUser.insertedId.toString()
-      magicId = createdUser.ops[0].authLink.magicId
+      const invitedUser = await model.users.getById(userId, true)
+      magicId = invitedUser[0].authLink.magicId
+
       if (magicId) {
         const createOrganization = await model.organizations.createDefault(
           userId,
@@ -144,7 +146,7 @@ async function updateUserFromOrganization(req, res, next) {
     if (!req.params.organizationId || !req.body.userId || !req.body.role)
       throw new OrganizationUnsupportedMediaType()
 
-    if (isNaN(req.body.role) && TYPES.checkValue(req.body.role))
+    if (isNaN(req.body.role) && ROLES.checkValue(req.body.role))
       throw new OrganizationUnsupportedMediaType("Role value is not valid")
     if (ROLES.canGiveAccess(req.body.role, req.userRole))
       throw new OrganizationForbidden()
@@ -268,7 +270,7 @@ async function deleteConversationFromOrganization(req, res, next) {
           conv._id,
         )
 
-      if (conv[0]?.metadata?.audio) {
+      if (conv?.metadata?.audio) {
         deleteFile(`${getStorageFolder()}/${conv.metadata.audio.filepath}`)
       }
 
@@ -279,6 +281,15 @@ async function deleteConversationFromOrganization(req, res, next) {
       for (const category of categoryList) {
         model.categories.delete(category._id)
         model.tags.deleteAllFromCategory(category._id.toString())
+      }
+
+      if (this?.app?.components?.IoHandler) {
+        this.app.components.IoHandler.emit(
+          "conversation_deleted",
+          conv.organization.organizationId,
+          conv._id,
+          conv?.jobs?.transcription?.state,
+        )
       }
     }
 
@@ -305,9 +316,43 @@ async function deleteConversationFromOrganization(req, res, next) {
   }
 }
 
+async function updateConversationOwner(req, res, next) {
+  try {
+    if (!req.params.conversationId) throw new ConversationIdRequire()
+    const conversation = await model.conversations.getById(
+      req.params.conversationId,
+    )
+    if (conversation.length !== 1) throw new ConversationNotFound()
+    if (!req.body.userId) throw new ConversationError("User ID is required")
+    const user = await model.users.getById(req.body.userId)
+    if (user.length !== 1) throw new ConversationError("User not found")
+
+    const organization = await model.organizations.getById(
+      req.params.organizationId,
+    )
+    if (organization.length !== 1)
+      throw new ConversationError("Organization not found")
+    if (!organization[0].users.some((u) => u.userId === req.body.userId)) {
+      throw new ConversationError("User is not part of the organization")
+    }
+
+    const result = await model.conversations.update({
+      _id: req.params.conversationId,
+      owner: req.body.userId,
+    })
+
+    res.status(200).send({
+      message: "Conversation owner updated",
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 module.exports = {
   addUserInOrganization,
   updateUserFromOrganization,
   deleteUserFromOrganization,
   deleteConversationFromOrganization,
+  updateConversationOwner,
 }

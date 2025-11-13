@@ -1,0 +1,396 @@
+import {
+  apiGetSharedCategoriesTree,
+  apiGetfavoritesCategoriesTree,
+  apiGetTagsByCategory,
+  apiGetSystemCategories,
+  apiCreateOrganizationTag,
+  apiDeleteTag,
+  apiUpdateTag,
+} from "@/api/tag"
+import {
+  apiAddTagToConversation,
+  apiDeleteTagFromConversation,
+} from "@/api/conversation"
+import i18n from "@/i18n"
+
+export default {
+  namespaced: true,
+  state: {
+    categories: [],
+    exploreSelectedTags: [],
+    sharedTags: [],
+    favoritesTags: [],
+    tags: [],
+    loading: false,
+    error: null,
+  },
+  mutations: {
+    setCategories(state, categories) {
+      state.categories = categories
+    },
+    setExploreSelectedTags(state, tags) {
+      state.exploreSelectedTags = tags
+    },
+    clearExploreSelectedTags(state) {
+      state.exploreSelectedTags = []
+    },
+    clearTags(state) {
+      state.tags = []
+    },
+    setTags(state, tags) {
+      state.tags = tags
+    },
+    setLoading(state, loading) {
+      state.loading = loading
+    },
+    setError(state, error) {
+      state.error = error
+    },
+    setSharedTags(state, tags) {
+      state.sharedTags = tags
+    },
+    setFavoritesTags(state, tags) {
+      state.favoritesTags = tags
+    },
+  },
+  getters: {
+    getTags: (state) => state.tags,
+    getSharedTags: (state) => state.sharedTags,
+    getFavoritesTags: (state) => state.favoritesTags,
+    getLoading: (state) => state.loading,
+
+    getCategoryById: (state) => (id) => {
+      return state.categories.find((category) => category._id === id)
+    },
+    getCategoryByName: (state) => (name) => {
+      return state.categories.find(
+        (category) => category.name.toLowerCase() === name.toLowerCase(),
+      )
+    },
+    getTagById: (state) => (id) => {
+      return (
+        state.tags.find((tag) => tag._id === id) ||
+        state.sharedTags.find((tag) => tag._id === id) ||
+        state.favoritesTags.find((tag) => tag._id === id)
+      )
+    },
+    getExploreSelectedTags: (state) => state.exploreSelectedTags,
+    isExploreSelectedTag: (state) => (tagId) => {
+      return state.exploreSelectedTags.some((tag) => tag._id === tagId)
+    },
+  },
+  actions: {
+    async fetchTags({ commit, getters, state, rootGetters }) {
+      // Prevent concurrent fetches
+      if (state.loading) return
+
+      commit("setLoading", true)
+      try {
+        const data = await apiGetSystemCategories(
+          rootGetters["organizations/getCurrentOrganizationScope"],
+        )
+
+        commit("setCategories", data)
+        const tagsCategory = data.find(
+          (category) => category.name.toLowerCase() === "tags",
+        )
+
+        if (tagsCategory) {
+          const tags = await apiGetTagsByCategory(
+            rootGetters["organizations/getCurrentOrganizationScope"],
+            tagsCategory._id,
+          )
+          commit("setTags", tags)
+        } else {
+          commit("setTags", [])
+        }
+
+        return { categories: data, tags: state.tags }
+      } catch (error) {
+        console.error("Error fetching tags:", error)
+        commit("setError", error)
+        throw error
+      } finally {
+        commit("setLoading", false)
+      }
+    },
+    async fetchSharedTags({ commit, getters, rootGetters, state }) {
+      // Prevent concurrent fetches
+      if (state.loading) return
+
+      commit("setLoading", true)
+      try {
+        const data = await apiGetSharedCategoriesTree()
+        const tags = []
+        data.forEach((org) => {
+          tags.push(...org.tags)
+        })
+
+        commit("setSharedTags", tags)
+      } catch (error) {
+        console.error("Error fetching shared tags:", error)
+        commit("setError", error)
+        throw error
+      } finally {
+        commit("setLoading", false)
+      }
+    },
+    async fetchFavoritesTags({ commit, getters, rootGetters, state }) {
+      // Prevent concurrent fetches
+      if (state.loading) return
+
+      commit("setLoading", true)
+      try {
+        const data = await apiGetfavoritesCategoriesTree()
+        const tags = []
+        data.forEach((org) => {
+          tags.push(...org.tags)
+        })
+
+        commit("setFavoritesTags", tags)
+      } catch (error) {
+        console.error("Error fetching favorites tags:", error)
+        commit("setError", error)
+        throw error
+      } finally {
+        commit("setLoading", false)
+      }
+    },
+    async createTag({ commit, getters, rootGetters, state }, tag) {
+      commit("setLoading", true)
+      try {
+        const data = await apiCreateOrganizationTag(
+          rootGetters["organizations/getCurrentOrganizationScope"],
+          getters.getCategoryByName("tags")._id,
+          tag.name,
+          tag.description,
+          tag.color,
+          tag.emoji,
+        )
+
+        commit(
+          "system/addNotification",
+          {
+            message: i18n.t("manage_tags.tag_create_notification"),
+            type: "success",
+          },
+          { root: true },
+        )
+
+        commit("setTags", [...state.tags, data])
+        return data
+      } catch (error) {
+        console.error("Error creating tag in store:", error)
+        commit("setError", error)
+        commit(
+          "system/addNotification",
+          {
+            message: i18n.t("manage_tags.error_creating_tag"),
+            type: "error",
+          },
+          { root: true },
+        )
+        throw error
+      } finally {
+        commit("setLoading", false)
+      }
+    },
+    async updateTag({ commit, getters, rootGetters, state }, tag) {
+      commit("setLoading", true)
+      try {
+        await apiUpdateTag(
+          rootGetters["organizations/getCurrentOrganizationScope"],
+          tag._id,
+          {
+            name: tag.name,
+            description: tag.description,
+            color: tag.color,
+            emoji: tag.emoji,
+          },
+        )
+        commit(
+          "setTags",
+          state.tags.map((t) => (t._id === tag._id ? tag : t)),
+        )
+        commit(
+          "system/addNotification",
+          {
+            message: i18n.t("manage_tags.tag_update_notification"),
+            type: "success",
+          },
+          { root: true },
+        )
+      } catch (error) {
+        console.error("Error updating tag in store:", error)
+        commit("setError", error)
+        commit(
+          "system/addNotification",
+          {
+            message: i18n.t("manage_tags.error_updating_tag"),
+            type: "error",
+          },
+          { root: true },
+        )
+        throw error
+      } finally {
+        commit("setLoading", false)
+      }
+    },
+    async deleteTag({ commit, getters, rootGetters, state }, tag) {
+      commit("setLoading", true)
+      try {
+        const data = await apiDeleteTag(
+          rootGetters["organizations/getCurrentOrganizationScope"],
+          tag._id,
+        )
+        commit(
+          "setTags",
+          state.tags.filter((t) => t._id !== tag._id),
+        )
+        commit(
+          "system/addNotification",
+          {
+            message: i18n.t("manage_tags.tag_delete_notification"),
+            type: "success",
+          },
+          { root: true },
+        )
+        return data
+      } catch (error) {
+        console.error("Error deleting tag in store:", error)
+        commit("setError", error)
+        commit(
+          "system/addNotification",
+          {
+            message: "Error deleting tag",
+            type: "error",
+          },
+          { root: true },
+        )
+        // Re-throw the error so the component can handle it
+        throw error
+      } finally {
+        commit("setLoading", false)
+      }
+    },
+    async addTagToMedia(
+      { commit, getters, rootGetters, state },
+      { mediaId, tagId },
+    ) {
+      commit("setLoading", true)
+      try {
+        const media = getMediabyId(rootGetters, mediaId)
+
+        if (media.tags.includes(tagId)) {
+          throw new Error("Tag already in media")
+        }
+
+        const data = await apiAddTagToConversation(mediaId, tagId)
+
+        if (data.status == "error") {
+          throw new Error(data.message)
+        }
+
+        const newMedia = { ...media, tags: [...media.tags, tagId] }
+        updateMedia(rootGetters, commit, newMedia, mediaId)
+        // commit(
+        //   "system/addNotification",
+        //   {
+        //     message: "Tag added to media successfully",
+        //     type: "success",
+        //   },
+        //   { root: true },
+        //)
+      } catch (error) {
+        console.error("error", error)
+        commit("setError", error)
+        commit(
+          "system/addNotification",
+          {
+            message: "Error adding tag to media",
+            type: "error",
+          },
+          { root: true },
+        )
+      } finally {
+        commit("setLoading", false)
+      }
+    },
+    async removeTagFromMedia(
+      { commit, getters, rootGetters, state },
+      { mediaId, tagId },
+    ) {
+      commit("setLoading", true)
+      try {
+        const data = await apiDeleteTagFromConversation(mediaId, tagId)
+        const media = getMediabyId(rootGetters, mediaId)
+        const newMedia = {
+          ...media,
+          tags: media.tags.filter((t) => t !== tagId),
+        }
+
+        updateMedia(rootGetters, commit, newMedia, mediaId)
+        // commit(
+        //   "system/addNotification",
+        //   {
+        //     message: "Tag removed from media successfully",
+        //     type: "success",
+        //   },
+        //   { root: true },
+        //)
+      } catch (error) {
+        console.error("error", error)
+        commit("setError", error)
+        commit(
+          "system/addNotification",
+          {
+            message: "Error removing tag from media",
+            type: "error",
+          },
+          { root: true },
+        )
+      } finally {
+        commit("setLoading", false)
+      }
+    },
+    setExploreSelectedTags({ commit }, tags) {
+      commit(
+        "setExploreSelectedTags",
+        tags.filter((t) => !!t),
+      )
+    },
+    clearExploreSelectedTags({ commit }) {
+      commit("clearExploreSelectedTags")
+      // Also clear tags from URL
+      const url = new URL(window.location.href)
+      url.searchParams.delete("tags")
+      window.history.pushState({}, "", url)
+    },
+    addExploreSelectedTag({ commit, state }, tag) {
+      commit("setExploreSelectedTags", [...state.exploreSelectedTags, tag])
+    },
+    removeExploreSelectedTag({ commit, state }, tag) {
+      commit(
+        "setExploreSelectedTags",
+        state.exploreSelectedTags.filter((t) => t._id !== tag._id),
+      )
+    },
+    toggleTag({ dispatch, state }, tag) {
+      if (state.exploreSelectedTags.some((t) => t._id === tag._id)) {
+        dispatch("removeExploreSelectedTag", tag)
+      } else {
+        dispatch("addExploreSelectedTag", tag)
+      }
+    },
+  },
+}
+
+function getMediabyId(rootGetters, id) {
+  const storePath = rootGetters["organizations/getStoreScope"]
+  return rootGetters[`${storePath}/getMediaById`](id)
+}
+
+function updateMedia(rootGetters, commit, media, mediaId) {
+  const storePath = rootGetters["organizations/getStoreScope"]
+  commit(`${storePath}/updateMedia`, { media, mediaId }, { root: true })
+}

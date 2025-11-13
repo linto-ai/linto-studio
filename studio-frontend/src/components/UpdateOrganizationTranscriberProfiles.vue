@@ -4,19 +4,28 @@
       <h2 style="width: auto">
         {{ $t("organisation.transcriber_profiles.title") }}
       </h2>
-      <button @click="showModalCreateTranscriberProfile">
+      <Button
+        @click="showModalCreateTranscriberProfile"
+        variant="primary"
+        icon="plus"
+        :label="
+          $t(
+            'backoffice.transcriber_profile_list.add_transcriber_profile_button',
+          )
+        " />
+      <!-- <button @click="showModalCreateTranscriberProfile">
         <span class="icon plus"></span>
         <span class="label">{{
           $t(
             "backoffice.transcriber_profile_list.add_transcriber_profile_button",
           )
         }}</span>
-      </button>
+      </button> -->
     </div>
     <div v-if="transcriberProfiles.length === 0 && !loading" class="">
       {{ $t("organisation.transcriber_profiles.no_profiles") }}
     </div>
-    <div v-else class="table-grid-container">
+    <div v-else>
       <TranscriberProfileTable
         @list_sort_by="sortBy"
         :sortListKey="sortListKey"

@@ -15,12 +15,22 @@
 
     <UpdateOrganizationTranscriberProfiles :organizationId="organizationId" />
     <section>
-      <h2 class="medium-margin-bottom">Danger zone</h2>
-      <button @click="openDeleteModal" class="btn red-border">
-        <span class="icon trash"></span>
-        <span class="label">{{ $t("organisation.delete_organization") }}</span>
-      </button>
+      <ApiTokenSettings :organizationId="organizationId" />
     </section>
+    <section>
+      <h2 class="medium-margin-bottom">Danger zone</h2>
+      <Button
+        @click="openDeleteModal"
+        variant="primary"
+        icon="trash"
+        :label="$t('organisation.delete_organization')"
+        intent="destructive" />
+      <!-- <button @click="openDeleteModal" class="btn tertiary outline">
+        <ph-icon name="trash"></ph-icon>
+        <span class="label">{{ $t("organisation.delete_organization") }}</span>
+      </button> -->
+    </section>
+
     <ModalDeleteOrganization
       v-if="displayDeleteModal"
       :currentOrganization="organization"
@@ -43,6 +53,8 @@ import UpdateOrganizationPermissions from "@/components/UpdateOrganizationPermis
 import UpdateOrganizationMatchingUsers from "@/components/UpdateOrganizationMatchingUsers.vue"
 import OrganizationStats from "@/components/OrganizationStats.vue"
 import UpdateOrganizationTranscriberProfiles from "@/components/UpdateOrganizationTranscriberProfiles.vue"
+import ApiTokenSettings from "@/components/ApiTokenSettings.vue"
+
 export default {
   mixins: [platformRoleMixin],
   props: {
@@ -63,7 +75,6 @@ export default {
     if (!this.isAtLeastSystemAdministrator) {
       this.$router.push({ name: "not_found" })
     }
-
     bus.$on("user_orga_update", this.fetchOrganization)
     this.fetchOrganization()
   },
@@ -95,6 +106,7 @@ export default {
     UpdateOrganizationMatchingUsers,
     ModalDeleteOrganization,
     OrganizationStats,
+    ApiTokenSettings,
   },
 }
 </script>

@@ -6,7 +6,12 @@ const proxyForwardParams = [
 const { storeSessionFromStop, storeQuickMeetingFromStop } = require(
   `${process.cwd()}/components/WebServer/controllers/session/conversation.js`,
 )
-const { forceQueryParams } = require(
+const {
+  forceQueryParams,
+  forwardSessionAlias,
+  checkTranscriberProfileAccess,
+  afterProxyAccess,
+} = require(
   `${process.cwd()}/components/WebServer/controllers/session/session.js`,
 )
 const { Unauthorized } = require(
@@ -40,22 +45,7 @@ module.exports = (webServer) => {
           {
             path: "/organizations/:organizationId/transcriber_profiles",
             method: ["get"],
-            executeAfterResult: [
-              (jsonString, req) => {
-                try {
-                  const transcribers = JSON.parse(jsonString)
-                  return JSON.stringify(
-                    transcribers.filter(
-                      (session) =>
-                        session.organizationId === req.params.organizationId ||
-                        session.organizationId === null,
-                    ),
-                  )
-                } catch (err) {
-                  return jsonString
-                }
-              },
-            ],
+            executeAfterResult: [checkTranscriberProfileAccess],
           },
         ],
         requireAuth: true,
@@ -110,11 +100,22 @@ module.exports = (webServer) => {
             path: "/sessions/:id/public",
             method: ["get"],
             addParams: [{ "body.visibility": "public" }],
+            executeBeforeResult: forwardSessionAlias,
             executeAfterResult: [
               (jsonString) => {
                 try {
-                  const session = JSON.parse(jsonString)
-                  if (session.visibility === "public") return jsonString
+                  let session = JSON.parse(jsonString)
+
+                  if (session.visibility === "public") {
+                    session.channels.forEach((channel) => {
+                      if (channel.streamEndpoints) {
+                        delete channel.streamEndpoints
+                      }
+                    })
+
+                    return JSON.stringify(session)
+                  }
+
                   throw new Unauthorized()
                 } catch (err) {
                   throw err
@@ -132,6 +133,8 @@ module.exports = (webServer) => {
           {
             path: "/organizations/:organizationId/sessions/:id",
             method: ["get"],
+            executeBeforeResult: forwardSessionAlias,
+            executeAfterResult: [afterProxyAccess],
             forwardParams: proxyForwardParams,
           },
           {
@@ -180,7 +183,7 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/quickMeeting/:id",
             method: ["delete"],
             forwardParams: proxyForwardParams,
-            executeBeforeResult: storeQuickMeetingFromStop,
+            executeBeforeResult: storeQuickMeetingFromStop.bind(webServer),
           },
           {
             path: "/organizations/:organizationId/bots",
@@ -212,14 +215,14 @@ module.exports = (webServer) => {
           },
           {
             path: "/organizations/:organizationId/sessions/:id",
-            method: ["put"],
+            method: ["put", "patch"],
             forwardParams: proxyForwardParams,
           },
           {
             path: "/organizations/:organizationId/sessions/:id",
             method: ["delete"],
             forwardParams: proxyForwardParams,
-            executeBeforeResult: storeSessionFromStop,
+            executeBeforeResult: storeSessionFromStop.bind(webServer),
           },
           {
             path: "/organizations/:organizationId/sessions/:id/stop",

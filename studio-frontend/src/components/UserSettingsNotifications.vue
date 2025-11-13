@@ -1,10 +1,10 @@
 <template>
-  <form @submit="updateNotifications">
+  <form @submit="updateNotifications" class="user-settings-notifications">
     <section>
-      <h2>{{ $t("usersettings.notifications.title") }}</h2>
+      <h2>{{ $t("user_settings.notifications.title") }}</h2>
       <fieldset class="small-margin">
         <legend>
-          {{ $t("usersettings.notifications.conversations.title") }}
+          {{ $t("user_settings.notifications.conversations.title") }}
         </legend>
         <FormCheckbox
           :field="fieldConvShareAdd"
@@ -19,7 +19,7 @@
 
       <fieldset class="small-margin">
         <legend>
-          {{ $t("usersettings.notifications.organizations.title") }}
+          {{ $t("user_settings.notifications.organizations.title") }}
         </legend>
         <FormCheckbox
           :field="fieldOrgaAdd"
@@ -32,20 +32,27 @@
           v-model="fieldOrgaUpdate.value"></FormCheckbox>
       </fieldset>
 
-      <button type="submit" class="btn small-margin">
-        <span class="icon apply"></span>
+      <Button
+        type="submit"
+        variant="primary"
+        size="sm"
+        :label="$t('user_settings.notifications.submit_button')" />
+      <!-- <button type="submit" class="btn small-margin primary">
+        <ph-icon name="check" size="md" class="icon" />
         <span class="label">{{
-          $t("usersettings.notifications.submit_button")
+          $t("user_settings.notifications.submit_button")
         }}</span>
-      </button>
+      </button> -->
     </section>
   </form>
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
-import FormCheckbox from "./FormCheckbox.vue"
-import { apiUpdateUserInfo } from "../api/user"
+import { mapActions } from "vuex"
+import { bus } from "@/main.js"
+import { apiUpdateUserInfo } from "@/api/user"
+
+import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 export default {
   props: {
     userInfo: {
@@ -61,7 +68,7 @@ export default {
           false,
         error: null,
         valid: false,
-        label: this.$t("usersettings.notifications.conversations.add_label"),
+        label: this.$t("user_settings.notifications.conversations.add_label"),
       },
       fieldConvShareDel: {
         value:
@@ -69,7 +76,7 @@ export default {
           false,
         error: null,
         valid: false,
-        label: this.$t("usersettings.notifications.conversations.del_label"),
+        label: this.$t("user_settings.notifications.conversations.del_label"),
       },
       fieldConvShareUpdate: {
         value:
@@ -77,32 +84,37 @@ export default {
           false,
         error: null,
         valid: false,
-        label: this.$t("usersettings.notifications.conversations.update_label"),
+        label: this.$t(
+          "user_settings.notifications.conversations.update_label",
+        ),
       },
       fieldOrgaAdd: {
         value: this.userInfo?.emailNotifications?.organizations?.add || false,
         error: null,
         valid: false,
-        label: this.$t("usersettings.notifications.organizations.add_label"),
+        label: this.$t("user_settings.notifications.organizations.add_label"),
       },
       fieldOrgaDel: {
         value:
           this.userInfo?.emailNotifications?.organizations?.delete || false,
         error: null,
         valid: false,
-        label: this.$t("usersettings.notifications.organizations.del_label"),
+        label: this.$t("user_settings.notifications.organizations.del_label"),
       },
       fieldOrgaUpdate: {
         value:
           this.userInfo?.emailNotifications?.organizations?.update || false,
         error: null,
         valid: false,
-        label: this.$t("usersettings.notifications.organizations.update_label"),
+        label: this.$t(
+          "user_settings.notifications.organizations.update_label",
+        ),
       },
     }
   },
   mounted() {},
   methods: {
+    ...mapActions("user", ["updateUser"]),
     async updateNotifications(event) {
       event?.preventDefault()
       const payload = {
@@ -121,14 +133,22 @@ export default {
           },
         },
       }
-
-      let req = await apiUpdateUserInfo(payload, {
-        timeout: 3000,
-        redirect: false,
-      })
-
+      let req = null
+      if (!this.isAdminPage) {
+        req = await this.updateUser(payload)
+      } else {
+        req = await apiAdminUpdateUser(this.userInfo._id, payload)
+      }
       if (req.status === "success") {
-        bus.$emit("user_settings_update", {})
+        bus.$emit("app_notif", {
+          status: "success",
+          message: this.$t("user_settings.notif_success"),
+        })
+      } else {
+        bus.$emit("app_notif", {
+          status: "error",
+          message: this.$t("user_settings.notif_error"),
+        })
       }
 
       return false
@@ -137,3 +157,13 @@ export default {
   components: { Fragment, FormCheckbox },
 }
 </script>
+
+<style lang="scss" scoped>
+.user-settings-notifications {
+  fieldset {
+    border: 1px solid #e0e0e0;
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+</style>

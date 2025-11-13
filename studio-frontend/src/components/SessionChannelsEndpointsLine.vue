@@ -1,15 +1,14 @@
 <template>
   <div class="context-menu__element flex gap-small" @click="copyEndpoint">
     <pre class="flex1 overflow-horizontal-auto">{{ endpoint }}</pre>
-    <button class="only-icon">
-      <span class="icon copy" v-if="!endpointHasbeenCopied"></span>
-      <span class="icon apply" v-else></span>
-    </button>
+    <Button
+      :icon="endpointHasbeenCopied ? 'check' : 'clipboard'"
+      iconWeight="regular" />
   </div>
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 export default {
   props: {
     endpoint: {

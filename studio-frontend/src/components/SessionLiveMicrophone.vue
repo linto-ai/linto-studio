@@ -1,6 +1,7 @@
 <template>
-  <MainContent noBreadcrumb :organizationPage="false" fullwidthContent sidebar>
+  <V2Layout :breadcrumbItems="breadcrumbItems">
     <template v-slot:sidebar>
+      <div class="sidebar-divider"></div>
       <SessionLiveMicrophoneStatus
         @toggle-microphone="toggleMicrophone"
         :speaking="speaking"
@@ -13,7 +14,8 @@
         v-bind:displayLiveTranscription.sync="displayLiveTranscription"
         v-bind:displaySubtitles.sync="displaySubtitles"
         v-bind:fontSize.sync="fontSize"
-        v-bind:selectedChannel.sync="selectedChannel" />
+        v-bind:selectedChannel.sync="selectedChannel"
+        quickSession />
     </template>
     <template v-slot:breadcrumb-actions>
       <slot name="breadcrumb-actions"></slot>
@@ -32,7 +34,7 @@
       @toggleMicrophone="toggleMicrophone"
       :isRecording="isRecording"
       @onSave="$emit('onSave')" />
-  </MainContent>
+  </V2Layout>
 </template>
 <script>
 import { sessionModelMixin } from "@/mixins/sessionModel.js"
@@ -41,10 +43,10 @@ import { sessionMicrophoneMixin } from "@/mixins/sessionMicrophone.js"
 
 import { customDebug } from "@/tools/customDebug.js"
 
-import MainContent from "@/components/MainContent.vue"
 import SessionLiveToolbar from "@/components/SessionLiveToolbar.vue"
 import SessionLiveContent from "@/components/SessionLiveContent.vue"
 import SessionLiveMicrophoneStatus from "@/components/SessionLiveMicrophoneStatus.vue"
+import V2Layout from "@/layouts/v2-layout.vue"
 
 export default {
   mixins: [sessionModelMixin, microphoneMixin, sessionMicrophoneMixin],
@@ -99,13 +101,20 @@ export default {
         )
       return res
     },
+    breadcrumbItems() {
+      return [
+        {
+          label: this.$t("breadcrumb.quickSession"),
+        },
+      ]
+    },
   },
   methods: {},
   components: {
-    MainContent,
     SessionLiveToolbar,
     SessionLiveContent,
     SessionLiveMicrophoneStatus,
+    V2Layout,
   },
 }
 </script>

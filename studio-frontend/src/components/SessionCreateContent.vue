@@ -28,15 +28,18 @@
       </section>
 
       <section>
-        <h2 class="flex align-center gap-medium">
-          <span>{{ $t("session.settings_page.metadata.title") }}</span>
-          <button type="button" class="" @click="startMedatadaEdition">
-            <span class="icon edit" />
-            <span class="label">{{
-              $t("session.settings_page.metadata.button_edition")
-            }}</span>
-          </button>
-        </h2>
+        <div class="flex row gap-medium align-center">
+          <h2 style="width: auto">
+            {{ $t("session.settings_page.metadata.title") }}
+          </h2>
+
+          <Button
+            :label="$t('session.settings_page.metadata.button_edition')"
+            variant="secondary"
+            size="sm"
+            icon="plus-circle"
+            @click="startMedatadaEdition" />
+        </div>
         <MetadataList :field="fieldMetadata" />
         <!-- <MetadataEditor v-model="fieldMetadata.value" :field="fieldMetadata" /> -->
       </section>
@@ -57,10 +60,14 @@
             <h2 style="width: auto">
               {{ $t("session.channels_list.title") }}
             </h2>
-            <button class="btn" @click="addChannel" type="button">
-              <span class="icon add"></span>
-              <span class="label">{{ $t("session.channels_list.add") }}</span>
-            </button>
+
+            <Button
+              :label="$t('session.channels_list.add')"
+              type="button"
+              variant="secondary"
+              size="sm"
+              icon="plus-circle"
+              @click="addChannel" />
           </div>
           <div v-if="channelsError" class="error-field">
             {{ channelsError }}
@@ -87,39 +94,32 @@
 
       <!-- Bottom footer-->
       <div class="flex gap-medium align-center conversation-create-footer">
-        <button
+        <Button
           type="button"
-          class="red-border"
+          variant="secondary"
+          intent="destructive"
           :disabled="formState === 'sending' || selectedTemplateId == ''"
+          :label="$t('session.create_page.delete_template_button')"
           @click="deleteSelectedTemplate">
-          <span class="label">
-            {{ $t("session.create_page.delete_template_button") }}
-          </span>
-        </button>
+        </Button>
         <div class="error-field flex1" v-if="formError">{{ formError }}</div>
         <div v-else class="flex1"></div>
-        <button
+        <Button
           type="button"
           :disabled="formState === 'sending'"
-          @click="saveTemplate">
-          <span class="label">{{
-            $t("session.create_page.save_as_template_button")
-          }}</span>
-        </button>
-        <button
+          variant="secondary"
+          @click="saveTemplate"
+          :label="$t('session.create_page.save_as_template_button')" />
+
+        <Button
           type="submit"
-          class="btn green"
-          id="upload-media-button"
-          :disabled="formState === 'sending'">
-          <span class="icon apply"></span>
-          <span class="label">
-            {{ $t("session.create_page.submit_button") }}
-          </span>
-        </button>
+          variant="primary"
+          :loading="formState === 'sending'"
+          :label="$t('session.create_page.submit_button')" />
       </div>
     </form>
     <ModalEditMetadata
-      v-if="modalEditMetadataIsOpen"
+      v-model="modalEditMetadataIsOpen"
       :field="fieldMetadata"
       @on-confirm="confirmEditMetadata"
       @on-cancel="closeModalEditMetadata"></ModalEditMetadata>
@@ -138,7 +138,7 @@
   </div>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import { testName } from "@/tools/fields/testName"
 import { getEnv } from "@/tools/getEnv"
@@ -150,13 +150,13 @@ import { apiCreateSession, apiCreateSessionTemplate } from "@/api/session.js"
 import { formsMixin } from "@/mixins/forms.js"
 
 import MainContent from "@/components/MainContent.vue"
-import FormInput from "@/components/FormInput.vue"
-import FormCheckbox from "@/components/FormCheckbox.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
+import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import SessionChannelsTable from "@/components/SessionChannelsTable.vue"
 import ModalAddSessionChannels from "@/components/ModalAddSessionChannels.vue"
 import AppointmentSelector from "@/components/AppointmentSelector.vue"
-import FormRadio from "@/components/FormRadio.vue"
-import CustomSelect from "@/components/CustomSelect.vue"
+import FormRadio from "@/components/molecules/FormRadio.vue"
+import CustomSelect from "@/components/molecules/CustomSelect.vue"
 import ModalDeleteTemplate from "@/components/ModalDeleteTemplate.vue"
 import MetadataEditor from "@/components/MetadataEditor.vue"
 import MetadataList from "@/components/MetadataList.vue"
@@ -211,7 +211,7 @@ export default {
         label: this.$t("session.settings_page.isPublic_label"),
       },
       fieldSessionVisibility: {
-        value: "organization",
+        value: "public",
         error: null,
         valid: true,
         options: [
@@ -242,7 +242,7 @@ export default {
       },
       fieldKeepAudio: {
         ...EMPTY_FIELD,
-        value: true,
+        value: false,
         label: this.$t("session.create_page.keep_audio_label"),
       },
       fieldAppointment: {
@@ -295,7 +295,7 @@ export default {
   computed: {
     selectedTemplate() {
       return this.localSessionTemplates.sessionTemplates.find(
-        (t) => t.id === this.selectedTemplateId,
+        (t) => t.id === Number(this.selectedTemplateId),
       )
     },
     optionsSelectTemplate() {
@@ -472,6 +472,7 @@ export default {
             translations: translations ?? [],
             diarization: this.fieldDiarizationEnabled.value,
             keepAudio: this.fieldKeepAudio.value,
+            compressAudio: true,
           })),
           meta: Object.fromEntries(this.fieldMetadata.value),
           scheduleOn: startDateTime,

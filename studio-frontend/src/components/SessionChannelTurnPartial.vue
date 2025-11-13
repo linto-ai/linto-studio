@@ -1,17 +1,22 @@
 <template>
   <SessionChannelTurn
+    :previous="previous"
     :turn="turn"
     :selectedTranslations="selectedTranslations"
     :channelLanguages="channelLanguages" />
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import SessionChannelTurn from "@/components/SessionChannelTurn.vue"
 
 export default {
   props: {
+    previous: {
+      type: Object,
+      required: false,
+    },
     partialText: {
       type: String,
       required: true,

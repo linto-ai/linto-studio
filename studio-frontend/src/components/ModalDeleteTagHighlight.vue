@@ -1,10 +1,11 @@
 <template>
   <ModalNew
+    value
     @on-cancel="($event) => this.$emit('on-cancel')"
     @on-confirm="deleteTag"
     :title="$t('manage_tags.delete_tag.title', { name: tag.name })"
     :actionBtnLabel="$t('manage_tags.delete_tag.action')"
-    small>
+    size="sm">
     <div class="form-field flex col">
       {{ $t("app_editor_highlights_modal.delete_tag_modal.content") }}
       <!-- {{
@@ -20,7 +21,7 @@ import { Fragment } from "vue-fragment"
 
 import { formsMixin } from "@/mixins/forms.js"
 
-import ModalNew from "./ModalNew.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
 import { workerSendMessage } from "../tools/worker-message"
 export default {
   mixins: [formsMixin],

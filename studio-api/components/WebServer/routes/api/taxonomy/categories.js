@@ -10,6 +10,7 @@ const {
   // getOrganizationCategory,
   createCategory,
   getCategory,
+  getSystemCategories,
 } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/taxonomy/categories/categories.js`,
 )
@@ -20,6 +21,14 @@ const { searchCategory } = require(
 
 module.exports = (webserver) => {
   return [
+    {
+      path: "/organizations/:organizationId/categories/system",
+      method: "get",
+      controller: getSystemCategories,
+      requireAuth: true,
+      requireReadTaxonomyAccess: false, // Authentified users can see the system categories
+    },
+    //
     {
       path: "/organizations/:organizationId/categories/search,/conversations/:conversationId/categories/search",
       method: "get",

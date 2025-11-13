@@ -151,8 +151,22 @@ async function addFileMetadataToConversation(conversation, file, endpoint) {
   return conversation
 }
 
+async function addAudioDuration(conversation, file) {
+  const file_metadata = await mm.parseStream(
+    fs.createReadStream(file.storageFilePath),
+    { mimeType: "audio/mpeg" },
+  )
+  delete file_metadata.native
+  if (!conversation.metadata.audio) {
+    conversation.metadata.audio = {}
+  }
+  conversation.metadata.audio.duration = file_metadata.format.duration
+  return conversation
+}
+
 module.exports = {
   transcriptionToConversation,
   addFileMetadataToConversation,
+  addAudioDuration,
   initConversation,
 }

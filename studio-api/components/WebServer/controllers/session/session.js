@@ -4,7 +4,21 @@ const debug = require("debug")(
 const { SessionError } = require(
   `${process.cwd()}/components/WebServer/error/exception/session`,
 )
+const { Unauthorized } = require(
+  `${process.cwd()}/components/WebServer/error/exception/auth`,
+)
+
 const model = require(`${process.cwd()}/lib/mongodb/models`)
+
+async function afterProxyAccess(jsonString, req) {
+  try {
+    const session = JSON.parse(jsonString)
+    if (session.organizationId === req.params.organizationId) return jsonString
+    throw new Unauthorized()
+  } catch (err) {
+    throw err
+  }
+}
 
 async function forceQueryParams(req, next) {
   try {
@@ -26,7 +40,7 @@ async function forceQueryParams(req, next) {
   }
 }
 
-async function forwardSessioAlias(req, next) {
+async function forwardSessionAlias(req, next) {
   try {
     const uuidV4Pattern =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -49,7 +63,23 @@ async function forwardSessioAlias(req, next) {
   }
 }
 
+async function checkTranscriberProfileAccess(jsonString, req) {
+  try {
+    const transcribers = JSON.parse(jsonString)
+    const filtered = transcribers.filter(
+      (session) =>
+        session.organizationId === req.params.organizationId ||
+        session.organizationId === null,
+    )
+    return JSON.stringify(filtered)
+  } catch (err) {
+    return jsonString
+  }
+}
+
 module.exports = {
   forceQueryParams,
-  forwardSessioAlias,
+  forwardSessionAlias,
+  checkTranscriberProfileAccess,
+  afterProxyAccess,
 }

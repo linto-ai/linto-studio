@@ -16,12 +16,23 @@ const {
   updateUserFromOrganization,
   deleteUserFromOrganization,
   deleteConversationFromOrganization,
+  updateConversationOwner,
 } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/organizations/maintainer.js`,
 )
 
 const { updateOrganization, deleteOrganization } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/organizations/admin.js`,
+)
+
+const {
+  createApiKey,
+  listApiKeyFromOrga,
+  getApiKey,
+  refreshApiKey,
+  deleteApiKey,
+} = require(
+  `${process.cwd()}/components/WebServer/routecontrollers/organizations/apiKey.js`,
 )
 
 const { transcribeReq } = require(
@@ -82,7 +93,7 @@ module.exports = (webserver) => {
       requireAuth: true,
       requireOrganizationUploaderAccess: true,
       orgaPermissionAccess: PERMISSIONS.UPLOAD,
-      controller: transcribeReq,
+      controller: transcribeReq.bind(webserver),
     },
     {
       path: "/:organizationId/conversations/import",
@@ -128,7 +139,14 @@ module.exports = (webserver) => {
       method: "delete",
       requireAuth: true,
       requireOrganizationMaintainerAccess: true,
-      controller: deleteConversationFromOrganization,
+      controller: deleteConversationFromOrganization.bind(webserver),
+    },
+    {
+      path: "/:organizationId/conversations/:conversationId/owner",
+      method: "patch",
+      requireAuth: true,
+      requireOrganizationMaintainerAccess: true,
+      controller: updateConversationOwner,
     },
 
     /* Admin right*/
@@ -145,6 +163,44 @@ module.exports = (webserver) => {
       requireAuth: true,
       requireOrganizationAdminAccess: true,
       controller: deleteOrganization,
+    },
+
+    /* Admin right M2M function*/
+
+    {
+      path: "/:organizationId/tokens",
+      method: "post",
+      requireAuth: true,
+      requireOrganizationAdminAccess: true,
+      controller: createApiKey,
+    },
+    {
+      path: "/:organizationId/tokens/",
+      method: "get",
+      requireAuth: true,
+      requireOrganizationAdminAccess: true,
+      controller: listApiKeyFromOrga,
+    },
+    {
+      path: "/:organizationId/tokens/:tokenId",
+      method: "get",
+      requireAuth: true,
+      requireOrganizationAdminAccess: true,
+      controller: getApiKey,
+    },
+    {
+      path: "/:organizationId/tokens/:tokenId",
+      method: "put",
+      requireAuth: true,
+      requireOrganizationAdminAccess: true,
+      controller: refreshApiKey,
+    },
+    {
+      path: "/:organizationId/tokens/:tokenId",
+      method: "delete",
+      requireAuth: true,
+      requireOrganizationAdminAccess: true,
+      controller: deleteApiKey,
     },
   ]
 }

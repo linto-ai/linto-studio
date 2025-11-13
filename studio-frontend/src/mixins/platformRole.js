@@ -1,3 +1,6 @@
+import { mapActions, mapGetters } from "vuex"
+import i18n from "@/i18n"
+
 const ROLES = {
   UNDEFINED: 0,
   USER: 1,
@@ -6,6 +9,34 @@ const ROLES = {
   SYSTEM_ADMINISTRATOR: 8,
   SUPER_ADMINISTRATOR: 16,
 }
+
+const PLATFORM_ROLES = [
+  {
+    name: i18n.t("platform_role.user"),
+    description: i18n.t("platform_role.user_description"),
+    value: ROLES.USER,
+  },
+  {
+    name: i18n.t("platform_role.organization_initiator"),
+    description: i18n.t("platform_role.organization_initiator_description"),
+    value: ROLES.ORGANIZATION_INITIATOR,
+  },
+  {
+    name: i18n.t("platform_role.session_operator"),
+    description: i18n.t("platform_role.session_operator_description"),
+    value: ROLES.SESSION_OPERATOR,
+  },
+  {
+    name: i18n.t("platform_role.system_administrator"),
+    description: i18n.t("platform_role.system_administrator_description"),
+    value: ROLES.SYSTEM_ADMINISTRATOR,
+  },
+  {
+    name: i18n.t("platform_role.super_administrator"),
+    description: i18n.t("platform_role.super_administrator_description"),
+    value: ROLES.SUPER_ADMINISTRATOR,
+  },
+]
 
 export const platformRoleMixin = {
   methods: {
@@ -38,6 +69,7 @@ export const platformRoleMixin = {
     },
   },
   computed: {
+    ...mapGetters("user", { platformRole: "getUserPlatformRole" }),
     hasNoRole() {
       return this.platformRole === 0
     },
@@ -68,11 +100,12 @@ export const platformRoleMixin = {
     isBackofficePage() {
       return this.$route.meta.backoffice
     },
-    platformRole() {
-      return this.$store.state.userInfo.role
-    },
+
     roles_dict() {
       return ROLES
+    },
+    platformRoles() {
+      return PLATFORM_ROLES
     },
   },
 }

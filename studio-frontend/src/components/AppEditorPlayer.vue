@@ -21,14 +21,14 @@
   </div>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { convertHexToRGBA } from "../tools/convertHexToRGBA.js"
 import { timeToHMS } from "../tools/timeToHMS.js"
 import { playerMixin } from "@/mixins/player.js"
 import WaveSurfer from "wavesurfer.js"
 import RegionsPlugin from "../../node_modules/wavesurfer.js/dist/plugins/regions.js"
 import TimelinePlugin from "../../node_modules/wavesurfer.js/dist/plugins/timeline.js"
-import Loading from "@/components/Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 import AppPlayerHeader from "@/components/AppPlayerHeader.vue"
 export default {
   mixins: [playerMixin],
@@ -55,7 +55,10 @@ export default {
     }
   },
   async mounted() {
-    await this.initAudioPlayer()
+    document.fonts.ready.then(() => {
+      this.initAudioPlayer()
+    })
+
     bus.$on("refresh_audio_regions", (data) => {
       if (!this.instanceDestroyed) {
         this.updateRegions(data)
@@ -95,6 +98,10 @@ export default {
     bus.$off("player_set_time")
     bus.$off("player-play")
     bus.$off("player-pause")
+    console.log("destroy player")
+    window.removeEventListener("load", (event) => {
+      this.initAudioPlayer()
+    })
   },
   computed: {
     currentTurn() {

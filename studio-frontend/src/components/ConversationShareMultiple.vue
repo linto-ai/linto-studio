@@ -1,299 +1,241 @@
 <template>
-  <div
-    class="flex col popover-parent"
-    ref="conversation-share"
-    v-click-outside="close">
-    <button
-      @click="showShareList = !showShareList"
-      :class="showShareList ? 'active' : ''">
-      <span class="icon share"></span>
-      <span class="label">{{ $t("share_menu.button") }}</span>
-    </button>
-    <ContextMenu
-      name="share-menu"
-      class="conversation-share-list"
-      first
-      v-if="showShareList"
-      overflow
-      getContainerSize>
-      <div v-if="selectedConversations.size == 0">
-        <h3 class="flex row align-center gap-small">
-          {{ $t("share_menu.no_conversation_selected_title") }}
-        </h3>
-        {{ $t("share_menu.no_conversation_selected_content") }}
-      </div>
-      <div
-        v-else-if="loading"
-        style="height: 50px"
-        class="flex center align-center justify-center">
-        <span class="icon loading"></span>
-      </div>
-      <div v-else-if="conversationsInError.length > 0">
-        <div class="flex col gap-small small-padding">
-          <h3 class="flex row align-center gap-small">
+  <Fragment ref="conversation-share" v-click-outside="close">
+    <Modal
+      v-model="showShareList"
+      :title="$t('share_menu.button')"
+      :with-actions="false"
+      :with-close="true"
+      :overlay="true"
+      :overlay-close="true"
+      size="md"
+      custom-modal-class="conversation-share-modal">
+      <template #trigger="{ open }">
+        <Button
+          size="sm"
+          :icon="showShareList ? 'x' : 'share-network'"
+          variant="secondary"
+          :label="$t('share_menu.button')"
+          @click="open"></Button>
+      </template>
+
+      <template #content>
+        <!-- Loading state -->
+        <div v-if="loading" class="conversation-share__loading">
+          <div class="conversation-share__loading-spinner">
+            <span class="icon loading"></span>
+          </div>
+          <p class="conversation-share__loading-text">
+            {{ $t("share_menu.loading_users") }}
+          </p>
+        </div>
+
+        <!-- Error state -->
+        <div
+          v-else-if="conversationsInError.length > 0"
+          class="conversation-share__error">
+          <div class="conversation-share__error-header">
             <span class="icon warning"></span>
-            <span class="label">
+            <h3 class="conversation-share__error-title">
               {{ $t("share_menu.conversation_error_title") }}
-            </span>
-          </h3>
-          <div class="flex col gap-small">
+            </h3>
+          </div>
+          <div class="conversation-share__error-list">
             <div
               v-for="conversation in conversationsInError"
               :key="conversation._id"
-              class="flex row align-center gap-small">
-              <span class="label">{{ conversation.name }}</span>
+              class="conversation-share__error-item">
+              <span class="conversation-share__error-item-name">
+                {{ conversation.name }}
+              </span>
             </div>
           </div>
         </div>
-      </div>
-      <div v-else class="flex col">
-        <form
-          class="form-field flex col small-padding no-margin conversation-share-list__search-form"
-          @submit="inviteUser">
-          <label class="form-label" for="dropdown-search-tags">
-            {{ $t("share_menu.search_label") }}
-          </label>
-          <div class="flex row gap-small">
-            <input
-              type="search"
-              class="flex1"
-              autocomplete="off"
-              v-model="searchMemberValue.value"
-              id="dropdown-search-tags" />
-            <button
-              type="submit"
-              class="btn green"
-              :title="
-                enable_inscription
-                  ? null
-                  : $t('share_menu.inscription_disabled')
-              "
-              :disabled="isValidEmail && enable_inscription ? null : true">
-              <span class="label">{{
-                $t("share_menu.invite_user_button")
-              }}</span>
-            </button>
-          </div>
-        </form>
-        <!-- Search -->
-        <!-- members right -->
-        <!-- <div class="flex row small-padding">
-          All member (except custom rights setup below):
-          <ConversationShareRightSelector
-            :value="membersRight"
-            :rightsList="rightsList"
-            @updateRight="updateOrgaMembersAccess" />
-        </div> -->
-        <SearchUsersListComponent
-          class="small-padding"
-          ref="conversation-share-search"
-          v-if="searchMemberValue.value"
-          :searchMemberValue="searchMemberValue.value"
-          :currentUser="[
-            ...userRights.organization_members,
-            ...userRights.external_members,
-          ]"
-          v-slot:default="slotProps">
-          <ConversationShareRightSelector
-            :value="slotProps.user.right"
-            @updateRight="
-              (newRight) => updateUserRights(slotProps.user, newRight)
-            "
-            :rightsList="getRightsList(slotProps.user._id)"
-            :readOnly="!canUpdateRights(slotProps.user)"
-            :isOwner="false" />
-        </SearchUsersListComponent>
-        <!-- User list of already add users -->
+
+        <!-- No conversations selected -->
         <div
-          class="flex col gap-small small-padding"
-          v-if="!searchMemberValue.value">
-          <UserList
-            :title="$t('share_menu.organization_members')"
-            :usersList="userRights.organization_members"
-            :expanded="true"
-            v-slot:default="slotProps">
-            <div
-              v-if="usersLoading[slotProps.user._id]"
-              style="height: 50px"
-              class="flex center align-center justify-center">
-              <span class="icon loading"></span>
-            </div>
-            <ConversationShareRightSelector
-              :value="slotProps.user.right"
-              @updateRight="
-                (newRight) => updateUserRights(slotProps.user, newRight)
-              "
-              :rightsList="getRightsList(slotProps.user._id)"
-              :readOnly="
-                !canUpdateRights(slotProps.user) ||
-                usersLoading[slotProps.user._id]
-              "
-              :isOwner="false" />
-          </UserList>
-
-          <UserList
-            :title="$t('share_menu.external_members')"
-            :usersList="userRights.external_members"
-            :expanded="true"
-            v-slot:default="slotProps">
-            <ConversationShareRightSelector
-              :value="slotProps.user.right"
-              @updateRight="
-                (newRight) => updateUserRights(slotProps.user, newRight)
-              "
-              :rightsList="getRightsList(slotProps.user._id)"
-              :readOnly="!canUpdateRights(slotProps.user)"
-              :isOwner="false" />
-          </UserList>
-        </div>
-      </div>
-    </ContextMenu>
-
-    <div
-      v-if="false"
-      :class="[
-        showShareList ? 'visible' : 'hidden',
-        'flex',
-        'col',
-        'conversation-share-list',
-      ]">
-      <div v-if="selectedConversations.size == 0">
-        <h3 class="flex row align-center gap-small">
-          {{ $t("share_menu.no_conversation_selected_title") }}
-        </h3>
-        {{ $t("share_menu.no_conversation_selected_content") }}
-      </div>
-      <div
-        v-else-if="loading"
-        style="height: 50px"
-        class="flex center align-center justify-center">
-        <span class="icon loading"></span>
-      </div>
-      <div v-else-if="conversationsInError.length > 0">
-        <div class="flex col gap-small small-padding">
-          <h3 class="flex row align-center gap-small">
-            <span class="icon warning"></span>
-            <span class="label">
-              {{ $t("share_menu.conversation_error_title") }}
-            </span>
+          v-else-if="selectedConversations.length == 0"
+          class="conversation-share__empty">
+          <div class="conversation-share__empty-icon">
+            <span class="icon users"></span>
+          </div>
+          <h3 class="conversation-share__empty-title">
+            {{ $t("share_menu.no_conversation_selected_title") }}
           </h3>
-          <div class="flex col gap-small">
-            <div
-              v-for="conversation in conversationsInError"
-              :key="conversation._id"
-              class="flex row align-center gap-small">
-              <span class="label">{{ conversation.name }}</span>
-            </div>
-          </div>
+          <p class="conversation-share__empty-text">
+            {{ $t("share_menu.no_conversation_selected_content") }}
+          </p>
         </div>
-      </div>
-      <div v-else class="flex col">
-        <form
-          class="form-field flex col small-padding no-margin"
-          @submit="inviteUser">
-          <label class="form-label" for="dropdown-search-tags">
-            {{ $t("share_menu.search_label") }}
-          </label>
-          <div class="flex row gap-small">
-            <input
-              type="search"
-              class="flex1"
-              autocomplete="off"
-              v-model="searchMemberValue.value"
-              id="dropdown-search-tags" />
-            <button
-              type="submit"
-              class="btn green"
-              :title="
-                enable_inscription
-                  ? null
-                  : $t('share_menu.inscription_disabled')
-              "
-              :disabled="isValidEmail && enable_inscription ? null : true">
-              <span class="label">{{
-                $t("share_menu.invite_user_button")
-              }}</span>
-            </button>
-          </div>
-        </form>
-        <!-- Search -->
-        <!-- members right -->
-        <!-- <div class="flex row small-padding">
-          All member (except custom rights setup below):
-          <ConversationShareRightSelector
-            :value="membersRight"
-            :rightsList="rightsList"
-            @updateRight="updateOrgaMembersAccess" />
-        </div> -->
-        <SearchUsersListComponent
-          class="small-padding"
-          ref="conversation-share-search"
-          v-if="searchMemberValue.value"
-          :searchMemberValue="searchMemberValue.value"
-          :currentUser="[
-            ...userRights.organization_members,
-            ...userRights.external_members,
-          ]"
-          v-slot:default="slotProps">
-          <ConversationShareRightSelector
-            :value="slotProps.user.right"
-            @updateRight="
-              (newRight) => updateUserRights(slotProps.user, newRight)
-            "
-            :rightsList="getRightsList(slotProps.user._id)"
-            :readOnly="!canUpdateRights(slotProps.user)"
-            :isOwner="false" />
-        </SearchUsersListComponent>
-        <!-- User list of already add users -->
-        <div
-          class="flex col gap-small small-padding"
-          v-if="!searchMemberValue.value">
-          <UserList
-            :title="$t('share_menu.organization_members')"
-            :usersList="userRights.organization_members"
-            :expanded="true"
-            v-slot:default="slotProps">
-            <div
-              v-if="usersLoading[slotProps.user._id]"
-              style="height: 50px"
-              class="flex center align-center justify-center">
-              <span class="icon loading"></span>
-            </div>
-            <ConversationShareRightSelector
-              :value="slotProps.user.right"
-              @updateRight="
-                (newRight) => updateUserRights(slotProps.user, newRight)
-              "
-              :rightsList="getRightsList(slotProps.user._id)"
-              :readOnly="
-                !canUpdateRights(slotProps.user) ||
-                usersLoading[slotProps.user._id]
-              "
-              :isOwner="false" />
-          </UserList>
 
-          <UserList
-            :title="$t('share_menu.external_members')"
-            :usersList="userRights.external_members"
-            :expanded="true"
-            v-slot:default="slotProps">
-            <ConversationShareRightSelector
-              :value="slotProps.user.right"
-              @updateRight="
-                (newRight) => updateUserRights(slotProps.user, newRight)
-              "
-              :rightsList="getRightsList(slotProps.user._id)"
-              :readOnly="!canUpdateRights(slotProps.user)"
-              :isOwner="false" />
-          </UserList>
+        <!-- Main content -->
+        <div v-else class="conversation-share__content">
+          <!-- Invite form -->
+          <div class="conversation-share__invite-section">
+            <h4 class="conversation-share__section-title">
+              {{ $t("share_menu.invite_new_user") }}
+            </h4>
+            <form class="conversation-share__invite-form" @submit="inviteUser">
+              <div class="conversation-share__invite-input-group">
+                <input
+                  type="email"
+                  v-model="searchMemberValue.value"
+                  :placeholder="$t('share_menu.email_placeholder')"
+                  class="conversation-share__invite-input-field"
+                  autocomplete="email" />
+                <Button
+                  type="submit"
+                  :icon="'plus'"
+                  :label="$t('share_menu.invite_user_button')"
+                  :disabled="!isValidEmail || !enable_inscription"
+                  :title="
+                    enable_inscription
+                      ? null
+                      : $t('share_menu.inscription_disabled')
+                  "
+                  color="primary"
+                  size="md"
+                  class="conversation-share__invite-button" />
+              </div>
+            </form>
+          </div>
+
+          <!-- Search results -->
+          <SearchUsersListComponent
+            v-if="searchMemberValue.value"
+            onlySlot
+            ref="conversation-share-search"
+            :searchMemberValue="searchMemberValue.value"
+            :currentUser="[
+              ...userRights.organization_members,
+              ...userRights.external_members,
+            ]"
+            class="conversation-share__search-results">
+            <template #default="slotProps">
+              <div class="conversation-share__user-item">
+                <div class="conversation-share__user-info">
+                  <UserInfoInline :user="slotProps.user" />
+                </div>
+                <div class="conversation-share__user-actions">
+                  <select
+                    :value="slotProps.user.right"
+                    @change="
+                      (event) =>
+                        updateUserRights(
+                          slotProps.user,
+                          parseInt(event.target.value),
+                        )
+                    "
+                    class="conversation-share__right-select">
+                    <option
+                      v-for="right in getRightsList(slotProps.user._id)"
+                      :key="right.value"
+                      :value="right.value">
+                      {{ right.txt }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </template>
+          </SearchUsersListComponent>
+
+          <!-- Existing users -->
+          <div
+            v-if="!searchMemberValue.value"
+            class="conversation-share__users-section">
+            <!-- Organization members -->
+            <div class="conversation-share__user-group">
+              <h4 class="conversation-share__section-title">
+                {{ $t("share_menu.organization_members") }}
+                <span class="conversation-share__user-count">
+                  ({{ userRights.organization_members.length }})
+                </span>
+              </h4>
+              <div class="conversation-share__user-list">
+                <div
+                  v-for="user in userRights.organization_members"
+                  :key="user._id"
+                  class="conversation-share__user-item">
+                  <div class="conversation-share__user-info">
+                    <UserInfoInline :user="user" />
+                  </div>
+                  <div class="conversation-share__user-actions">
+                    <div
+                      v-if="usersLoading[user._id]"
+                      class="conversation-share__loading-indicator">
+                      <span class="icon loading"></span>
+                    </div>
+                    <select
+                      v-else
+                      :value="user.right"
+                      @change="
+                        (event) =>
+                          updateUserRights(user, parseInt(event.target.value))
+                      "
+                      class="conversation-share__right-select">
+                      <option
+                        v-for="right in getRightsList(user._id)"
+                        :key="right.value"
+                        :value="right.value">
+                        {{ right.txt }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- External members -->
+            <div class="conversation-share__user-group">
+              <h4 class="conversation-share__section-title">
+                {{ $t("share_menu.external_members") }}
+                <span class="conversation-share__user-count">
+                  ({{ userRights.external_members.length }})
+                </span>
+              </h4>
+              <div class="conversation-share__user-list">
+                <div
+                  v-for="user in userRights.external_members"
+                  :key="user._id"
+                  class="conversation-share__user-item">
+                  <div class="conversation-share__user-info">
+                    <UserInfoInline :user="user" />
+                  </div>
+                  <div class="conversation-share__user-actions">
+                    <div
+                      v-if="usersLoading[user._id]"
+                      class="conversation-share__loading-indicator">
+                      <span class="icon loading"></span>
+                    </div>
+                    <select
+                      v-else
+                      :value="user.right"
+                      @change="
+                        (event) =>
+                          updateUserRights(user, parseInt(event.target.value))
+                      "
+                      class="conversation-share__right-select">
+                      <option
+                        v-for="right in getRightsList(user._id)"
+                        :key="right.value"
+                        :value="right.value">
+                        {{ right.txt }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
+      </template>
+    </Modal>
+  </Fragment>
 </template>
+
 <script>
+import { Fragment } from "vue-fragment"
 import RIGHTS_LIST from "@/const/rigthsList.js"
 import EMPTY_FIELD from "@/const/emptyField.js"
+import { mapActions, mapGetters } from "vuex"
 
 import {
   apiGetUsersFromMultipleConversation,
@@ -301,7 +243,7 @@ import {
 } from "../api/conversation.js"
 import { apiUpdateMultipleUsersInMultipleConversations } from "../api/user.js"
 
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { getUserRightFromConversation } from "@/tools/getUserRightFromConversation.js"
 import { indexConversationRightByUsers } from "@/tools/indexConversationRightByUsers.js"
 
@@ -309,20 +251,16 @@ import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { convRoleMixin } from "@/mixins/convRole.js"
 import { debounceMixin } from "@/mixins/debounce.js"
 
-import UserInfoInline from "./UserInfoInline.vue"
-import UserList from "./UserList.vue"
+import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 import ConversationShareRightSelector from "./ConversationShareRightSelector.vue"
 import SearchUsersListComponent from "@/components/SearchUsersList.vue"
-import ContextMenu from "@/components/ContextMenu.vue"
+import Modal from "@/components/molecules/Modal.vue"
+import Button from "@/components/atoms/Button.vue"
 
 export default {
   props: {
-    userInfo: { type: Object, required: true },
-    selectedConversations: { type: Map, required: true },
+    selectedConversations: { type: Array, required: true },
     currentOrganizationScope: { type: String, required: true },
-    // conversation: { type: Object, required: true },
-    // conversationId: { type: String, required: true },
-    // userRight: { type: Number, required: true },
   },
   mixins: [debounceMixin, orgaRoleMixin, convRoleMixin],
   data() {
@@ -334,14 +272,14 @@ export default {
         ...EMPTY_FIELD,
         value: "",
       },
-      usersRightsIndexed: {}, // { organization_members: map([[userid, {userObj}],...]), external_members: map([[userid, {userObj}],...])}
-      userRights: {}, // {[organization_members: {userObj1}, {userObj2}, ...], external_members: [...]}, because SearchUsersListComponent need array and not map (for the moment, to be refactored)
+      usersRightsIndexed: {},
+      userRights: {},
       usersRightsFreezed: {},
       usersLoading: {},
     }
   },
-  async mounted() {},
   computed: {
+    ...mapGetters("userInfos", { user: "getUserInfos" }),
     rightsList() {
       return RIGHTS_LIST((key) => this.$i18n.t(key))
     },
@@ -367,7 +305,7 @@ export default {
         this.loading = true
         this.verifyConversationsList()
         if (
-          this.selectedConversations.size > 0 &&
+          this.selectedConversations.length > 0 &&
           this.conversationsInError.length == 0
         ) {
           await this.loadUsersRights()
@@ -403,9 +341,7 @@ export default {
     },
     async inviteUser(event) {
       event.preventDefault()
-      const convIds = Array.from(this.selectedConversations.values()).map(
-        (c) => c._id,
-      )
+      const convIds = this.selectedConversations.map((c) => c._id)
       let res = await apiUpdateMultipleUsersInMultipleConversations(
         convIds,
         [{ email: this.searchMemberValue.value, right: 1 }],
@@ -418,14 +354,14 @@ export default {
       return false
     },
     async updateUserRights(user, newRight) {
-      // todo: websocket update (until then, other users will have to reload the page)
       if (this.usersLoading?.[user._id]) return
+
+      const convIds = this.selectedConversations.map((c) => c._id)
 
       this.$set(this.usersLoading, user._id, true)
 
       let newUser
       if (newRight == -1) {
-        // revert thanks to freezed object
         return
       } else {
         newUser = {
@@ -435,7 +371,7 @@ export default {
       }
 
       let res = await apiUpdateMultipleUsersInMultipleConversations(
-        Array.from(this.selectedConversations.keys()),
+        convIds,
         [newUser],
         this.currentOrganizationScope,
         null,
@@ -455,9 +391,9 @@ export default {
       this.$set(this.usersLoading, user._id, false)
     },
     async loadUsersRights() {
-      const listOfconvRights = await apiGetUsersFromMultipleConversation(
-        Array.from(this.selectedConversations.keys()),
-      )
+      const convIds = this.selectedConversations.map((c) => c._id)
+      const listOfconvRights =
+        await apiGetUsersFromMultipleConversation(convIds)
       this.usersRightsFreezed = Object.freeze(listOfconvRights)
       this.usersRightsIndexed = indexConversationRightByUsers(listOfconvRights)
       this.userRights = {
@@ -478,6 +414,12 @@ export default {
       }
       return this.rightsList
     },
+    getRightLabel(right) {
+      const rightItem = this.rightsList.find((item) => item.value === right)
+      return rightItem
+        ? rightItem.txt
+        : this.$i18n.t("conversation.members_right_txt.mutiple_values")
+    },
     canUpdateRights(user) {
       return true // TODO
     },
@@ -489,9 +431,289 @@ export default {
   components: {
     SearchUsersListComponent,
     UserInfoInline,
-    UserList,
     ConversationShareRightSelector,
-    ContextMenu,
+    Modal,
+    Button,
   },
 }
 </script>
+
+<style lang="scss" scoped>
+.conversation-share-modal {
+  .modal-content {
+    max-width: 700px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+}
+
+.conversation-share {
+  &__loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    gap: 1rem;
+  }
+
+  &__loading-spinner {
+    font-size: 2rem;
+    color: var(--primary-color);
+  }
+
+  &__loading-text {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin: 0;
+  }
+
+  &__error {
+    padding: 1.5rem;
+  }
+
+  &__error-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  &__error-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--danger-color);
+    margin: 0;
+  }
+
+  &__error-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__error-item {
+    padding: 0.75rem;
+    background-color: var(--danger-soft);
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--danger-color);
+  }
+
+  &__error-item-name {
+    font-size: 0.875rem;
+    color: var(--danger-color);
+  }
+
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1.5rem;
+    text-align: center;
+  }
+
+  &__empty-icon {
+    font-size: 3rem;
+    color: var(--neutral-40);
+    margin-bottom: 1rem;
+  }
+
+  &__empty-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+  }
+
+  &__empty-text {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin: 0;
+    max-width: 300px;
+  }
+
+  &__content {
+    padding: 1.5rem;
+  }
+
+  &__invite-section {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--neutral-20);
+  }
+
+  &__section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__invite-form {
+    width: 100%;
+  }
+
+  &__invite-input-group {
+    display: flex;
+    gap: 0;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  &__invite-input-field {
+    flex: 1;
+    min-width: 0;
+    padding: 0.5rem 0.75rem;
+    // border: 1px solid var(--neutral-30);
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    // border-bottom-left-radius: var(--border-radius-sm);
+    border-right: none;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    background-color: var(--background-primary);
+    box-sizing: border-box;
+    max-width: 100%;
+
+    &:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px var(--primary-soft);
+    }
+
+    &::placeholder {
+      color: var(--text-disabled);
+    }
+  }
+
+  &__invite-button {
+    white-space: nowrap;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  &__right-select {
+    padding: 0.5rem;
+    border: 1px solid var(--neutral-50);
+    border-radius: var(--border-radius-sm);
+    background-color: var(--background-primary);
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    min-width: 120px;
+    cursor: pointer;
+
+    &:hover {
+      border-color: var(--neutral-40);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px var(--primary-soft);
+    }
+
+    &:disabled {
+      background-color: var(--neutral-10);
+      color: var(--text-disabled);
+      cursor: not-allowed;
+    }
+  }
+
+  &__search-results {
+    margin-bottom: 2rem;
+  }
+
+  &__users-section {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  &__user-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  &__user-count {
+    font-weight: 400;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+  }
+
+  &__user-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  &__user-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    background-color: var(--background-secondary);
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--neutral-50);
+    transition: all 0.2s ease;
+
+    &:hover {
+      // background-color: var(--background-tertiary);
+      //border-color: var(--neutral-30);
+    }
+  }
+
+  &__user-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__user-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  &__loading-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    color: var(--primary-color);
+  }
+
+  &__right-selector {
+    min-width: 120px;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .conversation-share {
+    &__invite-input-group {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    &__user-item {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.75rem;
+    }
+
+    &__user-actions {
+      justify-content: flex-end;
+    }
+
+    &__right-selector {
+      width: 100%;
+    }
+  }
+}
+</style>

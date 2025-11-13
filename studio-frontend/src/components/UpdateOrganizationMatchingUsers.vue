@@ -6,19 +6,18 @@
       <FormInput :field="matchingMail" v-model="matchingMail.value" />
 
       <div class="flex gap-small wrap">
-        <button type="submit" class="btn green">
-          <span class="icon apply"></span>
-          <span class="label">{{
-            $t("organisation.matching_users.update_button")
-          }}</span>
-        </button>
+        <Button
+          type="submit"
+          variant="primary"
+          icon="check"
+          :label="$t('organisation.matching_users.update_button')" />
 
-        <button type="button" class="btn call-to-action" @click="applyMatch">
-          <span class="icon plus"></span>
-          <span class="label">{{
-            $t("organisation.matching_users.apply_button")
-          }}</span>
-        </button>
+        <Button
+          @click="applyMatch"
+          type="button"
+          variant="secondary"
+          icon="plus"
+          :label="$t('organisation.matching_users.apply_button')" />
       </div>
     </section>
   </form>
@@ -37,7 +36,7 @@ import {
   apiInviteUsersMachingEmail,
 } from "@/api/organisation.js"
 
-import FormInput from "@/components/FormInput.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 
 export default {
   mixins: [formsMixin, orgaRoleMixin, platformRoleMixin],

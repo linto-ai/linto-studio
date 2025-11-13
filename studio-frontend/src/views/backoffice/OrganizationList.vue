@@ -17,24 +17,22 @@
           $t('backoffice.organisation_list.add_organisation_button')
         ">
         <template v-slot:right-header>
-          <button
+          <Button
             v-if="showPersonalOrganizations"
-            @click="changeShowPersonalOrganizations">
-            <span class="icon show"></span>
-            <span class="label">
-              {{
-                $t("backoffice.organisation_list.personal_organizations_shown")
-              }}
-            </span>
-          </button>
-          <button v-else @click="changeShowPersonalOrganizations">
-            <span class="icon hide"></span>
-            <span class="label">
-              {{
-                $t("backoffice.organisation_list.personal_organizations_hidden")
-              }}
-            </span>
-          </button>
+            @click="changeShowPersonalOrganizations"
+            iconWeight="regular"
+            icon="eye"
+            :label="
+              $t('backoffice.organisation_list.personal_organizations_shown')
+            "></Button>
+          <Button
+            v-else
+            @click="changeShowPersonalOrganizations"
+            iconWeight="regular"
+            icon="eye-slash"
+            :label="
+              $t('backoffice.organisation_list.personal_organizations_hidden')
+            "></Button>
         </template>
       </HeaderTable>
     </template>
@@ -56,6 +54,7 @@
     <ModalCreateOrganization
       @on-confirm="newOrganization"
       @on-cancel="hideModalCreateOrganization"
+      v-model="modalCreateOrganizationIsVisible"
       v-if="modalCreateOrganizationIsVisible"></ModalCreateOrganization>
 
     <ModalDeleteMultipleOrganizations
@@ -76,7 +75,7 @@ import { debounceMixin } from "@/mixins/debounce.js"
 import HeaderTable from "@/components/HeaderTable.vue"
 import OrganizationTable from "@/components/OrganizationTable.vue"
 import ModalCreateOrganization from "@/components/ModalCreateOrganization.vue"
-import Pagination from "@/components/Pagination.vue"
+import Pagination from "@/components/molecules/Pagination.vue"
 import ModalDeleteMultipleOrganizations from "@/components/ModalDeleteMultipleOrganizations.vue"
 export default {
   mixins: [platformRoleMixin, debounceMixin],
@@ -170,6 +169,7 @@ export default {
     },
     search() {
       this.debouncedFetchAllOrganizations()
+      this.currentPageNb = 0
     },
   },
   components: {

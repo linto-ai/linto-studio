@@ -105,8 +105,8 @@
           </table>
         </div>-->
         <div class="flex row">
-          <button class="btn green" type="submit" :disabled="buttonDisabled">
-            <span class="icon apply"></span>
+          <button class="btn primary" type="submit" :disabled="buttonDisabled">
+            <ph-icon name="check" size="md" class="icon" />
             <span class="label">{{ formSubmitLabel }}</span>
           </button>
         </div>
@@ -116,7 +116,7 @@
 </template>
 <script>
 import { apiCreateOrganisation } from "../api/organisation.js"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import SearchUsersListComponent from "@/components/SearchUsersList.vue"
 import { sortArray } from "../tools/sortList.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"

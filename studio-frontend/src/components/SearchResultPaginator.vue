@@ -8,17 +8,26 @@
         $tc("conversation.search_in_transcription.n_found", numberFound)
       }}</span
     >
-    <button class="only-icon small" @click="previousResult">
+    <Button
+      @click="previousResult"
+      icon="skip-back"
+      variant="secondary"></Button>
+
+    <Button
+      @click="nextResult"
+      icon="skip-forward"
+      variant="secondary"></Button>
+    <!-- <button class="only-icon small" @click="previousResult">
       <span class="icon previous"></span>
     </button>
     <button class="only-icon small" @click="nextResult">
       <span class="icon next"></span>
-    </button>
+    </button> -->
   </div>
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 export default {
   props: {
     numberFound: Number,

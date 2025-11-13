@@ -27,7 +27,6 @@
         v-model="selectedUsers" />
     </div>
     <Pagination
-      v
       :pages="totalPagesNumber"
       v-model="currentPageNb"
       v-if="count > 0 && !loading"></Pagination>
@@ -52,7 +51,7 @@ import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import UserTable from "@/components/UserTable.vue"
 import HeaderTable from "@/components/HeaderTable.vue"
 import ModalDeleteUsers from "@/components/ModalDeleteUsers.vue"
-import Pagination from "@/components/Pagination.vue"
+import Pagination from "@/components/molecules/Pagination.vue"
 import ModalCreateUser from "@/components/ModalCreateUser.vue"
 
 export default {
@@ -137,6 +136,7 @@ export default {
     },
     search() {
       this.debouncedFetchAllUsers()
+      this.currentPageNb = 0
     },
   },
   components: {

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex gap-medium backoffice-listing-header align-center">
+  <div class="flex gap-medium backoffice-listing-header align-center flex1">
     <div
       class="flex1 flex gap-small backoffice-listing-header__title align-center">
       <h2>{{ title }}</h2>
@@ -12,26 +12,22 @@
         placeholder="Search"
         :value="search"
         @input="updateSearch" />
-      <!-- <button type="submit">
-        <span class="icon search"></span>
-        <span class="label">Rechercher</span>
-      </button> -->
     </form>
-    <button
+    <Button
       v-if="add_button_label"
-      class="btn green"
-      @click="$emit('on-create')">
-      <span class="icon plus"></span>
-      <span class="label">{{ add_button_label }}</span>
-    </button>
-    <button
+      variant="primary"
+      icon="plus"
+      @click="$emit('on-create')"
+      :label="add_button_label" />
+
+    <Button
       v-if="remove_button_label"
-      class="btn red-border"
+      variant="secondary"
+      intent="destructive"
+      icon="trash"
       @click="$emit('on-delete')"
-      :disabled="disableDelete">
-      <span class="icon delete"></span>
-      <span class="label">{{ remove_button_label }}</span>
-    </button>
+      :disabled="disableDelete"
+      :label="remove_button_label" />
   </div>
 </template>
 <script>

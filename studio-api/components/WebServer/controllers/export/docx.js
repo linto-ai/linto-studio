@@ -9,7 +9,6 @@ const fs = require("fs")
 const libre = require("libreoffice-convert")
 const docx = require("docx")
 const { Packer } = docx
-const { Blob } = require("buffer")
 
 const { generate } = require("./generator")
 
