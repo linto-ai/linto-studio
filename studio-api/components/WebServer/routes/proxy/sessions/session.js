@@ -38,26 +38,6 @@ module.exports = (webServer) => {
         disabled: true,
         requireAuth: false,
       },
-
-      /*************************/
-      /** transcriber profiles */
-      /*************************/
-      {
-        paths: [
-          {
-            path: "/transcriber_profiles",
-            method: ["get"],
-          },
-          { path: "/transcriber_profiles", method: ["post"] },
-          {
-            path: "/transcriber_profiles/:id",
-            method: ["get", "put", "delete"],
-          },
-        ],
-        requireAuth: true,
-        requireSessionOperator: true,
-      },
-
       {
         //member access
         scrapPath: /^\/organizations\/[^/]+/,
@@ -251,16 +231,6 @@ module.exports = (webServer) => {
           },
           {
             path: "/organizations/:organizationId/sessions/purge",
-            method: ["post"],
-            forwardParams: proxyForwardParams,
-          },
-          {
-            path: "/organizations/:organizationId/sessions/:id/start-bot",
-            method: ["post"],
-            forwardParams: proxyForwardParams,
-          },
-          {
-            path: "/organizations/:organizationId/sessions/:id/stop-bot",
             method: ["post"],
             forwardParams: proxyForwardParams,
           },

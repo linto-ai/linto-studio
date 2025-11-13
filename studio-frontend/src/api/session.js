@@ -65,17 +65,6 @@ export async function apiGetSessionAliasesBySessionId(
   return getSessionAliases?.data ?? []
 }
 
-export async function apiGetTranscriberProfiles(notif) {
-  const getTranscriberProfiles = await sendRequest(
-    `${BASE_API}/transcriber_profiles`,
-    { method: "get" },
-    {},
-    notif,
-  )
-
-  return getTranscriberProfiles?.data ?? []
-}
-
 export async function apiGetTranscriberProfilesByOrganization(
   organizationId,
   withoutGlobal = false,
@@ -91,47 +80,6 @@ export async function apiGetTranscriberProfilesByOrganization(
   )
 
   return getTranscriberProfiles?.data ?? []
-}
-
-export async function apiGetTranscriberProfilesById(transcriberId, notif) {
-  return await sendRequest(
-    `${BASE_API}/transcriber_profiles/${transcriberId}`,
-    { method: "get" },
-    {},
-    notif,
-  )
-}
-
-export async function apiUpdateTranscriberProfile(transcriberId, data, notif) {
-  const dataCopy = structuredClone(data)
-  if (dataCopy.config.key === "Secret key is hidden") {
-    delete dataCopy.config.key
-  }
-
-  return await sendRequest(
-    `${BASE_API}/transcriber_profiles/${transcriberId}`,
-    { method: "put" },
-    dataCopy,
-    notif,
-  )
-}
-
-export async function apiCreateTranscriberProfile(data, notif) {
-  return await sendRequest(
-    `${BASE_API}/transcriber_profiles`,
-    { method: "post" },
-    data,
-    notif,
-  )
-}
-
-export async function apiDeleteTranscriberProfile(transcriberId, notif) {
-  return await sendRequest(
-    `${BASE_API}/transcriber_profiles/${transcriberId}`,
-    { method: "delete" },
-    {},
-    notif,
-  )
 }
 
 export async function apiGetSessionTemplates(organizationScope, notif) {

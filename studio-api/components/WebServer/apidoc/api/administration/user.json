@@ -1,7 +1,7 @@
 {
   "/api/administration/user": {
     "post": {
-      "tags": ["administration"],
+      "tags": ["administration users"],
       "summary": "Create an user",
       "parameters": [
         {
@@ -75,7 +75,7 @@
       }
     },
     "get": {
-      "tags": ["administration"],
+      "tags": ["administration users"],
       "summary": "List all users of the platform",
       "parameters": [
         {
@@ -110,7 +110,7 @@
       }
     },
     "delete": {
-      "tags": ["administration"],
+      "tags": ["administration users"],
       "summary": "Delete users by userIds",
       "parameters": [
         {
@@ -159,7 +159,7 @@
   },
   "/api/administration/users/{userId}": {
     "patch": {
-      "tags": ["administration"],
+      "tags": ["administration users"],
       "summary": "Update the desired userId",
       "parameters": [
         {
@@ -264,7 +264,7 @@
   },
   "/api/administration/users/{userId}/organizations/": {
     "get": {
-      "tags": ["administration"],
+      "tags": ["administration users"],
       "summary": "List organizations where the user is part of",
       "parameters": [
         {
