@@ -45,11 +45,10 @@
 </template>
 <script>
 import { bus } from "@/main.js"
-import {
-  apiGetTranscriberProfilesByOrganization,
-  apiDeleteTranscriberProfile,
-} from "@/api/session.js"
+import { apiGetTranscriberProfilesByOrganization } from "@/api/session.js"
 import { sortArray } from "@/tools/sortList.js"
+
+import { apiAdminDeleteTranscriberProfile } from "@/api/admin.js"
 
 import TranscriberProfileTable from "@/components/TranscriberProfileTable.vue"
 import ModalCreateTranscriberProfiles from "@/components/ModalCreateTranscriberProfiles.vue"
@@ -100,7 +99,7 @@ export default {
     },
     async deleteSelectedProfiles() {
       const req = await bulkRequest(
-        apiDeleteTranscriberProfile,
+        apiAdminDeleteTranscriberProfile,
         this.selectedProfiles.map((profile) => profile.id),
       )
       if (req) {

@@ -197,3 +197,59 @@ export async function apiRenewPlatformToken(tokenId, { expiration }) {
 
   return res
 }
+
+export async function apiAdminGetTranscriberProfiles(notif) {
+  const getTranscriberProfiles = await sendRequest(
+    `${BASE_API}/administration/transcriber_profiles`,
+    { method: "get" },
+    {},
+    notif,
+  )
+
+  return getTranscriberProfiles?.data ?? []
+}
+
+export async function apiAdminGetTranscriberProfilesById(transcriberId, notif) {
+  return await sendRequest(
+    `${BASE_API}/administration/transcriber_profiles/${transcriberId}`,
+    { method: "get" },
+    {},
+    notif,
+  )
+}
+
+export async function apiAdminUpdateTranscriberProfile(
+  transcriberId,
+  data,
+  notif,
+) {
+  const dataCopy = structuredClone(data)
+  if (dataCopy.config.key === "Secret key is hidden") {
+    delete dataCopy.config.key
+  }
+
+  return await sendRequest(
+    `${BASE_API}/administration/transcriber_profiles/${transcriberId}`,
+    { method: "put" },
+    dataCopy,
+    notif,
+  )
+}
+
+export async function apiAdminCreateTranscriberProfile(data, notif) {
+  return await sendRequest(
+    `${BASE_API}/administration/transcriber_profiles`,
+    { method: "post" },
+    data,
+    notif,
+  )
+}
+
+export async function apiAdminDeleteTranscriberProfile(transcriberId, notif) {
+  return await sendRequest(
+    `${BASE_API}/administration/transcriber_profiles/${transcriberId}`,
+    { method: "delete" },
+    {},
+    notif,
+  )
+}

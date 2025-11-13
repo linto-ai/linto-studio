@@ -66,10 +66,12 @@
 </template>
 <script>
 import { bus } from "@/main.js"
+
 import {
-  apiGetTranscriberProfiles,
-  apiDeleteTranscriberProfile,
-} from "@/api/session.js"
+  apiAdminGetTranscriberProfiles,
+  apiAdminDeleteTranscriberProfile,
+} from "@/api/admin.js"
+
 import bulkRequest from "@/tools/bulkRequest.js"
 import { sortArray } from "@/tools/sortList.js"
 
@@ -103,7 +105,7 @@ export default {
       this.debouncedFetchTranscriberProfiles()
     },
     async fetchTranscriberProfiles() {
-      const res = await apiGetTranscriberProfiles()
+      const res = await apiAdminGetTranscriberProfiles()
       return res
     },
     async debouncedFetchTranscriberProfiles() {
@@ -131,21 +133,28 @@ export default {
     },
     async deleteSelectedProfiles() {
       const req = await bulkRequest(
-        apiDeleteTranscriberProfile,
+        apiAdminDeleteTranscriberProfile,
         this.selectedProfiles.map((id) => [id]),
         (count) => {
-          bus.$emit("app_notif", {
-            status: "loading",
+          this.$store.dispatch(
+            "system/removeNotificationById",
+            "profile-deletion-loading",
+          )
+          this.$store.dispatch("system/addNotification", {
             message: this.$i18n.t(
               "backoffice.transcriber_profile_list.bulk_remove_loading_notification",
               { count, total: this.selectedProfiles.length },
             ),
+            type: "loading",
             timeout: -1,
-            cantBeClosed: true,
+            id: "profile-deletion-loading",
           })
         },
       )
-
+      this.$store.dispatch(
+        "system/removeNotificationById",
+        "profile-deletion-loading",
+      )
       if (req.status === "success") {
         bus.$emit("app_notif", {
           status: "success",
@@ -153,7 +162,7 @@ export default {
             "backoffice.transcriber_profile_list.bulk_remove_success_notification",
           ),
         })
-        this.fetchTranscriberProfiles()
+        this.debouncedFetchTranscriberProfiles()
         this.selectedProfiles = []
       } else {
         bus.$emit("app_notif", {
@@ -162,7 +171,7 @@ export default {
             "backoffice.transcriber_profile_list.bulk_remove_error_notification",
           ),
         })
-        this.fetchTranscriberProfiles()
+        this.debouncedFetchTranscriberProfiles()
         this.selectedProfiles = []
       }
     },
