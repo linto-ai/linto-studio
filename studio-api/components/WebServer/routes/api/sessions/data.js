@@ -15,31 +15,31 @@ const {
 module.exports = (webserver) => {
   return [
     {
-      path: "/alias",
+      path: "/data",
       method: "post",
       requireAuth: true,
       controller: createSessionData,
     },
     {
-      path: "/alias/",
+      path: "/data/",
       method: "get",
       requireAuth: true,
       controller: getSessionData,
     },
     {
-      path: "/alias/:id",
+      path: "/data/:id",
       method: "get",
       requireAuth: true,
       controller: getSessionDataById,
     },
     {
-      path: "/alias/:id",
+      path: "/data/:id",
       method: "delete",
       requireAuth: true,
       controller: deleteSessionData,
     },
     {
-      path: "/alias/:id",
+      path: "/data/:id",
       method: "put",
       requireAuth: true,
       controller: updateSessionData,
