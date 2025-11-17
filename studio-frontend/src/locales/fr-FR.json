@@ -1210,9 +1210,15 @@
         "delete_error_message": "L'alias n'a pas pu être supprimé"
       },
       "visibility_private_label": "Privée",
+      "visibility_private_description": "La transcription ne peut être consultée que par votre utilisateur et les administrateurs",
       "visibility_organization_label": "Interne",
+      "visibility_organization_description": "La transcription peut être consultée par tous les utilisateurs de votre organisation",
       "visibility_public_label": "Publique",
-      "visibility_title": "Visibilité"
+      "visibility_public_description": "La transcription peut être consultée par tout utilisateur ayant accès au lien public",
+      "visibility_title": "Visibilité",
+      "visibility_password_label": "Publique, protégée par un mot de passe",
+      "visibility_password_description": "La transcription est en accès public, protégée par un mot de passe",
+      "password_label": "Mot de passe"
     },
     "start_undefined": "Non définie"
   },

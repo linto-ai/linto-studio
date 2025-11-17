@@ -5,7 +5,7 @@ import {
   apiStopSession,
   apiDeleteSession,
   apiGetPublicSession,
-  apiGetSessionAliasesBySessionId,
+  apiGetSessionDataBySessionId,
   apiUpdateSession,
   apiPatchSession,
 } from "../api/session"
@@ -90,7 +90,7 @@ export const sessionMixin = {
       this.sessionLoaded = true
     },
     async fetchAliases() {
-      this.sessionAliases = await apiGetSessionAliasesBySessionId(
+      this.sessionAliases = await apiGetSessionDataBySessionId(
         this.organizationId,
         this.session.id,
       )

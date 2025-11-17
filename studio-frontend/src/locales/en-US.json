@@ -104,7 +104,11 @@
     },
     "token_list": {
       "title": "API Keys",
-      "add_token_button": "Add a system API Key"
+      "add_token_button": "Add a system API Key",
+      "modal_create": {
+        "title": "Create a system API Key",
+        "platform_role": "Platform role"
+      }
     },
     "transcriber_profile_detail": {
       "save_button": "Save Transcriber Profile",
@@ -1204,9 +1208,15 @@
       },
       "title": "Session settings",
       "visibility_private_label": "Private",
+      "visibility_private_description": "The transcript can be viewed only by your user and administrators",
       "visibility_organization_label": "Internal",
+      "visibility_organization_description": "The transcript can be viewed by all users of your organization",
       "visibility_public_label": "Public",
-      "visibility_title": "Visibility"
+      "visibility_public_description": "The transcript can be viewed by any user with access to the public link",
+      "visibility_title": "Visibility",
+      "visibility_password_label": "Public, password protected",
+      "visibility_password_description": "The transcript is publicly accessible, protected by a password.",
+      "password_label": "Password"
     },
     "start_undefined": "Not defined"
   },
