@@ -1220,7 +1220,12 @@
       "visibility_password_description": "La transcription est en accès public, protégée par un mot de passe",
       "password_label": "Mot de passe"
     },
-    "start_undefined": "Non définie"
+    "start_undefined": "Non définie",
+    "password_modal": {
+      "title": "Mot de passe requis",
+      "password_label": "Mot de passe de la session",
+      "apply": "Continuer"
+    }
   },
   "quick_session": {
     "creation": {

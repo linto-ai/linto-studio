@@ -13,6 +13,7 @@ import {
 import { sessionModelMixin } from "./sessionModel"
 import { bus } from "../main"
 import mergeSession from "../tools/mergeSession"
+import EMPTY_FIELD from "@/const/emptyField"
 
 export const sessionMixin = {
   mixins: [sessionModelMixin],
@@ -39,6 +40,12 @@ export const sessionMixin = {
       isDeleting: false,
       isFromPublicLink: false,
       sessionAliases: null,
+      waitingPassword: false,
+      passwordField: {
+        ...EMPTY_FIELD,
+        type: "password",
+        label: this.$t("session.password_modal.password_label"),
+      },
     }
 
     if (!this.session) {
@@ -62,6 +69,9 @@ export const sessionMixin = {
     bus.$off(`websocket/orga_${this.organizationId}_session_update`)
   },
   methods: {
+    async fecthSessionWithPassword() {
+      console.log("try pwd", this.passwordField.value)
+    },
     async fetchSession() {
       let sessionRequest = null
       if (this.organizationId) {
@@ -80,7 +90,8 @@ export const sessionMixin = {
         sessionRequest.status === "error" ||
         typeof sessionRequest.data === "string"
       ) {
-        this.$router.replace({ name: "not_found" })
+        this.waitingPassword = true
+        //this.$router.replace({ name: "not_found" })
         return
       }
 

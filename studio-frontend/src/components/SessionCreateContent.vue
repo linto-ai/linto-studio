@@ -261,6 +261,7 @@ export default {
       },
       fieldPassword: {
         ...EMPTY_FIELD,
+        type: "password",
         disabled: true,
         label: this.$i18n.t("session.settings_page.password_label"),
       },
