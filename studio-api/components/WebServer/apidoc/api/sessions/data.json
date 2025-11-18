@@ -1,5 +1,5 @@
 {
-  "/api/organizations/{organizationId}/sessions/alias": {
+  "/api/organizations/{organizationId}/sessions/data": {
     "get": {
       "tags": ["sessions data"],
       "summary": "List all session data",
@@ -84,7 +84,7 @@
       }
     }
   },
-  "/api/organizations/{organizationId}/sessions/alias/{id}": {
+  "/api/organizations/{organizationId}/sessions/data/{id}": {
     "get": {
       "tags": ["sessions data"],
       "summary": "Get the session data by ID",
@@ -206,6 +206,41 @@
         },
         "409": {
           "$ref": "#/components/responses/Conflict"
+        }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/sessions/data/{id}/password": {
+    "delete": {
+      "tags": ["sessions data"],
+      "summary": "Remove a session password",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an session alias"
+        },
+        {
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Password removed from session data"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
         }
       }
     }

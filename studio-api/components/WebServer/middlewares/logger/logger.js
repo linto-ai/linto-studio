@@ -2,16 +2,6 @@ const debug = require("debug")("linto:app:webserver:middlewares:logger")
 const LogManager = require(`${process.cwd()}/lib/logger/manager`)
 
 async function logger(req, res, next) {
-  // Capture request data
-  // const requestMessage =
-  //   req.body && Object.keys(req.body).length > 0
-  //     ? req.url === "/auth/login"
-  //       ? JSON.stringify({ email: req.body.email })
-  //       : JSON.stringify(req.body)
-  //     : null
-  // debug(requestMessage)
-  // res.locals.requestMessage = requestMessage
-
   const originalJson = res.json
   res.json = function (body) {
     res.locals.responseBody = body
