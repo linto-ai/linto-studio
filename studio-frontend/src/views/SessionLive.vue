@@ -130,6 +130,8 @@
       <ModalNew
         @submit="fecthSessionWithPassword"
         v-model="waitingPassword"
+        :withClose="false"
+        :overlayClose="false"
         :withActionCancel="false"
         isForm
         :textActionApply="$t('session.password_modal.apply')"
