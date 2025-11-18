@@ -1226,8 +1226,8 @@
     },
     "start_undefined": "Non définie",
     "password_modal": {
-      "title": "Mot de passe requis",
-      "password_label": "Mot de passe de la session",
+      "title": "Un mot de passe est requis pour acceder à la transcription",
+      "password_label": "Mot de passe",
       "apply": "Continuer"
     }
   },

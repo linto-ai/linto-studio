@@ -1180,6 +1180,9 @@
       "start_time_label": "Start time",
       "success_message": "Session successfully updated",
       "error_update_message": "Session has not been updated",
+      "error_update_password": "Password has not been updated",
+      "success_update_password": "Password has been updated",
+      "empty_password_error": "Password cannot be empty",
       "force_delete_modal": {
         "action": "Delete",
         "content": "An audio stream is connected. Are you sure you want to delete the session? The content will be saved in your media library.",
@@ -1216,9 +1219,16 @@
       "visibility_title": "Visibility",
       "visibility_password_label": "Public, password protected",
       "visibility_password_description": "The transcript is publicly accessible, protected by a password.",
+      "visibility_save_button": "Apply visibility",
+
       "password_label": "Password"
     },
-    "start_undefined": "Not defined"
+    "start_undefined": "Not defined",
+    "password_modal": {
+      "title": "A password is required to access the live transcription",
+      "password_label": "Password",
+      "apply": "Continue"
+    }
   },
   "quick_session": {
     "creation": {
