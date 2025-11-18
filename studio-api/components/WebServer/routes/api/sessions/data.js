@@ -8,6 +8,7 @@ const {
   createSessionData,
   deleteSessionData,
   updateSessionData,
+  removePasswordFromSessionData,
 } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/session/data.js`,
 )
@@ -43,6 +44,12 @@ module.exports = (webserver) => {
       method: "put",
       requireAuth: true,
       controller: updateSessionData,
+    },
+    {
+      path: "/data/:id/password",
+      method: "delete",
+      requireAuth: true,
+      controller: removePasswordFromSessionData,
     },
   ]
 }

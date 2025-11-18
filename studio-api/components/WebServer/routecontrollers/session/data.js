@@ -153,10 +153,21 @@ async function updateSessionData(req, res, next) {
   }
 }
 
+async function removePasswordFromSessionData(req, res, next) {
+  try {
+    const { id } = req.params
+    await model.sessionData.unset(id, { password: "" })
+    res.status(200).json({ message: "Password removed from session data" })
+  } catch (err) {
+    next(err)
+  }
+}
+
 module.exports = {
   getSessionDataById,
   getSessionData,
   createSessionData,
   deleteSessionData,
   updateSessionData,
+  removePasswordFromSessionData,
 }

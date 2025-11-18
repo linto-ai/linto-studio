@@ -1,8 +1,6 @@
 const debug = require("debug")(
   "linto:conversation-manager:components:WebServer:error:handler",
 )
-const LogManager = require(`${process.cwd()}/lib/logger/manager`)
-
 const fs = require("fs")
 
 const JWT_DEFAULT_EXCEPTION = "UnauthorizedError" // Default JWT exception
@@ -20,10 +18,11 @@ let init = function (webserver) {
   webserver.express.use(function (err, req, res, next) {
     if (customException.indexOf(err.name) > -1) {
       const status = parseInt(err.status)
-
       if (isNaN(status)) return res.status(500).send({ message: err.message })
       else return res.status(status).send({ message: err.message })
     } else if (err) {
+      debug("Error handler caught an error:", err)
+      debug(err)
       return res.status(500).send({ message: err.message })
     }
     next()

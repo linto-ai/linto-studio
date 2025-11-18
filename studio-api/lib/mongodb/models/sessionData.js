@@ -117,6 +117,19 @@ class SessionData extends MongoModel {
     }
   }
 
+  async unset(id, payload) {
+    try {
+      const operator = "$unset"
+      if (!id) throw new Error("Missing _id in payload")
+      const query = { _id: this.getObjectId(id) }
+
+      return await this.mongoUpdateOne(query, operator, payload)
+    } catch (error) {
+      debug("Error updating session name:", error)
+      throw error
+    }
+  }
+
   async delete(id) {
     try {
       const query = { _id: this.getObjectId(id) }
