@@ -26,6 +26,19 @@ export async function apiRemoveSessionData(organizationScope, dataId) {
   return req
 }
 
+export async function apiRemovePasswordFromSessionData(
+  organizationScope,
+  dataId,
+) {
+  const req = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/data/${dataId}/password`,
+    { method: "delete" },
+    {},
+  )
+
+  return req
+}
+
 export async function apiUpdateSessionData(
   organizationScope,
   dataId,

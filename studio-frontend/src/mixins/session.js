@@ -7,7 +7,9 @@ import {
   apiGetPublicSession,
   apiGetSessionDataBySessionId,
   apiUpdateSession,
+  apiUpdateSessionData,
   apiPatchSession,
+  apiRemovePasswordFromSessionData,
 } from "../api/session"
 
 import { sessionModelMixin } from "./sessionModel"
@@ -190,9 +192,13 @@ export const sessionMixin = {
       }
     },
     async syncVisibility(visibility) {
-      let req = await apiPatchSession(this.currentOrganizationScope, this.id, {
-        visibility,
-      })
+      const req = await apiPatchSession(
+        this.currentOrganizationScope,
+        this.id,
+        {
+          visibility,
+        },
+      )
       if (req.status === "error") {
         console.error("Error updating session", req)
         bus.$emit("app_notif", {
@@ -200,14 +206,51 @@ export const sessionMixin = {
           message: this.$i18n.t("session.settings_page.error_update_message"),
           timeout: null,
         })
-        return
+        return false
       }
+
       bus.$emit("app_notif", {
         status: "success",
         message: this.$i18n.t("session.settings_page.success_message"),
         timeout: 3000,
       })
       this.session.visibility = visibility
+      return true
+    },
+    async syncPassword(password) {
+      let req
+      if (this.sessionAliases?.[0]) {
+        if (password) {
+          req = await apiUpdateSessionData(
+            this.currentOrganizationScope,
+            this.sessionAliases[0]._id,
+            { password },
+          )
+        } else {
+          req = await apiRemovePasswordFromSessionData(
+            this.currentOrganizationScope,
+            this.sessionAliases[0]._id,
+          )
+        }
+      } else if (password) {
+        req = await apiAddSessionData(organizationScope, {
+          sessionId: this.sessionId,
+          password: data.password,
+        })
+      }
+
+      if (req.status === "error") {
+        this.$store.dispatch("system/addNotification", {
+          message: this.$i18n.t("session.settings_page.error_update_password"),
+          type: "error",
+        })
+        return
+      }
+
+      this.$store.dispatch("system/addNotification", {
+        message: this.$i18n.t("session.settings_page.success_update_password"),
+        type: "success",
+      })
     },
     async syncWatermarkSettings(
       { frequency, duration, content, pinned, display },

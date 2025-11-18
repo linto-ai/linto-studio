@@ -1184,6 +1184,8 @@
       "start_time_label": "Heure de début",
       "success_message": "Session mise à jour avec succès",
       "error_update_message": "La session n'a pas été mise à jour",
+      "error_update_password": "La mise à jour du mot de passe à échoué",
+      "success_update_password": "Le mot de passe a été mis à jour",
       "force_delete_modal": {
         "action": "Supprimer",
         "content": "Un flux audio est connecté. Êtes-vous sûr de vouloir supprimer la session ? Le contenu sera sauvegardé dans votre bibliothèque de médias.",
@@ -1218,6 +1220,7 @@
       "visibility_title": "Visibilité",
       "visibility_password_label": "Publique, protégée par un mot de passe",
       "visibility_password_description": "La transcription est en accès public, protégée par un mot de passe",
+      "visibility_save_button": "Appliquer la visibilité",
       "password_label": "Mot de passe"
     },
     "start_undefined": "Non définie",

@@ -88,7 +88,11 @@ export const sessionModelMixin = {
       return this?.session?.visibility === "public"
     },
     visibility() {
-      return this?.session?.visibility ?? "private"
+      const baseVisibity = this?.session?.visibility ?? "private"
+      if (baseVisibity === "public") {
+        return this.sessionAliases?.[0]?.password ? "password" : "public"
+      }
+      return baseVisibity
     },
     sessionOrganizationId() {
       return this?.session?.organizationId
