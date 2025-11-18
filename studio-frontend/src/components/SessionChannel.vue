@@ -207,6 +207,10 @@ export default {
       type: Object,
       required: true,
     },
+    password: {
+      type: String,
+      required: false,
+    },
     fontSize: {
       type: String,
       default: "40",
@@ -408,6 +412,7 @@ export default {
         sessionRequest = await apiGetPublicSessionChannel(
           this.sessionId,
           this.channel.transcriber_id,
+          this.password,
         )
       }
 

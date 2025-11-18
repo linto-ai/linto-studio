@@ -27,16 +27,20 @@ export default class ApiEventWebSocket {
     this.test = false
     this.textPartialForTest = ""
     this.retryAfterKO = 0
+    this.currentToken = null
   }
 
-  connect() {
+  connect(token) {
+    this.clearNotifs()
     if (this.state.isConnected) {
       debugWSSession("already connected to socket.io server")
       return Promise.resolve()
     }
 
+    const userToken = token ?? this.currentToken ?? getCookie("authToken")
+    this.currentToken = userToken
+
     return new Promise((resolve, reject) => {
-      const userToken = getCookie("authToken")
       const transports = getEnv("VUE_APP_WEBSOCKET_TRANSPORTS").split(",")
       this.socket = io(socketioUrl, {
         path: socketioPath,
@@ -69,14 +73,24 @@ export default class ApiEventWebSocket {
         this.handleError()
       })
 
-      document.addEventListener("visibilitychange", () => {
-        if (document.visibilityState === "visible") {
-          if (this.state.isConnected && !this.socket.connected) {
-            this.handleDisconnection()
-          }
-        }
-      })
+      document.removeEventListener(
+        "visibilitychange",
+        this.handleVisibilityChange.bind(this),
+      )
+
+      document.addEventListener(
+        "visibilitychange",
+        this.handleVisibilityChange.bind(this),
+      )
     })
+  }
+
+  handleVisibilityChange() {
+    if (document.visibilityState === "visible") {
+      if (this.state.isConnected && !this.socket.connected) {
+        this.handleDisconnection()
+      }
+    }
   }
 
   clearNotifs() {

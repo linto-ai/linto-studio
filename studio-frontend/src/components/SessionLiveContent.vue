@@ -8,6 +8,7 @@
     <SessionChannel
       v-if="isConnected"
       @closeSubtitleFullscreen="closeSubtitleFullscreen"
+      :password="password"
       :showSubtitlesFullscreen="showSubtitlesFullscreen"
       :selectedTranslations="selectedTranslations"
       :sessionId="session.id"
@@ -48,6 +49,10 @@ export default {
     session: {
       type: Object,
       required: true,
+    },
+    password: {
+      type: String,
+      required: false,
     },
     fontSize: {
       type: String,

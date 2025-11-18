@@ -356,11 +356,11 @@ export async function apiGetSessionsBetweenDates(
   return allSessionsReq?.data ?? { sessions: [], totalItems: 0 }
 }
 
-export async function apiGetPublicSession(sessionId, notif) {
+export async function apiGetPublicSession(sessionId, password, notif) {
   const getSession = await sendRequest(
     `${BASE_API}/sessions/${sessionId}/public`,
     { method: "get" },
-    {},
+    { password },
     notif,
   )
 
@@ -434,12 +434,13 @@ export async function apiGetSessionChannel(
 export async function apiGetPublicSessionChannel(
   sessionId,
   transcriberId,
+  password,
   notif,
 ) {
   const getSessionChannel = await sendRequest(
     `${BASE_API}/sessions/${sessionId}/public`,
     { method: "get" },
-    { transcriber_id: transcriberId },
+    { transcriber_id: transcriberId, password },
     notif,
   )
 

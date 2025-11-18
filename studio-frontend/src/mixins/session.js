@@ -46,6 +46,7 @@ export const sessionMixin = {
         type: "password",
         label: this.$t("session.password_modal.password_label"),
       },
+      usedPassword: null,
     }
 
     if (!this.session) {
@@ -70,11 +71,13 @@ export const sessionMixin = {
   },
   methods: {
     async fecthSessionWithPassword() {
-      console.log("try pwd", this.passwordField.value)
+      this.sessionLoaded = false
+      this.usedPassword = this.passwordField.value
+      await this.fetchSession()
     },
     async fetchSession() {
       let sessionRequest = null
-      if (this.organizationId) {
+      if (this.organizationId && !this.usedPassword) {
         sessionRequest = await apiGetSession(
           this.organizationId,
           this.sessionId,
@@ -83,7 +86,10 @@ export const sessionMixin = {
 
       if (!sessionRequest || sessionRequest.status === "error") {
         this.isFromPublicLink = true
-        sessionRequest = await apiGetPublicSession(this.sessionId)
+        sessionRequest = await apiGetPublicSession(
+          this.sessionId,
+          this.usedPassword,
+        )
       }
 
       if (
@@ -97,6 +103,10 @@ export const sessionMixin = {
 
       this.session = sessionRequest.data
       this.$store.commit("sessions/addSession", this.session)
+
+      if (this.isFromPublicLink)
+        this.$apiEventWS.connect(this.session.publicSessionToken)
+
       await this.fetchAliases()
       this.sessionLoaded = true
     },

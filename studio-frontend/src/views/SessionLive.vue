@@ -94,6 +94,7 @@
       <SessionLiveContent
         v-else
         @closeSubtitleFullscreen="closeSubtitleFullscreen"
+        :password="usedPassword"
         :showSubtitlesFullscreen="showSubtitlesFullscreen"
         :selectedTranslations="selectedTranslation"
         :organizationId="organizationId"
