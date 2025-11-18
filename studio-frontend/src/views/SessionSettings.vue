@@ -568,6 +568,18 @@ export default {
     },
     async settingUpdateVisibility() {
       if (
+        this.fieldSessionVisibility.value === "password" &&
+        !this.fieldPassword.value.trim()
+      ) {
+        this.fieldPassword.error = this.$t(
+          "session.settings_page.empty_password_error",
+        )
+        return
+      }
+
+      this.fieldPassword.error = null
+
+      if (
         await this.syncVisibility(
           this.fieldSessionVisibility.value.replace("password", "public"),
         )
