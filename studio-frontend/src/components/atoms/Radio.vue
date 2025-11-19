@@ -58,7 +58,7 @@ export default {
     width: 20px;
     border-radius: 16px;
     box-sizing: border-box;
-    padding: 15%;
+    padding: 20%;
     margin: 0;
     background-color: var(--neutral-10);
     display: flex;
