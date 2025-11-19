@@ -54,9 +54,11 @@ export default {
 
   label {
     border: 1px solid var(--neutral-40);
-    height: 16px;
-    width: 16px;
+    height: 20px;
+    width: 20px;
     border-radius: 16px;
+    box-sizing: border-box;
+    padding: 15%;
     margin: 0;
     background-color: var(--neutral-10);
     display: flex;
@@ -66,9 +68,9 @@ export default {
 
   input:checked + label {
     .custom-radio__check {
-      height: 10px;
-      width: 10px;
-      border-radius: 16px;
+      width: 100%;
+      height: 100%;
+      border-radius: 24px;
       background-color: var(--primary-color);
     }
 
