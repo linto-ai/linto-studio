@@ -484,6 +484,17 @@ export default {
         return false
       }
 
+      if (
+        this.fieldSessionVisibility.value === "password" &&
+        !this.fieldPassword.value.trim()
+      ) {
+        this.fieldPassword.error = this.$t(
+          "session.settings_page.empty_password_error",
+        )
+        this.formState = "error"
+        return false
+      }
+
       if (this.testFields()) {
         // convert fieldAppointment.value[0] and fieldAppointment.value[1] to ISO string like 2024-10-04T13:52:56.693Z
         const startDateTime = this.fieldAppointment.value[0]
