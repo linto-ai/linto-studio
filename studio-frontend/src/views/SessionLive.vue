@@ -9,7 +9,7 @@
         <IsMobile>
           <div class="flex gap-small">
             <Button
-              v-if="isAtLeastMeetingManager"
+              v-if="isAtLeastMeetingManager && !isFromPublicLink"
               :to="settingsRoute"
               variant="primary"
               :aria-label="$t('session.detail_page.settings_button')"
@@ -24,7 +24,7 @@
 
           <template #desktop>
             <Button
-              v-if="isAtLeastMeetingManager"
+              v-if="isAtLeastMeetingManager && !isFromPublicLink"
               :to="settingsRoute"
               variant="primary"
               size="sm"

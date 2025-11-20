@@ -20,10 +20,19 @@ import ApiEventWebSocket from "@/services/websocket/ApiEventWebSocket"
 
 export const sessionMixin = {
   mixins: [sessionModelMixin],
+  /*
+  ### Orga id props
+  - `currentOrganizationScope` is the current orgaId from the store (may be null in annonymous mode)
+  - `organizationId` is the ID from the URL (normally it's identical to currentOrganizationScope, the router must ensure this)
+  - there is also `sessionOrganizationId` from the sessionModelMixin which is the orgaId of the session. 
+    this value is undefined until the session is loaded (this.sessionLoaded === true)
+
+  In the best case scenario all these values are identical, but for public sessions these three values may differ.
+  
+  It is preferable to use “sessionOrganizationId” in order to ensure that the actual session ID is used during API/WS interactions
+  */
   props: {
     userInfo: { type: Object, required: true },
-    // orga id from scope (cookie) => could be null in annonymous mode so better to use "organizationId".
-    // If no null, organizationId and currentOrganizationScope should be equal
     currentOrganizationScope: {
       type: String,
       required: false,
@@ -60,18 +69,11 @@ export const sessionMixin = {
     return props
   },
   mounted() {
-    // TODO: check rights
-    // then fetch session
     if (this.session === null) this.fetchSession()
-
-    bus.$on(
-      `websocket/orga_${this.organizationId}_session_update`,
-      this.onSessionUpdateEvent.bind(this),
-    )
   },
   beforeDestroy() {
     //this.$apiEventWS.unSubscribeSessionsUpdate()
-    bus.$off(`websocket/orga_${this.organizationId}_session_update`)
+    bus.$off(`websocket/orga_${this.sessionOrganizationId}_session_update`)
     if (this.isFromPublicLink) {
       this.currentChannelMicrophone?.close()
     }
@@ -168,7 +170,10 @@ export const sessionMixin = {
     },
     async deleteSession() {
       this.isDeleting = true
-      const deleteSession = await apiDeleteSession(this.organizationId, this.id)
+      const deleteSession = await apiDeleteSession(
+        this.sessionOrganizationId,
+        this.id,
+      )
 
       if (deleteSession.status === "error") {
         console.error("Error deleting session", deleteSession)
@@ -188,7 +193,11 @@ export const sessionMixin = {
       this.isDeleting = false
     },
     subscribeToWebsocket() {
-      this.$apiEventWS.subscribeSessionsUpdate(this.organizationId)
+      this.websocketInstance.subscribeSessionsUpdate(this.sessionOrganizationId)
+      bus.$on(
+        `websocket/orga_${this.sessionOrganizationId}_session_update`,
+        this.onSessionUpdateEvent.bind(this),
+      )
     },
     onSessionUpdateEvent(value) {
       for (const updatedSession of value.updated) {
@@ -317,7 +326,7 @@ export const sessionMixin = {
       }
     },
     readyForWSConnection() {
-      return this.sessionLoaded && this.$apiEventWS.state.isConnected
+      return this.sessionLoaded && this.websocketInstance.state.isConnected
     },
   },
   watch: {
