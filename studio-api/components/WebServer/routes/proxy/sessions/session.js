@@ -13,6 +13,7 @@ const {
   checkTranscriberProfileAccess,
   afterProxyAccess,
   generatPublicToken,
+  checkSessionMatchingOrganization,
 } = require(
   `${process.cwd()}/components/WebServer/controllers/session/session.js`,
 )
@@ -222,6 +223,7 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/sessions/:id",
             method: ["put", "patch"],
             forwardParams: proxyForwardParams,
+            executeBeforeResult: checkSessionMatchingOrganization,
           },
           {
             path: "/organizations/:organizationId/sessions/:id",
@@ -233,6 +235,7 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/sessions/:id/stop",
             method: ["put"],
             forwardParams: proxyForwardParams,
+            executeBeforeResult: checkSessionMatchingOrganization,
           },
           {
             path: "/organizations/:organizationId/sessions/purge",

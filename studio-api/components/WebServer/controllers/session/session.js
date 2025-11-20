@@ -1,6 +1,7 @@
 const debug = require("debug")(
   `linto:conversation-manager:components:WebServer:session:sessions`,
 )
+
 const { SessionError } = require(
   `${process.cwd()}/components/WebServer/error/exception/session`,
 )
@@ -15,6 +16,7 @@ const PublicToken = require(
   `${process.cwd()}/components/WebServer/config/passport/token/public_generator`,
 )
 
+const axios = require(`${process.cwd()}/lib/utility/axios`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const crypto = require("crypto")
 
@@ -145,6 +147,18 @@ async function generatPublicToken(jsonString, req) {
   return jsonString
 }
 
+async function checkSessionMatchingOrganization(req, next) {
+  try {
+    const session = await axios.get(
+      process.env.SESSION_API_ENDPOINT + `/sessions/${req.params.id}`,
+    )
+    if (session?.organizationId === req.params.organizationId) return next()
+    throw new Unauthorized()
+  } catch (err) {
+    next(err)
+  }
+}
+
 module.exports = {
   forceQueryParams,
   forwardSessionAlias,
@@ -152,4 +166,5 @@ module.exports = {
   checkTranscriberProfileAccess,
   afterProxyAccess,
   generatPublicToken,
+  checkSessionMatchingOrganization,
 }
