@@ -43,3 +43,45 @@ export default {
   components: { Fragment },
 }
 </script>
+
+<style lang="scss" scoped>
+.custom-checkbox {
+  input {
+    display: none;
+  }
+
+  label {
+    border: 1px solid var(--neutral-40);
+    height: 16px;
+    width: 16px;
+    margin: 0;
+    background-color: var(--neutral-10);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+  }
+
+  input:checked + label {
+    .custom-checkbox__check {
+      width: 4px;
+      height: 10px;
+      border: solid var(--primary-contrast);
+      border-width: 0 2px 2px 0;
+      -webkit-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+      transform: rotate(45deg);
+      position: relative;
+      bottom: 2px;
+    }
+
+    border-color: var(--primary-color);
+    background-color: var(--primary-color);
+  }
+
+  input:disabled + label {
+    background-color: var(--neutral-20);
+    border: 1px solid var(--neutral-40);
+  }
+}
+</style>

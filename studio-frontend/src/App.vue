@@ -106,7 +106,9 @@ export default {
       })
     })
 
-    this.$apiEventWS.connect()
+    if (this.isAuthenticated) {
+      this.$apiEventWS.connect()
+    }
   },
   watch: {
     isLoading: {

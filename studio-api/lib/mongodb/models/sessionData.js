@@ -1,11 +1,11 @@
 const debug = require("debug")(
-  "linto:conversation-manager:models:mongodb:models:sessionAlias",
+  "linto:conversation-manager:models:mongodb:models:sessionData",
 )
 const MongoModel = require(`../model`)
 
-class SessionAlias extends MongoModel {
+class SessionData extends MongoModel {
   constructor() {
-    super("sessionAlias") // define name of 'users' collection elsewhere?
+    super("sessionData") // define name of 'users' collection elsewhere?
   }
 
   async create(payload) {
@@ -117,6 +117,19 @@ class SessionAlias extends MongoModel {
     }
   }
 
+  async unset(id, payload) {
+    try {
+      const operator = "$unset"
+      if (!id) throw new Error("Missing _id in payload")
+      const query = { _id: this.getObjectId(id) }
+
+      return await this.mongoUpdateOne(query, operator, payload)
+    } catch (error) {
+      debug("Error updating session name:", error)
+      throw error
+    }
+  }
+
   async delete(id) {
     try {
       const query = { _id: this.getObjectId(id) }
@@ -141,4 +154,4 @@ class SessionAlias extends MongoModel {
   }
 }
 
-module.exports = new SessionAlias()
+module.exports = new SessionData()

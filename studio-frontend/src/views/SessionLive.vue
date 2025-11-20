@@ -45,9 +45,6 @@
 
     <template v-slot:sidebar>
       <div class="sidebar-divider"></div>
-      <!-- <h1 v-if="sessionLoaded" class="center-text session-live__title">
-        {{ name }}
-      </h1> -->
       <SessionLiveMicrophoneStatus
         v-if="useMicrophone && sessionLoaded"
         @toggle-microphone="toggleMicrophone"
@@ -97,6 +94,8 @@
       <SessionLiveContent
         v-else
         @closeSubtitleFullscreen="closeSubtitleFullscreen"
+        :websocketInstance="websocketInstance"
+        :password="usedPassword"
         :showSubtitlesFullscreen="showSubtitlesFullscreen"
         :selectedTranslations="selectedTranslation"
         :organizationId="organizationId"
@@ -128,6 +127,18 @@
           @start-session="startRecordFromMicrophone"
           @trash-session="cancelRecordSettings"></SessionSetupMicrophone>
       </ModalNew>
+
+      <ModalNew
+        @submit="fecthSessionWithPassword"
+        v-model="waitingPassword"
+        :withClose="false"
+        :overlayClose="false"
+        :withActionCancel="false"
+        isForm
+        :textActionApply="$t('session.password_modal.apply')"
+        :title="$t('session.password_modal.title')">
+        <FormInput :field="passwordField" v-model="passwordField.value" />
+      </ModalNew>
     </div>
   </LayoutV2>
 </template>
@@ -156,7 +167,9 @@ import SessionLiveMicrophoneStatus from "@/components/SessionLiveMicrophoneStatu
 import SessionHeader from "@/components/SessionHeader.vue"
 import LayoutV2 from "@/layouts/v2-layout.vue"
 import SessionDropdownChannelSelector from "@/components-mobile/SessionDropdownChannelSelector.vue"
-import IsMobile from "../components/atoms/IsMobile.vue"
+import IsMobile from "@/components/atoms/IsMobile.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
+
 export default {
   mixins: [
     sessionMixin,
@@ -283,6 +296,7 @@ export default {
     SessionLiveMicrophoneStatus,
     SessionDropdownChannelSelector,
     SessionHeader,
+    FormInput,
   },
 }
 </script>

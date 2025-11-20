@@ -1,5 +1,5 @@
 {
-  "/api/administration/user": {
+  "/api/administration/users": {
     "post": {
       "tags": ["administration users"],
       "summary": "Create an user",

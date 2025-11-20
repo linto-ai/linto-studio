@@ -45,3 +45,36 @@ export default {
   components: { Fragment },
 }
 </script>
+
+<style lang="scss" scoped>
+.custom-radio {
+  input {
+    display: none;
+  }
+
+  label {
+    border: 1px solid var(--neutral-40);
+    height: 20px;
+    width: 20px;
+    border-radius: 16px;
+    box-sizing: border-box;
+    padding: 20%;
+    margin: 0;
+    background-color: var(--neutral-10);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  input:checked + label {
+    .custom-radio__check {
+      width: 100%;
+      height: 100%;
+      border-radius: 24px;
+      background-color: var(--primary-color);
+    }
+
+    border-color: var(--primary-color);
+  }
+}
+</style>

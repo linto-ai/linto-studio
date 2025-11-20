@@ -145,38 +145,26 @@
       :watermarkPinned="watermarkPinned"
       :displayWatermark="displayWatermark"
       @close="closeSubtitleFullscreen" />
-    <!-- <div
-      class="session-content__subtitle"
-      :style="style"
-      ref="subtitle"
-      v-if="displaySubtitles">
-      <div id="scroller">
-        <div v-for="turn of lastTwoTurns">
-          {{ turn.text }}
-        </div>
-        <div>{{ partialText }}</div>
-        <div ref="subtitle-bottom"></div>
-      </div>
-    </div> -->
 
-    <button
-      v-if="!isBottom"
-      @click="scrollToBottom(true)"
-      class="bottom-session-button bottom-session-button-desktop outline"
-      :class="{ has_subtitles: displaySubtitles }">
-      <span class="icon bottom-arrow"></span>
-      <span class="label">{{
-        $tc("session.detail_page.scroll_to_bottom")
-      }}</span>
-    </button>
-
-    <button
-      v-if="!isBottom"
-      @click="scrollToBottom(true)"
-      class="mobile bottom-session-button bottom-session-button-mobile only-icon green circle"
-      :class="{ has_subtitles: displaySubtitles }">
-      <span class="icon bottom-arrow"></span>
-    </button>
+    <IsMobile>
+      <Button
+        v-if="!isBottom"
+        variant="secondary"
+        size="xl"
+        class="bottom-session-button bottom-session-button-mobile"
+        @click="scrollToBottom(true)"
+        icon="arrow-line-down" />
+      <template #desktop>
+        <Button
+          v-if="!isBottom"
+          class="bottom-session-button"
+          :class="{ has_subtitles: displaySubtitles }"
+          variant="secondary"
+          @click="scrollToBottom(true)"
+          icon="arrow-line-down"
+          :label="$t('session.detail_page.scroll_to_bottom')" />
+      </template>
+    </IsMobile>
   </div>
 </template>
 <script>
@@ -206,6 +194,10 @@ export default {
     channel: {
       type: Object,
       required: true,
+    },
+    password: {
+      type: String,
+      required: false,
     },
     fontSize: {
       type: String,
@@ -270,6 +262,10 @@ export default {
       type: Boolean,
       required: true,
     },
+    // instance of ApiEventWebSocket
+    websocketInstance: {
+      required: true,
+    },
   },
   data() {
     return {
@@ -296,7 +292,7 @@ export default {
     document.addEventListener("keydown", this.keydown)
   },
   beforeDestroy() {
-    this.$apiEventWS.unSubscribeSessionRoom()
+    this.websocketInstance.unSubscribeSessionRoom()
     document.removeEventListener("keydown", this.keydown)
   },
   computed: {
@@ -341,12 +337,12 @@ export default {
     displaySubtitles() {
       this.scrollToBottom(true)
     },
-    "$apiEventWS.state.isConnected"(newValue, oldValue) {
+    "websocketInstance.state.isConnected"(newValue, oldValue) {
       if (newValue) {
         this.subscribeToWebsocket()
       }
     },
-    async "$apiEventWS.state.connexionRestored"(newValue, oldValue) {
+    async "websocketInstance.state.connexionRestored"(newValue, oldValue) {
       if (newValue) {
         await this.init()
       }
@@ -357,7 +353,7 @@ export default {
       this.partialText = ""
       this.turns = []
       this.clearSelectedTurns()
-      if (this.$apiEventWS.state.isConnected) {
+      if (this.websocketInstance.state.isConnected) {
         this.subscribeToWebsocket()
       }
       await this.loadPreviousTranscrition()
@@ -366,7 +362,7 @@ export default {
       }, 1000)
     },
     subscribeToWebsocket() {
-      this.$apiEventWS.subscribeSessionRoom(
+      this.websocketInstance.subscribeSessionRoom(
         this.sessionId,
         this.channelIndex,
         this.onPartial.bind(this),
@@ -408,6 +404,7 @@ export default {
         sessionRequest = await apiGetPublicSessionChannel(
           this.sessionId,
           this.channel.transcriber_id,
+          this.password,
         )
       }
 

@@ -5,14 +5,18 @@ import {
   apiStopSession,
   apiDeleteSession,
   apiGetPublicSession,
-  apiGetSessionAliasesBySessionId,
+  apiGetSessionDataBySessionId,
   apiUpdateSession,
+  apiUpdateSessionData,
   apiPatchSession,
+  apiRemovePasswordFromSessionData,
 } from "../api/session"
 
 import { sessionModelMixin } from "./sessionModel"
 import { bus } from "../main"
 import mergeSession from "../tools/mergeSession"
+import EMPTY_FIELD from "@/const/emptyField"
+import ApiEventWebSocket from "@/services/websocket/ApiEventWebSocket"
 
 export const sessionMixin = {
   mixins: [sessionModelMixin],
@@ -39,6 +43,14 @@ export const sessionMixin = {
       isDeleting: false,
       isFromPublicLink: false,
       sessionAliases: null,
+      waitingPassword: false,
+      passwordField: {
+        ...EMPTY_FIELD,
+        type: "password",
+        label: this.$t("session.password_modal.password_label"),
+      },
+      usedPassword: null,
+      websocketInstance: null,
     }
 
     if (!this.session) {
@@ -60,11 +72,19 @@ export const sessionMixin = {
   beforeDestroy() {
     //this.$apiEventWS.unSubscribeSessionsUpdate()
     bus.$off(`websocket/orga_${this.organizationId}_session_update`)
+    if (this.isFromPublicLink) {
+      this.currentChannelMicrophone?.close()
+    }
   },
   methods: {
+    async fecthSessionWithPassword() {
+      this.sessionLoaded = false
+      this.usedPassword = this.passwordField.value
+      await this.fetchSession()
+    },
     async fetchSession() {
       let sessionRequest = null
-      if (this.organizationId) {
+      if (this.organizationId && !this.usedPassword) {
         sessionRequest = await apiGetSession(
           this.organizationId,
           this.sessionId,
@@ -73,24 +93,37 @@ export const sessionMixin = {
 
       if (!sessionRequest || sessionRequest.status === "error") {
         this.isFromPublicLink = true
-        sessionRequest = await apiGetPublicSession(this.sessionId)
+        sessionRequest = await apiGetPublicSession(
+          this.sessionId,
+          this.usedPassword,
+        )
       }
 
       if (
         sessionRequest.status === "error" ||
         typeof sessionRequest.data === "string"
       ) {
-        this.$router.replace({ name: "not_found" })
+        this.waitingPassword = true
+        //this.$router.replace({ name: "not_found" })
         return
       }
 
       this.session = sessionRequest.data
       this.$store.commit("sessions/addSession", this.session)
+
+      // Use another WS instance for public session to avoid conflict with main app WS
+      if (this.isFromPublicLink) {
+        this.websocketInstance = new ApiEventWebSocket()
+        this.websocketInstance.connect(this.session.publicSessionToken)
+      } else {
+        this.websocketInstance = this.$apiEventWS
+      }
+
       await this.fetchAliases()
       this.sessionLoaded = true
     },
     async fetchAliases() {
-      this.sessionAliases = await apiGetSessionAliasesBySessionId(
+      this.sessionAliases = await apiGetSessionDataBySessionId(
         this.organizationId,
         this.session.id,
       )
@@ -169,9 +202,13 @@ export const sessionMixin = {
       }
     },
     async syncVisibility(visibility) {
-      let req = await apiPatchSession(this.currentOrganizationScope, this.id, {
-        visibility,
-      })
+      const req = await apiPatchSession(
+        this.currentOrganizationScope,
+        this.id,
+        {
+          visibility,
+        },
+      )
       if (req.status === "error") {
         console.error("Error updating session", req)
         bus.$emit("app_notif", {
@@ -179,14 +216,51 @@ export const sessionMixin = {
           message: this.$i18n.t("session.settings_page.error_update_message"),
           timeout: null,
         })
-        return
+        return false
       }
+
       bus.$emit("app_notif", {
         status: "success",
         message: this.$i18n.t("session.settings_page.success_message"),
         timeout: 3000,
       })
       this.session.visibility = visibility
+      return true
+    },
+    async syncPassword(password) {
+      let req
+      if (this.sessionAliases?.[0]) {
+        if (password) {
+          req = await apiUpdateSessionData(
+            this.currentOrganizationScope,
+            this.sessionAliases[0]._id,
+            { password },
+          )
+        } else {
+          req = await apiRemovePasswordFromSessionData(
+            this.currentOrganizationScope,
+            this.sessionAliases[0]._id,
+          )
+        }
+      } else if (password) {
+        req = await apiAddSessionData(organizationScope, {
+          sessionId: this.sessionId,
+          password: data.password,
+        })
+      }
+
+      if (req.status === "error") {
+        this.$store.dispatch("system/addNotification", {
+          message: this.$i18n.t("session.settings_page.error_update_password"),
+          type: "error",
+        })
+        return
+      }
+
+      this.$store.dispatch("system/addNotification", {
+        message: this.$i18n.t("session.settings_page.success_update_password"),
+        type: "success",
+      })
     },
     async syncWatermarkSettings(
       { frequency, duration, content, pinned, display },

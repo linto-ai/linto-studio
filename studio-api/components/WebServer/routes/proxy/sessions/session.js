@@ -9,8 +9,10 @@ const { storeSessionFromStop, storeQuickMeetingFromStop } = require(
 const {
   forceQueryParams,
   forwardSessionAlias,
+  forwardSessionAliasPublic,
   checkTranscriberProfileAccess,
   afterProxyAccess,
+  generatPublicToken,
 } = require(
   `${process.cwd()}/components/WebServer/controllers/session/session.js`,
 )
@@ -100,7 +102,7 @@ module.exports = (webServer) => {
             path: "/sessions/:id/public",
             method: ["get"],
             addParams: [{ "body.visibility": "public" }],
-            executeBeforeResult: forwardSessionAlias,
+            executeBeforeResult: forwardSessionAliasPublic,
             executeAfterResult: [
               (jsonString) => {
                 try {
@@ -120,6 +122,9 @@ module.exports = (webServer) => {
                 } catch (err) {
                   throw err
                 }
+              },
+              (jsonString, req) => {
+                return generatPublicToken(jsonString, req)
               },
             ],
           },

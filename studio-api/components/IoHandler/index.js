@@ -21,40 +21,64 @@ const { sessionSocketAccess } = require(
   `${process.cwd()}/components/WebServer/middlewares/access/organization.js`,
 )
 
+function denySocket(socket) {
+  socket.emit("unauthorized")
+  socket.disconnect(true)
+  return false
+}
+
 async function checkSocketAccess(socket, roomId) {
+  const sessionRoomId = roomId.split("/")[0]
+
   try {
-    const session = await axios.get(
-      process.env.SESSION_API_ENDPOINT + `/sessions/${roomId.split("/")[0]}`,
+    // Load session
+    const sessionRes = await axios.get(
+      `${process.env.SESSION_API_ENDPOINT}/sessions/${sessionRoomId}`,
     )
+    const session = sessionRes?.data ?? sessionRes
 
-    if (session.visibility === "public") {
+    // Check user auth
+    const { isAuth, userId, sessionId } =
+      await auth_middlewares.checkSocket(socket)
+
+    // Protected session data
+    const protectedSession =
+      await model.sessionData.getBySessionId(sessionRoomId)
+    const hasPassword =
+      protectedSession?.[0]?.password && protectedSession.length > 0
+
+    // Public session + no protection
+    if (session.visibility === "public" && !hasPassword) {
       return true
-    } else {
-      const { isAuth, userId } = await auth_middlewares.checkSocket(socket)
-      if (isAuth === false) {
-        socket.emit("unauthorized")
-        socket.disconnect(true)
-        return false
-      }
-
-      const access = await sessionSocketAccess(session, userId)
-      if (access === false) {
-        socket.emit("unauthorized")
-        socket.disconnect(true)
-        return false
-      }
-
-      if (
-        session.visibility === "organization" ||
-        (session.visibility === "private" && session.owner === userId)
-      ) {
-        return true
-      } else {
-        socket.emit("unauthorized")
-        socket.disconnect(true)
-        return false
-      }
     }
+
+    // User is not authenticated
+    if (!isAuth) {
+      return denySocket(socket)
+    }
+
+    // Public session & sessionId matches with a password
+    if (
+      session.visibility === "public" &&
+      sessionId === session.id &&
+      hasPassword
+    ) {
+      return true
+    }
+
+    // Determine user access from organization access
+    const access = await sessionSocketAccess(session, userId)
+    if (access === true) {
+      // if (session.visibility === "organization") {
+      return true
+    }
+
+    // Private & owner or explicitly granted access
+    if (session.visibility === "private" && session.owner === userId) {
+      return true
+    }
+
+    return denySocket(socket)
   } catch (err) {
     LogManager.logSocketEvent(
       socket,
@@ -66,12 +90,9 @@ async function checkSocketAccess(socket, roomId) {
       },
       { level: "error" },
     )
-    socket.emit("unauthorized")
-    socket.disconnect(true)
-    return false
+    return denySocket(socket)
   }
 }
-
 class IoHandler extends Component {
   constructor(app) {
     super(app, "WebServer") // Relies on a WebServer component to be registrated
@@ -93,7 +114,7 @@ class IoHandler extends Component {
       },
     })
 
-    // this.io.use(auth_middlewares.isAuthenticateSocket) // Used initialy to require authentication, disabling annonymous sessions
+    this.io.use(auth_middlewares.isAuthenticateSocket) // Used initialy to require authentication, disabling annonymous sessions
     this.io.on("connection", (socket) => {
       LogManager.logSocketEvent(socket, {
         action: SOCKET_EVENTS.CONNECTING,
