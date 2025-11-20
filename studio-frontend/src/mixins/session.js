@@ -94,6 +94,10 @@ export const sessionMixin = {
       }
 
       if (!sessionRequest || sessionRequest.status === "error") {
+        if (this?.privatePage) {
+          this.$router.replace({ name: "not_found" })
+        }
+
         this.isFromPublicLink = true
         sessionRequest = await apiGetPublicSession(
           this.sessionId,
@@ -105,8 +109,11 @@ export const sessionMixin = {
         sessionRequest.status === "error" ||
         typeof sessionRequest.data === "string"
       ) {
-        this.waitingPassword = true
-        //this.$router.replace({ name: "not_found" })
+        if (sessionRequest?.error?.status === 401) {
+          this.waitingPassword = true
+        } else {
+          this.$router.replace({ name: "not_found" })
+        }
         return
       }
 

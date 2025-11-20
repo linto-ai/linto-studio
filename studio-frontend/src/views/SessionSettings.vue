@@ -298,6 +298,7 @@ export default {
   props: {},
   data() {
     return {
+      privatePage: true,
       fields: ["name", "fieldAppointment", "fieldAutoStop", "fieldAutoStart"],
       fieldPublicLink: {
         value: null,
