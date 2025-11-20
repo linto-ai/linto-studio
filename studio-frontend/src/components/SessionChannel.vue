@@ -145,38 +145,26 @@
       :watermarkPinned="watermarkPinned"
       :displayWatermark="displayWatermark"
       @close="closeSubtitleFullscreen" />
-    <!-- <div
-      class="session-content__subtitle"
-      :style="style"
-      ref="subtitle"
-      v-if="displaySubtitles">
-      <div id="scroller">
-        <div v-for="turn of lastTwoTurns">
-          {{ turn.text }}
-        </div>
-        <div>{{ partialText }}</div>
-        <div ref="subtitle-bottom"></div>
-      </div>
-    </div> -->
 
-    <button
-      v-if="!isBottom"
-      @click="scrollToBottom(true)"
-      class="bottom-session-button bottom-session-button-desktop outline"
-      :class="{ has_subtitles: displaySubtitles }">
-      <span class="icon bottom-arrow"></span>
-      <span class="label">{{
-        $tc("session.detail_page.scroll_to_bottom")
-      }}</span>
-    </button>
-
-    <button
-      v-if="!isBottom"
-      @click="scrollToBottom(true)"
-      class="mobile bottom-session-button bottom-session-button-mobile only-icon green circle"
-      :class="{ has_subtitles: displaySubtitles }">
-      <span class="icon bottom-arrow"></span>
-    </button>
+    <IsMobile>
+      <Button
+        v-if="!isBottom"
+        variant="secondary"
+        size="xl"
+        class="bottom-session-button bottom-session-button-mobile"
+        @click="scrollToBottom(true)"
+        icon="arrow-line-down" />
+      <template #desktop>
+        <Button
+          v-if="!isBottom"
+          class="bottom-session-button"
+          :class="{ has_subtitles: displaySubtitles }"
+          variant="secondary"
+          @click="scrollToBottom(true)"
+          icon="arrow-line-down"
+          :label="$t('session.detail_page.scroll_to_bottom')" />
+      </template>
+    </IsMobile>
   </div>
 </template>
 <script>
