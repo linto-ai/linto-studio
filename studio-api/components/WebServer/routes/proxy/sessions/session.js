@@ -16,7 +16,7 @@ const {
 } = require(
   `${process.cwd()}/components/WebServer/controllers/session/session.js`,
 )
-const { Unauthorized } = require(
+const { Unauthorized, UnauthorizedProxy } = require(
   `${process.cwd()}/components/WebServer/error/exception/auth`,
 )
 
@@ -118,7 +118,7 @@ module.exports = (webServer) => {
                     return JSON.stringify(session)
                   }
 
-                  throw new Unauthorized()
+                  throw new UnauthorizedProxy()
                 } catch (err) {
                   throw err
                 }

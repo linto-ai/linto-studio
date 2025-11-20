@@ -23,7 +23,7 @@ const platform_middlewares = require(
   `${process.cwd()}/components/WebServer/middlewares/access/platform.js`,
 )
 
-const { Unauthorized } = require(
+const { Unauthorized, UnauthorizedProxy } = require(
   `${process.cwd()}/components/WebServer/error/exception/auth`,
 )
 
@@ -214,8 +214,11 @@ const createProxyRoutes = (webServer, proxy_routes) => {
                       return responseBuffer
                     }
                   } catch (error) {
-                    if (error instanceof Unauthorized) {
-                      res.status(401)
+                    if (
+                      error instanceof Unauthorized ||
+                      error instanceof UnauthorizedProxy
+                    ) {
+                      res.status(error.status || 401)
                       return error.toString()
                     } else {
                       res.status(500)
