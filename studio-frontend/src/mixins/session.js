@@ -50,7 +50,7 @@ export const sessionMixin = {
         label: this.$t("session.password_modal.password_label"),
       },
       usedPassword: null,
-      websocketInstance: this.$apiEventWS,
+      websocketInstance: null,
     }
 
     if (!this.session) {
@@ -72,6 +72,9 @@ export const sessionMixin = {
   beforeDestroy() {
     //this.$apiEventWS.unSubscribeSessionsUpdate()
     bus.$off(`websocket/orga_${this.organizationId}_session_update`)
+    if (this.isFromPublicLink) {
+      this.currentChannelMicrophone?.close()
+    }
   },
   methods: {
     async fecthSessionWithPassword() {
@@ -108,9 +111,12 @@ export const sessionMixin = {
       this.session = sessionRequest.data
       this.$store.commit("sessions/addSession", this.session)
 
+      // Use another WS instance for public session to avoid conflict with main app WS
       if (this.isFromPublicLink) {
         this.websocketInstance = new ApiEventWebSocket()
         this.websocketInstance.connect(this.session.publicSessionToken)
+      } else {
+        this.websocketInstance = this.$apiEventWS
       }
 
       await this.fetchAliases()
