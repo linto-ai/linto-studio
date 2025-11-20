@@ -27,6 +27,10 @@ async function createSessionData(req, res, next) {
     let { sessionId, name, password } = req.body
     if (!sessionId) throw new SessionUnsupportedMediaType()
 
+    const existingData = await model.sessionData.getBySessionId(sessionId)
+    if (existingData.length > 0)
+      throw new SessionConflict("Session data already exists for this session")
+
     if (!name && !password) {
       throw new SessionUnsupportedMediaType(
         "Either name or password must be provided",

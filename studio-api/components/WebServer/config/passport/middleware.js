@@ -191,11 +191,23 @@ module.exports = {
     try {
       const token = socket?.handshake?.auth?.token
       if (!token) {
-        return next(new Error("Authentication token is missing"))
+        throw new Error("Authentication token is missing")
       }
       const tokenData = jwtDecode(token + "")
+
+      if (tokenData.data?.fromPublic && tokenData?.data?.fromSession) {
+        let isValid = PublicToken.validateToken(
+          token,
+          tokenData.data.fromSession,
+        )
+        if (!isValid) return false
+        return {
+          isAuth: true,
+          sessionId: tokenData.data.fromSession,
+        }
+      }
       if (!tokenData?.data?.userId || !tokenData?.data?.tokenId) {
-        return next(new Error("Malformed token"))
+        throw new Error("Malformed token")
       }
 
       const secret = await generateSecretFromHeaders(undefined, {
@@ -216,8 +228,10 @@ module.exports = {
           },
         )
       })
-
-      return { isAuth: isValid, userId: tokenData.data.userId }
+      return {
+        isAuth: isValid,
+        userId: tokenData.data.userId,
+      }
     } catch (err) {
       return false
     }
