@@ -83,7 +83,6 @@ class WebSocketSingleton {
     try {
       const parsedMessage = JSON.parse(message)
       if (parsedMessage.status === "alive") return
-      debug("Receive message:", parsedMessage)
 
       const tasks = Array.isArray(parsedMessage)
         ? parsedMessage

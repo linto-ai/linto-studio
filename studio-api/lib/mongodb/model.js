@@ -166,11 +166,17 @@ class MongoModel {
     }
   }
 
-  async mongoUpdateMany(query, values) {
+  async mongoUpdateMany(query, operatorOrValues, values) {
     try {
+      const update =
+        typeof operatorOrValues === "string"
+          ? { [operatorOrValues]: values }
+          : { $set: operatorOrValues }
+
       const result = await MongoDriver.constructor.db
         .collection(this.collection)
-        .updateMany(query, { $set: values })
+        .updateMany(query, update)
+
       return result
     } catch (error) {
       debug("mongoUpdateMany error:", error)

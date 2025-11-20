@@ -13,12 +13,14 @@ module.exports = (webServer) => {
       path: "/oidc/github/login",
       method: "get",
       requireAuth: false,
+      requireSession: true,
       controller: [auth_middleware.oidc_github_authenticate],
     },
     {
       path: "/oidc/github/cb",
       method: "get",
       requireAuth: false,
+      requireSession: true,
       controller: [
         passport.authenticate("github", {
           failureRedirect: (process.env.FRONTEND_DOMAIN || "") + "/login",

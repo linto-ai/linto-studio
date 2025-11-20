@@ -1,7 +1,7 @@
 const debug = require("debug")(
   `linto:conversation-manager:components:WebServer:controllers:llm:index`,
 )
-
+const LogManager = require(`${process.cwd()}/lib/logger/manager`)
 const webSocketSingleton = require(
   `${process.cwd()}/components/WebServer/controllers/llm//llm_ws`,
 )
@@ -31,14 +31,14 @@ async function generateText(conversation, metadata) {
   return prompt
 }
 
-async function request(query, conversation, metadata, conversationExport) {
+async function request(req, query, conversation, metadata, conversationExport) {
   let content = await generateText(conversation, metadata)
   const tempFileName = `file_${query.format}_${conversation._id}.txt`
 
-  return requestAPI(query, content, tempFileName, conversationExport)
+  return requestAPI(req, query, content, tempFileName, conversationExport)
 }
 
-async function requestAPI(query, content, fileName, conversationExport) {
+async function requestAPI(req, query, content, fileName, conversationExport) {
   if (process.env.LLM_GATEWAY_SERVICES === undefined) {
     throw new Error("LLM_GATEWAY_SERVICES is not defined")
   }
@@ -80,6 +80,14 @@ async function requestAPI(query, content, fileName, conversationExport) {
 
   fs.unlinkSync(tempFilePath)
   initWebSocketConnection(conversationExport)
+
+  LogManager.logLlmEvent(req, {
+    contentLength: content.length,
+    conversationExport: conversationExport,
+    query: query,
+    jobId: jobId,
+  })
+
   return jobId
 }
 

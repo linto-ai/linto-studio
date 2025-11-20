@@ -5,30 +5,28 @@
     <div
       class="session-content__action-bar flex align-center gap-medium"
       v-if="this.selectedTurns.length > 0">
-      <button
-        class="tertiary outline session-content__action-bar__reset-btn-desktop"
-        @click="clearSelectedTurns">
-        <span class="icon close"></span>
-        <span class="label">{{
-          $tc("session.detail_page.clear_turn_selection")
-        }}</span>
-      </button>
+      <IsMobile>
+        <Button
+          variant="secondary"
+          intent="destructive"
+          @click="clearSelectedTurns"
+          icon="x" />
+        <template #desktop>
+          <Button
+            icon="x"
+            variant="secondary"
+            intent="destructive"
+            :label="$tc('session.detail_page.clear_turn_selection')"
+            @click="clearSelectedTurns" />
 
-      <button
-        class="tertiary outline session-content__action-bar__reset-btn-mobile mobile only-icon"
-        @click="clearSelectedTurns">
-        <span class="icon close"></span>
-      </button>
-
-      <button
-        @click="copyTurns"
-        class="session-content__action-bar__copy-btn-desktop">
-        <span class="icon apply" v-if="copyState"></span>
-        <span class="icon copy" v-else></span>
-        <span class="label">{{
-          $tc("session.detail_page.copy_turns_text")
-        }}</span>
-      </button>
+          <Button
+            @click="copyTurns"
+            iconWeight="regular"
+            variant="secondary"
+            :label="$tc('session.detail_page.copy_turns_text')"
+            icon="copy" />
+        </template>
+      </IsMobile>
 
       <span
         class="session-content__action-bar__label-selected flex1 text-cut"
@@ -37,12 +35,13 @@
         }}</span
       >
 
-      <button
-        @click="copyTurns"
-        class="session-content__action-bar__copy-btn-mobile mobile only-icon">
-        <span class="icon apply" v-if="copyState"></span>
-        <span class="icon copy" v-else></span>
-      </button>
+      <IsMobile>
+        <Button
+          icon="copy"
+          iconWeight="regular"
+          variant="secondary"
+          @click="copyTurns" />
+      </IsMobile>
     </div>
 
     <!-- content if live transcript is disabled -->
@@ -146,24 +145,25 @@
       :displayWatermark="displayWatermark"
       @close="closeSubtitleFullscreen" />
 
-    <button
-      v-if="!isBottom"
-      @click="scrollToBottom(true)"
-      class="bottom-session-button bottom-session-button-desktop outline"
-      :class="{ has_subtitles: displaySubtitles }">
-      <span class="icon bottom-arrow"></span>
-      <span class="label">{{
-        $tc("session.detail_page.scroll_to_bottom")
-      }}</span>
-    </button>
-
-    <button
-      v-if="!isBottom"
-      @click="scrollToBottom(true)"
-      class="mobile bottom-session-button bottom-session-button-mobile only-icon green circle"
-      :class="{ has_subtitles: displaySubtitles }">
-      <span class="icon bottom-arrow"></span>
-    </button>
+    <IsMobile>
+      <Button
+        v-if="!isBottom"
+        variant="secondary"
+        size="xl"
+        class="bottom-session-button bottom-session-button-mobile"
+        @click="scrollToBottom(true)"
+        icon="arrow-line-down" />
+      <template #desktop>
+        <Button
+          v-if="!isBottom"
+          class="bottom-session-button"
+          :class="{ has_subtitles: displaySubtitles }"
+          variant="secondary"
+          @click="scrollToBottom(true)"
+          icon="arrow-line-down"
+          :label="$t('session.detail_page.scroll_to_bottom')" />
+      </template>
+    </IsMobile>
   </div>
 </template>
 <script>
@@ -193,6 +193,10 @@ export default {
     channel: {
       type: Object,
       required: true,
+    },
+    password: {
+      type: String,
+      required: false,
     },
     fontSize: {
       type: String,
@@ -257,6 +261,10 @@ export default {
       type: Boolean,
       required: true,
     },
+    // instance of ApiEventWebSocket
+    websocketInstance: {
+      required: true,
+    },
   },
   data() {
     return {
@@ -283,7 +291,7 @@ export default {
     document.addEventListener("keydown", this.keydown)
   },
   beforeDestroy() {
-    this.$apiEventWS.unSubscribeSessionRoom()
+    this.websocketInstance.unSubscribeSessionRoom()
     document.removeEventListener("keydown", this.keydown)
   },
   computed: {
@@ -318,11 +326,9 @@ export default {
     channel: {
       async handler() {
         this.loading = true
-        this.init()
-        await this.loadPreviousTranscrition()
+        await this.init()
         this.loading = false
         this.scrollToBottom()
-        this.clearSelectedTurns()
       },
       deep: true,
       immediate: true,
@@ -330,25 +336,32 @@ export default {
     displaySubtitles() {
       this.scrollToBottom(true)
     },
-    "$apiEventWS.state.isConnected"(newValue, oldValue) {
+    "websocketInstance.state.isConnected"(newValue, oldValue) {
       if (newValue) {
         this.subscribeToWebsocket()
       }
     },
+    async "websocketInstance.state.connexionRestored"(newValue, oldValue) {
+      if (newValue) {
+        await this.init()
+      }
+    },
   },
   methods: {
-    init() {
+    async init() {
       this.partialText = ""
       this.turns = []
-      if (this.$apiEventWS.state.isConnected) {
+      this.clearSelectedTurns()
+      if (this.websocketInstance.state.isConnected) {
         this.subscribeToWebsocket()
       }
+      await this.loadPreviousTranscrition()
       setTimeout(() => {
         this.scrollToBottom(true)
       }, 1000)
     },
     subscribeToWebsocket() {
-      this.$apiEventWS.subscribeSessionRoom(
+      this.websocketInstance.subscribeSessionRoom(
         this.sessionId,
         this.channelIndex,
         this.onPartial.bind(this),
@@ -390,6 +403,7 @@ export default {
         sessionRequest = await apiGetPublicSessionChannel(
           this.sessionId,
           this.channel.transcriber_id,
+          this.password,
         )
       }
 

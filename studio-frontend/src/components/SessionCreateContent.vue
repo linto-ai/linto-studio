@@ -45,12 +45,18 @@
       </section>
 
       <!-- Visibility section -->
-      <section class="flex col gap-medium">
+      <section class="flex col">
         <h2>{{ $t("session.settings_page.visibility_title") }}</h2>
         <FormRadio
-          inline
           :field="fieldSessionVisibility"
-          v-model="fieldSessionVisibility.value" />
+          v-model="fieldSessionVisibility.value">
+          <template #content-after-public> </template>
+        </FormRadio>
+        <div
+          style="margin-left: 24px"
+          v-if="fieldSessionVisibility.value === 'password'">
+          <FormInput :field="fieldPassword" v-model="fieldPassword.value" />
+        </div>
       </section>
 
       <!-- Channels section -->
@@ -220,11 +226,17 @@ export default {
             label: this.$i18n.t(
               "session.settings_page.visibility_private_label",
             ),
+            description: this.$i18n.t(
+              "session.settings_page.visibility_private_description",
+            ),
           },
           {
             name: "organization",
             label: this.$i18n.t(
               "session.settings_page.visibility_organization_label",
+            ),
+            description: this.$i18n.t(
+              "session.settings_page.visibility_organization_description",
             ),
           },
           {
@@ -232,8 +244,26 @@ export default {
             label: this.$i18n.t(
               "session.settings_page.visibility_public_label",
             ),
+            description: this.$i18n.t(
+              "session.settings_page.visibility_public_description",
+            ),
+          },
+          {
+            name: "password",
+            label: this.$i18n.t(
+              "session.settings_page.visibility_password_label",
+            ),
+            description: this.$i18n.t(
+              "session.settings_page.visibility_password_description",
+            ),
           },
         ],
+      },
+      fieldPassword: {
+        ...EMPTY_FIELD,
+        type: "password",
+        disabled: true,
+        label: this.$i18n.t("session.settings_page.password_label"),
       },
       fieldDiarizationEnabled: {
         ...EMPTY_FIELD,
@@ -454,6 +484,17 @@ export default {
         return false
       }
 
+      if (
+        this.fieldSessionVisibility.value === "password" &&
+        !this.fieldPassword.value.trim()
+      ) {
+        this.fieldPassword.error = this.$t(
+          "session.settings_page.empty_password_error",
+        )
+        this.formState = "error"
+        return false
+      }
+
       if (this.testFields()) {
         // convert fieldAppointment.value[0] and fieldAppointment.value[1] to ISO string like 2024-10-04T13:52:56.693Z
         const startDateTime = this.fieldAppointment.value[0]
@@ -466,6 +507,7 @@ export default {
 
         const res = await apiCreateSession(this.currentOrganizationScope, {
           name: this.name.value,
+          password: this.fieldPassword.value || null,
           channels: this.channels.map(({ profileId, name, translations }) => ({
             transcriberProfileId: profileId,
             name,
@@ -479,7 +521,9 @@ export default {
           endOn: endDateTime,
           autoStart: true,
           autoEnd: this.fieldAutoStop.value,
-          visibility: this.fieldSessionVisibility.value ?? "organization",
+          visibility: (
+            this.fieldSessionVisibility.value ?? "organization"
+          ).replace("password", "public"),
         })
         if (res.status == "success") {
           this.formState = "success"

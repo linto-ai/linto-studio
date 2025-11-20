@@ -1,8 +1,8 @@
 {
-  "/api/organizations/{organizationId}/sessions/alias": {
+  "/api/organizations/{organizationId}/sessions/data": {
     "get": {
-      "tags": ["sessions alias"],
-      "summary": "List all alias",
+      "tags": ["sessions data"],
+      "summary": "List all session data",
       "parameters": [
         {
           "in": "path",
@@ -15,13 +15,13 @@
       ],
       "responses": {
         "200": {
-          "description": "The list of session alias",
+          "description": "The list of session data",
           "content": {
             "application/json": {
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/SessionAlias"
+                  "$ref": "#/components/schemas/SessionData"
                 }
               }
             }
@@ -30,8 +30,8 @@
       }
     },
     "post": {
-      "tags": ["sessions alias"],
-      "summary": "Create an alias",
+      "tags": ["sessions data"],
+      "summary": "Create a sessuib data",
       "parameters": [
         {
           "in": "path",
@@ -51,6 +51,9 @@
                 "name": {
                   "type": "string"
                 },
+                "password": {
+                  "type": "string"
+                },
                 "sessionId": {
                   "type": "string"
                 }
@@ -62,7 +65,7 @@
       },
       "responses": {
         "201": {
-          "description": "Alias created",
+          "description": "Session data created",
           "name": "alias name",
           "sessionId": "session id"
         },
@@ -81,10 +84,10 @@
       }
     }
   },
-  "/api/organizations/{organizationId}/sessions/alias/{id}": {
+  "/api/organizations/{organizationId}/sessions/data/{id}": {
     "get": {
-      "tags": ["sessions alias"],
-      "summary": "Get the session alias by ID",
+      "tags": ["sessions data"],
+      "summary": "Get the session data by ID",
       "parameters": [
         {
           "in": "path",
@@ -109,7 +112,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SessionAlias"
+                "$ref": "#/components/schemas/SessionData"
               }
             }
           }
@@ -120,8 +123,8 @@
       }
     },
     "delete": {
-      "tags": ["sessions alias"],
-      "summary": "Delete an alias by ID",
+      "tags": ["sessions data"],
+      "summary": "Delete an session data by ID",
       "parameters": [
         {
           "in": "path",
@@ -153,8 +156,8 @@
       }
     },
     "put": {
-      "tags": ["sessions alias"],
-      "summary": "Update an alias by ID",
+      "tags": ["sessions data"],
+      "summary": "Update an session data by ID",
       "parameters": [
         {
           "in": "path",
@@ -181,6 +184,9 @@
               "properties": {
                 "name": {
                   "type": "string"
+                },
+                "password": {
+                  "type": "string"
                 }
               },
               "required": []
@@ -190,7 +196,7 @@
       },
       "responses": {
         "200": {
-          "description": "Alias updated"
+          "description": "Session data updated"
         },
         "403": {
           "$ref": "#/components/responses/Forbidden"
@@ -200,6 +206,41 @@
         },
         "409": {
           "$ref": "#/components/responses/Conflict"
+        }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/sessions/data/{id}/password": {
+    "delete": {
+      "tags": ["sessions data"],
+      "summary": "Remove a session password",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an session alias"
+        },
+        {
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Password removed from session data"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
         }
       }
     }

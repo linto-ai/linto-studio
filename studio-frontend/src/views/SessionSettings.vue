@@ -129,13 +129,27 @@
               </template>
             </FormCheckbox>
           </section>
-          <section class="flex col gap-medium">
+          <!-- Visibility -->
+          <section class="flex col">
             <h2>{{ $t("session.settings_page.visibility_title") }}</h2>
             <FormRadio
-              inline
               :field="fieldSessionVisibility"
               v-model="fieldSessionVisibility.value" />
+            <div
+              class="form-field"
+              style="margin-left: 24px"
+              v-if="fieldSessionVisibility.value === 'password'">
+              <FormInput :field="fieldPassword" v-model="fieldPassword.value" />
+            </div>
+            <div class="form-field">
+              <Button
+                @click="settingUpdateVisibility"
+                icon="check"
+                variant="secondary"
+                :label="$t('session.settings_page.visibility_save_button')" />
+            </div>
           </section>
+
           <section>
             <h2 class="flex align-center gap-medium">
               <span>{{ $t("session.settings_page.metadata.title") }}</span>
@@ -284,6 +298,7 @@ export default {
   props: {},
   data() {
     return {
+      privatePage: true,
       fields: ["name", "fieldAppointment", "fieldAutoStop", "fieldAutoStart"],
       fieldPublicLink: {
         value: null,
@@ -302,11 +317,17 @@ export default {
             label: this.$i18n.t(
               "session.settings_page.visibility_private_label",
             ),
+            description: this.$i18n.t(
+              "session.settings_page.visibility_private_description",
+            ),
           },
           {
             name: "organization",
             label: this.$i18n.t(
               "session.settings_page.visibility_organization_label",
+            ),
+            description: this.$i18n.t(
+              "session.settings_page.visibility_organization_description",
             ),
           },
           {
@@ -314,8 +335,26 @@ export default {
             label: this.$i18n.t(
               "session.settings_page.visibility_public_label",
             ),
+            description: this.$i18n.t(
+              "session.settings_page.visibility_public_description",
+            ),
+          },
+          {
+            name: "password",
+            label: this.$i18n.t(
+              "session.settings_page.visibility_password_label",
+            ),
+            description: this.$i18n.t(
+              "session.settings_page.visibility_password_description",
+            ),
           },
         ],
+      },
+      fieldPassword: {
+        ...EMPTY_FIELD,
+        type: "password",
+        disabled: true,
+        label: this.$i18n.t("session.settings_page.password_label"),
       },
       fieldDisplayWatermark: {
         value: null,
@@ -434,13 +473,6 @@ export default {
         }
       },
     },
-    "fieldSessionVisibility.value": {
-      handler(value) {
-        if (value != this.visibility) {
-          this.syncVisibility(this.fieldSessionVisibility.value)
-        }
-      },
-    },
   },
   methods: {
     onSessionUpdatePostProcess(newSession) {
@@ -463,6 +495,7 @@ export default {
       this.fieldAutoStart.value = this.autoStart
       this.fieldAutoStop.value = this.autoStop
       this.fieldPublicLink.value = this.publicLink
+
       this.fieldSessionVisibility.value = this.visibility
 
       this.fieldAppointment.value = [this.startTime, this.endTime]
@@ -533,6 +566,31 @@ export default {
     },
     resetSession() {
       this.initValues()
+    },
+    async settingUpdateVisibility() {
+      if (
+        this.fieldSessionVisibility.value === "password" &&
+        !this.fieldPassword.value.trim()
+      ) {
+        this.fieldPassword.error = this.$t(
+          "session.settings_page.empty_password_error",
+        )
+        return
+      }
+
+      this.fieldPassword.error = null
+
+      if (
+        await this.syncVisibility(
+          this.fieldSessionVisibility.value.replace("password", "public"),
+        )
+      ) {
+        await this.syncPassword(
+          this.fieldSessionVisibility.value === "password"
+            ? this.fieldPassword.value
+            : null,
+        )
+      }
     },
     async updateSession() {
       this.formState = "sending"

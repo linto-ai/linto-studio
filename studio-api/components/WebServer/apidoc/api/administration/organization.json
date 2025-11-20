@@ -1,7 +1,7 @@
 {
   "/api/administration/organizations": {
     "get": {
-      "tags": ["administration"],
+      "tags": ["administration organizations"],
       "summary": "List all organizations of the platform",
       "parameters": [
         {
@@ -41,7 +41,7 @@
       }
     },
     "post": {
-      "tags": ["administration"],
+      "tags": ["administration organizations"],
       "summary": "Create an organization",
       "parameters": [
         {
@@ -111,7 +111,7 @@
   },
   "/api/administration/organizations/{organizationId}/": {
     "patch": {
-      "tags": ["administration"],
+      "tags": ["administration organizations"],
       "summary": "Update the organization information",
       "parameters": [
         {
@@ -185,7 +185,7 @@
   },
   "/api/administration/organizations/{organizationId}/inviteMatchingMail": {
     "post": {
-      "tags": ["administration"],
+      "tags": ["administration organizations"],
       "summary": "Invite the users with matching email to the organization",
       "parameters": [
         {

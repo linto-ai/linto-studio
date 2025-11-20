@@ -9,12 +9,15 @@ const { storeSessionFromStop, storeQuickMeetingFromStop } = require(
 const {
   forceQueryParams,
   forwardSessionAlias,
+  forwardSessionAliasPublic,
   checkTranscriberProfileAccess,
   afterProxyAccess,
+  generatPublicToken,
+  checkSessionMatchingOrganization,
 } = require(
   `${process.cwd()}/components/WebServer/controllers/session/session.js`,
 )
-const { Unauthorized } = require(
+const { Unauthorized, UnauthorizedProxy } = require(
   `${process.cwd()}/components/WebServer/error/exception/auth`,
 )
 
@@ -38,26 +41,6 @@ module.exports = (webServer) => {
         disabled: true,
         requireAuth: false,
       },
-
-      /*************************/
-      /** transcriber profiles */
-      /*************************/
-      {
-        paths: [
-          {
-            path: "/transcriber_profiles",
-            method: ["get"],
-          },
-          { path: "/transcriber_profiles", method: ["post"] },
-          {
-            path: "/transcriber_profiles/:id",
-            method: ["get", "put", "delete"],
-          },
-        ],
-        requireAuth: true,
-        requireSessionOperator: true,
-      },
-
       {
         //member access
         scrapPath: /^\/organizations\/[^/]+/,
@@ -120,7 +103,7 @@ module.exports = (webServer) => {
             path: "/sessions/:id/public",
             method: ["get"],
             addParams: [{ "body.visibility": "public" }],
-            executeBeforeResult: forwardSessionAlias,
+            executeBeforeResult: forwardSessionAliasPublic,
             executeAfterResult: [
               (jsonString) => {
                 try {
@@ -136,10 +119,13 @@ module.exports = (webServer) => {
                     return JSON.stringify(session)
                   }
 
-                  throw new Unauthorized()
+                  throw new UnauthorizedProxy()
                 } catch (err) {
                   throw err
                 }
+              },
+              (jsonString, req) => {
+                return generatPublicToken(jsonString, req)
               },
             ],
           },
@@ -237,6 +223,7 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/sessions/:id",
             method: ["put", "patch"],
             forwardParams: proxyForwardParams,
+            executeBeforeResult: checkSessionMatchingOrganization,
           },
           {
             path: "/organizations/:organizationId/sessions/:id",
@@ -248,19 +235,10 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/sessions/:id/stop",
             method: ["put"],
             forwardParams: proxyForwardParams,
+            executeBeforeResult: checkSessionMatchingOrganization,
           },
           {
             path: "/organizations/:organizationId/sessions/purge",
-            method: ["post"],
-            forwardParams: proxyForwardParams,
-          },
-          {
-            path: "/organizations/:organizationId/sessions/:id/start-bot",
-            method: ["post"],
-            forwardParams: proxyForwardParams,
-          },
-          {
-            path: "/organizations/:organizationId/sessions/:id/stop-bot",
             method: ["post"],
             forwardParams: proxyForwardParams,
           },

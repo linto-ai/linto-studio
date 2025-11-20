@@ -1,0 +1,49 @@
+{
+  "/api/administration/activity": {
+    "get": {
+      "tags": ["administration"],
+      "summary": "List all activity of the platform",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
+          "required": true,
+          "description": "Scope of the user, must be 'backoffice'"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "count": {
+                    "type": "integer",
+                    "description": "Total number of activity log entries returned",
+                    "default": "1"
+                  },
+                  "list": {
+                    "type": "array",
+                    "description": "Array of activity log entries",
+                    "items": {
+                      "$ref": "#/components/schemas/ActivityLog"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
+  }
+}

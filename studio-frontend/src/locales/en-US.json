@@ -104,7 +104,11 @@
     },
     "token_list": {
       "title": "API Keys",
-      "add_token_button": "Add a system API Key"
+      "add_token_button": "Add a system API Key",
+      "modal_create": {
+        "title": "Create a system API Key",
+        "platform_role": "Platform role"
+      }
     },
     "transcriber_profile_detail": {
       "save_button": "Save Transcriber Profile",
@@ -1176,6 +1180,9 @@
       "start_time_label": "Start time",
       "success_message": "Session successfully updated",
       "error_update_message": "Session has not been updated",
+      "error_update_password": "Password has not been updated",
+      "success_update_password": "Password has been updated",
+      "empty_password_error": "Password cannot be empty",
       "force_delete_modal": {
         "action": "Delete",
         "content": "An audio stream is connected. Are you sure you want to delete the session? The content will be saved in your media library.",
@@ -1204,11 +1211,24 @@
       },
       "title": "Session settings",
       "visibility_private_label": "Private",
+      "visibility_private_description": "The transcript can be viewed only by your user and administrators",
       "visibility_organization_label": "Internal",
+      "visibility_organization_description": "The transcript can be viewed by all users of your organization",
       "visibility_public_label": "Public",
-      "visibility_title": "Visibility"
+      "visibility_public_description": "The transcript can be viewed by any user with access to the public link",
+      "visibility_title": "Visibility",
+      "visibility_password_label": "Public, password protected",
+      "visibility_password_description": "The transcript is publicly accessible, protected by a password.",
+      "visibility_save_button": "Apply visibility",
+
+      "password_label": "Password"
     },
-    "start_undefined": "Not defined"
+    "start_undefined": "Not defined",
+    "password_modal": {
+      "title": "A password is required to access the live transcription",
+      "password_label": "Password",
+      "apply": "Continue"
+    }
   },
   "quick_session": {
     "creation": {
@@ -1443,7 +1463,9 @@
   },
   "websocket": {
     "connected": "Content updated in real time",
-    "disconnected": "Content not updated, check your internet connection"
+    "disconnected": "Content not updated, check your internet connection",
+    "lost_connexion": "Connection lost, attempting to reconnect...",
+    "restored": "Connection restored"
   },
   "input_selector": {
     "search_tags": "Search topics...",

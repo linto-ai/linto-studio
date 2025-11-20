@@ -8,6 +8,7 @@
     <SessionChannel
       v-if="isConnected"
       @closeSubtitleFullscreen="closeSubtitleFullscreen"
+      :password="password"
       :showSubtitlesFullscreen="showSubtitlesFullscreen"
       :selectedTranslations="selectedTranslations"
       :sessionId="session.id"
@@ -25,6 +26,7 @@
       :watermarkContent="watermarkContent"
       :watermarkPinned="watermarkPinned"
       :displayWatermark="displayWatermark"
+      :websocketInstance="websocketInstance"
       :isRecording="isRecording"></SessionChannel>
     <Loading v-else></Loading>
   </div>
@@ -48,6 +50,10 @@ export default {
     session: {
       type: Object,
       required: true,
+    },
+    password: {
+      type: String,
+      required: false,
     },
     fontSize: {
       type: String,
@@ -93,6 +99,10 @@ export default {
       type: Boolean,
       required: false,
       default: false,
+    },
+    // instance of ApiEventWebSocket
+    websocketInstance: {
+      required: true,
     },
   },
   data() {

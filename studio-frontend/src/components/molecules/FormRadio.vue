@@ -1,6 +1,8 @@
 <template>
   <div class="form-field flex gap-small" :class="{ col: !inline }">
-    <div v-for="option in field.options" class="flex row align-top gap-small">
+    <div
+      v-for="option in field.options"
+      class="flex row align-center gap-small">
       <div class="flex align-center">
         <Radio
           v-model="value"
@@ -11,10 +13,17 @@
           ref="input"></Radio>
       </div>
       <div class="flex row justify-center align-center">
-        <label class="form-label" :for="id + option.name" v-if="option.label">
-          {{ option.label }}
+        <label
+          class="form-label flex col"
+          :for="id + option.name"
+          v-if="option.label">
+          <span class="radio-title">{{ option.label }}</span>
+          <span class="radio-description" v-if="option.description">
+            {{ option.description }}
+          </span>
+          <slot :name="`content-after-${option.name}`" />
         </label>
-        <label class="form-label" :for="id + option.name" v-else>
+        <label class="form-label flex col" :for="id + option.name" v-else>
           {{ option.name }}
         </label>
         <slot name="content-after-label"></slot>
@@ -76,3 +85,13 @@ export default {
   components: { Radio },
 }
 </script>
+
+<style lang="scss" scoped>
+.form-label {
+  margin-bottom: 0px;
+}
+
+.radio-title:has(+ .radio-description) {
+  color: var(--text-primary);
+}
+</style>

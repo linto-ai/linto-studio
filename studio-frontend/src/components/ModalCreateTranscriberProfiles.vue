@@ -17,7 +17,7 @@
 import ModalNew from "@/components/molecules/Modal.vue"
 import TranscriberProfileEditor from "@/components/TranscriberProfileEditor.vue"
 import TRANSCRIBER_PROFILES_TEMPLATES from "@/const/transcriberProfilesTemplates"
-import { apiCreateTranscriberProfile } from "@/api/session.js"
+import { apiAdminCreateTranscriberProfile } from "@/api/admin.js"
 import { bus } from "@/main.js"
 
 export default {
@@ -37,7 +37,7 @@ export default {
   methods: {
     async createTranscriberProfile(event) {
       this.state = "loading"
-      const res = await apiCreateTranscriberProfile({
+      const res = await apiAdminCreateTranscriberProfile({
         ...this.transcriberProfile,
         organizationId: this.organizationId,
       })

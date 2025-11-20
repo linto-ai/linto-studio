@@ -107,6 +107,21 @@ class Unauthorized extends Error {
   }
 }
 
+/****************
+ *****Proxy******
+ ****************/
+class UnauthorizedProxy extends Error {
+  constructor(message, err) {
+    super()
+    this.name = "Unauthorized"
+    this.type = ExceptionType
+    this.status = 403
+    if (message) this.message = message
+    else this.message = "You are not authorized to access this resource"
+    if (err) this.err = err
+  }
+}
+
 module.exports = {
   //Auth Exception
   InvalidCredential,
@@ -118,4 +133,6 @@ module.exports = {
   Unauthorized,
   MalformedToken,
   ExpiredLink,
+  // Proxy Exception
+  UnauthorizedProxy,
 }

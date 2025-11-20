@@ -1,0 +1,34 @@
+{
+  "SessionData": {
+    "type": "object",
+    "properties": {
+      "_id": {
+        "type": "string",
+        "description": "The session data id"
+      },
+      "name": {
+        "type": "string",
+        "description": "The session alias name"
+      },
+      "password": {
+        "type": "string",
+        "description": "The session password"
+      },
+      "sessionId": {
+        "type": "string",
+        "description": "The sessionId related"
+      },
+      "organizationId": {
+        "type": "string",
+        "description": "The organization id attached to the category"
+      }
+    },
+    "example": {
+      "_id": "5f9f9b9b7d1b424dccabc375",
+      "name": "My_session",
+      "password": "hashed_password",
+      "sessionId": "3f4d9ed7d1b424dccabc782",
+      "organizationId": "63f4d9ed7d1b424dccabc128"
+    }
+  }
+}

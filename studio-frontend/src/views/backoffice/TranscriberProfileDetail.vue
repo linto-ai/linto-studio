@@ -3,7 +3,8 @@
     <div class="flex col gap-medium" style="width: 100%; height: 100%">
       <TranscriberProfileEditor
         ref="editor"
-        v-bind:transcriberProfile.sync="transcriberProfile"
+        :transcriberProfile="transcriberProfile"
+        @input="updateProfile"
         class="flex1" />
       <div class="flex gap-medium transcriber-profile-detail__footer">
         <Button
@@ -35,10 +36,10 @@ import { bus } from "@/main.js"
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import TranscriberProfileEditor from "@/components/TranscriberProfileEditor.vue"
 import {
-  apiGetTranscriberProfilesById,
-  apiUpdateTranscriberProfile,
-  apiDeleteTranscriberProfile,
-} from "@/api/session.js"
+  apiAdminGetTranscriberProfilesById,
+  apiAdminUpdateTranscriberProfile,
+  apiAdminDeleteTranscriberProfile,
+} from "@/api/admin.js"
 
 export default {
   props: {},
@@ -54,9 +55,14 @@ export default {
     this.fetchTranscriberProfile()
   },
   methods: {
+    updateProfile(value) {
+      this.transcriberProfile = value
+    },
     async fetchTranscriberProfile() {
       this.loading = true
-      const req = await apiGetTranscriberProfilesById(this.transcriberProfileId)
+      const req = await apiAdminGetTranscriberProfilesById(
+        this.transcriberProfileId,
+      )
       if (req.status === "success") {
         delete req.data.id
         this.transcriberProfile = req.data
@@ -67,13 +73,14 @@ export default {
       // fetch transcriber profile
       this.loading = false
     },
-    reset() {
+    async reset() {
       this.transcriberProfile = structuredClone(this.transcriberProfileOriginal)
+      await this.$nextTick()
       this.$refs.editor.reset()
     },
     async save() {
       this.loading = true
-      const req = await apiUpdateTranscriberProfile(
+      const req = await apiAdminUpdateTranscriberProfile(
         this.transcriberProfileId,
         this.transcriberProfile,
       )
@@ -96,7 +103,9 @@ export default {
     },
     async deleteProfile() {
       this.loading = true
-      const req = await apiDeleteTranscriberProfile(this.transcriberProfileId)
+      const req = await apiAdminDeleteTranscriberProfile(
+        this.transcriberProfileId,
+      )
       if (req.status === "success") {
         bus.$emit("app_notif", {
           status: "success",
