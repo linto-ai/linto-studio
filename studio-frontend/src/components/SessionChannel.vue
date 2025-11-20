@@ -274,6 +274,10 @@ export default {
       type: Boolean,
       required: true,
     },
+    // instance of ApiEventWebSocket
+    websocketInstance: {
+      required: true,
+    },
   },
   data() {
     return {
@@ -300,7 +304,7 @@ export default {
     document.addEventListener("keydown", this.keydown)
   },
   beforeDestroy() {
-    this.$apiEventWS.unSubscribeSessionRoom()
+    this.websocketInstance.unSubscribeSessionRoom()
     document.removeEventListener("keydown", this.keydown)
   },
   computed: {
@@ -345,12 +349,12 @@ export default {
     displaySubtitles() {
       this.scrollToBottom(true)
     },
-    "$apiEventWS.state.isConnected"(newValue, oldValue) {
+    "websocketInstance.state.isConnected"(newValue, oldValue) {
       if (newValue) {
         this.subscribeToWebsocket()
       }
     },
-    async "$apiEventWS.state.connexionRestored"(newValue, oldValue) {
+    async "websocketInstance.state.connexionRestored"(newValue, oldValue) {
       if (newValue) {
         await this.init()
       }
@@ -361,7 +365,7 @@ export default {
       this.partialText = ""
       this.turns = []
       this.clearSelectedTurns()
-      if (this.$apiEventWS.state.isConnected) {
+      if (this.websocketInstance.state.isConnected) {
         this.subscribeToWebsocket()
       }
       await this.loadPreviousTranscrition()
@@ -370,7 +374,7 @@ export default {
       }, 1000)
     },
     subscribeToWebsocket() {
-      this.$apiEventWS.subscribeSessionRoom(
+      this.websocketInstance.subscribeSessionRoom(
         this.sessionId,
         this.channelIndex,
         this.onPartial.bind(this),

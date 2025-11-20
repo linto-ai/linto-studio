@@ -16,6 +16,7 @@ import { sessionModelMixin } from "./sessionModel"
 import { bus } from "../main"
 import mergeSession from "../tools/mergeSession"
 import EMPTY_FIELD from "@/const/emptyField"
+import ApiEventWebSocket from "@/services/websocket/ApiEventWebSocket"
 
 export const sessionMixin = {
   mixins: [sessionModelMixin],
@@ -49,6 +50,7 @@ export const sessionMixin = {
         label: this.$t("session.password_modal.password_label"),
       },
       usedPassword: null,
+      websocketInstance: this.$apiEventWS,
     }
 
     if (!this.session) {
@@ -106,8 +108,10 @@ export const sessionMixin = {
       this.session = sessionRequest.data
       this.$store.commit("sessions/addSession", this.session)
 
-      if (this.isFromPublicLink)
-        this.$apiEventWS.connect(this.session.publicSessionToken)
+      if (this.isFromPublicLink) {
+        this.websocketInstance = new ApiEventWebSocket()
+        this.websocketInstance.connect(this.session.publicSessionToken)
+      }
 
       await this.fetchAliases()
       this.sessionLoaded = true

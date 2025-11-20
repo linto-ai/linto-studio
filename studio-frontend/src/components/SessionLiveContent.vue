@@ -26,6 +26,7 @@
       :watermarkContent="watermarkContent"
       :watermarkPinned="watermarkPinned"
       :displayWatermark="displayWatermark"
+      :websocketInstance="websocketInstance"
       :isRecording="isRecording"></SessionChannel>
     <Loading v-else></Loading>
   </div>
@@ -98,6 +99,10 @@ export default {
       type: Boolean,
       required: false,
       default: false,
+    },
+    // instance of ApiEventWebSocket
+    websocketInstance: {
+      required: true,
     },
   },
   data() {

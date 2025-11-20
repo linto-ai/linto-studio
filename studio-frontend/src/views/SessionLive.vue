@@ -94,6 +94,7 @@
       <SessionLiveContent
         v-else
         @closeSubtitleFullscreen="closeSubtitleFullscreen"
+        :websocketInstance="websocketInstance"
         :password="usedPassword"
         :showSubtitlesFullscreen="showSubtitlesFullscreen"
         :selectedTranslations="selectedTranslation"
