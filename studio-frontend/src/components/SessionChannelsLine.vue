@@ -7,7 +7,12 @@
         :alt="alternativeTextForType"
         :title="alternativeTextForType" />
     </td>
-    <td><FormInput v-model="nameField.value" :field="nameField" /></td>
+    <td>
+      <FormInput
+        v-model="nameField.value"
+        :field="nameField"
+        :readonly="from === 'sessionSettings'" />
+    </td>
     <td v-if="from === 'formCreateSession'">
       {{ profileName }}
     </td>
