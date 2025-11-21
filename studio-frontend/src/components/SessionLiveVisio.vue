@@ -15,6 +15,7 @@
       <slot name="breadcrumb-actions"></slot>
     </template>
     <SessionLiveContent
+      :websocketInstance="$apiEventWS"
       :organizationId="currentOrganizationScope"
       displayLiveTranscription
       :session="session"
