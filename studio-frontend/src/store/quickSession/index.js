@@ -43,23 +43,24 @@ const actions = {
     if (quickSession) {
       commit("setQuickSession", quickSession)
 
-      if (this.session) {
-        this.selectedChannel = this.quickSession.channels[0]
+      const channel = quickSession.channels[0]
 
-        const botReq = await getBotForChannelId(
-          rootGetters["organizations/getCurrentOrganizationScope"],
-          this.selectedChannel.id,
-        )
+      const botReq = await getBotForChannelId(
+        rootGetters["organizations/getCurrentOrganizationScope"],
+        channel.id,
+      )
 
-        if (
-          botReq.status == "success" &&
-          botReq.data &&
-          botReq.data?.bots?.length > 0
-        ) {
-          this.sessionBot = botReq.data?.bots[0]
-          commit("setQuickSessionBot", sessionBot)
-        }
+      if (
+        botReq.status == "success" &&
+        botReq.data &&
+        botReq.data?.bots?.length > 0
+      ) {
+        const sessionBot = botReq.data?.bots[0]
+        commit("setQuickSessionBot", sessionBot)
       }
+    } else {
+      commit("setQuickSession", null)
+      commit("setQuickSessionBot", null)
     }
     commit("setLoading", false)
   },

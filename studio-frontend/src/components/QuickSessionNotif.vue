@@ -19,11 +19,13 @@
     <!-- buttons -->
     <Button
       v-if="isVisio"
+      :to="{ name: 'quick session' }"
       :label="$t('quick_session.notif.visio.continue_button')"
       size="sm"
       variant="secondary" />
     <Button
       v-else
+      :to="{ name: 'quick session' }"
       :label="$t('quick_session.notif.default.continue_button')"
       size="sm"
       variant="secondary" />
@@ -51,7 +53,7 @@ export default {
       return this.quickSessionBot !== null
     },
     visioUrl() {
-      return "https://jitsi.linagora.com/LinTOGreatAgain"
+      return this.quickSessionBot?.url
     },
     ...mapGetters("quickSession", ["quickSession", "quickSessionBot"]),
   },

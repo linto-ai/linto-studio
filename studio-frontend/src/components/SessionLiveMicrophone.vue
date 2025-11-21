@@ -20,21 +20,32 @@
     <template v-slot:breadcrumb-actions>
       <slot name="breadcrumb-actions"></slot>
     </template>
-    <SessionLiveContent
-      :websocketInstance="$apiEventWS"
-      :organizationId="currentOrganizationScope"
-      displayLiveTranscription
-      :session="session"
-      :displaySubtitles="displaySubtitles"
-      :displayLiveTranscription="displayLiveTranscription"
-      :fontSize="fontSize"
-      noTitle
-      :selectedTranslations="selectedTranslation"
-      :selectedChannel="selectedChannel"
-      fromMicrophone
-      @toggleMicrophone="toggleMicrophone"
-      :isRecording="isRecording"
-      @onSave="$emit('onSave')" />
+    <div class="relative flex flex1 col">
+      <SessionLiveContent
+        :websocketInstance="$apiEventWS"
+        :organizationId="currentOrganizationScope"
+        displayLiveTranscription
+        :session="session"
+        :displaySubtitles="displaySubtitles"
+        :displayLiveTranscription="displayLiveTranscription"
+        :fontSize="fontSize"
+        noTitle
+        :selectedTranslations="selectedTranslation"
+        :selectedChannel="selectedChannel"
+        fromMicrophone
+        @toggleMicrophone="toggleMicrophone"
+        :isRecording="isRecording"
+        @onSave="$emit('onSave')" />
+
+      <Modal
+        :withActions="false"
+        title="Setup microphone"
+        v-model="showMicrophoneSetup">
+        <SessionSetupMicrophone
+          :applyLabel="$t('session.microphone_apply_button')"
+          @start-session="startRecordFromMicrophone"></SessionSetupMicrophone>
+      </Modal>
+    </div>
   </V2Layout>
 </template>
 <script>
@@ -47,6 +58,9 @@ import { customDebug } from "@/tools/customDebug.js"
 import SessionLiveToolbar from "@/components/SessionLiveToolbar.vue"
 import SessionLiveContent from "@/components/SessionLiveContent.vue"
 import SessionLiveMicrophoneStatus from "@/components/SessionLiveMicrophoneStatus.vue"
+import Modal from "@/components/molecules/Modal.vue"
+import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
+
 import V2Layout from "@/layouts/v2-layout.vue"
 
 export default {
@@ -57,10 +71,6 @@ export default {
       required: true,
     },
     currentOrganizationScope: {
-      type: String,
-      required: true,
-    },
-    deviceId: {
       type: String,
       required: true,
     },
@@ -77,11 +87,13 @@ export default {
       displaySubtitles: false,
       fontSize: "40",
       selectedChannel: currentChannel,
+      deviceId: null,
+      showMicrophoneSetup: true,
     }
   },
   mounted() {
-    this.initMicrophone()
-    this.setupRecording(this.selectedChannel)
+    // this.initMicrophone()
+    // this.setupRecording(this.selectedChannel)
   },
   computed: {
     qualifiedForCrossSubtitles() {
@@ -110,12 +122,21 @@ export default {
       ]
     },
   },
-  methods: {},
+  methods: {
+    startRecordFromMicrophone({ deviceId }) {
+      this.showMicrophoneSetup = false
+      this.deviceId = deviceId
+      this.initMicrophone()
+      this.setupRecording(this.selectedChannel)
+    },
+  },
   components: {
     SessionLiveToolbar,
     SessionLiveContent,
     SessionLiveMicrophoneStatus,
     V2Layout,
+    Modal,
+    SessionSetupMicrophone,
   },
 }
 </script>

@@ -33,8 +33,7 @@
         <template #trigger="{ open }">
           <Button
             :icon-right="open ? 'caret-up' : 'caret-down'"
-            variant="outline"
-            color="neutral"
+            variant="tertiary"
             size="sm">
             <!-- <div class="flex gap-small">
               <Chip

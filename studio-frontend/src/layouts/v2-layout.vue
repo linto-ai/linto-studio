@@ -1,6 +1,6 @@
 <template>
   <div class="v2-layout" :class="{ 'no-sidebar': !sidebarOpen || fullscreen }">
-    <QuickSessionNotif v-if="quickSession" />
+    <QuickSessionNotif v-if="quickSession && !isQuickSessionPage" />
     <div class="v2-layout__content">
       <aside
         v-if="!fullscreen"
@@ -75,6 +75,9 @@ export default {
   computed: {
     isAuthenticated() {
       return isAuthenticated()
+    },
+    isQuickSessionPage() {
+      return this.$route.name === "quick session"
     },
     ...mapGetters("system", ["sidebarOpen", "isMobile"]),
     ...mapGetters("quickSession", ["quickSession"]),

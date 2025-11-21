@@ -117,11 +117,11 @@ const authGuards = {
 
   async checkQuickSession(to) {
     await store.dispatch("quickSession/loadQuickSession")
-    // const quickSession = store.getters["quickSession/quickSession"]
-    // if (quickSession) {
-    //   return { redirect: true, nextRoute: { name: "quick session" } }
-    // }
-    // return { redirect: false }
+    const quickSession = store.getters["quickSession/quickSession"]
+    if (!quickSession && to.name === "quick session") {
+      return { redirect: true, nextRoute: { name: "not_found" } }
+    }
+    return { redirect: false }
   },
 
   async checkConversationAccess(to) {
@@ -884,7 +884,10 @@ router.beforeEach(async (to, from, next) => {
     }
 
     // Check for quick session
-    await authGuards.checkQuickSession(to)
+    const quickSessionResult = await authGuards.checkQuickSession(to)
+    if (quickSessionResult.redirect) {
+      return next(quickSessionResult.nextRoute)
+    }
 
     // Check conversation access permissions
     const conversationAccess = await authGuards.checkConversationAccess(to)

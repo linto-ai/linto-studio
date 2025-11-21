@@ -1,6 +1,6 @@
 <template>
-  <Loading v-if="loading" />
-  <V2Layout
+  <Loading v-if="loading || !quickSession" />
+  <!-- <V2Layout
     v-else-if="state == 'microphone-selection'"
     :fullscreen="recover"
     box>
@@ -11,14 +11,35 @@
       @save-session="onSaveSession"
       @start-session="startSession"
       @back="backToStart"></SessionSetupMicrophone>
-  </V2Layout>
+  </V2Layout> -->
+
+  <SessionLiveVisio
+    v-else-if="quickSessionBot"
+    :session="quickSession"
+    :currentOrganizationScope="currentOrganizationScope">
+    <template v-slot:breadcrumb-actions>
+      <div class="flex1 flex gap-small align-center">
+        <div style="font-style: italic">
+          {{ $t("quick_session.live_visio.status_recording_visio") }}
+        </div>
+        <div class="flex1"></div>
+        <Button
+          @click="onSaveBotSession"
+          :disabled="isSavingSession"
+          :label="$t('quick_session.live.save_button')"
+          variant="primary"
+          icon="stop"
+          size="sm" />
+      </div>
+    </template>
+  </SessionLiveVisio>
+
   <SessionLiveMicrophone
-    v-else-if="state == 'session-live'"
+    v-else
     ref="sessionLiveMicrophone"
     @onSave="onSaveMicroSession"
-    :deviceId="selectedDeviceId"
     :currentOrganizationScope="currentOrganizationScope"
-    :session="session">
+    :session="quickSession">
     <template v-slot:breadcrumb-actions>
       <div class="flex1 flex gap-small align-center">
         <div class="flex1"></div>
@@ -28,30 +49,10 @@
       </div>
     </template>
   </SessionLiveMicrophone>
-
-  <SessionLiveVisio
-    v-else-if="state == 'session-live-visio'"
-    :session="session"
-    :currentOrganizationScope="currentOrganizationScope">
-    <template v-slot:breadcrumb-actions>
-      <div class="flex1 flex gap-small align-center">
-        <div style="font-style: italic">
-          {{ $t("quick_session.live_visio.status_recording_visio") }}
-        </div>
-        <div class="flex1"></div>
-        <!-- <Button
-          @click="onSaveBotSession"
-          :disabled="isSavingSession"
-          :label="$t('quick_session.live.save_button')"
-          variant="primary"
-          icon="stop"
-          size="sm" /> -->
-      </div>
-    </template>
-  </SessionLiveVisio>
 </template>
 <script>
 import { bus } from "@/main.js"
+import { mapActions, mapGetters } from "vuex"
 
 import {
   apiGetQuickSessionByOrganization,
@@ -83,20 +84,27 @@ export default {
   },
   data() {
     return {
-      selectedDeviceId: null,
-      state: null, // microphone-selection, session-live, session-live-visio
-      session: null,
+      // selectedDeviceId: null,
+      // state: null, // microphone-selection, session-live, session-live-visio
+      // session: null,
       isSavingSession: false,
-      recover: sessionStorage.getItem("startQuickSession") !== "true",
-      selectedChannel: null,
-      selectedTranslations: null,
-      loading: true,
-      sessionBot: null,
+      // recover: sessionStorage.getItem("startQuickSession") !== "true",
+      // selectedChannel: null,
+      // selectedTranslations: null,
+      // loading: true,
+      // sessionBot: null,
     }
   },
   mounted() {
-    sessionStorage.setItem("startQuickSession", false)
-    this.fetchData()
+    // sessionStorage.setItem("startQuickSession", false)
+    // this.fetchData()
+  },
+  computed: {
+    ...mapGetters("quickSession", [
+      "quickSession",
+      "quickSessionBot",
+      "loading",
+    ]),
   },
   methods: {
     async fetchData() {
@@ -149,7 +157,7 @@ export default {
     },
     async onSaveBotSession() {
       this.loading = true
-      await apiStopBot(this.currentOrganizationScope, this.sessionBot.id)
+      await apiStopBot(this.currentOrganizationScope, this.quickSessionBot.id)
       this.onSaveSession()
     },
     async onSaveSession(trash = false) {
@@ -165,7 +173,7 @@ export default {
         conversationName = this.$t("quick_session.live.default_name")
       }
 
-      const sessionToDelete = this.session
+      const sessionToDelete = this.quickSession
       await apiDeleteQuickSession(
         this.currentOrganizationScope,
         sessionToDelete.id,
@@ -175,7 +183,10 @@ export default {
           force: true,
         },
       )
-      this.$router.push({ name: "inbox" })
+      this.$router.push({
+        name: "explore",
+        params: { organizationId: this.currentOrganizationScope },
+      })
     },
   },
   components: {
