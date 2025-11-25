@@ -34,12 +34,7 @@
         v-model="selectedTranslations"
         :items="translationsOptions.channels">
         <template #trigger="{ open }">
-          <Button
-            :icon-right="open ? 'caret-up' : 'caret-down'"
-            variant="outline"
-            color="neutral"
-            size="sm"
-            block>
+          <Button :icon-right="open ? 'caret-up' : 'caret-down'" size="sm">
             {{
               $tc(
                 "session.profile_selector.n_translations_selected",
@@ -116,7 +111,7 @@ export default {
         channels: translations
           .map((translation) => {
             return {
-              value: translation,
+              id: translation,
               text: languageNames.of(translation),
             }
           })
@@ -168,6 +163,7 @@ export default {
       this.$emit("updateName", value)
     },
     selectedTranslations(value) {
+      console.log("selected tr", value)
       this.item.translations = value // shallow copy, parent will be updated
     },
     "item.diarization"(value) {

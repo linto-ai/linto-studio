@@ -31,10 +31,7 @@
         v-model="selectedTranslations"
         :items="translationsOptions.channels">
         <template #trigger="{ open }">
-          <Button
-            :icon-right="open ? 'caret-up' : 'caret-down'"
-            variant="tertiary"
-            size="sm">
+          <Button :icon-right="open ? 'caret-up' : 'caret-down'" size="sm">
             <!-- <div class="flex gap-small">
               <Chip
                 v-for="translation in displayedTranslations"
