@@ -8,8 +8,9 @@
     <div style="height: 100vh" class="flex col">
       <TranscriberProfileEditor
         class="flex1"
+        @input="updateTranscriberProfile"
         :organizationId="organizationId"
-        v-bind:transcriberProfile.sync="transcriberProfile" />
+        :transcriberProfile="transcriberProfile" />
     </div>
   </ModalNew>
 </template>
@@ -35,6 +36,9 @@ export default {
   },
   mounted() {},
   methods: {
+    updateTranscriberProfile(value) {
+      this.transcriberProfile = structuredClone(value)
+    },
     async createTranscriberProfile(event) {
       this.state = "loading"
       const res = await apiAdminCreateTranscriberProfile({

@@ -104,7 +104,8 @@ export default {
     },
   },
   methods: {
-    reset() {
+    async reset() {
+      await this.$nextTick()
       this.l_transcriberProfile = structuredClone(this.transcriberProfile)
       this.$nextTick(() => {
         this.$refs.editorPlain.resetValue()
