@@ -6,7 +6,7 @@
       </h1>
     </div> -->
     <SessionChannel
-      v-if="isConnected"
+      v-if="isConnected && isChannelLive"
       @closeSubtitleFullscreen="closeSubtitleFullscreen"
       :password="password"
       :showSubtitlesFullscreen="showSubtitlesFullscreen"
@@ -28,6 +28,11 @@
       :displayWatermark="displayWatermark"
       :websocketInstance="websocketInstance"
       :isRecording="isRecording"></SessionChannel>
+    <SessionChannelMicrophoneOffline
+      v-else-if="isConnected && !isChannelLive"
+      :channel="selectedChannel"
+      @toggleMicrophone="$emit('toggleMicrophone')"
+      :isRecording="isRecording" />
     <Loading v-else></Loading>
   </div>
 </template>
@@ -39,6 +44,7 @@ import { sessionChannelModelMixin } from "../mixins/sessionChannelModel.js"
 
 import SessionChannel from "@/components/SessionChannel.vue"
 import Loading from "@/components/atoms/Loading.vue"
+import SessionChannelMicrophoneOffline from "@/components/SessionChannelMicrophoneOffline.vue"
 
 export default {
   mixins: [sessionModelMixin, sessionChannelModelMixin],
@@ -123,6 +129,9 @@ export default {
     title() {
       return this.customTitle ?? this.name
     },
+    isChannelLive() {
+      return this.selectedChannel?.enableLiveTranscripts
+    },
   },
   methods: {
     async init() {
@@ -139,6 +148,11 @@ export default {
       this.$emit("closeSubtitleFullscreen")
     },
   },
-  components: { Fragment, SessionChannel, Loading },
+  components: {
+    Fragment,
+    SessionChannel,
+    Loading,
+    SessionChannelMicrophoneOffline,
+  },
 }
 </script>

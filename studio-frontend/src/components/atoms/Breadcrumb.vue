@@ -324,7 +324,7 @@ export default {
   }
 
   &-link {
-    color: var(--color-text-muted, #6c757d);
+    color: var(--text-secondary);
     text-decoration: none;
     padding: 0.25rem 0.5rem;
     border-radius: 0.25rem;
