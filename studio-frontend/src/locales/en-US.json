@@ -25,6 +25,7 @@
     "token_key_label": "Key",
     "token_name_label": "Name",
     "token_role_label": "Role",
+    "token_platform_role_label": "Platform roles",
     "token_actions_label": "Actions",
     "modal_create": {
       "title": "Create a new key",
@@ -86,6 +87,7 @@
       "home": "Home",
       "users": "Users",
       "organisations": "Organisations",
+      "tokens": "Api keys",
       "transcriberProfiles": "Transcriber Profiles"
     },
     "user_list": {
@@ -99,6 +101,14 @@
       "personal_organizations_shown": "Personal organisations shown",
       "personal_organizations_hidden": "Personal organisations hidden",
       "remove_organisation_button": "Delete an organisation | Delete {count} organisations"
+    },
+    "token_list": {
+      "title": "API Keys",
+      "add_token_button": "Add a system API Key",
+      "modal_create": {
+        "title": "Create a system API Key",
+        "platform_role": "Platform role"
+      }
     },
     "transcriber_profile_detail": {
       "save_button": "Save Transcriber Profile",
@@ -152,6 +162,7 @@
     "shared": "Shared",
     "subtitles": "Subtitles",
     "tagsSettings": "{organization} tags",
+    "tokens": "Api keys",
     "transcription": "Transcription",
     "transcriberProfiles": "Transcriber Profiles",
     "users": "Users",
@@ -873,11 +884,12 @@
     "description_description": "The description of your organisation",
     "description_label": "Description",
     "general_settings": "General settings",
-    "leave_error_message": "An error occurred while leaving the organisation",
     "leave_modal": {
       "action": "Leave",
       "content": "Are you sure you want to leave the organisation \"{name}\" ?",
-      "title": "Leave organisation"
+      "title": "Leave organisation",
+      "success_message": "You have successfully left the organisation",
+      "error_message": "An error occurred while leaving the organisation"
     },
     "remove_user_modal": {
       "action": "Remove user from organization",
@@ -1168,6 +1180,9 @@
       "start_time_label": "Start time",
       "success_message": "Session successfully updated",
       "error_update_message": "Session has not been updated",
+      "error_update_password": "Password has not been updated",
+      "success_update_password": "Password has been updated",
+      "empty_password_error": "Password cannot be empty",
       "force_delete_modal": {
         "action": "Delete",
         "content": "An audio stream is connected. Are you sure you want to delete the session? The content will be saved in your media library.",
@@ -1196,11 +1211,24 @@
       },
       "title": "Session settings",
       "visibility_private_label": "Private",
+      "visibility_private_description": "The transcript can be viewed only by your user and administrators",
       "visibility_organization_label": "Internal",
+      "visibility_organization_description": "The transcript can be viewed by all users of your organization",
       "visibility_public_label": "Public",
-      "visibility_title": "Visibility"
+      "visibility_public_description": "The transcript can be viewed by any user with access to the public link",
+      "visibility_title": "Visibility",
+      "visibility_password_label": "Public, password protected",
+      "visibility_password_description": "The transcript is publicly accessible, protected by a password.",
+      "visibility_save_button": "Apply visibility",
+
+      "password_label": "Password"
     },
-    "start_undefined": "Not defined"
+    "start_undefined": "Not defined",
+    "password_modal": {
+      "title": "A password is required to access the live transcription",
+      "password_label": "Password",
+      "apply": "Continue"
+    }
   },
   "quick_session": {
     "creation": {
@@ -1417,10 +1445,15 @@
   },
   "platform_role": {
     "organization_initiator": "Organisation initiator",
+    "organization_initiator_description": "Rights to create new organizations",
     "session_operator": "Session operator",
+    "session_operator_description": "Rights to manage and configure live streams for transcription",
     "system_administrator": "System administrator",
+    "system_administrator_description": "Rights to manage users and organizations on the platform",
+    "super_administrator_description": "All rights on the platform",
     "super_administrator": "Super administrator",
     "user": "User",
+    "user_description": "Simple user of the platform",
     "suspend": "Suspended user"
   },
   "week_selector": {
@@ -1430,7 +1463,9 @@
   },
   "websocket": {
     "connected": "Content updated in real time",
-    "disconnected": "Content not updated, check your internet connection"
+    "disconnected": "Content not updated, check your internet connection",
+    "lost_connexion": "Connection lost, attempting to reconnect...",
+    "restored": "Connection restored"
   },
   "input_selector": {
     "search_tags": "Search topics...",

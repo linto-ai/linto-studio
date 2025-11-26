@@ -2,8 +2,8 @@ const debug = require("debug")(
   "linto:conversation-manager:router:api:session:alias",
 )
 
-const { getAllSessionAlias } = require(
-  `${process.cwd()}/components/WebServer/routecontrollers/administration/alias.js`,
+const { getAllSessionData } = require(
+  `${process.cwd()}/components/WebServer/routecontrollers/administration/sessions.js`,
 )
 
 module.exports = (webserver) => {
@@ -13,7 +13,7 @@ module.exports = (webserver) => {
       method: "get",
       requireAuth: true,
       requireSessionOperator: true,
-      controller: getAllSessionAlias,
+      controller: getAllSessionData,
     },
   ]
 }

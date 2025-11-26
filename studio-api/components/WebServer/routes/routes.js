@@ -31,6 +31,7 @@ module.exports = (webServer) => {
       ...require("./api/taxonomy/metadata")(webServer),
     ],
     "/api/administration": [
+      ...require("./api/administration/activity")(webServer),
       ...require("./api/administration/users")(webServer),
       ...require("./api/administration/organizations")(webServer),
       ...require("./api/administration/tokens")(webServer),
@@ -42,11 +43,14 @@ module.exports = (webServer) => {
   let proxy_routes = []
   if (process.env.SESSION_API_ENDPOINT !== "") {
     proxy_routes.push(require("./proxy/sessions/session.js")(webServer))
+    proxy_routes.push(require("./proxy/sessions/sessionAdmin.js")(webServer))
+
+    /* Alias are api only on the studio side */
     api_routes["/api/organizations/:organizationId/sessions"] =
-      require("./api/sessions/alias.js")(webServer)
+      require("./api/sessions/data.js")(webServer)
     api_routes["/api/administration"] = [
       ...api_routes["/api/administration"],
-      ...require("./api/administration/alias")(webServer),
+      ...require("./api/administration/sessions")(webServer),
     ]
   }
   const authProviders = PROVIDER.registerRoutes(webServer)

@@ -59,7 +59,7 @@ export default {
   props: {
     text: {
       type: String,
-      required: true,
+      required: false, // if content slot
     },
     icon: {
       type: String,
@@ -315,7 +315,7 @@ export default {
 <style lang="scss" scoped>
 .tooltip-container {
   position: relative;
-  display: flex;
+  display: inline-flex;
   cursor: help;
 }
 

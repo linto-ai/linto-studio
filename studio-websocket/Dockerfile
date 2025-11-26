@@ -1,4 +1,4 @@
-FROM node:20.15.1
+FROM node:22.14.0
 
 RUN apt-get update -y && apt-get install -y gosu
 

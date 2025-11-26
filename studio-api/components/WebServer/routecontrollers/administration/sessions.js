@@ -7,14 +7,14 @@ const {} = require(
   `${process.cwd()}/components/WebServer/error/exception/session`,
 )
 
-async function getAllSessionAlias(req, res, next) {
+async function getAllSessionData(req, res, next) {
   try {
-    const sessionAlias = await model.sessionAlias.getAll()
+    const sessionAlias = await model.sessionData.getAll()
     res.status(200).json(sessionAlias)
   } catch (err) {
     next(err)
   }
 }
 module.exports = {
-  getAllSessionAlias,
+  getAllSessionData,
 }

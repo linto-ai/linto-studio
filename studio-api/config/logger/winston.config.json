@@ -1,0 +1,40 @@
+{
+  "format": "json",
+  "transports": [
+    {
+      "type": "console",
+      "options": {
+        "level": "info",
+        "colorize": true
+      }
+    },
+    {
+      "type": "file",
+      "options": {
+        "level": "error",
+        "filename": "./logs/errors.log",
+        "maxsize": 10485760,
+        "maxFiles": 5,
+        "tailable": true
+      }
+    },
+    {
+      "type": "file",
+      "options": {
+        "level": "warn",
+        "filename": "./logs/warning.log",
+        "maxsize": 10485760,
+        "maxFiles": 5,
+        "tailable": true
+      }
+    },
+    {
+      "type": "file",
+      "options": {
+        "level": "debug",
+        "filename": "./logs/debug.json",
+        "format": "json"
+      }
+    }
+  ]
+}

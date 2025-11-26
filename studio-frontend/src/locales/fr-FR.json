@@ -26,6 +26,7 @@
     "token_key_label": "clé",
     "token_name_label": "Nom",
     "token_role_label": "Rôle",
+    "token_platform_role_label": "Rôles de plateforme",
     "token_actions_label": "Actions",
     "modal_create": {
       "title": "Créer une clé d'API",
@@ -87,6 +88,7 @@
       "home": "Accueil",
       "users": "Utilisateurs",
       "organisations": "Organisations",
+      "tokens": "Clés d'apis",
       "transcriberProfiles": "Profils de transcription"
     },
     "user_list": {
@@ -100,6 +102,14 @@
       "personal_organizations_shown": "organisations personnelles affichées",
       "personal_organizations_hidden": "organisations personnelles cachées",
       "remove_organisation_button": "Supprimer l'organisation | Supprimer les {count} organisations"
+    },
+    "token_list": {
+      "title": "Clés d'API",
+      "add_token_button": "Ajouter une clé d'API système",
+      "modal_create": {
+        "title": "Créer une clé d'API système",
+        "platform_role": "Rôle de plateforme"
+      }
     },
     "transcriber_profile_detail": {
       "save_button": "Enregistrer le profil",
@@ -152,6 +162,7 @@
     "shared": "Partagés",
     "subtitles": "Sous-titres",
     "tagsSettings": "Tags de {organization}",
+    "tokens": "Clés d'apis",
     "transcription": "Transcription",
     "transcriberProfiles": "Profils de transcription",
     "users": "Utilisateurs",
@@ -874,11 +885,12 @@
     "description_description": "Description de l'organisation",
     "description_label": "Description",
     "general_settings": "Réglages",
-    "leave_error_message": "Une erreur s'est produite",
     "leave_modal": {
       "action": "Quitter",
       "content": "Êtes vous sur de vouloir quitter l'organisation \"{name}\" ?",
-      "title": "Quitter l'organisation"
+      "title": "Quitter l'organisation",
+      "success_message": "Vous avez quitté l'organisation avec succès",
+      "error_message": "Une erreur s'est produite pour quitter l'organisationn"
     },
     "remove_user_modal": {
       "action": "Supprimer l'utilisateur de l'organisation",
@@ -1172,6 +1184,9 @@
       "start_time_label": "Heure de début",
       "success_message": "Session mise à jour avec succès",
       "error_update_message": "La session n'a pas été mise à jour",
+      "error_update_password": "La mise à jour du mot de passe à échoué",
+      "success_update_password": "Le mot de passe a été mis à jour",
+      "empty_password_error": "Le mot de passe ne peut pas être vide",
       "force_delete_modal": {
         "action": "Supprimer",
         "content": "Un flux audio est connecté. Êtes-vous sûr de vouloir supprimer la session ? Le contenu sera sauvegardé dans votre bibliothèque de médias.",
@@ -1198,11 +1213,23 @@
         "delete_error_message": "L'alias n'a pas pu être supprimé"
       },
       "visibility_private_label": "Privée",
+      "visibility_private_description": "La transcription ne peut être consultée que par votre utilisateur et les administrateurs",
       "visibility_organization_label": "Interne",
+      "visibility_organization_description": "La transcription peut être consultée par tous les utilisateurs de votre organisation",
       "visibility_public_label": "Publique",
-      "visibility_title": "Visibilité"
+      "visibility_public_description": "La transcription peut être consultée par tout utilisateur ayant accès au lien public",
+      "visibility_title": "Visibilité",
+      "visibility_password_label": "Publique, protégée par un mot de passe",
+      "visibility_password_description": "La transcription est en accès public, protégée par un mot de passe",
+      "visibility_save_button": "Appliquer la visibilité",
+      "password_label": "Mot de passe"
     },
-    "start_undefined": "Non définie"
+    "start_undefined": "Non définie",
+    "password_modal": {
+      "title": "Un mot de passe est requis pour acceder à la transcription",
+      "password_label": "Mot de passe",
+      "apply": "Continuer"
+    }
   },
   "quick_session": {
     "creation": {
@@ -1419,10 +1446,15 @@
   },
   "platform_role": {
     "organization_initiator": "Initiateur d'organisation",
+    "organization_initiator_description": "Droits pour créer de nouvelles organisations",
     "session_operator": "Opérateur de session",
+    "session_operator_description": "Droits pour la gestion et la configuration des flux en direct pour la transcription",
     "system_administrator": "Administrateur système",
+    "system_administrator_description": "Droits pour la gestion des utilisateurs et des organisation sur la plateforme",
     "super_administrator": "Super administrateur",
+    "super_administrator_description": "Tous les droits sur la plateforme",
     "user": "Utilisateur",
+    "user_description": "Simple utilisateur de la plateforme",
     "suspend": "Utilisateur désactivé"
   },
   "week_selector": {
@@ -1432,7 +1464,9 @@
   },
   "websocket": {
     "connected": "Contenu mis à jour en temps réel",
-    "disconnected": "Contenu non mis à jour, vérifiez votre connexion internet"
+    "disconnected": "Contenu non mis à jour, vérifiez votre connexion internet",
+    "lost_connexion": "Connexion perdue, tentative de reconnexion...",
+    "restored": "Connexion restaurée"
   },
   "input_selector": {
     "search_tags": "Rechercher une thématique...",

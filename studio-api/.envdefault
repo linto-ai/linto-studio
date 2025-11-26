@@ -23,7 +23,7 @@ DB_PASS=example
 DB_NAME=conversations
 
 # Request a specific version of the database (optional)
-DB_MIGRATION_TARGET=1.6.0
+DB_MIGRATION_TARGET=1.6.1
 
 # STT Config
 GATEWAY_SERVICES=https://<domain>
@@ -78,6 +78,7 @@ SUPER_ADMIN_PWD=
 
 # Bellow are the settings require for the session service
 SESSION_API_ENDPOINT=
+SESSION_PSW_SALT=secret_salt
 
 BROKER_HOST=localhost
 BROKER_PORT=1883

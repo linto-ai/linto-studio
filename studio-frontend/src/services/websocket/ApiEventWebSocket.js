@@ -5,6 +5,7 @@ import { bus } from "@/main"
 import { getCookie } from "@/tools/getCookie"
 import { getEnv } from "@/tools/getEnv"
 import store from "@/store/index.js"
+import i18n from "@/i18n"
 
 const socketioUrl = process.env.VUE_APP_SESSION_WS
 const socketioPath = process.env.VUE_APP_SESSION_WS_PATH
@@ -15,7 +16,9 @@ export default class ApiEventWebSocket {
   constructor() {
     this.state = Vue.observable({
       isConnected: false,
-      isConnectedToSessionBroker: false,
+      connexionLost: false,
+      connexionError: false,
+      connexionRestored: false,
     })
 
     this.socket = null
@@ -24,11 +27,20 @@ export default class ApiEventWebSocket {
     this.test = false
     this.textPartialForTest = ""
     this.retryAfterKO = 0
+    this.currentToken = null
   }
 
-  connect() {
+  connect(token) {
+    this.clearNotifs()
+    if (this.state.isConnected) {
+      debugWSSession("already connected to socket.io server")
+      return Promise.resolve()
+    }
+
+    const userToken = token ?? this.currentToken ?? getCookie("authToken")
+    this.currentToken = userToken
+
     return new Promise((resolve, reject) => {
-      const userToken = getCookie("authToken")
       const transports = getEnv("VUE_APP_WEBSOCKET_TRANSPORTS").split(",")
       this.socket = io(socketioUrl, {
         path: socketioPath,
@@ -37,21 +49,91 @@ export default class ApiEventWebSocket {
         },
         transports: transports,
       })
+
       this.socket.on("connect", (msg) => {
         debugWSSession("connected to socket.io server", msg)
         this.state.isConnected = true
+
+        if (this.state.connexionLost) {
+          this.handleConnexionRestored()
+        }
+
         resolve()
-
-        this.socket.on("broker_ko", () => {
-          this.isConnectedToSessionBroker = false
-          debugWSSession("broker_ko")
-        })
-
-        this.socket.on("broker_ok", () => {
-          debugWSSession("broker_ok")
-          this.isConnectedToSessionBroker = true
-        })
       })
+
+      this.socket.on("disconnect", (msg) => {
+        this.handleDisconnection()
+      })
+
+      this.socket.on("connect_error", () => {
+        this.handleError()
+      })
+
+      this.socket.on("connect_timeout", () => {
+        this.handleError()
+      })
+
+      document.removeEventListener(
+        "visibilitychange",
+        this.handleVisibilityChange.bind(this),
+      )
+
+      document.addEventListener(
+        "visibilitychange",
+        this.handleVisibilityChange.bind(this),
+      )
+    })
+  }
+
+  handleVisibilityChange() {
+    if (document.visibilityState === "visible") {
+      if (this.state.isConnected && !this.socket.connected) {
+        this.handleDisconnection()
+      }
+    }
+  }
+
+  clearNotifs() {
+    store.dispatch("system/removeNotificationById", "websocket-error")
+    store.dispatch("system/removeNotificationById", "websocket-disconnected")
+  }
+
+  handleError() {
+    debugWSSession("connection error to socket.io server")
+    this.clearNotifs()
+    store.dispatch("system/addNotification", {
+      id: "websocket-error",
+      message: i18n.t("websocket.disconnected"),
+      timeout: 0,
+      type: "error",
+    })
+  }
+
+  handleDisconnection() {
+    debugWSSession("disconnected from socket.io server")
+    this.state.connexionLost = true
+    this.state.isConnected = false
+    this.isConnectedToSessionBroker = false
+    this.state.connexionRestored = false
+    this.clearNotifs()
+    store.dispatch("system/addNotification", {
+      id: "websocket-disconnected",
+      message: i18n.t("websocket.lost_connexion"),
+      timeout: 0,
+      type: "warning",
+    })
+
+    setTimeout(() => {
+      this.socket.connect()
+    }, 1000)
+  }
+
+  handleConnexionRestored() {
+    this.clearNotifs()
+    this.state.connexionRestored = true
+    store.dispatch("system/addNotification", {
+      message: i18n.t("websocket.restored"),
+      type: "success",
     })
   }
 
@@ -121,6 +203,7 @@ export default class ApiEventWebSocket {
   }
 
   subscribeMediaUpdate(organizationId) {
+    if (!this.socket) return
     this.unSubscribeMediaUdate()
     this.currentMediaOrganizationId = organizationId
     this.socket.emit("watch_organization_media", organizationId)
@@ -209,6 +292,7 @@ export default class ApiEventWebSocket {
     })
   }
   unSubscribeMediaUdate() {
+    if (!this.socket) return
     if (this.currentMediaOrganizationId) {
       this.socket.emit(
         "unwatch_organization_media",

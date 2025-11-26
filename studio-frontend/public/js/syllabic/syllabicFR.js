@@ -4,7 +4,7 @@
 // This tool "trie" to compute the syllabic form of a word
 import Syllabic from "./syllabic.js"
 import rulesFR from "./rules/fr-FR.js"
-import wordErrorFR from "./dict/fr-FR-errored.json" assert { type: "json" }
+import wordErrorFR from "./dict/fr-FR-errored.json" with { type: "json" }
 
 export default class syllabicFR extends Syllabic {
   constructor(language = "fr-FR") {

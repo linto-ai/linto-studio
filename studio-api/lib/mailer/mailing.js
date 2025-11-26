@@ -273,15 +273,15 @@ class Mailing {
   }
 
   async sendMail(TYPE, mail_data, payload) {
-    const mail_payload = this.prepareMail(TYPE, mail_data, payload)
+    const mail_payload = await this.prepareMail(TYPE, mail_data, payload)
     const mail_result = await Mailer.sendMail(mail_payload)
 
     if (!mail_result) debug("Error while send email to ", mail_payload.to)
     return mail_result
   }
 
-  prepareMail(TYPE, mail_data, payload) {
-    const html = htmlBuilder(TYPE, payload)
+  async prepareMail(TYPE, mail_data, payload) {
+    const html = await htmlBuilder(TYPE, payload)
     return this.generateMailPayload(html, mail_data)
   }
 

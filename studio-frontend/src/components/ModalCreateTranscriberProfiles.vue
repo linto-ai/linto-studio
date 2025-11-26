@@ -8,8 +8,9 @@
     <div style="height: 100vh" class="flex col">
       <TranscriberProfileEditor
         class="flex1"
+        @input="updateTranscriberProfile"
         :organizationId="organizationId"
-        v-bind:transcriberProfile.sync="transcriberProfile" />
+        :transcriberProfile="transcriberProfile" />
     </div>
   </ModalNew>
 </template>
@@ -17,7 +18,7 @@
 import ModalNew from "@/components/molecules/Modal.vue"
 import TranscriberProfileEditor from "@/components/TranscriberProfileEditor.vue"
 import TRANSCRIBER_PROFILES_TEMPLATES from "@/const/transcriberProfilesTemplates"
-import { apiCreateTranscriberProfile } from "@/api/session.js"
+import { apiAdminCreateTranscriberProfile } from "@/api/admin.js"
 import { bus } from "@/main.js"
 
 export default {
@@ -35,9 +36,12 @@ export default {
   },
   mounted() {},
   methods: {
+    updateTranscriberProfile(value) {
+      this.transcriberProfile = structuredClone(value)
+    },
     async createTranscriberProfile(event) {
       this.state = "loading"
-      const res = await apiCreateTranscriberProfile({
+      const res = await apiAdminCreateTranscriberProfile({
         ...this.transcriberProfile,
         organizationId: this.organizationId,
       })

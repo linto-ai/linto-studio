@@ -4,6 +4,7 @@ const debug = require("debug")(
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
+const LogManager = require(`${process.cwd()}/lib/logger/manager`)
 
 const {
   addFileMetadataToConversation,
@@ -102,6 +103,13 @@ async function transcribe(isSingleFile, req, res, next) {
       message: "A conversation is currently being processed",
       conversationId: conversation._id.toString(),
     })
+
+    LogManager.logTranscriptionEvent(req, {
+      conversationId: conversation._id.toString(),
+      jobId: processingJob.jobid,
+      query: req.body,
+    })
+
     return conversation
   } catch (err) {
     next(err)

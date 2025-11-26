@@ -79,10 +79,7 @@ export default {
         return this.transcriberProfile.config.type
       },
       set(value) {
-        this.$emit(
-          "update:transcriberProfile",
-          TRANSCRIBER_PROFILES_TEMPLATES[value],
-        )
+        this.$emit("input", TRANSCRIBER_PROFILES_TEMPLATES[value])
         this.$nextTick(() => {
           this.reset()
         })
@@ -92,7 +89,7 @@ export default {
   watch: {
     l_transcriberProfile: {
       handler(value) {
-        this.$emit("update:transcriberProfile", value)
+        this.$emit("input", value)
       },
       deep: true,
     },
@@ -107,7 +104,8 @@ export default {
     },
   },
   methods: {
-    reset() {
+    async reset() {
+      await this.$nextTick()
       this.l_transcriberProfile = structuredClone(this.transcriberProfile)
       this.$nextTick(() => {
         this.$refs.editorPlain.resetValue()

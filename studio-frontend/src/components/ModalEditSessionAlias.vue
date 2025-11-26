@@ -23,9 +23,9 @@ import { bus } from "@/main.js"
 import EMPTY_FIELD from "@/const/emptyField"
 import { testFieldEmpty } from "@/tools/fields/testEmpty.js"
 import {
-  createSessionAlias,
-  apiUpdateSessionAliase,
-  apiDeleteSessionAliase,
+  apiAddSessionData,
+  apiUpdateSessionData,
+  apiRemoveSessionData,
 } from "@/api/session.js"
 
 import { formsMixin } from "@/mixins/forms.js"
@@ -76,12 +76,12 @@ export default {
       if (this.testFields()) {
         let req
         if (this.sessionAliases.length == 0) {
-          req = await createSessionAlias(this.organizationId, {
+          req = await apiAddSessionData(this.organizationId, {
             sessionId: this.sessionId,
             name: this.nameField.value,
           })
         } else {
-          req = await apiUpdateSessionAliase(
+          req = await apiUpdateSessionData(
             this.organizationId,
             this.sessionAliases[0]._id,
             {
@@ -117,7 +117,7 @@ export default {
       return false
     },
     async deleteHandler() {
-      const req = await apiDeleteSessionAliase(
+      const req = await apiRemoveSessionData(
         this.organizationId,
         this.sessionAliases[0]._id,
       )

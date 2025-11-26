@@ -521,7 +521,7 @@ async function storeSessionFromStop(req, next) {
         ...result,
       })
     }
-    model.sessionAlias.deleteByOrganizationAndSession(
+    model.sessionData.deleteByOrganizationAndSession(
       session.organizationId,
       req.params.id,
     )

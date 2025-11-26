@@ -4,76 +4,79 @@ import { getEnv } from "@/tools/getEnv"
 
 const BASE_API = getEnv("VUE_APP_CONVO_API")
 
-export async function createSessionAlias(organizationScope, data, notif) {
-  const createSessionAlias = await sendRequest(
-    `${BASE_API}/organizations/${organizationScope}/sessions/alias`,
+// date = {sessionId, password, name}
+export async function apiAddSessionData(organizationScope, data, notif) {
+  const req = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/data`,
     { method: "post" },
     data,
     notif,
   )
 
-  return createSessionAlias
+  return req
 }
 
-export async function apiDeleteSessionAliase(organizationScope, aliasId) {
-  const deleteSessionAliase = await sendRequest(
-    `${BASE_API}/organizations/${organizationScope}/sessions/alias/${aliasId}`,
+export async function apiRemoveSessionData(organizationScope, dataId) {
+  const req = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/data/${dataId}`,
     { method: "delete" },
     {},
   )
 
-  return deleteSessionAliase
+  return req
 }
 
-export async function apiUpdateSessionAliase(
+export async function apiRemovePasswordFromSessionData(
   organizationScope,
-  aliasId,
+  dataId,
+) {
+  const req = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/data/${dataId}/password`,
+    { method: "delete" },
+    {},
+  )
+
+  return req
+}
+
+export async function apiUpdateSessionData(
+  organizationScope,
+  dataId,
   data,
   notif,
 ) {
-  const updateSessionAliase = await sendRequest(
-    `${BASE_API}/organizations/${organizationScope}/sessions/alias/${aliasId}`,
+  const req = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/data/${dataId}`,
     { method: "put" },
     data,
     notif,
   )
 
-  return updateSessionAliase
+  return req
 }
 
-export async function apiGetSessionAliase(organizationScope, aliasId, notif) {
-  const getSessionAliase = await sendRequest(
-    `${BASE_API}/organizations/${organizationScope}/sessions/alias/${aliasId}`,
+export async function apiGetSessionData(organizationScope, dataId, notif) {
+  const req = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/data/${aliasId}`,
     { method: "get" },
     {},
     notif,
   )
-  return getSessionAliase
+  return req
 }
 
-export async function apiGetSessionAliasesBySessionId(
+export async function apiGetSessionDataBySessionId(
   organizationScope,
   sessionId,
   notif,
 ) {
-  const getSessionAliases = await sendRequest(
-    `${BASE_API}/organizations/${organizationScope}/sessions/alias`,
+  const req = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/data`,
     { method: "get" },
     { sessionId: sessionId },
     notif,
   )
-  return getSessionAliases?.data ?? []
-}
-
-export async function apiGetTranscriberProfiles(notif) {
-  const getTranscriberProfiles = await sendRequest(
-    `${BASE_API}/transcriber_profiles`,
-    { method: "get" },
-    {},
-    notif,
-  )
-
-  return getTranscriberProfiles?.data ?? []
+  return req?.data ?? []
 }
 
 export async function apiGetTranscriberProfilesByOrganization(
@@ -91,47 +94,6 @@ export async function apiGetTranscriberProfilesByOrganization(
   )
 
   return getTranscriberProfiles?.data ?? []
-}
-
-export async function apiGetTranscriberProfilesById(transcriberId, notif) {
-  return await sendRequest(
-    `${BASE_API}/transcriber_profiles/${transcriberId}`,
-    { method: "get" },
-    {},
-    notif,
-  )
-}
-
-export async function apiUpdateTranscriberProfile(transcriberId, data, notif) {
-  const dataCopy = structuredClone(data)
-  if (dataCopy.config.key === "Secret key is hidden") {
-    delete dataCopy.config.key
-  }
-
-  return await sendRequest(
-    `${BASE_API}/transcriber_profiles/${transcriberId}`,
-    { method: "put" },
-    dataCopy,
-    notif,
-  )
-}
-
-export async function apiCreateTranscriberProfile(data, notif) {
-  return await sendRequest(
-    `${BASE_API}/transcriber_profiles`,
-    { method: "post" },
-    data,
-    notif,
-  )
-}
-
-export async function apiDeleteTranscriberProfile(transcriberId, notif) {
-  return await sendRequest(
-    `${BASE_API}/transcriber_profiles/${transcriberId}`,
-    { method: "delete" },
-    {},
-    notif,
-  )
 }
 
 export async function apiGetSessionTemplates(organizationScope, notif) {
@@ -172,14 +134,31 @@ export async function apiDeleteSessionTemplate(
 }
 
 export async function apiCreateSession(organizationScope, data, notif) {
-  const createSession = await sendRequest(
+  const reqCreation = await sendRequest(
     `${BASE_API}/organizations/${organizationScope}/sessions`,
     { method: "post" },
     data,
     notif,
   )
 
-  return createSession
+  if (reqCreation.status === "success") {
+    if (data.password) {
+      const reqPassword = await apiAddSessionData(organizationScope, {
+        sessionId: reqCreation.data.id,
+        password: data.password,
+      })
+
+      return {
+        ...reqPassword,
+        source: "password",
+        data: { ...reqCreation.data },
+      }
+    }
+
+    return { ...reqCreation, source: "sessionCreation" }
+  }
+
+  return { ...reqCreation, source: "sessionCreation" }
 }
 
 export async function apiUpdateSession(
@@ -338,11 +317,11 @@ export async function apiGetSessionsBetweenDates(
   return allSessionsReq?.data ?? { sessions: [], totalItems: 0 }
 }
 
-export async function apiGetPublicSession(sessionId, notif) {
+export async function apiGetPublicSession(sessionId, password, notif) {
   const getSession = await sendRequest(
     `${BASE_API}/sessions/${sessionId}/public`,
     { method: "get" },
-    {},
+    { password },
     notif,
   )
 
@@ -416,12 +395,13 @@ export async function apiGetSessionChannel(
 export async function apiGetPublicSessionChannel(
   sessionId,
   transcriberId,
+  password,
   notif,
 ) {
   const getSessionChannel = await sendRequest(
     `${BASE_API}/sessions/${sessionId}/public`,
     { method: "get" },
-    { transcriber_id: transcriberId },
+    { transcriber_id: transcriberId, password },
     notif,
   )
 

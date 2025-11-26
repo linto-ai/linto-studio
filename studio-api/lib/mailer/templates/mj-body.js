@@ -24,8 +24,6 @@ module.exports = function (Type, payload) {
     title = title + " - " + mailContent.title
   }
 
-  debug(body)
-  // throw new Error("Deprecated: Use htmlBuilder instead of mjmlBuilder")
   return {
     title,
     body,
