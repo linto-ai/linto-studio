@@ -9,14 +9,16 @@
     </div>
     <div class="channel-turn__content" :selected="selected" @click="onClick">
       <div class="channel-turn__header">
-        <span class="channel-turn__speaker" v-if="speaker !== previousSpeaker">
+        <span
+          class="channel-turn__speaker"
+          v-if="speaker && speaker !== previousSpeaker">
           {{ speaker }}
         </span>
-        <span class="channel-turn__lang" v-if="lang !== previousLang">
+        <span class="channel-turn__lang" v-if="lang && lang !== previousLang">
           {{ lang }}
         </span>
       </div>
-      <div class="channel_turn__text">{{ text }}</div>
+      <div class="channel-turn__text">{{ text }}</div>
     </div>
   </div>
 </template>
@@ -68,12 +70,10 @@ export default {
         return this.$t("session.detail_page.translation_bot")
       }
 
-      return (
-        this.turn?.locutor || this.$t("session.detail_page.undefined_speaker")
-      )
+      return this.turn?.locutor || null
     },
     lang() {
-      return this.turn.lang || this.$t("session.detail_page.undefined_lang")
+      return this.turn.lang || null
     },
     time() {
       if (!this.turn.astart) return "00:00:00"
@@ -114,9 +114,11 @@ export default {
 <style lang="scss" scoped>
 .channel-turn {
   display: grid;
-  grid-template-columns: 7rem 60rem;
+  grid-template-columns: 6rem 1fr;
   margin-inline: auto;
   gap: 1em;
+  max-width: calc(100% - 2rem);
+  width: 65rem;
 }
 
 .channel-turn__time {
@@ -126,6 +128,18 @@ export default {
 
 .channel-turn__header {
   font-weight: bold;
+}
+
+.channel-turn__text {
+  text-align: justify;
+  padding: calc(0.25rem + 1px);
+  border-radius: 4px;
+}
+
+.channel-turn__content[selected] .channel-turn__text {
+  border: 1px solid var(--primary-color);
+  padding: calc(0.25rem + 0px);
+  background-color: var(--primary-soft);
 }
 
 // .channel-turn {
