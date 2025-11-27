@@ -1,53 +1,21 @@
 <template>
-  <Loading v-if="loading || !quickSession" />
-  <!-- <V2Layout
-    v-else-if="state == 'microphone-selection'"
-    :fullscreen="recover"
-    box>
-    <SessionSetupMicrophone
-      ref="sessionSetupMicrophone"
-      :recover="recover"
-      @trash-session="trashSession"
-      @save-session="onSaveSession"
-      @start-session="startSession"
-      @back="backToStart"></SessionSetupMicrophone>
-  </V2Layout> -->
+  <div v-if="loading || !quickSession"></div>
+  <Loading v-else-if="saving" />
 
   <SessionLiveVisio
     v-else-if="quickSessionBot"
+    :quickSessionBot="quickSessionBot"
+    @onSave="saveSession"
     :session="quickSession"
     :currentOrganizationScope="currentOrganizationScope">
-    <template v-slot:breadcrumb-actions>
-      <div class="flex1 flex gap-small align-center">
-        <div style="font-style: italic">
-          {{ $t("quick_session.live_visio.status_recording_visio") }}
-        </div>
-        <div class="flex1"></div>
-        <Button
-          @click="onSaveBotSession"
-          :disabled="isSavingSession"
-          :label="$t('quick_session.live.save_button')"
-          variant="primary"
-          icon="stop"
-          size="sm" />
-      </div>
-    </template>
   </SessionLiveVisio>
 
   <SessionLiveMicrophone
     v-else
     ref="sessionLiveMicrophone"
-    @onSave="onSaveMicroSession"
+    @onSave="saveSession"
     :currentOrganizationScope="currentOrganizationScope"
     :session="quickSession">
-    <template v-slot:breadcrumb-actions>
-      <div class="flex1 flex gap-small align-center">
-        <div class="flex1"></div>
-        <button @click="onSaveMicroSession" :disabled="isSavingSession">
-          <span class="label">{{ $t("quick_session.live.save_button") }}</span>
-        </button>
-      </div>
-    </template>
   </SessionLiveMicrophone>
 </template>
 <script>
@@ -84,15 +52,7 @@ export default {
   },
   data() {
     return {
-      // selectedDeviceId: null,
-      // state: null, // microphone-selection, session-live, session-live-visio
-      // session: null,
       isSavingSession: false,
-      // recover: sessionStorage.getItem("startQuickSession") !== "true",
-      // selectedChannel: null,
-      // selectedTranslations: null,
-      // loading: true,
-      // sessionBot: null,
     }
   },
   mounted() {
@@ -104,91 +64,20 @@ export default {
       "quickSession",
       "quickSessionBot",
       "loading",
+      "saving",
     ]),
   },
   methods: {
-    async fetchData() {
-      this.session = await apiGetQuickSessionByOrganization(
-        this.currentOrganizationScope,
-      )
-
-      if (this.session) {
-        this.selectedChannel = this.session.channels[0]
-
-        const botReq = await getBotForChannelId(
-          this.currentOrganizationScope,
-          this.selectedChannel.id,
-        )
-        if (
-          botReq.status == "success" &&
-          botReq.data &&
-          botReq.data?.bots?.length > 0
-        ) {
-          this.sessionBot = botReq.data?.bots[0]
-          this.state = "session-live-visio"
-        } else {
-          this.state = "microphone-selection"
-        }
-
-        this.loading = false
-        this.selectedTranslations = "original"
-      } else {
-        // redirect to start page
-        this.$router.push({
-          name: "conversations create",
-          query: {},
-          params: {},
-        })
-      }
-    },
-    async startSession({ deviceId }) {
-      this.selectedDeviceId = deviceId
-
-      this.state = "session-live"
-    },
-    backToStart() {
-      this.$router.push({ name: "conversations create" })
-    },
-    trashSession() {
-      this.onSaveSession(true)
-    },
-    onSaveMicroSession(e) {
-      this.onSaveSession(false)
-    },
-    async onSaveBotSession() {
-      this.loading = true
-      await apiStopBot(this.currentOrganizationScope, this.quickSessionBot.id)
-      this.onSaveSession()
-    },
-    async onSaveSession(trash = false) {
-      await this.$nextTick()
-      this.isSavingSession = true
-      const now = new Date()
-      let conversationName = ""
-      if (this.sessionBot) {
-        conversationName = this.$t("quick_session.live_visio.default_name", {
-          type: capitalizeFirstLetter(this.sessionBot.provider),
-        })
-      } else {
-        conversationName = this.$t("quick_session.live.default_name")
-      }
-
-      const sessionToDelete = this.quickSession
-      await apiDeleteQuickSession(
-        this.currentOrganizationScope,
-        sessionToDelete.id,
-        {
-          name: conversationName,
-          trash,
-          force: true,
-        },
-      )
+    ...mapActions("quickSession", ["saveQuickSession"]),
+    async saveSession() {
+      await this.saveQuickSession()
       this.$router.push({
         name: "explore",
         params: { organizationId: this.currentOrganizationScope },
       })
     },
   },
+  watch: {},
   components: {
     SessionSetupMicrophone,
     SessionLiveMicrophone,

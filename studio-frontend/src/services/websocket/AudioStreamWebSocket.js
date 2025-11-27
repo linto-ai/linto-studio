@@ -16,7 +16,7 @@ export default class AudioStreamWebSocket {
     this.currentConfig = null
   }
 
-  changeChannel(channel, newConfig) {
+  async changeChannel(channel, newConfig) {
     this.channel = channel
 
     if (this.state.isConnected) {
@@ -29,9 +29,11 @@ export default class AudioStreamWebSocket {
     }
 
     if (config) {
-      return this.connectWithConfig(config)
+      return await this.connectWithConfig(config)
     } else {
-      return this.connect()
+      await this.connect()
+
+      return
     }
   }
 
@@ -48,11 +50,13 @@ export default class AudioStreamWebSocket {
         reject("No websocket url")
         return
       }
-
+      console.log("l1")
       this.socket = new WebSocket(url)
+      console.log("l2")
       this.socket.onopen = () => {
         debugWS("connected to websocket server")
         this.state.isConnected = true
+        console.log("l3")
         resolve()
       }
     })

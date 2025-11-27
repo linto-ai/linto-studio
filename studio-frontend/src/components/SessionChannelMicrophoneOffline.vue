@@ -1,13 +1,15 @@
 <template>
   <div class="flex1 flex col align-center justify-center">
-    <RecordingIndicator :recording="isRecording" />
+    <RecordingIndicator
+      :speaking="speaking"
+      :recording="isRecording"
+      @click="toggleMicrophone" />
     <h4 class="center-text" v-if="isRecording">
       {{ $t("quick_session.live.status_recording") }}
     </h4>
     <h4 class="center-text" v-else>
       {{ $t("quick_session.live.status_muted") }}
     </h4>
-    <div>00:17:30</div>
   </div>
 </template>
 <script>
@@ -24,12 +26,21 @@ export default {
       required: false,
       default: false,
     },
+    speaking: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {}
   },
   mounted() {},
-  methods: {},
+  methods: {
+    toggleMicrophone() {
+      this.$emit("toggleMicrophone")
+    },
+  },
   components: {
     RecordingIndicator,
   },

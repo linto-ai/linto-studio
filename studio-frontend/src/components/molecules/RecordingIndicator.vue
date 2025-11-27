@@ -1,7 +1,9 @@
 <template>
   <div
+    @click="$emit('click')"
     class="recording-indicator"
     :class="{
+      'recording-indicator--speaking': speaking,
       'recording-indicator--on': recording,
       'recording-indicator--off': !recording,
     }">
@@ -17,6 +19,11 @@ import { bus } from "@/main.js"
 export default {
   props: {
     recording: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    speaking: {
       type: Boolean,
       required: false,
       default: false,
@@ -51,7 +58,8 @@ export default {
   padding: 0px;
 }
 
-.recording-indicator--on .recording-indicator__2nd-circle {
+.recording-indicator--speaking.recording-indicator--on
+  .recording-indicator__2nd-circle {
   animation: pulse 1.5s infinite;
   border: 8px solid rgba(92, 206, 176, 0.25);
 }
@@ -67,7 +75,7 @@ export default {
 
 .recording-indicator--off .recording-indicator__1st-circle {
   background: var(--danger-soft);
-  animation: blink 1.5s infinite;
+  //animation: blink 1.5s infinite;
 }
 
 @keyframes blink {

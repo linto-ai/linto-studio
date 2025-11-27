@@ -2,11 +2,11 @@
   <V2Layout :breadcrumbItems="breadcrumbItems">
     <template v-slot:sidebar>
       <div class="sidebar-divider"></div>
-      <SessionLiveMicrophoneStatus
+      <!-- <SessionLiveMicrophoneStatus
         @toggle-microphone="toggleMicrophone"
         :speaking="speaking"
         :isRecording="isRecording"
-        :channelWebsocket="channelAudioWebsocket" />
+        :channelWebsocket="channelAudioWebsocket" /> -->
       <SessionLiveToolbar
         :channels="channels"
         :qualifiedForCrossSubtitles="qualifiedForCrossSubtitles"
@@ -18,7 +18,29 @@
         quickSession />
     </template>
     <template v-slot:breadcrumb-actions>
-      <slot name="breadcrumb-actions"></slot>
+      <div
+        class="flex1 flex gap-medium align-center"
+        style="margin-right: 0.5rem">
+        <div class="flex1"></div>
+        <Button
+          v-if="!isRecording"
+          icon="play"
+          @click="toggleMicrophone"
+          :label="$t('quick_session.live.start_microphone_button')"
+          size="sm"
+          variant="secondary" />
+        <Button
+          v-else
+          icon="pause"
+          @click="toggleMicrophone"
+          :label="$t('quick_session.live.mute_microphone_button')"
+          size="sm" />
+        <Button
+          @click="$emit('onSave')"
+          variant="primary"
+          size="sm"
+          :label="$t('quick_session.live.save_button')" />
+      </div>
     </template>
     <div class="relative flex flex1 col">
       <SessionLiveContent
@@ -34,15 +56,19 @@
         :selectedChannel="selectedChannel"
         fromMicrophone
         @toggleMicrophone="toggleMicrophone"
+        :speaking="speaking"
         :isRecording="isRecording"
         @onSave="$emit('onSave')" />
 
       <Modal
         :withActions="false"
-        title="Setup microphone"
+        :title="$t('session.microphone_setup_title')"
+        :overlayClose="false"
+        :withClose="false"
         v-model="showMicrophoneSetup">
         <SessionSetupMicrophone
           :applyLabel="$t('session.microphone_apply_button')"
+          noCancel
           @start-session="startRecordFromMicrophone"></SessionSetupMicrophone>
       </Modal>
     </div>
@@ -117,13 +143,14 @@ export default {
     breadcrumbItems() {
       return [
         {
-          label: this.$t("breadcrumb.quickSession"),
+          label: this.$t("breadcrumb.quickSession_microphone"),
         },
       ]
     },
   },
   methods: {
     startRecordFromMicrophone({ deviceId }) {
+      console.log("start")
       this.showMicrophoneSetup = false
       this.deviceId = deviceId
       this.initMicrophone()

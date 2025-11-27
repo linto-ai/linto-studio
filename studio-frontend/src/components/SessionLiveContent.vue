@@ -29,10 +29,14 @@
       :websocketInstance="websocketInstance"
       :isRecording="isRecording"></SessionChannel>
     <SessionChannelMicrophoneOffline
-      v-else-if="isConnected && !isChannelLive"
+      v-else-if="isConnected && !isChannelLive && !fromVisio"
       :channel="selectedChannel"
+      :speaking="speaking"
       @toggleMicrophone="$emit('toggleMicrophone')"
       :isRecording="isRecording" />
+    <SessionChannelVisioOffline
+      v-else-if="isConnected && !isChannelLive && fromVisio"
+      :channel="selectedChannel" />
     <Loading v-else></Loading>
   </div>
 </template>
@@ -45,6 +49,7 @@ import { sessionChannelModelMixin } from "../mixins/sessionChannelModel.js"
 import SessionChannel from "@/components/SessionChannel.vue"
 import Loading from "@/components/atoms/Loading.vue"
 import SessionChannelMicrophoneOffline from "@/components/SessionChannelMicrophoneOffline.vue"
+import SessionChannelVisioOffline from "./SessionChannelVisioOffline.vue"
 
 export default {
   mixins: [sessionModelMixin, sessionChannelModelMixin],
@@ -106,9 +111,19 @@ export default {
       required: false,
       default: false,
     },
+    fromVisio: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     // instance of ApiEventWebSocket
     websocketInstance: {
       required: true,
+    },
+    speaking: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   data() {
@@ -153,6 +168,7 @@ export default {
     SessionChannel,
     Loading,
     SessionChannelMicrophoneOffline,
+    SessionChannelVisioOffline,
   },
 }
 </script>

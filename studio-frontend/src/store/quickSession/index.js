@@ -1,8 +1,12 @@
+import i18n from "@/i18n"
+
 import {
   apiGetQuickSession,
   apiStopBot,
   getBotForChannelId,
+  apiDeleteQuickSession,
 } from "@/api/session.js"
+import { capitalizeFirstLetter } from "@/tools/capitalizeFirstLetter.js"
 
 const state = {
   quickSession: null,
@@ -66,14 +70,30 @@ const actions = {
   },
   async saveQuickSession({ commit, getters, rootGetters }) {
     commit("setSaving", true)
+    let conversationName
+
     // if bot stop bot
     if (getters.quickSessionBot) {
+      conversationName = i18n.t("quick_session.live_visio.default_name", {
+        type: capitalizeFirstLetter(getters.quickSessionBot.provider),
+      })
       await apiStopBot(
         rootGetters["organizations/getCurrentOrganizationScope"],
         getters.quickSessionBot.id,
       )
+    } else {
+      conversationName = i18n.t("quick_session.live.default_name")
     }
     // then stop session
+    await apiDeleteQuickSession(
+      rootGetters["organizations/getCurrentOrganizationScope"],
+      getters.quickSession.id,
+      {
+        name: conversationName,
+        force: true,
+      },
+    )
+
     commit("setSaving", false)
   },
 }

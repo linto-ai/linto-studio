@@ -11,70 +11,72 @@
       :selectedChannel="selectedChannel"
       v-model="p_selectedTranslation"></SessionTranslationSelection>
 
-    <h3>{{ $t("session.detail_page.title_interface_settings") }}</h3>
-    <FormCheckbox
-      :field="displayLiveTranscriptionField"
-      switchDisplay
-      v-model="displayLiveTranscriptionField.value" />
-    <FormCheckbox
-      :field="displaySubtitlesField"
-      switchDisplay
-      v-model="displaySubtitlesField.value">
-    </FormCheckbox>
-    <div
-      class="subSection flex col gap-small"
-      v-if="displaySubtitlesField.value">
-      <FormInput :field="fontSizeField" v-model="fontSizeField.value" />
-
+    <div class="flex col gap-medium" v-if="isChannelLive">
+      <h3>{{ $t("session.detail_page.title_interface_settings") }}</h3>
       <FormCheckbox
-        v-if="enableWatermark && isAtLeastMeetingManager && !quickSession"
-        :field="displayWatermarkField"
+        :field="displayLiveTranscriptionField"
         switchDisplay
-        v-model="displayWatermarkField.value">
-        <template v-slot:content-after-label>
-          <div class="flex gap-small small-margin-left">
-            <Button
-              icon="gear"
-              variant="transparent"
-              :aria-label="
-                $t('session.live_page.watermark_settings.settings_button')
-              "
-              :title="
-                $t('session.live_page.watermark_settings.settings_button')
-              "
-              @click="showWatermarkSettings = true" />
-
-            <Button
-              icon="push-pin"
-              variant="transparent"
-              @click="togglePin"
-              :aria-label="
-                $t('session.live_page.watermark_settings.pin_button')
-              "
-              :title="$t('session.live_page.watermark_settings.unpin_button')"
-              v-if="watermarkPinned" />
-
-            <Button
-              icon="push-pin-slash"
-              variant="transparent"
-              @click="togglePin"
-              :aria-label="
-                $t('session.live_page.watermark_settings.pin_button')
-              "
-              :title="$t('session.live_page.watermark_settings.pin_button')"
-              v-else />
-          </div>
-        </template>
+        v-model="displayLiveTranscriptionField.value" />
+      <FormCheckbox
+        :field="displaySubtitlesField"
+        switchDisplay
+        v-model="displaySubtitlesField.value">
       </FormCheckbox>
-      <Button
-        variant="secondary"
-        intent="destructive"
-        :label="$t('session.live_page.clear_subtitle')"
-        @click="clearSubtitles" />
-      <!-- <button @click="clearSubtitles">
+      <div
+        class="subSection flex col gap-small"
+        v-if="displaySubtitlesField.value">
+        <FormInput :field="fontSizeField" v-model="fontSizeField.value" />
+
+        <FormCheckbox
+          v-if="enableWatermark && isAtLeastMeetingManager && !quickSession"
+          :field="displayWatermarkField"
+          switchDisplay
+          v-model="displayWatermarkField.value">
+          <template v-slot:content-after-label>
+            <div class="flex gap-small small-margin-left">
+              <Button
+                icon="gear"
+                variant="transparent"
+                :aria-label="
+                  $t('session.live_page.watermark_settings.settings_button')
+                "
+                :title="
+                  $t('session.live_page.watermark_settings.settings_button')
+                "
+                @click="showWatermarkSettings = true" />
+
+              <Button
+                icon="push-pin"
+                variant="transparent"
+                @click="togglePin"
+                :aria-label="
+                  $t('session.live_page.watermark_settings.pin_button')
+                "
+                :title="$t('session.live_page.watermark_settings.unpin_button')"
+                v-if="watermarkPinned" />
+
+              <Button
+                icon="push-pin-slash"
+                variant="transparent"
+                @click="togglePin"
+                :aria-label="
+                  $t('session.live_page.watermark_settings.pin_button')
+                "
+                :title="$t('session.live_page.watermark_settings.pin_button')"
+                v-else />
+            </div>
+          </template>
+        </FormCheckbox>
+        <Button
+          variant="secondary"
+          intent="destructive"
+          :label="$t('session.live_page.clear_subtitle')"
+          @click="clearSubtitles" />
+        <!-- <button @click="clearSubtitles">
         <span class="icon clear-history" />
         <span class="label">{{ $t("session.live_page.clear_subtitle") }}</span>
       </button> -->
+      </div>
       <ModalWatermarkSettings
         v-if="showWatermarkSettings"
         @on-cancel="closeWatermarkSettings"
@@ -235,6 +237,9 @@ export default {
     },
     enableWatermark() {
       return getEnv("VUE_APP_ENABLE_WATERMARK") === "true"
+    },
+    isChannelLive() {
+      return this.selectedChannel?.enableLiveTranscripts
     },
   },
   watch: {
