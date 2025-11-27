@@ -75,7 +75,9 @@
           </FormCheckbox>
           <div class="form-field">
             <SessionTranslationSelection
-              v-if="field.value.selectedProfile.translations"
+              v-if="
+                source === 'visio' && field.value.selectedProfile.translations
+              "
               :selectedChannel="field.value.selectedProfile"
               :customLabel="$t('quick_session.setup_visio.bot_lang_label')"
               v-model="selectedTranslation">
