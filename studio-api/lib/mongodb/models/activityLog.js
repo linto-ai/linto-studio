@@ -117,18 +117,20 @@ class ActivityLog extends MongoModel {
     }
   }
 
-  async getKpiLlm(orgaId) {
+  async getKpiLlm(orgaId, timestamp) {
     try {
       const query = [
         {
           $match: {
             activity: "llm",
             ...(orgaId && { "organization.id": orgaId }),
+            // ...(timestamp && { timestamp: { $gte: new Date(timestamp) } }),
+            ...(timestamp && { timestamp: { $gte: timestamp } }),
           },
         },
         {
           $group: {
-            _id: null, // 👈 Global aggregation (or remove null if you want to group per org)
+            _id: null,
             totalGenerations: { $sum: 1 },
             totalContentLength: { $sum: "$llm.contentLength" },
           },
@@ -137,7 +139,7 @@ class ActivityLog extends MongoModel {
           $project: {
             _id: 0,
             totalGenerations: 1,
-            totalContentLength: 1, // keep as bytes
+            totalContentLength: 1,
           },
         },
       ]
@@ -148,13 +150,14 @@ class ActivityLog extends MongoModel {
     }
   }
 
-  async getKpiTranscription(orgaId) {
+  async getKpiTranscription(orgaId, timestamp) {
     try {
       const query = [
         {
           $match: {
             activity: "transcription",
             ...(orgaId && { "organization.id": orgaId }),
+            ...(timestamp && { timestamp: { $gte: timestamp } }),
           },
         },
         {
@@ -184,13 +187,14 @@ class ActivityLog extends MongoModel {
     }
   }
 
-  async getKpiSession(orgaId) {
+  async getKpiSession(orgaId, timestamp) {
     try {
       const query = [
         {
           $match: {
             activity: "session",
             ...(orgaId && { "organization.id": orgaId }),
+            ...(timestamp && { timestamp: { $gte: timestamp } }),
           },
         },
         {
@@ -296,6 +300,17 @@ class ActivityLog extends MongoModel {
       return await this.mongoAggregate(query)
     } catch (error) {
       console.error("Error in kpiSessionById:", error)
+      return error
+    }
+  }
+
+  async findOrganizationsWithActivity() {
+    try {
+      return await this.mongoDistinct("organization.id", {
+        "organization.id": { $exists: true, $ne: null },
+      })
+    } catch (error) {
+      console.error("Error in findOrganizationsWithActivity:", error)
       return error
     }
   }

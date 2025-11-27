@@ -220,6 +220,19 @@ class MongoModel {
       throw error // Rethrow the error to be handled by the caller
     }
   }
+
+  async mongoDistinct(field, filter = {}) {
+    try {
+      const result = await MongoDriver.constructor.db
+        .collection(this.collection)
+        .distinct(field, filter)
+
+      return result
+    } catch (error) {
+      console.error("mongoDistinct error:", error)
+      throw error
+    }
+  }
 }
 
 module.exports = MongoModel

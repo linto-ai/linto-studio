@@ -5,6 +5,7 @@ module.exports = {
   conversationSubtitles: require("./conversationSubtitles.js"),
   conversations: require("./conversations.js"),
   favorites: require("./favorites.js"),
+  kpi: require("./kpi.js"),
   metadata: require("./metadata.js"),
   organizations: require("./organizations.js"),
   sessionData: require("./sessionData.js"),

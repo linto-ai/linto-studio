@@ -1,8 +1,8 @@
 {
-  "/api/administration/alias": {
+  "/api/administration/sessions/data": {
     "get": {
-      "tags": ["administration alias"],
-      "summary": "List all existing session alias",
+      "tags": ["administration sessions"],
+      "summary": "List all existing session metadata",
       "responses": {
         "200": {
           "description": "OK",
@@ -12,7 +12,7 @@
                 "type": "array",
                 "items": {
                   "type": "object",
-                  "$ref": "#/components/schemas/SessionAlias"
+                  "$ref": "#/components/schemas/SessionData"
                 }
               }
             }
