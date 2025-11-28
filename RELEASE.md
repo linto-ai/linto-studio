@@ -1,3 +1,12 @@
+# 1.6.1
+
+_2025_11_28_
+
+- Public sessions can now be password protected
+- User actions are now logged in the database
+- Live updating has been improved, with reconnection and better error handling
+- External dependencies have been updated to fix vulnerabilities
+
 # 1.6.0
 
 _2025_10_08_
