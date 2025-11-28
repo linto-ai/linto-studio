@@ -73,9 +73,9 @@ export const mediaProgressMixin = {
     // progress with 2 numbers and no decimal
     progressDisplay() {
       const integer = Math.floor(this.progress)
-      if (integer < 10) {
-        return `0${integer}%`
-      }
+      // if (integer < 10) {
+      //   return `0${integer}%`
+      // }
       return `${integer}%`
     },
   },
