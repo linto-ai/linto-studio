@@ -1,0 +1,147 @@
+{
+  "SessionKPI": {
+    "type": "object",
+    "properties": {
+      "userCount": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "integer",
+            "description": "Total number of users in the session"
+          },
+          "totalConnections": {
+            "type": "integer",
+            "description": "Total number of connections across all users"
+          },
+          "above5Min": {
+            "type": "integer",
+            "description": "Number of users who watched more than 5 minutes"
+          },
+          "below5Min": {
+            "type": "integer",
+            "description": "Number of users who watched less than 5 minutes"
+          }
+        }
+      },
+
+      "sessionInfo": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "description": "ID of the session"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the session"
+          },
+          "organizationId": {
+            "type": "string",
+            "description": "ID of the associated organization"
+          },
+          "visibility": {
+            "type": "string",
+            "description": "Session visibility (public, private, organization)"
+          }
+        }
+      },
+
+      "organization": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Organization ID"
+          },
+          "info": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Organization name"
+              },
+              "description": {
+                "type": ["string", "null"],
+                "description": "Description of the organization"
+              }
+            }
+          }
+        }
+      },
+
+      "totalWatchTimeSeconds": {
+        "type": "number",
+        "description": "Total watch time for the session in seconds"
+      },
+
+      "totalWatchTimeMinutes": {
+        "type": "number",
+        "description": "Total watch time for the session in minutes"
+      },
+
+      "totalWatchTimeHours": {
+        "type": "number",
+        "description": "Total watch time for the session in hours"
+      },
+
+      "avgWatchTimeSeconds": {
+        "type": "number",
+        "description": "Average watch time per user in seconds"
+      },
+
+      "watchTime": {
+        "type": "object",
+        "properties": {
+          "avgAbove5MinSeconds": {
+            "type": "number",
+            "description": "Average watch time in seconds for users above 5 minutes"
+          },
+          "avgBelow5MinSeconds": {
+            "type": "number",
+            "description": "Average watch time in seconds for users below 5 minutes"
+          },
+          "avgAbove5MinMinutes": {
+            "type": "number",
+            "description": "Average watch time in minutes for users above 5 minutes"
+          },
+          "avgBelow5MinMinutes": {
+            "type": "number",
+            "description": "Average watch time in minutes for users below 5 minutes"
+          }
+        }
+      }
+    },
+
+    "example": {
+      "userCount": {
+        "total": 5,
+        "totalConnections": 7,
+        "above5Min": 2,
+        "below5Min": 3
+      },
+      "sessionInfo": {
+        "sessionId": "1fb1e5ba-6246-48a4-b4f4-34a57a3d6f7e",
+        "name": "My session",
+        "organizationId": "688778cb980f721744a206d8",
+        "visibility": "public"
+      },
+      "organization": {
+        "id": "688778cb980f721744a206d8",
+        "info": {
+          "name": "My organization",
+          "description": null
+        }
+      },
+      "totalWatchTimeSeconds": 1100,
+      "totalWatchTimeMinutes": 18.333333333333332,
+      "totalWatchTimeHours": 0.3055555555555556,
+      "avgWatchTimeSeconds": 220,
+      "watchTime": {
+        "avgAbove5MinSeconds": 541,
+        "avgBelow5MinSeconds": 6,
+        "avgAbove5MinMinutes": 9.016666666666667,
+        "avgBelow5MinMinutes": 0.1
+      }
+    }
+  }
+}

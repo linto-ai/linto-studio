@@ -15,7 +15,6 @@ async function getActivity(req, res, next) {
 async function getKpiByActivity(req, res, next) {
   try {
     const { organizationId, activity } = req.params
-
     let result, date
     if (req.query.timestamp) {
       date = req.query.timestamp
@@ -116,9 +115,7 @@ async function generateKpi(req, res, next) {
       const oldKpi = await model.kpi.getByOrgaId(orgaId)
 
       let date = undefined
-      if (oldKpi.length > 0) {
-        date = oldKpi[0].timestamp
-      }
+      if (oldKpi.length > 0) date = oldKpi[0].timestamp
 
       let activityKpi = {
         organization: {
@@ -141,7 +138,7 @@ async function generateKpi(req, res, next) {
     })
 
     // Clean up processed activity logs ?
-    res.status(201).send({ message: "KPI stored successfully" })
+    res.status(201).send({ message: "KPI generated successfully" })
   } catch (err) {
     next(err)
   }

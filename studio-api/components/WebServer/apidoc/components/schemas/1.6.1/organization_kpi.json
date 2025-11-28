@@ -1,0 +1,99 @@
+{
+  "OrganizationKPI": {
+    "type": "object",
+    "properties": {
+      "_id": {
+        "type": "string",
+        "description": "Unique KPI document ID"
+      },
+
+      "organization": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Organization ID"
+          }
+        }
+      },
+
+      "llm": {
+        "type": "object",
+        "properties": {
+          "totalGenerations": {
+            "type": "number",
+            "description": "Total number of LLM generations for the organization"
+          },
+          "totalContentLength": {
+            "type": "number",
+            "description": "Sum of all LLM contentLength values"
+          }
+        }
+      },
+
+      "transcription": {
+        "type": "object",
+        "properties": {
+          "totalTranscriptions": {
+            "type": "number",
+            "description": "Number of transcription events"
+          },
+          "totalDurationSeconds": {
+            "type": "number",
+            "description": "Total duration of audio processed in seconds"
+          },
+          "totalHours": {
+            "type": "number",
+            "description": "Total transcription duration in hours"
+          }
+        }
+      },
+
+      "session": {
+        "type": "object",
+        "properties": {
+          "totalSessions": {
+            "type": "number",
+            "description": "Number of session activity logs for this organization"
+          },
+          "totalWatchTimeHours": {
+            "type": "number",
+            "description": "Total watch time across all sessions in hours"
+          },
+          "avgWatchTimeMinutes": {
+            "type": "number",
+            "description": "Average watch time per session in minutes"
+          }
+        }
+      },
+
+      "timestamp": {
+        "type": "string",
+        "format": "date-time",
+        "description": "Timestamp when the KPI snapshot was generated"
+      }
+    },
+
+    "example": {
+      "_id": "6926d2281cabe4c269b72722",
+      "organization": {
+        "id": "688778cb980f721744a206d8"
+      },
+      "llm": {
+        "totalGenerations": 3,
+        "totalContentLength": 2550
+      },
+      "transcription": {
+        "totalTranscriptions": 4,
+        "totalDurationSeconds": 58.32,
+        "totalHours": 0.0162
+      },
+      "session": {
+        "totalSessions": 304,
+        "totalWatchTimeHours": 4.384444444444444,
+        "avgWatchTimeMinutes": 0.8653508771929824
+      },
+      "timestamp": "2025-11-27T14:10:43.362Z"
+    }
+  }
+}

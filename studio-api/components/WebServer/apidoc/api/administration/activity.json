@@ -1,7 +1,7 @@
 {
   "/api/administration/activity": {
     "get": {
-      "tags": ["administration"],
+      "tags": ["administration activity"],
       "summary": "List all activity of the platform",
       "parameters": [
         {
@@ -34,6 +34,152 @@
                     "items": {
                       "$ref": "#/components/schemas/ActivityLog"
                     }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
+  },
+  "/api/administration/activity/{activity}/organization/{organizationId}": {
+    "get": {
+      "tags": ["administration activity"],
+      "summary": "Get kpi details for a specific activity from an organization",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
+        },
+        {
+          "in": "path",
+          "name": "activity",
+          "schema": {
+            "type": "string",
+            "enum": ["session", "llm", "transcription"]
+          },
+          "required": true,
+          "description": "Scope of the desired activity"
+        },
+        {
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
+          "required": true,
+          "description": "Scope of the user, must be 'backoffice'"
+        },
+        {
+          "in": "query",
+          "name": "timestamp",
+          "schema": {
+            "type": "string"
+          },
+          "required": false,
+          "description": "Timestamp to filter activity logs from a specific date"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The list of sessions",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/OrganizationKPI"
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
+  },
+  "/api/administration/activity/session/{sessionId}": {
+    "get": {
+      "tags": ["administration activity"],
+      "summary": "Get activity details for a specific session",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "sessionId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for the session"
+        },
+        {
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
+          "required": true,
+          "description": "Scope of the user, must be 'backoffice'"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The list of sessions",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SessionKPI"
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
+  },
+  "/api/administration/activity/generate-kpi": {
+    "post": {
+      "tags": ["administration activity"],
+      "summary": "Generate kpi for all organizations",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
+          "required": true,
+          "description": "Scope of the user, must be 'backoffice'"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "KPI generated successfully"
                   }
                 }
               }
