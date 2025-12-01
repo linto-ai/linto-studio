@@ -1,5 +1,30 @@
 const MongoModel = require("../model")
 
+function buildActivityMatchQuery(activity, orgaId, startDate, endDate) {
+  const timestampQuery = {}
+
+  if (startDate) timestampQuery.$gte = startDate
+  if (endDate) timestampQuery.$lte = endDate
+  /*{
+          $match: {
+            activity: "llm",
+            ...(orgaId && { "organization.id": orgaId }),
+            // ...(timestamp && { timestamp: { $gte: new Date(timestamp) } }),
+            ...(timestamp && { timestamp: { $gte: timestamp } }),
+          },
+        },*/
+
+  return {
+    $match: {
+      activity,
+      ...(orgaId && { "organization.id": orgaId }),
+      ...(Object.keys(timestampQuery).length > 0 && {
+        timestamp: timestampQuery,
+      }),
+    },
+  }
+}
+
 class ActivityLog extends MongoModel {
   constructor() {
     super("activityLog")
@@ -117,17 +142,17 @@ class ActivityLog extends MongoModel {
     }
   }
 
-  async getKpiLlm(orgaId, timestamp) {
+  async getKpiLlm(orgaId, startDate, endDate) {
     try {
+      const matchQuery = buildActivityMatchQuery(
+        "llm",
+        orgaId,
+        startDate,
+        endDate,
+      )
+
       const query = [
-        {
-          $match: {
-            activity: "llm",
-            ...(orgaId && { "organization.id": orgaId }),
-            // ...(timestamp && { timestamp: { $gte: new Date(timestamp) } }),
-            ...(timestamp && { timestamp: { $gte: timestamp } }),
-          },
-        },
+        matchQuery,
         {
           $group: {
             _id: null,
@@ -150,16 +175,17 @@ class ActivityLog extends MongoModel {
     }
   }
 
-  async getKpiTranscription(orgaId, timestamp) {
+  async getKpiTranscription(orgaId, startDate, endDate) {
     try {
+      const matchQuery = buildActivityMatchQuery(
+        "transcription",
+        orgaId,
+        startDate,
+        endDate,
+      )
+
       const query = [
-        {
-          $match: {
-            activity: "transcription",
-            ...(orgaId && { "organization.id": orgaId }),
-            ...(timestamp && { timestamp: { $gte: timestamp } }),
-          },
-        },
+        matchQuery,
         {
           $group: {
             _id: "$organization.id",
@@ -187,16 +213,17 @@ class ActivityLog extends MongoModel {
     }
   }
 
-  async getKpiSession(orgaId, timestamp) {
+  async getKpiSession(orgaId, startDate, endDate) {
     try {
+      const matchQuery = buildActivityMatchQuery(
+        "session",
+        orgaId,
+        startDate,
+        endDate,
+      )
+
       const query = [
-        {
-          $match: {
-            activity: "session",
-            ...(orgaId && { "organization.id": orgaId }),
-            ...(timestamp && { timestamp: { $gte: timestamp } }),
-          },
-        },
+        matchQuery,
         {
           $group: {
             _id: "$organization.id",
