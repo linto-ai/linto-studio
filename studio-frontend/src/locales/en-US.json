@@ -84,11 +84,16 @@
   "backoffice": {
     "title": "Backoffice",
     "navigation": {
+      "activities": "Activity log",
       "home": "Home",
       "users": "Users",
       "organisations": "Organisations",
       "tokens": "Api keys",
       "transcriberProfiles": "Transcriber Profiles"
+    },
+    "activity_list": {
+      "title": "Activity log",
+      "scope_label": "Scope"
     },
     "user_list": {
       "title": "Users",
@@ -141,6 +146,7 @@
     }
   },
   "breadcrumb": {
+    "activities": "Activity log",
     "backoffice": "Backoffice",
     "conversations": "Media",
     "create": "Upload media",

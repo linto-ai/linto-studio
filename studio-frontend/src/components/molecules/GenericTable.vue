@@ -65,9 +65,7 @@ export default {
   data() {
     return {}
   },
-  mounted() {
-    console.log("table generic", this.$scopedSlots)
-  },
+  mounted() {},
   methods: {
     sortBy(event) {
       this.$emit("list_sort_by", event)

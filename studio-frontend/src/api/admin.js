@@ -6,6 +6,42 @@ import { sendMultipartFormData } from "@/tools/sendMultipartFormData"
 const BASE_API = getEnv("VUE_APP_CONVO_API")
 const DEFAULT_PAGE_SIZE = 10
 
+export async function apiGetActivityLogs(
+  page = 0,
+  {
+    pageSize = DEFAULT_PAGE_SIZE,
+    sortField = "timestamp",
+    sortOrder = -1,
+    source,
+  } = {},
+) {
+  let res
+
+  res = await sendRequest(
+    `${BASE_API}/administration/activity`,
+    {
+      method: "get",
+    },
+    {
+      page,
+      size: pageSize,
+      sortField,
+      sortCriteria: sortOrder,
+      source,
+    },
+  )
+
+  return res?.data || { count: 0, list: [] }
+}
+
+export async function apiGetHttpActivityLogs(page = 0, args) {
+  return await apiGetActivityLogs(page, { ...args, source: "webserver" })
+}
+
+export async function apiGetSessionActivityLogs(page = 0, args) {
+  return await apiGetActivityLogs(page, { ...args, source: "session" })
+}
+
 export async function apiGetAllOrganizations(
   page = 0,
   {

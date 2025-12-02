@@ -38,7 +38,7 @@ export async function sendRequest(
           params: {
             ...defaultQueryParams,
             ...data,
-            t: Date.now(),
+            //t: Date.now(),
           },
           headers: {
             ...headers,

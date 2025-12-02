@@ -85,11 +85,16 @@
   "backoffice": {
     "title": "Backoffice",
     "navigation": {
+      "activities": "Journal d'activité",
       "home": "Accueil",
       "users": "Utilisateurs",
       "organisations": "Organisations",
       "tokens": "Clés d'apis",
       "transcriberProfiles": "Profils de transcription"
+    },
+    "activity_list": {
+      "title": "Journal d'activité",
+      "scope_label": "Domaine"
     },
     "user_list": {
       "title": "Utilisateurs",
@@ -142,6 +147,7 @@
     }
   },
   "breadcrumb": {
+    "activities": "Journal d'activité",
     "backoffice": "Backoffice",
     "conversations": "Conversations",
     "create": "Importer un media",
