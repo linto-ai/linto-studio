@@ -231,6 +231,11 @@ export default {
 }
 
 @media only screen and (max-width: 1100px) {
+  .v2-layout {
+    gap: 0rem;
+    padding: 0rem;
+  }
+
   .v2-layout__content {
     //padding-left: 260px !important;
     transition: padding-left 0.3s ease-in-out;

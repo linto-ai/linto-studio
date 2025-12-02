@@ -1313,8 +1313,8 @@
       }
     },
     "modal_save": {
-      "title": "Enregistrer la session",
-      "name": "Nom de la session",
+      "title": "Sauvegarder l'enregistrement",
+      "name": "Nom",
       "confirm": "Enregistrer"
     }
   },

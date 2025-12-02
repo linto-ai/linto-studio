@@ -5,17 +5,15 @@
       <span class="channel-turn__time">{{ time }}</span>
     </div> -->
     <div class="channel_turn_left">
-      <span class="channel-turn__time">{{ time }}</span>
-      <span
-        class="channel-turn__lang"
-        v-if="speaker && speaker !== previousSpeaker">
+      <span class="channel-turn__time" v-if="showTime">{{ time }}</span>
+      <span class="channel-turn__lang" v-if="showLang">
         {{ lang }}
       </span>
     </div>
     <div class="channel-turn__content" :selected="selected" @click="onClick">
       <div class="channel-turn__header">
-        <span class="channel-turn__time">{{ time }}</span>
-        <span class="channel-turn__lang" v-if="lang && lang !== previousLang">
+        <span class="channel-turn__time" v-if="showTime">{{ time }}</span>
+        <span class="channel-turn__lang" v-if="showLang">
           {{ lang }}
         </span>
         <span
@@ -89,16 +87,11 @@ export default {
     },
     previousSpeaker() {
       if (!this.previous) return null
-      return (
-        this.previous?.locutor ||
-        this.$t("session.detail_page.undefined_speaker")
-      )
+      return this.previous?.locutor || null
     },
     previousLang() {
       if (!this.previous) return null
-      return (
-        this.previous?.lang || this.$t("session.detail_page.undefined_lang")
-      )
+      return this.previous?.lang || null
     },
     previousTime() {
       if (!this.previous) return null
@@ -106,6 +99,44 @@ export default {
       return new Date(
         new Date(this.previous.astart).getTime() + this.previous.start * 1000,
       ).toLocaleTimeString()
+    },
+    diffTimeBetweenPrevious() {
+      if (!this.previous) return null
+      return this.turn.start - this.previous.end
+    },
+    showTime() {
+      if (!this.previous) {
+        return true
+      }
+
+      // no diarization
+      if (!this.speaker) {
+        return true
+      }
+
+      if (this.previousSpeaker !== this.speaker) {
+        return true
+      }
+
+      if (this.previousLang !== this.lang) {
+        return true
+      }
+
+      if (this.speaker && this.diffTimeBetweenPrevious > 5) {
+        return true
+      }
+
+      return false
+    },
+    showLang() {
+      if (this.previousSpeaker !== this.speaker) {
+        return true
+      }
+
+      if (this.previousLang !== this.lang) {
+        return true
+      }
+      return false
     },
   },
   methods: {
@@ -137,7 +168,6 @@ export default {
 }
 
 .channel-turn__header:has(> .channel-turn__speaker) {
-  font-weight: bold;
   padding-top: 0.25rem;
 }
 
@@ -153,6 +183,7 @@ export default {
 
 .channel-turn__speaker {
   color: var(--text-secondary);
+  font-weight: 400;
 }
 
 .channel-turn__text {
@@ -176,7 +207,7 @@ export default {
 //   gap: 1em;
 // }
 
-@container session-content (max-width: 70em) {
+@container session-content (max-width: 700px) {
   .channel-turn {
     display: flex;
     flex-direction: column-reverse;

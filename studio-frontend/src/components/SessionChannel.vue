@@ -341,6 +341,11 @@ export default {
     },
     shouldDisplayTurn(turn) {
       const hasSpeaker = !!turn.locutor
+
+      if (turn?.locutor == "bot") {
+        return false
+      }
+
       if (
         this.hasDiarization &&
         this.selectedTranslations === "original" &&

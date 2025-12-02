@@ -21,6 +21,12 @@
       <div
         class="flex1 flex gap-medium align-center"
         style="margin-right: 0.5rem">
+        <IsMobile>
+          <template #desktop
+            ><StatusLed :on="speaking && isRecording"
+          /></template>
+        </IsMobile>
+
         <div class="flex1"></div>
         <Button
           v-if="!isRecording"
