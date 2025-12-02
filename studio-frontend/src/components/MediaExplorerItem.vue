@@ -529,6 +529,7 @@ export default {
   // border: var(--border-button);
   font-weight: bold;
   font-size: 14px;
+  width: 2rem;
   //border: 1px solid var(--neutral-40);
 }
 
