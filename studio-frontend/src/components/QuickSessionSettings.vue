@@ -154,7 +154,7 @@ export default {
       },
       fieldDiarizationEnabled: {
         ...EMPTY_FIELD,
-        value: this.value.diarization ?? false,
+        value: this.value.diarization ?? true,
         label: this.$t("session.create_page.diarization_label"),
       },
       fieldKeepAudio: {
