@@ -1311,6 +1311,11 @@
         "continue_button": "Reprendre l'enregistrement",
         "stop_button": "Sauvegarder et arrêter l'enregistrement"
       }
+    },
+    "modal_save": {
+      "title": "Enregistrer la session",
+      "name": "Nom de la session",
+      "confirm": "Enregistrer"
     }
   },
   "share_menu": {

@@ -7,6 +7,7 @@ import {
   apiDeleteQuickSession,
 } from "@/api/session.js"
 import { capitalizeFirstLetter } from "@/tools/capitalizeFirstLetter.js"
+import router from "@/routers/app-router"
 
 const state = {
   quickSession: null,
@@ -68,21 +69,18 @@ const actions = {
     }
     commit("setLoading", false)
   },
-  async saveQuickSession({ commit, getters, rootGetters }) {
+  async saveQuickSession(
+    { commit, getters, rootGetters, dispatch },
+    conversationName,
+  ) {
     commit("setSaving", true)
-    let conversationName
 
     // if bot stop bot
     if (getters.quickSessionBot) {
-      conversationName = i18n.t("quick_session.live_visio.default_name", {
-        type: capitalizeFirstLetter(getters.quickSessionBot.provider),
-      })
       await apiStopBot(
         rootGetters["organizations/getCurrentOrganizationScope"],
         getters.quickSessionBot.id,
       )
-    } else {
-      conversationName = i18n.t("quick_session.live.default_name")
     }
     // then stop session
     await apiDeleteQuickSession(
@@ -94,6 +92,16 @@ const actions = {
       },
     )
 
+    router.replace({
+      name: "explore",
+      params: {
+        organizationId:
+          rootGetters["organizations/getCurrentOrganizationScope"],
+      },
+      query: { t: Date.now() },
+    })
+    commit("setQuickSession", null)
+    commit("setQuickSessionBot", null)
     commit("setSaving", false)
   },
 }

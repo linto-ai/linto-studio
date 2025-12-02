@@ -51,7 +51,6 @@ export const sessionMicrophoneMixin = {
       }
 
       await this.channelAudioWebsocket.changeChannel(channel, initMessage)
-      console.log("l4")
     },
     async setupRecordRaw() {
       this.debugSessionMicrophone("Starting downsampler")
@@ -67,6 +66,14 @@ export const sessionMicrophoneMixin = {
     toggleMicrophone() {
       if (this.channelAudioWebsocket?.state?.isConnected) {
         this.isRecording = !this.isRecording
+      }
+    },
+    pauseMicrophone() {
+      this.isRecording = false
+    },
+    startMicrophone() {
+      if (this.channelAudioWebsocket?.state?.isConnected) {
+        this.isRecording = true
       }
     },
   },

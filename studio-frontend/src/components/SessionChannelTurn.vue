@@ -4,18 +4,24 @@
       
       <span class="channel-turn__time">{{ time }}</span>
     </div> -->
-    <div class="channel-turn__time">
-      {{ time }}
+    <div class="channel_turn_left">
+      <span class="channel-turn__time">{{ time }}</span>
+      <span
+        class="channel-turn__lang"
+        v-if="speaker && speaker !== previousSpeaker">
+        {{ lang }}
+      </span>
     </div>
     <div class="channel-turn__content" :selected="selected" @click="onClick">
       <div class="channel-turn__header">
-        <span
-          class="channel-turn__speaker"
-          v-if="speaker && speaker !== previousSpeaker">
-          {{ speaker }}
-        </span>
+        <span class="channel-turn__time">{{ time }}</span>
         <span class="channel-turn__lang" v-if="lang && lang !== previousLang">
           {{ lang }}
+        </span>
+        <span
+          class="channel-turn__speaker flex1"
+          v-if="speaker && speaker !== previousSpeaker">
+          {{ speaker }}
         </span>
       </div>
       <div class="channel-turn__text">{{ text }}</div>
@@ -114,26 +120,47 @@ export default {
 <style lang="scss" scoped>
 .channel-turn {
   display: grid;
-  grid-template-columns: 6rem 1fr;
+  grid-template-columns: 5rem 1fr;
   margin-inline: auto;
   gap: 1em;
-  max-width: calc(100% - 2rem);
+  max-width: calc(100% - 1rem);
   width: 65rem;
 }
 
-.channel-turn__time {
+.channel_turn_left {
+  display: flex;
+  flex-direction: column;
   text-align: end;
   color: var(--text-secondary);
+  padding-top: 0.25rem;
+  font-size: 14px;
+}
+
+.channel-turn__header:has(> .channel-turn__speaker) {
+  font-weight: bold;
+  padding-top: 0.25rem;
 }
 
 .channel-turn__header {
-  font-weight: bold;
+  .channel-turn__time {
+    display: none;
+  }
+
+  .channel-turn__lang {
+    display: none;
+  }
+}
+
+.channel-turn__speaker {
+  color: var(--text-secondary);
 }
 
 .channel-turn__text {
   text-align: justify;
   padding: calc(0.25rem + 1px);
   border-radius: 4px;
+  text-align: justify;
+  font-family: var(--luciole-font-family);
 }
 
 .channel-turn__content[selected] .channel-turn__text {
@@ -149,12 +176,52 @@ export default {
 //   gap: 1em;
 // }
 
-// @container session-content (max-width: 70em) {
-//   .channel-turn {
-//     grid-template-columns: auto 1fr;
-//     margin-inline: 1rem;
-//   }
-// }
+@container session-content (max-width: 70em) {
+  .channel-turn {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 0;
+  }
+
+  .channel-turn {
+    //grid-template-columns: 1fr 50px;
+  }
+
+  .channel_turn_left {
+    font-size: 12px;
+    display: none;
+    // display: flex;
+    // flex-direction: row;
+    // gap: 0.5em;
+    // //display: none;
+    // justify-content: end;
+    // padding-top: 0;
+  }
+
+  .channel-turn__header {
+    padding-top: 0 !important;
+    display: flex;
+    align-items: center;
+    margin-top: 0.5em;
+    gap: 0.5em;
+
+    .channel-turn__time,
+    .channel-turn__lang {
+      font-weight: normal;
+      color: var(--text-secondary);
+      //text-decoration: underline;
+      font-size: 14px;
+      display: block;
+    }
+
+    .channel-turn__speaker {
+      text-align: end;
+      font-weight: 400;
+      //text-transform: capitalize;
+      font-variant-caps: small-caps;
+    }
+  }
+}
 
 // .channel-turn__text {
 //   text-align: justify;

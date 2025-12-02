@@ -50,13 +50,10 @@ export default class AudioStreamWebSocket {
         reject("No websocket url")
         return
       }
-      console.log("l1")
       this.socket = new WebSocket(url)
-      console.log("l2")
       this.socket.onopen = () => {
         debugWS("connected to websocket server")
         this.state.isConnected = true
-        console.log("l3")
         resolve()
       }
     })

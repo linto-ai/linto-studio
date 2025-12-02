@@ -94,7 +94,7 @@ export default {
       deep: true,
     },
     "quickMeetingField.value"(value) {
-      this.l_transcriberProfile.quickMeeting = value
+      this.transcriberProfile.quickMeeting = value
       this.$nextTick(() => {
         this.reset()
       })

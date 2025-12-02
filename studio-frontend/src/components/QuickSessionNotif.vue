@@ -31,23 +31,43 @@
       variant="secondary" />
 
     <Button
+      @click="saveSession"
       :label="$t('quick_session.notif.visio.stop_button')"
       size="sm"
       variant="secondary"
       intent="destructive" />
+    <ModalSaveQuickSession
+      v-model="isModalSaveOpen"
+      :placeholder="defaultName" />
   </div>
 </template>
 <script>
 import { bus } from "@/main.js"
 import { mapGetters } from "vuex"
+import ModalSaveQuickSession from "@/components/ModalSaveQuickSession.vue"
 
 export default {
   props: {},
   data() {
-    return {}
+    return {
+      isModalSaveOpen: false,
+      defaultName: "",
+    }
   },
   mounted() {},
-  methods: {},
+  methods: {
+    async saveSession() {
+      if (this.quickSessionBot) {
+        this.defaultName = this.$t("quick_session.live_visio.default_name", {
+          type: this.quickSessionBot.provider,
+        })
+      } else {
+        this.defaultName = this.$t("quick_session.live.default_name")
+      }
+
+      this.isModalSaveOpen = true
+    },
+  },
   computed: {
     isVisio() {
       return this.quickSessionBot !== null
@@ -57,7 +77,9 @@ export default {
     },
     ...mapGetters("quickSession", ["quickSession", "quickSessionBot"]),
   },
-  components: {},
+  components: {
+    ModalSaveQuickSession,
+  },
 }
 </script>
 

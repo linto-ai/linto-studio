@@ -1,22 +1,27 @@
 <template>
-  <div v-if="loading || !quickSession"></div>
-  <Loading v-else-if="saving" />
+  <div class="flex1 flex col">
+    <div v-if="loading || !quickSession || systemLoading"></div>
+    <Loading v-else-if="saving" />
 
-  <SessionLiveVisio
-    v-else-if="quickSessionBot"
-    :quickSessionBot="quickSessionBot"
-    @onSave="saveSession"
-    :session="quickSession"
-    :currentOrganizationScope="currentOrganizationScope">
-  </SessionLiveVisio>
+    <SessionLiveVisio
+      v-else-if="quickSessionBot"
+      :quickSessionBot="quickSessionBot"
+      @onSave="saveSession"
+      :session="quickSession"
+      :currentOrganizationScope="currentOrganizationScope">
+    </SessionLiveVisio>
 
-  <SessionLiveMicrophone
-    v-else
-    ref="sessionLiveMicrophone"
-    @onSave="saveSession"
-    :currentOrganizationScope="currentOrganizationScope"
-    :session="quickSession">
-  </SessionLiveMicrophone>
+    <SessionLiveMicrophone
+      v-else
+      ref="sessionLiveMicrophone"
+      @onSave="saveSession"
+      :currentOrganizationScope="currentOrganizationScope"
+      :session="quickSession">
+    </SessionLiveMicrophone>
+    <ModalSaveQuickSession
+      v-model="isModalSaveOpen"
+      :placeholder="defaultName" />
+  </div>
 </template>
 <script>
 import { bus } from "@/main.js"
@@ -38,6 +43,7 @@ import SessionLiveVisio from "@/components/SessionLiveVisio.vue"
 import Loading from "@/components/atoms/Loading.vue"
 import MainContent from "@/components/MainContent.vue"
 import V2Layout from "@/layouts/v2-layout.vue"
+import ModalSaveQuickSession from "@/components/ModalSaveQuickSession.vue"
 
 export default {
   props: {
@@ -53,6 +59,8 @@ export default {
   data() {
     return {
       isSavingSession: false,
+      isModalSaveOpen: false,
+      defaultName: "",
     }
   },
   mounted() {
@@ -66,15 +74,24 @@ export default {
       "loading",
       "saving",
     ]),
+    ...mapGetters("system", {
+      systemLoading: "isLoading",
+    }),
   },
   methods: {
     ...mapActions("quickSession", ["saveQuickSession"]),
     async saveSession() {
-      await this.saveQuickSession()
-      this.$router.push({
-        name: "explore",
-        params: { organizationId: this.currentOrganizationScope },
-      })
+      if (this.quickSessionBot) {
+        this.defaultName = this.$t("quick_session.live_visio.default_name", {
+          type: this.quickSessionBot.provider,
+        })
+      } else {
+        this.defaultName = this.$t("quick_session.live.default_name")
+        this.$refs.sessionLiveMicrophone.pauseMicrophone()
+      }
+
+      this.isSavingSession = true
+      this.isModalSaveOpen = true
     },
   },
   watch: {},
@@ -85,6 +102,7 @@ export default {
     MainContent,
     Loading,
     V2Layout,
+    ModalSaveQuickSession,
   },
 }
 </script>

@@ -25,14 +25,14 @@
         <Button
           v-if="!isRecording"
           icon="play"
-          @click="toggleMicrophone"
+          @click="startMicrophone"
           :label="$t('quick_session.live.start_microphone_button')"
           size="sm"
           variant="secondary" />
         <Button
           v-else
           icon="pause"
-          @click="toggleMicrophone"
+          @click="pauseMicrophone"
           :label="$t('quick_session.live.mute_microphone_button')"
           size="sm" />
         <Button
@@ -150,7 +150,6 @@ export default {
   },
   methods: {
     startRecordFromMicrophone({ deviceId }) {
-      console.log("start")
       this.showMicrophoneSetup = false
       this.deviceId = deviceId
       this.initMicrophone()
