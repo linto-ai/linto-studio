@@ -15,23 +15,29 @@ async function getActivity(req, res, next) {
 async function getKpiByActivity(req, res, next) {
   try {
     const { organizationId, activity } = req.params
-    let result, date
-    if (req.query.timestamp) {
-      date = req.query.timestamp
-    }
-
+    const { startDate, endDate } = req.query
+    let result
     switch (activity) {
       case "llm":
-        result = await model.activityLog.getKpiLlm(organizationId, date)
+        result = await model.activityLog.getKpiLlm(
+          organizationId,
+          startDate,
+          endDate,
+        )
         break
       case "transcription":
         result = await model.activityLog.getKpiTranscription(
           organizationId,
-          date,
+          startDate,
+          endDate,
         )
         break
       case "session":
-        result = await model.activityLog.getKpiSession(organizationId, date)
+        result = await model.activityLog.getKpiSession(
+          organizationId,
+          startDate,
+          endDate,
+        )
         break
       default:
         throw new Error("Activity type not supported")

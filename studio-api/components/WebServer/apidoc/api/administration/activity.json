@@ -81,12 +81,25 @@
         },
         {
           "in": "query",
-          "name": "timestamp",
+          "name": "startDate",
           "schema": {
-            "type": "string"
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-11-19T00:00:00.000Z"
           },
           "required": false,
-          "description": "Timestamp to filter activity logs from a specific date"
+          "description": "Start date timestamp to filter activity logs from a specific date"
+        },
+        {
+          "in": "query",
+          "name": "endDate",
+          "schema": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-11-25T00:00:00.000Z"
+          },
+          "required": false,
+          "description": "End date timestamp to filter activity logs from a specific date"
         }
       ],
       "responses": {
