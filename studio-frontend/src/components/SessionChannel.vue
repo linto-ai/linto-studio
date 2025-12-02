@@ -1,7 +1,7 @@
 <template>
   <Loading v-if="loading" />
   <div class="flex col flex1 reset-overflows" v-else>
-    <!-- copy bar-->
+    <!-- copy bar -->
     <div
       class="session-content__action-bar flex align-center gap-medium"
       v-if="this.selectedTurns.length > 0">
@@ -44,41 +44,9 @@
       </IsMobile>
     </div>
 
-    <!-- content if live transcript is disabled -->
-
-    <div
-      v-if="!liveTranscript"
-      class="flex align-center justify-center flex1 col center-text">
-      <h2>{{ $t("session.detail_page.live_transcript_disabled.title") }}</h2>
-      <p>
-        {{ $t("session.detail_page.live_transcript_disabled.description") }}
-      </p>
-      <div class="flex gap-medium" v-if="fromMicrophone">
-        <Button
-          v-if="isRecording"
-          @click="toggleMicrophone"
-          :title="$t('quick_session.live.pause_button')"
-          :aria-label="$t('quick_session.live.pause_button')"
-          icon="pause"></Button>
-        <Button
-          v-else
-          @click="toggleMicrophone"
-          :title="$t('quick_session.live.start_button')"
-          :aria-label="$t('quick_session.live.start_button')"
-          icon="play"></Button>
-
-        <Button
-          @click="onSave"
-          :title="$t('quick_session.live.save_button')"
-          :aria-label="$t('quick_session.live.save_button')"
-          icon="stop"></Button>
-      </div>
-    </div>
-
     <!-- content live -->
-
     <div
-      v-else-if="hasText"
+      v-if="hasText"
       class="flex col flex1 session-content__turns reset-overflows"
       :class="{ has_subtitles: displaySubtitles }">
       <SessionChannelTurn
@@ -114,6 +82,8 @@
 
       <div ref="bottom"></div>
     </div>
+
+    <!-- Placeholder waiting transcription -->
     <div
       v-else
       class="flex align-center justify-center flex1 col center-text gap-medium">
@@ -371,6 +341,11 @@ export default {
     },
     shouldDisplayTurn(turn) {
       const hasSpeaker = !!turn.locutor
+
+      if (turn?.locutor == "bot") {
+        return false
+      }
+
       if (
         this.hasDiarization &&
         this.selectedTranslations === "original" &&

@@ -11,14 +11,14 @@
   // @import "mobile/text.scss";
 
   body {
-    --font-family: "Arial", "sans-serif";
+    --font-family: "Arial", "Noto Sans", "sans-serif";
     --font-size: 15px;
     --blue-chart: #3860ed;
     --red-chart: #fe346e;
 
     --primary-color: #3860ed;
     --primary-hard: #3860ed;
-    --primary-soft: #eef2ff;
+    --primary-soft: oklch(0.948 0.021 266.7);
     --primary-contrast: #fff;
   }
 

@@ -28,7 +28,7 @@
     <div v-else class="flex col">
       <!-- SELECTION MICRO-->
       <section class="flex col gap-small">
-        <div class="form-field flex col medium-margin-top">
+        <div class="form-field flex col">
           <label for="microphone-selection">{{
             $t("quick_session.setup_microphone.microphone_select_label")
           }}</label>
@@ -73,7 +73,9 @@
       </section>
     </div>
 
-    <div class="flex medium-margin-top gap-small" v-if="!recover">
+    <div
+      class="flex medium-margin-top gap-small"
+      v-if="!recover && !waitingPermission && !error">
       <button class="btn secondary setup-microphone-back" @click="trashSession">
         <span class="icon back"></span>
         <span class="label">{{
@@ -82,6 +84,7 @@
       </button>
       <div class="flex1"></div>
       <button
+        v-if="!noCancel"
         class="btn secondary setup-microphone-cancel"
         @click="trashSession">
         <span class="label">{{ $t("modal.cancel") }}</span>
@@ -95,7 +98,9 @@
         @click="setupSession" />
     </div>
 
-    <div class="flex medium-margin-top gap-small" v-else>
+    <div
+      class="flex medium-margin-top gap-small"
+      v-else-if="recover && !waitingPermission && !error">
       <button class="btn secondary" @click="trashSession">
         <ph-icon name="trash"></ph-icon>
         <span class="label">
@@ -138,6 +143,10 @@ export default {
     applyLabel: {
       type: String,
       required: false,
+    },
+    noCancel: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

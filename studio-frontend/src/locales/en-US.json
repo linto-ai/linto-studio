@@ -156,6 +156,8 @@
     "overview": "Overview",
     "publish": "Publish",
     "quickSession": "Quick session",
+    "quickSession_microphone": "Recording",
+    "quickSession_visio": "Videoconference recording",
     "sessions": "Sessions",
     "sessionSettings": "Settings",
     "settings": "{organization} Settings",
@@ -1113,6 +1115,7 @@
     "end_undefined": "Not defined",
     "room_undefined": "Place not defined",
     "microphone_apply_button": "Record microphone",
+    "microphone_setup_title": "Microphone setup",
     "record_to_chanel_name_info": "To \"{name}\"",
     "list_page": {
       "no_sessions": "No sessions found",
@@ -1284,13 +1287,32 @@
       "status_no_websocket": "Not connected to audio server",
       "status_recording": "Recording microphone",
       "status_muted": "Microphone is muted",
-      "save_button": "Save and quit",
+      "save_button": "Stop microphone recording",
       "pause_button": "Pause",
-      "start_button": "Start"
+      "start_button": "Start",
+      "start_microphone_button": "Unmute microphone",
+      "mute_microphone_button": "Mute microphone"
     },
     "live_visio": {
       "default_name": "Untitle {type} meeting",
       "status_recording_visio": "Recording videoconference"
+    },
+    "modal_save": {
+      "title": "Save the recording",
+      "name": "Name",
+      "confirm": "Save"
+    },
+    "notif": {
+      "visio": {
+        "title": "A videoconference is being recorded.",
+        "continue_button": "Show transcript",
+        "stop_button": "Save and stop recording"
+      },
+      "default": {
+        "title": "A recording is pending",
+        "continue_button": "Resume recording",
+        "stop_button": "Save and stop recording"
+      }
     }
   },
   "share_menu": {

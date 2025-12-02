@@ -6,7 +6,7 @@
       </h1>
     </div> -->
     <SessionChannel
-      v-if="isConnected"
+      v-if="isConnected && isChannelLive"
       @closeSubtitleFullscreen="closeSubtitleFullscreen"
       :password="password"
       :showSubtitlesFullscreen="showSubtitlesFullscreen"
@@ -18,7 +18,7 @@
       :displaySubtitles="displaySubtitles"
       :displayLiveTranscription="displayLiveTranscription"
       :isBottom="isBottom"
-      fromMicrophone
+      :fromMicrophone="fromMicrophone"
       @toggleMicrophone="$emit('toggleMicrophone')"
       @onSave="$emit('onSave')"
       :watermarkFrequency="watermarkFrequency"
@@ -28,6 +28,15 @@
       :displayWatermark="displayWatermark"
       :websocketInstance="websocketInstance"
       :isRecording="isRecording"></SessionChannel>
+    <SessionChannelMicrophoneOffline
+      v-else-if="isConnected && !isChannelLive && !fromVisio"
+      :channel="selectedChannel"
+      :speaking="speaking"
+      @toggleMicrophone="$emit('toggleMicrophone')"
+      :isRecording="isRecording" />
+    <SessionChannelVisioOffline
+      v-else-if="isConnected && !isChannelLive && fromVisio"
+      :channel="selectedChannel" />
     <Loading v-else></Loading>
   </div>
 </template>
@@ -39,6 +48,8 @@ import { sessionChannelModelMixin } from "../mixins/sessionChannelModel.js"
 
 import SessionChannel from "@/components/SessionChannel.vue"
 import Loading from "@/components/atoms/Loading.vue"
+import SessionChannelMicrophoneOffline from "@/components/SessionChannelMicrophoneOffline.vue"
+import SessionChannelVisioOffline from "./SessionChannelVisioOffline.vue"
 
 export default {
   mixins: [sessionModelMixin, sessionChannelModelMixin],
@@ -100,9 +111,19 @@ export default {
       required: false,
       default: false,
     },
+    fromVisio: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     // instance of ApiEventWebSocket
     websocketInstance: {
       required: true,
+    },
+    speaking: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   data() {
@@ -123,6 +144,9 @@ export default {
     title() {
       return this.customTitle ?? this.name
     },
+    isChannelLive() {
+      return this.selectedChannel?.enableLiveTranscripts
+    },
   },
   methods: {
     async init() {
@@ -139,6 +163,12 @@ export default {
       this.$emit("closeSubtitleFullscreen")
     },
   },
-  components: { Fragment, SessionChannel, Loading },
+  components: {
+    Fragment,
+    SessionChannel,
+    Loading,
+    SessionChannelMicrophoneOffline,
+    SessionChannelVisioOffline,
+  },
 }
 </script>

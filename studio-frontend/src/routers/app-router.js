@@ -8,7 +8,6 @@ import { setCookie } from "@/tools/setCookie"
 import { apiLoginUserMagicLink } from "@/api/user"
 import { apiGetUserRightFromConversation } from "@/api/conversation"
 import PUBLIC_ROUTES from "../const/publicRoutes"
-import { apiGetQuickSession } from "@/api/session.js"
 import { logout } from "../tools/logout"
 import { customDebug } from "@/tools/customDebug.js"
 
@@ -117,22 +116,11 @@ const authGuards = {
   },
 
   async checkQuickSession(to) {
-    const enableSession = getEnv("VUE_APP_ENABLE_SESSION") === "true"
-
-    if (enableSession && to.name !== "quick session") {
-      const quickSession = await apiGetQuickSession()
-      if (quickSession) {
-        return {
-          redirect: true,
-          nextRoute: {
-            name: "quick session",
-            params: { organizationId: quickSession.organizationId },
-            query: { recover: "true" },
-          },
-        }
-      }
+    await store.dispatch("quickSession/loadQuickSession")
+    const quickSession = store.getters["quickSession/quickSession"]
+    if (!quickSession && to.name === "quick session") {
+      return { redirect: true, nextRoute: { name: "not_found" } }
     }
-
     return { redirect: false }
   },
 
@@ -898,7 +886,6 @@ router.beforeEach(async (to, from, next) => {
     // Check for quick session
     const quickSessionResult = await authGuards.checkQuickSession(to)
     if (quickSessionResult.redirect) {
-      routerDebug("Quick session found > redirect to quick session")
       return next(quickSessionResult.nextRoute)
     }
 
