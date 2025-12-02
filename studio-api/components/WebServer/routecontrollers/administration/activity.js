@@ -1,7 +1,8 @@
 const debug = require("debug")(
-  "linto:conversation-manager:components:WebServer:routecontrollers:administration:loggin",
+  "linto:conversation-manager:components:WebServer:routecontrollers:administration:activity",
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
+const kpiHandler = require("../../controllers/activity/kpiHandlers")
 
 async function getActivity(req, res, next) {
   try {
@@ -150,9 +151,45 @@ async function generateKpi(req, res, next) {
   }
 }
 
+async function generateDailyKpi(req, res, next) {
+  try {
+    // let orgaIds = await model.activityLog.findOrganizationsWithActivity()
+    let daily = []
+    let orgaId = req.params.organizationId
+    // await orgaIds.map(async (orgaId) => {
+    daily = await kpiHandler.getLast7DaysKpi(orgaId)
+
+    res.status(201).send({ message: "Daily KPI generated successfully", daily })
+    // })
+
+    // res.status(201).send({ message: "Daily KPI generated successfully" })
+  } catch (err) {
+    next(err)
+  }
+}
+
+async function generateMonthlyKpi(req, res, next) {
+  try {
+    // let orgaIds = await model.activityLog.findOrganizationsWithActivity()
+    let monthly = []
+    let orgaId = req.params.organizationId
+    // await orgaIds.map(async (orgaId) => {
+    monthly = await kpiHandler.getLast12MonthsKpi(orgaId)
+    res
+      .status(201)
+      .send({ message: "Daily KPI generated successfully", monthly })
+    // })
+
+    // res.status(201).send({ message: "Daily KPI generated successfully" })
+  } catch (err) {
+    next(err)
+  }
+}
 module.exports = {
   getActivity,
   getKpiByActivity,
   getKpiBySession,
   generateKpi,
+  generateDailyKpi,
+  generateMonthlyKpi,
 }
