@@ -1,4 +1,11 @@
+import { customDebug } from "@/tools/customDebug.js"
+
 export const mediaProgressMixin = {
+  data() {
+    return {
+      progressDebug: customDebug("vue:debug:mediaProgress"),
+    }
+  },
   methods: {
     computeStatus(job) {
       if (!job) return "pending"
@@ -24,7 +31,14 @@ export const mediaProgressMixin = {
             steps?.postprocessing?.status === "StepState.STARTED":
             return "postprocessing"
           default:
-            return job.state
+            if (job.state === "started") {
+              this.progressDebug(
+                "Job is started but step is unknown",
+                JSON.parse(JSON.stringify(steps)),
+              )
+              throw new Error("Job is started but step is unknown")
+            }
+            return job.state ?? "pending" // should be "pending", "done" or "error", "started" state should be handled above
         }
       }
     },

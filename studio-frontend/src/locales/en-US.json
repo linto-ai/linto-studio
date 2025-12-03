@@ -767,7 +767,15 @@
     "no_medias_selected": "No media selected",
     "some_medias_cannot_be_deleted": "Some media cannot be deleted",
     "no_permission_to_delete": "You don't have permission to delete these media",
-    "processing_error_message": "The automatic transcription of the media encountered an error"
+    "processing_error_message": "The automatic transcription of the media encountered an error",
+    "status": {
+      "preprocessing": "Preprocessing",
+      "transcription": "Transcription",
+      "diarization": "Speakers split",
+      "punctuation": "Punctuation",
+      "postprocessing": "Postprocessing",
+      "pending": "Pending"
+    }
   },
   "modal": {
     "apply": "Apply",
