@@ -8,6 +8,7 @@ export const mediaProgressMixin = {
   },
   methods: {
     computeStatus(job) {
+      console.log(JSON.parse(JSON.stringify(job)))
       if (!job) return "pending"
       if (job.state === "done" || job.state === "error") {
         return job.state
@@ -36,11 +37,11 @@ export const mediaProgressMixin = {
                 "Job is started but step is unknown",
                 JSON.parse(JSON.stringify(steps)),
               )
-              throw new Error("Job is started but step is unknown")
+              return "pending"
             }
-            return job.state ?? "pending" // should be "pending", "done" or "error", "started" state should be handled above
         }
       }
+      return job.state ?? "pending" // should be "pending"
     },
   },
   computed: {
