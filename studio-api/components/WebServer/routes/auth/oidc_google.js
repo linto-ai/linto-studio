@@ -13,12 +13,14 @@ module.exports = (webServer) => {
       path: "/oidc/google/login",
       method: "get",
       requireAuth: false,
+      requireSession: true,
       controller: [auth_middleware.oidc_google_authenticate],
     },
     {
       path: "/oidc/google/cb",
       method: "get",
       requireAuth: false,
+      requireSession: true,
       controller: [
         (req, res, next) => {
           passport.authenticate("google", { session: false }, (err, token) => {
