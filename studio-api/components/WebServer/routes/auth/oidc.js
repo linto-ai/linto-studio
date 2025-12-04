@@ -15,14 +15,12 @@ module.exports = (webServer) => {
       path: "/oidc/login",
       method: "get",
       requireAuth: false,
-      requireSession: true,
       controller: [auth_middleware.oidc_authenticate],
     },
     {
       path: "/oidc/cb",
       method: "get",
       requireAuth: false,
-      requireSession: true,
       controller: [
         (req, res, next) => {
           passport.authenticate(

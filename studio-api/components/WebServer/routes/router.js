@@ -67,7 +67,6 @@ const disableAuthIfDev = (route) => {
 const loadMiddlewares = (route) => {
   const middlewares = []
 
-  if (route.requireSession) middlewares.push(sessionMiddleware)
   if (route.requireAuth) middlewares.push(auth_middlewares.isAuthenticate)
   if (route.requireRefresh) middlewares.push(auth_middlewares.refresh_token)
 
