@@ -122,7 +122,13 @@ async function initCaptionsForConversation(sessionData, name) {
         }
       }
 
-      if (!channel.closedCaptions) continue
+      if (
+        !channel.closedCaptions ||
+        channel.closedCaptions.every((cc) => cc.locutor === "bot")
+      ) {
+        continue
+      }
+
       const caption = initializeCaption(
         session,
         channel,
