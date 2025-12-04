@@ -98,7 +98,7 @@ const actions = {
         organizationId:
           rootGetters["organizations/getCurrentOrganizationScope"],
       },
-      query: { t: Date.now() },
+      query: { t: Date.now(), status: "processing" },
     })
     commit("setQuickSession", null)
     commit("setQuickSessionBot", null)

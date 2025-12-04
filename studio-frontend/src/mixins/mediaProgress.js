@@ -8,7 +8,6 @@ export const mediaProgressMixin = {
   },
   methods: {
     computeStatus(job) {
-      console.log(JSON.parse(JSON.stringify(job)))
       if (!job) return "pending"
       if (job.state === "done" || job.state === "error") {
         return job.state
