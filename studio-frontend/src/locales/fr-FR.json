@@ -184,6 +184,10 @@
     "audio_file_upload_label": "Choisir un fichier...",
     "audio_file_upload_label_multiple": "Choisir un ou plusieurs fichiers...",
     "back_conversation_button": "Synthèse du média",
+    "channel": {
+      "live_transcription": "Transcription en direct",
+      "offline_transcription": "Transcription après l'enregistrement"
+    },
     "close_editor": "Fermer l'éditeur",
     "close_publish": "Fermer",
     "conversation_creation_button": {

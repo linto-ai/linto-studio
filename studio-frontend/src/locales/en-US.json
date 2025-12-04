@@ -184,6 +184,10 @@
     "audio_file_upload_label": "Choose a file...",
     "audio_file_upload_label_multiple": "Choose one or multiple files...",
     "back_conversation_button": "Media overview",
+    "channel": {
+      "live_transcription": "Live transcription",
+      "offline_transcription": "Offline transcription"
+    },
     "close_editor": "Close editor",
     "close_publish": "Close",
     "conversation_creation_button": {

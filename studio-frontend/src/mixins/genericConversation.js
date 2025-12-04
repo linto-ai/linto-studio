@@ -97,6 +97,7 @@ export const genericConversationMixin = {
         "name",
         "type.mode",
         "locale",
+        "metadata.transcription",
       ])
 
       const childsType = childs.map((child) => child.type.mode)
