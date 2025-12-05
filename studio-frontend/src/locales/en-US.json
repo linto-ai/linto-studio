@@ -2,6 +2,21 @@
   "accoustic": {
     "standard": "Regular"
   },
+  "activity_list": {
+    "scope_label": "Scope",
+    "level_label": "Level",
+    "http_method_label": "Method",
+    "http_endpoint_label": "URL",
+    "http_status_label": "Status",
+    "organization_name_label": "Organisation",
+    "organization_role_label": "Role",
+    "user_email_label": "Email",
+    "platform_role_label": "Platform role",
+    "session_name_label": "Session name",
+    "session_id_label": "Session Id",
+    "watch_time_label": "Watch time",
+    "connection_count_label": "Connection count"
+  },
   "appointment_selector": {
     "date_label": "Date",
     "start_time_label": "Start time",
@@ -92,8 +107,7 @@
       "transcriberProfiles": "Transcriber Profiles"
     },
     "activity_list": {
-      "title": "Activity log",
-      "scope_label": "Scope"
+      "title": "Activity log"
     },
     "user_list": {
       "title": "Users",

@@ -119,6 +119,13 @@ export default {
     currentPageNb() {
       this.debouncedFetchData()
     },
+    fetchMethod() {
+      if (this.currentPageNb == 0) {
+        this.debouncedFetchData()
+      } else {
+        this.currentPageNb = 0
+      }
+    },
   },
   components: { GenericTable, Pagination },
 }

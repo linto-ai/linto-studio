@@ -67,26 +67,21 @@
   }
 
   .horizontal-tabs-secondary {
+    border-bottom: var(--border-block);
+    margin-bottom: 0.5rem;
+
     .tab {
-      border-bottom: var(--border-block);
-      padding: calc(0.25rem + 1px) calc(1rem + 1px);
-
       cursor: pointer;
-
+      padding: 0.5rem;
+      //padding-bottom: 1rem;
+      border-bottom: 1px solid transparent;
+      font-weight: 600;
       color: var(--text-secondary);
-      font-size: 14px;
-      font-weight: 500;
     }
 
     .tab[selected] {
-      border: var(--border-block);
-      border-bottom: 0px solid;
-      padding-bottom: calc(0.25rem + 2px);
-      padding-top: calc(0.25rem + 0px);
-      padding-left: calc(1rem + 0px);
-      padding-right: calc(1rem + 0px);
-      //border-top-color: var(--primary-color);
-      background-color: var(--background-inset-section);
+      color: var(--text-primary);
+      border-color: var(--neutral-100);
     }
   }
 

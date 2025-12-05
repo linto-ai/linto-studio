@@ -3,7 +3,7 @@
     <GenericTableCell
       v-for="column in columns"
       :key="column.key"
-      :value="line[column.key]"
+      :value="getNestedProperty(line, column.key)"
       :transformValue="column.transformValue">
       <template
         #default="defaultProps"
@@ -16,6 +16,7 @@
 <script>
 import { bus } from "@/main.js"
 import GenericTableCell from "./GenericTableCell.vue"
+import getNestedProperty from "@/tools/getNestedProperty"
 export default {
   props: {
     line: {
@@ -31,7 +32,11 @@ export default {
     return {}
   },
   mounted() {},
-  methods: {},
+  methods: {
+    getNestedProperty(obj, path) {
+      return getNestedProperty(obj, path)
+    },
+  },
   computed: {},
   components: { GenericTableCell },
 }

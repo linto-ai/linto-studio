@@ -39,7 +39,7 @@ export async function apiGetHttpActivityLogs(page = 0, args) {
 }
 
 export async function apiGetSessionActivityLogs(page = 0, args) {
-  return await apiGetActivityLogs(page, { ...args, source: "session" })
+  return await apiGetActivityLogs(page, { ...args, source: "socketio" })
 }
 
 export async function apiGetAllOrganizations(
