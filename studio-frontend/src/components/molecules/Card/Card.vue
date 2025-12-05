@@ -44,7 +44,7 @@ export default {
 
 <style lang="scss" scoped>
 .card {
-  background-color: var(--background-secondary);
+  background-color: var(--background-primary);
   border-radius: 4px;
   padding: 1em;
   color: var(--neutral-100);

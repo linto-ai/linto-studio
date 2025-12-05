@@ -1,4 +1,4 @@
-const debug = require("debug")("linto:conversation-manager:routes:auth")
+const debug = require("debug")("linto:conversation-manager:routes:auth:local")
 
 const { logout, recoveryAuth } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/users/users.js`,

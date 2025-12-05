@@ -13,6 +13,7 @@ export const sessionMicrophoneMixin = {
   },
   methods: {
     onClose() {
+      this.debugSessionMicrophone("Closing microphone")
       if (this.channelAudioWebsocket?.close) {
         this.channelAudioWebsocket.close()
       }
@@ -31,16 +32,16 @@ export const sessionMicrophoneMixin = {
       event.returnValue = ""
     },
     async setupRecording(channel) {
+      this.debugSessionMicrophone("Start recording")
       window.addEventListener("beforeunload", this.onbeforeunload)
       await this.connectToMicrophone(this.deviceId)
-      this.connectToChannelAudioWebsocket(channel)
-        .then(() => {
-          this.debugSessionMicrophone("Connected to websocket")
-          this.setupRecordRaw()
-        })
-        .catch((error) => {
-          console.error("Error while connecting to websocket", error)
-        })
+      try {
+        await this.connectToChannelAudioWebsocket(channel)
+        this.debugSessionMicrophone("Connected to websocket")
+        this.setupRecordRaw()
+      } catch (error) {
+        console.error("Error while connecting to websocket", error)
+      }
     },
     async connectToChannelAudioWebsocket(channel) {
       const initMessage = {
@@ -65,6 +66,14 @@ export const sessionMicrophoneMixin = {
     toggleMicrophone() {
       if (this.channelAudioWebsocket?.state?.isConnected) {
         this.isRecording = !this.isRecording
+      }
+    },
+    pauseMicrophone() {
+      this.isRecording = false
+    },
+    startMicrophone() {
+      if (this.channelAudioWebsocket?.state?.isConnected) {
+        this.isRecording = true
       }
     },
   },

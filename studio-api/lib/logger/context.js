@@ -72,7 +72,7 @@ function defineScope(url = "") {
   if (!url) return "unknown"
 
   const parts = url.toLowerCase().split("/").filter(Boolean)
-
+  if (parts[0] === "auth") return "authenticate"
   if (parts[1] === "administration" || parts[1] === "transcriber_profiles")
     return "platform"
   if (parts[1] === "sessions") return "resource"

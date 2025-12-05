@@ -656,7 +656,7 @@ export default {
     align-items: center;
     justify-content: space-between;
     padding: 0.75rem;
-    background-color: var(--background-secondary);
+    background-color: var(--background-primary);
     border-radius: var(--border-radius-sm);
     border: 1px solid var(--neutral-50);
     transition: all 0.2s ease;

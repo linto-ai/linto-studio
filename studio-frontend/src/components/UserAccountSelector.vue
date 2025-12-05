@@ -197,7 +197,7 @@ export default {
     color: var(--text-secondary);
     white-space: nowrap;
     font-weight: 400;
-    text-transform: lowercase;
+    //text-transform: lowercase;
     font-size: 0.9em;
 
     @media (max-width: 1100px) {

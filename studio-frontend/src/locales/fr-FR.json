@@ -161,7 +161,9 @@
     "organizations": "Organisations",
     "overview": "Synthèse",
     "publish": "Publication",
-    "quickSession": "Session rapide",
+    "quickSession": "Enregistrement rapide",
+    "quickSession_microphone": "Enregistrement",
+    "quickSession_visio": "Enregistrement d'une visioconférence",
     "sessions": "Sessions",
     "sessionSettings": "Paramètres",
     "settings": "Paramètres de {organization}",
@@ -188,6 +190,10 @@
     "audio_file_upload_label": "Choisir un fichier...",
     "audio_file_upload_label_multiple": "Choisir un ou plusieurs fichiers...",
     "back_conversation_button": "Synthèse du média",
+    "channel": {
+      "live_transcription": "Transcription en direct",
+      "offline_transcription": "Transcription après l'enregistrement"
+    },
     "close_editor": "Fermer l'éditeur",
     "close_publish": "Fermer",
     "conversation_creation_button": {
@@ -778,7 +784,15 @@
     "no_medias_selected": "Aucun média sélectionné",
     "some_medias_cannot_be_deleted": "Certains médias ne peuvent pas être supprimés",
     "no_permission_to_delete": "Vous n'avez pas la permission de supprimer ces médias",
-    "processing_error_message": "La transcription automatique du média a rencontré une erreur"
+    "processing_error_message": "La transcription automatique du média a rencontré une erreur",
+    "status": {
+      "preprocessing": "Pre-traitement",
+      "transcription": "Transcription",
+      "diarization": "Séparation des locuteurs",
+      "punctuation": "Ponctuation",
+      "postprocessing": "Post-traitement",
+      "pending": "En attente"
+    }
   },
   "modal": {
     "apply": "Appliquer",
@@ -1124,6 +1138,7 @@
     "end_undefined": "Non définie",
     "room_undefined": "Lieu non défini",
     "microphone_apply_button": "Enregistrer le microphone",
+    "microphone_setup_title": "Configuration du microphone",
     "record_to_chanel_name_info": "Vers \"{name}\"",
     "list_page": {
       "no_sessions": "Aucune session trouvée",
@@ -1291,14 +1306,34 @@
       "default_name": "Enregistrement sans titre",
       "status_no_websocket": "Déconnecté du serveur audio",
       "status_recording": "Microphone en cours d'enregistrement",
-      "status_muted": "Muet",
-      "save_button": "Sauvegarder et quitter",
+      "status_muted": "L'enregistrement du microphone est en pause",
+      "save_button": "Terminer l'enregistrement",
       "pause_button": "Pause",
-      "start_button": "Démarrer"
+      "start_button": "Démarrer",
+      "start_microphone_button": "Reprendre l'enregistrement",
+      "mute_microphone_button": "Mettre en pause l'enregistrement"
     },
     "live_visio": {
       "default_name": "Réunion {type} sans titre",
-      "status_recording_visio": "Enregistrement de la visio-conférence en cours"
+      "status_recording_visio": "La visioconférence est en cours d’enregistrement",
+      "status_recording_visio_description": "Vous pouvez quitter cette page, l’enregistrement continue en arrière plan"
+    },
+    "notif": {
+      "visio": {
+        "title": "Une visioconférence est en cours d'enregistrement",
+        "continue_button": "Afficher la transcription",
+        "stop_button": "Sauvegarder et arrêter l'enregistrement"
+      },
+      "default": {
+        "title": "Un enregistrement est en attente",
+        "continue_button": "Reprendre l'enregistrement",
+        "stop_button": "Sauvegarder et arrêter l'enregistrement"
+      }
+    },
+    "modal_save": {
+      "title": "Sauvegarder l'enregistrement",
+      "name": "Nom",
+      "confirm": "Enregistrer"
     }
   },
   "share_menu": {

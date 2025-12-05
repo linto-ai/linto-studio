@@ -117,7 +117,7 @@
           v-bind:selectedChannel.sync="selectedChannel"
           v-bind:selectedTranslation.sync="selectedTranslation" />
       </IsMobile>
-      <ModalNew
+      <Modal
         :withActions="false"
         title="Setup microphone"
         v-model="showMicrophoneSetup"
@@ -126,9 +126,9 @@
           :applyLabel="$t('session.microphone_apply_button')"
           @start-session="startRecordFromMicrophone"
           @trash-session="cancelRecordSettings"></SessionSetupMicrophone>
-      </ModalNew>
+      </Modal>
 
-      <ModalNew
+      <Modal
         @submit="fecthSessionWithPassword"
         v-model="waitingPassword"
         :withClose="false"
@@ -138,7 +138,7 @@
         :textActionApply="$t('session.password_modal.apply')"
         :title="$t('session.password_modal.title')">
         <FormInput :field="passwordField" v-model="passwordField.value" />
-      </ModalNew>
+      </Modal>
     </div>
   </LayoutV2>
 </template>
@@ -161,7 +161,7 @@ import Loading from "@/components/atoms/Loading.vue"
 import SessionEnded from "@/components/SessionEnded.vue"
 import SessionStatus from "@/components/SessionStatus.vue"
 import SessionLiveToolbar from "@/components/SessionLiveToolbar.vue"
-import ModalNew from "@/components/molecules/Modal.vue"
+import Modal from "@/components/molecules/Modal.vue"
 import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
 import SessionLiveMicrophoneStatus from "@/components/SessionLiveMicrophoneStatus.vue"
 import SessionHeader from "@/components/SessionHeader.vue"
@@ -291,7 +291,7 @@ export default {
     Loading,
     SessionEnded,
     SessionStatus,
-    ModalNew,
+    Modal,
     SessionSetupMicrophone,
     SessionLiveMicrophoneStatus,
     SessionDropdownChannelSelector,

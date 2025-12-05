@@ -1,4 +1,11 @@
+import { customDebug } from "@/tools/customDebug.js"
+
 export const mediaProgressMixin = {
+  data() {
+    return {
+      progressDebug: customDebug("vue:debug:mediaProgress"),
+    }
+  },
   methods: {
     computeStatus(job) {
       if (!job) return "pending"
@@ -24,9 +31,16 @@ export const mediaProgressMixin = {
             steps?.postprocessing?.status === "StepState.STARTED":
             return "postprocessing"
           default:
-            return job.state
+            if (job.state === "started") {
+              this.progressDebug(
+                "Job is started but step is unknown",
+                JSON.parse(JSON.stringify(steps)),
+              )
+              return "pending"
+            }
         }
       }
+      return job.state ?? "pending" // should be "pending"
     },
   },
   computed: {
@@ -73,9 +87,9 @@ export const mediaProgressMixin = {
     // progress with 2 numbers and no decimal
     progressDisplay() {
       const integer = Math.floor(this.progress)
-      if (integer < 10) {
-        return `0${integer}%`
-      }
+      // if (integer < 10) {
+      //   return `0${integer}%`
+      // }
       return `${integer}%`
     },
   },

@@ -17,7 +17,7 @@
   .session-content__turns {
     container-type: inline-size;
     container-name: session-content;
-    gap: 0.75em;
+    //gap: 0.75em;
     margin-top: 1rem;
   }
 
@@ -33,34 +33,6 @@
     box-sizing: border-box;
     padding: 0.5rem 2rem;
     //margin-bottom: 1rem;
-  }
-
-  .channel-turn {
-    display: grid;
-    grid-template-columns: auto 60em;
-    margin-inline: auto;
-    gap: 1em;
-  }
-
-  @container session-content (max-width: 70em) {
-    .channel-turn {
-      grid-template-columns: auto 1fr;
-      margin-inline: 1rem;
-    }
-  }
-
-  .channel-turn__text {
-    text-align: justify;
-    font-family: luciole;
-    line-height: 1.3em;
-    padding: calc(0.25rem + 1px);
-  }
-
-  .channel-turn__text[selected] {
-    border: 1px solid var(--primary-color);
-    background-color: var(--selected-background);
-    padding: calc(0.25rem + 0px);
-    border-radius: 3px;
   }
 
   // not supported in firefox ESR (2024 / v121), so we need js code

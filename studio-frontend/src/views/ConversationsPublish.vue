@@ -265,7 +265,7 @@ export default {
     breadcrumbItems() {
       return [
         {
-          label: this.conversation?.name ?? "",
+          label: this.rootConversation?.name ?? "",
           // to: {
           //   name: "conversations overview",
           //   params: { conversationId: this.conversationId },

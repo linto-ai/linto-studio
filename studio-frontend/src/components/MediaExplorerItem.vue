@@ -53,13 +53,14 @@
             class="media-explorer-item__type-icon" />
         </Tooltip>
 
-        <span
+        <!-- <span
           class="media-explorer-item__percentage"
           v-if="status !== 'done' && status !== 'error'">
           {{ progressDisplay }}
-        </span>
+        </span> -->
 
         <Tooltip
+          v-if="status === 'error'"
           :text="$t('media_explorer.processing_error_message')"
           position="bottom">
           <ph-icon
@@ -78,6 +79,11 @@
             size="sm"
             class="media-explorer-item__owner" />
         </Tooltip>
+
+        <MediaExplorerChipStatus
+          v-if="status !== 'done' && status !== 'error'"
+          :status="status"
+          :progress="progress" />
 
         <!-- Main content area with title and metadata -->
         <div
@@ -174,6 +180,7 @@ import { userName } from "@/tools/userName"
 import userAvatar from "@/tools/userAvatar"
 
 import { PhStar } from "phosphor-vue"
+import MediaExplorerChipStatus from "./MediaExplorerChipStatus.vue"
 
 export default {
   mixins: [mediaScopeMixin, mediaProgressMixin],
@@ -185,6 +192,7 @@ export default {
     MediaExplorerItemTags,
     ModalDeleteConversations,
     PopoverList,
+    MediaExplorerChipStatus,
   },
   props: {
     media: {
@@ -529,6 +537,7 @@ export default {
   // border: var(--border-button);
   font-weight: bold;
   font-size: 14px;
+  width: 2rem;
   //border: 1px solid var(--neutral-40);
 }
 

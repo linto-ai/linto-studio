@@ -61,6 +61,10 @@
     }
   }
 
+  .form-field > label:has(+ select) {
+    margin-bottom: 0.5rem;
+  }
+
   textarea {
     font-family: var(--font-family);
     font: inherit;

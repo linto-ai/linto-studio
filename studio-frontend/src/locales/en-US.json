@@ -162,6 +162,8 @@
     "overview": "Overview",
     "publish": "Publish",
     "quickSession": "Quick session",
+    "quickSession_microphone": "Recording",
+    "quickSession_visio": "Videoconference recording",
     "sessions": "Sessions",
     "sessionSettings": "Settings",
     "settings": "{organization} Settings",
@@ -188,6 +190,10 @@
     "audio_file_upload_label": "Choose a file...",
     "audio_file_upload_label_multiple": "Choose one or multiple files...",
     "back_conversation_button": "Media overview",
+    "channel": {
+      "live_transcription": "Live transcription",
+      "offline_transcription": "Offline transcription"
+    },
     "close_editor": "Close editor",
     "close_publish": "Close",
     "conversation_creation_button": {
@@ -771,7 +777,15 @@
     "no_medias_selected": "No media selected",
     "some_medias_cannot_be_deleted": "Some media cannot be deleted",
     "no_permission_to_delete": "You don't have permission to delete these media",
-    "processing_error_message": "The automatic transcription of the media encountered an error"
+    "processing_error_message": "The automatic transcription of the media encountered an error",
+    "status": {
+      "preprocessing": "Preprocessing",
+      "transcription": "Transcription",
+      "diarization": "Speakers split",
+      "punctuation": "Punctuation",
+      "postprocessing": "Postprocessing",
+      "pending": "Pending"
+    }
   },
   "modal": {
     "apply": "Apply",
@@ -1119,6 +1133,7 @@
     "end_undefined": "Not defined",
     "room_undefined": "Place not defined",
     "microphone_apply_button": "Record microphone",
+    "microphone_setup_title": "Microphone setup",
     "record_to_chanel_name_info": "To \"{name}\"",
     "list_page": {
       "no_sessions": "No sessions found",
@@ -1290,13 +1305,32 @@
       "status_no_websocket": "Not connected to audio server",
       "status_recording": "Recording microphone",
       "status_muted": "Microphone is muted",
-      "save_button": "Save and quit",
+      "save_button": "Stop microphone recording",
       "pause_button": "Pause",
-      "start_button": "Start"
+      "start_button": "Start",
+      "start_microphone_button": "Unmute microphone",
+      "mute_microphone_button": "Mute microphone"
     },
     "live_visio": {
       "default_name": "Untitle {type} meeting",
       "status_recording_visio": "Recording videoconference"
+    },
+    "modal_save": {
+      "title": "Save the recording",
+      "name": "Name",
+      "confirm": "Save"
+    },
+    "notif": {
+      "visio": {
+        "title": "A videoconference is being recorded.",
+        "continue_button": "Show transcript",
+        "stop_button": "Save and stop recording"
+      },
+      "default": {
+        "title": "A recording is pending",
+        "continue_button": "Resume recording",
+        "stop_button": "Save and stop recording"
+      }
     }
   },
   "share_menu": {

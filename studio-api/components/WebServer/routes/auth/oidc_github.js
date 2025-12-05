@@ -13,24 +13,29 @@ module.exports = (webServer) => {
       path: "/oidc/github/login",
       method: "get",
       requireAuth: false,
-      requireSession: true,
       controller: [auth_middleware.oidc_github_authenticate],
     },
     {
       path: "/oidc/github/cb",
       method: "get",
       requireAuth: false,
-      requireSession: true,
       controller: [
-        passport.authenticate("github", {
-          failureRedirect: (process.env.FRONTEND_DOMAIN || "") + "/login",
-        }),
-        function (req, res) {
-          res.redirect(
-            (process.env.FRONTEND_DOMAIN || "") +
+        (req, res, next) => {
+          passport.authenticate("github", { session: false }, (err, token) => {
+            const failureRedirect =
+              (process.env.FRONTEND_DOMAIN || "") + "/login"
+            if (err || !token) {
+              console.error(err)
+              return failureRedirect
+            }
+
+            const redirectUrl =
+              (process.env.FRONTEND_DOMAIN || "") +
               "/login/oidc?token=" +
-              req.session.passport.user.auth_token,
-          )
+              token.auth_token
+
+            res.redirect(redirectUrl)
+          })(req, res, next)
         },
       ],
     },

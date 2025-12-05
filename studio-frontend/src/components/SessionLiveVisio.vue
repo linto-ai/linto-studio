@@ -12,12 +12,21 @@
         quickSession />
     </template>
     <template v-slot:breadcrumb-actions>
-      <slot name="breadcrumb-actions"></slot>
+      <div class="flex1 flex gap-small align-center">
+        <div style="font-style: italic">({{ quickSessionBot?.url }})</div>
+        <div class="flex1"></div>
+        <Button
+          @click="$emit('onSave')"
+          :label="$t('quick_session.live.save_button')"
+          variant="primary"
+          size="sm" />
+      </div>
     </template>
     <SessionLiveContent
       :websocketInstance="$apiEventWS"
       :organizationId="currentOrganizationScope"
       displayLiveTranscription
+      fromVisio
       :session="session"
       :displaySubtitles="displaySubtitles"
       :displayLiveTranscription="displayLiveTranscription"
@@ -47,6 +56,10 @@ export default {
     },
     currentOrganizationScope: {
       type: String,
+      required: true,
+    },
+    quickSessionBot: {
+      type: Object,
       required: true,
     },
     // visioType: {
@@ -93,7 +106,7 @@ export default {
     breadcrumbItems() {
       return [
         {
-          label: this.$t("breadcrumb.quickSession"),
+          label: this.$t("breadcrumb.quickSession_visio"),
         },
       ]
     },

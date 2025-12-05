@@ -1,3 +1,14 @@
+# 1.6.1
+
+_2025_12_04_
+
+- Public sessions can now be password protected
+- User actions are now logged in the database
+- Live updating has been improved, with reconnection and better error handling
+- External dependencies have been updated to fix vulnerabilities
+- SSO functionality now uses an internal cookie-based system making the API sessionless
+- Improve microphone and videoconference recording interface
+
 # 1.6.0
 
 _2025_10_08_
