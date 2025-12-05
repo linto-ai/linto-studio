@@ -97,6 +97,8 @@ JWT_ALGORITHM=HS256
 LOCAL_AUTH_ENABLED=true
 
 # OIDC Type supported are : linagora
+SSO_ENCRYPTION_KEY=defaultEncryptionKeyChangeMe
+
 OIDC_TYPE=
 OIDC_ISSUER_URL=
 OIDC_URL=
