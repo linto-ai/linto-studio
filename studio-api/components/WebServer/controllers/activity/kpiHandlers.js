@@ -17,13 +17,13 @@ async function generateKpi(organizationId, startDate, endDate, scope) {
     transcription: (
       await kpiHandlers.transcription(organizationId, startDate, endDate)
     )[0],
-    scope,
   }
   return activityKpi
 }
 
 function getDayRange(dayOffset) {
-  const start = new Date("2025-11-20T17:17:51.671Z") // TODO: remove placeholder date for testing
+  // const start = new Date("2025-11-20T17:17:51.671Z") // TODO: remove placeholder date for testing
+  const start = new Date()
   start.setHours(0, 0, 0, 0)
   start.setDate(start.getDate() - dayOffset)
 
@@ -61,7 +61,7 @@ async function getLast7DaysKpi(organizationId) {
 
   for (let i = 6; i >= 0; i--) {
     const { startDate, endDate, date } = getDayRange(i)
-    const kpi = await generateKpi(organizationId, startDate, endDate, "daily")
+    const kpi = await generateKpi(organizationId, startDate, endDate)
     results.push({ date: date, ...kpi })
   }
   return results
@@ -72,7 +72,7 @@ async function getLast12MonthsKpi(organizationId) {
 
   for (let i = 11; i >= 0; i--) {
     const { startDate, endDate, date } = getMonthRange(i)
-    const kpi = await generateKpi(organizationId, startDate, endDate, "monthly")
+    const kpi = await generateKpi(organizationId, startDate, endDate)
     results.push({ date: date, ...kpi })
   }
 
