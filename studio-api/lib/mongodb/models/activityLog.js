@@ -5,14 +5,6 @@ function buildActivityMatchQuery(activity, orgaId, startDate, endDate) {
 
   if (startDate) timestampQuery.$gte = startDate
   if (endDate) timestampQuery.$lte = endDate
-  /*{
-          $match: {
-            activity: "llm",
-            ...(orgaId && { "organization.id": orgaId }),
-            // ...(timestamp && { timestamp: { $gte: new Date(timestamp) } }),
-            ...(timestamp && { timestamp: { $gte: timestamp } }),
-          },
-        },*/
 
   return {
     $match: {
