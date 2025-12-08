@@ -11,8 +11,6 @@ module.exports = (webServer) => {
     "/api/organizations": require("./api/organization/organizations")(
       webServer,
     ),
-    "/api/organizations/:organizationId/metrics":
-      require("./api/sessions/metrics.js")(webServer),
     "/api/organizations/:organizationId/categories":
       require("./api/organization/categories")(webServer),
     "/api/organizations/:organizationId/tags":

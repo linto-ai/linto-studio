@@ -4,14 +4,11 @@ const debug = require("debug")(
 
 const {
   getActivity,
-  getKpiByActivity,
+  getKpiByRessource,
   getKpiBySession,
-  getDailyKpi,
-  getMonthlyKpi,
-  generateDailyKpi,
-  generateMonthlyKpi,
-  generateOrgaDailyKpi,
-  generateOrgaMonthlyKpi,
+  getKpi,
+  generateKpi,
+  generateOrgaKpi,
 } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/administration/activity.js`,
 )
@@ -26,11 +23,11 @@ module.exports = (webserver) => {
       controller: getActivity,
     },
     {
-      path: "/activity/:activity/organization/:organizationId",
+      path: "/activity/organization/:organizationId",
       method: "get",
       requireAuth: true,
       requireSuperAdmin: true,
-      controller: getKpiByActivity,
+      controller: getKpiByRessource,
     },
     {
       path: "/activity/session/:sessionId",
@@ -40,46 +37,25 @@ module.exports = (webserver) => {
       controller: getKpiBySession,
     },
     {
-      path: "/activity/organization/:organizationId/daily",
+      path: "/activity/:interval",
       method: "get",
       requireAuth: true,
       requireSuperAdmin: true,
-      controller: generateOrgaDailyKpi,
+      controller: getKpi,
     },
     {
-      path: "/activity/organization/:organizationId/monthly",
-      method: "get",
-      requireAuth: true,
-      requireSuperAdmin: true,
-      controller: generateOrgaMonthlyKpi,
-    },
-    {
-      path: "/activity/daily",
-      method: "get",
-      requireAuth: true,
-      requireSuperAdmin: true,
-      controller: getDailyKpi,
-    },
-    {
-      path: "/activity/daily",
+      path: "/activity/:interval",
       method: "post",
       requireAuth: true,
       requireSuperAdmin: true,
-      controller: generateDailyKpi,
+      controller: generateKpi,
     },
     {
-      path: "/activity/monthly",
-      method: "post",
-      requireAuth: true,
-      requireSuperAdmin: true,
-      controller: generateMonthlyKpi,
-    },
-    {
-      path: "/activity/monthly",
+      path: "/activity/:interval/organization/:organizationId",
       method: "get",
       requireAuth: true,
       requireSuperAdmin: true,
-      controller: getMonthlyKpi,
+      controller: generateOrgaKpi,
     },
   ]
 }

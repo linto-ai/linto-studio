@@ -13,12 +13,12 @@ async function getActivity(req, res, next) {
   }
 }
 
-async function getKpiByActivity(req, res, next) {
+async function getKpiByRessource(req, res, next) {
   try {
-    const { organizationId, activity } = req.params
-    const { startDate, endDate } = req.query
+    const { organizationId } = req.params
+    const { startDate, endDate, resource } = req.query
     let result
-    switch (activity) {
+    switch (resource) {
       case "llm":
         result = await model.activityLog.getKpiLlm(
           organizationId,
@@ -41,7 +41,7 @@ async function getKpiByActivity(req, res, next) {
         )
         break
       default:
-        throw new Error("Activity type not supported")
+        throw new Error("Resource type not supported")
     }
 
     res.status(200).json(result)
@@ -114,83 +114,69 @@ function mergeKpi(oldKpi, newKpi) {
   return merged
 }
 
-async function generateOrgaDailyKpi(req, res, next) {
+async function generateOrgaKpi(req, res, next) {
   try {
-    let daily = await kpiHandler.getLast7DaysKpi(req.params.organizationId)
-    res.status(201).send({ message: "Daily KPI generated successfully", daily })
-  } catch (err) {
-    next(err)
-  }
-}
+    const orgaId = req.params.organizationId
 
-async function generateOrgaMonthlyKpi(req, res, next) {
-  try {
-    let monthly = await kpiHandler.getLast12MonthsKpi(req.params.organizationId)
+    let result
+    if (req.params.interval === "daily") {
+      result = await kpiHandler.getLast7DaysKpi(orgaId)
+    } else if (req.params.interval === "monthly") {
+      result = await kpiHandler.getLast12MonthsKpi(orgaId)
+    }
+
     res
       .status(201)
-      .send({ message: "Daily KPI generated successfully", monthly })
+      .send({ message: "KPI generated " + req.params.interval, result })
   } catch (err) {
     next(err)
   }
 }
 
-async function generateDailyKpi(req, res, next) {
+async function getKpi(req, res, next) {
   try {
-    let orgaIds = await model.activityLog.findOrganizationsWithActivity()
-
-    await orgaIds.map(async (orgaId) => {
-      const daily = await kpiHandler.getLast7DaysKpi(orgaId)
-      daily.map((day) => {
-        model.kpiDaily.createOrUpdate(day)
-      })
-    })
-    res.status(201).send({ message: "Daily KPI generated successfully" })
-  } catch (err) {
-    next(err)
-  }
-}
-
-async function getDailyKpi(req, res, next) {
-  try {
-    const result = await model.kpiDaily.getBy(req.query)
+    let result
+    if (req.params.interval === "daily") {
+      result = await model.kpiDaily.getBy(req.query)
+    } else if (req.params.interval === "monthly") {
+      result = await model.kpiMontly.getBy(req.query)
+    }
     res.status(200).json(result)
   } catch (err) {
     next(err)
   }
 }
 
-async function generateMonthlyKpi(req, res, next) {
+async function generateKpi(req, res, next) {
   try {
     let orgaIds = await model.activityLog.findOrganizationsWithActivity()
 
     await orgaIds.map(async (orgaId) => {
-      const monthly = await kpiHandler.getLast12MonthsKpi(orgaId)
-      monthly.map((month) => {
-        model.kpiMontly.createOrUpdate(month)
-      })
+      if (req.params.interval === "daily") {
+        const daily = await kpiHandler.getLast7DaysKpi(orgaId)
+        daily.map((day) => {
+          model.kpiDaily.createOrUpdate(day)
+        })
+      } else if (req.params.interval === "monthly") {
+        const monthly = await kpiHandler.getLast12MonthsKpi(orgaId)
+        monthly.map((month) => {
+          model.kpiMontly.createOrUpdate(month)
+        })
+      }
     })
-    res.status(201).send({ message: "Montly KPI generated successfully" })
+    res.status(201).send({
+      message: "KPI " + req.params.interval + " generated successfully",
+    })
   } catch (err) {
     next(err)
   }
 }
 
-async function getMonthlyKpi(req, res, next) {
-  try {
-    const result = await model.kpiMontly.getBy(req.query)
-    res.status(200).json(result)
-  } catch (err) {
-    next(err)
-  }
-}
 module.exports = {
   getActivity,
-  getKpiByActivity,
+  getKpiByRessource,
   getKpiBySession,
-  generateOrgaDailyKpi,
-  generateOrgaMonthlyKpi,
-  generateDailyKpi,
-  getDailyKpi,
-  generateMonthlyKpi,
-  getMonthlyKpi,
+  getKpi,
+  generateKpi,
+  generateOrgaKpi,
 }

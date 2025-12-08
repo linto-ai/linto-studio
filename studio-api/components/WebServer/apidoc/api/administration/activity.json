@@ -46,7 +46,7 @@
       }
     }
   },
-  "/api/administration/activity/{activity}/organization/{organizationId}": {
+  "/api/administration/activity/organization/{organizationId}": {
     "get": {
       "tags": ["administration activity"],
       "summary": "Get kpi details for a specific activity from an organization",
@@ -100,6 +100,16 @@
           },
           "required": false,
           "description": "End date timestamp to filter activity logs from a specific date"
+        },
+        {
+          "in": "query",
+          "name": "ressource",
+          "schema": {
+            "type": "string",
+            "enum": ["llm", "transcription", "session"]
+          },
+          "required": true,
+          "description": "Scope of the user, must be 'backoffice'"
         }
       ],
       "responses": {
@@ -166,7 +176,7 @@
       }
     }
   },
-  "/api/administration/activity/generate-kpi": {
+  "/api/administration/activity/{interval}": {
     "post": {
       "tags": ["administration activity"],
       "summary": "Generate kpi for all organizations",
@@ -180,6 +190,16 @@
           },
           "required": true,
           "description": "Scope of the user, must be 'backoffice'"
+        },
+        {
+          "in": "path",
+          "name": "interval",
+          "schema": {
+            "type": "string",
+            "enum": ["daily", "monthly"]
+          },
+          "required": true,
+          "description": "Desired interval for the KPI generation"
         }
       ],
       "responses": {
@@ -194,6 +214,104 @@
                     "type": "string",
                     "example": "KPI generated successfully"
                   }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    },
+    "get": {
+      "tags": ["administration activity"],
+      "summary": "Get kpi for all organizations",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
+          "required": true,
+          "description": "Scope of the user, must be 'backoffice'"
+        },
+        {
+          "in": "path",
+          "name": "interval",
+          "schema": {
+            "type": "string",
+            "enum": ["daily", "monthly"]
+          },
+          "required": true,
+          "description": "Desired interval for the KPI generation"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The list of sessions",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/OrganizationKPI"
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
+  },
+  "/api/administration/activity/{interval}/organization/{organizationId}": {
+    "get": {
+      "tags": ["administration activity"],
+      "summary": "Get kpi for a specific organization",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
+          "required": true,
+          "description": "Scope of the user, must be 'backoffice'"
+        },
+        {
+          "in": "path",
+          "name": "interval",
+          "schema": {
+            "type": "string",
+            "enum": ["daily", "monthly"]
+          },
+          "required": true,
+          "description": "Desired interval for the KPI generation"
+        },
+        {
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The list of sessions",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/OrganizationKPI"
                 }
               }
             }

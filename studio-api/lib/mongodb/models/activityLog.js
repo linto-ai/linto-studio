@@ -190,7 +190,6 @@ class ActivityLog extends MongoModel {
         {
           $project: {
             _id: 0,
-            // organizationId: "$_id",
             totalTranscriptions: 1,
             totalDurationSeconds: 1,
             totalHours: { $divide: ["$totalDurationSeconds", 3600] },
@@ -227,7 +226,6 @@ class ActivityLog extends MongoModel {
         {
           $project: {
             _id: 0,
-            organizationId: "$_id",
             totalSessions: 1,
             totalWatchTimeHours: { $divide: ["$totalWatchTimeSeconds", 3600] },
             avgWatchTimeMinutes: { $divide: ["$avgWatchTimeSeconds", 60] },

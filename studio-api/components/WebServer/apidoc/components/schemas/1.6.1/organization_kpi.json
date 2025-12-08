@@ -7,14 +7,9 @@
         "description": "Unique KPI document ID"
       },
 
-      "organization": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Organization ID"
-          }
-        }
+      "organizationId": {
+        "type": "string",
+        "description": "Organization ID"
       },
 
       "llm": {
@@ -76,9 +71,7 @@
 
     "example": {
       "_id": "6926d2281cabe4c269b72722",
-      "organization": {
-        "id": "688778cb980f721744a206d8"
-      },
+      "organizationId": "688778cb980f721744a206d8",
       "llm": {
         "totalGenerations": 3,
         "totalContentLength": 2550
