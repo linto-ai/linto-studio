@@ -312,6 +312,7 @@ class LoggerContext {
       context.transcription = {
         conversationId: payload.conversationId,
         name: conversation.name,
+        duration: conversation.duration || 0,
         jobId: payload.jobId,
         transcription: conversation.transcription,
       }

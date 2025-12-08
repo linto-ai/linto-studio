@@ -9,6 +9,19 @@ const kpiHandlers = {
   llm: model.activityLog.getKpiLlm.bind(model.activityLog),
 }
 
+async function fillEmptyKpi(activityKpi) {
+  if (activityKpi.session == null) {
+    activityKpi.session = { totalConnections: 0, watchTime: 0 }
+  }
+  if (activityKpi.llm == null) {
+    activityKpi.llm = { generated: 0, tokens: 0 }
+  }
+  if (activityKpi.transcription == null) {
+    activityKpi.transcription = { generated: 0, duration: 0 }
+  }
+  return activityKpi
+}
+
 async function generateKpi(organizationId, startDate, endDate, scope) {
   let activityKpi = {
     organizationId,
@@ -18,6 +31,8 @@ async function generateKpi(organizationId, startDate, endDate, scope) {
       await kpiHandlers.transcription(organizationId, startDate, endDate)
     )[0],
   }
+
+  activityKpi = fillEmptyKpi(activityKpi)
   return activityKpi
 }
 

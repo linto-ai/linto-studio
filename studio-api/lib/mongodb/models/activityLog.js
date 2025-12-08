@@ -148,15 +148,15 @@ class ActivityLog extends MongoModel {
         {
           $group: {
             _id: null,
-            totalGenerations: { $sum: 1 },
-            totalContentLength: { $sum: "$llm.contentLength" },
+            generated: { $sum: 1 },
+            tokens: { $sum: "$llm.contentLength" },
           },
         },
         {
           $project: {
             _id: 0,
-            totalGenerations: 1,
-            totalContentLength: 1,
+            generated: 1,
+            tokens: 1,
           },
         },
       ]
@@ -181,22 +181,20 @@ class ActivityLog extends MongoModel {
         {
           $group: {
             _id: "$organization.id",
-            totalTranscriptions: { $sum: 1 },
-            totalDurationSeconds: {
-              $sum: "$transcription.conversation.transcription.duration",
+            generated: { $sum: 1 },
+            duration: {
+              $sum: "$transcription.duration",
             },
           },
         },
         {
           $project: {
             _id: 0,
-            totalTranscriptions: 1,
-            totalDurationSeconds: 1,
-            totalHours: { $divide: ["$totalDurationSeconds", 3600] },
+            generated: 1,
+            duration: 1,
           },
         },
       ]
-
       return await this.mongoAggregate(query)
     } catch (error) {
       console.error("Error in kpiTranscription:", error)
@@ -218,17 +216,15 @@ class ActivityLog extends MongoModel {
         {
           $group: {
             _id: "$organization.id",
-            totalSessions: { $sum: 1 },
-            totalWatchTimeSeconds: { $sum: "$socket.totalWatchTime" },
-            avgWatchTimeSeconds: { $avg: "$socket.totalWatchTime" },
+            totalConnections: { $sum: 1 },
+            watchTime: { $sum: "$socket.totalWatchTime" },
           },
         },
         {
           $project: {
             _id: 0,
-            totalSessions: 1,
-            totalWatchTimeHours: { $divide: ["$totalWatchTimeSeconds", 3600] },
-            avgWatchTimeMinutes: { $divide: ["$avgWatchTimeSeconds", 60] },
+            totalConnections: 1,
+            watchTime: 1,
           },
         },
       ]
