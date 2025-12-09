@@ -1,36 +1,42 @@
 <template>
   <MainContentBackoffice :loading="loading">
+    <!-- <Tabs :tabs="tabs" v-model="currentTab" /> -->
     <div class="flex gap-large">
-      <div>
-        <UpdateOrganizationForm :currentOrganization="organization" />
-        <UpdateOrganizationMatchingUsers :currentOrganization="organization" />
-        <UpdateOrganizationPermissions :currentOrganization="organization" />
-      </div>
-      <OrganizationStats :organizationId="organizationId" />
-    </div>
+      <div class="flex1">
+        <div>
+          <UpdateOrganizationForm :currentOrganization="organization" />
+          <UpdateOrganizationMatchingUsers
+            :currentOrganization="organization" />
+          <UpdateOrganizationPermissions :currentOrganization="organization" />
+        </div>
 
-    <UpdateOrganizationUsers
-      :currentOrganization="organization"
-      :userInfo="userInfo" />
+        <UpdateOrganizationUsers
+          :currentOrganization="organization"
+          :userInfo="userInfo" />
 
-    <UpdateOrganizationTranscriberProfiles :organizationId="organizationId" />
-    <section>
-      <ApiTokenSettings :organizationId="organizationId" />
-    </section>
-    <section>
-      <h2 class="medium-margin-bottom">Danger zone</h2>
-      <Button
-        @click="openDeleteModal"
-        variant="primary"
-        icon="trash"
-        :label="$t('organisation.delete_organization')"
-        intent="destructive" />
-      <!-- <button @click="openDeleteModal" class="btn tertiary outline">
+        <UpdateOrganizationTranscriberProfiles
+          :organizationId="organizationId" />
+        <section>
+          <ApiTokenSettings :organizationId="organizationId" />
+        </section>
+        <section>
+          <h2 class="medium-margin-bottom">Danger zone</h2>
+          <Button
+            @click="openDeleteModal"
+            variant="primary"
+            icon="trash"
+            :label="$t('organisation.delete_organization')"
+            intent="destructive" />
+          <!-- <button @click="openDeleteModal" class="btn tertiary outline">
         <ph-icon name="trash"></ph-icon>
         <span class="label">{{ $t("organisation.delete_organization") }}</span>
       </button> -->
-    </section>
-
+        </section>
+      </div>
+      <div style="width: 450px">
+        <OrganizationStats :organizationId="organizationId" />
+      </div>
+    </div>
     <ModalDeleteOrganization
       v-if="displayDeleteModal"
       :currentOrganization="organization"
@@ -54,6 +60,7 @@ import UpdateOrganizationMatchingUsers from "@/components/UpdateOrganizationMatc
 import OrganizationStats from "@/components/OrganizationStats.vue"
 import UpdateOrganizationTranscriberProfiles from "@/components/UpdateOrganizationTranscriberProfiles.vue"
 import ApiTokenSettings from "@/components/ApiTokenSettings.vue"
+import Tabs from "@/components/molecules/Tabs.vue"
 
 export default {
   mixins: [platformRoleMixin],
@@ -69,6 +76,11 @@ export default {
       organizationId: this.$route.params.organizationId,
       organization: null,
       displayDeleteModal: false,
+      tabs: [
+        { name: "settings", label: "Settings" },
+        { name: "kpi", label: "Statistics" },
+      ],
+      currentTab: "http",
     }
   },
   mounted() {
@@ -107,6 +119,7 @@ export default {
     ModalDeleteOrganization,
     OrganizationStats,
     ApiTokenSettings,
+    Tabs,
   },
 }
 </script>

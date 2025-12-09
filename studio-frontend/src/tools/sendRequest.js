@@ -4,9 +4,9 @@ import { getCookie } from "./getCookie"
 
 export async function sendRequest(
   url,
-  params,
-  data,
-  notif,
+  params = "get",
+  data = {},
+  notif = null,
   headers,
   withoutToken = false,
 ) {

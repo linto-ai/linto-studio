@@ -918,6 +918,23 @@
     "description_description": "The description of your organisation",
     "description_label": "Description",
     "general_settings": "General settings",
+    "kpi": {
+      "error": "An error occurred while retrieving the data",
+      "loading": "Loading data...",
+      "session_watch_time": "Total time spent on the transcription",
+      "session_avg_watch_time": "Average time spent on the transcription",
+      "session_total_connections": "Number of connections",
+      "transcription_count": "Number of transcribed media",
+      "transcription_avg_duration": "Average duration of media",
+      "title": "Organization statistics",
+      "sessions_title": "Live transcription",
+      "media_title": "Media",
+      "time_step": {
+        "day": "Day",
+        "month": "Month",
+        "year": "Year"
+      }
+    },
     "leave_modal": {
       "action": "Leave",
       "content": "Are you sure you want to leave the organisation \"{name}\" ?",

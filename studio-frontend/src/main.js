@@ -17,6 +17,19 @@ import "./filters/index.js"
 import Loading from "vue-loading-overlay"
 
 import "vue-loading-overlay/dist/vue-loading.css"
+
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  Legend,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+} from "chart.js"
+
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
+
 //setDefaultEnv() // doesn't work
 
 export const bus = new Vue()

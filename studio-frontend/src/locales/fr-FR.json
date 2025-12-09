@@ -919,6 +919,23 @@
     "description_description": "Description de l'organisation",
     "description_label": "Description",
     "general_settings": "Réglages",
+    "kpi": {
+      "error": "Une erreur s'est produite lors de la récuperation des données",
+      "loading": "Chargement des données...",
+      "session_watch_time": "Temps total passé sur la transcription",
+      "session_avg_watch_time": "Temps moyen passé sur la transcription",
+      "session_total_connections": "Nombre de connexions",
+      "transcription_count": "Nombre de médias transcrits",
+      "transcription_avg_duration": "Duréé moyennes des médias",
+      "title": "Statistiques de l'organisation",
+      "sessions_title": "Transcription en direct",
+      "media_title": "Médias",
+      "time_step": {
+        "day": "Jour",
+        "month": "Mois",
+        "year": "Année"
+      }
+    },
     "leave_modal": {
       "action": "Quitter",
       "content": "Êtes vous sur de vouloir quitter l'organisation \"{name}\" ?",
@@ -949,10 +966,6 @@
       },
       "update_button": "Mettre à jour les critères d'appartenance",
       "apply_button": "Inviter les utilisateurs correspondant aux critères"
-    },
-    "organization_stats": {
-      "title": "Statistiques de l'organisation",
-      "medias": "Médias"
     },
     "transcriber_profiles": {
       "title": "Profils de transcription",
