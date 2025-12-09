@@ -29,13 +29,11 @@
       :count="mediaCount"
       :title="$t('organisation.organization_stats.medias')"
       icon="transcription" /> -->
-    <!-- <SessionStats /> -->
   </section>
 </template>
 <script>
 import { bus } from "@/main.js"
 import StatCard from "./StatCard.vue"
-import SessionStats from "@/components/SessionStats.vue"
 import { getKpiByOrganization } from "@/api/kpi.js"
 import { apiCountConversation } from "@/api/conversation.js"
 import BarChart from "./molecules/BarChart.vue"
@@ -129,7 +127,6 @@ export default {
   },
   components: {
     StatCard,
-    SessionStats,
     BarChart,
     Tabs,
   },
