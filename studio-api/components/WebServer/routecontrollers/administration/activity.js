@@ -115,9 +115,9 @@ async function getKpi(req, res, next) {
   try {
     let result
     if (req.params.interval === "daily") {
-      result = await model.kpiDaily.getBy(req.query)
+      result = await model.kpi.daily.getBy(req.query)
     } else if (req.params.interval === "monthly") {
-      result = await model.kpiMontly.getBy(req.query)
+      result = await model.kpi.monthly.getBy(req.query)
     }
     res.status(200).json(result)
   } catch (err) {
@@ -133,12 +133,12 @@ async function generateKpi(req, res, next) {
       if (req.params.interval === "daily") {
         const daily = await kpiHandler.getLast7DaysKpi(orgaId)
         daily.map((day) => {
-          model.kpiDaily.createOrUpdate(day)
+          model.kpi.daily.createOrUpdate(day)
         })
       } else if (req.params.interval === "monthly") {
         const monthly = await kpiHandler.getLast12MonthsKpi(orgaId)
         monthly.map((month) => {
-          model.kpiMontly.createOrUpdate(month)
+          model.kpi.monthly.createOrUpdate(month)
         })
       }
     })

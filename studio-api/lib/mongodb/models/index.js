@@ -5,9 +5,9 @@ module.exports = {
   conversationSubtitles: require("./conversationSubtitles.js"),
   conversations: require("./conversations.js"),
   favorites: require("./favorites.js"),
-  kpiDaily: require("./kpi.daily.js"),
-  kpiMontly: require("./kpi.monthly.js"),
   kpi: {
+    daily: require("./kpi.daily.js"),
+    monthly: require("./kpi.monthly.js"),
     sessions: require("./kpi.session.js"),
   },
   metadata: require("./metadata.js"),
