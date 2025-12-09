@@ -235,6 +235,7 @@ class ActivityLog extends MongoModel {
       return error
     }
   }
+
   async kpiSessionById(sessionId) {
     try {
       if (!sessionId) throw new Error("Missing sessionId")
@@ -253,7 +254,7 @@ class ActivityLog extends MongoModel {
             avgWatchTime: { $avg: "$socket.totalWatchTime" },
             totalConnections: { $sum: "$socket.connectionCount" },
             userCount: { $sum: 1 },
-            sessionInfo: { $first: "$session" },
+            session: { $first: "$session" },
             organization: { $first: "$organization" },
             usersAbove5Min: {
               $sum: {
@@ -288,23 +289,25 @@ class ActivityLog extends MongoModel {
         {
           $project: {
             _id: 0,
-            sessionInfo: 1,
-            organization: 1,
+            sessionId: "$session.sessionId",
+            organizationId: "$organization.id",
+            session: {
+              name: "$session.name",
+              visibility: "$session.visibility",
+            },
+
             userCount: {
               total: "$userCount",
-              totalConnections: "$totalConnections",
+              reconnections: "$totalConnections",
               above5Min: "$usersAbove5Min",
               below5Min: "$usersBelow5Min",
             },
-            totalWatchTimeSeconds: "$totalWatchTime",
-            totalWatchTimeMinutes: { $divide: ["$totalWatchTime", 60] },
-            totalWatchTimeHours: { $divide: ["$totalWatchTime", 3600] },
-            avgWatchTimeSeconds: "$avgWatchTime",
+
             watchTime: {
-              avgAbove5MinSeconds: "$avgWatchTimeAbove5Min",
-              avgBelow5MinSeconds: "$avgWatchTimeBelow5Min",
-              avgAbove5MinMinutes: { $divide: ["$avgWatchTimeAbove5Min", 60] },
-              avgBelow5MinMinutes: { $divide: ["$avgWatchTimeBelow5Min", 60] },
+              total: "$totalWatchTime",
+              average: "$avgWatchTime",
+              avgAbove5Min: "$avgWatchTimeAbove5Min",
+              avgUnder5Min: "$avgWatchTimeBelow5Min",
             },
           },
         },
@@ -324,6 +327,17 @@ class ActivityLog extends MongoModel {
       })
     } catch (error) {
       console.error("Error in findOrganizationsWithActivity:", error)
+      return error
+    }
+  }
+
+  async findSessionsWithActivity() {
+    try {
+      return await this.mongoDistinct("session.sessionId", {
+        "session.sessionId": { $exists: true, $ne: null },
+      })
+    } catch (error) {
+      console.error("Error in findSessionInActivity:", error)
       return error
     }
   }

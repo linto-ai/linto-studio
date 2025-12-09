@@ -7,6 +7,9 @@ module.exports = {
   favorites: require("./favorites.js"),
   kpiDaily: require("./kpi.daily.js"),
   kpiMontly: require("./kpi.monthly.js"),
+  kpi: {
+    sessions: require("./kpi.session.js"),
+  },
   metadata: require("./metadata.js"),
   organizations: require("./organizations.js"),
   sessionData: require("./sessionData.js"),

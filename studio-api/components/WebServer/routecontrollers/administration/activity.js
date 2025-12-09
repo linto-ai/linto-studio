@@ -2,6 +2,7 @@ const debug = require("debug")(
   "linto:conversation-manager:components:WebServer:routecontrollers:administration:activity",
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
+const { kpi } = require("../../../../lib/mongodb/models")
 const kpiHandler = require("../../controllers/activity/kpiHandlers")
 
 async function getActivity(req, res, next) {
@@ -53,65 +54,42 @@ async function getKpiByRessource(req, res, next) {
 async function getKpiBySession(req, res, next) {
   try {
     const { sessionId } = req.params
-    const result = await model.activityLog.kpiSessionById(sessionId)
-    res.status(200).json(result)
+    const [kpi] = await model.kpi.sessions.getBySessionId(sessionId)
+    if (kpi) {
+      return res.status(200).json(kpi)
+    }
+    const [kpiGenerated] = await model.activityLog.kpiSessionById(sessionId)
+    return res.status(200).json(kpiGenerated)
   } catch (err) {
     next(err)
   }
 }
 
-function mergeKpi(oldKpi, newKpi) {
-  // clone old KPI → base object
-  const merged = {
-    ...oldKpi,
-    timestamp: newKpi.timestamp || new Date().toISOString(),
+async function getSessionKpi(req, res, next) {
+  try {
+    const sessionKpi = await model.kpi.sessions.getAll(req.query)
+    res.status(200).json(sessionKpi)
+  } catch (err) {
+    next(err)
   }
+}
 
-  // ---- LLM ----
-  if (newKpi.llm) {
-    merged.llm = {
-      totalGenerations:
-        (oldKpi.llm?.totalGenerations || 0) +
-        (newKpi.llm.totalGenerations || 0),
-      totalContentLength:
-        (oldKpi.llm?.totalContentLength || 0) +
-        (newKpi.llm.totalContentLength || 0),
-    }
+async function generateSessionKpi(req, res, next) {
+  try {
+    const sessionIds = await model.activityLog.findSessionsWithActivity()
+    const existingSession = await model.kpi.sessions.getBySessions(sessionIds)
+    const missingIds = sessionIds.filter((id) => !existingSession.includes(id))
+    missingIds.map(async (sessionId) => {
+      const [kpiData] = await model.activityLog.kpiSessionById(sessionId)
+      model.kpi.sessions.create(kpiData)
+    })
+
+    res.status(201).send({
+      message: "KPI generation for sessions in progress",
+    })
+  } catch (err) {
+    next(err)
   }
-
-  // ---- TRANSCRIPTION ----
-  if (newKpi.transcription) {
-    merged.transcription = {
-      totalTranscriptions:
-        (oldKpi.transcription?.totalTranscriptions || 0) +
-        (newKpi.transcription.totalTranscriptions || 0),
-      totalDurationSeconds:
-        (oldKpi.transcription?.totalDurationSeconds || 0) +
-        (newKpi.transcription.totalDurationSeconds || 0),
-      totalHours:
-        (oldKpi.transcription?.totalHours || 0) +
-        (newKpi.transcription.totalHours || 0),
-    }
-  }
-
-  // ---- SESSION ----
-  if (newKpi.session) {
-    const totalSessions =
-      (oldKpi.session?.totalSessions || 0) + (newKpi.session.totalSessions || 0)
-
-    const totalWatchTimeHours =
-      (oldKpi.session?.totalWatchTimeHours || 0) +
-      (newKpi.session.totalWatchTimeHours || 0)
-
-    merged.session = {
-      totalSessions,
-      totalWatchTimeHours,
-      avgWatchTimeMinutes:
-        totalSessions > 0 ? (totalWatchTimeHours * 60) / totalSessions : 0,
-    }
-  }
-
-  return merged
 }
 
 async function generateOrgaKpi(req, res, next) {
@@ -176,6 +154,8 @@ module.exports = {
   getActivity,
   getKpiByRessource,
   getKpiBySession,
+  getSessionKpi,
+  generateSessionKpi,
   getKpi,
   generateKpi,
   generateOrgaKpi,
