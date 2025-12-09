@@ -40,8 +40,10 @@ class LogManager {
 
       switch (event.action) {
         case SOCKET_EVENTS.JOIN:
-          if (!activityLog) model.activityLog.create(ctx)
-          else model.activityLog.socketReconnect(activityLog, ctx.timestamp)
+          if (!activityLog) {
+            ctx.firstConnectionAt = ctx.timestamp
+            model.activityLog.create(ctx)
+          } else model.activityLog.socketReconnect(activityLog, ctx.timestamp)
           break
         case SOCKET_EVENTS.LEAVE:
         case SOCKET_EVENTS.DISCONNECT:
@@ -63,12 +65,6 @@ class LogManager {
       if (!activityLog) return
 
       const socketPayload = calculateWatchTime(activityLog, ctx)
-      /*if (socketPayload.totalWatchTime < KEEP_LOG_WITH_WATCHTIME_OVER) {
-        await model.activityLog.deleteAllSocketLog(
-          ctx.socket.id,
-          KEEP_LOG_WITH_WATCHTIME_OVER,
-        )
-      } else {*/
       await model.activityLog.socketLeft(
         activityLog,
         socketPayload,

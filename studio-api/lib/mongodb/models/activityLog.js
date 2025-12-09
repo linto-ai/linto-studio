@@ -105,6 +105,7 @@ class ActivityLog extends MongoModel {
       await this.mongoUpdateOne(query, operator, {
         socket: socket,
         timestamp: timestamp,
+        lastDisconnectionAt: new Date().toISOString(),
       })
     } catch (error) {
       console.error(error)
@@ -253,6 +254,8 @@ class ActivityLog extends MongoModel {
             totalWatchTime: { $sum: "$socket.totalWatchTime" },
             avgWatchTime: { $avg: "$socket.totalWatchTime" },
             totalConnections: { $sum: "$socket.connectionCount" },
+            firstConnectionAt: { $min: "$firstConnectionAt" },
+            lastDisconnectionAt: { $max: "$lastDisconnectionAt" },
             userCount: { $sum: 1 },
             session: { $first: "$session" },
             organization: { $first: "$organization" },
@@ -295,20 +298,20 @@ class ActivityLog extends MongoModel {
               name: "$session.name",
               visibility: "$session.visibility",
             },
-
             userCount: {
               total: "$userCount",
               reconnections: "$totalConnections",
               above5Min: "$usersAbove5Min",
               below5Min: "$usersBelow5Min",
             },
-
             watchTime: {
               total: "$totalWatchTime",
               average: "$avgWatchTime",
               avgAbove5Min: "$avgWatchTimeAbove5Min",
               avgUnder5Min: "$avgWatchTimeBelow5Min",
             },
+            firstConnectionAt: 1,
+            lastDisconnectionAt: 1,
           },
         },
       ]

@@ -74,6 +74,16 @@
           }
         },
         "required": ["total", "average", "avgAbove5Min", "avgUnder5Min"]
+      },
+      "firstConnectionAt": {
+        "type": "string",
+        "format": "date-time",
+        "description": "Timestamp when the first connection occurred"
+      },
+      "lastDisconnectionAt": {
+        "type": "string",
+        "format": "date-time",
+        "description": "Timestamp when the last disconnection occurred"
       }
     },
 
@@ -103,7 +113,9 @@
         "average": 220,
         "avgAbove5Min": 541,
         "avgUnder5Min": 6
-      }
+      },
+      "firstConnectionAt": "2025-12-09T15:49:45.001Z",
+      "lastDisconnectionAt": "2025-12-09T15:51:02.072Z"
     }
   }
 }
