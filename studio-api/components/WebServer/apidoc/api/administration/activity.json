@@ -46,178 +46,12 @@
       }
     }
   },
-
-  "/api/administration/activity/{interval}": {
-    "post": {
-      "tags": ["administration activity"],
-      "summary": "Generate kpi for all organizations",
-      "parameters": [
-        {
-          "in": "query",
-          "name": "userScope",
-          "schema": {
-            "type": "string",
-            "enum": ["backoffice"]
-          },
-          "required": true,
-          "description": "Scope of the user, must be 'backoffice'"
-        },
-        {
-          "in": "path",
-          "name": "interval",
-          "schema": {
-            "type": "string",
-            "enum": ["daily", "monthly"]
-          },
-          "required": true,
-          "description": "Desired interval for the KPI generation"
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "OK",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "message": {
-                    "type": "string",
-                    "example": "KPI generated successfully"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "401": {
-          "$ref": "#/components/responses/Unauthorized"
-        }
-      }
-    },
-    "get": {
-      "tags": ["administration activity"],
-      "summary": "Get kpi for all organizations",
-      "parameters": [
-        {
-          "in": "query",
-          "name": "userScope",
-          "schema": {
-            "type": "string",
-            "enum": ["backoffice"]
-          },
-          "required": true,
-          "description": "Scope of the user, must be 'backoffice'"
-        },
-        {
-          "in": "path",
-          "name": "interval",
-          "schema": {
-            "type": "string",
-            "enum": ["daily", "monthly"]
-          },
-          "required": true,
-          "description": "Desired interval for the KPI generation"
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "The list of sessions",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/OrganizationKPI"
-                }
-              }
-            }
-          }
-        },
-        "401": {
-          "$ref": "#/components/responses/Unauthorized"
-        }
-      }
-    }
-  },
-  "/api/administration/activity/{interval}/organization/{organizationId}": {
-    "get": {
-      "tags": ["administration activity"],
-      "summary": "Get kpi for a specific organization",
-      "parameters": [
-        {
-          "in": "query",
-          "name": "userScope",
-          "schema": {
-            "type": "string",
-            "enum": ["backoffice"]
-          },
-          "required": true,
-          "description": "Scope of the user, must be 'backoffice'"
-        },
-        {
-          "in": "path",
-          "name": "interval",
-          "schema": {
-            "type": "string",
-            "enum": ["daily", "monthly"]
-          },
-          "required": true,
-          "description": "Desired interval for the KPI generation"
-        },
-        {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "The list of sessions",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/OrganizationKPI"
-                }
-              }
-            }
-          }
-        },
-        "401": {
-          "$ref": "#/components/responses/Unauthorized"
-        }
-      }
-    }
-  },
-  "/api/administration/activity/organization/{organizationId}": {
+  "/api/administration/activity/compute": {
     "get": {
       "tags": ["administration activity"],
       "summary": "Get kpi details for a specific activity from an organization",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
-        },
-        {
-          "in": "path",
-          "name": "activity",
-          "schema": {
-            "type": "string",
-            "enum": ["session", "llm", "transcription"]
-          },
-          "required": true,
-          "description": "Scope of the desired activity"
-        },
-        {
           "in": "query",
           "name": "userScope",
           "schema": {
@@ -226,6 +60,14 @@
           },
           "required": true,
           "description": "Scope of the user, must be 'backoffice'"
+        },
+        {
+          "in": "query",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": false,
+          "description": "uuid string identifier for an organization"
         },
         {
           "in": "query",
@@ -256,7 +98,7 @@
             "type": "string",
             "enum": ["llm", "transcription", "session"]
           },
-          "required": true,
+          "required": false,
           "description": "Scope of the user, must be 'backoffice'"
         }
       ],

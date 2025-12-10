@@ -8,9 +8,6 @@ const {
   getKpiBySession,
   generateSessionKpi,
   getSessionKpi,
-  getKpi,
-  generateKpi,
-  generateOrgaKpi,
 } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/administration/activity.js`,
 )
@@ -25,7 +22,7 @@ module.exports = (webserver) => {
       controller: getActivity,
     },
     {
-      path: "/activity/organization/:organizationId",
+      path: "/activity/compute",
       method: "get",
       requireAuth: true,
       requireSuperAdmin: true,
@@ -51,27 +48,6 @@ module.exports = (webserver) => {
       requireAuth: true,
       requireSuperAdmin: true,
       controller: getKpiBySession,
-    },
-    {
-      path: "/activity/:interval",
-      method: "get",
-      requireAuth: true,
-      requireSuperAdmin: true,
-      controller: getKpi,
-    },
-    {
-      path: "/activity/:interval",
-      method: "post",
-      requireAuth: true,
-      requireSuperAdmin: true,
-      controller: generateKpi,
-    },
-    {
-      path: "/activity/:interval/organization/:organizationId",
-      method: "get",
-      requireAuth: true,
-      requireSuperAdmin: true,
-      controller: generateOrgaKpi,
     },
   ]
 }

@@ -22,7 +22,7 @@ async function fillEmptyKpi(activityKpi) {
   return activityKpi
 }
 
-async function generateKpi(organizationId, startDate, endDate, scope) {
+async function generateKpi(organizationId, startDate, endDate) {
   let activityKpi = {
     organizationId,
     session: (await kpiHandlers.session(organizationId, startDate, endDate))[0],
@@ -94,4 +94,4 @@ async function getLast12MonthsKpi(organizationId) {
   return results
 }
 
-module.exports = { getLast7DaysKpi, getLast12MonthsKpi }
+module.exports = { getLast7DaysKpi, getLast12MonthsKpi, generateKpi }
