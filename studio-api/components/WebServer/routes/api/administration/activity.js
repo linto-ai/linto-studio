@@ -6,7 +6,6 @@ const {
   getActivity,
   getKpiByRessource,
   getKpiBySession,
-  generateSessionKpi,
   getSessionKpi,
 } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/administration/activity.js`,
@@ -27,13 +26,6 @@ module.exports = (webserver) => {
       requireAuth: true,
       requireSuperAdmin: true,
       controller: getKpiByRessource,
-    },
-    {
-      path: "/activity/session",
-      method: "post",
-      requireAuth: true,
-      requireSuperAdmin: true,
-      controller: generateSessionKpi,
     },
     {
       path: "/activity/session",

@@ -69,26 +69,18 @@ async function getKpiBySession(req, res, next) {
 
 async function getSessionKpi(req, res, next) {
   try {
-    const sessionKpi = await model.kpi.sessions.getAll(req.query)
-    res.status(200).json(sessionKpi)
-  } catch (err) {
-    next(err)
-  }
-}
-//TODO: merge with get all session kpi
-async function generateSessionKpi(req, res, next) {
-  try {
     const sessionIds = await model.activityLog.findSessionsWithActivity()
     const existingSession = await model.kpi.sessions.getBySessions(sessionIds)
     const missingIds = sessionIds.filter((id) => !existingSession.includes(id))
-    missingIds.map(async (sessionId) => {
-      const [kpiData] = await model.activityLog.kpiSessionById(sessionId)
-      model.kpi.sessions.create(kpiData)
-    })
+    await Promise.all(
+      missingIds.map(async (sessionId) => {
+        const [kpiData] = await model.activityLog.kpiSessionById(sessionId)
+        await model.kpi.sessions.create(kpiData)
+      }),
+    )
 
-    res.status(201).send({
-      message: "KPI generation for sessions in progress",
-    })
+    const sessionKpi = await model.kpi.sessions.getAll(req.query)
+    res.status(200).json(sessionKpi)
   } catch (err) {
     next(err)
   }
@@ -99,5 +91,4 @@ module.exports = {
   getKpiByRessource,
   getKpiBySession,
   getSessionKpi,
-  generateSessionKpi,
 }

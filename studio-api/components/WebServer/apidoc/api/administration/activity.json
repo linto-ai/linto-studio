@@ -123,43 +123,6 @@
     }
   },
   "/api/administration/activity/session": {
-    "post": {
-      "tags": ["administration activity"],
-      "summary": "Generate kpi for all sessions with activity",
-      "parameters": [
-        {
-          "in": "query",
-          "name": "userScope",
-          "schema": {
-            "type": "string",
-            "enum": ["backoffice"]
-          },
-          "required": true,
-          "description": "Scope of the user, must be 'backoffice'"
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "OK",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "message": {
-                    "type": "string",
-                    "example": "KPI generated successfully"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "401": {
-          "$ref": "#/components/responses/Unauthorized"
-        }
-      }
-    },
     "get": {
       "tags": ["administration activity"],
       "summary": "Get activity details for all sessions",
