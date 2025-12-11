@@ -73,6 +73,7 @@ function defineScope(url = "") {
 
   const parts = url.toLowerCase().split("/").filter(Boolean)
   if (parts[0] === "auth") return "authenticate"
+  if (["tokens"].some((u) => url?.includes(u))) return "tokens"
   if (parts[1] === "administration" || parts[1] === "transcriber_profiles")
     return "platform"
   if (parts[1] === "sessions") return "resource"
@@ -236,6 +237,17 @@ class LoggerContext {
         )
         if (normalizedMessage) context.message = normalizedMessage
         if (errorContext) context.error = errorContext
+      }
+
+      if (socketEvent.userId) {
+        await storeCacheUser(socketEvent.userId) // Ensure user is cached
+
+        context.user = {
+          id: socketEvent.userId || null,
+          info: cache.users[socketEvent.userId],
+        }
+      } else {
+        context.user = { id: null, info: { email: "Temporary user" } }
       }
 
       if (socketEvent.from === "session") {

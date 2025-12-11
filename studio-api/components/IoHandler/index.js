@@ -31,17 +31,14 @@ async function checkSocketAccess(socket, roomId) {
   const sessionRoomId = roomId.split("/")[0]
 
   try {
-    // Load session
     const sessionRes = await axios.get(
       `${process.env.SESSION_API_ENDPOINT}/sessions/${sessionRoomId}`,
     )
     const session = sessionRes?.data ?? sessionRes
 
-    // Check user auth
     const { isAuth, userId, sessionId } =
       await auth_middlewares.checkSocket(socket)
 
-    // Protected session data
     const protectedSession =
       await model.sessionData.getBySessionId(sessionRoomId)
     const hasPassword =
@@ -49,36 +46,37 @@ async function checkSocketAccess(socket, roomId) {
 
     // Public session + no protection
     if (session.visibility === "public" && !hasPassword) {
-      return true
+      return { allowed: true, userId }
     }
 
     // User is not authenticated
     if (!isAuth) {
-      return denySocket(socket)
+      denySocket(socket)
+      return { allowed: false, userId: undefined }
     }
 
-    // Public session & sessionId matches with a password
+    // Public session + password-protected, sessionId matches
     if (
       session.visibility === "public" &&
       sessionId === session.id &&
       hasPassword
     ) {
-      return true
+      return { allowed: true, userId }
     }
 
-    // Determine user access from organization access
+    // Organization access
     const access = await sessionSocketAccess(session, userId)
     if (access === true) {
-      // if (session.visibility === "organization") {
-      return true
+      return { allowed: true, userId }
     }
 
-    // Private & owner or explicitly granted access
+    // Private session & is owner
     if (session.visibility === "private" && session.owner === userId) {
-      return true
+      return { allowed: true, userId }
     }
 
-    return denySocket(socket)
+    denySocket(socket)
+    return { allowed: false, userId: undefined }
   } catch (err) {
     LogManager.logSocketEvent(
       socket,
@@ -90,9 +88,11 @@ async function checkSocketAccess(socket, roomId) {
       },
       { level: "error" },
     )
-    return denySocket(socket)
+    denySocket(socket)
+    return { allowed: false, userId: undefined }
   }
 }
+
 class IoHandler extends Component {
   constructor(app) {
     super(app, "WebServer") // Relies on a WebServer component to be registrated
@@ -130,12 +130,15 @@ class IoHandler extends Component {
       }
 
       socket.on("join_room", async (roomId) => {
-        if (!(await checkSocketAccess(socket, roomId))) return
+        const { allowed, userId } = await checkSocketAccess(socket, roomId)
+        if (!allowed) return
         LogManager.logSocketEvent(socket, {
           sessionId: roomId,
+          userId,
           action: SOCKET_EVENTS.JOIN,
           from: "session",
         })
+
         this.addSocketInRoom(roomId, socket)
       })
 
