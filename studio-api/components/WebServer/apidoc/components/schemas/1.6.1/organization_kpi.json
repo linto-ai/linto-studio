@@ -2,26 +2,35 @@
   "OrganizationKPI": {
     "type": "object",
     "properties": {
-      "_id": {
-        "type": "string",
-        "description": "Unique KPI document ID"
-      },
-
       "organizationId": {
         "type": "string",
         "description": "Organization ID"
       },
 
+      "session": {
+        "type": "object",
+        "properties": {
+          "totalConnections": {
+            "type": "number",
+            "description": "Total number of connections"
+          },
+          "watchTime": {
+            "type": "number",
+            "description": "Total watch time"
+          }
+        }
+      },
+
       "llm": {
         "type": "object",
         "properties": {
-          "totalGenerations": {
+          "generated": {
             "type": "number",
-            "description": "Total number of LLM generations for the organization"
+            "description": "Total number of generated LLM outputs"
           },
-          "totalContentLength": {
+          "tokens": {
             "type": "number",
-            "description": "Sum of all LLM contentLength values"
+            "description": "Total number of LLM tokens"
           }
         }
       },
@@ -29,64 +38,32 @@
       "transcription": {
         "type": "object",
         "properties": {
-          "totalTranscriptions": {
+          "generated": {
             "type": "number",
             "description": "Number of transcription events"
           },
-          "totalDurationSeconds": {
+          "duration": {
             "type": "number",
-            "description": "Total duration of audio processed in seconds"
-          },
-          "totalHours": {
-            "type": "number",
-            "description": "Total transcription duration in hours"
+            "description": "Total duration of audio processed"
           }
         }
-      },
-
-      "session": {
-        "type": "object",
-        "properties": {
-          "totalSessions": {
-            "type": "number",
-            "description": "Number of session activity logs for this organization"
-          },
-          "totalWatchTimeHours": {
-            "type": "number",
-            "description": "Total watch time across all sessions in hours"
-          },
-          "avgWatchTimeMinutes": {
-            "type": "number",
-            "description": "Average watch time per session in minutes"
-          }
-        }
-      },
-
-      "timestamp": {
-        "type": "string",
-        "format": "date-time",
-        "description": "Timestamp when the KPI snapshot was generated"
       }
     },
 
     "example": {
-      "_id": "6926d2281cabe4c269b72722",
-      "organizationId": "688778cb980f721744a206d8",
+      "organizationId": "687763c270482528e9dc5ec1",
+      "session": {
+        "totalConnections": 0,
+        "watchTime": 0
+      },
       "llm": {
-        "totalGenerations": 3,
-        "totalContentLength": 2550
+        "generated": 0,
+        "tokens": 0
       },
       "transcription": {
-        "totalTranscriptions": 4,
-        "totalDurationSeconds": 58.32,
-        "totalHours": 0.0162
-      },
-      "session": {
-        "totalSessions": 304,
-        "totalWatchTimeHours": 4.384444444444444,
-        "avgWatchTimeMinutes": 0.8653508771929824
-      },
-      "timestamp": "2025-11-27T14:10:43.362Z"
+        "generated": 0,
+        "duration": 0
+      }
     }
   }
 }
