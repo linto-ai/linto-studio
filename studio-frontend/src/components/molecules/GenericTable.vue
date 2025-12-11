@@ -32,7 +32,7 @@ import GenericTableLine from "./GenericTableLine.vue"
 
 export default {
   props: {
-    // { key, label, sortable, width, component}
+    // [{ key, label, sortable, width, component, mainLabel }]
     columns: {
       type: Array,
       required: true,

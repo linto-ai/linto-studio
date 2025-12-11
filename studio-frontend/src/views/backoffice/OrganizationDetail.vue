@@ -1,7 +1,12 @@
 <template>
   <MainContentBackoffice :loading="loading">
-    <!-- <Tabs :tabs="tabs" v-model="currentTab" /> -->
-    <div class="flex gap-large">
+    <template v-slot:header>
+      <div class="flex align-center">
+        <h1 v-if="organization">{{ organization.name }}</h1>
+      </div>
+    </template>
+    <Tabs :tabs="tabs" v-model="currentTab" />
+    <div class="flex gap-large" v-if="currentTab == 'settings'">
       <div class="flex1">
         <div>
           <UpdateOrganizationForm :currentOrganization="organization" />
@@ -37,6 +42,12 @@
         <OrganizationStats :organizationId="organizationId" />
       </div>
     </div>
+    <div v-if="currentTab == 'sessions'">
+      <OrganizationSessionsKpi
+        v-if="organization"
+        :organizationId="organizationId"
+        :organization="organization" />
+    </div>
     <ModalDeleteOrganization
       v-if="displayDeleteModal"
       :currentOrganization="organization"
@@ -61,6 +72,7 @@ import OrganizationStats from "@/components/OrganizationStats.vue"
 import UpdateOrganizationTranscriberProfiles from "@/components/UpdateOrganizationTranscriberProfiles.vue"
 import ApiTokenSettings from "@/components/ApiTokenSettings.vue"
 import Tabs from "@/components/molecules/Tabs.vue"
+import OrganizationSessionsKpi from "@/components/OrganizationSessionsKpi.vue"
 
 export default {
   mixins: [platformRoleMixin],
@@ -77,10 +89,14 @@ export default {
       organization: null,
       displayDeleteModal: false,
       tabs: [
-        { name: "settings", label: "Settings" },
-        { name: "kpi", label: "Statistics" },
+        { name: "settings", label: "Settings", icon: "gear" },
+        {
+          name: "sessions",
+          label: "Statistique des sessions",
+          icon: "broadcast",
+        },
       ],
-      currentTab: "http",
+      currentTab: "settings",
     }
   },
   mounted() {
@@ -120,6 +136,7 @@ export default {
     OrganizationStats,
     ApiTokenSettings,
     Tabs,
+    OrganizationSessionsKpi,
   },
 }
 </script>

@@ -1279,6 +1279,12 @@
       "apply": "Continuer"
     }
   },
+  "session_kpi": {
+    "name_label": "Nom",
+    "viewer_label": "Spectateurs",
+    "watch_time_average_label": "Durée moyenne de visionnage",
+    "bounce_rate_label": "Taux de rebond (spectateurs)"
+  },
   "quick_session": {
     "creation": {
       "transcription_settings_title": "Méthode de transcription",

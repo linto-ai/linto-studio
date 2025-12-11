@@ -8,6 +8,7 @@
     border-radius: 8px;
     box-shadow: var(--shadow-block);
     position: relative;
+    border: 1px solid var(--neutral-20);
 
     * {
       z-index: 2;
@@ -94,6 +95,7 @@
 
   .tabs[squareTabs] {
     box-shadow: none;
+    border: none;
     gap: 1rem;
 
     .tab {

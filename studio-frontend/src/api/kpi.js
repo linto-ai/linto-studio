@@ -2,11 +2,38 @@ import { sendRequest } from "@/tools/sendRequest"
 import { getEnv } from "@/tools/getEnv"
 
 const BASE_API = getEnv("VUE_APP_CONVO_API")
+const DEFAULT_PAGE_SIZE = 10
 
 export async function getAllKpiDaily() {
   const res = await sendRequest(`${BASE_API}/administration/activity/daily`)
 
   return res
+}
+
+export async function getSessionListKpi(
+  page = 0,
+  {
+    pageSize = DEFAULT_PAGE_SIZE,
+    sortField = "timestamp",
+    sortOrder = -1,
+    organizationId,
+  } = {},
+) {
+  console.log("toto")
+  const res = await sendRequest(
+    `${BASE_API}/administration/activity/session`,
+    {
+      method: "get",
+    },
+    {
+      page,
+      size: pageSize,
+      sortField,
+      sortCriteria: sortOrder,
+      organizationId,
+    },
+  )
+  return res?.data ?? { list: [], count: 0 }
 }
 
 export async function getKpiByOrganization(organizationId, step) {

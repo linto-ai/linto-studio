@@ -1282,6 +1282,12 @@
       "apply": "Continue"
     }
   },
+  "session_kpi": {
+    "name_label": "Name",
+    "viewer_label": "Viewers",
+    "watch_time_average_label": "Average watch time",
+    "bounce_rate_label": "Bounce rate (viewers)"
+  },
   "quick_session": {
     "creation": {
       "transcription_settings_title": "Transcription mode",
