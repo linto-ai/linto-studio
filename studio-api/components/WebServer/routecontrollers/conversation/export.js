@@ -18,6 +18,7 @@ const path = require("path")
 const appLogger = require(`${process.cwd()}/lib/logger/logger.js`)
 
 const { jsonToPlainText } = require("json-to-plain-text")
+const axios = require(`${process.cwd()}/lib/utility/axios`)
 
 const {
   ConversationIdRequire,
@@ -153,25 +154,59 @@ async function exportConversation(req, res, next) {
   }
 }
 
+/**
+ * Call LLM API and handle response/errors synchronously
+ * Returns { success: true, jobId: string } or { success: false, error: string }
+ */
 async function callLlmAPI(
   req,
   query,
   conversation,
   metadata,
   conversationExport,
+  generationPayload = null,
 ) {
-  llm
-    .request(req, query, conversation, metadata, conversationExport)
-    .then((data) => {
-      conversationExport.jobId = data
-      conversationExport.status = "processing"
-      model.conversationExport.update(conversationExport)
-    })
-    .catch((err) => {
-      conversationExport.status = "error"
-      conversationExport.error = err.message
-      model.conversationExport.update(conversationExport)
-    })
+  try {
+    const jobId = await llm.request(req, query, conversation, metadata, conversationExport)
+
+    conversationExport.jobId = jobId
+    conversationExport.status = "processing"
+    await model.conversationExport.update(conversationExport)
+
+    // Create generation record if payload provided
+    if (generationPayload) {
+      generationPayload.jobId = jobId
+      generationPayload.status = "processing"
+      try {
+        await model.conversationGenerations.create(generationPayload)
+        debug(`Created generation record for jobId: ${jobId}`)
+      } catch (err) {
+        appLogger.warn(`[Export] Failed to create generation record: ${err.message}`)
+      }
+    }
+
+    return { success: true, jobId }
+  } catch (err) {
+    appLogger.error(`[Export] LLM API call failed: ${err.message}`)
+    conversationExport.status = "error"
+    conversationExport.error = err.message
+    await model.conversationExport.update(conversationExport)
+
+    // Update generation record if payload provided
+    if (generationPayload && generationPayload.generationId) {
+      try {
+        await model.conversationGenerations.updateStatus(
+          generationPayload.jobId,
+          "error",
+          err.message
+        )
+      } catch (genErr) {
+        appLogger.warn(`[Export] Failed to update generation status: ${genErr.message}`)
+      }
+    }
+
+    return { success: false, error: err.message }
+  }
 }
 
 async function handleLLMService(req, res, query, conversation, metadata) {
@@ -185,7 +220,23 @@ async function handleLLMService(req, res, query, conversation, metadata) {
     // Extract organization ID from conversation
     const organizationId = conversation.organization?.organizationId?.toString() || null
 
+    // Service ID is the format (route) which identifies the LLM service
+    const serviceId = query.format
+
     if (query.regenerate === "true" || conversationExport.length === 0) {
+      // Archive existing generations for this conversation+service before creating new one
+      if (query.regenerate === "true") {
+        try {
+          await model.conversationGenerations.archiveAllGenerations(
+            conversation._id.toString(),
+            serviceId
+          )
+          debug(`Archived existing generations for conversation ${conversation._id} and service ${serviceId}`)
+        } catch (archiveErr) {
+          appLogger.warn(`[Export] Failed to archive generations: ${archiveErr.message}`)
+        }
+      }
+
       // Delete existing export if regenerating
       if (conversationExport.length !== 0)
         await model.conversationExport.delete(conversationExport[0]._id)
@@ -202,12 +253,31 @@ async function handleLLMService(req, res, query, conversation, metadata) {
         flavorName: null,
         organizationId: organizationId,
       }
-      exportResult = await model.conversationExport.create(conversationExport)
+      const exportResult = await model.conversationExport.create(conversationExport)
       conversationExport._id = exportResult.insertedId.toString()
 
-      // V2: Call LLM API
-      callLlmAPI(req, query, conversation, metadata, conversationExport)
-      res.status(200).send({ status: "processing", processing: 0, organizationId: organizationId })
+      // Prepare generation payload for tracking history
+      const generationPayload = {
+        conversationId: conversation._id.toString(),
+        serviceId: serviceId,
+        serviceName: query.title || serviceId, // Use title if provided, otherwise service ID
+        organizationId: organizationId,
+        isCurrent: true,
+      }
+
+      // V2: Call LLM API with generation payload (awaited for proper error handling)
+      const result = await callLlmAPI(req, query, conversation, metadata, conversationExport, generationPayload)
+
+      if (result.success) {
+        res.status(200).send({ status: "processing", processing: 0, organizationId: organizationId })
+      } else {
+        // Return error immediately so frontend can show notification
+        res.status(502).send({
+          status: "error",
+          error: result.error || "Failed to connect to LLM Gateway",
+          errorType: "llm_gateway_error"
+        })
+      }
     } else if (
       conversationExport[0].status === "done" ||
       conversationExport[0].status === "complete"
@@ -217,9 +287,33 @@ async function handleLLMService(req, res, query, conversation, metadata) {
       // V2: Check if document export is requested (preview=true or exportFormat specified)
       if (query.preview === "true" || query.exportFormat === "pdf" || query.exportFormat === "docx") {
         // Try V2 document export from LLM Gateway
-        await handleV2DocumentExport(res, conversationExport, query, conversation.name)
+        const exportResult = await handleV2DocumentExport(res, conversationExport, query, conversation.name)
+
+        // If job was not found on LLM Gateway, inform frontend to regenerate
+        if (exportResult?.jobNotFound) {
+          res.status(410).send({
+            status: "job_not_found",
+            error: "Job no longer exists on LLM Gateway",
+            requiresRegeneration: true,
+          })
+        }
       } else if (conversationExport.llmOutputType === "markdown" || conversationExport.llmOutputType === "text") {
         // Return raw text content for editing (markdown or text output types)
+        // First verify the job still exists if we don't have local data
+        if (!conversationExport.data && conversationExport.jobId) {
+          const jobExists = await verifyJobExists(conversationExport.jobId)
+          if (!jobExists) {
+            conversationExport.status = "unknown"
+            conversationExport.error = "Job not found on LLM Gateway - regeneration required"
+            await model.conversationExport.update(conversationExport)
+            res.status(410).send({
+              status: "job_not_found",
+              error: "Job no longer exists on LLM Gateway",
+              requiresRegeneration: true,
+            })
+            return
+          }
+        }
         handleTextContent(
           res,
           conversationExport,
@@ -258,8 +352,30 @@ async function handleLLMService(req, res, query, conversation, metadata) {
 }
 
 /**
+ * Verify if a job still exists on LLM Gateway
+ * @param {string} jobId - The job ID to verify
+ * @returns {Promise<boolean>} True if job exists, false otherwise
+ */
+async function verifyJobExists(jobId) {
+  if (!jobId || !process.env.LLM_GATEWAY_SERVICES) return false
+
+  try {
+    const jobStatus = await llm.getJobStatus(jobId)
+    return jobStatus !== null
+  } catch (err) {
+    if (err.response?.status === 404) {
+      return false
+    }
+    // For other errors, assume job might exist
+    appLogger.warn(`[Export] Error verifying job ${jobId}: ${err.message}`)
+    return true
+  }
+}
+
+/**
  * Handle V2 document export (PDF/DOCX) from LLM Gateway
  * Falls back to local generation if V2 export fails
+ * Returns { jobNotFound: true } if job no longer exists on LLM Gateway
  */
 async function handleV2DocumentExport(res, conversationExport, query, conversationName) {
   const jobId = conversationExport.jobId
@@ -285,15 +401,35 @@ async function handleV2DocumentExport(res, conversationExport, query, conversati
       }
       res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`)
       res.send(Buffer.from(documentBuffer))
-      return
+      return { success: true }
     }
   } catch (err) {
+    // Check if this is a 404 (job not found) error
+    const isJobNotFound = err.response?.status === 404 ||
+      err.message?.includes("not found") ||
+      err.message?.includes("404")
+
+    if (isJobNotFound) {
+      appLogger.warn(`[Export V2] Job ${jobId} not found on LLM Gateway, marking for regeneration`)
+      // Mark the local export as needing regeneration
+      conversationExport.status = "unknown"
+      conversationExport.error = "Job not found on LLM Gateway - regeneration required"
+      await model.conversationExport.update(conversationExport)
+      return { jobNotFound: true }
+    }
+
     appLogger.warn(`[Export V2] LLM Gateway export failed, falling back to local generation: ${err.message}`)
   }
 
-  // Fallback: Local DOCX generation
-  const file = await docx.generateDocxOnFormat(query, conversationExport)
-  sendFileAsResponse(res, file, query)
+  // Fallback: Local DOCX generation (only if we have local data)
+  if (conversationExport.data) {
+    const file = await docx.generateDocxOnFormat(query, conversationExport)
+    sendFileAsResponse(res, file, query)
+    return { success: true }
+  }
+
+  // No local data and LLM Gateway failed - return job not found
+  return { jobNotFound: true }
 }
 function convertDocxToOdt(docxPath, outputDir, callback) {
   exec(
@@ -406,7 +542,7 @@ async function prepareConversation(conversation, filter) {
     )
 
   if (filter.keyword) {
-    keyword_list = filter.keyword.split(",")
+    let keyword_list = filter.keyword.split(",")
     keyword_list = (await model.tags.getByIdList(keyword_list)).map(
       (tag) => tag.name,
     )
@@ -453,7 +589,9 @@ async function prepateData(conversation, data, format) {
         update_turn.stime = secondsToHHMMSSWithDecimals(stime, secondsDecimals)
         update_turn.etime = secondsToHHMMSSWithDecimals(etime, secondsDecimals)
         return update_turn
-      } catch (err) {}
+      } catch (err) {
+        // Skip malformed turn entry
+      }
     })
     .filter(Boolean) // remove undefined entries in case of something is unsupported or unexpected
 
@@ -515,7 +653,6 @@ async function updateExportResult(req, res, next) {
       return res.status(500).json({ status: "error", error: "LLM Gateway not configured" })
     }
 
-    const axios = require(`${process.cwd()}/lib/utility/axios`)
     const response = await axios.patch(`${baseUrl}/api/v1/jobs/${jobId}/result`, { content })
 
     // Update local conversationExport with new version number
@@ -556,7 +693,6 @@ async function listExportVersions(req, res, next) {
       return res.status(500).json({ status: "error", error: "LLM Gateway not configured" })
     }
 
-    const axios = require(`${process.cwd()}/lib/utility/axios`)
     const response = await axios.get(`${baseUrl}/api/v1/jobs/${jobId}/versions`)
 
     return res.status(200).json({
@@ -590,7 +726,6 @@ async function getExportVersion(req, res, next) {
       return res.status(500).json({ status: "error", error: "LLM Gateway not configured" })
     }
 
-    const axios = require(`${process.cwd()}/lib/utility/axios`)
     const response = await axios.get(`${baseUrl}/api/v1/jobs/${jobId}/versions/${versionNumber}`)
 
     return res.status(200).json({
@@ -624,7 +759,6 @@ async function restoreExportVersion(req, res, next) {
       return res.status(500).json({ status: "error", error: "LLM Gateway not configured" })
     }
 
-    const axios = require(`${process.cwd()}/lib/utility/axios`)
     const response = await axios.post(`${baseUrl}/api/v1/jobs/${jobId}/versions/${versionNumber}/restore`, {})
 
     // Update local conversationExport
@@ -653,39 +787,45 @@ async function restoreExportVersion(req, res, next) {
 }
 
 /**
- * Generate document (PDF/DOCX) from job result - proxy to LLM Gateway
+ * Generate document (PDF/DOCX) from job result
  * POST /conversations/:conversationId/export/:jobId/document
- * Body: { format: "pdf" | "docx", content?: string }
+ * Body: { format: "pdf" | "docx", versionNumber?: number }
+ *
+ * If versionNumber is provided, exports that specific version (with per-version extraction).
+ * Otherwise, exports the current job version.
  */
 async function generateExportDocument(req, res, next) {
   try {
     if (!req.params.conversationId) throw new ConversationIdRequire()
     const { jobId } = req.params
-    const { format, content } = req.body
+    const { format, versionNumber } = req.body
 
     if (!jobId) throw new ConversationMetadataRequire("jobId is required")
     if (!format || !["pdf", "docx"].includes(format)) {
       throw new ConversationMetadataRequire("format must be 'pdf' or 'docx'")
     }
 
-    // Proxy to LLM Gateway
-    const baseUrl = process.env.LLM_GATEWAY_SERVICES
-    if (!baseUrl) {
-      return res.status(500).json({ status: "error", error: "LLM Gateway not configured" })
-    }
-
-    const axios = require(`${process.cwd()}/lib/utility/axios`)
-    const url = `${baseUrl}/api/v1/jobs/${jobId}/export/${format}`
-
-    const response = await axios.get(url, {
-      responseType: "arraybuffer"
-    })
-
     // Get conversation for filename
     const conversation = await model.conversations.getById(req.params.conversationId)
     const conversationName = conversation && conversation.length > 0 ? conversation[0].name : "export"
     const validCharsRegex = /[a-zA-Z0-9-_.]/g
     const fileName = conversationName.match(validCharsRegex)?.join("") || "export"
+
+    // Proxy to LLM Gateway with optional version_number
+    const baseUrl = process.env.LLM_GATEWAY_SERVICES
+    if (!baseUrl) {
+      return res.status(500).json({ status: "error", error: "LLM Gateway not configured" })
+    }
+
+    let url = `${baseUrl}/api/v1/jobs/${jobId}/export/${format}`
+    if (versionNumber !== undefined && versionNumber !== null) {
+      url += `?version_number=${versionNumber}`
+      appLogger.info(`[Export] Exporting version ${versionNumber} for job ${jobId}`)
+    }
+
+    const response = await axios.get(url, {
+      responseType: "arraybuffer"
+    })
 
     if (format === "pdf") {
       res.setHeader("Content-Type", "application/pdf")

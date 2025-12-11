@@ -10,6 +10,10 @@ class Axios {
       if (options.responseType) {
         axiosOptions.responseType = options.responseType
       }
+      // Support timeout to prevent hanging requests
+      if (options.timeout) {
+        axiosOptions.timeout = options.timeout
+      }
       const resp = await axios.get(host, axiosOptions)
       return resp.data
     } catch (error) {
@@ -64,6 +68,33 @@ class Axios {
     }
     try {
       const resp = await axios.put(host, options)
+      return resp.data
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async patch(host, data, options = {}) {
+    try {
+      const axiosOptions = {
+        headers: { "Content-Type": "application/json", ...options.headers },
+      }
+      const resp = await axios.patch(host, data, axiosOptions)
+      return resp.data
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async delete(host, options = {}) {
+    try {
+      const axiosOptions = {
+        headers: { ...options.headers },
+      }
+      if (options.timeout) {
+        axiosOptions.timeout = options.timeout
+      }
+      const resp = await axios.delete(host, axiosOptions)
       return resp.data
     } catch (error) {
       throw error

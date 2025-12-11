@@ -227,6 +227,22 @@ async function handleJobUpdate(jobId, update) {
 
     await model.conversationExport.updateStatus(convExport)
     appLogger.debug(`[LLM V2] Updated conversation export for job ${jobId}`)
+
+    // Also update generation status if a generation record exists for this job
+    try {
+      const generationStatus = statusMap[update.status] || update.status
+      if (generationStatus === "complete" || generationStatus === "error") {
+        await model.conversationGenerations.updateStatus(
+          jobId,
+          generationStatus === "complete" ? "completed" : generationStatus,
+          update.error || null
+        )
+        debug(`Updated generation status for job ${jobId}: ${generationStatus}`)
+      }
+    } catch (genErr) {
+      // Silently ignore if no generation record exists
+      debug(`No generation record to update for job ${jobId}`)
+    }
   } catch (error) {
     appLogger.error(`[LLM V2] Error handling job update for ${jobId}: ${error.message}`)
   }
@@ -373,15 +389,27 @@ async function getJobResult(jobId) {
 /**
  * Export job result as PDF or DOCX via V2 API
  * V2 endpoint: GET /api/v1/jobs/{job_id}/export/{format}
+ * @param {string} jobId - Job ID
+ * @param {string} format - Export format (pdf, docx, html)
+ * @param {string} templateId - Optional template ID
+ * @param {number} versionNumber - Optional version number for per-version export
  */
-async function exportJobDocument(jobId, format = "pdf", templateId = null) {
+async function exportJobDocument(jobId, format = "pdf", templateId = null, versionNumber = null) {
   if (!jobId) throw new Error("Job ID is required")
 
   const baseUrl = process.env.LLM_GATEWAY_SERVICES
   let url = `${baseUrl}/api/v1/jobs/${jobId}/export/${format}`
 
+  // Build query params
+  const params = []
   if (templateId) {
-    url += `?template_id=${templateId}`
+    params.push(`template_id=${templateId}`)
+  }
+  if (versionNumber !== null) {
+    params.push(`version_number=${versionNumber}`)
+  }
+  if (params.length > 0) {
+    url += `?${params.join("&")}`
   }
 
   try {

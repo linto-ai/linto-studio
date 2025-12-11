@@ -49,7 +49,8 @@ async function listLlmServices(organizationId = null) {
       host += `&organization_id=${encodeURIComponent(organizationId)}`
     }
 
-    const response = await axios.get(host)
+    // Add timeout to prevent hanging if LLM Gateway is unresponsive
+    const response = await axios.get(host, { timeout: 5000 })
 
     // V2 returns { items: [...], total: N, page: 1, page_size: 100, pages: N }
     // Transform to match expected format for frontend compatibility
@@ -76,7 +77,8 @@ async function listLlmServices(organizationId = null) {
     }))
   } catch (err) {
     debug("Error listing LLM services:", err.message)
-    throw new ServiceError("Error while listing LLM services")
+    // Return empty array instead of throwing - allows page to load with just Verbatim
+    return []
   }
 }
 

@@ -11,7 +11,7 @@ const {
 } = require("../content/documentComponents.js")
 
 const generate = (docxContent, document) => {
-  document.doc.addSection(generateHeader(data.conversation.name))
+  document.doc.addSection(generateHeader(docxContent.filedata.title))
 
   const columnProperties = textColumn(2, 500)
   document.doc.addSection({
