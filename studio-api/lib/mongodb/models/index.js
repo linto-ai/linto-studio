@@ -2,6 +2,7 @@ module.exports = {
   activityLog: require("./activityLog.js"),
   categories: require("./categories.js"),
   conversationExport: require("./conversationExport.js"),
+  conversationGenerations: require("./conversationGenerations.js"),
   conversationSubtitles: require("./conversationSubtitles.js"),
   conversations: require("./conversations.js"),
   favorites: require("./favorites.js"),

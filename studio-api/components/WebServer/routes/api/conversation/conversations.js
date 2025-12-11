@@ -25,6 +25,14 @@ const {
   `${process.cwd()}/components/WebServer/routecontrollers/conversation/export.js`,
 )
 
+const {
+  listGenerations,
+  createGeneration,
+  getGeneration,
+} = require(
+  `${process.cwd()}/components/WebServer/routecontrollers/conversation/generations.js`,
+)
+
 const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
 
 module.exports = (webserver) => {
@@ -126,6 +134,28 @@ module.exports = (webserver) => {
       requireAuth: true,
       requireConversationReadAccess: true,
       controller: generateExportDocument,
+    },
+    // Generation history routes
+    {
+      path: "/:conversationId/generations",
+      method: "get",
+      requireAuth: true,
+      requireConversationReadAccess: true,
+      controller: listGenerations,
+    },
+    {
+      path: "/:conversationId/generations",
+      method: "post",
+      requireAuth: true,
+      requireConversationWriteAccess: true,
+      controller: createGeneration,
+    },
+    {
+      path: "/:conversationId/generations/:generationId",
+      method: "get",
+      requireAuth: true,
+      requireConversationReadAccess: true,
+      controller: getGeneration,
     },
   ]
 }
