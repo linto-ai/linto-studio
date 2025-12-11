@@ -148,7 +148,23 @@ class IoHandler extends Component {
         this.removeSocketFromRoom(roomId, socket)
       })
 
-      socket.on("watch_organization_session", (orgaId) => {
+      socket.on("watch_organization_session", async (orgaId) => {
+        // Security: Verify user has access to this organization
+        try {
+          const { isAuth, userId } = await auth_middlewares.checkSocket(socket)
+          if (!isAuth || !userId) {
+            debug(`[Session] Unauthorized watch_organization_session attempt for org ${orgaId}`)
+            return
+          }
+          const orgAccess = await model.organizations.getByIdAndUser(orgaId, userId)
+          if (!orgAccess || orgAccess.length === 0) {
+            debug(`[Session] User ${userId} denied access to org ${orgaId}`)
+            return
+          }
+        } catch (err) {
+          debug(`[Session] Auth check failed for watch_organization_session: ${err.message}`)
+          return
+        }
         this.addSocketInOrga(orgaId, socket, "session")
       })
 
@@ -156,7 +172,23 @@ class IoHandler extends Component {
         this.removeSocketFromOrga(orgaId, socket)
       })
 
-      socket.on("watch_organization_media", (orgaId) => {
+      socket.on("watch_organization_media", async (orgaId) => {
+        // Security: Verify user has access to this organization
+        try {
+          const { isAuth, userId } = await auth_middlewares.checkSocket(socket)
+          if (!isAuth || !userId) {
+            debug(`[Media] Unauthorized watch_organization_media attempt for org ${orgaId}`)
+            return
+          }
+          const orgAccess = await model.organizations.getByIdAndUser(orgaId, userId)
+          if (!orgAccess || orgAccess.length === 0) {
+            debug(`[Media] User ${userId} denied access to org ${orgaId}`)
+            return
+          }
+        } catch (err) {
+          debug(`[Media] Auth check failed for watch_organization_media: ${err.message}`)
+          return
+        }
         this.addSocketInMedia(orgaId, socket)
       })
 
@@ -170,6 +202,56 @@ class IoHandler extends Component {
           from: "socket",
         })
         this.searchAndRemoveSocketFromRooms(socket)
+      })
+
+      // LLM job subscription handlers
+      socket.on("llm:join", async (data) => {
+        const { organizationId, conversationId } = data
+        if (!organizationId) return
+
+        // Security: Verify user has access to this organization
+        try {
+          const { isAuth, userId } = await auth_middlewares.checkSocket(socket)
+          if (!isAuth || !userId) {
+            debug(`[LLM] Unauthorized llm:join attempt for org ${organizationId}`)
+            return
+          }
+
+          // Check user belongs to this organization
+          const orgAccess = await model.organizations.getByIdAndUser(organizationId, userId)
+          if (!orgAccess || orgAccess.length === 0) {
+            debug(`[LLM] User ${userId} denied access to org ${organizationId}`)
+            return
+          }
+        } catch (err) {
+          debug(`[LLM] Auth check failed for llm:join: ${err.message}`)
+          return
+        }
+
+        // Join organization-level LLM room
+        const orgRoom = `llm/${organizationId}`
+        socket.join(orgRoom)
+        debug(`Socket ${socket.id} joined LLM room ${orgRoom}`)
+
+        // Join conversation-specific room if provided
+        if (conversationId) {
+          const convRoom = `llm/${organizationId}/${conversationId}`
+          socket.join(convRoom)
+          debug(`Socket ${socket.id} joined LLM room ${convRoom}`)
+        }
+      })
+
+      socket.on("llm:leave", (data) => {
+        const { organizationId, conversationId } = data
+        if (!organizationId) return
+
+        const orgRoom = `llm/${organizationId}`
+        socket.leave(orgRoom)
+
+        if (conversationId) {
+          const convRoom = `llm/${organizationId}/${conversationId}`
+          socket.leave(convRoom)
+        }
       })
     })
 
@@ -371,6 +453,38 @@ class IoHandler extends Component {
     if (notify) {
       this.io.emit("broker_ko")
       LogManager.logSystemEvent("Broker connection lost")
+    }
+  }
+
+  /**
+   * Broadcast LLM job update to subscribed clients
+   * @param {object} update - { organizationId, conversationId, jobId, status, progress, result, error }
+   */
+  notifyLlmJobUpdate(update) {
+    const { organizationId, conversationId, jobId, status } = update
+    if (!organizationId || !jobId) {
+      debug(`Cannot broadcast LLM update: missing organizationId or jobId`)
+      return
+    }
+
+    // Determine event name based on status
+    let eventName = "llm:job:update"
+    if (status === "completed" || status === "complete") {
+      eventName = "llm:job:complete"
+    } else if (status === "error" || status === "failed") {
+      eventName = "llm:job:error"
+    }
+
+    // Broadcast to organization room
+    const orgRoom = `llm/${organizationId}`
+    this.io.to(orgRoom).emit(eventName, update)
+    debug(`Broadcasted ${eventName} to room ${orgRoom} for job ${jobId}`)
+
+    // Also broadcast to conversation-specific room if available
+    if (conversationId) {
+      const convRoom = `llm/${organizationId}/${conversationId}`
+      this.io.to(convRoom).emit(eventName, update)
+      debug(`Broadcasted ${eventName} to room ${convRoom} for job ${jobId}`)
     }
   }
 }

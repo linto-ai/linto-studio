@@ -10,6 +10,7 @@ import updateConversationController from "./controllers/updateConversationContro
 import updateUserRightsController from "./controllers/updateUserRightsController.js"
 import jobTranscriptionController from "./controllers/jobTranscriptionController.js"
 import keywordController from "./controllers/keywordController.js"
+import llmJobController from "./controllers/llmJobController.js"
 
 import Conversations from "./models/conversations.js"
 import SubtitleHelper from "./models/subtitles.js"
@@ -189,6 +190,18 @@ export default class Websocket extends Component {
               tagId: data.tagId,
             })
           }
+        })
+
+        // LLM Job subscription for real-time updates
+        // Client -> Server: llm:join, llm:leave
+        socket.on("llm:join", async (data) => {
+          debug("llm:join event received")
+          llmJobController.subscribeToJob.bind(socket)(data, this.app.io)
+        })
+
+        socket.on("llm:leave", async (data) => {
+          debug("llm:leave event received")
+          llmJobController.unsubscribeFromJob.bind(socket)(data)
         })
       } catch (error) {
         info("Error in websocket connection")
