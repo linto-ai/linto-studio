@@ -28,9 +28,14 @@ DB_MIGRATION_TARGET=1.6.1
 # STT Config
 GATEWAY_SERVICES=https://<domain>
 
-# LLM Config
+# LLM Gateway V2 Config
+# HTTP API endpoint (e.g., http://localhost:8010)
 LLM_GATEWAY_SERVICES=
-LLM_GATEWAY_SERVICES_WS=
+# WebSocket URL is automatically derived from LLM_GATEWAY_SERVICES
+# (http://localhost:8010 -> ws://localhost:8010)
+# V2 WebSocket endpoints:
+#   /ws/jobs/{job_id} - Single job monitoring
+#   /ws/jobs - Global jobs monitoring
 
 # NLP Service
 NLP_SERVICES=<nlp_service_host>

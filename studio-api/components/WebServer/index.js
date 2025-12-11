@@ -111,6 +111,10 @@ class WebServer extends Component {
     require("./routes/router.js")(this) // Loads all defined routes
     WebServerErrorHandler.init(this) // Manage error from controllers
 
+    // Initialize LLM WebSocket manager with app reference for IoHandler access
+    const organizationWsManager = require("./controllers/llm/llm_ws")
+    organizationWsManager.setApp(app)
+
     let api_host = "localhost"
     let base_path = "/"
     if (process.env.WEBSERVER_SWAGGER_HTTP_HOST)

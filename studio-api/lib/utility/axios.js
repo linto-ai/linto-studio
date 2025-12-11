@@ -1,9 +1,16 @@
 const axios = require("axios").default
 
 class Axios {
-  async get(host, options = { headers: {} }) {
+  async get(host, options = {}) {
     try {
-      const resp = await axios.get(host, { headers: { ...options.headers } })
+      const axiosOptions = {
+        headers: { ...options.headers },
+      }
+      // Support responseType for binary data (arraybuffer, blob, etc.)
+      if (options.responseType) {
+        axiosOptions.responseType = options.responseType
+      }
+      const resp = await axios.get(host, axiosOptions)
       return resp.data
     } catch (error) {
       throw error

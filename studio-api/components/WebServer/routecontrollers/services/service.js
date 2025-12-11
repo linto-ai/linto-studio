@@ -23,7 +23,9 @@ async function getLlmServices(req, res, next) {
     ) {
       res.status(200).send([])
     } else {
-      const services = await serviceUtility.listLlmServices()
+      // Pass organizationId from query params if provided
+      const organizationId = req.query.organizationId || null
+      const services = await serviceUtility.listLlmServices(organizationId)
       res.status(200).send(services)
     }
   } catch (err) {
