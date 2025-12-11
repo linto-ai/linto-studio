@@ -1022,6 +1022,48 @@
       "cred": "Compte rendu des commissions et des délégations",
       "cri": "Compte rendu intégral",
       "verbatim": "Verbatim"
+    },
+    "editor": {
+      "edit_mode": "Modifier",
+      "preview_mode": "Aperçu",
+      "save_version": "Enregistrer la version",
+      "save_version_title": "Enregistrer comme nouvelle version",
+      "version_name_placeholder": "Nom de la version",
+      "version_saved": "Version enregistrée avec succès",
+      "version_save_error": "Erreur lors de l'enregistrement de la version",
+      "load_version": "Charger une version",
+      "versions_list": "Versions enregistrées",
+      "no_versions": "Aucune version enregistrée",
+      "version_label": "Version {version}",
+      "restore_version": "Restaurer cette version",
+      "restore_version_confirm": "Êtes-vous sûr de vouloir restaurer cette version ?",
+      "version_restored": "Version restaurée avec succès",
+      "version_restore_error": "Erreur lors de la restauration de la version",
+      "delete_version": "Supprimer la version",
+      "delete_version_confirm": "Êtes-vous sûr de vouloir supprimer cette version ?",
+      "version_deleted": "Version supprimée",
+      "version_delete_error": "Erreur lors de la suppression de la version",
+      "unsaved_changes": "Vous avez des modifications non enregistrées",
+      "discard_changes": "Annuler les modifications",
+      "toolbar": {
+        "bold": "Gras",
+        "italic": "Italique",
+        "heading1": "Titre 1",
+        "heading2": "Titre 2",
+        "heading3": "Titre 3",
+        "bullet_list": "Liste à puces",
+        "undo": "Annuler",
+        "redo": "Rétablir"
+      }
+    },
+    "category": {
+      "summary": "Résumés",
+      "report": "Rapports",
+      "correction": "Corrections",
+      "translation": "Traductions",
+      "custom": "Personnalisé",
+      "other": "Autre",
+      "all": "Tous"
     }
   },
   "session": {

@@ -92,3 +92,112 @@ export async function apiGetMetadataLLMService(conversationId) {
     return []
   }
 }
+
+/**
+ * Update job result (creates new version in LLM Gateway)
+ * @param {string} conversationId - Conversation ID
+ * @param {string} jobId - LLM Gateway job ID
+ * @param {string} content - New content (markdown)
+ * @returns {Promise<object|null>} Result with version number or null
+ */
+export async function apiUpdateExportResult(conversationId, jobId, content) {
+  const req = await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/export/${jobId}/result`,
+    { method: "put" },
+    { content },
+    null,
+  )
+
+  if (req.status === "success") {
+    return req.data
+  } else {
+    return null
+  }
+}
+
+/**
+ * List all versions for a job from LLM Gateway
+ * @param {string} conversationId - Conversation ID
+ * @param {string} jobId - LLM Gateway job ID
+ * @returns {Promise<Array>} List of versions
+ */
+export async function apiListExportVersions(conversationId, jobId) {
+  const req = await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/export/${jobId}/versions`,
+    { method: "get" },
+    {},
+    null,
+  )
+
+  if (req.status === "success") {
+    return req.data?.versions || []
+  } else {
+    return []
+  }
+}
+
+/**
+ * Get a specific version by number from LLM Gateway
+ * @param {string} conversationId - Conversation ID
+ * @param {string} jobId - LLM Gateway job ID
+ * @param {number} versionNumber - Version number
+ * @returns {Promise<object|null>} Version data or null
+ */
+export async function apiGetExportVersion(conversationId, jobId, versionNumber) {
+  const req = await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/export/${jobId}/versions/${versionNumber}`,
+    { method: "get" },
+    {},
+    null,
+  )
+
+  if (req.status === "success") {
+    return req.data?.version || req.data
+  } else {
+    return null
+  }
+}
+
+/**
+ * Restore a specific version in LLM Gateway
+ * @param {string} conversationId - Conversation ID
+ * @param {string} jobId - LLM Gateway job ID
+ * @param {number} versionNumber - Version number to restore
+ * @returns {Promise<object|null>} Restored version data or null
+ */
+export async function apiRestoreExportVersion(conversationId, jobId, versionNumber) {
+  const req = await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/export/${jobId}/versions/${versionNumber}/restore`,
+    { method: "post" },
+    {},
+    null,
+  )
+
+  if (req.status === "success") {
+    return req.data
+  } else {
+    return null
+  }
+}
+
+/**
+ * Generate document (PDF/DOCX) from job result
+ * @param {string} conversationId - Conversation ID
+ * @param {string} jobId - LLM Gateway job ID
+ * @param {string} format - Document format ('pdf' or 'docx')
+ * @returns {Promise<Blob|null>} Document blob or null
+ */
+export async function apiExportDocument(conversationId, jobId, format) {
+  const req = await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/export/${jobId}/document`,
+    { method: "post", responseType: "blob" },
+    { format },
+    null,
+  )
+
+  if (req.status === "success") {
+    return req.data
+  } else {
+    return null
+  }
+}

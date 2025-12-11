@@ -105,3 +105,224 @@
 .publish-turn-time {
   font-style: italic;
 }
+
+// Markdown Editor Toolbar Styles
+.markdown-editor-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.markdown-editor-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  background-color: var(--background-secondary);
+  border-bottom: var(--border-block);
+
+  .toolbar-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 0.5rem;
+    border: none;
+    border-radius: 4px;
+    background-color: transparent;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: var(--background-tertiary);
+    }
+
+    &.active {
+      background-color: var(--color-primary);
+      color: white;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  .toolbar-separator {
+    width: 1px;
+    height: 1.5rem;
+    background-color: var(--border-color);
+    margin: 0 0.25rem;
+  }
+}
+
+// Edit/Preview Toggle Styles
+.publish-editor-header {
+  padding: 0.5rem 1rem;
+  background-color: var(--background-secondary);
+  border-bottom: var(--border-block);
+}
+
+.publish-editor-mode-toggle {
+  background-color: var(--background-tertiary);
+  border-radius: 4px;
+  padding: 2px;
+
+  .mode-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 3px;
+    background-color: transparent;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: var(--background-secondary);
+    }
+
+    &.active {
+      background-color: var(--background-primary);
+      box-shadow: var(--shadow-sm);
+    }
+  }
+}
+
+.unsaved-indicator {
+  color: var(--color-warning);
+  font-size: 0.875rem;
+}
+
+// Versions Section Styles
+.versions-section {
+  .sidebar-section-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .no-versions {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-style: italic;
+  }
+
+  .versions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .version-item {
+    padding: 0.5rem;
+    background-color: var(--background-secondary);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: var(--background-tertiary);
+    }
+
+    .version-name {
+      font-size: 0.875rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .btn-icon-sm {
+      padding: 0.25rem;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      opacity: 0.6;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+// Category Tabs Styles
+.category-tabs {
+  padding: 0.5rem;
+  background-color: var(--background-secondary);
+  border-bottom: var(--border-block);
+
+  .category-tab {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--background-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: var(--background-tertiary);
+    }
+
+    &.active {
+      background-color: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+  }
+}
+
+// Modal Styles
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: var(--background-primary);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: var(--shadow-lg);
+  min-width: 400px;
+  max-width: 90%;
+
+  h3 {
+    margin-bottom: 1rem;
+  }
+
+  input {
+    padding: 0.5rem;
+    border: var(--border-block);
+    border-radius: 4px;
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-primary);
+    }
+  }
+}
+
+// Utility classes
+.margin-bottom-small {
+  margin-bottom: 0.5rem;
+}
+
+.margin-top-small {
+  margin-top: 0.5rem;
+}
+
+.justify-end {
+  justify-content: flex-end;
+}
