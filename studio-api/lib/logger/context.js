@@ -97,6 +97,14 @@ function defineScope(url = "") {
   return "unknown"
 }
 
+function getClientIp(req) {
+  const xForwardedFor = req.headers["x-forwarded-for"]
+  if (xForwardedFor) return xForwardedFor.split(",")[0].trim()
+  return (
+    req.ip || req.connection?.remoteAddress || req.socket?.remoteAddress || null
+  )
+}
+
 function formatError(error) {
   let normalizedMessage, errorContext
 
@@ -153,6 +161,9 @@ class LoggerContext {
           status: req.res?.statusCode || null,
         }
         context.scope = defineScope(context.http.url)
+        if (context.scope === "authenticate" && req.url === "/auth/login") {
+          context.http.ip = getClientIp(req)
+        }
       }
 
       if (req?.payload?.data?.userId) {

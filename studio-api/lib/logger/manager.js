@@ -17,12 +17,12 @@ class LogManager {
     const ctx = await context.createContext(req, message, payload)
     logger.log(ctx)
 
-    if (
-      ctx?.http?.method !== "GET" ||
-      activityLoggedUrls.some((u) => ctx?.http?.url?.includes(u))
-    ) {
-      model.activityLog.create(ctx)
+    const { method, url } = ctx?.http || {}
+    if (method === "GET" && !activityLoggedUrls.some((u) => url?.includes(u))) {
+      return
     }
+    if (url === "/auth/login") return
+    model.activityLog.create(ctx)
   }
 
   static async logSocketEvent(socket, event, payload = {}) {
