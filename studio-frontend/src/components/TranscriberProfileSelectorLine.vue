@@ -32,12 +32,6 @@
         :items="translationsOptions.channels">
         <template #trigger="{ open }">
           <Button :icon-right="open ? 'caret-up' : 'caret-down'" size="sm">
-            <!-- <div class="flex gap-small">
-              <Chip
-                v-for="translation in displayedTranslations"
-                :key="translation"
-                :value="translation"></Chip>
-            </div> -->
             {{
               $tc(
                 "session.profile_selector.n_translations_selected",

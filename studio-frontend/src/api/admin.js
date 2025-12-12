@@ -13,6 +13,7 @@ export async function apiGetActivityLogs(
     sortField = "timestamp",
     sortOrder = -1,
     source,
+    scope,
   } = {},
 ) {
   let res
@@ -28,14 +29,35 @@ export async function apiGetActivityLogs(
       sortField,
       sortCriteria: sortOrder,
       source,
+      scope,
     },
   )
 
   return res?.data || { count: 0, list: [] }
 }
 
+export async function apiGetBackofficeActivityLogs(page = 0, args) {
+  return await apiGetActivityLogs(page, {
+    ...args,
+    source: "webserver",
+    scope: "platform",
+  })
+}
+
+export async function apiGetKeysActivityLogs(page = 0, args) {
+  return await apiGetActivityLogs(page, {
+    ...args,
+    source: "webserver",
+    scope: "tokens",
+  })
+}
+
 export async function apiGetHttpActivityLogs(page = 0, args) {
-  return await apiGetActivityLogs(page, { ...args, source: "webserver" })
+  return await apiGetActivityLogs(page, {
+    ...args,
+    source: "webserver",
+    scope: "resource",
+  })
 }
 
 export async function apiGetSessionActivityLogs(page = 0, args) {

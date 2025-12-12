@@ -4,6 +4,7 @@
       <HeaderTable :title="$t('backoffice.activity_list.title')" />
     </template>
     <Tabs :tabs="tabs" v-model="currentTab" secondary></Tabs>
+    <UserSelector v-model="selecteduser" />
     <GenericTableRequest
       ref="table"
       idKey="_id"
@@ -11,50 +12,78 @@
       :columns="columns"
       :initSortListDirection="sortListDirection"
       :initSortListKey="sortListKey">
+      <template #cell-user.role.value="{ value }">
+        <PlatformRoleSelector v-model="value" readonly compact />
+      </template>
+
+      <template #cell-organization.role.value="{ value }">
+        <OrgaRoleSelector v-model="value" readonly v-if="value" />
+      </template>
+
+      <template #cell-http.method="{ value }">
+        <HttpMethodChip :HttpMethod="value" />
+      </template>
+
+      <template #cell-http.url="{ value }">
+        <FormatedUrl :url="value" />
+      </template>
     </GenericTableRequest>
   </MainContentBackoffice>
 </template>
 <script>
 import { bus } from "@/main.js"
+import {
+  apiGetHttpActivityLogs,
+  apiGetSessionActivityLogs,
+  apiGetBackofficeActivityLogs,
+  apiGetKeysActivityLogs,
+} from "@/api/admin.js"
 
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import GenericTableRequest from "@/components/molecules/GenericTableRequest.vue"
 import HeaderTable from "@/components/HeaderTable.vue"
-import {
-  apiGetHttpActivityLogs,
-  apiGetSessionActivityLogs,
-} from "@/api/admin.js"
 import Tabs from "@/components/molecules/Tabs.vue"
+import PlatformRoleSelector from "@/components/molecules/PlatformRoleSelector.vue"
+import OrgaRoleSelector from "@/components/molecules/OrgaRoleSelector.vue"
+import HttpMethodChip from "@/components/atoms/HttpMethodChip.vue"
+import FormatedUrl from "@/components/atoms/FormatedUrl.vue"
+import UserSelector from "@/components/molecules/UserSelector.vue"
 
 export default {
   props: {},
   data() {
     return {
-      sortListDirection: "asc",
-      sortListKey: "createdAt",
+      sortListDirection: "desc",
+      sortListKey: "timestamp",
       tabs: [
-        { name: "session", label: "Session" },
-        { name: "http", label: "Http" },
+        { name: "sessions", label: "Session" },
+        { name: "ressources", label: "Ressources" },
+        { name: "keys", label: "Accès aux clés d'api" },
+        { name: "backoffice", label: "Backoffice" },
       ],
-      currentTab: "http",
+      currentTab: "ressources",
+      selecteduser: null,
     }
   },
   mounted() {},
   computed: {
     columns() {
-      if (this.currentTab == "http") {
-        return this.httpColumns
-      } else {
-        return this.sessionColumns
+      switch (this.currentTab) {
+        case "ressources":
+        case "backoffice":
+        case "keys":
+          return this.httpColumns
+        case "sessions":
+          return this.sessionColumns
       }
     },
     httpColumns() {
       return [
-        {
-          key: "scope",
-          label: this.$t("activity_list.scope_label"),
-          width: "auto",
-        },
+        // {
+        //   key: "scope",
+        //   label: this.$t("activity_list.scope_label"),
+        //   width: "auto",
+        // },
         {
           key: "level",
           label: this.$t("activity_list.level_label"),
@@ -127,10 +156,16 @@ export default {
       ]
     },
     fetchMethod() {
-      if (this.currentTab == "http") {
-        return apiGetHttpActivityLogs
-      } else {
-        return apiGetSessionActivityLogs
+      switch (this.currentTab) {
+        case "ressources":
+          return apiGetHttpActivityLogs
+        case "backoffice":
+          return apiGetBackofficeActivityLogs
+        case "keys":
+          return apiGetKeysActivityLogs
+        case "sessions":
+          return apiGetSessionActivityLogs
+          break
       }
     },
   },
@@ -140,6 +175,11 @@ export default {
     GenericTableRequest,
     HeaderTable,
     Tabs,
+    PlatformRoleSelector,
+    OrgaRoleSelector,
+    HttpMethodChip,
+    FormatedUrl,
+    UserSelector,
   },
 }
 </script>

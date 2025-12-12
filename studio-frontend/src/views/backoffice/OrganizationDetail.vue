@@ -38,9 +38,9 @@
       </button> -->
         </section>
       </div>
-      <div style="width: 450px">
+      <!-- <div style="width: 450px">
         <OrganizationStats :organizationId="organizationId" />
-      </div>
+      </div> -->
     </div>
     <div v-if="currentTab == 'sessions'">
       <OrganizationSessionsKpi
