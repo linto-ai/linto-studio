@@ -22,14 +22,36 @@ class MongoModel {
   }
 
   // Request function for Mongodb. Makes a request on the collection, filtered by the query.
-  async mongoRequest(query, projection) {
+  async mongoRequest(query, options = {}) {
     try {
+      let projection, sort, limit
+
+      // Detect if second argument is an object containing options
+      if (options && typeof options === "object" && !Array.isArray(options)) {
+        // If it has the typical keys, treat as options
+        if (
+          "projection" in options ||
+          "sort" in options ||
+          "limit" in options
+        ) {
+          ;({ projection, sort, limit } = options)
+        } else {
+          // Otherwise, assume it's the old-style projection object
+          projection = options
+        }
+      }
+
       const collection = MongoDriver.constructor.db.collection(this.collection)
-      const result = await collection.find(query).project(projection).toArray()
-      return result // Use return if this is within an async function, otherwise resolve(result) if in a Promise
+      let cursor = collection.find(query)
+
+      if (projection) cursor = cursor.project(projection)
+      if (sort) cursor = cursor.sort(sort)
+      if (limit) cursor = cursor.limit(limit)
+
+      return await cursor.toArray()
     } catch (error) {
       debug("mongoRequest error:", error)
-      throw new MongoError(error) // Use throw if this is within an async function, otherwise reject(new MongoError(error)) if in a Promise
+      throw new MongoError(error)
     }
   }
 

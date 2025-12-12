@@ -67,18 +67,31 @@ async function getKpiBySession(req, res, next) {
   }
 }
 
-async function getSessionKpi(req, res, next) {
+async function refreshSessionKpi(req, res, next) {
   try {
-    const sessionIds = await model.activityLog.findSessionsWithActivity()
+    // 1. Retrieve the most recent KPI entry (used as baseline timestamp)
+    const [lastKpi] = await model.kpi.sessions.getLastKpi()
+
+    // 2. Find all sessions with new activity after the last KPI timestamp
+    const sessionIds = await model.activityLog.findSessionsWithActivity(
+      lastKpi?.timestamp,
+    )
+
+    // 3. Retrieve existing KPI entries for those sessions (if any)
     const existingSession = await model.kpi.sessions.getBySessions(sessionIds)
-    const missingIds = sessionIds.filter((id) => !existingSession.includes(id))
+
+    // 4. Delete outdated KPI entries for sessions that had new activity
+    await model.kpi.sessions.deleteSessions(existingSession)
+
+    // 5. Recompute KPI for each session with new activity
     await Promise.all(
-      missingIds.map(async (sessionId) => {
+      sessionIds.map(async (sessionId) => {
         const [kpiData] = await model.activityLog.kpiSessionById(sessionId)
         await model.kpi.sessions.create(kpiData)
       }),
     )
 
+    // 6. Fetch and return the full list of updated session KPI
     const sessionKpi = await model.kpi.sessions.getAll(req.query)
     res.status(200).json(sessionKpi)
   } catch (err) {
@@ -90,5 +103,5 @@ module.exports = {
   getActivity,
   getKpiByRessource,
   getKpiBySession,
-  getSessionKpi,
+  refreshSessionKpi,
 }

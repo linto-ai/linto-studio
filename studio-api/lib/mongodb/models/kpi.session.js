@@ -7,8 +7,20 @@ class KpiSession extends MongoModel {
 
   async create(payload) {
     try {
-      payload.createdAt = new Date()
+      payload.timestamp = new Date()
       return await this.mongoInsert(payload)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async deleteSessions(ids) {
+    try {
+      const query = {
+        sessionId: { $in: ids },
+      }
+      return await this.mongoDeleteMany(query)
     } catch (error) {
       console.error(error)
       return error
@@ -66,12 +78,20 @@ class KpiSession extends MongoModel {
     }
   }
 
+  async getLastKpi() {
+    try {
+      return await this.mongoRequest({}, { sort: { timestamp: -1 }, limit: 1 })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   async getBySessionId(sessionId) {
     try {
       const query = {
         sessionId: sessionId,
       }
-      console.log(query)
       return await this.mongoRequest(query)
     } catch (error) {
       console.error(error)

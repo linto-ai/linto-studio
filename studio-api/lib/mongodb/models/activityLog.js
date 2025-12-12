@@ -334,11 +334,16 @@ class ActivityLog extends MongoModel {
     }
   }
 
-  async findSessionsWithActivity() {
+  async findSessionsWithActivity(sinceTimestamp) {
     try {
-      return await this.mongoDistinct("session.sessionId", {
+      const query = {
         "session.sessionId": { $exists: true, $ne: null },
-      })
+      }
+      if (sinceTimestamp && sinceTimestamp !== "") {
+        query.timestamp = { $gt: sinceTimestamp }
+      }
+
+      return await this.mongoDistinct("session.sessionId", query)
     } catch (error) {
       console.error("Error in findSessionInActivity:", error)
       return error
