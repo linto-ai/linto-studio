@@ -18,7 +18,7 @@
           :translations="translations"
           v-model="selectedTranslation" />
       </div>
-      <div style="margin: 0 1rem" class="flex col gap-medium">
+      <div class="flex col gap-medium publish-content-wrapper">
         <!-- Status Section -->
         <section class="flex col gap-medium">
           <div v-if="isUpdated" class="flex align-center gap-small">
@@ -34,42 +34,22 @@
             </span>
           </div>
           <!-- Always show regenerate button -->
-          <button class="yellow fullwidth" @click="reloadGeneration">
+          <button class="yellow fullwidth" @click="confirmRegenerate">
             <span class="icon reload"></span>
             <span class="label">{{ $t("publish.reload_document") }}</span>
           </button>
         </section>
 
-        <!-- Versions Section -->
-        <section v-if="isEditableOutput && currentStatus === 'complete'" class="versions-section">
-          <h3 class="sidebar-section-title">{{ $t("publish.editor.versions_list") }}</h3>
-          <div v-if="savedVersions.length === 0" class="no-versions">
-            {{ $t("publish.editor.no_versions") }}
-          </div>
-          <div v-else class="versions-list">
-            <div
-              v-for="version in savedVersions"
-              :key="version.version_number"
-              class="version-item flex align-center gap-small"
-              @click="loadVersion(version)">
-              <span class="version-name flex1">{{ $t('publish.editor.version_label', { version: version.version_number }) }}</span>
-              <span class="version-date">{{ formatDate(version.created_at) }}</span>
-              <button
-                type="button"
-                class="btn-icon-sm"
-                @click.stop="restoreVersion(version)"
-                :title="$t('publish.editor.restore_version')">
-                <span class="icon undo"></span>
-              </button>
-            </div>
-          </div>
-          <button
-            v-if="hasContentChanges"
-            class="primary fullwidth margin-top-small"
-            @click="showSaveVersionModal = true">
-            <span class="icon save"></span>
-            <span class="label">{{ $t("publish.editor.save_version") }}</span>
-          </button>
+        <!-- Generation Timeline (replaces simple version list) -->
+        <section v-if="isEditableOutput" class="generations-section">
+          <GenerationTimeline
+            :generations="generations"
+            :currentGenerationId="currentGenerationId"
+            :versions="savedVersions"
+            :currentVersionNumber="currentVersionNumber"
+            :loading="currentStatus === 'processing' || currentStatus === 'queued'"
+            @select-generation="selectGeneration"
+            @select-version="handleSelectVersion" />
         </section>
       </div>
     </template>
@@ -78,7 +58,7 @@
       <div class="flex1 flex gap-small reset-overflows align-center">
         <PopoverList
           :items="optionsExport"
-          style="margin-left: auto"
+          class="publish-export-popover"
           closeOnItemClick
           @click="exportConv">
           <template #trigger="{ open }">
@@ -94,47 +74,58 @@
     </template>
 
     <div class="publish-main-container flex col" v-if="dataLoaded">
-      <!-- Category tabs if services have categories -->
-      <div v-if="hasCategories" class="category-tabs flex gap-small margin-bottom-small">
-        <button
-          v-for="category in availableCategories"
-          :key="category"
-          type="button"
-          class="category-tab"
-          :class="{ active: selectedCategory === category }"
-          @click="selectedCategory = category">
-          {{ $t(`publish.category.${category}`) || category }}
-        </button>
+      <!-- AI Service Menu -->
+      <div class="publish-service-menu-wrapper">
+        <AIServiceMenu
+          v-model="activeTab"
+          :services="indexedFormat"
+          :tabs="tabs"
+          v-if="tabs && tabs.length > 0" />
       </div>
-      <Tabs
-        v-model="activeTab"
-        :tabs="filteredTabs"
-        v-if="filteredTabs && filteredTabs.length > 0"></Tabs>
+
+      <!-- Publication Tab Content - Shows only templates grid -->
+      <PublicationSection
+        v-if="activeTab === 'publication'"
+        :jobId="currentJobId"
+        :organizationId="publicationOrganizationId"
+        :conversationName="conversation?.name || 'export'"
+        :versionNumber="currentVersionNumber"
+        class="publication-section-wrapper" />
+
+      <!-- Regular content for other tabs (verbatim, AI services) -->
       <ConversationPublishContent
+        v-else
         ref="publishContent"
-        :mardownContent="mardownContent"
+        :markdownContent="markdownContent"
         :status="currentStatus"
         :blobUrl="blobUrl"
         :pdfPercentage="generationPercentage"
         :editable="isEditableOutput"
-        @content-change="onContentChange" />
+        :errorMessage="currentJobError"
+        :jobId="currentJobId"
+        :organizationId="publicationOrganizationId"
+        :conversationName="conversation?.name || 'export'"
+        :versionNumber="currentVersionNumber"
+        @content-change="onContentChange"
+        @retry="reloadGeneration"
+        @save-version="saveVersion" />
     </div>
 
-    <!-- Save Version Modal -->
-    <div v-if="showSaveVersionModal" class="modal-overlay" @click.self="showSaveVersionModal = false">
+
+    <!-- Regenerate Confirmation Modal -->
+    <div v-if="showRegenerateConfirm" class="modal-overlay" @click.self="showRegenerateConfirm = false">
       <div class="modal-content">
-        <h3>{{ $t("publish.editor.save_version_title") }}</h3>
-        <input
-          type="text"
-          v-model="newVersionName"
-          :placeholder="$t('publish.editor.version_name_placeholder')"
-          class="fullwidth margin-bottom-small" />
-        <div class="flex gap-small justify-end">
-          <button type="button" class="secondary" @click="showSaveVersionModal = false">
+        <div class="modal-header flex align-center gap-small">
+          <span class="icon warning yellow"></span>
+          <h3>{{ $t("publish.regenerate.confirm_title") }}</h3>
+        </div>
+        <p>{{ $t("publish.regenerate.confirm_message") }}</p>
+        <div class="flex gap-small justify-end margin-top-medium">
+          <button type="button" class="secondary" @click="showRegenerateConfirm = false">
             {{ $t("common.cancel") }}
           </button>
-          <button type="button" class="primary" @click="saveVersion" :disabled="!newVersionName">
-            {{ $t("publish.editor.save_version") }}
+          <button type="button" class="primary" @click="executeRegenerate">
+            {{ $t("publish.regenerate.confirm_button") }}
           </button>
         </div>
       </div>
@@ -161,6 +152,7 @@ import {
   apiGetExportVersion,
   apiRestoreExportVersion,
   apiExportDocument,
+  apiListGenerations,
 } from "@/api/service.js"
 
 import getDescriptionByLanguage from "@/tools/getDescriptionByLanguage.js"
@@ -178,6 +170,9 @@ import ConversationPublishContent from "@/components/ConversationPublishContent.
 import AppEditorChannelsSelector from "@/components/AppEditorChannelsSelector.vue"
 import AppEditorTranslationSelector from "@/components/AppEditorTranslationSelector.vue"
 import PopoverList from "@/components/atoms/PopoverList.vue"
+import GenerationTimeline from "@/components/GenerationTimeline.vue"
+import AIServiceMenu from "@/components/AIServiceMenu.vue"
+import PublicationSection from "@/components/PublicationSection.vue"
 export default {
   mixins: [conversationMixin],
   data() {
@@ -199,17 +194,18 @@ export default {
       currentTabId: null,
       loadingDownload: false,
       pollingJob: null,
-      mardownContent: null,
+      markdownContent: null,
       // Versioning
       savedVersions: [],
-      showSaveVersionModal: false,
-      newVersionName: "",
       editedContent: null,
-      // Categories
-      selectedCategory: null,
       // Socket.io
       socket: null,
       socketConnected: false,
+      // Generations
+      generations: [],
+      currentGenerationId: null,
+      showRegenerateConfirm: false,
+      currentVersionNumber: null,
     }
   },
   mounted() {
@@ -231,72 +227,57 @@ export default {
       }
     },
     async activeTab(newVal, oldVal) {
-      this.initGeneration()
-      this.loadVersions()
+      await this.initGeneration()
+      // Load generations after job list is populated
+      await this.loadGenerations()
+      await this.loadVersions()
+      // Automatically select and load the latest version
+      await this.selectLatestVersion()
+      // Switch to preview mode for AI services (not verbatim or publication)
+      if (newVal && newVal !== 'verbatim' && newVal !== 'publication') {
+        this.$nextTick(() => {
+          this.$refs.publishContent?.setViewMode('preview')
+        })
+      }
+    },
+    async selectedTranslation(newVal, oldVal) {
+      // Auto-load document when translation language changes
+      if (newVal !== oldVal) {
+        await this.initGeneration()
+        await this.loadGenerations()
+        await this.loadVersions()
+        // Automatically select and load the latest version
+        await this.selectLatestVersion()
+      }
+    },
+    selectedChannel(newVal, oldVal) {
+      // Auto-load document when channel changes
+      if (newVal !== oldVal) {
+        this.initGeneration()
+      }
+    },
+    markdownContent(newVal) {
+      // Reset editedContent when new content is loaded
+      // This ensures hasContentChanges computed property works correctly
+      this.editedContent = null
     },
   },
   computed: {
     hasContentChanges() {
-      return this.$refs.publishContent?.hasUnsavedChanges() || false
-    },
-    hasCategories() {
-      const categories = Object.values(this.indexedFormat)
-        .map(s => s.service_category)
-        .filter(Boolean)
-      return categories.length > 0
-    },
-    availableCategories() {
-      const categories = new Set()
-      Object.values(this.indexedFormat).forEach(service => {
-        if (service.service_category) {
-          categories.add(service.service_category)
-        }
-      })
-      // Add 'other' for services without category
-      const hasUncategorized = Object.values(this.indexedFormat).some(s => !s.service_category)
-      if (hasUncategorized) {
-        categories.add('other')
-      }
-      return Array.from(categories)
-    },
-    filteredTabs() {
-      if (!this.hasCategories || !this.selectedCategory) {
-        return this.tabs
-      }
-      return this.tabs.filter(tab => {
-        const service = this.indexedFormat[tab.name]
-        if (this.selectedCategory === 'other') {
-          return !service?.service_category
-        }
-        return service?.service_category === this.selectedCategory
-      })
+      // Use the data property that's updated by onContentChange event
+      // This is reactive, unlike calling $refs method
+      if (this.editedContent === null) return false
+      return this.editedContent !== this.markdownContent
     },
     optionsExport() {
-      switch (this.activeTab) {
-        case "verbatim":
-        case "docx":
-        case "cri":
-          return [
-            { value: "docx", text: this.$t("conversation.export.docx") },
-            { value: "pdf", text: this.$t("conversation.export.pdf") },
-            { value: "txt", text: this.$t("conversation.export.txt") },
-            { value: "json", text: this.$t("conversation.export.json") },
-          ]
-
-        default:
-          if (this.mardownContent) {
-            return [
-              { value: "md", text: this.$t("conversation.export.md") },
-              // { value: "pdf", text: this.$t("conversation.export.pdf") },
-            ]
-          }
-          return [
-            { value: "docx", text: this.$t("conversation.export.docx") },
-            { value: "pdf", text: this.$t("conversation.export.pdf") },
-            // { value: 'txt', text: $t('conversation.export.txt') },
-            // { value: 'json', text: $t('conversation.export.json') },
-          ]
-      }
+      // Verbatim export options - always the same regardless of active tab
+      // AI service exports (DOCX/PDF from templates) are handled in PublicationSection
+      return [
+        { value: "docx", text: this.$t("conversation.export.docx") },
+        { value: "pdf", text: this.$t("conversation.export.pdf") },
+        { value: "txt", text: this.$t("conversation.export.txt") },
+        { value: "json", text: this.$t("conversation.export.json") },
+      ]
     },
     dataLoaded() {
       return this.conversationLoaded && !this.loadingServices
@@ -338,9 +319,15 @@ export default {
             icon: "file-text",
           },
           ...res,
+          {
+            name: "publication",
+            label: this.$i18n.t(`publish.tabs.publication`),
+            icon: "file-text",
+          },
         ]
 
-        this.activeTab = resWithCri[0].name
+        // Default to verbatim when arriving on export view
+        this.activeTab = "verbatim"
         return resWithCri
       } else {
         this.activeTab = "verbatim"
@@ -348,10 +335,15 @@ export default {
       return res
     },
     selectedFlavor() {
+      // Verbatim and publication are not LLM services, have no flavor
+      if (this.activeTab === 'verbatim' || this.activeTab === 'publication') return null
       // return string like "llama3"
       return this.indexedFormat[this.activeTab]?.flavors?.[0]?.name
     },
     outputFormating() {
+      // Verbatim produces DOCX/PDF output (not editable markdown)
+      // Publication tab doesn't have direct output format
+      if (this.activeTab === 'verbatim' || this.activeTab === 'publication') return 'abstractive'
       // abstractive / markdown / text
       return this.indexedFormat[this.activeTab]?.flavors?.[0]?.output_type
     },
@@ -392,14 +384,36 @@ export default {
     generationPercentage() {
       return Number(this?.currentJob?.processing || 0)
     },
+    currentJobError() {
+      const error = this.currentJob?.error
+      if (!error) return null
+
+      // Transform technical errors to user-friendly messages
+      if (error.includes("status code 500") || error.includes("500")) {
+        return this.$t("publish.error_llm_server")
+      }
+      if (error.includes("status code 502") || error.includes("502")) {
+        return this.$t("publish.error_llm_unavailable")
+      }
+      if (error.includes("status code 503") || error.includes("503")) {
+        return this.$t("publish.error_llm_unavailable")
+      }
+      if (error.includes("status code 404") || error.includes("not found")) {
+        return this.$t("publish.error_job_expired")
+      }
+      if (error.includes("ECONNREFUSED") || error.includes("connect")) {
+        return this.$t("publish.error_llm_unavailable")
+      }
+      if (error.includes("timeout") || error.includes("ETIMEDOUT")) {
+        return this.$t("publish.error_timeout")
+      }
+
+      return error
+    },
     breadcrumbItems() {
       return [
         {
           label: this.rootConversation?.name ?? "",
-          // to: {
-          //   name: "conversations overview",
-          //   params: { conversationId: this.conversationId },
-          // },
         },
         {
           label: this.$t("breadcrumb.transcription"),
@@ -413,10 +427,25 @@ export default {
         },
       ]
     },
+    currentJobId() {
+      // For publication tab, get the job ID from current generation or job
+      // This allows publication templates to use completed jobs
+      if (this.activeTab === 'publication') {
+        // Try to get jobId from current generation first
+        const currentGen = this.generations?.find(g => g.generationId === this.currentGenerationId)
+        if (currentGen?.jobId) {
+          return currentGen.jobId
+        }
+      }
+      return this.currentJob?.jobId || null
+    },
+    publicationOrganizationId() {
+      return this.conversation?.organization?.organizationId || null
+    },
   },
   methods: {
     initConversationHook() {
-      // this.initGeneration()
+      // Method intentionally empty - hook for future use
     },
     showHelper() {
       this.helperVisible = true
@@ -432,6 +461,8 @@ export default {
       await this.pollingGeneration(true, this.activeTab)
     },
     exportConv({ value }) {
+      // Verbatim export - always use direct conversation export
+      // AI service exports (via LLM Gateway templates) are handled in PublicationSection
       switch (value) {
         case "docx":
           this.exportDocx()
@@ -444,9 +475,6 @@ export default {
           break
         case "pdf":
           this.exportPdf()
-          break
-        case "md":
-          this.exportMarkdown()
           break
         default:
           break
@@ -576,6 +604,52 @@ export default {
       link.click()
       URL.revokeObjectURL(link.href)
     },
+    async exportViaGateway(format) {
+      this.loadingDownload = true
+      try {
+        const jobId = this.currentJob?.jobId
+        if (!jobId) {
+          // Try to get jobId from current generation if available
+          const currentGen = this.generations.find(g => g.generationId === this.currentGenerationId)
+          if (currentGen?.jobId) {
+            // Update jobsList and retry
+            const serviceId = this.selectedRoute || this.activeTab
+            const existingJobIndex = this.jobsList.findIndex(j => j.format === serviceId)
+            if (existingJobIndex !== -1) {
+              this.$set(this.jobsList, existingJobIndex, {
+                ...this.jobsList[existingJobIndex],
+                jobId: currentGen.jobId,
+              })
+            }
+            // Pass version number to export the specific version from database
+            const blob = await apiExportDocument(this.conversationId, currentGen.jobId, format, this.currentVersionNumber)
+            if (blob) {
+              this.exportBlobFile(blob, `.${format}`)
+            } else {
+              throw new Error("Export returned no data")
+            }
+            return
+          }
+          console.error("No job ID available for export. currentJob:", this.currentJob, "currentGenerationId:", this.currentGenerationId)
+          throw new Error("No job ID available")
+        }
+        // Pass version number to export the specific version from database
+        const blob = await apiExportDocument(this.conversationId, jobId, format, this.currentVersionNumber)
+        if (blob) {
+          this.exportBlobFile(blob, `.${format}`)
+        } else {
+          throw new Error("Export returned no data")
+        }
+      } catch (e) {
+        console.error("Export failed:", e)
+        this.$store.dispatch("system/addNotification", {
+          type: "error",
+          message: this.$t("publish.export_error"),
+        })
+      } finally {
+        this.loadingDownload = false
+      }
+    },
     async getServices() {
       try {
         let services = await getLLMService()
@@ -592,11 +666,6 @@ export default {
           res[format]["service_category"] = service.service_category || null
         }
         this.indexedFormat = res
-
-        // Set initial category if categories exist
-        if (this.hasCategories && this.availableCategories.length > 0) {
-          this.selectedCategory = this.availableCategories[0]
-        }
       } catch (e) {
         console.error(e)
       } finally {
@@ -605,7 +674,13 @@ export default {
     },
     async getPreview(regenerate = false) {
       let currentTab = this.activeTab
-      this.mardownContent = null
+      // Skip if no format is selected yet (prevents 400 errors on initial load)
+      // Also skip for publication tab which shows templates, not a preview
+      const format = this.selectedRoute || this.activeTab
+      if (!format || this.activeTab === 'publication') {
+        return
+      }
+      this.markdownContent = null
       this.blobUrl = null
       let req = await apiGetGenericFileFromConversation(
         this.conversationId,
@@ -625,16 +700,75 @@ export default {
 
       if (req?.status === "success") {
         if (req.data.type === "application/json") {
+          // Check if this is an error response from backend
+          try {
+            const text = await req.data.text()
+            const json = JSON.parse(text)
+
+            // Handle LLM Gateway errors
+            if (json.status === "error" && json.errorType === "llm_gateway_error") {
+              this.$store.dispatch("system/addNotification", {
+                type: "error",
+                message: this.$t("publish.llm_gateway_error", { error: json.error }),
+              })
+              return
+            }
+
+            // Handle job not found - auto-trigger regeneration
+            if (json.status === "job_not_found" && json.requiresRegeneration) {
+              this.$store.dispatch("system/addNotification", {
+                type: "warning",
+                message: this.$t("publish.job_not_found_regenerating"),
+              })
+              // Auto-regenerate after a short delay
+              setTimeout(() => this.initGeneration(true), 1000)
+              return
+            }
+          } catch (e) {
+            // Not JSON, just ignore
+          }
+
           this.blobUrl = null
           return
         } else if (req.data.type === "application/pdf") {
           this.blobUrl = URL.createObjectURL(req.data)
         } else if (req.data.type === "text/plain") {
           this.blobUrl = null
-          this.mardownContent = await req.data.text()
+          this.markdownContent = await req.data.text()
         } else {
           this.blobUrl = null
-          console.log("error", req)
+        }
+      } else if (req?.status === "error") {
+        // Handle error responses
+        const errorMessage = req?.message || req?.error?.response?.data?.error || this.$t("publish.generic_error")
+        const statusCode = req?.error?.response?.status
+
+        // Check for job not found (410)
+        if (statusCode === 410) {
+          this.$store.dispatch("system/addNotification", {
+            type: "warning",
+            message: this.$t("publish.job_not_found_regenerating"),
+          })
+          // Auto-regenerate after a short delay
+          setTimeout(() => this.initGeneration(true), 1000)
+          return
+        }
+
+        // Check for LLM Gateway error (502)
+        if (statusCode === 502) {
+          this.$store.dispatch("system/addNotification", {
+            type: "error",
+            message: this.$t("publish.llm_gateway_unavailable"),
+          })
+          return
+        }
+
+        // Generic error
+        if (regenerate) {
+          this.$store.dispatch("system/addNotification", {
+            type: "error",
+            message: errorMessage,
+          })
         }
       }
     },
@@ -695,7 +829,7 @@ export default {
           version.version_number
         )
         if (versionData && versionData.content) {
-          this.mardownContent = versionData.content
+          this.markdownContent = versionData.content
           this.$refs.publishContent?.markAsSaved()
         }
       } catch (e) {
@@ -708,7 +842,7 @@ export default {
         const jobId = this.currentJob?.jobId
         if (!jobId) return
 
-        const content = this.$refs.publishContent?.getContent() || this.mardownContent
+        const content = this.$refs.publishContent?.getContent() || this.markdownContent
         const result = await apiUpdateExportResult(
           this.conversationId,
           jobId,
@@ -716,9 +850,12 @@ export default {
         )
         if (result) {
           this.$refs.publishContent?.markAsSaved()
-          this.showSaveVersionModal = false
-          this.newVersionName = ""
           await this.loadVersions()
+          // Auto-select the newly created version (highest version number)
+          if (this.savedVersions && this.savedVersions.length > 0) {
+            const newVersionNumber = Math.max(...this.savedVersions.map(v => v.version_number))
+            this.currentVersionNumber = newVersionNumber
+          }
           // Show success notification
           this.$store.dispatch("system/addNotification", {
             type: "success",
@@ -751,7 +888,7 @@ export default {
           version.version_number
         )
         if (result && result.content) {
-          this.mardownContent = result.content
+          this.markdownContent = result.content
           this.$refs.publishContent?.markAsSaved()
           await this.loadVersions()
           this.$store.dispatch("system/addNotification", {
@@ -778,6 +915,108 @@ export default {
     formatDate(dateString) {
       if (!dateString) return ""
       return moment(dateString).format("YYYY-MM-DD HH:mm")
+    },
+    // Generation methods
+    async loadGenerations() {
+      const serviceId = this.selectedRoute || this.activeTab
+      if (!this.conversationId || this.activeTab === 'verbatim' || this.activeTab === 'publication' || !serviceId) {
+        this.generations = []
+        this.currentGenerationId = null
+        return
+      }
+      try {
+        this.generations = await apiListGenerations(this.conversationId, serviceId)
+        // Set current generation
+        const current = this.generations.find(g => g.isCurrent)
+        if (current) {
+          this.currentGenerationId = current.generationId
+          // Sync jobId in jobsList with the current generation's jobId
+          // This ensures export works correctly even if conversationExport was out of sync
+          if (current.jobId) {
+            const existingJobIndex = this.jobsList.findIndex(j => j.format === serviceId)
+            if (existingJobIndex !== -1 && this.jobsList[existingJobIndex].jobId !== current.jobId) {
+              this.$set(this.jobsList, existingJobIndex, {
+                ...this.jobsList[existingJobIndex],
+                jobId: current.jobId,
+              })
+            }
+          }
+        } else if (this.generations.length > 0) {
+          // Fallback to the most recent generation
+          this.currentGenerationId = this.generations[0].generationId
+          // Also sync jobId for the most recent generation
+          const mostRecent = this.generations[0]
+          if (mostRecent.jobId) {
+            const existingJobIndex = this.jobsList.findIndex(j => j.format === serviceId)
+            if (existingJobIndex !== -1) {
+              this.$set(this.jobsList, existingJobIndex, {
+                ...this.jobsList[existingJobIndex],
+                jobId: mostRecent.jobId,
+              })
+            }
+          }
+        }
+      } catch (e) {
+        console.error("Error loading generations:", e)
+        this.generations = []
+      }
+    },
+    async selectGeneration(generationId) {
+      this.currentGenerationId = generationId
+      const generation = this.generations.find(g => g.generationId === generationId)
+      if (generation) {
+        // Update currentJob to use the selected generation's jobId
+        // Find and update the job in jobsList
+        const existingJobIndex = this.jobsList.findIndex(j => j.format === (this.selectedRoute || this.activeTab))
+        if (existingJobIndex !== -1) {
+          this.$set(this.jobsList, existingJobIndex, {
+            ...this.jobsList[existingJobIndex],
+            jobId: generation.jobId,
+          })
+        }
+        // Load versions for that generation
+        await this.loadVersions()
+        // Automatically select and load the latest version of this generation
+        if (this.savedVersions && this.savedVersions.length > 0) {
+          await this.selectLatestVersion()
+        } else {
+          // No versions yet, load the raw generation content
+          this.currentVersionNumber = null
+          await this.getPreview(false)
+        }
+      }
+    },
+    async handleSelectVersion({ generationId, versionNumber }) {
+      // First ensure we're on the right generation
+      if (generationId !== this.currentGenerationId) {
+        await this.selectGeneration(generationId)
+      }
+      // Then load the specific version
+      await this.loadVersionByNumber(versionNumber)
+    },
+    async loadVersionByNumber(versionNumber) {
+      const version = this.savedVersions.find(v => v.version_number === versionNumber)
+      if (version) {
+        this.currentVersionNumber = versionNumber
+        await this.loadVersion(version)
+      }
+    },
+    async selectLatestVersion() {
+      // Select and load the latest version if available
+      if (this.savedVersions && this.savedVersions.length > 0) {
+        const latestVersionNumber = Math.max(...this.savedVersions.map(v => v.version_number))
+        await this.loadVersionByNumber(latestVersionNumber)
+      } else {
+        this.currentVersionNumber = null
+      }
+    },
+    confirmRegenerate() {
+      this.showRegenerateConfirm = true
+    },
+    async executeRegenerate() {
+      this.showRegenerateConfirm = false
+      await this.initGeneration(true)
+      await this.loadGenerations()
     },
     // Socket.io methods
     initSocket() {
@@ -911,13 +1150,13 @@ export default {
     CustomSelect,
     SwitchInput,
     Tabs,
-    // ConversationPublishVerbatim,
-    // ConversationPublishCra,
-    // ConversationPublishCri,
     ConversationPublishContent,
     AppEditorChannelsSelector,
     AppEditorTranslationSelector,
     PopoverList,
+    GenerationTimeline,
+    AIServiceMenu,
+    PublicationSection,
   },
 }
 </script>

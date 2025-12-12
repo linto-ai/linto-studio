@@ -1,5 +1,5 @@
 .publish-main-container {
-  background-color: #8080802e;
+  background-color: var(--color-background-secondary, rgba(128, 128, 128, 0.18));
   overflow: auto;
   padding: 5px;
   flex: 1;
@@ -17,18 +17,13 @@
   width: 60rem;
   max-width: 100%;
   margin-inline: auto;
-  //font-family: luciole;
-  //flex: 1;
-  //display: flex;
-  // border-radius: 4px;
+  overflow: hidden;
 
   border: var(--border-block);
   box-shadow: var(--shadow-block);
   background-color: var(--background-primary);
 
   #markdown-editor-source {
-    //width: 50%;
-    //height: 100%;
     .cm-editor {
       height: 100%;
     }
@@ -50,6 +45,8 @@
 
   #markdown-editor-container {
     height: 100%;
+    overflow: auto;
+    flex: 1;
   }
 
   #markdown-editor-preview header,
@@ -61,8 +58,12 @@
 
   .tiptap.ProseMirror {
     width: 100%;
+    max-width: 100%;
     overflow: auto;
-    padding: 4rem;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    box-sizing: border-box;
+    padding: 2rem;
   }
 }
 
@@ -75,21 +76,40 @@
   border-radius: 4px;
   padding: 2rem;
   width: 100%;
+
+  .error-details {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background-color: var(--background-secondary);
+    border-radius: 4px;
+    word-break: break-word;
+  }
 }
 
-.publish-main__loading {
-  max-width: 56rem;
+// Progress/Loading state - fills the container like the editor
+.publish-main__progress {
+  width: 60rem;
+  max-width: 100%;
   margin-inline: auto;
   background-color: var(--background-primary);
   box-shadow: var(--shadow-block);
+  border: var(--border-block);
   text-align: center;
   border-radius: 4px;
   padding: 2rem;
+  min-height: 400px;
+
+  .illustration {
+    margin-bottom: 1rem;
+    max-width: 20rem;
+  }
 }
 
-.publish-main__loading .illustration {
-  margin-bottom: 1rem;
-  width: 25rem;
+// Legacy class for backwards compatibility
+.publish-main__loading {
+  @extend .publish-main__progress;
 }
 
 .publish-turn {
@@ -120,6 +140,7 @@
   padding: 0.5rem;
   background-color: var(--background-secondary);
   border-bottom: var(--border-block);
+  flex-shrink: 0;
 
   .toolbar-btn {
     display: flex;
@@ -133,6 +154,9 @@
     background-color: transparent;
     cursor: pointer;
     transition: background-color 0.2s ease;
+    font-size: 1rem;
+    font-weight: normal;
+    color: var(--text-primary);
 
     &:hover {
       background-color: var(--background-tertiary);
@@ -147,6 +171,14 @@
       opacity: 0.5;
       cursor: not-allowed;
     }
+
+    strong {
+      font-weight: bold;
+    }
+
+    em {
+      font-style: italic;
+    }
   }
 
   .toolbar-separator {
@@ -160,35 +192,62 @@
 // Edit/Preview Toggle Styles
 .publish-editor-header {
   padding: 0.5rem 1rem;
-  background-color: var(--background-secondary);
+  background-color: var(--background-secondary, #f5f5f5);
   border-bottom: var(--border-block);
 }
 
 .publish-editor-mode-toggle {
-  background-color: var(--background-tertiary);
-  border-radius: 4px;
-  padding: 2px;
+  display: inline-flex;
+  align-items: center;
+  background: var(--background-primary, white);
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 8px;
+  padding: 3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 
   .mode-btn {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 0.25rem;
-    padding: 0.5rem 1rem;
+    gap: 6px;
+    padding: 6px 14px;
     border: none;
-    border-radius: 3px;
-    background-color: transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-secondary, #666);
+    font-size: 0.8125rem;
+    font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+
+    .icon {
+      width: 14px;
+      height: 14px;
+    }
 
     &:hover {
-      background-color: var(--background-secondary);
+      color: var(--text-primary, #333);
+      background: var(--background-secondary, #f5f5f5);
     }
 
     &.active {
-      background-color: var(--background-primary);
-      box-shadow: var(--shadow-sm);
+      background: var(--primary-color);
+      color: var(--primary-contrast);
+
+      .icon {
+        background: var(--primary-contrast);
+      }
     }
   }
+}
+
+// Save version button in editor header
+.save-version-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
 }
 
 .unsaved-indicator {
@@ -233,6 +292,12 @@
       font-size: 0.875rem;
       overflow: hidden;
       text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .version-date {
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
       white-space: nowrap;
     }
 
@@ -325,4 +390,19 @@
 
 .justify-end {
   justify-content: flex-end;
+}
+
+// AI Service Menu Wrapper
+.publish-service-menu-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 0.25rem 0;
+}
+
+.publish-content-wrapper {
+  margin: 0 1rem;
+}
+
+.publish-export-popover {
+  margin-left: auto;
 }
