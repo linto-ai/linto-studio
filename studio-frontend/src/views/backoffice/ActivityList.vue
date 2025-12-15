@@ -4,30 +4,33 @@
       <HeaderTable :title="$t('backoffice.activity_list.title')" />
     </template>
     <Tabs :tabs="tabs" v-model="currentTab" secondary></Tabs>
-    <UserSelector v-model="selecteduser" />
-    <GenericTableRequest
-      ref="table"
-      idKey="_id"
-      :fetchMethod="fetchMethod"
-      :columns="columns"
-      :initSortListDirection="sortListDirection"
-      :initSortListKey="sortListKey">
-      <template #cell-user.role.value="{ value }">
-        <PlatformRoleSelector v-model="value" readonly compact />
-      </template>
+    <div class="flex1 flex col gap-medium">
+      <UserSelector v-model="selecteduser" label="Filtrer par utilisateur" />
+      <GenericTableRequest
+        ref="table"
+        idKey="_id"
+        :fetchMethod="fetchMethod"
+        :fetchMethodParams="fetchMethodParams"
+        :columns="columns"
+        :initSortListDirection="sortListDirection"
+        :initSortListKey="sortListKey">
+        <template #cell-user.role.value="{ value }">
+          <PlatformRoleSelector v-model="value" readonly compact />
+        </template>
 
-      <template #cell-organization.role.value="{ value }">
-        <OrgaRoleSelector v-model="value" readonly v-if="value" />
-      </template>
+        <template #cell-organization.role.value="{ value }">
+          <OrgaRoleSelector v-model="value" readonly v-if="value" />
+        </template>
 
-      <template #cell-http.method="{ value }">
-        <HttpMethodChip :HttpMethod="value" />
-      </template>
+        <template #cell-http.method="{ value }">
+          <HttpMethodChip :HttpMethod="value" />
+        </template>
 
-      <template #cell-http.url="{ value }">
-        <FormatedUrl :url="value" />
-      </template>
-    </GenericTableRequest>
+        <template #cell-http.url="{ value }">
+          <FormatedUrl :url="value" />
+        </template>
+      </GenericTableRequest>
+    </div>
   </MainContentBackoffice>
 </template>
 <script>
@@ -67,6 +70,11 @@ export default {
   },
   mounted() {},
   computed: {
+    fetchMethodParams() {
+      return {
+        userId: this.selecteduser?._id,
+      }
+    },
     columns() {
       switch (this.currentTab) {
         case "ressources":

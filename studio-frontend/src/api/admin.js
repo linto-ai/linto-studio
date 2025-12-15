@@ -14,6 +14,7 @@ export async function apiGetActivityLogs(
     sortOrder = -1,
     source,
     scope,
+    userId,
   } = {},
 ) {
   let res
@@ -30,6 +31,7 @@ export async function apiGetActivityLogs(
       sortCriteria: sortOrder,
       source,
       scope,
+      "user.id": userId,
     },
   )
 
