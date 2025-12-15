@@ -30,7 +30,7 @@
         <div class="create-template-card" @click="showCreateForm = true">
           <div class="create-preview">
             <div class="create-icon-wrapper">
-              <span class="create-icon-emoji">📤</span>
+              <span class="icon upload create-icon"></span>
             </div>
           </div>
           <div class="create-content">
@@ -137,13 +137,13 @@
                 @change="handleFileSelect"
                 style="display: none" />
               <template v-if="newTemplate.file">
-                <span class="file-icon">📄</span>
+                <span class="icon document file-icon"></span>
                 <span class="file-name">{{ newTemplate.file.name }}</span>
                 <span class="file-size">({{ formatFileSize(newTemplate.file.size) }})</span>
                 <button type="button" class="file-remove" @click.stop="removeFile">×</button>
               </template>
               <template v-else>
-                <span class="upload-icon">📤</span>
+                <span class="icon upload upload-icon"></span>
                 <span class="upload-text">
                   {{ $t("publish.publication.drop_file") }}
                 </span>
@@ -741,14 +741,15 @@ export default {
   border-style: solid;
 }
 
-.create-icon-emoji {
-  font-size: 24px;
-  line-height: 1;
-  transition: filter 0.25s ease;
+.create-icon {
+  width: 24px;
+  height: 24px;
+  background: var(--text-secondary, #666);
+  transition: background 0.25s ease;
 }
 
-.create-template-card:hover .create-icon-emoji {
-  filter: brightness(0) invert(1);
+.create-template-card:hover .create-icon {
+  background: white;
 }
 
 .create-content {
@@ -963,7 +964,9 @@ export default {
 }
 
 .upload-icon {
-  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  background: var(--text-secondary, #666);
 }
 
 .upload-text {
@@ -978,7 +981,10 @@ export default {
 }
 
 .file-icon {
-  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  background: var(--success-color, #4caf50);
+  flex-shrink: 0;
 }
 
 .file-name {

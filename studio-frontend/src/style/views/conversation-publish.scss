@@ -223,11 +223,16 @@
     .icon {
       width: 14px;
       height: 14px;
+      background: var(--text-secondary, #666);
     }
 
     &:hover {
       color: var(--text-primary, #333);
       background: var(--background-secondary, #f5f5f5);
+
+      .icon {
+        background: var(--text-primary, #333);
+      }
     }
 
     &.active {

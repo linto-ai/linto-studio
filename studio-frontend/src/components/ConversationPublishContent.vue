@@ -24,7 +24,7 @@
               class="mode-btn"
               :class="{ active: viewMode === 'edit' }"
               @click="setMode('edit')">
-              <span class="mode-icon">✏️</span>
+              <span class="icon edit mode-icon"></span>
               {{ $t("publish.editor.edit_mode") }}
             </button>
             <button
@@ -32,7 +32,7 @@
               class="mode-btn"
               :class="{ active: viewMode === 'preview' }"
               @click="setMode('preview')">
-              <span class="mode-icon">👁️</span>
+              <span class="icon show mode-icon"></span>
               {{ $t("publish.editor.preview_mode") }}
             </button>
             <button
@@ -40,7 +40,7 @@
               class="mode-btn"
               :class="{ active: viewMode === 'publication' }"
               @click="setMode('publication')">
-              <span class="mode-icon">📤</span>
+              <span class="icon share mode-icon"></span>
               {{ $t("publish.editor.publication_mode") }}
             </button>
           </div>

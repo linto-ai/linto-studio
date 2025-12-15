@@ -15,7 +15,7 @@
         <div class="preview-header" v-if="hasTitle">
           <div class="preview-title-bar"></div>
           <div class="preview-date" v-if="hasDate">
-            <span class="date-icon">📅</span>
+            <span class="icon clock date-icon"></span>
           </div>
         </div>
 
@@ -72,7 +72,7 @@
 
       <!-- Scope badge -->
       <div class="scope-badge" :class="`badge-${scopeClass}`">
-        <span class="scope-icon">{{ scopeIcon }}</span>
+        <span :class="['icon', scopeIconClass, 'scope-icon']"></span>
       </div>
     </div>
 
@@ -90,7 +90,7 @@
             class="delete-btn"
             @click.stop="handleDelete"
             :title="$t('publish.publication.delete_template') || 'Supprimer le modèle'">
-            <span class="delete-icon">🗑️</span>
+            <span class="icon trash delete-icon"></span>
           </button>
           <span class="template-action">
             {{ $t("publish.publication.preview_action") || "Aperçu" }}
@@ -142,11 +142,11 @@ export default {
       if (scope === "organization") return "org"
       return "user"
     },
-    scopeIcon() {
+    scopeIconClass() {
       switch (this.scopeClass) {
-        case "system": return "🌐"
-        case "org": return "🏢"
-        default: return "👤"
+        case "system": return "pin-on"
+        case "org": return "work"
+        default: return "profile"
       }
     },
     scopeLabel() {
@@ -323,7 +323,9 @@ export default {
 }
 
 .date-icon {
-  font-size: 8px;
+  width: 8px;
+  height: 8px;
+  background: var(--text-secondary, #666);
   opacity: 0.7;
 }
 
@@ -439,8 +441,21 @@ export default {
 }
 
 .scope-icon {
-  font-size: 14px;
-  line-height: 1;
+  width: 14px;
+  height: 14px;
+  background: var(--text-secondary, #666);
+}
+
+.badge-system .scope-icon {
+  background: #667eea;
+}
+
+.badge-org .scope-icon {
+  background: #f5576c;
+}
+
+.badge-user .scope-icon {
+  background: #5fa8d3;
 }
 
 /* Card Content */
@@ -522,8 +537,9 @@ export default {
 }
 
 .delete-icon {
-  font-size: 14px;
-  line-height: 1;
+  width: 14px;
+  height: 14px;
+  background: var(--error-color, #f44336);
 }
 
 .template-action {
