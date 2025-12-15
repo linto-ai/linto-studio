@@ -33,8 +33,8 @@
               {{ $t("publish.is_not_updated") }}
             </span>
           </div>
-          <!-- Always show regenerate button -->
-          <button class="yellow fullwidth" @click="confirmRegenerate">
+          <!-- Show regenerate button only when document is outdated OR user is admin -->
+          <button v-if="!isUpdated || isAdmin" class="yellow fullwidth" @click="confirmRegenerate">
             <span class="icon reload"></span>
             <span class="label">{{ $t("publish.reload_document") }}</span>
           </button>
@@ -137,6 +137,7 @@ import moment from "moment"
 import { jsPDF } from "jspdf"
 
 import { conversationMixin } from "../mixins/conversation.js"
+import { orgaRoleMixin } from "../mixins/orgaRole.js"
 import {
   apiGetJsonFileFromConversation,
   apiGetTextFileFromConversation,
@@ -174,7 +175,7 @@ import GenerationTimeline from "@/components/GenerationTimeline.vue"
 import AIServiceMenu from "@/components/AIServiceMenu.vue"
 import PublicationSection from "@/components/PublicationSection.vue"
 export default {
-  mixins: [conversationMixin],
+  mixins: [conversationMixin, orgaRoleMixin],
   data() {
     return {
       selfUrl: (convId) => `/interface/conversations/${convId}/publish`,
