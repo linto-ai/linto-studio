@@ -1076,7 +1076,7 @@ export default {
         }
       }
     },
-    handleJobComplete(update) {
+    async handleJobComplete(update) {
       // Handle job completion
       // Check conversationId if provided, otherwise check if jobId is in our list
       if (update.conversationId && update.conversationId !== this.conversationId) return
@@ -1098,8 +1098,10 @@ export default {
           processing: 100,
         })
 
-        // Refresh the preview when job completes
-        this.getPreview()
+        // Refresh the generations timeline, versions and preview when job completes
+        await this.loadGenerations()
+        await this.loadVersions()
+        await this.getPreview()
       }
     },
     handleJobError(update) {
