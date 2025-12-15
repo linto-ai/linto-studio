@@ -28,9 +28,9 @@ class TokenModel extends MongoModel {
         payload.expiresIn = expires_in
         payload.expiresAt = new Date(Date.now() + expires_in)
       } else {
-        expireIn = getExpiresIn()
-        payload.expiresIn = expireIn
-        payload.expiresAt = new Date(Date.now() + expireIn)
+        expires_in = getExpiresIn()
+        payload.expiresIn = expires_in
+        payload.expiresAt = new Date(Date.now() + expires_in)
       }
 
       return await this.mongoInsert(payload)
