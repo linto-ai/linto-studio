@@ -32,7 +32,7 @@ import GenericTableLine from "./GenericTableLine.vue"
 
 export default {
   props: {
-    // { key, label, sortable, width, component}
+    // [{ key, label, sortable, width, component, mainLabel }]
     columns: {
       type: Array,
       required: true,
@@ -65,9 +65,7 @@ export default {
   data() {
     return {}
   },
-  mounted() {
-    console.log("table generic", this.$scopedSlots)
-  },
+  mounted() {},
   methods: {
     sortBy(event) {
       this.$emit("list_sort_by", event)

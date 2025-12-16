@@ -1,5 +1,22 @@
 const MongoModel = require("../model")
 
+function buildActivityMatchQuery(activity, orgaId, startDate, endDate) {
+  const timestampQuery = {}
+
+  if (startDate) timestampQuery.$gte = startDate
+  if (endDate) timestampQuery.$lte = endDate
+
+  return {
+    $match: {
+      activity,
+      ...(orgaId && { "organization.id": orgaId }),
+      ...(Object.keys(timestampQuery).length > 0 && {
+        timestamp: timestampQuery,
+      }),
+    },
+  }
+}
+
 class ActivityLog extends MongoModel {
   constructor() {
     super("activityLog")
@@ -88,6 +105,7 @@ class ActivityLog extends MongoModel {
       await this.mongoUpdateOne(query, operator, {
         socket: socket,
         timestamp: timestamp,
+        lastDisconnectionAt: new Date().toISOString(),
       })
     } catch (error) {
       console.error(error)
@@ -117,27 +135,29 @@ class ActivityLog extends MongoModel {
     }
   }
 
-  async getKpiLlm(orgaId) {
+  async getKpiLlm(orgaId, startDate, endDate) {
     try {
+      const matchQuery = buildActivityMatchQuery(
+        "llm",
+        orgaId,
+        startDate,
+        endDate,
+      )
+
       const query = [
-        {
-          $match: {
-            activity: "llm",
-            ...(orgaId && { "organization.id": orgaId }),
-          },
-        },
+        matchQuery,
         {
           $group: {
-            _id: null, // 👈 Global aggregation (or remove null if you want to group per org)
-            totalGenerations: { $sum: 1 },
-            totalContentLength: { $sum: "$llm.contentLength" },
+            _id: null,
+            generated: { $sum: 1 },
+            tokens: { $sum: "$llm.contentLength" },
           },
         },
         {
           $project: {
             _id: 0,
-            totalGenerations: 1,
-            totalContentLength: 1, // keep as bytes
+            generated: 1,
+            tokens: 1,
           },
         },
       ]
@@ -148,35 +168,34 @@ class ActivityLog extends MongoModel {
     }
   }
 
-  async getKpiTranscription(orgaId) {
+  async getKpiTranscription(orgaId, startDate, endDate) {
     try {
+      const matchQuery = buildActivityMatchQuery(
+        "transcription",
+        orgaId,
+        startDate,
+        endDate,
+      )
+
       const query = [
-        {
-          $match: {
-            activity: "transcription",
-            ...(orgaId && { "organization.id": orgaId }),
-          },
-        },
+        matchQuery,
         {
           $group: {
             _id: "$organization.id",
-            totalTranscriptions: { $sum: 1 },
-            totalDurationSeconds: {
-              $sum: "$transcription.conversation.transcription.duration",
+            generated: { $sum: 1 },
+            duration: {
+              $sum: "$transcription.duration",
             },
           },
         },
         {
           $project: {
             _id: 0,
-            // organizationId: "$_id",
-            totalTranscriptions: 1,
-            totalDurationSeconds: 1,
-            totalHours: { $divide: ["$totalDurationSeconds", 3600] },
+            generated: 1,
+            duration: 1,
           },
         },
       ]
-
       return await this.mongoAggregate(query)
     } catch (error) {
       console.error("Error in kpiTranscription:", error)
@@ -184,30 +203,29 @@ class ActivityLog extends MongoModel {
     }
   }
 
-  async getKpiSession(orgaId) {
+  async getKpiSession(orgaId, startDate, endDate) {
     try {
+      const matchQuery = buildActivityMatchQuery(
+        "session",
+        orgaId,
+        startDate,
+        endDate,
+      )
+
       const query = [
-        {
-          $match: {
-            activity: "session",
-            ...(orgaId && { "organization.id": orgaId }),
-          },
-        },
+        matchQuery,
         {
           $group: {
             _id: "$organization.id",
-            totalSessions: { $sum: 1 },
-            totalWatchTimeSeconds: { $sum: "$socket.totalWatchTime" },
-            avgWatchTimeSeconds: { $avg: "$socket.totalWatchTime" },
+            totalConnections: { $sum: 1 },
+            watchTime: { $sum: "$socket.totalWatchTime" },
           },
         },
         {
           $project: {
             _id: 0,
-            organizationId: "$_id",
-            totalSessions: 1,
-            totalWatchTimeHours: { $divide: ["$totalWatchTimeSeconds", 3600] },
-            avgWatchTimeMinutes: { $divide: ["$avgWatchTimeSeconds", 60] },
+            totalConnections: 1,
+            watchTime: 1,
           },
         },
       ]
@@ -218,6 +236,7 @@ class ActivityLog extends MongoModel {
       return error
     }
   }
+
   async kpiSessionById(sessionId) {
     try {
       if (!sessionId) throw new Error("Missing sessionId")
@@ -235,8 +254,10 @@ class ActivityLog extends MongoModel {
             totalWatchTime: { $sum: "$socket.totalWatchTime" },
             avgWatchTime: { $avg: "$socket.totalWatchTime" },
             totalConnections: { $sum: "$socket.connectionCount" },
+            firstConnectionAt: { $min: "$firstConnectionAt" },
+            lastDisconnectionAt: { $max: "$lastDisconnectionAt" },
             userCount: { $sum: 1 },
-            sessionInfo: { $first: "$session" },
+            session: { $first: "$session" },
             organization: { $first: "$organization" },
             usersAbove5Min: {
               $sum: {
@@ -271,24 +292,26 @@ class ActivityLog extends MongoModel {
         {
           $project: {
             _id: 0,
-            sessionInfo: 1,
-            organization: 1,
+            sessionId: "$session.sessionId",
+            organizationId: "$organization.id",
+            session: {
+              name: "$session.name",
+              visibility: "$session.visibility",
+            },
             userCount: {
               total: "$userCount",
-              totalConnections: "$totalConnections",
+              reconnections: "$totalConnections",
               above5Min: "$usersAbove5Min",
               below5Min: "$usersBelow5Min",
             },
-            totalWatchTimeSeconds: "$totalWatchTime",
-            totalWatchTimeMinutes: { $divide: ["$totalWatchTime", 60] },
-            totalWatchTimeHours: { $divide: ["$totalWatchTime", 3600] },
-            avgWatchTimeSeconds: "$avgWatchTime",
             watchTime: {
-              avgAbove5MinSeconds: "$avgWatchTimeAbove5Min",
-              avgBelow5MinSeconds: "$avgWatchTimeBelow5Min",
-              avgAbove5MinMinutes: { $divide: ["$avgWatchTimeAbove5Min", 60] },
-              avgBelow5MinMinutes: { $divide: ["$avgWatchTimeBelow5Min", 60] },
+              total: "$totalWatchTime",
+              average: "$avgWatchTime",
+              avgAbove5Min: "$avgWatchTimeAbove5Min",
+              avgUnder5Min: "$avgWatchTimeBelow5Min",
             },
+            firstConnectionAt: 1,
+            lastDisconnectionAt: 1,
           },
         },
       ]
@@ -296,6 +319,33 @@ class ActivityLog extends MongoModel {
       return await this.mongoAggregate(query)
     } catch (error) {
       console.error("Error in kpiSessionById:", error)
+      return error
+    }
+  }
+
+  async findOrganizationsWithActivity() {
+    try {
+      return await this.mongoDistinct("organization.id", {
+        "organization.id": { $exists: true, $ne: null },
+      })
+    } catch (error) {
+      console.error("Error in findOrganizationsWithActivity:", error)
+      return error
+    }
+  }
+
+  async findSessionsWithActivity(sinceTimestamp) {
+    try {
+      const query = {
+        "session.sessionId": { $exists: true, $ne: null },
+      }
+      if (sinceTimestamp && sinceTimestamp !== "") {
+        query.timestamp = { $gt: sinceTimestamp }
+      }
+
+      return await this.mongoDistinct("session.sessionId", query)
+    } catch (error) {
+      console.error("Error in findSessionInActivity:", error)
       return error
     }
   }

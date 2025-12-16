@@ -3,6 +3,30 @@
   "accoustic": {
     "standard": "Standard"
   },
+  "activity_list": {
+    "scope_label": "Domaine",
+    "level_label": "Niveau",
+    "http_method_label": "Méthode",
+    "http_endpoint_label": "URL",
+    "http_status_label": "Statut",
+    "organization_name_label": "Organisation",
+    "organization_role_label": "Rôle",
+    "user_label": "Utilisateur",
+    "user_filter_label": "Filtrer par utilisateur",
+    "platform_role_label": "Rôle sur la plateforme",
+    "session_name_label": "Nom de la session",
+    "session_id_label": "Id de session",
+    "time_label": "Date",
+    "watch_time_label": "Temps de visionnage",
+    "connection_count_label": "Nombre de connexions",
+    "tabs": {
+      "sessions_kpi": "KPI des sessions",
+      "sessions": "Detail des sessions",
+      "ressources": "Ressources",
+      "tokens": "Accès aux clé d'api",
+      "backoffice": "Backoffice"
+    }
+  },
   "appointment_selector": {
     "date_label": "Date",
     "start_time_label": "Heure de début",
@@ -85,11 +109,15 @@
   "backoffice": {
     "title": "Backoffice",
     "navigation": {
+      "activities": "Journal d'activité",
       "home": "Accueil",
       "users": "Utilisateurs",
       "organisations": "Organisations",
       "tokens": "Clés d'apis",
       "transcriberProfiles": "Profils de transcription"
+    },
+    "activity_list": {
+      "title": "Journal d'activité"
     },
     "user_list": {
       "title": "Utilisateurs",
@@ -142,6 +170,7 @@
     }
   },
   "breadcrumb": {
+    "activities": "Journal d'activité",
     "backoffice": "Backoffice",
     "conversations": "Conversations",
     "create": "Importer un media",
@@ -899,6 +928,23 @@
     "description_description": "Description de l'organisation",
     "description_label": "Description",
     "general_settings": "Réglages",
+    "kpi": {
+      "error": "Une erreur s'est produite lors de la récuperation des données",
+      "loading": "Chargement des données...",
+      "session_watch_time": "Temps total passé sur la transcription",
+      "session_avg_watch_time": "Temps moyen passé sur la transcription",
+      "session_total_connections": "Nombre de connexions",
+      "transcription_count": "Nombre de médias transcrits",
+      "transcription_avg_duration": "Duréé moyennes des médias",
+      "title": "Statistiques de l'organisation",
+      "sessions_title": "Transcription en direct",
+      "media_title": "Médias",
+      "time_step": {
+        "day": "Jour",
+        "month": "Mois",
+        "year": "Année"
+      }
+    },
     "leave_modal": {
       "action": "Quitter",
       "content": "Êtes vous sur de vouloir quitter l'organisation \"{name}\" ?",
@@ -929,10 +975,6 @@
       },
       "update_button": "Mettre à jour les critères d'appartenance",
       "apply_button": "Inviter les utilisateurs correspondant aux critères"
-    },
-    "organization_stats": {
-      "title": "Statistiques de l'organisation",
-      "medias": "Médias"
     },
     "transcriber_profiles": {
       "title": "Profils de transcription",
@@ -1246,6 +1288,14 @@
       "apply": "Continuer"
     }
   },
+  "session_kpi": {
+    "name_label": "Nom",
+    "viewer_label": "Spectateurs",
+    "watch_time_average_label": "Durée moyenne de visionnage",
+    "bounce_rate_label": "Taux de rebond (spectateurs)",
+    "quick_session_name": "Enregistrement de {userName}",
+    "quick_session_name_anonymous": "Enregistrement personnel"
+  },
   "quick_session": {
     "creation": {
       "transcription_settings_title": "Méthode de transcription",
@@ -1514,5 +1564,9 @@
     "search_empty_message": "Appuyer sur [ENTER] pour rechercher dans tous vos médias",
     "search_back_to_results_message": "Appuyer sur [ENTER] pour revenir aux résultats",
     "search_placeholder": "Rechercher dans vos médias"
+  },
+  "user_selector": {
+    "clear_button": "Effacer",
+    "search_placeholder": "Rechercher un utilisateur"
   }
 }

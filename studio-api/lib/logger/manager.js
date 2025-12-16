@@ -17,12 +17,12 @@ class LogManager {
     const ctx = await context.createContext(req, message, payload)
     logger.log(ctx)
 
-    if (
-      ctx?.http?.method !== "GET" ||
-      activityLoggedUrls.some((u) => ctx?.http?.url?.includes(u))
-    ) {
-      model.activityLog.create(ctx)
+    const { method, url } = ctx?.http || {}
+    if (method === "GET" && !activityLoggedUrls.some((u) => url?.includes(u))) {
+      return
     }
+    if (url === "/auth/login") return
+    model.activityLog.create(ctx)
   }
 
   static async logSocketEvent(socket, event, payload = {}) {
@@ -40,8 +40,10 @@ class LogManager {
 
       switch (event.action) {
         case SOCKET_EVENTS.JOIN:
-          if (!activityLog) model.activityLog.create(ctx)
-          else model.activityLog.socketReconnect(activityLog, ctx.timestamp)
+          if (!activityLog) {
+            ctx.firstConnectionAt = ctx.timestamp
+            model.activityLog.create(ctx)
+          } else model.activityLog.socketReconnect(activityLog, ctx.timestamp)
           break
         case SOCKET_EVENTS.LEAVE:
         case SOCKET_EVENTS.DISCONNECT:
@@ -63,12 +65,6 @@ class LogManager {
       if (!activityLog) return
 
       const socketPayload = calculateWatchTime(activityLog, ctx)
-      /*if (socketPayload.totalWatchTime < KEEP_LOG_WITH_WATCHTIME_OVER) {
-        await model.activityLog.deleteAllSocketLog(
-          ctx.socket.id,
-          KEEP_LOG_WITH_WATCHTIME_OVER,
-        )
-      } else {*/
       await model.activityLog.socketLeft(
         activityLog,
         socketPayload,

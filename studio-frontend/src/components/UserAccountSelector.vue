@@ -49,24 +49,6 @@
       variant="transparent"
       @click="toggleSidebar"></Button>
   </div>
-  <!-- <PopoverList
-    :items="navList.userMenu"
-    @click="handleClick"
-    class="user-account-selector"
-    :close-on-click="true"
-    width="ref">
-    <template #trigger="{ open }">
-      <Button
-        :avatar="userAvatar"
-        :avatar-text="uname"
-        :avatar-color="getColorFromText(UserName)"
-        :icon-right="open ? 'caret-up' : 'caret-down'"
-        variant="outline"
-        block>
-        {{ UserName }}
-      </Button>
-    </template>
-  </PopoverList> -->
 </template>
 
 <script>

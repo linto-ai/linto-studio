@@ -35,7 +35,8 @@
         :placeholder="placeholder"
         ref="input"
         v-model="editValue"
-        @change="onInputChange"
+        @input="onInput"
+        @change="onChange"
         @keydown="keydown"
         v-bind="field.customParams" />
       <textarea
@@ -45,7 +46,7 @@
         :id="id"
         ref="input"
         v-model="editValue"
-        @change="onInputChange"
+        @change="onChange"
         @keydown="keydown" />
 
       <div v-if="shouldShowConfirmationButtons" class="form-field__actions">
@@ -213,7 +214,13 @@ export default {
     }
   },
   methods: {
-    onInputChange(e) {
+    onInput(e) {
+      if (!this.withConfirmation) {
+        this.$emit("update:modelValue", this.editValue)
+        this.$emit("input", this.editValue)
+      }
+    },
+    onChange(e) {
       this.$emit("update:modelValue", this.editValue)
       this.$emit("input", this.editValue)
     },
@@ -241,7 +248,9 @@ export default {
         e.preventDefault()
         this.cancel()
       } else {
-        e.stopPropagation()
+        if (this.withConfirmation) {
+          e.stopPropagation()
+        }
       }
     },
   },

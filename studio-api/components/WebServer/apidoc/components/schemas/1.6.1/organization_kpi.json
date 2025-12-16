@@ -1,0 +1,69 @@
+{
+  "OrganizationKPI": {
+    "type": "object",
+    "properties": {
+      "organizationId": {
+        "type": "string",
+        "description": "Organization ID"
+      },
+
+      "session": {
+        "type": "object",
+        "properties": {
+          "totalConnections": {
+            "type": "number",
+            "description": "Total number of connections"
+          },
+          "watchTime": {
+            "type": "number",
+            "description": "Total watch time"
+          }
+        }
+      },
+
+      "llm": {
+        "type": "object",
+        "properties": {
+          "generated": {
+            "type": "number",
+            "description": "Total number of generated LLM outputs"
+          },
+          "tokens": {
+            "type": "number",
+            "description": "Total number of LLM tokens"
+          }
+        }
+      },
+
+      "transcription": {
+        "type": "object",
+        "properties": {
+          "generated": {
+            "type": "number",
+            "description": "Number of transcription events"
+          },
+          "duration": {
+            "type": "number",
+            "description": "Total duration of audio processed"
+          }
+        }
+      }
+    },
+
+    "example": {
+      "organizationId": "687763c270482528e9dc5ec1",
+      "session": {
+        "totalConnections": 0,
+        "watchTime": 0
+      },
+      "llm": {
+        "generated": 0,
+        "tokens": 0
+      },
+      "transcription": {
+        "generated": 0,
+        "duration": 0
+      }
+    }
+  }
+}

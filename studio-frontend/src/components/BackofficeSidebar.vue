@@ -39,6 +39,15 @@
         $t("backoffice.navigation.transcriberProfiles")
       }}</span>
     </router-link>
+    <router-link
+      v-if="isAtLeastSystemAdministrator"
+      :to="{ name: 'backoffice-activityList' }"
+      class="flex row align-center gap-medium tab backoffice-sidebar__link">
+      <ph-icon name="notebook" size="sm"></ph-icon>
+      <span class="tab__label">{{
+        $t("backoffice.navigation.activities")
+      }}</span>
+    </router-link>
   </nav>
 </template>
 <script>
