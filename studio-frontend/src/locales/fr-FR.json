@@ -1091,6 +1091,7 @@
     "llm_gateway_error": "Erreur du service IA : {error}",
     "llm_gateway_unavailable": "Le service d'intelligence artificielle est temporairement indisponible. Veuillez réessayer dans quelques instants.",
     "job_not_found_regenerating": "Le document a expiré sur le serveur. Régénération automatique en cours...",
+    "job_removed_refreshing": "Cette génération n'est plus disponible. Affichage des générations restantes.",
     "generic_error": "Une erreur est survenue. Veuillez réessayer.",
     "error_llm_server": "Le service d'intelligence artificielle a rencontré une erreur interne. Veuillez réessayer.",
     "error_llm_unavailable": "Le service d'intelligence artificielle est temporairement indisponible.",

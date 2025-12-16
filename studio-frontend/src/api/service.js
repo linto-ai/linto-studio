@@ -268,3 +268,48 @@ export async function apiCreateGeneration(conversationId, serviceId, jobId, serv
   }
   return null
 }
+
+/**
+ * Get export content from LLM Gateway (no local cache)
+ * @param {string} conversationId
+ * @param {string} jobId
+ * @returns {Promise<{status: string, content?: string, version?: number, gatewayAvailable?: boolean, error?: string}>}
+ */
+export async function apiGetExportContent(conversationId, jobId) {
+  const req = await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/export/${jobId}/content`,
+    { method: "get" },
+    {},
+    null,
+  )
+
+  if (req.status === "success") {
+    return req.data
+  }
+
+  // Handle error responses
+  const statusCode = req?.error?.response?.status
+  const responseData = req?.error?.response?.data
+
+  if (statusCode === 404) {
+    return {
+      status: "job_not_found",
+      gatewayAvailable: responseData?.gatewayAvailable ?? true,
+      error: responseData?.error || "Job not found"
+    }
+  }
+
+  if (statusCode === 503) {
+    return {
+      status: "gateway_unavailable",
+      gatewayAvailable: false,
+      error: responseData?.error || "LLM Gateway unavailable"
+    }
+  }
+
+  // Return generic error for other cases
+  return {
+    status: "error",
+    error: responseData?.error || req?.error?.message || "Unknown error"
+  }
+}

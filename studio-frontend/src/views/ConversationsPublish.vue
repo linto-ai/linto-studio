@@ -154,6 +154,7 @@ import {
   apiRestoreExportVersion,
   apiExportDocument,
   apiListGenerations,
+  apiGetExportContent,
 } from "@/api/service.js"
 
 import getDescriptionByLanguage from "@/tools/getDescriptionByLanguage.js"
@@ -674,7 +675,7 @@ export default {
       }
     },
     async getPreview(regenerate = false) {
-      let currentTab = this.activeTab
+      const currentTab = this.activeTab
       // Skip if no format is selected yet (prevents 400 errors on initial load)
       // Also skip for publication tab which shows templates, not a preview
       const format = this.selectedRoute || this.activeTab
@@ -683,6 +684,60 @@ export default {
       }
       this.markdownContent = null
       this.blobUrl = null
+
+      // For editable outputs, fetch fresh content from gateway (single source of truth)
+      if (this.isEditableOutput && this.currentJob?.jobId && !regenerate) {
+        const contentResult = await apiGetExportContent(
+          this.conversationId,
+          this.currentJob.jobId
+        )
+
+        if (currentTab !== this.activeTab) return
+
+        if (contentResult.status === "success") {
+          this.markdownContent = contentResult.content
+          return
+        }
+
+        if (contentResult.status === "job_not_found") {
+          if (contentResult.gatewayAvailable) {
+            // Gateway is up but job is gone - refresh generations list
+            // Do NOT auto-regenerate - other generations may exist
+            this.$store.dispatch("system/addNotification", {
+              type: "info",
+              message: this.$t("publish.job_removed_refreshing"),
+            })
+            // Refresh the generations list to show remaining valid generations
+            await this.loadGenerations()
+            await this.loadVersions()
+            // If no generations remain, the UI will show empty state with regenerate button
+            return
+          } else {
+            // Gateway is down - show error
+            this.$store.dispatch("system/addNotification", {
+              type: "error",
+              message: this.$t("publish.llm_gateway_unavailable"),
+            })
+            return
+          }
+        }
+
+        if (contentResult.status === "gateway_unavailable") {
+          this.$store.dispatch("system/addNotification", {
+            type: "error",
+            message: this.$t("publish.llm_gateway_unavailable"),
+          })
+          return
+        }
+
+        // For other errors, fall through to legacy flow
+        if (contentResult.status === "error") {
+          // Continue with the original apiGetGenericFileFromConversation
+          // This handles cases where the new endpoint isn't available yet
+        }
+      }
+
+      // For non-editable outputs (PDF, DOCX) or when regenerating, use existing flow
       let req = await apiGetGenericFileFromConversation(
         this.conversationId,
         this.selectedRoute || this.activeTab,
@@ -715,14 +770,15 @@ export default {
               return
             }
 
-            // Handle job not found - auto-trigger regeneration
+            // Handle job not found - refresh generations instead of auto-regenerate
             if (json.status === "job_not_found" && json.requiresRegeneration) {
               this.$store.dispatch("system/addNotification", {
-                type: "warning",
-                message: this.$t("publish.job_not_found_regenerating"),
+                type: "info",
+                message: this.$t("publish.job_removed_refreshing"),
               })
-              // Auto-regenerate after a short delay
-              setTimeout(() => this.initGeneration(true), 1000)
+              // Refresh generations list instead of auto-regenerating
+              await this.loadGenerations()
+              await this.loadVersions()
               return
             }
           } catch (e) {
@@ -747,11 +803,12 @@ export default {
         // Check for job not found (410)
         if (statusCode === 410) {
           this.$store.dispatch("system/addNotification", {
-            type: "warning",
-            message: this.$t("publish.job_not_found_regenerating"),
+            type: "info",
+            message: this.$t("publish.job_removed_refreshing"),
           })
-          // Auto-regenerate after a short delay
-          setTimeout(() => this.initGeneration(true), 1000)
+          // Refresh generations list instead of auto-regenerating
+          await this.loadGenerations()
+          await this.loadVersions()
           return
         }
 
@@ -1061,10 +1118,12 @@ export default {
           status: update.status,
           processing: update.progress?.percentage || 0,
         })
-      } else if (update.conversationId === this.conversationId && (update.serviceFormat || update.serviceName)) {
+      } else if (update.conversationId === this.conversationId && (update.serviceFormat || update.serviceName || update.format)) {
         // New job for this conversation - find matching format and update jobId
+        // WebSocket sends 'format', but for compatibility also check serviceFormat/serviceName
+        const updateFormat = update.serviceFormat || update.serviceName || update.format
         const formatIndex = this.jobsList.findIndex(j =>
-          j.format === update.serviceFormat || j.format === update.serviceName
+          j.format === updateFormat
         )
         if (formatIndex !== -1) {
           this.$set(this.jobsList, formatIndex, {
@@ -1084,9 +1143,11 @@ export default {
       let jobIndex = this.jobsList.findIndex(j => j.jobId === update.jobId)
 
       // If not found by jobId, try to match by format
-      if (jobIndex === -1 && update.conversationId === this.conversationId && (update.serviceFormat || update.serviceName)) {
+      // WebSocket sends 'format', but for compatibility also check serviceFormat/serviceName
+      if (jobIndex === -1 && update.conversationId === this.conversationId && (update.serviceFormat || update.serviceName || update.format)) {
+        const updateFormat = update.serviceFormat || update.serviceName || update.format
         jobIndex = this.jobsList.findIndex(j =>
-          j.format === update.serviceFormat || j.format === update.serviceName
+          j.format === updateFormat
         )
       }
 
@@ -1111,9 +1172,11 @@ export default {
       let jobIndex = this.jobsList.findIndex(j => j.jobId === update.jobId)
 
       // If not found by jobId, try to match by format
-      if (jobIndex === -1 && update.conversationId === this.conversationId && (update.serviceFormat || update.serviceName)) {
+      // WebSocket sends 'format', but for compatibility also check serviceFormat/serviceName
+      if (jobIndex === -1 && update.conversationId === this.conversationId && (update.serviceFormat || update.serviceName || update.format)) {
+        const updateFormat = update.serviceFormat || update.serviceName || update.format
         jobIndex = this.jobsList.findIndex(j =>
-          j.format === update.serviceFormat || j.format === update.serviceName
+          j.format === updateFormat
         )
       }
 

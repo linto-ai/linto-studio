@@ -1090,6 +1090,7 @@
     "llm_gateway_error": "AI service error: {error}",
     "llm_gateway_unavailable": "The AI service is temporarily unavailable. Please try again in a few moments.",
     "job_not_found_regenerating": "The document has expired on the server. Automatic regeneration in progress...",
+    "job_removed_refreshing": "This generation is no longer available. Showing remaining generations.",
     "generic_error": "An error occurred. Please try again.",
     "error_llm_server": "The AI service encountered an internal error. Please try again.",
     "error_llm_unavailable": "The AI service is temporarily unavailable.",
