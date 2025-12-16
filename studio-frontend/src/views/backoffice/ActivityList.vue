@@ -64,6 +64,7 @@ import FormatedUrl from "@/components/atoms/FormatedUrl.vue"
 import UserSelector from "@/components/molecules/UserSelector.vue"
 import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 import SessionsKpi from "@/components/SessionsKpi.vue"
+import { timeToHMS } from "@/tools/timeToHMS"
 
 export default {
   props: {},
@@ -204,6 +205,7 @@ export default {
           key: "socket.totalWatchTime",
           label: this.$t("activity_list.watch_time_label"),
           width: "auto",
+          transformValue: timeToHMS,
         },
         {
           key: "socket.connectionCount",
