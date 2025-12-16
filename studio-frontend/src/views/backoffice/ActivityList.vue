@@ -4,8 +4,11 @@
       <HeaderTable :title="$t('backoffice.activity_list.title')" />
     </template>
     <Tabs :tabs="tabs" v-model="currentTab" secondary></Tabs>
-    <div class="flex1 flex col gap-medium">
-      <UserSelector v-model="selecteduser" label="Filtrer par utilisateur" />
+    <SessionsKpi v-if="currentTab == 'sessions_kpi'" />
+    <div class="flex1 flex col gap-medium" v-else>
+      <UserSelector
+        v-model="selecteduser"
+        :label="$t('activity_list.user_filter_label')" />
       <GenericTableRequest
         ref="table"
         idKey="_id"
@@ -15,7 +18,7 @@
         :initSortListDirection="sortListDirection"
         :initSortListKey="sortListKey">
         <template #cell-user.role.value="{ value }">
-          <PlatformRoleSelector v-model="value" readonly compact />
+          <PlatformRoleSelector v-model="value" readonly compact v-if="value" />
         </template>
 
         <template #cell-organization.role.value="{ value }">
@@ -23,11 +26,19 @@
         </template>
 
         <template #cell-http.method="{ value }">
-          <HttpMethodChip :HttpMethod="value" />
+          <HttpMethodChip :HttpMethod="value" v-if="value" />
         </template>
 
         <template #cell-http.url="{ value }">
-          <FormatedUrl :url="value" />
+          <FormatedUrl :url="value" v-if="value" />
+        </template>
+
+        <template #cell-user.info="{ value }">
+          <UserInfoInline
+            :user="value"
+            :userId="value._id"
+            v-if="value"
+            :showImage="false" />
         </template>
       </GenericTableRequest>
     </div>
@@ -51,6 +62,8 @@ import OrgaRoleSelector from "@/components/molecules/OrgaRoleSelector.vue"
 import HttpMethodChip from "@/components/atoms/HttpMethodChip.vue"
 import FormatedUrl from "@/components/atoms/FormatedUrl.vue"
 import UserSelector from "@/components/molecules/UserSelector.vue"
+import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
+import SessionsKpi from "@/components/SessionsKpi.vue"
 
 export default {
   props: {},
@@ -59,10 +72,31 @@ export default {
       sortListDirection: "desc",
       sortListKey: "timestamp",
       tabs: [
-        { name: "sessions", label: "Session" },
-        { name: "ressources", label: "Ressources" },
-        { name: "keys", label: "Accès aux clés d'api" },
-        { name: "backoffice", label: "Backoffice" },
+        {
+          name: "ressources",
+          label: this.$t("activity_list.tabs.ressources"),
+          icon: "list",
+        },
+        {
+          name: "keys",
+          label: this.$t("activity_list.tabs.tokens"),
+          icon: "key",
+        },
+        {
+          name: "backoffice",
+          label: this.$t("activity_list.tabs.backoffice"),
+          icon: "graduation-cap",
+        },
+        {
+          name: "sessions",
+          label: this.$t("activity_list.tabs.sessions"),
+          icon: "broadcast",
+        },
+        {
+          name: "sessions_kpi",
+          label: this.$t("activity_list.tabs.sessions_kpi"),
+          icon: "chart-pie",
+        },
       ],
       currentTab: "ressources",
       selecteduser: null,
@@ -78,30 +112,42 @@ export default {
     columns() {
       switch (this.currentTab) {
         case "ressources":
-        case "backoffice":
         case "keys":
-          return this.httpColumns
+          return [
+            ...this.genericColumns,
+            ...this.platformColumns,
+            ...this.orgaColumns,
+            ...this.httpColumns,
+          ]
+        case "backoffice":
+          return [
+            ...this.genericColumns,
+            ...this.platformColumns,
+            ...this.httpColumns,
+          ]
         case "sessions":
-          return this.sessionColumns
+          return [...this.genericColumns, ...this.sessionColumns]
       }
     },
-    httpColumns() {
+    genericColumns() {
       return [
-        // {
-        //   key: "scope",
-        //   label: this.$t("activity_list.scope_label"),
-        //   width: "auto",
-        // },
         {
-          key: "level",
-          label: this.$t("activity_list.level_label"),
+          key: "timestamp",
+          label: this.$t("activity_list.time_label"),
           width: "auto",
+          transformValue: (value) => {
+            return new Date(value).toLocaleString()
+          },
         },
         {
-          key: "user.info.email",
-          label: this.$t("activity_list.user_email_label"),
+          key: "user.info",
+          label: this.$t("activity_list.user_label"),
           width: "auto",
         },
+      ]
+    },
+    orgaColumns() {
+      return [
         {
           key: "organization.info.name",
           label: this.$t("activity_list.organization_name_label"),
@@ -112,11 +158,19 @@ export default {
           label: this.$t("activity_list.organization_role_label"),
           width: "auto",
         },
+      ]
+    },
+    platformColumns() {
+      return [
         {
           key: "user.role.value",
           label: this.$t("activity_list.platform_role_label"),
           width: "auto",
         },
+      ]
+    },
+    httpColumns() {
+      return [
         {
           key: "http.method",
           label: this.$t("activity_list.http_method_label"),
@@ -136,11 +190,6 @@ export default {
     },
     sessionColumns() {
       return [
-        {
-          key: "scope",
-          label: this.$t("activity_list.scope_label"),
-          width: "auto",
-        },
         {
           key: "session.name",
           label: this.$t("activity_list.session_name_label"),
@@ -188,6 +237,8 @@ export default {
     HttpMethodChip,
     FormatedUrl,
     UserSelector,
+    UserInfoInline,
+    SessionsKpi,
   },
 }
 </script>

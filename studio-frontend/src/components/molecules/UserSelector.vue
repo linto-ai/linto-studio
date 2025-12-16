@@ -9,8 +9,8 @@
       @click="selectUser">
       <template #trigger="{ open }">
         <FormInput :field="fieldUser" v-model="fieldUser.value">
-          <template #content-after-input>
-            <Button label="Effacer" @click="clear" />
+          <template #content-after-input v-if="fieldUser.value">
+            <Button :label="$t('user_selector.clear_button')" @click="clear" />
           </template>
         </FormInput>
       </template>
@@ -47,6 +47,7 @@ export default {
         ...EMPTY_FIELD,
         type: "text",
         label: this.label,
+        placeholder: this.$t("user_selector.search_placeholder"),
       },
       showPopover: false,
       listUsers: [],

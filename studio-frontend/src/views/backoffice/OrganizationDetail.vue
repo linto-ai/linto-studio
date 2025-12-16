@@ -72,7 +72,7 @@ import OrganizationStats from "@/components/OrganizationStats.vue"
 import UpdateOrganizationTranscriberProfiles from "@/components/UpdateOrganizationTranscriberProfiles.vue"
 import ApiTokenSettings from "@/components/ApiTokenSettings.vue"
 import Tabs from "@/components/molecules/Tabs.vue"
-import OrganizationSessionsKpi from "@/components/OrganizationSessionsKpi.vue"
+import OrganizationSessionsKpi from "@/components/SessionsKpi.vue"
 
 export default {
   mixins: [platformRoleMixin],

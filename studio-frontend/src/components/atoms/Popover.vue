@@ -338,7 +338,7 @@ export default {
   position: absolute; /* Will be positioned by 'top' and 'left' from style */
 }
 
-.popover-content {
+.popover-content:has(> div) {
   background: var(--background-app);
   border: 1px solid var(--neutral-40);
   border-radius: 2px;

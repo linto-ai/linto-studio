@@ -19,11 +19,11 @@ export default {
   props: {
     organizationId: {
       type: String,
-      required: true,
+      required: false,
     },
     organization: {
       type: Object,
-      required: true,
+      required: false,
     },
   },
   data() {
@@ -92,10 +92,12 @@ export default {
       ],
       sortListDirection: "desc",
       sortListKey: "firstConnectionAt",
-      indexedUsers: this.organization.users.reduce((acc, user) => {
-        acc[user._id] = user
-        return acc
-      }, {}),
+      indexedUsers: this?.organization?.users
+        ? this.organization.users.reduce((acc, user) => {
+            acc[user._id] = user
+            return acc
+          }, {})
+        : [],
     }
   },
   mounted() {},
@@ -111,7 +113,11 @@ export default {
       if (name.startsWith("@")) {
         const userId = name.slice(1)
         const user = this.findUser(userId)
-        if (user) return "Enregistrement de " + userName(user)
+        return user
+          ? this.$t("session_kpi.quick_session_name", {
+              userName: userName(user),
+            })
+          : this.$t("session_kpi.quick_session_name_anonymous")
       }
 
       return name

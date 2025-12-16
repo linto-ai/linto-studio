@@ -19,10 +19,7 @@
         :id="tab.id ? tab.id : undefined"
         :aria-controls="tab.ariaControl ? tab.ariaControl : undefined"
         @click="!disabled && !tab.disabled && $emit('input', tab.name)">
-        <ph-icon
-          :name="tab.icon"
-          :size="squareTabs ? 'lg' : 'md'"
-          v-if="tab.icon"></ph-icon>
+        <ph-icon :name="tab.icon" :size="iconSize" v-if="tab.icon"></ph-icon>
         <img :src="tab.img" v-else-if="tab.img" class="icon" />
         <div class="flex col justify-center" :class="{ flex1: !squareTabs }">
           <span class="tab__label">{{ tab.label }}</span>
@@ -51,7 +48,19 @@ export default {
     return {}
   },
   watch: {},
-  computed: {},
+  computed: {
+    iconSize() {
+      if (this.squareTabs) {
+        return "lg"
+      }
+
+      if (this.secondary) {
+        return "sm"
+      }
+
+      return "md"
+    },
+  },
   methods: {},
   components: {
     Badge,

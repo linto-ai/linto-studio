@@ -10,12 +10,21 @@
     "http_status_label": "Status",
     "organization_name_label": "Organisation",
     "organization_role_label": "Role",
-    "user_email_label": "Email",
+    "user_label": "User",
+    "user_filter_label": "Filter by a user",
     "platform_role_label": "Platform role",
     "session_name_label": "Session name",
     "session_id_label": "Session Id",
+    "time_label": "Date",
     "watch_time_label": "Watch time",
-    "connection_count_label": "Connection count"
+    "connection_count_label": "Connection count",
+    "tabs": {
+      "sessions_kpi": "Sessions KPI",
+      "sessions": "Sessions detailed",
+      "ressources": "Ressources",
+      "tokens": "Api keys access",
+      "backoffice": "Backoffice"
+    }
   },
   "appointment_selector": {
     "date_label": "Date",
@@ -1286,7 +1295,9 @@
     "name_label": "Name",
     "viewer_label": "Viewers",
     "watch_time_average_label": "Average watch time",
-    "bounce_rate_label": "Bounce rate (viewers)"
+    "bounce_rate_label": "Bounce rate (viewers)",
+    "quick_session_name": "{userName} recording",
+    "quick_session_name_anonymous": "Personal recording"
   },
   "quick_session": {
     "creation": {
@@ -1555,5 +1566,9 @@
     "search_empty_message": "Press [ENTER] to search in all your media",
     "search_back_to_results_message": "Press [ENTER] to return to results",
     "search_placeholder": "Search in your media"
+  },
+  "user_selector": {
+    "clear_button": "Clear",
+    "search_placeholder": "Search for a user..."
   }
 }

@@ -19,7 +19,12 @@ export default {
   computed: {
     color() {
       if (this.HttpMethod == "GET") return "var(--success-color)"
-      if (this.HttpMethod == "POST") return "var(--warning-color)"
+      if (
+        this.HttpMethod == "POST" ||
+        this.HttpMethod == "PUT" ||
+        this.HttpMethod == "PATCH"
+      )
+        return "var(--warning-color)"
       if (this.HttpMethod == "DELETE") return "var(--danger-color)"
       return null
     },

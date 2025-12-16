@@ -16,7 +16,7 @@
       </slot>
     </template>
     <template #content>
-      <div class="popover-list__content">
+      <div class="popover-list__content" v-if="items && items.length">
         <div
           v-for="(item, index) in items"
           :key="item.id"

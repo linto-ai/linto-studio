@@ -11,12 +11,21 @@
     "http_status_label": "Statut",
     "organization_name_label": "Organisation",
     "organization_role_label": "Rôle",
-    "user_email_label": "Courriel",
+    "user_label": "Utilisateur",
+    "user_filter_label": "Filtrer par utilisateur",
     "platform_role_label": "Rôle sur la plateforme",
     "session_name_label": "Nom de la session",
     "session_id_label": "Id de session",
+    "time_label": "Date",
     "watch_time_label": "Temps de visionnage",
-    "connection_count_label": "Nombre de connexions"
+    "connection_count_label": "Nombre de connexions",
+    "tabs": {
+      "sessions_kpi": "KPI des sessions",
+      "sessions": "Detail des sessions",
+      "ressources": "Ressources",
+      "tokens": "Accès aux clé d'api",
+      "backoffice": "Backoffice"
+    }
   },
   "appointment_selector": {
     "date_label": "Date",
@@ -1283,7 +1292,9 @@
     "name_label": "Nom",
     "viewer_label": "Spectateurs",
     "watch_time_average_label": "Durée moyenne de visionnage",
-    "bounce_rate_label": "Taux de rebond (spectateurs)"
+    "bounce_rate_label": "Taux de rebond (spectateurs)",
+    "quick_session_name": "Enregistrement de {userName}",
+    "quick_session_name_anonymous": "Enregistrement personnel"
   },
   "quick_session": {
     "creation": {
@@ -1553,5 +1564,9 @@
     "search_empty_message": "Appuyer sur [ENTER] pour rechercher dans tous vos médias",
     "search_back_to_results_message": "Appuyer sur [ENTER] pour revenir aux résultats",
     "search_placeholder": "Rechercher dans vos médias"
+  },
+  "user_selector": {
+    "clear_button": "Effacer",
+    "search_placeholder": "Rechercher un utilisateur"
   }
 }

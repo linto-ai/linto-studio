@@ -143,7 +143,7 @@ export default {
   position: absolute;
 }
 
-.popover-content {
+.popover-content:has(> div) {
   background: var(--neutral-10);
   border: 1px solid var(--primary-color);
   border-radius: 4px;
