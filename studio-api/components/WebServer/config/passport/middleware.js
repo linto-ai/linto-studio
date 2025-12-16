@@ -10,6 +10,9 @@ const PublicToken = require(
 )
 const algorithm = process.env.JWT_ALGORITHM || "HS256"
 let { generators } = require("openid-client")
+const { decrypt } = require(
+  `${process.cwd()}/components/WebServer/config/passport/token/encryption`,
+)
 
 const PROVIDER = require(`${process.cwd()}/lib/dao/oidc/provider`)
 
@@ -75,7 +78,8 @@ const extractToken = (req) => {
   } else if (req?.session?.passport?.user?.auth_token) {
     return req.session.passport.user.auth_token
   } else if (req.cookies?.auth_token) {
-    return req.cookies.auth_token
+    const decryptedToken = decrypt(req.cookies.auth_token)
+    return decryptedToken
   }
 
   return null

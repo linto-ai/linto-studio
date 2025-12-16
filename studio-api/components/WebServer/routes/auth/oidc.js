@@ -3,6 +3,9 @@ const debug = require("debug")("linto:conversation-manager:routes:auth:oidc")
 const { Unauthorized } = require(
   `${process.cwd()}/components/WebServer/error/exception/auth`,
 )
+const { encrypt, decrypt } = require(
+  `${process.cwd()}/components/WebServer/config/passport/token/encryption`,
+)
 
 const auth_middleware = require(
   `${process.cwd()}/components/WebServer/config/passport/middleware`,
@@ -34,13 +37,15 @@ module.exports = (webServer) => {
               if (!token) {
                 return res.redirect("/cm-api/auth/login/oidc")
               }
-              res.cookie("auth_token", token.auth_token, {
+              const encryptedToken = encrypt(token.auth_token)
+              res.cookie("auth_token", encryptedToken, {
                 httpOnly: true,
                 secure: true,
                 sameSite: "lax",
                 maxAge: 5 * 60 * 1000,
                 path: "/",
               })
+
               res.cookie("user_id", token.user_id, {
                 httpOnly: true,
                 secure: true,
@@ -66,7 +71,7 @@ module.exports = (webServer) => {
         (req, res, next) => {
           if (req?.cookies?.auth_token) {
             return res.status(200).json({
-              auth_token: req.cookies.auth_token,
+              auth_token: decrypt(req.cookies.auth_token),
               user_id: req.cookies.user_id,
             })
           }
