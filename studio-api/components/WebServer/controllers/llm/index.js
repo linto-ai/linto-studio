@@ -209,14 +209,8 @@ async function handleJobUpdate(jobId, update) {
     }
 
     // Handle result (V2 format - result contains the summarization output)
-    if (update.status === "completed" && update.result) {
-      if (typeof update.result === "object" && update.result.output) {
-        convExport.data = update.result.output
-      } else if (typeof update.result === "string") {
-        convExport.data = update.result
-      } else {
-        convExport.data = update.result
-      }
+    // Note: Content is NOT cached locally - fetch from LLM Gateway when needed (single source of truth)
+    if (update.status === "completed") {
       convExport.processing = 100
     }
 
@@ -460,7 +454,7 @@ function getSocketStatus() {
 
 /**
  * Get the markdown content for a completed job
- * Used for versioning and editing features
+ * Always fetches from LLM Gateway (single source of truth - no local caching)
  * @param {string} jobId - The job ID
  * @returns {Promise<string|null>} The markdown content or null
  */
@@ -468,13 +462,7 @@ async function getJobMarkdownContent(jobId) {
   if (!jobId) return null
 
   try {
-    // First try to get from conversation export
-    const convExports = await model.conversationExport.getByJobId(jobId)
-    if (convExports && convExports.length > 0 && convExports[0].data) {
-      return convExports[0].data
-    }
-
-    // Fallback to fetching from LLM Gateway
+    // Always fetch from LLM Gateway (single source of truth)
     const job = await getJobStatus(jobId)
     if (job && job.status === "completed" && job.result) {
       if (typeof job.result === "object" && job.result.output) {

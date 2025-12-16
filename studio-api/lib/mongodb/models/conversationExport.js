@@ -13,9 +13,10 @@ const moment = require("moment")
  *   _id: ObjectId,
  *   convId: string,              // Conversation ID
  *   format: string,              // Service name/type (e.g., "summary", "keywords")
- *   status: string,              // queued | started | processing | complete | error
+ *   status: string,              // queued | started | processing | complete | error | unknown
  *   processing: number,          // Progress percentage (0-100)
- *   data: string | object,       // Result data from LLM
+ *   data: string | object,       // DEPRECATED: Result data from LLM (kept for backward compatibility)
+ *                                // Content is now fetched directly from LLM Gateway (single source of truth)
  *   error: string,               // Error message if failed
  *   jobId: string,               // V2 job UUID
  *   created: string,             // Creation timestamp

@@ -4,6 +4,10 @@ const debug = require("debug")(
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const appLogger = require(`${process.cwd()}/lib/logger/logger.js`)
+const llm = require(
+  `${process.cwd()}/components/WebServer/controllers/llm/index`,
+)
+const axios = require(`${process.cwd()}/lib/utility/axios`)
 
 const {
   ConversationIdRequire,
@@ -13,9 +17,53 @@ const {
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
 
+const HEALTH_CHECK_TIMEOUT = 5000 // 5 seconds
+
+/**
+ * Check if LLM Gateway is healthy
+ * @returns {Promise<boolean>} true if gateway is reachable and healthy
+ */
+async function checkLlmGatewayHealth() {
+  const baseUrl = process.env.LLM_GATEWAY_SERVICES
+  if (!baseUrl) return false
+
+  try {
+    const response = await axios.get(`${baseUrl}/healthcheck`, {
+      timeout: HEALTH_CHECK_TIMEOUT
+    })
+    return response?.status === "healthy"
+  } catch (err) {
+    appLogger.warn(`[Generations] Health check failed: ${err.message}`)
+    return false
+  }
+}
+
+/**
+ * Verify if a job still exists on LLM Gateway
+ * @param {string} jobId - The job ID to verify
+ * @returns {Promise<boolean>} True if job exists, false otherwise
+ */
+async function verifyJobExists(jobId) {
+  if (!jobId || !process.env.LLM_GATEWAY_SERVICES) return false
+
+  try {
+    const jobStatus = await llm.getJobStatus(jobId)
+    return jobStatus !== null
+  } catch (err) {
+    if (err.response?.status === 404) {
+      return false
+    }
+    // For other errors, assume job might exist
+    appLogger.warn(`[Generations] Error verifying job ${jobId}: ${err.message}`)
+    return true
+  }
+}
+
 /**
  * List generations for a conversation and service
  * GET /conversations/:conversationId/generations?serviceId=xxx
+ *
+ * Validates each completed generation against LLM Gateway and filters out orphans.
  */
 async function listGenerations(req, res, next) {
   try {
@@ -36,8 +84,29 @@ async function listGenerations(req, res, next) {
       serviceId
     )
 
+    // Validate completed generations against LLM Gateway and filter out orphans
+    const validGenerations = []
+    for (const gen of generations) {
+      // Only validate completed jobs with jobId
+      if (gen.status === "completed" && gen.jobId) {
+        const jobExists = await verifyJobExists(gen.jobId)
+        if (!jobExists) {
+          // Check gateway health before deleting orphan
+          const gatewayHealthy = await checkLlmGatewayHealth()
+          if (gatewayHealthy) {
+            // Job no longer exists on gateway - delete orphan reference
+            appLogger.info(`[Generations] Removing orphan generation for job ${gen.jobId}`)
+            await model.conversationGenerations.delete(gen._id)
+            continue // Skip this generation
+          }
+          // Gateway unhealthy - keep reference, include in list
+        }
+      }
+      validGenerations.push(gen)
+    }
+
     // Format response
-    const formattedGenerations = generations.map((gen) => ({
+    const formattedGenerations = validGenerations.map((gen) => ({
       generationId: gen.generationId,
       jobId: gen.jobId,
       createdAt: gen.createdAt,

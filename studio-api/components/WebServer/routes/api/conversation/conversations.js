@@ -21,6 +21,7 @@ const {
   getExportVersion,
   restoreExportVersion,
   generateExportDocument,
+  getExportContent,
 } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/conversation/export.js`,
 )
@@ -93,6 +94,14 @@ module.exports = (webserver) => {
       requireAuth: true,
       requireConversationReadAccess: true,
       controller: getChildConversation,
+    },
+    // Get job content directly from LLM Gateway (no local caching)
+    {
+      path: "/:conversationId/export/:jobId/content",
+      method: "get",
+      requireAuth: true,
+      requireConversationReadAccess: true,
+      controller: getExportContent,
     },
     // Versioning routes - proxy to LLM Gateway
     // Update job result (creates new version in LLM Gateway)

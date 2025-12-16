@@ -28,6 +28,36 @@ const {
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
 
+const HEALTH_CHECK_TIMEOUT = 5000 // 5 seconds
+
+/**
+ * Check if LLM Gateway is healthy
+ * @returns {Promise<boolean>} true if gateway is reachable and healthy
+ */
+async function checkLlmGatewayHealth() {
+  const baseUrl = process.env.LLM_GATEWAY_SERVICES
+  if (!baseUrl) return false
+
+  try {
+    const response = await axios.get(`${baseUrl}/healthcheck`, {
+      timeout: HEALTH_CHECK_TIMEOUT
+    })
+    return response?.status === "healthy"
+  } catch (err) {
+    appLogger.warn(`[LLM] Health check failed: ${err.message}`)
+    return false
+  }
+}
+
+/**
+ * Delete orphan export reference when job no longer exists on LLM Gateway
+ * @param {object} conversationExport - The conversation export to delete
+ */
+async function deleteOrphanExportReference(conversationExport) {
+  appLogger.info(`[Export] Deleting orphan export ref for job ${conversationExport.jobId}`)
+  await model.conversationExport.delete(conversationExport._id)
+}
+
 async function listExport(req, res, next) {
   try {
     if (!req.params.conversationId) throw new ConversationIdRequire()
@@ -35,12 +65,33 @@ async function listExport(req, res, next) {
       req.params.conversationId,
     )
     if (conversationExport.length === 0) {
-      return []
+      return res.status(200).send([])
+    }
+
+    // Validate completed jobs against LLM Gateway and filter out orphans
+    const validExports = []
+    for (const convExport of conversationExport) {
+      // Only validate completed jobs with jobId
+      if (convExport.status === "complete" && convExport.jobId) {
+        const jobExists = await verifyJobExists(convExport.jobId)
+        if (!jobExists) {
+          // Check gateway health before deleting orphan
+          const gatewayHealthy = await checkLlmGatewayHealth()
+          if (gatewayHealthy) {
+            // Job no longer exists on gateway - delete orphan reference
+            appLogger.info(`[Export] Removing orphan export ref for job ${convExport.jobId}`)
+            await deleteOrphanExportReference(convExport)
+            continue // Skip this export
+          }
+          // Gateway unhealthy - keep reference, include in list
+        }
+      }
+      validExports.push(convExport)
     }
 
     let list = []
     let done = true
-    for (let status of conversationExport) {
+    for (let status of validExports) {
       let export_conv = {
         _id: status._id.toString(),
         format: status.format,
@@ -63,7 +114,7 @@ async function listExport(req, res, next) {
       // V2: Connect to organization-scoped WebSocket for monitoring
       // Group pending jobs by organization
       const jobsByOrg = new Map()
-      for (const convExport of conversationExport) {
+      for (const convExport of validExports) {
         if (
           convExport.status === "complete" ||
           convExport.status === "error" ||
@@ -299,18 +350,32 @@ async function handleLLMService(req, res, query, conversation, metadata) {
         }
       } else if (conversationExport.llmOutputType === "markdown" || conversationExport.llmOutputType === "text") {
         // Return raw text content for editing (markdown or text output types)
-        // First verify the job still exists if we don't have local data
-        if (!conversationExport.data && conversationExport.jobId) {
+        // Always verify the job still exists on LLM Gateway (no local caching)
+        if (conversationExport.jobId) {
           const jobExists = await verifyJobExists(conversationExport.jobId)
           if (!jobExists) {
-            conversationExport.status = "unknown"
-            conversationExport.error = "Job not found on LLM Gateway - regeneration required"
-            await model.conversationExport.update(conversationExport)
-            res.status(410).send({
-              status: "job_not_found",
-              error: "Job no longer exists on LLM Gateway",
-              requiresRegeneration: true,
-            })
+            // Job not found - check gateway health before deciding what to do
+            const gatewayHealthy = await checkLlmGatewayHealth()
+
+            if (gatewayHealthy) {
+              // Gateway is healthy, job truly doesn't exist - mark as unknown for auto-regeneration
+              conversationExport.status = "unknown"
+              conversationExport.error = "Job not found on LLM Gateway - regeneration required"
+              await model.conversationExport.update(conversationExport)
+              res.status(410).send({
+                status: "job_not_found",
+                gatewayAvailable: true,
+                error: "Job no longer exists on LLM Gateway",
+                requiresRegeneration: true,
+              })
+            } else {
+              // Gateway is unhealthy - keep reference, report unavailable
+              res.status(503).send({
+                status: "gateway_unavailable",
+                gatewayAvailable: false,
+                error: "LLM Gateway is not reachable",
+              })
+            }
             return
           }
         }
@@ -325,10 +390,66 @@ async function handleLLMService(req, res, query, conversation, metadata) {
         sendFileAsResponse(res, file, query)
       }
     } else {
-      if (
-        conversationExport[0].status === "unknown" ||
-        (conversationExport[0].status === "error" &&
-          conversationExport[0].error)
+      if (conversationExport[0].status === "unknown") {
+        // Status is unknown - check if gateway is healthy
+        const gatewayHealthy = await checkLlmGatewayHealth()
+
+        if (gatewayHealthy) {
+          // Gateway is healthy, job truly doesn't exist - delete orphan
+          appLogger.info(`[Export] Deleting orphan export for job ${conversationExport[0].jobId}`)
+          await deleteOrphanExportReference(conversationExport[0])
+
+          // Check if OTHER valid generations exist for this service
+          const serviceId = query.format
+          const allGenerations = await model.conversationGenerations.listByConversationAndService(
+            conversation._id.toString(),
+            serviceId
+          )
+
+          // Filter to find valid generations (completed jobs that still exist on gateway)
+          const validGenerations = []
+          for (const gen of allGenerations) {
+            if (gen.status === "completed" && gen.jobId) {
+              const jobExists = await verifyJobExists(gen.jobId)
+              if (jobExists) {
+                validGenerations.push(gen)
+              } else {
+                // Delete orphan generation record
+                appLogger.info(`[Export] Removing orphan generation for job ${gen.jobId}`)
+                await model.conversationGenerations.delete(gen._id)
+              }
+            } else if (gen.status !== "completed") {
+              // Include pending/processing generations
+              validGenerations.push(gen)
+            }
+          }
+
+          if (validGenerations.length > 0) {
+            // Other valid generations exist - do NOT auto-regenerate
+            appLogger.info(`[Export] Not auto-regenerating: ${validGenerations.length} valid generation(s) exist for service ${serviceId}`)
+            return res.status(200).send({
+              status: "job_removed",
+              message: "Selected job no longer exists. Other generations available.",
+              hasOtherGenerations: true,
+              generationCount: validGenerations.length
+            })
+          }
+
+          // No other valid generations - auto-regenerate
+          appLogger.info(`[Export] Auto-regenerating job for conversation ${conversation._id} (no other valid generations)`)
+          query.regenerate = "true"
+          return handleLLMService(req, res, query, conversation, metadata)
+        } else {
+          // Gateway is unhealthy - keep reference, report unavailable
+          res.status(503).send({
+            status: "gateway_unavailable",
+            gatewayAvailable: false,
+            error: "LLM Gateway is not reachable - cannot regenerate",
+          })
+        }
+      } else if (
+        conversationExport[0].status === "error" &&
+        conversationExport[0].error
       ) {
         res.status(400).send({
           status: conversationExport[0].status,
@@ -499,11 +620,32 @@ async function handleMarkdownFormat(
 
 /**
  * Handle text/markdown content - returns raw text for frontend editor
+ * Always fetches from LLM Gateway (single source of truth - no local caching)
  */
 async function handleTextContent(res, conversationExport, name) {
-  const content = conversationExport.data || ""
+  // Always fetch fresh content from LLM Gateway (single source of truth)
+  if (conversationExport.jobId) {
+    try {
+      const jobStatus = await llm.getJobStatus(conversationExport.jobId)
+      if (jobStatus && jobStatus.status === "completed" && jobStatus.result) {
+        let content = ""
+        if (typeof jobStatus.result === "object" && jobStatus.result.output) {
+          content = jobStatus.result.output
+        } else if (typeof jobStatus.result === "string") {
+          content = jobStatus.result
+        }
+        res.setHeader("Content-Type", "text/plain")
+        res.status(200).send(content)
+        return
+      }
+    } catch (err) {
+      appLogger.warn(`[Export] Failed to fetch content from LLM Gateway for job ${conversationExport.jobId}: ${err.message}`)
+    }
+  }
+
+  // Fallback to empty content if gateway fetch fails
   res.setHeader("Content-Type", "text/plain")
-  res.status(200).send(content)
+  res.status(200).send("")
 }
 
 async function handleTextFormat(res, metadata, conversation) {
@@ -761,14 +903,11 @@ async function restoreExportVersion(req, res, next) {
 
     const response = await axios.post(`${baseUrl}/api/v1/jobs/${jobId}/versions/${versionNumber}/restore`, {})
 
-    // Update local conversationExport
+    // Update local conversationExport version number only (no local data caching)
     const conversationExport = await model.conversationExport.getByJobId(jobId)
     if (conversationExport && conversationExport.length > 0 && response.current_version) {
       conversationExport[0].currentVersion = response.current_version
-      // Also update local data if result is available
-      if (response.result?.output) {
-        conversationExport[0].data = response.result.output
-      }
+      // Note: Content is NOT cached locally - fetch from LLM Gateway when needed
       await model.conversationExport.update(conversationExport[0])
     }
 
@@ -843,6 +982,117 @@ async function generateExportDocument(req, res, next) {
   }
 }
 
+/**
+ * Get job content from LLM Gateway (no local caching)
+ * GET /conversations/:conversationId/export/:jobId/content
+ *
+ * Returns fresh content from LLM Gateway.
+ * If job not found on gateway:
+ *   - Checks gateway health
+ *   - If healthy: deletes local reference, returns job_not_found
+ *   - If unhealthy: keeps reference, returns gateway_unavailable
+ */
+async function getExportContent(req, res, next) {
+  try {
+    if (!req.params.conversationId) throw new ConversationIdRequire()
+    const { jobId } = req.params
+
+    if (!jobId) throw new ConversationMetadataRequire("jobId is required")
+
+    const baseUrl = process.env.LLM_GATEWAY_SERVICES
+    if (!baseUrl) {
+      return res.status(500).json({ status: "error", error: "LLM Gateway not configured" })
+    }
+
+    // Fetch job from LLM Gateway
+    try {
+      const jobStatus = await llm.getJobStatus(jobId)
+
+      if (jobStatus && jobStatus.status === "completed" && jobStatus.result) {
+        let content = ""
+        if (typeof jobStatus.result === "object" && jobStatus.result.output) {
+          content = jobStatus.result.output
+        } else if (typeof jobStatus.result === "string") {
+          content = jobStatus.result
+        }
+
+        return res.status(200).json({
+          status: "success",
+          content: content,
+          version: jobStatus.current_version || 1,
+          lastModified: jobStatus.updated_at || jobStatus.created_at
+        })
+      }
+
+      // Job exists but not completed yet
+      if (jobStatus) {
+        return res.status(200).json({
+          status: "processing",
+          jobStatus: jobStatus.status,
+          progress: jobStatus.progress || null
+        })
+      }
+
+      // Job not found - check gateway health before deciding what to do
+      const gatewayHealthy = await checkLlmGatewayHealth()
+
+      if (gatewayHealthy) {
+        // Gateway is healthy, job truly doesn't exist - delete local reference
+        const conversationExports = await model.conversationExport.getByJobId(jobId)
+        if (conversationExports && conversationExports.length > 0) {
+          await deleteOrphanExportReference(conversationExports[0])
+        }
+
+        return res.status(404).json({
+          status: "job_not_found",
+          gatewayAvailable: true,
+          error: "Job no longer exists on LLM Gateway"
+        })
+      } else {
+        // Gateway is unhealthy - keep reference, report unavailable
+        return res.status(503).json({
+          status: "gateway_unavailable",
+          gatewayAvailable: false,
+          error: "LLM Gateway is not reachable"
+        })
+      }
+    } catch (err) {
+      // Check if this is a 404 error from the gateway
+      if (err.response?.status === 404) {
+        const gatewayHealthy = await checkLlmGatewayHealth()
+
+        if (gatewayHealthy) {
+          // Gateway is healthy, job truly doesn't exist - delete local reference
+          const conversationExports = await model.conversationExport.getByJobId(jobId)
+          if (conversationExports && conversationExports.length > 0) {
+            await deleteOrphanExportReference(conversationExports[0])
+          }
+
+          return res.status(404).json({
+            status: "job_not_found",
+            gatewayAvailable: true,
+            error: "Job no longer exists on LLM Gateway"
+          })
+        } else {
+          return res.status(503).json({
+            status: "gateway_unavailable",
+            gatewayAvailable: false,
+            error: "LLM Gateway is not reachable"
+          })
+        }
+      }
+
+      throw err
+    }
+  } catch (err) {
+    appLogger.error(`[Export] getExportContent error: ${err.message}`)
+    return res.status(err.response?.status || 500).json({
+      status: "error",
+      error: err.response?.data?.detail || err.message
+    })
+  }
+}
+
 module.exports = {
   exportConversation,
   listExport,
@@ -851,4 +1101,5 @@ module.exports = {
   getExportVersion,
   restoreExportVersion,
   generateExportDocument,
+  getExportContent,
 }
