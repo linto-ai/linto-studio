@@ -339,8 +339,13 @@ class ActivityLog extends MongoModel {
       const query = {
         "session.sessionId": { $exists: true, $ne: null },
       }
-      if (sinceTimestamp && sinceTimestamp !== "") {
-        query.timestamp = { $gt: sinceTimestamp }
+      if (sinceTimestamp) {
+        const iso =
+          sinceTimestamp instanceof Date
+            ? sinceTimestamp.toISOString()
+            : new Date(sinceTimestamp).toISOString()
+
+        query.timestamp = { $gt: iso }
       }
 
       return await this.mongoDistinct("session.sessionId", query)
