@@ -88,11 +88,11 @@ export default {
           label: this.$t("activity_list.tabs.backoffice"),
           icon: "graduation-cap",
         },
-        {
-          name: "sessions",
-          label: this.$t("activity_list.tabs.sessions"),
-          icon: "broadcast",
-        },
+        // {
+        //   name: "sessions",
+        //   label: this.$t("activity_list.tabs.sessions"),
+        //   icon: "broadcast",
+        // },
         {
           name: "sessions_kpi",
           label: this.$t("activity_list.tabs.sessions_kpi"),
