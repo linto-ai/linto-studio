@@ -19,7 +19,6 @@ export async function getSessionListKpi(
     organizationId,
   } = {},
 ) {
-  console.log("toto")
   const res = await sendRequest(
     `${BASE_API}/administration/activity/session`,
     {
