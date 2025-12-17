@@ -131,12 +131,20 @@ export default {
       isConnected: false,
       isBottom: true,
       channelKeyObj: "selectedChannel",
+      wakeLock: null,
     }
   },
   mounted() {
     this.init()
+    document.addEventListener("visibilitychange", this.renewWakeLock.bind(this))
   },
-  beforeDestroy() {},
+  beforeDestroy() {
+    this.releaseWakeLock()
+    document.removeEventListener(
+      "visibilitychange",
+      this.renewWakeLock.bind(this),
+    )
+  },
   computed: {
     isInError() {
       return this.channelTranscriberStatus === "errored"
@@ -149,8 +157,31 @@ export default {
     },
   },
   methods: {
+    async renewWakeLock() {
+      if (this.wakeLock) {
+        await this.wakeLock.release()
+      }
+
+      await this.aquireWakeLock()
+    },
+    async aquireWakeLock() {
+      try {
+        this.wakeLock = await navigator.wakeLock.request("screen")
+        this.wakeLock.addEventListener("release", () => {
+          this.wakeLock = null
+        })
+      } catch (error) {
+        console.warn("WakeLock error", error)
+      }
+    },
+    async releaseWakeLock() {
+      if (this.wakeLock) {
+        await this.wakeLock.release()
+      }
+    },
     async init() {
       this.isConnected = true
+      this.aquireWakeLock()
     },
     handleScroll(e) {
       let isBottom =
