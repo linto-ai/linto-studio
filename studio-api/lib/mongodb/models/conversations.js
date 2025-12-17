@@ -804,6 +804,27 @@ class ConvoModel extends MongoModel {
       return error
     }
   }
+
+  async countMediaFromOrga(orgaIds) {
+    try {
+      return await this.mongoAggregate([
+        {
+          $match: {
+            "organization.organizationId": { $in: orgaIds },
+          },
+        },
+        {
+          $group: {
+            _id: "$organization.organizationId",
+            total: { $sum: 1 },
+          },
+        },
+      ])
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
 }
 
 module.exports = new ConvoModel()
