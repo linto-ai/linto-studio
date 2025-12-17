@@ -9,7 +9,6 @@ const { calculateWatchTime, reduceToLastActivity } = require(
 
 const SOCKET_EVENTS = require(`${process.cwd()}/lib/dao/log/socketEvent`)
 
-const KEEP_LOG_WITH_WATCHTIME_OVER = 300
 const activityLoggedUrls = ["/api/administration/", "/tokens/"]
 
 class LogManager {
@@ -21,7 +20,23 @@ class LogManager {
     if (method === "GET" && !activityLoggedUrls.some((u) => url?.includes(u))) {
       return
     }
-    if (url === "/auth/login") return
+
+    const match = url.match(/format=([^&]+)/)
+    const format = match ? match[1] : null
+    // Ignore the following routes:
+    // - /auth/login
+    // - any URL containing conversations/create
+    // - /download? with format=summarize-en
+    // The routes related to conversations creation and file downloads are already
+    // handled by logTranscriptionEvent and logLlmEvent, so we don't process them here.
+    // extract format if present
+    if (
+      url === "/auth/login" ||
+      url.includes("conversations/create") ||
+      (url.includes("/download?") && format && format !== "verbatim")
+    ) {
+      return // ignore
+    }
     model.activityLog.create(ctx)
   }
 
