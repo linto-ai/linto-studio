@@ -251,7 +251,8 @@
       "title": "Download verbatim",
       "txt": "Export TXT",
       "vtt": "Export VTT",
-      "md": "Export Markdown"
+      "md": "Export Markdown",
+      "whisperx": "Raw JSON (WhisperX)"
     },
     "export_json_button": "Export JSON",
     "highlight_toolbox": {

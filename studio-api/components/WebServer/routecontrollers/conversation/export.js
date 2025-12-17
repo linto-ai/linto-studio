@@ -189,6 +189,9 @@ async function exportConversation(req, res, next) {
       case "json":
         await handleJsonFormat(res, metadata, conversation)
         break
+      case "whisperx":
+        await handleWhisperXFormat(res, metadata, conversation)
+        break
       case "text":
         await handleTextFormat(res, metadata, conversation)
         break
@@ -603,6 +606,73 @@ async function handleJsonFormat(res, metadata, conversation) {
 
   //we don't add metadata if json is empty
   if (Object.keys(metadata).length === 0) delete output.metadata
+
+  res.setHeader("Content-Type", "application/json")
+  res.status(200).send(output)
+}
+
+async function handleWhisperXFormat(res, metadata, conversation) {
+  // Re-fetch conversation from database to get raw data with words array
+  // The conversation passed in has been transformed by prepateData which removes words
+  const rawConversations = await model.conversations.getById(conversation._id)
+  if (rawConversations.length !== 1) {
+    res.status(404).send({ error: "Conversation not found" })
+    return
+  }
+  const rawConversation = rawConversations[0]
+
+  // Build speaker mapping: original speaker_id -> SPEAKER_XX
+  const speakerMap = new Map()
+  rawConversation.speakers.forEach((speaker, index) => {
+    const label = `SPEAKER_${index.toString().padStart(2, '0')}`
+    speakerMap.set(speaker.speaker_id, label)
+  })
+
+  // Transform turns to WhisperX segments
+  const segments = rawConversation.text.map((turn) => {
+    const speakerLabel = speakerMap.get(turn.speaker_id) || "SPEAKER_00"
+
+    // Calculate segment start/end from words
+    let segmentStart = null
+    let segmentEnd = null
+
+    const words = (turn.words || []).map((w) => {
+      if (segmentStart === null || w.stime < segmentStart) {
+        segmentStart = w.stime
+      }
+      if (segmentEnd === null || w.etime > segmentEnd) {
+        segmentEnd = w.etime
+      }
+
+      return {
+        word: w.word,
+        start: w.stime,
+        end: w.etime,
+        score: w.confidence ?? 1.0,
+        speaker: speakerLabel
+      }
+    })
+
+    // Fallback if no words available
+    if (segmentStart === null) segmentStart = turn.stime || 0
+    if (segmentEnd === null) segmentEnd = turn.etime || 0
+
+    return {
+      start: segmentStart,
+      end: segmentEnd,
+      text: turn.segment,
+      speaker: speakerLabel,
+      words: words
+    }
+  })
+
+  // Get language from conversation metadata
+  const language = rawConversation.lang || rawConversation.transcriptionConfig?.lang || "unknown"
+
+  const output = {
+    segments: segments,
+    language: language
+  }
 
   res.setHeader("Content-Type", "application/json")
   res.status(200).send(output)

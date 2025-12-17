@@ -385,10 +385,11 @@ export async function apiGetJsonFileFromConversation(
   conversationId,
   speakers,
   keywords,
+  format = "json",
   notif,
 ) {
   return await sendRequest(
-    `${BASE_API}/conversations/${conversationId}/download?format=json`,
+    `${BASE_API}/conversations/${conversationId}/download?format=${format}`,
     { method: "post" },
     {
       filter: { speaker: speakers.join(","), keyword: keywords.join(",") },

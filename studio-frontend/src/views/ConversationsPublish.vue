@@ -279,6 +279,7 @@ export default {
         { value: "pdf", text: this.$t("conversation.export.pdf") },
         { value: "txt", text: this.$t("conversation.export.txt") },
         { value: "json", text: this.$t("conversation.export.json") },
+        { value: "whisperx", text: this.$t("conversation.export.whisperx") },
       ]
     },
     dataLoaded() {
@@ -475,6 +476,9 @@ export default {
         case "json":
           this.exportJson()
           break
+        case "whisperx":
+          this.exportWhisperX()
+          break
         case "pdf":
           this.exportPdf()
           break
@@ -511,6 +515,23 @@ export default {
           JSON.stringify(req?.data, null, 4),
           "application/json",
           ".json",
+        )
+      }
+      this.loadingDownload = false
+    },
+    async exportWhisperX() {
+      this.loadingDownload = true
+      let req = await apiGetJsonFileFromConversation(
+        this.conversationId,
+        this.filterSpeakers,
+        this.filterTags,
+        "whisperx",
+      )
+      if (req?.status === "success") {
+        this.exportFile(
+          JSON.stringify(req?.data, null, 2),
+          "application/json",
+          "_whisperx.json",
         )
       }
       this.loadingDownload = false
