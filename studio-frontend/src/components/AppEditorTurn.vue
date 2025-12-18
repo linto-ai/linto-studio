@@ -173,10 +173,6 @@ export default {
       type: Boolean,
       required: true,
     },
-    conversationIsFiltered: {
-      type: Boolean,
-      required: true,
-    },
     lastTurn: {
       type: Boolean,
     },
