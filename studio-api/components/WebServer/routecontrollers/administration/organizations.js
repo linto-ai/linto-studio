@@ -17,6 +17,19 @@ const {
 async function listAllOrganization(req, res, next) {
   try {
     const organizations = await model.organizations.getAll(req.query)
+    const ids = organizations.list.map((org) => org._id.toString())
+
+    const totals = await model.conversations.countMediaFromOrga(ids)
+    const totalsMap = totals.reduce((acc, item) => {
+      acc[item._id] = item.total
+      return acc
+    }, {})
+
+    organizations.list = organizations.list.map((org) => ({
+      ...org,
+      mediaCount: totalsMap[org._id.toString()] || 0,
+    }))
+
     return res.status(200).send(organizations)
   } catch (err) {
     next(err)

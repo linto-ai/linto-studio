@@ -21,19 +21,20 @@ class LogManager {
       return
     }
 
-    const match = url.match(/format=([^&]+)/)
-    const format = match ? match[1] : null
+    const regenerate = url.includes("regenerate=true")
+
     // Ignore the following routes:
     // - /auth/login
     // - any URL containing conversations/create
     // - /download? with format=summarize-en
     // The routes related to conversations creation and file downloads are already
     // handled by logTranscriptionEvent and logLlmEvent, so we don't process them here.
-    // extract format if present
+    // Unless the user regenerate don't regenerate the document
+
     if (
       url === "/auth/login" ||
       url.includes("conversations/create") ||
-      (url.includes("/download?") && format && format !== "verbatim")
+      (url.includes("/download?") && regenerate)
     ) {
       return // ignore
     }
