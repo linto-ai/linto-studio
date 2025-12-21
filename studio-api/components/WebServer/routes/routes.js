@@ -54,6 +54,7 @@ module.exports = (webServer) => {
       ...require("./api/administration/sessions")(webServer),
     ]
   }
+
   const authProviders = PROVIDER.registerRoutes(webServer)
   api_routes["/auth"] = [...api_routes["/auth"], ...authProviders["/auth"]]
 
