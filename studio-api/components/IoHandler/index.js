@@ -17,7 +17,7 @@ const { watchConversation, refreshInterval } = require(
 const auth_middlewares = require(
   `${process.cwd()}/components/WebServer/config/passport/middleware`,
 )
-const { sessionSocketAccess } = require(
+const { sessionSocketAccess, checkSocketOrganizationAccess } = require(
   `${process.cwd()}/components/WebServer/middlewares/access/organization.js`,
 )
 
@@ -149,20 +149,9 @@ class IoHandler extends Component {
       })
 
       socket.on("watch_organization_session", async (orgaId) => {
-        // Security: Verify user has access to this organization
-        try {
-          const { isAuth, userId } = await auth_middlewares.checkSocket(socket)
-          if (!isAuth || !userId) {
-            debug(`[Session] Unauthorized watch_organization_session attempt for org ${orgaId}`)
-            return
-          }
-          const orgAccess = await model.organizations.getByIdAndUser(orgaId, userId)
-          if (!orgAccess || orgAccess.length === 0) {
-            debug(`[Session] User ${userId} denied access to org ${orgaId}`)
-            return
-          }
-        } catch (err) {
-          debug(`[Session] Auth check failed for watch_organization_session: ${err.message}`)
+        const { authorized } = await checkSocketOrganizationAccess(socket, orgaId)
+        if (!authorized) {
+          debug(`[Session] User denied access to org ${orgaId}`)
           return
         }
         this.addSocketInOrga(orgaId, socket, "session")
@@ -173,20 +162,9 @@ class IoHandler extends Component {
       })
 
       socket.on("watch_organization_media", async (orgaId) => {
-        // Security: Verify user has access to this organization
-        try {
-          const { isAuth, userId } = await auth_middlewares.checkSocket(socket)
-          if (!isAuth || !userId) {
-            debug(`[Media] Unauthorized watch_organization_media attempt for org ${orgaId}`)
-            return
-          }
-          const orgAccess = await model.organizations.getByIdAndUser(orgaId, userId)
-          if (!orgAccess || orgAccess.length === 0) {
-            debug(`[Media] User ${userId} denied access to org ${orgaId}`)
-            return
-          }
-        } catch (err) {
-          debug(`[Media] Auth check failed for watch_organization_media: ${err.message}`)
+        const { authorized } = await checkSocketOrganizationAccess(socket, orgaId)
+        if (!authorized) {
+          debug(`[Media] User denied access to org ${orgaId}`)
           return
         }
         this.addSocketInMedia(orgaId, socket)
@@ -209,22 +187,36 @@ class IoHandler extends Component {
         const { organizationId, conversationId } = data
         if (!organizationId) return
 
-        // Security: Verify user has access to this organization
-        try {
-          const { isAuth, userId } = await auth_middlewares.checkSocket(socket)
-          if (!isAuth || !userId) {
-            debug(`[LLM] Unauthorized llm:join attempt for org ${organizationId}`)
-            return
+        // First, try normal authentication
+        const { authorized, userId } = await checkSocketOrganizationAccess(socket, organizationId)
+
+        if (!authorized) {
+          // Check for public session token
+          const publicToken = socket.handshake?.auth?.publicToken || socket.handshake?.query?.publicToken
+          if (publicToken) {
+            // Validate token and check if organizationId matches
+            const PublicToken = require(
+              `${process.cwd()}/components/WebServer/config/passport/token/public_generator`,
+            )
+            try {
+              // Decode without verification first to get the session ID
+              const jwt = require("jsonwebtoken")
+              const decoded = jwt.decode(publicToken)
+              if (decoded?.data?.fromSession && decoded?.data?.organizationId === organizationId) {
+                const validated = PublicToken.validateToken(publicToken, decoded.data.fromSession)
+                if (validated && validated.data?.organizationId === organizationId) {
+                  debug(`[LLM] Public session user joined room for org ${organizationId}`)
+                  const orgRoom = `llm/${organizationId}`
+                  socket.join(orgRoom)
+                  return
+                }
+              }
+            } catch (err) {
+              debug(`[LLM] Invalid public token: ${err.message}`)
+            }
           }
 
-          // Check user belongs to this organization
-          const orgAccess = await model.organizations.getByIdAndUser(organizationId, userId)
-          if (!orgAccess || orgAccess.length === 0) {
-            debug(`[LLM] User ${userId} denied access to org ${organizationId}`)
-            return
-          }
-        } catch (err) {
-          debug(`[LLM] Auth check failed for llm:join: ${err.message}`)
+          debug(`[LLM] Unauthorized llm:join attempt for org ${organizationId}`)
           return
         }
 
