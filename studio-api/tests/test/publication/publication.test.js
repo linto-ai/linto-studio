@@ -5,7 +5,8 @@
  * to LLM Gateway for template management and document export.
  *
  * API contract tests for publication endpoints.
- * Updated to match the fixed implementation (v2).
+ * Updated to match the refactored implementation using custom error classes
+ * and global error handler pattern.
  */
 
 // Mock dependencies before requiring the module
@@ -199,7 +200,7 @@ describe("Publication Feature - API Contract Conformance", () => {
       )
     })
 
-    it("[CONTRACT] should return 500 error when LLM Gateway not configured", async () => {
+    it("[CONTRACT] should call next with PublicationNotConfigured error when LLM Gateway not configured", async () => {
       delete process.env.LLM_GATEWAY_SERVICES
 
       // Re-require to pick up env change
@@ -213,17 +214,20 @@ describe("Publication Feature - API Contract Conformance", () => {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
       }
+      const mockNext = jest.fn()
 
-      await publication.getTemplates(mockReq, mockRes, jest.fn())
+      await publication.getTemplates(mockReq, mockRes, mockNext)
 
-      expect(mockRes.status).toHaveBeenCalledWith(500)
-      expect(mockRes.json).toHaveBeenCalledWith({
-        status: "error",
-        error: "LLM Gateway not configured",
-      })
+      expect(mockNext).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: "PublicationNotConfigured",
+          status: 500,
+          message: "LLM Gateway not configured",
+        })
+      )
     })
 
-    it("[CONTRACT] should return 502 error on LLM Gateway connection failure", async () => {
+    it("[CONTRACT] should call next with error on LLM Gateway connection failure", async () => {
       mockAxios.get.mockRejectedValue(new Error("Connection refused"))
 
       const mockReq = { query: {} }
@@ -231,14 +235,15 @@ describe("Publication Feature - API Contract Conformance", () => {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
       }
+      const mockNext = jest.fn()
 
-      await getTemplates(mockReq, mockRes, jest.fn())
+      await getTemplates(mockReq, mockRes, mockNext)
 
-      expect(mockRes.status).toHaveBeenCalledWith(502)
-      expect(mockRes.json).toHaveBeenCalledWith({
-        status: "error",
-        error: "Failed to fetch templates from LLM Gateway",
-      })
+      expect(mockNext).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: "Connection refused",
+        })
+      )
     })
 
     it("[CONTRACT] should preserve name_fr and name_en fields (i18n support)", async () => {
@@ -319,23 +324,26 @@ describe("Publication Feature - API Contract Conformance", () => {
       )
     })
 
-    it("[CONTRACT] should return 400 when templateId is missing", async () => {
+    it("[CONTRACT] should call next with PublicationIdRequired error when templateId is missing", async () => {
       const mockReq = { params: {} }
       const mockRes = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
       }
+      const mockNext = jest.fn()
 
-      await getTemplatePlaceholders(mockReq, mockRes, jest.fn())
+      await getTemplatePlaceholders(mockReq, mockRes, mockNext)
 
-      expect(mockRes.status).toHaveBeenCalledWith(400)
-      expect(mockRes.json).toHaveBeenCalledWith({
-        status: "error",
-        error: "templateId is required",
-      })
+      expect(mockNext).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: "PublicationIdRequired",
+          status: 400,
+          message: "templateId is required",
+        })
+      )
     })
 
-    it("[CONTRACT] should return 404 when template not found", async () => {
+    it("[CONTRACT] should call next with PublicationNotFound error when template not found", async () => {
       const error = new Error("Template not found")
       error.response = { status: 404 }
       mockAxios.get.mockRejectedValue(error)
@@ -345,17 +353,20 @@ describe("Publication Feature - API Contract Conformance", () => {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
       }
+      const mockNext = jest.fn()
 
-      await getTemplatePlaceholders(mockReq, mockRes, jest.fn())
+      await getTemplatePlaceholders(mockReq, mockRes, mockNext)
 
-      expect(mockRes.status).toHaveBeenCalledWith(404)
-      expect(mockRes.json).toHaveBeenCalledWith({
-        status: "error",
-        error: "Template not found",
-      })
+      expect(mockNext).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: "PublicationNotFound",
+          status: 404,
+          message: "Template not found",
+        })
+      )
     })
 
-    it("[CONTRACT] should return 500 when LLM Gateway not configured", async () => {
+    it("[CONTRACT] should call next with PublicationNotConfigured error when LLM Gateway not configured", async () => {
       delete process.env.LLM_GATEWAY_SERVICES
 
       jest.resetModules()
@@ -368,14 +379,17 @@ describe("Publication Feature - API Contract Conformance", () => {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
       }
+      const mockNext = jest.fn()
 
-      await publication.getTemplatePlaceholders(mockReq, mockRes, jest.fn())
+      await publication.getTemplatePlaceholders(mockReq, mockRes, mockNext)
 
-      expect(mockRes.status).toHaveBeenCalledWith(500)
-      expect(mockRes.json).toHaveBeenCalledWith({
-        status: "error",
-        error: "LLM Gateway not configured",
-      })
+      expect(mockNext).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: "PublicationNotConfigured",
+          status: 500,
+          message: "LLM Gateway not configured",
+        })
+      )
     })
   })
 
@@ -477,7 +491,7 @@ describe("Publication Feature - API Contract Conformance", () => {
       )
     })
 
-    it("[CONTRACT] should return 400 for invalid format", async () => {
+    it("[CONTRACT] should call next with PublicationInvalidFormat error for invalid format", async () => {
       const mockReq = {
         params: { jobId: "job-uuid-1", format: "txt" },
         query: {},
@@ -486,17 +500,20 @@ describe("Publication Feature - API Contract Conformance", () => {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
       }
+      const mockNext = jest.fn()
 
-      await exportWithTemplate(mockReq, mockRes, jest.fn())
+      await exportWithTemplate(mockReq, mockRes, mockNext)
 
-      expect(mockRes.status).toHaveBeenCalledWith(400)
-      expect(mockRes.json).toHaveBeenCalledWith({
-        status: "error",
-        error: "Invalid format",
-      })
+      expect(mockNext).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: "PublicationInvalidFormat",
+          status: 400,
+          message: "Invalid format. Allowed: pdf, docx, html",
+        })
+      )
     })
 
-    it("[CONTRACT] should return 400 when jobId is missing", async () => {
+    it("[CONTRACT] should call next with PublicationIdRequired error when jobId is missing", async () => {
       const mockReq = {
         params: { format: "pdf" },
         query: {},
@@ -505,17 +522,20 @@ describe("Publication Feature - API Contract Conformance", () => {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
       }
+      const mockNext = jest.fn()
 
-      await exportWithTemplate(mockReq, mockRes, jest.fn())
+      await exportWithTemplate(mockReq, mockRes, mockNext)
 
-      expect(mockRes.status).toHaveBeenCalledWith(400)
-      expect(mockRes.json).toHaveBeenCalledWith({
-        status: "error",
-        error: "jobId is required",
-      })
+      expect(mockNext).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: "PublicationIdRequired",
+          status: 400,
+          message: "jobId is required",
+        })
+      )
     })
 
-    it("[CONTRACT] should return 404 when job not found", async () => {
+    it("[CONTRACT] should call next with PublicationNotFound error when job not found", async () => {
       const error = new Error("Job not found")
       error.response = { status: 404 }
       mockAxios.get.mockRejectedValue(error)
@@ -528,17 +548,20 @@ describe("Publication Feature - API Contract Conformance", () => {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
       }
+      const mockNext = jest.fn()
 
-      await exportWithTemplate(mockReq, mockRes, jest.fn())
+      await exportWithTemplate(mockReq, mockRes, mockNext)
 
-      expect(mockRes.status).toHaveBeenCalledWith(404)
-      expect(mockRes.json).toHaveBeenCalledWith({
-        status: "error",
-        error: "Job not found",
-      })
+      expect(mockNext).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: "PublicationNotFound",
+          status: 404,
+          message: "Job not found",
+        })
+      )
     })
 
-    it("[CONTRACT] should return 500 when LLM Gateway not configured", async () => {
+    it("[CONTRACT] should call next with PublicationNotConfigured error when LLM Gateway not configured", async () => {
       delete process.env.LLM_GATEWAY_SERVICES
 
       jest.resetModules()
@@ -554,17 +577,20 @@ describe("Publication Feature - API Contract Conformance", () => {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
       }
+      const mockNext = jest.fn()
 
-      await publication.exportWithTemplate(mockReq, mockRes, jest.fn())
+      await publication.exportWithTemplate(mockReq, mockRes, mockNext)
 
-      expect(mockRes.status).toHaveBeenCalledWith(500)
-      expect(mockRes.json).toHaveBeenCalledWith({
-        status: "error",
-        error: "LLM Gateway not configured",
-      })
+      expect(mockNext).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: "PublicationNotConfigured",
+          status: 500,
+          message: "LLM Gateway not configured",
+        })
+      )
     })
 
-    it("[CONTRACT] should return 500 on document generation failure", async () => {
+    it("[CONTRACT] should call next with error on document generation failure", async () => {
       const error = new Error("Internal server error")
       error.response = { status: 500 }
       mockAxios.get.mockRejectedValue(error)
@@ -577,16 +603,16 @@ describe("Publication Feature - API Contract Conformance", () => {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
       }
+      const mockNext = jest.fn()
 
-      await exportWithTemplate(mockReq, mockRes, jest.fn())
+      await exportWithTemplate(mockReq, mockRes, mockNext)
 
-      expect(mockRes.status).toHaveBeenCalledWith(500)
-      // Implementation uses errorDetail from err.message, falling back to "Document generation failed"
-      // Since err.message is "Internal server error", that's what gets returned
-      expect(mockRes.json).toHaveBeenCalledWith({
-        status: "error",
-        error: "Internal server error",
-      })
+      // For 500 errors without special handling, the original error is passed to next()
+      expect(mockNext).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: "Internal server error",
+        })
+      )
     })
   })
 
@@ -628,7 +654,7 @@ describe("Publication Feature - API Contract Conformance", () => {
       expect(Array.isArray(response.placeholders)).toBe(true)
     })
 
-    it("[CONTRACT] error responses should have { status: 'error', error: '...' } format", async () => {
+    it("[CONTRACT] errors should be passed to next() with proper error class properties", async () => {
       delete process.env.LLM_GATEWAY_SERVICES
 
       jest.resetModules()
@@ -641,13 +667,16 @@ describe("Publication Feature - API Contract Conformance", () => {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
       }
+      const mockNext = jest.fn()
 
-      await publication.getTemplates(mockReq, mockRes, jest.fn())
+      await publication.getTemplates(mockReq, mockRes, mockNext)
 
-      const response = mockRes.json.mock.calls[0][0]
-      expect(response).toHaveProperty("status", "error")
-      expect(response).toHaveProperty("error")
-      expect(typeof response.error).toBe("string")
+      // Errors are now passed to next() for global handler
+      expect(mockNext).toHaveBeenCalled()
+      const error = mockNext.mock.calls[0][0]
+      expect(error).toHaveProperty("name")
+      expect(error).toHaveProperty("status")
+      expect(error).toHaveProperty("message")
     })
   })
 })

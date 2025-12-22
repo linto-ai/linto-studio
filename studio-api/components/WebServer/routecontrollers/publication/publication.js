@@ -4,15 +4,19 @@ const debug = require("debug")(
 
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 const appLogger = require(`${process.cwd()}/lib/logger/logger.js`)
-const model = require(`${process.cwd()}/lib/mongodb/models`)
 const FormData = require("form-data")
 
 const {
-  ConversationIdRequire,
-  ConversationNotFound,
-  ConversationMetadataRequire,
+  PublicationError,
+  PublicationNotConfigured,
+  PublicationNotFound,
+  PublicationInvalidFormat,
+  PublicationUploadFailed,
+  PublicationForbidden,
+  PublicationAuthRequired,
+  PublicationIdRequired,
 } = require(
-  `${process.cwd()}/components/WebServer/error/exception/conversation`,
+  `${process.cwd()}/components/WebServer/error/exception/publication`,
 )
 
 /**
@@ -31,7 +35,7 @@ async function getTemplates(req, res, next) {
   try {
     const baseUrl = process.env.LLM_GATEWAY_SERVICES
     if (!baseUrl) {
-      return res.status(500).json({ status: "error", error: "LLM Gateway not configured" })
+      throw new PublicationNotConfigured()
     }
 
     // Get authenticated user's ID from JWT payload
@@ -61,11 +65,7 @@ async function getTemplates(req, res, next) {
       templates: response || []
     })
   } catch (err) {
-    appLogger.error(`[Publication] getTemplates error: ${err.message}`)
-    return res.status(err.response?.status || 502).json({
-      status: "error",
-      error: err.response?.data?.detail || "Failed to fetch templates from LLM Gateway"
-    })
+    next(err)
   }
 }
 
@@ -80,12 +80,12 @@ async function getTemplatePlaceholders(req, res, next) {
     const { templateId } = req.params
 
     if (!templateId) {
-      return res.status(400).json({ status: "error", error: "templateId is required" })
+      throw new PublicationIdRequired("templateId is required")
     }
 
     const baseUrl = process.env.LLM_GATEWAY_SERVICES
     if (!baseUrl) {
-      return res.status(500).json({ status: "error", error: "LLM Gateway not configured" })
+      throw new PublicationNotConfigured()
     }
 
     // CORRECT endpoint: /api/v1/document-templates/{id}/placeholders
@@ -98,12 +98,10 @@ async function getTemplatePlaceholders(req, res, next) {
       placeholders: response || []
     })
   } catch (err) {
-    appLogger.error(`[Publication] getTemplatePlaceholders error: ${err.message}`)
-    const status = err.response?.status || 500
-    return res.status(status).json({
-      status: "error",
-      error: status === 404 ? "Template not found" : (err.response?.data?.detail || err.message)
-    })
+    if (err.response?.status === 404) {
+      return next(new PublicationNotFound("Template not found"))
+    }
+    next(err)
   }
 }
 
@@ -125,15 +123,15 @@ async function exportWithTemplate(req, res, next) {
     const { jobId, format } = req.params
 
     if (!jobId) {
-      return res.status(400).json({ status: "error", error: "jobId is required" })
+      throw new PublicationIdRequired("jobId is required")
     }
     if (!format || !["pdf", "docx", "html"].includes(format)) {
-      return res.status(400).json({ status: "error", error: "Invalid format" })
+      throw new PublicationInvalidFormat("Invalid format. Allowed: pdf, docx, html")
     }
 
     const baseUrl = process.env.LLM_GATEWAY_SERVICES
     if (!baseUrl) {
-      return res.status(500).json({ status: "error", error: "LLM Gateway not configured" })
+      throw new PublicationNotConfigured()
     }
 
     // Build request URL
@@ -194,17 +192,14 @@ async function exportWithTemplate(req, res, next) {
       }
     }
 
-    appLogger.error(`[Publication] exportWithTemplate error: ${errorDetail}`)
-    appLogger.error(`[Publication] URL called: ${url}`)
-
     if (err.response?.status === 404) {
-      return res.status(404).json({ status: "error", error: "Job not found" })
+      return next(new PublicationNotFound("Job not found"))
     }
     if (err.response?.status === 400) {
-      return res.status(400).json({ status: "error", error: errorDetail || "Invalid request" })
+      return next(new PublicationError(errorDetail || "Invalid request"))
     }
 
-    return res.status(500).json({ status: "error", error: errorDetail || "Document generation failed" })
+    next(err)
   }
 }
 
@@ -232,18 +227,12 @@ async function createTemplate(req, res, next) {
     // Get authenticated user's ID from JWT payload
     const authenticatedUserId = req.payload?.data?.userId
     if (!authenticatedUserId) {
-      return res.status(401).json({
-        status: "error",
-        error: "Authentication required"
-      })
+      throw new PublicationAuthRequired()
     }
 
     // Check for file upload
     if (!req.files || !req.files.file) {
-      return res.status(400).json({
-        status: "error",
-        error: "A DOCX file is required"
-      })
+      throw new PublicationError("A DOCX file is required")
     }
 
     const file = req.files.file
@@ -251,10 +240,7 @@ async function createTemplate(req, res, next) {
 
     // Validate required fields
     if (!name_fr || !name_fr.trim()) {
-      return res.status(400).json({
-        status: "error",
-        error: "name_fr is required"
-      })
+      throw new PublicationError("name_fr is required")
     }
 
     // Validate file type
@@ -266,27 +252,18 @@ async function createTemplate(req, res, next) {
                         file.name.toLowerCase().endsWith(".docx")
 
     if (!isValidType) {
-      return res.status(400).json({
-        status: "error",
-        error: "Invalid file type. Only DOCX files are accepted."
-      })
+      throw new PublicationInvalidFormat("Invalid file type. Only DOCX files are accepted.")
     }
 
     // Check file size (max 10MB)
     const maxSize = 10 * 1024 * 1024
     if (file.size > maxSize) {
-      return res.status(400).json({
-        status: "error",
-        error: "File too large. Maximum size is 10MB."
-      })
+      throw new PublicationError("File too large. Maximum size is 10MB.")
     }
 
     const baseUrl = process.env.LLM_GATEWAY_SERVICES
     if (!baseUrl) {
-      return res.status(500).json({
-        status: "error",
-        error: "LLM Gateway not configured"
-      })
+      throw new PublicationNotConfigured()
     }
 
     // Create FormData for multipart request to LLM Gateway
@@ -323,12 +300,12 @@ async function createTemplate(req, res, next) {
 
     if (templateScope === "organization") {
       // Organization-scoped template: org_id only, no user_id
-      appLogger.info(`[Publication] Creating org-scoped template for org: ${organization_id}`)
+      debug(`Creating org-scoped template for org: ${organization_id}`)
     } else {
       // Personal/user-scoped template (default): org_id + user_id
       // Use authenticated user's MongoDB ObjectId directly (LLM Gateway accepts any string ID)
       formData.append("user_id", authenticatedUserId)
-      appLogger.info(`[Publication] Creating user-scoped template for user: ${authenticatedUserId} in org: ${organization_id}`)
+      debug(`Creating user-scoped template for user: ${authenticatedUserId} in org: ${organization_id}`)
     }
 
     // Forward to LLM Gateway
@@ -345,28 +322,24 @@ async function createTemplate(req, res, next) {
       maxBodyLength: Infinity,
     })
 
-    appLogger.info(`[Publication] Template uploaded successfully: ${response.data?.id}`)
+    debug(`Template uploaded successfully: ${response.data?.id}`)
 
     return res.status(201).json({
       status: "success",
       template: response.data || {}
     })
   } catch (err) {
-    appLogger.error(`[Publication] createTemplate error: ${err.message}`)
-
-    // Parse error detail from LLM Gateway if available
-    let errorDetail = err.message
-    if (err.response?.data?.detail) {
-      errorDetail = err.response.data.detail
-    } else if (err.response?.data?.message) {
-      errorDetail = err.response.data.message
+    // Handle axios errors from LLM Gateway
+    if (err.response?.status) {
+      let errorDetail = err.response?.data?.detail || err.response?.data?.message || err.message
+      if (err.response.status === 400) {
+        return next(new PublicationError(errorDetail))
+      }
+      if (err.response.status === 500) {
+        return next(new PublicationUploadFailed(errorDetail))
+      }
     }
-
-    const status = err.response?.status || 500
-    return res.status(status).json({
-      status: "error",
-      error: errorDetail || "Failed to upload template"
-    })
+    next(err)
   }
 }
 
@@ -383,21 +356,18 @@ async function deleteTemplate(req, res, next) {
     const { templateId } = req.params
 
     if (!templateId) {
-      return res.status(400).json({ status: "error", error: "templateId is required" })
+      throw new PublicationIdRequired("templateId is required")
     }
 
     // Get authenticated user's ID from JWT payload
     const authenticatedUserId = req.payload?.data?.userId
     if (!authenticatedUserId) {
-      return res.status(401).json({
-        status: "error",
-        error: "Authentication required"
-      })
+      throw new PublicationAuthRequired()
     }
 
     const baseUrl = process.env.LLM_GATEWAY_SERVICES
     if (!baseUrl) {
-      return res.status(500).json({ status: "error", error: "LLM Gateway not configured" })
+      throw new PublicationNotConfigured()
     }
 
     // First, get the template to check its scope and ownership
@@ -408,25 +378,19 @@ async function deleteTemplate(req, res, next) {
       template = getResponse
     } catch (err) {
       if (err.response?.status === 404) {
-        return res.status(404).json({ status: "error", error: "Template not found" })
+        throw new PublicationNotFound("Template not found")
       }
       throw err
     }
 
     // Check if it's a system template (cannot be deleted via this endpoint)
     if (template.scope === "system") {
-      return res.status(403).json({
-        status: "error",
-        error: "Cannot delete system templates"
-      })
+      throw new PublicationForbidden("Cannot delete system templates")
     }
 
     // Check ownership for user-scoped templates
     if (template.scope === "user" && template.user_id !== authenticatedUserId) {
-      return res.status(403).json({
-        status: "error",
-        error: "You can only delete your own templates"
-      })
+      throw new PublicationForbidden("You can only delete your own templates")
     }
 
     // For organization-scoped templates, we could add permission checks here
@@ -436,25 +400,14 @@ async function deleteTemplate(req, res, next) {
     const deleteUrl = `${baseUrl}/api/v1/document-templates/${templateId}`
     await axios.delete(deleteUrl, { timeout: 5000 })
 
-    appLogger.info(`[Publication] Template deleted: ${templateId} by user ${authenticatedUserId}`)
+    debug(`Template deleted: ${templateId} by user ${authenticatedUserId}`)
 
     return res.status(200).json({
       status: "success",
       message: "Template deleted successfully"
     })
   } catch (err) {
-    appLogger.error(`[Publication] deleteTemplate error: ${err.message}`)
-
-    let errorDetail = err.message
-    if (err.response?.data?.detail) {
-      errorDetail = err.response.data.detail
-    }
-
-    const status = err.response?.status || 500
-    return res.status(status).json({
-      status: "error",
-      error: errorDetail || "Failed to delete template"
-    })
+    next(err)
   }
 }
 
