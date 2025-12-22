@@ -168,7 +168,7 @@ describe("Versioning API", () => {
       expect(wasErrorHandled).toBe(true)
     })
 
-    it("[CONTRACT] should return error when LLM Gateway is not configured", async () => {
+    it("[CONTRACT] should pass ExportNotConfigured error to next() when LLM Gateway is not configured", async () => {
       const {
         updateExportResult,
       } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/export.js`)
@@ -184,13 +184,10 @@ describe("Versioning API", () => {
 
       await updateExportResult(req, res, next)
 
-      expect(res.status).toHaveBeenCalledWith(500)
-      expect(res.json).toHaveBeenCalledWith(
-        expect.objectContaining({
-          status: "error",
-          error: expect.stringContaining("not configured"),
-        })
-      )
+      // With new error handling pattern, errors are passed to next()
+      expect(next).toHaveBeenCalled()
+      expect(next.mock.calls[0][0].name).toBe("ExportNotConfigured")
+      expect(next.mock.calls[0][0].status).toBe(500)
     })
   })
 
@@ -324,7 +321,7 @@ describe("Versioning API", () => {
       )
     })
 
-    it("[CONTRACT] should handle version not found error", async () => {
+    it("[CONTRACT] should pass ExportGatewayError to next() when version not found", async () => {
       const {
         getExportVersion,
       } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/export.js`)
@@ -343,13 +340,10 @@ describe("Versioning API", () => {
 
       await getExportVersion(req, res, next)
 
-      expect(res.status).toHaveBeenCalledWith(404)
-      expect(res.json).toHaveBeenCalledWith(
-        expect.objectContaining({
-          status: "error",
-          error: expect.stringContaining("not found"),
-        })
-      )
+      // With new error handling pattern, errors are passed to next()
+      expect(next).toHaveBeenCalled()
+      expect(next.mock.calls[0][0].name).toBe("ExportGatewayError")
+      expect(next.mock.calls[0][0].message).toContain("not found")
     })
   })
 
@@ -573,7 +567,7 @@ describe("Error Handling", () => {
   })
 
   describe("Error Response Format", () => {
-    it("[CONTRACT] should return error response in correct format", async () => {
+    it("[CONTRACT] should pass ExportGatewayError to next() for gateway errors", async () => {
       const {
         listExportVersions,
       } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/export.js`)
@@ -588,16 +582,13 @@ describe("Error Handling", () => {
 
       await listExportVersions(req, res, next)
 
-      expect(res.status).toHaveBeenCalledWith(500)
-      expect(res.json).toHaveBeenCalledWith(
-        expect.objectContaining({
-          status: "error",
-          error: expect.any(String),
-        })
-      )
+      // With new error handling pattern, errors are passed to next()
+      expect(next).toHaveBeenCalled()
+      expect(next.mock.calls[0][0].name).toBe("ExportGatewayError")
+      expect(next.mock.calls[0][0].status).toBe(502)
     })
 
-    it("[CONTRACT] should handle network errors gracefully", async () => {
+    it("[CONTRACT] should pass error to next() for network errors", async () => {
       const {
         getExportVersion,
       } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/export.js`)
@@ -614,12 +605,9 @@ describe("Error Handling", () => {
 
       await getExportVersion(req, res, next)
 
-      expect(res.status).toHaveBeenCalledWith(500)
-      expect(res.json).toHaveBeenCalledWith(
-        expect.objectContaining({
-          status: "error",
-        })
-      )
+      // Network errors without response.status are passed directly to next()
+      expect(next).toHaveBeenCalled()
+      expect(next.mock.calls[0][0].message).toBe("ECONNREFUSED")
     })
   })
 })

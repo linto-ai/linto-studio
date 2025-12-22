@@ -264,16 +264,15 @@ describe("Sprint 10: GET /export/:jobId/content", () => {
   })
 
   describe("Edge cases and error handling", () => {
-    it("should return 500 when LLM_GATEWAY_SERVICES is not configured", async () => {
+    it("should pass ExportNotConfigured error to next() when LLM_GATEWAY_SERVICES is not configured", async () => {
       delete process.env.LLM_GATEWAY_SERVICES
 
       await getExportContent(mockReq, mockRes, mockNext)
 
-      expect(mockRes.status).toHaveBeenCalledWith(500)
-      expect(mockRes.json).toHaveBeenCalledWith({
-        status: "error",
-        error: "LLM Gateway not configured",
-      })
+      // With new error handling pattern, errors are passed to next()
+      expect(mockNext).toHaveBeenCalled()
+      expect(mockNext.mock.calls[0][0].name).toBe("ExportNotConfigured")
+      expect(mockNext.mock.calls[0][0].status).toBe(500)
     })
 
     it("should require conversationId parameter", async () => {
@@ -302,18 +301,17 @@ describe("Sprint 10: GET /export/:jobId/content", () => {
       expect(nextCalled || errorResponse).toBe(true)
     })
 
-    it("should handle unexpected errors gracefully", async () => {
+    it("should pass ExportGatewayError to next() for unexpected errors", async () => {
       const unexpectedError = new Error("Database connection lost")
       unexpectedError.response = { status: 500, data: { detail: "Internal error" } }
       mockGetJobStatus.mockRejectedValue(unexpectedError)
 
       await getExportContent(mockReq, mockRes, mockNext)
 
-      expect(mockRes.status).toHaveBeenCalledWith(500)
-      expect(mockRes.json).toHaveBeenCalledWith({
-        status: "error",
-        error: "Internal error",
-      })
+      // With new error handling pattern, gateway errors are passed to next()
+      expect(mockNext).toHaveBeenCalled()
+      expect(mockNext.mock.calls[0][0].name).toBe("ExportGatewayError")
+      expect(mockNext.mock.calls[0][0].message).toContain("Internal error")
     })
   })
 })

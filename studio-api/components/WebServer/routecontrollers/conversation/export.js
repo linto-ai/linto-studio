@@ -24,6 +24,8 @@ const {
   ConversationIdRequire,
   ConversationNotFound,
   ConversationMetadataRequire,
+  ExportNotConfigured,
+  ExportGatewayError,
 } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
@@ -862,7 +864,7 @@ async function updateExportResult(req, res, next) {
     // Proxy to LLM Gateway
     const baseUrl = process.env.LLM_GATEWAY_SERVICES
     if (!baseUrl) {
-      return res.status(500).json({ status: "error", error: "LLM Gateway not configured" })
+      throw new ExportNotConfigured()
     }
 
     const response = await axios.patch(`${baseUrl}/api/v1/jobs/${jobId}/result`, { content })
@@ -880,11 +882,10 @@ async function updateExportResult(req, res, next) {
       version: response.current_version || 1
     })
   } catch (err) {
-    appLogger.error(`[Export] updateExportResult error: ${err.message}`)
-    return res.status(err.response?.status || 500).json({
-      status: "error",
-      error: err.response?.data?.detail || err.message
-    })
+    if (err.response?.status) {
+      return next(new ExportGatewayError(err.response?.data?.detail || err.message))
+    }
+    next(err)
   }
 }
 
@@ -902,7 +903,7 @@ async function listExportVersions(req, res, next) {
     // Proxy to LLM Gateway
     const baseUrl = process.env.LLM_GATEWAY_SERVICES
     if (!baseUrl) {
-      return res.status(500).json({ status: "error", error: "LLM Gateway not configured" })
+      throw new ExportNotConfigured()
     }
 
     const response = await axios.get(`${baseUrl}/api/v1/jobs/${jobId}/versions`)
@@ -912,11 +913,10 @@ async function listExportVersions(req, res, next) {
       versions: response || []
     })
   } catch (err) {
-    appLogger.error(`[Export] listExportVersions error: ${err.message}`)
-    return res.status(err.response?.status || 500).json({
-      status: "error",
-      error: err.response?.data?.detail || err.message
-    })
+    if (err.response?.status) {
+      return next(new ExportGatewayError(err.response?.data?.detail || err.message))
+    }
+    next(err)
   }
 }
 
@@ -935,7 +935,7 @@ async function getExportVersion(req, res, next) {
     // Proxy to LLM Gateway
     const baseUrl = process.env.LLM_GATEWAY_SERVICES
     if (!baseUrl) {
-      return res.status(500).json({ status: "error", error: "LLM Gateway not configured" })
+      throw new ExportNotConfigured()
     }
 
     const response = await axios.get(`${baseUrl}/api/v1/jobs/${jobId}/versions/${versionNumber}`)
@@ -945,11 +945,10 @@ async function getExportVersion(req, res, next) {
       version: response
     })
   } catch (err) {
-    appLogger.error(`[Export] getExportVersion error: ${err.message}`)
-    return res.status(err.response?.status || 500).json({
-      status: "error",
-      error: err.response?.data?.detail || err.message
-    })
+    if (err.response?.status) {
+      return next(new ExportGatewayError(err.response?.data?.detail || err.message))
+    }
+    next(err)
   }
 }
 
@@ -968,7 +967,7 @@ async function restoreExportVersion(req, res, next) {
     // Proxy to LLM Gateway
     const baseUrl = process.env.LLM_GATEWAY_SERVICES
     if (!baseUrl) {
-      return res.status(500).json({ status: "error", error: "LLM Gateway not configured" })
+      throw new ExportNotConfigured()
     }
 
     const response = await axios.post(`${baseUrl}/api/v1/jobs/${jobId}/versions/${versionNumber}/restore`, {})
@@ -987,11 +986,10 @@ async function restoreExportVersion(req, res, next) {
       content: response.result?.output || null
     })
   } catch (err) {
-    appLogger.error(`[Export] restoreExportVersion error: ${err.message}`)
-    return res.status(err.response?.status || 500).json({
-      status: "error",
-      error: err.response?.data?.detail || err.message
-    })
+    if (err.response?.status) {
+      return next(new ExportGatewayError(err.response?.data?.detail || err.message))
+    }
+    next(err)
   }
 }
 
@@ -1023,7 +1021,7 @@ async function generateExportDocument(req, res, next) {
     // Proxy to LLM Gateway with optional version_number
     const baseUrl = process.env.LLM_GATEWAY_SERVICES
     if (!baseUrl) {
-      return res.status(500).json({ status: "error", error: "LLM Gateway not configured" })
+      throw new ExportNotConfigured()
     }
 
     let url = `${baseUrl}/api/v1/jobs/${jobId}/export/${format}`
@@ -1044,11 +1042,10 @@ async function generateExportDocument(req, res, next) {
     res.setHeader("Content-Disposition", `attachment; filename="${fileName}.${format}"`)
     res.send(Buffer.from(response))
   } catch (err) {
-    appLogger.error(`[Export] generateExportDocument error: ${err.message}`)
-    return res.status(err.response?.status || 500).json({
-      status: "error",
-      error: err.response?.data?.detail || err.message
-    })
+    if (err.response?.status) {
+      return next(new ExportGatewayError(err.response?.data?.detail || err.message))
+    }
+    next(err)
   }
 }
 
@@ -1071,7 +1068,7 @@ async function getExportContent(req, res, next) {
 
     const baseUrl = process.env.LLM_GATEWAY_SERVICES
     if (!baseUrl) {
-      return res.status(500).json({ status: "error", error: "LLM Gateway not configured" })
+      throw new ExportNotConfigured()
     }
 
     // Fetch job from LLM Gateway
@@ -1155,11 +1152,10 @@ async function getExportContent(req, res, next) {
       throw err
     }
   } catch (err) {
-    appLogger.error(`[Export] getExportContent error: ${err.message}`)
-    return res.status(err.response?.status || 500).json({
-      status: "error",
-      error: err.response?.data?.detail || err.message
-    })
+    if (err.response?.status) {
+      return next(new ExportGatewayError(err.response?.data?.detail || err.message))
+    }
+    next(err)
   }
 }
 

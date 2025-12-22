@@ -13,6 +13,7 @@ const {
   ConversationIdRequire,
   ConversationNotFound,
   ConversationMetadataRequire,
+  GenerationNotFound,
 } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
@@ -118,7 +119,6 @@ async function listGenerations(req, res, next) {
 
     res.status(200).send({ generations: formattedGenerations })
   } catch (error) {
-    appLogger.error(`[Generations] listGenerations error: ${error.message}`)
     next(error)
   }
 }
@@ -180,7 +180,6 @@ async function createGeneration(req, res, next) {
 
     res.status(201).send({ generation: newGeneration })
   } catch (error) {
-    appLogger.error(`[Generations] createGeneration error: ${error.message}`)
     next(error)
   }
 }
@@ -205,20 +204,14 @@ async function getGeneration(req, res, next) {
     // Get generation
     const generations = await model.conversationGenerations.getByGenerationId(generationId)
     if (generations.length === 0) {
-      return res.status(404).json({
-        status: "error",
-        error: "Generation not found",
-      })
+      throw new GenerationNotFound()
     }
 
     const gen = generations[0]
 
     // Verify generation belongs to this conversation
     if (gen.conversationId !== req.params.conversationId) {
-      return res.status(404).json({
-        status: "error",
-        error: "Generation not found for this conversation",
-      })
+      throw new GenerationNotFound("Generation not found for this conversation")
     }
 
     // Format response
@@ -234,7 +227,6 @@ async function getGeneration(req, res, next) {
 
     res.status(200).send({ generation: formattedGeneration })
   } catch (error) {
-    appLogger.error(`[Generations] getGeneration error: ${error.message}`)
     next(error)
   }
 }
