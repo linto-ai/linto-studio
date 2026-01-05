@@ -9,7 +9,6 @@ const { calculateWatchTime, reduceToLastActivity } = require(
 
 const SOCKET_EVENTS = require(`${process.cwd()}/lib/dao/log/socketEvent`)
 
-const KEEP_LOG_WITH_WATCHTIME_OVER = 300
 const activityLoggedUrls = ["/api/administration/", "/tokens/"]
 
 class LogManager {
@@ -17,12 +16,29 @@ class LogManager {
     const ctx = await context.createContext(req, message, payload)
     logger.log(ctx)
 
-    if (
-      ctx?.http?.method !== "GET" ||
-      activityLoggedUrls.some((u) => ctx?.http?.url?.includes(u))
-    ) {
-      model.activityLog.create(ctx)
+    const { method, url } = ctx?.http || {}
+    if (method === "GET" && !activityLoggedUrls.some((u) => url?.includes(u))) {
+      return
     }
+
+    const regenerate = url.includes("regenerate=true")
+
+    // Ignore the following routes:
+    // - /auth/login
+    // - any URL containing conversations/create
+    // - /download? with format=summarize-en
+    // The routes related to conversations creation and file downloads are already
+    // handled by logTranscriptionEvent and logLlmEvent, so we don't process them here.
+    // Unless the user regenerate don't regenerate the document
+
+    if (
+      url === "/auth/login" ||
+      url.includes("conversations/create") ||
+      (url.includes("/download?") && regenerate)
+    ) {
+      return // ignore
+    }
+    model.activityLog.create(ctx)
   }
 
   static async logSocketEvent(socket, event, payload = {}) {
@@ -40,8 +56,10 @@ class LogManager {
 
       switch (event.action) {
         case SOCKET_EVENTS.JOIN:
-          if (!activityLog) model.activityLog.create(ctx)
-          else model.activityLog.socketReconnect(activityLog, ctx.timestamp)
+          if (!activityLog) {
+            ctx.firstConnectionAt = ctx.timestamp
+            model.activityLog.create(ctx)
+          } else model.activityLog.socketReconnect(activityLog, ctx.timestamp)
           break
         case SOCKET_EVENTS.LEAVE:
         case SOCKET_EVENTS.DISCONNECT:
@@ -63,12 +81,6 @@ class LogManager {
       if (!activityLog) return
 
       const socketPayload = calculateWatchTime(activityLog, ctx)
-      /*if (socketPayload.totalWatchTime < KEEP_LOG_WITH_WATCHTIME_OVER) {
-        await model.activityLog.deleteAllSocketLog(
-          ctx.socket.id,
-          KEEP_LOG_WITH_WATCHTIME_OVER,
-        )
-      } else {*/
       await model.activityLog.socketLeft(
         activityLog,
         socketPayload,

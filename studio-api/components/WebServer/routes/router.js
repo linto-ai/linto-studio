@@ -183,7 +183,7 @@ const createProxyRoutes = (webServer, proxy_routes) => {
       if (proxyPath.disabled) return
 
       const middlewares = loadMiddlewares(proxyPath)
-      middlewares.push(logger)
+      // middlewares.push(logger)
 
       proxyPath.paths.forEach((path) => {
         //we alter req.payload, req.params, req.query, req.body if require

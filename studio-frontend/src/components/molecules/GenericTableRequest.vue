@@ -31,6 +31,11 @@ export default {
       type: Function,
       required: true,
     },
+    fetchMethodParams: {
+      type: Object,
+      default: () => ({}),
+      required: false,
+    },
     columns: {
       type: Array,
       required: true,
@@ -73,6 +78,7 @@ export default {
       return await this.fetchMethod(this.currentPageNb, {
         sortField: this.sortListKey,
         sortOrder: this.sortListDirection === "asc" ? 1 : -1,
+        ...this.fetchMethodParams,
       })
     },
     async debouncedFetchData() {
@@ -118,6 +124,24 @@ export default {
   watch: {
     currentPageNb() {
       this.debouncedFetchData()
+    },
+    fetchMethod() {
+      if (this.currentPageNb == 0) {
+        this.debouncedFetchData()
+      } else {
+        this.currentPageNb = 0 // will trigger debouncedFetchData
+      }
+    },
+    fetchMethodParams: {
+      handler() {
+        console.log("fetchMethodParams changed", this.fetchMethodParams)
+        if (this.currentPageNb == 0) {
+          this.debouncedFetchData()
+        } else {
+          this.currentPageNb = 0 // will trigger debouncedFetchData
+        }
+      },
+      deep: true,
     },
   },
   components: { GenericTable, Pagination },

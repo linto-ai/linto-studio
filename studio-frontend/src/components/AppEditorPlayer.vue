@@ -41,16 +41,12 @@ export default {
       type: Array,
       required: true,
     },
-    filterSpeakers: {
-      required: true,
-    },
   },
   data() {
     return {
       playerSettings: null,
       regionsSettings: [],
       audioProcessClean: true,
-      currentPlaylist: {},
       regionZoom: 1,
     }
   },
@@ -67,17 +63,6 @@ export default {
     bus.$on("player_set_time", (data) => {
       if (!this.instanceDestroyed) {
         this.seekTo(data.stime)
-        if (this.conversationFiltered) {
-          let currentTimeBox = this.speakersTurnsTimebox.find((turn) => {
-            return turn.stime <= data.stime && turn.etime >= data.stime
-          })
-          if (currentTimeBox) {
-            this.currentPlaylist = {
-              stime: currentTimeBox.stime,
-              etime: currentTimeBox.etime,
-            }
-          }
-        }
       }
     })
 
@@ -98,7 +83,6 @@ export default {
     bus.$off("player_set_time")
     bus.$off("player-play")
     bus.$off("player-pause")
-    console.log("destroy player")
     window.removeEventListener("load", (event) => {
       this.initAudioPlayer()
     })
@@ -117,22 +101,12 @@ export default {
       }
       return false
     },
-    conversationFiltered() {
-      return this.filterSpeakers !== "default"
-    },
   },
   watch: {
     speakersTurnsTimebox(data) {
       if (this.player && this.playerReady) {
         this.updateRegions(data)
       }
-    },
-    filterSpeakers() {
-      this.currentPlaylist = {
-        stime: this.speakersTurnsTimebox[0].stime,
-        etime: this.speakersTurnsTimebox[0].etime,
-      }
-      this.seekTo(this.currentPlaylist.stime)
     },
   },
   methods: {
@@ -243,35 +217,14 @@ export default {
           this.state = "pause"
         })
         this.player.on("seeking", (time) => {
-          this.currentTime = time
-          bus.$emit("player-seek", this.currentTime)
-          if (this.conversationFiltered) {
-            if (
-              this.currentTime > this.currentPlaylist.etime ||
-              this.currentTime < this.currentPlaylist.stime
-            ) {
-              this.updatePlaylist(currentTime, false, this.player.isPlaying())
-            }
-          }
+          // this.currentTime = time
+          // bus.$emit("player-seek", this.currentTime)
         })
 
         this.player.on("timeupdate", (time) => {
-          bus.$emit("player-audioprocess", time)
-          this.currentTime = time
-          if (
-            this.currentPlaylist.etime !== undefined &&
-            this.currentPlaylist.stime !== undefined
-          ) {
-            if (
-              this.conversationFiltered &&
-              (time > this.currentPlaylist.etime ||
-                time < this.currentPlaylist.stime) &&
-              this.audioProcessClean
-            ) {
-              this.player.pause()
-              this.audioProcessClean = false
-              this.updatePlaylist(time, true, true)
-            }
+          if (time !== this.currentTime) {
+            bus.$emit("player-audioprocess", time)
+            this.currentTime = time
           }
         })
 
@@ -282,46 +235,6 @@ export default {
         this.destroy()
         this.playerError = true
         return
-      }
-    },
-    updatePlaylist(time, seek, isPlaying) {
-      let targetTimebox = null
-      if (
-        time > this.currentPlaylist.etime ||
-        time < this.currentPlaylist.stime
-      ) {
-        targetTimebox = this.speakersTurnsTimebox.find((turn) => {
-          return turn.etime >= time
-        })
-      }
-      if (targetTimebox) {
-        this.currentPlaylist = {
-          stime: targetTimebox.stime,
-          etime: targetTimebox.etime,
-        }
-        this.audioProcessClean = true
-        if (isPlaying) {
-          if (this.currentPlaylist.stime < time) {
-            setTimeout(() => {
-              this.player.play(time + 0.01)
-            }, 500)
-          } else {
-            setTimeout(() => {
-              this.player.play(this.currentPlaylist.stime + 0.01)
-            }, 500)
-          }
-        } else {
-          if (this.currentPlaylist.stime < time) {
-            this.seekTo(time + 0.01)
-          } else {
-            this.seekTo(this.currentPlaylist.stime + 0.01)
-          }
-        }
-      } else {
-        if (seek) {
-          this.seekTo(this.speakersTurnsTimebox[0].stime)
-        }
-        this.audioProcessClean = true
       }
     },
     initRegions() {

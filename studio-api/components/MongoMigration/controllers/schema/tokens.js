@@ -7,7 +7,14 @@ module.exports = async function (db, collectionName) {
     if (!collectionName) return
     await db
       .collection(collectionName)
-      .createIndex({ createdAt: 1 }, { expireAfterSeconds: 1209600 }) // 14 days in seconds
+      .createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 })
+
+    const indexes = await db.collection(collectionName).indexes()
+    indexes.map(async (index) => {
+      if (index.name === "createdAt_1") {
+        await db.collection(collectionName).dropIndex("createdAt_1")
+      }
+    })
 
     console.log(
       `Collection "${collectionName}" with TTL index created successfully.`,

@@ -80,8 +80,6 @@ export default {
   props: {},
   data() {
     return {
-      tokenList: [],
-      loading: false,
       columns: [
         {
           key: "firstname",
@@ -119,9 +117,7 @@ export default {
       isModalViewTokenOpen: false,
     }
   },
-  mounted() {
-    this.fetchMethod()
-  },
+  mounted() {},
   methods: {
     fetchMethod: apiGetAllTokens,
     async fetchToken() {

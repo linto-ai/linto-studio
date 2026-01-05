@@ -99,7 +99,6 @@
         :focusFields="focusFields"
         :conversationUsers="conversationUsers"
         :userInfo="userInfo"
-        :filterSpeakers="filterSpeakers"
         :turnPages="turnPages"
         :turns="turns"
         :canEdit="canEdit"
@@ -154,7 +153,6 @@ export default {
   data() {
     return {
       selfUrl: (convId) => `/interface/conversations/${convId}/transcription`,
-      filterSpeakers: "default",
       helperVisible: false,
       status: null,
       showDeleteModal: false,
@@ -207,15 +205,6 @@ export default {
     bus.$off("turn_speaker_update")
   },
   watch: {
-    "conversation.speakers"(newVal, oldVal) {
-      if (
-        this.filterSpeakers != "default" &&
-        newVal.filter((spk) => spk.speaker_id == this.filterSpeakers).length ==
-          0
-      ) {
-        this.filterSpeakers = "default"
-      }
-    },
     dataLoaded(newVal, oldVal) {
       if (newVal) {
         this.status = this.computeStatus(this.conversation?.jobs?.transcription)

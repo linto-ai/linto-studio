@@ -1,6 +1,7 @@
 <template>
   <Popover
     :close-on-click-outside="closeOnClickOutside"
+    :closeOnClick="closeOnClick"
     :close-on-escape="closeOnEscape"
     :overlay="overlay"
     :content-class="isMobile ? 'popover-list__mobile' : ''"
@@ -15,7 +16,7 @@
       </slot>
     </template>
     <template #content>
-      <div class="popover-list__content">
+      <div class="popover-list__content" v-if="items && items.length">
         <div
           v-for="(item, index) in items"
           :key="item.id"
@@ -31,16 +32,18 @@
             @click="handleClickItem(item)"
             :size="size"
             v-bind="itemPropsWithoutTo(item)">
-            <div class="flex col">
-              <span class="popover-list__item__name text-cut">{{
-                item.name || item.text
-              }}</span>
-              <span
-                class="popover-list__item__description"
-                v-if="item.description">
-                {{ item.description }}
-              </span>
-            </div>
+            <slot name="item" :item="item">
+              <div class="flex col">
+                <span class="popover-list__item__name text-cut">{{
+                  item.name || item.text
+                }}</span>
+                <span
+                  class="popover-list__item__description"
+                  v-if="item.description">
+                  {{ item.description }}
+                </span>
+              </div>
+            </slot>
           </Button>
         </div>
       </div>
@@ -129,6 +132,13 @@ export default {
      * (ignored in `selection` mode when `multiple` is enabled).
      */
     closeOnItemClick: {
+      type: Boolean,
+      default: true,
+    },
+    /**
+     * If true, clicking on the trigger will close the menu
+     */
+    closeOnClick: {
       type: Boolean,
       default: true,
     },

@@ -56,7 +56,7 @@ export default {
      */
     closeOnClick: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     /**
      * width of the popover
@@ -180,8 +180,12 @@ export default {
       this.toggle(true)
     },
     handleClick(event) {
-      event.preventDefault()
-      this.toggle(!this.isOpen)
+      //event.preventDefault()
+      if (this.closeOnClick) {
+        this.toggle(!this.isOpen)
+      } else {
+        this.toggle(true)
+      }
     },
     handleContextmenu(event) {
       event.preventDefault()
@@ -217,13 +221,6 @@ export default {
           }
           this.hoverTimeout = null
         }, 50)
-      }
-    },
-    handleClickOnHover(event) {
-      // For tooltips with closeOnClick, the popupManager will handle the closing
-      // This handler is just here to prevent default behavior if needed
-      if (this.trigger === "hover" && this.closeOnClick) {
-        event.preventDefault()
       }
     },
     onContentEnter() {
@@ -341,7 +338,7 @@ export default {
   position: absolute; /* Will be positioned by 'top' and 'left' from style */
 }
 
-.popover-content {
+.popover-content:has(> div) {
   background: var(--background-app);
   border: 1px solid var(--neutral-40);
   border-radius: 2px;

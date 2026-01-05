@@ -165,6 +165,23 @@ let router = new Router({
       },
     },
     {
+      path: "/backoffice/activity",
+      name: "backoffice-activityList",
+      components: {
+        default: () => import("../views/backoffice/ActivityList.vue"),
+        ...defaultComponents,
+      },
+      defaultProps,
+      meta: {
+        backoffice: true,
+        breadcrumb: {
+          label: "breadcrumb.activities",
+          parent: "backoffice",
+          showInBreadcrumb: true,
+        },
+      },
+    },
+    {
       path: "/backoffice/users",
       name: "backoffice-userList",
       components: {

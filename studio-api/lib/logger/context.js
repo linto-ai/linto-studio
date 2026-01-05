@@ -73,6 +73,7 @@ function defineScope(url = "") {
 
   const parts = url.toLowerCase().split("/").filter(Boolean)
   if (parts[0] === "auth") return "authenticate"
+  if (["tokens"].some((u) => url?.includes(u))) return "tokens"
   if (parts[1] === "administration" || parts[1] === "transcriber_profiles")
     return "platform"
   if (parts[1] === "sessions") return "resource"
@@ -95,6 +96,14 @@ function defineScope(url = "") {
   if (hasOrganization) return "organization"
   if (hasUser) return "user"
   return "unknown"
+}
+
+function getClientIp(req) {
+  const xForwardedFor = req.headers["x-forwarded-for"]
+  if (xForwardedFor) return xForwardedFor.split(",")[0].trim()
+  return (
+    req.ip || req.connection?.remoteAddress || req.socket?.remoteAddress || null
+  )
 }
 
 function formatError(error) {
@@ -153,6 +162,9 @@ class LoggerContext {
           status: req.res?.statusCode || null,
         }
         context.scope = defineScope(context.http.url)
+        if (context.scope === "authenticate" && req.url === "/auth/login") {
+          context.http.ip = getClientIp(req)
+        }
       }
 
       if (req?.payload?.data?.userId) {
@@ -225,6 +237,17 @@ class LoggerContext {
         )
         if (normalizedMessage) context.message = normalizedMessage
         if (errorContext) context.error = errorContext
+      }
+
+      if (socketEvent.userId) {
+        await storeCacheUser(socketEvent.userId) // Ensure user is cached
+
+        context.user = {
+          id: socketEvent.userId || null,
+          info: cache.users[socketEvent.userId],
+        }
+      } else {
+        context.user = { id: null, info: { email: "Temporary user" } }
       }
 
       if (socketEvent.from === "session") {
@@ -312,6 +335,7 @@ class LoggerContext {
       context.transcription = {
         conversationId: payload.conversationId,
         name: conversation.name,
+        duration: conversation.duration || 0,
         jobId: payload.jobId,
         transcription: conversation.transcription,
       }

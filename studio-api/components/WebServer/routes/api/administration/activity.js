@@ -2,7 +2,12 @@ const debug = require("debug")(
   "linto:conversation-manager:router:api:administration:activity",
 )
 
-const { getActivity, getKpiByActivity, getKpiBySession } = require(
+const {
+  getActivity,
+  getKpiByRessource,
+  getKpiBySession,
+  refreshSessionKpi,
+} = require(
   `${process.cwd()}/components/WebServer/routecontrollers/administration/activity.js`,
 )
 
@@ -16,11 +21,18 @@ module.exports = (webserver) => {
       controller: getActivity,
     },
     {
-      path: "/activity/:activity/organization/:organizationId",
+      path: "/activity/compute",
       method: "get",
       requireAuth: true,
       requireSuperAdmin: true,
-      controller: getKpiByActivity,
+      controller: getKpiByRessource,
+    },
+    {
+      path: "/activity/session",
+      method: "get",
+      requireAuth: true,
+      requireSuperAdmin: true,
+      controller: refreshSessionKpi,
     },
     {
       path: "/activity/session/:sessionId",

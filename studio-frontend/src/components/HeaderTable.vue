@@ -3,7 +3,11 @@
     <div
       class="flex1 flex gap-small backoffice-listing-header__title align-center">
       <h2>{{ title }}</h2>
-      <span class="backoffice-listing-header__total">{{ count }}</span>
+      <span
+        class="backoffice-listing-header__total"
+        v-if="count !== undefined"
+        >{{ count }}</span
+      >
       <slot name="right-header"></slot>
     </div>
     <form class="flex align-center gap-small" v-if="search !== undefined">
@@ -34,7 +38,7 @@
 export default {
   props: {
     title: { type: String, required: true },
-    count: { type: Number, required: true },
+    count: { type: Number, required: false },
     add_button_label: { type: String, required: false },
     remove_button_label: { type: String, required: false },
     disableDelete: { type: Boolean, default: false },

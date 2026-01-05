@@ -673,14 +673,4 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-.topbar {
-  height: 54px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
-  border-bottom: 1px solid var(--neutral-20);
-  background-color: var(--background-primary-soft);
-}
-</style>
+<style lang="scss" scoped></style>

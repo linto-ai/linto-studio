@@ -1,6 +1,9 @@
 <template>
   <div class="flex align-center user-info-inline gap-small flex1">
-    <img :src="imgFullPath(user.img)" class="user-info-inline__avatar" />
+    <img
+      v-if="showImage"
+      :src="imgFullPath(user.img)"
+      class="user-info-inline__avatar" />
     <div v-if="user" class="flex col align-top flex1 text-cut">
       <div class="user-info-inline__name flex align-top fullwidth gap-tiny">
         <span
@@ -23,6 +26,9 @@ export default {
     userId: { required: true },
     user: { required: false },
     external: { required: false, default: false },
+    showImage: {
+      default: true,
+    },
   },
   data() {
     return {
@@ -43,7 +49,11 @@ export default {
   },
   methods: {
     imgFullPath(imgPath) {
-      return process.env.VUE_APP_PUBLIC_MEDIA + "/" + imgPath
+      return (
+        process.env.VUE_APP_PUBLIC_MEDIA +
+        "/" +
+        (imgPath || "pictures/default.jpg")
+      )
     },
   },
 }

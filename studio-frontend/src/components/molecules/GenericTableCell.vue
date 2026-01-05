@@ -1,6 +1,6 @@
 <template>
   <td>
-    <slot :value="_value">
+    <slot :value="value">
       {{ _value }}
     </slot>
     <!-- <component

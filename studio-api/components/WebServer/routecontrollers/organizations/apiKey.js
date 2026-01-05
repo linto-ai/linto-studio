@@ -68,7 +68,7 @@ async function createApiKey(req, res, next) {
     }
     if (role >= ROLES.ADMIN) {
       throw new OrganizationUnsupportedMediaType(
-        "Cannot assign a role higher than Admin",
+        "The requested role is too high. Only roles below Admin can be assigned.",
       )
     }
 

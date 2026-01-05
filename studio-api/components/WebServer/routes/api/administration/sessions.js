@@ -9,7 +9,7 @@ const { getAllSessionData } = require(
 module.exports = (webserver) => {
   return [
     {
-      path: "/alias/",
+      path: "/sessions/data/",
       method: "get",
       requireAuth: true,
       requireSessionOperator: true,

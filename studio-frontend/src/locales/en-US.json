@@ -2,6 +2,30 @@
   "accoustic": {
     "standard": "Regular"
   },
+  "activity_list": {
+    "scope_label": "Scope",
+    "level_label": "Level",
+    "http_method_label": "Method",
+    "http_endpoint_label": "URL",
+    "http_status_label": "Status",
+    "organization_name_label": "Organisation",
+    "organization_role_label": "Role",
+    "user_label": "User",
+    "user_filter_label": "Filter by a user",
+    "platform_role_label": "Platform role",
+    "session_name_label": "Session name",
+    "session_id_label": "Session Id",
+    "time_label": "Date",
+    "watch_time_label": "Watch time",
+    "connection_count_label": "Connection count",
+    "tabs": {
+      "sessions_kpi": "Sessions KPI",
+      "sessions": "Sessions detailed",
+      "ressources": "Ressources",
+      "tokens": "Api keys access",
+      "backoffice": "Backoffice"
+    }
+  },
   "appointment_selector": {
     "date_label": "Date",
     "start_time_label": "Start time",
@@ -84,11 +108,15 @@
   "backoffice": {
     "title": "Backoffice",
     "navigation": {
+      "activities": "Activity log",
       "home": "Home",
       "users": "Users",
       "organisations": "Organisations",
       "tokens": "Api keys",
       "transcriberProfiles": "Transcriber Profiles"
+    },
+    "activity_list": {
+      "title": "Activity log"
     },
     "user_list": {
       "title": "Users",
@@ -141,6 +169,7 @@
     }
   },
   "breadcrumb": {
+    "activities": "Activity log",
     "backoffice": "Backoffice",
     "conversations": "Media",
     "create": "Upload media",
@@ -899,6 +928,23 @@
     "description_description": "The description of your organisation",
     "description_label": "Description",
     "general_settings": "General settings",
+    "kpi": {
+      "error": "An error occurred while retrieving the data",
+      "loading": "Loading data...",
+      "session_watch_time": "Total time spent on the transcription",
+      "session_avg_watch_time": "Average time spent on the transcription",
+      "session_total_connections": "Number of connections",
+      "transcription_count": "Number of transcribed media",
+      "transcription_avg_duration": "Average duration of media",
+      "title": "Organization statistics",
+      "sessions_title": "Live transcription",
+      "media_title": "Media",
+      "time_step": {
+        "day": "Day",
+        "month": "Month",
+        "year": "Year"
+      }
+    },
     "leave_modal": {
       "action": "Leave",
       "content": "Are you sure you want to leave the organisation \"{name}\" ?",
@@ -1390,6 +1436,14 @@
       "apply": "Continue"
     }
   },
+  "session_kpi": {
+    "name_label": "Name",
+    "viewer_label": "Viewers",
+    "watch_time_average_label": "Average watch time",
+    "bounce_rate_label": "Bounce rate (viewers)",
+    "quick_session_name": "{userName} recording",
+    "quick_session_name_anonymous": "Personal recording"
+  },
   "quick_session": {
     "creation": {
       "transcription_settings_title": "Transcription mode",
@@ -1657,5 +1711,9 @@
     "search_empty_message": "Press [ENTER] to search in all your media",
     "search_back_to_results_message": "Press [ENTER] to return to results",
     "search_placeholder": "Search in your media"
+  },
+  "user_selector": {
+    "clear_button": "Clear",
+    "search_placeholder": "Search for a user..."
   }
 }
