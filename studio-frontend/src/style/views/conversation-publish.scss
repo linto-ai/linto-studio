@@ -196,65 +196,6 @@
   border-bottom: var(--border-block);
 }
 
-.publish-editor-mode-toggle {
-  display: inline-flex;
-  align-items: center;
-  background: var(--background-primary, white);
-  border: 1px solid var(--border-color, #e0e0e0);
-  border-radius: 8px;
-  padding: 3px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-
-  .mode-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 14px;
-    border: none;
-    border-radius: 6px;
-    background: transparent;
-    color: var(--text-secondary, #666);
-    font-size: 0.8125rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    white-space: nowrap;
-
-    .icon {
-      width: 14px;
-      height: 14px;
-      background: var(--text-secondary, #666);
-    }
-
-    &:hover {
-      color: var(--text-primary, #333);
-      background: var(--background-secondary, #f5f5f5);
-
-      .icon {
-        background: var(--text-primary, #333);
-      }
-    }
-
-    &.active {
-      background: var(--primary-color);
-      color: var(--primary-contrast);
-
-      .icon {
-        background: var(--primary-contrast);
-      }
-    }
-  }
-}
-
-// Save version button in editor header
-.save-version-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-}
-
 .unsaved-indicator {
   color: var(--color-warning);
   font-size: 0.875rem;
@@ -316,32 +257,6 @@
       &:hover {
         opacity: 1;
       }
-    }
-  }
-}
-
-// Category Tabs Styles
-.category-tabs {
-  padding: 0.5rem;
-  background-color: var(--background-secondary);
-  border-bottom: var(--border-block);
-
-  .category-tab {
-    padding: 0.5rem 1rem;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    background-color: var(--background-primary);
-    cursor: pointer;
-    transition: all 0.2s ease;
-
-    &:hover {
-      background-color: var(--background-tertiary);
-    }
-
-    &.active {
-      background-color: var(--color-primary);
-      color: white;
-      border-color: var(--color-primary);
     }
   }
 }

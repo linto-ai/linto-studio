@@ -2,17 +2,18 @@
   <div class="pdf-viewer" :class="{ 'pdf-viewer--loading': loading }">
     <!-- Loading state -->
     <div v-if="loading" class="pdf-viewer__loading">
-      <span class="loading-spinner"></span>
-      <span v-if="loadingText">{{ loadingText }}</span>
+      <Loading :title="loadingText" />
     </div>
 
     <!-- Error state -->
     <div v-else-if="error" class="pdf-viewer__error">
-      <span class="error-icon">&#9888;</span>
+      <ph-icon name="warning" size="xl" weight="fill" class="error-icon" />
       <span>{{ error }}</span>
-      <button v-if="showRetry" class="secondary" @click="$emit('retry')">
-        {{ $t("common.retry") }}
-      </button>
+      <Button
+        v-if="showRetry"
+        variant="secondary"
+        :label="$t('common.retry')"
+        @click="$emit('retry')" />
     </div>
 
     <!-- PDF Display -->
@@ -34,22 +35,28 @@
     <!-- Optional toolbar -->
     <div v-if="showToolbar && src && !loading && !error" class="pdf-viewer__toolbar">
       <slot name="toolbar">
-        <button
+        <Button
           v-if="showDownload"
-          class="pdf-viewer__btn"
+          variant="tertiary"
+          icon="download"
+          :label="downloadLabel"
           :title="$t('common.download') || 'Download'"
-          @click="download">
-          <span class="icon download"></span>
-          <span v-if="downloadLabel">{{ downloadLabel }}</span>
-        </button>
+          @click="download" />
       </slot>
     </div>
   </div>
 </template>
 
 <script>
+import Loading from "@/components/atoms/Loading.vue"
+import Button from "@/components/atoms/Button.vue"
+
 export default {
   name: "PdfViewer",
+  components: {
+    Loading,
+    Button,
+  },
   props: {
     src: {
       type: String,
@@ -158,23 +165,8 @@ export default {
   color: var(--error-color, #f44336);
 }
 
-.error-icon {
-  font-size: 32px;
-}
-
-.loading-spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid var(--border-color, #e0e0e0);
-  border-top-color: var(--primary-color, #2196f3);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+.pdf-viewer__error .error-icon {
+  color: var(--error-color, #f44336);
 }
 
 .pdf-viewer__toolbar {
@@ -185,34 +177,6 @@ export default {
   padding: 8px 12px;
   background: var(--background-primary, white);
   border-top: 1px solid var(--border-color, #e0e0e0);
-}
-
-.pdf-viewer__btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border: 1px solid var(--border-color, #e0e0e0);
-  border-radius: 4px;
-  background: var(--background-primary, white);
-  color: var(--text-primary, #333);
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.pdf-viewer__btn:hover {
-  background: var(--background-secondary, #f5f5f5);
-  border-color: var(--primary-color, #2196f3);
-  color: var(--primary-color, #2196f3);
-}
-
-.pdf-viewer__btn .icon {
-  background-color: var(--text-primary, #333);
-}
-
-.pdf-viewer__btn:hover .icon {
-  background-color: var(--primary-color, #2196f3);
 }
 
 /* Loading overlay */

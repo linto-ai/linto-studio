@@ -3,9 +3,11 @@
     <div v-if="statusIsInError" class="publish-main__empty">
       <h2>{{ $t(`publish.error_first_line.generic`) }}</h2>
       <p v-if="errorMessage" class="error-details">{{ errorMessage }}</p>
-      <button class="primary margin-top-small" @click="$emit('retry')">
-        {{ $t('common.retry') }}
-      </button>
+      <Button
+        variant="primary"
+        class="margin-top-small"
+        :label="$t('common.retry')"
+        @click="$emit('retry')" />
     </div>
     <PdfViewer
       v-else-if="status === 'complete' && blobUrl"
@@ -18,46 +20,23 @@
       <!-- Mode Toggle Header with Save Button -->
       <div v-if="editable" class="publish-editor-header flex align-center justify-between">
         <div class="flex align-center gap-small">
-          <div class="publish-editor-mode-toggle flex">
-            <button
-              type="button"
-              class="mode-btn"
-              :class="{ active: viewMode === 'edit' }"
-              @click="setMode('edit')">
-              <span class="icon edit mode-icon"></span>
-              {{ $t("publish.editor.edit_mode") }}
-            </button>
-            <button
-              type="button"
-              class="mode-btn"
-              :class="{ active: viewMode === 'preview' }"
-              @click="setMode('preview')">
-              <span class="icon show mode-icon"></span>
-              {{ $t("publish.editor.preview_mode") }}
-            </button>
-            <button
-              type="button"
-              class="mode-btn"
-              :class="{ active: viewMode === 'publication' }"
-              @click="setMode('publication')">
-              <span class="icon share mode-icon"></span>
-              {{ $t("publish.editor.publication_mode") }}
-            </button>
-          </div>
+          <Tabs
+            :tabs="modeTabs"
+            v-model="viewMode"
+            secondary
+            @input="setMode" />
           <div v-if="hasChanges" class="unsaved-indicator flex align-center gap-small">
-            <span class="icon warning"></span>
+            <ph-icon name="warning" size="sm" />
             <span>{{ $t("publish.editor.unsaved_changes") }}</span>
           </div>
         </div>
         <!-- Save Version Button (in header, right side) -->
-        <button
+        <Button
           v-if="hasChanges"
-          type="button"
-          class="primary save-version-btn"
-          @click="$emit('save-version')">
-          <span class="icon save"></span>
-          <span class="label">{{ $t("publish.editor.save_version") }}</span>
-        </button>
+          variant="primary"
+          icon="floppy-disk"
+          :label="$t('publish.editor.save_version')"
+          @click="$emit('save-version')" />
       </div>
       <!-- Edit mode: Markdown textarea -->
       <MarkdownEditor
@@ -92,7 +71,7 @@
       v-else-if="status === 'complete'"
       class="publish-main__progress flex col center-text align-center flex1 justify-center">
       <h2 class="center-text">{{ $t("publish.loading_document") }}</h2>
-      <span class="icon loading"></span>
+      <Loading />
     </div>
     <div
       v-else-if="
@@ -106,7 +85,7 @@
         src="/img/compass_illustration.svg"
         alt="processing"
         class="illustration" />
-      <span class="icon loading"></span>
+      <Loading />
     </div>
     <div
       v-else-if="status === 'processing'"
@@ -130,6 +109,9 @@ import { marked } from "marked"
 import MarkdownEditor from "@/components/MardownWYSIWYGEditor.vue"
 import PublicationSection from "@/components/PublicationSection.vue"
 import PdfViewer from "@/components/PdfViewer.vue"
+import Button from "@/components/atoms/Button.vue"
+import Tabs from "@/components/molecules/Tabs.vue"
+import Loading from "@/components/atoms/Loading.vue"
 
 // Configure marked
 marked.setOptions({
@@ -205,6 +187,13 @@ export default {
       if (!this.editableContent) return ""
       return marked.parse(this.editableContent)
     },
+    modeTabs() {
+      return [
+        { name: "edit", label: this.$t("publish.editor.edit_mode"), icon: "pencil-simple" },
+        { name: "preview", label: this.$t("publish.editor.preview_mode"), icon: "eye" },
+        { name: "publication", label: this.$t("publish.editor.publication_mode"), icon: "share-network" },
+      ]
+    },
   },
   watch: {
     markdownContent: {
@@ -279,7 +268,7 @@ export default {
       return this.viewMode
     },
   },
-  components: { MarkdownEditor, PublicationSection, PdfViewer },
+  components: { MarkdownEditor, PublicationSection, PdfViewer, Button, Tabs, Loading },
 }
 </script>
 
@@ -296,8 +285,6 @@ export default {
   line-height: 1.7;
   color: var(--text-primary, #333);
   background: var(--bg-primary, white);
-  border: 1px solid var(--border-color, #e0e0e0);
-  border-radius: 8px;
   min-height: 0; // Important for flex scroll
 }
 

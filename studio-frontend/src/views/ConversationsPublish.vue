@@ -34,10 +34,13 @@
             </span>
           </div>
           <!-- Show regenerate button only when document is outdated OR user is admin -->
-          <button v-if="!isUpdated || isAdmin" class="yellow fullwidth" @click="confirmRegenerate">
-            <span class="icon reload"></span>
-            <span class="label">{{ $t("publish.reload_document") }}</span>
-          </button>
+          <Button
+            v-if="!isUpdated || isAdmin"
+            variant="secondary"
+            icon="arrow-clockwise"
+            block
+            :label="$t('publish.reload_document')"
+            @click="confirmRegenerate" />
         </section>
 
         <!-- Generation Timeline (replaces simple version list) -->
@@ -113,23 +116,16 @@
 
 
     <!-- Regenerate Confirmation Modal -->
-    <div v-if="showRegenerateConfirm" class="modal-overlay" @click.self="showRegenerateConfirm = false">
-      <div class="modal-content">
-        <div class="modal-header flex align-center gap-small">
-          <span class="icon warning yellow"></span>
-          <h3>{{ $t("publish.regenerate.confirm_title") }}</h3>
-        </div>
+    <Modal
+      v-model="showRegenerateConfirm"
+      :title="$t('publish.regenerate.confirm_title')"
+      :textActionApply="$t('publish.regenerate.confirm_button')"
+      @confirm="executeRegenerate"
+      @cancel="showRegenerateConfirm = false">
+      <template #content>
         <p>{{ $t("publish.regenerate.confirm_message") }}</p>
-        <div class="flex gap-small justify-end margin-top-medium">
-          <button type="button" class="secondary" @click="showRegenerateConfirm = false">
-            {{ $t("common.cancel") }}
-          </button>
-          <button type="button" class="primary" @click="executeRegenerate">
-            {{ $t("publish.regenerate.confirm_button") }}
-          </button>
-        </div>
-      </div>
-    </div>
+      </template>
+    </Modal>
   </MainContentConversation>
 </template>
 <script>
@@ -175,6 +171,8 @@ import PopoverList from "@/components/atoms/PopoverList.vue"
 import GenerationTimeline from "@/components/GenerationTimeline.vue"
 import AIServiceMenu from "@/components/AIServiceMenu.vue"
 import PublicationSection from "@/components/PublicationSection.vue"
+import Modal from "@/components/molecules/Modal.vue"
+import Button from "@/components/atoms/Button.vue"
 export default {
   mixins: [conversationMixin, orgaRoleMixin],
   data() {
@@ -1244,6 +1242,8 @@ export default {
     GenerationTimeline,
     AIServiceMenu,
     PublicationSection,
+    Modal,
+    Button,
   },
 }
 </script>
