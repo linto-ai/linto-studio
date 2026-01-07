@@ -85,3 +85,12 @@ function mergeKpi() {
 }
 
 export const getAllKpiDailyMerged = mergeKpi(getAllKpiDaily)
+
+export async function apiGetPlatformKpiSeries(step = "daily") {
+  const res = await sendRequest(
+    `${BASE_API}/administration/activity/compute/series`,
+    { method: "get" },
+    { userScope: "backoffice", step },
+  )
+  return res?.data || { step, data: [] }
+}

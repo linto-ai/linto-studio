@@ -118,6 +118,26 @@
     "activity_list": {
       "title": "Activity log"
     },
+    "dashboard": {
+      "title": "Platform Dashboard",
+      "sessions_count": "Sessions Transcribed",
+      "medias_count": "Media Processed",
+      "media_duration": "Total Duration (hours)",
+      "active_users": "Active Users",
+      "time_period": {
+        "day": "Day",
+        "month": "Month",
+        "year": "Year"
+      },
+      "charts": {
+        "sessions_title": "Live Sessions",
+        "medias_title": "Media Transcriptions",
+        "duration_title": "Audio Duration (hours)",
+        "active_users_title": "Active Users"
+      },
+      "loading": "Loading dashboard data...",
+      "error": "Failed to load dashboard data"
+    },
     "user_list": {
       "title": "Users",
       "add_user_button": "Add a user",

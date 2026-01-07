@@ -99,9 +99,38 @@ async function refreshSessionKpi(req, res, next) {
   }
 }
 
+async function getKpiSeries(req, res, next) {
+  try {
+    const { step, organizationId } = req.query
+
+    let result
+    switch (step) {
+      case "daily":
+        result = await kpiHandler.getLast7DaysKpi(organizationId)
+        break
+      case "monthly":
+        result = await kpiHandler.getLast12MonthsKpi(organizationId)
+        break
+      case "yearly":
+        result = await kpiHandler.getLastYearsKpi(organizationId)
+        break
+      default:
+        result = await kpiHandler.getLast7DaysKpi(organizationId)
+    }
+
+    res.status(200).json({
+      step: step || "daily",
+      data: result,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 module.exports = {
   getActivity,
   getKpiByRessource,
   getKpiBySession,
   refreshSessionKpi,
+  getKpiSeries,
 }

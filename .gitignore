@@ -32,7 +32,7 @@ coverage
 .history
 .svn/
 migrate_working_dir/
-
+.claude/
 # IntelliJ related
 *.iml
 *.ipr

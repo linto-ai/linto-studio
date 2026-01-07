@@ -119,6 +119,26 @@
     "activity_list": {
       "title": "Journal d'activité"
     },
+    "dashboard": {
+      "title": "Tableau de bord",
+      "sessions_count": "Sessions transcrites",
+      "medias_count": "Medias traites",
+      "media_duration": "Duree totale (heures)",
+      "active_users": "Utilisateurs actifs",
+      "time_period": {
+        "day": "Jour",
+        "month": "Mois",
+        "year": "Annee"
+      },
+      "charts": {
+        "sessions_title": "Sessions en direct",
+        "medias_title": "Transcriptions",
+        "duration_title": "Duree audio (heures)",
+        "active_users_title": "Utilisateurs actifs"
+      },
+      "loading": "Chargement des donnees...",
+      "error": "Echec du chargement des donnees"
+    },
     "user_list": {
       "title": "Utilisateurs",
       "add_user_button": "Ajouter un utilisateur",

@@ -94,4 +94,34 @@ async function getLast12MonthsKpi(organizationId) {
   return results
 }
 
-module.exports = { getLast7DaysKpi, getLast12MonthsKpi, generateKpi }
+function getYearRange(yearOffset) {
+  const now = new Date()
+  const year = now.getUTCFullYear() - yearOffset
+  const start = new Date(Date.UTC(year, 0, 1, 0, 0, 0, 0))
+  const end = new Date(Date.UTC(year, 11, 31, 23, 59, 59, 999))
+
+  return {
+    startDate: start.toISOString(),
+    endDate: end.toISOString(),
+    date: String(year),
+  }
+}
+
+async function getLastYearsKpi(organizationId, years = 5) {
+  const results = []
+
+  for (let i = years - 1; i >= 0; i--) {
+    const { startDate, endDate, date } = getYearRange(i)
+    const kpi = await generateKpi(organizationId, startDate, endDate)
+    results.push({ date: date, ...kpi })
+  }
+
+  return results
+}
+
+module.exports = {
+  getLast7DaysKpi,
+  getLast12MonthsKpi,
+  getLastYearsKpi,
+  generateKpi,
+}
