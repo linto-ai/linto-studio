@@ -119,6 +119,7 @@
       "title": "Activity log"
     },
     "dashboard": {
+      "page_title": "Dashboard",
       "title": "Platform Dashboard",
       "sessions_count": "Sessions Transcribed",
       "medias_count": "Media Processed",
@@ -134,6 +135,14 @@
         "medias_title": "Media Transcriptions",
         "duration_title": "Audio Duration (hours)",
         "active_users_title": "Active Users"
+      },
+      "filters": {
+        "organization": "Organization",
+        "all_organizations": "All Organizations",
+        "date_range": "Date Range",
+        "start_date": "From",
+        "end_date": "To",
+        "clear": "Clear Filters"
       },
       "loading": "Loading dashboard data...",
       "error": "Failed to load dashboard data"

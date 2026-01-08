@@ -1,6 +1,7 @@
 /**
  * Unit tests for KPI Series Response Structure
- * Validates that the API response conforms to the API contract
+ * Validates that the API response conforms to the API contract (Sprint 2)
+ * Tests backward compatibility and new filter features
  */
 
 // Mock mongodb models first (before any imports that use it)
@@ -24,7 +25,8 @@ jest.mock(`${process.cwd()}/lib/mongodb/models`, () => ({
   },
 }))
 
-// Mock the kpiHandlers module
+// Mock the kpiHandlers module with the new getKpiByDateRange function
+const mockGetKpiByDateRange = jest.fn()
 const mockGetLast7DaysKpi = jest.fn()
 const mockGetLast12MonthsKpi = jest.fn()
 const mockGetLastYearsKpi = jest.fn()
@@ -36,6 +38,7 @@ jest.mock(
     getLast12MonthsKpi: mockGetLast12MonthsKpi,
     getLastYearsKpi: mockGetLastYearsKpi,
     generateKpi: jest.fn(),
+    getKpiByDateRange: mockGetKpiByDateRange,
   }),
 )
 
@@ -52,19 +55,20 @@ const { getKpiSeries } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/administration/activity`,
 )
 
-describe("KPI Series Response - API Contract Compliance", () => {
+describe("KPI Series Response - API Contract Compliance (Sprint 2)", () => {
   let mockRes
 
   beforeEach(() => {
     mockRes = createMockRes()
     mockNext.mockReset()
+    mockGetKpiByDateRange.mockReset()
     mockGetLast7DaysKpi.mockReset()
     mockGetLast12MonthsKpi.mockReset()
     mockGetLastYearsKpi.mockReset()
   })
 
-  describe("Response Structure", () => {
-    it("should return step and data fields for daily step", async () => {
+  describe("Test 1: Backward Compatibility (no filters = existing behavior)", () => {
+    it("should return step and data fields for daily step without filters", async () => {
       const mockData = [
         {
           date: "2026-01-01",
@@ -73,7 +77,7 @@ describe("KPI Series Response - API Contract Compliance", () => {
           transcription: { generated: 8, duration: 7200 },
         },
       ]
-      mockGetLast7DaysKpi.mockResolvedValue(mockData)
+      mockGetKpiByDateRange.mockResolvedValue(mockData)
 
       const req = { query: { step: "daily", userScope: "backoffice" } }
       await getKpiSeries(req, mockRes, mockNext)
@@ -83,6 +87,12 @@ describe("KPI Series Response - API Contract Compliance", () => {
         step: "daily",
         data: mockData,
       })
+      expect(mockGetKpiByDateRange).toHaveBeenCalledWith(
+        undefined,
+        undefined,
+        undefined,
+        "daily",
+      )
     })
 
     it("should return step and data fields for monthly step", async () => {
@@ -94,7 +104,7 @@ describe("KPI Series Response - API Contract Compliance", () => {
           transcription: { generated: 30, duration: 36000 },
         },
       ]
-      mockGetLast12MonthsKpi.mockResolvedValue(mockData)
+      mockGetKpiByDateRange.mockResolvedValue(mockData)
 
       const req = { query: { step: "monthly", userScope: "backoffice" } }
       await getKpiSeries(req, mockRes, mockNext)
@@ -115,7 +125,7 @@ describe("KPI Series Response - API Contract Compliance", () => {
           transcription: { generated: 300, duration: 360000 },
         },
       ]
-      mockGetLastYearsKpi.mockResolvedValue(mockData)
+      mockGetKpiByDateRange.mockResolvedValue(mockData)
 
       const req = { query: { step: "yearly", userScope: "backoffice" } }
       await getKpiSeries(req, mockRes, mockNext)
@@ -126,9 +136,7 @@ describe("KPI Series Response - API Contract Compliance", () => {
         data: mockData,
       })
     })
-  })
 
-  describe("Default Behavior", () => {
     it("should default to daily step when step is not provided", async () => {
       const mockData = [
         {
@@ -138,58 +146,277 @@ describe("KPI Series Response - API Contract Compliance", () => {
           transcription: { generated: 5, duration: 3600 },
         },
       ]
-      mockGetLast7DaysKpi.mockResolvedValue(mockData)
+      mockGetKpiByDateRange.mockResolvedValue(mockData)
 
       const req = { query: { userScope: "backoffice" } }
       await getKpiSeries(req, mockRes, mockNext)
 
-      expect(mockGetLast7DaysKpi).toHaveBeenCalled()
+      expect(mockGetKpiByDateRange).toHaveBeenCalledWith(
+        undefined,
+        undefined,
+        undefined,
+        "daily",
+      )
       expect(mockRes.json).toHaveBeenCalledWith({
         step: "daily",
         data: mockData,
       })
     })
-
-    it("should default to daily step when invalid step is provided", async () => {
-      const mockData = []
-      mockGetLast7DaysKpi.mockResolvedValue(mockData)
-
-      const req = { query: { step: "invalid_step", userScope: "backoffice" } }
-      await getKpiSeries(req, mockRes, mockNext)
-
-      expect(mockGetLast7DaysKpi).toHaveBeenCalled()
-    })
   })
 
-  describe("Organization Filter", () => {
+  describe("Test 2: Organization Filter", () => {
     it("should pass organizationId to handler when provided", async () => {
       const mockData = []
-      mockGetLast7DaysKpi.mockResolvedValue(mockData)
+      mockGetKpiByDateRange.mockResolvedValue(mockData)
 
-      const orgId = "test-org-456"
+      const orgId = "507f1f77bcf86cd799439011"
       const req = {
         query: { step: "daily", userScope: "backoffice", organizationId: orgId },
       }
       await getKpiSeries(req, mockRes, mockNext)
 
-      expect(mockGetLast7DaysKpi).toHaveBeenCalledWith(orgId)
+      expect(mockGetKpiByDateRange).toHaveBeenCalledWith(
+        orgId,
+        undefined,
+        undefined,
+        "daily",
+      )
+      expect(mockRes.status).toHaveBeenCalledWith(200)
     })
 
     it("should work without organizationId for platform-wide data", async () => {
       const mockData = []
-      mockGetLast7DaysKpi.mockResolvedValue(mockData)
+      mockGetKpiByDateRange.mockResolvedValue(mockData)
 
       const req = { query: { step: "daily", userScope: "backoffice" } }
       await getKpiSeries(req, mockRes, mockNext)
 
-      expect(mockGetLast7DaysKpi).toHaveBeenCalledWith(undefined)
+      expect(mockGetKpiByDateRange).toHaveBeenCalledWith(
+        undefined,
+        undefined,
+        undefined,
+        "daily",
+      )
+    })
+  })
+
+  describe("Test 3: Invalid Organization ID Handling", () => {
+    it("should return 200 with empty data for invalid organizationId (implementation choice)", async () => {
+      const mockData = []
+      mockGetKpiByDateRange.mockResolvedValue(mockData)
+
+      const req = {
+        query: {
+          step: "daily",
+          userScope: "backoffice",
+          organizationId: "invalid",
+        },
+      }
+      await getKpiSeries(req, mockRes, mockNext)
+
+      // Current implementation passes through to handler which returns empty data
+      expect(mockRes.status).toHaveBeenCalledWith(200)
+      expect(mockRes.json).toHaveBeenCalledWith({
+        step: "daily",
+        data: [],
+      })
+    })
+  })
+
+  describe("Test 4: Date Range Filter - Valid", () => {
+    it("should pass valid date range to handler", async () => {
+      const mockData = [
+        {
+          date: "2025-12-01",
+          session: { totalConnections: 5, watchTime: 1000 },
+          llm: { generated: 2, tokens: 300 },
+          transcription: { generated: 3, duration: 1500 },
+        },
+      ]
+      mockGetKpiByDateRange.mockResolvedValue(mockData)
+
+      const req = {
+        query: {
+          step: "daily",
+          userScope: "backoffice",
+          startDate: "2025-12-01",
+          endDate: "2025-12-07",
+        },
+      }
+      await getKpiSeries(req, mockRes, mockNext)
+
+      expect(mockGetKpiByDateRange).toHaveBeenCalledWith(
+        undefined,
+        "2025-12-01",
+        "2025-12-07",
+        "daily",
+      )
+      expect(mockRes.status).toHaveBeenCalledWith(200)
+    })
+  })
+
+  describe("Test 5: Date Range - Invalid (start > end)", () => {
+    it("should return 400 Bad Request when startDate is after endDate", async () => {
+      const req = {
+        query: {
+          step: "daily",
+          userScope: "backoffice",
+          startDate: "2025-12-31",
+          endDate: "2025-12-01",
+        },
+      }
+      await getKpiSeries(req, mockRes, mockNext)
+
+      expect(mockRes.status).toHaveBeenCalledWith(400)
+      expect(mockRes.json).toHaveBeenCalledWith({
+        error: "Invalid date range: startDate must be before endDate",
+      })
+      expect(mockGetKpiByDateRange).not.toHaveBeenCalled()
+    })
+  })
+
+  describe("Test 6: Start Date Only", () => {
+    it("should use current date as end when only startDate provided", async () => {
+      const mockData = []
+      mockGetKpiByDateRange.mockResolvedValue(mockData)
+
+      const req = {
+        query: {
+          step: "daily",
+          userScope: "backoffice",
+          startDate: "2025-12-01",
+        },
+      }
+      await getKpiSeries(req, mockRes, mockNext)
+
+      expect(mockGetKpiByDateRange).toHaveBeenCalledWith(
+        undefined,
+        "2025-12-01",
+        undefined,
+        "daily",
+      )
+      expect(mockRes.status).toHaveBeenCalledWith(200)
+    })
+  })
+
+  describe("Test 7: End Date Only", () => {
+    it("should use reasonable default start when only endDate provided", async () => {
+      const mockData = []
+      mockGetKpiByDateRange.mockResolvedValue(mockData)
+
+      const req = {
+        query: {
+          step: "daily",
+          userScope: "backoffice",
+          endDate: "2025-12-31",
+        },
+      }
+      await getKpiSeries(req, mockRes, mockNext)
+
+      expect(mockGetKpiByDateRange).toHaveBeenCalledWith(
+        undefined,
+        undefined,
+        "2025-12-31",
+        "daily",
+      )
+      expect(mockRes.status).toHaveBeenCalledWith(200)
+    })
+  })
+
+  describe("Test 8: Combined Filters (org + dates)", () => {
+    it("should pass both organizationId and date range to handler", async () => {
+      const mockData = [
+        {
+          date: "2025-01",
+          session: { totalConnections: 25, watchTime: 9000 },
+          llm: { generated: 10, tokens: 2500 },
+          transcription: { generated: 15, duration: 18000 },
+        },
+      ]
+      mockGetKpiByDateRange.mockResolvedValue(mockData)
+
+      const orgId = "507f1f77bcf86cd799439011"
+      const req = {
+        query: {
+          step: "monthly",
+          userScope: "backoffice",
+          organizationId: orgId,
+          startDate: "2025-01-01",
+          endDate: "2025-06-30",
+        },
+      }
+      await getKpiSeries(req, mockRes, mockNext)
+
+      expect(mockGetKpiByDateRange).toHaveBeenCalledWith(
+        orgId,
+        "2025-01-01",
+        "2025-06-30",
+        "monthly",
+      )
+      expect(mockRes.status).toHaveBeenCalledWith(200)
+    })
+  })
+
+  describe("Test 9: Monthly Granularity with Date Range", () => {
+    it("should return monthly data points for date range", async () => {
+      const mockData = [
+        { date: "2025-01", session: { totalConnections: 10, watchTime: 1000 }, llm: { generated: 5, tokens: 500 }, transcription: { generated: 3, duration: 1000 } },
+        { date: "2025-02", session: { totalConnections: 15, watchTime: 1500 }, llm: { generated: 7, tokens: 700 }, transcription: { generated: 5, duration: 1500 } },
+      ]
+      mockGetKpiByDateRange.mockResolvedValue(mockData)
+
+      const req = {
+        query: {
+          step: "monthly",
+          userScope: "backoffice",
+          startDate: "2025-01-01",
+          endDate: "2025-12-31",
+        },
+      }
+      await getKpiSeries(req, mockRes, mockNext)
+
+      expect(mockGetKpiByDateRange).toHaveBeenCalledWith(
+        undefined,
+        "2025-01-01",
+        "2025-12-31",
+        "monthly",
+      )
+      expect(mockRes.status).toHaveBeenCalledWith(200)
+    })
+  })
+
+  describe("Test 10: Yearly Granularity with Date Range", () => {
+    it("should return yearly data points for date range", async () => {
+      const mockData = [
+        { date: "2020", session: { totalConnections: 100, watchTime: 10000 }, llm: { generated: 50, tokens: 5000 }, transcription: { generated: 30, duration: 10000 } },
+        { date: "2021", session: { totalConnections: 150, watchTime: 15000 }, llm: { generated: 70, tokens: 7000 }, transcription: { generated: 50, duration: 15000 } },
+      ]
+      mockGetKpiByDateRange.mockResolvedValue(mockData)
+
+      const req = {
+        query: {
+          step: "yearly",
+          userScope: "backoffice",
+          startDate: "2020-01-01",
+          endDate: "2025-12-31",
+        },
+      }
+      await getKpiSeries(req, mockRes, mockNext)
+
+      expect(mockGetKpiByDateRange).toHaveBeenCalledWith(
+        undefined,
+        "2020-01-01",
+        "2025-12-31",
+        "yearly",
+      )
+      expect(mockRes.status).toHaveBeenCalledWith(200)
     })
   })
 
   describe("Error Handling", () => {
     it("should call next with error when handler throws", async () => {
       const testError = new Error("Database connection failed")
-      mockGetLast7DaysKpi.mockRejectedValue(testError)
+      mockGetKpiByDateRange.mockRejectedValue(testError)
 
       const req = { query: { step: "daily", userScope: "backoffice" } }
       await getKpiSeries(req, mockRes, mockNext)

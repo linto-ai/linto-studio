@@ -101,25 +101,25 @@ async function refreshSessionKpi(req, res, next) {
 
 async function getKpiSeries(req, res, next) {
   try {
-    const { step, organizationId } = req.query
+    const { step, organizationId, startDate, endDate } = req.query
 
-    let result
-    switch (step) {
-      case "daily":
-        result = await kpiHandler.getLast7DaysKpi(organizationId)
-        break
-      case "monthly":
-        result = await kpiHandler.getLast12MonthsKpi(organizationId)
-        break
-      case "yearly":
-        result = await kpiHandler.getLastYearsKpi(organizationId)
-        break
-      default:
-        result = await kpiHandler.getLast7DaysKpi(organizationId)
+    // Validate date range if both dates are provided
+    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+      return res.status(400).json({
+        error: "Invalid date range: startDate must be before endDate",
+      })
     }
 
+    const granularity = step || "daily"
+    const result = await kpiHandler.getKpiByDateRange(
+      organizationId,
+      startDate,
+      endDate,
+      granularity,
+    )
+
     res.status(200).json({
-      step: step || "daily",
+      step: granularity,
       data: result,
     })
   } catch (err) {

@@ -237,6 +237,28 @@
           },
           "required": false,
           "description": "Optional organization ID to filter results"
+        },
+        {
+          "in": "query",
+          "name": "startDate",
+          "schema": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-12-01"
+          },
+          "required": false,
+          "description": "Custom start date filter (ISO 8601 format, e.g., YYYY-MM-DD). If only startDate is provided, endDate defaults to current date."
+        },
+        {
+          "in": "query",
+          "name": "endDate",
+          "schema": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-12-31"
+          },
+          "required": false,
+          "description": "Custom end date filter (ISO 8601 format, e.g., YYYY-MM-DD). If only endDate is provided, startDate defaults based on granularity (7 days for daily, 12 months for monthly, 5 years for yearly)."
         }
       ],
       "responses": {
@@ -308,6 +330,22 @@
                         }
                       }
                     }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request - Invalid date range",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "error": {
+                    "type": "string",
+                    "example": "Invalid date range: startDate must be before endDate"
                   }
                 }
               }

@@ -120,6 +120,7 @@
       "title": "Journal d'activité"
     },
     "dashboard": {
+      "page_title": "Tableau de bord",
       "title": "Tableau de bord",
       "sessions_count": "Sessions transcrites",
       "medias_count": "Medias traites",
@@ -135,6 +136,14 @@
         "medias_title": "Transcriptions",
         "duration_title": "Duree audio (heures)",
         "active_users_title": "Utilisateurs actifs"
+      },
+      "filters": {
+        "organization": "Organisation",
+        "all_organizations": "Toutes les organisations",
+        "date_range": "Plage de dates",
+        "start_date": "Du",
+        "end_date": "Au",
+        "clear": "Effacer les filtres"
       },
       "loading": "Chargement des donnees...",
       "error": "Echec du chargement des donnees"

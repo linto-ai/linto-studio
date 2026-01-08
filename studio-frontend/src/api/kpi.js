@@ -86,11 +86,18 @@ function mergeKpi() {
 
 export const getAllKpiDailyMerged = mergeKpi(getAllKpiDaily)
 
-export async function apiGetPlatformKpiSeries(step = "daily") {
+export async function apiGetPlatformKpiSeries(filters = {}) {
+  const { step = "daily", organizationId, startDate, endDate } = filters
+
+  const params = { userScope: "backoffice", step }
+  if (organizationId) params.organizationId = organizationId
+  if (startDate) params.startDate = startDate
+  if (endDate) params.endDate = endDate
+
   const res = await sendRequest(
     `${BASE_API}/administration/activity/compute/series`,
     { method: "get" },
-    { userScope: "backoffice", step },
+    params,
   )
   return res?.data || { step, data: [] }
 }
