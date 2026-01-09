@@ -1,5 +1,5 @@
 <template>
-  <div class="generation-timeline">
+  <div class="generation-timeline flex col flex1">
     <h3 class="sidebar-section-title">{{ $t("publish.generations.title") }}</h3>
 
     <!-- Loading state -->
@@ -8,26 +8,29 @@
       <span>{{ $t("publish.generations.loading") }}</span>
     </div>
 
-    <div v-else-if="!generations || generations.length === 0" class="no-generations">
+    <div
+      v-else-if="!generations || generations.length === 0"
+      class="no-generations">
       {{ $t("publish.generations.no_generations") }}
     </div>
 
-    <div v-else class="generations-list">
+    <div v-else class="generations-list flex1 overflow-vertical-auto">
       <div
         v-for="generation in sortedGenerations"
         :key="generation.generationId"
         class="generation-item"
         :class="{
           selected: generation.generationId === currentGenerationId,
-          latest: generation.isCurrent
+          latest: generation.isCurrent,
         }"
         @click="selectGeneration(generation)">
-
         <div class="generation-header">
           <!-- Filled dot = selected, empty = not selected -->
           <span
             class="generation-indicator"
-            :class="{ filled: generation.generationId === currentGenerationId }">
+            :class="{
+              filled: generation.generationId === currentGenerationId,
+            }">
           </span>
           <span class="generation-label">
             {{ formatDate(generation.createdAt) }}
@@ -40,7 +43,11 @@
 
         <!-- Nested versions when this generation is selected -->
         <div
-          v-if="generation.generationId === currentGenerationId && versions && versions.length > 0"
+          v-if="
+            generation.generationId === currentGenerationId &&
+            versions &&
+            versions.length > 0
+          "
           class="generation-versions">
           <div
             v-for="version in sortedVersions"
@@ -49,7 +56,11 @@
             :class="{ active: version.version_number === currentVersionNumber }"
             @click.stop="selectVersion(generation, version)">
             <span class="version-indicator"></span>
-            {{ $t('publish.editor.version_label', { version: version.version_number }) }}
+            {{
+              $t("publish.editor.version_label", {
+                version: version.version_number,
+              })
+            }}
             <span v-if="isLatestVersion(version)" class="version-latest-tag">
               ({{ $t("publish.generations.latest") }})
             </span>
@@ -104,7 +115,7 @@ export default {
     },
     latestVersionNumber() {
       if (!this.versions || this.versions.length === 0) return null
-      return Math.max(...this.versions.map(v => v.version_number))
+      return Math.max(...this.versions.map((v) => v.version_number))
     },
   },
   methods: {
@@ -120,7 +131,7 @@ export default {
     selectVersion(generation, version) {
       this.$emit("select-version", {
         generationId: generation.generationId,
-        versionNumber: version.version_number
+        versionNumber: version.version_number,
       })
     },
     isLatestVersion(version) {

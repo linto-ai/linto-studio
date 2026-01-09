@@ -9,7 +9,8 @@
       role="tablist"
       :squareTabs="squareTabs">
       <div
-        v-for="tab of tabs"
+        v-for="tab of visibleTabs"
+        :key="tab.name"
         class="tab"
         role="tab"
         :title="tab.label"
@@ -29,20 +30,46 @@
         }}</Badge>
       </div>
 
+      <PopoverList
+        v-if="hasHiddenTabs"
+        :items="popoverItems"
+        closeOnItemClick
+        class="tabs__submenu"
+        @click="handleHiddenTabSelect">
+        <template #trigger="{ open }">
+          <div
+            class="tab tabs__submenu-trigger"
+            :class="{ 'tabs__submenu-trigger--active': isHiddenTabSelected }"
+            :selected="isHiddenTabSelected"
+            role="tab"
+            :aria-expanded="open"
+            :aria-haspopup="true">
+            <ph-icon :name="isHiddenTabSelected ? 'sparkle' : hiddenTabsIcon" :size="iconSize" />
+            <span class="tab__label">{{ submenuButtonLabel }}</span>
+            <ph-icon name="caret-down" size="sm" />
+          </div>
+        </template>
+      </PopoverList>
+
       <div class="flex1 tab" v-if="secondary"></div>
     </div>
   </div>
 </template>
 <script>
 import Badge from "@/components/atoms/Badge.vue"
+import PopoverList from "@/components/atoms/PopoverList.vue"
 
 export default {
   props: {
-    tabs: { type: Array, required: true }, // array of tab objects { name: 'inbox', label: 'Inbox', icon: 'box', ?id, ?aria-control }
+    tabs: { type: Array, required: true }, // array of tab objects { name: 'inbox', label: 'Inbox', icon: 'box', ?id, ?aria-control, ?hidden }
     value: { type: String, required: true }, // selected tab
     squareTabs: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false },
     secondary: { type: Boolean, default: false },
+    // Label for the submenu trigger button when no hidden tab is selected
+    hiddenTabsLabel: { type: String, default: "" },
+    // Icon for the submenu trigger button
+    hiddenTabsIcon: { type: String, default: "caret-down" },
   },
   data() {
     return {}
@@ -60,10 +87,48 @@ export default {
 
       return "md"
     },
+    visibleTabs() {
+      return this.tabs.filter(tab => !tab.hidden)
+    },
+    hiddenTabs() {
+      return this.tabs.filter(tab => tab.hidden)
+    },
+    hasHiddenTabs() {
+      return this.hiddenTabs.length > 0
+    },
+    selectedHiddenTab() {
+      return this.hiddenTabs.find(tab => tab.name === this.value) || null
+    },
+    popoverItems() {
+      return this.hiddenTabs.map(tab => ({
+        id: tab.name,
+        value: tab.name,
+        name: tab.label,
+        text: tab.label,
+        icon: this.value === tab.name ? "check" : (tab.icon || "file-text"),
+        disabled: tab.disabled,
+      }))
+    },
+    submenuButtonLabel() {
+      if (this.selectedHiddenTab) {
+        return this.selectedHiddenTab.label
+      }
+      return this.hiddenTabsLabel || this.$t("publish.ai_menu.select")
+    },
+    isHiddenTabSelected() {
+      return this.selectedHiddenTab !== null
+    },
   },
-  methods: {},
+  methods: {
+    handleHiddenTabSelect(item) {
+      if (!this.disabled && !item.disabled) {
+        this.$emit("input", item.value || item.id)
+      }
+    },
+  },
   components: {
     Badge,
+    PopoverList,
   },
 }
 </script>

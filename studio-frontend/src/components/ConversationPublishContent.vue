@@ -18,14 +18,18 @@
       v-else-if="status === 'complete' && markdownContent"
       class="publish-main__content publish__markdown-wrapper flex col flex1">
       <!-- Mode Toggle Header with Save Button -->
-      <div v-if="editable" class="publish-editor-header flex align-center justify-between">
+      <div
+        v-if="editable"
+        class="publish-editor-header flex align-center justify-between">
         <div class="flex align-center gap-small">
           <Tabs
             :tabs="modeTabs"
             v-model="viewMode"
             secondary
             @input="setMode" />
-          <div v-if="hasChanges" class="unsaved-indicator flex align-center gap-small">
+          <div
+            v-if="hasChanges"
+            class="unsaved-indicator flex align-center gap-small">
             <ph-icon name="warning" size="sm" />
             <span>{{ $t("publish.editor.unsaved_changes") }}</span>
           </div>
@@ -53,8 +57,7 @@
       <div
         v-else-if="viewMode === 'preview'"
         class="markdown-preview-container flex1"
-        v-html="renderedMarkdown">
-      </div>
+        v-html="renderedMarkdown"></div>
 
       <!-- Publication mode: Show templates -->
       <div
@@ -85,7 +88,7 @@
         src="/img/compass_illustration.svg"
         alt="processing"
         class="illustration" />
-      <Loading />
+      <Loading block />
     </div>
     <div
       v-else-if="status === 'processing'"
@@ -189,9 +192,21 @@ export default {
     },
     modeTabs() {
       return [
-        { name: "edit", label: this.$t("publish.editor.edit_mode"), icon: "pencil-simple" },
-        { name: "preview", label: this.$t("publish.editor.preview_mode"), icon: "eye" },
-        { name: "publication", label: this.$t("publish.editor.publication_mode"), icon: "share-network" },
+        {
+          name: "edit",
+          label: this.$t("publish.editor.edit_mode"),
+          icon: "pencil-simple",
+        },
+        {
+          name: "preview",
+          label: this.$t("publish.editor.preview_mode"),
+          icon: "eye",
+        },
+        {
+          name: "publication",
+          label: this.$t("publish.editor.publication_mode"),
+          icon: "share-network",
+        },
       ]
     },
   },
@@ -233,7 +248,12 @@ export default {
       // 2. Content has been initialized (prevents false warning on initial load)
       // 3. Not currently switching tabs (prevents false warning on tab switch)
       // 4. Content is actually different from original
-      if (this.viewMode === "edit" && this.contentInitialized && !this.isTabSwitching && content !== this.originalContent) {
+      if (
+        this.viewMode === "edit" &&
+        this.contentInitialized &&
+        !this.isTabSwitching &&
+        content !== this.originalContent
+      ) {
         this.hasUserEdited = true
       }
       this.$emit("content-change", content)
@@ -259,7 +279,7 @@ export default {
     },
     // Public method to set view mode from parent
     setViewMode(mode) {
-      if (['edit', 'preview', 'publication'].includes(mode)) {
+      if (["edit", "preview", "publication"].includes(mode)) {
         this.viewMode = mode
       }
     },
@@ -268,7 +288,14 @@ export default {
       return this.viewMode
     },
   },
-  components: { MarkdownEditor, PublicationSection, PdfViewer, Button, Tabs, Loading },
+  components: {
+    MarkdownEditor,
+    PublicationSection,
+    PdfViewer,
+    Button,
+    Tabs,
+    Loading,
+  },
 }
 </script>
 
@@ -289,20 +316,35 @@ export default {
 }
 
 .markdown-preview-container {
-
-  :deep(h1), :deep(h2), :deep(h3), :deep(h4) {
+  :deep(h1),
+  :deep(h2),
+  :deep(h3),
+  :deep(h4) {
     font-weight: 600;
     margin: 1.5em 0 0.5em;
     line-height: 1.3;
   }
-  :deep(h1) { font-size: 1.8em; border-bottom: 1px solid var(--border-color, #e0e0e0); padding-bottom: 0.3em; }
-  :deep(h2) { font-size: 1.5em; }
-  :deep(h3) { font-size: 1.25em; }
-  :deep(h4) { font-size: 1.1em; }
+  :deep(h1) {
+    font-size: 1.8em;
+    border-bottom: 1px solid var(--border-color, #e0e0e0);
+    padding-bottom: 0.3em;
+  }
+  :deep(h2) {
+    font-size: 1.5em;
+  }
+  :deep(h3) {
+    font-size: 1.25em;
+  }
+  :deep(h4) {
+    font-size: 1.1em;
+  }
 
-  :deep(p) { margin: 0.8em 0; }
+  :deep(p) {
+    margin: 0.8em 0;
+  }
 
-  :deep(ul), :deep(ol) {
+  :deep(ul),
+  :deep(ol) {
     padding-left: 1.5em;
     margin: 0.8em 0;
   }
@@ -324,7 +366,7 @@ export default {
     background: var(--bg-secondary, #f5f5f5);
     border-radius: 3px;
     padding: 0.2em 0.4em;
-    font-family: 'Monaco', 'Menlo', monospace;
+    font-family: "Monaco", "Menlo", monospace;
     font-size: 0.9em;
   }
 
@@ -352,7 +394,8 @@ export default {
     width: 100%;
     margin: 1em 0;
 
-    th, td {
+    th,
+    td {
       border: 1px solid var(--border-color, #e0e0e0);
       padding: 10px 14px;
       text-align: left;

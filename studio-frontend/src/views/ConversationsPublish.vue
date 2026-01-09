@@ -18,7 +18,7 @@
           :translations="translations"
           v-model="selectedTranslation" />
       </div>
-      <div class="flex col gap-medium publish-content-wrapper">
+      <div class="flex col gap-medium publish-content-wrapper flex1">
         <!-- Status Section -->
         <section class="flex col gap-medium">
           <div v-if="isUpdated" class="flex align-center gap-small">
@@ -44,13 +44,17 @@
         </section>
 
         <!-- Generation Timeline (replaces simple version list) -->
-        <section v-if="isEditableOutput" class="generations-section">
+        <section
+          v-if="isEditableOutput"
+          class="generations-section flex1 flex col">
           <GenerationTimeline
             :generations="generations"
             :currentGenerationId="currentGenerationId"
             :versions="savedVersions"
             :currentVersionNumber="currentVersionNumber"
-            :loading="currentStatus === 'processing' || currentStatus === 'queued'"
+            :loading="
+              currentStatus === 'processing' || currentStatus === 'queued'
+            "
             @select-generation="selectGeneration"
             @select-version="handleSelectVersion" />
         </section>
@@ -87,17 +91,16 @@
       </div>
 
       <!-- Publication Tab Content - Shows only templates grid -->
-      <PublicationSection
+      <!-- <PublicationSection
         v-if="activeTab === 'publication'"
         :jobId="currentJobId"
         :organizationId="publicationOrganizationId"
         :conversationName="conversation?.name || 'export'"
         :versionNumber="currentVersionNumber"
-        class="publication-section-wrapper" />
+        class="publication-section-wrapper" /> -->
 
       <!-- Regular content for other tabs (verbatim, AI services) -->
       <ConversationPublishContent
-        v-else
         ref="publishContent"
         :markdownContent="markdownContent"
         :status="currentStatus"
@@ -113,7 +116,6 @@
         @retry="reloadGeneration"
         @save-version="saveVersion" />
     </div>
-
 
     <!-- Regenerate Confirmation Modal -->
     <Modal
@@ -234,9 +236,9 @@ export default {
       // Automatically select and load the latest version
       await this.selectLatestVersion()
       // Switch to preview mode for AI services (not verbatim or publication)
-      if (newVal && newVal !== 'verbatim' && newVal !== 'publication') {
+      if (newVal && newVal !== "verbatim" && newVal !== "publication") {
         this.$nextTick(() => {
-          this.$refs.publishContent?.setViewMode('preview')
+          this.$refs.publishContent?.setViewMode("preview")
         })
       }
     },
@@ -320,11 +322,11 @@ export default {
             icon: "file-text",
           },
           ...res,
-          {
-            name: "publication",
-            label: this.$i18n.t(`publish.tabs.publication`),
-            icon: "file-text",
-          },
+          // {
+          //   name: "publication",
+          //   label: this.$i18n.t(`publish.tabs.publication`),
+          //   icon: "file-text",
+          // },
         ]
 
         // Default to verbatim when arriving on export view
@@ -337,20 +339,22 @@ export default {
     },
     selectedFlavor() {
       // Verbatim and publication are not LLM services, have no flavor
-      if (this.activeTab === 'verbatim' || this.activeTab === 'publication') return null
+      if (this.activeTab === "verbatim" || this.activeTab === "publication")
+        return null
       // return string like "llama3"
       return this.indexedFormat[this.activeTab]?.flavors?.[0]?.name
     },
     outputFormating() {
       // Verbatim produces DOCX/PDF output (not editable markdown)
       // Publication tab doesn't have direct output format
-      if (this.activeTab === 'verbatim' || this.activeTab === 'publication') return 'abstractive'
+      if (this.activeTab === "verbatim" || this.activeTab === "publication")
+        return "abstractive"
       // abstractive / markdown / text
       return this.indexedFormat[this.activeTab]?.flavors?.[0]?.output_type
     },
     isEditableOutput() {
       // Text and markdown outputs can be edited, PDF/abstractive cannot
-      return ['text', 'markdown'].includes(this.outputFormating)
+      return ["text", "markdown"].includes(this.outputFormating)
     },
     selectedRoute() {
       return this.indexedFormat[this.activeTab]?.route
@@ -431,9 +435,11 @@ export default {
     currentJobId() {
       // For publication tab, get the job ID from current generation or job
       // This allows publication templates to use completed jobs
-      if (this.activeTab === 'publication') {
+      if (this.activeTab === "publication") {
         // Try to get jobId from current generation first
-        const currentGen = this.generations?.find(g => g.generationId === this.currentGenerationId)
+        const currentGen = this.generations?.find(
+          (g) => g.generationId === this.currentGenerationId,
+        )
         if (currentGen?.jobId) {
           return currentGen.jobId
         }
@@ -631,11 +637,15 @@ export default {
         const jobId = this.currentJob?.jobId
         if (!jobId) {
           // Try to get jobId from current generation if available
-          const currentGen = this.generations.find(g => g.generationId === this.currentGenerationId)
+          const currentGen = this.generations.find(
+            (g) => g.generationId === this.currentGenerationId,
+          )
           if (currentGen?.jobId) {
             // Update jobsList and retry
             const serviceId = this.selectedRoute || this.activeTab
-            const existingJobIndex = this.jobsList.findIndex(j => j.format === serviceId)
+            const existingJobIndex = this.jobsList.findIndex(
+              (j) => j.format === serviceId,
+            )
             if (existingJobIndex !== -1) {
               this.$set(this.jobsList, existingJobIndex, {
                 ...this.jobsList[existingJobIndex],
@@ -643,7 +653,12 @@ export default {
               })
             }
             // Pass version number to export the specific version from database
-            const blob = await apiExportDocument(this.conversationId, currentGen.jobId, format, this.currentVersionNumber)
+            const blob = await apiExportDocument(
+              this.conversationId,
+              currentGen.jobId,
+              format,
+              this.currentVersionNumber,
+            )
             if (blob) {
               this.exportBlobFile(blob, `.${format}`)
             } else {
@@ -651,11 +666,21 @@ export default {
             }
             return
           }
-          console.error("No job ID available for export. currentJob:", this.currentJob, "currentGenerationId:", this.currentGenerationId)
+          console.error(
+            "No job ID available for export. currentJob:",
+            this.currentJob,
+            "currentGenerationId:",
+            this.currentGenerationId,
+          )
           throw new Error("No job ID available")
         }
         // Pass version number to export the specific version from database
-        const blob = await apiExportDocument(this.conversationId, jobId, format, this.currentVersionNumber)
+        const blob = await apiExportDocument(
+          this.conversationId,
+          jobId,
+          format,
+          this.currentVersionNumber,
+        )
         if (blob) {
           this.exportBlobFile(blob, `.${format}`)
         } else {
@@ -698,7 +723,7 @@ export default {
       // Skip if no format is selected yet (prevents 400 errors on initial load)
       // Also skip for publication tab which shows templates, not a preview
       const format = this.selectedRoute || this.activeTab
-      if (!format || this.activeTab === 'publication') {
+      if (!format || this.activeTab === "publication") {
         return
       }
       this.markdownContent = null
@@ -708,7 +733,7 @@ export default {
       if (this.isEditableOutput && this.currentJob?.jobId && !regenerate) {
         const contentResult = await apiGetExportContent(
           this.conversationId,
-          this.currentJob.jobId
+          this.currentJob.jobId,
         )
 
         if (currentTab !== this.activeTab) return
@@ -781,10 +806,15 @@ export default {
             const json = JSON.parse(text)
 
             // Handle LLM Gateway errors
-            if (json.status === "error" && json.errorType === "llm_gateway_error") {
+            if (
+              json.status === "error" &&
+              json.errorType === "llm_gateway_error"
+            ) {
               this.$store.dispatch("system/addNotification", {
                 type: "error",
-                message: this.$t("publish.llm_gateway_error", { error: json.error }),
+                message: this.$t("publish.llm_gateway_error", {
+                  error: json.error,
+                }),
               })
               return
             }
@@ -816,7 +846,10 @@ export default {
         }
       } else if (req?.status === "error") {
         // Handle error responses
-        const errorMessage = req?.message || req?.error?.response?.data?.error || this.$t("publish.generic_error")
+        const errorMessage =
+          req?.message ||
+          req?.error?.response?.data?.error ||
+          this.$t("publish.generic_error")
         const statusCode = req?.error?.response?.status
 
         // Check for job not found (410)
@@ -889,7 +922,10 @@ export default {
       if (!this.conversationId || !this.currentJob?.jobId) return
       try {
         const jobId = this.currentJob.jobId
-        this.savedVersions = await apiListExportVersions(this.conversationId, jobId)
+        this.savedVersions = await apiListExportVersions(
+          this.conversationId,
+          jobId,
+        )
       } catch (e) {
         console.error("Error loading versions:", e)
         this.savedVersions = []
@@ -903,7 +939,7 @@ export default {
         const versionData = await apiGetExportVersion(
           this.conversationId,
           jobId,
-          version.version_number
+          version.version_number,
         )
         if (versionData && versionData.content) {
           this.markdownContent = versionData.content
@@ -919,18 +955,21 @@ export default {
         const jobId = this.currentJob?.jobId
         if (!jobId) return
 
-        const content = this.$refs.publishContent?.getContent() || this.markdownContent
+        const content =
+          this.$refs.publishContent?.getContent() || this.markdownContent
         const result = await apiUpdateExportResult(
           this.conversationId,
           jobId,
-          content
+          content,
         )
         if (result) {
           this.$refs.publishContent?.markAsSaved()
           await this.loadVersions()
           // Auto-select the newly created version (highest version number)
           if (this.savedVersions && this.savedVersions.length > 0) {
-            const newVersionNumber = Math.max(...this.savedVersions.map(v => v.version_number))
+            const newVersionNumber = Math.max(
+              ...this.savedVersions.map((v) => v.version_number),
+            )
             this.currentVersionNumber = newVersionNumber
           }
           // Show success notification
@@ -962,7 +1001,7 @@ export default {
         const result = await apiRestoreExportVersion(
           this.conversationId,
           jobId,
-          version.version_number
+          version.version_number,
         )
         if (result && result.content) {
           this.markdownContent = result.content
@@ -996,22 +1035,35 @@ export default {
     // Generation methods
     async loadGenerations() {
       const serviceId = this.selectedRoute || this.activeTab
-      if (!this.conversationId || this.activeTab === 'verbatim' || this.activeTab === 'publication' || !serviceId) {
+      if (
+        !this.conversationId ||
+        this.activeTab === "verbatim" ||
+        this.activeTab === "publication" ||
+        !serviceId
+      ) {
         this.generations = []
         this.currentGenerationId = null
         return
       }
       try {
-        this.generations = await apiListGenerations(this.conversationId, serviceId)
+        this.generations = await apiListGenerations(
+          this.conversationId,
+          serviceId,
+        )
         // Set current generation
-        const current = this.generations.find(g => g.isCurrent)
+        const current = this.generations.find((g) => g.isCurrent)
         if (current) {
           this.currentGenerationId = current.generationId
           // Sync jobId in jobsList with the current generation's jobId
           // This ensures export works correctly even if conversationExport was out of sync
           if (current.jobId) {
-            const existingJobIndex = this.jobsList.findIndex(j => j.format === serviceId)
-            if (existingJobIndex !== -1 && this.jobsList[existingJobIndex].jobId !== current.jobId) {
+            const existingJobIndex = this.jobsList.findIndex(
+              (j) => j.format === serviceId,
+            )
+            if (
+              existingJobIndex !== -1 &&
+              this.jobsList[existingJobIndex].jobId !== current.jobId
+            ) {
               this.$set(this.jobsList, existingJobIndex, {
                 ...this.jobsList[existingJobIndex],
                 jobId: current.jobId,
@@ -1024,7 +1076,9 @@ export default {
           // Also sync jobId for the most recent generation
           const mostRecent = this.generations[0]
           if (mostRecent.jobId) {
-            const existingJobIndex = this.jobsList.findIndex(j => j.format === serviceId)
+            const existingJobIndex = this.jobsList.findIndex(
+              (j) => j.format === serviceId,
+            )
             if (existingJobIndex !== -1) {
               this.$set(this.jobsList, existingJobIndex, {
                 ...this.jobsList[existingJobIndex],
@@ -1040,11 +1094,15 @@ export default {
     },
     async selectGeneration(generationId) {
       this.currentGenerationId = generationId
-      const generation = this.generations.find(g => g.generationId === generationId)
+      const generation = this.generations.find(
+        (g) => g.generationId === generationId,
+      )
       if (generation) {
         // Update currentJob to use the selected generation's jobId
         // Find and update the job in jobsList
-        const existingJobIndex = this.jobsList.findIndex(j => j.format === (this.selectedRoute || this.activeTab))
+        const existingJobIndex = this.jobsList.findIndex(
+          (j) => j.format === (this.selectedRoute || this.activeTab),
+        )
         if (existingJobIndex !== -1) {
           this.$set(this.jobsList, existingJobIndex, {
             ...this.jobsList[existingJobIndex],
@@ -1072,7 +1130,9 @@ export default {
       await this.loadVersionByNumber(versionNumber)
     },
     async loadVersionByNumber(versionNumber) {
-      const version = this.savedVersions.find(v => v.version_number === versionNumber)
+      const version = this.savedVersions.find(
+        (v) => v.version_number === versionNumber,
+      )
       if (version) {
         this.currentVersionNumber = versionNumber
         await this.loadVersion(version)
@@ -1081,7 +1141,9 @@ export default {
     async selectLatestVersion() {
       // Select and load the latest version if available
       if (this.savedVersions && this.savedVersions.length > 0) {
-        const latestVersionNumber = Math.max(...this.savedVersions.map(v => v.version_number))
+        const latestVersionNumber = Math.max(
+          ...this.savedVersions.map((v) => v.version_number),
+        )
         await this.loadVersionByNumber(latestVersionNumber)
       } else {
         this.currentVersionNumber = null
@@ -1127,9 +1189,13 @@ export default {
     handleJobUpdate(update) {
       // Update the job status in real-time
       // Check conversationId if provided, otherwise check if jobId is in our list
-      if (update.conversationId && update.conversationId !== this.conversationId) return
+      if (
+        update.conversationId &&
+        update.conversationId !== this.conversationId
+      )
+        return
 
-      const jobIndex = this.jobsList.findIndex(j => j.jobId === update.jobId)
+      const jobIndex = this.jobsList.findIndex((j) => j.jobId === update.jobId)
       if (jobIndex !== -1) {
         // Update existing job
         this.$set(this.jobsList, jobIndex, {
@@ -1137,12 +1203,16 @@ export default {
           status: update.status,
           processing: update.progress?.percentage || 0,
         })
-      } else if (update.conversationId === this.conversationId && (update.serviceFormat || update.serviceName || update.format)) {
+      } else if (
+        update.conversationId === this.conversationId &&
+        (update.serviceFormat || update.serviceName || update.format)
+      ) {
         // New job for this conversation - find matching format and update jobId
         // WebSocket sends 'format', but for compatibility also check serviceFormat/serviceName
-        const updateFormat = update.serviceFormat || update.serviceName || update.format
-        const formatIndex = this.jobsList.findIndex(j =>
-          j.format === updateFormat
+        const updateFormat =
+          update.serviceFormat || update.serviceName || update.format
+        const formatIndex = this.jobsList.findIndex(
+          (j) => j.format === updateFormat,
         )
         if (formatIndex !== -1) {
           this.$set(this.jobsList, formatIndex, {
@@ -1157,17 +1227,25 @@ export default {
     async handleJobComplete(update) {
       // Handle job completion
       // Check conversationId if provided, otherwise check if jobId is in our list
-      if (update.conversationId && update.conversationId !== this.conversationId) return
+      if (
+        update.conversationId &&
+        update.conversationId !== this.conversationId
+      ) {
+        return
+      }
 
-      let jobIndex = this.jobsList.findIndex(j => j.jobId === update.jobId)
+      let jobIndex = this.jobsList.findIndex((j) => j.jobId === update.jobId)
 
       // If not found by jobId, try to match by format
       // WebSocket sends 'format', but for compatibility also check serviceFormat/serviceName
-      if (jobIndex === -1 && update.conversationId === this.conversationId && (update.serviceFormat || update.serviceName || update.format)) {
-        const updateFormat = update.serviceFormat || update.serviceName || update.format
-        jobIndex = this.jobsList.findIndex(j =>
-          j.format === updateFormat
-        )
+      if (
+        jobIndex === -1 &&
+        update.conversationId === this.conversationId &&
+        (update.serviceFormat || update.serviceName || update.format)
+      ) {
+        const updateFormat =
+          update.serviceFormat || update.serviceName || update.format
+        jobIndex = this.jobsList.findIndex((j) => j.format === updateFormat)
       }
 
       if (jobIndex !== -1) {
@@ -1186,17 +1264,24 @@ export default {
     },
     handleJobError(update) {
       // Handle job error
-      if (update.conversationId && update.conversationId !== this.conversationId) return
+      if (
+        update.conversationId &&
+        update.conversationId !== this.conversationId
+      )
+        return
 
-      let jobIndex = this.jobsList.findIndex(j => j.jobId === update.jobId)
+      let jobIndex = this.jobsList.findIndex((j) => j.jobId === update.jobId)
 
       // If not found by jobId, try to match by format
       // WebSocket sends 'format', but for compatibility also check serviceFormat/serviceName
-      if (jobIndex === -1 && update.conversationId === this.conversationId && (update.serviceFormat || update.serviceName || update.format)) {
-        const updateFormat = update.serviceFormat || update.serviceName || update.format
-        jobIndex = this.jobsList.findIndex(j =>
-          j.format === updateFormat
-        )
+      if (
+        jobIndex === -1 &&
+        update.conversationId === this.conversationId &&
+        (update.serviceFormat || update.serviceName || update.format)
+      ) {
+        const updateFormat =
+          update.serviceFormat || update.serviceName || update.format
+        jobIndex = this.jobsList.findIndex((j) => j.format === updateFormat)
       }
 
       if (jobIndex !== -1) {

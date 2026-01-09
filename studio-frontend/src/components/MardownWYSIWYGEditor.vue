@@ -9,7 +9,7 @@
         @click="mode = 'edit'"
         :disabled="readonly">
         <span class="mode-icon">✏️</span>
-        <span class="mode-label">{{ $t('publish.editor.edit_mode') }}</span>
+        <span class="mode-label">{{ $t("publish.editor.edit_mode") }}</span>
       </button>
       <button
         type="button"
@@ -17,33 +17,95 @@
         :class="{ active: mode === 'preview' }"
         @click="mode = 'preview'">
         <span class="mode-icon">👁️</span>
-        <span class="mode-label">{{ $t('publish.editor.preview_mode') }}</span>
+        <span class="mode-label">{{ $t("publish.editor.preview_mode") }}</span>
       </button>
     </div>
 
     <!-- Edit mode: textarea (always show when hideHeader, otherwise respect mode) -->
-    <div v-if="hideHeader || mode === 'edit'" class="markdown-edit-container flex col flex1">
+    <div
+      v-if="hideHeader || mode === 'edit'"
+      class="markdown-edit-container flex col flex1">
       <div v-if="showToolbar && !readonly" class="markdown-editor-toolbar">
-        <button type="button" class="toolbar-btn" @click="insertMarkdown('**', '**')" title="Bold">
+        <button
+          type="button"
+          class="toolbar-btn"
+          @click="insertMarkdown('**', '**')"
+          title="Bold">
           <strong>B</strong>
         </button>
-        <button type="button" class="toolbar-btn" @click="insertMarkdown('*', '*')" title="Italic">
+        <button
+          type="button"
+          class="toolbar-btn"
+          @click="insertMarkdown('*', '*')"
+          title="Italic">
           <em>I</em>
         </button>
-        <button type="button" class="toolbar-btn" @click="insertMarkdown('~~', '~~')" title="Strikethrough">
+        <button
+          type="button"
+          class="toolbar-btn"
+          @click="insertMarkdown('~~', '~~')"
+          title="Strikethrough">
           <s>S</s>
         </button>
         <span class="toolbar-separator"></span>
-        <button type="button" class="toolbar-btn" @click="insertLineStart('# ')" title="H1">H1</button>
-        <button type="button" class="toolbar-btn" @click="insertLineStart('## ')" title="H2">H2</button>
-        <button type="button" class="toolbar-btn" @click="insertLineStart('### ')" title="H3">H3</button>
+        <button
+          type="button"
+          class="toolbar-btn"
+          @click="insertLineStart('# ')"
+          title="H1">
+          H1
+        </button>
+        <button
+          type="button"
+          class="toolbar-btn"
+          @click="insertLineStart('## ')"
+          title="H2">
+          H2
+        </button>
+        <button
+          type="button"
+          class="toolbar-btn"
+          @click="insertLineStart('### ')"
+          title="H3">
+          H3
+        </button>
         <span class="toolbar-separator"></span>
-        <button type="button" class="toolbar-btn" @click="insertLineStart('- ')" title="Liste à puces">•</button>
-        <button type="button" class="toolbar-btn" @click="insertLineStart('1. ')" title="Liste numérotée">1.</button>
-        <button type="button" class="toolbar-btn" @click="insertLineStart('> ')" title="Citation">"</button>
+        <button
+          type="button"
+          class="toolbar-btn"
+          @click="insertLineStart('- ')"
+          title="Liste à puces">
+          •
+        </button>
+        <button
+          type="button"
+          class="toolbar-btn"
+          @click="insertLineStart('1. ')"
+          title="Liste numérotée">
+          1.
+        </button>
+        <button
+          type="button"
+          class="toolbar-btn"
+          @click="insertLineStart('> ')"
+          title="Citation">
+          "
+        </button>
         <span class="toolbar-separator"></span>
-        <button type="button" class="toolbar-btn" @click="insertMarkdown('`', '`')" title="Code">&lt;/&gt;</button>
-        <button type="button" class="toolbar-btn" @click="insertText('\n---\n')" title="Ligne horizontale">―</button>
+        <button
+          type="button"
+          class="toolbar-btn"
+          @click="insertMarkdown('`', '`')"
+          title="Code">
+          &lt;/&gt;
+        </button>
+        <button
+          type="button"
+          class="toolbar-btn"
+          @click="insertText('\n---\n')"
+          title="Ligne horizontale">
+          ―
+        </button>
       </div>
       <textarea
         ref="textarea"
@@ -52,12 +114,14 @@
         :readonly="readonly"
         @input="onInput"
         @keydown.tab.prevent="onTab"
-        placeholder="Écrivez en markdown..."
-      ></textarea>
+        placeholder="Écrivez en markdown..."></textarea>
     </div>
 
     <!-- Preview mode: rendered markdown (only when not using hideHeader) -->
-    <div v-else-if="!hideHeader" class="markdown-preview-container flex1" v-html="renderedMarkdown"></div>
+    <div
+      v-else-if="!hideHeader"
+      class="markdown-preview-container flex1"
+      v-html="renderedMarkdown"></div>
   </div>
 </template>
 
@@ -121,14 +185,20 @@ export default {
       const end = textarea.selectionEnd
       const value = this.value
       const selectedText = value.substring(start, end)
-      const newValue = value.substring(0, start) + before + selectedText + after + value.substring(end)
+      const newValue =
+        value.substring(0, start) +
+        before +
+        selectedText +
+        after +
+        value.substring(end)
       this.$emit("input", newValue)
       this.$nextTick(() => {
         if (selectedText) {
           textarea.selectionStart = start
           textarea.selectionEnd = end + before.length + after.length
         } else {
-          textarea.selectionStart = textarea.selectionEnd = start + before.length
+          textarea.selectionStart = textarea.selectionEnd =
+            start + before.length
         }
         textarea.focus()
       })
@@ -141,7 +211,8 @@ export default {
       while (lineStart > 0 && value[lineStart - 1] !== "\n") {
         lineStart--
       }
-      const newValue = value.substring(0, lineStart) + prefix + value.substring(lineStart)
+      const newValue =
+        value.substring(0, lineStart) + prefix + value.substring(lineStart)
       this.$emit("input", newValue)
       this.$nextTick(() => {
         textarea.selectionStart = textarea.selectionEnd = start + prefix.length
@@ -173,8 +244,6 @@ export default {
   min-height: 0; // Important for flex scroll
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--border-color, #e0e0e0);
-  border-radius: 8px;
   overflow: hidden;
   background: var(--bg-primary, white);
 }
@@ -277,7 +346,7 @@ export default {
   outline: none;
   resize: none;
   overflow: auto;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
   font-size: 14px;
   line-height: 1.6;
   background: var(--bg-primary, white);
@@ -300,19 +369,35 @@ export default {
   line-height: 1.7;
   color: var(--text-primary, #333);
 
-  :deep(h1), :deep(h2), :deep(h3), :deep(h4) {
+  :deep(h1),
+  :deep(h2),
+  :deep(h3),
+  :deep(h4) {
     font-weight: 600;
     margin: 1.5em 0 0.5em;
     line-height: 1.3;
   }
-  :deep(h1) { font-size: 1.8em; border-bottom: 1px solid var(--border-color, #e0e0e0); padding-bottom: 0.3em; }
-  :deep(h2) { font-size: 1.5em; }
-  :deep(h3) { font-size: 1.25em; }
-  :deep(h4) { font-size: 1.1em; }
+  :deep(h1) {
+    font-size: 1.8em;
+    border-bottom: 1px solid var(--border-color, #e0e0e0);
+    padding-bottom: 0.3em;
+  }
+  :deep(h2) {
+    font-size: 1.5em;
+  }
+  :deep(h3) {
+    font-size: 1.25em;
+  }
+  :deep(h4) {
+    font-size: 1.1em;
+  }
 
-  :deep(p) { margin: 0.8em 0; }
+  :deep(p) {
+    margin: 0.8em 0;
+  }
 
-  :deep(ul), :deep(ol) {
+  :deep(ul),
+  :deep(ol) {
     padding-left: 1.5em;
     margin: 0.8em 0;
   }
@@ -334,7 +419,7 @@ export default {
     background: var(--bg-secondary, #f5f5f5);
     border-radius: 3px;
     padding: 0.2em 0.4em;
-    font-family: 'Monaco', 'Menlo', monospace;
+    font-family: "Monaco", "Menlo", monospace;
     font-size: 0.9em;
   }
 
@@ -362,7 +447,8 @@ export default {
     width: 100%;
     margin: 1em 0;
 
-    th, td {
+    th,
+    td {
       border: 1px solid var(--border-color, #e0e0e0);
       padding: 10px 14px;
       text-align: left;

@@ -9,8 +9,7 @@
 
     <!-- Loading state -->
     <div v-if="loading" class="publication-loading">
-      <span class="icon loading"></span>
-      <span>{{ $t("publish.publication.loading") }}</span>
+      <Loading :title="$t('publish.publication.loading')" />
     </div>
 
     <!-- Error state -->
@@ -56,7 +55,10 @@
       <div v-if="selectedTemplate" class="export-actions">
         <div class="selected-template-info">
           <span class="icon done"></span>
-          <span>{{ $t("publish.publication.selected") }}: {{ selectedTemplate.name }}</span>
+          <span
+            >{{ $t("publish.publication.selected") }}:
+            {{ selectedTemplate.name }}</span
+          >
         </div>
         <div class="export-buttons">
           <button class="secondary" @click="exportDocument('docx')">
@@ -72,11 +74,18 @@
     </div>
 
     <!-- Preview Modal -->
-    <div v-if="previewTemplate" class="modal-overlay" @click.self="closePreview">
+    <div
+      v-if="previewTemplate"
+      class="modal-overlay"
+      @click.self="closePreview">
       <div class="modal-content preview-modal">
         <div class="modal-header">
           <h3>{{ getTemplateName(previewTemplate) }}</h3>
-          <button class="modal-close-btn" @click="closePreview" type="button" aria-label="Close">
+          <button
+            class="modal-close-btn"
+            @click="closePreview"
+            type="button"
+            aria-label="Close">
             <span class="icon close"></span>
           </button>
         </div>
@@ -97,11 +106,19 @@
             {{ $t("common.cancel") }}
           </button>
           <div class="export-btns">
-            <button class="modal-btn export docx" @click="downloadFromPreview('docx')" :disabled="!previewUrl" type="button">
+            <button
+              class="modal-btn export docx"
+              @click="downloadFromPreview('docx')"
+              :disabled="!previewUrl"
+              type="button">
               <span class="icon download"></span>
               DOCX
             </button>
-            <button class="modal-btn export pdf" @click="downloadFromPreview('pdf')" :disabled="!previewUrl" type="button">
+            <button
+              class="modal-btn export pdf"
+              @click="downloadFromPreview('pdf')"
+              :disabled="!previewUrl"
+              type="button">
               <span class="icon download"></span>
               PDF
             </button>
@@ -111,11 +128,17 @@
     </div>
 
     <!-- Upload Template Modal -->
-    <div v-if="showCreateForm" class="modal-overlay" @click.self="closeUploadModal">
+    <div
+      v-if="showCreateForm"
+      class="modal-overlay"
+      @click.self="closeUploadModal">
       <div class="modal-content create-template-modal">
         <div class="modal-header">
           <h3>{{ $t("publish.publication.upload_template_title") }}</h3>
-          <button class="modal-close-btn" @click="closeUploadModal" type="button">
+          <button
+            class="modal-close-btn"
+            @click="closeUploadModal"
+            type="button">
             <span class="icon close"></span>
           </button>
         </div>
@@ -139,8 +162,15 @@
               <template v-if="newTemplate.file">
                 <span class="icon document file-icon"></span>
                 <span class="file-name">{{ newTemplate.file.name }}</span>
-                <span class="file-size">({{ formatFileSize(newTemplate.file.size) }})</span>
-                <button type="button" class="file-remove" @click.stop="removeFile">×</button>
+                <span class="file-size"
+                  >({{ formatFileSize(newTemplate.file.size) }})</span
+                >
+                <button
+                  type="button"
+                  class="file-remove"
+                  @click.stop="removeFile">
+                  ×
+                </button>
               </template>
               <template v-else>
                 <span class="icon upload upload-icon"></span>
@@ -160,14 +190,18 @@
             <input
               type="text"
               v-model="newTemplate.name_fr"
-              :placeholder="$t('publish.publication.template_name_placeholder')" />
+              :placeholder="
+                $t('publish.publication.template_name_placeholder')
+              " />
           </div>
 
           <div class="form-field">
             <label>{{ $t("publish.publication.template_description") }}</label>
             <textarea
               v-model="newTemplate.description_fr"
-              :placeholder="$t('publish.publication.template_description_placeholder')"
+              :placeholder="
+                $t('publish.publication.template_description_placeholder')
+              "
               rows="2"></textarea>
           </div>
 
@@ -175,14 +209,24 @@
             <label>{{ $t("publish.publication.template_scope") }}</label>
             <div class="scope-options">
               <label class="scope-option">
-                <input type="radio" v-model="newTemplate.scope" value="personal" />
+                <input
+                  type="radio"
+                  v-model="newTemplate.scope"
+                  value="personal" />
                 <span>{{ $t("publish.publication.scope_personal") }}</span>
-                <span class="scope-hint">{{ $t("publish.publication.scope_personal_hint") }}</span>
+                <span class="scope-hint">{{
+                  $t("publish.publication.scope_personal_hint")
+                }}</span>
               </label>
               <label class="scope-option">
-                <input type="radio" v-model="newTemplate.scope" value="organization" />
+                <input
+                  type="radio"
+                  v-model="newTemplate.scope"
+                  value="organization" />
                 <span>{{ $t("publish.publication.scope_organization") }}</span>
-                <span class="scope-hint">{{ $t("publish.publication.scope_organization_hint") }}</span>
+                <span class="scope-hint">{{
+                  $t("publish.publication.scope_organization_hint")
+                }}</span>
               </label>
             </div>
           </div>
@@ -197,7 +241,11 @@
             :disabled="!canUpload || uploading"
             type="button">
             <span v-if="uploading" class="icon loading"></span>
-            <span>{{ uploading ? $t("common.uploading") : $t("publish.publication.upload_button") }}</span>
+            <span>{{
+              uploading
+                ? $t("common.uploading")
+                : $t("publish.publication.upload_button")
+            }}</span>
           </button>
         </div>
       </div>
@@ -206,9 +254,15 @@
 </template>
 
 <script>
-import { apiGetPublicationTemplates, apiExportWithTemplate, apiUploadPublicationTemplate, apiDeletePublicationTemplate } from "@/api/publication"
+import {
+  apiGetPublicationTemplates,
+  apiExportWithTemplate,
+  apiUploadPublicationTemplate,
+  apiDeletePublicationTemplate,
+} from "@/api/publication"
 import PublicationTemplateCard from "@/components/PublicationTemplateCard.vue"
 import PdfViewer from "@/components/PdfViewer.vue"
+import Loading from "./atoms/Loading.vue"
 
 export default {
   name: "PublicationSection",
@@ -269,11 +323,21 @@ export default {
   computed: {
     canCreateOrgTemplate() {
       // User can create org-scoped templates if they are admin or manager
-      const allowedRoles = ["admin", "administrator", "maintainer", "manager", "meeting manager"]
+      const allowedRoles = [
+        "admin",
+        "administrator",
+        "maintainer",
+        "manager",
+        "meeting manager",
+      ]
       return allowedRoles.includes((this.userRole || "").toLowerCase())
     },
     canUpload() {
-      return this.newTemplate.file && this.newTemplate.name_fr && this.newTemplate.name_fr.trim().length > 0
+      return (
+        this.newTemplate.file &&
+        this.newTemplate.name_fr &&
+        this.newTemplate.name_fr.trim().length > 0
+      )
     },
     templateFormatHint() {
       // Return hint text with placeholder syntax escaped for Vue
@@ -405,12 +469,19 @@ export default {
 
         if (blob) {
           this.downloadBlob(blob, format)
-          this.$emit("export-success", { format, template: this.selectedTemplate })
+          this.$emit("export-success", {
+            format,
+            template: this.selectedTemplate,
+          })
         } else {
           throw new Error("Export returned no data")
         }
       } catch (err) {
-        this.$emit("export-error", { format, template: this.selectedTemplate, error: err })
+        this.$emit("export-error", {
+          format,
+          template: this.selectedTemplate,
+          error: err,
+        })
         this.$store.dispatch("system/addNotification", {
           type: "error",
           message: this.$t("publish.export_error"),
@@ -421,7 +492,8 @@ export default {
     },
     downloadBlob(blob, format) {
       const validCharsRegex = /[a-zA-Z0-9-_.]/g
-      const safeName = this.conversationName.match(validCharsRegex)?.join("") || "export"
+      const safeName =
+        this.conversationName.match(validCharsRegex)?.join("") || "export"
       const filename = `${safeName}.${format}`
 
       const url = URL.createObjectURL(blob)
@@ -454,7 +526,8 @@ export default {
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         ".docx",
       ]
-      const isValidType = validTypes.includes(file.type) || file.name.endsWith(".docx")
+      const isValidType =
+        validTypes.includes(file.type) || file.name.endsWith(".docx")
 
       if (!isValidType) {
         this.$store.dispatch("system/addNotification", {
@@ -499,8 +572,11 @@ export default {
     },
     async handleDeleteTemplate(template) {
       // Show confirmation dialog
-      const templateName = template.name_fr || template.name_en || template.name || ""
-      const confirmMessage = this.$t("publish.publication.delete_confirm", { name: templateName })
+      const templateName =
+        template.name_fr || template.name_en || template.name || ""
+      const confirmMessage = this.$t("publish.publication.delete_confirm", {
+        name: templateName,
+      })
 
       if (!confirm(confirmMessage)) {
         return
@@ -516,7 +592,10 @@ export default {
           })
 
           // Clear selection if deleted template was selected
-          if (this.selectedTemplate && this.selectedTemplate.id === template.id) {
+          if (
+            this.selectedTemplate &&
+            this.selectedTemplate.id === template.id
+          ) {
             this.selectedTemplate = null
           }
 
@@ -1177,7 +1256,9 @@ export default {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .preview-pdf-viewer {

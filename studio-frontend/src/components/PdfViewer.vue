@@ -29,11 +29,15 @@
 
     <!-- Fallback when no src -->
     <div v-else class="pdf-viewer__empty">
-      <span>{{ $t("publish.publication.no_preview") || "No PDF to display" }}</span>
+      <span>{{
+        $t("publish.publication.no_preview") || "No PDF to display"
+      }}</span>
     </div>
 
     <!-- Optional toolbar -->
-    <div v-if="showToolbar && src && !loading && !error" class="pdf-viewer__toolbar">
+    <div
+      v-if="showToolbar && src && !loading && !error"
+      class="pdf-viewer__toolbar">
       <slot name="toolbar">
         <Button
           v-if="showDownload"
@@ -104,7 +108,9 @@ export default {
     pdfSrc() {
       if (!this.src) return null
       // Add parameters to hide native PDF controls
-      const params = this.hideControls ? "#toolbar=0&navpanes=0&scrollbar=1" : ""
+      const params = this.hideControls
+        ? "#toolbar=0&navpanes=0&scrollbar=1"
+        : ""
       return this.src + params
     },
   },
