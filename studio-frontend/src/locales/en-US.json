@@ -120,21 +120,21 @@
     },
     "dashboard": {
       "page_title": "Dashboard",
-      "title": "Platform Dashboard",
       "sessions_count": "Sessions Transcribed",
       "medias_count": "Media Processed",
       "media_duration": "Total Duration (hours)",
-      "active_users": "Active Users",
+      "active_users": "Session Participants",
+      "time_period_label": "Period",
       "time_period": {
         "day": "Day",
         "month": "Month",
         "year": "Year"
       },
       "charts": {
-        "sessions_title": "Live Sessions",
+        "sessions_title": "Live Transcriptions",
         "medias_title": "Media Transcriptions",
         "duration_title": "Audio Duration (hours)",
-        "active_users_title": "Active Users"
+        "active_users_title": "Session Participants"
       },
       "filters": {
         "organization": "Organization",

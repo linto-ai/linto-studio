@@ -5,102 +5,34 @@
       <h2 class="dashboard-header__title">{{ $t("backoffice.dashboard.page_title") }}</h2>
     </div>
 
-    <!-- Summary Cards Row -->
-    <div class="dashboard-stats">
-      <StatCard
-        :count="usersCount"
-        title="Users"
-        icon="profile"
-        :to="{ name: 'backoffice-userList' }" />
-      <StatCard
-        :count="organizationCount"
-        title="Organizations"
-        icon="work"
-        :to="{ name: 'backoffice-organizationList' }" />
-      <StatCard
-        :count="sessionsCount"
-        :title="$t('backoffice.dashboard.sessions_count')"
-        icon="broadcast" />
-      <StatCard
-        :count="mediasCount"
-        :title="$t('backoffice.dashboard.medias_count')"
-        icon="transcription" />
-    </div>
+    <!-- Platform Stats (not affected by filters) -->
+    <DashboardStats
+      :usersCount="usersCount"
+      :organizationCount="organizationCount" />
 
-    <!-- Filters Section -->
-    <div class="dashboard-filters">
-      <!-- Organization Filter -->
-      <FormInput
-        :field="{ label: $t('backoffice.dashboard.filters.organization') }"
-        class="dashboard-filters__field">
-        <template #custom-input="{ id, disabled }">
-          <select
-            :id="id"
-            v-model="selectedOrganization"
-            :disabled="disabled"
-            class="dashboard-filters__select">
-            <option :value="null">{{ $t("backoffice.dashboard.filters.all_organizations") }}</option>
-            <option v-for="org in organizations" :key="org._id" :value="org._id">
-              {{ org.name }}
-            </option>
-          </select>
-        </template>
-      </FormInput>
+    <!-- Filters -->
+    <DashboardFilters
+      :organizations="organizations"
+      :timePeriodOptions="timePeriodOptions"
+      :timePeriod="currentTimePeriod"
+      :selectedOrganization="selectedOrganization"
+      :startDate="startDate"
+      :endDate="endDate"
+      @update:timePeriod="currentTimePeriod = $event"
+      @update:selectedOrganization="selectedOrganization = $event"
+      @update:startDate="startDate = $event"
+      @update:endDate="endDate = $event"
+      @clear="clearFilters" />
 
-      <!-- Date Range - Start -->
-      <FormInput
-        :field="{ label: $t('backoffice.dashboard.filters.start_date'), type: 'date' }"
-        class="dashboard-filters__field">
-        <template #custom-input="{ id, disabled }">
-          <input
-            :id="id"
-            type="date"
-            v-model="startDate"
-            :max="endDate || today"
-            :disabled="disabled"
-            class="dashboard-filters__date-input"
-          />
-        </template>
-      </FormInput>
-
-      <!-- Date Range - End -->
-      <FormInput
-        :field="{ label: $t('backoffice.dashboard.filters.end_date'), type: 'date' }"
-        class="dashboard-filters__field">
-        <template #custom-input="{ id, disabled }">
-          <input
-            :id="id"
-            type="date"
-            v-model="endDate"
-            :min="startDate"
-            :max="today"
-            :disabled="disabled"
-            class="dashboard-filters__date-input"
-          />
-        </template>
-      </FormInput>
-
-      <!-- Clear Filters Button -->
-      <Button
-        v-if="hasActiveFilters"
-        @click="clearFilters"
-        secondary
-        small
-        class="dashboard-filters__clear-btn">
-        {{ $t("backoffice.dashboard.filters.clear") }}
-      </Button>
-    </div>
-
-    <!-- Time Period Tabs -->
-    <div class="dashboard-section">
-      <h3 class="dashboard-section__title">
-        {{ $t("backoffice.dashboard.title") }}
-      </h3>
-      <Tabs :tabs="timePeriodTabs" v-model="currentTimePeriod" secondary />
-    </div>
+    <!-- Filtered Stats (affected by filters) -->
+    <DashboardKPIs
+      :sessionsCount="sessionsCount"
+      :mediasCount="mediasCount"
+      :loading="kpiLoading" />
 
     <!-- Charts Section -->
-    <div class="dashboard-charts" v-if="!chartsLoading">
+    <div class="dashboard-charts" v-if="!kpiLoading">
+      <!-- Live/Real-time Charts Row -->
       <div class="dashboard-charts__row">
         <div class="dashboard-charts__item">
           <h4 class="dashboard-charts__title">
@@ -113,6 +45,18 @@
         </div>
         <div class="dashboard-charts__item">
           <h4 class="dashboard-charts__title">
+            {{ $t("backoffice.dashboard.charts.active_users_title") }}
+          </h4>
+          <BarChart
+            :labels="chartLabels"
+            :data="activeUsersData"
+            :dataTitle="$t('backoffice.dashboard.charts.active_users_title')" />
+        </div>
+      </div>
+      <!-- Media/Offline Charts Row -->
+      <div class="dashboard-charts__row">
+        <div class="dashboard-charts__item">
+          <h4 class="dashboard-charts__title">
             {{ $t("backoffice.dashboard.charts.medias_title") }}
           </h4>
           <BarChart
@@ -120,8 +64,6 @@
             :data="mediasData"
             :dataTitle="$t('backoffice.dashboard.charts.medias_title')" />
         </div>
-      </div>
-      <div class="dashboard-charts__row">
         <div class="dashboard-charts__item">
           <h4 class="dashboard-charts__title">
             {{ $t("backoffice.dashboard.charts.duration_title") }}
@@ -130,15 +72,6 @@
             :labels="chartLabels"
             :data="durationData"
             :dataTitle="$t('backoffice.dashboard.charts.duration_title')" />
-        </div>
-        <div class="dashboard-charts__item">
-          <h4 class="dashboard-charts__title">
-            {{ $t("backoffice.dashboard.charts.active_users_title") }}
-          </h4>
-          <BarChart
-            :labels="chartLabels"
-            :data="activeUsersData"
-            :dataTitle="$t('backoffice.dashboard.charts.active_users_title')" />
         </div>
       </div>
     </div>
@@ -155,12 +88,11 @@ import { apiGetPlatformKpiSeries } from "@/api/kpi.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
-import StatCard from "@/components/StatCard.vue"
-import Tabs from "@/components/molecules/Tabs.vue"
 import BarChart from "@/components/molecules/BarChart.vue"
 import Loading from "@/components/atoms/Loading.vue"
-import Button from "@/components/atoms/Button.vue"
-import FormInput from "@/components/molecules/FormInput.vue"
+import DashboardStats from "@/components/backoffice/DashboardStats.vue"
+import DashboardFilters from "@/components/backoffice/DashboardFilters.vue"
+import DashboardKPIs from "@/components/backoffice/DashboardKPIs.vue"
 
 export default {
   mixins: [platformRoleMixin],
@@ -168,7 +100,7 @@ export default {
   data() {
     return {
       loading: true,
-      chartsLoading: true,
+      kpiLoading: false,
       usersCount: 0,
       organizationCount: 0,
       sessionsCount: 0,
@@ -188,16 +120,15 @@ export default {
       return
     }
     this.loadFiltersFromUrl()
-    this.fetchAll()
+    this.fetchPlatformStats()
     this.fetchOrganizations()
+    this.fetchFilteredData()
   },
   methods: {
-    async fetchAll() {
+    async fetchPlatformStats() {
       this.loading = true
-      await this.countUsers()
-      await this.countOrganizations()
+      await Promise.all([this.countUsers(), this.countOrganizations()])
       this.loading = false
-      await this.fetchKpiSeries()
     },
     async countUsers() {
       const req = await apiGetAllUsers()
@@ -207,8 +138,8 @@ export default {
       const req = await apiGetAllOrganizations()
       this.organizationCount = req.count
     },
-    async fetchKpiSeries() {
-      this.chartsLoading = true
+    async fetchFilteredData() {
+      this.kpiLoading = true
       try {
         const res = await apiGetPlatformKpiSeries(this.currentFilters)
         this.kpiSeries = res.data || []
@@ -217,7 +148,7 @@ export default {
         console.error("Failed to fetch KPI series:", error)
         this.kpiSeries = []
       }
-      this.chartsLoading = false
+      this.kpiLoading = false
     },
     async fetchOrganizations() {
       const res = await apiGetAllOrganizations(0, { pageSize: 1000 })
@@ -274,29 +205,23 @@ export default {
   },
   watch: {
     currentTimePeriod() {
-      this.fetchKpiSeries()
+      this.fetchFilteredData()
       this.updateUrlParams()
     },
     selectedOrganization() {
-      this.fetchKpiSeries()
+      this.fetchFilteredData()
       this.updateUrlParams()
     },
     startDate() {
-      this.fetchKpiSeries()
+      this.fetchFilteredData()
       this.updateUrlParams()
     },
     endDate() {
-      this.fetchKpiSeries()
+      this.fetchFilteredData()
       this.updateUrlParams()
     },
   },
   computed: {
-    hasActiveFilters() {
-      return this.selectedOrganization || this.startDate || this.endDate
-    },
-    today() {
-      return new Date().toISOString().split('T')[0]
-    },
     currentFilters() {
       return {
         step: this.currentTimePeriod,
@@ -305,7 +230,7 @@ export default {
         endDate: this.endDate,
       }
     },
-    timePeriodTabs() {
+    timePeriodOptions() {
       return [
         {
           name: "daily",
@@ -339,7 +264,14 @@ export default {
       return this.kpiSeries.map((item) => item.session?.totalConnections || 0)
     },
   },
-  components: { MainContentBackoffice, StatCard, Tabs, BarChart, Loading, Button, FormInput },
+  components: {
+    MainContentBackoffice,
+    BarChart,
+    Loading,
+    DashboardStats,
+    DashboardFilters,
+    DashboardKPIs,
+  },
 }
 </script>
 <style lang="scss" scoped>
@@ -354,27 +286,6 @@ export default {
     margin: 0;
     font-size: var(--text-2xl);
     font-weight: 700;
-    color: var(--text-primary);
-  }
-}
-
-/* Stats Cards Grid */
-.dashboard-stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--md-gap);
-  animation: fadeInUp 0.4s ease-out;
-}
-
-/* Dashboard Section */
-.dashboard-section {
-  margin-top: var(--lg-gap);
-  animation: fadeIn 0.5s ease-out;
-
-  &__title {
-    margin-bottom: var(--md-gap);
-    font-size: var(--text-lg);
-    font-weight: 600;
     color: var(--text-primary);
   }
 }
@@ -421,59 +332,6 @@ export default {
   animation: pulse 1.5s ease-in-out infinite;
 }
 
-/* Filters Section */
-.dashboard-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--md-gap);
-  align-items: flex-end;
-  margin-top: var(--md-gap);
-  margin-bottom: var(--md-gap);
-  padding: var(--md-gap);
-  background: var(--neutral-10);
-  border-radius: 12px;
-  border: var(--border-block);
-  box-shadow: var(--shadow-1);
-  transition: box-shadow 0.2s ease;
-  animation: fadeIn 0.4s ease-out;
-
-  &:hover {
-    box-shadow: var(--shadow-2);
-  }
-
-  &__field {
-    flex: 0 1 auto;
-    min-width: 180px;
-    max-width: 220px;
-  }
-
-  &__select,
-  &__date-input {
-    padding: 0.625rem 0.75rem;
-    border: var(--border-input);
-    border-radius: 6px;
-    background: var(--background-primary);
-    font-size: var(--text-sm);
-    color: var(--text-primary);
-    width: 100%;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-
-    &:hover:not(:disabled) {
-      border-color: var(--neutral-40);
-    }
-
-    &:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px var(--primary-soft);
-    }
-  }
-
-  &__clear-btn {
-    align-self: flex-end;
-    margin-bottom: 2px;
-  }
-}
 
 /* Keyframe Animations */
 @keyframes fadeIn {
@@ -524,24 +382,6 @@ export default {
     }
   }
 
-  .dashboard-stats {
-    flex-direction: column;
-  }
-
-  .dashboard-filters {
-    flex-direction: column;
-    align-items: stretch;
-
-    &__field {
-      max-width: none;
-      width: 100%;
-    }
-
-    &__clear-btn {
-      align-self: stretch;
-    }
-  }
-
   .dashboard-charts__row {
     flex-direction: column;
   }
@@ -554,16 +394,9 @@ export default {
 /* Reduced Motion Support */
 @media (prefers-reduced-motion: reduce) {
   .dashboard-header,
-  .dashboard-stats,
-  .dashboard-section,
   .dashboard-charts,
-  .dashboard-filters,
   .dashboard-charts-loading {
     animation: none;
-  }
-
-  .dashboard-filters {
-    transition: none;
   }
 }
 </style>

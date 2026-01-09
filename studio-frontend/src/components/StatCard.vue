@@ -1,6 +1,8 @@
 <template>
   <component class="stat-card flex align-center" :is="componentType" :to="to">
-    <span :class="['icon', icon]"></span>
+    <span class="stat-card__icon">
+      <PhIcon :name="icon" size="lg" />
+    </span>
     <div class="flex col flex1">
       <div class="flex stat-card__header align-center">
         <span class="flex1 stat-card__count" v-if="count">{{ count }}</span>
@@ -13,6 +15,8 @@
   </component>
 </template>
 <script>
+import PhIcon from "@/components/atoms/PhIcon.vue"
+
 export default {
   props: {
     count: { type: Number, required: false },
@@ -30,6 +34,13 @@ export default {
     },
   },
   methods: {},
-  components: {},
+  components: { PhIcon },
 }
 </script>
+<style lang="scss" scoped>
+.stat-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>

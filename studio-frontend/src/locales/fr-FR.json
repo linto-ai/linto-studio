@@ -121,21 +121,21 @@
     },
     "dashboard": {
       "page_title": "Tableau de bord",
-      "title": "Tableau de bord",
       "sessions_count": "Sessions transcrites",
       "medias_count": "Medias traites",
       "media_duration": "Duree totale (heures)",
-      "active_users": "Utilisateurs actifs",
+      "active_users": "Participants aux sessions",
+      "time_period_label": "Periode",
       "time_period": {
         "day": "Jour",
         "month": "Mois",
         "year": "Annee"
       },
       "charts": {
-        "sessions_title": "Sessions en direct",
+        "sessions_title": "Transcription en direct",
         "medias_title": "Transcriptions",
         "duration_title": "Duree audio (heures)",
-        "active_users_title": "Utilisateurs actifs"
+        "active_users_title": "Participants aux sessions"
       },
       "filters": {
         "organization": "Organisation",

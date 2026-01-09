@@ -1,0 +1,71 @@
+<template>
+  <div class="dashboard-stats dashboard-stats--platform">
+    <StatCard
+      :count="usersCount"
+      title="Users"
+      icon="users"
+      :to="{ name: 'backoffice-userList' }" />
+    <StatCard
+      :count="organizationCount"
+      title="Organizations"
+      icon="buildings"
+      :to="{ name: 'backoffice-organizationList' }" />
+  </div>
+</template>
+
+<script>
+import StatCard from "@/components/StatCard.vue"
+
+export default {
+  name: "DashboardStats",
+  props: {
+    usersCount: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
+    organizationCount: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
+  },
+  components: { StatCard },
+}
+</script>
+
+<style lang="scss" scoped>
+.dashboard-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--md-gap);
+  animation: fadeInUp 0.4s ease-out;
+
+  &--platform {
+    margin-bottom: var(--sm-gap);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-stats {
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-stats {
+    animation: none;
+  }
+}
+</style>
