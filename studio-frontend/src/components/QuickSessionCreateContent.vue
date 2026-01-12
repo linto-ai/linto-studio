@@ -29,23 +29,7 @@
       source="micro"
       v-model="quickSessionSettingsField.value" />
 
-    <!-- security level -->
-    <section>
-      <h2>{{ $t("conversation.conversation_creation_security_title") }}</h2>
-      <div class="form-field flex col">
-        <label class="form-label">
-          {{ $t("conversation.conversation_creation_security_label") }}
-        </label>
-        <select v-model="securityLevel.value">
-          <option
-            v-for="level in securityLevel.list"
-            :key="level.value"
-            :value="level.value">
-            {{ level.txt }}
-          </option>
-        </select>
-      </div>
-    </section>
+    <SecurityLevelSelector v-model="securityLevel" />
 
     <div
       class="flex gap-small align-center conversation-create-footer"
@@ -70,7 +54,6 @@
 </template>
 <script>
 import EMPTY_FIELD from "@/const/emptyField"
-import SECURITY_LEVELS_LIST from "@/const/securityLevelsList"
 import { testFieldEmpty } from "@/tools/fields/testEmpty"
 import { testQuickSessionSettings } from "@/tools/fields/testQuickSessionSettings"
 import generateServiceConfig from "@/tools/generateServiceConfig"
@@ -81,6 +64,7 @@ import FormRadio from "@/components/molecules/FormRadio.vue"
 import TranscriberProfileSelector from "@/components/TranscriberProfileSelector.vue"
 import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import QuickSessionSettings from "@/components/QuickSessionSettings.vue"
+import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
 
 import { apiCreateQuickSession } from "@/api/session.js"
 
@@ -143,11 +127,7 @@ export default {
         testField: testQuickSessionSettings,
       },
       selectedProfile: this.transcriberProfiles[0],
-      securityLevel: {
-        ...EMPTY_FIELD,
-        value: "unsecured",
-        list: SECURITY_LEVELS_LIST((key) => this.$i18n.t(key)),
-      },
+      securityLevel: "unsecured",
       formSubmitLabel: this.$i18n.t("quick_session.creation.submit_button"),
 
       formError: null,
@@ -188,7 +168,7 @@ export default {
         const res = await apiCreateQuickSession(this.currentOrganizationScope, {
           channels: channels,
           meta: {
-            securityLevel: this.securityLevel.value,
+            securityLevel: this.securityLevel,
           },
         })
 
@@ -215,6 +195,7 @@ export default {
     TranscriberProfileSelector,
     FormCheckbox,
     QuickSessionSettings,
+    SecurityLevelSelector,
   },
 }
 </script>

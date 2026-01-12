@@ -30,23 +30,7 @@
       source="visio"
       v-model="quickSessionSettingsField.value" />
 
-    <!-- security level -->
-    <section>
-      <h2>{{ $t("conversation.conversation_creation_security_title") }}</h2>
-      <div class="form-field flex col">
-        <label class="form-label">
-          {{ $t("conversation.conversation_creation_security_label") }}
-        </label>
-        <select v-model="securityLevel.value">
-          <option
-            v-for="level in securityLevel.list"
-            :key="level.value"
-            :value="level.value">
-            {{ level.txt }}
-          </option>
-        </select>
-      </div>
-    </section>
+    <SecurityLevelSelector v-model="securityLevel" />
 
     <div
       class="flex gap-small align-center conversation-create-footer"
@@ -66,7 +50,6 @@
 import { bus } from "@/main.js"
 
 import EMPTY_FIELD from "@/const/emptyField.js"
-import SECURITY_LEVELS_LIST from "@/const/securityLevelsList"
 import { testVisioUrl } from "@/tools/fields/testVisioUrl"
 import { formsMixin } from "@/mixins/forms.js"
 import generateServiceConfig from "@/tools/generateServiceConfig"
@@ -81,6 +64,7 @@ import FormInput from "@/components/molecules/FormInput.vue"
 import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import TranscriberProfileSelector from "@/components/TranscriberProfileSelector.vue"
 import QuickSessionSettings from "@/components/QuickSessionSettings.vue"
+import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
 
 export default {
   mixins: [formsMixin],
@@ -131,11 +115,7 @@ export default {
         testField: testQuickSessionSettings,
       },
       supportedVisioServices: ["jitsi", "bigbluebutton"],
-      securityLevel: {
-        ...EMPTY_FIELD,
-        value: "unsecured",
-        list: SECURITY_LEVELS_LIST((key) => this.$i18n.t(key)),
-      },
+      securityLevel: "unsecured",
       formSubmitLabel: this.$t("quick_session.setup_visio.join_meeting"),
       formError: null,
       formState: "idle",
@@ -167,7 +147,7 @@ export default {
           {
             channels: channels,
             meta: {
-              securityLevel: this.securityLevel.value,
+              securityLevel: this.securityLevel,
             },
           },
         )
@@ -213,6 +193,7 @@ export default {
     FormCheckbox,
     TranscriberProfileSelector,
     QuickSessionSettings,
+    SecurityLevelSelector,
   },
 }
 </script>

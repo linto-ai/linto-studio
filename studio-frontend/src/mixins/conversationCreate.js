@@ -11,7 +11,6 @@ import { formsMixin } from "@/mixins/forms.js"
 import { debounceMixin } from "@/mixins/debounce"
 
 import RIGHTS_LIST from "@/const/rigthsList"
-import SECURITY_LEVELS_LIST from "@/const/securityLevelsList"
 import EMPTY_FIELD from "@/const/emptyField"
 import generateServiceConfig from "@/tools/generateServiceConfig"
 
@@ -51,11 +50,7 @@ export default {
         value: 1,
         list: RIGHTS_LIST((key) => this.$i18n.t(key)),
       },
-      securityLevel: {
-        ...EMPTY_FIELD,
-        value: "unsecured",
-        list: SECURITY_LEVELS_LIST((key) => this.$i18n.t(key)),
-      },
+      securityLevel: "unsecured",
       fieldTranscriptionService: {
         ...EMPTY_FIELD,
         loading: true,
@@ -168,7 +163,7 @@ export default {
                 membersRight: this.organizationMemberAccess
                   ? parseInt(this.membersRight.value)
                   : 0,
-                securityLevel: this.securityLevel.value,
+                securityLevel: this.securityLevel,
                 serviceName: this.fieldTranscriptionService.value.serviceName,
                 transcriptionConfig: JSON.stringify(
                   this.fieldTranscriptionService.value.config,
@@ -258,7 +253,7 @@ export default {
               membersRights: this.organizationMemberAccess
                 ? parseInt(this.membersRight.value)
                 : 0,
-              securityLevel: this.securityLevel.value,
+              securityLevel: this.securityLevel,
               serviceName: this.fieldTranscriptionService.value.serviceName,
               transcriptionConfig: JSON.stringify(
                 this.fieldTranscriptionService.value.config,

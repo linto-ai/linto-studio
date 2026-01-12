@@ -59,23 +59,7 @@
         </div>
       </section>
 
-      <!-- Security level section -->
-      <section>
-        <h2>{{ $t("conversation.conversation_creation_security_title") }}</h2>
-        <div class="form-field flex col">
-          <label class="form-label">
-            {{ $t("conversation.conversation_creation_security_label") }}
-          </label>
-          <select v-model="securityLevel.value">
-            <option
-              v-for="level in securityLevel.list"
-              :key="level.value"
-              :value="level.value">
-              {{ level.txt }}
-            </option>
-          </select>
-        </div>
-      </section>
+      <SecurityLevelSelector v-model="securityLevel" />
 
       <!-- Channels section -->
       <section class="flex col">
@@ -168,7 +152,6 @@ import { testName } from "@/tools/fields/testName"
 import { getEnv } from "@/tools/getEnv"
 
 import EMPTY_FIELD from "@/const/emptyField"
-import SECURITY_LEVELS_LIST from "@/const/securityLevelsList"
 
 import { apiCreateSession, apiCreateSessionTemplate } from "@/api/session.js"
 
@@ -186,6 +169,7 @@ import ModalDeleteTemplate from "@/components/ModalDeleteTemplate.vue"
 import MetadataEditor from "@/components/MetadataEditor.vue"
 import MetadataList from "@/components/MetadataList.vue"
 import ModalEditMetadata from "@/components/ModalEditMetadata.vue"
+import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
 
 export default {
   mixins: [formsMixin],
@@ -309,11 +293,7 @@ export default {
         value: defaultMetadata,
         label: this.$t("session.create_page.metadata_label"),
       },
-      securityLevel: {
-        ...EMPTY_FIELD,
-        value: "unsecured",
-        list: SECURITY_LEVELS_LIST((key) => this.$i18n.t(key)),
-      },
+      securityLevel: "unsecured",
       modalEditMetadataIsOpen: false,
       channels: [],
       selectedProfiles: [],
@@ -450,7 +430,7 @@ export default {
             name: this.name.value,
             meta: {
               ...Object.fromEntries(this.fieldMetadata.value),
-              securityLevel: this.securityLevel.value,
+              securityLevel: this.securityLevel,
             },
             channels: this.channels.map(
               ({ profileId, name, translations }) => ({
@@ -545,7 +525,7 @@ export default {
           })),
           meta: {
             ...Object.fromEntries(this.fieldMetadata.value),
-            securityLevel: this.securityLevel.value,
+            securityLevel: this.securityLevel,
           },
           scheduleOn: startDateTime,
           endOn: endDateTime,
@@ -632,6 +612,7 @@ export default {
     MetadataEditor,
     MetadataList,
     ModalEditMetadata,
+    SecurityLevelSelector,
   },
 }
 </script>

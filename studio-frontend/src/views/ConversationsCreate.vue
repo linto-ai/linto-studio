@@ -41,23 +41,7 @@
           </div>
         </section>
 
-        <!-- security level -->
-        <section>
-          <h2>{{ $t("conversation.conversation_creation_security_title") }}</h2>
-          <div class="form-field flex col">
-            <label class="form-label">
-              {{ $t("conversation.conversation_creation_security_label") }}
-            </label>
-            <select v-model="securityLevel.value">
-              <option
-                v-for="level in securityLevel.list"
-                :key="level.value"
-                :value="level.value">
-                {{ level.txt }}
-              </option>
-            </select>
-          </div>
-        </section>
+        <SecurityLevelSelector v-model="securityLevel" />
 
         <!-- services -->
         <section class="flex col gap-small">
@@ -131,6 +115,7 @@ import QuickSessionCreateContent from "@/components/QuickSessionCreateContent.vu
 import VisioCreateContent from "@/components/VisioCreateContent.vue"
 import TabsVertical from "@/components/TabsVertical.vue"
 import ConversationCreateFileLine from "@/components/ConversationCreateFileLine.vue"
+import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
 
 export default {
   mixins: [
@@ -316,6 +301,7 @@ export default {
     VisioCreateContent,
     TabsVertical,
     ConversationCreateFileLine,
+    SecurityLevelSelector,
   },
 }
 </script>
