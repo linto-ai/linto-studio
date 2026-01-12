@@ -3,8 +3,9 @@
     <div
       class="flex row tabs"
       :class="{
-        'horizontal-tabs': !secondary,
+        'horizontal-tabs': primary,
         'horizontal-tabs-secondary': secondary,
+        'horizontal-tabs-inline': inline,
       }"
       role="tablist"
       :squareTabs="squareTabs">
@@ -44,7 +45,9 @@
             role="tab"
             :aria-expanded="open"
             :aria-haspopup="true">
-            <ph-icon :name="isHiddenTabSelected ? 'sparkle' : hiddenTabsIcon" :size="iconSize" />
+            <ph-icon
+              :name="isHiddenTabSelected ? 'sparkle' : hiddenTabsIcon"
+              :size="iconSize" />
             <span class="tab__label">{{ submenuButtonLabel }}</span>
             <ph-icon name="caret-down" size="sm" />
           </div>
@@ -65,7 +68,7 @@ export default {
     value: { type: String, required: true }, // selected tab
     squareTabs: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false },
-    secondary: { type: Boolean, default: false },
+    variant: { type: Boolean, default: "primary" }, // secondary, or inline
     // Label for the submenu trigger button when no hidden tab is selected
     hiddenTabsLabel: { type: String, default: "" },
     // Icon for the submenu trigger button
@@ -76,6 +79,15 @@ export default {
   },
   watch: {},
   computed: {
+    secondary() {
+      return this.variant === "secondary"
+    },
+    primary() {
+      return this.variant === "primary"
+    },
+    inline() {
+      return this.variant === "inline"
+    },
     iconSize() {
       if (this.squareTabs) {
         return "lg"
@@ -88,24 +100,24 @@ export default {
       return "md"
     },
     visibleTabs() {
-      return this.tabs.filter(tab => !tab.hidden)
+      return this.tabs.filter((tab) => !tab.hidden)
     },
     hiddenTabs() {
-      return this.tabs.filter(tab => tab.hidden)
+      return this.tabs.filter((tab) => tab.hidden)
     },
     hasHiddenTabs() {
       return this.hiddenTabs.length > 0
     },
     selectedHiddenTab() {
-      return this.hiddenTabs.find(tab => tab.name === this.value) || null
+      return this.hiddenTabs.find((tab) => tab.name === this.value) || null
     },
     popoverItems() {
-      return this.hiddenTabs.map(tab => ({
+      return this.hiddenTabs.map((tab) => ({
         id: tab.name,
         value: tab.name,
         name: tab.label,
         text: tab.label,
-        icon: this.value === tab.name ? "check" : (tab.icon || "file-text"),
+        icon: this.value === tab.name ? "check" : tab.icon || "file-text",
         disabled: tab.disabled,
       }))
     },

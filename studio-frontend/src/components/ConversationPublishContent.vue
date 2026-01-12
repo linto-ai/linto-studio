@@ -25,7 +25,7 @@
           <Tabs
             :tabs="modeTabs"
             v-model="viewMode"
-            secondary
+            variant="inline"
             @input="setMode" />
           <div
             v-if="hasChanges"
