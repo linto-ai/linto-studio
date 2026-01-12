@@ -142,7 +142,9 @@
         "all_organizations": "Toutes les organisations",
         "date_range": "Plage de dates",
         "start_date": "Du",
+        "start_date_placeholder": "jj/mm/aaaa",
         "end_date": "Au",
+        "end_date_placeholder": "jj/mm/aaaa",
         "clear": "Effacer les filtres"
       },
       "loading": "Chargement des donnees...",

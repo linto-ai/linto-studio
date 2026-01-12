@@ -72,9 +72,15 @@ export default {
     gap: var(--md-gap);
     animation: fadeInUp 0.4s ease-out;
     transition: opacity 0.2s ease;
+    justify-content: center;
 
     &--loading {
       opacity: 0.5;
+    }
+
+    .stat-card {
+      flex: 1 1 200px;
+      max-width: 280px;
     }
   }
 }

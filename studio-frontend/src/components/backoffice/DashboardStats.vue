@@ -40,9 +40,15 @@ export default {
   flex-wrap: wrap;
   gap: var(--md-gap);
   animation: fadeInUp 0.4s ease-out;
+  justify-content: center;
 
   &--platform {
     margin-bottom: var(--sm-gap);
+  }
+
+  .stat-card {
+    flex: 1 1 200px;
+    max-width: 280px;
   }
 }
 

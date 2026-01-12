@@ -12,6 +12,9 @@
 import { Bar } from "vue-chartjs"
 
 export default {
+  inject: {
+    i18n: { default: null }
+  },
   props: {
     labels: {
       type: Array,
@@ -39,6 +42,10 @@ export default {
   },
   mounted() {},
   computed: {
+    currentLocale() {
+      // Get locale from i18n if available, otherwise default to 'en-US'
+      return this.$i18n?.locale || 'en-US'
+    },
     isEmpty() {
       return !this.data || this.data.length === 0 || this.data.every(v => v === 0)
     },
@@ -64,7 +71,7 @@ export default {
             displayColors: false,
             callbacks: {
               title: (items) => items[0]?.label || '',
-              label: (item) => `${this.dataTitle}: ${item.formattedValue}`
+              label: (item) => `${this.dataTitle}: ${item.raw.toLocaleString(this.currentLocale)}`
             }
           },
           legend: {
@@ -103,6 +110,7 @@ export default {
                 size: 11,
               },
               padding: 8,
+              callback: (value) => value.toLocaleString(this.currentLocale)
             }
           }
         },

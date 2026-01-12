@@ -44,14 +44,14 @@
     <FormInput
       :value="startDate"
       @input="$emit('update:startDate', $event)"
-      :field="{ label: $t('backoffice.dashboard.filters.start_date'), type: 'date', error: null, max: endDate || today }"
+      :field="{ label: $t('backoffice.dashboard.filters.start_date'), type: 'date', error: null, max: endDate || today, placeholder: $t('backoffice.dashboard.filters.start_date_placeholder') }"
       class="dashboard-controls__field" />
 
     <!-- Date Range - End -->
     <FormInput
       :value="endDate"
       @input="$emit('update:endDate', $event)"
-      :field="{ label: $t('backoffice.dashboard.filters.end_date'), type: 'date', error: null, min: startDate, max: today }"
+      :field="{ label: $t('backoffice.dashboard.filters.end_date'), type: 'date', error: null, min: startDate, max: today, placeholder: $t('backoffice.dashboard.filters.end_date_placeholder') }"
       class="dashboard-controls__field" />
 
     <!-- Clear Filters Button -->
@@ -165,12 +165,23 @@ export default {
   }
 }
 
+@media (max-width: 1100px) {
+  .dashboard-controls {
+    &__field {
+      flex: 1 1 calc(50% - var(--md-gap));
+      min-width: 140px;
+      max-width: none;
+    }
+  }
+}
+
 @media (max-width: 768px) {
   .dashboard-controls {
     flex-direction: column;
     align-items: stretch;
 
     &__field {
+      flex: 1 1 100%;
       max-width: none;
       width: 100%;
     }
