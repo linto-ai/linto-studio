@@ -68,7 +68,7 @@ export default {
     value: { type: String, required: true }, // selected tab
     squareTabs: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false },
-    variant: { type: Boolean, default: "primary" }, // secondary, or inline
+    variant: { type: String, default: "primary" }, // primary, secondary, or inline
     // Label for the submenu trigger button when no hidden tab is selected
     hiddenTabsLabel: { type: String, default: "" },
     // Icon for the submenu trigger button

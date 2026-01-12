@@ -1053,6 +1053,12 @@
       "verbatim": "Génération du verbatim en cours...",
       "general": "Génération en cours..."
     },
+    "phase": {
+      "processing": "Traitement des segments",
+      "reducing": "Réduction et synthèse",
+      "extracting": "Extraction des informations",
+      "categorizing": "Catégorisation"
+    },
     "loading_document": "Chargement du document final",
     "is_not_updated": "La transcription a été mise à jour. Le compte rendu ne reflète plus les dernières modifications.",
     "is_updated": "Le compte rendu est à jour avec la transcription",
@@ -1129,7 +1135,8 @@
       "current": "Actuelle",
       "latest": "Récent",
       "no_generations": "Aucune génération",
-      "loading": "Chargement..."
+      "loading": "Chargement...",
+      "generating": "Génération en cours..."
     },
     "llm_gateway_error": "Erreur du service IA : {error}",
     "llm_gateway_unavailable": "Le service d'intelligence artificielle est temporairement indisponible. Veuillez réessayer dans quelques instants.",

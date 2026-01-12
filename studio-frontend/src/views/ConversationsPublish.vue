@@ -106,6 +106,7 @@
         :status="currentStatus"
         :blobUrl="blobUrl"
         :pdfPercentage="generationPercentage"
+        :phase="generationPhase"
         :editable="isEditableOutput"
         :errorMessage="currentJobError"
         :jobId="currentJobId"
@@ -341,8 +342,14 @@ export default {
       // Verbatim and publication are not LLM services, have no flavor
       if (this.activeTab === "verbatim" || this.activeTab === "publication")
         return null
-      // return string like "llama3"
-      return this.indexedFormat[this.activeTab]?.flavors?.[0]?.name
+      // return the default flavor name, or first one as fallback
+      const flavors = this.indexedFormat[this.activeTab]?.flavors
+      return flavors?.find((f) => f.is_default)?.name || flavors?.[0]?.name
+    },
+    defaultFlavor() {
+      // Helper to get the default flavor object for current tab
+      const flavors = this.indexedFormat[this.activeTab]?.flavors
+      return flavors?.find((f) => f.is_default) || flavors?.[0]
     },
     outputFormating() {
       // Verbatim produces DOCX/PDF output (not editable markdown)
@@ -350,7 +357,7 @@ export default {
       if (this.activeTab === "verbatim" || this.activeTab === "publication")
         return "abstractive"
       // abstractive / markdown / text
-      return this.indexedFormat[this.activeTab]?.flavors?.[0]?.output_type
+      return this.defaultFlavor?.output_type
     },
     isEditableOutput() {
       // Text and markdown outputs can be edited, PDF/abstractive cannot
@@ -388,6 +395,9 @@ export default {
     },
     generationPercentage() {
       return Number(this?.currentJob?.processing || 0)
+    },
+    generationPhase() {
+      return this?.currentJob?.phase || null
     },
     currentJobError() {
       const error = this.currentJob?.error
@@ -1198,10 +1208,13 @@ export default {
       const jobIndex = this.jobsList.findIndex((j) => j.jobId === update.jobId)
       if (jobIndex !== -1) {
         // Update existing job
+        // Map backend status to frontend status: 'started' -> 'processing'
+        const mappedStatus = update.status === 'started' ? 'processing' : update.status
         this.$set(this.jobsList, jobIndex, {
           ...this.jobsList[jobIndex],
-          status: update.status,
+          status: mappedStatus,
           processing: update.progress?.percentage || 0,
+          phase: update.progress?.phase || null,
         })
       } else if (
         update.conversationId === this.conversationId &&

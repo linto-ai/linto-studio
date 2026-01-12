@@ -2,19 +2,19 @@
   <div class="generation-timeline flex col flex1">
     <h3 class="sidebar-section-title">{{ $t("publish.generations.title") }}</h3>
 
-    <!-- Loading state -->
+    <!-- Loading indicator (shown alongside list, not instead of) -->
     <div v-if="loading" class="generation-loading">
       <span class="icon loading small"></span>
-      <span>{{ $t("publish.generations.loading") }}</span>
+      <span>{{ $t("publish.generations.generating") }}</span>
     </div>
 
     <div
-      v-else-if="!generations || generations.length === 0"
+      v-if="!loading && (!generations || generations.length === 0)"
       class="no-generations">
       {{ $t("publish.generations.no_generations") }}
     </div>
 
-    <div v-else class="generations-list flex1 overflow-vertical-auto">
+    <div v-if="generations && generations.length > 0" class="generations-list flex1 overflow-vertical-auto">
       <div
         v-for="generation in sortedGenerations"
         :key="generation.generationId"

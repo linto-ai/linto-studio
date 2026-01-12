@@ -1056,6 +1056,12 @@
       "verbatim": "Verbatim generation in progress...",
       "general": "Generation in progress..."
     },
+    "phase": {
+      "processing": "Processing segments",
+      "reducing": "Reducing and summarizing",
+      "extracting": "Extracting information",
+      "categorizing": "Categorizing"
+    },
     "loading_document": "Requesting final document...",
     "is_not_updated": "The transcription has been updated. The report no longer reflects the latest changes.",
     "is_updated": "The report is up to date with the transcript ",
@@ -1132,7 +1138,8 @@
       "current": "Current",
       "latest": "Latest",
       "no_generations": "No generations yet",
-      "loading": "Loading..."
+      "loading": "Loading...",
+      "generating": "Generating..."
     },
     "llm_gateway_error": "AI service error: {error}",
     "llm_gateway_unavailable": "The AI service is temporarily unavailable. Please try again in a few moments.",

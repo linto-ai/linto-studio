@@ -101,6 +101,7 @@
         class="circle-progress-bar">
         <span>{{ pdfPercentage }}%</span>
       </div>
+      <p v-if="phaseLabel" class="phase-label">{{ phaseLabel }}</p>
     </div>
     <div v-else class="publish-main__empty">
       <h2>{{ $t(`publish.error_first_line.generic`) }}</h2>
@@ -135,6 +136,11 @@ export default {
     pdfPercentage: {
       type: Number,
       required: false,
+    },
+    phase: {
+      type: String,
+      required: false,
+      default: null,
     },
     markdownContent: {
       type: String,
@@ -181,6 +187,17 @@ export default {
   computed: {
     statusIsInError() {
       return this.status === "error"
+    },
+    phaseLabel() {
+      if (!this.phase) return null
+      // Try to get translated phase label, fallback to capitalized phase name
+      const key = `publish.phase.${this.phase}`
+      const translated = this.$t(key)
+      // If translation key doesn't exist, $t returns the key itself
+      if (translated === key) {
+        return this.phase.charAt(0).toUpperCase() + this.phase.slice(1).replace(/_/g, ' ')
+      }
+      return translated
     },
     hasChanges() {
       // Only show changes if user has actually edited
@@ -302,6 +319,12 @@ export default {
 <style lang="scss" scoped>
 .publish-main__content {
   min-height: 0; // Important for flex scroll
+}
+
+.phase-label {
+  margin-top: 1rem;
+  color: var(--text-secondary, #666);
+  font-size: 0.875rem;
 }
 
 .markdown-preview-container,
