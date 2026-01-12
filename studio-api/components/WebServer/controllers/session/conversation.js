@@ -11,6 +11,9 @@ const DEFAULT_MEMBER_RIGHTS = 3
 const DEFAULT_SPEAKER_NAME = "Unknown speaker"
 const DEFAULT_TRANSLATION_NAME = "Automatic Translation"
 const TYPES = require(`${process.cwd()}/lib/dao/conversation/types`)
+const SECURITY_LEVELS = require(
+  `${process.cwd()}/lib/dao/conversation/securityLevels`,
+)
 const { storeFile } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
@@ -55,6 +58,9 @@ function initConversationMultiChannel(
       transcription: { state: "done" },
       keyword: {},
     },
+    security_level: SECURITY_LEVELS.getValueOrDefault(
+      session.meta?.security_level,
+    ),
   }
 }
 
@@ -219,6 +225,9 @@ function initializeCaption(
     },
     sharedWithUsers: [],
     description: "",
+    security_level: SECURITY_LEVELS.getValueOrDefault(
+      session.meta?.security_level,
+    ),
   }
 
   if (channelCount === 1) {
