@@ -229,6 +229,8 @@
     "conversation_creation_loading_multiple": "Uploading audio {count} of {total}. This can take several minutes.",
     "conversation_creation_right_title": "Medias rights",
     "conversation_creation_right_label": "Default rights for organisation members",
+    "conversation_creation_security_title": "Security level",
+    "conversation_creation_security_label": "Media security level",
     "conversation_is_locked_by": "The media is locked by",
     "conversation_need_reload": " The media has been modified by an other user, reload the page to edit it.",
     "conversation_overview_title": "Media overview",
@@ -325,6 +327,11 @@
       "read": "Read",
       "share": "Share",
       "write": "Write"
+    },
+    "security_level_txt": {
+      "unsecured": "Unsecured",
+      "sensitive": "Sensitive",
+      "secured": "Secured"
     },
     "model_quality": {
       "high": "High",

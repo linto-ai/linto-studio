@@ -12,6 +12,9 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const CONVERSATION_RIGHT = require(
   `${process.cwd()}/lib/dao/conversation/rights`,
 )
+const SECURITY_LEVELS = require(
+  `${process.cwd()}/lib/dao/conversation/securityLevels`,
+)
 const { storeFile } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
@@ -97,6 +100,12 @@ async function importTranscription(req, res) {
   if (!req.body.transcription)
     throw new ConversationMetadataRequire("transcription param is required")
   if (!req.body.membersRight) req.body.membersRight = CONVERSATION_RIGHT.READ
+
+  if (!SECURITY_LEVELS.isValid(req.body.securityLevel)) {
+    throw new ConversationMetadataRequire(
+      "Invalid securityLevel value. Allowed values: secured, sensitive, unsecured",
+    )
+  }
 
   let conversation = initConversation(req.body, req.body.userId, "imported")
   await addFileToConv(conversation, req)

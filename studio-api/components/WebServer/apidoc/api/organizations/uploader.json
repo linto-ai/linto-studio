@@ -54,6 +54,11 @@
                 "segmentCharSize": {
                   "type": "integer",
                   "description": "Size of the segment in characters"
+                },
+                "securityLevel": {
+                  "type": "string",
+                  "enum": ["secured", "sensitive", "unsecured"],
+                  "description": "Security classification of the media. Optional."
                 }
               }
             },
@@ -199,6 +204,11 @@
                 "segmentCharSize": {
                   "type": "integer",
                   "description": "Size of the segment in characters"
+                },
+                "securityLevel": {
+                  "type": "string",
+                  "enum": ["secured", "sensitive", "unsecured"],
+                  "description": "Security classification of the media. Optional."
                 }
               }
             },

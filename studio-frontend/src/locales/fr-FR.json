@@ -229,6 +229,8 @@
     "conversation_creation_loading_multiple": "Envoi du fichier {count} sur {total}. Cette opération peut prendre plusieurs minutes.",
     "conversation_creation_right_title": "Gestion des droits",
     "conversation_creation_right_label": "Droits par défaut pour les membres de l'organisation",
+    "conversation_creation_security_title": "Niveau de sécurité",
+    "conversation_creation_security_label": "Niveau de sécurité du média",
     "conversation_is_locked_by": "Le média est verouillée par",
     "conversation_need_reload": " Le média a été modifiée par un autre utilisateur, rechargez la page pour l'éditer",
     "conversation_overview_title": "Synthèse du média",
@@ -325,6 +327,11 @@
       "read": "Lecture",
       "share": "Partager",
       "write": "Écriture"
+    },
+    "security_level_txt": {
+      "unsecured": "Non sécurisé",
+      "sensitive": "Sensible",
+      "secured": "Sécurisé"
     },
     "model_quality": {
       "high": "Haute",

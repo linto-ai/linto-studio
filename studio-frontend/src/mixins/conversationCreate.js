@@ -50,6 +50,7 @@ export default {
         value: 1,
         list: RIGHTS_LIST((key) => this.$i18n.t(key)),
       },
+      securityLevel: "unsecured",
       fieldTranscriptionService: {
         ...EMPTY_FIELD,
         loading: true,
@@ -162,6 +163,7 @@ export default {
                 membersRight: this.organizationMemberAccess
                   ? parseInt(this.membersRight.value)
                   : 0,
+                securityLevel: this.securityLevel,
                 serviceName: this.fieldTranscriptionService.value.serviceName,
                 transcriptionConfig: JSON.stringify(
                   this.fieldTranscriptionService.value.config,
@@ -251,6 +253,7 @@ export default {
               membersRights: this.organizationMemberAccess
                 ? parseInt(this.membersRight.value)
                 : 0,
+              securityLevel: this.securityLevel,
               serviceName: this.fieldTranscriptionService.value.serviceName,
               transcriptionConfig: JSON.stringify(
                 this.fieldTranscriptionService.value.config,
