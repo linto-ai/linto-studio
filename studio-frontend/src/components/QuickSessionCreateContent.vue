@@ -29,6 +29,24 @@
       source="micro"
       v-model="quickSessionSettingsField.value" />
 
+    <!-- security level -->
+    <section>
+      <h2>{{ $t("conversation.conversation_creation_security_title") }}</h2>
+      <div class="form-field flex col">
+        <label class="form-label">
+          {{ $t("conversation.conversation_creation_security_label") }}
+        </label>
+        <select v-model="securityLevel.value">
+          <option
+            v-for="level in securityLevel.list"
+            :key="level.value"
+            :value="level.value">
+            {{ level.txt }}
+          </option>
+        </select>
+      </div>
+    </section>
+
     <div
       class="flex gap-small align-center conversation-create-footer"
       style="margin-top: 1rem">
@@ -52,6 +70,7 @@
 </template>
 <script>
 import EMPTY_FIELD from "@/const/emptyField"
+import SECURITY_LEVELS_LIST from "@/const/securityLevelsList"
 import { testFieldEmpty } from "@/tools/fields/testEmpty"
 import { testQuickSessionSettings } from "@/tools/fields/testQuickSessionSettings"
 import generateServiceConfig from "@/tools/generateServiceConfig"
@@ -124,6 +143,11 @@ export default {
         testField: testQuickSessionSettings,
       },
       selectedProfile: this.transcriberProfiles[0],
+      securityLevel: {
+        ...EMPTY_FIELD,
+        value: "unsecured",
+        list: SECURITY_LEVELS_LIST((key) => this.$i18n.t(key)),
+      },
       formSubmitLabel: this.$i18n.t("quick_session.creation.submit_button"),
 
       formError: null,
@@ -163,6 +187,9 @@ export default {
         ]
         const res = await apiCreateQuickSession(this.currentOrganizationScope, {
           channels: channels,
+          meta: {
+            securityLevel: this.securityLevel.value,
+          },
         })
 
         if (res.status == "success") {

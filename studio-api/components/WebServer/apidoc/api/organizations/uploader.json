@@ -55,7 +55,7 @@
                   "type": "integer",
                   "description": "Size of the segment in characters"
                 },
-                "security_level": {
+                "securityLevel": {
                   "type": "string",
                   "enum": ["secured", "sensitive", "unsecured"],
                   "description": "Security classification of the media. Optional."
@@ -205,7 +205,7 @@
                   "type": "integer",
                   "description": "Size of the segment in characters"
                 },
-                "security_level": {
+                "securityLevel": {
                   "type": "string",
                   "enum": ["secured", "sensitive", "unsecured"],
                   "description": "Security classification of the media. Optional."

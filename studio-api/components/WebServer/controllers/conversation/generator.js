@@ -59,8 +59,8 @@ function initConversation(metadata, userId, job_id) {
 
   if (metadata.sharedWithUsers)
     conversation.sharedWithUsers = metadata.sharedWithUsers
-  conversation.security_level = SECURITY_LEVELS.getValueOrDefault(
-    metadata.security_level,
+  conversation.securityLevel = SECURITY_LEVELS.getValueOrDefault(
+    metadata.securityLevel,
   )
   if (metadata.segmentWordSize)
     conversation.metadata.normalize.filter.segmentWordSize =

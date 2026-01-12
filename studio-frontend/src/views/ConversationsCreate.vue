@@ -41,6 +41,24 @@
           </div>
         </section>
 
+        <!-- security level -->
+        <section>
+          <h2>{{ $t("conversation.conversation_creation_security_title") }}</h2>
+          <div class="form-field flex col">
+            <label class="form-label">
+              {{ $t("conversation.conversation_creation_security_label") }}
+            </label>
+            <select v-model="securityLevel.value">
+              <option
+                v-for="level in securityLevel.list"
+                :key="level.value"
+                :value="level.value">
+                {{ level.txt }}
+              </option>
+            </select>
+          </div>
+        </section>
+
         <!-- services -->
         <section class="flex col gap-small">
           <h2>{{ $t("conversation.transcription_service_title") }}</h2>

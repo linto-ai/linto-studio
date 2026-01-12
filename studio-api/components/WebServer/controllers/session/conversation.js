@@ -58,8 +58,8 @@ function initConversationMultiChannel(
       transcription: { state: "done" },
       keyword: {},
     },
-    security_level: SECURITY_LEVELS.getValueOrDefault(
-      session.meta?.security_level,
+    securityLevel: SECURITY_LEVELS.getValueOrDefault(
+      session.meta?.securityLevel,
     ),
   }
 }
@@ -225,8 +225,8 @@ function initializeCaption(
     },
     sharedWithUsers: [],
     description: "",
-    security_level: SECURITY_LEVELS.getValueOrDefault(
-      session.meta?.security_level,
+    securityLevel: SECURITY_LEVELS.getValueOrDefault(
+      session.meta?.securityLevel,
     ),
   }
 

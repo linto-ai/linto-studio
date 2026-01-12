@@ -101,9 +101,9 @@ async function importTranscription(req, res) {
     throw new ConversationMetadataRequire("transcription param is required")
   if (!req.body.membersRight) req.body.membersRight = CONVERSATION_RIGHT.READ
 
-  if (!SECURITY_LEVELS.isValid(req.body.security_level)) {
+  if (!SECURITY_LEVELS.isValid(req.body.securityLevel)) {
     throw new ConversationMetadataRequire(
-      "Invalid security_level value. Allowed values: secured, sensitive, unsecured",
+      "Invalid securityLevel value. Allowed values: secured, sensitive, unsecured",
     )
   }
 

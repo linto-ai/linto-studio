@@ -30,6 +30,24 @@
       source="visio"
       v-model="quickSessionSettingsField.value" />
 
+    <!-- security level -->
+    <section>
+      <h2>{{ $t("conversation.conversation_creation_security_title") }}</h2>
+      <div class="form-field flex col">
+        <label class="form-label">
+          {{ $t("conversation.conversation_creation_security_label") }}
+        </label>
+        <select v-model="securityLevel.value">
+          <option
+            v-for="level in securityLevel.list"
+            :key="level.value"
+            :value="level.value">
+            {{ level.txt }}
+          </option>
+        </select>
+      </div>
+    </section>
+
     <div
       class="flex gap-small align-center conversation-create-footer"
       style="margin-top: 1rem">
@@ -48,6 +66,7 @@
 import { bus } from "@/main.js"
 
 import EMPTY_FIELD from "@/const/emptyField.js"
+import SECURITY_LEVELS_LIST from "@/const/securityLevelsList"
 import { testVisioUrl } from "@/tools/fields/testVisioUrl"
 import { formsMixin } from "@/mixins/forms.js"
 import generateServiceConfig from "@/tools/generateServiceConfig"
@@ -112,6 +131,11 @@ export default {
         testField: testQuickSessionSettings,
       },
       supportedVisioServices: ["jitsi", "bigbluebutton"],
+      securityLevel: {
+        ...EMPTY_FIELD,
+        value: "unsecured",
+        list: SECURITY_LEVELS_LIST((key) => this.$i18n.t(key)),
+      },
       formSubmitLabel: this.$t("quick_session.setup_visio.join_meeting"),
       formError: null,
       formState: "idle",
@@ -142,6 +166,9 @@ export default {
           this.currentOrganizationScope,
           {
             channels: channels,
+            meta: {
+              securityLevel: this.securityLevel.value,
+            },
           },
         )
 

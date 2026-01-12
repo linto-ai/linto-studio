@@ -243,6 +243,7 @@ export async function apiCreateConversation(
     name,
     description,
     membersRight,
+    securityLevel,
     serviceName,
     transcriptionConfig,
     segmentCharSize,
@@ -261,6 +262,7 @@ export async function apiCreateConversation(
     formData.append("name", name)
     formData.append("description", description)
     formData.append("membersRight", membersRight)
+    formData.append("securityLevel", securityLevel)
     formData.append("serviceName", serviceName)
     formData.append("transcriptionConfig", transcriptionConfig)
     formData.append("segmentCharSize", segmentCharSize)

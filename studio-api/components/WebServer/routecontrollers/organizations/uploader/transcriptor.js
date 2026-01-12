@@ -79,9 +79,9 @@ async function transcribe(isSingleFile, req, res, next) {
     req.body.organizationId = req.params.organizationId
     req.body.filter = {}
 
-    if (!SECURITY_LEVELS.isValid(req.body.security_level)) {
+    if (!SECURITY_LEVELS.isValid(req.body.securityLevel)) {
       throw new ConversationMetadataRequire(
-        "Invalid security_level value. Allowed values: secured, sensitive, unsecured",
+        "Invalid securityLevel value. Allowed values: secured, sensitive, unsecured",
       )
     }
 

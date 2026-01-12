@@ -10,23 +10,23 @@ module.exports = {
     const result = await db.collection(collectionName).updateMany(
       {
         $or: [
-          { security_level: { $exists: false } },
-          { security_level: null },
-          { security_level: "" },
+          { securityLevel: { $exists: false } },
+          { securityLevel: null },
+          { securityLevel: "" },
         ],
       },
-      { $set: { security_level: defaultSecurityLevel } },
+      { $set: { securityLevel: defaultSecurityLevel } },
     )
     debug(
-      `Updated ${result.modifiedCount} conversations with default security_level`,
+      `Updated ${result.modifiedCount} conversations with default securityLevel`,
     )
   },
 
   async down(db) {
     const result = await db.collection(collectionName).updateMany(
-      { security_level: defaultSecurityLevel },
-      { $unset: { security_level: "" } },
+      { securityLevel: defaultSecurityLevel },
+      { $unset: { securityLevel: "" } },
     )
-    debug(`Removed security_level from ${result.modifiedCount} conversations`)
+    debug(`Removed securityLevel from ${result.modifiedCount} conversations`)
   },
 }
