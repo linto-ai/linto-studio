@@ -8,6 +8,10 @@ const uuid = require("uuid")
 const fs = require("fs")
 const mm = require("music-metadata")
 
+const SECURITY_LEVELS = require(
+  `${process.cwd()}/lib/dao/conversation/securityLevels`,
+)
+
 //Parse the stt transcription to for conversation mongodb model
 function initConversation(metadata, userId, job_id) {
   let transcriptionConfig = metadata.transcriptionConfig
@@ -55,6 +59,9 @@ function initConversation(metadata, userId, job_id) {
 
   if (metadata.sharedWithUsers)
     conversation.sharedWithUsers = metadata.sharedWithUsers
+  conversation.security_level = SECURITY_LEVELS.getValueOrDefault(
+    metadata.security_level,
+  )
   if (metadata.segmentWordSize)
     conversation.metadata.normalize.filter.segmentWordSize =
       metadata.segmentWordSize
