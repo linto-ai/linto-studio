@@ -130,6 +130,7 @@ import moment from "moment"
 import { nextTick } from "vue"
 
 import { bus } from "@/main.js"
+import { getEnv } from "@/tools/getEnv"
 import { apiPostMetadata, apiUpdateMetadata } from "@/api/metadata.js"
 import findExpressionInWordsList from "@/tools/findExpressionInWordsList.js"
 
@@ -229,7 +230,7 @@ export default {
   },
   computed: {
     experimental_highlight() {
-      return process.env?.VUE_APP_EXPERIMENTAL_HIGHLIGHT === "true"
+      return getEnv("VUE_APP_EXPERIMENTAL_HIGHLIGHT") === "true"
     },
     conversationListRoute() {
       return { name: "inbox", hash: "#previous" }
@@ -283,7 +284,7 @@ export default {
         this.turnPages[currentPage].push(turn)
         nbCaracters += turn.segment.length
         if (
-          nbCaracters > parseInt(process.env.VUE_APP_MAX_CARACTERS_PER_PAGE)
+          nbCaracters > parseInt(getEnv("VUE_APP_MAX_CARACTERS_PER_PAGE"))
         ) {
           nbCaracters = 0
           nbTurns = 0
@@ -291,7 +292,7 @@ export default {
           this.turnPages[currentPage] = []
         }
         nbTurns += 1
-        if (nbTurns > parseInt(process.env.VUE_APP_TURN_PER_PAGE)) {
+        if (nbTurns > parseInt(getEnv("VUE_APP_TURN_PER_PAGE"))) {
           nbCaracters = 0
           nbTurns = 0
           currentPage += 1

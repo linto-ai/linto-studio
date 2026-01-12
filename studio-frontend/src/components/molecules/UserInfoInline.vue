@@ -21,6 +21,7 @@
 </template>
 <script>
 import { getUserInfo } from "@/tools/getUserInfo.js"
+import { getEnv } from "@/tools/getEnv"
 export default {
   props: {
     userId: { required: true },
@@ -50,7 +51,7 @@ export default {
   methods: {
     imgFullPath(imgPath) {
       return (
-        process.env.VUE_APP_PUBLIC_MEDIA +
+        getEnv("VUE_APP_PUBLIC_MEDIA") +
         "/" +
         (imgPath || "pictures/default.jpg")
       )

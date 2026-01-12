@@ -7,8 +7,8 @@ import { getEnv } from "@/tools/getEnv"
 import store from "@/store/index.js"
 import i18n from "@/i18n"
 
-const socketioUrl = process.env.VUE_APP_SESSION_WS
-const socketioPath = process.env.VUE_APP_SESSION_WS_PATH
+const socketioUrl = getEnv("VUE_APP_SESSION_WS")
+const socketioPath = getEnv("VUE_APP_SESSION_WS_PATH")
 
 const debugWSSession = customDebug("Websocket:Session:debug")
 const debugWSMedia = customDebug("Websocket:Media:debug")
