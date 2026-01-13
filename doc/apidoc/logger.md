@@ -2,20 +2,21 @@
 
 ## Winston Configuration
 
-Winston is a flexible and extensible **logging library** for Node.js that supports multiple **transports**, output destinations such as console, files, or HTTP endpoints.
+Winston is a flexible logging library for Node.js that supports multiple **transports** (output destinations such as console, files, or HTTP endpoints).
 
-In LinTO, Winston is configured using a **JSON configuration file** (`winston.config.json`) located at:
+### Configuration File Location
 
 ```
-config/logger/winston.config.json
+studio-api/config/logger/winston.config.json
 ```
 
-This configuration allows full customization of **log format, levels, and outputs** without changing code.
-You can find more information about winston there : [winston guide](https://github.com/winstonjs/winston)
+You can override this path using the `WINSTON_CONFIG_PATH` environment variable.
+
+For more information about Winston: [winston guide](https://github.com/winstonjs/winston)
 
 ---
 
-### Example Configuration File
+### Example Configuration
 
 ```json
 {
@@ -53,7 +54,7 @@ You can find more information about winston there : [winston guide](https://gith
       "options": {
         "level": "debug",
         "filename": "./logs/debug.json",
-        "format": "plain"
+        "format": "json"
       }
     }
   ]
@@ -62,18 +63,20 @@ You can find more information about winston there : [winston guide](https://gith
 
 ---
 
-### Configuration Fields
+### Global Options
 
 #### **`format`**
 
-Specifies the **global format** for all log outputs.
+Default format for all transports. Can be overridden per transport.
 
-| Value     | Description                                                      | Example                                                                                                                                    |
-| --------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `"json"`  | Structured JSON format. Best for machine processing and storage. | `{ "level": "info", "message": "Organization broker connection established", "source": "system", "timestamp": "2025-10-21T08:36:40.704Z"}` |
-| `"plain"` | Human-readable plain text format (used when colorized).          | `2025-10-21T08:35:24.439Z [info]: Organization broker connection established {"source":"system"}`                                          |
+| Value    | Output Style                                                                                          |
+| -------- | ----------------------------------------------------------------------------------------------------- |
+| `"json"` | `{"level":"info","message":"Broker connected","source":"system","timestamp":"2025-10-21T08:36:40Z"}`  |
+| (other)  | `2025-10-21T08:35:24Z [info]: Broker connected {"source":"system"}`                                   |
 
-Each transport can override this with its own `options.format` field.
+#### **`level`**
+
+Default log level for all transports (default: `"info"`). Can be overridden per transport.
 
 ---
 
@@ -82,8 +85,8 @@ Each transport can override this with its own `options.format` field.
 An array defining where and how logs are written.
 Each transport object must specify:
 
-- **`type`** → the transport kind (`console`, `file`, or `http`)
-- **`options`** → configuration specific to that type
+- **`type`** - the transport kind (`console`, `file`, or `http`)
+- **`options`** - configuration specific to that type
 
 ---
 
@@ -110,9 +113,9 @@ Used for local debugging or development environments.
 
 ---
 
-#### **File Transport (error/warn/debug logs)**
+#### **File Transport**
 
-Persists logs to disk. Multiple transports configuration file can be handle.
+Persists logs to disk. You can configure multiple file transports for different log levels.
 
 ```json
 {
@@ -134,7 +137,7 @@ Persists logs to disk. Multiple transports configuration file can be handle.
 | `maxsize`  | `number`  | Maximum size (in bytes) before the file is rotated.                     |
 | `maxFiles` | `number`  | Maximum number of rotated files to keep.                                |
 | `tailable` | `boolean` | Keeps old logs in a rotating manner (useful for continuous writes).     |
-| `format`   | `string`  | Optional override (`json` or `plain`). If set, overrides global format. |
+| `format`   | `string`  | Set to `"json"` to override global format for this transport.           |
 
 ---
 
@@ -164,26 +167,25 @@ Used for remote log streaming to an external monitoring service.
 
 ### Default Log Level Hierarchy
 
-| Level   | Purpose                | Example                                           |
-| ------- | ---------------------- | ------------------------------------------------- |
-| `error` | Critical failures      | Server errors                                     |
-| `warn`  | Studio error           | Error generated error and handled by the platform |
-| `info`  | Standard runtime info  | Service started, client connected, api called     |
-| `debug` | Verbose developer logs | Detailed HTTP events or payloads                  |
+| Level   | Purpose               | Example                                      |
+| ------- | --------------------- | -------------------------------------------- |
+| `error` | Critical failures     | Server crashes, unhandled exceptions         |
+| `warn`  | Handled errors        | API errors, validation failures              |
+| `info`  | Standard runtime info | Service started, client connected, API calls |
+| `debug` | Verbose logs          | Detailed request/response data               |
 
-Each transport writes only logs at or **above its level** (e.g., a `warn` transport won’t log `info` messages but will logs `error` messages).
+Each transport writes only logs at or **above its level** (e.g., a `warn` transport won't log `info` messages but will log `error` messages).
 
 ---
 
 ### Changing Configuration
 
-To customize Winston’s behavior:
+To customize logging:
 
-1. Open `config/logger/winston.config.json`.
-2. Edit or add transports as needed.
-3. Restart the service for the changes to take effect.
+1. Edit `studio-api/config/logger/winston.config.json`
+2. Restart the service
 
-Example, to add a new log file:
+**Example:** Add an info-level log file:
 
 ```json
 {
@@ -197,44 +199,28 @@ Example, to add a new log file:
 }
 ```
 
-## Log Overview
+---
 
-The LinTO logging system provides a **structured and contextualized** way to record events from different components (webserver, socket.io, system).
-It ensures that each log entry contains enough metadata to be **machine-readable**, **human-friendly**, and **ready for storage or filtering** in databases or log management tools.
+## Log Types
 
-The system is composed of three main layers:
+The LinTO logging system records events from different sources. Each log type captures specific information relevant to its context.
 
-1. **Context Builder** : shapes structured log data.
-2. **Logger** : dispatches logs to configured winston transports (console, file, HTTP).
-3. **LogManager** : orchestrates the creation and dispatch of logs, and optionally persists important logs.
+### Sources
+
+| Source       | Description                                              |
+| ------------ | -------------------------------------------------------- |
+| `webserver`  | HTTP API requests and responses                          |
+| `socketio`   | Real-time socket connections (users joining sessions)    |
+| `mqtt`       | Channel streaming events (transcription start/stop)      |
+| `system`     | Internal system events (startup, broker connections)     |
 
 ---
 
-## Log Structure
+## Log Examples
 
-Each log entry is a **JSON object** following a standardized schema.
-Fields may vary slightly depending on the source (`webserver`, `socketio`, etc.), but the base format remains consistent.
+### System Event
 
-### Example (Socket.io event)
-
-```json
-{
-  "level": "info",
-  "message": "New client connected : ocfbWDBvXWDU2s4BAAAB",
-  "scope": "resource",
-  "socket": {
-    "connected": true,
-    "disconnected": false,
-    "id": "ocfbWDBvXWDU2s4BAAAB",
-    "namespace": "/",
-    "rooms": ["ocfbWDBvXWDU2s4BAAAB"]
-  },
-  "source": "socketio",
-  "timestamp": "2025-10-20T15:24:01.677Z"
-}
-```
-
-### Example (System broker connection)
+Service startup and internal connections.
 
 ```json
 {
@@ -245,24 +231,23 @@ Fields may vary slightly depending on the source (`webserver`, `socketio`, etc.)
 }
 ```
 
-### Example (Webserver action log)
+---
+
+### API Request
+
+HTTP requests to the platform API.
 
 ```json
 {
+  "level": "info",
+  "source": "webserver",
+  "scope": "resource",
+  "timestamp": "2025-10-21T13:08:25.736Z",
   "http": {
     "method": "GET",
-    "status": 200,
-    "url": "/api/organizations/688778cb980f721744a206d8/conversations"
+    "url": "/api/organizations/688778cb980f721744a206d8/conversations",
+    "status": 200
   },
-  "level": "info",
-  "organization": {
-    "id": "688778cb980f721744a206d8",
-    "info": { "name": "linagora" },
-    "role": { "name": "ADMIN", "value": 6 }
-  },
-  "scope": "resource",
-  "source": "webserver",
-  "timestamp": "2025-10-21T13:08:25.736Z",
   "user": {
     "id": "688778cb980f721744a206d7",
     "info": {
@@ -271,7 +256,135 @@ Fields may vary slightly depending on the source (`webserver`, `socketio`, etc.)
       "lastname": "lng"
     },
     "role": { "name": "SUPER_ADMINISTRATOR", "value": 31 }
+  },
+  "organization": {
+    "id": "688778cb980f721744a206d8",
+    "info": { "name": "linagora" },
+    "role": { "name": "ADMIN", "value": 6 }
   }
+}
+```
+
+---
+
+### Socket Connection
+
+User joining or leaving a live session.
+
+```json
+{
+  "level": "info",
+  "source": "socketio",
+  "scope": "resource",
+  "activity": "session",
+  "timestamp": "2025-10-20T15:24:01.677Z",
+  "message": "ocfbWDBvXWDU2s4BAAAB join abc123-session",
+  "socket": {
+    "id": "ocfbWDBvXWDU2s4BAAAB",
+    "connectionCount": 1,
+    "totalWatchTime": 0,
+    "lastJoinedAt": "2025-10-20T15:24:01.677Z"
+  },
+  "session": {
+    "sessionId": "abc123-session",
+    "name": "Team Meeting",
+    "organizationId": "688778cb980f721744a206d8",
+    "visibility": "public"
+  },
+  "user": {
+    "id": "688778cb980f721744a206d7",
+    "info": { "email": "user@linagora.com" }
+  }
+}
+```
+
+---
+
+### Channel Event
+
+Transcription channel starting or stopping streaming.
+
+```json
+{
+  "level": "info",
+  "source": "mqtt",
+  "scope": "resource",
+  "activity": "channel",
+  "action": "mount",
+  "timestamp": "2025-10-21T14:30:00.000Z",
+  "session": {
+    "sessionId": "abc123-session",
+    "name": "Team Meeting",
+    "organizationId": "688778cb980f721744a206d8",
+    "visibility": "public"
+  },
+  "channel": {
+    "channelId": "1",
+    "translations": ["fr", "en"],
+    "type": "microsoft",
+    "name": "Azure Speech Profile",
+    "description": "Production transcriber",
+    "languages": ["fr-FR", "en-US"],
+    "region": "francecentral",
+    "hasDiarization": true
+  },
+  "organization": {
+    "id": "688778cb980f721744a206d8",
+    "info": { "name": "linagora" }
+  }
+}
+```
+
+**Note:** Sensitive credentials (API keys) are automatically excluded from channel logs.
+
+---
+
+### LLM Event
+
+AI/LLM operations (summaries, generation).
+
+```json
+{
+  "level": "info",
+  "source": "webserver",
+  "scope": "resource",
+  "activity": "llm",
+  "timestamp": "2025-10-21T14:00:00.000Z",
+  "llm": {
+    "conversation": {
+      "id": "conv123",
+      "name": "Meeting Notes"
+    },
+    "query": "Generate summary",
+    "jobId": "job-456",
+    "contentLength": 15000
+  },
+  "user": { ... },
+  "organization": { ... }
+}
+```
+
+---
+
+### Transcription Event
+
+Transcription job processing.
+
+```json
+{
+  "level": "info",
+  "source": "webserver",
+  "scope": "resource",
+  "activity": "transcription",
+  "timestamp": "2025-10-21T14:00:00.000Z",
+  "transcription": {
+    "conversationId": "conv123",
+    "name": "Meeting Recording",
+    "duration": 3600,
+    "jobId": "job-789"
+  },
+  "user": { ... },
+  "organization": { ... }
 }
 ```
 
@@ -279,15 +392,60 @@ Fields may vary slightly depending on the source (`webserver`, `socketio`, etc.)
 
 ## Field Reference
 
-| Field            | Type                | Description                                                                                   |
-| ---------------- | ------------------- | --------------------------------------------------------------------------------------------- |
-| **level**        | `string`            | Logging level, e.g. `debug`, `info`, `warn`, or `error`.                                      |
-| **message**      | `string`            | Short human-readable description of the event. May be omitted for state logs.                 |
-| **timestamp**    | `string (ISO-8601)` | UTC timestamp of when the log was emitted.                                                    |
-| **source**       | `string`            | The logical origin of the event (`webserver`, `socketio`, `system`).                          |
-| **scope**        | `string`            | The high-level category of action: `"platform"`, `"organization"`, `"user"`, or `"resource"`. |
-| **socket**       | `object`            | Metadata for socket.io-related events (if applicable).                                        |
-| **user**         | `object`            | Metadata about the authenticated user performing the action (only for webserver).             |
-| **organization** | `object`            | Metadata about the organization context                                                       |
-| **http**         | `object`            | HTTP-specific data such as method, URL, and response status.                                  |
-| **error**        | `object`            | Optional error information (`name`, `stack`) when an exception occurs.                        |
+| Field            | Description                                                                                   |
+| ---------------- | --------------------------------------------------------------------------------------------- |
+| **level**        | Log severity: `error`, `warn`, `info`, or `debug`                                             |
+| **message**      | Human-readable description of the event                                                       |
+| **timestamp**    | UTC time when the event occurred (ISO-8601 format)                                            |
+| **source**       | Origin of the event: `webserver`, `socketio`, `mqtt`, or `system`                             |
+| **scope**        | Category: `platform`, `organization`, `user`, `resource`, `authenticate`, or `tokens`         |
+| **activity**     | Type of activity: `session`, `channel`, `llm`, or `transcription`                             |
+| **action**       | Specific action: `mount` (channel start) or `unmount` (channel stop)                          |
+| **http**         | HTTP request details (method, URL, status code)                                               |
+| **user**         | User who performed the action (id, email, name, role)                                         |
+| **organization** | Organization context (id, name, user's role in org)                                           |
+| **session**      | Live session details (sessionId, name, visibility)                                            |
+| **channel**      | Channel configuration (channelId, translations, transcriber settings)                         |
+| **socket**       | Socket connection info (id, connection count, watch time)                                     |
+| **llm**          | LLM operation details (conversation, query, job info)                                         |
+| **transcription**| Transcription job details (conversation, duration, job info)                                  |
+| **error**        | Error information when something fails (name, stack trace)                                    |
+
+---
+
+## Activity Log Storage
+
+Important events are stored in the database for KPI tracking and analytics. The following events are persisted:
+
+| Event Type       | What's Stored                                                    |
+| ---------------- | ---------------------------------------------------------------- |
+| **API Requests** | Most POST/PUT/DELETE requests (modifications)                    |
+| **Sessions**     | User join/leave events with watch time                           |
+| **Channels**     | Channel mount/unmount events with duration                       |
+| **LLM**          | All AI generation requests                                       |
+| **Transcription**| All transcription jobs                                           |
+
+### Not Stored
+
+- GET requests (read-only operations)
+- Login attempts
+- System events (startup, connections)
+
+---
+
+## Querying Logs
+
+### By File
+
+Logs are written to files based on your Winston configuration:
+- `logs/errors.log` - Critical errors only
+- `logs/warning.log` - Warnings and errors
+- `logs/debug.json` - All events (verbose)
+
+### By Database
+
+Activity logs stored in MongoDB can be queried for:
+- User session analytics (watch time, connection counts)
+- Channel streaming metrics (duration per channel)
+- API usage statistics
+- LLM and transcription job history
