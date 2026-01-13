@@ -7,7 +7,7 @@ const LogManager = require(`${process.cwd()}/lib/logger/manager`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const SOCKET_EVENTS = require(`${process.cwd()}/lib/dao/log/socketEvent`)
 
-const { diffSessions, groupSessionsByOrg } = require(
+const { diffSessions, groupSessionsByOrg, handleChannelChanges } = require(
   `${process.cwd()}/components/IoHandler/controllers/SessionHandling`,
 )
 const { watchConversation, refreshInterval } = require(
@@ -303,6 +303,12 @@ class IoHandler extends Component {
 
   async notify_sessions(roomId, action, sessions) {
     const differences = diffSessions(this.sessionsCache, sessions)
+
+    // Handle channel status changes (log to activityLog)
+    if (differences.channelChanges?.length > 0) {
+      await handleChannelChanges(differences.channelChanges)
+    }
+
     const merged = await groupSessionsByOrg(differences, this.memorySessions)
     Object.keys(merged).forEach((orgaId) => {
       //Verify if a websocket connection is establish to the room

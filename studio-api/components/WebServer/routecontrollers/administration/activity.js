@@ -61,6 +61,14 @@ async function getKpiBySession(req, res, next) {
   try {
     const { sessionId } = req.params
     const [kpiGenerated] = await model.activityLog.kpiSessionById(sessionId)
+
+    // Aggregate channel metrics and merge into KPI data
+    const channelMetrics =
+      await model.activityLog.aggregateChannelMetrics(sessionId)
+    if (channelMetrics) {
+      Object.assign(kpiGenerated, channelMetrics)
+    }
+
     return res.status(200).json(kpiGenerated)
   } catch (err) {
     next(err)
@@ -87,6 +95,14 @@ async function refreshSessionKpi(req, res, next) {
     await Promise.all(
       sessionIds.map(async (sessionId) => {
         const [kpiData] = await model.activityLog.kpiSessionById(sessionId)
+
+        // Aggregate channel metrics and merge into KPI data
+        const channelMetrics =
+          await model.activityLog.aggregateChannelMetrics(sessionId)
+        if (channelMetrics) {
+          Object.assign(kpiData, channelMetrics)
+        }
+
         await model.kpi.sessions.create(kpiData)
       }),
     )

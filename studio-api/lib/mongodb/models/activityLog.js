@@ -354,6 +354,114 @@ class ActivityLog extends MongoModel {
       return error
     }
   }
+
+  async aggregateChannelMetrics(sessionId) {
+    try {
+      const query = [
+        {
+          $match: {
+            activity: "channel",
+            "session.sessionId": sessionId,
+          },
+        },
+        { $sort: { timestamp: 1 } },
+        {
+          $group: {
+            _id: "$channel.channelId",
+            channelId: { $first: "$channel.channelId" },
+            translations: { $first: "$channel.translations" },
+            // Transcriber profile fields (flattened in channel)
+            type: { $first: "$channel.type" },
+            name: { $first: "$channel.name" },
+            description: { $first: "$channel.description" },
+            languages: { $first: "$channel.languages" },
+            region: { $first: "$channel.region" },
+            hasDiarization: { $first: "$channel.hasDiarization" },
+            events: {
+              $push: {
+                action: "$action",
+                timestamp: "$timestamp",
+              },
+            },
+            firstMountAt: {
+              $min: {
+                $cond: [{ $eq: ["$action", "mount"] }, "$timestamp", null],
+              },
+            },
+            lastUnmountAt: {
+              $max: {
+                $cond: [{ $eq: ["$action", "unmount"] }, "$timestamp", null],
+              },
+            },
+          },
+        },
+      ]
+
+      const channelGroups = await this.mongoAggregate(query)
+
+      // Calculate durations from event pairs
+      const channels = channelGroups.map((group) => {
+        let totalDuration = 0
+        let mountTime = null
+
+        for (const event of group.events) {
+          if (event.action === "mount") {
+            mountTime = new Date(event.timestamp)
+          } else if (event.action === "unmount" && mountTime) {
+            totalDuration += (new Date(event.timestamp) - mountTime) / 1000
+            mountTime = null
+          }
+        }
+
+        return {
+          channelId: group.channelId,
+          translations: group.translations,
+          // Transcriber profile fields (flattened)
+          type: group.type,
+          name: group.name,
+          description: group.description,
+          languages: group.languages,
+          region: group.region,
+          hasDiarization: group.hasDiarization,
+          // Timing metrics
+          mountedAt: group.firstMountAt ? new Date(group.firstMountAt) : null,
+          unmountedAt: group.lastUnmountAt
+            ? new Date(group.lastUnmountAt)
+            : null,
+          activeDuration: Math.round(totalDuration),
+        }
+      })
+
+      // Calculate aggregate metrics
+      const totalActiveDuration = channels.reduce(
+        (sum, ch) => sum + ch.activeDuration,
+        0,
+      )
+      const firstMountAt = channels
+        .filter((ch) => ch.mountedAt)
+        .sort((a, b) => a.mountedAt - b.mountedAt)[0]?.mountedAt
+      const lastUnmountAt = channels
+        .filter((ch) => ch.unmountedAt)
+        .sort((a, b) => b.unmountedAt - a.unmountedAt)[0]?.unmountedAt
+
+      return {
+        channels,
+        firstChannelMountAt: firstMountAt,
+        lastChannelUnmountAt: lastUnmountAt,
+        streaming: {
+          totalChannels: channels.length,
+          totalActiveDuration,
+          averageChannelDuration:
+            channels.length > 0
+              ? Math.round(totalActiveDuration / channels.length)
+              : 0,
+        },
+      }
+    } catch (error) {
+      console.error("Error in aggregateChannelMetrics:", error)
+      return null
+    }
+  }
 }
 
 module.exports = new ActivityLog()

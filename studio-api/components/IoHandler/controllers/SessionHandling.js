@@ -11,12 +11,14 @@ function diffSessions(oldSessions, newSessions) {
       added: newSessions,
       removed: [],
       updated: [],
+      channelChanges: [],
     }
   }
 
   const added = []
   const removed = []
   const updated = []
+  const channelChanges = []
 
   const oldSessionsMap = new Map(
     oldSessions.map((session) => [session.id, session]),
@@ -31,6 +33,25 @@ function diffSessions(oldSessions, newSessions) {
       added.push(session)
     } else if (JSON.stringify(oldSession) !== JSON.stringify(session)) {
       updated.push(session)
+
+      // Track channel status changes within updated sessions
+      const oldChannelsMap = new Map(
+        (oldSession.channels || []).map((ch) => [ch.id, ch]),
+      )
+
+      for (const newChannel of session.channels || []) {
+        const oldChannel = oldChannelsMap.get(newChannel.id)
+        if (!oldChannel) continue
+
+        if (oldChannel.streamStatus !== newChannel.streamStatus) {
+          channelChanges.push({
+            session,
+            channel: newChannel,
+            oldStatus: oldChannel.streamStatus,
+            newStatus: newChannel.streamStatus,
+          })
+        }
+      }
     }
   })
 
@@ -40,7 +61,7 @@ function diffSessions(oldSessions, newSessions) {
     }
   })
 
-  return { added, removed, updated }
+  return { added, removed, updated, channelChanges }
 }
 
 async function groupSessionsByOrg(differences, sessionIdToOrg) {
@@ -104,4 +125,16 @@ async function groupSessionsByOrg(differences, sessionIdToOrg) {
   return groupedByOrg
 }
 
-module.exports = { diffSessions, groupSessionsByOrg }
+async function handleChannelChanges(channelChanges) {
+  const LogManager = require(`${process.cwd()}/lib/logger/manager`)
+
+  for (const change of channelChanges) {
+    if (change.newStatus === "active" && change.oldStatus !== "active") {
+      await LogManager.logChannelEvent(change.session, change.channel, "mount")
+    } else if (change.oldStatus === "active" && change.newStatus !== "active") {
+      await LogManager.logChannelEvent(change.session, change.channel, "unmount")
+    }
+  }
+}
+
+module.exports = { diffSessions, groupSessionsByOrg, handleChannelChanges }
