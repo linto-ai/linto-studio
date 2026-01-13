@@ -83,12 +83,15 @@ setup_user() {
     if [ "${DEVELOPMENT}" = "true" ]; then
         echo "Development mode: skipping ownership changes to preserve volume mounts"
     else
-        # Production mode: adjust ownership
+        # Production mode: adjust ownership (separate commands to ensure all run)
         echo "Adjusting ownership of application directories"
-        chown -R "$USER_NAME:$GROUP_NAME" /usr/share/nginx/html /var/cache/nginx /var/log/nginx
-        # PID file may not exist yet, create parent dir with correct ownership
-        touch /var/run/nginx.pid 2>/dev/null || true
-        chown "$USER_NAME:$GROUP_NAME" /var/run/nginx.pid 2>/dev/null || true
+        chown -R "$USER_NAME:$GROUP_NAME" /usr/share/nginx/html
+        chown -R "$USER_NAME:$GROUP_NAME" /var/cache/nginx
+        # Replace log symlinks with actual files (symlinks to /dev/stdout aren't writable after gosu)
+        rm -f /var/log/nginx/access.log /var/log/nginx/error.log
+        touch /var/log/nginx/access.log /var/log/nginx/error.log
+        chown -R "$USER_NAME:$GROUP_NAME" /var/log/nginx
+        touch /var/run/nginx.pid && chown "$USER_NAME:$GROUP_NAME" /var/run/nginx.pid
 
         # Grant full permissions to the user on their home directory
         echo "Granting full permissions to $USER_NAME on $USER_HOME"
