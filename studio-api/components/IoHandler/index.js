@@ -17,7 +17,7 @@ const { watchConversation, refreshInterval } = require(
 const auth_middlewares = require(
   `${process.cwd()}/components/WebServer/config/passport/middleware`,
 )
-const { sessionSocketAccess } = require(
+const { sessionSocketAccess, checkSocketOrganizationAccess } = require(
   `${process.cwd()}/components/WebServer/middlewares/access/organization.js`,
 )
 
@@ -151,7 +151,12 @@ class IoHandler extends Component {
         this.removeSocketFromRoom(roomId, socket)
       })
 
-      socket.on("watch_organization_session", (orgaId) => {
+      socket.on("watch_organization_session", async (orgaId) => {
+        const { authorized } = await checkSocketOrganizationAccess(socket, orgaId)
+        if (!authorized) {
+          debug(`[Session] User denied access to org ${orgaId}`)
+          return
+        }
         this.addSocketInOrga(orgaId, socket, "session")
       })
 
@@ -159,7 +164,12 @@ class IoHandler extends Component {
         this.removeSocketFromOrga(orgaId, socket)
       })
 
-      socket.on("watch_organization_media", (orgaId) => {
+      socket.on("watch_organization_media", async (orgaId) => {
+        const { authorized } = await checkSocketOrganizationAccess(socket, orgaId)
+        if (!authorized) {
+          debug(`[Media] User denied access to org ${orgaId}`)
+          return
+        }
         this.addSocketInMedia(orgaId, socket)
       })
 
@@ -173,6 +183,70 @@ class IoHandler extends Component {
           from: "socket",
         })
         this.searchAndRemoveSocketFromRooms(socket)
+      })
+
+      // LLM job subscription handlers
+      socket.on("llm:join", async (data) => {
+        const { organizationId, conversationId } = data
+        if (!organizationId) return
+
+        // First, try normal authentication
+        const { authorized, userId } = await checkSocketOrganizationAccess(socket, organizationId)
+
+        if (!authorized) {
+          // Check for public session token
+          const publicToken = socket.handshake?.auth?.publicToken || socket.handshake?.query?.publicToken
+          if (publicToken) {
+            // Validate token and check if organizationId matches
+            const PublicToken = require(
+              `${process.cwd()}/components/WebServer/config/passport/token/public_generator`,
+            )
+            try {
+              // Decode without verification first to get the session ID
+              const jwt = require("jsonwebtoken")
+              const decoded = jwt.decode(publicToken)
+              if (decoded?.data?.fromSession && decoded?.data?.organizationId === organizationId) {
+                const validated = PublicToken.validateToken(publicToken, decoded.data.fromSession)
+                if (validated && validated.data?.organizationId === organizationId) {
+                  debug(`[LLM] Public session user joined room for org ${organizationId}`)
+                  const orgRoom = `llm/${organizationId}`
+                  socket.join(orgRoom)
+                  return
+                }
+              }
+            } catch (err) {
+              debug(`[LLM] Invalid public token: ${err.message}`)
+            }
+          }
+
+          debug(`[LLM] Unauthorized llm:join attempt for org ${organizationId}`)
+          return
+        }
+
+        // Join organization-level LLM room
+        const orgRoom = `llm/${organizationId}`
+        socket.join(orgRoom)
+        debug(`Socket ${socket.id} joined LLM room ${orgRoom}`)
+
+        // Join conversation-specific room if provided
+        if (conversationId) {
+          const convRoom = `llm/${organizationId}/${conversationId}`
+          socket.join(convRoom)
+          debug(`Socket ${socket.id} joined LLM room ${convRoom}`)
+        }
+      })
+
+      socket.on("llm:leave", (data) => {
+        const { organizationId, conversationId } = data
+        if (!organizationId) return
+
+        const orgRoom = `llm/${organizationId}`
+        socket.leave(orgRoom)
+
+        if (conversationId) {
+          const convRoom = `llm/${organizationId}/${conversationId}`
+          socket.leave(convRoom)
+        }
       })
     })
 
@@ -374,6 +448,38 @@ class IoHandler extends Component {
     if (notify) {
       this.io.emit("broker_ko")
       LogManager.logSystemEvent("Broker connection lost")
+    }
+  }
+
+  /**
+   * Broadcast LLM job update to subscribed clients
+   * @param {object} update - { organizationId, conversationId, jobId, status, progress, result, error }
+   */
+  notifyLlmJobUpdate(update) {
+    const { organizationId, conversationId, jobId, status } = update
+    if (!organizationId || !jobId) {
+      debug(`Cannot broadcast LLM update: missing organizationId or jobId`)
+      return
+    }
+
+    // Determine event name based on status
+    let eventName = "llm:job:update"
+    if (status === "completed" || status === "complete") {
+      eventName = "llm:job:complete"
+    } else if (status === "error" || status === "failed") {
+      eventName = "llm:job:error"
+    }
+
+    // Broadcast to organization room
+    const orgRoom = `llm/${organizationId}`
+    this.io.to(orgRoom).emit(eventName, update)
+    debug(`Broadcasted ${eventName} to room ${orgRoom} for job ${jobId}`)
+
+    // Also broadcast to conversation-specific room if available
+    if (conversationId) {
+      const convRoom = `llm/${organizationId}/${conversationId}`
+      this.io.to(convRoom).emit(eventName, update)
+      debug(`Broadcasted ${eventName} to room ${convRoom} for job ${jobId}`)
     }
   }
 }

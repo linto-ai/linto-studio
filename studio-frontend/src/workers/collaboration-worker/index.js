@@ -1,3 +1,5 @@
+import { getEnv } from "@/tools/getEnv"
+
 let worker = new Worker(new URL("./collaborationWorker.js", import.meta.url), {
   type: "module",
 })
@@ -38,7 +40,17 @@ class WorkerSingleton {
     }
     this.getWorker().postMessage({
       action: "connect",
-      params: { conversationId, userToken, userId, conversationFormat },
+      params: {
+        conversationId,
+        userToken,
+        userId,
+        conversationFormat,
+        config: {
+          VUE_APP_DEBUG: getEnv('VUE_APP_DEBUG'),
+          VUE_APP_WEBSOCKET_SERVER: getEnv('VUE_APP_WEBSOCKET_SERVER'),
+          VUE_APP_WEBSOCKET_PATH: getEnv('VUE_APP_WEBSOCKET_PATH')
+        }
+      },
     })
   }
 

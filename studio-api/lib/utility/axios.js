@@ -1,9 +1,20 @@
 const axios = require("axios").default
 
 class Axios {
-  async get(host, options = { headers: {} }) {
+  async get(host, options = {}) {
     try {
-      const resp = await axios.get(host, { headers: { ...options.headers } })
+      const axiosOptions = {
+        headers: { ...options.headers },
+      }
+      // Support responseType for binary data (arraybuffer, blob, etc.)
+      if (options.responseType) {
+        axiosOptions.responseType = options.responseType
+      }
+      // Support timeout to prevent hanging requests
+      if (options.timeout) {
+        axiosOptions.timeout = options.timeout
+      }
+      const resp = await axios.get(host, axiosOptions)
       return resp.data
     } catch (error) {
       throw error
@@ -57,6 +68,33 @@ class Axios {
     }
     try {
       const resp = await axios.put(host, options)
+      return resp.data
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async patch(host, data, options = {}) {
+    try {
+      const axiosOptions = {
+        headers: { "Content-Type": "application/json", ...options.headers },
+      }
+      const resp = await axios.patch(host, data, axiosOptions)
+      return resp.data
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async delete(host, options = {}) {
+    try {
+      const axiosOptions = {
+        headers: { ...options.headers },
+      }
+      if (options.timeout) {
+        axiosOptions.timeout = options.timeout
+      }
+      const resp = await axios.delete(host, axiosOptions)
       return resp.data
     } catch (error) {
       throw error

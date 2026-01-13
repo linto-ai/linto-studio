@@ -238,7 +238,7 @@ export default {
       return this.picture.value !== ""
     },
     enable_inscription() {
-      return process.env.VUE_APP_DISABLE_USER_CREATION !== "true"
+      return getEnv("VUE_APP_DISABLE_USER_CREATION") !== "true"
     },
     logo() {
       return `/img/${getEnv("VUE_APP_LOGO")}`
@@ -267,7 +267,7 @@ export default {
           this.state = "organization-information"
         }
       } catch (error) {
-        if (process.env.VUE_APP_DEBUG === "true") {
+        if (getEnv("VUE_APP_DEBUG") === "true") {
           console.error(error)
         }
       }

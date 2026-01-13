@@ -387,10 +387,11 @@ export async function apiGetJsonFileFromConversation(
   conversationId,
   speakers,
   keywords,
+  format = "json",
   notif,
 ) {
   return await sendRequest(
-    `${BASE_API}/conversations/${conversationId}/download?format=json`,
+    `${BASE_API}/conversations/${conversationId}/download?format=${format}`,
     { method: "post" },
     {
       filter: { speaker: speakers.join(","), keyword: keywords.join(",") },
@@ -465,8 +466,11 @@ export async function apiGetGenericFileFromConversation(
   } = {},
   notif,
 ) {
+  // Ensure flavor and llmOutputType are not null/undefined in the URL
+  const safeFlavor = flavor ?? ""
+  const safeOutputType = llmOutputType ?? ""
   return await sendRequest(
-    `${BASE_API}/conversations/${conversationId}/download?format=${format}&preview=${preview}&flavor=${flavor}&regenerate=${regenerate}&title=${title}&llmOutputType=${llmOutputType}`,
+    `${BASE_API}/conversations/${conversationId}/download?format=${format}&preview=${preview}&flavor=${safeFlavor}&regenerate=${regenerate}&title=${title}&llmOutputType=${safeOutputType}`,
     { method: "post", responseType: "blob" },
     {
       filter: { speaker: speakers.join(","), keyword: keywords.join(",") },

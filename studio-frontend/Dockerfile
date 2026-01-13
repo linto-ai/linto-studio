@@ -1,23 +1,34 @@
+# Stage 1: Build the Vue.js application
 FROM node:22.14.0 as builder
 
-RUN apt-get update -y && \
-  apt-get install -y gettext nginx gosu
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
 
-# Copy project in default workdir
-WORKDIR /usr/src/app/studio-frontend
-COPY . /usr/src/app/studio-frontend
-RUN npm install 
+# Stage 2: Serve with nginx
+FROM nginx:alpine
 
-RUN rm -rf /usr/share/nginx/html/*
+# Install gosu for user switching
+RUN apk add --no-cache gosu
+
+# Copy built files from builder stage
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Copy nginx configuration
 COPY ./config/nginx/nginx.conf /etc/nginx/nginx.conf
-RUN chown node:node /etc/nginx/nginx.conf \
-  && chmod u+w /etc/nginx/nginx.conf
 
+# Copy entrypoint script
 COPY ./docker-entrypoint.sh /
+RUN chmod +x /docker-entrypoint.sh
 
-RUN touch /run/nginx.pid
+# Create necessary directories and set permissions
+RUN mkdir -p /var/cache/nginx /var/log/nginx /var/run && \
+    touch /var/run/nginx.pid && \
+    chown -R nginx:nginx /var/cache/nginx /var/log/nginx /var/run/nginx.pid /usr/share/nginx/html
 
-HEALTHCHECK CMD curl -f http://localhost
+HEALTHCHECK CMD wget --quiet --tries=1 --spider http://localhost || exit 1
 
 EXPOSE 80
 ENTRYPOINT ["/docker-entrypoint.sh"]

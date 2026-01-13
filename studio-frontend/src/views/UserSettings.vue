@@ -111,7 +111,7 @@ export default {
     },
 
     imgUrl() {
-      return `${process.env.VUE_APP_PUBLIC_MEDIA}/${this.userInfo.img}`
+      return `${getEnv("VUE_APP_PUBLIC_MEDIA")}/${this.userInfo.img}`
     },
     isInviteAccount() {
       return this.userInfo?.accountNotifications?.inviteAccount ?? false
@@ -190,7 +190,7 @@ export default {
           }
         }
       } catch (error) {
-        if (process.env.VUE_APP_DEBUG === "true") {
+        if (getEnv("VUE_APP_DEBUG") === "true") {
           console.error(error)
         }
       }

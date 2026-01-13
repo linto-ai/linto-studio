@@ -1,5 +1,6 @@
 import debounce from "debounce"
 import { bus } from "@/main.js"
+import { getEnv } from "@/tools/getEnv"
 
 import { apiGetTranscriptionService } from "@/api/service"
 import { apiCreateConversation } from "@/api/conversation"
@@ -168,7 +169,7 @@ export default {
                 transcriptionConfig: JSON.stringify(
                   this.fieldTranscriptionService.value.config,
                 ),
-                segmentCharSize: process.env.VUE_APP_TURN_SIZE,
+                segmentCharSize: getEnv("VUE_APP_TURN_SIZE"),
                 lang: this.fieldTranscriptionService.value.lang,
                 endpoint: this.fieldTranscriptionService.value.endpoint,
                 tracks: uploadType == "url" ? null : [file],
@@ -258,7 +259,7 @@ export default {
               transcriptionConfig: JSON.stringify(
                 this.fieldTranscriptionService.value.config,
               ),
-              segmentCharSize: process.env.VUE_APP_TURN_SIZE,
+              segmentCharSize: getEnv("VUE_APP_TURN_SIZE"),
               lang: this.fieldTranscriptionService.value.lang,
               endpoint: this.fieldTranscriptionService.value.endpoint,
               url: this.linkFields[0].value,
