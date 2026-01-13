@@ -85,7 +85,10 @@ setup_user() {
     else
         # Production mode: adjust ownership
         echo "Adjusting ownership of application directories"
-        chown -R "$USER_NAME:$GROUP_NAME" /usr/share/nginx/html /var/cache/nginx /var/log/nginx /var/run/nginx.pid
+        chown -R "$USER_NAME:$GROUP_NAME" /usr/share/nginx/html /var/cache/nginx /var/log/nginx
+        # PID file may not exist yet, create parent dir with correct ownership
+        touch /var/run/nginx.pid 2>/dev/null || true
+        chown "$USER_NAME:$GROUP_NAME" /var/run/nginx.pid 2>/dev/null || true
 
         # Grant full permissions to the user on their home directory
         echo "Granting full permissions to $USER_NAME on $USER_HOME"
