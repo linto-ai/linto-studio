@@ -30,8 +30,9 @@ echo "Runtime configuration generated at /usr/share/nginx/html/config.js"
 WEBSERVER_HTTP_PORT=${WEBSERVER_HTTP_PORT:-8080}
 echo "Nginx port set to: ${WEBSERVER_HTTP_PORT}"
 
-# Update nginx.conf with the configured port
-sed -i "s/listen [0-9]\+;/listen ${WEBSERVER_HTTP_PORT};/" /etc/nginx/nginx.conf
+# Copy nginx.conf to writable location and update port
+cp /etc/nginx/nginx.conf /tmp/nginx/nginx.conf
+sed -i "s/listen [0-9]\+;/listen ${WEBSERVER_HTTP_PORT};/" /tmp/nginx/nginx.conf
 
 echo "Starting Nginx (rootless)..."
-exec nginx -g "daemon off;"
+exec nginx -c /tmp/nginx/nginx.conf -g "daemon off;"
