@@ -205,20 +205,21 @@ class ActivityLog extends MongoModel {
 
   async getKpiSession(orgaId, startDate, endDate) {
     try {
-      const matchQuery = buildActivityMatchQuery(
+      const sessionMatchQuery = buildActivityMatchQuery(
         "session",
         orgaId,
         startDate,
         endDate,
       )
 
-      const query = [
-        matchQuery,
+      const sessionQuery = [
+        sessionMatchQuery,
         {
           $group: {
             _id: "$organization.id",
             totalConnections: { $sum: 1 },
             watchTime: { $sum: "$socket.totalWatchTime" },
+            uniqueSessions: { $addToSet: "$session.sessionId" },
           },
         },
         {
@@ -226,11 +227,86 @@ class ActivityLog extends MongoModel {
             _id: 0,
             totalConnections: 1,
             watchTime: 1,
+            totalSessions: { $size: "$uniqueSessions" },
           },
         },
       ]
 
-      return await this.mongoAggregate(query)
+      // Build channel match query for totalStreamingTime
+      const timestampQuery = {}
+      if (startDate) timestampQuery.$gte = startDate
+      if (endDate) timestampQuery.$lte = endDate
+
+      const channelMatchQuery = {
+        $match: {
+          activity: "channel",
+          source: "mqtt",
+          ...(orgaId && { "organization.id": orgaId }),
+          ...(Object.keys(timestampQuery).length > 0 && {
+            timestamp: timestampQuery,
+          }),
+        },
+      }
+
+      const channelQuery = [
+        channelMatchQuery,
+        { $sort: { timestamp: 1 } },
+        {
+          $group: {
+            _id: {
+              sessionId: "$session.sessionId",
+              channelId: "$channel.channelId",
+            },
+            events: {
+              $push: {
+                action: "$action",
+                timestamp: "$timestamp",
+              },
+            },
+          },
+        },
+      ]
+
+      // Run both aggregations in parallel
+      const [sessionResult, channelGroups] = await Promise.all([
+        this.mongoAggregate(sessionQuery),
+        this.mongoAggregate(channelQuery),
+      ])
+
+      // Calculate totalStreamingTime from channel mount/unmount pairs
+      let totalStreamingTime = 0
+      for (const group of channelGroups) {
+        let mountTime = null
+        for (const event of group.events) {
+          if (event.action === "mount") {
+            mountTime = new Date(event.timestamp)
+          } else if (event.action === "unmount" && mountTime) {
+            totalStreamingTime +=
+              (new Date(event.timestamp) - mountTime) / 1000
+            mountTime = null
+          }
+        }
+      }
+
+      // Merge results
+      if (sessionResult.length > 0) {
+        return [
+          {
+            ...sessionResult[0],
+            totalStreamingTime: Math.round(totalStreamingTime),
+          },
+        ]
+      }
+
+      // Return default values if no session data
+      return [
+        {
+          totalConnections: 0,
+          watchTime: 0,
+          totalSessions: 0,
+          totalStreamingTime: Math.round(totalStreamingTime),
+        },
+      ]
     } catch (error) {
       console.error("Error in kpiSession:", error)
       return error
@@ -433,7 +509,7 @@ class ActivityLog extends MongoModel {
       })
 
       // Calculate aggregate metrics
-      const totalActiveDuration = channels.reduce(
+      const totalStreamingTime = channels.reduce(
         (sum, ch) => sum + ch.activeDuration,
         0,
       )
@@ -450,10 +526,10 @@ class ActivityLog extends MongoModel {
         lastChannelUnmountAt: lastUnmountAt,
         streaming: {
           totalChannels: channels.length,
-          totalActiveDuration,
+          totalStreamingTime,
           averageChannelDuration:
             channels.length > 0
-              ? Math.round(totalActiveDuration / channels.length)
+              ? Math.round(totalStreamingTime / channels.length)
               : 0,
         },
       }

@@ -11,7 +11,12 @@ const kpiHandlers = {
 
 async function fillEmptyKpi(activityKpi) {
   if (activityKpi.session == null) {
-    activityKpi.session = { totalConnections: 0, watchTime: 0 }
+    activityKpi.session = {
+      totalConnections: 0,
+      watchTime: 0,
+      totalSessions: 0,
+      totalStreamingTime: 0,
+    }
   }
   if (activityKpi.llm == null) {
     activityKpi.llm = { generated: 0, tokens: 0 }
