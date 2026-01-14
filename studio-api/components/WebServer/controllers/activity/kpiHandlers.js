@@ -194,25 +194,26 @@ function computeIntervalsForRange(start, end, granularity) {
 /**
  * Get default start date based on granularity when only endDate is provided
  * @param {string} granularity - "daily", "monthly", or "yearly"
+ * @param {Date} referenceDate - Reference date to calculate from (defaults to now)
  * @returns {Date} Default start date
  */
-function getDefaultStartDate(granularity) {
-  const now = new Date()
+function getDefaultStartDate(granularity, referenceDate = new Date()) {
+  const ref = new Date(referenceDate)
   switch (granularity) {
     case "daily":
-      const dailyStart = new Date(now)
+      const dailyStart = new Date(ref)
       dailyStart.setDate(dailyStart.getDate() - 6)
       return dailyStart
     case "monthly":
-      const monthlyStart = new Date(now)
+      const monthlyStart = new Date(ref)
       monthlyStart.setMonth(monthlyStart.getMonth() - 11)
       return monthlyStart
     case "yearly":
-      const yearlyStart = new Date(now)
+      const yearlyStart = new Date(ref)
       yearlyStart.setFullYear(yearlyStart.getFullYear() - 4)
       return yearlyStart
     default:
-      return now
+      return ref
   }
 }
 
@@ -249,7 +250,7 @@ async function getKpiByDateRange(
   const end = endDate ? new Date(endDate) : new Date()
   const start = startDate
     ? new Date(startDate)
-    : getDefaultStartDate(granularity)
+    : getDefaultStartDate(granularity, end)
 
   // Compute intervals based on granularity
   const intervals = computeIntervalsForRange(start, end, granularity)

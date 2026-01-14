@@ -27,7 +27,7 @@ describe("KPI Handlers - Date Range Functions", () => {
       mockKpiLlm.mockReset()
 
       // Setup default mock responses
-      mockKpiSession.mockResolvedValue([{ totalConnections: 5, watchTime: 100 }])
+      mockKpiSession.mockResolvedValue([{ totalConnections: 5, watchTime: 100, totalSessions: 2, totalStreamingTime: 50 }])
       mockKpiTranscription.mockResolvedValue([{ generated: 3, duration: 200 }])
       mockKpiLlm.mockResolvedValue([{ generated: 2, tokens: 500 }])
     })
@@ -58,6 +58,8 @@ describe("KPI Handlers - Date Range Functions", () => {
         // Verify session structure
         expect(entry.session).toHaveProperty("totalConnections")
         expect(entry.session).toHaveProperty("watchTime")
+        expect(entry.session).toHaveProperty("totalSessions")
+        expect(entry.session).toHaveProperty("totalStreamingTime")
 
         // Verify llm structure
         expect(entry.llm).toHaveProperty("generated")
@@ -89,7 +91,7 @@ describe("KPI Handlers - Date Range Functions", () => {
       mockKpiTranscription.mockReset()
       mockKpiLlm.mockReset()
 
-      mockKpiSession.mockResolvedValue([{ totalConnections: 10, watchTime: 500 }])
+      mockKpiSession.mockResolvedValue([{ totalConnections: 10, watchTime: 500, totalSessions: 4, totalStreamingTime: 250 }])
       mockKpiTranscription.mockResolvedValue([{ generated: 5, duration: 1000 }])
       mockKpiLlm.mockResolvedValue([{ generated: 3, tokens: 1500 }])
     })
@@ -126,7 +128,7 @@ describe("KPI Handlers - Date Range Functions", () => {
       mockKpiTranscription.mockReset()
       mockKpiLlm.mockReset()
 
-      mockKpiSession.mockResolvedValue([{ totalConnections: 100, watchTime: 5000 }])
+      mockKpiSession.mockResolvedValue([{ totalConnections: 100, watchTime: 5000, totalSessions: 20, totalStreamingTime: 2500 }])
       mockKpiTranscription.mockResolvedValue([{ generated: 50, duration: 10000 }])
       mockKpiLlm.mockResolvedValue([{ generated: 30, tokens: 15000 }])
     })
@@ -177,13 +179,13 @@ describe("KPI Handlers - Date Range Functions", () => {
 
       const result = await kpiHandlers.generateKpi("org-123", "2026-01-01", "2026-01-07")
 
-      expect(result.session).toEqual({ totalConnections: 0, watchTime: 0 })
+      expect(result.session).toEqual({ totalConnections: 0, watchTime: 0, totalSessions: 0, totalStreamingTime: 0 })
       expect(result.llm).toEqual({ generated: 0, tokens: 0 })
       expect(result.transcription).toEqual({ generated: 0, duration: 0 })
     })
 
     it("should return actual values when data exists", async () => {
-      mockKpiSession.mockResolvedValue([{ totalConnections: 15, watchTime: 3600 }])
+      mockKpiSession.mockResolvedValue([{ totalConnections: 15, watchTime: 3600, totalSessions: 5, totalStreamingTime: 1800 }])
       mockKpiTranscription.mockResolvedValue([{ generated: 8, duration: 7200 }])
       mockKpiLlm.mockResolvedValue([{ generated: 5, tokens: 1200 }])
 
@@ -191,6 +193,8 @@ describe("KPI Handlers - Date Range Functions", () => {
 
       expect(result.session.totalConnections).toBe(15)
       expect(result.session.watchTime).toBe(3600)
+      expect(result.session.totalSessions).toBe(5)
+      expect(result.session.totalStreamingTime).toBe(1800)
       expect(result.llm.generated).toBe(5)
       expect(result.llm.tokens).toBe(1200)
       expect(result.transcription.generated).toBe(8)
@@ -198,7 +202,7 @@ describe("KPI Handlers - Date Range Functions", () => {
     })
 
     it("should include organizationId in response", async () => {
-      mockKpiSession.mockResolvedValue([{ totalConnections: 1, watchTime: 100 }])
+      mockKpiSession.mockResolvedValue([{ totalConnections: 1, watchTime: 100, totalSessions: 1, totalStreamingTime: 50 }])
       mockKpiTranscription.mockResolvedValue([{ generated: 1, duration: 100 }])
       mockKpiLlm.mockResolvedValue([{ generated: 1, tokens: 100 }])
 
@@ -214,7 +218,7 @@ describe("KPI Handlers - Date Range Functions", () => {
       mockKpiTranscription.mockReset()
       mockKpiLlm.mockReset()
 
-      mockKpiSession.mockResolvedValue([{ totalConnections: 5, watchTime: 100 }])
+      mockKpiSession.mockResolvedValue([{ totalConnections: 5, watchTime: 100, totalSessions: 2, totalStreamingTime: 50 }])
       mockKpiTranscription.mockResolvedValue([{ generated: 3, duration: 200 }])
       mockKpiLlm.mockResolvedValue([{ generated: 2, tokens: 500 }])
     })
@@ -365,6 +369,8 @@ describe("KPI Handlers - Date Range Functions", () => {
 
       expect(entry.session).toHaveProperty("totalConnections")
       expect(entry.session).toHaveProperty("watchTime")
+      expect(entry.session).toHaveProperty("totalSessions")
+      expect(entry.session).toHaveProperty("totalStreamingTime")
       expect(entry.llm).toHaveProperty("generated")
       expect(entry.llm).toHaveProperty("tokens")
       expect(entry.transcription).toHaveProperty("generated")
