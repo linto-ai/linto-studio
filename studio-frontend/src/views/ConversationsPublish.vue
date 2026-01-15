@@ -213,7 +213,6 @@ export default {
   },
   mounted() {
     this.getLastUpdate()
-    this.getServices()
     this.initSocket()
   },
   beforeDestroy() {
@@ -222,6 +221,11 @@ export default {
     this.cleanupSocket()
   },
   watch: {
+    async conversationLoaded(value) {
+      if (value) {
+        await this.getServices()
+      }
+    },
     dataLoaded(newVal, oldVal) {
       if (newVal) {
         this.status = this.computeStatus(this.conversation?.jobs?.transcription)
@@ -713,7 +717,11 @@ export default {
     async getServices() {
       try {
         const organizationId = this.currentOrganizationScope
-        let services = await getLLMService(organizationId)
+
+        let services = await getLLMService(
+          organizationId,
+          this.conversation.securityLevel,
+        )
         let res = {}
         for (const service of services) {
           const format = service.name
@@ -1214,7 +1222,8 @@ export default {
       if (jobIndex !== -1) {
         // Update existing job
         // Map backend status to frontend status: 'started' -> 'processing'
-        const mappedStatus = update.status === 'started' ? 'processing' : update.status
+        const mappedStatus =
+          update.status === "started" ? "processing" : update.status
         this.$set(this.jobsList, jobIndex, {
           ...this.jobsList[jobIndex],
           status: mappedStatus,
