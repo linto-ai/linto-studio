@@ -1,13 +1,13 @@
 const SECURITY_LEVELS = Object.freeze({
-  SECURED: "secured",
+  SECURE: "secure",
   SENSITIVE: "sensitive",
-  UNSECURED: "unsecured",
+  INSECURE: "insecure",
 
   // check if the value is valid (strict - must be one of the enum values)
   checkValue: (level) =>
-    level === SECURITY_LEVELS.SECURED ||
+    level === SECURITY_LEVELS.SECURE ||
     level === SECURITY_LEVELS.SENSITIVE ||
-    level === SECURITY_LEVELS.UNSECURED,
+    level === SECURITY_LEVELS.INSECURE,
 
   // check if the value is valid or empty (for API validation)
   isValid: (level) => {
@@ -17,12 +17,12 @@ const SECURITY_LEVELS = Object.freeze({
     return SECURITY_LEVELS.checkValue(level)
   },
 
-  // get the value or default to UNSECURED
+  // get the value or default to INSECURE
   getValueOrDefault: (level) => {
     if (SECURITY_LEVELS.checkValue(level)) {
       return level
     }
-    return SECURITY_LEVELS.UNSECURED
+    return SECURITY_LEVELS.INSECURE
   },
 })
 

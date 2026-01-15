@@ -51,7 +51,7 @@ export default {
         value: 1,
         list: RIGHTS_LIST((key) => this.$i18n.t(key)),
       },
-      securityLevel: "unsecured",
+      securityLevel: "insecure",
       fieldTranscriptionService: {
         ...EMPTY_FIELD,
         loading: true,

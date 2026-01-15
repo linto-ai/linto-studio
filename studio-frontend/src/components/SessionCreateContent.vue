@@ -293,7 +293,7 @@ export default {
         value: defaultMetadata,
         label: this.$t("session.create_page.metadata_label"),
       },
-      securityLevel: "unsecured",
+      securityLevel: "insecure",
       modalEditMetadataIsOpen: false,
       channels: [],
       selectedProfiles: [],

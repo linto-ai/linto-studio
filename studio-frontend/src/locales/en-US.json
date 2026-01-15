@@ -330,9 +330,9 @@
       "write": "Write"
     },
     "security_level_txt": {
-      "unsecured": "Unsecured",
+      "insecure": "Insecure",
       "sensitive": "Sensitive",
-      "secured": "Secured"
+      "secure": "Secure"
     },
     "model_quality": {
       "high": "High",

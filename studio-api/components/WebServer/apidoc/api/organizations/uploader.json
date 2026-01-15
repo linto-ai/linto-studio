@@ -57,7 +57,7 @@
                 },
                 "securityLevel": {
                   "type": "string",
-                  "enum": ["secured", "sensitive", "unsecured"],
+                  "enum": ["secure", "sensitive", "insecure"],
                   "description": "Security classification of the media. Optional."
                 }
               }
@@ -207,7 +207,7 @@
                 },
                 "securityLevel": {
                   "type": "string",
-                  "enum": ["secured", "sensitive", "unsecured"],
+                  "enum": ["secure", "sensitive", "insecure"],
                   "description": "Security classification of the media. Optional."
                 }
               }

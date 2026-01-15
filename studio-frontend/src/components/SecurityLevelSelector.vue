@@ -25,7 +25,7 @@ export default {
   props: {
     value: {
       type: String,
-      default: "unsecured",
+      default: "insecure",
     },
   },
   computed: {
