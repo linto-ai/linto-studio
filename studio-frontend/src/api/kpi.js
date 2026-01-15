@@ -101,3 +101,18 @@ export async function apiGetPlatformKpiSeries(filters = {}) {
   )
   return res?.data || { step, data: [] }
 }
+
+/**
+ * Fetches detailed KPI data for a specific session.
+ * Includes channel-level metrics and timeline information.
+ * @param {string} sessionId - The session ID to fetch KPIs for
+ * @returns {Promise<Object|null>} Session detailed KPI data or null if not found
+ */
+export async function getSessionKpiById(sessionId) {
+  const res = await sendRequest(
+    `${BASE_API}/administration/activity/session/${sessionId}`,
+    { method: "get" },
+    { userScope: "backoffice" },
+  )
+  return res?.data ?? null
+}

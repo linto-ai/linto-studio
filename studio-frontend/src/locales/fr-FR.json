@@ -1482,7 +1482,38 @@
     "watch_time_average_label": "Durée moyenne de visionnage",
     "bounce_rate_label": "Taux de rebond (spectateurs)",
     "quick_session_name": "Enregistrement de {userName}",
-    "quick_session_name_anonymous": "Enregistrement personnel"
+    "quick_session_name_anonymous": "Enregistrement personnel",
+    "view_details": "Voir les details de la session"
+  },
+  "session_stats_modal": {
+    "title": "Statistiques de la session",
+    "loading": "Chargement des statistiques...",
+    "error": "Erreur lors du chargement des statistiques",
+    "retry": "Reessayer",
+    "summary": {
+      "title": "Resume",
+      "total_viewers": "Nombre de spectateurs",
+      "total_watch_time": "Temps de visionnage total",
+      "session_duration": "Duree de la session",
+      "channels_count": "Canaux"
+    },
+    "channels": {
+      "title": "Canaux",
+      "no_channels": "Aucune donnee de canal disponible",
+      "default_name": "Canal {id}",
+      "active_duration": "Duree active",
+      "started_at": "Debut",
+      "ended_at": "Fin",
+      "languages": "Langues",
+      "diarization": "Diarisation",
+      "diarization_enabled": "Diarisation",
+      "diarization_disabled": "Desactivee"
+    },
+    "timeline": {
+      "title": "Timeline d'activite",
+      "active": "Actif",
+      "inactive": "Inactif"
+    }
   },
   "quick_session": {
     "creation": {

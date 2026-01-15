@@ -6,12 +6,30 @@
       :fetchMethod="fetchMethod"
       :columns="columns"
       :initSortListDirection="sortListDirection"
-      :initSortListKey="sortListKey" />
+      :initSortListKey="sortListKey">
+      <template #cell-actions="{ element }">
+        <Button
+          icon="broadcast"
+          size="sm"
+          variant="tertiary"
+          @click="openStatsModal(element)">
+          {{ $t("session_stats_modal.channels.title") }}
+        </Button>
+      </template>
+    </GenericTableRequest>
+
+    <ModalSessionStats
+      v-model="showStatsModal"
+      :sessionId="selectedSessionId"
+      :sessionName="selectedSessionName"
+      @close="closeStatsModal" />
   </div>
 </template>
 <script>
 import { bus } from "@/main.js"
 import GenericTableRequest from "@/components/molecules/GenericTableRequest.vue"
+import Button from "@/components/atoms/Button.vue"
+import ModalSessionStats from "@/components/ModalSessionStats.vue"
 import { getSessionListKpi } from "@/api/kpi"
 import { timeToHMS } from "@/tools/timeToHMS"
 import { userName } from "@/tools/userName"
@@ -28,6 +46,9 @@ export default {
   },
   data() {
     return {
+      showStatsModal: false,
+      selectedSessionId: "",
+      selectedSessionName: "",
       columns: [
         {
           key: "firstConnectionAt",
@@ -89,6 +110,12 @@ export default {
         //   transformValue: timeToHMS,
         //   mainLabel: "< 5 min",
         // },
+        {
+          key: "actions",
+          label: "",
+          width: "auto",
+          sortable: false,
+        },
       ],
       sortListDirection: "desc",
       sortListKey: "firstConnectionAt",
@@ -129,9 +156,21 @@ export default {
 
       return null
     },
+    openStatsModal(session) {
+      this.selectedSessionId = session.sessionId
+      this.selectedSessionName = session.session?.name || ""
+      this.showStatsModal = true
+    },
+    closeStatsModal() {
+      this.showStatsModal = false
+      this.selectedSessionId = ""
+      this.selectedSessionName = ""
+    },
   },
   components: {
     GenericTableRequest,
+    Button,
+    ModalSessionStats,
   },
 }
 </script>

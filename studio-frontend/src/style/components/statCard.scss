@@ -65,6 +65,52 @@
     margin-top: var(--xs-gap);
   }
 
+  /* Secondary variant - flat style for embedding in other cards */
+  .stat-card--secondary {
+    padding: 0.5rem;
+    min-width: auto;
+    width: 100%;
+    border: none;
+    box-shadow: none;
+    background: var(--primary-soft, rgba(0, 0, 0, 0.02));
+    border-radius: 6px;
+    gap: var(--xs-gap);
+
+    &:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .stat-card__icon {
+      .icon {
+        width: 1.5rem;
+        height: 1.5rem;
+        padding: 0;
+        background: transparent;
+        color: var(--primary-color);
+      }
+    }
+
+    .stat-card__count {
+      font-size: var(--text-base);
+      font-weight: 600;
+      text-align: left;
+    }
+
+    .stat-card__title {
+      font-size: var(--text-xs);
+      text-align: left;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+      margin-top: 0;
+    }
+
+    .stat-card__header {
+      font-size: var(--text-base);
+      font-weight: 600;
+    }
+  }
+
   /* Reduced motion support */
   @media (prefers-reduced-motion: reduce) {
     .stat-card {

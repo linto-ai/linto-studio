@@ -1490,7 +1490,38 @@
     "watch_time_average_label": "Average watch time",
     "bounce_rate_label": "Bounce rate (viewers)",
     "quick_session_name": "{userName} recording",
-    "quick_session_name_anonymous": "Personal recording"
+    "quick_session_name_anonymous": "Personal recording",
+    "view_details": "View session details"
+  },
+  "session_stats_modal": {
+    "title": "Session Statistics",
+    "loading": "Loading session statistics...",
+    "error": "Failed to load session statistics",
+    "retry": "Retry",
+    "summary": {
+      "title": "Summary",
+      "total_viewers": "Total viewers",
+      "total_watch_time": "Total watch time",
+      "session_duration": "Session duration",
+      "channels_count": "Channels"
+    },
+    "channels": {
+      "title": "Channels",
+      "no_channels": "No channel data available",
+      "default_name": "Channel {id}",
+      "active_duration": "Active duration",
+      "started_at": "Started",
+      "ended_at": "Ended",
+      "languages": "Languages",
+      "diarization": "Diarization",
+      "diarization_enabled": "Diarization",
+      "diarization_disabled": "Disabled"
+    },
+    "timeline": {
+      "title": "Activity timeline",
+      "active": "Active",
+      "inactive": "Inactive"
+    }
   },
   "quick_session": {
     "creation": {

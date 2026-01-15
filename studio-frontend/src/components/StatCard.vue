@@ -1,7 +1,12 @@
 <template>
-  <component class="stat-card flex align-center" :is="componentType" :to="to">
+  <component
+    class="stat-card flex align-center"
+    :class="variantClass"
+    :is="componentType"
+    :to="to"
+  >
     <span class="stat-card__icon">
-      <PhIcon :name="icon" size="lg" />
+      <PhIcon :name="icon" :size="variant === 'secondary' ? 'sm' : 'lg'" />
     </span>
     <div class="flex col flex1">
       <div class="flex stat-card__header align-center">
@@ -19,10 +24,15 @@ import PhIcon from "@/components/atoms/PhIcon.vue"
 
 export default {
   props: {
-    count: { type: Number, required: false },
+    count: { type: [Number, String], required: false },
     title: { type: String, required: true },
     icon: { type: String, required: true },
     to: { type: Object, default: null },
+    variant: {
+      type: String,
+      default: "default",
+      validator: (v) => ["default", "secondary"].includes(v),
+    },
   },
   data() {
     return {}
@@ -31,6 +41,9 @@ export default {
   computed: {
     componentType() {
       return this.to ? "router-link" : "div"
+    },
+    variantClass() {
+      return this.variant !== "default" ? `stat-card--${this.variant}` : ""
     },
   },
   methods: {},
