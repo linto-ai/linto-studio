@@ -307,6 +307,7 @@ export default {
         const description = getDescriptionByLanguage(
           this.indexedFormat[format].description,
           this.$i18n.locale,
+          format,
         )
         return {
           name: format,
