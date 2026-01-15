@@ -475,17 +475,24 @@ class ActivityLog extends MongoModel {
 
       const channelGroups = await this.mongoAggregate(query)
 
-      // Calculate durations from event pairs
+      // Calculate durations from event pairs and collect all timestamps
       const channels = channelGroups.map((group) => {
         let totalDuration = 0
         let mountTime = null
+        const mountedAtList = []
+        const unmountedAtList = []
 
         for (const event of group.events) {
           if (event.action === "mount") {
             mountTime = new Date(event.timestamp)
-          } else if (event.action === "unmount" && mountTime) {
-            totalDuration += (new Date(event.timestamp) - mountTime) / 1000
-            mountTime = null
+            mountedAtList.push(mountTime)
+          } else if (event.action === "unmount") {
+            const unmountTime = new Date(event.timestamp)
+            unmountedAtList.push(unmountTime)
+            if (mountTime) {
+              totalDuration += (unmountTime - mountTime) / 1000
+              mountTime = null
+            }
           }
         }
 
@@ -499,11 +506,9 @@ class ActivityLog extends MongoModel {
           languages: group.languages,
           region: group.region,
           hasDiarization: group.hasDiarization,
-          // Timing metrics
-          mountedAt: group.firstMountAt ? new Date(group.firstMountAt) : null,
-          unmountedAt: group.lastUnmountAt
-            ? new Date(group.lastUnmountAt)
-            : null,
+          // Timing metrics (arrays for multiple mount/unmount events)
+          mountedAt: mountedAtList,
+          unmountedAt: unmountedAtList,
           activeDuration: Math.round(totalDuration),
         }
       })
@@ -513,12 +518,15 @@ class ActivityLog extends MongoModel {
         (sum, ch) => sum + ch.activeDuration,
         0,
       )
-      const firstMountAt = channels
-        .filter((ch) => ch.mountedAt)
-        .sort((a, b) => a.mountedAt - b.mountedAt)[0]?.mountedAt
-      const lastUnmountAt = channels
-        .filter((ch) => ch.unmountedAt)
-        .sort((a, b) => b.unmountedAt - a.unmountedAt)[0]?.unmountedAt
+      // Get first mount and last unmount across all channels
+      const allMounts = channels.flatMap((ch) => ch.mountedAt).filter(Boolean)
+      const allUnmounts = channels.flatMap((ch) => ch.unmountedAt).filter(Boolean)
+      const firstMountAt = allMounts.length > 0
+        ? allMounts.sort((a, b) => a - b)[0]
+        : null
+      const lastUnmountAt = allUnmounts.length > 0
+        ? allUnmounts.sort((a, b) => b - a)[0]
+        : null
 
       return {
         channels,

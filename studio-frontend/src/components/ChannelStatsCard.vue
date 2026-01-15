@@ -47,44 +47,20 @@
         :title="$t('session_stats_modal.channels.ended_at')" />
     </div>
 
-    <div
+    <TimelineSegmented
       v-if="hasTimelineData"
       class="channel-stats-card__timeline"
-      role="img"
-      :aria-label="$t('session_stats_modal.timeline.title')">
-      <div class="channel-stats-card__timeline-label">
-        {{ $t("session_stats_modal.timeline.title") }}
-      </div>
-      <div class="channel-stats-card__timeline-bar" ref="timelineBar">
-        <div
-          class="channel-stats-card__timeline-segment channel-stats-card__timeline-segment--active"
-          :style="timelineSegmentStyle"
-          :aria-label="
-            $t('session_stats_modal.timeline.active') +
-            ': ' +
-            timelinePercentage +
-            '%'
-          "></div>
-      </div>
-      <div class="channel-stats-card__timeline-legend">
-        <div class="channel-stats-card__timeline-legend-item">
-          <span
-            class="channel-stats-card__timeline-legend-dot channel-stats-card__timeline-legend-dot--active"></span>
-          {{ $t("session_stats_modal.timeline.active") }}
-        </div>
-        <div class="channel-stats-card__timeline-legend-item">
-          <span
-            class="channel-stats-card__timeline-legend-dot channel-stats-card__timeline-legend-dot--inactive"></span>
-          {{ $t("session_stats_modal.timeline.inactive") }}
-        </div>
-      </div>
-    </div>
+      :segments="timelineSegments"
+      :label="$t('session_stats_modal.timeline.title')"
+      :aria-label="$t('session_stats_modal.timeline.active') + ': ' + timelinePercentage + '%'"
+    />
   </div>
 </template>
 
 <script>
 import Chip from "@/components/atoms/Chip.vue"
 import StatCard from "@/components/StatCard.vue"
+import TimelineSegmented from "@/components/atoms/TimelineSegmented.vue"
 import { formatDuration, formatTime } from "@/tools/formatDuration"
 
 export default {
@@ -92,6 +68,7 @@ export default {
   components: {
     Chip,
     StatCard,
+    TimelineSegmented,
   },
   props: {
     channel: {
@@ -122,18 +99,30 @@ export default {
       }
       return formatDuration(this.channel.activeDuration, { compact: true })
     },
+    // Get first mount timestamp from array
+    firstMountedAt() {
+      const mounts = this.channel.mountedAt
+      if (!mounts?.length) return null
+      return mounts[0]
+    },
+    // Get last unmount timestamp from array
+    lastUnmountedAt() {
+      const unmounts = this.channel.unmountedAt
+      if (!unmounts?.length) return null
+      return unmounts[unmounts.length - 1]
+    },
     formattedStartTime() {
-      return formatTime(this.channel.mountedAt, this.$i18n.locale)
+      return formatTime(this.firstMountedAt, this.$i18n.locale)
     },
     formattedEndTime() {
-      return formatTime(this.channel.unmountedAt, this.$i18n.locale)
+      return formatTime(this.lastUnmountedAt, this.$i18n.locale)
     },
     hasTimelineData() {
       return (
         this.sessionStart &&
         this.sessionEnd &&
-        this.channel.mountedAt &&
-        this.channel.unmountedAt
+        this.firstMountedAt &&
+        this.lastUnmountedAt
       )
     },
     sessionDuration() {
@@ -142,34 +131,47 @@ export default {
       const end = new Date(this.sessionEnd).getTime()
       return end - start
     },
-    timelineSegmentStyle() {
-      if (!this.hasTimelineData || this.sessionDuration <= 0) {
-        return { left: "0%", width: "100%" }
-      }
-
-      const sessionStartMs = new Date(this.sessionStart).getTime()
-      const channelStartMs = new Date(this.channel.mountedAt).getTime()
-      const channelEndMs = new Date(this.channel.unmountedAt).getTime()
-
-      const startPercent = Math.max(
-        0,
-        ((channelStartMs - sessionStartMs) / this.sessionDuration) * 100,
-      )
-      const endPercent = Math.min(
-        100,
-        ((channelEndMs - sessionStartMs) / this.sessionDuration) * 100,
-      )
-      const widthPercent = Math.max(0, endPercent - startPercent)
-
-      return {
-        left: `${startPercent}%`,
-        width: `${widthPercent}%`,
-      }
-    },
     timelinePercentage() {
       if (!this.hasTimelineData || this.sessionDuration <= 0) return 100
-      const widthStr = this.timelineSegmentStyle.width
-      return Math.round(parseFloat(widthStr) || 0)
+      // Use activeDuration which already accounts for all mount/unmount pairs
+      const activeDurationMs = (this.channel.activeDuration || 0) * 1000
+      return Math.round(Math.min(100, Math.max(0, (activeDurationMs / this.sessionDuration) * 100)))
+    },
+    timelineSegments() {
+      if (!this.hasTimelineData || this.sessionDuration <= 0) return []
+
+      const sessionStartMs = new Date(this.sessionStart).getTime()
+      const mounts = this.channel.mountedAt || []
+      const unmounts = this.channel.unmountedAt || []
+      const segments = []
+
+      // Pair mounts with unmounts to create active segments
+      const pairCount = Math.min(mounts.length, unmounts.length)
+      const locale = this.$i18n?.locale || "en"
+
+      for (let i = 0; i < pairCount; i++) {
+        const mountDate = new Date(mounts[i])
+        const unmountDate = new Date(unmounts[i])
+        const mountMs = mountDate.getTime()
+        const unmountMs = unmountDate.getTime()
+        const durationSec = (unmountMs - mountMs) / 1000
+
+        const left = ((mountMs - sessionStartMs) / this.sessionDuration) * 100
+        const width = ((unmountMs - mountMs) / this.sessionDuration) * 100
+
+        segments.push({
+          active: true,
+          left: Math.max(0, left),
+          width: Math.min(100 - left, Math.max(0, width)),
+          tooltip: {
+            [this.$t("session_stats_modal.channels.started_at")]: formatTime(mountDate, locale),
+            [this.$t("session_stats_modal.channels.ended_at")]: formatTime(unmountDate, locale),
+            [this.$t("session_stats_modal.channels.active_duration")]: formatDuration(durationSec, { compact: true }),
+          },
+        })
+      }
+
+      return segments
     },
     formattedLanguages() {
       if (!this.channel.languages?.length) return ""
@@ -274,76 +276,8 @@ export default {
   border-top: 1px solid var(--neutral-10);
 }
 
-.channel-stats-card__timeline-label {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
-  margin-bottom: 0.5rem;
-}
-
-.channel-stats-card__timeline-bar {
-  position: relative;
-  height: 8px;
-  background: var(--neutral-20);
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.channel-stats-card__timeline-segment {
-  position: absolute;
-  top: 0;
-  height: 100%;
-  border-radius: 4px;
-  transition:
-    width 0.3s ease,
-    left 0.3s ease;
-
-  &--active {
-    background: linear-gradient(
-      90deg,
-      var(--primary-color),
-      var(--primary-hard, var(--primary-color))
-    );
-  }
-}
-
-.channel-stats-card__timeline-legend {
-  display: flex;
-  gap: 1rem;
-  margin-top: 0.5rem;
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-}
-
-.channel-stats-card__timeline-legend-item {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.channel-stats-card__timeline-legend-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-
-  &--active {
-    background: var(--primary-color);
-  }
-
-  &--inactive {
-    background: var(--neutral-20);
-    border: 1px solid var(--neutral-30);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .channel-stats-card {
-    transition: none;
-  }
-
-  .channel-stats-card__timeline-segment {
     transition: none;
   }
 }
