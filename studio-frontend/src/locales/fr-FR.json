@@ -73,7 +73,7 @@
     "label": "Choisir un canal"
   },
   "app_editor_translations_selector": {
-    "label": "Choisir la langue de traduction",
+    "label": "Langue du verbatim",
     "original_language": "Langue originale"
   },
   "app_editor_highlights_modal": {
@@ -260,6 +260,8 @@
     "conversation_creation_loading_multiple": "Envoi du fichier {count} sur {total}. Cette opération peut prendre plusieurs minutes.",
     "conversation_creation_right_title": "Gestion des droits",
     "conversation_creation_right_label": "Droits par défaut pour les membres de l'organisation",
+    "conversation_creation_security_title": "Niveau de sécurité",
+    "conversation_creation_security_label": "Niveau de sécurité du média",
     "conversation_is_locked_by": "Le média est verouillée par",
     "conversation_need_reload": " Le média a été modifiée par un autre utilisateur, rechargez la page pour l'éditer",
     "conversation_overview_title": "Synthèse du média",
@@ -308,10 +310,11 @@
       "json": "Télécharger en JSON",
       "pdf": "Télécharger en PDF",
       "srt": "Télécharger en SRT",
-      "title": "Télécharger",
+      "title": "Télécharger le verbatim",
       "txt": "Télécharger en TXT",
       "vtt": "Télécharger en VTT",
-      "md": "Télécharger en Markdown"
+      "md": "Télécharger en Markdown",
+      "whisperx": "JSON brut (WhisperX)"
     },
     "export_json_button": "Exporter en JSON",
     "highlight_toolbox": {
@@ -356,6 +359,11 @@
       "read": "Lecture",
       "share": "Partager",
       "write": "Écriture"
+    },
+    "security_level_txt": {
+      "unsecured": "Non sécurisé",
+      "sensitive": "Sensible",
+      "secured": "Sécurisé"
     },
     "model_quality": {
       "high": "Haute",
@@ -1058,6 +1066,7 @@
     "administrator_description": "Tous les droits sur l’organisation"
   },
   "publish": {
+    "download_verbatim": "Télécharger le verbatim",
     "error_first_line": {
       "cra": "Erreur lors de la génération du compte rendu analytique",
       "cred": "Erreur lors de la génération du compte rendu des commissions et des délégations",
@@ -1082,6 +1091,12 @@
       "verbatim": "Génération du verbatim en cours...",
       "general": "Génération en cours..."
     },
+    "phase": {
+      "processing": "Traitement des segments",
+      "reducing": "Réduction et synthèse",
+      "extracting": "Extraction des informations",
+      "categorizing": "Catégorisation"
+    },
     "loading_document": "Chargement du document final",
     "is_not_updated": "La transcription a été mise à jour. Le compte rendu ne reflète plus les dernières modifications.",
     "is_updated": "Le compte rendu est à jour avec la transcription",
@@ -1094,8 +1109,147 @@
       "cra": "Compte rendu analytique",
       "cred": "Compte rendu des commissions et des délégations",
       "cri": "Compte rendu intégral",
-      "verbatim": "Verbatim"
+      "verbatim": "Verbatim",
+      "publication": "Publication"
+    },
+    "editor": {
+      "edit_mode": "Édition",
+      "preview_mode": "Aperçu",
+      "publication_mode": "Publication",
+      "save_version": "Enregistrer la version",
+      "save_version_title": "Enregistrer comme nouvelle version",
+      "version_name_placeholder": "Nom de la version",
+      "version_saved": "Version enregistrée avec succès",
+      "version_save_error": "Erreur lors de l'enregistrement de la version",
+      "load_version": "Charger une version",
+      "versions_list": "Versions enregistrées",
+      "no_versions": "Aucune version enregistrée",
+      "version_label": "Version {version}",
+      "restore_version": "Restaurer cette version",
+      "restore_version_confirm": "Êtes-vous sûr de vouloir restaurer cette version ?",
+      "version_restored": "Version restaurée avec succès",
+      "version_restore_error": "Erreur lors de la restauration de la version",
+      "delete_version": "Supprimer la version",
+      "delete_version_confirm": "Êtes-vous sûr de vouloir supprimer cette version ?",
+      "version_deleted": "Version supprimée",
+      "version_delete_error": "Erreur lors de la suppression de la version",
+      "unsaved_changes": "Vous avez des modifications non enregistrées",
+      "discard_changes": "Annuler les modifications",
+      "toolbar": {
+        "bold": "Gras",
+        "italic": "Italique",
+        "heading1": "Titre 1",
+        "heading2": "Titre 2",
+        "heading3": "Titre 3",
+        "bullet_list": "Liste à puces",
+        "ordered_list": "Liste numérotée",
+        "blockquote": "Citation",
+        "horizontal_rule": "Ligne horizontale",
+        "strike": "Barré",
+        "code": "Code en ligne",
+        "undo": "Annuler",
+        "redo": "Rétablir"
+      }
+    },
+    "category": {
+      "summary": "Résumés",
+      "report": "Rapports",
+      "correction": "Corrections",
+      "translation": "Traductions",
+      "custom": "Personnalisé",
+      "other": "Autre",
+      "all": "Tous"
+    },
+    "export_error": "Echec de l'export du document",
+    "export_in_progress": "Export en cours...",
+    "downloading": "Telechargement...",
+    "regenerate": {
+      "confirm_title": "Nouvelle génération ?",
+      "confirm_message": "Une nouvelle requête sera envoyée au service IA. La génération actuelle sera archivée dans l'historique.",
+      "confirm_button": "Générer"
+    },
+    "generations": {
+      "title": "Générations",
+      "current": "Actuelle",
+      "latest": "Récent",
+      "no_generations": "Aucune génération",
+      "loading": "Chargement...",
+      "generating": "Génération en cours..."
+    },
+    "llm_gateway_error": "Erreur du service IA : {error}",
+    "llm_gateway_unavailable": "Le service d'intelligence artificielle est temporairement indisponible. Veuillez réessayer dans quelques instants.",
+    "job_not_found_regenerating": "Le document a expiré sur le serveur. Régénération automatique en cours...",
+    "job_removed_refreshing": "Cette génération n'est plus disponible. Affichage des générations restantes.",
+    "generic_error": "Une erreur est survenue. Veuillez réessayer.",
+    "error_llm_server": "Le service d'intelligence artificielle a rencontré une erreur interne. Veuillez réessayer.",
+    "error_llm_unavailable": "Le service d'intelligence artificielle est temporairement indisponible.",
+    "error_job_expired": "Cette génération a expiré. Veuillez régénérer le document.",
+    "error_timeout": "La demande a expiré. Veuillez réessayer.",
+    "select_service": "Choisir un service",
+    "ai_menu": {
+      "title": "Services IA",
+      "select": "Services IA",
+      "other": "Autres services",
+      "categories": {
+        "summary": "Résumés",
+        "summarize": "Résumés",
+        "resume": "Résumés",
+        "translation": "Traductions",
+        "translate": "Traductions",
+        "traduction": "Traductions",
+        "correction": "Corrections",
+        "correct": "Corrections",
+        "transcription": "Transcriptions"
+      }
+    },
+    "publication": {
+      "title": "Modèles de publication",
+      "description": "Choisissez un modèle pour formater votre document",
+      "loading": "Chargement des modèles...",
+      "load_error": "Échec du chargement des modèles",
+      "no_templates": "Aucun modèle de publication disponible",
+      "no_description": "Pas de description",
+      "no_name": "Sans nom",
+      "selected": "Modèle sélectionné",
+      "preview_action": "Aperçu",
+      "generating_preview": "Génération de l'aperçu...",
+      "preview_error": "Impossible de générer l'aperçu",
+      "no_job_for_preview": "Aucun traitement IA disponible pour l'aperçu",
+      "upload_template": "Importer un modèle",
+      "upload_template_hint": "Téléversez votre propre fichier DOCX",
+      "upload_template_title": "Importer un modèle",
+      "template_file": "Fichier modèle (DOCX)",
+      "drop_file": "Glissez un fichier DOCX ici",
+      "or_click": "ou cliquez pour sélectionner",
+      "template_format_hint": "Format DOCX. Le placeholder <code>&#123;&#123;output&#125;&#125;</code> sera remplacé par le contenu du service IA.",
+      "template_name": "Nom du modèle",
+      "template_name_placeholder": "Nom du modèle",
+      "template_description": "Description",
+      "template_description_placeholder": "Description optionnelle",
+      "template_scope": "Portée",
+      "scope_personal": "Personnel",
+      "scope_personal_hint": "Visible uniquement par vous",
+      "scope_organization": "Organisation",
+      "scope_organization_hint": "Visible par toute l'organisation",
+      "upload_button": "Importer",
+      "upload_success": "Modèle importé avec succès",
+      "upload_error": "Erreur lors de l'import du modèle",
+      "invalid_file_type": "Le fichier doit être au format DOCX",
+      "file_too_large": "Le fichier ne doit pas dépasser 10 Mo",
+      "delete_confirm": "Voulez-vous vraiment supprimer \"{name}\" ?",
+      "delete_success": "Modele supprime avec succes",
+      "delete_error": "Erreur lors de la suppression du modele",
+      "scope": {
+        "system": "Système",
+        "organization": "Organisation",
+        "user": "Personnel"
+      }
     }
+  },
+  "common": {
+    "retry": "Réessayer",
+    "cancel": "Annuler",
+    "uploading": "Import en cours..."
   },
   "session": {
     "sessions_status": {

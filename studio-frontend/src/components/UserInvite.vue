@@ -89,6 +89,7 @@
 <script>
 import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
+import { getEnv } from "@/tools/getEnv"
 import EMPTY_FIELD from "../const/emptyField"
 import SearchUsersListComponent from "@/components/SearchUsersList.vue"
 import { testEmail } from "@/tools/fields/testEmail"
@@ -121,7 +122,7 @@ export default {
   },
   computed: {
     enable_inscription() {
-      return process.env.VUE_APP_DISABLE_USER_CREATION !== "true"
+      return getEnv("VUE_APP_DISABLE_USER_CREATION") !== "true"
     },
   },
   methods: {

@@ -29,6 +29,8 @@
       source="micro"
       v-model="quickSessionSettingsField.value" />
 
+    <SecurityLevelSelector v-model="securityLevel" />
+
     <div
       class="flex gap-small align-center conversation-create-footer"
       style="margin-top: 1rem">
@@ -62,6 +64,7 @@ import FormRadio from "@/components/molecules/FormRadio.vue"
 import TranscriberProfileSelector from "@/components/TranscriberProfileSelector.vue"
 import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import QuickSessionSettings from "@/components/QuickSessionSettings.vue"
+import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
 
 import { apiCreateQuickSession } from "@/api/session.js"
 
@@ -124,6 +127,7 @@ export default {
         testField: testQuickSessionSettings,
       },
       selectedProfile: this.transcriberProfiles[0],
+      securityLevel: "unsecured",
       formSubmitLabel: this.$i18n.t("quick_session.creation.submit_button"),
 
       formError: null,
@@ -163,6 +167,9 @@ export default {
         ]
         const res = await apiCreateQuickSession(this.currentOrganizationScope, {
           channels: channels,
+          meta: {
+            securityLevel: this.securityLevel,
+          },
         })
 
         if (res.status == "success") {
@@ -188,6 +195,7 @@ export default {
     TranscriberProfileSelector,
     FormCheckbox,
     QuickSessionSettings,
+    SecurityLevelSelector,
   },
 }
 </script>

@@ -230,6 +230,74 @@ class SubtitleNotFound extends Error {
   }
 }
 
+/******************************
+ ************Export************
+ ******************************/
+
+class ExportError extends Error {
+  constructor(message, err) {
+    super()
+    this.name = "ExportError"
+    this.type = ExceptionType
+    this.status = 400
+    if (message) this.message = message
+    else this.message = "Error during export operation"
+    if (err) this.err = err
+  }
+}
+
+class ExportNotConfigured extends Error {
+  constructor(message, err) {
+    super()
+    this.name = "ExportNotConfigured"
+    this.type = ExceptionType
+    this.status = 500
+    if (message) this.message = message
+    else this.message = "LLM Gateway not configured"
+    if (err) this.err = err
+  }
+}
+
+class ExportJobNotFound extends Error {
+  constructor(message, err) {
+    super()
+    this.name = "ExportJobNotFound"
+    this.type = ExceptionType
+    this.status = 404
+    if (message) this.message = message
+    else this.message = "Export job not found"
+    if (err) this.err = err
+  }
+}
+
+class ExportGatewayError extends Error {
+  constructor(message, err) {
+    super()
+    this.name = "ExportGatewayError"
+    this.type = ExceptionType
+    this.status = 502
+    if (message) this.message = message
+    else this.message = "LLM Gateway request failed"
+    if (err) this.err = err
+  }
+}
+
+/******************************
+ **********Generation**********
+ ******************************/
+
+class GenerationNotFound extends Error {
+  constructor(message, err) {
+    super()
+    this.name = "GenerationNotFound"
+    this.type = ExceptionType
+    this.status = 404
+    if (message) this.message = message
+    else this.message = "Generation not found"
+    if (err) this.err = err
+  }
+}
+
 module.exports = {
   ConversationNoFileUploaded,
   ConversationURLExtractorError,
@@ -249,4 +317,9 @@ module.exports = {
   SubtitleError,
   SubtitleMaxVersion,
   SubtitleNotFound,
+  ExportError,
+  ExportNotConfigured,
+  ExportJobNotFound,
+  ExportGatewayError,
+  GenerationNotFound,
 }

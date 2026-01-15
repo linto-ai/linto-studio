@@ -4,7 +4,7 @@
     <div class="v2-layout__content">
       <aside
         v-if="!fullscreen"
-        class="v2-layout__sidebar"
+        class="v2-layout__sidebar flex1"
         :class="{ 'v2-layout__sidebar--hidden': !sidebarOpen }">
         <BurgerMenu :backoffice="backoffice">
           <slot name="sidebar"></slot>

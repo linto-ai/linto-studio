@@ -17,7 +17,7 @@ async function generateDocxOnFormat(query, conversationExport) {
     conversationExport.convId,
     ["speakers", "name", "description", "owner", "locale", "metadata"],
   )
-  data = {
+  const data = {
     conversation: conversation[0],
     speakers: conversation[0].speakers.map(
       (speaker) => speaker.speaker_name + " : ",

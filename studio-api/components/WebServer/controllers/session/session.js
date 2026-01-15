@@ -136,7 +136,8 @@ async function generatPublicToken(jsonString, req) {
     if (!req?.payload?.data?.userId) {
       let session = JSON.parse(jsonString)
 
-      const token = PublicToken.generateTokens(session.id)
+      // Include organizationId in token for WebSocket access validation
+      const token = PublicToken.generateTokens(session.id, session.organizationId)
       session.publicSessionToken = token
       return JSON.stringify(session)
     }

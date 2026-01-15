@@ -1,6 +1,6 @@
 <template>
   <nav class="burger-menu">
-    <div>
+    <div class="flex col flex1">
       <div class="burger-menu__header flex" v-if="isAuthenticated">
         <UserAccountSelector :backoffice="backoffice" />
       </div>

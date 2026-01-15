@@ -99,6 +99,7 @@ module.exports = {
   sessionSocketAccess: async (session, userId) => {
     return await sessionSocketAccess(session, userId, ROLES.MEMBER)
   },
+  checkSocketOrganizationAccess,
 }
 
 async function permissionAccess(req, res, next, access) {
@@ -183,5 +184,34 @@ async function sessionSocketAccess(session, userId, right) {
     }
   } catch (err) {
     return false
+  }
+}
+
+/**
+ * Check if a socket user has access to an organization
+ * Used by IoHandler for WebSocket event authorization
+ * @param {Socket} socket - Socket.io socket object
+ * @param {string} orgaId - Organization ID
+ * @returns {Promise<{authorized: boolean, userId?: string}>}
+ */
+async function checkSocketOrganizationAccess(socket, orgaId) {
+  const auth_middlewares = require(
+    `${process.cwd()}/components/WebServer/config/passport/middleware`,
+  )
+
+  try {
+    const { isAuth, userId } = await auth_middlewares.checkSocket(socket)
+    if (!isAuth || !userId) {
+      return { authorized: false }
+    }
+
+    const orgAccess = await model.organizations.getByIdAndUser(orgaId, userId)
+    if (!orgAccess || orgAccess.length === 0) {
+      return { authorized: false }
+    }
+
+    return { authorized: true, userId }
+  } catch (err) {
+    return { authorized: false }
   }
 }

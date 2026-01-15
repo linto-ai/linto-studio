@@ -13,6 +13,7 @@ import PortalVue from "portal-vue"
 import ApiEventWebSocket from "@/services/websocket/ApiEventWebSocket.js"
 import Atoms from "./components/atoms/index.js"
 import "./filters/index.js"
+import { getEnv } from "@/tools/getEnv"
 
 import Loading from "vue-loading-overlay"
 
@@ -43,7 +44,7 @@ Vue.config.productionTip = false
 Vue.prototype.debug = Debug("Vue")
 Vue.prototype.$apiEventWS = new ApiEventWebSocket()
 
-Debug.enable(process.env.VUE_APP_DEBUG)
+Debug.enable(getEnv("VUE_APP_DEBUG"))
 
 new Vue({
   router,

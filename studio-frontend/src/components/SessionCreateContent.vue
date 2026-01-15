@@ -59,6 +59,8 @@
         </div>
       </section>
 
+      <SecurityLevelSelector v-model="securityLevel" />
+
       <!-- Channels section -->
       <section class="flex col">
         <div>
@@ -167,6 +169,7 @@ import ModalDeleteTemplate from "@/components/ModalDeleteTemplate.vue"
 import MetadataEditor from "@/components/MetadataEditor.vue"
 import MetadataList from "@/components/MetadataList.vue"
 import ModalEditMetadata from "@/components/ModalEditMetadata.vue"
+import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
 
 export default {
   mixins: [formsMixin],
@@ -290,6 +293,7 @@ export default {
         value: defaultMetadata,
         label: this.$t("session.create_page.metadata_label"),
       },
+      securityLevel: "unsecured",
       modalEditMetadataIsOpen: false,
       channels: [],
       selectedProfiles: [],
@@ -424,7 +428,10 @@ export default {
           this.currentOrganizationScope,
           {
             name: this.name.value,
-            meta: Object.fromEntries(this.fieldMetadata.value),
+            meta: {
+              ...Object.fromEntries(this.fieldMetadata.value),
+              securityLevel: this.securityLevel,
+            },
             channels: this.channels.map(
               ({ profileId, name, translations }) => ({
                 transcriberProfileId: profileId,
@@ -516,7 +523,10 @@ export default {
             keepAudio: this.fieldKeepAudio.value,
             compressAudio: true,
           })),
-          meta: Object.fromEntries(this.fieldMetadata.value),
+          meta: {
+            ...Object.fromEntries(this.fieldMetadata.value),
+            securityLevel: this.securityLevel,
+          },
           scheduleOn: startDateTime,
           endOn: endDateTime,
           autoStart: true,
@@ -602,6 +612,7 @@ export default {
     MetadataEditor,
     MetadataList,
     ModalEditMetadata,
+    SecurityLevelSelector,
   },
 }
 </script>

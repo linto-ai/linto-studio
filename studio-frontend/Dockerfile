@@ -1,23 +1,42 @@
-FROM node:22.14.0 as builder
+# Stage 1: Build the Vue.js application
+FROM node:22.14.0 AS builder
 
-RUN apt-get update -y && \
-  apt-get install -y gettext nginx gosu
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
 
-# Copy project in default workdir
-WORKDIR /usr/src/app/studio-frontend
-COPY . /usr/src/app/studio-frontend
-RUN npm install 
+# Stage 2: Serve with nginx (rootless)
+FROM nginx:alpine
 
-RUN rm -rf /usr/share/nginx/html/*
-COPY ./config/nginx/nginx.conf /etc/nginx/nginx.conf
-RUN chown node:node /etc/nginx/nginx.conf \
-  && chmod u+w /etc/nginx/nginx.conf
+# Remove default nginx config
+RUN rm -f /etc/nginx/conf.d/default.conf
 
-COPY ./docker-entrypoint.sh /
+# Copy built files from builder stage WITH correct ownership
+COPY --from=builder --chown=nginx:nginx /app/dist /usr/share/nginx/html
 
-RUN touch /run/nginx.pid
+# Copy nginx configuration
+COPY --chown=nginx:nginx ./config/nginx/nginx.conf /etc/nginx/nginx.conf
 
-HEALTHCHECK CMD curl -f http://localhost
+# Copy entrypoint script
+COPY --chown=nginx:nginx ./docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
-EXPOSE 80
+# Create necessary directories with correct permissions for nginx user
+RUN mkdir -p /var/cache/nginx/client_temp \
+             /var/cache/nginx/proxy_temp \
+             /var/cache/nginx/fastcgi_temp \
+             /var/cache/nginx/uwsgi_temp \
+             /var/cache/nginx/scgi_temp \
+             /tmp/nginx && \
+    chown -R nginx:nginx /var/cache/nginx /tmp/nginx /usr/share/nginx/html
+
+HEALTHCHECK CMD wget --quiet --tries=1 --spider http://localhost:8080/health || exit 1
+
+# Run as nginx user (101:101) - truly rootless
+USER nginx
+
+EXPOSE 8080
+
 ENTRYPOINT ["/docker-entrypoint.sh"]

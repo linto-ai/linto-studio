@@ -1,7 +1,7 @@
 <template>
   <section class="flex col gap-small organization-stats">
     <h2>{{ $t("organisation.kpi.title") }}</h2>
-    <Tabs :tabs="tabs" v-model="currentTab" secondary></Tabs>
+    <Tabs :tabs="tabs" v-model="currentTab" variant="secondary"></Tabs>
     <div v-if="loading">Loading...</div>
     <div v-else-if="error">{{ error }}</div>
     <div v-else class="">

@@ -117,6 +117,7 @@
 <script>
 import { apiCreateOrganisation } from "../api/organisation.js"
 import { bus } from "@/main.js"
+import { getEnv } from "@/tools/getEnv"
 import SearchUsersListComponent from "@/components/SearchUsersList.vue"
 import { sortArray } from "../tools/sortList.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
@@ -232,7 +233,7 @@ export default {
               this.handleError(req)
             }
           } catch (error) {
-            if (process.env.VUE_APP_DEBUG === "true") {
+            if (getEnv("VUE_APP_DEBUG") === "true") {
               console.error(error)
             }
             this.handleError()
@@ -278,7 +279,7 @@ export default {
       this.orgaMembers.splice(memberIndex, 1)
     },
     imgFullPath(imgPath) {
-      return process.env.VUE_APP_PUBLIC_MEDIA + "/" + imgPath
+      return getEnv("VUE_APP_PUBLIC_MEDIA") + "/" + imgPath
     },
   },
   components: {

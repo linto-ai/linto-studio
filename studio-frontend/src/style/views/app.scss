@@ -68,34 +68,6 @@
   font-style: italic;
 }
 
-#loading-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: white;
-  z-index: 50;
-  display: none;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  padding: 0;
-
-  &.overlay-transparent {
-    background-color: transparent;
-
-    .vld-background {
-      background-color: transparent;
-    }
-  }
-}
-
-#loading-overlay[visible] {
-  display: flex;
-}
-
 .sidebar-divider {
   border-top: var(--border-block);
   margin: 0.5rem 0rem;

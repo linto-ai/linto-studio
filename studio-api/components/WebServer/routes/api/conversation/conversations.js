@@ -13,8 +13,25 @@ const {
   `${process.cwd()}/components/WebServer/routecontrollers/conversation/conversation.js`,
 )
 
-const { exportConversation, listExport } = require(
+const {
+  exportConversation,
+  listExport,
+  updateExportResult,
+  listExportVersions,
+  getExportVersion,
+  restoreExportVersion,
+  generateExportDocument,
+  getExportContent,
+} = require(
   `${process.cwd()}/components/WebServer/routecontrollers/conversation/export.js`,
+)
+
+const {
+  listGenerations,
+  createGeneration,
+  getGeneration,
+} = require(
+  `${process.cwd()}/components/WebServer/routecontrollers/conversation/generations.js`,
 )
 
 const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
@@ -77,6 +94,77 @@ module.exports = (webserver) => {
       requireAuth: true,
       requireConversationReadAccess: true,
       controller: getChildConversation,
+    },
+    // Get job content directly from LLM Gateway (no local caching)
+    {
+      path: "/:conversationId/export/:jobId/content",
+      method: "get",
+      requireAuth: true,
+      requireConversationReadAccess: true,
+      controller: getExportContent,
+    },
+    // Versioning routes - proxy to LLM Gateway
+    // Update job result (creates new version in LLM Gateway)
+    {
+      path: "/:conversationId/export/:jobId/result",
+      method: "put",
+      requireAuth: true,
+      requireConversationWriteAccess: true,
+      controller: updateExportResult,
+    },
+    // List all versions for a job
+    {
+      path: "/:conversationId/export/:jobId/versions",
+      method: "get",
+      requireAuth: true,
+      requireConversationReadAccess: true,
+      controller: listExportVersions,
+    },
+    // Get specific version
+    {
+      path: "/:conversationId/export/:jobId/versions/:versionNumber",
+      method: "get",
+      requireAuth: true,
+      requireConversationReadAccess: true,
+      controller: getExportVersion,
+    },
+    // Restore a specific version
+    {
+      path: "/:conversationId/export/:jobId/versions/:versionNumber/restore",
+      method: "post",
+      requireAuth: true,
+      requireConversationWriteAccess: true,
+      controller: restoreExportVersion,
+    },
+    // Generate document (PDF/DOCX) from job result
+    {
+      path: "/:conversationId/export/:jobId/document",
+      method: "post",
+      requireAuth: true,
+      requireConversationReadAccess: true,
+      controller: generateExportDocument,
+    },
+    // Generation history routes
+    {
+      path: "/:conversationId/generations",
+      method: "get",
+      requireAuth: true,
+      requireConversationReadAccess: true,
+      controller: listGenerations,
+    },
+    {
+      path: "/:conversationId/generations",
+      method: "post",
+      requireAuth: true,
+      requireConversationWriteAccess: true,
+      controller: createGeneration,
+    },
+    {
+      path: "/:conversationId/generations/:generationId",
+      method: "get",
+      requireAuth: true,
+      requireConversationReadAccess: true,
+      controller: getGeneration,
     },
   ]
 }

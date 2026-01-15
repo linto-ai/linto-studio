@@ -1,5 +1,6 @@
 import debounce from "debounce"
 import { bus } from "@/main.js"
+import { getEnv } from "@/tools/getEnv"
 
 import { apiGetTranscriptionService } from "@/api/service"
 import { apiCreateConversation } from "@/api/conversation"
@@ -50,6 +51,7 @@ export default {
         value: 1,
         list: RIGHTS_LIST((key) => this.$i18n.t(key)),
       },
+      securityLevel: "unsecured",
       fieldTranscriptionService: {
         ...EMPTY_FIELD,
         loading: true,
@@ -162,11 +164,12 @@ export default {
                 membersRight: this.organizationMemberAccess
                   ? parseInt(this.membersRight.value)
                   : 0,
+                securityLevel: this.securityLevel,
                 serviceName: this.fieldTranscriptionService.value.serviceName,
                 transcriptionConfig: JSON.stringify(
                   this.fieldTranscriptionService.value.config,
                 ),
-                segmentCharSize: process.env.VUE_APP_TURN_SIZE,
+                segmentCharSize: getEnv("VUE_APP_TURN_SIZE"),
                 lang: this.fieldTranscriptionService.value.lang,
                 endpoint: this.fieldTranscriptionService.value.endpoint,
                 tracks: uploadType == "url" ? null : [file],
@@ -251,11 +254,12 @@ export default {
               membersRights: this.organizationMemberAccess
                 ? parseInt(this.membersRight.value)
                 : 0,
+              securityLevel: this.securityLevel,
               serviceName: this.fieldTranscriptionService.value.serviceName,
               transcriptionConfig: JSON.stringify(
                 this.fieldTranscriptionService.value.config,
               ),
-              segmentCharSize: process.env.VUE_APP_TURN_SIZE,
+              segmentCharSize: getEnv("VUE_APP_TURN_SIZE"),
               lang: this.fieldTranscriptionService.value.lang,
               endpoint: this.fieldTranscriptionService.value.endpoint,
               url: this.linkFields[0].value,

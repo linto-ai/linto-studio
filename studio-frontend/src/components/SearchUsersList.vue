@@ -24,6 +24,7 @@
 </template>
 <script>
 import { debounceMixin } from "../mixins/debounce"
+import { getEnv } from "@/tools/getEnv"
 import Loading from "@/components/atoms/Loading.vue"
 import { apiSearchUser } from "../api/user.js"
 import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
@@ -102,7 +103,7 @@ export default {
       }, 50)
     },
     imgFullPath(imgPath) {
-      return process.env.VUE_APP_PUBLIC_MEDIA + "/" + imgPath
+      return getEnv("VUE_APP_PUBLIC_MEDIA") + "/" + imgPath
     },
   },
   components: { Loading, UserInfoInline },

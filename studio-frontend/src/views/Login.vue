@@ -155,7 +155,7 @@ export default {
           }
         }
       } catch (error) {
-        if (process.env.VUE_APP_DEBUG === "*") {
+        if (getEnv("VUE_APP_DEBUG") === "*") {
           console.error(error)
         }
         this.$store.dispatch("system/addNotification", {

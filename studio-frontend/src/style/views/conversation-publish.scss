@@ -1,5 +1,5 @@
 .publish-main-container {
-  background-color: #8080802e;
+  background-color: var(--color-background-secondary, rgba(128, 128, 128, 0.18));
   overflow: auto;
   padding: 5px;
   flex: 1;
@@ -17,18 +17,13 @@
   width: 60rem;
   max-width: 100%;
   margin-inline: auto;
-  //font-family: luciole;
-  //flex: 1;
-  //display: flex;
-  // border-radius: 4px;
+  overflow: hidden;
 
   border: var(--border-block);
   box-shadow: var(--shadow-block);
   background-color: var(--background-primary);
 
   #markdown-editor-source {
-    //width: 50%;
-    //height: 100%;
     .cm-editor {
       height: 100%;
     }
@@ -50,6 +45,8 @@
 
   #markdown-editor-container {
     height: 100%;
+    overflow: auto;
+    flex: 1;
   }
 
   #markdown-editor-preview header,
@@ -61,8 +58,12 @@
 
   .tiptap.ProseMirror {
     width: 100%;
+    max-width: 100%;
     overflow: auto;
-    padding: 4rem;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    box-sizing: border-box;
+    padding: 2rem;
   }
 }
 
@@ -75,21 +76,40 @@
   border-radius: 4px;
   padding: 2rem;
   width: 100%;
+
+  .error-details {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background-color: var(--background-secondary);
+    border-radius: 4px;
+    word-break: break-word;
+  }
 }
 
-.publish-main__loading {
-  max-width: 56rem;
+// Progress/Loading state - fills the container like the editor
+.publish-main__progress {
+  width: 60rem;
+  max-width: 100%;
   margin-inline: auto;
   background-color: var(--background-primary);
   box-shadow: var(--shadow-block);
+  border: var(--border-block);
   text-align: center;
   border-radius: 4px;
   padding: 2rem;
+  min-height: 400px;
+
+  .illustration {
+    margin-bottom: 1rem;
+    max-width: 20rem;
+  }
 }
 
-.publish-main__loading .illustration {
-  margin-bottom: 1rem;
-  width: 25rem;
+// Legacy class for backwards compatibility
+.publish-main__loading {
+  @extend .publish-main__progress;
 }
 
 .publish-turn {
@@ -104,4 +124,205 @@
 
 .publish-turn-time {
   font-style: italic;
+}
+
+// Markdown Editor Toolbar Styles
+.markdown-editor-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.markdown-editor-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  background-color: var(--background-secondary);
+  border-bottom: var(--border-block);
+  flex-shrink: 0;
+
+  .toolbar-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 0.5rem;
+    border: none;
+    border-radius: 4px;
+    background-color: transparent;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-size: 1rem;
+    font-weight: normal;
+    color: var(--text-primary);
+
+    &:hover {
+      background-color: var(--background-tertiary);
+    }
+
+    &.active {
+      background-color: var(--color-primary);
+      color: white;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    strong {
+      font-weight: bold;
+    }
+
+    em {
+      font-style: italic;
+    }
+  }
+
+  .toolbar-separator {
+    width: 1px;
+    height: 1.5rem;
+    background-color: var(--border-color);
+    margin: 0 0.25rem;
+  }
+}
+
+// Edit/Preview Toggle Styles
+.publish-editor-header {
+  padding: 0.5rem 1rem;
+  background-color: var(--background-secondary, #f5f5f5);
+  border-bottom: var(--border-block);
+}
+
+.unsaved-indicator {
+  color: var(--color-warning);
+  font-size: 0.875rem;
+}
+
+// Versions Section Styles
+.versions-section {
+  .sidebar-section-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .no-versions {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-style: italic;
+  }
+
+  .versions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .version-item {
+    padding: 0.5rem;
+    background-color: var(--background-secondary);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: var(--background-tertiary);
+    }
+
+    .version-name {
+      font-size: 0.875rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .version-date {
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+      white-space: nowrap;
+    }
+
+    .btn-icon-sm {
+      padding: 0.25rem;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      opacity: 0.6;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+// Modal Styles
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: var(--background-primary);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: var(--shadow-lg);
+  min-width: 400px;
+  max-width: 90%;
+
+  h3 {
+    margin-bottom: 1rem;
+  }
+
+  input {
+    padding: 0.5rem;
+    border: var(--border-block);
+    border-radius: 4px;
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-primary);
+    }
+  }
+}
+
+// Utility classes
+.margin-bottom-small {
+  margin-bottom: 0.5rem;
+}
+
+.margin-top-small {
+  margin-top: 0.5rem;
+}
+
+.justify-end {
+  justify-content: flex-end;
+}
+
+// AI Service Menu Wrapper
+.publish-service-menu-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 0.25rem 0;
+}
+
+.publish-content-wrapper {
+  margin: 0 1rem;
+}
+
+.publish-export-popover {
+  margin-left: auto;
 }

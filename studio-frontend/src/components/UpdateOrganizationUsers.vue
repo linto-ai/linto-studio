@@ -94,6 +94,7 @@
 </template>
 <script>
 import { bus } from "@/main.js"
+import { getEnv } from "@/tools/getEnv"
 import EMPTY_FIELD from "@/const/emptyField"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
@@ -236,7 +237,7 @@ export default {
       this.displayLeaveModal = false
     },
     imgFullPath(imgPath) {
-      return process.env.VUE_APP_PUBLIC_MEDIA + "/" + imgPath
+      return getEnv("VUE_APP_PUBLIC_MEDIA") + "/" + imgPath
     },
     async updateUserRole(user) {
       let req = await apiUpdateUserRoleInOrganisation(

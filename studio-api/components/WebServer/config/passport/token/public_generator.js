@@ -7,8 +7,13 @@ const algorithm = process.env.JWT_ALGORITHM || "HS256"
 
 const DEFAULT_TOKEN_EXPIRATION = "1d"
 
-function generateTokens(sessionId) {
-  const payload = { fromPublic: true, fromSession: sessionId, role: 0 }
+function generateTokens(sessionId, organizationId = null) {
+  const payload = {
+    fromPublic: true,
+    fromSession: sessionId,
+    organizationId: organizationId,
+    role: 0,
+  }
   const salt = sessionId
 
   const authSecret = salt + process.env.CM_JWT_SECRET
