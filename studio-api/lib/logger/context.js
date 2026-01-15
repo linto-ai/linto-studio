@@ -357,6 +357,57 @@ class LoggerContext {
       timestamp: new Date().toISOString(),
     }
   }
+
+  _sanitizeTranscriberProfile(transcriberProfile) {
+    if (!transcriberProfile?.config) return {}
+
+    // Copy config but exclude sensitive 'key' and redundant 'availableTranslations' fields
+    const { key, availableTranslations, ...safeConfig } = transcriberProfile.config
+    return safeConfig
+  }
+
+  async createChannelContext(
+    session,
+    channel,
+    action,
+    { source = "mqtt", level = DEFAULT_LEVEL, activity = "channel" } = {},
+  ) {
+    try {
+      const context = {
+        source,
+        level,
+        scope: "resource",
+        activity,
+        action,
+        timestamp: new Date().toISOString(),
+
+        session: {
+          sessionId: session.id,
+          name: session.name,
+          organizationId: session.organizationId,
+          visibility: session.visibility,
+        },
+
+        channel: {
+          channelId: channel.id,
+          translations: channel.translations,
+          ...this._sanitizeTranscriberProfile(channel.transcriberProfile),
+        },
+      }
+
+      if (session.organizationId) {
+        await storeCacheOrganization(session.organizationId)
+        context.organization = {
+          id: session.organizationId,
+          info: cache.organizations[session.organizationId],
+        }
+      }
+
+      return context
+    } catch (err) {
+      return logError(`Error creating channel context from ${source}`, err)
+    }
+  }
 }
 
 module.exports = new LoggerContext()

@@ -1,3 +1,13 @@
+# 1.6.2
+
+_2026_01_13_
+
+- Channel-level streaming metrics for KPI
+  - Track channel mount/unmount events with timestamps
+  - Per-channel streaming duration and transcriber profile information
+  - Aggregate streaming metrics (total channels, total duration, average duration)
+- Logger documentation rewritten
+
 # 1.6.1
 
 _2025_12_04_

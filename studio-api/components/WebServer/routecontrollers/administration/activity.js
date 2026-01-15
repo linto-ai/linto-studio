@@ -61,6 +61,14 @@ async function getKpiBySession(req, res, next) {
   try {
     const { sessionId } = req.params
     const [kpiGenerated] = await model.activityLog.kpiSessionById(sessionId)
+
+    // Aggregate channel metrics and merge into KPI data
+    const channelMetrics =
+      await model.activityLog.aggregateChannelMetrics(sessionId)
+    if (channelMetrics) {
+      Object.assign(kpiGenerated, channelMetrics)
+    }
+
     return res.status(200).json(kpiGenerated)
   } catch (err) {
     next(err)
@@ -87,6 +95,14 @@ async function refreshSessionKpi(req, res, next) {
     await Promise.all(
       sessionIds.map(async (sessionId) => {
         const [kpiData] = await model.activityLog.kpiSessionById(sessionId)
+
+        // Aggregate channel metrics and merge into KPI data
+        const channelMetrics =
+          await model.activityLog.aggregateChannelMetrics(sessionId)
+        if (channelMetrics) {
+          Object.assign(kpiData, channelMetrics)
+        }
+
         await model.kpi.sessions.create(kpiData)
       }),
     )
@@ -99,9 +115,38 @@ async function refreshSessionKpi(req, res, next) {
   }
 }
 
+async function getKpiSeries(req, res, next) {
+  try {
+    const { step, organizationId, startDate, endDate } = req.query
+
+    // Validate date range if both dates are provided
+    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+      return res.status(400).json({
+        error: "Invalid date range: startDate must be before endDate",
+      })
+    }
+
+    const granularity = step || "daily"
+    const result = await kpiHandler.getKpiByDateRange(
+      organizationId,
+      startDate,
+      endDate,
+      granularity,
+    )
+
+    res.status(200).json({
+      step: granularity,
+      data: result,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 module.exports = {
   getActivity,
   getKpiByRessource,
   getKpiBySession,
   refreshSessionKpi,
+  getKpiSeries,
 }

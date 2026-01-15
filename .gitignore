@@ -32,12 +32,13 @@ coverage
 .history
 .svn/
 migrate_working_dir/
-
+.claude/
 # IntelliJ related
 *.iml
 *.ipr
 *.iws
 .idea/
+studio-api/logs/debug.json
 
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line

@@ -102,6 +102,11 @@ import i18n from "../../i18n"
 export default {
   name: "ModalRenderer",
   components: { VNodeRenderer },
+  data() {
+    return {
+      previouslyFocused: null,
+    }
+  },
   props: {
     // Controller instance
     controller: { type: Object, required: true },
@@ -175,7 +180,64 @@ export default {
         : this.slots.default || []
     },
   },
+  mounted() {
+    // Store reference to previously focused element for restoration on close
+    this.previouslyFocused = document.activeElement
+    // Focus first focusable element after render
+    this.$nextTick(() => {
+      this.focusFirstElement()
+    })
+    // Add keydown listener for focus trap
+    document.addEventListener("keydown", this.handleKeyDown)
+  },
+  beforeDestroy() {
+    // Remove keydown listener
+    document.removeEventListener("keydown", this.handleKeyDown)
+    // Restore focus to previously focused element
+    if (this.previouslyFocused && typeof this.previouslyFocused.focus === "function") {
+      this.previouslyFocused.focus()
+    }
+  },
   methods: {
+    getFocusableElements() {
+      const selector =
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled])'
+      const modal = this.$refs.modalContent
+      if (!modal) return []
+      return Array.from(modal.querySelectorAll(selector)).filter(
+        (el) => el.offsetParent !== null
+      )
+    },
+    focusFirstElement() {
+      const elements = this.getFocusableElements()
+      if (elements.length > 0) {
+        elements[0].focus()
+      }
+    },
+    handleKeyDown(event) {
+      // Only handle Tab key for focus trap
+      if (event.key !== "Tab") return
+
+      const elements = this.getFocusableElements()
+      if (elements.length === 0) return
+
+      const firstElement = elements[0]
+      const lastElement = elements[elements.length - 1]
+
+      if (event.shiftKey) {
+        // Shift+Tab: if on first element, wrap to last
+        if (document.activeElement === firstElement) {
+          event.preventDefault()
+          lastElement.focus()
+        }
+      } else {
+        // Tab: if on last element, wrap to first
+        if (document.activeElement === lastElement) {
+          event.preventDefault()
+          firstElement.focus()
+        }
+      }
+    },
     // Delegate events to the controller
     close(e) {
       this.controller.close(e)

@@ -203,6 +203,9 @@
   .form-field:last-child {
     margin-bottom: 0px;
   }
+  .flex.row > .form-field {
+    margin-bottom: 0px;
+  }
 
   .error-field {
     display: inline-block;

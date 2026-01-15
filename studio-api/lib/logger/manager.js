@@ -86,7 +86,6 @@ class LogManager {
         socketPayload,
         ctx.timestamp,
       )
-      // }
     }
   }
   static async logLlmEvent(req, payload) {
@@ -102,6 +101,12 @@ class LogManager {
   static async logSystemEvent(message, payload = {}) {
     const ctx = await context.createSystemContext(message, payload)
     if (ctx) logger.log(ctx)
+  }
+
+  static async logChannelEvent(session, channel, action) {
+    const ctx = await context.createChannelContext(session, channel, action)
+    logger.log(ctx)
+    if (ctx) model.activityLog.create(ctx)
   }
 }
 

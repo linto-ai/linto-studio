@@ -1,22 +1,51 @@
 @layer base {
   .stat-card {
-    border: var(--divider);
-    padding: 1rem;
+    border: var(--border-block);
+    padding: 1.25rem 1.5rem;
     background: var(--background-primary);
-    min-width: 10rem;
-    border-radius: 2px;
+    min-width: 11rem;
+    border-radius: 12px;
     width: fit-content;
+    box-shadow: var(--shadow-2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-decoration: none;
+    color: inherit;
+    gap: var(--md-gap);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-3);
+    }
+
+    &:active {
+      transform: translateY(0);
+      box-shadow: var(--shadow-2);
+    }
+  }
+
+  /* Clickable stat cards (router-link) */
+  a.stat-card {
+    cursor: pointer;
+
+    &:hover {
+      border-color: var(--primary-soft);
+    }
   }
 
   .stat-card__header {
-    font-size: 2rem;
+    font-size: var(--text-3xl);
     font-weight: 800;
+    line-height: 1.1;
   }
 
   .stat-card .icon {
-    width: 2rem;
-    height: 2rem;
+    width: 2.5rem;
+    height: 2.5rem;
     margin: 0;
+    padding: 0.5rem;
+    background: var(--primary-soft);
+    border-radius: 10px;
+    color: var(--primary-color);
   }
 
   .stat-card__header-right {
@@ -25,9 +54,71 @@
 
   .stat-card__count {
     text-align: center;
+    color: var(--text-primary);
   }
 
   .stat-card__title {
     text-align: center;
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-top: var(--xs-gap);
+  }
+
+  /* Secondary variant - flat style for embedding in other cards */
+  .stat-card--secondary {
+    padding: 0.5rem;
+    min-width: auto;
+    width: 100%;
+    border: none;
+    box-shadow: none;
+    background: var(--primary-soft, rgba(0, 0, 0, 0.02));
+    border-radius: 6px;
+    gap: var(--xs-gap);
+
+    &:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .stat-card__icon {
+      .icon {
+        width: 1.5rem;
+        height: 1.5rem;
+        padding: 0;
+        background: transparent;
+        color: var(--primary-color);
+      }
+    }
+
+    .stat-card__count {
+      font-size: var(--text-base);
+      font-weight: 600;
+      text-align: left;
+    }
+
+    .stat-card__title {
+      font-size: var(--text-xs);
+      text-align: left;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+      margin-top: 0;
+    }
+
+    .stat-card__header {
+      font-size: var(--text-base);
+      font-weight: 600;
+    }
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .stat-card {
+      transition: none;
+
+      &:hover {
+        transform: none;
+      }
+    }
   }
 }
