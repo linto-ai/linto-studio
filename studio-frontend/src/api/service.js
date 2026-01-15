@@ -63,9 +63,9 @@ export async function apiGetNlpService(notif) {
   return res
 }
 
-export async function getLLMService() {
+export async function getLLMService(organizationId) {
   const req = await sendRequest(
-    `${BASE_API}/services/llm`,
+    `${BASE_API}/services/${organizationId}/llm`,
     { method: "get" },
     {},
     null,

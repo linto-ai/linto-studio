@@ -3,6 +3,18 @@
     "get": {
       "tags": ["services"],
       "summary": "Get all runing services based of the gateway api",
+      "parameters": [
+        {
+          "name": "securityLevel",
+          "in": "query",
+          "required": false,
+          "description": "Filter transcription services by security level (insecure, sensitive, secure). Services without security_level are treated as insecure.",
+          "schema": {
+            "type": "string",
+            "enum": ["insecure", "sensitive", "secure"]
+          }
+        }
+      ],
       "responses": {
         "200": {
           "description": "The list of services",
@@ -32,6 +44,16 @@
           "schema": {
             "type": "string"
           }
+        },
+        {
+          "name": "securityLevel",
+          "in": "query",
+          "required": false,
+          "description": "Filter transcription services by security level (insecure, sensitive, secure). Services without security_level are treated as insecure.",
+          "schema": {
+            "type": "string",
+            "enum": ["insecure", "sensitive", "secure"]
+          }
         }
       ],
       "responses": {
@@ -51,10 +73,31 @@
       }
     }
   },
-  "/api/services/llm": {
+  "/api/services/{organizationId}/llm": {
     "get": {
       "tags": ["services"],
       "summary": "Get all llm service listed",
+      "parameters": [
+        {
+          "name": "organizationId",
+          "in": "query",
+          "required": false,
+          "description": "Filter services by organization ID",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "securityLevel",
+          "in": "query",
+          "required": false,
+          "description": "Filter flavors by security level (insecure, sensitive, secure). Flavors without model.security_level are treated as insecure. Services with no remaining flavors are excluded.",
+          "schema": {
+            "type": "string",
+            "enum": ["insecure", "sensitive", "secure"]
+          }
+        }
+      ],
       "responses": {
         "200": {
           "description": "The list of llm services",

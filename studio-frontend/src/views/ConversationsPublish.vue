@@ -266,6 +266,9 @@ export default {
     },
   },
   computed: {
+    currentOrganizationScope() {
+      return this.$store.getters["organizations/getCurrentOrganizationScope"]
+    },
     hasContentChanges() {
       // Use the data property that's updated by onContentChange event
       // This is reactive, unlike calling $refs method
@@ -709,7 +712,8 @@ export default {
     },
     async getServices() {
       try {
-        let services = await getLLMService()
+        const organizationId = this.currentOrganizationScope
+        let services = await getLLMService(organizationId)
         let res = {}
         for (const service of services) {
           const format = service.name
