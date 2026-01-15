@@ -49,6 +49,17 @@
         </Tooltip>
       </div>
     </div>
+    <div v-if="legend.length" class="timeline-segmented__legend">
+      <div
+        v-for="(item, index) in legend"
+        :key="index"
+        class="timeline-segmented__legend-item">
+        <span
+          class="timeline-segmented__legend-color"
+          :class="item.type ? `timeline-segmented__legend-color--${item.type}` : ''" />
+        <span class="timeline-segmented__legend-label">{{ item.label }}</span>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -102,6 +113,14 @@ export default {
     ariaLabel: {
       type: String,
       default: "",
+    },
+    /**
+     * Legend items to display below the bar
+     * Each item: { label: string, type?: 'active' | 'inactive' }
+     */
+    legend: {
+      type: Array,
+      default: () => [],
     },
   },
   computed: {
@@ -253,6 +272,39 @@ export default {
 .timeline-segmented__tooltip-value {
   font-weight: 600;
   color: var(--text-primary);
+}
+
+.timeline-segmented__legend {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.timeline-segmented__legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.timeline-segmented__legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--neutral-20);
+
+  &--active {
+    background: var(--primary-color);
+  }
+
+  &--inactive {
+    background: var(--neutral-20);
+  }
+}
+
+.timeline-segmented__legend-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
 }
 
 @media (prefers-reduced-motion: reduce) {

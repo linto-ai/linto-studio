@@ -52,8 +52,8 @@
       class="channel-stats-card__timeline"
       :segments="timelineSegments"
       :label="$t('session_stats_modal.timeline.title')"
-      :aria-label="$t('session_stats_modal.timeline.active') + ': ' + timelinePercentage + '%'"
-    />
+      :legend="timelineLegend"
+      :aria-label="$t('session_stats_modal.timeline.active') + ': ' + timelinePercentage + '%'" />
   </div>
 </template>
 
@@ -136,6 +136,12 @@ export default {
       // Use activeDuration which already accounts for all mount/unmount pairs
       const activeDurationMs = (this.channel.activeDuration || 0) * 1000
       return Math.round(Math.min(100, Math.max(0, (activeDurationMs / this.sessionDuration) * 100)))
+    },
+    timelineLegend() {
+      return [
+        { label: this.$t("session_stats_modal.timeline.active"), type: "active" },
+        { label: this.$t("session_stats_modal.timeline.inactive"), type: "inactive" },
+      ]
     },
     timelineSegments() {
       if (!this.hasTimelineData || this.sessionDuration <= 0) return []
