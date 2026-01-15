@@ -133,7 +133,7 @@
       @on-cancel="closeModalEditMetadata"></ModalEditMetadata>
     <ModalAddSessionChannels
       v-if="modalAddChannelsIsOpen"
-      :transcriberProfiles="transcriberProfiles"
+      :transcriberProfiles="filteredTranscriberProfiles"
       v-model="selectedProfiles"
       @on-confirm="confirmAddSessionChannels"
       @on-cancel="closeModalAddSessionChannels" />
@@ -327,6 +327,20 @@ export default {
     },
   },
   computed: {
+    filteredTranscriberProfiles() {
+      const securityHierarchy = {
+        insecure: 1,
+        sensitive: 2,
+        secure: 3,
+      }
+      const requiredLevel = securityHierarchy[this.securityLevel] || 1
+
+      return this.transcriberProfiles.filter((profile) => {
+        const profileLevel = profile.meta?.security_level || "insecure"
+        const profileLevelValue = securityHierarchy[profileLevel] || 1
+        return profileLevelValue >= requiredLevel
+      })
+    },
     selectedTemplate() {
       return this.localSessionTemplates.sessionTemplates.find(
         (t) => t.id === Number(this.selectedTemplateId),
