@@ -2,12 +2,12 @@
   <div class="dashboard-stats dashboard-stats--platform">
     <StatCard
       :count="usersCount"
-      title="Users"
+      :title="$t('backoffice.dashboard.users')"
       icon="users"
       :to="{ name: 'backoffice-userList' }" />
     <StatCard
       :count="organizationCount"
-      title="Organizations"
+      :title="$t('backoffice.dashboard.organizations')"
       icon="buildings"
       :to="{ name: 'backoffice-organizationList' }" />
   </div>

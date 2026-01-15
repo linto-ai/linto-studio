@@ -262,16 +262,16 @@ export default {
       return this.kpiSeries.map((item) => item.transcription?.generated || 0)
     },
     durationData() {
-      return this.kpiSeries.map((item) =>
-        Math.round((item.transcription?.duration || 0) / 3600),
+      return this.kpiSeries.map(
+        (item) => (item.transcription?.duration || 0) / 3600,
       )
     },
     activeUsersData() {
       return this.kpiSeries.map((item) => item.session?.totalConnections || 0)
     },
     sessionsDurationData() {
-      return this.kpiSeries.map((item) =>
-        Math.round((item.transcription?.totalStreamingTime || 0) / 3600),
+      return this.kpiSeries.map(
+        (item) => (item.session?.totalStreamingTime || 0) / 3600,
       )
     },
   },

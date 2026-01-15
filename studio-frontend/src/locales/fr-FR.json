@@ -125,6 +125,8 @@
       "medias_count": "Medias traites",
       "media_duration": "Duree totale (heures)",
       "active_users": "Participants aux sessions",
+      "users": "Utilisateurs",
+      "organizations": "Organisations",
       "time_period_label": "Periode",
       "time_period": {
         "day": "Jour",

@@ -125,6 +125,8 @@
       "media_duration": "Total Duration (hours)",
       "active_users": "Session Participants",
       "time_period_label": "Period",
+      "users": "Users",
+      "organizations": "Organisations",
       "time_period": {
         "day": "Day",
         "month": "Month",

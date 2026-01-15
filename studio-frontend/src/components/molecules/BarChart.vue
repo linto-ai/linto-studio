@@ -4,7 +4,9 @@
       <Bar :data="chartData" :options="chartOptions" />
     </div>
     <div v-if="isEmpty" class="bar-chart__empty">
-      <span class="bar-chart__empty-text">{{ emptyText || 'No data available' }}</span>
+      <span class="bar-chart__empty-text">{{
+        emptyText || "No data available"
+      }}</span>
     </div>
   </div>
 </template>
@@ -13,7 +15,7 @@ import { Bar } from "vue-chartjs"
 
 export default {
   inject: {
-    i18n: { default: null }
+    i18n: { default: null },
   },
   props: {
     labels: {
@@ -36,18 +38,21 @@ export default {
   data() {
     return {
       // Primary color from design system: #11977c
-      primaryColor: '#11977c',
-      primaryColorHover: '#0d7a64',
+      primaryColor: "#11977c",
+      primaryColorHover: "#0d7a64",
     }
   },
   mounted() {},
   computed: {
     currentLocale() {
       // Get locale from i18n if available, otherwise default to 'en-US'
-      return this.$i18n?.locale || 'en-US'
+      return this.$i18n?.locale || "en-US"
     },
     isEmpty() {
-      return !this.data || this.data.length === 0 || this.data.every(v => v === 0)
+      console.log("data", this.data)
+      return (
+        !this.data || this.data.length === 0 || this.data.every((v) => v === 0)
+      )
     },
     chartOptions() {
       return {
@@ -56,13 +61,13 @@ export default {
         plugins: {
           tooltip: {
             enabled: true,
-            backgroundColor: 'rgba(51, 51, 51, 0.95)',
-            titleColor: '#fff',
+            backgroundColor: "rgba(51, 51, 51, 0.95)",
+            titleColor: "#fff",
             titleFont: {
               size: 12,
-              weight: '600',
+              weight: "600",
             },
-            bodyColor: '#fff',
+            bodyColor: "#fff",
             bodyFont: {
               size: 13,
             },
@@ -70,13 +75,14 @@ export default {
             cornerRadius: 8,
             displayColors: false,
             callbacks: {
-              title: (items) => items[0]?.label || '',
-              label: (item) => `${this.dataTitle}: ${item.raw.toLocaleString(this.currentLocale)}`
-            }
+              title: (items) => items[0]?.label || "",
+              label: (item) =>
+                `${this.dataTitle}: ${item.raw.toLocaleString(this.currentLocale)}`,
+            },
           },
           legend: {
-            display: false
-          }
+            display: false,
+          },
         },
         scales: {
           x: {
@@ -87,40 +93,40 @@ export default {
               display: false,
             },
             ticks: {
-              color: '#666',
+              color: "#666",
               font: {
                 size: 11,
-                weight: '500',
+                weight: "500",
               },
               padding: 8,
-            }
+            },
           },
           y: {
             beginAtZero: true,
             grid: {
-              color: 'rgba(0, 0, 0, 0.04)',
+              color: "rgba(0, 0, 0, 0.04)",
               drawBorder: false,
             },
             border: {
               display: false,
             },
             ticks: {
-              color: '#666',
+              color: "#666",
               font: {
                 size: 11,
               },
               padding: 8,
-              callback: (value) => value.toLocaleString(this.currentLocale)
-            }
-          }
+              callback: (value) => value.toLocaleString(this.currentLocale),
+            },
+          },
         },
         interaction: {
           intersect: false,
-          mode: 'index'
+          mode: "index",
         },
         animation: {
           duration: 500,
-          easing: 'easeOutQuart',
+          easing: "easeOutQuart",
         },
       }
     },
@@ -134,7 +140,7 @@ export default {
             backgroundColor: this.primaryColor,
             hoverBackgroundColor: this.primaryColorHover,
             barPercentage: 0.7,
-            barThickness: 'flex',
+            barThickness: "flex",
             maxBarThickness: 28,
             borderRadius: 6,
             borderSkipped: false,
