@@ -132,6 +132,7 @@
       },
       "charts": {
         "sessions_title": "Live Transcriptions",
+        "sessions_duration_title": "Real-time audio transcription (hours)",
         "medias_title": "Media Transcriptions",
         "duration_title": "Audio Duration (hours)",
         "active_users_title": "Session Participants"

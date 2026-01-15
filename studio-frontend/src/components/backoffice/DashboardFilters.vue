@@ -1,8 +1,11 @@
 <template>
-  <div class="dashboard-controls">
+  <div class="dashboard-controls flex row">
     <!-- Time Period Dropdown -->
     <FormInput
-      :field="{ label: $t('backoffice.dashboard.time_period_label'), error: null }"
+      :field="{
+        label: $t('backoffice.dashboard.time_period_label'),
+        error: null,
+      }"
       class="dashboard-controls__field">
       <template #custom-input="{ id, disabled }">
         <select
@@ -23,16 +26,23 @@
 
     <!-- Organization Filter -->
     <FormInput
-      :field="{ label: $t('backoffice.dashboard.filters.organization'), error: null }"
+      :field="{
+        label: $t('backoffice.dashboard.filters.organization'),
+        error: null,
+      }"
       class="dashboard-controls__field">
       <template #custom-input="{ id, disabled }">
         <select
           :id="id"
           :value="selectedOrganization"
-          @change="$emit('update:selectedOrganization', $event.target.value || null)"
+          @change="
+            $emit('update:selectedOrganization', $event.target.value || null)
+          "
           :disabled="disabled"
           class="dashboard-controls__select">
-          <option :value="null">{{ $t("backoffice.dashboard.filters.all_organizations") }}</option>
+          <option :value="null">
+            {{ $t("backoffice.dashboard.filters.all_organizations") }}
+          </option>
           <option v-for="org in organizations" :key="org._id" :value="org._id">
             {{ org.name }}
           </option>
@@ -44,14 +54,27 @@
     <FormInput
       :value="startDate"
       @input="$emit('update:startDate', $event)"
-      :field="{ label: $t('backoffice.dashboard.filters.start_date'), type: 'date', error: null, max: endDate || today, placeholder: $t('backoffice.dashboard.filters.start_date_placeholder') }"
+      :field="{
+        label: $t('backoffice.dashboard.filters.start_date'),
+        type: 'date',
+        error: null,
+        max: endDate || today,
+        placeholder: $t('backoffice.dashboard.filters.start_date_placeholder'),
+      }"
       class="dashboard-controls__field" />
 
     <!-- Date Range - End -->
     <FormInput
       :value="endDate"
       @input="$emit('update:endDate', $event)"
-      :field="{ label: $t('backoffice.dashboard.filters.end_date'), type: 'date', error: null, min: startDate, max: today, placeholder: $t('backoffice.dashboard.filters.end_date_placeholder') }"
+      :field="{
+        label: $t('backoffice.dashboard.filters.end_date'),
+        type: 'date',
+        error: null,
+        min: startDate,
+        max: today,
+        placeholder: $t('backoffice.dashboard.filters.end_date_placeholder'),
+      }"
       class="dashboard-controls__field" />
 
     <!-- Clear Filters Button -->
@@ -137,7 +160,9 @@ export default {
     font-size: var(--text-sm);
     color: var(--text-primary);
     width: 100%;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
 
     &:hover:not(:disabled) {
       border-color: var(--neutral-40);

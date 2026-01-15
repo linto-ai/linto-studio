@@ -133,8 +133,9 @@
       },
       "charts": {
         "sessions_title": "Transcription en direct",
+        "sessions_duration_title": "Audio transcrit en temps réel (heures)",
         "medias_title": "Transcriptions",
-        "duration_title": "Duree audio (heures)",
+        "duration_title": "Durée totale des médias transcrits (heures)",
         "active_users_title": "Participants aux sessions"
       },
       "filters": {

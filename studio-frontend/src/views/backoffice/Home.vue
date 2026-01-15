@@ -2,7 +2,9 @@
   <MainContentBackoffice :loading="loading">
     <!-- Dashboard Header -->
     <div class="dashboard-header">
-      <h2 class="dashboard-header__title">{{ $t("backoffice.dashboard.page_title") }}</h2>
+      <h2 class="dashboard-header__title">
+        {{ $t("backoffice.dashboard.page_title") }}
+      </h2>
     </div>
 
     <!-- Platform Stats (not affected by filters) -->
@@ -28,6 +30,7 @@
     <DashboardKPIs
       :sessionsCount="sessionsCount"
       :mediasCount="mediasCount"
+      v-if="!kpiLoading"
       :loading="kpiLoading" />
 
     <!-- Charts Section -->
@@ -45,12 +48,14 @@
         </div>
         <div class="dashboard-charts__item">
           <h4 class="dashboard-charts__title">
-            {{ $t("backoffice.dashboard.charts.active_users_title") }}
+            {{ $t("backoffice.dashboard.charts.sessions_duration_title") }}
           </h4>
           <BarChart
             :labels="chartLabels"
-            :data="activeUsersData"
-            :dataTitle="$t('backoffice.dashboard.charts.active_users_title')" />
+            :data="sessionsDurationData"
+            :dataTitle="
+              $t('backoffice.dashboard.charts.sessions_duration_title')
+            " />
         </div>
       </div>
       <!-- Media/Offline Charts Row -->
@@ -76,7 +81,7 @@
       </div>
     </div>
     <div v-else class="dashboard-charts-loading">
-      <Loading />
+      <Loading block />
       <span>{{ $t("backoffice.dashboard.loading") }}</span>
     </div>
   </MainContentBackoffice>
@@ -161,7 +166,8 @@ export default {
     },
     updateUrlParams() {
       const query = {}
-      if (this.currentTimePeriod !== "daily") query.step = this.currentTimePeriod
+      if (this.currentTimePeriod !== "daily")
+        query.step = this.currentTimePeriod
       if (this.selectedOrganization) query.org = this.selectedOrganization
       if (this.startDate) query.from = this.startDate
       if (this.endDate) query.to = this.endDate
@@ -177,7 +183,7 @@ export default {
     },
     computeTotals() {
       this.sessionsCount = this.kpiSeries.reduce(
-        (acc, item) => acc + (item.session?.totalConnections || 0),
+        (acc, item) => acc + (item.session?.totalSessions || 0),
         0,
       )
       this.mediasCount = this.kpiSeries.reduce(
@@ -206,19 +212,19 @@ export default {
   watch: {
     currentTimePeriod() {
       this.fetchFilteredData()
-      this.updateUrlParams()
+      //this.updateUrlParams()
     },
     selectedOrganization() {
       this.fetchFilteredData()
-      this.updateUrlParams()
+      //this.updateUrlParams()
     },
     startDate() {
       this.fetchFilteredData()
-      this.updateUrlParams()
+      //this.updateUrlParams()
     },
     endDate() {
       this.fetchFilteredData()
-      this.updateUrlParams()
+      //this.updateUrlParams()
     },
   },
   computed: {
@@ -250,7 +256,7 @@ export default {
       return this.kpiSeries.map((item) => this.formatDate(item.date))
     },
     sessionsData() {
-      return this.kpiSeries.map((item) => item.session?.totalConnections || 0)
+      return this.kpiSeries.map((item) => item.session?.totalSessions || 0)
     },
     mediasData() {
       return this.kpiSeries.map((item) => item.transcription?.generated || 0)
@@ -262,6 +268,11 @@ export default {
     },
     activeUsersData() {
       return this.kpiSeries.map((item) => item.session?.totalConnections || 0)
+    },
+    sessionsDurationData() {
+      return this.kpiSeries.map((item) =>
+        Math.round((item.transcription?.totalStreamingTime || 0) / 3600),
+      )
     },
   },
   components: {
@@ -331,7 +342,6 @@ export default {
   animation: pulse 1.5s ease-in-out infinite;
 }
 
-
 /* Keyframe Animations */
 @keyframes fadeIn {
   from {
@@ -365,7 +375,8 @@ export default {
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
