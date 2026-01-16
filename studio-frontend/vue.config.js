@@ -3,6 +3,7 @@ import { fileURLToPath } from "url"
 import { dirname } from "path"
 import getCurrentTheme from "./src/tools/getCurrentTheme.js"
 import webpack from "webpack"
+import packageJson from "./package.json" with { type: "json" }
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -25,6 +26,9 @@ export default {
       new webpack.ProvidePlugin({
         process: "process/browser",
         Buffer: ["buffer", "Buffer"],
+      }),
+      new webpack.DefinePlugin({
+        __APP_VERSION__: JSON.stringify(packageJson.version),
       }),
     ]
     ;(config.devtool = false),

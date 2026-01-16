@@ -205,20 +205,21 @@ class ActivityLog extends MongoModel {
 
   async getKpiSession(orgaId, startDate, endDate) {
     try {
-      const matchQuery = buildActivityMatchQuery(
+      const sessionMatchQuery = buildActivityMatchQuery(
         "session",
         orgaId,
         startDate,
         endDate,
       )
 
-      const query = [
-        matchQuery,
+      const sessionQuery = [
+        sessionMatchQuery,
         {
           $group: {
             _id: "$organization.id",
             totalConnections: { $sum: 1 },
             watchTime: { $sum: "$socket.totalWatchTime" },
+            uniqueSessions: { $addToSet: "$session.sessionId" },
           },
         },
         {
@@ -226,11 +227,86 @@ class ActivityLog extends MongoModel {
             _id: 0,
             totalConnections: 1,
             watchTime: 1,
+            totalSessions: { $size: "$uniqueSessions" },
           },
         },
       ]
 
-      return await this.mongoAggregate(query)
+      // Build channel match query for totalStreamingTime
+      const timestampQuery = {}
+      if (startDate) timestampQuery.$gte = startDate
+      if (endDate) timestampQuery.$lte = endDate
+
+      const channelMatchQuery = {
+        $match: {
+          activity: "channel",
+          source: "mqtt",
+          ...(orgaId && { "organization.id": orgaId }),
+          ...(Object.keys(timestampQuery).length > 0 && {
+            timestamp: timestampQuery,
+          }),
+        },
+      }
+
+      const channelQuery = [
+        channelMatchQuery,
+        { $sort: { timestamp: 1 } },
+        {
+          $group: {
+            _id: {
+              sessionId: "$session.sessionId",
+              channelId: "$channel.channelId",
+            },
+            events: {
+              $push: {
+                action: "$action",
+                timestamp: "$timestamp",
+              },
+            },
+          },
+        },
+      ]
+
+      // Run both aggregations in parallel
+      const [sessionResult, channelGroups] = await Promise.all([
+        this.mongoAggregate(sessionQuery),
+        this.mongoAggregate(channelQuery),
+      ])
+
+      // Calculate totalStreamingTime from channel mount/unmount pairs
+      let totalStreamingTime = 0
+      for (const group of channelGroups) {
+        let mountTime = null
+        for (const event of group.events) {
+          if (event.action === "mount") {
+            mountTime = new Date(event.timestamp)
+          } else if (event.action === "unmount" && mountTime) {
+            totalStreamingTime +=
+              (new Date(event.timestamp) - mountTime) / 1000
+            mountTime = null
+          }
+        }
+      }
+
+      // Merge results
+      if (sessionResult.length > 0) {
+        return [
+          {
+            ...sessionResult[0],
+            totalStreamingTime: Math.round(totalStreamingTime),
+          },
+        ]
+      }
+
+      // Return default values if no session data
+      return [
+        {
+          totalConnections: 0,
+          watchTime: 0,
+          totalSessions: 0,
+          totalStreamingTime: Math.round(totalStreamingTime),
+        },
+      ]
     } catch (error) {
       console.error("Error in kpiSession:", error)
       return error
@@ -352,6 +428,122 @@ class ActivityLog extends MongoModel {
     } catch (error) {
       console.error("Error in findSessionInActivity:", error)
       return error
+    }
+  }
+
+  async aggregateChannelMetrics(sessionId) {
+    try {
+      const query = [
+        {
+          $match: {
+            activity: "channel",
+            "session.sessionId": sessionId,
+          },
+        },
+        { $sort: { timestamp: 1 } },
+        {
+          $group: {
+            _id: "$channel.channelId",
+            channelId: { $first: "$channel.channelId" },
+            translations: { $first: "$channel.translations" },
+            // Transcriber profile fields (flattened in channel)
+            type: { $first: "$channel.type" },
+            name: { $first: "$channel.name" },
+            description: { $first: "$channel.description" },
+            languages: { $first: "$channel.languages" },
+            region: { $first: "$channel.region" },
+            hasDiarization: { $first: "$channel.hasDiarization" },
+            events: {
+              $push: {
+                action: "$action",
+                timestamp: "$timestamp",
+              },
+            },
+            firstMountAt: {
+              $min: {
+                $cond: [{ $eq: ["$action", "mount"] }, "$timestamp", null],
+              },
+            },
+            lastUnmountAt: {
+              $max: {
+                $cond: [{ $eq: ["$action", "unmount"] }, "$timestamp", null],
+              },
+            },
+          },
+        },
+      ]
+
+      const channelGroups = await this.mongoAggregate(query)
+
+      // Calculate durations from event pairs and collect all timestamps
+      const channels = channelGroups.map((group) => {
+        let totalDuration = 0
+        let mountTime = null
+        const mountedAtList = []
+        const unmountedAtList = []
+
+        for (const event of group.events) {
+          if (event.action === "mount") {
+            mountTime = new Date(event.timestamp)
+            mountedAtList.push(mountTime)
+          } else if (event.action === "unmount") {
+            const unmountTime = new Date(event.timestamp)
+            unmountedAtList.push(unmountTime)
+            if (mountTime) {
+              totalDuration += (unmountTime - mountTime) / 1000
+              mountTime = null
+            }
+          }
+        }
+
+        return {
+          channelId: group.channelId,
+          translations: group.translations,
+          // Transcriber profile fields (flattened)
+          type: group.type,
+          name: group.name,
+          description: group.description,
+          languages: group.languages,
+          region: group.region,
+          hasDiarization: group.hasDiarization,
+          // Timing metrics (arrays for multiple mount/unmount events)
+          mountedAt: mountedAtList,
+          unmountedAt: unmountedAtList,
+          activeDuration: Math.round(totalDuration),
+        }
+      })
+
+      // Calculate aggregate metrics
+      const totalStreamingTime = channels.reduce(
+        (sum, ch) => sum + ch.activeDuration,
+        0,
+      )
+      // Get first mount and last unmount across all channels
+      const allMounts = channels.flatMap((ch) => ch.mountedAt).filter(Boolean)
+      const allUnmounts = channels.flatMap((ch) => ch.unmountedAt).filter(Boolean)
+      const firstMountAt = allMounts.length > 0
+        ? allMounts.sort((a, b) => a - b)[0]
+        : null
+      const lastUnmountAt = allUnmounts.length > 0
+        ? allUnmounts.sort((a, b) => b - a)[0]
+        : null
+
+      return {
+        channels,
+        firstChannelMountAt: firstMountAt,
+        lastChannelUnmountAt: lastUnmountAt,
+        streaming: {
+          totalChannels: channels.length,
+          totalStreamingTime,
+          averageChannelDuration:
+            channels.length > 0
+              ? Math.round(totalStreamingTime / channels.length)
+              : 0,
+        },
+      }
+    } catch (error) {
+      console.error("Error in aggregateChannelMetrics:", error)
+      return null
     }
   }
 }

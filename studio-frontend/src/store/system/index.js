@@ -47,6 +47,8 @@ const mutations = {
   },
   setIsMobile(state, isMobile) {
     state.isMobile = isMobile
+    if (isMobile) state.sidebarOpen = false
+    else state.sidebarOpen = true
   },
   setIsLoading(state, isLoading) {
     state.isLoading = isLoading

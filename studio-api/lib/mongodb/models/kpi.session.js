@@ -109,6 +109,24 @@ class KpiSession extends MongoModel {
       return error
     }
   }
+
+  async updateWithChannelMetrics(sessionId, channelMetrics) {
+    try {
+      const query = { sessionId }
+      const operator = "$set"
+      const payload = {
+        channels: channelMetrics.channels,
+        firstChannelMountAt: channelMetrics.firstChannelMountAt,
+        lastChannelUnmountAt: channelMetrics.lastChannelUnmountAt,
+        streaming: channelMetrics.streaming,
+      }
+
+      return await this.mongoUpdateOne(query, operator, payload)
+    } catch (error) {
+      console.error("Error updating KPI with channel metrics:", error)
+      return error
+    }
+  }
 }
 
 module.exports = new KpiSession()

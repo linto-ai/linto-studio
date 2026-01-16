@@ -85,3 +85,34 @@ function mergeKpi() {
 }
 
 export const getAllKpiDailyMerged = mergeKpi(getAllKpiDaily)
+
+export async function apiGetPlatformKpiSeries(filters = {}) {
+  const { step = "daily", organizationId, startDate, endDate } = filters
+
+  const params = { userScope: "backoffice", step }
+  if (organizationId) params.organizationId = organizationId
+  if (startDate) params.startDate = startDate
+  if (endDate) params.endDate = endDate
+
+  const res = await sendRequest(
+    `${BASE_API}/administration/activity/compute/series`,
+    { method: "get" },
+    params,
+  )
+  return res?.data || { step, data: [] }
+}
+
+/**
+ * Fetches detailed KPI data for a specific session.
+ * Includes channel-level metrics and timeline information.
+ * @param {string} sessionId - The session ID to fetch KPIs for
+ * @returns {Promise<Object|null>} Session detailed KPI data or null if not found
+ */
+export async function getSessionKpiById(sessionId) {
+  const res = await sendRequest(
+    `${BASE_API}/administration/activity/session/${sessionId}`,
+    { method: "get" },
+    { userScope: "backoffice" },
+  )
+  return res?.data ?? null
+}

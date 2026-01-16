@@ -2,6 +2,9 @@ module.exports = {
   env: {
     node: true,
   },
+  globals: {
+    __APP_VERSION__: "readonly",
+  },
   extends: [
     "eslint:recommended",
     "plugin:vue/base",

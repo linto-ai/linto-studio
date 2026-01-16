@@ -8,6 +8,11 @@ _2026_01_16_
   - Filter STT services based on security level on media creation page
   - Filter STT services and transcriber profiles on microphone and visioconference pages
   - Filter LLM services based on security level
+- Channel-level streaming metrics for KPI
+  - Track channel mount/unmount events with timestamps
+  - Per-channel streaming duration and transcriber profile information
+  - Aggregate streaming metrics (total channels, total duration, average duration)
+- Logger documentation rewritten
 
 # 1.6.1
 
