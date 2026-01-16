@@ -147,6 +147,7 @@
       "notif_delete_success": "Transcriber profile successfully deleted",
       "notif_delete_error": "An error occured while deleting the profile",
       "type_label": "Profile type",
+      "security_level_label": "Security level",
       "quick_meeting_label": "Enabled for quick meetings",
       "warning_global": {
         "line_1": "This profile will be visible in all organizations.",

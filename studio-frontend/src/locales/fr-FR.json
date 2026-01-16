@@ -148,6 +148,7 @@
       "notif_delete_success": "Le profil a été supprimé",
       "notif_delete_error": "Une erreur est survenue lors de la suppression du profil",
       "type_label": "Type de profil",
+      "security_level_label": "Niveau de sécurité",
       "quick_meeting_label": "Activé pour les quick meetings",
       "warning_global": {
         "line_1": "Ce profil sera visible dans toutes les organisations.",

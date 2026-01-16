@@ -336,7 +336,7 @@ export default {
       const requiredLevel = securityHierarchy[this.securityLevel] || 1
 
       return this.transcriberProfiles.filter((profile) => {
-        const profileLevel = profile.meta?.security_level || "insecure"
+        const profileLevel = profile.meta?.securityLevel || "insecure"
         const profileLevelValue = securityHierarchy[profileLevel] || 1
         return profileLevelValue >= requiredLevel
       })
