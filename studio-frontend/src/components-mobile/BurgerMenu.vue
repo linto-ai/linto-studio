@@ -149,7 +149,7 @@ export default {
       return this.$route.meta?.sessionListingPage
     },
     appVersion() {
-      return "1.6.0" // Version from package.json
+      return typeof __APP_VERSION__ !== "undefined" ? __APP_VERSION__ : "dev"
     },
   },
   components: {
