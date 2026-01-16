@@ -50,7 +50,7 @@
             {{ fieldTranscriptionService.error }}
           </div>
           <ConversationCreateServices
-            :serviceList="fieldTranscriptionService.list"
+            :serviceList="filteredTranscriptionServices"
             :disabled="formState === 'sending'"
             :loading="fieldTranscriptionService.loading"
             v-model="fieldTranscriptionService.value" />

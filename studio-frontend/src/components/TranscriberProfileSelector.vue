@@ -106,6 +106,14 @@ export default {
     },
   },
   mounted() {},
+  watch: {
+    profilesList: {
+      handler(newList) {
+        this.l_profilesList = structuredClone(newList)
+      },
+      deep: true,
+    },
+  },
   methods: {
     sortBy(key) {
       if (key === this.sortListKey) {

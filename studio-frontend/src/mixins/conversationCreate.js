@@ -7,6 +7,7 @@ import { apiCreateConversation } from "@/api/conversation"
 import { getUserRoleInOrganization } from "@/tools/getUserRoleInOrganization"
 import { testFieldEmpty } from "@/tools/fields/testEmpty.js"
 import { testService } from "@/tools/fields/testService.js"
+import { filterBySecurityLevel } from "@/tools/filterBySecurityLevel"
 
 import { formsMixin } from "@/mixins/forms.js"
 import { debounceMixin } from "@/mixins/debounce"
@@ -97,6 +98,12 @@ export default {
         let role = getUserRoleInOrganization(org, this.userInfo._id)
         return role > 1
       })
+    },
+    filteredTranscriptionServices() {
+      return filterBySecurityLevel(
+        this.fieldTranscriptionService.list,
+        this.securityLevel,
+      )
     },
   },
   methods: {

@@ -23,14 +23,14 @@
         required />
     </section>
 
+    <SecurityLevelSelector v-model="securityLevel" />
+
     <QuickSessionSettings
-      :transcriberProfiles="transcriberProfiles"
-      :transcriptionServices="transcriptionServices"
+      :transcriberProfiles="filteredTranscriberProfiles"
+      :transcriptionServices="filteredTranscriptionServices"
       :field="quickSessionSettingsField"
       source="visio"
       v-model="quickSessionSettingsField.value" />
-
-    <SecurityLevelSelector v-model="securityLevel" />
 
     <div
       class="flex gap-small align-center conversation-create-footer"
@@ -53,6 +53,10 @@ import EMPTY_FIELD from "@/const/emptyField.js"
 import { testVisioUrl } from "@/tools/fields/testVisioUrl"
 import { formsMixin } from "@/mixins/forms.js"
 import generateServiceConfig from "@/tools/generateServiceConfig"
+import {
+  filterBySecurityLevel,
+  filterByMetaSecurityLevel,
+} from "@/tools/filterBySecurityLevel"
 import {
   apiCreateQuickSession,
   apiStartBot,
@@ -122,6 +126,20 @@ export default {
     }
   },
   mounted() {},
+  computed: {
+    filteredTranscriberProfiles() {
+      return filterByMetaSecurityLevel(
+        this.transcriberProfiles,
+        this.securityLevel,
+      )
+    },
+    filteredTranscriptionServices() {
+      return filterBySecurityLevel(
+        this.transcriptionServices,
+        this.securityLevel,
+      )
+    },
+  },
   methods: {
     async createSession(event) {
       event?.preventDefault()

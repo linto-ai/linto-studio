@@ -106,6 +106,7 @@ import EMPTY_FIELD from "@/const/emptyField.js"
 import { testService } from "@/tools/fields/testService.js"
 import RIGHTS_LIST from "@/const/rigthsList"
 import { getEnv } from "@/tools/getEnv"
+import generateServiceConfig from "@/tools/generateServiceConfig"
 
 import SessionTranslationSelection from "@/components/SessionTranslationSelection.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
@@ -250,6 +251,35 @@ export default {
       handler() {
         this.sendUpdate()
       },
+    },
+    transcriptionServices: {
+      handler(newServices) {
+        this.fieldTranscriptionService.list = newServices
+        if (
+          newServices.length > 0 &&
+          !newServices.find(
+            (s) =>
+              s.serviceName ===
+              this.fieldTranscriptionService.value?.serviceName,
+          )
+        ) {
+          this.fieldTranscriptionService.value = generateServiceConfig(
+            newServices[0],
+          )
+        }
+      },
+      deep: true,
+    },
+    transcriberProfiles: {
+      handler(newProfiles) {
+        if (
+          newProfiles.length > 0 &&
+          !newProfiles.find((p) => p.id === this.selectedProfile?.id)
+        ) {
+          this.selectedProfile = newProfiles[0]
+        }
+      },
+      deep: true,
     },
   },
   methods: {

@@ -150,6 +150,7 @@ import { bus } from "@/main.js"
 
 import { testName } from "@/tools/fields/testName"
 import { getEnv } from "@/tools/getEnv"
+import { filterByMetaSecurityLevel } from "@/tools/filterBySecurityLevel"
 
 import EMPTY_FIELD from "@/const/emptyField"
 
@@ -328,18 +329,10 @@ export default {
   },
   computed: {
     filteredTranscriberProfiles() {
-      const securityHierarchy = {
-        insecure: 1,
-        sensitive: 2,
-        secure: 3,
-      }
-      const requiredLevel = securityHierarchy[this.securityLevel] || 1
-
-      return this.transcriberProfiles.filter((profile) => {
-        const profileLevel = profile.meta?.securityLevel || "insecure"
-        const profileLevelValue = securityHierarchy[profileLevel] || 1
-        return profileLevelValue >= requiredLevel
-      })
+      return filterByMetaSecurityLevel(
+        this.transcriberProfiles,
+        this.securityLevel,
+      )
     },
     selectedTemplate() {
       return this.localSessionTemplates.sessionTemplates.find(
