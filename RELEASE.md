@@ -1,3 +1,14 @@
+# 1.6.2
+
+_2026_01_16_
+
+- Security level filtering
+  - Add security level selector to transcriber profile editor in backoffice
+  - Filter transcriber profiles based on security level on session creation page
+  - Filter STT services based on security level on media creation page
+  - Filter STT services and transcriber profiles on microphone and visioconference pages
+  - Filter LLM services based on security level
+
 # 1.6.1
 
 _2025_12_04_
