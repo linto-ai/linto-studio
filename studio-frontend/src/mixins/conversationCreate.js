@@ -7,7 +7,7 @@ import { apiCreateConversation } from "@/api/conversation"
 import { getUserRoleInOrganization } from "@/tools/getUserRoleInOrganization"
 import { testFieldEmpty } from "@/tools/fields/testEmpty.js"
 import { testService } from "@/tools/fields/testService.js"
-import { filterBySecurityLevel } from "@/tools/filterBySecurityLevel"
+import { meetsSecurityLevel } from "@/tools/filterBySecurityLevel"
 
 import { formsMixin } from "@/mixins/forms.js"
 import { debounceMixin } from "@/mixins/debounce"
@@ -85,6 +85,18 @@ export default {
     "conversationLanguage.value"(value) {
       this.initTranscriptionList()
     },
+    securityLevel(newLevel) {
+      // Reset selection if current service doesn't meet the new security level
+      if (this.fieldTranscriptionService.value) {
+        const currentService = this.fieldTranscriptionService.list.find(
+          (s) =>
+            s.serviceName === this.fieldTranscriptionService.value.serviceName,
+        )
+        if (currentService && !meetsSecurityLevel(currentService, newLevel)) {
+          this.fieldTranscriptionService.value = null
+        }
+      }
+    },
     // "$i18n.locale": {
     //   handler(value) {
     //     this.conversationLanguage.value = value.split("-")[0]
@@ -98,12 +110,6 @@ export default {
         let role = getUserRoleInOrganization(org, this.userInfo._id)
         return role > 1
       })
-    },
-    filteredTranscriptionServices() {
-      return filterBySecurityLevel(
-        this.fieldTranscriptionService.list,
-        this.securityLevel,
-      )
     },
   },
   methods: {

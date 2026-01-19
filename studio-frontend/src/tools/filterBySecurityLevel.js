@@ -45,7 +45,40 @@ export function filterByMetaSecurityLevel(items, requiredLevel) {
   })
 }
 
+/**
+ * Checks if a single item meets the required security level.
+ *
+ * @param {Object} item - Item to check
+ * @param {string} requiredLevel - Required security level
+ * @param {string} securityKey - Key to read security level from item (default: "security_level")
+ * @returns {boolean} True if item meets or exceeds required level
+ */
+export function meetsSecurityLevel(item, requiredLevel, securityKey = "security_level") {
+  if (!item) return false
+  const requiredLevelValue = SECURITY_HIERARCHY[requiredLevel] || 1
+  const itemLevel = item[securityKey] || "insecure"
+  const itemLevelValue = SECURITY_HIERARCHY[itemLevel] || 1
+  return itemLevelValue >= requiredLevelValue
+}
+
+/**
+ * Checks if a single item meets the required security level (using meta.securityLevel).
+ *
+ * @param {Object} item - Item to check
+ * @param {string} requiredLevel - Required security level
+ * @returns {boolean} True if item meets or exceeds required level
+ */
+export function meetsMetaSecurityLevel(item, requiredLevel) {
+  if (!item) return false
+  const requiredLevelValue = SECURITY_HIERARCHY[requiredLevel] || 1
+  const itemLevel = item.meta?.securityLevel || "insecure"
+  const itemLevelValue = SECURITY_HIERARCHY[itemLevel] || 1
+  return itemLevelValue >= requiredLevelValue
+}
+
 export default {
   filterBySecurityLevel,
   filterByMetaSecurityLevel,
+  meetsSecurityLevel,
+  meetsMetaSecurityLevel,
 }

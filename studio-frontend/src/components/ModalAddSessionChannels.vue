@@ -15,7 +15,8 @@
       <h3>{{ $t("session.profile_selector.title") }}</h3>
       <TranscriberProfileSelector
         v-model="selectedProfiles"
-        :profilesList="profilesList" />
+        :profilesList="profilesList"
+        :securityLevel="securityLevel" />
     </section>
   </ModalNew>
 </template>
@@ -37,6 +38,11 @@ export default {
     transcriberProfiles: {
       type: Array,
       required: true,
+    },
+    securityLevel: {
+      type: String,
+      required: false,
+      default: null,
     },
   },
   data() {

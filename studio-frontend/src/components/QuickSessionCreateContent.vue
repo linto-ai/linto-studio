@@ -25,8 +25,9 @@
     <SecurityLevelSelector v-model="securityLevel" />
 
     <QuickSessionSettings
-      :transcriberProfiles="filteredTranscriberProfiles"
-      :transcriptionServices="filteredTranscriptionServices"
+      :transcriberProfiles="transcriberProfiles"
+      :transcriptionServices="transcriptionServices"
+      :securityLevel="securityLevel"
       :field="quickSessionSettingsField"
       source="micro"
       v-model="quickSessionSettingsField.value" />
@@ -57,16 +58,9 @@ import EMPTY_FIELD from "@/const/emptyField"
 import { testFieldEmpty } from "@/tools/fields/testEmpty"
 import { testQuickSessionSettings } from "@/tools/fields/testQuickSessionSettings"
 import generateServiceConfig from "@/tools/generateServiceConfig"
-import {
-  filterBySecurityLevel,
-  filterByMetaSecurityLevel,
-} from "@/tools/filterBySecurityLevel"
 
 import { formsMixin } from "@/mixins/forms.js"
 
-import FormRadio from "@/components/molecules/FormRadio.vue"
-import TranscriberProfileSelector from "@/components/TranscriberProfileSelector.vue"
-import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import QuickSessionSettings from "@/components/QuickSessionSettings.vue"
 import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
 
@@ -139,20 +133,6 @@ export default {
     }
   },
   mounted() {},
-  computed: {
-    filteredTranscriberProfiles() {
-      return filterByMetaSecurityLevel(
-        this.transcriberProfiles,
-        this.securityLevel,
-      )
-    },
-    filteredTranscriptionServices() {
-      return filterBySecurityLevel(
-        this.transcriptionServices,
-        this.securityLevel,
-      )
-    },
-  },
   methods: {
     async goToQuickSession() {
       this.$router.push({
@@ -209,9 +189,6 @@ export default {
     },
   },
   components: {
-    FormRadio,
-    TranscriberProfileSelector,
-    FormCheckbox,
     QuickSessionSettings,
     SecurityLevelSelector,
   },

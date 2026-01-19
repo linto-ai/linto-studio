@@ -438,6 +438,44 @@
       border-color: var(--primary-color);
       border-width: 2px;
       margin: 0px;
+      background-color: color-mix(
+        in srgb,
+        var(--primary-color) 8%,
+        var(--background-primary)
+      );
+      box-shadow: 0 0 0 1px var(--primary-color);
+    }
+
+    &.security-disabled {
+      opacity: 0.4;
+      border-style: dashed;
+      border-color: var(--neutral-40);
+      background-color: var(--neutral-10);
+      cursor: not-allowed;
+      pointer-events: auto;
+
+      &:hover {
+        border-color: var(--neutral-40);
+      }
+
+      * {
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  tr.security-disabled {
+    opacity: 0.4;
+    background-color: var(--neutral-10);
+    cursor: not-allowed;
+    pointer-events: auto;
+
+    * {
+      cursor: not-allowed;
+    }
+
+    &:hover {
+      background-color: var(--neutral-10);
     }
   }
 

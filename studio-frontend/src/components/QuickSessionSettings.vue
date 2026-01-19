@@ -30,6 +30,7 @@
           </div>
           <ConversationCreateServices
             :serviceList="fieldTranscriptionService.list"
+            :securityLevel="securityLevel"
             v-model="fieldTranscriptionService.value" />
         </div>
       </div>
@@ -60,7 +61,8 @@
           <TranscriberProfileSelector
             :multiple="false"
             v-model="selectedProfile"
-            :profilesList="transcriberProfiles" />
+            :profilesList="transcriberProfiles"
+            :securityLevel="securityLevel" />
         </div>
 
         <!-- Options for live transcription -->
@@ -107,6 +109,12 @@ import { testService } from "@/tools/fields/testService.js"
 import RIGHTS_LIST from "@/const/rigthsList"
 import { getEnv } from "@/tools/getEnv"
 import generateServiceConfig from "@/tools/generateServiceConfig"
+import {
+  filterBySecurityLevel,
+  filterByMetaSecurityLevel,
+  meetsSecurityLevel,
+  meetsMetaSecurityLevel,
+} from "@/tools/filterBySecurityLevel"
 
 import SessionTranslationSelection from "@/components/SessionTranslationSelection.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
@@ -137,6 +145,11 @@ export default {
     source: {
       type: String, // "micro" | "visio"
       required: true,
+    },
+    securityLevel: {
+      type: String,
+      required: false,
+      default: null,
     },
   },
   data() {
@@ -280,6 +293,39 @@ export default {
         }
       },
       deep: true,
+    },
+    securityLevel: {
+      handler(newLevel) {
+        // Reset profile selection if current doesn't meet new security level
+        if (
+          this.selectedProfile &&
+          !meetsMetaSecurityLevel(this.selectedProfile, newLevel)
+        ) {
+          const validProfiles = filterByMetaSecurityLevel(
+            this.transcriberProfiles,
+            newLevel,
+          )
+          this.selectedProfile = validProfiles.length > 0 ? validProfiles[0] : null
+        }
+
+        // Reset transcription service if current doesn't meet new security level
+        const currentService = this.fieldTranscriptionService.value
+        if (currentService) {
+          const serviceObj = this.transcriptionServices.find(
+            (s) => s.serviceName === currentService.serviceName,
+          )
+          if (serviceObj && !meetsSecurityLevel(serviceObj, newLevel)) {
+            const validServices = filterBySecurityLevel(
+              this.transcriptionServices,
+              newLevel,
+            )
+            this.fieldTranscriptionService.value =
+              validServices.length > 0
+                ? generateServiceConfig(validServices[0])
+                : null
+          }
+        }
+      },
     },
   },
   methods: {

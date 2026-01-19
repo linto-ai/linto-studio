@@ -26,8 +26,9 @@
     <SecurityLevelSelector v-model="securityLevel" />
 
     <QuickSessionSettings
-      :transcriberProfiles="filteredTranscriberProfiles"
-      :transcriptionServices="filteredTranscriptionServices"
+      :transcriberProfiles="transcriberProfiles"
+      :transcriptionServices="transcriptionServices"
+      :securityLevel="securityLevel"
       :field="quickSessionSettingsField"
       source="visio"
       v-model="quickSessionSettingsField.value" />
@@ -54,10 +55,6 @@ import { testVisioUrl } from "@/tools/fields/testVisioUrl"
 import { formsMixin } from "@/mixins/forms.js"
 import generateServiceConfig from "@/tools/generateServiceConfig"
 import {
-  filterBySecurityLevel,
-  filterByMetaSecurityLevel,
-} from "@/tools/filterBySecurityLevel"
-import {
   apiCreateQuickSession,
   apiStartBot,
   apiDeleteQuickSession,
@@ -65,8 +62,6 @@ import {
 import { testQuickSessionSettings } from "@/tools/fields/testQuickSessionSettings"
 
 import FormInput from "@/components/molecules/FormInput.vue"
-import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
-import TranscriberProfileSelector from "@/components/TranscriberProfileSelector.vue"
 import QuickSessionSettings from "@/components/QuickSessionSettings.vue"
 import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
 
@@ -126,20 +121,6 @@ export default {
     }
   },
   mounted() {},
-  computed: {
-    filteredTranscriberProfiles() {
-      return filterByMetaSecurityLevel(
-        this.transcriberProfiles,
-        this.securityLevel,
-      )
-    },
-    filteredTranscriptionServices() {
-      return filterBySecurityLevel(
-        this.transcriptionServices,
-        this.securityLevel,
-      )
-    },
-  },
   methods: {
     async createSession(event) {
       event?.preventDefault()
@@ -208,8 +189,6 @@ export default {
   },
   components: {
     FormInput,
-    FormCheckbox,
-    TranscriberProfileSelector,
     QuickSessionSettings,
     SecurityLevelSelector,
   },
