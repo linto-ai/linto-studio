@@ -15,9 +15,14 @@
           <span class="title flex1" id="modal-title">{{ title }}</span>
           <span class="subtitle" v-if="subtitle">{{ subtitle }}</span>
         </div>
-        <template v-if="withClose">
-          <Button icon="x" size="sm" @click="cancel" type="button" />
-        </template>
+        <div class="modal-header__actions flex row align-center gap-small">
+          <v-node-renderer
+            v-if="headerActionsNodes.length"
+            :nodes="headerActionsNodes" />
+          <template v-if="withClose">
+            <Button icon="x" size="sm" @click="cancel" type="button" />
+          </template>
+        </div>
       </div>
       <div v-if="loading" class="modal-loading">
         <ph-icon
@@ -162,6 +167,11 @@ export default {
     actionsRightNodes() {
       return this.slots && this.slots["actions-right"]
         ? this.slots["actions-right"]()
+        : []
+    },
+    headerActionsNodes() {
+      return this.slots && this.slots["header-actions"]
+        ? this.slots["header-actions"]()
         : []
     },
     modalComponentType() {

@@ -1,20 +1,7 @@
 <template>
   <div class="transcriber-profile-editor">
-    <!-- Header row with type selector -->
-    <div class="editor-header">
-      <div class="form-field flex col">
-        <label class="form-label">{{ $t("backoffice.transcriber_profile_detail.type_label") }}</label>
-        <select v-model="currentType">
-          <option v-for="type in types" :key="type" :value="type">
-            {{ typesLabels[type] }}
-          </option>
-        </select>
-      </div>
-    </div>
-
     <NotificationBanner variant="warning" v-if="!organizationId">
       {{ $t("backoffice.transcriber_profile_detail.warning_global.line_1") }}
-      {{ $t("backoffice.transcriber_profile_detail.warning_global.line_2") }}
     </NotificationBanner>
 
     <!-- Side-by-side layout: Config form + JSON editor -->
@@ -75,13 +62,15 @@ export default {
   },
   data() {
     return {
-      types: ["linto", "microsoft", "amazon"],
       typesLabels: {
         linto: "LinTO",
         microsoft: "Microsoft",
         amazon: "Amazon",
       },
-      l_transcriberProfile: structuredClone(this.transcriberProfile),
+      l_transcriberProfile: {
+        ...structuredClone(this.transcriberProfile),
+        organizationId: this.organizationId,
+      },
       amazonFiles: {
         certificate: null,
         privateKey: null,
@@ -89,20 +78,14 @@ export default {
     }
   },
   computed: {
-    currentType: {
-      get() {
-        return this.transcriberProfile.config.type
-      },
-      set(value) {
-        this.$emit("input", TRANSCRIBER_PROFILES_TEMPLATES[value])
-        this.amazonFiles = { certificate: null, privateKey: null }
-        this.$nextTick(() => {
-          this.reset()
-        })
-      },
+    currentType() {
+      return this.transcriberProfile.config.type
     },
   },
   watch: {
+    organizationId(value) {
+      this.l_transcriberProfile.organizationId = value
+    },
     l_transcriberProfile: {
       handler(value) {
         this.$emit("input", value)
@@ -113,7 +96,10 @@ export default {
   methods: {
     async reset() {
       await this.$nextTick()
-      this.l_transcriberProfile = structuredClone(this.transcriberProfile)
+      this.l_transcriberProfile = {
+        ...structuredClone(this.transcriberProfile),
+        organizationId: this.organizationId,
+      }
       this.amazonFiles = { certificate: null, privateKey: null }
       if (this.$refs.amazonConfig) {
         this.$refs.amazonConfig.resetFiles()
@@ -147,12 +133,6 @@ export default {
   flex-direction: column;
   gap: var(--small-gap);
   height: 100%;
-}
-
-.editor-header {
-  display: flex;
-  gap: var(--large-gap);
-  flex-shrink: 0;
 }
 
 .editor-content {

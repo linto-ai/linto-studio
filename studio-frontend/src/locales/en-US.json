@@ -894,7 +894,10 @@
   "modal_create_transcriber_profile": {
     "title": "Create new transcriber profile",
     "action_btn": "Create profile",
-    "notif_error": "An error occurred while creating the transcriber profile"
+    "notif_error": "An error occurred while creating the transcriber profile",
+    "platform_global": "Platform (global)",
+    "organization_tooltip": "Select organization",
+    "type_tooltip": "Transcription engine"
   },
   "modal_delete_users": {
     "title": "Delete user | Delete {count} users",

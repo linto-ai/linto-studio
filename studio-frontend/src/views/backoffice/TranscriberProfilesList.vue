@@ -44,8 +44,6 @@
       variant="warning"
       v-if="!showAllProfiles">
       {{ $t("backoffice.transcriber_profile_list.warning_global.line_1") }}
-      <br />
-      {{ $t("backoffice.transcriber_profile_list.warning_global.line_2") }}
     </NotificationBanner>
     <div class="backoffice-listing-container">
       <TranscriberProfileTable
