@@ -1,11 +1,11 @@
 <template>
-  <div class="transcriber-profile-editor">
+  <div class="flex flex1 col gap-small">
     <NotificationBanner variant="warning" v-if="!organizationId">
       {{ $t("backoffice.transcriber_profile_detail.warning_global.line_1") }}
     </NotificationBanner>
 
     <!-- Side-by-side layout: Config form + JSON editor -->
-    <div class="editor-content">
+    <div class="editor-content flex1">
       <!-- Left: Configuration form -->
       <Panel :title="`Configuration ${typesLabels[currentType]}`">
         <TranscriberProfileConfigLinto
@@ -128,19 +128,10 @@ export default {
 </script>
 
 <style scoped>
-.transcriber-profile-editor {
-  display: flex;
-  flex-direction: column;
-  gap: var(--small-gap);
-  height: 100%;
-}
-
 .editor-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--medium-gap);
-  flex: 1;
-  min-height: 0;
 }
 
 .editor-content :deep(.panel) {
@@ -149,13 +140,6 @@ export default {
 
 .editor-content :deep(.panel__body) {
   min-height: 0;
-}
-
-/* Form field styles inside panels */
-.editor-content :deep(.form-field) {
-  display: flex;
-  flex-direction: column;
-  gap: var(--tiny-gap);
 }
 
 .editor-content :deep(.form-label) {

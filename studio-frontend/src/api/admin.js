@@ -313,3 +313,82 @@ export async function apiAdminDeleteTranscriberProfile(transcriberId, notif) {
     notif,
   )
 }
+
+export async function apiAdminCreateAmazonTranscriberProfile(data, files, notif) {
+  const formData = new FormData()
+
+  formData.append("config[type]", "amazon")
+  formData.append("config[name]", data.config.name)
+  formData.append("config[description]", data.config.description || "")
+  formData.append("config[languages]", JSON.stringify(data.config.languages))
+  formData.append(
+    "config[availableTranslations]",
+    JSON.stringify(data.config.availableTranslations || []),
+  )
+  formData.append("config[passphrase]", data.config.passphrase || "")
+  formData.append("config[credentials]", data.config.credentials)
+  formData.append("config[trustAnchorArn]", data.config.trustAnchorArn)
+  formData.append("config[profileArn]", data.config.profileArn)
+  formData.append("config[roleArn]", data.config.roleArn)
+  formData.append("quickMeeting", data.quickMeeting)
+
+  if (files.certificate) {
+    formData.append("config[certificate]", files.certificate)
+  }
+  if (files.privateKey) {
+    formData.append("config[privateKey]", files.privateKey)
+  }
+
+  if (data.organizationId) {
+    formData.append("organizationId", data.organizationId)
+  }
+
+  return sendMultipartFormData(
+    `${BASE_API}/administration/transcriber_profiles`,
+    "post",
+    formData,
+    notif,
+  )
+}
+
+export async function apiAdminUpdateAmazonTranscriberProfile(
+  transcriberId,
+  data,
+  files,
+  notif,
+) {
+  const formData = new FormData()
+
+  formData.append("config[type]", "amazon")
+  formData.append("config[name]", data.config.name)
+  formData.append("config[description]", data.config.description || "")
+  formData.append("config[languages]", JSON.stringify(data.config.languages))
+  formData.append(
+    "config[availableTranslations]",
+    JSON.stringify(data.config.availableTranslations || []),
+  )
+  formData.append("config[passphrase]", data.config.passphrase || "")
+  formData.append("config[credentials]", data.config.credentials)
+  formData.append("config[trustAnchorArn]", data.config.trustAnchorArn)
+  formData.append("config[profileArn]", data.config.profileArn)
+  formData.append("config[roleArn]", data.config.roleArn)
+  formData.append("quickMeeting", data.quickMeeting)
+
+  if (files && files.certificate) {
+    formData.append("config[certificate]", files.certificate)
+  }
+  if (files && files.privateKey) {
+    formData.append("config[privateKey]", files.privateKey)
+  }
+
+  if (data.organizationId) {
+    formData.append("organizationId", data.organizationId)
+  }
+
+  return sendMultipartFormData(
+    `${BASE_API}/administration/transcriber_profiles/${transcriberId}`,
+    "put",
+    formData,
+    notif,
+  )
+}

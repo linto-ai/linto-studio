@@ -12,10 +12,12 @@
       <h4>{{ $t("backoffice.transcriber_profile_detail.options_title") }}</h4>
       <FormCheckbox
         switchDisplay
+        labelRight
         v-model="localQuickMeeting"
         :field="{ label: $t('backoffice.transcriber_profile_detail.quick_meeting_label'), value: localQuickMeeting }" />
       <FormCheckbox
         switchDisplay
+        labelRight
         v-model="localConfig.hasDiarization"
         :field="{ label: $t('backoffice.transcriber_profile_detail.diarization_label'), value: localConfig.hasDiarization }" />
     </section>
@@ -92,6 +94,7 @@ export default {
 .options-section {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: var(--small-gap);
   margin-top: var(--small-gap);
   padding-top: var(--small-gap);

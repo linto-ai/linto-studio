@@ -1,37 +1,54 @@
 <template>
   <div class="config-amazon">
-    <FormInput
-      :field="nameField"
-      v-model="localConfig.name" />
+    <FormInput :field="nameField" v-model="localConfig.name" />
 
-    <FormInput
-      :field="descriptionField"
-      v-model="localConfig.description" />
+    <FormInput :field="descriptionField" v-model="localConfig.description" />
 
     <section class="options-section">
       <h4>{{ $t("backoffice.transcriber_profile_detail.options_title") }}</h4>
       <FormCheckbox
         switchDisplay
         v-model="localQuickMeeting"
-        :field="{ label: $t('backoffice.transcriber_profile_detail.quick_meeting_label'), value: localQuickMeeting }" />
+        :field="{
+          label: $t(
+            'backoffice.transcriber_profile_detail.quick_meeting_label',
+          ),
+          value: localQuickMeeting,
+        }" />
     </section>
 
     <section class="form-section">
       <h4>Certificats AWS</h4>
 
       <div class="form-field">
-        <label class="form-label">{{ $t("backoffice.transcriber_profile_detail.amazon_certificate_label") }}</label>
+        <label class="form-label">{{
+          $t("backoffice.transcriber_profile_detail.amazon_certificate_label")
+        }}</label>
         <div class="file-input-wrapper">
-          <input type="file" accept=".crt" @change="onCertificateChange" class="file-input" />
-          <span v-if="files.certificate" class="file-selected">{{ files.certificate.name }}</span>
+          <input
+            type="file"
+            accept=".crt"
+            @change="onCertificateChange"
+            class="file-input" />
+          <span v-if="files.certificate" class="file-selected">{{
+            files.certificate.name
+          }}</span>
         </div>
       </div>
 
       <div class="form-field">
-        <label class="form-label">{{ $t("backoffice.transcriber_profile_detail.amazon_private_key_label") }}</label>
+        <label class="form-label">{{
+          $t("backoffice.transcriber_profile_detail.amazon_private_key_label")
+        }}</label>
         <div class="file-input-wrapper">
-          <input type="file" accept=".pem" @change="onPrivateKeyChange" class="file-input" />
-          <span v-if="files.privateKey" class="file-selected">{{ files.privateKey.name }}</span>
+          <input
+            type="file"
+            accept=".pem"
+            @change="onPrivateKeyChange"
+            class="file-input" />
+          <span v-if="files.privateKey" class="file-selected">{{
+            files.privateKey.name
+          }}</span>
         </div>
         <div v-if="rsaWarning" class="warning-message">
           {{ $t("backoffice.transcriber_profile_detail.amazon_rsa_warning") }}
@@ -39,33 +56,29 @@
       </div>
 
       <div class="pkcs8-helper">
-        <span class="helper-text">{{ $t("backoffice.transcriber_profile_detail.amazon_pkcs8_helper") }}</span>
-        <code class="helper-command">{{ $t("backoffice.transcriber_profile_detail.amazon_pkcs8_command") }}</code>
+        <span class="helper-text">{{
+          $t("backoffice.transcriber_profile_detail.amazon_pkcs8_helper")
+        }}</span>
+        <code class="helper-command">{{
+          $t("backoffice.transcriber_profile_detail.amazon_pkcs8_command")
+        }}</code>
       </div>
 
-      <FormInput
-        :field="passphraseField"
-        v-model="localConfig.passphrase" />
+      <FormInput :field="passphraseField" v-model="localConfig.passphrase" />
     </section>
 
     <section class="form-section">
       <h4>IAM Roles Anywhere</h4>
 
-      <FormInput
-        :field="credentialsField"
-        v-model="localConfig.credentials" />
+      <FormInput :field="credentialsField" v-model="localConfig.credentials" />
 
       <FormInput
         :field="trustAnchorArnField"
         v-model="localConfig.trustAnchorArn" />
 
-      <FormInput
-        :field="profileArnField"
-        v-model="localConfig.profileArn" />
+      <FormInput :field="profileArnField" v-model="localConfig.profileArn" />
 
-      <FormInput
-        :field="roleArnField"
-        v-model="localConfig.roleArn" />
+      <FormInput :field="roleArnField" v-model="localConfig.roleArn" />
     </section>
   </div>
 </template>
@@ -96,38 +109,64 @@ export default {
       rsaWarning: false,
       nameField: {
         label: this.$t("backoffice.transcriber_profile_detail.name_label"),
-        placeholder: this.$t("backoffice.transcriber_profile_detail.name_placeholder"),
+        placeholder: this.$t(
+          "backoffice.transcriber_profile_detail.name_placeholder",
+        ),
         error: null,
       },
       descriptionField: {
-        label: this.$t("backoffice.transcriber_profile_detail.description_label"),
-        placeholder: this.$t("backoffice.transcriber_profile_detail.description_placeholder"),
+        label: this.$t(
+          "backoffice.transcriber_profile_detail.description_label",
+        ),
+        placeholder: this.$t(
+          "backoffice.transcriber_profile_detail.description_placeholder",
+        ),
         error: null,
       },
       passphraseField: {
-        label: this.$t("backoffice.transcriber_profile_detail.amazon_passphrase_label"),
-        placeholder: this.$t("backoffice.transcriber_profile_detail.amazon_passphrase_placeholder"),
+        label: this.$t(
+          "backoffice.transcriber_profile_detail.amazon_passphrase_label",
+        ),
+        placeholder: this.$t(
+          "backoffice.transcriber_profile_detail.amazon_passphrase_placeholder",
+        ),
         type: "password",
         error: null,
       },
       credentialsField: {
-        label: this.$t("backoffice.transcriber_profile_detail.amazon_credentials_label"),
-        placeholder: this.$t("backoffice.transcriber_profile_detail.amazon_credentials_placeholder"),
+        label: this.$t(
+          "backoffice.transcriber_profile_detail.amazon_credentials_label",
+        ),
+        placeholder: this.$t(
+          "backoffice.transcriber_profile_detail.amazon_credentials_placeholder",
+        ),
         error: null,
       },
       trustAnchorArnField: {
-        label: this.$t("backoffice.transcriber_profile_detail.amazon_trust_anchor_arn_label"),
-        placeholder: this.$t("backoffice.transcriber_profile_detail.amazon_trust_anchor_arn_placeholder"),
+        label: this.$t(
+          "backoffice.transcriber_profile_detail.amazon_trust_anchor_arn_label",
+        ),
+        placeholder: this.$t(
+          "backoffice.transcriber_profile_detail.amazon_trust_anchor_arn_placeholder",
+        ),
         error: null,
       },
       profileArnField: {
-        label: this.$t("backoffice.transcriber_profile_detail.amazon_profile_arn_label"),
-        placeholder: this.$t("backoffice.transcriber_profile_detail.amazon_profile_arn_placeholder"),
+        label: this.$t(
+          "backoffice.transcriber_profile_detail.amazon_profile_arn_label",
+        ),
+        placeholder: this.$t(
+          "backoffice.transcriber_profile_detail.amazon_profile_arn_placeholder",
+        ),
         error: null,
       },
       roleArnField: {
-        label: this.$t("backoffice.transcriber_profile_detail.amazon_role_arn_label"),
-        placeholder: this.$t("backoffice.transcriber_profile_detail.amazon_role_arn_placeholder"),
+        label: this.$t(
+          "backoffice.transcriber_profile_detail.amazon_role_arn_label",
+        ),
+        placeholder: this.$t(
+          "backoffice.transcriber_profile_detail.amazon_role_arn_placeholder",
+        ),
         error: null,
       },
     }
@@ -197,13 +236,16 @@ export default {
   gap: var(--small-gap);
 }
 
-.form-field {
+.options-section {
   display: flex;
   flex-direction: column;
-  gap: var(--tiny-gap);
+  align-items: flex-start;
+  gap: var(--small-gap);
+  margin-top: var(--small-gap);
+  padding-top: var(--small-gap);
+  border-top: var(--border-block);
 }
 
-.options-section,
 .form-section {
   display: flex;
   flex-direction: column;
@@ -254,7 +296,7 @@ export default {
 }
 
 .helper-command {
-  font-family: 'Monaco', 'Menlo', monospace;
+  font-family: var(--font-family-mono);
   font-size: var(--text-xs);
   padding: var(--tiny-gap) var(--small-gap);
   background: var(--background-primary);

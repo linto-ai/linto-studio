@@ -7,7 +7,8 @@
     :actionBtnLabel="$t('modal_create_transcriber_profile.action_btn')"
     :title="$t('modal_create_transcriber_profile.title')">
     <template #header-actions>
-      <Tooltip :text="$t('modal_create_transcriber_profile.organization_tooltip')">
+      <Tooltip
+        :text="$t('modal_create_transcriber_profile.organization_tooltip')">
         <div class="header-selector">
           <ph-icon name="buildings" size="sm" />
           <PopoverList
@@ -19,14 +20,11 @@
       <Tooltip :text="$t('modal_create_transcriber_profile.type_tooltip')">
         <div class="header-selector">
           <ph-icon name="microphone" size="sm" />
-          <PopoverList
-            :items="typeItems"
-            v-model="currentType"
-            size="sm" />
+          <PopoverList :items="typeItems" v-model="currentType" size="sm" />
         </div>
       </Tooltip>
     </template>
-    <div class="transcriber-modal-content">
+    <div class="transcriber-modal-content flex col">
       <TranscriberProfileEditor
         ref="editor"
         @input="updateTranscriberProfile"
@@ -77,7 +75,10 @@ export default {
   computed: {
     organizationItems() {
       const items = [
-        { value: null, text: this.$t("modal_create_transcriber_profile.platform_global") },
+        {
+          value: null,
+          text: this.$t("modal_create_transcriber_profile.platform_global"),
+        },
       ]
       this.organizations.forEach((org) => {
         items.push({ value: org._id, text: org.name })
@@ -89,7 +90,9 @@ export default {
         return this.transcriberProfile.config.type
       },
       set(value) {
-        this.transcriberProfile = structuredClone(TRANSCRIBER_PROFILES_TEMPLATES[value])
+        this.transcriberProfile = structuredClone(
+          TRANSCRIBER_PROFILES_TEMPLATES[value],
+        )
         this.amazonFiles = { certificate: null, privateKey: null }
         this.$nextTick(() => {
           this.$refs.editor.reset()
@@ -102,7 +105,10 @@ export default {
   },
   methods: {
     async fetchOrganizations() {
-      const res = await apiGetAllOrganizations(0, { pageSize: 1000, hidePersonal: true })
+      const res = await apiGetAllOrganizations(0, {
+        pageSize: 1000,
+        hidePersonal: true,
+      })
       this.organizations = res.list || []
     },
     updateTranscriberProfile(value) {
