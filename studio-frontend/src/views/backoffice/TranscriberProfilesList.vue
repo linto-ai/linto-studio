@@ -39,13 +39,14 @@
         </template>
       </HeaderTable>
     </template>
-    <div class="fixed-notif small-margin-bottom" v-if="!showAllProfiles">
-      <div class="app-notif__message">
-        {{ $t("backoffice.transcriber_profile_list.warning_global.line_1") }}
-        <br />
-        {{ $t("backoffice.transcriber_profile_list.warning_global.line_2") }}
-      </div>
-    </div>
+    <NotificationBanner
+      class="small-margin-bottom"
+      variant="warning"
+      v-if="!showAllProfiles">
+      {{ $t("backoffice.transcriber_profile_list.warning_global.line_1") }}
+      <br />
+      {{ $t("backoffice.transcriber_profile_list.warning_global.line_2") }}
+    </NotificationBanner>
     <div class="backoffice-listing-container">
       <TranscriberProfileTable
         @list_sort_by="sortBy"
@@ -79,6 +80,7 @@ import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import TranscriberProfileTable from "@/components/TranscriberProfileTable.vue"
 import HeaderTable from "@/components/HeaderTable.vue"
 import ModalCreateTranscriberProfiles from "@/components/ModalCreateTranscriberProfiles.vue"
+import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 import { debounceMixin } from "@/mixins/debounce.js"
 
 export default {
@@ -203,6 +205,7 @@ export default {
     TranscriberProfileTable,
     HeaderTable,
     ModalCreateTranscriberProfiles,
+    NotificationBanner,
   },
 }
 </script>

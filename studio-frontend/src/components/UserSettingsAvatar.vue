@@ -15,6 +15,7 @@
       </button> -->
       <input
         type="file"
+        class="hidden"
         id="file"
         ref="file"
         v-on:change="handleFileUpload()" />

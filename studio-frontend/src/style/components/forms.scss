@@ -213,7 +213,7 @@
   }
 
   /* input file */
-  input[type="file"] {
+  input[type="file"].hidden {
     position: absolute;
     z-index: -1;
     top: 5px;

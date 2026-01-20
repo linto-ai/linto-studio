@@ -1,54 +1,72 @@
 <template>
-  <div class="flex col transcriber-profile-editor">
-    <div class="flex gap-medium align-end">
+  <div class="transcriber-profile-editor">
+    <!-- Header row with type selector -->
+    <div class="editor-header">
       <div class="form-field flex col">
-        <label class="form-label">{{ $t(
-          "backoffice.transcriber_profile_detail.type_label",
-        ), }}</label>
+        <label class="form-label">{{ $t("backoffice.transcriber_profile_detail.type_label") }}</label>
         <select v-model="currentType">
           <option v-for="type in types" :key="type" :value="type">
             {{ typesLabels[type] }}
           </option>
         </select>
       </div>
-
-      <FormCheckbox
-        column
-        switchDisplay
-        v-model="quickMeetingField.value"
-        :field="quickMeetingField" />
-
-      <div></div>
     </div>
-    <div class="fixed-notif small-margin-bottom" v-if="!organizationId">
-      <div class="app-notif__message">
-        {{ $t("backoffice.transcriber_profile_detail.warning_global.line_1") }}
-        <br />
-        {{ $t("backoffice.transcriber_profile_detail.warning_global.line_2") }}
-      </div>
+
+    <NotificationBanner variant="warning" v-if="!organizationId">
+      {{ $t("backoffice.transcriber_profile_detail.warning_global.line_1") }}
+      {{ $t("backoffice.transcriber_profile_detail.warning_global.line_2") }}
+    </NotificationBanner>
+
+    <!-- Side-by-side layout: Config form + JSON editor -->
+    <div class="editor-content">
+      <!-- Left: Configuration form -->
+      <Panel :title="`Configuration ${typesLabels[currentType]}`">
+        <TranscriberProfileConfigLinto
+          v-if="currentType === 'linto'"
+          v-model="l_transcriberProfile.config"
+          :quickMeeting="l_transcriberProfile.quickMeeting"
+          @update:quickMeeting="l_transcriberProfile.quickMeeting = $event" />
+
+        <TranscriberProfileConfigMicrosoft
+          v-if="currentType === 'microsoft'"
+          v-model="l_transcriberProfile.config"
+          :quickMeeting="l_transcriberProfile.quickMeeting"
+          @update:quickMeeting="l_transcriberProfile.quickMeeting = $event" />
+
+        <TranscriberProfileConfigAmazon
+          v-if="currentType === 'amazon'"
+          ref="amazonConfig"
+          v-model="l_transcriberProfile.config"
+          :quickMeeting="l_transcriberProfile.quickMeeting"
+          @update:quickMeeting="l_transcriberProfile.quickMeeting = $event"
+          @files-changed="onFilesChanged" />
+      </Panel>
+
+      <!-- Right: JSON editor -->
+      <Panel title="JSON" variant="dark" noPadding>
+        <TranscriberProfileEditorPlain
+          v-model="l_transcriberProfile"
+          ref="editorPlain" />
+      </Panel>
     </div>
-    <TranscriberProfileEditorPlain
-      v-model="l_transcriberProfile"
-      class="flex1"
-      ref="editorPlain" />
   </div>
 </template>
+
 <script>
-import { bus } from "@/main.js"
 import TRANSCRIBER_PROFILES_TEMPLATES from "@/const/transcriberProfilesTemplates"
-import EMPTY_FIELD from "@/const/emptyField"
-import Tabs from "@/components/molecules/Tabs.vue"
 import TranscriberProfileEditorPlain from "@/components/TranscriberProfileEditorPlain.vue"
-import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
+import Panel from "@/components/atoms/Panel.vue"
+import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
+import TranscriberProfileConfigLinto from "@/components/TranscriberProfileConfigLinto.vue"
+import TranscriberProfileConfigMicrosoft from "@/components/TranscriberProfileConfigMicrosoft.vue"
+import TranscriberProfileConfigAmazon from "@/components/TranscriberProfileConfigAmazon.vue"
 
 export default {
   props: {
     transcriberProfile: {
       type: Object,
       required: false,
-      default: () => {
-        return TRANSCRIBER_PROFILES_TEMPLATES.linto
-      },
+      default: () => TRANSCRIBER_PROFILES_TEMPLATES.linto,
     },
     organizationId: {
       type: String,
@@ -57,22 +75,19 @@ export default {
   },
   data() {
     return {
-      types: ["linto", "microsoft"],
+      types: ["linto", "microsoft", "amazon"],
       typesLabels: {
         linto: "LinTO",
         microsoft: "Microsoft",
-      },
-      quickMeetingField: {
-        ...EMPTY_FIELD,
-        value: this.transcriberProfile.quickMeeting,
-        label: this.$t(
-          "backoffice.transcriber_profile_detail.quick_meeting_label",
-        ),
+        amazon: "Amazon",
       },
       l_transcriberProfile: structuredClone(this.transcriberProfile),
+      amazonFiles: {
+        certificate: null,
+        privateKey: null,
+      },
     }
   },
-  mounted() {},
   computed: {
     currentType: {
       get() {
@@ -80,6 +95,7 @@ export default {
       },
       set(value) {
         this.$emit("input", TRANSCRIBER_PROFILES_TEMPLATES[value])
+        this.amazonFiles = { certificate: null, privateKey: null }
         this.$nextTick(() => {
           this.reset()
         })
@@ -93,29 +109,106 @@ export default {
       },
       deep: true,
     },
-    "quickMeetingField.value"(value) {
-      this.transcriberProfile.quickMeeting = value
-      this.$nextTick(() => {
-        this.reset()
-      })
-    },
-    "transcriberProfile.quickMeeting"(value) {
-      this.quickMeetingField.value = value
-    },
   },
   methods: {
     async reset() {
       await this.$nextTick()
       this.l_transcriberProfile = structuredClone(this.transcriberProfile)
+      this.amazonFiles = { certificate: null, privateKey: null }
+      if (this.$refs.amazonConfig) {
+        this.$refs.amazonConfig.resetFiles()
+      }
       this.$nextTick(() => {
         this.$refs.editorPlain.resetValue()
       })
     },
+    onFilesChanged(files) {
+      this.amazonFiles = files
+      this.$emit("files-changed", files)
+    },
+    getAmazonFiles() {
+      return this.amazonFiles
+    },
   },
   components: {
-    Tabs,
     TranscriberProfileEditorPlain,
-    FormCheckbox,
+    Panel,
+    NotificationBanner,
+    TranscriberProfileConfigLinto,
+    TranscriberProfileConfigMicrosoft,
+    TranscriberProfileConfigAmazon,
   },
 }
 </script>
+
+<style scoped>
+.transcriber-profile-editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--small-gap);
+  height: 100%;
+}
+
+.editor-header {
+  display: flex;
+  gap: var(--large-gap);
+  flex-shrink: 0;
+}
+
+.editor-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--medium-gap);
+  flex: 1;
+  min-height: 0;
+}
+
+.editor-content :deep(.panel) {
+  min-height: 0;
+}
+
+.editor-content :deep(.panel__body) {
+  min-height: 0;
+}
+
+/* Form field styles inside panels */
+.editor-content :deep(.form-field) {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tiny-gap);
+}
+
+.editor-content :deep(.form-label) {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.editor-content :deep(input[type="text"]),
+.editor-content :deep(input[type="password"]) {
+  padding: var(--small-gap) var(--small-gap);
+  border: var(--border-input);
+  border-radius: 4px;
+  font-size: var(--text-sm);
+  background: var(--input-background);
+}
+
+.editor-content :deep(input[type="text"]:focus),
+.editor-content :deep(input[type="password"]:focus) {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px var(--primary-soft);
+}
+
+/* JSON editor textarea */
+.editor-content :deep(.transcriber-profile-editor__plain) {
+  flex: 1;
+  min-height: 200px;
+}
+
+@media (max-width: 800px) {
+  .editor-content {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

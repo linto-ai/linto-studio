@@ -1,31 +1,24 @@
 @layer base {
-  #app-notif,
-  .fixed-notif {
+  #app-notif {
     background: var(--background-primary);
     width: 100%;
-
     align-items: center;
     justify-content: center;
-
     box-sizing: border-box;
     color: var(--text-primary);
     padding: 0.5rem 0.25rem;
+
     &.success {
-      border-color: var(--green-chart);
-      color: var(--green-chart);
+      border-color: var(--success-color);
+      color: var(--success-color);
     }
     &.warning {
-      border-color: var(--yellow-chart);
-      color: var(--yellow-chart);
+      border-color: var(--warning-color);
+      color: var(--warning-color);
     }
     &.error {
-      border-color: var(--red-chart);
-      color: var(--red-chart);
+      border-color: var(--danger-color);
+      color: var(--danger-color);
     }
-  }
-
-  .fixed-notif {
-    border: 1px solid;
-    padding: 0.5rem 0.5rem;
   }
 }

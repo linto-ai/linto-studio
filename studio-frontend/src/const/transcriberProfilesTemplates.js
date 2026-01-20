@@ -74,6 +74,28 @@ const TRANSCRIBER_PROFILES_TEMPLATES = {
     },
     quickMeeting: true,
   },
+  amazon: {
+    config: {
+      type: "amazon",
+      name: "Amazon Transcribe",
+      description: "Amazon Transcribe with IAM Roles Anywhere",
+      languages: [
+        {
+          candidate: "en-US",
+          endpoint: "us-east-1",
+        },
+      ],
+      availableTranslations: [],
+      certificate: null,
+      privateKey: null,
+      passphrase: "",
+      credentials: "",
+      trustAnchorArn: "",
+      profileArn: "",
+      roleArn: "",
+    },
+    quickMeeting: true,
+  },
 }
 
 export default TRANSCRIBER_PROFILES_TEMPLATES

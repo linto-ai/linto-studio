@@ -14,6 +14,7 @@
         </div>
         <input
           type="file"
+          class="hidden"
           id="fileInput"
           ref="input"
           :accept="acceptString"
