@@ -116,6 +116,9 @@
             <span v-if="createdAt" class="media-explorer-item__date">
               {{ createdAt }}
             </span>
+            <SecurityLevelIndicator
+              :level="securityLevel"
+              class="media-explorer-item__security-level" />
           </div>
         </div>
       </div>
@@ -181,6 +184,7 @@ import userAvatar from "@/tools/userAvatar"
 
 import { PhStar } from "phosphor-vue"
 import MediaExplorerChipStatus from "./MediaExplorerChipStatus.vue"
+import SecurityLevelIndicator from "@/components/SecurityLevelIndicator.vue"
 
 export default {
   mixins: [mediaScopeMixin, mediaProgressMixin],
@@ -193,6 +197,7 @@ export default {
     ModalDeleteConversations,
     PopoverList,
     MediaExplorerChipStatus,
+    SecurityLevelIndicator,
   },
   props: {
     media: {
@@ -341,6 +346,9 @@ export default {
       }
       const d = new Date(this.reactiveMedia?.created)
       return d.toLocaleDateString(undefined, options)
+    },
+    securityLevel() {
+      return this.reactiveMedia?.securityLevel || null
     },
     isFavorite() {
       return this.$store.getters["user/isFavoriteConversation"](
@@ -621,6 +629,10 @@ export default {
   border-radius: 4px;
   color: var(--text-secondary);
   white-space: nowrap;
+}
+
+.media-explorer-item__security-level {
+  flex-shrink: 0;
 }
 
 // ===== ACTIONS =====

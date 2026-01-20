@@ -213,7 +213,6 @@ export default {
   },
   mounted() {
     this.getLastUpdate()
-    this.getServices()
     this.initSocket()
   },
   beforeDestroy() {
@@ -222,6 +221,11 @@ export default {
     this.cleanupSocket()
   },
   watch: {
+    async conversationLoaded(value) {
+      if (value) {
+        await this.getServices()
+      }
+    },
     dataLoaded(newVal, oldVal) {
       if (newVal) {
         this.status = this.computeStatus(this.conversation?.jobs?.transcription)
@@ -266,6 +270,9 @@ export default {
     },
   },
   computed: {
+    currentOrganizationScope() {
+      return this.$store.getters["organizations/getCurrentOrganizationScope"]
+    },
     hasContentChanges() {
       // Use the data property that's updated by onContentChange event
       // This is reactive, unlike calling $refs method
@@ -307,6 +314,7 @@ export default {
         const description = getDescriptionByLanguage(
           this.indexedFormat[format].description,
           this.$i18n.locale,
+          format,
         )
         return {
           name: format,
@@ -708,7 +716,12 @@ export default {
     },
     async getServices() {
       try {
-        let services = await getLLMService()
+        const organizationId = this.currentOrganizationScope
+
+        let services = await getLLMService(
+          organizationId,
+          this.conversation.securityLevel,
+        )
         let res = {}
         for (const service of services) {
           const format = service.name
@@ -1209,7 +1222,8 @@ export default {
       if (jobIndex !== -1) {
         // Update existing job
         // Map backend status to frontend status: 'started' -> 'processing'
-        const mappedStatus = update.status === 'started' ? 'processing' : update.status
+        const mappedStatus =
+          update.status === "started" ? "processing" : update.status
         this.$set(this.jobsList, jobIndex, {
           ...this.jobsList[jobIndex],
           status: mappedStatus,

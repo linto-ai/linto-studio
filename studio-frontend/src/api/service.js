@@ -63,11 +63,11 @@ export async function apiGetNlpService(notif) {
   return res
 }
 
-export async function getLLMService() {
+export async function getLLMService(organizationId, securityLevel) {
   const req = await sendRequest(
-    `${BASE_API}/services/llm`,
+    `${BASE_API}/services/${organizationId}/llm`,
     { method: "get" },
-    {},
+    { securityLevel },
     null,
   )
 
@@ -143,7 +143,11 @@ export async function apiListExportVersions(conversationId, jobId) {
  * @param {number} versionNumber - Version number
  * @returns {Promise<object|null>} Version data or null
  */
-export async function apiGetExportVersion(conversationId, jobId, versionNumber) {
+export async function apiGetExportVersion(
+  conversationId,
+  jobId,
+  versionNumber,
+) {
   const req = await sendRequest(
     `${BASE_API}/conversations/${conversationId}/export/${jobId}/versions/${versionNumber}`,
     { method: "get" },
@@ -165,7 +169,11 @@ export async function apiGetExportVersion(conversationId, jobId, versionNumber) 
  * @param {number} versionNumber - Version number to restore
  * @returns {Promise<object|null>} Restored version data or null
  */
-export async function apiRestoreExportVersion(conversationId, jobId, versionNumber) {
+export async function apiRestoreExportVersion(
+  conversationId,
+  jobId,
+  versionNumber,
+) {
   const req = await sendRequest(
     `${BASE_API}/conversations/${conversationId}/export/${jobId}/versions/${versionNumber}/restore`,
     { method: "post" },
@@ -188,7 +196,12 @@ export async function apiRestoreExportVersion(conversationId, jobId, versionNumb
  * @param {number} [versionNumber] - Optional version number to export (uses latest if not provided)
  * @returns {Promise<Blob|null>} Document blob or null
  */
-export async function apiExportDocument(conversationId, jobId, format, versionNumber = null) {
+export async function apiExportDocument(
+  conversationId,
+  jobId,
+  format,
+  versionNumber = null,
+) {
   const body = { format }
   if (versionNumber !== null && versionNumber !== undefined) {
     body.versionNumber = versionNumber
@@ -255,7 +268,12 @@ export async function apiGetGeneration(conversationId, generationId) {
  * @param {string} serviceName - Optional service name
  * @returns {Promise<object|null>} Created generation or null
  */
-export async function apiCreateGeneration(conversationId, serviceId, jobId, serviceName) {
+export async function apiCreateGeneration(
+  conversationId,
+  serviceId,
+  jobId,
+  serviceName,
+) {
   const req = await sendRequest(
     `${BASE_API}/conversations/${conversationId}/generations`,
     { method: "post" },
@@ -295,7 +313,7 @@ export async function apiGetExportContent(conversationId, jobId) {
     return {
       status: "job_not_found",
       gatewayAvailable: responseData?.gatewayAvailable ?? true,
-      error: responseData?.error || "Job not found"
+      error: responseData?.error || "Job not found",
     }
   }
 
@@ -303,13 +321,13 @@ export async function apiGetExportContent(conversationId, jobId) {
     return {
       status: "gateway_unavailable",
       gatewayAvailable: false,
-      error: responseData?.error || "LLM Gateway unavailable"
+      error: responseData?.error || "LLM Gateway unavailable",
     }
   }
 
   // Return generic error for other cases
   return {
     status: "error",
-    error: responseData?.error || req?.error?.message || "Unknown error"
+    error: responseData?.error || req?.error?.message || "Unknown error",
   }
 }

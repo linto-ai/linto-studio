@@ -1,15 +1,15 @@
 const SECURITY_LEVELS_LIST = (t) => [
   {
-    value: "unsecured",
-    txt: t("conversation.security_level_txt.unsecured"),
+    value: "insecure",
+    txt: t("conversation.security_level_txt.insecure"),
   },
   {
     value: "sensitive",
     txt: t("conversation.security_level_txt.sensitive"),
   },
   {
-    value: "secured",
-    txt: t("conversation.security_level_txt.secured"),
+    value: "secure",
+    txt: t("conversation.security_level_txt.secure"),
   },
 ]
 

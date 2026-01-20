@@ -1,11 +1,13 @@
 <template>
   <!-- TODO: Merge with serviceBox component ? -->
   <fieldset
-    @click="select"
+    @click="handleClick"
     class="flex col selectable"
+    :class="{ 'security-disabled': securityDisabled }"
     :selected="selected"
     role="option"
-    aria-selected="selected"
+    :aria-selected="selected"
+    :aria-disabled="securityDisabled"
     :id="`service-${value.name}`">
     <!-- add a form tag all around ?-->
     <!-- <legend class="h3">{{ value.name }}</legend> -->
@@ -148,6 +150,11 @@ export default {
       required: false,
       default: false,
     },
+    securityDisabled: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     let defaultLang
@@ -219,7 +226,14 @@ export default {
       const lang = this.$i18n.locale.split("-")[0] || "en"
       return value[lang] || value["en"]
     },
-
+    handleClick(event) {
+      if (this.securityDisabled) {
+        event?.preventDefault()
+        event?.stopPropagation()
+        return
+      }
+      this.select(event)
+    },
     select(event) {
       event?.preventDefault()
       this.$emit(

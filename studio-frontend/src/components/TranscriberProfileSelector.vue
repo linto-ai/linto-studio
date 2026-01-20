@@ -54,6 +54,7 @@
         :profilesList="sortedTranscriberProfiles"
         :key="profile.id"
         :profile="profile"
+        :securityDisabled="isSecurityDisabled(profile)"
         v-model="selectedProfiles" />
     </tbody>
   </table>
@@ -62,6 +63,7 @@
 import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 import { sortArray } from "@/tools/sortList.js"
+import { meetsMetaSecurityLevel } from "@/tools/filterBySecurityLevel"
 
 import ArrayHeader from "@/components/ArrayHeader.vue"
 import TranscriberProfileSelectorLine from "@/components/TranscriberProfileSelectorLine.vue"
@@ -79,6 +81,11 @@ export default {
     multiple: {
       type: Boolean,
       default: true,
+    },
+    securityLevel: {
+      type: String,
+      required: false,
+      default: null,
     },
   },
   data() {
@@ -106,6 +113,14 @@ export default {
     },
   },
   mounted() {},
+  watch: {
+    profilesList: {
+      handler(newList) {
+        this.l_profilesList = structuredClone(newList)
+      },
+      deep: true,
+    },
+  },
   methods: {
     sortBy(key) {
       if (key === this.sortListKey) {
@@ -115,6 +130,10 @@ export default {
         this.sortListDirection = "desc"
       }
       this.sortListKey = key
+    },
+    isSecurityDisabled(profile) {
+      if (!this.securityLevel) return false
+      return !meetsMetaSecurityLevel(profile, this.securityLevel)
     },
   },
   components: { Fragment, ArrayHeader, TranscriberProfileSelectorLine },

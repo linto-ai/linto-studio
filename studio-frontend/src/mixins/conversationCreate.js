@@ -7,6 +7,7 @@ import { apiCreateConversation } from "@/api/conversation"
 import { getUserRoleInOrganization } from "@/tools/getUserRoleInOrganization"
 import { testFieldEmpty } from "@/tools/fields/testEmpty.js"
 import { testService } from "@/tools/fields/testService.js"
+import { meetsSecurityLevel } from "@/tools/filterBySecurityLevel"
 
 import { formsMixin } from "@/mixins/forms.js"
 import { debounceMixin } from "@/mixins/debounce"
@@ -51,7 +52,7 @@ export default {
         value: 1,
         list: RIGHTS_LIST((key) => this.$i18n.t(key)),
       },
-      securityLevel: "unsecured",
+      securityLevel: "insecure",
       fieldTranscriptionService: {
         ...EMPTY_FIELD,
         loading: true,
@@ -83,6 +84,18 @@ export default {
   watch: {
     "conversationLanguage.value"(value) {
       this.initTranscriptionList()
+    },
+    securityLevel(newLevel) {
+      // Reset selection if current service doesn't meet the new security level
+      if (this.fieldTranscriptionService.value) {
+        const currentService = this.fieldTranscriptionService.list.find(
+          (s) =>
+            s.serviceName === this.fieldTranscriptionService.value.serviceName,
+        )
+        if (currentService && !meetsSecurityLevel(currentService, newLevel)) {
+          this.fieldTranscriptionService.value = null
+        }
+      }
     },
     // "$i18n.locale": {
     //   handler(value) {

@@ -1,3 +1,5 @@
+export const SECURITY_LEVELS = ["insecure", "sensitive", "secure"]
+
 const TRANSCRIBER_PROFILES_TEMPLATES = {
   linto: {
     config: {
@@ -14,6 +16,9 @@ const TRANSCRIBER_PROFILES_TEMPLATES = {
       hasDiarization: false,
     },
     quickMeeting: true,
+    meta: {
+      securityLevel: "insecure",
+    },
   },
   microsoft: {
     config: {
@@ -73,6 +78,9 @@ const TRANSCRIBER_PROFILES_TEMPLATES = {
       hasDiarization: true,
     },
     quickMeeting: true,
+    meta: {
+      securityLevel: "insecure",
+    },
   },
 }
 

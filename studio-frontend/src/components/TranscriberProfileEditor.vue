@@ -12,6 +12,17 @@
         </select>
       </div>
 
+      <div class="form-field flex col">
+        <label class="form-label">{{ $t(
+          "backoffice.transcriber_profile_detail.security_level_label",
+        ) }}</label>
+        <select v-model="currentSecurityLevel">
+          <option v-for="level in securityLevels" :key="level.value" :value="level.value">
+            {{ level.txt }}
+          </option>
+        </select>
+      </div>
+
       <FormCheckbox
         column
         switchDisplay
@@ -35,7 +46,8 @@
 </template>
 <script>
 import { bus } from "@/main.js"
-import TRANSCRIBER_PROFILES_TEMPLATES from "@/const/transcriberProfilesTemplates"
+import TRANSCRIBER_PROFILES_TEMPLATES, { SECURITY_LEVELS } from "@/const/transcriberProfilesTemplates"
+import SECURITY_LEVELS_LIST from "@/const/securityLevelsList"
 import EMPTY_FIELD from "@/const/emptyField"
 import Tabs from "@/components/molecules/Tabs.vue"
 import TranscriberProfileEditorPlain from "@/components/TranscriberProfileEditorPlain.vue"
@@ -74,12 +86,31 @@ export default {
   },
   mounted() {},
   computed: {
+    securityLevels() {
+      return SECURITY_LEVELS_LIST((key) => this.$i18n.t(key))
+    },
     currentType: {
       get() {
         return this.transcriberProfile.config.type
       },
       set(value) {
         this.$emit("input", TRANSCRIBER_PROFILES_TEMPLATES[value])
+        this.$nextTick(() => {
+          this.reset()
+        })
+      },
+    },
+    currentSecurityLevel: {
+      get() {
+        return this.transcriberProfile.meta?.securityLevel || "insecure"
+      },
+      set(value) {
+        const updatedProfile = structuredClone(this.transcriberProfile)
+        if (!updatedProfile.meta) {
+          updatedProfile.meta = {}
+        }
+        updatedProfile.meta.securityLevel = value
+        this.$emit("input", updatedProfile)
         this.$nextTick(() => {
           this.reset()
         })

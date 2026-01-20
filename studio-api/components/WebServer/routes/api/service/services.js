@@ -15,7 +15,7 @@ module.exports = (webserver) => {
       controller: getSaasServices,
     },
     {
-      path: "/llm",
+      path: "/:organizationId/llm",
       method: "get",
       requireAuth: true,
       controller: getLlmServices,
