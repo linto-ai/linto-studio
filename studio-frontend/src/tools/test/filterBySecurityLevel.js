@@ -17,7 +17,11 @@ test("filterBySecurityLevel() returns all items when required level is insecure"
     { name: "item3", security_level: "secure" },
   ]
   const result = filterBySecurityLevel(items, "insecure")
-  t.is(result.length, 3)
+  t.deepEqual(result, [
+    { name: "item1", security_level: "insecure" },
+    { name: "item2", security_level: "sensitive" },
+    { name: "item3", security_level: "secure" },
+  ])
 })
 
 test("filterBySecurityLevel() filters out insecure items when required level is sensitive", (t) => {
@@ -27,8 +31,10 @@ test("filterBySecurityLevel() filters out insecure items when required level is 
     { name: "item3", security_level: "secure" },
   ]
   const result = filterBySecurityLevel(items, "sensitive")
-  t.is(result.length, 2)
-  t.true(result.every((item) => item.security_level !== "insecure"))
+  t.deepEqual(result, [
+    { name: "item2", security_level: "sensitive" },
+    { name: "item3", security_level: "secure" },
+  ])
 })
 
 test("filterBySecurityLevel() returns only secure items when required level is secure", (t) => {
@@ -38,8 +44,7 @@ test("filterBySecurityLevel() returns only secure items when required level is s
     { name: "item3", security_level: "secure" },
   ]
   const result = filterBySecurityLevel(items, "secure")
-  t.is(result.length, 1)
-  t.is(result[0].security_level, "secure")
+  t.deepEqual(result, [{ name: "item3", security_level: "secure" }])
 })
 
 test("filterBySecurityLevel() treats missing security_level as insecure", (t) => {
@@ -48,8 +53,7 @@ test("filterBySecurityLevel() treats missing security_level as insecure", (t) =>
     { name: "item2", security_level: "sensitive" },
   ]
   const result = filterBySecurityLevel(items, "sensitive")
-  t.is(result.length, 1)
-  t.is(result[0].name, "item2")
+  t.deepEqual(result, [{ name: "item2", security_level: "sensitive" }])
 })
 
 test("filterBySecurityLevel() uses custom securityKey", (t) => {
@@ -58,8 +62,7 @@ test("filterBySecurityLevel() uses custom securityKey", (t) => {
     { name: "item2", level: "secure" },
   ]
   const result = filterBySecurityLevel(items, "secure", "level")
-  t.is(result.length, 1)
-  t.is(result[0].name, "item2")
+  t.deepEqual(result, [{ name: "item2", level: "secure" }])
 })
 
 test("filterBySecurityLevel() returns empty array when no items match", (t) => {
@@ -82,7 +85,10 @@ test("filterBySecurityLevel() treats unknown required level as insecure (level 1
     { name: "item2", security_level: "secure" },
   ]
   const result = filterBySecurityLevel(items, "unknown")
-  t.is(result.length, 2)
+  t.deepEqual(result, [
+    { name: "item1", security_level: "insecure" },
+    { name: "item2", security_level: "secure" },
+  ])
 })
 
 // ============================================
@@ -96,8 +102,10 @@ test("filterByMetaSecurityLevel() reads security level from meta.securityLevel",
     { name: "profile3", meta: { securityLevel: "secure" } },
   ]
   const result = filterByMetaSecurityLevel(items, "sensitive")
-  t.is(result.length, 2)
-  t.true(result.every((item) => item.meta.securityLevel !== "insecure"))
+  t.deepEqual(result, [
+    { name: "profile2", meta: { securityLevel: "sensitive" } },
+    { name: "profile3", meta: { securityLevel: "secure" } },
+  ])
 })
 
 test("filterByMetaSecurityLevel() treats missing meta as insecure", (t) => {
@@ -106,8 +114,7 @@ test("filterByMetaSecurityLevel() treats missing meta as insecure", (t) => {
     { name: "profile2", meta: { securityLevel: "secure" } },
   ]
   const result = filterByMetaSecurityLevel(items, "sensitive")
-  t.is(result.length, 1)
-  t.is(result[0].name, "profile2")
+  t.deepEqual(result, [{ name: "profile2", meta: { securityLevel: "secure" } }])
 })
 
 test("filterByMetaSecurityLevel() treats missing meta.securityLevel as insecure", (t) => {
@@ -116,8 +123,7 @@ test("filterByMetaSecurityLevel() treats missing meta.securityLevel as insecure"
     { name: "profile2", meta: { securityLevel: "secure" } },
   ]
   const result = filterByMetaSecurityLevel(items, "sensitive")
-  t.is(result.length, 1)
-  t.is(result[0].name, "profile2")
+  t.deepEqual(result, [{ name: "profile2", meta: { securityLevel: "secure" } }])
 })
 
 // ============================================
