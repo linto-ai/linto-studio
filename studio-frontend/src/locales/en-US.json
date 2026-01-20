@@ -213,7 +213,14 @@
       "amazon_role_arn_placeholder": "arn:aws:iam:...",
       "amazon_pkcs8_helper": "Private key must be in PKCS#8 format. Convert with:",
       "amazon_pkcs8_command": "openssl pkcs8 -topk8 -in old.pem -out new.pem",
-      "amazon_rsa_warning": "Warning: This appears to be an RSA private key. Please convert to PKCS#8 format."
+      "amazon_rsa_warning": "Warning: This appears to be an RSA private key. Please convert to PKCS#8 format.",
+      "languages_title": "Languages",
+      "linto_endpoint_label": "WebSocket URL",
+      "linto_endpoint_placeholder": "ws://...",
+      "microsoft_endpoint_label": "Endpoint ID",
+      "microsoft_endpoint_placeholder": "endpoint-id",
+      "amazon_endpoint_label": "AWS Region",
+      "amazon_endpoint_placeholder": "us-east-1"
     },
     "transcriber_profile_list": {
       "title": "Transcriber Profiles",
@@ -739,6 +746,11 @@
     "automatic": "Automatic",
     "optimized_fr": "Optimize for French",
     "optimized_en": "Optimize for English"
+  },
+  "language_endpoint_editor": {
+    "language": "Language",
+    "add": "Add a language",
+    "remove": "Remove"
   },
   "login": {
     "not_registered": "Not registered yet? ",

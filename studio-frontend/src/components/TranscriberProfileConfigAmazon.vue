@@ -80,16 +80,34 @@
 
       <FormInput :field="roleArnField" v-model="localConfig.roleArn" />
     </section>
+
+    <section class="languages-section">
+      <h4>{{ $t("backoffice.transcriber_profile_detail.languages_title") }}</h4>
+      <LanguageEndpointEditor
+        v-model="localConfig.languages"
+        :languages="supportedLanguages"
+        :endpointLabel="
+          $t('backoffice.transcriber_profile_detail.amazon_endpoint_label')
+        "
+        :endpointPlaceholder="
+          $t(
+            'backoffice.transcriber_profile_detail.amazon_endpoint_placeholder',
+          )
+        "
+        defaultEndpoint="us-east-1" />
+    </section>
   </div>
 </template>
 
 <script>
 import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
+import LanguageEndpointEditor from "@/components/molecules/LanguageEndpointEditor.vue"
+import { AMAZON_LANGUAGES } from "@/const/supportedLanguages"
 
 export default {
   name: "TranscriberProfileConfigAmazon",
-  components: { FormCheckbox, FormInput },
+  components: { FormCheckbox, FormInput, LanguageEndpointEditor },
   props: {
     value: {
       type: Object,
@@ -102,6 +120,7 @@ export default {
   },
   data() {
     return {
+      supportedLanguages: AMAZON_LANGUAGES,
       files: {
         certificate: null,
         privateKey: null,
@@ -246,7 +265,8 @@ export default {
   border-top: var(--border-block);
 }
 
-.form-section {
+.form-section,
+.languages-section {
   display: flex;
   flex-direction: column;
   gap: var(--small-gap);

@@ -1,25 +1,41 @@
 <template>
   <div class="config-linto">
-    <FormInput
-      :field="nameField"
-      v-model="localConfig.name" />
+    <FormInput :field="nameField" v-model="localConfig.name" />
 
-    <FormInput
-      :field="descriptionField"
-      v-model="localConfig.description" />
+    <FormInput :field="descriptionField" v-model="localConfig.description" />
 
     <section class="options-section">
       <h4>{{ $t("backoffice.transcriber_profile_detail.options_title") }}</h4>
       <FormCheckbox
         switchDisplay
-        labelRight
         v-model="localQuickMeeting"
-        :field="{ label: $t('backoffice.transcriber_profile_detail.quick_meeting_label'), value: localQuickMeeting }" />
+        :field="{
+          label: $t(
+            'backoffice.transcriber_profile_detail.quick_meeting_label',
+          ),
+          value: localQuickMeeting,
+        }" />
       <FormCheckbox
         switchDisplay
-        labelRight
         v-model="localConfig.hasDiarization"
-        :field="{ label: $t('backoffice.transcriber_profile_detail.diarization_label'), value: localConfig.hasDiarization }" />
+        :field="{
+          label: $t('backoffice.transcriber_profile_detail.diarization_label'),
+          value: localConfig.hasDiarization,
+        }" />
+    </section>
+
+    <section class="languages-section">
+      <h4>{{ $t("backoffice.transcriber_profile_detail.languages_title") }}</h4>
+      <LanguageEndpointEditor
+        v-model="localConfig.languages"
+        :languages="supportedLanguages"
+        :endpointLabel="
+          $t('backoffice.transcriber_profile_detail.linto_endpoint_label')
+        "
+        :endpointPlaceholder="
+          $t('backoffice.transcriber_profile_detail.linto_endpoint_placeholder')
+        "
+        defaultEndpoint="ws://" />
     </section>
   </div>
 </template>
@@ -27,10 +43,12 @@
 <script>
 import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
+import LanguageEndpointEditor from "@/components/molecules/LanguageEndpointEditor.vue"
+import { LINTO_LANGUAGES } from "@/const/supportedLanguages"
 
 export default {
   name: "TranscriberProfileConfigLinto",
-  components: { FormCheckbox, FormInput },
+  components: { FormCheckbox, FormInput, LanguageEndpointEditor },
   props: {
     value: {
       type: Object,
@@ -43,14 +61,21 @@ export default {
   },
   data() {
     return {
+      supportedLanguages: LINTO_LANGUAGES,
       nameField: {
         label: this.$t("backoffice.transcriber_profile_detail.name_label"),
-        placeholder: this.$t("backoffice.transcriber_profile_detail.name_placeholder"),
+        placeholder: this.$t(
+          "backoffice.transcriber_profile_detail.name_placeholder",
+        ),
         error: null,
       },
       descriptionField: {
-        label: this.$t("backoffice.transcriber_profile_detail.description_label"),
-        placeholder: this.$t("backoffice.transcriber_profile_detail.description_placeholder"),
+        label: this.$t(
+          "backoffice.transcriber_profile_detail.description_label",
+        ),
+        placeholder: this.$t(
+          "backoffice.transcriber_profile_detail.description_placeholder",
+        ),
         error: null,
       },
     }
@@ -91,7 +116,8 @@ export default {
   gap: var(--small-gap);
 }
 
-.options-section {
+.options-section,
+.languages-section {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -99,5 +125,9 @@ export default {
   margin-top: var(--small-gap);
   padding-top: var(--small-gap);
   border-top: var(--border-block);
+}
+
+.languages-section {
+  align-items: stretch;
 }
 </style>
