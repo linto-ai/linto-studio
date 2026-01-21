@@ -1,4 +1,4 @@
-export const SECURITY_LEVELS = ["insecure", "sensitive", "secure"]
+export const SECURITY_LEVELS = [0, 1, 2]
 
 const TRANSCRIBER_PROFILES_TEMPLATES = {
   linto: {
@@ -17,7 +17,7 @@ const TRANSCRIBER_PROFILES_TEMPLATES = {
     },
     quickMeeting: true,
     meta: {
-      securityLevel: "insecure",
+      securityLevel: 0,
     },
   },
   microsoft: {
@@ -79,7 +79,7 @@ const TRANSCRIBER_PROFILES_TEMPLATES = {
     },
     quickMeeting: true,
     meta: {
-      securityLevel: "insecure",
+      securityLevel: 0,
     },
   },
 }

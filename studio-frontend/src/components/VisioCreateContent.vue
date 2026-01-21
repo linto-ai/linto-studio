@@ -114,7 +114,7 @@ export default {
         testField: testQuickSessionSettings,
       },
       supportedVisioServices: ["jitsi", "bigbluebutton"],
-      securityLevel: "insecure",
+      securityLevel: 0,
       formSubmitLabel: this.$t("quick_session.setup_visio.join_meeting"),
       formError: null,
       formState: "idle",

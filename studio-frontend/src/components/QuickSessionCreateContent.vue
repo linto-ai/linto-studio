@@ -125,7 +125,7 @@ export default {
         testField: testQuickSessionSettings,
       },
       selectedProfile: this.transcriberProfiles[0],
-      securityLevel: "insecure",
+      securityLevel: 0,
       formSubmitLabel: this.$i18n.t("quick_session.creation.submit_button"),
 
       formError: null,

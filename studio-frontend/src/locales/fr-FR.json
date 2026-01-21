@@ -365,9 +365,9 @@
       "write": "Écriture"
     },
     "security_level_txt": {
-      "insecure": "Non sécurisé",
-      "sensitive": "Sensible",
-      "secure": "Sécurisé"
+      "0": "Diffusion publique",
+      "1": "Usage commission",
+      "2": "Sensible non classifie"
     },
     "model_quality": {
       "high": "Haute",

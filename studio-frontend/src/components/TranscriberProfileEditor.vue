@@ -102,7 +102,7 @@ export default {
     },
     currentSecurityLevel: {
       get() {
-        return this.transcriberProfile.meta?.securityLevel || "insecure"
+        return this.transcriberProfile.meta?.securityLevel ?? 0
       },
       set(value) {
         const updatedProfile = structuredClone(this.transcriberProfile)

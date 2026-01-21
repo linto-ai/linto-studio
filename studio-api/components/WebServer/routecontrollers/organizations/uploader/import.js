@@ -103,7 +103,7 @@ async function importTranscription(req, res) {
 
   if (!SECURITY_LEVELS.isValid(req.body.securityLevel)) {
     throw new ConversationMetadataRequire(
-      "Invalid securityLevel value. Allowed values: secure, sensitive, insecure",
+      "Invalid securityLevel value. Allowed values: 0, 1, 2",
     )
   }
 

@@ -147,7 +147,7 @@ export default {
       required: true,
     },
     securityLevel: {
-      type: String,
+      type: Number,
       required: false,
       default: null,
     },

@@ -5,7 +5,7 @@
       <label class="form-label">
         {{ $t("conversation.conversation_creation_security_label") }}
       </label>
-      <select :value="value" @change="$emit('input', $event.target.value)">
+      <select :value="value" @change="handleChange">
         <option
           v-for="level in securityLevels"
           :key="level.value"
@@ -24,13 +24,18 @@ export default {
   name: "SecurityLevelSelector",
   props: {
     value: {
-      type: String,
-      default: "insecure",
+      type: Number,
+      default: 0,
     },
   },
   computed: {
     securityLevels() {
       return SECURITY_LEVELS_LIST((key) => this.$i18n.t(key))
+    },
+  },
+  methods: {
+    handleChange(event) {
+      this.$emit("input", Number(event.target.value))
     },
   },
 }
