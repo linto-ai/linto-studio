@@ -54,7 +54,7 @@
 import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
 import LanguageEndpointEditor from "@/components/molecules/LanguageEndpointEditor.vue"
-import { MICROSOFT_LANGUAGES } from "@/const/supportedLanguages"
+import { MICROSOFT_LANGUAGES } from "@/const/microsoftLanguages"
 
 export default {
   name: "TranscriberProfileConfigMicrosoft",

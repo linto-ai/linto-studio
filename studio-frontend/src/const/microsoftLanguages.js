@@ -1,72 +1,7 @@
 /**
- * Supported languages for each transcription service
- * Sources:
- * - Amazon: https://docs.aws.amazon.com/transcribe/latest/dg/supported-languages.html
- * - Microsoft: https://learn.microsoft.com/en-us/azure/ai-services/speech-service/language-support
+ * Supported languages for Microsoft Azure Speech-to-Text
+ * Source: https://learn.microsoft.com/en-us/azure/ai-services/speech-service/language-support
  */
-
-export const LINTO_LANGUAGES = [
-  "fr-FR",
-  "en-US",
-]
-
-export const AMAZON_LANGUAGES = [
-  "af-ZA",
-  "ar-AE",
-  "ar-SA",
-  "ca-ES",
-  "cs-CZ",
-  "da-DK",
-  "de-CH",
-  "de-DE",
-  "el-GR",
-  "en-AB",
-  "en-AU",
-  "en-GB",
-  "en-IE",
-  "en-IN",
-  "en-NZ",
-  "en-US",
-  "en-WL",
-  "en-ZA",
-  "es-ES",
-  "es-US",
-  "eu-ES",
-  "fa-IR",
-  "fi-FI",
-  "fr-CA",
-  "fr-FR",
-  "gl-ES",
-  "he-IL",
-  "hi-IN",
-  "hr-HR",
-  "id-ID",
-  "it-IT",
-  "ja-JP",
-  "ko-KR",
-  "lv-LV",
-  "ms-MY",
-  "nl-NL",
-  "no-NO",
-  "pl-PL",
-  "pt-BR",
-  "pt-PT",
-  "ro-RO",
-  "ru-RU",
-  "sk-SK",
-  "so-SO",
-  "sr-RS",
-  "sv-SE",
-  "th-TH",
-  "tl-PH",
-  "uk-UA",
-  "vi-VN",
-  "yue-HK",
-  "zh-CN",
-  "zh-TW",
-  "zu-ZA",
-]
-
 export const MICROSOFT_LANGUAGES = [
   "af-ZA",
   "am-ET",

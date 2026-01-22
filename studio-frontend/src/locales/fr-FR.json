@@ -204,6 +204,8 @@
       "amazon_private_key_placeholder": "Selectionner le fichier de cle privee",
       "amazon_passphrase_label": "Phrase de passe (optionnel)",
       "amazon_passphrase_placeholder": "Phrase de passe si la cle est chiffree",
+      "amazon_region_label": "Région AWS",
+      "amazon_region_placeholder": "ex: eu-west-1",
       "amazon_credentials_label": "Credentials",
       "amazon_credentials_placeholder": "Identifiant AWS credentials",
       "amazon_trust_anchor_arn_label": "Trust Anchor ARN",
@@ -910,10 +912,19 @@
     "label_name": "Nom de l'organisation",
     "action_btn": "Créer"
   },
-  "modal_create_transcriber_profile": {
-    "title": "Créer un profil de transcription",
-    "action_btn": "Créer le profil",
-    "notif_error": "Une erreur s'est produite lors de la création du profil de transcription",
+  "modal_transcriber_profile": {
+    "title_create": "Créer un profil de transcription",
+    "title_edit": "Modifier le profil de transcription",
+    "action_btn_create": "Créer le profil",
+    "action_btn_edit": "Enregistrer",
+    "delete_button": "Supprimer",
+    "confirm_delete": "Êtes-vous sûr de vouloir supprimer ce profil de transcription ?",
+    "notif_error": "Une erreur s'est produite",
+    "notif_create_success": "Le profil de transcription a été créé avec succès",
+    "notif_update_success": "Le profil de transcription a été mis à jour avec succès",
+    "notif_delete_success": "Le profil de transcription a été supprimé avec succès",
+    "notif_delete_error": "Une erreur s'est produite lors de la suppression du profil de transcription",
+    "notif_fetch_error": "Une erreur s'est produite lors du chargement du profil de transcription",
     "platform_global": "Plateforme (global)",
     "organization_tooltip": "Sélectionner l'organisation",
     "type_tooltip": "Moteur de transcription"

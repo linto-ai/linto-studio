@@ -70,6 +70,8 @@
     <section class="form-section">
       <h4>IAM Roles Anywhere</h4>
 
+      <FormInput :field="regionField" v-model="localConfig.region" />
+
       <FormInput :field="credentialsField" v-model="localConfig.credentials" />
 
       <FormInput
@@ -103,7 +105,7 @@
 import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
 import LanguageEndpointEditor from "@/components/molecules/LanguageEndpointEditor.vue"
-import { AMAZON_LANGUAGES } from "@/const/supportedLanguages"
+import { AMAZON_LANGUAGES } from "@/const/amazonLanguages"
 
 export default {
   name: "TranscriberProfileConfigAmazon",
@@ -150,6 +152,15 @@ export default {
           "backoffice.transcriber_profile_detail.amazon_passphrase_placeholder",
         ),
         type: "password",
+        error: null,
+      },
+      regionField: {
+        label: this.$t(
+          "backoffice.transcriber_profile_detail.amazon_region_label",
+        ),
+        placeholder: this.$t(
+          "backoffice.transcriber_profile_detail.amazon_region_placeholder",
+        ),
         error: null,
       },
       credentialsField: {

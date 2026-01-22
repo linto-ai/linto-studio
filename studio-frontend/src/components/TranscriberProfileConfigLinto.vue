@@ -44,7 +44,7 @@
 import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
 import LanguageEndpointEditor from "@/components/molecules/LanguageEndpointEditor.vue"
-import { LINTO_LANGUAGES } from "@/const/supportedLanguages"
+import { LINTO_LANGUAGES } from "@/const/lintoLanguages"
 
 export default {
   name: "TranscriberProfileConfigLinto",

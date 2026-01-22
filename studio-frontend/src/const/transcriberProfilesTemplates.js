@@ -86,6 +86,7 @@ const TRANSCRIBER_PROFILES_TEMPLATES = {
         },
       ],
       availableTranslations: [],
+      region: "",
       certificate: null,
       privateKey: null,
       passphrase: "",

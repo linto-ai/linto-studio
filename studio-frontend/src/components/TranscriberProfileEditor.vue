@@ -75,6 +75,7 @@ export default {
         certificate: null,
         privateKey: null,
       },
+      skipNextEmit: false,
     }
   },
   computed: {
@@ -83,11 +84,28 @@ export default {
     },
   },
   watch: {
+    transcriberProfile: {
+      handler(value) {
+        this.skipNextEmit = true
+        this.l_transcriberProfile = {
+          ...structuredClone(value),
+          organizationId: this.organizationId,
+        }
+        this.$nextTick(() => {
+          this.$refs.editorPlain?.resetValue()
+        })
+      },
+      deep: true,
+    },
     organizationId(value) {
       this.l_transcriberProfile.organizationId = value
     },
     l_transcriberProfile: {
       handler(value) {
+        if (this.skipNextEmit) {
+          this.skipNextEmit = false
+          return
+        }
         this.$emit("input", value)
       },
       deep: true,
