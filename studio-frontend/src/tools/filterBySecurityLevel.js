@@ -8,12 +8,14 @@ const SECURITY_HIERARCHY = {
  * Normalizes a security level to its integer form.
  * Invalid values fallback to default (0 - Publicly available).
  *
- * @param {number|null|undefined} level - Security level (0, 1, or 2)
+ * @param {number|string|null|undefined} level - Security level (0, 1, or 2)
  * @returns {number} Normalized integer security level (0, 1, or 2)
  */
 export function normalizeSecurityLevel(level) {
-  if (typeof level === "number" && SECURITY_HIERARCHY[level] !== undefined) {
-    return level
+  // Convert string to number if needed
+  const numLevel = typeof level === "string" ? parseInt(level, 10) : level
+  if (typeof numLevel === "number" && SECURITY_HIERARCHY[numLevel] !== undefined) {
+    return numLevel
   }
   return 0 // Default to "Publicly available"
 }
@@ -98,10 +100,36 @@ export function meetsMetaSecurityLevel(item, requiredLevel) {
   return itemLevelValue >= requiredLevelValue
 }
 
+/**
+ * Filters LLM services by security level.
+ * Each service's flavors are filtered by model.security_level,
+ * and services with no remaining flavors are removed.
+ *
+ * @param {Array} services - Array of LLM services with flavors
+ * @param {number|string} requiredLevel - Required security level (0, 1, or 2)
+ * @returns {Array} Filtered services with filtered flavors
+ */
+export function filterLLMServicesBySecurityLevel(services, requiredLevel) {
+  const normalizedRequired = normalizeSecurityLevel(requiredLevel)
+  const requiredLevelValue = SECURITY_HIERARCHY[normalizedRequired] || 1
+
+  return services
+    .map((service) => {
+      const filteredFlavors = (service.flavors || []).filter((flavor) => {
+        const flavorLevel = normalizeSecurityLevel(flavor.model?.security_level)
+        const flavorLevelValue = SECURITY_HIERARCHY[flavorLevel] || 1
+        return flavorLevelValue >= requiredLevelValue
+      })
+      return { ...service, flavors: filteredFlavors }
+    })
+    .filter((service) => service.flavors.length > 0)
+}
+
 export default {
   normalizeSecurityLevel,
   filterBySecurityLevel,
   filterByMetaSecurityLevel,
   meetsSecurityLevel,
   meetsMetaSecurityLevel,
+  filterLLMServicesBySecurityLevel,
 }

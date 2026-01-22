@@ -157,6 +157,7 @@ import {
 } from "@/api/service.js"
 
 import getDescriptionByLanguage from "@/tools/getDescriptionByLanguage.js"
+import { filterLLMServicesBySecurityLevel } from "@/tools/filterBySecurityLevel.js"
 
 import Loading from "@/components/atoms/Loading.vue"
 import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
@@ -718,8 +719,10 @@ export default {
       try {
         const organizationId = this.currentOrganizationScope
 
-        let services = await getLLMService(
-          organizationId,
+        let services = await getLLMService(organizationId)
+        // Filter services by conversation security level
+        services = filterLLMServicesBySecurityLevel(
+          services,
           this.conversation.securityLevel,
         )
         let res = {}
