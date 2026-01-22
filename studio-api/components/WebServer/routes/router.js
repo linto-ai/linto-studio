@@ -195,20 +195,13 @@ const createProxyRoutes = (webServer, proxy_routes) => {
             changeOrigin: true,
             on: {
               proxyReq: (proxyReq, req, res) => {
-                debug("proxyReq triggered", req.method, req.url)
-
                 // Handle file uploads with multipart-form data
                 if (req.files || req.file) {
-                  debug("File upload detected, building multipart form")
-                  debug("req.file:", req.file)
-                  debug("req.files:", req.files)
-                  debug("req.body:", req.body)
                   const FormData = require("form-data")
                   const form = new FormData()
 
                   // Handle files - support both multer and express-fileupload structures
                   if (req.file) {
-                    // Multer single file
                     const fileData = req.file.buffer || req.file.data
                     const fileName = req.file.originalname || req.file.name
                     form.append(req.file.fieldname, fileData, {
@@ -219,7 +212,6 @@ const createProxyRoutes = (webServer, proxy_routes) => {
 
                   if (req.files) {
                     if (Array.isArray(req.files)) {
-                      // Multer array
                       req.files.forEach((file) => {
                         const fileData = file.buffer || file.data
                         const fileName = file.originalname || file.name
@@ -229,7 +221,6 @@ const createProxyRoutes = (webServer, proxy_routes) => {
                         })
                       })
                     } else {
-                      // Object with field names as keys (express-fileupload or multer fields)
                       Object.keys(req.files).forEach((fieldname) => {
                         const fileOrFiles = req.files[fieldname]
                         const files = Array.isArray(fileOrFiles)
@@ -254,24 +245,12 @@ const createProxyRoutes = (webServer, proxy_routes) => {
                     })
                   }
 
-                  // Get form as buffer (works because we only added buffers, not streams)
                   const formBuffer = form.getBuffer()
                   const formHeaders = form.getHeaders()
 
-                  debug("Form buffer length:", formBuffer.length)
-                  debug("Form headers:", formHeaders)
-                  debug(
-                    "Form buffer preview:",
-                    formBuffer.toString().substring(0, 500),
-                  )
-                  debug(formBuffer.toString())
-                  proxyReq.setHeader(
-                    "Content-Type",
-                    formHeaders["content-type"],
-                  )
+                  proxyReq.setHeader("Content-Type", formHeaders["content-type"])
                   proxyReq.setHeader("Content-Length", formBuffer.length)
                   proxyReq.write(formBuffer)
-                  debug("Multipart form sent, length:", formBuffer.length)
                 } else {
                   // For all other requests (including DELETE), use fixRequestBody
                   fixRequestBody(proxyReq, req, res)
