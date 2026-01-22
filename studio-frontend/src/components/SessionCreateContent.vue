@@ -172,6 +172,7 @@ import MetadataEditor from "@/components/MetadataEditor.vue"
 import MetadataList from "@/components/MetadataList.vue"
 import ModalEditMetadata from "@/components/ModalEditMetadata.vue"
 import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
+import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
 
 export default {
   mixins: [formsMixin],
@@ -295,7 +296,7 @@ export default {
         value: defaultMetadata,
         label: this.$t("session.create_page.metadata_label"),
       },
-      securityLevel: 0,
+      securityLevel: DEFAULT_SECURITY_LEVEL,
       modalEditMetadataIsOpen: false,
       channels: [],
       selectedProfiles: [],

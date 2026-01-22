@@ -1,8 +1,7 @@
-const SECURITY_HIERARCHY = {
-  0: 1, // least restrictive
-  1: 2, // restrictive
-  2: 3, // most restrictive
-}
+import {
+  SECURITY_HIERARCHY,
+  DEFAULT_SECURITY_LEVEL,
+} from "../const/securityLevels.js"
 
 /**
  * Normalizes a security level to its integer form.
@@ -17,7 +16,7 @@ export function normalizeSecurityLevel(level) {
   if (typeof numLevel === "number" && SECURITY_HIERARCHY[numLevel] !== undefined) {
     return numLevel
   }
-  return 0 // Default to "Publicly available"
+  return DEFAULT_SECURITY_LEVEL
 }
 
 /**
