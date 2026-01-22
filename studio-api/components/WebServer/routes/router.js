@@ -194,7 +194,89 @@ const createProxyRoutes = (webServer, proxy_routes) => {
 
             changeOrigin: true,
             on: {
-              proxyReq: fixRequestBody,
+              proxyReq: (proxyReq, req, res) => {
+                debug("proxyReq triggered", req.method, req.url)
+
+                // Handle file uploads with multipart-form data
+                if (req.files || req.file) {
+                  debug("File upload detected, building multipart form")
+                  debug("req.file:", req.file)
+                  debug("req.files:", req.files)
+                  debug("req.body:", req.body)
+                  const FormData = require("form-data")
+                  const form = new FormData()
+
+                  // Handle files - support both multer and express-fileupload structures
+                  if (req.file) {
+                    // Multer single file
+                    const fileData = req.file.buffer || req.file.data
+                    const fileName = req.file.originalname || req.file.name
+                    form.append(req.file.fieldname, fileData, {
+                      filename: fileName,
+                      contentType: req.file.mimetype,
+                    })
+                  }
+
+                  if (req.files) {
+                    if (Array.isArray(req.files)) {
+                      // Multer array
+                      req.files.forEach((file) => {
+                        const fileData = file.buffer || file.data
+                        const fileName = file.originalname || file.name
+                        form.append(file.fieldname, fileData, {
+                          filename: fileName,
+                          contentType: file.mimetype,
+                        })
+                      })
+                    } else {
+                      // Object with field names as keys (express-fileupload or multer fields)
+                      Object.keys(req.files).forEach((fieldname) => {
+                        const fileOrFiles = req.files[fieldname]
+                        const files = Array.isArray(fileOrFiles)
+                          ? fileOrFiles
+                          : [fileOrFiles]
+                        files.forEach((file) => {
+                          const fileData = file.buffer || file.data
+                          const fileName = file.originalname || file.name
+                          form.append(fieldname, fileData, {
+                            filename: fileName,
+                            contentType: file.mimetype,
+                          })
+                        })
+                      })
+                    }
+                  }
+
+                  // Add other body fields to the form
+                  if (req.body) {
+                    Object.keys(req.body).forEach((key) => {
+                      form.append(key, req.body[key])
+                    })
+                  }
+
+                  // Get form as buffer (works because we only added buffers, not streams)
+                  const formBuffer = form.getBuffer()
+                  const formHeaders = form.getHeaders()
+
+                  debug("Form buffer length:", formBuffer.length)
+                  debug("Form headers:", formHeaders)
+                  debug(
+                    "Form buffer preview:",
+                    formBuffer.toString().substring(0, 500),
+                  )
+                  debug(formBuffer.toString())
+                  proxyReq.setHeader(
+                    "Content-Type",
+                    formHeaders["content-type"],
+                  )
+                  proxyReq.setHeader("Content-Length", formBuffer.length)
+                  proxyReq.write(formBuffer)
+                  debug("Multipart form sent, length:", formBuffer.length)
+                } else {
+                  // For all other requests (including DELETE), use fixRequestBody
+                  fixRequestBody(proxyReq, req, res)
+                }
+              },
               proxyRes: responseInterceptor(
                 async (responseBuffer, proxyRes, req, res) => {
                   try {
@@ -253,28 +335,6 @@ const createProxyRoutes = (webServer, proxy_routes) => {
                 newPath = `${newPath.split("?")[0]}?${cleanedQuery}`
 
               return newPath
-            },
-            onProxyReq: (proxyReq, req, res) => {
-              // If the body is already parsed and present, need to re-write it to the proxy request
-              if (req.body) {
-                const bodyData = JSON.stringify(req.body)
-                proxyReq.setHeader(
-                  "Content-Length",
-                  Buffer.byteLength(bodyData),
-                )
-                proxyReq.setHeader("Content-Type", "application/json")
-                proxyReq.write(bodyData)
-              }
-            },
-            onProxyRes: (proxyRes, req, res) => {
-              let responseData = ""
-              proxyRes.on("data", (chunk) => {
-                responseData += chunk
-              })
-              proxyRes.on("end", () => {
-                res.setHeader("Content-Type", "application/json")
-                res.send(responseData)
-              })
             },
             onError: (err, req, res) => {
               debug("Proxy error:", err)
