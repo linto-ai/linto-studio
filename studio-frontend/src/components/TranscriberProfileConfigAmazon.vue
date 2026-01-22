@@ -72,8 +72,6 @@
 
       <FormInput :field="regionField" v-model="localConfig.region" />
 
-      <FormInput :field="credentialsField" v-model="localConfig.credentials" />
-
       <FormInput
         :field="trustAnchorArnField"
         v-model="localConfig.trustAnchorArn" />
@@ -163,15 +161,7 @@ export default {
         ),
         error: null,
       },
-      credentialsField: {
-        label: this.$t(
-          "backoffice.transcriber_profile_detail.amazon_credentials_label",
-        ),
-        placeholder: this.$t(
-          "backoffice.transcriber_profile_detail.amazon_credentials_placeholder",
-        ),
-        error: null,
-      },
+
       trustAnchorArnField: {
         label: this.$t(
           "backoffice.transcriber_profile_detail.amazon_trust_anchor_arn_label",

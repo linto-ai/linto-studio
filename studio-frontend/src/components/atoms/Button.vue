@@ -25,6 +25,7 @@
     <span v-else-if="avatarText" class="icon">
       {{ avatarText }}
     </span>
+    <img :src="avatar" v-else-if="avatar" class="icon" />
     <span class="label flex1" v-if="label">
       <slot>{{ label }}</slot>
     </span>
@@ -53,6 +54,11 @@ export default {
       required: false,
     },
     avatarText: {
+      type: String,
+      required: false,
+    },
+    // path to image
+    avatar: {
       type: String,
       required: false,
     },

@@ -23,7 +23,6 @@ const TRANSCRIBER_PROFILES_TEMPLATES = {
       languages: [
         {
           candidate: "en-GB",
-          endpoint: "endpoint-id",
         },
       ],
       region: "westeurope",
@@ -82,15 +81,11 @@ const TRANSCRIBER_PROFILES_TEMPLATES = {
       languages: [
         {
           candidate: "en-US",
-          endpoint: "us-east-1",
         },
       ],
       availableTranslations: [],
-      region: "",
-      certificate: null,
-      privateKey: null,
+      region: "us-east-1",
       passphrase: "",
-      credentials: "",
       trustAnchorArn: "",
       profileArn: "",
       roleArn: "",

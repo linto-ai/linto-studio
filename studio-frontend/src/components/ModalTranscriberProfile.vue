@@ -8,23 +8,22 @@
     :actionBtnLabel="actionBtnLabel"
     :title="modalTitle">
     <template #header-actions>
-      <Tooltip
-        :text="$t('modal_transcriber_profile.organization_tooltip')">
-        <div class="header-selector">
-          <ph-icon name="buildings" size="sm" />
-          <PopoverList
-            :items="organizationItems"
-            v-model="selectedOrganizationId"
-            :disabled="isEditMode"
-            size="sm" />
-        </div>
-      </Tooltip>
       <Tooltip :text="$t('modal_transcriber_profile.type_tooltip')">
         <div class="header-selector">
           <ph-icon name="microphone" size="sm" />
           <PopoverList
             :items="typeItems"
             v-model="currentType"
+            :disabled="isEditMode"
+            size="sm" />
+        </div>
+      </Tooltip>
+      <Tooltip :text="$t('modal_transcriber_profile.organization_tooltip')">
+        <div class="header-selector">
+          <ph-icon name="buildings" size="sm" />
+          <PopoverList
+            :items="organizationItems"
+            v-model="selectedOrganizationId"
             :disabled="isEditMode"
             size="sm" />
         </div>
@@ -67,6 +66,7 @@ import {
   apiGetAllOrganizations,
 } from "@/api/admin.js"
 import { bus } from "@/main.js"
+import transriberImageFromtype from "@/tools/transriberImageFromtype"
 
 export default {
   props: {
@@ -87,9 +87,21 @@ export default {
       organizations: [],
       selectedOrganizationId: this.organizationId,
       typeItems: [
-        { value: "linto", text: "LinTO" },
-        { value: "microsoft", text: "Microsoft" },
-        { value: "amazon", text: "Amazon" },
+        {
+          value: "linto",
+          text: "LinTO",
+          avatar: transriberImageFromtype("linto"),
+        },
+        {
+          value: "microsoft",
+          text: "Microsoft",
+          avatar: transriberImageFromtype("microsoft"),
+        },
+        {
+          value: "amazon",
+          text: "Amazon",
+          avatar: transriberImageFromtype("amazon"),
+        },
       ],
       transcriberProfile: structuredClone(TRANSCRIBER_PROFILES_TEMPLATES.linto),
       transcriberProfileOriginal: null,
@@ -256,7 +268,13 @@ export default {
       this.loading = false
     },
   },
-  components: { ModalNew, TranscriberProfileEditor, PopoverList, Tooltip, Button },
+  components: {
+    ModalNew,
+    TranscriberProfileEditor,
+    PopoverList,
+    Tooltip,
+    Button,
+  },
 }
 </script>
 
