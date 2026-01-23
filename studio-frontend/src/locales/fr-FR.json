@@ -404,7 +404,7 @@
     "security_level_txt": {
       "0": "Diffusion publique",
       "1": "Usage commission",
-      "2": "Sensible non classifie"
+      "2": "Sensible non classifié"
     },
     "model_quality": {
       "high": "Haute",

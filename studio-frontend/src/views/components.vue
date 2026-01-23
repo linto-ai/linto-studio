@@ -19,6 +19,9 @@
         intent="destructive"
         label="destructive secondary button" />
     </div>
+    <div>
+      <Button label="Download" icon="download" />
+    </div>
     <FormInput :field="fieldInput" />
     <FormInput :field="fieldInputError" />
     <FormInput :field="fieldInputDisabled" disabled />
@@ -106,6 +109,7 @@ export default {
           value: "select-value-3",
           text: "Apple",
           description: "Crisp and juicy fruit",
+          icon: "apple-logo",
         },
         {
           value: "select-value-4",

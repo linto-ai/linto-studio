@@ -13,6 +13,8 @@
           :iconRight="open ? 'caret-up' : 'caret-down'"
           v-bind="$attrs"
           :avatar="selectedItem?.avatar"
+          :icon="selectedItem?.icon"
+          :icon-weight="selectedItem?.iconWeight"
           :label="labelButton" />
       </slot>
     </template>

@@ -8,35 +8,37 @@
     :actionBtnLabel="actionBtnLabel"
     :title="modalTitle">
     <template #header-actions>
-      <Tooltip :text="$t('modal_transcriber_profile.type_tooltip')">
-        <div class="header-selector">
-          <ph-icon name="microphone" size="sm" />
-          <PopoverList
-            :items="typeItems"
-            v-model="currentType"
-            :disabled="isEditMode"
-            size="sm" />
-        </div>
-      </Tooltip>
-      <Tooltip :text="$t('modal_transcriber_profile.organization_tooltip')">
-        <div class="header-selector">
-          <ph-icon name="buildings" size="sm" />
-          <PopoverList
-            :items="organizationItems"
-            v-model="selectedOrganizationId"
-            :disabled="isEditMode"
-            size="sm" />
-        </div>
-      </Tooltip>
-      <Tooltip :text="$t('modal_transcriber_profile.security_level_tooltip')">
-        <div class="header-selector">
-          <ph-icon name="shield" size="sm" />
-          <PopoverList
-            :items="securityLevelItems"
-            v-model="currentSecurityLevel"
-            size="sm" />
-        </div>
-      </Tooltip>
+      <div class="flex gap-medium">
+        <Tooltip :text="$t('modal_transcriber_profile.type_tooltip')">
+          <div class="header-selector">
+            <!-- <ph-icon name="microphone" size="sm" /> -->
+            <PopoverList
+              :items="typeItems"
+              v-model="currentType"
+              :disabled="isEditMode"
+              size="sm" />
+          </div>
+        </Tooltip>
+        <Tooltip :text="$t('modal_transcriber_profile.organization_tooltip')">
+          <div class="header-selector">
+            <!-- <ph-icon name="buildings" size="sm" /> -->
+            <PopoverList
+              :items="organizationItems"
+              v-model="selectedOrganizationId"
+              :disabled="isEditMode"
+              size="sm" />
+          </div>
+        </Tooltip>
+        <Tooltip :text="$t('modal_transcriber_profile.security_level_tooltip')">
+          <div class="header-selector">
+            <!-- <ph-icon :name="securityLevelIcon" size="sm" /> -->
+            <PopoverList
+              :items="securityLevelItems"
+              v-model="currentSecurityLevel"
+              size="sm" />
+          </div>
+        </Tooltip>
+      </div>
     </template>
     <template #footer-left v-if="isEditMode">
       <Button
@@ -66,7 +68,10 @@ import Tooltip from "@/components/atoms/Tooltip.vue"
 import Button from "@/components/atoms/Button.vue"
 import TRANSCRIBER_PROFILES_TEMPLATES from "@/const/transcriberProfilesTemplates"
 import SECURITY_LEVELS_LIST from "@/const/securityLevelsList"
-import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
+import {
+  DEFAULT_SECURITY_LEVEL,
+  SECURITY_LEVEL_ICONS,
+} from "@/const/securityLevels"
 import {
   apiAdminCreateTranscriberProfile,
   apiAdminCreateAmazonTranscriberProfile,
@@ -141,10 +146,17 @@ export default {
         {
           value: null,
           text: this.$t("modal_transcriber_profile.platform_global"),
+          icon: "globe-hemisphere-west",
+          //iconWeight: "regular",
         },
       ]
       this.organizations.forEach((org) => {
-        items.push({ value: org._id, text: org.name })
+        items.push({
+          value: org._id,
+          text: org.name,
+          icon: "buildings",
+          iconWeight: "regular",
+        })
       })
       return items
     },
@@ -167,11 +179,15 @@ export default {
       return SECURITY_LEVELS_LIST((key) => this.$t(key)).map((level) => ({
         value: level.value,
         text: level.txt,
+        icon: SECURITY_LEVEL_ICONS[level.value],
+        iconWeight: "regular",
       }))
     },
     currentSecurityLevel: {
       get() {
-        return this.transcriberProfile.meta?.securityLevel ?? DEFAULT_SECURITY_LEVEL
+        return (
+          this.transcriberProfile.meta?.securityLevel ?? DEFAULT_SECURITY_LEVEL
+        )
       },
       set(value) {
         if (!this.transcriberProfile.meta) {
@@ -179,6 +195,12 @@ export default {
         }
         this.transcriberProfile.meta.securityLevel = value
       },
+    },
+    securityLevelIcon() {
+      return (
+        SECURITY_LEVEL_ICONS[this.currentSecurityLevel] ??
+        SECURITY_LEVEL_ICONS[DEFAULT_SECURITY_LEVEL]
+      )
     },
   },
   async mounted() {

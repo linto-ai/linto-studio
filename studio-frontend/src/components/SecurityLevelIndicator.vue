@@ -12,7 +12,11 @@
 </template>
 
 <script>
-import { SECURITY_LEVELS } from "@/const/securityLevels"
+import {
+  SECURITY_LEVELS,
+  SECURITY_LEVEL_ICONS,
+  DEFAULT_SECURITY_LEVEL,
+} from "@/const/securityLevels"
 
 export default {
   name: "SecurityLevelIndicator",
@@ -25,15 +29,7 @@ export default {
   },
   computed: {
     iconName() {
-      switch (this.level) {
-        case 2:
-          return "shield-check"
-        case 1:
-          return "shield-warning"
-        case 0:
-        default:
-          return "shield-slash"
-      }
+      return SECURITY_LEVEL_ICONS[this.level] ?? SECURITY_LEVEL_ICONS[DEFAULT_SECURITY_LEVEL]
     },
     iconColor() {
       return "var(--text-secondary)"
