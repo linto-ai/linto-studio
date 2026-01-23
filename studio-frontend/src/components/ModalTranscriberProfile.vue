@@ -3,6 +3,7 @@
     value
     size="xl"
     :loading="loading"
+    :overlayClose="false"
     @on-cancel="$emit('on-cancel')"
     @on-confirm="save"
     :actionBtnLabel="actionBtnLabel"
