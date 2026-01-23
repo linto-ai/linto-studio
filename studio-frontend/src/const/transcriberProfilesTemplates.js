@@ -1,4 +1,9 @@
-export const SECURITY_LEVELS = ["insecure", "sensitive", "secure"]
+import {
+  SECURITY_LEVELS,
+  SECURITY_LEVEL_PUBLIC,
+} from "./securityLevels.js"
+
+export { SECURITY_LEVELS }
 
 const TRANSCRIBER_PROFILES_TEMPLATES = {
   linto: {
@@ -17,7 +22,7 @@ const TRANSCRIBER_PROFILES_TEMPLATES = {
     },
     quickMeeting: true,
     meta: {
-      securityLevel: "insecure",
+      securityLevel: SECURITY_LEVEL_PUBLIC,
     },
   },
   microsoft: {
@@ -79,7 +84,7 @@ const TRANSCRIBER_PROFILES_TEMPLATES = {
     },
     quickMeeting: true,
     meta: {
-      securityLevel: "insecure",
+      securityLevel: SECURITY_LEVEL_PUBLIC,
     },
   },
 }

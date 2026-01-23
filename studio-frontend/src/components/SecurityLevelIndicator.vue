@@ -12,24 +12,25 @@
 </template>
 
 <script>
+import { SECURITY_LEVELS } from "@/const/securityLevels"
+
 export default {
   name: "SecurityLevelIndicator",
   props: {
     level: {
-      type: String,
+      type: Number,
       default: null,
-      validator: (value) =>
-        value === null || ["insecure", "sensitive", "secure"].includes(value),
+      validator: (value) => value === null || SECURITY_LEVELS.includes(value),
     },
   },
   computed: {
     iconName() {
       switch (this.level) {
-        case "secure":
+        case 2:
           return "shield-check"
-        case "sensitive":
+        case 1:
           return "shield-warning"
-        case "insecure":
+        case 0:
         default:
           return "shield-slash"
       }
@@ -41,15 +42,8 @@ export default {
       return "regular"
     },
     tooltipText() {
-      switch (this.level) {
-        case "secure":
-          return this.$t("conversation.security_level_txt.secure")
-        case "sensitive":
-          return this.$t("conversation.security_level_txt.sensitive")
-        case "insecure":
-        default:
-          return this.$t("conversation.security_level_txt.insecure")
-      }
+      const key = this.level ?? 0
+      return this.$t(`conversation.security_level_txt.${key}`)
     },
   },
 }

@@ -14,6 +14,7 @@ import { debounceMixin } from "@/mixins/debounce"
 
 import RIGHTS_LIST from "@/const/rigthsList"
 import EMPTY_FIELD from "@/const/emptyField"
+import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
 import generateServiceConfig from "@/tools/generateServiceConfig"
 
 export default {
@@ -52,7 +53,7 @@ export default {
         value: 1,
         list: RIGHTS_LIST((key) => this.$i18n.t(key)),
       },
-      securityLevel: "insecure",
+      securityLevel: DEFAULT_SECURITY_LEVEL,
       fieldTranscriptionService: {
         ...EMPTY_FIELD,
         loading: true,

@@ -50,7 +50,7 @@ export default {
       default: false,
     },
     securityLevel: {
-      type: String,
+      type: Number,
       required: false,
       default: null,
     },

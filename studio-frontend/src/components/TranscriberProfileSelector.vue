@@ -83,7 +83,7 @@ export default {
       default: true,
     },
     securityLevel: {
-      type: String,
+      type: Number,
       required: false,
       default: null,
     },

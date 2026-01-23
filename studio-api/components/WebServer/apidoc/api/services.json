@@ -8,10 +8,10 @@
           "name": "securityLevel",
           "in": "query",
           "required": false,
-          "description": "Filter transcription services by security level (insecure, sensitive, secure). Services without security_level are treated as insecure.",
+          "description": "Filter transcription services by security level. 0 = Publicly available, 1 = Commission use, 2 = Sensitive non-classified. Services without security_level are treated as 0.",
           "schema": {
-            "type": "string",
-            "enum": ["insecure", "sensitive", "secure"]
+            "type": "integer",
+            "enum": [0, 1, 2]
           }
         }
       ],
@@ -49,10 +49,10 @@
           "name": "securityLevel",
           "in": "query",
           "required": false,
-          "description": "Filter transcription services by security level (insecure, sensitive, secure). Services without security_level are treated as insecure.",
+          "description": "Filter transcription services by security level. 0 = Publicly available, 1 = Commission use, 2 = Sensitive non-classified. Services without security_level are treated as 0.",
           "schema": {
-            "type": "string",
-            "enum": ["insecure", "sensitive", "secure"]
+            "type": "integer",
+            "enum": [0, 1, 2]
           }
         }
       ],
@@ -91,10 +91,10 @@
           "name": "securityLevel",
           "in": "query",
           "required": false,
-          "description": "Filter flavors by security level (insecure, sensitive, secure). Flavors without model.security_level are treated as insecure. Services with no remaining flavors are excluded.",
+          "description": "Filter flavors by security level. 0 = Publicly available, 1 = Commission use, 2 = Sensitive non-classified. Flavors without model.security_level are treated as 0. Services with no remaining flavors are excluded.",
           "schema": {
-            "type": "string",
-            "enum": ["insecure", "sensitive", "secure"]
+            "type": "integer",
+            "enum": [0, 1, 2]
           }
         }
       ],

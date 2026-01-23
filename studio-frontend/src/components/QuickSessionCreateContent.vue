@@ -63,6 +63,7 @@ import { formsMixin } from "@/mixins/forms.js"
 
 import QuickSessionSettings from "@/components/QuickSessionSettings.vue"
 import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
+import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
 
 import { apiCreateQuickSession } from "@/api/session.js"
 
@@ -125,7 +126,7 @@ export default {
         testField: testQuickSessionSettings,
       },
       selectedProfile: this.transcriberProfiles[0],
-      securityLevel: "insecure",
+      securityLevel: DEFAULT_SECURITY_LEVEL,
       formSubmitLabel: this.$i18n.t("quick_session.creation.submit_button"),
 
       formError: null,

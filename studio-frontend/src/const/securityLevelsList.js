@@ -1,15 +1,21 @@
+import {
+  SECURITY_LEVEL_PUBLIC,
+  SECURITY_LEVEL_COMMISSION,
+  SECURITY_LEVEL_SENSITIVE,
+} from "./securityLevels.js"
+
 const SECURITY_LEVELS_LIST = (t) => [
   {
-    value: "insecure",
-    txt: t("conversation.security_level_txt.insecure"),
+    value: SECURITY_LEVEL_PUBLIC,
+    txt: t("conversation.security_level_txt.0"),
   },
   {
-    value: "sensitive",
-    txt: t("conversation.security_level_txt.sensitive"),
+    value: SECURITY_LEVEL_COMMISSION,
+    txt: t("conversation.security_level_txt.1"),
   },
   {
-    value: "secure",
-    txt: t("conversation.security_level_txt.secure"),
+    value: SECURITY_LEVEL_SENSITIVE,
+    txt: t("conversation.security_level_txt.2"),
   },
 ]
 
