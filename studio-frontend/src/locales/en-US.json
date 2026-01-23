@@ -181,6 +181,7 @@
       "notif_delete_success": "Transcriber profile successfully deleted",
       "notif_delete_error": "An error occured while deleting the profile",
       "type_label": "Profile type",
+      "security_level_label": "Security level",
       "quick_meeting_label": "Enabled for quick meetings",
       "name_label": "Name",
       "name_placeholder": "Profile name",
@@ -401,9 +402,9 @@
       "write": "Write"
     },
     "security_level_txt": {
-      "unsecured": "Unsecured",
-      "sensitive": "Sensitive",
-      "secured": "Secured"
+      "0": "Publicly available",
+      "1": "Commission use",
+      "2": "Sensitive non-classified"
     },
     "model_quality": {
       "high": "High",
@@ -920,7 +921,8 @@
     "notif_fetch_error": "An error occurred while loading the transcriber profile",
     "platform_global": "Platform (global)",
     "organization_tooltip": "Select organization",
-    "type_tooltip": "Transcription engine"
+    "type_tooltip": "Transcription engine",
+    "security_level_tooltip": "Security level"
   },
   "modal_delete_users": {
     "title": "Delete user | Delete {count} users",

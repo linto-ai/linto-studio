@@ -56,9 +56,9 @@
                   "description": "Size of the segment in characters"
                 },
                 "securityLevel": {
-                  "type": "string",
-                  "enum": ["secured", "sensitive", "unsecured"],
-                  "description": "Security classification of the media. Optional."
+                  "type": "integer",
+                  "enum": [0, 1, 2],
+                  "description": "Security classification of the media. 0 = Publicly available, 1 = Commission use, 2 = Sensitive non-classified. Optional."
                 }
               }
             },
@@ -206,9 +206,9 @@
                   "description": "Size of the segment in characters"
                 },
                 "securityLevel": {
-                  "type": "string",
-                  "enum": ["secured", "sensitive", "unsecured"],
-                  "description": "Security classification of the media. Optional."
+                  "type": "integer",
+                  "enum": [0, 1, 2],
+                  "description": "Security classification of the media. 0 = Publicly available, 1 = Commission use, 2 = Sensitive non-classified. Optional."
                 }
               }
             },

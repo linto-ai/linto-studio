@@ -53,6 +53,7 @@
             :serviceList="fieldTranscriptionService.list"
             :disabled="formState === 'sending'"
             :loading="fieldTranscriptionService.loading"
+            :securityLevel="securityLevel"
             v-model="fieldTranscriptionService.value" />
         </section>
 

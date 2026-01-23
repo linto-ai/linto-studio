@@ -28,6 +28,15 @@
             size="sm" />
         </div>
       </Tooltip>
+      <Tooltip :text="$t('modal_transcriber_profile.security_level_tooltip')">
+        <div class="header-selector">
+          <ph-icon name="shield" size="sm" />
+          <PopoverList
+            :items="securityLevelItems"
+            v-model="currentSecurityLevel"
+            size="sm" />
+        </div>
+      </Tooltip>
     </template>
     <template #footer-left v-if="isEditMode">
       <Button
@@ -56,6 +65,8 @@ import PopoverList from "@/components/atoms/PopoverList.vue"
 import Tooltip from "@/components/atoms/Tooltip.vue"
 import Button from "@/components/atoms/Button.vue"
 import TRANSCRIBER_PROFILES_TEMPLATES from "@/const/transcriberProfilesTemplates"
+import SECURITY_LEVELS_LIST from "@/const/securityLevelsList"
+import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
 import {
   apiAdminCreateTranscriberProfile,
   apiAdminCreateAmazonTranscriberProfile,
@@ -150,6 +161,23 @@ export default {
         this.$nextTick(() => {
           this.$refs.editor?.reset()
         })
+      },
+    },
+    securityLevelItems() {
+      return SECURITY_LEVELS_LIST((key) => this.$t(key)).map((level) => ({
+        value: level.value,
+        text: level.txt,
+      }))
+    },
+    currentSecurityLevel: {
+      get() {
+        return this.transcriberProfile.meta?.securityLevel ?? DEFAULT_SECURITY_LEVEL
+      },
+      set(value) {
+        if (!this.transcriberProfile.meta) {
+          this.transcriberProfile.meta = {}
+        }
+        this.transcriberProfile.meta.securityLevel = value
       },
     },
   },

@@ -3,7 +3,7 @@ const debug = require("debug")(
 )
 
 const collectionName = "conversations"
-const defaultSecurityLevel = "unsecured"
+const defaultSecurityLevel = "insecure"
 
 module.exports = {
   async up(db) {

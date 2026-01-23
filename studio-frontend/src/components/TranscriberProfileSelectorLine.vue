@@ -1,5 +1,7 @@
 <template>
-  <tr @click="onClickLine">
+  <tr
+    @click="onClickLine"
+    :class="{ 'security-disabled': securityDisabled }">
     <td class="content-size">
       <Checkbox
         v-if="multiple"
@@ -83,6 +85,11 @@ export default {
     multiple: {
       type: Boolean,
       default: true,
+    },
+    securityDisabled: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   data() {
@@ -179,6 +186,11 @@ export default {
     },
     onClickLine(e) {
       if (e && e.target.classList.contains("no-propagation")) return
+      if (this.securityDisabled) {
+        e?.preventDefault()
+        e?.stopPropagation()
+        return
+      }
 
       if (this.multiple) {
         this.selectedProfiles.includes(this.id_profile)

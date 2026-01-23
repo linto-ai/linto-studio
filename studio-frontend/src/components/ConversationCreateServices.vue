@@ -9,6 +9,7 @@
       @select="select(index, $event)"
       :selected="value && service.serviceName == value.serviceName"
       :multiTrack="multiTrack"
+      :securityDisabled="isSecurityDisabled(service)"
       role="listbox" />
   </div>
   <div v-else-if="!loading">
@@ -22,6 +23,7 @@
 import EMPTY_FIELD from "../const/emptyField"
 import ConversationCreateService from "@/components/ConversationCreateService.vue"
 import Loading from "@/components/atoms/Loading.vue"
+import { meetsSecurityLevel } from "@/tools/filterBySecurityLevel"
 
 export default {
   props: {
@@ -47,12 +49,21 @@ export default {
       required: false,
       default: false,
     },
+    securityLevel: {
+      type: Number,
+      required: false,
+      default: null,
+    },
   },
   methods: {
     select(index, value) {
       if (this.disabled) return
       this.indexSelected = index
       this.$emit("input", value)
+    },
+    isSecurityDisabled(service) {
+      if (!this.securityLevel) return false
+      return !meetsSecurityLevel(service, this.securityLevel)
     },
   },
   data() {

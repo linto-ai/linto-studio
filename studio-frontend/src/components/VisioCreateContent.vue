@@ -23,14 +23,15 @@
         required />
     </section>
 
+    <SecurityLevelSelector v-model="securityLevel" />
+
     <QuickSessionSettings
       :transcriberProfiles="transcriberProfiles"
       :transcriptionServices="transcriptionServices"
+      :securityLevel="securityLevel"
       :field="quickSessionSettingsField"
       source="visio"
       v-model="quickSessionSettingsField.value" />
-
-    <SecurityLevelSelector v-model="securityLevel" />
 
     <div
       class="flex gap-small align-center conversation-create-footer"
@@ -61,10 +62,9 @@ import {
 import { testQuickSessionSettings } from "@/tools/fields/testQuickSessionSettings"
 
 import FormInput from "@/components/molecules/FormInput.vue"
-import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
-import TranscriberProfileSelector from "@/components/TranscriberProfileSelector.vue"
 import QuickSessionSettings from "@/components/QuickSessionSettings.vue"
 import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
+import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
 
 export default {
   mixins: [formsMixin],
@@ -115,7 +115,7 @@ export default {
         testField: testQuickSessionSettings,
       },
       supportedVisioServices: ["jitsi", "bigbluebutton"],
-      securityLevel: "unsecured",
+      securityLevel: DEFAULT_SECURITY_LEVEL,
       formSubmitLabel: this.$t("quick_session.setup_visio.join_meeting"),
       formError: null,
       formState: "idle",
@@ -190,8 +190,6 @@ export default {
   },
   components: {
     FormInput,
-    FormCheckbox,
-    TranscriberProfileSelector,
     QuickSessionSettings,
     SecurityLevelSelector,
   },

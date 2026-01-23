@@ -82,6 +82,24 @@ export default {
     currentType() {
       return this.transcriberProfile.config.type
     },
+    currentSecurityLevel: {
+      get() {
+        return (
+          this.transcriberProfile.meta?.securityLevel ?? DEFAULT_SECURITY_LEVEL
+        )
+      },
+      set(value) {
+        const updatedProfile = structuredClone(this.transcriberProfile)
+        if (!updatedProfile.meta) {
+          updatedProfile.meta = {}
+        }
+        updatedProfile.meta.securityLevel = value
+        this.$emit("input", updatedProfile)
+        this.$nextTick(() => {
+          this.reset()
+        })
+      },
+    },
   },
   watch: {
     transcriberProfile: {

@@ -1,3 +1,10 @@
+import {
+  SECURITY_LEVELS,
+  SECURITY_LEVEL_PUBLIC,
+} from "./securityLevels.js"
+
+export { SECURITY_LEVELS }
+
 const TRANSCRIBER_PROFILES_TEMPLATES = {
   linto: {
     config: {
@@ -14,6 +21,9 @@ const TRANSCRIBER_PROFILES_TEMPLATES = {
       hasDiarization: false,
     },
     quickMeeting: true,
+    meta: {
+      securityLevel: SECURITY_LEVEL_PUBLIC,
+    },
   },
   microsoft: {
     config: {
@@ -72,6 +82,9 @@ const TRANSCRIBER_PROFILES_TEMPLATES = {
       hasDiarization: true,
     },
     quickMeeting: true,
+    meta: {
+      securityLevel: SECURITY_LEVEL_PUBLIC,
+    },
   },
   amazon: {
     config: {
@@ -91,6 +104,9 @@ const TRANSCRIBER_PROFILES_TEMPLATES = {
       roleArn: "",
     },
     quickMeeting: true,
+    meta: {
+      securityLevel: SECURITY_LEVEL_PUBLIC,
+    },
   },
 }
 

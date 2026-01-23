@@ -134,6 +134,7 @@
     <ModalAddSessionChannels
       v-if="modalAddChannelsIsOpen"
       :transcriberProfiles="transcriberProfiles"
+      :securityLevel="securityLevel"
       v-model="selectedProfiles"
       @on-confirm="confirmAddSessionChannels"
       @on-cancel="closeModalAddSessionChannels" />
@@ -150,6 +151,7 @@ import { bus } from "@/main.js"
 
 import { testName } from "@/tools/fields/testName"
 import { getEnv } from "@/tools/getEnv"
+import { meetsMetaSecurityLevel } from "@/tools/filterBySecurityLevel"
 
 import EMPTY_FIELD from "@/const/emptyField"
 
@@ -170,6 +172,7 @@ import MetadataEditor from "@/components/MetadataEditor.vue"
 import MetadataList from "@/components/MetadataList.vue"
 import ModalEditMetadata from "@/components/ModalEditMetadata.vue"
 import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
+import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
 
 export default {
   mixins: [formsMixin],
@@ -293,7 +296,7 @@ export default {
         value: defaultMetadata,
         label: this.$t("session.create_page.metadata_label"),
       },
-      securityLevel: "unsecured",
+      securityLevel: DEFAULT_SECURITY_LEVEL,
       modalEditMetadataIsOpen: false,
       channels: [],
       selectedProfiles: [],
@@ -324,6 +327,15 @@ export default {
       }
 
       this.applyTemplate(this.selectedTemplate)
+    },
+    securityLevel(newLevel) {
+      // Remove channels whose profile doesn't meet the new security level
+      this.channels = this.channels.filter((channel) => {
+        const profile = this.transcriberProfiles.find(
+          (p) => p.id === channel.profileId,
+        )
+        return profile && meetsMetaSecurityLevel(profile, newLevel)
+      })
     },
   },
   computed: {
