@@ -116,3 +116,27 @@ export async function getSessionKpiById(sessionId) {
   )
   return res?.data ?? null
 }
+
+/**
+ * Export KPI session data in the specified format
+ * @param {string} format - Export format: 'json', 'csv', or 'xls'
+ * @param {Object} filters - Optional filters
+ * @param {string} [filters.organizationId] - Filter by organization ID
+ * @param {string} [filters.startDate] - Filter from date (ISO 8601)
+ * @param {string} [filters.endDate] - Filter to date (ISO 8601)
+ * @returns {Promise<Blob|null>} File blob for download
+ */
+export async function exportKpiSessions(format, filters = {}) {
+  const params = { userScope: "backoffice", format }
+  if (filters.organizationId) params.organizationId = filters.organizationId
+  if (filters.startDate) params.startDate = filters.startDate
+  if (filters.endDate) params.endDate = filters.endDate
+
+  const res = await sendRequest(
+    `${BASE_API}/administration/activity/session/export`,
+    { method: "get", responseType: "blob" },
+    params,
+  )
+
+  return res?.data ?? null
+}

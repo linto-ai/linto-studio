@@ -42,6 +42,16 @@ jest.mock(
   }),
 )
 
+// Mock kpiExport module to avoid exceljs dependency
+jest.mock(
+  `${process.cwd()}/components/WebServer/controllers/activity/kpiExport`,
+  () => ({
+    transformSessionData: jest.fn(),
+    generateCsv: jest.fn(),
+    generateXlsx: jest.fn(),
+  }),
+)
+
 // Mock res object
 const createMockRes = () => ({
   status: jest.fn().mockReturnThis(),

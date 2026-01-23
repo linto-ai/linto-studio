@@ -357,5 +357,92 @@
         }
       }
     }
+  },
+  "/api/administration/activity/session/export": {
+    "get": {
+      "tags": ["administration activity"],
+      "summary": "Export KPI session data in various formats",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
+          "required": true,
+          "description": "Scope of the user, must be 'backoffice'"
+        },
+        {
+          "in": "query",
+          "name": "format",
+          "schema": {
+            "type": "string",
+            "enum": ["json", "csv", "xls"]
+          },
+          "required": true,
+          "description": "Export format"
+        },
+        {
+          "in": "query",
+          "name": "organizationId",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": false,
+          "description": "Filter by organization ID"
+        },
+        {
+          "in": "query",
+          "name": "startDate",
+          "schema": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "required": false,
+          "description": "Filter sessions from this date"
+        },
+        {
+          "in": "query",
+          "name": "endDate",
+          "schema": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "required": false,
+          "description": "Filter sessions until this date"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "File download",
+          "content": {
+            "application/json": {},
+            "text/csv": {},
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
+          }
+        },
+        "400": {
+          "description": "Bad Request - Invalid format or date range",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "error": {
+                    "type": "string",
+                    "example": "Invalid format. Must be one of: json, csv, xls"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
   }
 }

@@ -3,6 +3,7 @@ const debug = require("debug")(
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const kpiHandler = require("../../controllers/activity/kpiHandlers")
+const kpiExport = require("../../controllers/activity/kpiExport")
 
 async function getActivity(req, res, next) {
   try {
@@ -143,10 +144,88 @@ async function getKpiSeries(req, res, next) {
   }
 }
 
+async function exportKpiSessions(req, res, next) {
+  try {
+    const { format, organizationId, startDate, endDate } = req.query
+
+    // Validate format
+    const validFormats = ["json", "csv", "xls"]
+    if (!format || !validFormats.includes(format)) {
+      return res.status(400).json({
+        error: `Invalid format. Must be one of: ${validFormats.join(", ")}`,
+      })
+    }
+
+    // Validate date range if both provided
+    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+      return res.status(400).json({
+        error: "Invalid date range: startDate must be before endDate",
+      })
+    }
+
+    // Build query params
+    const queryParams = {}
+    if (organizationId) queryParams.organizationId = organizationId
+    if (startDate) queryParams.startDate = startDate
+    if (endDate) queryParams.endDate = endDate
+
+    // Fetch all session KPI data (no pagination for export)
+    const sessionKpiList = await model.kpi.sessions.getBy({
+      ...queryParams,
+      size: 10000, // Large limit for export
+      page: 0,
+    })
+
+    // Generate filename with current date
+    const dateStr = new Date().toISOString().split("T")[0]
+    const filename = `kpi-sessions-${dateStr}`
+
+    // Return appropriate format
+    switch (format) {
+      case "json":
+        // Return raw database data for JSON
+        res.setHeader("Content-Type", "application/json")
+        res.setHeader(
+          "Content-Disposition",
+          `attachment; filename="${filename}.json"`,
+        )
+        return res.json(sessionKpiList.list)
+
+      case "csv":
+        // Transform data (flatten since each session may have multiple channel rows)
+        const csvData = sessionKpiList.list.flatMap(kpiExport.transformSessionData)
+        const csvContent = kpiExport.generateCsv(csvData)
+        res.setHeader("Content-Type", "text/csv; charset=utf-8")
+        res.setHeader(
+          "Content-Disposition",
+          `attachment; filename="${filename}.csv"`,
+        )
+        return res.send(csvContent)
+
+      case "xls":
+        // Transform data (flatten since each session may have multiple channel rows)
+        const xlsData = sessionKpiList.list.flatMap(kpiExport.transformSessionData)
+        const xlsxBuffer = await kpiExport.generateXlsx(xlsData)
+        res.setHeader(
+          "Content-Type",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
+        res.setHeader(
+          "Content-Disposition",
+          `attachment; filename="${filename}.xlsx"`,
+        )
+        return res.send(Buffer.from(xlsxBuffer))
+    }
+  } catch (err) {
+    next(err)
+  }
+}
+
 module.exports = {
   getActivity,
   getKpiByRessource,
   getKpiBySession,
   refreshSessionKpi,
   getKpiSeries,
+  exportKpiSessions,
 }
