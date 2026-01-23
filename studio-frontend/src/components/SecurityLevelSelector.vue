@@ -18,6 +18,7 @@
 </template>
 
 <script>
+import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
 import SECURITY_LEVELS_LIST from "@/const/securityLevelsList"
 
 export default {
@@ -25,7 +26,7 @@ export default {
   props: {
     value: {
       type: Number,
-      default: 0,
+      default: DEFAULT_SECURITY_LEVEL,
     },
   },
   computed: {

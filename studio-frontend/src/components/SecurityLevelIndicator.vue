@@ -12,13 +12,15 @@
 </template>
 
 <script>
+import { SECURITY_LEVELS } from "@/const/securityLevels"
+
 export default {
   name: "SecurityLevelIndicator",
   props: {
     level: {
       type: Number,
       default: null,
-      validator: (value) => value === null || [0, 1, 2].includes(value),
+      validator: (value) => value === null || SECURITY_LEVELS.includes(value),
     },
   },
   computed: {
