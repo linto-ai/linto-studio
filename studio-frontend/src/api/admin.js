@@ -314,7 +314,11 @@ export async function apiAdminDeleteTranscriberProfile(transcriberId, notif) {
   )
 }
 
-export async function apiAdminCreateAmazonTranscriberProfile(data, files, notif) {
+export async function apiAdminCreateAmazonTranscriberProfile(
+  data,
+  files,
+  notif,
+) {
   const formData = new FormData()
 
   const config = {
@@ -322,6 +326,7 @@ export async function apiAdminCreateAmazonTranscriberProfile(data, files, notif)
     name: data.config.name,
     description: data.config.description || "",
     languages: data.config.languages,
+    region: data.config.region,
     availableTranslations: data.config.availableTranslations || [],
     passphrase: data.config.passphrase || "",
     credentials: data.config.credentials,
@@ -365,6 +370,7 @@ export async function apiAdminUpdateAmazonTranscriberProfile(
     name: data.config.name,
     description: data.config.description || "",
     languages: data.config.languages,
+    region: data.config.region,
     availableTranslations: data.config.availableTranslations || [],
     passphrase: data.config.passphrase || "",
     credentials: data.config.credentials,

@@ -31,8 +31,8 @@
       <Button
         icon="trash"
         iconOnly
-        variant="ghost"
-        color="danger"
+        variant="transparent"
+        intent="destructive"
         size="sm"
         :title="$t('language_endpoint_editor.remove')"
         @click="removeItem(index)" />
@@ -41,8 +41,6 @@
     <Button
       icon="plus"
       :label="$t('language_endpoint_editor.add')"
-      variant="ghost"
-      color="primary"
       size="sm"
       @click="addItem" />
   </div>
