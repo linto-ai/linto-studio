@@ -12,6 +12,9 @@
         <Button
           :iconRight="open ? 'caret-up' : 'caret-down'"
           v-bind="$attrs"
+          :avatar="selectedItem?.avatar"
+          :icon="selectedItem?.icon"
+          :icon-weight="selectedItem?.iconWeight"
           :label="labelButton" />
       </slot>
     </template>
@@ -278,6 +281,9 @@ export default {
     labelButton() {
       const item = this.items.find((item) => this.isSame(this.value, item))
       return item.text || item.name
+    },
+    selectedItem() {
+      return this.items.find((item) => this.isSame(this.value, item))
     },
   },
   mounted() {

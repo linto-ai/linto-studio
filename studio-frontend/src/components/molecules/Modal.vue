@@ -100,6 +100,10 @@ export default {
                 this.$scopedSlots["actions-right"]
                   ? this.$scopedSlots["actions-right"]()
                   : this.$slots["actions-right"] || [],
+              "header-actions": () =>
+                this.$scopedSlots["header-actions"]
+                  ? this.$scopedSlots["header-actions"]()
+                  : this.$slots["header-actions"] || [],
             },
             triggerEl: this.triggerEl,
           })
@@ -131,6 +135,10 @@ export default {
             this.$scopedSlots["actions-right"]
               ? this.$scopedSlots["actions-right"]()
               : this.$slots["actions-right"] || [],
+          "header-actions": () =>
+            this.$scopedSlots["header-actions"]
+              ? this.$scopedSlots["header-actions"]()
+              : this.$slots["header-actions"] || [],
         }
         popup.rendererInstance.$forceUpdate()
       }

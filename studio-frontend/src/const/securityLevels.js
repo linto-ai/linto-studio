@@ -25,6 +25,13 @@ export const SECURITY_HIERARCHY = {
 // Default security level
 export const DEFAULT_SECURITY_LEVEL = SECURITY_LEVEL_PUBLIC
 
+// Icon names for each security level
+export const SECURITY_LEVEL_ICONS = {
+  [SECURITY_LEVEL_PUBLIC]: "shield-slash",
+  [SECURITY_LEVEL_COMMISSION]: "shield-warning",
+  [SECURITY_LEVEL_SENSITIVE]: "shield-check",
+}
+
 export default {
   SECURITY_LEVEL_PUBLIC,
   SECURITY_LEVEL_COMMISSION,
@@ -32,4 +39,5 @@ export default {
   SECURITY_LEVELS,
   SECURITY_HIERARCHY,
   DEFAULT_SECURITY_LEVEL,
+  SECURITY_LEVEL_ICONS,
 }

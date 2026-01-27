@@ -33,7 +33,6 @@ const TRANSCRIBER_PROFILES_TEMPLATES = {
       languages: [
         {
           candidate: "en-GB",
-          endpoint: "endpoint-id",
         },
       ],
       region: "westeurope",
@@ -81,6 +80,28 @@ const TRANSCRIBER_PROFILES_TEMPLATES = {
         "cy",
       ],
       hasDiarization: true,
+    },
+    quickMeeting: true,
+    meta: {
+      securityLevel: SECURITY_LEVEL_PUBLIC,
+    },
+  },
+  amazon: {
+    config: {
+      type: "amazon",
+      name: "Amazon Transcribe",
+      description: "Amazon Transcribe with IAM Roles Anywhere",
+      languages: [
+        {
+          candidate: "en-US",
+        },
+      ],
+      availableTranslations: [],
+      region: "us-east-1",
+      passphrase: "",
+      trustAnchorArn: "",
+      profileArn: "",
+      roleArn: "",
     },
     quickMeeting: true,
     meta: {

@@ -5,6 +5,7 @@
         ref="editor"
         :transcriberProfile="transcriberProfile"
         @input="updateProfile"
+        @files-changed="onFilesChanged"
         class="flex1" />
       <div class="flex gap-medium transcriber-profile-detail__footer">
         <Button
@@ -38,6 +39,7 @@ import TranscriberProfileEditor from "@/components/TranscriberProfileEditor.vue"
 import {
   apiAdminGetTranscriberProfilesById,
   apiAdminUpdateTranscriberProfile,
+  apiAdminUpdateAmazonTranscriberProfile,
   apiAdminDeleteTranscriberProfile,
 } from "@/api/admin.js"
 
@@ -49,6 +51,10 @@ export default {
       transcriberProfileOriginal: null,
       transcriberProfile: null,
       transcriberProfileId: this.$route.params.transcriberProfileId,
+      amazonFiles: {
+        certificate: null,
+        privateKey: null,
+      },
     }
   },
   mounted() {
@@ -57,6 +63,9 @@ export default {
   methods: {
     updateProfile(value) {
       this.transcriberProfile = value
+    },
+    onFilesChanged(files) {
+      this.amazonFiles = files
     },
     async fetchTranscriberProfile() {
       this.loading = true
@@ -75,15 +84,27 @@ export default {
     },
     async reset() {
       this.transcriberProfile = structuredClone(this.transcriberProfileOriginal)
+      this.amazonFiles = { certificate: null, privateKey: null }
       await this.$nextTick()
       this.$refs.editor.reset()
     },
     async save() {
       this.loading = true
-      const req = await apiAdminUpdateTranscriberProfile(
-        this.transcriberProfileId,
-        this.transcriberProfile,
-      )
+      let req
+
+      if (this.transcriberProfile.config.type === "amazon") {
+        req = await apiAdminUpdateAmazonTranscriberProfile(
+          this.transcriberProfileId,
+          this.transcriberProfile,
+          this.amazonFiles,
+        )
+      } else {
+        req = await apiAdminUpdateTranscriberProfile(
+          this.transcriberProfileId,
+          this.transcriberProfile,
+        )
+      }
+
       if (req.status === "success") {
         bus.$emit("app_notif", {
           status: "success",
@@ -93,6 +114,7 @@ export default {
         })
         this.transcriberProfile = req.data
         this.transcriberProfileOriginal = structuredClone(req.data)
+        this.amazonFiles = { certificate: null, privateKey: null }
       } else {
         bus.$emit("app_notif", {
           status: "error",

@@ -97,6 +97,10 @@ export default {
       type: Object,
       required: true,
     },
+    value: {
+      type: String,
+      default: undefined,
+    },
     modelValue: {
       type: String,
       default: undefined,
@@ -139,16 +143,11 @@ export default {
     },
   },
   data() {
+    const initialValue = this.modelValue ?? this.value ?? this.field.value ?? ""
     return {
       id: this.inputId || Math.random().toString(36).substr(2, 9),
-      editValue:
-        this.modelValue !== undefined
-          ? this.modelValue
-          : this.field.value || "",
-      originalValue:
-        this.modelValue !== undefined
-          ? this.modelValue
-          : this.field.value || "",
+      editValue: initialValue,
+      originalValue: initialValue,
     }
   },
   computed: {
@@ -194,13 +193,19 @@ export default {
   },
   watch: {
     modelValue(newVal) {
-      if (newVal !== this.editValue) {
+      if (newVal !== undefined && newVal !== this.editValue) {
+        this.editValue = newVal
+        this.originalValue = newVal
+      }
+    },
+    value(newVal) {
+      if (newVal !== undefined && newVal !== this.editValue) {
         this.editValue = newVal
         this.originalValue = newVal
       }
     },
     "field.value"(newVal) {
-      if (this.modelValue === undefined && newVal !== this.editValue) {
+      if (this.modelValue === undefined && this.value === undefined && newVal !== this.editValue) {
         this.editValue = newVal
         this.originalValue = newVal
       }

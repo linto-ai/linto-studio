@@ -183,10 +183,47 @@
       "type_label": "Profile type",
       "security_level_label": "Security level",
       "quick_meeting_label": "Enabled for quick meetings",
+      "name_label": "Name",
+      "name_placeholder": "Profile name",
+      "description_label": "Description",
+      "description_placeholder": "Profile description",
+      "region_label": "Region",
+      "region_placeholder": "e.g. westeurope",
+      "key_label": "API Key",
+      "key_placeholder": "Your API key",
+      "diarization_label": "Enable diarization",
+      "options_title": "Options",
+      "credentials_title": "Credentials",
       "warning_global": {
         "line_1": "This profile will be visible in all organizations.",
         "line_2": "To manage an organization's transcription profiles, go to the \"Organizations\" tab in the navigation bar."
-      }
+      },
+      "amazon_certificate_label": "Certificate (.crt)",
+      "amazon_certificate_placeholder": "Select certificate file",
+      "amazon_private_key_label": "Private Key (.pem, PKCS#8)",
+      "amazon_private_key_placeholder": "Select private key file",
+      "amazon_passphrase_label": "Passphrase (optional)",
+      "amazon_passphrase_placeholder": "Key passphrase if encrypted",
+      "amazon_region_label": "AWS Region",
+      "amazon_region_placeholder": "e.g. eu-west-1",
+      "amazon_credentials_label": "Credentials",
+      "amazon_credentials_placeholder": "AWS credentials identifier",
+      "amazon_trust_anchor_arn_label": "Trust Anchor ARN",
+      "amazon_trust_anchor_arn_placeholder": "arn:aws:rolesanywhere:...",
+      "amazon_profile_arn_label": "Profile ARN",
+      "amazon_profile_arn_placeholder": "arn:aws:rolesanywhere:...",
+      "amazon_role_arn_label": "Role ARN",
+      "amazon_role_arn_placeholder": "arn:aws:iam:...",
+      "amazon_pkcs8_helper": "Private key must be in PKCS#8 format. Convert with:",
+      "amazon_pkcs8_command": "openssl pkcs8 -topk8 -in old.pem -out new.pem",
+      "amazon_rsa_warning": "Warning: This appears to be an RSA private key. Please convert to PKCS#8 format.",
+      "languages_title": "Languages",
+      "linto_endpoint_label": "WebSocket URL",
+      "linto_endpoint_placeholder": "ws://...",
+      "microsoft_endpoint_label": "Endpoint ID",
+      "microsoft_endpoint_placeholder": "endpoint-id",
+      "amazon_endpoint_label": "AWS Region",
+      "amazon_endpoint_placeholder": "us-east-1"
     },
     "transcriber_profile_list": {
       "title": "Transcriber Profiles",
@@ -713,6 +750,11 @@
     "optimized_fr": "Optimize for French",
     "optimized_en": "Optimize for English"
   },
+  "language_endpoint_editor": {
+    "language": "Language",
+    "add": "Add a language",
+    "remove": "Remove"
+  },
   "login": {
     "not_registered": "Not registered yet? ",
     "create_account_button": "Create an account",
@@ -864,10 +906,23 @@
     "label_name": "Name",
     "action_btn": "Create"
   },
-  "modal_create_transcriber_profile": {
-    "title": "Create new transcriber profile",
-    "action_btn": "Create profile",
-    "notif_error": "An error occurred while creating the transcriber profile"
+  "modal_transcriber_profile": {
+    "title_create": "Create new transcriber profile",
+    "title_edit": "Edit transcriber profile",
+    "action_btn_create": "Create profile",
+    "action_btn_edit": "Save changes",
+    "delete_button": "Delete",
+    "confirm_delete": "Are you sure you want to delete this transcriber profile?",
+    "notif_error": "An error occurred",
+    "notif_create_success": "Transcriber profile created successfully",
+    "notif_update_success": "Transcriber profile updated successfully",
+    "notif_delete_success": "Transcriber profile deleted successfully",
+    "notif_delete_error": "An error occurred while deleting the transcriber profile",
+    "notif_fetch_error": "An error occurred while loading the transcriber profile",
+    "platform_global": "Platform (global)",
+    "organization_tooltip": "Select organization",
+    "type_tooltip": "Transcription engine",
+    "security_level_tooltip": "Security level"
   },
   "modal_delete_users": {
     "title": "Delete user | Delete {count} users",

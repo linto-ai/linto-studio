@@ -29,6 +29,7 @@
 
   body {
     --font-family: "Noto Sans", "Arial", "Helvetica", "verdana";
+    --font-family-mono: ui-monospace, monospace;
     --font-size: 14px;
     --luciole-font-family: "Luciole", "Arial", "Helvetica", "verdana";
     --background-primary: white;
@@ -137,6 +138,8 @@
     --text-xl: 1.25rem;
     --text-2xl: 1.5rem;
     --text-3xl: 1.875rem;
+
+    --border-radius-sm: 0.25rem;
   }
 
   // @media (prefers-color-scheme: dark) {}

@@ -184,10 +184,47 @@
       "type_label": "Type de profil",
       "security_level_label": "Niveau de sécurité",
       "quick_meeting_label": "Activé pour les quick meetings",
+      "name_label": "Nom",
+      "name_placeholder": "Nom du profil",
+      "description_label": "Description",
+      "description_placeholder": "Description du profil",
+      "region_label": "Région",
+      "region_placeholder": "ex: westeurope",
+      "key_label": "Clé API",
+      "key_placeholder": "Votre clé API",
+      "diarization_label": "Activer la diarisation",
+      "options_title": "Options",
+      "credentials_title": "Identifiants",
       "warning_global": {
         "line_1": "Ce profil sera visible dans toutes les organisations.",
         "line_2": "Pour gérer les profils de transcription d'une organisation, allez dans l'onglet \"Organisations\" de la barre de navigation."
-      }
+      },
+      "amazon_certificate_label": "Certificat (.crt)",
+      "amazon_certificate_placeholder": "Selectionner le fichier certificat",
+      "amazon_private_key_label": "Cle privee (.pem, PKCS#8)",
+      "amazon_private_key_placeholder": "Selectionner le fichier de cle privee",
+      "amazon_passphrase_label": "Phrase de passe (optionnel)",
+      "amazon_passphrase_placeholder": "Phrase de passe si la cle est chiffree",
+      "amazon_region_label": "Région AWS",
+      "amazon_region_placeholder": "ex: eu-west-1",
+      "amazon_credentials_label": "Credentials",
+      "amazon_credentials_placeholder": "Identifiant AWS credentials",
+      "amazon_trust_anchor_arn_label": "Trust Anchor ARN",
+      "amazon_trust_anchor_arn_placeholder": "arn:aws:rolesanywhere:...",
+      "amazon_profile_arn_label": "Profile ARN",
+      "amazon_profile_arn_placeholder": "arn:aws:rolesanywhere:...",
+      "amazon_role_arn_label": "Role ARN",
+      "amazon_role_arn_placeholder": "arn:aws:iam:...",
+      "amazon_pkcs8_helper": "La cle privee doit etre au format PKCS#8. Convertir avec :",
+      "amazon_pkcs8_command": "openssl pkcs8 -topk8 -in old.pem -out new.pem",
+      "amazon_rsa_warning": "Attention : Ceci semble etre une cle privee RSA. Veuillez la convertir au format PKCS#8.",
+      "languages_title": "Langues",
+      "linto_endpoint_label": "URL WebSocket",
+      "linto_endpoint_placeholder": "ws://...",
+      "microsoft_endpoint_label": "ID Endpoint",
+      "microsoft_endpoint_placeholder": "endpoint-id",
+      "amazon_endpoint_label": "Région AWS",
+      "amazon_endpoint_placeholder": "us-east-1"
     },
     "transcriber_profile_list": {
       "title": "Profils de transcription",
@@ -367,7 +404,7 @@
     "security_level_txt": {
       "0": "Diffusion publique",
       "1": "Usage commission",
-      "2": "Sensible non classifie"
+      "2": "Sensible non classifié"
     },
     "model_quality": {
       "high": "Haute",
@@ -712,6 +749,11 @@
     "optimized_fr": "Optimisé pour le français",
     "optimized_en": "Optimisé pour l'anglais"
   },
+  "language_endpoint_editor": {
+    "language": "Langue",
+    "add": "Ajouter une langue",
+    "remove": "Supprimer"
+  },
   "login": {
     "not_registered": "Pas encore inscrit ? ",
     "create_account_button": "Créer un compte",
@@ -871,10 +913,23 @@
     "label_name": "Nom de l'organisation",
     "action_btn": "Créer"
   },
-  "modal_create_transcriber_profile": {
-    "title": "Créer un profil de transcription",
-    "action_btn": "Créer le profil",
-    "notif_error": "Une erreur s'est produite lors de la création du profil de transcription"
+  "modal_transcriber_profile": {
+    "title_create": "Créer un profil de transcription",
+    "title_edit": "Modifier le profil de transcription",
+    "action_btn_create": "Créer le profil",
+    "action_btn_edit": "Enregistrer",
+    "delete_button": "Supprimer",
+    "confirm_delete": "Êtes-vous sûr de vouloir supprimer ce profil de transcription ?",
+    "notif_error": "Une erreur s'est produite",
+    "notif_create_success": "Le profil de transcription a été créé avec succès",
+    "notif_update_success": "Le profil de transcription a été mis à jour avec succès",
+    "notif_delete_success": "Le profil de transcription a été supprimé avec succès",
+    "notif_delete_error": "Une erreur s'est produite lors de la suppression du profil de transcription",
+    "notif_fetch_error": "Une erreur s'est produite lors du chargement du profil de transcription",
+    "platform_global": "Plateforme (global)",
+    "organization_tooltip": "Sélectionner l'organisation",
+    "type_tooltip": "Moteur de transcription",
+    "security_level_tooltip": "Niveau de sécurité"
   },
   "modal_delete_users": {
     "title": "Supprimer un utilisateur | Supprimer {count} utilisateurs",

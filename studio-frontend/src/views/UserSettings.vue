@@ -24,6 +24,7 @@
       <div style="position: relative">
         <input
           type="file"
+          class="hidden"
           ref="file"
           id="profile-picture"
           name="profile-picture"

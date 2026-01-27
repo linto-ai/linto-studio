@@ -313,3 +313,90 @@ export async function apiAdminDeleteTranscriberProfile(transcriberId, notif) {
     notif,
   )
 }
+
+export async function apiAdminCreateAmazonTranscriberProfile(
+  data,
+  files,
+  notif,
+) {
+  const formData = new FormData()
+
+  const config = {
+    type: "amazon",
+    name: data.config.name,
+    description: data.config.description || "",
+    languages: data.config.languages,
+    region: data.config.region,
+    availableTranslations: data.config.availableTranslations || [],
+    passphrase: data.config.passphrase || "",
+    credentials: data.config.credentials,
+    trustAnchorArn: data.config.trustAnchorArn,
+    profileArn: data.config.profileArn,
+    roleArn: data.config.roleArn,
+    quickMeeting: data.quickMeeting,
+  }
+
+  if (data.organizationId) {
+    config.organizationId = data.organizationId
+  }
+
+  formData.append("config", JSON.stringify(config))
+
+  if (files.certificate) {
+    formData.append("certificate", files.certificate)
+  }
+  if (files.privateKey) {
+    formData.append("privateKey", files.privateKey)
+  }
+
+  return sendMultipartFormData(
+    `${BASE_API}/administration/transcriber_profiles`,
+    "post",
+    formData,
+    notif,
+  )
+}
+
+export async function apiAdminUpdateAmazonTranscriberProfile(
+  transcriberId,
+  data,
+  files,
+  notif,
+) {
+  const formData = new FormData()
+
+  const config = {
+    type: "amazon",
+    name: data.config.name,
+    description: data.config.description || "",
+    languages: data.config.languages,
+    region: data.config.region,
+    availableTranslations: data.config.availableTranslations || [],
+    passphrase: data.config.passphrase || "",
+    credentials: data.config.credentials,
+    trustAnchorArn: data.config.trustAnchorArn,
+    profileArn: data.config.profileArn,
+    roleArn: data.config.roleArn,
+    quickMeeting: data.quickMeeting,
+  }
+
+  if (data.organizationId) {
+    config.organizationId = data.organizationId
+  }
+
+  formData.append("config", JSON.stringify(config))
+
+  if (files && files.certificate) {
+    formData.append("certificate", files.certificate)
+  }
+  if (files && files.privateKey) {
+    formData.append("privateKey", files.privateKey)
+  }
+
+  return sendMultipartFormData(
+    `${BASE_API}/administration/transcriber_profiles/${transcriberId}`,
+    "put",
+    formData,
+    notif,
+  )
+}
