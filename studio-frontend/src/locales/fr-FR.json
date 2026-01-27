@@ -1221,7 +1221,7 @@
     },
     "export_error": "Echec de l'export du document",
     "export_in_progress": "Export en cours...",
-    "downloading": "Telechargement...",
+    "downloading": "Téléchargement...",
     "regenerate": {
       "confirm_title": "Nouvelle génération ?",
       "confirm_message": "Une nouvelle requête sera envoyée au service IA. La génération actuelle sera archivée dans l'historique.",
@@ -1539,7 +1539,12 @@
     "bounce_rate_label": "Taux de rebond (spectateurs)",
     "quick_session_name": "Enregistrement de {userName}",
     "quick_session_name_anonymous": "Enregistrement personnel",
-    "view_details": "Voir les details de la session"
+    "view_details": "Voir les details de la session",
+    "export": {
+      "button": "Exporter",
+      "success": "Export téléchargé avec succès",
+      "error": "Echec de l'export des donnees"
+    }
   },
   "session_stats_modal": {
     "title": "Statistiques de la session",

@@ -1547,7 +1547,12 @@
     "bounce_rate_label": "Bounce rate (viewers)",
     "quick_session_name": "{userName} recording",
     "quick_session_name_anonymous": "Personal recording",
-    "view_details": "View session details"
+    "view_details": "View session details",
+    "export": {
+      "button": "Export",
+      "success": "Export downloaded successfully",
+      "error": "Failed to export data"
+    }
   },
   "session_stats_modal": {
     "title": "Session Statistics",

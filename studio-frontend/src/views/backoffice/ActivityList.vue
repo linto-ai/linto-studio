@@ -7,7 +7,7 @@
       :tabs="tabs"
       v-model="currentTab"
       variant="secondary"
-      style="padding-bottom: 0.5rem"></Tabs>
+      style="padding-bottom: 0.5rem" />
     <SessionsKpi v-if="currentTab == 'sessions_kpi'" />
     <div class="flex1 flex col gap-medium" v-else>
       <UserSelector

@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div class="sessions-kpi__toolbar">
+      <KpiExportDropdown :organizationId="organizationId" />
+    </div>
     <GenericTableRequest
       ref="table"
       idKey="sessionId"
@@ -30,6 +33,7 @@ import { bus } from "@/main.js"
 import GenericTableRequest from "@/components/molecules/GenericTableRequest.vue"
 import Button from "@/components/atoms/Button.vue"
 import ModalSessionStats from "@/components/ModalSessionStats.vue"
+import KpiExportDropdown from "@/components/KpiExportDropdown.vue"
 import { getSessionListKpi } from "@/api/kpi"
 import { timeToHMS } from "@/tools/timeToHMS"
 import { userName } from "@/tools/userName"
@@ -171,6 +175,16 @@ export default {
     GenericTableRequest,
     Button,
     ModalSessionStats,
+    KpiExportDropdown,
   },
 }
 </script>
+
+<style lang="scss" scoped>
+.sessions-kpi__toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+}
+</style>
+
