@@ -30,6 +30,7 @@
         v-if="translationsOptions.channels.length > 0"
         selection
         multiple
+        :close-on-click="false"
         v-model="selectedTranslations"
         :items="translationsOptions.channels">
         <template #trigger="{ open }">
