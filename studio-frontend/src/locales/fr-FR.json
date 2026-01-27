@@ -1166,7 +1166,7 @@
     },
     "export_error": "Echec de l'export du document",
     "export_in_progress": "Export en cours...",
-    "downloading": "Telechargement...",
+    "downloading": "Téléchargement...",
     "regenerate": {
       "confirm_title": "Nouvelle génération ?",
       "confirm_message": "Une nouvelle requête sera envoyée au service IA. La génération actuelle sera archivée dans l'historique.",
@@ -1487,7 +1487,7 @@
     "view_details": "Voir les details de la session",
     "export": {
       "button": "Exporter",
-      "success": "Export telecharge avec succes",
+      "success": "Export téléchargé avec succès",
       "error": "Echec de l'export des donnees"
     }
   },

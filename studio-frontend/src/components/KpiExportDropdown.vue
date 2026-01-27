@@ -1,53 +1,29 @@
 <template>
-  <div class="kpi-export-dropdown">
-    <Popover v-model="isOpen">
-      <template #trigger>
-        <Button
-          icon="download-simple"
-          variant="secondary"
-          :loading="exporting">
-          {{ $t("session_kpi.export.button") }}
-        </Button>
-      </template>
-      <template #content>
-        <div class="kpi-export-dropdown__menu">
-          <button
-            class="kpi-export-dropdown__item"
-            @click="handleExport('json')"
-            :disabled="exporting">
-            <PhIcon name="brackets-curly" />
-            <span>JSON</span>
-          </button>
-          <button
-            class="kpi-export-dropdown__item"
-            @click="handleExport('csv')"
-            :disabled="exporting">
-            <PhIcon name="file-csv" />
-            <span>CSV</span>
-          </button>
-          <button
-            class="kpi-export-dropdown__item"
-            @click="handleExport('xls')"
-            :disabled="exporting">
-            <PhIcon name="file-xls" />
-            <span>Excel (XLSX)</span>
-          </button>
-        </div>
-      </template>
-    </Popover>
-  </div>
+  <PopoverList
+    :items="exportItems"
+    @click="onItemClick"
+    color="neutral"
+    class="kpi-export-dropdown">
+    <template #trigger>
+      <Button
+        icon="download-simple"
+        variant="secondary"
+        :loading="exporting">
+        {{ $t("session_kpi.export.button") }}
+      </Button>
+    </template>
+  </PopoverList>
 </template>
 
 <script>
 import { mapActions } from "vuex"
 import Button from "@/components/atoms/Button.vue"
-import Popover from "@/components/atoms/Popover.vue"
-import PhIcon from "@/components/atoms/PhIcon.vue"
+import PopoverList from "@/components/atoms/PopoverList.vue"
 import { exportKpiSessions } from "@/api/kpi"
 
 export default {
   name: "KpiExportDropdown",
-  components: { Button, Popover, PhIcon },
+  components: { Button, PopoverList },
   props: {
     organizationId: {
       type: String,
@@ -64,15 +40,27 @@ export default {
   },
   data() {
     return {
-      isOpen: false,
       exporting: false,
     }
   },
+  computed: {
+    exportItems() {
+      return [
+        { id: "json", name: "JSON", icon: "brackets-curly" },
+        { id: "csv", name: "CSV", icon: "file-csv" },
+        { id: "xls", name: "Excel (XLSX)", icon: "file-xls" },
+      ]
+    },
+  },
   methods: {
     ...mapActions("system", ["showSuccess", "showError"]),
+    onItemClick(item) {
+      if (!this.exporting) {
+        this.handleExport(item.id)
+      }
+    },
     async handleExport(format) {
       this.exporting = true
-      this.isOpen = false
 
       try {
         const blob = await exportKpiSessions(format, {
@@ -114,40 +102,6 @@ export default {
 
 <style lang="scss" scoped>
 .kpi-export-dropdown {
-  &__menu {
-    display: flex;
-    flex-direction: column;
-    min-width: 160px;
-  }
-
-  &__item {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 0.75rem;
-    padding: 0.625rem 1rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-    text-align: left;
-    font-size: 0.875rem;
-    color: var(--color-text-primary);
-    transition: background-color 0.15s ease;
-    width: 100%;
-
-    &:hover:not(:disabled) {
-      background-color: var(--color-background-secondary);
-    }
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .ph-icon {
-      font-size: 1.125rem;
-      color: var(--color-text-secondary);
-    }
-  }
+  display: inline-flex;
 }
 </style>
