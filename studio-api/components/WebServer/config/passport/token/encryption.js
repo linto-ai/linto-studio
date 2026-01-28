@@ -1,7 +1,5 @@
 const crypto = require("crypto")
 
-console.log(process.env.SSO_ENCRYPTION_KEY)
-
 const rawKey =
   process.env.SSO_ENCRYPTION_KEY ||
   "default_platform_encryption_key_please_change"
