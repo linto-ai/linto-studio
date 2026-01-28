@@ -1,6 +1,6 @@
 {
   "name": "linto-studio-websocket",
-  "version": "1.5.6",
+  "version": "1.7.0",
   "description": "Websocker server for the conversation manager.",
   "main": "src/app.js",
   "type": "module",
