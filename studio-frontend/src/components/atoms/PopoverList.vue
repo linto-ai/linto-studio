@@ -17,7 +17,9 @@
           :avatar="selectedItem?.avatar"
           :icon="selectedItem?.icon"
           :icon-weight="selectedItem?.iconWeight"
-          :label="labelButton" />
+          :label="labelButton"
+          aria-haspopup="listbox"
+          :aria-expanded="open" />
       </slot>
     </template>
     <template #content>
@@ -26,39 +28,80 @@
         v-if="items && items.length"
         role="listbox"
         :id="listboxId"
+        :aria-label="ariaLabel"
+        :aria-multiselectable="multiple || null"
         :aria-activedescendant="activeDescendantId">
-        <div
-          v-for="(item, index) in items"
-          :key="item.id"
-          :id="getItemId(index)"
-          class="popover-list__item"
-          role="option"
-          :aria-selected="isSelected(item)">
-          <Button
-            :icon="itemIcon(item)"
-            :icon-position="item.iconPosition || 'left'"
-            :icon-weight="item.iconWeight"
-            :avatar="item.avatar"
-            :avatar-text="item.avatarText"
-            :icon-right="item.iconRight"
-            :hovered="highlightedIndex == index"
-            @click="handleClickItem(item)"
-            :size="size"
-            v-bind="itemPropsWithoutTo(item)">
-            <slot name="item" :item="item">
-              <div class="flex col">
-                <span class="popover-list__item__name text-cut">{{
+        <!-- Selection mode: native checkbox + label -->
+        <template v-if="selection">
+          <div
+            v-for="(item, index) in items"
+            :key="item.id ?? item.value ?? index"
+            :id="getItemId(index)"
+            class="popover-list__item popover-list__item--selection"
+            :class="{
+              'popover-list__item--highlighted': highlightedIndex === index,
+            }"
+            role="option"
+            :aria-selected="isSelected(item)"
+            @click.stop>
+            <input
+              type="checkbox"
+              :id="getCheckboxId(index)"
+              :checked="isSelected(item)"
+              @change="toggleSelection(item)"
+              class="popover-list__checkbox-input" />
+            <label
+              :for="getCheckboxId(index)"
+              class="popover-list__checkbox-label">
+              <slot name="item" :item="item">
+                <span class="popover-list__item__name">{{
                   item.name || item.text
                 }}</span>
                 <span
-                  class="popover-list__item__description"
-                  v-if="item.description">
+                  v-if="item.description"
+                  class="popover-list__item__description">
                   {{ item.description }}
                 </span>
-              </div>
-            </slot>
-          </Button>
-        </div>
+              </slot>
+            </label>
+          </div>
+        </template>
+
+        <!-- Normal mode: button -->
+        <template v-else>
+          <div
+            v-for="(item, index) in items"
+            :key="item.id ?? item.value ?? index"
+            :id="getItemId(index)"
+            class="popover-list__item"
+            role="option"
+            :aria-selected="isSelected(item)">
+            <Button
+              :icon="itemIcon(item)"
+              :icon-position="item.iconPosition || 'left'"
+              :icon-weight="item.iconWeight"
+              :avatar="item.avatar"
+              :avatar-text="item.avatarText"
+              :icon-right="item.iconRight"
+              :hovered="highlightedIndex == index"
+              @click="handleClickItem(item)"
+              :size="size"
+              :color="itemColor(item)">
+              <slot name="item" :item="item">
+                <div class="flex col">
+                  <span class="popover-list__item__name text-cut">{{
+                    item.name || item.text
+                  }}</span>
+                  <span
+                    class="popover-list__item__description"
+                    v-if="item.description">
+                    {{ item.description }}
+                  </span>
+                </div>
+              </slot>
+            </Button>
+          </div>
+        </template>
       </div>
     </template>
   </Popover>
@@ -155,6 +198,13 @@ export default {
       type: Boolean,
       default: true,
     },
+    /**
+     * Accessible label for the listbox (screen readers)
+     */
+    ariaLabel: {
+      type: String,
+      default: null,
+    },
   },
   emits: ["click", "update:value", "input"],
   methods: {
@@ -180,14 +230,21 @@ export default {
         if (selected) {
           updated = current.filter((v) => !this.isSame(v, item))
         } else {
-          updated = [...current, this.returnObjects ? item : item.id]
+          updated = [
+            ...current,
+            this.returnObjects ? item : (item.id ?? item.value),
+          ]
         }
         this.$emit("update:value", updated)
         this.$emit("input", updated)
       } else {
         // single selection: either select or deselect (null)
         const selected = this.isSelected(item)
-        const updated = selected ? null : this.returnObjects ? item : item.id
+        const updated = selected
+          ? null
+          : this.returnObjects
+            ? item
+            : (item.id ?? item.value)
         this.$emit("update:value", updated)
         this.$emit("input", updated)
       }
@@ -229,22 +286,33 @@ export default {
     },
     /**
      * Returns the icon for an item based on selection mode.
+     * In selection mode, we use Checkbox component instead of icon.
      */
     itemIcon(item) {
       if (this.selection) {
-        return this.isSelected(item) ? "check-circle" : undefined
+        return undefined
       }
       return item.icon
     },
     /**
-     * Returns item props without the 'to' property to prevent automatic navigation.
+     * Returns only Button-compatible props from an item.
      */
     itemPropsWithoutTo(item) {
-      const { to, ...itemWithoutTo } = item
-      return itemWithoutTo
+      return {
+        color: item.color || this.color,
+      }
     },
     getItemId(index) {
       return `${this.listboxId}-option-${index}`
+    },
+    getCheckboxId(index) {
+      return `${this.listboxId}-checkbox-${index}`
+    },
+    getCheckboxField(item) {
+      return {
+        label: item.name || item.text,
+        value: this.isSelected(item),
+      }
     },
     onKeyDown(e) {
       switch (e.key) {
@@ -319,7 +387,7 @@ export default {
     },
     labelButton() {
       const item = this.items.find((item) => this.isSame(this.value, item))
-      return item.text || item.name
+      return item ? item.text || item.name : ""
     },
     selectedItem() {
       return this.items.find((item) => this.isSame(this.value, item))
@@ -410,6 +478,40 @@ export default {
     color: var(--text-secondary);
     font-size: 0.9em;
   }
+}
+
+// Selection mode item styling
+.popover-list__item--selection {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.15s;
+
+  &:hover,
+  &.popover-list__item--highlighted {
+    background-color: var(--primary-soft);
+  }
+}
+
+.popover-list__checkbox-input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  margin-top: 2px;
+  accent-color: var(--primary-color);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.popover-list__checkbox-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  cursor: pointer;
+  flex: 1;
+  min-width: 0;
 }
 
 .popover-list__mobile {

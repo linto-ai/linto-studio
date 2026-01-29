@@ -33,6 +33,19 @@
         <Button variant="tertiary" size="sm"> {{ popoverValue }} </Button>
       </template> -->
     </PopoverList>
+    <PopoverList
+      :items="popoverItems"
+      v-model="popoverMultiValue"
+      selection
+      multiple
+      :closeOnItemClick="false"
+      class="relative">
+      <template #trigger="{ open }">
+        <Button :iconRight="open ? 'caret-up' : 'caret-down'">
+          {{ popoverMultiValue.length }} fruits sélectionnés
+        </Button>
+      </template>
+    </PopoverList>
     <OrgaRoleSelector v-model="role" />
     <OrgaRoleSelector v-model="role" readonly />
     <GenericTable
@@ -118,6 +131,7 @@ export default {
         },
       ],
       popoverValue: "select-value-1",
+      popoverMultiValue: ["select-value-1", "select-value-3"],
       role: 1,
       tableContent: [
         { _id: "1", name: "Alfred", role: 1 },
