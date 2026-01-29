@@ -3,9 +3,11 @@
     class="popover-wrapper"
     :style="popoverStyle"
     ref="wrapper"
+    tabindex="-1"
     @mouseenter="controller.onContentEnter"
     @mouseleave="controller.onContentLeave"
-    @click="handleClickInside">
+    @click="handleClickInside"
+    @keydown="handleKeydown">
     <div
       class="popover-content"
       :class="[position, contentClass]"
@@ -134,6 +136,15 @@ export default {
     closeOnEscape() {
       this.controller.closeOnEscape()
     },
+    handleKeydown(event) {
+      // Forward keydown to controller if it has a handler
+      if (this.controller && typeof this.controller.onContentKeydown === "function") {
+        this.controller.onContentKeydown(event)
+      }
+    },
+    focus() {
+      this.$refs.wrapper && this.$refs.wrapper.focus()
+    },
   },
 }
 </script>
@@ -141,6 +152,7 @@ export default {
 <style lang="scss">
 .popover-wrapper {
   position: absolute;
+  outline: none;
 }
 
 .popover-content:has(> div) {

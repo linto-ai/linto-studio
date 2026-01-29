@@ -6,7 +6,9 @@
     :overlay="overlay"
     :content-class="isMobile ? 'popover-list__mobile' : ''"
     v-bind="$attrs"
-    ref="popover">
+    ref="popover"
+    @input="onPopoverToggle"
+    @keydown="onKeyDown">
     <template #trigger="{ open }">
       <slot name="trigger" :open="open">
         <Button
@@ -19,11 +21,19 @@
       </slot>
     </template>
     <template #content>
-      <div class="popover-list__content" v-if="items && items.length">
+      <div
+        class="popover-list__content"
+        v-if="items && items.length"
+        role="listbox"
+        :id="listboxId"
+        :aria-activedescendant="activeDescendantId">
         <div
           v-for="(item, index) in items"
           :key="item.id"
-          class="popover-list__item">
+          :id="getItemId(index)"
+          class="popover-list__item"
+          role="option"
+          :aria-selected="isSelected(item)">
           <Button
             :icon="itemIcon(item)"
             :icon-position="item.iconPosition || 'left'"
@@ -233,20 +243,48 @@ export default {
       const { to, ...itemWithoutTo } = item
       return itemWithoutTo
     },
+    getItemId(index) {
+      return `${this.listboxId}-option-${index}`
+    },
     onKeyDown(e) {
-      console.log("hey")
       switch (e.key) {
         case "ArrowDown":
+          e.preventDefault()
           this.highlightNext()
           break
         case "ArrowUp":
+          e.preventDefault()
           this.highlightPrevious()
           break
         case "Enter":
-          this.handleClickItem(this.items[this.highlightedIndex])
+          e.preventDefault()
+          if (this.items && this.items[this.highlightedIndex]) {
+            this.handleClickItem(this.items[this.highlightedIndex])
+          }
+          break
+        case "Escape":
+          e.preventDefault()
+          this.$refs.popover && this.$refs.popover.close()
+          break
+        case "Home":
+          e.preventDefault()
+          this.highlightedIndex = 0
+          break
+        case "End":
+          e.preventDefault()
+          this.highlightedIndex = this.items.length - 1
           break
         default:
           break
+      }
+    },
+    onPopoverToggle(isOpen) {
+      if (isOpen) {
+        // Reset highlighted index to selected item or first item
+        const selectedIndex = this.items.findIndex((item) =>
+          this.isSame(this.value, item),
+        )
+        this.highlightedIndex = selectedIndex >= 0 ? selectedIndex : 0
       }
     },
     highlightNext() {
@@ -267,6 +305,7 @@ export default {
   data() {
     return {
       highlightedIndex: 0,
+      uid: Math.random().toString(36).substring(2, 9),
     }
   },
   computed: {
@@ -285,6 +324,15 @@ export default {
     selectedItem() {
       return this.items.find((item) => this.isSame(this.value, item))
     },
+    listboxId() {
+      return `popover-list-${this.uid}`
+    },
+    activeDescendantId() {
+      if (this.items && this.items.length > 0) {
+        return this.getItemId(this.highlightedIndex)
+      }
+      return null
+    },
   },
   mounted() {
     // Ensure reactivity on viewport resize
@@ -294,7 +342,6 @@ export default {
     }
     if (typeof window !== "undefined") {
       window.addEventListener("resize", this.resizeListener, { passive: true })
-      //window.addEventListener("keydown", this.onKeyDown)
     }
   },
   beforeDestroy() {
@@ -314,6 +361,12 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 0px;
+  outline: none;
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: -2px;
+  }
 }
 
 .popover-list__item {
@@ -335,7 +388,8 @@ export default {
       color: var(--tertiary-color);
     }
 
-    &:hover {
+    &:hover,
+    &.btn--hovered {
       background-color: var(--primary-color);
       color: var(--primary-contrast);
 

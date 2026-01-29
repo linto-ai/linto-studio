@@ -115,6 +115,8 @@ export default {
 
         this.$nextTick(() => {
           this.updatePopoverPosition()
+          // Focus the popover content for keyboard navigation
+          this.focusContent()
         })
 
         window.addEventListener("resize", this.updatePopoverPosition, {
@@ -235,6 +237,19 @@ export default {
     },
     closeOnEscape() {
       this.toggle(false)
+    },
+    onContentKeydown(event) {
+      this.$emit("keydown", event)
+    },
+    focusContent(attempts = 0) {
+      const maxAttempts = 5
+      const popup = popupManager.stack.find((p) => p.id === this._uid)
+      if (popup && popup.rendererInstance && popup.rendererInstance.focus) {
+        popup.rendererInstance.focus()
+      } else if (attempts < maxAttempts) {
+        // Renderer not ready yet, retry after a frame
+        requestAnimationFrame(() => this.focusContent(attempts + 1))
+      }
     },
     updatePopoverPosition() {
       if (!this.isOpen) return

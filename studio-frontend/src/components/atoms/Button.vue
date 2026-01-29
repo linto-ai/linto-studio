@@ -143,6 +143,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    hovered: {
+      type: Boolean,
+      default: false,
+    },
     type: {
       type: String,
       default: "button", // button or submit
@@ -175,6 +179,9 @@ export default {
       classes.push(`btn--${this.size}`)
       if (this.block) {
         classes.push("btn--block")
+      }
+      if (this.hovered) {
+        classes.push("btn--hovered")
       }
       return classes
     },
