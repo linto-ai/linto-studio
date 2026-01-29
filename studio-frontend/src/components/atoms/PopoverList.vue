@@ -23,10 +23,10 @@
       </slot>
     </template>
     <template #content>
-      <div class="popover-list__content" v-if="items && items.length">
+      <div class="popover-list__content" v-if="asyncSearch || (items && items.length)">
         <!-- Header: select all + search -->
         <div
-          v-if="searchable || (selection && multiple)"
+          v-if="searchable || asyncSearch || (selection && multiple)"
           class="popover-list__header"
           @click.stop>
           <input
@@ -38,13 +38,13 @@
             class="popover-list__checkbox-input"
             aria-label="Select all" />
           <input
-            v-if="searchable"
+            v-if="searchable || asyncSearch"
             type="text"
             v-model="searchQuery"
             autofocus
-            :placeholder="searchPlaceholder"
+            :placeholder="effectiveSearchPlaceholder"
             class="popover-list__search-input"
-            aria-label="Rechercher"
+            :aria-label="$t('popover_list.search')"
             @keydown.stop="onSearchKeyDown" />
         </div>
 
@@ -54,13 +54,49 @@
           :aria-label="ariaLabel"
           :aria-multiselectable="multiple || null"
           :aria-activedescendant="activeDescendantId">
-          <!-- Empty state -->
-          <div v-if="filteredItems.length === 0" class="popover-list__empty">
-            Aucun résultat
+          <!-- Loading state -->
+          <div v-if="loading" class="popover-list__loading">
+            <Loading block :background="false" />
           </div>
 
-          <!-- Selection mode: native checkbox + label -->
-          <template v-if="selection">
+          <!-- Async mode: no search yet, show selected items + hint -->
+          <template v-else-if="asyncSearch && searchQuery.length < minSearchLength">
+            <template v-if="selectedItems.length > 0 && selection">
+              <div
+                v-for="(item, index) in selectedItems"
+                :key="'selected-' + (item.id ?? item.value ?? index)"
+                class="popover-list__item popover-list__item--selection"
+                role="option"
+                :aria-selected="true"
+                @click.stop>
+                <input
+                  type="checkbox"
+                  :checked="true"
+                  @change="toggleSelection(item)"
+                  class="popover-list__checkbox-input" />
+                <label class="popover-list__checkbox-label">
+                  <slot name="item" :item="item">
+                    <span class="popover-list__item__name">{{
+                      item.name || item.text
+                    }}</span>
+                  </slot>
+                </label>
+              </div>
+            </template>
+            <div class="popover-list__empty">
+              {{ $t('popover_list.min_characters', { count: minSearchLength }) }}
+            </div>
+          </template>
+
+          <!-- Empty search results -->
+          <div
+            v-else-if="filteredItems.length === 0"
+            class="popover-list__empty">
+            {{ $t('popover_list.no_results') }}
+          </div>
+
+          <!-- Selection mode: checkbox items -->
+          <template v-else-if="selection">
             <div
               v-for="(item, index) in filteredItems"
               :key="item.id ?? item.value ?? index"
@@ -95,7 +131,7 @@
             </div>
           </template>
 
-          <!-- Normal mode: button -->
+          <!-- Normal mode: button items -->
           <template v-else>
             <div
               v-for="(item, index) in filteredItems"
@@ -138,11 +174,15 @@
 
 <script>
 import Popover from "./Popover.vue"
+import Loading from "./Loading.vue"
+import { debounceMixin } from "@/mixins/debounce"
 
 export default {
   name: "PopoverList",
+  mixins: [debounceMixin],
   components: {
     Popover,
+    Loading,
   },
   props: {
     /**
@@ -246,7 +286,29 @@ export default {
      */
     searchPlaceholder: {
       type: String,
-      default: "Rechercher...",
+      default: null,
+    },
+    /**
+     * Async search function. Takes query string, returns Promise<items[]>.
+     * When provided, items prop is ignored and search is done via this function.
+     */
+    asyncSearch: {
+      type: Function,
+      default: null,
+    },
+    /**
+     * Minimum characters before triggering async search
+     */
+    minSearchLength: {
+      type: Number,
+      default: 2,
+    },
+    /**
+     * Selected items to display at top (useful in async mode to show current selection)
+     */
+    selectedItems: {
+      type: Array,
+      default: () => [],
     },
   },
   emits: ["click", "update:value", "input"],
@@ -412,8 +474,9 @@ export default {
     },
     onPopoverToggle(isOpen) {
       if (isOpen) {
-        // Reset search query
+        // Reset search query and async items
         this.searchQuery = ""
+        this.asyncItems = []
         // Reset highlighted index to selected item or first item
         const selectedIndex = this.filteredItems.findIndex((item) =>
           this.isSame(this.value, item),
@@ -460,12 +523,29 @@ export default {
         this.highlightedIndex -= 1
       }
     },
+    async performAsyncSearch(query) {
+      this.loading = true
+      try {
+        const results = await this.debouncedSearch(this.asyncSearch, query)
+        // Only update if query hasn't changed during the request
+        if (this.searchQuery === query) {
+          this.asyncItems = results ?? []
+        }
+      } catch (error) {
+        console.error("Async search error:", error)
+        this.asyncItems = []
+      } finally {
+        this.loading = false
+      }
+    },
   },
   data() {
     return {
       highlightedIndex: 0,
       uid: Math.random().toString(36).substring(2, 9),
       searchQuery: "",
+      loading: false,
+      asyncItems: [],
     }
   },
   computed: {
@@ -476,6 +556,9 @@ export default {
     isMobile() {
       if (typeof window === "undefined") return false
       return window.matchMedia("(max-width: 768px)").matches
+    },
+    effectiveSearchPlaceholder() {
+      return this.searchPlaceholder ?? this.$t("popover_list.search_placeholder")
     },
     labelButton() {
       const item = this.items.find((item) => this.isSame(this.value, item))
@@ -494,9 +577,15 @@ export default {
       return null
     },
     filteredItems() {
+      // Async search mode: use asyncItems directly
+      if (this.asyncSearch) {
+        return this.asyncItems
+      }
+      // Static mode with no search or empty query
       if (!this.searchable || !this.searchQuery.trim()) {
         return this.items
       }
+      // Static mode with local filtering
       const query = this.searchQuery.toLowerCase().trim()
       return this.items.filter((item) => {
         const name = (item.name || item.text || "").toLowerCase()
@@ -513,9 +602,20 @@ export default {
     },
   },
   watch: {
-    searchQuery() {
-      // Reset highlight to first item when search changes
-      this.highlightedIndex = 0
+    searchQuery: {
+      handler(query) {
+        // Reset highlight to first item when search changes
+        this.highlightedIndex = 0
+
+        // Trigger async search if provided
+        if (this.asyncSearch) {
+          if (query.length >= this.minSearchLength) {
+            this.performAsyncSearch(query)
+          } else {
+            this.asyncItems = []
+          }
+        }
+      },
     },
   },
   mounted() {
@@ -575,6 +675,14 @@ export default {
   text-align: center;
   color: var(--text-secondary);
   font-size: 0.875rem;
+}
+
+.popover-list__loading {
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60px;
 }
 
 .popover-list__item {

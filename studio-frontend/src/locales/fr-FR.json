@@ -1847,6 +1847,15 @@
   },
   "user_selector": {
     "clear_button": "Effacer",
-    "search_placeholder": "Rechercher un utilisateur"
+    "search_placeholder": "Rechercher un utilisateur",
+    "select_user": "Sélectionner un utilisateur",
+    "select_users": "Sélectionner des utilisateurs",
+    "users_selected": "{count} utilisateur(s) sélectionné(s)"
+  },
+  "popover_list": {
+    "search": "Rechercher",
+    "search_placeholder": "Rechercher...",
+    "no_results": "Aucun résultat",
+    "min_characters": "{count} caractères minimum"
   }
 }
