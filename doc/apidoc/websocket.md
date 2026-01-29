@@ -2,7 +2,7 @@
 
 This document describes the main WebSocket events in the studio-api service: live sessions, transcriptions, organization monitoring, and conversation processing.
 
-See also: [WebSocket LLM Events](./websocket-llm.md)
+> **LLM WebSocket Events:** For real-time LLM job monitoring, see the [LLM Gateway documentation](https://github.com/linto-ai/llm-gateway).
 
 ## Architecture Overview
 
