@@ -143,7 +143,14 @@ export default {
       }
     },
     focus() {
-      this.$refs.wrapper && this.$refs.wrapper.focus()
+      if (!this.$refs.wrapper) return
+      // Check for autofocus element inside the popover
+      const autofocusEl = this.$refs.wrapper.querySelector('[autofocus]')
+      if (autofocusEl) {
+        autofocusEl.focus()
+      } else {
+        this.$refs.wrapper.focus()
+      }
     },
   },
 }

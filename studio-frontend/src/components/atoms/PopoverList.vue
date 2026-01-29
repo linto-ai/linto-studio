@@ -23,85 +23,114 @@
       </slot>
     </template>
     <template #content>
-      <div
-        class="popover-list__content"
-        v-if="items && items.length"
-        role="listbox"
-        :id="listboxId"
-        :aria-label="ariaLabel"
-        :aria-multiselectable="multiple || null"
-        :aria-activedescendant="activeDescendantId">
-        <!-- Selection mode: native checkbox + label -->
-        <template v-if="selection">
-          <div
-            v-for="(item, index) in items"
-            :key="item.id ?? item.value ?? index"
-            :id="getItemId(index)"
-            class="popover-list__item popover-list__item--selection"
-            :class="{
-              'popover-list__item--highlighted': highlightedIndex === index,
-            }"
-            role="option"
-            :aria-selected="isSelected(item)"
-            @click.stop>
-            <input
-              type="checkbox"
-              :id="getCheckboxId(index)"
-              :checked="isSelected(item)"
-              @change="toggleSelection(item)"
-              class="popover-list__checkbox-input" />
-            <label
-              :for="getCheckboxId(index)"
-              class="popover-list__checkbox-label">
-              <slot name="item" :item="item">
-                <span class="popover-list__item__name">{{
-                  item.name || item.text
-                }}</span>
-                <span
-                  v-if="item.description"
-                  class="popover-list__item__description">
-                  {{ item.description }}
-                </span>
-              </slot>
-            </label>
-          </div>
-        </template>
+      <div class="popover-list__content" v-if="items && items.length">
+        <!-- Header: select all + search -->
+        <div
+          v-if="searchable || (selection && multiple)"
+          class="popover-list__header"
+          @click.stop>
+          <input
+            v-if="selection && multiple"
+            type="checkbox"
+            :checked="allFilteredSelected"
+            :indeterminate.prop="someFilteredSelected && !allFilteredSelected"
+            @change="toggleSelectAll"
+            class="popover-list__checkbox-input"
+            aria-label="Select all" />
+          <input
+            v-if="searchable"
+            type="text"
+            v-model="searchQuery"
+            autofocus
+            :placeholder="searchPlaceholder"
+            class="popover-list__search-input"
+            aria-label="Rechercher"
+            @keydown.stop="onSearchKeyDown" />
+        </div>
 
-        <!-- Normal mode: button -->
-        <template v-else>
-          <div
-            v-for="(item, index) in items"
-            :key="item.id ?? item.value ?? index"
-            :id="getItemId(index)"
-            class="popover-list__item"
-            role="option"
-            :aria-selected="isSelected(item)">
-            <Button
-              :icon="itemIcon(item)"
-              :icon-position="item.iconPosition || 'left'"
-              :icon-weight="item.iconWeight"
-              :avatar="item.avatar"
-              :avatar-text="item.avatarText"
-              :icon-right="item.iconRight"
-              :hovered="highlightedIndex == index"
-              @click="handleClickItem(item)"
-              :size="size"
-              :color="itemColor(item)">
-              <slot name="item" :item="item">
-                <div class="flex col">
-                  <span class="popover-list__item__name text-cut">{{
+        <div
+          role="listbox"
+          :id="listboxId"
+          :aria-label="ariaLabel"
+          :aria-multiselectable="multiple || null"
+          :aria-activedescendant="activeDescendantId">
+          <!-- Empty state -->
+          <div v-if="filteredItems.length === 0" class="popover-list__empty">
+            Aucun résultat
+          </div>
+
+          <!-- Selection mode: native checkbox + label -->
+          <template v-if="selection">
+            <div
+              v-for="(item, index) in filteredItems"
+              :key="item.id ?? item.value ?? index"
+              :id="getItemId(index)"
+              class="popover-list__item popover-list__item--selection"
+              :class="{
+                'popover-list__item--highlighted': highlightedIndex === index,
+              }"
+              role="option"
+              :aria-selected="isSelected(item)"
+              @click.stop>
+              <input
+                type="checkbox"
+                :id="getCheckboxId(index)"
+                :checked="isSelected(item)"
+                @change="toggleSelection(item)"
+                class="popover-list__checkbox-input" />
+              <label
+                :for="getCheckboxId(index)"
+                class="popover-list__checkbox-label">
+                <slot name="item" :item="item">
+                  <span class="popover-list__item__name">{{
                     item.name || item.text
                   }}</span>
                   <span
-                    class="popover-list__item__description"
-                    v-if="item.description">
+                    v-if="item.description"
+                    class="popover-list__item__description">
                     {{ item.description }}
                   </span>
-                </div>
-              </slot>
-            </Button>
-          </div>
-        </template>
+                </slot>
+              </label>
+            </div>
+          </template>
+
+          <!-- Normal mode: button -->
+          <template v-else>
+            <div
+              v-for="(item, index) in filteredItems"
+              :key="item.id ?? item.value ?? index"
+              :id="getItemId(index)"
+              class="popover-list__item"
+              role="option"
+              :aria-selected="isSelected(item)">
+              <Button
+                :icon="itemIcon(item)"
+                :icon-position="item.iconPosition || 'left'"
+                :icon-weight="item.iconWeight"
+                :avatar="item.avatar"
+                :avatar-text="item.avatarText"
+                :icon-right="item.iconRight"
+                :hovered="highlightedIndex == index"
+                @click="handleClickItem(item)"
+                :size="size"
+                :color="itemColor(item)">
+                <slot name="item" :item="item">
+                  <div class="flex col">
+                    <span class="popover-list__item__name text-cut">{{
+                      item.name || item.text
+                    }}</span>
+                    <span
+                      class="popover-list__item__description"
+                      v-if="item.description">
+                      {{ item.description }}
+                    </span>
+                  </div>
+                </slot>
+              </Button>
+            </div>
+          </template>
+        </div>
       </div>
     </template>
   </Popover>
@@ -205,6 +234,20 @@ export default {
       type: String,
       default: null,
     },
+    /**
+     * Enable search/filter input
+     */
+    searchable: {
+      type: Boolean,
+      default: false,
+    },
+    /**
+     * Placeholder text for search input
+     */
+    searchPlaceholder: {
+      type: String,
+      default: "Rechercher...",
+    },
   },
   emits: ["click", "update:value", "input"],
   methods: {
@@ -248,6 +291,27 @@ export default {
         this.$emit("update:value", updated)
         this.$emit("input", updated)
       }
+    },
+    toggleSelectAll() {
+      if (!this.multiple) return
+      const current = Array.isArray(this.value) ? [...this.value] : []
+      let updated
+
+      if (this.allFilteredSelected) {
+        // Deselect all filtered items (keep items not in filteredItems)
+        updated = current.filter(
+          (v) => !this.filteredItems.some((item) => this.isSame(v, item)),
+        )
+      } else {
+        // Select all filtered items (add missing ones)
+        const toAdd = this.filteredItems
+          .filter((item) => !this.isSelected(item))
+          .map((item) => (this.returnObjects ? item : (item.id ?? item.value)))
+        updated = [...current, ...toAdd]
+      }
+
+      this.$emit("update:value", updated)
+      this.$emit("input", updated)
     },
     handleClickItem(item) {
       if (this.selection) {
@@ -326,13 +390,13 @@ export default {
           break
         case "Enter":
           e.preventDefault()
-          if (this.items && this.items[this.highlightedIndex]) {
-            this.handleClickItem(this.items[this.highlightedIndex])
+          if (this.filteredItems[this.highlightedIndex]) {
+            this.handleClickItem(this.filteredItems[this.highlightedIndex])
           }
           break
         case "Escape":
           e.preventDefault()
-          this.$refs.popover && this.$refs.popover.close()
+          this.$refs.popover?.close()
           break
         case "Home":
           e.preventDefault()
@@ -340,7 +404,7 @@ export default {
           break
         case "End":
           e.preventDefault()
-          this.highlightedIndex = this.items.length - 1
+          this.highlightedIndex = Math.max(0, this.filteredItems.length - 1)
           break
         default:
           break
@@ -348,23 +412,50 @@ export default {
     },
     onPopoverToggle(isOpen) {
       if (isOpen) {
+        // Reset search query
+        this.searchQuery = ""
         // Reset highlighted index to selected item or first item
-        const selectedIndex = this.items.findIndex((item) =>
+        const selectedIndex = this.filteredItems.findIndex((item) =>
           this.isSame(this.value, item),
         )
         this.highlightedIndex = selectedIndex >= 0 ? selectedIndex : 0
       }
     },
+    onSearchKeyDown(e) {
+      // Allow navigation keys to work from search input
+      switch (e.key) {
+        case "ArrowDown":
+          e.preventDefault()
+          this.highlightNext()
+          break
+        case "ArrowUp":
+          e.preventDefault()
+          this.highlightPrevious()
+          break
+        case "Enter":
+          e.preventDefault()
+          if (this.filteredItems[this.highlightedIndex]) {
+            this.handleClickItem(this.filteredItems[this.highlightedIndex])
+          }
+          break
+        case "Escape":
+          e.preventDefault()
+          this.$refs.popover?.close()
+          break
+      }
+    },
     highlightNext() {
-      if (this.highlightedIndex == this.items.length - 1) {
+      if (this.filteredItems.length === 0) return
+      if (this.highlightedIndex >= this.filteredItems.length - 1) {
         this.highlightedIndex = 0
       } else {
         this.highlightedIndex += 1
       }
     },
     highlightPrevious() {
-      if (this.highlightedIndex == 0) {
-        this.highlightedIndex = this.items.length - 1
+      if (this.filteredItems.length === 0) return
+      if (this.highlightedIndex <= 0) {
+        this.highlightedIndex = this.filteredItems.length - 1
       } else {
         this.highlightedIndex -= 1
       }
@@ -374,6 +465,7 @@ export default {
     return {
       highlightedIndex: 0,
       uid: Math.random().toString(36).substring(2, 9),
+      searchQuery: "",
     }
   },
   computed: {
@@ -396,10 +488,34 @@ export default {
       return `popover-list-${this.uid}`
     },
     activeDescendantId() {
-      if (this.items && this.items.length > 0) {
+      if (this.filteredItems && this.filteredItems.length > 0) {
         return this.getItemId(this.highlightedIndex)
       }
       return null
+    },
+    filteredItems() {
+      if (!this.searchable || !this.searchQuery.trim()) {
+        return this.items
+      }
+      const query = this.searchQuery.toLowerCase().trim()
+      return this.items.filter((item) => {
+        const name = (item.name || item.text || "").toLowerCase()
+        const description = (item.description || "").toLowerCase()
+        return name.includes(query) || description.includes(query)
+      })
+    },
+    allFilteredSelected() {
+      if (this.filteredItems.length === 0) return false
+      return this.filteredItems.every((item) => this.isSelected(item))
+    },
+    someFilteredSelected() {
+      return this.filteredItems.some((item) => this.isSelected(item))
+    },
+  },
+  watch: {
+    searchQuery() {
+      // Reset highlight to first item when search changes
+      this.highlightedIndex = 0
     },
   },
   mounted() {
@@ -435,6 +551,30 @@ export default {
     outline: 2px solid var(--primary-color);
     outline-offset: -2px;
   }
+}
+
+.popover-list__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--neutral-20);
+  position: sticky;
+  top: 0;
+  background: var(--background-app);
+  z-index: 1;
+}
+
+.popover-list__search-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.popover-list__empty {
+  padding: 1rem;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
 }
 
 .popover-list__item {
@@ -483,7 +623,7 @@ export default {
 // Selection mode item styling
 .popover-list__item--selection {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.75rem;
   padding: 0.5rem 0.75rem;
   cursor: pointer;
@@ -499,7 +639,6 @@ export default {
   width: 16px;
   height: 16px;
   margin: 0;
-  margin-top: 2px;
   accent-color: var(--primary-color);
   cursor: pointer;
   flex-shrink: 0;
@@ -512,6 +651,8 @@ export default {
   cursor: pointer;
   flex: 1;
   min-width: 0;
+  padding-bottom: 0;
+  margin-bottom: 0;
 }
 
 .popover-list__mobile {

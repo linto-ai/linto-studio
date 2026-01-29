@@ -1,7 +1,5 @@
 <template>
-  <tr
-    @click="onClickLine"
-    :class="{ 'security-disabled': securityDisabled }">
+  <tr @click="onClickLine" :class="{ 'security-disabled': securityDisabled }">
     <td class="content-size">
       <Checkbox
         v-if="multiple"
@@ -30,6 +28,7 @@
         v-if="translationsOptions.channels.length > 0"
         selection
         multiple
+        searchable
         :close-on-click="false"
         v-model="selectedTranslations"
         :items="translationsOptions.channels">
