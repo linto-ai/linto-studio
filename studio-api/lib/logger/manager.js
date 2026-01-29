@@ -17,7 +17,9 @@ class LogManager {
     logger.log(ctx)
 
     const { method, url } = ctx?.http || {}
-    if (method === "GET" && !activityLoggedUrls.some((u) => url?.includes(u))) {
+    if (!url) return
+
+    if (method === "GET" && !activityLoggedUrls.some((u) => url.includes(u))) {
       return
     }
 

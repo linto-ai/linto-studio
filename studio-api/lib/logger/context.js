@@ -21,6 +21,8 @@ async function storeCacheUser(userId) {
   if (cache.users[userId]) return cache.users[userId]
 
   const user = (await model.users.getById(userId))[0]
+  if (!user) return null
+
   return (cache.users[userId] = {
     lastname: user.lastname,
     firstname: user.firstname,
@@ -124,12 +126,13 @@ function formatError(error) {
   return { normalizedMessage, errorContext }
 }
 
-function logError(message, err) {
+function logError(message, err, context = {}) {
   return {
     source: "system",
     level: "error",
     message,
     error: { name: err.name, stack: err.stack },
+    context,
     timestamp: new Date().toISOString(),
   }
 }
@@ -198,7 +201,24 @@ class LoggerContext {
 
       return context
     } catch (err) {
-      return logError(`Error creating log context from ${source}`, err)
+      return logError(`Error creating log context from ${source}`, err, {
+        http: req?.method
+          ? {
+              method: req.method,
+              url: req.originalUrl || req.url,
+            }
+          : undefined,
+        user: req?.payload?.data?.userId
+          ? {
+              id: req.payload.data.userId,
+            }
+          : undefined,
+        organization: req?.params?.organizationId
+          ? {
+              id: req.params.organizationId,
+            }
+          : undefined,
+      })
     }
   }
 
@@ -362,7 +382,8 @@ class LoggerContext {
     if (!transcriberProfile?.config) return {}
 
     // Copy config but exclude sensitive 'key' and redundant 'availableTranslations' fields
-    const { key, availableTranslations, ...safeConfig } = transcriberProfile.config
+    const { key, availableTranslations, ...safeConfig } =
+      transcriberProfile.config
     return safeConfig
   }
 
