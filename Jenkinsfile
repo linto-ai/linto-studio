@@ -1,4 +1,20 @@
-def buildDockerfile(folder_name, version) {
+def notifyLintoDeploy(service_name, tag, commit_sha) {
+    echo "Notifying linto-deploy for ${service_name}:${tag} (commit: ${commit_sha})..."
+    withCredentials([usernamePassword(
+        credentialsId: 'linto-deploy-bot',
+        usernameVariable: 'GITHUB_APP',
+        passwordVariable: 'GITHUB_TOKEN'
+    )]) {
+        sh """curl -s -X POST \
+            -H "Authorization: token \$GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/linto-ai/linto-deploy/dispatches \
+            -d '{"event_type":"update-service","client_payload":{"service":"${service_name}","tag":"${tag}","commit_sha":"${commit_sha}"}}'
+        """
+    }
+}
+
+def buildDockerfile(folder_name, version, commit_sha) {
     echo "Building Dockerfile at ${folder_name}/Dockerfile for ${folder_name}... with version ${version}"
 
     // Build Docker image using the specified Dockerfile
@@ -15,29 +31,34 @@ def buildDockerfile(folder_name, version) {
                 image.push(version)
             }
         }
+
+        // Notify linto-deploy after successful push (only for master branch)
+        if (version != 'latest-unstable' && version != 'preview-saas') {
+            notifyLintoDeploy(folder_name, version, commit_sha)
+        }
     }
 }
 
 // For linto studio, the folder name have the same name of the docker image
-def performBuildForFile(changedFiles, version) {
+def performBuildForFile(changedFiles, version, commit_sha) {
     if (changedFiles.contains('studio-api')) {
         echo 'Files in studio-api path are modified. Running specific build steps for studio-api...'
-        buildDockerfile('studio-api', version)
+        buildDockerfile('studio-api', version, commit_sha)
     }
 
     if (changedFiles.contains('studio-frontend')) {
         echo 'Files in studio-frontend path are modified. Running specific build steps for studio-frontend...'
-        buildDockerfile('studio-frontend', version)
+        buildDockerfile('studio-frontend', version, commit_sha)
     }
 
     if (changedFiles.contains('studio-websocket')) {
         echo 'Files in studio-websocket path are modified. Running specific build steps for studio-websocket...'
-        buildDockerfile('studio-websocket', version)
+        buildDockerfile('studio-websocket', version, commit_sha)
     }
 
     if (changedFiles.contains('studio-dashboard')) {
         echo 'Files in studio-dashboard path are modified. Running specific build steps for studio-dashboard...'
-        buildDockerfile('studio-dashboard', version)
+        buildDockerfile('studio-dashboard', version, commit_sha)
     }
 }
 
@@ -57,13 +78,14 @@ pipeline {
                 echo 'Publishing latest'
                 script {
                     def changedFiles = sh(returnStdout: true, script: 'git diff --name-only HEAD^ HEAD').trim()
-                    
-                    version = sh(
-                        returnStdout: true, 
+                    def commit_sha = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+
+                    def version = sh(
+                        returnStdout: true,
                         script: "awk -v RS='' '/#/ {print; exit}' RELEASE.md | head -1 | sed 's/#//' | sed 's/ //'"
                     ).trim()
-                    
-                    performBuildForFile(changedFiles, version)
+
+                    performBuildForFile(changedFiles, version, commit_sha)
                 }
             }
         }
@@ -76,8 +98,9 @@ pipeline {
                 echo 'Publishing unstable'
                 script {
                     def changedFiles = sh(returnStdout: true, script: 'git diff --name-only HEAD^ HEAD').trim()
+                    def commit_sha = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
 
-                    performBuildForFile(changedFiles, 'latest-unstable')
+                    performBuildForFile(changedFiles, 'latest-unstable', commit_sha)
                 }
             }
         }
@@ -90,8 +113,9 @@ pipeline {
                 echo 'Publishing unstable'
                 script {
                     def changedFiles = sh(returnStdout: true, script: 'git diff --name-only HEAD^ HEAD').trim()
+                    def commit_sha = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
 
-                    performBuildForFile(changedFiles, 'preview-saas')
+                    performBuildForFile(changedFiles, 'preview-saas', commit_sha)
                 }
             }
         }
