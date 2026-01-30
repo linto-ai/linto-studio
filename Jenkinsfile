@@ -5,12 +5,8 @@ def notifyLintoDeploy(service_name, tag, commit_sha) {
         usernameVariable: 'GITHUB_APP',
         passwordVariable: 'GITHUB_TOKEN'
     )]) {
-        sh """curl -s -X POST \
-            -H "Authorization: token \$GITHUB_TOKEN" \
-            -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/linto-ai/linto-deploy/dispatches \
-            -d '{"event_type":"update-service","client_payload":{"service":"${service_name}","tag":"${tag}","commit_sha":"${commit_sha}"}}'
-        """
+        writeFile file: 'payload.json', text: "{\"event_type\":\"update-service\",\"client_payload\":{\"service\":\"${service_name}\",\"tag\":\"${tag}\",\"commit_sha\":\"${commit_sha}\"}}"
+        sh 'curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github.v3+json" -d @payload.json https://api.github.com/repos/linto-ai/linto-deploy/dispatches'
     }
 }
 
