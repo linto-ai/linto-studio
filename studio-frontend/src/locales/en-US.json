@@ -1863,6 +1863,7 @@
     "search": "Search",
     "search_placeholder": "Search...",
     "no_results": "No results",
-    "min_characters": "{count} characters minimum"
+    "min_characters": "{count} characters minimum",
+    "select_all": "Select all"
   }
 }

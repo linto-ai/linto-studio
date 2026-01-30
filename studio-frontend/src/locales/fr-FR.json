@@ -1856,6 +1856,7 @@
     "search": "Rechercher",
     "search_placeholder": "Rechercher...",
     "no_results": "Aucun résultat",
-    "min_characters": "{count} caractères minimum"
+    "min_characters": "{count} caractères minimum",
+    "select_all": "Tout sélectionner"
   }
 }

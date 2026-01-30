@@ -38,7 +38,7 @@
             :indeterminate.prop="someFilteredSelected && !allFilteredSelected"
             @change="toggleSelectAll"
             class="popover-list__checkbox-input"
-            aria-label="Select all" />
+            :aria-label="$t('popover_list.select_all')" />
           <input
             v-if="searchable || asyncSearch"
             type="text"
@@ -516,19 +516,36 @@ export default {
       }
     },
     async performAsyncSearch(query) {
+      if (this.isDestroyed) return
       this.loading = true
       try {
         const results = await this.debouncedSearch(this.asyncSearch, query)
-        // Only update if query hasn't changed during the request
-        if (this.searchQuery === query) {
+        // Only update if query hasn't changed and component is still alive
+        if (!this.isDestroyed && this.searchQuery === query) {
           this.asyncItems = results ?? []
         }
       } catch (error) {
-        console.error("Async search error:", error)
-        this.asyncItems = []
+        if (!this.isDestroyed) {
+          console.error("Async search error:", error)
+          this.asyncItems = []
+        }
       } finally {
-        this.loading = false
+        if (!this.isDestroyed) {
+          this.loading = false
+        }
       }
+    },
+    /**
+     * Scrolls the highlighted item into view within the listbox.
+     */
+    scrollHighlightedIntoView() {
+      this.$nextTick(() => {
+        const itemId = this.getItemId(this.highlightedIndex)
+        const element = document.getElementById(itemId)
+        if (element) {
+          element.scrollIntoView({ block: "nearest", behavior: "smooth" })
+        }
+      })
     },
   },
   data() {
@@ -538,6 +555,7 @@ export default {
       searchQuery: "",
       loading: false,
       asyncItems: [],
+      isDestroyed: false,
     }
   },
   computed: {
@@ -624,6 +642,12 @@ export default {
         }
       },
     },
+    highlightedIndex() {
+      this.scrollHighlightedIntoView()
+    },
+  },
+  beforeDestroy() {
+    this.isDestroyed = true
   },
 }
 </script>
@@ -681,6 +705,9 @@ export default {
   width: 100%;
   box-sizing: border-box;
   display: flex;
+  scroll-margin-top: calc(
+    1rem + 40.5px
+  ); // Compense le header sticky lors du scroll clavier
 
   .btn {
     width: 100%;
