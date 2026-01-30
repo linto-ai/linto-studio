@@ -4,6 +4,7 @@
     :closeOnClick="closeOnClick"
     :close-on-escape="closeOnEscape"
     :overlay="overlay"
+    :full-width="fullWidth"
     :content-class="isMobile ? 'popover-list__mobile' : ''"
     v-bind="$attrs"
     ref="popover"
@@ -14,10 +15,12 @@
         <Button
           :iconRight="open ? 'caret-up' : 'caret-down'"
           v-bind="$attrs"
+          :block="fullWidth"
           :avatar="selectedItem?.avatar"
           :icon="selectedItem?.icon"
           :icon-weight="selectedItem?.iconWeight"
           :label="labelButton"
+          class="popover-list__trigger"
           aria-haspopup="listbox"
           :aria-expanded="open" />
       </slot>
@@ -315,6 +318,13 @@ export default {
     selectedItems: {
       type: Array,
       default: () => [],
+    },
+    /**
+     * If true, the popover will take the full width of the trigger element.
+     */
+    fullWidth: {
+      type: Boolean,
+      default: false,
     },
   },
   emits: ["click", "update:value", "input"],
@@ -800,6 +810,17 @@ export default {
   .popover-list__search-input {
     width: 100%;
     max-width: none;
+  }
+}
+
+// Default trigger button styling (inherits input styles from forms.scss)
+.popover-list__trigger {
+  display: flex;
+  justify-content: space-between;
+  --btn-font-size: 1em;
+
+  .label {
+    text-align: left;
   }
 }
 </style>

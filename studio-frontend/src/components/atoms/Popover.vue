@@ -1,5 +1,9 @@
 <template>
-  <div class="popover-trigger" ref="trigger" v-on="triggerHandlers">
+  <div
+    class="popover-trigger"
+    :class="{ 'popover-trigger--full-width': fullWidth }"
+    ref="trigger"
+    v-on="triggerHandlers">
     <slot name="trigger" :open="isOpen"></slot>
   </div>
 </template>
@@ -68,6 +72,14 @@ export default {
     width: {
       type: [String, Number],
       default: "auto",
+    },
+    /**
+     * If true, the popover will take the full width of the trigger element.
+     * Shorthand for width="ref".
+     */
+    fullWidth: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -335,6 +347,10 @@ export default {
 .popover-trigger {
   display: flex;
   width: fit-content;
+
+  &--full-width {
+    width: 100%;
+  }
 }
 
 .popover-wrapper {

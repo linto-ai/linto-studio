@@ -31,22 +31,15 @@
         error: null,
       }"
       class="dashboard-controls__field">
-      <template #custom-input="{ id, disabled }">
-        <select
-          :id="id"
+      <template #custom-input>
+        <PopoverList
+          :items="organizationItems"
           :value="selectedOrganization"
-          @change="
-            $emit('update:selectedOrganization', $event.target.value || null)
-          "
-          :disabled="disabled"
-          class="dashboard-controls__select">
-          <option :value="null">
-            {{ $t("backoffice.dashboard.filters.all_organizations") }}
-          </option>
-          <option v-for="org in organizations" :key="org._id" :value="org._id">
-            {{ org.name }}
-          </option>
-        </select>
+          @input="$emit('update:selectedOrganization', $event)"
+          searchable
+          full-width
+          :overlay="false"
+          color="neutral" />
       </template>
     </FormInput>
 
@@ -92,6 +85,7 @@
 <script>
 import FormInput from "@/components/molecules/FormInput.vue"
 import Button from "@/components/atoms/Button.vue"
+import PopoverList from "@/components/atoms/PopoverList.vue"
 
 export default {
   name: "DashboardFilters",
@@ -128,8 +122,28 @@ export default {
     today() {
       return new Date().toISOString().split("T")[0]
     },
+    organizationItems() {
+      const allOption = {
+        id: null,
+        name: this.$t("backoffice.dashboard.filters.all_organizations"),
+      }
+      const orgItems = this.organizations.map((org) => ({
+        id: org._id,
+        name: org.name,
+      }))
+      return [allOption, ...orgItems]
+    },
+    selectedOrganizationLabel() {
+      if (!this.selectedOrganization) {
+        return this.$t("backoffice.dashboard.filters.all_organizations")
+      }
+      const org = this.organizations.find(
+        (o) => o._id === this.selectedOrganization,
+      )
+      return org?.name || this.selectedOrganization
+    },
   },
-  components: { FormInput, Button },
+  components: { FormInput, Button, PopoverList },
 }
 </script>
 
@@ -178,6 +192,11 @@ export default {
   &__clear-btn {
     align-self: flex-end;
     margin-bottom: 2px;
+  }
+
+  &__select-btn {
+    width: 100%;
+    justify-content: space-between;
   }
 }
 
