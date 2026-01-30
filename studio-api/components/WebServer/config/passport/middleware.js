@@ -32,7 +32,7 @@ PROVIDER.loadEnabledStrategies()
 const authenticateUser = (strategy, req, res, next) => {
   if (
     process.env.OIDC_TYPE === "eu" &&
-    !req.session.code_verifier &&
+    !req.session?.code_verifier &&
     strategy === "oidc"
   ) {
     const code_verifier = generators.codeVerifier()
