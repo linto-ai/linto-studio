@@ -23,7 +23,9 @@
       </slot>
     </template>
     <template #content>
-      <div class="popover-list__content" v-if="asyncSearch || (items && items.length)">
+      <div
+        class="popover-list__content"
+        v-if="asyncSearch || (items && items.length)">
         <!-- Header: select all + search -->
         <div
           v-if="searchable || asyncSearch || (selection && multiple)"
@@ -60,7 +62,8 @@
           </div>
 
           <!-- Async mode: no search yet, show selected items + hint -->
-          <template v-else-if="asyncSearch && searchQuery.length < minSearchLength">
+          <template
+            v-else-if="asyncSearch && searchQuery.length < minSearchLength">
             <template v-if="selectedItems.length > 0 && selection">
               <div
                 v-for="(item, index) in selectedItems"
@@ -84,7 +87,9 @@
               </div>
             </template>
             <div class="popover-list__empty">
-              {{ $t('popover_list.min_characters', { count: minSearchLength }) }}
+              {{
+                $t("popover_list.min_characters", { count: minSearchLength })
+              }}
             </div>
           </template>
 
@@ -92,7 +97,7 @@
           <div
             v-else-if="filteredItems.length === 0"
             class="popover-list__empty">
-            {{ $t('popover_list.no_results') }}
+            {{ $t("popover_list.no_results") }}
           </div>
 
           <!-- Selection mode: checkbox items -->
@@ -147,7 +152,7 @@
                 :avatar="item.avatar"
                 :avatar-text="item.avatarText"
                 :icon-right="item.iconRight"
-                :hovered="highlightedIndex == index"
+                :hovered="highlightedIndex === index"
                 @click="handleClickItem(item)"
                 :size="size"
                 :color="itemColor(item)">
@@ -173,6 +178,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex"
 import Popover from "./Popover.vue"
 import Loading from "./Loading.vue"
 import { debounceMixin } from "@/mixins/debounce"
@@ -327,6 +333,13 @@ export default {
       // single select
       return this.isSame(this.value, item)
     },
+    /**
+     * Emits both update:value and input events for v-model compatibility.
+     */
+    emitValue(value) {
+      this.$emit("update:value", value)
+      this.$emit("input", value)
+    },
     toggleSelection(item) {
       if (this.multiple) {
         const current = Array.isArray(this.value) ? [...this.value] : []
@@ -340,8 +353,7 @@ export default {
             this.returnObjects ? item : (item.id ?? item.value),
           ]
         }
-        this.$emit("update:value", updated)
-        this.$emit("input", updated)
+        this.emitValue(updated)
       } else {
         // single selection: either select or deselect (null)
         const selected = this.isSelected(item)
@@ -350,8 +362,7 @@ export default {
           : this.returnObjects
             ? item
             : (item.id ?? item.value)
-        this.$emit("update:value", updated)
-        this.$emit("input", updated)
+        this.emitValue(updated)
       }
     },
     toggleSelectAll() {
@@ -372,8 +383,7 @@ export default {
         updated = [...current, ...toAdd]
       }
 
-      this.$emit("update:value", updated)
-      this.$emit("input", updated)
+      this.emitValue(updated)
     },
     handleClickItem(item) {
       if (this.selection) {
@@ -394,7 +404,7 @@ export default {
           })
         } else {
           this.$emit("click", item)
-          this.$emit("input", item.value ?? item.id)
+          this.emitValue(item.value ?? item.id)
           if (this.closeOnItemClick) {
             this.$nextTick(() => {
               this.$refs.popover && this.$refs.popover.close()
@@ -420,57 +430,59 @@ export default {
       }
       return item.icon
     },
-    /**
-     * Returns only Button-compatible props from an item.
-     */
-    itemPropsWithoutTo(item) {
-      return {
-        color: item.color || this.color,
-      }
-    },
     getItemId(index) {
       return `${this.listboxId}-option-${index}`
     },
     getCheckboxId(index) {
       return `${this.listboxId}-checkbox-${index}`
     },
-    getCheckboxField(item) {
-      return {
-        label: item.name || item.text,
-        value: this.isSelected(item),
-      }
-    },
-    onKeyDown(e) {
+    /**
+     * Handles keyboard navigation for the listbox.
+     * @param {KeyboardEvent} e
+     * @param {Object} options
+     * @param {boolean} options.enableHomeEnd - Whether Home/End keys are supported
+     * @returns {boolean} - Whether the event was handled
+     */
+    handleKeyboardNavigation(e, { enableHomeEnd = false } = {}) {
       switch (e.key) {
         case "ArrowDown":
           e.preventDefault()
           this.highlightNext()
-          break
+          return true
         case "ArrowUp":
           e.preventDefault()
           this.highlightPrevious()
-          break
+          return true
         case "Enter":
           e.preventDefault()
           if (this.filteredItems[this.highlightedIndex]) {
             this.handleClickItem(this.filteredItems[this.highlightedIndex])
           }
-          break
+          return true
         case "Escape":
           e.preventDefault()
           this.$refs.popover?.close()
-          break
+          return true
         case "Home":
-          e.preventDefault()
-          this.highlightedIndex = 0
-          break
+          if (enableHomeEnd) {
+            e.preventDefault()
+            this.highlightedIndex = 0
+            return true
+          }
+          return false
         case "End":
-          e.preventDefault()
-          this.highlightedIndex = Math.max(0, this.filteredItems.length - 1)
-          break
+          if (enableHomeEnd) {
+            e.preventDefault()
+            this.highlightedIndex = Math.max(0, this.filteredItems.length - 1)
+            return true
+          }
+          return false
         default:
-          break
+          return false
       }
+    },
+    onKeyDown(e) {
+      this.handleKeyboardNavigation(e, { enableHomeEnd: true })
     },
     onPopoverToggle(isOpen) {
       if (isOpen) {
@@ -485,27 +497,7 @@ export default {
       }
     },
     onSearchKeyDown(e) {
-      // Allow navigation keys to work from search input
-      switch (e.key) {
-        case "ArrowDown":
-          e.preventDefault()
-          this.highlightNext()
-          break
-        case "ArrowUp":
-          e.preventDefault()
-          this.highlightPrevious()
-          break
-        case "Enter":
-          e.preventDefault()
-          if (this.filteredItems[this.highlightedIndex]) {
-            this.handleClickItem(this.filteredItems[this.highlightedIndex])
-          }
-          break
-        case "Escape":
-          e.preventDefault()
-          this.$refs.popover?.close()
-          break
-      }
+      this.handleKeyboardNavigation(e)
     },
     highlightNext() {
       if (this.filteredItems.length === 0) return
@@ -549,23 +541,38 @@ export default {
     }
   },
   computed: {
-    /**
-     * Detect if we are on a narrow viewport (mobile-like) to switch the
-     * popover to a bottom-sheet presentation.
-     */
-    isMobile() {
-      if (typeof window === "undefined") return false
-      return window.matchMedia("(max-width: 768px)").matches
-    },
+    ...mapGetters("system", ["isMobile"]),
     effectiveSearchPlaceholder() {
-      return this.searchPlaceholder ?? this.$t("popover_list.search_placeholder")
+      return (
+        this.searchPlaceholder ?? this.$t("popover_list.search_placeholder")
+      )
+    },
+    /**
+     * Returns all available items for lookup (items + selectedItems for async mode).
+     */
+    allAvailableItems() {
+      if (this.asyncSearch) {
+        // In async mode, combine selectedItems with asyncItems (avoid duplicates)
+        const combined = [...this.selectedItems]
+        for (const item of this.asyncItems) {
+          if (!combined.some((i) => this.isSame(i.id ?? i.value, item))) {
+            combined.push(item)
+          }
+        }
+        return combined
+      }
+      return this.items
     },
     labelButton() {
-      const item = this.items.find((item) => this.isSame(this.value, item))
+      const item = this.allAvailableItems.find((item) =>
+        this.isSame(this.value, item),
+      )
       return item ? item.text || item.name : ""
     },
     selectedItem() {
-      return this.items.find((item) => this.isSame(this.value, item))
+      return this.allAvailableItems.find((item) =>
+        this.isSame(this.value, item),
+      )
     },
     listboxId() {
       return `popover-list-${this.uid}`
@@ -618,21 +625,6 @@ export default {
       },
     },
   },
-  mounted() {
-    // Ensure reactivity on viewport resize
-    this.resizeListener = () => {
-      // force Vue to recalculate isMobile computed dependency
-      this.$forceUpdate()
-    }
-    if (typeof window !== "undefined") {
-      window.addEventListener("resize", this.resizeListener, { passive: true })
-    }
-  },
-  beforeDestroy() {
-    if (this.resizeListener && typeof window !== "undefined") {
-      window.removeEventListener("resize", this.resizeListener)
-    }
-  },
 }
 </script>
 
@@ -644,7 +636,7 @@ export default {
 .popover-list__content {
   display: flex;
   flex-direction: column;
-  gap: 0px;
+  gap: 0;
   outline: none;
 
   &:focus-visible {
@@ -719,9 +711,6 @@ export default {
     }
   }
 
-  &__title {
-  }
-
   &__description {
     color: var(--text-secondary);
     font-size: 0.9em;
@@ -777,8 +766,13 @@ export default {
   box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.25);
 
   .popover-list__content {
-    padding: 0.5rem;
+    //padding: 0.5rem;
     gap: 0.25rem;
+  }
+
+  .popover-list__search-input {
+    width: 100%;
+    max-width: none;
   }
 }
 </style>

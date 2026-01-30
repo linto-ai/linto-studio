@@ -5,6 +5,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex"
 import popupManager from "@/tools/popupManager"
 import PopoverRenderer from "./PopoverRenderer.vue"
 import POPOVER_MARGIN from "@/const/popoverMargin.js"
@@ -75,7 +76,6 @@ export default {
       mouseInside: false,
       popoverCoords: { top: 0, left: 0 },
       hoverTimeout: null,
-      resizeListener: null,
     }
   },
   watch: {
@@ -97,7 +97,7 @@ export default {
             ...this.$props,
             contentClass: [
               this.$props.contentClass,
-              this.isMobileViewport ? "popover-mobile-sheet" : "",
+              this.isMobile ? "popover-mobile-sheet" : "",
             ]
               .filter(Boolean)
               .join(" "),
@@ -140,6 +140,19 @@ export default {
       },
       deep: true,
     },
+    isMobile() {
+      if (this.isOpen) {
+        const popup = popupManager.stack.find((p) => p.id === this._uid)
+        if (popup) {
+          popup.props.contentClass = [
+            this.$props.contentClass,
+            this.isMobile ? "popover-mobile-sheet" : "",
+          ]
+            .filter(Boolean)
+            .join(" ")
+        }
+      }
+    },
   },
   computed: {
     triggerHandlers() {
@@ -158,15 +171,12 @@ export default {
       }
       return handlers
     },
+    ...mapGetters("system", ["isMobile"]),
     style() {
       return {
         borderSize: this.borderSize,
         padding: this.padding,
       }
-    },
-    isMobileViewport() {
-      if (typeof window === "undefined") return false
-      return window.matchMedia("(max-width: 1100px)").matches
     },
   },
   methods: {
@@ -311,32 +321,10 @@ export default {
       }
     },
   },
-  mounted() {
-    this.resizeListener = () => {
-      if (this.isOpen) {
-        const popup = popupManager.stack.find((p) => p.id === this._uid)
-        if (popup) {
-          popup.props.contentClass = [
-            this.$props.contentClass,
-            this.isMobileViewport ? "popover-mobile-sheet" : "",
-          ]
-            .filter(Boolean)
-            .join(" ")
-        }
-      }
-    }
-    if (typeof window !== "undefined") {
-      window.addEventListener("resize", this.resizeListener, { passive: true })
-    }
-  },
   beforeDestroy() {
-    // Clear any pending timeout
     if (this.hoverTimeout) {
       clearTimeout(this.hoverTimeout)
       this.hoverTimeout = null
-    }
-    if (this.resizeListener && typeof window !== "undefined") {
-      window.removeEventListener("resize", this.resizeListener)
     }
     this.toggle(false)
   },
