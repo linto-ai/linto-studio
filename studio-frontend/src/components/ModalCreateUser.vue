@@ -1,5 +1,5 @@
 <template>
-  <ModalNew
+  <Modal
     isForm
     value
     @on-cancel="() => this.$emit('on-close')"
@@ -27,7 +27,7 @@
       :field="newPasswordConfirm"
       v-model="newPasswordConfirm.value"
       :disabled="status == 'loading'" />
-  </ModalNew>
+  </Modal>
 </template>
 <script>
 import { bus } from "@/main"
@@ -39,7 +39,7 @@ import { testEmail } from "@/tools/fields/testEmail.js"
 import { apiAdminCreateUser } from "@/api/admin.js"
 
 import FormInput from "@/components/molecules/FormInput.vue"
-import ModalNew from "@/components/molecules/Modal.vue"
+import Modal from "@/components/molecules/Modal.vue"
 
 export default {
   mixins: [formsMixin],
@@ -127,6 +127,6 @@ export default {
       return false
     },
   },
-  components: { ModalNew, FormInput },
+  components: { Modal, FormInput },
 }
 </script>

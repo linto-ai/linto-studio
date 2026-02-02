@@ -1,5 +1,5 @@
 <template>
-  <ModalNew
+  <Modal
     v-model="_value"
     @on-cancel="($event) => this.$emit('on-cancel')"
     @on-confirm="deleteUserFromOrganization"
@@ -14,7 +14,7 @@
         })
       }}
     </p>
-  </ModalNew>
+  </Modal>
 </template>
 <script>
 import { Fragment } from "vue-fragment"
@@ -22,7 +22,7 @@ import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 import { apiRemoveUserFromOrganisation } from "@/api/user.js"
 
-import ModalNew from "@/components/molecules/Modal.vue"
+import Modal from "@/components/molecules/Modal.vue"
 export default {
   props: {
     currentOrganization: {
@@ -64,6 +64,6 @@ export default {
       },
     },
   },
-  components: { Fragment, ModalNew },
+  components: { Fragment, Modal },
 }
 </script>

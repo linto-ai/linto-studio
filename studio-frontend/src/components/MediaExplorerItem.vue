@@ -27,15 +27,10 @@
             :variant="isFavorite ? 'primary' : 'transparent'"
             size="sm" />
 
-          <div
-            class="media-explorer-item__checkbox-container"
-            :class="{ selected: isSelected }">
-            <input
-              type="checkbox"
-              v-model="isSelected"
-              class="media-explorer-item__checkbox"
-              @change="handleSelectionChange" />
-          </div>
+          <Checkbox
+            v-model="isSelected"
+            @input="handleSelectionChange"
+            class="media-explorer-item__checkbox" />
         </div>
 
         <!-- Media type icon -->
@@ -177,6 +172,7 @@ import MediaExplorerItemTags from "@/components/MediaExplorerItemTags.vue"
 import ModalDeleteConversations from "@/components/ModalDeleteConversations.vue"
 import TimeDuration from "@/components/atoms/TimeDuration.vue"
 import PopoverList from "@/components/atoms/PopoverList.vue"
+import Checkbox from "@/components/atoms/Checkbox.vue"
 
 import { userName } from "@/tools/userName"
 import userAvatar from "@/tools/userAvatar"
@@ -194,6 +190,7 @@ export default {
     PopoverList,
     MediaExplorerChipStatus,
     SecurityLevelIndicator,
+    Checkbox,
   },
   props: {
     media: {
@@ -500,25 +497,7 @@ export default {
   }
 }
 
-.media-explorer-item__checkbox-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 2px;
-  overflow: hidden;
-  transition: background-color 0.2s ease;
-
-  &.selected {
-    background-color: var(--primary-color);
-  }
-}
-
 .media-explorer-item__checkbox {
-  width: 12px;
-  height: 12px;
-  margin: 0;
   cursor: pointer;
 }
 

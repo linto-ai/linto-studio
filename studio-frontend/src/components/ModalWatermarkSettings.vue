@@ -1,5 +1,5 @@
 <template>
-  <ModalNew
+  <Modal
     value
     @on-cancel="($event) => this.$emit('on-cancel')"
     @on-confirm="applyWatermarkSettings"
@@ -20,11 +20,11 @@
         :field="watermarkDurationField"
         v-model="watermarkDurationField.value" />
     </div>
-  </ModalNew>
+  </Modal>
 </template>
 <script>
 import { bus } from "@/main.js"
-import ModalNew from "@/components/molecules/Modal.vue"
+import Modal from "@/components/molecules/Modal.vue"
 import EMPTY_FIELD from "@/const/emptyField"
 import FormInput from "@/components/molecules/FormInput.vue"
 
@@ -68,7 +68,7 @@ export default {
     },
   },
   components: {
-    ModalNew,
+    Modal,
     FormInput,
   },
 }
