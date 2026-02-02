@@ -233,7 +233,7 @@
         </button>
 
         <button @click="updateSession" class="btn primary">
-          <ph-icon name="check" size="md" class="icon" />
+          <ph-icon name="check" size="md" />
           <span class="label">Sauvegarder</span>
         </button>
       </div>

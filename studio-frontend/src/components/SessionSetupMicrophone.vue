@@ -116,7 +116,7 @@
 
       <div class="flex1"></div>
       <button class="btn primary" @click="setupSession" type="submit">
-        <ph-icon name="check" size="md" class="icon" />
+        <ph-icon name="check" size="md" />
         <span class="label">
           {{ $t("quick_session.restore.continue_button") }}
         </span>

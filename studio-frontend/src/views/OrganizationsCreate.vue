@@ -106,7 +106,7 @@
         </div>-->
         <div class="flex row">
           <button class="btn primary" type="submit" :disabled="buttonDisabled">
-            <ph-icon name="check" size="md" class="icon" />
+            <ph-icon name="check" size="md" />
             <span class="label">{{ formSubmitLabel }}</span>
           </button>
         </div>

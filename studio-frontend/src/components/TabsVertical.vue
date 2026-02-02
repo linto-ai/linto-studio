@@ -11,7 +11,7 @@
         :id="tab.id ? tab.id : undefined"
         :aria-controls="tab.ariaControl ? tab.ariaControl : undefined"
         @click="$emit('input', tab.name)">
-        <span class="icon" :class="tab.icon"></span>
+        <ph-icon :name="tab.icon" />
         <span class="tab__label">{{ tab.label }}</span>
       </div>
     </div>
