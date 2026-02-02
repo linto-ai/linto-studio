@@ -37,12 +37,9 @@ import {
 import { userName } from "@/tools/userName.js"
 import { capitalizeFirstLetter } from "@/tools/capitalizeFirstLetter.js"
 
-import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
 import SessionLiveMicrophone from "@/components/SessionLiveMicrophone.vue"
 import SessionLiveVisio from "@/components/SessionLiveVisio.vue"
 import Loading from "@/components/atoms/Loading.vue"
-import MainContent from "@/components/MainContent.vue"
-import V2Layout from "@/layouts/v2-layout.vue"
 import ModalSaveQuickSession from "@/components/ModalSaveQuickSession.vue"
 
 export default {
@@ -96,12 +93,9 @@ export default {
   },
   watch: {},
   components: {
-    SessionSetupMicrophone,
     SessionLiveMicrophone,
     SessionLiveVisio,
-    MainContent,
     Loading,
-    V2Layout,
     ModalSaveQuickSession,
   },
 }

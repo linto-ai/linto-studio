@@ -6,12 +6,11 @@
           inputFullWidth
           :field="nameField"
           v-model="nameField.value" />
-        <button type="submit" class="btn primary">
-          <ph-icon name="check" size="md" />
-          <span class="label">{{
-            $t("conversation_overview.channel.apply_name")
-          }}</span>
-        </button>
+        <Button
+          type="submit"
+          variant="primary"
+          icon="check"
+          :label="$t('conversation_overview.channel.apply_name')" />
       </section>
     </form>
     <section class="flex overview__main-section gap-medium" v-if="audio">

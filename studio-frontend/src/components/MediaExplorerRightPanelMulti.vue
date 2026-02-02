@@ -130,10 +130,8 @@
 import { mapGetters } from "vuex"
 import { mediaScopeMixin } from "@/mixins/mediaScope"
 
-import Badge from "@/components/atoms/Badge.vue"
 import Avatar from "@/components/atoms/Avatar.vue"
 import InputSelector from "@/components/atoms/InputSelector.vue"
-import TextInput from "@/components/atoms/TextInput.vue"
 import Tooltip from "@/components/atoms/Tooltip.vue"
 import ModalDeleteConversations from "./ModalDeleteConversations.vue"
 import ConversationShareMultiple from "./ConversationShareMultiple.vue"
@@ -144,10 +142,8 @@ export default {
   name: "MediaExplorerRightPanelMulti",
   mixins: [mediaExplorerRightPanelMixin, mediaScopeMixin],
   components: {
-    Badge,
     Avatar,
     InputSelector,
-    TextInput,
     Tooltip,
     ModalDeleteConversations,
     ConversationShareMultiple,

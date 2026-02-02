@@ -29,9 +29,9 @@
                 @click="showDeleteModal = true"
                 :label="$t('media_explorer.delete')"
                 size="sm"
-                color="tertiary"
+                intent="destructive"
                 icon="trash"
-                variant="outline" />
+                variant="secondary" />
             </div>
             <template #desktop>
               <slot name="header-actions" v-if="$slots['header-actions']" />
@@ -109,9 +109,7 @@ import { mediaScopeMixin } from "@/mixins/mediaScope"
 
 import MediaExplorerHeader from "@/components/MediaExplorerHeader.vue"
 import MediaExplorerItem from "@/components/MediaExplorerItem.vue"
-import MediaExplorerItemMobile from "@/components-mobile/MediaExplorerItem.vue"
 import MediaExplorerRightPanel from "@/components/MediaExplorerRightPanel.vue"
-import Modal from "@/components/molecules/Modal.vue"
 import Button from "@/components/atoms/Button.vue"
 import ModalDeleteConversations from "@/components/ModalDeleteConversations.vue"
 import ConversationShareMultiple from "@/components/ConversationShareMultiple.vue"
@@ -124,9 +122,7 @@ export default {
   components: {
     MediaExplorerHeader,
     MediaExplorerItem,
-    MediaExplorerItemMobile,
     MediaExplorerRightPanel,
-    Modal,
     Button,
     ModalDeleteConversations,
     ConversationShareMultiple,

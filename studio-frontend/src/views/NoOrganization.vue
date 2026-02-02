@@ -12,15 +12,20 @@
         :field="orgaName"
         inputId="organisation-name"
         required />
-      <button type="submit" class="btn primary" v-if="state !== 'sending'">
-        <span class="label"> {{ $t("no_orga.can_create.create") }} </span>
-        <ph-icon name="check" size="md" />
-      </button>
+      <Button
+        v-if="state !== 'sending'"
+        type="submit"
+        variant="primary"
+        :label="$t('no_orga.can_create.create')"
+        icon="check" />
 
-      <button type="submit" class="btn primary" disabled v-else>
-        <span class="label"> {{ $t("no_orga.can_create.creating") }} </span>
-        <span class="icon loading"></span>
-      </button>
+      <Button
+        v-else
+        type="submit"
+        variant="primary"
+        disabled
+        :label="$t('no_orga.can_create.creating')"
+        icon="spinner-gap" />
     </form>
 
     <div id="app-login" v-else>

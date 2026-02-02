@@ -19,11 +19,11 @@
         }}</span>
       </div>
       <div class="form-field flex row">
-        <button type="submit" :disabled="sending" class="btn primary">
-          <span class="label">{{
-            $t("login.recover_password_btn_label")
-          }}</span>
-        </button>
+        <Button
+          type="submit"
+          :disabled="sending"
+          variant="primary"
+          :label="$t('login.recover_password_btn_label')" />
       </div>
       <div class="error-field global" v-if="globalError !== ''">
         {{ globalError }}

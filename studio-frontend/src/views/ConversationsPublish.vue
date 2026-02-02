@@ -159,22 +159,13 @@ import {
 import getDescriptionByLanguage from "@/tools/getDescriptionByLanguage.js"
 import { filterLLMServicesBySecurityLevel } from "@/tools/filterBySecurityLevel.js"
 
-import Loading from "@/components/atoms/Loading.vue"
-import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
-import AppEditor from "@/components/AppEditor.vue"
 import MainContentConversation from "@/components/MainContentConversation.vue"
-import MenuToolbox from "@/components/MenuToolbox.vue"
-import CustomSelect from "@/components/molecules/CustomSelect.vue"
-import SwitchInput from "@/components/atoms/SwitchInput.vue"
-import Tabs from "@/components/molecules/Tabs.vue"
-import TranscriptionHelper from "@/components/TranscriptionHelper.vue"
 import ConversationPublishContent from "@/components/ConversationPublishContent.vue"
 import AppEditorChannelsSelector from "@/components/AppEditorChannelsSelector.vue"
 import AppEditorTranslationSelector from "@/components/AppEditorTranslationSelector.vue"
 import PopoverList from "@/components/atoms/PopoverList.vue"
 import GenerationTimeline from "@/components/GenerationTimeline.vue"
 import AIServiceMenu from "@/components/AIServiceMenu.vue"
-import PublicationSection from "@/components/PublicationSection.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import Button from "@/components/atoms/Button.vue"
 export default {
@@ -1341,22 +1332,13 @@ export default {
     },
   },
   components: {
-    TranscriptionHelper,
-    Loading,
-    UserInfoInline,
-    AppEditor,
     MainContentConversation,
-    MenuToolbox,
-    CustomSelect,
-    SwitchInput,
-    Tabs,
     ConversationPublishContent,
     AppEditorChannelsSelector,
     AppEditorTranslationSelector,
     PopoverList,
     GenerationTimeline,
     AIServiceMenu,
-    PublicationSection,
     Modal,
     Button,
   },

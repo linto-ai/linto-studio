@@ -16,7 +16,6 @@ import { bus } from "@/main.js"
 import Modal from "@/components/molecules/Modal.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
 import EMPTY_FIELD from "@/const/emptyField"
-import OrgaRoleSelector from "./molecules/OrgaRoleSelector.vue"
 import { apiCreateToken } from "@/api/token.js"
 import { mapGetters } from "vuex"
 import DurationInput from "@/components/molecules/DurationInput.vue"
@@ -91,7 +90,6 @@ export default {
   components: {
     Modal,
     FormInput,
-    OrgaRoleSelector,
     DurationInput,
     PlatformRoleSelector,
   },

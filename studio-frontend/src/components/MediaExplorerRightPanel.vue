@@ -63,9 +63,7 @@ import { mediaProgressMixin } from "@/mixins/mediaProgress"
 import Button from "@/components/atoms/Button.vue"
 import MediaExplorerRightPanelItem from "@/components/MediaExplorerRightPanelItem.vue"
 import MediaExplorerRightPanelMulti from "@/components/MediaExplorerRightPanelMulti.vue"
-import ModalDeleteConversations from "@/components/ModalDeleteConversations.vue"
 import { mediaExplorerRightPanelMixin } from "@/mixins/mediaExplorerRightPanel.js"
-import ConversationShareMultiple from "@/components/ConversationShareMultiple.vue"
 
 export default {
   name: "MediaExplorerRightPanel",
@@ -74,8 +72,6 @@ export default {
     Button,
     MediaExplorerRightPanelItem,
     MediaExplorerRightPanelMulti,
-    ModalDeleteConversations,
-    ConversationShareMultiple,
   },
   props: {
     initialWidth: {

@@ -5,12 +5,12 @@
       @close="closeHelper()"></OrganizationCreateHelper>
 
     <template v-slot:breadcrumb-actions>
-      <button class="btn" @click="showHelper()" style="min-width: 80px">
-        <span class="icon help"></span>
-        <span class="label">{{
-          $t("conversation.transcription_help.help_button_label")
-        }}</span>
-      </button>
+      <Button
+        variant="secondary"
+        @click="showHelper()"
+        style="min-width: 80px"
+        icon="question"
+        :label="$t('conversation.transcription_help.help_button_label')" />
     </template>
 
     <section class="flex row">
@@ -105,10 +105,12 @@
           </table>
         </div>-->
         <div class="flex row">
-          <button class="btn primary" type="submit" :disabled="buttonDisabled">
-            <ph-icon name="check" size="md" />
-            <span class="label">{{ formSubmitLabel }}</span>
-          </button>
+          <Button
+            variant="primary"
+            type="submit"
+            :disabled="buttonDisabled"
+            icon="check"
+            :label="formSubmitLabel" />
         </div>
       </form>
     </section>

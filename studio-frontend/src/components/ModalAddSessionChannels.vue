@@ -28,7 +28,6 @@ import { apiGetTranscriberProfiles } from "@/api/session.js"
 
 import ModalNew from "@/components/molecules/Modal.vue"
 import TranscriberProfileSelector from "@/components/TranscriberProfileSelector.vue"
-import LoadingComponent from "@/components/atoms/Loading.vue"
 export default {
   props: {
     value: {
@@ -85,7 +84,6 @@ export default {
     Fragment,
     ModalNew,
     TranscriberProfileSelector,
-    LoadingComponent,
   },
 }
 </script>

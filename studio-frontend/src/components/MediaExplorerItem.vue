@@ -175,14 +175,12 @@ import { mediaProgressMixin } from "@/mixins/mediaProgress"
 
 import MediaExplorerItemTags from "@/components/MediaExplorerItemTags.vue"
 import ModalDeleteConversations from "@/components/ModalDeleteConversations.vue"
-import UserProfilePicture from "@/components/atoms/UserProfilePicture.vue"
 import TimeDuration from "@/components/atoms/TimeDuration.vue"
 import PopoverList from "@/components/atoms/PopoverList.vue"
 
 import { userName } from "@/tools/userName"
 import userAvatar from "@/tools/userAvatar"
 
-import { PhStar } from "phosphor-vue"
 import MediaExplorerChipStatus from "./MediaExplorerChipStatus.vue"
 import SecurityLevelIndicator from "@/components/SecurityLevelIndicator.vue"
 
@@ -190,8 +188,6 @@ export default {
   mixins: [mediaScopeMixin, mediaProgressMixin],
   name: "MediaExplorerItem",
   components: {
-    PhStar,
-    UserProfilePicture,
     TimeDuration,
     MediaExplorerItemTags,
     ModalDeleteConversations,

@@ -10,7 +10,6 @@
   </V2Layout>
 </template>
 <script>
-import BackofficeSidebar from "@/components/BackofficeSidebar.vue"
 import Loading from "@/components/atoms/Loading.vue"
 import V2Layout from "@/layouts/v2-layout.vue"
 import ActionBar from "@/layouts/ActionBar.vue"
@@ -28,6 +27,6 @@ export default {
   },
   mounted() {},
   methods: {},
-  components: { BackofficeSidebar, Loading, V2Layout, ActionBar },
+  components: { Loading, V2Layout, ActionBar },
 }
 </script>

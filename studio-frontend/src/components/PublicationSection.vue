@@ -16,9 +16,7 @@
     <div v-else-if="error" class="publication-error">
       <span class="icon warning"></span>
       <span>{{ error }}</span>
-      <button class="secondary" @click="loadTemplates">
-        {{ $t("common.retry") }}
-      </button>
+      <Button variant="secondary" @click="loadTemplates" :label="$t('common.retry')" />
     </div>
 
     <!-- Content (even when templates.length === 0, we show create card) -->
@@ -61,14 +59,16 @@
           >
         </div>
         <div class="export-buttons">
-          <button class="secondary" @click="exportDocument('docx')">
-            <span class="icon download"></span>
-            <span>{{ $t("conversation.export.docx") }}</span>
-          </button>
-          <button class="primary" @click="exportDocument('pdf')">
-            <span class="icon download"></span>
-            <span>{{ $t("conversation.export.pdf") }}</span>
-          </button>
+          <Button
+            variant="secondary"
+            @click="exportDocument('docx')"
+            icon="download"
+            :label="$t('conversation.export.docx')" />
+          <Button
+            variant="primary"
+            @click="exportDocument('pdf')"
+            icon="download"
+            :label="$t('conversation.export.pdf')" />
         </div>
       </div>
     </div>
@@ -102,26 +102,26 @@
             @retry="generatePreview" />
         </div>
         <div class="modal-footer preview-footer">
-          <button class="modal-btn cancel" @click="closePreview" type="button">
-            {{ $t("common.cancel") }}
-          </button>
+          <Button
+            variant="secondary"
+            @click="closePreview"
+            type="button"
+            :label="$t('common.cancel')" />
           <div class="export-btns">
-            <button
-              class="modal-btn export docx"
+            <Button
+              variant="secondary"
               @click="downloadFromPreview('docx')"
               :disabled="!previewUrl"
-              type="button">
-              <span class="icon download"></span>
-              DOCX
-            </button>
-            <button
-              class="modal-btn export pdf"
+              type="button"
+              icon="download"
+              label="DOCX" />
+            <Button
+              variant="primary"
               @click="downloadFromPreview('pdf')"
               :disabled="!previewUrl"
-              type="button">
-              <span class="icon download"></span>
-              PDF
-            </button>
+              type="button"
+              icon="download"
+              label="PDF" />
           </div>
         </div>
       </div>
@@ -232,21 +232,18 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button class="secondary" @click="closeUploadModal" type="button">
-            {{ $t("common.cancel") }}
-          </button>
-          <button
-            class="primary"
+          <Button
+            variant="secondary"
+            @click="closeUploadModal"
+            type="button"
+            :label="$t('common.cancel')" />
+          <Button
+            variant="primary"
             @click="uploadTemplate"
             :disabled="!canUpload || uploading"
-            type="button">
-            <span v-if="uploading" class="icon loading"></span>
-            <span>{{
-              uploading
-                ? $t("common.uploading")
-                : $t("publish.publication.upload_button")
-            }}</span>
-          </button>
+            type="button"
+            :icon="uploading ? 'spinner-gap' : null"
+            :label="uploading ? $t('common.uploading') : $t('publish.publication.upload_button')" />
         </div>
       </div>
     </div>

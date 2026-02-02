@@ -29,10 +29,11 @@
       </router-link>
     </td>
     <td class="fit-content">
-      <button @click="editUser">
-        <ph-icon name="pencil"></ph-icon>
-        <span class="label">{{ $t("user_table.edit_button_label") }}</span>
-      </button>
+      <Button
+        @click="editUser"
+        variant="secondary"
+        icon="pencil"
+        :label="$t('user_table.edit_button_label')" />
     </td>
   </tr>
 </template>
