@@ -13,7 +13,7 @@
         :total-count="totalCount"
         :loading="loading"
         :all-medias="medias"
-        @select-all="handleSelectAll">
+        :selected-media-ids.sync="selectedMediaIds">
         <template #actions>
           <IsMobile>
             <div class="flex gap-small" v-if="selectedMedias.length > 0">
@@ -64,6 +64,7 @@
             v-for="(media, index) in medias"
             :key="`media-explorer-item-${media._id}-${index}`"
             :media="media"
+            :selected-media-ids.sync="selectedMediaIds"
             :ref="'mediaItem' + index"
             class="media-explorer__body__item" />
 
@@ -88,6 +89,8 @@
             <MediaExplorerRightPanel
               v-if="selectedMedias.length > 0 && currentOrganizationScope"
               :currentOrganizationScope="currentOrganizationScope"
+              :selected-medias="selectedMedias"
+              :selected-media-ids.sync="selectedMediaIds"
               @resize="handleRightPanelResize" />
           </template>
         </IsMobile>
@@ -154,13 +157,25 @@ export default {
       currentOrganizationScope: "getCurrentOrganizationScope",
     }),
     ...mapGetters("system", { pageIsLoading: "isLoading" }),
+    selectedMedias() {
+      return this.medias.filter((m) => this.selectedMediaIds.includes(m._id))
+    },
     selectedCount() {
-      const count = this.selectedMedias.length
-      return count
+      return this.selectedMediaIds.length
     },
     totalCount() {
-      const count = this.medias.length
-      return count
+      return this.medias.length
+    },
+    isAllSelected: {
+      get() {
+        return this.selectedMediaIds.length === this.medias.length && this.medias.length > 0
+      },
+      set(val) {
+        this.selectedMediaIds = val ? this.medias.map((m) => m._id) : []
+      },
+    },
+    isPartiallySelected() {
+      return this.selectedMediaIds.length > 0 && this.selectedMediaIds.length < this.medias.length
     },
     hasMore() {
       return this.$store.state[this.storeScope].pagination.hasMore
@@ -174,6 +189,7 @@ export default {
       rightPanelWidth: 500,
       _observerSetupPending: false,
       _loadMorePending: false, // Prevent multiple simultaneous load-more calls
+      selectedMediaIds: [],
     }
   },
   mounted() {},
@@ -212,15 +228,11 @@ export default {
   },
   methods: {
     reset() {
-      this.clearSelectedMedias()
+      this.selectedMediaIds = []
       this._loadMorePending = false
     },
     handleSelectAll() {
-      if (this.isSelectAll) {
-        this.clearSelectedMedias()
-      } else {
-        this.selectAll()
-      }
+      this.isAllSelected = !this.isAllSelected
     },
     setupIntersectionObserver() {
       if (this.observer) {

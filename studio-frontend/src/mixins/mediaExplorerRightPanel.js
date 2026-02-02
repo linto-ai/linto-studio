@@ -61,16 +61,7 @@ export const mediaExplorerRightPanelMixin = {
               mediaId,
               media: updatedMedia,
             })
-          }
-
-          // Also update in conversations store if it exists
-          const conversationMedia =
-            this.$store.getters["conversations/getConversationById"](mediaId)
-          if (conversationMedia) {
-            this.$store.commit("conversations/updateConversation", {
-              conversationId: mediaId,
-              updates: { [propertyName]: value },
-            })
+            return updatedMedia
           }
 
           return true

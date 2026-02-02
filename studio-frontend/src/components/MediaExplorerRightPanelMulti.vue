@@ -148,7 +148,16 @@ export default {
     ModalDeleteConversations,
     ConversationShareMultiple,
   },
-  props: {},
+  props: {
+    selectedMedias: {
+      type: Array,
+      default: () => [],
+    },
+    selectedMediaIds: {
+      type: Array,
+      default: () => [],
+    },
+  },
   data() {
     return {
       downloadLoading: false,
@@ -182,11 +191,12 @@ export default {
   },
   methods: {
     clearSelection() {
-      this.clearSelectedMedias()
+      this.$emit("update:selectedMediaIds", [])
     },
 
     removeMediaFromSelection(media) {
-      this.$store.commit(`${this.storeScope}/removeSelectedMedia`, media)
+      const newSelection = this.selectedMediaIds.filter((id) => id !== media._id)
+      this.$emit("update:selectedMediaIds", newSelection)
     },
 
     handleBulkExport() {

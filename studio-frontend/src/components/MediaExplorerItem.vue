@@ -1,7 +1,7 @@
 <template>
   <div
     class="media-explorer-item"
-    @click="select"
+@click="toggleSelection"
     :class="{
       'media-explorer-item--selected': isSelected,
       'media-explorer-item--favorite': isFavorite,
@@ -28,8 +28,9 @@
             size="sm" />
 
           <Checkbox
-            v-model="isSelected"
-            @input="handleSelectionChange"
+            v-model="selectedMediaIdsModel"
+            @click.native.stop
+            :checkbox-value="media._id"
             class="media-explorer-item__checkbox" />
         </div>
 
@@ -205,10 +206,13 @@ export default {
       type: Boolean,
       default: false,
     },
+    selectedMediaIds: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
-      isSelected: false,
       showDeleteModal: false,
     }
   },
@@ -220,6 +224,17 @@ export default {
 
     reactiveMedia() {
       return this.media
+    },
+    isSelected() {
+      return this.selectedMediaIds.includes(this.media._id)
+    },
+    selectedMediaIdsModel: {
+      get() {
+        return this.selectedMediaIds
+      },
+      set(newIds) {
+        this.$emit("update:selectedMediaIds", newIds)
+      },
     },
     filterStatus() {
       return this.$store.getters[`${this.storeScope}/getFilterStatus`]
@@ -352,22 +367,6 @@ export default {
       return !!this.media?.type?.from_session_id
     },
   },
-  watch: {
-    isSelectAll(value) {},
-    // Sync local isSelected state with store
-    selectedMedias: {
-      handler(selectedMedias) {
-        const isCurrentlySelected = selectedMedias.some(
-          (media) => media._id === this.reactiveMedia._id,
-        )
-        if (this.isSelected !== isCurrentlySelected) {
-          this.isSelected = isCurrentlySelected
-        }
-      },
-      immediate: true,
-      deep: true,
-    },
-  },
   methods: {
     toggleFavorite() {
       this.$store.dispatch(
@@ -376,12 +375,19 @@ export default {
       )
     },
 
-    select() {
-      this.isSelected = !this.isSelected
-      this.toggleMediaSelection(this.media)
+    toggleSelection() {
+      if (this.isSelected) {
+        this.$emit(
+          "update:selectedMediaIds",
+          this.selectedMediaIds.filter((id) => id !== this.media._id),
+        )
+      } else {
+        this.$emit("update:selectedMediaIds", [
+          ...this.selectedMediaIds,
+          this.media._id,
+        ])
+      }
     },
-
-    handleSelectionChange() {},
 
     handleActionClick(action) {
       switch (action.id) {
