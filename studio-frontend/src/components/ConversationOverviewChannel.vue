@@ -19,12 +19,11 @@
         :value="duration"></LabeledValue>
       <LabeledValue
         :label="$t('conversation_overview.audio.file_label_inline')">
-        <button
+        <Button
+          v-if="!loadingAudio"
           @click="downloadAudio"
-          class="transparent inline"
-          v-if="!loadingAudio">
-          {{ fileName }}
-        </button>
+          variant="transparent"
+          :label="fileName" />
         <div v-else>
           {{ $t("conversation_overview.audio.loading_audio_file") }}
         </div>
