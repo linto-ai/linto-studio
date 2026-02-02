@@ -720,23 +720,6 @@ let router = new Router({
       },
     },
     {
-      path: "/interface/organizations/create",
-      name: "organizations create",
-      components: {
-        default: () => import("../views/OrganizationsCreate.vue"),
-        ...defaultComponents,
-      },
-      props: defaultProps,
-      meta: {
-        userPage: true,
-        breadcrumb: {
-          label: "breadcrumb.createOrganization",
-          parent: "explore",
-          showInBreadcrumb: true,
-        },
-      },
-    },
-    {
       path: "/interface/organizations/:organizationId",
       name: "organizations update",
       components: {
