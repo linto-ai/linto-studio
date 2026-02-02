@@ -41,6 +41,15 @@
     </router-link>
     <router-link
       v-if="isAtLeastSystemAdministrator"
+      :to="{ name: 'backoffice-sessionList' }"
+      class="flex row align-center gap-medium tab backoffice-sidebar__link">
+      <ph-icon name="broadcast" size="sm"></ph-icon>
+      <span class="tab__label">{{
+        $t("backoffice.navigation.sessions")
+      }}</span>
+    </router-link>
+    <router-link
+      v-if="isAtLeastSystemAdministrator"
       :to="{ name: 'backoffice-activityList' }"
       class="flex row align-center gap-medium tab backoffice-sidebar__link">
       <ph-icon name="notebook" size="sm"></ph-icon>

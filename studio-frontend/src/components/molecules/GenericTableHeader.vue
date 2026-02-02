@@ -1,6 +1,7 @@
 <template>
   <thead>
     <tr v-if="mainHeader">
+      <th v-if="selectable" class="no-size"></th>
       <th
         v-for="head in mainHeader"
         :colspan="head.col"
@@ -9,6 +10,13 @@
       </th>
     </tr>
     <tr>
+      <th v-if="selectable">
+        <Checkbox
+          :id="randomId"
+          :value="isAllSelected"
+          :indeterminate="isIndeterminate"
+          @input="toggleSelectAll" />
+      </th>
       <ArrayHeader
         v-for="column in columns"
         @list_sort_by="sortBy"
@@ -22,6 +30,7 @@
 <script>
 import { bus } from "@/main.js"
 import ArrayHeader from "@/components/ArrayHeader.vue"
+import Checkbox from "@/components/atoms/Checkbox.vue"
 export default {
   props: {
     // { key, label, sortable, width, component, mainLabel}
@@ -37,14 +46,35 @@ export default {
       type: String,
       required: true,
     },
+    selectable: {
+      type: Boolean,
+      default: false,
+    },
+    selectedRows: {
+      type: Array,
+      default: () => [],
+    },
+    allRowIds: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
-    return {}
+    return {
+      randomId: Math.random().toString(36).substring(2, 15),
+    }
   },
   mounted() {},
   methods: {
     sortBy(event) {
       this.$emit("list_sort_by", event)
+    },
+    toggleSelectAll() {
+      if (this.isAllSelected) {
+        this.$emit("update:selectedRows", [])
+      } else {
+        this.$emit("update:selectedRows", [...this.allRowIds])
+      }
     },
   },
   computed: {
@@ -68,9 +98,22 @@ export default {
 
       return isEmpty ? null : res
     },
+    isAllSelected() {
+      return (
+        this.allRowIds.length > 0 &&
+        this.selectedRows.length === this.allRowIds.length
+      )
+    },
+    isIndeterminate() {
+      return (
+        this.selectedRows.length > 0 &&
+        this.selectedRows.length < this.allRowIds.length
+      )
+    },
   },
   components: {
     ArrayHeader,
+    Checkbox,
   },
 }
 </script>

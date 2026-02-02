@@ -2,13 +2,15 @@
   <div>
     <GenericTable
       @list_sort_by="sortBy"
+      @update:selectedRows="updateSelectedRows"
       :columns="columns"
       :content="data"
       :loading="loading"
       :selectedRows="selectedRows"
       :idKey="idKey"
       :sortListDirection="sortListDirection"
-      :sortListKey="sortListKey">
+      :sortListKey="sortListKey"
+      :selectable="selectable">
       <template v-for="(_, slot) in $scopedSlots" #[slot]="props">
         <slot :name="slot" v-bind="props"></slot>
       </template>
@@ -55,6 +57,10 @@ export default {
     initSortListKey: {
       type: String,
       required: true,
+    },
+    selectable: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -119,6 +125,9 @@ export default {
       }
       this.sortListKey = key
       this.debouncedFetchData()
+    },
+    updateSelectedRows(newSelection) {
+      this.$emit("update:selectedRows", newSelection)
     },
   },
   watch: {

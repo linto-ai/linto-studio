@@ -357,6 +357,53 @@ export async function apiAdminCreateAmazonTranscriberProfile(
   )
 }
 
+export async function apiGetAdminSessions(
+  page = 0,
+  {
+    pageSize = DEFAULT_PAGE_SIZE,
+    sortField = "scheduleOn",
+    sortOrder = -1,
+    searchName,
+    statusList,
+    organizationId,
+    visibility,
+  } = {},
+) {
+  const params = {
+    offset: page * pageSize,
+    limit: pageSize,
+    sortField,
+    sortCriteria: sortOrder,
+  }
+
+  if (searchName) params.searchName = searchName
+  if (statusList) params.statusList = statusList
+  if (organizationId) params.organizationId = organizationId
+  if (visibility) params.visibility = visibility
+
+  const res = await sendRequest(
+    `${BASE_API}/administration/sessions`,
+    { method: "get" },
+    params,
+  )
+
+  if (res?.data) {
+    return {
+      list: res.data.sessions || [],
+      count: res.data.totalItems || 0,
+    }
+  }
+  return { list: [], count: 0 }
+}
+
+export async function apiAdminDeleteSession(sessionId) {
+  const res = await sendRequest(
+    `${BASE_API}/administration/sessions/${sessionId}?force=true`,
+    { method: "delete" },
+  )
+  return res
+}
+
 export async function apiAdminUpdateAmazonTranscriberProfile(
   transcriberId,
   data,

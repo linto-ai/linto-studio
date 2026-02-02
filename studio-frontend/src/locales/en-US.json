@@ -26,6 +26,32 @@
       "backoffice": "Backoffice"
     }
   },
+  "session_list": {
+    "title": "Sessions",
+    "columns": {
+      "name": "Name",
+      "status": "Status",
+      "organization": "Organization",
+      "visibility": "Visibility",
+      "start_date": "Start",
+      "end_date": "Scheduled end",
+      "channels": "Channels"
+    },
+    "visibility": {
+      "private": "Private",
+      "organization": "Organization",
+      "public": "Public"
+    },
+    "remove_session_button": "Delete session | Delete {count} sessions"
+  },
+  "modal_delete_sessions": {
+    "title": "Delete session | Delete {count} sessions",
+    "content": "Are you sure you want to delete this session? | Are you sure you want to delete these {count} sessions?",
+    "action_btn": "Delete | Delete {count}",
+    "loading_notification": "Deleting ({count}/{total})...",
+    "success_notification": "{count} session deleted | {count} sessions deleted",
+    "error": "The session could not be deleted | The sessions could not be deleted"
+  },
   "appointment_selector": {
     "date_label": "Date",
     "start_time_label": "Start time",
@@ -113,7 +139,8 @@
       "users": "Users",
       "organisations": "Organizations",
       "tokens": "Api keys",
-      "transcriberProfiles": "Transcriber Profiles"
+      "transcriberProfiles": "Transcriber Profiles",
+      "sessions": "Sessions"
     },
     "activity_list": {
       "title": "Activity log"

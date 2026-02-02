@@ -308,6 +308,23 @@ let router = new Router({
         },
       },
     },
+    {
+      path: "/backoffice/sessions",
+      name: "backoffice-sessionList",
+      components: {
+        default: () => import("../views/backoffice/SessionList.vue"),
+        ...defaultComponents,
+      },
+      defaultProps,
+      meta: {
+        backoffice: true,
+        breadcrumb: {
+          label: "breadcrumb.sessions",
+          parent: "backoffice",
+          showInBreadcrumb: true,
+        },
+      },
+    },
     // PUBLIC ROUTES
     {
       path: "/interface/404",

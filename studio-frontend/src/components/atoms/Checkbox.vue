@@ -1,6 +1,7 @@
 <template>
-  <div class="custom-checkbox flex">
+  <div class="custom-checkbox flex" :class="{ indeterminate }">
     <input
+      ref="checkbox"
       type="checkbox"
       :id="id"
       :name="name"
@@ -14,7 +15,6 @@
   </div>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 export default {
   name: "Checkbox",
   props: {
@@ -23,12 +23,26 @@ export default {
     name: { type: String, default: "" },
     checkboxValue: { type: [String, Object, Number], default: null },
     disabled: { type: Boolean, default: false },
+    indeterminate: { type: Boolean, default: false },
   },
   data() {
     return {}
   },
-  mounted() {},
-  methods: {},
+  mounted() {
+    this.updateIndeterminate()
+  },
+  watch: {
+    indeterminate() {
+      this.updateIndeterminate()
+    },
+  },
+  methods: {
+    updateIndeterminate() {
+      if (this.$refs.checkbox) {
+        this.$refs.checkbox.indeterminate = this.indeterminate
+      }
+    },
+  },
   computed: {
     _value: {
       get() {
@@ -40,7 +54,7 @@ export default {
       },
     },
   },
-  components: { Fragment },
+  components: {},
 }
 </script>
 
@@ -82,6 +96,17 @@ export default {
   input:disabled + label {
     background-color: var(--neutral-20);
     border: 1px solid var(--neutral-40);
+  }
+
+  &.indeterminate label {
+    border-color: var(--primary-color);
+    background-color: var(--primary-color);
+
+    .custom-checkbox__check {
+      width: 8px;
+      height: 2px;
+      background-color: var(--primary-contrast);
+    }
   }
 }
 </style>

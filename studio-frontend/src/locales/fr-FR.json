@@ -27,6 +27,32 @@
       "backoffice": "Backoffice"
     }
   },
+  "session_list": {
+    "title": "Sessions",
+    "columns": {
+      "name": "Nom",
+      "status": "Statut",
+      "organization": "Organisation",
+      "visibility": "Visibilité",
+      "start_date": "Début",
+      "end_date": "Fin prévue",
+      "channels": "Canaux"
+    },
+    "visibility": {
+      "private": "Privé",
+      "organization": "Organisation",
+      "public": "Public"
+    },
+    "remove_session_button": "Supprimer la session | Supprimer {count} sessions"
+  },
+  "modal_delete_sessions": {
+    "title": "Supprimer la session | Supprimer {count} sessions",
+    "content": "Êtes-vous sûr de vouloir supprimer cette session ? | Êtes-vous sûr de vouloir supprimer ces {count} sessions ?",
+    "action_btn": "Supprimer | Supprimer {count}",
+    "loading_notification": "Suppression en cours ({count}/{total})...",
+    "success_notification": "{count} session supprimée | {count} sessions supprimées",
+    "error": "La session n'a pas pu être supprimée | Les sessions n'ont pas pu être supprimées"
+  },
   "appointment_selector": {
     "date_label": "Date",
     "start_time_label": "Heure de début",
@@ -114,7 +140,8 @@
       "users": "Utilisateurs",
       "organisations": "Organisations",
       "tokens": "Clés d'apis",
-      "transcriberProfiles": "Profils de transcription"
+      "transcriberProfiles": "Profils de transcription",
+      "sessions": "Sessions"
     },
     "activity_list": {
       "title": "Journal d'activité"
