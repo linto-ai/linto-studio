@@ -32,7 +32,7 @@ ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 //setDefaultEnv() // doesn't work
 
 export const bus = new Vue()
-Vue.use(PortalVue.default)
+Vue.use(PortalVue)
 Vue.use(vClickOutside)
 Vue.use(Fragment.Plugin)
 Vue.use(Atoms)
