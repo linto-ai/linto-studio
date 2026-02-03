@@ -14,7 +14,6 @@
 <script>
 import { Fragment } from "vue-fragment"
 import findParentByClass from "@/tools/findParentByClass"
-import { bus } from "@/main.js"
 
 /*
 === TODO ===

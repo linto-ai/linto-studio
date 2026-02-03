@@ -23,7 +23,6 @@
   </tr>
 </template>
 <script>
-import { bus } from "@/main.js"
 import GenericTableCell from "./GenericTableCell.vue"
 import Checkbox from "@/components/atoms/Checkbox.vue"
 import getNestedProperty from "@/tools/getNestedProperty"

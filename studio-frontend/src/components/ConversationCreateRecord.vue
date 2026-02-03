@@ -14,7 +14,9 @@
   </div>
 </template>
 <script>
-import WebVoiceSDK from "@linto-ai/webvoicesdk"
+// TODO: Fix webvoicesdk compatibility with Vite (parcel-specific imports)
+// import WebVoiceSDK from "@linto-ai/webvoicesdk"
+const WebVoiceSDK = null
 import EMPTY_FIELD from "@/const/emptyField.js"
 import { audioDuration } from "@/tools/audioDuration.js"
 
@@ -37,8 +39,10 @@ export default {
     }
   },
   created() {
-    this.recorder = new WebVoiceSDK.Recorder()
-    this.mic = new WebVoiceSDK.Mic()
+    // TODO: Re-enable when webvoicesdk is fixed
+    // this.recorder = new WebVoiceSDK.Recorder()
+    // this.mic = new WebVoiceSDK.Mic()
+    console.warn('WebVoiceSDK disabled - recording feature unavailable')
   },
   methods: {
     select() {

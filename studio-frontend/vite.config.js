@@ -14,18 +14,18 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
-        // Use pre-built version to avoid parcel-specific imports in source
-        '@linto-ai/webvoicesdk': path.resolve(__dirname, './node_modules/@linto-ai/webvoicesdk/dist/webVoiceSDK-linto.min.js'),
       },
       dedupe: ['vue'],
     },
 
     define: {
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
-      'process.env': Object.fromEntries(
-        Object.entries(env)
-          .filter(([key]) => key.startsWith('VUE_APP_'))
-          .map(([key, value]) => [key, JSON.stringify(value)])
+      // For dynamic access (process.env[key]), we need a real object with stringified values
+      'process.env': JSON.stringify(
+        Object.fromEntries(
+          Object.entries(env)
+            .filter(([key]) => key.startsWith('VUE_APP_'))
+        )
       ),
     },
 

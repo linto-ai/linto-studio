@@ -28,7 +28,6 @@
   </thead>
 </template>
 <script>
-import { bus } from "@/main.js"
 import ArrayHeader from "@/components/ArrayHeader.vue"
 import Checkbox from "@/components/atoms/Checkbox.vue"
 export default {

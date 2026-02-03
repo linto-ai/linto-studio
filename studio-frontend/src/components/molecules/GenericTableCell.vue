@@ -12,7 +12,6 @@
   </td>
 </template>
 <script>
-import { bus } from "@/main.js"
 export default {
   props: {
     // { key, label, sortable, width, component, componentProps}
