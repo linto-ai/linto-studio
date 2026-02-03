@@ -39,6 +39,7 @@
 </template>
 <script>
 import { bus } from "@/main.js"
+import { getEnv } from "@/tools/getEnv"
 import { userName } from "@/tools/userName"
 import RIGHTS_LIST from "@/const/rigthsList"
 import EMPTY_FIELD from "@/const/emptyField"
@@ -74,12 +75,12 @@ export default {
       if (owner) {
         return {
           fullName: userName(owner),
-          img: process.env.VUE_APP_PUBLIC_MEDIA + "/" + owner.img,
+          img: getEnv("VUE_APP_PUBLIC_MEDIA") + "/" + owner.img,
         }
       } else {
         return {
           fullName: "Private user",
-          img: process.env.VUE_APP_PUBLIC_MEDIA + "/pictures/default.jpg",
+          img: getEnv("VUE_APP_PUBLIC_MEDIA") + "/pictures/default.jpg",
         }
       }
     },

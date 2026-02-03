@@ -53,13 +53,14 @@
             class="media-explorer-item__type-icon" />
         </Tooltip>
 
-        <span
+        <!-- <span
           class="media-explorer-item__percentage"
           v-if="status !== 'done' && status !== 'error'">
           {{ progressDisplay }}
-        </span>
+        </span> -->
 
         <Tooltip
+          v-if="status === 'error'"
           :text="$t('media_explorer.processing_error_message')"
           position="bottom">
           <ph-icon
@@ -78,6 +79,11 @@
             size="sm"
             class="media-explorer-item__owner" />
         </Tooltip>
+
+        <MediaExplorerChipStatus
+          v-if="status !== 'done' && status !== 'error'"
+          :status="status"
+          :progress="progress" />
 
         <!-- Main content area with title and metadata -->
         <div
@@ -110,6 +116,9 @@
             <span v-if="createdAt" class="media-explorer-item__date">
               {{ createdAt }}
             </span>
+            <SecurityLevelIndicator
+              :level="securityLevel"
+              class="media-explorer-item__security-level" />
           </div>
         </div>
       </div>
@@ -174,6 +183,8 @@ import { userName } from "@/tools/userName"
 import userAvatar from "@/tools/userAvatar"
 
 import { PhStar } from "phosphor-vue"
+import MediaExplorerChipStatus from "./MediaExplorerChipStatus.vue"
+import SecurityLevelIndicator from "@/components/SecurityLevelIndicator.vue"
 
 export default {
   mixins: [mediaScopeMixin, mediaProgressMixin],
@@ -185,6 +196,8 @@ export default {
     MediaExplorerItemTags,
     ModalDeleteConversations,
     PopoverList,
+    MediaExplorerChipStatus,
+    SecurityLevelIndicator,
   },
   props: {
     media: {
@@ -333,6 +346,9 @@ export default {
       }
       const d = new Date(this.reactiveMedia?.created)
       return d.toLocaleDateString(undefined, options)
+    },
+    securityLevel() {
+      return this.reactiveMedia?.securityLevel || null
     },
     isFavorite() {
       return this.$store.getters["user/isFavoriteConversation"](
@@ -529,6 +545,7 @@ export default {
   // border: var(--border-button);
   font-weight: bold;
   font-size: 14px;
+  width: 2rem;
   //border: 1px solid var(--neutral-40);
 }
 
@@ -612,6 +629,10 @@ export default {
   border-radius: 4px;
   color: var(--text-secondary);
   white-space: nowrap;
+}
+
+.media-explorer-item__security-level {
+  flex-shrink: 0;
 }
 
 // ===== ACTIONS =====

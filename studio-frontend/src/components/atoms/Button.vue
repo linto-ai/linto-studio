@@ -25,6 +25,7 @@
     <span v-else-if="avatarText" class="icon">
       {{ avatarText }}
     </span>
+    <img :src="avatar" v-else-if="avatar" class="icon" />
     <span class="label flex1" v-if="label">
       <slot>{{ label }}</slot>
     </span>
@@ -53,6 +54,11 @@ export default {
       required: false,
     },
     avatarText: {
+      type: String,
+      required: false,
+    },
+    // path to image
+    avatar: {
       type: String,
       required: false,
     },
@@ -137,6 +143,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    hovered: {
+      type: Boolean,
+      default: false,
+    },
     type: {
       type: String,
       default: "button", // button or submit
@@ -169,6 +179,9 @@ export default {
       classes.push(`btn--${this.size}`)
       if (this.block) {
         classes.push("btn--block")
+      }
+      if (this.hovered) {
+        classes.push("btn--hovered")
       }
       return classes
     },

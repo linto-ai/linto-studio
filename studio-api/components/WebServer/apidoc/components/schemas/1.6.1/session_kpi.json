@@ -1,0 +1,121 @@
+{
+  "SessionKPI": {
+    "type": "object",
+    "properties": {
+      "userCount": {
+        "type": "object",
+        "description": "User statistics for the session",
+        "properties": {
+          "total": {
+            "type": "integer",
+            "description": "Total number of users in the session"
+          },
+          "reconnections": {
+            "type": "integer",
+            "description": "Total number of reconnections across all users"
+          },
+          "avgAbove5Min": {
+            "type": "integer",
+            "description": "Number of users who watched more than 5 minutes"
+          },
+          "below5Min": {
+            "type": "integer",
+            "description": "Number of users who watched less than 5 minutes"
+          }
+        },
+        "required": ["total", "reconnections", "avgAbove5Min", "below5Min"]
+      },
+
+      "session": {
+        "type": "object",
+        "description": "Session metadata",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the session"
+          },
+          "visibility": {
+            "type": "string",
+            "description": "Session visibility (public, private, organization)"
+          }
+        },
+        "required": ["name", "visibility"]
+      },
+
+      "sessionId": {
+        "type": "string",
+        "description": "Unique identifier of the session"
+      },
+
+      "organizationId": {
+        "type": "string",
+        "description": "ID of the associated organization"
+      },
+
+      "watchTime": {
+        "type": "object",
+        "description": "Watch time statistics in seconds",
+        "properties": {
+          "total": {
+            "type": "number",
+            "description": "Total watch time for the session in seconds"
+          },
+          "average": {
+            "type": "number",
+            "description": "Average watch time per user in seconds"
+          },
+          "avgAbove5Min": {
+            "type": "number",
+            "description": "Average watch time in seconds for users above 5 minutes"
+          },
+          "avgUnder5Min": {
+            "type": "number",
+            "description": "Average watch time in seconds for users under 5 minutes"
+          }
+        },
+        "required": ["total", "average", "avgAbove5Min", "avgUnder5Min"]
+      },
+      "firstConnectionAt": {
+        "type": "string",
+        "format": "date-time",
+        "description": "Timestamp when the first connection occurred"
+      },
+      "lastDisconnectionAt": {
+        "type": "string",
+        "format": "date-time",
+        "description": "Timestamp when the last disconnection occurred"
+      }
+    },
+
+    "required": [
+      "userCount",
+      "session",
+      "sessionId",
+      "organizationId",
+      "watchTime"
+    ],
+
+    "example": {
+      "userCount": {
+        "total": 5,
+        "reconnections": 7,
+        "above5Min": 2,
+        "below5Min": 3
+      },
+      "session": {
+        "name": "Demo Session",
+        "visibility": "public"
+      },
+      "sessionId": "1fb1e5ba-6c3d-4f4b-8f4e-2d3f5e6a7b8c",
+      "organizationId": "688778cb980f721744a206d8",
+      "watchTime": {
+        "total": 1100,
+        "average": 220,
+        "avgAbove5Min": 541,
+        "avgUnder5Min": 6
+      },
+      "firstConnectionAt": "2025-12-09T15:49:45.001Z",
+      "lastDisconnectionAt": "2025-12-09T15:51:02.072Z"
+    }
+  }
+}

@@ -1,10 +1,15 @@
 <template>
-  <div class="popover-trigger" ref="trigger" v-on="triggerHandlers">
+  <div
+    class="popover-trigger"
+    :class="{ 'popover-trigger--full-width': fullWidth }"
+    ref="trigger"
+    v-on="triggerHandlers">
     <slot name="trigger" :open="isOpen"></slot>
   </div>
 </template>
 
 <script>
+import { mapGetters } from "vuex"
 import popupManager from "@/tools/popupManager"
 import PopoverRenderer from "./PopoverRenderer.vue"
 import POPOVER_MARGIN from "@/const/popoverMargin.js"
@@ -56,7 +61,7 @@ export default {
      */
     closeOnClick: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     /**
      * width of the popover
@@ -68,6 +73,14 @@ export default {
       type: [String, Number],
       default: "auto",
     },
+    /**
+     * If true, the popover will take the full width of the trigger element.
+     * Shorthand for width="ref".
+     */
+    fullWidth: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -75,7 +88,6 @@ export default {
       mouseInside: false,
       popoverCoords: { top: 0, left: 0 },
       hoverTimeout: null,
-      resizeListener: null,
     }
   },
   watch: {
@@ -97,7 +109,7 @@ export default {
             ...this.$props,
             contentClass: [
               this.$props.contentClass,
-              this.isMobileViewport ? "popover-mobile-sheet" : "",
+              this.isMobile ? "popover-mobile-sheet" : "",
             ]
               .filter(Boolean)
               .join(" "),
@@ -115,6 +127,8 @@ export default {
 
         this.$nextTick(() => {
           this.updatePopoverPosition()
+          // Focus the popover content for keyboard navigation
+          this.focusContent()
         })
 
         window.addEventListener("resize", this.updatePopoverPosition, {
@@ -138,6 +152,19 @@ export default {
       },
       deep: true,
     },
+    isMobile() {
+      if (this.isOpen) {
+        const popup = popupManager.stack.find((p) => p.id === this._uid)
+        if (popup) {
+          popup.props.contentClass = [
+            this.$props.contentClass,
+            this.isMobile ? "popover-mobile-sheet" : "",
+          ]
+            .filter(Boolean)
+            .join(" ")
+        }
+      }
+    },
   },
   computed: {
     triggerHandlers() {
@@ -156,15 +183,12 @@ export default {
       }
       return handlers
     },
+    ...mapGetters("system", ["isMobile"]),
     style() {
       return {
         borderSize: this.borderSize,
         padding: this.padding,
       }
-    },
-    isMobileViewport() {
-      if (typeof window === "undefined") return false
-      return window.matchMedia("(max-width: 1100px)").matches
     },
   },
   methods: {
@@ -180,8 +204,12 @@ export default {
       this.toggle(true)
     },
     handleClick(event) {
-      event.preventDefault()
-      this.toggle(!this.isOpen)
+      //event.preventDefault()
+      if (this.closeOnClick) {
+        this.toggle(!this.isOpen)
+      } else {
+        this.toggle(true)
+      }
     },
     handleContextmenu(event) {
       event.preventDefault()
@@ -219,13 +247,6 @@ export default {
         }, 50)
       }
     },
-    handleClickOnHover(event) {
-      // For tooltips with closeOnClick, the popupManager will handle the closing
-      // This handler is just here to prevent default behavior if needed
-      if (this.trigger === "hover" && this.closeOnClick) {
-        event.preventDefault()
-      }
-    },
     onContentEnter() {
       this.mouseInside = true
     },
@@ -238,6 +259,19 @@ export default {
     },
     closeOnEscape() {
       this.toggle(false)
+    },
+    onContentKeydown(event) {
+      this.$emit("keydown", event)
+    },
+    focusContent(attempts = 0) {
+      const maxAttempts = 5
+      const popup = popupManager.stack.find((p) => p.id === this._uid)
+      if (popup && popup.rendererInstance && popup.rendererInstance.focus) {
+        popup.rendererInstance.focus()
+      } else if (attempts < maxAttempts) {
+        // Renderer not ready yet, retry after a frame
+        requestAnimationFrame(() => this.focusContent(attempts + 1))
+      }
     },
     updatePopoverPosition() {
       if (!this.isOpen) return
@@ -299,32 +333,10 @@ export default {
       }
     },
   },
-  mounted() {
-    this.resizeListener = () => {
-      if (this.isOpen) {
-        const popup = popupManager.stack.find((p) => p.id === this._uid)
-        if (popup) {
-          popup.props.contentClass = [
-            this.$props.contentClass,
-            this.isMobileViewport ? "popover-mobile-sheet" : "",
-          ]
-            .filter(Boolean)
-            .join(" ")
-        }
-      }
-    }
-    if (typeof window !== "undefined") {
-      window.addEventListener("resize", this.resizeListener, { passive: true })
-    }
-  },
   beforeDestroy() {
-    // Clear any pending timeout
     if (this.hoverTimeout) {
       clearTimeout(this.hoverTimeout)
       this.hoverTimeout = null
-    }
-    if (this.resizeListener && typeof window !== "undefined") {
-      window.removeEventListener("resize", this.resizeListener)
     }
     this.toggle(false)
   },
@@ -335,13 +347,17 @@ export default {
 .popover-trigger {
   display: flex;
   width: fit-content;
+
+  &--full-width {
+    width: 100%;
+  }
 }
 
 .popover-wrapper {
   position: absolute; /* Will be positioned by 'top' and 'left' from style */
 }
 
-.popover-content {
+.popover-content:has(> div) {
   background: var(--background-app);
   border: 1px solid var(--neutral-40);
   border-radius: 2px;

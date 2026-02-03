@@ -63,7 +63,7 @@
         <div v-if="tabs.length == 0">
           {{ $t("conversation_overview.channel.only_one") }}
         </div>
-        <Tabs :tabs="tabs" v-model="selectedChannel" secondary></Tabs>
+        <Tabs :tabs="tabs" v-model="selectedChannel" variant="secondary"></Tabs>
         <div class="tab-container-content" :key="conversation._id">
           <ConversationOverviewChannel
             :root="tabs.length == 0"

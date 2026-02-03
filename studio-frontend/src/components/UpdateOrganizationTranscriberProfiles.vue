@@ -51,7 +51,7 @@ import { sortArray } from "@/tools/sortList.js"
 import { apiAdminDeleteTranscriberProfile } from "@/api/admin.js"
 
 import TranscriberProfileTable from "@/components/TranscriberProfileTable.vue"
-import ModalCreateTranscriberProfiles from "@/components/ModalCreateTranscriberProfiles.vue"
+import ModalCreateTranscriberProfiles from "@/components/ModalTranscriberProfile.vue"
 export default {
   props: {
     organizationId: {

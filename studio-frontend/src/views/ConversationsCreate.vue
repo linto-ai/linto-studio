@@ -41,6 +41,8 @@
           </div>
         </section>
 
+        <SecurityLevelSelector v-model="securityLevel" />
+
         <!-- services -->
         <section class="flex col gap-small">
           <h2>{{ $t("conversation.transcription_service_title") }}</h2>
@@ -51,6 +53,7 @@
             :serviceList="fieldTranscriptionService.list"
             :disabled="formState === 'sending'"
             :loading="fieldTranscriptionService.loading"
+            :securityLevel="securityLevel"
             v-model="fieldTranscriptionService.value" />
         </section>
 
@@ -113,6 +116,7 @@ import QuickSessionCreateContent from "@/components/QuickSessionCreateContent.vu
 import VisioCreateContent from "@/components/VisioCreateContent.vue"
 import TabsVertical from "@/components/TabsVertical.vue"
 import ConversationCreateFileLine from "@/components/ConversationCreateFileLine.vue"
+import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
 
 export default {
   mixins: [
@@ -298,6 +302,7 @@ export default {
     VisioCreateContent,
     TabsVertical,
     ConversationCreateFileLine,
+    SecurityLevelSelector,
   },
 }
 </script>

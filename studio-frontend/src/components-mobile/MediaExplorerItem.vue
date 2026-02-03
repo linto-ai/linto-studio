@@ -78,6 +78,7 @@
 <script>
 import { mapMutations, mapGetters } from "vuex"
 import { mediaScopeMixin } from "@/mixins/mediaScope"
+import { getEnv } from "@/tools/getEnv"
 
 import MediaExplorerItemTags from "@/components/MediaExplorerItemTags.vue"
 import TimeDuration from "@/components/atoms/TimeDuration.vue"
@@ -135,7 +136,7 @@ export default {
         return {
           ...this.media.sharedBy,
           img: this.media.sharedBy.img
-            ? process.env.VUE_APP_PUBLIC_MEDIA + "/" + this.media.sharedBy.img
+            ? getEnv("VUE_APP_PUBLIC_MEDIA") + "/" + this.media.sharedBy.img
             : null,
           fullName: `${this.media.sharedBy.firstname} ${this.media.sharedBy.lastname}`,
         }

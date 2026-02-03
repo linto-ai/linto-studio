@@ -11,13 +11,13 @@
       <span v-else class="icon close" />
     </td>
     <td>
-      <router-link :to="to">{{ name }}</router-link>
+      <span class="clickable" @click="editProfile">{{ name }}</span>
     </td>
     <td>
-      <router-link :to="to">{{ description }}</router-link>
+      <span class="clickable" @click="editProfile">{{ description }}</span>
     </td>
     <td>
-      <router-link :to="to">{{ languages }}</router-link>
+      <span class="clickable" @click="editProfile">{{ languages }}</span>
     </td>
     <!-- <td>
       {{ transcriberOrganizationId || "–" }}
@@ -41,10 +41,6 @@ export default {
       type: Object,
       required: true,
     },
-    linkTo: {
-      type: Object,
-      required: false,
-    },
     value: {
       //selectedProfiles
       type: Array,
@@ -64,16 +60,11 @@ export default {
         this.$emit("input", value)
       },
     },
-    to() {
-      return {
-        ...this.linkTo,
-        params: { transcriberProfileId: this.id },
-      }
-    },
   },
   methods: {
-    editProfile() {
-      this.$router.push(this.to)
+    editProfile(event) {
+      event.stopPropagation()
+      this.$emit("edit", this.id)
     },
     selectTranscriberProfile() {
       this.p_selectedProfiles = this.p_selectedProfiles.includes(this.id)
@@ -86,3 +77,13 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+.clickable {
+  cursor: pointer;
+}
+
+.clickable:hover {
+  text-decoration: underline;
+}
+</style>

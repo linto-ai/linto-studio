@@ -53,6 +53,7 @@ let userId = ""
 let shouldDisconnect = false
 let syllabic = null
 let conversationFormat = null
+let workerConfig = {}
 
 const infoWorker = customDebug("Worker:info")
 const debugWorker = customDebug("Worker:debug")
@@ -62,10 +63,16 @@ const debugFocusWorker = customDebug("Worker:debug:focus")
 const debugRightWorker = customDebug("Worker:debug:right")
 const debugJobsWorker = customDebug("Worker:debug:jobs")
 
-Debug.enable(process.env.VUE_APP_DEBUG)
+// Note: Debug.enable is called in connect() after config is received from main thread
 
 function connect(event) {
   disconnect()
+
+  // Store config from main thread
+  workerConfig = event.data?.params?.config || {}
+
+  // Enable debug with config from main thread
+  Debug.enable(workerConfig.VUE_APP_DEBUG || '')
 
   // get conversationID and userToken
   conversationId = event.data?.params?.conversationId
@@ -77,9 +84,9 @@ function connect(event) {
 
   // Connect to socket server
   shouldDisconnect = false
-  socket = io(process.env.VUE_APP_WEBSOCKET_SERVER, {
+  socket = io(workerConfig.VUE_APP_WEBSOCKET_SERVER, {
     query: { conversationId, userToken, userId, conversationFormat },
-    path: process.env.VUE_APP_WEBSOCKET_PATH,
+    path: workerConfig.VUE_APP_WEBSOCKET_PATH,
     transports: ["websocket"],
   })
   // Set socket listeners

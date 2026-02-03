@@ -7,6 +7,7 @@ const passport = require("passport")
 const bodyParser = require("body-parser")
 const WebServerErrorHandler = require("./error/handler")
 const cookieParser = require("cookie-parser")
+const cookieSession = require("cookie-session")
 
 const swaggerUi = require("swagger-ui-express")
 const swaggerJsdoc = require("swagger-jsdoc")
@@ -55,6 +56,17 @@ class WebServer extends Component {
       this.express.options("*", CORS(corsOptions)) // allow cors settings to be enable for all routes
     }
 
+    const cookieMiddleware = cookieSession({
+      name: "oidc",
+      keys: [process.env.WEBSERVER_SESSION_SECRET],
+      maxAge: 5 * 60 * 1000, // 5 min,
+      sameSite: "lax",
+      secure: true,
+      httpOnly: true,
+    })
+
+    this.express.use("/auth/oidc", cookieMiddleware)
+
     this.express.set("etag", false)
     this.express.set("trust proxy", true)
 
@@ -98,6 +110,10 @@ class WebServer extends Component {
 
     require("./routes/router.js")(this) // Loads all defined routes
     WebServerErrorHandler.init(this) // Manage error from controllers
+
+    // Initialize LLM WebSocket manager with app reference for IoHandler access
+    const organizationWsManager = require("./controllers/llm/llm_ws")
+    organizationWsManager.setApp(app)
 
     let api_host = "localhost"
     let base_path = "/"

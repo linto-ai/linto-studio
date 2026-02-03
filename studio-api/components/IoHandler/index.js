@@ -7,7 +7,7 @@ const LogManager = require(`${process.cwd()}/lib/logger/manager`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const SOCKET_EVENTS = require(`${process.cwd()}/lib/dao/log/socketEvent`)
 
-const { diffSessions, groupSessionsByOrg } = require(
+const { diffSessions, groupSessionsByOrg, handleChannelChanges } = require(
   `${process.cwd()}/components/IoHandler/controllers/SessionHandling`,
 )
 const { watchConversation, refreshInterval } = require(
@@ -17,7 +17,7 @@ const { watchConversation, refreshInterval } = require(
 const auth_middlewares = require(
   `${process.cwd()}/components/WebServer/config/passport/middleware`,
 )
-const { sessionSocketAccess } = require(
+const { sessionSocketAccess, checkSocketOrganizationAccess } = require(
   `${process.cwd()}/components/WebServer/middlewares/access/organization.js`,
 )
 
@@ -31,17 +31,14 @@ async function checkSocketAccess(socket, roomId) {
   const sessionRoomId = roomId.split("/")[0]
 
   try {
-    // Load session
     const sessionRes = await axios.get(
       `${process.env.SESSION_API_ENDPOINT}/sessions/${sessionRoomId}`,
     )
     const session = sessionRes?.data ?? sessionRes
 
-    // Check user auth
     const { isAuth, userId, sessionId } =
       await auth_middlewares.checkSocket(socket)
 
-    // Protected session data
     const protectedSession =
       await model.sessionData.getBySessionId(sessionRoomId)
     const hasPassword =
@@ -49,36 +46,37 @@ async function checkSocketAccess(socket, roomId) {
 
     // Public session + no protection
     if (session.visibility === "public" && !hasPassword) {
-      return true
+      return { allowed: true, userId }
     }
 
     // User is not authenticated
     if (!isAuth) {
-      return denySocket(socket)
+      denySocket(socket)
+      return { allowed: false, userId: undefined }
     }
 
-    // Public session & sessionId matches with a password
+    // Public session + password-protected, sessionId matches
     if (
       session.visibility === "public" &&
       sessionId === session.id &&
       hasPassword
     ) {
-      return true
+      return { allowed: true, userId }
     }
 
-    // Determine user access from organization access
+    // Organization access
     const access = await sessionSocketAccess(session, userId)
     if (access === true) {
-      // if (session.visibility === "organization") {
-      return true
+      return { allowed: true, userId }
     }
 
-    // Private & owner or explicitly granted access
+    // Private session & is owner
     if (session.visibility === "private" && session.owner === userId) {
-      return true
+      return { allowed: true, userId }
     }
 
-    return denySocket(socket)
+    denySocket(socket)
+    return { allowed: false, userId: undefined }
   } catch (err) {
     LogManager.logSocketEvent(
       socket,
@@ -90,9 +88,11 @@ async function checkSocketAccess(socket, roomId) {
       },
       { level: "error" },
     )
-    return denySocket(socket)
+    denySocket(socket)
+    return { allowed: false, userId: undefined }
   }
 }
+
 class IoHandler extends Component {
   constructor(app) {
     super(app, "WebServer") // Relies on a WebServer component to be registrated
@@ -130,12 +130,15 @@ class IoHandler extends Component {
       }
 
       socket.on("join_room", async (roomId) => {
-        if (!(await checkSocketAccess(socket, roomId))) return
+        const { allowed, userId } = await checkSocketAccess(socket, roomId)
+        if (!allowed) return
         LogManager.logSocketEvent(socket, {
           sessionId: roomId,
+          userId,
           action: SOCKET_EVENTS.JOIN,
           from: "session",
         })
+
         this.addSocketInRoom(roomId, socket)
       })
 
@@ -148,7 +151,12 @@ class IoHandler extends Component {
         this.removeSocketFromRoom(roomId, socket)
       })
 
-      socket.on("watch_organization_session", (orgaId) => {
+      socket.on("watch_organization_session", async (orgaId) => {
+        const { authorized } = await checkSocketOrganizationAccess(socket, orgaId)
+        if (!authorized) {
+          debug(`[Session] User denied access to org ${orgaId}`)
+          return
+        }
         this.addSocketInOrga(orgaId, socket, "session")
       })
 
@@ -156,7 +164,12 @@ class IoHandler extends Component {
         this.removeSocketFromOrga(orgaId, socket)
       })
 
-      socket.on("watch_organization_media", (orgaId) => {
+      socket.on("watch_organization_media", async (orgaId) => {
+        const { authorized } = await checkSocketOrganizationAccess(socket, orgaId)
+        if (!authorized) {
+          debug(`[Media] User denied access to org ${orgaId}`)
+          return
+        }
         this.addSocketInMedia(orgaId, socket)
       })
 
@@ -170,6 +183,70 @@ class IoHandler extends Component {
           from: "socket",
         })
         this.searchAndRemoveSocketFromRooms(socket)
+      })
+
+      // LLM job subscription handlers
+      socket.on("llm:join", async (data) => {
+        const { organizationId, conversationId } = data
+        if (!organizationId) return
+
+        // First, try normal authentication
+        const { authorized, userId } = await checkSocketOrganizationAccess(socket, organizationId)
+
+        if (!authorized) {
+          // Check for public session token
+          const publicToken = socket.handshake?.auth?.publicToken || socket.handshake?.query?.publicToken
+          if (publicToken) {
+            // Validate token and check if organizationId matches
+            const PublicToken = require(
+              `${process.cwd()}/components/WebServer/config/passport/token/public_generator`,
+            )
+            try {
+              // Decode without verification first to get the session ID
+              const jwt = require("jsonwebtoken")
+              const decoded = jwt.decode(publicToken)
+              if (decoded?.data?.fromSession && decoded?.data?.organizationId === organizationId) {
+                const validated = PublicToken.validateToken(publicToken, decoded.data.fromSession)
+                if (validated && validated.data?.organizationId === organizationId) {
+                  debug(`[LLM] Public session user joined room for org ${organizationId}`)
+                  const orgRoom = `llm/${organizationId}`
+                  socket.join(orgRoom)
+                  return
+                }
+              }
+            } catch (err) {
+              debug(`[LLM] Invalid public token: ${err.message}`)
+            }
+          }
+
+          debug(`[LLM] Unauthorized llm:join attempt for org ${organizationId}`)
+          return
+        }
+
+        // Join organization-level LLM room
+        const orgRoom = `llm/${organizationId}`
+        socket.join(orgRoom)
+        debug(`Socket ${socket.id} joined LLM room ${orgRoom}`)
+
+        // Join conversation-specific room if provided
+        if (conversationId) {
+          const convRoom = `llm/${organizationId}/${conversationId}`
+          socket.join(convRoom)
+          debug(`Socket ${socket.id} joined LLM room ${convRoom}`)
+        }
+      })
+
+      socket.on("llm:leave", (data) => {
+        const { organizationId, conversationId } = data
+        if (!organizationId) return
+
+        const orgRoom = `llm/${organizationId}`
+        socket.leave(orgRoom)
+
+        if (conversationId) {
+          const convRoom = `llm/${organizationId}/${conversationId}`
+          socket.leave(convRoom)
+        }
       })
     })
 
@@ -300,6 +377,12 @@ class IoHandler extends Component {
 
   async notify_sessions(roomId, action, sessions) {
     const differences = diffSessions(this.sessionsCache, sessions)
+
+    // Handle channel status changes (log to activityLog)
+    if (differences.channelChanges?.length > 0) {
+      await handleChannelChanges(differences.channelChanges)
+    }
+
     const merged = await groupSessionsByOrg(differences, this.memorySessions)
     Object.keys(merged).forEach((orgaId) => {
       //Verify if a websocket connection is establish to the room
@@ -371,6 +454,38 @@ class IoHandler extends Component {
     if (notify) {
       this.io.emit("broker_ko")
       LogManager.logSystemEvent("Broker connection lost")
+    }
+  }
+
+  /**
+   * Broadcast LLM job update to subscribed clients
+   * @param {object} update - { organizationId, conversationId, jobId, status, progress, result, error }
+   */
+  notifyLlmJobUpdate(update) {
+    const { organizationId, conversationId, jobId, status } = update
+    if (!organizationId || !jobId) {
+      debug(`Cannot broadcast LLM update: missing organizationId or jobId`)
+      return
+    }
+
+    // Determine event name based on status
+    let eventName = "llm:job:update"
+    if (status === "completed" || status === "complete") {
+      eventName = "llm:job:complete"
+    } else if (status === "error" || status === "failed") {
+      eventName = "llm:job:error"
+    }
+
+    // Broadcast to organization room
+    const orgRoom = `llm/${organizationId}`
+    this.io.to(orgRoom).emit(eventName, update)
+    debug(`Broadcasted ${eventName} to room ${orgRoom} for job ${jobId}`)
+
+    // Also broadcast to conversation-specific room if available
+    if (conversationId) {
+      const convRoom = `llm/${organizationId}/${conversationId}`
+      this.io.to(convRoom).emit(eventName, update)
+      debug(`Broadcasted ${eventName} to room ${convRoom} for job ${jobId}`)
     }
   }
 }

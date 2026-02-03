@@ -244,6 +244,7 @@ import {
 import { apiUpdateMultipleUsersInMultipleConversations } from "../api/user.js"
 
 import { bus } from "@/main.js"
+import { getEnv } from "@/tools/getEnv"
 import { getUserRightFromConversation } from "@/tools/getUserRightFromConversation.js"
 import { indexConversationRightByUsers } from "@/tools/indexConversationRightByUsers.js"
 
@@ -296,7 +297,7 @@ export default {
       return this.searchMemberValue.value.indexOf("@") > 0
     },
     enable_inscription() {
-      return process.env.VUE_APP_DISABLE_USER_CREATION !== "true"
+      return getEnv("VUE_APP_DISABLE_USER_CREATION") !== "true"
     },
   },
   watch: {
@@ -656,7 +657,7 @@ export default {
     align-items: center;
     justify-content: space-between;
     padding: 0.75rem;
-    background-color: var(--background-secondary);
+    background-color: var(--background-primary);
     border-radius: var(--border-radius-sm);
     border: 1px solid var(--neutral-50);
     transition: all 0.2s ease;

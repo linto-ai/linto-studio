@@ -13,10 +13,24 @@ import PortalVue from "portal-vue"
 import ApiEventWebSocket from "@/services/websocket/ApiEventWebSocket.js"
 import Atoms from "./components/atoms/index.js"
 import "./filters/index.js"
+import { getEnv } from "@/tools/getEnv"
 
 import Loading from "vue-loading-overlay"
 
 import "vue-loading-overlay/dist/vue-loading.css"
+
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  Legend,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+} from "chart.js"
+
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
+
 //setDefaultEnv() // doesn't work
 
 export const bus = new Vue()
@@ -30,7 +44,7 @@ Vue.config.productionTip = false
 Vue.prototype.debug = Debug("Vue")
 Vue.prototype.$apiEventWS = new ApiEventWebSocket()
 
-Debug.enable(process.env.VUE_APP_DEBUG)
+Debug.enable(getEnv("VUE_APP_DEBUG"))
 
 new Vue({
   router,

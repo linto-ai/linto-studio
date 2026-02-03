@@ -14,8 +14,8 @@
         v-for="profile in transcriberProfilesList"
         v-model="p_selectedProfiles"
         :key="profile.id"
-        :linkTo="linkTo"
-        :profile="profile" />
+        :profile="profile"
+        @edit="onEdit" />
     </tbody>
   </table>
 </template>
@@ -30,10 +30,6 @@ export default {
     transcriberProfilesList: {
       type: Array,
       required: true,
-    },
-    linkTo: {
-      type: Object,
-      required: false,
     },
     value: {
       //selectedOrganizations
@@ -76,6 +72,9 @@ export default {
   methods: {
     sortBy(event) {
       this.$emit("list_sort_by", event)
+    },
+    onEdit(profileId) {
+      this.$emit("edit", profileId)
     },
   },
   components: {

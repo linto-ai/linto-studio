@@ -39,29 +39,29 @@
         </template>
       </HeaderTable>
     </template>
-    <div class="fixed-notif small-margin-bottom" v-if="!showAllProfiles">
-      <div class="app-notif__message">
-        {{ $t("backoffice.transcriber_profile_list.warning_global.line_1") }}
-        <br />
-        {{ $t("backoffice.transcriber_profile_list.warning_global.line_2") }}
-      </div>
-    </div>
+    <NotificationBanner
+      class="small-margin-bottom"
+      variant="warning"
+      v-if="!showAllProfiles">
+      {{ $t("backoffice.transcriber_profile_list.warning_global.line_1") }}
+    </NotificationBanner>
     <div class="backoffice-listing-container">
       <TranscriberProfileTable
         @list_sort_by="sortBy"
+        @edit="editProfile"
         :sortListKey="sortListKey"
         :sortListDirection="sortListDirection"
         :transcriberProfilesList="sortedTranscriberProfiles"
         :loading="loading"
-        :linkTo="{ name: 'backoffice-transcriberProfileDetail' }"
         v-model="selectedProfiles" />
     </div>
 
-    <ModalCreateTranscriberProfiles
-      v-if="showModalCreate"
-      @on-confirm="confirmCreation"
-      @on-cancel="cancelCreation"
-      @close="showModalCreate = false" />
+    <ModalTranscriberProfile
+      v-if="showModal"
+      :transcriberProfileId="editProfileId"
+      @on-confirm="onModalConfirm"
+      @on-cancel="closeModal"
+      @on-delete="onModalDelete" />
   </MainContentBackoffice>
 </template>
 <script>
@@ -78,7 +78,8 @@ import { sortArray } from "@/tools/sortList.js"
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import TranscriberProfileTable from "@/components/TranscriberProfileTable.vue"
 import HeaderTable from "@/components/HeaderTable.vue"
-import ModalCreateTranscriberProfiles from "@/components/ModalCreateTranscriberProfiles.vue"
+import ModalTranscriberProfile from "@/components/ModalTranscriberProfile.vue"
+import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 import { debounceMixin } from "@/mixins/debounce.js"
 
 export default {
@@ -90,7 +91,8 @@ export default {
       transcriberProfiles: [],
       selectedProfiles: [],
       search: "",
-      showModalCreate: false,
+      showModal: false,
+      editProfileId: null,
       sortListKey: "config.name",
       sortListDirection: "asc",
       showAllProfiles: false,
@@ -122,14 +124,24 @@ export default {
       this.loading = false
     },
     showModalCreateTranscriberProfile() {
-      this.showModalCreate = true
+      this.editProfileId = null
+      this.showModal = true
     },
-    confirmCreation() {
-      this.showModalCreate = false
+    editProfile(profileId) {
+      this.editProfileId = profileId
+      this.showModal = true
+    },
+    closeModal() {
+      this.showModal = false
+      this.editProfileId = null
+    },
+    onModalConfirm() {
+      this.closeModal()
       this.debouncedFetchTranscriberProfiles()
     },
-    cancelCreation() {
-      this.showModalCreate = false
+    onModalDelete() {
+      this.closeModal()
+      this.debouncedFetchTranscriberProfiles()
     },
     async deleteSelectedProfiles() {
       const req = await bulkRequest(
@@ -202,7 +214,8 @@ export default {
     MainContentBackoffice,
     TranscriberProfileTable,
     HeaderTable,
-    ModalCreateTranscriberProfiles,
+    ModalTranscriberProfile,
+    NotificationBanner,
   },
 }
 </script>

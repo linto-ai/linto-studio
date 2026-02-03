@@ -388,3 +388,68 @@ export async function apiDeleteTagFromConversation(
     userToken,
   )
 }
+
+/**
+ * Subscribe to LLM job updates via studio-api internal endpoint
+ * @param {string} conversationId - Conversation ID
+ * @param {string} jobId - Job ID
+ * @param {string} organizationId - Organization ID
+ * @param {string} userToken - User token
+ */
+export async function apiSubscribeLlmJob(
+  conversationId,
+  jobId,
+  organizationId,
+  userToken,
+) {
+  return await sendRequest(
+    `${BASE_API}/internal/llm/subscribe`,
+    { method: "post" },
+    {
+      conversationId,
+      jobId,
+      organizationId,
+    },
+    null,
+    userToken,
+  )
+}
+
+/**
+ * Unsubscribe from LLM job updates
+ * @param {string} conversationId - Conversation ID
+ * @param {string} jobId - Job ID
+ * @param {string} userToken - User token
+ */
+export async function apiUnsubscribeLlmJob(
+  conversationId,
+  jobId,
+  userToken,
+) {
+  return await sendRequest(
+    `${BASE_API}/internal/llm/unsubscribe`,
+    { method: "post" },
+    {
+      conversationId,
+      jobId,
+    },
+    null,
+    userToken,
+  )
+}
+
+/**
+ * Check if user has access to an organization
+ * @param {string} organizationId - Organization ID
+ * @param {string} userToken - User token
+ * @returns {Promise<{status: string, data?: object}>} - Success if user has access
+ */
+export async function apiCheckOrganizationAccess(organizationId, userToken) {
+  return await sendRequest(
+    `${BASE_API}/organizations/${organizationId}`,
+    { method: "get" },
+    null,
+    null,
+    userToken,
+  )
+}

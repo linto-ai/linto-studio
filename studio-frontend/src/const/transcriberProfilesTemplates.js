@@ -1,3 +1,10 @@
+import {
+  SECURITY_LEVELS,
+  SECURITY_LEVEL_PUBLIC,
+} from "./securityLevels.js"
+
+export { SECURITY_LEVELS }
+
 const TRANSCRIBER_PROFILES_TEMPLATES = {
   linto: {
     config: {
@@ -14,6 +21,9 @@ const TRANSCRIBER_PROFILES_TEMPLATES = {
       hasDiarization: false,
     },
     quickMeeting: true,
+    meta: {
+      securityLevel: SECURITY_LEVEL_PUBLIC,
+    },
   },
   microsoft: {
     config: {
@@ -23,7 +33,6 @@ const TRANSCRIBER_PROFILES_TEMPLATES = {
       languages: [
         {
           candidate: "en-GB",
-          endpoint: "endpoint-id",
         },
       ],
       region: "westeurope",
@@ -73,6 +82,31 @@ const TRANSCRIBER_PROFILES_TEMPLATES = {
       hasDiarization: true,
     },
     quickMeeting: true,
+    meta: {
+      securityLevel: SECURITY_LEVEL_PUBLIC,
+    },
+  },
+  amazon: {
+    config: {
+      type: "amazon",
+      name: "Amazon Transcribe",
+      description: "Amazon Transcribe with IAM Roles Anywhere",
+      languages: [
+        {
+          candidate: "en-US",
+        },
+      ],
+      availableTranslations: [],
+      region: "us-east-1",
+      passphrase: "",
+      trustAnchorArn: "",
+      profileArn: "",
+      roleArn: "",
+    },
+    quickMeeting: true,
+    meta: {
+      securityLevel: SECURITY_LEVEL_PUBLIC,
+    },
   },
 }
 

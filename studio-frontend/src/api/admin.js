@@ -6,6 +6,66 @@ import { sendMultipartFormData } from "@/tools/sendMultipartFormData"
 const BASE_API = getEnv("VUE_APP_CONVO_API")
 const DEFAULT_PAGE_SIZE = 10
 
+export async function apiGetActivityLogs(
+  page = 0,
+  {
+    pageSize = DEFAULT_PAGE_SIZE,
+    sortField = "timestamp",
+    sortOrder = -1,
+    source,
+    scope,
+    userId,
+  } = {},
+) {
+  let res
+
+  res = await sendRequest(
+    `${BASE_API}/administration/activity`,
+    {
+      method: "get",
+    },
+    {
+      page,
+      size: pageSize,
+      sortField,
+      sortCriteria: sortOrder,
+      source,
+      scope,
+      "user.id": userId,
+    },
+  )
+
+  return res?.data || { count: 0, list: [] }
+}
+
+export async function apiGetBackofficeActivityLogs(page = 0, args) {
+  return await apiGetActivityLogs(page, {
+    ...args,
+    source: "webserver",
+    scope: "platform",
+  })
+}
+
+export async function apiGetKeysActivityLogs(page = 0, args) {
+  return await apiGetActivityLogs(page, {
+    ...args,
+    source: "webserver",
+    scope: "tokens",
+  })
+}
+
+export async function apiGetHttpActivityLogs(page = 0, args) {
+  return await apiGetActivityLogs(page, {
+    ...args,
+    source: "webserver",
+    scope: "resource",
+  })
+}
+
+export async function apiGetSessionActivityLogs(page = 0, args) {
+  return await apiGetActivityLogs(page, { ...args, source: "socketio" })
+}
+
 export async function apiGetAllOrganizations(
   page = 0,
   {
@@ -250,6 +310,140 @@ export async function apiAdminDeleteTranscriberProfile(transcriberId, notif) {
     `${BASE_API}/administration/transcriber_profiles/${transcriberId}`,
     { method: "delete" },
     {},
+    notif,
+  )
+}
+
+export async function apiAdminCreateAmazonTranscriberProfile(
+  data,
+  files,
+  notif,
+) {
+  const formData = new FormData()
+
+  const config = {
+    type: "amazon",
+    name: data.config.name,
+    description: data.config.description || "",
+    languages: data.config.languages,
+    region: data.config.region,
+    availableTranslations: data.config.availableTranslations || [],
+    passphrase: data.config.passphrase || "",
+    credentials: data.config.credentials,
+    trustAnchorArn: data.config.trustAnchorArn,
+    profileArn: data.config.profileArn,
+    roleArn: data.config.roleArn,
+    quickMeeting: data.quickMeeting,
+  }
+
+  if (data.organizationId) {
+    config.organizationId = data.organizationId
+  }
+
+  formData.append("config", JSON.stringify(config))
+
+  if (files.certificate) {
+    formData.append("certificate", files.certificate)
+  }
+  if (files.privateKey) {
+    formData.append("privateKey", files.privateKey)
+  }
+
+  return sendMultipartFormData(
+    `${BASE_API}/administration/transcriber_profiles`,
+    "post",
+    formData,
+    notif,
+  )
+}
+
+export async function apiGetAdminSessions(
+  page = 0,
+  {
+    pageSize = DEFAULT_PAGE_SIZE,
+    sortField = "scheduleOn",
+    sortOrder = -1,
+    searchName,
+    statusList,
+    organizationId,
+    visibility,
+  } = {},
+) {
+  const params = {
+    offset: page * pageSize,
+    limit: pageSize,
+    sortField,
+    sortCriteria: sortOrder,
+  }
+
+  if (searchName) params.searchName = searchName
+  if (statusList) params.statusList = statusList
+  if (organizationId) params.organizationId = organizationId
+  if (visibility) params.visibility = visibility
+
+  const res = await sendRequest(
+    `${BASE_API}/administration/sessions`,
+    { method: "get" },
+    params,
+  )
+
+  if (res?.data) {
+    return {
+      list: res.data.sessions || [],
+      count: res.data.totalItems || 0,
+    }
+  }
+  return { list: [], count: 0 }
+}
+
+export async function apiAdminDeleteSession(sessionId) {
+  const res = await sendRequest(
+    `${BASE_API}/administration/sessions/${sessionId}?force=true`,
+    { method: "delete" },
+  )
+  return res
+}
+
+export async function apiAdminUpdateAmazonTranscriberProfile(
+  transcriberId,
+  data,
+  files,
+  notif,
+) {
+  const formData = new FormData()
+
+  const config = {
+    type: "amazon",
+    name: data.config.name,
+    description: data.config.description || "",
+    languages: data.config.languages,
+    region: data.config.region,
+    availableTranslations: data.config.availableTranslations || [],
+    passphrase: data.config.passphrase || "",
+    credentials: data.config.credentials,
+    trustAnchorArn: data.config.trustAnchorArn,
+    profileArn: data.config.profileArn,
+    roleArn: data.config.roleArn,
+    quickMeeting: data.quickMeeting,
+  }
+
+  if (data.organizationId) {
+    config.organizationId = data.organizationId
+  }
+
+  formData.append("config", JSON.stringify(config))
+
+  if (files && files.certificate) {
+    formData.append("certificate", files.certificate)
+  }
+  if (files && files.privateKey) {
+    formData.append("privateKey", files.privateKey)
+  }
+
+  return sendMultipartFormData(
+    `${BASE_API}/administration/transcriber_profiles/${transcriberId}`,
+    "put",
+    formData,
     notif,
   )
 }

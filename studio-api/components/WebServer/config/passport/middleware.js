@@ -10,6 +10,9 @@ const PublicToken = require(
 )
 const algorithm = process.env.JWT_ALGORITHM || "HS256"
 let { generators } = require("openid-client")
+const { decrypt } = require(
+  `${process.cwd()}/components/WebServer/config/passport/token/encryption`,
+)
 
 const PROVIDER = require(`${process.cwd()}/lib/dao/oidc/provider`)
 
@@ -29,7 +32,7 @@ PROVIDER.loadEnabledStrategies()
 const authenticateUser = (strategy, req, res, next) => {
   if (
     process.env.OIDC_TYPE === "eu" &&
-    !req.session.code_verifier &&
+    !req.session?.code_verifier &&
     strategy === "oidc"
   ) {
     const code_verifier = generators.codeVerifier()
@@ -53,24 +56,32 @@ const authenticateUser = (strategy, req, res, next) => {
 }
 
 const authenticateScopeUser = (strategy, scope, req, res, next) => {
-  passport.authenticate(strategy, { scope: scope }, (err, user) => {
-    if (err) next(err)
-    else if (!user) throw new InvalidCredential()
-    else {
-      res.status(200).json({
-        message: "login success",
-        ...user,
-      })
-    }
-  })(req, res, next)
+  passport.authenticate(
+    strategy,
+    { scope: scope, session: false },
+    (err, user) => {
+      if (err) next(err)
+      else if (!user) throw new InvalidCredential()
+      else {
+        res.status(200).json({
+          message: "login success",
+          ...user,
+        })
+      }
+    },
+  )(req, res, next)
 }
 
 const extractToken = (req) => {
-  if (req.headers.authorization) {
+  if (req.headers?.authorization) {
     return req.headers.authorization.split(" ")[1]
   } else if (req?.session?.passport?.user?.auth_token) {
     return req.session.passport.user.auth_token
+  } else if (req.cookies?.auth_token) {
+    const decryptedToken = decrypt(req.cookies.auth_token)
+    return decryptedToken
   }
+
   return null
 }
 
@@ -126,7 +137,6 @@ module.exports = {
           req.payload.data.userId = req.query.impersonateUser
         }
       }
-
       next()
     },
   ],

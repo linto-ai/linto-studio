@@ -35,7 +35,8 @@
         :placeholder="placeholder"
         ref="input"
         v-model="editValue"
-        @change="onInputChange"
+        @input="onInput"
+        @change="onChange"
         @keydown="keydown"
         v-bind="field.customParams" />
       <textarea
@@ -45,7 +46,7 @@
         :id="id"
         ref="input"
         v-model="editValue"
-        @change="onInputChange"
+        @change="onChange"
         @keydown="keydown" />
 
       <div v-if="shouldShowConfirmationButtons" class="form-field__actions">
@@ -96,6 +97,10 @@ export default {
       type: Object,
       required: true,
     },
+    value: {
+      type: String,
+      default: undefined,
+    },
     modelValue: {
       type: String,
       default: undefined,
@@ -138,16 +143,11 @@ export default {
     },
   },
   data() {
+    const initialValue = this.modelValue ?? this.value ?? this.field.value ?? ""
     return {
       id: this.inputId || Math.random().toString(36).substr(2, 9),
-      editValue:
-        this.modelValue !== undefined
-          ? this.modelValue
-          : this.field.value || "",
-      originalValue:
-        this.modelValue !== undefined
-          ? this.modelValue
-          : this.field.value || "",
+      editValue: initialValue,
+      originalValue: initialValue,
     }
   },
   computed: {
@@ -193,13 +193,19 @@ export default {
   },
   watch: {
     modelValue(newVal) {
-      if (newVal !== this.editValue) {
+      if (newVal !== undefined && newVal !== this.editValue) {
+        this.editValue = newVal
+        this.originalValue = newVal
+      }
+    },
+    value(newVal) {
+      if (newVal !== undefined && newVal !== this.editValue) {
         this.editValue = newVal
         this.originalValue = newVal
       }
     },
     "field.value"(newVal) {
-      if (this.modelValue === undefined && newVal !== this.editValue) {
+      if (this.modelValue === undefined && this.value === undefined && newVal !== this.editValue) {
         this.editValue = newVal
         this.originalValue = newVal
       }
@@ -213,7 +219,13 @@ export default {
     }
   },
   methods: {
-    onInputChange(e) {
+    onInput(e) {
+      if (!this.withConfirmation) {
+        this.$emit("update:modelValue", this.editValue)
+        this.$emit("input", this.editValue)
+      }
+    },
+    onChange(e) {
       this.$emit("update:modelValue", this.editValue)
       this.$emit("input", this.editValue)
     },
@@ -241,7 +253,9 @@ export default {
         e.preventDefault()
         this.cancel()
       } else {
-        e.stopPropagation()
+        if (this.withConfirmation) {
+          e.stopPropagation()
+        }
       }
     },
   },

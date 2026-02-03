@@ -43,23 +43,23 @@
     }
 
     &.secondary {
-      color: var(--secondary-color);
+      color: var(--primary-color);
     }
 
     &.tertiary {
-      color: var(--tertiary-color);
+      color: var(--danger-color);
     }
 
     &.success {
-      color: var(--green-chart);
+      color: var(--success-color);
     }
 
     &.warning {
-      color: var(--yellow-chart);
+      color: var(--warning-color);
     }
 
     &.danger {
-      color: var(--red-chart);
+      color: var(--danger-color);
     }
 
     // Fill variants

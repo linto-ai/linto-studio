@@ -13,24 +13,29 @@ module.exports = (webServer) => {
       path: "/oidc/google/login",
       method: "get",
       requireAuth: false,
-      requireSession: true,
       controller: [auth_middleware.oidc_google_authenticate],
     },
     {
       path: "/oidc/google/cb",
       method: "get",
       requireAuth: false,
-      requireSession: true,
       controller: [
-        passport.authenticate("google", {
-          failureRedirect: (process.env.FRONTEND_DOMAIN || "") + "/login",
-        }),
-        function (req, res) {
-          res.redirect(
-            (process.env.FRONTEND_DOMAIN || "") +
+        (req, res, next) => {
+          passport.authenticate("google", { session: false }, (err, token) => {
+            const failureRedirect =
+              (process.env.FRONTEND_DOMAIN || "") + "/login"
+            if (err || !token) {
+              console.error(err)
+              return failureRedirect
+            }
+
+            const redirectUrl =
+              (process.env.FRONTEND_DOMAIN || "") +
               "/login/oidc?token=" +
-              req.session.passport.user.auth_token,
-          )
+              token.auth_token
+
+            res.redirect(redirectUrl)
+          })(req, res, next)
         },
       ],
     },

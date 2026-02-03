@@ -1,0 +1,27 @@
+{
+  "/api/administration/sessions/data": {
+    "get": {
+      "tags": ["administration sessions"],
+      "summary": "List all existing session metadata",
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/SessionData"
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
+  }
+}

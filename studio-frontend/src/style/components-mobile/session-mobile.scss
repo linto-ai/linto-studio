@@ -31,37 +31,6 @@
     display: none;
   }
 
-  .channel-turn {
-    display: flex;
-    flex-direction: column;
-    gap: 0em;
-  }
-
-  .channel-turn__metadata {
-    // display: grid;
-    // grid-template-areas:
-    //   "speaker speaker"
-    //   "lang time";
-    // grid-template-columns: 1fr 1fr;
-
-    // .channel-turn__speaker {
-    //   grid-area: speaker;
-    // }
-
-    // .channel-turn__lang {
-    //   grid-area: lang;
-    // }
-
-    // .channel-turn__time {
-    //   grid-area: time;
-    // }
-
-    display: flex;
-    flex-direction: row !important;
-    width: 100%;
-    gap: 1rem;
-  }
-
   .session-content__action-bar__copy-btn-desktop {
     display: none;
   }

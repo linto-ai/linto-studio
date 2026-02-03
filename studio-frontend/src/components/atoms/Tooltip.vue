@@ -1,19 +1,4 @@
 <template>
-  <!-- <Popover
-    :position="position"
-    content-class="tooltip-popover-container"
-    trigger="hover"
-    close-on-click
-  >
-    <template #trigger>
-      <span :class="['tooltip-trigger', mode]">
-        <slot></slot>
-      </span>
-    </template>
-    <template #content>
-      
-    </template>
-  </Popover> -->
   <div
     class="tooltip-container"
     ref="container"

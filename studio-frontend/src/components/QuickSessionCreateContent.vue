@@ -22,9 +22,12 @@
         :profilesList="transcriberProfiles" />
     </section> -->
 
+    <SecurityLevelSelector v-model="securityLevel" />
+
     <QuickSessionSettings
       :transcriberProfiles="transcriberProfiles"
       :transcriptionServices="transcriptionServices"
+      :securityLevel="securityLevel"
       :field="quickSessionSettingsField"
       source="micro"
       v-model="quickSessionSettingsField.value" />
@@ -58,10 +61,9 @@ import generateServiceConfig from "@/tools/generateServiceConfig"
 
 import { formsMixin } from "@/mixins/forms.js"
 
-import FormRadio from "@/components/molecules/FormRadio.vue"
-import TranscriberProfileSelector from "@/components/TranscriberProfileSelector.vue"
-import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import QuickSessionSettings from "@/components/QuickSessionSettings.vue"
+import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
+import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
 
 import { apiCreateQuickSession } from "@/api/session.js"
 
@@ -124,6 +126,7 @@ export default {
         testField: testQuickSessionSettings,
       },
       selectedProfile: this.transcriberProfiles[0],
+      securityLevel: DEFAULT_SECURITY_LEVEL,
       formSubmitLabel: this.$i18n.t("quick_session.creation.submit_button"),
 
       formError: null,
@@ -163,6 +166,9 @@ export default {
         ]
         const res = await apiCreateQuickSession(this.currentOrganizationScope, {
           channels: channels,
+          meta: {
+            securityLevel: this.securityLevel,
+          },
         })
 
         if (res.status == "success") {
@@ -184,10 +190,8 @@ export default {
     },
   },
   components: {
-    FormRadio,
-    TranscriberProfileSelector,
-    FormCheckbox,
     QuickSessionSettings,
+    SecurityLevelSelector,
   },
 }
 </script>

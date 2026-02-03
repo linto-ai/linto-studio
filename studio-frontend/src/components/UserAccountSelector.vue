@@ -1,7 +1,7 @@
 <template>
   <div class="user-account-selector flex gap-small flex1 align-center">
     <div class="avatar-container">
-      <Avatar :src="userAvatar" size="lg" @click="openSettingsModal" />
+      <Avatar :src="userAvatar" :text="userInitials" size="lg" @click="openSettingsModal" />
       <Tooltip
         v-if="!userInfo.emailIsVerified"
         :text="$t('app_settings_modal.email_not_verified')"
@@ -49,24 +49,6 @@
       variant="transparent"
       @click="toggleSidebar"></Button>
   </div>
-  <!-- <PopoverList
-    :items="navList.userMenu"
-    @click="handleClick"
-    class="user-account-selector"
-    :close-on-click="true"
-    width="ref">
-    <template #trigger="{ open }">
-      <Button
-        :avatar="userAvatar"
-        :avatar-text="uname"
-        :avatar-color="getColorFromText(UserName)"
-        :icon-right="open ? 'caret-up' : 'caret-down'"
-        variant="outline"
-        block>
-        {{ UserName }}
-      </Button>
-    </template>
-  </PopoverList> -->
 </template>
 
 <script>
@@ -112,6 +94,15 @@ export default {
       return this.UserName.length > 2
         ? this.UserName.slice(0, 2)
         : this.UserName
+    },
+    userInitials() {
+      // Generate initials from user name (e.g., "John Doe" -> "JD")
+      if (!this.UserName) return ""
+      const parts = this.UserName.trim().split(/\s+/)
+      if (parts.length >= 2) {
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+      }
+      return this.UserName.substring(0, 2).toUpperCase()
     },
     userAvatar() {
       return userAvatar(this.userInfo)
@@ -197,7 +188,7 @@ export default {
     color: var(--text-secondary);
     white-space: nowrap;
     font-weight: 400;
-    text-transform: lowercase;
+    //text-transform: lowercase;
     font-size: 0.9em;
 
     @media (max-width: 1100px) {

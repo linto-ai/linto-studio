@@ -35,10 +35,51 @@ export default {
       return "name"
     },
     channelsList() {
-      let channelsList = this.channels.map((channel) => {
+      let channelsList
+      // Case with two channels, one offline and one live:
+      if (this.channels.length == 2) {
+        if (this.channels[0].metadata.transcription) {
+          channelsList = [
+            {
+              value: this.channels[0]._id,
+              text: this.$t("conversation.channel.offline_transcription"),
+            },
+            {
+              value: this.channels[1]._id,
+              text: this.$t("conversation.channel.live_transcription"),
+            },
+          ]
+
+          return {
+            channels: channelsList,
+          }
+        }
+
+        if (this.channels[1].metadata.transcription) {
+          channelsList = [
+            {
+              value: this.channels[1]._id,
+              text: this.$t("conversation.channel.offline_transcription"),
+            },
+            {
+              value: this.channels[0]._id,
+              text: this.$t("conversation.channel.live_transcription"),
+            },
+          ]
+
+          return {
+            channels: channelsList,
+          }
+        }
+      }
+
+      // Generic case
+
+      channelsList = this.channels.map((channel) => {
+        let text = channel.name.replace("multiple channels - ", "")
         return {
           value: channel._id,
-          text: `${channel.name}`,
+          text,
         }
       })
 

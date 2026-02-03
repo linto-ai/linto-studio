@@ -29,6 +29,43 @@
           "schema": {
             "type": "integer"
           }
+        },
+        {
+          "in": "query",
+          "name": "searchName",
+          "description": "Name of the template to search",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "in": "query",
+          "name": "visibility",
+          "description": "Search for templates with a specific visibility.",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "enum": ["private", "organization", "public"]
+          }
+        },
+        {
+          "in": "query",
+          "name": "autoStart",
+          "description": "Search for templates with autoStart set to this value.",
+          "required": false,
+          "schema": {
+            "type": "boolean"
+          }
+        },
+        {
+          "in": "query",
+          "name": "autoEnd",
+          "description": "Search for templates with autoEnd set to this value.",
+          "required": false,
+          "schema": {
+            "type": "boolean"
+          }
         }
       ],
       "responses": {

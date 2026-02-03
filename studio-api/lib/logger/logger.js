@@ -61,7 +61,7 @@ const loggerTransports = config.transports
           format: buildFormat(t.options),
         })
       default:
-        console.warn(`⚠️ Unknown transport: ${t.type}`)
+        console.warn(`Unknown transport: ${t.type}`)
         return null
     }
   })

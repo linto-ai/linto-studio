@@ -1,7 +1,8 @@
 import Debug from "debug"
+import { getEnv } from "./getEnv"
 
 export function customDebug(name) {
-  if (process.env.VUE_APP_SIMPLIFY_LOG === "true") {
+  if (getEnv("VUE_APP_SIMPLIFY_LOG") === "true") {
     return function (formatter, ...args) {
       console.log("---" + name + "--->")
       console.log(formatter)

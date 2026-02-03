@@ -30,6 +30,7 @@
           </div>
           <ConversationCreateServices
             :serviceList="fieldTranscriptionService.list"
+            :securityLevel="securityLevel"
             v-model="fieldTranscriptionService.value" />
         </div>
       </div>
@@ -60,7 +61,8 @@
           <TranscriberProfileSelector
             :multiple="false"
             v-model="selectedProfile"
-            :profilesList="transcriberProfiles" />
+            :profilesList="transcriberProfiles"
+            :securityLevel="securityLevel" />
         </div>
 
         <!-- Options for live transcription -->
@@ -75,7 +77,9 @@
           </FormCheckbox>
           <div class="form-field">
             <SessionTranslationSelection
-              v-if="field.value.selectedProfile.translations"
+              v-if="
+                source === 'visio' && field.value.selectedProfile.translations
+              "
               :selectedChannel="field.value.selectedProfile"
               :customLabel="$t('quick_session.setup_visio.bot_lang_label')"
               v-model="selectedTranslation">
@@ -104,6 +108,13 @@ import EMPTY_FIELD from "@/const/emptyField.js"
 import { testService } from "@/tools/fields/testService.js"
 import RIGHTS_LIST from "@/const/rigthsList"
 import { getEnv } from "@/tools/getEnv"
+import generateServiceConfig from "@/tools/generateServiceConfig"
+import {
+  filterBySecurityLevel,
+  filterByMetaSecurityLevel,
+  meetsSecurityLevel,
+  meetsMetaSecurityLevel,
+} from "@/tools/filterBySecurityLevel"
 
 import SessionTranslationSelection from "@/components/SessionTranslationSelection.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
@@ -135,6 +146,11 @@ export default {
       type: String, // "micro" | "visio"
       required: true,
     },
+    securityLevel: {
+      type: Number,
+      required: false,
+      default: null,
+    },
   },
   data() {
     return {
@@ -152,7 +168,7 @@ export default {
       },
       fieldDiarizationEnabled: {
         ...EMPTY_FIELD,
-        value: this.value.diarization ?? false,
+        value: this.value.diarization ?? true,
         label: this.$t("session.create_page.diarization_label"),
       },
       fieldKeepAudio: {
@@ -247,6 +263,68 @@ export default {
     "membersRight.value": {
       handler() {
         this.sendUpdate()
+      },
+    },
+    transcriptionServices: {
+      handler(newServices) {
+        this.fieldTranscriptionService.list = newServices
+        if (
+          newServices.length > 0 &&
+          !newServices.find(
+            (s) =>
+              s.serviceName ===
+              this.fieldTranscriptionService.value?.serviceName,
+          )
+        ) {
+          this.fieldTranscriptionService.value = generateServiceConfig(
+            newServices[0],
+          )
+        }
+      },
+      deep: true,
+    },
+    transcriberProfiles: {
+      handler(newProfiles) {
+        if (
+          newProfiles.length > 0 &&
+          !newProfiles.find((p) => p.id === this.selectedProfile?.id)
+        ) {
+          this.selectedProfile = newProfiles[0]
+        }
+      },
+      deep: true,
+    },
+    securityLevel: {
+      handler(newLevel) {
+        // Reset profile selection if current doesn't meet new security level
+        if (
+          this.selectedProfile &&
+          !meetsMetaSecurityLevel(this.selectedProfile, newLevel)
+        ) {
+          const validProfiles = filterByMetaSecurityLevel(
+            this.transcriberProfiles,
+            newLevel,
+          )
+          this.selectedProfile = validProfiles.length > 0 ? validProfiles[0] : null
+        }
+
+        // Reset transcription service if current doesn't meet new security level
+        const currentService = this.fieldTranscriptionService.value
+        if (currentService) {
+          const serviceObj = this.transcriptionServices.find(
+            (s) => s.serviceName === currentService.serviceName,
+          )
+          if (serviceObj && !meetsSecurityLevel(serviceObj, newLevel)) {
+            const validServices = filterBySecurityLevel(
+              this.transcriptionServices,
+              newLevel,
+            )
+            this.fieldTranscriptionService.value =
+              validServices.length > 0
+                ? generateServiceConfig(validServices[0])
+                : null
+          }
+        }
       },
     },
   },

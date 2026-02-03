@@ -19,6 +19,9 @@
         intent="destructive"
         label="destructive secondary button" />
     </div>
+    <div>
+      <Button label="Download" icon="download" />
+    </div>
     <FormInput :field="fieldInput" />
     <FormInput :field="fieldInputError" />
     <FormInput :field="fieldInputDisabled" disabled />
@@ -29,6 +32,32 @@
       <!-- <template #trigger="{ open }">
         <Button variant="tertiary" size="sm"> {{ popoverValue }} </Button>
       </template> -->
+    </PopoverList>
+    <PopoverList
+      :items="popoverItems"
+      v-model="popoverMultiValue"
+      selection
+      multiple
+      searchable
+      :closeOnItemClick="false"
+      class="relative">
+      <template #trigger="{ open }">
+        <Button :iconRight="open ? 'caret-up' : 'caret-down'">
+          {{ popoverMultiValue.length }} fruits sélectionnés
+        </Button>
+      </template>
+    </PopoverList>
+    <PopoverList
+      :items="popoverItems"
+      v-model="popoverSearchValue"
+      searchable
+      aria-label="Rechercher un fruit"
+      class="relative">
+      <template #trigger="{ open }">
+        <Button :iconRight="open ? 'caret-up' : 'caret-down'">
+          Avec recherche: {{ popoverSearchValue || 'Aucun' }}
+        </Button>
+      </template>
     </PopoverList>
     <OrgaRoleSelector v-model="role" />
     <OrgaRoleSelector v-model="role" readonly />
@@ -106,6 +135,7 @@ export default {
           value: "select-value-3",
           text: "Apple",
           description: "Crisp and juicy fruit",
+          icon: "apple-logo",
         },
         {
           value: "select-value-4",
@@ -114,6 +144,8 @@ export default {
         },
       ],
       popoverValue: "select-value-1",
+      popoverMultiValue: ["select-value-1", "select-value-3"],
+      popoverSearchValue: null,
       role: 1,
       tableContent: [
         { _id: "1", name: "Alfred", role: 1 },

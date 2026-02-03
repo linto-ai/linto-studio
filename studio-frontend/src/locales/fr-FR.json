@@ -3,6 +3,56 @@
   "accoustic": {
     "standard": "Standard"
   },
+  "activity_list": {
+    "scope_label": "Domaine",
+    "level_label": "Niveau",
+    "http_method_label": "Méthode",
+    "http_endpoint_label": "URL",
+    "http_status_label": "Statut",
+    "organization_name_label": "Organisation",
+    "organization_role_label": "Rôle",
+    "user_label": "Utilisateur",
+    "user_filter_label": "Filtrer par utilisateur",
+    "platform_role_label": "Rôle sur la plateforme",
+    "session_name_label": "Nom de la session",
+    "session_id_label": "Id de session",
+    "time_label": "Date",
+    "watch_time_label": "Temps de visionnage",
+    "connection_count_label": "Nombre de connexions",
+    "tabs": {
+      "sessions_kpi": "KPI des sessions",
+      "sessions": "Detail des sessions",
+      "ressources": "Ressources",
+      "tokens": "Accès aux clé d'api",
+      "backoffice": "Backoffice"
+    }
+  },
+  "session_list": {
+    "title": "Sessions",
+    "columns": {
+      "name": "Nom",
+      "status": "Statut",
+      "organization": "Organisation",
+      "visibility": "Visibilité",
+      "start_date": "Début",
+      "end_date": "Fin prévue",
+      "channels": "Canaux"
+    },
+    "visibility": {
+      "private": "Privé",
+      "organization": "Organisation",
+      "public": "Public"
+    },
+    "remove_session_button": "Supprimer la session | Supprimer {count} sessions"
+  },
+  "modal_delete_sessions": {
+    "title": "Supprimer la session | Supprimer {count} sessions",
+    "content": "Êtes-vous sûr de vouloir supprimer cette session ? | Êtes-vous sûr de vouloir supprimer ces {count} sessions ?",
+    "action_btn": "Supprimer | Supprimer {count}",
+    "loading_notification": "Suppression en cours ({count}/{total})...",
+    "success_notification": "{count} session supprimée | {count} sessions supprimées",
+    "error": "La session n'a pas pu être supprimée | Les sessions n'ont pas pu être supprimées"
+  },
   "appointment_selector": {
     "date_label": "Date",
     "start_time_label": "Heure de début",
@@ -49,7 +99,7 @@
     "label": "Choisir un canal"
   },
   "app_editor_translations_selector": {
-    "label": "Choisir la langue de traduction",
+    "label": "Langue du verbatim",
     "original_language": "Langue originale"
   },
   "app_editor_highlights_modal": {
@@ -85,11 +135,50 @@
   "backoffice": {
     "title": "Backoffice",
     "navigation": {
+      "activities": "Journal d'activité",
       "home": "Accueil",
       "users": "Utilisateurs",
       "organisations": "Organisations",
       "tokens": "Clés d'apis",
-      "transcriberProfiles": "Profils de transcription"
+      "transcriberProfiles": "Profils de transcription",
+      "sessions": "Sessions"
+    },
+    "activity_list": {
+      "title": "Journal d'activité"
+    },
+    "dashboard": {
+      "page_title": "Tableau de bord",
+      "sessions_count": "Sessions transcrites",
+      "medias_count": "Medias traites",
+      "media_duration": "Duree totale (heures)",
+      "active_users": "Participants aux sessions",
+      "users": "Utilisateurs",
+      "organizations": "Organisations",
+      "time_period_label": "Periode",
+      "time_period": {
+        "day": "Jour",
+        "month": "Mois",
+        "year": "Annee"
+      },
+      "charts": {
+        "sessions_title": "Transcription en direct",
+        "sessions_duration_title": "Audio transcrit en temps réel (heures)",
+        "medias_title": "Transcriptions",
+        "duration_title": "Durée totale des médias transcrits (heures)",
+        "active_users_title": "Participants aux sessions"
+      },
+      "filters": {
+        "organization": "Organisation",
+        "all_organizations": "Toutes les organisations",
+        "date_range": "Plage de dates",
+        "start_date": "Du",
+        "start_date_placeholder": "jj/mm/aaaa",
+        "end_date": "Au",
+        "end_date_placeholder": "jj/mm/aaaa",
+        "clear": "Effacer les filtres"
+      },
+      "loading": "Chargement des donnees...",
+      "error": "Echec du chargement des donnees"
     },
     "user_list": {
       "title": "Utilisateurs",
@@ -120,11 +209,49 @@
       "notif_delete_success": "Le profil a été supprimé",
       "notif_delete_error": "Une erreur est survenue lors de la suppression du profil",
       "type_label": "Type de profil",
+      "security_level_label": "Niveau de sécurité",
       "quick_meeting_label": "Activé pour les quick meetings",
+      "name_label": "Nom",
+      "name_placeholder": "Nom du profil",
+      "description_label": "Description",
+      "description_placeholder": "Description du profil",
+      "region_label": "Région",
+      "region_placeholder": "ex: westeurope",
+      "key_label": "Clé API",
+      "key_placeholder": "Votre clé API",
+      "diarization_label": "Activer la diarisation",
+      "options_title": "Options",
+      "credentials_title": "Identifiants",
       "warning_global": {
         "line_1": "Ce profil sera visible dans toutes les organisations.",
         "line_2": "Pour gérer les profils de transcription d'une organisation, allez dans l'onglet \"Organisations\" de la barre de navigation."
-      }
+      },
+      "amazon_certificate_label": "Certificat (.crt)",
+      "amazon_certificate_placeholder": "Selectionner le fichier certificat",
+      "amazon_private_key_label": "Cle privee (.pem, PKCS#8)",
+      "amazon_private_key_placeholder": "Selectionner le fichier de cle privee",
+      "amazon_passphrase_label": "Phrase de passe (optionnel)",
+      "amazon_passphrase_placeholder": "Phrase de passe si la cle est chiffree",
+      "amazon_region_label": "Région AWS",
+      "amazon_region_placeholder": "ex: eu-west-1",
+      "amazon_credentials_label": "Credentials",
+      "amazon_credentials_placeholder": "Identifiant AWS credentials",
+      "amazon_trust_anchor_arn_label": "Trust Anchor ARN",
+      "amazon_trust_anchor_arn_placeholder": "arn:aws:rolesanywhere:...",
+      "amazon_profile_arn_label": "Profile ARN",
+      "amazon_profile_arn_placeholder": "arn:aws:rolesanywhere:...",
+      "amazon_role_arn_label": "Role ARN",
+      "amazon_role_arn_placeholder": "arn:aws:iam:...",
+      "amazon_pkcs8_helper": "La cle privee doit etre au format PKCS#8. Convertir avec :",
+      "amazon_pkcs8_command": "openssl pkcs8 -topk8 -in old.pem -out new.pem",
+      "amazon_rsa_warning": "Attention : Ceci semble etre une cle privee RSA. Veuillez la convertir au format PKCS#8.",
+      "languages_title": "Langues",
+      "linto_endpoint_label": "URL WebSocket",
+      "linto_endpoint_placeholder": "ws://...",
+      "microsoft_endpoint_label": "ID Endpoint",
+      "microsoft_endpoint_placeholder": "endpoint-id",
+      "amazon_endpoint_label": "Région AWS",
+      "amazon_endpoint_placeholder": "us-east-1"
     },
     "transcriber_profile_list": {
       "title": "Profils de transcription",
@@ -142,6 +269,7 @@
     }
   },
   "breadcrumb": {
+    "activities": "Journal d'activité",
     "backoffice": "Backoffice",
     "conversations": "Conversations",
     "create": "Importer un media",
@@ -155,7 +283,9 @@
     "organizations": "Organisations",
     "overview": "Synthèse",
     "publish": "Publication",
-    "quickSession": "Session rapide",
+    "quickSession": "Enregistrement rapide",
+    "quickSession_microphone": "Enregistrement",
+    "quickSession_visio": "Enregistrement d'une visioconférence",
     "sessions": "Sessions",
     "sessionSettings": "Paramètres",
     "settings": "Paramètres de {organization}",
@@ -182,6 +312,10 @@
     "audio_file_upload_label": "Choisir un fichier...",
     "audio_file_upload_label_multiple": "Choisir un ou plusieurs fichiers...",
     "back_conversation_button": "Synthèse du média",
+    "channel": {
+      "live_transcription": "Transcription en direct",
+      "offline_transcription": "Transcription après l'enregistrement"
+    },
     "close_editor": "Fermer l'éditeur",
     "close_publish": "Fermer",
     "conversation_creation_button": {
@@ -194,6 +328,8 @@
     "conversation_creation_loading_multiple": "Envoi du fichier {count} sur {total}. Cette opération peut prendre plusieurs minutes.",
     "conversation_creation_right_title": "Gestion des droits",
     "conversation_creation_right_label": "Droits par défaut pour les membres de l'organisation",
+    "conversation_creation_security_title": "Niveau de sécurité",
+    "conversation_creation_security_label": "Niveau de sécurité du média",
     "conversation_is_locked_by": "Le média est verouillée par",
     "conversation_need_reload": " Le média a été modifiée par un autre utilisateur, rechargez la page pour l'éditer",
     "conversation_overview_title": "Synthèse du média",
@@ -242,10 +378,11 @@
       "json": "Télécharger en JSON",
       "pdf": "Télécharger en PDF",
       "srt": "Télécharger en SRT",
-      "title": "Télécharger",
+      "title": "Télécharger le verbatim",
       "txt": "Télécharger en TXT",
       "vtt": "Télécharger en VTT",
-      "md": "Télécharger en Markdown"
+      "md": "Télécharger en Markdown",
+      "whisperx": "JSON brut (WhisperX)"
     },
     "export_json_button": "Exporter en JSON",
     "highlight_toolbox": {
@@ -290,6 +427,11 @@
       "read": "Lecture",
       "share": "Partager",
       "write": "Écriture"
+    },
+    "security_level_txt": {
+      "0": "Diffusion publique",
+      "1": "Usage commission",
+      "2": "Sensible non classifié"
     },
     "model_quality": {
       "high": "Haute",
@@ -634,6 +776,11 @@
     "optimized_fr": "Optimisé pour le français",
     "optimized_en": "Optimisé pour l'anglais"
   },
+  "language_endpoint_editor": {
+    "language": "Langue",
+    "add": "Ajouter une langue",
+    "remove": "Supprimer"
+  },
   "login": {
     "not_registered": "Pas encore inscrit ? ",
     "create_account_button": "Créer un compte",
@@ -772,7 +919,15 @@
     "no_medias_selected": "Aucun média sélectionné",
     "some_medias_cannot_be_deleted": "Certains médias ne peuvent pas être supprimés",
     "no_permission_to_delete": "Vous n'avez pas la permission de supprimer ces médias",
-    "processing_error_message": "La transcription automatique du média a rencontré une erreur"
+    "processing_error_message": "La transcription automatique du média a rencontré une erreur",
+    "status": {
+      "preprocessing": "Pre-traitement",
+      "transcription": "Transcription",
+      "diarization": "Séparation des locuteurs",
+      "punctuation": "Ponctuation",
+      "postprocessing": "Post-traitement",
+      "pending": "En attente"
+    }
   },
   "modal": {
     "apply": "Appliquer",
@@ -785,10 +940,23 @@
     "label_name": "Nom de l'organisation",
     "action_btn": "Créer"
   },
-  "modal_create_transcriber_profile": {
-    "title": "Créer un profil de transcription",
-    "action_btn": "Créer le profil",
-    "notif_error": "Une erreur s'est produite lors de la création du profil de transcription"
+  "modal_transcriber_profile": {
+    "title_create": "Créer un profil de transcription",
+    "title_edit": "Modifier le profil de transcription",
+    "action_btn_create": "Créer le profil",
+    "action_btn_edit": "Enregistrer",
+    "delete_button": "Supprimer",
+    "confirm_delete": "Êtes-vous sûr de vouloir supprimer ce profil de transcription ?",
+    "notif_error": "Une erreur s'est produite",
+    "notif_create_success": "Le profil de transcription a été créé avec succès",
+    "notif_update_success": "Le profil de transcription a été mis à jour avec succès",
+    "notif_delete_success": "Le profil de transcription a été supprimé avec succès",
+    "notif_delete_error": "Une erreur s'est produite lors de la suppression du profil de transcription",
+    "notif_fetch_error": "Une erreur s'est produite lors du chargement du profil de transcription",
+    "platform_global": "Plateforme (global)",
+    "organization_tooltip": "Sélectionner l'organisation",
+    "type_tooltip": "Moteur de transcription",
+    "security_level_tooltip": "Niveau de sécurité"
   },
   "modal_delete_users": {
     "title": "Supprimer un utilisateur | Supprimer {count} utilisateurs",
@@ -885,6 +1053,23 @@
     "description_description": "Description de l'organisation",
     "description_label": "Description",
     "general_settings": "Réglages",
+    "kpi": {
+      "error": "Une erreur s'est produite lors de la récuperation des données",
+      "loading": "Chargement des données...",
+      "session_watch_time": "Temps total passé sur la transcription",
+      "session_avg_watch_time": "Temps moyen passé sur la transcription",
+      "session_total_connections": "Nombre de connexions",
+      "transcription_count": "Nombre de médias transcrits",
+      "transcription_avg_duration": "Duréé moyennes des médias",
+      "title": "Statistiques de l'organisation",
+      "sessions_title": "Transcription en direct",
+      "media_title": "Médias",
+      "time_step": {
+        "day": "Jour",
+        "month": "Mois",
+        "year": "Année"
+      }
+    },
     "leave_modal": {
       "action": "Quitter",
       "content": "Êtes vous sur de vouloir quitter l'organisation \"{name}\" ?",
@@ -915,10 +1100,6 @@
       },
       "update_button": "Mettre à jour les critères d'appartenance",
       "apply_button": "Inviter les utilisateurs correspondant aux critères"
-    },
-    "organization_stats": {
-      "title": "Statistiques de l'organisation",
-      "medias": "Médias"
     },
     "transcriber_profiles": {
       "title": "Profils de transcription",
@@ -971,6 +1152,7 @@
     "administrator_description": "Tous les droits sur l’organisation"
   },
   "publish": {
+    "download_verbatim": "Télécharger le verbatim",
     "error_first_line": {
       "cra": "Erreur lors de la génération du compte rendu analytique",
       "cred": "Erreur lors de la génération du compte rendu des commissions et des délégations",
@@ -995,6 +1177,12 @@
       "verbatim": "Génération du verbatim en cours...",
       "general": "Génération en cours..."
     },
+    "phase": {
+      "processing": "Traitement des segments",
+      "reducing": "Réduction et synthèse",
+      "extracting": "Extraction des informations",
+      "categorizing": "Catégorisation"
+    },
     "loading_document": "Chargement du document final",
     "is_not_updated": "La transcription a été mise à jour. Le compte rendu ne reflète plus les dernières modifications.",
     "is_updated": "Le compte rendu est à jour avec la transcription",
@@ -1007,8 +1195,147 @@
       "cra": "Compte rendu analytique",
       "cred": "Compte rendu des commissions et des délégations",
       "cri": "Compte rendu intégral",
-      "verbatim": "Verbatim"
+      "verbatim": "Verbatim",
+      "publication": "Publication"
+    },
+    "editor": {
+      "edit_mode": "Édition",
+      "preview_mode": "Aperçu",
+      "publication_mode": "Publication",
+      "save_version": "Enregistrer la version",
+      "save_version_title": "Enregistrer comme nouvelle version",
+      "version_name_placeholder": "Nom de la version",
+      "version_saved": "Version enregistrée avec succès",
+      "version_save_error": "Erreur lors de l'enregistrement de la version",
+      "load_version": "Charger une version",
+      "versions_list": "Versions enregistrées",
+      "no_versions": "Aucune version enregistrée",
+      "version_label": "Version {version}",
+      "restore_version": "Restaurer cette version",
+      "restore_version_confirm": "Êtes-vous sûr de vouloir restaurer cette version ?",
+      "version_restored": "Version restaurée avec succès",
+      "version_restore_error": "Erreur lors de la restauration de la version",
+      "delete_version": "Supprimer la version",
+      "delete_version_confirm": "Êtes-vous sûr de vouloir supprimer cette version ?",
+      "version_deleted": "Version supprimée",
+      "version_delete_error": "Erreur lors de la suppression de la version",
+      "unsaved_changes": "Vous avez des modifications non enregistrées",
+      "discard_changes": "Annuler les modifications",
+      "toolbar": {
+        "bold": "Gras",
+        "italic": "Italique",
+        "heading1": "Titre 1",
+        "heading2": "Titre 2",
+        "heading3": "Titre 3",
+        "bullet_list": "Liste à puces",
+        "ordered_list": "Liste numérotée",
+        "blockquote": "Citation",
+        "horizontal_rule": "Ligne horizontale",
+        "strike": "Barré",
+        "code": "Code en ligne",
+        "undo": "Annuler",
+        "redo": "Rétablir"
+      }
+    },
+    "category": {
+      "summary": "Résumés",
+      "report": "Rapports",
+      "correction": "Corrections",
+      "translation": "Traductions",
+      "custom": "Personnalisé",
+      "other": "Autre",
+      "all": "Tous"
+    },
+    "export_error": "Echec de l'export du document",
+    "export_in_progress": "Export en cours...",
+    "downloading": "Téléchargement...",
+    "regenerate": {
+      "confirm_title": "Nouvelle génération ?",
+      "confirm_message": "Une nouvelle requête sera envoyée au service IA. La génération actuelle sera archivée dans l'historique.",
+      "confirm_button": "Générer"
+    },
+    "generations": {
+      "title": "Générations",
+      "current": "Actuelle",
+      "latest": "Récent",
+      "no_generations": "Aucune génération",
+      "loading": "Chargement...",
+      "generating": "Génération en cours..."
+    },
+    "llm_gateway_error": "Erreur du service IA : {error}",
+    "llm_gateway_unavailable": "Le service d'intelligence artificielle est temporairement indisponible. Veuillez réessayer dans quelques instants.",
+    "job_not_found_regenerating": "Le document a expiré sur le serveur. Régénération automatique en cours...",
+    "job_removed_refreshing": "Cette génération n'est plus disponible. Affichage des générations restantes.",
+    "generic_error": "Une erreur est survenue. Veuillez réessayer.",
+    "error_llm_server": "Le service d'intelligence artificielle a rencontré une erreur interne. Veuillez réessayer.",
+    "error_llm_unavailable": "Le service d'intelligence artificielle est temporairement indisponible.",
+    "error_job_expired": "Cette génération a expiré. Veuillez régénérer le document.",
+    "error_timeout": "La demande a expiré. Veuillez réessayer.",
+    "select_service": "Choisir un service",
+    "ai_menu": {
+      "title": "Services IA",
+      "select": "Services IA",
+      "other": "Autres services",
+      "categories": {
+        "summary": "Résumés",
+        "summarize": "Résumés",
+        "resume": "Résumés",
+        "translation": "Traductions",
+        "translate": "Traductions",
+        "traduction": "Traductions",
+        "correction": "Corrections",
+        "correct": "Corrections",
+        "transcription": "Transcriptions"
+      }
+    },
+    "publication": {
+      "title": "Modèles de publication",
+      "description": "Choisissez un modèle pour formater votre document",
+      "loading": "Chargement des modèles...",
+      "load_error": "Échec du chargement des modèles",
+      "no_templates": "Aucun modèle de publication disponible",
+      "no_description": "Pas de description",
+      "no_name": "Sans nom",
+      "selected": "Modèle sélectionné",
+      "preview_action": "Aperçu",
+      "generating_preview": "Génération de l'aperçu...",
+      "preview_error": "Impossible de générer l'aperçu",
+      "no_job_for_preview": "Aucun traitement IA disponible pour l'aperçu",
+      "upload_template": "Importer un modèle",
+      "upload_template_hint": "Téléversez votre propre fichier DOCX",
+      "upload_template_title": "Importer un modèle",
+      "template_file": "Fichier modèle (DOCX)",
+      "drop_file": "Glissez un fichier DOCX ici",
+      "or_click": "ou cliquez pour sélectionner",
+      "template_format_hint": "Format DOCX. Le placeholder <code>&#123;&#123;output&#125;&#125;</code> sera remplacé par le contenu du service IA.",
+      "template_name": "Nom du modèle",
+      "template_name_placeholder": "Nom du modèle",
+      "template_description": "Description",
+      "template_description_placeholder": "Description optionnelle",
+      "template_scope": "Portée",
+      "scope_personal": "Personnel",
+      "scope_personal_hint": "Visible uniquement par vous",
+      "scope_organization": "Organisation",
+      "scope_organization_hint": "Visible par toute l'organisation",
+      "upload_button": "Importer",
+      "upload_success": "Modèle importé avec succès",
+      "upload_error": "Erreur lors de l'import du modèle",
+      "invalid_file_type": "Le fichier doit être au format DOCX",
+      "file_too_large": "Le fichier ne doit pas dépasser 10 Mo",
+      "delete_confirm": "Voulez-vous vraiment supprimer \"{name}\" ?",
+      "delete_success": "Modele supprime avec succes",
+      "delete_error": "Erreur lors de la suppression du modele",
+      "scope": {
+        "system": "Système",
+        "organization": "Organisation",
+        "user": "Personnel"
+      }
     }
+  },
+  "common": {
+    "retry": "Réessayer",
+    "cancel": "Annuler",
+    "uploading": "Import en cours..."
   },
   "session": {
     "sessions_status": {
@@ -1118,6 +1445,7 @@
     "end_undefined": "Non définie",
     "room_undefined": "Lieu non défini",
     "microphone_apply_button": "Enregistrer le microphone",
+    "microphone_setup_title": "Configuration du microphone",
     "record_to_chanel_name_info": "Vers \"{name}\"",
     "list_page": {
       "no_sessions": "Aucune session trouvée",
@@ -1231,6 +1559,50 @@
       "apply": "Continuer"
     }
   },
+  "session_kpi": {
+    "name_label": "Nom",
+    "viewer_label": "Spectateurs",
+    "watch_time_average_label": "Durée moyenne de visionnage",
+    "bounce_rate_label": "Taux de rebond (spectateurs)",
+    "quick_session_name": "Enregistrement de {userName}",
+    "quick_session_name_anonymous": "Enregistrement personnel",
+    "view_details": "Voir les details de la session",
+    "export": {
+      "button": "Exporter",
+      "success": "Export téléchargé avec succès",
+      "error": "Echec de l'export des donnees"
+    }
+  },
+  "session_stats_modal": {
+    "title": "Statistiques de la session",
+    "loading": "Chargement des statistiques...",
+    "error": "Erreur lors du chargement des statistiques",
+    "retry": "Reessayer",
+    "summary": {
+      "title": "Resume",
+      "total_viewers": "Nombre de spectateurs",
+      "total_watch_time": "Temps de visionnage total",
+      "session_duration": "Duree de la session",
+      "channels_count": "Canaux"
+    },
+    "channels": {
+      "title": "Canaux",
+      "no_channels": "Aucune donnee de canal disponible",
+      "default_name": "Canal {id}",
+      "active_duration": "Duree active",
+      "started_at": "Debut",
+      "ended_at": "Fin",
+      "languages": "Langues",
+      "diarization": "Diarisation",
+      "diarization_enabled": "Diarisation",
+      "diarization_disabled": "Desactivee"
+    },
+    "timeline": {
+      "title": "Timeline d'activite",
+      "active": "Actif",
+      "inactive": "Inactif"
+    }
+  },
   "quick_session": {
     "creation": {
       "transcription_settings_title": "Méthode de transcription",
@@ -1285,14 +1657,34 @@
       "default_name": "Enregistrement sans titre",
       "status_no_websocket": "Déconnecté du serveur audio",
       "status_recording": "Microphone en cours d'enregistrement",
-      "status_muted": "Muet",
-      "save_button": "Sauvegarder et quitter",
+      "status_muted": "L'enregistrement du microphone est en pause",
+      "save_button": "Terminer l'enregistrement",
       "pause_button": "Pause",
-      "start_button": "Démarrer"
+      "start_button": "Démarrer",
+      "start_microphone_button": "Reprendre l'enregistrement",
+      "mute_microphone_button": "Mettre en pause l'enregistrement"
     },
     "live_visio": {
       "default_name": "Réunion {type} sans titre",
-      "status_recording_visio": "Enregistrement de la visio-conférence en cours"
+      "status_recording_visio": "La visioconférence est en cours d’enregistrement",
+      "status_recording_visio_description": "Vous pouvez quitter cette page, l’enregistrement continue en arrière plan"
+    },
+    "notif": {
+      "visio": {
+        "title": "Une visioconférence est en cours d'enregistrement",
+        "continue_button": "Afficher la transcription",
+        "stop_button": "Sauvegarder et arrêter l'enregistrement"
+      },
+      "default": {
+        "title": "Un enregistrement est en attente",
+        "continue_button": "Reprendre l'enregistrement",
+        "stop_button": "Sauvegarder et arrêter l'enregistrement"
+      }
+    },
+    "modal_save": {
+      "title": "Sauvegarder l'enregistrement",
+      "name": "Nom",
+      "confirm": "Enregistrer"
     }
   },
   "share_menu": {
@@ -1479,5 +1871,19 @@
     "search_empty_message": "Appuyer sur [ENTER] pour rechercher dans tous vos médias",
     "search_back_to_results_message": "Appuyer sur [ENTER] pour revenir aux résultats",
     "search_placeholder": "Rechercher dans vos médias"
+  },
+  "user_selector": {
+    "clear_button": "Effacer",
+    "search_placeholder": "Rechercher un utilisateur",
+    "select_user": "Sélectionner un utilisateur",
+    "select_users": "Sélectionner des utilisateurs",
+    "users_selected": "{count} utilisateur(s) sélectionné(s)"
+  },
+  "popover_list": {
+    "search": "Rechercher",
+    "search_placeholder": "Rechercher...",
+    "no_results": "Aucun résultat",
+    "min_characters": "{count} caractères minimum",
+    "select_all": "Tout sélectionner"
   }
 }

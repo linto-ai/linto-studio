@@ -1,5 +1,5 @@
 <template>
-  <tr @click="onClickLine">
+  <tr @click="onClickLine" :class="{ 'security-disabled': securityDisabled }">
     <td class="content-size">
       <Checkbox
         v-if="multiple"
@@ -28,16 +28,12 @@
         v-if="translationsOptions.channels.length > 0"
         selection
         multiple
+        searchable
+        :close-on-click="false"
         v-model="selectedTranslations"
         :items="translationsOptions.channels">
         <template #trigger="{ open }">
           <Button :icon-right="open ? 'caret-up' : 'caret-down'" size="sm">
-            <!-- <div class="flex gap-small">
-              <Chip
-                v-for="translation in displayedTranslations"
-                :key="translation"
-                :value="translation"></Chip>
-            </div> -->
             {{
               $tc(
                 "session.profile_selector.n_translations_selected",
@@ -89,6 +85,11 @@ export default {
     multiple: {
       type: Boolean,
       default: true,
+    },
+    securityDisabled: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   data() {
@@ -185,6 +186,11 @@ export default {
     },
     onClickLine(e) {
       if (e && e.target.classList.contains("no-propagation")) return
+      if (this.securityDisabled) {
+        e?.preventDefault()
+        e?.stopPropagation()
+        return
+      }
 
       if (this.multiple) {
         this.selectedProfiles.includes(this.id_profile)

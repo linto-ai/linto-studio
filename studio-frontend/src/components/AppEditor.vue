@@ -14,7 +14,6 @@
             :conversationUsers="conversationUsers"
             :userInfo="userInfo"
             :canEdit="canEdit"
-            :conversationIsFiltered="conversationIsFiltered"
             :hightlightsCategories="hightlightsCategories"
             :hightlightsCategoriesVisibility="hightlightsCategoriesVisibility"
             :lastTurn="
@@ -35,7 +34,6 @@
       :speakers="speakers"
       :speakersTurnsTimebox="speakersTurnsTimebox"
       :conversationId="audioId"
-      :filterSpeakers="filterSpeakers"
       ref="editorPlayer">
       <AppEditorPagination
         v-model="currentPageNb"
@@ -46,6 +44,7 @@
 <script>
 import { bus } from "@/main.js"
 import uuidv4 from "uuid/v4.js"
+import { getEnv } from "@/tools/getEnv"
 
 import { workerSendMessage } from "@/tools/worker-message.js"
 import findExpressionInWordsList from "@/tools/findExpressionInWordsList.js"
@@ -87,9 +86,6 @@ export default {
     rootConversation: {
       type: Object,
       required: true,
-    },
-    filterSpeakers: {
-      required: false,
     },
     turnPages: {
       type: Array,
@@ -163,9 +159,6 @@ export default {
       })
       return speakers
     },
-    conversationIsFiltered() {
-      return this.filterSpeakers != "default"
-    },
     keywords() {
       const keywordsTags = []
       const keywordsCat = this.conversation?.keywords || []
@@ -214,17 +207,15 @@ export default {
       return res
     },
   },
-  watch: {
-    filterSpeakers() {
-      this.speakersTurnsTimebox = this.getSpkTimebox()
-    },
-  },
+  watch: {},
   mounted() {
     this.speakersTurnsTimebox = this.getSpkTimebox()
     bus.$on("player-audioprocess", (time) => {
+      console.log("player-audioprocess")
       this.updateCurrentTime(time)
     })
     bus.$on("player-seek", (time) => {
+      console.log("player-seek")
       this.updateCurrentTime(time)
     })
 
@@ -417,7 +408,8 @@ export default {
     showSpeakerModal() {
       bus.$emit("showSpeakerModal")
     },
-    updateCurrentTime(time) {
+    async updateCurrentTime(time) {
+      console.log("update time", time)
       this.currentTime = time
       // Remove playing class from all words
       let activeWords = Array.from(
@@ -439,22 +431,23 @@ export default {
       }
 
       // Find current page
-      for (let i = 0; i < this.turnPages.length; i++) {
-        if (
-          time >= this.turnPages[i][0].words[0].stime &&
-          time <=
-            this.turnPages[i][this.turnPages[i].length - 1].words[
-              this.turnPages[i][this.turnPages[i].length - 1].words.length - 1
-            ].etime
-        ) {
-          this.currentPageNb = i
+      for (const page of this.turnPages) {
+        const startTime = page[0].words[0].stime || page[0].stime
+        const lastTurn = page.slice(-1)[0]
+        const lastWord = lastTurn.words.slice(-1)[0]
+        const endTime = lastWord.etime || lastTurn.etime
+        if (time >= startTime && time <= endTime) {
+          this.currentPageNb = this.turnPages.indexOf(page)
           break
         }
       }
 
+      await this.$nextTick()
+
       // Find current Turn
       for (let turn of this.turnPages[this.currentPageNb]) {
         if (
+          turn.words[0].stime &&
           time >= turn.words[0].stime &&
           time <= turn.words[turn.words.length - 1].etime
         ) {
@@ -481,12 +474,15 @@ export default {
         ) {
           // if no timestamps on word, check timestamps on turn
           let turnElement = document.getElementById(turn.turn_id)
-          turnElement.classList.add("playing")
-          turnElement.scrollIntoView({
-            behavior: "smooth",
-            block: "center",
-            inline: "center",
-          })
+          if (turnElement) {
+            // should be defined if click from the player, and not defined if click from the text (edition mode)
+            turnElement.classList.add("playing")
+            turnElement.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+              inline: "center",
+            })
+          }
         }
       }
 
@@ -508,7 +504,7 @@ export default {
       const baseTurnTextLength = baseTurn.segment.length
       const nextTurnTextLength = this.turns[baseTurnIndex + 1].segment.length
       const totalTextLenght = baseTurnTextLength + nextTurnTextLength
-      if (totalTextLenght >= process.env.VUE_APP_TURN_SIZE * 2) {
+      if (totalTextLenght >= getEnv("VUE_APP_TURN_SIZE") * 2) {
         bus.$emit("app_notif", {
           status: "error",
           message: this.$t("conversation.turn_cant_merge"),

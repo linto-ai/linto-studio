@@ -29,6 +29,9 @@ const {
 const CONVERSATION_RIGHT = require(
   `${process.cwd()}/lib/dao/conversation/rights`,
 )
+const SECURITY_LEVELS = require(
+  `${process.cwd()}/lib/dao/conversation/securityLevels`,
+)
 const {
   ConversationNoFileUploaded,
   ConversationMetadataRequire,
@@ -75,6 +78,17 @@ async function transcribe(isSingleFile, req, res, next) {
     req.body.userId = userId
     req.body.organizationId = req.params.organizationId
     req.body.filter = {}
+
+    // Parse securityLevel from string (FormData sends strings)
+    if (req.body.securityLevel !== undefined && req.body.securityLevel !== "") {
+      req.body.securityLevel = parseInt(req.body.securityLevel)
+    }
+
+    if (!SECURITY_LEVELS.isValid(req.body.securityLevel)) {
+      throw new ConversationMetadataRequire(
+        "Invalid securityLevel value. Allowed values: 0, 1, 2",
+      )
+    }
 
     const orgExists = await model.organizations.getByIdAndUser(
       req.params.organizationId,

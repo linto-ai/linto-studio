@@ -1,7 +1,6 @@
 const debug = require("debug")("linto:app:webserver:router")
 
 const auth_middlewares = require(`../config/passport/middleware`)
-const { sessionMiddleware } = require(`../config/express/sessionMiddleware`)
 
 const { logger } = require(
   `${process.cwd()}/components/WebServer/middlewares/logger/logger.js`,
@@ -60,7 +59,6 @@ const disableAuthIfDev = (route) => {
     route.requireOrganizationMemberAccess = false
     route.requireOrganizationUploaderAccess = false
     route.requireReadTaxonomyAccess = false
-    route.requireSession = false
     route.requireUserVisibility = false
     route.requireWriteTaxonomyAccess = false
   }
@@ -69,7 +67,6 @@ const disableAuthIfDev = (route) => {
 const loadMiddlewares = (route) => {
   const middlewares = []
 
-  if (route.requireSession) middlewares.push(sessionMiddleware)
   if (route.requireAuth) middlewares.push(auth_middlewares.isAuthenticate)
   if (route.requireRefresh) middlewares.push(auth_middlewares.refresh_token)
 
@@ -186,7 +183,7 @@ const createProxyRoutes = (webServer, proxy_routes) => {
       if (proxyPath.disabled) return
 
       const middlewares = loadMiddlewares(proxyPath)
-      middlewares.push(logger)
+      // middlewares.push(logger)
 
       proxyPath.paths.forEach((path) => {
         //we alter req.payload, req.params, req.query, req.body if require
@@ -197,7 +194,68 @@ const createProxyRoutes = (webServer, proxy_routes) => {
 
             changeOrigin: true,
             on: {
-              proxyReq: fixRequestBody,
+              proxyReq: (proxyReq, req, res) => {
+                // Handle file uploads with multipart-form data
+                if (req.files || req.file) {
+                  const FormData = require("form-data")
+                  const form = new FormData()
+
+                  // Handle files - support both multer and express-fileupload structures
+                  if (req.file) {
+                    const fileData = req.file.buffer || req.file.data
+                    const fileName = req.file.originalname || req.file.name
+                    form.append(req.file.fieldname, fileData, {
+                      filename: fileName,
+                      contentType: req.file.mimetype,
+                    })
+                  }
+
+                  if (req.files) {
+                    if (Array.isArray(req.files)) {
+                      req.files.forEach((file) => {
+                        const fileData = file.buffer || file.data
+                        const fileName = file.originalname || file.name
+                        form.append(file.fieldname, fileData, {
+                          filename: fileName,
+                          contentType: file.mimetype,
+                        })
+                      })
+                    } else {
+                      Object.keys(req.files).forEach((fieldname) => {
+                        const fileOrFiles = req.files[fieldname]
+                        const files = Array.isArray(fileOrFiles)
+                          ? fileOrFiles
+                          : [fileOrFiles]
+                        files.forEach((file) => {
+                          const fileData = file.buffer || file.data
+                          const fileName = file.originalname || file.name
+                          form.append(fieldname, fileData, {
+                            filename: fileName,
+                            contentType: file.mimetype,
+                          })
+                        })
+                      })
+                    }
+                  }
+
+                  // Add other body fields to the form
+                  if (req.body) {
+                    Object.keys(req.body).forEach((key) => {
+                      form.append(key, req.body[key])
+                    })
+                  }
+
+                  const formBuffer = form.getBuffer()
+                  const formHeaders = form.getHeaders()
+
+                  proxyReq.setHeader("Content-Type", formHeaders["content-type"])
+                  proxyReq.setHeader("Content-Length", formBuffer.length)
+                  proxyReq.write(formBuffer)
+                } else {
+                  // For all other requests (including DELETE), use fixRequestBody
+                  fixRequestBody(proxyReq, req, res)
+                }
+              },
               proxyRes: responseInterceptor(
                 async (responseBuffer, proxyRes, req, res) => {
                   try {
@@ -256,28 +314,6 @@ const createProxyRoutes = (webServer, proxy_routes) => {
                 newPath = `${newPath.split("?")[0]}?${cleanedQuery}`
 
               return newPath
-            },
-            onProxyReq: (proxyReq, req, res) => {
-              // If the body is already parsed and present, need to re-write it to the proxy request
-              if (req.body) {
-                const bodyData = JSON.stringify(req.body)
-                proxyReq.setHeader(
-                  "Content-Length",
-                  Buffer.byteLength(bodyData),
-                )
-                proxyReq.setHeader("Content-Type", "application/json")
-                proxyReq.write(bodyData)
-              }
-            },
-            onProxyRes: (proxyRes, req, res) => {
-              let responseData = ""
-              proxyRes.on("data", (chunk) => {
-                responseData += chunk
-              })
-              proxyRes.on("end", () => {
-                res.setHeader("Content-Type", "application/json")
-                res.send(responseData)
-              })
             },
             onError: (err, req, res) => {
               debug("Proxy error:", err)

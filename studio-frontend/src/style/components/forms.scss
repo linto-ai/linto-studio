@@ -11,7 +11,8 @@
   textarea,
   progress.hoverInput,
   form-field[select-like] .form-value,
-  .collab-input {
+  .collab-input,
+  button.popover-list__trigger {
     display: inline-block;
     box-shadow: none;
     margin: 0px;
@@ -21,7 +22,7 @@
     position: relative;
     height: 40.5px;
     border-radius: 4px;
-    font-size: 0.95em;
+    font-size: 0.875rem;
     padding: 0.2em 0.5em;
     outline: none;
 
@@ -59,6 +60,10 @@
       border-bottom: var(--border-input);
       border-radius: 0;
     }
+  }
+
+  .form-field > label:has(+ select) {
+    margin-bottom: 0.5rem;
   }
 
   textarea {
@@ -199,14 +204,23 @@
   .form-field:last-child {
     margin-bottom: 0px;
   }
+  .flex.row > .form-field {
+    margin-bottom: 0px;
+  }
 
   .error-field {
     display: inline-block;
     color: var(--red-chart);
   }
 
+  // Utility class to match standard input height
+  .input-height {
+    height: 40.5px;
+    box-sizing: border-box;
+  }
+
   /* input file */
-  input[type="file"] {
+  input[type="file"].hidden {
     position: absolute;
     z-index: -1;
     top: 5px;
@@ -431,6 +445,44 @@
       border-color: var(--primary-color);
       border-width: 2px;
       margin: 0px;
+      background-color: color-mix(
+        in srgb,
+        var(--primary-color) 8%,
+        var(--background-primary)
+      );
+      box-shadow: 0 0 0 1px var(--primary-color);
+    }
+
+    &.security-disabled {
+      opacity: 0.4;
+      border-style: dashed;
+      border-color: var(--neutral-40);
+      background-color: var(--neutral-10);
+      cursor: not-allowed;
+      pointer-events: auto;
+
+      &:hover {
+        border-color: var(--neutral-40);
+      }
+
+      * {
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  tr.security-disabled {
+    opacity: 0.4;
+    background-color: var(--neutral-10);
+    cursor: not-allowed;
+    pointer-events: auto;
+
+    * {
+      cursor: not-allowed;
+    }
+
+    &:hover {
+      background-color: var(--neutral-10);
     }
   }
 

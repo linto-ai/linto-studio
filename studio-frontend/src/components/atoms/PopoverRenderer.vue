@@ -3,9 +3,11 @@
     class="popover-wrapper"
     :style="popoverStyle"
     ref="wrapper"
+    tabindex="-1"
     @mouseenter="controller.onContentEnter"
     @mouseleave="controller.onContentLeave"
-    @click="handleClickInside">
+    @click="handleClickInside"
+    @keydown="handleKeydown">
     <div
       class="popover-content"
       :class="[position, contentClass]"
@@ -134,6 +136,22 @@ export default {
     closeOnEscape() {
       this.controller.closeOnEscape()
     },
+    handleKeydown(event) {
+      // Forward keydown to controller if it has a handler
+      if (this.controller && typeof this.controller.onContentKeydown === "function") {
+        this.controller.onContentKeydown(event)
+      }
+    },
+    focus() {
+      if (!this.$refs.wrapper) return
+      // Check for autofocus element inside the popover
+      const autofocusEl = this.$refs.wrapper.querySelector('[autofocus]')
+      if (autofocusEl) {
+        autofocusEl.focus()
+      } else {
+        this.$refs.wrapper.focus()
+      }
+    },
   },
 }
 </script>
@@ -141,9 +159,10 @@ export default {
 <style lang="scss">
 .popover-wrapper {
   position: absolute;
+  outline: none;
 }
 
-.popover-content {
+.popover-content:has(> div) {
   background: var(--neutral-10);
   border: 1px solid var(--primary-color);
   border-radius: 4px;

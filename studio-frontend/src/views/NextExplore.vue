@@ -110,6 +110,7 @@ export default {
         await this.initCounts()
         this.$apiEventWS.subscribeMediaUpdate(this.currentOrganizationScope)
         this.filterStatus = this.getStatusFromUrl()
+
         window.history.replaceState({}, "", window.location.pathname)
       }
 
@@ -117,6 +118,9 @@ export default {
 
       this.loading = false
       this.$store.dispatch("system/setIsLoading", false)
+      if (this.countProcessing == 0) {
+        this.filterStatus = "done"
+      }
     },
     getStatusFromUrl() {
       const status = this.$route.query.status

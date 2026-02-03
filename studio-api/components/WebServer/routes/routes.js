@@ -11,8 +11,6 @@ module.exports = (webServer) => {
     "/api/organizations": require("./api/organization/organizations")(
       webServer,
     ),
-    "/api/organizations/:organizationId/metrics":
-      require("./api/sessions/metrics.js")(webServer),
     "/api/organizations/:organizationId/categories":
       require("./api/organization/categories")(webServer),
     "/api/organizations/:organizationId/tags":
@@ -38,6 +36,7 @@ module.exports = (webServer) => {
     ],
     "/api/nlp": require("./api/nlp/nlp")(webServer),
     "/api/services": require("./api/service/services")(webServer, this),
+    "/api/publication": require("./api/publication/publication")(webServer),
   }
 
   let proxy_routes = []
@@ -53,6 +52,7 @@ module.exports = (webServer) => {
       ...require("./api/administration/sessions")(webServer),
     ]
   }
+
   const authProviders = PROVIDER.registerRoutes(webServer)
   api_routes["/auth"] = [...api_routes["/auth"], ...authProviders["/auth"]]
 

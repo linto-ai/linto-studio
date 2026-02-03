@@ -59,6 +59,8 @@
         </div>
       </section>
 
+      <SecurityLevelSelector v-model="securityLevel" />
+
       <!-- Channels section -->
       <section class="flex col">
         <div>
@@ -132,6 +134,7 @@
     <ModalAddSessionChannels
       v-if="modalAddChannelsIsOpen"
       :transcriberProfiles="transcriberProfiles"
+      :securityLevel="securityLevel"
       v-model="selectedProfiles"
       @on-confirm="confirmAddSessionChannels"
       @on-cancel="closeModalAddSessionChannels" />
@@ -148,6 +151,7 @@ import { bus } from "@/main.js"
 
 import { testName } from "@/tools/fields/testName"
 import { getEnv } from "@/tools/getEnv"
+import { meetsMetaSecurityLevel } from "@/tools/filterBySecurityLevel"
 
 import EMPTY_FIELD from "@/const/emptyField"
 
@@ -167,6 +171,8 @@ import ModalDeleteTemplate from "@/components/ModalDeleteTemplate.vue"
 import MetadataEditor from "@/components/MetadataEditor.vue"
 import MetadataList from "@/components/MetadataList.vue"
 import ModalEditMetadata from "@/components/ModalEditMetadata.vue"
+import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
+import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
 
 export default {
   mixins: [formsMixin],
@@ -290,6 +296,7 @@ export default {
         value: defaultMetadata,
         label: this.$t("session.create_page.metadata_label"),
       },
+      securityLevel: DEFAULT_SECURITY_LEVEL,
       modalEditMetadataIsOpen: false,
       channels: [],
       selectedProfiles: [],
@@ -320,6 +327,15 @@ export default {
       }
 
       this.applyTemplate(this.selectedTemplate)
+    },
+    securityLevel(newLevel) {
+      // Remove channels whose profile doesn't meet the new security level
+      this.channels = this.channels.filter((channel) => {
+        const profile = this.transcriberProfiles.find(
+          (p) => p.id === channel.profileId,
+        )
+        return profile && meetsMetaSecurityLevel(profile, newLevel)
+      })
     },
   },
   computed: {
@@ -424,7 +440,10 @@ export default {
           this.currentOrganizationScope,
           {
             name: this.name.value,
-            meta: Object.fromEntries(this.fieldMetadata.value),
+            meta: {
+              ...Object.fromEntries(this.fieldMetadata.value),
+              securityLevel: this.securityLevel,
+            },
             channels: this.channels.map(
               ({ profileId, name, translations }) => ({
                 transcriberProfileId: profileId,
@@ -516,7 +535,10 @@ export default {
             keepAudio: this.fieldKeepAudio.value,
             compressAudio: true,
           })),
-          meta: Object.fromEntries(this.fieldMetadata.value),
+          meta: {
+            ...Object.fromEntries(this.fieldMetadata.value),
+            securityLevel: this.securityLevel,
+          },
           scheduleOn: startDateTime,
           endOn: endDateTime,
           autoStart: true,
@@ -602,6 +624,7 @@ export default {
     MetadataEditor,
     MetadataList,
     ModalEditMetadata,
+    SecurityLevelSelector,
   },
 }
 </script>

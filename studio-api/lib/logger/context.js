@@ -21,6 +21,8 @@ async function storeCacheUser(userId) {
   if (cache.users[userId]) return cache.users[userId]
 
   const user = (await model.users.getById(userId))[0]
+  if (!user) return null
+
   return (cache.users[userId] = {
     lastname: user.lastname,
     firstname: user.firstname,
@@ -72,7 +74,8 @@ function defineScope(url = "") {
   if (!url) return "unknown"
 
   const parts = url.toLowerCase().split("/").filter(Boolean)
-
+  if (parts[0] === "auth") return "authenticate"
+  if (["tokens"].some((u) => url?.includes(u))) return "tokens"
   if (parts[1] === "administration" || parts[1] === "transcriber_profiles")
     return "platform"
   if (parts[1] === "sessions") return "resource"
@@ -97,6 +100,14 @@ function defineScope(url = "") {
   return "unknown"
 }
 
+function getClientIp(req) {
+  const xForwardedFor = req.headers["x-forwarded-for"]
+  if (xForwardedFor) return xForwardedFor.split(",")[0].trim()
+  return (
+    req.ip || req.connection?.remoteAddress || req.socket?.remoteAddress || null
+  )
+}
+
 function formatError(error) {
   let normalizedMessage, errorContext
 
@@ -115,12 +126,13 @@ function formatError(error) {
   return { normalizedMessage, errorContext }
 }
 
-function logError(message, err) {
+function logError(message, err, context = {}) {
   return {
     source: "system",
     level: "error",
     message,
     error: { name: err.name, stack: err.stack },
+    context,
     timestamp: new Date().toISOString(),
   }
 }
@@ -153,6 +165,9 @@ class LoggerContext {
           status: req.res?.statusCode || null,
         }
         context.scope = defineScope(context.http.url)
+        if (context.scope === "authenticate" && req.url === "/auth/login") {
+          context.http.ip = getClientIp(req)
+        }
       }
 
       if (req?.payload?.data?.userId) {
@@ -186,7 +201,24 @@ class LoggerContext {
 
       return context
     } catch (err) {
-      return logError(`Error creating log context from ${source}`, err)
+      return logError(`Error creating log context from ${source}`, err, {
+        http: req?.method
+          ? {
+              method: req.method,
+              url: req.originalUrl || req.url,
+            }
+          : undefined,
+        user: req?.payload?.data?.userId
+          ? {
+              id: req.payload.data.userId,
+            }
+          : undefined,
+        organization: req?.params?.organizationId
+          ? {
+              id: req.params.organizationId,
+            }
+          : undefined,
+      })
     }
   }
 
@@ -225,6 +257,17 @@ class LoggerContext {
         )
         if (normalizedMessage) context.message = normalizedMessage
         if (errorContext) context.error = errorContext
+      }
+
+      if (socketEvent.userId) {
+        await storeCacheUser(socketEvent.userId) // Ensure user is cached
+
+        context.user = {
+          id: socketEvent.userId || null,
+          info: cache.users[socketEvent.userId],
+        }
+      } else {
+        context.user = { id: null, info: { email: "Temporary user" } }
       }
 
       if (socketEvent.from === "session") {
@@ -312,6 +355,7 @@ class LoggerContext {
       context.transcription = {
         conversationId: payload.conversationId,
         name: conversation.name,
+        duration: conversation.duration || 0,
         jobId: payload.jobId,
         transcription: conversation.transcription,
       }
@@ -331,6 +375,58 @@ class LoggerContext {
       source,
       level,
       timestamp: new Date().toISOString(),
+    }
+  }
+
+  _sanitizeTranscriberProfile(transcriberProfile) {
+    if (!transcriberProfile?.config) return {}
+
+    // Copy config but exclude sensitive 'key' and redundant 'availableTranslations' fields
+    const { key, availableTranslations, ...safeConfig } =
+      transcriberProfile.config
+    return safeConfig
+  }
+
+  async createChannelContext(
+    session,
+    channel,
+    action,
+    { source = "mqtt", level = DEFAULT_LEVEL, activity = "channel" } = {},
+  ) {
+    try {
+      const context = {
+        source,
+        level,
+        scope: "resource",
+        activity,
+        action,
+        timestamp: new Date().toISOString(),
+
+        session: {
+          sessionId: session.id,
+          name: session.name,
+          organizationId: session.organizationId,
+          visibility: session.visibility,
+        },
+
+        channel: {
+          channelId: channel.id,
+          translations: channel.translations,
+          ...this._sanitizeTranscriberProfile(channel.transcriberProfile),
+        },
+      }
+
+      if (session.organizationId) {
+        await storeCacheOrganization(session.organizationId)
+        context.organization = {
+          id: session.organizationId,
+          info: cache.organizations[session.organizationId],
+        }
+      }
+
+      return context
+    } catch (err) {
+      return logError(`Error creating channel context from ${source}`, err)
     }
   }
 }

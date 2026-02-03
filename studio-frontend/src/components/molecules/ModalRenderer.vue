@@ -15,9 +15,14 @@
           <span class="title flex1" id="modal-title">{{ title }}</span>
           <span class="subtitle" v-if="subtitle">{{ subtitle }}</span>
         </div>
-        <template v-if="withClose">
-          <Button icon="x" size="sm" @click="cancel" type="button" />
-        </template>
+        <div class="modal-header__actions flex row align-center gap-small">
+          <v-node-renderer
+            v-if="headerActionsNodes.length"
+            :nodes="headerActionsNodes" />
+          <template v-if="withClose">
+            <Button icon="x" size="sm" @click="cancel" type="button" />
+          </template>
+        </div>
       </div>
       <div v-if="loading" class="modal-loading">
         <ph-icon
@@ -102,6 +107,11 @@ import i18n from "../../i18n"
 export default {
   name: "ModalRenderer",
   components: { VNodeRenderer },
+  data() {
+    return {
+      previouslyFocused: null,
+    }
+  },
   props: {
     // Controller instance
     controller: { type: Object, required: true },
@@ -159,6 +169,11 @@ export default {
         ? this.slots["actions-right"]()
         : []
     },
+    headerActionsNodes() {
+      return this.slots && this.slots["header-actions"]
+        ? this.slots["header-actions"]()
+        : []
+    },
     modalComponentType() {
       return this.isForm ? "form" : "div"
     },
@@ -175,7 +190,64 @@ export default {
         : this.slots.default || []
     },
   },
+  mounted() {
+    // Store reference to previously focused element for restoration on close
+    this.previouslyFocused = document.activeElement
+    // Focus first focusable element after render
+    this.$nextTick(() => {
+      this.focusFirstElement()
+    })
+    // Add keydown listener for focus trap
+    document.addEventListener("keydown", this.handleKeyDown)
+  },
+  beforeDestroy() {
+    // Remove keydown listener
+    document.removeEventListener("keydown", this.handleKeyDown)
+    // Restore focus to previously focused element
+    if (this.previouslyFocused && typeof this.previouslyFocused.focus === "function") {
+      this.previouslyFocused.focus()
+    }
+  },
   methods: {
+    getFocusableElements() {
+      const selector =
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled])'
+      const modal = this.$refs.modalContent
+      if (!modal) return []
+      return Array.from(modal.querySelectorAll(selector)).filter(
+        (el) => el.offsetParent !== null
+      )
+    },
+    focusFirstElement() {
+      const elements = this.getFocusableElements()
+      if (elements.length > 0) {
+        elements[0].focus()
+      }
+    },
+    handleKeyDown(event) {
+      // Only handle Tab key for focus trap
+      if (event.key !== "Tab") return
+
+      const elements = this.getFocusableElements()
+      if (elements.length === 0) return
+
+      const firstElement = elements[0]
+      const lastElement = elements[elements.length - 1]
+
+      if (event.shiftKey) {
+        // Shift+Tab: if on first element, wrap to last
+        if (document.activeElement === firstElement) {
+          event.preventDefault()
+          lastElement.focus()
+        }
+      } else {
+        // Tab: if on last element, wrap to first
+        if (document.activeElement === lastElement) {
+          event.preventDefault()
+          firstElement.focus()
+        }
+      }
+    },
     // Delegate events to the controller
     close(e) {
       this.controller.close(e)
@@ -220,7 +292,7 @@ now, let's copy them over.
 
 .modal {
   pointer-events: all;
-  background: var(--background-secondary);
+  background: var(--background-primary);
   max-height: calc(100% - 4rem);
   border-radius: 4px;
   display: flex;
@@ -245,7 +317,7 @@ now, let's copy them over.
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: var(--background-secondary);
+      background-color: var(--background-primary);
       opacity: 0.5;
       z-index: 10;
     }
@@ -257,7 +329,7 @@ now, let's copy them over.
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: var(--background-secondary);
+      background-color: var(--background-primary);
       opacity: 0.5;
       z-index: 11;
     }
@@ -268,7 +340,7 @@ now, let's copy them over.
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: var(--background-secondary);
+    background-color: var(--background-primary);
     border-radius: 4px;
     padding: 1rem;
     box-shadow: var(--shadow-block);
@@ -340,7 +412,7 @@ now, let's copy them over.
   padding: 1rem;
   position: sticky;
   top: 0;
-  background: var(--background-secondary);
+  background: var(--background-primary);
   z-index: 1;
 
   .title {

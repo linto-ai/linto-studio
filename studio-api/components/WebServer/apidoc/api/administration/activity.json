@@ -1,7 +1,7 @@
 {
   "/api/administration/activity": {
     "get": {
-      "tags": ["administration"],
+      "tags": ["administration activity"],
       "summary": "List all activity of the platform",
       "parameters": [
         {
@@ -34,6 +34,405 @@
                     "items": {
                       "$ref": "#/components/schemas/ActivityLog"
                     }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
+  },
+  "/api/administration/activity/compute": {
+    "get": {
+      "tags": ["administration activity"],
+      "summary": "Get kpi details for a specific activity from an organization",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
+          "required": true,
+          "description": "Scope of the user, must be 'backoffice'"
+        },
+        {
+          "in": "query",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": false,
+          "description": "uuid string identifier for an organization"
+        },
+        {
+          "in": "query",
+          "name": "startDate",
+          "schema": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-11-19T00:00:00.000Z"
+          },
+          "required": false,
+          "description": "Start date timestamp to filter activity logs from a specific date"
+        },
+        {
+          "in": "query",
+          "name": "endDate",
+          "schema": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-11-25T00:00:00.000Z"
+          },
+          "required": false,
+          "description": "End date timestamp to filter activity logs from a specific date"
+        },
+        {
+          "in": "query",
+          "name": "ressource",
+          "schema": {
+            "type": "string",
+            "enum": ["llm", "transcription", "session"]
+          },
+          "required": false,
+          "description": "Scope of the user, must be 'backoffice'"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The list of sessions",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/OrganizationKPI"
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
+  },
+  "/api/administration/activity/session": {
+    "get": {
+      "tags": ["administration activity"],
+      "summary": "Get activity details for all sessions",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
+          "required": true,
+          "description": "Scope of the user, must be 'backoffice'"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The list of sessions",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SessionKPI"
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
+  },
+  "/api/administration/activity/session/{sessionId}": {
+    "get": {
+      "tags": ["administration activity"],
+      "summary": "Get activity details for a specific session",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "sessionId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for the session"
+        },
+        {
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
+          "required": true,
+          "description": "Scope of the user, must be 'backoffice'"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The list of sessions",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SessionKPI"
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
+  },
+  "/api/administration/activity/compute/series": {
+    "get": {
+      "tags": ["administration activity"],
+      "summary": "Get time-series KPI data for dashboard charts",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
+          "required": true,
+          "description": "Scope of the user, must be 'backoffice'"
+        },
+        {
+          "in": "query",
+          "name": "step",
+          "schema": {
+            "type": "string",
+            "enum": ["daily", "monthly", "yearly"],
+            "default": "daily"
+          },
+          "required": false,
+          "description": "Time granularity for the series data"
+        },
+        {
+          "in": "query",
+          "name": "organizationId",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": false,
+          "description": "Optional organization ID to filter results"
+        },
+        {
+          "in": "query",
+          "name": "startDate",
+          "schema": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-12-01"
+          },
+          "required": false,
+          "description": "Custom start date filter (ISO 8601 format, e.g., YYYY-MM-DD). If only startDate is provided, endDate defaults to current date."
+        },
+        {
+          "in": "query",
+          "name": "endDate",
+          "schema": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-12-31"
+          },
+          "required": false,
+          "description": "Custom end date filter (ISO 8601 format, e.g., YYYY-MM-DD). If only endDate is provided, startDate defaults based on granularity (7 days for daily, 12 months for monthly, 5 years for yearly)."
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "KPI time series data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "step": {
+                    "type": "string",
+                    "enum": ["daily", "monthly", "yearly"],
+                    "description": "Time granularity of the returned data"
+                  },
+                  "data": {
+                    "type": "array",
+                    "description": "Array of KPI data points",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "date": {
+                          "type": "string",
+                          "description": "Date label (YYYY-MM-DD for daily, YYYY-MM for monthly, YYYY for yearly)"
+                        },
+                        "organizationId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "Organization ID if filtered"
+                        },
+                        "session": {
+                          "type": "object",
+                          "properties": {
+                            "totalConnections": {
+                              "type": "integer",
+                              "description": "Number of session connections"
+                            },
+                            "watchTime": {
+                              "type": "integer",
+                              "description": "Total watch time in seconds"
+                            }
+                          }
+                        },
+                        "llm": {
+                          "type": "object",
+                          "properties": {
+                            "generated": {
+                              "type": "integer",
+                              "description": "Number of LLM generations"
+                            },
+                            "tokens": {
+                              "type": "integer",
+                              "description": "Total tokens used"
+                            }
+                          }
+                        },
+                        "transcription": {
+                          "type": "object",
+                          "properties": {
+                            "generated": {
+                              "type": "integer",
+                              "description": "Number of transcriptions generated"
+                            },
+                            "duration": {
+                              "type": "integer",
+                              "description": "Total transcription duration in seconds"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request - Invalid date range",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "error": {
+                    "type": "string",
+                    "example": "Invalid date range: startDate must be before endDate"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
+  },
+  "/api/administration/activity/session/export": {
+    "get": {
+      "tags": ["administration activity"],
+      "summary": "Export KPI session data in various formats",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
+          "required": true,
+          "description": "Scope of the user, must be 'backoffice'"
+        },
+        {
+          "in": "query",
+          "name": "format",
+          "schema": {
+            "type": "string",
+            "enum": ["json", "csv", "xls"]
+          },
+          "required": true,
+          "description": "Export format"
+        },
+        {
+          "in": "query",
+          "name": "organizationId",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": false,
+          "description": "Filter by organization ID"
+        },
+        {
+          "in": "query",
+          "name": "startDate",
+          "schema": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "required": false,
+          "description": "Filter sessions from this date"
+        },
+        {
+          "in": "query",
+          "name": "endDate",
+          "schema": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "required": false,
+          "description": "Filter sessions until this date"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "File download",
+          "content": {
+            "application/json": {},
+            "text/csv": {},
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
+          }
+        },
+        "400": {
+          "description": "Bad Request - Invalid format or date range",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "error": {
+                    "type": "string",
+                    "example": "Invalid format. Must be one of: json, csv, xls"
                   }
                 }
               }

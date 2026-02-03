@@ -2,6 +2,15 @@ const debug = require("debug")(
   "linto:conversation-manager:models:mongodb:models:token",
 )
 const MongoModel = require(`../model`)
+const ms = require("ms")
+
+function getExpiresIn(defaultValue = "14d") {
+  try {
+    return ms(process.env.REFRESH_TOKEN_DAYS_TIME || defaultValue)
+  } catch {
+    return ms(defaultValue)
+  }
+}
 
 class TokenModel extends MongoModel {
   constructor() {
@@ -18,7 +27,12 @@ class TokenModel extends MongoModel {
       if (expires_in) {
         payload.expiresIn = expires_in
         payload.expiresAt = new Date(Date.now() + expires_in)
+      } else {
+        expires_in = getExpiresIn()
+        payload.expiresIn = expires_in
+        payload.expiresAt = new Date(Date.now() + expires_in)
       }
+
       return await this.mongoInsert(payload)
     } catch (error) {
       console.error(error)

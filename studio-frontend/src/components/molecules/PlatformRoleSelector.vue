@@ -1,7 +1,11 @@
 <template>
   <div class="plaform-role-container" v-if="readonly">
-    <Tooltip v-for="role in platformRoles" :text="role.description">
-      <div class="plaform-role" v-if="value & role.value">
+    <Tooltip
+      class="plaform-role-tooltip"
+      v-for="role in platformRoles"
+      :text="role.description"
+      v-if="value & role.value && (!compact || role.value * 2 > value)">
+      <div class="plaform-role">
         {{ role.name }}
       </div>
     </Tooltip>
@@ -42,6 +46,10 @@ export default {
       required: true,
     },
     readonly: {
+      type: Boolean,
+      default: false,
+    },
+    compact: {
       type: Boolean,
       default: false,
     },
@@ -158,5 +166,13 @@ export default {
   color: var(--text-secondary);
   font-weight: 500;
   white-space: nowrap;
+}
+
+.plaform-role-tooltip:first-child .plaform-role {
+  margin-left: 0;
+}
+
+.plaform-role-tooltip:last-child .plaform-role {
+  margin-bottom: 0;
 }
 </style>

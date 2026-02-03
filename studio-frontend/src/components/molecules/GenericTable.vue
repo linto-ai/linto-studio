@@ -2,9 +2,13 @@
   <table class="table-grid" :style="style">
     <GenericTableHeader
       @list_sort_by="sortBy"
+      @update:selectedRows="updateSelectedRows"
       :columns="columns"
       :sortListDirection="sortListDirection"
-      :sortListKey="sortListKey" />
+      :sortListKey="sortListKey"
+      :selectable="selectable"
+      :selectedRows="selectedRows"
+      :allRowIds="allRowIds" />
     <tbody>
       <div class="table-loader" v-if="loading">
         <Loading />
@@ -13,7 +17,11 @@
         v-for="line of content"
         :key="line[idKey]"
         :line="line"
-        :columns="columns">
+        :columns="columns"
+        :selectable="selectable"
+        :selectedRows="selectedRows"
+        :idKey="idKey"
+        @update:selectedRows="updateSelectedRows">
         <template v-for="(_, slot) in $scopedSlots" #[slot]="props">
           <slot
             :name="slot"
@@ -32,7 +40,7 @@ import GenericTableLine from "./GenericTableLine.vue"
 
 export default {
   props: {
-    // { key, label, sortable, width, component}
+    // [{ key, label, sortable, width, component, mainLabel }]
     columns: {
       type: Array,
       required: true,
@@ -61,25 +69,34 @@ export default {
       type: String,
       required: true,
     },
+    selectable: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {}
   },
-  mounted() {
-    console.log("table generic", this.$scopedSlots)
-  },
+  mounted() {},
   methods: {
     sortBy(event) {
       this.$emit("list_sort_by", event)
     },
+    updateSelectedRows(newSelection) {
+      this.$emit("update:selectedRows", newSelection)
+    },
   },
   computed: {
     style() {
+      const columnsWidth = this.columns.map((column) => column.width).join(" ")
       return {
-        "grid-template-columns": this.columns
-          .map((column) => column.width)
-          .join(" "),
+        "grid-template-columns": this.selectable
+          ? `auto ${columnsWidth}`
+          : columnsWidth,
       }
+    },
+    allRowIds() {
+      return this.content.map((row) => row[this.idKey])
     },
   },
   components: {

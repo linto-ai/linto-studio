@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:components:MongoMigration:controllers:version:1.1.2:organization`,
+  `linto:components:MongoMigration:controllers:version:1.1.2:token`,
 )
 
 const collections_name = "tokens"

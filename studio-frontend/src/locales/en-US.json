@@ -2,6 +2,56 @@
   "accoustic": {
     "standard": "Regular"
   },
+  "activity_list": {
+    "scope_label": "Scope",
+    "level_label": "Level",
+    "http_method_label": "Method",
+    "http_endpoint_label": "URL",
+    "http_status_label": "Status",
+    "organization_name_label": "Organization",
+    "organization_role_label": "Role",
+    "user_label": "User",
+    "user_filter_label": "Filter by a user",
+    "platform_role_label": "Platform role",
+    "session_name_label": "Session name",
+    "session_id_label": "Session Id",
+    "time_label": "Date",
+    "watch_time_label": "Watch time",
+    "connection_count_label": "Connection count",
+    "tabs": {
+      "sessions_kpi": "Sessions KPI",
+      "sessions": "Sessions detailed",
+      "ressources": "Ressources",
+      "tokens": "Api keys access",
+      "backoffice": "Backoffice"
+    }
+  },
+  "session_list": {
+    "title": "Sessions",
+    "columns": {
+      "name": "Name",
+      "status": "Status",
+      "organization": "Organization",
+      "visibility": "Visibility",
+      "start_date": "Start",
+      "end_date": "Scheduled end",
+      "channels": "Channels"
+    },
+    "visibility": {
+      "private": "Private",
+      "organization": "Organization",
+      "public": "Public"
+    },
+    "remove_session_button": "Delete session | Delete {count} sessions"
+  },
+  "modal_delete_sessions": {
+    "title": "Delete session | Delete {count} sessions",
+    "content": "Are you sure you want to delete this session? | Are you sure you want to delete these {count} sessions?",
+    "action_btn": "Delete | Delete {count}",
+    "loading_notification": "Deleting ({count}/{total})...",
+    "success_notification": "{count} session deleted | {count} sessions deleted",
+    "error": "The session could not be deleted | The sessions could not be deleted"
+  },
   "appointment_selector": {
     "date_label": "Date",
     "start_time_label": "Start time",
@@ -48,7 +98,7 @@
     "label": "Choose a channel"
   },
   "app_editor_translations_selector": {
-    "label": "Choose a translation",
+    "label": "Verbatim language",
     "original_language": "Original language"
   },
   "app_editor_highlights_modal": {
@@ -84,11 +134,50 @@
   "backoffice": {
     "title": "Backoffice",
     "navigation": {
+      "activities": "Activity log",
       "home": "Home",
       "users": "Users",
-      "organisations": "Organisations",
+      "organisations": "Organizations",
       "tokens": "Api keys",
-      "transcriberProfiles": "Transcriber Profiles"
+      "transcriberProfiles": "Transcriber Profiles",
+      "sessions": "Sessions"
+    },
+    "activity_list": {
+      "title": "Activity log"
+    },
+    "dashboard": {
+      "page_title": "Dashboard",
+      "sessions_count": "Sessions Transcribed",
+      "medias_count": "Media Processed",
+      "media_duration": "Total Duration (hours)",
+      "active_users": "Session Participants",
+      "time_period_label": "Period",
+      "users": "Users",
+      "organizations": "Organisations",
+      "time_period": {
+        "day": "Day",
+        "month": "Month",
+        "year": "Year"
+      },
+      "charts": {
+        "sessions_title": "Live Transcriptions",
+        "sessions_duration_title": "Real-time audio transcription (hours)",
+        "medias_title": "Media Transcriptions",
+        "duration_title": "Audio Duration (hours)",
+        "active_users_title": "Session Participants"
+      },
+      "filters": {
+        "organization": "Organization",
+        "all_organizations": "All Organizations",
+        "date_range": "Date Range",
+        "start_date": "From",
+        "start_date_placeholder": "dd/mm/yyyy",
+        "end_date": "To",
+        "end_date_placeholder": "dd/mm/yyyy",
+        "clear": "Clear Filters"
+      },
+      "loading": "Loading dashboard data...",
+      "error": "Failed to load dashboard data"
     },
     "user_list": {
       "title": "Users",
@@ -96,11 +185,11 @@
       "remove_user_button": "Delete a user | Delete {count} users"
     },
     "organisation_list": {
-      "title": "Organisations",
-      "add_organisation_button": "Add an organisation",
-      "personal_organizations_shown": "Personal organisations shown",
-      "personal_organizations_hidden": "Personal organisations hidden",
-      "remove_organisation_button": "Delete an organisation | Delete {count} organisations"
+      "title": "Organizations",
+      "add_organisation_button": "Add an organization",
+      "personal_organizations_shown": "Personal organizations shown",
+      "personal_organizations_hidden": "Personal organizations hidden",
+      "remove_organisation_button": "Delete an organization | Delete {count} organizations"
     },
     "token_list": {
       "title": "API Keys",
@@ -119,11 +208,49 @@
       "notif_delete_success": "Transcriber profile successfully deleted",
       "notif_delete_error": "An error occured while deleting the profile",
       "type_label": "Profile type",
+      "security_level_label": "Security level",
       "quick_meeting_label": "Enabled for quick meetings",
+      "name_label": "Name",
+      "name_placeholder": "Profile name",
+      "description_label": "Description",
+      "description_placeholder": "Profile description",
+      "region_label": "Region",
+      "region_placeholder": "e.g. westeurope",
+      "key_label": "API Key",
+      "key_placeholder": "Your API key",
+      "diarization_label": "Enable diarization",
+      "options_title": "Options",
+      "credentials_title": "Credentials",
       "warning_global": {
         "line_1": "This profile will be visible in all organizations.",
         "line_2": "To manage an organization's transcription profiles, go to the \"Organizations\" tab in the navigation bar."
-      }
+      },
+      "amazon_certificate_label": "Certificate (.crt)",
+      "amazon_certificate_placeholder": "Select certificate file",
+      "amazon_private_key_label": "Private Key (.pem, PKCS#8)",
+      "amazon_private_key_placeholder": "Select private key file",
+      "amazon_passphrase_label": "Passphrase (optional)",
+      "amazon_passphrase_placeholder": "Key passphrase if encrypted",
+      "amazon_region_label": "AWS Region",
+      "amazon_region_placeholder": "e.g. eu-west-1",
+      "amazon_credentials_label": "Credentials",
+      "amazon_credentials_placeholder": "AWS credentials identifier",
+      "amazon_trust_anchor_arn_label": "Trust Anchor ARN",
+      "amazon_trust_anchor_arn_placeholder": "arn:aws:rolesanywhere:...",
+      "amazon_profile_arn_label": "Profile ARN",
+      "amazon_profile_arn_placeholder": "arn:aws:rolesanywhere:...",
+      "amazon_role_arn_label": "Role ARN",
+      "amazon_role_arn_placeholder": "arn:aws:iam:...",
+      "amazon_pkcs8_helper": "Private key must be in PKCS#8 format. Convert with:",
+      "amazon_pkcs8_command": "openssl pkcs8 -topk8 -in old.pem -out new.pem",
+      "amazon_rsa_warning": "Warning: This appears to be an RSA private key. Please convert to PKCS#8 format.",
+      "languages_title": "Languages",
+      "linto_endpoint_label": "WebSocket URL",
+      "linto_endpoint_placeholder": "ws://...",
+      "microsoft_endpoint_label": "Endpoint ID",
+      "microsoft_endpoint_placeholder": "endpoint-id",
+      "amazon_endpoint_label": "AWS Region",
+      "amazon_endpoint_placeholder": "us-east-1"
     },
     "transcriber_profile_list": {
       "title": "Transcriber Profiles",
@@ -133,7 +260,7 @@
       "bulk_remove_success_notification": "Profiles successfully deleted",
       "bulk_remove_error_notification": "An error occurred while deleting profiles",
       "warning_global": {
-        "line_1": "Listed transcriber profiles are enabled for all organisations.",
+        "line_1": "Listed transcriber profiles are enabled for all organizations.",
         "line_2": "To manage an organization's transcription profiles, go to the \"Organizations\" tab in the navigation bar."
       },
       "all_profiles_shown": "All profiles are shown",
@@ -141,12 +268,13 @@
     }
   },
   "breadcrumb": {
+    "activities": "Activity log",
     "backoffice": "Backoffice",
     "conversations": "Media",
     "create": "Upload media",
     "createConversation": "Create a conversation",
-    "createorganization": "Create an organisation",
-    "createOrganization": "Create an organisation",
+    "createorganization": "Create an organization",
+    "createOrganization": "Create an organization",
     "createSession": "Create a session",
     "explore": "Inbox",
     "exploreOld": "Explore (legacy)",
@@ -156,6 +284,8 @@
     "overview": "Overview",
     "publish": "Publish",
     "quickSession": "Quick session",
+    "quickSession_microphone": "Recording",
+    "quickSession_visio": "Videoconference recording",
     "sessions": "Sessions",
     "sessionSettings": "Settings",
     "settings": "{organization} Settings",
@@ -182,6 +312,10 @@
     "audio_file_upload_label": "Choose a file...",
     "audio_file_upload_label_multiple": "Choose one or multiple files...",
     "back_conversation_button": "Media overview",
+    "channel": {
+      "live_transcription": "Live transcription",
+      "offline_transcription": "Offline transcription"
+    },
     "close_editor": "Close editor",
     "close_publish": "Close",
     "conversation_creation_button": {
@@ -194,6 +328,8 @@
     "conversation_creation_loading_multiple": "Uploading audio {count} of {total}. This can take several minutes.",
     "conversation_creation_right_title": "Medias rights",
     "conversation_creation_right_label": "Default rights for organisation members",
+    "conversation_creation_security_title": "Security level",
+    "conversation_creation_security_label": "Media security level",
     "conversation_is_locked_by": "The media is locked by",
     "conversation_need_reload": " The media has been modified by an other user, reload the page to edit it.",
     "conversation_overview_title": "Media overview",
@@ -242,10 +378,11 @@
       "json": "Export JSON",
       "pdf": "Export PDF",
       "srt": "Export SRT",
-      "title": "Export",
+      "title": "Download verbatim",
       "txt": "Export TXT",
       "vtt": "Export VTT",
-      "md": "Export Markdown"
+      "md": "Export Markdown",
+      "whisperx": "Raw JSON (WhisperX)"
     },
     "export_json_button": "Export JSON",
     "highlight_toolbox": {
@@ -290,6 +427,11 @@
       "read": "Read",
       "share": "Share",
       "write": "Write"
+    },
+    "security_level_txt": {
+      "0": "Publicly available",
+      "1": "Commission use",
+      "2": "Sensitive non-classified"
     },
     "model_quality": {
       "high": "High",
@@ -528,9 +670,9 @@
     "first_name_label": "First name",
     "image_label": "Image (.png, .jpg) :",
     "last_name_label": "Last name",
-    "organization_description": "Create and share your transcripts, invite collaborators within organisations.",
-    "organization_name_label": "One last step : please name your first organisation, you can create others later",
-    "organization_title": "Name your organisation",
+    "organization_description": "Create and share your transcripts, invite collaborators within organizations.",
+    "organization_name_label": "One last step : please name your first organization, you can create others later",
+    "organization_title": "Name your organization",
     "password_confirmation_label": "Password confirmation",
     "password_label": "Password",
     "personal_button": "Next",
@@ -580,7 +722,7 @@
     "search_text_label": "Search text",
     "sort_label": "Sort by",
     "subtitle": "Search and discover insights on transcribed media using meaningful semantics",
-    "title": "Explore the organisation's media"
+    "title": "Explore the organization's media"
   },
   "favorites": {
     "subtitle": "Your favourite media are here.",
@@ -634,6 +776,11 @@
     "automatic": "Automatic",
     "optimized_fr": "Optimize for French",
     "optimized_en": "Optimize for English"
+  },
+  "language_endpoint_editor": {
+    "language": "Language",
+    "add": "Add a language",
+    "remove": "Remove"
   },
   "login": {
     "not_registered": "Not registered yet? ",
@@ -765,7 +912,15 @@
     "no_medias_selected": "No media selected",
     "some_medias_cannot_be_deleted": "Some media cannot be deleted",
     "no_permission_to_delete": "You don't have permission to delete these media",
-    "processing_error_message": "The automatic transcription of the media encountered an error"
+    "processing_error_message": "The automatic transcription of the media encountered an error",
+    "status": {
+      "preprocessing": "Preprocessing",
+      "transcription": "Transcription",
+      "diarization": "Speakers split",
+      "punctuation": "Punctuation",
+      "postprocessing": "Postprocessing",
+      "pending": "Pending"
+    }
   },
   "modal": {
     "apply": "Apply",
@@ -774,14 +929,27 @@
     "delete": "Delete"
   },
   "modal_create_organization": {
-    "title": "Create new organisation",
+    "title": "Create new organization",
     "label_name": "Name",
     "action_btn": "Create"
   },
-  "modal_create_transcriber_profile": {
-    "title": "Create new transcriber profile",
-    "action_btn": "Create profile",
-    "notif_error": "An error occurred while creating the transcriber profile"
+  "modal_transcriber_profile": {
+    "title_create": "Create new transcriber profile",
+    "title_edit": "Edit transcriber profile",
+    "action_btn_create": "Create profile",
+    "action_btn_edit": "Save changes",
+    "delete_button": "Delete",
+    "confirm_delete": "Are you sure you want to delete this transcriber profile?",
+    "notif_error": "An error occurred",
+    "notif_create_success": "Transcriber profile created successfully",
+    "notif_update_success": "Transcriber profile updated successfully",
+    "notif_delete_success": "Transcriber profile deleted successfully",
+    "notif_delete_error": "An error occurred while deleting the transcriber profile",
+    "notif_fetch_error": "An error occurred while loading the transcriber profile",
+    "platform_global": "Platform (global)",
+    "organization_tooltip": "Select organization",
+    "type_tooltip": "Transcription engine",
+    "security_level_tooltip": "Security level"
   },
   "modal_delete_users": {
     "title": "Delete user | Delete {count} users",
@@ -790,18 +958,18 @@
     "error": "An error occurred while deleting the user | An error occurred while deleting {count} users"
   },
   "modal_delete_multiple_organizations": {
-    "title": "Delete organisation | Delete {count} organisations",
-    "content": "Are you sure you want to delete this organisation ? | Are you sure you want to delete {count} organisations ?",
+    "title": "Delete organization | Delete {count} organizations",
+    "content": "Are you sure you want to delete this organization ? | Are you sure you want to delete {count} organizations ?",
     "action_btn": "Confirm deletion",
-    "error": "An error occurred while deleting the organisation | An error occurred while deleting {count} organisations",
-    "loading_notification": "Deleting organisation {count} of {total}.",
-    "success_notification": "Organisations successfully deleted"
+    "error": "An error occurred while deleting the organization | An error occurred while deleting {count} organizations",
+    "loading_notification": "Deleting organization {count} of {total}.",
+    "success_notification": "Organizations successfully deleted"
   },
   "modal_switch_org": {
-    "title": "Switch organisation",
-    "subtitle": "Select the organisation you want to switch to",
+    "title": "Switch organization",
+    "subtitle": "Select the organization you want to switch to",
     "current": "Current",
-    "create_organization": "Create an organisation",
+    "create_organization": "Create an organization",
     "backoffice": "Backoffice"
   },
   "navigation": {
@@ -818,23 +986,23 @@
     "conversation": {
       "start": "Transcribe",
       "create": "Upload media",
-      "create_no_rights_error": "You don't have the rights to create a media. Please contact your organisation administrator.",
+      "create_no_rights_error": "You don't have the rights to create a media. Please contact your organization administrator.",
       "list": "Media",
-      "my_conversations": "organisation media",
+      "my_conversations": "organization media",
       "not_found": "No media found",
       "shared_with_me": "Shared with me",
       "title": "Media"
     },
     "home": "Return to main page",
     "organisation": {
-      "aria_organisations_selector": "Organisations selector",
-      "create": "Create organisation",
-      "setting": "Organisation settings",
-      "title": "organisation"
+      "aria_organisations_selector": "Organizations selector",
+      "create": "Create organization",
+      "setting": "Organization settings",
+      "title": "organization"
     },
     "session": {
       "create": "New session",
-      "create_no_rights_error": "You don't have the rights to create a media. Please contact your organisation administrator."
+      "create_no_rights_error": "You don't have the rights to create a media. Please contact your organization administrator."
     },
     "tabs": {
       "explore": "Inbox",
@@ -850,14 +1018,14 @@
   },
   "no_orga": {
     "can_create": {
-      "create": "Create an organisation",
-      "creating": "Creating organisation...",
-      "label": "Name your organisation, you can create others later",
-      "subtitle": "Create an organisation to create and share your transcriptions.",
+      "create": "Create an organization",
+      "creating": "Creating organization...",
+      "label": "Name your organization, you can create others later",
+      "subtitle": "Create an organization to create and share your transcriptions.",
       "title": "Discover LinTO Studio again"
     },
     "cannot_create": {
-      "subtitle_line_one": "Your user does not belong to any organisation.",
+      "subtitle_line_one": "Your user does not belong to any organization.",
       "subtitle_line_two": "Please contact an administrator.",
       "title": "Your account is not provisioned"
     }
@@ -866,30 +1034,47 @@
     "add_member_description": "Use the search form to find users by their firstname, lastname or email address",
     "add_member_label": "Add a member",
     "create": {
-      "error_already_exists": "An organisation with this name already exists",
-      "error_message": "An error occurred while creating the organisation",
-      "submit_label": "Create organisation",
-      "success_message": "organisation successfully created",
-      "title": "Create organisation"
+      "error_already_exists": "An organization with this name already exists",
+      "error_message": "An error occurred while creating the organization",
+      "submit_label": "Create organization",
+      "success_message": "Organization successfully created",
+      "title": "Create organization"
     },
     "danger_zone": "Danger zone",
-    "delete_error_message": "An error occurred while deleting the organisation",
+    "delete_error_message": "An error occurred while deleting the organization",
     "delete_modal": {
       "action": "Delete",
-      "content": "Are you sure you want to delete the organisation \"{name}\" ? This action cannot be undone. All the organisation media will be deleted.",
-      "title": "Delete organisation"
+      "content": "Are you sure you want to delete the organization \"{name}\" ? This action cannot be undone. All the organization media will be deleted.",
+      "title": "Delete organization"
     },
-    "delete_organization": "Delete organisation",
-    "delete_success_message": "Organisation successfully deleted",
-    "description_description": "The description of your organisation",
+    "delete_organization": "Delete organization",
+    "delete_success_message": "Organization successfully deleted",
+    "description_description": "The description of your organization",
     "description_label": "Description",
     "general_settings": "General settings",
+    "kpi": {
+      "error": "An error occurred while retrieving the data",
+      "loading": "Loading data...",
+      "session_watch_time": "Total time spent on the transcription",
+      "session_avg_watch_time": "Average time spent on the transcription",
+      "session_total_connections": "Number of connections",
+      "transcription_count": "Number of transcribed media",
+      "transcription_avg_duration": "Average duration of media",
+      "title": "Organization statistics",
+      "sessions_title": "Live transcription",
+      "media_title": "Media",
+      "time_step": {
+        "day": "Day",
+        "month": "Month",
+        "year": "Year"
+      }
+    },
     "leave_modal": {
       "action": "Leave",
-      "content": "Are you sure you want to leave the organisation \"{name}\" ?",
-      "title": "Leave organisation",
-      "success_message": "You have successfully left the organisation",
-      "error_message": "An error occurred while leaving the organisation"
+      "content": "Are you sure you want to leave the organization \"{name}\" ?",
+      "title": "Leave organization",
+      "success_message": "You have successfully left the organization",
+      "error_message": "An error occurred while leaving the organization"
     },
     "remove_user_modal": {
       "action": "Remove user from organization",
@@ -897,11 +1082,11 @@
       "title": "Remove user from organization"
     },
     "my_workspace": "My workspace",
-    "name_description": "The name of your organisation",
+    "name_description": "The name of your organization",
     "name_label": "Name",
-    "organization_users": "Organisation users",
+    "organization_users": "Organization users",
     "organization_permissions": {
-      "title": "Organisation permissions",
+      "title": "Organization permissions",
       "upload_permission": "Upload media",
       "summary_permission": "Generate summary",
       "session_permission": "Create session",
@@ -916,24 +1101,24 @@
       "apply_button": "Invite all users matching criterions"
     },
     "organization_stats": {
-      "title": "Organisation statistics",
+      "title": "Organization statistics",
       "medias": "Medias"
     },
     "transcriber_profiles": {
       "title": "Transcriber profiles",
-      "no_profiles": "No transcriber profiles link to this organisation"
+      "no_profiles": "No transcriber profiles link to this organization"
     },
     "update": {
-      "title": "organisation : {name}"
+      "title": "organization : {name}"
     },
-    "update_button": "Update organisation",
+    "update_button": "Update organization",
     "user": {
-      "leave_button": "Leave organisation",
+      "leave_button": "Leave organization",
       "remove_button": "remove",
       "remove_description": "Revoke member access to the organiztion",
       "remove_label": "Remove",
       "remove_label_inline": "\"Remove\" : ",
-      "role_description": "User organisation role (Admin, Maintainer, Member)",
+      "role_description": "User organization role (Admin, Maintainer, Member)",
       "role_label": "Role",
       "role_label_inline": "\"Role\" : ",
       "visibility_label": "Visibility"
@@ -941,15 +1126,15 @@
     "user_description": "User firstname, lastname, email and picture",
     "user_label": "User",
     "user_label_inline": "\"User\" : ",
-    "user_list_description": "The list of the organisation users:",
+    "user_list_description": "The list of the organization users:",
     "user_list_label": "Users list",
     "user_not_found": "User not found",
     "visibility": {
       "private": "private",
-      "private_description": ": Avoid external users to search and list your organisation",
+      "private_description": ": Avoid external users to search and list your organization",
       "private_inline": "\"Private\" : ",
       "public": "public",
-      "public_description": "Allows external users to search and list your organisation",
+      "public_description": "Allows external users to search and list your organization",
       "public_inline": "\"Public\" : "
     },
     "visibility_label": "Visibility",
@@ -970,6 +1155,7 @@
     "administrator_description": "Full permissions over the organization"
   },
   "publish": {
+    "download_verbatim": "Download verbatim",
     "error_first_line": {
       "cra": "Error during summary report generation",
       "cred": "Error during commission and delegation report generation",
@@ -994,6 +1180,12 @@
       "verbatim": "Verbatim generation in progress...",
       "general": "Generation in progress..."
     },
+    "phase": {
+      "processing": "Processing segments",
+      "reducing": "Reducing and summarizing",
+      "extracting": "Extracting information",
+      "categorizing": "Categorizing"
+    },
     "loading_document": "Requesting final document...",
     "is_not_updated": "The transcription has been updated. The report no longer reflects the latest changes.",
     "is_updated": "The report is up to date with the transcript ",
@@ -1006,8 +1198,152 @@
       "cra": "Summary report",
       "cred": "Commission and delegation reports",
       "cri": "Full report",
-      "verbatim": "Verbatim"
+      "verbatim": "Verbatim",
+      "publication": "Publication"
+    },
+    "editor": {
+      "edit_mode": "Edit",
+      "preview_mode": "Preview",
+      "publication_mode": "Publication",
+      "save_version": "Save version",
+      "save_version_title": "Save as new version",
+      "version_name_placeholder": "Version name",
+      "version_saved": "Version saved successfully",
+      "version_save_error": "Error saving version",
+      "load_version": "Load version",
+      "versions_list": "Saved versions",
+      "no_versions": "No saved versions",
+      "version_label": "Version {version}",
+      "restore_version": "Restore this version",
+      "restore_version_confirm": "Are you sure you want to restore this version?",
+      "version_restored": "Version restored successfully",
+      "version_restore_error": "Error restoring version",
+      "delete_version": "Delete version",
+      "delete_version_confirm": "Are you sure you want to delete this version?",
+      "version_deleted": "Version deleted",
+      "version_delete_error": "Error deleting version",
+      "unsaved_changes": "You have unsaved changes",
+      "discard_changes": "Discard changes",
+      "toolbar": {
+        "bold": "Bold",
+        "italic": "Italic",
+        "heading1": "Heading 1",
+        "heading2": "Heading 2",
+        "heading3": "Heading 3",
+        "bullet_list": "Bullet list",
+        "ordered_list": "Numbered list",
+        "blockquote": "Quote",
+        "horizontal_rule": "Horizontal line",
+        "strike": "Strikethrough",
+        "code": "Inline code",
+        "undo": "Undo",
+        "redo": "Redo"
+      }
+    },
+    "category": {
+      "summary": "Summaries",
+      "report": "Reports",
+      "correction": "Corrections",
+      "translation": "Translations",
+      "custom": "Custom",
+      "other": "Other",
+      "all": "All"
+    },
+    "export_error": "Failed to export document",
+    "export_in_progress": "Exporting...",
+    "downloading": "Downloading...",
+    "regenerate": {
+      "confirm_title": "New generation?",
+      "confirm_message": "A new request will be sent to the AI service. The current generation will be archived in the history.",
+      "confirm_button": "Generate"
+    },
+    "generations": {
+      "title": "Generations",
+      "current": "Current",
+      "latest": "Latest",
+      "no_generations": "No generations yet",
+      "loading": "Loading...",
+      "generating": "Generating..."
+    },
+    "llm_gateway_error": "AI service error: {error}",
+    "llm_gateway_unavailable": "The AI service is temporarily unavailable. Please try again in a few moments.",
+    "job_not_found_regenerating": "The document has expired on the server. Automatic regeneration in progress...",
+    "job_removed_refreshing": "This generation is no longer available. Showing remaining generations.",
+    "generic_error": "An error occurred. Please try again.",
+    "error_llm_server": "The AI service encountered an internal error. Please try again.",
+    "error_llm_unavailable": "The AI service is temporarily unavailable.",
+    "error_job_expired": "This generation has expired. Please regenerate the document.",
+    "error_timeout": "The request timed out. Please try again.",
+    "select_service": "Select a service",
+    "ai_menu": {
+      "title": "AI Services",
+      "select": "AI Services",
+      "other": "Other services",
+      "categories": {
+        "summary": "Summaries",
+        "summarize": "Summaries",
+        "resume": "Summaries",
+        "translation": "Translations",
+        "translate": "Translations",
+        "traduction": "Translations",
+        "correction": "Corrections",
+        "correct": "Corrections",
+        "transcription": "Transcriptions"
+      }
+    },
+    "publication": {
+      "title": "Publication Templates",
+      "description": "Choose a template to format your document",
+      "loading": "Loading templates...",
+      "load_error": "Failed to load templates",
+      "no_templates": "No publication templates available",
+      "no_description": "No description",
+      "selected": "Selected template",
+      "create_template": "Create template",
+      "create_template_title": "New publication template",
+      "template_name": "Template name",
+      "template_description": "Description",
+      "template_category": "Category",
+      "template_scope": "Scope",
+      "scope_personal": "Personal (visible only to me)",
+      "scope_organization": "Organization (visible to all members)",
+      "create_button": "Create",
+      "create_success": "Template created successfully",
+      "create_error": "Error creating template",
+      "no_name": "Unnamed",
+      "generating_preview": "Generating preview...",
+      "preview_error": "Unable to generate preview",
+      "no_job_for_preview": "No AI processing available for preview",
+      "upload_template": "Upload a template",
+      "upload_template_hint": "Upload your own DOCX file",
+      "upload_template_title": "Upload a template",
+      "template_file": "Template file (DOCX)",
+      "drop_file": "Drop a DOCX file here",
+      "or_click": "or click to select",
+      "template_format_hint": "DOCX format. The placeholder <code>&#123;&#123;output&#125;&#125;</code> will be replaced by the AI service content.",
+      "template_name_placeholder": "Template name",
+      "template_description_placeholder": "Optional description",
+      "scope_personal_hint": "Visible only to you",
+      "scope_organization_hint": "Visible to the entire organization",
+      "upload_button": "Upload",
+      "upload_success": "Template uploaded successfully",
+      "upload_error": "Error uploading template",
+      "invalid_file_type": "File must be in DOCX format",
+      "file_too_large": "File must not exceed 10 MB",
+      "preview_action": "Preview",
+      "delete_confirm": "Are you sure you want to delete \"{name}\"?",
+      "delete_success": "Template deleted successfully",
+      "delete_error": "Error deleting template",
+      "scope": {
+        "system": "System",
+        "organization": "Organization",
+        "user": "Personal"
+      }
     }
+  },
+  "common": {
+    "retry": "Retry",
+    "cancel": "Cancel"
   },
   "session": {
     "sessions_status": {
@@ -1113,6 +1449,7 @@
     "end_undefined": "Not defined",
     "room_undefined": "Place not defined",
     "microphone_apply_button": "Record microphone",
+    "microphone_setup_title": "Microphone setup",
     "record_to_chanel_name_info": "To \"{name}\"",
     "list_page": {
       "no_sessions": "No sessions found",
@@ -1156,7 +1493,7 @@
         "type": "Type",
         "translations": "Translations",
         "diarization": "Diarization",
-        "organization": "Organisation"
+        "organization": "Organization"
       },
       "title": "Selection of transcription profiles",
       "translation_not_available": "No translation available",
@@ -1230,6 +1567,50 @@
       "apply": "Continue"
     }
   },
+  "session_kpi": {
+    "name_label": "Name",
+    "viewer_label": "Viewers",
+    "watch_time_average_label": "Average watch time",
+    "bounce_rate_label": "Bounce rate (viewers)",
+    "quick_session_name": "{userName} recording",
+    "quick_session_name_anonymous": "Personal recording",
+    "view_details": "View session details",
+    "export": {
+      "button": "Export",
+      "success": "Export downloaded successfully",
+      "error": "Failed to export data"
+    }
+  },
+  "session_stats_modal": {
+    "title": "Session Statistics",
+    "loading": "Loading session statistics...",
+    "error": "Failed to load session statistics",
+    "retry": "Retry",
+    "summary": {
+      "title": "Summary",
+      "total_viewers": "Total viewers",
+      "total_watch_time": "Total watch time",
+      "session_duration": "Session duration",
+      "channels_count": "Channels"
+    },
+    "channels": {
+      "title": "Channels",
+      "no_channels": "No channel data available",
+      "default_name": "Channel {id}",
+      "active_duration": "Active duration",
+      "started_at": "Started",
+      "ended_at": "Ended",
+      "languages": "Languages",
+      "diarization": "Diarization",
+      "diarization_enabled": "Diarization",
+      "diarization_disabled": "Disabled"
+    },
+    "timeline": {
+      "title": "Activity timeline",
+      "active": "Active",
+      "inactive": "Inactive"
+    }
+  },
   "quick_session": {
     "creation": {
       "transcription_settings_title": "Transcription mode",
@@ -1284,13 +1665,32 @@
       "status_no_websocket": "Not connected to audio server",
       "status_recording": "Recording microphone",
       "status_muted": "Microphone is muted",
-      "save_button": "Save and quit",
+      "save_button": "Stop microphone recording",
       "pause_button": "Pause",
-      "start_button": "Start"
+      "start_button": "Start",
+      "start_microphone_button": "Unmute microphone",
+      "mute_microphone_button": "Mute microphone"
     },
     "live_visio": {
       "default_name": "Untitle {type} meeting",
       "status_recording_visio": "Recording videoconference"
+    },
+    "modal_save": {
+      "title": "Save the recording",
+      "name": "Name",
+      "confirm": "Save"
+    },
+    "notif": {
+      "visio": {
+        "title": "A videoconference is being recorded.",
+        "continue_button": "Show transcript",
+        "stop_button": "Save and stop recording"
+      },
+      "default": {
+        "title": "A recording is pending",
+        "continue_button": "Resume recording",
+        "stop_button": "Save and stop recording"
+      }
     }
   },
   "share_menu": {
@@ -1303,14 +1703,14 @@
     "invite_user_button": "Invite user",
     "no_conversation_selected_content": "Please select at least one media to share.",
     "no_conversation_selected_title": "No media selected",
-    "organization_members": "organisation members",
+    "organization_members": "organization members",
     "search_label": "Invite user",
     "user_has_been_invited": "User has been invited",
     "user_not_found": "User not found",
     "user_right_updated": "User rights have been updated"
   },
   "shared_with_me": {
-    "subtitle": "All media shared with you (from outside the organisation)",
+    "subtitle": "All media shared with you (from outside the organization)",
     "title": "Media shared with me",
     "no_media_title": "No media has been shared with you",
     "no_media_subtitle": "Other users can share media with you using the 'share' button in their media library."
@@ -1370,10 +1770,10 @@
         "update_label": "When your media rights are updated"
       },
       "organizations": {
-        "add_label": "When you joined an organisation",
-        "del_label": "When you left an organisation",
-        "title": "Organisations",
-        "update_label": "When your role in the organisation is updated"
+        "add_label": "When you joined an organization",
+        "del_label": "When you left an organization",
+        "title": "Organizations",
+        "update_label": "When your role in the organization is updated"
       },
       "submit_button": "Update notifications",
       "title": "Notifications by email"
@@ -1381,7 +1781,7 @@
     "notif_success": "User informations updated",
     "notif_error": "An error occurred while updating user informations",
     "organizations_section": {
-      "title": "Organisations"
+      "title": "Organizations"
     },
     "personal_information": "Personal information",
     "picture_label": "Picture",
@@ -1444,7 +1844,7 @@
     "edit_button_label": "Edit"
   },
   "platform_role": {
-    "organization_initiator": "Organisation initiator",
+    "organization_initiator": "Organization initiator",
     "organization_initiator_description": "Rights to create new organizations",
     "session_operator": "Session operator",
     "session_operator_description": "Rights to manage and configure live streams for transcription",
@@ -1478,5 +1878,19 @@
     "search_empty_message": "Press [ENTER] to search in all your media",
     "search_back_to_results_message": "Press [ENTER] to return to results",
     "search_placeholder": "Search in your media"
+  },
+  "user_selector": {
+    "clear_button": "Clear",
+    "search_placeholder": "Search for a user...",
+    "select_user": "Select a user",
+    "select_users": "Select users",
+    "users_selected": "{count} user(s) selected"
+  },
+  "popover_list": {
+    "search": "Search",
+    "search_placeholder": "Search...",
+    "no_results": "No results",
+    "min_characters": "{count} characters minimum",
+    "select_all": "Select all"
   }
 }

@@ -35,7 +35,12 @@ async function generateApiKeyToken(
     expires_in = getExpiresIn(expires_in)
     if (token === undefined) {
       token_salt = require("randomstring").generate(12)
-      token = await model.tokens.insert(user[0]._id, token_salt, expires_in)
+      token = await model.tokens.insert(
+        user[0]._id,
+        token_salt,
+        expires_in,
+        true,
+      )
     } else {
       token_salt = token.salt
     }
@@ -79,6 +84,7 @@ async function createApiKey(reqPayload, role = PLATFORM_ROLE.UNDEFINED) {
       lastname: "",
       metadata,
     }
+
     const createdUser = await model.users.createApiKey(userPayload, role)
     if (createdUser.insertedCount !== 1) throw new UserError()
 

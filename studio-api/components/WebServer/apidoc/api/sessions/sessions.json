@@ -463,6 +463,51 @@
         "content": {
           "application/json": {
             "schema": {
+              "$ref": "#/components/schemas/SessionUpdateRequestWithChannels"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionAnswerWithCaptions"
+              }
+            }
+          }
+        }
+      }
+    },
+    "patch": {
+      "tags": ["sessions"],
+      "summary": "Update a session",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
+        },
+        {
+          "name": "id",
+          "in": "path",
+          "description": "Session ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
               "$ref": "#/components/schemas/SessionUpdateRequest"
             }
           }
@@ -569,6 +614,87 @@
         },
         "404": {
           "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/sessions/{id}/delete-captions": {
+    "delete": {
+      "tags": ["sessions"],
+      "summary": "Delete captions of a session by ID",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
+        },
+        {
+          "name": "id",
+          "in": "path",
+          "description": "Session ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "in": "query",
+          "name": "start_time",
+          "description": "Delete captions from this time",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "time",
+            "example": "00:00:00",
+            "default": null
+          }
+        },
+        {
+          "in": "query",
+          "name": "end_time",
+          "description": "Delete captions to this time",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "time",
+            "example": "00:05:00",
+            "default": null
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The session",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionAnswerWithCaptions"
+              }
+            }
+          }
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "400": {
+          "description": "Bad Request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Invalid start_time format. Expected HH:mm:ss or null"
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
