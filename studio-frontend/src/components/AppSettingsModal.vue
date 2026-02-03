@@ -9,7 +9,7 @@
         <p>{{ $t("app_settings_modal.email_not_verified") }}</p>
 
         <Button size="sm" @click="sendVerificationEmail()">
-          <ph-icon name="paper-plane-tilt" size="md" class="icon" />
+          <ph-icon name="paper-plane-tilt" size="md" />
           <!-- <span
             :class="['icon', sendingEmail ? 'loading' : 'send-mail']"></span> -->
           <span class="label">{{

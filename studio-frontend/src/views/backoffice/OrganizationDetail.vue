@@ -68,7 +68,6 @@ import UpdateOrganizationUsers from "@/components/UpdateOrganizationUsers.vue"
 import ModalDeleteOrganization from "@/components/ModalDeleteOrganization.vue"
 import UpdateOrganizationPermissions from "@/components/UpdateOrganizationPermissions.vue"
 import UpdateOrganizationMatchingUsers from "@/components/UpdateOrganizationMatchingUsers.vue"
-import OrganizationStats from "@/components/OrganizationStats.vue"
 import UpdateOrganizationTranscriberProfiles from "@/components/UpdateOrganizationTranscriberProfiles.vue"
 import ApiTokenSettings from "@/components/ApiTokenSettings.vue"
 import Tabs from "@/components/molecules/Tabs.vue"
@@ -133,7 +132,6 @@ export default {
     UpdateOrganizationTranscriberProfiles,
     UpdateOrganizationMatchingUsers,
     ModalDeleteOrganization,
-    OrganizationStats,
     ApiTokenSettings,
     Tabs,
     OrganizationSessionsKpi,

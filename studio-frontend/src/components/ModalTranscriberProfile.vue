@@ -1,5 +1,5 @@
 <template>
-  <ModalNew
+  <Modal
     value
     size="xl"
     :loading="loading"
@@ -58,11 +58,11 @@
         :organizationId="selectedOrganizationId"
         :transcriberProfile="transcriberProfile" />
     </div>
-  </ModalNew>
+  </Modal>
 </template>
 
 <script>
-import ModalNew from "@/components/molecules/Modal.vue"
+import Modal from "@/components/molecules/Modal.vue"
 import TranscriberProfileEditor from "@/components/TranscriberProfileEditor.vue"
 import PopoverList from "@/components/atoms/PopoverList.vue"
 import Tooltip from "@/components/atoms/Tooltip.vue"
@@ -320,7 +320,7 @@ export default {
     },
   },
   components: {
-    ModalNew,
+    Modal,
     TranscriberProfileEditor,
     PopoverList,
     Tooltip,

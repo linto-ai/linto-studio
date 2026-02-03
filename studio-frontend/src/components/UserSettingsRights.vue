@@ -24,9 +24,11 @@
           v-model="super_administrator_field.value" />
       </div>
 
-      <button type="submit" class="medium-margin-top">
-        {{ $t("user_settings.role_section.submit_button") }}
-      </button>
+      <Button
+        type="submit"
+        variant="secondary"
+        class="medium-margin-top"
+        :label="$t('user_settings.role_section.submit_button')" />
     </form>
     <div class="flex col gap-small medium-margin-top">
       <FormCheckbox

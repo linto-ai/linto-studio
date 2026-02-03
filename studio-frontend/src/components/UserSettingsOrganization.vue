@@ -12,9 +12,7 @@
       :loading="loading" />
     <div v-else>
       <div>{{ error }}</div>
-      <button @click="retry">
-        <span class="label">Retry</span>
-      </button>
+      <Button @click="retry" variant="secondary" label="Retry" />
     </div>
   </section>
 </template>

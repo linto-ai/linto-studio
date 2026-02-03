@@ -56,8 +56,7 @@
           :title="$t ? $t('cancel') : 'Cancel'"
           icon="x"
           iconOnly
-          variant="outline"
-          color="neutral"
+          variant="secondary"
           size="sm"
           class="form-field__cancel-btn" />
         <Button
@@ -66,8 +65,7 @@
           :title="$t ? $t('apply') : 'Apply'"
           icon="check"
           iconOnly
-          variant="outline"
-          color="primary"
+          variant="primary"
           size="sm"
           class="form-field__apply-btn" />
       </div>

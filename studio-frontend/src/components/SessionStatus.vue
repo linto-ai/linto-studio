@@ -34,7 +34,6 @@
 <script>
 import { sessionModelMixin } from "@/mixins/sessionModel.js"
 import StatusLed from "@/components/atoms/StatusLed.vue"
-import Badge from "./atoms/Badge.vue"
 
 export default {
   mixins: [sessionModelMixin],
@@ -88,7 +87,7 @@ export default {
       this.$emit("click", e)
     },
   },
-  components: { StatusLed, Badge },
+  components: { StatusLed },
 }
 </script>
 

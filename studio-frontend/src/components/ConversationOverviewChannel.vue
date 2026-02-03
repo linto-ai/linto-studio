@@ -6,12 +6,11 @@
           inputFullWidth
           :field="nameField"
           v-model="nameField.value" />
-        <button type="submit" class="btn primary">
-          <ph-icon name="check" size="md" class="icon" />
-          <span class="label">{{
-            $t("conversation_overview.channel.apply_name")
-          }}</span>
-        </button>
+        <Button
+          type="submit"
+          variant="primary"
+          icon="check"
+          :label="$t('conversation_overview.channel.apply_name')" />
       </section>
     </form>
     <section class="flex overview__main-section gap-medium" v-if="audio">
@@ -20,12 +19,11 @@
         :value="duration"></LabeledValue>
       <LabeledValue
         :label="$t('conversation_overview.audio.file_label_inline')">
-        <button
+        <Button
+          v-if="!loadingAudio"
           @click="downloadAudio"
-          class="transparent inline"
-          v-if="!loadingAudio">
-          {{ fileName }}
-        </button>
+          variant="transparent"
+          :label="fileName" />
         <div v-else>
           {{ $t("conversation_overview.audio.loading_audio_file") }}
         </div>

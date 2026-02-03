@@ -26,7 +26,7 @@
                   :icon="selectedEmoji ? null : 'smiley-blank'"
                   :avatar-text="selectedEmoji || null"
                   :avatar-color="selectedEmoji ? 'primary-soft' : null"
-                  variant="outline"
+                  variant="secondary"
                   size="md"
                   @mouseenter.prevent
                   @mouseleave.prevent />
@@ -65,7 +65,7 @@
               <template #trigger>
                 <Button
                   class="neutral outline icon-only"
-                  variant="outline"
+                  variant="secondary"
                   size="md"
                   :avatar-color="computedAvatarColor" />
               </template>

@@ -136,14 +136,10 @@ import findExpressionInWordsList from "@/tools/findExpressionInWordsList.js"
 
 import { conversationMixin } from "@/mixins/conversation.js"
 
-import Loading from "@/components/atoms/Loading.vue"
-import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 import AppEditor from "@/components/AppEditor.vue"
 import MainContentConversation from "@/components/MainContentConversation.vue"
 import HighlightsList from "@/components/HighlightsList.vue"
-import MenuToolbox from "@/components/MenuToolbox.vue"
 import ModalDeleteTagHighlight from "@/components/ModalDeleteTagHighlight.vue"
-import TranscriptionHelper from "@/components/TranscriptionHelper.vue"
 import AppEditorMetadataModal from "@/components/AppEditorMetadataModal.vue"
 import SearchResultPaginator from "@/components/SearchResultPaginator.vue"
 import AppEditorChannelsSelector from "@/components/AppEditorChannelsSelector.vue"
@@ -440,13 +436,9 @@ export default {
     },
   },
   components: {
-    TranscriptionHelper,
-    Loading,
-    UserInfoInline,
     AppEditor,
     MainContentConversation,
     HighlightsList,
-    MenuToolbox,
     ModalDeleteTagHighlight,
     AppEditorMetadataModal,
     SearchResultPaginator,

@@ -15,7 +15,6 @@
 </template>
 <script>
 import { bus } from "@/main.js"
-import Tag from "@/components/molecules/Tag.vue"
 export default {
   props: {
     field: {
@@ -32,9 +31,7 @@ export default {
       return key.startsWith("@")
     },
   },
-  components: {
-    Tag,
-  },
+  components: {},
 }
 </script>
 

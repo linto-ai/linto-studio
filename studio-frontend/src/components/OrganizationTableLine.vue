@@ -18,10 +18,11 @@
     </td>
     <td>{{ userNumber }}</td>
     <td>
-      <button @click="editOrganization">
-        <ph-icon name="pencil"></ph-icon>
-        <span class="label">{{ $t("orga_table.edit_button_label") }}</span>
-      </button>
+      <Button
+        @click="editOrganization"
+        variant="secondary"
+        icon="pencil"
+        :label="$t('orga_table.edit_button_label')" />
     </td>
   </tr>
 </template>

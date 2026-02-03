@@ -1,5 +1,5 @@
 <template>
-  <ModalNew
+  <Modal
     value
     @on-cancel="() => this.$emit('on-close')"
     @on-confirm="deleteSession"
@@ -7,10 +7,10 @@
     :actionBtnLabel="actionBtnLabel"
     size="sm">
     {{ $t("session.settings_page.force_delete_modal.content") }}
-  </ModalNew>
+  </Modal>
 </template>
 <script>
-import ModalNew from "@/components/molecules/Modal.vue"
+import Modal from "@/components/molecules/Modal.vue"
 export default {
   props: {},
   data() {
@@ -26,6 +26,6 @@ export default {
       this.$emit("on-confirm")
     },
   },
-  components: { ModalNew },
+  components: { Modal },
 }
 </script>
