@@ -1,7 +1,9 @@
-FROM node:22.14.0
+FROM node:22.14.0-slim
 
 RUN apt-get update -y && \
-  apt-get install -y \
+  apt-get upgrade -y && \
+  apt-get install -y --no-install-recommends \
+  curl \
   gettext \
   ffmpeg \
   cron \
@@ -15,9 +17,9 @@ RUN apt-get update -y && \
   libmad0-dev \
   libid3tag0-dev \
   libgd-dev && \
-  apt-get install -y libreoffice --fix-missing 
-
-RUN apt update -y && apt install -y libreoffice --fix-missing
+  apt-get install -y libreoffice --fix-missing && \
+  apt-get clean && \
+  rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/src/app/conversation-manager
 COPY . /usr/src/app/conversation-manager
