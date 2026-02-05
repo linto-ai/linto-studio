@@ -19,6 +19,7 @@
       </th>
       <ArrayHeader
         v-for="column in columns"
+        :key="column.key"
         @list_sort_by="sortBy"
         :label="column.label"
         :sortListDirection="sortListDirection"
@@ -28,7 +29,6 @@
   </thead>
 </template>
 <script>
-import { bus } from "@/main.js"
 import ArrayHeader from "@/components/ArrayHeader.vue"
 import Checkbox from "@/components/atoms/Checkbox.vue"
 export default {

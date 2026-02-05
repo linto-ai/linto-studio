@@ -1,7 +1,7 @@
 import test from "ava"
 import { divideTurn, splitWord } from "../divideTurn.js"
 import { mergeTurn } from "../mergeTurn.js"
-import SyllabicFR from "../../../public/js/syllabic/syllabicFR.js"
+import SyllabicFR from "@/lib/syllabic/syllabicFR.js"
 
 const syllabicFr = new SyllabicFR("fr-FR")
 

@@ -12,7 +12,6 @@
 Better to use popoverlist or native select
 */
 import { Fragment } from "vue-fragment"
-import { bus } from "@/main.js"
 
 import Checkbox from "@/components/atoms/Checkbox.vue"
 import Chip from "@/components/atoms/Chip.vue"

@@ -24,8 +24,6 @@
 import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 
-import { apiGetTranscriberProfiles } from "@/api/session.js"
-
 import Modal from "@/components/molecules/Modal.vue"
 import TranscriberProfileSelector from "@/components/TranscriberProfileSelector.vue"
 export default {

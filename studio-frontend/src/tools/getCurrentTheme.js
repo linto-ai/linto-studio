@@ -5,6 +5,7 @@ export default function getCurrentTheme() {
   const runtimeTheme = typeof window !== 'undefined'
     ? window.VUE_APP_CONFIG?.VUE_APP_THEME
     : undefined
-  const THEME = runtimeTheme ?? process.env.VUE_APP_THEME ?? "LinTO-green"
+  const buildTimeTheme = typeof process !== 'undefined' ? process.env?.VUE_APP_THEME : undefined
+  const THEME = runtimeTheme ?? buildTimeTheme ?? "LinTO-green"
   return themes[THEME] || themes["LinTO-green"]
 }

@@ -1,4 +1,6 @@
 {
+  "apply": "Appliquer",
+  "cancel": "Annuler",
   "actions": "Actions",
   "activity_list": {
     "http_method_label": "Méthode",
@@ -1469,6 +1471,10 @@
     "select_all": "Tout sélectionner"
   },
   "duration_input": {
-    "s": "Seconde | Secondes"
+    "s": "Seconde | Secondes",
+    "d": "Jour | Jours",
+    "h": "Heure | Heures",
+    "m": "Minute | Minutes",
+    "y": "Année | Années"
   }
 }

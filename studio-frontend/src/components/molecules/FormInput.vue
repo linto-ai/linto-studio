@@ -86,7 +86,6 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "@/main.js"
 import LabeledValue from "@/components/atoms/LabeledValue.vue"
 import Button from "@/components/atoms/Button.vue"
 export default {

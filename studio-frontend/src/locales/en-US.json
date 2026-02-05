@@ -1,4 +1,6 @@
 {
+  "apply": "Apply",
+  "cancel": "Cancel",
   "activity_list": {
     "http_method_label": "Method",
     "http_endpoint_label": "URL",
@@ -538,7 +540,10 @@
     "openFileExplorer": "or choose from the file explorer"
   },
   "duration_input": {
-    "s": "Second | Seconds"
+    "s": "Second | Seconds",
+    "d": "Day | Days",
+    "h": "Hour | Hours",
+    "m": "Minute | Minutes"
   },
   "error": {
     "server_error": {
