@@ -210,7 +210,6 @@ export default {
   mounted() {
     this.speakersTurnsTimebox = this.getSpkTimebox()
     bus.$on("player-audioprocess", (time) => {
-      console.log("player-audioprocess")
       this.updateCurrentTime(time)
     })
     bus.$on("player-seek", (time) => {
@@ -408,7 +407,6 @@ export default {
       bus.$emit("showSpeakerModal")
     },
     async updateCurrentTime(time) {
-      console.log("update time", time)
       this.currentTime = time
       // Remove playing class from all words
       let activeWords = Array.from(

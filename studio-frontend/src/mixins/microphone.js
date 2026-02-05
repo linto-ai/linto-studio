@@ -1,6 +1,6 @@
 // TODO: Fix webvoicesdk compatibility with Vite (parcel-specific imports)
-// import WebVoiceSDK from "@linto-ai/webvoicesdk"
-const WebVoiceSDK = null
+import WebVoiceSDK from "@linto-ai/webvoicesdk"
+//const WebVoiceSDK = null
 
 export const microphoneMixin = {
   data() {
@@ -20,7 +20,7 @@ export const microphoneMixin = {
     initMicrophone() {
       // TODO: Re-enable when webvoicesdk is fixed
       if (!WebVoiceSDK) {
-        console.warn('WebVoiceSDK disabled - microphone features unavailable')
+        console.warn("WebVoiceSDK disabled - microphone features unavailable")
         return
       }
       this.recorder = new WebVoiceSDK.Recorder()

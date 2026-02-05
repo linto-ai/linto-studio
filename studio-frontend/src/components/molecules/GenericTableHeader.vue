@@ -19,6 +19,7 @@
       </th>
       <ArrayHeader
         v-for="column in columns"
+        :key="column.key"
         @list_sort_by="sortBy"
         :label="column.label"
         :sortListDirection="sortListDirection"
