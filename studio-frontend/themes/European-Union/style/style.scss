@@ -1,14 +1,9 @@
+@use "sass:meta";
+
 @layer base, theme;
 
 @layer theme {
-  // Don't import to avoid conflicts
-  // @import "buttons.scss";
-  // @import "checkbox.scss";
-  // @import "forms.scss";
-  // @import "select.scss";
-  @import "text.scss";
-  // @import "radio.scss";
-  // @import "mobile/text.scss";
+  @include meta.load-css("text");
 
   body {
     --font-family: "Arial", "Noto Sans", "sans-serif";

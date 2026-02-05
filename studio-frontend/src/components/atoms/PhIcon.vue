@@ -1,49 +1,49 @@
 <template>
-  <component
-    v-if="iconComponent"
-    :is="iconComponent"
-    :weight="weight"
-    :mirrored="mirrored"
-    :class="['icon-svg', size, color, animation]"
-    :style="{ color: computedColor, ...style }"
-  />
-  <span v-else class="icon-svg missing-icon" :class="[size, color]">?</span>
+  <Icon
+    v-if="iconName"
+    :icon="iconName"
+    :class="['icon-svg', sizeClass, color, animation]"
+    :style="{ color: computedColor, ...sizeStyle }"
+    :horizontal-flip="mirrored" />
+  <span v-else class="icon-svg missing-icon" :class="[sizeClass, color]">?</span>
 </template>
 
 <script>
-import * as PhIcons from 'phosphor-vue';
+import { Icon } from "@iconify/vue2"
 
 export default {
-  name: 'PhIcon',
+  name: "PhIcon",
+  components: { Icon },
   props: {
-    name: { type: String, required: true }, // ex: 'House', 'User', etc.
-    size: { type: [String, Number], default: 'sm' }, // xs, sm, md, lg, xl
-    color: { type: String, default: '' }, // primary, secondary, etc.
-    weight: { type: String, default: 'fill' }, // thin, light, regular, bold, fill, duotone
+    name: { type: String, required: true },
+    size: { type: [String, Number], default: "sm" },
+    color: { type: String, default: "" },
+    weight: { type: String, default: "fill" },
     mirrored: { type: Boolean, default: false },
-    animation: { type: String, default: '' } // spin, pulse
+    animation: { type: String, default: "" },
   },
   computed: {
-    iconComponent() {
-      const camelCase = this.name.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
-      const camelCaseName = camelCase.charAt(0).toUpperCase() + camelCase.slice(1);
-      return PhIcons[`Ph${camelCaseName}`] || null;
+    iconName() {
+      if (!this.name) return null
+      const w = this.weight
+      const suffix = w && w !== "regular" ? "-" + w : ""
+      return `ph:${this.name}${suffix}`
     },
-    style() {
-      const size = Number(this.size)
-      if (size) {
-        return {
-          width: size + 'px',
-          height: size + 'px',
-        }
+    sizeClass() {
+      return isNaN(this.size) ? this.size : null
+    },
+    sizeStyle() {
+      const px = Number(this.size)
+      if (px) {
+        return { width: px + "px", height: px + "px" }
       }
       return {}
     },
     computedColor() {
-      return this.color || 'currentColor';
-    }
-  }
-};
+      return this.color || "currentColor"
+    },
+  },
+}
 </script>
 
 <style lang="scss" scoped>
@@ -129,4 +129,4 @@ export default {
   font-size: 1.2em;
   opacity: 0.5;
 }
-</style> 
+</style>
