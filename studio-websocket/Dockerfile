@@ -1,6 +1,11 @@
-FROM node:22.14.0
+FROM node:22.22.0-alpine
 
-RUN apt-get update -y && apt-get install -y gosu
+RUN apk upgrade --no-cache && apk add --no-cache \
+  bash \
+  curl \
+  su-exec \
+  shadow \
+  && ln -s /sbin/su-exec /usr/local/bin/gosu
 
 WORKDIR /usr/src/app
 
