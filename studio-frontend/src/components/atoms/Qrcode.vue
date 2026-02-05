@@ -4,6 +4,8 @@
   </div>
 </template>
 <script>
+import qrcode from "qrcode-generator"
+
 export default {
   name: "Qrcode",
   props: {
@@ -12,20 +14,13 @@ export default {
       required: true,
     },
   },
-  data() {
-    return {}
-  },
   mounted() {
-    // qrcode is imported as script in index.html (see public/index.html)
-    // from https://github.com/kazuhikoarase/qrcode-generator
-    var qr = qrcode("0", "M")
+    var qr = qrcode(0, "M")
     qr.addData(this.value)
     qr.make()
     this.$refs.qrcode.innerHTML = qr.createSvgTag()
     this.$refs.qrcode.childNodes[0].setAttribute("height", "100%")
     this.$refs.qrcode.childNodes[0].setAttribute("width", "100%")
   },
-  methods: {},
-  components: {},
 }
 </script>

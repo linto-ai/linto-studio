@@ -1,13 +1,8 @@
 @use "sass:color";
 
 @layer base {
-  $montserrat: "Montserrat", "Arial", "Helvetica", "verdana";
-  $luciole: "Luciole", "Arial", "Helvetica", "verdana";
-  $lato: "Lato", "Arial", "Helvetica", "verdana";
-  $rubik: "Rubik", "Arial", "Helvetica", "verdana";
-  $ubuntu: "Ubuntu", "Arial", "Helvetica", "verdana";
-  $bitter: "BitterPro", "Arial", "Helvetica", "verdana";
   $noto: "Noto Sans", "Arial", "Helvetica", "verdana";
+  $luciole: "Luciole", "Arial", "Helvetica", "verdana";
 
   // https://oklch.fyi/ to compute soft
   $yellowHard: #feb11d;

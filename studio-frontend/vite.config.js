@@ -18,15 +18,10 @@ export default defineConfig(({ mode }) => {
       dedupe: ['vue'],
     },
 
+    envPrefix: 'VUE_APP_',
+
     define: {
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
-      // For dynamic access (process.env[key]), we need a real object with stringified values
-      'process.env': JSON.stringify(
-        Object.fromEntries(
-          Object.entries(env)
-            .filter(([key]) => key.startsWith('VUE_APP_'))
-        )
-      ),
     },
 
     css: {

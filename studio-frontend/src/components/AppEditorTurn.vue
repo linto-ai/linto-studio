@@ -225,7 +225,7 @@ export default {
   },
   computed: {
     experimental_highlight() {
-      return process.env?.VUE_APP_EXPERIMENTAL_HIGHLIGHT === "true"
+      return import.meta.env?.VUE_APP_EXPERIMENTAL_HIGHLIGHT === "true"
     },
     turnId: {
       get: function () {
