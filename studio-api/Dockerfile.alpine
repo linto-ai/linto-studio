@@ -47,5 +47,5 @@ HEALTHCHECK CMD curl -f http://localhost || exit 1
 EXPOSE 80
 
 COPY wait-for-it.sh /
-COPY docker-entrypoint-alpine.sh /docker-entrypoint.sh
+COPY docker-entrypoint.sh /docker-entrypoint.sh
 ENTRYPOINT ["/docker-entrypoint.sh"]
