@@ -69,7 +69,7 @@ function setup_user() {
     fi
     #
     # Check if a user with the specified UID already exists
-    if id -u "$USER_ID" >/dev/null 2>&1; then
+    if getent passwd "$USER_ID" >/dev/null 2>&1; then
         USER_NAME=$(getent passwd "$USER_ID" | cut -d: -f1)
         echo "A user with UID=$USER_ID already exists: $USER_NAME"
     else
@@ -78,9 +78,6 @@ function setup_user() {
         useradd -m -u "$USER_ID" -g "$GROUP_NAME" "$USER_NAME"
     fi
 
-
-    # chown -R "$USER_NAME:$GROUP_NAME" /usr/src/app
-
     # Get the user's home directory from the system
     USER_HOME=$(getent passwd "$USER_NAME" | cut -d: -f6)
 
@@ -88,7 +85,6 @@ function setup_user() {
     if [ ! -d "$USER_HOME" ]; then
         echo "Ensure home directory exists: $USER_HOME"
         mkdir -p "$USER_HOME"
-        # chown "$USER_NAME:$GROUP_NAME" "$USER_HOME"
     fi
 
     # Adjust ownership of the application directories
