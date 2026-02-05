@@ -126,7 +126,7 @@
   </MainContentConversation>
 </template>
 <script>
-import moment from "moment"
+import { formatTimestamp } from "@/tools/formatDate.js"
 import { nextTick } from "vue"
 
 import { bus } from "@/main.js"
@@ -235,9 +235,7 @@ export default {
       return this.conversationLoaded
     },
     exportFileTitle() {
-      return `${this.conversation.name.replace(/\s/g, "_")}_${moment().format(
-        "YYYYMMDDHHmmss",
-      )}`
+      return `${this.conversation.name.replace(/\s/g, "_")}_${formatTimestamp()}`
     },
     breadcrumbItems() {
       return [

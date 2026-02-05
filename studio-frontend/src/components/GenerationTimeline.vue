@@ -72,7 +72,7 @@
 </template>
 
 <script>
-import moment from "moment"
+import { formatDateShort } from "@/tools/formatDate.js"
 
 export default {
   name: "GenerationTimeline",
@@ -120,10 +120,7 @@ export default {
   },
   methods: {
     formatDate(dateString) {
-      if (!dateString) return ""
-      const date = moment(dateString)
-      // Format: "11 dec. 2025, 10:45"
-      return date.format("D MMM YYYY, HH:mm")
+      return formatDateShort(dateString)
     },
     selectGeneration(generation) {
       this.$emit("select-generation", generation.generationId)

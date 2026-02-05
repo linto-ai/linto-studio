@@ -40,6 +40,15 @@ export default defineConfig(({ mode }) => {
     build: {
       outDir: 'dist',
       sourcemap: false,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'vendor-vue': ['vue', 'vue-router', 'vuex', 'vue-i18n'],
+            'vendor-editor': ['yjs', 'wavesurfer.js', 'socket.io-client'],
+            'vendor-utils': ['axios', 'debug', 'uuid'],
+          },
+        },
+      },
     },
 
     server: {
@@ -65,10 +74,6 @@ export default defineConfig(({ mode }) => {
         'socket.io-client',
         'yjs',
         'wavesurfer.js',
-        'chart.js',
-        'vue-chartjs',
-        'moment',
-        'jspdf',
         'debug',
         'uuid',
       ],

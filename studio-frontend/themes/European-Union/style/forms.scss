@@ -114,13 +114,12 @@ fieldset[role="listbox"] {
 fieldset[role="listbox"][selected="selected"] {
   border-color: var(--primary-color);
   border-width: 2px;
+  margin: 0px;
+  box-shadow: var(--shadow-block-selected);
+  padding: 1rem;
   legend {
     color: var(--primary-color);
   }
-  margin: 0px;
-  box-shadow: var(--shadow-block-selected);
-  //background-color: #28998314;
-  padding: 1rem;
 }
 
 .form-value {

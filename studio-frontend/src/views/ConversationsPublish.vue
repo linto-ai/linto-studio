@@ -132,9 +132,7 @@
   </MainContentConversation>
 </template>
 <script>
-import moment from "moment"
-import { jsPDF } from "jspdf"
-
+import { formatTimestamp, formatDateTime } from "@/tools/formatDate.js"
 import { conversationMixin } from "../mixins/conversation.js"
 import { orgaRoleMixin } from "../mixins/orgaRole.js"
 import {
@@ -297,9 +295,7 @@ export default {
       return { name: "inbox", hash: "#previous" }
     },
     exportFileTitle() {
-      return `${this.conversation.name.replace(/\s/g, "_")}_${moment().format(
-        "YYYYMMDDHHmmss",
-      )}`
+      return `${this.conversation.name.replace(/\s/g, "_")}_${formatTimestamp()}`
     },
     tabs() {
       const res = Object.keys(this.indexedFormat).map((format) => {
@@ -580,7 +576,8 @@ export default {
       }
       this.loadingDownload = false
     },
-    exportPdfFromEditor(element, title) {
+    async exportPdfFromEditor(element, title) {
+      const { jsPDF } = await import("jspdf")
       const doc = new jsPDF("p", "pt", "letter")
       doc.html(element, {
         callback: function (doc) {
@@ -1047,7 +1044,7 @@ export default {
     },
     formatDate(dateString) {
       if (!dateString) return ""
-      return moment(dateString).format("YYYY-MM-DD HH:mm")
+      return formatDateTime(dateString)
     },
     // Generation methods
     async loadGenerations() {
