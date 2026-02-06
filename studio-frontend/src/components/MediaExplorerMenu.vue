@@ -6,7 +6,7 @@
         params: { organizationId: currentOrganizationScope },
       }"
       class="flex row align-center gap-medium media-explorer-menu__item">
-      <ph-icon name="tray" size="sm"></ph-icon>
+      <ph-icon name="tray" :weight="$route.name === 'explore' ? 'fill' : 'regular'"></ph-icon>
       <span class="media-explorer-menu__item__text">
         {{ $t("navigation.tabs.explore") }}
       </span>
@@ -18,7 +18,7 @@
         params: { organizationId: currentOrganizationScope },
       }"
       class="flex row align-center gap-medium media-explorer-menu__item">
-      <ph-icon name="broadcast"></ph-icon>
+      <ph-icon name="broadcast" :weight="$route.name === 'sessionsList' ? 'fill' : 'regular'"></ph-icon>
       <span class="media-explorer-menu__item__text">
         {{ $t("navigation.tabs.sessions") }}
       </span>
@@ -30,7 +30,7 @@
         params: { organizationId: currentOrganizationScope },
       }"
       class="flex row align-center gap-medium media-explorer-menu__item">
-      <ph-icon name="star"></ph-icon>
+      <ph-icon name="star" :weight="$route.name === 'explore-favorites' ? 'fill' : 'regular'"></ph-icon>
       <span class="media-explorer-menu__item__sub__item__text">
         {{ $t("navigation.tabs.favorites") }}
       </span>
@@ -41,7 +41,7 @@
         params: { organizationId: currentOrganizationScope },
       }"
       class="flex row align-center gap-medium media-explorer-menu__item">
-      <ph-icon name="share-network"></ph-icon>
+      <ph-icon name="share-network" :weight="$route.name === 'explore-shared' ? 'fill' : 'regular'"></ph-icon>
       <span class="media-explorer-menu__item__sub__item__text">
         {{ $t("navigation.tabs.shared") }}
       </span>
