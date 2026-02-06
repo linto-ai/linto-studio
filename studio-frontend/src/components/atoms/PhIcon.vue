@@ -2,14 +2,24 @@
   <Icon
     v-if="iconName"
     :icon="iconName"
-    :class="['icon-svg', sizeClass, color, animation]"
-    :style="{ color: computedColor, ...sizeStyle }"
+    :width="sizePx"
+    :height="sizePx"
+    :class="['icon-svg', color, animation]"
+    :style="{ color: computedColor }"
     :horizontal-flip="mirrored" />
-  <span v-else class="icon-svg missing-icon" :class="[sizeClass, color]">?</span>
+  <span v-else class="icon-svg missing-icon" :class="[size, color]">?</span>
 </template>
 
 <script>
 import { Icon } from "@iconify/vue2"
+
+const SIZE_MAP = {
+  xs: 16,
+  sm: 20,
+  md: 24,
+  lg: 28,
+  xl: 32,
+}
 
 export default {
   name: "PhIcon",
@@ -18,7 +28,7 @@ export default {
     name: { type: String, required: true },
     size: { type: [String, Number], default: "sm" },
     color: { type: String, default: "" },
-    weight: { type: String, default: "fill" },
+    weight: { type: String, default: "regular" },
     mirrored: { type: Boolean, default: false },
     animation: { type: String, default: "" },
   },
@@ -29,15 +39,10 @@ export default {
       const suffix = w && w !== "regular" ? "-" + w : ""
       return `ph:${this.name}${suffix}`
     },
-    sizeClass() {
-      return isNaN(this.size) ? this.size : null
-    },
-    sizeStyle() {
-      const px = Number(this.size)
-      if (px) {
-        return { width: px + "px", height: px + "px" }
-      }
-      return {}
+    sizePx() {
+      const n = Number(this.size)
+      if (n) return n + "px"
+      return (SIZE_MAP[this.size] || 20) + "px"
     },
     computedColor() {
       return this.color || "currentColor"
@@ -54,9 +59,6 @@ export default {
   vertical-align: middle;
   background: none;
 
-  :deep(svg) {
-    fill: currentColor;
-  }
 
   &.pulse :deep(svg) {
     animation: pulse 2s infinite;
@@ -85,26 +87,6 @@ export default {
     100% {
       transform: rotate(360deg);
     }
-  }
-
-  &.lg {
-    width: 24px;
-    height: 24px;
-  }
-
-  &.md {
-    width: 20px;
-    height: 20px;
-  }
-
-  &.sm {
-    width: 16px;
-    height: 16px;
-  }
-
-  &.xs {
-    width: 12px;
-    height: 12px;
   }
 
   /* Color variants */

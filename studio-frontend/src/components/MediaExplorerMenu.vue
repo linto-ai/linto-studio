@@ -6,7 +6,7 @@
         params: { organizationId: currentOrganizationScope },
       }"
       class="flex row align-center gap-medium media-explorer-menu__item">
-      <ph-icon name="Tray"></ph-icon>
+      <ph-icon name="tray" size="sm"></ph-icon>
       <span class="media-explorer-menu__item__text">
         {{ $t("navigation.tabs.explore") }}
       </span>

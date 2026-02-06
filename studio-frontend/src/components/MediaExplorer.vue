@@ -17,10 +17,6 @@
         <template #actions>
           <IsMobile>
             <div class="flex gap-small" v-if="selectedMedias.length > 0">
-              <!-- <Button
-              :label="$t('media_explorer.share')"
-              icon="share-network"
-              variant="outline" /> -->
               <ConversationShareMultiple
                 :selectedConversations="selectedMedias"
                 :currentOrganizationScope="currentOrganizationScope"
@@ -168,14 +164,20 @@ export default {
     },
     isAllSelected: {
       get() {
-        return this.selectedMediaIds.length === this.medias.length && this.medias.length > 0
+        return (
+          this.selectedMediaIds.length === this.medias.length &&
+          this.medias.length > 0
+        )
       },
       set(val) {
         this.selectedMediaIds = val ? this.medias.map((m) => m._id) : []
       },
     },
     isPartiallySelected() {
-      return this.selectedMediaIds.length > 0 && this.selectedMediaIds.length < this.medias.length
+      return (
+        this.selectedMediaIds.length > 0 &&
+        this.selectedMediaIds.length < this.medias.length
+      )
     },
     hasMore() {
       return this.$store.state[this.storeScope].pagination.hasMore
@@ -187,8 +189,6 @@ export default {
       search: "",
       showDeleteModal: false,
       rightPanelWidth: 500,
-      _observerSetupPending: false,
-      _loadMorePending: false, // Prevent multiple simultaneous load-more calls
       selectedMediaIds: [],
     }
   },
@@ -229,10 +229,6 @@ export default {
   methods: {
     reset() {
       this.selectedMediaIds = []
-      this._loadMorePending = false
-    },
-    handleSelectAll() {
-      this.isAllSelected = !this.isAllSelected
     },
     setupIntersectionObserver() {
       if (this.observer) {
