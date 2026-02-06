@@ -3,9 +3,7 @@
     <div class="media-explorer-header__content">
       <div class="flex flex-1 row align-center gap-medium">
         <div class="media-explorer-header__selection">
-          <label
-            class="select-all-control"
-            :class="{ active: isAllSelected }">
+          <label class="select-all-control" :class="{ active: isAllSelected }">
             <Checkbox
               v-model="isAllSelected"
               :indeterminate="isPartiallySelected"
@@ -89,10 +87,16 @@ export default {
     },
     isAllSelected: {
       get() {
-        return this.selectedMediaIds.length === this.totalCount && this.totalCount > 0
+        return (
+          this.selectedMediaIds.length === this.totalCount &&
+          this.totalCount > 0
+        )
       },
       set(val) {
-        this.$emit("update:selectedMediaIds", val ? this.allMedias.map((m) => m._id) : [])
+        this.$emit(
+          "update:selectedMediaIds",
+          val ? this.allMedias.map((m) => m._id) : [],
+        )
       },
     },
     isPartiallySelected() {
@@ -137,6 +141,7 @@ export default {
         searchQuery !== null ? searchQuery.trim() : this.search.trim()
 
       this.$store.dispatch(`${this.storeScope}/setSearchQuery`, formattedSearch)
+      this.$emit("update:selectedMediaIds", [])
     },
 
     handleAddTag(tag) {
