@@ -1,4 +1,4 @@
-const debug = require("debug")("linto:app:webserver:middlewares:logger")
+const debug = require("debug")("linto:components:WebServer:middlewares:logger:logger")
 const LogManager = require(`${process.cwd()}/lib/logger/manager`)
 
 async function logger(req, res, next) {

@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:components:MongoMigration:controllers:version:1.6.2:activityLog`,
+  `linto:components:MongoMigration:version:1.6.2:activityLog`,
 )
 
 const collections_name = "activityLog"

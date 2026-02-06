@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:components:WebServer:controller:generator",
+  "linto:components:WebServer:controllers:conversation:generator",
 )
 
 const { v4: uuidv4 } = require("uuid")

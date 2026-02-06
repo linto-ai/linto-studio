@@ -1,4 +1,4 @@
-const debug = require("debug")("app:webserver:middlewares")
+const debug = require("debug")("linto:components:WebServer:middlewares:index")
 
 const getDurationInMilliseconds = (start) => {
   const NS_PER_SEC = 1e9

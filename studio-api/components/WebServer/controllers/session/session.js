@@ -1,6 +1,7 @@
 const debug = require("debug")(
-  `linto:conversation-manager:components:WebServer:session:sessions`,
+  `linto:components:WebServer:controllers:session:session`,
 )
+const logger = require(`${process.cwd()}/lib/logger/logger`)
 
 const { SessionError } = require(
   `${process.cwd()}/components/WebServer/error/exception/session`,
@@ -143,7 +144,7 @@ async function generatPublicToken(jsonString, req) {
     }
     return jsonString
   } catch (err) {
-    console.log(err)
+    logger.warn("Failed to generate public session token:", err)
   }
   return jsonString
 }

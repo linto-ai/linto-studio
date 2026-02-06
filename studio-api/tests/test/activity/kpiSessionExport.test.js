@@ -314,20 +314,16 @@ describe("KPI Session Export - API Contract Compliance", () => {
       )
     })
 
-    it("[CONTRACT] should return transformed data array for JSON format", async () => {
+    it("[CONTRACT] should return raw database data for JSON format (no transformation)", async () => {
       const mockData = createMockSessionData()
-      const transformedData = createTransformedData()
       mockGetBy.mockResolvedValue({ list: [mockData] })
-      mockTransformSessionData.mockReturnValue(transformedData)
 
       const req = { query: { userScope: "backoffice", format: "json" } }
       await exportKpiSessions(req, mockRes, mockNext)
 
-      // transformSessionData is called via .flatMap(), which passes (item, index, array)
-      expect(mockTransformSessionData).toHaveBeenCalled()
-      expect(mockTransformSessionData.mock.calls[0][0]).toEqual(mockData)
-      // flatMap flattens the array returned by transformSessionData
-      expect(mockRes.json).toHaveBeenCalledWith(transformedData)
+      // JSON format returns raw data directly, without transformSessionData
+      expect(mockTransformSessionData).not.toHaveBeenCalled()
+      expect(mockRes.json).toHaveBeenCalledWith([mockData])
     })
   })
 

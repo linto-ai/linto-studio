@@ -1,5 +1,5 @@
 const Component = require(`../component.js`)
-const debug = require("debug")(`linto:components:MongoMigration`)
+const debug = require("debug")(`linto:components:MongoMigration:index`)
 
 const migration = require("./controllers/migration")
 const MongoDriver = require(`${process.cwd()}/lib/mongodb/driver`)

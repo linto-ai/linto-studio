@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:router:api:taxonomy:categories",
+  "linto:components:WebServer:routes:api:taxonomy:categories",
 )
 
 const { getOrganizationCategory } = require(

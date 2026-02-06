@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:components:WebServer:routecontrollers:organizations:m2m",
+  "linto:components:WebServer:routecontrollers:organizations:apiKey",
 )
 const ms = require("ms")
 

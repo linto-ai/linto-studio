@@ -1,4 +1,4 @@
-const debug = require("debug")("linto:conversation-manager:router:api:tag:tag")
+const debug = require("debug")("linto:components:WebServer:routes:api:organization:tag")
 
 const { createTag, updateTag, deleteTag, getTags, checkBody } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/taxonomy/tags/tag.js`,

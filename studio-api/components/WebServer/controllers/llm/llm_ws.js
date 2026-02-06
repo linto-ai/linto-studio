@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:conversation-manager:components:WebServer:controllers:llm:llm_ws`,
+  `linto:components:WebServer:controllers:llm:llm_ws`,
 )
 const WebSocket = require("ws")
 

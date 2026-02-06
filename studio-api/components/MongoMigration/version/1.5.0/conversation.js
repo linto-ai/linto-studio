@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:components:MongoMigration:controllers:version:1.5.0:conversation`,
+  `linto:components:MongoMigration:version:1.5.0:conversation`,
 )
 const collections_name = "conversations"
 

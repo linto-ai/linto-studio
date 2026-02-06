@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:conversation-manager:components:WebServer:controllers:export:template:default`,
+  `linto:components:WebServer:controllers:export:template:default`,
 )
 
 const {

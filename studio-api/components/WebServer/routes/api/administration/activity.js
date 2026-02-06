@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:router:api:administration:activity",
+  "linto:components:WebServer:routes:api:administration:activity",
 )
 
 const {

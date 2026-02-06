@@ -1,4 +1,4 @@
-const debug = require("debug")("linto:lib:Mailer:templates:builder:title")
+const debug = require("debug")("linto:lib:mailer:templates:mj-footer")
 const year = new Date().getFullYear()
 
 module.exports = function () {

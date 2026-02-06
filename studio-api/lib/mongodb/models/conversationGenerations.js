@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:models:mongodb:models:conversationGenerations",
+  "linto:lib:mongodb:models:conversationGenerations",
 )
 const MongoModel = require(`../model`)
 const { v4: uuidv4 } = require("uuid")

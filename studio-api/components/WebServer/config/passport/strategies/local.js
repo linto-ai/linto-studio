@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:components:webserver:config:passport:local",
+  "linto:components:WebServer:config:passport:strategies:local",
 )
 
 const randomstring = require("randomstring")

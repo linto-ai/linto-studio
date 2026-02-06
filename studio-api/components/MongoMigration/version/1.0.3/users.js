@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:components:MongoMigration:controllers:version:1.0.3:users`,
+  `linto:components:MongoMigration:version:1.0.3:users`,
 )
 
 const collections_name = "users"

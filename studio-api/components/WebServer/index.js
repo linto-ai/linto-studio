@@ -1,6 +1,6 @@
 const Component = require(`../component.js`)
 const fs = require("fs")
-const debug = require("debug")(`linto:components:webserver`)
+const debug = require("debug")(`linto:components:WebServer:index`)
 const express = require("express")
 const fileUpload = require("express-fileupload")
 const passport = require("passport")

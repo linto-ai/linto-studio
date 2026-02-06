@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:conversation-manager:components:WebServer:controllers:export:generator:cred`,
+  `linto:components:WebServer:controllers:export:format:cred`,
 )
 
 const docx = require("docx")

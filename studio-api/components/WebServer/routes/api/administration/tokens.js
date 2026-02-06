@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:router:api:organizations:token",
+  "linto:components:WebServer:routes:api:administration:tokens",
 )
 const {
   createApiKeyPlatform,

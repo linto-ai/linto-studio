@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:components:WebServer:controllers:activity:kpiHandlers",
+  "linto:components:WebServer:controllers:activity:kpiHandlers",
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
@@ -42,7 +42,6 @@ async function generateKpi(organizationId, startDate, endDate) {
 }
 
 function getDayRange(dayOffset) {
-  // const start = new Date("2025-11-20T17:17:51.671Z") // TODO: remove placeholder date for testing
   const start = new Date()
   start.setHours(0, 0, 0, 0)
   start.setDate(start.getDate() - dayOffset)

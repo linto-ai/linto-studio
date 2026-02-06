@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:components:WebServer:controller:services:utility",
+  "linto:components:WebServer:controllers:services:utility",
 )
 const { ServiceError } = require(
   `${process.cwd()}/components/WebServer/error/exception/service`,

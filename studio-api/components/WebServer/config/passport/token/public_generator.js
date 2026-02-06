@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:components:webserver:config:passport:token:public_generator",
+  "linto:components:WebServer:config:passport:token:public_generator",
 )
 
 const jwt = require("jsonwebtoken")

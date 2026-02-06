@@ -1,4 +1,4 @@
-const debug = require("debug")("linto:conversation-manager:config")
+const debug = require("debug")("linto:config")
 const dotenv = require("dotenv")
 const fs = require("fs")
 

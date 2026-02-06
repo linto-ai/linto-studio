@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:conversation-manager:components:WebServer:routeControllers:conversation:transcriptor`,
+  `linto:components:WebServer:routecontrollers:organizations:uploader:transcriptor`,
 )
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 
@@ -157,7 +157,6 @@ async function createConversation(processing_job, body) {
     const result = await model.conversations.create(conversation)
     if (result.insertedCount !== 1) throw new ConversationError()
 
-    //TODO: temporary workaround to create default categories
     await model.categories.createDefaultCategories(
       "keyword",
       result.insertedId.toString(),

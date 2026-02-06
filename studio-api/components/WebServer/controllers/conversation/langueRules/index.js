@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:components:WebServer:controller:langueRules",
+  "linto:components:WebServer:controllers:conversation:langueRules:index",
 )
 
 const frFr = require("./french")

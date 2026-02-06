@@ -1,4 +1,4 @@
-const cp = require('utils-copy')
+const cp = structuredClone
 const { segmentNormalizeText } = require(`${process.cwd()}/components/WebServer/controllers/conversation/normalizeSegment`)
 
 describe('initialzation conversation', () => {

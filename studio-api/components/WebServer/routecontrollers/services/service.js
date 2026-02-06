@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:components:WebServer:routecontrollers:services:services",
+  "linto:components:WebServer:routecontrollers:services:service",
 )
 
 const serviceUtility = require(

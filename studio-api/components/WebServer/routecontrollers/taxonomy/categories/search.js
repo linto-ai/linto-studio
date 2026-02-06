@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:components:WebServer:routecontrollers:taxonomy:categories:search",
+  "linto:components:WebServer:routecontrollers:taxonomy:categories:search",
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 

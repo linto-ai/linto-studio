@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:components:WebServer:controller:conversation:turn",
+  "linto:components:WebServer:controllers:conversation:turn",
 )
 
 function isTurnLonger(turnOne, turnTwo) {

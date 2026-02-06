@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:router:api:session:links",
+  "linto:components:WebServer:routes:api:sessions:data",
 )
 
 const {

@@ -1,4 +1,4 @@
-const debug = require("debug")("linto:conversation-manager:routes:auth")
+const debug = require("debug")("linto:components:WebServer:routes:auth:index")
 
 const { logout, recoveryAuth, generateExtendedAuthToken } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/users/users.js`,

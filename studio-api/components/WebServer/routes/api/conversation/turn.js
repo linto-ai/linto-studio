@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:router:api:conversation:turn",
+  "linto:components:WebServer:routes:api:conversation:turn",
 )
 
 const { addTurn, deleteTurn, updateTurn, mergeTurn, search } = require(

@@ -1,4 +1,4 @@
-const debug = require("debug")("linto:components:IoHandler:Session-Handling")
+const debug = require("debug")("linto:components:IoHandler:controllers:SessionHandling")
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 
 const { storeSession } = require(

@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:components:WebServer:controller:fetchHandler",
+  "linto:components:WebServer:controllers:job:fetchHandler",
 )
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 
