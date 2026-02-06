@@ -1,6 +1,7 @@
 const debug = require("debug")(
   `linto:components:MongoMigration:controllers:schema:conversationGenerations`,
 )
+const logger = require(`${process.cwd()}/lib/logger/logger`)
 
 module.exports = async function (db, collectionName) {
   try {
@@ -30,6 +31,6 @@ module.exports = async function (db, collectionName) {
     )
 
   } catch (error) {
-    console.error("Error creating indexes:", error)
+    logger.error("Error creating indexes:", error)
   }
 }

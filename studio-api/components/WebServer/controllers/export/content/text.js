@@ -27,8 +27,6 @@ function processTurn(paragraphs_content, data) {
   const conversation = data.text
   const lines = conversation.data.split("\n")
 
-  //TODO: WIP to clean
-  // metadata.speakers = metadata.speakers.map(speaker => speaker.charAt(0).toUpperCase() + speaker.slice(1))
   data.speakers = data.speakers.flatMap((speaker) => [
     speaker,
     speaker.charAt(0).toUpperCase() + speaker.slice(1),

@@ -205,10 +205,7 @@ async function inviteNewUser(email) {
       id: userId,
       magicId: magicId,
     }
-    // await Mailing.conversationSharedNewUser(email, req, magicId, sharedBy[0].email)
-    // await model.conversations.addSharedUser(req.params.conversationId, { userId, sharedBy: req.payload.data.userId, right: 1 })
   }
-  //TODO: throw error ?
 }
 
 module.exports = {

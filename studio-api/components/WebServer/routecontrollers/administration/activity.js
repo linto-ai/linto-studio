@@ -16,8 +16,6 @@ async function getActivity(req, res, next) {
 
 async function getKpiByRessource(req, res, next) {
   try {
-    //TODO: rework if no orgaId
-    // const { organizationId } = req.params
     const { startDate, endDate, resource, organizationId } = req.query
 
     let result
@@ -193,7 +191,9 @@ async function exportKpiSessions(req, res, next) {
 
       case "csv":
         // Transform data (flatten since each session may have multiple channel rows)
-        const csvData = sessionKpiList.list.flatMap(kpiExport.transformSessionData)
+        const csvData = sessionKpiList.list.flatMap(
+          kpiExport.transformSessionData,
+        )
         const csvContent = kpiExport.generateCsv(csvData)
         res.setHeader("Content-Type", "text/csv; charset=utf-8")
         res.setHeader(
@@ -204,7 +204,9 @@ async function exportKpiSessions(req, res, next) {
 
       case "xls":
         // Transform data (flatten since each session may have multiple channel rows)
-        const xlsData = sessionKpiList.list.flatMap(kpiExport.transformSessionData)
+        const xlsData = sessionKpiList.list.flatMap(
+          kpiExport.transformSessionData,
+        )
         const xlsxBuffer = await kpiExport.generateXlsx(xlsData)
         res.setHeader(
           "Content-Type",
