@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:components:webserver:config:passport:oidc:eu",
+  "linto:components:WebServer:config:passport:strategies:oidc_eu",
 )
 const randomstring = require("randomstring")
 const appLogger = require(`${process.cwd()}/lib/logger/logger.js`)

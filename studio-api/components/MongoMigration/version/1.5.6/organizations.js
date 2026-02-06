@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:components:MongoMigration:controllers:version:1.5.6:users`,
+  `linto:components:MongoMigration:version:1.5.6:organizations`,
 )
 const moment = require("moment")
 

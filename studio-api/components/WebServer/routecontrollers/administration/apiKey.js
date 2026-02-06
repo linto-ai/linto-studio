@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:components:WebServer:routecontrollers:administration:m2m",
+  "linto:components:WebServer:routecontrollers:administration:apiKey",
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 

@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:components:MongoMigration:controllers:version:1.5.3:version`,
+  `linto:components:MongoMigration:version:1.5.3:version`,
 )
 
 const previous_version = "1.5.2"

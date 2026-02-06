@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:conversation-manager:components:WebServer:routeControllers:import`,
+  `linto:components:WebServer:routecontrollers:organizations:uploader:import`,
 )
 const utf8 = require("utf8")
 

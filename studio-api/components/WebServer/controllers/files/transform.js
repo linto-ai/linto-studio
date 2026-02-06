@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:components:WebServer:controller:file:tranform",
+  "linto:components:WebServer:controllers:files:transform",
 )
 
 const { spawn } = require("child_process")

@@ -1,4 +1,4 @@
-const debug = require("debug")("linto:lib:Mailer:templates:builder:body")
+const debug = require("debug")("linto:lib:mailer:templates:mj-body")
 
 const Handlebars = require("handlebars")
 const lang = {

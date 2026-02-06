@@ -1,4 +1,4 @@
-const debug = require("debug")("linto:components:IoHandler:mqtt-events")
+const debug = require("debug")("linto:components:IoHandler:controllers:MqttEvents")
 
 const retryInterval = 10000 // Retry every 10 seconds
 const maxRetries = 5 // Maximum number of retries

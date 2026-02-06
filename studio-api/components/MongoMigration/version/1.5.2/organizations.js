@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:components:MongoMigration:controllers:version:1.5.2:organization`,
+  `linto:components:MongoMigration:version:1.5.2:organizations`,
 )
 const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
 

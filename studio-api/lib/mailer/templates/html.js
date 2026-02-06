@@ -1,4 +1,4 @@
-const debug = require("debug")("linto:lib:Mailer:templates:builder:html")
+const debug = require("debug")("linto:lib:mailer:templates:html")
 
 const mjml2html = require("mjml")
 const mjMailHeader = require("./mj-header")

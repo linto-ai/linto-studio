@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:components:MongoMigration:controllers:version:1.4.3:conversation_export`,
+  `linto:components:MongoMigration:version:1.4.3:conversation_export`,
 )
 
 const initDb = require(

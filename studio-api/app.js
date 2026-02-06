@@ -1,4 +1,4 @@
-const debug = require("debug")("linto:app:main")
+const debug = require("debug")("linto:app")
 const ora = require("ora")
 
 class App {

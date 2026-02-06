@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:components:WebServer:controller:filterRules",
+  "linto:components:WebServer:controllers:conversation:filterRules:index",
 )
 
 const segmentWordResize = require("./segmentWordResize")

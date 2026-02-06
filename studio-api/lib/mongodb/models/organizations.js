@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:lib:mongodb:models:organization",
+  "linto:lib:mongodb:models:organizations",
 )
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)

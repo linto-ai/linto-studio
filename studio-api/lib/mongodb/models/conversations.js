@@ -1,6 +1,6 @@
 const MongoModel = require(`../model`)
 const debug = require("debug")(
-  "linto:conversation-manager:models:mongodb:models:conversations",
+  "linto:lib:mongodb:models:conversations",
 )
 
 const moment = require("moment")

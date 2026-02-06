@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:conversation-manager:components:WebServer:controllers:export:content:transcription`,
+  `linto:components:WebServer:controllers:export:content:document`,
 )
 
 const docx = require("docx")

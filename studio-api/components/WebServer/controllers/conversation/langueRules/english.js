@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:components:WebServer:controller:langueRules:french",
+  "linto:components:WebServer:controllers:conversation:langueRules:english",
 )
 
 function correctSegmentText(seg_text) {

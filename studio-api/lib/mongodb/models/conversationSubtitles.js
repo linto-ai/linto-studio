@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:models:mongodb:models:conversation_subtitles",
+  "linto:lib:mongodb:models:conversationSubtitles",
 )
 const MongoModel = require(`../model`)
 

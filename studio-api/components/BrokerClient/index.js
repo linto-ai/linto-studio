@@ -1,4 +1,4 @@
-const debug = require("debug")(`linto:components:BrokerClient`)
+const debug = require("debug")(`linto:components:BrokerClient:index`)
 const logger = require(`${process.cwd()}/lib/logger/logger`)
 
 const Component = require(`../component.js`)

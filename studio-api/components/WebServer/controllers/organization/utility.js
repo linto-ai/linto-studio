@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:components:WebServer:controller:organizations:utility",
+  "linto:components:WebServer:controllers:organization:utility",
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 

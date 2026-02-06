@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:models:mongodb:models",
+  "linto:lib:mongodb:model",
 )
 
 const MongoDriver = require(`./driver`)

@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:components:MongoMigration:controllers:migration`,
+  `linto:components:MongoMigration:controllers:migration:index`,
 )
 
 //read all folder in version 1

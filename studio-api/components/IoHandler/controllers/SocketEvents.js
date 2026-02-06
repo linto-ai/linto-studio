@@ -1,4 +1,4 @@
-const debug = require("debug")("linto:components:IoHandler:socket-event")
+const debug = require("debug")("linto:components:IoHandler:controllers:SocketEvents")
 
 // Event endpoints for other components to emit events to sockets
 module.exports = function () {

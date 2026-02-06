@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:conversation-manager:components:WebServer:session:conversation`,
+  `linto:components:WebServer:controllers:session:conversation`,
 )
 
 const axios = require(`${process.cwd()}/lib/utility/axios`)

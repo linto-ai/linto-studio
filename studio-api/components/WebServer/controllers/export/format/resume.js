@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:conversation-manager:components:WebServer:controllers:export:generator:resume`,
+  `linto:components:WebServer:controllers:export:format:resume`,
 )
 
 const docx = require("docx")

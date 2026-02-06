@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:components:WebServer:controller:segment_normalize",
+  "linto:components:WebServer:controllers:conversation:normalizeSegment",
 )
 
 const logger = require(`${process.cwd()}/lib/logger/logger`)

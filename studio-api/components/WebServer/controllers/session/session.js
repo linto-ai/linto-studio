@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:conversation-manager:components:WebServer:session:sessions`,
+  `linto:components:WebServer:controllers:session:session`,
 )
 const logger = require(`${process.cwd()}/lib/logger/logger`)
 

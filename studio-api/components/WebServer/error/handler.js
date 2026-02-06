@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:components:WebServer:error:handler",
+  "linto:components:WebServer:error:handler",
 )
 const fs = require("fs")
 

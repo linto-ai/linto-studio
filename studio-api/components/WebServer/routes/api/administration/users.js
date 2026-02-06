@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:router:api:admin:users",
+  "linto:components:WebServer:routes:api:administration:users",
 )
 const {
   createSuperUser,

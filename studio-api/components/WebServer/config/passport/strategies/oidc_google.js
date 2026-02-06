@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:components:webserver:config:passport:oidc:google",
+  "linto:components:WebServer:config:passport:strategies:oidc_google",
 )
 const crypto = require("crypto")
 

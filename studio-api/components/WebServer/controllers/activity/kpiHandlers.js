@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:components:WebServer:controllers:activity:kpiHandlers",
+  "linto:components:WebServer:controllers:activity:kpiHandlers",
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 

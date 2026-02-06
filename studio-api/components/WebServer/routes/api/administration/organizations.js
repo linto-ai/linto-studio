@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:router:api:organizations:organizations",
+  "linto:components:WebServer:routes:api:administration:organizations",
 )
 const {
   listAllOrganization,

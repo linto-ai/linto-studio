@@ -1,4 +1,4 @@
-const debug = require("debug")("linto:lib:logger")
+const debug = require("debug")("linto:lib:logger:logger")
 const fs = require("fs")
 const { createLogger, format, transports } = require("winston")
 

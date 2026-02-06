@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:components:webserver:middlewares:access:conversation",
+  "linto:components:WebServer:middlewares:access:taxonomy",
 )
 
 const CONVERSATION_RIGHTS = require(

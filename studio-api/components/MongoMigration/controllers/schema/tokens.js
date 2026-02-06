@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:components:MongoMigration:controllers:schema:token`,
+  `linto:components:MongoMigration:controllers:schema:tokens`,
 )
 const logger = require(`${process.cwd()}/lib/logger/logger`)
 

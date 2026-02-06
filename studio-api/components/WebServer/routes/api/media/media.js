@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:router:api:file:files",
+  "linto:components:WebServer:routes:api:media:media",
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const fs = require("fs")

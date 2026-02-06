@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:components:IoHandler:Conversations-Handling",
+  "linto:components:IoHandler:controllers:ConversationHandling",
 )
 
 const MAX_ATTEMPTS = 1000

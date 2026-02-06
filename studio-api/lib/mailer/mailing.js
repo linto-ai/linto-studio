@@ -1,4 +1,4 @@
-const debug = require("debug")("linto:lib:Mailer:mailing")
+const debug = require("debug")("linto:lib:mailer:mailing")
 const Mailer = require(`./mailer`)
 const TYPE = require("./dao/type")
 const htmlBuilder = require("./templates/html.js")

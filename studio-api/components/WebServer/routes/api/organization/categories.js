@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:router:api:tag:categories",
+  "linto:components:WebServer:routes:api:organization:categories",
 )
 const { updateCategory, deleteCategory } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/taxonomy/categories/categories.js`,

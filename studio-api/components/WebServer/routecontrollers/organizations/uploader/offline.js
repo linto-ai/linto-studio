@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:conversation-manager:components:WebServer:routeControllers:conversation:transcriptor`,
+  `linto:components:WebServer:routecontrollers:organizations:uploader:offline`,
 )
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 const { storeFile } = require(

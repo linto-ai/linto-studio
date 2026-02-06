@@ -1,4 +1,4 @@
-const debug = require("debug")("linto:lib:Mailer:mailer")
+const debug = require("debug")("linto:lib:mailer:mailer")
 const nodemailer = require("nodemailer")
 const { MailError } = require("./../error/customErrors")
 

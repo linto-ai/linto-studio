@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:components:BrokerClient:mqtt-events-delivery",
+  "linto:components:BrokerClient:controllers:MqttEventsDelivery",
 )
 const logger = require(`${process.cwd()}/lib/logger/logger`)
 

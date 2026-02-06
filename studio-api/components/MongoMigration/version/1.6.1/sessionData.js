@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:components:MongoMigration:controllers:version:1.6.1::sessionData`,
+  `linto:components:MongoMigration:version:1.6.1:sessionData`,
 )
 
 const collectionName = "sessionAlias"

@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:components:webserver:config:passport:oidc:middleware",
+  "linto:components:WebServer:config:passport:middleware",
 )
 const passport = require("passport")
 const { expressjwt: jwt } = require("express-jwt")

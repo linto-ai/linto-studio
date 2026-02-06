@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:router:api:taxonomy:conversation",
+  "linto:components:WebServer:routes:api:taxonomy:metadata",
 )
 
 const {

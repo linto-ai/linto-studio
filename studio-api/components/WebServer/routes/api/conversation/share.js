@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:router:api:conversation:share",
+  "linto:components:WebServer:routes:api:conversation:share",
 )
 
 const {

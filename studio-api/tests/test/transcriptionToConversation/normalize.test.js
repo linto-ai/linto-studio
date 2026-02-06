@@ -1,4 +1,4 @@
-const debug = require('debug')('linto:tests:linstt:normalize-double-apostrophe-reduce')
+const debug = require('debug')('linto:tests:test:transcriptionToConversation:normalize.test')
 
 const cp = structuredClone
 const { segmentNormalizeText } = require(`${process.cwd()}/components/WebServer/controllers/conversation/normalizeSegment`)

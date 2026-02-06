@@ -1,4 +1,4 @@
-const debug = require("debug")("linto:components:socketio")
+const debug = require("debug")("linto:components:IoHandler:index")
 const Component = require(`../component.js`)
 const socketIO = require("socket.io")
 const axios = require(`${process.cwd()}/lib/utility/axios`)

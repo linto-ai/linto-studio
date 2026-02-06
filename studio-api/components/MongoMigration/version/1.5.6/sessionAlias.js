@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:components:MongoMigration:controllers:version:1.5.6::sessionAlias`,
+  `linto:components:MongoMigration:version:1.5.6:sessionAlias`,
 )
 
 const initDb = require(

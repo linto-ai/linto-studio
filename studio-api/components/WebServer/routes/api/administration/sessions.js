@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:router:api:session:alias",
+  "linto:components:WebServer:routes:api:administration:sessions",
 )
 
 const { getAllSessionData } = require(
