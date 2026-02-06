@@ -1,6 +1,7 @@
 const debug = require("debug")(
   "linto:components:BrokerClient:mqtt-events-delivery",
 )
+const logger = require(`${process.cwd()}/lib/logger/logger`)
 
 module.exports = function () {
   this.deliveryClient.on("message", (topic, message) => {
@@ -10,7 +11,7 @@ module.exports = function () {
       ;[type, out, session_id, channel_index, action] = topic.split("/")
     } catch (error) {
       // Handle the split error (e.g., skip processing, return early, etc.)
-      console.error("Error splitting topic:", error)
+      logger.error(`Error splitting topic "${topic}":`, error)
       return
     }
 
@@ -36,7 +37,7 @@ module.exports = function () {
     let parsedMessage = JSON.parse(message.toString())
 
     if (this.app.components["IoHandler"] === undefined) {
-      console.log("IoHandler not loaded yet")
+      logger.info("BrokerClient requires IoHandler component, not loaded yet")
       return
     }
     this.app.components["IoHandler"].emit(

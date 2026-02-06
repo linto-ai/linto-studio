@@ -1,4 +1,5 @@
 const debug = require("debug")(`linto:components:BrokerClient`)
+const logger = require(`${process.cwd()}/lib/logger/logger`)
 
 const Component = require(`../component.js`)
 const MqttClient = require(`${process.cwd()}/lib/mqtt/mqtt.js`)
@@ -65,7 +66,7 @@ class BrokerClient extends Component {
       this.sessionState = ERROR
       if (this.notify) {
         if (this.app.components["IoHandler"] === undefined) {
-          console.log("IoHandler not loaded yet")
+          logger.info("BrokerClient requires IoHandler component, not loaded yet")
           return
         }
         this.app.components["IoHandler"].emit("borker_disconnected")
@@ -93,7 +94,7 @@ class BrokerClient extends Component {
       this.organizationState = ERROR
 
       if (this.app.components["IoHandler"] === undefined) {
-        console.log("IoHandler not loaded yet")
+        logger.info("BrokerClient requires IoHandler component, not loaded yet")
         return
       }
 

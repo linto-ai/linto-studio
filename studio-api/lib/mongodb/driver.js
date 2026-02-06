@@ -1,5 +1,6 @@
 const mongoDb = require("mongodb")
 const { MongoClient } = require("mongodb")
+const logger = require(`${process.cwd()}/lib/logger/logger`)
 
 const index = require("./index/init.js")
 const user = require("./populate/init.js")
@@ -35,7 +36,7 @@ class MongoDriver {
         return false
       }
     } catch (error) {
-      console.error(error)
+      logger.error(error)
       return false
     }
   }
@@ -44,28 +45,28 @@ class MongoDriver {
     if (!MongoDriver.db) {
       try {
         await MongoDriver.client.connect()
-        console.log("> MongoDB : Connected")
+        logger.info("> MongoDB : Connected")
         MongoDriver.db = MongoDriver.client.db(process.env.DB_NAME)
-        console.log(
+        logger.info(
           `> MongoDB : Successfully connected to database "${process.env.DB_NAME}"`,
         )
 
         // Event handling
         MongoDriver.client.on("close", () => {
-          console.error("> MongoDb : Connection lost")
+          logger.error("> MongoDb : Connection lost")
         })
         MongoDriver.client.on("error", (e) => {
-          console.error("> MongoDb ERROR: ", e)
+          logger.error("> MongoDb ERROR: ", e)
         })
         MongoDriver.client.on("reconnect", () => {
-          console.error("> MongoDb : Reconnected")
+          logger.info("> MongoDb : Reconnected")
         })
 
         // Optionally, create indexes
         index.createIndex(MongoDriver)
         user.createSuperAdmin()
       } catch (err) {
-        console.error("> MongoDB ERROR unable to connect:", err)
+        logger.error("> MongoDB ERROR unable to connect:", err)
       }
     }
   }

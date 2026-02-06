@@ -27,9 +27,6 @@ module.exports = async function (db, collectionName) {
       "organization.id": 1,
     })
 
-    console.log(
-      `Collection "${collectionName}" with TTL index created successfully.`,
-    )
   } catch (error) {
     console.error("Error creating collection:", error)
   }

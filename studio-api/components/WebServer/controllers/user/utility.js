@@ -1,6 +1,7 @@
 const debug = require("debug")(
   "linto:conversation-manager:components:WebServer:controller:user:utility",
 )
+const logger = require(`${process.cwd()}/lib/logger/logger`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const CONVERSATION_RIGHTS = require(
@@ -33,7 +34,7 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
     for (const swUser of conversation.sharedWithUsers) {
       let user = await model.users.getById(swUser.userId)
       if (user.length !== 1) {
-        console.log("User not found", swUser.userId)
+        logger.info("User not found", { userId: swUser.userId })
       } else {
         if (
           isShare &&
@@ -53,7 +54,7 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
     for (const oUser of organiaztion.users) {
       let user = await model.users.getById(oUser.userId)
       if (user.length !== 1) {
-        console.log("User not found", oUser.userId)
+        logger.info("User not found", { userId: oUser.userId })
       } else {
         if (
           isShare &&

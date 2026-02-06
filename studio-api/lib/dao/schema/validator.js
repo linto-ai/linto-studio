@@ -1,4 +1,5 @@
 const Validator = new (require("jsonschema").Validator)()
+const logger = require(`${process.cwd()}/lib/logger/logger`)
 
 function validateJson(jsonToValidate, schemaName) {
   try {
@@ -16,7 +17,7 @@ function validateJson(jsonToValidate, schemaName) {
       return true
     } else {
       validationResult.errors.forEach((error) => {
-        console.log(error.stack)
+        logger.warn("Schema validation error:", error.stack)
       })
 
       return false

@@ -2,6 +2,7 @@ const debug = require("debug")(
   "linto:components:WebServer:controller:segment_normalize",
 )
 
+const logger = require(`${process.cwd()}/lib/logger/logger`)
 const rules = require("./langueRules/index")
 const filterRules = require("./filterRules/index")
 
@@ -73,7 +74,7 @@ function* ruleSequenceGenerator(segments, lang) {
       i++
     }
   } catch (error) {
-    console.log(error)
+    logger.warn("Segment normalization failed:", error)
   }
 }
 

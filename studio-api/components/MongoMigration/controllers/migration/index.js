@@ -7,6 +7,7 @@ const INIT_VERSION = "0.0.0"
 
 const fs = require("fs")
 const fsPromises = require("fs").promises
+const logger = require(`${process.cwd()}/lib/logger/logger`)
 
 module.exports = {
   async migrationProcessing(db, version) {
@@ -24,7 +25,7 @@ module.exports = {
       )
 
       if (desired_index === -1 || current_index === -1) {
-        console.error(
+        logger.error(
           "Error, desired version not found " +
             version.desired_version +
             ". Version range " +
@@ -46,7 +47,7 @@ module.exports = {
         }
       }
     } catch (err) {
-      console.error(err)
+      logger.error(err)
     }
   },
 
@@ -74,7 +75,7 @@ module.exports = {
 
       return version
     } catch (err) {
-      console.error(err)
+      logger.error(err)
     }
   },
 }
@@ -85,8 +86,8 @@ async function doMigration(versionStep, db, step) {
       `${process.cwd()}/components/MongoMigration/version/${versionStep}`,
     )
     if (step === "up")
-      console.log(`Migration ${step} to version ${versionStep}`)
-    else console.log(`Migration ${step} from version ${versionStep}`)
+      logger.info(`Migration ${step} to version ${versionStep}`)
+    else logger.info(`Migration ${step} from version ${versionStep}`)
 
     for (let j = 0; j < migrationFiles.length; j++) {
       const file = migrationFiles[j]
@@ -99,10 +100,10 @@ async function doMigration(versionStep, db, step) {
       } else if (step === "down") {
         await migration.down(db)
       } else {
-        console.error("Error, step not found")
+        logger.error("Error, step not found")
       }
     }
   } catch (err) {
-    console.error(err)
+    logger.error(err)
   }
 }

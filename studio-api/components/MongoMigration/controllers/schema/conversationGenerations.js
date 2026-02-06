@@ -29,7 +29,6 @@ module.exports = async function (db, collectionName) {
       { name: "conversationId_serviceId_isCurrent" },
     )
 
-    console.log(`Collection "${collectionName}" indexes created successfully.`)
   } catch (error) {
     console.error("Error creating indexes:", error)
   }
