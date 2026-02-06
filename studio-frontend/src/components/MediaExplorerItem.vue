@@ -1,7 +1,7 @@
 <template>
   <div
     class="media-explorer-item"
-@click="toggleSelection"
+    @click="toggleSelection"
     :class="{
       'media-explorer-item--selected': isSelected,
       'media-explorer-item--favorite': isFavorite,
@@ -17,23 +17,21 @@
       <div class="media-explorer-item__left">
         <!-- Favorite & Checkbox group -->
         <div class="media-explorer-item__controls">
-          <Button
-            class="media-explorer-item__favorite"
-            :class="{ active: isFavorite }"
-            @click.stop="toggleFavorite"
-            icon="star"
-            :title="$t('media_explorer.favorite')"
-            :iconWeight="isFavorite ? 'fill' : 'regular'"
-            :variant="isFavorite ? 'primary' : 'transparent'"
-            size="sm" />
-
           <Checkbox
             v-model="selectedMediaIdsModel"
             @click.native.stop
             :checkbox-value="media._id"
             class="media-explorer-item__checkbox" />
         </div>
-
+        <Button
+          class="media-explorer-item__favorite"
+          :class="{ active: isFavorite }"
+          @click.stop="toggleFavorite"
+          icon="star"
+          :title="$t('media_explorer.favorite')"
+          :iconWeight="isFavorite ? 'fill' : 'regular'"
+          :variant="isFavorite ? 'primary' : 'transparent'"
+          size="sm" />
         <!-- Media type icon -->
         <Tooltip
           :text="
@@ -467,10 +465,10 @@ export default {
   display: flex;
   align-items: center;
   gap: 2px;
-  padding: 2px;
-  border: 1px solid var(--neutral-40);
-  border-radius: 4px;
-  background-color: var(--neutral-10);
+  padding: 0.375rem 0.75rem;
+  // border: 1px solid var(--neutral-40);
+  // border-radius: 4px;
+  // background-color: var(--neutral-10);
   flex-shrink: 0;
 }
 
