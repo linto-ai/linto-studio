@@ -27,10 +27,14 @@ class BrokerClient extends Component {
       // roomId is the concatenation of session_id / channel_index
       (roomId) => `transcriber/out/${roomId}/partial`,
       (roomId) => `transcriber/out/${roomId}/final`,
+      (roomId) => `transcriber/out/${roomId}/partial/translations`,
+      (roomId) => `transcriber/out/${roomId}/final/translations`,
     ]
     this.deliverySubs = [
       `transcriber/out/+/+/partial`,
       `transcriber/out/+/+/final`,
+      `transcriber/out/+/+/partial/translations`,
+      `transcriber/out/+/+/final/translations`,
     ]
 
     // Initialize delivery client
