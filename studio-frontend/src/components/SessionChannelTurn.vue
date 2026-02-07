@@ -1,5 +1,5 @@
 <template>
-  <div class="channel-turn">
+  <div class="channel-turn" v-if="text">
     <!-- <div class="flex col channel-turn__metadata">
       
       <span class="channel-turn__time">{{ time }}</span>
