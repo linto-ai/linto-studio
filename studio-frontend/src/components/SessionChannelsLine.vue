@@ -97,7 +97,15 @@ export default {
     },
   },
   data() {
-    const translations = this.item.availableTranslations || []
+    const raw = this.item.availableTranslations || []
+    let translations
+    if (Array.isArray(raw)) {
+      translations = raw
+    } else {
+      const discrete = raw.discrete || []
+      const external = (raw.external || []).flatMap(e => e.languages || [])
+      translations = [...new Set([...discrete, ...external])]
+    }
     let languageNames = new Intl.DisplayNames([this.$i18n.locale], {
       type: "language",
     })

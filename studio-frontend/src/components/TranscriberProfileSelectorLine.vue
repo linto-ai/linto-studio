@@ -93,7 +93,17 @@ export default {
     },
   },
   data() {
-    const translations = this.profile?.config?.availableTranslations || []
+    const raw = this.profile?.config?.availableTranslations || []
+    let translations
+    if (Array.isArray(raw)) {
+      // Legacy flat array of lang codes
+      translations = raw
+    } else {
+      // New format: { discrete: string[], external: [{translator, languages}] }
+      const discrete = raw.discrete || []
+      const external = (raw.external || []).flatMap(e => e.languages || [])
+      translations = [...new Set([...discrete, ...external])]
+    }
     let languageNames = new Intl.DisplayNames([this.$i18n.locale], {
       type: "language",
     })

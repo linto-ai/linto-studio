@@ -70,10 +70,12 @@ export default {
 
       const translations = this.selectedChannel.translations
         .map((translation) => {
+          // Handle both old string format and new object format
+          const langCode = typeof translation === 'string' ? translation : translation.target
           return {
-            value: translation,
-            text: languageNames.of(translation),
-            id: translation,
+            value: langCode,
+            text: languageNames.of(langCode),
+            id: langCode,
           }
         })
         .sort((t1, t2) => t1.text.localeCompare(t2.text))

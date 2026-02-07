@@ -263,19 +263,15 @@ export default {
     qualifiedForCrossSubtitles() {
       let res = true
       res = res && this.selectedChannel.languages.length == 2
-      //res = res && this.selectedChannel.translations.length == 2
-      res =
-        res &&
-        !!this.selectedChannel.translations.find(
-          (t) =>
-            t.split("-")[0] === this.selectedChannel.languages[0].split("-")[0],
-        )
-      res =
-        res &&
-        !!this.selectedChannel.translations.find(
-          (t) =>
-            t.split("-")[0] === this.selectedChannel.languages[1].split("-")[0],
-        )
+      const translations = this.selectedChannel.translations.map(t =>
+        typeof t === 'string' ? t : t.target
+      )
+      res = res && !!translations.find(
+        (t) => t.split("-")[0] === this.selectedChannel.languages[0].split("-")[0]
+      )
+      res = res && !!translations.find(
+        (t) => t.split("-")[0] === this.selectedChannel.languages[1].split("-")[0]
+      )
       return res
     },
     ...mapGetters("system", ["isMobile"]),
