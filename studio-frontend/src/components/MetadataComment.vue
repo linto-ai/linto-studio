@@ -4,9 +4,7 @@
       <span class="flex1">{{
         $t("conversation.highlight_toolbox.comment")
       }}</span>
-      <button class="transparent" @click="deleteMetadata">
-        <span class="icon trash" />
-      </button>
+      <Button variant="transparent" @click="deleteMetadata" icon="trash" />
     </h4>
     <div>{{ metadata.value.content }}</div>
   </section>

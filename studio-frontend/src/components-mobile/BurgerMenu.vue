@@ -71,8 +71,6 @@ import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.j
 import { userName } from "@/tools/userName.js"
 import { logout } from "@/tools/logout"
 
-import LocalSwitcher from "@/components/LocalSwitcher.vue"
-import CloudCardCredits from "@/components-cloud/CardCredits.vue"
 import MediaExplorerMenu from "@/components/MediaExplorerMenu.vue"
 import BackofficeSidebar from "@/components/BackofficeSidebar.vue"
 import MediaExplorerMenuLabels from "@/components/MediaExplorerMenuLabels.vue"
@@ -154,8 +152,6 @@ export default {
   },
   components: {
     UserAccountSelector,
-    LocalSwitcher,
-    CloudCardCredits,
     MediaExplorerMenu,
     BackofficeSidebar,
     MediaExplorerMenuLabels,

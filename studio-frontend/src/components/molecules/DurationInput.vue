@@ -10,7 +10,6 @@
   </FormInput>
 </template>
 <script>
-import { bus } from "@/main.js"
 import EMPTY_FIELD from "@/const/emptyField"
 import FormInput from "@/components/molecules/FormInput.vue"
 
@@ -65,12 +64,10 @@ export default {
     },
     "countUnit.value"() {
       const duration = this.countUnit.value + this.unit.value
-      console.log("upd 1", duration)
       this.$emit("input", duration)
     },
     "unit.value"() {
       const duration = this.countUnit.value + this.unit.value
-      console.log("upd 2", duration)
       this.$emit("input", duration)
     },
   },

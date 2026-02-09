@@ -1,16 +1,16 @@
 <template>
-  <ModalNew
+  <Modal
     @on-cancel="($event) => this.$emit('on-cancel')"
     @on-confirm="confirm"
     v-model="isOpen"
     :title="$t('session.settings_page.metadata.modal_title')"
     :actionBtnLabel="$t('session.settings_page.metadata.confirm_button')">
     <MetadataEditor :field="l_field" v-model="l_field.value"></MetadataEditor>
-  </ModalNew>
+  </Modal>
 </template>
 <script>
 import { bus } from "@/main.js"
-import ModalNew from "@/components/molecules/Modal.vue"
+import Modal from "@/components/molecules/Modal.vue"
 import MetadataEditor from "@/components/MetadataEditor.vue"
 
 export default {
@@ -49,7 +49,7 @@ export default {
     },
   },
   components: {
-    ModalNew,
+    Modal,
     MetadataEditor,
   },
 }

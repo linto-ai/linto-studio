@@ -12,6 +12,17 @@
 </template>
 <script>
 import { Bar } from "vue-chartjs"
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  Legend,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+} from "chart.js"
+
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 
 export default {
   inject: {
@@ -49,7 +60,6 @@ export default {
       return this.$i18n?.locale || "en-US"
     },
     isEmpty() {
-      console.log("data", this.data)
       return (
         !this.data || this.data.length === 0 || this.data.every((v) => v === 0)
       )

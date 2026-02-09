@@ -2,7 +2,6 @@
   <Chip :color="color" :value="HttpMethod" />
 </template>
 <script>
-import { bus } from "@/main.js"
 import Chip from "@/components/atoms/Chip.vue"
 export default {
   props: {

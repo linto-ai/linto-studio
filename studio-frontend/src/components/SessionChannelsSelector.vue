@@ -29,7 +29,6 @@ export default {
     },
   },
   data() {
-    console.log("SessionChannelsSelector", this.channels)
     return {}
   },
   computed: {

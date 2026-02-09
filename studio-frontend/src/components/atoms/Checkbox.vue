@@ -19,7 +19,10 @@ export default {
   name: "Checkbox",
   props: {
     value: { type: [Boolean, Array], default: false },
-    id: { type: String, default: "" },
+    id: {
+      type: String,
+      default: () => Math.random().toString(36).substring(2, 11),
+    },
     name: { type: String, default: "" },
     checkboxValue: { type: [String, Object, Number], default: null },
     disabled: { type: Boolean, default: false },

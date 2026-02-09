@@ -1,13 +1,8 @@
 @use "sass:color";
 
 @layer base {
-  $montserrat: "Montserrat", "Arial", "Helvetica", "verdana";
-  $luciole: "Luciole", "Arial", "Helvetica", "verdana";
-  $lato: "Lato", "Arial", "Helvetica", "verdana";
-  $rubik: "Rubik", "Arial", "Helvetica", "verdana";
-  $ubuntu: "Ubuntu", "Arial", "Helvetica", "verdana";
-  $bitter: "BitterPro", "Arial", "Helvetica", "verdana";
   $noto: "Noto Sans", "Arial", "Helvetica", "verdana";
+  $luciole: "Luciole", "Arial", "Helvetica", "verdana";
 
   // https://oklch.fyi/ to compute soft
   $yellowHard: #feb11d;
@@ -84,17 +79,7 @@
     --small-contrast: var(--dark-60);
 
     --background-disabled: #f6f6f6;
-    --background-primary-soft: var(--primary-soft);
-    --background-primary-hard: var(--primary-hard);
-    --background-primary-soft: var(--secondary-soft);
-    --background-primary-hard: var(--secondary-hard);
-    --background-tertiary-soft: var(--tertiary-soft);
-    --background-tertiary-hard: var(--tertiary-hard);
-    --background-yellow-soft: var(--yellow-soft);
-    --background-yellow-hard: var(--yellow-hard);
-    --background-green-soft: var(--green-soft);
 
-    // outdated variable, to delete (keep now for old code)
     --background-lock-turn: #e6e6e6;
     --border-lock-turn: 1px solid #848484;
 

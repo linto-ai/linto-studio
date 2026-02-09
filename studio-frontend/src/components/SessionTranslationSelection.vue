@@ -13,7 +13,6 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import CustomSelect from "@/components/molecules/CustomSelect.vue"
 
 import { bus } from "@/main.js"
 export default {
@@ -87,13 +86,12 @@ export default {
         return this.value
       },
       set(value) {
-        console.log(value)
         this.$emit("input", value)
       },
     },
   },
   mounted() {},
   methods: {},
-  components: { Fragment, CustomSelect },
+  components: { Fragment },
 }
 </script>

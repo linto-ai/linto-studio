@@ -39,8 +39,8 @@ import {
 } from "./handlers/docHandlers.js"
 
 import { customDebug } from "../../tools/customDebug.js"
-import SyllabicFR from "../../../public/js/syllabic/syllabicFR.js"
-import SyllabicEN from "../../../public/js/syllabic/syllabicEN.js"
+import SyllabicFR from "@/lib/syllabic/syllabicFR.js"
+import SyllabicEN from "@/lib/syllabic/syllabicEN.js"
 
 //let rootDoc = null
 let conversation = null
@@ -346,9 +346,7 @@ function setSocketListeners(socket) {
     }
   })
 
-  socket.on("success", (data) => {
-    console.log("server success !")
-  })
+  socket.on("success", (data) => {})
 
   socket.on(`conversation_updated`, (data) => {
     debugWorker("Websocket event 'conversation_updated'")
@@ -413,7 +411,7 @@ function setSocketListeners(socket) {
         .getArray("screens")
         .observeDeep(sendScreenUpdateToViewWrapper(sendMessage, subtitle))
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   })
 

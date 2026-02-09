@@ -1,5 +1,5 @@
 <template>
-  <ModalNew
+  <Modal
     value
     @on-cancel="() => this.$emit('on-close')"
     @on-confirm="deleteSubtitle"
@@ -22,11 +22,11 @@
         {{ $t("conversation.subtitles.delete_no_selection") }}
       </span>
     </div>
-  </ModalNew>
+  </Modal>
 </template>
 <script>
 import { workerSendMessage } from "../tools/worker-message"
-import ModalNew from "@/components/molecules/Modal.vue"
+import Modal from "@/components/molecules/Modal.vue"
 export default {
   props: {
     subtitleIds: {
@@ -56,6 +56,6 @@ export default {
       this.$emit("on-close")
     },
   },
-  components: { ModalNew },
+  components: { Modal },
 }
 </script>

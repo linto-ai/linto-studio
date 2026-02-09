@@ -1,11 +1,5 @@
 @charset "utf-8";
-//@use "../public/fonts/luciole/Luciole.css";
-//@use "../public/fonts/Noto_Sans/noto.css";
-
-//@use "../public/fonts/Montserrat/Montserrat.css";
 @use "./_layer.scss";
-
-@use "./_mixin.scss";
 @use "./_variables.scss";
 @use "./_material-colors-variables.scss";
 @use "./_material-colors-variables-dark.scss";
@@ -37,7 +31,6 @@
 // Components
 @use "./components/app-header.scss";
 @use "./components/app-notif.scss";
-@use "./components/breadcrumb.scss";
 @use "./components/conversations-list.scss";
 @use "./components/pagination.scss";
 @use "./components/tables.scss";
@@ -73,17 +66,7 @@
 @use "./components/explore.scss";
 @use "./components/typography.scss";
 
-//@use "./views/app-mobile.scss";
-// @use "./components/app-header-mobile.scss";
-// @use "./components/tabs-mobile.scss";
-// @use "./components/conversations-list-mobile.scss";
 @use "./components-mobile/app-mobile.scss";
 @use "./components-mobile/sidebar.scss";
 @use "./components-mobile/session-mobile.scss";
 @use "./components-mobile/burger-menu.scss";
-
-// @layer base {
-//   @use "./components/icons.scss";
-//   @use "./components/forms.scss";
-//   @use "./components/buttons.scss";
-// }

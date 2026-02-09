@@ -22,7 +22,6 @@
   </div>
 </template>
 <script>
-import { bus } from "@/main.js"
 import { debounceMixin } from "@/mixins/debounce.js"
 import GenericTable from "./GenericTable.vue"
 import Pagination from "./Pagination.vue"
@@ -100,7 +99,6 @@ export default {
     },
     removeElement(id) {
       this.data = this.data.filter((d) => d[this.idKey] !== id)
-      console.log("rem", this.data)
     },
     updateElement(id, newElement) {
       this.data = this.data.map((d) => {
@@ -143,7 +141,6 @@ export default {
     },
     fetchMethodParams: {
       handler() {
-        console.log("fetchMethodParams changed", this.fetchMethodParams)
         if (this.currentPageNb == 0) {
           this.debouncedFetchData()
         } else {

@@ -26,7 +26,7 @@
                   :icon="selectedEmoji ? null : 'smiley-blank'"
                   :avatar-text="selectedEmoji || null"
                   :avatar-color="selectedEmoji ? 'primary-soft' : null"
-                  variant="outline"
+                  variant="secondary"
                   size="md"
                   @mouseenter.prevent
                   @mouseleave.prevent />
@@ -65,7 +65,7 @@
               <template #trigger>
                 <Button
                   class="neutral outline icon-only"
-                  variant="outline"
+                  variant="secondary"
                   size="md"
                   :avatar-color="computedAvatarColor" />
               </template>
@@ -138,7 +138,6 @@ const TAG_COLORS = [
 function getRandomColor() {
   const randomIndex = Math.floor(Math.random() * TAG_COLORS.length)
   const selectedColor = TAG_COLORS[randomIndex]
-  console.log(`[MediaExplorerFormTag] Random color selected: ${selectedColor}`)
   return selectedColor
 }
 

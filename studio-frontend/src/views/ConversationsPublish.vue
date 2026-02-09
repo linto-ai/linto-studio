@@ -132,9 +132,7 @@
   </MainContentConversation>
 </template>
 <script>
-import moment from "moment"
-import { jsPDF } from "jspdf"
-
+import { formatTimestamp, formatDateTime } from "@/tools/formatDate.js"
 import { conversationMixin } from "../mixins/conversation.js"
 import { orgaRoleMixin } from "../mixins/orgaRole.js"
 import {
@@ -159,22 +157,13 @@ import {
 import getDescriptionByLanguage from "@/tools/getDescriptionByLanguage.js"
 import { filterLLMServicesBySecurityLevel } from "@/tools/filterBySecurityLevel.js"
 
-import Loading from "@/components/atoms/Loading.vue"
-import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
-import AppEditor from "@/components/AppEditor.vue"
 import MainContentConversation from "@/components/MainContentConversation.vue"
-import MenuToolbox from "@/components/MenuToolbox.vue"
-import CustomSelect from "@/components/molecules/CustomSelect.vue"
-import SwitchInput from "@/components/atoms/SwitchInput.vue"
-import Tabs from "@/components/molecules/Tabs.vue"
-import TranscriptionHelper from "@/components/TranscriptionHelper.vue"
 import ConversationPublishContent from "@/components/ConversationPublishContent.vue"
 import AppEditorChannelsSelector from "@/components/AppEditorChannelsSelector.vue"
 import AppEditorTranslationSelector from "@/components/AppEditorTranslationSelector.vue"
 import PopoverList from "@/components/atoms/PopoverList.vue"
 import GenerationTimeline from "@/components/GenerationTimeline.vue"
 import AIServiceMenu from "@/components/AIServiceMenu.vue"
-import PublicationSection from "@/components/PublicationSection.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import Button from "@/components/atoms/Button.vue"
 export default {
@@ -306,9 +295,7 @@ export default {
       return { name: "inbox", hash: "#previous" }
     },
     exportFileTitle() {
-      return `${this.conversation.name.replace(/\s/g, "_")}_${moment().format(
-        "YYYYMMDDHHmmss",
-      )}`
+      return `${this.conversation.name.replace(/\s/g, "_")}_${formatTimestamp()}`
     },
     tabs() {
       const res = Object.keys(this.indexedFormat).map((format) => {
@@ -589,7 +576,8 @@ export default {
       }
       this.loadingDownload = false
     },
-    exportPdfFromEditor(element, title) {
+    async exportPdfFromEditor(element, title) {
+      const { jsPDF } = await import("jspdf")
       const doc = new jsPDF("p", "pt", "letter")
       doc.html(element, {
         callback: function (doc) {
@@ -1056,7 +1044,7 @@ export default {
     },
     formatDate(dateString) {
       if (!dateString) return ""
-      return moment(dateString).format("YYYY-MM-DD HH:mm")
+      return formatDateTime(dateString)
     },
     // Generation methods
     async loadGenerations() {
@@ -1341,22 +1329,13 @@ export default {
     },
   },
   components: {
-    TranscriptionHelper,
-    Loading,
-    UserInfoInline,
-    AppEditor,
     MainContentConversation,
-    MenuToolbox,
-    CustomSelect,
-    SwitchInput,
-    Tabs,
     ConversationPublishContent,
     AppEditorChannelsSelector,
     AppEditorTranslationSelector,
     PopoverList,
     GenerationTimeline,
     AIServiceMenu,
-    PublicationSection,
     Modal,
     Button,
   },

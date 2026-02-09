@@ -152,14 +152,9 @@ import { sessionMicrophoneMixin } from "@/mixins/sessionMicrophone.js"
 
 import { getEnv } from "@/tools/getEnv"
 
-import MainContent from "@/components/MainContent.vue"
-import SessionNotStarted from "@/components/SessionNotStarted.vue"
-import SessionChannelsSelector from "@/components/SessionChannelsSelector.vue"
-import SessionTranslationSelection from "@/components/SessionTranslationSelection.vue"
 import SessionLiveContent from "@/components/SessionLiveContent.vue"
 import Loading from "@/components/atoms/Loading.vue"
 import SessionEnded from "@/components/SessionEnded.vue"
-import SessionStatus from "@/components/SessionStatus.vue"
 import SessionLiveToolbar from "@/components/SessionLiveToolbar.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
@@ -279,14 +274,10 @@ export default {
   },
   components: {
     LayoutV2,
-    SessionNotStarted,
-    SessionChannelsSelector,
-    SessionTranslationSelection,
     SessionLiveContent,
     SessionLiveToolbar,
     Loading,
     SessionEnded,
-    SessionStatus,
     Modal,
     SessionSetupMicrophone,
     SessionLiveMicrophoneStatus,

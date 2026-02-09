@@ -2,7 +2,6 @@
   <Button :icon="icon" iconWeight="regular" :loading="loading" @click="copy" />
 </template>
 <script>
-import { bus } from "@/main.js"
 export default {
   name: "CopyButton",
   props: {

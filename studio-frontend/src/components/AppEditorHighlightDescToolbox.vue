@@ -24,7 +24,6 @@ import CATEGORY_NAME_FROM_SCOPE from "../const/categoryNameFromScope"
 import { bus } from "@/main.js"
 
 import ContextMenu from "@/components/atoms/ContextMenu.vue"
-import LabeledValue from "@/components/atoms/LabeledValue.vue"
 import Tag from "@/components/molecules/Tag.vue"
 import MetadataComment from "./MetadataComment.vue"
 
@@ -75,6 +74,6 @@ export default {
       e.preventDefault()
     },
   },
-  components: { ContextMenu, Tag, LabeledValue, MetadataComment },
+  components: { ContextMenu, Tag, MetadataComment },
 }
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <ModalNew
+  <Modal
     value
     @on-cancel="() => this.$emit('on-close')"
     @on-confirm="deleteOrganizations"
@@ -13,14 +13,14 @@
         selectedOrganizations.length,
       )
     }}
-  </ModalNew>
+  </Modal>
 </template>
 <script>
 import { apiDeleteOrganisation } from "@/api/organisation.js"
 import bulkRequest from "@/tools/bulkRequest.js"
 import { bus } from "@/main"
 
-import ModalNew from "@/components/molecules/Modal.vue"
+import Modal from "@/components/molecules/Modal.vue"
 
 export default {
   props: {
@@ -80,6 +80,6 @@ export default {
       }
     },
   },
-  components: { ModalNew },
+  components: { Modal },
 }
 </script>

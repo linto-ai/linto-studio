@@ -40,6 +40,9 @@ import AppNotifications from "@/components/AppNotifications.vue"
 
 import "@/style/style.scss"
 
+// Pre-register all theme styles for dynamic loading (Vite glob import)
+const themeStyles = import.meta.glob('../themes/*/style/style.scss')
+
 export default {
   props: {},
   data() {
@@ -75,13 +78,11 @@ export default {
     },
   },
   beforeCreate() {
-    // Limit the dynamic import context so that webpack only considers SCSS files inside the "themes" directory.
-    // This avoids having it try to parse unrelated files at the project root (Dockerfile, README.md, ...).
-    /* eslint-disable-next-line import/no-dynamic-require */
-    import(
-      /* webpackInclude: /themes\/.*\/style\/style\.scss$/ */
-      `../${getCurrentTheme()["stylePath"]}`
-    )
+    // Load theme-specific styles dynamically
+    const stylePath = `../${getCurrentTheme()["stylePath"]}`
+    if (themeStyles[stylePath]) {
+      themeStyles[stylePath]()
+    }
   },
   mounted() {
     // notification usage

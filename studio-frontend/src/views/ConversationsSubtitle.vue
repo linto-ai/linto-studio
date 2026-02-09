@@ -7,30 +7,23 @@
     :error="error">
     <template v-slot:breadcrumb-actions>
       <div class="flex gap-small" style="margin-left: auto">
-        <CustomSelect
+        <PopoverList
           v-if="conversationLoaded"
+          :items="versionList"
           :value="subtitleId"
-          :valueText="versionName"
-          :options="versionList"
-          @input="loadNewSubtitles"></CustomSelect>
-        <!-- <button class="btn primary" @click="downloadSrt" v-if="screens"> -->
-        <!--   <span class="icon upload"></span> -->
-        <!--   <span class="label">{{ $t("conversation.export.title") }}</span> -->
-        <!-- </button> -->
-        <CustomSelect
-          :valueText="$t('conversation.export.title')"
-          iconType="icon"
-          icon="upload"
-          value=""
+          @input="loadNewSubtitles" />
+        <PopoverList
+          :items="exportItems"
           aria-label="select how to download the subtitles"
-          :options="{
-            actions: [
-              { value: 'srt', text: $t('conversation.export.srt') },
-              { value: 'vtt', text: $t('conversation.export.vtt') },
-            ],
-          }"
-          buttonClass="green"
-          @input="downloadSubtitles"></CustomSelect>
+          @input="downloadSubtitles">
+          <template #trigger>
+            <Button
+              icon="upload"
+              variant="primary"
+              size="sm"
+              :label="$t('conversation.export.title')" />
+          </template>
+        </PopoverList>
       </div>
     </template>
     <SubtitleEditor
@@ -60,7 +53,8 @@ import { subtitleMixin } from "@/mixins/subtitle.js"
 
 import MainContentConversation from "@/components/MainContentConversation.vue"
 import SubtitleEditor from "@/components/SubtitleEditor.vue"
-import CustomSelect from "@/components/molecules/CustomSelect.vue"
+import PopoverList from "@/components/atoms/PopoverList.vue"
+import Button from "@/components/atoms/Button.vue"
 export default {
   mixins: [subtitleMixin],
   data() {
@@ -107,16 +101,16 @@ export default {
       return this.subtitleObj.generate_settings
     },
     versionList() {
-      let action = []
-      for (const version of this.subtitleVersions) {
-        action.push({
-          value: version._id,
-          text: version.version,
-        })
-      }
-      return {
-        action: action,
-      }
+      return this.subtitleVersions.map((version) => ({
+        value: version._id,
+        text: version.version,
+      }))
+    },
+    exportItems() {
+      return [
+        { value: "srt", text: this.$t("conversation.export.srt") },
+        { value: "vtt", text: this.$t("conversation.export.vtt") },
+      ]
     },
     breadcrumbItems() {
       return [
@@ -266,7 +260,8 @@ export default {
   components: {
     MainContentConversation,
     SubtitleEditor,
-    CustomSelect,
+    PopoverList,
+    Button,
   },
 }
 </script>

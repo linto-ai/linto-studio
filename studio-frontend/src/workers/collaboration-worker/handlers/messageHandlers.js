@@ -280,7 +280,6 @@ export function deleteSubtitleScreen(screenId, rootDoc) {
     rootDoc.getArray("screens").toJSON(),
     screenId
   )
-  console.log("screenIndex", screenIndex)
   rootDoc.transact(() => {
     debugEditScreen(`delete screen ${screenId}`)
     rootDoc.getArray("screens").delete(screenIndex, 1)

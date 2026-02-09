@@ -9,7 +9,6 @@ const mutations = {
     state.favoritesConversationIds.push(conversationId)
   },
   removeFavoritesConversationId(state, conversationId) {
-    console.log('state just before', state)
     state.favoritesConversationIds = state.favoritesConversationIds.filter(
       (id) => id !== conversationId,
     )

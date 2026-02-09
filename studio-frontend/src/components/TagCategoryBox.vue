@@ -26,7 +26,7 @@
           <slot name="content-just-after-title"></slot>
         </span>
         <slot name="content-after-title"></slot>
-        <span class="icon" :class="iconClass" v-if="!fixed"></span>
+        <ph-icon :name="iconName" v-if="!fixed" />
       </h4>
     </header>
     <ul class="category-box__tag-list flex col" v-if="open">
@@ -113,9 +113,9 @@ export default {
     bus.$off("tag-category-changed", this.updateCategory)
   },
   computed: {
-    iconClass() {
-      if (this.loading) return "loading"
-      return !this.open ? "bottom-arrow" : "top-arrow"
+    iconName() {
+      if (this.loading) return "spinner"
+      return !this.open ? "caret-down" : "caret-up"
     },
     tagsList() {
       const tags =

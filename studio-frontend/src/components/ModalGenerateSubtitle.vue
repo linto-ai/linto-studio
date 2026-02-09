@@ -1,5 +1,5 @@
 <template>
-  <ModalNew
+  <Modal
     value
     :title="$t('conversation.subtitles.generate_subs')"
     :actionBtnLabel="$t('conversation.subtitles.generate')"
@@ -31,10 +31,10 @@
         </template>
       </FormInput>
     </form>
-  </ModalNew>
+  </Modal>
 </template>
 <script>
-import ModalNew from "@/components/molecules/Modal.vue"
+import Modal from "@/components/molecules/Modal.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
 import { formsMixin } from "@/mixins/forms.js"
 import { testName } from "../tools/fields/testName"
@@ -135,7 +135,7 @@ export default {
     },
   },
   components: {
-    ModalNew,
+    Modal,
     FormInput,
     CustomSelect,
   },

@@ -1,7 +1,7 @@
 <template>
   <div
     class="media-explorer-item"
-    @click="select"
+    @click="toggleSelection"
     :class="{
       'media-explorer-item--selected': isSelected,
       'media-explorer-item--favorite': isFavorite,
@@ -17,27 +17,21 @@
       <div class="media-explorer-item__left">
         <!-- Favorite & Checkbox group -->
         <div class="media-explorer-item__controls">
-          <Button
-            class="media-explorer-item__favorite"
-            :class="{ active: isFavorite }"
-            @click.stop="toggleFavorite"
-            icon="star"
-            :title="$t('media_explorer.favorite')"
-            :iconWeight="isFavorite ? 'fill' : 'regular'"
-            :variant="isFavorite ? 'primary' : 'transparent'"
-            size="sm" />
-
-          <div
-            class="media-explorer-item__checkbox-container"
-            :class="{ selected: isSelected }">
-            <input
-              type="checkbox"
-              v-model="isSelected"
-              class="media-explorer-item__checkbox"
-              @change="handleSelectionChange" />
-          </div>
+          <Checkbox
+            v-model="selectedMediaIdsModel"
+            @click.native.stop
+            :checkbox-value="media._id"
+            class="media-explorer-item__checkbox" />
         </div>
-
+        <Button
+          class="media-explorer-item__favorite"
+          :class="{ active: isFavorite }"
+          @click.stop="toggleFavorite"
+          icon="star"
+          :title="$t('media_explorer.favorite')"
+          :iconWeight="isFavorite ? 'fill' : 'regular'"
+          :variant="isFavorite ? 'primary' : 'transparent'"
+          size="sm" />
         <!-- Media type icon -->
         <Tooltip
           :text="
@@ -175,14 +169,13 @@ import { mediaProgressMixin } from "@/mixins/mediaProgress"
 
 import MediaExplorerItemTags from "@/components/MediaExplorerItemTags.vue"
 import ModalDeleteConversations from "@/components/ModalDeleteConversations.vue"
-import UserProfilePicture from "@/components/atoms/UserProfilePicture.vue"
 import TimeDuration from "@/components/atoms/TimeDuration.vue"
 import PopoverList from "@/components/atoms/PopoverList.vue"
+import Checkbox from "@/components/atoms/Checkbox.vue"
 
 import { userName } from "@/tools/userName"
 import userAvatar from "@/tools/userAvatar"
 
-import { PhStar } from "phosphor-vue"
 import MediaExplorerChipStatus from "./MediaExplorerChipStatus.vue"
 import SecurityLevelIndicator from "@/components/SecurityLevelIndicator.vue"
 
@@ -190,14 +183,13 @@ export default {
   mixins: [mediaScopeMixin, mediaProgressMixin],
   name: "MediaExplorerItem",
   components: {
-    PhStar,
-    UserProfilePicture,
     TimeDuration,
     MediaExplorerItemTags,
     ModalDeleteConversations,
     PopoverList,
     MediaExplorerChipStatus,
     SecurityLevelIndicator,
+    Checkbox,
   },
   props: {
     media: {
@@ -212,10 +204,13 @@ export default {
       type: Boolean,
       default: false,
     },
+    selectedMediaIds: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
-      isSelected: false,
       showDeleteModal: false,
     }
   },
@@ -227,6 +222,17 @@ export default {
 
     reactiveMedia() {
       return this.media
+    },
+    isSelected() {
+      return this.selectedMediaIds.includes(this.media._id)
+    },
+    selectedMediaIdsModel: {
+      get() {
+        return this.selectedMediaIds
+      },
+      set(newIds) {
+        this.$emit("update:selectedMediaIds", newIds)
+      },
     },
     filterStatus() {
       return this.$store.getters[`${this.storeScope}/getFilterStatus`]
@@ -359,22 +365,6 @@ export default {
       return !!this.media?.type?.from_session_id
     },
   },
-  watch: {
-    isSelectAll(value) {},
-    // Sync local isSelected state with store
-    selectedMedias: {
-      handler(selectedMedias) {
-        const isCurrentlySelected = selectedMedias.some(
-          (media) => media._id === this.reactiveMedia._id,
-        )
-        if (this.isSelected !== isCurrentlySelected) {
-          this.isSelected = isCurrentlySelected
-        }
-      },
-      immediate: true,
-      deep: true,
-    },
-  },
   methods: {
     toggleFavorite() {
       this.$store.dispatch(
@@ -383,12 +373,19 @@ export default {
       )
     },
 
-    select() {
-      this.isSelected = !this.isSelected
-      this.toggleMediaSelection(this.media)
+    toggleSelection() {
+      if (this.isSelected) {
+        this.$emit(
+          "update:selectedMediaIds",
+          this.selectedMediaIds.filter((id) => id !== this.media._id),
+        )
+      } else {
+        this.$emit("update:selectedMediaIds", [
+          ...this.selectedMediaIds,
+          this.media._id,
+        ])
+      }
     },
-
-    handleSelectionChange() {},
 
     handleActionClick(action) {
       switch (action.id) {
@@ -468,10 +465,10 @@ export default {
   display: flex;
   align-items: center;
   gap: 2px;
-  padding: 2px;
-  border: 1px solid var(--neutral-40);
-  border-radius: 4px;
-  background-color: var(--neutral-10);
+  padding: 0.375rem 0.75rem;
+  // border: 1px solid var(--neutral-40);
+  // border-radius: 4px;
+  // background-color: var(--neutral-10);
   flex-shrink: 0;
 }
 
@@ -504,25 +501,7 @@ export default {
   }
 }
 
-.media-explorer-item__checkbox-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 2px;
-  overflow: hidden;
-  transition: background-color 0.2s ease;
-
-  &.selected {
-    background-color: var(--primary-color);
-  }
-}
-
 .media-explorer-item__checkbox {
-  width: 12px;
-  height: 12px;
-  margin: 0;
   cursor: pointer;
 }
 

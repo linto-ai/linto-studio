@@ -13,7 +13,6 @@
 </template>
 <script>
 import { bus } from "@/main.js"
-import VueLoading from "vue-loading-overlay"
 
 export default {
   props: {
@@ -59,9 +58,7 @@ export default {
   },
   mounted() {},
   methods: {},
-  components: {
-    VueLoading,
-  },
+  components: {},
 }
 </script>
 

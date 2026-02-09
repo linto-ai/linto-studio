@@ -166,11 +166,7 @@ export default {
       ],
     }
   },
-  mounted() {
-    console.log(
-      new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toLocaleString(),
-    )
-  },
+  mounted() {},
   methods: {},
   components: {
     FormInput,

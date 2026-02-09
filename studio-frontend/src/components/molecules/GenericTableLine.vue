@@ -23,7 +23,6 @@
   </tr>
 </template>
 <script>
-import { bus } from "@/main.js"
 import GenericTableCell from "./GenericTableCell.vue"
 import Checkbox from "@/components/atoms/Checkbox.vue"
 import getNestedProperty from "@/tools/getNestedProperty"
@@ -83,7 +82,6 @@ export default {
         return this.selectedRows
       },
       set(value) {
-        console.log("p_selectedRows", value)
         this.$emit("update:selectedRows", value)
       },
     },

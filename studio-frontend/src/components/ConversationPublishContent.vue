@@ -97,8 +97,8 @@
         {{ $t(`publish.generation_first_line.general`) }}
       </h2>
       <div
-        :class="'circle-progress-bar-' + Math.trunc(pdfPercentage)"
-        class="circle-progress-bar">
+        class="circle-progress-bar"
+        :style="{ '--progress': Math.trunc(pdfPercentage) }">
         <span>{{ pdfPercentage }}%</span>
       </div>
       <p v-if="phaseLabel" class="phase-label">{{ phaseLabel }}</p>

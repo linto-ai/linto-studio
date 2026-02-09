@@ -41,10 +41,8 @@ import { sessionModelMixin } from "@/mixins/sessionModel.js"
 
 import { customDebug } from "@/tools/customDebug.js"
 
-import MainContent from "@/components/MainContent.vue"
 import SessionLiveToolbar from "@/components/SessionLiveToolbar.vue"
 import SessionLiveContent from "@/components/SessionLiveContent.vue"
-import StatusLed from "@/components/atoms/StatusLed.vue"
 import V2Layout from "@/layouts/v2-layout.vue"
 
 export default {
@@ -114,10 +112,8 @@ export default {
     },
   },
   components: {
-    MainContent,
     SessionLiveToolbar,
     SessionLiveContent,
-    StatusLed,
     V2Layout,
   },
 }

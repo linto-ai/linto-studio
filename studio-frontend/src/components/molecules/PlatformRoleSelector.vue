@@ -3,6 +3,7 @@
     <Tooltip
       class="plaform-role-tooltip"
       v-for="role in platformRoles"
+      :key="role.value"
       :text="role.description"
       v-if="value & role.value && (!compact || role.value * 2 > value)">
       <div class="plaform-role">

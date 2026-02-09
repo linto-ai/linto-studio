@@ -1,49 +1,54 @@
 <template>
-  <component
-    v-if="iconComponent"
-    :is="iconComponent"
-    :weight="weight"
-    :mirrored="mirrored"
-    :class="['icon-svg', size, color, animation]"
-    :style="{ color: computedColor, ...style }"
-  />
+  <Icon
+    v-if="iconName"
+    :icon="iconName"
+    :width="sizePx"
+    :height="sizePx"
+    :class="['icon-svg', color, animation]"
+    :style="{ color: computedColor }"
+    :horizontal-flip="mirrored" />
   <span v-else class="icon-svg missing-icon" :class="[size, color]">?</span>
 </template>
 
 <script>
-import * as PhIcons from 'phosphor-vue';
+import { Icon } from "@iconify/vue2"
+
+const SIZE_MAP = {
+  xs: 16,
+  sm: 20,
+  md: 24,
+  lg: 28,
+  xl: 32,
+}
 
 export default {
-  name: 'PhIcon',
+  name: "PhIcon",
+  components: { Icon },
   props: {
-    name: { type: String, required: true }, // ex: 'House', 'User', etc.
-    size: { type: [String, Number], default: 'sm' }, // xs, sm, md, lg, xl
-    color: { type: String, default: '' }, // primary, secondary, etc.
-    weight: { type: String, default: 'fill' }, // thin, light, regular, bold, fill, duotone
+    name: { type: String, required: true },
+    size: { type: [String, Number], default: "sm" },
+    color: { type: String, default: "" },
+    weight: { type: String, default: "regular" },
     mirrored: { type: Boolean, default: false },
-    animation: { type: String, default: '' } // spin, pulse
+    animation: { type: String, default: "" },
   },
   computed: {
-    iconComponent() {
-      const camelCase = this.name.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
-      const camelCaseName = camelCase.charAt(0).toUpperCase() + camelCase.slice(1);
-      return PhIcons[`Ph${camelCaseName}`] || null;
+    iconName() {
+      if (!this.name) return null
+      const w = this.weight
+      const suffix = w && w !== "regular" ? "-" + w : ""
+      return `ph:${this.name}${suffix}`
     },
-    style() {
-      const size = Number(this.size)
-      if (size) {
-        return {
-          width: size + 'px',
-          height: size + 'px',
-        }
-      }
-      return {}
+    sizePx() {
+      const n = Number(this.size)
+      if (n) return n + "px"
+      return (SIZE_MAP[this.size] || 20) + "px"
     },
     computedColor() {
-      return this.color || 'currentColor';
-    }
-  }
-};
+      return this.color || "currentColor"
+    },
+  },
+}
 </script>
 
 <style lang="scss" scoped>
@@ -54,9 +59,6 @@ export default {
   vertical-align: middle;
   background: none;
 
-  :deep(svg) {
-    fill: currentColor;
-  }
 
   &.pulse :deep(svg) {
     animation: pulse 2s infinite;
@@ -87,26 +89,6 @@ export default {
     }
   }
 
-  &.lg {
-    width: 24px;
-    height: 24px;
-  }
-
-  &.md {
-    width: 20px;
-    height: 20px;
-  }
-
-  &.sm {
-    width: 16px;
-    height: 16px;
-  }
-
-  &.xs {
-    width: 12px;
-    height: 12px;
-  }
-
   /* Color variants */
   &.primary {
     color: var(--primary-color);
@@ -129,4 +111,4 @@ export default {
   font-size: 1.2em;
   opacity: 0.5;
 }
-</style> 
+</style>

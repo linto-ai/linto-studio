@@ -131,7 +131,6 @@ import _setSpeakerName from "@/components/AppEditorTurn.d/setSpeakerName.js"
 import _handleEnter from "@/components/AppEditorTurn.d/handleEnter.js"
 import _highlightSearchWord from "@/components/AppEditorTurn.d/highlightSearchWord.js"
 import _unHighlightSearchWord from "@/components/AppEditorTurn.d/unHighlightSearchWord.js"
-import AppEditorMetadataModal from "./AppEditorMetadataModal.vue"
 import { getCookie } from "../tools/getCookie.js"
 
 export default {
@@ -226,7 +225,7 @@ export default {
   },
   computed: {
     experimental_highlight() {
-      return process.env?.VUE_APP_EXPERIMENTAL_HIGHLIGHT === "true"
+      return import.meta.env?.VUE_APP_EXPERIMENTAL_HIGHLIGHT === "true"
     },
     turnId: {
       get: function () {
@@ -552,7 +551,6 @@ export default {
     CollaborativeField,
     AppEditorSpkToolbox,
     //AppEditorToolbox,
-    AppEditorMetadataModal,
   },
 }
 </script>

@@ -117,11 +117,9 @@ import {
 } from "@/tools/filterBySecurityLevel"
 
 import SessionTranslationSelection from "@/components/SessionTranslationSelection.vue"
-import FormInput from "@/components/molecules/FormInput.vue"
 import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import TranscriberProfileSelector from "@/components/TranscriberProfileSelector.vue"
 import ConversationCreateServices from "@/components/ConversationCreateServices.vue"
-import Badge from "@/components/atoms/Badge.vue"
 import Chip from "@/components/atoms/Chip.vue"
 
 export default {
@@ -354,12 +352,10 @@ export default {
     },
   },
   components: {
-    FormInput,
     FormCheckbox,
     TranscriberProfileSelector,
     ConversationCreateServices,
     SessionTranslationSelection,
-    Badge,
     Chip,
   },
 }

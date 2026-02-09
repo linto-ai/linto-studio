@@ -29,6 +29,7 @@
         <div class="flex col gap-small">
           <Button
             v-for="spk of speakersList"
+            :key="spk.speaker_id"
             icon="user"
             :label="spk.speaker_name"
             @click="updateSpeaker(spk.speaker_id)" />
@@ -88,6 +89,7 @@
         <div class="flex col gap-small">
           <Button
             v-for="spk of speakersList"
+            :key="spk.speaker_id"
             icon="user"
             :label="spk.speaker_name"
             @click="mergeSpeaker(spk.speaker_id)" />

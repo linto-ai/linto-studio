@@ -13,9 +13,9 @@
         <Button
           size="sm"
           label="Delete versions"
+          intent="destructive"
           icon="trash"
-          color="tertiary"
-          variant="outline"
+          variant="secondary"
           v-if="canEdit && selectedVersions.length > 0"
           @click="() => (deleteModal = true)"></Button>
         <!-- <button
