@@ -83,11 +83,8 @@ import { conversationMixin } from "@/mixins/conversation.js"
 import { debounceMixin } from "@/mixins/debounce.js"
 import { timeToHMS } from "@/tools/timeToHMS"
 
-import Loading from "@/components/atoms/Loading.vue"
-import CollaborativeField from "@/components/CollaborativeField.vue"
 import MainContentConversation from "@/components/MainContentConversation.vue"
 import ConversationOverviewMainInfos from "@/components/ConversationOverviewMainInfos.vue"
-import ConversationOverviewMetadata from "@/components/ConversationOverviewMetadata.vue"
 import ConversationOverviewLinks from "@/components/ConversationOverviewLinks.vue"
 import ConversationOverviewRights from "@/components/ConversationOverviewRights.vue"
 import Tabs from "@/components/molecules/Tabs.vue"
@@ -186,11 +183,8 @@ export default {
     },
   },
   components: {
-    CollaborativeField,
-    Loading,
     MainContentConversation,
     ConversationOverviewMainInfos,
-    ConversationOverviewMetadata,
     ConversationOverviewLinks,
     ConversationOverviewRights,
     ConversationOverviewChannel,

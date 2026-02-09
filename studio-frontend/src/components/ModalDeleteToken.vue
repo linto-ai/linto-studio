@@ -14,7 +14,6 @@
 </template>
 <script>
 import Modal from "@/components/molecules/Modal.vue"
-import FormInput from "@/components/molecules/FormInput.vue"
 
 export default {
   props: {
@@ -43,7 +42,6 @@ export default {
   },
   components: {
     Modal,
-    FormInput,
   },
 }
 </script>

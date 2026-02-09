@@ -53,9 +53,8 @@
         <template #trigger="{ open }">
           <Button
             icon="dots-three-vertical"
-            variant="solid"
+            variant="secondary"
             size="md"
-            :color="open ? 'primary' : 'neutral'"
             class="icon-only" />
         </template>
       </PopoverList>

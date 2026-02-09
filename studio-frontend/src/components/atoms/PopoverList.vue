@@ -34,13 +34,12 @@
           v-if="searchable || asyncSearch || (selection && multiple)"
           class="popover-list__header"
           @click.stop>
-          <input
+          <Checkbox
             v-if="selection && multiple"
-            type="checkbox"
-            :checked="allFilteredSelected"
-            :indeterminate.prop="someFilteredSelected && !allFilteredSelected"
-            @change="toggleSelectAll"
-            class="popover-list__checkbox-input"
+            :value="allFilteredSelected"
+            :indeterminate="someFilteredSelected && !allFilteredSelected"
+            @input="toggleSelectAll"
+            class="popover-list__checkbox"
             :aria-label="$t('popover_list.select_all')" />
           <input
             v-if="searchable || asyncSearch"
@@ -75,11 +74,10 @@
                 role="option"
                 :aria-selected="true"
                 @click.stop>
-                <input
-                  type="checkbox"
-                  :checked="true"
-                  @change="toggleSelection(item)"
-                  class="popover-list__checkbox-input" />
+                <Checkbox
+                  :value="true"
+                  @input="toggleSelection(item)"
+                  class="popover-list__checkbox" />
                 <label class="popover-list__checkbox-label">
                   <slot name="item" :item="item">
                     <span class="popover-list__item__name">{{
@@ -116,12 +114,11 @@
               role="option"
               :aria-selected="isSelected(item)"
               @click.stop>
-              <input
-                type="checkbox"
+              <Checkbox
                 :id="getCheckboxId(index)"
-                :checked="isSelected(item)"
-                @change="toggleSelection(item)"
-                class="popover-list__checkbox-input" />
+                :value="isSelected(item)"
+                @input="toggleSelection(item)"
+                class="popover-list__checkbox" />
               <label
                 :for="getCheckboxId(index)"
                 class="popover-list__checkbox-label">
@@ -184,6 +181,7 @@
 import { mapGetters } from "vuex"
 import Popover from "./Popover.vue"
 import Loading from "./Loading.vue"
+import Checkbox from "./Checkbox.vue"
 import { debounceMixin } from "@/mixins/debounce"
 
 export default {
@@ -192,6 +190,7 @@ export default {
   components: {
     Popover,
     Loading,
+    Checkbox,
   },
   props: {
     /**
@@ -769,13 +768,9 @@ export default {
   }
 }
 
-.popover-list__checkbox-input {
-  width: 16px;
-  height: 16px;
-  margin: 0;
-  accent-color: var(--primary-color);
-  cursor: pointer;
+.popover-list__checkbox {
   flex-shrink: 0;
+  cursor: pointer;
 }
 
 .popover-list__checkbox-label {

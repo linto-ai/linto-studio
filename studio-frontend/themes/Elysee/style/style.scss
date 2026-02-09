@@ -1,12 +1,13 @@
+@use "sass:meta";
+
 @layer base, theme;
 
 @layer theme {
-  // @import "../../European-Union/style/buttons.scss";
-  @import "../../European-Union/style/checkbox.scss";
-  @import "../../European-Union/style/forms.scss";
-  @import "../../European-Union/style/select.scss";
-  @import "../../European-Union/style/text.scss";
-  @import "../../European-Union/style/radio.scss";
+  @include meta.load-css("../../European-Union/style/checkbox");
+  @include meta.load-css("../../European-Union/style/forms");
+  @include meta.load-css("../../European-Union/style/select");
+  @include meta.load-css("../../European-Union/style/text");
+  @include meta.load-css("../../European-Union/style/radio");
 
   body {
     --blue-chart: #3860ed;

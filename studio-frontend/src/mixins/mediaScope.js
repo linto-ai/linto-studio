@@ -11,9 +11,6 @@ export const mediaScopeMixin = {
       "getCurrentFilterStatus",
       "getStoreScope",
     ]),
-    selectedMedias() {
-      return this.$store.state[this.storeScope].selectedMedias ?? []
-    },
     isSelectAll() {
       const value = this.$store.state[this.storeScope].autoselectMedias ?? false
       return value

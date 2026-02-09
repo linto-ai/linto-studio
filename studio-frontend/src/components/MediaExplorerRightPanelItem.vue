@@ -191,6 +191,10 @@ export default {
       type: [Object, null],
       default: null,
     },
+    selectedMedias: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {

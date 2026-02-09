@@ -42,9 +42,11 @@
           {{ picture.error }}
         </span>
 
-        <button v-if="picture.valid" @click="updateProfilPicture()">
-          {{ $t("user_settings.update_picture_button") }}
-        </button>
+        <Button
+          v-if="picture.valid"
+          @click="updateProfilPicture()"
+          variant="secondary"
+          :label="$t('user_settings.update_picture_button')" />
       </div>
     </section>
 

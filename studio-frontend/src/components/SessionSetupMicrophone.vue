@@ -76,12 +76,12 @@
     <div
       class="flex medium-margin-top gap-small"
       v-if="!recover && !waitingPermission && !error">
-      <button class="btn secondary setup-microphone-back" @click="trashSession">
-        <span class="icon back"></span>
-        <span class="label">{{
-          $t("quick_session.setup_microphone.back")
-        }}</span>
-      </button>
+      <Button
+        variant="secondary"
+        class="setup-microphone-back"
+        @click="trashSession"
+        icon="arrow-left"
+        :label="$t('quick_session.setup_microphone.back')" />
       <div class="flex1"></div>
       <button
         v-if="!noCancel"
@@ -101,26 +101,24 @@
     <div
       class="flex medium-margin-top gap-small"
       v-else-if="recover && !waitingPermission && !error">
-      <button class="btn secondary" @click="trashSession">
-        <ph-icon name="trash"></ph-icon>
-        <span class="label">
-          {{ $t("quick_session.restore.trash_button") }}
-        </span>
-      </button>
-      <button class="btn secondary" @click="saveSession">
-        <ph-icon name="file"></ph-icon>
-        <span class="label">
-          {{ $t("quick_session.restore.save_button") }}
-        </span>
-      </button>
+      <Button
+        variant="secondary"
+        @click="trashSession"
+        icon="trash"
+        :label="$t('quick_session.restore.trash_button')" />
+      <Button
+        variant="secondary"
+        @click="saveSession"
+        icon="file"
+        :label="$t('quick_session.restore.save_button')" />
 
       <div class="flex1"></div>
-      <button class="btn primary" @click="setupSession" type="submit">
-        <ph-icon name="check" size="md" class="icon" />
-        <span class="label">
-          {{ $t("quick_session.restore.continue_button") }}
-        </span>
-      </button>
+      <Button
+        variant="primary"
+        @click="setupSession"
+        type="submit"
+        icon="check"
+        :label="$t('quick_session.restore.continue_button')" />
     </div>
   </div>
 </template>
@@ -130,8 +128,6 @@ import { bus } from "@/main.js"
 import { customDebug } from "@/tools/customDebug.js"
 
 import { microphoneMixin } from "@/mixins/microphone.js"
-import MainContent from "@/components/MainContent.vue"
-import CustomSelect from "@/components/molecules/CustomSelect.vue"
 import StatusLed from "@/components/atoms/StatusLed.vue"
 export default {
   mixins: [microphoneMixin],
@@ -240,8 +236,6 @@ export default {
     },
   },
   components: {
-    MainContent,
-    CustomSelect,
     StatusLed,
   },
 }

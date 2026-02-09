@@ -26,9 +26,11 @@
     </template>
 
     <template v-slot:content-after-tag="slotProps">
-      <button class="only-icon small transparent" @click="deleteTag(slotProps)">
-        <ph-icon name="trash"></ph-icon>
-      </button>
+      <Button
+        variant="transparent"
+        size="sm"
+        @click="deleteTag(slotProps)"
+        icon="trash" />
     </template>
     <template v-slot:content-under-tag="slotProps">
       <slot name="content-under-tag" v-bind:tag="slotProps.tag"></slot>

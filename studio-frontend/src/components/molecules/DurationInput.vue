@@ -10,7 +10,6 @@
   </FormInput>
 </template>
 <script>
-import { bus } from "@/main.js"
 import EMPTY_FIELD from "@/const/emptyField"
 import FormInput from "@/components/molecules/FormInput.vue"
 

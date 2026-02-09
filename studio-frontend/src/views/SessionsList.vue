@@ -18,11 +18,7 @@ import {
   apiCountActiveSessions,
 } from "@/api/session.js"
 
-import MainContent from "@/components/MainContent.vue"
 import Tabs from "@/components/molecules/Tabs.vue"
-import Loading from "@/components/atoms/Loading.vue"
-import ErrorPage from "@/components/ErrorPage.vue"
-import SessionListLine from "@/components/SessionListLine.vue"
 import SessionWeekList from "@/components/SessionWeekList.vue"
 import SessionActiveList from "@/components/SessionActiveList.vue"
 import LayoutV2 from "@/layouts/v2-layout.vue"
@@ -116,11 +112,7 @@ export default {
   },
   components: {
     Fragment,
-    MainContent,
     Tabs,
-    Loading,
-    ErrorPage,
-    SessionListLine,
     SessionWeekList,
     SessionActiveList,
     LayoutV2,

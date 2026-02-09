@@ -253,7 +253,6 @@ import { convRoleMixin } from "@/mixins/convRole.js"
 import { debounceMixin } from "@/mixins/debounce.js"
 
 import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
-import ConversationShareRightSelector from "./ConversationShareRightSelector.vue"
 import SearchUsersListComponent from "@/components/SearchUsersList.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import Button from "@/components/atoms/Button.vue"
@@ -432,7 +431,6 @@ export default {
   components: {
     SearchUsersListComponent,
     UserInfoInline,
-    ConversationShareRightSelector,
     Modal,
     Button,
   },

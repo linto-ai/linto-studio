@@ -1,10 +1,7 @@
 {
-  "accoustic": {
-    "standard": "Regular"
-  },
+  "apply": "Apply",
+  "cancel": "Cancel",
   "activity_list": {
-    "scope_label": "Scope",
-    "level_label": "Level",
     "http_method_label": "Method",
     "http_endpoint_label": "URL",
     "http_status_label": "Status",
@@ -83,8 +80,7 @@
     },
     "modal_delete": {
       "title": "Delete api token {name}",
-      "content": "Are you sure you want to delete the token {name} ?",
-      "delete_action": "Delete"
+      "content": "Are you sure you want to delete the token {name} ?"
     },
     "modal_renew": {
       "title": "Renew api key '{name}'",
@@ -127,12 +123,10 @@
     "notifications": "Notifications",
     "tags": "Topics",
     "title": "Settings",
-    "subtitle": "Manage your account and preferences",
     "logout": "Logout",
     "email_not_verified": "Your email is not verified. Please verify your email to access all features."
   },
   "backoffice": {
-    "title": "Backoffice",
     "navigation": {
       "activities": "Activity log",
       "home": "Home",
@@ -149,8 +143,6 @@
       "page_title": "Dashboard",
       "sessions_count": "Sessions Transcribed",
       "medias_count": "Media Processed",
-      "media_duration": "Total Duration (hours)",
-      "active_users": "Session Participants",
       "time_period_label": "Period",
       "users": "Users",
       "organizations": "Organisations",
@@ -163,21 +155,18 @@
         "sessions_title": "Live Transcriptions",
         "sessions_duration_title": "Real-time audio transcription (hours)",
         "medias_title": "Media Transcriptions",
-        "duration_title": "Audio Duration (hours)",
-        "active_users_title": "Session Participants"
+        "duration_title": "Audio Duration (hours)"
       },
       "filters": {
         "organization": "Organization",
         "all_organizations": "All Organizations",
-        "date_range": "Date Range",
         "start_date": "From",
         "start_date_placeholder": "dd/mm/yyyy",
         "end_date": "To",
         "end_date_placeholder": "dd/mm/yyyy",
         "clear": "Clear Filters"
       },
-      "loading": "Loading dashboard data...",
-      "error": "Failed to load dashboard data"
+      "loading": "Loading dashboard data..."
     },
     "user_list": {
       "title": "Users",
@@ -207,8 +196,6 @@
       "notif_error": "An error occurred",
       "notif_delete_success": "Transcriber profile successfully deleted",
       "notif_delete_error": "An error occured while deleting the profile",
-      "type_label": "Profile type",
-      "security_level_label": "Security level",
       "quick_meeting_label": "Enabled for quick meetings",
       "name_label": "Name",
       "name_placeholder": "Profile name",
@@ -222,19 +209,14 @@
       "options_title": "Options",
       "credentials_title": "Credentials",
       "warning_global": {
-        "line_1": "This profile will be visible in all organizations.",
-        "line_2": "To manage an organization's transcription profiles, go to the \"Organizations\" tab in the navigation bar."
+        "line_1": "This profile will be visible in all organizations."
       },
       "amazon_certificate_label": "Certificate (.crt)",
-      "amazon_certificate_placeholder": "Select certificate file",
       "amazon_private_key_label": "Private Key (.pem, PKCS#8)",
-      "amazon_private_key_placeholder": "Select private key file",
       "amazon_passphrase_label": "Passphrase (optional)",
       "amazon_passphrase_placeholder": "Key passphrase if encrypted",
       "amazon_region_label": "AWS Region",
       "amazon_region_placeholder": "e.g. eu-west-1",
-      "amazon_credentials_label": "Credentials",
-      "amazon_credentials_placeholder": "AWS credentials identifier",
       "amazon_trust_anchor_arn_label": "Trust Anchor ARN",
       "amazon_trust_anchor_arn_placeholder": "arn:aws:rolesanywhere:...",
       "amazon_profile_arn_label": "Profile ARN",
@@ -260,8 +242,7 @@
       "bulk_remove_success_notification": "Profiles successfully deleted",
       "bulk_remove_error_notification": "An error occurred while deleting profiles",
       "warning_global": {
-        "line_1": "Listed transcriber profiles are enabled for all organizations.",
-        "line_2": "To manage an organization's transcription profiles, go to the \"Organizations\" tab in the navigation bar."
+        "line_1": "Listed transcriber profiles are enabled for all organizations."
       },
       "all_profiles_shown": "All profiles are shown",
       "global_profiles_shown": "Only global profiles are shown"
@@ -270,28 +251,21 @@
   "breadcrumb": {
     "activities": "Activity log",
     "backoffice": "Backoffice",
-    "conversations": "Media",
-    "create": "Upload media",
     "createConversation": "Create a conversation",
     "createorganization": "Create an organization",
     "createOrganization": "Create an organization",
     "createSession": "Create a session",
     "explore": "Inbox",
-    "exploreOld": "Explore (legacy)",
     "favorites": "Favorites",
-    "media": "{organization} media",
     "organizations": "Organizations",
-    "overview": "Overview",
     "publish": "Publish",
     "quickSession": "Quick session",
     "quickSession_microphone": "Recording",
     "quickSession_visio": "Videoconference recording",
     "sessions": "Sessions",
     "sessionSettings": "Settings",
-    "settings": "{organization} Settings",
     "shared": "Shared",
     "subtitles": "Subtitles",
-    "tagsSettings": "{organization} tags",
     "tokens": "Api keys",
     "transcription": "Transcription",
     "transcriberProfiles": "Transcriber Profiles",
@@ -304,49 +278,23 @@
       "phone": "Phone"
     },
     "acoustic_label": "Acoustic:",
-    "add_search_criterion": "Add a search criterion",
-    "add_tag": "Add a tag",
-    "add_to_favorites": "Add to favorites",
-    "apply_filters": "Apply filters",
     "audio_file_too_big": "The audio file is too big. The maximum size is 1GB.",
-    "audio_file_upload_label": "Choose a file...",
-    "audio_file_upload_label_multiple": "Choose one or multiple files...",
-    "back_conversation_button": "Media overview",
     "channel": {
       "live_transcription": "Live transcription",
       "offline_transcription": "Offline transcription"
     },
-    "close_editor": "Close editor",
-    "close_publish": "Close",
     "conversation_creation_button": {
       "create": "Start transcription",
       "retry": "Retry upload",
       "sending": "Sending..."
     },
     "conversation_creation_error_multiple_unknown": "An error occurred while uploading {total} audio files. {count} have already been uploaded. try again later.",
-    "conversation_creation_loading": "Uploading audio. This can take several minutes.",
     "conversation_creation_loading_multiple": "Uploading audio {count} of {total}. This can take several minutes.",
     "conversation_creation_right_title": "Medias rights",
     "conversation_creation_right_label": "Default rights for organisation members",
     "conversation_creation_security_title": "Security level",
     "conversation_creation_security_label": "Media security level",
-    "conversation_is_locked_by": "The media is locked by",
-    "conversation_need_reload": " The media has been modified by an other user, reload the page to edit it.",
-    "conversation_overview_title": "Media overview",
-    "conversation_transcription_title": "Transcription",
-    "conversations_list_title": "Médias",
-    "create": "Upload media",
-    "created": "Created at : {date}",
-    "created_label": "Created",
     "creation_success_message": "Media successfully imported",
-    "default_value_speakers_list": "All speakers",
-    "delete": "Delete",
-    "delete_error_message": "An error occurred while deleting the media | An error occurred while deleting {count} media",
-    "delete_modal": {
-      "button": "Delete media",
-      "content": "Are you sure you want to delete permanently the media \"{name}\" ?",
-      "title": "Delete a media"
-    },
     "delete_modal_multiple": {
       "button": "Delete one media | Delete {count} media",
       "content": "Are you sure you want to delete permanently one media | Are you sure you want to delete permanently {count} media ?",
@@ -357,20 +305,8 @@
       "content": "Please select at least one media to delete",
       "title": "No media selected"
     },
-    "delete_modal_multiple_error": {
-      "button": "ok",
-      "content": "{count} media cannot be deleted | {count} media cannot be deleted. No media will be deleted.",
-      "title": "Some media cannot be deleted"
-    },
-    "delete_mutltiple": "Delete a media | Delete {count} media",
-    "delete_success_message": "Media successfully deleted | {count} media successfully deleted",
-    "description_empty": "No description",
-    "duration": "Duration {duration}",
-    "duration_label": "Duration",
     "error": {
-      "creation_unknown": "Error: please try again later",
       "form_invalid": "Error: please check the form",
-      "loading_upload_message": "Uploading audio. This can take several minutes",
       "no_audio_file": "Error: you did not upload any audio file"
     },
     "export": {
@@ -381,10 +317,8 @@
       "title": "Download verbatim",
       "txt": "Export TXT",
       "vtt": "Export VTT",
-      "md": "Export Markdown",
       "whisperx": "Raw JSON (WhisperX)"
     },
-    "export_json_button": "Export JSON",
     "highlight_toolbox": {
       "add_metadata_modal": {
         "button_first": "Add metadata",
@@ -392,35 +326,15 @@
         "placeholder": "Select a metadata type",
         "title": "Add metadata"
       },
-      "button-add-metadata": "Add metadata",
-      "comment": "Commentaire",
-      "no-metadata": "No metadata",
-      "title": "Add an highlight"
+      "comment": "Commentaire"
     },
-    "keyword_list": {
-      "error": {
-        "button": "Retry",
-        "description": "An error has occurred."
-      },
-      "loading": {
-        "description": "Generating keywords..."
-      },
-      "none": {
-        "button": "Generate keywords"
-      },
-      "title": "keywords"
-    },
-    "language_description": "Select the transcription language for the media file",
     "language_label": "Language: ",
-    "loading_audio_file": "Loading audio file",
-    "loading_list_title": "Loading media.",
     "loading": {
       "conversation_data": "Loading conversation data",
       "llm_services": "Loading summary services"
     },
     "members_right_txt": {
       "comment": "Comment",
-      "delete": "Delete",
       "full_rights": "Full rights",
       "mutiple_values": "Multiple values",
       "none": "No access",
@@ -439,31 +353,13 @@
       "medium": "Medium"
     },
     "model_quality_label": "Model quality:",
-    "no_conversation_found": "No media found",
-    "no_search_criterion": "No search criterion",
-    "number_of_conversations_selected": "0 media selected | 1 media selected | {count} media selected",
-    "open_editor": "Edit transcription",
-    "open_overview": "Media overview",
-    "open_publish": "Publish",
-    "open_subtitles": "Edit subtitles",
     "publish_document": "Publish document",
     "record": "Record",
     "recording": "Recording...",
-    "remove_all_filters": "Remove all filters",
-    "remove_from_favorites": "Remove from favorites",
-    "return_to_editor": "Return to editor",
-    "search_criterions": "Search criteria",
     "search_in_transcription": {
       "clear_search": "Clear search",
       "exact_word_match": "Exact word match",
       "n_found": "No occurrences | 1 occurrence | {count} occurrences"
-    },
-    "search_placeholder": "Search a media",
-    "shared_by_label": "Shared by",
-    "shared_with_label": "Shared with",
-    "source": {
-      "from_session": "Source : Live Session",
-      "from_upload": "Source : User Upload"
     },
     "speaker_toolbox": {
       "change_speaker_button": "Assign another speaker to this turn",
@@ -473,7 +369,6 @@
       "edit_speaker_label": "Speaker name",
       "merge_speaker_button": "Merge \"{name}\" with another speaker"
     },
-    "speakers_button": "Speakers",
     "status": {
       "diarization": "Speakers split",
       "error": "Error : an error has occured during processing the audio",
@@ -484,8 +379,6 @@
       "transcription": "Transcription",
       "unknown": "Unknown"
     },
-    "status_label": "Status",
-    "status_label_inline": "Status : ",
     "status_page": {
       "error_log_label": "Here's some information:",
       "error_title": "An error has occured during processing the audio",
@@ -523,8 +416,7 @@
       "screens": {
         "current_screen": "Current screen",
         "next_screen": "Next screen",
-        "previous_screen": "Previous screen",
-        "start": "Start:"
+        "previous_screen": "Previous screen"
       },
       "split_selection": {
         "no_split": "No split",
@@ -534,70 +426,32 @@
       "version_name": "Subtitle version name"
     },
     "transcription": {
-      "add_speaker": "Add a speaker",
-      "diarization_description": "Enable diarization and select the number of speakers",
       "diarization_disabled": "Disabled",
       "diarization_label": "Speakers diarization",
-      "diarization_label_inline": "Speakers diarization : ",
-      "edit_speaker": "Edit speaker",
       "language_label": "Language",
-      "normalization_description": "Enable normalization and replace text numbers by numbers",
-      "normalization_label_inline": "Normalization : ",
       "number_of_speaker_label": "Number of speakers",
       "player_error": "An error has occured while initializing player.",
-      "punctuation_description": "Enable punctuation restitution",
       "punctuation_disabled": "Disabled",
       "punctuation_label": "Punctuation",
-      "punctuation_label_inline": "Punctuation : ",
-      "punctuation_value_whisper": "Automatic",
-      "speaker_name": "Speaker name",
-      "speakers": "speakers"
+      "punctuation_value_whisper": "Automatic"
     },
     "transcription_help": {
-      "audio_player_shortcut_content": "You can control the audio player by using standard player buttons and/or the following shortcuts:",
-      "audio_player_shortcut_list1": "\"Space\" (<span class=\"txt-icon key-space\"></span>) : <i>Play / Pause</i>",
-      "audio_player_shortcut_list2": "\"CTRL + \"Right arrow\" (<span class=\"txt-icon key-ctrl\"></span> + <span class=\"txt-icon key-right-arrow\"></span>) : <i>Move forward 60 seconds</i>",
-      "audio_player_shortcut_list3": "\"ALT\" + \"Right arrow\" (<span class=\"txt-icon key-alt\"></span> + <span class=\"txt-icon key-right-arrow\"></span>) : <i>Move forward 10 seconds</i>",
-      "audio_player_shortcut_list4": "\"SHIFT\" + \"Right arrow\" (<span class=\"txt-icon key-shift\"></span> + <span class=\"txt-icon key-right-arrow\"></span>) : <i>Move forward 3 seconds</i>",
-      "audio_player_shortcut_list5": "\"CTRL + \"Left  arrow\" (<span class=\"txt-icon key-ctrl\"></span> + <span class=\"txt-icon key-left-arrow\"></span>) : <i>Move backward 60 seconds</i>",
-      "audio_player_shortcut_list6": "\"ALT\" + \"Left  arrow\" (<span class=\"txt-icon key-alt\"></span> + <span class=\"txt-icon key-left-arrow\"></span>) : <i>Move backward 10 seconds</i>",
-      "audio_player_shortcut_list7": "\"SHIFT\" + \"Left  arrow\" (<span class=\"txt-icon key-shift\"></span> + <span class=\"txt-icon key-left-arrow\"></span>) : <i>Move backward 3 seconds</i>",
-      "audio_player_shortcut_title": "Audio player / Keyboard shortcuts",
-      "edit_speaker_content": "To change the speaker for a given turn, click on the speaker name. This will open a drop-down menu with the following options:",
-      "edit_speaker_content_list": "To change the name for the current turn only, click directly on the desired name or click on \"Add a speaker\" to add a new speaker. | To change the name for the current turn only, click directly on the desired name.",
-      "edit_speaker_title": "Edit speakers",
-      "edit_transcript_content": "To edit the transcript, simply click on the word to place your cursor and start typing. | The audio player will automatically jump to the part of the audio in which that word was uttered.",
-      "edit_transcript_title": "Edit the transcript",
-      "filter_speaker_content": "You can filter the transcription by speaker by selecting a speaker name from the drop-down \"Filter\" menu just above the transcript. When a speaker is selected, the transcript editor will only show turns from that speaker and the audio player will only play audio associated with those turns. ",
-      "filter_speaker_title": "Filter transcription by speaker",
-      "help_button_label": "Help",
-      "merge_turn_content": "Click on the \"merge\" button (<span class=\"txt-icon key-merge\"></span>) to merge two turns.",
-      "merge_turn_title": "Merge turns",
-      "split_turn_content": "To split an existing turn into two separate turns, place your cursor where you would like to create the new turn and press \"Enter\" (<span class=\"txt-icon key-enter\"></span>). Note that the new turn will still be attributed to the original speaker.",
-      "split_turn_title": "Split turns"
+      "help_button_label": "Help"
     },
     "transcription_label": "Transcription",
-    "transcription_saving_notif": "Saving media...",
-    "transcription_service_description": "Choose the transcription service to use",
     "transcription_service_error": "Please select a transcription service",
-    "transcription_service_label": "Transcription service",
     "transcription_service_list_empty": "No transcription service available",
     "transcription_service_title": "Transcription AI selection",
-    "transcription_settings_label": "Transcription settings",
     "turn_cant_merge": "There are too many caracteres in the turn to merge it",
     "turn_sync_error_title": "The turn is not well synchronized",
-    "update_label": "Updated",
-    "updated": "Last update : {date}",
     "websocket_error_content": "Document update failed, save your change and reload the page.",
     "websocket_error_title": "Syncronisation error."
   },
   "conversation_creation": {
     "tabs": {
-      "file": "File",
       "microphone": "Microphone",
       "url": "Import URL",
       "quick_meeting": "Microphone",
-      "coming_soon": "Coming soon",
       "session": "Session",
       "visio": "Videoconference"
     },
@@ -607,8 +461,6 @@
     "url_tab": {
       "main_info_title": "General information",
       "url_label": "Source URL",
-      "live_label": "Live transcription",
-      "name_label": "Media name",
       "get_button": "Add media from the URL"
     },
     "offline": {
@@ -645,7 +497,6 @@
       "title": "Media rights",
       "owner_label": "Media owner",
       "orga_right_label": "Rights of other members of the organization",
-      "share_right_label": "Manage custom rights",
       "orga_right_update_success": "The rights for members of the organization have been updated.",
       "orga_right_update_error": "An error has occurred, the rights for organization members have not been modified"
     },
@@ -689,60 +540,29 @@
     "openFileExplorer": "or choose from the file explorer"
   },
   "duration_input": {
-    "h": "Hour | Hours",
-    "d": "Day | Days",
-    "m": "Minute | Minutes",
     "s": "Second | Seconds",
-    "y": "Year | Years"
+    "d": "Day | Days",
+    "h": "Hour | Hours",
+    "m": "Minute | Minutes"
   },
   "error": {
-    "bug_report": "Report a bug or an issue",
     "server_error": {
       "subtitle": "We are working on it, please try again later.",
       "title": "The operation is currently unavailable."
     },
-    "title": "Something went wrong",
     "required": "This field is required",
     "invalidVisioUrl": "Invalid visio URL",
     "unauthorized_caracters": "Caractères non autorisé",
     "invalid_email": "Invalid email",
-    "not_responsive": {
-      "title": "Your device is not compatible with {app_name}",
-      "description": "We are actively working to make {app_name} compatible with mobile devices and tablets."
-    },
     "passwordsMustBeTheSame": "Passwords must be the same",
     "passwordLength": "This field must contain at least 6 characters"
-  },
-  "explore": {
-    "delete_conversation_button": "Delete ",
-    "link_to_inbox": "Go to the media library",
-    "no_categories_modal": "There are no tags. Start tagging your media in the media library",
-    "search_text_in_content": "Search \"{text}\" in transcription",
-    "search_text_in_title": "Search \"{text}\" in title",
-    "search_text_label": "Search text",
-    "sort_label": "Sort by",
-    "subtitle": "Search and discover insights on transcribed media using meaningful semantics",
-    "title": "Explore the organization's media"
-  },
-  "favorites": {
-    "subtitle": "Your favourite media are here.",
-    "title": "Favorites media",
-    "no_media_title": "Your favorite media collection is empty",
-    "no_media_subtitle": "Add favorite media by clicking on the star icon on the media card."
   },
   "form_field": {
     "empty_value": "–"
   },
   "footer": {
     "powered_by": "LinTO {linto_logo} by {linagora_logo}",
-    "contact": "Contact",
-    "legal_notice": "Legal notice",
-    "privacy_policy": "Privacy policy"
-  },
-  "global": {
-    "disabled": "disabled",
-    "enabled": "enabled",
-    "this_field_is_required": "This field is required"
+    "contact": "Contact"
   },
   "global_error": {
     "auth_magic_link": "The authentication link as expired, please request again for an authentication link",
@@ -751,15 +571,6 @@
   },
   "highlights_name": {
     "keyword": "Keywords"
-  },
-  "inbox": {
-    "sort": {
-      "created": "Recently uploaded",
-      "last_update": "Last updated",
-      "notags": "Without tags"
-    },
-    "subtitle": "Your recently uploaded media lands here. Use \"Upload media\" or {appLink} to feed this.",
-    "title": "Inbox"
   },
   "invite_user": {
     "add_user": "Add user",
@@ -772,10 +583,7 @@
   "lang": {
     "en": "English",
     "fr": "French",
-    "all": "All languages",
-    "automatic": "Automatic",
-    "optimized_fr": "Optimize for French",
-    "optimized_en": "Optimize for English"
+    "automatic": "Automatic"
   },
   "language_endpoint_editor": {
     "language": "Language",
@@ -826,7 +634,6 @@
     "no_tags": "No topics",
     "create_tag": "Create a topic",
     "delete_tag": "Delete",
-    "edit_tag": "Edit",
     "no_description": "No description",
     "placeholder_new_tag_name": "+ Type a name for your topic",
     "description_placeholder": "Add a description",
@@ -839,10 +646,6 @@
   "modal_delete_tag": {
     "title": "Delete topic '{name}'",
     "message": "Are you sure you want to delete this topic ?"
-  },
-  "markdown_editor": {
-    "source": "Source",
-    "preview": "Preview"
   },
   "media_explorer": {
     "favorite": "Favorite",
@@ -863,12 +666,6 @@
       "error": "Error"
     },
     "share": "Share",
-    "tags_selector": {
-      "title": "Filter by topics",
-      "filter": "Filter",
-      "clear_all": "Clear all",
-      "no_tags": "No topics available"
-    },
     "panel": {
       "overview": "Media Overview",
       "title": "Title",
@@ -882,13 +679,10 @@
       "default_title": "No title",
       "default_description": "No description",
       "selected_count": "{count} media selected",
-      "bulk_actions_description": "Perform actions on multiple media at once",
       "selected_medias": "Selected media",
-      "clear_selection": "Clear all",
       "bulk_actions": "Bulk Actions",
       "manage_tags": "Manage topics",
       "add_tag_to_all": "Assign topic",
-      "common_tags": "Common topics",
       "no_tags": "No tags",
       "no_common_tags": "No common tags",
       "actions": "Actions",
@@ -902,16 +696,8 @@
       "download_multiple_partial": "{success} medias downloaded out of {total}",
       "download_multiple_error": "Error downloading medias"
     },
-    "bulk_export": "Export selection",
-    "end_of_results": "End of results",
-    "loading_more": "Loading more...",
-    "load_previous_items": "Load previous items",
-    "empty_title": "No media",
-    "empty_description": "No media has been found. Start a transcription to add one. ",
-    "loading": "Loading...",
     "no_medias_selected": "No media selected",
     "some_medias_cannot_be_deleted": "Some media cannot be deleted",
-    "no_permission_to_delete": "You don't have permission to delete these media",
     "processing_error_message": "The automatic transcription of the media encountered an error",
     "status": {
       "preprocessing": "Preprocessing",
@@ -925,7 +711,6 @@
   "modal": {
     "apply": "Apply",
     "cancel": "Cancel",
-    "close_title": "Close modal",
     "delete": "Delete"
   },
   "modal_create_organization": {
@@ -967,7 +752,6 @@
   },
   "modal_switch_org": {
     "title": "Switch organization",
-    "subtitle": "Select the organization you want to switch to",
     "current": "Current",
     "create_organization": "Create an organization",
     "backoffice": "Backoffice"
@@ -979,40 +763,14 @@
       "logout": "Logout",
       "title": "User menu"
     },
-    "backoffice": {
-      "link_title": "Backoffice",
-      "return_link": "User interface"
-    },
     "conversation": {
-      "start": "Transcribe",
-      "create": "Upload media",
-      "create_no_rights_error": "You don't have the rights to create a media. Please contact your organization administrator.",
-      "list": "Media",
-      "my_conversations": "organization media",
-      "not_found": "No media found",
-      "shared_with_me": "Shared with me",
-      "title": "Media"
-    },
-    "home": "Return to main page",
-    "organisation": {
-      "aria_organisations_selector": "Organizations selector",
-      "create": "Create organization",
-      "setting": "Organization settings",
-      "title": "organization"
-    },
-    "session": {
-      "create": "New session",
-      "create_no_rights_error": "You don't have the rights to create a media. Please contact your organization administrator."
+      "start": "Transcribe"
     },
     "tabs": {
       "explore": "Inbox",
-      "explore_labels": "Labels",
       "favorites": "Favorites",
-      "inbox": "Homepage",
-      "manage_tags": "Manage tags",
       "sessions": "Live transcriptions",
       "shared": "Shared with me",
-      "user_page": "My account",
       "tags": "Topics"
     }
   },
@@ -1054,8 +812,6 @@
     "general_settings": "General settings",
     "kpi": {
       "error": "An error occurred while retrieving the data",
-      "loading": "Loading data...",
-      "session_watch_time": "Total time spent on the transcription",
       "session_avg_watch_time": "Average time spent on the transcription",
       "session_total_connections": "Number of connections",
       "transcription_count": "Number of transcribed media",
@@ -1081,7 +837,6 @@
       "content": "Are you sure you want to remove \"{name}\" from the organization?",
       "title": "Remove user from organization"
     },
-    "my_workspace": "My workspace",
     "name_description": "The name of your organization",
     "name_label": "Name",
     "organization_users": "Organization users",
@@ -1108,9 +863,6 @@
       "title": "Transcriber profiles",
       "no_profiles": "No transcriber profiles link to this organization"
     },
-    "update": {
-      "title": "organization : {name}"
-    },
     "update_button": "Update organization",
     "user": {
       "leave_button": "Leave organization",
@@ -1120,25 +872,20 @@
       "remove_label_inline": "\"Remove\" : ",
       "role_description": "User organization role (Admin, Maintainer, Member)",
       "role_label": "Role",
-      "role_label_inline": "\"Role\" : ",
-      "visibility_label": "Visibility"
+      "role_label_inline": "\"Role\" : "
     },
     "user_description": "User firstname, lastname, email and picture",
     "user_label": "User",
     "user_label_inline": "\"User\" : ",
     "user_list_description": "The list of the organization users:",
     "user_list_label": "Users list",
-    "user_not_found": "User not found",
     "visibility": {
-      "private": "private",
       "private_description": ": Avoid external users to search and list your organization",
       "private_inline": "\"Private\" : ",
-      "public": "public",
       "public_description": "Allows external users to search and list your organization",
       "public_inline": "\"Public\" : "
     },
-    "visibility_label": "Visibility",
-    "visibility_name": "Visibility"
+    "visibility_label": "Visibility"
   },
   "organization_role": {
     "member": "Member",
@@ -1155,16 +902,12 @@
     "administrator_description": "Full permissions over the organization"
   },
   "publish": {
-    "download_verbatim": "Download verbatim",
     "error_first_line": {
       "cra": "Error during summary report generation",
       "cred": "Error during commission and delegation report generation",
       "cri": "Error during full report generation",
       "verbatim": "Error during verbatim generation",
       "generic": "We couldn't complete the task due to a temporary connection issue with the model provider. Please try again in a moment"
-    },
-    "filter_speaker": {
-      "title": "Filter by speaker"
     },
     "filter_title": {
       "automatic_summary": "Automatic summary options",
@@ -1206,52 +949,15 @@
       "preview_mode": "Preview",
       "publication_mode": "Publication",
       "save_version": "Save version",
-      "save_version_title": "Save as new version",
-      "version_name_placeholder": "Version name",
       "version_saved": "Version saved successfully",
       "version_save_error": "Error saving version",
-      "load_version": "Load version",
-      "versions_list": "Saved versions",
-      "no_versions": "No saved versions",
       "version_label": "Version {version}",
-      "restore_version": "Restore this version",
       "restore_version_confirm": "Are you sure you want to restore this version?",
       "version_restored": "Version restored successfully",
       "version_restore_error": "Error restoring version",
-      "delete_version": "Delete version",
-      "delete_version_confirm": "Are you sure you want to delete this version?",
-      "version_deleted": "Version deleted",
-      "version_delete_error": "Error deleting version",
-      "unsaved_changes": "You have unsaved changes",
-      "discard_changes": "Discard changes",
-      "toolbar": {
-        "bold": "Bold",
-        "italic": "Italic",
-        "heading1": "Heading 1",
-        "heading2": "Heading 2",
-        "heading3": "Heading 3",
-        "bullet_list": "Bullet list",
-        "ordered_list": "Numbered list",
-        "blockquote": "Quote",
-        "horizontal_rule": "Horizontal line",
-        "strike": "Strikethrough",
-        "code": "Inline code",
-        "undo": "Undo",
-        "redo": "Redo"
-      }
-    },
-    "category": {
-      "summary": "Summaries",
-      "report": "Reports",
-      "correction": "Corrections",
-      "translation": "Translations",
-      "custom": "Custom",
-      "other": "Other",
-      "all": "All"
+      "unsaved_changes": "You have unsaved changes"
     },
     "export_error": "Failed to export document",
-    "export_in_progress": "Exporting...",
-    "downloading": "Downloading...",
     "regenerate": {
       "confirm_title": "New generation?",
       "confirm_message": "A new request will be sent to the AI service. The current generation will be archived in the history.",
@@ -1259,44 +965,26 @@
     },
     "generations": {
       "title": "Generations",
-      "current": "Current",
       "latest": "Latest",
       "no_generations": "No generations yet",
-      "loading": "Loading...",
       "generating": "Generating..."
     },
     "llm_gateway_error": "AI service error: {error}",
     "llm_gateway_unavailable": "The AI service is temporarily unavailable. Please try again in a few moments.",
-    "job_not_found_regenerating": "The document has expired on the server. Automatic regeneration in progress...",
     "job_removed_refreshing": "This generation is no longer available. Showing remaining generations.",
     "generic_error": "An error occurred. Please try again.",
     "error_llm_server": "The AI service encountered an internal error. Please try again.",
     "error_llm_unavailable": "The AI service is temporarily unavailable.",
     "error_job_expired": "This generation has expired. Please regenerate the document.",
     "error_timeout": "The request timed out. Please try again.",
-    "select_service": "Select a service",
     "ai_menu": {
-      "title": "AI Services",
-      "select": "AI Services",
-      "other": "Other services",
-      "categories": {
-        "summary": "Summaries",
-        "summarize": "Summaries",
-        "resume": "Summaries",
-        "translation": "Translations",
-        "translate": "Translations",
-        "traduction": "Translations",
-        "correction": "Corrections",
-        "correct": "Corrections",
-        "transcription": "Transcriptions"
-      }
+      "select": "AI Services"
     },
     "publication": {
       "title": "Publication Templates",
       "description": "Choose a template to format your document",
       "loading": "Loading templates...",
       "load_error": "Failed to load templates",
-      "no_templates": "No publication templates available",
       "no_description": "No description",
       "selected": "Selected template",
       "create_template": "Create template",
@@ -1333,17 +1021,13 @@
       "preview_action": "Preview",
       "delete_confirm": "Are you sure you want to delete \"{name}\"?",
       "delete_success": "Template deleted successfully",
-      "delete_error": "Error deleting template",
-      "scope": {
-        "system": "System",
-        "organization": "Organization",
-        "user": "Personal"
-      }
+      "delete_error": "Error deleting template"
     }
   },
   "common": {
     "retry": "Retry",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "uploading": "Uploading..."
   },
   "session": {
     "sessions_status": {
@@ -1367,7 +1051,6 @@
         "diarization": "Diarization"
       },
       "modal_add": {
-        "loading_profiles": "Loading transcriptions profiles...",
         "main_button": "Create 1 channel | Create {count} channels",
         "title": "Add channels"
       },
@@ -1397,9 +1080,7 @@
         "success": "The template has been deleted"
       },
       "submit_button": "Create session",
-      "submit_label": "Create session",
       "success_message": "Session successfully created",
-      "title": "Create a session",
       "template_selection_title": "Template selection",
       "template_selection_placeholder": "No template",
       "template_apply_success": "The template has been applied",
@@ -1409,19 +1090,12 @@
       "auto_stop_label": "Stop session automatically at the end time"
     },
     "detail_page": {
-      "back_to_listing": "Sessions list",
       "back_to_live": "Live Session",
-      "delete_button": "Delete session",
       "delete_session_error_message": "The session could not be deleted",
       "display_live_transcription_label": "Display live transcription",
       "display_watermark_label": "Watermark",
       "display_subtitles_label": "Display subtitles",
-      "end_time_not_defined": "Not defined",
       "font_size_label": "Font size",
-      "live_transcript_disabled": {
-        "title": "Live transcription is disabled",
-        "description": "The audio stream is recorded and will be transcribed at the end of the session."
-      },
       "no_transcription": "Nothing has been transcribed yet for this channel",
       "n_turns_selected": "0 turn selected | 1 turn selected | {count} turns selected",
       "copy_turns_text": "Copy content",
@@ -1431,22 +1105,17 @@
       "session_ended_link_to_inbox": "Go to the media library",
       "session_not_started_title": "The session has not started yet",
       "settings_button": "Settings",
-      "start_button": "Start",
-      "start_time_not_defined": "Not defined",
       "stop_button": "Stop and save session to library",
       "stop_force_button": "Force stop and save session to library",
       "stop_session_error_message": "The session could not be stopped",
       "stop_session_success": "The session has been stopped and saved",
       "title_interface_settings": "Interface settings",
-      "undefined_lang": "Unknown language",
-      "undefined_speaker": "Unknown speaker",
       "translation_bot": "Automatic translation",
       "session_already_started": "Session already started",
       "session_auto_start_helper": "Session will start automatically at start time",
       "stop_button_title_session_running": "The session cannot be stopped while streams are being sent.",
       "scroll_to_bottom": "Scroll to bottom"
     },
-    "end_undefined": "Not defined",
     "room_undefined": "Place not defined",
     "microphone_apply_button": "Record microphone",
     "microphone_setup_title": "Microphone setup",
@@ -1458,9 +1127,7 @@
       "start_time": "Start time",
       "tabs": {
         "ongoing_sessions": "Ongoing sessions",
-        "past_sessions": "Past sessions",
-        "scheduled_sessions": "Scheduled sessions",
-        "all_sessions": "All sessions"
+        "scheduled_sessions": "Scheduled sessions"
       }
     },
     "live_page": {
@@ -1497,24 +1164,19 @@
       },
       "title": "Selection of transcription profiles",
       "translation_not_available": "No translation available",
-      "diarization_not_available": "No diarization available",
       "n_translations_selected": "No translations | One translation | {n} translations"
     },
-
     "settings_page": {
       "autoStart_label": "Automatic session start",
       "channels_list_title": "Channels",
       "copy_link_button": "Copy link",
       "copy_link_button_done": "Link copied",
       "displayWatermark_label": "Display watermark",
-      "end_time_label": "End time",
       "edit_alias_button": "Manage the aliase",
       "global_informations_title": "General information",
       "time_informations_title": "Start and stop settings",
       "isPublic_label": "Allow anonymous access to the session",
-      "diarization_label": "Speakers detection",
       "publicLink_label": "Session link",
-      "start_time_label": "Start time",
       "success_message": "Session successfully updated",
       "error_update_message": "Session has not been updated",
       "error_update_password": "Password has not been updated",
@@ -1525,7 +1187,6 @@
         "content": "An audio stream is connected. Are you sure you want to delete the session? The content will be saved in your media library.",
         "title": "Confirm session deletion"
       },
-
       "metadata": {
         "title": "Metadatas",
         "key_label": "Key",
@@ -1557,10 +1218,8 @@
       "visibility_password_label": "Public, password protected",
       "visibility_password_description": "The transcript is publicly accessible, protected by a password.",
       "visibility_save_button": "Apply visibility",
-
       "password_label": "Password"
     },
-    "start_undefined": "Not defined",
     "password_modal": {
       "title": "A password is required to access the live transcription",
       "password_label": "Password",
@@ -1574,7 +1233,6 @@
     "bounce_rate_label": "Bounce rate (viewers)",
     "quick_session_name": "{userName} recording",
     "quick_session_name_anonymous": "Personal recording",
-    "view_details": "View session details",
     "export": {
       "button": "Export",
       "success": "Export downloaded successfully",
@@ -1586,13 +1244,6 @@
     "loading": "Loading session statistics...",
     "error": "Failed to load session statistics",
     "retry": "Retry",
-    "summary": {
-      "title": "Summary",
-      "total_viewers": "Total viewers",
-      "total_watch_time": "Total watch time",
-      "session_duration": "Session duration",
-      "channels_count": "Channels"
-    },
     "channels": {
       "title": "Channels",
       "no_channels": "No channel data available",
@@ -1600,10 +1251,7 @@
       "active_duration": "Active duration",
       "started_at": "Started",
       "ended_at": "Ended",
-      "languages": "Languages",
-      "diarization": "Diarization",
-      "diarization_enabled": "Diarization",
-      "diarization_disabled": "Disabled"
+      "diarization_enabled": "Diarization"
     },
     "timeline": {
       "title": "Activity timeline",
@@ -1616,8 +1264,6 @@
       "transcription_settings_title": "Transcription mode",
       "profile_selector_title": "Transcription AI selection",
       "no_profile_selected_error": "No transcription profile selected",
-      "quick_meeting_already_start_title": "A recording has already been started.",
-      "quick_meeting_already_start_button": "Join the quick meeting",
       "submit_button": "Start recording",
       "description_micro": "Setting up the microphone is done in the next step.",
       "live_transcription_label": "Live transcription",
@@ -1631,16 +1277,13 @@
       "microphone_error_first_line": "Hello ! You are muted.",
       "microphone_error_second_line": "Check the permissions of your microphone.",
       "microphone_select_label": "Microphone selection",
-      "microphone_reset_button": "Reset to default system microphone",
-      "microphone_select_button": "Select microphone",
       "microphone_default_value": "Default system microphone",
       "sound_detector_headline": "Say something to test your microphone",
       "sound_detector_label": "Voice detection",
       "sound_detector_value_ok": "Your microphone works",
       "sound_detector_value_wait": "Waiting sound from microphone...",
       "start_meeting": "Start the meeting",
-      "back": "Back",
-      "bypass": "Continue despite muted microphone"
+      "back": "Back"
     },
     "restore": {
       "title": "A quick meeting is already in progress",
@@ -1650,14 +1293,10 @@
       "continue_button": "Continue the recording"
     },
     "setup_visio": {
-      "title": "Join a videoconference",
-      "subtitle": "Enter the videoconference link to start the transcription",
       "type_label": "Service type",
       "link_label": "URL",
       "display_transcription_in_visio_label": "Display subtitles in the videoconference",
-      "back": "Back",
       "join_meeting": "Join the meeting",
-      "error_bot_setup": "An error occurred while joining the videoconference",
       "bot_lang_label": "Choose language used for videoconference subtitle"
     },
     "live": {
@@ -1666,14 +1305,13 @@
       "status_recording": "Recording microphone",
       "status_muted": "Microphone is muted",
       "save_button": "Stop microphone recording",
-      "pause_button": "Pause",
-      "start_button": "Start",
       "start_microphone_button": "Unmute microphone",
       "mute_microphone_button": "Mute microphone"
     },
     "live_visio": {
       "default_name": "Untitle {type} meeting",
-      "status_recording_visio": "Recording videoconference"
+      "status_recording_visio": "Recording videoconference",
+      "status_recording_visio_description": "You can leave this page, the recording continues in the background"
     },
     "modal_save": {
       "title": "Save the recording",
@@ -1688,8 +1326,7 @@
       },
       "default": {
         "title": "A recording is pending",
-        "continue_button": "Resume recording",
-        "stop_button": "Save and stop recording"
+        "continue_button": "Resume recording"
       }
     }
   },
@@ -1704,58 +1341,19 @@
     "no_conversation_selected_content": "Please select at least one media to share.",
     "no_conversation_selected_title": "No media selected",
     "organization_members": "organization members",
-    "search_label": "Invite user",
     "user_has_been_invited": "User has been invited",
-    "user_not_found": "User not found",
     "user_right_updated": "User rights have been updated"
-  },
-  "shared_with_me": {
-    "subtitle": "All media shared with you (from outside the organization)",
-    "title": "Media shared with me",
-    "no_media_title": "No media has been shared with you",
-    "no_media_subtitle": "Other users can share media with you using the 'share' button in their media library."
-  },
-  "sidebar_filters": {
-    "title": "Filters",
-    "add_criterions_button": "Select tags"
   },
   "tags": {
     "add_tag_to_conversation": "Add tag",
-    "add_tags": "Add tags",
-    "back_to_search": "Back to search",
-    "browse_categories": "Browse categories",
-    "cancel_create_tag": "Cancel",
-    "categories": "Tag Categories",
-    "create_a_tag": "Create a tag",
-    "create_category": "Create tag category {value}",
-    "create_tag": "Create tag",
-    "define_category_button": "Create tag",
-    "delete_category_title": "Delete category",
-    "delete_tag_title": "Delete tag",
-    "done_create_tag": "Done",
-    "edit_category_title": "Edit category",
-    "edit_tag_title": "Edit tag",
-    "empty_category": "category yet to define",
     "empty_value": "No value",
-    "error_creating_tag": "An error occurred while creating the tag",
-    "manage_tags": "Manage tags",
     "new_tag_name": "Tag name",
-    "no_categories_found": "No tag categories found",
-    "no_tags": "No tags",
-    "no_tags_found": "No tags found",
     "no_tags_in_category": "No tags in this category",
     "remove_tag": "Remove tag",
-    "search_categories": "Search categories or create a new one",
-    "search_tags_or_categories": "Search tags or categories",
-    "search_tags_or_categories_or_create_new_one": "Search tags, or type to create a new one",
-    "search_tags_with": "Search tags with",
-    "select_category_title": "Select category",
-    "select_tag_title": "Select this tag",
-    "tags": "Tags"
+    "select_tag_title": "Select this tag"
   },
   "user_settings": {
     "change_password_label": "Change password",
-    "check_verify_email": "Please check your emails and click on the link we've sent to you in order to verify your email address.",
     "email_label": "Email",
     "firstname_label": "Firstname",
     "invite_account_notif": "Please fill in the form and create a password in order to complete the creation of your account",
@@ -1785,7 +1383,6 @@
     },
     "personal_information": "Personal information",
     "picture_label": "Picture",
-    "private_label": "Set profile private",
     "profil_visibility": {
       "label_private": "Private profile",
       "title": "Profile visibility"
@@ -1794,7 +1391,6 @@
       "profile_image_button": "Choose a file",
       "update_picture_button": "Update picture"
     },
-    "profile_image_reset_button": "Reset picture",
     "role_section": {
       "title": "Platform role",
       "submit_button": "Update role",
@@ -1802,15 +1398,11 @@
       "notif_error": "An error occurred while updating the role"
     },
     "send_verification_link": "Resend validation link",
-    "share_notification_label": "Receive email notification when a media is shared to you",
     "title": "Profile settings",
-    "update_email_label": "Update email",
     "update_password_button": "Update password",
     "update_personal_information_button": "Update personal information",
-
     "update_pswd_notif": "You recently requested a recovery link for your password. You might think about updating your password.",
-    "update_pswd_notif_dismiss_btn": "Dismiss",
-    "verify_email_notif": "Please verify your email address"
+    "update_pswd_notif_dismiss_btn": "Dismiss"
   },
   "user_creation": {
     "title": "New user",
@@ -1825,20 +1417,15 @@
       "email": "Email",
       "firstname": "Firstname",
       "lastname": "Lastname",
-      "role": "Role",
-      "status": "Status",
       "creation_date": "Creation date",
       "platform_role": "Highest Platform role"
     },
-    "edit_button_label": "Edit",
-    "delete_button_label": "Delete"
+    "edit_button_label": "Edit"
   },
   "orga_table": {
     "header": {
       "creation_date": "Creation date",
-      "id": "ID",
       "name": "Name",
-      "description": "Description",
       "userNumber": "Number of users"
     },
     "edit_button_label": "Edit"
@@ -1862,25 +1449,20 @@
     "main_label": "Week {weekNumber} of {year} ({startDate} - {endDate})"
   },
   "websocket": {
-    "connected": "Content updated in real time",
     "disconnected": "Content not updated, check your internet connection",
     "lost_connexion": "Connection lost, attempting to reconnect...",
     "restored": "Connection restored"
   },
   "input_selector": {
     "search_tags": "Search topics...",
-    "available_tags": "Available topics",
     "no_tags_found": "No topics found",
     "create_tag": "Create a topic",
-    "clear_all": "Clear all",
     "selected_count": "selected",
     "search_message": "Press [ENTER] to search \"{keyword}\" in your media",
-    "search_empty_message": "Press [ENTER] to search in all your media",
     "search_back_to_results_message": "Press [ENTER] to return to results",
     "search_placeholder": "Search in your media"
   },
   "user_selector": {
-    "clear_button": "Clear",
     "search_placeholder": "Search for a user...",
     "select_user": "Select a user",
     "select_users": "Select users",
@@ -1892,5 +1474,6 @@
     "no_results": "No results",
     "min_characters": "{count} characters minimum",
     "select_all": "Select all"
-  }
+  },
+  "actions": "Actions"
 }

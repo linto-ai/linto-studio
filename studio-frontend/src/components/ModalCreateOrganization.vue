@@ -1,5 +1,5 @@
 <template>
-  <ModalNew
+  <Modal
     v-model="isOpen"
     isForm
     @on-cancel="($event) => this.$emit('on-cancel')"
@@ -29,7 +29,7 @@
         {{ $t("modal_create_organization.action_btn") }}
       </Button>
     </template>
-  </ModalNew>
+  </Modal>
 </template>
 <script>
 import { Fragment } from "vue-fragment"
@@ -42,7 +42,7 @@ import { formsMixin } from "@/mixins/forms.js"
 import FormInput from "@/components/molecules/FormInput.vue"
 import Button from "@/components/atoms/Button.vue"
 import { apiCreateOrganisation } from "../api/organisation"
-import ModalNew from "@/components/molecules/Modal.vue"
+import Modal from "@/components/molecules/Modal.vue"
 
 export default {
   mixins: [formsMixin],
@@ -101,6 +101,6 @@ export default {
       // If validation fails, don't close the modal
     },
   },
-  components: { Fragment, FormInput, ModalNew, Button },
+  components: { Fragment, FormInput, Modal, Button },
 }
 </script>

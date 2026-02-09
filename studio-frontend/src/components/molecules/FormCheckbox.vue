@@ -38,7 +38,6 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "@/main.js"
 
 import LabeledValue from "@/components/atoms/LabeledValue.vue"
 import SwitchInput from "@/components/atoms/SwitchInput.vue"

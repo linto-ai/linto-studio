@@ -8,8 +8,6 @@ import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 import isAuthenticated from "@/tools/isAuthenticated.js"
 
-import BurgerMenu from "@/components-mobile/BurgerMenu.vue"
-import HeaderBar from "@/components/HeaderBar.vue"
 import V2Layout from "@/layouts/v2-layout.vue"
 
 export default {
@@ -74,8 +72,6 @@ export default {
   },
   components: {
     Fragment,
-    BurgerMenu,
-    HeaderBar,
     V2Layout,
   },
 }

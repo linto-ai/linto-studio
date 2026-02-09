@@ -22,7 +22,6 @@
   </div>
 </template>
 <script>
-import { bus } from "@/main.js"
 import { debounceMixin } from "@/mixins/debounce.js"
 import GenericTable from "./GenericTable.vue"
 import Pagination from "./Pagination.vue"

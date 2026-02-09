@@ -1,5 +1,5 @@
 <template>
-  <ModalNew
+  <Modal
     value
     @on-cancel="() => this.$emit('on-close')"
     @on-delete="deleteSessions"
@@ -9,7 +9,7 @@
     :withActionApply="false"
     size="sm">
     {{ $tc("modal_delete_sessions.content", selectedSessions.length) }}
-  </ModalNew>
+  </Modal>
 </template>
 
 <script>
@@ -17,7 +17,7 @@ import { apiAdminDeleteSession } from "@/api/admin.js"
 import bulkRequest from "@/tools/bulkRequest.js"
 import { bus } from "@/main"
 
-import ModalNew from "@/components/molecules/Modal.vue"
+import Modal from "@/components/molecules/Modal.vue"
 
 export default {
   props: {
@@ -79,6 +79,6 @@ export default {
       }
     },
   },
-  components: { ModalNew },
+  components: { Modal },
 }
 </script>

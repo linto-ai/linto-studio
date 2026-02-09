@@ -29,9 +29,6 @@
 <script>
 import { mapGetters } from "vuex"
 
-import CustomSelect from "./molecules/CustomSelect.vue"
-import PhIcon from "./atoms/PhIcon.vue"
-import MediaExplorerStorageSize from "./MediaExplorerStorageSize.vue"
 import LocalSwitcher from "./LocalSwitcher.vue"
 import Breadcrumb from "@/components/atoms/Breadcrumb.vue"
 import IsMobile from "./atoms/IsMobile.vue"
@@ -103,11 +100,9 @@ export default {
     },
   },
   components: {
-    PhIcon,
-    CustomSelect,
-    MediaExplorerStorageSize,
     LocalSwitcher,
     Breadcrumb,
+    IsMobile,
   },
 }
 </script>

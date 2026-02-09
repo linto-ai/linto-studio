@@ -1,9 +1,7 @@
 <template>
   <div id="helper-container" class="flex col" v-if="showHelper">
     <div class="flex row helper-close">
-      <button class="btn" @click="hide()">
-        <span class="icon close"></span>
-      </button>
+      <Button variant="secondary" @click="hide()" icon="x" />
     </div>
 
     <div class="flex col flex1 form-info-container" style="border: none">

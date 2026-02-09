@@ -1,5 +1,5 @@
 <template>
-  <ModalNew
+  <Modal
     :title="$t('app_editor_highlights_modal.ia_title')"
     @on-cancel="close"
     @on-confirm="done"
@@ -24,12 +24,12 @@
       <h3>{{ $t("app_editor_highlights_modal.loading_services") }}</h3>
       <ph-icon name="spinner" size="lg" color="primary" weight="bold" />
     </div>
-  </ModalNew>
+  </Modal>
 </template>
 <script>
 import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
-import ModalNew from "@/components/molecules/Modal.vue"
+import Modal from "@/components/molecules/Modal.vue"
 import ServiceBox from "./ServiceBox.vue"
 import { apiGetNlpService } from "../api/service.js"
 
@@ -86,6 +86,6 @@ export default {
       this.$emit("on-confirm", services)
     },
   },
-  components: { Fragment, ModalNew, ServiceBox },
+  components: { Fragment, Modal, ServiceBox },
 }
 </script>

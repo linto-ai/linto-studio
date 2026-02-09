@@ -46,12 +46,17 @@
       </header>
 
       <!-- Multi-selection mode -->
-      <MediaExplorerRightPanelMulti v-if="isMultiMode" />
+      <MediaExplorerRightPanelMulti
+        v-if="isMultiMode"
+        :selected-medias="selectedMedias"
+        :selected-media-ids="selectedMediaIds"
+        @update:selectedMediaIds="$emit('update:selectedMediaIds', $event)" />
 
       <!-- Single media mode -->
       <MediaExplorerRightPanelItem
         v-else-if="selectedMediaForOverview"
-        :selectedMedia="selectedMediaForOverview" />
+        :selectedMedia="selectedMediaForOverview"
+        :selectedMedias="selectedMedias" />
     </div>
   </div>
 </template>
@@ -63,9 +68,7 @@ import { mediaProgressMixin } from "@/mixins/mediaProgress"
 import Button from "@/components/atoms/Button.vue"
 import MediaExplorerRightPanelItem from "@/components/MediaExplorerRightPanelItem.vue"
 import MediaExplorerRightPanelMulti from "@/components/MediaExplorerRightPanelMulti.vue"
-import ModalDeleteConversations from "@/components/ModalDeleteConversations.vue"
 import { mediaExplorerRightPanelMixin } from "@/mixins/mediaExplorerRightPanel.js"
-import ConversationShareMultiple from "@/components/ConversationShareMultiple.vue"
 
 export default {
   name: "MediaExplorerRightPanel",
@@ -74,8 +77,6 @@ export default {
     Button,
     MediaExplorerRightPanelItem,
     MediaExplorerRightPanelMulti,
-    ModalDeleteConversations,
-    ConversationShareMultiple,
   },
   props: {
     initialWidth: {
@@ -97,6 +98,14 @@ export default {
     readonlyTags: {
       type: Boolean,
       default: false,
+    },
+    selectedMedias: {
+      type: Array,
+      default: () => [],
+    },
+    selectedMediaIds: {
+      type: Array,
+      default: () => [],
     },
   },
   data() {
@@ -200,7 +209,7 @@ export default {
   },
   methods: {
     close(e) {
-      this.clearSelectedMedias()
+      this.$emit("update:selectedMediaIds", [])
     },
     startResize(event) {
       this.isResizing = true
@@ -325,7 +334,7 @@ export default {
       this.showDeleteModal = false
 
       // Clear selected medias after successful deletion
-      this.clearSelectedMedias()
+      this.$emit("update:selectedMediaIds", [])
 
       // Emit event to parent to close panel
       this.$emit("close")

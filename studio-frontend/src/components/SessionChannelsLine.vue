@@ -75,10 +75,8 @@ import { bus } from "@/main.js"
 
 import { sessionChannelModelMixin } from "@/mixins/sessionChannelModel.js"
 
-import ArrayHeader from "@/components/ArrayHeader.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
 import EMPTY_FIELD from "@/const/emptyField"
-import CustomSelect from "@/components/molecules/CustomSelect.vue"
 
 import SessionChannelsEndpoints from "@/components/SessionChannelsEndpoints.vue"
 import Checkbox from "@/components/atoms/Checkbox.vue"
@@ -178,10 +176,8 @@ export default {
   },
   components: {
     Fragment,
-    ArrayHeader,
     FormInput,
     SessionChannelsEndpoints,
-    CustomSelect,
     Checkbox,
   },
 }

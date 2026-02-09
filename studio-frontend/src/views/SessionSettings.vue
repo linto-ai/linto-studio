@@ -228,14 +228,16 @@
         class="flex gap-medium conversation-create-footer align-center"
         v-if="hasChanged">
         <div class="flex1 small-padding-left">Session has been modified</div>
-        <button class="btn secondary" @click="resetSession">
-          <span class="label">Reset</span>
-        </button>
+        <Button
+          variant="secondary"
+          @click="resetSession"
+          label="Reset" />
 
-        <button @click="updateSession" class="btn primary">
-          <ph-icon name="check" size="md" class="icon" />
-          <span class="label">Sauvegarder</span>
-        </button>
+        <Button
+          variant="primary"
+          @click="updateSession"
+          icon="check"
+          label="Sauvegarder" />
       </div>
 
       <ModalForceDeleteSession
@@ -275,8 +277,6 @@ import { getEnv } from "@/tools/getEnv"
 
 import { apiUpdateSession } from "@/api/session.js"
 
-import SessionNotStarted from "@/components/SessionNotStarted.vue"
-import LabeledValue from "@/components/atoms/LabeledValue.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
 import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import FormRadio from "@/components/molecules/FormRadio.vue"
@@ -284,8 +284,6 @@ import FormRadio from "@/components/molecules/FormRadio.vue"
 import SessionChannelsTable from "@/components/SessionChannelsTable.vue"
 import AppointmentSelector from "@/components/AppointmentSelector.vue"
 import ModalForceDeleteSession from "@/components/ModalForceDeleteSession.vue"
-import MainContent from "@/components/MainContent.vue"
-import SessionStatus from "@/components/SessionStatus.vue"
 import MetadataList from "@/components/MetadataList.vue"
 import SessionHeader from "@/components/SessionHeader.vue"
 import ModalEditSessionAlias from "@/components/ModalEditSessionAlias.vue"
@@ -652,11 +650,6 @@ export default {
     },
   },
   components: {
-    MainContent,
-    SessionStatus,
-    MainContent,
-    SessionNotStarted,
-    LabeledValue,
     FormInput,
     FormCheckbox,
     FormRadio,

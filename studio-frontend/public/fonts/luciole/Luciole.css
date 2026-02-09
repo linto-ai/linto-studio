@@ -5,32 +5,33 @@
   font-family: "Luciole";
   font-weight: 500;
   font-style: normal;
-  src: url("Luciole-Regular.ttf") format("truetype");
+  font-display: swap;
+  src: url("Luciole-Regular.woff2") format("woff2");
 }
 
 /** Luciole normal-Italic **/
-
 @font-face {
   font-family: "Luciole";
   font-weight: 500;
   font-style: italic;
-  src: url("Luciole-Regular-Italic.ttf") format("truetype");
+  font-display: swap;
+  src: url("Luciole-Regular-Italic.woff2") format("woff2");
 }
 
 /** Luciole bold **/
-
 @font-face {
   font-family: "Luciole";
   font-weight: 600;
   font-style: normal;
-  src: url("Luciole-Bold.ttf") format("truetype");
+  font-display: swap;
+  src: url("Luciole-Bold.woff2") format("woff2");
 }
 
 /** Luciole bold-Italic **/
-
 @font-face {
   font-family: "Luciole";
   font-weight: 600;
   font-style: italic;
-  src: url("Luciole-Bold-Italic.ttf") format("truetype");
+  font-display: swap;
+  src: url("Luciole-Bold-Italic.woff2") format("woff2");
 }

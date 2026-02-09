@@ -2,9 +2,7 @@
   <div class="subtitle-fullscreen-container" ref="fullscreenContainer">
     <div class="subtitle-fullscreen__rotate">
       <header class="subtitle-fullscreen__header">
-        <button class="transparent">
-          <span class="icon close large" @click="close"></span>
-        </button>
+        <Button variant="transparent" @click="close" icon="x" size="lg" />
       </header>
       <div class="subtitle-fullscreen__content">
         <SessionSubtitle

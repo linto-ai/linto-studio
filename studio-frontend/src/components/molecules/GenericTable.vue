@@ -34,7 +34,6 @@
   </table>
 </template>
 <script>
-import { bus } from "@/main.js"
 import GenericTableHeader from "./GenericTableHeader.vue"
 import GenericTableLine from "./GenericTableLine.vue"
 

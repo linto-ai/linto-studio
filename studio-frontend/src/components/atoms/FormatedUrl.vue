@@ -2,7 +2,6 @@
   <div>{{ simplifiedUrl }}</div>
 </template>
 <script>
-import { bus } from "@/main.js"
 import { getEnv } from "@/tools/getEnv"
 
 export default {

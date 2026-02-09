@@ -3,16 +3,11 @@
     <div class="media-explorer-header__content">
       <div class="flex flex-1 row align-center gap-medium">
         <div class="media-explorer-header__selection">
-          <label
-            for="select-all-checkbox"
-            class="select-all-control"
-            :class="{ active: isSelectAll && selectedCount > 0 }">
-            <input
-              id="select-all-checkbox"
-              type="checkbox"
-              :checked="isSelectAll"
-              :disabled="loading || totalCount === 0"
-              @change="handleSelectAll" />
+          <label class="select-all-control" :class="{ active: isAllSelected }">
+            <Checkbox
+              v-model="isAllSelected"
+              :indeterminate="isPartiallySelected"
+              :disabled="loading || totalCount === 0" />
 
             <span v-if="selectedCount > 0" class="selection-count">
               {{ selectedCount }} / {{ totalCount }}
@@ -54,11 +49,14 @@
 <script>
 import { v4 as uuid } from "uuid"
 import { mediaScopeMixin } from "@/mixins/mediaScope"
+import Checkbox from "@/components/atoms/Checkbox.vue"
 
 export default {
   mixins: [mediaScopeMixin],
   name: "MediaExplorerHeader",
-  components: {},
+  components: {
+    Checkbox,
+  },
   props: {
     selectedCount: {
       type: Number,
@@ -77,11 +75,32 @@ export default {
       type: Array,
       default: () => [],
     },
+    selectedMediaIds: {
+      type: Array,
+      default: () => [],
+    },
   },
   computed: {
     getTags() {
       const tags = this.$store.getters["tags/getTags"]
       return tags
+    },
+    isAllSelected: {
+      get() {
+        return (
+          this.selectedMediaIds.length === this.totalCount &&
+          this.totalCount > 0
+        )
+      },
+      set(val) {
+        this.$emit(
+          "update:selectedMediaIds",
+          val ? this.allMedias.map((m) => m._id) : [],
+        )
+      },
+    },
+    isPartiallySelected() {
+      return this.selectedCount > 0 && this.selectedCount < this.totalCount
     },
     // Use computed property instead of data to ensure reactivity
     search: {
@@ -116,16 +135,13 @@ export default {
     },
   },
   methods: {
-    handleSelectAll() {
-      this.$emit("select-all")
-    },
-
     handleSearch(searchQuery = null) {
       // Use parameter if provided, otherwise use internal search value
       const formattedSearch =
         searchQuery !== null ? searchQuery.trim() : this.search.trim()
 
       this.$store.dispatch(`${this.storeScope}/setSearchQuery`, formattedSearch)
+      this.$emit("update:selectedMediaIds", [])
     },
 
     handleAddTag(tag) {
@@ -186,12 +202,10 @@ export default {
 }
 
 .select-all-control {
-  position: relative;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.375rem 0.75rem;
-  padding-left: 2rem;
   background-color: var(--neutral-10);
   border: 1px solid var(--neutral-40);
   border-radius: 0.375rem;
@@ -210,22 +224,6 @@ export default {
   background-color: var(--primary-color, #007bff);
   border-color: var(--primary-color, #007bff);
   color: white;
-}
-
-.select-all-control input[type="checkbox"] {
-  position: absolute;
-  left: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 16px;
-  height: 16px;
-  margin: 0;
-  cursor: pointer;
-}
-
-.select-all-control input[type="checkbox"]:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
 }
 
 .selection-count {

@@ -39,8 +39,8 @@ import {
 } from "./handlers/docHandlers.js"
 
 import { customDebug } from "../../tools/customDebug.js"
-import SyllabicFR from "../../../public/js/syllabic/syllabicFR.js"
-import SyllabicEN from "../../../public/js/syllabic/syllabicEN.js"
+import SyllabicFR from "@/lib/syllabic/syllabicFR.js"
+import SyllabicEN from "@/lib/syllabic/syllabicEN.js"
 
 //let rootDoc = null
 let conversation = null
