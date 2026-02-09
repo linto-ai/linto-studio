@@ -65,7 +65,7 @@ export default {
     try {
       if (container.requestFullscreen) {
         container.requestFullscreen().catch((err) => {
-          console.log(err)
+          console.error(err)
         })
       } else if (container.webkitRequestFullscreen) {
         container.webkitRequestFullscreen()
@@ -73,13 +73,13 @@ export default {
         console.warn("Fullscreen API is not supported on this browser.")
       }
     } catch (err) {
-      console.log(err)
+      console.error(err)
     }
   },
   methods: {
     close() {
       document.exitFullscreen().catch((err) => {
-        console.log(err)
+        console.error(err)
       })
 
       this.$emit("close")

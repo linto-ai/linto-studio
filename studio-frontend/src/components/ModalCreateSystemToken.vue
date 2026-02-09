@@ -54,13 +54,11 @@ export default {
       const expiration = this.expiration.value
       const role_value = this.platformRoleField.value
 
-      console.log("yop")
       const req = await apiCreatePlatformToken({
         name: this.name.value,
         role: role_value,
         expiration,
       })
-      console.log("yop2")
       if (req.status == "success") {
         this.$store.dispatch("system/addNotification", {
           message: this.$t("api_tokens_settings.token_created"),

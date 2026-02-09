@@ -82,7 +82,6 @@ export default {
         return this.selectedRows
       },
       set(value) {
-        console.log("p_selectedRows", value)
         this.$emit("update:selectedRows", value)
       },
     },

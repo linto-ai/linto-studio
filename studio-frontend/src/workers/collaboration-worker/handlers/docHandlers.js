@@ -236,7 +236,6 @@ function sendTextUpdateToView(sendMessage, conversation, YEvent, transaction) {
           )
           break
         case "speaker_id":
-          console.log("need update speaker ")
           break
         default:
           break
@@ -360,8 +359,7 @@ function sendScreenUpdateToView(sendMessage, subtitle, events, transaction) {
   if (mergeScreen) sendScreenMergeToView(sendMessage, subtitle, events)
   else if (deleteScreen) {
     sendScreenDeleteToView(sendMessage, subtitle, events, transaction.origin)
-  } else if (splitScreen) console.log("split")
-  else if (addScreen)
+  } else if (addScreen)
     sendScreenAddToView(sendMessage, subtitle, events[0], transaction.origin)
   else if (updateScreen)
     sendScreenContentUpdateToView(

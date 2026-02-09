@@ -268,8 +268,6 @@ export default {
       this.loadingQuickSession = false
     },
     handleNewUploadComplete(data) {
-      console.log("New upload workflow completed:", data)
-
       this.$router.push({
         name: "explore",
         params: { organizationId: this.currentOrganizationScope },

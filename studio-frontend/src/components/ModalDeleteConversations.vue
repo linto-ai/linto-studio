@@ -75,9 +75,7 @@ export default {
       this.deleteMedias(this.medias.map((media) => media._id))
       this.$emit("confirm")
     },
-    closeModal() {
-      console.log("closeModal")
-    },
+    closeModal() {},
     onCancel() {
       this.$emit("cancel")
     },

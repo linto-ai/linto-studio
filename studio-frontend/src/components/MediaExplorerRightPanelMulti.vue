@@ -201,7 +201,6 @@ export default {
 
     handleBulkExport() {
       // TODO: Implement bulk export functionality
-      console.log("Bulk export not implemented yet")
     },
 
     async handleCreateAndAddTag(tag) {

@@ -161,7 +161,6 @@ export default {
       this.$emit("updateName", value)
     },
     selectedTranslations(value) {
-      console.log("selected tr", value)
       this.item.translations = value // shallow copy, parent will be updated
     },
     "item.diarization"(value) {

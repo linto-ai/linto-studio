@@ -237,7 +237,7 @@ export default {
           bus.$emit("screen-leave", region.id)
         })
       } catch (error) {
-        console.log(error)
+        console.error(error)
         this.playerError = true
       }
     },

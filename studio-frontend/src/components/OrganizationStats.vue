@@ -73,7 +73,6 @@ export default {
 
       if (reqKpi.status === "success") {
         this.kpiDaily = reqKpi.data.result
-        console.log(reqKpi.data.result)
       } else {
         this.error = this.$t("organisation.kpi.error")
       }

@@ -138,7 +138,6 @@ const TAG_COLORS = [
 function getRandomColor() {
   const randomIndex = Math.floor(Math.random() * TAG_COLORS.length)
   const selectedColor = TAG_COLORS[randomIndex]
-  console.log(`[MediaExplorerFormTag] Random color selected: ${selectedColor}`)
   return selectedColor
 }
 
