@@ -308,7 +308,6 @@ export default {
           this.formError = this.$t("user_creation.error_message")
         }
       } else {
-        console.log("invalid form")
       }
       return false
     },

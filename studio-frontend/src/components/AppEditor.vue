@@ -213,7 +213,6 @@ export default {
       this.updateCurrentTime(time)
     })
     bus.$on("player-seek", (time) => {
-      console.log("player-seek")
       this.updateCurrentTime(time)
     })
 
