@@ -77,8 +77,7 @@
         :previous="lastTurn || lastOfPreviousTurns"
         :channelLanguages="channelLanguages"
         :selectedTranslations="selectedTranslations"
-        :partialObject="partialObject"
-        :partialText="partialText"></SessionChannelTurnPartial>
+        :partialObject="partialObject"></SessionChannelTurnPartial>
 
       <div ref="bottom"></div>
     </div>
@@ -241,10 +240,9 @@ export default {
     return {
       turns: [],
       previousTurns: [],
-      partialText: "",
+      partialText: "", // text used in subtitle
       partialObject: {},
       finalText: "",
-      finalObject: {},
       loading: true,
       selectedTurns: [],
       copyState: false,
@@ -405,10 +403,12 @@ export default {
         // Merge stored translations into previous turns
         const translatedCaptions = channel?.translatedCaptions || []
         for (const tc of translatedCaptions) {
-          const matchingTurn = this.previousTurns.find(t => t.segmentId === tc.segmentId)
+          const matchingTurn = this.previousTurns.find(
+            (t) => t.segmentId === tc.segmentId,
+          )
           if (matchingTurn) {
             if (!matchingTurn.translations) {
-              this.$set(matchingTurn, 'translations', {})
+              this.$set(matchingTurn, "translations", {})
             }
             this.$set(matchingTurn.translations, tc.targetLang, tc.text)
           }
@@ -417,7 +417,11 @@ export default {
     },
     onPartial(content) {
       // Carry forward translations from previous partial of same segment
-      if (this.partialObject && this.partialObject.segmentId === content.segmentId && this.partialObject.translations) {
+      if (
+        this.partialObject &&
+        this.partialObject.segmentId === content.segmentId &&
+        this.partialObject.translations
+      ) {
         content.translations = { ...this.partialObject.translations }
       }
       this.partialText = getTextTurnWithTranslation(
@@ -431,8 +435,15 @@ export default {
     onFinal(content) {
       content.uuid = uuidv4()
       // Carry forward translations from partial to final
-      if (this.partialObject && this.partialObject.segmentId === content.segmentId && this.partialObject.translations) {
-        content.translations = { ...this.partialObject.translations, ...(content.translations || {}) }
+      if (
+        this.partialObject &&
+        this.partialObject.segmentId === content.segmentId &&
+        this.partialObject.translations
+      ) {
+        content.translations = {
+          ...this.partialObject.translations,
+          ...(content.translations || {}),
+        }
       }
       if (!content.translations) {
         content.translations = {}
@@ -446,18 +457,24 @@ export default {
         this.selectedTranslations,
         this.channelLanguages,
       )
-      this.finalObject = content
       this.turns.push(content)
       this.scrollToBottom()
     },
     onTranslation(content) {
       // content = {segmentId, text, targetLang, sourceLang, start, end, locutor, astart}
       // Update the current partial if it matches
-      if (this.partialObject && this.partialObject.segmentId === content.segmentId) {
+      if (
+        this.partialObject &&
+        this.partialObject.segmentId === content.segmentId
+      ) {
         if (!this.partialObject.translations) {
-          this.$set(this.partialObject, 'translations', {})
+          this.$set(this.partialObject, "translations", {})
         }
-        this.$set(this.partialObject.translations, content.targetLang, content.text)
+        this.$set(
+          this.partialObject.translations,
+          content.targetLang,
+          content.text,
+        )
         this.partialText = getTextTurnWithTranslation(
           this.partialObject,
           this.selectedTranslations,
@@ -467,11 +484,13 @@ export default {
 
       // Also update the matching turn if already finalized
       const allTurns = [...this.previousTurns, ...this.turns]
-      const matchingTurn = allTurns.find(t => t.segmentId === content.segmentId)
+      const matchingTurn = allTurns.find(
+        (t) => t.segmentId === content.segmentId,
+      )
       if (!matchingTurn) return
 
       if (!matchingTurn.translations) {
-        this.$set(matchingTurn, 'translations', {})
+        this.$set(matchingTurn, "translations", {})
       }
       this.$set(matchingTurn.translations, content.targetLang, content.text)
     },

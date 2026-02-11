@@ -74,6 +74,7 @@ import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 
 import { sessionChannelModelMixin } from "@/mixins/sessionChannelModel.js"
+import { normalizeAvailableTranslations, extractTranslationLangCode } from "@/tools/translationUtils.js"
 
 import FormInput from "@/components/molecules/FormInput.vue"
 import EMPTY_FIELD from "@/const/emptyField"
@@ -95,15 +96,7 @@ export default {
     },
   },
   data() {
-    const raw = this.item.availableTranslations || []
-    let translations
-    if (Array.isArray(raw)) {
-      translations = raw
-    } else {
-      const discrete = raw.discrete || []
-      const external = (raw.external || []).flatMap(e => e.languages || [])
-      translations = [...new Set([...discrete, ...external])]
-    }
+    const translations = normalizeAvailableTranslations(this.item.availableTranslations)
     let languageNames = new Intl.DisplayNames([this.$i18n.locale], {
       type: "language",
     })
@@ -149,7 +142,7 @@ export default {
       if (translations_array.length === 0) {
         return this.$t("session.channels_list.no_translations")
       }
-      return translations_array.join(", ")
+      return translations_array.map(extractTranslationLangCode).join(", ")
     },
     // endpoint() {
     //   return this.item.stream_endpoint || ""

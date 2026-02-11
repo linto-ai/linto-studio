@@ -15,6 +15,7 @@
 import { Fragment } from "vue-fragment"
 
 import { bus } from "@/main.js"
+import { extractTranslationLangCode } from "@/tools/translationUtils.js"
 export default {
   props: {
     selectedChannel: {
@@ -69,8 +70,7 @@ export default {
 
       const translations = this.selectedChannel.translations
         .map((translation) => {
-          // Handle both old string format and new object format
-          const langCode = typeof translation === 'string' ? translation : translation.target
+          const langCode = extractTranslationLangCode(translation)
           return {
             value: langCode,
             text: languageNames.of(langCode),

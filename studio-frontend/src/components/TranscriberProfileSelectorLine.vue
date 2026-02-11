@@ -67,6 +67,7 @@ import SwitchInput from "@/components/atoms/SwitchInput.vue"
 import Radio from "@/components/atoms/Radio.vue"
 
 import { transcriberProfileModelMixin } from "@/mixins/transcriberProfileModel.js"
+import { normalizeAvailableTranslations } from "@/tools/translationUtils.js"
 export default {
   mixins: [transcriberProfileModelMixin],
   props: {
@@ -93,17 +94,7 @@ export default {
     },
   },
   data() {
-    const raw = this.profile?.config?.availableTranslations || []
-    let translations
-    if (Array.isArray(raw)) {
-      // Legacy flat array of lang codes
-      translations = raw
-    } else {
-      // New format: { discrete: string[], external: [{translator, languages}] }
-      const discrete = raw.discrete || []
-      const external = (raw.external || []).flatMap(e => e.languages || [])
-      translations = [...new Set([...discrete, ...external])]
-    }
+    const translations = normalizeAvailableTranslations(this.profile?.config?.availableTranslations)
     let languageNames = new Intl.DisplayNames([this.$i18n.locale], {
       type: "language",
     })

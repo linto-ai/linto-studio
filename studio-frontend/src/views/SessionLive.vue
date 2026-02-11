@@ -151,6 +151,7 @@ import { microphoneMixin } from "@/mixins/microphone.js"
 import { sessionMicrophoneMixin } from "@/mixins/sessionMicrophone.js"
 
 import { getEnv } from "@/tools/getEnv"
+import { isQualifiedForCrossSubtitles } from "@/tools/translationUtils.js"
 
 import SessionLiveContent from "@/components/SessionLiveContent.vue"
 import Loading from "@/components/atoms/Loading.vue"
@@ -256,18 +257,10 @@ export default {
   },
   computed: {
     qualifiedForCrossSubtitles() {
-      let res = true
-      res = res && this.selectedChannel.languages.length == 2
-      const translations = this.selectedChannel.translations.map(t =>
-        typeof t === 'string' ? t : t.target
+      return isQualifiedForCrossSubtitles(
+        this.selectedChannel.translations,
+        this.selectedChannel.languages,
       )
-      res = res && !!translations.find(
-        (t) => t.split("-")[0] === this.selectedChannel.languages[0].split("-")[0]
-      )
-      res = res && !!translations.find(
-        (t) => t.split("-")[0] === this.selectedChannel.languages[1].split("-")[0]
-      )
-      return res
     },
     ...mapGetters("system", ["isMobile"]),
     ...mapGetters("user", ["isAuthenticated"]),
