@@ -142,15 +142,33 @@ async function initCaptionsForConversation(sessionData, name) {
         session.channels.length,
       )
 
+      // Merge translatedCaptions into closedCaptions translations dict
+      // New format stores translated text in channel.translatedCaptions
+      // instead of closedCaptions[].translations
+      if (channel.translatedCaptions) {
+        for (const tc of channel.translatedCaptions) {
+          const cc = channel.closedCaptions.find(
+            (cc) => cc.segmentId === tc.segmentId,
+          )
+          if (cc) {
+            if (!cc.translations || typeof cc.translations !== "object")
+              cc.translations = {}
+            cc.translations[tc.targetLang] = tc.text
+          }
+        }
+      }
+
       processChannelCaptions(channel, caption, true)
 
       for (const translation of channel.translations || []) {
+        const targetLang =
+          typeof translation === "string" ? translation : translation.target
         const tlCaption = initializeCaption(
           session,
           channel,
           name,
           session.channels.length,
-          translation,
+          targetLang,
         )
         processChannelCaptions(channel, tlCaption, false)
         tlCaption.parentName = caption.name
