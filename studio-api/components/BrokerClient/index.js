@@ -30,12 +30,7 @@ class BrokerClient extends Component {
       (roomId) => `transcriber/out/${roomId}/partial/translations`,
       (roomId) => `transcriber/out/${roomId}/final/translations`,
     ]
-    this.deliverySubs = [
-      `transcriber/out/+/+/partial`,
-      `transcriber/out/+/+/final`,
-      `transcriber/out/+/+/partial/translations`,
-      `transcriber/out/+/+/final/translations`,
-    ]
+    this.deliverySubs = []
 
     // Initialize delivery client
     this.deliveryClient = new MqttClient({
