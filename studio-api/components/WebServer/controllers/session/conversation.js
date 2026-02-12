@@ -171,7 +171,7 @@ async function initCaptionsForConversation(sessionData, name) {
           targetLang,
         )
         processChannelCaptions(channel, tlCaption, false)
-        tlCaption.parentName = caption.name
+        tlCaption.parentCaptionId = caption.captionId
         captions.push(tlCaption)
       }
 
@@ -212,7 +212,9 @@ function initializeCaption(
   channelCount = 1,
   translation,
 ) {
+  const captionId = uuidv4()
   let caption = {
+    captionId,
     name: `${name} - ${channel.name}`,
     owner: session.owner,
     locale: channel.languages,
@@ -433,10 +435,12 @@ async function storeSingleConversation(captions, conversationMemory) {
   for (let caption of captions) {
     if (caption.type.mode !== TYPES.TRANSLATION) {
       caption.type.mode = TYPES.CANONICAL
-      result = await model.conversations.create(caption)
+      const { captionId: _cid, ...captionData } = caption
+      result = await model.conversations.create(captionData)
       conversationMemory.push({
         convId: result.insertedId.toString(),
         name: caption.name,
+        captionId: caption.captionId,
       })
       if (caption.jobs.transcription.state === "waiting") {
         startOfflineJob(result.insertedId.toString())
@@ -456,7 +460,8 @@ async function storeMultiChannelConversation(
   const offlineList = []
   for (let caption of captions) {
     if (caption.type.mode === TYPES.TRANSLATION) continue
-    let caption_result = await model.conversations.create(caption)
+    const { captionId: _cid, ...captionData } = caption
+    let caption_result = await model.conversations.create(captionData)
     main_conversation.type.child_conversations.push(
       caption_result.insertedId.toString(),
     )
@@ -467,6 +472,7 @@ async function storeMultiChannelConversation(
     conversationMemory.push({
       convId: caption_result.insertedId.toString(),
       name: caption.name,
+      captionId: caption.captionId,
     })
 
     if (caption.jobs.transcription.state === "waiting") {
@@ -507,7 +513,7 @@ async function storeTranslations(captions, conversationMemory, result) {
     if (caption.type.mode !== TYPES.TRANSLATION) continue
 
     const parent = conversationMemory.find(
-      (conv) => conv.name === caption.parentName,
+      (conv) => conv.captionId === caption.parentCaptionId,
     )
     caption.type = {
       ...caption.type,
@@ -515,7 +521,8 @@ async function storeTranslations(captions, conversationMemory, result) {
       from_canonical_id: result.insertedId.toString(),
     }
 
-    const result_translation = await model.conversations.create(caption)
+    const { captionId: _cid, parentCaptionId: _pcid, ...captionData } = caption
+    const result_translation = await model.conversations.create(captionData)
 
     const parentConv = await model.conversations.getById(parent.convId)
     parentConv[0].type.child_conversations.push(
