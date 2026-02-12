@@ -901,9 +901,11 @@ router.beforeEach(async (to, from, next) => {
     }
 
     // Check for quick session
-    const quickSessionResult = await authGuards.checkQuickSession(to)
-    if (quickSessionResult.redirect) {
-      return next(quickSessionResult.nextRoute)
+    if (enableSession) {
+      const quickSessionResult = await authGuards.checkQuickSession(to)
+      if (quickSessionResult.redirect) {
+        return next(quickSessionResult.nextRoute)
+      }
     }
 
     // Check conversation access permissions

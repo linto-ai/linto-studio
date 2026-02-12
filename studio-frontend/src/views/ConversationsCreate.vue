@@ -144,8 +144,10 @@ export default {
     }
   },
   mounted() {
-    this.fetchProfiles()
-    this.fetchSessionTemplates()
+    if (this.canCreateSession) {
+      this.fetchProfiles()
+      this.fetchSessionTemplates()
+    }
   },
   async created() {
     if (this.mainTabs.length > 0) {
