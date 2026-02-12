@@ -2,7 +2,8 @@ const debug = require("debug")("linto:config")
 const dotenv = require("dotenv")
 const fs = require("fs")
 
-const ifHas = (element, defaultValue) => element || defaultValue
+const ifHas = (element, defaultValue) =>
+  element !== undefined ? element : defaultValue
 
 const loadEnvFile = (filePath) => dotenv.parse(fs.readFileSync(filePath))
 

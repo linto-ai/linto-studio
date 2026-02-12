@@ -8,6 +8,11 @@ const serviceUtility = require(
 
 async function getSaasServices(req, res, next) {
   try {
+    if (!process.env.GATEWAY_SERVICES?.trim()) {
+      return res
+        .status(503)
+        .send({ message: "Gateway service is not configured", services: [] })
+    }
     const securityLevel = req.query.securityLevel || null
     const services = await serviceUtility.listSaasServices(
       req.params.scope,
@@ -15,29 +20,34 @@ async function getSaasServices(req, res, next) {
     )
     res.status(200).send(services)
   } catch (err) {
-    next(err)
+    res
+      .status(503)
+      .send({ message: "Gateway service unreachable", services: [] })
   }
 }
 
 async function getLlmServices(req, res, next) {
   try {
-    if (
-      process.env.LLM_GATEWAY_SERVICES === "" ||
-      process.env.LLM_GATEWAY_SERVICES === undefined
-    ) {
-      res.status(200).send([])
-    } else {
-      // Pass organizationId and securityLevel from query params if provided
-      const organizationId = req.params.organizationId || null
-      const securityLevel = req.query.securityLevel || null
-      const services = await serviceUtility.listLlmServices(
-        organizationId,
-        securityLevel,
-      )
-      res.status(200).send(services)
+    if (!process.env.LLM_GATEWAY_SERVICES?.trim()) {
+      return res
+        .status(503)
+        .send({
+          message: "LLM Gateway service is not configured",
+          services: [],
+        })
     }
+    // Pass organizationId and securityLevel from query params if provided
+    const organizationId = req.params.organizationId || null
+    const securityLevel = req.query.securityLevel || null
+    const services = await serviceUtility.listLlmServices(
+      organizationId,
+      securityLevel,
+    )
+    res.status(200).send(services)
   } catch (err) {
-    next(err)
+    res
+      .status(503)
+      .send({ message: "LLM Gateway service unreachable", services: [] })
   }
 }
 

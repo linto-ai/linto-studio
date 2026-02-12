@@ -32,7 +32,7 @@ async function listSaasServices(scope, securityLevel = null) {
 
     return services
   } catch (err) {
-    throw new ServiceError("Error while listing services")
+    throw new ServiceError("Gateway service unreachable")
   }
 }
 
@@ -101,9 +101,7 @@ async function listLlmServices(organizationId = null, securityLevel = null) {
         .filter((service) => service.flavors.length > 0)
     )
   } catch (err) {
-    debug("Error listing LLM services:", err.message)
-    // Return empty array instead of throwing - allows page to load with just Verbatim
-    return []
+    throw new ServiceError("LLM Gateway service unreachable")
   }
 }
 
