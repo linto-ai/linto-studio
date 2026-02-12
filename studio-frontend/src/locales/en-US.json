@@ -232,7 +232,9 @@
       "microsoft_endpoint_label": "Endpoint ID",
       "microsoft_endpoint_placeholder": "endpoint-id",
       "amazon_endpoint_label": "AWS Region",
-      "amazon_endpoint_placeholder": "us-east-1"
+      "amazon_endpoint_placeholder": "us-east-1",
+      "voxstral_endpoint_label": "Global WebSocket URL",
+      "voxstral_endpoint_placeholder": "ws://..."
     },
     "transcriber_profile_list": {
       "title": "Transcriber Profiles",
@@ -245,7 +247,8 @@
         "line_1": "Listed transcriber profiles are enabled for all organizations."
       },
       "all_profiles_shown": "All profiles are shown",
-      "global_profiles_shown": "Only global profiles are shown"
+      "global_profiles_shown": "Only global profiles are shown",
+      "edit_button": "Edit"
     }
   },
   "breadcrumb": {

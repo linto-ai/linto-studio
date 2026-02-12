@@ -72,7 +72,7 @@
         @select="onSelectTurn(turn.uuid, $event)"></SessionChannelTurn>
 
       <SessionChannelTurnPartial
-        v-if="displayLiveTranscription && partialText !== ''"
+        v-if="displayLiveTranscription && partialText !== '' && shouldDisplayTurn(partialObject)"
         ref="partial"
         :previous="lastTurn || lastOfPreviousTurns"
         :channelLanguages="channelLanguages"
@@ -315,6 +315,11 @@ export default {
         await this.init()
       }
     },
+    selectedTranslations() {
+      if (this.partialObject && this.partialObject.segmentId) {
+        this.partialText = this.computeDisplayText(this.partialObject)
+      }
+    },
   },
   methods: {
     async init() {
@@ -407,37 +412,14 @@ export default {
             (t) => t.segmentId === tc.segmentId,
           )
           if (matchingTurn) {
-            if (!matchingTurn.translations) {
-              this.$set(matchingTurn, "translations", {})
-            }
-            this.$set(matchingTurn.translations, tc.targetLang, tc.text)
+            this.setTurnTranslation(matchingTurn, tc.targetLang, tc.text)
           }
         }
       }
     },
-    onPartial(content) {
-      // Carry forward translations from previous partial of same segment
+    mergePartialTranslations(content) {
       if (
-        this.partialObject &&
-        this.partialObject.segmentId === content.segmentId &&
-        this.partialObject.translations
-      ) {
-        content.translations = { ...this.partialObject.translations }
-      }
-      this.partialText = getTextTurnWithTranslation(
-        content,
-        this.selectedTranslations,
-        this.channelLanguages,
-      )
-      this.partialObject = content
-      this.scrollToBottom()
-    },
-    onFinal(content) {
-      content.uuid = uuidv4()
-      // Carry forward translations from partial to final
-      if (
-        this.partialObject &&
-        this.partialObject.segmentId === content.segmentId &&
+        this.partialObject?.segmentId === content.segmentId &&
         this.partialObject.translations
       ) {
         content.translations = {
@@ -448,51 +430,51 @@ export default {
       if (!content.translations) {
         content.translations = {}
       }
-
-      this.partialText = ""
-      this.partialObject = null
-
-      this.finalText = getTextTurnWithTranslation(
-        content,
+    },
+    setTurnTranslation(turn, lang, text) {
+      if (!turn.translations) {
+        this.$set(turn, "translations", {})
+      }
+      this.$set(turn.translations, lang, text)
+    },
+    computeDisplayText(turn) {
+      return getTextTurnWithTranslation(
+        turn,
         this.selectedTranslations,
         this.channelLanguages,
       )
+    },
+    onPartial(content) {
+      this.mergePartialTranslations(content)
+      this.partialText = this.computeDisplayText(content)
+      this.partialObject = content
+      this.scrollToBottom()
+    },
+    onFinal(content) {
+      content.uuid = uuidv4()
+      this.mergePartialTranslations(content)
+      this.partialText = ""
+      this.partialObject = null
+      this.finalText = this.computeDisplayText(content)
       this.turns.push(content)
       this.scrollToBottom()
     },
     onTranslation(content) {
-      // content = {segmentId, text, targetLang, sourceLang, start, end, locutor, astart}
-      // Update the current partial if it matches
-      if (
-        this.partialObject &&
-        this.partialObject.segmentId === content.segmentId
-      ) {
-        if (!this.partialObject.translations) {
-          this.$set(this.partialObject, "translations", {})
-        }
-        this.$set(
-          this.partialObject.translations,
+      if (this.partialObject?.segmentId === content.segmentId) {
+        this.setTurnTranslation(
+          this.partialObject,
           content.targetLang,
           content.text,
         )
-        this.partialText = getTextTurnWithTranslation(
-          this.partialObject,
-          this.selectedTranslations,
-          this.channelLanguages,
-        )
+        this.partialText = this.computeDisplayText(this.partialObject)
       }
 
-      // Also update the matching turn if already finalized
       const allTurns = [...this.previousTurns, ...this.turns]
       const matchingTurn = allTurns.find(
         (t) => t.segmentId === content.segmentId,
       )
       if (!matchingTurn) return
-
-      if (!matchingTurn.translations) {
-        this.$set(matchingTurn, "translations", {})
-      }
-      this.$set(matchingTurn.translations, content.targetLang, content.text)
+      this.setTurnTranslation(matchingTurn, content.targetLang, content.text)
     },
     scrollToBottom(force = false) {
       if (!this.displayLiveTranscription) return
@@ -572,13 +554,7 @@ export default {
 
       const text = previousSelectedTurns
         .concat(selectedTurns)
-        .map((turn) =>
-          getTextTurnWithTranslation(
-            turn,
-            this.selectedTranslations,
-            this.channelLanguages,
-          ),
-        )
+        .map((turn) => this.computeDisplayText(turn))
         .join("\n\n")
 
       this.copyState = true
