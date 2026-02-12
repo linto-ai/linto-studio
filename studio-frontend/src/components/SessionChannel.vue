@@ -432,7 +432,13 @@ export default {
 
       this.$nextTick().then(() => {
         if (this.$refs.bottom) {
-          this.$refs.bottom.scrollIntoView({ behavior: "smooth" })
+          const container = this.$refs.bottom.closest('.session-content')
+          if (container) {
+            container.scrollTo({
+              top: container.scrollHeight,
+              behavior: "smooth"
+            })
+          }
         }
       })
     },
