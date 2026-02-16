@@ -5,6 +5,7 @@ const en: Record<keyof typeof fr, string> = {
   'editor.loadError': 'Loading error',
   'header.export': 'Export',
   'header.settings': 'Settings',
+  'sidebar.channel': 'Channel',
   'sidebar.speakers': 'Speakers',
   'player.play': 'Play',
   'player.pause': 'Pause',
@@ -15,6 +16,10 @@ const en: Record<keyof typeof fr, string> = {
   'player.unmute': 'Unmute',
   'player.speed': 'Playback speed',
   'transcription.resumeScroll': 'Resume follow',
+  'header.channelLabel': 'Select a channel',
+  'sidebar.language': 'Language',
+  'sidebar.languageLabel': 'Transcription language',
+  'sidebar.originalLanguage': 'original',
 }
 
 export default en

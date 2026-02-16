@@ -29,6 +29,7 @@ const {
   formattedDuration,
   togglePlay,
   seekTo,
+  pause,
   skip,
   setVolume,
   cyclePlaybackRate,
@@ -43,7 +44,7 @@ const {
 watch(currentTime, (t) => emit('timeupdate', t))
 watch(isPlaying, (v) => emit('playStateChange', v))
 
-defineExpose({ seekTo })
+defineExpose({ seekTo, pause })
 </script>
 
 <template>

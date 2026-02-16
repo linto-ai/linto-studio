@@ -38,3 +38,16 @@ export interface EditorDocument {
   speakers: Map<string, Speaker>
   turns: Turn[]
 }
+
+export interface Translation {
+  language: string
+  turns: Turn[]
+}
+
+export interface Channel {
+  id: string
+  label: string
+  document: EditorDocument
+  translations?: Translation[]
+  audioSrc?: string
+}

@@ -3,6 +3,7 @@ const fr = {
   'editor.loadError': 'Erreur de chargement',
   'header.export': 'Exporter',
   'header.settings': 'Param\u00e8tres',
+  'sidebar.channel': 'Canal',
   'sidebar.speakers': 'Intervenants',
   'player.play': 'Lecture',
   'player.pause': 'Pause',
@@ -13,6 +14,10 @@ const fr = {
   'player.unmute': 'R\u00e9activer le son',
   'player.speed': 'Vitesse de lecture',
   'transcription.resumeScroll': 'Reprendre le suivi',
+  'header.channelLabel': 'Sélectionner un canal',
+  'sidebar.language': 'Langue',
+  'sidebar.languageLabel': 'Langue de transcription',
+  'sidebar.originalLanguage': 'original',
 } as const
 
 export default fr
