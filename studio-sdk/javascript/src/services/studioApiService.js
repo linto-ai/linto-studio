@@ -42,10 +42,112 @@ export class StudioApiService {
     return organizations
   }
 
+  async validateToken(args) {
+    return await this.#withToken(this.#fetchSelf)(args)
+  }
+
   async uploadFile(args) {
     return await this.#withToken(
       this.#withOrganizationId(this.#withUploadConfig(this.#uploadFile))
     )(args)
+  }
+
+  // -- Sessions --
+
+  async listSessions(args) {
+    return await this.#withToken(this.#withOrganizationId(this.#listSessions))(args)
+  }
+
+  async getSession(args) {
+    return await this.#withToken(this.#withOrganizationId(this.#getSession))(args)
+  }
+
+  async createSession(args) {
+    return await this.#withToken(this.#withOrganizationId(this.#createSession))(args)
+  }
+
+  async updateSession(args) {
+    return await this.#withToken(this.#withOrganizationId(this.#updateSession))(args)
+  }
+
+  async stopSession(args) {
+    return await this.#withToken(this.#withOrganizationId(this.#stopSession))(args)
+  }
+
+  async deleteSession(args) {
+    return await this.#withToken(this.#withOrganizationId(this.#deleteSession))(args)
+  }
+
+  // -- Bots --
+
+  async listBots(args) {
+    return await this.#withToken(this.#withOrganizationId(this.#listBots))(args)
+  }
+
+  async createBot(args) {
+    return await this.#withToken(this.#withOrganizationId(this.#createBot))(args)
+  }
+
+  async getBot(args) {
+    return await this.#withToken(this.#withOrganizationId(this.#getBot))(args)
+  }
+
+  async deleteBot(args) {
+    return await this.#withToken(this.#withOrganizationId(this.#deleteBot))(args)
+  }
+
+  // -- Transcriber Profiles --
+
+  async listTranscriberProfiles(args) {
+    return await this.#withToken(this.#withOrganizationId(this.#listTranscriberProfiles))(args)
+  }
+
+  // -- Templates --
+
+  async listTemplates(args) {
+    return await this.#withToken(this.#withOrganizationId(this.#listTemplates))(args)
+  }
+
+  async createTemplate(args) {
+    return await this.#withToken(this.#withOrganizationId(this.#createTemplate))(args)
+  }
+
+  async getTemplate(args) {
+    return await this.#withToken(this.#withOrganizationId(this.#getTemplate))(args)
+  }
+
+  async updateTemplate(args) {
+    return await this.#withToken(this.#withOrganizationId(this.#updateTemplate))(args)
+  }
+
+  async deleteTemplate(args) {
+    return await this.#withToken(this.#withOrganizationId(this.#deleteTemplate))(args)
+  }
+
+  // -- Quick Meetings --
+
+  async listQuickMeetings(args) {
+    return await this.#withToken(this.#withOrganizationId(this.#listQuickMeetings))(args)
+  }
+
+  async createQuickMeeting(args) {
+    return await this.#withToken(this.#withOrganizationId(this.#createQuickMeeting))(args)
+  }
+
+  async deleteQuickMeeting(args) {
+    return await this.#withToken(this.#withOrganizationId(this.#deleteQuickMeeting))(args)
+  }
+
+  // -- Conversations --
+
+  async listConversations(args) {
+    return await this.#withToken(this.#withOrganizationId(this.#listConversations))(args)
+  }
+
+  // -- Public Session (no auth) --
+
+  async getPublicSession(args) {
+    return await this.#getPublicSession(args)
   }
 
   async login({ email, password }) {
@@ -153,6 +255,14 @@ export class StudioApiService {
     return await sendRequest(req)
   }
 
+  async #fetchSelf({ token }) {
+    const req = prepareRequest(`${this.baseApiUrl}/users/self`, "GET", {
+      token,
+    })
+
+    return await sendRequest(req)
+  }
+
   async #uploadFile({
     token,
     organizationId,
@@ -182,6 +292,209 @@ export class StudioApiService {
       formData
     )
 
+    return await sendRequest(req)
+  }
+
+  // -- Sessions API calls --
+
+  async #listSessions({ token, organizationId, ...params }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/sessions`,
+      "GET",
+      { token, ...params }
+    )
+    return await sendRequest(req)
+  }
+
+  async #getSession({ token, organizationId, sessionId }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/sessions/${sessionId}`,
+      "GET",
+      { token }
+    )
+    return await sendRequest(req)
+  }
+
+  async #createSession({ token, organizationId, ...body }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/sessions/`,
+      "POST",
+      { token, ...body }
+    )
+    return await sendRequest(req)
+  }
+
+  async #updateSession({ token, organizationId, sessionId, ...body }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/sessions/${sessionId}`,
+      "PUT",
+      { token, ...body }
+    )
+    return await sendRequest(req)
+  }
+
+  async #stopSession({ token, organizationId, sessionId, force }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/sessions/${sessionId}/stop`,
+      "PUT",
+      { token, ...(force !== undefined ? { force } : {}) }
+    )
+    return await sendRequest(req)
+  }
+
+  async #deleteSession({ token, organizationId, sessionId, name }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/sessions/${sessionId}`,
+      "DELETE",
+      { token, ...(name !== undefined ? { name } : {}) }
+    )
+    return await sendRequest(req)
+  }
+
+  // -- Bots API calls --
+
+  async #listBots({ token, organizationId }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/bots`,
+      "GET",
+      { token }
+    )
+    return await sendRequest(req)
+  }
+
+  async #createBot({ token, organizationId, url, channelId, provider, enableDisplaySub }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/bots`,
+      "POST",
+      { token, url, channelId, provider, enableDisplaySub }
+    )
+    return await sendRequest(req)
+  }
+
+  async #getBot({ token, organizationId, botId }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/bots/${botId}`,
+      "GET",
+      { token }
+    )
+    return await sendRequest(req)
+  }
+
+  async #deleteBot({ token, organizationId, botId }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/bots/${botId}`,
+      "DELETE",
+      { token }
+    )
+    return await sendRequest(req)
+  }
+
+  // -- Transcriber Profiles API calls --
+
+  async #listTranscriberProfiles({ token, organizationId, quickMeeting }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/transcriber_profiles`,
+      "GET",
+      { token, ...(quickMeeting !== undefined ? { quickMeeting } : {}) }
+    )
+    return await sendRequest(req)
+  }
+
+  // -- Templates API calls --
+
+  async #listTemplates({ token, organizationId }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/templates`,
+      "GET",
+      { token }
+    )
+    return await sendRequest(req)
+  }
+
+  async #createTemplate({ token, organizationId, ...body }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/templates`,
+      "POST",
+      { token, ...body }
+    )
+    return await sendRequest(req)
+  }
+
+  async #getTemplate({ token, organizationId, templateId }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/templates/${templateId}`,
+      "GET",
+      { token }
+    )
+    return await sendRequest(req)
+  }
+
+  async #updateTemplate({ token, organizationId, templateId, ...body }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/templates/${templateId}`,
+      "PUT",
+      { token, ...body }
+    )
+    return await sendRequest(req)
+  }
+
+  async #deleteTemplate({ token, organizationId, templateId }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/templates/${templateId}`,
+      "DELETE",
+      { token }
+    )
+    return await sendRequest(req)
+  }
+
+  // -- Quick Meetings API calls --
+
+  async #listQuickMeetings({ token, organizationId }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/quickMeeting/`,
+      "GET",
+      { token }
+    )
+    return await sendRequest(req)
+  }
+
+  async #createQuickMeeting({ token, organizationId, ...body }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/quickMeeting/`,
+      "POST",
+      { token, ...body }
+    )
+    return await sendRequest(req)
+  }
+
+  async #deleteQuickMeeting({ token, organizationId, quickMeetingId, trash }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/quickMeeting/${quickMeetingId}`,
+      "DELETE",
+      { token, ...(trash !== undefined ? { trash } : {}) }
+    )
+    return await sendRequest(req)
+  }
+
+  // -- Conversations API calls --
+
+  async #listConversations({ token, organizationId }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/conversations`,
+      "GET",
+      { token }
+    )
+    return await sendRequest(req)
+  }
+
+  // -- Public Session API call (no auth) --
+
+  async #getPublicSession({ sessionId, password }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/sessions/${sessionId}/public`,
+      "GET",
+      { ...(password !== undefined ? { password } : {}) }
+    )
     return await sendRequest(req)
   }
 }
