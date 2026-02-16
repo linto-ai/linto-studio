@@ -39,6 +39,7 @@ function onVolumeInput(event: Event) {
       <EditorButton
         variant="ghost"
         size="md"
+        class="skip-button"
         :aria-label="t('player.skipBack')"
         :disabled="!isReady"
         @click="emit('skipBack')"
@@ -63,6 +64,7 @@ function onVolumeInput(event: Event) {
       <EditorButton
         variant="ghost"
         size="md"
+        class="skip-button"
         :aria-label="t('player.skipForward')"
         :disabled="!isReady"
         @click="emit('skipForward')"
@@ -186,5 +188,20 @@ function onVolumeInput(event: Event) {
 .speed-button {
   font-size: var(--font-size-sm);
   font-family: var(--font-family-mono);
+}
+
+@media (max-width: 767px) {
+  .skip-button {
+    display: none;
+  }
+
+  .volume-slider {
+    display: none;
+  }
+
+  .player-controls {
+    padding: var(--spacing-xs) var(--spacing-md);
+    gap: var(--spacing-sm);
+  }
 }
 </style>

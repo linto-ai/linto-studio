@@ -144,4 +144,10 @@ const { isFollowing, resumeFollow } = useAutoScroll({
     transition: none;
   }
 }
+
+@media (max-width: 767px) {
+  .turns-container {
+    padding: var(--spacing-md);
+  }
+}
 </style>

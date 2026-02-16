@@ -5,6 +5,8 @@ const en: Record<keyof typeof fr, string> = {
   'editor.loadError': 'Loading error',
   'header.export': 'Export',
   'header.settings': 'Settings',
+  'header.openSidebar': 'Open panel',
+  'header.closeSidebar': 'Close panel',
   'sidebar.channel': 'Channel',
   'sidebar.speakers': 'Speakers',
   'player.play': 'Play',

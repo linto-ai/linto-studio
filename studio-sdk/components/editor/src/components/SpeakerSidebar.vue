@@ -4,6 +4,7 @@ import SpeakerIndicator from './atoms/SpeakerIndicator.vue'
 import SidebarSelect from './atoms/SidebarSelect.vue'
 import ChannelSelector from './ChannelSelector.vue'
 import { useI18n } from '../i18n'
+import { buildLanguageItems } from '../utils/intl'
 import type { Speaker, Channel } from '../types/editor'
 
 const props = defineProps<{
@@ -21,19 +22,14 @@ defineEmits<{
 
 const { t, locale } = useI18n()
 
-const languageItems = computed(() => {
-  const displayNames = new Intl.DisplayNames([locale.value], { type: 'language' })
-  return props.availableLanguages.map((code, i) => ({
-    value: code,
-    label: (displayNames.of(code) ?? code)
-      + (i === 0 ? ` (${t('sidebar.originalLanguage')})` : ''),
-  }))
-})
+const languageItems = computed(() =>
+  buildLanguageItems(props.availableLanguages, locale.value, t('sidebar.originalLanguage'))
+)
 </script>
 
 <template>
   <aside class="speaker-sidebar">
-    <section v-if="channels.length > 1" class="sidebar-section">
+    <section v-if="channels.length > 1" class="sidebar-section sidebar-section--selector">
       <h2 class="sidebar-title">{{ t('sidebar.channel') }}</h2>
       <ChannelSelector
         :channels="channels"
@@ -41,7 +37,7 @@ const languageItems = computed(() => {
         @update:selected-channel-id="$emit('update:selectedChannelId', $event)"
       />
     </section>
-    <section v-if="availableLanguages.length > 1" class="sidebar-section">
+    <section v-if="availableLanguages.length > 1" class="sidebar-section sidebar-section--selector">
       <h2 class="sidebar-title">{{ t('sidebar.language') }}</h2>
       <SidebarSelect
         :items="languageItems"
@@ -116,5 +112,15 @@ const languageItems = computed(() => {
   font-size: var(--font-size-sm);
   font-weight: 500;
   color: var(--color-text-primary);
+}
+
+@media (max-width: 767px) {
+  .speaker-sidebar {
+    border-left: none;
+  }
+
+  .sidebar-section--selector {
+    display: none;
+  }
 }
 </style>

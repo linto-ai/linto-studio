@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { Download, Settings } from 'lucide-vue-next'
+import { Download, Settings, Users } from 'lucide-vue-next'
 import EditorBadge from './atoms/EditorBadge.vue'
 import EditorButton from './atoms/EditorButton.vue'
 import { useI18n } from '../i18n'
@@ -10,6 +10,11 @@ import type { DocumentMetadata } from '../types/editor'
 
 const props = defineProps<{
   metadata: DocumentMetadata
+  isMobile: boolean
+}>()
+
+defineEmits<{
+  toggleSidebar: []
 }>()
 
 const { t, locale } = useI18n()
@@ -35,7 +40,18 @@ const formattedTitle = computed(() => {
       </div>
     </div>
     <div class="header-right">
-      <EditorButton variant="secondary" disabled>
+      <EditorButton
+        v-if="isMobile"
+        variant="ghost"
+        :aria-label="t('header.openSidebar')"
+        @click="$emit('toggleSidebar')"
+      >
+        <template #icon><Users :size="16" /></template>
+      </EditorButton>
+      <EditorButton v-if="isMobile" variant="secondary" disabled :aria-label="t('header.export')">
+        <template #icon><Download :size="16" /></template>
+      </EditorButton>
+      <EditorButton v-else variant="secondary" disabled>
         <template #icon><Download :size="16" /></template>
         {{ t('header.export') }}
       </EditorButton>
@@ -85,5 +101,20 @@ const formattedTitle = computed(() => {
   align-items: center;
   gap: var(--spacing-sm);
   flex-shrink: 0;
+}
+
+@media (max-width: 767px) {
+  .editor-header {
+    padding: 0 var(--spacing-md);
+    height: 48px;
+  }
+
+  .badges {
+    display: none;
+  }
+
+  .document-title {
+    font-size: var(--font-size-base);
+  }
 }
 </style>

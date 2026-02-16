@@ -3,6 +3,8 @@ const fr = {
   'editor.loadError': 'Erreur de chargement',
   'header.export': 'Exporter',
   'header.settings': 'Param\u00e8tres',
+  'header.openSidebar': 'Ouvrir le panneau',
+  'header.closeSidebar': 'Fermer le panneau',
   'sidebar.channel': 'Canal',
   'sidebar.speakers': 'Intervenants',
   'player.play': 'Lecture',

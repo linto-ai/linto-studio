@@ -62,4 +62,10 @@ const activeWordId = computed(() => {
   text-underline-offset: 3px;
   color: var(--speaker-color);
 }
+
+@media (max-width: 767px) {
+  .turn {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+}
 </style>
