@@ -141,7 +141,7 @@ function onVolumeInput(event: Event) {
 .controls-time {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: var(--spacing-xxs);
   font-family: var(--font-family-mono);
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);

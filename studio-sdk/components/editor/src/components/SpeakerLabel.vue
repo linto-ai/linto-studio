@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import SpeakerIndicator from './atoms/SpeakerIndicator.vue'
 import EditorBadge from './atoms/EditorBadge.vue'
 import { useI18n } from '../i18n'
 import { formatTime } from '../utils/time'
+import { getLanguageDisplayName } from '../utils/intl'
 import type { Speaker } from '../types/editor'
 
 const props = defineProps<{
@@ -13,14 +15,7 @@ const props = defineProps<{
 
 const { locale } = useI18n()
 
-const languageName = computed(() => {
-  try {
-    const display = new Intl.DisplayNames([locale.value], { type: 'language' })
-    return display.of(props.language) ?? props.language
-  } catch {
-    return props.language
-  }
-})
+const languageName = computed(() => getLanguageDisplayName(props.language, locale.value))
 
 const formattedTime = computed(() => formatTime(props.startTime))
 
@@ -29,7 +24,7 @@ const isoDuration = computed(() => `PT${props.startTime.toFixed(1)}S`)
 
 <template>
   <div class="speaker-label">
-    <span class="speaker-indicator" :style="{ backgroundColor: speaker.color }" aria-hidden="true" />
+    <SpeakerIndicator :color="speaker.color" />
     <span class="speaker-name">{{ speaker.name }}</span>
     <time class="timestamp" :datetime="isoDuration">{{ formattedTime }}</time>
     <EditorBadge>{{ languageName }}</EditorBadge>
@@ -41,14 +36,6 @@ const isoDuration = computed(() => `PT${props.startTime.toFixed(1)}S`)
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
-}
-
-.speaker-indicator {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
 }
 
 .speaker-name {

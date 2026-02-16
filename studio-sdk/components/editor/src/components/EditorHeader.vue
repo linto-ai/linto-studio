@@ -5,6 +5,7 @@ import EditorBadge from './atoms/EditorBadge.vue'
 import EditorButton from './atoms/EditorButton.vue'
 import { useI18n } from '../i18n'
 import { formatTime } from '../utils/time'
+import { getLanguageDisplayName } from '../utils/intl'
 import type { DocumentMetadata } from '../types/editor'
 
 const props = defineProps<{
@@ -13,14 +14,7 @@ const props = defineProps<{
 
 const { t, locale } = useI18n()
 
-const languageName = computed(() => {
-  try {
-    const display = new Intl.DisplayNames([locale.value], { type: 'language' })
-    return display.of(props.metadata.language) ?? props.metadata.language
-  } catch {
-    return props.metadata.language
-  }
-})
+const languageName = computed(() => getLanguageDisplayName(props.metadata.language, locale.value))
 
 const formattedDuration = computed(() => formatTime(props.metadata.duration))
 

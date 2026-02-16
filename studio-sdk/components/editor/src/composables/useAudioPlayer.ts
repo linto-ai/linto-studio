@@ -5,12 +5,13 @@ import {
   onBeforeUnmount,
   type Ref,
   shallowRef,
-} from "vue"
-import WaveSurfer from "wavesurfer.js"
-import RegionsPlugin from "wavesurfer.js/dist/plugins/regions.esm.js"
-import { hexToRgba } from "../utils/color"
-import { formatTime } from "../utils/time"
-import type { Turn, Speaker } from "../types/editor"
+} from 'vue'
+import WaveSurfer from 'wavesurfer.js'
+import RegionsPlugin from 'wavesurfer.js/dist/plugins/regions.esm.js'
+import { hexToRgba } from '../utils/color'
+import { formatTime } from '../utils/time'
+import { renderWaveform } from '../utils/waveform'
+import type { Turn, Speaker } from '../types/editor'
 
 export interface UseAudioPlayerOptions {
   containerRef: Ref<HTMLElement | null>
@@ -48,67 +49,68 @@ export function useAudioPlayer(options: UseAudioPlayerOptions) {
     const regionsPlugin = RegionsPlugin.create()
     regions.value = regionsPlugin
 
-    const ws = WaveSurfer.create({
+    const player = WaveSurfer.create({
       container,
-      height: 64,
-      waveColor: "#adb5bd",
-      progressColor: "#4263eb",
-      cursorColor: "#4263eb",
+      height: 32,
+      waveColor: '#000000ff',
+      progressColor: '#5f5f5fff',
+      cursorColor: 'red',
       cursorWidth: 2,
       barWidth: 3,
       barGap: 2,
       barRadius: 3,
       barHeight: 0.8,
       normalize: true,
-      backend: "MediaElement",
+      backend: 'MediaElement',
+      renderFunction: renderWaveform,
       url: src,
       plugins: [regionsPlugin],
     })
 
-    ws.on("ready", () => {
+    player.on('ready', () => {
       isReady.value = true
       isLoading.value = false
-      duration.value = ws.getDuration()
+      duration.value = player.getDuration()
       syncRegions()
     })
 
-    ws.on("timeupdate", (time: number) => {
+    player.on('timeupdate', (time: number) => {
       currentTime.value = time
     })
 
-    ws.on("play", () => {
+    player.on('play', () => {
       isPlaying.value = true
     })
 
-    ws.on("pause", () => {
+    player.on('pause', () => {
       isPlaying.value = false
     })
 
-    ws.on("finish", () => {
+    player.on('finish', () => {
       isPlaying.value = false
     })
 
-    wavesurfer.value = ws
+    wavesurfer.value = player
   }
 
   function syncRegions() {
-    const rp = regions.value
-    if (!rp) return
+    const regionsPlugin = regions.value
+    if (!regionsPlugin) return
 
-    rp.clearRegions()
+    regionsPlugin.clearRegions()
 
     for (const turn of turns.value) {
       const speaker = speakers.value.get(turn.speakerId)
       if (!speaker) continue
 
-      const region = rp.addRegion({
+      const region = regionsPlugin.addRegion({
         start: turn.startTime,
         end: turn.endTime,
         color: hexToRgba(speaker.color, 0.25),
         drag: false,
         resize: false,
       })
-      region.element?.style.setProperty("--region-color", speaker.color)
+      region.element?.style.setProperty('--region-color', speaker.color)
     }
   }
 
@@ -125,9 +127,9 @@ export function useAudioPlayer(options: UseAudioPlayerOptions) {
   }
 
   function seekTo(time: number) {
-    const ws = wavesurfer.value
-    if (!ws || duration.value === 0) return
-    ws.setTime(time)
+    const player = wavesurfer.value
+    if (!player || duration.value === 0) return
+    player.setTime(time)
   }
 
   function skip(seconds: number) {
@@ -135,28 +137,28 @@ export function useAudioPlayer(options: UseAudioPlayerOptions) {
   }
 
   function setVolume(v: number) {
-    const ws = wavesurfer.value
-    if (!ws) return
+    const player = wavesurfer.value
+    if (!player) return
     volume.value = v
-    ws.setVolume(v)
+    player.setVolume(v)
     if (v > 0 && isMuted.value) {
       isMuted.value = false
-      ws.setMuted(false)
+      player.setMuted(false)
     }
   }
 
   function toggleMute() {
-    const ws = wavesurfer.value
-    if (!ws) return
+    const player = wavesurfer.value
+    if (!player) return
     isMuted.value = !isMuted.value
-    ws.setMuted(isMuted.value)
+    player.setMuted(isMuted.value)
   }
 
   function setPlaybackRate(rate: number) {
-    const ws = wavesurfer.value
-    if (!ws) return
+    const player = wavesurfer.value
+    if (!player) return
     playbackRate.value = rate
-    ws.setPlaybackRate(rate)
+    player.setPlaybackRate(rate)
   }
 
   function cyclePlaybackRate() {

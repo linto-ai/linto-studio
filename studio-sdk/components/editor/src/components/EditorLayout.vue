@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, readonly, useTemplateRef } from 'vue'
 import EditorHeader from './EditorHeader.vue'
 import TranscriptionPanel from './TranscriptionPanel.vue'
 import SpeakerSidebar from './SpeakerSidebar.vue'
 import AudioPlayer from './AudioPlayer.vue'
+import { provideAudioContext } from '../composables/useAudioContext'
 import type { EditorDocument } from '../types/editor'
 
 const props = defineProps<{
@@ -12,6 +13,20 @@ const props = defineProps<{
 }>()
 
 const speakerList = computed(() => Array.from(props.document.speakers.values()))
+
+const audioPlayerRef = useTemplateRef<InstanceType<typeof AudioPlayer>>('audioPlayer')
+const currentTime = ref(0)
+const isPlaying = ref(false)
+
+function onTimeUpdate(time: number) {
+  currentTime.value = time
+}
+
+provideAudioContext({
+  currentTime: readonly(currentTime),
+  isPlaying: readonly(isPlaying),
+  seekTo: (time: number) => audioPlayerRef.value?.seekTo(time),
+})
 </script>
 
 <template>
@@ -26,9 +41,12 @@ const speakerList = computed(() => Array.from(props.document.speakers.values()))
     </main>
     <AudioPlayer
       v-if="audioSrc"
+      ref="audioPlayer"
       :audio-src="audioSrc"
       :turns="document.turns"
       :speakers="document.speakers"
+      @timeupdate="onTimeUpdate"
+      @play-state-change="(v: boolean) => isPlaying = v"
     />
   </div>
 </template>

@@ -12,6 +12,7 @@ const fr = {
   'player.mute': 'Couper le son',
   'player.unmute': 'R\u00e9activer le son',
   'player.speed': 'Vitesse de lecture',
+  'transcription.resumeScroll': 'Reprendre le suivi',
 } as const
 
 export default fr

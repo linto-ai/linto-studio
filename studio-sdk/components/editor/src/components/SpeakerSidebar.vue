@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Separator } from 'reka-ui'
+import SpeakerIndicator from './atoms/SpeakerIndicator.vue'
 import { useI18n } from '../i18n'
 import type { Speaker } from '../types/editor'
 
@@ -20,7 +21,7 @@ const { t } = useI18n()
         :key="speaker.id"
         class="speaker-item"
       >
-        <span class="speaker-indicator" :style="{ backgroundColor: speaker.color }" aria-hidden="true" />
+        <SpeakerIndicator :color="speaker.color" />
         <span class="speaker-name">{{ speaker.name }}</span>
       </li>
     </ul>
@@ -67,14 +68,6 @@ const { t } = useI18n()
 
 .speaker-item:hover {
   background-color: var(--color-surface-hover);
-}
-
-.speaker-indicator {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
 }
 
 .speaker-name {

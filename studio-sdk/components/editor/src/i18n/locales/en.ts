@@ -14,6 +14,7 @@ const en: Record<keyof typeof fr, string> = {
   'player.mute': 'Mute',
   'player.unmute': 'Unmute',
   'player.speed': 'Playback speed',
+  'transcription.resumeScroll': 'Resume follow',
 }
 
 export default en
