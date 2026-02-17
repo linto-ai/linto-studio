@@ -35,18 +35,11 @@ def buildDockerfile(folder_name, version, commit_sha, dockerfile = 'Dockerfile',
     }
 }
 
-def buildWithAlpine(folder_name, version, commit_sha) {
-    buildDockerfile(folder_name, version, commit_sha)
-    if (version != 'preview-saas' && fileExists("${folder_name}/Dockerfile.alpine")) {
-        buildDockerfile(folder_name, version, commit_sha, 'Dockerfile.alpine', '-alpine')
-    }
-}
-
 // For linto studio, the folder name have the same name of the docker image
 def performBuildForFile(changedFiles, version, commit_sha) {
     if (changedFiles.contains('studio-api')) {
         echo 'Files in studio-api path are modified. Running specific build steps for studio-api...'
-        buildWithAlpine('studio-api', version, commit_sha)
+        buildDockerfile('studio-api', version, commit_sha)
     }
 
     if (changedFiles.contains('studio-frontend')) {
