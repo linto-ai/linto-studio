@@ -1,7 +1,14 @@
 import { getEnv } from "../getEnv"
 
-export function testVisioUrl(field, t) {
-  const acceptedUrlsStrings = getEnv("VUE_APP_ACCEPTED_JITSI_URLS")
+export function testVisioUrl(field, t, provider) {
+  const envKeys = {
+    jitsi: "VUE_APP_ACCEPTED_JITSI_URLS",
+    bigbluebutton: "VUE_APP_ACCEPTED_BBB_URLS",
+    teams: "VUE_APP_ACCEPTED_TEAMS_URLS",
+  }
+
+  const envKey = envKeys[provider] || envKeys.jitsi
+  const acceptedUrlsStrings = getEnv(envKey)
 
   let acceptedUrls = []
   if (acceptedUrlsStrings) {

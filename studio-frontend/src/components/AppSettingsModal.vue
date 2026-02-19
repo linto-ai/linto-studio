@@ -86,6 +86,14 @@
                 <span>{{ $t("app_settings_modal.api_tokens") }}</span>
               </a>
             </li>
+            <li
+              :class="{ active: selectedTab === 'integrations' }"
+              v-if="isAdmin">
+              <a href="#" @click="selectTab('integrations')">
+                <ph-icon name="plugs-connected" weight="bold"></ph-icon>
+                <span>{{ $t("app_settings_modal.integrations") }}</span>
+              </a>
+            </li>
           </ul>
         </div>
         <div>
@@ -136,6 +144,13 @@
         <ApiTokenSettings v-if="isAdmin" :organizationId="organizationId" />
       </div>
       <div
+        v-if="selectedTab === 'integrations'"
+        class="app-settings__section">
+        <OrganizationIntegrations
+          v-if="isAdmin"
+          :organizationId="organizationId" />
+      </div>
+      <div
         v-if="selectedTab === 'billing'"
         class="app-settings__section"
         :class="{ active: selectedTab === 'billing' }"></div>
@@ -162,6 +177,7 @@ import UpdateOrganizationUsers from "@/components/UpdateOrganizationUsers.vue"
 import UpdateOrganizationDeletion from "@/components/UpdateOrganizationDeletion.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import ApiTokenSettings from "@/components/ApiTokenSettings.vue"
+import OrganizationIntegrations from "@/components/OrganizationIntegrations.vue"
 
 export default {
   name: "AppSettingsModal",
@@ -180,6 +196,7 @@ export default {
     UpdateOrganizationDeletion,
     Modal,
     ApiTokenSettings,
+    OrganizationIntegrations,
   },
   data() {
     return {

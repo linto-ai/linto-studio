@@ -247,6 +247,45 @@ module.exports = (webServer) => {
         orgaPermissionAccess: PERMISSIONS.SESSION,
         requireOrganizationMeetingManagerAccess: true,
       },
+      /*******************************/
+      /*** calendar-subscriptions ***/
+      /*******************************/
+      {
+        scrapPath: /^\/organizations\/[^/]+/,
+        paths: [
+          {
+            path: "/organizations/:organizationId/calendar-subscriptions",
+            method: ["get", "post"],
+            forwardParams: proxyForwardParams,
+          },
+          {
+            path: "/organizations/:organizationId/calendar-subscriptions/:id",
+            method: ["get", "put", "delete"],
+            forwardParams: proxyForwardParams,
+          },
+        ],
+        requireAuth: true,
+        orgaPermissionAccess: PERMISSIONS.SESSION,
+        requireOrganizationMeetingManagerAccess: true,
+      },
+      /*******************************/
+      /******* teams-app ************/
+      /*******************************/
+      {
+        scrapPath: /^\/organizations\/[^/]+/,
+        paths: [
+          {
+            path: "/organizations/:organizationId/teams-app/download",
+            method: ["get"],
+          },
+          {
+            path: "/organizations/:organizationId/teams-app/info",
+            method: ["get"],
+          },
+        ],
+        requireAuth: true,
+        orgaPermissionAccess: PERMISSIONS.SESSION,
+      },
     ],
   }
 }

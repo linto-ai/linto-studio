@@ -177,7 +177,7 @@ export class StudioApiService {
         args.organizationId = this.organizations[0]._id
       }
 
-      return await method(args)
+      return await method.bind(this)(args)
     }
   }
 
