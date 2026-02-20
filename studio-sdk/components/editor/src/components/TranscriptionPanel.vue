@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { useTemplateRef } from 'vue'
+import { computed, useTemplateRef } from 'vue'
 import { ScrollAreaRoot, ScrollAreaViewport, ScrollAreaScrollbar, ScrollAreaThumb } from 'reka-ui'
 import { ArrowDown } from 'lucide-vue-next'
 import TranscriptionTurn from './TranscriptionTurn.vue'
 import EditorButton from './atoms/EditorButton.vue'
 import { useAudioContext } from '../composables/useAudioContext'
 import { useAutoScroll } from '../composables/useAutoScroll'
+import { useEditorCore } from '../core'
 import { useI18n } from '../i18n'
 import type { Turn, Speaker } from '../types/editor'
 
@@ -15,8 +16,11 @@ defineProps<{
 }>()
 
 const { t } = useI18n()
+const editor = useEditorCore()
 const playback = useAudioContext()
 const panelRef = useTemplateRef<HTMLElement>('panel')
+
+const partials = computed(() => editor.partials.value)
 
 const { isFollowing, resumeFollow } = useAutoScroll({
   panelRef,
@@ -34,6 +38,7 @@ const { isFollowing, resumeFollow } = useAutoScroll({
             :key="turn.id"
             :turn="turn"
             :speaker="speakers.get(turn.speakerId)!"
+            :partial-text="partials.get(turn.id)"
           />
         </div>
       </ScrollAreaViewport>

@@ -8,6 +8,7 @@ import type { Turn, Speaker } from '../types/editor'
 const props = defineProps<{
   turn: Turn
   speaker: Speaker
+  partialText?: string
 }>()
 
 const playback = useAudioContext()
@@ -35,6 +36,7 @@ const activeWordId = computed(() => {
         >{{ word.text }}</span
         >{{ i < turn.words.length - 1 ? " " : "" }}
       </template>
+      <span v-if="partialText" class="partial-text"> {{ partialText }}</span>
     </p>
   </section>
 </template>
@@ -61,6 +63,23 @@ const activeWordId = computed(() => {
   text-decoration-thickness: 2px;
   text-underline-offset: 3px;
   color: var(--speaker-color);
+}
+
+.partial-text {
+  font-style: italic;
+  color: var(--color-text-muted);
+  animation: partial-fade-in 200ms ease;
+}
+
+@keyframes partial-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .partial-text {
+    animation: none;
+  }
 }
 
 @media (max-width: 767px) {

@@ -1,24 +1,30 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import EditorLayout from './components/EditorLayout.vue'
 import { mapApiDocument } from './adapters/apiAdapter'
 import { provideI18n, type Locale } from './i18n'
+import { createEditorCore, provideEditorCore } from './core'
+import { createLivePlugin } from './plugins/live'
 import type { ApiDocument } from './types/api'
-import type { Channel } from './types/editor'
 
 const locale = ref<Locale>('fr')
 const { t } = provideI18n(locale)
 
-const channels = ref<Channel[]>([])
-const selectedChannelId = ref('')
+const editor = createEditorCore()
+provideEditorCore(editor)
+
+const livePlugin = createLivePlugin()
+editor.use(livePlugin)
+
 const error = ref<string | null>(null)
+const loading = ref(true)
 
 onMounted(async () => {
   try {
     const [r1, r2] = await Promise.all([fetch('/test.json'), fetch('/test2.json')])
     const [raw1, raw2]: [ApiDocument, ApiDocument] = await Promise.all([r1.json(), r2.json()])
     const doc1 = mapApiDocument(raw1)
-    channels.value = [
+    editor.setChannels([
       {
         id: 'ch-1',
         label: 'Canal 1',
@@ -30,11 +36,16 @@ onMounted(async () => {
         ],
       },
       { id: 'ch-2', label: 'Canal 2', document: mapApiDocument(raw2), audioSrc: '/Comment peut-on atteindre ses fins.mp3' },
-    ]
-    selectedChannelId.value = 'ch-1'
+    ])
+    loading.value = false
   } catch (e) {
     error.value = e instanceof Error ? e.message : t('editor.loadError')
+    loading.value = false
   }
+})
+
+onUnmounted(() => {
+  editor.destroy()
 })
 </script>
 
@@ -42,14 +53,10 @@ onMounted(async () => {
   <div v-if="error" class="error-state">
     <p>{{ error }}</p>
   </div>
-  <div v-else-if="channels.length === 0" class="loading-state">
+  <div v-else-if="loading" class="loading-state">
     <p>{{ t('editor.loading') }}</p>
   </div>
-  <EditorLayout
-    v-else
-    :channels="channels"
-    v-model:selected-channel-id="selectedChannelId"
-  />
+  <EditorLayout v-else />
 </template>
 
 <style scoped>

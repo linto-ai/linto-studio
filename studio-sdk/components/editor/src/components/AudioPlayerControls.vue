@@ -4,7 +4,7 @@ import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX } from 'lucide-vue
 import EditorButton from './atoms/EditorButton.vue'
 import { useI18n } from '../i18n'
 
-const props = defineProps<{
+defineProps<{
   isPlaying: boolean
   currentTime: string
   duration: string

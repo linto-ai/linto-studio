@@ -17,27 +17,22 @@ import ChannelSelector from './ChannelSelector.vue'
 import SidebarSelect from './atoms/SidebarSelect.vue'
 import { provideAudioContext } from '../composables/useAudioContext'
 import { useIsMobile } from '../composables/useIsMobile'
+import { useEditorCore } from '../core'
 import { useI18n } from '../i18n'
 import { buildLanguageItems } from '../utils/intl'
-import type { Channel } from '../types/editor'
 
-const props = defineProps<{
-  channels: Channel[]
-  selectedChannelId: string
-}>()
-
-defineEmits<{
-  'update:selectedChannelId': [id: string]
-}>()
-
+const editor = useEditorCore()
 const { t, locale } = useI18n()
 const { isMobile } = useIsMobile()
 const isSidebarOpen = ref(false)
 
-const activeChannel = computed(() =>
-  props.channels.find(c => c.id === props.selectedChannelId) ?? props.channels[0]!
-)
-const activeDocument = computed(() => activeChannel.value.document)
+const activeDocument = editor.activeDocument
+const activeChannel = editor.activeChannel
+const activeTurns = editor.activeTurns
+const availableLanguages = editor.availableLanguages
+const activeLanguageCode = editor.activeLanguageCode
+const channels = editor.channels
+
 const activeAudioSrc = computed(() => activeChannel.value.audioSrc)
 const speakerList = computed(() => Array.from(activeDocument.value.speakers.values()))
 
@@ -45,43 +40,27 @@ const audioPlayerRef = useTemplateRef<InstanceType<typeof AudioPlayer>>('audioPl
 const currentTime = ref(0)
 const isPlaying = ref(false)
 
-const selectedLanguage = ref<string | null>(null)
-
 function onTimeUpdate(time: number) {
   currentTime.value = time
 }
 
-watch(() => props.selectedChannelId, () => {
+watch(() => editor.activeChannelId.value, () => {
   audioPlayerRef.value?.pause()
   currentTime.value = 0
   isPlaying.value = false
-  selectedLanguage.value = null
   isSidebarOpen.value = false
-})
-
-const activeLanguageCode = computed(() =>
-  selectedLanguage.value ?? activeDocument.value.metadata.language
-)
-
-const activeTurns = computed(() => {
-  if (!selectedLanguage.value) return activeDocument.value.turns
-  const tr = activeChannel.value.translations?.find(t => t.language === selectedLanguage.value)
-  return tr?.turns ?? activeDocument.value.turns
-})
-
-const availableLanguages = computed(() => {
-  const original = activeDocument.value.metadata.language
-  const extras = activeChannel.value.translations?.map(t => t.language) ?? []
-  return [original, ...extras]
 })
 
 const languageItems = computed(() =>
   buildLanguageItems(availableLanguages.value, locale.value, t('sidebar.originalLanguage'))
 )
 
+function onChannelChange(channelId: string) {
+  editor.setActiveChannel(channelId)
+}
+
 function onLanguageChange(lang: string) {
-  const isOriginal = lang === activeDocument.value.metadata.language
-  selectedLanguage.value = isOriginal ? null : lang
+  editor.setActiveLanguage(lang)
 }
 
 provideAudioContext({
@@ -107,10 +86,10 @@ provideAudioContext({
         v-if="!isMobile"
         :speakers="speakerList"
         :channels="channels"
-        :selected-channel-id="selectedChannelId"
+        :selected-channel-id="editor.activeChannelId.value"
         :available-languages="availableLanguages"
         :selected-language="activeLanguageCode"
-        @update:selected-channel-id="$emit('update:selectedChannelId', $event)"
+        @update:selected-channel-id="onChannelChange"
         @update:selected-language="onLanguageChange"
       />
 
@@ -125,10 +104,10 @@ provideAudioContext({
             <SpeakerSidebar
               :speakers="speakerList"
               :channels="channels"
-              :selected-channel-id="selectedChannelId"
+              :selected-channel-id="editor.activeChannelId.value"
               :available-languages="availableLanguages"
               :selected-language="activeLanguageCode"
-              @update:selected-channel-id="$emit('update:selectedChannelId', $event)"
+              @update:selected-channel-id="onChannelChange"
               @update:selected-language="onLanguageChange"
             />
           </DialogContent>
@@ -148,8 +127,8 @@ provideAudioContext({
       <ChannelSelector
         v-if="channels.length > 1"
         :channels="channels"
-        :selected-channel-id="selectedChannelId"
-        @update:selected-channel-id="$emit('update:selectedChannelId', $event)"
+        :selected-channel-id="editor.activeChannelId.value"
+        @update:selected-channel-id="onChannelChange"
       />
       <SidebarSelect
         v-if="availableLanguages.length > 1"
