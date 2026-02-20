@@ -1,43 +1,51 @@
-FROM node:22.14.0-slim
+FROM node:22.22.0-alpine
 
-RUN apt-get update -y && \
-  apt-get upgrade -y && \
-  apt-get install -y --no-install-recommends \
+# Install dependencies
+RUN apk upgrade --no-cache && apk add --no-cache \
+  bash \
   curl \
   gettext \
   ffmpeg \
-  cron \
+  dcron \
   zip \
-  build-essential \
-  gosu \
-  libboost-program-options-dev \
-  libboost-filesystem-dev \
-  libboost-date-time-dev \
-  libboost-regex-dev \
-  libmad0-dev \
-  libid3tag0-dev \
-  libgd-dev && \
-  apt-get install -y libreoffice --fix-missing && \
-  apt-get clean && \
-  rm -rf /var/lib/apt/lists/*
+  build-base \
+  python3 \
+  su-exec \
+  boost-dev \
+  libmad-dev \
+  libid3tag-dev \
+  gd-dev \
+  shadow \
+  libreoffice \
+  # Fonts for PDF generation
+  ttf-freefont \
+  ttf-dejavu \
+  ttf-liberation \
+  font-noto \
+  && rm -rf /var/cache/apk/* \
+  && ln -s /sbin/su-exec /usr/local/bin/gosu \
+  && fc-cache -f
 
 WORKDIR /usr/src/app/conversation-manager
 COPY . /usr/src/app/conversation-manager
 
 # Move binaries to their respective locations
-RUN cp config/bin/yt-dlp_linux /usr/local/bin/yt-dlp
+# Note: yt-dlp_linux is for glibc, need to use the Python version on Alpine
+RUN pip3 install --break-system-packages yt-dlp && \
+  ln -sf /usr/bin/yt-dlp /usr/local/bin/yt-dlp || \
+  cp config/bin/yt-dlp_linux /usr/local/bin/yt-dlp 2>/dev/null || true
 
 RUN npm install
 
-# Set up cron job with
+# Set up cron job
 RUN chmod 0644 config/cron/backup-cron && \
   crontab config/cron/backup-cron
 
-RUN service cron start
+RUN crond
 
 HEALTHCHECK CMD curl -f http://localhost || exit 1
 EXPOSE 80
 
 COPY wait-for-it.sh /
-COPY docker-entrypoint.sh /
+COPY docker-entrypoint.sh /docker-entrypoint.sh
 ENTRYPOINT ["/docker-entrypoint.sh"]
