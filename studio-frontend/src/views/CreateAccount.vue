@@ -353,3 +353,9 @@ export default {
   },
 }
 </script>
+
+<style lang="css" scoped>
+input[type="file"] {
+  display: none;
+}
+</style>
