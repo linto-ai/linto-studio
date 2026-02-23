@@ -67,6 +67,9 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# MCP server (local dev tool)
+linto-mcp-server/
+
 # python
 *env*/
 *.egg-info/

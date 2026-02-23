@@ -119,6 +119,11 @@ export default {
           text: "Amazon",
           avatar: transriberImageFromtype("amazon"),
         },
+        {
+          value: "voxstral",
+          text: "Voxstral",
+          avatar: transriberImageFromtype("voxstral"),
+        },
       ],
       transcriberProfile: structuredClone(TRANSCRIBER_PROFILES_TEMPLATES.linto),
       transcriberProfileOriginal: null,

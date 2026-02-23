@@ -86,6 +86,7 @@ import { microphoneMixin } from "@/mixins/microphone.js"
 import { sessionMicrophoneMixin } from "@/mixins/sessionMicrophone.js"
 
 import { customDebug } from "@/tools/customDebug.js"
+import { isQualifiedForCrossSubtitles } from "@/tools/translationUtils.js"
 
 import SessionLiveToolbar from "@/components/SessionLiveToolbar.vue"
 import SessionLiveContent from "@/components/SessionLiveContent.vue"
@@ -129,22 +130,10 @@ export default {
   },
   computed: {
     qualifiedForCrossSubtitles() {
-      let res = true
-      res = res && this.selectedChannel.languages.length == 2
-      //res = res && this.selectedChannel.translations.length == 2
-      res =
-        res &&
-        !!this.selectedChannel.translations.find(
-          (t) =>
-            t.split("-")[0] === this.selectedChannel.languages[0].split("-")[0],
-        )
-      res =
-        res &&
-        !!this.selectedChannel.translations.find(
-          (t) =>
-            t.split("-")[0] === this.selectedChannel.languages[1].split("-")[0],
-        )
-      return res
+      return isQualifiedForCrossSubtitles(
+        this.selectedChannel.translations,
+        this.selectedChannel.languages,
+      )
     },
     breadcrumbItems() {
       return [
