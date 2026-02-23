@@ -59,7 +59,7 @@
         </div>
       </section>
 
-      <SecurityLevelSelector v-model="securityLevel" />
+      <SecurityLevelSelector v-if="enableSecurityLevel" v-model="securityLevel" />
 
       <!-- Channels section -->
       <section class="flex col">
@@ -337,6 +337,9 @@ export default {
     },
   },
   computed: {
+    enableSecurityLevel() {
+      return getEnv("VUE_APP_ENABLE_SECURITY_LEVEL") === "true"
+    },
     selectedTemplate() {
       return this.localSessionTemplates.sessionTemplates.find(
         (t) => t.id === Number(this.selectedTemplateId),

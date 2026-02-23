@@ -41,7 +41,7 @@
           </div>
         </section>
 
-        <SecurityLevelSelector v-model="securityLevel" />
+        <SecurityLevelSelector v-if="enableSecurityLevel" v-model="securityLevel" />
 
         <!-- services -->
         <section class="flex col gap-small">
@@ -159,6 +159,9 @@ export default {
   computed: {
     transcriberProfilesQuickMeeting() {
       return this.transcriberProfiles.filter((t) => t.quickMeeting)
+    },
+    enableSecurityLevel() {
+      return getEnv("VUE_APP_ENABLE_SECURITY_LEVEL") === "true"
     },
     canUploadFiles() {
       return this.canUploadInCurrentOrganization
