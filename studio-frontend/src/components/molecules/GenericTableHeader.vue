@@ -24,7 +24,9 @@
         :label="column.label"
         :sortListDirection="sortListDirection"
         :sortListKey="sortListKey"
-        :eventLabel="column.key" />
+        :eventLabel="column.key">
+        <slot v-if="$scopedSlots['header-' + column.key]" :name="'header-' + column.key"></slot>
+      </ArrayHeader>
     </tr>
   </thead>
 </template>

@@ -3,7 +3,6 @@
     <template v-slot:header>
       <HeaderTable
         :title="$t('backoffice.organisation_list.title')"
-        :count="count"
         v-bind:search.sync="search"
         @on-create="showModalCreateOrganization"
         @on-delete="showModalDeleteMultipleOrganizations"
@@ -37,20 +36,51 @@
       </HeaderTable>
     </template>
 
-    <div class="backoffice-listing-container">
-      <OrganizationTable
-        :loading="loading"
-        :organizationList="organizationList"
-        :linkTo="{ name: 'backoffice-organizationDetail' }"
-        :sortListKey="sortListKey"
-        :sortListDirection="sortListDirection"
-        @list_sort_by="sortBy"
-        v-model="selectedOrganizations" />
+    <div class="flex1 flex col gap-medium">
+      <GenericTableRequest
+        ref="table"
+        idKey="_id"
+        selectable
+        :selectedRows="selectedOrganizations"
+        @update:selectedRows="selectedOrganizations = $event"
+        :fetchMethod="fetchOrganizations"
+        :fetchMethodParams="fetchMethodParams"
+        :columns="columns"
+        :initSortListDirection="'asc'"
+        :initSortListKey="'name'">
+        <template #header-personal>
+          <ph-icon name="user" />
+        </template>
+
+        <template #cell-personal="{ value }">
+          <span v-if="value" class="icon apply" />
+          <span v-else class="icon close" />
+        </template>
+
+        <template #cell-created="{ value, id }">
+          <router-link :to="orgDetailRoute(id)">
+            {{ formatDate(value) }}
+          </router-link>
+        </template>
+
+        <template #cell-name="{ value, id }">
+          <router-link :to="orgDetailRoute(id)">{{ value }}</router-link>
+        </template>
+
+        <template #cell-userNumber="{ element }">
+          {{ element.users ? element.users.length : 0 }}
+        </template>
+
+        <template #cell-actions="{ id }">
+          <Button
+            @click="$router.push(orgDetailRoute(id))"
+            variant="secondary"
+            icon="pencil"
+            :label="$t('orga_table.edit_button_label')" />
+        </template>
+      </GenericTableRequest>
     </div>
-    <Pagination
-      :pages="totalPagesNumber"
-      v-model="currentPageNb"
-      v-if="count > 0"></Pagination>
+
     <ModalCreateOrganization
       @on-confirm="newOrganization"
       @on-cancel="hideModalCreateOrganization"
@@ -67,64 +97,79 @@
   </MainContentBackoffice>
 </template>
 <script>
-import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
-import { apiGetAllOrganizations } from "@/api/admin.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
-import { debounceMixin } from "@/mixins/debounce.js"
+import { apiGetAllOrganizations } from "@/api/admin.js"
 
+import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
+import GenericTableRequest from "@/components/molecules/GenericTableRequest.vue"
 import HeaderTable from "@/components/HeaderTable.vue"
-import OrganizationTable from "@/components/OrganizationTable.vue"
 import ModalCreateOrganization from "@/components/ModalCreateOrganization.vue"
-import Pagination from "@/components/molecules/Pagination.vue"
 import ModalDeleteMultipleOrganizations from "@/components/ModalDeleteMultipleOrganizations.vue"
+
 export default {
-  mixins: [platformRoleMixin, debounceMixin],
-  props: {},
+  mixins: [platformRoleMixin],
   data() {
     return {
-      loading: true,
-      organizationList: [],
-      count: 0,
-      modalCreateOrganizationIsVisible: false,
       selectedOrganizations: [],
-      totalPagesNumber: 0,
-      currentPageNb: 0,
-      search: "",
-      sortListKey: "name",
-      sortListDirection: "asc",
-      showPersonalOrganizations: false,
+      modalCreateOrganizationIsVisible: false,
       modalDeleteMultipleOrganizationsIsVisible: false,
+      search: "",
+      showPersonalOrganizations: false,
     }
   },
   mounted() {
     if (!this.isAtLeastSystemAdministrator) {
       this.$router.push({ name: "not_found" })
     }
-    this.debouncedFetchAllOrganizations()
+  },
+  computed: {
+    fetchMethodParams() {
+      return {
+        search: this.search,
+        hidePersonal: !this.showPersonalOrganizations,
+      }
+    },
+    columns() {
+      return [
+        { key: "personal", label: "", width: "auto" },
+        {
+          key: "created",
+          label: this.$t("orga_table.header.creation_date"),
+          width: "auto",
+        },
+        {
+          key: "name",
+          label: this.$t("orga_table.header.name"),
+          width: "1fr",
+        },
+        {
+          key: "userNumber",
+          label: this.$t("orga_table.header.userNumber"),
+          width: "1fr",
+        },
+        { key: "actions", label: "", width: "auto" },
+      ]
+    },
   },
   methods: {
-    async fetchAllOrganizations(search, signal) {
-      return await apiGetAllOrganizations(
-        this.currentPageNb,
-        {
-          sortField: this.sortListKey,
-          sortOrder: this.sortListDirection === "asc" ? 1 : -1,
-          hidePersonal: !this.showPersonalOrganizations,
-        },
+    fetchOrganizations(page, { sortField, sortOrder, search, hidePersonal }) {
+      return apiGetAllOrganizations(
+        page,
+        { sortField, sortOrder, hidePersonal },
         search,
-        signal,
       )
     },
-    async debouncedFetchAllOrganizations() {
-      this.loading = true
-      const req = await this.debouncedSearch(
-        this.fetchAllOrganizations.bind(this),
-        this.search,
-      )
-      this.organizationList = req.list
-      this.count = req.count
-      this.totalPagesNumber = Math.ceil(req.count / 10)
-      this.loading = false
+    formatDate(value) {
+      return value ? new Date(value).toLocaleDateString() : "-"
+    },
+    orgDetailRoute(organizationId) {
+      return {
+        name: "backoffice-organizationDetail",
+        params: { organizationId },
+      }
+    },
+    changeShowPersonalOrganizations() {
+      this.showPersonalOrganizations = !this.showPersonalOrganizations
     },
     showModalCreateOrganization() {
       this.modalCreateOrganizationIsVisible = true
@@ -132,23 +177,9 @@ export default {
     hideModalCreateOrganization() {
       this.modalCreateOrganizationIsVisible = false
     },
-    newOrganization(res) {
-      this.organizationList.unshift(res.data)
+    newOrganization() {
       this.hideModalCreateOrganization()
-    },
-    sortBy(key) {
-      if (key === this.sortListKey) {
-        this.sortListDirection =
-          this.sortListDirection === "desc" ? "asc" : "desc"
-      } else {
-        this.sortListDirection = "desc"
-      }
-      this.sortListKey = key
-      this.debouncedFetchAllOrganizations()
-    },
-    changeShowPersonalOrganizations() {
-      this.showPersonalOrganizations = !this.showPersonalOrganizations
-      this.debouncedFetchAllOrganizations()
+      this.$refs.table.reset()
     },
     showModalDeleteMultipleOrganizations() {
       this.modalDeleteMultipleOrganizationsIsVisible = true
@@ -158,26 +189,15 @@ export default {
     },
     reload() {
       this.hideModalDeleteMultipleOrganizations()
-      this.debouncedFetchAllOrganizations()
       this.selectedOrganizations = []
-    },
-  },
-  computed: {},
-  watch: {
-    currentPageNb() {
-      this.debouncedFetchAllOrganizations()
-    },
-    search() {
-      this.debouncedFetchAllOrganizations()
-      this.currentPageNb = 0
+      this.$refs.table.reset()
     },
   },
   components: {
     MainContentBackoffice,
-    OrganizationTable,
+    GenericTableRequest,
     HeaderTable,
     ModalCreateOrganization,
-    Pagination,
     ModalDeleteMultipleOrganizations,
   },
 }

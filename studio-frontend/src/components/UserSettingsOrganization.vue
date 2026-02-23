@@ -1,15 +1,46 @@
 <template>
   <section>
     <h2>{{ $t("user_settings.organizations_section.title") }}</h2>
-    <OrganizationTable
+    <GenericTable
       v-if="!error"
-      @list_sort_by="sortBy"
-      :organizationList="sortedOrganization"
-      :sortListKey="sortListKey"
+      :columns="columns"
+      :content="sortedOrganization"
+      :loading="loading"
       :sortListDirection="sortListDirection"
-      v-model="selectedOrganizations"
-      :linkTo="{ name: 'backoffice-organizationDetail' }"
-      :loading="loading" />
+      :sortListKey="sortListKey"
+      idKey="_id"
+      @list_sort_by="sortBy">
+      <template #header-personal>
+        <ph-icon name="user" />
+      </template>
+
+      <template #cell-personal="{ value }">
+        <span v-if="value" class="icon apply" />
+        <span v-else class="icon close" />
+      </template>
+
+      <template #cell-created="{ value, id }">
+        <router-link :to="orgDetailRoute(id)">
+          {{ formatDate(value) }}
+        </router-link>
+      </template>
+
+      <template #cell-name="{ value, id }">
+        <router-link :to="orgDetailRoute(id)">{{ value }}</router-link>
+      </template>
+
+      <template #cell-userNumber="{ element }">
+        {{ element.users ? element.users.length : 0 }}
+      </template>
+
+      <template #cell-actions="{ id }">
+        <Button
+          @click="$router.push(orgDetailRoute(id))"
+          variant="secondary"
+          icon="pencil"
+          :label="$t('orga_table.edit_button_label')" />
+      </template>
+    </GenericTable>
     <div v-else>
       <div>{{ error }}</div>
       <Button @click="retry" variant="secondary" label="Retry" />
@@ -19,7 +50,7 @@
 <script>
 import { bus } from "@/main.js"
 import { apiGetUserOrganizations } from "@/api/admin.js"
-import OrganizationTable from "@/components/OrganizationTable.vue"
+import GenericTable from "@/components/molecules/GenericTable.vue"
 import { sortArray } from "@/tools/sortList.js"
 export default {
   props: {
@@ -31,7 +62,6 @@ export default {
   data() {
     return {
       organisationList: [],
-      selectedOrganizations: [],
       error: null,
       loading: false,
       sortListKey: "name",
@@ -40,6 +70,36 @@ export default {
   },
   mounted() {
     this.fetchOrganization()
+  },
+  computed: {
+    columns() {
+      return [
+        { key: "personal", label: "", width: "auto" },
+        {
+          key: "created",
+          label: this.$t("orga_table.header.creation_date"),
+          width: "auto",
+        },
+        {
+          key: "name",
+          label: this.$t("orga_table.header.name"),
+          width: "1fr",
+        },
+        {
+          key: "userNumber",
+          label: this.$t("orga_table.header.userNumber"),
+          width: "1fr",
+        },
+        { key: "actions", label: "", width: "auto" },
+      ]
+    },
+    sortedOrganization() {
+      return sortArray(
+        this.organisationList,
+        this.sortListKey,
+        this.sortListDirection,
+      )
+    },
   },
   methods: {
     retry() {
@@ -64,20 +124,19 @@ export default {
         this.sortListDirection = "desc"
       }
       this.sortListKey = key
-      this.fetchOrganization()
     },
-  },
-  computed: {
-    sortedOrganization() {
-      return sortArray(
-        this.organisationList,
-        this.sortListKey,
-        this.sortListDirection,
-      )
+    formatDate(value) {
+      return value ? new Date(value).toLocaleDateString() : "-"
+    },
+    orgDetailRoute(organizationId) {
+      return {
+        name: "backoffice-organizationDetail",
+        params: { organizationId },
+      }
     },
   },
   components: {
-    OrganizationTable,
+    GenericTable,
   },
 }
 </script>
