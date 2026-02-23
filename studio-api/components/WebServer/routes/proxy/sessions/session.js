@@ -269,6 +269,58 @@ module.exports = (webServer) => {
         requireOrganizationMeetingManagerAccess: true,
       },
       /*******************************/
+      /**** integration-configs ****/
+      /*******************************/
+      {
+        // Public access — authenticated by provisioningToken query param (no JWT)
+        scrapPath: /^\/organizations\/[^/]+/,
+        paths: [
+          {
+            path: "/organizations/:organizationId/integration-configs/:id/setup-script",
+            method: ["get"],
+          },
+        ],
+        requireAuth: false,
+      },
+      {
+        scrapPath: /^\/organizations\/[^/]+/,
+        paths: [
+          {
+            path: "/organizations/:organizationId/integration-configs",
+            method: ["get", "post"],
+            forwardParams: proxyForwardParams,
+          },
+          {
+            path: "/organizations/:organizationId/integration-configs/:id",
+            method: ["get", "put", "delete"],
+            forwardParams: proxyForwardParams,
+          },
+          {
+            path: "/organizations/:organizationId/integration-configs/:id/validate-credentials",
+            method: ["post"],
+            forwardParams: proxyForwardParams,
+          },
+          {
+            path: "/organizations/:organizationId/integration-configs/:id/generate-provisioning-token",
+            method: ["post"],
+            forwardParams: proxyForwardParams,
+          },
+          {
+            path: "/organizations/:organizationId/integration-configs/:id/generate-deploy-link",
+            method: ["post"],
+            forwardParams: proxyForwardParams,
+          },
+          {
+            path: "/organizations/:organizationId/integration-configs/:id/check-connectivity",
+            method: ["post"],
+            forwardParams: proxyForwardParams,
+          },
+        ],
+        requireAuth: true,
+        orgaPermissionAccess: PERMISSIONS.SESSION,
+        requireOrganizationMeetingManagerAccess: true,
+      },
+      /*******************************/
       /******* teams-app ************/
       /*******************************/
       {

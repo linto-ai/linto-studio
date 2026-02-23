@@ -146,9 +146,15 @@
       <div
         v-if="selectedTab === 'integrations'"
         class="app-settings__section">
-        <OrganizationIntegrations
-          v-if="isAdmin"
-          :organizationId="organizationId" />
+        <TeamsSetupWizard
+          v-if="teamsWizardOpen"
+          :configId="teamsConfigId"
+          :organizationId="organizationId"
+          @close="closeTeamsWizard" />
+        <IntegrationsCatalog
+          v-else-if="isAdmin"
+          :organizationId="organizationId"
+          @open-teams-wizard="openTeamsWizard" />
       </div>
       <div
         v-if="selectedTab === 'billing'"
@@ -177,7 +183,8 @@ import UpdateOrganizationUsers from "@/components/UpdateOrganizationUsers.vue"
 import UpdateOrganizationDeletion from "@/components/UpdateOrganizationDeletion.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import ApiTokenSettings from "@/components/ApiTokenSettings.vue"
-import OrganizationIntegrations from "@/components/OrganizationIntegrations.vue"
+import IntegrationsCatalog from "@/components/IntegrationsCatalog.vue"
+import TeamsSetupWizard from "@/components/TeamsSetupWizard.vue"
 
 export default {
   name: "AppSettingsModal",
@@ -196,11 +203,14 @@ export default {
     UpdateOrganizationDeletion,
     Modal,
     ApiTokenSettings,
-    OrganizationIntegrations,
+    IntegrationsCatalog,
+    TeamsSetupWizard,
   },
   data() {
     return {
       selectedTab: "account-information",
+      teamsWizardOpen: false,
+      teamsConfigId: null,
     }
   },
   computed: {
@@ -245,6 +255,14 @@ export default {
       this.$store.dispatch("user/logout")
       this.closeModal()
       document.location.reload()
+    },
+    openTeamsWizard(configId) {
+      this.teamsConfigId = configId
+      this.teamsWizardOpen = true
+    },
+    closeTeamsWizard() {
+      this.teamsWizardOpen = false
+      this.teamsConfigId = null
     },
     async sendVerificationEmail() {
       this.sendingEmail = true
