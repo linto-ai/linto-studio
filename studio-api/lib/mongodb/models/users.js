@@ -78,12 +78,16 @@ class UsersModel extends MongoModel {
         salt,
         passwordHash,
         authLink: generateAuthLink(),
-        emailIsVerified: true,
-        verifiedEmail: [user.email],
         created: dateTime,
         last_update: dateTime,
         fromSso: false,
         type: USER_TYPE.USER,
+      }
+
+      // If SMTP is not configured, mark the email as verified
+      if (!process.env.SMTP_HOST) {
+        adminPayload.emailIsVerified = true
+        adminPayload.verifiedEmail.push(adminPayload.email)
       }
 
       return await this.mongoInsert(adminPayload)
@@ -109,8 +113,8 @@ class UsersModel extends MongoModel {
         type: USER_TYPE.USER,
       }
 
-      // If SMTP is disabled, mark the email as verified
-      if (process.env.SMTP_HOST === "") {
+      // If SMTP is not configured, mark the email as verified
+      if (!process.env.SMTP_HOST) {
         userPayload.emailIsVerified = true
         userPayload.verifiedEmail.push(userPayload.email)
       }

@@ -77,10 +77,11 @@ async function createSuperUser(req, res, next) {
     )
     if (!mail_result) throw new NodemailerError()
 
-    res.status(201).send({
-      message:
-        "Account created. An email has been sent to the created account.",
-    })
+    const message = !process.env.SMTP_HOST
+      ? "Account created."
+      : "Account created. An email has been sent to the created account."
+
+    res.status(201).send({ message })
   } catch (err) {
     next(err)
   }
