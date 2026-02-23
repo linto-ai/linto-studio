@@ -35,7 +35,7 @@ RUN pip3 install --break-system-packages yt-dlp && \
   ln -sf /usr/bin/yt-dlp /usr/local/bin/yt-dlp || \
   cp config/bin/yt-dlp_linux /usr/local/bin/yt-dlp 2>/dev/null || true
 
-RUN npm install
+RUN npm install --omit=dev
 
 # Set up cron job
 RUN chmod 0644 config/cron/backup-cron && \

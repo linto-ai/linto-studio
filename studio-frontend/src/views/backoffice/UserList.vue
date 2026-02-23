@@ -45,11 +45,11 @@
           <router-link :to="userDetailRoute(id)">{{ value }}</router-link>
         </template>
 
-        <template #cell-role="{ value, id }">
-          <router-link :to="userDetailRoute(id)" class="flex flex1 gap-small">
+        <template #cell-role="{ value }">
+          <span class="flex flex1 gap-small">
             <span class="flex1">{{ platformRoleName(value) }}</span>
             <span>({{ value }})</span>
-          </router-link>
+          </span>
         </template>
 
         <template #cell-actions="{ id }">
