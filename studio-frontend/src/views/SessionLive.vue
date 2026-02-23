@@ -91,24 +91,7 @@
         :session="session"
         :isFromPublicLink="isFromPublicLink" />
 
-      <SessionLiveContent
-        v-else
-        @closeSubtitleFullscreen="closeSubtitleFullscreen"
-        :websocketInstance="websocketInstance"
-        :password="usedPassword"
-        :showSubtitlesFullscreen="showSubtitlesFullscreen"
-        :selectedTranslations="selectedTranslation"
-        :organizationId="organizationId"
-        :fontSize="fontSize"
-        :displaySubtitles="displaySubtitles"
-        :displayLiveTranscription="displayLiveTranscription"
-        :session="session"
-        :selectedChannel="selectedChannel"
-        :displayWatermark="displayWatermark"
-        :watermarkFrequency="watermarkFrequency"
-        :watermarkDuration="watermarkDuration"
-        :watermarkContent="watermarkContent"
-        :watermarkPinned="watermarkPinned" />
+      <SessionLiveNG v-else :session="session" />
       <IsMobile>
         <SessionDropdownChannelSelector
           v-if="sessionLoaded"
@@ -164,6 +147,7 @@ import LayoutV2 from "@/layouts/v2-layout.vue"
 import SessionDropdownChannelSelector from "@/components-mobile/SessionDropdownChannelSelector.vue"
 import IsMobile from "@/components/atoms/IsMobile.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
+import SessionLiveNG from "@/components/SessionLiveNG.vue"
 
 export default {
   mixins: [
@@ -288,6 +272,7 @@ export default {
     SessionDropdownChannelSelector,
     SessionHeader,
     FormInput,
+    SessionLiveNG,
   },
 }
 </script>
