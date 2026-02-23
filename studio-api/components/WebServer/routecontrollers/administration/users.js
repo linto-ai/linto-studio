@@ -17,6 +17,10 @@ const { defaultPicture } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 
+const { populateUserToOrganization } = require(
+  `${process.cwd()}/components/WebServer/controllers/organization/utility`,
+)
+
 const { UserConflict, UserError, UserUnsupportedMediaType } = require(
   `${process.cwd()}/components/WebServer/error/exception/users`,
 )
@@ -70,6 +74,8 @@ async function createSuperUser(req, res, next) {
       model.users.delete(createdUser.insertedId.toString())
       throw new UserError()
     }
+
+    populateUserToOrganization(myCreatedUser[0])
 
     const mail_result = await Mailing.accountCreate(
       user.email,
