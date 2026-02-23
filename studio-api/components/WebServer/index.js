@@ -10,7 +10,6 @@ const cookieParser = require("cookie-parser")
 const cookieSession = require("cookie-session")
 
 const swaggerUi = require("swagger-ui-express")
-const swaggerJsdoc = require("swagger-jsdoc")
 
 let swaggerDocument = require("./apidoc/swagger.json")
 
@@ -152,12 +151,10 @@ class WebServer extends Component {
       debug(err)
     }
 
-    swaggerDocument.apis = ["./apidoc/"]
-
     this.express.use(
       "/apidoc",
       swaggerUi.serve,
-      swaggerUi.setup(swaggerJsdoc(swaggerDocument)),
+      swaggerUi.setup(swaggerDocument.definition),
     )
 
     return this.init()
