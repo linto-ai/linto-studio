@@ -107,44 +107,53 @@ async function removeUserFromPlatform(userId) {
     const conversations = await model.conversations.getByShare(userId)
 
     // Remove the user from the sharedWithUsers array
-    conversations.map(async (conversation) => {
-      conversation.sharedWithUsers = conversation.sharedWithUsers.filter(
-        (user) => user.userId !== userId,
-      )
-
-      // Update the conversation
-      const resultConvoUpdate = await model.conversations.update(conversation)
-      if (resultConvoUpdate.matchedCount === 0) throw new UserError()
-    })
-
-    // Get all organizations the user is part of
-
-    const organizations = await model.organizations.listSelf(userId)
-    organizations.map(async (organization) => {
-      const data = orgaUtility.countAdmin(organization, userId)
-      if (data.adminCount === 1 && data.isAdmin) {
-        const conversations = await model.conversations.getByOrga(
-          organization._id,
-        )
-        conversations.map(async (conversation) => {
-          deleteFile(
-            `${getStorageFolder()}/${conversation.metadata.audio.filepath}`,
-          )
-
-          const resultConvo = await model.conversations.delete(conversation._id)
-          if (resultConvo.deletedCount !== 1) throw new UserError()
-        })
-        // delete orga
-        const resultOrga = await model.organizations.delete(organization._id)
-        if (resultOrga.deletedCount !== 1) throw new UserError()
-      } else if (data.adminCount > 1 || !data.isAdmin) {
-        organization.users = organization.users.filter(
+    await Promise.all(
+      conversations.map(async (conversation) => {
+        conversation.sharedWithUsers = conversation.sharedWithUsers.filter(
           (user) => user.userId !== userId,
         )
-        let resultOperation = await model.organizations.update(organization)
-        if (resultOperation.matchedCount === 0) throw new UserError()
-      }
-    })
+
+        // Update the conversation
+        const resultConvoUpdate = await model.conversations.update(conversation)
+        if (resultConvoUpdate.matchedCount === 0) throw new UserError()
+      }),
+    )
+
+    // Get all organizations the user is part of
+    const organizations = await model.organizations.listSelf(userId)
+    await Promise.all(
+      organizations.map(async (organization) => {
+        const data = orgaUtility.countAdmin(organization, userId)
+        if (data.adminCount === 1 && data.isAdmin) {
+          const conversations = await model.conversations.getByOrga(
+            organization._id,
+          )
+          await Promise.all(
+            conversations.map(async (conversation) => {
+              if (conversation.metadata?.audio?.filepath) {
+                deleteFile(
+                  `${getStorageFolder()}/${conversation.metadata.audio.filepath}`,
+                )
+              }
+
+              const resultConvo = await model.conversations.delete(
+                conversation._id,
+              )
+              if (resultConvo.deletedCount !== 1) throw new UserError()
+            }),
+          )
+          // delete orga
+          const resultOrga = await model.organizations.delete(organization._id)
+          if (resultOrga.deletedCount !== 1) throw new UserError()
+        } else if (data.adminCount > 1 || !data.isAdmin) {
+          organization.users = organization.users.filter(
+            (user) => user.userId !== userId,
+          )
+          let resultOperation = await model.organizations.update(organization)
+          if (resultOperation.matchedCount === 0) throw new UserError()
+        }
+      }),
+    )
 
     return true
   } catch (error) {

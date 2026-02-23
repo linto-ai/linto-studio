@@ -462,6 +462,20 @@ class UsersModel extends MongoModel {
     }
   }
 
+  async countSuperAdmins() {
+    try {
+      const query = {
+        role: { $bitsAllSet: ROLE.SUPER_ADMINISTRATOR },
+        type: USER_TYPE.USER,
+      }
+      const result = await this.mongoRequest(query, { _id: 1 })
+      return result.length
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   async deleteMany(ids) {
     try {
       const objectIdArray = ids.map((id) => {
@@ -471,7 +485,6 @@ class UsersModel extends MongoModel {
 
       const query = {
         _id: { $in: objectIdArray },
-        role: { $bitsAllClear: ROLE.SUPER_ADMINISTRATOR }, // 4th bit (8 in decimal) must be clear (0)
       }
 
       return await this.mongoDeleteMany(query)

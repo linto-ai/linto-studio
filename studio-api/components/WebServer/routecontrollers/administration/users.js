@@ -6,6 +6,7 @@ const debug = require("debug")(
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
+const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
 const Mailing = require(`${process.cwd()}/lib/mailer/mailing`)
 
 const userUtility = require(
@@ -103,9 +104,34 @@ async function deleteUser(req, res, next) {
     if (!Array.isArray(req.body.userIds))
       throw new UserUnsupportedMediaType("userIds must be an array")
 
+    // Check if deleting these users would remove all human super admins
+    let superAdminsToDelete = 0
+    for (const userId of req.body.userIds) {
+      const users = await model.users.getById(userId, true)
+      if (
+        users.length === 1 &&
+        users[0].type === USER_TYPE.USER &&
+        ROLE.hasPlatformRoleAccess(users[0].role, ROLE.SUPER_ADMINISTRATOR)
+      ) {
+        superAdminsToDelete++
+      }
+    }
+
+    if (superAdminsToDelete > 0) {
+      const totalSuperAdmins = await model.users.countSuperAdmins()
+      debug(
+        `Total super admins: ${totalSuperAdmins}, Super admins to delete: ${superAdminsToDelete}`,
+      )
+      if (totalSuperAdmins - superAdminsToDelete < 1)
+        throw new UserError(
+          "Cannot delete the last super administrator of the platform",
+        )
+    }
+
     for (const userId of req.body.userIds) {
       await userUtility.removeUserFromPlatform(userId)
     }
+
     const result = await model.users.deleteMany(req.body.userIds)
     if (result.deletedCount !== req.body.userIds.length)
       throw new UserError("User not deleted")
