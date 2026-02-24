@@ -13,6 +13,7 @@ COPY package.json ./
 
 RUN npm install --omit=dev
 COPY . .
+RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
 
 HEALTHCHECK CMD curl -f http://localhost
 EXPOSE 80
