@@ -56,7 +56,6 @@ import { debounceMixin } from "../mixins/debounce.js"
 import AppEditorTurn from "@/components/AppEditorTurn.vue"
 import AppEditorPlayer from "@/components/AppEditorPlayer.vue"
 import AppEditorPagination from "@/components/molecules/Pagination.vue"
-import ModalDeleteTagHighlight from "@/components/ModalDeleteTagHighlight.vue"
 
 export default {
   mixins: [debounceMixin],
@@ -211,11 +210,9 @@ export default {
   mounted() {
     this.speakersTurnsTimebox = this.getSpkTimebox()
     bus.$on("player-audioprocess", (time) => {
-      console.log("player-audioprocess")
       this.updateCurrentTime(time)
     })
     bus.$on("player-seek", (time) => {
-      console.log("player-seek")
       this.updateCurrentTime(time)
     })
 
@@ -409,7 +406,6 @@ export default {
       bus.$emit("showSpeakerModal")
     },
     async updateCurrentTime(time) {
-      console.log("update time", time)
       this.currentTime = time
       // Remove playing class from all words
       let activeWords = Array.from(
@@ -564,7 +560,6 @@ export default {
     AppEditorTurn,
     AppEditorPlayer,
     AppEditorPagination,
-    ModalDeleteTagHighlight,
   },
 }
 </script>

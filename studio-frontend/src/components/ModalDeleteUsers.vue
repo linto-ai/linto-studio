@@ -1,5 +1,5 @@
 <template>
-  <ModalNew
+  <Modal
     value
     @on-cancel="() => this.$emit('on-close')"
     @on-confirm="deleteUsers"
@@ -8,12 +8,12 @@
     :customClassButton="{ red: true }"
     size="sm">
     {{ $tc("modal_delete_users.content", selectedUsers.length) }}
-  </ModalNew>
+  </Modal>
 </template>
 <script>
 import { apiDeleteMultipleUsers } from "@/api/admin.js"
 
-import ModalNew from "@/components/molecules/Modal.vue"
+import Modal from "@/components/molecules/Modal.vue"
 import { bus } from "../main"
 
 export default {
@@ -50,6 +50,6 @@ export default {
       }
     },
   },
-  components: { ModalNew },
+  components: { Modal },
 }
 </script>

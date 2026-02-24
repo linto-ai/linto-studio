@@ -44,8 +44,7 @@
           @click="validateEdit"
           icon="check"
           size="sm"
-          variant="solid"
-          color="primary"
+          variant="primary"
           shape="circle"
           :title="$t('validate')" />
       </div>

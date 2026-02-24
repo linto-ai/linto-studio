@@ -11,7 +11,6 @@
 <script>
 import Modal from "@/components/molecules/Modal.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
-import DurationInput from "@/components/molecules/DurationInput.vue"
 import EMPTY_FIELD from "@/const/emptyField"
 import { mapActions, mapGetters } from "vuex"
 
@@ -57,7 +56,6 @@ export default {
   components: {
     Modal,
     FormInput,
-    DurationInput,
   },
 }
 </script>

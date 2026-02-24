@@ -1,4 +1,5 @@
-const debug = require("debug")(`linto:components:BrokerClient`)
+const debug = require("debug")(`linto:components:BrokerClient:index`)
+const logger = require(`${process.cwd()}/lib/logger/logger`)
 
 const Component = require(`../component.js`)
 const MqttClient = require(`${process.cwd()}/lib/mqtt/mqtt.js`)
@@ -26,11 +27,10 @@ class BrokerClient extends Component {
       // roomId is the concatenation of session_id / channel_index
       (roomId) => `transcriber/out/${roomId}/partial`,
       (roomId) => `transcriber/out/${roomId}/final`,
+      (roomId) => `transcriber/out/${roomId}/partial/translations`,
+      (roomId) => `transcriber/out/${roomId}/final/translations`,
     ]
-    this.deliverySubs = [
-      `transcriber/out/+/+/partial`,
-      `transcriber/out/+/+/final`,
-    ]
+    this.deliverySubs = []
 
     // Initialize delivery client
     this.deliveryClient = new MqttClient({
@@ -65,7 +65,7 @@ class BrokerClient extends Component {
       this.sessionState = ERROR
       if (this.notify) {
         if (this.app.components["IoHandler"] === undefined) {
-          console.log("IoHandler not loaded yet")
+          logger.info("BrokerClient requires IoHandler component, not loaded yet")
           return
         }
         this.app.components["IoHandler"].emit("borker_disconnected")
@@ -93,7 +93,7 @@ class BrokerClient extends Component {
       this.organizationState = ERROR
 
       if (this.app.components["IoHandler"] === undefined) {
-        console.log("IoHandler not loaded yet")
+        logger.info("BrokerClient requires IoHandler component, not loaded yet")
         return
       }
 

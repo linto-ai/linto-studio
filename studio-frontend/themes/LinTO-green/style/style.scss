@@ -1,12 +1,9 @@
-//@layer base, theme;
-
 @use "text.scss" as text-theme;
-
 @use "mobile/text.scss" as mobile-text-theme;
-@layer theme {
-  body {
-  }
 
+@layer base, theme;
+
+@layer theme {
   html[data-theme="dark"] body {
     --yellow-chart: #976400;
     --blue-chart: #479ae4;

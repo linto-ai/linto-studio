@@ -18,28 +18,26 @@
       <span class="flex1 tag__value__main" :class="{ 'no-value': !value }">{{
         l_value
       }}</span>
-      <button
-        @click="$emit('remove')"
+      <Button
         v-if="removable"
-        class="transparent inline">
-        <span
-          class="icon remove tag__remove"
-          :class="{ small: size == 'small' }"
-          :title="$t('tags.remove_tag')" />
-      </button>
-      <button @click="deleteTag" v-if="deletable" class="transparent inline">
-        <span
-          class="icon trash"
-          :class="{ small: size == 'small' }"
-          :title="$t('tags.remove_tag')" />
-      </button>
+        @click="$emit('remove')"
+        variant="transparent"
+        :size="size === 'small' ? 'sm' : 'md'"
+        icon="x"
+        :title="$t('tags.remove_tag')" />
+      <Button
+        v-if="deletable"
+        @click="deleteTag"
+        variant="transparent"
+        :size="size === 'small' ? 'sm' : 'md'"
+        icon="trash"
+        :title="$t('tags.remove_tag')" />
     </div>
   </div>
 </template>
 
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "@/main.js"
 
 export default {
   props: {

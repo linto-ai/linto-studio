@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:conversation-manager:components:WebServer:controllers:export:generator:verbatim`,
+  `linto:components:WebServer:controllers:export:format:verbatim`,
 )
 
 const docx = require("docx")

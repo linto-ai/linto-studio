@@ -45,7 +45,6 @@
 import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 
-import MainContent from "./MainContent.vue"
 import ConversationStatus from "@/components/ConversationStatus.vue"
 import ConversationStatusError from "@/components/ConversationStatusError.vue"
 import Loading from "@/components/atoms/Loading.vue"
@@ -104,7 +103,6 @@ export default {
   methods: {},
   components: {
     Fragment,
-    MainContent,
     ConversationStatus,
     ConversationStatusError,
     Loading,

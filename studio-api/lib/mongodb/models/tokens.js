@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:models:mongodb:models:token",
+  "linto:lib:mongodb:models:tokens",
 )
 const MongoModel = require(`../model`)
 const ms = require("ms")

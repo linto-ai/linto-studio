@@ -6,7 +6,6 @@
         @on-delete="showModalDeleteUsers"
         @on-create="showModalAddUser"
         :title="$t('backoffice.user_list.title')"
-        :count="count"
         :disableDelete="selectedUsers.length === 0"
         :remove_button_label="
           $tc('backoffice.user_list.remove_user_button', selectedUsers.length)
@@ -16,20 +15,53 @@
         "></HeaderTable>
     </template>
 
-    <div class="backoffice-listing-container">
-      <UserTable
-        :loading="loading"
-        :users="users"
-        :sortListKey="sortListKey"
-        :sortListDirection="sortListDirection"
-        @list_sort_by="sortBy"
-        :linkTo="{ name: 'backoffice-userDetail' }"
-        v-model="selectedUsers" />
+    <div class="flex1 flex col gap-medium">
+      <GenericTableRequest
+        ref="table"
+        idKey="_id"
+        selectable
+        :selectedRows="selectedUsers"
+        @update:selectedRows="selectedUsers = $event"
+        :fetchMethod="fetchUsers"
+        :fetchMethodParams="fetchMethodParams"
+        :columns="columns"
+        :initSortListDirection="'asc'"
+        :initSortListKey="'email'">
+        <template #cell-created="{ value, id }">
+          <router-link :to="userDetailRoute(id)">
+            {{ formatDate(value) }}
+          </router-link>
+        </template>
+
+        <template #cell-email="{ value, id }">
+          <router-link :to="userDetailRoute(id)">{{ value }}</router-link>
+        </template>
+
+        <template #cell-firstname="{ value, id }">
+          <router-link :to="userDetailRoute(id)">{{ value }}</router-link>
+        </template>
+
+        <template #cell-lastname="{ value, id }">
+          <router-link :to="userDetailRoute(id)">{{ value }}</router-link>
+        </template>
+
+        <template #cell-role="{ value }">
+          <span class="flex flex1 gap-small">
+            <span class="flex1">{{ platformRoleName(value) }}</span>
+            <span>({{ value }})</span>
+          </span>
+        </template>
+
+        <template #cell-actions="{ id }">
+          <Button
+            @click="$router.push(userDetailRoute(id))"
+            variant="secondary"
+            icon="pencil"
+            :label="$t('user_table.edit_button_label')" />
+        </template>
+      </GenericTableRequest>
     </div>
-    <Pagination
-      :pages="totalPagesNumber"
-      v-model="currentPageNb"
-      v-if="count > 0 && !loading"></Pagination>
+
     <ModalDeleteUsers
       @on-close="hideModalDeleteUsers"
       @on-confirm="reload"
@@ -45,60 +77,90 @@
 <script>
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 import { apiGetAllUsers } from "@/api/admin.js"
-import { debounceMixin } from "@/mixins/debounce.js"
 
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
-import UserTable from "@/components/UserTable.vue"
+import GenericTableRequest from "@/components/molecules/GenericTableRequest.vue"
 import HeaderTable from "@/components/HeaderTable.vue"
 import ModalDeleteUsers from "@/components/ModalDeleteUsers.vue"
-import Pagination from "@/components/molecules/Pagination.vue"
 import ModalCreateUser from "@/components/ModalCreateUser.vue"
 
 export default {
-  mixins: [platformRoleMixin, debounceMixin],
-  props: {},
+  mixins: [platformRoleMixin],
   data() {
     return {
-      loading: true,
-      users: [],
-      count: 0,
       selectedUsers: [],
       modalDeleteUsersIsVisible: false,
       modalAddUserIsVisible: false,
-      currentPageNb: 0,
-      totalPagesNumber: 0,
       search: "",
-      sortListKey: "email",
-      sortListDirection: "asc",
     }
   },
   mounted() {
     if (!this.isAtLeastSystemAdministrator) {
       this.$router.push({ name: "not_found" })
     }
-    this.debouncedFetchAllUsers()
+  },
+  computed: {
+    fetchMethodParams() {
+      return { search: this.search }
+    },
+    columns() {
+      return [
+        {
+          key: "created",
+          label: this.$t("user_table.header.creation_date"),
+          width: "auto",
+        },
+        {
+          key: "email",
+          label: this.$t("user_table.header.email"),
+          width: "1fr",
+        },
+        {
+          key: "firstname",
+          label: this.$t("user_table.header.firstname"),
+          width: "1fr",
+        },
+        {
+          key: "lastname",
+          label: this.$t("user_table.header.lastname"),
+          width: "1fr",
+        },
+        {
+          key: "role",
+          label: this.$t("user_table.header.platform_role"),
+          width: "1fr",
+        },
+        {
+          key: "actions",
+          label: "",
+          width: "auto",
+        },
+      ]
+    },
   },
   methods: {
-    async fetchAllUsers() {
-      return await apiGetAllUsers(
-        this.currentPageNb,
-        {
-          sortField: this.sortListKey,
-          sortOrder: this.sortListDirection === "asc" ? 1 : -1,
-        },
-        this.search,
-      )
+    fetchUsers(page, { sortField, sortOrder, search }) {
+      return apiGetAllUsers(page, { sortField, sortOrder }, search)
     },
-    async debouncedFetchAllUsers() {
-      this.loading = true
-      const req = await this.debouncedSearch(
-        this.fetchAllUsers.bind(this),
-        this.search,
-      )
-      this.users = req.list
-      this.count = req.count
-      this.totalPagesNumber = Math.ceil(req.count / 10)
-      this.loading = false
+    platformRoleName(role) {
+      switch (true) {
+        case this.roleIsSuperAdministrator(role):
+          return this.$t("platform_role.super_administrator")
+        case this.roleIsSystemAdministrator(role):
+          return this.$t("platform_role.system_administrator")
+        case this.roleIsSessionOperator(role):
+          return this.$t("platform_role.session_operator")
+        case this.roleIsOrganizationInitiator(role):
+          return this.$t("platform_role.organization_initiator")
+        default:
+          return "–"
+      }
+    },
+    formatDate(value) {
+      return value ? new Date(value).toLocaleDateString() : "-"
+    },
+    userDetailRoute(userId) {
+      return { name: "backoffice-userDetail", params: { userId } }
     },
     showModalDeleteUsers() {
       this.modalDeleteUsersIsVisible = true
@@ -115,37 +177,16 @@ export default {
     reload() {
       this.hideModalDeleteUsers()
       this.hideModalAddUser()
-      this.debouncedFetchAllUsers()
       this.selectedUsers = []
-    },
-    sortBy(key) {
-      if (key === this.sortListKey) {
-        this.sortListDirection =
-          this.sortListDirection === "desc" ? "asc" : "desc"
-      } else {
-        this.sortListDirection = "desc"
-      }
-      this.sortListKey = key
-      this.debouncedFetchAllUsers()
-    },
-  },
-  computed: {},
-  watch: {
-    currentPageNb() {
-      this.debouncedFetchAllUsers()
-    },
-    search() {
-      this.debouncedFetchAllUsers()
-      this.currentPageNb = 0
+      this.$refs.table.reset()
     },
   },
   components: {
     MainContentBackoffice,
-    UserTable,
+    GenericTableRequest,
     HeaderTable,
     ModalDeleteUsers,
     ModalCreateUser,
-    Pagination,
   },
 }
 </script>

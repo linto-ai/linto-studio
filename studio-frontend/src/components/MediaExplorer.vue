@@ -13,14 +13,10 @@
         :total-count="totalCount"
         :loading="loading"
         :all-medias="medias"
-        @select-all="handleSelectAll">
+        :selected-media-ids.sync="selectedMediaIds">
         <template #actions>
           <IsMobile>
             <div class="flex gap-small" v-if="selectedMedias.length > 0">
-              <!-- <Button
-              :label="$t('media_explorer.share')"
-              icon="share-network"
-              variant="outline" /> -->
               <ConversationShareMultiple
                 :selectedConversations="selectedMedias"
                 :currentOrganizationScope="currentOrganizationScope"
@@ -29,9 +25,9 @@
                 @click="showDeleteModal = true"
                 :label="$t('media_explorer.delete')"
                 size="sm"
-                color="tertiary"
+                intent="destructive"
                 icon="trash"
-                variant="outline" />
+                variant="secondary" />
             </div>
             <template #desktop>
               <slot name="header-actions" v-if="$slots['header-actions']" />
@@ -64,6 +60,7 @@
             v-for="(media, index) in medias"
             :key="`media-explorer-item-${media._id}-${index}`"
             :media="media"
+            :selected-media-ids.sync="selectedMediaIds"
             :ref="'mediaItem' + index"
             class="media-explorer__body__item" />
 
@@ -88,6 +85,8 @@
             <MediaExplorerRightPanel
               v-if="selectedMedias.length > 0 && currentOrganizationScope"
               :currentOrganizationScope="currentOrganizationScope"
+              :selected-medias="selectedMedias"
+              :selected-media-ids.sync="selectedMediaIds"
               @resize="handleRightPanelResize" />
           </template>
         </IsMobile>
@@ -109,9 +108,7 @@ import { mediaScopeMixin } from "@/mixins/mediaScope"
 
 import MediaExplorerHeader from "@/components/MediaExplorerHeader.vue"
 import MediaExplorerItem from "@/components/MediaExplorerItem.vue"
-import MediaExplorerItemMobile from "@/components-mobile/MediaExplorerItem.vue"
 import MediaExplorerRightPanel from "@/components/MediaExplorerRightPanel.vue"
-import Modal from "@/components/molecules/Modal.vue"
 import Button from "@/components/atoms/Button.vue"
 import ModalDeleteConversations from "@/components/ModalDeleteConversations.vue"
 import ConversationShareMultiple from "@/components/ConversationShareMultiple.vue"
@@ -124,9 +121,7 @@ export default {
   components: {
     MediaExplorerHeader,
     MediaExplorerItem,
-    MediaExplorerItemMobile,
     MediaExplorerRightPanel,
-    Modal,
     Button,
     ModalDeleteConversations,
     ConversationShareMultiple,
@@ -158,13 +153,31 @@ export default {
       currentOrganizationScope: "getCurrentOrganizationScope",
     }),
     ...mapGetters("system", { pageIsLoading: "isLoading" }),
+    selectedMedias() {
+      return this.medias.filter((m) => this.selectedMediaIds.includes(m._id))
+    },
     selectedCount() {
-      const count = this.selectedMedias.length
-      return count
+      return this.selectedMediaIds.length
     },
     totalCount() {
-      const count = this.medias.length
-      return count
+      return this.medias.length
+    },
+    isAllSelected: {
+      get() {
+        return (
+          this.selectedMediaIds.length === this.medias.length &&
+          this.medias.length > 0
+        )
+      },
+      set(val) {
+        this.selectedMediaIds = val ? this.medias.map((m) => m._id) : []
+      },
+    },
+    isPartiallySelected() {
+      return (
+        this.selectedMediaIds.length > 0 &&
+        this.selectedMediaIds.length < this.medias.length
+      )
     },
     hasMore() {
       return this.$store.state[this.storeScope].pagination.hasMore
@@ -176,8 +189,7 @@ export default {
       search: "",
       showDeleteModal: false,
       rightPanelWidth: 500,
-      _observerSetupPending: false,
-      _loadMorePending: false, // Prevent multiple simultaneous load-more calls
+      selectedMediaIds: [],
     }
   },
   mounted() {},
@@ -216,15 +228,7 @@ export default {
   },
   methods: {
     reset() {
-      this.clearSelectedMedias()
-      this._loadMorePending = false
-    },
-    handleSelectAll() {
-      if (this.isSelectAll) {
-        this.clearSelectedMedias()
-      } else {
-        this.selectAll()
-      }
+      this.selectedMediaIds = []
     },
     setupIntersectionObserver() {
       if (this.observer) {

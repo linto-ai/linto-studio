@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:components:WebServer:routecontrollers:keyword",
+  "linto:components:WebServer:routecontrollers:keyword:keyword",
 )
 const FormData = require("form-data")
 

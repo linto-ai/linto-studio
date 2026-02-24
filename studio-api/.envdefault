@@ -73,6 +73,8 @@ DISABLE_DEFAULT_ORGANIZATION_CREATION=false
 DEFAULT_TAGS=
 
 EXPORT_TEMPLATE=default
+# Export timeout in milliseconds (default: 10 minutes)
+EXPORT_TIMEOUT_MS=600000
 
 # ORGANIZATION_DEFAULT_PERMISSIONS supported value are "upload,summary,session"
 ORGANIZATION_DEFAULT_PERMISSIONS=upload,summary,session

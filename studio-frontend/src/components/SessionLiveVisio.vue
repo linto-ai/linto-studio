@@ -40,11 +40,10 @@
 import { sessionModelMixin } from "@/mixins/sessionModel.js"
 
 import { customDebug } from "@/tools/customDebug.js"
+import { isQualifiedForCrossSubtitles } from "@/tools/translationUtils.js"
 
-import MainContent from "@/components/MainContent.vue"
 import SessionLiveToolbar from "@/components/SessionLiveToolbar.vue"
 import SessionLiveContent from "@/components/SessionLiveContent.vue"
-import StatusLed from "@/components/atoms/StatusLed.vue"
 import V2Layout from "@/layouts/v2-layout.vue"
 
 export default {
@@ -86,22 +85,10 @@ export default {
   methods: {},
   computed: {
     qualifiedForCrossSubtitles() {
-      let res = true
-      res = res && this.selectedChannel.languages.length == 2
-      //res = res && this.selectedChannel.translations.length == 2
-      res =
-        res &&
-        !!this.selectedChannel.translations.find(
-          (t) =>
-            t.split("-")[0] === this.selectedChannel.languages[0].split("-")[0],
-        )
-      res =
-        res &&
-        !!this.selectedChannel.translations.find(
-          (t) =>
-            t.split("-")[0] === this.selectedChannel.languages[1].split("-")[0],
-        )
-      return res
+      return isQualifiedForCrossSubtitles(
+        this.selectedChannel.translations,
+        this.selectedChannel.languages,
+      )
     },
     breadcrumbItems() {
       return [
@@ -112,10 +99,8 @@ export default {
     },
   },
   components: {
-    MainContent,
     SessionLiveToolbar,
     SessionLiveContent,
-    StatusLed,
     V2Layout,
   },
 }

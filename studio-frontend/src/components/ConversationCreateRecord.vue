@@ -14,6 +14,8 @@
   </div>
 </template>
 <script>
+// TODO: Fix webvoicesdk compatibility with Vite (parcel-specific imports)
+// import WebVoiceSDK from "@linto-ai/webvoicesdk"
 import WebVoiceSDK from "@linto-ai/webvoicesdk"
 import EMPTY_FIELD from "@/const/emptyField.js"
 import { audioDuration } from "@/tools/audioDuration.js"

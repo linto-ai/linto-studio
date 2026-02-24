@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:components:WebServer:controllers:activity:kpiExport",
+  "linto:components:WebServer:controllers:activity:kpiExport",
 )
 const ExcelJS = require("exceljs")
 

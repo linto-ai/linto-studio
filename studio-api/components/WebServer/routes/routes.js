@@ -1,4 +1,4 @@
-const debug = require("debug")("linto:webserver:routes")
+const debug = require("debug")("linto:components:WebServer:routes:routes")
 const PROVIDER = require(`${process.cwd()}/lib/dao/oidc/provider`)
 
 module.exports = (webServer) => {

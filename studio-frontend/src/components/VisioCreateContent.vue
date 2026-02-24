@@ -23,7 +23,7 @@
         required />
     </section>
 
-    <SecurityLevelSelector v-model="securityLevel" />
+    <SecurityLevelSelector v-if="enableSecurityLevel" v-model="securityLevel" />
 
     <QuickSessionSettings
       :transcriberProfiles="transcriberProfiles"
@@ -65,6 +65,7 @@ import FormInput from "@/components/molecules/FormInput.vue"
 import QuickSessionSettings from "@/components/QuickSessionSettings.vue"
 import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
 import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
+import { getEnv } from "@/tools/getEnv"
 
 export default {
   mixins: [formsMixin],
@@ -122,6 +123,11 @@ export default {
     }
   },
   mounted() {},
+  computed: {
+    enableSecurityLevel() {
+      return getEnv("VUE_APP_ENABLE_SECURITY_LEVEL") === "true"
+    },
+  },
   methods: {
     async createSession(event) {
       event?.preventDefault()

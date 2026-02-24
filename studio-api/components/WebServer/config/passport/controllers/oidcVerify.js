@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:components:webserver:config:passport:controllers/oidcVerify",
+  "linto:components:WebServer:config:passport:controllers:oidcVerify",
 )
 const randomstring = require("randomstring")
 const model = require(`${process.cwd()}/lib/mongodb/models`)

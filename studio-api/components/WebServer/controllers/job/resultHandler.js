@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:components:WebServer:controller:resultHandler",
+  "linto:components:WebServer:controllers:job:resultHandler",
 )
 
 const SttWrapper = require(

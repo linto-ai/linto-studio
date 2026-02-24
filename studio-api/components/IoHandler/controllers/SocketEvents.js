@@ -1,4 +1,4 @@
-const debug = require("debug")("linto:components:IoHandler:socket-event")
+const debug = require("debug")("linto:components:IoHandler:controllers:SocketEvents")
 
 // Event endpoints for other components to emit events to sockets
 module.exports = function () {
@@ -7,6 +7,9 @@ module.exports = function () {
   })
   this.on("final", (roomId, transcription) => {
     this.notify(roomId, "final", transcription)
+  })
+  this.on("translation", (roomId, translation) => {
+    this.notify(roomId, "translation", translation)
   })
 
   this.on("watch_organization", (roomId, sessions) => {

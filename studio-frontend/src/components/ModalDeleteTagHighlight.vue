@@ -1,5 +1,5 @@
 <template>
-  <ModalNew
+  <Modal
     value
     @on-cancel="($event) => this.$emit('on-cancel')"
     @on-confirm="deleteTag"
@@ -14,14 +14,14 @@
         })
       }} -->
     </div>
-  </ModalNew>
+  </Modal>
 </template>
 <script>
 import { Fragment } from "vue-fragment"
 
 import { formsMixin } from "@/mixins/forms.js"
 
-import ModalNew from "@/components/molecules/Modal.vue"
+import Modal from "@/components/molecules/Modal.vue"
 import { workerSendMessage } from "../tools/worker-message"
 export default {
   mixins: [formsMixin],
@@ -48,6 +48,6 @@ export default {
       this.$emit("on-confirm")
     },
   },
-  components: { Fragment, ModalNew },
+  components: { Fragment, Modal },
 }
 </script>

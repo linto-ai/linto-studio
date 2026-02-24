@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:components:MongoMigration:controllers:version:1.2.1:conversation_subtitles`,
+  `linto:components:MongoMigration:version:1.2.1:conversationSubtitles`,
 )
 
 const initDb = require(

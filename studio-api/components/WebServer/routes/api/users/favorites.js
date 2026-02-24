@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:router:api:user:user",
+  "linto:components:WebServer:routes:api:users:favorites",
 )
 const { addFav, deleteFav, listFav, listFavTags } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/users/favorites.js`,

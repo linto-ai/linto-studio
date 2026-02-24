@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:components:WebServer:routeControllers:publication",
+  "linto:components:WebServer:routecontrollers:publication:publication",
 )
 
 const axios = require(`${process.cwd()}/lib/utility/axios`)
@@ -160,9 +160,10 @@ async function exportWithTemplate(req, res, next) {
 
     // HTML returns text, others return binary
     const isHtml = format === "html"
+    const exportTimeout = parseInt(process.env.EXPORT_TIMEOUT_MS, 10) || 600000 // Default: 10 minutes
     const response = await axios.get(url, {
       responseType: isHtml ? undefined : "arraybuffer",
-      timeout: 30000, // 30 second timeout for document generation
+      timeout: exportTimeout,
     })
 
     // Set appropriate content type and return response

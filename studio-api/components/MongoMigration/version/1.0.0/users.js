@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:components:MongoMigration:controllers:version:1.0.0::users`,
+  `linto:components:MongoMigration:version:1.0.0:users`,
 )
 
 const initDb = require(

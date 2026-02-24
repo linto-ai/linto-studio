@@ -12,7 +12,6 @@
 import { mapGetters } from "vuex"
 
 import Modal from "@/components/molecules/Modal.vue"
-import FormInput from "@/components/molecules/FormInput.vue"
 import getDurationFromSecond from "../tools/date/getDurationFromSecond"
 import DurationInput from "@/components/molecules/DurationInput.vue"
 import EMPTY_FIELD from "@/const/emptyField"
@@ -91,7 +90,6 @@ export default {
   },
   components: {
     Modal,
-    FormInput,
     DurationInput,
   },
 }

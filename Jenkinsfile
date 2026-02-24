@@ -10,26 +10,26 @@ def notifyLintoDeploy(service_name, tag, commit_sha) {
     }
 }
 
-def buildDockerfile(folder_name, version, commit_sha) {
-    echo "Building Dockerfile at ${folder_name}/Dockerfile for ${folder_name}... with version ${version}"
+def buildDockerfile(folder_name, version, commit_sha, dockerfile = 'Dockerfile', tagSuffix = '') {
+    echo "Building ${dockerfile} at ${folder_name}/${dockerfile} for ${folder_name}... with version ${version}${tagSuffix}"
 
     // Build Docker image using the specified Dockerfile
     script {
         def completeImageName = "${env.DOCKER_HUB_REPO}/${folder_name}" // Concatenate repo with image name
-        def image = docker.build(completeImageName, "-f ${folder_name}/Dockerfile ./${folder_name}")
+        def image = docker.build(completeImageName, "-f ${folder_name}/${dockerfile} ./${folder_name}")
 
-        echo "Prepare to release newer version ${completeImageName}:${version}"
+        echo "Prepare to release newer version ${completeImageName}:${version}${tagSuffix}"
         docker.withRegistry('https://registry.hub.docker.com', env.DOCKER_HUB_CRED) {
             if (version  == 'latest-unstable') {
-                image.push('latest-unstable')
+                image.push("latest-unstable${tagSuffix}")
             } else {
-                image.push('latest')
-                image.push(version)
+                image.push("latest${tagSuffix}")
+                image.push("${version}${tagSuffix}")
             }
         }
 
-        // Notify linto-deploy after successful push (only for master branch)
-        if (version != 'latest-unstable' && version != 'preview-saas') {
+        // Notify linto-deploy after successful push (only for master branch, standard build only)
+        if (tagSuffix == '' && version != 'latest-unstable' && version != 'preview-saas') {
             notifyLintoDeploy(folder_name, version, commit_sha)
         }
     }

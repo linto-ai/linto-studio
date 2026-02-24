@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:router:api:healthcheck:healthcheck",
+  "linto:components:WebServer:routes:api:healthcheck:healthcheck",
 )
 
 module.exports = (webserver) => {

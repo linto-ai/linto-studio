@@ -59,7 +59,7 @@
         </div>
       </section>
 
-      <SecurityLevelSelector v-model="securityLevel" />
+      <SecurityLevelSelector v-if="enableSecurityLevel" v-model="securityLevel" />
 
       <!-- Channels section -->
       <section class="flex col">
@@ -159,7 +159,6 @@ import { apiCreateSession, apiCreateSessionTemplate } from "@/api/session.js"
 
 import { formsMixin } from "@/mixins/forms.js"
 
-import MainContent from "@/components/MainContent.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
 import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import SessionChannelsTable from "@/components/SessionChannelsTable.vue"
@@ -168,7 +167,6 @@ import AppointmentSelector from "@/components/AppointmentSelector.vue"
 import FormRadio from "@/components/molecules/FormRadio.vue"
 import CustomSelect from "@/components/molecules/CustomSelect.vue"
 import ModalDeleteTemplate from "@/components/ModalDeleteTemplate.vue"
-import MetadataEditor from "@/components/MetadataEditor.vue"
 import MetadataList from "@/components/MetadataList.vue"
 import ModalEditMetadata from "@/components/ModalEditMetadata.vue"
 import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
@@ -339,6 +337,9 @@ export default {
     },
   },
   computed: {
+    enableSecurityLevel() {
+      return getEnv("VUE_APP_ENABLE_SECURITY_LEVEL") === "true"
+    },
     selectedTemplate() {
       return this.localSessionTemplates.sessionTemplates.find(
         (t) => t.id === Number(this.selectedTemplateId),
@@ -612,7 +613,6 @@ export default {
     },
   },
   components: {
-    MainContent,
     FormInput,
     SessionChannelsTable,
     ModalAddSessionChannels,
@@ -621,7 +621,6 @@ export default {
     FormRadio,
     AppointmentSelector,
     CustomSelect,
-    MetadataEditor,
     MetadataList,
     ModalEditMetadata,
     SecurityLevelSelector,

@@ -1,6 +1,7 @@
 const debug = require("debug")(
-  `linto:components:MongoMigration:controllers:schema:token`,
+  `linto:components:MongoMigration:controllers:schema:tokens`,
 )
+const logger = require(`${process.cwd()}/lib/logger/logger`)
 
 module.exports = async function (db, collectionName) {
   try {
@@ -16,10 +17,7 @@ module.exports = async function (db, collectionName) {
       }
     })
 
-    console.log(
-      `Collection "${collectionName}" with TTL index created successfully.`,
-    )
   } catch (error) {
-    console.error("Error creating collection:", error)
+    logger.error("Error creating collection:", error)
   }
 }

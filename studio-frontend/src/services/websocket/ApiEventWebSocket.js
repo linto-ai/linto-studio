@@ -142,7 +142,7 @@ export default class ApiEventWebSocket {
     this.state.isConnected = false
   }
 
-  subscribeSessionRoom(sessionId, channelIndex, onPartial, onFinal) {
+  subscribeSessionRoom(sessionId, channelIndex, onPartial, onFinal, onTranslation) {
     // TODO: rewrite by emitting event via bus
     return new Promise((resolve, reject) => {
       this.unSubscribeSessionRoom()
@@ -151,9 +151,13 @@ export default class ApiEventWebSocket {
 
       this.socket.off("partial")
       this.socket.off("final")
+      this.socket.off("translation")
 
       this.socket.on("partial", onPartial)
       this.socket.on("final", onFinal)
+      if (onTranslation) {
+        this.socket.on("translation", onTranslation)
+      }
 
       this.socket.emit("join_room", channelId)
       debugWSSession("subscribed to channel", channelId)
@@ -177,6 +181,7 @@ export default class ApiEventWebSocket {
     }
     this.socket.off("partial")
     this.socket.off("final")
+    this.socket.off("translation")
   }
 
   subscribeSessionsUpdate(organizationId) {

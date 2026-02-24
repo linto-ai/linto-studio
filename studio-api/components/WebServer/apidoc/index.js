@@ -1,4 +1,4 @@
-const debug = require("debug")(`linto:components:webserver:apidoc:index`)
+const debug = require("debug")(`linto:components:WebServer:apidoc:index`)
 
 const fs = require("fs")
 const path = require("path")

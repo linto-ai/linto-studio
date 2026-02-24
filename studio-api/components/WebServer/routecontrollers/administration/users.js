@@ -1,11 +1,12 @@
 const Mail = require("nodemailer/lib/mailer")
 
 const debug = require("debug")(
-  "linto:conversation-manager:components:WebServer:routecontrollers:administration:user",
+  "linto:components:WebServer:routecontrollers:administration:users",
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
+const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
 const Mailing = require(`${process.cwd()}/lib/mailer/mailing`)
 
 const userUtility = require(
@@ -14,6 +15,10 @@ const userUtility = require(
 
 const { defaultPicture } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
+)
+
+const { populateUserToOrganization } = require(
+  `${process.cwd()}/components/WebServer/controllers/organization/utility`,
 )
 
 const { UserConflict, UserError, UserUnsupportedMediaType } = require(
@@ -70,6 +75,8 @@ async function createSuperUser(req, res, next) {
       throw new UserError()
     }
 
+    populateUserToOrganization(myCreatedUser[0])
+
     const mail_result = await Mailing.accountCreate(
       user.email,
       req,
@@ -77,10 +84,11 @@ async function createSuperUser(req, res, next) {
     )
     if (!mail_result) throw new NodemailerError()
 
-    res.status(201).send({
-      message:
-        "Account created. An email has been sent to the created account.",
-    })
+    const message = !process.env.SMTP_HOST
+      ? "Account created."
+      : "Account created. An email has been sent to the created account."
+
+    res.status(201).send({ message })
   } catch (err) {
     next(err)
   }
@@ -102,9 +110,34 @@ async function deleteUser(req, res, next) {
     if (!Array.isArray(req.body.userIds))
       throw new UserUnsupportedMediaType("userIds must be an array")
 
+    // Check if deleting these users would remove all human super admins
+    let superAdminsToDelete = 0
+    for (const userId of req.body.userIds) {
+      const users = await model.users.getById(userId, true)
+      if (
+        users.length === 1 &&
+        users[0].type === USER_TYPE.USER &&
+        ROLE.hasPlatformRoleAccess(users[0].role, ROLE.SUPER_ADMINISTRATOR)
+      ) {
+        superAdminsToDelete++
+      }
+    }
+
+    if (superAdminsToDelete > 0) {
+      const totalSuperAdmins = await model.users.countSuperAdmins()
+      debug(
+        `Total super admins: ${totalSuperAdmins}, Super admins to delete: ${superAdminsToDelete}`,
+      )
+      if (totalSuperAdmins - superAdminsToDelete < 1)
+        throw new UserError(
+          "Cannot delete the last super administrator of the platform",
+        )
+    }
+
     for (const userId of req.body.userIds) {
       await userUtility.removeUserFromPlatform(userId)
     }
+
     const result = await model.users.deleteMany(req.body.userIds)
     if (result.deletedCount !== req.body.userIds.length)
       throw new UserError("User not deleted")
@@ -124,8 +157,6 @@ async function updateUser(req, res, next) {
       admin_projection,
     )
     if (user.length === 0) throw new UserError("User not found")
-    if (ROLE.hasPlatformRoleAccess(user[0].role, ROLE.SUPER_ADMINISTRATOR))
-      throw new UserError("Cannot update other super admininistrator user")
 
     user[0]._id = req.params.userId
     const userUpdate = {

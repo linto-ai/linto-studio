@@ -1,4 +1,4 @@
-const debug = require("debug")("linto:app:webserver:router")
+const debug = require("debug")("linto:components:WebServer:routes:router")
 
 const auth_middlewares = require(`../config/passport/middleware`)
 

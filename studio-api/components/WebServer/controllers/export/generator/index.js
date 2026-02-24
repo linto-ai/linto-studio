@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:conversation-manager:components:WebServer:controllers:export:generator:index`,
+  `linto:components:WebServer:controllers:export:generator:index`,
 )
 
 const template = require("../template/index")

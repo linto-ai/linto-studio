@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:components:WebServer:controller:file:urlExtractor",
+  "linto:components:WebServer:controllers:files:urlExtractor",
 )
 const MODULE_NAME = "yt-dlp"
 

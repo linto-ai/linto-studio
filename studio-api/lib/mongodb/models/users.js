@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:models:mongodb:models:user",
+  "linto:lib:mongodb:models:users",
 )
 const MongoModel = require(`../model`)
 const crypto = require("crypto")
@@ -78,12 +78,16 @@ class UsersModel extends MongoModel {
         salt,
         passwordHash,
         authLink: generateAuthLink(),
-        emailIsVerified: true,
-        verifiedEmail: [user.email],
         created: dateTime,
         last_update: dateTime,
         fromSso: false,
         type: USER_TYPE.USER,
+      }
+
+      // If SMTP is not configured, mark the email as verified
+      if (!process.env.SMTP_HOST) {
+        adminPayload.emailIsVerified = true
+        adminPayload.verifiedEmail.push(adminPayload.email)
       }
 
       return await this.mongoInsert(adminPayload)
@@ -109,8 +113,8 @@ class UsersModel extends MongoModel {
         type: USER_TYPE.USER,
       }
 
-      // If SMTP is disabled, mark the email as verified
-      if (process.env.SMTP_HOST === "") {
+      // If SMTP is not configured, mark the email as verified
+      if (!process.env.SMTP_HOST) {
         userPayload.emailIsVerified = true
         userPayload.verifiedEmail.push(userPayload.email)
       }
@@ -458,6 +462,20 @@ class UsersModel extends MongoModel {
     }
   }
 
+  async countSuperAdmins() {
+    try {
+      const query = {
+        role: { $bitsAllSet: ROLE.SUPER_ADMINISTRATOR },
+        type: USER_TYPE.USER,
+      }
+      const result = await this.mongoRequest(query, { _id: 1 })
+      return result.length
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   async deleteMany(ids) {
     try {
       const objectIdArray = ids.map((id) => {
@@ -467,7 +485,6 @@ class UsersModel extends MongoModel {
 
       const query = {
         _id: { $in: objectIdArray },
-        role: { $bitsAllClear: ROLE.SUPER_ADMINISTRATOR }, // 4th bit (8 in decimal) must be clear (0)
       }
 
       return await this.mongoDeleteMany(query)

@@ -1,5 +1,5 @@
 <template>
-  <ModalNew
+  <Modal
     :title="$t('conversation.highlight_toolbox.add_metadata_modal.title')"
     @on-cancel="close"
     @on-confirm="done"
@@ -40,7 +40,7 @@
         </div>
       </form>
     </div>
-  </ModalNew>
+  </Modal>
 </template>
 <script>
 import { Fragment } from "vue-fragment"
@@ -52,7 +52,7 @@ import jsonSchemaToFields from "@/tools/jsonSchemaToFields.js"
 
 import { formsMixin } from "@/mixins/forms.js"
 
-import ModalNew from "@/components/molecules/Modal.vue"
+import Modal from "@/components/molecules/Modal.vue"
 // import ServiceBox from "./ServiceBox.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
 
@@ -94,6 +94,6 @@ export default {
   //     return []
   //   },
   // },
-  components: { Fragment, ModalNew, FormInput },
+  components: { Fragment, Modal, FormInput },
 }
 </script>

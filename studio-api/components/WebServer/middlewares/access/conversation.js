@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:components:webserver:middlewares:access:conversation",
+  "linto:components:WebServer:middlewares:access:conversation",
 )
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
@@ -146,7 +146,7 @@ async function batchAccess(
   for (const convId of conversations.split(",")) {
     const conv = (await model.conversations.getById(convId, projection))[0]
     const organization = await model.organizations.getById(
-      conv.organization.organizationId, //TODO:
+      conv.organization.organizationId,
     )
     const luser = organization[0].users.filter(
       (user) =>

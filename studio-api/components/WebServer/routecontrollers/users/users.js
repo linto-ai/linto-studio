@@ -1,7 +1,7 @@
 const Mail = require("nodemailer/lib/mailer")
 
 const debug = require("debug")(
-  "linto:conversation-manager:components:WebServer:routecontrollers:users:user",
+  "linto:components:WebServer:routecontrollers:users:users",
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
@@ -91,10 +91,11 @@ async function createUser(req, res, next) {
 
     populateUserToOrganization(myCreatedUser[0])
 
-    res.status(201).send({
-      message:
-        "Account created. An email has been sent to you. Please open it and click on the link to validate your email address.",
-    })
+    const message = !process.env.SMTP_HOST
+      ? "Account created."
+      : "Account created. An email has been sent to you. Please open it and click on the link to validate your email address."
+
+    res.status(201).send({ message })
   } catch (err) {
     next(err)
   }

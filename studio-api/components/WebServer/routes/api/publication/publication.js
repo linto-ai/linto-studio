@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:router:api:publication",
+  "linto:components:WebServer:routes:api:publication:publication",
 )
 
 const {

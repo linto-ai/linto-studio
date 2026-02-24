@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:components:MongoMigration:controllers:version:1.6.3:securityLevelToInteger`,
+  `linto:components:MongoMigration:version:1.6.3:securityLevelToInteger`,
 )
 
 // Migration mapping from old strings to new integers

@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:conversation-manager:components:WebServer:controllers:llm:index`,
+  `linto:components:WebServer:controllers:llm:index`,
 )
 const LogManager = require(`${process.cwd()}/lib/logger/manager`)
 const organizationWsManager = require(

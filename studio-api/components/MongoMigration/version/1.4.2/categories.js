@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:components:MongoMigration:controllers:version:1.4.2:categories`,
+  `linto:components:MongoMigration:version:1.4.2:categories`,
 )
 
 const collections_name = "categories"

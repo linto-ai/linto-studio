@@ -1,5 +1,5 @@
 import Vue from "vue"
-import moment from "moment"
+import { timeAgo } from "../tools/formatDate.js"
 import { getCookie } from "../tools/getCookie"
 import { sendRequest } from "../tools/sendRequest"
 import { logout } from "../tools/logout"
@@ -82,5 +82,5 @@ Vue.filter("setCookie", setCookie)
 Vue.filter("getCookie", getCookie)
 
 Vue.filter("getTimeDiffText", function (date) {
-  return moment(date).fromNow()
+  return timeAgo(date)
 })

@@ -1,4 +1,4 @@
-const debug = require("debug")("linto:conversation-manager:routes:auth:oidc")
+const debug = require("debug")("linto:components:WebServer:routes:auth:oidc")
 
 const { Unauthorized } = require(
   `${process.cwd()}/components/WebServer/error/exception/auth`,

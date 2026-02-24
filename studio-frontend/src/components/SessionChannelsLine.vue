@@ -74,11 +74,10 @@ import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 
 import { sessionChannelModelMixin } from "@/mixins/sessionChannelModel.js"
+import { normalizeAvailableTranslations, extractTranslationLangCode } from "@/tools/translationUtils.js"
 
-import ArrayHeader from "@/components/ArrayHeader.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
 import EMPTY_FIELD from "@/const/emptyField"
-import CustomSelect from "@/components/molecules/CustomSelect.vue"
 
 import SessionChannelsEndpoints from "@/components/SessionChannelsEndpoints.vue"
 import Checkbox from "@/components/atoms/Checkbox.vue"
@@ -97,7 +96,7 @@ export default {
     },
   },
   data() {
-    const translations = this.item.availableTranslations || []
+    const translations = normalizeAvailableTranslations(this.item.availableTranslations)
     let languageNames = new Intl.DisplayNames([this.$i18n.locale], {
       type: "language",
     })
@@ -143,7 +142,7 @@ export default {
       if (translations_array.length === 0) {
         return this.$t("session.channels_list.no_translations")
       }
-      return translations_array.join(", ")
+      return translations_array.map(extractTranslationLangCode).join(", ")
     },
     // endpoint() {
     //   return this.item.stream_endpoint || ""
@@ -163,7 +162,6 @@ export default {
       this.$emit("updateName", value)
     },
     selectedTranslations(value) {
-      console.log("selected tr", value)
       this.item.translations = value // shallow copy, parent will be updated
     },
     "item.diarization"(value) {
@@ -178,10 +176,8 @@ export default {
   },
   components: {
     Fragment,
-    ArrayHeader,
     FormInput,
     SessionChannelsEndpoints,
-    CustomSelect,
     Checkbox,
   },
 }

@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:models:mongodb:models:tags",
+  "linto:lib:mongodb:models:tags",
 )
 const MongoModel = require(`../model`)
 const COLOR = require(`${process.cwd()}/lib/dao/organization/color`)

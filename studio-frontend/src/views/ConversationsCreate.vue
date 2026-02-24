@@ -41,7 +41,7 @@
           </div>
         </section>
 
-        <SecurityLevelSelector v-model="securityLevel" />
+        <SecurityLevelSelector v-if="enableSecurityLevel" v-model="securityLevel" />
 
         <!-- services -->
         <section class="flex col gap-small">
@@ -107,15 +107,10 @@ import { testService } from "@/tools/fields/testService.js"
 import LayoutV2 from "@/layouts/v2-layout.vue"
 import ConversationCreateAudio from "@/components/ConversationCreateAudio.vue"
 import ConversationCreateServices from "@/components/ConversationCreateServices.vue"
-import MainContent from "@/components/MainContent.vue"
-import Checkbox from "@/components/atoms/Checkbox.vue"
 import Tabs from "@/components/molecules/Tabs.vue"
 import SessionCreateContent from "@/components/SessionCreateContent.vue"
-import ConversationCreateLink from "@/components/ConversationCreateLink.vue"
 import QuickSessionCreateContent from "@/components/QuickSessionCreateContent.vue"
 import VisioCreateContent from "@/components/VisioCreateContent.vue"
-import TabsVertical from "@/components/TabsVertical.vue"
-import ConversationCreateFileLine from "@/components/ConversationCreateFileLine.vue"
 import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
 
 export default {
@@ -149,8 +144,10 @@ export default {
     }
   },
   mounted() {
-    this.fetchProfiles()
-    this.fetchSessionTemplates()
+    if (this.canCreateSession) {
+      this.fetchProfiles()
+      this.fetchSessionTemplates()
+    }
   },
   async created() {
     if (this.mainTabs.length > 0) {
@@ -162,6 +159,9 @@ export default {
   computed: {
     transcriberProfilesQuickMeeting() {
       return this.transcriberProfiles.filter((t) => t.quickMeeting)
+    },
+    enableSecurityLevel() {
+      return getEnv("VUE_APP_ENABLE_SECURITY_LEVEL") === "true"
     },
     canUploadFiles() {
       return this.canUploadInCurrentOrganization
@@ -273,8 +273,6 @@ export default {
       this.loadingQuickSession = false
     },
     handleNewUploadComplete(data) {
-      console.log("New upload workflow completed:", data)
-
       this.$router.push({
         name: "explore",
         params: { organizationId: this.currentOrganizationScope },
@@ -293,15 +291,10 @@ export default {
     LayoutV2,
     ConversationCreateAudio,
     ConversationCreateServices,
-    ConversationCreateLink,
-    MainContent,
-    Checkbox,
     Tabs,
     SessionCreateContent,
     QuickSessionCreateContent,
     VisioCreateContent,
-    TabsVertical,
-    ConversationCreateFileLine,
     SecurityLevelSelector,
   },
 }

@@ -5,7 +5,7 @@
     :message="content"
     @confirm="onConfirm"
     @cancel="onCancel"></Alert>
-  <!-- <ModalNew
+  <!-- <Modal
     :title="title"
     value
     @on-cancel="($event) => this.$emit('on-cancel')"
@@ -20,7 +20,7 @@
         {{ conv.name }}
       </li>
     </ul>
-  </ModalNew> -->
+  </Modal> -->
 </template>
 <script>
 import { mediaScopeMixin } from "@/mixins/mediaScope"
@@ -75,9 +75,7 @@ export default {
       this.deleteMedias(this.medias.map((media) => media._id))
       this.$emit("confirm")
     },
-    closeModal() {
-      console.log("closeModal")
-    },
+    closeModal() {},
     onCancel() {
       this.$emit("cancel")
     },

@@ -1,5 +1,5 @@
 <template>
-  <ModalNew
+  <Modal
     size="sm"
     value
     isForm
@@ -16,7 +16,7 @@
     <LabeledValue
       :label="$t('session.settings_page.modal_edit_session_alias.link_label')"
       :value="publicLink" />
-  </ModalNew>
+  </Modal>
 </template>
 <script>
 import { bus } from "@/main.js"
@@ -30,7 +30,7 @@ import {
 
 import { formsMixin } from "@/mixins/forms.js"
 
-import ModalNew from "@/components/molecules/Modal.vue"
+import Modal from "@/components/molecules/Modal.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
 import LabeledValue from "@/components/atoms/LabeledValue.vue"
 
@@ -142,7 +142,7 @@ export default {
     },
   },
   components: {
-    ModalNew,
+    Modal,
     LabeledValue,
     FormInput,
   },

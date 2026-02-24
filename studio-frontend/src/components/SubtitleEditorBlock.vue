@@ -33,9 +33,9 @@
     <Button
       v-if="canEdit"
       @click="deletescreen"
+      intent="destructive"
       icon="trash"
-      color="tertiary"
-      variant="outline"></Button>
+      variant="secondary"></Button>
   </div>
 </template>
 <script>

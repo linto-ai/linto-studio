@@ -720,23 +720,6 @@ let router = new Router({
       },
     },
     {
-      path: "/interface/organizations/create",
-      name: "organizations create",
-      components: {
-        default: () => import("../views/OrganizationsCreate.vue"),
-        ...defaultComponents,
-      },
-      props: defaultProps,
-      meta: {
-        userPage: true,
-        breadcrumb: {
-          label: "breadcrumb.createOrganization",
-          parent: "explore",
-          showInBreadcrumb: true,
-        },
-      },
-    },
-    {
       path: "/interface/organizations/:organizationId",
       name: "organizations update",
       components: {
@@ -918,9 +901,11 @@ router.beforeEach(async (to, from, next) => {
     }
 
     // Check for quick session
-    const quickSessionResult = await authGuards.checkQuickSession(to)
-    if (quickSessionResult.redirect) {
-      return next(quickSessionResult.nextRoute)
+    if (enableSession) {
+      const quickSessionResult = await authGuards.checkQuickSession(to)
+      if (quickSessionResult.redirect) {
+        return next(quickSessionResult.nextRoute)
+      }
     }
 
     // Check conversation access permissions

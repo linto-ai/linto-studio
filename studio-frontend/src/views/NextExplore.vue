@@ -2,6 +2,7 @@
   <LayoutV2 customClass="explore-next">
     <MediaExplorer
       v-if="medias"
+      ref="mediaExplorer"
       :medias="medias"
       :loading="loading || pageIsLoading"
       :loadingNextPage="loadingNextPage"
@@ -93,6 +94,7 @@ export default {
         return this.$store.getters["organizations/getCurrentFilterStatus"]
       },
       set(value) {
+        this.$refs.mediaExplorer.reset()
         this.$store.dispatch("organizations/setCurrentFilterStatus", value)
       },
     },

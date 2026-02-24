@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:models:mongodb:models:categories",
+  "linto:lib:mongodb:models:categories",
 )
 const MongoModel = require(`../model`)
 

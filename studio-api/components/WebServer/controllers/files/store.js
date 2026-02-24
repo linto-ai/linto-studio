@@ -1,4 +1,4 @@
-const debug = require("debug")("linto:components:WebServer:controller:store")
+const debug = require("debug")("linto:components:WebServer:controllers:files:store")
 
 const { v4: uuidv4 } = require("uuid")
 const fs = require("fs")

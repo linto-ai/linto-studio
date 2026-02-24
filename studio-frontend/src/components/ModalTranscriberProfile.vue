@@ -1,5 +1,5 @@
 <template>
-  <ModalNew
+  <Modal
     value
     size="xl"
     :loading="loading"
@@ -30,7 +30,7 @@
               size="sm" />
           </div>
         </Tooltip>
-        <Tooltip :text="$t('modal_transcriber_profile.security_level_tooltip')">
+        <Tooltip v-if="enableSecurityLevel" :text="$t('modal_transcriber_profile.security_level_tooltip')">
           <div class="header-selector">
             <!-- <ph-icon :name="securityLevelIcon" size="sm" /> -->
             <PopoverList
@@ -58,11 +58,11 @@
         :organizationId="selectedOrganizationId"
         :transcriberProfile="transcriberProfile" />
     </div>
-  </ModalNew>
+  </Modal>
 </template>
 
 <script>
-import ModalNew from "@/components/molecules/Modal.vue"
+import Modal from "@/components/molecules/Modal.vue"
 import TranscriberProfileEditor from "@/components/TranscriberProfileEditor.vue"
 import PopoverList from "@/components/atoms/PopoverList.vue"
 import Tooltip from "@/components/atoms/Tooltip.vue"
@@ -84,6 +84,7 @@ import {
 } from "@/api/admin.js"
 import { bus } from "@/main.js"
 import transriberImageFromtype from "@/tools/transriberImageFromtype"
+import { getEnv } from "@/tools/getEnv"
 
 export default {
   props: {
@@ -119,6 +120,11 @@ export default {
           text: "Amazon",
           avatar: transriberImageFromtype("amazon"),
         },
+        {
+          value: "voxstral",
+          text: "Voxstral",
+          avatar: transriberImageFromtype("voxstral"),
+        },
       ],
       transcriberProfile: structuredClone(TRANSCRIBER_PROFILES_TEMPLATES.linto),
       transcriberProfileOriginal: null,
@@ -129,6 +135,9 @@ export default {
     }
   },
   computed: {
+    enableSecurityLevel() {
+      return getEnv("VUE_APP_ENABLE_SECURITY_LEVEL") === "true"
+    },
     isEditMode() {
       return !!this.transcriberProfileId
     },
@@ -320,7 +329,7 @@ export default {
     },
   },
   components: {
-    ModalNew,
+    Modal,
     TranscriberProfileEditor,
     PopoverList,
     Tooltip,

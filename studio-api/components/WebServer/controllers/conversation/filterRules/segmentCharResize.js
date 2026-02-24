@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:components:WebServer:controller:filterRules:segmentCharResize",
+  "linto:components:WebServer:controllers:conversation:filterRules:segmentCharResize",
 )
 
 module.exports = function (segments, segmentCharResize) {

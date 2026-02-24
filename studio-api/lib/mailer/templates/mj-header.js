@@ -1,4 +1,4 @@
-const debug = require("debug")("linto:lib:Mailer:templates:builder:title")
+const debug = require("debug")("linto:lib:mailer:templates:mj-header")
 const TITLE = process.env.APPLICATION_NAME || "LinTO Studio"
 
 module.exports = function (Type) {

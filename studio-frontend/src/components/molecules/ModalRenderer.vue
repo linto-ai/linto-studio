@@ -132,7 +132,7 @@ export default {
     isForm: { type: Boolean, default: false },
     size: { type: String, default: "md" },
     overlay: { type: Boolean, default: true },
-    overlayClose: { type: Boolean, default: true },
+    overlayClose: { type: Boolean, default: false },
     textActionApply: { type: String, default: i18n.t("modal.apply") },
     textActionCancel: { type: String, default: i18n.t("modal.cancel") },
     textActionDelete: { type: String, default: "Delete" },

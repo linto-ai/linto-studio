@@ -10,7 +10,6 @@ import LabeledValue from "./LabeledValue.vue"
 import LabeledValueSmall from "./LabeledValueSmall.vue"
 import Loading from "./Loading.vue"
 import OrganizationBadge from "./OrganizationBadge.vue"
-import Qrcode from "./Qrcode.vue"
 import Radio from "./Radio.vue"
 import StatusLed from "./StatusLed.vue"
 import Badge from "./Badge.vue"
@@ -47,7 +46,6 @@ const components = [
   LabeledValueSmall,
   Loading,
   OrganizationBadge,
-  Qrcode,
   Radio,
   StatusLed,
   Badge,

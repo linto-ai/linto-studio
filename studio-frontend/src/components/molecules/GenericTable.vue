@@ -8,7 +8,11 @@
       :sortListKey="sortListKey"
       :selectable="selectable"
       :selectedRows="selectedRows"
-      :allRowIds="allRowIds" />
+      :allRowIds="allRowIds">
+      <template v-for="(_, slot) in headerSlots" #[slot]>
+        <slot :name="slot"></slot>
+      </template>
+    </GenericTableHeader>
     <tbody>
       <div class="table-loader" v-if="loading">
         <Loading />
@@ -34,7 +38,6 @@
   </table>
 </template>
 <script>
-import { bus } from "@/main.js"
 import GenericTableHeader from "./GenericTableHeader.vue"
 import GenericTableLine from "./GenericTableLine.vue"
 
@@ -87,6 +90,15 @@ export default {
     },
   },
   computed: {
+    headerSlots() {
+      const slots = {}
+      for (const name in this.$scopedSlots) {
+        if (name.startsWith("header-")) {
+          slots[name] = this.$scopedSlots[name]
+        }
+      }
+      return slots
+    },
     style() {
       const columnsWidth = this.columns.map((column) => column.width).join(" ")
       return {

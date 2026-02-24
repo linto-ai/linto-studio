@@ -66,7 +66,7 @@ function setup_user() {
     fi
     #
     # Check if a user with the specified UID already exists
-    if id -u "$USER_ID" >/dev/null 2>&1; then
+    if getent passwd "$USER_ID" >/dev/null 2>&1; then
         USER_NAME=$(getent passwd "$USER_ID" | cut -d: -f1)
         echo "A user with UID=$USER_ID already exists: $USER_NAME"
     else

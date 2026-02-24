@@ -8,6 +8,7 @@ export default function userAvatar(userInfos) {
 
   const baseUrl = window.location.origin
   let publicMedia = getEnv("VUE_APP_PUBLIC_MEDIA").trim("/")
+
   if (!publicMedia.startsWith("http")) {
     publicMedia = `${baseUrl}${publicMedia}`
   }

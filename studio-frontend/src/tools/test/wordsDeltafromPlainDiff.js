@@ -3,7 +3,7 @@ import util from "util"
 
 import { wordsDeltafromPlainDiff } from "../wordsDeltaFromPlainDiffV2.js"
 import myers from "myers-diff"
-import SyllabicFR from "../../../public/js/syllabic/syllabicFR.js"
+import SyllabicFR from "@/lib/syllabic/syllabicFR.js"
 import { diffWords, diffArrays } from "diff"
 const syllabicFr = new SyllabicFR("fr-FR")
 

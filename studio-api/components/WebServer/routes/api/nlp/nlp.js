@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:router:api:keyword:keyword",
+  "linto:components:WebServer:routes:api:nlp:nlp",
 )
 const { keywordExtract } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/keyword/keyword.js`,

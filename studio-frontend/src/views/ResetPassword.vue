@@ -5,25 +5,17 @@
       <p style="font-style: italic; font-size: 13px; margin-top: 0">
         {{ $t("login.recover_password_detail") }}
       </p>
-      <div class="form-field flex col">
-        <label for="email" class="form-label">Email</label>
-        <input
-          type="text"
-          name="email"
-          @change="testEmail"
-          class="fullwidth"
-          :class="email.error !== null ? 'error' : ''"
-          v-model="email.value" />
-        <span class="error-field" v-if="email.error !== null">{{
-          email.error
-        }}</span>
-      </div>
+      <FormInput
+        :field="email"
+        v-model="email.value"
+        @change="testEmail"
+        inputFullWidth />
       <div class="form-field flex row">
-        <button type="submit" :disabled="sending" class="btn primary">
-          <span class="label">{{
-            $t("login.recover_password_btn_label")
-          }}</span>
-        </button>
+        <Button
+          type="submit"
+          :disabled="sending"
+          variant="primary"
+          :label="$t('login.recover_password_btn_label')" />
       </div>
       <div class="error-field global" v-if="globalError !== ''">
         {{ globalError }}
@@ -53,12 +45,14 @@ import EMPTY_FIELD from "@/const/emptyField.js"
 import { apiRecoverPassword } from "../api/user"
 import { testEmail } from "@/tools/fields/testEmail"
 import MainContentPublic from "@/components/MainContentPublic.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 
 export default {
   data() {
     return {
       email: {
         ...EMPTY_FIELD,
+        label: "Email",
       },
       globalError: "",
       sending: false,
@@ -112,6 +106,7 @@ export default {
   components: {
     LocalSwitcher,
     MainContentPublic,
+    FormInput,
   },
 }
 </script>

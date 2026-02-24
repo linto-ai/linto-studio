@@ -67,6 +67,7 @@ import SwitchInput from "@/components/atoms/SwitchInput.vue"
 import Radio from "@/components/atoms/Radio.vue"
 
 import { transcriberProfileModelMixin } from "@/mixins/transcriberProfileModel.js"
+import { normalizeAvailableTranslations } from "@/tools/translationUtils.js"
 export default {
   mixins: [transcriberProfileModelMixin],
   props: {
@@ -93,7 +94,7 @@ export default {
     },
   },
   data() {
-    const translations = this.profile?.config?.availableTranslations || []
+    const translations = normalizeAvailableTranslations(this.profile?.config?.availableTranslations)
     let languageNames = new Intl.DisplayNames([this.$i18n.locale], {
       type: "language",
     })

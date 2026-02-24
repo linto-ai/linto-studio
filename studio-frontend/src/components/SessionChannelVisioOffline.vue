@@ -22,7 +22,6 @@
 </template>
 <script>
 import { bus } from "@/main.js"
-import RecordingIndicator from "@/components/molecules/RecordingIndicator.vue"
 import VideoConf from "@/svg/videoConf.vue"
 
 export default {
@@ -52,7 +51,6 @@ export default {
     },
   },
   components: {
-    RecordingIndicator,
     VideoConf,
   },
 }

@@ -1,7 +1,7 @@
 const { query } = require("express")
 
 const debug = require("debug")(
-  "linto:conversation-manager:components:WebServer:routecontrollers:taxonomy:taxonomy",
+  "linto:components:WebServer:routecontrollers:taxonomy:tags:search",
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)

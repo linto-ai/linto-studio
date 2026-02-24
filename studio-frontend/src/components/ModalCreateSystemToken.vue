@@ -16,7 +16,6 @@ import { bus } from "@/main.js"
 import Modal from "@/components/molecules/Modal.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
 import EMPTY_FIELD from "@/const/emptyField"
-import OrgaRoleSelector from "./molecules/OrgaRoleSelector.vue"
 import { apiCreateToken } from "@/api/token.js"
 import { mapGetters } from "vuex"
 import DurationInput from "@/components/molecules/DurationInput.vue"
@@ -55,13 +54,11 @@ export default {
       const expiration = this.expiration.value
       const role_value = this.platformRoleField.value
 
-      console.log("yop")
       const req = await apiCreatePlatformToken({
         name: this.name.value,
         role: role_value,
         expiration,
       })
-      console.log("yop2")
       if (req.status == "success") {
         this.$store.dispatch("system/addNotification", {
           message: this.$t("api_tokens_settings.token_created"),
@@ -91,7 +88,6 @@ export default {
   components: {
     Modal,
     FormInput,
-    OrgaRoleSelector,
     DurationInput,
     PlatformRoleSelector,
   },

@@ -1,6 +1,6 @@
 const { DocumentAttributes } = require("docx")
 const debug = require("debug")(
-  `linto:conversation-manager:components:WebServer:routeControllers:conversation:share`,
+  `linto:components:WebServer:routecontrollers:taxonomy:conversations:share`,
 )
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)

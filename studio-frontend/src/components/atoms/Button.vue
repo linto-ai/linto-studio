@@ -40,7 +40,6 @@
   </component>
 </template>
 <script>
-import { bus } from "@/main.js"
 export default {
   name: "Button",
   inheritAttrs: false,
@@ -69,7 +68,7 @@ export default {
     iconWeight: {
       type: String,
       required: false,
-      default: "fill", // thin, light, regular, bold, fill, duotone
+      default: "regular", // thin, light, regular, bold, fill, duotone
     },
     variant: {
       type: String,

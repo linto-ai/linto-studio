@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:conversation-manager:components:WebServer:controllers:export:format:index`,
+  `linto:components:WebServer:controllers:export:format:index`,
 )
 
 const cri = require("./cri")

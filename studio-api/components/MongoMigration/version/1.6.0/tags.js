@@ -1,4 +1,4 @@
-const debug = require("debug")("linto:migration:1.6.0:tags")
+const debug = require("debug")("linto:components:MongoMigration:version:1.6.0:tags")
 const moment = require("moment")
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const MongoDriver = require(`${process.cwd()}/lib/mongodb/driver`)

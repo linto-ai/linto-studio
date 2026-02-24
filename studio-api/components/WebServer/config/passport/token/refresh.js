@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:components:webserver:config:auth:refresh",
+  "linto:components:WebServer:config:passport:token:refresh",
 )
 
 const jwtDecode = require("jwt-decode")

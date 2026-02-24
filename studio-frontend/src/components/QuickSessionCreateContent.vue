@@ -22,7 +22,7 @@
         :profilesList="transcriberProfiles" />
     </section> -->
 
-    <SecurityLevelSelector v-model="securityLevel" />
+    <SecurityLevelSelector v-if="enableSecurityLevel" v-model="securityLevel" />
 
     <QuickSessionSettings
       :transcriberProfiles="transcriberProfiles"
@@ -64,6 +64,7 @@ import { formsMixin } from "@/mixins/forms.js"
 import QuickSessionSettings from "@/components/QuickSessionSettings.vue"
 import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
 import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
+import { getEnv } from "@/tools/getEnv"
 
 import { apiCreateQuickSession } from "@/api/session.js"
 
@@ -134,6 +135,11 @@ export default {
     }
   },
   mounted() {},
+  computed: {
+    enableSecurityLevel() {
+      return getEnv("VUE_APP_ENABLE_SECURITY_LEVEL") === "true"
+    },
+  },
   methods: {
     async goToQuickSession() {
       this.$router.push({

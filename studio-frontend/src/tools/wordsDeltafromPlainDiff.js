@@ -246,5 +246,5 @@ function deleteChangeWithEmptyWord(change, words) {
 }
 
 function generateID() {
-  return process.env["TEST"] ? "id" : uuidv4()
+  return import.meta.env?.TEST ? "id" : uuidv4()
 }

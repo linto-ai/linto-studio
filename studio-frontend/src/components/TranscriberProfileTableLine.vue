@@ -23,10 +23,11 @@
       {{ transcriberOrganizationId || "–" }}
     </td> -->
     <td>
-      <button @click="editProfile">
-        <ph-icon name="pencil"></ph-icon>
-        <span class="label">Edit</span>
-      </button>
+      <Button
+        @click="editProfile"
+        variant="secondary"
+        icon="pencil"
+        label="Edit" />
     </td>
   </tr>
 </template>

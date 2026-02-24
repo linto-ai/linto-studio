@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:conversation-manager:routes:auth:oidc:google",
+  "linto:components:WebServer:routes:auth:oidc_google",
 )
 
 const auth_middleware = require(

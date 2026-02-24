@@ -1,4 +1,4 @@
-const debug = require("debug")("linto:lib:Mailer:mailer")
+const debug = require("debug")("linto:lib:mailer:mailer")
 const nodemailer = require("nodemailer")
 const { MailError } = require("./../error/customErrors")
 
@@ -31,7 +31,7 @@ class Mailer {
   }
 
   static async sendMail(mail_payload) {
-    if (process.env.SMTP_HOST === "") {
+    if (!process.env.SMTP_HOST) {
       debug("SMTP wasn't define, mailing disable")
       return true
     }

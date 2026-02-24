@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  "linto:components:WebServer:controller:langueRules:ruleless",
+  "linto:components:WebServer:controllers:conversation:langueRules:ruleless",
 )
 
 function correctSegmentText(seg_text) {
