@@ -4,6 +4,7 @@ import {
   validateCredentials,
   getMediaHosts,
   createMediaHost,
+  decommissionMediaHost,
   generateMediaHostProvisioningToken,
   generateMediaHostDeployLink,
   checkMediaHostConnectivity,
@@ -14,6 +15,7 @@ import {
   validatePlatformCredentials,
   getAdminMediaHosts,
   createAdminMediaHost,
+  decommissionAdminMediaHost,
   generateAdminProvisioningToken,
   generateAdminDeployLink,
   checkAdminConnectivity,
@@ -31,6 +33,7 @@ export function createIntegrationApi(scope, organizationId) {
       genProvisioningToken: (mediaHostId) => generateAdminProvisioningToken(mediaHostId),
       genDeployLink: (mediaHostId) => generateAdminDeployLink(mediaHostId),
       checkConnectivity: (mediaHostId, payload) => checkAdminConnectivity(mediaHostId, payload),
+      decommissionMediaHost: (mediaHostId) => decommissionAdminMediaHost(mediaHostId),
       getSetupScriptUrl: (mediaHostId, token) => getAdminMediaHostSetupScriptUrl(mediaHostId, token),
       getPlatformStatus: () => Promise.resolve(null),
     }
@@ -45,6 +48,7 @@ export function createIntegrationApi(scope, organizationId) {
     genProvisioningToken: (mediaHostId) => generateMediaHostProvisioningToken(organizationId, mediaHostId),
     genDeployLink: (mediaHostId) => generateMediaHostDeployLink(organizationId, mediaHostId),
     checkConnectivity: (mediaHostId, payload) => checkMediaHostConnectivity(organizationId, mediaHostId, payload),
+    decommissionMediaHost: (mediaHostId) => decommissionMediaHost(organizationId, mediaHostId),
     getSetupScriptUrl: (mediaHostId, token) => getMediaHostSetupScriptUrl(organizationId, mediaHostId, token),
     getPlatformStatus: (provider) => getPlatformStatus(organizationId, provider),
   }

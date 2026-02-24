@@ -58,13 +58,13 @@
           :organizationId="organizationId"
           :scope="scope"
           @validated="onStepValidated(0, $event)" />
-        <TeamsStepAzureBot
+        <TeamsStepMediaHost
           v-if="currentStep === 1"
           :config="config"
           :organizationId="organizationId"
           :scope="scope"
           @validated="onStepValidated(1, $event)" />
-        <TeamsStepMediaHost
+        <TeamsStepAzureBot
           v-if="currentStep === 2"
           :config="config"
           :organizationId="organizationId"
@@ -159,14 +159,14 @@ export default {
           skipped: false,
         },
         {
-          key: "azure_bot",
-          label: this.$t("integrations.teams_wizard.step_azure_bot"),
+          key: "media_host",
+          label: this.$t("integrations.teams_wizard.step_media_host"),
           completed: false,
           skipped: false,
         },
         {
-          key: "media_host",
-          label: this.$t("integrations.teams_wizard.step_media_host"),
+          key: "azure_bot",
+          label: this.$t("integrations.teams_wizard.step_azure_bot"),
           completed: false,
           skipped: false,
         },
@@ -244,11 +244,6 @@ export default {
             })
           }
         }
-        // If config has a shared media host, mark media_host step as pre-completed
-        if (res?.sharedMediaHostId) {
-          const mhStep = this.steps.find((s) => s.key === "media_host")
-          if (mhStep) mhStep.completed = true
-        }
         // If current step is skipped, jump to next visible step
         if (this.steps[this.currentStep]?.skipped) {
           this.nextStep()
@@ -319,6 +314,11 @@ export default {
           },
         }
         await this.api.updateConfig(this.config.id, progressPayload)
+        // Reload config from API so next steps see fresh data (decrypted credentials)
+        const fresh = await this.api.getConfig(this.config.id)
+        if (fresh) {
+          this.config = fresh
+        }
       } catch {
         // silently ignore save errors
       }

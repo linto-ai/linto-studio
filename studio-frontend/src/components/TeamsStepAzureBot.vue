@@ -33,6 +33,11 @@
       </ol>
     </div>
 
+    <div class="wizard-step__info-box wizard-step__info-box--info">
+      <strong>{{ $t("integrations.teams_wizard.azure_bot.info_title") }}</strong>
+      <p>{{ $t("integrations.teams_wizard.azure_bot.info_text") }}</p>
+    </div>
+
     <div class="wizard-step__checklist">
       <label>
         <input type="checkbox" v-model="checks.botCreated" />
@@ -81,19 +86,26 @@ export default {
   computed: {
     clientId() {
       if (!this.config?.config) return "\u2014"
-      const parsed =
-        typeof this.config.config === "string"
-          ? JSON.parse(this.config.config)
-          : this.config.config
-      return parsed.clientId || "\u2014"
+      try {
+        const parsed =
+          typeof this.config.config === "string"
+            ? JSON.parse(this.config.config)
+            : this.config.config
+        return parsed.clientId || "\u2014"
+      } catch {
+        return "\u2014"
+      }
+    },
+    firstMediaHostDns() {
+      const hosts = this.config?.mediaHosts || []
+      const onlineHost = hosts.find(h => h.status === 'online')
+      return onlineHost?.dns || hosts[0]?.dns || '<media-host-dns>'
     },
     messagingEndpoint() {
-      const dns = this.config?.mediaHostDns || "<media-host-dns>"
-      return `https://${dns}/api/messages`
+      return `https://${this.firstMediaHostDns}/api/messages`
     },
     callingWebhook() {
-      const dns = this.config?.mediaHostDns || "<media-host-dns>"
-      return `https://${dns}/api/calling`
+      return `https://${this.firstMediaHostDns}/api/calling`
     },
     allChecked() {
       return (
@@ -157,6 +169,23 @@ export default {
   padding: 0.15rem 0.4rem;
   border-radius: 3px;
   font-size: 0.9em;
+}
+.wizard-step__info-box--info {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #e3f2fd;
+  border-left: 4px solid #2196f3;
+  border-radius: 4px;
+}
+.wizard-step__info-box--info strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #1565c0;
+}
+.wizard-step__info-box--info p {
+  margin: 0;
+  font-size: 0.9em;
+  color: #333;
 }
 .wizard-step__checklist {
   display: flex;

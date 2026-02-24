@@ -28,22 +28,32 @@
           <StatusLed :on="teamsConfig.status === 'active'" />
           <span>{{ teamsStatusLabel }}</span>
         </div>
-        <Button
-          v-if="teamsLocked"
-          variant="secondary"
-          :label="$t('integrations.catalog.configure_button')"
-          disabled
-          @click.stop />
-        <Button
-          v-else-if="teamsInherited"
-          variant="secondary"
-          :label="$t('integrations.catalog.customize_button')"
-          @click.stop="openTeamsWizard" />
-        <Button
-          v-else
-          variant="secondary"
-          :label="$t('integrations.catalog.configure_button')"
-          @click.stop="openTeamsWizard" />
+
+        <!-- Media Host Manager for active configs -->
+        <TeamsMediaHostManager
+          v-if="teamsOrgConfig && teamsOrgConfig.status === 'active'"
+          :configId="teamsOrgConfig.id"
+          :organizationId="organizationId"
+          :scope="'organization'"
+          @click.native.stop />
+
+        <div class="integration-card__buttons" @click.stop>
+          <Button
+            v-if="teamsLocked"
+            variant="secondary"
+            :label="$t('integrations.catalog.configure_button')"
+            disabled />
+          <Button
+            v-else-if="teamsInherited"
+            variant="secondary"
+            :label="$t('integrations.catalog.customize_button')"
+            @click="openTeamsWizard" />
+          <Button
+            v-else
+            variant="secondary"
+            :label="$t('integrations.catalog.configure_button')"
+            @click="openTeamsWizard" />
+        </div>
       </div>
 
       <div class="integration-card integration-card--disabled">
@@ -73,10 +83,11 @@
 import { getIntegrationConfigs, getPlatformStatus } from "@/api/integrationConfig"
 import StatusLed from "@/components/atoms/StatusLed.vue"
 import Button from "@/components/atoms/Button.vue"
+import TeamsMediaHostManager from "@/components/TeamsMediaHostManager.vue"
 
 export default {
   name: "IntegrationsCatalog",
-  components: { StatusLed, Button },
+  components: { StatusLed, Button, TeamsMediaHostManager },
   props: {
     organizationId: {
       type: String,

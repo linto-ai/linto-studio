@@ -166,6 +166,14 @@ export async function checkMediaHostConnectivity(organizationId, mediaHostId, pa
   return res
 }
 
+export async function decommissionMediaHost(organizationId, mediaHostId) {
+  const res = await sendRequest(
+    `${BASE_API}/organizations/${organizationId}/media-hosts/${mediaHostId}`,
+    { method: "delete" },
+  )
+  return res
+}
+
 export function getMediaHostSetupScriptUrl(organizationId, mediaHostId, token) {
   return `${BASE_API}/media-hosts/${mediaHostId}/setup-script?token=${encodeURIComponent(token)}`
 }

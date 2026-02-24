@@ -149,7 +149,7 @@
       <div class="manual-setup__info">
         <p>
           {{ $t("integrations.teams_wizard.media_host.manual.verify_dns") }}
-          <code>{{ fqdn || config.mediaHostDns }}</code>
+          <code>{{ fqdn || config.mediaHosts?.[0]?.dns }}</code>
         </p>
       </div>
     </div>
@@ -256,7 +256,17 @@ export default {
       if (this.currentMediaHostId) return
       const mhRes = await this.api.createMediaHost(
         this.config.id,
-        { deploymentMode: "manual" }
+        {
+          deploymentMode: "manual",
+          dns: this.fqdn || null,
+          publicIp: this.publicIp || null,
+          manualConfig: {
+            fqdn: this.fqdn || "",
+            publicIp: this.publicIp || "",
+            sslMode: this.sslMode,
+            pfxPath: this.pfxPath || "",
+          },
+        }
       )
       const mh = mhRes?.data || mhRes
       this.currentMediaHostId = mh?.id || mh?._id
