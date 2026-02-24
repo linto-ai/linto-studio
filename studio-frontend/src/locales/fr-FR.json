@@ -1548,13 +1548,20 @@
         "configuring": "Configuration en cours",
         "active": "Actif",
         "error": "Erreur",
-        "disabled": "Désactivé"
+        "disabled": "Désactivé",
+        "inherited": "Active (plateforme)",
+        "locked": "Géré par la plateforme"
       },
       "configure_button": "Configurer",
-      "coming_soon": "Bientôt disponible"
+      "coming_soon": "Bientôt disponible",
+      "inherited_badge": "Hérité",
+      "locked_badge": "Verrouillé",
+      "customize_button": "Personnaliser",
+      "locked_info": "Cette intégration est gérée au niveau de la plateforme et ne peut pas être surchargée."
     },
     "teams_wizard": {
       "title": "Configuration Microsoft Teams",
+      "title_platform": "Configuration Microsoft Teams (Plateforme)",
       "progress": "{current} sur {total} étapes terminées",
       "step_azure_app": "Enregistrement Azure App",
       "step_azure_bot": "Azure Bot",
@@ -1608,6 +1615,11 @@
         "dns_label": "DNS :",
         "ip_label": "IP publique :",
         "polling": "Vérification du statut de déploiement...",
+        "mode_shared_title": "Utiliser le Media Host de la plateforme",
+        "mode_shared_desc": "Utiliser un media host fourni par l'administrateur de la plateforme",
+        "shared_select_label": "Sélectionner un media host de la plateforme",
+        "shared_description": "Sélectionnez un media host de la plateforme à partager au sein de votre organisation.",
+        "shared_info": "Ce media host est partagé entre les organisations et géré par la plateforme.",
         "mode_label": "Choisir le mode de déploiement",
         "mode_azure_title": "Azure Marketplace",
         "mode_azure_desc": "Déployez une VM pré-configurée sur Azure en un clic. Nécessite un abonnement Azure.",
@@ -1738,6 +1750,22 @@
         "last_check": "Dernière vérification :",
         "no_data": "Aucune donnée de santé disponible"
       }
+    },
+    "platform_admin": {
+      "title": "Intégrations plateforme",
+      "subtitle": "Gérer les configurations d'intégration au niveau plateforme",
+      "create_teams": "Créer une config Teams plateforme",
+      "lock_label": "Surcharge par les organisations",
+      "lock_active": "Verrouillé (les orgas ne peuvent pas surcharger)",
+      "unlock_label": "Déverrouillé (les orgas peuvent surcharger)",
+      "usage_label": "Utilisation",
+      "usage_orgs_own": "{count} organisation(s) avec config propre",
+      "media_hosts_title": "Media Hosts",
+      "add_media_host": "Ajouter un Media Host",
+      "decommission": "Décommissionner",
+      "configure": "Configurer",
+      "delete": "Supprimer",
+      "delete_confirm": "Êtes-vous sûr de vouloir supprimer cette configuration plateforme ?"
     }
   }
 }

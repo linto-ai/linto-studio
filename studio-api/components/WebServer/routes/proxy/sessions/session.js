@@ -273,10 +273,13 @@ module.exports = (webServer) => {
       /*******************************/
       {
         // Public access — authenticated by provisioningToken query param (no JWT)
-        scrapPath: /^\/organizations\/[^/]+/,
         paths: [
           {
-            path: "/organizations/:organizationId/integration-configs/:id/setup-script",
+            path: "/media-hosts/:id/setup-script",
+            method: ["get"],
+          },
+          {
+            path: "/media-hosts/:id/media-host-package",
             method: ["get"],
           },
         ],
@@ -301,17 +304,43 @@ module.exports = (webServer) => {
             forwardParams: proxyForwardParams,
           },
           {
-            path: "/organizations/:organizationId/integration-configs/:id/generate-provisioning-token",
+            path: "/organizations/:organizationId/integration-configs/platform-status/:provider",
+            method: ["get"],
+            forwardParams: proxyForwardParams,
+          },
+        ],
+        requireAuth: true,
+        orgaPermissionAccess: PERMISSIONS.SESSION,
+        requireOrganizationMeetingManagerAccess: true,
+      },
+      /*******************************/
+      /******* media-hosts **********/
+      /*******************************/
+      {
+        scrapPath: /^\/organizations\/[^/]+/,
+        paths: [
+          {
+            path: "/organizations/:organizationId/integration-configs/:configId/media-hosts",
+            method: ["get", "post"],
+            forwardParams: proxyForwardParams,
+          },
+          {
+            path: "/organizations/:organizationId/media-hosts/:id",
+            method: ["get", "delete"],
+            forwardParams: proxyForwardParams,
+          },
+          {
+            path: "/organizations/:organizationId/media-hosts/:id/generate-provisioning-token",
             method: ["post"],
             forwardParams: proxyForwardParams,
           },
           {
-            path: "/organizations/:organizationId/integration-configs/:id/generate-deploy-link",
+            path: "/organizations/:organizationId/media-hosts/:id/generate-deploy-link",
             method: ["post"],
             forwardParams: proxyForwardParams,
           },
           {
-            path: "/organizations/:organizationId/integration-configs/:id/check-connectivity",
+            path: "/organizations/:organizationId/media-hosts/:id/check-connectivity",
             method: ["post"],
             forwardParams: proxyForwardParams,
           },

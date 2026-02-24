@@ -10,7 +10,7 @@
       <div class="wizard-step__info">
         <p>
           {{ $t("integrations.teams_wizard.media_host.dns_label") }}
-          <code>{{ config.mediaHostDns }}</code>
+          <code>{{ currentMediaHost?.dns || config.mediaHostDns }}</code>
         </p>
       </div>
     </div>
@@ -38,6 +38,17 @@
           <div class="wizard-step__mode-card-icon">&#9881;</div>
           <h5>{{ $t("integrations.teams_wizard.media_host.mode_manual_title") }}</h5>
           <p>{{ $t("integrations.teams_wizard.media_host.mode_manual_desc") }}</p>
+        </div>
+        <div
+          v-if="availablePlatformMediaHosts.length > 0 && !isPlatform"
+          class="wizard-step__mode-card"
+          :class="{ 'wizard-step__mode-card--hover': hoveredMode === 'shared' }"
+          @mouseenter="hoveredMode = 'shared'"
+          @mouseleave="hoveredMode = null"
+          @click="selectMode('shared')">
+          <div class="wizard-step__mode-card-icon">&#9741;</div>
+          <h5>{{ $t("integrations.teams_wizard.media_host.mode_shared_title") }}</h5>
+          <p>{{ $t("integrations.teams_wizard.media_host.mode_shared_desc") }}</p>
         </div>
       </div>
     </div>
@@ -72,7 +83,34 @@
       <MediaHostManualSetup
         :config="config"
         :organizationId="organizationId"
+        :scope="scope"
+        :mediaHostId="currentMediaHost?.id || currentMediaHost?._id || null"
+        @media-host-created="onMediaHostCreated"
         @validated="onManualValidated" />
+
+      <Button
+        variant="text"
+        :label="$t('integrations.teams_wizard.media_host.change_mode')"
+        @click="resetMode" />
+    </div>
+
+    <!-- Shared mode -->
+    <div v-else-if="selectedMode === 'shared'">
+      <p class="text-muted">
+        {{ $t("integrations.teams_wizard.media_host.shared_description") }}
+      </p>
+      <div class="wizard-step__shared-list">
+        <div
+          v-for="mh in availablePlatformMediaHosts"
+          :key="mh.id || mh._id"
+          class="wizard-step__shared-item"
+          :class="{ 'wizard-step__shared-item--selected': selectedSharedMediaHost === (mh.id || mh._id) }"
+          @click="selectSharedMediaHost(mh)">
+          <StatusLed :on="mh.healthStatus?.status === 'healthy' || mh.status === 'online'" />
+          <span class="wizard-step__shared-name">{{ mh.dns || mh.name || (mh.id || mh._id) }}</span>
+          <span class="wizard-step__shared-status text-muted">{{ mh.healthStatus?.status || mh.status || 'unknown' }}</span>
+        </div>
+      </div>
 
       <Button
         variant="text"
@@ -86,12 +124,7 @@
 </template>
 
 <script>
-import {
-  generateProvisioningToken,
-  generateDeployLink,
-  getIntegrationConfig,
-  updateIntegrationConfig,
-} from "@/api/integrationConfig"
+import integrationApiMixin from "@/mixins/integrationApiMixin"
 import StatusLed from "@/components/atoms/StatusLed.vue"
 import Button from "@/components/atoms/Button.vue"
 import MediaHostManualSetup from "@/components/MediaHostManualSetup.vue"
@@ -100,6 +133,7 @@ import TeamsNetworkRequirements from "@/components/TeamsNetworkRequirements.vue"
 export default {
   name: "TeamsStepMediaHost",
   components: { StatusLed, Button, MediaHostManualSetup, TeamsNetworkRequirements },
+  mixins: [integrationApiMixin],
   props: {
     config: {
       type: Object,
@@ -108,6 +142,10 @@ export default {
     organizationId: {
       type: String,
       required: true,
+    },
+    platformMediaHosts: {
+      type: Array,
+      default: () => [],
     },
   },
   data() {
@@ -118,13 +156,39 @@ export default {
       deployed: false,
       selectedMode: null,
       hoveredMode: null,
+      currentMediaHost: null,
+      availablePlatformMediaHosts: [],
+      selectedSharedMediaHost: null,
     }
   },
-  mounted() {
+  async mounted() {
     if (this.config?.setupProgress?.mediaHost) {
       this.deployed = true
     } else if (this.config?.deploymentMode) {
       this.selectedMode = this.config.deploymentMode
+    }
+    // Load existing media hosts for this config
+    if (this.config?.id) {
+      try {
+        const hosts = await this.api.getMediaHosts(this.config.id)
+        if (hosts.some((h) => h.status === "online")) {
+          this.deployed = true
+        }
+        if (hosts.length > 0) {
+          this.currentMediaHost = hosts[0]
+        }
+      } catch {
+        // silently ignore
+      }
+    }
+    // Fetch platform media hosts for shared mode (N/A for platform scope)
+    try {
+      const platformStatus = await this.api.getPlatformStatus("teams")
+      if (platformStatus?.mediaHosts?.length) {
+        this.availablePlatformMediaHosts = platformStatus.mediaHosts
+      }
+    } catch {
+      // silently ignore
     }
   },
   beforeDestroy() {
@@ -136,7 +200,7 @@ export default {
     async selectMode(mode) {
       this.selectedMode = mode
       try {
-        await updateIntegrationConfig(this.organizationId, this.config.id, {
+        await this.api.updateConfig(this.config.id, {
           deploymentMode: mode,
         })
       } catch {
@@ -146,20 +210,39 @@ export default {
     resetMode() {
       this.selectedMode = null
     },
+    onMediaHostCreated(mediaHost) {
+      this.currentMediaHost = mediaHost
+    },
     onManualValidated(payload) {
       this.deployed = true
       this.$emit("validated", payload)
     },
+    async selectSharedMediaHost(mh) {
+      const id = mh.id || mh._id
+      this.selectedSharedMediaHost = id
+      try {
+        await this.api.updateConfig(this.config.id, {
+          sharedMediaHostId: id,
+        })
+        this.deployed = true
+        this.$emit("validated", { mediaHost: true, shared: true })
+      } catch {
+        // silently ignore
+      }
+    },
     async deploy() {
       try {
-        await generateProvisioningToken(
-          this.organizationId,
-          this.config.id
-        )
-        const res = await generateDeployLink(
-          this.organizationId,
-          this.config.id
-        )
+        // Create a media host first if we don't have one
+        if (!this.currentMediaHost) {
+          const mhRes = await this.api.createMediaHost(
+            this.config.id,
+            { deploymentMode: this.selectedMode }
+          )
+          this.currentMediaHost = mhRes?.data || mhRes
+        }
+        const mediaHostId = this.currentMediaHost?.id || this.currentMediaHost?._id
+        await this.api.genProvisioningToken(mediaHostId)
+        const res = await this.api.genDeployLink(mediaHostId)
         this.deployUrl = res?.data?.url || res?.data
         if (this.deployUrl) {
           window.open(this.deployUrl, "_blank")
@@ -175,10 +258,7 @@ export default {
     },
     async checkDeployment() {
       try {
-        const res = await getIntegrationConfig(
-          this.organizationId,
-          this.config.id
-        )
+        const res = await this.api.getConfig(this.config.id)
         if (res?.setupProgress?.mediaHost === true) {
           this.deployed = true
           clearInterval(this.pollInterval)
@@ -266,6 +346,36 @@ export default {
 .text-muted {
   color: var(--text-secondary, #666);
   font-size: 0.9em;
+}
+.wizard-step__shared-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+.wizard-step__shared-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--border-color, #e0e0e0);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.wizard-step__shared-item:hover {
+  border-color: var(--color-primary, #2196f3);
+}
+.wizard-step__shared-item--selected {
+  border-color: var(--color-primary, #2196f3);
+  background: rgba(33, 150, 243, 0.05);
+}
+.wizard-step__shared-name {
+  flex: 1;
+  font-weight: 600;
+}
+.wizard-step__shared-status {
+  font-size: 0.85em;
 }
 .wizard-step__network-section {
   margin-top: 1.5rem;

@@ -1547,13 +1547,20 @@
         "configuring": "Configuration in progress",
         "active": "Active",
         "error": "Error",
-        "disabled": "Disabled"
+        "disabled": "Disabled",
+        "inherited": "Active (platform)",
+        "locked": "Managed by platform"
       },
       "configure_button": "Configure",
-      "coming_soon": "Coming soon"
+      "coming_soon": "Coming soon",
+      "inherited_badge": "Inherited",
+      "locked_badge": "Locked",
+      "customize_button": "Customize",
+      "locked_info": "This integration is managed at the platform level and cannot be overridden."
     },
     "teams_wizard": {
       "title": "Microsoft Teams Configuration",
+      "title_platform": "Microsoft Teams Platform Configuration",
       "progress": "{current} of {total} steps completed",
       "step_azure_app": "Azure App Registration",
       "step_azure_bot": "Azure Bot",
@@ -1607,6 +1614,11 @@
         "dns_label": "DNS:",
         "ip_label": "Public IP:",
         "polling": "Checking deployment status...",
+        "mode_shared_title": "Use Platform Media Host",
+        "mode_shared_desc": "Use a media host provided by the platform administrator",
+        "shared_select_label": "Select a platform media host",
+        "shared_description": "Select a platform media host to share across your organization.",
+        "shared_info": "This media host is shared across organizations and managed by the platform.",
         "mode_label": "Choose deployment mode",
         "mode_azure_title": "Azure Marketplace",
         "mode_azure_desc": "Deploy a pre-configured VM on Azure with one click. Requires an Azure subscription.",
@@ -1737,6 +1749,22 @@
         "last_check": "Last health check:",
         "no_data": "No health data available"
       }
+    },
+    "platform_admin": {
+      "title": "Platform Integrations",
+      "subtitle": "Manage platform-wide integration configurations",
+      "create_teams": "Create Platform Teams Config",
+      "lock_label": "Organization Override",
+      "lock_active": "Locked (orgs cannot override)",
+      "unlock_label": "Unlocked (orgs can override)",
+      "usage_label": "Usage",
+      "usage_orgs_own": "{count} organization(s) with own config",
+      "media_hosts_title": "Media Hosts",
+      "add_media_host": "Add Media Host",
+      "decommission": "Decommission",
+      "configure": "Configure",
+      "delete": "Delete",
+      "delete_confirm": "Are you sure you want to delete this platform configuration?"
     }
   }
 }

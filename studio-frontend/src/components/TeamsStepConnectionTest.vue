@@ -60,17 +60,14 @@
 </template>
 
 <script>
-import {
-  validateCredentials,
-  getIntegrationConfig,
-  updateIntegrationConfig,
-} from "@/api/integrationConfig"
+import integrationApiMixin from "@/mixins/integrationApiMixin"
 import StatusLed from "@/components/atoms/StatusLed.vue"
 import Button from "@/components/atoms/Button.vue"
 
 export default {
   name: "TeamsStepConnectionTest",
   components: { StatusLed, Button },
+  mixins: [integrationApiMixin],
   props: {
     config: {
       type: Object,
@@ -111,10 +108,7 @@ export default {
       // Check credentials
       this.checks[0].status = "checking"
       try {
-        const res = await validateCredentials(
-          this.organizationId,
-          this.config.id
-        )
+        const res = await this.api.validateCredentials(this.config.id)
         this.checks[0].status =
           res?.status === 200 || res?.data?.valid ? "ok" : "error"
       } catch {
@@ -126,10 +120,7 @@ export default {
       this.checks[2].status = "checking"
       this.checks[3].status = "checking"
       try {
-        const res = await getIntegrationConfig(
-          this.organizationId,
-          this.config.id
-        )
+        const res = await this.api.getConfig(this.config.id)
         const health = res?.healthStatus || {}
         this.checks[1].status = health.mediaHost ? "ok" : "error"
         this.checks[2].status = health.mqtt ? "ok" : "error"
@@ -144,11 +135,7 @@ export default {
 
       if (this.allPassed) {
         try {
-          await updateIntegrationConfig(
-            this.organizationId,
-            this.config.id,
-            { status: "active" }
-          )
+          await this.api.updateConfig(this.config.id, { status: "active" })
         } catch {
           // silently ignore
         }

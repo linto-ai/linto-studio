@@ -5,7 +5,9 @@
         variant="text"
         :label="'\u2190 ' + $t('integrations.teams_wizard.back_to_catalog')"
         @click="$emit('close')" />
-      <h3>{{ $t("integrations.teams_wizard.title") }}</h3>
+      <h3>{{ isPlatform
+          ? $t("integrations.teams_wizard.title_platform")
+          : $t("integrations.teams_wizard.title") }}</h3>
       <div class="teams-wizard__progress">
         <div class="progress-bar">
           <div
@@ -15,7 +17,7 @@
         <span>{{
           $t("integrations.teams_wizard.progress", {
             current: completedSteps,
-            total: 6,
+            total: totalSteps,
           })
         }}</span>
       </div>
@@ -24,13 +26,15 @@
     <TeamsHealthPanel
       v-if="config && config.status === 'active'"
       :config="config"
-      :organizationId="organizationId" />
+      :organizationId="organizationId"
+      :scope="scope" />
 
     <div class="teams-wizard__body" v-if="!loading">
       <nav class="teams-wizard__stepper">
         <ol>
           <li
             v-for="(step, index) in steps"
+            v-show="!step.skipped"
             :key="step.key"
             :class="{
               'step--completed': step.completed,
@@ -40,7 +44,7 @@
             }"
             @click="goToStep(index)">
             <span class="step__indicator">{{
-              step.completed ? "\u2713" : index + 1
+              step.completed ? "\u2713" : visibleStepNumber(index)
             }}</span>
             <span class="step__label">{{ step.label }}</span>
           </li>
@@ -52,26 +56,31 @@
           v-if="currentStep === 0"
           :config="config"
           :organizationId="organizationId"
+          :scope="scope"
           @validated="onStepValidated(0, $event)" />
         <TeamsStepAzureBot
           v-if="currentStep === 1"
           :config="config"
           :organizationId="organizationId"
+          :scope="scope"
           @validated="onStepValidated(1, $event)" />
         <TeamsStepMediaHost
           v-if="currentStep === 2"
           :config="config"
           :organizationId="organizationId"
+          :scope="scope"
           @validated="onStepValidated(2, $event)" />
         <TeamsStepTeamsApp
           v-if="currentStep === 3"
           :config="config"
           :organizationId="organizationId"
+          :scope="scope"
           @validated="onStepValidated(3, $event)" />
         <TeamsStepConnectionTest
           v-if="currentStep === 4"
           :config="config"
           :organizationId="organizationId"
+          :scope="scope"
           @validated="onStepValidated(4, $event)" />
         <TeamsStepCalendar
           v-if="currentStep === 5"
@@ -83,11 +92,11 @@
       <Button
         variant="secondary"
         :label="$t('integrations.teams_wizard.previous')"
-        :disabled="currentStep === 0"
+        :disabled="currentStep <= firstVisibleStepIndex"
         @click="prevStep" />
       <Button
         variant="primary"
-        v-if="currentStep < 5"
+        v-if="currentStep < lastVisibleStepIndex"
         :label="$t('integrations.teams_wizard.next')"
         @click="nextStep" />
       <Button
@@ -101,10 +110,10 @@
 
 <script>
 import {
-  getIntegrationConfig,
   createIntegrationConfig,
-  updateIntegrationConfig,
+  createPlatformIntegrationConfig,
 } from "@/api/integrationConfig"
+import integrationApiMixin from "@/mixins/integrationApiMixin"
 import TeamsHealthPanel from "@/components/TeamsHealthPanel.vue"
 import TeamsStepAzureApp from "@/components/TeamsStepAzureApp.vue"
 import TeamsStepAzureBot from "@/components/TeamsStepAzureBot.vue"
@@ -126,6 +135,7 @@ export default {
     TeamsStepCalendar,
     Button,
   },
+  mixins: [integrationApiMixin],
   props: {
     configId: {
       type: String,
@@ -146,57 +156,108 @@ export default {
           key: "azure_app",
           label: this.$t("integrations.teams_wizard.step_azure_app"),
           completed: false,
+          skipped: false,
         },
         {
           key: "azure_bot",
           label: this.$t("integrations.teams_wizard.step_azure_bot"),
           completed: false,
+          skipped: false,
         },
         {
           key: "media_host",
           label: this.$t("integrations.teams_wizard.step_media_host"),
           completed: false,
+          skipped: false,
         },
         {
           key: "teams_app",
           label: this.$t("integrations.teams_wizard.step_teams_app"),
           completed: false,
+          skipped: false,
         },
         {
           key: "connection_test",
           label: this.$t("integrations.teams_wizard.step_connection_test"),
           completed: false,
+          skipped: false,
         },
         {
           key: "calendar",
           label: this.$t("integrations.teams_wizard.step_calendar"),
           completed: false,
+          skipped: false,
         },
       ],
     }
   },
   computed: {
+    visibleSteps() {
+      return this.steps.filter((s) => !s.skipped)
+    },
+    totalSteps() {
+      return this.visibleSteps.length
+    },
     completedSteps() {
-      return this.steps.filter((s) => s.completed).length
+      return this.visibleSteps.filter((s) => s.completed).length
     },
     progressPercent() {
-      return (this.completedSteps / 6) * 100
+      return this.totalSteps > 0
+        ? (this.completedSteps / this.totalSteps) * 100
+        : 0
+    },
+    firstVisibleStepIndex() {
+      return this.steps.findIndex((s) => !s.skipped)
+    },
+    lastVisibleStepIndex() {
+      for (let i = this.steps.length - 1; i >= 0; i--) {
+        if (!this.steps[i].skipped) return i
+      }
+      return this.steps.length - 1
     },
   },
   async mounted() {
+    // Auto-skip platform-irrelevant steps
+    if (this.isPlatform) {
+      const skippedKeys = ["teams_app", "calendar"]
+      this.steps.forEach((step) => {
+        if (skippedKeys.includes(step.key)) {
+          step.skipped = true
+          step.completed = true
+        }
+      })
+    }
+
     try {
       if (this.configId) {
-        const res = await getIntegrationConfig(
-          this.organizationId,
-          this.configId
-        )
+        const res = await this.api.getConfig(this.configId)
         this.config = res
         if (res?.setupProgress) {
           this.currentStep = res.setupProgress.currentStep || 0
-          this.steps.forEach((step, i) => {
+          this.steps.forEach((step) => {
             step.completed = !!res.setupProgress.completedSteps?.[step.key]
           })
+          // Ensure skipped steps stay completed
+          if (this.isPlatform) {
+            this.steps.forEach((step) => {
+              if (step.skipped) step.completed = true
+            })
+          }
         }
+        // If config has a shared media host, mark media_host step as pre-completed
+        if (res?.sharedMediaHostId) {
+          const mhStep = this.steps.find((s) => s.key === "media_host")
+          if (mhStep) mhStep.completed = true
+        }
+        // If current step is skipped, jump to next visible step
+        if (this.steps[this.currentStep]?.skipped) {
+          this.nextStep()
+        }
+      } else if (this.isPlatform) {
+        const res = await createPlatformIntegrationConfig({
+          provider: "teams",
+        })
+        this.config = res?.data || res
       } else {
         const res = await createIntegrationConfig(this.organizationId, {
           provider: "teams",
@@ -210,19 +271,35 @@ export default {
     }
   },
   methods: {
+    visibleStepNumber(index) {
+      let count = 0
+      for (let i = 0; i <= index; i++) {
+        if (!this.steps[i].skipped) count++
+      }
+      return count
+    },
     goToStep(index) {
+      if (this.steps[index].skipped) return
       if (this.steps[index].completed || index <= this.currentStep) {
         this.currentStep = index
       }
     },
     prevStep() {
-      if (this.currentStep > 0) {
-        this.currentStep--
+      let prev = this.currentStep - 1
+      while (prev >= 0 && this.steps[prev].skipped) {
+        prev--
+      }
+      if (prev >= 0) {
+        this.currentStep = prev
       }
     },
     nextStep() {
-      if (this.currentStep < 5) {
-        this.currentStep++
+      let next = this.currentStep + 1
+      while (next < this.steps.length && this.steps[next].skipped) {
+        next++
+      }
+      if (next < this.steps.length) {
+        this.currentStep = next
       }
     },
     async onStepValidated(stepIndex, data) {
@@ -235,18 +312,17 @@ export default {
         this.steps.forEach((s) => {
           if (s.completed) completedSteps[s.key] = true
         })
-        await updateIntegrationConfig(this.organizationId, this.config.id, {
+        const progressPayload = {
           setupProgress: {
             currentStep: this.currentStep,
             completedSteps,
           },
-        })
+        }
+        await this.api.updateConfig(this.config.id, progressPayload)
       } catch {
         // silently ignore save errors
       }
-      if (this.currentStep < 5) {
-        this.currentStep++
-      }
+      this.nextStep()
     },
   },
 }

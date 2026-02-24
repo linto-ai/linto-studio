@@ -14,11 +14,33 @@
           <h4>{{ $t("integrations.catalog.teams.name") }}</h4>
           <p>{{ $t("integrations.catalog.teams.description") }}</p>
         </div>
-        <div class="integration-card__status">
-          <StatusLed :on="teamsConfig && teamsConfig.status === 'active'" />
+        <div class="integration-card__status" v-if="teamsInherited">
+          <StatusLed :on="true" />
+          <span>{{ $t("integrations.catalog.status.inherited") }}</span>
+          <span class="integration-card__badge">{{ $t("integrations.catalog.inherited_badge") }}</span>
+        </div>
+        <div class="integration-card__status" v-else-if="teamsLocked">
+          <StatusLed :on="true" />
+          <span>{{ $t("integrations.catalog.status.locked") }}</span>
+          <span class="integration-card__badge">{{ $t("integrations.catalog.locked_badge") }}</span>
+        </div>
+        <div class="integration-card__status" v-else-if="teamsConfig">
+          <StatusLed :on="teamsConfig.status === 'active'" />
           <span>{{ teamsStatusLabel }}</span>
         </div>
         <Button
+          v-if="teamsLocked"
+          variant="secondary"
+          :label="$t('integrations.catalog.configure_button')"
+          disabled
+          @click.stop />
+        <Button
+          v-else-if="teamsInherited"
+          variant="secondary"
+          :label="$t('integrations.catalog.customize_button')"
+          @click.stop="openTeamsWizard" />
+        <Button
+          v-else
           variant="secondary"
           :label="$t('integrations.catalog.configure_button')"
           @click.stop="openTeamsWizard" />
@@ -48,7 +70,7 @@
 </template>
 
 <script>
-import { getIntegrationConfigs } from "@/api/integrationConfig"
+import { getIntegrationConfigs, getPlatformStatus } from "@/api/integrationConfig"
 import StatusLed from "@/components/atoms/StatusLed.vue"
 import Button from "@/components/atoms/Button.vue"
 
@@ -64,18 +86,36 @@ export default {
   data() {
     return {
       integrationConfigs: [],
+      platformStatus: null,
       loading: true,
       error: null,
     }
   },
   computed: {
-    teamsConfig() {
+    teamsOrgConfig() {
       const configs = Array.isArray(this.integrationConfigs)
         ? this.integrationConfigs
         : []
       return configs.find(
-        (c) => c.provider === "teams" && c.status !== "disabled"
+        (c) => c.provider === "teams" && c.status !== "disabled" && c.scope === "organization"
       )
+    },
+    teamsInherited() {
+      return !this.teamsOrgConfig && this.platformStatus?.exists === true
+    },
+    teamsLocked() {
+      return this.platformStatus?.exists === true && this.platformStatus?.allowOrganizationOverride === false
+    },
+    teamsConfig() {
+      if (this.teamsOrgConfig) return this.teamsOrgConfig
+      if (this.platformStatus?.exists) {
+        return {
+          status: "active",
+          provider: "teams",
+          id: this.platformStatus.configId || null,
+        }
+      }
+      return null
     },
     teamsStatusLabel() {
       return this.$t(
@@ -85,8 +125,12 @@ export default {
   },
   async mounted() {
     try {
-      const result = await getIntegrationConfigs(this.organizationId)
+      const [result, platformResult] = await Promise.all([
+        getIntegrationConfigs(this.organizationId),
+        getPlatformStatus(this.organizationId, "teams"),
+      ])
       this.integrationConfigs = Array.isArray(result) ? result : []
+      this.platformStatus = platformResult
     } catch (e) {
       this.error = e.message || "Error loading integration configs"
     } finally {

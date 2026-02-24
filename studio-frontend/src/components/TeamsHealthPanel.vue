@@ -51,6 +51,18 @@
       </div>
     </div>
 
+    <div v-if="mediaHosts.length > 1" class="teams-health-panel__hosts">
+      <h5>{{ $t("integrations.teams_wizard.health.media_hosts") }}</h5>
+      <div
+        v-for="mh in mediaHosts"
+        :key="mh.id || mh._id"
+        class="teams-health-panel__host-card">
+        <StatusLed :on="mh.healthStatus?.status === 'healthy' || mh.status === 'online'" />
+        <span class="host-card__name">{{ mh.dns || mh.name || (mh.id || mh._id) }}</span>
+        <span class="host-card__status text-muted">{{ mh.healthStatus?.status || mh.status || 'unknown' }}</span>
+      </div>
+    </div>
+
     <div class="teams-health-panel__footer">
       <span class="text-muted"
         >{{ $t("integrations.teams_wizard.health.last_check") }}
@@ -70,7 +82,7 @@
 </template>
 
 <script>
-import { getIntegrationConfig } from "@/api/integrationConfig"
+import integrationApiMixin from "@/mixins/integrationApiMixin"
 import StatusLed from "@/components/atoms/StatusLed.vue"
 import Button from "@/components/atoms/Button.vue"
 import TeamsNetworkDiagram from "@/components/TeamsNetworkDiagram.vue"
@@ -78,6 +90,7 @@ import TeamsNetworkDiagram from "@/components/TeamsNetworkDiagram.vue"
 export default {
   name: "TeamsHealthPanel",
   components: { StatusLed, Button, TeamsNetworkDiagram },
+  mixins: [integrationApiMixin],
   props: {
     config: {
       type: Object,
@@ -91,6 +104,7 @@ export default {
   data() {
     return {
       healthData: null,
+      mediaHosts: [],
       pollInterval: null,
       showDiagram: false,
     }
@@ -125,12 +139,14 @@ export default {
     },
     async fetchHealth() {
       try {
-        const res = await getIntegrationConfig(
-          this.organizationId,
-          this.config.id
+        const hosts = await this.api.getMediaHosts(this.config.id)
+        this.mediaHosts = hosts || []
+        // Use the first media host's health status for the primary display
+        const primaryHost = this.mediaHosts.find(
+          (h) => h.healthStatus
         )
-        if (res?.healthStatus) {
-          this.healthData = res.healthStatus
+        if (primaryHost?.healthStatus) {
+          this.healthData = primaryHost.healthStatus
         }
       } catch {
         // silently ignore polling errors
@@ -188,6 +204,29 @@ export default {
 }
 .health-status--offline {
   color: var(--color-error, #e74c3c);
+}
+.teams-health-panel__hosts {
+  margin-top: 1rem;
+}
+.teams-health-panel__hosts h5 {
+  margin: 0 0 0.5rem;
+}
+.teams-health-panel__host-card {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
+.host-card__name {
+  flex: 1;
+  font-weight: 600;
+  font-size: 0.9em;
+}
+.host-card__status {
+  font-size: 0.85em;
 }
 .teams-health-panel__footer {
   margin-top: 1rem;

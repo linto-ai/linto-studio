@@ -149,7 +149,7 @@
       <div class="manual-setup__info">
         <p>
           {{ $t("integrations.teams_wizard.media_host.manual.verify_dns") }}
-          <code>{{ config.mediaHostDns || fqdn }}</code>
+          <code>{{ fqdn || config.mediaHostDns }}</code>
         </p>
       </div>
     </div>
@@ -157,13 +157,7 @@
 </template>
 
 <script>
-import {
-  updateIntegrationConfig,
-  generateProvisioningToken,
-  getIntegrationConfig,
-  checkConnectivity,
-  getSetupScriptUrl,
-} from "@/api/integrationConfig"
+import integrationApiMixin from "@/mixins/integrationApiMixin"
 import Button from "@/components/atoms/Button.vue"
 import StatusLed from "@/components/atoms/StatusLed.vue"
 import CopyButton from "@/components/atoms/CopyButton.vue"
@@ -171,6 +165,7 @@ import CopyButton from "@/components/atoms/CopyButton.vue"
 export default {
   name: "MediaHostManualSetup",
   components: { Button, StatusLed, CopyButton },
+  mixins: [integrationApiMixin],
   props: {
     config: {
       type: Object,
@@ -179,6 +174,10 @@ export default {
     organizationId: {
       type: String,
       required: true,
+    },
+    mediaHostId: {
+      type: String,
+      default: null,
     },
   },
   data() {
@@ -199,6 +198,7 @@ export default {
       checkingDns: false,
       connectivityResult: null,
       saving: false,
+      currentMediaHostId: null,
       provisioningToken: null,
       polling: false,
       pollInterval: null,
@@ -209,12 +209,13 @@ export default {
       return this.prereqs.every(p => p.checked)
     },
     setupCommand() {
-      if (!this.provisioningToken) return ""
-      const url = getSetupScriptUrl(this.organizationId, this.config.id, this.provisioningToken)
+      if (!this.provisioningToken || !this.currentMediaHostId) return ""
+      const url = this.api.getSetupScriptUrl(this.currentMediaHostId, this.provisioningToken)
       return `Invoke-WebRequest -Uri "${url}" -OutFile setup-manual.ps1; .\\setup-manual.ps1`
     },
   },
   mounted() {
+    this.currentMediaHostId = this.mediaHostId || null
     if (this.config?.manualConfig) {
       this.fqdn = this.config.manualConfig.fqdn || ""
       this.publicIp = this.config.manualConfig.publicIp || ""
@@ -236,9 +237,12 @@ export default {
       this.checkingDns = true
       this.connectivityResult = null
       try {
-        const res = await checkConnectivity(
-          this.organizationId,
-          this.config.id,
+        // Create media host first if needed
+        if (!this.currentMediaHostId) {
+          await this.ensureMediaHost()
+        }
+        const res = await this.api.checkConnectivity(
+          this.currentMediaHostId,
           { fqdn: this.fqdn }
         )
         this.connectivityResult = res?.data?.results || res?.results || null
@@ -248,17 +252,20 @@ export default {
         this.checkingDns = false
       }
     },
+    async ensureMediaHost() {
+      if (this.currentMediaHostId) return
+      const mhRes = await this.api.createMediaHost(
+        this.config.id,
+        { deploymentMode: "manual" }
+      )
+      const mh = mhRes?.data || mhRes
+      this.currentMediaHostId = mh?.id || mh?._id
+      this.$emit("media-host-created", mh)
+    },
     async saveConfig() {
       this.saving = true
       try {
-        await updateIntegrationConfig(this.organizationId, this.config.id, {
-          manualConfig: {
-            fqdn: this.fqdn,
-            publicIp: this.publicIp,
-            sslMode: this.sslMode,
-            pfxPath: this.pfxPath,
-          },
-        })
+        await this.ensureMediaHost()
         this.subStep = 2
         await this.startInstallStep()
       } catch {
@@ -268,11 +275,10 @@ export default {
       }
     },
     async startInstallStep() {
-      if (!this.provisioningToken) {
+      if (!this.provisioningToken && this.currentMediaHostId) {
         try {
-          const res = await generateProvisioningToken(
-            this.organizationId,
-            this.config.id
+          const res = await this.api.genProvisioningToken(
+            this.currentMediaHostId
           )
           this.provisioningToken = res?.data?.provisioningToken || null
         } catch {
@@ -282,10 +288,9 @@ export default {
       this.startPolling()
     },
     downloadScript() {
-      if (!this.provisioningToken) return
-      const url = getSetupScriptUrl(
-        this.organizationId,
-        this.config.id,
+      if (!this.provisioningToken || !this.currentMediaHostId) return
+      const url = this.api.getSetupScriptUrl(
+        this.currentMediaHostId,
         this.provisioningToken
       )
       window.open(url, "_blank")
@@ -296,10 +301,7 @@ export default {
     },
     async checkDeployment() {
       try {
-        const res = await getIntegrationConfig(
-          this.organizationId,
-          this.config.id
-        )
+        const res = await this.api.getConfig(this.config.id)
         if (res?.setupProgress?.mediaHost === true) {
           clearInterval(this.pollInterval)
           this.polling = false

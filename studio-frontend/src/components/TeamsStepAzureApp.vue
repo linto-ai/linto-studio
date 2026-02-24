@@ -100,10 +100,7 @@
 </template>
 
 <script>
-import {
-  updateIntegrationConfig,
-  validateCredentials,
-} from "@/api/integrationConfig"
+import integrationApiMixin from "@/mixins/integrationApiMixin"
 import Button from "@/components/atoms/Button.vue"
 
 const UUID_REGEX =
@@ -112,6 +109,7 @@ const UUID_REGEX =
 export default {
   name: "TeamsStepAzureApp",
   components: { Button },
+  mixins: [integrationApiMixin],
   props: {
     config: {
       type: Object,
@@ -158,7 +156,7 @@ export default {
 
       this.validating = true
       try {
-        await updateIntegrationConfig(this.organizationId, this.config.id, {
+        await this.api.updateConfig(this.config.id, {
           config: {
             tenantId: this.tenantId,
             clientId: this.clientId,
@@ -166,10 +164,7 @@ export default {
           },
         })
 
-        const res = await validateCredentials(
-          this.organizationId,
-          this.config.id
-        )
+        const res = await this.api.validateCredentials(this.config.id)
         this.validationResult = res?.status === 200 || res?.data?.valid === true
         if (this.validationResult) {
           this.$emit("validated", { azureApp: true })

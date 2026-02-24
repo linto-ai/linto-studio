@@ -66,6 +66,64 @@ module.exports = (webServer) => {
         requireAuth: true,
         requireSessionOperator: true,
       },
+      /***************************************/
+      /** platform integration-configs (admin) */
+      /***************************************/
+      {
+        paths: [
+          {
+            path: "/integration-configs/platform",
+            method: ["get", "post"],
+          },
+          {
+            path: "/integration-configs/platform/:id",
+            method: ["get", "put", "delete"],
+          },
+          {
+            path: "/integration-configs/platform/:id/validate-credentials",
+            method: ["post"],
+          },
+          {
+            path: "/integration-configs/platform/:provider/usage",
+            method: ["get"],
+          },
+        ],
+        requireAuth: true,
+        requireSessionOperator: true,
+        rewrite: {
+          fromPath: "/integration-configs/platform",
+          toPath: "/admin/integration-configs/platform",
+        },
+      },
+      /***************************************/
+      /** media-hosts (admin) ****************/
+      /***************************************/
+      {
+        paths: [
+          {
+            path: "/integration-configs/:configId/media-hosts",
+            method: ["get", "post"],
+          },
+          {
+            path: "/media-hosts/:id",
+            method: ["get", "delete"],
+          },
+          {
+            path: "/media-hosts/:id/generate-provisioning-token",
+            method: ["post"],
+          },
+          {
+            path: "/media-hosts/:id/generate-deploy-link",
+            method: ["post"],
+          },
+          {
+            path: "/media-hosts/:id/check-connectivity",
+            method: ["post"],
+          },
+        ],
+        requireAuth: true,
+        requireSessionOperator: true,
+      },
     ],
   }
 }
