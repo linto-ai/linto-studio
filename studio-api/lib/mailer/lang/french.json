@@ -38,7 +38,7 @@
     "title": "Vérification de votre adresse email",
     "subject": "Vérification de votre adresse email",
     "email_info": "Vous avez récemment modifié votre adresse email sur la plateforme LinTO Studio.",
-    "email_verification_cta": "Cliquez sur ce lien ci-dessous pour vérifier que vous êtes bien le propriétaire de l'adresse email que vous avez renseigné.",
+    "email_verification_cta": "Cliquez sur ce lien ci-dessous pour vérifier que vous êtes bien le propriétaire de l'adresse email que vous avez renseignée.",
     "email_expiry_notice": "Ce lien a une validité de 30 minutes."
   },
   "share_conversation": {
@@ -69,7 +69,7 @@
   },
   "unshare_conversation": {
     "title": "Révocation de vos droits sur une conversation",
-    "subject": "Révocation de vos droit sur une conversation",
+    "subject": "Révocation de vos droits sur une conversation",
     "email_revocation": "Révocation de vos droits sur le média {{name}}."
   }
 }

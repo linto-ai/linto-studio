@@ -83,7 +83,7 @@ module.exports = {
     else
       next(
         new ConversationDeleteAccessDenied(
-          "User don't have the right to delete conversation tags",
+          "User doesn't have the right to delete conversation tags",
         ),
       )
   },

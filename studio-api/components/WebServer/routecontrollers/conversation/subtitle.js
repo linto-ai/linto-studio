@@ -253,7 +253,7 @@ async function generateSubtitle(req, res, next) {
     if (!req.params.conversationId)
       throw new SubtitleUnsupportedMediaType("Conversation id is required")
     if (!req.body.version)
-      throw new SubtitleUnsupportedMediaType("Version name is require")
+      throw new SubtitleUnsupportedMediaType("Version name is required")
 
     const conversationId = req.params.conversationId
 
@@ -529,7 +529,7 @@ async function copySubtitle(req, res, next) {
       req.body.version,
     )
     if (conv_copy.length === 1)
-      throw new SubtitleError("Version name already exist")
+      throw new SubtitleError("Version name already exists")
 
     let subtitle = {
       ...subtitle_to_copy[0],

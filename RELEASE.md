@@ -1,3 +1,37 @@
+# 1.8.0
+
+_2026_02_24_
+
+- Streaming translation
+  - Real-time translation mode during live sessions
+- Vite migration
+  - Frontend bundler migrated from Webpack to Vite
+  - Optimized bundle size and reduced dependencies
+- Alpine Docker images
+  - studio-api and studio-websocket migrated from Debian to Alpine for a smaller footprint
+- Backoffice
+  - Super administrators can now manage other super administrators
+  - Automatic email and organization matching on user creation
+  - New generic table component for user and organization lists
+- Configuration
+  - `VUE_APP_ENABLE_SECURITY_LEVEL` to toggle security level display in frontend
+  - `EXPORT_TIMEOUT_MS` to configure media export timeout
+  - Security selector in transcriber profile modal is now optional
+- Gateway error handling
+  - Proper error responses when gateway services are not configured or unreachable
+  - Session API calls are skipped when session service is disabled
+- Logging
+  - Winston logger replaces console.log/error across studio-api
+  - Standardized debug namespace identifiers
+- Frontend
+  - Removed orphan components and dead code
+  - Improved modal behavior (click outside no longer closes by default)
+  - Fixed navbar icons, media selection reset after search, and live session auto-scroll in embedded iframes
+- Accessibility
+  - List selector with keyboard navigation and optional search field
+  - Improved table line selection
+  - Improved media listing
+
 # 1.7.0
 
 _2026_01_27_

@@ -6,6 +6,8 @@ export default function transriberImageFromtype(type) {
       return "/img/linto.svg"
     case "amazon":
       return "/img/amazon.svg"
+    case "voxstral":
+      return "/img/voxstral.svg"
     default:
       return "/img/question.svg"
   }

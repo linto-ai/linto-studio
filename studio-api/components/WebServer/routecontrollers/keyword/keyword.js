@@ -17,9 +17,9 @@ const { ConversationIdRequire } = require(
 async function keywordExtract(req, res, next) {
   try {
     if (!req.body.endpoint)
-      throw new KeywordMetadataRequire("endpoint param is require")
+      throw new KeywordMetadataRequire("endpoint param is required")
     if (!req.body.serviceName)
-      throw new KeywordMetadataRequire("serviceName param is require")
+      throw new KeywordMetadataRequire("serviceName param is required")
 
     if (!req.params.conversationId) throw new ConversationIdRequire()
     let service = process.env.GATEWAY_SERVICES + "/" + req.body.endpoint

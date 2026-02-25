@@ -1,7 +1,4 @@
-import {
-  SECURITY_LEVELS,
-  SECURITY_LEVEL_PUBLIC,
-} from "./securityLevels.js"
+import { SECURITY_LEVELS, SECURITY_LEVEL_PUBLIC } from "./securityLevels.js"
 
 export { SECURITY_LEVELS }
 
@@ -102,6 +99,21 @@ const TRANSCRIBER_PROFILES_TEMPLATES = {
       trustAnchorArn: "",
       profileArn: "",
       roleArn: "",
+    },
+    quickMeeting: true,
+    meta: {
+      securityLevel: SECURITY_LEVEL_PUBLIC,
+    },
+  },
+  voxstral: {
+    config: {
+      type: "voxstral",
+      name: "Voxstral (Global)",
+      description: "Mistral Voxtral Mini",
+      endpoint: "ws://127.0.0.1:8000",
+      languages: [{ candidate: "fr-FR" }, { candidate: "en-US" }],
+      availableTranslations: [],
+      hasDiarization: false,
     },
     quickMeeting: true,
     meta: {

@@ -8,7 +8,7 @@
     <Popover
       content-class="invite-user-list"
       overlay
-      close-on-click-outside
+      :closeOnClick="false"
       close-on-escape>
       <template #trigger>
         <Button

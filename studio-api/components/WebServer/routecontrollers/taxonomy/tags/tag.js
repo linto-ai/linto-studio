@@ -48,7 +48,7 @@ async function createTag(req, res, next) {
     const tag = await model.tags.getTagByCategoryAndProperties(req.body)
     if (tag.length > 0)
       throw new TagConflict(
-        `Conflict with tag name ${req.body.name} already exist. Tag id : ${tag[0]._id}`,
+        `Conflict with tag name ${req.body.name} already exists. Tag id : ${tag[0]._id}`,
       )
 
     let category = await model.categories.getById(req.body.categoryId)

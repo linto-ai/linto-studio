@@ -56,7 +56,7 @@ async function createCategory(req, res, next) {
     )
     if (category.length > 0) {
       throw new CategoryConflict(
-        `Conflict with category name ${req.body.name} already exist. Category id ${category[0]._id}`,
+        `Conflict with category name ${req.body.name} already exists. Category id ${category[0]._id}`,
       )
     }
 
@@ -131,11 +131,11 @@ async function updateCategory(req, res, next) {
       category_name[0]._id.toString() !== req.params.categoryId
     )
       throw new CategoryConflict(
-        `Conflict with category name ${req.body.name} already exist. Category id ${category_name[0]._id}`,
+        `Conflict with category name ${req.body.name} already exists. Category id ${category_name[0]._id}`,
       )
     if (category_name.length > 1)
       throw new CategoryConflict(
-        `Conflict with category name ${req.body.name} already exist. Category id ${category_name[0]._id}`,
+        `Conflict with category name ${req.body.name} already exists. Category id ${category_name[0]._id}`,
       )
 
     const result = await model.categories.update(category[0])

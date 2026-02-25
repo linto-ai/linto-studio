@@ -63,7 +63,7 @@ async function fetchJob(conversation, conversationId, userToken, socket) {
     // fetch keywords
     debug("Job done or error")
     const keywords = await apiGetKeywords(conversationId, orgaId, userToken)
-    debug("Feched keywords:", keywords)
+    debug("Fetched keywords:", keywords)
     conversation.setKeywords(keywords)
     jobsFetcher[conversationId] = false
     send(conversation, conversationId, socket)

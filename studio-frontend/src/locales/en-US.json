@@ -18,7 +18,7 @@
     "tabs": {
       "sessions_kpi": "Sessions KPI",
       "sessions": "Sessions detailed",
-      "ressources": "Ressources",
+      "ressources": "Resources",
       "tokens": "Api keys access",
       "backoffice": "Backoffice"
     }
@@ -195,7 +195,7 @@
       "notif_success": "Transcriber profile successfully updated",
       "notif_error": "An error occurred",
       "notif_delete_success": "Transcriber profile successfully deleted",
-      "notif_delete_error": "An error occured while deleting the profile",
+      "notif_delete_error": "An error occurred while deleting the profile",
       "quick_meeting_label": "Enabled for quick meetings",
       "name_label": "Name",
       "name_placeholder": "Profile name",
@@ -232,7 +232,9 @@
       "microsoft_endpoint_label": "Endpoint ID",
       "microsoft_endpoint_placeholder": "endpoint-id",
       "amazon_endpoint_label": "AWS Region",
-      "amazon_endpoint_placeholder": "us-east-1"
+      "amazon_endpoint_placeholder": "us-east-1",
+      "voxstral_endpoint_label": "Global WebSocket URL",
+      "voxstral_endpoint_placeholder": "ws://..."
     },
     "transcriber_profile_list": {
       "title": "Transcriber Profiles",
@@ -245,7 +247,8 @@
         "line_1": "Listed transcriber profiles are enabled for all organizations."
       },
       "all_profiles_shown": "All profiles are shown",
-      "global_profiles_shown": "Only global profiles are shown"
+      "global_profiles_shown": "Only global profiles are shown",
+      "edit_button": "Edit"
     }
   },
   "breadcrumb": {
@@ -326,7 +329,7 @@
         "placeholder": "Select a metadata type",
         "title": "Add metadata"
       },
-      "comment": "Commentaire"
+      "comment": "Comment"
     },
     "language_label": "Language: ",
     "loading": {
@@ -371,7 +374,7 @@
     },
     "status": {
       "diarization": "Speakers split",
-      "error": "Error : an error has occured during processing the audio",
+      "error": "Error : an error has occurred during processing the audio",
       "pending": "The media is waiting to be processed.",
       "postprocessing": "Postprocessing",
       "preprocessing": "Preprocessing",
@@ -381,7 +384,7 @@
     },
     "status_page": {
       "error_log_label": "Here's some information:",
-      "error_title": "An error has occured during processing the audio",
+      "error_title": "An error has occurred during processing the audio",
       "generic_description_line_1": "You can continue browsing the site. The page will refresh automatically when it has finished loading.",
       "generic_description_line_2": "Depending on the size of the media, transcription can take dozens of minutes or even several hours.",
       "generic_title": "The media is being transcribed by LinTO",
@@ -397,7 +400,7 @@
       "delete_label": "Delete subtitle versions",
       "delete_no_selection": "Please select at least one version to delete",
       "delete_no_selection_label": "No versions selected",
-      "drop_video": "Drag and drop your vidéo file here",
+      "drop_video": "Drag and drop your video file here",
       "error": {
         "cannot_merge_non_consecutive_screens": "Cannot merge non consecutive screens",
         "no_enough_place_new_screen": "Not enough place to create a new screen",
@@ -430,7 +433,7 @@
       "diarization_label": "Speakers diarization",
       "language_label": "Language",
       "number_of_speaker_label": "Number of speakers",
-      "player_error": "An error has occured while initializing player.",
+      "player_error": "An error has occurred while initializing player.",
       "punctuation_disabled": "Disabled",
       "punctuation_label": "Punctuation",
       "punctuation_value_whisper": "Automatic"
@@ -442,10 +445,10 @@
     "transcription_service_error": "Please select a transcription service",
     "transcription_service_list_empty": "No transcription service available",
     "transcription_service_title": "Transcription AI selection",
-    "turn_cant_merge": "There are too many caracteres in the turn to merge it",
+    "turn_cant_merge": "There are too many characters in the turn to merge it",
     "turn_sync_error_title": "The turn is not well synchronized",
     "websocket_error_content": "Document update failed, save your change and reload the page.",
-    "websocket_error_title": "Syncronisation error."
+    "websocket_error_title": "Synchronization error."
   },
   "conversation_creation": {
     "tabs": {
@@ -481,7 +484,7 @@
     "close_overview": "Back to medias list",
     "main_information": {
       "title": "General information",
-      "update_information_button": "Update informations",
+      "update_information_button": "Update information",
       "name_label": "Media name",
       "description_label": "Description",
       "error_notif": "An error has occurred, the media information has not been updated.",
@@ -552,7 +555,7 @@
     },
     "required": "This field is required",
     "invalidVisioUrl": "Invalid visio URL",
-    "unauthorized_caracters": "Caractères non autorisé",
+    "unauthorized_caracters": "Unauthorized characters",
     "invalid_email": "Invalid email",
     "passwordsMustBeTheSame": "Passwords must be the same",
     "passwordLength": "This field must contain at least 6 characters"
@@ -565,7 +568,7 @@
     "contact": "Contact"
   },
   "global_error": {
-    "auth_magic_link": "The authentication link as expired, please request again for an authentication link",
+    "auth_magic_link": "The authentication link has expired, please request again for an authentication link",
     "back_to_home": "Back to home",
     "page_not_found": "The page is not found, or you don't have the rights to access it"
   },
@@ -850,10 +853,10 @@
     "matching_users": {
       "title": "Automatic user invitation",
       "matching_mail": {
-        "label": "Maching email"
+        "label": "Matching email"
       },
-      "update_button": "Update matching criterions",
-      "apply_button": "Invite all users matching criterions"
+      "update_button": "Update matching criteria",
+      "apply_button": "Invite all users matching criteria"
     },
     "organization_stats": {
       "title": "Organization statistics",
@@ -867,7 +870,7 @@
     "user": {
       "leave_button": "Leave organization",
       "remove_button": "remove",
-      "remove_description": "Revoke member access to the organiztion",
+      "remove_description": "Revoke member access to the organization",
       "remove_label": "Remove",
       "remove_label_inline": "\"Remove\" : ",
       "role_description": "User organization role (Admin, Maintainer, Member)",
@@ -1172,7 +1175,7 @@
       "copy_link_button": "Copy link",
       "copy_link_button_done": "Link copied",
       "displayWatermark_label": "Display watermark",
-      "edit_alias_button": "Manage the aliase",
+      "edit_alias_button": "Manage the aliases",
       "global_informations_title": "General information",
       "time_informations_title": "Start and stop settings",
       "isPublic_label": "Allow anonymous access to the session",
@@ -1188,7 +1191,7 @@
         "title": "Confirm session deletion"
       },
       "metadata": {
-        "title": "Metadatas",
+        "title": "Metadata",
         "key_label": "Key",
         "value_label": "Value",
         "modal_title": "Set metadatas",
@@ -1197,7 +1200,7 @@
         "no_metadata": "No metadata"
       },
       "modal_edit_session_alias": {
-        "title": "Manage the aliase",
+        "title": "Manage the aliases",
         "name_label": "Alias name",
         "link_label": "Final link",
         "confirm_button": "Apply",
@@ -1300,7 +1303,7 @@
       "bot_lang_label": "Choose language used for videoconference subtitle"
     },
     "live": {
-      "default_name": "Untitle record",
+      "default_name": "Untitled record",
       "status_no_websocket": "Not connected to audio server",
       "status_recording": "Recording microphone",
       "status_muted": "Microphone is muted",
@@ -1309,7 +1312,7 @@
       "mute_microphone_button": "Mute microphone"
     },
     "live_visio": {
-      "default_name": "Untitle {type} meeting",
+      "default_name": "Untitled {type} meeting",
       "status_recording_visio": "Recording videoconference",
       "status_recording_visio_description": "You can leave this page, the recording continues in the background"
     },
@@ -1376,8 +1379,8 @@
       "submit_button": "Update notifications",
       "title": "Notifications by email"
     },
-    "notif_success": "User informations updated",
-    "notif_error": "An error occurred while updating user informations",
+    "notif_success": "User information updated",
+    "notif_error": "An error occurred while updating user information",
     "organizations_section": {
       "title": "Organizations"
     },

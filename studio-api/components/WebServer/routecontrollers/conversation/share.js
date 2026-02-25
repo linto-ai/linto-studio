@@ -53,7 +53,7 @@ async function updateConversationRights(req, res, next) {
   try {
     if (!req.params.conversationId) throw new ConversationIdRequire()
     if (req.body.right === undefined || !req.params.userId)
-      throw new ConversationMetadataRequire("UserId is require")
+      throw new ConversationMetadataRequire("UserId is required")
     if (req.params.userId === req.payload.data.userId)
       throw new ConversationError("You can't change your own right")
 
@@ -193,7 +193,7 @@ async function inviteNewUser(req, res, next) {
     }
 
     res.status(200).send({
-      message: "Invitation send",
+      message: "Invitation sent",
     })
   } catch (err) {
     next(err)

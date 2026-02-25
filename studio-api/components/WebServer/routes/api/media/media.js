@@ -34,7 +34,7 @@ module.exports = (webserver) => {
           } else {
             res
               .status(204)
-              .send({ message: "Conversation don't have any audio" })
+              .send({ message: "Conversation doesn't have any audio" })
           }
         } catch (err) {
           next(err)

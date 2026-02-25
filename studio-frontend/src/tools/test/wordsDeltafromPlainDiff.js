@@ -1327,7 +1327,7 @@ test("Change one word on middle when there is empty words before", (t) => {
   ])
 })
 
-test("erase a three word syllab whith one syllab needed by a two word syllab", (t) => {
+test("erase a three word syllab with one syllab needed by a two word syllab", (t) => {
   const oldText = "ressources naturelles, paraity atteinte"
   const newText = "ressources naturelles, parait atteinte"
 

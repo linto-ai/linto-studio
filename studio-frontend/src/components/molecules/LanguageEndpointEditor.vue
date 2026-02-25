@@ -1,14 +1,18 @@
 <template>
   <div class="language-endpoint-editor">
-    <div class="editor-header">
+    <div class="editor-header" :class="{ 'no-endpoint': !showEndpoint }">
       <span class="header-label">{{
         $t("language_endpoint_editor.language")
       }}</span>
-      <span class="header-label">{{ endpointLabel }}</span>
+      <span v-if="showEndpoint" class="header-label">{{ endpointLabel }}</span>
       <span class="header-spacer"></span>
     </div>
 
-    <div v-for="(item, index) in localValue" :key="index" class="editor-row">
+    <div
+      v-for="(item, index) in localValue"
+      :key="index"
+      class="editor-row"
+      :class="{ 'no-endpoint': !showEndpoint }">
       <select
         class="language-select"
         :value="item.candidate"
@@ -22,6 +26,7 @@
       </select>
 
       <input
+        v-if="showEndpoint"
         type="text"
         class="endpoint-input"
         :value="item.endpoint"
@@ -73,6 +78,10 @@ export default {
       type: String,
       default: "",
     },
+    showEndpoint: {
+      type: Boolean,
+      default: true,
+    },
   },
   computed: {
     localValue: {
@@ -114,10 +123,11 @@ export default {
       this.$emit("input", newValue)
     },
     addItem() {
-      const newValue = [
-        ...this.localValue,
-        { candidate: this.defaultLanguage, endpoint: this.defaultEndpoint },
-      ]
+      const newItem = { candidate: this.defaultLanguage }
+      if (this.showEndpoint) {
+        newItem.endpoint = this.defaultEndpoint
+      }
+      const newValue = [...this.localValue, newItem]
       this.$emit("input", newValue)
     },
     removeItem(index) {
@@ -145,6 +155,10 @@ export default {
   text-transform: uppercase;
 }
 
+.editor-header.no-endpoint {
+  grid-template-columns: 1fr auto;
+}
+
 .header-spacer {
   width: 32px;
 }
@@ -154,6 +168,10 @@ export default {
   grid-template-columns: 1fr 1fr auto;
   gap: var(--small-gap);
   align-items: center;
+}
+
+.editor-row.no-endpoint {
+  grid-template-columns: 1fr auto;
 }
 
 .endpoint-input {

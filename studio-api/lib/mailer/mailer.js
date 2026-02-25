@@ -31,8 +31,8 @@ class Mailer {
   }
 
   static async sendMail(mail_payload) {
-    if (process.env.SMTP_HOST === "") {
-      debug("SMTP wasn't define, mailing disable")
+    if (!process.env.SMTP_HOST) {
+      debug("SMTP wasn't defined, mailing disabled")
       return true
     }
 

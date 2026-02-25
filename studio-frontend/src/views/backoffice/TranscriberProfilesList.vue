@@ -1,9 +1,8 @@
 <template>
-  <MainContentBackoffice :loading="loading">
+  <MainContentBackoffice>
     <template v-slot:header>
       <HeaderTable
         :title="$t('backoffice.transcriber_profile_list.title')"
-        :count="count"
         @on-create="showModalCreateTranscriberProfile"
         @on-delete="deleteSelectedProfiles"
         :add_button_label="
@@ -45,16 +44,40 @@
       v-if="!showAllProfiles">
       {{ $t("backoffice.transcriber_profile_list.warning_global.line_1") }}
     </NotificationBanner>
-    <div class="backoffice-listing-container">
-      <TranscriberProfileTable
-        @list_sort_by="sortBy"
-        @edit="editProfile"
-        :sortListKey="sortListKey"
-        :sortListDirection="sortListDirection"
-        :transcriberProfilesList="sortedTranscriberProfiles"
-        :loading="loading"
-        v-model="selectedProfiles" />
-    </div>
+    <GenericTableRequest
+      ref="table"
+      idKey="id"
+      selectable
+      :selectedRows="selectedProfiles"
+      @update:selectedRows="selectedProfiles = $event"
+      :fetchMethod="fetchTranscriberProfiles"
+      :fetchMethodParams="fetchMethodParams"
+      :columns="columns"
+      :initSortListDirection="sortListDirection"
+      :initSortListKey="sortListKey">
+      <template #cell-organizationId="{ value }">
+        <span v-if="value" class="icon apply" />
+        <span v-else class="icon close" />
+      </template>
+      <template #cell-config.name="{ value, id }">
+        <span class="clickable" @click="editProfile(id)">{{ value }}</span>
+      </template>
+      <template #cell-config.description="{ value, id }">
+        <span class="clickable" @click="editProfile(id)">{{ value }}</span>
+      </template>
+      <template #cell-config.languages="{ value, id }">
+        <span class="clickable" @click="editProfile(id)">
+          {{ value?.map((l) => l.candidate).join(", ") || "\u2014" }}
+        </span>
+      </template>
+      <template #cell-actions="{ id }">
+        <Button
+          @click="editProfile(id)"
+          variant="secondary"
+          icon="pencil"
+          :label="$t('backoffice.transcriber_profile_list.edit_button')" />
+      </template>
+    </GenericTableRequest>
 
     <ModalTranscriberProfile
       v-if="showModal"
@@ -76,21 +99,44 @@ import bulkRequest from "@/tools/bulkRequest.js"
 import { sortArray } from "@/tools/sortList.js"
 
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
-import TranscriberProfileTable from "@/components/TranscriberProfileTable.vue"
+import GenericTableRequest from "@/components/molecules/GenericTableRequest.vue"
 import HeaderTable from "@/components/HeaderTable.vue"
 import ModalTranscriberProfile from "@/components/ModalTranscriberProfile.vue"
 import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
-import { debounceMixin } from "@/mixins/debounce.js"
 
 export default {
-  mixins: [debounceMixin],
-  props: {},
   data() {
     return {
-      loading: true,
-      transcriberProfiles: [],
+      columns: [
+        {
+          key: "organizationId",
+          label: "",
+          width: "auto",
+        },
+        {
+          key: "config.name",
+          label: this.$t("session.profile_selector.labels.name"),
+          width: "1fr",
+        },
+        {
+          key: "config.description",
+          label: this.$t("session.profile_selector.labels.description"),
+          width: "1fr",
+        },
+        {
+          key: "config.languages",
+          label: this.$t("session.profile_selector.labels.languages"),
+          width: "1fr",
+          transformValue: (langs) =>
+            langs?.map((l) => l.candidate).join(", ") || "\u2014",
+        },
+        {
+          key: "actions",
+          label: "",
+          width: "auto",
+        },
+      ],
       selectedProfiles: [],
-      search: "",
       showModal: false,
       editProfileId: null,
       sortListKey: "config.name",
@@ -98,30 +144,17 @@ export default {
       showAllProfiles: false,
     }
   },
-  mounted() {
-    this.debouncedFetchTranscriberProfiles()
-  },
   methods: {
     changeShowAllProfiles() {
       this.showAllProfiles = !this.showAllProfiles
-      this.debouncedFetchTranscriberProfiles()
     },
-    async fetchTranscriberProfiles() {
-      const res = await apiAdminGetTranscriberProfiles()
-      return res
-    },
-    async debouncedFetchTranscriberProfiles() {
-      this.loading = true
-      const res = await this.debouncedSearch(
-        this.fetchTranscriberProfiles.bind(this),
-        this.search,
-      )
-      if (!this.showAllProfiles) {
-        this.transcriberProfiles = res.filter((t) => !t.organizationId)
-      } else {
-        this.transcriberProfiles = res
-      }
-      this.loading = false
+    async fetchTranscriberProfiles(pageNumber, { sortField, sortOrder, showAllProfiles }) {
+      const allProfiles = await apiAdminGetTranscriberProfiles()
+      let filtered = showAllProfiles
+        ? allProfiles
+        : allProfiles.filter((t) => !t.organizationId)
+      filtered = sortArray(filtered, sortField, sortOrder === 1 ? "asc" : "desc")
+      return { list: filtered, count: filtered.length }
     },
     showModalCreateTranscriberProfile() {
       this.editProfileId = null
@@ -137,11 +170,11 @@ export default {
     },
     onModalConfirm() {
       this.closeModal()
-      this.debouncedFetchTranscriberProfiles()
+      this.$refs.table.reset()
     },
     onModalDelete() {
       this.closeModal()
-      this.debouncedFetchTranscriberProfiles()
+      this.$refs.table.reset()
     },
     async deleteSelectedProfiles() {
       const req = await bulkRequest(
@@ -174,8 +207,6 @@ export default {
             "backoffice.transcriber_profile_list.bulk_remove_success_notification",
           ),
         })
-        this.debouncedFetchTranscriberProfiles()
-        this.selectedProfiles = []
       } else {
         bus.$emit("app_notif", {
           status: "error",
@@ -183,39 +214,32 @@ export default {
             "backoffice.transcriber_profile_list.bulk_remove_error_notification",
           ),
         })
-        this.debouncedFetchTranscriberProfiles()
-        this.selectedProfiles = []
       }
-    },
-    sortBy(key) {
-      if (key === this.sortListKey) {
-        this.sortListDirection =
-          this.sortListDirection === "desc" ? "asc" : "desc"
-      } else {
-        this.sortListDirection = "desc"
-      }
-      this.sortListKey = key
+      this.$refs.table.reset()
+      this.selectedProfiles = []
     },
   },
   computed: {
-    count() {
-      return this.transcriberProfiles.length
-    },
-    sortedTranscriberProfiles() {
-      let res = sortArray(
-        this.transcriberProfiles,
-        this.sortListKey,
-        this.sortListDirection,
-      )
-      return res
+    fetchMethodParams() {
+      return { showAllProfiles: this.showAllProfiles }
     },
   },
   components: {
     MainContentBackoffice,
-    TranscriberProfileTable,
+    GenericTableRequest,
     HeaderTable,
     ModalTranscriberProfile,
     NotificationBanner,
   },
 }
 </script>
+
+<style scoped>
+.clickable {
+  cursor: pointer;
+}
+
+.clickable:hover {
+  text-decoration: underline;
+}
+</style>

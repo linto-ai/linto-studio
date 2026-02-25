@@ -104,8 +104,8 @@ export function turnEditText(params, conversationId, rootDoc, syllabic) {
   if (oldText.trim() == newText.trim()) {
     return
   }
-  debugturnEditText("oldText (trimed) >%s<", oldText.trim(), words)
-  debugturnEditText("newText (trimed) >%s<", newText.trim())
+  debugturnEditText("oldText (trimmed) >%s<", oldText.trim(), words)
+  debugturnEditText("newText (trimmed) >%s<", newText.trim())
 
   const splitText = newText.split(" ").map((word) => ({ word: word.trim() }))
   const diff = diffArrays(

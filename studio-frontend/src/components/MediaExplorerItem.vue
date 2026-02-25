@@ -111,6 +111,7 @@
               {{ createdAt }}
             </span>
             <SecurityLevelIndicator
+              v-if="enableSecurityLevel"
               :level="securityLevel"
               class="media-explorer-item__security-level" />
           </div>
@@ -173,6 +174,7 @@ import TimeDuration from "@/components/atoms/TimeDuration.vue"
 import PopoverList from "@/components/atoms/PopoverList.vue"
 import Checkbox from "@/components/atoms/Checkbox.vue"
 
+import { getEnv } from "@/tools/getEnv"
 import { userName } from "@/tools/userName"
 import userAvatar from "@/tools/userAvatar"
 
@@ -220,6 +222,9 @@ export default {
       currentOrganization: "getCurrentOrganization",
     }),
 
+    enableSecurityLevel() {
+      return getEnv("VUE_APP_ENABLE_SECURITY_LEVEL") === "true"
+    },
     reactiveMedia() {
       return this.media
     },

@@ -287,6 +287,7 @@ export async function apiAdminUpdateTranscriberProfile(
   if (dataCopy.config.key === "Secret key is hidden") {
     delete dataCopy.config.key
   }
+  delete dataCopy.config.availableTranslations?.external
 
   return await sendRequest(
     `${BASE_API}/administration/transcriber_profiles/${transcriberId}`,
@@ -297,10 +298,12 @@ export async function apiAdminUpdateTranscriberProfile(
 }
 
 export async function apiAdminCreateTranscriberProfile(data, notif) {
+  const dataCopy = structuredClone(data)
+  delete dataCopy.config.availableTranslations?.external
   return await sendRequest(
     `${BASE_API}/administration/transcriber_profiles`,
     { method: "post" },
-    data,
+    dataCopy,
     notif,
   )
 }
@@ -335,6 +338,8 @@ export async function apiAdminCreateAmazonTranscriberProfile(
     roleArn: data.config.roleArn,
     quickMeeting: data.quickMeeting,
   }
+
+  delete config.availableTranslations?.external
 
   if (data.organizationId) {
     config.organizationId = data.organizationId
@@ -426,6 +431,8 @@ export async function apiAdminUpdateAmazonTranscriberProfile(
     roleArn: data.config.roleArn,
     quickMeeting: data.quickMeeting,
   }
+
+  delete config.availableTranslations?.external
 
   if (data.organizationId) {
     config.organizationId = data.organizationId

@@ -27,6 +27,12 @@
           :quickMeeting="l_transcriberProfile.quickMeeting"
           @update:quickMeeting="l_transcriberProfile.quickMeeting = $event"
           @files-changed="onFilesChanged" />
+
+        <TranscriberProfileConfigVoxstral
+          v-if="currentType === 'voxstral'"
+          v-model="l_transcriberProfile.config"
+          :quickMeeting="l_transcriberProfile.quickMeeting"
+          @update:quickMeeting="l_transcriberProfile.quickMeeting = $event" />
       </Panel>
 
       <!-- Right: JSON editor -->
@@ -47,6 +53,7 @@ import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 import TranscriberProfileConfigLinto from "@/components/TranscriberProfileConfigLinto.vue"
 import TranscriberProfileConfigMicrosoft from "@/components/TranscriberProfileConfigMicrosoft.vue"
 import TranscriberProfileConfigAmazon from "@/components/TranscriberProfileConfigAmazon.vue"
+import TranscriberProfileConfigVoxstral from "@/components/TranscriberProfileConfigVoxstral.vue"
 
 export default {
   props: {
@@ -66,6 +73,7 @@ export default {
         linto: "LinTO",
         microsoft: "Microsoft",
         amazon: "Amazon",
+        voxstral: "Voxstral",
       },
       l_transcriberProfile: {
         ...structuredClone(this.transcriberProfile),
@@ -159,6 +167,7 @@ export default {
     TranscriberProfileConfigLinto,
     TranscriberProfileConfigMicrosoft,
     TranscriberProfileConfigAmazon,
+    TranscriberProfileConfigVoxstral,
   },
 }
 </script>

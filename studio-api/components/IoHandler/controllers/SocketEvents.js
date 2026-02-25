@@ -8,6 +8,9 @@ module.exports = function () {
   this.on("final", (roomId, transcription) => {
     this.notify(roomId, "final", transcription)
   })
+  this.on("translation", (roomId, translation) => {
+    this.notify(roomId, "translation", translation)
+  })
 
   this.on("watch_organization", (roomId, sessions) => {
     this.notify_sessions(roomId, "session_update", sessions)

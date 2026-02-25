@@ -15,6 +15,7 @@
 import { Fragment } from "vue-fragment"
 
 import { bus } from "@/main.js"
+import { extractTranslationLangCode } from "@/tools/translationUtils.js"
 export default {
   props: {
     selectedChannel: {
@@ -69,10 +70,11 @@ export default {
 
       const translations = this.selectedChannel.translations
         .map((translation) => {
+          const langCode = extractTranslationLangCode(translation)
           return {
-            value: translation,
-            text: languageNames.of(translation),
-            id: translation,
+            value: langCode,
+            text: languageNames.of(langCode),
+            id: langCode,
           }
         })
         .sort((t1, t2) => t1.text.localeCompare(t2.text))

@@ -17,10 +17,6 @@ export default {
       type: Object,
       required: false,
     },
-    partialText: {
-      type: String,
-      required: true,
-    },
     partialObject: {
       type: Object,
       required: true,
