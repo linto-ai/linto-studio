@@ -18,7 +18,7 @@
     "tabs": {
       "sessions_kpi": "Sessions KPI",
       "sessions": "Sessions detailed",
-      "ressources": "Ressources",
+      "ressources": "Resources",
       "tokens": "Api keys access",
       "backoffice": "Backoffice"
     }
@@ -195,7 +195,7 @@
       "notif_success": "Transcriber profile successfully updated",
       "notif_error": "An error occurred",
       "notif_delete_success": "Transcriber profile successfully deleted",
-      "notif_delete_error": "An error occured while deleting the profile",
+      "notif_delete_error": "An error occurred while deleting the profile",
       "quick_meeting_label": "Enabled for quick meetings",
       "name_label": "Name",
       "name_placeholder": "Profile name",
@@ -374,7 +374,7 @@
     },
     "status": {
       "diarization": "Speakers split",
-      "error": "Error : an error has occured during processing the audio",
+      "error": "Error : an error has occurred during processing the audio",
       "pending": "The media is waiting to be processed.",
       "postprocessing": "Postprocessing",
       "preprocessing": "Preprocessing",
@@ -384,7 +384,7 @@
     },
     "status_page": {
       "error_log_label": "Here's some information:",
-      "error_title": "An error has occured during processing the audio",
+      "error_title": "An error has occurred during processing the audio",
       "generic_description_line_1": "You can continue browsing the site. The page will refresh automatically when it has finished loading.",
       "generic_description_line_2": "Depending on the size of the media, transcription can take dozens of minutes or even several hours.",
       "generic_title": "The media is being transcribed by LinTO",
@@ -400,7 +400,7 @@
       "delete_label": "Delete subtitle versions",
       "delete_no_selection": "Please select at least one version to delete",
       "delete_no_selection_label": "No versions selected",
-      "drop_video": "Drag and drop your vidéo file here",
+      "drop_video": "Drag and drop your video file here",
       "error": {
         "cannot_merge_non_consecutive_screens": "Cannot merge non consecutive screens",
         "no_enough_place_new_screen": "Not enough place to create a new screen",
@@ -433,7 +433,7 @@
       "diarization_label": "Speakers diarization",
       "language_label": "Language",
       "number_of_speaker_label": "Number of speakers",
-      "player_error": "An error has occured while initializing player.",
+      "player_error": "An error has occurred while initializing player.",
       "punctuation_disabled": "Disabled",
       "punctuation_label": "Punctuation",
       "punctuation_value_whisper": "Automatic"
@@ -484,7 +484,7 @@
     "close_overview": "Back to medias list",
     "main_information": {
       "title": "General information",
-      "update_information_button": "Update informations",
+      "update_information_button": "Update information",
       "name_label": "Media name",
       "description_label": "Description",
       "error_notif": "An error has occurred, the media information has not been updated.",
@@ -568,7 +568,7 @@
     "contact": "Contact"
   },
   "global_error": {
-    "auth_magic_link": "The authentication link as expired, please request again for an authentication link",
+    "auth_magic_link": "The authentication link has expired, please request again for an authentication link",
     "back_to_home": "Back to home",
     "page_not_found": "The page is not found, or you don't have the rights to access it"
   },
@@ -1379,8 +1379,8 @@
       "submit_button": "Update notifications",
       "title": "Notifications by email"
     },
-    "notif_success": "User informations updated",
-    "notif_error": "An error occurred while updating user informations",
+    "notif_success": "User information updated",
+    "notif_error": "An error occurred while updating user information",
     "organizations_section": {
       "title": "Organizations"
     },
