@@ -154,7 +154,7 @@ export const sessionMixin = {
       const start = await apiDeleteSession(this.organizationId, this.id)
 
       if (start.status === "error") {
-        console.error("Error stoping session", start)
+        console.error("Error stopping session", start)
         this.isStoping = false
         bus.$emit("app_notif", {
           status: "error",

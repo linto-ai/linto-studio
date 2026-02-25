@@ -269,7 +269,7 @@ function disconnect() {
   debugWorkerDestroy("WS should be off")
   if (conversation !== null) {
     conversation.destroy()
-    debugWorkerDestroy("Internal data has been clean")
+    debugWorkerDestroy("Internal data has been cleaned")
   }
   conversation = null
   conversationId = ""

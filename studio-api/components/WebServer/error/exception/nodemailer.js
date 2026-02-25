@@ -13,7 +13,7 @@ class NodemailerError extends Error {
     if (message) this.message = message
     else
       this.message =
-        "An error has occured when sending email. Please retry later or contact support."
+        "An error has occurred when sending email. Please retry later or contact support."
     if (err) this.err = err
   }
 }
