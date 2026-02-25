@@ -329,7 +329,7 @@
         "placeholder": "Select a metadata type",
         "title": "Add metadata"
       },
-      "comment": "Commentaire"
+      "comment": "Comment"
     },
     "language_label": "Language: ",
     "loading": {
@@ -445,10 +445,10 @@
     "transcription_service_error": "Please select a transcription service",
     "transcription_service_list_empty": "No transcription service available",
     "transcription_service_title": "Transcription AI selection",
-    "turn_cant_merge": "There are too many caracteres in the turn to merge it",
+    "turn_cant_merge": "There are too many characters in the turn to merge it",
     "turn_sync_error_title": "The turn is not well synchronized",
     "websocket_error_content": "Document update failed, save your change and reload the page.",
-    "websocket_error_title": "Syncronisation error."
+    "websocket_error_title": "Synchronization error."
   },
   "conversation_creation": {
     "tabs": {
@@ -555,7 +555,7 @@
     },
     "required": "This field is required",
     "invalidVisioUrl": "Invalid visio URL",
-    "unauthorized_caracters": "Caractères non autorisé",
+    "unauthorized_caracters": "Unauthorized characters",
     "invalid_email": "Invalid email",
     "passwordsMustBeTheSame": "Passwords must be the same",
     "passwordLength": "This field must contain at least 6 characters"
@@ -853,10 +853,10 @@
     "matching_users": {
       "title": "Automatic user invitation",
       "matching_mail": {
-        "label": "Maching email"
+        "label": "Matching email"
       },
-      "update_button": "Update matching criterions",
-      "apply_button": "Invite all users matching criterions"
+      "update_button": "Update matching criteria",
+      "apply_button": "Invite all users matching criteria"
     },
     "organization_stats": {
       "title": "Organization statistics",
@@ -870,7 +870,7 @@
     "user": {
       "leave_button": "Leave organization",
       "remove_button": "remove",
-      "remove_description": "Revoke member access to the organiztion",
+      "remove_description": "Revoke member access to the organization",
       "remove_label": "Remove",
       "remove_label_inline": "\"Remove\" : ",
       "role_description": "User organization role (Admin, Maintainer, Member)",
@@ -1175,7 +1175,7 @@
       "copy_link_button": "Copy link",
       "copy_link_button_done": "Link copied",
       "displayWatermark_label": "Display watermark",
-      "edit_alias_button": "Manage the aliase",
+      "edit_alias_button": "Manage the aliases",
       "global_informations_title": "General information",
       "time_informations_title": "Start and stop settings",
       "isPublic_label": "Allow anonymous access to the session",
@@ -1191,7 +1191,7 @@
         "title": "Confirm session deletion"
       },
       "metadata": {
-        "title": "Metadatas",
+        "title": "Metadata",
         "key_label": "Key",
         "value_label": "Value",
         "modal_title": "Set metadatas",
@@ -1200,7 +1200,7 @@
         "no_metadata": "No metadata"
       },
       "modal_edit_session_alias": {
-        "title": "Manage the aliase",
+        "title": "Manage the aliases",
         "name_label": "Alias name",
         "link_label": "Final link",
         "confirm_button": "Apply",
@@ -1303,7 +1303,7 @@
       "bot_lang_label": "Choose language used for videoconference subtitle"
     },
     "live": {
-      "default_name": "Untitle record",
+      "default_name": "Untitled record",
       "status_no_websocket": "Not connected to audio server",
       "status_recording": "Recording microphone",
       "status_muted": "Microphone is muted",
@@ -1312,7 +1312,7 @@
       "mute_microphone_button": "Mute microphone"
     },
     "live_visio": {
-      "default_name": "Untitle {type} meeting",
+      "default_name": "Untitled {type} meeting",
       "status_recording_visio": "Recording videoconference",
       "status_recording_visio_description": "You can leave this page, the recording continues in the background"
     },
