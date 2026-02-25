@@ -244,7 +244,7 @@ test("multiline remove empty lines cursor on empty line", (t) => {
   })
 })
 
-test("multiline remove empty lines in begining cursor on first non empty line", (t) => {
+test("multiline remove empty lines in beginning cursor on first non empty line", (t) => {
   let content = document.createElement("div")
   content.innerText = ""
 

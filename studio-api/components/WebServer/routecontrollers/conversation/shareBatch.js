@@ -30,7 +30,7 @@ async function batchShareConversation(req, res, next) {
       throw new ConversationMetadataRequire("A conversations ids list is")
     if (!req.body.users)
       throw new ConversationMetadataRequire(
-        "A users ids list is with desired rights is require",
+        "A users list with desired rights is required",
       )
 
     let auth_user = {

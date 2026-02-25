@@ -70,7 +70,7 @@ class ConversationWriteAccessDenied extends Error {
     this.type = ExceptionType
     this.status = 401
     if (message) this.message = message
-    else this.message = `User don't have write access to the conversation`
+    else this.message = `User doesn't have write access to the conversation`
     if (err) this.err = err
   }
 }
@@ -82,7 +82,7 @@ class ConversationShareAccessDenied extends Error {
     this.type = ExceptionType
     this.status = 401
     if (message) this.message = message
-    else this.message = `User don't have share access to the conversation`
+    else this.message = `User doesn't have share access to the conversation`
     if (err) this.err = err
   }
 }
@@ -94,7 +94,7 @@ class ConversationDeleteAccessDenied extends Error {
     this.type = ExceptionType
     this.status = 401
     if (message) this.message = message
-    else this.message = `User don't have delete access to the conversation`
+    else this.message = `User doesn't have delete access to the conversation`
     if (err) this.err = err
   }
 }
@@ -106,7 +106,7 @@ class ConversationReadAccessDenied extends Error {
     this.type = ExceptionType
     this.status = 401
     if (message) this.message = message
-    else this.message = `User don't have read access to the conversation`
+    else this.message = `User doesn't have read access to the conversation`
     if (err) this.err = err
   }
 }
@@ -117,7 +117,7 @@ class ConversationNotShared extends Error {
     this.type = ExceptionType
     this.status = 401
     if (message) this.message = message
-    else this.message = `User don't have access to the conversation`
+    else this.message = `User doesn't have access to the conversation`
     if (err) this.err = err
   }
 }
@@ -129,7 +129,7 @@ class ConversationIdRequire extends Error {
     this.type = ExceptionType
     this.status = 403
     if (message) this.message = message
-    else this.message = `Conversation id param is require`
+    else this.message = `Conversation id param is required`
     if (err) this.err = err
   }
 }
@@ -159,7 +159,7 @@ class TurnIdRequire extends Error {
     this.type = ExceptionTurnType
     this.status = 403
     if (message) this.message = message
-    else this.message = "Turn id param is require"
+    else this.message = "Turn id param is required"
     if (err) this.err = err
   }
 }

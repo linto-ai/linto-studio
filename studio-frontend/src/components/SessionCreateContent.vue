@@ -409,7 +409,7 @@ export default {
         (p) => p.id == templateChannel.transcriberProfileId,
       )
       if (!profile) {
-        throw "Transcriber profiles does not exists"
+        throw "Transcriber profile does not exist"
       }
       channel.type = profile.config.type
       channel.availableTranslations = profile.config.availableTranslations ?? []

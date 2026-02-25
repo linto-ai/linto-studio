@@ -51,7 +51,7 @@ async function leaveSelfFromOrganization(req, res, next) {
     if (result.matchedCount === 0) throw new OrganizationError()
 
     res.status(200).send({
-      message: "You have leaved the organization",
+      message: "You have left the organization",
     })
   } catch (err) {
     next(err)
