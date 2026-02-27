@@ -1,0 +1,490 @@
+{
+  "/api/organizations/{organizationId}/folders": {
+    "get": {
+      "tags": ["organizations members"],
+      "summary": "List folders for an organization",
+      "description": "Retrieve all folders belonging to an organization. Supports tree mode, filtering by parentId, and optional conversation count.",
+      "parameters": [
+        {
+          "name": "organizationId",
+          "in": "path",
+          "description": "Organization ID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "in": "query",
+          "name": "tree",
+          "required": false,
+          "description": "If 'true', returns the folder hierarchy as a nested tree using $graphLookup",
+          "schema": {
+            "type": "string",
+            "enum": ["true", "false"]
+          }
+        },
+        {
+          "in": "query",
+          "name": "parentId",
+          "required": false,
+          "description": "Filter folders by parent ID. Use 'null' to get root folders only.",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "in": "query",
+          "name": "withConversationCount",
+          "required": false,
+          "description": "If 'true', includes the number of conversations in each folder",
+          "schema": {
+            "type": "string",
+            "enum": ["true", "false"]
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/FolderWithCount"
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    },
+    "post": {
+      "tags": ["organizations members"],
+      "summary": "Create a folder in an organization",
+      "parameters": [
+        {
+          "name": "organizationId",
+          "in": "path",
+          "description": "Organization ID",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Folder name (max 255 characters)"
+                },
+                "parentId": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "Parent folder ID. Null or omitted for root folder."
+                },
+                "color": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "Hex color code (e.g. #3498db)"
+                },
+                "emoji": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "Unified emoji code (e.g. 1F4C1)"
+                },
+                "position": {
+                  "type": "number",
+                  "description": "Sort position among siblings (default 0)"
+                }
+              },
+              "required": ["name"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Folder created",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Folder"
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/folders/{folderId}": {
+    "get": {
+      "tags": ["organizations members"],
+      "summary": "Retrieve a folder by ID",
+      "parameters": [
+        {
+          "name": "organizationId",
+          "in": "path",
+          "description": "Organization ID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "folderId",
+          "in": "path",
+          "description": "Folder ID",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Folder"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "patch": {
+      "tags": ["organizations members"],
+      "summary": "Update a folder",
+      "description": "Update folder properties. If parentId is changed, anti-cycle detection is performed to prevent moving a folder into one of its descendants.",
+      "parameters": [
+        {
+          "name": "organizationId",
+          "in": "path",
+          "description": "Organization ID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "folderId",
+          "in": "path",
+          "description": "Folder ID",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Folder name (max 255 characters)"
+                },
+                "parentId": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "New parent folder ID. Set to null to move to root. Anti-cycle detection is enforced."
+                },
+                "color": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "Hex color code (e.g. #3498db)"
+                },
+                "emoji": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "Unified emoji code (e.g. 1F4C1)"
+                },
+                "position": {
+                  "type": "number",
+                  "description": "Sort position among siblings"
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Folder updated",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Folder"
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "422": {
+          "description": "Cycle detected - cannot move a folder into one of its descendants",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "error": {
+                    "type": "string",
+                    "example": "Cannot move a folder into one of its descendants"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "delete": {
+      "tags": ["organizations maintainers"],
+      "summary": "Delete a folder",
+      "description": "Delete a folder. By default (strategy=move_to_parent), child folders and conversations are reparented to the deleted folder's parent.",
+      "parameters": [
+        {
+          "name": "organizationId",
+          "in": "path",
+          "description": "Organization ID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "folderId",
+          "in": "path",
+          "description": "Folder ID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "in": "query",
+          "name": "strategy",
+          "required": false,
+          "description": "Deletion strategy. 'move_to_parent' (default) reparents children and conversations to the parent folder.",
+          "schema": {
+            "type": "string",
+            "enum": ["move_to_parent"],
+            "default": "move_to_parent"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Folder deleted",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "message": "Folder deleted"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/folders/{folderId}/conversations": {
+    "post": {
+      "tags": ["organizations members"],
+      "summary": "Move conversations to a folder",
+      "description": "Batch move multiple conversations into a specific folder.",
+      "parameters": [
+        {
+          "name": "organizationId",
+          "in": "path",
+          "description": "Organization ID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "folderId",
+          "in": "path",
+          "description": "Target folder ID",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "conversationIds": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "description": "List of conversation IDs to move"
+                }
+              },
+              "required": ["conversationIds"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Conversations moved",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": { "type": "string" },
+                  "modifiedCount": { "type": "number" }
+                }
+              },
+              "example": {
+                "message": "Conversations moved",
+                "modifiedCount": 3
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "get": {
+      "tags": ["organizations members"],
+      "summary": "List conversations in a folder",
+      "description": "Retrieve conversations belonging to a specific folder, with support for pagination, sorting, and filtering by tags/text.",
+      "parameters": [
+        {
+          "name": "organizationId",
+          "in": "path",
+          "description": "Organization ID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "folderId",
+          "in": "path",
+          "description": "Folder ID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "in": "query",
+          "name": "page",
+          "required": false,
+          "description": "Page number (0-indexed)",
+          "schema": { "type": "number" }
+        },
+        {
+          "in": "query",
+          "name": "size",
+          "required": false,
+          "description": "Number of items per page",
+          "schema": { "type": "number" }
+        },
+        {
+          "in": "query",
+          "name": "sortField",
+          "required": false,
+          "description": "Field to sort by",
+          "schema": { "type": "string" }
+        },
+        {
+          "in": "query",
+          "name": "sortCriteria",
+          "required": false,
+          "description": "Sort order: 1 for ascending, -1 for descending",
+          "schema": { "type": "number", "enum": [1, -1] }
+        },
+        {
+          "in": "query",
+          "name": "tags",
+          "required": false,
+          "description": "Comma-separated list of tag IDs to filter by",
+          "schema": { "type": "string" }
+        },
+        {
+          "in": "query",
+          "name": "name",
+          "required": false,
+          "description": "Filter conversations by name",
+          "schema": { "type": "string" }
+        },
+        {
+          "in": "query",
+          "name": "text",
+          "required": false,
+          "description": "Full-text search in conversation content",
+          "schema": { "type": "string" }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "count": { "type": "number" },
+                  "list": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ConversationList"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "Folder": {
+    "type": "object",
+    "properties": {
+      "_id": {
+        "type": "string",
+        "description": "Folder ID"
+      },
+      "name": {
+        "type": "string",
+        "description": "Folder name"
+      },
+      "organizationId": {
+        "type": "string",
+        "description": "Organization ID the folder belongs to"
+      },
+      "parentId": {
+        "type": "string",
+        "nullable": true,
+        "description": "Parent folder ID. Null for root folders."
+      },
+      "color": {
+        "type": "string",
+        "nullable": true,
+        "description": "Hex color code (e.g. #3498db)"
+      },
+      "emoji": {
+        "type": "string",
+        "nullable": true,
+        "description": "Unified emoji code (e.g. 1F4C1)"
+      },
+      "position": {
+        "type": "number",
+        "description": "Sort position among sibling folders"
+      },
+      "created": {
+        "type": "string",
+        "description": "Creation date"
+      },
+      "last_update": {
+        "type": "string",
+        "description": "Last update date"
+      }
+    },
+    "example": {
+      "_id": "665a1b2c3d4e5f6a7b8c9d0e",
+      "name": "Project Alpha",
+      "organizationId": "5e9b1b9b0f9b2c0017b5f1b5",
+      "parentId": null,
+      "color": "#3498db",
+      "emoji": null,
+      "position": 0,
+      "created": "2025-01-15T10:30:00.000Z",
+      "last_update": "2025-01-15T10:30:00.000Z"
+    }
+  },
+  "FolderWithCount": {
+    "allOf": [
+      { "$ref": "#/components/schemas/Folder" },
+      {
+        "type": "object",
+        "properties": {
+          "conversationCount": {
+            "type": "number",
+            "description": "Number of conversations in this folder"
+          }
+        }
+      }
+    ],
+    "example": {
+      "_id": "665a1b2c3d4e5f6a7b8c9d0e",
+      "name": "Project Alpha",
+      "organizationId": "5e9b1b9b0f9b2c0017b5f1b5",
+      "parentId": null,
+      "color": "#3498db",
+      "emoji": null,
+      "position": 0,
+      "conversationCount": 12,
+      "created": "2025-01-15T10:30:00.000Z",
+      "last_update": "2025-01-15T10:30:00.000Z"
+    }
+  }
+}
