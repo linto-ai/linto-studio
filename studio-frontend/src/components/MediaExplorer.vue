@@ -197,6 +197,9 @@ export default {
     this.cleanupObserver()
   },
   watch: {
+    selectedFolderId() {
+      this.selectedMediaIds = []
+    },
     loading: {
       immediate: true,
       handler(newValue, oldvalue) {

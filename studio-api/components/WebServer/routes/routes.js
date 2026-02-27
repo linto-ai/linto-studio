@@ -15,6 +15,8 @@ module.exports = (webServer) => {
       require("./api/organization/categories")(webServer),
     "/api/organizations/:organizationId/tags":
       require("./api/organization/tag")(webServer),
+    "/api/organizations/:organizationId/folders":
+      require("./api/organization/folders")(webServer),
     "/api/conversations": [
       ...require("./api/conversation/share")(webServer),
       ...require("./api/conversation/conversations")(webServer),

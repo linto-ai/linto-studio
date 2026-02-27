@@ -502,6 +502,20 @@ class ConvoModel extends MongoModel {
         ],
       }
 
+      if (filter.folderId !== undefined) {
+        if (filter.folderId === null || filter.folderId === "null") {
+          query.$and = query.$and || []
+          query.$and.push({
+            $or: [
+              { folderId: null },
+              { folderId: { $exists: false } },
+            ],
+          })
+        } else {
+          query.folderId = filter.folderId
+        }
+      }
+
       if (filter.tags && filter.filter === "notags") {
         // notags rules don't apply for highlighs category
         query.tags = {
@@ -799,6 +813,60 @@ class ConvoModel extends MongoModel {
       const result = await this.mongoRequest(query, {})
       if (result.length === objectIds.length) return result
       else return []
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async updateFolder(_id, folderId) {
+    try {
+      const operator = "$set"
+      const query = {
+        _id: this.getObjectId(_id),
+      }
+      const dateTime = moment().format()
+      let mutableElements = {
+        folderId: folderId,
+        last_update: dateTime,
+      }
+      return await this.mongoUpdateOne(query, operator, mutableElements)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async updateFolderBatch(conversationIds, folderId, organizationId) {
+    try {
+      const objectIds = conversationIds.map((id) =>
+        typeof id === "string" ? this.getObjectId(id) : id,
+      )
+      const query = {
+        _id: { $in: objectIds },
+        "organization.organizationId": organizationId,
+      }
+      const dateTime = moment().format()
+      return await this.mongoUpdateMany(query, "$set", {
+        folderId: folderId,
+        last_update: dateTime,
+      })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async unsetFolderReferences(folderId, newFolderId) {
+    try {
+      const query = {
+        folderId: folderId,
+      }
+      const dateTime = moment().format()
+      return await this.mongoUpdateMany(query, "$set", {
+        folderId: newFolderId,
+        last_update: dateTime,
+      })
     } catch (error) {
       console.error(error)
       return error

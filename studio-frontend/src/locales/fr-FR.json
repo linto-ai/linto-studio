@@ -627,6 +627,27 @@
       }
     }
   },
+  "folders": {
+    "title": "Dossiers",
+    "all": "Tous",
+    "uncategorized": "Non classé",
+    "create": "Créer un dossier",
+    "create_placeholder": "Nom du dossier...",
+    "create_subfolder": "Créer un sous-dossier",
+    "rename": "Renommer",
+    "delete": "Supprimer",
+    "move": "Déplacer",
+    "create_success": "Dossier créé",
+    "create_error": "Erreur lors de la création du dossier",
+    "update_success": "Dossier mis à jour",
+    "update_error": "Erreur lors de la mise à jour du dossier",
+    "delete_success": "Dossier supprimé",
+    "delete_error": "Erreur lors de la suppression du dossier",
+    "move_success": "Conversations déplacées",
+    "move_error": "Erreur lors du déplacement des conversations",
+    "folder": "Dossier",
+    "move_to_folder": "Déplacer vers un dossier"
+  },
   "manage_tags": {
     "title": "Thématiques",
     "no_tags": "Aucune thématique",
@@ -763,7 +784,8 @@
       "favorites": "Favoris",
       "sessions": "Transcription en direct",
       "shared": "Partages reçus",
-      "tags": "Thématiques"
+      "tags": "Thématiques",
+      "folders": "Dossiers"
     },
     "account": {
       "account_link": "Mon compte",

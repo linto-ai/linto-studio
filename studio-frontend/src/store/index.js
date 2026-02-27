@@ -4,6 +4,7 @@ import Vuex from "vuex"
 import user from "./user"
 import organizations from "./organizations"
 import tags from "./tags"
+import folders from "./folders"
 import sessions from "./sessions"
 import settings from "./settings"
 import system from "./system"
@@ -17,6 +18,7 @@ export default new Vuex.Store({
     user,
     organizations,
     tags,
+    folders,
     quickSession,
     sessions,
     settings,

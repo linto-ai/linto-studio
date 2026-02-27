@@ -632,6 +632,27 @@
       }
     }
   },
+  "folders": {
+    "title": "Folders",
+    "all": "All",
+    "uncategorized": "Uncategorized",
+    "create": "Create folder",
+    "create_placeholder": "Folder name...",
+    "create_subfolder": "Create subfolder",
+    "rename": "Rename",
+    "delete": "Delete",
+    "move": "Move",
+    "create_success": "Folder created",
+    "create_error": "Error creating folder",
+    "update_success": "Folder updated",
+    "update_error": "Error updating folder",
+    "delete_success": "Folder deleted",
+    "delete_error": "Error deleting folder",
+    "move_success": "Conversations moved",
+    "move_error": "Error moving conversations",
+    "folder": "Folder",
+    "move_to_folder": "Move to folder"
+  },
   "manage_tags": {
     "title": "Topics",
     "no_tags": "No topics",
@@ -774,7 +795,8 @@
       "favorites": "Favorites",
       "sessions": "Live transcriptions",
       "shared": "Shared with me",
-      "tags": "Topics"
+      "tags": "Topics",
+      "folders": "Folders"
     }
   },
   "no_orga": {

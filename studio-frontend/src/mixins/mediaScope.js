@@ -18,6 +18,9 @@ export const mediaScopeMixin = {
     selectedTagsIds() {
       return this.$store.state[this.storeScope].selectedTagIds ?? []
     },
+    selectedFolderId() {
+      return this.$store.getters[`${this.storeScope}/selectedFolderId`]
+    },
     searchValue() {
       return this.$store.getters[`${this.storeScope}/search`]
     },
@@ -39,6 +42,11 @@ export const mediaScopeMixin = {
       return this.$store.dispatch(`${this.storeScope}/deleteMedias`, {
         ids: ids,
       })
+    },
+    async selectFolder(folderId) {
+      await this.$store.dispatch(`${this.storeScope}/clearSelectedMedias`)
+      await this.$store.dispatch(`${this.storeScope}/setSelectedFolderId`, folderId)
+      await this.$store.dispatch(`${this.storeScope}/load`)
     },
     toggleSelectedTag(tag) {
       return this.$store.dispatch(
