@@ -93,6 +93,15 @@
           </div>
         </div>
 
+        <!-- Media folder -->
+        <div class="media-section" v-if="getCurrentScope === 'organization'">
+          <h4 class="section-title">{{ $t("folders.folder") }}</h4>
+          <FolderSelector
+            :value="reactiveSelectedMedia?.folderId || null"
+            :readonly="readOnly"
+            @change="handleFolderChange" />
+        </div>
+
         <!-- Media metadata -->
         <div v-if="false" class="media-section">
           <h4 class="section-title">
@@ -172,6 +181,7 @@ import { mediaExplorerRightPanelMixin } from "@/mixins/mediaExplorerRightPanel.j
 import FormInput from "@/components/molecules/FormInput.vue"
 import EMPTY_FIELD from "@/const/emptyField"
 import ConversationShareMultiple from "./ConversationShareMultiple.vue"
+import FolderSelector from "./FolderSelector.vue"
 import { mapGetters } from "vuex"
 
 export default {
@@ -185,6 +195,7 @@ export default {
     ModalDeleteConversations,
     FormInput,
     ConversationShareMultiple,
+    FolderSelector,
   },
   props: {
     selectedMedia: {
@@ -217,6 +228,7 @@ export default {
   computed: {
     ...mapGetters("organizations", {
       currentOrganizationScope: "getCurrentOrganizationScope",
+      getCurrentScope: "getCurrentScope",
     }),
     reactiveSelectedMedia() {
       return this.selectedMedia
@@ -280,6 +292,31 @@ export default {
     async handleAddTag(tag) {
       if (this.isTagManagementReadOnly) return
       await this.addTagToMedia(tag, this.selectedMedia._id)
+    },
+
+    async handleFolderChange(folderId) {
+      if (!this.selectedMedia?._id) return
+      try {
+        await this.updateMediaProperty(
+          this.selectedMedia._id,
+          "folderId",
+          folderId,
+        )
+        this.$store.dispatch("system/addNotification", {
+          type: "success",
+          message: this.$t("folders.move_success"),
+        })
+        // Refresh folders to update conversation counts
+        this.$store.dispatch("folders/fetchFolders")
+        // Reload conversation list (conversation may no longer match current folder filter)
+        this.$store.dispatch(`${this.storeScope}/load`)
+      } catch (error) {
+        console.error("Folder change error:", error)
+        this.$store.dispatch("system/addNotification", {
+          type: "error",
+          message: this.$t("folders.move_error"),
+        })
+      }
     },
 
     handleDelete() {

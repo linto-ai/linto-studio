@@ -19,24 +19,32 @@ export async function apiGetGenericConversationsList(
     sortField = "last_update",
     sortOrder = -1,
     status = null,
+    folderId = undefined,
   } = {},
   notif = null,
 ) {
+  const params = {
+    tags: tags.toString(),
+    text,
+    name: title,
+    page,
+    size: pageSize,
+    sortField,
+    sortCriteria: sortOrder,
+    processing: status,
+  }
+
+  if (folderId !== undefined) {
+    // Send "null" as string so axios doesn't strip it from query params
+    params.folderId = folderId === null ? "null" : folderId
+  }
+
   const getConversations = await sendRequest(
     `${BASE_API}/${scope}`,
     {
       method: "get",
     },
-    {
-      tags: tags.toString(),
-      text,
-      name: title,
-      page,
-      size: pageSize,
-      sortField,
-      sortCriteria: sortOrder,
-      processing: status,
-    },
+    params,
     notif,
   )
 

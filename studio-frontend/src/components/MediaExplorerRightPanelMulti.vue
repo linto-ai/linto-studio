@@ -96,6 +96,20 @@
       </div>
     </div>
 
+    <!-- Bulk move to folder -->
+    <div
+      class="media-section"
+      v-if="!readOnly && getCurrentScope == 'organization'">
+      <h4 class="section-title">
+        {{ $t("folders.move_to_folder") }}
+      </h4>
+      <div class="actions-container">
+        <FolderSelector
+          :value="bulkFolderId"
+          @change="handleBulkFolderChange" />
+      </div>
+    </div>
+
     <div
       class="media-section"
       v-if="!readOnly && getCurrentScope == 'organization'">
@@ -129,6 +143,7 @@
 <script>
 import { mapGetters } from "vuex"
 import { mediaScopeMixin } from "@/mixins/mediaScope"
+import { apiUpdateConversation } from "@/api/conversation"
 
 import Avatar from "@/components/atoms/Avatar.vue"
 import InputSelector from "@/components/atoms/InputSelector.vue"
@@ -137,6 +152,7 @@ import ModalDeleteConversations from "./ModalDeleteConversations.vue"
 import ConversationShareMultiple from "./ConversationShareMultiple.vue"
 import { mediaExplorerRightPanelMixin } from "@/mixins/mediaExplorerRightPanel.js"
 import ChipTag from "./atoms/ChipTag.vue"
+import FolderSelector from "./FolderSelector.vue"
 
 export default {
   name: "MediaExplorerRightPanelMulti",
@@ -147,6 +163,7 @@ export default {
     Tooltip,
     ModalDeleteConversations,
     ConversationShareMultiple,
+    FolderSelector,
   },
   props: {
     selectedMedias: {
@@ -163,6 +180,7 @@ export default {
       downloadLoading: false,
       bulkTitle: "",
       bulkDescription: "",
+      bulkFolderId: null,
       showDeleteModal: false,
     }
   },
@@ -170,6 +188,7 @@ export default {
     ...mapGetters("user", { userInfo: "getUserInfos" }),
     ...mapGetters("organizations", {
       currentOrganizationScope: "getCurrentOrganizationScope",
+      getCurrentScope: "getCurrentScope",
     }),
     commonTags() {
       if (this.selectedMedias.length === 0) return []
@@ -346,6 +365,52 @@ export default {
         })
       } finally {
         this.downloadLoading = false
+      }
+    },
+
+    async handleBulkFolderChange(folderId) {
+      if (this.selectedMedias.length === 0) return
+
+      try {
+        const conversationIds = this.selectedMedias.map((m) => m._id)
+
+        if (folderId) {
+          await this.$store.dispatch("folders/moveConversationsToFolder", {
+            folderId,
+            conversationIds,
+          })
+        } else {
+          // Move to uncategorized: update each conversation's folderId to null
+          const promises = conversationIds.map((id) =>
+            apiUpdateConversation(id, { folderId: null }),
+          )
+          await Promise.all(promises)
+          this.$store.dispatch("system/addNotification", {
+            type: "success",
+            message: this.$t("folders.move_success"),
+          })
+        }
+
+        this.bulkFolderId = folderId
+
+        // Update local media state
+        this.selectedMedias.forEach((media) => {
+          this.$store.dispatch(`${this.storeScope}/updateMedia`, {
+            mediaId: media._id,
+            media: { ...media, folderId },
+            patch: true,
+          })
+        })
+
+        // Refresh folder counts and conversation list
+        this.$store.dispatch("folders/fetchFolders")
+        this.$store.dispatch(`${this.storeScope}/load`)
+      } catch (error) {
+        console.error("Bulk folder move error:", error)
+        this.$store.dispatch("system/addNotification", {
+          type: "error",
+          message: this.$t("folders.move_error"),
+        })
       }
     },
 

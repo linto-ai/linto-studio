@@ -19,6 +19,7 @@ export default function createMediaModule(scope, status = "done") {
       autoselectMedias: false,
       searchQuery: "",
       selectedTagIds: [],
+      selectedFolderId: undefined,
       pagination: { page: 0, hasMore: true },
       count: 0,
       countDone: 0,
@@ -34,6 +35,7 @@ export default function createMediaModule(scope, status = "done") {
       search: (s) => s.searchQuery,
       hasMore: (s) => s.pagination.hasMore,
       selectedTagIds: (s) => s.selectedTagIds,
+      selectedFolderId: (s) => s.selectedFolderId,
       count: (s) => s.count,
       countDone: (s) => s.countDone,
       countProcessing: (s) => s.countProcessing,
@@ -155,6 +157,9 @@ export default function createMediaModule(scope, status = "done") {
       clearSelectedTagIds(state) {
         state.selectedTagIds = []
       },
+      setSelectedFolderId(state, folderId) {
+        state.selectedFolderId = folderId
+      },
       setCount(state, count) {
         state.count = count
       },
@@ -184,6 +189,7 @@ export default function createMediaModule(scope, status = "done") {
             title: getters.search,
             tags: getters.selectedTagIds,
             status: getters.getFilterStatus,
+            folderId: getters.selectedFolderId,
           })
 
           if (append) commit("appendMedias", data.list)
@@ -283,6 +289,16 @@ export default function createMediaModule(scope, status = "done") {
       },
       clearSelectedTagIds({ commit }) {
         commit("clearSelectedTagIds")
+      },
+      setSelectedFolderId({ commit }, folderId) {
+        commit("setSelectedFolderId", folderId)
+      },
+      toggleSelectedFolderId({ commit, getters }, folderId) {
+        if (getters.selectedFolderId === folderId) {
+          commit("setSelectedFolderId", undefined)
+        } else {
+          commit("setSelectedFolderId", folderId)
+        }
       },
       clearSelectedMedias({ commit }) {
         commit("clearSelectedMedias")
