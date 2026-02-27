@@ -38,9 +38,13 @@ module.exports = function generateTokens(
 
 // Helper function to generate a single JWT
 function generateJWT(payload, secret, expiresIn) {
-  return jwt.sign({ data: payload }, secret, {
+  const options = {
     algorithm: algorithm,
     expiresIn:
       expiresIn || process.env.TOKEN_DAYS_TIME || DEFAULT_TOKEN_EXPIRATION,
-  })
+  }
+  if (process.env.CM_API_URL) {
+    options.issuer = process.env.CM_API_URL
+  }
+  return jwt.sign({ data: payload }, secret, options)
 }
