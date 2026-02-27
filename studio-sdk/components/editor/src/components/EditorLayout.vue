@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, readonly, useTemplateRef, watch } from 'vue'
+import { computed, ref, readonly, useTemplateRef, watch } from "vue"
 import {
   DialogRoot,
   DialogPortal,
@@ -7,36 +7,38 @@ import {
   DialogContent,
   DialogTitle,
   DialogClose,
-} from 'reka-ui'
-import { X } from 'lucide-vue-next'
-import EditorHeader from './EditorHeader.vue'
-import TranscriptionPanel from './TranscriptionPanel.vue'
-import SpeakerSidebar from './SpeakerSidebar.vue'
-import AudioPlayer from './AudioPlayer.vue'
-import ChannelSelector from './ChannelSelector.vue'
-import SidebarSelect from './atoms/SidebarSelect.vue'
-import { provideAudioContext } from '../composables/useAudioContext'
-import { useIsMobile } from '../composables/useIsMobile'
-import { useEditorCore } from '../core'
-import { useI18n } from '../i18n'
-import { buildLanguageItems } from '../utils/intl'
+} from "reka-ui"
+import { X } from "lucide-vue-next"
+import EditorHeader from "./EditorHeader.vue"
+import TranscriptionPanel from "./TranscriptionPanel.vue"
+import SpeakerSidebar from "./SpeakerSidebar.vue"
+import AudioPlayer from "./AudioPlayer.vue"
+import ChannelSelector from "./ChannelSelector.vue"
+import SidebarSelect from "./atoms/SidebarSelect.vue"
+import { provideAudioContext } from "../composables/useAudioContext"
+import { useIsMobile } from "../composables/useIsMobile"
+import { useEditorCore } from "../core"
+import { useI18n } from "../i18n"
+import { buildLanguageItems } from "../utils/intl"
 
 const editor = useEditorCore()
 const { t, locale } = useI18n()
 const { isMobile } = useIsMobile()
 const isSidebarOpen = ref(false)
 
-const activeDocument = editor.activeDocument
 const activeChannel = editor.activeChannel
+const activeTranslation = editor.activeTranslation
 const activeTurns = editor.activeTurns
 const availableLanguages = editor.availableLanguages
 const activeLanguageCode = editor.activeLanguageCode
-const channels = editor.channels
+const speakers = editor.speakers
 
-const activeAudioSrc = computed(() => activeChannel.value.audioSrc)
-const speakerList = computed(() => Array.from(activeDocument.value.speakers.values()))
+const channels = computed(() => editor.document.value.channels)
+const activeAudioSrc = computed(() => activeTranslation.value.audio?.src)
+const speakerList = computed(() => Array.from(speakers.value.values()))
 
-const audioPlayerRef = useTemplateRef<InstanceType<typeof AudioPlayer>>('audioPlayer')
+const audioPlayerRef =
+  useTemplateRef<InstanceType<typeof AudioPlayer>>("audioPlayer")
 const currentTime = ref(0)
 const isPlaying = ref(false)
 
@@ -44,15 +46,23 @@ function onTimeUpdate(time: number) {
   currentTime.value = time
 }
 
-watch(() => editor.activeChannelId.value, () => {
-  audioPlayerRef.value?.pause()
-  currentTime.value = 0
-  isPlaying.value = false
-  isSidebarOpen.value = false
-})
+watch(
+  () => editor.activeChannelId.value,
+  () => {
+    audioPlayerRef.value?.pause()
+    currentTime.value = 0
+    isPlaying.value = false
+    isSidebarOpen.value = false
+  },
+)
 
 const languageItems = computed(() =>
-  buildLanguageItems(availableLanguages.value, locale.value, t('sidebar.originalLanguage'))
+  buildLanguageItems(
+    availableLanguages.value,
+    locale.value,
+    t("sidebar.originalLanguage"),
+    t("language.wildcard"),
+  ),
 )
 
 function onChannelChange(channelId: string) {
@@ -73,15 +83,13 @@ provideAudioContext({
 <template>
   <div class="editor-layout">
     <EditorHeader
-      :metadata="activeDocument.metadata"
+      :title="editor.document.value.title"
+      :duration="activeChannel.duration"
+      :language="activeLanguageCode"
       :is-mobile="isMobile"
-      @toggle-sidebar="isSidebarOpen = !isSidebarOpen"
-    />
+      @toggle-sidebar="isSidebarOpen = !isSidebarOpen" />
     <main class="editor-body">
-      <TranscriptionPanel
-        :turns="activeTurns"
-        :speakers="activeDocument.speakers"
-      />
+      <TranscriptionPanel :turns="activeTurns" :speakers="speakers" />
       <SpeakerSidebar
         v-if="!isMobile"
         :speakers="speakerList"
@@ -90,15 +98,18 @@ provideAudioContext({
         :available-languages="availableLanguages"
         :selected-language="activeLanguageCode"
         @update:selected-channel-id="onChannelChange"
-        @update:selected-language="onLanguageChange"
-      />
+        @update:selected-language="onLanguageChange" />
 
       <DialogRoot v-model:open="isSidebarOpen">
         <DialogPortal>
           <DialogOverlay class="sidebar-overlay" />
           <DialogContent class="sidebar-drawer">
-            <DialogTitle class="sr-only">{{ t('sidebar.speakers') }}</DialogTitle>
-            <DialogClose class="sidebar-close" :aria-label="t('header.closeSidebar')">
+            <DialogTitle class="sr-only">{{
+              t("sidebar.speakers")
+            }}</DialogTitle>
+            <DialogClose
+              class="sidebar-close"
+              :aria-label="t('header.closeSidebar')">
               <X :size="20" />
             </DialogClose>
             <SpeakerSidebar
@@ -108,8 +119,7 @@ provideAudioContext({
               :available-languages="availableLanguages"
               :selected-language="activeLanguageCode"
               @update:selected-channel-id="onChannelChange"
-              @update:selected-language="onLanguageChange"
-            />
+              @update:selected-language="onLanguageChange" />
           </DialogContent>
         </DialogPortal>
       </DialogRoot>
@@ -119,24 +129,21 @@ provideAudioContext({
       ref="audioPlayer"
       :audio-src="activeAudioSrc"
       :turns="activeTurns"
-      :speakers="activeDocument.speakers"
+      :speakers="speakers"
       @timeupdate="onTimeUpdate"
-      @play-state-change="(v: boolean) => isPlaying = v"
-    />
+      @play-state-change="(v: boolean) => (isPlaying = v)" />
     <div v-if="isMobile" class="mobile-selectors">
       <ChannelSelector
         v-if="channels.length > 1"
         :channels="channels"
         :selected-channel-id="editor.activeChannelId.value"
-        @update:selected-channel-id="onChannelChange"
-      />
+        @update:selected-channel-id="onChannelChange" />
       <SidebarSelect
         v-if="availableLanguages.length > 1"
         :items="languageItems"
         :selected-value="activeLanguageCode"
         :ariaLabel="t('sidebar.languageLabel')"
-        @update:selected-value="onLanguageChange"
-      />
+        @update:selected-value="onLanguageChange" />
     </div>
   </div>
 </template>
@@ -145,7 +152,7 @@ provideAudioContext({
 .editor-layout {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
   overflow: hidden;
   background-color: var(--color-background);
 }
@@ -238,13 +245,21 @@ provideAudioContext({
 }
 
 @keyframes overlay-fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes drawer-slide-in {
-  from { translate: 100% 0; }
-  to { translate: 0 0; }
+  from {
+    translate: 100% 0;
+  }
+  to {
+    translate: 0 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

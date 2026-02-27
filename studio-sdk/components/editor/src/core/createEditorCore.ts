@@ -1,53 +1,76 @@
-import { ref, computed, shallowRef, triggerRef } from 'vue'
-import type { Channel, Turn, Speaker, Word } from '../types/editor'
-import { SPEAKER_COLORS } from '../constants/speakers'
+import { ref, computed, shallowRef, triggerRef } from "vue"
+import type { EditorDocument, Turn, Speaker, Word } from "../types/editor"
 import type {
   EditorCore,
   EditorCoreOptions,
   EditorEventMap,
   EditorCapabilities,
   EditorPlugin,
-} from './types'
+} from "./types"
+import { SPEAKER_COLORS } from "../constants/speakers"
+import { validateEditorDocument } from "../utils/validateDocument"
 
-type EventHandler<K extends keyof EditorEventMap> = (payload: EditorEventMap[K]) => void
+type EventHandler<K extends keyof EditorEventMap> = (
+  payload: EditorEventMap[K],
+) => void
 type AnyHandler = (payload: never) => void
+
+const emptyDocument: EditorDocument = {
+  title: "",
+  speakers: new Map(),
+  channels: [],
+}
 
 export function createEditorCore(options: EditorCoreOptions = {}): EditorCore {
   // ── State ──────────────────────────────────────────────────────────
 
-  const channels = ref<Channel[]>(options.channels ?? [])
-  const activeChannelId = ref(options.activeChannelId ?? '')
+  const document = ref<EditorDocument>(options.document ?? emptyDocument)
+  const activeChannelId = ref(options.activeChannelId ?? "")
   const selectedLanguage = ref<string | null>(null)
-  const partials = shallowRef<Map<string, string>>(new Map())
+  const partial = shallowRef<string | null>(null)
   const capabilities = ref<EditorCapabilities>(
-    options.capabilities ?? { text: 'edit', speakers: 'edit' },
+    options.capabilities ?? { text: "edit", speakers: "edit" },
   )
 
   // ── Computed ───────────────────────────────────────────────────────
 
-  const activeChannel = computed(() =>
-    channels.value.find(c => c.id === activeChannelId.value) ?? channels.value[0]!,
+  const activeChannel = computed(
+    () =>
+      document.value.channels.find((c) => c.id === activeChannelId.value) ??
+      document.value.channels[0]!,
   )
 
-  const activeDocument = computed(() => activeChannel.value.document)
-
-  const activeLanguageCode = computed(() =>
-    selectedLanguage.value ?? activeDocument.value.metadata.language,
+  const sourceTranslation = computed(
+    () =>
+      activeChannel.value.translations.find((t) => t.isSource) ??
+      activeChannel.value.translations[0]!,
   )
 
-  const activeTurns = computed(() => {
-    if (!selectedLanguage.value) return activeDocument.value.turns
-    const tr = activeChannel.value.translations?.find(
-      t => t.language === selectedLanguage.value,
+  const activeTranslation = computed(() => {
+    if (!selectedLanguage.value) return sourceTranslation.value
+    const tr = activeChannel.value.translations.find((t) =>
+      t.languages.includes(selectedLanguage.value!),
     )
-    return tr?.turns ?? activeDocument.value.turns
+    return tr ?? sourceTranslation.value
   })
+
+  const activeTurns = computed(() => activeTranslation.value.turns)
+
+  const activeLanguageCode = computed(
+    () => selectedLanguage.value ?? sourceTranslation.value.languages[0]!,
+  )
 
   const availableLanguages = computed(() => {
-    const original = activeDocument.value.metadata.language
-    const extras = activeChannel.value.translations?.map(t => t.language) ?? []
-    return [original, ...extras]
+    const langs: string[] = []
+    for (const tr of activeChannel.value.translations) {
+      for (const lang of tr.languages) {
+        if (!langs.includes(lang)) langs.push(lang)
+      }
+    }
+    return langs
   })
+
+  const speakers = computed(() => document.value.speakers)
 
   // ── Event Bus ──────────────────────────────────────────────────────
 
@@ -77,116 +100,147 @@ export function createEditorCore(options: EditorCoreOptions = {}): EditorCore {
     event: K,
     payload: EditorEventMap[K],
   ): void {
-    listeners.get(event)?.forEach(h => (h as EventHandler<K>)(payload))
+    listeners.get(event)?.forEach((h) => (h as EventHandler<K>)(payload))
+  }
+
+  // ── Document ─────────────────────────────────────────────────────
+
+  function ensureDocumentSpeakers(doc: EditorDocument): void {
+    for (const [id, speaker] of doc.speakers) {
+      ensureSpeaker(id, speaker.name)
+    }
+    for (const channel of doc.channels) {
+      for (const translation of channel.translations) {
+        for (const turn of translation.turns) {
+          ensureSpeaker(turn.speakerId)
+        }
+      }
+    }
+  }
+
+  function setDocument(doc: EditorDocument): void {
+    validateEditorDocument(doc)
+    document.value = { ...doc, speakers: new Map() }
+    ensureDocumentSpeakers(doc)
+    if (
+      doc.channels.length > 0 &&
+      !doc.channels.some((c) => c.id === activeChannelId.value)
+    ) {
+      activeChannelId.value = doc.channels[0]!.id
+    }
+
+    selectedLanguage.value = null
+    clearPartial()
   }
 
   // ── Channel / Language ─────────────────────────────────────────────
-
-  function setChannels(newChannels: Channel[]): void {
-    channels.value = newChannels
-    if (newChannels.length > 0 && !newChannels.some(c => c.id === activeChannelId.value)) {
-      activeChannelId.value = newChannels[0]!.id
-    }
-  }
 
   function setActiveChannel(channelId: string): void {
     if (channelId === activeChannelId.value) return
     activeChannelId.value = channelId
     selectedLanguage.value = null
-    clearAllPartials()
-    emit('channel:change', { channelId })
+    clearPartial()
+    emit("channel:change", { channelId })
   }
 
   function setActiveLanguage(language: string | null): void {
-    const isOriginal = language === activeDocument.value.metadata.language
-    selectedLanguage.value = isOriginal ? null : language
-    emit('language:change', { language: selectedLanguage.value })
+    const isSource = sourceTranslation.value.languages.includes(language ?? "")
+    selectedLanguage.value = isSource ? null : language
+    emit("language:change", { language: selectedLanguage.value })
   }
 
   // ── Turn Mutations ─────────────────────────────────────────────────
 
   function findTurnIndex(turnId: string): number {
-    return activeDocument.value.turns.findIndex(t => t.id === turnId)
+    return activeTranslation.value.turns.findIndex((t) => t.id === turnId)
   }
 
   function addTurn(turn: Turn): void {
-    activeDocument.value.turns.push(turn)
-    emit('turn:add', { turn })
+    ensureSpeaker(turn.speakerId)
+    const translation = activeTranslation.value
+    translation.turns = [...translation.turns, turn]
+    emit("turn:add", { turn })
   }
 
   function updateTurn(turnId: string, patch: Partial<Turn>): void {
     const idx = findTurnIndex(turnId)
     if (idx === -1) return
-    const turns = activeDocument.value.turns
-    turns[idx] = { ...turns[idx]!, ...patch, id: turnId }
-    emit('turn:update', { turn: turns[idx]! })
+    const translation = activeTranslation.value
+    const updated = { ...translation.turns[idx]!, ...patch, id: turnId }
+    translation.turns = translation.turns.map((t, i) => (i === idx ? updated : t))
+    emit("turn:update", { turn: updated })
   }
 
   function removeTurn(turnId: string): void {
     const idx = findTurnIndex(turnId)
     if (idx === -1) return
-    activeDocument.value.turns.splice(idx, 1)
-    emit('turn:remove', { turnId })
+    const translation = activeTranslation.value
+    translation.turns = translation.turns.filter((_, i) => i !== idx)
+    emit("turn:remove", { turnId })
   }
 
   function updateWords(turnId: string, words: Word[]): void {
     const idx = findTurnIndex(turnId)
     if (idx === -1) return
-    const turns = activeDocument.value.turns
-    const turn = turns[idx]!
-    turns[idx] = {
+    const translation = activeTranslation.value
+    const turn = translation.turns[idx]!
+    const updated = {
       ...turn,
       words,
-      text: words.map(w => w.text).join(' '),
+      text: null,
       startTime: words[0]?.startTime ?? turn.startTime,
       endTime: words[words.length - 1]?.endTime ?? turn.endTime,
     }
-    emit('turn:update', { turn: turns[idx]! })
+    translation.turns = translation.turns.map((t, i) => (i === idx ? updated : t))
+    emit("turn:update", { turn: updated })
   }
 
   // ── Speaker Mutations ──────────────────────────────────────────────
 
-  function addSpeaker(speaker: { id: string; name: string; color?: string }): void {
-    const color = speaker.color
-      ?? SPEAKER_COLORS[activeDocument.value.speakers.size % SPEAKER_COLORS.length]!
-    const full: Speaker = { id: speaker.id, name: speaker.name, color }
-    activeDocument.value.speakers.set(full.id, full)
-    emit('speaker:add', { speaker: full })
+  function nextSpeakerColor(): string {
+    return SPEAKER_COLORS[document.value.speakers.size % SPEAKER_COLORS.length]!
   }
 
-  function ensureSpeaker(speakerId: string): void {
-    if (activeDocument.value.speakers.has(speakerId)) return
-    addSpeaker({ id: speakerId, name: speakerId })
+  function addSpeaker(speaker: { id: string; name: string }): void {
+    const full: Speaker = {
+      id: speaker.id,
+      name: speaker.name,
+      color: nextSpeakerColor(),
+    }
+    document.value.speakers.set(full.id, full)
+    emit("speaker:add", { speaker: full })
   }
 
-  function updateSpeaker(speakerId: string, patch: Partial<Omit<Speaker, 'id'>>): void {
-    const existing = activeDocument.value.speakers.get(speakerId)
+  function ensureSpeaker(speakerId: string | null, name?: string): void {
+    if (!speakerId) return
+    if (document.value.speakers.has(speakerId)) return
+    addSpeaker({ id: speakerId, name: name ?? speakerId })
+  }
+
+  function updateSpeaker(
+    speakerId: string,
+    patch: Partial<Omit<Speaker, "id">>,
+  ): void {
+    const existing = document.value.speakers.get(speakerId)
     if (!existing) return
     const updated = { ...existing, ...patch }
-    activeDocument.value.speakers.set(speakerId, updated)
-    emit('speaker:update', { speaker: updated })
+    document.value.speakers.set(speakerId, updated)
+    emit("speaker:update", { speaker: updated })
   }
 
   // ── Partials ───────────────────────────────────────────────────────
 
-  function setPartial(turnId: string, text: string): void {
-    partials.value.set(turnId, text)
-    triggerRef(partials)
-    emit('partial:set', { turnId, text })
+  function setPartial(text: string): void {
+    partial.value = text
+    triggerRef(partial)
+    emit("partial:set", { text })
   }
 
-  function clearPartial(turnId: string): void {
-    if (!partials.value.has(turnId)) return
-    partials.value.delete(turnId)
-    triggerRef(partials)
-    emit('partial:clear', { turnId })
-  }
-
-  function clearAllPartials(): void {
-    if (partials.value.size === 0) return
-    partials.value.clear()
-    triggerRef(partials)
-    emit('partials:clear-all', undefined as never)
+  function clearPartial(): void {
+    if (partial.value === null) return
+    partial.value = null
+    triggerRef(partial)
+    emit("partial:clear", undefined as never)
   }
 
   // ── Plugin Lifecycle ───────────────────────────────────────────────
@@ -199,8 +253,8 @@ export function createEditorCore(options: EditorCoreOptions = {}): EditorCore {
   }
 
   function destroy(): void {
-    emit('destroy', undefined as never)
-    cleanups.forEach(fn => fn())
+    emit("destroy", undefined as never)
+    cleanups.forEach((fn) => fn())
     cleanups.length = 0
     listeners.clear()
   }
@@ -209,19 +263,21 @@ export function createEditorCore(options: EditorCoreOptions = {}): EditorCore {
 
   const core: EditorCore = {
     // State
-    channels,
+    document,
     activeChannelId,
     selectedLanguage,
-    partials,
+    partial,
     capabilities,
     // Computed
     activeChannel,
-    activeDocument,
+    activeTranslation,
     activeTurns,
     activeLanguageCode,
     availableLanguages,
+    speakers,
+    // Document
+    setDocument,
     // Channel / Language
-    setChannels,
     setActiveChannel,
     setActiveLanguage,
     // Turns
@@ -235,7 +291,6 @@ export function createEditorCore(options: EditorCoreOptions = {}): EditorCore {
     // Partials
     setPartial,
     clearPartial,
-    clearAllPartials,
     // Events
     on,
     off,

@@ -1,32 +1,42 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import SpeakerIndicator from './atoms/SpeakerIndicator.vue'
-import EditorBadge from './atoms/EditorBadge.vue'
-import { useI18n } from '../i18n'
-import { formatTime } from '../utils/time'
-import { getLanguageDisplayName } from '../utils/intl'
-import type { Speaker } from '../types/editor'
+import { computed } from "vue"
+import SpeakerIndicator from "./atoms/SpeakerIndicator.vue"
+import EditorBadge from "./atoms/EditorBadge.vue"
+import { useI18n } from "../i18n"
+import { formatTime } from "../utils/time"
+import { getLanguageDisplayName } from "../utils/intl"
+import type { Speaker } from "../types/editor"
 
 const props = defineProps<{
-  speaker: Speaker
-  startTime: number
+  speaker?: Speaker
+  startTime?: number
   language: string
 }>()
 
-const { locale } = useI18n()
+const { t, locale } = useI18n()
 
-const languageName = computed(() => getLanguageDisplayName(props.language, locale.value))
+const languageName = computed(() =>
+  getLanguageDisplayName(props.language, locale.value, t("language.wildcard")),
+)
 
-const formattedTime = computed(() => formatTime(props.startTime))
+const formattedTime = computed(() =>
+  props.startTime != null ? formatTime(props.startTime) : null,
+)
 
-const isoDuration = computed(() => `PT${props.startTime.toFixed(1)}S`)
+const isoDuration = computed(() =>
+  props.startTime != null ? `PT${props.startTime.toFixed(1)}S` : undefined,
+)
+
+const speakerColor = computed(() => props.speaker?.color ?? 'transparent')
 </script>
 
 <template>
   <div class="speaker-label">
-    <SpeakerIndicator :color="speaker.color" />
-    <span class="speaker-name">{{ speaker.name }}</span>
-    <time class="timestamp" :datetime="isoDuration">{{ formattedTime }}</time>
+    <SpeakerIndicator v-if="speaker" :color="speakerColor" />
+    <span v-if="speaker" class="speaker-name">{{ speaker.name }}</span>
+    <time v-if="formattedTime" class="timestamp" :datetime="isoDuration">{{
+      formattedTime
+    }}</time>
     <EditorBadge>{{ languageName }}</EditorBadge>
   </div>
 </template>

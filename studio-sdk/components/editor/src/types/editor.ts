@@ -3,19 +3,18 @@
 export interface Word {
   id: string
   text: string
-  startTime: number
-  endTime: number
-  confidence: number
+  startTime?: number
+  endTime?: number
+  confidence?: number
 }
 
 export interface Turn {
   id: string
-  speakerId: string
-  text: string
-  rawText: string
-  words: Word[]
-  startTime: number
-  endTime: number
+  speakerId: string | null
+  text: string | null // non-null when words is empty (live text-only), null otherwise
+  words: Word[] // non-empty for word-level detail (ASR), empty when text is the source
+  startTime?: number
+  endTime?: number
   language: string
 }
 
@@ -25,29 +24,30 @@ export interface Speaker {
   color: string
 }
 
-export interface DocumentMetadata {
-  title: string
-  description: string
-  duration: number
-  audioFilename: string
-  language: string
-}
-
-export interface EditorDocument {
-  metadata: DocumentMetadata
-  speakers: Map<string, Speaker>
-  turns: Turn[]
+export interface AudioSource {
+  src: string
+  filename?: string
 }
 
 export interface Translation {
-  language: string
+  id: string
+  languages: string[] // ["fr", "en"] for source, ["es"] for auto-translation
+  isSource: boolean
+  audio?: AudioSource
   turns: Turn[]
 }
 
 export interface Channel {
   id: string
-  label: string
-  document: EditorDocument
-  translations?: Translation[]
-  audioSrc?: string
+  name: string
+  description?: string
+  duration: number
+  translations: Translation[] // at least 1 (the source)
+}
+
+export interface EditorDocument {
+  title: string
+  description?: string
+  speakers: Map<string, Speaker>
+  channels: Channel[]
 }

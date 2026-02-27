@@ -2,10 +2,10 @@
 
 export interface ApiWord {
   wid: string
-  stime: number
-  etime: number
+  stime?: number
+  etime?: number
   word: string
-  confidence: number
+  confidence?: number
 }
 
 export interface ApiTurn {
@@ -14,6 +14,8 @@ export interface ApiTurn {
   segment: string
   raw_segment: string
   words: ApiWord[]
+  stime?: number
+  etime?: number
   language: string
 }
 

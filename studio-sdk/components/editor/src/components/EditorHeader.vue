@@ -6,10 +6,10 @@ import EditorButton from './atoms/EditorButton.vue'
 import { useI18n } from '../i18n'
 import { formatTime } from '../utils/time'
 import { getLanguageDisplayName } from '../utils/intl'
-import type { DocumentMetadata } from '../types/editor'
-
 const props = defineProps<{
-  metadata: DocumentMetadata
+  title: string
+  duration: number
+  language: string
   isMobile: boolean
 }>()
 
@@ -19,12 +19,12 @@ defineEmits<{
 
 const { t, locale } = useI18n()
 
-const languageName = computed(() => getLanguageDisplayName(props.metadata.language, locale.value))
+const languageName = computed(() => getLanguageDisplayName(props.language, locale.value, t('language.wildcard')))
 
-const formattedDuration = computed(() => formatTime(props.metadata.duration))
+const formattedDuration = computed(() => formatTime(props.duration))
 
 const formattedTitle = computed(() => {
-  return props.metadata.title.replace(/-/g, ' ')
+  return props.title.replace(/-/g, ' ')
 })
 </script>
 
@@ -35,7 +35,7 @@ const formattedTitle = computed(() => {
       <div class="badges">
         <EditorBadge>{{ languageName }}</EditorBadge>
         <EditorBadge>
-          <time :datetime="`PT${metadata.duration}S`">{{ formattedDuration }}</time>
+          <time :datetime="`PT${duration}S`">{{ formattedDuration }}</time>
         </EditorBadge>
       </div>
     </div>

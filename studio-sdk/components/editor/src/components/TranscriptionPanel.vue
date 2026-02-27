@@ -20,7 +20,19 @@ const editor = useEditorCore()
 const playback = useAudioContext()
 const panelRef = useTemplateRef<HTMLElement>('panel')
 
-const partials = computed(() => editor.partials.value)
+const partialTurn = computed(() => {
+  const text = editor.partial.value
+  if (text === null) return null
+  return {
+    id: '__partial__',
+    speakerId: null,
+    text,
+    words: [],
+    language: editor.activeLanguageCode.value,
+    startTime: undefined,
+    endTime: undefined,
+  } as Turn
+})
 
 const { isFollowing, resumeFollow } = useAutoScroll({
   panelRef,
@@ -37,8 +49,13 @@ const { isFollowing, resumeFollow } = useAutoScroll({
             v-for="turn in turns"
             :key="turn.id"
             :turn="turn"
-            :speaker="speakers.get(turn.speakerId)!"
-            :partial-text="partials.get(turn.id)"
+            :speaker="turn.speakerId ? speakers.get(turn.speakerId) : undefined"
+          />
+          <TranscriptionTurn
+            v-if="partialTurn"
+            key="__partial__"
+            :turn="partialTurn"
+            partial
           />
         </div>
       </ScrollAreaViewport>

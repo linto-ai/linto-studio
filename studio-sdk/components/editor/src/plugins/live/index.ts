@@ -8,42 +8,37 @@ export function createLivePlugin(): EditorPlugin & LivePluginApi {
 
   function onPartial(event: LivePartialEvent): void {
     if (!editor) return
-    editor.ensureSpeaker(event.speakerId)
-    editor.setPartial(event.turnId, event.text)
+    editor.setPartial(event.text)
   }
 
   function onFinal(event: LiveFinalEvent): void {
     if (!editor) return
     editor.ensureSpeaker(event.speakerId)
 
-    const existingIdx = editor.activeDocument.value.turns.findIndex(
+    const hasWords = event.words.length > 0
+    const existingIdx = editor.activeTranslation.value.turns.findIndex(
       t => t.id === event.turnId,
     )
 
+    const turnData = {
+      speakerId: event.speakerId,
+      text: hasWords ? null : event.text,
+      words: event.words,
+      startTime: event.startTime,
+      endTime: event.endTime,
+      language: event.language,
+    }
+
     if (existingIdx !== -1) {
-      editor.updateTurn(event.turnId, {
-        speakerId: event.speakerId,
-        text: event.text,
-        rawText: event.text,
-        words: event.words,
-        startTime: event.startTime,
-        endTime: event.endTime,
-        language: event.language,
-      })
+      editor.updateTurn(event.turnId, turnData)
     } else {
       editor.addTurn({
         id: event.turnId,
-        speakerId: event.speakerId,
-        text: event.text,
-        rawText: event.text,
-        words: event.words,
-        startTime: event.startTime,
-        endTime: event.endTime,
-        language: event.language,
+        ...turnData,
       })
     }
 
-    editor.clearPartial(event.turnId)
+    editor.clearPartial()
   }
 
   function onTranslation(_event: LiveTranslationEvent): void {

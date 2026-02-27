@@ -16,6 +16,9 @@ export { mapApiDocument } from './adapters/apiAdapter'
 export { provideI18n } from './i18n'
 export type { Locale } from './i18n'
 
+// Validation
+export { validateEditorDocument, DocumentValidationError } from './utils/validateDocument'
+
 // Types
-export type { EditorDocument, Turn, Speaker, Word, Channel, DocumentMetadata } from './types/editor'
+export type { EditorDocument, Turn, Speaker, Word, Channel, Translation, AudioSource } from './types/editor'
 export type { ApiDocument } from './types/api'

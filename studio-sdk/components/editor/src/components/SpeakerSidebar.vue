@@ -23,7 +23,7 @@ defineEmits<{
 const { t, locale } = useI18n()
 
 const languageItems = computed(() =>
-  buildLanguageItems(props.availableLanguages, locale.value, t('sidebar.originalLanguage'))
+  buildLanguageItems(props.availableLanguages, locale.value, t('sidebar.originalLanguage'), t('language.wildcard'))
 )
 </script>
 

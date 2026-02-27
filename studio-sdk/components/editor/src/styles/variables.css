@@ -1,7 +1,7 @@
 /* Design tokens */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
-:root {
+:root, :host {
   /* Colors — light theme */
   --color-background: #f8f9fa;
   --color-surface: #ffffff;
@@ -47,7 +47,21 @@
   --glass-border: rgba(255, 255, 255, 0.3);
 }
 
-/* Reset & base */
+:host {
+  /* Shadow DOM host styles */
+  display: block;
+  height: 100%;
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height);
+  color: var(--color-text-primary);
+  background-color: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+/* Reset */
 *,
 *::before,
 *::after {
@@ -56,6 +70,7 @@
   padding: 0;
 }
 
+/* Dev mode SPA (ignored in Shadow DOM — these elements don't exist) */
 html, body {
   height: 100%;
   overflow: hidden;

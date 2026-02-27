@@ -91,7 +91,7 @@
         :session="session"
         :isFromPublicLink="isFromPublicLink" />
 
-      <SessionLiveNG v-else :session="session" />
+      <SessionLiveNG v-else :session="session" :websocketInstance="websocketInstance" />
       <IsMobile>
         <SessionDropdownChannelSelector
           v-if="sessionLoaded"

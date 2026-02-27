@@ -26,7 +26,9 @@ export function useAutoScroll({ panelRef, playback }: UseAutoScrollOptions): Use
     const viewport = getViewport()
     if (!viewport) return
 
-    const activeEl = viewport.querySelector('[data-word-active]')
+    const activeEl =
+      viewport.querySelector('[data-word-active]') ??
+      viewport.querySelector('[data-turn-active]')
     if (!activeEl) return
 
     activeEl.scrollIntoView({

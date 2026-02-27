@@ -1,5 +1,5 @@
 import type { ComputedRef, Ref, ShallowRef } from 'vue'
-import type { Channel, EditorDocument, Turn, Speaker, Word } from '../types/editor'
+import type { Channel, EditorDocument, Translation, Turn, Speaker, Word } from '../types/editor'
 
 // ── Capabilities ────────────────────────────────────────────────────────
 
@@ -18,9 +18,8 @@ export interface EditorEventMap {
   'turn:remove': { turnId: string }
   'speaker:update': { speaker: Speaker }
   'speaker:add': { speaker: Speaker }
-  'partial:set': { turnId: string; text: string }
-  'partial:clear': { turnId: string }
-  'partials:clear-all': void
+  'partial:set': { text: string }
+  'partial:clear': void
   'destroy': void
 }
 
@@ -34,7 +33,7 @@ export interface EditorPlugin {
 // ── Core Options ───────────────────────────────────────────────────────
 
 export interface EditorCoreOptions {
-  channels?: Channel[]
+  document?: EditorDocument
   activeChannelId?: string
   capabilities?: EditorCapabilities
 }
@@ -43,21 +42,24 @@ export interface EditorCoreOptions {
 
 export interface EditorCore {
   // ── State (readonly) ───────────────────────────────────────────────
-  channels: Ref<Channel[]>
+  document: Ref<EditorDocument>
   activeChannelId: Ref<string>
   selectedLanguage: Ref<string | null>
-  partials: ShallowRef<Map<string, string>>
+  partial: ShallowRef<string | null>
   capabilities: Ref<EditorCapabilities>
 
   // ── Computed ───────────────────────────────────────────────────────
   activeChannel: ComputedRef<Channel>
-  activeDocument: ComputedRef<EditorDocument>
+  activeTranslation: ComputedRef<Translation>
   activeTurns: ComputedRef<Turn[]>
   activeLanguageCode: ComputedRef<string>
   availableLanguages: ComputedRef<string[]>
+  speakers: ComputedRef<Map<string, Speaker>>
+
+  // ── Document ─────────────────────────────────────────────────────
+  setDocument(doc: EditorDocument): void
 
   // ── Channel / Language ─────────────────────────────────────────────
-  setChannels(channels: Channel[]): void
   setActiveChannel(channelId: string): void
   setActiveLanguage(language: string | null): void
 
@@ -68,13 +70,12 @@ export interface EditorCore {
   updateWords(turnId: string, words: Word[]): void
 
   // ── Speakers ───────────────────────────────────────────────────────
-  ensureSpeaker(speakerId: string): void
+  ensureSpeaker(speakerId: string | null, name?: string): void
   updateSpeaker(speakerId: string, patch: Partial<Omit<Speaker, 'id'>>): void
 
   // ── Partials ───────────────────────────────────────────────────────
-  setPartial(turnId: string, text: string): void
-  clearPartial(turnId: string): void
-  clearAllPartials(): void
+  setPartial(text: string): void
+  clearPartial(): void
 
   // ── Events ─────────────────────────────────────────────────────────
   on<K extends keyof EditorEventMap>(

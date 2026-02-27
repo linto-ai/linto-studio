@@ -100,17 +100,18 @@ export function useAudioPlayer(options: UseAudioPlayerOptions) {
     regionsPlugin.clearRegions()
 
     for (const turn of turns.value) {
-      const speaker = speakers.value.get(turn.speakerId)
-      if (!speaker) continue
+      const speaker = turn.speakerId ? speakers.value.get(turn.speakerId) : undefined
+      if (!speaker || turn.startTime == null || turn.endTime == null) continue
 
+      const color = speaker.color
       const region = regionsPlugin.addRegion({
         start: turn.startTime,
         end: turn.endTime,
-        color: hexToRgba(speaker.color, 0.25),
+        color: hexToRgba(color, 0.25),
         drag: false,
         resize: false,
       })
-      region.element?.style.setProperty('--region-color', speaker.color)
+      region.element?.style.setProperty('--region-color', color)
     }
   }
 

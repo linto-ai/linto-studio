@@ -20,6 +20,7 @@ const fr = {
   'sidebar.language': 'Langue',
   'sidebar.languageLabel': 'Langue de transcription',
   'sidebar.originalLanguage': 'original',
+  'language.wildcard': 'Multi-langue',
 } as const
 
 export default fr

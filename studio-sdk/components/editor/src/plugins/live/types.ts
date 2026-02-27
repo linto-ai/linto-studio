@@ -1,21 +1,19 @@
 /** Live transcription event types — placeholder, to adapt to backend format */
 
 export interface LivePartialEvent {
-  turnId: string
-  speakerId: string
   text: string
 }
 
 export interface LiveFinalEvent {
   turnId: string
-  speakerId: string
+  speakerId: string | null
   text: string
   words: Array<{
     id: string
     text: string
-    startTime: number
-    endTime: number
-    confidence: number
+    startTime?: number
+    endTime?: number
+    confidence?: number
   }>
   startTime: number
   endTime: number

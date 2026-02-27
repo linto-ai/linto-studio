@@ -1,55 +1,69 @@
-import type { ApiDocument } from '../types/api'
+import type { ApiDocument, ApiWord } from '../types/api'
 import type { EditorDocument, Speaker, Turn, Word } from '../types/editor'
-import { SPEAKER_COLORS } from '../constants/speakers'
 
-function mapWord(w: { wid: string; stime: number; etime: number; word: string; confidence: number }): Word {
+function mapWord(w: ApiWord): Word {
   return {
     id: w.wid,
     text: w.word,
-    startTime: w.stime,
-    endTime: w.etime,
-    confidence: w.confidence,
+    ...(w.stime !== undefined && { startTime: w.stime }),
+    ...(w.etime !== undefined && { endTime: w.etime }),
+    ...(w.confidence !== undefined && { confidence: w.confidence }),
   }
 }
 
 export function mapApiDocument(raw: ApiDocument): EditorDocument {
   const speakers = new Map<string, Speaker>()
 
-  for (let i = 0; i < raw.speakers.length; i++) {
-    const s = raw.speakers[i]!
+  for (const s of raw.speakers) {
     speakers.set(s.speaker_id, {
       id: s.speaker_id,
       name: s.speaker_name,
-      color: SPEAKER_COLORS[i % SPEAKER_COLORS.length]!,
+      color: '',
     })
   }
 
   const turns: Turn[] = raw.text.map((t) => {
     const words = t.words.map(mapWord)
-    const startTime = words.length > 0 ? words[0]!.startTime : 0
-    const endTime = words.length > 0 ? words[words.length - 1]!.endTime : 0
+    const startTime = words[0]?.startTime ?? t.stime
+    const endTime = words.length > 0
+      ? (words[words.length - 1]!.endTime ?? t.etime)
+      : t.etime
 
     return {
       id: t.turn_id,
-      speakerId: t.speaker_id,
-      text: t.segment,
-      rawText: t.raw_segment,
+      speakerId: t.speaker_id || null,
+      text: words.length > 0 ? null : t.segment,
       words,
-      startTime,
-      endTime,
+      ...(startTime !== undefined && { startTime }),
+      ...(endTime !== undefined && { endTime }),
       language: t.language,
     }
   })
 
+  const sourceLanguage = raw.metadata.transcription.lang ?? raw.text[0]?.language ?? 'fr'
+
   return {
-    metadata: {
-      title: raw.name,
-      description: raw.description,
-      duration: raw.metadata.audio.duration,
-      audioFilename: raw.metadata.audio.filename,
-      language: raw.text[0]?.language ?? 'fr',
-    },
+    title: raw.name,
+    description: raw.description,
     speakers,
-    turns,
+    channels: [
+      {
+        id: 'default',
+        name: 'Canal 1',
+        duration: raw.metadata.audio.duration,
+        translations: [
+          {
+            id: 'source',
+            languages: [sourceLanguage],
+            isSource: true,
+            audio: {
+              src: raw.metadata.audio.filepath,
+              filename: raw.metadata.audio.filename,
+            },
+            turns,
+          },
+        ],
+      },
+    ],
   }
 }

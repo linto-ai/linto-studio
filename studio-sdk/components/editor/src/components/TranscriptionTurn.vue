@@ -2,41 +2,62 @@
 import { computed } from 'vue'
 import SpeakerLabel from './SpeakerLabel.vue'
 import { useAudioContext } from '../composables/useAudioContext'
-import { findActiveWord } from '../utils/words'
+import { findActiveWord, hasWordTimestamps } from '../utils/words'
 import type { Turn, Speaker } from '../types/editor'
 
 const props = defineProps<{
   turn: Turn
-  speaker: Speaker
-  partialText?: string
+  speaker?: Speaker
+  partial?: boolean
 }>()
 
 const playback = useAudioContext()
 
+const hasWords = computed(() => props.turn.words.length > 0)
+
 const activeWordId = computed(() => {
-  if (!playback) return null
+  if (!playback || !hasWords.value) return null
   const time = playback.currentTime.value
   const { startTime, endTime, words } = props.turn
+  if (startTime == null || endTime == null) return null
   if (time < startTime || time > endTime) return null
   return findActiveWord(words, time)
 })
+
+const isTurnActive = computed(() => {
+  if (!playback) return false
+  if (props.turn.startTime == null || props.turn.endTime == null) return false
+  if (hasWordTimestamps(props.turn.words)) return false
+  const time = playback.currentTime.value
+  return time >= props.turn.startTime && time <= props.turn.endTime
+})
+
+const speakerColor = computed(() => props.speaker?.color ?? 'transparent')
 </script>
 
 <template>
-  <section class="turn" :style="{ '--speaker-color': speaker.color }">
+  <section
+    class="turn"
+    :class="{ 'turn--active': isTurnActive, 'turn--partial': partial }"
+    :data-turn-active="isTurnActive || undefined"
+    :style="{ '--speaker-color': speakerColor }"
+  >
     <SpeakerLabel
+      v-if="!partial"
       :speaker="speaker"
       :start-time="turn.startTime"
       :language="turn.language" />
     <p class="turn-text">
-      <template v-for="(word, i) in turn.words" :key="word.id">
-        <span
-          :class="{ 'word--active': word.id === activeWordId }"
-          :data-word-active="word.id === activeWordId || undefined"
-        >{{ word.text }}</span
-        >{{ i < turn.words.length - 1 ? " " : "" }}
+      <template v-if="hasWords">
+        <template v-for="(word, i) in turn.words" :key="word.id">
+          <span
+            :class="{ 'word--active': word.id === activeWordId }"
+            :data-word-active="word.id === activeWordId || undefined"
+          >{{ word.text }}</span
+          >{{ i < turn.words.length - 1 ? " " : "" }}
+        </template>
       </template>
-      <span v-if="partialText" class="partial-text"> {{ partialText }}</span>
+      <template v-else-if="turn.text">{{ turn.text }}</template>
     </p>
   </section>
 </template>
@@ -57,6 +78,11 @@ const activeWordId = computed(() => {
   color: var(--color-text-secondary);
 }
 
+.turn--active {
+  border-left: 3px solid var(--speaker-color);
+  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);
+}
+
 .word--active {
   text-decoration: underline;
   text-decoration-color: var(--speaker-color);
@@ -65,7 +91,7 @@ const activeWordId = computed(() => {
   color: var(--speaker-color);
 }
 
-.partial-text {
+.turn--partial .turn-text {
   font-style: italic;
   color: var(--color-text-muted);
   animation: partial-fade-in 200ms ease;
@@ -77,7 +103,7 @@ const activeWordId = computed(() => {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .partial-text {
+  .turn--partial .turn-text {
     animation: none;
   }
 }

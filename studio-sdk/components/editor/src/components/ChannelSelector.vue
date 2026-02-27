@@ -16,7 +16,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 
 const items = computed(() =>
-  props.channels.map(c => ({ value: c.id, label: c.label }))
+  props.channels.map(c => ({ value: c.id, label: c.name }))
 )
 </script>
 
