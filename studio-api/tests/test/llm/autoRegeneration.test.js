@@ -99,23 +99,25 @@ describe("Sprint 10: Auto-regeneration Flow", () => {
   let mockRes
   let mockNext
 
-  const mockConversation = {
-    _id: { toString: () => "conv-123" },
-    name: "Test Conversation",
-    organization: { organizationId: { toString: () => "org-456" } },
-    text: [
-      {
-        turn_id: "t1",
-        speaker_id: "s1",
-        speaker_name: "Speaker1",
-        segment: "Hello world",
-        stime: 0,
-        etime: 5,
-        words: [{ stime: 0, etime: 5 }]
-      }
-    ],
-    speakers: [{ speaker_id: "s1", speaker_name: "Speaker1" }],
-    tags: [],
+  function freshConversation() {
+    return {
+      _id: { toString: () => "conv-123" },
+      name: "Test Conversation",
+      organization: { organizationId: { toString: () => "org-456" } },
+      text: [
+        {
+          turn_id: "t1",
+          speaker_id: "s1",
+          speaker_name: "Speaker1",
+          segment: "Hello world",
+          stime: 0,
+          etime: 5,
+          words: [{ stime: 0, etime: 5 }]
+        }
+      ],
+      speakers: [{ speaker_id: "s1", speaker_name: "Speaker1" }],
+      tags: [],
+    }
   }
 
   beforeEach(() => {
@@ -141,8 +143,8 @@ describe("Sprint 10: Auto-regeneration Flow", () => {
 
     mockNext = jest.fn()
 
-    // Default setup: conversation exists
-    mockConversationsModel.getById.mockResolvedValue([mockConversation])
+    // Default setup: conversation exists (fresh copy each test)
+    mockConversationsModel.getById.mockResolvedValue([freshConversation()])
   })
 
   describe("Test 3.1: Auto-regenerate on job not found", () => {
@@ -343,23 +345,25 @@ describe("Sprint 10 Iteration 2: Conditional Auto-regeneration", () => {
   let mockRes
   let mockNext
 
-  const mockConversation = {
-    _id: { toString: () => "conv-123" },
-    name: "Test Conversation",
-    organization: { organizationId: { toString: () => "org-456" } },
-    text: [
-      {
-        turn_id: "t1",
-        speaker_id: "s1",
-        speaker_name: "Speaker1",
-        segment: "Hello world",
-        stime: 0,
-        etime: 5,
-        words: [{ stime: 0, etime: 5 }]
-      }
-    ],
-    speakers: [{ speaker_id: "s1", speaker_name: "Speaker1" }],
-    tags: [],
+  function freshConversation() {
+    return {
+      _id: { toString: () => "conv-123" },
+      name: "Test Conversation",
+      organization: { organizationId: { toString: () => "org-456" } },
+      text: [
+        {
+          turn_id: "t1",
+          speaker_id: "s1",
+          speaker_name: "Speaker1",
+          segment: "Hello world",
+          stime: 0,
+          etime: 5,
+          words: [{ stime: 0, etime: 5 }]
+        }
+      ],
+      speakers: [{ speaker_id: "s1", speaker_name: "Speaker1" }],
+      tags: [],
+    }
   }
 
   beforeEach(() => {
@@ -385,7 +389,7 @@ describe("Sprint 10 Iteration 2: Conditional Auto-regeneration", () => {
 
     mockNext = jest.fn()
 
-    mockConversationsModel.getById.mockResolvedValue([mockConversation])
+    mockConversationsModel.getById.mockResolvedValue([freshConversation()])
   })
 
   describe("job_removed response with hasOtherGenerations flag", () => {

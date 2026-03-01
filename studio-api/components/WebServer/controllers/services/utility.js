@@ -106,7 +106,8 @@ async function listLlmServices(organizationId = null, securityLevel = null) {
         .filter((service) => service.flavors.length > 0)
     )
   } catch (err) {
-    throw new ServiceError("LLM Gateway service unreachable")
+    debug("LLM Gateway service unreachable:", err.message)
+    return []
   }
 }
 
