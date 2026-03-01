@@ -1,7 +1,8 @@
 <template>
   <V2Layout
     v-if="dataLoaded && status == 'done'"
-    :breadcrumbItems="breadcrumbItems">
+    :breadcrumbItems="breadcrumbItems"
+    :noBreadcrumb="noBreadcrumb">
     <!-- <template v-slot:header-bar>
       <slot name="breadcrumb-actions"></slot>
     </template> -->
@@ -88,6 +89,10 @@ export default {
     breadcrumbItems: {
       type: Array,
       default: () => [],
+    },
+    noBreadcrumb: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

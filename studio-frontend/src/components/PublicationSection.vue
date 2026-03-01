@@ -1,6 +1,6 @@
 <template>
   <div class="publication-section">
-    <div class="section-header">
+    <div v-if="!hideHeader" class="section-header">
       <h3 class="section-title">{{ $t("publish.publication.title") }}</h3>
       <p class="section-description">
         {{ $t("publish.publication.description") }}
@@ -74,179 +74,130 @@
     </div>
 
     <!-- Preview Modal -->
-    <div
-      v-if="previewTemplate"
-      class="modal-overlay"
-      @click.self="closePreview">
-      <div class="modal-content preview-modal">
-        <div class="modal-header">
-          <h3>{{ getTemplateName(previewTemplate) }}</h3>
-          <button
-            class="modal-close-btn"
-            @click="closePreview"
-            type="button"
-            aria-label="Close">
-            <span class="icon close"></span>
-          </button>
-        </div>
-        <div class="modal-body preview-body">
-          <!-- PDF Preview using PdfViewer component -->
-          <PdfViewer
-            :src="previewUrl"
-            :loading="previewLoading"
-            :loadingText="$t('publish.publication.generating_preview')"
-            :error="previewError"
-            :showRetry="true"
-            :showToolbar="false"
-            class="preview-pdf-viewer"
-            @retry="generatePreview" />
-        </div>
-        <div class="modal-footer preview-footer">
-          <Button
-            variant="secondary"
-            @click="closePreview"
-            type="button"
-            :label="$t('common.cancel')" />
-          <div class="export-btns">
-            <Button
-              variant="secondary"
-              @click="downloadFromPreview('docx')"
-              :disabled="!previewUrl"
-              type="button"
-              icon="download"
-              label="DOCX" />
-            <Button
-              variant="primary"
-              @click="downloadFromPreview('pdf')"
-              :disabled="!previewUrl"
-              type="button"
-              icon="download"
-              label="PDF" />
-          </div>
-        </div>
-      </div>
-    </div>
+    <Modal
+      v-model="showPreviewModal"
+      :title="previewTemplate ? getTemplateName(previewTemplate) : ''"
+      size="lg"
+      :withActionApply="false"
+      :withActionCancel="false"
+      customModalClass="publication-preview-modal">
+      <template #content>
+        <PdfViewer
+          :src="previewUrl"
+          :loading="previewLoading"
+          :loadingText="$t('publish.publication.generating_preview')"
+          :error="previewError"
+          :showRetry="true"
+          :showToolbar="false"
+          class="preview-pdf-viewer"
+          @retry="generatePreview" />
+      </template>
+      <template #actions-left>
+        <Button
+          variant="tertiary"
+          @click="closePreview"
+          type="button"
+          icon="x-circle"
+          :label="$t('common.cancel')" />
+      </template>
+      <template #actions-right>
+        <Button
+          variant="secondary"
+          @click="downloadFromPreview('docx')"
+          :disabled="!previewUrl"
+          type="button"
+          icon="download"
+          label="DOCX" />
+        <Button
+          variant="primary"
+          @click="downloadFromPreview('pdf')"
+          :disabled="!previewUrl"
+          type="button"
+          icon="download"
+          label="PDF" />
+      </template>
+    </Modal>
 
     <!-- Upload Template Modal -->
-    <div
-      v-if="showCreateForm"
-      class="modal-overlay"
-      @click.self="closeUploadModal">
-      <div class="modal-content create-template-modal">
-        <div class="modal-header">
-          <h3>{{ $t("publish.publication.upload_template_title") }}</h3>
-          <button
-            class="modal-close-btn"
-            @click="closeUploadModal"
-            type="button">
-            <span class="icon close"></span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <!-- File Upload Zone -->
-          <div class="form-field">
-            <label>{{ $t("publish.publication.template_file") }} *</label>
-            <div
-              class="file-upload-zone"
-              :class="{ 'has-file': newTemplate.file, 'drag-over': isDragging }"
-              @click="triggerFileInput"
-              @dragover.prevent="isDragging = true"
-              @dragleave.prevent="isDragging = false"
-              @drop.prevent="handleFileDrop">
-              <input
-                ref="fileInput"
-                type="file"
-                accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                @change="handleFileSelect"
-                style="display: none" />
-              <template v-if="newTemplate.file">
-                <span class="icon document file-icon"></span>
-                <span class="file-name">{{ newTemplate.file.name }}</span>
-                <span class="file-size"
-                  >({{ formatFileSize(newTemplate.file.size) }})</span
-                >
-                <button
-                  type="button"
-                  class="file-remove"
-                  @click.stop="removeFile">
-                  ×
-                </button>
-              </template>
-              <template v-else>
-                <span class="icon upload upload-icon"></span>
-                <span class="upload-text">
-                  {{ $t("publish.publication.drop_file") }}
-                </span>
-                <span class="upload-hint">
-                  {{ $t("publish.publication.or_click") }}
-                </span>
-              </template>
-            </div>
-            <p class="field-hint" v-html="templateFormatHint"></p>
-          </div>
-
-          <div class="form-field">
-            <label>{{ $t("publish.publication.template_name") }} *</label>
+    <Modal
+      v-model="showCreateForm"
+      :title="$t('publish.publication.upload_template_title')"
+      size="sm"
+      :withActionApply="false"
+      @close="resetUploadForm">
+      <template #content>
+        <div class="form-field">
+          <label>{{ $t("publish.publication.template_file") }} *</label>
+          <div
+            class="file-upload-zone"
+            :class="{ 'has-file': newTemplate.file, 'drag-over': isDragging }"
+            @click="triggerFileInput"
+            @dragover.prevent="isDragging = true"
+            @dragleave.prevent="isDragging = false"
+            @drop.prevent="handleFileDrop">
             <input
-              type="text"
-              v-model="newTemplate.name_fr"
-              :placeholder="
-                $t('publish.publication.template_name_placeholder')
-              " />
+              ref="fileInput"
+              type="file"
+              accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+              @change="handleFileSelect"
+              style="display: none" />
+            <template v-if="newTemplate.file">
+              <span class="icon document file-icon"></span>
+              <span class="file-name">{{ newTemplate.file.name }}</span>
+              <span class="file-size">({{ formatFileSize(newTemplate.file.size) }})</span>
+              <button type="button" class="file-remove" @click.stop="removeFile">×</button>
+            </template>
+            <template v-else>
+              <span class="icon upload upload-icon"></span>
+              <span class="upload-text">{{ $t("publish.publication.drop_file") }}</span>
+              <span class="upload-hint">{{ $t("publish.publication.or_click") }}</span>
+            </template>
           </div>
+          <p class="field-hint" v-html="templateFormatHint"></p>
+        </div>
 
-          <div class="form-field">
-            <label>{{ $t("publish.publication.template_description") }}</label>
-            <textarea
-              v-model="newTemplate.description_fr"
-              :placeholder="
-                $t('publish.publication.template_description_placeholder')
-              "
-              rows="2"></textarea>
-          </div>
+        <div class="form-field">
+          <label>{{ $t("publish.publication.template_name") }} *</label>
+          <input
+            type="text"
+            v-model="newTemplate.name_fr"
+            :placeholder="$t('publish.publication.template_name_placeholder')" />
+        </div>
 
-          <div class="form-field" v-if="canCreateOrgTemplate">
-            <label>{{ $t("publish.publication.template_scope") }}</label>
-            <div class="scope-options">
-              <label class="scope-option">
-                <input
-                  type="radio"
-                  v-model="newTemplate.scope"
-                  value="personal" />
-                <span>{{ $t("publish.publication.scope_personal") }}</span>
-                <span class="scope-hint">{{
-                  $t("publish.publication.scope_personal_hint")
-                }}</span>
-              </label>
-              <label class="scope-option">
-                <input
-                  type="radio"
-                  v-model="newTemplate.scope"
-                  value="organization" />
-                <span>{{ $t("publish.publication.scope_organization") }}</span>
-                <span class="scope-hint">{{
-                  $t("publish.publication.scope_organization_hint")
-                }}</span>
-              </label>
-            </div>
+        <div class="form-field">
+          <label>{{ $t("publish.publication.template_description") }}</label>
+          <textarea
+            v-model="newTemplate.description_fr"
+            :placeholder="$t('publish.publication.template_description_placeholder')"
+            rows="2"></textarea>
+        </div>
+
+        <div class="form-field" v-if="canCreateOrgTemplate">
+          <label>{{ $t("publish.publication.template_scope") }}</label>
+          <div class="scope-options">
+            <label class="scope-option">
+              <input type="radio" v-model="newTemplate.scope" value="personal" />
+              <span>{{ $t("publish.publication.scope_personal") }}</span>
+              <span class="scope-hint">{{ $t("publish.publication.scope_personal_hint") }}</span>
+            </label>
+            <label class="scope-option">
+              <input type="radio" v-model="newTemplate.scope" value="organization" />
+              <span>{{ $t("publish.publication.scope_organization") }}</span>
+              <span class="scope-hint">{{ $t("publish.publication.scope_organization_hint") }}</span>
+            </label>
           </div>
         </div>
-        <div class="modal-footer">
-          <Button
-            variant="secondary"
-            @click="closeUploadModal"
-            type="button"
-            :label="$t('common.cancel')" />
-          <Button
-            variant="primary"
-            @click="uploadTemplate"
-            :disabled="!canUpload || uploading"
-            type="button"
-            :icon="uploading ? 'spinner-gap' : null"
-            :label="uploading ? $t('common.uploading') : $t('publish.publication.upload_button')" />
-        </div>
-      </div>
-    </div>
+      </template>
+      <template #actions-right>
+        <Button
+          variant="primary"
+          @click="uploadTemplate"
+          :disabled="!canUpload || uploading"
+          type="button"
+          :icon="uploading ? 'spinner-gap' : 'check'"
+          :label="uploading ? $t('common.uploading') : $t('publish.publication.upload_button')" />
+      </template>
+    </Modal>
   </div>
 </template>
 
@@ -259,6 +210,7 @@ import {
 } from "@/api/publication"
 import PublicationTemplateCard from "@/components/PublicationTemplateCard.vue"
 import PdfViewer from "@/components/PdfViewer.vue"
+import Modal from "@/components/molecules/Modal.vue"
 import Loading from "./atoms/Loading.vue"
 
 export default {
@@ -266,6 +218,7 @@ export default {
   components: {
     PublicationTemplateCard,
     PdfViewer,
+    Modal,
   },
   props: {
     jobId: {
@@ -282,6 +235,10 @@ export default {
       type: String,
       required: false,
       default: "export",
+    },
+    hideHeader: {
+      type: Boolean,
+      default: false,
     },
     userRole: {
       type: String,
@@ -318,6 +275,14 @@ export default {
     }
   },
   computed: {
+    showPreviewModal: {
+      get() {
+        return !!this.previewTemplate
+      },
+      set(val) {
+        if (!val) this.closePreview()
+      },
+    },
     canCreateOrgTemplate() {
       // User can create org-scoped templates if they are admin or manager
       const allowedRoles = [
@@ -378,6 +343,7 @@ export default {
       this.openPreview(template)
     },
     openPreview(template) {
+      this.$emit("preview-open")
       this.previewTemplate = template
       this.previewError = null
       // Revoke previous blob URL if exists
@@ -388,6 +354,7 @@ export default {
       this.generatePreview()
     },
     closePreview() {
+      this.$emit("preview-close")
       this.previewTemplate = null
       this.previewLoading = false
       this.previewError = null
@@ -853,118 +820,22 @@ export default {
   line-height: 1.4;
 }
 
-/* Modal styles */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content.create-template-modal {
-  background: var(--background-primary, white);
-  border-radius: 12px;
-  width: 90%;
-  max-width: 480px;
-  max-height: 90vh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--border-color, #e0e0e0);
-  flex-shrink: 0;
-  overflow: visible;
-}
-
-.modal-header h3 {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.modal-close {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: var(--text-secondary, #666);
-  padding: 0;
-  line-height: 1;
-}
-
-.modal-close:hover {
-  color: var(--text-primary, #333);
-}
-
-/* Improved close button */
-.modal-close-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border: none;
-  border-radius: 6px;
-  background: transparent;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-}
-
-.modal-close-btn:hover {
-  background: var(--background-secondary, #f5f5f5);
-}
-
-.modal-close-btn:hover .icon {
-  background-color: var(--text-primary, #333);
-}
-
-.modal-close-btn .icon {
-  width: 18px;
-  height: 18px;
-  background-color: var(--text-secondary, #666);
-}
-
-.modal-body {
-  padding: 20px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.modal-body .form-field {
+/* Form field styles (rendered inside Modal body) */
+.form-field {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.modal-body .form-field label {
+.form-field label {
   font-size: 13px;
   font-weight: 500;
   color: var(--text-primary, #333);
 }
 
-.modal-body .form-field input,
-.modal-body .form-field textarea,
-.modal-body .form-field select {
+.form-field input,
+.form-field textarea,
+.form-field select {
   padding: 10px 12px;
   border: 1px solid var(--border-color, #e0e0e0);
   border-radius: 6px;
@@ -972,9 +843,9 @@ export default {
   font-family: inherit;
 }
 
-.modal-body .form-field input:focus,
-.modal-body .form-field textarea:focus,
-.modal-body .form-field select:focus {
+.form-field input:focus,
+.form-field textarea:focus,
+.form-field select:focus {
   outline: none;
   border-color: var(--primary-color, #2196f3);
 }
@@ -1114,152 +985,15 @@ export default {
   color: var(--primary-color, #2196f3);
 }
 
-.modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  padding: 16px 20px;
-  border-top: 1px solid var(--border-color, #e0e0e0);
-}
-
-/* Preview modal footer */
-.modal-footer.preview-footer {
-  justify-content: space-between;
-  align-items: center;
-  background: var(--background-primary, white);
-}
-
-.export-btns {
-  display: flex;
-  gap: 8px;
-}
-
-.modal-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 16px;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.modal-btn.cancel {
-  background: transparent;
-  color: var(--text-secondary, #666);
-  border: 1px solid var(--border-color, #e0e0e0);
-}
-
-.modal-btn.cancel:hover {
-  background: var(--background-secondary, #f5f5f5);
-  color: var(--text-primary, #333);
-}
-
-.modal-btn.export {
-  background: var(--primary-color, #2196f3);
-  color: white;
-}
-
-.modal-btn.export:hover:not(:disabled) {
-  background: var(--primary-color-dark, #1976d2);
-}
-
-.modal-btn.export.docx {
-  background: var(--background-secondary, #f5f5f5);
-  color: var(--text-primary, #333);
-  border: 1px solid var(--border-color, #e0e0e0);
-}
-
-.modal-btn.export.docx:hover:not(:disabled) {
-  background: var(--background-tertiary, #e8e8e8);
-}
-
-.modal-btn.export.pdf {
-  background: var(--primary-color, #2196f3);
-  color: white;
-}
-
-.modal-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.modal-btn .icon {
-  width: 16px;
-  height: 16px;
-  background-color: currentColor;
-}
-
-.modal-btn.export.pdf .icon {
-  background-color: white;
-}
-
-.modal-btn.export.docx .icon {
-  background-color: var(--text-primary, #333);
-}
-
-/* Preview Modal */
-.modal-content.preview-modal {
-  background: var(--background-primary, white);
-  border-radius: 12px;
-  width: 90%;
-  max-width: 900px;
-  height: 85vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.preview-body {
-  flex: 1;
-  display: flex;
-  align-items: stretch;
-  justify-content: center;
-  padding: 16px;
-  overflow: hidden;
-  background: white;
-}
-
-.preview-body .preview-pdf-viewer {
-  width: 100%;
-  border: 1px solid var(--border-color, #e0e0e0);
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.preview-loading,
-.preview-error {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  color: var(--text-secondary, #666);
-  font-size: 14px;
-}
-
-.preview-error {
-  color: var(--error-color, #f44336);
-}
-
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid var(--border-color, #e0e0e0);
-  border-top-color: var(--primary-color, #2196f3);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 .preview-pdf-viewer {
   width: 100%;
   height: 100%;
+}
+</style>
+
+<!-- Unscoped: customModalClass renders in PopupHost outside this component's scope -->
+<style lang="scss">
+.publication-preview-modal {
+  height: 85vh;
 }
 </style>

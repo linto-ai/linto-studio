@@ -67,6 +67,15 @@
   }
 }
 
+.publish-verbatim-page {
+  width: 60rem;
+  max-width: 100%;
+  margin-inline: auto;
+  background-color: var(--background-primary);
+  border: var(--border-block);
+  box-shadow: var(--shadow-block);
+}
+
 .publish-main__empty {
   max-width: 56rem;
   margin-inline: auto;
@@ -191,14 +200,13 @@
 
 // Edit/Preview Toggle Styles
 .publish-editor-header {
-  padding: 0.5rem 1rem;
-  background-color: var(--background-secondary, #f5f5f5);
-  border-bottom: var(--border-block);
+  padding: 0.25rem 0.5rem;
 }
 
 .unsaved-indicator {
   color: var(--color-warning);
-  font-size: 0.875rem;
+  font-size: 0.8rem;
+  opacity: 0.8;
 }
 
 // Versions Section Styles

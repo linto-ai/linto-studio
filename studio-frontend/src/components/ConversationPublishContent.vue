@@ -22,23 +22,23 @@
         v-if="editable"
         class="publish-editor-header flex align-center justify-between">
         <div class="flex align-center gap-small">
-          <Tabs
-            :tabs="modeTabs"
-            v-model="viewMode"
-            variant="inline"
-            @input="setMode" />
-          <div
+          <Button
+            :variant="viewMode === 'edit' ? 'primary-soft' : 'secondary'"
+            :icon="viewMode === 'edit' ? 'eye' : 'pencil-simple'"
+            size="sm"
+            :label="viewMode === 'edit' ? $t('publish.editor.preview_mode') : $t('publish.editor.edit_mode')"
+            @click="toggleMode" />
+          <span
             v-if="hasChanges"
-            class="unsaved-indicator flex align-center gap-small">
-            <ph-icon name="warning" size="sm" />
-            <span>{{ $t("publish.editor.unsaved_changes") }}</span>
-          </div>
+            class="unsaved-indicator">
+            {{ $t("publish.editor.unsaved_changes") }}
+          </span>
         </div>
-        <!-- Save Version Button (in header, right side) -->
         <Button
           v-if="hasChanges"
           variant="primary"
           icon="floppy-disk"
+          size="sm"
           :label="$t('publish.editor.save_version')"
           @click="$emit('save-version')" />
       </div>
@@ -55,20 +55,9 @@
 
       <!-- Preview mode: Rendered markdown -->
       <div
-        v-else-if="viewMode === 'preview'"
+        v-else
         class="markdown-preview-container flex1"
         v-html="renderedMarkdown"></div>
-
-      <!-- Publication mode: Show templates -->
-      <div
-        v-else-if="viewMode === 'publication'"
-        class="publication-wrapper flex1">
-        <PublicationSection
-          :jobId="jobId"
-          :organizationId="organizationId"
-          :conversationName="conversationName"
-          :versionNumber="versionNumber" />
-      </div>
     </div>
     <div
       v-else-if="status === 'complete'"
@@ -111,10 +100,8 @@
 <script>
 import { marked } from "marked"
 import MarkdownEditor from "@/components/MardownWYSIWYGEditor.vue"
-import PublicationSection from "@/components/PublicationSection.vue"
 import PdfViewer from "@/components/PdfViewer.vue"
 import Button from "@/components/atoms/Button.vue"
-import Tabs from "@/components/molecules/Tabs.vue"
 import Loading from "@/components/atoms/Loading.vue"
 
 // Configure marked
@@ -155,28 +142,12 @@ export default {
       required: false,
       default: null,
     },
-    jobId: {
-      type: String,
-      default: null,
-    },
-    organizationId: {
-      type: String,
-      default: null,
-    },
-    conversationName: {
-      type: String,
-      default: "export",
-    },
-    versionNumber: {
-      type: Number,
-      default: null,
-    },
   },
   data() {
     return {
       loading: true,
       currentStatus: null,
-      viewMode: "edit", // 'edit' | 'preview' | 'publication'
+      viewMode: "preview", // 'edit' | 'preview'
       editableContent: "",
       originalContent: "",
       hasUserEdited: false, // Track if user has actually made edits
@@ -207,25 +178,6 @@ export default {
       if (!this.editableContent) return ""
       return marked.parse(this.editableContent)
     },
-    modeTabs() {
-      return [
-        {
-          name: "edit",
-          label: this.$t("publish.editor.edit_mode"),
-          icon: "pencil-simple",
-        },
-        {
-          name: "preview",
-          label: this.$t("publish.editor.preview_mode"),
-          icon: "eye",
-        },
-        {
-          name: "publication",
-          label: this.$t("publish.editor.publication_mode"),
-          icon: "share-network",
-        },
-      ]
-    },
   },
   watch: {
     markdownContent: {
@@ -250,9 +202,9 @@ export default {
       // Keep double backslashes (escaped backslash)
       return content.replace(/\\(?=\n|$)/g, "")
     },
-    setMode(mode) {
+    toggleMode() {
       this.isTabSwitching = true
-      this.viewMode = mode
+      this.viewMode = this.viewMode === "edit" ? "preview" : "edit"
       // Reset flag after Vue renders
       this.$nextTick(() => {
         this.isTabSwitching = false
@@ -296,7 +248,7 @@ export default {
     },
     // Public method to set view mode from parent
     setViewMode(mode) {
-      if (["edit", "preview", "publication"].includes(mode)) {
+      if (["edit", "preview"].includes(mode)) {
         this.viewMode = mode
       }
     },
@@ -307,10 +259,8 @@ export default {
   },
   components: {
     MarkdownEditor,
-    PublicationSection,
     PdfViewer,
     Button,
-    Tabs,
     Loading,
   },
 }
@@ -327,8 +277,7 @@ export default {
   font-size: 0.875rem;
 }
 
-.markdown-preview-container,
-.publication-wrapper {
+.markdown-preview-container {
   flex: 1;
   overflow: auto;
   padding: 24px;

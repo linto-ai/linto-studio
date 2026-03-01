@@ -4,7 +4,7 @@
     :breadcrumbItems="breadcrumbItems"
     :status="status"
     :dataLoaded="conversationLoaded"
-    :error="error">
+    :error="error"
     <template v-slot:breadcrumb-actions>
       <div class="flex gap-small" style="margin-left: auto">
         <PopoverList

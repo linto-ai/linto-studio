@@ -13,7 +13,7 @@ const llm = require(
   `${process.cwd()}/components/WebServer/controllers/llm/index`,
 )
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
-const { exec } = require("child_process")
+const { execFile } = require("child_process")
 const path = require("path")
 const appLogger = require(`${process.cwd()}/lib/logger/logger.js`)
 
@@ -558,8 +558,9 @@ async function handleV2DocumentExport(res, conversationExport, query, conversati
   return { jobNotFound: true }
 }
 function convertDocxToOdt(docxPath, outputDir, callback) {
-  exec(
-    `libreoffice --headless --convert-to odt --outdir ${outputDir} ${docxPath}`,
+  execFile(
+    "libreoffice",
+    ["--headless", "--convert-to", "odt", "--outdir", outputDir, docxPath],
     (err, stdout, stderr) => {
       if (err) return callback(err)
       const odtPath = path.join(
@@ -572,7 +573,7 @@ function convertDocxToOdt(docxPath, outputDir, callback) {
 }
 async function sendFileAsResponse(res, file, query) {
   const validCharsRegex = /[a-zA-Z0-9-_.]/g
-  let fileName = file.name.match(validCharsRegex).join("")
+  let fileName = (file.name.match(validCharsRegex) || []).join("") || "export"
 
   if (query.preview === undefined) query.preview = "false"
   if (query.exportFormat === undefined) query.exportFormat = "docx"
@@ -737,15 +738,7 @@ async function handleTextFormat(res, metadata, conversation) {
 }
 
 async function handleVerbatimFormat(res, query, conversation, metadata) {
-  const text = await llm.generateText(conversation, metadata)
-  const conv = {
-    data: text,
-    status: "done",
-    convId: conversation._id,
-    format: query.format,
-    created: conversation.created,
-  }
-  const file = await docx.generateDocxOnFormat(query, conv)
+  const file = await docx.generateVerbatimDocx(query, conversation, metadata)
   sendFileAsResponse(res, file, query)
 }
 
@@ -782,7 +775,7 @@ async function prepateData(conversation, data, format) {
   })
 
   let secondsDecimals = 2
-  if (format === "docx") secondsDecimals = 0
+  if (format === "docx" || format === "verbatim") secondsDecimals = 0
 
   let text = conversation.text
     .map((turn) => {
@@ -802,6 +795,8 @@ async function prepateData(conversation, data, format) {
         update_turn.speaker_name = speakers[turn.speaker_id]
         update_turn.stime = secondsToHHMMSSWithDecimals(stime, secondsDecimals)
         update_turn.etime = secondsToHHMMSSWithDecimals(etime, secondsDecimals)
+        if (turn.lang) update_turn.lang = turn.lang
+        else if (turn.language) update_turn.lang = turn.language
         return update_turn
       } catch (err) {
         // Skip malformed turn entry
@@ -839,6 +834,7 @@ async function prepareMetadata(conversation, metadata, data) {
 }
 
 function secondsToHHMMSSWithDecimals(totalSeconds, secondsDecimals = 0) {
+  if (totalSeconds == null || isNaN(totalSeconds)) return null
   const hours = Math.floor(totalSeconds / 3600)
   const minutes = Math.floor((totalSeconds % 3600) / 60)
   const seconds = (totalSeconds % 60).toFixed(secondsDecimals)

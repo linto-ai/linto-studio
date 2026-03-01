@@ -3,19 +3,37 @@ const debug = require("debug")(
 )
 
 const docx = require("docx")
-const { SectionType } = docx
-
-const {
-  generateHeader,
-  textColumn,
-} = require("../content/documentComponents.js")
+const { SectionType, Header, Paragraph, AlignmentType, Footer, PageNumber, TextRun } = docx
 
 const generate = (docxContent, document) => {
-  document.doc.addSection(generateHeader(docxContent.filedata.title))
-
-  const columnProperties = textColumn(2, 500)
   document.doc.addSection({
-    ...columnProperties,
+    properties: {
+      type: SectionType.CONTINUOUS,
+    },
+    headers: {
+      default: new Header({
+        children: [
+          new Paragraph({
+            text: docxContent.filedata.title,
+            alignment: AlignmentType.CENTER,
+          }),
+        ],
+      }),
+    },
+    footers: {
+      default: new Footer({
+        children: [
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [
+              new TextRun({
+                children: [PageNumber.CURRENT],
+              }),
+            ],
+          }),
+        ],
+      }),
+    },
     children: docxContent.transcription,
   })
 

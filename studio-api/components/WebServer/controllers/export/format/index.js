@@ -2,16 +2,10 @@ const debug = require("debug")(
   `linto:components:WebServer:controllers:export:format:index`,
 )
 
-const cri = require("./cri")
-const cra = require("./cra")
-const cred = require("./cred")
 const resume = require("./resume")
 const verbatim = require("./verbatim")
 
 const generators = {
-  cri,
-  cra,
-  cred,
   resume,
   verbatim,
 }

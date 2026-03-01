@@ -358,6 +358,8 @@
     },
     "model_quality_label": "Qualité du modèle :",
     "publish_document": "Publier le document",
+    "publish_document_description": "Générez un compte-rendu ou exportez la transcription",
+    "back_to_transcription": "Consultez et éditez la transcription",
     "record": "S'enregistrer",
     "recording": "Enregistrement...",
     "search_in_transcription": {
@@ -901,23 +903,14 @@
   },
   "publish": {
     "error_first_line": {
-      "cra": "Erreur lors de la génération du compte rendu analytique",
-      "cred": "Erreur lors de la génération du compte rendu des commissions et des délégations",
-      "cri": "Erreur lors de la génération du compte rendu intégral",
       "verbatim": "Erreur lors de la génération du verbatim",
       "generic": "Nous n'avons pas pu terminer la tâche en raison d'un problème de connexion temporaire avec le service d'intelligence artificielle. Veuillez réessayer dans un moment."
     },
     "filter_title": {
       "automatic_summary": "Options pour le résumé automatique",
-      "cra": "Options pour le compte rendu analytique",
-      "cred": "Options pour le compte rendu des commissions et des délégations",
-      "cri": "Options pour le compte rendu intégral",
       "verbatim": "Options pour le verbatim"
     },
     "generation_first_line": {
-      "cra": "Génération du compte rendu analytique en cours...",
-      "cred": "Génération du compte rendu des commissions et des délégations en cours...",
-      "cri": "Génération du compte rendu intégral en cours...",
       "verbatim": "Génération du verbatim en cours...",
       "general": "Génération en cours..."
     },
@@ -936,9 +929,6 @@
     "reload_document": "Regénérer le document",
     "tabs": {
       "automatic_summary": "Résumé automatique",
-      "cra": "Compte rendu analytique",
-      "cred": "Compte rendu des commissions et des délégations",
-      "cri": "Compte rendu intégral",
       "verbatim": "Verbatim",
       "publication": "Publication"
     },
@@ -975,8 +965,21 @@
     "error_llm_unavailable": "Le service d'intelligence artificielle est temporairement indisponible.",
     "error_job_expired": "Cette génération a expiré. Veuillez régénérer le document.",
     "error_timeout": "La demande a expiré. Veuillez réessayer.",
+    "action_cards": {
+      "download": "Télécharger",
+      "download_description": "DOCX, PDF, TXT, JSON",
+      "publication": "Publication",
+      "publication_description": "Exporter avec un modèle DOCX/PDF",
+      "transcript": "Transcription",
+      "transcript_description": "Afficher la transcription originale"
+    },
+    "transcript_panel": {
+      "title": "Transcription"
+    },
     "ai_menu": {
-      "select": "Services IA"
+      "select": "Services IA",
+      "more": "Autres services",
+      "badge": "IA"
     },
     "publication": {
       "title": "Modèles de publication",

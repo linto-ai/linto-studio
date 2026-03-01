@@ -11,7 +11,7 @@
         </BurgerMenu>
       </aside>
       <main class="v2-layout__main" @click="closeSidebar">
-        <HeaderBar :breadcrumbItems="breadcrumbItems" :fullscreen="fullscreen">
+        <HeaderBar :breadcrumbItems="breadcrumbItems" :fullscreen="fullscreen" :noBreadcrumb="noBreadcrumb">
           <template v-slot:breadcrumb-actions>
             <slot name="breadcrumb-actions"></slot>
           </template>
@@ -57,6 +57,10 @@ export default {
     breadcrumbItems: {
       type: Array,
       required: false,
+    },
+    noBreadcrumb: {
+      type: Boolean,
+      default: false,
     },
     // if true, the main content will be wrapped in centered instead of full width
     box: {

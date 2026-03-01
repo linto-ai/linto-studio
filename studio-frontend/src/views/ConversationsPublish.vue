@@ -6,7 +6,8 @@
     :dataLoaded="dataLoaded"
     :dataLoadedStatus="dataLoadedStatus"
     :error="error"
-    :sidebar="true">
+    :sidebar="true"
+    noBreadcrumb>
     <template v-slot:sidebar>
       <div class="form-field flex col medium-margin gap-medium">
         <AppEditorChannelsSelector
@@ -62,44 +63,96 @@
     </template>
 
     <template v-slot:breadcrumb-actions>
-      <div class="flex1 flex gap-small reset-overflows align-center">
-        <PopoverList
-          :items="optionsExport"
-          class="publish-export-popover"
-          closeOnItemClick
-          @click="exportConv">
-          <template #trigger="{ open }">
-            <Button
-              icon="download"
-              variant="primary"
-              size="sm"
-              :label="$t('conversation.export.title')">
-            </Button>
-          </template>
-        </PopoverList>
-      </div>
+      <AIServiceMenu
+        v-model="activeTab"
+        :services="indexedFormat"
+        :tabs="tabs"
+        v-if="dataLoaded && tabs && tabs.length > 0" />
     </template>
 
-    <div class="publish-main-container flex col" v-if="dataLoaded">
-      <!-- AI Service Menu -->
-      <div class="publish-service-menu-wrapper">
-        <AIServiceMenu
-          v-model="activeTab"
-          :services="indexedFormat"
-          :tabs="tabs"
-          v-if="tabs && tabs.length > 0" />
+    <div class="action-cards" v-if="conversation && conversation._id">
+      <router-link
+        class="action-card"
+        :to="{ name: 'conversations transcription', params: { conversationId: conversation._id } }">
+        <div class="action-card__icon action-card__icon--transcription">
+          <PhIcon name="text-align-left" size="lg" />
+        </div>
+        <div class="action-card__content">
+          <span class="action-card__title">{{ $t('breadcrumb.transcription') }}</span>
+          <span class="action-card__description">{{ $t('conversation.back_to_transcription') }}</span>
+        </div>
+        <PhIcon name="caret-right" size="sm" class="action-card__arrow" />
+      </router-link>
+      <!-- Verbatim tab: Download card with PopoverList -->
+      <PopoverList
+        v-if="activeTab === 'verbatim'"
+        :items="optionsExport"
+        closeOnItemClick
+        @click="exportConv">
+        <template #trigger>
+          <div class="action-card">
+            <div class="action-card__icon action-card__icon--download">
+              <PhIcon name="download" size="lg" />
+            </div>
+            <div class="action-card__content">
+              <span class="action-card__title">{{ $t('publish.action_cards.download') }}</span>
+              <span class="action-card__description">{{ $t('publish.action_cards.download_description') }}</span>
+            </div>
+            <PhIcon name="caret-down" size="sm" class="action-card__arrow" />
+          </div>
+        </template>
+      </PopoverList>
+
+      <!-- AI Service tab: Publication card -->
+      <button
+        v-else-if="activeTab && activeTab !== 'verbatim'"
+        class="action-card"
+        @click="showPublicationModal = true">
+        <div class="action-card__icon action-card__icon--publish">
+          <PhIcon name="share-network" size="lg" />
+        </div>
+        <div class="action-card__content">
+          <span class="action-card__title">{{ $t('publish.action_cards.publication') }}</span>
+          <span class="action-card__description">{{ $t('publish.action_cards.publication_description') }}</span>
+        </div>
+        <PhIcon name="caret-right" size="sm" class="action-card__arrow" />
+      </button>
+
+      <button
+        class="action-card"
+        :class="{ 'action-card--active': showTranscript }"
+        @click="showTranscript = !showTranscript"
+        v-if="activeTab && activeTab !== 'verbatim' && conversation.text && conversation.text.length > 0">
+        <div class="action-card__icon action-card__icon--side-by-side">
+          <PhIcon name="columns" size="lg" />
+        </div>
+        <div class="action-card__content">
+          <span class="action-card__title">{{ $t('publish.action_cards.transcript') }}</span>
+          <span class="action-card__description">{{ $t('publish.action_cards.transcript_description') }}</span>
+        </div>
+        <PhIcon name="caret-right" size="sm" class="action-card__arrow" />
+      </button>
+    </div>
+
+    <div class="publish-split-wrapper" :class="{ 'publish-split-wrapper--split': showTranscript }" v-if="dataLoaded">
+      <!-- Split transcript panel (AI service tabs only) -->
+      <TranscriptPanel
+        v-if="showTranscript"
+        class="publish-split-wrapper__transcript"
+        :turns="conversation.text"
+        :speakers="conversation.speakers" />
+
+      <!-- Verbatim: show transcript directly -->
+      <div v-if="activeTab === 'verbatim'" class="publish-main-container flex col">
+        <TranscriptPanel
+          class="publish-verbatim-page"
+          :title="conversation.name"
+          :turns="conversation.text"
+          :speakers="conversation.speakers" />
       </div>
 
-      <!-- Publication Tab Content - Shows only templates grid -->
-      <!-- <PublicationSection
-        v-if="activeTab === 'publication'"
-        :jobId="currentJobId"
-        :organizationId="publicationOrganizationId"
-        :conversationName="conversation?.name || 'export'"
-        :versionNumber="currentVersionNumber"
-        class="publication-section-wrapper" /> -->
-
-      <!-- Regular content for other tabs (verbatim, AI services) -->
+      <!-- AI service tabs: show ConversationPublishContent -->
+      <div v-else class="publish-main-container flex col">
       <ConversationPublishContent
         ref="publishContent"
         :markdownContent="markdownContent"
@@ -109,14 +162,28 @@
         :phase="generationPhase"
         :editable="isEditableOutput"
         :errorMessage="currentJobError"
-        :jobId="currentJobId"
-        :organizationId="publicationOrganizationId"
-        :conversationName="conversation?.name || 'export'"
-        :versionNumber="currentVersionNumber"
         @content-change="onContentChange"
         @retry="reloadGeneration"
         @save-version="saveVersion" />
+      </div>
     </div>
+
+    <!-- Publication Templates Modal -->
+    <Modal
+      v-model="showPublicationModal"
+      :title="$t('publish.publication.title')"
+      :withActions="false"
+      size="lg">
+      <template #content>
+        <PublicationSection
+          :jobId="currentJobId"
+          :organizationId="publicationOrganizationId"
+          :conversationName="conversation?.name || 'export'"
+          :versionNumber="currentVersionNumber"
+          hideHeader
+          @preview-close="showPublicationModal = false" />
+      </template>
+    </Modal>
 
     <!-- Regenerate Confirmation Modal -->
     <Modal
@@ -164,8 +231,11 @@ import AppEditorTranslationSelector from "@/components/AppEditorTranslationSelec
 import PopoverList from "@/components/atoms/PopoverList.vue"
 import GenerationTimeline from "@/components/GenerationTimeline.vue"
 import AIServiceMenu from "@/components/AIServiceMenu.vue"
+import PublicationSection from "@/components/PublicationSection.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import Button from "@/components/atoms/Button.vue"
+import PhIcon from "@/components/atoms/PhIcon.vue"
+import TranscriptPanel from "@/components/TranscriptPanel.vue"
 export default {
   mixins: [conversationMixin, orgaRoleMixin],
   data() {
@@ -198,7 +268,9 @@ export default {
       generations: [],
       currentGenerationId: null,
       showRegenerateConfirm: false,
+      showPublicationModal: false,
       currentVersionNumber: null,
+      showTranscript: false,
     }
   },
   mounted() {
@@ -230,11 +302,15 @@ export default {
       await this.loadVersions()
       // Automatically select and load the latest version
       await this.selectLatestVersion()
-      // Switch to preview mode for AI services (not verbatim or publication)
-      if (newVal && newVal !== "verbatim" && newVal !== "publication") {
+      // Reset to preview mode when switching tabs
+      if (newVal) {
         this.$nextTick(() => {
           this.$refs.publishContent?.setViewMode("preview")
         })
+      }
+      // Hide transcript panel when switching to verbatim
+      if (newVal === 'verbatim') {
+        this.showTranscript = false
       }
     },
     async selectedTranslation(newVal, oldVal) {
@@ -307,7 +383,8 @@ export default {
         return {
           name: format,
           label: description,
-          icon: "file-text",
+          icon: "sparkle",
+          badge: this.$t("publish.ai_menu.badge"),
         }
       })
 
@@ -319,11 +396,6 @@ export default {
             icon: "file-text",
           },
           ...res,
-          // {
-          //   name: "publication",
-          //   label: this.$i18n.t(`publish.tabs.publication`),
-          //   icon: "file-text",
-          // },
         ]
 
         // Default to verbatim when arriving on export view
@@ -335,10 +407,8 @@ export default {
       return res
     },
     selectedFlavor() {
-      // Verbatim and publication are not LLM services, have no flavor
-      if (this.activeTab === "verbatim" || this.activeTab === "publication")
-        return null
-      // return the default flavor name, or first one as fallback
+      if (this.activeTab === "verbatim") return null
+      // Return the default flavor name, or first one as fallback
       const flavors = this.indexedFormat[this.activeTab]?.flavors
       return flavors?.find((f) => f.is_default)?.name || flavors?.[0]?.name
     },
@@ -349,9 +419,7 @@ export default {
     },
     outputFormating() {
       // Verbatim produces DOCX/PDF output (not editable markdown)
-      // Publication tab doesn't have direct output format
-      if (this.activeTab === "verbatim" || this.activeTab === "publication")
-        return "abstractive"
+      if (this.activeTab === "verbatim") return "abstractive"
       // abstractive / markdown / text
       return this.defaultFlavor?.output_type
     },
@@ -439,17 +507,6 @@ export default {
       ]
     },
     currentJobId() {
-      // For publication tab, get the job ID from current generation or job
-      // This allows publication templates to use completed jobs
-      if (this.activeTab === "publication") {
-        // Try to get jobId from current generation first
-        const currentGen = this.generations?.find(
-          (g) => g.generationId === this.currentGenerationId,
-        )
-        if (currentGen?.jobId) {
-          return currentGen.jobId
-        }
-      }
       return this.currentJob?.jobId || null
     },
     publicationOrganizationId() {
@@ -469,6 +526,7 @@ export default {
     async initGeneration(regenerate = false) {
       clearTimeout(this.pollingJob)
       this.blobUrl = null
+      if (this.activeTab === "verbatim") return
       await this.getPreview(regenerate)
       await this.getJobsList(true)
       await this.pollingGeneration(true, this.activeTab)
@@ -735,9 +793,8 @@ export default {
     async getPreview(regenerate = false) {
       const currentTab = this.activeTab
       // Skip if no format is selected yet (prevents 400 errors on initial load)
-      // Also skip for publication tab which shows templates, not a preview
       const format = this.selectedRoute || this.activeTab
-      if (!format || this.activeTab === "publication") {
+      if (!format) {
         return
       }
       this.markdownContent = null
@@ -1052,7 +1109,6 @@ export default {
       if (
         !this.conversationId ||
         this.activeTab === "verbatim" ||
-        this.activeTab === "publication" ||
         !serviceId
       ) {
         this.generations = []
@@ -1336,8 +1392,166 @@ export default {
     PopoverList,
     GenerationTimeline,
     AIServiceMenu,
+    PublicationSection,
     Modal,
     Button,
+    PhIcon,
+    TranscriptPanel,
   },
 }
 </script>
+
+<style lang="scss" scoped>
+.action-cards {
+  display: flex;
+  gap: 12px;
+  padding: 16px 24px 8px;
+
+  // Ensure PopoverList wrapper also gets flex sizing
+  &::v-deep > .popover-trigger {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.action-card {
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--neutral-20);
+  background: var(--background-primary);
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-family: inherit;
+  font-size: inherit;
+  text-align: left;
+
+  &:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-2);
+  }
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    flex-shrink: 0;
+
+    &--transcription {
+      background-color: var(--primary-soft);
+      color: var(--primary-color);
+    }
+
+    &--download {
+      background-color: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    &--publish {
+      background-color: #f3e5f5;
+      color: #7b1fa2;
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+  }
+
+  &__description {
+    font-size: 0.8rem;
+    color: var(--dark-70);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__arrow {
+    flex-shrink: 0;
+    color: var(--dark-70);
+    transition: transform 0.2s ease;
+  }
+
+  &:hover &__arrow {
+    transform: translateX(2px);
+  }
+}
+
+.action-card--active {
+  border-color: var(--primary-color);
+  background-color: var(--primary-soft);
+}
+
+.action-card__icon--side-by-side {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
+
+.publish-split-wrapper {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.publish-verbatim-page::v-deep {
+  &.transcript-panel {
+    height: auto;
+    overflow: visible;
+  }
+  .transcript-panel__body {
+    overflow: visible;
+  }
+}
+
+.publish-split-wrapper--split {
+  .publish-split-wrapper__transcript {
+    flex: 1;
+    border-right: 1px solid var(--neutral-20);
+    min-width: 0;
+  }
+  .publish-main-container {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 800px) {
+  .action-cards {
+    flex-direction: column;
+    padding: 12px 12px 4px;
+
+    .action-card,
+    &::v-deep > .popover-trigger {
+      width: 100%;
+    }
+  }
+
+  .publish-split-wrapper--split {
+    flex-direction: column;
+
+    .publish-split-wrapper__transcript {
+      border-right: none;
+      border-bottom: 1px solid var(--neutral-20);
+      max-height: 40vh;
+    }
+  }
+}
+</style>

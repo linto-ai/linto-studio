@@ -357,6 +357,8 @@
     },
     "model_quality_label": "Model quality:",
     "publish_document": "Publish document",
+    "publish_document_description": "Generate a report or export the transcription",
+    "back_to_transcription": "View and edit the transcription",
     "record": "Record",
     "recording": "Recording...",
     "search_in_transcription": {
@@ -906,23 +908,14 @@
   },
   "publish": {
     "error_first_line": {
-      "cra": "Error during summary report generation",
-      "cred": "Error during commission and delegation report generation",
-      "cri": "Error during full report generation",
       "verbatim": "Error during verbatim generation",
       "generic": "We couldn't complete the task due to a temporary connection issue with the model provider. Please try again in a moment"
     },
     "filter_title": {
       "automatic_summary": "Automatic summary options",
-      "cra": "Summary report options",
-      "cred": "Options for commission and delegation reports",
-      "cri": "Full report options",
       "verbatim": "Verbatim options"
     },
     "generation_first_line": {
-      "cra": "Summary report generation in progress...",
-      "cred": "Commission and delegation report generation in progress...",
-      "cri": "Full report generation in progress...",
       "verbatim": "Verbatim generation in progress...",
       "general": "Generation in progress..."
     },
@@ -941,9 +934,6 @@
     "reload_document": "Regenerate the report",
     "tabs": {
       "automatic_summary": "Automatic summary",
-      "cra": "Summary report",
-      "cred": "Commission and delegation reports",
-      "cri": "Full report",
       "verbatim": "Verbatim",
       "publication": "Publication"
     },
@@ -980,8 +970,21 @@
     "error_llm_unavailable": "The AI service is temporarily unavailable.",
     "error_job_expired": "This generation has expired. Please regenerate the document.",
     "error_timeout": "The request timed out. Please try again.",
+    "action_cards": {
+      "download": "Download",
+      "download_description": "DOCX, PDF, TXT, JSON",
+      "publication": "Publication",
+      "publication_description": "Export with a DOCX/PDF template",
+      "transcript": "Transcript",
+      "transcript_description": "Show original transcript alongside"
+    },
+    "transcript_panel": {
+      "title": "Transcript"
+    },
     "ai_menu": {
-      "select": "AI Services"
+      "select": "AI Services",
+      "more": "More services",
+      "badge": "AI"
     },
     "publication": {
       "title": "Publication Templates",
