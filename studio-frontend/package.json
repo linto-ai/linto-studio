@@ -2,7 +2,7 @@
   "name": "linto-studio-frontend",
   "author": "Romain Lopez <rlopez@linagora.com>",
   "description": "This is LinTO Studio web interface",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "license": "GNU AFFERO GPLV3",
   "repository": {
     "type": "git",
