@@ -67,8 +67,9 @@ async function listLlmServices(organizationId = null, securityLevel = null) {
     return (
       services
         .map((service) => {
-          // Filter flavors by security level
+          // Filter flavors by active status and security level
           const filteredFlavors = (service.flavors || [])
+            .filter((flavor) => flavor.is_active !== false)
             .filter((flavor) =>
               SECURITY_LEVELS.isAllowed(
                 flavor.model?.security_level,
@@ -97,6 +98,10 @@ async function listLlmServices(organizationId = null, securityLevel = null) {
             flavors: filteredFlavors,
           }
         })
+        // Exclude inactive services
+        .filter((service) => service.is_active !== false)
+        // Exclude chat services (used separately by ChatDrawer)
+        .filter((service) => service.service_type !== "chat")
         // Remove services with no flavors
         .filter((service) => service.flavors.length > 0)
     )

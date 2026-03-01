@@ -13,6 +13,7 @@
     </router-link>
 
     <router-link
+      v-if="hasSessions"
       :to="{
         name: 'sessionsList',
         params: { organizationId: currentOrganizationScope },
@@ -51,6 +52,8 @@
 
 <script>
 import { mapGetters } from "vuex"
+import { apiHasSessions } from "@/api/session.js"
+
 export default {
   name: "MediaExplorerMenu",
   components: {},
@@ -62,7 +65,21 @@ export default {
     }),
   },
   data() {
-    return {}
+    return {
+      hasSessions: false,
+    }
+  },
+  watch: {
+    currentOrganizationScope: {
+      immediate: true,
+      async handler(orgId) {
+        if (orgId) {
+          this.hasSessions = await apiHasSessions(orgId)
+        } else {
+          this.hasSessions = false
+        }
+      },
+    },
   },
   methods: {},
 }

@@ -25,6 +25,10 @@
       :iconActionApply="null"
       v-if="websocketError"
       :closable="false"></Alert>
+
+    <ChatDrawer
+      v-if="conversation && conversation._id"
+      :conversationId="conversation._id.toString()" />
   </V2Layout>
   <div
     v-else-if="dataLoaded && status != 'done' && status != 'error'"
@@ -48,6 +52,7 @@ import { bus } from "@/main.js"
 
 import ConversationStatus from "@/components/ConversationStatus.vue"
 import ConversationStatusError from "@/components/ConversationStatusError.vue"
+import ChatDrawer from "@/components/ChatDrawer.vue"
 import Loading from "@/components/atoms/Loading.vue"
 import ErrorView from "@/views/Error.vue"
 import V2Layout from "@/layouts/v2-layout.vue"
@@ -108,6 +113,7 @@ export default {
   methods: {},
   components: {
     Fragment,
+    ChatDrawer,
     ConversationStatus,
     ConversationStatusError,
     Loading,

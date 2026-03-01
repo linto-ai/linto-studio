@@ -90,6 +90,16 @@
         </div>
         <PhIcon name="caret-right" size="sm" class="action-card__arrow" />
       </router-link>
+      <button class="action-card" @click="openChat" v-if="chatEnabled">
+        <div class="action-card__icon action-card__icon--chat">
+          <PhIcon name="chat-text" size="lg" />
+        </div>
+        <div class="action-card__content">
+          <span class="action-card__title">{{ $t('chat.start') }}</span>
+          <span class="action-card__description">{{ $t('chat.description') }}</span>
+        </div>
+        <PhIcon name="caret-right" size="sm" class="action-card__arrow" />
+      </button>
     </div>
 
     <div class="flex flex1">
@@ -173,6 +183,8 @@ export default {
     }
   },
   mounted() {
+    this.$store.dispatch("chat/checkAvailability")
+
     bus.$on("open-metadata-modal", (data) => {
       this.showMetadataModal = true
       this.metadataModalData = data
@@ -228,6 +240,9 @@ export default {
     },
   },
   computed: {
+    chatEnabled() {
+      return this.$store.state.chat.enabled
+    },
     experimental_highlight() {
       return getEnv("VUE_APP_EXPERIMENTAL_HIGHLIGHT") === "true"
     },
@@ -249,6 +264,14 @@ export default {
     },
   },
   methods: {
+    openChat() {
+      if (this.conversation && this.conversation._id) {
+        this.$store.dispatch(
+          "chat/openDrawer",
+          this.conversation._id.toString(),
+        )
+      }
+    },
     initConversationHook() {
       this.setupTurns()
     },
@@ -488,6 +511,10 @@ export default {
       color: var(--primary-color);
     }
 
+    &--chat {
+      background-color: #fff3e0;
+      color: #e65100;
+    }
   }
 
   &__content {

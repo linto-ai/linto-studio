@@ -241,6 +241,19 @@ export async function apiGetStartedSessions(organizationScope, notif) {
   }
 }
 
+export async function apiHasSessions(organizationScope) {
+  try {
+    const res = await sendRequest(
+      `${BASE_API}/organizations/${organizationScope}/sessions`,
+      { method: "get" },
+      { limit: 1, organizationId: organizationScope },
+    )
+    return (res?.data?.totalItems ?? 0) > 0
+  } catch {
+    return false
+  }
+}
+
 export async function apiCountActiveSessions(organizationScope, notif) {
   const getStartedSessions = await sendRequest(
     `${BASE_API}/organizations/${organizationScope}/sessions?statusList=active&organizationId=${organizationScope}`,

@@ -1028,6 +1028,7 @@
   "common": {
     "retry": "Réessayer",
     "cancel": "Annuler",
+    "delete": "Supprimer",
     "uploading": "Import en cours..."
   },
   "session": {
@@ -1482,5 +1483,21 @@
     "h": "Heure | Heures",
     "m": "Minute | Minutes",
     "y": "Année | Années"
+  },
+  "chat": {
+    "title": "Chat",
+    "start": "Démarrer un chat",
+    "description": "Posez des questions sur cette conversation",
+    "new_chat": "Nouveau chat",
+    "send": "Envoyer",
+    "placeholder": "Posez une question sur cette conversation...",
+    "history": "Historique",
+    "empty_state": "Posez une question pour démarrer un chat",
+    "empty_chat": "Posez votre première question",
+    "rename": "Renommer",
+    "delete_session": "Supprimer",
+    "delete_confirm_inline": "Supprimer « {name} » ?",
+    "error": "Une erreur est survenue",
+    "streaming": "Génération de la réponse..."
   }
 }

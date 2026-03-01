@@ -83,6 +83,17 @@
         </div>
         <PhIcon name="caret-right" size="sm" class="action-card__arrow" />
       </router-link>
+      <button class="action-card" @click="openChat" v-if="chatEnabled">
+        <div class="action-card__icon action-card__icon--chat">
+          <PhIcon name="chat-text" size="lg" />
+        </div>
+        <div class="action-card__content">
+          <span class="action-card__title">{{ $t('chat.start') }}</span>
+          <span class="action-card__description">{{ $t('chat.description') }}</span>
+        </div>
+        <PhIcon name="caret-right" size="sm" class="action-card__arrow" />
+      </button>
+
       <!-- Verbatim tab: Download card with PopoverList -->
       <PopoverList
         v-if="activeTab === 'verbatim'"
@@ -274,6 +285,7 @@ export default {
     }
   },
   mounted() {
+    this.$store.dispatch("chat/checkAvailability")
     this.getLastUpdate()
     this.initSocket()
   },
@@ -336,6 +348,9 @@ export default {
     },
   },
   computed: {
+    chatEnabled() {
+      return this.$store.state.chat.enabled
+    },
     currentOrganizationScope() {
       return this.$store.getters["organizations/getCurrentOrganizationScope"]
     },
@@ -514,6 +529,14 @@ export default {
     },
   },
   methods: {
+    openChat() {
+      if (this.conversation && this.conversation._id) {
+        this.$store.dispatch(
+          "chat/openDrawer",
+          this.conversation._id.toString(),
+        )
+      }
+    },
     initConversationHook() {
       // Method intentionally empty - hook for future use
     },
@@ -1450,6 +1473,11 @@ export default {
     &--transcription {
       background-color: var(--primary-soft);
       color: var(--primary-color);
+    }
+
+    &--chat {
+      background-color: #fff3e0;
+      color: #e65100;
     }
 
     &--download {

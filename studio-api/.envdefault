@@ -31,6 +31,8 @@ GATEWAY_SERVICES=https://<domain>
 # LLM Gateway V2 Config
 # HTTP API endpoint (e.g., http://localhost:8010)
 LLM_GATEWAY_SERVICES=
+# Chat service ID from LLM Gateway (required for chat feature)
+LLM_CHAT_SERVICE_ID=
 # WebSocket URL is automatically derived from LLM_GATEWAY_SERVICES
 # (http://localhost:8010 -> ws://localhost:8010)
 # V2 WebSocket endpoints:

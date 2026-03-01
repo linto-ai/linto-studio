@@ -1033,6 +1033,7 @@
   "common": {
     "retry": "Retry",
     "cancel": "Cancel",
+    "delete": "Delete",
     "uploading": "Uploading..."
   },
   "session": {
@@ -1481,5 +1482,21 @@
     "min_characters": "{count} characters minimum",
     "select_all": "Select all"
   },
-  "actions": "Actions"
+  "actions": "Actions",
+  "chat": {
+    "title": "Chat",
+    "start": "Start a chat",
+    "description": "Ask questions about this conversation",
+    "new_chat": "New chat",
+    "send": "Send",
+    "placeholder": "Ask a question about this conversation...",
+    "history": "History",
+    "empty_state": "Ask a question to start a chat",
+    "empty_chat": "Ask your first question",
+    "rename": "Rename",
+    "delete_session": "Delete",
+    "delete_confirm_inline": "Delete \"{name}\"?",
+    "error": "An error occurred",
+    "streaming": "Generating response..."
+  }
 }
