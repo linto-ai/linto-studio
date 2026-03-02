@@ -4,8 +4,7 @@
       class="folder-tree-node__row"
       :class="{ 'folder-tree-node__row--active': selectedFolderId === folder._id }"
       :style="{ paddingLeft: (depth * 1) + 0.5 + 'em' }"
-      @click="$emit('select', folder._id)"
-      @contextmenu.prevent="openContextMenuFromRow($event)">
+      @click="$emit('select', folder._id)">
       <button
         v-if="folder.children && folder.children.length > 0"
         class="folder-tree-node__chevron"
@@ -44,12 +43,18 @@
         {{ folder.conversationCount }}
       </span>
 
-      <button
-        ref="menuBtn"
-        class="folder-tree-node__menu-btn"
-        @click.stop="toggleContextMenu">
-        <ph-icon name="dots-three" size="16" />
-      </button>
+      <PopoverList
+        :items="contextMenuItems"
+        :close-on-item-click="true"
+        :overlay="false"
+        class="folder-tree-node__menu"
+        @click="handleMenuAction">
+        <template #trigger="{ open }">
+          <span class="folder-tree-node__menu-btn">
+            <ph-icon name="dots-three" size="16" />
+          </span>
+        </template>
+      </PopoverList>
     </div>
 
     <div
@@ -83,8 +88,11 @@
 </template>
 
 <script>
+import PopoverList from "@/components/atoms/PopoverList.vue"
+
 export default {
   name: "FolderTreeNode",
+  components: { PopoverList },
   props: {
     folder: { type: Object, required: true },
     selectedFolderId: { default: undefined },
@@ -93,18 +101,33 @@ export default {
   data() {
     return {
       expanded: false,
-      showContextMenu: false,
       isRenaming: false,
       renameName: "",
       showChildInput: false,
       childName: "",
-      menuStyle: {},
-      _portalEl: null,
     }
   },
-  beforeDestroy() {
-    this.destroyPortal()
-    document.removeEventListener("click", this._onOutsideClick)
+  computed: {
+    contextMenuItems() {
+      return [
+        {
+          id: "rename",
+          name: this.$t("folders.rename"),
+          icon: "pencil",
+        },
+        {
+          id: "create-child",
+          name: this.$t("folders.create_subfolder"),
+          icon: "folder-plus",
+        },
+        {
+          id: "delete",
+          name: this.$t("folders.delete"),
+          icon: "trash",
+          color: "tertiary",
+        },
+      ]
+    },
   },
   methods: {
     decodeEmoji(unified) {
@@ -117,85 +140,17 @@ export default {
       }
     },
 
-    // --- Context menu (portal to body) ---
-    toggleContextMenu() {
-      if (this.showContextMenu) {
-        this.closeContextMenu()
-      } else {
-        this.openContextMenu()
-      }
-    },
-    openContextMenuFromRow(event) {
-      if (this.showContextMenu) {
-        this.closeContextMenu()
-        return
-      }
-      this.menuStyle = {
-        top: event.clientY + "px",
-        left: event.clientX + "px",
-      }
-      this.showContextMenu = true
-      this.$nextTick(() => this.mountPortal())
-    },
-    openContextMenu() {
-      const btn = this.$refs.menuBtn
-      if (!btn) return
-      const rect = btn.getBoundingClientRect()
-      this.menuStyle = {
-        top: rect.bottom + 4 + "px",
-        left: rect.right + "px",
-      }
-      this.showContextMenu = true
-      this.$nextTick(() => this.mountPortal())
-    },
-    closeContextMenu() {
-      this.showContextMenu = false
-      this.destroyPortal()
-    },
-    mountPortal() {
-      this.destroyPortal()
-
-      const el = document.createElement("div")
-      el.className = "folder-context-portal"
-      el.innerHTML = `
-        <div class="folder-context-backdrop"></div>
-        <div class="folder-context-popover" style="top:${this.menuStyle.top};left:${this.menuStyle.left}">
-          <button data-action="rename">
-            <span class="popover-icon">&#9998;</span>
-            ${this.$t("folders.rename")}
-          </button>
-          <button data-action="create-child">
-            <span class="popover-icon">&#128193;</span>
-            ${this.$t("folders.create_subfolder")}
-          </button>
-          <button data-action="delete" class="danger">
-            <span class="popover-icon">&#128465;</span>
-            ${this.$t("folders.delete")}
-          </button>
-        </div>
-      `
-
-      el.querySelector(".folder-context-backdrop").addEventListener("click", () => {
-        this.closeContextMenu()
-      })
-
-      el.querySelectorAll("button[data-action]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const action = btn.getAttribute("data-action")
-          this.closeContextMenu()
-          if (action === "rename") this.startRename()
-          else if (action === "create-child") this.startCreateChild()
-          else if (action === "delete") this.handleDelete()
-        })
-      })
-
-      document.body.appendChild(el)
-      this._portalEl = el
-    },
-    destroyPortal() {
-      if (this._portalEl) {
-        this._portalEl.remove()
-        this._portalEl = null
+    handleMenuAction(action) {
+      switch (action.id) {
+        case "rename":
+          this.startRename()
+          break
+        case "create-child":
+          this.startCreateChild()
+          break
+        case "delete":
+          this.handleDelete()
+          break
       }
     },
 
@@ -264,10 +219,6 @@ export default {
 
     &:hover {
       background-color: var(--primary-soft);
-
-      .folder-tree-node__menu-btn {
-        opacity: 1;
-      }
     }
 
     &--active {
@@ -314,20 +265,22 @@ export default {
     padding: 0 0.3em;
   }
 
+  &__menu {
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+
   &__menu-btn {
-    background: none;
-    border: none;
+    display: flex;
+    align-items: center;
     cursor: pointer;
     padding: 0.1em;
     border-radius: 4px;
     color: var(--text-secondary);
-    display: flex;
-    align-items: center;
-    opacity: 0;
-    flex-shrink: 0;
 
     &:hover {
       background-color: rgba(0, 0, 0, 0.08);
+      color: var(--text-primary);
     }
   }
 
@@ -349,62 +302,6 @@ export default {
     list-style: none;
     padding: 0;
     margin: 0;
-  }
-}
-
-/* Portal popover — rendered at body level */
-.folder-context-portal {
-  .folder-context-backdrop {
-    position: fixed;
-    inset: 0;
-    z-index: 999;
-  }
-
-  .folder-context-popover {
-    position: fixed;
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
-    padding: 0.4em 0;
-    min-width: 180px;
-    transform: translateX(-100%);
-
-    button {
-      display: flex;
-      align-items: center;
-      gap: 0.5em;
-      padding: 0.5em 1em;
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 0.85em;
-      color: var(--text-primary, #333);
-      white-space: nowrap;
-      transition: background-color 0.15s;
-
-      &:hover {
-        background-color: var(--primary-soft, #f0f0ff);
-      }
-
-      &.danger {
-        color: var(--error-color, #d32f2f);
-
-        &:hover {
-          background-color: rgba(211, 47, 47, 0.08);
-        }
-      }
-
-      .popover-icon {
-        flex-shrink: 0;
-        font-size: 0.9em;
-        width: 16px;
-        text-align: center;
-      }
-    }
   }
 }
 </style>
