@@ -608,6 +608,9 @@
     "recover_password_detail": "Please enter your email address to receive a recovery link",
     "recover_password_sent": "A recovery link has been sent to your email address",
     "title": "Sign in",
+    "email_not_verified": "Your email address has not been verified yet. Please check your inbox and click the verification link.",
+    "resend_verification": "Resend verification email",
+    "resend_verification_sent": "A new verification email has been sent. Please check your inbox.",
     "footer": {
       "description": "Open source innovations powered by LINAGORA on EXAION infrastructures"
     },

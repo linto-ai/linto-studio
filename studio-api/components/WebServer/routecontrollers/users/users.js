@@ -319,6 +319,38 @@ async function recoveryAuth(req, res, next) {
   }
 }
 
+async function resendVerificationEmail(req, res, next) {
+  try {
+    if (!req.body.email) throw new UserUnsupportedMediaType()
+
+    const successMessage = {
+      message: "If this email exists and is not yet verified, a verification link has been sent.",
+    }
+
+    const user = await model.users.getByEmail(req.body.email, true)
+    if (user.length !== 1 || user[0].emailIsVerified) {
+      res.status(200).send(successMessage)
+      return
+    }
+
+    const updatedUser = await model.users.generateMagicLink({ _id: user[0]._id })
+    if (updatedUser.modifiedCount === 0) throw new GenerateMagicLinkError()
+
+    const mail_result = await Mailing.verifyEmailAddress(
+      req.body.email,
+      req,
+      updatedUser.data.magicId,
+    )
+    if (!mail_result) {
+      debug(`Error sending verification email to ${req.body.email}`)
+    }
+
+    res.status(200).send(successMessage)
+  } catch (error) {
+    next(error)
+  }
+}
+
 async function deleteUser(req, res, next) {
   try {
     const userId = req.payload.data.userId
@@ -399,5 +431,6 @@ module.exports = {
   updateUserPicture,
   recoveryAuth,
   sendVerificationEmail,
+  resendVerificationEmail,
   generateExtendedAuthToken,
 }
