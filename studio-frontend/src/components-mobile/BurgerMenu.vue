@@ -1,14 +1,14 @@
 <template>
   <nav class="burger-menu">
-    <div class="flex col flex1">
-      <div class="burger-menu__header flex" v-if="isAuthenticated">
-        <UserAccountSelector :backoffice="backoffice" />
-      </div>
+    <div class="burger-menu__header flex" v-if="isAuthenticated">
+      <UserAccountSelector :backoffice="backoffice" />
+    </div>
 
-      <MediaExplorerMenu
-        v-if="!backoffice && isAuthenticated"
-        :organizationId="currentOrganization._id" />
+    <MediaExplorerMenu
+      v-if="!backoffice && isAuthenticated"
+      :organizationId="currentOrganization._id" />
 
+    <div class="burger-menu__body">
       <FolderTree v-if="isInbox" />
       <MediaExplorerMenuLabels v-if="isInbox" />
 
@@ -16,7 +16,7 @@
 
       <slot></slot>
     </div>
-    <div class="flex col">
+    <div class="burger-menu__footer-section">
       <ButtonRoller
         v-if="isAtLeastUploader"
         @click="startConversation"
@@ -167,7 +167,15 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 1em;
-  overflow: visible;
+  overflow: hidden;
+
+  .burger-menu__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+  }
 
   .burger-menu__header {
     display: flex;
@@ -224,6 +232,12 @@ export default {
       border-radius: 4px;
       margin-top: 1em;
     }
+  }
+
+  .burger-menu__footer-section {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
   }
 
   .start-button {

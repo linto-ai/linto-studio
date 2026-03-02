@@ -69,7 +69,17 @@ export default {
         return arr
       }
 
-      return sortByName(roots)
+      const aggregateCounts = (arr) => {
+        arr.forEach((item) => {
+          const childrenTotal = aggregateCounts(item.children)
+          item.conversationCount = (item.conversationCount || 0) + childrenTotal
+        })
+        return arr.reduce((sum, item) => sum + (item.conversationCount || 0), 0)
+      }
+
+      const sorted = sortByName(roots)
+      aggregateCounts(sorted)
+      return sorted
     },
     getSelectedFolderId: (state) => state.selectedFolderId,
     getRootFolders: (state) => {
