@@ -603,6 +603,9 @@
     "recover_password_detail": "Saisissez votre adresse email sur laquelle sera envoyé un lien de récupération",
     "recover_password_sent": "Un email vous a été envoyé pour réinitialiser votre mot de passe",
     "title": "Identifiez-vous",
+    "email_not_verified": "Votre adresse email n'a pas encore été vérifiée. Veuillez consulter votre boîte de réception et cliquer sur le lien de vérification.",
+    "resend_verification": "Renvoyer l'email de vérification",
+    "resend_verification_sent": "Un nouvel email de vérification a été envoyé. Veuillez consulter votre boîte de réception.",
     "footer": {
       "description": "Innovations Open source propulsées par LINAGORA sur les infrastructures EXAION"
     },

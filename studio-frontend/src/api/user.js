@@ -194,6 +194,15 @@ export async function apiCreateUser(payload, notif) {
   )
 }
 
+export async function apiResendVerificationEmail(email) {
+  return await sendRequest(
+    `${BASE_AUTH}/resend-verification`,
+    { method: "post" },
+    { email },
+    null,
+  )
+}
+
 export async function apiSendVerificationLink(notif) {
   return await sendMultipartFormData(
     `${BASE_API}/users/self/verify-email`,
