@@ -63,19 +63,19 @@ export default {
         }
       })
 
-      const sortByPosition = (arr) => {
-        arr.sort((a, b) => (a.position || 0) - (b.position || 0))
-        arr.forEach((item) => sortByPosition(item.children))
+      const sortByName = (arr) => {
+        arr.sort((a, b) => (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" }))
+        arr.forEach((item) => sortByName(item.children))
         return arr
       }
 
-      return sortByPosition(roots)
+      return sortByName(roots)
     },
     getSelectedFolderId: (state) => state.selectedFolderId,
     getRootFolders: (state) => {
       return state.folders
         .filter((f) => !f.parentId)
-        .sort((a, b) => (a.position || 0) - (b.position || 0))
+        .sort((a, b) => (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" }))
     },
     getLoading: (state) => state.loading,
   },

@@ -38,7 +38,7 @@ class FolderModel extends MongoModel {
         organizationId: organizationId,
       }
       return await this.mongoRequest(query, {
-        sort: { position: 1, created: 1 },
+        sort: { name: 1, created: 1 },
       })
     } catch (error) {
       console.error(error)
@@ -53,7 +53,7 @@ class FolderModel extends MongoModel {
         parentId: parentId,
       }
       return await this.mongoRequest(query, {
-        sort: { position: 1, created: 1 },
+        sort: { name: 1, created: 1 },
       })
     } catch (error) {
       console.error(error)
@@ -82,7 +82,7 @@ class FolderModel extends MongoModel {
           $match: { parentId: null },
         },
         {
-          $sort: { position: 1, created: 1 },
+          $sort: { name: 1, created: 1 },
         },
       ]
       return await this.mongoAggregate(pipeline)

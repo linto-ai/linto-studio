@@ -4,7 +4,8 @@
       class="folder-tree-node__row"
       :class="{ 'folder-tree-node__row--active': selectedFolderId === folder._id }"
       :style="{ paddingLeft: (depth * 1) + 0.5 + 'em' }"
-      @click="$emit('select', folder._id)">
+      @click="$emit('select', folder._id)"
+      @dblclick.prevent="toggleExpand">
       <button
         v-if="folder.children && folder.children.length > 0"
         class="folder-tree-node__chevron"
@@ -36,6 +37,12 @@
         @keyup.esc="cancelRename"
         @blur="confirmRename"
         @click.stop />
+      <button
+        v-if="isRenaming"
+        class="folder-tree-node__confirm-btn"
+        @click.stop="confirmRename">
+        <ph-icon name="check" size="14" />
+      </button>
 
       <span
         v-if="folder.conversationCount !== undefined && !isRenaming"
@@ -68,6 +75,11 @@
         class="folder-tree-node__input"
         @keyup.enter="confirmCreateChild"
         @keyup.esc="cancelCreateChild" />
+      <button
+        class="folder-tree-node__confirm-btn"
+        @click.stop="confirmCreateChild">
+        <ph-icon name="check" size="14" />
+      </button>
     </div>
 
     <ul
@@ -138,6 +150,10 @@ export default {
       } catch {
         return unified
       }
+    },
+
+    toggleExpand() {
+      this.expanded = !this.expanded
     },
 
     handleMenuAction(action) {
@@ -216,6 +232,7 @@ export default {
     font-size: 0.85em;
     color: var(--text-primary);
     border-left: 2px solid transparent;
+    user-select: none;
 
     &:hover {
       background-color: var(--primary-soft);
@@ -294,7 +311,26 @@ export default {
     min-width: 0;
   }
 
+  &__confirm-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.1em;
+    border-radius: 4px;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+
+    &:hover {
+      background-color: var(--primary-soft);
+    }
+  }
+
   &__create-child {
+    display: flex;
+    align-items: center;
+    gap: 0.3em;
     padding: 0.3em 0.5em;
   }
 

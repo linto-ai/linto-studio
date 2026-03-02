@@ -19,6 +19,11 @@
         @keyup.enter="handleCreate"
         @keyup.esc="cancelCreate"
         class="folder-tree__input" />
+      <button
+        class="folder-tree__confirm-btn"
+        @click="handleCreate">
+        <ph-icon name="check" size="14" />
+      </button>
     </div>
 
     <nav>
@@ -180,7 +185,26 @@ export default {
   }
 
   &__create {
+    display: flex;
+    align-items: center;
+    gap: 0.3em;
     padding: 0 0.5em 0.5em;
+  }
+
+  &__confirm-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.1em;
+    border-radius: 4px;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+
+    &:hover {
+      background-color: var(--primary-soft);
+    }
   }
 
   &__input {
