@@ -259,6 +259,7 @@ export async function apiCreateConversation(
     endpoint,
     tracks,
     url, // tracks or url is required
+    folderId,
   },
   notif,
   onUploadProgress = null,
@@ -276,6 +277,10 @@ export async function apiCreateConversation(
     formData.append("segmentCharSize", segmentCharSize)
     formData.append("lang", lang)
     formData.append("endpoint", endpoint)
+
+    if (folderId) {
+      formData.append("folderId", folderId)
+    }
 
     if (tracks) {
       for (let i = 0; i < tracks.length; i++) {

@@ -112,6 +112,8 @@ export default {
 <style lang="scss" scoped>
 .folder-selector {
   position: relative;
+  max-width: 20rem;
+  min-width: 10rem;
 
   &__trigger {
     display: flex;

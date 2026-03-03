@@ -53,6 +53,7 @@ export default {
         value: 1,
         list: RIGHTS_LIST((key) => this.$i18n.t(key)),
       },
+      selectedFolderId: null,
       securityLevel: DEFAULT_SECURITY_LEVEL,
       fieldTranscriptionService: {
         ...EMPTY_FIELD,
@@ -188,6 +189,7 @@ export default {
                 endpoint: this.fieldTranscriptionService.value.endpoint,
                 tracks: uploadType == "url" ? null : [file],
                 url: uploadType == "url" ? file : null,
+                folderId: this.selectedFolderId,
               },
               null,
               (progressEvent) => {
