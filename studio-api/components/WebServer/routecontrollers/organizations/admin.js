@@ -64,10 +64,8 @@ async function deleteOrganization(req, res, next) {
           "Error while deleting conversation from organization",
         )
 
-      try {
+      if (conv?.metadata?.audio) {
         await deleteAudioFileIfOrphaned(conv.metadata.audio.filepath)
-      } catch (err) {
-        debug(`Error checking audio file: ${conv.metadata.audio.filepath}`)
       }
     })
     //delete all subtitle from that organization

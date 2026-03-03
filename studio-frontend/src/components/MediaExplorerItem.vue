@@ -178,7 +178,6 @@ import TimeDuration from "@/components/atoms/TimeDuration.vue"
 import PopoverList from "@/components/atoms/PopoverList.vue"
 import Checkbox from "@/components/atoms/Checkbox.vue"
 
-import { apiDuplicateConversation } from "@/api/conversation"
 import { getEnv } from "@/tools/getEnv"
 import { userName } from "@/tools/userName"
 import userAvatar from "@/tools/userAvatar"
@@ -220,6 +219,7 @@ export default {
     return {
       showDeleteModal: false,
       isDragging: false,
+      duplicateLoading: false,
     }
   },
   computed: {
@@ -417,21 +417,28 @@ export default {
     },
 
     async handleDuplicate() {
+      if (this.duplicateLoading) return
+      this.duplicateLoading = true
       try {
-        const result = await apiDuplicateConversation(this.media._id)
-        if (result.status === "success") {
-          this.$store.dispatch(`${this.storeScope}/load`)
+        const success = await this.duplicateConversation(this.media._id)
+        if (success) {
           this.$store.dispatch("system/addNotification", {
             type: "success",
             message: this.$t("media_explorer.panel.duplicate_success"),
           })
+        } else {
+          this.$store.dispatch("system/addNotification", {
+            type: "error",
+            message: this.$t("media_explorer.panel.duplicate_error"),
+          })
         }
       } catch (error) {
-        console.error("Error duplicating conversation:", error)
         this.$store.dispatch("system/addNotification", {
           type: "error",
           message: this.$t("media_explorer.panel.duplicate_error"),
         })
+      } finally {
+        this.duplicateLoading = false
       }
     },
 

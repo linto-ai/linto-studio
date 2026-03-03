@@ -194,7 +194,6 @@ import FormInput from "@/components/molecules/FormInput.vue"
 import EMPTY_FIELD from "@/const/emptyField"
 import ConversationShareMultiple from "./ConversationShareMultiple.vue"
 import FolderSelector from "./FolderSelector.vue"
-import { apiDuplicateConversation } from "@/api/conversation"
 import { mapGetters } from "vuex"
 
 export default {
@@ -421,18 +420,21 @@ export default {
       if (this.duplicateLoading || !this.reactiveSelectedMedia) return
       this.duplicateLoading = true
       try {
-        const result = await apiDuplicateConversation(
+        const success = await this.duplicateConversation(
           this.reactiveSelectedMedia._id,
         )
-        if (result.status === "success") {
-          this.$store.dispatch(`${this.storeScope}/load`)
+        if (success) {
           this.$store.dispatch("system/addNotification", {
             type: "success",
             message: this.$t("media_explorer.panel.duplicate_success"),
           })
+        } else {
+          this.$store.dispatch("system/addNotification", {
+            type: "error",
+            message: this.$t("media_explorer.panel.duplicate_error"),
+          })
         }
       } catch (error) {
-        console.error("Duplicate error:", error)
         this.$store.dispatch("system/addNotification", {
           type: "error",
           message: this.$t("media_explorer.panel.duplicate_error"),
