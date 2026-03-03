@@ -895,6 +895,17 @@ class ConvoModel extends MongoModel {
     }
   }
 
+  async countByAudioFilepath(filepath) {
+    try {
+      const query = { "metadata.audio.filepath": filepath }
+      const result = await this.mongoRequest(query, { _id: 1 })
+      return result.length
+    } catch (error) {
+      console.error(error)
+      return 0
+    }
+  }
+
   async countMediaFromOrga(orgaIds) {
     try {
       return await this.mongoAggregate([

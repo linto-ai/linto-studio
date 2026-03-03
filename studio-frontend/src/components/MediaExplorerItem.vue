@@ -178,6 +178,7 @@ import TimeDuration from "@/components/atoms/TimeDuration.vue"
 import PopoverList from "@/components/atoms/PopoverList.vue"
 import Checkbox from "@/components/atoms/Checkbox.vue"
 
+import { apiDuplicateConversation } from "@/api/conversation"
 import { getEnv } from "@/tools/getEnv"
 import { userName } from "@/tools/userName"
 import userAvatar from "@/tools/userAvatar"
@@ -295,6 +296,13 @@ export default {
           disabled: this.status !== "done",
         },
         {
+          id: "duplicate",
+          name: this.$t("media_explorer.line.duplicate"),
+          icon: "copy",
+          color: "primary",
+          disabled: this.status !== "done",
+        },
+        {
           id: "delete",
           name: this.$t("media_explorer.line.delete"),
           icon: "trash",
@@ -399,9 +407,31 @@ export default {
 
     handleActionClick(action) {
       switch (action.id) {
+        case "duplicate":
+          this.handleDuplicate()
+          break
         case "delete":
           this.handleDelete()
           break
+      }
+    },
+
+    async handleDuplicate() {
+      try {
+        const result = await apiDuplicateConversation(this.media._id)
+        if (result.status === "success") {
+          this.$store.dispatch(`${this.storeScope}/load`)
+          this.$store.dispatch("system/addNotification", {
+            type: "success",
+            message: this.$t("media_explorer.panel.duplicate_success"),
+          })
+        }
+      } catch (error) {
+        console.error("Error duplicating conversation:", error)
+        this.$store.dispatch("system/addNotification", {
+          type: "error",
+          message: this.$t("media_explorer.panel.duplicate_error"),
+        })
       }
     },
 

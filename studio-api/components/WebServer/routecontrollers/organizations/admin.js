@@ -3,7 +3,7 @@ const debug = require("debug")(
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
-const { getStorageFolder, deleteFile } = require(
+const { deleteAudioFileIfOrphaned } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 
@@ -65,11 +65,9 @@ async function deleteOrganization(req, res, next) {
         )
 
       try {
-        deleteFile(`${getStorageFolder()}/${conv.metadata.audio.filepath}`)
+        await deleteAudioFileIfOrphaned(conv.metadata.audio.filepath)
       } catch (err) {
-        debug(
-          `file not found ${getStorageFolder()}/${conv.metadata.audio.filepath}`,
-        )
+        debug(`Error checking audio file: ${conv.metadata.audio.filepath}`)
       }
     })
     //delete all subtitle from that organization

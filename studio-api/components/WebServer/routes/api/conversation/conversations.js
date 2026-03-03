@@ -4,6 +4,7 @@ const debug = require("debug")(
 
 const {
   deleteConversation,
+  duplicateConversation,
   getConversation,
   getUsersByConversation,
   updateConversation,
@@ -65,6 +66,13 @@ module.exports = (webserver) => {
       requireAuth: true,
       requireConversationDeleteAccess: true,
       controller: deleteConversation,
+    },
+    {
+      path: "/:conversationId/duplicate",
+      method: "post",
+      requireAuth: true,
+      requireConversationReadAccess: true,
+      controller: duplicateConversation,
     },
     {
       path: "/:conversationId/users",

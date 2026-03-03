@@ -136,6 +136,18 @@
                   : $t("media_explorer.panel.download_media")
               }}
             </Button>
+            <Button
+              @click="handleDuplicate"
+              :loading="duplicateLoading"
+              icon="copy"
+              variant="secondary"
+              size="sm">
+              {{
+                duplicateLoading
+                  ? $t("media_explorer.panel.duplicating")
+                  : $t("media_explorer.panel.duplicate")
+              }}
+            </Button>
           </div>
         </div>
 
@@ -182,6 +194,7 @@ import FormInput from "@/components/molecules/FormInput.vue"
 import EMPTY_FIELD from "@/const/emptyField"
 import ConversationShareMultiple from "./ConversationShareMultiple.vue"
 import FolderSelector from "./FolderSelector.vue"
+import { apiDuplicateConversation } from "@/api/conversation"
 import { mapGetters } from "vuex"
 
 export default {
@@ -211,6 +224,7 @@ export default {
     return {
       showDeleteModal: false,
       downloadLoading: false,
+      duplicateLoading: false,
       titleField: {
         ...EMPTY_FIELD,
         value: "",
@@ -400,6 +414,31 @@ export default {
           type: "error",
           message: this.$t("media_explorer.panel.update_error"),
         })
+      }
+    },
+
+    async handleDuplicate() {
+      if (this.duplicateLoading || !this.reactiveSelectedMedia) return
+      this.duplicateLoading = true
+      try {
+        const result = await apiDuplicateConversation(
+          this.reactiveSelectedMedia._id,
+        )
+        if (result.status === "success") {
+          this.$store.dispatch(`${this.storeScope}/load`)
+          this.$store.dispatch("system/addNotification", {
+            type: "success",
+            message: this.$t("media_explorer.panel.duplicate_success"),
+          })
+        }
+      } catch (error) {
+        console.error("Duplicate error:", error)
+        this.$store.dispatch("system/addNotification", {
+          type: "error",
+          message: this.$t("media_explorer.panel.duplicate_error"),
+        })
+      } finally {
+        this.duplicateLoading = false
       }
     },
 

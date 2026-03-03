@@ -700,6 +700,7 @@
       "edit_transcription": "Transcription",
       "edit_subtitles": "Sous-titres",
       "export": "Publication",
+      "duplicate": "Dupliquer",
       "delete": "Supprimer"
     },
     "delete": "Supprimer",
@@ -737,7 +738,11 @@
       "download_error": "Erreur lors du téléchargement",
       "download_multiple_success": "{count} médias téléchargés avec succès",
       "download_multiple_partial": "{success} médias téléchargés sur {total}",
-      "download_multiple_error": "Erreur lors du téléchargement des médias"
+      "download_multiple_error": "Erreur lors du téléchargement des médias",
+      "duplicate": "Dupliquer la conversation",
+      "duplicating": "Duplication en cours...",
+      "duplicate_success": "Conversation dupliquée",
+      "duplicate_error": "Erreur lors de la duplication"
     },
     "no_medias_selected": "Aucun média sélectionné",
     "some_medias_cannot_be_deleted": "Certains médias ne peuvent pas être supprimés",

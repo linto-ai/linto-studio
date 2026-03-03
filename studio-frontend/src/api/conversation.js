@@ -86,6 +86,15 @@ export async function apiGetGenericConversationsCount(
   return getConversations?.data?.count ?? 0
 }
 
+export async function apiDuplicateConversation(conversationId, notif) {
+  return await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/duplicate`,
+    { method: "post" },
+    {},
+    notif,
+  )
+}
+
 export async function apiDeleteConversation(conversationId, notif) {
   return await sendRequest(
     `${BASE_API}/conversations/${conversationId}`,
