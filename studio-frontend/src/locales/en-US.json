@@ -673,7 +673,9 @@
     "right_write": "Write",
     "right_write_description": "Edit media, create subfolders and move conversations",
     "right_share": "Share",
-    "right_share_description": "Manage folder access and members"
+    "right_share_description": "Manage folder access and members",
+    "conversation_count": "{count} conversation | {count} conversations",
+    "back": "Back"
   },
   "manage_tags": {
     "title": "Topics",

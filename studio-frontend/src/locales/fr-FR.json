@@ -668,7 +668,9 @@
     "right_write": "Écriture",
     "right_write_description": "Éditer les médias, créer des sous-dossiers et déplacer des conversations",
     "right_share": "Partage",
-    "right_share_description": "Gérer l'accès et les membres du dossier"
+    "right_share_description": "Gérer l'accès et les membres du dossier",
+    "conversation_count": "{count} conversation | {count} conversations",
+    "back": "Retour"
   },
   "manage_tags": {
     "title": "Thématiques",

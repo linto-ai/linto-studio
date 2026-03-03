@@ -44,9 +44,16 @@
         <div class="media-explorer__body__content">
           <slot name="before" />
           <Loading v-if="loading && !pageIsLoading" />
+          <!-- Folders navigation -->
+          <MediaExplorerFolders
+            v-if="!loading"
+            :folders="folders"
+            :can-go-back="canGoBack"
+            @navigate="$emit('navigate-folder', $event)"
+            @go-back="$emit('go-back-folder')" />
           <!-- Empty state -->
           <div
-            v-if="medias.length === 0 && !loading"
+            v-if="medias.length === 0 && folders.length === 0 && !loading"
             class="media-explorer__body__empty">
             <slot name="empty">
               <div class="empty-state">
@@ -108,6 +115,7 @@ import { mediaScopeMixin } from "@/mixins/mediaScope"
 
 import MediaExplorerHeader from "@/components/MediaExplorerHeader.vue"
 import MediaExplorerItem from "@/components/MediaExplorerItem.vue"
+import MediaExplorerFolders from "@/components/MediaExplorerFolders.vue"
 import MediaExplorerRightPanel from "@/components/MediaExplorerRightPanel.vue"
 import Button from "@/components/atoms/Button.vue"
 import ModalDeleteConversations from "@/components/ModalDeleteConversations.vue"
@@ -121,6 +129,7 @@ export default {
   components: {
     MediaExplorerHeader,
     MediaExplorerItem,
+    MediaExplorerFolders,
     MediaExplorerRightPanel,
     Button,
     ModalDeleteConversations,
@@ -144,6 +153,14 @@ export default {
     error: {
       type: [String, null],
       default: null,
+    },
+    folders: {
+      type: Array,
+      default: () => [],
+    },
+    canGoBack: {
+      type: Boolean,
+      default: false,
     },
   },
   computed: {
