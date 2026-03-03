@@ -172,9 +172,9 @@ class FolderModel extends MongoModel {
         },
       ]
 
-      const collection = require("../driver")
-      const result = await require("../driver")
-        .constructor.db.collection("conversations")
+      const MongoDriver = require("../driver")
+      const result = await MongoDriver.constructor.db
+        .collection("conversations")
         .aggregate(pipeline)
         .toArray()
 

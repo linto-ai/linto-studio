@@ -2,7 +2,11 @@
   <button
     class="folder-chip"
     :style="chipStyle"
-    @click="$emit('navigate', folder._id)">
+    :class="{ 'folder-chip--drag-over': isDragOver }"
+    @click="$emit('navigate', folder._id)"
+    @dragover.prevent="isDragOver = true"
+    @dragleave="isDragOver = false"
+    @drop.prevent="onDrop">
     <PhIcon
       name="folder"
       size="16"
@@ -30,12 +34,28 @@ export default {
       required: true,
     },
   },
+  data() {
+    return {
+      isDragOver: false,
+    }
+  },
   computed: {
     chipStyle() {
       if (this.folder.color) {
         return { '--folder-accent': this.folder.color }
       }
       return {}
+    },
+  },
+  methods: {
+    onDrop(e) {
+      this.isDragOver = false
+      const raw = e.dataTransfer.getData("conversationIds")
+      if (!raw) return
+      this.$emit("drop-media", {
+        folderId: this.folder._id,
+        conversationIds: JSON.parse(raw),
+      })
     },
   },
 }
@@ -67,6 +87,25 @@ export default {
 
   &:active {
     transform: scale(0.98);
+  }
+
+  &--drag-over {
+    border-color: var(--primary-color);
+    background-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-color), 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: scale(1.08);
+    z-index: 10;
+
+    .folder-chip__name,
+    .folder-chip__chevron,
+    .folder-chip__lock {
+      color: var(--background-primary);
+    }
+
+    .folder-chip__count {
+      background-color: rgba(255, 255, 255, 0.3);
+      color: var(--background-primary);
+    }
   }
 }
 

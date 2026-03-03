@@ -33,6 +33,33 @@
         "type": "number",
         "description": "Sort position among sibling folders"
       },
+      "visibility": {
+        "type": "string",
+        "enum": ["public", "private"],
+        "description": "Folder visibility. Private folders are only accessible to the owner and explicit members."
+      },
+      "owner": {
+        "type": "string",
+        "nullable": true,
+        "description": "User ID of the folder owner. Set when visibility is private."
+      },
+      "members": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "userId": {
+              "type": "string",
+              "description": "User ID"
+            },
+            "right": {
+              "type": "number",
+              "description": "Access right level"
+            }
+          }
+        },
+        "description": "List of members with explicit access to a private folder."
+      },
       "created": {
         "type": "string",
         "description": "Creation date"
@@ -50,6 +77,9 @@
       "color": "#3498db",
       "emoji": null,
       "position": 0,
+      "visibility": "public",
+      "owner": null,
+      "members": [],
       "created": "2025-01-15T10:30:00.000Z",
       "last_update": "2025-01-15T10:30:00.000Z"
     }

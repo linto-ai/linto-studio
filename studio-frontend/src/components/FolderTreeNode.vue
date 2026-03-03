@@ -2,10 +2,16 @@
   <li class="folder-tree-node">
     <div
       class="folder-tree-node__row"
-      :class="{ 'folder-tree-node__row--active': selectedFolderId === folder._id }"
+      :class="{
+        'folder-tree-node__row--active': selectedFolderId === folder._id,
+        'folder-tree-node__row--drag-over': isDragOver,
+      }"
       :style="{ paddingLeft: (depth * 1) + 0.5 + 'em' }"
       @click="$emit('select', folder._id)"
-      @dblclick.prevent="toggleExpand">
+      @dblclick.prevent="toggleExpand"
+      @dragover.prevent="isDragOver = true"
+      @dragleave="isDragOver = false"
+      @drop.prevent="onDrop">
       <button
         v-if="folder.children && folder.children.length > 0"
         class="folder-tree-node__chevron"
@@ -103,7 +109,8 @@
         @rename="$emit('rename', $event)"
         @delete="$emit('delete', $event)"
         @create-child="$emit('create-child', $event)"
-        @manage-access="$emit('manage-access', $event)" />
+        @manage-access="$emit('manage-access', $event)"
+        @drop-media="$emit('drop-media', $event)" />
     </ul>
   </li>
 </template>
@@ -131,6 +138,7 @@ export default {
       renameName: "",
       showChildInput: false,
       childName: "",
+      isDragOver: false,
     }
   },
   computed: {
@@ -246,6 +254,17 @@ export default {
     handleDelete() {
       this.$emit("delete", this.folder._id)
     },
+
+    // --- Drag & Drop ---
+    onDrop(e) {
+      this.isDragOver = false
+      const raw = e.dataTransfer.getData("conversationIds")
+      if (!raw) return
+      this.$emit("drop-media", {
+        folderId: this.folder._id,
+        conversationIds: JSON.parse(raw),
+      })
+    },
   },
 }
 </script>
@@ -273,6 +292,12 @@ export default {
       background-color: var(--primary-soft);
       border-left-color: var(--primary-color);
       font-weight: 600;
+    }
+
+    &--drag-over {
+      background-color: var(--primary-color);
+      border-left-color: var(--primary-color);
+      color: var(--background-primary);
     }
   }
 

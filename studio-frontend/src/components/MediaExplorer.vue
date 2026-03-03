@@ -44,43 +44,33 @@
         <div class="media-explorer__body__content">
           <slot name="before" />
           <Loading v-if="loading && !pageIsLoading" />
-          <!-- Folders navigation -->
-          <MediaExplorerFolders
-            v-if="!loading"
-            :folders="folders"
-            :can-go-back="canGoBack"
-            @navigate="$emit('navigate-folder', $event)"
-            @go-back="$emit('go-back-folder')" />
-          <!-- Empty state -->
-          <div
-            v-if="medias.length === 0 && folders.length === 0 && !loading"
-            class="media-explorer__body__empty">
-            <slot name="empty">
-              <div class="empty-state">
-                <p>Aucun média trouvé</p>
-              </div>
-            </slot>
-          </div>
-          <!-- Media items -->
-          <MediaExplorerItem
-            v-if="!loading"
-            v-for="(media, index) in medias"
-            :key="`media-explorer-item-${media._id}-${index}`"
-            :media="media"
-            :selected-media-ids.sync="selectedMediaIds"
-            :ref="'mediaItem' + index"
-            class="media-explorer__body__item" />
-
-          <!-- <IsMobile>
-            <MediaExplorerItemMobile
-              v-if="!loading"
+          <div v-if="!loading">
+            <!-- Folders navigation -->
+            <MediaExplorerFolders
+              :folders="folders"
+              :can-go-back="canGoBack"
+              @navigate="$emit('navigate-folder', $event)"
+              @go-back="$emit('go-back-folder')"
+              @drop-media="onDropMedia" />
+            <!-- Empty state -->
+            <div
+              v-if="medias.length === 0 && folders.length === 0"
+              class="media-explorer__body__empty">
+              <slot name="empty">
+                <div class="empty-state">
+                  <p>Aucun média trouvé</p>
+                </div>
+              </slot>
+            </div>
+            <!-- Media items -->
+            <MediaExplorerItem
               v-for="(media, index) in medias"
               :key="`media-explorer-item-${media._id}-${index}`"
-              :media="media" />
-            <template #desktop>
-              
-            </template>
-          </IsMobile> -->
+              :media="media"
+              :selected-media-ids.sync="selectedMediaIds"
+              :ref="'mediaItem' + index"
+              class="media-explorer__body__item" />
+          </div>
           <div v-if="loadingNextPage" class="loading-next-page">
             <p>Chargement de la page suivante</p>
           </div>
@@ -293,6 +283,20 @@ export default {
       if (this.observer) {
         this.observer.disconnect()
         this.observer = null
+      }
+    },
+
+    async onDropMedia({ folderId, conversationIds }) {
+      try {
+        await this.$store.dispatch("folders/moveConversationsToFolder", {
+          folderId,
+          conversationIds,
+        })
+        await this.$store.dispatch("folders/fetchFolders")
+        await this.$store.dispatch(`${this.storeScope}/load`)
+        this.selectedMediaIds = []
+      } catch (error) {
+        console.error("Error moving conversations to folder:", error)
       }
     },
 

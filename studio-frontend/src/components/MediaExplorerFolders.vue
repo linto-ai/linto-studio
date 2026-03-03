@@ -11,7 +11,8 @@
       v-for="folder in folders"
       :key="folder._id"
       :folder="folder"
-      @navigate="$emit('navigate', $event)" />
+      @navigate="$emit('navigate', $event)"
+      @drop-media="$emit('drop-media', $event)" />
   </div>
 </template>
 
