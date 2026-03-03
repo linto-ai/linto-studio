@@ -220,6 +220,26 @@ class FolderModel extends MongoModel {
     }
   }
 
+  async updateDescendantsVisibility(descendantIds, visibility, owner, members) {
+    try {
+      const objectIds = descendantIds.map((id) =>
+        typeof id === "string" ? this.getObjectId(id) : id,
+      )
+      const query = {
+        _id: { $in: objectIds },
+      }
+      return await this.mongoUpdateMany(query, "$set", {
+        visibility,
+        owner,
+        members,
+        last_update: moment().format(),
+      })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   async deleteAllFromParent(parentId) {
     try {
       const query = {

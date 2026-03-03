@@ -656,7 +656,21 @@
     "move_success": "Conversations moved",
     "move_error": "Error moving conversations",
     "folder": "Folder",
-    "move_to_folder": "Move to folder"
+    "move_to_folder": "Move to folder",
+    "manage_access": "Manage access",
+    "visibility_public": "Public",
+    "visibility_private": "Private",
+    "visibility_update_success": "Folder access updated",
+    "visibility_update_error": "Error updating folder access",
+    "visibility_warning": "This will affect all conversations and subfolders in this folder.",
+    "members_label": "Members",
+    "no_members": "No members selected",
+    "right_read": "Read",
+    "right_read_description": "View folder and its conversations",
+    "right_write": "Write",
+    "right_write_description": "Edit media, create subfolders and move conversations",
+    "right_share": "Share",
+    "right_share_description": "Manage folder access and members"
   },
   "manage_tags": {
     "title": "Topics",

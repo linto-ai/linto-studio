@@ -651,7 +651,21 @@
     "move_success": "Conversations déplacées",
     "move_error": "Erreur lors du déplacement des conversations",
     "folder": "Dossier",
-    "move_to_folder": "Déplacer vers un dossier"
+    "move_to_folder": "Déplacer vers un dossier",
+    "manage_access": "Gérer l'accès",
+    "visibility_public": "Public",
+    "visibility_private": "Privé",
+    "visibility_update_success": "Accès du dossier mis à jour",
+    "visibility_update_error": "Erreur lors de la mise à jour de l'accès",
+    "visibility_warning": "Cela affectera toutes les conversations et sous-dossiers de ce dossier.",
+    "members_label": "Membres",
+    "no_members": "Aucun membre sélectionné",
+    "right_read": "Lecture",
+    "right_read_description": "Voir le dossier et ses conversations",
+    "right_write": "Écriture",
+    "right_write_description": "Éditer les médias, créer des sous-dossiers et déplacer des conversations",
+    "right_share": "Partage",
+    "right_share_description": "Gérer l'accès et les membres du dossier"
   },
   "manage_tags": {
     "title": "Thématiques",

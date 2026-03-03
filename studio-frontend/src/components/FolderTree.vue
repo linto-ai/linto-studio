@@ -49,28 +49,40 @@
           :folder="folder"
           :selectedFolderId="selectedFolderId"
           :depth="0"
+          :userRole="currentUserRole"
+          :userId="currentUserId"
           @select="selectFolder"
           @rename="handleRename"
           @delete="handleDelete"
-          @create-child="handleCreateChild" />
+          @create-child="handleCreateChild"
+          @manage-access="handleManageAccess" />
       </ul>
     </nav>
+
+    <FolderAccessModal
+      v-if="accessFolder"
+      :value="!!accessFolder"
+      :folder="accessFolder"
+      @input="accessFolder = null"
+      @on-cancel="accessFolder = null" />
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from "vuex"
 import FolderTreeNode from "./FolderTreeNode.vue"
+import FolderAccessModal from "./FolderAccessModal.vue"
 import { mediaScopeMixin } from "@/mixins/mediaScope"
 
 export default {
   name: "FolderTree",
   mixins: [mediaScopeMixin],
-  components: { FolderTreeNode },
+  components: { FolderTreeNode, FolderAccessModal },
   data() {
     return {
       showCreateInput: false,
       newFolderName: "",
+      accessFolder: null,
     }
   },
   watch: {
@@ -97,6 +109,12 @@ export default {
       folderTree: "getFolderTree",
       foldersLoading: "getLoading",
     }),
+    currentUserRole() {
+      return this.$store.getters["organizations/getUserRoleInOrganization"] || 0
+    },
+    currentUserId() {
+      return this.$store.getters["user/getUserId"] || ""
+    },
     selectedFolderId() {
       return this.$store.getters[`${this.storeScope}/selectedFolderId`]
     },
@@ -137,6 +155,9 @@ export default {
         name,
         parentId,
       })
+    },
+    handleManageAccess(folder) {
+      this.accessFolder = folder
     },
   },
 }

@@ -24,13 +24,13 @@ export async function apiFetchFolders(
 
 export async function apiCreateFolder(
   organizationId,
-  { name, parentId, color, emoji, position },
+  { name, parentId, color, emoji, position, visibility, members },
   notif = null,
 ) {
   const requestRes = await sendRequest(
     `${BASE_API}/organizations/${organizationId}/folders`,
     { method: "post" },
-    { name, parentId, color, emoji, position },
+    { name, parentId, color, emoji, position, visibility, members },
     notif,
   )
 

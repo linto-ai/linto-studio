@@ -25,6 +25,12 @@
         size="16"
         :style="folder.color ? { color: folder.color } : {}" />
 
+      <ph-icon
+        v-if="folder.visibility === 'private'"
+        name="lock-simple"
+        size="12"
+        class="folder-tree-node__lock" />
+
       <span v-if="!isRenaming" class="folder-tree-node__name">
         {{ folder.name }}
       </span>
@@ -91,16 +97,22 @@
         :folder="child"
         :selectedFolderId="selectedFolderId"
         :depth="depth + 1"
+        :userRole="userRole"
+        :userId="userId"
         @select="$emit('select', $event)"
         @rename="$emit('rename', $event)"
         @delete="$emit('delete', $event)"
-        @create-child="$emit('create-child', $event)" />
+        @create-child="$emit('create-child', $event)"
+        @manage-access="$emit('manage-access', $event)" />
     </ul>
   </li>
 </template>
 
 <script>
 import PopoverList from "@/components/atoms/PopoverList.vue"
+
+const ROLE_MAINTAINER = 5
+const RIGHT_SHARE = 16
 
 export default {
   name: "FolderTreeNode",
@@ -109,6 +121,8 @@ export default {
     folder: { type: Object, required: true },
     selectedFolderId: { default: undefined },
     depth: { type: Number, default: 0 },
+    userRole: { type: Number, default: 0 },
+    userId: { type: String, default: "" },
   },
   data() {
     return {
@@ -120,8 +134,14 @@ export default {
     }
   },
   computed: {
+    canManageAccess() {
+      if (this.userRole >= ROLE_MAINTAINER) return true
+      if (this.folder.owner === this.userId) return true
+      if (this.folder.members && this.folder.members.some((m) => m.userId === this.userId && (m.right & RIGHT_SHARE) === RIGHT_SHARE)) return true
+      return false
+    },
     contextMenuItems() {
-      return [
+      const items = [
         {
           id: "rename",
           name: this.$t("folders.rename"),
@@ -132,13 +152,21 @@ export default {
           name: this.$t("folders.create_subfolder"),
           icon: "folder-plus",
         },
-        {
-          id: "delete",
-          name: this.$t("folders.delete"),
-          icon: "trash",
-          color: "tertiary",
-        },
       ]
+      if (this.canManageAccess) {
+        items.push({
+          id: "manage-access",
+          name: this.$t("folders.manage_access"),
+          icon: "users-three",
+        })
+      }
+      items.push({
+        id: "delete",
+        name: this.$t("folders.delete"),
+        icon: "trash",
+        color: "tertiary",
+      })
+      return items
     },
   },
   methods: {
@@ -163,6 +191,9 @@ export default {
           break
         case "create-child":
           this.startCreateChild()
+          break
+        case "manage-access":
+          this.$emit("manage-access", this.folder)
           break
         case "delete":
           this.handleDelete()
@@ -259,6 +290,11 @@ export default {
 
   &__chevron-spacer {
     width: 14px;
+    flex-shrink: 0;
+  }
+
+  &__lock {
+    color: var(--text-secondary);
     flex-shrink: 0;
   }
 

@@ -510,6 +510,17 @@ class ConvoModel extends MongoModel {
         }
       }
 
+      if (filter.excludeFolderIds && filter.excludeFolderIds.length > 0) {
+        query.$and = query.$and || []
+        query.$and.push({
+          $or: [
+            { folderId: { $nin: filter.excludeFolderIds } },
+            { folderId: null },
+            { folderId: { $exists: false } },
+          ],
+        })
+      }
+
       if (filter.tags && filter.filter === "notags") {
         // notags rules don't apply for highlighs category
         query.tags = {
@@ -860,6 +871,23 @@ class ConvoModel extends MongoModel {
       return await this.mongoUpdateMany(query, "$set", {
         folderId: newFolderId,
         last_update: dateTime,
+      })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async updateRightsBatchByFolderId(folderId, organizationId, membersRight, customRights) {
+    try {
+      const query = {
+        folderId: folderId,
+        "organization.organizationId": organizationId,
+      }
+      return await this.mongoUpdateMany(query, "$set", {
+        "organization.membersRight": membersRight,
+        "organization.customRights": customRights,
+        last_update: moment().format(),
       })
     } catch (error) {
       console.error(error)

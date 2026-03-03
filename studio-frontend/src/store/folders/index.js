@@ -213,6 +213,38 @@ export default {
     selectFolder({ commit }, folderId) {
       commit("setSelectedFolderId", folderId)
     },
+    async updateFolderVisibility(
+      { commit, dispatch, rootGetters },
+      { folderId, visibility, members },
+    ) {
+      try {
+        await apiUpdateFolder(
+          rootGetters["organizations/getCurrentOrganizationScope"],
+          folderId,
+          { visibility, members },
+        )
+        await dispatch("fetchFolders")
+        commit(
+          "system/addNotification",
+          {
+            message: i18n.t("folders.visibility_update_success"),
+            type: "success",
+          },
+          { root: true },
+        )
+      } catch (error) {
+        console.error("Error updating folder visibility:", error)
+        commit(
+          "system/addNotification",
+          {
+            message: i18n.t("folders.visibility_update_error"),
+            type: "error",
+          },
+          { root: true },
+        )
+        throw error
+      }
+    },
     async moveConversationsToFolder(
       { commit, rootGetters },
       { folderId, conversationIds },

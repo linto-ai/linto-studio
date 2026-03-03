@@ -52,9 +52,22 @@ class FolderCycleDetected extends Error {
   }
 }
 
+class FolderForbidden extends Error {
+  constructor(message, err) {
+    super()
+    this.name = "FolderForbidden"
+    this.type = ExceptionType
+    this.status = 403
+    if (message) this.message = message
+    else this.message = `Folder access denied`
+    if (err) this.err = err
+  }
+}
+
 module.exports = {
   FolderError,
   FolderNotFound,
   FolderConflict,
   FolderCycleDetected,
+  FolderForbidden,
 }
