@@ -1,7 +1,5 @@
 const MongoModel = require(`../model`)
-const debug = require("debug")(
-  "linto:lib:mongodb:models:conversations",
-)
+const debug = require("debug")("linto:lib:mongodb:models:conversations")
 
 const moment = require("moment")
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
@@ -451,11 +449,7 @@ class ConvoModel extends MongoModel {
         },
         "type.mode": TYPE.CANONICAL,
       }
-      const projection = {
-        _id: 1,
-        name: 1,
-        "jobs.transcription": 1,
-      }
+
       return await this.mongoRequest(query)
     } catch (error) {
       console.error(error)
