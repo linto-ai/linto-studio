@@ -63,6 +63,19 @@ class CategoryModel extends MongoModel {
     }
   }
 
+  async getSystemCategoriesByOrgIds(orgIds) {
+    try {
+      const query = {
+        type: TYPE.SYSTEM,
+        scopeId: { $in: orgIds },
+      }
+      return await this.mongoRequest(query)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   async getByOrganizationId(organizationId) {
     try {
       let query = {

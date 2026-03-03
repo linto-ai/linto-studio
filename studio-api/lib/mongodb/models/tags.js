@@ -31,7 +31,9 @@ class TagModel extends MongoModel {
   async createDefaultTags(organizationId, categoryId) {
     const defaultsTags = [
       ...DEFAULT_TAGS,
-      ...(process.env.DEFAULT_TAGS ? process.env.DEFAULT_TAGS.split(",") : []),
+      ...(process.env.DEFAULT_TAGS
+        ? process.env.DEFAULT_TAGS.split(",").map((name) => ({ name: name.trim(), emoji: null }))
+        : []),
     ]
 
     const tags = defaultsTags.map((tag) => ({
