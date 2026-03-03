@@ -129,30 +129,9 @@
         <PhIcon name="caret-right" size="sm" class="action-card__arrow" />
       </button>
 
-      <button
-        class="action-card"
-        :class="{ 'action-card--active': showTranscript }"
-        @click="showTranscript = !showTranscript"
-        v-if="activeTab && activeTab !== 'verbatim' && conversation.text && conversation.text.length > 0">
-        <div class="action-card__icon action-card__icon--side-by-side">
-          <PhIcon name="columns" size="lg" />
-        </div>
-        <div class="action-card__content">
-          <span class="action-card__title">{{ $t('publish.action_cards.transcript') }}</span>
-          <span class="action-card__description">{{ $t('publish.action_cards.transcript_description') }}</span>
-        </div>
-        <PhIcon name="caret-right" size="sm" class="action-card__arrow" />
-      </button>
     </div>
 
     <div class="publish-split-wrapper" :class="{ 'publish-split-wrapper--split': showTranscript }" v-if="dataLoaded">
-      <!-- Split transcript panel (AI service tabs only) -->
-      <TranscriptPanel
-        v-if="showTranscript"
-        class="publish-split-wrapper__transcript"
-        :turns="conversation.text"
-        :speakers="conversation.speakers" />
-
       <!-- Verbatim: show transcript directly -->
       <div v-if="activeTab === 'verbatim'" class="publish-main-container flex col">
         <TranscriptPanel
@@ -162,7 +141,7 @@
           :speakers="conversation.speakers" />
       </div>
 
-      <!-- AI service tabs: show ConversationPublishContent -->
+      <!-- AI service tabs: show ConversationPublishContent (left side) -->
       <div v-else class="publish-main-container flex col">
       <ConversationPublishContent
         ref="publishContent"
@@ -173,10 +152,20 @@
         :phase="generationPhase"
         :editable="isEditableOutput"
         :errorMessage="currentJobError"
+        :showTranscript="showTranscript"
+        :canShowTranscript="activeTab && activeTab !== 'verbatim' && conversation.text && conversation.text.length > 0"
         @content-change="onContentChange"
         @retry="reloadGeneration"
-        @save-version="saveVersion" />
+        @save-version="saveVersion"
+        @toggle-transcript="showTranscript = !showTranscript" />
       </div>
+
+      <!-- Split transcript panel (right side, AI service tabs only) -->
+      <TranscriptPanel
+        v-if="showTranscript"
+        class="publish-split-wrapper__transcript"
+        :turns="conversation.text"
+        :speakers="conversation.speakers" />
     </div>
 
     <!-- Publication Templates Modal -->
@@ -1523,16 +1512,6 @@ export default {
   }
 }
 
-.action-card--active {
-  border-color: var(--primary-color);
-  background-color: var(--primary-soft);
-}
-
-.action-card__icon--side-by-side {
-  background-color: #e3f2fd;
-  color: #1565c0;
-}
-
 .publish-split-wrapper {
   display: flex;
   flex: 1;
@@ -1552,7 +1531,7 @@ export default {
 .publish-split-wrapper--split {
   .publish-split-wrapper__transcript {
     flex: 1;
-    border-right: 1px solid var(--neutral-20);
+    border-left: 1px solid var(--neutral-20);
     min-width: 0;
   }
   .publish-main-container {
@@ -1576,7 +1555,7 @@ export default {
     flex-direction: column;
 
     .publish-split-wrapper__transcript {
-      border-right: none;
+      border-left: none;
       border-bottom: 1px solid var(--neutral-20);
       max-height: 40vh;
     }

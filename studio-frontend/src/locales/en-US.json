@@ -951,7 +951,8 @@
       "restore_version_confirm": "Are you sure you want to restore this version?",
       "version_restored": "Version restored successfully",
       "version_restore_error": "Error restoring version",
-      "unsaved_changes": "You have unsaved changes"
+      "unsaved_changes": "You have unsaved changes",
+      "show_transcript": "Transcription"
     },
     "export_error": "Failed to export document",
     "regenerate": {

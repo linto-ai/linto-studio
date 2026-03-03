@@ -19,15 +19,22 @@
       class="publish-main__content publish__markdown-wrapper flex col flex1">
       <!-- Mode Toggle Header with Save Button -->
       <div
-        v-if="editable"
         class="publish-editor-header flex align-center justify-between">
         <div class="flex align-center gap-small">
           <Button
+            v-if="editable"
             :variant="viewMode === 'edit' ? 'primary-soft' : 'secondary'"
             :icon="viewMode === 'edit' ? 'eye' : 'pencil-simple'"
             size="sm"
             :label="viewMode === 'edit' ? $t('publish.editor.preview_mode') : $t('publish.editor.edit_mode')"
             @click="toggleMode" />
+          <Button
+            v-if="canShowTranscript"
+            :variant="showTranscript ? 'primary-soft' : 'secondary'"
+            icon="columns"
+            size="sm"
+            :label="$t('publish.editor.show_transcript')"
+            @click="$emit('toggle-transcript')" />
           <span
             v-if="hasChanges"
             class="unsaved-indicator">
@@ -141,6 +148,14 @@ export default {
       type: String,
       required: false,
       default: null,
+    },
+    showTranscript: {
+      type: Boolean,
+      default: false,
+    },
+    canShowTranscript: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

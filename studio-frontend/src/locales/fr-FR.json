@@ -946,7 +946,8 @@
       "restore_version_confirm": "Êtes-vous sûr de vouloir restaurer cette version ?",
       "version_restored": "Version restaurée avec succès",
       "version_restore_error": "Erreur lors de la restauration de la version",
-      "unsaved_changes": "Vous avez des modifications non enregistrées"
+      "unsaved_changes": "Vous avez des modifications non enregistrées",
+      "show_transcript": "Transcription"
     },
     "export_error": "Échec de l'export du document",
     "regenerate": {
