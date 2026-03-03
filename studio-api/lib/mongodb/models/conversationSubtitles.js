@@ -1,6 +1,4 @@
-const debug = require("debug")(
-  "linto:lib:mongodb:models:conversationSubtitles",
-)
+const debug = require("debug")("linto:lib:mongodb:models:conversationSubtitles")
 const MongoModel = require(`../model`)
 
 const moment = require("moment")
@@ -128,23 +126,6 @@ class SubtitleModel extends MongoModel {
       }
 
       return await this.mongoRequest(query)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
-  }
-
-  async update(payload) {
-    try {
-      const operator = "$set"
-      const query = {
-        _id: this.getObjectId(payload._id),
-      }
-      const dateTime = moment().format()
-      payload.last_update = dateTime
-
-      let mutableElements = payload
-      return await this.mongoUpdateOne(query, operator, mutableElements)
     } catch (error) {
       console.error(error)
       return error
