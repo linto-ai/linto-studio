@@ -641,7 +641,7 @@
     }
   },
   "folders": {
-    "title": "Folders",
+    "title": "Media",
     "all": "All",
     "uncategorized": "Uncategorized",
     "create": "Create folder",
@@ -681,8 +681,7 @@
     "back": "Back",
     "uncategorize_success": "Conversations removed from folder",
     "uncategorize_error": "Error removing conversations from folder",
-    "depth_limit_error": "Maximum folder nesting depth reached",
-    "go_to_folder": "Go to folder"
+    "depth_limit_error": "Maximum folder nesting depth reached"
   },
   "manage_tags": {
     "title": "Topics",
@@ -825,6 +824,10 @@
     },
     "conversation": {
       "start": "Transcribe"
+    },
+    "sections": {
+      "media": "Media",
+      "personal": "Personal"
     },
     "tabs": {
       "explore": "Inbox",

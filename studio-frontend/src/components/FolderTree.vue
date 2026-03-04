@@ -1,16 +1,5 @@
 <template>
-  <div class="folder-tree" v-if="isExploreRoute">
-    <hr />
-    <div class="folder-tree__header">
-      <span class="title">{{ $t("folders.title") }}</span>
-      <button
-        class="folder-tree__add-btn"
-        @click="showCreateInput = !showCreateInput"
-        :title="$t('folders.create')">
-        <ph-icon name="plus" size="16" />
-      </button>
-    </div>
-
+  <div class="folder-tree">
     <div class="folder-tree__create" v-if="showCreateInput">
       <input
         ref="createInput"
@@ -28,38 +17,12 @@
 
     <nav>
       <ul class="folder-tree__list">
-        <li
-          class="folder-tree__item"
-          :class="{
-            'folder-tree__item--active': selectedFolderId === undefined,
-            'folder-tree__item--drag-over': isAllDragOver,
-          }"
-          @click="selectFolder(undefined)"
-          @dragover.prevent="isAllDragOver = true"
-          @dragleave="isAllDragOver = false"
-          @drop.prevent="onDropAll">
-          <ph-icon name="folders" size="16" />
-          <span>{{ $t("folders.all") }}</span>
-        </li>
-        <li
-          class="folder-tree__item"
-          :class="{
-            'folder-tree__item--active': selectedFolderId === null,
-            'folder-tree__item--drag-over': isUncategorizedDragOver,
-          }"
-          @click="selectFolder(null)"
-          @dragover.prevent="isUncategorizedDragOver = true"
-          @dragleave="isUncategorizedDragOver = false"
-          @drop.prevent="onDropUncategorized">
-          <ph-icon name="folder-dashed" size="16" />
-          <span>{{ $t("folders.uncategorized") }}</span>
-        </li>
-
         <FolderTreeNode
           v-for="folder in folderTree"
           :key="folder._id"
           :folder="folder"
           :selectedFolderId="selectedFolderId"
+          :activeFolderId="activeFolderId"
           :depth="0"
           :userRole="currentUserRole"
           :userId="currentUserId"
@@ -98,8 +61,6 @@ export default {
       showCreateInput: false,
       newFolderName: "",
       accessFolder: null,
-      isAllDragOver: false,
-      isUncategorizedDragOver: false,
     }
   },
   watch: {
@@ -110,21 +71,15 @@ export default {
         })
       }
     },
-    "$route.name"() {
-      if (this.isExploreRoute) {
-        this.fetchFolders()
-      }
-    },
   },
   mounted() {
-    if (this.isExploreRoute) {
-      this.fetchFolders()
-    }
+    this.fetchFolders()
   },
   computed: {
     ...mapGetters("folders", {
       folderTree: "getFolderTree",
       foldersLoading: "getLoading",
+      activeFolderId: "getActiveFolderId",
     }),
     currentUserRole() {
       return this.$store.getters["organizations/getUserRoleInOrganization"] || 0
@@ -132,12 +87,24 @@ export default {
     currentUserId() {
       return this.$store.getters["user/getUserId"] || ""
     },
-    isExploreRoute() {
-      return this.$route.name === "explore" || this.$route.name === "inbox"
-    },
   },
   methods: {
     ...mapActions("folders", ["fetchFolders"]),
+    toggleCreate() {
+      this.showCreateInput = !this.showCreateInput
+    },
+    async selectFolder(folderId) {
+      if (this.$route.name !== "explore" && this.$route.name !== "inbox") {
+        await this.$router.push({
+          name: "explore",
+          params: { organizationId: this.getCurrentOrganizationScope },
+        })
+      }
+      this.$store.dispatch("folders/setActiveFolderId", null)
+      await this.$store.dispatch(`${this.storeScope}/clearSelectedMedias`)
+      await this.$store.dispatch(`${this.storeScope}/setSelectedFolderId`, folderId)
+      await this.$store.dispatch(`${this.storeScope}/load`)
+    },
     async refreshAfterDrop() {
       await this.$store.dispatch("folders/fetchFolders")
       await this.$store.dispatch(`${this.storeScope}/load`)
@@ -172,24 +139,6 @@ export default {
     handleManageAccess(folder) {
       this.accessFolder = folder
     },
-    async onDropAll(e) {
-      this.isAllDragOver = false
-      const { folderId } = this.parseDragData(e)
-      if (folderId) {
-        await this.handleDropFolder({ folderId, newParentId: null })
-      }
-    },
-    async onDropUncategorized(e) {
-      this.isUncategorizedDragOver = false
-      const { folderId, conversationIds } = this.parseDragData(e)
-      if (folderId || !conversationIds) return
-      try {
-        await this.$store.dispatch("folders/uncategorizeConversations", { conversationIds })
-        await this.refreshAfterDrop()
-      } catch (error) {
-        console.error("Error uncategorizing conversations:", error)
-      }
-    },
     async handleDropFolder({ folderId, newParentId }) {
       try {
         await this.$store.dispatch("folders/updateFolder", {
@@ -220,43 +169,6 @@ export default {
 .folder-tree {
   display: flex;
   flex-direction: column;
-
-  hr {
-    margin: 0;
-    height: 2px;
-    background-color: #ccc;
-    border: none;
-    margin: 0 0.5em;
-    margin-top: 0.5em;
-  }
-
-  &__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.5em;
-
-    .title {
-      font-weight: 600;
-      color: var(--text-secondary);
-    }
-  }
-
-  &__add-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0.2em;
-    border-radius: 4px;
-    color: var(--text-secondary);
-    display: flex;
-    align-items: center;
-
-    &:hover {
-      background-color: var(--primary-soft);
-      color: var(--primary-color);
-    }
-  }
 
   &__create {
     display: flex;

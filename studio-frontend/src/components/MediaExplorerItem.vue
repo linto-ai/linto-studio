@@ -104,18 +104,6 @@
               :is="status !== 'done' ? 'span' : 'router-link'">
               {{ title }}
             </component>
-            <Tooltip
-              v-if="showFolderLink"
-              :text="folder.name || $t('folders.go_to_folder')"
-              position="bottom">
-              <ph-icon
-                name="folder"
-                weight="fill"
-                size="18"
-                class="media-explorer-item__folder-icon"
-                :color="folder.color || 'var(--primary-color)'"
-                @click.native.stop="goToFolder" />
-            </Tooltip>
           </div>
 
           <!-- Media metadata -->
@@ -180,7 +168,7 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters } from "vuex"
+import { mapGetters } from "vuex"
 import { mediaScopeMixin } from "@/mixins/mediaScope"
 import { mediaProgressMixin } from "@/mixins/mediaProgress"
 
@@ -333,9 +321,6 @@ export default {
     title() {
       return this.media.name
     },
-    description() {
-      return this.media.description
-    },
     duration() {
       if (this.media.metadata?.audio?.duration) {
         return this.media.metadata?.audio?.duration
@@ -394,13 +379,6 @@ export default {
     isFromSession() {
       return !!this.media?.type?.from_session_id
     },
-    folder() {
-      if (!this.media.folderId) return null
-      return this.$store.getters["folders/getFolderById"](this.media.folderId)
-    },
-    showFolderLink() {
-      return this.folder && this.selectedFolderId === undefined
-    },
   },
   methods: {
     toggleFavorite() {
@@ -412,15 +390,17 @@ export default {
 
     toggleSelection() {
       if (this.isSelected) {
-        this.$emit(
-          "update:selectedMediaIds",
-          this.selectedMediaIds.filter((id) => id !== this.media._id),
-        )
+        const remaining = this.selectedMediaIds.filter((id) => id !== this.media._id)
+        this.$emit("update:selectedMediaIds", remaining)
+        if (remaining.length === 0) {
+          this.$store.dispatch("folders/setActiveFolderId", null)
+        }
       } else {
         this.$emit("update:selectedMediaIds", [
           ...this.selectedMediaIds,
           this.media._id,
         ])
+        this.$store.dispatch("folders/setActiveFolderId", this.media.folderId || null)
       }
     },
 
@@ -463,10 +443,6 @@ export default {
 
     handleDelete() {
       this.showDeleteModal = true
-    },
-
-    goToFolder() {
-      this.selectFolder(this.media.folderId)
     },
 
     onDragStart(e) {
@@ -539,14 +515,6 @@ export default {
   flex: 1;
   min-width: 350px; // Allow shrinking
   overflow: hidden; // Prevent horizontal overflow
-}
-
-.media-explorer-item__right {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  flex: 0 0 auto;
-  min-width: 0; // Allow shrinking
 }
 
 // ===== CONTROLS GROUP =====
@@ -662,33 +630,6 @@ export default {
 
   & a:hover {
     text-decoration: underline;
-  }
-}
-
-.media-explorer-item__folder-icon {
-  flex-shrink: 0;
-  cursor: pointer;
-  color: var(--primary-color);
-  transition: opacity 0.2s ease;
-
-  &:hover {
-    opacity: 0.7;
-  }
-}
-
-.media-explorer-item__overview-btn {
-  flex-shrink: 0;
-  width: 24px;
-  height: 24px;
-  min-width: 24px;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  .media-explorer-item:hover & {
-    opacity: 1;
   }
 }
 

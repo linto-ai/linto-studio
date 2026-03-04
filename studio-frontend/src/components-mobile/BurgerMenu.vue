@@ -9,7 +9,6 @@
       :organizationId="currentOrganization._id" />
 
     <div class="burger-menu__body">
-      <FolderTree v-if="isInbox" />
       <MediaExplorerMenuLabels v-if="isInbox" />
 
       <BackofficeSidebar v-if="backoffice" />
@@ -75,7 +74,6 @@ import { logout } from "@/tools/logout"
 import MediaExplorerMenu from "@/components/MediaExplorerMenu.vue"
 import BackofficeSidebar from "@/components/BackofficeSidebar.vue"
 import MediaExplorerMenuLabels from "@/components/MediaExplorerMenuLabels.vue"
-import FolderTree from "@/components/FolderTree.vue"
 
 export default {
   mixins: [orgaRoleMixin, organizationPermissionsMixin],
@@ -157,7 +155,6 @@ export default {
     MediaExplorerMenu,
     BackofficeSidebar,
     MediaExplorerMenuLabels,
-    FolderTree,
   },
 }
 </script>

@@ -45,16 +45,9 @@
           <slot name="before" />
           <Loading v-if="loading && !pageIsLoading" />
           <div v-if="!loading">
-            <!-- Folders navigation -->
-            <MediaExplorerFolders
-              :folders="folders"
-              :can-go-back="canGoBack"
-              @navigate="$emit('navigate-folder', $event)"
-              @go-back="$emit('go-back-folder')"
-              @drop-media="onDropMedia" />
             <!-- Empty state -->
             <div
-              v-if="medias.length === 0 && folders.length === 0"
+              v-if="medias.length === 0"
               class="media-explorer__body__empty">
               <slot name="empty">
                 <div class="empty-state">
@@ -99,13 +92,12 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex"
+import { mapGetters } from "vuex"
 
 import { mediaScopeMixin } from "@/mixins/mediaScope"
 
 import MediaExplorerHeader from "@/components/MediaExplorerHeader.vue"
 import MediaExplorerItem from "@/components/MediaExplorerItem.vue"
-import MediaExplorerFolders from "@/components/MediaExplorerFolders.vue"
 import MediaExplorerRightPanel from "@/components/MediaExplorerRightPanel.vue"
 import Button from "@/components/atoms/Button.vue"
 import ModalDeleteConversations from "@/components/ModalDeleteConversations.vue"
@@ -119,7 +111,6 @@ export default {
   components: {
     MediaExplorerHeader,
     MediaExplorerItem,
-    MediaExplorerFolders,
     MediaExplorerRightPanel,
     Button,
     ModalDeleteConversations,
@@ -143,14 +134,6 @@ export default {
     error: {
       type: [String, null],
       default: null,
-    },
-    folders: {
-      type: Array,
-      default: () => [],
-    },
-    canGoBack: {
-      type: Boolean,
-      default: false,
     },
   },
   computed: {
@@ -193,7 +176,6 @@ export default {
   data() {
     return {
       observer: null,
-      search: "",
       showDeleteModal: false,
       rightPanelWidth: 500,
       selectedMediaIds: [],
@@ -206,6 +188,7 @@ export default {
   watch: {
     selectedFolderId() {
       this.selectedMediaIds = []
+      this.$store.dispatch("folders/setActiveFolderId", null)
     },
     loading: {
       immediate: true,
@@ -283,20 +266,6 @@ export default {
       if (this.observer) {
         this.observer.disconnect()
         this.observer = null
-      }
-    },
-
-    async onDropMedia({ folderId, conversationIds }) {
-      try {
-        await this.$store.dispatch("folders/moveConversationsToFolder", {
-          folderId,
-          conversationIds,
-        })
-        await this.$store.dispatch("folders/fetchFolders")
-        await this.$store.dispatch(`${this.storeScope}/load`)
-        this.selectedMediaIds = []
-      } catch (error) {
-        console.error("Error moving conversations to folder:", error)
       }
     },
 

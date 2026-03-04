@@ -3,7 +3,7 @@
     <div
       class="folder-tree-node__row"
       :class="{
-        'folder-tree-node__row--active': selectedFolderId === folder._id,
+        'folder-tree-node__row--active': selectedFolderId === folder._id || activeFolderId === folder._id,
         'folder-tree-node__row--drag-over': isDragOver,
       }"
       :style="{ paddingLeft: (depth * 1) + 0.5 + 'em' }"
@@ -104,6 +104,7 @@
         :key="child._id"
         :folder="child"
         :selectedFolderId="selectedFolderId"
+        :activeFolderId="activeFolderId"
         :depth="depth + 1"
         :userRole="userRole"
         :userId="userId"
@@ -132,6 +133,7 @@ export default {
   props: {
     folder: { type: Object, required: true },
     selectedFolderId: { default: undefined },
+    activeFolderId: { type: String, default: null },
     depth: { type: Number, default: 0 },
     userRole: { type: Number, default: 0 },
     userId: { type: String, default: "" },
@@ -150,6 +152,14 @@ export default {
       immediate: true,
       handler(newId) {
         if (newId && this.containsDescendant(this.folder.children, newId)) {
+          this.expanded = true
+        }
+      },
+    },
+    activeFolderId: {
+      immediate: true,
+      handler(newId) {
+        if (newId === this.folder._id || (newId && this.containsDescendant(this.folder.children, newId))) {
           this.expanded = true
         }
       },

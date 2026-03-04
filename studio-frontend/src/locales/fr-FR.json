@@ -636,7 +636,7 @@
     }
   },
   "folders": {
-    "title": "Dossiers",
+    "title": "Médias",
     "all": "Tous",
     "uncategorized": "Non classé",
     "create": "Créer un dossier",
@@ -676,8 +676,7 @@
     "back": "Retour",
     "uncategorize_success": "Conversations retirées du dossier",
     "uncategorize_error": "Erreur lors du retrait des conversations du dossier",
-    "depth_limit_error": "Profondeur maximale d'imbrication des dossiers atteinte",
-    "go_to_folder": "Aller au dossier"
+    "depth_limit_error": "Profondeur maximale d'imbrication des dossiers atteinte"
   },
   "manage_tags": {
     "title": "Thématiques",
@@ -822,6 +821,10 @@
       "shared": "Partages reçus",
       "tags": "Thématiques",
       "folders": "Dossiers"
+    },
+    "sections": {
+      "media": "Médias",
+      "personal": "Personnel"
     },
     "account": {
       "account_link": "Mon compte",

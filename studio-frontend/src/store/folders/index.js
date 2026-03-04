@@ -13,6 +13,7 @@ export default {
   state: {
     folders: [],
     selectedFolderId: null,
+    activeFolderId: null,
     loading: false,
     error: null,
   },
@@ -22,6 +23,9 @@ export default {
     },
     setSelectedFolderId(state, folderId) {
       state.selectedFolderId = folderId
+    },
+    setActiveFolderId(state, folderId) {
+      state.activeFolderId = folderId
     },
     addFolder(state, folder) {
       state.folders = [...state.folders, folder]
@@ -83,6 +87,7 @@ export default {
       return sorted
     },
     getSelectedFolderId: (state) => state.selectedFolderId,
+    getActiveFolderId: (state) => state.activeFolderId,
     getRootFolders: (state) => {
       return state.folders
         .filter((f) => !f.parentId)
@@ -213,6 +218,9 @@ export default {
     },
     selectFolder({ commit }, folderId) {
       commit("setSelectedFolderId", folderId)
+    },
+    setActiveFolderId({ commit }, folderId) {
+      commit("setActiveFolderId", folderId)
     },
     async updateFolderVisibility(
       { commit, dispatch, rootGetters },

@@ -1,76 +1,124 @@
 <template>
-  <div class="media-explorer-menu flex col">
-    <router-link
-      :to="{
-        name: 'explore',
-        params: { organizationId: currentOrganizationScope },
+  <div class="media-explorer-menu">
+    <!-- Médias -->
+    <div
+      class="media-explorer-menu__item"
+      :class="{
+        'media-explorer-menu__item--active': isMediaActive,
+        'media-explorer-menu__item--drag-over': isInboxDragOver,
       }"
-      class="flex row align-center gap-medium media-explorer-menu__item">
-      <ph-icon name="tray" :weight="$route.name === 'explore' ? 'fill' : 'regular'"></ph-icon>
-      <span class="media-explorer-menu__item__text">
-        {{ $t("navigation.tabs.explore") }}
-      </span>
-    </router-link>
+      @click="handleMediaClick"
+      @dblclick.prevent="mediaExpanded = !mediaExpanded"
+      @dragover.prevent="isInboxDragOver = true"
+      @dragleave="isInboxDragOver = false"
+      @drop.prevent="onDropInbox">
+      <ph-icon name="tray" :weight="isMediaRoute ? 'fill' : 'regular'" size="16" />
+      <span>{{ $t("navigation.sections.media") }}</span>
+      <button
+        class="media-explorer-menu__item__action"
+        :title="$t('folders.create')"
+        @click.stop="mediaExpanded = true; $refs.folderTree.toggleCreate()">
+        <ph-icon name="plus" size="14" />
+      </button>
+      <button
+        class="media-explorer-menu__item__action"
+        @click.stop="mediaExpanded = !mediaExpanded">
+        <ph-icon :name="mediaExpanded ? 'caret-up' : 'caret-down'" size="14" />
+      </button>
+    </div>
+    <div v-show="mediaExpanded" class="media-explorer-menu__sub">
+      <FolderTree ref="folderTree" />
+    </div>
 
-    <router-link
+    <!-- Transcription en direct -->
+    <div
       v-if="hasSessions"
-      :to="{
-        name: 'sessionsList',
-        params: { organizationId: currentOrganizationScope },
-      }"
-      class="flex row align-center gap-medium media-explorer-menu__item">
-      <ph-icon name="broadcast" :weight="$route.name === 'sessionsList' ? 'fill' : 'regular'"></ph-icon>
-      <span class="media-explorer-menu__item__text">
-        {{ $t("navigation.tabs.sessions") }}
-      </span>
-    </router-link>
+      class="media-explorer-menu__item"
+      :class="{ 'media-explorer-menu__item--active': isSessionsActive }"
+      @click="handleSessionsClick">
+      <ph-icon name="broadcast" :weight="isSessionsActive ? 'fill' : 'regular'" size="16" />
+      <span>{{ $t("navigation.tabs.sessions") }}</span>
+    </div>
 
-    <router-link
-      :to="{
-        name: 'explore-favorites',
-        params: { organizationId: currentOrganizationScope },
-      }"
-      class="flex row align-center gap-medium media-explorer-menu__item">
-      <ph-icon name="star" :weight="$route.name === 'explore-favorites' ? 'fill' : 'regular'"></ph-icon>
-      <span class="media-explorer-menu__item__sub__item__text">
-        {{ $t("navigation.tabs.favorites") }}
-      </span>
-    </router-link>
-    <router-link
-      :to="{
-        name: 'explore-shared',
-        params: { organizationId: currentOrganizationScope },
-      }"
-      class="flex row align-center gap-medium media-explorer-menu__item">
-      <ph-icon name="share-network" :weight="$route.name === 'explore-shared' ? 'fill' : 'regular'"></ph-icon>
-      <span class="media-explorer-menu__item__sub__item__text">
-        {{ $t("navigation.tabs.shared") }}
-      </span>
-    </router-link>
+    <!-- Personnel -->
+    <div
+      class="media-explorer-menu__item"
+      :class="{ 'media-explorer-menu__item--active': isPersonalActive }"
+      @click="personalExpanded = !personalExpanded">
+      <ph-icon name="user" :weight="isPersonalActive ? 'fill' : 'regular'" size="16" />
+      <span>{{ $t("navigation.sections.personal") }}</span>
+      <button
+        class="media-explorer-menu__item__action"
+        @click.stop="personalExpanded = !personalExpanded">
+        <ph-icon :name="personalExpanded ? 'caret-up' : 'caret-down'" size="14" />
+      </button>
+    </div>
+    <div v-show="personalExpanded" class="media-explorer-menu__sub">
+      <router-link
+        :to="{
+          name: 'explore-favorites',
+          params: { organizationId: getCurrentOrganizationScope },
+        }"
+        class="media-explorer-menu__item media-explorer-menu__item--nested">
+        <ph-icon name="star" :weight="isFavoritesActive ? 'fill' : 'regular'" size="16" />
+        <span>{{ $t("navigation.tabs.favorites") }}</span>
+      </router-link>
+      <router-link
+        :to="{
+          name: 'explore-shared',
+          params: { organizationId: getCurrentOrganizationScope },
+        }"
+        class="media-explorer-menu__item media-explorer-menu__item--nested">
+        <ph-icon name="share-network" :weight="isSharedActive ? 'fill' : 'regular'" size="16" />
+        <span>{{ $t("navigation.tabs.shared") }}</span>
+      </router-link>
+    </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex"
 import { apiHasSessions } from "@/api/session.js"
+import { mediaScopeMixin } from "@/mixins/mediaScope"
+import { folderDragDropMixin } from "@/mixins/folderDragDrop"
+import FolderTree from "@/components/FolderTree.vue"
 
 export default {
   name: "MediaExplorerMenu",
-  components: {},
-  computed: {
-    ...mapGetters("organizations", {
-      organizations: "getOrganizations",
-      currentOrganization: "getCurrentOrganization",
-      currentOrganizationScope: "getCurrentOrganizationScope",
-    }),
-  },
+  mixins: [mediaScopeMixin, folderDragDropMixin],
+  components: { FolderTree },
   data() {
     return {
+      mediaExpanded: false,
+      personalExpanded: false,
       hasSessions: false,
+      isInboxDragOver: false,
     }
   },
+  computed: {
+    activeFolderId() {
+      return this.$store.getters["folders/getActiveFolderId"]
+    },
+    isMediaRoute() {
+      return this.$route.name === "explore" || this.$route.name === "inbox"
+    },
+    isMediaActive() {
+      return this.isMediaRoute && this.selectedFolderId === undefined
+    },
+    isSessionsActive() {
+      return this.$route.name === "sessionsList"
+    },
+    isPersonalActive() {
+      return this.isFavoritesActive || this.isSharedActive
+    },
+    isFavoritesActive() {
+      return this.$route.name === "explore-favorites"
+    },
+    isSharedActive() {
+      return this.$route.name === "explore-shared"
+    },
+  },
   watch: {
-    currentOrganizationScope: {
+    getCurrentOrganizationScope: {
       immediate: true,
       async handler(orgId) {
         if (orgId) {
@@ -80,8 +128,53 @@ export default {
         }
       },
     },
+    activeFolderId(id) {
+      if (id) {
+        this.mediaExpanded = true
+      }
+    },
+    isPersonalActive: {
+      immediate: true,
+      handler(val) {
+        if (val) {
+          this.personalExpanded = true
+        }
+      },
+    },
   },
-  methods: {},
+  methods: {
+    async handleMediaClick() {
+      if (!this.isMediaRoute) {
+        await this.$router.push({
+          name: "explore",
+          params: { organizationId: this.getCurrentOrganizationScope },
+        })
+      }
+      this.selectFolder(undefined)
+    },
+    handleSessionsClick() {
+      this.$router.push({
+        name: "sessionsList",
+        params: { organizationId: this.getCurrentOrganizationScope },
+      })
+    },
+    async onDropInbox(e) {
+      this.isInboxDragOver = false
+      const { folderId } = this.parseDragData(e)
+      if (folderId) {
+        try {
+          await this.$store.dispatch("folders/updateFolder", {
+            folderId,
+            payload: { parentId: null },
+          })
+          await this.$store.dispatch("folders/fetchFolders")
+          await this.$store.dispatch(`${this.storeScope}/load`)
+        } catch (error) {
+          console.error("Error moving folder to root:", error)
+        }
+      }
+    },
+  },
 }
 </script>
 
@@ -91,17 +184,66 @@ export default {
   flex-direction: column;
 
   &__item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     padding: 0.5rem 1rem;
     border-left: 2px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    user-select: none;
 
+    &:hover {
+      background-color: var(--primary-soft);
+    }
+
+    &--active,
     &.router-link-exact-active {
       background: var(--primary-soft);
-      border-left: 2px solid var(--primary-color);
+      border-left-color: var(--primary-color);
+
+      svg {
+        color: var(--primary-color) !important;
+      }
     }
 
-    &.router-link-exact-active svg {
-      color: var(--primary-color) !important;
+    &--drag-over {
+      background-color: var(--primary-color);
+      border-left-color: var(--primary-color);
+      color: var(--background-primary);
     }
+
+    &--nested {
+      padding-left: 2.5rem;
+    }
+
+    &__action {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.2em;
+      border-radius: 4px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      margin-left: auto;
+
+      &:hover {
+        background-color: var(--primary-soft);
+        color: var(--primary-color);
+      }
+
+      & + & {
+        margin-left: 0;
+      }
+    }
+  }
+
+  &__sub {
+    display: flex;
+    flex-direction: column;
   }
 }
 </style>

@@ -6,13 +6,9 @@
       :medias="medias"
       :loading="loading || pageIsLoading"
       :loadingNextPage="loadingNextPage"
-      :folders="currentFolders"
-      :can-go-back="canGoBack"
       enable-pagination
       class="relative"
-      @load-more="handleLoadMore"
-      @navigate-folder="handleNavigateFolder"
-      @go-back-folder="handleGoBackFolder">
+      @load-more="handleLoadMore">
       <template #header-actions v-if="getCurrentScope == 'organization'">
         <div class="flex gap-small">
           <FilterChip
@@ -74,17 +70,6 @@ export default {
   computed: {
     medias() {
       return this.$store.getters[`${this.storeScope}/all`]
-    },
-    currentFolders() {
-      const selectedId = this.$store.getters[`${this.storeScope}/selectedFolderId`]
-      if (selectedId === null) return []
-      const allFolders = this.$store.getters["folders/getFolders"]
-      if (selectedId === undefined) return allFolders.filter(f => !f.parentId)
-      return allFolders.filter(f => f.parentId === selectedId)
-    },
-    canGoBack() {
-      const selectedId = this.$store.getters[`${this.storeScope}/selectedFolderId`]
-      return selectedId !== undefined && selectedId !== null
     },
     search() {
       return this.$store.getters[`${this.storeScope}/search`]
@@ -150,18 +135,6 @@ export default {
       this.loadingNextPage = true
       await this.$store.dispatch(`${this.storeScope}/loadNextPage`)
       this.loadingNextPage = false
-    },
-    async handleNavigateFolder(folderId) {
-      this.loading = true
-      await this.selectFolder(folderId)
-      this.loading = false
-    },
-    async handleGoBackFolder() {
-      const selectedId = this.$store.getters[`${this.storeScope}/selectedFolderId`]
-      const folder = this.$store.getters["folders/getFolderById"](selectedId)
-      this.loading = true
-      await this.selectFolder(folder?.parentId || undefined)
-      this.loading = false
     },
     initCounts() {
       this.$store.dispatch(
