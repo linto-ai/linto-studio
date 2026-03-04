@@ -36,7 +36,7 @@
           </div>
           <!-- Show regenerate button only when document is outdated OR user is admin -->
           <Button
-            v-if="!isUpdated || isAdmin"
+            v-if="activeTab !== 'verbatim' && (!isUpdated || isAdmin)"
             variant="secondary"
             icon="arrow-clockwise"
             block
@@ -1286,7 +1286,17 @@ export default {
             const target = current || this.generations[0]
             await this.selectGeneration(target.generationId)
           } else {
-            // No generations left - switch to verbatim
+            // No generations left - clean state and switch to verbatim
+            this.currentGenerationId = null
+            this.savedVersions = []
+            this.currentVersionNumber = null
+            this.markdownContent = null
+            // Remove the job entry so returning to this tab won't auto-regenerate
+            const serviceId = this.selectedRoute || this.activeTab
+            const jobIndex = this.jobsList.findIndex((j) => j.format === serviceId)
+            if (jobIndex !== -1) {
+              this.jobsList.splice(jobIndex, 1)
+            }
             this.activeTab = "verbatim"
           }
           this.$store.dispatch("system/addNotification", {
