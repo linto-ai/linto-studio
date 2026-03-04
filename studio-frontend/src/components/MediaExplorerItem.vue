@@ -104,6 +104,18 @@
               :is="status !== 'done' ? 'span' : 'router-link'">
               {{ title }}
             </component>
+            <Tooltip
+              v-if="showFolderLink"
+              :text="folder.name || $t('folders.go_to_folder')"
+              position="bottom">
+              <ph-icon
+                name="folder"
+                weight="fill"
+                size="18"
+                class="media-explorer-item__folder-icon"
+                :color="folder.color || 'var(--primary-color)'"
+                @click.native.stop="goToFolder" />
+            </Tooltip>
           </div>
 
           <!-- Media metadata -->
@@ -382,6 +394,13 @@ export default {
     isFromSession() {
       return !!this.media?.type?.from_session_id
     },
+    folder() {
+      if (!this.media.folderId) return null
+      return this.$store.getters["folders/getFolderById"](this.media.folderId)
+    },
+    showFolderLink() {
+      return this.folder && this.selectedFolderId === undefined
+    },
   },
   methods: {
     toggleFavorite() {
@@ -444,6 +463,10 @@ export default {
 
     handleDelete() {
       this.showDeleteModal = true
+    },
+
+    goToFolder() {
+      this.selectFolder(this.media.folderId)
     },
 
     onDragStart(e) {
@@ -617,6 +640,8 @@ export default {
 .media-explorer-item__title {
   font-weight: 600;
   color: var(--text-primary);
+  gap: 0.35rem;
+  align-items: center;
   // white-space: nowrap;
   // overflow: hidden;
   // text-overflow: ellipsis;
@@ -637,6 +662,17 @@ export default {
 
   & a:hover {
     text-decoration: underline;
+  }
+}
+
+.media-explorer-item__folder-icon {
+  flex-shrink: 0;
+  cursor: pointer;
+  color: var(--primary-color);
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.7;
   }
 }
 

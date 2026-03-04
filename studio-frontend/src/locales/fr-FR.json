@@ -676,7 +676,8 @@
     "back": "Retour",
     "uncategorize_success": "Conversations retirées du dossier",
     "uncategorize_error": "Erreur lors du retrait des conversations du dossier",
-    "depth_limit_error": "Profondeur maximale d'imbrication des dossiers atteinte"
+    "depth_limit_error": "Profondeur maximale d'imbrication des dossiers atteinte",
+    "go_to_folder": "Aller au dossier"
   },
   "manage_tags": {
     "title": "Thématiques",
