@@ -819,7 +819,8 @@
     "sections": {
       "organization": "Organisation",
       "media": "Médias",
-      "personal": "Personnel"
+      "personal": "Personnel",
+      "my_space": "Mon espace"
     },
     "account": {
       "account_link": "Mon compte",

@@ -822,7 +822,8 @@
     "sections": {
       "organization": "Organization",
       "media": "Media",
-      "personal": "Personal"
+      "personal": "Personal",
+      "my_space": "My space"
     },
     "tabs": {
       "explore": "Inbox",

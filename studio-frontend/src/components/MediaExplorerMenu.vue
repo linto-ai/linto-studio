@@ -112,7 +112,7 @@ export default {
     orgDisplayName() {
       if (!this.currentOrganization) return ""
       if (this.isOwnPersonalOrg) {
-        return this.$t("navigation.sections.personal")
+        return this.$t("navigation.sections.my_space")
       }
       return this.currentOrganization.name
     },
