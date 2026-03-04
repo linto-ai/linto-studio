@@ -7,10 +7,12 @@
         'folder-tree-node__row--drag-over': isDragOver,
       }"
       :style="{ paddingLeft: (depth * 1) + 0.5 + 'em' }"
+      draggable="true"
+      @dragstart.stop="onDragStart"
       @click="$emit('select', folder._id)"
       @dblclick.prevent="toggleExpand"
-      @dragover.prevent="isDragOver = true"
-      @dragleave="isDragOver = false"
+      @dragover.prevent="onDragOver"
+      @dragleave="onDragLeave"
       @drop.prevent="onDrop">
       <button
         v-if="folder.children && folder.children.length > 0"
@@ -110,19 +112,22 @@
         @delete="$emit('delete', $event)"
         @create-child="$emit('create-child', $event)"
         @manage-access="$emit('manage-access', $event)"
-        @drop-media="$emit('drop-media', $event)" />
+        @drop-media="$emit('drop-media', $event)"
+        @drop-folder="$emit('drop-folder', $event)" />
     </ul>
   </li>
 </template>
 
 <script>
 import PopoverList from "@/components/atoms/PopoverList.vue"
+import { folderDragDropMixin } from "@/mixins/folderDragDrop"
 
 const ROLE_MAINTAINER = 5
 const RIGHT_SHARE = 16
 
 export default {
   name: "FolderTreeNode",
+  mixins: [folderDragDropMixin],
   components: { PopoverList },
   props: {
     folder: { type: Object, required: true },
@@ -138,8 +143,17 @@ export default {
       renameName: "",
       showChildInput: false,
       childName: "",
-      isDragOver: false,
     }
+  },
+  watch: {
+    selectedFolderId: {
+      immediate: true,
+      handler(newId) {
+        if (newId && this.containsDescendant(this.folder.children, newId)) {
+          this.expanded = true
+        }
+      },
+    },
   },
   computed: {
     canManageAccess() {
@@ -255,15 +269,31 @@ export default {
       this.$emit("delete", this.folder._id)
     },
 
+    containsDescendant(children, targetId) {
+      if (!children) return false
+      for (const child of children) {
+        if (child._id === targetId) return true
+        if (this.containsDescendant(child.children, targetId)) return true
+      }
+      return false
+    },
+
     // --- Drag & Drop ---
+    onDragStart(e) {
+      e.dataTransfer.setData("folderId", this.folder._id)
+    },
     onDrop(e) {
       this.isDragOver = false
-      const raw = e.dataTransfer.getData("conversationIds")
-      if (!raw) return
-      this.$emit("drop-media", {
-        folderId: this.folder._id,
-        conversationIds: JSON.parse(raw),
-      })
+      const { folderId, conversationIds } = this.parseDragData(e)
+
+      if (folderId && folderId !== this.folder._id) {
+        this.$emit("drop-folder", { folderId, newParentId: this.folder._id })
+        return
+      }
+
+      if (conversationIds) {
+        this.$emit("drop-media", { folderId: this.folder._id, conversationIds })
+      }
     },
   },
 }

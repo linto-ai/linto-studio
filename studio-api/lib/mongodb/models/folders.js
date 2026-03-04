@@ -252,6 +252,61 @@ class FolderModel extends MongoModel {
     }
   }
 
+  async getAncestors(folderId, organizationId) {
+    try {
+      const ancestors = []
+      const current = await this.getById(folderId)
+      if (current.length === 0) return []
+
+      let parentId = current[0].parentId
+      while (parentId) {
+        const parent = await this.getById(parentId)
+        if (parent.length === 0) break
+        if (parent[0].organizationId !== organizationId) break
+        ancestors.push(parent[0])
+        parentId = parent[0].parentId
+        if (ancestors.length > 10) break
+      }
+
+      return ancestors
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async getSubtreeDepth(folderId, organizationId) {
+    try {
+      const descendants = await this.getDescendants(folderId, organizationId)
+      if (descendants.length === 0) return 0
+
+      // BFS to compute max depth from folderId
+      const childrenMap = {}
+      for (const d of descendants) {
+        const parent = d.parentId || null
+        if (!childrenMap[parent]) childrenMap[parent] = []
+        childrenMap[parent].push(d._id.toString())
+      }
+
+      let maxDepth = 0
+      const queue = [{ id: folderId, depth: 0 }]
+      while (queue.length > 0) {
+        const { id, depth } = queue.shift()
+        const children = childrenMap[id] || []
+        for (const childId of children) {
+          const childDepth = depth + 1
+          if (childDepth > maxDepth) maxDepth = childDepth
+          queue.push({ id: childId, depth: childDepth })
+        }
+      }
+
+      return maxDepth
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   async reparentChildren(oldParentId, newParentId) {
     try {
       const query = {

@@ -30,15 +30,27 @@
       <ul class="folder-tree__list">
         <li
           class="folder-tree__item"
-          :class="{ 'folder-tree__item--active': selectedFolderId === undefined }"
-          @click="selectFolder(undefined)">
+          :class="{
+            'folder-tree__item--active': selectedFolderId === undefined,
+            'folder-tree__item--drag-over': isAllDragOver,
+          }"
+          @click="selectFolder(undefined)"
+          @dragover.prevent="isAllDragOver = true"
+          @dragleave="isAllDragOver = false"
+          @drop.prevent="onDropAll">
           <ph-icon name="folders" size="16" />
           <span>{{ $t("folders.all") }}</span>
         </li>
         <li
           class="folder-tree__item"
-          :class="{ 'folder-tree__item--active': selectedFolderId === null }"
-          @click="selectFolder(null)">
+          :class="{
+            'folder-tree__item--active': selectedFolderId === null,
+            'folder-tree__item--drag-over': isUncategorizedDragOver,
+          }"
+          @click="selectFolder(null)"
+          @dragover.prevent="isUncategorizedDragOver = true"
+          @dragleave="isUncategorizedDragOver = false"
+          @drop.prevent="onDropUncategorized">
           <ph-icon name="folder-dashed" size="16" />
           <span>{{ $t("folders.uncategorized") }}</span>
         </li>
@@ -56,7 +68,8 @@
           @delete="handleDelete"
           @create-child="handleCreateChild"
           @manage-access="handleManageAccess"
-          @drop-media="handleDropMedia" />
+          @drop-media="handleDropMedia"
+          @drop-folder="handleDropFolder" />
       </ul>
     </nav>
 
@@ -74,16 +87,19 @@ import { mapGetters, mapActions } from "vuex"
 import FolderTreeNode from "./FolderTreeNode.vue"
 import FolderAccessModal from "./FolderAccessModal.vue"
 import { mediaScopeMixin } from "@/mixins/mediaScope"
+import { folderDragDropMixin } from "@/mixins/folderDragDrop"
 
 export default {
   name: "FolderTree",
-  mixins: [mediaScopeMixin],
+  mixins: [mediaScopeMixin, folderDragDropMixin],
   components: { FolderTreeNode, FolderAccessModal },
   data() {
     return {
       showCreateInput: false,
       newFolderName: "",
       accessFolder: null,
+      isAllDragOver: false,
+      isUncategorizedDragOver: false,
     }
   },
   watch: {
@@ -116,18 +132,14 @@ export default {
     currentUserId() {
       return this.$store.getters["user/getUserId"] || ""
     },
-    selectedFolderId() {
-      return this.$store.getters[`${this.storeScope}/selectedFolderId`]
-    },
     isExploreRoute() {
       return this.$route.name === "explore" || this.$route.name === "inbox"
     },
   },
   methods: {
     ...mapActions("folders", ["fetchFolders"]),
-    async selectFolder(folderId) {
-      await this.$store.dispatch(`${this.storeScope}/clearSelectedMedias`)
-      await this.$store.dispatch(`${this.storeScope}/setSelectedFolderId`, folderId)
+    async refreshAfterDrop() {
+      await this.$store.dispatch("folders/fetchFolders")
       await this.$store.dispatch(`${this.storeScope}/load`)
     },
     async handleCreate() {
@@ -149,7 +161,7 @@ export default {
     },
     async handleDelete(folderId) {
       await this.$store.dispatch("folders/deleteFolder", folderId)
-      this.$store.dispatch(`${this.storeScope}/load`)
+      await this.$store.dispatch(`${this.storeScope}/load`)
     },
     async handleCreateChild({ parentId, name }) {
       await this.$store.dispatch("folders/createFolder", {
@@ -160,14 +172,42 @@ export default {
     handleManageAccess(folder) {
       this.accessFolder = folder
     },
+    async onDropAll(e) {
+      this.isAllDragOver = false
+      const { folderId } = this.parseDragData(e)
+      if (folderId) {
+        await this.handleDropFolder({ folderId, newParentId: null })
+      }
+    },
+    async onDropUncategorized(e) {
+      this.isUncategorizedDragOver = false
+      const { folderId, conversationIds } = this.parseDragData(e)
+      if (folderId || !conversationIds) return
+      try {
+        await this.$store.dispatch("folders/uncategorizeConversations", { conversationIds })
+        await this.refreshAfterDrop()
+      } catch (error) {
+        console.error("Error uncategorizing conversations:", error)
+      }
+    },
+    async handleDropFolder({ folderId, newParentId }) {
+      try {
+        await this.$store.dispatch("folders/updateFolder", {
+          folderId,
+          payload: { parentId: newParentId },
+        })
+        await this.refreshAfterDrop()
+      } catch (error) {
+        console.error("Error moving folder:", error)
+      }
+    },
     async handleDropMedia({ folderId, conversationIds }) {
       try {
         await this.$store.dispatch("folders/moveConversationsToFolder", {
           folderId,
           conversationIds,
         })
-        await this.$store.dispatch("folders/fetchFolders")
-        await this.$store.dispatch(`${this.storeScope}/load`)
+        await this.refreshAfterDrop()
       } catch (error) {
         console.error("Error moving conversations to folder:", error)
       }
@@ -279,6 +319,12 @@ export default {
       background-color: var(--primary-soft);
       border-left-color: var(--primary-color);
       font-weight: 600;
+    }
+
+    &--drag-over {
+      background-color: var(--primary-color);
+      border-left-color: var(--primary-color);
+      color: var(--background-primary);
     }
   }
 }

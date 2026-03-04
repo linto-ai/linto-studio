@@ -4,6 +4,7 @@ import {
   apiUpdateFolder,
   apiDeleteFolder,
   apiMoveConversationsToFolder,
+  apiUncategorizeConversations,
 } from "@/api/folder"
 import i18n from "@/i18n"
 
@@ -215,13 +216,15 @@ export default {
     },
     async updateFolderVisibility(
       { commit, dispatch, rootGetters },
-      { folderId, visibility, members },
+      { folderId, visibility, members, force },
     ) {
       try {
+        const payload = { visibility, members }
+        if (force) payload.force = true
         await apiUpdateFolder(
           rootGetters["organizations/getCurrentOrganizationScope"],
           folderId,
-          { visibility, members },
+          payload,
         )
         await dispatch("fetchFolders")
         commit(
@@ -238,6 +241,36 @@ export default {
           "system/addNotification",
           {
             message: i18n.t("folders.visibility_update_error"),
+            type: "error",
+          },
+          { root: true },
+        )
+        throw error
+      }
+    },
+    async uncategorizeConversations(
+      { commit, rootGetters },
+      { conversationIds },
+    ) {
+      try {
+        await apiUncategorizeConversations(
+          rootGetters["organizations/getCurrentOrganizationScope"],
+          conversationIds,
+        )
+        commit(
+          "system/addNotification",
+          {
+            message: i18n.t("folders.uncategorize_success"),
+            type: "success",
+          },
+          { root: true },
+        )
+      } catch (error) {
+        console.error("Error uncategorizing conversations:", error)
+        commit(
+          "system/addNotification",
+          {
+            message: i18n.t("folders.uncategorize_error"),
             type: "error",
           },
           { root: true },

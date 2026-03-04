@@ -10,10 +10,13 @@ const {
   FolderNotFound,
   FolderConflict,
   FolderCycleDetected,
+  FolderDepthLimitExceeded,
   FolderForbidden,
 } = require(
   `${process.cwd()}/components/WebServer/error/exception/folder`,
 )
+
+const MAX_FOLDER_DEPTH = 10
 
 function checkBody(req, res, next) {
   if (req.body.name !== undefined) {
@@ -88,6 +91,35 @@ function checkFolderAccess(folder, userId, userRole) {
     folder.owner === userId ||
     (folder.members && folder.members.some((m) => m.userId === userId))
   if (!hasAccess) throw new FolderNotFound()
+}
+
+function validateConversationIds(body) {
+  if (
+    !body.conversationIds ||
+    !Array.isArray(body.conversationIds) ||
+    body.conversationIds.length === 0
+  )
+    throw new FolderError("conversationIds must be a non-empty array")
+}
+
+async function syncConversationsRights(conversationIds, membersRight, customRights) {
+  for (const convId of conversationIds) {
+    await model.conversations.update({
+      _id: convId,
+      "organization.membersRight": membersRight,
+      "organization.customRights": customRights,
+    })
+  }
+}
+
+async function makeFolderPublic(folderId, organizationId) {
+  await model.folders.update({
+    _id: folderId,
+    visibility: "public",
+    owner: null,
+    members: [],
+  })
+  await syncFolderVisibility(folderId, organizationId, "public", null, [])
 }
 
 async function syncFolderVisibility(folderId, organizationId, visibility, owner, members) {
@@ -180,6 +212,12 @@ async function createFolder(req, res, next) {
       if (parent[0].organizationId !== req.params.organizationId)
         throw new FolderError("Parent folder belongs to another organization")
 
+      // Validate depth limit
+      const ancestors = await model.folders.getAncestors(parentId, req.params.organizationId)
+      const parentDepth = ancestors.length
+      if (parentDepth + 1 > MAX_FOLDER_DEPTH)
+        throw new FolderDepthLimitExceeded()
+
       if (parent[0].visibility === "private") {
         visibility = "private"
         owner = parent[0].owner
@@ -269,15 +307,29 @@ async function updateFolder(req, res, next) {
           throw new FolderCycleDetected(
             "Cannot move a folder into one of its descendants",
           )
+
+        // Validate depth limit: newParentDepth + 1 (this folder) + subtreeDepth
+        const ancestors = await model.folders.getAncestors(newParentId, organizationId)
+        const newParentDepth = ancestors.length + 1
+        const subtreeDepth = await model.folders.getSubtreeDepth(req.params.folderId, organizationId)
+        if (newParentDepth + 1 + subtreeDepth > MAX_FOLDER_DEPTH)
+          throw new FolderDepthLimitExceeded()
       }
     }
 
-    // Private -> Public: verify parent is not private
+    // Private -> Public: verify parent is not private (unless force)
+    let forcePublicAncestors = []
     if (currentVisibility === "private" && newVisibility === "public") {
       if (folder[0].parentId) {
         const parentResult = await model.folders.getById(folder[0].parentId)
-        if (parentResult.length > 0 && parentResult[0].visibility === "private")
-          throw new FolderError("Cannot make a folder public when its parent is private")
+        if (parentResult.length > 0 && parentResult[0].visibility === "private") {
+          if (!req.body.force)
+            throw new FolderError("Cannot make a folder public when its parent is private")
+
+          // Collect all private ancestors to also make them public
+          const ancestors = await model.folders.getAncestors(req.params.folderId, organizationId)
+          forcePublicAncestors = ancestors.filter((a) => a.visibility === "private")
+        }
       }
     }
 
@@ -331,13 +383,10 @@ async function updateFolder(req, res, next) {
     }
     // Private -> Public
     else if (currentVisibility === "private" && newVisibility === "public") {
-      await syncFolderVisibility(
-        req.params.folderId,
-        organizationId,
-        "public",
-        null,
-        [],
-      )
+      for (const ancestor of forcePublicAncestors) {
+        await makeFolderPublic(ancestor._id.toString(), organizationId)
+      }
+      await syncFolderVisibility(req.params.folderId, organizationId, "public", null, [])
     }
     // Members changed while staying private
     else if (
@@ -418,12 +467,7 @@ async function deleteFolder(req, res, next) {
 
 async function moveConversations(req, res, next) {
   try {
-    if (
-      !req.body.conversationIds ||
-      !Array.isArray(req.body.conversationIds) ||
-      req.body.conversationIds.length === 0
-    )
-      throw new FolderError("conversationIds must be a non-empty array")
+    validateConversationIds(req.body)
 
     const folder = await model.folders.getById(req.params.folderId)
     if (folder.length === 0) throw new FolderNotFound()
@@ -437,24 +481,10 @@ async function moveConversations(req, res, next) {
       req.params.organizationId,
     )
 
-    // Sync rights to destination folder
     if (folder[0].visibility === "private") {
-      const customRights = folder[0].members || []
-      for (const convId of req.body.conversationIds) {
-        await model.conversations.update({
-          _id: convId,
-          "organization.membersRight": RIGHTS.UNDEFINED,
-          "organization.customRights": customRights,
-        })
-      }
+      await syncConversationsRights(req.body.conversationIds, RIGHTS.UNDEFINED, folder[0].members || [])
     } else {
-      for (const convId of req.body.conversationIds) {
-        await model.conversations.update({
-          _id: convId,
-          "organization.membersRight": RIGHTS.READ,
-          "organization.customRights": [],
-        })
-      }
+      await syncConversationsRights(req.body.conversationIds, RIGHTS.READ, [])
     }
 
     res.status(200).send({
@@ -495,6 +525,26 @@ async function listFolderConversations(req, res, next) {
   }
 }
 
+async function uncategorizeConversations(req, res, next) {
+  try {
+    validateConversationIds(req.body)
+
+    await model.conversations.updateFolderBatch(
+      req.body.conversationIds,
+      null,
+      req.params.organizationId,
+    )
+
+    await syncConversationsRights(req.body.conversationIds, RIGHTS.READ, [])
+
+    res.status(200).send({
+      message: "Conversations removed from folder",
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 module.exports = {
   checkBody,
   listFolders,
@@ -504,4 +554,5 @@ module.exports = {
   deleteFolder,
   moveConversations,
   listFolderConversations,
+  uncategorizeConversations,
 }

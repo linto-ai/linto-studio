@@ -52,6 +52,18 @@ class FolderCycleDetected extends Error {
   }
 }
 
+class FolderDepthLimitExceeded extends Error {
+  constructor(message, err) {
+    super()
+    this.name = "FolderDepthLimitExceeded"
+    this.type = ExceptionType
+    this.status = 422
+    if (message) this.message = message
+    else this.message = `Maximum folder nesting depth reached`
+    if (err) this.err = err
+  }
+}
+
 class FolderForbidden extends Error {
   constructor(message, err) {
     super()
@@ -69,5 +81,6 @@ module.exports = {
   FolderNotFound,
   FolderConflict,
   FolderCycleDetected,
+  FolderDepthLimitExceeded,
   FolderForbidden,
 }

@@ -661,6 +661,9 @@
     "visibility_update_success": "Accès du dossier mis à jour",
     "visibility_update_error": "Erreur lors de la mise à jour de l'accès",
     "visibility_warning": "Cela affectera toutes les conversations et sous-dossiers de ce dossier.",
+    "visibility_parent_private": "Ce dossier ne peut pas être rendu public car son dossier parent est privé. Pour modifier la visibilité de ce dossier, rendez d'abord le dossier parent public.",
+    "visibility_parent_private_force": "Le dossier parent est privé. Rendre ce dossier public rendra également tous ses dossiers parents privés publics, y compris leurs conversations et sous-dossiers.",
+    "force_public_parents": "Rendre aussi les dossiers parents publics",
     "members_label": "Membres",
     "no_members": "Aucun membre sélectionné",
     "right_read": "Lecture",
@@ -670,7 +673,10 @@
     "right_share": "Partage",
     "right_share_description": "Gérer l'accès et les membres du dossier",
     "conversation_count": "{count} conversation | {count} conversations",
-    "back": "Retour"
+    "back": "Retour",
+    "uncategorize_success": "Conversations retirées du dossier",
+    "uncategorize_error": "Erreur lors du retrait des conversations du dossier",
+    "depth_limit_error": "Profondeur maximale d'imbrication des dossiers atteinte"
   },
   "manage_tags": {
     "title": "Thématiques",

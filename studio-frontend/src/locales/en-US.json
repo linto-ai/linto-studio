@@ -666,6 +666,9 @@
     "visibility_update_success": "Folder access updated",
     "visibility_update_error": "Error updating folder access",
     "visibility_warning": "This will affect all conversations and subfolders in this folder.",
+    "visibility_parent_private": "This folder cannot be made public because its parent folder is private. To change this folder's visibility, first make the parent folder public.",
+    "visibility_parent_private_force": "The parent folder is private. Making this folder public will also make all its private parent folders public, including their conversations and subfolders.",
+    "force_public_parents": "Also make parent folders public",
     "members_label": "Members",
     "no_members": "No members selected",
     "right_read": "Read",
@@ -675,7 +678,10 @@
     "right_share": "Share",
     "right_share_description": "Manage folder access and members",
     "conversation_count": "{count} conversation | {count} conversations",
-    "back": "Back"
+    "back": "Back",
+    "uncategorize_success": "Conversations removed from folder",
+    "uncategorize_error": "Error removing conversations from folder",
+    "depth_limit_error": "Maximum folder nesting depth reached"
   },
   "manage_tags": {
     "title": "Topics",

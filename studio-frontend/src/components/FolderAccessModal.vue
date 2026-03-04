@@ -14,7 +14,7 @@
           <input
             type="checkbox"
             :checked="isPrivate"
-            @change="isPrivate = $event.target.checked" />
+            @change="onVisibilityChange($event.target.checked)" />
           <span class="folder-access-modal__slider"></span>
         </label>
         <label class="folder-access-modal__label">
@@ -22,7 +22,20 @@
         </label>
       </div>
 
-      <p v-if="isPrivate" class="folder-access-modal__warning">
+      <div v-if="showForceOption" class="folder-access-modal__warning folder-access-modal__warning--blocked">
+        <p class="folder-access-modal__force-text">
+          {{ $t("folders.visibility_parent_private_force") }}
+        </p>
+        <label class="folder-access-modal__force-check">
+          <input
+            type="checkbox"
+            :checked="forcePublic"
+            @change="forcePublic = $event.target.checked" />
+          <span>{{ $t("folders.force_public_parents") }}</span>
+        </label>
+      </div>
+
+      <p v-else-if="isPrivate" class="folder-access-modal__warning">
         {{ $t("folders.visibility_warning") }}
       </p>
 
@@ -85,6 +98,7 @@ export default {
   data() {
     return {
       isPrivate: this.folder.visibility === "private",
+      forcePublic: false,
       selectedMembers: this.folder.members
         ? this.folder.members.map((m) => ({ ...m }))
         : [],
@@ -94,6 +108,14 @@ export default {
     ...mapGetters("organizations", {
       orgUsers: "getCurrentOrganizationUsers",
     }),
+    parentIsPrivate() {
+      if (!this.folder.parentId) return false
+      const parent = this.$store.getters["folders/getFolderById"](this.folder.parentId)
+      return parent && parent.visibility === "private"
+    },
+    showForceOption() {
+      return this.parentIsPrivate && !this.isPrivate
+    },
     _value: {
       get() {
         return this.value
@@ -124,14 +146,25 @@ export default {
       const member = this.selectedMembers.find((m) => m.userId === userId)
       if (member) member.right = right
     },
+    onVisibilityChange(checked) {
+      this.isPrivate = checked
+      if (checked) {
+        this.forcePublic = false
+      }
+    },
     async handleSave() {
+      // Block save if switching to public with private parent and force not checked
+      if (this.showForceOption && !this.forcePublic) return
+
       const visibility = this.isPrivate ? "private" : "public"
       const members = this.isPrivate ? this.selectedMembers : []
+      const force = this.showForceOption && this.forcePublic
 
       await this.$store.dispatch("folders/updateFolderVisibility", {
         folderId: this.folder._id,
         visibility,
         members,
+        force,
       })
       this.$emit("input", false)
     },
@@ -168,6 +201,7 @@ export default {
       width: 0;
       height: 0;
     }
+
   }
 
   &__slider {
@@ -210,6 +244,28 @@ export default {
     border-left: 3px solid var(--neutral-40, #999);
     border-radius: 2px;
     margin: 0;
+
+    &--blocked {
+      color: var(--warning-color, #b45309);
+      background-color: var(--warning-soft, #fef3c7);
+      border-left-color: var(--warning-color, #b45309);
+    }
+  }
+
+  &__force-text {
+    margin: 0 0 0.5em 0;
+  }
+
+  &__force-check {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    cursor: pointer;
+    font-weight: 600;
+
+    input {
+      cursor: pointer;
+    }
   }
 
   &__members {

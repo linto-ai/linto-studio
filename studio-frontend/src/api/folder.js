@@ -83,6 +83,20 @@ export async function apiMoveConversationsToFolder(
   return requestRes?.data
 }
 
+export async function apiUncategorizeConversations(
+  organizationId,
+  conversationIds,
+  notif = null,
+) {
+  const requestRes = await sendRequest(
+    `${BASE_API}/organizations/${organizationId}/folders/uncategorized/conversations`,
+    { method: "post" },
+    { conversationIds },
+    notif,
+  )
+  return requestRes?.data
+}
+
 export async function apiFetchFolderConversations(
   organizationId,
   folderId,

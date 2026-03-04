@@ -11,6 +11,7 @@ const {
   deleteFolder,
   moveConversations,
   listFolderConversations,
+  uncategorizeConversations,
 } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/organizations/folders.js`,
 )
@@ -31,6 +32,13 @@ module.exports = (webserver) => {
       requireAuth: true,
       requireOrganizationMemberAccess: true,
       middlewares: [checkBody],
+    },
+    {
+      path: "/uncategorized/conversations",
+      method: "post",
+      controller: uncategorizeConversations,
+      requireAuth: true,
+      requireOrganizationMemberAccess: true,
     },
     {
       path: "/:folderId",
