@@ -6,26 +6,20 @@
       :class="{
         'media-explorer-menu__item--drag-over': isInboxDragOver,
       }"
-      @click="handleOrgClick"
-      @dblclick.prevent="orgExpanded = !orgExpanded"
+      @click="openOrgSelector"
       @dragover.prevent="isInboxDragOver = true"
       @dragleave="isInboxDragOver = false"
       @drop.prevent="onDropInbox">
-      <ph-icon name="buildings" size="16" />
-      <span>{{ $t("navigation.sections.organization") }}</span>
+      <ph-icon name="user-switch" size="16" />
+      <span class="media-explorer-menu__item__org-name">{{ orgDisplayName }}</span>
       <button
         class="media-explorer-menu__item__action"
         :title="$t('folders.create')"
-        @click.stop="orgExpanded = true; $refs.folderTree.toggleCreate()">
+        @click.stop="$refs.folderTree.toggleCreate()">
         <ph-icon name="plus" size="14" />
       </button>
-      <button
-        class="media-explorer-menu__item__action"
-        @click.stop="orgExpanded = !orgExpanded">
-        <ph-icon :name="orgExpanded ? 'caret-up' : 'caret-down'" size="14" />
-      </button>
     </div>
-    <div v-show="orgExpanded" class="media-explorer-menu__sub">
+    <div class="media-explorer-menu__sub">
       <!-- Média -->
       <div
         class="media-explorer-menu__item media-explorer-menu__item--nested"
@@ -46,6 +40,8 @@
       <!-- Arbre de dossiers -->
       <FolderTree ref="folderTree" />
     </div>
+
+    <ModalSwitchOrg v-model="modalOrgSelector" @close="modalOrgSelector = false" />
 
     <!-- Personnel -->
     <div
@@ -89,31 +85,42 @@ import { apiHasSessions } from "@/api/session.js"
 import { mediaScopeMixin } from "@/mixins/mediaScope"
 import { folderDragDropMixin } from "@/mixins/folderDragDrop"
 import FolderTree from "@/components/FolderTree.vue"
+import ModalSwitchOrg from "@/components/ModalSwitchOrg.vue"
 
 export default {
   name: "MediaExplorerMenu",
   mixins: [mediaScopeMixin, folderDragDropMixin],
-  components: { FolderTree },
+  components: { FolderTree, ModalSwitchOrg },
   data() {
     return {
-      orgExpanded: false,
       personalExpanded: false,
       hasSessions: false,
       isInboxDragOver: false,
+      modalOrgSelector: false,
     }
   },
   computed: {
-    activeFolderId() {
-      return this.$store.getters["folders/getActiveFolderId"]
+    currentOrganization() {
+      return this.$store.getters["organizations/getCurrentOrganization"]
+    },
+    currentUserId() {
+      return this.$store.getters["user/getUserId"]
+    },
+    isOwnPersonalOrg() {
+      return this.currentOrganization?.personal && this.currentOrganization?.owner === this.currentUserId
+    },
+    orgDisplayName() {
+      if (!this.currentOrganization) return ""
+      if (this.isOwnPersonalOrg) {
+        return this.$t("navigation.sections.personal")
+      }
+      return this.currentOrganization.name
     },
     isMediaRoute() {
       return this.$route.name === "explore" || this.$route.name === "inbox"
     },
     isInboxActive() {
       return this.isMediaRoute && this.selectedFolderId === undefined
-    },
-    isOrgSectionActive() {
-      return this.isMediaRoute || this.isSessionsActive
     },
     isSessionsActive() {
       return this.$route.name === "sessionsList"
@@ -131,24 +138,14 @@ export default {
   watch: {
     getCurrentOrganizationScope: {
       immediate: true,
-      async handler(orgId) {
+      async handler(orgId, oldOrgId) {
         if (orgId) {
           this.hasSessions = await apiHasSessions(orgId)
+          if (oldOrgId && orgId !== oldOrgId) {
+            this.selectFolder(undefined)
+          }
         } else {
           this.hasSessions = false
-        }
-      },
-    },
-    activeFolderId(id) {
-      if (id) {
-        this.orgExpanded = true
-      }
-    },
-    isOrgSectionActive: {
-      immediate: true,
-      handler(val) {
-        if (val) {
-          this.orgExpanded = true
         }
       },
     },
@@ -162,14 +159,8 @@ export default {
     },
   },
   methods: {
-    async handleOrgClick() {
-      if (!this.isMediaRoute) {
-        await this.$router.push({
-          name: "explore",
-          params: { organizationId: this.getCurrentOrganizationScope },
-        })
-      }
-      this.selectFolder(undefined)
+    openOrgSelector() {
+      this.modalOrgSelector = true
     },
     handleInboxClick() {
       if (!this.isMediaRoute) {
@@ -250,6 +241,20 @@ export default {
       font-weight: 600;
     }
 
+    &__org-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
+      text-decoration: underline transparent;
+      transition: text-decoration-color 0.2s;
+    }
+
+    &--section:hover &__org-name {
+      text-decoration-color: var(--primary-color);
+      color: var(--primary-color);
+    }
+
     &--nested {
       padding-left: 2.5rem;
     }
@@ -269,10 +274,6 @@ export default {
       &:hover {
         background-color: var(--primary-soft);
         color: var(--primary-color);
-      }
-
-      & + & {
-        margin-left: 0;
       }
     }
   }

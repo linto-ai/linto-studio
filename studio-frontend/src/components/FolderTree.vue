@@ -64,6 +64,11 @@ export default {
     }
   },
   watch: {
+    getCurrentOrganizationScope(newOrgId, oldOrgId) {
+      if (newOrgId && newOrgId !== oldOrgId) {
+        this.fetchFolders()
+      }
+    },
     showCreateInput(val) {
       if (val) {
         this.$nextTick(() => {

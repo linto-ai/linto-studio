@@ -44,7 +44,6 @@ import MediaExplorer from "@/components/MediaExplorer.vue"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { convRoleMixin } from "@/mixins/convRole.js"
 import { mediaScopeMixin } from "@/mixins/mediaScope"
-import { getCurrentScope } from "vue"
 
 export default {
   name: "NextExplore",
@@ -63,8 +62,6 @@ export default {
     return {
       loading: true,
       loadingNextPage: false,
-      currentOperation: null,
-      observer: null,
     }
   },
   computed: {
@@ -108,20 +105,25 @@ export default {
   },
   methods: {
     async init() {
-      if (this.getCurrentScope === "organization") {
-        await this.initCounts()
-        this.$apiEventWS.subscribeMediaUpdate(this.currentOrganizationScope)
-        this.filterStatus = this.getStatusFromUrl()
+      try {
+        if (this.getCurrentScope === "organization") {
+          await this.initCounts()
+          this.$apiEventWS.subscribeMediaUpdate(this.currentOrganizationScope)
 
-        window.history.replaceState({}, "", window.location.pathname)
-      }
+          const status = this.getStatusFromUrl()
+          this.$store.dispatch("organizations/setCurrentFilterStatus", status)
 
-      await this.$store.dispatch(`${this.storeScope}/load`, {})
+          window.history.replaceState({}, "", window.location.pathname)
+        }
 
-      this.loading = false
-      this.$store.dispatch("system/setIsLoading", false)
-      if (this.countProcessing == 0) {
-        this.filterStatus = "done"
+        await this.$store.dispatch(`${this.storeScope}/load`, {})
+
+        if (this.countProcessing == 0) {
+          this.$store.dispatch("organizations/setCurrentFilterStatus", "done")
+        }
+      } finally {
+        this.loading = false
+        this.$store.dispatch("system/setIsLoading", false)
       }
     },
     getStatusFromUrl() {
@@ -149,6 +151,13 @@ export default {
     },
   },
   watch: {
+    getCurrentOrganizationScope(newOrgId, oldOrgId) {
+      if (newOrgId && newOrgId !== oldOrgId) {
+        this.loading = true
+        this.$apiEventWS.unSubscribeMediaUdate()
+        this.init()
+      }
+    },
     countProcessing(value) {
       if (value == 0) {
         this.filterStatus = "done"
