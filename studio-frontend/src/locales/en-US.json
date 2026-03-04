@@ -826,6 +826,7 @@
       "start": "Transcribe"
     },
     "sections": {
+      "organization": "Organization",
       "media": "Media",
       "personal": "Personal"
     },

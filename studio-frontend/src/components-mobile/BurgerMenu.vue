@@ -4,11 +4,11 @@
       <UserAccountSelector :backoffice="backoffice" />
     </div>
 
-    <MediaExplorerMenu
-      v-if="!backoffice && isAuthenticated"
-      :organizationId="currentOrganization._id" />
-
     <div class="burger-menu__body">
+      <MediaExplorerMenu
+        v-if="!backoffice && isAuthenticated"
+        :organizationId="currentOrganization._id" />
+
       <MediaExplorerMenuLabels v-if="isInbox" />
 
       <BackofficeSidebar v-if="backoffice" />

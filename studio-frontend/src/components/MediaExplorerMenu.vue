@@ -1,43 +1,51 @@
 <template>
   <div class="media-explorer-menu">
-    <!-- Médias -->
+    <!-- Organisation -->
     <div
       class="media-explorer-menu__item"
       :class="{
-        'media-explorer-menu__item--active': isMediaActive,
+        'media-explorer-menu__item--active': isOrgSectionActive,
         'media-explorer-menu__item--drag-over': isInboxDragOver,
       }"
-      @click="handleMediaClick"
-      @dblclick.prevent="mediaExpanded = !mediaExpanded"
+      @click="handleOrgClick"
+      @dblclick.prevent="orgExpanded = !orgExpanded"
       @dragover.prevent="isInboxDragOver = true"
       @dragleave="isInboxDragOver = false"
       @drop.prevent="onDropInbox">
-      <ph-icon name="tray" :weight="isMediaRoute ? 'fill' : 'regular'" size="16" />
-      <span>{{ $t("navigation.sections.media") }}</span>
+      <ph-icon name="buildings" :weight="isOrgSectionActive ? 'fill' : 'regular'" size="16" />
+      <span>{{ $t("navigation.sections.organization") }}</span>
       <button
         class="media-explorer-menu__item__action"
         :title="$t('folders.create')"
-        @click.stop="mediaExpanded = true; $refs.folderTree.toggleCreate()">
+        @click.stop="orgExpanded = true; $refs.folderTree.toggleCreate()">
         <ph-icon name="plus" size="14" />
       </button>
       <button
         class="media-explorer-menu__item__action"
-        @click.stop="mediaExpanded = !mediaExpanded">
-        <ph-icon :name="mediaExpanded ? 'caret-up' : 'caret-down'" size="14" />
+        @click.stop="orgExpanded = !orgExpanded">
+        <ph-icon :name="orgExpanded ? 'caret-up' : 'caret-down'" size="14" />
       </button>
     </div>
-    <div v-show="mediaExpanded" class="media-explorer-menu__sub">
+    <div v-show="orgExpanded" class="media-explorer-menu__sub">
+      <!-- Média -->
+      <div
+        class="media-explorer-menu__item media-explorer-menu__item--nested"
+        :class="{ 'media-explorer-menu__item--active': isInboxActive }"
+        @click="handleInboxClick">
+        <ph-icon name="tray" :weight="isInboxActive ? 'fill' : 'regular'" size="16" />
+        <span>{{ $t("navigation.sections.media") }}</span>
+      </div>
+      <!-- Transcription en direct -->
+      <div
+        v-if="hasSessions"
+        class="media-explorer-menu__item media-explorer-menu__item--nested"
+        :class="{ 'media-explorer-menu__item--active': isSessionsActive }"
+        @click="handleSessionsClick">
+        <ph-icon name="broadcast" :weight="isSessionsActive ? 'fill' : 'regular'" size="16" />
+        <span>{{ $t("navigation.tabs.sessions") }}</span>
+      </div>
+      <!-- Arbre de dossiers -->
       <FolderTree ref="folderTree" />
-    </div>
-
-    <!-- Transcription en direct -->
-    <div
-      v-if="hasSessions"
-      class="media-explorer-menu__item"
-      :class="{ 'media-explorer-menu__item--active': isSessionsActive }"
-      @click="handleSessionsClick">
-      <ph-icon name="broadcast" :weight="isSessionsActive ? 'fill' : 'regular'" size="16" />
-      <span>{{ $t("navigation.tabs.sessions") }}</span>
     </div>
 
     <!-- Personnel -->
@@ -88,7 +96,7 @@ export default {
   components: { FolderTree },
   data() {
     return {
-      mediaExpanded: false,
+      orgExpanded: false,
       personalExpanded: false,
       hasSessions: false,
       isInboxDragOver: false,
@@ -101,8 +109,11 @@ export default {
     isMediaRoute() {
       return this.$route.name === "explore" || this.$route.name === "inbox"
     },
-    isMediaActive() {
+    isInboxActive() {
       return this.isMediaRoute && this.selectedFolderId === undefined
+    },
+    isOrgSectionActive() {
+      return this.isMediaRoute || this.isSessionsActive
     },
     isSessionsActive() {
       return this.$route.name === "sessionsList"
@@ -130,8 +141,16 @@ export default {
     },
     activeFolderId(id) {
       if (id) {
-        this.mediaExpanded = true
+        this.orgExpanded = true
       }
+    },
+    isOrgSectionActive: {
+      immediate: true,
+      handler(val) {
+        if (val) {
+          this.orgExpanded = true
+        }
+      },
     },
     isPersonalActive: {
       immediate: true,
@@ -143,9 +162,18 @@ export default {
     },
   },
   methods: {
-    async handleMediaClick() {
+    async handleOrgClick() {
       if (!this.isMediaRoute) {
         await this.$router.push({
+          name: "explore",
+          params: { organizationId: this.getCurrentOrganizationScope },
+        })
+      }
+      this.selectFolder(undefined)
+    },
+    handleInboxClick() {
+      if (!this.isMediaRoute) {
+        this.$router.push({
           name: "explore",
           params: { organizationId: this.getCurrentOrganizationScope },
         })

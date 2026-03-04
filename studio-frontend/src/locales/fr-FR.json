@@ -823,6 +823,7 @@
       "folders": "Dossiers"
     },
     "sections": {
+      "organization": "Organisation",
       "media": "Médias",
       "personal": "Personnel"
     },

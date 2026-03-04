@@ -6,7 +6,7 @@
         'folder-tree-node__row--active': selectedFolderId === folder._id || activeFolderId === folder._id,
         'folder-tree-node__row--drag-over': isDragOver,
       }"
-      :style="{ paddingLeft: (depth * 1) + 0.5 + 'em' }"
+      :style="{ paddingLeft: `calc(2.5rem - 14px - 0.5rem + ${Math.min(depth, 6) * 0.75}rem)` }"
       draggable="true"
       @dragstart.stop="onDragStart"
       @click="$emit('select', folder._id)"
@@ -81,7 +81,7 @@
     <div
       v-if="showChildInput"
       class="folder-tree-node__create-child"
-      :style="{ paddingLeft: ((depth + 1) * 1) + 0.5 + 'em' }">
+      :style="{ paddingLeft: `calc(2.5rem - 14px - 0.5rem + ${Math.min(depth + 1, 6) * 0.75}rem)` }">
       <input
         ref="childInput"
         v-model="childName"
@@ -316,13 +316,13 @@ export default {
   &__row {
     display: flex;
     align-items: center;
-    gap: 0.3em;
-    padding: 0.35em 0.5em;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
     cursor: pointer;
-    font-size: 0.85em;
     color: var(--text-primary);
     border-left: 2px solid transparent;
     user-select: none;
+    overflow: hidden;
 
     &:hover {
       background-color: var(--primary-soft);
@@ -431,8 +431,8 @@ export default {
   &__create-child {
     display: flex;
     align-items: center;
-    gap: 0.3em;
-    padding: 0.3em 0.5em;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
   }
 
   &__children {

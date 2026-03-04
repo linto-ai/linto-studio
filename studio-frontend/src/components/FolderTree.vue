@@ -169,12 +169,13 @@ export default {
 .folder-tree {
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
 
   &__create {
     display: flex;
     align-items: center;
-    gap: 0.3em;
-    padding: 0 0.5em 0.5em;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem 0.5rem 2.5rem;
   }
 
   &__confirm-btn {
