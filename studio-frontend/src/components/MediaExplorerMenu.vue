@@ -2,7 +2,7 @@
   <div class="media-explorer-menu">
     <!-- Organisation -->
     <div
-      class="media-explorer-menu__item"
+      class="media-explorer-menu__item media-explorer-menu__item--section"
       :class="{
         'media-explorer-menu__item--active': isOrgSectionActive,
         'media-explorer-menu__item--drag-over': isInboxDragOver,
@@ -50,7 +50,7 @@
 
     <!-- Personnel -->
     <div
-      class="media-explorer-menu__item"
+      class="media-explorer-menu__item media-explorer-menu__item--section"
       :class="{ 'media-explorer-menu__item--active': isPersonalActive }"
       @click="personalExpanded = !personalExpanded">
       <ph-icon name="user" :weight="isPersonalActive ? 'fill' : 'regular'" size="16" />
@@ -240,6 +240,10 @@ export default {
       background-color: var(--primary-color);
       border-left-color: var(--primary-color);
       color: var(--background-primary);
+    }
+
+    &--section {
+      font-weight: 600;
     }
 
     &--nested {
