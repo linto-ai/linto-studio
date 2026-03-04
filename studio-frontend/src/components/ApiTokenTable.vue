@@ -1,26 +1,46 @@
 <template>
   <div>
-    <table
-      class="table-grid"
-      style="grid-template-columns: auto 1fr auto auto auto; width: 100%">
-      <ApiTokenTableHeader
-        @list_sort_by="sortBy"
-        :sortListKey="sortListKey"
-        :sortListDirection="sortListDirection" />
-      <tbody>
-        <div class="table-loader" v-if="loading">
-          <Loading />
+    <GenericTable
+      :columns="columns"
+      :content="tokenList"
+      :loading="loading"
+      :sortListKey="sortListKey"
+      :sortListDirection="sortListDirection"
+      idKey="userId"
+      @list_sort_by="sortBy">
+      <template #cell-firstname="{ element }">
+        {{ element.firstname }}
+      </template>
+      <template #cell-organizationRole="{ element }">
+        <OrgaRoleSelector v-model="element.organizationRole" readonly />
+      </template>
+      <template #cell-createdAt="{ value }">
+        {{ formatDate(value) }}
+      </template>
+      <template #cell-expiresAt="{ value }">
+        {{ formatDate(value) }}
+      </template>
+      <template #cell-actions="{ element }">
+        <div class="flex gap-small">
+          <Button
+            icon="eye"
+            variant="tertiary"
+            @click="openViewModal(element)"
+            iconWeight="regular" />
+          <CopyButton :value="() => fetchTokenValue(element)" />
+          <Button
+            icon="arrows-clockwise"
+            variant="tertiary"
+            @click="openRenewModal(element)" />
+          <Button
+            icon="trash"
+            variant="secondary"
+            intent="destructive"
+            iconWeight="regular"
+            @click="openDeleteModal(element)" />
         </div>
-        <ApiTokenTableLine
-          v-for="token in tokenList"
-          v-model="p_selectedTokens"
-          :key="token.id"
-          :token="token"
-          @view-token="openViewModal"
-          @delete-token="openDeleteModal"
-          @renew-token="openRenewModal" />
-      </tbody>
-    </table>
+      </template>
+    </GenericTable>
     <ModalViewToken
       v-if="selectedToken"
       :fetchFunction="fetchToken"
@@ -45,13 +65,11 @@
 
 <script>
 import { apiGetToken } from "@/api/token"
-import ApiTokenTableHeader from "./ApiTokenTableHeader.vue"
-import ApiTokenTableLine from "./ApiTokenTableLine.vue"
+import GenericTable from "@/components/molecules/GenericTable.vue"
+import OrgaRoleSelector from "./molecules/OrgaRoleSelector.vue"
 import ModalDeleteToken from "./ModalDeleteToken.vue"
 import ModalRenewToken from "./ModalRenewToken.vue"
 import ModalViewToken from "./ModalViewToken.vue"
-// import DeleteTokenModal from "./DeleteTokenModal.vue"
-import Loading from "@/components/atoms/Loading.vue"
 
 export default {
   props: {
@@ -89,9 +107,23 @@ export default {
       selectedToken: null,
     }
   },
+  computed: {
+    columns() {
+      return [
+        { key: "firstname", label: this.$t("api_tokens_settings.token_name_label"), width: "1fr" },
+        { key: "organizationRole", label: this.$t("api_tokens_settings.token_role_label"), width: "auto" },
+        { key: "createdAt", label: this.$t("api_tokens_settings.token_creation_date_label"), width: "auto" },
+        { key: "expiresAt", label: this.$t("api_tokens_settings.token_expiration_date_label"), width: "auto" },
+        { key: "actions", label: this.$t("api_tokens_settings.token_actions_label"), width: "auto" },
+      ]
+    },
+  },
   methods: {
     sortBy(event) {
       this.$emit("list_sort_by", event)
+    },
+    formatDate(date) {
+      return new Date(date).toLocaleDateString()
     },
     openViewModal(token) {
       this.selectedToken = token
@@ -132,24 +164,21 @@ export default {
         throw new Error(req.message)
       }
     },
-  },
-  computed: {
-    p_selectedTokens: {
-      get() {
-        return this.value
-      },
-      set(value) {
-        this.$emit("input", value)
-      },
+    async fetchTokenValue(token) {
+      const req = await apiGetToken(this.organizationId, token.userId)
+      if (req.status == "success") {
+        return req.data.auth_token
+      } else {
+        throw new Error("Failed to fetch token details")
+      }
     },
   },
   components: {
-    ApiTokenTableHeader,
-    ApiTokenTableLine,
+    GenericTable,
+    OrgaRoleSelector,
     ModalViewToken,
     ModalDeleteToken,
     ModalRenewToken,
-    Loading,
   },
 }
 </script>

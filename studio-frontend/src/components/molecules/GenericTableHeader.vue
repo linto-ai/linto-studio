@@ -10,13 +10,14 @@
       </th>
     </tr>
     <tr>
-      <th v-if="selectable">
+      <th v-if="selectable && selectMode !== 'single'">
         <Checkbox
           :id="randomId"
           :value="isAllSelected"
           :indeterminate="isIndeterminate"
           @input="toggleSelectAll" />
       </th>
+      <th v-else-if="selectable" class="no-size"></th>
       <ArrayHeader
         v-for="column in columns"
         :key="column.key"
@@ -51,6 +52,10 @@ export default {
     selectable: {
       type: Boolean,
       default: false,
+    },
+    selectMode: {
+      type: String,
+      default: "multiple",
     },
     selectedRows: {
       type: Array,

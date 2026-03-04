@@ -7,6 +7,7 @@
       :sortListDirection="sortListDirection"
       :sortListKey="sortListKey"
       :selectable="selectable"
+      :selectMode="selectMode"
       :selectedRows="selectedRows"
       :allRowIds="allRowIds">
       <template v-for="(_, slot) in headerSlots" #[slot]>
@@ -23,8 +24,10 @@
         :line="line"
         :columns="columns"
         :selectable="selectable"
+        :selectMode="selectMode"
         :selectedRows="selectedRows"
         :idKey="idKey"
+        :rowClass="rowClass"
         @update:selectedRows="updateSelectedRows">
         <template v-for="(_, slot) in $scopedSlots" #[slot]="props">
           <slot
@@ -75,6 +78,14 @@ export default {
     selectable: {
       type: Boolean,
       default: false,
+    },
+    selectMode: {
+      type: String,
+      default: "multiple",
+    },
+    rowClass: {
+      type: Function,
+      default: null,
     },
   },
   data() {

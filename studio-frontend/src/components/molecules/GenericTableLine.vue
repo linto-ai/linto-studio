@@ -1,12 +1,20 @@
 <template>
   <tr
     @click="onRowClick"
-    :class="{ 'selectable-row': selectable, selected: isSelected }">
-    <td v-if="selectable">
+    :class="[{ 'selectable-row': selectable, selected: isSelected }, rowClass?.(line)]">
+    <td v-if="selectable && selectMode !== 'single'">
       <Checkbox
         v-model="p_selectedRows"
         :id="line[idKey]"
         :checkboxValue="line[idKey]"
+        @click.native.stop />
+    </td>
+    <td v-else-if="selectable">
+      <Radio
+        :value="selectedRows[0] ?? null"
+        :radioValue="line[idKey]"
+        name="generic-table-radio"
+        @input="selectSingle"
         @click.native.stop />
     </td>
     <GenericTableCell
@@ -25,6 +33,7 @@
 <script>
 import GenericTableCell from "./GenericTableCell.vue"
 import Checkbox from "@/components/atoms/Checkbox.vue"
+import Radio from "@/components/atoms/Radio.vue"
 import getNestedProperty from "@/tools/getNestedProperty"
 export default {
   props: {
@@ -48,6 +57,14 @@ export default {
       type: String,
       default: "_id",
     },
+    selectMode: {
+      type: String,
+      default: "multiple",
+    },
+    rowClass: {
+      type: Function,
+      default: null,
+    },
   },
   data() {
     return {}
@@ -59,6 +76,10 @@ export default {
     },
     toggleSelection() {
       const id = this.line[this.idKey]
+      if (this.selectMode === "single") {
+        this.$emit("update:selectedRows", [id])
+        return
+      }
       let newSelection
       if (this.isSelected) {
         newSelection = this.selectedRows.filter((rowId) => rowId !== id)
@@ -66,6 +87,9 @@ export default {
         newSelection = [...this.selectedRows, id]
       }
       this.$emit("update:selectedRows", newSelection)
+    },
+    selectSingle(value) {
+      this.$emit("update:selectedRows", [value])
     },
     onRowClick() {
       if (this.selectable) {
@@ -86,7 +110,7 @@ export default {
       },
     },
   },
-  components: { GenericTableCell, Checkbox },
+  components: { GenericTableCell, Checkbox, Radio },
 }
 </script>
 <style lang="scss" scoped>
