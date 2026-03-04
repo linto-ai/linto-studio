@@ -1,7 +1,3 @@
-const debug = require("debug")(
-  "linto:components:WebServer:routes:api:organization:folders",
-)
-
 const {
   checkBody,
   listFolders,

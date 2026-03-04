@@ -48,7 +48,6 @@ export default {
     },
   },
   getters: {
-    getFolders: (state) => state.folders,
     getFolderById: (state) => (id) => {
       return state.folders.find((f) => f._id === id)
     },
@@ -86,13 +85,7 @@ export default {
       aggregateCounts(sorted)
       return sorted
     },
-    getSelectedFolderId: (state) => state.selectedFolderId,
     getActiveFolderId: (state) => state.activeFolderId,
-    getRootFolders: (state) => {
-      return state.folders
-        .filter((f) => !f.parentId)
-        .sort((a, b) => (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" }))
-    },
     getLoading: (state) => state.loading,
   },
   actions: {
@@ -215,9 +208,6 @@ export default {
       } finally {
         commit("setLoading", false)
       }
-    },
-    selectFolder({ commit }, folderId) {
-      commit("setSelectedFolderId", folderId)
     },
     setActiveFolderId({ commit }, folderId) {
       commit("setActiveFolderId", folderId)

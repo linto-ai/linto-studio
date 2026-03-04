@@ -824,24 +824,6 @@ class ConvoModel extends MongoModel {
     }
   }
 
-  async updateFolder(_id, folderId) {
-    try {
-      const operator = "$set"
-      const query = {
-        _id: this.getObjectId(_id),
-      }
-      const dateTime = moment().format()
-      let mutableElements = {
-        folderId: folderId,
-        last_update: dateTime,
-      }
-      return await this.mongoUpdateOne(query, operator, mutableElements)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
-  }
-
   async updateFolderBatch(conversationIds, folderId, organizationId) {
     try {
       const objectIds = conversationIds.map((id) =>

@@ -1,6 +1,3 @@
-const debug = require("debug")(
-  "linto:components:WebServer:routecontrollers:organizations:folders",
-)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
@@ -8,7 +5,6 @@ const RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const {
   FolderError,
   FolderNotFound,
-  FolderConflict,
   FolderCycleDetected,
   FolderDepthLimitExceeded,
   FolderForbidden,

@@ -471,29 +471,6 @@ export default {
   flex-wrap: wrap;
 }
 
-.selection-summary {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding: 1rem;
-  background-color: var(--primary-soft);
-  border-radius: 8px;
-  border: 1px solid var(--primary-color);
-}
-
-.summary-title {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.summary-description {
-  margin: 0;
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-}
-
 .selected-medias-preview {
   display: flex;
   flex-direction: column;
@@ -504,13 +481,6 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.preview-title {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-primary);
 }
 
 .medias-list {
@@ -586,26 +556,10 @@ export default {
   font-weight: 600;
 }
 
-.actions-grid {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.action-item {
-  display: flex;
-  width: 100%;
-}
-
 .bulk-tag-management {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-}
-
-.tag-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
 }
 
 .common-tags {
@@ -638,31 +592,4 @@ export default {
   font-style: italic;
 }
 
-.bulk-property-editing {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.property-editors {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.property-section {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.property-label {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-.bulk-property-input {
-  width: 100%;
-}
 </style>

@@ -567,8 +567,4 @@ export default {
   gap: 0.5rem;
   flex-wrap: wrap;
 }
-
-.section-content-input {
-  margin: 0;
-}
 </style>

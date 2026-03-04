@@ -4,7 +4,6 @@
     <div
       class="media-explorer-menu__item media-explorer-menu__item--section"
       :class="{
-        'media-explorer-menu__item--active': isOrgSectionActive,
         'media-explorer-menu__item--drag-over': isInboxDragOver,
       }"
       @click="handleOrgClick"
@@ -12,7 +11,7 @@
       @dragover.prevent="isInboxDragOver = true"
       @dragleave="isInboxDragOver = false"
       @drop.prevent="onDropInbox">
-      <ph-icon name="buildings" :weight="isOrgSectionActive ? 'fill' : 'regular'" size="16" />
+      <ph-icon name="buildings" size="16" />
       <span>{{ $t("navigation.sections.organization") }}</span>
       <button
         class="media-explorer-menu__item__action"
@@ -51,9 +50,8 @@
     <!-- Personnel -->
     <div
       class="media-explorer-menu__item media-explorer-menu__item--section"
-      :class="{ 'media-explorer-menu__item--active': isPersonalActive }"
       @click="personalExpanded = !personalExpanded">
-      <ph-icon name="user" :weight="isPersonalActive ? 'fill' : 'regular'" size="16" />
+      <ph-icon name="user" size="16" />
       <span>{{ $t("navigation.sections.personal") }}</span>
       <button
         class="media-explorer-menu__item__action"
@@ -67,7 +65,8 @@
           name: 'explore-favorites',
           params: { organizationId: getCurrentOrganizationScope },
         }"
-        class="media-explorer-menu__item media-explorer-menu__item--nested">
+        class="media-explorer-menu__item media-explorer-menu__item--nested"
+        @click.native="clearFolderSelection">
         <ph-icon name="star" :weight="isFavoritesActive ? 'fill' : 'regular'" size="16" />
         <span>{{ $t("navigation.tabs.favorites") }}</span>
       </router-link>
@@ -76,7 +75,8 @@
           name: 'explore-shared',
           params: { organizationId: getCurrentOrganizationScope },
         }"
-        class="media-explorer-menu__item media-explorer-menu__item--nested">
+        class="media-explorer-menu__item media-explorer-menu__item--nested"
+        @click.native="clearFolderSelection">
         <ph-icon name="share-network" :weight="isSharedActive ? 'fill' : 'regular'" size="16" />
         <span>{{ $t("navigation.tabs.shared") }}</span>
       </router-link>
@@ -181,10 +181,14 @@ export default {
       this.selectFolder(undefined)
     },
     handleSessionsClick() {
+      this.$store.dispatch(`${this.storeScope}/setSelectedFolderId`, undefined)
       this.$router.push({
         name: "sessionsList",
         params: { organizationId: this.getCurrentOrganizationScope },
       })
+    },
+    clearFolderSelection() {
+      this.$store.dispatch(`${this.storeScope}/setSelectedFolderId`, undefined)
     },
     async onDropInbox(e) {
       this.isInboxDragOver = false

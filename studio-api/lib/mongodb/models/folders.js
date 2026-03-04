@@ -124,35 +124,6 @@ class FolderModel extends MongoModel {
     }
   }
 
-  async countConversations(folderId) {
-    try {
-      const pipeline = [
-        {
-          $match: { _id: this.getObjectId(folderId) },
-        },
-        {
-          $lookup: {
-            from: "conversations",
-            localField: "_id",
-            foreignField: "folderId",
-            as: "conversations",
-          },
-        },
-        {
-          $project: {
-            conversationCount: { $size: "$conversations" },
-          },
-        },
-      ]
-      const result = await this.mongoAggregate(pipeline)
-      if (result.length === 0) return 0
-      return result[0].conversationCount
-    } catch (error) {
-      console.error(error)
-      return error
-    }
-  }
-
   async countConversationsByFolderIds(folderIds) {
     try {
       const objectIds = folderIds.map((id) =>
@@ -234,18 +205,6 @@ class FolderModel extends MongoModel {
         members,
         last_update: moment().format(),
       })
-    } catch (error) {
-      console.error(error)
-      return error
-    }
-  }
-
-  async deleteAllFromParent(parentId) {
-    try {
-      const query = {
-        parentId: parentId,
-      }
-      return await this.mongoDeleteMany(query)
     } catch (error) {
       console.error(error)
       return error
