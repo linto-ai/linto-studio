@@ -57,7 +57,9 @@
               currentStatus === 'processing' || currentStatus === 'queued'
             "
             @select-generation="selectGeneration"
-            @select-version="handleSelectVersion" />
+            @select-version="handleSelectVersion"
+            @delete-generation="handleDeleteGeneration"
+            @delete-version="handleDeleteVersion" />
         </section>
       </div>
     </template>
@@ -196,6 +198,30 @@
         <p>{{ $t("publish.regenerate.confirm_message") }}</p>
       </template>
     </Modal>
+
+    <!-- Delete Generation Confirmation Modal -->
+    <Modal
+      v-model="showDeleteGenerationConfirm"
+      :title="$t('publish.generations.delete_confirm_title')"
+      :textActionApply="$t('publish.generations.delete_confirm_button')"
+      @confirm="executeDeleteGeneration"
+      @cancel="showDeleteGenerationConfirm = false">
+      <template #content>
+        <p>{{ $t("publish.generations.delete_confirm") }}</p>
+      </template>
+    </Modal>
+
+    <!-- Delete Version Confirmation Modal -->
+    <Modal
+      v-model="showDeleteVersionConfirm"
+      :title="$t('publish.editor.delete_version_confirm_title')"
+      :textActionApply="$t('publish.editor.delete_version_confirm_button')"
+      @confirm="executeDeleteVersion"
+      @cancel="showDeleteVersionConfirm = false">
+      <template #content>
+        <p>{{ $t("publish.editor.delete_version_confirm") }}</p>
+      </template>
+    </Modal>
   </MainContentConversation>
 </template>
 <script>
@@ -219,6 +245,8 @@ import {
   apiExportDocument,
   apiListGenerations,
   apiGetExportContent,
+  apiDeleteGeneration,
+  apiDeleteExportVersion,
 } from "@/api/service.js"
 
 import getDescriptionByLanguage from "@/tools/getDescriptionByLanguage.js"
@@ -269,6 +297,10 @@ export default {
       currentGenerationId: null,
       showRegenerateConfirm: false,
       showPublicationModal: false,
+      showDeleteGenerationConfirm: false,
+      pendingDeleteGenerationId: null,
+      showDeleteVersionConfirm: false,
+      pendingDeleteVersion: null,
       currentVersionNumber: null,
       showTranscript: false,
     }
@@ -303,12 +335,6 @@ export default {
       await this.loadVersions()
       // Automatically select and load the latest version
       await this.selectLatestVersion()
-      // Reset to preview mode when switching tabs
-      if (newVal) {
-        this.$nextTick(() => {
-          this.$refs.publishContent?.setViewMode("preview")
-        })
-      }
       // Hide transcript panel when switching to verbatim
       if (newVal === 'verbatim') {
         this.showTranscript = false
@@ -1238,6 +1264,87 @@ export default {
       this.showRegenerateConfirm = false
       await this.initGeneration(true)
       await this.loadGenerations()
+    },
+    handleDeleteGeneration(generationId) {
+      this.pendingDeleteGenerationId = generationId
+      this.showDeleteGenerationConfirm = true
+    },
+    async executeDeleteGeneration() {
+      this.showDeleteGenerationConfirm = false
+      const generationId = this.pendingDeleteGenerationId
+      this.pendingDeleteGenerationId = null
+      if (!generationId) return
+      try {
+        const success = await apiDeleteGeneration(
+          this.conversationId,
+          generationId,
+        )
+        if (success) {
+          await this.loadGenerations()
+          if (this.generations.length > 0) {
+            const current = this.generations.find((g) => g.isCurrent)
+            const target = current || this.generations[0]
+            await this.selectGeneration(target.generationId)
+          } else {
+            // No generations left - switch to verbatim
+            this.activeTab = "verbatim"
+          }
+          this.$store.dispatch("system/addNotification", {
+            type: "success",
+            message: this.$t("publish.generations.deleted"),
+          })
+        } else {
+          this.$store.dispatch("system/addNotification", {
+            type: "error",
+            message: this.$t("publish.generations.delete_error"),
+          })
+        }
+      } catch (e) {
+        console.error("Error deleting generation:", e)
+        this.$store.dispatch("system/addNotification", {
+          type: "error",
+          message: this.$t("publish.generations.delete_error"),
+        })
+      }
+    },
+    handleDeleteVersion({ generationId, versionNumber }) {
+      this.pendingDeleteVersion = { generationId, versionNumber }
+      this.showDeleteVersionConfirm = true
+    },
+    async executeDeleteVersion() {
+      this.showDeleteVersionConfirm = false
+      const pending = this.pendingDeleteVersion
+      this.pendingDeleteVersion = null
+      if (!pending) return
+      try {
+        const jobId = this.currentJob?.jobId
+        if (!jobId) return
+
+        const success = await apiDeleteExportVersion(
+          this.conversationId,
+          jobId,
+          pending.versionNumber,
+        )
+        if (success) {
+          await this.loadVersions()
+          await this.selectLatestVersion()
+          this.$store.dispatch("system/addNotification", {
+            type: "success",
+            message: this.$t("publish.editor.version_deleted"),
+          })
+        } else {
+          this.$store.dispatch("system/addNotification", {
+            type: "error",
+            message: this.$t("publish.editor.version_delete_error"),
+          })
+        }
+      } catch (e) {
+        console.error("Error deleting version:", e)
+        this.$store.dispatch("system/addNotification", {
+          type: "error",
+          message: this.$t("publish.editor.version_delete_error"),
+        })
+      }
     },
     // Socket.io methods
     initSocket() {

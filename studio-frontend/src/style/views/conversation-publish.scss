@@ -56,7 +56,7 @@
     padding: 0.25rem;
   }
 
-  .tiptap.ProseMirror {
+  .native-editor {
     width: 100%;
     max-width: 100%;
     overflow: auto;
@@ -172,7 +172,7 @@
     }
 
     &.active {
-      background-color: var(--color-primary);
+      background-color: var(--primary-color);
       color: white;
     }
 
@@ -198,7 +198,7 @@
   }
 }
 
-// Edit/Preview Toggle Styles
+// Editor Header Styles
 .publish-editor-header {
   padding: 0.25rem 0.5rem;
 }

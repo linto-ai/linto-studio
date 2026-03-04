@@ -947,7 +947,12 @@
       "version_restored": "Version restaurée avec succès",
       "version_restore_error": "Erreur lors de la restauration de la version",
       "unsaved_changes": "Vous avez des modifications non enregistrées",
-      "show_transcript": "Transcription"
+      "show_transcript": "Transcription",
+      "delete_version_confirm_title": "Supprimer la version ?",
+      "delete_version_confirm": "Cette version sera définitivement supprimée.",
+      "delete_version_confirm_button": "Supprimer",
+      "version_deleted": "Version supprimée avec succès",
+      "version_delete_error": "Erreur lors de la suppression de la version"
     },
     "export_error": "Échec de l'export du document",
     "regenerate": {
@@ -959,7 +964,14 @@
       "title": "Générations",
       "latest": "Récent",
       "no_generations": "Aucune génération",
-      "generating": "Génération en cours..."
+      "generating": "Génération en cours...",
+      "delete": "Supprimer la génération",
+      "delete_version": "Supprimer la version",
+      "delete_confirm_title": "Supprimer la génération ?",
+      "delete_confirm": "La génération et le job IA associé seront définitivement supprimés.",
+      "delete_confirm_button": "Supprimer",
+      "deleted": "Génération supprimée avec succès",
+      "delete_error": "Erreur lors de la suppression de la génération"
     },
     "llm_gateway_error": "Erreur du service IA : {error}",
     "llm_gateway_unavailable": "Le service d'intelligence artificielle est temporairement indisponible. Veuillez réessayer dans quelques instants.",

@@ -952,7 +952,12 @@
       "version_restored": "Version restored successfully",
       "version_restore_error": "Error restoring version",
       "unsaved_changes": "You have unsaved changes",
-      "show_transcript": "Transcription"
+      "show_transcript": "Transcription",
+      "delete_version_confirm_title": "Delete version?",
+      "delete_version_confirm": "This version will be permanently deleted.",
+      "delete_version_confirm_button": "Delete",
+      "version_deleted": "Version deleted successfully",
+      "version_delete_error": "Error deleting version"
     },
     "export_error": "Failed to export document",
     "regenerate": {
@@ -964,7 +969,14 @@
       "title": "Generations",
       "latest": "Latest",
       "no_generations": "No generations yet",
-      "generating": "Generating..."
+      "generating": "Generating...",
+      "delete": "Delete generation",
+      "delete_version": "Delete version",
+      "delete_confirm_title": "Delete generation?",
+      "delete_confirm": "The generation and its associated AI job will be permanently deleted.",
+      "delete_confirm_button": "Delete",
+      "deleted": "Generation deleted successfully",
+      "delete_error": "Error deleting generation"
     },
     "llm_gateway_error": "AI service error: {error}",
     "llm_gateway_unavailable": "The AI service is temporarily unavailable. Please try again in a few moments.",

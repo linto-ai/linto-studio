@@ -681,16 +681,6 @@ async function handleWhisperXFormat(res, metadata, conversation) {
   res.status(200).send(output)
 }
 
-async function handleMarkdownFormat(
-  res,
-  conversationExport,
-  name,
-  preview = "false",
-) {
-  res.setHeader("Content-Type", "text/plain")
-  res.status(200).send("# " + name + "\n" + conversationExport.data)
-}
-
 /**
  * Handle text/markdown content - returns raw text for frontend editor
  * Always fetches from LLM Gateway (single source of truth - no local caching)
@@ -1155,6 +1145,39 @@ async function getExportContent(req, res, next) {
   }
 }
 
+/**
+ * Delete a specific version from a job
+ * DELETE /conversations/:conversationId/export/:jobId/versions/:versionNumber
+ */
+async function deleteExportVersion(req, res, next) {
+  try {
+    if (!req.params.conversationId) throw new ConversationIdRequire()
+    const { jobId, versionNumber } = req.params
+
+    if (!jobId) throw new ConversationMetadataRequire("jobId is required")
+    if (!versionNumber) throw new ConversationMetadataRequire("versionNumber is required")
+
+    // Proxy to LLM Gateway
+    const baseUrl = process.env.LLM_GATEWAY_SERVICES
+    if (!baseUrl) {
+      throw new ExportNotConfigured()
+    }
+
+    const response = await axios.delete(`${baseUrl}/api/v1/jobs/${jobId}/versions/${versionNumber}`)
+
+    return res.status(200).json({
+      status: "success",
+      message: response.message,
+      version_number: response.version_number,
+    })
+  } catch (err) {
+    if (err.response?.status) {
+      return next(new ExportGatewayError(err.response?.data?.detail || err.message))
+    }
+    next(err)
+  }
+}
+
 module.exports = {
   exportConversation,
   listExport,
@@ -1164,4 +1187,5 @@ module.exports = {
   restoreExportVersion,
   generateExportDocument,
   getExportContent,
+  deleteExportVersion,
 }
