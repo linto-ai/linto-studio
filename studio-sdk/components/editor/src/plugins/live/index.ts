@@ -1,11 +1,20 @@
-import type { EditorCore, EditorPlugin } from '../../core/types'
-import type { LivePartialEvent, LiveFinalEvent, LiveTranslationEvent, LivePluginApi } from './types'
+import type { EditorCore, EditorPlugin } from "../../core/types"
+import type {
+  LivePartialEvent,
+  LiveFinalEvent,
+  LiveTranslationEvent,
+  LivePluginApi,
+} from "./types"
 
-export type { LivePluginApi, LivePartialEvent, LiveFinalEvent, LiveTranslationEvent }
+export type {
+  LivePluginApi,
+  LivePartialEvent,
+  LiveFinalEvent,
+  LiveTranslationEvent,
+}
 
 export function createLivePlugin(): EditorPlugin & LivePluginApi {
   let editor: EditorCore | null = null
-
   function onPartial(event: LivePartialEvent): void {
     if (!editor) return
     editor.setPartial(event.text)
@@ -17,7 +26,7 @@ export function createLivePlugin(): EditorPlugin & LivePluginApi {
 
     const hasWords = event.words.length > 0
     const existingIdx = editor.activeTranslation.value.turns.findIndex(
-      t => t.id === event.turnId,
+      (t) => t.id === event.turnId,
     )
 
     const turnData = {
@@ -43,14 +52,15 @@ export function createLivePlugin(): EditorPlugin & LivePluginApi {
 
   function onTranslation(_event: LiveTranslationEvent): void {
     // Placeholder — translation handling will be implemented later
-    console.warn('[live-plugin] onTranslation not yet implemented')
+    console.warn("[live-plugin] onTranslation not yet implemented")
   }
 
   const plugin: EditorPlugin & LivePluginApi = {
-    name: 'live',
+    name: "live",
 
     install(core: EditorCore) {
       editor = core
+      editor.hasLiveUpdate.value = true
       return () => {
         editor = null
       }

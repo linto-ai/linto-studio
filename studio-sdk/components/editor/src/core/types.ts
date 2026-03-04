@@ -1,26 +1,33 @@
-import type { ComputedRef, Ref, ShallowRef } from 'vue'
-import type { Channel, EditorDocument, Translation, Turn, Speaker, Word } from '../types/editor'
+import type { ComputedRef, Ref, ShallowRef } from "vue"
+import type {
+  Channel,
+  EditorDocument,
+  Translation,
+  Turn,
+  Speaker,
+  Word,
+} from "../types/editor"
 
 // ── Capabilities ────────────────────────────────────────────────────────
 
 export interface EditorCapabilities {
-  text: 'edit' | 'view'
-  speakers: 'edit' | 'view'
+  text: "edit" | "view"
+  speakers: "edit" | "view"
 }
 
 // ── Event Map ──────────────────────────────────────────────────────────
 
 export interface EditorEventMap {
-  'channel:change': { channelId: string }
-  'language:change': { language: string | null }
-  'turn:add': { turn: Turn }
-  'turn:update': { turn: Turn }
-  'turn:remove': { turnId: string }
-  'speaker:update': { speaker: Speaker }
-  'speaker:add': { speaker: Speaker }
-  'partial:set': { text: string }
-  'partial:clear': void
-  'destroy': void
+  "channel:change": { channelId: string }
+  "language:change": { language: string | null }
+  "turn:add": { turn: Turn }
+  "turn:update": { turn: Turn }
+  "turn:remove": { turnId: string }
+  "speaker:update": { speaker: Speaker }
+  "speaker:add": { speaker: Speaker }
+  "partial:set": { text: string }
+  "partial:clear": void
+  destroy: void
 }
 
 // ── Plugin ─────────────────────────────────────────────────────────────
@@ -47,6 +54,7 @@ export interface EditorCore {
   selectedLanguage: Ref<string | null>
   partial: ShallowRef<string | null>
   capabilities: Ref<EditorCapabilities>
+  hasLiveUpdate: Ref<Boolean>
 
   // ── Computed ───────────────────────────────────────────────────────
   activeChannel: ComputedRef<Channel>
@@ -71,7 +79,7 @@ export interface EditorCore {
 
   // ── Speakers ───────────────────────────────────────────────────────
   ensureSpeaker(speakerId: string | null, name?: string): void
-  updateSpeaker(speakerId: string, patch: Partial<Omit<Speaker, 'id'>>): void
+  updateSpeaker(speakerId: string, patch: Partial<Omit<Speaker, "id">>): void
 
   // ── Partials ───────────────────────────────────────────────────────
   setPartial(text: string): void

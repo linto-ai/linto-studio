@@ -1,14 +1,19 @@
 <script setup lang="ts">
-import { computed, useTemplateRef } from 'vue'
-import { ScrollAreaRoot, ScrollAreaViewport, ScrollAreaScrollbar, ScrollAreaThumb } from 'reka-ui'
-import { ArrowDown } from 'lucide-vue-next'
-import TranscriptionTurn from './TranscriptionTurn.vue'
-import EditorButton from './atoms/EditorButton.vue'
-import { useAudioContext } from '../composables/useAudioContext'
-import { useAutoScroll } from '../composables/useAutoScroll'
-import { useEditorCore } from '../core'
-import { useI18n } from '../i18n'
-import type { Turn, Speaker } from '../types/editor'
+import { computed, useTemplateRef } from "vue"
+import {
+  ScrollAreaRoot,
+  ScrollAreaViewport,
+  ScrollAreaScrollbar,
+  ScrollAreaThumb,
+} from "reka-ui"
+import { ArrowDown } from "lucide-vue-next"
+import TranscriptionTurn from "./TranscriptionTurn.vue"
+import EditorButton from "./atoms/EditorButton.vue"
+import { useAudioContext } from "../composables/useAudioContext"
+import { useAutoScroll } from "../composables/useAutoScroll"
+import { useEditorCore } from "../core"
+import { useI18n } from "../i18n"
+import type { Turn, Speaker } from "../types/editor"
 
 defineProps<{
   turns: Turn[]
@@ -18,13 +23,13 @@ defineProps<{
 const { t } = useI18n()
 const editor = useEditorCore()
 const playback = useAudioContext()
-const panelRef = useTemplateRef<HTMLElement>('panel')
+const panelRef = useTemplateRef<HTMLElement>("panel")
 
 const partialTurn = computed(() => {
   const text = editor.partial.value
   if (text === null) return null
   return {
-    id: '__partial__',
+    id: "__partial__",
     speakerId: null,
     text,
     words: [],
@@ -34,9 +39,11 @@ const partialTurn = computed(() => {
   } as Turn
 })
 
-const { isFollowing, resumeFollow } = useAutoScroll({
+const { isFollowing, isLiveMode, resumeFollow } = useAutoScroll({
   panelRef,
   playback,
+  activeTurns: editor.activeTurns,
+  partial: editor.partial,
 })
 </script>
 
@@ -49,14 +56,14 @@ const { isFollowing, resumeFollow } = useAutoScroll({
             v-for="turn in turns"
             :key="turn.id"
             :turn="turn"
-            :speaker="turn.speakerId ? speakers.get(turn.speakerId) : undefined"
-          />
+            :speaker="
+              turn.speakerId ? speakers.get(turn.speakerId) : undefined
+            " />
           <TranscriptionTurn
             v-if="partialTurn"
             key="__partial__"
             :turn="partialTurn"
-            partial
-          />
+            partial />
         </div>
       </ScrollAreaViewport>
       <ScrollAreaScrollbar class="scrollbar" orientation="vertical">
@@ -65,14 +72,13 @@ const { isFollowing, resumeFollow } = useAutoScroll({
 
       <Transition name="fade-slide">
         <EditorButton
-          v-if="!isFollowing && playback?.isPlaying.value"
+          v-if="!isFollowing && (isLiveMode || playback?.isPlaying.value)"
           size="sm"
           class="resume-scroll-btn"
           :aria-label="t('transcription.resumeScroll')"
-          @click="resumeFollow"
-        >
+          @click="resumeFollow">
           <template #icon><ArrowDown :size="14" /></template>
-          {{ t('transcription.resumeScroll') }}
+          {{ t("transcription.resumeScroll") }}
         </EditorButton>
       </Transition>
     </ScrollAreaRoot>
@@ -151,7 +157,9 @@ const { isFollowing, resumeFollow } = useAutoScroll({
 /* Transition */
 .fade-slide-enter-active,
 .fade-slide-leave-active {
-  transition: opacity 200ms ease, translate 200ms ease;
+  transition:
+    opacity 200ms ease,
+    translate 200ms ease;
 }
 
 .fade-slide-enter-from,

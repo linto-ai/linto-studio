@@ -31,6 +31,7 @@ export function createEditorCore(options: EditorCoreOptions = {}): EditorCore {
   const capabilities = ref<EditorCapabilities>(
     options.capabilities ?? { text: "edit", speakers: "edit" },
   )
+  const hasLiveUpdate = ref<Boolean>(false)
 
   // ── Computed ───────────────────────────────────────────────────────
 
@@ -167,7 +168,9 @@ export function createEditorCore(options: EditorCoreOptions = {}): EditorCore {
     if (idx === -1) return
     const translation = activeTranslation.value
     const updated = { ...translation.turns[idx]!, ...patch, id: turnId }
-    translation.turns = translation.turns.map((t, i) => (i === idx ? updated : t))
+    translation.turns = translation.turns.map((t, i) =>
+      i === idx ? updated : t,
+    )
     emit("turn:update", { turn: updated })
   }
 
@@ -191,7 +194,9 @@ export function createEditorCore(options: EditorCoreOptions = {}): EditorCore {
       startTime: words[0]?.startTime ?? turn.startTime,
       endTime: words[words.length - 1]?.endTime ?? turn.endTime,
     }
-    translation.turns = translation.turns.map((t, i) => (i === idx ? updated : t))
+    translation.turns = translation.turns.map((t, i) =>
+      i === idx ? updated : t,
+    )
     emit("turn:update", { turn: updated })
   }
 
@@ -268,6 +273,7 @@ export function createEditorCore(options: EditorCoreOptions = {}): EditorCore {
     selectedLanguage,
     partial,
     capabilities,
+    hasLiveUpdate,
     // Computed
     activeChannel,
     activeTranslation,

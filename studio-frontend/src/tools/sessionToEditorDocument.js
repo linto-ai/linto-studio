@@ -1,3 +1,5 @@
+import computeSessionTurnUniqueId from "@/const/computeSessionTurnUniqueId"
+
 /**
  * Converts a live session object into an EditorDocument.
  *
@@ -9,14 +11,17 @@ export default function sessionToEditorDocument(session) {
 
   function toSessionTime(astart, offset) {
     if (!astart) return offset
-    return Math.max(0, (new Date(astart).getTime() - sessionStartMs) / 1000 + offset)
+    return Math.max(
+      0,
+      (new Date(astart).getTime() - sessionStartMs) / 1000 + offset,
+    )
   }
 
   const channels = session.channels.map((channel) => {
     const originalTurns = (channel.closedCaptions ?? [])
       .filter((c) => c.segmentId != null)
       .map((c) => ({
-        id: String(c.segmentId),
+        id: computeSessionTurnUniqueId(c),
         text: c.text ?? null,
         words: [],
         speakerId: c.locutor ?? null,
@@ -26,7 +31,7 @@ export default function sessionToEditorDocument(session) {
       }))
 
     const translations = {}
-    for (const translationTarget of (channel.translations ?? [])) {
+    for (const translationTarget of channel.translations ?? []) {
       translations[translationTarget.target] = {
         id: translationTarget.target,
         languages: [translationTarget.target],
@@ -35,7 +40,7 @@ export default function sessionToEditorDocument(session) {
       }
     }
 
-    for (const translationCaption of (channel.translatedCaptions ?? [])) {
+    for (const translationCaption of channel.translatedCaptions ?? []) {
       if (!translations[translationCaption.targetLang]) {
         translations[translationCaption.targetLang] = {
           id: translationCaption.targetLang,
@@ -45,9 +50,15 @@ export default function sessionToEditorDocument(session) {
         }
       }
       translations[translationCaption.targetLang].turns.push({
-        id: String(translationCaption.segmentId),
-        startTime: toSessionTime(translationCaption.astart, translationCaption.start),
-        endTime: toSessionTime(translationCaption.astart, translationCaption.end),
+        id: computeSessionTurnUniqueId(translationCaption),
+        startTime: toSessionTime(
+          translationCaption.astart,
+          translationCaption.start,
+        ),
+        endTime: toSessionTime(
+          translationCaption.astart,
+          translationCaption.end,
+        ),
         language: translationCaption.targetLang,
         text: translationCaption.text ?? null,
         words: [],

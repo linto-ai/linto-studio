@@ -7,6 +7,7 @@ import { markRaw } from "vue"
 import { sessionModelMixin } from "@/mixins/sessionModel.js"
 import sessionToEditorDocument from "@/tools/sessionToEditorDocument.js"
 import { createLivePlugin } from "@linto/studio-editor/webcomponent"
+import computeSessionTurnUniqueId from "@/const/computeSessionTurnUniqueId"
 
 export default {
   mixins: [sessionModelMixin],
@@ -83,12 +84,20 @@ export default {
     onFinal(content) {
       const activeChannel = this.editor.activeChannel.value
       this.livePlugin.onFinal({
-        turnId: String(content.segmentId),
+        turnId: computeSessionTurnUniqueId(content),
         speakerId: content.locutor ?? null,
         text: content.text,
         words: [],
-        startTime: Math.max(0, (new Date(content.astart).getTime() - this.sessionStartMs) / 1000 + content.start),
-        endTime: Math.max(0, (new Date(content.astart).getTime() - this.sessionStartMs) / 1000 + content.end),
+        startTime: Math.max(
+          0,
+          (new Date(content.astart).getTime() - this.sessionStartMs) / 1000 +
+            content.start,
+        ),
+        endTime: Math.max(
+          0,
+          (new Date(content.astart).getTime() - this.sessionStartMs) / 1000 +
+            content.end,
+        ),
         language:
           content.lang ??
           activeChannel.translations.find((t) => t.isSource)?.languages[0] ??
