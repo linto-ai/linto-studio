@@ -48,11 +48,9 @@
 import { mapGetters, mapActions } from "vuex"
 import FolderTreeNode from "./FolderTreeNode.vue"
 import FolderAccessModal from "./FolderAccessModal.vue"
-import { mediaScopeMixin } from "@/mixins/mediaScope"
 
 export default {
   name: "FolderTree",
-  mixins: [mediaScopeMixin],
   components: { FolderTreeNode, FolderAccessModal },
   data() {
     return {
@@ -84,6 +82,10 @@ export default {
       foldersLoading: "getLoading",
       activeFolderId: "getActiveFolderId",
     }),
+    ...mapGetters("organizations", ["getCurrentOrganizationScope"]),
+    selectedFolderId() {
+      return this.$route.params.folderId
+    },
     currentUserRole() {
       return this.$store.getters["organizations/getUserRoleInOrganization"] || 0
     },
@@ -96,17 +98,16 @@ export default {
     toggleCreate() {
       this.showCreateInput = !this.showCreateInput
     },
-    async selectFolder(folderId) {
-      if (this.$route.name !== "explore" && this.$route.name !== "inbox") {
-        await this.$router.push({
-          name: "explore",
-          params: { organizationId: this.getCurrentOrganizationScope },
-        })
-      }
+    selectFolder(folderId) {
+      if (this.$route.params.folderId === folderId && this.$route.name === "explore") return
       this.$store.dispatch("folders/setActiveFolderId", null)
-      await this.$store.dispatch(`${this.storeScope}/clearSelectedMedias`)
-      await this.$store.dispatch(`${this.storeScope}/setSelectedFolderId`, folderId)
-      await this.$store.dispatch(`${this.storeScope}/load`)
+      this.$router.push({
+        name: "explore",
+        params: {
+          organizationId: this.getCurrentOrganizationScope,
+          folderId,
+        },
+      })
     },
     async handleCreate() {
       const name = this.newFolderName.trim()
@@ -127,7 +128,12 @@ export default {
     },
     async handleDelete(folderId) {
       await this.$store.dispatch("folders/deleteFolder", folderId)
-      await this.$store.dispatch(`${this.storeScope}/load`)
+      if (this.$route.params.folderId === folderId) {
+        this.$router.push({
+          name: "explore",
+          params: { organizationId: this.getCurrentOrganizationScope },
+        })
+      }
     },
     async handleCreateChild({ parentId, name }) {
       await this.$store.dispatch("folders/createFolder", {
@@ -140,7 +146,6 @@ export default {
     },
     async refreshAfterDrop() {
       await this.$store.dispatch("folders/fetchFolders")
-      await this.$store.dispatch(`${this.storeScope}/load`)
     },
     async handleDropMedia({ folderId, conversationIds }) {
       try {
@@ -148,8 +153,14 @@ export default {
           folderId,
           conversationIds,
         })
-        await this.$store.dispatch(`${this.storeScope}/setSelectedFolderId`, folderId)
         await this.refreshAfterDrop()
+        this.$router.push({
+          name: "explore",
+          params: {
+            organizationId: this.getCurrentOrganizationScope,
+            folderId,
+          },
+        })
       } catch (error) {
         console.error("Error moving conversations to folder:", error)
       }

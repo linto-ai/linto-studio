@@ -19,9 +19,6 @@ export const mediaScopeMixin = {
     selectedTagsIds() {
       return this.$store.state[this.storeScope].selectedTagIds ?? []
     },
-    selectedFolderId() {
-      return this.$store.getters[`${this.storeScope}/selectedFolderId`]
-    },
     searchValue() {
       return this.$store.getters[`${this.storeScope}/search`]
     },
@@ -44,11 +41,6 @@ export const mediaScopeMixin = {
         ids: ids,
       })
     },
-    async selectFolder(folderId) {
-      await this.$store.dispatch(`${this.storeScope}/clearSelectedMedias`)
-      await this.$store.dispatch(`${this.storeScope}/setSelectedFolderId`, folderId)
-      await this.$store.dispatch(`${this.storeScope}/load`)
-    },
     toggleSelectedTag(tag) {
       return this.$store.dispatch(
         `${this.storeScope}/toggleSelectedTagId`,
@@ -64,7 +56,9 @@ export const mediaScopeMixin = {
       try {
         const result = await apiDuplicateConversation(mediaId)
         if (result.status === "success") {
-          await this.$store.dispatch(`${this.storeScope}/load`)
+          await this.$store.dispatch(`${this.storeScope}/load`, {
+            folderId: this.$route.params.folderId,
+          })
           return true
         }
         return false

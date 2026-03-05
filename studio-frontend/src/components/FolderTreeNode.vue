@@ -3,7 +3,7 @@
     <div
       class="folder-tree-node__row"
       :class="{
-        'folder-tree-node__row--active': selectedFolderId === folder._id || activeFolderId === folder._id,
+        'folder-tree-node__row--active': isActive,
         'folder-tree-node__row--drag-over': isDragOver,
       }"
       :style="{ paddingLeft: `calc(2.5rem - 14px - 0.5rem + ${Math.min(depth, 6) * 0.75}rem)` }"
@@ -12,30 +12,39 @@
       @dragover.prevent="onDragOver"
       @dragleave="onDragLeave"
       @drop.prevent="onDrop">
-      <button
-        v-if="folder.children && folder.children.length > 0"
-        class="folder-tree-node__chevron"
-        @click.stop="expanded = !expanded">
+      <template v-if="virtual">
+        <span class="folder-tree-node__chevron-spacer"></span>
         <ph-icon
-          :name="expanded ? 'caret-down' : 'caret-right'"
-          size="14" />
-      </button>
-      <span v-else class="folder-tree-node__chevron-spacer"></span>
+          :name="icon"
+          size="16"
+          :weight="isActive ? 'fill' : iconWeight" />
+      </template>
+      <template v-else>
+        <button
+          v-if="folder.children && folder.children.length > 0"
+          class="folder-tree-node__chevron"
+          @click.stop="expanded = !expanded">
+          <ph-icon
+            :name="expanded ? 'caret-down' : 'caret-right'"
+            size="14" />
+        </button>
+        <span v-else class="folder-tree-node__chevron-spacer"></span>
 
-      <span v-if="folder.emoji" class="folder-tree-node__emoji">
-        {{ decodeEmoji(folder.emoji) }}
-      </span>
-      <ph-icon
-        v-else
-        :name="expanded ? 'folder-open' : 'folder'"
-        size="16"
-        :style="folder.color ? { color: folder.color } : {}" />
+        <span v-if="folder.emoji" class="folder-tree-node__emoji">
+          {{ decodeEmoji(folder.emoji) }}
+        </span>
+        <ph-icon
+          v-else
+          :name="expanded ? 'folder-open' : 'folder'"
+          size="16"
+          :style="folder.color ? { color: folder.color } : {}" />
 
-      <ph-icon
-        v-if="folder.visibility === 'private'"
-        name="lock-simple"
-        size="12"
-        class="folder-tree-node__lock" />
+        <ph-icon
+          v-if="folder.visibility === 'private'"
+          name="lock-simple"
+          size="12"
+          class="folder-tree-node__lock" />
+      </template>
 
       <span v-if="!isRenaming" class="folder-tree-node__name">
         {{ folder.name }}
@@ -78,7 +87,7 @@
     </div>
 
     <div
-      v-if="showChildInput"
+      v-if="!virtual && showChildInput"
       class="folder-tree-node__create-child"
       :style="{ paddingLeft: `calc(2.5rem - 14px - 0.5rem + ${Math.min(depth + 1, 6) * 0.75}rem)` }">
       <input
@@ -96,7 +105,7 @@
     </div>
 
     <ul
-      v-if="expanded && folder.children && folder.children.length > 0"
+      v-if="!virtual && expanded && folder.children && folder.children.length > 0"
       class="folder-tree-node__children">
       <FolderTreeNode
         v-for="child in folder.children"
@@ -133,6 +142,9 @@ export default {
     depth: { type: Number, default: 0 },
     userRole: { type: Number, default: 0 },
     userId: { type: String, default: "" },
+    virtual: { type: Boolean, default: false },
+    icon: { type: String, default: null },
+    iconWeight: { type: String, default: "regular" },
   },
   data() {
     return {
@@ -168,8 +180,11 @@ export default {
       if (this.folder.members && this.folder.members.some((m) => m.userId === this.userId && RIGHTS.hasRightAccess(m.right, RIGHTS.SHARE))) return true
       return false
     },
+    isActive() {
+      return this.selectedFolderId === this.folder._id || this.activeFolderId === this.folder._id
+    },
     contextMenuItems() {
-      if (!this.canManageAccess) return []
+      if (this.virtual || !this.canManageAccess) return []
       return [
         {
           id: "rename",
@@ -273,8 +288,13 @@ export default {
       this.$emit("delete", this.folder._id)
     },
 
+    onDragOver() {
+      if (!this.$listeners["drop-media"]) return
+      this.isDragOver = true
+    },
     onDrop(e) {
       this.isDragOver = false
+      if (!this.$listeners["drop-media"]) return
       const { conversationIds } = this.parseDragData(e)
       if (conversationIds) {
         this.$emit("drop-media", { folderId: this.folder._id, conversationIds })

@@ -186,7 +186,7 @@ export default {
     this.cleanupObserver()
   },
   watch: {
-    selectedFolderId() {
+    "$route.params.folderId"() {
       this.selectedMediaIds = []
       this.$store.dispatch("folders/setActiveFolderId", null)
     },

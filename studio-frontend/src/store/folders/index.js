@@ -12,7 +12,6 @@ export default {
   namespaced: true,
   state: {
     folders: [],
-    selectedFolderId: null,
     activeFolderId: null,
     loading: false,
     error: null,
@@ -20,9 +19,6 @@ export default {
   mutations: {
     setFolders(state, folders) {
       state.folders = folders
-    },
-    setSelectedFolderId(state, folderId) {
-      state.selectedFolderId = folderId
     },
     setActiveFolderId(state, folderId) {
       state.activeFolderId = folderId
@@ -182,9 +178,6 @@ export default {
           folderId,
         )
         commit("removeFolder", folderId)
-        if (state.selectedFolderId === folderId) {
-          commit("setSelectedFolderId", null)
-        }
         commit(
           "system/addNotification",
           {
