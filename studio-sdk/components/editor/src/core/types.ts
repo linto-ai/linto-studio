@@ -63,6 +63,13 @@ export interface EditorCore {
   activeLanguageCode: ComputedRef<string>
   availableLanguages: ComputedRef<string[]>
   speakers: ComputedRef<Map<string, Speaker>>
+  activeAudioSrc: ComputedRef<string | null>
+
+  // ── Audio Playback ───────────────────────────────────────────────
+  currentTime: Ref<number>
+  isPlaying: Ref<boolean>
+  seekTo(time: number): void
+  setSeekHandler(handler: ((time: number) => void) | null): void
 
   // ── Document ─────────────────────────────────────────────────────
   setDocument(doc: EditorDocument): void

@@ -1,35 +1,24 @@
 import {
   ref,
   readonly,
-  watch,
+  onMounted,
   onBeforeUnmount,
-  type ComputedRef,
   type DeepReadonly,
   type Ref,
-  type ShallowRef,
 } from "vue"
-import type { AudioContext } from "./useAudioContext"
-import type { Turn } from "../types/editor"
 import throttle from "../utils/throttle"
 
 interface UseAutoScrollOptions {
   panelRef: Ref<HTMLElement | null>
-  playback: AudioContext | null
-  activeTurns?: ComputedRef<Turn[]>
-  partial?: ShallowRef<string | null>
 }
 
 interface UseAutoScrollReturn {
   isFollowing: DeepReadonly<Ref<boolean>>
-  isLiveMode: boolean
   resumeFollow: () => void
 }
 
 export function useAutoScroll({
   panelRef,
-  playback,
-  activeTurns,
-  partial,
 }: UseAutoScrollOptions): UseAutoScrollReturn {
   const isFollowing = ref(true)
 
@@ -44,6 +33,8 @@ export function useAutoScroll({
   }
 
   function scrollToActive() {
+    if (!isFollowing.value) return
+
     const viewport = getViewport()
     if (!viewport) return
 
@@ -52,29 +43,21 @@ export function useAutoScroll({
       viewport.querySelector("[data-turn-active]")
     if (!activeEl) return
 
-    activeEl.scrollIntoView({
-      behavior: prefersReducedMotion.matches ? "auto" : "smooth",
-      block: "center",
-    })
-  }
+    const elRect = activeEl.getBoundingClientRect()
+    const vpRect = viewport.getBoundingClientRect()
+    const targetTop =
+      viewport.scrollTop +
+      (elRect.top - vpRect.top) -
+      viewport.clientHeight / 2 +
+      elRect.height / 2
 
-  const throttledScrollToActive =
-    isFollowing.value && playback?.isPlaying?.value
-      ? throttle(scrollToActive)
-      : () => {}
-
-  function scrollToBottom() {
-    const viewport = getViewport()
-    if (!viewport) return
     viewport.scrollTo({
-      top: viewport.scrollHeight,
+      top: targetTop,
       behavior: prefersReducedMotion.matches ? "auto" : "smooth",
     })
   }
 
-  const throttledScrollToBottom = isFollowing.value
-    ? throttle(scrollToBottom)
-    : () => {}
+  const throttledScrollToActive = throttle(scrollToActive)
 
   // wheel and touchstart are ONLY dispatched by user actions,
   // never by scrollIntoView — no need for a programmatic scroll guard.
@@ -82,70 +65,41 @@ export function useAutoScroll({
     isFollowing.value = false
   }
 
-  const isLive = !playback
-
   function resumeFollow() {
     isFollowing.value = true
-    if (isLive) {
-      scrollToBottom()
-    } else {
-      scrollToActive()
-    }
+    scrollToActive()
   }
 
-  // Attach/detach user-scroll listeners when panel mounts
-  let cleanupListeners: (() => void) | undefined
+  let observer: MutationObserver | undefined
 
-  function attachListeners(viewport: HTMLElement) {
+  onMounted(() => {
+    const viewport = getViewport()
+    if (!viewport) return
+
     viewport.addEventListener("wheel", onUserScroll, { passive: true })
     viewport.addEventListener("touchstart", onUserScroll, { passive: true })
-    cleanupListeners = () => {
+
+    observer = new MutationObserver(throttledScrollToActive)
+    observer.observe(viewport, {
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["data-word-active", "data-turn-active"],
+      childList: true,
+      characterData: true,
+    })
+  })
+
+  onBeforeUnmount(() => {
+    const viewport = getViewport()
+    if (viewport) {
       viewport.removeEventListener("wheel", onUserScroll)
       viewport.removeEventListener("touchstart", onUserScroll)
     }
-  }
-
-  watch(
-    () => panelRef.value,
-    (panel, _oldPanel, onCleanup) => {
-      cleanupListeners?.()
-      cleanupListeners = undefined
-      if (panel) {
-        const viewport = panel.querySelector<HTMLElement>(
-          "[data-reka-scroll-area-viewport]",
-        )
-        if (viewport) {
-          attachListeners(viewport)
-          onCleanup(() => {
-            cleanupListeners?.()
-            cleanupListeners = undefined
-          })
-        }
-      }
-    },
-    { immediate: true },
-  )
-
-  // Auto-scroll when currentTime changes
-  if (playback) {
-    watch(playback.currentTime, throttledScrollToActive)
-
-    // Re-enable following when playback starts
-    watch(playback.isPlaying, throttledScrollToActive)
-  } else {
-    // Live mode: scroll to bottom when new turns arrive or partial updates
-    watch(activeTurns, throttledScrollToBottom, { flush: "post" })
-
-    watch(partial, throttledScrollToBottom, { flush: "post" })
-  }
-
-  onBeforeUnmount(() => {
-    cleanupListeners?.()
+    observer?.disconnect()
   })
 
   return {
     isFollowing: readonly(isFollowing),
-    isLiveMode: isLive,
     resumeFollow,
   }
 }

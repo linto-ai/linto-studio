@@ -1,23 +1,24 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import SpeakerLabel from './SpeakerLabel.vue'
-import { useAudioContext } from '../composables/useAudioContext'
-import { findActiveWord, hasWordTimestamps } from '../utils/words'
-import type { Turn, Speaker } from '../types/editor'
+import { computed } from "vue"
+import SpeakerLabel from "./SpeakerLabel.vue"
+import { useEditorCore } from "../core"
+import { findActiveWord, hasWordTimestamps } from "../utils/words"
+import type { Turn, Speaker } from "../types/editor"
 
 const props = defineProps<{
   turn: Turn
   speaker?: Speaker
   partial?: boolean
+  live?: boolean
 }>()
 
-const playback = useAudioContext()
+const editor = useEditorCore()
 
 const hasWords = computed(() => props.turn.words.length > 0)
 
 const activeWordId = computed(() => {
-  if (!playback || !hasWords.value) return null
-  const time = playback.currentTime.value
+  if (!editor.activeAudioSrc.value || !hasWords.value) return null
+  const time = editor.currentTime.value
   const { startTime, endTime, words } = props.turn
   if (startTime == null || endTime == null) return null
   if (time < startTime || time > endTime) return null
@@ -25,23 +26,22 @@ const activeWordId = computed(() => {
 })
 
 const isTurnActive = computed(() => {
-  if (!playback) return false
+  if (!editor.activeAudioSrc.value) return false
   if (props.turn.startTime == null || props.turn.endTime == null) return false
   if (hasWordTimestamps(props.turn.words)) return false
-  const time = playback.currentTime.value
+  const time = editor.currentTime.value
   return time >= props.turn.startTime && time <= props.turn.endTime
 })
 
-const speakerColor = computed(() => props.speaker?.color ?? 'transparent')
+const speakerColor = computed(() => props.speaker?.color ?? "transparent")
 </script>
 
 <template>
   <section
     class="turn"
-    :class="{ 'turn--active': isTurnActive, 'turn--partial': partial }"
-    :data-turn-active="isTurnActive || undefined"
-    :style="{ '--speaker-color': speakerColor }"
-  >
+    :class="{ 'turn--active': isTurnActive || live, 'turn--partial': partial }"
+    :data-turn-active="isTurnActive || partial || live || undefined"
+    :style="{ '--speaker-color': speakerColor }">
     <SpeakerLabel
       v-if="!partial"
       :speaker="speaker"
@@ -53,7 +53,7 @@ const speakerColor = computed(() => props.speaker?.color ?? 'transparent')
           <span
             :class="{ 'word--active': word.id === activeWordId }"
             :data-word-active="word.id === activeWordId || undefined"
-          >{{ word.text }}</span
+            >{{ word.text }}</span
           >{{ i < turn.words.length - 1 ? " " : "" }}
         </template>
       </template>
@@ -98,8 +98,12 @@ const speakerColor = computed(() => props.speaker?.color ?? 'transparent')
 }
 
 @keyframes partial-fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

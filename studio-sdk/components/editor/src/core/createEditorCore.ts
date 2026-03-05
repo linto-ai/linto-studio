@@ -73,6 +73,24 @@ export function createEditorCore(options: EditorCoreOptions = {}): EditorCore {
 
   const speakers = computed(() => document.value.speakers)
 
+  const activeAudioSrc = computed(
+    () => activeTranslation.value.audio?.src ?? null,
+  )
+
+  // ── Audio Playback ───────────────────────────────────────────────
+
+  const currentTime = ref(0)
+  const isPlaying = ref(false)
+  let seekHandler: ((time: number) => void) | null = null
+
+  function seekTo(time: number) {
+    seekHandler?.(time)
+  }
+
+  function setSeekHandler(fn: ((time: number) => void) | null) {
+    seekHandler = fn
+  }
+
   // ── Event Bus ──────────────────────────────────────────────────────
 
   const listeners = new Map<keyof EditorEventMap, Set<AnyHandler>>()
@@ -281,6 +299,12 @@ export function createEditorCore(options: EditorCoreOptions = {}): EditorCore {
     activeLanguageCode,
     availableLanguages,
     speakers,
+    activeAudioSrc,
+    // Audio Playback
+    currentTime,
+    isPlaying,
+    seekTo,
+    setSeekHandler,
     // Document
     setDocument,
     // Channel / Language

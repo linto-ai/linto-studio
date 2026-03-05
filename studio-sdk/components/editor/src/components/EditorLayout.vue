@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, readonly, useTemplateRef, watch } from "vue"
+import { computed, ref, useTemplateRef, watch } from "vue"
 import {
   DialogRoot,
   DialogPortal,
@@ -15,7 +15,6 @@ import SpeakerSidebar from "./SpeakerSidebar.vue"
 import AudioPlayer from "./AudioPlayer.vue"
 import ChannelSelector from "./ChannelSelector.vue"
 import SidebarSelect from "./atoms/SidebarSelect.vue"
-import { provideAudioContext } from "../composables/useAudioContext"
 import { useIsMobile } from "../composables/useIsMobile"
 import { useEditorCore } from "../core"
 import { useI18n } from "../i18n"
@@ -27,34 +26,32 @@ const { isMobile } = useIsMobile()
 const isSidebarOpen = ref(false)
 
 const activeChannel = editor.activeChannel
-const activeTranslation = editor.activeTranslation
 const activeTurns = editor.activeTurns
 const availableLanguages = editor.availableLanguages
 const activeLanguageCode = editor.activeLanguageCode
 const speakers = editor.speakers
 
 const channels = computed(() => editor.document.value.channels)
-const activeAudioSrc = computed(() => activeTranslation.value.audio?.src)
 const speakerList = computed(() => Array.from(speakers.value.values()))
 
 const audioPlayerRef =
   useTemplateRef<InstanceType<typeof AudioPlayer>>("audioPlayer")
-const currentTime = ref(0)
-const isPlaying = ref(false)
 
 function onTimeUpdate(time: number) {
-  currentTime.value = time
+  editor.currentTime.value = time
 }
 
 watch(
   () => editor.activeChannelId.value,
   () => {
     audioPlayerRef.value?.pause()
-    currentTime.value = 0
-    isPlaying.value = false
+    editor.currentTime.value = 0
+    editor.isPlaying.value = false
     isSidebarOpen.value = false
   },
 )
+
+editor.setSeekHandler((t) => audioPlayerRef.value?.seekTo(t))
 
 const languageItems = computed(() =>
   buildLanguageItems(
@@ -73,11 +70,6 @@ function onLanguageChange(lang: string) {
   editor.setActiveLanguage(lang)
 }
 
-provideAudioContext({
-  currentTime: readonly(currentTime),
-  isPlaying: readonly(isPlaying),
-  seekTo: (time: number) => audioPlayerRef.value?.seekTo(time),
-})
 </script>
 
 <template>
@@ -125,13 +117,13 @@ provideAudioContext({
       </DialogRoot>
     </main>
     <AudioPlayer
-      v-if="activeAudioSrc"
+      v-if="editor.activeAudioSrc.value"
       ref="audioPlayer"
-      :audio-src="activeAudioSrc"
+      :audio-src="editor.activeAudioSrc.value"
       :turns="activeTurns"
       :speakers="speakers"
       @timeupdate="onTimeUpdate"
-      @play-state-change="(v: boolean) => (isPlaying = v)" />
+      @play-state-change="(v: boolean) => (editor.isPlaying.value = v)" />
     <div v-if="isMobile" class="mobile-selectors">
       <ChannelSelector
         v-if="channels.length > 1"

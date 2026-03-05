@@ -9,7 +9,6 @@ import {
 import { ArrowDown } from "lucide-vue-next"
 import TranscriptionTurn from "./TranscriptionTurn.vue"
 import EditorButton from "./atoms/EditorButton.vue"
-import { useAudioContext } from "../composables/useAudioContext"
 import { useAutoScroll } from "../composables/useAutoScroll"
 import { useEditorCore } from "../core"
 import { useI18n } from "../i18n"
@@ -22,7 +21,6 @@ defineProps<{
 
 const { t } = useI18n()
 const editor = useEditorCore()
-const playback = useAudioContext()
 const panelRef = useTemplateRef<HTMLElement>("panel")
 
 const partialTurn = computed(() => {
@@ -39,12 +37,7 @@ const partialTurn = computed(() => {
   } as Turn
 })
 
-const { isFollowing, isLiveMode, resumeFollow } = useAutoScroll({
-  panelRef,
-  playback,
-  activeTurns: editor.activeTurns,
-  partial: editor.partial,
-})
+const { isFollowing, resumeFollow } = useAutoScroll({ panelRef })
 </script>
 
 <template>
@@ -53,12 +46,13 @@ const { isFollowing, isLiveMode, resumeFollow } = useAutoScroll({
       <ScrollAreaViewport class="scroll-viewport">
         <div class="turns-container">
           <TranscriptionTurn
-            v-for="turn in turns"
+            v-for="(turn, i) in turns"
             :key="turn.id"
             :turn="turn"
             :speaker="
               turn.speakerId ? speakers.get(turn.speakerId) : undefined
-            " />
+            "
+            :live="editor.hasLiveUpdate.value && !partialTurn && i === turns.length - 1" />
           <TranscriptionTurn
             v-if="partialTurn"
             key="__partial__"
@@ -72,7 +66,7 @@ const { isFollowing, isLiveMode, resumeFollow } = useAutoScroll({
 
       <Transition name="fade-slide">
         <EditorButton
-          v-if="!isFollowing && (isLiveMode || playback?.isPlaying.value)"
+          v-if="!isFollowing && (editor.isPlaying.value || editor.hasLiveUpdate.value)"
           size="sm"
           class="resume-scroll-btn"
           :aria-label="t('transcription.resumeScroll')"
