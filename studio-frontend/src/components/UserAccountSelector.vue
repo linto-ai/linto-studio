@@ -17,7 +17,6 @@
     </div>
     <div class="flex-1 metadata">
       <div class="user-name">{{ UserName }}</div>
-      <div class="user-role">{{ currentRoleToString }}</div>
       <Button
         v-if="backoffice"
         @click="openOrganizationSelector"
@@ -48,7 +47,6 @@
 <script>
 import { mapGetters } from "vuex"
 
-import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 import { userName } from "@/tools/userName"
 import userAvatar from "@/tools/userAvatar"
@@ -57,7 +55,7 @@ import ModalSwitchOrg from "@/components/ModalSwitchOrg.vue"
 
 export default {
   components: { Tooltip, ModalSwitchOrg },
-  mixins: [orgaRoleMixin, platformRoleMixin],
+  mixins: [platformRoleMixin],
   props: {
     backoffice: {
       type: Boolean,
@@ -139,13 +137,6 @@ export default {
 
   .organization-switch {
     align-self: flex-start;
-  }
-
-  .user-role {
-    color: var(--text-secondary);
-    white-space: nowrap;
-    font-weight: 400;
-    font-size: 0.9em;
   }
 }
 </style>

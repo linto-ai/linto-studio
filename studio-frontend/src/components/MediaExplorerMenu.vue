@@ -11,7 +11,10 @@
       @dragleave="isInboxDragOver = false"
       @drop.prevent="onDropInbox">
       <ph-icon name="user-switch" size="16" />
-      <span class="media-explorer-menu__item__org-name">{{ orgDisplayName }}</span>
+      <div class="media-explorer-menu__item__org-info">
+        <span class="media-explorer-menu__item__org-name">{{ orgName }}</span>
+        <span class="media-explorer-menu__item__org-role">{{ currentRoleToString }}</span>
+      </div>
       <button
         class="media-explorer-menu__item__action"
         :title="$t('folders.create')"
@@ -84,12 +87,14 @@
 import { apiHasSessions } from "@/api/session.js"
 import { mediaScopeMixin } from "@/mixins/mediaScope"
 import { folderDragDropMixin } from "@/mixins/folderDragDrop"
+import { orgaRoleMixin } from "@/mixins/orgaRole.js"
+import { orgDisplayName } from "@/tools/orgDisplayName"
 import FolderTree from "@/components/FolderTree.vue"
 import ModalSwitchOrg from "@/components/ModalSwitchOrg.vue"
 
 export default {
   name: "MediaExplorerMenu",
-  mixins: [mediaScopeMixin, folderDragDropMixin],
+  mixins: [mediaScopeMixin, folderDragDropMixin, orgaRoleMixin],
   components: { FolderTree, ModalSwitchOrg },
   data() {
     return {
@@ -106,15 +111,8 @@ export default {
     currentUserId() {
       return this.$store.getters["user/getUserId"]
     },
-    isOwnPersonalOrg() {
-      return this.currentOrganization?.personal && this.currentOrganization?.owner === this.currentUserId
-    },
-    orgDisplayName() {
-      if (!this.currentOrganization) return ""
-      if (this.isOwnPersonalOrg) {
-        return this.$t("navigation.sections.my_space")
-      }
-      return this.currentOrganization.name
+    orgName() {
+      return orgDisplayName(this.currentOrganization, this.currentUserId)
     },
     isMediaRoute() {
       return this.$route.name === "explore" || this.$route.name === "inbox"
@@ -239,15 +237,31 @@ export default {
 
     &--section {
       font-weight: 600;
+      padding-top: 0.25rem;
+      padding-bottom: 0.25rem;
+    }
+
+    &__org-info {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      flex: 1;
+      line-height: 1.2;
     }
 
     &__org-name {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      min-width: 0;
       text-decoration: underline transparent;
       transition: text-decoration-color 0.2s;
+    }
+
+    &__org-role {
+      font-size: 0.7em;
+      font-weight: 400;
+      color: var(--text-secondary);
+      padding-left: 0.5em;
     }
 
     &--section:hover &__org-name {
