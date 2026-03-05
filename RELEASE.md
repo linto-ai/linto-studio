@@ -1,3 +1,28 @@
+# 1.8.1
+
+_2026_03_01_
+
+- Bugfix
+  - Fix collaborative editing crash in Web Worker (`process` not defined)
+- Publication page redesign
+  - Action cards layout replacing text buttons
+  - Transcript split view alongside AI service content
+  - Verbatim tab shows transcript directly instead of PDF preview
+- Export cleanup
+  - Removed legacy report formats (cri, cra, cred)
+  - Verbatim DOCX export standalone (no LLM processing)
+  - Fix command injection risk in ODT conversion (execFile)
+- Chat
+  - Chat with AI about your conversations via LLM Gateway proxy
+  - Session management with ownership verification
+  - SSE streaming with transcript and summary context
+  - ChatDrawer component with conversation history
+  - New `LLM_CHAT_SERVICE_ID` environment variable
+- UI improvements
+  - AIServiceMenu collapses overflow services into dropdown
+  - PublicationSection uses Modal component
+  - Conditional session menu visibility
+
 # 1.8.0
 
 _2026_02_24_

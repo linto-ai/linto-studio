@@ -1,6 +1,8 @@
 module.exports = {
   activityLog: require("./activityLog.js"),
   categories: require("./categories.js"),
+  chatMessages: require("./chatMessages.js"),
+  chatSessions: require("./chatSessions.js"),
   conversationExport: require("./conversationExport.js"),
   conversationGenerations: require("./conversationGenerations.js"),
   conversationSubtitles: require("./conversationSubtitles.js"),

@@ -420,7 +420,7 @@ export default {
     mergePartialTranslations(content) {
       if (
         this.partialObject?.segmentId === content.segmentId &&
-        this.partialObject.translations
+        this.partialObject?.translations
       ) {
         content.translations = {
           ...this.partialObject.translations,
@@ -445,6 +445,12 @@ export default {
       )
     },
     onPartial(content) {
+      if (content.locutor === "bot") return
+      if (this.hasDiarization) {
+        const isTranslationPartial = content.translations && Object.values(content.translations).some(v => v)
+        if (this.selectedTranslations === "original" && isTranslationPartial) return
+        if (this.selectedTranslations !== "original" && !isTranslationPartial) return
+      }
       this.mergePartialTranslations(content)
       this.partialText = this.computeDisplayText(content)
       this.partialObject = content
@@ -453,10 +459,20 @@ export default {
     onFinal(content) {
       content.uuid = uuidv4()
       this.mergePartialTranslations(content)
-      this.partialText = ""
-      this.partialObject = null
-      this.finalText = this.computeDisplayText(content)
       this.turns.push(content)
+
+      const shouldProcess = content.locutor !== "bot" && (
+        !this.hasDiarization ||
+        (this.selectedTranslations === "original" && !!content.locutor) ||
+        (this.selectedTranslations !== "original" && !content.locutor)
+      )
+
+      if (shouldProcess) {
+        this.partialText = ""
+        this.partialObject = null
+        this.finalText = this.computeDisplayText(content)
+      }
+
       this.scrollToBottom()
     },
     onTranslation(content) {

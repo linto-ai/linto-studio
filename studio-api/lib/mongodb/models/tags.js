@@ -31,7 +31,9 @@ class TagModel extends MongoModel {
   async createDefaultTags(organizationId, categoryId) {
     const defaultsTags = [
       ...DEFAULT_TAGS,
-      ...(process.env.DEFAULT_TAGS ? process.env.DEFAULT_TAGS.split(",") : []),
+      ...(process.env.DEFAULT_TAGS
+        ? process.env.DEFAULT_TAGS.split(",").map((name) => ({ name: name.trim(), emoji: null }))
+        : []),
     ]
 
     const tags = defaultsTags.map((tag) => ({
@@ -126,48 +128,50 @@ class TagModel extends MongoModel {
     withMediaCount = false,
   ) {
     try {
-      const pipeline = []
-
-      pipeline.push({
-        $match: {
-          organizationId: this.getObjectId(organizationId),
-          categoryId: this.getObjectId(categoryId),
-        },
-      })
-
-      if (withMediaCount) {
-        pipeline.push({
-          $lookup: {
-            from: "conversations",
-            let: { tagId: { $toString: "$_id" } },
-            pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $and: [
-                      {
-                        $eq: [
-                          "$organization.organizationId",
-                          organizationId.toString(),
-                        ],
-                      },
-                      { $in: ["$$tagId", "$tags"] },
-                    ],
-                  },
-                },
-              },
-            ],
-            as: "media",
-          },
-        })
-
-        pipeline.push({
-          $addFields: { mediaCount: { $size: "$media" } },
-        })
-        pipeline.push({ $project: { media: 0 } })
+      const query = {
+        organizationId: this.getObjectId(organizationId),
+        categoryId: this.getObjectId(categoryId),
       }
 
-      return await this.mongoAggregate(pipeline)
+      const tags = await this.mongoRequest(query)
+
+      if (!withMediaCount || tags.length === 0) {
+        return tags
+      }
+
+      const tagIdStrings = tags.map((t) => t._id.toString())
+
+      const MongoDriver = require("../driver")
+      const counts = await MongoDriver.constructor.db
+        .collection("conversations")
+        .aggregate([
+          {
+            $match: {
+              "organization.organizationId": organizationId.toString(),
+              tags: { $in: tagIdStrings },
+            },
+          },
+          { $unwind: "$tags" },
+          {
+            $match: {
+              tags: { $in: tagIdStrings },
+            },
+          },
+          {
+            $group: {
+              _id: "$tags",
+              count: { $sum: 1 },
+            },
+          },
+        ])
+        .toArray()
+
+      const countMap = new Map(counts.map((c) => [c._id, c.count]))
+
+      return tags.map((tag) => ({
+        ...tag,
+        mediaCount: countMap.get(tag._id.toString()) || 0,
+      }))
     } catch (error) {
       console.error(error)
       return error

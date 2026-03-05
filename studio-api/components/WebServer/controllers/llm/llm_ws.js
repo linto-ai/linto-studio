@@ -121,7 +121,15 @@ class OrganizationWebSocketManager {
 
       this.connections.set(organizationId, connectionData)
 
+      const connectionTimeout = setTimeout(() => {
+        if (ws.readyState !== WebSocket.OPEN) {
+          ws.close()
+          reject(new Error(`WebSocket connection timeout for organization ${organizationId}`))
+        }
+      }, 10000)
+
       ws.on("open", () => {
+        clearTimeout(connectionTimeout)
         appLogger.info(`[LLM WS] Connected to organization ${organizationId}`)
         resolve()
       })
@@ -131,23 +139,17 @@ class OrganizationWebSocketManager {
       })
 
       ws.on("close", (code) => {
+        clearTimeout(connectionTimeout)
         appLogger.info(`[LLM WS] Disconnected from organization ${organizationId} (code: ${code})`)
         this._cleanupConnection(organizationId)
       })
 
       ws.on("error", (error) => {
+        clearTimeout(connectionTimeout)
         appLogger.error(`[LLM WS] Error for organization ${organizationId}: ${error.message}`)
         this._cleanupConnection(organizationId)
         reject(error)
       })
-
-      // Timeout for initial connection
-      setTimeout(() => {
-        if (ws.readyState !== WebSocket.OPEN) {
-          ws.close()
-          reject(new Error(`WebSocket connection timeout for organization ${organizationId}`))
-        }
-      }, 10000)
     })
   }
 

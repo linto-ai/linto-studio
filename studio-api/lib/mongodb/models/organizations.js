@@ -217,11 +217,26 @@ class OrganizationModel extends MongoModel {
         },
       }
       const organizations = await this.mongoRequest(query, public_projection)
-      for (const organization of organizations) {
-        organization.categories = await categoriesModel.getSystemCategories(
-          organization._id.toString(),
-        )
+
+      if (organizations.length === 0) return organizations
+
+      const orgIds = organizations.map((o) => o._id.toString())
+      const allCategories = await categoriesModel.getSystemCategoriesByOrgIds(
+        orgIds,
+      )
+
+      const categoriesByOrg = new Map()
+      for (const cat of allCategories) {
+        const key = cat.scopeId
+        if (!categoriesByOrg.has(key)) categoriesByOrg.set(key, [])
+        categoriesByOrg.get(key).push(cat)
       }
+
+      for (const organization of organizations) {
+        organization.categories =
+          categoriesByOrg.get(organization._id.toString()) || []
+      }
+
       return organizations
     } catch (error) {
       console.error(error)

@@ -218,7 +218,6 @@
             from="sessionSettings"
             @connectMicrophone="connectMicrophone"
             @updateName="updateChannelName"
-            @updateDiarization="updateChannelDiarization"
             :channelsList="localChannels"></SessionChannelsTable>
         </div>
       </section>
@@ -512,10 +511,6 @@ export default {
         microphone: "true",
       }
       this.$router.push(route)
-    },
-    updateChannelDiarization(index, value) {
-      this.localChannels[index].diarization = value
-      this.channelsHasChanged = true
     },
     openModalDeleteSession() {
       this.showModalDeleteSession = true

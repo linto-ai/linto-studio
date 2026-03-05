@@ -357,6 +357,8 @@
     },
     "model_quality_label": "Model quality:",
     "publish_document": "Publish document",
+    "publish_document_description": "Generate a report or export the transcription",
+    "back_to_transcription": "View and edit the transcription",
     "record": "Record",
     "recording": "Recording...",
     "search_in_transcription": {
@@ -606,6 +608,9 @@
     "recover_password_detail": "Please enter your email address to receive a recovery link",
     "recover_password_sent": "A recovery link has been sent to your email address",
     "title": "Sign in",
+    "email_not_verified": "Your email address has not been verified yet. Please check your inbox and click the verification link.",
+    "resend_verification": "Resend verification email",
+    "resend_verification_sent": "A new verification email has been sent. Please check your inbox.",
     "footer": {
       "description": "Open source innovations powered by LINAGORA on EXAION infrastructures"
     },
@@ -906,23 +911,14 @@
   },
   "publish": {
     "error_first_line": {
-      "cra": "Error during summary report generation",
-      "cred": "Error during commission and delegation report generation",
-      "cri": "Error during full report generation",
       "verbatim": "Error during verbatim generation",
       "generic": "We couldn't complete the task due to a temporary connection issue with the model provider. Please try again in a moment"
     },
     "filter_title": {
       "automatic_summary": "Automatic summary options",
-      "cra": "Summary report options",
-      "cred": "Options for commission and delegation reports",
-      "cri": "Full report options",
       "verbatim": "Verbatim options"
     },
     "generation_first_line": {
-      "cra": "Summary report generation in progress...",
-      "cred": "Commission and delegation report generation in progress...",
-      "cri": "Full report generation in progress...",
       "verbatim": "Verbatim generation in progress...",
       "general": "Generation in progress..."
     },
@@ -941,9 +937,6 @@
     "reload_document": "Regenerate the report",
     "tabs": {
       "automatic_summary": "Automatic summary",
-      "cra": "Summary report",
-      "cred": "Commission and delegation reports",
-      "cri": "Full report",
       "verbatim": "Verbatim",
       "publication": "Publication"
     },
@@ -958,7 +951,13 @@
       "restore_version_confirm": "Are you sure you want to restore this version?",
       "version_restored": "Version restored successfully",
       "version_restore_error": "Error restoring version",
-      "unsaved_changes": "You have unsaved changes"
+      "unsaved_changes": "You have unsaved changes",
+      "show_transcript": "Transcription",
+      "delete_version_confirm_title": "Delete version?",
+      "delete_version_confirm": "This version will be permanently deleted.",
+      "delete_version_confirm_button": "Delete",
+      "version_deleted": "Version deleted successfully",
+      "version_delete_error": "Error deleting version"
     },
     "export_error": "Failed to export document",
     "regenerate": {
@@ -970,7 +969,14 @@
       "title": "Generations",
       "latest": "Latest",
       "no_generations": "No generations yet",
-      "generating": "Generating..."
+      "generating": "Generating...",
+      "delete": "Delete generation",
+      "delete_version": "Delete version",
+      "delete_confirm_title": "Delete generation?",
+      "delete_confirm": "The generation and its associated AI job will be permanently deleted.",
+      "delete_confirm_button": "Delete",
+      "deleted": "Generation deleted successfully",
+      "delete_error": "Error deleting generation"
     },
     "llm_gateway_error": "AI service error: {error}",
     "llm_gateway_unavailable": "The AI service is temporarily unavailable. Please try again in a few moments.",
@@ -980,8 +986,21 @@
     "error_llm_unavailable": "The AI service is temporarily unavailable.",
     "error_job_expired": "This generation has expired. Please regenerate the document.",
     "error_timeout": "The request timed out. Please try again.",
+    "action_cards": {
+      "download": "Download",
+      "download_description": "DOCX, PDF, TXT, JSON",
+      "publication": "Publication",
+      "publication_description": "Export with a DOCX/PDF template",
+      "transcript": "Transcript",
+      "transcript_description": "Show original transcript alongside"
+    },
+    "transcript_panel": {
+      "title": "Transcript"
+    },
     "ai_menu": {
-      "select": "AI Services"
+      "select": "AI Services",
+      "more": "More services",
+      "badge": "AI"
     },
     "publication": {
       "title": "Publication Templates",
@@ -1030,6 +1049,7 @@
   "common": {
     "retry": "Retry",
     "cancel": "Cancel",
+    "delete": "Delete",
     "uploading": "Uploading..."
   },
   "session": {
@@ -1478,5 +1498,21 @@
     "min_characters": "{count} characters minimum",
     "select_all": "Select all"
   },
-  "actions": "Actions"
+  "actions": "Actions",
+  "chat": {
+    "title": "Chat",
+    "start": "Start a chat",
+    "description": "Ask questions about this conversation",
+    "new_chat": "New chat",
+    "send": "Send",
+    "placeholder": "Ask a question about this conversation...",
+    "history": "History",
+    "empty_state": "Ask a question to start a chat",
+    "empty_chat": "Ask your first question",
+    "rename": "Rename",
+    "delete_session": "Delete",
+    "delete_confirm_inline": "Delete \"{name}\"?",
+    "error": "An error occurred",
+    "streaming": "Generating response..."
+  }
 }

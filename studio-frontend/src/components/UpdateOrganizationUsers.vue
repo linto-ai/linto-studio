@@ -14,68 +14,46 @@
 
     <!--Organization Members -->
 
-    <div v-if="sortedUsers.length > 0" class="flex row">
-      <table
-        class="table-grid"
-        style="grid-template-columns: 1fr 1fr auto; width: 100%">
-        <thead>
-          <tr>
-            <ArrayHeader
-              :eventLabel="'user'"
-              :label="$t('organisation.user_label')"
-              :sortListKey="sortListKey"
-              :sortListDirection="sortListDirection"
-              @list_sort_by="sortBy" />
-            <ArrayHeader
-              :eventLabel="'role'"
-              :label="$t('organisation.user.role_label')"
-              :sortListKey="sortListKey"
-              :sortListDirection="sortListDirection"
-              @list_sort_by="sortBy" />
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="user of sortedUsers"
-            :key="user._id"
-            :class="userInfo._id === user._id ? 'currentuser' : ''">
-            <td>
-              <UserInfoInline :user="user" :user-id="user._id" />
-            </td>
-            <td>
-              <OrgaRoleSelector
-                v-model="user.role"
-                @input="updateUserRole(user)"
-                :readonly="!canUpdateRole(user)" />
-            </td>
-            <td class="content-size">
-              <Button
-                v-if="userInfo._id === user._id"
-                size="sm"
-                variant="secondary"
-                intent="destructive"
-                :label="$t('organisation.user.leave_button')"
-                @click="leaveOrganization()" />
-
-              <Button
-                v-else-if="
-                  (isAtLeastMaintainer &&
-                    userRole >= user.role &&
-                    userInfo._id !== user._id) ||
-                  (isSystemAdministrator && isBackofficePage)
-                "
-                size="sm"
-                icon="trash"
-                variant="secondary"
-                intent="destructive"
-                :label="$t('organisation.user.remove_button')"
-                @click="removeFromMembers(user)" />
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <GenericTable
+      v-if="sortedUsers.length > 0"
+      :columns="columns"
+      :content="sortedUsers"
+      :sortListKey="sortListKey"
+      :sortListDirection="sortListDirection"
+      :rowClass="getUserRowClass"
+      @list_sort_by="sortBy">
+      <template #cell-user="{ element }">
+        <UserInfoInline :user="element" :user-id="element._id" />
+      </template>
+      <template #cell-role="{ element }">
+        <OrgaRoleSelector
+          v-model="element.role"
+          @input="updateUserRole(element)"
+          :readonly="!canUpdateRole(element)" />
+      </template>
+      <template #cell-actions="{ element }">
+        <Button
+          v-if="userInfo._id === element._id"
+          size="sm"
+          variant="secondary"
+          intent="destructive"
+          :label="$t('organisation.user.leave_button')"
+          @click="leaveOrganization()" />
+        <Button
+          v-else-if="
+            (isAtLeastMaintainer &&
+              userRole >= element.role &&
+              userInfo._id !== element._id) ||
+            (isSystemAdministrator && isBackofficePage)
+          "
+          size="sm"
+          icon="trash"
+          variant="secondary"
+          intent="destructive"
+          :label="$t('organisation.user.remove_button')"
+          @click="removeFromMembers(element)" />
+      </template>
+    </GenericTable>
 
     <ModalLeaveOrganization
       v-model="displayLeaveModal"
@@ -108,11 +86,10 @@ import {
 
 import UserInvite from "@/components/UserInvite.vue"
 import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
-import ArrayHeader from "@/components/ArrayHeader.vue"
+import GenericTable from "@/components/molecules/GenericTable.vue"
 import ModalLeaveOrganization from "@/components/ModalLeaveOrganization.vue"
 import ModalRemoveUserFromOrganization from "@/components/ModalRemoveUserFromOrganization.vue"
 import OrgaRoleSelector from "@/components/molecules/OrgaRoleSelector.vue"
-import { readonly } from "vue"
 
 export default {
   mixins: [orgaRoleMixin, platformRoleMixin],
@@ -151,6 +128,13 @@ export default {
     }
   },
   computed: {
+    columns() {
+      return [
+        { key: "user", label: this.$t("organisation.user_label"), width: "1fr" },
+        { key: "role", label: this.$t("organisation.user.role_label"), width: "1fr" },
+        { key: "actions", label: "", width: "auto" },
+      ]
+    },
     sortedUsers() {
       return sortArray(
         this.orgaMembers,
@@ -167,6 +151,9 @@ export default {
   },
   mounted() {},
   methods: {
+    getUserRowClass(user) {
+      return this.userInfo._id === user._id ? "currentuser" : ""
+    },
     sortBy(key) {
       if (key === this.sortListKey) {
         this.sortListDirection =
@@ -278,7 +265,7 @@ export default {
   components: {
     UserInvite,
     UserInfoInline,
-    ArrayHeader,
+    GenericTable,
     ModalLeaveOrganization,
     ModalRemoveUserFromOrganization,
     OrgaRoleSelector,

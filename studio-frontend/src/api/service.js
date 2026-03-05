@@ -331,3 +331,42 @@ export async function apiGetExportContent(conversationId, jobId) {
     error: responseData?.error || req?.error?.message || "Unknown error",
   }
 }
+
+/**
+ * Delete a generation
+ * @param {string} conversationId
+ * @param {string} generationId
+ * @returns {Promise<boolean>} true if deleted
+ */
+export async function apiDeleteGeneration(conversationId, generationId) {
+  const req = await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/generations/${generationId}`,
+    { method: "delete" },
+    {},
+    null,
+  )
+
+  return req.status === "success"
+}
+
+/**
+ * Delete a specific version from a job
+ * @param {string} conversationId
+ * @param {string} jobId
+ * @param {number} versionNumber
+ * @returns {Promise<boolean>} true if deleted
+ */
+export async function apiDeleteExportVersion(
+  conversationId,
+  jobId,
+  versionNumber,
+) {
+  const req = await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/export/${jobId}/versions/${versionNumber}`,
+    { method: "delete" },
+    {},
+    null,
+  )
+
+  return req.status === "success"
+}

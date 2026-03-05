@@ -20,6 +20,7 @@ module.exports = (webServer) => {
       ...require("./api/conversation/conversations")(webServer),
       ...require("./api/conversation/turn")(webServer),
       ...require("./api/conversation/subtitle")(webServer),
+      ...require("./api/conversation/chat")(webServer),
     ],
     "/api": [
       ...require("./api/taxonomy/categories")(webServer), // Keep that way until frontend catches up
@@ -33,6 +34,16 @@ module.exports = (webServer) => {
       ...require("./api/administration/users")(webServer),
       ...require("./api/administration/organizations")(webServer),
       ...require("./api/administration/tokens")(webServer),
+    ],
+    "/api/chat": [
+      {
+        path: "/status",
+        method: "get",
+        requireAuth: true,
+        controller:
+          require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/chat.js`)
+            .chatStatus,
+      },
     ],
     "/api/nlp": require("./api/nlp/nlp")(webServer),
     "/api/services": require("./api/service/services")(webServer, this),

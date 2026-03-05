@@ -244,9 +244,103 @@ async function updateGenerationStatus(jobId, status, error = null) {
   }
 }
 
+/**
+ * Delete a generation
+ * DELETE /conversations/:conversationId/generations/:generationId
+ */
+async function deleteGeneration(req, res, next) {
+  try {
+    if (!req.params.conversationId) throw new ConversationIdRequire()
+
+    const { generationId } = req.params
+    if (!generationId) {
+      throw new ConversationMetadataRequire("generationId is required")
+    }
+
+    // Verify conversation exists
+    const conversation = await model.conversations.getById(req.params.conversationId)
+    if (conversation.length !== 1) throw new ConversationNotFound()
+
+    // Get generation
+    const generations = await model.conversationGenerations.getByGenerationId(generationId)
+    if (generations.length === 0) {
+      throw new GenerationNotFound()
+    }
+
+    const gen = generations[0]
+
+    // Verify generation belongs to this conversation
+    if (gen.conversationId !== req.params.conversationId) {
+      throw new GenerationNotFound("Generation not found for this conversation")
+    }
+
+    // Delete the job on LLM Gateway if it exists
+    if (gen.jobId) {
+      const baseUrl = process.env.LLM_GATEWAY_SERVICES
+      if (baseUrl) {
+        try {
+          await axios.delete(`${baseUrl}/api/v1/jobs/${gen.jobId}`)
+        } catch (err) {
+          // Ignore 404 (job already gone) but log other errors
+          if (err.response?.status !== 404) {
+            appLogger.warn(`[Generations] Failed to delete LLM Gateway job ${gen.jobId}: ${err.message}`)
+          }
+        }
+      }
+    }
+
+    const wasCurrent = gen.isCurrent
+    const serviceId = gen.serviceId
+
+    // Delete the generation record from MongoDB
+    await model.conversationGenerations.delete(gen._id)
+
+    // If it was the current generation, promote the most recent remaining one
+    if (wasCurrent) {
+      const remaining = await model.conversationGenerations.listByConversationAndService(
+        req.params.conversationId,
+        serviceId
+      )
+
+      if (remaining.length > 0) {
+        // Promote the most recent one (list is sorted by createdAt desc)
+        const newest = remaining[0]
+        newest.isCurrent = true
+        await model.conversationGenerations.update(newest)
+
+        // Update conversationExport to point to the new current generation's jobId
+        if (newest.jobId) {
+          const conversationExports = await model.conversationExport.getByConvAndFormat(
+            req.params.conversationId,
+            serviceId
+          )
+          if (conversationExports && conversationExports.length > 0) {
+            conversationExports[0].jobId = newest.jobId
+            await model.conversationExport.update(conversationExports[0])
+          }
+        }
+      } else {
+        // No generations remain - delete the conversationExport record
+        const conversationExports = await model.conversationExport.getByConvAndFormat(
+          req.params.conversationId,
+          serviceId
+        )
+        if (conversationExports && conversationExports.length > 0) {
+          await model.conversationExport.delete(conversationExports[0]._id)
+        }
+      }
+    }
+
+    res.status(200).send({ status: "success" })
+  } catch (error) {
+    next(error)
+  }
+}
+
 module.exports = {
   listGenerations,
   createGeneration,
   getGeneration,
   updateGenerationStatus,
+  deleteGeneration,
 }
