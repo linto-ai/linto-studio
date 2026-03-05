@@ -68,16 +68,16 @@ export async function apiDeleteFolder(
   return requestRes
 }
 
-export async function apiMoveConversationsToFolder(
+export async function apiMoveConversationToFolder(
   organizationId,
   folderId,
-  conversationIds,
+  conversationId,
   notif = null,
 ) {
   const requestRes = await sendRequest(
-    `${BASE_API}/organizations/${organizationId}/folders/${folderId}/conversations`,
+    `${BASE_API}/organizations/${organizationId}/folders/${folderId}/conversations/${conversationId}`,
     { method: "post" },
-    { conversationIds },
+    {},
     notif,
   )
   return requestRes?.data

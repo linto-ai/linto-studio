@@ -3,7 +3,7 @@ import {
   apiCreateFolder,
   apiUpdateFolder,
   apiDeleteFolder,
-  apiMoveConversationsToFolder,
+  apiMoveConversationToFolder,
   apiUncategorizeConversations,
 } from "@/api/folder"
 import i18n from "@/i18n"
@@ -281,11 +281,14 @@ export default {
       { folderId, conversationIds },
     ) {
       try {
-        await apiMoveConversationsToFolder(
-          rootGetters["organizations/getCurrentOrganizationScope"],
-          folderId,
-          conversationIds,
-        )
+        const organizationId = rootGetters["organizations/getCurrentOrganizationScope"]
+        for (const conversationId of conversationIds) {
+          await apiMoveConversationToFolder(
+            organizationId,
+            folderId,
+            conversationId,
+          )
+        }
         commit(
           "system/addNotification",
           {

@@ -211,9 +211,10 @@ class FolderModel extends MongoModel {
     return maxDepth
   }
 
-  async reparentChildren(oldParentId, newParentId) {
+  async reparentChildren(oldParentId, newParentId, organizationId) {
     const query = {
       parentId: oldParentId,
+      organizationId: organizationId,
     }
     return await this.mongoUpdateMany(query, "$set", {
       parentId: newParentId,

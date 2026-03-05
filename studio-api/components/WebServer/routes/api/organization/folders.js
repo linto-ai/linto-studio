@@ -4,7 +4,7 @@ const {
   createFolder,
   updateFolder,
   deleteFolder,
-  moveConversations,
+  moveConversation,
   listFolderConversations,
   uncategorizeConversations,
 } = require(
@@ -59,11 +59,12 @@ module.exports = (webserver) => {
       requireFolderManagerAccess: true,
     },
     {
-      path: "/:folderId/conversations",
+      path: "/:folderId/conversations/:conversationId",
       method: "post",
-      controller: moveConversations,
+      controller: moveConversation,
       requireAuth: true,
       requireOrganizationMemberAccess: true,
+      requireConversationWriteAccess: true,
     },
     {
       path: "/:folderId/conversations",

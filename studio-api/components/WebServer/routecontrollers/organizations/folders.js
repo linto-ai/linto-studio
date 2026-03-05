@@ -57,6 +57,10 @@ function validateConversationIds(body) {
     body.conversationIds.length === 0
   )
     throw new FolderError("conversationIds must be a non-empty array")
+  for (const id of body.conversationIds) {
+    if (typeof id !== "string")
+      throw new FolderError("each conversationId must be a string")
+  }
 }
 
 // --- Access helpers ---
@@ -105,10 +109,11 @@ function filterTreeByAccess(tree, userId, userRole) {
 
 // --- Visibility sync helpers ---
 
-async function syncConversationsRights(conversationIds, membersRight, customRights) {
+async function syncConversationsRights(conversationIds, membersRight, customRights, organizationId) {
   for (const convId of conversationIds) {
     await model.conversations.update({
       _id: convId,
+      "organization.organizationId": organizationId,
       "organization.membersRight": membersRight,
       "organization.customRights": customRights,
     })
@@ -389,8 +394,8 @@ async function deleteFolder(req, res, next) {
 
     const parentId = folder.parentId || null
 
-    await model.folders.reparentChildren(folderId, parentId)
-    await model.conversations.unsetFolderReferences(folderId, parentId)
+    await model.folders.reparentChildren(folderId, parentId, organizationId)
+    await model.conversations.unsetFolderReferences(folderId, parentId, organizationId)
 
     if (folder.visibility === "private") {
       let parentIsPublic = true
@@ -415,24 +420,24 @@ async function deleteFolder(req, res, next) {
   }
 }
 
-async function moveConversations(req, res, next) {
+async function moveConversation(req, res, next) {
   try {
-    validateConversationIds(req.body)
+    const { folderId, organizationId, conversationId } = req.params
 
-    const folder = await getRequiredFolder(req.params.folderId, req.params.organizationId)
+    const folder = await getRequiredFolder(folderId, organizationId)
     checkFolderAccess(folder, req.payload.data.userId, req.userRole)
 
     const result = await model.conversations.updateFolderBatch(
-      req.body.conversationIds,
-      req.params.folderId,
-      req.params.organizationId,
+      [conversationId],
+      folderId,
+      organizationId,
     )
 
     const membersRight = folder.visibility === "private" ? RIGHTS.UNDEFINED : RIGHTS.READ
     const customRights = folder.visibility === "private" ? (folder.members || []) : []
-    await syncConversationsRights(req.body.conversationIds, membersRight, customRights)
+    await syncConversationsRights([conversationId], membersRight, customRights, organizationId)
 
-    res.status(200).send({ message: "Conversations moved", modifiedCount: result.modifiedCount })
+    res.status(200).send({ message: "Conversation moved", modifiedCount: result.modifiedCount })
   } catch (err) {
     next(err)
   }
@@ -447,7 +452,7 @@ async function listFolderConversations(req, res, next) {
     const conversations = await model.conversations.listConvFromOrga(
       req.params.organizationId,
       req.payload.data.userId,
-      req.payload.data.organizationRole,
+      req.userRole,
       1,
       { ...queryParams, folderId: req.params.folderId },
     )
@@ -463,7 +468,7 @@ async function uncategorizeConversations(req, res, next) {
     validateConversationIds(req.body)
 
     await model.conversations.updateFolderBatch(req.body.conversationIds, null, req.params.organizationId)
-    await syncConversationsRights(req.body.conversationIds, RIGHTS.READ, [])
+    await syncConversationsRights(req.body.conversationIds, RIGHTS.READ, [], req.params.organizationId)
 
     res.status(200).send({ message: "Conversations removed from folder" })
   } catch (err) {
@@ -477,7 +482,7 @@ module.exports = {
   createFolder,
   updateFolder,
   deleteFolder,
-  moveConversations,
+  moveConversation,
   listFolderConversations,
   uncategorizeConversations,
 }

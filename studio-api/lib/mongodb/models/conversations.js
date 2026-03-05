@@ -840,14 +840,15 @@ class ConvoModel extends MongoModel {
       })
     } catch (error) {
       console.error(error)
-      return error
+      throw error
     }
   }
 
-  async unsetFolderReferences(folderId, newFolderId) {
+  async unsetFolderReferences(folderId, newFolderId, organizationId) {
     try {
       const query = {
         folderId: folderId,
+        "organization.organizationId": organizationId,
       }
       const dateTime = moment().format()
       return await this.mongoUpdateMany(query, "$set", {
@@ -856,7 +857,7 @@ class ConvoModel extends MongoModel {
       })
     } catch (error) {
       console.error(error)
-      return error
+      throw error
     }
   }
 
@@ -873,7 +874,7 @@ class ConvoModel extends MongoModel {
       })
     } catch (error) {
       console.error(error)
-      return error
+      throw error
     }
   }
 
