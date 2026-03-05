@@ -20,36 +20,22 @@
       </button>
     </div>
     <div class="media-explorer-menu__sub">
-      <!-- Média -->
-      <div
-        class="media-explorer-menu__item media-explorer-menu__item--nested"
-        :class="{
-          'media-explorer-menu__item--active': isInboxActive,
-          'media-explorer-menu__item--drag-over': isInboxDragOver,
-        }"
-        @click="handleInboxClick"
-        @dragover.prevent="isInboxDragOver = true"
-        @dragleave="isInboxDragOver = false"
-        @drop.prevent="handleInboxDrop">
-        <ph-icon
-          name="tray"
-          :weight="isInboxActive ? 'fill' : 'regular'"
-          size="16" />
-        <span>{{ $t("navigation.sections.media") }}</span>
-      </div>
-      <!-- Transcription en direct -->
-      <div
-        v-if="hasSessions"
-        class="media-explorer-menu__item media-explorer-menu__item--nested"
-        :class="{ 'media-explorer-menu__item--active': isSessionsActive }"
-        @click="handleSessionsClick">
-        <ph-icon
-          name="broadcast"
-          :weight="isSessionsActive ? 'fill' : 'regular'"
-          size="16" />
-        <span>{{ $t("navigation.tabs.sessions") }}</span>
-      </div>
-      <!-- Arbre de dossiers -->
+      <ul class="media-explorer-menu__list">
+        <FolderTreeNode
+          :folder="inboxFolder"
+          :virtual="true"
+          icon="tray"
+          :activeFolderId="isInboxActive ? 'inbox' : null"
+          @select="handleInboxClick"
+          @drop-media="handleInboxDrop" />
+        <FolderTreeNode
+          v-if="hasSessions"
+          :folder="sessionsFolder"
+          :virtual="true"
+          icon="broadcast"
+          :activeFolderId="isSessionsActive ? 'sessions' : null"
+          @select="handleSessionsClick" />
+      </ul>
       <FolderTree ref="folderTree" />
     </div>
 
@@ -63,32 +49,20 @@
       <span>{{ $t("navigation.sections.personal") }}</span>
     </div>
     <div class="media-explorer-menu__sub">
-      <router-link
-        :to="{
-          name: 'explore-favorites',
-          params: { organizationId: getCurrentOrganizationScope },
-        }"
-        class="media-explorer-menu__item media-explorer-menu__item--nested"
-        @click.native="clearFolderSelection">
-        <ph-icon
-          name="star"
-          :weight="isFavoritesActive ? 'fill' : 'regular'"
-          size="16" />
-        <span>{{ $t("navigation.tabs.favorites") }}</span>
-      </router-link>
-      <router-link
-        :to="{
-          name: 'explore-shared',
-          params: { organizationId: getCurrentOrganizationScope },
-        }"
-        class="media-explorer-menu__item media-explorer-menu__item--nested"
-        @click.native="clearFolderSelection">
-        <ph-icon
-          name="share-network"
-          :weight="isSharedActive ? 'fill' : 'regular'"
-          size="16" />
-        <span>{{ $t("navigation.tabs.shared") }}</span>
-      </router-link>
+      <ul class="media-explorer-menu__list">
+        <FolderTreeNode
+          :folder="favoritesFolder"
+          :virtual="true"
+          icon="star"
+          :activeFolderId="isFavoritesActive ? 'favorites' : null"
+          @select="handleFavoritesClick" />
+        <FolderTreeNode
+          :folder="sharedFolder"
+          :virtual="true"
+          icon="share-network"
+          :activeFolderId="isSharedActive ? 'shared' : null"
+          @select="handleSharedClick" />
+      </ul>
     </div>
   </div>
 </template>
@@ -99,17 +73,17 @@ import { mediaScopeMixin } from "@/mixins/mediaScope"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { orgDisplayName } from "@/tools/orgDisplayName"
 import FolderTree from "@/components/FolderTree.vue"
+import FolderTreeNode from "@/components/FolderTreeNode.vue"
 import ModalSwitchOrg from "@/components/ModalSwitchOrg.vue"
 
 export default {
   name: "MediaExplorerMenu",
   mixins: [mediaScopeMixin, orgaRoleMixin],
-  components: { FolderTree, ModalSwitchOrg },
+  components: { FolderTree, FolderTreeNode, ModalSwitchOrg },
   data() {
     return {
       hasSessions: false,
       modalOrgSelector: false,
-      isInboxDragOver: false,
     }
   },
   computed: {
@@ -139,6 +113,18 @@ export default {
     },
     isSharedActive() {
       return this.$route.name === "explore-shared"
+    },
+    inboxFolder() {
+      return { _id: "inbox", name: this.$t("navigation.sections.media") }
+    },
+    sessionsFolder() {
+      return { _id: "sessions", name: this.$t("navigation.tabs.sessions") }
+    },
+    favoritesFolder() {
+      return { _id: "favorites", name: this.$t("navigation.tabs.favorites") }
+    },
+    sharedFolder() {
+      return { _id: "shared", name: this.$t("navigation.tabs.shared") }
     },
   },
   watch: {
@@ -176,6 +162,20 @@ export default {
         params: { organizationId: this.getCurrentOrganizationScope },
       })
     },
+    handleFavoritesClick() {
+      this.$store.dispatch(`${this.storeScope}/setSelectedFolderId`, undefined)
+      this.$router.push({
+        name: "explore-favorites",
+        params: { organizationId: this.getCurrentOrganizationScope },
+      })
+    },
+    handleSharedClick() {
+      this.$store.dispatch(`${this.storeScope}/setSelectedFolderId`, undefined)
+      this.$router.push({
+        name: "explore-shared",
+        params: { organizationId: this.getCurrentOrganizationScope },
+      })
+    },
     selectFolder(folderId) {
       this.$store.dispatch("folders/setActiveFolderId", null)
       this.$router.push({
@@ -186,13 +186,7 @@ export default {
         },
       })
     },
-    clearFolderSelection() {
-      this.$store.dispatch(`${this.storeScope}/setSelectedFolderId`, undefined)
-    },
-    async handleInboxDrop(e) {
-      this.isInboxDragOver = false
-      const raw = e.dataTransfer.getData("conversationIds")
-      const conversationIds = raw ? JSON.parse(raw) : null
+    async handleInboxDrop({ conversationIds }) {
       if (!conversationIds || conversationIds.length === 0) return
       try {
         await this.$store.dispatch("folders/uncategorizeConversations", {
@@ -214,6 +208,12 @@ export default {
   display: flex;
   flex-direction: column;
 
+  &__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
   &__item {
     display: flex;
     align-items: center;
@@ -227,22 +227,6 @@ export default {
 
     &:hover {
       background-color: var(--primary-soft);
-    }
-
-    &--active,
-    &.router-link-exact-active {
-      background: var(--primary-soft);
-      border-left-color: var(--primary-color);
-
-      svg {
-        color: var(--primary-color) !important;
-      }
-    }
-
-    &--drag-over {
-      background-color: var(--primary-color);
-      border-left-color: var(--primary-color);
-      color: var(--background-primary);
     }
 
     &--section {
@@ -277,10 +261,6 @@ export default {
     &--section:hover &__org-name {
       text-decoration-color: var(--primary-color);
       color: var(--primary-color);
-    }
-
-    &--nested {
-      padding-left: 2.5rem;
     }
 
     &__action {

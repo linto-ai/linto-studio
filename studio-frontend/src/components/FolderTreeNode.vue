@@ -6,7 +6,9 @@
         'folder-tree-node__row--active': isActive,
         'folder-tree-node__row--drag-over': isDragOver,
       }"
-      :style="{ paddingLeft: `calc(2.5rem - 14px - 0.5rem + ${Math.min(depth, 6) * 0.75}rem)` }"
+      :style="{
+        paddingLeft: `calc(2.5rem - 14px - 0.5rem + ${Math.min(depth, 6) * 0.75}rem)`,
+      }"
       @click="$emit('select', folder._id)"
       @dblclick.prevent="toggleExpand"
       @dragover.prevent="onDragOver"
@@ -16,7 +18,7 @@
         <span class="folder-tree-node__chevron-spacer"></span>
         <ph-icon
           :name="icon"
-          size="16"
+          size="20"
           :weight="isActive ? 'fill' : iconWeight" />
       </template>
       <template v-else>
@@ -24,9 +26,7 @@
           v-if="folder.children && folder.children.length > 0"
           class="folder-tree-node__chevron"
           @click.stop="expanded = !expanded">
-          <ph-icon
-            :name="expanded ? 'caret-down' : 'caret-right'"
-            size="14" />
+          <ph-icon :name="expanded ? 'caret-down' : 'caret-right'" size="14" />
         </button>
         <span v-else class="folder-tree-node__chevron-spacer"></span>
 
@@ -36,7 +36,7 @@
         <ph-icon
           v-else
           :name="expanded ? 'folder-open' : 'folder'"
-          size="16"
+          size="20"
           :style="folder.color ? { color: folder.color } : {}" />
 
         <ph-icon
@@ -89,7 +89,9 @@
     <div
       v-if="!virtual && showChildInput"
       class="folder-tree-node__create-child"
-      :style="{ paddingLeft: `calc(2.5rem - 14px - 0.5rem + ${Math.min(depth + 1, 6) * 0.75}rem)` }">
+      :style="{
+        paddingLeft: `calc(2.5rem - 14px - 0.5rem + ${Math.min(depth + 1, 6) * 0.75}rem)`,
+      }">
       <FormInput
         :field="childField"
         v-model="childName"
@@ -103,7 +105,9 @@
     </div>
 
     <ul
-      v-if="!virtual && expanded && folder.children && folder.children.length > 0"
+      v-if="
+        !virtual && expanded && folder.children && folder.children.length > 0
+      "
       class="folder-tree-node__children">
       <FolderTreeNode
         v-for="child in folder.children"
@@ -152,7 +156,10 @@ export default {
       renameName: "",
       showChildInput: false,
       childName: "",
-      childField: { placeholder: this.$t("folders.create_placeholder"), error: null },
+      childField: {
+        placeholder: this.$t("folders.create_placeholder"),
+        error: null,
+      },
     }
   },
   watch: {
@@ -167,7 +174,10 @@ export default {
     activeFolderId: {
       immediate: true,
       handler(newId) {
-        if (newId === this.folder._id || (newId && this.containsDescendant(this.folder.children, newId))) {
+        if (
+          newId === this.folder._id ||
+          (newId && this.containsDescendant(this.folder.children, newId))
+        ) {
           this.expanded = true
         }
       },
@@ -177,11 +187,22 @@ export default {
     canManageAccess() {
       if (this.userRole >= 5) return true
       if (this.folder.owner === this.userId) return true
-      if (this.folder.members && this.folder.members.some((m) => m.userId === this.userId && RIGHTS.hasRightAccess(m.right, RIGHTS.SHARE))) return true
+      if (
+        this.folder.members &&
+        this.folder.members.some(
+          (m) =>
+            m.userId === this.userId &&
+            RIGHTS.hasRightAccess(m.right, RIGHTS.SHARE),
+        )
+      )
+        return true
       return false
     },
     isActive() {
-      return this.selectedFolderId === this.folder._id || this.activeFolderId === this.folder._id
+      return (
+        this.selectedFolderId === this.folder._id ||
+        this.activeFolderId === this.folder._id
+      )
     },
     contextMenuItems() {
       if (this.virtual || !this.canManageAccess) return []
@@ -316,7 +337,6 @@ export default {
       }
       return false
     },
-
   },
 }
 </script>
@@ -443,9 +463,16 @@ export default {
   &__create-child {
     padding: 0.25rem 1rem;
 
-    :deep(.form-field) { gap: 0; }
-    :deep(.form-field__input) { padding: 0.2em 0.4em; font-size: 0.85em; }
-    :deep(.form-field__error) { font-size: 0.7em; }
+    :deep(.form-field) {
+      gap: 0;
+    }
+    :deep(.form-field__input) {
+      padding: 0.2em 0.4em;
+      font-size: 0.85em;
+    }
+    :deep(.form-field__error) {
+      font-size: 0.7em;
+    }
   }
 
   &__children {
