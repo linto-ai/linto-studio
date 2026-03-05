@@ -3,13 +3,7 @@
     <!-- Organisation -->
     <div
       class="media-explorer-menu__item media-explorer-menu__item--section"
-      :class="{
-        'media-explorer-menu__item--drag-over': isInboxDragOver,
-      }"
-      @click="openOrgSelector"
-      @dragover.prevent="isInboxDragOver = true"
-      @dragleave="isInboxDragOver = false"
-      @drop.prevent="onDropInbox">
+      @click="openOrgSelector">
       <ph-icon name="user-switch" size="16" />
       <div class="media-explorer-menu__item__org-info">
         <span class="media-explorer-menu__item__org-name">{{ orgName }}</span>
@@ -47,18 +41,11 @@
     <ModalSwitchOrg v-model="modalOrgSelector" @close="modalOrgSelector = false" />
 
     <!-- Personnel -->
-    <div
-      class="media-explorer-menu__item media-explorer-menu__item--section"
-      @click="personalExpanded = !personalExpanded">
+    <div class="media-explorer-menu__item media-explorer-menu__item--section">
       <ph-icon name="user" size="16" />
       <span>{{ $t("navigation.sections.personal") }}</span>
-      <button
-        class="media-explorer-menu__item__action"
-        @click.stop="personalExpanded = !personalExpanded">
-        <ph-icon :name="personalExpanded ? 'caret-up' : 'caret-down'" size="14" />
-      </button>
     </div>
-    <div v-show="personalExpanded" class="media-explorer-menu__sub">
+    <div class="media-explorer-menu__sub">
       <router-link
         :to="{
           name: 'explore-favorites',
@@ -86,7 +73,6 @@
 <script>
 import { apiHasSessions } from "@/api/session.js"
 import { mediaScopeMixin } from "@/mixins/mediaScope"
-import { folderDragDropMixin } from "@/mixins/folderDragDrop"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { orgDisplayName } from "@/tools/orgDisplayName"
 import FolderTree from "@/components/FolderTree.vue"
@@ -94,13 +80,11 @@ import ModalSwitchOrg from "@/components/ModalSwitchOrg.vue"
 
 export default {
   name: "MediaExplorerMenu",
-  mixins: [mediaScopeMixin, folderDragDropMixin, orgaRoleMixin],
+  mixins: [mediaScopeMixin, orgaRoleMixin],
   components: { FolderTree, ModalSwitchOrg },
   data() {
     return {
-      personalExpanded: false,
       hasSessions: false,
-      isInboxDragOver: false,
       modalOrgSelector: false,
     }
   },
@@ -123,9 +107,6 @@ export default {
     isSessionsActive() {
       return this.$route.name === "sessionsList"
     },
-    isPersonalActive() {
-      return this.isFavoritesActive || this.isSharedActive
-    },
     isFavoritesActive() {
       return this.$route.name === "explore-favorites"
     },
@@ -144,14 +125,6 @@ export default {
           }
         } else {
           this.hasSessions = false
-        }
-      },
-    },
-    isPersonalActive: {
-      immediate: true,
-      handler(val) {
-        if (val) {
-          this.personalExpanded = true
         }
       },
     },
@@ -178,22 +151,6 @@ export default {
     },
     clearFolderSelection() {
       this.$store.dispatch(`${this.storeScope}/setSelectedFolderId`, undefined)
-    },
-    async onDropInbox(e) {
-      this.isInboxDragOver = false
-      const { folderId } = this.parseDragData(e)
-      if (folderId) {
-        try {
-          await this.$store.dispatch("folders/updateFolder", {
-            folderId,
-            payload: { parentId: null },
-          })
-          await this.$store.dispatch("folders/fetchFolders")
-          await this.$store.dispatch(`${this.storeScope}/load`)
-        } catch (error) {
-          console.error("Error moving folder to root:", error)
-        }
-      }
     },
   },
 }
@@ -227,12 +184,6 @@ export default {
       svg {
         color: var(--primary-color) !important;
       }
-    }
-
-    &--drag-over {
-      background-color: var(--primary-color);
-      border-left-color: var(--primary-color);
-      color: var(--background-primary);
     }
 
     &--section {

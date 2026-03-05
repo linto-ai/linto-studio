@@ -30,9 +30,7 @@
           @rename="handleRename"
           @delete="handleDelete"
           @create-child="handleCreateChild"
-          @manage-access="handleManageAccess"
-          @drop-media="handleDropMedia"
-          @drop-folder="handleDropFolder" />
+          @manage-access="handleManageAccess" />
       </ul>
     </nav>
 
@@ -50,11 +48,10 @@ import { mapGetters, mapActions } from "vuex"
 import FolderTreeNode from "./FolderTreeNode.vue"
 import FolderAccessModal from "./FolderAccessModal.vue"
 import { mediaScopeMixin } from "@/mixins/mediaScope"
-import { folderDragDropMixin } from "@/mixins/folderDragDrop"
 
 export default {
   name: "FolderTree",
-  mixins: [mediaScopeMixin, folderDragDropMixin],
+  mixins: [mediaScopeMixin],
   components: { FolderTreeNode, FolderAccessModal },
   data() {
     return {
@@ -110,10 +107,6 @@ export default {
       await this.$store.dispatch(`${this.storeScope}/setSelectedFolderId`, folderId)
       await this.$store.dispatch(`${this.storeScope}/load`)
     },
-    async refreshAfterDrop() {
-      await this.$store.dispatch("folders/fetchFolders")
-      await this.$store.dispatch(`${this.storeScope}/load`)
-    },
     async handleCreate() {
       const name = this.newFolderName.trim()
       if (!name) return
@@ -143,28 +136,6 @@ export default {
     },
     handleManageAccess(folder) {
       this.accessFolder = folder
-    },
-    async handleDropFolder({ folderId, newParentId }) {
-      try {
-        await this.$store.dispatch("folders/updateFolder", {
-          folderId,
-          payload: { parentId: newParentId },
-        })
-        await this.refreshAfterDrop()
-      } catch (error) {
-        console.error("Error moving folder:", error)
-      }
-    },
-    async handleDropMedia({ folderId, conversationIds }) {
-      try {
-        await this.$store.dispatch("folders/moveConversationsToFolder", {
-          folderId,
-          conversationIds,
-        })
-        await this.refreshAfterDrop()
-      } catch (error) {
-        console.error("Error moving conversations to folder:", error)
-      }
     },
   },
 }
@@ -239,11 +210,6 @@ export default {
       font-weight: 600;
     }
 
-    &--drag-over {
-      background-color: var(--primary-color);
-      border-left-color: var(--primary-color);
-      color: var(--background-primary);
-    }
   }
 }
 </style>

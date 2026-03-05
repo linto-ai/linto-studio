@@ -1,12 +1,8 @@
 <template>
   <div
     class="media-explorer-item"
-    draggable="true"
-    @dragstart="onDragStart"
-    @dragend="isDragging = false"
     @click="toggleSelection"
     :class="{
-      'media-explorer-item--dragging': isDragging,
       'media-explorer-item--selected': isSelected,
       'media-explorer-item--favorite': isFavorite,
       'media-explorer-item--done':
@@ -218,7 +214,6 @@ export default {
   data() {
     return {
       showDeleteModal: false,
-      isDragging: false,
       duplicateLoading: false,
     }
   },
@@ -444,21 +439,6 @@ export default {
     handleDelete() {
       this.showDeleteModal = true
     },
-
-    onDragStart(e) {
-      this.isDragging = true
-      this.$el.style.opacity = "0.3"
-      requestAnimationFrame(() => {
-        this.$el.style.opacity = ""
-      })
-
-      const ids =
-        this.isSelected && this.selectedMediaIds.length > 1
-          ? this.selectedMediaIds
-          : [this.media._id]
-      e.dataTransfer.setData("conversationIds", JSON.stringify(ids))
-      e.dataTransfer.effectAllowed = "move"
-    },
   },
 }
 </script>
@@ -479,10 +459,6 @@ export default {
   &:hover {
     border-color: var(--neutral-30);
     background-color: var(--neutral-10);
-  }
-
-  &--dragging {
-    opacity: 0.4;
   }
 
   &--selected {

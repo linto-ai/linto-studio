@@ -701,7 +701,7 @@
       "edit_transcription": "Transcription",
       "edit_subtitles": "Sous-titres",
       "export": "Publication",
-      "duplicate": "Dupliquer",
+      "duplicate": "Créer une nouvelle copie",
       "delete": "Supprimer"
     },
     "delete": "Supprimer",
@@ -740,7 +740,7 @@
       "download_multiple_success": "{count} médias téléchargés avec succès",
       "download_multiple_partial": "{success} médias téléchargés sur {total}",
       "download_multiple_error": "Erreur lors du téléchargement des médias",
-      "duplicate": "Dupliquer la conversation",
+      "duplicate": "Créer une nouvelle copie",
       "duplicating": "Duplication en cours...",
       "duplicate_success": "Conversation dupliquée",
       "duplicate_error": "Erreur lors de la duplication"

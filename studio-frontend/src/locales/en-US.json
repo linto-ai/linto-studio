@@ -706,7 +706,7 @@
       "edit_transcription": "Transcription",
       "edit_subtitles": "Subtitles",
       "export": "Publish",
-      "duplicate": "Duplicate",
+      "duplicate": "Create a new copy",
       "delete": "Delete"
     },
     "delete": "Delete",
@@ -745,7 +745,7 @@
       "download_multiple_success": "{count} medias downloaded successfully",
       "download_multiple_partial": "{success} medias downloaded out of {total}",
       "download_multiple_error": "Error downloading medias",
-      "duplicate": "Duplicate conversation",
+      "duplicate": "Create a new copy",
       "duplicating": "Duplicating...",
       "duplicate_success": "Conversation duplicated",
       "duplicate_error": "Error duplicating conversation"
