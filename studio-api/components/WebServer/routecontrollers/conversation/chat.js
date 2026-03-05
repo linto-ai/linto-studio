@@ -367,6 +367,8 @@ async function sendMessage(req, res, next) {
           conversation_name: conversation.name,
         },
       },
+      session_id: sessionId,
+      organization_id: session.organizationId || undefined,
     }
 
     // 8. SSE headers
