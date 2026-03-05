@@ -63,29 +63,36 @@ class FolderModel extends MongoModel {
 
   async getTree(organizationId) {
     try {
-      const pipeline = [
-        {
-          $match: { organizationId: organizationId },
-        },
-        {
-          $graphLookup: {
-            from: "folders",
-            startWith: "$_id",
-            connectFromField: "_id",
-            connectToField: "parentId",
-            as: "descendants",
-            maxDepth: 10,
-            restrictSearchWithMatch: { organizationId: organizationId },
-          },
-        },
-        {
-          $match: { parentId: null },
-        },
-        {
-          $sort: { name: 1, created: 1 },
-        },
-      ]
-      return await this.mongoAggregate(pipeline)
+      const allFolders = await this.mongoRequest(
+        { organizationId },
+        { sort: { name: 1, created: 1 } },
+      )
+
+      // Build descendants map
+      const childrenMap = {}
+      for (const folder of allFolders) {
+        const pid = folder.parentId || null
+        if (!childrenMap[pid]) childrenMap[pid] = []
+        childrenMap[pid].push(folder)
+      }
+
+      const collectDescendants = (folderId) => {
+        const result = []
+        const queue = [...(childrenMap[folderId] || [])]
+        while (queue.length > 0) {
+          const child = queue.shift()
+          result.push(child)
+          const grandchildren = childrenMap[child._id.toString()] || []
+          queue.push(...grandchildren)
+        }
+        return result
+      }
+
+      const roots = allFolders.filter((f) => !f.parentId)
+      return roots.map((root) => ({
+        ...root,
+        descendants: collectDescendants(root._id.toString()),
+      }))
     } catch (error) {
       console.error(error)
       return error
@@ -94,30 +101,23 @@ class FolderModel extends MongoModel {
 
   async getDescendants(folderId, organizationId) {
     try {
-      const pipeline = [
-        {
-          $match: { _id: this.getObjectId(folderId) },
-        },
-        {
-          $graphLookup: {
-            from: "folders",
-            startWith: "$_id",
-            connectFromField: "_id",
-            connectToField: "parentId",
-            as: "descendants",
-            maxDepth: 10,
-            restrictSearchWithMatch: { organizationId: organizationId },
-          },
-        },
-        {
-          $project: {
-            descendants: 1,
-          },
-        },
-      ]
-      const result = await this.mongoAggregate(pipeline)
-      if (result.length === 0) return []
-      return result[0].descendants
+      const descendants = []
+      const queue = [folderId]
+
+      while (queue.length > 0) {
+        const currentId = queue.shift()
+        const children = await this.mongoRequest({
+          organizationId,
+          parentId: currentId,
+        })
+        for (const child of children) {
+          descendants.push(child)
+          queue.push(child._id.toString())
+        }
+        if (descendants.length > 1000) break
+      }
+
+      return descendants
     } catch (error) {
       console.error(error)
       return error

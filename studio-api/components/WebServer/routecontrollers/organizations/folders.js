@@ -118,6 +118,36 @@ async function makeFolderPublic(folderId, organizationId) {
   await syncFolderVisibility(folderId, organizationId, "public", null, [])
 }
 
+async function propagateMembersToPrivateAncestors(folderId, organizationId, newMembers) {
+  const ancestors = await model.folders.getAncestors(folderId, organizationId)
+  const privateAncestors = ancestors.filter((a) => a.visibility === "private")
+
+  for (const ancestor of privateAncestors) {
+    const existingUserIds = new Set(
+      (ancestor.members || []).map((m) => m.userId),
+    )
+    const membersToAdd = newMembers.filter(
+      (m) => !existingUserIds.has(m.userId),
+    )
+    if (membersToAdd.length === 0) continue
+
+    const updatedMembers = [
+      ...(ancestor.members || []),
+      ...membersToAdd.map((m) => ({ userId: m.userId, right: RIGHTS.READ })),
+    ]
+    await model.folders.update({
+      _id: ancestor._id.toString(),
+      members: updatedMembers,
+    })
+    await model.conversations.updateRightsBatchByFolderId(
+      ancestor._id.toString(),
+      organizationId,
+      RIGHTS.UNDEFINED,
+      updatedMembers,
+    )
+  }
+}
+
 async function syncFolderVisibility(folderId, organizationId, visibility, owner, members) {
   const descendants = await model.folders.getDescendants(folderId, organizationId)
   const descendantIds = descendants.map((d) => d._id.toString())
@@ -397,6 +427,21 @@ async function updateFolder(req, res, next) {
         folder[0].owner || req.payload.data.userId,
         newMembers,
       )
+
+      // Propagate newly added members to private ancestors with READ access
+      const existingUserIds = new Set(
+        (folder[0].members || []).map((m) => m.userId),
+      )
+      const addedMembers = newMembers.filter(
+        (m) => !existingUserIds.has(m.userId),
+      )
+      if (addedMembers.length > 0) {
+        await propagateMembersToPrivateAncestors(
+          req.params.folderId,
+          organizationId,
+          addedMembers,
+        )
+      }
     }
 
     const updated = await model.folders.getById(req.params.folderId)

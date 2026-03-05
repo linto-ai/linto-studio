@@ -30,7 +30,8 @@
           @rename="handleRename"
           @delete="handleDelete"
           @create-child="handleCreateChild"
-          @manage-access="handleManageAccess" />
+          @manage-access="handleManageAccess"
+          @drop-media="handleDropMedia" />
       </ul>
     </nav>
 
@@ -136,6 +137,22 @@ export default {
     },
     handleManageAccess(folder) {
       this.accessFolder = folder
+    },
+    async refreshAfterDrop() {
+      await this.$store.dispatch("folders/fetchFolders")
+      await this.$store.dispatch(`${this.storeScope}/load`)
+    },
+    async handleDropMedia({ folderId, conversationIds }) {
+      try {
+        await this.$store.dispatch("folders/moveConversationsToFolder", {
+          folderId,
+          conversationIds,
+        })
+        await this.$store.dispatch(`${this.storeScope}/setSelectedFolderId`, folderId)
+        await this.refreshAfterDrop()
+      } catch (error) {
+        console.error("Error moving conversations to folder:", error)
+      }
     },
   },
 }

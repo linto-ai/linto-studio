@@ -676,7 +676,8 @@
     "right_share": "Share",
     "right_share_description": "Manage folder access and members",
     "uncategorize_success": "Conversations removed from folder",
-    "uncategorize_error": "Error removing conversations from folder"
+    "uncategorize_error": "Error removing conversations from folder",
+    "members_propagate_to_parents": "New members will also be added to parent folders with read-only access to allow navigation."
   },
   "manage_tags": {
     "title": "Topics",

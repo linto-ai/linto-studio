@@ -4,10 +4,14 @@
       class="folder-tree-node__row"
       :class="{
         'folder-tree-node__row--active': selectedFolderId === folder._id || activeFolderId === folder._id,
+        'folder-tree-node__row--drag-over': isDragOver,
       }"
       :style="{ paddingLeft: `calc(2.5rem - 14px - 0.5rem + ${Math.min(depth, 6) * 0.75}rem)` }"
       @click="$emit('select', folder._id)"
-      @dblclick.prevent="toggleExpand">
+      @dblclick.prevent="toggleExpand"
+      @dragover.prevent="onDragOver"
+      @dragleave="onDragLeave"
+      @drop.prevent="onDrop">
       <button
         v-if="folder.children && folder.children.length > 0"
         class="folder-tree-node__chevron"
@@ -107,19 +111,21 @@
         @delete="$emit('delete', $event)"
         @create-child="$emit('create-child', $event)"
         @manage-access="$emit('manage-access', $event)"
-        />
+        @drop-media="$emit('drop-media', $event)" />
     </ul>
   </li>
 </template>
 
 <script>
 import PopoverList from "@/components/atoms/PopoverList.vue"
+import { folderDragDropMixin } from "@/mixins/folderDragDrop"
 
 const ROLE_MAINTAINER = 5
 const RIGHT_SHARE = 16
 
 export default {
   name: "FolderTreeNode",
+  mixins: [folderDragDropMixin],
   components: { PopoverList },
   props: {
     folder: { type: Object, required: true },
@@ -270,6 +276,14 @@ export default {
       this.$emit("delete", this.folder._id)
     },
 
+    onDrop(e) {
+      this.isDragOver = false
+      const { conversationIds } = this.parseDragData(e)
+      if (conversationIds) {
+        this.$emit("drop-media", { folderId: this.folder._id, conversationIds })
+      }
+    },
+
     containsDescendant(children, targetId) {
       if (!children) return false
       for (const child of children) {
@@ -308,6 +322,11 @@ export default {
       font-weight: 600;
     }
 
+    &--drag-over {
+      background-color: var(--primary-color);
+      border-left-color: var(--primary-color);
+      color: var(--background-primary);
+    }
   }
 
   &__chevron {

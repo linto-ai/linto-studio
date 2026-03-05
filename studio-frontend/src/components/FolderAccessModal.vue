@@ -39,6 +39,10 @@
         {{ $t("folders.visibility_warning") }}
       </p>
 
+      <p v-if="isPrivate && hasPrivateAncestor" class="folder-access-modal__warning folder-access-modal__warning--info">
+        {{ $t("folders.members_propagate_to_parents") }}
+      </p>
+
       <div v-if="isPrivate" class="folder-access-modal__members">
         <h4>{{ $t("folders.members_label") }}</h4>
         <p v-if="orgUsers.length === 0" class="folder-access-modal__no-members">
@@ -112,6 +116,16 @@ export default {
       if (!this.folder.parentId) return false
       const parent = this.$store.getters["folders/getFolderById"](this.folder.parentId)
       return parent && parent.visibility === "private"
+    },
+    hasPrivateAncestor() {
+      let currentId = this.folder.parentId
+      while (currentId) {
+        const parent = this.$store.getters["folders/getFolderById"](currentId)
+        if (!parent) break
+        if (parent.visibility === "private") return true
+        currentId = parent.parentId
+      }
+      return false
     },
     showForceOption() {
       return this.parentIsPrivate && !this.isPrivate
@@ -249,6 +263,12 @@ export default {
       color: var(--warning-color, #b45309);
       background-color: var(--warning-soft, #fef3c7);
       border-left-color: var(--warning-color, #b45309);
+    }
+
+    &--info {
+      color: var(--info-color, #1d4ed8);
+      background-color: var(--info-soft, #dbeafe);
+      border-left-color: var(--info-color, #1d4ed8);
     }
   }
 

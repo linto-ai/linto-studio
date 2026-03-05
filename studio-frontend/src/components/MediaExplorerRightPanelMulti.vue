@@ -402,7 +402,8 @@ export default {
           })
         })
 
-        // Refresh folder counts and conversation list
+        // Navigate to destination folder and refresh
+        await this.$store.dispatch(`${this.storeScope}/setSelectedFolderId`, folderId)
         this.$store.dispatch("folders/fetchFolders")
         this.$store.dispatch(`${this.storeScope}/load`)
       } catch (error) {

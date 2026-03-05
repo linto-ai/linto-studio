@@ -319,9 +319,11 @@ export default {
           type: "success",
           message: this.$t("folders.move_success"),
         })
+        // Navigate to destination folder
+        await this.$store.dispatch(`${this.storeScope}/setSelectedFolderId`, folderId)
         // Refresh folders to update conversation counts
         this.$store.dispatch("folders/fetchFolders")
-        // Reload conversation list (conversation may no longer match current folder filter)
+        // Reload conversation list
         this.$store.dispatch(`${this.storeScope}/load`)
       } catch (error) {
         console.error("Folder change error:", error)
