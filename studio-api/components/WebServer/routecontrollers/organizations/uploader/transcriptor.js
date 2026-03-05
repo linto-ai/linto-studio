@@ -96,6 +96,24 @@ async function transcribe(isSingleFile, req, res, next) {
     )
     if (orgExists.length !== 1) throw new OrganizationNotFound()
 
+    if (req.body.folderId && req.body.folderId !== "null") {
+      const folderResult = await model.folders.getById(req.body.folderId)
+      if (folderResult.length === 0)
+        throw new ConversationMetadataRequire("Folder not found")
+      if (folderResult[0].organizationId !== req.params.organizationId)
+        throw new ConversationMetadataRequire(
+          "Folder belongs to another organization",
+        )
+
+      const folder = folderResult[0]
+      req.body.folderId = folder._id.toString()
+
+      if (folder.visibility === "private") {
+        req.body.membersRight = CONVERSATION_RIGHT.UNDEFINED
+        req.body.customRights = folder.members || []
+      }
+    }
+
     const transcriptionService = getTranscriptionService(
       req.body.endpoint,
       isSingleFile,
@@ -156,6 +174,13 @@ async function createConversation(processing_job, body) {
 
     const result = await model.conversations.create(conversation)
     if (result.insertedCount !== 1) throw new ConversationError()
+
+    if (body.customRights && body.customRights.length > 0) {
+      await model.conversations.update({
+        _id: result.insertedId.toString(),
+        "organization.customRights": body.customRights,
+      })
+    }
 
     await model.categories.createDefaultCategories(
       "keyword",

@@ -92,6 +92,24 @@ async function listConversationFromOrganization(req, res, next) {
       req.query.tags = tags
     }
 
+    // Exclude conversations in private folders the user can't access
+    if (userRole < ROLES.MAINTAINER) {
+      const allFolders = await model.folders.getByOrganizationId(
+        req.params.organizationId,
+      )
+      const restrictedFolderIds = allFolders
+        .filter(
+          (f) =>
+            f.visibility === "private" &&
+            f.owner !== userId &&
+            !(f.members && f.members.some((m) => m.userId === userId)),
+        )
+        .map((f) => f._id.toString())
+      if (restrictedFolderIds.length > 0) {
+        req.query.excludeFolderIds = restrictedFolderIds
+      }
+    }
+
     let conversations = await model.conversations.listConvFromOrga(
       req.params.organizationId,
       userId,

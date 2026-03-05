@@ -9,7 +9,7 @@ const orgaUtility = require(
   `${process.cwd()}/components/WebServer/controllers/organization/utility`,
 )
 
-const { deleteFile, getStorageFolder } = require(
+const { deleteAudioFileIfOrphaned } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 const { updateChildConversation } = require(
@@ -271,7 +271,7 @@ async function deleteConversationFromOrganization(req, res, next) {
         )
 
       if (conv?.metadata?.audio) {
-        deleteFile(`${getStorageFolder()}/${conv.metadata.audio.filepath}`)
+        await deleteAudioFileIfOrphaned(conv.metadata.audio.filepath)
       }
 
       await model.conversationSubtitles.deleteAllFromConv(conv._id.toString())

@@ -62,6 +62,7 @@ function initConversation(metadata, userId, job_id) {
   conversation.securityLevel = SECURITY_LEVELS.getValueOrDefault(
     metadata.securityLevel,
   )
+  if (metadata.folderId) conversation.folderId = metadata.folderId
   if (metadata.segmentWordSize)
     conversation.metadata.normalize.filter.segmentWordSize =
       metadata.segmentWordSize

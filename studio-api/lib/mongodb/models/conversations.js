@@ -496,6 +496,31 @@ class ConvoModel extends MongoModel {
         ],
       }
 
+      if (filter.folderId !== undefined) {
+        if (filter.folderId === null || filter.folderId === "null") {
+          query.$and = query.$and || []
+          query.$and.push({
+            $or: [
+              { folderId: null },
+              { folderId: { $exists: false } },
+            ],
+          })
+        } else {
+          query.folderId = filter.folderId
+        }
+      }
+
+      if (filter.excludeFolderIds && filter.excludeFolderIds.length > 0) {
+        query.$and = query.$and || []
+        query.$and.push({
+          $or: [
+            { folderId: { $nin: filter.excludeFolderIds } },
+            { folderId: null },
+            { folderId: { $exists: false } },
+          ],
+        })
+      }
+
       if (filter.tags && filter.filter === "notags") {
         // notags rules don't apply for highlighs category
         query.tags = {
@@ -796,6 +821,89 @@ class ConvoModel extends MongoModel {
     } catch (error) {
       console.error(error)
       return error
+    }
+  }
+
+  async getByFolderIds(folderIds, organizationId) {
+    try {
+      const query = {
+        folderId: { $in: folderIds },
+        "organization.organizationId": organizationId,
+      }
+      return await this.mongoRequest(query, {
+        owner: 1,
+        "organization.customRights": 1,
+        "organization.membersRight": 1,
+        "organization.organizationId": 1,
+      })
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  }
+
+  async updateFolderBatch(conversationIds, folderId, organizationId) {
+    try {
+      const objectIds = conversationIds.map((id) =>
+        typeof id === "string" ? this.getObjectId(id) : id,
+      )
+      const query = {
+        _id: { $in: objectIds },
+        "organization.organizationId": organizationId,
+      }
+      const dateTime = moment().format()
+      return await this.mongoUpdateMany(query, "$set", {
+        folderId: folderId,
+        last_update: dateTime,
+      })
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  }
+
+  async unsetFolderReferences(folderId, newFolderId, organizationId) {
+    try {
+      const query = {
+        folderId: folderId,
+        "organization.organizationId": organizationId,
+      }
+      const dateTime = moment().format()
+      return await this.mongoUpdateMany(query, "$set", {
+        folderId: newFolderId,
+        last_update: dateTime,
+      })
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  }
+
+  async updateRightsBatchByFolderId(folderId, organizationId, membersRight, customRights) {
+    try {
+      const query = {
+        folderId: folderId,
+        "organization.organizationId": organizationId,
+      }
+      return await this.mongoUpdateMany(query, "$set", {
+        "organization.membersRight": membersRight,
+        "organization.customRights": customRights,
+        last_update: moment().format(),
+      })
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  }
+
+  async countByAudioFilepath(filepath) {
+    try {
+      const query = { "metadata.audio.filepath": filepath }
+      const result = await this.mongoRequest(query, { _id: 1 })
+      return result.length
+    } catch (error) {
+      console.error(error)
+      return 0
     }
   }
 

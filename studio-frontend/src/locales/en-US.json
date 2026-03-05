@@ -134,7 +134,8 @@
       "organisations": "Organizations",
       "tokens": "Api keys",
       "transcriberProfiles": "Transcriber Profiles",
-      "sessions": "Sessions"
+      "sessions": "Sessions",
+      "back_to_org": "Back to organization"
     },
     "activity_list": {
       "title": "Activity log"
@@ -293,6 +294,9 @@
     },
     "conversation_creation_error_multiple_unknown": "An error occurred while uploading {total} audio files. {count} have already been uploaded. try again later.",
     "conversation_creation_loading_multiple": "Uploading audio {count} of {total}. This can take several minutes.",
+    "folder_selection_title": "Folder",
+    "folder_selection_label": "Upload to folder",
+    "rights_info_tooltip": "If the selected folder is private, the media will automatically inherit the folder's permissions.",
     "conversation_creation_right_title": "Medias rights",
     "conversation_creation_right_label": "Default rights for organisation members",
     "conversation_creation_security_title": "Security level",
@@ -637,6 +641,45 @@
       }
     }
   },
+  "folders": {
+    "uncategorized": "Uncategorized",
+    "create": "Create folder",
+    "create_placeholder": "Folder name...",
+    "name_required": "Folder name is required",
+    "create_subfolder": "Create subfolder",
+    "rename": "Rename",
+    "delete": "Delete",
+    "move": "Move",
+    "create_success": "Folder created",
+    "create_error": "Error creating folder",
+    "update_success": "Folder updated",
+    "update_error": "Error updating folder",
+    "delete_success": "Folder deleted",
+    "delete_error": "Error deleting folder",
+    "move_success": "Conversations moved",
+    "move_error": "Error moving conversations",
+    "folder": "Folder",
+    "move_to_folder": "Move to folder",
+    "manage_access": "Manage access",
+    "visibility_public": "Public",
+    "visibility_private": "Private",
+    "visibility_update_success": "Folder access updated",
+    "visibility_update_error": "Error updating folder access",
+    "visibility_warning": "This will affect all conversations and subfolders in this folder.",
+    "visibility_parent_private_force": "The parent folder is private. Making this folder public will also make all its private parent folders public, including their conversations and subfolders.",
+    "force_public_parents": "Also make parent folders public",
+    "members_label": "Members",
+    "no_members": "No members selected",
+    "right_read": "Read",
+    "right_read_description": "View folder and its conversations",
+    "right_write": "Write",
+    "right_write_description": "Edit media, create subfolders and move conversations",
+    "right_share": "Share",
+    "right_share_description": "Manage folder access and members",
+    "uncategorize_success": "Conversations removed from folder",
+    "uncategorize_error": "Error removing conversations from folder",
+    "members_propagate_to_parents": "New members will also be added to parent folders with read-only access to allow navigation."
+  },
   "manage_tags": {
     "title": "Topics",
     "no_tags": "No topics",
@@ -665,6 +708,7 @@
       "edit_transcription": "Transcription",
       "edit_subtitles": "Subtitles",
       "export": "Publish",
+      "duplicate": "Create a new copy",
       "delete": "Delete"
     },
     "delete": "Delete",
@@ -702,7 +746,11 @@
       "download_error": "Download error",
       "download_multiple_success": "{count} medias downloaded successfully",
       "download_multiple_partial": "{success} medias downloaded out of {total}",
-      "download_multiple_error": "Error downloading medias"
+      "download_multiple_error": "Error downloading medias",
+      "duplicate": "Create a new copy",
+      "duplicating": "Duplicating...",
+      "duplicate_success": "Conversation duplicated",
+      "duplicate_error": "Error duplicating conversation"
     },
     "no_medias_selected": "No media selected",
     "some_medias_cannot_be_deleted": "Some media cannot be deleted",
@@ -774,12 +822,19 @@
     "conversation": {
       "start": "Transcribe"
     },
+    "sections": {
+      "organization": "Organization",
+      "media": "Media",
+      "personal": "Personal",
+      "my_space": "My space"
+    },
     "tabs": {
       "explore": "Inbox",
       "favorites": "Favorites",
       "sessions": "Live transcriptions",
       "shared": "Shared with me",
-      "tags": "Topics"
+      "tags": "Topics",
+      "folders": "Folders"
     }
   },
   "no_orga": {

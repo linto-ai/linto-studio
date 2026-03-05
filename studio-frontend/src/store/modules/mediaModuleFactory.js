@@ -175,7 +175,7 @@ export default function createMediaModule(scope, status = "done") {
     actions: {
       async load(
         { commit, dispatch, getters },
-        { page = 0, append = false } = {},
+        { page = 0, append = false, folderId } = {},
       ) {
         try {
           const data = await apiGetGenericConversationsList(scope, {
@@ -184,6 +184,7 @@ export default function createMediaModule(scope, status = "done") {
             title: getters.search,
             tags: getters.selectedTagIds,
             status: getters.getFilterStatus,
+            folderId,
           })
 
           if (append) commit("appendMedias", data.list)
@@ -230,9 +231,9 @@ export default function createMediaModule(scope, status = "done") {
       decreaseCount({ commit, getters }) {
         commit("setCount", getters.count - 1)
       },
-      async loadNextPage({ state, dispatch }) {
+      async loadNextPage({ state, dispatch }, { folderId } = {}) {
         const nextPage = state.pagination.page + 1
-        await dispatch("load", { page: nextPage, append: true })
+        await dispatch("load", { page: nextPage, append: true, folderId })
       },
       setSearchQuery({ commit }, query) {
         commit("setSearchQuery", query)

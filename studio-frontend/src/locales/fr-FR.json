@@ -135,7 +135,8 @@
       "organisations": "Organisations",
       "tokens": "Clés d'apis",
       "transcriberProfiles": "Profils de transcription",
-      "sessions": "Sessions"
+      "sessions": "Sessions",
+      "back_to_org": "Retour à l'organisation"
     },
     "activity_list": {
       "title": "Journal d'activité"
@@ -294,6 +295,9 @@
     },
     "conversation_creation_error_multiple_unknown": "Une erreur s'est produite lors de l'envoi de {total} fichiers audio. {count} ont déjà été transférés. Réessayez plus tard.",
     "conversation_creation_loading_multiple": "Envoi du fichier {count} sur {total}. Cette opération peut prendre plusieurs minutes.",
+    "folder_selection_title": "Dossier",
+    "folder_selection_label": "Importer dans le dossier",
+    "rights_info_tooltip": "Si le dossier sélectionné est privé, le média héritera automatiquement des permissions du dossier.",
     "conversation_creation_right_title": "Gestion des droits",
     "conversation_creation_right_label": "Droits par défaut pour les membres de l'organisation",
     "conversation_creation_security_title": "Niveau de sécurité",
@@ -632,6 +636,45 @@
       }
     }
   },
+  "folders": {
+    "uncategorized": "Non classé",
+    "create": "Créer un dossier",
+    "create_placeholder": "Nom du dossier...",
+    "name_required": "Le nom du dossier est requis",
+    "create_subfolder": "Créer un sous-dossier",
+    "rename": "Renommer",
+    "delete": "Supprimer",
+    "move": "Déplacer",
+    "create_success": "Dossier créé",
+    "create_error": "Erreur lors de la création du dossier",
+    "update_success": "Dossier mis à jour",
+    "update_error": "Erreur lors de la mise à jour du dossier",
+    "delete_success": "Dossier supprimé",
+    "delete_error": "Erreur lors de la suppression du dossier",
+    "move_success": "Conversations déplacées",
+    "move_error": "Erreur lors du déplacement des conversations",
+    "folder": "Dossier",
+    "move_to_folder": "Déplacer vers un dossier",
+    "manage_access": "Gérer l'accès",
+    "visibility_public": "Public",
+    "visibility_private": "Privé",
+    "visibility_update_success": "Accès du dossier mis à jour",
+    "visibility_update_error": "Erreur lors de la mise à jour de l'accès",
+    "visibility_warning": "Cela affectera toutes les conversations et sous-dossiers de ce dossier.",
+    "visibility_parent_private_force": "Le dossier parent est privé. Rendre ce dossier public rendra également tous ses dossiers parents privés publics, y compris leurs conversations et sous-dossiers.",
+    "force_public_parents": "Rendre aussi les dossiers parents publics",
+    "members_label": "Membres",
+    "no_members": "Aucun membre sélectionné",
+    "right_read": "Lecture",
+    "right_read_description": "Voir le dossier et ses conversations",
+    "right_write": "Écriture",
+    "right_write_description": "Éditer les médias, créer des sous-dossiers et déplacer des conversations",
+    "right_share": "Partage",
+    "right_share_description": "Gérer l'accès et les membres du dossier",
+    "uncategorize_success": "Conversations retirées du dossier",
+    "uncategorize_error": "Erreur lors du retrait des conversations du dossier",
+    "members_propagate_to_parents": "Les nouveaux membres seront aussi ajoutés aux dossiers parents avec un accès en lecture seule pour permettre la navigation."
+  },
   "manage_tags": {
     "title": "Thématiques",
     "no_tags": "Aucune thématique",
@@ -660,6 +703,7 @@
       "edit_transcription": "Transcription",
       "edit_subtitles": "Sous-titres",
       "export": "Publication",
+      "duplicate": "Créer une nouvelle copie",
       "delete": "Supprimer"
     },
     "delete": "Supprimer",
@@ -697,7 +741,11 @@
       "download_error": "Erreur lors du téléchargement",
       "download_multiple_success": "{count} médias téléchargés avec succès",
       "download_multiple_partial": "{success} médias téléchargés sur {total}",
-      "download_multiple_error": "Erreur lors du téléchargement des médias"
+      "download_multiple_error": "Erreur lors du téléchargement des médias",
+      "duplicate": "Créer une nouvelle copie",
+      "duplicating": "Duplication en cours...",
+      "duplicate_success": "Conversation dupliquée",
+      "duplicate_error": "Erreur lors de la duplication"
     },
     "no_medias_selected": "Aucun média sélectionné",
     "some_medias_cannot_be_deleted": "Certains médias ne peuvent pas être supprimés",
@@ -768,7 +816,14 @@
       "favorites": "Favoris",
       "sessions": "Transcription en direct",
       "shared": "Partages reçus",
-      "tags": "Thématiques"
+      "tags": "Thématiques",
+      "folders": "Dossiers"
+    },
+    "sections": {
+      "organization": "Organisation",
+      "media": "Médias",
+      "personal": "Personnel",
+      "my_space": "Mon espace"
     },
     "account": {
       "account_link": "Mon compte",

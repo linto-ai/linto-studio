@@ -1,4 +1,5 @@
 import { mapGetters } from "vuex"
+import { apiDuplicateConversation } from "@/api/conversation"
 
 export const mediaScopeMixin = {
   computed: {
@@ -50,6 +51,21 @@ export const mediaScopeMixin = {
       const right =
         this.$store.getters[`${this.storeScope}/getSelfMediaRight`](mediaId)
       return right
+    },
+    async duplicateConversation(mediaId) {
+      try {
+        const result = await apiDuplicateConversation(mediaId)
+        if (result.status === "success") {
+          await this.$store.dispatch(`${this.storeScope}/load`, {
+            folderId: this.$route.params.folderId,
+          })
+          return true
+        }
+        return false
+      } catch (error) {
+        console.error("Error duplicating conversation:", error)
+        return false
+      }
     },
   },
 }

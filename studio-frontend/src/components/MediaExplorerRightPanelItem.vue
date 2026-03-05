@@ -93,6 +93,15 @@
           </div>
         </div>
 
+        <!-- Media folder -->
+        <div class="media-section" v-if="getCurrentScope === 'organization'">
+          <h4 class="section-title">{{ $t("folders.folder") }}</h4>
+          <FolderSelector
+            :value="reactiveSelectedMedia?.folderId || null"
+            :readonly="readOnly"
+            @change="handleFolderChange" />
+        </div>
+
         <!-- Media metadata -->
         <div v-if="false" class="media-section">
           <h4 class="section-title">
@@ -125,6 +134,18 @@
                 downloadLoading
                   ? $t("media_explorer.panel.downloading")
                   : $t("media_explorer.panel.download_media")
+              }}
+            </Button>
+            <Button
+              @click="handleDuplicate"
+              :loading="duplicateLoading"
+              icon="copy"
+              variant="secondary"
+              size="sm">
+              {{
+                duplicateLoading
+                  ? $t("media_explorer.panel.duplicating")
+                  : $t("media_explorer.panel.duplicate")
               }}
             </Button>
           </div>
@@ -172,6 +193,7 @@ import { mediaExplorerRightPanelMixin } from "@/mixins/mediaExplorerRightPanel.j
 import FormInput from "@/components/molecules/FormInput.vue"
 import EMPTY_FIELD from "@/const/emptyField"
 import ConversationShareMultiple from "./ConversationShareMultiple.vue"
+import FolderSelector from "./FolderSelector.vue"
 import { mapGetters } from "vuex"
 
 export default {
@@ -185,6 +207,7 @@ export default {
     ModalDeleteConversations,
     FormInput,
     ConversationShareMultiple,
+    FolderSelector,
   },
   props: {
     selectedMedia: {
@@ -200,6 +223,7 @@ export default {
     return {
       showDeleteModal: false,
       downloadLoading: false,
+      duplicateLoading: false,
       titleField: {
         ...EMPTY_FIELD,
         value: "",
@@ -217,6 +241,7 @@ export default {
   computed: {
     ...mapGetters("organizations", {
       currentOrganizationScope: "getCurrentOrganizationScope",
+      getCurrentScope: "getCurrentScope",
     }),
     reactiveSelectedMedia() {
       return this.selectedMedia
@@ -280,6 +305,27 @@ export default {
     async handleAddTag(tag) {
       if (this.isTagManagementReadOnly) return
       await this.addTagToMedia(tag, this.selectedMedia._id)
+    },
+
+    async handleFolderChange(folderId) {
+      if (!this.selectedMedia?._id) return
+      try {
+        if (folderId) {
+          await this.$store.dispatch("folders/moveConversationsToFolder", {
+            folderId,
+            conversationIds: [this.selectedMedia._id],
+          })
+        } else {
+          await this.$store.dispatch("folders/uncategorizeConversations", {
+            conversationIds: [this.selectedMedia._id],
+          })
+        }
+        await this.$store.dispatch(`${this.storeScope}/setSelectedFolderId`, folderId)
+        this.$store.dispatch("folders/fetchFolders")
+        this.$store.dispatch(`${this.storeScope}/load`)
+      } catch (error) {
+        console.error("Folder change error:", error)
+      }
     },
 
     handleDelete() {
@@ -363,6 +409,34 @@ export default {
           type: "error",
           message: this.$t("media_explorer.panel.update_error"),
         })
+      }
+    },
+
+    async handleDuplicate() {
+      if (this.duplicateLoading || !this.reactiveSelectedMedia) return
+      this.duplicateLoading = true
+      try {
+        const success = await this.duplicateConversation(
+          this.reactiveSelectedMedia._id,
+        )
+        if (success) {
+          this.$store.dispatch("system/addNotification", {
+            type: "success",
+            message: this.$t("media_explorer.panel.duplicate_success"),
+          })
+        } else {
+          this.$store.dispatch("system/addNotification", {
+            type: "error",
+            message: this.$t("media_explorer.panel.duplicate_error"),
+          })
+        }
+      } catch (error) {
+        this.$store.dispatch("system/addNotification", {
+          type: "error",
+          message: this.$t("media_explorer.panel.duplicate_error"),
+        })
+      } finally {
+        this.duplicateLoading = false
       }
     },
 
@@ -488,9 +562,5 @@ export default {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
-}
-
-.section-content-input {
-  margin: 0;
 }
 </style>

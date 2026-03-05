@@ -458,7 +458,7 @@ let router = new Router({
       },
     },
     {
-      path: "/interface/:organizationId?/explore",
+      path: "/interface/:organizationId?/explore/:folderId?",
       name: "explore",
       components: {
         default: () => import("../views/NextExplore.vue"),

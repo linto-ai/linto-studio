@@ -1,8 +1,12 @@
 <template>
   <div
     class="media-explorer-item"
+    draggable="true"
+    @dragstart="onDragStart"
+    @dragend="isDragging = false"
     @click="toggleSelection"
     :class="{
+      'media-explorer-item--dragging': isDragging,
       'media-explorer-item--selected': isSelected,
       'media-explorer-item--favorite': isFavorite,
       'media-explorer-item--done':
@@ -164,7 +168,7 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters } from "vuex"
+import { mapGetters } from "vuex"
 import { mediaScopeMixin } from "@/mixins/mediaScope"
 import { mediaProgressMixin } from "@/mixins/mediaProgress"
 
@@ -214,6 +218,8 @@ export default {
   data() {
     return {
       showDeleteModal: false,
+      isDragging: false,
+      duplicateLoading: false,
     }
   },
   computed: {
@@ -290,6 +296,13 @@ export default {
           disabled: this.status !== "done",
         },
         {
+          id: "duplicate",
+          name: this.$t("media_explorer.line.duplicate"),
+          icon: "copy",
+          color: "primary",
+          disabled: this.status !== "done",
+        },
+        {
           id: "delete",
           name: this.$t("media_explorer.line.delete"),
           icon: "trash",
@@ -307,9 +320,6 @@ export default {
     },
     title() {
       return this.media.name
-    },
-    description() {
-      return this.media.description
     },
     duration() {
       if (this.media.metadata?.audio?.duration) {
@@ -380,28 +390,74 @@ export default {
 
     toggleSelection() {
       if (this.isSelected) {
-        this.$emit(
-          "update:selectedMediaIds",
-          this.selectedMediaIds.filter((id) => id !== this.media._id),
-        )
+        const remaining = this.selectedMediaIds.filter((id) => id !== this.media._id)
+        this.$emit("update:selectedMediaIds", remaining)
+        if (remaining.length === 0) {
+          this.$store.dispatch("folders/setActiveFolderId", null)
+        }
       } else {
         this.$emit("update:selectedMediaIds", [
           ...this.selectedMediaIds,
           this.media._id,
         ])
+        this.$store.dispatch("folders/setActiveFolderId", this.media.folderId || null)
       }
     },
 
     handleActionClick(action) {
       switch (action.id) {
+        case "duplicate":
+          this.handleDuplicate()
+          break
         case "delete":
           this.handleDelete()
           break
       }
     },
 
+    async handleDuplicate() {
+      if (this.duplicateLoading) return
+      this.duplicateLoading = true
+      try {
+        const success = await this.duplicateConversation(this.media._id)
+        if (success) {
+          this.$store.dispatch("system/addNotification", {
+            type: "success",
+            message: this.$t("media_explorer.panel.duplicate_success"),
+          })
+        } else {
+          this.$store.dispatch("system/addNotification", {
+            type: "error",
+            message: this.$t("media_explorer.panel.duplicate_error"),
+          })
+        }
+      } catch (error) {
+        this.$store.dispatch("system/addNotification", {
+          type: "error",
+          message: this.$t("media_explorer.panel.duplicate_error"),
+        })
+      } finally {
+        this.duplicateLoading = false
+      }
+    },
+
     handleDelete() {
       this.showDeleteModal = true
+    },
+
+    onDragStart(e) {
+      this.isDragging = true
+      this.$el.style.opacity = "0.3"
+      requestAnimationFrame(() => {
+        this.$el.style.opacity = ""
+      })
+
+      const ids =
+        this.isSelected && this.selectedMediaIds.length > 1
+          ? this.selectedMediaIds
+          : [this.media._id]
+      e.dataTransfer.setData("conversationIds", JSON.stringify(ids))
+      e.dataTransfer.effectAllowed = "move"
     },
   },
 }
@@ -423,6 +479,10 @@ export default {
   &:hover {
     border-color: var(--neutral-30);
     background-color: var(--neutral-10);
+  }
+
+  &--dragging {
+    opacity: 0.4;
   }
 
   &--selected {
@@ -455,14 +515,6 @@ export default {
   flex: 1;
   min-width: 350px; // Allow shrinking
   overflow: hidden; // Prevent horizontal overflow
-}
-
-.media-explorer-item__right {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  flex: 0 0 auto;
-  min-width: 0; // Allow shrinking
 }
 
 // ===== CONTROLS GROUP =====
@@ -556,6 +608,8 @@ export default {
 .media-explorer-item__title {
   font-weight: 600;
   color: var(--text-primary);
+  gap: 0.35rem;
+  align-items: center;
   // white-space: nowrap;
   // overflow: hidden;
   // text-overflow: ellipsis;
@@ -576,22 +630,6 @@ export default {
 
   & a:hover {
     text-decoration: underline;
-  }
-}
-
-.media-explorer-item__overview-btn {
-  flex-shrink: 0;
-  width: 24px;
-  height: 24px;
-  min-width: 24px;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  .media-explorer-item:hover & {
-    opacity: 1;
   }
 }
 

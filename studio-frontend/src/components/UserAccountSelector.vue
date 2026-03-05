@@ -17,32 +17,12 @@
     </div>
     <div class="flex-1 metadata">
       <div class="user-name">{{ UserName }}</div>
-      <div class="user-role">{{ currentRoleToString }}</div>
-      <Button
-        @click="openOrganizationSelector"
-        :label="orgaName"
-        size="xs"
-        variant="link"
-        color="neutral"
-        icon="swap"
-        class="organization-name" />
     </div>
     <Button
       icon="gear"
       variant="transparent"
       color="neutral"
       @click="openSettingsModal"></Button>
-    <ModalSwitchOrg
-      v-model="modalOrganizationSelector"
-      @close="modalOrganizationSelector = false" />
-    <!-- <Button
-      icon="sidebar-simple"
-      variant="transparent"
-      @click="toggleSidebar"></Button> -->
-    <!-- <Button
-      icon="arrow-line-left"
-      variant="transparent"
-      @click="toggleSidebar"></Button> -->
     <Button
       icon="caret-double-left"
       iconWeight="regular"
@@ -54,15 +34,14 @@
 <script>
 import { mapGetters } from "vuex"
 
-import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 import { userName } from "@/tools/userName"
 import userAvatar from "@/tools/userAvatar"
-import ModalSwitchOrg from "@/components/ModalSwitchOrg.vue"
 import Tooltip from "@/components/atoms/Tooltip.vue"
 
 export default {
-  mixins: [orgaRoleMixin, platformRoleMixin],
+  components: { Tooltip },
+  mixins: [platformRoleMixin],
   props: {
     backoffice: {
       type: Boolean,
@@ -70,30 +49,15 @@ export default {
     },
   },
   data() {
-    return {
-      active: false,
-      modalOrganizationSelector: false,
-    }
+    return {}
   },
-  mounted() {},
-  beforeDestroy() {},
   computed: {
     ...mapGetters("user", {
       userInfo: "getUserInfos",
     }),
-    ...mapGetters("organizations", {
-      organizations: "getOrganizations",
-      currentOrganization: "getCurrentOrganization",
-      currentOrganizationScope: "getCurrentOrganizationScope",
-    }),
     ...mapGetters("system", ["isMobile"]),
     UserName() {
       return userName(this.userInfo)
-    },
-    uname() {
-      return this.UserName.length > 2
-        ? this.UserName.slice(0, 2)
-        : this.UserName
     },
     userInitials() {
       // Generate initials from user name (e.g., "John Doe" -> "JD")
@@ -107,24 +71,14 @@ export default {
     userAvatar() {
       return userAvatar(this.userInfo)
     },
-    orgaName() {
-      return this.backoffice ? "Backoffice" : this.currentOrganization?.name
-    },
   },
   methods: {
-    openOrganizationSelector() {
-      this.modalOrganizationSelector = true
-    },
     openSettingsModal() {
       this.$store.dispatch("settings/setModalOpen", true)
     },
     toggleSidebar() {
       this.$store.dispatch("system/toggleSidebar")
     },
-  },
-  components: {
-    ModalSwitchOrg,
-    Tooltip,
   },
 }
 </script>
@@ -162,38 +116,5 @@ export default {
     font-weight: bold;
   }
 
-  .organization-name {
-    align-self: flex-start;
-    max-width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-decoration-color: var(--primary-color);
-  }
-
-  .organization-name .btn-prefix-label,
-  .organization-name .label {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .organization-name .label {
-    display: inline;
-    font-size: 14px;
-    color: var(--primary-color);
-  }
-
-  .user-role {
-    color: var(--text-secondary);
-    white-space: nowrap;
-    font-weight: 400;
-    //text-transform: lowercase;
-    font-size: 0.9em;
-
-    @media (max-width: 1100px) {
-      font-size: 0.9em;
-    }
-  }
 }
 </style>
