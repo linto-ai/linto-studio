@@ -17,15 +17,6 @@
     </div>
     <div class="flex-1 metadata">
       <div class="user-name">{{ UserName }}</div>
-      <Button
-        v-if="backoffice"
-        @click="openOrganizationSelector"
-        :label="$t('modal_switch_org.title')"
-        size="xs"
-        variant="link"
-        color="neutral"
-        icon="swap"
-        class="organization-switch" />
     </div>
     <Button
       icon="gear"
@@ -37,10 +28,6 @@
       iconWeight="regular"
       variant="transparent"
       @click="toggleSidebar"></Button>
-    <ModalSwitchOrg
-      v-if="backoffice"
-      v-model="modalOrganizationSelector"
-      @close="modalOrganizationSelector = false" />
   </div>
 </template>
 
@@ -51,10 +38,9 @@ import { platformRoleMixin } from "@/mixins/platformRole.js"
 import { userName } from "@/tools/userName"
 import userAvatar from "@/tools/userAvatar"
 import Tooltip from "@/components/atoms/Tooltip.vue"
-import ModalSwitchOrg from "@/components/ModalSwitchOrg.vue"
 
 export default {
-  components: { Tooltip, ModalSwitchOrg },
+  components: { Tooltip },
   mixins: [platformRoleMixin],
   props: {
     backoffice: {
@@ -63,9 +49,7 @@ export default {
     },
   },
   data() {
-    return {
-      modalOrganizationSelector: false,
-    }
+    return {}
   },
   computed: {
     ...mapGetters("user", {
@@ -89,9 +73,6 @@ export default {
     },
   },
   methods: {
-    openOrganizationSelector() {
-      this.modalOrganizationSelector = true
-    },
     openSettingsModal() {
       this.$store.dispatch("settings/setModalOpen", true)
     },
@@ -135,8 +116,5 @@ export default {
     font-weight: bold;
   }
 
-  .organization-switch {
-    align-self: flex-start;
-  }
 }
 </style>

@@ -134,7 +134,8 @@
       "organisations": "Organizations",
       "tokens": "Api keys",
       "transcriberProfiles": "Transcriber Profiles",
-      "sessions": "Sessions"
+      "sessions": "Sessions",
+      "back_to_org": "Back to organization"
     },
     "activity_list": {
       "title": "Activity log"

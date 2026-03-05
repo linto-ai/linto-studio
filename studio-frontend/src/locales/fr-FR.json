@@ -135,7 +135,8 @@
       "organisations": "Organisations",
       "tokens": "Clés d'apis",
       "transcriberProfiles": "Profils de transcription",
-      "sessions": "Sessions"
+      "sessions": "Sessions",
+      "back_to_org": "Retour à l'organisation"
     },
     "activity_list": {
       "title": "Journal d'activité"
