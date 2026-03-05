@@ -953,6 +953,7 @@
       "version_restore_error": "Error restoring version",
       "unsaved_changes": "You have unsaved changes",
       "show_transcript": "Transcription",
+      "side_by_side": "Side by side",
       "delete_version_confirm_title": "Delete version?",
       "delete_version_confirm": "This version will be permanently deleted.",
       "delete_version_confirm_button": "Delete",

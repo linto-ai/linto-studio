@@ -948,6 +948,7 @@
       "version_restore_error": "Erreur lors de la restauration de la version",
       "unsaved_changes": "Vous avez des modifications non enregistrées",
       "show_transcript": "Transcription",
+      "side_by_side": "Côte à côte",
       "delete_version_confirm_title": "Supprimer la version ?",
       "delete_version_confirm": "Cette version sera définitivement supprimée.",
       "delete_version_confirm_button": "Supprimer",
