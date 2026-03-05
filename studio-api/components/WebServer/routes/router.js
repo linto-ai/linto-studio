@@ -63,6 +63,7 @@ const disableAuthIfDev = (route) => {
     route.requireOrganizationUploaderAccess = false
     route.requireReadTaxonomyAccess = false
     route.requireFolderManagerAccess = false
+    route.requireFolderConversationWriteAccess = false
     route.requireUserVisibility = false
     route.requireWriteTaxonomyAccess = false
   }
@@ -111,6 +112,8 @@ const loadMiddlewares = (route) => {
 
   if (route.requireFolderManagerAccess)
     middlewares.push(folder_middlewares.asManagerAccess)
+  if (route.requireFolderConversationWriteAccess)
+    middlewares.push(folder_middlewares.asConversationWriteAccess)
 
   if (route.requireReadTaxonomyAccess)
     middlewares.push(taxonomy_middlewares.asReadTaxonomyAccess)

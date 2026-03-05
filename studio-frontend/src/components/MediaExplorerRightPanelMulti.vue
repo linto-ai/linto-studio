@@ -143,7 +143,6 @@
 <script>
 import { mapGetters } from "vuex"
 import { mediaScopeMixin } from "@/mixins/mediaScope"
-import { apiUpdateConversation } from "@/api/conversation"
 
 import Avatar from "@/components/atoms/Avatar.vue"
 import InputSelector from "@/components/atoms/InputSelector.vue"
@@ -380,38 +379,17 @@ export default {
             conversationIds,
           })
         } else {
-          // Move to uncategorized: update each conversation's folderId to null
-          const promises = conversationIds.map((id) =>
-            apiUpdateConversation(id, { folderId: null }),
-          )
-          await Promise.all(promises)
-          this.$store.dispatch("system/addNotification", {
-            type: "success",
-            message: this.$t("folders.move_success"),
+          await this.$store.dispatch("folders/uncategorizeConversations", {
+            conversationIds,
           })
         }
 
         this.bulkFolderId = folderId
-
-        // Update local media state
-        this.selectedMedias.forEach((media) => {
-          this.$store.dispatch(`${this.storeScope}/updateMedia`, {
-            mediaId: media._id,
-            media: { ...media, folderId },
-            patch: true,
-          })
-        })
-
-        // Navigate to destination folder and refresh
         await this.$store.dispatch(`${this.storeScope}/setSelectedFolderId`, folderId)
         this.$store.dispatch("folders/fetchFolders")
         this.$store.dispatch(`${this.storeScope}/load`)
       } catch (error) {
         console.error("Bulk folder move error:", error)
-        this.$store.dispatch("system/addNotification", {
-          type: "error",
-          message: this.$t("folders.move_error"),
-        })
       }
     },
 

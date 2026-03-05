@@ -824,6 +824,24 @@ class ConvoModel extends MongoModel {
     }
   }
 
+  async getByFolderIds(folderIds, organizationId) {
+    try {
+      const query = {
+        folderId: { $in: folderIds },
+        "organization.organizationId": organizationId,
+      }
+      return await this.mongoRequest(query, {
+        owner: 1,
+        "organization.customRights": 1,
+        "organization.membersRight": 1,
+        "organization.organizationId": 1,
+      })
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  }
+
   async updateFolderBatch(conversationIds, folderId, organizationId) {
     try {
       const objectIds = conversationIds.map((id) =>

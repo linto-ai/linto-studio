@@ -80,6 +80,7 @@ export async function apiMoveConversationToFolder(
     {},
     notif,
   )
+  if (requestRes.status === "error") throw new Error(requestRes.message)
   return requestRes?.data
 }
 

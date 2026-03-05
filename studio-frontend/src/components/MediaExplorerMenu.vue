@@ -20,8 +20,14 @@
       <!-- Média -->
       <div
         class="media-explorer-menu__item media-explorer-menu__item--nested"
-        :class="{ 'media-explorer-menu__item--active': isInboxActive }"
-        @click="handleInboxClick">
+        :class="{
+          'media-explorer-menu__item--active': isInboxActive,
+          'media-explorer-menu__item--drag-over': isInboxDragOver,
+        }"
+        @click="handleInboxClick"
+        @dragover.prevent="isInboxDragOver = true"
+        @dragleave="isInboxDragOver = false"
+        @drop.prevent="handleInboxDrop">
         <ph-icon name="tray" :weight="isInboxActive ? 'fill' : 'regular'" size="16" />
         <span>{{ $t("navigation.sections.media") }}</span>
       </div>
@@ -86,6 +92,7 @@ export default {
     return {
       hasSessions: false,
       modalOrgSelector: false,
+      isInboxDragOver: false,
     }
   },
   computed: {
@@ -152,6 +159,22 @@ export default {
     clearFolderSelection() {
       this.$store.dispatch(`${this.storeScope}/setSelectedFolderId`, undefined)
     },
+    async handleInboxDrop(e) {
+      this.isInboxDragOver = false
+      const raw = e.dataTransfer.getData("conversationIds")
+      const conversationIds = raw ? JSON.parse(raw) : null
+      if (!conversationIds || conversationIds.length === 0) return
+      try {
+        await this.$store.dispatch("folders/uncategorizeConversations", {
+          conversationIds,
+        })
+        this.$store.dispatch("folders/setActiveFolderId", null)
+        this.selectFolder(undefined)
+        await this.$store.dispatch("folders/fetchFolders")
+      } catch (error) {
+        console.error("Error uncategorizing conversations:", error)
+      }
+    },
   },
 }
 </script>
@@ -184,6 +207,12 @@ export default {
       svg {
         color: var(--primary-color) !important;
       }
+    }
+
+    &--drag-over {
+      background-color: var(--primary-color);
+      border-left-color: var(--primary-color);
+      color: var(--background-primary);
     }
 
     &--section {

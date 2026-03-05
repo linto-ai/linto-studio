@@ -34,6 +34,7 @@ module.exports = (webserver) => {
       controller: uncategorizeConversations,
       requireAuth: true,
       requireOrganizationMemberAccess: true,
+      requireFolderConversationWriteAccess: true,
     },
     {
       path: "/:folderId",
@@ -57,6 +58,7 @@ module.exports = (webserver) => {
       requireAuth: true,
       requireOrganizationMemberAccess: true,
       requireFolderManagerAccess: true,
+      requireFolderConversationWriteAccess: true,
     },
     {
       path: "/:folderId/conversations/:conversationId",

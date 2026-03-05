@@ -310,27 +310,21 @@ export default {
     async handleFolderChange(folderId) {
       if (!this.selectedMedia?._id) return
       try {
-        await this.updateMediaProperty(
-          this.selectedMedia._id,
-          "folderId",
-          folderId,
-        )
-        this.$store.dispatch("system/addNotification", {
-          type: "success",
-          message: this.$t("folders.move_success"),
-        })
-        // Navigate to destination folder
+        if (folderId) {
+          await this.$store.dispatch("folders/moveConversationsToFolder", {
+            folderId,
+            conversationIds: [this.selectedMedia._id],
+          })
+        } else {
+          await this.$store.dispatch("folders/uncategorizeConversations", {
+            conversationIds: [this.selectedMedia._id],
+          })
+        }
         await this.$store.dispatch(`${this.storeScope}/setSelectedFolderId`, folderId)
-        // Refresh folders to update conversation counts
         this.$store.dispatch("folders/fetchFolders")
-        // Reload conversation list
         this.$store.dispatch(`${this.storeScope}/load`)
       } catch (error) {
         console.error("Folder change error:", error)
-        this.$store.dispatch("system/addNotification", {
-          type: "error",
-          message: this.$t("folders.move_error"),
-        })
       }
     },
 

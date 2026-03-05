@@ -63,6 +63,7 @@
       </span>
 
       <PopoverList
+        v-if="contextMenuItems.length > 0"
         :items="contextMenuItems"
         :close-on-item-click="true"
         :overlay="false"
@@ -119,9 +120,7 @@
 <script>
 import PopoverList from "@/components/atoms/PopoverList.vue"
 import { folderDragDropMixin } from "@/mixins/folderDragDrop"
-
-const ROLE_MAINTAINER = 5
-const RIGHT_SHARE = 16
+import RIGHTS from "@/const/userRights"
 
 export default {
   name: "FolderTreeNode",
@@ -164,13 +163,14 @@ export default {
   },
   computed: {
     canManageAccess() {
-      if (this.userRole >= ROLE_MAINTAINER) return true
+      if (this.userRole >= 5) return true
       if (this.folder.owner === this.userId) return true
-      if (this.folder.members && this.folder.members.some((m) => m.userId === this.userId && (m.right & RIGHT_SHARE) === RIGHT_SHARE)) return true
+      if (this.folder.members && this.folder.members.some((m) => m.userId === this.userId && RIGHTS.hasRightAccess(m.right, RIGHTS.SHARE))) return true
       return false
     },
     contextMenuItems() {
-      const items = [
+      if (!this.canManageAccess) return []
+      return [
         {
           id: "rename",
           name: this.$t("folders.rename"),
@@ -181,21 +181,18 @@ export default {
           name: this.$t("folders.create_subfolder"),
           icon: "folder-plus",
         },
-      ]
-      if (this.canManageAccess) {
-        items.push({
+        {
           id: "manage-access",
           name: this.$t("folders.manage_access"),
           icon: "users-three",
-        })
-      }
-      items.push({
-        id: "delete",
-        name: this.$t("folders.delete"),
-        icon: "trash",
-        color: "tertiary",
-      })
-      return items
+        },
+        {
+          id: "delete",
+          name: this.$t("folders.delete"),
+          icon: "trash",
+          color: "tertiary",
+        },
+      ]
     },
   },
   methods: {
