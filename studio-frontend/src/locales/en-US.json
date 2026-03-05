@@ -645,6 +645,7 @@
     "uncategorized": "Uncategorized",
     "create": "Create folder",
     "create_placeholder": "Folder name...",
+    "name_required": "Folder name is required",
     "create_subfolder": "Create subfolder",
     "rename": "Rename",
     "delete": "Delete",

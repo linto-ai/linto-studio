@@ -90,18 +90,16 @@
       v-if="!virtual && showChildInput"
       class="folder-tree-node__create-child"
       :style="{ paddingLeft: `calc(2.5rem - 14px - 0.5rem + ${Math.min(depth + 1, 6) * 0.75}rem)` }">
-      <input
-        ref="childInput"
+      <FormInput
+        :field="childField"
         v-model="childName"
-        :placeholder="$t('folders.create_placeholder')"
-        class="folder-tree-node__input"
-        @keyup.enter="confirmCreateChild"
-        @keyup.esc="cancelCreateChild" />
-      <button
-        class="folder-tree-node__confirm-btn"
-        @click.stop="confirmCreateChild">
-        <ph-icon name="check" size="14" />
-      </button>
+        :focus="showChildInput"
+        inputFullWidth
+        withConfirmation
+        @on-confirm="confirmCreateChild"
+        @on-cancel="cancelCreateChild"
+        @keyup.esc.native="cancelCreateChild"
+        @keyup.enter.native="confirmCreateChild" />
     </div>
 
     <ul
@@ -128,13 +126,14 @@
 
 <script>
 import PopoverList from "@/components/atoms/PopoverList.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 import { folderDragDropMixin } from "@/mixins/folderDragDrop"
 import RIGHTS from "@/const/userRights"
 
 export default {
   name: "FolderTreeNode",
   mixins: [folderDragDropMixin],
-  components: { PopoverList },
+  components: { PopoverList, FormInput },
   props: {
     folder: { type: Object, required: true },
     selectedFolderId: { default: undefined },
@@ -153,6 +152,7 @@ export default {
       renameName: "",
       showChildInput: false,
       childName: "",
+      childField: { placeholder: this.$t("folders.create_placeholder"), error: null },
     }
   },
   watch: {
@@ -191,17 +191,19 @@ export default {
           name: this.$t("folders.rename"),
           icon: "pencil",
         },
-        {
+      ]
+      if (this.userRole >= 5) {
+        items.push({
           id: "create-child",
           name: this.$t("folders.create_subfolder"),
           icon: "folder-plus",
-        },
-        {
-          id: "manage-access",
-          name: this.$t("folders.manage_access"),
-          icon: "users-three",
-        },
-      ]
+        })
+      }
+      items.push({
+        id: "manage-access",
+        name: this.$t("folders.manage_access"),
+        icon: "users-three",
+      })
       if (!this.folder.conversationCount) {
         items.push({
           id: "delete",
@@ -269,20 +271,22 @@ export default {
     startCreateChild() {
       this.expanded = true
       this.showChildInput = true
-      this.$nextTick(() => {
-        this.$refs.childInput?.focus()
-      })
     },
     confirmCreateChild() {
+      if (!this.showChildInput) return
       const name = this.childName.trim()
-      if (name) {
-        this.$emit("create-child", { parentId: this.folder._id, name })
+      if (!name) {
+        this.childField.error = this.$t("folders.name_required")
+        return
       }
+      this.$emit("create-child", { parentId: this.folder._id, name })
       this.childName = ""
+      this.childField.error = null
       this.showChildInput = false
     },
     cancelCreateChild() {
       this.childName = ""
+      this.childField.error = null
       this.showChildInput = false
     },
 
@@ -437,10 +441,11 @@ export default {
   }
 
   &__create-child {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
+    padding: 0.25rem 1rem;
+
+    :deep(.form-field) { gap: 0; }
+    :deep(.form-field__input) { padding: 0.2em 0.4em; font-size: 0.85em; }
+    :deep(.form-field__error) { font-size: 0.7em; }
   }
 
   &__children {

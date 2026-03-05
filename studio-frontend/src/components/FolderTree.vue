@@ -1,18 +1,16 @@
 <template>
   <div class="folder-tree">
     <div class="folder-tree__create" v-if="showCreateInput">
-      <input
-        ref="createInput"
+      <FormInput
+        :field="createField"
         v-model="newFolderName"
-        :placeholder="$t('folders.create_placeholder')"
-        @keyup.enter="handleCreate"
-        @keyup.esc="cancelCreate"
-        class="folder-tree__input" />
-      <button
-        class="folder-tree__confirm-btn"
-        @click="handleCreate">
-        <ph-icon name="check" size="14" />
-      </button>
+        :focus="showCreateInput"
+        inputFullWidth
+        withConfirmation
+        @on-confirm="handleCreate"
+        @on-cancel="cancelCreate"
+        @keyup.esc.native="cancelCreate"
+        @keyup.enter.native="handleCreate" />
     </div>
 
     <nav>
@@ -48,14 +46,16 @@
 import { mapGetters, mapActions } from "vuex"
 import FolderTreeNode from "./FolderTreeNode.vue"
 import FolderAccessModal from "./FolderAccessModal.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 
 export default {
   name: "FolderTree",
-  components: { FolderTreeNode, FolderAccessModal },
+  components: { FolderTreeNode, FolderAccessModal, FormInput },
   data() {
     return {
       showCreateInput: false,
       newFolderName: "",
+      createField: { placeholder: this.$t("folders.create_placeholder"), error: null },
       accessFolder: null,
     }
   },
@@ -66,10 +66,8 @@ export default {
       }
     },
     showCreateInput(val) {
-      if (val) {
-        this.$nextTick(() => {
-          this.$refs.createInput?.focus()
-        })
+      if (!val) {
+        this.createField.error = null
       }
     },
   },
@@ -110,14 +108,20 @@ export default {
       })
     },
     async handleCreate() {
+      if (!this.showCreateInput) return
       const name = this.newFolderName.trim()
-      if (!name) return
+      if (!name) {
+        this.createField.error = this.$t("folders.name_required")
+        return
+      }
       await this.$store.dispatch("folders/createFolder", { name })
       this.newFolderName = ""
+      this.createField.error = null
       this.showCreateInput = false
     },
     cancelCreate() {
       this.newFolderName = ""
+      this.createField.error = null
       this.showCreateInput = false
     },
     async handleRename({ folderId, name }) {
@@ -176,40 +180,11 @@ export default {
   overflow-x: hidden;
 
   &__create {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem 0.5rem 2.5rem;
-  }
+    padding: 0.25rem 1rem 0.25rem 2.5rem;
 
-  &__confirm-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0.1em;
-    border-radius: 4px;
-    color: var(--primary-color);
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-
-    &:hover {
-      background-color: var(--primary-soft);
-    }
-  }
-
-  &__input {
-    width: 100%;
-    padding: 0.3em 0.5em;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 0.85em;
-    outline: none;
-    box-sizing: border-box;
-
-    &:focus {
-      border-color: var(--primary-color);
-    }
+    :deep(.form-field) { gap: 0; }
+    :deep(.form-field__input) { padding: 0.3em 0.5em; font-size: 0.85em; }
+    :deep(.form-field__error) { font-size: 0.7em; }
   }
 
   &__list {

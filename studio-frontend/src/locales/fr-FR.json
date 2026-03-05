@@ -640,6 +640,7 @@
     "uncategorized": "Non classé",
     "create": "Créer un dossier",
     "create_placeholder": "Nom du dossier...",
+    "name_required": "Le nom du dossier est requis",
     "create_subfolder": "Créer un sous-dossier",
     "rename": "Renommer",
     "delete": "Supprimer",

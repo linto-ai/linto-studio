@@ -4,12 +4,15 @@
     <div
       class="media-explorer-menu__item media-explorer-menu__item--section"
       @click="openOrgSelector">
-      <ph-icon name="user-switch" size="16" />
+      <ph-icon name="user-switch" size="20" />
       <div class="media-explorer-menu__item__org-info">
         <span class="media-explorer-menu__item__org-name">{{ orgName }}</span>
-        <span class="media-explorer-menu__item__org-role">{{ currentRoleToString }}</span>
+        <span class="media-explorer-menu__item__org-role">{{
+          currentRoleToString
+        }}</span>
       </div>
       <button
+        v-if="isAtLeastMaintainer"
         class="media-explorer-menu__item__action"
         :title="$t('folders.create')"
         @click.stop="$refs.folderTree.toggleCreate()">
@@ -28,7 +31,10 @@
         @dragover.prevent="isInboxDragOver = true"
         @dragleave="isInboxDragOver = false"
         @drop.prevent="handleInboxDrop">
-        <ph-icon name="tray" :weight="isInboxActive ? 'fill' : 'regular'" size="16" />
+        <ph-icon
+          name="tray"
+          :weight="isInboxActive ? 'fill' : 'regular'"
+          size="16" />
         <span>{{ $t("navigation.sections.media") }}</span>
       </div>
       <!-- Transcription en direct -->
@@ -37,18 +43,23 @@
         class="media-explorer-menu__item media-explorer-menu__item--nested"
         :class="{ 'media-explorer-menu__item--active': isSessionsActive }"
         @click="handleSessionsClick">
-        <ph-icon name="broadcast" :weight="isSessionsActive ? 'fill' : 'regular'" size="16" />
+        <ph-icon
+          name="broadcast"
+          :weight="isSessionsActive ? 'fill' : 'regular'"
+          size="16" />
         <span>{{ $t("navigation.tabs.sessions") }}</span>
       </div>
       <!-- Arbre de dossiers -->
       <FolderTree ref="folderTree" />
     </div>
 
-    <ModalSwitchOrg v-model="modalOrgSelector" @close="modalOrgSelector = false" />
+    <ModalSwitchOrg
+      v-model="modalOrgSelector"
+      @close="modalOrgSelector = false" />
 
     <!-- Personnel -->
     <div class="media-explorer-menu__item media-explorer-menu__item--section">
-      <ph-icon name="user" size="16" />
+      <ph-icon name="user" size="20" />
       <span>{{ $t("navigation.sections.personal") }}</span>
     </div>
     <div class="media-explorer-menu__sub">
@@ -59,7 +70,10 @@
         }"
         class="media-explorer-menu__item media-explorer-menu__item--nested"
         @click.native="clearFolderSelection">
-        <ph-icon name="star" :weight="isFavoritesActive ? 'fill' : 'regular'" size="16" />
+        <ph-icon
+          name="star"
+          :weight="isFavoritesActive ? 'fill' : 'regular'"
+          size="16" />
         <span>{{ $t("navigation.tabs.favorites") }}</span>
       </router-link>
       <router-link
@@ -69,7 +83,10 @@
         }"
         class="media-explorer-menu__item media-explorer-menu__item--nested"
         @click.native="clearFolderSelection">
-        <ph-icon name="share-network" :weight="isSharedActive ? 'fill' : 'regular'" size="16" />
+        <ph-icon
+          name="share-network"
+          :weight="isSharedActive ? 'fill' : 'regular'"
+          size="16" />
         <span>{{ $t("navigation.tabs.shared") }}</span>
       </router-link>
     </div>
@@ -107,6 +124,9 @@ export default {
     },
     isMediaRoute() {
       return this.$route.name === "explore" || this.$route.name === "inbox"
+    },
+    selectedFolderId() {
+      return this.$route.params.folderId
     },
     isInboxActive() {
       return this.isMediaRoute && this.selectedFolderId === undefined
@@ -154,6 +174,16 @@ export default {
       this.$router.push({
         name: "sessionsList",
         params: { organizationId: this.getCurrentOrganizationScope },
+      })
+    },
+    selectFolder(folderId) {
+      this.$store.dispatch("folders/setActiveFolderId", null)
+      this.$router.push({
+        name: "explore",
+        params: {
+          organizationId: this.getCurrentOrganizationScope,
+          folderId,
+        },
       })
     },
     clearFolderSelection() {
@@ -238,10 +268,10 @@ export default {
     }
 
     &__org-role {
-      font-size: 0.7em;
+      //font-size: 0.7em;
       font-weight: 400;
       color: var(--text-secondary);
-      padding-left: 0.5em;
+      //padding-left: 0.5em;
     }
 
     &--section:hover &__org-name {
