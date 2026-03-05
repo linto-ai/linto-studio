@@ -185,7 +185,7 @@ export default {
     },
     contextMenuItems() {
       if (this.virtual || !this.canManageAccess) return []
-      return [
+      const items = [
         {
           id: "rename",
           name: this.$t("folders.rename"),
@@ -201,13 +201,16 @@ export default {
           name: this.$t("folders.manage_access"),
           icon: "users-three",
         },
-        {
+      ]
+      if (!this.folder.conversationCount) {
+        items.push({
           id: "delete",
           name: this.$t("folders.delete"),
           icon: "trash",
           color: "tertiary",
-        },
-      ]
+        })
+      }
+      return items
     },
   },
   methods: {
