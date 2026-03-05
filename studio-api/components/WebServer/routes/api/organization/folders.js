@@ -1,5 +1,4 @@
 const {
-  checkBody,
   listFolders,
   getFolder,
   createFolder,
@@ -27,7 +26,7 @@ module.exports = (webserver) => {
       controller: createFolder,
       requireAuth: true,
       requireOrganizationMemberAccess: true,
-      middlewares: [checkBody],
+      requireFolderManagerAccess: true,
     },
     {
       path: "/uncategorized/conversations",
@@ -49,14 +48,15 @@ module.exports = (webserver) => {
       controller: updateFolder,
       requireAuth: true,
       requireOrganizationMemberAccess: true,
-      middlewares: [checkBody],
+      requireFolderManagerAccess: true,
     },
     {
       path: "/:folderId",
       method: "delete",
       controller: deleteFolder,
       requireAuth: true,
-      requireOrganizationMaintainerAccess: true,
+      requireOrganizationMemberAccess: true,
+      requireFolderManagerAccess: true,
     },
     {
       path: "/:folderId/conversations",

@@ -7,86 +7,47 @@ const {
   FolderNotFound,
   FolderCycleDetected,
   FolderDepthLimitExceeded,
-  FolderForbidden,
 } = require(
   `${process.cwd()}/components/WebServer/error/exception/folder`,
 )
 
 const MAX_FOLDER_DEPTH = 10
 
-function checkBody(req, res, next) {
-  if (req.body.name !== undefined) {
-    if (typeof req.body.name !== "string" || req.body.name.trim().length === 0)
+// --- Validation helpers ---
+
+function validateBody(body) {
+  if (body.name !== undefined) {
+    if (typeof body.name !== "string" || body.name.trim().length === 0)
       throw new FolderError("name must be a non-empty string")
-    if (req.body.name.length > 255)
+    if (body.name.length > 255)
       throw new FolderError("name must be less than 255 characters")
   }
-  if (req.body.color !== undefined && req.body.color !== null) {
-    if (!req.body.color.match(/^#([0-9a-fA-F]{6})$/))
+  if (body.color !== undefined && body.color !== null) {
+    if (typeof body.color !== "string" || !body.color.match(/^#([0-9a-fA-F]{6})$/))
       throw new FolderError("color must be a valid hex color")
   }
-  if (req.body.emoji !== undefined && req.body.emoji !== null) {
-    if (typeof req.body.emoji !== "string")
+  if (body.emoji !== undefined && body.emoji !== null) {
+    if (typeof body.emoji !== "string")
       throw new FolderError("emoji must be a string")
   }
-  if (req.body.position !== undefined && req.body.position !== null) {
-    if (typeof req.body.position !== "number")
+  if (body.position !== undefined && body.position !== null) {
+    if (typeof body.position !== "number")
       throw new FolderError("position must be a number")
   }
-  if (req.body.visibility !== undefined) {
-    if (req.body.visibility !== "public" && req.body.visibility !== "private")
+  if (body.visibility !== undefined) {
+    if (body.visibility !== "public" && body.visibility !== "private")
       throw new FolderError("visibility must be 'public' or 'private'")
   }
-  if (req.body.members !== undefined) {
-    if (!Array.isArray(req.body.members))
+  if (body.members !== undefined) {
+    if (!Array.isArray(body.members))
       throw new FolderError("members must be an array")
-    for (const member of req.body.members) {
+    for (const member of body.members) {
       if (!member.userId || typeof member.userId !== "string")
         throw new FolderError("each member must have a userId string")
       if (member.right === undefined || !RIGHTS.validRight(member.right))
         throw new FolderError("each member must have a valid right")
     }
   }
-  next()
-}
-
-function filterFoldersByAccess(folders, userId, userRole) {
-  if (userRole >= ROLES.MAINTAINER) return folders
-  return folders.filter((f) =>
-    f.visibility !== "private" ||
-    f.owner === userId ||
-    (f.members && f.members.some((m) => m.userId === userId))
-  )
-}
-
-function filterTreeByAccess(tree, userId, userRole) {
-  if (userRole >= ROLES.MAINTAINER) return tree
-  return tree.reduce((acc, node) => {
-    const hasAccess =
-      node.visibility !== "private" ||
-      node.owner === userId ||
-      (node.members && node.members.some((m) => m.userId === userId))
-    if (!hasAccess) return acc
-    const filtered = { ...node }
-    if (filtered.descendants) {
-      filtered.descendants = filtered.descendants.filter((d) =>
-        d.visibility !== "private" ||
-        d.owner === userId ||
-        (d.members && d.members.some((m) => m.userId === userId))
-      )
-    }
-    acc.push(filtered)
-    return acc
-  }, [])
-}
-
-function checkFolderAccess(folder, userId, userRole) {
-  if (folder.visibility !== "private") return
-  if (userRole >= ROLES.MAINTAINER) return
-  const hasAccess =
-    folder.owner === userId ||
-    (folder.members && folder.members.some((m) => m.userId === userId))
-  if (!hasAccess) throw new FolderNotFound()
 }
 
 function validateConversationIds(body) {
@@ -98,6 +59,52 @@ function validateConversationIds(body) {
     throw new FolderError("conversationIds must be a non-empty array")
 }
 
+// --- Access helpers ---
+
+function canAccessFolder(folder, userId) {
+  return (
+    folder.visibility !== "private" ||
+    folder.owner === userId ||
+    (folder.members && folder.members.some((m) => m.userId === userId))
+  )
+}
+
+function checkFolderAccess(folder, userId, userRole) {
+  if (userRole >= ROLES.MAINTAINER) return
+  if (!canAccessFolder(folder, userId)) throw new FolderNotFound()
+}
+
+async function getRequiredFolder(folderId, organizationId) {
+  const result = await model.folders.getById(folderId)
+  if (result.length === 0) throw new FolderNotFound()
+  if (result[0].organizationId !== organizationId)
+    throw new FolderError("Folder belongs to another organization")
+  return result[0]
+}
+
+// --- Access filtering ---
+
+function filterFoldersByAccess(folders, userId, userRole) {
+  if (userRole >= ROLES.MAINTAINER) return folders
+  return folders.filter((f) => canAccessFolder(f, userId))
+}
+
+function filterTreeByAccess(tree, userId, userRole) {
+  if (userRole >= ROLES.MAINTAINER) return tree
+  return tree.reduce((acc, node) => {
+    if (!canAccessFolder(node, userId)) return acc
+    acc.push({
+      ...node,
+      descendants: node.descendants
+        ? node.descendants.filter((d) => canAccessFolder(d, userId))
+        : [],
+    })
+    return acc
+  }, [])
+}
+
+// --- Visibility sync helpers ---
+
 async function syncConversationsRights(conversationIds, membersRight, customRights) {
   for (const convId of conversationIds) {
     await model.conversations.update({
@@ -105,46 +112,6 @@ async function syncConversationsRights(conversationIds, membersRight, customRigh
       "organization.membersRight": membersRight,
       "organization.customRights": customRights,
     })
-  }
-}
-
-async function makeFolderPublic(folderId, organizationId) {
-  await model.folders.update({
-    _id: folderId,
-    visibility: "public",
-    owner: null,
-    members: [],
-  })
-  await syncFolderVisibility(folderId, organizationId, "public", null, [])
-}
-
-async function propagateMembersToPrivateAncestors(folderId, organizationId, newMembers) {
-  const ancestors = await model.folders.getAncestors(folderId, organizationId)
-  const privateAncestors = ancestors.filter((a) => a.visibility === "private")
-
-  for (const ancestor of privateAncestors) {
-    const existingUserIds = new Set(
-      (ancestor.members || []).map((m) => m.userId),
-    )
-    const membersToAdd = newMembers.filter(
-      (m) => !existingUserIds.has(m.userId),
-    )
-    if (membersToAdd.length === 0) continue
-
-    const updatedMembers = [
-      ...(ancestor.members || []),
-      ...membersToAdd.map((m) => ({ userId: m.userId, right: RIGHTS.READ })),
-    ]
-    await model.folders.update({
-      _id: ancestor._id.toString(),
-      members: updatedMembers,
-    })
-    await model.conversations.updateRightsBatchByFolderId(
-      ancestor._id.toString(),
-      organizationId,
-      RIGHTS.UNDEFINED,
-      updatedMembers,
-    )
   }
 }
 
@@ -161,25 +128,102 @@ async function syncFolderVisibility(folderId, organizationId, visibility, owner,
   const customRights = visibility === "private" ? members : []
 
   for (const id of allFolderIds) {
-    await model.conversations.updateRightsBatchByFolderId(
-      id,
-      organizationId,
-      membersRight,
-      customRights,
-    )
+    await model.conversations.updateRightsBatchByFolderId(id, organizationId, membersRight, customRights)
   }
 }
 
+async function makeFolderPublic(folderId, organizationId) {
+  await model.folders.update({ _id: folderId, visibility: "public", owner: null, members: [] })
+  await syncFolderVisibility(folderId, organizationId, "public", null, [])
+}
+
+async function propagateMembersToPrivateAncestors(folderId, organizationId, newMembers) {
+  const ancestors = await model.folders.getAncestors(folderId, organizationId)
+
+  for (const ancestor of ancestors) {
+    if (ancestor.visibility !== "private") continue
+
+    const existingUserIds = new Set((ancestor.members || []).map((m) => m.userId))
+    const membersToAdd = newMembers.filter((m) => !existingUserIds.has(m.userId))
+    if (membersToAdd.length === 0) continue
+
+    const updatedMembers = [
+      ...(ancestor.members || []),
+      ...membersToAdd.map((m) => ({ userId: m.userId, right: RIGHTS.READ })),
+    ]
+    const ancestorId = ancestor._id.toString()
+    await model.folders.update({ _id: ancestorId, members: updatedMembers })
+    await model.conversations.updateRightsBatchByFolderId(ancestorId, organizationId, RIGHTS.UNDEFINED, updatedMembers)
+  }
+}
+
+// --- Visibility change handlers (used by updateFolder) ---
+
+async function handleInheritFromPrivateParent(folderId, organizationId, parent) {
+  const members = parent.members || []
+  await model.folders.update({ _id: folderId, visibility: "private", owner: parent.owner, members })
+  await syncFolderVisibility(folderId, organizationId, "private", parent.owner, members)
+}
+
+async function handlePublicToPrivate(folderId, organizationId, folder, newMembers, userId) {
+  const effectiveMembers = newMembers || [{ userId, right: RIGHTS.adminRight() }]
+  if (!newMembers) {
+    await model.folders.update({ _id: folderId, members: effectiveMembers })
+  }
+  await syncFolderVisibility(folderId, organizationId, "private", folder.owner || userId, effectiveMembers)
+}
+
+async function handlePrivateToPublic(folderId, organizationId, forcePublicAncestors) {
+  for (const ancestor of forcePublicAncestors) {
+    await makeFolderPublic(ancestor._id.toString(), organizationId)
+  }
+  await syncFolderVisibility(folderId, organizationId, "public", null, [])
+}
+
+async function handleMembersChanged(folderId, organizationId, folder, newMembers, userId) {
+  await syncFolderVisibility(folderId, organizationId, "private", folder.owner || userId, newMembers)
+
+  const existingUserIds = new Set((folder.members || []).map((m) => m.userId))
+  const addedMembers = newMembers.filter((m) => !existingUserIds.has(m.userId))
+  if (addedMembers.length > 0) {
+    await propagateMembersToPrivateAncestors(folderId, organizationId, addedMembers)
+  }
+}
+
+// --- ParentId change validation ---
+
+async function validateParentChange(folderId, newParentId, organizationId) {
+  if (newParentId === null) return null
+
+  if (newParentId === folderId)
+    throw new FolderCycleDetected("Cannot move a folder into itself")
+
+  const parentResult = await model.folders.getById(newParentId)
+  if (parentResult.length === 0) throw new FolderNotFound("Parent folder not found")
+
+  const descendants = await model.folders.getDescendants(folderId, organizationId)
+  if (descendants.some((d) => d._id.toString() === newParentId))
+    throw new FolderCycleDetected("Cannot move a folder into one of its descendants")
+
+  const ancestors = await model.folders.getAncestors(newParentId, organizationId)
+  const subtreeDepth = await model.folders.getSubtreeDepth(folderId, organizationId)
+  if (ancestors.length + 2 + subtreeDepth > MAX_FOLDER_DEPTH)
+    throw new FolderDepthLimitExceeded()
+
+  return parentResult[0]
+}
+
+// --- Route controllers ---
+
 async function listFolders(req, res, next) {
   try {
-    const organizationId = req.params.organizationId
+    const { organizationId } = req.params
     const userId = req.payload.data.userId
     const userRole = req.userRole
 
     if (req.query.tree === "true") {
       let tree = await model.folders.getTree(organizationId)
-      tree = filterTreeByAccess(tree, userId, userRole)
-      return res.status(200).send(tree)
+      return res.status(200).send(filterTreeByAccess(tree, userId, userRole))
     }
 
     let folders
@@ -193,9 +237,9 @@ async function listFolders(req, res, next) {
     folders = filterFoldersByAccess(folders, userId, userRole)
 
     if (req.query.withConversationCount === "true" && folders.length > 0) {
-      const folderIds = folders.map((f) => f._id.toString())
-      const counts =
-        await model.folders.countConversationsByFolderIds(folderIds)
+      const counts = await model.folders.countConversationsByFolderIds(
+        folders.map((f) => f._id.toString()),
+      )
       folders = folders.map((f) => ({
         ...f,
         conversationCount: counts[f._id.toString()] || 0,
@@ -210,12 +254,9 @@ async function listFolders(req, res, next) {
 
 async function getFolder(req, res, next) {
   try {
-    const folder = await model.folders.getById(req.params.folderId)
-    if (folder.length === 0) throw new FolderNotFound()
-
-    checkFolderAccess(folder[0], req.payload.data.userId, req.userRole)
-
-    res.status(200).send(folder[0])
+    const folder = await getRequiredFolder(req.params.folderId, req.params.organizationId)
+    checkFolderAccess(folder, req.payload.data.userId, req.userRole)
+    res.status(200).send(folder)
   } catch (err) {
     next(err)
   }
@@ -223,31 +264,27 @@ async function getFolder(req, res, next) {
 
 async function createFolder(req, res, next) {
   try {
+    validateBody(req.body)
     if (!req.body.name) throw new FolderError("name is required")
 
     const parentId = req.body.parentId || null
     const userId = req.payload.data.userId
+    const { organizationId } = req.params
 
     let visibility = req.body.visibility || "public"
     let owner = userId
     let members = req.body.members || []
 
     if (parentId) {
-      const parent = await model.folders.getById(parentId)
-      if (parent.length === 0) throw new FolderNotFound("Parent folder not found")
-      if (parent[0].organizationId !== req.params.organizationId)
-        throw new FolderError("Parent folder belongs to another organization")
+      const parent = await getRequiredFolder(parentId, organizationId)
 
-      // Validate depth limit
-      const ancestors = await model.folders.getAncestors(parentId, req.params.organizationId)
-      const parentDepth = ancestors.length
-      if (parentDepth + 1 > MAX_FOLDER_DEPTH)
-        throw new FolderDepthLimitExceeded()
+      const ancestors = await model.folders.getAncestors(parentId, organizationId)
+      if (ancestors.length + 1 > MAX_FOLDER_DEPTH) throw new FolderDepthLimitExceeded()
 
-      if (parent[0].visibility === "private") {
+      if (parent.visibility === "private") {
         visibility = "private"
-        owner = parent[0].owner
-        members = parent[0].members || []
+        owner = parent.owner
+        members = parent.members || []
       }
     }
 
@@ -255,19 +292,17 @@ async function createFolder(req, res, next) {
       members = [{ userId: owner, right: RIGHTS.adminRight() }]
     }
 
-    const payload = {
+    const result = await model.folders.create({
       name: req.body.name.trim(),
-      organizationId: req.params.organizationId,
-      parentId: parentId,
+      organizationId,
+      parentId,
       color: req.body.color || null,
       emoji: req.body.emoji || null,
       position: req.body.position ?? 0,
       visibility,
       owner,
       members,
-    }
-
-    const result = await model.folders.create(payload)
+    })
     if (result.insertedCount !== 1)
       throw new FolderError("Error during the creation of the folder")
 
@@ -280,171 +315,62 @@ async function createFolder(req, res, next) {
 
 async function updateFolder(req, res, next) {
   try {
-    const folder = await model.folders.getById(req.params.folderId)
-    if (folder.length === 0) throw new FolderNotFound()
+    validateBody(req.body)
 
-    if (folder[0].organizationId !== req.params.organizationId)
-      throw new FolderError("Folder belongs to another organization")
-
-    const organizationId = req.params.organizationId
+    const { folderId } = req.params
+    const { organizationId } = req.params
     const userId = req.payload.data.userId
-    const userRole = req.userRole
-    const currentVisibility = folder[0].visibility || "public"
+    const folder = await getRequiredFolder(folderId, organizationId)
+
+    checkFolderAccess(folder, userId, req.userRole)
+
+    const currentVisibility = folder.visibility || "public"
     const newVisibility = req.body.visibility
     const newMembers = req.body.members
 
-    // Only MAINTAINER+ or folder owner/member with SHARE right can change visibility/members
-    if (newVisibility !== undefined || newMembers !== undefined) {
-      const isMaintainer = userRole >= ROLES.MAINTAINER
-      const isOwner = folder[0].owner === userId
-      const hasShareRight = folder[0].members && folder[0].members.some(
-        (m) => m.userId === userId && RIGHTS.hasRightAccess(m.right, RIGHTS.SHARE),
-      )
-      if (!isMaintainer && !isOwner && !hasShareRight)
-        throw new FolderForbidden("Only maintainers, admins, or members with share access can manage folder access")
-    }
-
-    // Check for cycle if parentId is being changed
+    // Validate parentId change
     let newParent = null
-    if (
-      req.body.parentId !== undefined &&
-      req.body.parentId !== folder[0].parentId
-    ) {
-      const newParentId = req.body.parentId
-
-      if (newParentId !== null) {
-        // Cannot move a folder into itself
-        if (newParentId === req.params.folderId)
-          throw new FolderCycleDetected("Cannot move a folder into itself")
-
-        // Check that new parent exists
-        const parentResult = await model.folders.getById(newParentId)
-        if (parentResult.length === 0)
-          throw new FolderNotFound("Parent folder not found")
-        newParent = parentResult[0]
-
-        // Check that new parent is not a descendant of this folder
-        const descendants = await model.folders.getDescendants(
-          req.params.folderId,
-          organizationId,
-        )
-        const descendantIds = descendants.map((d) => d._id.toString())
-        if (descendantIds.includes(newParentId))
-          throw new FolderCycleDetected(
-            "Cannot move a folder into one of its descendants",
-          )
-
-        // Validate depth limit: newParentDepth + 1 (this folder) + subtreeDepth
-        const ancestors = await model.folders.getAncestors(newParentId, organizationId)
-        const newParentDepth = ancestors.length + 1
-        const subtreeDepth = await model.folders.getSubtreeDepth(req.params.folderId, organizationId)
-        if (newParentDepth + 1 + subtreeDepth > MAX_FOLDER_DEPTH)
-          throw new FolderDepthLimitExceeded()
-      }
+    if (req.body.parentId !== undefined && req.body.parentId !== folder.parentId) {
+      newParent = await validateParentChange(folderId, req.body.parentId, organizationId)
     }
 
-    // Private -> Public: verify parent is not private (unless force)
+    // Collect ancestors to force public if needed
     let forcePublicAncestors = []
-    if (currentVisibility === "private" && newVisibility === "public") {
-      if (folder[0].parentId) {
-        const parentResult = await model.folders.getById(folder[0].parentId)
-        if (parentResult.length > 0 && parentResult[0].visibility === "private") {
-          if (!req.body.force)
-            throw new FolderError("Cannot make a folder public when its parent is private")
-
-          // Collect all private ancestors to also make them public
-          const ancestors = await model.folders.getAncestors(req.params.folderId, organizationId)
-          forcePublicAncestors = ancestors.filter((a) => a.visibility === "private")
-        }
+    if (currentVisibility === "private" && newVisibility === "public" && folder.parentId) {
+      const parentResult = await model.folders.getById(folder.parentId)
+      if (parentResult.length > 0 && parentResult[0].visibility === "private") {
+        if (!req.body.force)
+          throw new FolderError("Cannot make a folder public when its parent is private")
+        const ancestors = await model.folders.getAncestors(folderId, organizationId)
+        forcePublicAncestors = ancestors.filter((a) => a.visibility === "private")
       }
     }
 
-    const updatePayload = { _id: req.params.folderId }
+    // Build and apply update payload
+    const updatePayload = { _id: folderId }
     if (req.body.name !== undefined) updatePayload.name = req.body.name.trim()
-    if (req.body.parentId !== undefined)
-      updatePayload.parentId = req.body.parentId
+    if (req.body.parentId !== undefined) updatePayload.parentId = req.body.parentId
     if (req.body.color !== undefined) updatePayload.color = req.body.color
     if (req.body.emoji !== undefined) updatePayload.emoji = req.body.emoji
-    if (req.body.position !== undefined)
-      updatePayload.position = req.body.position
-
-    // Handle visibility fields in update payload
+    if (req.body.position !== undefined) updatePayload.position = req.body.position
     if (newVisibility !== undefined) updatePayload.visibility = newVisibility
     if (newMembers !== undefined) updatePayload.members = newMembers
-    if (req.body.owner !== undefined) updatePayload.owner = req.body.owner
 
     const result = await model.folders.update(updatePayload)
     if (result.matchedCount === 0) throw new FolderError("Nothing to update")
 
-    // Handle parentId change to a private parent: force inherit visibility
+    // Handle visibility transitions
     if (newParent && newParent.visibility === "private") {
-      const inheritPayload = {
-        _id: req.params.folderId,
-        visibility: "private",
-        owner: newParent.owner,
-        members: newParent.members || [],
-      }
-      await model.folders.update(inheritPayload)
-      await syncFolderVisibility(
-        req.params.folderId,
-        organizationId,
-        "private",
-        newParent.owner,
-        newParent.members || [],
-      )
-    }
-    // Public -> Private
-    else if (currentVisibility !== "private" && newVisibility === "private") {
-      const effectiveMembers = newMembers || [{ userId: req.payload.data.userId, right: RIGHTS.adminRight() }]
-      if (!updatePayload.members) {
-        await model.folders.update({ _id: req.params.folderId, members: effectiveMembers })
-      }
-      await syncFolderVisibility(
-        req.params.folderId,
-        organizationId,
-        "private",
-        folder[0].owner || req.payload.data.userId,
-        effectiveMembers,
-      )
-    }
-    // Private -> Public
-    else if (currentVisibility === "private" && newVisibility === "public") {
-      for (const ancestor of forcePublicAncestors) {
-        await makeFolderPublic(ancestor._id.toString(), organizationId)
-      }
-      await syncFolderVisibility(req.params.folderId, organizationId, "public", null, [])
-    }
-    // Members changed while staying private
-    else if (
-      currentVisibility === "private" &&
-      newVisibility !== "public" &&
-      newMembers !== undefined
-    ) {
-      await syncFolderVisibility(
-        req.params.folderId,
-        organizationId,
-        "private",
-        folder[0].owner || req.payload.data.userId,
-        newMembers,
-      )
-
-      // Propagate newly added members to private ancestors with READ access
-      const existingUserIds = new Set(
-        (folder[0].members || []).map((m) => m.userId),
-      )
-      const addedMembers = newMembers.filter(
-        (m) => !existingUserIds.has(m.userId),
-      )
-      if (addedMembers.length > 0) {
-        await propagateMembersToPrivateAncestors(
-          req.params.folderId,
-          organizationId,
-          addedMembers,
-        )
-      }
+      await handleInheritFromPrivateParent(folderId, organizationId, newParent)
+    } else if (currentVisibility !== "private" && newVisibility === "private") {
+      await handlePublicToPrivate(folderId, organizationId, folder, newMembers, userId)
+    } else if (currentVisibility === "private" && newVisibility === "public") {
+      await handlePrivateToPublic(folderId, organizationId, forcePublicAncestors)
+    } else if (currentVisibility === "private" && newVisibility !== "public" && newMembers !== undefined) {
+      await handleMembersChanged(folderId, organizationId, folder, newMembers, userId)
     }
 
-    const updated = await model.folders.getById(req.params.folderId)
+    const updated = await model.folders.getById(folderId)
     res.status(200).send(updated[0])
   } catch (err) {
     next(err)
@@ -453,50 +379,33 @@ async function updateFolder(req, res, next) {
 
 async function deleteFolder(req, res, next) {
   try {
-    const folder = await model.folders.getById(req.params.folderId)
-    if (folder.length === 0) throw new FolderNotFound()
-
-    if (folder[0].organizationId !== req.params.organizationId)
-      throw new FolderError("Folder belongs to another organization")
+    const { folderId } = req.params
+    const { organizationId } = req.params
+    const folder = await getRequiredFolder(folderId, organizationId)
 
     const strategy = req.query.strategy || "move_to_parent"
-    const parentId = folder[0].parentId || null
-    const organizationId = req.params.organizationId
+    if (strategy !== "move_to_parent")
+      throw new FolderError("Invalid delete strategy")
 
-    if (strategy === "move_to_parent") {
-      // Reparent child folders to the deleted folder's parent
-      await model.folders.reparentChildren(
-        req.params.folderId,
-        parentId,
-      )
+    const parentId = folder.parentId || null
 
-      // Reparent conversations to the deleted folder's parent
-      await model.conversations.unsetFolderReferences(
-        req.params.folderId,
-        parentId,
-      )
+    await model.folders.reparentChildren(folderId, parentId)
+    await model.conversations.unsetFolderReferences(folderId, parentId)
 
-      // If private folder and parent is public/null: reset conversation rights
-      if (folder[0].visibility === "private") {
-        let parentIsPublic = true
-        if (parentId) {
-          const parentResult = await model.folders.getById(parentId)
-          if (parentResult.length > 0 && parentResult[0].visibility === "private") {
-            parentIsPublic = false
-          }
+    if (folder.visibility === "private") {
+      let parentIsPublic = true
+      if (parentId) {
+        const parentResult = await model.folders.getById(parentId)
+        if (parentResult.length > 0 && parentResult[0].visibility === "private") {
+          parentIsPublic = false
         }
-        if (parentIsPublic) {
-          await model.conversations.updateRightsBatchByFolderId(
-            req.params.folderId,
-            organizationId,
-            RIGHTS.READ,
-            [],
-          )
-        }
+      }
+      if (parentIsPublic) {
+        await model.conversations.updateRightsBatchByFolderId(folderId, organizationId, RIGHTS.READ, [])
       }
     }
 
-    const result = await model.folders.delete(req.params.folderId)
+    const result = await model.folders.delete(folderId)
     if (result.deletedCount !== 1)
       throw new FolderError("Error during the deletion of the folder")
 
@@ -510,11 +419,8 @@ async function moveConversations(req, res, next) {
   try {
     validateConversationIds(req.body)
 
-    const folder = await model.folders.getById(req.params.folderId)
-    if (folder.length === 0) throw new FolderNotFound()
-
-    if (folder[0].organizationId !== req.params.organizationId)
-      throw new FolderError("Folder belongs to another organization")
+    const folder = await getRequiredFolder(req.params.folderId, req.params.organizationId)
+    checkFolderAccess(folder, req.payload.data.userId, req.userRole)
 
     const result = await model.conversations.updateFolderBatch(
       req.body.conversationIds,
@@ -522,16 +428,11 @@ async function moveConversations(req, res, next) {
       req.params.organizationId,
     )
 
-    if (folder[0].visibility === "private") {
-      await syncConversationsRights(req.body.conversationIds, RIGHTS.UNDEFINED, folder[0].members || [])
-    } else {
-      await syncConversationsRights(req.body.conversationIds, RIGHTS.READ, [])
-    }
+    const membersRight = folder.visibility === "private" ? RIGHTS.UNDEFINED : RIGHTS.READ
+    const customRights = folder.visibility === "private" ? (folder.members || []) : []
+    await syncConversationsRights(req.body.conversationIds, membersRight, customRights)
 
-    res.status(200).send({
-      message: "Conversations moved",
-      modifiedCount: result.modifiedCount,
-    })
+    res.status(200).send({ message: "Conversations moved", modifiedCount: result.modifiedCount })
   } catch (err) {
     next(err)
   }
@@ -539,25 +440,16 @@ async function moveConversations(req, res, next) {
 
 async function listFolderConversations(req, res, next) {
   try {
-    const folder = await model.folders.getById(req.params.folderId)
-    if (folder.length === 0) throw new FolderNotFound()
+    const folder = await getRequiredFolder(req.params.folderId, req.params.organizationId)
+    checkFolderAccess(folder, req.payload.data.userId, req.userRole)
 
-    if (folder[0].organizationId !== req.params.organizationId)
-      throw new FolderError("Folder belongs to another organization")
-
-    checkFolderAccess(folder[0], req.payload.data.userId, req.userRole)
-
-    const filter = {
-      folderId: req.params.folderId,
-      ...req.query,
-    }
-
+    const { folderId: _ignored, ...queryParams } = req.query
     const conversations = await model.conversations.listConvFromOrga(
       req.params.organizationId,
       req.payload.data.userId,
       req.payload.data.organizationRole,
       1,
-      filter,
+      { ...queryParams, folderId: req.params.folderId },
     )
 
     res.status(200).send(conversations)
@@ -570,24 +462,16 @@ async function uncategorizeConversations(req, res, next) {
   try {
     validateConversationIds(req.body)
 
-    await model.conversations.updateFolderBatch(
-      req.body.conversationIds,
-      null,
-      req.params.organizationId,
-    )
-
+    await model.conversations.updateFolderBatch(req.body.conversationIds, null, req.params.organizationId)
     await syncConversationsRights(req.body.conversationIds, RIGHTS.READ, [])
 
-    res.status(200).send({
-      message: "Conversations removed from folder",
-    })
+    res.status(200).send({ message: "Conversations removed from folder" })
   } catch (err) {
     next(err)
   }
 }
 
 module.exports = {
-  checkBody,
   listFolders,
   getFolder,
   createFolder,
