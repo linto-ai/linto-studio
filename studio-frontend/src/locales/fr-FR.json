@@ -637,7 +637,7 @@
     }
   },
   "folders": {
-    "uncategorized": "Non classé",
+    "uncategorized": "Médias",
     "create": "Créer un dossier",
     "create_placeholder": "Nom du dossier...",
     "name_required": "Le nom du dossier est requis",
@@ -707,6 +707,12 @@
       "delete": "Supprimer"
     },
     "delete": "Supprimer",
+    "sort": {
+      "created_desc": "Plus récents",
+      "created_asc": "Plus anciens",
+      "last_update_desc": "Modifiés récemment",
+      "last_update_asc": "Modifiés anciennement"
+    },
     "filter": {
       "transcribed": "Transcrits",
       "processing": "En traitement",

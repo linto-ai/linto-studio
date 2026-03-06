@@ -1,14 +1,16 @@
 <template>
   <div class="folder-selector" v-click-outside="closeDropdown">
     <button
+      type="button"
       class="folder-selector__trigger"
       :class="{ 'folder-selector__trigger--open': isOpen, 'folder-selector__trigger--readonly': readonly }"
       @click="toggle"
       :disabled="readonly">
-      <ph-icon :name="selectedFolder ? 'folder' : 'folder-dashed'" size="16" />
+      <ph-icon :name="selectedFolder ? 'folder' : 'tray'" size="16" />
       <span class="folder-selector__label">
         {{ selectedFolder ? selectedFolder.name : $t("folders.uncategorized") }}
       </span>
+      <ph-icon v-if="selectedFolder && selectedFolder.visibility === 'private'" name="lock-simple" size="12" class="folder-selector__lock" />
       <ph-icon v-if="!readonly" name="caret-down" size="14" class="folder-selector__caret" />
     </button>
 
@@ -17,7 +19,7 @@
         class="folder-selector__option"
         :class="{ 'folder-selector__option--active': !value }"
         @click="select(null)">
-        <ph-icon name="folder-dashed" size="16" />
+        <ph-icon name="tray" size="16" />
         <span>{{ $t("folders.uncategorized") }}</span>
       </div>
       <div
@@ -29,6 +31,7 @@
         @click="select(folder._id)">
         <ph-icon name="folder" size="16" :style="folder.color ? { color: folder.color } : {}" />
         <span>{{ folder.name }}</span>
+        <ph-icon v-if="folder.visibility === 'private'" name="lock-simple" size="12" class="folder-selector__lock" />
       </div>
     </div>
   </div>
@@ -149,6 +152,11 @@ export default {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  &__lock {
+    flex-shrink: 0;
+    color: var(--text-muted, #999);
   }
 
   &__caret {

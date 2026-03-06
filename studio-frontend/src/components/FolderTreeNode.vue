@@ -9,7 +9,7 @@
       :style="{
         paddingLeft: `calc(2.5rem - 14px - 0.5rem + ${Math.min(depth, 6) * 0.75}rem)`,
       }"
-      @click="$emit('select', folder._id)"
+      @click="handleClick"
       @dblclick.prevent="toggleExpand"
       @dragover.prevent="onDragOver"
       @dragleave="onDragLeave"
@@ -35,7 +35,7 @@
         </span>
         <ph-icon
           v-else
-          :name="expanded ? 'folder-open' : 'folder'"
+          :name="expanded || isActive ? 'folder-open' : 'folder'"
           size="20"
           :style="folder.color ? { color: folder.color } : {}" />
 
@@ -247,6 +247,12 @@ export default {
       }
     },
 
+    handleClick() {
+      this.$emit('select', this.folder._id)
+      if (!this.virtual && this.folder.children && this.folder.children.length > 0) {
+        this.expanded = true
+      }
+    },
     toggleExpand() {
       this.expanded = !this.expanded
     },
@@ -294,16 +300,18 @@ export default {
       this.showChildInput = true
     },
     confirmCreateChild() {
-      if (!this.showChildInput) return
+      if (!this.showChildInput || this._creatingChild) return
       const name = this.childName.trim()
       if (!name) {
         this.childField.error = this.$t("folders.name_required")
         return
       }
+      this._creatingChild = true
       this.$emit("create-child", { parentId: this.folder._id, name })
       this.childName = ""
       this.childField.error = null
       this.showChildInput = false
+      this._creatingChild = false
     },
     cancelCreateChild() {
       this.childName = ""

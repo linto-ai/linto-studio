@@ -184,7 +184,7 @@ export default {
           organizationId: this.getCurrentOrganizationScope,
           folderId,
         },
-      })
+      }).catch(() => {})
     },
     async handleInboxDrop({ conversationIds }) {
       if (!conversationIds || conversationIds.length === 0) return

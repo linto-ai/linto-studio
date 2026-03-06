@@ -642,7 +642,7 @@
     }
   },
   "folders": {
-    "uncategorized": "Uncategorized",
+    "uncategorized": "Inbox",
     "create": "Create folder",
     "create_placeholder": "Folder name...",
     "name_required": "Folder name is required",
@@ -712,6 +712,12 @@
       "delete": "Delete"
     },
     "delete": "Delete",
+    "sort": {
+      "created_desc": "Newest first",
+      "created_asc": "Oldest first",
+      "last_update_desc": "Recently modified",
+      "last_update_asc": "Least recently modified"
+    },
     "filter": {
       "transcribed": "Transcribed",
       "processing": "Processing",

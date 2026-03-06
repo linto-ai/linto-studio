@@ -109,11 +109,15 @@ export default {
 
   .metadata {
     line-height: normal;
-    font-size: 0.9em;
+    overflow: hidden;
   }
 
   .user-name {
-    font-weight: bold;
+    font-weight: 600;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
 }
