@@ -57,7 +57,7 @@ export const mediaScopeMixin = {
         const result = await apiDuplicateConversation(mediaId)
         if (result.status === "success") {
           await this.$store.dispatch(`${this.storeScope}/load`, {
-            folderId: this.$route.params.folderId,
+            folderId: this.effectiveFolderId ?? this.$route.params.folderId,
           })
           return true
         }

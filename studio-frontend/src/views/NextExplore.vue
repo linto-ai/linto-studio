@@ -71,6 +71,12 @@ export default {
     search() {
       return this.$store.getters[`${this.storeScope}/search`]
     },
+    sortField() {
+      return this.$store.getters[`${this.storeScope}/getSortField`]
+    },
+    sortOrder() {
+      return this.$store.getters[`${this.storeScope}/getSortOrder`]
+    },
     countDone() {
       return this.$store.getters[
         `${this.getCurrentOrganizationScope}/done/conversations/count`
@@ -96,6 +102,13 @@ export default {
       },
     },
     ...mapGetters("system", { pageIsLoading: "isLoading" }),
+    effectiveFolderId() {
+      const routeFolderId = this.$route.params.folderId
+      if (routeFolderId) return routeFolderId
+      // In organization scope inbox (no folder selected), show only unfiled conversations
+      if (this.getCurrentScope === "organization") return null
+      return undefined
+    },
   },
   mounted() {
     this.init()
@@ -117,7 +130,7 @@ export default {
         }
 
         await this.$store.dispatch(`${this.storeScope}/load`, {
-          folderId: this.$route.params.folderId,
+          folderId: this.effectiveFolderId,
         })
 
         if (this.countProcessing == 0) {
@@ -138,7 +151,7 @@ export default {
     async handleLoadMore() {
       this.loadingNextPage = true
       await this.$store.dispatch(`${this.storeScope}/loadNextPage`, {
-        folderId: this.$route.params.folderId,
+        folderId: this.effectiveFolderId,
       })
       this.loadingNextPage = false
     },
@@ -167,11 +180,11 @@ export default {
         this.filterStatus = "done"
       }
     },
-    async "$route.params.folderId"(folderId) {
+    async "$route.params.folderId"() {
       this.loading = true
       this.$store.dispatch(`${this.storeScope}/clearSelectedMedias`)
       try {
-        await this.$store.dispatch(`${this.storeScope}/load`, { folderId })
+        await this.$store.dispatch(`${this.storeScope}/load`, { folderId: this.effectiveFolderId })
       } finally {
         this.loading = false
         this.$store.dispatch("system/setIsLoading", false)
@@ -181,7 +194,7 @@ export default {
       if (this.pageIsLoading) return
       this.loading = true
       await this.$store.dispatch(`${this.storeScope}/load`, {
-        folderId: this.$route.params.folderId,
+        folderId: this.effectiveFolderId,
       })
       this.loading = false
     },
@@ -189,7 +202,7 @@ export default {
       if (this.pageIsLoading) return
       this.loading = true
       await this.$store.dispatch(`${this.storeScope}/load`, {
-        folderId: this.$route.params.folderId,
+        folderId: this.effectiveFolderId,
       })
       this.loading = false
     },
@@ -197,7 +210,23 @@ export default {
       if (this.pageIsLoading) return
       this.loading = true
       await this.$store.dispatch(`${this.storeScope}/load`, {
-        folderId: this.$route.params.folderId,
+        folderId: this.effectiveFolderId,
+      })
+      this.loading = false
+    },
+    async sortField() {
+      if (this.pageIsLoading) return
+      this.loading = true
+      await this.$store.dispatch(`${this.storeScope}/load`, {
+        folderId: this.effectiveFolderId,
+      })
+      this.loading = false
+    },
+    async sortOrder() {
+      if (this.pageIsLoading) return
+      this.loading = true
+      await this.$store.dispatch(`${this.storeScope}/load`, {
+        folderId: this.effectiveFolderId,
       })
       this.loading = false
     },
