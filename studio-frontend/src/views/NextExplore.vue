@@ -194,42 +194,57 @@ export default {
     async search() {
       if (this.pageIsLoading) return
       this.loading = true
-      await this.$store.dispatch(`${this.storeScope}/load`, {
-        folderId: this.effectiveFolderId,
-      })
-      this.loading = false
+      try {
+        await this.$store.dispatch(`${this.storeScope}/load`, {
+          folderId: this.effectiveFolderId,
+        })
+      } finally {
+        this.loading = false
+      }
     },
-    async selectedTagsIds(newValue, oldvalue) {
+    async selectedTagsIds() {
       if (this.pageIsLoading) return
       this.loading = true
-      await this.$store.dispatch(`${this.storeScope}/load`, {
-        folderId: this.effectiveFolderId,
-      })
-      this.loading = false
+      try {
+        await this.$store.dispatch(`${this.storeScope}/load`, {
+          folderId: this.effectiveFolderId,
+        })
+      } finally {
+        this.loading = false
+      }
     },
     async filterStatus() {
       if (this.pageIsLoading) return
       this.loading = true
-      await this.$store.dispatch(`${this.storeScope}/load`, {
-        folderId: this.effectiveFolderId,
-      })
-      this.loading = false
+      try {
+        await this.$store.dispatch(`${this.storeScope}/load`, {
+          folderId: this.effectiveFolderId,
+        })
+      } finally {
+        this.loading = false
+      }
     },
     async sortField() {
       if (this.pageIsLoading) return
       this.loading = true
-      await this.$store.dispatch(`${this.storeScope}/load`, {
-        folderId: this.effectiveFolderId,
-      })
-      this.loading = false
+      try {
+        await this.$store.dispatch(`${this.storeScope}/load`, {
+          folderId: this.effectiveFolderId,
+        })
+      } finally {
+        this.loading = false
+      }
     },
     async sortOrder() {
       if (this.pageIsLoading) return
       this.loading = true
-      await this.$store.dispatch(`${this.storeScope}/load`, {
-        folderId: this.effectiveFolderId,
-      })
-      this.loading = false
+      try {
+        await this.$store.dispatch(`${this.storeScope}/load`, {
+          folderId: this.effectiveFolderId,
+        })
+      } finally {
+        this.loading = false
+      }
     },
     "$apiEventWS.state.connexionRestored"() {
       if (this.getCurrentScope === "organization") {

@@ -138,7 +138,8 @@ export default {
         if (orgId) {
           this.hasSessions = await apiHasSessions(orgId)
           if (oldOrgId && orgId !== oldOrgId) {
-            this.selectFolder(undefined)
+            // Only reset folder state — navigation is already handled by the org switch modal
+            this.$store.dispatch("folders/setActiveFolderId", null)
           }
         } else {
           this.hasSessions = false
