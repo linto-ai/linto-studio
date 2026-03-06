@@ -41,6 +41,19 @@
             @remove="handleRemoveTag"
             @search="handleSearch" />
         </div>
+
+        <!-- Sort controls -->
+        <div class="media-explorer-header__sort">
+          <select
+            class="sort-select"
+            :value="sortField + ':' + sortOrder"
+            @change="handleSortChange($event.target.value)">
+            <option value="created:-1">{{ $t('media_explorer.sort.created_desc') }}</option>
+            <option value="created:1">{{ $t('media_explorer.sort.created_asc') }}</option>
+            <option value="last_update:-1">{{ $t('media_explorer.sort.last_update_desc') }}</option>
+            <option value="last_update:1">{{ $t('media_explorer.sort.last_update_asc') }}</option>
+          </select>
+        </div>
       </div>
     </div>
   </div>
@@ -102,6 +115,12 @@ export default {
     isPartiallySelected() {
       return this.selectedCount > 0 && this.selectedCount < this.totalCount
     },
+    sortField() {
+      return this.$store.getters[`${this.storeScope}/getSortField`]
+    },
+    sortOrder() {
+      return this.$store.getters[`${this.storeScope}/getSortOrder`]
+    },
     // Use computed property instead of data to ensure reactivity
     search: {
       get() {
@@ -151,6 +170,10 @@ export default {
     handleRemoveTag(tag) {
       this.toggleSelectedTag(tag)
     },
+    handleSortChange(value) {
+      const [field, order] = value.split(':')
+      this.$store.dispatch(`${this.storeScope}/setSort`, { field, order: parseInt(order) })
+    },
   },
 }
 </script>
@@ -192,6 +215,31 @@ export default {
   flex: 1;
   justify-content: center;
   min-width: 0;
+}
+
+.media-explorer-header__sort {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.sort-select {
+  font-size: 0.8rem;
+  padding: 0.25rem 0.4rem;
+  border: 1px solid var(--neutral-30, #e0e0e0);
+  border-radius: 0.25rem;
+  background: var(--background-color, #fff);
+  color: var(--text-color, #333);
+  cursor: pointer;
+  outline: none;
+}
+
+.sort-select:hover {
+  border-color: var(--neutral-50, #aaa);
+}
+
+.sort-select:focus {
+  border-color: var(--primary-color, #007bff);
 }
 
 .media-explorer-header__actions {

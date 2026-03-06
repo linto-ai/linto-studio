@@ -25,6 +25,8 @@ export default function createMediaModule(scope, status = "done") {
       countProcessing: 0,
       countError: 0,
       filterStatus: status, // done, processing, error
+      sortField: "last_update",
+      sortOrder: -1, // -1 = desc, 1 = asc
     }),
 
     getters: {
@@ -80,6 +82,8 @@ export default function createMediaModule(scope, status = "done") {
         }
       },
       getFilterStatus: (s) => s.filterStatus,
+      getSortField: (s) => s.sortField,
+      getSortOrder: (s) => s.sortOrder,
     },
 
     mutations: {
@@ -167,6 +171,12 @@ export default function createMediaModule(scope, status = "done") {
       setCountError(state, count) {
         state.countError = count
       },
+      setSortField(state, field) {
+        state.sortField = field
+      },
+      setSortOrder(state, order) {
+        state.sortOrder = order
+      },
       setFilterStatus(state, value) {
         console.warn("filterStatus is readOnly")
       },
@@ -184,6 +194,8 @@ export default function createMediaModule(scope, status = "done") {
             title: getters.search,
             tags: getters.selectedTagIds,
             status: getters.getFilterStatus,
+            sortField: getters.getSortField,
+            sortOrder: getters.getSortOrder,
             folderId,
           })
 
@@ -237,6 +249,10 @@ export default function createMediaModule(scope, status = "done") {
       },
       setSearchQuery({ commit }, query) {
         commit("setSearchQuery", query)
+      },
+      setSort({ commit }, { field, order }) {
+        commit("setSortField", field)
+        commit("setSortOrder", order)
       },
       toggleMediaSelection({ commit }, media) {
         commit("toggleSelectedMedia", media)
