@@ -1,19 +1,25 @@
 <template>
-  <div class="media-explorer-menu-labels" v-if="orderedTags.length > 0">
+  <div class="media-explorer-menu-labels" v-if="visibleTags.length > 0">
     <hr />
     <div class="title">
       {{ $t("navigation.tabs.tags") }}
     </div>
     <nav>
       <ul>
-        <li v-for="tag in orderedTags" :key="tag._id">
+        <li v-for="tag in visibleTags" :key="tag._id">
           <ChipTag
             :name="tag.name"
             :emoji="tag.emoji"
             :color="tag.color"
-            :count="tag.mediaCount"
+            :count="isSidebarActive(tag._id) ? 0 : tag.mediaCount"
+            :active="isSidebarActive(tag._id)"
             size="xs"
-            @click="handleTagClick(tag)" />
+            @click="handleTagClick(tag)">
+            <ph-icon
+              v-if="isSidebarActive(tag._id)"
+              name="check"
+              size="14" />
+          </ChipTag>
         </li>
       </ul>
     </nav>
@@ -61,17 +67,20 @@ export default {
       }
     },
     searchActive() {
-      return this.hasActiveSearch
+      return !!this.searchValue
+    },
+    sidebarFilterTagIds() {
+      return this.$store.state[this.storeScope]?.sidebarFilterTagIds ?? []
     },
     effectiveFolderId() {
-      if (this.searchActive) return undefined // Show all org tags during search
+      if (this.searchActive) return undefined // Show all org tags during text search
       const routeFolderId = this.$route.params.folderId
       if (routeFolderId) return routeFolderId
       const routeName = this.$route?.name || ""
       if (routeName === "explore" || routeName === "explore-folder") return null
       return undefined
     },
-    orderedTags() {
+    visibleTags() {
       return [...this.tags]
         .sort((a, b) => a.name.localeCompare(b.name))
         .sort((a, b) => b.mediaCount - a.mediaCount)
@@ -82,7 +91,10 @@ export default {
   },
   methods: {
     handleTagClick(tag) {
-      this.toggleSelectedTag(tag)
+      this.$store.dispatch(`${this.storeScope}/toggleSidebarFilterTagId`, tag._id)
+    },
+    isSidebarActive(tagId) {
+      return this.sidebarFilterTagIds.includes(tagId)
     },
     fetchTags() {
       const currentRoute = this.$route?.name || ""

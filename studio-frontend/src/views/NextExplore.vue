@@ -71,6 +71,9 @@ export default {
     search() {
       return this.$store.getters[`${this.storeScope}/search`]
     },
+    sidebarFilterTagIds() {
+      return this.$store.state[this.storeScope]?.sidebarFilterTagIds ?? []
+    },
     sortField() {
       return this.$store.getters[`${this.storeScope}/getSortField`]
     },
@@ -184,6 +187,7 @@ export default {
     async "$route.params.folderId"() {
       this.loading = true
       this.$store.dispatch(`${this.storeScope}/clearSelectedMedias`)
+      this.$store.dispatch(`${this.storeScope}/clearSidebarFilterTagIds`)
       try {
         await this.$store.dispatch(`${this.storeScope}/load`, { folderId: this.effectiveFolderId })
       } finally {
@@ -203,6 +207,17 @@ export default {
       }
     },
     async selectedTagsIds() {
+      if (this.pageIsLoading) return
+      this.loading = true
+      try {
+        await this.$store.dispatch(`${this.storeScope}/load`, {
+          folderId: this.effectiveFolderId,
+        })
+      } finally {
+        this.loading = false
+      }
+    },
+    async sidebarFilterTagIds() {
       if (this.pageIsLoading) return
       this.loading = true
       try {

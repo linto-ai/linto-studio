@@ -19,6 +19,7 @@ export default function createMediaModule(scope, status = "done") {
       autoselectMedias: false,
       searchQuery: "",
       selectedTagIds: [],
+      sidebarFilterTagIds: [],
       pagination: { page: 0, hasMore: true },
       count: 0,
       countDone: 0,
@@ -159,6 +160,16 @@ export default function createMediaModule(scope, status = "done") {
       clearSelectedTagIds(state) {
         state.selectedTagIds = []
       },
+      toggleSidebarFilterTagId(state, id) {
+        if (state.sidebarFilterTagIds.includes(id)) {
+          state.sidebarFilterTagIds = state.sidebarFilterTagIds.filter((t) => t !== id)
+        } else {
+          state.sidebarFilterTagIds = [...state.sidebarFilterTagIds, id]
+        }
+      },
+      clearSidebarFilterTagIds(state) {
+        state.sidebarFilterTagIds = []
+      },
       setCount(state, count) {
         state.count = count
       },
@@ -184,7 +195,7 @@ export default function createMediaModule(scope, status = "done") {
 
     actions: {
       async load(
-        { commit, dispatch, getters },
+        { state, commit, dispatch, getters },
         { page = 0, append = false, folderId } = {},
       ) {
         try {
@@ -192,7 +203,7 @@ export default function createMediaModule(scope, status = "done") {
             page,
             text: getters.search,
             title: getters.search,
-            tags: getters.selectedTagIds,
+            tags: [...getters.selectedTagIds, ...state.sidebarFilterTagIds],
             status: getters.getFilterStatus,
             sortField: getters.getSortField,
             sortOrder: getters.getSortOrder,
@@ -300,6 +311,12 @@ export default function createMediaModule(scope, status = "done") {
       },
       clearSelectedTagIds({ commit }) {
         commit("clearSelectedTagIds")
+      },
+      toggleSidebarFilterTagId({ commit }, id) {
+        commit("toggleSidebarFilterTagId", id)
+      },
+      clearSidebarFilterTagIds({ commit }) {
+        commit("clearSidebarFilterTagIds")
       },
       clearSelectedMedias({ commit }) {
         commit("clearSelectedMedias")
