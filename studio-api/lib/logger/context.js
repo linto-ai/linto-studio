@@ -164,6 +164,9 @@ class LoggerContext {
           // body: Object.keys(req.body || {}).length ? req.body : null,
           status: req.res?.statusCode || null,
         }
+        if (req.method === "DELETE" && Object.keys(req.body || {}).length) {
+          context.http.body = req.body
+        }
         context.scope = defineScope(context.http.url)
         if (context.scope === "authenticate" && req.url === "/auth/login") {
           context.http.ip = getClientIp(req)

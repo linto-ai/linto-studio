@@ -8,6 +8,7 @@ const { calculateWatchTime, reduceToLastActivity } = require(
 )
 
 const SOCKET_EVENTS = require(`${process.cwd()}/lib/dao/log/socketEvent`)
+const { isDuplicatePatchEvent } = require(`${process.cwd()}/lib/logger/filterCachedLog`)
 
 const activityLoggedUrls = ["/api/administration/", "/tokens/"]
 
@@ -40,6 +41,11 @@ class LogManager {
     ) {
       return // ignore
     }
+
+    if (isDuplicatePatchEvent(method, url)) {
+      return
+    }
+
     model.activityLog.create(ctx)
   }
 
