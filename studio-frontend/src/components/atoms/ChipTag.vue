@@ -53,7 +53,7 @@
         name="x"
         size="14"
         class="chip-tag__remove"
-        @click.native.stop="$emit('remove')" />
+        @click.native="$emit('remove')" />
     </span>
     <span v-if="description" class="chip-tag__description">
       {{ description }}

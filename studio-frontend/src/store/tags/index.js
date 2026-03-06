@@ -80,7 +80,7 @@ export default {
     },
   },
   actions: {
-    async fetchTags({ commit, getters, state, rootGetters }) {
+    async fetchTags({ commit, getters, state, rootGetters }, { folderId } = {}) {
       // Prevent concurrent fetches
       if (state.loading) return
 
@@ -99,6 +99,7 @@ export default {
           const tags = await apiGetTagsByCategory(
             rootGetters["organizations/getCurrentOrganizationScope"],
             tagsCategory._id,
+            { folderId },
           )
           commit("setTags", tags)
         } else {

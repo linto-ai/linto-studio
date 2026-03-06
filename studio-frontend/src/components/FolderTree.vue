@@ -82,6 +82,12 @@ export default {
     }),
     ...mapGetters("organizations", ["getCurrentOrganizationScope"]),
     selectedFolderId() {
+      const storeScope = this.$store.getters["organizations/getStoreScope"]
+      if (storeScope) {
+        const hasSearch = this.$store.getters[`${storeScope}/search`]
+        const hasTags = (this.$store.state[storeScope]?.selectedTagIds ?? []).length > 0
+        if (hasSearch || hasTags) return '__search__'
+      }
       return this.$route.params.folderId
     },
     currentUserRole() {
@@ -96,7 +102,17 @@ export default {
     toggleCreate() {
       this.showCreateInput = !this.showCreateInput
     },
+    clearSearch() {
+      const storeScope = this.$store.getters["organizations/getStoreScope"]
+      if (!storeScope) return
+      const hasSearch = !!this.$store.getters[`${storeScope}/search`]
+      const hasTags = (this.$store.state[storeScope]?.selectedTagIds ?? []).length > 0
+      if (!hasSearch && !hasTags) return
+      this.$store.dispatch(`${storeScope}/setSearchQuery`, "")
+      this.$store.dispatch(`${storeScope}/clearSelectedTagIds`)
+    },
     selectFolder(folderId) {
+      this.clearSearch()
       if (this.$route.params.folderId === folderId && this.$route.name === "explore") return
       this.$store.dispatch("folders/setActiveFolderId", null)
       this.$router.push({

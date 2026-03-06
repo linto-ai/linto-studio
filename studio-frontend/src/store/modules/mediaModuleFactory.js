@@ -153,7 +153,7 @@ export default function createMediaModule(scope, status = "done") {
         if (state.selectedTagIds.includes(id)) {
           state.selectedTagIds = state.selectedTagIds.filter((t) => t !== id)
         } else {
-          state.selectedTagIds.push(id)
+          state.selectedTagIds = [...state.selectedTagIds, id]
         }
       },
       clearSelectedTagIds(state) {

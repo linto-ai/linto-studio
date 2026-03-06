@@ -13,14 +13,17 @@ export const mediaScopeMixin = {
       "getStoreScope",
     ]),
     isSelectAll() {
-      const value = this.$store.state[this.storeScope].autoselectMedias ?? false
+      const value = this.$store.state[this.storeScope]?.autoselectMedias ?? false
       return value
     },
     selectedTagsIds() {
-      return this.$store.state[this.storeScope].selectedTagIds ?? []
+      return this.$store.state[this.storeScope]?.selectedTagIds ?? []
     },
     searchValue() {
       return this.$store.getters[`${this.storeScope}/search`]
+    },
+    hasActiveSearch() {
+      return !!this.searchValue || this.selectedTagsIds.length > 0
     },
   },
   methods: {
@@ -46,6 +49,11 @@ export const mediaScopeMixin = {
         `${this.storeScope}/toggleSelectedTagId`,
         tag._id,
       )
+    },
+    clearSearch() {
+      if (!this.hasActiveSearch) return
+      this.$store.dispatch(`${this.storeScope}/setSearchQuery`, "")
+      this.$store.dispatch(`${this.storeScope}/clearSelectedTagIds`)
     },
     mediaRight(mediaId) {
       const right =

@@ -5,21 +5,8 @@
       {{ $t("navigation.tabs.tags") }}
     </div>
     <nav>
-      <div v-if="orderedTags.length === 0" class="no-tags">
-        <!-- <p>
-          {{ $t("manage_tags.no_tags") }}
-        </p> -->
-        <!-- <p>
-          <Button
-            :label="$t('manage_tags.create_tag')"
-            @click="openSettingsModal"
-            size="xs"
-            color="neutral"
-            variant="outline"></Button>
-        </p> -->
-      </div>
       <ul>
-        <li v-for="tag in orderedTags" :key="tag._id" v-if="tag.mediaCount > 0">
+        <li v-for="tag in orderedTags" :key="tag._id">
           <ChipTag
             :name="tag.name"
             :emoji="tag.emoji"
@@ -40,18 +27,17 @@ import { mediaScopeMixin } from "@/mixins/mediaScope"
 export default {
   mixins: [mediaScopeMixin],
   name: "MediaExplorerMenuLabels",
-  components: {},
-  data() {
-    return {
-      showModalTagManagement: false,
-      showAllTags: false,
-    }
-  },
   watch: {
     "$route.name"(newRouteName, oldRouteName) {
       if (newRouteName !== oldRouteName) {
         this.fetchTags()
       }
+    },
+    "$route.params.folderId"() {
+      this.fetchTags()
+    },
+    searchActive() {
+      this.fetchTags()
     },
   },
   mounted() {
@@ -74,29 +60,29 @@ export default {
         return this.orgTags
       }
     },
+    searchActive() {
+      return this.hasActiveSearch
+    },
+    effectiveFolderId() {
+      if (this.searchActive) return undefined // Show all org tags during search
+      const routeFolderId = this.$route.params.folderId
+      if (routeFolderId) return routeFolderId
+      const routeName = this.$route?.name || ""
+      if (routeName === "explore" || routeName === "explore-folder") return null
+      return undefined
+    },
     orderedTags() {
       return [...this.tags]
         .sort((a, b) => a.name.localeCompare(b.name))
         .sort((a, b) => b.mediaCount - a.mediaCount)
         .filter((tag) => {
-          return !this.selectedTagsIds.includes(tag._id)
+          return tag.mediaCount > 0 && !this.selectedTagsIds.includes(tag._id)
         })
     },
   },
   methods: {
-    getTagColor(tag) {
-      return tag.color
-    },
     handleTagClick(tag) {
       this.toggleSelectedTag(tag)
-    },
-    async handleTagSubmit(tag) {
-      await this.$store.dispatch("tags/createTag", tag)
-      this.fetchTags()
-      this.showModalTagManagement = false
-    },
-    handleTagCancel() {
-      this.showModalTagManagement = false
     },
     fetchTags() {
       const currentRoute = this.$route?.name || ""
@@ -112,11 +98,8 @@ export default {
       ) {
         this.$store.dispatch("tags/fetchSharedTags")
       } else {
-        this.$store.dispatch("tags/fetchTags")
+        this.$store.dispatch("tags/fetchTags", { folderId: this.effectiveFolderId })
       }
-    },
-    openSettingsModal() {
-      this.$store.dispatch("settings/setModalOpen", true)
     },
   },
 }
@@ -189,24 +172,5 @@ export default {
     }
   }
 
-  &__footer {
-    margin-top: 0.5em !important;
-    padding: 0.5em;
-    padding-left: 46px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--spacing-small);
-  }
-
-  .no-tags {
-    padding: 0.5em;
-    padding-left: 0.5em;
-    color: var(--text-secondary);
-
-    p {
-      margin: 0;
-    }
-  }
 }
 </style>

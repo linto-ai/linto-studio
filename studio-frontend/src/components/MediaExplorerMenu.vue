@@ -102,7 +102,11 @@ export default {
     selectedFolderId() {
       return this.$route.params.folderId
     },
+    isSearchActive() {
+      return this.hasActiveSearch
+    },
     isInboxActive() {
+      if (this.isSearchActive) return false
       return this.isMediaRoute && this.selectedFolderId === undefined
     },
     isSessionsActive() {
@@ -147,6 +151,7 @@ export default {
       this.modalOrgSelector = true
     },
     handleInboxClick() {
+      this.clearSearch()
       if (!this.isMediaRoute) {
         this.$router.push({
           name: "explore",
@@ -156,6 +161,7 @@ export default {
       this.selectFolder(undefined)
     },
     handleSessionsClick() {
+      this.clearSearch()
       this.$store.dispatch(`${this.storeScope}/setSelectedFolderId`, undefined)
       this.$router.push({
         name: "sessionsList",
@@ -163,6 +169,7 @@ export default {
       })
     },
     handleFavoritesClick() {
+      this.clearSearch()
       this.$store.dispatch(`${this.storeScope}/setSelectedFolderId`, undefined)
       this.$router.push({
         name: "explore-favorites",
@@ -170,6 +177,7 @@ export default {
       })
     },
     handleSharedClick() {
+      this.clearSearch()
       this.$store.dispatch(`${this.storeScope}/setSelectedFolderId`, undefined)
       this.$router.push({
         name: "explore-shared",

@@ -33,6 +33,7 @@
             :selectedTagsIds="selectedTagsIds"
             :tags="getTags"
             :allow-create="false"
+            :close-on-select="true"
             id="search"
             mode="search"
             :placeholder="$t('input_selector.search_placeholder')"
@@ -60,7 +61,6 @@
 </template>
 
 <script>
-import { v4 as uuid } from "uuid"
 import { mediaScopeMixin } from "@/mixins/mediaScope"
 import Checkbox from "@/components/atoms/Checkbox.vue"
 
@@ -121,36 +121,30 @@ export default {
     sortOrder() {
       return this.$store.getters[`${this.storeScope}/getSortOrder`]
     },
-    // Use computed property instead of data to ensure reactivity
     search: {
       get() {
-        if (this._localSearch !== undefined && this._localSearch !== null) {
-          return this._localSearch
+        if (this.localSearch !== undefined && this.localSearch !== null) {
+          return this.localSearch
         }
-
         return this.searchValue || ""
       },
       set(value) {
-        this._localSearch = value
+        this.localSearch = value
       },
     },
   },
   data() {
     return {
-      _localSearch: null, // Start with null to prioritize external values initially
+      localSearch: null,
     }
   },
-  mounted() {},
   watch: {
     // Watch store search value properly using computed property
-    storeSearchValue: {
-      handler(storeValue) {
-        // Only sync if we don't have local input and store value is different
-        if (this._localSearch === null && storeValue) {
-          this._localSearch = storeValue
-        }
-      },
-      immediate: true,
+    searchValue(storeValue) {
+      // Sync local search when store changes (e.g. cleared by sidebar navigation)
+      if (storeValue !== this.localSearch) {
+        this.localSearch = storeValue || null
+      }
     },
   },
   methods: {

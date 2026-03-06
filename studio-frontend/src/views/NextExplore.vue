@@ -103,6 +103,7 @@ export default {
     },
     ...mapGetters("system", { pageIsLoading: "isLoading" }),
     effectiveFolderId() {
+      if (this.hasActiveSearch) return undefined // Global search across all folders
       const routeFolderId = this.$route.params.folderId
       if (routeFolderId) return routeFolderId
       // In organization scope inbox (no folder selected), show only unfiled conversations
