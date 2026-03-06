@@ -320,9 +320,13 @@ export default {
             conversationIds: [this.selectedMedia._id],
           })
         }
-        await this.$store.dispatch(`${this.storeScope}/setSelectedFolderId`, folderId)
         this.$store.dispatch("folders/fetchFolders")
-        this.$store.dispatch(`${this.storeScope}/load`)
+        // Remove moved media from current list and clear selection
+        const currentFolderId = this.$route.params.folderId
+        if (folderId !== currentFolderId) {
+          this.$store.commit(`${this.storeScope}/deleteMedias`, [this.selectedMedia._id])
+        }
+        this.$emit("clear-selection")
       } catch (error) {
         console.error("Folder change error:", error)
       }

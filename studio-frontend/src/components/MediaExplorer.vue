@@ -186,6 +186,14 @@ export default {
     this.cleanupObserver()
   },
   watch: {
+    medias(newMedias) {
+      // Clean up selectedMediaIds that no longer exist in the list
+      const mediaIdSet = new Set(newMedias.map((m) => m._id))
+      const cleaned = this.selectedMediaIds.filter((id) => mediaIdSet.has(id))
+      if (cleaned.length !== this.selectedMediaIds.length) {
+        this.selectedMediaIds = cleaned
+      }
+    },
     "$route.params.folderId"() {
       this.selectedMediaIds = []
       this.$store.dispatch("folders/setActiveFolderId", null)

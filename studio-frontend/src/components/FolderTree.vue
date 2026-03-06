@@ -108,16 +108,21 @@ export default {
       })
     },
     async handleCreate() {
-      if (!this.showCreateInput) return
+      if (!this.showCreateInput || this._creating) return
       const name = this.newFolderName.trim()
       if (!name) {
         this.createField.error = this.$t("folders.name_required")
         return
       }
-      await this.$store.dispatch("folders/createFolder", { name })
-      this.newFolderName = ""
-      this.createField.error = null
-      this.showCreateInput = false
+      this._creating = true
+      try {
+        await this.$store.dispatch("folders/createFolder", { name })
+        this.newFolderName = ""
+        this.createField.error = null
+        this.showCreateInput = false
+      } finally {
+        this._creating = false
+      }
     },
     cancelCreate() {
       this.newFolderName = ""
@@ -158,13 +163,15 @@ export default {
           conversationIds,
         })
         await this.refreshAfterDrop()
-        this.$router.push({
-          name: "explore",
-          params: {
-            organizationId: this.getCurrentOrganizationScope,
-            folderId,
-          },
-        })
+        const storeScope = this.$store.getters["organizations/getStoreScope"]
+        if (storeScope) {
+          // Remove moved medias from current list instead of full reload
+          const currentFolderId = this.$route.params.folderId
+          if (folderId !== currentFolderId) {
+            this.$store.commit(`${storeScope}/deleteMedias`, conversationIds)
+          }
+          this.$store.commit(`${storeScope}/clearSelectedMedias`)
+        }
       } catch (error) {
         console.error("Error moving conversations to folder:", error)
       }

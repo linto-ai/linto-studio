@@ -385,9 +385,13 @@ export default {
         }
 
         this.bulkFolderId = folderId
-        await this.$store.dispatch(`${this.storeScope}/setSelectedFolderId`, folderId)
         this.$store.dispatch("folders/fetchFolders")
-        this.$store.dispatch(`${this.storeScope}/load`)
+        // Remove moved medias from current list and clear selection
+        const currentFolderId = this.$route.params.folderId
+        if (folderId !== currentFolderId) {
+          this.$store.commit(`${this.storeScope}/deleteMedias`, conversationIds)
+        }
+        this.$emit("update:selectedMediaIds", [])
       } catch (error) {
         console.error("Bulk folder move error:", error)
       }
