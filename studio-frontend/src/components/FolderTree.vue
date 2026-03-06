@@ -20,7 +20,6 @@
           :key="folder._id"
           :folder="folder"
           :selectedFolderId="selectedFolderId"
-          :activeFolderId="activeFolderId"
           :depth="0"
           :userRole="currentUserRole"
           :userId="currentUserId"
@@ -78,7 +77,6 @@ export default {
     ...mapGetters("folders", {
       folderTree: "getFolderTree",
       foldersLoading: "getLoading",
-      activeFolderId: "getActiveFolderId",
     }),
     ...mapGetters("organizations", ["getCurrentOrganizationScope"]),
     selectedFolderId() {
@@ -114,7 +112,6 @@ export default {
     selectFolder(folderId) {
       this.clearSearch()
       if (this.$route.params.folderId === folderId && this.$route.name === "explore") return
-      this.$store.dispatch("folders/setActiveFolderId", null)
       this.$router.push({
         name: "explore",
         params: {

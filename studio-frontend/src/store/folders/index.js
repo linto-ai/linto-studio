@@ -12,16 +12,12 @@ export default {
   namespaced: true,
   state: {
     folders: [],
-    activeFolderId: null,
     loading: false,
     error: null,
   },
   mutations: {
     setFolders(state, folders) {
       state.folders = folders
-    },
-    setActiveFolderId(state, folderId) {
-      state.activeFolderId = folderId
     },
     addFolder(state, folder) {
       state.folders = [...state.folders, folder]
@@ -81,7 +77,6 @@ export default {
       aggregateCounts(sorted)
       return sorted
     },
-    getActiveFolderId: (state) => state.activeFolderId,
     getLoading: (state) => state.loading,
   },
   actions: {
@@ -201,9 +196,6 @@ export default {
       } finally {
         commit("setLoading", false)
       }
-    },
-    setActiveFolderId({ commit }, folderId) {
-      commit("setActiveFolderId", folderId)
     },
     async updateFolderVisibility(
       { commit, dispatch, rootGetters },

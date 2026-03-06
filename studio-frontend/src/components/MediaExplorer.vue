@@ -194,9 +194,8 @@ export default {
         this.selectedMediaIds = cleaned
       }
     },
-    "$route.params.folderId"() {
+    "$route.fullPath"() {
       this.selectedMediaIds = []
-      this.$store.dispatch("folders/setActiveFolderId", null)
     },
     loading: {
       immediate: true,

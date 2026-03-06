@@ -392,15 +392,11 @@ export default {
       if (this.isSelected) {
         const remaining = this.selectedMediaIds.filter((id) => id !== this.media._id)
         this.$emit("update:selectedMediaIds", remaining)
-        if (remaining.length === 0) {
-          this.$store.dispatch("folders/setActiveFolderId", null)
-        }
       } else {
         this.$emit("update:selectedMediaIds", [
           ...this.selectedMediaIds,
           this.media._id,
         ])
-        this.$store.dispatch("folders/setActiveFolderId", this.media.folderId || null)
       }
     },
 

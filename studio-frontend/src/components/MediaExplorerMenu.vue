@@ -25,7 +25,7 @@
           :folder="inboxFolder"
           :virtual="true"
           icon="tray"
-          :activeFolderId="isInboxActive ? 'inbox' : null"
+          :selectedFolderId="isInboxActive ? 'inbox' : null"
           @select="handleInboxClick"
           @drop-media="handleInboxDrop" />
         <FolderTreeNode
@@ -33,7 +33,7 @@
           :folder="sessionsFolder"
           :virtual="true"
           icon="broadcast"
-          :activeFolderId="isSessionsActive ? 'sessions' : null"
+          :selectedFolderId="isSessionsActive ? 'sessions' : null"
           @select="handleSessionsClick" />
       </ul>
       <FolderTree ref="folderTree" />
@@ -54,13 +54,13 @@
           :folder="favoritesFolder"
           :virtual="true"
           icon="star"
-          :activeFolderId="isFavoritesActive ? 'favorites' : null"
+          :selectedFolderId="isFavoritesActive ? 'favorites' : null"
           @select="handleFavoritesClick" />
         <FolderTreeNode
           :folder="sharedFolder"
           :virtual="true"
           icon="share-network"
-          :activeFolderId="isSharedActive ? 'shared' : null"
+          :selectedFolderId="isSharedActive ? 'shared' : null"
           @select="handleSharedClick" />
       </ul>
     </div>
@@ -137,10 +137,6 @@ export default {
       async handler(orgId, oldOrgId) {
         if (orgId) {
           this.hasSessions = await apiHasSessions(orgId)
-          if (oldOrgId && orgId !== oldOrgId) {
-            // Only reset folder state — navigation is already handled by the org switch modal
-            this.$store.dispatch("folders/setActiveFolderId", null)
-          }
         } else {
           this.hasSessions = false
         }
@@ -163,7 +159,6 @@ export default {
     },
     handleSessionsClick() {
       this.clearSearch()
-      this.$store.dispatch(`${this.storeScope}/setSelectedFolderId`, undefined)
       this.$router.push({
         name: "sessionsList",
         params: { organizationId: this.getCurrentOrganizationScope },
@@ -171,7 +166,6 @@ export default {
     },
     handleFavoritesClick() {
       this.clearSearch()
-      this.$store.dispatch(`${this.storeScope}/setSelectedFolderId`, undefined)
       this.$router.push({
         name: "explore-favorites",
         params: { organizationId: this.getCurrentOrganizationScope },
@@ -179,14 +173,12 @@ export default {
     },
     handleSharedClick() {
       this.clearSearch()
-      this.$store.dispatch(`${this.storeScope}/setSelectedFolderId`, undefined)
       this.$router.push({
         name: "explore-shared",
         params: { organizationId: this.getCurrentOrganizationScope },
       })
     },
     selectFolder(folderId) {
-      this.$store.dispatch("folders/setActiveFolderId", null)
       this.$router.push({
         name: "explore",
         params: {
@@ -201,7 +193,6 @@ export default {
         await this.$store.dispatch("folders/uncategorizeConversations", {
           conversationIds,
         })
-        this.$store.dispatch("folders/setActiveFolderId", null)
         this.selectFolder(undefined)
         await this.$store.dispatch("folders/fetchFolders")
       } catch (error) {

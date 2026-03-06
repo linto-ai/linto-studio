@@ -799,6 +799,20 @@ router.beforeEach(async (to, from, next) => {
   try {
     routerDebug("beforeEach from", from.fullPath, "to", to.fullPath)
 
+    // Short-circuit: same explore route, same org, only folderId changes
+    if (
+      from.name === "explore" &&
+      to.name === "explore" &&
+      from.params.organizationId === to.params.organizationId &&
+      from.params.folderId !== to.params.folderId
+    ) {
+      const tagFolderId = to.params.folderId ?? null
+      await store.dispatch("tags/fetchTags", { folderId: tagFolderId })
+      //store.dispatch("system/setIsLoading", false)
+      routerDebug("Short-circuit folder navigation")
+      return next()
+    }
+
     // Redirect to 404 if sessions are disabled but trying to access session page
     if (!enableSession && to.meta?.sessionPage) {
       return next({ name: "not_found" })
@@ -888,7 +902,8 @@ router.beforeEach(async (to, from, next) => {
     }
 
     // Fetch tags scoped to the target folder
-    const tagFolderId = to.params.folderId || (to.name === "explore" ? null : undefined)
+    const tagFolderId =
+      to.params.folderId || (to.name === "explore" ? null : undefined)
     await store.dispatch("tags/fetchTags", { folderId: tagFolderId })
     routerDebug("Tags fetched")
 

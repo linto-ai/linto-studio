@@ -114,7 +114,6 @@
         :key="child._id"
         :folder="child"
         :selectedFolderId="selectedFolderId"
-        :activeFolderId="activeFolderId"
         :depth="depth + 1"
         :userRole="userRole"
         :userId="userId"
@@ -141,7 +140,6 @@ export default {
   props: {
     folder: { type: Object, required: true },
     selectedFolderId: { default: undefined },
-    activeFolderId: { type: String, default: null },
     depth: { type: Number, default: 0 },
     userRole: { type: Number, default: 0 },
     userId: { type: String, default: "" },
@@ -171,17 +169,6 @@ export default {
         }
       },
     },
-    activeFolderId: {
-      immediate: true,
-      handler(newId) {
-        if (
-          newId === this.folder._id ||
-          (newId && this.containsDescendant(this.folder.children, newId))
-        ) {
-          this.expanded = true
-        }
-      },
-    },
   },
   computed: {
     canManageAccess() {
@@ -199,10 +186,7 @@ export default {
       return false
     },
     isActive() {
-      return (
-        this.selectedFolderId === this.folder._id ||
-        this.activeFolderId === this.folder._id
-      )
+      return this.selectedFolderId === this.folder._id
     },
     contextMenuItems() {
       if (this.virtual || !this.canManageAccess) return []
