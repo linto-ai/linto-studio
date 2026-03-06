@@ -45,6 +45,22 @@ class ConvoModel extends MongoModel {
     }
   }
 
+  async updateRights(conversationId, organizationId, membersRight, customRights) {
+    try {
+      const query = {
+        _id: this.getObjectId(conversationId),
+        "organization.organizationId": organizationId,
+      }
+      return await this.mongoUpdateOne(query, "$set", {
+        "organization.membersRight": membersRight,
+        "organization.customRights": customRights,
+      })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   async getConvos() {
     try {
       const query = {}
@@ -851,10 +867,8 @@ class ConvoModel extends MongoModel {
         _id: { $in: objectIds },
         "organization.organizationId": organizationId,
       }
-      const dateTime = moment().format()
       return await this.mongoUpdateMany(query, "$set", {
         folderId: folderId,
-        last_update: dateTime,
       })
     } catch (error) {
       console.error(error)
@@ -868,10 +882,8 @@ class ConvoModel extends MongoModel {
         folderId: folderId,
         "organization.organizationId": organizationId,
       }
-      const dateTime = moment().format()
       return await this.mongoUpdateMany(query, "$set", {
         folderId: newFolderId,
-        last_update: dateTime,
       })
     } catch (error) {
       console.error(error)
@@ -888,7 +900,6 @@ class ConvoModel extends MongoModel {
       return await this.mongoUpdateMany(query, "$set", {
         "organization.membersRight": membersRight,
         "organization.customRights": customRights,
-        last_update: moment().format(),
       })
     } catch (error) {
       console.error(error)

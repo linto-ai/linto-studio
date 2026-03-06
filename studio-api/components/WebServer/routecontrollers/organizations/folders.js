@@ -127,12 +127,7 @@ function filterTreeByAccess(tree, userId, userRole) {
 
 async function syncConversationsRights(conversationIds, membersRight, customRights, organizationId) {
   for (const convId of conversationIds) {
-    await model.conversations.update({
-      _id: convId,
-      "organization.organizationId": organizationId,
-      "organization.membersRight": membersRight,
-      "organization.customRights": customRights,
-    })
+    await model.conversations.updateRights(convId, organizationId, membersRight, customRights)
   }
 }
 
