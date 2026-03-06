@@ -887,8 +887,9 @@ router.beforeEach(async (to, from, next) => {
       return next(orgScopeResult.nextRoute)
     }
 
-    // Fetch tags
-    await store.dispatch("tags/fetchTags")
+    // Fetch tags scoped to the target folder
+    const tagFolderId = to.params.folderId || (to.name === "explore" ? null : undefined)
+    await store.dispatch("tags/fetchTags", { folderId: tagFolderId })
     routerDebug("Tags fetched")
 
     if (to.name === "explore-favorites") {
