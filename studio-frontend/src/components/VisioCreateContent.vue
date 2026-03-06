@@ -105,7 +105,7 @@ export default {
           diarization: false,
           subInStudio: false,
           subInVisio: false,
-          offlineTranscription: true,
+          offlineTranscription: false,
           selectedProfile: this.transcriberProfiles?.[0] ?? null,
           transcriptionService:
             this.transcriptionServices.length > 0

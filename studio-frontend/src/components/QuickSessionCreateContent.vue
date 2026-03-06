@@ -4,9 +4,6 @@
       <h2>{{ $t("quick_session.creation.source_title") }}</h2>
       <FormRadio :field="fieldSource" v-model="fieldSource.value" />
     </section> -->
-    <div>
-      {{ $t("quick_session.creation.description_micro") }}
-    </div>
     <!-- <section class="flex col gap-small">
       <h2>{{ $t("quick_session.creation.profile_selector_title") }}</h2>
       <FormCheckbox
@@ -117,7 +114,7 @@ export default {
           keepAudio: true,
           diarization: false,
           subInStudio: false,
-          offlineTranscription: true,
+          offlineTranscription: false,
           selectedProfile: this.transcriberProfiles?.[0] ?? null,
           transcriptionService:
             this.transcriptionServices.length > 0
