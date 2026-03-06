@@ -665,6 +665,8 @@
     "force_public_parents": "Rendre aussi les dossiers parents publics",
     "members_label": "Membres",
     "no_members": "Aucun membre sélectionné",
+    "right_none": "Pas d'accès",
+    "right_none_description": "Pas d'accès à ce dossier",
     "right_read": "Lecture",
     "right_read_description": "Voir le dossier et ses conversations",
     "right_write": "Écriture",
@@ -673,6 +675,7 @@
     "right_share_description": "Gérer l'accès et les membres du dossier",
     "uncategorize_success": "Conversations retirées du dossier",
     "uncategorize_error": "Erreur lors du retrait des conversations du dossier",
+    "right_label": "Droit",
     "members_propagate_to_parents": "Les nouveaux membres seront aussi ajoutés aux dossiers parents avec un accès en lecture seule pour permettre la navigation."
   },
   "manage_tags": {

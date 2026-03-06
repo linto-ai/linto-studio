@@ -29,6 +29,11 @@ export default {
     items() {
       return [
         {
+          name: this.$t("folders.right_none"),
+          description: this.$t("folders.right_none_description"),
+          value: 0,
+        },
+        {
           name: this.$t("folders.right_read"),
           description: this.$t("folders.right_read_description"),
           value: 1,

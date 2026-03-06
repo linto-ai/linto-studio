@@ -49,36 +49,21 @@
           {{ $t("folders.no_members") }}
         </p>
 
-        <table
+        <GenericTable
           v-if="orgUsers.length > 0"
-          class="table-grid"
-          style="grid-template-columns: auto 1fr auto; width: 100%">
-          <tbody>
-            <tr
-              v-for="user in orgUsers"
-              :key="user._id"
-              class="folder-access-modal__row"
-              :class="{ 'folder-access-modal__row--selected': isMemberSelected(user._id) }"
-              @click="toggleMember(user, !isMemberSelected(user._id))">
-              <td class="content-size">
-                <input
-                  type="checkbox"
-                  :checked="isMemberSelected(user._id)"
-                  @click.stop
-                  @change="toggleMember(user, $event.target.checked)" />
-              </td>
-              <td>
-                <UserInfoInline :user="user" :user-id="user._id" />
-              </td>
-              <td v-if="isMemberSelected(user._id)" @click.stop>
-                <FolderRightSelector
-                  :value="getMemberRight(user._id)"
-                  @input="setMemberRight(user._id, $event)" />
-              </td>
-              <td v-else></td>
-            </tr>
-          </tbody>
-        </table>
+          :columns="columns"
+          :content="orgUsers"
+          sortListDirection=""
+          sortListKey="">
+          <template #cell-user="{ element }">
+            <UserInfoInline :user="element" :user-id="element._id" />
+          </template>
+          <template #cell-right="{ element }">
+            <FolderRightSelector
+              :value="getMemberRight(element._id)"
+              @input="setMemberRight(element._id, $event)" />
+          </template>
+        </GenericTable>
       </div>
     </div>
   </Modal>
@@ -86,15 +71,14 @@
 
 <script>
 import Modal from "@/components/molecules/Modal.vue"
+import GenericTable from "@/components/molecules/GenericTable.vue"
 import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 import FolderRightSelector from "@/components/molecules/FolderRightSelector.vue"
 import { mapGetters } from "vuex"
 
-const RIGHT_READ = 1
-
 export default {
   name: "FolderAccessModal",
-  components: { Modal, UserInfoInline, FolderRightSelector },
+  components: { Modal, GenericTable, UserInfoInline, FolderRightSelector },
   props: {
     folder: { type: Object, required: true },
     value: { type: Boolean, required: true },
@@ -130,6 +114,12 @@ export default {
     showForceOption() {
       return this.parentIsPrivate && !this.isPrivate
     },
+    columns() {
+      return [
+        { key: "user", label: this.$t("folders.members_label"), width: "1fr" },
+        { key: "right", label: this.$t("folders.right_label"), width: "auto" },
+      ]
+    },
     _value: {
       get() {
         return this.value
@@ -140,25 +130,23 @@ export default {
     },
   },
   methods: {
-    isMemberSelected(userId) {
-      return this.selectedMembers.some((m) => m.userId === userId)
-    },
     getMemberRight(userId) {
       const member = this.selectedMembers.find((m) => m.userId === userId)
-      return member ? member.right : RIGHT_READ
-    },
-    toggleMember(user, checked) {
-      if (checked) {
-        this.selectedMembers.push({ userId: user._id, right: RIGHT_READ })
-      } else {
-        this.selectedMembers = this.selectedMembers.filter(
-          (m) => m.userId !== user._id,
-        )
-      }
+      return member ? member.right : 0
     },
     setMemberRight(userId, right) {
-      const member = this.selectedMembers.find((m) => m.userId === userId)
-      if (member) member.right = right
+      if (right === 0) {
+        this.selectedMembers = this.selectedMembers.filter(
+          (m) => m.userId !== userId,
+        )
+      } else {
+        const member = this.selectedMembers.find((m) => m.userId === userId)
+        if (member) {
+          member.right = right
+        } else {
+          this.selectedMembers.push({ userId, right })
+        }
+      }
     },
     onVisibilityChange(checked) {
       this.isPrivate = checked
@@ -306,16 +294,5 @@ export default {
     margin: 0;
   }
 
-  &__row {
-    cursor: pointer;
-
-    &:hover {
-      background-color: var(--primary-soft);
-    }
-
-    &--selected {
-      background-color: var(--primary-soft);
-    }
-  }
 }
 </style>

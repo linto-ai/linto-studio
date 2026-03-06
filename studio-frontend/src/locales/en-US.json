@@ -670,6 +670,8 @@
     "force_public_parents": "Also make parent folders public",
     "members_label": "Members",
     "no_members": "No members selected",
+    "right_none": "No access",
+    "right_none_description": "No access to this folder",
     "right_read": "Read",
     "right_read_description": "View folder and its conversations",
     "right_write": "Write",
@@ -678,6 +680,7 @@
     "right_share_description": "Manage folder access and members",
     "uncategorize_success": "Conversations removed from folder",
     "uncategorize_error": "Error removing conversations from folder",
+    "right_label": "Right",
     "members_propagate_to_parents": "New members will also be added to parent folders with read-only access to allow navigation."
   },
   "manage_tags": {
