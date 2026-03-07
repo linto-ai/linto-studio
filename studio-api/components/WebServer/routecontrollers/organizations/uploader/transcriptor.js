@@ -53,7 +53,7 @@ async function transcribeReq(req, res, next) {
       req.body.url || !(req.files && Array.isArray(req.files.file))
     const conversation = await transcribe(isSingleFile, req, res, next)
 
-    if (this?.app?.components?.IoHandler)
+    if (conversation && this?.app?.components?.IoHandler)
       this.app.components.IoHandler.emit("new_conversation", conversation)
   } catch (err) {
     next(err)

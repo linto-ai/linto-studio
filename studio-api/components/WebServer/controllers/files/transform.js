@@ -63,7 +63,11 @@ async function handleStreamProcess(streamProcess) {
 
     streamProcess.on("close", (code) => {
       debug(`child process exited with code ${code}`)
-      resolve()
+      if (code !== 0) {
+        reject(new Error(`ffmpeg exited with code ${code}`))
+      } else {
+        resolve()
+      }
     })
   })
 }
