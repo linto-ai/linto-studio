@@ -4,7 +4,7 @@ export default function generateServiceConfig(
     punctuationValue = "disabled",
     diarizationValue = "disabled",
     speakersNumberValue = 0,
-    languageValue = service.language || "*",
+    languageValue = (service.language || "*").split(",")[0],
   } = {},
 ) {
   const hasBuiltInPunctuation = ["whisper", "nemo"].includes(service.model_type)
