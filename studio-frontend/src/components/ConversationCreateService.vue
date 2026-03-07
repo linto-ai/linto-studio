@@ -183,11 +183,11 @@ export default {
     modelType() {
       return this.value.model_type
     },
-    isModelWithPunctuation() {
-      return this.modelType !== "whisper"
+    hasBuiltInPunctuation() {
+      return ["whisper", "nemo"].includes(this.modelType)
     },
-    isWhisper() {
-      return this.modelType === "whisper"
+    isModelWithPunctuation() {
+      return !this.hasBuiltInPunctuation
     },
     language() {
       return this.value?.language || "*"
@@ -242,7 +242,7 @@ export default {
           punctuationValue: this.punctuation.value,
           diarizationValue: this.diarization.value,
           speakersNumberValue: this.speakersNumber.value,
-          languageValue: this.isWhisper
+          languageValue: this.hasBuiltInPunctuation
             ? this.languageField.value
             : this.value.language,
         }),

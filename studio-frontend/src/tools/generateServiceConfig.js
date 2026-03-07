@@ -7,7 +7,7 @@ export default function generateServiceConfig(
     languageValue = service.language || "*",
   } = {},
 ) {
-  const isWhisper = service.model_type === "whisper"
+  const hasBuiltInPunctuation = ["whisper", "nemo"].includes(service.model_type)
 
   return {
     serviceName: service.serviceName,
@@ -30,7 +30,7 @@ export default function generateServiceConfig(
       },
       enableNormalization: true,
       modelType: service.model_type,
-      vadConfig: isWhisper
+      vadConfig: hasBuiltInPunctuation
         ? {
             enableVAD: true,
             methodName: "WebRTC",
