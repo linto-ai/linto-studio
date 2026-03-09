@@ -523,6 +523,27 @@ let router = new Router({
       },
     },
     {
+      path: "/interface/:organizationId?/processing",
+      name: "explore-processing",
+      components: {
+        default: () => import("../views/NextExplore.vue"),
+        ...defaultComponents,
+      },
+      props: {
+        ...defaultProps,
+        default: { processing: true },
+      },
+      meta: {
+        mainListingPage: true,
+        breadcrumb: {
+          label: "breadcrumb.processing",
+          parent: null,
+          showInBreadcrumb: true,
+          isRoot: true,
+        },
+      },
+    },
+    {
       path: "/interface/:organizationId?/sessionsList",
       name: "sessionsList",
       components: {

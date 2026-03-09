@@ -106,6 +106,7 @@
       <div class="actions-container">
         <FolderSelector
           :value="bulkFolderId"
+          :readonly="hasProcessingMedia"
           @change="handleBulkFolderChange" />
       </div>
     </div>
@@ -189,6 +190,12 @@ export default {
       currentOrganizationScope: "getCurrentOrganizationScope",
       getCurrentScope: "getCurrentScope",
     }),
+    hasProcessingMedia() {
+      return this.selectedMedias.some((m) => {
+        const state = m?.jobs?.transcription?.state
+        return state && state !== "done" && state !== "error"
+      })
+    },
     commonTags() {
       if (this.selectedMedias.length === 0) return []
 

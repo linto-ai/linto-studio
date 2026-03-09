@@ -4,6 +4,7 @@ import {
   apiGetGenericConversationsList,
   apiGetGenericConversationsCount,
   apiDeleteMultipleConversation,
+  apiGetConversationById,
 } from "@/api/conversation"
 import i18n from "@/i18n"
 import Vue from "vue"
@@ -328,8 +329,15 @@ export default function createMediaModule(scope, status = "done") {
       setFilterStatus({ commit }, status) {
         commit("setFilterStatus", status)
       },
-      prependMedias({ commit }, medias) {
-        commit("prependMedias", medias)
+      async prependMedias({ commit }, medias) {
+        const resolved = await Promise.all(
+          medias.map(async (m) => {
+            if (typeof m === "string") return await apiGetConversationById(m)
+            if (m?._id) return m
+            return null
+          }),
+        )
+        commit("prependMedias", resolved.filter(Boolean))
       },
     },
   }

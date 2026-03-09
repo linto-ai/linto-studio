@@ -98,7 +98,7 @@
           <h4 class="section-title">{{ $t("folders.folder") }}</h4>
           <FolderSelector
             :value="reactiveSelectedMedia?.folderId || null"
-            :readonly="readOnly"
+            :readonly="readOnly || isProcessing"
             @change="handleFolderChange" />
         </div>
 
@@ -139,6 +139,7 @@
             <Button
               @click="handleDuplicate"
               :loading="duplicateLoading"
+              :disabled="isProcessing"
               icon="copy"
               variant="secondary"
               size="sm">
@@ -245,6 +246,10 @@ export default {
     }),
     reactiveSelectedMedia() {
       return this.selectedMedia
+    },
+    isProcessing() {
+      const state = this.reactiveSelectedMedia?.jobs?.transcription?.state
+      return state && state !== "done" && state !== "error"
     },
     selectedMediaTags() {
       const media = this.reactiveSelectedMedia

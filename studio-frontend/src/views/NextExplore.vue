@@ -2,36 +2,12 @@
   <LayoutV2 customClass="explore-next">
     <MediaExplorer
       v-if="medias"
-      ref="mediaExplorer"
       :medias="medias"
       :loading="loading || pageIsLoading"
       :loadingNextPage="loadingNextPage"
       enable-pagination
       class="relative"
-      @load-more="handleLoadMore">
-      <template #header-actions v-if="getCurrentScope == 'organization'">
-        <div class="flex gap-small">
-          <FilterChip
-            v-if="countProcessing > 0 || countError > 0"
-            :label="$t('media_explorer.filter.transcribed')"
-            v-model="filterStatus"
-            chipValue="done"
-            :count="countDone" />
-          <FilterChip
-            v-if="countProcessing > 0"
-            :label="$t('media_explorer.filter.processing')"
-            v-model="filterStatus"
-            chipValue="processing"
-            :count="countProcessing" />
-          <FilterChip
-            v-if="countError > 0"
-            :label="$t('media_explorer.filter.error')"
-            v-model="filterStatus"
-            chipValue="error"
-            :count="countError" />
-        </div>
-      </template>
-    </MediaExplorer>
+      @load-more="handleLoadMore" />
   </LayoutV2>
 </template>
 
@@ -57,6 +33,7 @@ export default {
     currentOrganizationScope: { type: String, required: true },
     favorites: { type: Boolean, required: false, default: false },
     shared: { type: Boolean, required: false, default: false },
+    processing: { type: Boolean, default: false },
   },
   data() {
     return {
@@ -80,33 +57,10 @@ export default {
     sortOrder() {
       return this.$store.getters[`${this.storeScope}/getSortOrder`]
     },
-    countDone() {
-      return this.$store.getters[
-        `${this.getCurrentOrganizationScope}/done/conversations/count`
-      ]
-    },
-    countError() {
-      return this.$store.getters[
-        `${this.getCurrentOrganizationScope}/error/conversations/count`
-      ]
-    },
-    countProcessing() {
-      return this.$store.getters[
-        `${this.getCurrentOrganizationScope}/processing/conversations/count`
-      ]
-    },
-    filterStatus: {
-      get() {
-        return this.$store.getters["organizations/getCurrentFilterStatus"]
-      },
-      set(value) {
-        this.$refs.mediaExplorer.reset()
-        this.$store.dispatch("organizations/setCurrentFilterStatus", value)
-      },
-    },
     ...mapGetters("system", { pageIsLoading: "isLoading" }),
     effectiveFolderId() {
       if (this.hasActiveSearch) return undefined // Global search across all folders
+      if (this.processing) return undefined
       const routeFolderId = this.$route.params.folderId
       if (routeFolderId) return routeFolderId
       // In organization scope inbox (no folder selected), show only unfiled conversations
@@ -124,33 +78,19 @@ export default {
     async init() {
       try {
         if (this.getCurrentScope === "organization") {
-          await this.initCounts()
           this.$apiEventWS.subscribeMediaUpdate(this.currentOrganizationScope)
-
-          const status = this.getStatusFromUrl()
-          this.$store.dispatch("organizations/setCurrentFilterStatus", status)
-
-          window.history.replaceState({}, "", window.location.pathname)
+          this.$store.dispatch(
+            "organizations/setCurrentFilterStatus",
+            this.processing ? "processing" : "done"
+          )
         }
-
         await this.$store.dispatch(`${this.storeScope}/load`, {
           folderId: this.effectiveFolderId,
         })
-
-        if (this.countProcessing == 0) {
-          this.$store.dispatch("organizations/setCurrentFilterStatus", "done")
-        }
       } finally {
         this.loading = false
         this.$store.dispatch("system/setIsLoading", false)
       }
-    },
-    getStatusFromUrl() {
-      const status = this.$route.query.status
-      if (!status || ["done", "processing", "error"].indexOf(status) == "-1") {
-        return "done"
-      }
-      return status
     },
     async handleLoadMore() {
       this.loadingNextPage = true
@@ -158,17 +98,6 @@ export default {
         folderId: this.effectiveFolderId,
       })
       this.loadingNextPage = false
-    },
-    initCounts() {
-      this.$store.dispatch(
-        `${this.getCurrentOrganizationScope}/done/conversations/loadStatusCount`,
-      )
-      this.$store.dispatch(
-        `${this.getCurrentOrganizationScope}/processing/conversations/loadStatusCount`,
-      )
-      this.$store.dispatch(
-        `${this.getCurrentOrganizationScope}/error/conversations/loadStatusCount`,
-      )
     },
   },
   watch: {
@@ -179,10 +108,9 @@ export default {
         this.init()
       }
     },
-    countProcessing(value) {
-      if (value == 0) {
-        this.filterStatus = "done"
-      }
+    processing() {
+      this.loading = true
+      this.init()
     },
     async "$route.params.folderId"() {
       this.loading = true
@@ -218,17 +146,6 @@ export default {
       }
     },
     async sidebarFilterTagIds() {
-      if (this.pageIsLoading) return
-      this.loading = true
-      try {
-        await this.$store.dispatch(`${this.storeScope}/load`, {
-          folderId: this.effectiveFolderId,
-        })
-      } finally {
-        this.loading = false
-      }
-    },
-    async filterStatus() {
       if (this.pageIsLoading) return
       this.loading = true
       try {

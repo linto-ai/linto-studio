@@ -35,6 +35,13 @@
           icon="broadcast"
           :selectedFolderId="isSessionsActive ? 'sessions' : null"
           @select="handleSessionsClick" />
+        <FolderTreeNode
+          v-if="processingCount > 0"
+          :folder="processingFolder"
+          :virtual="true"
+          icon="arrows-clockwise"
+          :selectedFolderId="isProcessingActive ? 'processing' : null"
+          @select="handleProcessingClick" />
       </ul>
       <FolderTree ref="folderTree" />
     </div>
@@ -130,6 +137,21 @@ export default {
     sharedFolder() {
       return { _id: "shared", name: this.$t("navigation.tabs.shared") }
     },
+    processingCount() {
+      return this.$store.getters[
+        `${this.getCurrentOrganizationScope}/processing/conversations/count`
+      ] || 0
+    },
+    isProcessingActive() {
+      return this.$route.name === "explore-processing"
+    },
+    processingFolder() {
+      return {
+        _id: "processing",
+        name: this.$t("navigation.tabs.processing"),
+        conversationCount: this.processingCount,
+      }
+    },
   },
   watch: {
     getCurrentOrganizationScope: {
@@ -137,6 +159,9 @@ export default {
       async handler(orgId, oldOrgId) {
         if (orgId) {
           this.hasSessions = await apiHasSessions(orgId)
+          this.$store.dispatch(
+            `${orgId}/processing/conversations/loadStatusCount`
+          )
         } else {
           this.hasSessions = false
         }
@@ -175,6 +200,13 @@ export default {
       this.clearSearch()
       this.$router.push({
         name: "explore-shared",
+        params: { organizationId: this.getCurrentOrganizationScope },
+      })
+    },
+    handleProcessingClick() {
+      this.clearSearch()
+      this.$router.push({
+        name: "explore-processing",
         params: { organizationId: this.getCurrentOrganizationScope },
       })
     },

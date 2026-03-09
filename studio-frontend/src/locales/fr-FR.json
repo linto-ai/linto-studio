@@ -275,7 +275,8 @@
     "transcriberProfiles": "Profils de transcription",
     "users": "Utilisateurs",
     "userSettings": "Paramètres utilisateur",
-    "createorganization": "Créer une organisation"
+    "createorganization": "Créer une organisation",
+    "processing": "En traitement"
   },
   "conversation": {
     "acoustic": {
@@ -826,7 +827,8 @@
       "sessions": "Transcription en direct",
       "shared": "Partages reçus",
       "tags": "Thématiques",
-      "folders": "Dossiers"
+      "folders": "Dossiers",
+      "processing": "En traitement"
     },
     "sections": {
       "organization": "Organisation",

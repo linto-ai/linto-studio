@@ -1,7 +1,7 @@
 <template>
   <div
     class="media-explorer-item"
-    draggable="true"
+    :draggable="status === 'done'"
     @dragstart="onDragStart"
     @dragend="isDragging = false"
     @click="toggleSelection"
@@ -442,6 +442,7 @@ export default {
     },
 
     onDragStart(e) {
+      if (this.status !== "done") return
       this.isDragging = true
       this.$el.style.opacity = "0.3"
       requestAnimationFrame(() => {

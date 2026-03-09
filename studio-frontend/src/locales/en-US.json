@@ -274,7 +274,8 @@
     "transcription": "Transcription",
     "transcriberProfiles": "Transcriber Profiles",
     "users": "Users",
-    "userSettings": "Profile settings"
+    "userSettings": "Profile settings",
+    "processing": "Processing"
   },
   "conversation": {
     "acoustic": {
@@ -843,7 +844,8 @@
       "sessions": "Live transcriptions",
       "shared": "Shared with me",
       "tags": "Topics",
-      "folders": "Folders"
+      "folders": "Folders",
+      "processing": "Processing"
     }
   },
   "no_orga": {

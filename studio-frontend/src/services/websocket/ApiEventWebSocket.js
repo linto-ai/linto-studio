@@ -252,47 +252,52 @@ export default class ApiEventWebSocket {
 
     this.socket.on("conversation_processing_done", (mediaId) => {
       debugWSMedia("conversation_processing_done", mediaId)
+
+      const processingMedia = store.getters[
+        `${this.currentMediaOrganizationId}/processing/conversations/getMediaById`
+      ](mediaId)
+
+      // Remove from processing store
+      if (processingMedia) {
+        store.dispatch(
+          `${this.currentMediaOrganizationId}/processing/conversations/deleteMedias`,
+          { ids: [mediaId], callApi: false },
+        )
+      }
       store.dispatch(
-        `${this.currentMediaOrganizationId}/processing/conversations/updateMedia`,
-        {
-          mediaId: mediaId,
-          media: { jobs: { transcription: { state: "done" } } },
-          patch: true,
-        },
+        `${this.currentMediaOrganizationId}/processing/conversations/decreaseCount`,
+      )
+
+      // Add to done store (inbox)
+      store.dispatch(
+        `${this.currentMediaOrganizationId}/done/conversations/prependMedias`,
+        [processingMedia ? { ...processingMedia, jobs: { transcription: { state: "done" } } } : mediaId],
       )
       store.dispatch(
         `${this.currentMediaOrganizationId}/done/conversations/increaseCount`,
-      )
-
-      store.dispatch(
-        `${this.currentMediaOrganizationId}/done/conversations/prependMedias`,
-        [
-          store.getters[
-            `${this.currentMediaOrganizationId}/processing/conversations/getMediaById`
-          ](mediaId),
-        ],
-      )
-
-      store.dispatch(
-        `${this.currentMediaOrganizationId}/processing/conversations/decreaseCount`,
       )
     })
 
     this.socket.on("conversation_processing_error", (mediaId) => {
       debugWSMedia("conversation_processing_error", mediaId)
-      store.dispatch(
-        `${this.currentMediaOrganizationId}/processing/conversations/updateMedia`,
-        {
-          mediaId: mediaId,
-          media: { jobs: { transcription: { state: "error" } } },
-          patch: true,
-        },
-      )
-      store.dispatch(
-        `${this.currentMediaOrganizationId}/error/conversations/increaseCount`,
-      )
+
+      const processingMedia = store.getters[
+        `${this.currentMediaOrganizationId}/processing/conversations/getMediaById`
+      ](mediaId)
+
+      // Remove from processing store
+      if (processingMedia) {
+        store.dispatch(
+          `${this.currentMediaOrganizationId}/processing/conversations/deleteMedias`,
+          { ids: [mediaId], callApi: false },
+        )
+      }
       store.dispatch(
         `${this.currentMediaOrganizationId}/processing/conversations/decreaseCount`,
+      )
+
+      store.dispatch(
+        `${this.currentMediaOrganizationId}/error/conversations/increaseCount`,
       )
     })
   }
