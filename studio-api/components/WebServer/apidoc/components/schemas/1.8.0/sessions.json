@@ -1,0 +1,214 @@
+{
+    "TranslationEntry": {
+        "type": "object",
+        "properties": {
+            "target": {
+                "type": "string",
+                "description": "BCP47 language tag"
+            },
+            "mode": {
+                "type": "string",
+                "enum": ["discrete", "external"],
+                "description": "Translation mode"
+            },
+            "translator": {
+                "type": "string",
+                "description": "Translator name (required for external mode)"
+            }
+        },
+        "required": ["target", "mode"]
+    },
+    "ChannelRequest": {
+        "type": "object",
+        "properties": {
+            "name": {
+                "type": "string",
+                "description": "The name of the channel"
+            },
+            "transcriberProfileId": {
+                "type": "integer",
+                "description": "The id of the channel config"
+            },
+            "translations": {
+                "type": "array",
+                "description": "List of translation targets. Accepts BCP47 strings (legacy, converted to discrete mode) or objects with target, mode, and optional translator.",
+                "items": {
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "description": "BCP47 language tag (legacy format, converted to discrete mode)"
+                        },
+                        {
+                            "$ref": "#/components/schemas/TranslationEntry"
+                        }
+                    ]
+                },
+                "default": []
+            },
+            "keepAudio": {
+                "type": "boolean",
+                "description": "Save audio",
+                "default": true
+            },
+            "diarization": {
+                "type": "boolean",
+                "description": "Enable diarization",
+                "default": false
+            },
+            "compressAudio": {
+                "type": "boolean",
+                "description": "Compress audio as MP3 instead of WAV.",
+                "default": true
+            },
+            "enableLiveTranscripts": {
+                "type": "boolean",
+                "description": "Set to False to disable transcription.",
+                "default": true
+            },
+            "meta": {
+                "type": "json",
+                "default": null
+            }
+        }
+    },
+    "ChannelUpdateRequest": {
+        "type": "object",
+        "properties": {
+            "id": {
+                "type": "integer",
+                "description": "The id of the channel"
+            },
+            "name": {
+                "type": "string",
+                "description": "The name of the channel"
+            },
+            "transcriberProfileId": {
+                "type": "integer",
+                "description": "The id of the transcriber profile"
+            },
+            "translations": {
+                "type": "array",
+                "description": "List of translation targets. Accepts BCP47 strings (legacy, converted to discrete mode) or objects with target, mode, and optional translator.",
+                "items": {
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "description": "BCP47 language tag (legacy format, converted to discrete mode)"
+                        },
+                        {
+                            "$ref": "#/components/schemas/TranslationEntry"
+                        }
+                    ]
+                },
+                "default": []
+            },
+            "keepAudio": {
+                "type": "boolean",
+                "description": "Save audio",
+                "default": true
+            },
+            "diarization": {
+                "type": "boolean",
+                "description": "Enable diarization",
+                "default": false
+            },
+            "compressAudio": {
+                "type": "boolean",
+                "description": "Compress audio as MP3 instead of WAV."
+            },
+            "enableLiveTranscripts": {
+                "type": "boolean",
+                "description": "Set to False to disable transcription.",
+                "default": true
+            },
+            "meta": {
+                "type": "json",
+                "default": null
+            }
+        }
+    },
+    "ChannelAnswer": {
+        "type": "object",
+        "properties": {
+            "id": {
+                "type": "integer",
+                "description": "The ID of the channel"
+            },
+            "index": {
+                "type": "integer",
+                "description": "The index of the channel in the channels list"
+            },
+            "keepAudio": {
+                "type": "boolean",
+                "description": "The audio is saved"
+            },
+            "diarization": {
+                "type": "boolean",
+                "description": "The diarization is enabled"
+            },
+            "compressAudio": {
+                "type": "boolean",
+                "description": "Audio is compressed as MP3 instead of WAV."
+            },
+            "enableLiveTranscripts": {
+                "type": "boolean",
+                "description": "Set to False to disable transcription.",
+                "default": true
+            },
+            "transcriberId": {
+                "type": "string",
+                "description": "The id of the transcriber that is currently transcribing this channel"
+            },
+            "name": {
+                "type": "string",
+                "description": "The name of the channel"
+            },
+            "languages": {
+                "type": "array",
+                "description": "The language of the channel as a BCP-47 language tag (fr-FR, en-US, ...) and endpoints"
+            },
+            "translations": {
+                "type": "array",
+                "description": "The translations enabled for the channel",
+                "items": {
+                    "$ref": "#/components/schemas/TranslationEntry"
+                }
+            },
+            "transcriberProfileId": {
+                "type": "integer",
+                "description": "The id of the channel config"
+            },
+            "streamEndpoints": {
+                "type": "object",
+                "description": "The available stream endpoints for this channel",
+                "properties": {
+                    "srt": {
+                        "type": "string",
+                        "description": "The stream endpoint for SRT stream"
+                    },
+                    "rtmp": {
+                        "type": "string",
+                        "description": "The stream endpoint for RTMP stream"
+                    },
+                    "ws": {
+                        "type": "string",
+                        "description": "The stream endpoint for WEBSOCKET stream"
+                    }
+                }
+            },
+            "streamStatus": {
+                "type": "string",
+                "description": "The status of the stream",
+                "enum": [
+                    "active",
+                    "inactive",
+                    "errored"
+                ]
+            },
+            "audioFile": {
+                "type": "string",
+                "description": "URL to the audio file"
+            }
+        }
+    }
+}
