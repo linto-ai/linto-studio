@@ -193,7 +193,7 @@ export default {
     hasProcessingMedia() {
       return this.selectedMedias.some((m) => {
         const state = m?.jobs?.transcription?.state
-        return state && state !== "done" && state !== "error"
+        return state !== "done"
       })
     },
     commonTags() {
@@ -220,7 +220,9 @@ export default {
     },
 
     removeMediaFromSelection(media) {
-      const newSelection = this.selectedMediaIds.filter((id) => id !== media._id)
+      const newSelection = this.selectedMediaIds.filter(
+        (id) => id !== media._id,
+      )
       this.$emit("update:selectedMediaIds", newSelection)
     },
 
@@ -581,5 +583,4 @@ export default {
   color: var(--text-secondary, #666);
   font-style: italic;
 }
-
 </style>

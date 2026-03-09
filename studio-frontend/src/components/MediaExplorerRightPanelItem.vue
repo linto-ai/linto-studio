@@ -249,7 +249,7 @@ export default {
     },
     isProcessing() {
       const state = this.reactiveSelectedMedia?.jobs?.transcription?.state
-      return state && state !== "done" && state !== "error"
+      return state !== "done"
     },
     selectedMediaTags() {
       const media = this.reactiveSelectedMedia
@@ -329,7 +329,9 @@ export default {
         // Remove moved media from current list and clear selection
         const currentFolderId = this.$route.params.folderId
         if (folderId !== currentFolderId) {
-          this.$store.commit(`${this.storeScope}/deleteMedias`, [this.selectedMedia._id])
+          this.$store.commit(`${this.storeScope}/deleteMedias`, [
+            this.selectedMedia._id,
+          ])
         }
         this.$emit("clear-selection")
       } catch (error) {
