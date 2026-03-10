@@ -32,6 +32,22 @@ module.exports = function () {
     this.notify_conversation_action("deleted", orgaIds, { id, status })
   })
 
+  this.on("folder_created", (orgaId, folder) => {
+    this.notify_folder_action("created", orgaId, folder)
+  })
+
+  this.on("folder_updated", (orgaId, folder) => {
+    this.notify_folder_action("updated", orgaId, folder)
+  })
+
+  this.on("folder_deleted", (orgaId, folderId) => {
+    this.notify_folder_action("deleted", orgaId, { _id: folderId })
+  })
+
+  this.on("folders_refresh", (orgaId) => {
+    this.io.to(orgaId).emit("folders_refresh")
+  })
+
   // MQTT broker client send this event when the connection is lost
   this.on("borker_disconnected", () => {
     this.brokerKo(true)

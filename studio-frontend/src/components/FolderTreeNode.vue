@@ -132,6 +132,7 @@ import PopoverList from "@/components/atoms/PopoverList.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
 import { folderDragDropMixin } from "@/mixins/folderDragDrop"
 import RIGHTS from "@/const/userRights"
+import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
 
 export default {
   name: "FolderTreeNode",
@@ -172,7 +173,7 @@ export default {
   },
   computed: {
     canManageAccess() {
-      if (this.userRole >= 5) return true
+      if (this.userRole >= ORGANIZATION_ROLES.MAINTAINER) return true
       if (this.folder.owner === this.userId) return true
       if (
         this.folder.members &&
@@ -197,7 +198,7 @@ export default {
           icon: "pencil",
         },
       ]
-      if (this.userRole >= 5) {
+      if (this.userRole >= ORGANIZATION_ROLES.MAINTAINER) {
         items.push({
           id: "create-child",
           name: this.$t("folders.create_subfolder"),

@@ -23,7 +23,7 @@ module.exports = (webserver) => {
     {
       path: "/",
       method: "post",
-      controller: createFolder,
+      controller: createFolder.bind(webserver),
       requireAuth: true,
       requireOrganizationMemberAccess: true,
       requireFolderManagerAccess: true,
@@ -46,7 +46,7 @@ module.exports = (webserver) => {
     {
       path: "/:folderId",
       method: "patch",
-      controller: updateFolder,
+      controller: updateFolder.bind(webserver),
       requireAuth: true,
       requireOrganizationMemberAccess: true,
       requireFolderManagerAccess: true,
@@ -54,7 +54,7 @@ module.exports = (webserver) => {
     {
       path: "/:folderId",
       method: "delete",
-      controller: deleteFolder,
+      controller: deleteFolder.bind(webserver),
       requireAuth: true,
       requireOrganizationMemberAccess: true,
       requireFolderManagerAccess: true,

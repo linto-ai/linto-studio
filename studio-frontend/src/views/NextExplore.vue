@@ -73,12 +73,14 @@ export default {
   },
   beforeDestroy() {
     this.$apiEventWS.unSubscribeMediaUdate()
+    this.$apiEventWS.unSubscribeFolderUpdate()
   },
   methods: {
     async init() {
       try {
         if (this.getCurrentScope === "organization") {
           this.$apiEventWS.subscribeMediaUpdate(this.currentOrganizationScope)
+          this.$apiEventWS.subscribeFolderUpdate(this.currentOrganizationScope)
           this.$store.dispatch(
             "organizations/setCurrentFilterStatus",
             this.processing ? "processing" : "done"
@@ -105,6 +107,7 @@ export default {
       if (newOrgId && newOrgId !== oldOrgId) {
         this.loading = true
         this.$apiEventWS.unSubscribeMediaUdate()
+        this.$apiEventWS.unSubscribeFolderUpdate()
         this.init()
       }
     },
@@ -181,6 +184,7 @@ export default {
     "$apiEventWS.state.connexionRestored"() {
       if (this.getCurrentScope === "organization") {
         this.$apiEventWS.subscribeMediaUpdate(this.currentOrganizationScope)
+        this.$apiEventWS.subscribeFolderUpdate(this.currentOrganizationScope)
       }
     },
   },

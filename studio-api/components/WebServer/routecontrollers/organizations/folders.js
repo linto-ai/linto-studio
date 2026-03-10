@@ -233,19 +233,21 @@ async function handleInheritFromPrivateParent(
   folderId,
   organizationId,
   parent,
+  userId,
 ) {
+  const effectiveOwner = parent.owner || userId
   const members = parent.members || []
   await model.folders.update({
     _id: folderId,
     visibility: "private",
-    owner: parent.owner,
+    owner: effectiveOwner,
     members,
   })
   await syncFolderVisibility(
     folderId,
     organizationId,
     "private",
-    parent.owner,
+    effectiveOwner,
     members,
   )
 }
@@ -257,17 +259,22 @@ async function handlePublicToPrivate(
   newMembers,
   userId,
 ) {
-  const effectiveMembers = newMembers || [
-    { userId, right: RIGHTS.adminRight() },
-  ]
-  if (!newMembers) {
-    await model.folders.update({ _id: folderId, members: effectiveMembers })
-  }
+  const effectiveOwner = folder.owner || userId
+  const effectiveMembers =
+    newMembers && newMembers.length > 0
+      ? newMembers
+      : [{ userId: effectiveOwner, right: RIGHTS.adminRight() }]
+
+  await model.folders.update({
+    _id: folderId,
+    owner: effectiveOwner,
+    members: effectiveMembers,
+  })
   await syncFolderVisibility(
     folderId,
     organizationId,
     "private",
-    folder.owner || userId,
+    effectiveOwner,
     effectiveMembers,
   )
 }
@@ -426,7 +433,7 @@ async function createFolder(req, res, next) {
 
       if (parent.visibility === "private") {
         visibility = "private"
-        owner = parent.owner
+        owner = parent.owner || userId
         members = parent.members || []
       }
     }
@@ -450,6 +457,11 @@ async function createFolder(req, res, next) {
       throw new FolderError("Error during the creation of the folder")
 
     const folder = await model.folders.getById(result.insertedId.toString())
+
+    if (this?.app?.components?.IoHandler) {
+      this.app.components.IoHandler.emit("folder_created", organizationId, folder[0])
+    }
+
     res.status(201).send(folder[0])
   } catch (err) {
     next(err)
@@ -548,14 +560,17 @@ async function updateFolder(req, res, next) {
     if (req.body.position !== undefined)
       updatePayload.position = req.body.position
     if (newVisibility !== undefined) updatePayload.visibility = newVisibility
+    if (newVisibility === "private" && !folder.owner) updatePayload.owner = userId
     if (newMembers !== undefined) updatePayload.members = newMembers
 
     const result = await model.folders.update(updatePayload)
     if (result.matchedCount === 0) throw new FolderError("Nothing to update")
 
     // Handle visibility transitions
+    let visibilityCascaded = false
     if (newParent && newParent.visibility === "private") {
-      await handleInheritFromPrivateParent(folderId, organizationId, newParent)
+      await handleInheritFromPrivateParent(folderId, organizationId, newParent, userId)
+      visibilityCascaded = true
     } else if (currentVisibility !== "private" && newVisibility === "private") {
       await handlePublicToPrivate(
         folderId,
@@ -564,12 +579,14 @@ async function updateFolder(req, res, next) {
         newMembers,
         userId,
       )
+      visibilityCascaded = true
     } else if (currentVisibility === "private" && newVisibility === "public") {
       await handlePrivateToPublic(
         folderId,
         organizationId,
         forcePublicAncestors,
       )
+      visibilityCascaded = true
     } else if (
       currentVisibility === "private" &&
       newVisibility !== "public" &&
@@ -582,9 +599,19 @@ async function updateFolder(req, res, next) {
         newMembers,
         userId,
       )
+      visibilityCascaded = true
     }
 
     const updated = await model.folders.getById(folderId)
+
+    if (this?.app?.components?.IoHandler) {
+      if (visibilityCascaded) {
+        this.app.components.IoHandler.emit("folders_refresh", organizationId)
+      } else {
+        this.app.components.IoHandler.emit("folder_updated", organizationId, updated[0])
+      }
+    }
+
     res.status(200).send(updated[0])
   } catch (err) {
     next(err)
@@ -635,6 +662,11 @@ async function deleteFolder(req, res, next) {
     const result = await model.folders.delete(folderId)
     if (result.deletedCount !== 1)
       throw new FolderError("Error during the deletion of the folder")
+
+    if (this?.app?.components?.IoHandler) {
+      this.app.components.IoHandler.emit("folder_deleted", organizationId, folderId)
+      this.app.components.IoHandler.emit("folders_refresh", organizationId)
+    }
 
     res.status(200).send({ message: "Folder deleted" })
   } catch (err) {

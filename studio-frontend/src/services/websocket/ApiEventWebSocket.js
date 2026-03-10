@@ -6,6 +6,7 @@ import { getCookie } from "@/tools/getCookie"
 import { getEnv } from "@/tools/getEnv"
 import store from "@/store/index.js"
 import i18n from "@/i18n"
+import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
 
 const socketioUrl = getEnv("VUE_APP_SESSION_WS")
 const socketioPath = getEnv("VUE_APP_SESSION_WS_PATH")
@@ -301,6 +302,57 @@ export default class ApiEventWebSocket {
       )
     })
   }
+
+  subscribeFolderUpdate(organizationId) {
+    if (!this.socket) return
+    this.unSubscribeFolderUpdate()
+
+    this.socket.on("folder_created", (folder) => {
+      if (!this._canAccessFolder(folder)) return
+      const existing = store.getters["folders/getFolderById"](folder._id)
+      if (existing) return
+      store.commit("folders/addFolder", { ...folder, conversationCount: 0 })
+    })
+
+    this.socket.on("folder_updated", (folder) => {
+      const existing = store.getters["folders/getFolderById"](folder._id)
+      if (this._canAccessFolder(folder)) {
+        if (existing) {
+          store.commit("folders/updateFolder", folder)
+        } else {
+          store.commit("folders/addFolder", { ...folder, conversationCount: 0 })
+        }
+      } else if (existing) {
+        store.commit("folders/removeFolder", folder._id)
+      }
+    })
+
+    this.socket.on("folder_deleted", ({ _id }) => {
+      store.commit("folders/removeFolder", _id)
+    })
+
+    this.socket.on("folders_refresh", () => {
+      store.dispatch("folders/fetchFolders")
+    })
+  }
+
+  unSubscribeFolderUpdate() {
+    if (!this.socket) return
+    this.socket.off("folder_created")
+    this.socket.off("folder_updated")
+    this.socket.off("folder_deleted")
+    this.socket.off("folders_refresh")
+  }
+
+  _canAccessFolder(folder) {
+    if (folder.visibility !== "private") return true
+    const userId = store.getters["user/getUserId"]
+    const userRole = store.getters["organizations/getUserRoleInOrganization"]
+    if (userRole >= ORGANIZATION_ROLES.MAINTAINER) return true
+    if (folder.owner === userId) return true
+    return (folder.members || []).some((m) => m.userId === userId)
+  }
+
   unSubscribeMediaUdate() {
     if (!this.socket) return
     if (this.currentMediaOrganizationId) {
