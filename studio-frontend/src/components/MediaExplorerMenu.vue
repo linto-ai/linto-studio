@@ -1,5 +1,5 @@
 <template>
-  <div class="media-explorer-menu">
+  <div class="media-explorer-menu flex col flex1">
     <!-- Organisation -->
     <div
       class="media-explorer-menu__item media-explorer-menu__item--section"
@@ -138,9 +138,11 @@ export default {
       return { _id: "shared", name: this.$t("navigation.tabs.shared") }
     },
     processingCount() {
-      return this.$store.getters[
-        `${this.getCurrentOrganizationScope}/processing/conversations/count`
-      ] || 0
+      return (
+        this.$store.getters[
+          `${this.getCurrentOrganizationScope}/processing/conversations/count`
+        ] || 0
+      )
     },
     isProcessingActive() {
       return this.$route.name === "explore-processing"
@@ -160,7 +162,7 @@ export default {
         if (orgId) {
           this.hasSessions = await apiHasSessions(orgId)
           this.$store.dispatch(
-            `${orgId}/processing/conversations/loadStatusCount`
+            `${orgId}/processing/conversations/loadStatusCount`,
           )
         } else {
           this.hasSessions = false
@@ -211,13 +213,15 @@ export default {
       })
     },
     selectFolder(folderId) {
-      this.$router.push({
-        name: "explore",
-        params: {
-          organizationId: this.getCurrentOrganizationScope,
-          folderId,
-        },
-      }).catch(() => {})
+      this.$router
+        .push({
+          name: "explore",
+          params: {
+            organizationId: this.getCurrentOrganizationScope,
+            folderId,
+          },
+        })
+        .catch(() => {})
     },
     async handleInboxDrop({ conversationIds }) {
       if (!conversationIds || conversationIds.length === 0) return
@@ -237,9 +241,9 @@ export default {
 
 <style lang="scss">
 .media-explorer-menu {
-  display: flex;
-  flex-direction: column;
-
+  overflow: auto;
+  padding-top: 0.5rem;
+  border-bottom: var(--border-block);
   &__list {
     list-style: none;
     padding: 0;

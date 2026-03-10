@@ -13,7 +13,9 @@
 
       <BackofficeSidebar v-if="backoffice" />
 
-      <slot></slot>
+      <div class="flex1 flex col" v-if="$slots.default">
+        <slot></slot>
+      </div>
     </div>
     <div class="burger-menu__footer-section">
       <ButtonRoller
@@ -163,7 +165,6 @@ export default {
 .burger-menu {
   display: flex;
   flex-direction: column;
-  gap: 1em;
   overflow: hidden;
 
   .burger-menu__body {

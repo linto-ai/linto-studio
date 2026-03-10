@@ -8,7 +8,12 @@
     sidebar>
     <template v-slot:sidebar>
       <div>
-        <div class="form-field flex col medium-margin gap-medium">
+        <div
+          class="form-field flex col medium-margin gap-medium"
+          v-if="
+            (channels && channels.length > 0) ||
+            (translations && translations.length > 0)
+          ">
           <AppEditorChannelsSelector
             v-if="channels && channels.length > 0"
             :channels="channels"
@@ -80,13 +85,20 @@
     <div class="action-cards" v-if="conversation && conversation._id">
       <router-link
         class="action-card"
-        :to="{ name: 'conversations publish', params: { conversationId: conversation._id } }">
+        :to="{
+          name: 'conversations publish',
+          params: { conversationId: conversation._id },
+        }">
         <div class="action-card__icon action-card__icon--publish">
           <PhIcon name="file-text" size="lg" />
         </div>
         <div class="action-card__content">
-          <span class="action-card__title">{{ $t('conversation.publish_document') }}</span>
-          <span class="action-card__description">{{ $t('conversation.publish_document_description') }}</span>
+          <span class="action-card__title">{{
+            $t("conversation.publish_document")
+          }}</span>
+          <span class="action-card__description">{{
+            $t("conversation.publish_document_description")
+          }}</span>
         </div>
         <PhIcon name="caret-right" size="sm" class="action-card__arrow" />
       </router-link>
@@ -95,8 +107,10 @@
           <PhIcon name="chat-text" size="lg" />
         </div>
         <div class="action-card__content">
-          <span class="action-card__title">{{ $t('chat.start') }}</span>
-          <span class="action-card__description">{{ $t('chat.description') }}</span>
+          <span class="action-card__title">{{ $t("chat.start") }}</span>
+          <span class="action-card__description">{{
+            $t("chat.description")
+          }}</span>
         </div>
         <PhIcon name="caret-right" size="sm" class="action-card__arrow" />
       </button>
@@ -296,9 +310,7 @@ export default {
         // Split the turns in pages
         this.turnPages[currentPage].push(turn)
         nbCaracters += turn.segment.length
-        if (
-          nbCaracters > parseInt(getEnv("VUE_APP_MAX_CARACTERS_PER_PAGE"))
-        ) {
+        if (nbCaracters > parseInt(getEnv("VUE_APP_MAX_CARACTERS_PER_PAGE"))) {
           nbCaracters = 0
           nbTurns = 0
           currentPage += 1
@@ -487,7 +499,9 @@ export default {
   text-decoration: none;
   color: inherit;
   cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
   font-family: inherit;
   font-size: inherit;
   text-align: left;
