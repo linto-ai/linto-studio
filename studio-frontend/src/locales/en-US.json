@@ -142,7 +142,7 @@
     },
     "dashboard": {
       "page_title": "Dashboard",
-      "sessions_count": "Sessions Transcribed",
+      "sessions_count": "Live transcriptions",
       "medias_count": "Media Processed",
       "time_period_label": "Period",
       "users": "Users",
@@ -154,9 +154,9 @@
       },
       "charts": {
         "sessions_title": "Live Transcriptions",
-        "sessions_duration_title": "Real-time audio transcription (hours)",
-        "medias_title": "Media Transcriptions",
-        "duration_title": "Audio Duration (hours)"
+        "sessions_duration_title": "Live transcription duration (hours)",
+        "medias_title": "Transcribed media",
+        "duration_title": "Transcribed media duration (hours)"
       },
       "filters": {
         "organization": "Organization",
@@ -881,6 +881,7 @@
     },
     "delete_organization": "Delete organization",
     "delete_success_message": "Organization successfully deleted",
+    "sessions_kpi_link": "Session statistics",
     "description_description": "The description of your organization",
     "description_label": "Description",
     "general_settings": "General settings",

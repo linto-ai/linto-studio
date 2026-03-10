@@ -1,12 +1,20 @@
 <template>
   <MainContentBackoffice :loading="loading">
     <template v-slot:header>
-      <div class="flex align-center">
-        <h1 v-if="organization">{{ organization.name }}</h1>
+      <div class="flex1 flex align-center gap-small">
+        <h1 v-if="organization" class="flex1">{{ organization.name }}</h1>
+        <Button
+          :to="{
+            name: 'backoffice-activityList',
+            query: { tab: 'sessions_kpi', org: organizationId },
+          }"
+          variant="tertiary"
+          icon="chart-pie"
+          style="white-space: nowrap"
+          :label="$t('organisation.sessions_kpi_link')" />
       </div>
     </template>
-    <Tabs :tabs="tabs" v-model="currentTab" />
-    <div class="flex gap-large" v-if="currentTab == 'settings'">
+    <div class="flex gap-large">
       <div class="flex1">
         <div>
           <UpdateOrganizationForm :currentOrganization="organization" />
@@ -42,12 +50,6 @@
         <OrganizationStats :organizationId="organizationId" />
       </div> -->
     </div>
-    <div v-if="currentTab == 'sessions'">
-      <OrganizationSessionsKpi
-        v-if="organization"
-        :organizationId="organizationId"
-        :organization="organization" />
-    </div>
     <ModalDeleteOrganization
       v-if="displayDeleteModal"
       :currentOrganization="organization"
@@ -70,8 +72,7 @@ import UpdateOrganizationPermissions from "@/components/UpdateOrganizationPermis
 import UpdateOrganizationMatchingUsers from "@/components/UpdateOrganizationMatchingUsers.vue"
 import UpdateOrganizationTranscriberProfiles from "@/components/UpdateOrganizationTranscriberProfiles.vue"
 import ApiTokenSettings from "@/components/ApiTokenSettings.vue"
-import Tabs from "@/components/molecules/Tabs.vue"
-import OrganizationSessionsKpi from "@/components/SessionsKpi.vue"
+import Button from "@/components/atoms/Button.vue"
 
 export default {
   mixins: [platformRoleMixin],
@@ -87,15 +88,6 @@ export default {
       organizationId: this.$route.params.organizationId,
       organization: null,
       displayDeleteModal: false,
-      tabs: [
-        { name: "settings", label: "Settings", icon: "gear" },
-        {
-          name: "sessions",
-          label: "Statistique des sessions",
-          icon: "broadcast",
-        },
-      ],
-      currentTab: "settings",
     }
   },
   mounted() {
@@ -133,8 +125,7 @@ export default {
     UpdateOrganizationMatchingUsers,
     ModalDeleteOrganization,
     ApiTokenSettings,
-    Tabs,
-    OrganizationSessionsKpi,
+    Button,
   },
 }
 </script>
