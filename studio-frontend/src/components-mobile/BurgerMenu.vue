@@ -186,6 +186,7 @@ export default {
     overflow: visible;
     position: relative;
     z-index: 10;
+    flex-shrink: 0;
 
     & > * {
       flex: 1;
