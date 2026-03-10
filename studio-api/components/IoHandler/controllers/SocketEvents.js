@@ -48,6 +48,10 @@ module.exports = function () {
     this.io.to(orgaId).emit("folders_refresh")
   })
 
+  this.on("conversation_folder_changed", (orgaId, payload) => {
+    this.io.to(orgaId).emit("conversation_folder_changed", payload)
+  })
+
   // MQTT broker client send this event when the connection is lost
   this.on("borker_disconnected", () => {
     this.brokerKo(true)

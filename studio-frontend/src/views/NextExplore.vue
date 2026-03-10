@@ -16,6 +16,7 @@ import { mapGetters } from "vuex"
 
 import LayoutV2 from "@/layouts/v2-layout.vue"
 import MediaExplorer from "@/components/MediaExplorer.vue"
+import { bus } from "@/main"
 
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { convRoleMixin } from "@/mixins/convRole.js"
@@ -70,10 +71,13 @@ export default {
   },
   mounted() {
     this.init()
+    bus.$on("conversation_folder_changed", this.onConversationFolderChanged)
   },
   beforeDestroy() {
     this.$apiEventWS.unSubscribeMediaUdate()
     this.$apiEventWS.unSubscribeFolderUpdate()
+    bus.$off("conversation_folder_changed", this.onConversationFolderChanged)
+    clearTimeout(this._folderChangedTimer)
   },
   methods: {
     async init() {
@@ -93,6 +97,22 @@ export default {
         this.loading = false
         this.$store.dispatch("system/setIsLoading", false)
       }
+    },
+    onConversationFolderChanged({ fromFolderId, toFolderId }) {
+      const current = this.effectiveFolderId
+      const affected =
+        current === undefined ||
+        fromFolderId === undefined ||
+        current === fromFolderId ||
+        current === toFolderId
+      if (!affected) return
+      // Debounce: batch rapid events (e.g. moving N conversations) into one reload
+      clearTimeout(this._folderChangedTimer)
+      this._folderChangedTimer = setTimeout(() => {
+        this.$store.dispatch(`${this.storeScope}/load`, {
+          folderId: this.effectiveFolderId,
+        })
+      }, 300)
     },
     async handleLoadMore() {
       this.loadingNextPage = true

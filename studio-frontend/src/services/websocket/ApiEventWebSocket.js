@@ -334,6 +334,10 @@ export default class ApiEventWebSocket {
     this.socket.on("folders_refresh", () => {
       store.dispatch("folders/fetchFolders")
     })
+
+    this.socket.on("conversation_folder_changed", (payload) => {
+      bus.$emit("conversation_folder_changed", payload)
+    })
   }
 
   unSubscribeFolderUpdate() {
@@ -342,6 +346,7 @@ export default class ApiEventWebSocket {
     this.socket.off("folder_updated")
     this.socket.off("folder_deleted")
     this.socket.off("folders_refresh")
+    this.socket.off("conversation_folder_changed")
   }
 
   _canAccessFolder(folder) {

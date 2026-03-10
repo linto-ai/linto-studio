@@ -681,6 +681,11 @@ async function moveConversation(req, res, next) {
     const folder = await getRequiredFolder(folderId, organizationId)
     checkFolderAccess(folder, req.payload.data.userId, req.userRole)
 
+    const conv = await model.conversations.getByIdWithFilter(conversationId, {
+      folderId: 1,
+    })
+    const fromFolderId = conv?.[0]?.folderId ?? null
+
     const result = await model.conversations.updateFolderBatch(
       [conversationId],
       folderId,
@@ -697,6 +702,15 @@ async function moveConversation(req, res, next) {
       customRights,
       organizationId,
     )
+
+    if (this?.app?.components?.IoHandler) {
+      this.app.components.IoHandler.emit("folders_refresh", organizationId)
+      this.app.components.IoHandler.emit(
+        "conversation_folder_changed",
+        organizationId,
+        { conversationIds: [conversationId], fromFolderId, toFolderId: folderId },
+      )
+    }
 
     res
       .status(200)
@@ -736,17 +750,29 @@ async function uncategorizeConversations(req, res, next) {
   try {
     validateConversationIds(req.body)
 
+    const { organizationId } = req.params
+    const { conversationIds } = req.body
+
     await model.conversations.updateFolderBatch(
-      req.body.conversationIds,
+      conversationIds,
       null,
-      req.params.organizationId,
+      organizationId,
     )
     await syncConversationsRights(
-      req.body.conversationIds,
+      conversationIds,
       RIGHTS.READ,
       [],
-      req.params.organizationId,
+      organizationId,
     )
+
+    if (this?.app?.components?.IoHandler) {
+      this.app.components.IoHandler.emit("folders_refresh", organizationId)
+      this.app.components.IoHandler.emit(
+        "conversation_folder_changed",
+        organizationId,
+        { conversationIds, fromFolderId: undefined, toFolderId: null },
+      )
+    }
 
     res.status(200).send({ message: "Conversations removed from folder" })
   } catch (err) {
