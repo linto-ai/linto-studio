@@ -23,7 +23,7 @@ module.exports = (webserver) => {
     {
       path: "/",
       method: "post",
-      controller: createFolder,
+      controller: createFolder.bind(webserver),
       requireAuth: true,
       requireOrganizationMemberAccess: true,
       requireFolderManagerAccess: true,
@@ -31,7 +31,7 @@ module.exports = (webserver) => {
     {
       path: "/uncategorized/conversations",
       method: "post",
-      controller: uncategorizeConversations,
+      controller: uncategorizeConversations.bind(webserver),
       requireAuth: true,
       requireOrganizationMemberAccess: true,
       requireFolderConversationWriteAccess: true,
@@ -46,7 +46,7 @@ module.exports = (webserver) => {
     {
       path: "/:folderId",
       method: "patch",
-      controller: updateFolder,
+      controller: updateFolder.bind(webserver),
       requireAuth: true,
       requireOrganizationMemberAccess: true,
       requireFolderManagerAccess: true,
@@ -54,7 +54,7 @@ module.exports = (webserver) => {
     {
       path: "/:folderId",
       method: "delete",
-      controller: deleteFolder,
+      controller: deleteFolder.bind(webserver),
       requireAuth: true,
       requireOrganizationMemberAccess: true,
       requireFolderManagerAccess: true,
@@ -63,7 +63,7 @@ module.exports = (webserver) => {
     {
       path: "/:folderId/conversations/:conversationId",
       method: "post",
-      controller: moveConversation,
+      controller: moveConversation.bind(webserver),
       requireAuth: true,
       requireOrganizationMemberAccess: true,
       requireConversationWriteAccess: true,

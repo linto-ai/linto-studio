@@ -13,6 +13,7 @@ export default {
   state: {
     folders: [],
     loading: false,
+    pendingRefresh: false,
     error: null,
   },
   mutations: {
@@ -20,6 +21,7 @@ export default {
       state.folders = folders
     },
     addFolder(state, folder) {
+      if (state.folders.some((f) => f._id === folder._id)) return
       state.folders = [...state.folders, folder]
     },
     updateFolder(state, folder) {
@@ -34,6 +36,9 @@ export default {
     },
     setLoading(state, loading) {
       state.loading = loading
+    },
+    setPendingRefresh(state, pending) {
+      state.pendingRefresh = pending
     },
     setError(state, error) {
       state.error = error
@@ -80,9 +85,13 @@ export default {
     getLoading: (state) => state.loading,
   },
   actions: {
-    async fetchFolders({ commit, state, rootGetters }) {
-      if (state.loading) return
+    async fetchFolders({ commit, dispatch, state, rootGetters }) {
+      if (state.loading) {
+        commit("setPendingRefresh", true)
+        return
+      }
       commit("setLoading", true)
+      commit("setPendingRefresh", false)
       try {
         const data = await apiFetchFolders(
           rootGetters["organizations/getCurrentOrganizationScope"],
@@ -96,6 +105,9 @@ export default {
         throw error
       } finally {
         commit("setLoading", false)
+        if (state.pendingRefresh) {
+          dispatch("fetchFolders")
+        }
       }
     },
     async createFolder({ commit, rootGetters, state }, folder) {

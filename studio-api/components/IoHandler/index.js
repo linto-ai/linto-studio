@@ -457,6 +457,10 @@ class IoHandler extends Component {
     }
   }
 
+  notify_folder_action(action, orgaId, folder) {
+    this.io.to(orgaId).emit(`folder_${action}`, folder)
+  }
+
   /**
    * Broadcast LLM job update to subscribed clients
    * @param {object} update - { organizationId, conversationId, jobId, status, progress, result, error }

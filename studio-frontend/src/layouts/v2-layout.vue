@@ -11,7 +11,10 @@
         </BurgerMenu>
       </aside>
       <main class="v2-layout__main" @click="closeSidebar">
-        <HeaderBar :breadcrumbItems="breadcrumbItems" :fullscreen="fullscreen" :noBreadcrumb="noBreadcrumb">
+        <HeaderBar
+          :breadcrumbItems="breadcrumbItems"
+          :fullscreen="fullscreen"
+          :noBreadcrumb="noBreadcrumb">
           <template v-slot:breadcrumb-actions>
             <slot name="breadcrumb-actions"></slot>
           </template>
@@ -153,7 +156,7 @@ export default {
     z-index: 1000;
     box-sizing: border-box;
 
-    nav {
+    .burger-menu {
       width: 100%;
       overflow: auto;
     }

@@ -7,6 +7,7 @@ import {
   apiGetConversationById,
 } from "@/api/conversation"
 import i18n from "@/i18n"
+import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
 import Vue from "vue"
 import { bus } from "@/main.js"
 
@@ -76,7 +77,7 @@ export default function createMediaModule(scope, status = "done") {
 
           const orgaRole =
             rootGetters["organizations/getUserRoleInOrganization"]
-          if (orgaRole >= 4) {
+          if (orgaRole >= ORGANIZATION_ROLES.SESSION_OPERATOR) {
             return 31
           }
 

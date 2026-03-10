@@ -4,7 +4,6 @@ import { getEnv } from "@/tools/getEnv"
 
 import { apiGetTranscriptionService } from "@/api/service"
 import { apiCreateConversation } from "@/api/conversation"
-import { getUserRoleInOrganization } from "@/tools/getUserRoleInOrganization"
 import { testFieldEmpty } from "@/tools/fields/testEmpty.js"
 import { testService } from "@/tools/fields/testService.js"
 import { meetsSecurityLevel } from "@/tools/filterBySecurityLevel"
@@ -106,14 +105,7 @@ export default {
     //   immediate: true,
     // },
   },
-  computed: {
-    organizationList() {
-      return this.userOrganizations.filter((org) => {
-        let role = getUserRoleInOrganization(org, this.userInfo._id)
-        return role > 1
-      })
-    },
-  },
+  computed: {},
   methods: {
     getTranscriptionList(lang, signal) {
       return apiGetTranscriptionService(lang, signal)

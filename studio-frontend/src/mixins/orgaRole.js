@@ -1,36 +1,37 @@
 import { mapActions, mapGetters } from "vuex"
 import i18n from "@/i18n"
+import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
 
 const ROLES = [
   {
     name: i18n.t("organization_role.member"),
     description: i18n.t("organization_role.member_description"),
-    value: 1,
+    value: ORGANIZATION_ROLES.MEMBER,
   },
   {
     name: i18n.t("organization_role.uploader"),
     description: i18n.t("organization_role.uploader_description"),
-    value: 2,
+    value: ORGANIZATION_ROLES.UPLOADER,
   },
   {
     name: i18n.t("organization_role.quick_meeting"),
     description: i18n.t("organization_role.quick_meeting_description"),
-    value: 3,
+    value: ORGANIZATION_ROLES.QUICK_MEETING,
   },
   {
     name: i18n.t("organization_role.session_operator"),
     description: i18n.t("organization_role.session_operator_description"),
-    value: 4,
+    value: ORGANIZATION_ROLES.SESSION_OPERATOR,
   },
   {
     name: i18n.t("organization_role.maintainer"),
     description: i18n.t("organization_role.maintainer_description"),
-    value: 5,
+    value: ORGANIZATION_ROLES.MAINTAINER,
   },
   {
     name: i18n.t("organization_role.administrator"),
     description: i18n.t("organization_role.administrator_description"),
-    value: 6,
+    value: ORGANIZATION_ROLES.ADMINISTRATOR,
   },
 ]
 
@@ -46,13 +47,8 @@ export const orgaRoleMixin = {
         organizationId,
       )
     },
-    isAtLeastMaintainerOfOrganization(organizationId) {
-      return this.$store.getters[
-        "organizations/isAtLeastMaintainerOfOrganization"
-      ](organizationId)
-    },
     roleToString(role) {
-      if (role > 6 || role < 1) return this.$t("Unknown")
+      if (role > ORGANIZATION_ROLES.ADMINISTRATOR || role < ORGANIZATION_ROLES.MEMBER) return this.$t("Unknown")
       return ROLES_INDEXED_BY_VALUE[role].name
     },
   },
@@ -62,46 +58,46 @@ export const orgaRoleMixin = {
       userOrganizations: "getOrganizationsAsArray",
     }),
     isMember() {
-      return this.userRole === 1
+      return this.userRole === ORGANIZATION_ROLES.MEMBER
     },
     isUploader() {
-      return this.userRole === 2
+      return this.userRole === ORGANIZATION_ROLES.UPLOADER
     },
     isQuickMeeting() {
-      return this.userRole === 3
+      return this.userRole === ORGANIZATION_ROLES.QUICK_MEETING
     },
     isMeetingManager() {
-      return this.userRole === 4
+      return this.userRole === ORGANIZATION_ROLES.SESSION_OPERATOR
     },
     isMaintainer() {
-      return this.userRole === 5
+      return this.userRole === ORGANIZATION_ROLES.MAINTAINER
     },
     isAdmin() {
-      return this.userRole === 6
+      return this.userRole === ORGANIZATION_ROLES.ADMINISTRATOR
     },
     isAtLeastMember() {
-      return this.userRole >= 1
+      return this.userRole >= ORGANIZATION_ROLES.MEMBER
     },
     isAtLeastUploader() {
-      return this.userRole >= 2
+      return this.userRole >= ORGANIZATION_ROLES.UPLOADER
     },
     isAtLeastQuickMeeting() {
-      return this.userRole >= 3
+      return this.userRole >= ORGANIZATION_ROLES.QUICK_MEETING
     },
     isAtLeastMeetingManager() {
-      return this.userRole >= 4
+      return this.userRole >= ORGANIZATION_ROLES.SESSION_OPERATOR
     },
     isAtLeastMaintainer() {
-      return this.userRole >= 5
+      return this.userRole >= ORGANIZATION_ROLES.MAINTAINER
     },
     maxRoleValue() {
-      return 6
+      return ORGANIZATION_ROLES.ADMINISTRATOR
     },
     userRoles() {
       return ROLES
     },
     currentRoleToString() {
-      if (this.userRole > 6 || this.userRole < 1) return this.$t("Unknown")
+      if (this.userRole > ORGANIZATION_ROLES.ADMINISTRATOR || this.userRole < ORGANIZATION_ROLES.MEMBER) return this.$t("Unknown")
       return ROLES_INDEXED_BY_VALUE[this.userRole].name
     },
   },

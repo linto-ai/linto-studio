@@ -159,7 +159,9 @@ export default {
       if (this.showForceOption && !this.forcePublic) return
 
       const visibility = this.isPrivate ? "private" : "public"
-      const members = this.isPrivate ? this.selectedMembers : []
+      const members = this.isPrivate
+        ? this.selectedMembers.filter((m) => m.userId)
+        : []
       const force = this.showForceOption && this.forcePublic
 
       await this.$store.dispatch("folders/updateFolderVisibility", {
