@@ -45,6 +45,10 @@ export default {
       type: String,
       default: null,
     },
+    valueFormatter: {
+      type: Function,
+      default: null,
+    },
   },
   data() {
     return {
@@ -87,7 +91,7 @@ export default {
             callbacks: {
               title: (items) => items[0]?.label || "",
               label: (item) =>
-                `${this.dataTitle}: ${item.raw.toLocaleString(this.currentLocale)}`,
+                `${this.dataTitle}: ${this.valueFormatter ? this.valueFormatter(item.raw) : item.raw.toLocaleString(this.currentLocale)}`,
             },
           },
           legend: {
@@ -126,7 +130,7 @@ export default {
                 size: 11,
               },
               padding: 8,
-              callback: (value) => value.toLocaleString(this.currentLocale),
+              callback: (value) => this.valueFormatter ? this.valueFormatter(value) : value.toLocaleString(this.currentLocale),
             },
           },
         },

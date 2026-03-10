@@ -1,12 +1,14 @@
 <template>
   <div>
     <div class="sessions-kpi__toolbar">
+      <slot name="toolbar-start" />
       <KpiExportDropdown :organizationId="organizationId" />
     </div>
     <GenericTableRequest
       ref="table"
       idKey="sessionId"
       :fetchMethod="fetchMethod"
+      :fetchMethodParams="fetchMethodParams"
       :columns="columns"
       :initSortListDirection="sortListDirection"
       :initSortListKey="sortListKey">
@@ -132,14 +134,13 @@ export default {
     }
   },
   mounted() {},
-  methods: {
-    // fetchMethod: getSessionListKpi,
-    async fetchMethod(page, parameters) {
-      return await getSessionListKpi(page, {
-        ...parameters,
-        organizationId: this.organizationId,
-      })
+  computed: {
+    fetchMethodParams() {
+      return { organizationId: this.organizationId }
     },
+  },
+  methods: {
+    fetchMethod: getSessionListKpi,
     computeSessionName(name) {
       if (name.startsWith("@")) {
         const userId = name.slice(1)
@@ -183,7 +184,8 @@ export default {
 <style lang="scss" scoped>
 .sessions-kpi__toolbar {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: flex-end;
   margin-bottom: 0.5rem;
 }
 </style>

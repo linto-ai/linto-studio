@@ -143,7 +143,7 @@
     },
     "dashboard": {
       "page_title": "Tableau de bord",
-      "sessions_count": "Sessions transcrites",
+      "sessions_count": "Transcription en direct",
       "medias_count": "Médias traités",
       "users": "Utilisateurs",
       "organizations": "Organisations",
@@ -154,10 +154,10 @@
         "year": "Année"
       },
       "charts": {
-        "sessions_title": "Transcription en direct",
-        "sessions_duration_title": "Audio transcrit en temps réel (heures)",
-        "medias_title": "Transcriptions",
-        "duration_title": "Durée totale des médias transcrits (heures)"
+        "sessions_title": "Transcriptions en direct",
+        "sessions_duration_title": "Durée des transcriptions en direct (heures)",
+        "medias_title": "Médias transcrits",
+        "duration_title": "Durée des médias transcrits (heures)"
       },
       "filters": {
         "organization": "Organisation",
@@ -876,6 +876,7 @@
     },
     "delete_organization": "Supprimer l'organisation",
     "delete_success_message": "L'organisation a été supprimée avec succès",
+    "sessions_kpi_link": "Statistiques des sessions",
     "description_description": "Description de l'organisation",
     "description_label": "Description",
     "general_settings": "Réglages",
