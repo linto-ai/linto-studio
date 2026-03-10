@@ -47,11 +47,6 @@ export const orgaRoleMixin = {
         organizationId,
       )
     },
-    isAtLeastMaintainerOfOrganization(organizationId) {
-      return this.$store.getters[
-        "organizations/isAtLeastMaintainerOfOrganization"
-      ](organizationId)
-    },
     roleToString(role) {
       if (role > ORGANIZATION_ROLES.ADMINISTRATOR || role < ORGANIZATION_ROLES.MEMBER) return this.$t("Unknown")
       return ROLES_INDEXED_BY_VALUE[role].name
