@@ -26,6 +26,9 @@ module.exports = function () {
       conversation.organization.organizationId,
       conversation,
     )
+    if (conversation.folderId) {
+      this.io.to(conversation.organization.organizationId).emit("folders_refresh")
+    }
   })
 
   this.on("conversation_deleted", (orgaIds, id, status) => {
