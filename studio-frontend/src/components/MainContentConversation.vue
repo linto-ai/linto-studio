@@ -11,7 +11,6 @@
     </template>
 
     <template v-slot:sidebar>
-      <div class="sidebar-divider"></div>
       <slot name="sidebar"></slot>
     </template>
     <slot></slot>
