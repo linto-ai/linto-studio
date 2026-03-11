@@ -1,7 +1,10 @@
 <template>
   <div class="flex col">
     <select :value="valueKey(value)" @input="input">
-      <option v-for="o in planOptions" :value="valueKey(o.value)">
+      <option
+        v-for="o in planOptions"
+        :value="valueKey(o.value)"
+        :disabled="o.disabled">
         {{ o.text }}
       </option>
     </select>

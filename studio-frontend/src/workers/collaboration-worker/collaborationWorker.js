@@ -373,6 +373,11 @@ function setSocketListeners(socket) {
     sendMessage("job_transcription_update", data)
   })
 
+  socket.on("sibling_job_transcription_update", (data) => {
+    debugJobsWorker("Websocket event 'sibling_job_transcription_update'")
+    sendMessage("sibling_job_transcription_update", data)
+  })
+
   socket.on("keywords_update", (data) => {
     debugJobsWorker("Websocket event 'keywords_update'")
     sendMessage("keywords_update", data)
