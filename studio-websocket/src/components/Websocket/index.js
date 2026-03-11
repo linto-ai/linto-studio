@@ -9,6 +9,7 @@ import CONVERSATION_FORMATS from "./consts/conversationFormats.js"
 import updateConversationController from "./controllers/updateConversationController.js"
 import updateUserRightsController from "./controllers/updateUserRightsController.js"
 import jobTranscriptionController from "./controllers/jobTranscriptionController.js"
+import siblingTranscriptionController from "./controllers/siblingTranscriptionController.js"
 import keywordController from "./controllers/keywordController.js"
 import llmJobController from "./controllers/llmJobController.js"
 
@@ -271,6 +272,19 @@ export default class Websocket extends Component {
     this.clients[socket.id] = userId
 
     socket.join(`conversation/${conversationId}`)
+
+    // Join canonical room so siblings can receive transcription job updates
+    const canonicalId = conversation.getObj()?.type?.from_canonical_id
+    if (canonicalId) {
+      socket.join(`canonical/${canonicalId}`)
+      siblingTranscriptionController(
+        canonicalId,
+        conversationId,
+        userToken,
+        this.app.io,
+        socket,
+      )
+    }
 
     jobTranscriptionController(
       conversation,

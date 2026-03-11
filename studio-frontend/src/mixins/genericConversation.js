@@ -98,6 +98,7 @@ export const genericConversationMixin = {
         "type.mode",
         "locale",
         "metadata.transcription",
+        "jobs.transcription.state",
       ])
 
       const childsType = childs.map((child) => child.type.mode)
@@ -105,14 +106,16 @@ export const genericConversationMixin = {
       switch (childsType[0]) {
         case "child": // multitple channels
           this.channels = childs
-          this.translations = await apiGetConversationChild(childs[0]._id, [
+          const doneChild =
+            childs.find((c) => !this.isChannelProcessing(c)) || childs[0]
+          this.translations = await apiGetConversationChild(doneChild._id, [
             "_id",
             "name",
             "type.mode",
             "locale",
           ])
-          this.conversationId = childs[0]._id
-          this.selectedChannel = childs[0]._id
+          this.conversationId = doneChild._id
+          this.selectedChannel = doneChild._id
           this.selectedTranslation = "original"
           break
         case "translation": // one channel, only translation
@@ -205,6 +208,12 @@ export const genericConversationMixin = {
             if (transcriptionState === "done" || transcriptionState === "error")
               window.location.reload()
             break
+          case "sibling_job_transcription_update":
+            this.updateChannelJobState(
+              event.data.params.conversationId,
+              event.data.params.state,
+            )
+            break
           default:
             this.specificWorkerOnMessage(event)
             break
@@ -263,6 +272,19 @@ export const genericConversationMixin = {
       } else {
         this.audioFile = ""
       }
+    },
+    isChannelProcessing(channel) {
+      const state = channel.jobs?.transcription?.state
+      return !!state && state !== "done" && state !== "error"
+    },
+    updateChannelJobState(conversationId, state) {
+      const channel = this.channels.find((c) => c._id === conversationId)
+      if (!channel) return
+      if (channel.jobs?.transcription?.state === state) return
+      if (!channel.jobs) channel.jobs = {}
+      if (!channel.jobs.transcription) channel.jobs.transcription = {}
+      channel.jobs.transcription.state = state
+      this.channels = [...this.channels]
     },
     computeStatus(job) {
       if (!job) return "pending"

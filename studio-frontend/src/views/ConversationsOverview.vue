@@ -122,13 +122,16 @@ export default {
     tabs() {
       let tabs = []
       for (const channel of this.channels) {
-        //let nameBefore = channel.name
-        //const nameSplit = channel.name.split("-")
-        //const nameFinal = nameSplit.length > 1 ? nameSplit[1] : nameSplit[0]
+        const processing = this.isChannelProcessing(channel)
+        let label = channel.name.trim()
+        if (processing) {
+          label += ` (${this.$t("app_editor_channels_selector.transcription_in_progress")})`
+        }
         tabs.push({
           name: channel._id,
-          label: channel.name.trim(),
+          label,
           id: channel._id,
+          disabled: processing,
         })
       }
       return structuredClone(tabs)

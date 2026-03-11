@@ -91,7 +91,8 @@
     "token_renew_error": "An error occurred while renewing the key"
   },
   "app_editor_channels_selector": {
-    "label": "Choose a channel"
+    "label": "Choose a channel",
+    "transcription_in_progress": "Transcription in progress"
   },
   "app_editor_translations_selector": {
     "label": "Verbatim language",
