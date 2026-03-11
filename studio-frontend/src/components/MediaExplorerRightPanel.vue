@@ -56,7 +56,8 @@
       <MediaExplorerRightPanelItem
         v-else-if="selectedMediaForOverview"
         :selectedMedia="selectedMediaForOverview"
-        :selectedMedias="selectedMedias" />
+        :selectedMedias="selectedMedias"
+        @clear-selection="$emit('update:selectedMediaIds', [])" />
     </div>
   </div>
 </template>

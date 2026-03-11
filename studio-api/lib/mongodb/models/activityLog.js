@@ -177,11 +177,12 @@ class ActivityLog extends MongoModel {
         endDate,
       )
 
+      const groupId = orgaId ? "$organization.id" : null
       const query = [
         matchQuery,
         {
           $group: {
-            _id: "$organization.id",
+            _id: groupId,
             generated: { $sum: 1 },
             duration: {
               $sum: "$transcription.duration",
@@ -212,11 +213,12 @@ class ActivityLog extends MongoModel {
         endDate,
       )
 
+      const groupId = orgaId ? "$organization.id" : null
       const sessionQuery = [
         sessionMatchQuery,
         {
           $group: {
-            _id: "$organization.id",
+            _id: groupId,
             totalConnections: { $sum: 1 },
             watchTime: { $sum: "$socket.totalWatchTime" },
             uniqueSessions: { $addToSet: "$session.sessionId" },

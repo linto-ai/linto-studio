@@ -48,14 +48,12 @@
         {{ count }}
       </Avatar>
       <slot></slot>
-      <Button
+      <ph-icon
         v-if="removable"
-        icon="x"
-        size="xs"
-        color="tertiary"
-        shape="circle"
-        variant="transparent"
-        @click="$emit('remove')" />
+        name="x"
+        size="14"
+        class="chip-tag__remove"
+        @click.native="$emit('remove')" />
     </span>
     <span v-if="description" class="chip-tag__description">
       {{ description }}
@@ -261,6 +259,15 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .chip-tag__remove {
+    cursor: pointer;
+    opacity: 0.6;
+    margin-left: 0.1em;
+    &:hover {
+      opacity: 1;
+    }
   }
 
   .chip-tag__name:focus {

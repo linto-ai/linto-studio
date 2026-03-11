@@ -23,14 +23,34 @@
             :disabled="formState === 'sending'"
             v-model="audioFiles" />
         </div>
+        <!-- folder -->
+        <section>
+          <h2>{{ $t("conversation.folder_selection_title") }}</h2>
+          <div class="form-field flex col">
+            <label class="form-label">
+              {{ $t("conversation.folder_selection_label") }}
+            </label>
+            <FolderSelector v-model="selectedFolderId" />
+          </div>
+        </section>
+
         <!-- rights -->
         <section>
           <h2>{{ $t("conversation.conversation_creation_right_title") }}</h2>
           <div class="form-field flex col">
-            <label class="form-label">
-              {{ $t("conversation.conversation_creation_right_label") }}
-            </label>
-            <select v-model="membersRight.value">
+            <div class="flex align-center gap-small">
+              <label class="form-label">
+                {{ $t("conversation.conversation_creation_right_label") }}
+              </label>
+              <Tooltip
+                :text="$t('conversation.rights_info_tooltip')"
+                position="right">
+                <ph-icon name="info" size="16" />
+              </Tooltip>
+            </div>
+            <select
+              v-model="membersRight.value"
+              :disabled="selectedFolderIsPrivate">
               <option
                 v-for="uright in membersRight.list"
                 :key="uright.value"
@@ -112,6 +132,7 @@ import SessionCreateContent from "@/components/SessionCreateContent.vue"
 import QuickSessionCreateContent from "@/components/QuickSessionCreateContent.vue"
 import VisioCreateContent from "@/components/VisioCreateContent.vue"
 import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
+import FolderSelector from "@/components/FolderSelector.vue"
 
 export default {
   mixins: [
@@ -144,6 +165,7 @@ export default {
     }
   },
   mounted() {
+    this.$store.dispatch("folders/fetchFolders")
     if (this.canCreateSession) {
       this.fetchProfiles()
       this.fetchSessionTemplates()
@@ -159,6 +181,13 @@ export default {
   computed: {
     transcriberProfilesQuickMeeting() {
       return this.transcriberProfiles.filter((t) => t.quickMeeting)
+    },
+    selectedFolderIsPrivate() {
+      if (!this.selectedFolderId) return false
+      const folder = this.$store.getters["folders/getFolderById"](
+        this.selectedFolderId,
+      )
+      return folder && folder.visibility === "private"
     },
     enableSecurityLevel() {
       return getEnv("VUE_APP_ENABLE_SECURITY_LEVEL") === "true"
@@ -296,6 +325,7 @@ export default {
     QuickSessionCreateContent,
     VisioCreateContent,
     SecurityLevelSelector,
+    FolderSelector,
   },
 }
 </script>

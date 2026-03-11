@@ -14,7 +14,9 @@
       {{ $t("publish.generations.no_generations") }}
     </div>
 
-    <div v-if="generations && generations.length > 0" class="generations-list flex1 overflow-vertical-auto">
+    <div
+      v-if="generations && generations.length > 0"
+      class="generations-list flex1">
       <div
         v-for="generation in sortedGenerations"
         :key="generation.generationId"

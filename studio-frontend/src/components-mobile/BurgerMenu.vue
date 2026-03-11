@@ -1,21 +1,21 @@
 <template>
   <nav class="burger-menu">
-    <div class="flex col flex1">
-      <div class="burger-menu__header flex" v-if="isAuthenticated">
-        <UserAccountSelector :backoffice="backoffice" />
-      </div>
+    <div class="burger-menu__header flex" v-if="isAuthenticated">
+      <UserAccountSelector :backoffice="backoffice" />
+    </div>
 
+    <div class="burger-menu__body">
       <MediaExplorerMenu
         v-if="!backoffice && isAuthenticated"
         :organizationId="currentOrganization._id" />
 
-      <MediaExplorerMenuLabels v-if="isInbox" />
-
       <BackofficeSidebar v-if="backoffice" />
 
-      <slot></slot>
+      <div class="flex1 flex col overflow-vertical-auto" v-if="$slots.default">
+        <slot></slot>
+      </div>
     </div>
-    <div class="flex col">
+    <div class="burger-menu__footer-section">
       <ButtonRoller
         v-if="isAtLeastUploader"
         @click="startConversation"
@@ -163,8 +163,15 @@ export default {
 .burger-menu {
   display: flex;
   flex-direction: column;
-  gap: 1em;
-  overflow: visible;
+  overflow: hidden;
+
+  .burger-menu__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+  }
 
   .burger-menu__header {
     display: flex;
@@ -178,6 +185,7 @@ export default {
     overflow: visible;
     position: relative;
     z-index: 10;
+    flex-shrink: 0;
 
     & > * {
       flex: 1;
@@ -221,6 +229,12 @@ export default {
       border-radius: 4px;
       margin-top: 1em;
     }
+  }
+
+  .burger-menu__footer-section {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
   }
 
   .start-button {

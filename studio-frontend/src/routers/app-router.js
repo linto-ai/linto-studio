@@ -458,7 +458,7 @@ let router = new Router({
       },
     },
     {
-      path: "/interface/:organizationId?/explore",
+      path: "/interface/:organizationId?/explore/:folderId?",
       name: "explore",
       components: {
         default: () => import("../views/NextExplore.vue"),
@@ -520,6 +520,27 @@ let router = new Router({
           isRoot: true,
         },
         shared: true,
+      },
+    },
+    {
+      path: "/interface/:organizationId?/processing",
+      name: "explore-processing",
+      components: {
+        default: () => import("../views/NextExplore.vue"),
+        ...defaultComponents,
+      },
+      props: {
+        ...defaultProps,
+        default: { processing: true },
+      },
+      meta: {
+        mainListingPage: true,
+        breadcrumb: {
+          label: "breadcrumb.processing",
+          parent: null,
+          showInBreadcrumb: true,
+          isRoot: true,
+        },
       },
     },
     {
@@ -799,6 +820,20 @@ router.beforeEach(async (to, from, next) => {
   try {
     routerDebug("beforeEach from", from.fullPath, "to", to.fullPath)
 
+    // Short-circuit: same explore route, same org, only folderId changes
+    if (
+      from.name === "explore" &&
+      to.name === "explore" &&
+      from.params.organizationId === to.params.organizationId &&
+      from.params.folderId !== to.params.folderId
+    ) {
+      const tagFolderId = to.params.folderId ?? null
+      await store.dispatch("tags/fetchTags", { folderId: tagFolderId })
+      //store.dispatch("system/setIsLoading", false)
+      routerDebug("Short-circuit folder navigation")
+      return next()
+    }
+
     // Redirect to 404 if sessions are disabled but trying to access session page
     if (!enableSession && to.meta?.sessionPage) {
       return next({ name: "not_found" })
@@ -887,8 +922,10 @@ router.beforeEach(async (to, from, next) => {
       return next(orgScopeResult.nextRoute)
     }
 
-    // Fetch tags
-    await store.dispatch("tags/fetchTags")
+    // Fetch tags scoped to the target folder
+    const tagFolderId =
+      to.params.folderId || (to.name === "explore" ? null : undefined)
+    await store.dispatch("tags/fetchTags", { folderId: tagFolderId })
     routerDebug("Tags fetched")
 
     if (to.name === "explore-favorites") {

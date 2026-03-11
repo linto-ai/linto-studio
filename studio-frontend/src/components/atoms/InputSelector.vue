@@ -930,7 +930,7 @@ export default {
 
     &:hover,
     &--highlighted {
-      background: var(--neutral-40);
+      background: var(--primary-soft, #e8f5e9);
     }
 
     span {

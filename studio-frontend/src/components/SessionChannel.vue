@@ -72,7 +72,11 @@
         @select="onSelectTurn(turn.uuid, $event)"></SessionChannelTurn>
 
       <SessionChannelTurnPartial
-        v-if="displayLiveTranscription && partialText !== '' && shouldDisplayTurn(partialObject)"
+        v-if="
+          displayLiveTranscription &&
+          partialText !== '' &&
+          shouldDisplayTurn(partialObject)
+        "
         ref="partial"
         :previous="lastTurn || lastOfPreviousTurns"
         :channelLanguages="channelLanguages"
@@ -344,29 +348,19 @@ export default {
       )
     },
     shouldDisplayTurn(turn) {
-      const hasSpeaker = !!turn.locutor
-
       if (turn?.locutor == "bot") {
         return false
       }
 
       if (
-        this.hasDiarization &&
         this.selectedTranslations === "original" &&
-        hasSpeaker
+        this.hasDiarization &&
+        Object.keys(turn.translations).length > 0
       ) {
-        return true
+        return false
       }
 
-      if (this.selectedTranslations !== "original" && !hasSpeaker) {
-        return true
-      }
-
-      if (!this.hasDiarization && !hasSpeaker) {
-        return true
-      }
-
-      return false
+      return true
     },
     async loadPreviousTranscrition() {
       let sessionRequest = null
@@ -447,9 +441,13 @@ export default {
     onPartial(content) {
       if (content.locutor === "bot") return
       if (this.hasDiarization) {
-        const isTranslationPartial = content.translations && Object.values(content.translations).some(v => v)
-        if (this.selectedTranslations === "original" && isTranslationPartial) return
-        if (this.selectedTranslations !== "original" && !isTranslationPartial) return
+        const isTranslationPartial =
+          content.translations &&
+          Object.values(content.translations).some((v) => v)
+        if (this.selectedTranslations === "original" && isTranslationPartial)
+          return
+        if (this.selectedTranslations !== "original" && !isTranslationPartial)
+          return
       }
       this.mergePartialTranslations(content)
       this.partialText = this.computeDisplayText(content)
@@ -461,11 +459,11 @@ export default {
       this.mergePartialTranslations(content)
       this.turns.push(content)
 
-      const shouldProcess = content.locutor !== "bot" && (
-        !this.hasDiarization ||
-        (this.selectedTranslations === "original" && !!content.locutor) ||
-        (this.selectedTranslations !== "original" && !content.locutor)
-      )
+      const shouldProcess =
+        content.locutor !== "bot" &&
+        (!this.hasDiarization ||
+          (this.selectedTranslations === "original" && !!content.locutor) ||
+          (this.selectedTranslations !== "original" && !content.locutor))
 
       if (shouldProcess) {
         this.partialText = ""
@@ -499,11 +497,11 @@ export default {
 
       this.$nextTick().then(() => {
         if (this.$refs.bottom) {
-          const container = this.$refs.bottom.closest('.session-content')
+          const container = this.$refs.bottom.closest(".session-content")
           if (container) {
             container.scrollTo({
               top: container.scrollHeight,
-              behavior: "smooth"
+              behavior: "smooth",
             })
           }
         }

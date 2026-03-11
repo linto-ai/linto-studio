@@ -17,72 +17,74 @@ const {
 
 const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
 
+async function isSystemAdmin(req) {
+  if (await platformAccess.isSystemAdministrator(req)) {
+    req.userRole = ROLES.ADMIN
+    return true
+  }
+  return false
+}
+
 module.exports = {
   asAdminAccess: async (req, res, next) => {
-    if (await platformAccess.isSystemAdministrator(req)) next()
-    else
-      await access(
-        req,
-        next,
-        req.params.organizationId,
-        req.payload.data.userId,
-        ROLES.ADMIN,
-      )
+    if (await isSystemAdmin(req)) return next()
+    await access(
+      req,
+      next,
+      req.params.organizationId,
+      req.payload.data.userId,
+      ROLES.ADMIN,
+    )
   },
   asMaintainerAccess: async (req, res, next) => {
-    if (await platformAccess.isSystemAdministrator(req)) next()
-    else
-      await access(
-        req,
-        next,
-        req.params.organizationId,
-        req.payload.data.userId,
-        ROLES.MAINTAINER,
-      )
+    if (await isSystemAdmin(req)) return next()
+    await access(
+      req,
+      next,
+      req.params.organizationId,
+      req.payload.data.userId,
+      ROLES.MAINTAINER,
+    )
   },
   asMeetingManagerAccess: async (req, res, next) => {
-    if (await platformAccess.isSessionOperator(req)) next()
-    else
-      await access(
-        req,
-        next,
-        req.params.organizationId,
-        req.payload.data.userId,
-        ROLES.MEETING_MANAGER,
-      )
+    if (await platformAccess.isSessionOperator(req)) return next()
+    await access(
+      req,
+      next,
+      req.params.organizationId,
+      req.payload.data.userId,
+      ROLES.MEETING_MANAGER,
+    )
   },
   asQuickMeetingAccess: async (req, res, next) => {
-    if (await platformAccess.isSessionOperator(req)) next()
-    else
-      await access(
-        req,
-        next,
-        req.params.organizationId,
-        req.payload.data.userId,
-        ROLES.QUICK_MEETING,
-      )
+    if (await platformAccess.isSessionOperator(req)) return next()
+    await access(
+      req,
+      next,
+      req.params.organizationId,
+      req.payload.data.userId,
+      ROLES.QUICK_MEETING,
+    )
   },
   asUploaderAccess: async (req, res, next) => {
-    if (await platformAccess.isSystemAdministrator(req)) next()
-    else
-      await access(
-        req,
-        next,
-        req.params.organizationId,
-        req.payload.data.userId,
-        ROLES.UPLOADER,
-      )
+    if (await isSystemAdmin(req)) return next()
+    await access(
+      req,
+      next,
+      req.params.organizationId,
+      req.payload.data.userId,
+      ROLES.UPLOADER,
+    )
   },
   asMemberAccess: async (req, res, next) => {
-    if (await platformAccess.isSystemAdministrator(req)) return next()
-    else
-      await access(
-        req,
-        next,
-        req.params.organizationId,
-        req.payload.data.userId,
-        ROLES.MEMBER,
-      )
+    if (await isSystemAdmin(req)) return next()
+    await access(
+      req,
+      next,
+      req.params.organizationId,
+      req.payload.data.userId,
+      ROLES.MEMBER,
+    )
   },
   access: async (req, next, organizationId, userId, right) => {
     await access(req, next, organizationId, userId, right)
@@ -166,7 +168,7 @@ async function access(req, next, organizationId, userId, right) {
 
 async function sessionSocketAccess(session, userId, right) {
   try {
-    if (!session && session.organizationId) {
+    if (!session || !session.organizationId) {
       return false
     }
     const organization = await model.organizations.getById(

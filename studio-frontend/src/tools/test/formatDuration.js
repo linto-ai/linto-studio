@@ -54,6 +54,27 @@ test("formatDuration handles large values", (t) => {
   t.is(formatDuration(36000), "10h 0m 0s")
 })
 
+// showSeconds: false tests
+test("formatDuration compact showSeconds:false with hours", (t) => {
+  t.is(formatDuration(5400, { compact: true, showSeconds: false }), "01:30")
+})
+
+test("formatDuration compact showSeconds:false with showZeroHours", (t) => {
+  t.is(formatDuration(125, { compact: true, showZeroHours: true, showSeconds: false }), "00:02")
+})
+
+test("formatDuration compact showSeconds:false minutes only", (t) => {
+  t.is(formatDuration(45, { compact: true, showSeconds: false }), "00")
+})
+
+test("formatDuration non-compact showSeconds:false", (t) => {
+  t.is(formatDuration(5430, { showSeconds: false }), "1h 30m")
+})
+
+test("formatDuration non-compact showSeconds:false zero seconds", (t) => {
+  t.is(formatDuration(3600, { showSeconds: false }), "1h 0m")
+})
+
 // formatTime tests
 test("formatTime returns null for null input", (t) => {
   t.is(formatTime(null), null)

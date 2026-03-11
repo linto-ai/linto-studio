@@ -10,7 +10,7 @@
     <p>
       {{
         $t("organisation.remove_user_modal.content", {
-          name: user.email,
+          name: user ? user.email : '',
         })
       }}
     </p>

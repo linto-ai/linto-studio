@@ -126,6 +126,7 @@ class TagModel extends MongoModel {
     organizationId,
     categoryId,
     withMediaCount = false,
+    folderId = undefined,
   ) {
     try {
       const query = {
@@ -141,15 +142,22 @@ class TagModel extends MongoModel {
 
       const tagIdStrings = tags.map((t) => t._id.toString())
 
+      const matchQuery = {
+        "organization.organizationId": organizationId.toString(),
+        tags: { $in: tagIdStrings },
+      }
+      if (folderId === "null" || folderId === null) {
+        matchQuery.folderId = null
+      } else if (folderId) {
+        matchQuery.folderId = folderId
+      }
+
       const MongoDriver = require("../driver")
       const counts = await MongoDriver.constructor.db
         .collection("conversations")
         .aggregate([
           {
-            $match: {
-              "organization.organizationId": organizationId.toString(),
-              tags: { $in: tagIdStrings },
-            },
+            $match: matchQuery,
           },
           { $unwind: "$tags" },
           {

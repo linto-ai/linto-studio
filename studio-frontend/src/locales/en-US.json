@@ -16,7 +16,7 @@
     "watch_time_label": "Watch time",
     "connection_count_label": "Connection count",
     "tabs": {
-      "sessions_kpi": "Sessions KPI",
+      "sessions_kpi": "Sessions statistics",
       "sessions": "Sessions detailed",
       "ressources": "Resources",
       "tokens": "Api keys access",
@@ -134,14 +134,15 @@
       "organisations": "Organizations",
       "tokens": "Api keys",
       "transcriberProfiles": "Transcriber Profiles",
-      "sessions": "Sessions"
+      "sessions": "Sessions",
+      "back_to_org": "Back to organization"
     },
     "activity_list": {
       "title": "Activity log"
     },
     "dashboard": {
       "page_title": "Dashboard",
-      "sessions_count": "Sessions Transcribed",
+      "sessions_count": "Live transcriptions",
       "medias_count": "Media Processed",
       "time_period_label": "Period",
       "users": "Users",
@@ -153,9 +154,9 @@
       },
       "charts": {
         "sessions_title": "Live Transcriptions",
-        "sessions_duration_title": "Real-time audio transcription (hours)",
-        "medias_title": "Media Transcriptions",
-        "duration_title": "Audio Duration (hours)"
+        "sessions_duration_title": "Live transcription duration (hours)",
+        "medias_title": "Transcribed media",
+        "duration_title": "Transcribed media duration (hours)"
       },
       "filters": {
         "organization": "Organization",
@@ -273,7 +274,8 @@
     "transcription": "Transcription",
     "transcriberProfiles": "Transcriber Profiles",
     "users": "Users",
-    "userSettings": "Profile settings"
+    "userSettings": "Profile settings",
+    "processing": "Processing"
   },
   "conversation": {
     "acoustic": {
@@ -293,6 +295,9 @@
     },
     "conversation_creation_error_multiple_unknown": "An error occurred while uploading {total} audio files. {count} have already been uploaded. try again later.",
     "conversation_creation_loading_multiple": "Uploading audio {count} of {total}. This can take several minutes.",
+    "folder_selection_title": "Folder",
+    "folder_selection_label": "Upload to folder",
+    "rights_info_tooltip": "If the selected folder is private, the media will automatically inherit the folder's permissions.",
     "conversation_creation_right_title": "Medias rights",
     "conversation_creation_right_label": "Default rights for organisation members",
     "conversation_creation_security_title": "Security level",
@@ -466,7 +471,10 @@
     "url_tab": {
       "main_info_title": "General information",
       "url_label": "Source URL",
-      "get_button": "Add media from the URL"
+      "get_button": "Add media from the URL",
+      "youtube_warning": "YouTube URLs are not supported. YouTube blocks automated downloads.",
+      "supported_platforms": "Supported: Arte, Radio France, PeerTube, or direct link to an audio/video file.",
+      "supported_platforms_link": "See the full list of supported sites"
     },
     "offline": {
       "label_icon_source": {
@@ -559,6 +567,7 @@
     "invalidVisioUrl": "Invalid visio URL",
     "unauthorized_caracters": "Unauthorized characters",
     "invalid_email": "Invalid email",
+    "invalid_url": "Please enter a valid URL (https:// or http://)",
     "passwordsMustBeTheSame": "Passwords must be the same",
     "passwordLength": "This field must contain at least 6 characters"
   },
@@ -637,6 +646,48 @@
       }
     }
   },
+  "folders": {
+    "uncategorized": "Inbox",
+    "create": "Create folder",
+    "create_placeholder": "Folder name...",
+    "name_required": "Folder name is required",
+    "create_subfolder": "Create subfolder",
+    "rename": "Rename",
+    "delete": "Delete",
+    "move": "Move",
+    "create_success": "Folder created",
+    "create_error": "Error creating folder",
+    "update_success": "Folder updated",
+    "update_error": "Error updating folder",
+    "delete_success": "Folder deleted",
+    "delete_error": "Error deleting folder",
+    "move_success": "Conversations moved",
+    "move_error": "Error moving conversations",
+    "folder": "Folder",
+    "move_to_folder": "Move to folder",
+    "manage_access": "Manage access",
+    "visibility_public": "Public",
+    "visibility_private": "Private",
+    "visibility_update_success": "Folder access updated",
+    "visibility_update_error": "Error updating folder access",
+    "visibility_warning": "This will affect all conversations and subfolders in this folder.",
+    "visibility_parent_private_force": "The parent folder is private. Making this folder public will also make all its private parent folders public, including their conversations and subfolders.",
+    "force_public_parents": "Also make parent folders public",
+    "members_label": "Members",
+    "no_members": "No members selected",
+    "right_none": "No access",
+    "right_none_description": "No access to this folder",
+    "right_read": "Read",
+    "right_read_description": "View folder and its conversations",
+    "right_write": "Write",
+    "right_write_description": "Edit media, create subfolders and move conversations",
+    "right_share": "Share",
+    "right_share_description": "Manage folder access and members",
+    "uncategorize_success": "Conversations removed from folder",
+    "uncategorize_error": "Error removing conversations from folder",
+    "right_label": "Right",
+    "members_propagate_to_parents": "New members will also be added to parent folders with read-only access to allow navigation."
+  },
   "manage_tags": {
     "title": "Topics",
     "no_tags": "No topics",
@@ -665,9 +716,16 @@
       "edit_transcription": "Transcription",
       "edit_subtitles": "Subtitles",
       "export": "Publish",
+      "duplicate": "Create a new copy",
       "delete": "Delete"
     },
     "delete": "Delete",
+    "sort": {
+      "created_desc": "Newest first",
+      "created_asc": "Oldest first",
+      "last_update_desc": "Recently modified",
+      "last_update_asc": "Least recently modified"
+    },
     "filter": {
       "transcribed": "Transcribed",
       "processing": "Processing",
@@ -702,7 +760,11 @@
       "download_error": "Download error",
       "download_multiple_success": "{count} medias downloaded successfully",
       "download_multiple_partial": "{success} medias downloaded out of {total}",
-      "download_multiple_error": "Error downloading medias"
+      "download_multiple_error": "Error downloading medias",
+      "duplicate": "Create a new copy",
+      "duplicating": "Duplicating...",
+      "duplicate_success": "Conversation duplicated",
+      "duplicate_error": "Error duplicating conversation"
     },
     "no_medias_selected": "No media selected",
     "some_medias_cannot_be_deleted": "Some media cannot be deleted",
@@ -774,12 +836,20 @@
     "conversation": {
       "start": "Transcribe"
     },
+    "sections": {
+      "organization": "Organization",
+      "media": "Media",
+      "personal": "Personal",
+      "my_space": "My space"
+    },
     "tabs": {
       "explore": "Inbox",
       "favorites": "Favorites",
       "sessions": "Live transcriptions",
       "shared": "Shared with me",
-      "tags": "Topics"
+      "tags": "Topics",
+      "folders": "Folders",
+      "processing": "Processing"
     }
   },
   "no_orga": {
@@ -815,6 +885,7 @@
     },
     "delete_organization": "Delete organization",
     "delete_success_message": "Organization successfully deleted",
+    "sessions_kpi_link": "Session statistics",
     "description_description": "The description of your organization",
     "description_label": "Description",
     "general_settings": "General settings",
@@ -953,6 +1024,7 @@
       "version_restore_error": "Error restoring version",
       "unsaved_changes": "You have unsaved changes",
       "show_transcript": "Transcription",
+      "side_by_side": "Side by side",
       "delete_version_confirm_title": "Delete version?",
       "delete_version_confirm": "This version will be permanently deleted.",
       "delete_version_confirm_button": "Delete",

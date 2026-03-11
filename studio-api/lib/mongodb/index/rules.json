@@ -41,6 +41,20 @@
       "_id": 1,
       "name": 1,
       "text": 1
+    },
+    {
+      "folderId": 1,
+      "organization.organizationId": 1
+    }
+  ],
+
+  "folders": [
+    {
+      "organizationId": 1
+    },
+    {
+      "parentId": 1,
+      "organizationId": 1
     }
   ],
 

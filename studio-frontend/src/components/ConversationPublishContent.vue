@@ -21,19 +21,20 @@
       <div
         class="publish-editor-header flex align-center justify-between">
         <div class="flex align-center gap-small">
-          <Button
-            v-if="canShowTranscript"
-            :variant="showTranscript ? 'primary' : 'secondary'"
-            icon="columns"
-            size="sm"
-            :label="$t('publish.editor.show_transcript')"
-            @click="$emit('toggle-transcript')" />
           <span
             v-if="hasChanges"
             class="unsaved-indicator">
             {{ $t("publish.editor.unsaved_changes") }}
           </span>
         </div>
+        <div class="flex align-center gap-small">
+        <Button
+          v-if="canShowTranscript"
+          :variant="showTranscript ? 'primary' : 'secondary'"
+          icon="columns"
+          size="sm"
+          :label="$t('publish.editor.side_by_side')"
+          @click="$emit('toggle-transcript')" />
         <Button
           v-if="hasChanges"
           variant="primary"
@@ -41,6 +42,7 @@
           size="sm"
           :label="$t('publish.editor.save_version')"
           @click="$emit('save-version')" />
+        </div>
       </div>
       <!-- Tiptap WYSIWYG editor (always rendered, editable when allowed) -->
       <div id="markdown-editor-container" class="flex col flex1" style="min-height: 0">

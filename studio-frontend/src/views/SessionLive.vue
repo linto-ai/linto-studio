@@ -44,7 +44,6 @@
     </template>
 
     <template v-slot:sidebar>
-      <div class="sidebar-divider"></div>
       <SessionLiveMicrophoneStatus
         v-if="useMicrophone && sessionLoaded"
         @toggle-microphone="toggleMicrophone"

@@ -8,7 +8,29 @@
       v-model="currentTab"
       variant="secondary"
       style="padding-bottom: 0.5rem" />
-    <SessionsKpi v-if="currentTab == 'sessions_kpi'" />
+    <SessionsKpi
+      v-if="currentTab === 'sessions_kpi'"
+      :organizationId="selectedOrganization">
+      <template #toolbar-start>
+        <FormInput
+          :field="{
+            label: $t('backoffice.dashboard.filters.organization'),
+            error: null,
+          }"
+          style="max-width: 300px">
+          <template #custom-input>
+            <PopoverList
+              :items="organizationItems"
+              :value="selectedOrganization"
+              @input="selectedOrganization = $event"
+              searchable
+              full-width
+              :overlay="false"
+              color="neutral" />
+          </template>
+        </FormInput>
+      </template>
+    </SessionsKpi>
     <div class="flex1 flex col gap-medium" v-else>
       <UserSelector
         v-model="selecteduser"
@@ -55,6 +77,7 @@ import {
   apiGetSessionActivityLogs,
   apiGetBackofficeActivityLogs,
   apiGetKeysActivityLogs,
+  apiGetAllOrganizations,
 } from "@/api/admin.js"
 
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
@@ -68,6 +91,7 @@ import FormatedUrl from "@/components/atoms/FormatedUrl.vue"
 import UserSelector from "@/components/molecules/UserSelector.vue"
 import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 import SessionsKpi from "@/components/SessionsKpi.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 import { timeToHMS } from "@/tools/timeToHMS"
 
 export default {
@@ -100,14 +124,19 @@ export default {
         {
           name: "sessions_kpi",
           label: this.$t("activity_list.tabs.sessions_kpi"),
-          icon: "chart-pie",
+          icon: "broadcast",
         },
       ],
       currentTab: "ressources",
       selecteduser: null,
+      selectedOrganization: null,
+      organizations: [],
     }
   },
-  mounted() {},
+  mounted() {
+    this.loadFiltersFromUrl()
+    this.fetchOrganizations()
+  },
   computed: {
     fetchMethodParams() {
       return {
@@ -218,6 +247,17 @@ export default {
         },
       ]
     },
+    organizationItems() {
+      const allOption = {
+        id: null,
+        name: this.$t("backoffice.dashboard.filters.all_organizations"),
+      }
+      const orgItems = this.organizations.map((org) => ({
+        id: org._id,
+        name: org.name,
+      }))
+      return [allOption, ...orgItems]
+    },
     fetchMethod() {
       switch (this.currentTab) {
         case "ressources":
@@ -232,7 +272,32 @@ export default {
       }
     },
   },
-  methods: {},
+  watch: {
+    currentTab() {
+      this.updateUrlParams()
+    },
+    selectedOrganization() {
+      this.updateUrlParams()
+    },
+  },
+  methods: {
+    updateUrlParams() {
+      const query = {}
+      if (this.currentTab !== "ressources") query.tab = this.currentTab
+      if (this.currentTab === "sessions_kpi" && this.selectedOrganization)
+        query.org = this.selectedOrganization
+      this.$router.replace({ query }).catch(() => {})
+    },
+    loadFiltersFromUrl() {
+      const { tab, org } = this.$route.query
+      if (tab && this.tabs.some((t) => t.name === tab)) this.currentTab = tab
+      if (org) this.selectedOrganization = org
+    },
+    async fetchOrganizations() {
+      const res = await apiGetAllOrganizations(0, { pageSize: 1000 })
+      this.organizations = res.list || []
+    },
+  },
   components: {
     MainContentBackoffice,
     GenericTableRequest,
@@ -245,6 +310,7 @@ export default {
     UserSelector,
     UserInfoInline,
     SessionsKpi,
+    FormInput,
   },
 }
 </script>

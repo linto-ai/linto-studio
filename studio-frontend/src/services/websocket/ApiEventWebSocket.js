@@ -6,6 +6,7 @@ import { getCookie } from "@/tools/getCookie"
 import { getEnv } from "@/tools/getEnv"
 import store from "@/store/index.js"
 import i18n from "@/i18n"
+import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
 
 const socketioUrl = getEnv("VUE_APP_SESSION_WS")
 const socketioPath = getEnv("VUE_APP_SESSION_WS_PATH")
@@ -252,50 +253,111 @@ export default class ApiEventWebSocket {
 
     this.socket.on("conversation_processing_done", (mediaId) => {
       debugWSMedia("conversation_processing_done", mediaId)
+
+      const processingMedia = store.getters[
+        `${this.currentMediaOrganizationId}/processing/conversations/getMediaById`
+      ](mediaId)
+
+      // Remove from processing store
+      if (processingMedia) {
+        store.dispatch(
+          `${this.currentMediaOrganizationId}/processing/conversations/deleteMedias`,
+          { ids: [mediaId], callApi: false },
+        )
+      }
       store.dispatch(
-        `${this.currentMediaOrganizationId}/processing/conversations/updateMedia`,
-        {
-          mediaId: mediaId,
-          media: { jobs: { transcription: { state: "done" } } },
-          patch: true,
-        },
+        `${this.currentMediaOrganizationId}/processing/conversations/decreaseCount`,
+      )
+
+      // Add to done store (inbox)
+      store.dispatch(
+        `${this.currentMediaOrganizationId}/done/conversations/prependMedias`,
+        [processingMedia ? { ...processingMedia, jobs: { transcription: { state: "done" } } } : mediaId],
       )
       store.dispatch(
         `${this.currentMediaOrganizationId}/done/conversations/increaseCount`,
-      )
-
-      store.dispatch(
-        `${this.currentMediaOrganizationId}/done/conversations/prependMedias`,
-        [
-          store.getters[
-            `${this.currentMediaOrganizationId}/processing/conversations/getMediaById`
-          ](mediaId),
-        ],
-      )
-
-      store.dispatch(
-        `${this.currentMediaOrganizationId}/processing/conversations/decreaseCount`,
       )
     })
 
     this.socket.on("conversation_processing_error", (mediaId) => {
       debugWSMedia("conversation_processing_error", mediaId)
-      store.dispatch(
-        `${this.currentMediaOrganizationId}/processing/conversations/updateMedia`,
-        {
-          mediaId: mediaId,
-          media: { jobs: { transcription: { state: "error" } } },
-          patch: true,
-        },
-      )
-      store.dispatch(
-        `${this.currentMediaOrganizationId}/error/conversations/increaseCount`,
-      )
+
+      const processingMedia = store.getters[
+        `${this.currentMediaOrganizationId}/processing/conversations/getMediaById`
+      ](mediaId)
+
+      // Remove from processing store
+      if (processingMedia) {
+        store.dispatch(
+          `${this.currentMediaOrganizationId}/processing/conversations/deleteMedias`,
+          { ids: [mediaId], callApi: false },
+        )
+      }
       store.dispatch(
         `${this.currentMediaOrganizationId}/processing/conversations/decreaseCount`,
       )
+
+      store.dispatch(
+        `${this.currentMediaOrganizationId}/error/conversations/increaseCount`,
+      )
     })
   }
+
+  subscribeFolderUpdate(organizationId) {
+    if (!this.socket) return
+    this.unSubscribeFolderUpdate()
+
+    this.socket.on("folder_created", (folder) => {
+      if (!this._canAccessFolder(folder)) return
+      const existing = store.getters["folders/getFolderById"](folder._id)
+      if (existing) return
+      store.commit("folders/addFolder", { ...folder, conversationCount: 0 })
+    })
+
+    this.socket.on("folder_updated", (folder) => {
+      const existing = store.getters["folders/getFolderById"](folder._id)
+      if (this._canAccessFolder(folder)) {
+        if (existing) {
+          store.commit("folders/updateFolder", folder)
+        } else {
+          store.commit("folders/addFolder", { ...folder, conversationCount: 0 })
+        }
+      } else if (existing) {
+        store.commit("folders/removeFolder", folder._id)
+      }
+    })
+
+    this.socket.on("folder_deleted", ({ _id }) => {
+      store.commit("folders/removeFolder", _id)
+    })
+
+    this.socket.on("folders_refresh", () => {
+      store.dispatch("folders/fetchFolders")
+    })
+
+    this.socket.on("conversation_folder_changed", (payload) => {
+      bus.$emit("conversation_folder_changed", payload)
+    })
+  }
+
+  unSubscribeFolderUpdate() {
+    if (!this.socket) return
+    this.socket.off("folder_created")
+    this.socket.off("folder_updated")
+    this.socket.off("folder_deleted")
+    this.socket.off("folders_refresh")
+    this.socket.off("conversation_folder_changed")
+  }
+
+  _canAccessFolder(folder) {
+    if (folder.visibility !== "private") return true
+    const userId = store.getters["user/getUserId"]
+    const userRole = store.getters["organizations/getUserRoleInOrganization"]
+    if (userRole >= ORGANIZATION_ROLES.MAINTAINER) return true
+    if (folder.owner === userId) return true
+    return (folder.members || []).some((m) => m.userId === userId)
+  }
+
   unSubscribeMediaUdate() {
     if (!this.socket) return
     if (this.currentMediaOrganizationId) {

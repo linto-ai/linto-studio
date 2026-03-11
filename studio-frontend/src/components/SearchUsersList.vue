@@ -6,7 +6,7 @@
     <div v-else-if="searchMemberValue.length > 0" class="">
       <div class="flex col gap-small">
         <user-info-inline
-          v-if="!onlySlot && user._id !== userInfo._id"
+          v-if="!onlySlot"
           :user="user"
           :userId="user._id"
           v-for="user of availableUsers"
@@ -17,7 +17,7 @@
         <slot
           v-bind:user="user"
           v-for="user of availableUsers"
-          v-if="onlySlot && user._id !== userInfo._id"></slot>
+          v-if="onlySlot"></slot>
       </div>
     </div>
   </div>
@@ -33,6 +33,7 @@ export default {
     searchMemberValue: { required: true },
     currentUser: { required: true },
     onlySlot: { type: Boolean, default: false },
+    includeSelf: { type: Boolean, default: false },
   },
   mixins: [debounceMixin],
   data() {
@@ -50,22 +51,26 @@ export default {
   computed: {
     availableUsers() {
       if (this.searchMemberValue.length > 0) {
-        return this.searchUsersList.map((user) => {
-          const existingUserIndex = this.currentUser.findIndex(
-            (usr) => usr._id === user._id,
+        return this.searchUsersList
+          .filter(
+            (user) => this.includeSelf || user._id !== this.userInfo._id,
           )
-          if (existingUserIndex < 0) {
-            return {
-              ...user,
-              right: 0,
+          .map((user) => {
+            const existingUserIndex = this.currentUser.findIndex(
+              (usr) => usr._id === user._id,
+            )
+            if (existingUserIndex < 0) {
+              return {
+                ...user,
+                right: 0,
+              }
+            } else {
+              return {
+                ...user,
+                right: this.currentUser[existingUserIndex].right,
+              }
             }
-          } else {
-            return {
-              ...user,
-              right: this.currentUser[existingUserIndex].right,
-            }
-          }
-        })
+          })
       }
       return []
     },

@@ -14,9 +14,6 @@
             "channelId": {
                 "type": "integer"
             },
-            "enableLiveTranscripts": {
-                "type": "boolean"
-            },
             "enableDisplaySub": {
                 "type": "boolean"
             },
@@ -36,11 +33,6 @@
             "channelId": {
               "type": "integer",
               "description": "The id of the channel."
-            },
-            "enableLiveTranscripts": {
-                "type": "boolean",
-                "description": "Set to False to disable transcription.",
-                "default": true
             },
             "enableDisplaySub": {
                 "type": "boolean",

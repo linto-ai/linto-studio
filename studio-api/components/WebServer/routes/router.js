@@ -17,6 +17,9 @@ const taxonomy_middlewares = require(
 const user_middlewares = require(
   `${process.cwd()}/components/WebServer/middlewares/access/user.js`,
 )
+const folder_middlewares = require(
+  `${process.cwd()}/components/WebServer/middlewares/access/folder.js`,
+)
 
 const platform_middlewares = require(
   `${process.cwd()}/components/WebServer/middlewares/access/platform.js`,
@@ -59,6 +62,8 @@ const disableAuthIfDev = (route) => {
     route.requireOrganizationMemberAccess = false
     route.requireOrganizationUploaderAccess = false
     route.requireReadTaxonomyAccess = false
+    route.requireFolderManagerAccess = false
+    route.requireFolderConversationWriteAccess = false
     route.requireUserVisibility = false
     route.requireWriteTaxonomyAccess = false
   }
@@ -104,6 +109,11 @@ const loadMiddlewares = (route) => {
     middlewares.push(organization_middlewares.asUploaderAccess)
   if (route.requireOrganizationMemberAccess)
     middlewares.push(organization_middlewares.asMemberAccess)
+
+  if (route.requireFolderManagerAccess)
+    middlewares.push(folder_middlewares.asManagerAccess)
+  if (route.requireFolderConversationWriteAccess)
+    middlewares.push(folder_middlewares.asConversationWriteAccess)
 
   if (route.requireReadTaxonomyAccess)
     middlewares.push(taxonomy_middlewares.asReadTaxonomyAccess)

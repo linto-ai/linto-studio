@@ -36,6 +36,7 @@ async function getTags(req, res, next) {
       req.params.organizationId,
       req.query.categoryId,
       req.query.withMediaCount,
+      req.query.folderId,
     )
     res.status(200).send(tags)
   } catch (err) {

@@ -9,7 +9,8 @@
         @inviteUser="addToMembers"
         @removeUser="removeFromMembers"
         :currentUsers="orgaMembers"
-        :usersEmailPending="usersEmailPending"></UserInvite>
+        :usersEmailPending="usersEmailPending"
+        :includeSelf="isBackofficePage"></UserInvite>
     </div>
 
     <!--Organization Members -->
@@ -33,7 +34,7 @@
       </template>
       <template #cell-actions="{ element }">
         <Button
-          v-if="userInfo._id === element._id"
+          v-if="userInfo._id === element._id && !isBackofficePage"
           size="sm"
           variant="secondary"
           intent="destructive"

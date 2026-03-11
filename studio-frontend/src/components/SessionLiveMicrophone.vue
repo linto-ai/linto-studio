@@ -1,7 +1,6 @@
 <template>
   <V2Layout :breadcrumbItems="breadcrumbItems">
     <template v-slot:sidebar>
-      <div class="sidebar-divider"></div>
       <!-- <SessionLiveMicrophoneStatus
         @toggle-microphone="toggleMicrophone"
         :speaking="speaking"
