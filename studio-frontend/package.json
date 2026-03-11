@@ -2,7 +2,7 @@
   "name": "linto-studio-frontend",
   "author": "Romain Lopez <rlopez@linagora.com>",
   "description": "This is LinTO Studio web interface",
-  "version": "1.8.0",
+  "version": "1.8.2",
   "license": "GNU AFFERO GPLV3",
   "repository": {
     "type": "git",
@@ -56,6 +56,8 @@
     "qrcode-generator": "^2.0.4",
     "socket.io-client": "^4.5.2",
     "syllable": "^5.0.1",
+    "turndown": "^7.2.2",
+    "turndown-plugin-gfm": "^1.0.2",
     "uuid": "^3.4.0",
     "v-click-outside": "^3.2.0",
     "vue": "^2.7.13",

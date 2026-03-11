@@ -375,6 +375,18 @@ export async function updateTurn(conversationId, turnId, payload, userToken) {
   )
 }
 
+export async function apiGetConversationChildren(conversationId, userToken) {
+  const res = await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/child`,
+    { method: "get" },
+    { projection: "_id,jobs.transcription.state" },
+    null,
+    userToken,
+  )
+  if (res.status === "error") return []
+  return res.data || []
+}
+
 export async function apiDeleteTagFromConversation(
   conversationId,
   tagId,

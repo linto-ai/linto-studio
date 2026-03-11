@@ -23,7 +23,7 @@ DB_PASS=example
 DB_NAME=conversations
 
 # Request a specific version of the database (optional)
-DB_MIGRATION_TARGET=1.6.3
+DB_MIGRATION_TARGET=1.8.0
 
 # STT Config
 GATEWAY_SERVICES=https://<domain>
@@ -31,6 +31,8 @@ GATEWAY_SERVICES=https://<domain>
 # LLM Gateway V2 Config
 # HTTP API endpoint (e.g., http://localhost:8010)
 LLM_GATEWAY_SERVICES=
+# Chat service ID from LLM Gateway (required for chat feature)
+LLM_CHAT_SERVICE_ID=
 # WebSocket URL is automatically derived from LLM_GATEWAY_SERVICES
 # (http://localhost:8010 -> ws://localhost:8010)
 # V2 WebSocket endpoints:
@@ -54,6 +56,7 @@ MAX_SUBTITLE_VERSION=5
 # JWT SECRET
 CM_JWT_SECRET=jwt_secret
 CM_REFRESH_SECRET=jwt_refresh_secret
+CM_API_URL=
 
 # SMTP
 SMTP_HOST=

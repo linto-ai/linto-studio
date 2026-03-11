@@ -8,7 +8,7 @@ const CONVERSATION_RIGHTS = require(
   `${process.cwd()}/lib/dao/conversation/rights`,
 )
 
-const { getStorageFolder, deleteFile } = require(
+const { deleteAudioFileIfOrphaned } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 
@@ -131,8 +131,8 @@ async function removeUserFromPlatform(userId) {
           await Promise.all(
             conversations.map(async (conversation) => {
               if (conversation.metadata?.audio?.filepath) {
-                deleteFile(
-                  `${getStorageFolder()}/${conversation.metadata.audio.filepath}`,
+                await deleteAudioFileIfOrphaned(
+                  conversation.metadata.audio.filepath,
                 )
               }
 

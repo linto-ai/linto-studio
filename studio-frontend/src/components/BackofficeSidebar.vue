@@ -57,19 +57,31 @@
         $t("backoffice.navigation.activities")
       }}</span>
     </router-link>
+
+    <div class="backoffice-sidebar__separator"></div>
+
+    <a
+      class="flex row align-center gap-medium tab backoffice-sidebar__link backoffice-sidebar__org-switch"
+      @click="modalOrgSelector = true">
+      <ph-icon name="arrow-left" size="sm"></ph-icon>
+      <span class="tab__label">{{ $t("backoffice.navigation.back_to_org") }}</span>
+    </a>
+
+    <ModalSwitchOrg v-model="modalOrgSelector" @close="modalOrgSelector = false" />
   </nav>
 </template>
 <script>
 import { platformRoleMixin } from "@/mixins/platformRole.js"
+import ModalSwitchOrg from "@/components/ModalSwitchOrg.vue"
+
 export default {
+  components: { ModalSwitchOrg },
   mixins: [platformRoleMixin],
-  props: {},
   data() {
-    return {}
+    return {
+      modalOrgSelector: false,
+    }
   },
-  mounted() {},
-  methods: {},
-  components: {},
 }
 </script>
 
@@ -87,6 +99,15 @@ export default {
 
   a.router-link-exact-active svg {
     color: var(--primary-color) !important;
+  }
+
+  &__separator {
+    margin: 0.5em 1em;
+    border-top: 1px solid var(--border-color, #e0e0e0);
+  }
+
+  &__org-switch {
+    cursor: pointer;
   }
 }
 </style>

@@ -1,4 +1,5 @@
 import { mapGetters } from "vuex"
+import { apiDuplicateConversation } from "@/api/conversation"
 
 export const mediaScopeMixin = {
   computed: {
@@ -12,14 +13,17 @@ export const mediaScopeMixin = {
       "getStoreScope",
     ]),
     isSelectAll() {
-      const value = this.$store.state[this.storeScope].autoselectMedias ?? false
+      const value = this.$store.state[this.storeScope]?.autoselectMedias ?? false
       return value
     },
     selectedTagsIds() {
-      return this.$store.state[this.storeScope].selectedTagIds ?? []
+      return this.$store.state[this.storeScope]?.selectedTagIds ?? []
     },
     searchValue() {
       return this.$store.getters[`${this.storeScope}/search`]
+    },
+    hasActiveSearch() {
+      return !!this.searchValue || this.selectedTagsIds.length > 0
     },
   },
   methods: {
@@ -46,10 +50,30 @@ export const mediaScopeMixin = {
         tag._id,
       )
     },
+    clearSearch() {
+      if (!this.hasActiveSearch) return
+      this.$store.dispatch(`${this.storeScope}/setSearchQuery`, "")
+      this.$store.dispatch(`${this.storeScope}/clearSelectedTagIds`)
+    },
     mediaRight(mediaId) {
       const right =
         this.$store.getters[`${this.storeScope}/getSelfMediaRight`](mediaId)
       return right
+    },
+    async duplicateConversation(mediaId) {
+      try {
+        const result = await apiDuplicateConversation(mediaId)
+        if (result.status === "success") {
+          await this.$store.dispatch(`${this.storeScope}/load`, {
+            folderId: this.effectiveFolderId ?? this.$route.params.folderId,
+          })
+          return true
+        }
+        return false
+      } catch (error) {
+        console.error("Error duplicating conversation:", error)
+        return false
+      }
     },
   },
 }

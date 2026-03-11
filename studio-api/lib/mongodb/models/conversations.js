@@ -1,7 +1,5 @@
 const MongoModel = require(`../model`)
-const debug = require("debug")(
-  "linto:lib:mongodb:models:conversations",
-)
+const debug = require("debug")("linto:lib:mongodb:models:conversations")
 
 const moment = require("moment")
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
@@ -41,6 +39,22 @@ class ConvoModel extends MongoModel {
       let mutableElements = payload
 
       return await this.mongoUpdateOne(query, operator, mutableElements)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async updateRights(conversationId, organizationId, membersRight, customRights) {
+    try {
+      const query = {
+        _id: this.getObjectId(conversationId),
+        "organization.organizationId": organizationId,
+      }
+      return await this.mongoUpdateOne(query, "$set", {
+        "organization.membersRight": membersRight,
+        "organization.customRights": customRights,
+      })
     } catch (error) {
       console.error(error)
       return error
@@ -451,11 +465,7 @@ class ConvoModel extends MongoModel {
         },
         "type.mode": TYPE.CANONICAL,
       }
-      const projection = {
-        _id: 1,
-        name: 1,
-        "jobs.transcription": 1,
-      }
+
       return await this.mongoRequest(query)
     } catch (error) {
       console.error(error)
@@ -500,6 +510,31 @@ class ConvoModel extends MongoModel {
             },
           },
         ],
+      }
+
+      if (filter.folderId !== undefined) {
+        if (filter.folderId === null || filter.folderId === "null") {
+          query.$and = query.$and || []
+          query.$and.push({
+            $or: [
+              { folderId: null },
+              { folderId: { $exists: false } },
+            ],
+          })
+        } else {
+          query.folderId = filter.folderId
+        }
+      }
+
+      if (filter.excludeFolderIds && filter.excludeFolderIds.length > 0) {
+        query.$and = query.$and || []
+        query.$and.push({
+          $or: [
+            { folderId: { $nin: filter.excludeFolderIds } },
+            { folderId: null },
+            { folderId: { $exists: false } },
+          ],
+        })
       }
 
       if (filter.tags && filter.filter === "notags") {
@@ -802,6 +837,84 @@ class ConvoModel extends MongoModel {
     } catch (error) {
       console.error(error)
       return error
+    }
+  }
+
+  async getByFolderIds(folderIds, organizationId) {
+    try {
+      const query = {
+        folderId: { $in: folderIds },
+        "organization.organizationId": organizationId,
+      }
+      return await this.mongoRequest(query, {
+        owner: 1,
+        "organization.customRights": 1,
+        "organization.membersRight": 1,
+        "organization.organizationId": 1,
+      })
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  }
+
+  async updateFolderBatch(conversationIds, folderId, organizationId) {
+    try {
+      const objectIds = conversationIds.map((id) =>
+        typeof id === "string" ? this.getObjectId(id) : id,
+      )
+      const query = {
+        _id: { $in: objectIds },
+        "organization.organizationId": organizationId,
+      }
+      return await this.mongoUpdateMany(query, "$set", {
+        folderId: folderId,
+      })
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  }
+
+  async unsetFolderReferences(folderId, newFolderId, organizationId) {
+    try {
+      const query = {
+        folderId: folderId,
+        "organization.organizationId": organizationId,
+      }
+      return await this.mongoUpdateMany(query, "$set", {
+        folderId: newFolderId,
+      })
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  }
+
+  async updateRightsBatchByFolderId(folderId, organizationId, membersRight, customRights) {
+    try {
+      const query = {
+        folderId: folderId,
+        "organization.organizationId": organizationId,
+      }
+      return await this.mongoUpdateMany(query, "$set", {
+        "organization.membersRight": membersRight,
+        "organization.customRights": customRights,
+      })
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  }
+
+  async countByAudioFilepath(filepath) {
+    try {
+      const query = { "metadata.audio.filepath": filepath }
+      const result = await this.mongoRequest(query, { _id: 1 })
+      return result.length
+    } catch (error) {
+      console.error(error)
+      return 0
     }
   }
 

@@ -16,7 +16,7 @@
     "watch_time_label": "Watch time",
     "connection_count_label": "Connection count",
     "tabs": {
-      "sessions_kpi": "Sessions KPI",
+      "sessions_kpi": "Sessions statistics",
       "sessions": "Sessions detailed",
       "ressources": "Resources",
       "tokens": "Api keys access",
@@ -91,7 +91,8 @@
     "token_renew_error": "An error occurred while renewing the key"
   },
   "app_editor_channels_selector": {
-    "label": "Choose a channel"
+    "label": "Choose a channel",
+    "transcription_in_progress": "Transcription in progress"
   },
   "app_editor_translations_selector": {
     "label": "Verbatim language",
@@ -134,14 +135,15 @@
       "organisations": "Organizations",
       "tokens": "Api keys",
       "transcriberProfiles": "Transcriber Profiles",
-      "sessions": "Sessions"
+      "sessions": "Sessions",
+      "back_to_org": "Back to organization"
     },
     "activity_list": {
       "title": "Activity log"
     },
     "dashboard": {
       "page_title": "Dashboard",
-      "sessions_count": "Sessions Transcribed",
+      "sessions_count": "Live transcriptions",
       "medias_count": "Media Processed",
       "time_period_label": "Period",
       "users": "Users",
@@ -153,9 +155,9 @@
       },
       "charts": {
         "sessions_title": "Live Transcriptions",
-        "sessions_duration_title": "Real-time audio transcription (hours)",
-        "medias_title": "Media Transcriptions",
-        "duration_title": "Audio Duration (hours)"
+        "sessions_duration_title": "Live transcription duration (hours)",
+        "medias_title": "Transcribed media",
+        "duration_title": "Transcribed media duration (hours)"
       },
       "filters": {
         "organization": "Organization",
@@ -273,7 +275,8 @@
     "transcription": "Transcription",
     "transcriberProfiles": "Transcriber Profiles",
     "users": "Users",
-    "userSettings": "Profile settings"
+    "userSettings": "Profile settings",
+    "processing": "Processing"
   },
   "conversation": {
     "acoustic": {
@@ -293,6 +296,9 @@
     },
     "conversation_creation_error_multiple_unknown": "An error occurred while uploading {total} audio files. {count} have already been uploaded. try again later.",
     "conversation_creation_loading_multiple": "Uploading audio {count} of {total}. This can take several minutes.",
+    "folder_selection_title": "Folder",
+    "folder_selection_label": "Upload to folder",
+    "rights_info_tooltip": "If the selected folder is private, the media will automatically inherit the folder's permissions.",
     "conversation_creation_right_title": "Medias rights",
     "conversation_creation_right_label": "Default rights for organisation members",
     "conversation_creation_security_title": "Security level",
@@ -357,6 +363,8 @@
     },
     "model_quality_label": "Model quality:",
     "publish_document": "Publish document",
+    "publish_document_description": "Generate a report or export the transcription",
+    "back_to_transcription": "View and edit the transcription",
     "record": "Record",
     "recording": "Recording...",
     "search_in_transcription": {
@@ -464,7 +472,10 @@
     "url_tab": {
       "main_info_title": "General information",
       "url_label": "Source URL",
-      "get_button": "Add media from the URL"
+      "get_button": "Add media from the URL",
+      "youtube_warning": "YouTube URLs are not supported. YouTube blocks automated downloads.",
+      "supported_platforms": "Supported: Arte, Radio France, PeerTube, or direct link to an audio/video file.",
+      "supported_platforms_link": "See the full list of supported sites"
     },
     "offline": {
       "label_icon_source": {
@@ -557,6 +568,7 @@
     "invalidVisioUrl": "Invalid visio URL",
     "unauthorized_caracters": "Unauthorized characters",
     "invalid_email": "Invalid email",
+    "invalid_url": "Please enter a valid URL (https:// or http://)",
     "passwordsMustBeTheSame": "Passwords must be the same",
     "passwordLength": "This field must contain at least 6 characters"
   },
@@ -606,6 +618,9 @@
     "recover_password_detail": "Please enter your email address to receive a recovery link",
     "recover_password_sent": "A recovery link has been sent to your email address",
     "title": "Sign in",
+    "email_not_verified": "Your email address has not been verified yet. Please check your inbox and click the verification link.",
+    "resend_verification": "Resend verification email",
+    "resend_verification_sent": "A new verification email has been sent. Please check your inbox.",
     "footer": {
       "description": "Open source innovations powered by LINAGORA on EXAION infrastructures"
     },
@@ -631,6 +646,48 @@
         "desc": "Get summaries suited to your business in your own formats (word, pdf, subtitles)"
       }
     }
+  },
+  "folders": {
+    "uncategorized": "Inbox",
+    "create": "Create folder",
+    "create_placeholder": "Folder name...",
+    "name_required": "Folder name is required",
+    "create_subfolder": "Create subfolder",
+    "rename": "Rename",
+    "delete": "Delete",
+    "move": "Move",
+    "create_success": "Folder created",
+    "create_error": "Error creating folder",
+    "update_success": "Folder updated",
+    "update_error": "Error updating folder",
+    "delete_success": "Folder deleted",
+    "delete_error": "Error deleting folder",
+    "move_success": "Conversations moved",
+    "move_error": "Error moving conversations",
+    "folder": "Folder",
+    "move_to_folder": "Move to folder",
+    "manage_access": "Manage access",
+    "visibility_public": "Public",
+    "visibility_private": "Private",
+    "visibility_update_success": "Folder access updated",
+    "visibility_update_error": "Error updating folder access",
+    "visibility_warning": "This will affect all conversations and subfolders in this folder.",
+    "visibility_parent_private_force": "The parent folder is private. Making this folder public will also make all its private parent folders public, including their conversations and subfolders.",
+    "force_public_parents": "Also make parent folders public",
+    "members_label": "Members",
+    "no_members": "No members selected",
+    "right_none": "No access",
+    "right_none_description": "No access to this folder",
+    "right_read": "Read",
+    "right_read_description": "View folder and its conversations",
+    "right_write": "Write",
+    "right_write_description": "Edit media, create subfolders and move conversations",
+    "right_share": "Share",
+    "right_share_description": "Manage folder access and members",
+    "uncategorize_success": "Conversations removed from folder",
+    "uncategorize_error": "Error removing conversations from folder",
+    "right_label": "Right",
+    "members_propagate_to_parents": "New members will also be added to parent folders with read-only access to allow navigation."
   },
   "manage_tags": {
     "title": "Topics",
@@ -660,9 +717,16 @@
       "edit_transcription": "Transcription",
       "edit_subtitles": "Subtitles",
       "export": "Publish",
+      "duplicate": "Create a new copy",
       "delete": "Delete"
     },
     "delete": "Delete",
+    "sort": {
+      "created_desc": "Newest first",
+      "created_asc": "Oldest first",
+      "last_update_desc": "Recently modified",
+      "last_update_asc": "Least recently modified"
+    },
     "filter": {
       "transcribed": "Transcribed",
       "processing": "Processing",
@@ -697,7 +761,11 @@
       "download_error": "Download error",
       "download_multiple_success": "{count} medias downloaded successfully",
       "download_multiple_partial": "{success} medias downloaded out of {total}",
-      "download_multiple_error": "Error downloading medias"
+      "download_multiple_error": "Error downloading medias",
+      "duplicate": "Create a new copy",
+      "duplicating": "Duplicating...",
+      "duplicate_success": "Conversation duplicated",
+      "duplicate_error": "Error duplicating conversation"
     },
     "no_medias_selected": "No media selected",
     "some_medias_cannot_be_deleted": "Some media cannot be deleted",
@@ -769,12 +837,20 @@
     "conversation": {
       "start": "Transcribe"
     },
+    "sections": {
+      "organization": "Organization",
+      "media": "Media",
+      "personal": "Personal",
+      "my_space": "My space"
+    },
     "tabs": {
       "explore": "Inbox",
       "favorites": "Favorites",
       "sessions": "Live transcriptions",
       "shared": "Shared with me",
-      "tags": "Topics"
+      "tags": "Topics",
+      "folders": "Folders",
+      "processing": "Processing"
     }
   },
   "no_orga": {
@@ -810,6 +886,7 @@
     },
     "delete_organization": "Delete organization",
     "delete_success_message": "Organization successfully deleted",
+    "sessions_kpi_link": "Session statistics",
     "description_description": "The description of your organization",
     "description_label": "Description",
     "general_settings": "General settings",
@@ -906,23 +983,14 @@
   },
   "publish": {
     "error_first_line": {
-      "cra": "Error during summary report generation",
-      "cred": "Error during commission and delegation report generation",
-      "cri": "Error during full report generation",
       "verbatim": "Error during verbatim generation",
       "generic": "We couldn't complete the task due to a temporary connection issue with the model provider. Please try again in a moment"
     },
     "filter_title": {
       "automatic_summary": "Automatic summary options",
-      "cra": "Summary report options",
-      "cred": "Options for commission and delegation reports",
-      "cri": "Full report options",
       "verbatim": "Verbatim options"
     },
     "generation_first_line": {
-      "cra": "Summary report generation in progress...",
-      "cred": "Commission and delegation report generation in progress...",
-      "cri": "Full report generation in progress...",
       "verbatim": "Verbatim generation in progress...",
       "general": "Generation in progress..."
     },
@@ -941,9 +1009,6 @@
     "reload_document": "Regenerate the report",
     "tabs": {
       "automatic_summary": "Automatic summary",
-      "cra": "Summary report",
-      "cred": "Commission and delegation reports",
-      "cri": "Full report",
       "verbatim": "Verbatim",
       "publication": "Publication"
     },
@@ -958,7 +1023,14 @@
       "restore_version_confirm": "Are you sure you want to restore this version?",
       "version_restored": "Version restored successfully",
       "version_restore_error": "Error restoring version",
-      "unsaved_changes": "You have unsaved changes"
+      "unsaved_changes": "You have unsaved changes",
+      "show_transcript": "Transcription",
+      "side_by_side": "Side by side",
+      "delete_version_confirm_title": "Delete version?",
+      "delete_version_confirm": "This version will be permanently deleted.",
+      "delete_version_confirm_button": "Delete",
+      "version_deleted": "Version deleted successfully",
+      "version_delete_error": "Error deleting version"
     },
     "export_error": "Failed to export document",
     "regenerate": {
@@ -970,7 +1042,14 @@
       "title": "Generations",
       "latest": "Latest",
       "no_generations": "No generations yet",
-      "generating": "Generating..."
+      "generating": "Generating...",
+      "delete": "Delete generation",
+      "delete_version": "Delete version",
+      "delete_confirm_title": "Delete generation?",
+      "delete_confirm": "The generation and its associated AI job will be permanently deleted.",
+      "delete_confirm_button": "Delete",
+      "deleted": "Generation deleted successfully",
+      "delete_error": "Error deleting generation"
     },
     "llm_gateway_error": "AI service error: {error}",
     "llm_gateway_unavailable": "The AI service is temporarily unavailable. Please try again in a few moments.",
@@ -980,8 +1059,21 @@
     "error_llm_unavailable": "The AI service is temporarily unavailable.",
     "error_job_expired": "This generation has expired. Please regenerate the document.",
     "error_timeout": "The request timed out. Please try again.",
+    "action_cards": {
+      "download": "Download",
+      "download_description": "DOCX, PDF, TXT, JSON",
+      "publication": "Publication",
+      "publication_description": "Export with a DOCX/PDF template",
+      "transcript": "Transcript",
+      "transcript_description": "Show original transcript alongside"
+    },
+    "transcript_panel": {
+      "title": "Transcript"
+    },
     "ai_menu": {
-      "select": "AI Services"
+      "select": "AI Services",
+      "more": "More services",
+      "badge": "AI"
     },
     "publication": {
       "title": "Publication Templates",
@@ -1030,6 +1122,7 @@
   "common": {
     "retry": "Retry",
     "cancel": "Cancel",
+    "delete": "Delete",
     "uploading": "Uploading..."
   },
   "session": {
@@ -1478,5 +1571,21 @@
     "min_characters": "{count} characters minimum",
     "select_all": "Select all"
   },
-  "actions": "Actions"
+  "actions": "Actions",
+  "chat": {
+    "title": "Chat",
+    "start": "Start a chat",
+    "description": "Ask questions about this conversation",
+    "new_chat": "New chat",
+    "send": "Send",
+    "placeholder": "Ask a question about this conversation...",
+    "history": "History",
+    "empty_state": "Ask a question to start a chat",
+    "empty_chat": "Ask your first question",
+    "rename": "Rename",
+    "delete_session": "Delete",
+    "delete_confirm_inline": "Delete \"{name}\"?",
+    "error": "An error occurred",
+    "streaming": "Generating response..."
+  }
 }

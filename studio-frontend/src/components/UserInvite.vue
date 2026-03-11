@@ -58,6 +58,7 @@
             :searchMemberValue="searchMemberValue.value"
             :expanded="true"
             :currentUser="currentUsers"
+            :includeSelf="includeSelf"
             v-slot:default="slotProps">
             <Button
               v-if="isPending(slotProps.user)"
@@ -103,6 +104,10 @@ export default {
     currentUsers: {
       type: Array,
       default: () => [],
+    },
+    includeSelf: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

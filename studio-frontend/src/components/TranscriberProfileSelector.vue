@@ -1,72 +1,67 @@
 <template>
-  <table style="width: 100%">
-    <thead>
-      <tr>
-        <ArrayHeader
-          eventLabel="selected"
-          :label="$t('session.profile_selector.labels.selected')"
-          :sortListDirection="sortListDirection"
-          :sortListKey="sortListKey" />
-        <ArrayHeader
-          @list_sort_by="sortBy"
-          eventLabel="config.type"
-          :label="$t('session.profile_selector.labels.type')"
-          :sortListDirection="sortListDirection"
-          :sortListKey="sortListKey" />
-        <ArrayHeader
-          @list_sort_by="sortBy"
-          eventLabel="config.name"
-          :label="$t('session.profile_selector.labels.name')"
-          :sortListDirection="sortListDirection"
-          :sortListKey="sortListKey" />
-        <ArrayHeader
-          @list_sort_by="sortBy"
-          eventLabel="config.description"
-          :label="$t('session.profile_selector.labels.description')"
-          :sortListDirection="sortListDirection"
-          :sortListKey="sortListKey" />
-        <ArrayHeader
-          @list_sort_by="sortBy"
-          eventLabel="config.languages.0.candidate"
-          :label="$t('session.profile_selector.labels.languages')"
-          :sortListDirection="sortListDirection"
-          :sortListKey="sortListKey" />
-        <ArrayHeader
-          class="no-size"
-          @list_sort_by="sortBy"
-          eventLabel="translations"
-          :label="$t('session.profile_selector.labels.translations')"
-          :sortListDirection="sortListDirection"
-          :sortListKey="sortListKey" />
-        <!-- <ArrayHeader
-            class="no-size"
-            @list_sort_by="sortBy"
-            eventLabel="translations"
-            :label="$t('session.profile_selector.labels.diarization')"
-            :sortListDirection="sortListDirection"
-            :sortListKey="sortListKey" /> -->
-      </tr>
-    </thead>
-    <tbody>
-      <TranscriberProfileSelectorLine
-        v-for="profile in sortedTranscriberProfiles"
-        :multiple="multiple"
-        :profilesList="sortedTranscriberProfiles"
-        :key="profile.id"
-        :profile="profile"
-        :securityDisabled="isSecurityDisabled(profile)"
-        v-model="selectedProfiles" />
-    </tbody>
-  </table>
+  <GenericTable
+    :columns="columns"
+    :content="sortedTranscriberProfiles"
+    :sortListKey="sortListKey"
+    :sortListDirection="sortListDirection"
+    :selectable="true"
+    :selectMode="multiple ? 'multiple' : 'single'"
+    :selectedRows="selectedIds"
+    :rowClass="getRowClass"
+    idKey="id"
+    @list_sort_by="sortBy"
+    @update:selectedRows="onSelectionChange">
+    <template #cell-config.type="{ element }">
+      <img
+        class="icon medium"
+        :src="typeImage(element)"
+        :alt="element.config.type || ''"
+        :title="element.config.type || ''" />
+    </template>
+    <template #cell-config.name="{ element }">
+      {{ element.config.name || "" }}
+    </template>
+    <template #cell-config.description="{ element }">
+      {{ element.config.description || "" }}
+    </template>
+    <template #cell-config.languages.0.candidate="{ element }">
+      {{ formatLanguages(element) }}
+    </template>
+    <template #cell-translations="{ element }">
+      <PopoverList
+        v-if="translationOptionsFor(element).length > 0"
+        selection
+        multiple
+        searchable
+        :close-on-click="false"
+        :value="getTranslations(element)"
+        @input="onTranslationsInput(element, $event)"
+        :items="translationOptionsFor(element)">
+        <template #trigger="{ open }">
+          <Button :icon-right="open ? 'caret-up' : 'caret-down'" size="sm">
+            {{
+              $tc(
+                "session.profile_selector.n_translations_selected",
+                getTranslations(element).length,
+              )
+            }}
+          </Button>
+        </template>
+      </PopoverList>
+      <Button
+        v-else
+        size="sm"
+        disabled
+        :label="$t('session.profile_selector.translation_not_available')" />
+    </template>
+  </GenericTable>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
-import { bus } from "@/main.js"
 import { sortArray } from "@/tools/sortList.js"
 import { meetsMetaSecurityLevel } from "@/tools/filterBySecurityLevel"
-
-import ArrayHeader from "@/components/ArrayHeader.vue"
-import TranscriberProfileSelectorLine from "@/components/TranscriberProfileSelectorLine.vue"
+import { normalizeAvailableTranslations } from "@/tools/translationUtils.js"
+import transriberImageFromtype from "@/tools/transriberImageFromtype.js"
+import GenericTable from "@/components/molecules/GenericTable.vue"
 
 export default {
   props: {
@@ -92,17 +87,19 @@ export default {
     return {
       sortListKey: "name",
       sortListDirection: "asc",
-      l_profilesList: structuredClone(this.profilesList), // TranscriberProfileSelectorLine uses shallow copy so we need to clone the list to avoid propagation to parent
+      l_profilesList: structuredClone(this.profilesList),
+      translationState: {},
     }
   },
   computed: {
-    selectedProfiles: {
-      get() {
-        return this.value
-      },
-      set(value) {
-        this.$emit("input", value)
-      },
+    columns() {
+      return [
+        { key: "config.type", label: this.$t("session.profile_selector.labels.type"), width: "auto" },
+        { key: "config.name", label: this.$t("session.profile_selector.labels.name"), width: "1fr" },
+        { key: "config.description", label: this.$t("session.profile_selector.labels.description"), width: "1fr" },
+        { key: "config.languages.0.candidate", label: this.$t("session.profile_selector.labels.languages"), width: "1fr" },
+        { key: "translations", label: this.$t("session.profile_selector.labels.translations"), width: "auto" },
+      ]
     },
     sortedTranscriberProfiles() {
       return sortArray(
@@ -111,8 +108,14 @@ export default {
         this.sortListDirection,
       )
     },
+    selectedIds() {
+      if (this.multiple) {
+        return (this.value || []).map((profile) => profile.id)
+      } else {
+        return this.value ? [this.value.id] : []
+      }
+    },
   },
-  mounted() {},
   watch: {
     profilesList: {
       handler(newList) {
@@ -131,11 +134,75 @@ export default {
       }
       this.sortListKey = key
     },
+    getRowClass(profile) {
+      return { "security-disabled": this.isSecurityDisabled(profile) }
+    },
     isSecurityDisabled(profile) {
       if (!this.securityLevel) return false
       return !meetsMetaSecurityLevel(profile, this.securityLevel)
     },
+    typeImage(profile) {
+      return transriberImageFromtype(profile.config.type)
+    },
+    formatLanguages(profile) {
+      const langs = profile.config.languages.map((lang) => lang.candidate)
+      return langs.join(", ")
+    },
+    translationOptionsFor(profile) {
+      const translations = normalizeAvailableTranslations(profile?.config?.availableTranslations)
+      const languageNames = new Intl.DisplayNames([this.$i18n.locale], { type: "language" })
+      return translations
+        .map((t) => ({ id: t, text: languageNames.of(t) }))
+        .sort((a, b) => a.text.localeCompare(b.text))
+    },
+    getTranslations(profile) {
+      if (this.translationState[profile.id]) {
+        return this.translationState[profile.id]
+      }
+      return []
+    },
+    onTranslationsInput(profile, value) {
+      this.$set(this.translationState, profile.id, value)
+      // Update translations on the local profile clone
+      const localProfile = this.l_profilesList.find((p) => p.id === profile.id)
+      if (localProfile) {
+        localProfile.translations = value
+      }
+      // Auto-select the profile when translations are changed
+      this.ensureProfileSelected(profile.id)
+      // Re-emit current selection with updated translations
+      this.emitSelection(this.selectedIds)
+    },
+    ensureProfileSelected(profileId) {
+      if (this.multiple) {
+        if (!this.selectedIds.includes(profileId)) {
+          this.onSelectionChange([...this.selectedIds, profileId])
+        }
+      } else {
+        if (!this.selectedIds.includes(profileId)) {
+          this.onSelectionChange([profileId])
+        }
+      }
+    },
+    onSelectionChange(ids) {
+      this.emitSelection(ids)
+    },
+    emitSelection(ids) {
+      if (this.multiple) {
+        const profiles = ids.map((id) =>
+          this.l_profilesList.find((p) => p.id === id),
+        ).filter(Boolean)
+        this.$emit("input", structuredClone(profiles))
+      } else {
+        const profile = ids.length > 0
+          ? this.l_profilesList.find((p) => p.id === ids[0])
+          : null
+        this.$emit("input", profile ? structuredClone(profile) : null)
+      }
+    },
   },
-  components: { Fragment, ArrayHeader, TranscriberProfileSelectorLine },
+  components: {
+    GenericTable,
+  },
 }
 </script>

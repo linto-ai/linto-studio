@@ -1,7 +1,8 @@
 <template>
   <V2Layout
     v-if="dataLoaded && status == 'done'"
-    :breadcrumbItems="breadcrumbItems">
+    :breadcrumbItems="breadcrumbItems"
+    :noBreadcrumb="noBreadcrumb">
     <!-- <template v-slot:header-bar>
       <slot name="breadcrumb-actions"></slot>
     </template> -->
@@ -10,7 +11,6 @@
     </template>
 
     <template v-slot:sidebar>
-      <div class="sidebar-divider"></div>
       <slot name="sidebar"></slot>
     </template>
     <slot></slot>
@@ -24,6 +24,10 @@
       :iconActionApply="null"
       v-if="websocketError"
       :closable="false"></Alert>
+
+    <ChatDrawer
+      v-if="conversation && conversation._id"
+      :conversationId="conversation._id.toString()" />
   </V2Layout>
   <div
     v-else-if="dataLoaded && status != 'done' && status != 'error'"
@@ -47,6 +51,7 @@ import { bus } from "@/main.js"
 
 import ConversationStatus from "@/components/ConversationStatus.vue"
 import ConversationStatusError from "@/components/ConversationStatusError.vue"
+import ChatDrawer from "@/components/ChatDrawer.vue"
 import Loading from "@/components/atoms/Loading.vue"
 import ErrorView from "@/views/Error.vue"
 import V2Layout from "@/layouts/v2-layout.vue"
@@ -89,6 +94,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    noBreadcrumb: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -103,6 +112,7 @@ export default {
   methods: {},
   components: {
     Fragment,
+    ChatDrawer,
     ConversationStatus,
     ConversationStatusError,
     Loading,

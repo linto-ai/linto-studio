@@ -95,6 +95,18 @@ class DisabledUser extends Error {
   }
 }
 
+class EmailNotVerified extends Error {
+  constructor(message, err) {
+    super()
+    this.name = "EmailNotVerified"
+    this.type = ExceptionType
+    this.status = 403
+    if (message) this.message = message
+    else this.message = "Email address not verified"
+    if (err) this.err = err
+  }
+}
+
 class Unauthorized extends Error {
   constructor(message, err) {
     super()
@@ -129,6 +141,7 @@ module.exports = {
   UnableToGenerateKeyToken,
   UserNotFound,
   DisabledUser,
+  EmailNotVerified,
   //Passport Exception
   Unauthorized,
   MalformedToken,

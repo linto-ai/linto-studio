@@ -18,6 +18,7 @@ const {
   UserNotFound,
   ExpiredLink,
   DisabledUser,
+  EmailNotVerified,
 } = require(`${process.cwd()}/components/WebServer/error/exception/auth`)
 
 const moment = require("moment")
@@ -42,6 +43,9 @@ async function generateUserToken(email, password, done) {
     if (!user.salt) throw new UnableToGenerateKeyToken()
     if (!user || !validatePassword(password, user))
       return done(new InvalidCredential())
+
+    if (process.env.SMTP_HOST && user.emailIsVerified === false)
+      throw new EmailNotVerified()
 
     const token_salt = randomstring.generate(12)
     let token = await model.tokens.insert(user._id, token_salt)

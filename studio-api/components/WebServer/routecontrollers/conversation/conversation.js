@@ -9,7 +9,7 @@ const userUtility = require(
   `${process.cwd()}/components/WebServer/controllers/user/utility`,
 )
 
-const { deleteFile, getStorageFolder } = require(
+const { deleteAudioFileIfOrphaned } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 const { updateChildConversation } = require(
@@ -45,10 +45,7 @@ async function deleteConversation(req, res, next) {
       throw new ConversationError("Error when deleting conversation")
 
     if (conversation[0]?.metadata?.audio) {
-      // delete audio file
-      deleteFile(
-        `${getStorageFolder()}/${conversation[0].metadata.audio.filepath}`,
-      )
+      await deleteAudioFileIfOrphaned(conversation[0].metadata.audio.filepath)
     }
     // delete also all subtitle related to that conversation
     await model.conversationSubtitles.deleteAllFromConv(
@@ -244,8 +241,54 @@ async function getChildConversation(req, res, next) {
   }
 }
 
+async function duplicateConversation(req, res, next) {
+  try {
+    if (!req.params.conversationId) throw new ConversationIdRequire()
+    const conversation = await model.conversations.getById(
+      req.params.conversationId,
+    )
+    if (conversation.length !== 1) throw new ConversationNotFound()
+
+    const source = conversation[0]
+
+    const copy = JSON.parse(JSON.stringify(source))
+    delete copy._id
+    delete copy.created
+    delete copy.last_update
+
+    copy.name = source.name + " (copy)"
+    copy.owner = req.payload.data.userId
+    copy.sharedWithUsers = []
+
+    copy.type = {
+      mode: "canonical",
+      child_conversations: [],
+    }
+
+    copy.jobs = {
+      transcription: {
+        state: source.jobs?.transcription?.state || "done",
+        steps: {},
+      },
+      keyword: {},
+    }
+
+    const result = await model.conversations.create(copy)
+    if (!result.insertedId)
+      throw new ConversationError("Error duplicating conversation")
+
+    res.status(201).send({
+      message: "Conversation duplicated",
+      conversationId: result.insertedId.toString(),
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 module.exports = {
   deleteConversation,
+  duplicateConversation,
   getConversation,
   getUsersByConversation,
   getUsersByConversationList,

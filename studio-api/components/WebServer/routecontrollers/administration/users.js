@@ -40,9 +40,6 @@ const admin_projection = {
 
 async function createSuperUser(req, res, next) {
   try {
-    if (process.env.DISABLE_USER_CREATION === "true")
-      throw new UserError("User creation is disabled")
-
     let user = req.body
     if (!user.email || !user.password || !user.role)
       throw new UserUnsupportedMediaType()

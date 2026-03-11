@@ -17,7 +17,7 @@
     "watch_time_label": "Temps de visionnage",
     "connection_count_label": "Nombre de connexions",
     "tabs": {
-      "sessions_kpi": "KPI des sessions",
+      "sessions_kpi": "Statistiques des sessions",
       "sessions": "Détail des sessions",
       "ressources": "Ressources",
       "tokens": "Accès aux clés d'API",
@@ -92,7 +92,8 @@
     "token_renew_error": "Une erreur est survenue lors du renouvellement de la clé"
   },
   "app_editor_channels_selector": {
-    "label": "Choisir un canal"
+    "label": "Choisir un canal",
+    "transcription_in_progress": "Transcription en cours"
   },
   "app_editor_translations_selector": {
     "label": "Langue du verbatim",
@@ -135,14 +136,15 @@
       "organisations": "Organisations",
       "tokens": "Clés d'apis",
       "transcriberProfiles": "Profils de transcription",
-      "sessions": "Sessions"
+      "sessions": "Sessions",
+      "back_to_org": "Retour à l'organisation"
     },
     "activity_list": {
       "title": "Journal d'activité"
     },
     "dashboard": {
       "page_title": "Tableau de bord",
-      "sessions_count": "Sessions transcrites",
+      "sessions_count": "Transcription en direct",
       "medias_count": "Médias traités",
       "users": "Utilisateurs",
       "organizations": "Organisations",
@@ -153,10 +155,10 @@
         "year": "Année"
       },
       "charts": {
-        "sessions_title": "Transcription en direct",
-        "sessions_duration_title": "Audio transcrit en temps réel (heures)",
-        "medias_title": "Transcriptions",
-        "duration_title": "Durée totale des médias transcrits (heures)"
+        "sessions_title": "Transcriptions en direct",
+        "sessions_duration_title": "Durée des transcriptions en direct (heures)",
+        "medias_title": "Médias transcrits",
+        "duration_title": "Durée des médias transcrits (heures)"
       },
       "filters": {
         "organization": "Organisation",
@@ -274,7 +276,8 @@
     "transcriberProfiles": "Profils de transcription",
     "users": "Utilisateurs",
     "userSettings": "Paramètres utilisateur",
-    "createorganization": "Créer une organisation"
+    "createorganization": "Créer une organisation",
+    "processing": "En traitement"
   },
   "conversation": {
     "acoustic": {
@@ -294,6 +297,9 @@
     },
     "conversation_creation_error_multiple_unknown": "Une erreur s'est produite lors de l'envoi de {total} fichiers audio. {count} ont déjà été transférés. Réessayez plus tard.",
     "conversation_creation_loading_multiple": "Envoi du fichier {count} sur {total}. Cette opération peut prendre plusieurs minutes.",
+    "folder_selection_title": "Dossier",
+    "folder_selection_label": "Importer dans le dossier",
+    "rights_info_tooltip": "Si le dossier sélectionné est privé, le média héritera automatiquement des permissions du dossier.",
     "conversation_creation_right_title": "Gestion des droits",
     "conversation_creation_right_label": "Droits par défaut pour les membres de l'organisation",
     "conversation_creation_security_title": "Niveau de sécurité",
@@ -358,6 +364,8 @@
     },
     "model_quality_label": "Qualité du modèle :",
     "publish_document": "Publier le document",
+    "publish_document_description": "Générez un compte-rendu ou exportez la transcription",
+    "back_to_transcription": "Consultez et éditez la transcription",
     "record": "S'enregistrer",
     "recording": "Enregistrement...",
     "search_in_transcription": {
@@ -465,7 +473,10 @@
     "url_tab": {
       "main_info_title": "Informations principales",
       "url_label": "URL de la source",
-      "get_button": "Ajouter le média depuis l'URL"
+      "get_button": "Ajouter le média depuis l'URL",
+      "youtube_warning": "Les URL YouTube ne sont pas prises en charge. YouTube bloque les téléchargements automatisés.",
+      "supported_platforms": "Supportés : Arte, Radio France, PeerTube, ou lien direct vers un fichier audio/vidéo.",
+      "supported_platforms_link": "Voir la liste complète des sites supportés"
     },
     "offline": {
       "label_icon_source": {
@@ -552,6 +563,7 @@
     "invalidVisioUrl": "L'url de la visio n'est pas valide",
     "unauthorized_caracters": "Caractères non autorisés",
     "invalid_email": "Adresse email invalide",
+    "invalid_url": "Veuillez entrer une URL valide (https:// ou http://)",
     "passwordsMustBeTheSame": "Les mots de passe doivent être identiques",
     "passwordLength": "Ce champ doit contenir au moins 6 caractères"
   },
@@ -601,6 +613,9 @@
     "recover_password_detail": "Saisissez votre adresse email sur laquelle sera envoyé un lien de récupération",
     "recover_password_sent": "Un email vous a été envoyé pour réinitialiser votre mot de passe",
     "title": "Identifiez-vous",
+    "email_not_verified": "Votre adresse email n'a pas encore été vérifiée. Veuillez consulter votre boîte de réception et cliquer sur le lien de vérification.",
+    "resend_verification": "Renvoyer l'email de vérification",
+    "resend_verification_sent": "Un nouvel email de vérification a été envoyé. Veuillez consulter votre boîte de réception.",
     "footer": {
       "description": "Innovations Open source propulsées par LINAGORA sur les infrastructures EXAION"
     },
@@ -626,6 +641,48 @@
         "desc": "Obtenez des résumés adaptés à votre métier dans vos formats (word, pdf, sous-titres)"
       }
     }
+  },
+  "folders": {
+    "uncategorized": "Médias",
+    "create": "Créer un dossier",
+    "create_placeholder": "Nom du dossier...",
+    "name_required": "Le nom du dossier est requis",
+    "create_subfolder": "Créer un sous-dossier",
+    "rename": "Renommer",
+    "delete": "Supprimer",
+    "move": "Déplacer",
+    "create_success": "Dossier créé",
+    "create_error": "Erreur lors de la création du dossier",
+    "update_success": "Dossier mis à jour",
+    "update_error": "Erreur lors de la mise à jour du dossier",
+    "delete_success": "Dossier supprimé",
+    "delete_error": "Erreur lors de la suppression du dossier",
+    "move_success": "Conversations déplacées",
+    "move_error": "Erreur lors du déplacement des conversations",
+    "folder": "Dossier",
+    "move_to_folder": "Déplacer vers un dossier",
+    "manage_access": "Gérer l'accès",
+    "visibility_public": "Public",
+    "visibility_private": "Privé",
+    "visibility_update_success": "Accès du dossier mis à jour",
+    "visibility_update_error": "Erreur lors de la mise à jour de l'accès",
+    "visibility_warning": "Cela affectera toutes les conversations et sous-dossiers de ce dossier.",
+    "visibility_parent_private_force": "Le dossier parent est privé. Rendre ce dossier public rendra également tous ses dossiers parents privés publics, y compris leurs conversations et sous-dossiers.",
+    "force_public_parents": "Rendre aussi les dossiers parents publics",
+    "members_label": "Membres",
+    "no_members": "Aucun membre sélectionné",
+    "right_none": "Pas d'accès",
+    "right_none_description": "Pas d'accès à ce dossier",
+    "right_read": "Lecture",
+    "right_read_description": "Voir le dossier et ses conversations",
+    "right_write": "Écriture",
+    "right_write_description": "Éditer les médias, créer des sous-dossiers et déplacer des conversations",
+    "right_share": "Partage",
+    "right_share_description": "Gérer l'accès et les membres du dossier",
+    "uncategorize_success": "Conversations retirées du dossier",
+    "uncategorize_error": "Erreur lors du retrait des conversations du dossier",
+    "right_label": "Droit",
+    "members_propagate_to_parents": "Les nouveaux membres seront aussi ajoutés aux dossiers parents avec un accès en lecture seule pour permettre la navigation."
   },
   "manage_tags": {
     "title": "Thématiques",
@@ -655,9 +712,16 @@
       "edit_transcription": "Transcription",
       "edit_subtitles": "Sous-titres",
       "export": "Publication",
+      "duplicate": "Créer une nouvelle copie",
       "delete": "Supprimer"
     },
     "delete": "Supprimer",
+    "sort": {
+      "created_desc": "Plus récents",
+      "created_asc": "Plus anciens",
+      "last_update_desc": "Modifiés récemment",
+      "last_update_asc": "Modifiés anciennement"
+    },
     "filter": {
       "transcribed": "Transcrits",
       "processing": "En traitement",
@@ -692,7 +756,11 @@
       "download_error": "Erreur lors du téléchargement",
       "download_multiple_success": "{count} médias téléchargés avec succès",
       "download_multiple_partial": "{success} médias téléchargés sur {total}",
-      "download_multiple_error": "Erreur lors du téléchargement des médias"
+      "download_multiple_error": "Erreur lors du téléchargement des médias",
+      "duplicate": "Créer une nouvelle copie",
+      "duplicating": "Duplication en cours...",
+      "duplicate_success": "Conversation dupliquée",
+      "duplicate_error": "Erreur lors de la duplication"
     },
     "no_medias_selected": "Aucun média sélectionné",
     "some_medias_cannot_be_deleted": "Certains médias ne peuvent pas être supprimés",
@@ -763,7 +831,15 @@
       "favorites": "Favoris",
       "sessions": "Transcription en direct",
       "shared": "Partages reçus",
-      "tags": "Thématiques"
+      "tags": "Thématiques",
+      "folders": "Dossiers",
+      "processing": "En traitement"
+    },
+    "sections": {
+      "organization": "Organisation",
+      "media": "Médias",
+      "personal": "Personnel",
+      "my_space": "Mon espace"
     },
     "account": {
       "account_link": "Mon compte",
@@ -805,6 +881,7 @@
     },
     "delete_organization": "Supprimer l'organisation",
     "delete_success_message": "L'organisation a été supprimée avec succès",
+    "sessions_kpi_link": "Statistiques des sessions",
     "description_description": "Description de l'organisation",
     "description_label": "Description",
     "general_settings": "Réglages",
@@ -901,23 +978,14 @@
   },
   "publish": {
     "error_first_line": {
-      "cra": "Erreur lors de la génération du compte rendu analytique",
-      "cred": "Erreur lors de la génération du compte rendu des commissions et des délégations",
-      "cri": "Erreur lors de la génération du compte rendu intégral",
       "verbatim": "Erreur lors de la génération du verbatim",
       "generic": "Nous n'avons pas pu terminer la tâche en raison d'un problème de connexion temporaire avec le service d'intelligence artificielle. Veuillez réessayer dans un moment."
     },
     "filter_title": {
       "automatic_summary": "Options pour le résumé automatique",
-      "cra": "Options pour le compte rendu analytique",
-      "cred": "Options pour le compte rendu des commissions et des délégations",
-      "cri": "Options pour le compte rendu intégral",
       "verbatim": "Options pour le verbatim"
     },
     "generation_first_line": {
-      "cra": "Génération du compte rendu analytique en cours...",
-      "cred": "Génération du compte rendu des commissions et des délégations en cours...",
-      "cri": "Génération du compte rendu intégral en cours...",
       "verbatim": "Génération du verbatim en cours...",
       "general": "Génération en cours..."
     },
@@ -936,9 +1004,6 @@
     "reload_document": "Regénérer le document",
     "tabs": {
       "automatic_summary": "Résumé automatique",
-      "cra": "Compte rendu analytique",
-      "cred": "Compte rendu des commissions et des délégations",
-      "cri": "Compte rendu intégral",
       "verbatim": "Verbatim",
       "publication": "Publication"
     },
@@ -953,7 +1018,14 @@
       "restore_version_confirm": "Êtes-vous sûr de vouloir restaurer cette version ?",
       "version_restored": "Version restaurée avec succès",
       "version_restore_error": "Erreur lors de la restauration de la version",
-      "unsaved_changes": "Vous avez des modifications non enregistrées"
+      "unsaved_changes": "Vous avez des modifications non enregistrées",
+      "show_transcript": "Transcription",
+      "side_by_side": "Côte à côte",
+      "delete_version_confirm_title": "Supprimer la version ?",
+      "delete_version_confirm": "Cette version sera définitivement supprimée.",
+      "delete_version_confirm_button": "Supprimer",
+      "version_deleted": "Version supprimée avec succès",
+      "version_delete_error": "Erreur lors de la suppression de la version"
     },
     "export_error": "Échec de l'export du document",
     "regenerate": {
@@ -965,7 +1037,14 @@
       "title": "Générations",
       "latest": "Récent",
       "no_generations": "Aucune génération",
-      "generating": "Génération en cours..."
+      "generating": "Génération en cours...",
+      "delete": "Supprimer la génération",
+      "delete_version": "Supprimer la version",
+      "delete_confirm_title": "Supprimer la génération ?",
+      "delete_confirm": "La génération et le job IA associé seront définitivement supprimés.",
+      "delete_confirm_button": "Supprimer",
+      "deleted": "Génération supprimée avec succès",
+      "delete_error": "Erreur lors de la suppression de la génération"
     },
     "llm_gateway_error": "Erreur du service IA : {error}",
     "llm_gateway_unavailable": "Le service d'intelligence artificielle est temporairement indisponible. Veuillez réessayer dans quelques instants.",
@@ -975,8 +1054,21 @@
     "error_llm_unavailable": "Le service d'intelligence artificielle est temporairement indisponible.",
     "error_job_expired": "Cette génération a expiré. Veuillez régénérer le document.",
     "error_timeout": "La demande a expiré. Veuillez réessayer.",
+    "action_cards": {
+      "download": "Télécharger",
+      "download_description": "DOCX, PDF, TXT, JSON",
+      "publication": "Publication",
+      "publication_description": "Exporter avec un modèle DOCX/PDF",
+      "transcript": "Transcription",
+      "transcript_description": "Afficher la transcription originale"
+    },
+    "transcript_panel": {
+      "title": "Transcription"
+    },
     "ai_menu": {
-      "select": "Services IA"
+      "select": "Services IA",
+      "more": "Autres services",
+      "badge": "IA"
     },
     "publication": {
       "title": "Modèles de publication",
@@ -1025,6 +1117,7 @@
   "common": {
     "retry": "Réessayer",
     "cancel": "Annuler",
+    "delete": "Supprimer",
     "uploading": "Import en cours..."
   },
   "session": {
@@ -1479,5 +1572,21 @@
     "h": "Heure | Heures",
     "m": "Minute | Minutes",
     "y": "Année | Années"
+  },
+  "chat": {
+    "title": "Chat",
+    "start": "Démarrer un chat",
+    "description": "Posez des questions sur cette conversation",
+    "new_chat": "Nouveau chat",
+    "send": "Envoyer",
+    "placeholder": "Posez une question sur cette conversation...",
+    "history": "Historique",
+    "empty_state": "Posez une question pour démarrer un chat",
+    "empty_chat": "Posez votre première question",
+    "rename": "Renommer",
+    "delete_session": "Supprimer",
+    "delete_confirm_inline": "Supprimer « {name} » ?",
+    "error": "Une erreur est survenue",
+    "streaming": "Génération de la réponse..."
   }
 }

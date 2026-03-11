@@ -33,6 +33,7 @@
             :selectedTagsIds="selectedTagsIds"
             :tags="getTags"
             :allow-create="false"
+            :close-on-select="true"
             id="search"
             mode="search"
             :placeholder="$t('input_selector.search_placeholder')"
@@ -41,13 +42,25 @@
             @remove="handleRemoveTag"
             @search="handleSearch" />
         </div>
+
+        <!-- Sort controls -->
+        <div class="media-explorer-header__sort">
+          <select
+            class="sort-select"
+            :value="sortField + ':' + sortOrder"
+            @change="handleSortChange($event.target.value)">
+            <option value="created:-1">{{ $t('media_explorer.sort.created_desc') }}</option>
+            <option value="created:1">{{ $t('media_explorer.sort.created_asc') }}</option>
+            <option value="last_update:-1">{{ $t('media_explorer.sort.last_update_desc') }}</option>
+            <option value="last_update:1">{{ $t('media_explorer.sort.last_update_asc') }}</option>
+          </select>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { v4 as uuid } from "uuid"
 import { mediaScopeMixin } from "@/mixins/mediaScope"
 import Checkbox from "@/components/atoms/Checkbox.vue"
 
@@ -102,36 +115,36 @@ export default {
     isPartiallySelected() {
       return this.selectedCount > 0 && this.selectedCount < this.totalCount
     },
-    // Use computed property instead of data to ensure reactivity
+    sortField() {
+      return this.$store.getters[`${this.storeScope}/getSortField`]
+    },
+    sortOrder() {
+      return this.$store.getters[`${this.storeScope}/getSortOrder`]
+    },
     search: {
       get() {
-        if (this._localSearch !== undefined && this._localSearch !== null) {
-          return this._localSearch
+        if (this.localSearch !== undefined && this.localSearch !== null) {
+          return this.localSearch
         }
-
         return this.searchValue || ""
       },
       set(value) {
-        this._localSearch = value
+        this.localSearch = value
       },
     },
   },
   data() {
     return {
-      _localSearch: null, // Start with null to prioritize external values initially
+      localSearch: null,
     }
   },
-  mounted() {},
   watch: {
     // Watch store search value properly using computed property
-    storeSearchValue: {
-      handler(storeValue) {
-        // Only sync if we don't have local input and store value is different
-        if (this._localSearch === null && storeValue) {
-          this._localSearch = storeValue
-        }
-      },
-      immediate: true,
+    searchValue(storeValue) {
+      // Sync local search when store changes (e.g. cleared by sidebar navigation)
+      if (storeValue !== this.localSearch) {
+        this.localSearch = storeValue || null
+      }
     },
   },
   methods: {
@@ -150,6 +163,10 @@ export default {
 
     handleRemoveTag(tag) {
       this.toggleSelectedTag(tag)
+    },
+    handleSortChange(value) {
+      const [field, order] = value.split(':')
+      this.$store.dispatch(`${this.storeScope}/setSort`, { field, order: parseInt(order) })
     },
   },
 }
@@ -192,6 +209,31 @@ export default {
   flex: 1;
   justify-content: center;
   min-width: 0;
+}
+
+.media-explorer-header__sort {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.sort-select {
+  font-size: 0.8rem;
+  padding: 0.25rem 0.4rem;
+  border: 1px solid var(--neutral-30, #e0e0e0);
+  border-radius: 0.25rem;
+  background: var(--background-color, #fff);
+  color: var(--text-color, #333);
+  cursor: pointer;
+  outline: none;
+}
+
+.sort-select:hover {
+  border-color: var(--neutral-50, #aaa);
+}
+
+.sort-select:focus {
+  border-color: var(--primary-color, #007bff);
 }
 
 .media-explorer-header__actions {

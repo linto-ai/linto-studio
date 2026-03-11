@@ -37,6 +37,16 @@
       </div>
     </form>
 
+    <div v-if="emailNotVerified" class="email-not-verified-notice flex col gap-small">
+      <p>{{ $t("login.email_not_verified") }}</p>
+      <Button
+        :label="$t('login.resend_verification')"
+        :disabled="resendingVerification"
+        variant="primary"
+        block
+        @click="handleResendVerification" />
+    </div>
+
     <div
       class="oidc-form flex col gap-medium"
       v-if="oidcList && oidcList.length">
@@ -71,7 +81,7 @@
 import { getEnv } from "@/tools/getEnv"
 
 import LocalSwitcher from "@/components/LocalSwitcher.vue"
-import { apiLoginUser, getLoginMethods } from "@/api/user"
+import { apiLoginUser, apiResendVerificationEmail, getLoginMethods } from "@/api/user"
 import MainContentPublic from "@/components/MainContentPublic.vue"
 import { testEmail } from "@/tools/fields/testEmail"
 import { testFieldEmpty } from "@/tools/fields/testEmpty"
@@ -96,6 +106,8 @@ export default {
         type: "password",
       },
       formError: null,
+      emailNotVerified: false,
+      resendingVerification: false,
       loginMethodsIndexedByPath: {},
       BASE_AUTH: getEnv("VUE_APP_CONVO_AUTH"),
     }
@@ -133,6 +145,7 @@ export default {
   methods: {
     async handleForm(event) {
       event?.preventDefault()
+      this.emailNotVerified = false
       try {
         this.testEmail()
         this.testPasswordEmpty()
@@ -155,6 +168,10 @@ export default {
           }
         }
       } catch (error) {
+        if (error?.error?.response?.status === 403) {
+          this.emailNotVerified = true
+          return false
+        }
         if (getEnv("VUE_APP_DEBUG") === "*") {
           console.error(error)
         }
@@ -173,6 +190,23 @@ export default {
     },
     setCookie(name, value, exdays) {
       return this.$options.filters.setCookie(name, value, exdays)
+    },
+    async handleResendVerification() {
+      this.resendingVerification = true
+      try {
+        await apiResendVerificationEmail(this.email.value)
+        this.$store.dispatch("system/addNotification", {
+          message: this.$t("login.resend_verification_sent"),
+          type: "success",
+        })
+      } catch (error) {
+        this.$store.dispatch("system/addNotification", {
+          message: this.$t("login.error"),
+          type: "error",
+        })
+      } finally {
+        this.resendingVerification = false
+      }
     },
     async fetchLoginMethods() {
       const loginList = await getLoginMethods()
@@ -200,6 +234,24 @@ export default {
 
 .login-page__form__create-account {
   text-align: center;
+}
+
+.email-not-verified-notice {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: var(--border-button);
+  border-radius: 0.5rem;
+  text-align: center;
+}
+
+.email-not-verified-notice p {
+  color: var(--danger-color);
+}
+
+.email-not-verified-notice .btn .label {
+  display: inline-block;
+  text-align: center;
+  width: 100%;
 }
 
 .oidc-form {

@@ -4,6 +4,7 @@ const debug = require("debug")(
 
 const {
   deleteConversation,
+  duplicateConversation,
   getConversation,
   getUsersByConversation,
   updateConversation,
@@ -22,6 +23,7 @@ const {
   restoreExportVersion,
   generateExportDocument,
   getExportContent,
+  deleteExportVersion,
 } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/conversation/export.js`,
 )
@@ -30,6 +32,7 @@ const {
   listGenerations,
   createGeneration,
   getGeneration,
+  deleteGeneration,
 } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/conversation/generations.js`,
 )
@@ -65,6 +68,13 @@ module.exports = (webserver) => {
       requireAuth: true,
       requireConversationDeleteAccess: true,
       controller: deleteConversation,
+    },
+    {
+      path: "/:conversationId/duplicate",
+      method: "post",
+      requireAuth: true,
+      requireConversationReadAccess: true,
+      controller: duplicateConversation,
     },
     {
       path: "/:conversationId/users",
@@ -165,6 +175,22 @@ module.exports = (webserver) => {
       requireAuth: true,
       requireConversationReadAccess: true,
       controller: getGeneration,
+    },
+    // Delete a generation
+    {
+      path: "/:conversationId/generations/:generationId",
+      method: "delete",
+      requireAuth: true,
+      requireConversationWriteAccess: true,
+      controller: deleteGeneration,
+    },
+    // Delete a specific version from a job
+    {
+      path: "/:conversationId/export/:jobId/versions/:versionNumber",
+      method: "delete",
+      requireAuth: true,
+      requireConversationWriteAccess: true,
+      controller: deleteExportVersion,
     },
   ]
 }

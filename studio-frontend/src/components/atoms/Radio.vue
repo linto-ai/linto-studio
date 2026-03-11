@@ -2,13 +2,13 @@
   <div class="custom-radio flex">
     <input
       type="radio"
-      :id="id"
+      :id="_id"
       :name="name"
       :checked="value"
       :disabled="disabled"
       :value="radioValue"
       v-model="_value" />
-    <label :for="id">
+    <label :for="_id">
       <span class="custom-radio__check"></span>
     </label>
   </div>
@@ -40,6 +40,9 @@ export default {
         if (this.disabled) return
         this.$emit("input", value)
       },
+    },
+    _id() {
+      return this.id || Math.random().toString(36).substring(2, 15)
     },
   },
   components: { Fragment },

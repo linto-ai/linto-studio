@@ -55,7 +55,8 @@
             :data="sessionsDurationData"
             :dataTitle="
               $t('backoffice.dashboard.charts.sessions_duration_title')
-            " />
+            "
+            :valueFormatter="formatHoursDuration" />
         </div>
       </div>
       <!-- Media/Offline Charts Row -->
@@ -76,7 +77,8 @@
           <BarChart
             :labels="chartLabels"
             :data="durationData"
-            :dataTitle="$t('backoffice.dashboard.charts.duration_title')" />
+            :dataTitle="$t('backoffice.dashboard.charts.duration_title')"
+            :valueFormatter="formatHoursDuration" />
         </div>
       </div>
     </div>
@@ -90,6 +92,7 @@
 import { apiGetAllUsers, apiGetAllOrganizations } from "@/api/admin.js"
 import { apiGetPlatformKpiSeries } from "@/api/kpi.js"
 
+import { formatDuration } from "@/tools/formatDuration.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
@@ -190,6 +193,9 @@ export default {
         (acc, item) => acc + (item.transcription?.generated || 0),
         0,
       )
+    },
+    formatHoursDuration(decimalHours) {
+      return formatDuration(Math.round(decimalHours * 3600), { compact: true, showZeroHours: true, showSeconds: false }) || "00:00"
     },
     formatDate(dateStr) {
       if (!dateStr) return ""

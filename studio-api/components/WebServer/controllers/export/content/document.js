@@ -3,7 +3,7 @@ const debug = require("debug")(
 )
 
 const docx = require("docx")
-const { SectionType } = docx
+const { AlignmentType, SectionType } = docx
 
 const { processTurn } = require("./text.js")
 
@@ -29,7 +29,13 @@ const generate = (data, query, enableProcess = true) => {
     transcription: [],
   }
 
-  if (enableProcess) processTurn(document.transcription, data)
+  if (enableProcess) {
+    const options =
+      query.format === "verbatim"
+        ? { alignment: AlignmentType.LEFT }
+        : {}
+    processTurn(document.transcription, data, options)
+  }
   return document
 }
 

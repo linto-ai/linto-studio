@@ -399,7 +399,7 @@ function getNumberOfSyllabs(words, startIndex, numberOfWords, syllabic) {
 }
 
 function generateID() {
-  return process.env["TEST"] ? "id" : uuidv4()
+  return (typeof process !== "undefined" && process.env && process.env["TEST"]) ? "id" : uuidv4()
 }
 
 function simplifyNumber(number) {

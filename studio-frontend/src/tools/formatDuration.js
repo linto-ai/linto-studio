@@ -4,9 +4,10 @@
  * @param {Object} options - Formatting options
  * @param {boolean} options.compact - Use compact format (HH:MM:SS)
  * @param {boolean} options.showZeroHours - Show hours even if zero
+ * @param {boolean} options.showSeconds - Show seconds (default: true)
  * @returns {string|null} Formatted duration string or null if invalid input
  */
-export function formatDuration(seconds, { compact = false, showZeroHours = false } = {}) {
+export function formatDuration(seconds, { compact = false, showZeroHours = false, showSeconds = true } = {}) {
   if (seconds == null || isNaN(seconds) || seconds < 0) {
     return null
   }
@@ -17,9 +18,11 @@ export function formatDuration(seconds, { compact = false, showZeroHours = false
 
   if (compact) {
     if (hours > 0 || showZeroHours) {
-      return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
+      const base = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`
+      return showSeconds ? `${base}:${secs.toString().padStart(2, "0")}` : base
     }
-    return `${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
+    const base = `${minutes.toString().padStart(2, "0")}`
+    return showSeconds ? `${base}:${secs.toString().padStart(2, "0")}` : base
   }
 
   const parts = []
@@ -29,7 +32,9 @@ export function formatDuration(seconds, { compact = false, showZeroHours = false
   if (minutes > 0 || hours > 0) {
     parts.push(`${minutes}m`)
   }
-  parts.push(`${secs}s`)
+  if (showSeconds) {
+    parts.push(`${secs}s`)
+  }
 
   return parts.join(" ")
 }

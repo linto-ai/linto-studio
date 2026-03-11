@@ -121,10 +121,20 @@ function getAudioSessionFolder() {
   return process.env.VOLUME_AUDIO_SESSION_PATH
 }
 
+async function deleteAudioFileIfOrphaned(filepath) {
+  if (!filepath) return
+  const model = require(`${process.cwd()}/lib/mongodb/models`)
+  const count = await model.conversations.countByAudioFilepath(filepath)
+  if (count === 0) {
+    deleteFile(`${getStorageFolder()}/${filepath}`)
+  }
+}
+
 module.exports = {
   storeFile,
   defaultPicture,
   deleteFile,
+  deleteAudioFileIfOrphaned,
   getStorageFolder,
   getPictureFolder,
   getAudioFolder,

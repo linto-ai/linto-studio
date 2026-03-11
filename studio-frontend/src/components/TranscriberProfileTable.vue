@@ -1,29 +1,42 @@
 <template>
-  <table
-    class="table-grid"
-    style="grid-template-columns: auto auto 1fr 1fr 1fr auto; width: 100%">
-    <TranscriberProfileTableHeader
-      @list_sort_by="sortBy"
-      :sortListKey="sortListKey"
-      :sortListDirection="sortListDirection" />
-    <tbody>
-      <div class="table-loader" v-if="loading">
-        <Loading />
-      </div>
-      <TranscriberProfileTableLine
-        v-for="profile in transcriberProfilesList"
-        v-model="p_selectedProfiles"
-        :key="profile.id"
-        :profile="profile"
-        @edit="onEdit" />
-    </tbody>
-  </table>
+  <GenericTable
+    :columns="columns"
+    :content="transcriberProfilesList"
+    :loading="loading"
+    :sortListKey="sortListKey"
+    :sortListDirection="sortListDirection"
+    :selectable="true"
+    :selectedRows="selectedIds"
+    idKey="id"
+    @list_sort_by="sortBy"
+    @update:selectedRows="onSelectionChange">
+    <template #header-organizationId>
+      <span class="icon work" />
+    </template>
+    <template #cell-organizationId="{ element }">
+      <span v-if="element.organizationId !== null" class="icon apply" />
+      <span v-else class="icon close" />
+    </template>
+    <template #cell-config.name="{ element }">
+      <span class="clickable" @click="onEdit(element.id)">{{ element.config.name }}</span>
+    </template>
+    <template #cell-config.description="{ element }">
+      <span class="clickable" @click="onEdit(element.id)">{{ element.config.description }}</span>
+    </template>
+    <template #cell-config.languages.0.candidate="{ element }">
+      <span class="clickable" @click="onEdit(element.id)">{{ formatLanguages(element) }}</span>
+    </template>
+    <template #cell-actions="{ element }">
+      <Button
+        @click="onEdit(element.id)"
+        variant="secondary"
+        icon="pencil"
+        label="Edit" />
+    </template>
+  </GenericTable>
 </template>
 <script>
-import { bus } from "@/main.js"
-import TranscriberProfileTableHeader from "./TranscriberProfileTableHeader.vue"
-import TranscriberProfileTableLine from "./TranscriberProfileTableLine.vue"
-import Loading from "@/components/atoms/Loading.vue"
+import GenericTable from "@/components/molecules/GenericTable.vue"
 
 export default {
   props: {
@@ -32,7 +45,6 @@ export default {
       required: true,
     },
     value: {
-      //selectedOrganizations
       type: Array,
       required: true,
     },
@@ -52,21 +64,18 @@ export default {
       default: "asc",
     },
   },
-  data() {
-    return {}
-  },
-  mounted() {},
   computed: {
-    p_selectedProfiles: {
-      get() {
-        return this.value
-      },
-      set(value) {
-        this.$emit("input", value)
-      },
+    columns() {
+      return [
+        { key: "organizationId", label: "", width: "auto" },
+        { key: "config.name", label: this.$t("session.profile_selector.labels.name"), width: "1fr" },
+        { key: "config.description", label: this.$t("session.profile_selector.labels.description"), width: "1fr" },
+        { key: "config.languages.0.candidate", label: this.$t("session.profile_selector.labels.languages"), width: "1fr" },
+        { key: "actions", label: "", width: "auto" },
+      ]
     },
-    empty_list() {
-      return !this.transcriberProfilesList.length
+    selectedIds() {
+      return this.value
     },
   },
   methods: {
@@ -76,11 +85,26 @@ export default {
     onEdit(profileId) {
       this.$emit("edit", profileId)
     },
+    onSelectionChange(ids) {
+      this.$emit("input", ids)
+    },
+    formatLanguages(profile) {
+      const langs = profile.config.languages.map((lang) => lang.candidate)
+      return langs.join(", ")
+    },
   },
   components: {
-    TranscriberProfileTableHeader,
-    TranscriberProfileTableLine,
-    Loading,
+    GenericTable,
   },
 }
 </script>
+
+<style scoped>
+.clickable {
+  cursor: pointer;
+}
+
+.clickable:hover {
+  text-decoration: underline;
+}
+</style>

@@ -23,9 +23,10 @@ const { DateTime } = require("luxon")
 
 const systemTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
 
-function processTurn(paragraphs_content, data) {
+function processTurn(paragraphs_content, data, options = {}) {
   const conversation = data.text
   const lines = conversation.data.split("\n")
+  const alignment = options.alignment || AlignmentType.JUSTIFIED
 
   data.speakers = data.speakers.flatMap((speaker) => [
     speaker,
@@ -79,8 +80,7 @@ function processTurn(paragraphs_content, data) {
             },
           ],
           children,
-          rightToLeft: true,
-          alignment: AlignmentType.JUSTIFIED,
+          alignment,
         }),
       )
       paragraphs_content.push(new Paragraph({}))

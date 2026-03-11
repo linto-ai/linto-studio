@@ -44,36 +44,26 @@
         <div class="media-explorer__body__content">
           <slot name="before" />
           <Loading v-if="loading && !pageIsLoading" />
-          <!-- Empty state -->
-          <div
-            v-if="medias.length === 0 && !loading"
-            class="media-explorer__body__empty">
-            <slot name="empty">
-              <div class="empty-state">
-                <p>Aucun média trouvé</p>
-              </div>
-            </slot>
-          </div>
-          <!-- Media items -->
-          <MediaExplorerItem
-            v-if="!loading"
-            v-for="(media, index) in medias"
-            :key="`media-explorer-item-${media._id}-${index}`"
-            :media="media"
-            :selected-media-ids.sync="selectedMediaIds"
-            :ref="'mediaItem' + index"
-            class="media-explorer__body__item" />
-
-          <!-- <IsMobile>
-            <MediaExplorerItemMobile
-              v-if="!loading"
+          <div v-if="!loading">
+            <!-- Empty state -->
+            <div
+              v-if="medias.length === 0"
+              class="media-explorer__body__empty">
+              <slot name="empty">
+                <div class="empty-state">
+                  <p>Aucun média trouvé</p>
+                </div>
+              </slot>
+            </div>
+            <!-- Media items -->
+            <MediaExplorerItem
               v-for="(media, index) in medias"
               :key="`media-explorer-item-${media._id}-${index}`"
-              :media="media" />
-            <template #desktop>
-              
-            </template>
-          </IsMobile> -->
+              :media="media"
+              :selected-media-ids.sync="selectedMediaIds"
+              :ref="'mediaItem' + index"
+              class="media-explorer__body__item" />
+          </div>
           <div v-if="loadingNextPage" class="loading-next-page">
             <p>Chargement de la page suivante</p>
           </div>
@@ -102,7 +92,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex"
+import { mapGetters } from "vuex"
 
 import { mediaScopeMixin } from "@/mixins/mediaScope"
 
@@ -186,7 +176,6 @@ export default {
   data() {
     return {
       observer: null,
-      search: "",
       showDeleteModal: false,
       rightPanelWidth: 500,
       selectedMediaIds: [],
@@ -197,6 +186,17 @@ export default {
     this.cleanupObserver()
   },
   watch: {
+    medias(newMedias) {
+      // Clean up selectedMediaIds that no longer exist in the list
+      const mediaIdSet = new Set(newMedias.map((m) => m._id))
+      const cleaned = this.selectedMediaIds.filter((id) => mediaIdSet.has(id))
+      if (cleaned.length !== this.selectedMediaIds.length) {
+        this.selectedMediaIds = cleaned
+      }
+    },
+    "$route.fullPath"() {
+      this.selectedMediaIds = []
+    },
     loading: {
       immediate: true,
       handler(newValue, oldvalue) {

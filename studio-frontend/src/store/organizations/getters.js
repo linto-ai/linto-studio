@@ -43,10 +43,6 @@ const getters = {
   isInOrganization: (state) => (organizationId) => {
     return state.rolesInOrganizations.has(organizationId)
   },
-  isAtLeastMaintainerOfOrganization: (state, getters) => (organizationId) => {
-    if (!getters.isInOrganization(organizationId)) return false
-    return state.rolesInOrganizations.get(organizationId).myrole >= 4
-  },
   getCurrentScope: (state) => {
     return state.currentScope
   },

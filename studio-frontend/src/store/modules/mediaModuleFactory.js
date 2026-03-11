@@ -4,8 +4,10 @@ import {
   apiGetGenericConversationsList,
   apiGetGenericConversationsCount,
   apiDeleteMultipleConversation,
+  apiGetConversationById,
 } from "@/api/conversation"
 import i18n from "@/i18n"
+import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
 import Vue from "vue"
 import { bus } from "@/main.js"
 
@@ -19,12 +21,15 @@ export default function createMediaModule(scope, status = "done") {
       autoselectMedias: false,
       searchQuery: "",
       selectedTagIds: [],
+      sidebarFilterTagIds: [],
       pagination: { page: 0, hasMore: true },
       count: 0,
       countDone: 0,
       countProcessing: 0,
       countError: 0,
       filterStatus: status, // done, processing, error
+      sortField: "last_update",
+      sortOrder: -1, // -1 = desc, 1 = asc
     }),
 
     getters: {
@@ -72,7 +77,7 @@ export default function createMediaModule(scope, status = "done") {
 
           const orgaRole =
             rootGetters["organizations/getUserRoleInOrganization"]
-          if (orgaRole >= 4) {
+          if (orgaRole >= ORGANIZATION_ROLES.SESSION_OPERATOR) {
             return 31
           }
 
@@ -80,6 +85,8 @@ export default function createMediaModule(scope, status = "done") {
         }
       },
       getFilterStatus: (s) => s.filterStatus,
+      getSortField: (s) => s.sortField,
+      getSortOrder: (s) => s.sortOrder,
     },
 
     mutations: {
@@ -149,11 +156,21 @@ export default function createMediaModule(scope, status = "done") {
         if (state.selectedTagIds.includes(id)) {
           state.selectedTagIds = state.selectedTagIds.filter((t) => t !== id)
         } else {
-          state.selectedTagIds.push(id)
+          state.selectedTagIds = [...state.selectedTagIds, id]
         }
       },
       clearSelectedTagIds(state) {
         state.selectedTagIds = []
+      },
+      toggleSidebarFilterTagId(state, id) {
+        if (state.sidebarFilterTagIds.includes(id)) {
+          state.sidebarFilterTagIds = state.sidebarFilterTagIds.filter((t) => t !== id)
+        } else {
+          state.sidebarFilterTagIds = [...state.sidebarFilterTagIds, id]
+        }
+      },
+      clearSidebarFilterTagIds(state) {
+        state.sidebarFilterTagIds = []
       },
       setCount(state, count) {
         state.count = count
@@ -167,6 +184,12 @@ export default function createMediaModule(scope, status = "done") {
       setCountError(state, count) {
         state.countError = count
       },
+      setSortField(state, field) {
+        state.sortField = field
+      },
+      setSortOrder(state, order) {
+        state.sortOrder = order
+      },
       setFilterStatus(state, value) {
         console.warn("filterStatus is readOnly")
       },
@@ -174,16 +197,19 @@ export default function createMediaModule(scope, status = "done") {
 
     actions: {
       async load(
-        { commit, dispatch, getters },
-        { page = 0, append = false } = {},
+        { state, commit, dispatch, getters },
+        { page = 0, append = false, folderId } = {},
       ) {
         try {
           const data = await apiGetGenericConversationsList(scope, {
             page,
             text: getters.search,
             title: getters.search,
-            tags: getters.selectedTagIds,
+            tags: [...getters.selectedTagIds, ...state.sidebarFilterTagIds],
             status: getters.getFilterStatus,
+            sortField: getters.getSortField,
+            sortOrder: getters.getSortOrder,
+            folderId,
           })
 
           if (append) commit("appendMedias", data.list)
@@ -230,12 +256,16 @@ export default function createMediaModule(scope, status = "done") {
       decreaseCount({ commit, getters }) {
         commit("setCount", getters.count - 1)
       },
-      async loadNextPage({ state, dispatch }) {
+      async loadNextPage({ state, dispatch }, { folderId } = {}) {
         const nextPage = state.pagination.page + 1
-        await dispatch("load", { page: nextPage, append: true })
+        await dispatch("load", { page: nextPage, append: true, folderId })
       },
       setSearchQuery({ commit }, query) {
         commit("setSearchQuery", query)
+      },
+      setSort({ commit }, { field, order }) {
+        commit("setSortField", field)
+        commit("setSortOrder", order)
       },
       toggleMediaSelection({ commit }, media) {
         commit("toggleSelectedMedia", media)
@@ -284,6 +314,12 @@ export default function createMediaModule(scope, status = "done") {
       clearSelectedTagIds({ commit }) {
         commit("clearSelectedTagIds")
       },
+      toggleSidebarFilterTagId({ commit }, id) {
+        commit("toggleSidebarFilterTagId", id)
+      },
+      clearSidebarFilterTagIds({ commit }) {
+        commit("clearSidebarFilterTagIds")
+      },
       clearSelectedMedias({ commit }) {
         commit("clearSelectedMedias")
       },
@@ -294,8 +330,15 @@ export default function createMediaModule(scope, status = "done") {
       setFilterStatus({ commit }, status) {
         commit("setFilterStatus", status)
       },
-      prependMedias({ commit }, medias) {
-        commit("prependMedias", medias)
+      async prependMedias({ commit }, medias) {
+        const resolved = await Promise.all(
+          medias.map(async (m) => {
+            if (typeof m === "string") return await apiGetConversationById(m)
+            if (m?._id) return m
+            return null
+          }),
+        )
+        commit("prependMedias", resolved.filter(Boolean))
       },
     },
   }

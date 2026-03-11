@@ -1,32 +1,21 @@
 <template>
-  <div class="media-explorer-menu-labels" v-if="orderedTags.length > 0">
-    <hr />
+  <div class="media-explorer-menu-labels" v-if="visibleTags.length > 0">
     <div class="title">
       {{ $t("navigation.tabs.tags") }}
     </div>
     <nav>
-      <div v-if="orderedTags.length === 0" class="no-tags">
-        <!-- <p>
-          {{ $t("manage_tags.no_tags") }}
-        </p> -->
-        <!-- <p>
-          <Button
-            :label="$t('manage_tags.create_tag')"
-            @click="openSettingsModal"
-            size="xs"
-            color="neutral"
-            variant="outline"></Button>
-        </p> -->
-      </div>
       <ul>
-        <li v-for="tag in orderedTags" :key="tag._id" v-if="tag.mediaCount > 0">
+        <li v-for="tag in visibleTags" :key="tag._id">
           <ChipTag
             :name="tag.name"
             :emoji="tag.emoji"
             :color="tag.color"
-            :count="tag.mediaCount"
+            :count="isSidebarActive(tag._id) ? 0 : tag.mediaCount"
+            :active="isSidebarActive(tag._id)"
             size="xs"
-            @click="handleTagClick(tag)" />
+            @click="handleTagClick(tag)">
+            <ph-icon v-if="isSidebarActive(tag._id)" name="check" size="14" />
+          </ChipTag>
         </li>
       </ul>
     </nav>
@@ -40,18 +29,17 @@ import { mediaScopeMixin } from "@/mixins/mediaScope"
 export default {
   mixins: [mediaScopeMixin],
   name: "MediaExplorerMenuLabels",
-  components: {},
-  data() {
-    return {
-      showModalTagManagement: false,
-      showAllTags: false,
-    }
-  },
   watch: {
     "$route.name"(newRouteName, oldRouteName) {
       if (newRouteName !== oldRouteName) {
         this.fetchTags()
       }
+    },
+    "$route.params.folderId"() {
+      this.fetchTags()
+    },
+    searchActive() {
+      this.fetchTags()
     },
   },
   mounted() {
@@ -74,29 +62,38 @@ export default {
         return this.orgTags
       }
     },
-    orderedTags() {
+    searchActive() {
+      return !!this.searchValue
+    },
+    sidebarFilterTagIds() {
+      return this.$store.state[this.storeScope]?.sidebarFilterTagIds ?? []
+    },
+    effectiveFolderId() {
+      if (this.searchActive) return undefined // Show all org tags during text search
+      const routeFolderId = this.$route.params.folderId
+      if (routeFolderId) return routeFolderId
+      const routeName = this.$route?.name || ""
+      if (routeName === "explore" || routeName === "explore-folder") return null
+      return undefined
+    },
+    visibleTags() {
       return [...this.tags]
         .sort((a, b) => a.name.localeCompare(b.name))
         .sort((a, b) => b.mediaCount - a.mediaCount)
         .filter((tag) => {
-          return !this.selectedTagsIds.includes(tag._id)
+          return tag.mediaCount > 0 && !this.selectedTagsIds.includes(tag._id)
         })
     },
   },
   methods: {
-    getTagColor(tag) {
-      return tag.color
-    },
     handleTagClick(tag) {
-      this.toggleSelectedTag(tag)
+      this.$store.dispatch(
+        `${this.storeScope}/toggleSidebarFilterTagId`,
+        tag._id,
+      )
     },
-    async handleTagSubmit(tag) {
-      await this.$store.dispatch("tags/createTag", tag)
-      this.fetchTags()
-      this.showModalTagManagement = false
-    },
-    handleTagCancel() {
-      this.showModalTagManagement = false
+    isSidebarActive(tagId) {
+      return this.sidebarFilterTagIds.includes(tagId)
     },
     fetchTags() {
       const currentRoute = this.$route?.name || ""
@@ -112,11 +109,10 @@ export default {
       ) {
         this.$store.dispatch("tags/fetchSharedTags")
       } else {
-        this.$store.dispatch("tags/fetchTags")
+        this.$store.dispatch("tags/fetchTags", {
+          folderId: this.effectiveFolderId,
+        })
       }
-    },
-    openSettingsModal() {
-      this.$store.dispatch("settings/setModalOpen", true)
     },
   },
 }
@@ -186,26 +182,6 @@ export default {
           max-width: 100% !important;
         }
       }
-    }
-  }
-
-  &__footer {
-    margin-top: 0.5em !important;
-    padding: 0.5em;
-    padding-left: 46px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--spacing-small);
-  }
-
-  .no-tags {
-    padding: 0.5em;
-    padding-left: 0.5em;
-    color: var(--text-secondary);
-
-    p {
-      margin: 0;
     }
   }
 }

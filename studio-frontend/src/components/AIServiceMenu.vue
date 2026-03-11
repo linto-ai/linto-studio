@@ -3,7 +3,8 @@
     <Tabs
       :tabs="allTabs"
       :value="value"
-      :hiddenTabsLabel="$t('publish.ai_menu.select')"
+      variant="secondary"
+      :hiddenTabsLabel="$t('publish.ai_menu.more')"
       hiddenTabsIcon="sparkle"
       @input="$emit('input', $event)" />
   </div>
@@ -30,15 +31,30 @@ export default {
       type: Array,
       default: () => [],
     },
+    maxVisibleServices: {
+      type: Number,
+      default: 3,
+    },
   },
   computed: {
     allTabs() {
-      // Mark AI service tabs as hidden (they go in submenu)
-      // Keep verbatim as visible
-      return this.tabs.map((tab) => ({
-        ...tab,
-        hidden: tab.name !== "verbatim" && tab.name !== "publication",
-      }))
+      // Verbatim is always visible
+      // Show first N AI service tabs as visible, rest go in submenu
+      let serviceIndex = 0
+      return this.tabs.map((tab) => {
+        if (tab.name === "verbatim") {
+          return { ...tab, hidden: false }
+        }
+        serviceIndex++
+        return {
+          ...tab,
+          hidden: serviceIndex > this.maxVisibleServices,
+        }
+      })
+    },
+    hasOverflow() {
+      const serviceCount = this.tabs.filter((t) => t.name !== "verbatim").length
+      return serviceCount > this.maxVisibleServices
     },
   },
 }
@@ -48,7 +64,6 @@ export default {
 .ai-menu {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 0.5rem 0;
+  flex: 1;
 }
 </style>

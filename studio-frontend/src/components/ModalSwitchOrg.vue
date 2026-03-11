@@ -43,7 +43,7 @@
                 currentOrganization && org._id === currentOrganization._id,
             }">
             <div class="modal-switch-org__list__item__name__text flex1">
-              {{ org.name }}
+              {{ getOrgDisplayName(org) }}
             </div>
             <!-- <div
               v-if="currentOrganization && org._id === currentOrganization._id"
@@ -77,7 +77,7 @@
 import { mapGetters } from "vuex"
 import Modal from "@/components/molecules/Modal.vue"
 import ModalCreateOrganization from "@/components/ModalCreateOrganization.vue"
-import ChipTag from "./atoms/ChipTag.vue"
+import { orgDisplayName } from "@/tools/orgDisplayName"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { getUserRoleInOrganization } from "@/tools/getUserRoleInOrganization"
@@ -135,6 +135,9 @@ export default {
     close() {
       this.$emit("close")
     },
+    getOrgDisplayName(org) {
+      return orgDisplayName(org, this.userInfo._id)
+    },
   },
 }
 </script>
@@ -161,10 +164,6 @@ export default {
 
         &.current {
           font-weight: bold;
-
-          .modal-switch-org__list__item__name__text {
-            //color: var(--primary-color);
-          }
 
           .modal-switch-org__list__item__name__role {
             color: var(--text-primary);

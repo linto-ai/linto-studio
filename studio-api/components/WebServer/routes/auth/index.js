@@ -1,6 +1,6 @@
 const debug = require("debug")("linto:components:WebServer:routes:auth:index")
 
-const { logout, recoveryAuth, generateExtendedAuthToken } = require(
+const { logout, recoveryAuth, resendVerificationEmail, generateExtendedAuthToken } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/users/users.js`,
 )
 const PROVIDER = require(`${process.cwd()}/lib/dao/oidc/provider`)
@@ -34,6 +34,12 @@ module.exports = (webServer) => {
       method: "post",
       requireAuth: false,
       controller: recoveryAuth,
+    },
+    {
+      path: "/resend-verification",
+      method: "post",
+      requireAuth: false,
+      controller: resendVerificationEmail,
     },
     {
       path: "/list",

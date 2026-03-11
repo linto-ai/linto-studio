@@ -31,7 +31,7 @@ COPY . /usr/src/app/conversation-manager
 
 # Move binaries to their respective locations
 # Note: yt-dlp_linux is for glibc, need to use the Python version on Alpine
-RUN pip3 install --break-system-packages yt-dlp && \
+RUN pip3 install --break-system-packages --upgrade yt-dlp && \
   ln -sf /usr/bin/yt-dlp /usr/local/bin/yt-dlp || \
   cp config/bin/yt-dlp_linux /usr/local/bin/yt-dlp 2>/dev/null || true
 

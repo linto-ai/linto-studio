@@ -8,7 +8,12 @@
     sidebar>
     <template v-slot:sidebar>
       <div>
-        <div class="form-field flex col medium-margin gap-medium">
+        <div
+          class="form-field flex col medium-margin gap-medium"
+          v-if="
+            (channels && channels.length > 0) ||
+            (translations && translations.length > 0)
+          ">
           <AppEditorChannelsSelector
             v-if="channels && channels.length > 0"
             :channels="channels"
@@ -77,18 +82,39 @@
       </div>
     </template>
 
-    <template v-slot:breadcrumb-actions>
-      <Button
-        style="margin-left: auto"
-        :label="$t('conversation.publish_document')"
-        icon="file"
-        variant="primary"
-        size="sm"
+    <div class="action-cards" v-if="conversation && conversation._id">
+      <router-link
+        class="action-card"
         :to="{
           name: 'conversations publish',
           params: { conversationId: conversation._id },
-        }"></Button>
-    </template>
+        }">
+        <div class="action-card__icon action-card__icon--publish">
+          <PhIcon name="file-text" size="lg" />
+        </div>
+        <div class="action-card__content">
+          <span class="action-card__title">{{
+            $t("conversation.publish_document")
+          }}</span>
+          <span class="action-card__description">{{
+            $t("conversation.publish_document_description")
+          }}</span>
+        </div>
+        <PhIcon name="caret-right" size="sm" class="action-card__arrow" />
+      </router-link>
+      <button class="action-card" @click="openChat" v-if="chatEnabled">
+        <div class="action-card__icon action-card__icon--chat">
+          <PhIcon name="chat-text" size="lg" />
+        </div>
+        <div class="action-card__content">
+          <span class="action-card__title">{{ $t("chat.start") }}</span>
+          <span class="action-card__description">{{
+            $t("chat.description")
+          }}</span>
+        </div>
+        <PhIcon name="caret-right" size="sm" class="action-card__arrow" />
+      </button>
+    </div>
 
     <div class="flex flex1">
       <AppEditor
@@ -144,6 +170,7 @@ import AppEditorMetadataModal from "@/components/AppEditorMetadataModal.vue"
 import SearchResultPaginator from "@/components/SearchResultPaginator.vue"
 import AppEditorChannelsSelector from "@/components/AppEditorChannelsSelector.vue"
 import AppEditorTranslationSelector from "../components/AppEditorTranslationSelector.vue"
+import PhIcon from "@/components/atoms/PhIcon.vue"
 
 export default {
   mixins: [conversationMixin],
@@ -170,6 +197,8 @@ export default {
     }
   },
   mounted() {
+    this.$store.dispatch("chat/checkAvailability")
+
     bus.$on("open-metadata-modal", (data) => {
       this.showMetadataModal = true
       this.metadataModalData = data
@@ -225,6 +254,9 @@ export default {
     },
   },
   computed: {
+    chatEnabled() {
+      return this.$store.state.chat.enabled
+    },
     experimental_highlight() {
       return getEnv("VUE_APP_EXPERIMENTAL_HIGHLIGHT") === "true"
     },
@@ -241,18 +273,19 @@ export default {
       return [
         {
           label: this.rootConversation?.name ?? "",
-          // to: {
-          //   name: "conversations overview",
-          //   params: { conversationId: this.conversationId },
-          // },
-        },
-        {
-          label: this.$t("breadcrumb.transcription"),
         },
       ]
     },
   },
   methods: {
+    openChat() {
+      if (this.conversation && this.conversation._id) {
+        this.$store.dispatch(
+          "chat/openDrawer",
+          this.conversation._id.toString(),
+        )
+      }
+    },
     initConversationHook() {
       this.setupTurns()
     },
@@ -277,9 +310,7 @@ export default {
         // Split the turns in pages
         this.turnPages[currentPage].push(turn)
         nbCaracters += turn.segment.length
-        if (
-          nbCaracters > parseInt(getEnv("VUE_APP_MAX_CARACTERS_PER_PAGE"))
-        ) {
+        if (nbCaracters > parseInt(getEnv("VUE_APP_MAX_CARACTERS_PER_PAGE"))) {
           nbCaracters = 0
           nbTurns = 0
           currentPage += 1
@@ -442,6 +473,104 @@ export default {
     SearchResultPaginator,
     AppEditorChannelsSelector,
     AppEditorTranslationSelector,
+    PhIcon,
   },
 }
 </script>
+
+<style lang="scss" scoped>
+.action-cards {
+  display: flex;
+  gap: 12px;
+  padding: 16px 24px 8px;
+}
+
+.action-card {
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--neutral-20);
+  background: var(--background-primary);
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+  font-family: inherit;
+  font-size: inherit;
+  text-align: left;
+
+  &:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-2);
+  }
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    flex-shrink: 0;
+
+    &--publish {
+      background-color: var(--primary-soft);
+      color: var(--primary-color);
+    }
+
+    &--chat {
+      background-color: #fff3e0;
+      color: #e65100;
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+  }
+
+  &__description {
+    font-size: 0.8rem;
+    color: var(--dark-70);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__arrow {
+    flex-shrink: 0;
+    color: var(--dark-70);
+    transition: transform 0.2s ease;
+  }
+
+  &:hover &__arrow {
+    transform: translateX(2px);
+  }
+}
+
+@media (max-width: 800px) {
+  .action-cards {
+    flex-direction: column;
+    padding: 12px 12px 4px;
+
+    .action-card {
+      width: 100%;
+    }
+  }
+}
+</style>

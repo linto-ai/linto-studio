@@ -345,7 +345,7 @@
           "schema": {
             "$ref": "#/components/schemas/DownloadConversationType"
           },
-          "description": "Download type of media type:\n * `json` - Segment information with timestamp and speaker \n * `text` - Raw transcription \n * `docx` / `verbatim` - Generate a .docx file to download \n * `cri` / `cra` / `cred` / `resume` -  LLM request WIP (openai or mixtral) \n"
+          "description": "Download type of media type:\n * `json` - Segment information with timestamp and speaker \n * `text` - Raw transcription \n * `docx` / `verbatim` - Generate a .docx file to download \n * Other formats - LLM Gateway processing \n"
         },
         {
           "in": "path",

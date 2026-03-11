@@ -92,9 +92,13 @@ export async function apiGetSystemCategories(organizationId) {
   return requestRes?.data || []
 }
 
-export async function apiGetTagsByCategory(organizationId, categoryId) {
+export async function apiGetTagsByCategory(organizationId, categoryId, { folderId } = {}) {
+  let url = `${BASE_API}/organizations/${organizationId}/tags?categoryId=${categoryId}&withMediaCount=true`
+  if (folderId !== undefined) {
+    url += `&folderId=${folderId === null ? "null" : folderId}`
+  }
   const requestRes = await sendRequest(
-    `${BASE_API}/organizations/${organizationId}/tags?categoryId=${categoryId}&withMediaCount=true`,
+    url,
     { method: "get" },
     {},
   )

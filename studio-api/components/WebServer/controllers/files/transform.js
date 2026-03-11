@@ -14,7 +14,7 @@ ffmpeg -i in.whatever -vn -c:a libfdk_aac -ar 16000 -ac 1 -b:a 64k out.m4a (best
 async function transformAudio(filePath, transformedFilePath) {
   let streamProcess = spawn(
     "ffmpeg",
-    ["-i", `${filePath}`, ...ARG_TRANSFORM, transformedFilePath],
+    ["-y", "-i", `${filePath}`, ...ARG_TRANSFORM, transformedFilePath],
     { detached: true },
   )
   await handleStreamProcess(streamProcess)
@@ -63,7 +63,11 @@ async function handleStreamProcess(streamProcess) {
 
     streamProcess.on("close", (code) => {
       debug(`child process exited with code ${code}`)
-      resolve()
+      if (code !== 0) {
+        reject(new Error(`ffmpeg exited with code ${code}`))
+      } else {
+        resolve()
+      }
     })
   })
 }

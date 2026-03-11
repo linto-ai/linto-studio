@@ -2,36 +2,12 @@
   <LayoutV2 customClass="explore-next">
     <MediaExplorer
       v-if="medias"
-      ref="mediaExplorer"
       :medias="medias"
       :loading="loading || pageIsLoading"
       :loadingNextPage="loadingNextPage"
       enable-pagination
       class="relative"
-      @load-more="handleLoadMore">
-      <template #header-actions v-if="getCurrentScope == 'organization'">
-        <div class="flex gap-small">
-          <FilterChip
-            v-if="countProcessing > 0 || countError > 0"
-            :label="$t('media_explorer.filter.transcribed')"
-            v-model="filterStatus"
-            chipValue="done"
-            :count="countDone" />
-          <FilterChip
-            v-if="countProcessing > 0"
-            :label="$t('media_explorer.filter.processing')"
-            v-model="filterStatus"
-            chipValue="processing"
-            :count="countProcessing" />
-          <FilterChip
-            v-if="countError > 0"
-            :label="$t('media_explorer.filter.error')"
-            v-model="filterStatus"
-            chipValue="error"
-            :count="countError" />
-        </div>
-      </template>
-    </MediaExplorer>
+      @load-more="handleLoadMore" />
   </LayoutV2>
 </template>
 
@@ -40,11 +16,11 @@ import { mapGetters } from "vuex"
 
 import LayoutV2 from "@/layouts/v2-layout.vue"
 import MediaExplorer from "@/components/MediaExplorer.vue"
+import { bus } from "@/main"
 
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { convRoleMixin } from "@/mixins/convRole.js"
 import { mediaScopeMixin } from "@/mixins/mediaScope"
-import { getCurrentScope } from "vue"
 
 export default {
   name: "NextExplore",
@@ -58,13 +34,12 @@ export default {
     currentOrganizationScope: { type: String, required: true },
     favorites: { type: Boolean, required: false, default: false },
     shared: { type: Boolean, required: false, default: false },
+    processing: { type: Boolean, default: false },
   },
   data() {
     return {
       loading: true,
       loadingNextPage: false,
-      currentOperation: null,
-      observer: null,
     }
   },
   computed: {
@@ -74,107 +49,162 @@ export default {
     search() {
       return this.$store.getters[`${this.storeScope}/search`]
     },
-    countDone() {
-      return this.$store.getters[
-        `${this.getCurrentOrganizationScope}/done/conversations/count`
-      ]
+    sidebarFilterTagIds() {
+      return this.$store.state[this.storeScope]?.sidebarFilterTagIds ?? []
     },
-    countError() {
-      return this.$store.getters[
-        `${this.getCurrentOrganizationScope}/error/conversations/count`
-      ]
+    sortField() {
+      return this.$store.getters[`${this.storeScope}/getSortField`]
     },
-    countProcessing() {
-      return this.$store.getters[
-        `${this.getCurrentOrganizationScope}/processing/conversations/count`
-      ]
-    },
-    filterStatus: {
-      get() {
-        return this.$store.getters["organizations/getCurrentFilterStatus"]
-      },
-      set(value) {
-        this.$refs.mediaExplorer.reset()
-        this.$store.dispatch("organizations/setCurrentFilterStatus", value)
-      },
+    sortOrder() {
+      return this.$store.getters[`${this.storeScope}/getSortOrder`]
     },
     ...mapGetters("system", { pageIsLoading: "isLoading" }),
+    effectiveFolderId() {
+      if (this.hasActiveSearch) return undefined // Global search across all folders
+      if (this.processing) return undefined
+      const routeFolderId = this.$route.params.folderId
+      if (routeFolderId) return routeFolderId
+      // In organization scope inbox (no folder selected), show only unfiled conversations
+      if (this.getCurrentScope === "organization") return null
+      return undefined
+    },
   },
   mounted() {
     this.init()
+    bus.$on("conversation_folder_changed", this.onConversationFolderChanged)
   },
   beforeDestroy() {
     this.$apiEventWS.unSubscribeMediaUdate()
+    this.$apiEventWS.unSubscribeFolderUpdate()
+    bus.$off("conversation_folder_changed", this.onConversationFolderChanged)
+    clearTimeout(this._folderChangedTimer)
   },
   methods: {
     async init() {
-      if (this.getCurrentScope === "organization") {
-        await this.initCounts()
-        this.$apiEventWS.subscribeMediaUpdate(this.currentOrganizationScope)
-        this.filterStatus = this.getStatusFromUrl()
-
-        window.history.replaceState({}, "", window.location.pathname)
-      }
-
-      await this.$store.dispatch(`${this.storeScope}/load`, {})
-
-      this.loading = false
-      this.$store.dispatch("system/setIsLoading", false)
-      if (this.countProcessing == 0) {
-        this.filterStatus = "done"
+      try {
+        if (this.getCurrentScope === "organization") {
+          this.$apiEventWS.subscribeMediaUpdate(this.currentOrganizationScope)
+          this.$apiEventWS.subscribeFolderUpdate(this.currentOrganizationScope)
+          this.$store.dispatch(
+            "organizations/setCurrentFilterStatus",
+            this.processing ? "processing" : "done"
+          )
+        }
+        await this.$store.dispatch(`${this.storeScope}/load`, {
+          folderId: this.effectiveFolderId,
+        })
+      } finally {
+        this.loading = false
+        this.$store.dispatch("system/setIsLoading", false)
       }
     },
-    getStatusFromUrl() {
-      const status = this.$route.query.status
-      if (!status || ["done", "processing", "error"].indexOf(status) == "-1") {
-        return "done"
-      }
-      return status
+    onConversationFolderChanged({ fromFolderId, toFolderId }) {
+      const current = this.effectiveFolderId
+      const affected =
+        current === undefined ||
+        fromFolderId === undefined ||
+        current === fromFolderId ||
+        current === toFolderId
+      if (!affected) return
+      // Debounce: batch rapid events (e.g. moving N conversations) into one reload
+      clearTimeout(this._folderChangedTimer)
+      this._folderChangedTimer = setTimeout(() => {
+        this.$store.dispatch(`${this.storeScope}/load`, {
+          folderId: this.effectiveFolderId,
+        })
+      }, 300)
     },
     async handleLoadMore() {
       this.loadingNextPage = true
-      await this.$store.dispatch(`${this.storeScope}/loadNextPage`)
+      await this.$store.dispatch(`${this.storeScope}/loadNextPage`, {
+        folderId: this.effectiveFolderId,
+      })
       this.loadingNextPage = false
-    },
-    initCounts() {
-      this.$store.dispatch(
-        `${this.getCurrentOrganizationScope}/done/conversations/loadStatusCount`,
-      )
-      this.$store.dispatch(
-        `${this.getCurrentOrganizationScope}/processing/conversations/loadStatusCount`,
-      )
-      this.$store.dispatch(
-        `${this.getCurrentOrganizationScope}/error/conversations/loadStatusCount`,
-      )
     },
   },
   watch: {
-    countProcessing(value) {
-      if (value == 0) {
-        this.filterStatus = "done"
+    getCurrentOrganizationScope(newOrgId, oldOrgId) {
+      if (newOrgId && newOrgId !== oldOrgId) {
+        this.loading = true
+        this.$apiEventWS.unSubscribeMediaUdate()
+        this.$apiEventWS.unSubscribeFolderUpdate()
+        this.init()
+      }
+    },
+    processing() {
+      this.loading = true
+      this.init()
+    },
+    async "$route.params.folderId"() {
+      this.loading = true
+      this.$store.dispatch(`${this.storeScope}/clearSelectedMedias`)
+      this.$store.dispatch(`${this.storeScope}/clearSidebarFilterTagIds`)
+      try {
+        await this.$store.dispatch(`${this.storeScope}/load`, { folderId: this.effectiveFolderId })
+      } finally {
+        this.loading = false
+        this.$store.dispatch("system/setIsLoading", false)
       }
     },
     async search() {
       if (this.pageIsLoading) return
       this.loading = true
-      await this.$store.dispatch(`${this.storeScope}/load`, {})
-      this.loading = false
+      try {
+        await this.$store.dispatch(`${this.storeScope}/load`, {
+          folderId: this.effectiveFolderId,
+        })
+      } finally {
+        this.loading = false
+      }
     },
-    async selectedTagsIds(newValue, oldvalue) {
+    async selectedTagsIds() {
       if (this.pageIsLoading) return
       this.loading = true
-      await this.$store.dispatch(`${this.storeScope}/load`, {})
-      this.loading = false
+      try {
+        await this.$store.dispatch(`${this.storeScope}/load`, {
+          folderId: this.effectiveFolderId,
+        })
+      } finally {
+        this.loading = false
+      }
     },
-    async filterStatus() {
+    async sidebarFilterTagIds() {
       if (this.pageIsLoading) return
       this.loading = true
-      await this.$store.dispatch(`${this.storeScope}/load`, {})
-      this.loading = false
+      try {
+        await this.$store.dispatch(`${this.storeScope}/load`, {
+          folderId: this.effectiveFolderId,
+        })
+      } finally {
+        this.loading = false
+      }
+    },
+    async sortField() {
+      if (this.pageIsLoading) return
+      this.loading = true
+      try {
+        await this.$store.dispatch(`${this.storeScope}/load`, {
+          folderId: this.effectiveFolderId,
+        })
+      } finally {
+        this.loading = false
+      }
+    },
+    async sortOrder() {
+      if (this.pageIsLoading) return
+      this.loading = true
+      try {
+        await this.$store.dispatch(`${this.storeScope}/load`, {
+          folderId: this.effectiveFolderId,
+        })
+      } finally {
+        this.loading = false
+      }
     },
     "$apiEventWS.state.connexionRestored"() {
       if (this.getCurrentScope === "organization") {
         this.$apiEventWS.subscribeMediaUpdate(this.currentOrganizationScope)
+        this.$apiEventWS.subscribeFolderUpdate(this.currentOrganizationScope)
       }
     },
   },

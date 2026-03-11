@@ -1,6 +1,9 @@
 <template>
   <nav class="breadcrumb flex flex1" aria-label="Breadcrumb">
-    <IsMobile class="flex flex1">
+    <template v-if="noBreadcrumb">
+      <slot name="breadcrumb-actions"></slot>
+    </template>
+    <IsMobile v-else class="flex flex1">
       <slot
         name="breadcrumb-actions"
         v-if="$slots['breadcrumb-actions']"></slot>
@@ -51,6 +54,10 @@ export default {
     additionalbreadcrumbItems: {
       type: Array,
       default: () => [],
+    },
+    noBreadcrumb: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

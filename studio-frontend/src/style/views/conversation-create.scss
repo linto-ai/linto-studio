@@ -49,7 +49,7 @@
 }
 
 .audio-upload-form {
-  height: 8rem;
+  min-height: 8rem;
   border-radius: 4px 0px 0px 4px;
 
   & .droparea__description {

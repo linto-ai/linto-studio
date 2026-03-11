@@ -4,6 +4,7 @@ const debug = require("debug")(
 const MODULE_NAME = "yt-dlp"
 
 const { spawn } = require("child_process")
+const fs = require("fs")
 
 const { v4: uuidv4 } = require("uuid")
 const { getAudioFolder, getStorageFolder } = require(
@@ -39,8 +40,13 @@ async function downloadAudio(url, domain) {
     })
     await handleStreamProcess(streamProcess)
 
+    const outputFile = filePath + "/" + fileName + ".mp3"
+    if (!fs.existsSync(outputFile)) {
+      throw new Error("yt-dlp did not produce the expected output file")
+    }
+
     return {
-      filePath: filePath + "/" + fileName + ".mp3",
+      filePath: outputFile,
       name: fileName,
     }
   } catch (err) {

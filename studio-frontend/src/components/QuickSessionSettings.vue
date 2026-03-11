@@ -245,6 +245,7 @@ export default {
 
         this.sendUpdate()
       },
+      immediate: true,
     },
     selectedProfile: {
       handler() {
@@ -303,7 +304,8 @@ export default {
             this.transcriberProfiles,
             newLevel,
           )
-          this.selectedProfile = validProfiles.length > 0 ? validProfiles[0] : null
+          this.selectedProfile =
+            validProfiles.length > 0 ? validProfiles[0] : null
         }
 
         // Reset transcription service if current doesn't meet new security level

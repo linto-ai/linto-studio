@@ -6,7 +6,7 @@
     },
     {
       "tags": 1,
-      "organizationId ": 1
+      "organizationId": 1
     }
   ],
 
@@ -41,6 +41,49 @@
       "_id": 1,
       "name": 1,
       "text": 1
+    },
+    {
+      "folderId": 1,
+      "organization.organizationId": 1
+    }
+  ],
+
+  "folders": [
+    {
+      "organizationId": 1
+    },
+    {
+      "parentId": 1,
+      "organizationId": 1
+    }
+  ],
+
+  "conversationExport": [
+    {
+      "convId": 1,
+      "format": 1
+    },
+    {
+      "jobId": 1
+    }
+  ],
+
+  "conversationGenerations": [
+    {
+      "conversationId": 1,
+      "serviceId": 1
+    },
+    {
+      "jobId": 1
+    }
+  ],
+
+  "kpi.session": [
+    {
+      "sessionId": 1
+    },
+    {
+      "timestamp": -1
     }
   ]
 }

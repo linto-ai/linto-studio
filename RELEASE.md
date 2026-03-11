@@ -1,3 +1,54 @@
+# 1.8.2
+
+_2026_03_11_
+
+- Folder inbox system, Media explorer
+  - Sort controls (creation/modification date, ascending/descending)
+  - Improved folder move UX (drag-and-drop without automatic navigation)
+- Authentication & admin
+  - Email verification required when SMTP is enabled
+  - Admins can create users even when account creation is disabled
+  - Session KPI improvements in backoffice
+- Transcription
+  - Load main transcript while sub-channel transcription is in progress
+  - Offline transcription disabled by default on microphone/video creation views
+- Bugfix
+  - Backoffice organization member management fixes
+  - Tags query performance fix with missing MongoDB indexes
+  - Graceful LLM Gateway degradation handling
+  - Fix URL import crash for ffmpeg/yt-dlp failures
+  - Fix non-deterministic KPI results for session and transcription
+  - Fix turn displaying when diarization is enabled on unsupported profile
+- Other
+  - Activity log improvements: DELETE body logging and PATCH deduplication
+  - Pass session_id and organization_id to LLM Gateway chat endpoint
+  - Improved URL download handling
+
+# 1.8.1
+
+_2026_03_01_
+
+- Bugfix
+  - Fix collaborative editing crash in Web Worker (`process` not defined)
+- Publication page redesign
+  - Action cards layout replacing text buttons
+  - Transcript split view alongside AI service content
+  - Verbatim tab shows transcript directly instead of PDF preview
+- Export cleanup
+  - Removed legacy report formats (cri, cra, cred)
+  - Verbatim DOCX export standalone (no LLM processing)
+  - Fix command injection risk in ODT conversion (execFile)
+- Chat
+  - Chat with AI about your conversations via LLM Gateway proxy
+  - Session management with ownership verification
+  - SSE streaming with transcript and summary context
+  - ChatDrawer component with conversation history
+  - New `LLM_CHAT_SERVICE_ID` environment variable
+- UI improvements
+  - AIServiceMenu collapses overflow services into dropdown
+  - PublicationSection uses Modal component
+  - Conditional session menu visibility
+
 # 1.8.0
 
 _2026_02_24_

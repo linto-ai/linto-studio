@@ -14,7 +14,9 @@
       {{ $t("publish.generations.no_generations") }}
     </div>
 
-    <div v-if="generations && generations.length > 0" class="generations-list flex1 overflow-vertical-auto">
+    <div
+      v-if="generations && generations.length > 0"
+      class="generations-list flex1">
       <div
         v-for="generation in sortedGenerations"
         :key="generation.generationId"
@@ -38,6 +40,12 @@
           <!-- "Latest" badge for most recent generation -->
           <span v-if="generation.isCurrent" class="latest-badge">
             {{ $t("publish.generations.latest") }}
+          </span>
+          <span
+            class="delete-btn generation-delete"
+            :title="$t('publish.generations.delete')"
+            @click.stop="deleteGeneration(generation)">
+            <span class="icon trash small"></span>
           </span>
         </div>
 
@@ -63,6 +71,13 @@
             }}
             <span v-if="isLatestVersion(version)" class="version-latest-tag">
               ({{ $t("publish.generations.latest") }})
+            </span>
+            <span
+              v-if="canDeleteVersion(version)"
+              class="delete-btn version-delete"
+              :title="$t('publish.generations.delete_version')"
+              @click.stop="deleteVersion(generation, version)">
+              <span class="icon trash small"></span>
             </span>
           </div>
         </div>
@@ -133,6 +148,21 @@ export default {
     },
     isLatestVersion(version) {
       return version.version_number === this.latestVersionNumber
+    },
+    canDeleteVersion(version) {
+      // Can't delete if only one version or the latest (current) version
+      if (!this.versions || this.versions.length <= 1) return false
+      if (version.version_number === this.latestVersionNumber) return false
+      return true
+    },
+    deleteGeneration(generation) {
+      this.$emit("delete-generation", generation.generationId)
+    },
+    deleteVersion(generation, version) {
+      this.$emit("delete-version", {
+        generationId: generation.generationId,
+        versionNumber: version.version_number,
+      })
     },
   },
 }
@@ -271,5 +301,30 @@ export default {
   font-size: 0.85em;
   color: var(--color-text-secondary, #666);
   font-weight: normal;
+}
+
+.delete-btn {
+  margin-left: auto;
+  opacity: 0;
+  transition: opacity 0.15s;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0.125rem;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.delete-btn:hover {
+  background-color: rgba(239, 68, 68, 0.15);
+}
+
+.generation-item:hover .generation-delete,
+.version-item:hover .version-delete {
+  opacity: 0.6;
+}
+
+.delete-btn:hover {
+  opacity: 1 !important;
 }
 </style>
