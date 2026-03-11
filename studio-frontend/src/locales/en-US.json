@@ -471,7 +471,10 @@
     "url_tab": {
       "main_info_title": "General information",
       "url_label": "Source URL",
-      "get_button": "Add media from the URL"
+      "get_button": "Add media from the URL",
+      "youtube_warning": "YouTube URLs are not supported. YouTube blocks automated downloads.",
+      "supported_platforms": "Supported: Arte, Radio France, PeerTube, or direct link to an audio/video file.",
+      "supported_platforms_link": "See the full list of supported sites"
     },
     "offline": {
       "label_icon_source": {
@@ -564,6 +567,7 @@
     "invalidVisioUrl": "Invalid visio URL",
     "unauthorized_caracters": "Unauthorized characters",
     "invalid_email": "Invalid email",
+    "invalid_url": "Please enter a valid URL (https:// or http://)",
     "passwordsMustBeTheSame": "Passwords must be the same",
     "passwordLength": "This field must contain at least 6 characters"
   },

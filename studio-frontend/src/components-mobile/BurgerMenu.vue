@@ -9,8 +9,6 @@
         v-if="!backoffice && isAuthenticated"
         :organizationId="currentOrganization._id" />
 
-      <MediaExplorerMenuLabels v-if="isInbox" />
-
       <BackofficeSidebar v-if="backoffice" />
 
       <div class="flex1 flex col overflow-vertical-auto" v-if="$slots.default">

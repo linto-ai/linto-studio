@@ -78,7 +78,7 @@
 
     <slot name="content-bottom-input"></slot>
 
-    <div class="form-field__info" v-if="field.error !== null">
+    <div class="form-field__info" v-if="this.isInError">
       <span class="form-field__error">{{ field.error }}</span>
     </div>
   </div>
@@ -167,7 +167,7 @@ export default {
       return {
         "form-field--inline": this.inline,
         "form-field--disabled": this.disabled,
-        "form-field--error": this.field.error !== null,
+        "form-field--error": this.isInError,
         "form-field--with-confirmation": this.withConfirmation,
       }
     },
@@ -176,7 +176,7 @@ export default {
         "form-field__input": true,
         "form-field__input--fullwidth": this.inputFullWidth,
         "form-field__input--disabled": this.disabled,
-        "form-field__input--error": this.field.error !== null,
+        "form-field__input--error": this.isInError,
       }
     },
     textareaClasses() {
@@ -184,8 +184,11 @@ export default {
         "form-field__textarea": true,
         "form-field__input--fullwidth": this.inputFullWidth,
         "form-field__input--disabled": this.disabled,
-        "form-field__input--error": this.field.error !== null,
+        "form-field__input--error": this.isInError,
       }
+    },
+    isInError() {
+      return this.field.error !== null && this.field.error !== undefined
     },
   },
   watch: {
@@ -202,7 +205,11 @@ export default {
       }
     },
     "field.value"(newVal) {
-      if (this.modelValue === undefined && this.value === undefined && newVal !== this.editValue) {
+      if (
+        this.modelValue === undefined &&
+        this.value === undefined &&
+        newVal !== this.editValue
+      ) {
         this.editValue = newVal
         this.originalValue = newVal
       }

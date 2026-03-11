@@ -1,6 +1,5 @@
 <template>
   <div class="media-explorer-menu-labels" v-if="visibleTags.length > 0">
-    <hr />
     <div class="title">
       {{ $t("navigation.tabs.tags") }}
     </div>
@@ -15,10 +14,7 @@
             :active="isSidebarActive(tag._id)"
             size="xs"
             @click="handleTagClick(tag)">
-            <ph-icon
-              v-if="isSidebarActive(tag._id)"
-              name="check"
-              size="14" />
+            <ph-icon v-if="isSidebarActive(tag._id)" name="check" size="14" />
           </ChipTag>
         </li>
       </ul>
@@ -91,7 +87,10 @@ export default {
   },
   methods: {
     handleTagClick(tag) {
-      this.$store.dispatch(`${this.storeScope}/toggleSidebarFilterTagId`, tag._id)
+      this.$store.dispatch(
+        `${this.storeScope}/toggleSidebarFilterTagId`,
+        tag._id,
+      )
     },
     isSidebarActive(tagId) {
       return this.sidebarFilterTagIds.includes(tagId)
@@ -110,7 +109,9 @@ export default {
       ) {
         this.$store.dispatch("tags/fetchSharedTags")
       } else {
-        this.$store.dispatch("tags/fetchTags", { folderId: this.effectiveFolderId })
+        this.$store.dispatch("tags/fetchTags", {
+          folderId: this.effectiveFolderId,
+        })
       }
     },
   },
@@ -183,6 +184,5 @@ export default {
       }
     }
   }
-
 }
 </style>

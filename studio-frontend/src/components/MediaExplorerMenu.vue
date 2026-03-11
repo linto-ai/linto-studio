@@ -71,6 +71,8 @@
           @select="handleSharedClick" />
       </ul>
     </div>
+
+    <MediaExplorerMenuLabels />
   </div>
 </template>
 
@@ -82,11 +84,17 @@ import { orgDisplayName } from "@/tools/orgDisplayName"
 import FolderTree from "@/components/FolderTree.vue"
 import FolderTreeNode from "@/components/FolderTreeNode.vue"
 import ModalSwitchOrg from "@/components/ModalSwitchOrg.vue"
+import MediaExplorerMenuLabels from "@/components/MediaExplorerMenuLabels.vue"
 
 export default {
   name: "MediaExplorerMenu",
   mixins: [mediaScopeMixin, orgaRoleMixin],
-  components: { FolderTree, FolderTreeNode, ModalSwitchOrg },
+  components: {
+    FolderTree,
+    FolderTreeNode,
+    ModalSwitchOrg,
+    MediaExplorerMenuLabels,
+  },
   data() {
     return {
       hasSessions: false,

@@ -1,24 +1,40 @@
 <template>
-  <div class="flex col">
-    <!-- <h2>{{ $t("conversation_creation.url_tab.main_info_title") }}</h2> -->
-    <!-- <FormInput :field="nameFields" v-model="nameFields.value" /> -->
-    <FormInput
-      :field="linkFields"
-      v-model="linkFields.value"
-      inputFullWidth
-      class="flex1" />
-    <Button
-      variant="secondary"
-      :label="$t('conversation_creation.url_tab.get_button')"
-      @click="add_link" />
+  <div class="flex col gap-small">
+    <NotificationBanner v-if="isYoutubeUrl" variant="warning">
+      {{ $t("conversation_creation.url_tab.youtube_warning") }}
+    </NotificationBanner>
+
+    <div class="flex gap-small align-bottom">
+      <FormInput
+        style="margin-bottom: 0"
+        :field="linkFields"
+        v-model="linkFields.value"
+        inputFullWidth
+        class="flex1" />
+      <Button
+        style="align-self: flex-end"
+        variant="secondary"
+        :label="$t('conversation_creation.url_tab.get_button')"
+        :disabled="disabled || isYoutubeUrl"
+        @click="add_link" />
+    </div>
+
+    <p class="url-helper-text">
+      {{ $t("conversation_creation.url_tab.supported_platforms") }}
+      <a
+        href="https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md"
+        target="_blank"
+        rel="noopener noreferrer">
+        {{ $t("conversation_creation.url_tab.supported_platforms_link") }} ↗
+      </a>
+    </p>
   </div>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
-import { bus } from "@/main.js"
 import FormInput from "@/components/molecules/FormInput.vue"
+import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 import EMPTY_FIELD from "@/const/emptyField"
-import { testFieldEmpty } from "@/tools/fields/testEmpty.js"
+import { testUrl } from "@/tools/fields/testUrl.js"
 import { formsMixin } from "@/mixins/forms.js"
 
 export default {
@@ -36,14 +52,17 @@ export default {
         ...EMPTY_FIELD,
         label: this.$i18n.t("conversation_creation.url_tab.url_label"),
         value: "",
-        placeholder: "https://www.youtube.com/watch?v=YBpfClfbf0Y",
-        testField: testFieldEmpty,
+        placeholder: "https://www.arte.tv/fr/videos/example",
+        testField: testUrl,
       },
       fields: ["linkFields"],
     }
   },
-  computed: {},
-  mounted() {},
+  computed: {
+    isYoutubeUrl() {
+      return /(?:youtube\.com|youtu\.be)/i.test(this.linkFields.value)
+    },
+  },
   methods: {
     add_link(e) {
       e.preventDefault()
@@ -53,6 +72,13 @@ export default {
       }
     },
   },
-  components: { Fragment, FormInput },
+  components: { FormInput, NotificationBanner },
 }
 </script>
+<style scoped>
+.url-helper-text {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  margin: 0;
+}
+</style>
