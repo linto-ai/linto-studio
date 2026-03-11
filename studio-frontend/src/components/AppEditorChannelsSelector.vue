@@ -120,7 +120,7 @@ export default {
   methods: {
     isChannelProcessing(channel) {
       const state = channel.jobs?.transcription?.state
-      return state && state !== "done" && state !== "error"
+      return !!state && state !== "done" && state !== "error"
     },
   },
   components: { Fragment, CustomSelect },

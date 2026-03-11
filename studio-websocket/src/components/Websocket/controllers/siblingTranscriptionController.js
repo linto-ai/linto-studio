@@ -4,21 +4,20 @@ import { apiGetJobs, apiGetConversationChildren } from "../request/index.js"
 const debug = Debug("Websocket:debug:siblingTranscriptionController")
 
 // Track active polling loops to prevent duplicates across sockets
-const activePolls = new Set()
+const activePolls = new Map()
 
 export default async function siblingTranscriptionController(
   canonicalId,
   currentConversationId,
   userToken,
   io,
-  socket,
 ) {
   try {
     const children = await apiGetConversationChildren(canonicalId, userToken)
     const siblings = children.filter((c) => c._id !== currentConversationId)
     const processingSiblings = siblings.filter((c) => {
       const state = c.jobs?.transcription?.state
-      return state && state !== "done" && state !== "error"
+      return !!state && state !== "done" && state !== "error"
     })
 
     if (processingSiblings.length === 0) {
@@ -33,7 +32,7 @@ export default async function siblingTranscriptionController(
         debug("Polling already active for sibling %s, skipping", sibling._id)
         continue
       }
-      activePolls.add(pollKey)
+      activePolls.set(pollKey, null)
       pollSiblingJob(sibling._id, canonicalId, pollKey, userToken, io)
     }
   } catch (error) {
@@ -44,17 +43,22 @@ export default async function siblingTranscriptionController(
 async function pollSiblingJob(siblingId, canonicalId, pollKey, userToken, io) {
   try {
     const jobs = await apiGetJobs(siblingId, userToken)
-    const state = jobs?.transcription?.state
+    const state = jobs?.transcription?.state || "pending"
+    const lastState = activePolls.get(pollKey)
+    const canonicalRoom = `canonical/${canonicalId}`
 
     debug("Sibling %s transcription state: %s", siblingId, state)
 
-    const canonicalRoom = `canonical/${canonicalId}`
-    io.to(canonicalRoom).emit("sibling_job_transcription_update", {
-      conversationId: siblingId,
-      state: state || "pending",
-    })
+    // Only emit when state has changed
+    if (state !== lastState) {
+      activePolls.set(pollKey, state)
+      io.to(canonicalRoom).emit("sibling_job_transcription_update", {
+        conversationId: siblingId,
+        state,
+      })
+    }
 
-    if (state && (state === "done" || state === "error")) {
+    if (state === "done" || state === "error") {
       debug("Sibling %s transcription finished: %s", siblingId, state)
       activePolls.delete(pollKey)
       return

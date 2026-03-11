@@ -282,7 +282,6 @@ export default class Websocket extends Component {
         conversationId,
         userToken,
         this.app.io,
-        socket,
       )
     }
 

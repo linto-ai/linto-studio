@@ -30,7 +30,6 @@ export default async function jobTranscriptionController(
         jobTranscriptionController(conversation, conversationId, userToken, io),
       3000,
     )
-    const jobData = conversation.jobs["transcription"].toJSON()
-    io.to(room).emit("job_transcription_update", jobData)
+    io.to(room).emit("job_transcription_update", job.toJSON())
   }
 }
