@@ -17,7 +17,7 @@
     "watch_time_label": "Temps de visionnage",
     "connection_count_label": "Nombre de connexions",
     "tabs": {
-      "sessions_kpi": "KPI des sessions",
+      "sessions_kpi": "Statistiques des sessions",
       "sessions": "Détail des sessions",
       "ressources": "Ressources",
       "tokens": "Accès aux clés d'API",

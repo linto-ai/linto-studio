@@ -16,7 +16,7 @@
     "watch_time_label": "Watch time",
     "connection_count_label": "Connection count",
     "tabs": {
-      "sessions_kpi": "Sessions KPI",
+      "sessions_kpi": "Sessions statistics",
       "sessions": "Sessions detailed",
       "ressources": "Resources",
       "tokens": "Api keys access",

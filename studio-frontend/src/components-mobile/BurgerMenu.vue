@@ -13,7 +13,7 @@
 
       <BackofficeSidebar v-if="backoffice" />
 
-      <div class="flex1 flex col" v-if="$slots.default">
+      <div class="flex1 flex col overflow-vertical-auto" v-if="$slots.default">
         <slot></slot>
       </div>
     </div>

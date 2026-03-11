@@ -124,7 +124,7 @@ export default {
         {
           name: "sessions_kpi",
           label: this.$t("activity_list.tabs.sessions_kpi"),
-          icon: "chart-pie",
+          icon: "broadcast",
         },
       ],
       currentTab: "ressources",
