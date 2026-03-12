@@ -9,7 +9,7 @@ const orgaUtility = require(
   `${process.cwd()}/components/WebServer/controllers/organization/utility`,
 )
 
-const { deleteAudioFileIfOrphaned } = require(
+const { deleteAudioFileIfOrphaned, deleteDocumentFile } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 const { updateChildConversation } = require(
@@ -263,6 +263,10 @@ async function deleteConversationFromOrganization(req, res, next) {
     for (let conv of conversations.list) {
       await updateChildConversation(conv, "DELETE")
 
+      const fullConv = await model.conversations.getById(conv._id, [
+        "metadata.documents",
+      ])
+
       const result = await model.conversations.delete(conv._id)
       if (result.deletedCount !== 1)
         throw new ConversationError(
@@ -272,6 +276,11 @@ async function deleteConversationFromOrganization(req, res, next) {
 
       if (conv?.metadata?.audio) {
         await deleteAudioFileIfOrphaned(conv.metadata.audio.filepath)
+      }
+
+      const documents = fullConv[0]?.metadata?.documents || []
+      for (const doc of documents) {
+        deleteDocumentFile(doc.filepath)
       }
 
       await model.conversationSubtitles.deleteAllFromConv(conv._id.toString())

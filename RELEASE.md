@@ -1,3 +1,17 @@
+# 1.8.3
+
+_2026_03_12_
+
+- Document management
+  - Attach documents to conversations (PDF, DOCX, PPTX, XLS, ODS, ODT, ODP, TXT, CSV, RTF)
+  - Upload, download, and delete documents via API
+  - Document cleanup on conversation and bulk organization deletion
+  - MongoDB migration 1.8.3: adds `metadata.documents` array to all conversations
+- API documentation
+  - Document schema with status enum (stored, processing, indexed, error)
+- Configuration
+  - `VOLUME_DOCUMENT_PATH` environment variable for document storage path
+
 # 1.8.2
 
 _2026_03_11_

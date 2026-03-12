@@ -298,6 +298,48 @@ class GenerationNotFound extends Error {
   }
 }
 
+/******************************
+ **********Document************
+ ******************************/
+
+const ExceptionDocumentType = ExceptionType + "Document"
+
+class DocumentIdRequire extends Error {
+  constructor(message, err) {
+    super()
+    this.name = "DocumentIdRequire"
+    this.type = ExceptionDocumentType
+    this.status = 403
+    if (message) this.message = message
+    else this.message = "Document id param is required"
+    if (err) this.err = err
+  }
+}
+
+class DocumentNotFound extends Error {
+  constructor(message, err) {
+    super()
+    this.name = "DocumentNotFound"
+    this.type = ExceptionDocumentType
+    this.status = 404
+    if (message) this.message = message
+    else this.message = "Requested document not found"
+    if (err) this.err = err
+  }
+}
+
+class DocumentUnsupportedMimeType extends Error {
+  constructor(message, err) {
+    super()
+    this.name = "DocumentUnsupportedMimeType"
+    this.type = ExceptionDocumentType
+    this.status = 415
+    if (message) this.message = message
+    else this.message = "Unsupported document file type"
+    if (err) this.err = err
+  }
+}
+
 module.exports = {
   ConversationNoFileUploaded,
   ConversationURLExtractorError,
@@ -322,4 +364,7 @@ module.exports = {
   ExportJobNotFound,
   ExportGatewayError,
   GenerationNotFound,
+  DocumentIdRequire,
+  DocumentNotFound,
+  DocumentUnsupportedMimeType,
 }

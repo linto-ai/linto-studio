@@ -526,7 +526,22 @@
       "error_notif": "Une erreur est survenue, les informations du canal n'ont pas été mises à jour.",
       "done_notif": "Les informations du canal ont été mises à jour.",
       "only_one": "Le média a un seul canal de transcription"
+    },
+    "documents": {
+      "title": "Documents"
     }
+  },
+  "documents": {
+    "title": "Documents",
+    "empty": "Aucun document rattaché",
+    "drop_hint": "Déposez vos documents ici ou parcourir",
+    "uploading": "Envoi en cours...",
+    "upload_success": "Documents envoyés avec succès",
+    "upload_error": "Une erreur est survenue lors de l'envoi des documents",
+    "download": "Télécharger",
+    "delete": "Supprimer",
+    "delete_success": "Document supprimé",
+    "delete_error": "Une erreur est survenue lors de la suppression du document"
   },
   "createaccount": {
     "create_account_button": "Créer mon compte",

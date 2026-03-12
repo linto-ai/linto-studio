@@ -9,7 +9,7 @@ const userUtility = require(
   `${process.cwd()}/components/WebServer/controllers/user/utility`,
 )
 
-const { deleteAudioFileIfOrphaned } = require(
+const { deleteAudioFileIfOrphaned, deleteDocumentFile } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 const { updateChildConversation } = require(
@@ -46,6 +46,11 @@ async function deleteConversation(req, res, next) {
 
     if (conversation[0]?.metadata?.audio) {
       await deleteAudioFileIfOrphaned(conversation[0].metadata.audio.filepath)
+    }
+    if (conversation[0]?.metadata?.documents?.length > 0) {
+      for (const doc of conversation[0].metadata.documents) {
+        deleteDocumentFile(doc.filepath)
+      }
     }
     // delete also all subtitle related to that conversation
     await model.conversationSubtitles.deleteAllFromConv(
@@ -271,6 +276,10 @@ async function duplicateConversation(req, res, next) {
         steps: {},
       },
       keyword: {},
+    }
+
+    if (copy.metadata) {
+      copy.metadata.documents = []
     }
 
     const result = await model.conversations.create(copy)

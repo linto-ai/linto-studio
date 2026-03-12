@@ -93,6 +93,16 @@
           </div>
         </div>
 
+        <!-- Documents -->
+        <div class="media-section" v-if="reactiveSelectedMedia?._id">
+          <h4 class="section-title">
+            {{ $t("documents.title") }}
+          </h4>
+          <ConversationDocuments
+            :conversationId="reactiveSelectedMedia._id"
+            :canEdit="!readOnly" />
+        </div>
+
         <!-- Media folder -->
         <div class="media-section" v-if="getCurrentScope === 'organization'">
           <h4 class="section-title">{{ $t("folders.folder") }}</h4>
@@ -195,6 +205,7 @@ import FormInput from "@/components/molecules/FormInput.vue"
 import EMPTY_FIELD from "@/const/emptyField"
 import ConversationShareMultiple from "./ConversationShareMultiple.vue"
 import FolderSelector from "./FolderSelector.vue"
+import ConversationDocuments from "./ConversationDocuments.vue"
 import { mapGetters } from "vuex"
 
 export default {
@@ -209,6 +220,7 @@ export default {
     FormInput,
     ConversationShareMultiple,
     FolderSelector,
+    ConversationDocuments,
   },
   props: {
     selectedMedia: {

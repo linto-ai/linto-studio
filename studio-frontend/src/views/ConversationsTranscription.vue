@@ -60,6 +60,13 @@
             @previousResult="previousResult"
             @nextResult="nextResult" />
         </div>
+        <div class="form-field flex col medium-margin" v-if="conversation">
+          <label>{{ $t("documents.title") }}</label>
+          <ConversationDocuments
+            :conversationId="conversation._id"
+            :canEdit="canEdit" />
+        </div>
+
         <HighlightsList
           v-if="status === 'done' && experimental_highlight"
           :conversation="conversation"
@@ -171,6 +178,7 @@ import SearchResultPaginator from "@/components/SearchResultPaginator.vue"
 import AppEditorChannelsSelector from "@/components/AppEditorChannelsSelector.vue"
 import AppEditorTranslationSelector from "../components/AppEditorTranslationSelector.vue"
 import PhIcon from "@/components/atoms/PhIcon.vue"
+import ConversationDocuments from "@/components/ConversationDocuments.vue"
 
 export default {
   mixins: [conversationMixin],
@@ -474,6 +482,7 @@ export default {
     AppEditorChannelsSelector,
     AppEditorTranslationSelector,
     PhIcon,
+    ConversationDocuments,
   },
 }
 </script>

@@ -69,6 +69,7 @@ class ConvoModel extends MongoModel {
         speakers: 0,
         keywords: 0,
         highlights: 0,
+        "metadata.documents": 0,
       }
 
       return await this.mongoRequest(query, projection)
@@ -156,6 +157,7 @@ class ConvoModel extends MongoModel {
         keywords: 0,
         highlights: 0,
         "jobs.transcription.job_logs": 0,
+        "metadata.documents": 0,
       }
 
       const query = {
@@ -263,6 +265,7 @@ class ConvoModel extends MongoModel {
           speakers: 0,
           keywords: 0,
           highlights: 0,
+          "metadata.documents": 0,
         }
       }
       return await this.mongoRequest(query, projection)
@@ -310,6 +313,7 @@ class ConvoModel extends MongoModel {
           speakers: 0,
           keywords: 0,
           highlights: 0,
+          "metadata.documents": 0,
         }
       }
       return await this.mongoRequest(query, projection)
@@ -486,6 +490,7 @@ class ConvoModel extends MongoModel {
         page: 0,
         text: 0,
         "jobs.transcription.job_logs": 0,
+        "metadata.documents": 0,
       }
 
       let query = {
@@ -683,6 +688,7 @@ class ConvoModel extends MongoModel {
         page: 0,
         text: 0,
         "jobs.transcription.job_logs": 0,
+        "metadata.documents": 0,
       }
 
       return await this.mongoAggregatePaginate(query, projection, filter)
@@ -698,6 +704,7 @@ class ConvoModel extends MongoModel {
         page: 0,
         text: 0,
         "jobs.transcription.job_logs": 0,
+        "metadata.documents": 0,
       }
 
       convIds = convIds.map((id) => {
@@ -812,6 +819,7 @@ class ConvoModel extends MongoModel {
         page: 0,
         text: 0,
         "jobs.transcription.job_logs": 0,
+        "metadata.documents": 0,
       }
 
       return await this.mongoRequest(query, projectionAcc)
@@ -915,6 +923,34 @@ class ConvoModel extends MongoModel {
     } catch (error) {
       console.error(error)
       return 0
+    }
+  }
+
+  async addDocuments(conversationId, documents) {
+    try {
+      const query = {
+        _id: this.getObjectId(conversationId),
+      }
+      return await this.mongoUpdateOne(query, "$push", {
+        "metadata.documents": { $each: documents },
+      })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async removeDocument(conversationId, documentId) {
+    try {
+      const query = {
+        _id: this.getObjectId(conversationId),
+      }
+      return await this.mongoUpdateOne(query, "$pull", {
+        "metadata.documents": { documentId: documentId },
+      })
+    } catch (error) {
+      console.error(error)
+      return error
     }
   }
 

@@ -525,7 +525,22 @@
       "error_notif": "An error has occurred, the channel information has not been updated.",
       "done_notif": "The channel information has been updated.",
       "only_one": "Media has only one transcription channel"
+    },
+    "documents": {
+      "title": "Documents"
     }
+  },
+  "documents": {
+    "title": "Documents",
+    "empty": "No documents attached",
+    "drop_hint": "Drop documents here or browse",
+    "uploading": "Uploading...",
+    "upload_success": "Documents uploaded successfully",
+    "upload_error": "An error occurred while uploading documents",
+    "download": "Download",
+    "delete": "Delete",
+    "delete_success": "Document deleted",
+    "delete_error": "An error occurred while deleting the document"
   },
   "createaccount": {
     "create_account_button": "Create an account",
