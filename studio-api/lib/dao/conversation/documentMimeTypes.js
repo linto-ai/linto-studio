@@ -12,9 +12,11 @@ const DOCUMENT_MIME_TYPES = Object.freeze({
   ODT: "application/vnd.oasis.opendocument.text",
   ODP: "application/vnd.oasis.opendocument.presentation",
   ODS: "application/vnd.oasis.opendocument.spreadsheet",
-
-  values: () => Object.values(DOCUMENT_MIME_TYPES).filter((v) => typeof v === "string"),
-  isAllowed: (mimetype) => DOCUMENT_MIME_TYPES.values().includes(mimetype),
 })
+
+const ALLOWED_SET = new Set(Object.values(DOCUMENT_MIME_TYPES))
+
+DOCUMENT_MIME_TYPES.values = () => [...ALLOWED_SET]
+DOCUMENT_MIME_TYPES.isAllowed = (mimetype) => ALLOWED_SET.has(mimetype)
 
 module.exports = DOCUMENT_MIME_TYPES

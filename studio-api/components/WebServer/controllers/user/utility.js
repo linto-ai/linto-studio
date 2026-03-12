@@ -8,7 +8,7 @@ const CONVERSATION_RIGHTS = require(
   `${process.cwd()}/lib/dao/conversation/rights`,
 )
 
-const { deleteAudioFileIfOrphaned } = require(
+const { deleteAudioFileIfOrphaned, deleteDocumentFile } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 
@@ -134,6 +134,11 @@ async function removeUserFromPlatform(userId) {
                 await deleteAudioFileIfOrphaned(
                   conversation.metadata.audio.filepath,
                 )
+              }
+
+              const documents = conversation?.metadata?.documents || []
+              for (const doc of documents) {
+                deleteDocumentFile(doc.filepath)
               }
 
               const resultConvo = await model.conversations.delete(

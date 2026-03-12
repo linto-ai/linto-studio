@@ -7,6 +7,7 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const {
   storeFile,
   deleteDocumentFile,
+  getStorageFolder,
 } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 
 const {
@@ -123,7 +124,7 @@ async function downloadDocument(req, res, next) {
     )
     if (!document) throw new DocumentNotFound()
 
-    const filePath = `${process.cwd()}/${process.env.VOLUME_FOLDER}/${document.filepath}`
+    const filePath = `${process.cwd()}/${getStorageFolder()}/${document.filepath}`
 
     res.setHeader("Content-Type", document.mimetype)
     res.setHeader(
