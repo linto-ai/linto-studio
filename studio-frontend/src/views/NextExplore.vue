@@ -32,8 +32,6 @@ export default {
   props: {
     userInfo: { type: Object, required: true },
     currentOrganizationScope: { type: String, required: true },
-    favorites: { type: Boolean, required: false, default: false },
-    shared: { type: Boolean, required: false, default: false },
     processing: { type: Boolean, default: false },
   },
   data() {
@@ -82,22 +80,11 @@ export default {
   },
   methods: {
     async init() {
-      try {
-        if (this.getCurrentScope === "organization") {
-          this.$apiEventWS.subscribeMediaUpdate(this.currentOrganizationScope)
-          this.$apiEventWS.subscribeFolderUpdate(this.currentOrganizationScope)
-          this.$store.dispatch(
-            "organizations/setCurrentFilterStatus",
-            this.processing ? "processing" : "done",
-          )
-        }
-        await this.$store.dispatch(`${this.storeScope}/load`, {
-          folderId: this.effectiveFolderId,
-        })
-      } finally {
-        this.loading = false
-        this.$store.dispatch("system/setIsLoading", false)
+      if (this.getCurrentScope === "organization") {
+        this.$apiEventWS.subscribeMediaUpdate(this.currentOrganizationScope)
+        this.$apiEventWS.subscribeFolderUpdate(this.currentOrganizationScope)
       }
+      await this.reloadMedias()
     },
     onConversationFolderChanged({ fromFolderId, toFolderId }) {
       const current = this.effectiveFolderId
@@ -107,18 +94,19 @@ export default {
         current === fromFolderId ||
         current === toFolderId
       if (!affected) return
-      // Debounce: batch rapid events (e.g. moving N conversations) into one reload
       clearTimeout(this._folderChangedTimer)
       this._folderChangedTimer = setTimeout(() => {
-        this.$store.dispatch(`${this.storeScope}/load`, {
-          folderId: this.effectiveFolderId,
-        })
+        this.reloadMedias()
       }, 300)
     },
     async reloadMedias() {
       this._abortCtrl?.abort()
       const ctrl = (this._abortCtrl = new AbortController())
       this.loading = true
+      this.$store.dispatch(
+        "organizations/setCurrentFilterStatus",
+        this.processing ? "processing" : "done",
+      )
       try {
         await this.$store.dispatch(`${this.storeScope}/load`, {
           folderId: this.effectiveFolderId,
@@ -150,10 +138,6 @@ export default {
         this.$apiEventWS.unSubscribeFolderUpdate()
         this.init()
       }
-    },
-    processing() {
-      this.loading = true
-      this.init()
     },
     $route() {
       this.$store.dispatch(`${this.storeScope}/clearSidebarFilterTagIds`)
