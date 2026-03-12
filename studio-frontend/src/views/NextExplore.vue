@@ -32,8 +32,6 @@ export default {
   props: {
     userInfo: { type: Object, required: true },
     currentOrganizationScope: { type: String, required: true },
-    favorites: { type: Boolean, required: false, default: false },
-    shared: { type: Boolean, required: false, default: false },
     processing: { type: Boolean, default: false },
   },
   data() {
@@ -74,6 +72,7 @@ export default {
     bus.$on("conversation_folder_changed", this.onConversationFolderChanged)
   },
   beforeDestroy() {
+    this._abortCtrl?.abort()
     this.$apiEventWS.unSubscribeMediaUdate()
     this.$apiEventWS.unSubscribeFolderUpdate()
     bus.$off("conversation_folder_changed", this.onConversationFolderChanged)
@@ -81,22 +80,11 @@ export default {
   },
   methods: {
     async init() {
-      try {
-        if (this.getCurrentScope === "organization") {
-          this.$apiEventWS.subscribeMediaUpdate(this.currentOrganizationScope)
-          this.$apiEventWS.subscribeFolderUpdate(this.currentOrganizationScope)
-          this.$store.dispatch(
-            "organizations/setCurrentFilterStatus",
-            this.processing ? "processing" : "done"
-          )
-        }
-        await this.$store.dispatch(`${this.storeScope}/load`, {
-          folderId: this.effectiveFolderId,
-        })
-      } finally {
-        this.loading = false
-        this.$store.dispatch("system/setIsLoading", false)
+      if (this.getCurrentScope === "organization") {
+        this.$apiEventWS.subscribeMediaUpdate(this.currentOrganizationScope)
+        this.$apiEventWS.subscribeFolderUpdate(this.currentOrganizationScope)
       }
+      await this.reloadMedias()
     },
     onConversationFolderChanged({ fromFolderId, toFolderId }) {
       const current = this.effectiveFolderId
@@ -106,13 +94,33 @@ export default {
         current === fromFolderId ||
         current === toFolderId
       if (!affected) return
-      // Debounce: batch rapid events (e.g. moving N conversations) into one reload
       clearTimeout(this._folderChangedTimer)
       this._folderChangedTimer = setTimeout(() => {
-        this.$store.dispatch(`${this.storeScope}/load`, {
-          folderId: this.effectiveFolderId,
-        })
+        this.reloadMedias()
       }, 300)
+    },
+    async reloadMedias() {
+      this._abortCtrl?.abort()
+      const ctrl = (this._abortCtrl = new AbortController())
+      this.loading = true
+      this.$store.dispatch(
+        "organizations/setCurrentFilterStatus",
+        this.processing ? "processing" : "done",
+      )
+      try {
+        await this.$store.dispatch(`${this.storeScope}/load`, {
+          folderId: this.effectiveFolderId,
+          signal: ctrl.signal,
+        })
+      } catch (e) {
+        if (ctrl.signal.aborted) return
+        throw e
+      } finally {
+        if (!ctrl.signal.aborted) {
+          this.loading = false
+          this.$store.dispatch("system/setIsLoading", false)
+        }
+      }
     },
     async handleLoadMore() {
       this.loadingNextPage = true
@@ -131,76 +139,15 @@ export default {
         this.init()
       }
     },
-    processing() {
-      this.loading = true
-      this.init()
-    },
-    async "$route.params.folderId"() {
-      this.loading = true
-      this.$store.dispatch(`${this.storeScope}/clearSelectedMedias`)
+    $route() {
       this.$store.dispatch(`${this.storeScope}/clearSidebarFilterTagIds`)
-      try {
-        await this.$store.dispatch(`${this.storeScope}/load`, { folderId: this.effectiveFolderId })
-      } finally {
-        this.loading = false
-        this.$store.dispatch("system/setIsLoading", false)
-      }
+      this.reloadMedias()
     },
-    async search() {
-      if (this.pageIsLoading) return
-      this.loading = true
-      try {
-        await this.$store.dispatch(`${this.storeScope}/load`, {
-          folderId: this.effectiveFolderId,
-        })
-      } finally {
-        this.loading = false
-      }
-    },
-    async selectedTagsIds() {
-      if (this.pageIsLoading) return
-      this.loading = true
-      try {
-        await this.$store.dispatch(`${this.storeScope}/load`, {
-          folderId: this.effectiveFolderId,
-        })
-      } finally {
-        this.loading = false
-      }
-    },
-    async sidebarFilterTagIds() {
-      if (this.pageIsLoading) return
-      this.loading = true
-      try {
-        await this.$store.dispatch(`${this.storeScope}/load`, {
-          folderId: this.effectiveFolderId,
-        })
-      } finally {
-        this.loading = false
-      }
-    },
-    async sortField() {
-      if (this.pageIsLoading) return
-      this.loading = true
-      try {
-        await this.$store.dispatch(`${this.storeScope}/load`, {
-          folderId: this.effectiveFolderId,
-        })
-      } finally {
-        this.loading = false
-      }
-    },
-    async sortOrder() {
-      if (this.pageIsLoading) return
-      this.loading = true
-      try {
-        await this.$store.dispatch(`${this.storeScope}/load`, {
-          folderId: this.effectiveFolderId,
-        })
-      } finally {
-        this.loading = false
-      }
-    },
+    search: "reloadMedias",
+    selectedTagsIds: "reloadMedias",
+    sidebarFilterTagIds: "reloadMedias",
+    sortField: "reloadMedias",
+    sortOrder: "reloadMedias",
     "$apiEventWS.state.connexionRestored"() {
       if (this.getCurrentScope === "organization") {
         this.$apiEventWS.subscribeMediaUpdate(this.currentOrganizationScope)

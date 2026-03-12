@@ -24,13 +24,12 @@
           block
           variant="primary"
           class="login-page__form__submit"></Button>
-        <div class="login-page__form__create-account">
+        <div class="login-page__form__create-account" v-if="enable_inscription">
           <span>{{ $t("login.not_registered") }}</span>
           <router-link
             to="/create-account"
             id="create-account-link"
-            class="underline"
-            v-if="enable_inscription">
+            class="underline">
             {{ $t("login.create_account_button") }}
           </router-link>
         </div>

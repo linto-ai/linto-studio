@@ -116,10 +116,14 @@ const authGuards = {
   },
 
   async checkQuickSession(to) {
-    await store.dispatch("quickSession/loadQuickSession")
-    const quickSession = store.getters["quickSession/quickSession"]
-    if (!quickSession && to.name === "quick session") {
-      return { redirect: true, nextRoute: { name: "not_found" } }
+    if (to.name === "quick session") {
+      await store.dispatch("quickSession/loadQuickSession")
+      const quickSession = store.getters["quickSession/quickSession"]
+      if (!quickSession) {
+        return { redirect: true, nextRoute: { name: "not_found" } }
+      }
+    } else {
+      store.dispatch("quickSession/loadQuickSession").catch(() => {})
     }
     return { redirect: false }
   },

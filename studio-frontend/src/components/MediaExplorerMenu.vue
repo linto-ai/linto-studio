@@ -184,12 +184,6 @@ export default {
     },
     handleInboxClick() {
       this.clearSearch()
-      if (!this.isMediaRoute) {
-        this.$router.push({
-          name: "explore",
-          params: { organizationId: this.getCurrentOrganizationScope },
-        })
-      }
       this.selectFolder(undefined)
     },
     handleSessionsClick() {

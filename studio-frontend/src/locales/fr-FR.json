@@ -92,7 +92,8 @@
     "token_renew_error": "Une erreur est survenue lors du renouvellement de la clé"
   },
   "app_editor_channels_selector": {
-    "label": "Choisir un canal"
+    "label": "Choisir un canal",
+    "transcription_in_progress": "Transcription en cours"
   },
   "app_editor_translations_selector": {
     "label": "Langue du verbatim",

@@ -63,10 +63,13 @@ export const mediaScopeMixin = {
     async duplicateConversation(mediaId) {
       try {
         const result = await apiDuplicateConversation(mediaId)
-        if (result.status === "success") {
-          await this.$store.dispatch(`${this.storeScope}/load`, {
-            folderId: this.effectiveFolderId ?? this.$route.params.folderId,
-          })
+        if (result.status === "success" && result.data?.conversationId) {
+          await Promise.all([
+            this.$store.dispatch(`${this.storeScope}/prependMedias`, [
+              result.data.conversationId,
+            ]),
+            this.$store.dispatch(`${this.storeScope}/increaseCount`),
+          ])
           return true
         }
         return false
