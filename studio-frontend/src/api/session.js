@@ -3,6 +3,27 @@ import { sendRequest } from "../tools/sendRequest"
 import { getEnv } from "@/tools/getEnv"
 
 const BASE_API = getEnv("VUE_APP_CONVO_API")
+const SESSION_PAGE_SIZE = 100
+
+async function fetchAllSessionPages(url, method, baseParams, notif) {
+  const params = { ...baseParams, limit: SESSION_PAGE_SIZE, offset: 0 }
+  const firstPage = await sendRequest(url, { method }, params, notif)
+  const totalItems = firstPage?.data?.totalItems ?? 0
+  const sessions = firstPage?.data?.sessions ?? []
+
+  if (totalItems > SESSION_PAGE_SIZE) {
+    const remaining = []
+    for (let offset = SESSION_PAGE_SIZE; offset < totalItems; offset += SESSION_PAGE_SIZE) {
+      remaining.push(sendRequest(url, { method }, { ...params, offset }, notif))
+    }
+    const pages = await Promise.all(remaining)
+    for (const page of pages) {
+      sessions.push(...(page?.data?.sessions ?? []))
+    }
+  }
+
+  return { sessions, totalItems }
+}
 
 // date = {sessionId, password, name}
 export async function apiAddSessionData(organizationScope, data, notif) {
@@ -100,7 +121,7 @@ export async function apiGetSessionTemplates(organizationScope, notif) {
   const getSessionTemplates = await sendRequest(
     `${BASE_API}/organizations/${organizationScope}/templates`,
     { method: "get" },
-    { limit: 100 },
+    { limit: 1000 },
     notif,
   )
 
@@ -209,31 +230,28 @@ export async function apiSearchSessionByName(
 }
 
 export async function apiGetActiveSessions(organizationScope, notif) {
-  const getStartedSessions = await sendRequest(
-    `${BASE_API}/organizations/${organizationScope}/sessions?statusList=active&organizationId=${organizationScope}`,
-    { method: "get" },
+  const url = `${BASE_API}/organizations/${organizationScope}/sessions?statusList=active&organizationId=${organizationScope}`
+  const result = await fetchAllSessionPages(
+    url,
+    "get",
     { statusList: "active, ready" },
     notif,
   )
 
-  if (getStartedSessions.status === "error") {
-    throw new Error(getStartedSessions.message)
-  }
-  return getStartedSessions?.data ?? { sessions: [], totalItems: 0 }
+  return result
 }
 
 // started is not a session api status
 export async function apiGetStartedSessions(organizationScope, notif) {
-  const allSessionsReq = await sendRequest(
-    `${BASE_API}/organizations/${organizationScope}/sessions`,
-    { method: "get" },
-    { limit: 100, organizationId: organizationScope },
+  const url = `${BASE_API}/organizations/${organizationScope}/sessions`
+  const allSessions = await fetchAllSessionPages(
+    url,
+    "get",
+    { organizationId: organizationScope },
     notif,
   )
 
-  const allSessionsList = allSessionsReq?.data?.sessions ?? []
-
-  const allSessionsFiltered = allSessionsList.filter(isSessionStarted)
+  const allSessionsFiltered = allSessions.sessions.filter(isSessionStarted)
 
   return {
     sessions: allSessionsFiltered,
@@ -266,17 +284,8 @@ export async function apiCountActiveSessions(organizationScope, notif) {
 }
 
 export async function apiGetFutureSessions(organizationScope, notif) {
-  const getStartedSessions = await sendRequest(
-    `${BASE_API}/organizations/${organizationScope}/sessions?organizationId=${organizationScope}`,
-    { method: "get" },
-    {},
-    notif,
-  )
-
-  if (getStartedSessions.status === "error") {
-    throw new Error(getStartedSessions.message)
-  }
-  return getStartedSessions?.data ?? { sessions: [], totalItems: 0 }
+  const url = `${BASE_API}/organizations/${organizationScope}/sessions?organizationId=${organizationScope}`
+  return await fetchAllSessionPages(url, "get", {}, notif)
 }
 
 export async function apiCountFutureSessions(organizationScope, notif) {
@@ -307,27 +316,17 @@ export async function apiGetSessionsBetweenDates(
   end_date,
   notif,
 ) {
-  const allSessionsReq = await sendRequest(
-    `${BASE_API}/organizations/${organizationScope}/sessions`,
-    { method: "get" },
+  const url = `${BASE_API}/organizations/${organizationScope}/sessions`
+  return await fetchAllSessionPages(
+    url,
+    "get",
     {
-      limit: 100,
       organizationId: organizationScope,
       "scheduleOn[before]": end_date,
       "scheduleOn[after]": start_date,
     },
     notif,
   )
-
-  // const allSessionsList = allSessionsReq?.data?.sessions ?? []
-
-  // const allSessionsFiltered = allSessionsList.filter(
-  //   (session) =>
-  //     new Date(session.startTime) >= new Date(start_date) &&
-  //     new Date(session.startTime) <= new Date(end_date),
-  // )
-
-  return allSessionsReq?.data ?? { sessions: [], totalItems: 0 }
 }
 
 export async function apiGetPublicSession(sessionId, password, notif) {
