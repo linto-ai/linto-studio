@@ -22,6 +22,7 @@ export async function apiGetGenericConversationsList(
     folderId = undefined,
   } = {},
   notif = null,
+  signal,
 ) {
   const params = {
     tags: tags.toString(),
@@ -43,10 +44,13 @@ export async function apiGetGenericConversationsList(
     `${BASE_API}/${scope}`,
     {
       method: "get",
+      signal,
     },
     params,
     notif,
   )
+
+  if (!getConversations) return null // aborted: sendRequest returned undefined
 
   if (getConversations.status == "error") {
     throw getConversations.error

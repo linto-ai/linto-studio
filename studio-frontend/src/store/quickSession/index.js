@@ -29,6 +29,7 @@ const mutations = {
   },
   clearQuickSession(state) {
     state.quickSession = null
+    state.quickSessionBot = null
   },
   setLoading(state, value) {
     state.loading = value
@@ -44,28 +45,32 @@ const mutations = {
 const actions = {
   async loadQuickSession({ commit, rootGetters }, notification) {
     commit("setLoading", true)
-    const quickSession = await apiGetQuickSession()
-    if (quickSession) {
-      commit("setQuickSession", quickSession)
+    try {
+      const quickSession = await apiGetQuickSession()
+      if (quickSession) {
+        commit("setQuickSession", quickSession)
 
-      const channel = quickSession.channels[0]
+        const channel = quickSession.channels[0]
 
-      const botReq = await getBotForChannelId(
-        rootGetters["organizations/getCurrentOrganizationScope"],
-        channel.id,
-      )
+        const botReq = await getBotForChannelId(
+          rootGetters["organizations/getCurrentOrganizationScope"],
+          channel.id,
+        )
 
-      if (
-        botReq.status == "success" &&
-        botReq.data &&
-        botReq.data?.bots?.length > 0
-      ) {
-        const sessionBot = botReq.data?.bots[0]
-        commit("setQuickSessionBot", sessionBot)
+        if (
+          botReq.status == "success" &&
+          botReq.data &&
+          botReq.data?.bots?.length > 0
+        ) {
+          const sessionBot = botReq.data?.bots[0]
+          commit("setQuickSessionBot", sessionBot)
+        }
+      } else {
+        commit("clearQuickSession")
       }
-    } else {
-      commit("setQuickSession", null)
-      commit("setQuickSessionBot", null)
+    } catch (error) {
+      console.error("Failed to load quick session:", error)
+      commit("clearQuickSession")
     }
     commit("setLoading", false)
   },
@@ -100,8 +105,7 @@ const actions = {
       },
       query: { t: Date.now(), status: "processing" },
     })
-    commit("setQuickSession", null)
-    commit("setQuickSessionBot", null)
+    commit("clearQuickSession")
     commit("setSaving", false)
   },
 }
