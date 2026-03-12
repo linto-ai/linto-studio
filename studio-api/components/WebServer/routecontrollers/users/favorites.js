@@ -55,22 +55,36 @@ async function listFav(req, res, next) {
     const userFav = await model.favorites.listFav(req.payload.data.userId)
     if (userFav.length === 0) res.status(204).send()
     else {
+      const favIds = userFav[0].favorites
+      // Batch-fetch all favorited conversations in one query
+      const existingConvs = await model.conversations.getConvsListByIds(favIds)
+      const existingIds = new Set(existingConvs.map((c) => c._id.toString()))
+
       let conv_favorite = []
-      for (let favId of userFav[0].favorites) {
-        const conversation = await model.conversations.getById(favId)
-        if (conversation.length !== 1)
-          await model.favorites.deleteFav(req.payload.data.userId, favId)
-        else {
-          let conv = await conversationUtility.userAccess(
-            req.payload.data.userId,
-            favId,
-            ORGANIZATION_ROLES.MEMBER,
-          )
-          // if access to the covnersation have been removed from the user we delete the conversation from the user favorite
-          if (conv) conv_favorite.push(conv._id)
-          else await model.favorites.deleteFav(req.payload.data.userId, favId)
+      const staleIds = []
+
+      for (let favId of favIds) {
+        const favIdStr = typeof favId === "object" ? favId.toString() : favId
+        if (!existingIds.has(favIdStr)) {
+          staleIds.push(favId)
+          continue
         }
+        let conv = await conversationUtility.userAccess(
+          req.payload.data.userId,
+          favId,
+          ORGANIZATION_ROLES.MEMBER,
+        )
+        if (conv) conv_favorite.push(conv._id)
+        else staleIds.push(favId)
       }
+
+      // Clean up stale favorites in parallel
+      await Promise.all(
+        staleIds.map((id) =>
+          model.favorites.deleteFav(req.payload.data.userId, id),
+        ),
+      )
+
       let fav_conv = await model.conversations.listConvFromFavorite(
         conv_favorite,
         req.query,
