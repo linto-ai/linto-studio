@@ -198,19 +198,26 @@ export default function createMediaModule(scope, status = "done") {
     actions: {
       async load(
         { state, commit, dispatch, getters },
-        { page = 0, append = false, folderId } = {},
+        { page = 0, append = false, folderId, signal } = {},
       ) {
         try {
-          const data = await apiGetGenericConversationsList(scope, {
-            page,
-            text: getters.search,
-            title: getters.search,
-            tags: [...getters.selectedTagIds, ...state.sidebarFilterTagIds],
-            status: getters.getFilterStatus,
-            sortField: getters.getSortField,
-            sortOrder: getters.getSortOrder,
-            folderId,
-          })
+          const data = await apiGetGenericConversationsList(
+            scope,
+            {
+              page,
+              text: getters.search,
+              title: getters.search,
+              tags: [...getters.selectedTagIds, ...state.sidebarFilterTagIds],
+              status: getters.getFilterStatus,
+              sortField: getters.getSortField,
+              sortOrder: getters.getSortOrder,
+              folderId,
+            },
+            null,
+            signal,
+          )
+
+          if (!data) return // aborted
 
           if (append) commit("appendMedias", data.list)
           else {
