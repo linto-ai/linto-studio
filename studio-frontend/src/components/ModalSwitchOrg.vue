@@ -108,6 +108,7 @@ export default {
   data() {
     return {
       isCreateModalOpen: false,
+      sortedOrganizations: [],
     }
   },
   computed: {
@@ -128,18 +129,29 @@ export default {
         this.$emit("input", value)
       },
     },
-    sortedOrganizations() {
-      return this.organizations
-        .map((org) => ({
-          ...org,
-          role: getUserRoleInOrganization(org, this.userInfo._id),
-        }))
-        .sort((a, b) => {
-          if (a.role > b.role) return -1
-          if (a.role < b.role) return 1
+  },
+  watch: {
+    value: {
+      immediate: true,
+      handler(open) {
+        if (open) {
+          this.sortedOrganizations = this.organizations
+            .map((org) => ({
+              ...org,
+              role: getUserRoleInOrganization(org, this.userInfo._id),
+            }))
+            .sort((a, b) => {
+              const aFav = this.isFavoriteOrganization(a._id)
+              const bFav = this.isFavoriteOrganization(b._id)
+              if (aFav !== bFav) return aFav ? -1 : 1
 
-          return a.name.localeCompare(b.name)
-        })
+              if (a.role > b.role) return -1
+              if (a.role < b.role) return 1
+
+              return a.name.localeCompare(b.name)
+            })
+        }
+      },
     },
   },
   methods: {
