@@ -93,7 +93,7 @@ function onLanguageChange(lang: string) {
         @update:selected-language="onLanguageChange" />
 
       <DialogRoot v-model:open="isSidebarOpen">
-        <DialogPortal>
+        <DialogPortal disabled>
           <DialogOverlay class="sidebar-overlay" />
           <DialogContent class="sidebar-drawer">
             <DialogTitle class="sr-only">{{
@@ -177,7 +177,7 @@ function onLanguageChange(lang: string) {
 }
 </style>
 
-<!-- Unscoped: DialogPortal renders outside this component's DOM -->
+<!-- Unscoped: styles need to reach DialogContent children -->
 <style>
 .sidebar-overlay {
   position: fixed;

@@ -25,41 +25,47 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <SelectRoot
-    :model-value="selectedValue"
-    @update:model-value="emit('update:selectedValue', $event as string)"
-  >
-    <SelectTrigger
-      class="sidebar-select-trigger"
-      :aria-label="ariaLabel"
+  <div class="sidebar-select">
+    <SelectRoot
+      :model-value="selectedValue"
+      @update:model-value="emit('update:selectedValue', $event as string)"
     >
-      <SelectValue />
-      <SelectIcon>
-        <ChevronDown :size="16" />
-      </SelectIcon>
-    </SelectTrigger>
+      <SelectTrigger
+        class="sidebar-select-trigger"
+        :aria-label="ariaLabel"
+      >
+        <SelectValue />
+        <SelectIcon>
+          <ChevronDown :size="16" />
+        </SelectIcon>
+      </SelectTrigger>
 
-    <SelectPortal>
-      <SelectContent class="sidebar-select-content" position="popper" :side-offset="4">
-        <SelectViewport>
-          <SelectItem
-            v-for="item in items"
-            :key="item.value"
-            :value="item.value"
-            class="sidebar-select-item"
-          >
-            <SelectItemIndicator class="sidebar-select-item-indicator">
-              <Check :size="14" />
-            </SelectItemIndicator>
-            <SelectItemText>{{ item.label }}</SelectItemText>
-          </SelectItem>
-        </SelectViewport>
-      </SelectContent>
-    </SelectPortal>
-  </SelectRoot>
+      <SelectPortal disabled>
+        <SelectContent class="sidebar-select-content" position="popper" :side-offset="4" position-strategy="absolute">
+          <SelectViewport>
+            <SelectItem
+              v-for="item in items"
+              :key="item.value"
+              :value="item.value"
+              class="sidebar-select-item"
+            >
+              <SelectItemIndicator class="sidebar-select-item-indicator">
+                <Check :size="14" />
+              </SelectItemIndicator>
+              <SelectItemText>{{ item.label }}</SelectItemText>
+            </SelectItem>
+          </SelectViewport>
+        </SelectContent>
+      </SelectPortal>
+    </SelectRoot>
+  </div>
 </template>
 
 <style scoped>
+.sidebar-select {
+  position: relative;
+}
+
 .sidebar-select-trigger {
   display: inline-flex;
   align-items: center;
