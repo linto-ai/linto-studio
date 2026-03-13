@@ -820,7 +820,8 @@
     "title": "Choisir une organisation",
     "current": "Actuelle",
     "create_organization": "Créer une nouvelle organisation",
-    "backoffice": "Backoffice"
+    "backoffice": "Backoffice",
+    "favorite": "Définir comme organisation par défaut"
   },
   "navigation": {
     "conversation": {

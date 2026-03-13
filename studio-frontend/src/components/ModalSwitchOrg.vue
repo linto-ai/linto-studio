@@ -13,6 +13,7 @@
             name: 'backoffice',
           }"
           class="modal-switch-org__list__item">
+          <span class="modal-switch-org__list__item__favorite-spacer" />
           <Avatar
             icon="key"
             size="sm"
@@ -32,6 +33,15 @@
           v-for="org in sortedOrganizations"
           :key="org._id"
           class="modal-switch-org__list__item">
+          <Button
+            class="modal-switch-org__list__item__favorite"
+            :class="{ active: isFavoriteOrganization(org._id) }"
+            @click.native.stop.prevent="toggleFavoriteOrganization(org._id)"
+            icon="star"
+            :title="$t('modal_switch_org.favorite')"
+            :iconWeight="isFavoriteOrganization(org._id) ? 'fill' : 'regular'"
+            variant="transparent"
+            size="sm" />
           <Avatar
             :text="org.name.slice(0, 1)"
             :size="isMobile ? 'md' : 'sm'"
@@ -74,7 +84,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex"
+import { mapGetters, mapActions } from "vuex"
 import Modal from "@/components/molecules/Modal.vue"
 import ModalCreateOrganization from "@/components/ModalCreateOrganization.vue"
 import { orgDisplayName } from "@/tools/orgDisplayName"
@@ -107,6 +117,7 @@ export default {
     }),
     ...mapGetters("user", {
       userInfo: "getUserInfos",
+      isFavoriteOrganization: "isFavoriteOrganization",
     }),
     ...mapGetters("system", ["isMobile"]),
     isOpen: {
@@ -132,6 +143,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions("user", ["toggleFavoriteOrganization"]),
     close() {
       this.$emit("close")
     },
@@ -143,6 +155,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@use "@/style/mixin" as *;
 .modal-switch-org {
   &__list {
     &__item {
@@ -173,6 +186,16 @@ export default {
         &__role {
           color: var(--text-secondary);
         }
+      }
+
+      &__favorite-spacer {
+        display: inline-block;
+        width: 20px;
+        flex-shrink: 0;
+      }
+
+      &__favorite {
+        @include favorite-star;
       }
 
       &.new-org {

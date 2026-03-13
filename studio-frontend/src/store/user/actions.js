@@ -76,6 +76,26 @@ const actions = {
     }
     return req
   },
+  async toggleFavoriteOrganization({ commit, state, dispatch }, organizationId) {
+    try {
+      const currentFavorite = state.userInfos?.defaultOrganization ?? null
+      const newFavorite =
+        currentFavorite === organizationId ? null : organizationId
+      const req = await dispatch("updateUser", {
+        defaultOrganization: newFavorite,
+      })
+      if (req?.status !== "success") throw new Error()
+    } catch (error) {
+      commit(
+        "system/addNotification",
+        {
+          message: "Error toggling favorite organization",
+          type: "error",
+        },
+        { root: true },
+      )
+    }
+  },
   async toggleFavoriteConversation({ commit, getters, dispatch }, id) {
     const isFavorite = getters.isFavoriteConversation(id)
 
