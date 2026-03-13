@@ -1,0 +1,218 @@
+{
+  "/api/conversations/{conversationId}/documents": {
+    "post": {
+      "tags": ["conversations documents"],
+      "summary": "Upload documents to a conversation",
+      "description": "Upload one or multiple documents to attach to a conversation. Accepted formats: PDF, DOC, DOCX, PPT, PPTX, XLS, XLSX, TXT, CSV, RTF, ODT, ODP, ODS.",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "conversationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for a conversation"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "file": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "format": "binary",
+                      "description": "Single document file"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "format": "binary"
+                      },
+                      "description": "Multiple document files"
+                    }
+                  ]
+                }
+              },
+              "required": ["file"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Documents uploaded successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Documents uploaded"
+                  },
+                  "documents": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Document"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "get": {
+      "tags": ["conversations documents"],
+      "summary": "List all documents attached to a conversation",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "conversationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for a conversation"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "documents": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Document"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/conversations/{conversationId}/documents/{documentId}": {
+    "get": {
+      "tags": ["conversations documents"],
+      "summary": "Download a document",
+      "description": "Download a specific document attached to a conversation. The response Content-Type matches the document's original MIME type.",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "conversationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for a conversation"
+        },
+        {
+          "in": "path",
+          "name": "documentId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for a document"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Document file",
+          "content": {
+            "application/octet-stream": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "delete": {
+      "tags": ["conversations documents"],
+      "summary": "Delete a document",
+      "description": "Delete a specific document attached to a conversation. Removes both the database entry and the file from disk.",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "conversationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for a conversation"
+        },
+        {
+          "in": "path",
+          "name": "documentId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for a document"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Document deleted",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Document deleted"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  }
+}

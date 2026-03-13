@@ -71,6 +71,13 @@
             @update_channel_name="updateChannelName" />
         </div>
       </section>
+
+      <section v-if="conversation">
+        <h2>{{ $t("conversation_overview.documents.title") }}</h2>
+        <ConversationDocuments
+          :conversationId="conversation._id"
+          :canEdit="canEdit" />
+      </section>
     </div>
   </MainContentConversation>
 </template>
@@ -89,6 +96,7 @@ import ConversationOverviewLinks from "@/components/ConversationOverviewLinks.vu
 import ConversationOverviewRights from "@/components/ConversationOverviewRights.vue"
 import Tabs from "@/components/molecules/Tabs.vue"
 import ConversationOverviewChannel from "@/components/ConversationOverviewChannel.vue"
+import ConversationDocuments from "@/components/ConversationDocuments.vue"
 
 export default {
   props: {
@@ -191,6 +199,7 @@ export default {
     ConversationOverviewLinks,
     ConversationOverviewRights,
     ConversationOverviewChannel,
+    ConversationDocuments,
     Tabs,
   },
 }

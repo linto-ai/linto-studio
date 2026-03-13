@@ -74,6 +74,20 @@ async function storeFile(files, type = "audio", name = undefined) {
         storageFilePath: output_audio,
         filename: files.name,
       }
+    } else if (type === "document") {
+      const fileExtension = path.extname(files.name)
+      const store_path = `${getStorageFolder()}/${getDocumentFolder()}`
+      fs.mkdirSync(store_path, { recursive: true })
+      const filePath = `${store_path}/${fileName}${fileExtension}`
+      fs.writeFileSync(filePath, files.data)
+      return {
+        fileId: fileName,
+        filePath: `${process.env.VOLUME_DOCUMENT_PATH}/${fileName}${fileExtension}`,
+        storageFilePath: filePath,
+        filename: files.name,
+        mimetype: files.mimetype,
+        size: files.size,
+      }
     } else if (type === "audio_session") {
       const store_path = `${getStorageFolder()}/${getAudioFolder()}/${fileName}`
       const output_audio = `${store_path}.mp3`
@@ -121,6 +135,15 @@ function getAudioSessionFolder() {
   return process.env.VOLUME_AUDIO_SESSION_PATH
 }
 
+function getDocumentFolder() {
+  return process.env.VOLUME_DOCUMENT_PATH
+}
+
+function deleteDocumentFile(filepath) {
+  if (!filepath) return
+  deleteFile(`${getStorageFolder()}/${filepath}`)
+}
+
 async function deleteAudioFileIfOrphaned(filepath) {
   if (!filepath) return
   const model = require(`${process.cwd()}/lib/mongodb/models`)
@@ -135,7 +158,9 @@ module.exports = {
   defaultPicture,
   deleteFile,
   deleteAudioFileIfOrphaned,
+  deleteDocumentFile,
   getStorageFolder,
   getPictureFolder,
   getAudioFolder,
+  getDocumentFolder,
 }

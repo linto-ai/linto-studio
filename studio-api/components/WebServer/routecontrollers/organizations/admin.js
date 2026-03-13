@@ -3,7 +3,7 @@ const debug = require("debug")(
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
-const { deleteAudioFileIfOrphaned } = require(
+const { deleteAudioFileIfOrphaned, deleteDocumentFile } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 
@@ -66,6 +66,11 @@ async function deleteOrganization(req, res, next) {
 
       if (conv?.metadata?.audio) {
         await deleteAudioFileIfOrphaned(conv.metadata.audio.filepath)
+      }
+
+      const documents = conv?.metadata?.documents || []
+      for (const doc of documents) {
+        deleteDocumentFile(doc.filepath)
       }
     })
     //delete all subtitle from that organization

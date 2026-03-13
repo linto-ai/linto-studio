@@ -1,0 +1,68 @@
+{
+  "Document": {
+    "type": "object",
+    "properties": {
+      "documentId": {
+        "type": "string",
+        "format": "uuid",
+        "description": "Unique identifier for the document"
+      },
+      "filename": {
+        "type": "string",
+        "description": "Original filename of the uploaded document"
+      },
+      "mimetype": {
+        "type": "string",
+        "description": "MIME type of the document",
+        "enum": [
+          "application/pdf",
+          "application/msword",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "application/vnd.ms-powerpoint",
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+          "application/vnd.ms-excel",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "text/plain",
+          "text/csv",
+          "application/rtf",
+          "application/vnd.oasis.opendocument.text",
+          "application/vnd.oasis.opendocument.presentation",
+          "application/vnd.oasis.opendocument.spreadsheet"
+        ]
+      },
+      "filepath": {
+        "type": "string",
+        "description": "Internal storage path of the document"
+      },
+      "size": {
+        "type": "integer",
+        "description": "File size in bytes"
+      },
+      "status": {
+        "type": "string",
+        "description": "Processing status of the document",
+        "enum": ["stored", "processing", "indexed", "error"],
+        "default": "stored"
+      },
+      "uploadedBy": {
+        "type": "string",
+        "description": "User ID of the uploader"
+      },
+      "uploadedAt": {
+        "type": "string",
+        "format": "date-time",
+        "description": "Upload timestamp"
+      }
+    },
+    "example": {
+      "documentId": "a92b8d10-58ae-43af-a0c1-d6bed413d9a5",
+      "filename": "meeting-notes.pdf",
+      "mimetype": "application/pdf",
+      "filepath": "documents/a92b8d10-58ae-43af-a0c1-d6bed413d9a5.pdf",
+      "size": 245760,
+      "status": "stored",
+      "uploadedBy": "5e9b1b9b0f9b2c0017b5f1b5",
+      "uploadedAt": "2026-03-12T14:30:00+01:00"
+    }
+  }
+}

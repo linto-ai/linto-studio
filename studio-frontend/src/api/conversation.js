@@ -650,3 +650,51 @@ export async function apiGetConversationChild(conversationId, fields, notif) {
 
   return res?.data ?? []
 }
+
+// -- -- -- documents -- -- -- --
+
+export async function apiUploadDocuments(
+  conversationId,
+  files,
+  notif,
+  onUploadProgress = null,
+) {
+  let formData = new FormData()
+  for (let i = 0; i < files.length; i++) {
+    formData.append("file", files[i])
+  }
+  return await sendMultipartFormData(
+    `${BASE_API}/conversations/${conversationId}/documents`,
+    "post",
+    formData,
+    notif,
+    onUploadProgress,
+  )
+}
+
+export async function apiGetDocuments(conversationId, notif) {
+  return await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/documents`,
+    { method: "get" },
+    {},
+    notif,
+  )
+}
+
+export async function apiDownloadDocument(conversationId, documentId, notif) {
+  return await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/documents/${documentId}`,
+    { method: "get", responseType: "blob" },
+    {},
+    notif,
+  )
+}
+
+export async function apiDeleteDocument(conversationId, documentId, notif) {
+  return await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/documents/${documentId}`,
+    { method: "delete" },
+    {},
+    notif,
+  )
+}
