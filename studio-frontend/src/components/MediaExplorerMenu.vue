@@ -72,7 +72,7 @@
       </ul>
     </div>
 
-    <MediaExplorerMenuLabels />
+    <MediaExplorerMenuLabels v-if="isExplorePage" />
   </div>
 </template>
 
@@ -154,6 +154,9 @@ export default {
     },
     isProcessingActive() {
       return this.$route.name === "explore-processing"
+    },
+    isExplorePage() {
+      return this.$route.name?.startsWith("explore")
     },
     processingFolder() {
       return {

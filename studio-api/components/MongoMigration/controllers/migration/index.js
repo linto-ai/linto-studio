@@ -12,26 +12,42 @@ const logger = require(`${process.cwd()}/lib/logger/logger`)
 module.exports = {
   async migrationProcessing(db, version) {
     try {
-      const availabelVersion = fs.readdirSync(
-        `${process.cwd()}/components/MongoMigration/version/`,
-      )
-      //check if desired version is available
+      const availabelVersion = fs
+        .readdirSync(
+          `${process.cwd()}/components/MongoMigration/version/`,
+        )
+        .sort(compareVersions)
 
-      const desired_index = availabelVersion.indexOf(
+      let desired_index = availabelVersion.indexOf(
         version.desired_version.toString(),
       )
       const current_index = availabelVersion.indexOf(
         version.current_version.toString(),
       )
 
-      if (desired_index === -1 || current_index === -1) {
+      if (current_index === -1) {
         logger.error(
-          "Error, desired version not found " +
-            version.desired_version +
+          "Error, current version not found " +
+            version.current_version +
             ". Version range " +
             availabelVersion,
         )
         return
+      }
+
+      if (desired_index === -1) {
+        const lastAvailable = availabelVersion[availabelVersion.length - 1]
+        if (compareVersions(version.desired_version, lastAvailable) > 0) {
+          logger.warn(
+            `Desired version ${version.desired_version} not found. Migrating to latest available version ${lastAvailable}.`,
+          )
+          desired_index = availabelVersion.length - 1
+        } else {
+          logger.error(
+            `Error, desired version ${version.desired_version} does not exist and falls between available versions. Cannot determine migration target. Available versions: ${availabelVersion}`,
+          )
+          return
+        }
       }
 
       const version_diff = desired_index - current_index
@@ -78,6 +94,18 @@ module.exports = {
       logger.error(err)
     }
   },
+}
+
+function compareVersions(a, b) {
+  const partsA = a.toString().split(".").map(Number)
+  const partsB = b.toString().split(".").map(Number)
+  for (let i = 0; i < Math.max(partsA.length, partsB.length); i++) {
+    const numA = partsA[i] || 0
+    const numB = partsB[i] || 0
+    if (numA > numB) return 1
+    if (numA < numB) return -1
+  }
+  return 0
 }
 
 async function doMigration(versionStep, db, step) {

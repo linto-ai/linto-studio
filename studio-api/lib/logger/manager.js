@@ -8,12 +8,16 @@ const { calculateWatchTime, reduceToLastActivity } = require(
 )
 
 const SOCKET_EVENTS = require(`${process.cwd()}/lib/dao/log/socketEvent`)
-const { isDuplicatePatchEvent } = require(`${process.cwd()}/lib/logger/filterCachedLog`)
+const { isDuplicatePatchEvent } = require(
+  `${process.cwd()}/lib/logger/filterCachedLog`,
+)
 
 const activityLoggedUrls = ["/api/administration/", "/tokens/"]
 
 class LogManager {
   static async logWebserverEvent(req, message, payload = {}) {
+    if ((req.originalUrl || req.url) === "/healthcheck") return
+
     const ctx = await context.createContext(req, message, payload)
     logger.log(ctx)
 
