@@ -3,6 +3,8 @@ import {
   apiGetPersonalUserInfo,
   apiUpdateUserInfo,
   apiUpdateUserImage,
+  apiSetDefaultOrganization,
+  apiUnsetDefaultOrganization,
 } from "@/api/user"
 import {
   apiRemoveConversationFromFavorites,
@@ -76,15 +78,22 @@ const actions = {
     }
     return req
   },
-  async toggleFavoriteOrganization({ commit, state, dispatch }, organizationId) {
+  async toggleFavoriteOrganization({ commit, state }, organizationId) {
     try {
       const currentFavorite = state.userInfos?.defaultOrganization ?? null
-      const newFavorite =
-        currentFavorite === organizationId ? null : organizationId
-      const req = await dispatch("updateUser", {
-        defaultOrganization: newFavorite,
-      })
-      if (req?.status !== "success") throw new Error()
+      const isFavorite = currentFavorite === organizationId
+      const req = isFavorite
+        ? await apiUnsetDefaultOrganization()
+        : await apiSetDefaultOrganization(organizationId)
+
+      if (req.status === "success") {
+        commit("setUserInfos", {
+          ...state.userInfos,
+          defaultOrganization: isFavorite ? null : organizationId,
+        })
+      } else {
+        throw new Error()
+      }
     } catch (error) {
       commit(
         "system/addNotification",
