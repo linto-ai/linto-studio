@@ -19,8 +19,8 @@ const en: Record<keyof typeof fr, string> = {
   'player.speed': 'Playback speed',
   'transcription.resumeScroll': 'Resume follow',
   'header.channelLabel': 'Select a channel',
-  'sidebar.language': 'Language',
-  'sidebar.languageLabel': 'Transcription language',
+  'sidebar.translation': 'Translation',
+  'sidebar.translationLabel': 'Translation',
   'sidebar.originalLanguage': 'original',
   'language.wildcard': 'Multilingual',
 }

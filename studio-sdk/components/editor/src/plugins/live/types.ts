@@ -25,9 +25,3 @@ export interface LiveTranslationEvent {
   language: string
   text: string
 }
-
-export interface LivePluginApi {
-  onPartial(event: LivePartialEvent): void
-  onFinal(event: LiveFinalEvent): void
-  onTranslation(event: LiveTranslationEvent): void
-}

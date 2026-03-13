@@ -1,75 +1,83 @@
-import type { EditorCore, EditorPlugin } from "../../core/types"
+import { ref, shallowRef, triggerRef } from "vue"
+import type { EditorCore, EditorPlugin, LivePluginApi } from "../../core/types"
 import type {
   LivePartialEvent,
   LiveFinalEvent,
   LiveTranslationEvent,
-  LivePluginApi,
 } from "./types"
 
 export type {
-  LivePluginApi,
   LivePartialEvent,
   LiveFinalEvent,
   LiveTranslationEvent,
 }
+export type { LivePluginApi }
 
-export function createLivePlugin(): EditorPlugin & LivePluginApi {
-  let editor: EditorCore | null = null
-  function onPartial(event: LivePartialEvent): void {
-    if (!editor) return
-    editor.setPartial(event.text)
-  }
-
-  function onFinal(event: LiveFinalEvent): void {
-    if (!editor) return
-    editor.ensureSpeaker(event.speakerId)
-
-    const hasWords = event.words.length > 0
-    const existingIdx = editor.activeTranslation.value.turns.findIndex(
-      (t) => t.id === event.turnId,
-    )
-
-    const turnData = {
-      speakerId: event.speakerId,
-      text: hasWords ? null : event.text,
-      words: event.words,
-      startTime: event.startTime,
-      endTime: event.endTime,
-      language: event.language,
-    }
-
-    if (existingIdx !== -1) {
-      editor.updateTurn(event.turnId, turnData)
-    } else {
-      editor.addTurn({
-        id: event.turnId,
-        ...turnData,
-      })
-    }
-
-    editor.clearPartial()
-  }
-
-  function onTranslation(_event: LiveTranslationEvent): void {
-    // Placeholder — translation handling will be implemented later
-    console.warn("[live-plugin] onTranslation not yet implemented")
-  }
-
-  const plugin: EditorPlugin & LivePluginApi = {
+export function createLivePlugin(): EditorPlugin {
+  return {
     name: "live",
 
     install(core: EditorCore) {
-      editor = core
-      editor.hasLiveUpdate.value = true
+      const partial = shallowRef<string | null>(null)
+      const hasLiveUpdate = ref(false)
+
+      hasLiveUpdate.value = true
+
+      function onPartial(event: LivePartialEvent, channelId: string): void {
+        if (core.activeChannelId.value !== channelId) return
+        partial.value = event.text
+        triggerRef(partial)
+      }
+
+      function onFinal(event: LiveFinalEvent, channelId: string): void {
+        core.speakers.ensure(event.speakerId)
+
+        const target = { channelId }
+        const hasWords = event.words.length > 0
+
+        const turnData = {
+          speakerId: event.speakerId,
+          text: hasWords ? null : event.text,
+          words: event.words,
+          startTime: event.startTime,
+          endTime: event.endTime,
+          language: event.language,
+        }
+
+        const handle = core.withTranslation(target)
+        if (!handle) return
+
+        const exists = handle.turns.value.some((t) => t.id === event.turnId)
+
+        if (exists) {
+          handle.updateTurn(event.turnId, turnData)
+        } else {
+          handle.addTurn({ id: event.turnId, ...turnData })
+        }
+
+        // Clear partial
+        partial.value = null
+        triggerRef(partial)
+      }
+
+      function onTranslation(_event: LiveTranslationEvent): void {
+        // Placeholder — translation handling will be implemented later
+        console.warn("[live-plugin] onTranslation not yet implemented")
+      }
+
+      const api: LivePluginApi = {
+        partial,
+        hasLiveUpdate,
+        onPartial,
+        onFinal,
+        onTranslation,
+      }
+
+      core.live = api
+
       return () => {
-        editor = null
+        core.live = undefined
       }
     },
-
-    onPartial,
-    onFinal,
-    onTranslation,
   }
-
-  return plugin
 }

@@ -24,18 +24,21 @@ const editor = useEditorCore()
 const panelRef = useTemplateRef<HTMLElement>("panel")
 
 const partialTurn = computed(() => {
-  const text = editor.partial.value
+  const text = editor.live?.partial.value ?? null
   if (text === null) return null
   return {
     id: "__partial__",
     speakerId: null,
     text,
     words: [],
-    language: editor.activeLanguageCode.value,
+    language: editor.activeChannel.activeTranslation.data.value.languages[0] ?? "",
     startTime: undefined,
     endTime: undefined,
   } as Turn
 })
+
+const hasLiveUpdate = computed(() => editor.live?.hasLiveUpdate.value ?? false)
+const isPlaying = computed(() => editor.audio?.isPlaying.value ?? false)
 
 const { isFollowing, resumeFollow } = useAutoScroll({ panelRef })
 </script>
@@ -52,7 +55,7 @@ const { isFollowing, resumeFollow } = useAutoScroll({ panelRef })
             :speaker="
               turn.speakerId ? speakers.get(turn.speakerId) : undefined
             "
-            :live="editor.hasLiveUpdate.value && !partialTurn && i === turns.length - 1" />
+            :live="hasLiveUpdate && !partialTurn && i === turns.length - 1" />
           <TranscriptionTurn
             v-if="partialTurn"
             key="__partial__"
@@ -66,7 +69,7 @@ const { isFollowing, resumeFollow } = useAutoScroll({ panelRef })
 
       <Transition name="fade-slide">
         <EditorButton
-          v-if="!isFollowing && (editor.isPlaying.value || editor.hasLiveUpdate.value)"
+          v-if="!isFollowing && (isPlaying || hasLiveUpdate)"
           size="sm"
           class="resume-scroll-btn"
           :aria-label="t('transcription.resumeScroll')"

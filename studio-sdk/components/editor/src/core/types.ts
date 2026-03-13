@@ -8,6 +8,13 @@ import type {
   Word,
 } from "../types/editor"
 
+// ── Turn Target ─────────────────────────────────────────────────────────
+
+export interface TurnTarget {
+  channelId?: string
+  translationId?: string
+}
+
 // ── Capabilities ────────────────────────────────────────────────────────
 
 export interface EditorCapabilities {
@@ -19,14 +26,12 @@ export interface EditorCapabilities {
 
 export interface EditorEventMap {
   "channel:change": { channelId: string }
-  "language:change": { language: string | null }
+  "translation:change": { translationId: string | null }
   "turn:add": { turn: Turn }
   "turn:update": { turn: Turn }
   "turn:remove": { turnId: string }
   "speaker:update": { speaker: Speaker }
   "speaker:add": { speaker: Speaker }
-  "partial:set": { text: string }
-  "partial:clear": void
   destroy: void
 }
 
@@ -45,54 +50,85 @@ export interface EditorCoreOptions {
   capabilities?: EditorCapabilities
 }
 
-// ── Core ───────────────────────────────────────────────────────────────
+// ── Handles ─────────────────────────────────────────────────────────────
 
-export interface EditorCore {
-  // ── State (readonly) ───────────────────────────────────────────────
-  document: Ref<EditorDocument>
-  activeChannelId: Ref<string>
-  selectedLanguage: Ref<string | null>
-  partial: ShallowRef<string | null>
-  capabilities: Ref<EditorCapabilities>
-  hasLiveUpdate: Ref<Boolean>
-
-  // ── Computed ───────────────────────────────────────────────────────
-  activeChannel: ComputedRef<Channel>
-  activeTranslation: ComputedRef<Translation>
-  activeTurns: ComputedRef<Turn[]>
-  activeLanguageCode: ComputedRef<string>
-  availableLanguages: ComputedRef<string[]>
-  speakers: ComputedRef<Map<string, Speaker>>
-  activeAudioSrc: ComputedRef<string | null>
-
-  // ── Audio Playback ───────────────────────────────────────────────
-  currentTime: Ref<number>
-  isPlaying: Ref<boolean>
-  seekTo(time: number): void
-  setSeekHandler(handler: ((time: number) => void) | null): void
-
-  // ── Document ─────────────────────────────────────────────────────
-  setDocument(doc: EditorDocument): void
-
-  // ── Channel / Language ─────────────────────────────────────────────
-  setActiveChannel(channelId: string): void
-  setActiveLanguage(language: string | null): void
-
-  // ── Turns ──────────────────────────────────────────────────────────
+export interface TranslationHandle {
+  data: ComputedRef<Translation>
+  turns: ComputedRef<Turn[]>
   addTurn(turn: Turn): void
   updateTurn(turnId: string, patch: Partial<Turn>): void
   removeTurn(turnId: string): void
   updateWords(turnId: string, words: Word[]): void
+}
 
-  // ── Speakers ───────────────────────────────────────────────────────
-  ensureSpeaker(speakerId: string | null, name?: string): void
-  updateSpeaker(speakerId: string, patch: Partial<Omit<Speaker, "id">>): void
+export interface ChannelHandle {
+  data: ComputedRef<Channel>
+  activeTranslation: TranslationHandle
+  setActiveTranslation(translationId: string | null): void
+}
 
-  // ── Partials ───────────────────────────────────────────────────────
-  setPartial(text: string): void
-  clearPartial(): void
+export interface SpeakersHandle {
+  all: ComputedRef<Map<string, Speaker>>
+  ensure(speakerId: string | null, name?: string): void
+  update(speakerId: string, patch: Partial<Omit<Speaker, "id">>): void
+}
 
-  // ── Events ─────────────────────────────────────────────────────────
+// ── Audio Plugin API ────────────────────────────────────────────────────
+
+export interface AudioPluginApi {
+  currentTime: Ref<number>
+  isPlaying: Ref<boolean>
+  src: ComputedRef<string | null>
+  seekTo(time: number): void
+  setSeekHandler(handler: ((time: number) => void) | null): void
+}
+
+// ── Live Plugin API ─────────────────────────────────────────────────────
+
+export interface LivePluginApi {
+  partial: ShallowRef<string | null>
+  hasLiveUpdate: Ref<boolean>
+  onPartial(event: { text: string }, channelId: string): void
+  onFinal(event: {
+    turnId: string
+    speakerId: string | null
+    text: string
+    words: Array<{
+      id: string
+      text: string
+      startTime?: number
+      endTime?: number
+      confidence?: number
+    }>
+    startTime: number
+    endTime: number
+    language: string
+  }, channelId: string): void
+  onTranslation(event: { turnId: string; language: string; text: string }): void
+}
+
+// ── Core ───────────────────────────────────────────────────────────────
+
+export interface EditorCore {
+  // ── State ────────────────────────────────────────────────────────────
+  document: Ref<EditorDocument>
+  activeChannelId: Ref<string>
+  capabilities: Ref<EditorCapabilities>
+
+  // ── Handles ──────────────────────────────────────────────────────────
+  activeChannel: ChannelHandle
+  speakers: SpeakersHandle
+
+  // ── Navigation ───────────────────────────────────────────────────────
+  setDocument(doc: EditorDocument): void
+  setActiveChannel(channelId: string): void
+  withTranslation(target?: TurnTarget): TranslationHandle | null
+
+  // ── Plugin slots ─────────────────────────────────────────────────────
+  audio?: AudioPluginApi
+  live?: LivePluginApi
+
+  // ── Events ───────────────────────────────────────────────────────────
   on<K extends keyof EditorEventMap>(
     event: K,
     handler: (payload: EditorEventMap[K]) => void,
@@ -106,7 +142,7 @@ export interface EditorCore {
     payload: EditorEventMap[K],
   ): void
 
-  // ── Plugins ────────────────────────────────────────────────────────
+  // ── Plugins ──────────────────────────────────────────────────────────
   use(plugin: EditorPlugin): void
   destroy(): void
 }

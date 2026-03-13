@@ -17,8 +17,8 @@ const fr = {
   'player.speed': 'Vitesse de lecture',
   'transcription.resumeScroll': 'Reprendre le suivi',
   'header.channelLabel': 'Sélectionner un canal',
-  'sidebar.language': 'Langue',
-  'sidebar.languageLabel': 'Langue de transcription',
+  'sidebar.translation': 'Traduction',
+  'sidebar.translationLabel': 'Traduction',
   'sidebar.originalLanguage': 'original',
   'language.wildcard': 'Multi-langue',
 } as const

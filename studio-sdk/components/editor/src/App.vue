@@ -4,7 +4,8 @@ import EditorLayout from "./components/EditorLayout.vue"
 import { mapApiDocument } from "./adapters/apiAdapter"
 import { provideI18n, type Locale } from "./i18n"
 import { createEditorCore, provideEditorCore } from "./core"
-import { createLivePlugin } from "./plugins/live"
+import { createAudioPlugin } from "./plugins/audio"
+// import { createLivePlugin } from "./plugins/live"
 import type { ApiDocument } from "./types/api"
 import type { Channel, Speaker } from "./types/editor"
 
@@ -12,10 +13,9 @@ const locale = ref<Locale>("fr")
 const { t } = provideI18n(locale)
 
 const editor = createEditorCore()
+editor.use(createAudioPlugin())
+// editor.use(createLivePlugin())
 provideEditorCore(editor)
-
-// const livePlugin = createLivePlugin()
-// editor.use(livePlugin)
 
 const error = ref<string | null>(null)
 const loading = ref(true)

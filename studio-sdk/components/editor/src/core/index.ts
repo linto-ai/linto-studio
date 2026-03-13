@@ -6,4 +6,10 @@ export type {
   EditorEventMap,
   EditorCoreOptions,
   EditorCapabilities,
+  TurnTarget,
+  ChannelHandle,
+  TranslationHandle,
+  SpeakersHandle,
+  AudioPluginApi,
+  LivePluginApi,
 } from './types'

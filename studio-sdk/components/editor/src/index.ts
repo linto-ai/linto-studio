@@ -1,13 +1,25 @@
 // Core
 export { createEditorCore, provideEditorCore, useEditorCore } from './core'
-export type { EditorCore, EditorPlugin, EditorEventMap, EditorCoreOptions, EditorCapabilities } from './core'
+export type {
+  EditorCore,
+  EditorPlugin,
+  EditorEventMap,
+  EditorCoreOptions,
+  EditorCapabilities,
+  ChannelHandle,
+  TranslationHandle,
+  SpeakersHandle,
+  AudioPluginApi,
+  LivePluginApi,
+} from './core'
 
 // Composant principal
 export { default as EditorLayout } from './components/EditorLayout.vue'
 
 // Plugins
+export { createAudioPlugin } from './plugins/audio'
 export { createLivePlugin } from './plugins/live'
-export type { LivePluginApi, LivePartialEvent, LiveFinalEvent, LiveTranslationEvent } from './plugins/live'
+export type { LivePartialEvent, LiveFinalEvent, LiveTranslationEvent } from './plugins/live'
 
 // Adapter API LinTO
 export { mapApiDocument } from './adapters/apiAdapter'

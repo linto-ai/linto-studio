@@ -1,3 +1,5 @@
+import type { Translation } from "../types/editor"
+
 export function getLanguageDisplayName(
   code: string,
   locale: string,
@@ -12,16 +14,17 @@ export function getLanguageDisplayName(
   }
 }
 
-export function buildLanguageItems(
-  languages: string[],
+export function buildTranslationItems(
+  translations: Translation[],
   locale: string,
   originalLabel: string,
   wildcardLabel = "*",
 ): { value: string; label: string }[] {
-  return languages.map((code, i) => ({
-    value: code,
+  return translations.map((tr) => ({
+    value: tr.id,
     label:
-      getLanguageDisplayName(code, locale, wildcardLabel) +
-      (i === 0 ? ` (${originalLabel})` : ""),
+      tr.languages
+        .map((code) => getLanguageDisplayName(code, locale, wildcardLabel))
+        .join(", ") + (tr.isSource ? ` (${originalLabel})` : ""),
   }))
 }

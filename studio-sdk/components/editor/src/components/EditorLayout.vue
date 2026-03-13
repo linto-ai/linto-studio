@@ -18,44 +18,48 @@ import SidebarSelect from "./atoms/SidebarSelect.vue"
 import { useIsMobile } from "../composables/useIsMobile"
 import { useEditorCore } from "../core"
 import { useI18n } from "../i18n"
-import { buildLanguageItems } from "../utils/intl"
+import { buildTranslationItems } from "../utils/intl"
 
 const editor = useEditorCore()
 const { t, locale } = useI18n()
 const { isMobile } = useIsMobile()
 const isSidebarOpen = ref(false)
 
-const activeChannel = editor.activeChannel
-const activeTurns = editor.activeTurns
-const availableLanguages = editor.availableLanguages
-const activeLanguageCode = editor.activeLanguageCode
-const speakers = editor.speakers
+const activeTurns = editor.activeChannel.activeTranslation.turns
+const speakers = editor.speakers.all
 
 const channels = computed(() => editor.document.value.channels)
+const translations = computed(() => editor.activeChannel.data.value.translations)
+const activeTranslationId = computed(() => editor.activeChannel.activeTranslation.data.value.id)
 const speakerList = computed(() => Array.from(speakers.value.values()))
 
 const audioPlayerRef =
   useTemplateRef<InstanceType<typeof AudioPlayer>>("audioPlayer")
 
 function onTimeUpdate(time: number) {
-  editor.currentTime.value = time
+  if (!editor.audio) return
+  editor.audio.currentTime.value = time
 }
 
 watch(
   () => editor.activeChannelId.value,
   () => {
     audioPlayerRef.value?.pause()
-    editor.currentTime.value = 0
-    editor.isPlaying.value = false
+    if (editor.audio) {
+      editor.audio.currentTime.value = 0
+      editor.audio.isPlaying.value = false
+    }
     isSidebarOpen.value = false
   },
 )
 
-editor.setSeekHandler((t) => audioPlayerRef.value?.seekTo(t))
+if (editor.audio) {
+  editor.audio.setSeekHandler((t) => audioPlayerRef.value?.seekTo(t))
+}
 
-const languageItems = computed(() =>
-  buildLanguageItems(
-    availableLanguages.value,
+const translationItems = computed(() =>
+  buildTranslationItems(
+    translations.value,
     locale.value,
     t("sidebar.originalLanguage"),
     t("language.wildcard"),
@@ -66,8 +70,8 @@ function onChannelChange(channelId: string) {
   editor.setActiveChannel(channelId)
 }
 
-function onLanguageChange(lang: string) {
-  editor.setActiveLanguage(lang)
+function onTranslationChange(translationId: string) {
+  editor.activeChannel.setActiveTranslation(translationId)
 }
 
 </script>
@@ -76,8 +80,8 @@ function onLanguageChange(lang: string) {
   <div class="editor-layout">
     <EditorHeader
       :title="editor.document.value.title"
-      :duration="activeChannel.duration"
-      :language="activeLanguageCode"
+      :duration="editor.activeChannel.data.value.duration"
+      :language="activeTranslationId"
       :is-mobile="isMobile"
       @toggle-sidebar="isSidebarOpen = !isSidebarOpen" />
     <main class="editor-body">
@@ -87,10 +91,10 @@ function onLanguageChange(lang: string) {
         :speakers="speakerList"
         :channels="channels"
         :selected-channel-id="editor.activeChannelId.value"
-        :available-languages="availableLanguages"
-        :selected-language="activeLanguageCode"
+        :translations="translations"
+        :selected-translation-id="activeTranslationId"
         @update:selected-channel-id="onChannelChange"
-        @update:selected-language="onLanguageChange" />
+        @update:selected-translation-id="onTranslationChange" />
 
       <DialogRoot v-model:open="isSidebarOpen">
         <DialogPortal disabled>
@@ -108,22 +112,22 @@ function onLanguageChange(lang: string) {
               :speakers="speakerList"
               :channels="channels"
               :selected-channel-id="editor.activeChannelId.value"
-              :available-languages="availableLanguages"
-              :selected-language="activeLanguageCode"
+              :translations="translations"
+              :selected-translation-id="activeTranslationId"
               @update:selected-channel-id="onChannelChange"
-              @update:selected-language="onLanguageChange" />
+              @update:selected-translation-id="onTranslationChange" />
           </DialogContent>
         </DialogPortal>
       </DialogRoot>
     </main>
     <AudioPlayer
-      v-if="editor.activeAudioSrc.value"
+      v-if="editor.audio?.src.value"
       ref="audioPlayer"
-      :audio-src="editor.activeAudioSrc.value"
+      :audio-src="editor.audio.src.value"
       :turns="activeTurns"
       :speakers="speakers"
       @timeupdate="onTimeUpdate"
-      @play-state-change="(v: boolean) => (editor.isPlaying.value = v)" />
+      @play-state-change="(v: boolean) => { if (editor.audio) editor.audio.isPlaying.value = v }" />
     <div v-if="isMobile" class="mobile-selectors">
       <ChannelSelector
         v-if="channels.length > 1"
@@ -131,11 +135,11 @@ function onLanguageChange(lang: string) {
         :selected-channel-id="editor.activeChannelId.value"
         @update:selected-channel-id="onChannelChange" />
       <SidebarSelect
-        v-if="availableLanguages.length > 1"
-        :items="languageItems"
-        :selected-value="activeLanguageCode"
-        :ariaLabel="t('sidebar.languageLabel')"
-        @update:selected-value="onLanguageChange" />
+        v-if="translations.length > 1"
+        :items="translationItems"
+        :selected-value="activeTranslationId"
+        :ariaLabel="t('sidebar.translationLabel')"
+        @update:selected-value="onTranslationChange" />
     </div>
   </div>
 </template>

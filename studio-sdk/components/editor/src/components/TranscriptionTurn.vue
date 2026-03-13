@@ -17,8 +17,8 @@ const editor = useEditorCore()
 const hasWords = computed(() => props.turn.words.length > 0)
 
 const activeWordId = computed(() => {
-  if (!editor.activeAudioSrc.value || !hasWords.value) return null
-  const time = editor.currentTime.value
+  if (!editor.audio?.src.value || !hasWords.value) return null
+  const time = editor.audio.currentTime.value
   const { startTime, endTime, words } = props.turn
   if (startTime == null || endTime == null) return null
   if (time < startTime || time > endTime) return null
@@ -26,10 +26,10 @@ const activeWordId = computed(() => {
 })
 
 const isTurnActive = computed(() => {
-  if (!editor.activeAudioSrc.value) return false
+  if (!editor.audio?.src.value) return false
   if (props.turn.startTime == null || props.turn.endTime == null) return false
   if (hasWordTimestamps(props.turn.words)) return false
-  const time = editor.currentTime.value
+  const time = editor.audio.currentTime.value
   return time >= props.turn.startTime && time <= props.turn.endTime
 })
 

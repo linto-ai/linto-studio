@@ -4,26 +4,26 @@ import SpeakerIndicator from './atoms/SpeakerIndicator.vue'
 import SidebarSelect from './atoms/SidebarSelect.vue'
 import ChannelSelector from './ChannelSelector.vue'
 import { useI18n } from '../i18n'
-import { buildLanguageItems } from '../utils/intl'
-import type { Speaker, Channel } from '../types/editor'
+import { buildTranslationItems } from '../utils/intl'
+import type { Speaker, Channel, Translation } from '../types/editor'
 
 const props = defineProps<{
   speakers: Speaker[]
   channels: Channel[]
   selectedChannelId: string
-  availableLanguages: string[]
-  selectedLanguage: string
+  translations: Translation[]
+  selectedTranslationId: string
 }>()
 
 defineEmits<{
   'update:selectedChannelId': [id: string]
-  'update:selectedLanguage': [lang: string]
+  'update:selectedTranslationId': [id: string]
 }>()
 
 const { t, locale } = useI18n()
 
-const languageItems = computed(() =>
-  buildLanguageItems(props.availableLanguages, locale.value, t('sidebar.originalLanguage'), t('language.wildcard'))
+const translationItems = computed(() =>
+  buildTranslationItems(props.translations, locale.value, t('sidebar.originalLanguage'), t('language.wildcard'))
 )
 </script>
 
@@ -37,13 +37,13 @@ const languageItems = computed(() =>
         @update:selected-channel-id="$emit('update:selectedChannelId', $event)"
       />
     </section>
-    <section v-if="availableLanguages.length > 1" class="sidebar-section sidebar-section--selector">
-      <h2 class="sidebar-title">{{ t('sidebar.language') }}</h2>
+    <section v-if="translations.length > 1" class="sidebar-section sidebar-section--selector">
+      <h2 class="sidebar-title">{{ t('sidebar.translation') }}</h2>
       <SidebarSelect
-        :items="languageItems"
-        :selected-value="selectedLanguage"
-        :ariaLabel="t('sidebar.languageLabel')"
-        @update:selected-value="$emit('update:selectedLanguage', $event)"
+        :items="translationItems"
+        :selected-value="selectedTranslationId"
+        :ariaLabel="t('sidebar.translationLabel')"
+        @update:selected-value="$emit('update:selectedTranslationId', $event)"
       />
     </section>
     <section class="sidebar-section">

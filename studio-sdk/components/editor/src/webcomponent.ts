@@ -1,6 +1,7 @@
 import { defineCustomElement, ref, h } from "vue"
 import EditorLayout from "./components/EditorLayout.vue"
 import { createEditorCore, provideEditorCore } from "./core"
+import { createAudioPlugin } from "./plugins/audio"
 import { provideI18n, type Locale } from "./i18n"
 import styles from "./styles/variables.css?inline"
 
@@ -14,6 +15,7 @@ const LintoEditor = defineCustomElement({
     provideI18n(locale)
 
     const editor = createEditorCore()
+    editor.use(createAudioPlugin())
     provideEditorCore(editor)
 
     expose({ editor })
@@ -34,3 +36,4 @@ export function register(tagName = "linto-editor") {
 
 export { LintoEditor }
 export { createLivePlugin } from "./plugins/live"
+export { createAudioPlugin } from "./plugins/audio"
