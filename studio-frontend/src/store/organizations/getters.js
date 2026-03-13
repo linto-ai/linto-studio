@@ -7,18 +7,25 @@ const getters = {
   getOrganizationById: (state) => (id) => {
     return state.organizations[id]
   },
-  getDefaultOrganizationId(state) {
-    const cookie = getCookie("organizationScope")
-    const res =
-      state.currentOrganizationScope ||
-      cookie ||
-      Object.values(state.organizations)?.[0]?._id ||
-      null
-
-    if (!state.organizations[res]) {
-      return Object.values(state.organizations)?.[0]?._id
+  getDefaultOrganizationId(state, getters, rootState, rootGetters) {
+    const favoriteOrgId = rootGetters["user/getFavoriteOrganizationId"]
+    if (favoriteOrgId && state.organizations[favoriteOrgId]) {
+      return favoriteOrgId
     }
-    return res
+
+    if (
+      state.currentOrganizationScope &&
+      state.organizations[state.currentOrganizationScope]
+    ) {
+      return state.currentOrganizationScope
+    }
+
+    const cookie = getCookie("organizationScope")
+    if (cookie && state.organizations[cookie]) {
+      return cookie
+    }
+
+    return Object.values(state.organizations)?.[0]?._id || null
   },
   getOrganizationsAsArray(state) {
     return Object.values(state.organizations)

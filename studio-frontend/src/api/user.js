@@ -156,6 +156,21 @@ export async function apiSearchUser(search, signal, notif) {
   )
 }
 
+export async function apiSetDefaultOrganization(organizationId) {
+  return await sendRequest(
+    `${BASE_API}/users/self/default-organization`,
+    { method: "put" },
+    { organizationId },
+  )
+}
+
+export async function apiUnsetDefaultOrganization() {
+  return await sendRequest(
+    `${BASE_API}/users/self/default-organization`,
+    { method: "delete" },
+  )
+}
+
 export async function apiUpdateUserInfo(payload, notif) {
   return await sendRequest(
     `${BASE_API}/users/self`,

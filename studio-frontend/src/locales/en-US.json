@@ -825,7 +825,8 @@
     "title": "Switch organization",
     "current": "Current",
     "create_organization": "Create an organization",
-    "backoffice": "Backoffice"
+    "backoffice": "Backoffice",
+    "favorite": "Set as default organization"
   },
   "navigation": {
     "account": {
