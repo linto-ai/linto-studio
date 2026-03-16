@@ -126,7 +126,8 @@
     "tags": "Thématiques",
     "title": "Paramètres",
     "logout": "Déconnexion",
-    "email_not_verified": "Votre adresse email n'est pas vérifiée. Veuillez vérifier votre adresse email pour accéder à toutes les fonctionnalités."
+    "email_not_verified": "Votre adresse email n'est pas vérifiée. Veuillez vérifier votre adresse email pour accéder à toutes les fonctionnalités.",
+    "voice_signatures": "Signatures vocales"
   },
   "backoffice": {
     "navigation": {
@@ -1588,5 +1589,50 @@
     "delete_confirm_inline": "Supprimer « {name} » ?",
     "error": "Une erreur est survenue",
     "streaming": "Génération de la réponse..."
+  },
+  "voice_signatures": {
+    "title": "Signatures vocales",
+    "description": "Gérez les signatures vocales pour l'identification des locuteurs (diarisation). Enregistrez un court échantillon audio pour chaque locuteur afin d'améliorer la reconnaissance automatique.",
+    "add_signature": "Ajouter une signature",
+    "speaker_name": "Nom du locuteur",
+    "duration": "Durée",
+    "created_at": "Créée le",
+    "actions": "Actions",
+    "loading": "Chargement des signatures vocales...",
+    "empty": "Aucune signature vocale. Ajoutez-en une pour améliorer l'identification des locuteurs.",
+    "created_success": "Signature vocale créée avec succès",
+    "created_error": "Une erreur est survenue lors de la création de la signature vocale",
+    "fetch_error": "Une erreur est survenue lors du chargement des signatures vocales",
+    "playback_error": "Une erreur est survenue lors de la lecture audio",
+    "updated_success": "Signature vocale mise à jour avec succès",
+    "updated_error": "Une erreur est survenue lors de la mise à jour de la signature vocale",
+    "deleted_success": "Signature vocale supprimée avec succès",
+    "deleted_error": "Une erreur est survenue lors de la suppression de la signature vocale",
+    "modal_record": {
+      "title": "Enregistrer une signature vocale",
+      "speaker_name": "Nom du locuteur",
+      "speaker_name_placeholder": "ex. Jean Dupont",
+      "text_to_read_label": "Lisez le texte suivant à voix haute :",
+      "change_text": "Changer de texte",
+      "recording": "Enregistrement...",
+      "recording_complete": "Enregistrement terminé",
+      "ready_to_record": "Prêt à enregistrer",
+      "start_recording": "Commencer l'enregistrement",
+      "stop_recording": "Arrêter",
+      "re_record": "Réenregistrer",
+      "save": "Enregistrer",
+      "microphone_error": "Impossible d'accéder au microphone. Vérifiez les permissions de votre navigateur.",
+      "prompt_texts": [
+        "Le soleil se couche doucement derrière les montagnes, illuminant le ciel de nuances orangées et violettes. Les oiseaux chantent leurs dernières mélodies avant la tombée de la nuit paisible.",
+        "Dans cette forêt ancienne, les arbres centenaires se dressent fièrement vers le ciel. Le vent murmure à travers leurs branches, créant une symphonie naturelle qui apaise les esprits.",
+        "La mer s'étend à perte de vue, ses vagues rythmées viennent caresser le sable doré. Au loin, un voilier blanc glisse silencieusement sur les flots, porté par la brise marine.",
+        "Les rues de la vieille ville racontent des histoires d'un autre temps. Chaque pierre, chaque façade porte la mémoire des générations passées qui ont façonné ce lieu unique.",
+        "Ce matin, la rosée perle sur les pétales des fleurs du jardin. Le parfum délicat des roses se mêle à celui du café fraîchement préparé, annonçant une belle journée."
+      ]
+    },
+    "modal_delete": {
+      "title": "Supprimer la signature vocale",
+      "content": "Êtes-vous sûr de vouloir supprimer la signature vocale de « {name} » ?"
+    }
   }
 }

@@ -121,6 +121,10 @@ function getAudioSessionFolder() {
   return process.env.VOLUME_AUDIO_SESSION_PATH
 }
 
+function getVoiceSignaturesFolder() {
+  return process.env.VOLUME_VOICE_SIGNATURES_PATH
+}
+
 async function deleteAudioFileIfOrphaned(filepath) {
   if (!filepath) return
   const model = require(`${process.cwd()}/lib/mongodb/models`)
@@ -138,4 +142,5 @@ module.exports = {
   getStorageFolder,
   getPictureFolder,
   getAudioFolder,
+  getVoiceSignaturesFolder,
 }

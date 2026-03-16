@@ -125,7 +125,8 @@
     "tags": "Topics",
     "title": "Settings",
     "logout": "Logout",
-    "email_not_verified": "Your email is not verified. Please verify your email to access all features."
+    "email_not_verified": "Your email is not verified. Please verify your email to access all features.",
+    "voice_signatures": "Voice signatures"
   },
   "backoffice": {
     "navigation": {
@@ -1587,5 +1588,50 @@
     "delete_confirm_inline": "Delete \"{name}\"?",
     "error": "An error occurred",
     "streaming": "Generating response..."
+  },
+  "voice_signatures": {
+    "title": "Voice signatures",
+    "description": "Manage voice signatures for speaker identification (diarization). Record a short audio sample for each speaker to improve automatic speaker recognition.",
+    "add_signature": "Add a signature",
+    "speaker_name": "Speaker name",
+    "duration": "Duration",
+    "created_at": "Created",
+    "actions": "Actions",
+    "loading": "Loading voice signatures...",
+    "empty": "No voice signatures yet. Add one to improve speaker identification.",
+    "created_success": "Voice signature created successfully",
+    "created_error": "An error occurred while creating the voice signature",
+    "fetch_error": "An error occurred while loading voice signatures",
+    "playback_error": "An error occurred while playing the audio",
+    "updated_success": "Voice signature updated successfully",
+    "updated_error": "An error occurred while updating the voice signature",
+    "deleted_success": "Voice signature deleted successfully",
+    "deleted_error": "An error occurred while deleting the voice signature",
+    "modal_record": {
+      "title": "Record a voice signature",
+      "speaker_name": "Speaker name",
+      "speaker_name_placeholder": "e.g. John Doe",
+      "text_to_read_label": "Read the following text aloud:",
+      "change_text": "Change text",
+      "recording": "Recording...",
+      "recording_complete": "Recording complete",
+      "ready_to_record": "Ready to record",
+      "start_recording": "Start recording",
+      "stop_recording": "Stop",
+      "re_record": "Re-record",
+      "save": "Save",
+      "microphone_error": "Unable to access microphone. Please check your browser permissions.",
+      "prompt_texts": [
+        "The sun sets gently behind the mountains, illuminating the sky with shades of orange and violet. The birds sing their last melodies before the peaceful nightfall arrives.",
+        "In this ancient forest, centuries-old trees stand proudly toward the sky. The wind whispers through their branches, creating a natural symphony that soothes the spirits.",
+        "The sea stretches as far as the eye can see, its rhythmic waves caressing the golden sand. In the distance, a white sailboat glides silently on the waves, carried by the sea breeze.",
+        "The streets of the old town tell stories from another time. Every stone, every facade carries the memory of past generations who shaped this unique place.",
+        "This morning, dew glistens on the petals of the garden flowers. The delicate scent of roses mingles with that of freshly brewed coffee, heralding a beautiful day."
+      ]
+    },
+    "modal_delete": {
+      "title": "Delete voice signature",
+      "content": "Are you sure you want to delete the voice signature for \"{name}\"?"
+    }
   }
 }

@@ -80,6 +80,12 @@
                 <span>{{ $t("app_settings_modal.tags") }}</span>
               </a>
             </li>
+            <li :class="{ active: selectedTab === 'voiceSignatures' }">
+              <a href="#" @click="selectTab('voiceSignatures')">
+                <ph-icon name="microphone" weight="bold"></ph-icon>
+                <span>{{ $t("app_settings_modal.voice_signatures") }}</span>
+              </a>
+            </li>
             <li :class="{ active: selectedTab === 'apiTokens' }" v-if="isAdmin">
               <a href="#" @click="selectTab('apiTokens')">
                 <ph-icon name="key" weight="bold"></ph-icon>
@@ -132,6 +138,11 @@
           :userInfo="user" />
       </div>
 
+      <div
+        v-if="selectedTab === 'voiceSignatures'"
+        class="app-settings__section">
+        <VoiceSignatureSettings :organizationId="organizationId" />
+      </div>
       <div v-if="selectedTab === 'apiTokens'" class="app-settings__section">
         <ApiTokenSettings v-if="isAdmin" :organizationId="organizationId" />
       </div>
@@ -162,6 +173,7 @@ import UpdateOrganizationUsers from "@/components/UpdateOrganizationUsers.vue"
 import UpdateOrganizationDeletion from "@/components/UpdateOrganizationDeletion.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import ApiTokenSettings from "@/components/ApiTokenSettings.vue"
+import VoiceSignatureSettings from "@/components/VoiceSignatureSettings.vue"
 
 export default {
   name: "AppSettingsModal",
@@ -180,6 +192,7 @@ export default {
     UpdateOrganizationDeletion,
     Modal,
     ApiTokenSettings,
+    VoiceSignatureSettings,
   },
   data() {
     return {

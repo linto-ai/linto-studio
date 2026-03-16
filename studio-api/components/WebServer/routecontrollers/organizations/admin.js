@@ -3,9 +3,11 @@ const debug = require("debug")(
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
-const { deleteAudioFileIfOrphaned } = require(
-  `${process.cwd()}/components/WebServer/controllers/files/store`,
-)
+const {
+  deleteAudioFileIfOrphaned,
+  deleteFile,
+  getStorageFolder,
+} = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 
 const {
   OrganizationUnsupportedMediaType,
@@ -70,6 +72,21 @@ async function deleteOrganization(req, res, next) {
     })
     //delete all subtitle from that organization
     await model.conversationSubtitles.deleteAllFromOrga(
+      organization._id.toString(),
+    )
+
+    // Delete all voice signatures and their audio files
+    const voiceSignatures = await model.voiceSignatures.getByOrganizationId(
+      organization._id.toString(),
+    )
+    if (Array.isArray(voiceSignatures)) {
+      for (const sig of voiceSignatures) {
+        if (sig.audioFilePath) {
+          deleteFile(`${getStorageFolder()}/${sig.audioFilePath}`)
+        }
+      }
+    }
+    await model.voiceSignatures.deleteAllFromOrganization(
       organization._id.toString(),
     )
 
