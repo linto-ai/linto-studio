@@ -1621,6 +1621,11 @@
       "stop_recording": "Arrêter",
       "re_record": "Réenregistrer",
       "save": "Enregistrer",
+      "tab_record": "Enregistrer",
+      "tab_upload": "Importer un fichier",
+      "upload_label": "Fichier audio",
+      "drop_or_browse": "Glissez-déposez un fichier audio ici, ou parcourez",
+      "browse": "Parcourir",
       "microphone_error": "Impossible d'accéder au microphone. Vérifiez les permissions de votre navigateur.",
       "prompt_texts": [
         "Le soleil se couche doucement derrière les montagnes, illuminant le ciel de nuances orangées et violettes. Les oiseaux chantent leurs dernières mélodies avant la tombée de la nuit paisible.",

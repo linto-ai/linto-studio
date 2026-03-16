@@ -1620,6 +1620,11 @@
       "stop_recording": "Stop",
       "re_record": "Re-record",
       "save": "Save",
+      "tab_record": "Record",
+      "tab_upload": "Upload file",
+      "upload_label": "Audio file",
+      "drop_or_browse": "Drag and drop an audio file here, or browse",
+      "browse": "Browse files",
       "microphone_error": "Unable to access microphone. Please check your browser permissions.",
       "prompt_texts": [
         "The sun sets gently behind the mountains, illuminating the sky with shades of orange and violet. The birds sing their last melodies before the peaceful nightfall arrives.",
