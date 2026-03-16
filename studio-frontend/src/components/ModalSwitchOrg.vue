@@ -33,15 +33,10 @@
           v-for="org in sortedOrganizations"
           :key="org._id"
           class="modal-switch-org__list__item">
-          <Button
-            class="modal-switch-org__list__item__favorite"
-            :class="{ active: isFavoriteOrganization(org._id) }"
-            @click.native.stop.prevent="toggleFavoriteOrganization(org._id)"
-            icon="star"
+          <FavoriteStar
+            :value="isFavoriteOrganization(org._id)"
             :title="$t('modal_switch_org.favorite')"
-            :iconWeight="isFavoriteOrganization(org._id) ? 'fill' : 'regular'"
-            variant="transparent"
-            size="sm" />
+            @input="toggleFavoriteOrganization(org._id)" />
           <Avatar
             :text="org.name.slice(0, 1)"
             :size="isMobile ? 'md' : 'sm'"
@@ -87,6 +82,7 @@
 import { mapGetters, mapActions } from "vuex"
 import Modal from "@/components/molecules/Modal.vue"
 import ModalCreateOrganization from "@/components/ModalCreateOrganization.vue"
+import FavoriteStar from "@/components/atoms/FavoriteStar.vue"
 import { orgDisplayName } from "@/tools/orgDisplayName"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
@@ -97,6 +93,7 @@ export default {
   components: {
     Modal,
     ModalCreateOrganization,
+    FavoriteStar,
   },
   mixins: [platformRoleMixin, orgaRoleMixin],
   props: {
@@ -139,11 +136,10 @@ export default {
             .map((org) => ({
               ...org,
               role: getUserRoleInOrganization(org, this.userInfo._id),
+              isFav: this.isFavoriteOrganization(org._id),
             }))
             .sort((a, b) => {
-              const aFav = this.isFavoriteOrganization(a._id)
-              const bFav = this.isFavoriteOrganization(b._id)
-              if (aFav !== bFav) return aFav ? -1 : 1
+              if (a.isFav !== b.isFav) return a.isFav ? -1 : 1
 
               if (a.role > b.role) return -1
               if (a.role < b.role) return 1
@@ -167,7 +163,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@use "@/style/mixin" as *;
 .modal-switch-org {
   &__list {
     &__item {
@@ -204,10 +199,6 @@ export default {
         display: inline-block;
         width: 20px;
         flex-shrink: 0;
-      }
-
-      &__favorite {
-        @include favorite-star;
       }
 
       &.new-org {
