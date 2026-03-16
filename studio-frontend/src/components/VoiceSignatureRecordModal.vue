@@ -20,22 +20,12 @@
           class="voice-record__input" />
       </div>
 
-      <div class="voice-record__mode-tabs">
-        <button
-          :class="['voice-record__tab', { active: mode === 'record' }]"
-          @click="switchMode('record')"
-          :disabled="recording">
-          <ph-icon name="microphone" size="sm" />
-          {{ $t("voice_signatures.modal_record.tab_record") }}
-        </button>
-        <button
-          :class="['voice-record__tab', { active: mode === 'upload' }]"
-          @click="switchMode('upload')"
-          :disabled="recording">
-          <ph-icon name="upload-simple" size="sm" />
-          {{ $t("voice_signatures.modal_record.tab_upload") }}
-        </button>
-      </div>
+      <Tabs
+        :tabs="modeTabs"
+        v-model="mode"
+        variant="inline"
+        :disabled="recording"
+        @input="switchMode" />
 
       <!-- Record mode -->
       <template v-if="mode === 'record'">
@@ -104,47 +94,26 @@
 
       <!-- Upload mode -->
       <template v-if="mode === 'upload'">
-        <div class="voice-record__upload">
-          <label>{{ $t("voice_signatures.modal_record.upload_label") }}</label>
-          <div
-            class="voice-record__dropzone"
-            :class="{ 'voice-record__dropzone--active': dragOver }"
-            @dragover.prevent="dragOver = true"
-            @dragleave="dragOver = false"
-            @drop.prevent="handleDrop">
-            <template v-if="!uploadedFile">
-              <ph-icon name="file-audio" size="xl" />
-              <p>{{ $t("voice_signatures.modal_record.drop_or_browse") }}</p>
-              <Button
-                variant="secondary"
-                size="sm"
-                icon="folder-open"
-                :label="$t('voice_signatures.modal_record.browse')"
-                @click="$refs.fileInput.click()" />
-            </template>
-            <template v-else>
-              <div class="voice-record__file-info">
-                <ph-icon name="file-audio" />
-                <span>{{ uploadedFile.name }}</span>
-                <Button
-                  variant="tertiary"
-                  icon="x"
-                  iconWeight="regular"
-                  @click="resetAudio" />
-              </div>
-              <audio
-                ref="uploadAudioPlayer"
-                :src="audioUrl"
-                controls></audio>
-            </template>
+        <div v-if="uploadedFile" class="voice-record__uploaded">
+          <div class="voice-record__file-info">
+            <ph-icon name="file-audio" />
+            <span>{{ uploadedFile.name }}</span>
+            <Button
+              variant="tertiary"
+              icon="x"
+              iconWeight="regular"
+              @click="resetAudio" />
           </div>
-          <input
-            ref="fileInput"
-            type="file"
-            accept="audio/*"
-            class="voice-record__file-input"
-            @change="handleFileSelect" />
+          <audio ref="uploadAudioPlayer" :src="audioUrl" controls></audio>
         </div>
+        <Droparea
+          v-else
+          :accepts="['audio/*']"
+          @drop="handleDropareaFiles"
+          @error="handleDropareaError">
+          <ph-icon name="file-audio" size="xl" />
+          <p>{{ $t("voice_signatures.modal_record.drop_or_browse") }}</p>
+        </Droparea>
       </template>
     </div>
   </Modal>
@@ -153,6 +122,8 @@
 <script>
 import Modal from "@/components/molecules/Modal.vue"
 import Button from "@/components/atoms/Button.vue"
+import Tabs from "@/components/molecules/Tabs.vue"
+import Droparea from "@/components/molecules/Droparea.vue"
 import { apiCreateVoiceSignature } from "@/api/voiceSignature.js"
 import { formatDuration } from "@/tools/formatDuration.js"
 import { audioDuration } from "@/tools/audioDuration.js"
@@ -172,7 +143,7 @@ function getExtensionForMimeType(mimeType) {
 
 export default {
   name: "VoiceSignatureRecordModal",
-  components: { Modal, Button },
+  components: { Modal, Button, Tabs, Droparea },
   props: {
     value: { type: Boolean, required: true },
     organizationId: { type: String, required: true },
@@ -193,7 +164,6 @@ export default {
       recordingTime: 0,
       recordingTimer: null,
       uploadDuration: null,
-      dragOver: false,
     }
   },
   computed: {
@@ -205,6 +175,20 @@ export default {
         this.$emit("input", value)
         if (!value) this.resetAll()
       },
+    },
+    modeTabs() {
+      return [
+        {
+          name: "record",
+          label: this.$t("voice_signatures.modal_record.tab_record"),
+          icon: "microphone",
+        },
+        {
+          name: "upload",
+          label: this.$t("voice_signatures.modal_record.tab_upload"),
+          icon: "upload-simple",
+        },
+      ]
     },
     hasAudio() {
       return !!(this.audioBlob || this.uploadedFile)
@@ -221,10 +205,9 @@ export default {
     },
   },
   methods: {
-    switchMode(newMode) {
+    switchMode() {
       if (this.recording) return
       this.resetAudio()
-      this.mode = newMode
     },
     shufflePrompt() {
       const texts = this.promptTexts
@@ -308,16 +291,17 @@ export default {
     },
 
     // -- Upload --
-    handleFileSelect(event) {
-      const file = event.target.files[0]
-      if (file) this.setUploadedFile(file)
-    },
-    handleDrop(event) {
-      this.dragOver = false
-      const file = event.dataTransfer.files[0]
-      if (file && file.type.startsWith("audio/")) {
-        this.setUploadedFile(file)
+    handleDropareaFiles(files) {
+      if (files.length > 0) {
+        this.setUploadedFile(files[0])
       }
+    },
+    handleDropareaError(err) {
+      this.$store.dispatch("system/addNotification", {
+        message: err.msg,
+        type: "error",
+        timeout: 5000,
+      })
     },
     async setUploadedFile(file) {
       this.resetAudio()
@@ -344,9 +328,6 @@ export default {
       this.uploadedFile = null
       this.uploadDuration = null
       this.recordingTime = 0
-      if (this.$refs.fileInput) {
-        this.$refs.fileInput.value = ""
-      }
     },
     resetAll() {
       this.resetAudio()
@@ -443,44 +424,6 @@ export default {
     }
   }
 
-  &__mode-tabs {
-    display: flex;
-    gap: 0;
-    border: 1px solid var(--neutral-20);
-    border-radius: 6px;
-    overflow: hidden;
-  }
-
-  &__tab {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4rem;
-    padding: 0.5rem;
-    border: none;
-    background: var(--background-primary);
-    color: var(--text-secondary);
-    font-size: 14px;
-    cursor: pointer;
-    transition: background 0.15s, color 0.15s;
-
-    &:not(:last-child) {
-      border-right: 1px solid var(--neutral-20);
-    }
-
-    &.active {
-      background: var(--primary-soft);
-      color: var(--primary-hard);
-      font-weight: 600;
-    }
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-  }
-
   &__text-prompt {
     display: flex;
     flex-direction: column;
@@ -561,37 +504,10 @@ export default {
     }
   }
 
-  &__upload {
+  &__uploaded {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-
-    label {
-      font-weight: 600;
-      font-size: 14px;
-    }
-  }
-
-  &__dropzone {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     gap: 0.75rem;
-    padding: 1.5rem;
-    border: 2px dashed var(--neutral-30);
-    border-radius: 8px;
-    color: var(--text-secondary);
-    transition: border-color 0.15s, background 0.15s;
-
-    &--active {
-      border-color: var(--primary-hard);
-      background: var(--primary-soft);
-    }
-
-    p {
-      margin: 0;
-      font-size: 14px;
-    }
 
     audio {
       width: 100%;
@@ -604,10 +520,6 @@ export default {
     gap: 0.5rem;
     font-size: 14px;
     color: var(--text-primary);
-  }
-
-  &__file-input {
-    display: none;
   }
 }
 
