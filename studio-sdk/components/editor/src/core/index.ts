@@ -12,4 +12,5 @@ export type {
   SpeakersHandle,
   AudioPluginApi,
   LivePluginApi,
+  SubtitlePluginApi,
 } from './types'

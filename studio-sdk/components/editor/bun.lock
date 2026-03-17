@@ -5,11 +5,13 @@
     "": {
       "name": "editor",
       "dependencies": {
+        "diff": "^8.0.3",
         "lucide-vue-next": "^0.564.0",
         "reka-ui": "^2.8.0",
         "wavesurfer.js": "^7.12.1",
       },
       "devDependencies": {
+        "@types/diff": "^8.0.0",
         "@types/node": "^24.10.1",
         "@vitejs/plugin-vue": "^6.0.2",
         "@vue/tsconfig": "^0.8.1",
@@ -182,6 +184,8 @@
     "@tanstack/vue-virtual": ["@tanstack/vue-virtual@3.13.18", "", { "dependencies": { "@tanstack/virtual-core": "3.13.18" }, "peerDependencies": { "vue": "^2.7.0 || ^3.0.0" } }, "sha512-6pT8HdHtTU5Z+t906cGdCroUNA5wHjFXsNss9gwk7QAr1VNZtz9IQCs2Nhx0gABK48c+OocHl2As+TMg8+Hy4A=="],
 
     "@types/argparse": ["@types/argparse@1.0.38", "", {}, "sha512-ebDJ9b0e702Yr7pWgB0jzm+CX4Srzz8RcXtLJDJB+BSccqMa36uyH/zUsSYao5+BD1ytv3k3rPYCq4mAE1hsXA=="],
+
+    "@types/diff": ["@types/diff@8.0.0", "", { "dependencies": { "diff": "*" } }, "sha512-o7jqJM04gfaYrdCecCVMbZhNdG6T1MHg/oQoRFdERLV+4d+V7FijhiEAbFu0Usww84Yijk9yH58U4Jk4HbtzZw=="],
 
     "@types/estree": ["@types/estree@1.0.8", "", {}, "sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w=="],
 

@@ -11,6 +11,7 @@ export type {
   SpeakersHandle,
   AudioPluginApi,
   LivePluginApi,
+  SubtitlePluginApi,
 } from './core'
 
 // Composant principal
@@ -20,6 +21,8 @@ export { default as EditorLayout } from './components/EditorLayout.vue'
 export { createAudioPlugin } from './plugins/audio'
 export { createLivePlugin } from './plugins/live'
 export type { LivePartialEvent, LiveFinalEvent, LiveTranslationEvent } from './plugins/live'
+export { createSubtitlePlugin } from './plugins/subtitle'
+export type { SubtitlePluginOptions } from './plugins/subtitle'
 
 // Adapter API LinTO
 export { mapApiDocument } from './adapters/apiAdapter'

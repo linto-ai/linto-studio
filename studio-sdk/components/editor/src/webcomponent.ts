@@ -8,9 +8,11 @@ import styles from "./styles/variables.css?inline"
 const LintoEditor = defineCustomElement({
   props: {
     locale: { type: String, default: "fr" },
+    noHeader: { type: Boolean, default: false },
   },
   styles: [styles],
   setup(props, { expose }) {
+    console.log(props)
     const locale = ref<Locale>(props.locale as Locale)
     provideI18n(locale)
 
@@ -22,7 +24,7 @@ const LintoEditor = defineCustomElement({
 
     return () => {
       if (editor.document.value.channels.length ?? 0) {
-        return h(EditorLayout)
+        return h(EditorLayout, { showHeader: !props.noHeader })
       }
 
       return null
@@ -37,3 +39,4 @@ export function register(tagName = "linto-editor") {
 export { LintoEditor }
 export { createLivePlugin } from "./plugins/live"
 export { createAudioPlugin } from "./plugins/audio"
+export { createSubtitlePlugin } from "./plugins/subtitle"

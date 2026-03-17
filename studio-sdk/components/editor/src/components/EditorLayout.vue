@@ -13,12 +13,20 @@ import EditorHeader from "./EditorHeader.vue"
 import TranscriptionPanel from "./TranscriptionPanel.vue"
 import SpeakerSidebar from "./SpeakerSidebar.vue"
 import AudioPlayer from "./AudioPlayer.vue"
+import SubtitleBanner from "./SubtitleBanner.vue"
+import SubtitleFullscreen from "./SubtitleFullscreen.vue"
 import ChannelSelector from "./ChannelSelector.vue"
 import SidebarSelect from "./atoms/SidebarSelect.vue"
 import { useIsMobile } from "../composables/useIsMobile"
 import { useEditorCore } from "../core"
 import { useI18n } from "../i18n"
 import { buildTranslationItems } from "../utils/intl"
+
+const props = withDefaults(defineProps<{
+  showHeader?: boolean
+}>(), {
+  showHeader: true,
+})
 
 const editor = useEditorCore()
 const { t, locale } = useI18n()
@@ -79,6 +87,7 @@ function onTranslationChange(translationId: string) {
 <template>
   <div class="editor-layout">
     <EditorHeader
+      v-if="props.showHeader"
       :title="editor.document.value.title"
       :duration="editor.activeChannel.data.value.duration"
       :language="activeTranslationId"
@@ -128,6 +137,8 @@ function onTranslationChange(translationId: string) {
       :speakers="speakers"
       @timeupdate="onTimeUpdate"
       @play-state-change="(v: boolean) => { if (editor.audio) editor.audio.isPlaying.value = v }" />
+    <SubtitleBanner v-if="editor.subtitle && !isMobile && !editor.subtitle.isFullscreen.value" />
+    <SubtitleFullscreen v-if="editor.subtitle?.isFullscreen.value" />
     <div v-if="isMobile" class="mobile-selectors">
       <ChannelSelector
         v-if="channels.length > 1"

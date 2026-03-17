@@ -43,9 +43,8 @@
       </SessionHeader>
     </template>
 
-    <template v-slot:sidebar>
+    <template v-slot:sidebar v-if="useMicrophone && sessionLoaded">
       <SessionLiveMicrophoneStatus
-        v-if="useMicrophone && sessionLoaded"
         @toggle-microphone="toggleMicrophone"
         :speaking="speaking"
         :isRecording="isRecording"
@@ -60,7 +59,7 @@
         }}
       </div>
       <IsMobile>
-        <template #desktop>
+        <!-- <template #desktop>
           <SessionLiveToolbar
             v-if="sessionLoaded"
             :channels="channels"
@@ -76,7 +75,7 @@
             :displayWatermark="displayWatermark"
             :watermarkPinned="watermarkPinned"
             @updateWatermarkSettings="syncWatermarkSettings" />
-        </template>
+        </template> -->
       </IsMobile>
     </template>
 
@@ -90,15 +89,12 @@
         :session="session"
         :isFromPublicLink="isFromPublicLink" />
 
-      <SessionLiveNG v-else :session="session" :websocketInstance="websocketInstance" />
-      <IsMobile>
-        <SessionDropdownChannelSelector
-          v-if="sessionLoaded"
-          :channels="channels"
-          :qualifiedForCrossSubtitles="qualifiedForCrossSubtitles"
-          v-bind:selectedChannel.sync="selectedChannel"
-          v-bind:selectedTranslation.sync="selectedTranslation" />
-      </IsMobile>
+      <SessionLiveNG
+        v-else
+        ref="sessionLiveNG"
+        :session="session"
+        :websocketInstance="websocketInstance" />
+
       <Modal
         :withActions="false"
         title="Setup microphone"
@@ -232,6 +228,7 @@ export default {
       this.updateUrl()
     },
     showMobileSubtitles() {
+      this.$refs["sessionLiveNG"].showMobileSubtitles()
       this.showSubtitlesFullscreen = true
     },
     closeSubtitleFullscreen() {

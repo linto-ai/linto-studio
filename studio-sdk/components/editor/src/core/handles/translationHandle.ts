@@ -42,5 +42,18 @@ export function createTranslationHandle(
     emit("turn:update", { turn: result.updated })
   }
 
-  return { data, turns, addTurn, updateTurn, removeTurn, updateWords }
+  function setTurns(turns: Turn[]): void {
+    const translation = getTranslation()
+    const seen = new Set<string>()
+    for (const turn of turns) {
+      if (turn.speakerId && !seen.has(turn.speakerId)) {
+        seen.add(turn.speakerId)
+        speakersEnsure(turn.speakerId)
+      }
+    }
+    translation.turns = turns
+    emit("translation:sync", { translationId: translation.id })
+  }
+
+  return { data, turns, addTurn, updateTurn, removeTurn, updateWords, setTurns }
 }

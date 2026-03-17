@@ -64,7 +64,7 @@ const speakerColor = computed(() => props.speaker?.color ?? "transparent")
 
 <style scoped>
 .turn {
-  padding: var(--spacing-md) var(--spacing-lg);
+  padding: var(--spacing-sm) var(--spacing-lg);
 }
 
 .turn + .turn {

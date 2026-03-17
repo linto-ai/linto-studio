@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChevronDown, Check } from 'lucide-vue-next'
+import { ChevronDown, Check } from "lucide-vue-next"
 import {
   SelectRoot,
   SelectTrigger,
@@ -11,7 +11,7 @@ import {
   SelectItem,
   SelectItemText,
   SelectItemIndicator,
-} from 'reka-ui'
+} from "reka-ui"
 
 defineProps<{
   items: { value: string; label: string }[]
@@ -20,7 +20,7 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
-  'update:selectedValue': [value: string]
+  "update:selectedValue": [value: string]
 }>()
 </script>
 
@@ -28,27 +28,26 @@ const emit = defineEmits<{
   <div class="sidebar-select">
     <SelectRoot
       :model-value="selectedValue"
-      @update:model-value="emit('update:selectedValue', $event as string)"
-    >
-      <SelectTrigger
-        class="sidebar-select-trigger"
-        :aria-label="ariaLabel"
-      >
-        <SelectValue />
+      @update:model-value="emit('update:selectedValue', $event as string)">
+      <SelectTrigger class="sidebar-select-trigger" :aria-label="ariaLabel">
+        <SelectValue class="sidebar-select-trigger-label" />
         <SelectIcon>
           <ChevronDown :size="16" />
         </SelectIcon>
       </SelectTrigger>
 
       <SelectPortal disabled>
-        <SelectContent class="sidebar-select-content" position="popper" :side-offset="4" position-strategy="absolute">
+        <SelectContent
+          class="sidebar-select-content"
+          position="popper"
+          :side-offset="4"
+          position-strategy="absolute">
           <SelectViewport>
             <SelectItem
               v-for="item in items"
               :key="item.value"
               :value="item.value"
-              class="sidebar-select-item"
-            >
+              class="sidebar-select-item">
               <SelectItemIndicator class="sidebar-select-item-indicator">
                 <Check :size="14" />
               </SelectItemIndicator>
@@ -89,6 +88,11 @@ const emit = defineEmits<{
   background-color: var(--color-surface-hover);
 }
 
+.sidebar-select-trigger-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 :deep(.sidebar-select-content) {
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -98,6 +102,7 @@ const emit = defineEmits<{
   min-width: var(--reka-select-trigger-width);
   overflow: hidden;
   padding: var(--spacing-xs) 0;
+  position: absolute;
 }
 
 :deep(.sidebar-select-item) {

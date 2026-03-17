@@ -23,6 +23,7 @@ const en: Record<keyof typeof fr, string> = {
   'sidebar.translationLabel': 'Translation',
   'sidebar.originalLanguage': 'original',
   'language.wildcard': 'Multilingual',
+  'subtitle.exitFullscreen': 'Exit fullscreen',
 }
 
 export default en

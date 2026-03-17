@@ -1,12 +1,15 @@
 <template>
-  <linto-editor ref="editor" locale="fr" />
+  <linto-editor ref="editor" locale="en" no-header />
 </template>
 
 <script>
 import { markRaw } from "vue"
 import { sessionModelMixin } from "@/mixins/sessionModel.js"
 import sessionToEditorDocument from "@/tools/sessionToEditorDocument.js"
-import { createLivePlugin } from "@linto/studio-editor/webcomponent"
+import {
+  createLivePlugin,
+  createSubtitlePlugin,
+} from "@linto/studio-editor/webcomponent"
 import computeSessionTurnUniqueId from "@/const/computeSessionTurnUniqueId"
 
 export default {
@@ -21,13 +24,10 @@ export default {
       editor: null,
       offChannelChange: null,
       sessionStartMs: new Date(this.session.startTime).getTime(),
+      activeChannelIndex: null,
     }
   },
-  computed: {
-    activeChannelIndex() {
-      return this.editor?.activeChannelId.value ?? null
-    },
-  },
+  computed: {},
   watch: {
     "websocketInstance.state.isConnected"(connected) {
       if (connected) this.subscribeToWebsocket()
@@ -52,11 +52,16 @@ export default {
       this.livePlugin = createLivePlugin()
       editor.use(this.livePlugin)
 
+      editor.use(createSubtitlePlugin())
+
       const doc = sessionToEditorDocument(this.session)
       console.log(doc)
       editor.setDocument(doc)
 
-      this.offChannelChange = editor.on("channel:change", () => {
+      this.activeChannelIndex = this.editor?.activeChannelId.value ?? null
+
+      this.offChannelChange = editor.on("channel:change", ({ channelId }) => {
+        this.activeChannelIndex = channelId
         this.subscribeToWebsocket()
       })
 
@@ -66,6 +71,7 @@ export default {
     },
 
     subscribeToWebsocket() {
+      console.log(this.activeChannelIndex)
       this.websocketInstance.subscribeSessionRoom(
         this.session.id,
         this.activeChannelIndex,
@@ -76,41 +82,54 @@ export default {
     },
 
     onPartial(content) {
-      this.livePlugin.onPartial({
-        text: content.text,
-      })
+      console.log("partial", { text: content.text }, this.activeChannelIndex)
+      this.editor.live.onPartial(
+        {
+          text: content.text,
+        },
+        this.activeChannelIndex,
+      )
     },
 
     onFinal(content) {
       const activeChannel = this.editor.activeChannel.value
-      this.livePlugin.onFinal({
-        turnId: computeSessionTurnUniqueId(content),
-        speakerId: content.locutor ?? null,
-        text: content.text,
-        words: [],
-        startTime: Math.max(
-          0,
-          (new Date(content.astart).getTime() - this.sessionStartMs) / 1000 +
-            content.start,
-        ),
-        endTime: Math.max(
-          0,
-          (new Date(content.astart).getTime() - this.sessionStartMs) / 1000 +
-            content.end,
-        ),
-        language:
-          content.lang ??
-          activeChannel.translations.find((t) => t.isSource)?.languages[0] ??
-          "*",
-      })
+      console.log("final", this.activeChannelIndex)
+
+      this.editor.live.onFinal(
+        {
+          turnId: computeSessionTurnUniqueId(content),
+          speakerId: content.locutor ?? null,
+          text: content.text,
+          words: [],
+          startTime: Math.max(
+            0,
+            (new Date(content.astart).getTime() - this.sessionStartMs) / 1000 +
+              content.start,
+          ),
+          endTime: Math.max(
+            0,
+            (new Date(content.astart).getTime() - this.sessionStartMs) / 1000 +
+              content.end,
+          ),
+          language:
+            content.lang ??
+            activeChannel.translations.find((t) => t.isSource)?.languages[0] ??
+            "*",
+        },
+        this.activeChannelIndex,
+      )
     },
 
     onTranslation(content) {
-      this.livePlugin.onTranslation({
+      this.editor.live.onTranslation({
         turnId: String(content.segmentId),
         language: content.targetLang,
         text: content.text,
       })
+    },
+
+    showMobileSubtitles() {
+      this.editor.subtitle.enterFullscreen()
     },
   },
 }

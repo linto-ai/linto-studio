@@ -23,6 +23,11 @@ export function createLivePlugin(): EditorPlugin {
 
       hasLiveUpdate.value = true
 
+      function clearPartial(): void {
+        partial.value = null
+        triggerRef(partial)
+      }
+
       function onPartial(event: LivePartialEvent, channelId: string): void {
         if (core.activeChannelId.value !== channelId) return
         partial.value = event.text
@@ -55,9 +60,7 @@ export function createLivePlugin(): EditorPlugin {
           handle.addTurn({ id: event.turnId, ...turnData })
         }
 
-        // Clear partial
-        partial.value = null
-        triggerRef(partial)
+        clearPartial()
       }
 
       function onTranslation(_event: LiveTranslationEvent): void {
@@ -73,9 +76,16 @@ export function createLivePlugin(): EditorPlugin {
         onTranslation,
       }
 
+      const unsubChannelChange = core.on("channel:change", clearPartial)
+      const unsubTranslationSync = core.on("translation:sync", clearPartial)
+      const unsubChannelSync = core.on("channel:sync", clearPartial)
+
       core.live = api
 
       return () => {
+        unsubChannelChange()
+        unsubTranslationSync()
+        unsubChannelSync()
         core.live = undefined
       }
     },

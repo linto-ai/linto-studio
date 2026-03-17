@@ -32,6 +32,8 @@ export interface EditorEventMap {
   "turn:remove": { turnId: string }
   "speaker:update": { speaker: Speaker }
   "speaker:add": { speaker: Speaker }
+  "translation:sync": { translationId: string }
+  "channel:sync": { channelId: string }
   destroy: void
 }
 
@@ -59,6 +61,7 @@ export interface TranslationHandle {
   updateTurn(turnId: string, patch: Partial<Turn>): void
   removeTurn(turnId: string): void
   updateWords(turnId: string, words: Word[]): void
+  setTurns(turns: Turn[]): void
 }
 
 export interface ChannelHandle {
@@ -81,6 +84,15 @@ export interface AudioPluginApi {
   src: ComputedRef<string | null>
   seekTo(time: number): void
   setSeekHandler(handler: ((time: number) => void) | null): void
+}
+
+// ── Subtitle Plugin API ──────────────────────────────────────────────────
+
+export interface SubtitlePluginApi {
+  fontSize: Ref<number>
+  isFullscreen: Ref<boolean>
+  enterFullscreen(): void
+  exitFullscreen(): void
 }
 
 // ── Live Plugin API ─────────────────────────────────────────────────────
@@ -122,11 +134,13 @@ export interface EditorCore {
   // ── Navigation ───────────────────────────────────────────────────────
   setDocument(doc: EditorDocument): void
   setActiveChannel(channelId: string): void
+  setChannel(channelId: string, channel: Channel): void
   withTranslation(target?: TurnTarget): TranslationHandle | null
 
   // ── Plugin slots ─────────────────────────────────────────────────────
   audio?: AudioPluginApi
   live?: LivePluginApi
+  subtitle?: SubtitlePluginApi
 
   // ── Events ───────────────────────────────────────────────────────────
   on<K extends keyof EditorEventMap>(

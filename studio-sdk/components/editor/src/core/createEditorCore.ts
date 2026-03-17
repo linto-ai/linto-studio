@@ -1,5 +1,5 @@
 import { ref, computed } from "vue"
-import type { EditorDocument } from "../types/editor"
+import type { Channel, EditorDocument } from "../types/editor"
 import type {
   EditorCore,
   EditorCoreOptions,
@@ -72,6 +72,30 @@ export function createEditorCore(options: EditorCoreOptions = {}): EditorCore {
     emit("channel:change", { channelId })
   }
 
+  function setChannel(channelId: string, channel: Channel): void {
+    const channels = document.value.channels
+    const index = channels.findIndex((c) => c.id === channelId)
+    if (index === -1) return
+    if (channels[index] === channel) return
+
+    const seen = new Set<string>()
+    for (const translation of channel.translations) {
+      for (const turn of translation.turns) {
+        if (turn.speakerId && !seen.has(turn.speakerId)) {
+          seen.add(turn.speakerId)
+          speakers.ensure(turn.speakerId)
+        }
+      }
+    }
+
+    channels[index] = channel
+    emit("channel:sync", { channelId })
+
+    if (channelId === activeChannelId.value) {
+      activeChannel.setActiveTranslation(null)
+    }
+  }
+
   // ── withTranslation ──────────────────────────────────────────────────
 
   function withTranslation(target?: TurnTarget): TranslationHandle | null {
@@ -106,6 +130,7 @@ export function createEditorCore(options: EditorCoreOptions = {}): EditorCore {
     speakers,
     setDocument,
     setActiveChannel,
+    setChannel,
     withTranslation,
     on,
     off,
