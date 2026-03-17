@@ -10,6 +10,7 @@ import { apiGetUserRightFromConversation } from "@/api/conversation"
 import PUBLIC_ROUTES from "../const/publicRoutes"
 import { logout } from "../tools/logout"
 import { customDebug } from "@/tools/customDebug.js"
+import { generateId } from "@/tools/generateId.js"
 
 const defaultComponents = {}
 
@@ -814,7 +815,7 @@ router.afterEach((to, from) => {
 
 router.beforeEach(async (to, from, next) => {
   store.dispatch("system/setIsLoading", true)
-  const randomId = Math.random().toString(36).substring(7)
+  const randomId = generateId()
   const routerDebug = customDebug("vue:debug:router:" + randomId)
   const enableSession = getEnv("VUE_APP_ENABLE_SESSION") === "true"
 

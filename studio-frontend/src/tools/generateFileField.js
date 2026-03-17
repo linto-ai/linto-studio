@@ -1,5 +1,6 @@
 import EMPTY_FIELD from "@/const/emptyField"
 import { testFile } from "@/tools/fields/testFile"
+import { generateId } from "@/tools/generateId.js"
 
 export function generateFileField(name, file, uploadType = "file") {
   return {
@@ -7,7 +8,7 @@ export function generateFileField(name, file, uploadType = "file") {
     value: name,
     file: file,
     testField: testFile,
-    id: Math.random().toString(36).substring(2),
+    id: generateId(),
     progress: 0,
     uploadType,
   }

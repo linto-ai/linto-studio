@@ -5,7 +5,7 @@
     <td v-if="selectable && selectMode !== 'single'">
       <Checkbox
         v-model="p_selectedRows"
-        :id="line[idKey]"
+        :id="String(line[idKey])"
         :checkboxValue="line[idKey]"
         @click.native.stop />
     </td>

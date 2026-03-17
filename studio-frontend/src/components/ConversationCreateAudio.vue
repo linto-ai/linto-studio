@@ -44,6 +44,7 @@
 <script>
 import EMPTY_FIELD from "@/const/emptyField"
 import { generateFileField } from "@/tools/generateFileField.js"
+import { generateId } from "@/tools/generateId.js"
 
 import ConversationCreateUpload from "@/components/ConversationCreateUpload.vue"
 import ConversationCreateRecord from "@/components/ConversationCreateRecord.vue"
@@ -139,7 +140,7 @@ export default {
           value: url,
           file: url,
           uploadType: "url",
-          id: Math.random().toString(36).substring(2),
+          id: generateId(),
           progress: 0,
         },
       ])

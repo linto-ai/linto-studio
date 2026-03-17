@@ -73,12 +73,15 @@
                 class="popover-list__item popover-list__item--selection"
                 role="option"
                 :aria-selected="true"
-                @click.stop>
+                @click.stop="onSelectionItemClick(item, $event)">
                 <Checkbox
+                  :id="getCheckboxId('selected-' + index)"
                   :value="true"
                   @input="toggleSelection(item)"
                   class="popover-list__checkbox" />
-                <label class="popover-list__checkbox-label">
+                <label
+                  :for="getCheckboxId('selected-' + index)"
+                  class="popover-list__checkbox-label">
                   <slot name="item" :item="item">
                     <span class="popover-list__item__name">{{
                       item.name || item.text
@@ -113,7 +116,7 @@
               }"
               role="option"
               :aria-selected="isSelected(item)"
-              @click.stop>
+              @click.stop="onSelectionItemClick(item, $event)">
               <Checkbox
                 :id="getCheckboxId(index)"
                 :value="isSelected(item)"
@@ -183,6 +186,7 @@ import Popover from "./Popover.vue"
 import Loading from "./Loading.vue"
 import Checkbox from "./Checkbox.vue"
 import { debounceMixin } from "@/mixins/debounce"
+import { generateId } from "@/tools/generateId.js"
 
 export default {
   name: "PopoverList",
@@ -394,6 +398,11 @@ export default {
 
       this.emitValue(updated)
     },
+    onSelectionItemClick(item, event) {
+      if (event.target === event.currentTarget) {
+        this.toggleSelection(item)
+      }
+    },
     handleClickItem(item) {
       if (this.selection) {
         this.toggleSelection(item)
@@ -560,7 +569,7 @@ export default {
   data() {
     return {
       highlightedIndex: 0,
-      uid: Math.random().toString(36).substring(2, 9),
+      uid: generateId(),
       searchQuery: "",
       loading: false,
       asyncItems: [],
