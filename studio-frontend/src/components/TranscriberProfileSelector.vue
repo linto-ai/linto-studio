@@ -163,26 +163,16 @@ export default {
     },
     onTranslationsInput(profile, value) {
       this.$set(this.translationState, profile.id, value)
-      // Update translations on the local profile clone
       const localProfile = this.l_profilesList.find((p) => p.id === profile.id)
       if (localProfile) {
         localProfile.translations = value
       }
-      // Auto-select the profile when translations are changed
-      this.ensureProfileSelected(profile.id)
-      // Re-emit current selection with updated translations
-      this.emitSelection(this.selectedIds)
-    },
-    ensureProfileSelected(profileId) {
-      if (this.multiple) {
-        if (!this.selectedIds.includes(profileId)) {
-          this.onSelectionChange([...this.selectedIds, profileId])
-        }
-      } else {
-        if (!this.selectedIds.includes(profileId)) {
-          this.onSelectionChange([profileId])
-        }
+      // Build IDs with profile auto-selected, then emit once
+      let ids = this.multiple ? [...this.selectedIds] : []
+      if (!ids.includes(profile.id)) {
+        ids.push(profile.id)
       }
+      this.emitSelection(ids)
     },
     onSelectionChange(ids) {
       this.emitSelection(ids)

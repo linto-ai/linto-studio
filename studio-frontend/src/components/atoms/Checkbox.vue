@@ -15,13 +15,14 @@
   </div>
 </template>
 <script>
+import { generateId } from "@/tools/generateId.js"
 export default {
   name: "Checkbox",
   props: {
     value: { type: [Boolean, Array], default: false },
     id: {
       type: String,
-      default: () => Math.random().toString(36).substring(2, 11),
+      default: () => generateId(),
     },
     name: { type: String, default: "" },
     checkboxValue: { type: [String, Object, Number], default: null },

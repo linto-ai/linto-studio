@@ -151,6 +151,7 @@ import { bus } from "@/main.js"
 
 import { testName } from "@/tools/fields/testName"
 import { getEnv } from "@/tools/getEnv"
+import { generateId } from "@/tools/generateId.js"
 import { meetsMetaSecurityLevel } from "@/tools/filterBySecurityLevel"
 
 import EMPTY_FIELD from "@/const/emptyField"
@@ -399,7 +400,7 @@ export default {
     convertTemplateChannelToEditableChannel(templateChannel) {
       let channel = {}
 
-      channel.id = templateChannel.id
+      channel.id = generateId()
       channel.name = templateChannel.name
       channel.translations = structuredClone(templateChannel.translations)
       channel.languages = templateChannel.languages
