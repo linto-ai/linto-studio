@@ -12,6 +12,8 @@ import {
   SelectItemText,
   SelectItemIndicator,
 } from "reka-ui"
+import { useIsMobile } from "../../composables/useIsMobile"
+import MobileSelectSheet from "./MobileSelectSheet.vue"
 
 defineProps<{
   items: { value: string; label: string }[]
@@ -22,10 +24,19 @@ defineProps<{
 const emit = defineEmits<{
   "update:selectedValue": [value: string]
 }>()
+
+const { isMobile } = useIsMobile()
 </script>
 
 <template>
-  <div class="sidebar-select">
+  <MobileSelectSheet
+    v-if="isMobile"
+    :items="items"
+    :selected-value="selectedValue"
+    :ariaLabel="ariaLabel"
+    @update:selected-value="emit('update:selectedValue', $event)" />
+
+  <div v-else class="sidebar-select">
     <SelectRoot
       :model-value="selectedValue"
       @update:model-value="emit('update:selectedValue', $event as string)">

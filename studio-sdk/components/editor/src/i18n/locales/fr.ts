@@ -21,6 +21,7 @@ const fr = {
   'sidebar.translationLabel': 'Traduction',
   'sidebar.originalLanguage': 'original',
   'language.wildcard': 'Multi-langue',
+  'select.filter': 'Rechercher\u2026',
   'subtitle.exitFullscreen': 'Quitter le plein écran',
 } as const
 

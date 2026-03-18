@@ -1,7 +1,8 @@
 /* Design tokens */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap");
 
-:root, :host {
+:root,
+:host {
   /* Colors — light theme */
   --color-background: #f8f9fa;
   --color-surface: #ffffff;
@@ -15,8 +16,8 @@
   --color-border-light: #e9ecef;
 
   /* Typography */
-  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-family-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-family: "Inter", system-ui, -apple-system, sans-serif;
+  --font-family-mono: "JetBrains Mono", ui-monospace, monospace;
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.8125rem;
   --font-size-base: 0.9375rem;
@@ -71,7 +72,8 @@
 }
 
 /* Dev mode SPA (ignored in Shadow DOM — these elements don't exist) */
-html, body {
+html,
+body {
   height: 100%;
   overflow: hidden;
 }
@@ -87,6 +89,6 @@ body {
 }
 
 #app {
-  height: 100vh;
+  height: 100%;
   overflow: hidden;
 }
