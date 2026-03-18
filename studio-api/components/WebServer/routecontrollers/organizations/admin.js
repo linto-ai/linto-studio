@@ -5,8 +5,6 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const {
   deleteAudioFileIfOrphaned,
-  deleteFile,
-  getStorageFolder,
 } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 
 const {
@@ -15,6 +13,10 @@ const {
   OrganizationConflict,
 } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
+)
+
+const { cascadeDeleteSignatureFiles } = require(
+  `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 
 const { ConversationError } = require(
@@ -79,16 +81,20 @@ async function deleteOrganization(req, res, next) {
     const voiceSignatures = await model.voiceSignatures.getByOrganizationId(
       organization._id.toString(),
     )
-    if (Array.isArray(voiceSignatures)) {
-      for (const sig of voiceSignatures) {
-        if (sig.audioFilePath) {
-          deleteFile(`${getStorageFolder()}/${sig.audioFilePath}`)
-        }
-      }
-    }
-    await model.voiceSignatures.deleteAllFromOrganization(
-      organization._id.toString(),
-    )
+    cascadeDeleteSignatureFiles(voiceSignatures)
+
+    // Delete all voice signature records, speaker labels, and collections in parallel
+    await Promise.all([
+      model.voiceSignatures.deleteAllFromOrganization(
+        organization._id.toString(),
+      ),
+      model.speakerLabels.deleteAllFromOrganization(
+        organization._id.toString(),
+      ),
+      model.speakerLabelCollections.deleteAllFromOrganization(
+        organization._id.toString(),
+      ),
+    ])
 
     const result = await model.organizations.delete(organization._id.toString())
     if (result.deletedCount !== 1)

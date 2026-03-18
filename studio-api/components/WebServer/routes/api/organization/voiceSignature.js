@@ -3,7 +3,6 @@ const {
   getVoiceSignature,
   getVoiceSignatureAudio,
   createVoiceSignature,
-  updateVoiceSignature,
   deleteVoiceSignature,
 } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/organization/voiceSignature.js`,
@@ -38,13 +37,6 @@ module.exports = (webserver) => {
       controller: getVoiceSignatureAudio,
       requireAuth: true,
       requireOrganizationMemberAccess: true,
-    },
-    {
-      path: "/:voiceSignatureId",
-      method: "patch",
-      controller: updateVoiceSignature,
-      requireAuth: true,
-      requireOrganizationMaintainerAccess: true,
     },
     {
       path: "/:voiceSignatureId",

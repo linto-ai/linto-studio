@@ -15,7 +15,7 @@ const CONVERSATION_RIGHT = require(
 const SECURITY_LEVELS = require(
   `${process.cwd()}/lib/dao/conversation/securityLevels`,
 )
-const { storeFile } = require(
+const { storeFile, STORE_TYPE } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 
@@ -36,7 +36,7 @@ async function addFileToConv(conversation, req) {
       ...req.files.file,
       name: utf8.decode(req.files.file.name),
     }
-    let file_data = await storeFile(fileData, "audio")
+    let file_data = await storeFile(fileData, STORE_TYPE.AUDIO)
     conversation = await addFileMetadataToConversation(conversation, file_data)
   }
 

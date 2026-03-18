@@ -17,7 +17,7 @@ const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
 const Mailing = require(`${process.cwd()}/lib/mailer/mailing`)
 const validator = require(`${process.cwd()}/lib/dao/schema/validator`)
 
-const { storeFile, defaultPicture, deleteFile, getStorageFolder } = require(
+const { storeFile, defaultPicture, deleteFile, getStorageFolder, STORE_TYPE } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 
@@ -53,7 +53,7 @@ async function createUser(req, res, next) {
       throw new UserUnsupportedMediaType()
 
     if (req.files && Object.keys(req.files).length !== 0 && req.files.file)
-      user.img = await storeFile(req.files.file, "picture")
+      user.img = await storeFile(req.files.file, STORE_TYPE.PICTURE)
     else user.img = defaultPicture()
 
     if (!organizationName) organizationName = user.email + "'s Organization"
@@ -252,7 +252,7 @@ async function updateUserPicture(req, res, next) {
       throw new UserUnsupportedMediaType()
     const payload = {
       _id: req.payload.data.userId,
-      img: await storeFile(req.files.file, "picture"),
+      img: await storeFile(req.files.file, STORE_TYPE.PICTURE),
     }
 
     const user = await model.users.getById(req.payload.data.userId)

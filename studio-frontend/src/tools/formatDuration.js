@@ -40,6 +40,16 @@ export function formatDuration(seconds, { compact = false, showZeroHours = false
 }
 
 /**
+ * Formats a duration in compact format, returning "-" for null/zero values.
+ * Convenience wrapper used by speaker diarization components.
+ * @param {number} seconds - The duration in seconds
+ * @returns {string} Formatted duration or "-"
+ */
+export function formatCompactDuration(seconds) {
+  return formatDuration(seconds, { compact: true }) || "-"
+}
+
+/**
  * Formats a timestamp to a localized time string.
  * @param {string|Date} timestamp - ISO date string or Date object
  * @param {string} locale - Locale string (e.g., 'en-US', 'fr-FR')

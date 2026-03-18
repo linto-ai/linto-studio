@@ -2,7 +2,7 @@ const debug = require("debug")(
   `linto:components:WebServer:routecontrollers:organizations:uploader:offline`,
 )
 const axios = require(`${process.cwd()}/lib/utility/axios`)
-const { storeFile } = require(
+const { storeFile, STORE_TYPE } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 const {
@@ -41,7 +41,7 @@ async function offline(conversation, isConversation = true) {
     if (audio.mimetype === "audio/wav" || audio.filename.endsWith(".wav")) {
       let file_data = await storeFile(
         conversation.metadata.audio,
-        "audio_session",
+        STORE_TYPE.AUDIO_SESSION,
         conversation.type.from_session_id,
       )
       conversation = await addFileMetadataToConversation(

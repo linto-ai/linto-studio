@@ -1,5 +1,8 @@
 const MongoModel = require(`../model`)
 const moment = require("moment")
+const {
+  VOICE_SIGNATURE_TYPE,
+} = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 
 class VoiceSignatureModel extends MongoModel {
   constructor() {
@@ -10,13 +13,34 @@ class VoiceSignatureModel extends MongoModel {
     try {
       const dateTime = moment().format()
 
+      const type = payload.type || VOICE_SIGNATURE_TYPE.LABEL
+      if (!Object.values(VOICE_SIGNATURE_TYPE).includes(type)) {
+        throw new Error(`Invalid voice signature type: ${type}`)
+      }
+
       const doc = {
         created: dateTime,
         last_update: dateTime,
-        speakerName: payload.speakerName,
+        type,
         audioFilePath: payload.audioFilePath,
-        organizationId: this.getObjectId(payload.organizationId),
       }
+
+      // Label-type fields
+      if (payload.speakerLabelId) {
+        doc.speakerLabelId = this.getObjectId(payload.speakerLabelId)
+      }
+      if (payload.collectionId) {
+        doc.collectionId = this.getObjectId(payload.collectionId)
+      }
+      if (payload.organizationId) {
+        doc.organizationId = this.getObjectId(payload.organizationId)
+      }
+
+      // User-type fields
+      if (payload.userId) {
+        doc.userId = payload.userId
+      }
+
       if (payload.audioDuration !== undefined) {
         doc.audioDuration = payload.audioDuration
       }
@@ -39,6 +63,36 @@ class VoiceSignatureModel extends MongoModel {
     }
   }
 
+  // --- Label-type queries ---
+
+  async getBySpeakerLabelId(speakerLabelId) {
+    try {
+      const query = {
+        speakerLabelId: this.getObjectId(speakerLabelId),
+      }
+      return await this.mongoRequest(query, {
+        sort: { created: -1 },
+      })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async getByCollectionId(collectionId) {
+    try {
+      const query = {
+        collectionId: this.getObjectId(collectionId),
+      }
+      return await this.mongoRequest(query, {
+        sort: { created: -1 },
+      })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   async getByOrganizationId(organizationId) {
     try {
       const query = {
@@ -53,35 +107,37 @@ class VoiceSignatureModel extends MongoModel {
     }
   }
 
-  async getBySpeakerName(organizationId, speakerName) {
+  // --- User-type queries ---
+
+  async getByUserId(userId) {
     try {
       const query = {
-        organizationId: this.getObjectId(organizationId),
-        speakerName: speakerName,
+        type: VOICE_SIGNATURE_TYPE.USER,
+        userId: userId,
       }
-      return await this.mongoRequest(query)
+      return await this.mongoRequest(query, {
+        sort: { created: -1 },
+      })
     } catch (error) {
       console.error(error)
       return error
     }
   }
 
-  async update(payload) {
+  async deleteAllFromUser(userId) {
     try {
-      const operator = "$set"
       const query = {
-        _id: this.getObjectId(payload._id),
+        type: VOICE_SIGNATURE_TYPE.USER,
+        userId: userId,
       }
-      const dateTime = moment().format()
-      payload.last_update = dateTime
-
-      let mutableElements = payload
-      return await this.mongoUpdateOne(query, operator, mutableElements)
+      return await this.mongoDeleteMany(query)
     } catch (error) {
       console.error(error)
       return error
     }
   }
+
+  // --- Shared ---
 
   async delete(id) {
     try {
@@ -89,6 +145,30 @@ class VoiceSignatureModel extends MongoModel {
         _id: this.getObjectId(id),
       }
       return await this.mongoDelete(query)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async deleteAllFromSpeakerLabel(speakerLabelId) {
+    try {
+      const query = {
+        speakerLabelId: this.getObjectId(speakerLabelId),
+      }
+      return await this.mongoDeleteMany(query)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async deleteAllFromCollection(collectionId) {
+    try {
+      const query = {
+        collectionId: this.getObjectId(collectionId),
+      }
+      return await this.mongoDeleteMany(query)
     } catch (error) {
       console.error(error)
       return error

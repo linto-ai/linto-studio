@@ -47,3 +47,13 @@ export function formatDateShort(dateString) {
     hour12: false,
   })
 }
+
+/**
+ * Formats a date string using formatDateShort, returning "-" for empty/null values.
+ * Convenience wrapper for display in table cells.
+ * @param {string} dateString - ISO date string
+ * @returns {string} Formatted date or "-"
+ */
+export function formatDateOrDash(dateString) {
+  return formatDateShort(dateString) || "-"
+}

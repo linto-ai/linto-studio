@@ -3,18 +3,11 @@ import { getEnv } from "@/tools/getEnv"
 
 const BASE_API = getEnv("VUE_APP_CONVO_API")
 
-function signaturesUrl(organizationId, collectionId, labelId) {
-  return `${BASE_API}/organizations/${organizationId}/speaker-label-collections/${collectionId}/labels/${labelId}/voice-signatures`
-}
+const BASE_URL = `${BASE_API}/users/self/voice`
 
-export async function apiGetVoiceSignatures(
-  organizationId,
-  collectionId,
-  labelId,
-  notif,
-) {
+export async function apiGetUserVoiceSignatures(notif) {
   const requestRes = await sendRequest(
-    signaturesUrl(organizationId, collectionId, labelId),
+    `${BASE_URL}/voice-signatures`,
     { method: "get" },
     {},
     notif,
@@ -22,10 +15,7 @@ export async function apiGetVoiceSignatures(
   return requestRes?.data || []
 }
 
-export async function apiCreateVoiceSignature(
-  organizationId,
-  collectionId,
-  labelId,
+export async function apiCreateUserVoiceSignature(
   audioFile,
   audioDuration,
   notif,
@@ -37,7 +27,7 @@ export async function apiCreateVoiceSignature(
   }
 
   const requestRes = await sendRequest(
-    signaturesUrl(organizationId, collectionId, labelId),
+    `${BASE_URL}/voice-signatures`,
     { method: "post" },
     formData,
     notif,
@@ -47,14 +37,9 @@ export async function apiCreateVoiceSignature(
   return requestRes.data
 }
 
-export async function apiGetVoiceSignatureAudio(
-  organizationId,
-  collectionId,
-  labelId,
-  voiceSignatureId,
-) {
+export async function apiGetUserVoiceSignatureAudio(id) {
   return await sendRequest(
-    `${signaturesUrl(organizationId, collectionId, labelId)}/${voiceSignatureId}/audio`,
+    `${BASE_URL}/voice-signatures/${id}/audio`,
     {
       method: "get",
       responseType: "blob",
@@ -63,15 +48,19 @@ export async function apiGetVoiceSignatureAudio(
   )
 }
 
-export async function apiDeleteVoiceSignature(
-  organizationId,
-  collectionId,
-  labelId,
-  voiceSignatureId,
-  notif,
-) {
+export async function apiDeleteUserVoiceSignature(id, notif) {
   const requestRes = await sendRequest(
-    `${signaturesUrl(organizationId, collectionId, labelId)}/${voiceSignatureId}`,
+    `${BASE_URL}/voice-signatures/${id}`,
+    { method: "delete" },
+    {},
+    notif,
+  )
+  return requestRes
+}
+
+export async function apiDeleteAllUserVoiceSignatures(notif) {
+  const requestRes = await sendRequest(
+    `${BASE_URL}/voice-signatures`,
     { method: "delete" },
     {},
     notif,

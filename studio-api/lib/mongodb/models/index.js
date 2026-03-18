@@ -17,6 +17,8 @@ module.exports = {
   sessionData: require("./sessionData.js"),
   tags: require("./tags.js"),
   tokens: require("./tokens.js"),
+  speakerLabelCollections: require("./speakerLabelCollections.js"),
+  speakerLabels: require("./speakerLabels.js"),
   users: require("./users.js"),
   voiceSignatures: require("./voiceSignatures.js"),
   search: {

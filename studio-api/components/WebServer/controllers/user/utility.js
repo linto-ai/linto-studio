@@ -8,7 +8,10 @@ const CONVERSATION_RIGHTS = require(
   `${process.cwd()}/lib/dao/conversation/rights`,
 )
 
-const { deleteAudioFileIfOrphaned } = require(
+const {
+  deleteAudioFileIfOrphaned,
+  cascadeDeleteSignatureFiles,
+} = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 
@@ -154,6 +157,15 @@ async function removeUserFromPlatform(userId) {
         }
       }),
     )
+
+    // Delete all user voice signatures and audio files
+    try {
+      const signatures = await model.voiceSignatures.getByUserId(userId)
+      cascadeDeleteSignatureFiles(signatures)
+      await model.voiceSignatures.deleteAllFromUser(userId)
+    } catch (err) {
+      debug("Error cleaning up user voice signatures:", err)
+    }
 
     return true
   } catch (error) {

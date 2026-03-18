@@ -8,6 +8,7 @@ module.exports = (webServer) => {
     "/auth": [...require("./auth/index.js")(webServer)],
     "/api/users/self/favorites": require("./api/users/favorites.js")(webServer),
     "/api/users": require("./api/users/users.js")(webServer),
+    "/api/users/self/voice": require("./api/users/userVoiceOptIn")(webServer),
     "/api/organizations": require("./api/organization/organizations")(
       webServer,
     ),
@@ -17,8 +18,14 @@ module.exports = (webServer) => {
       require("./api/organization/tag")(webServer),
     "/api/organizations/:organizationId/folders":
       require("./api/organization/folders")(webServer),
-    "/api/organizations/:organizationId/voice-signatures":
+    "/api/organizations/:organizationId/speaker-label-collections":
+      require("./api/organization/speakerLabelCollection")(webServer),
+    "/api/organizations/:organizationId/speaker-label-collections/:collectionId/labels":
+      require("./api/organization/speakerLabel")(webServer),
+    "/api/organizations/:organizationId/speaker-label-collections/:collectionId/labels/:labelId/voice-signatures":
       require("./api/organization/voiceSignature")(webServer),
+    "/api/organizations/:organizationId/speaker-label-collections/:collectionId/opted-in-members":
+      require("./api/organization/optedInMembers")(webServer),
     "/api/conversations": [
       ...require("./api/conversation/share")(webServer),
       ...require("./api/conversation/conversations")(webServer),

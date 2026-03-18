@@ -80,10 +80,10 @@
                 <span>{{ $t("app_settings_modal.tags") }}</span>
               </a>
             </li>
-            <li :class="{ active: selectedTab === 'voiceSignatures' }">
-              <a href="#" @click="selectTab('voiceSignatures')">
+            <li :class="{ active: selectedTab === 'speakerDiarization' }">
+              <a href="#" @click="selectTab('speakerDiarization')">
                 <ph-icon name="microphone" weight="bold"></ph-icon>
-                <span>{{ $t("app_settings_modal.voice_signatures") }}</span>
+                <span>{{ $t("app_settings_modal.speaker_diarization") }}</span>
               </a>
             </li>
             <li :class="{ active: selectedTab === 'apiTokens' }" v-if="isAdmin">
@@ -113,6 +113,7 @@
         <UserSettingsPersonal :userInfo="user" v-if="isAuthenticated" />
         <UserSettingsVisibility :userInfo="user" v-if="isAuthenticated" />
         <UserSettingsPassword :userInfo="user" v-if="isAuthenticated" />
+        <UserSettingsVoiceOptIn v-if="isAuthenticated" />
       </div>
       <div v-if="selectedTab === 'notifications'" class="app-settings__section">
         <UserSettingsNotifications :userInfo="user" v-if="isAuthenticated" />
@@ -139,9 +140,9 @@
       </div>
 
       <div
-        v-if="selectedTab === 'voiceSignatures'"
+        v-if="selectedTab === 'speakerDiarization'"
         class="app-settings__section">
-        <VoiceSignatureSettings :organizationId="organizationId" />
+        <SpeakerDiarizationSettings :organizationId="organizationId" />
       </div>
       <div v-if="selectedTab === 'apiTokens'" class="app-settings__section">
         <ApiTokenSettings v-if="isAdmin" :organizationId="organizationId" />
@@ -173,7 +174,8 @@ import UpdateOrganizationUsers from "@/components/UpdateOrganizationUsers.vue"
 import UpdateOrganizationDeletion from "@/components/UpdateOrganizationDeletion.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import ApiTokenSettings from "@/components/ApiTokenSettings.vue"
-import VoiceSignatureSettings from "@/components/VoiceSignatureSettings.vue"
+import SpeakerDiarizationSettings from "@/components/SpeakerDiarizationSettings.vue"
+import UserSettingsVoiceOptIn from "@/components/UserSettingsVoiceOptIn.vue"
 
 export default {
   name: "AppSettingsModal",
@@ -192,7 +194,8 @@ export default {
     UpdateOrganizationDeletion,
     Modal,
     ApiTokenSettings,
-    VoiceSignatureSettings,
+    SpeakerDiarizationSettings,
+    UserSettingsVoiceOptIn,
   },
   data() {
     return {
