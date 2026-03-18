@@ -38,7 +38,8 @@
     "visibility": {
       "private": "Privé",
       "organization": "Organisation",
-      "public": "Public"
+      "public": "Public",
+      "user": "Utilisateur"
     },
     "remove_session_button": "Supprimer la session | Supprimer {count} sessions"
   },
