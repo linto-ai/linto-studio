@@ -101,11 +101,17 @@ export interface SubtitlePluginApi {
 export interface LivePluginApi {
   partial: ShallowRef<string | null>
   hasLiveUpdate: Ref<boolean>
-  onPartial(event: { text: string }, channelId: string): void
+  onPartial(event: {
+    text?: string
+    translations?: Array<{
+      translationId: string
+      text: string
+    }>
+  }, channelId: string): void
   onFinal(event: {
     turnId: string
     speakerId: string | null
-    text: string
+    text?: string
     words: Array<{
       id: string
       text: string
@@ -116,6 +122,11 @@ export interface LivePluginApi {
     startTime: number
     endTime: number
     language: string
+    translations?: Array<{
+      translationId: string
+      text: string
+      language: string
+    }>
   }, channelId: string): void
   onTranslation(event: { turnId: string; language: string; text: string }): void
 }

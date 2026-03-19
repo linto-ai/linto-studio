@@ -30,34 +30,73 @@ export function createLivePlugin(): EditorPlugin {
 
       function onPartial(event: LivePartialEvent, channelId: string): void {
         if (core.activeChannelId.value !== channelId) return
-        partial.value = event.text
+
+        const activeTranslation = core.activeChannel.activeTranslation.data.value
+
+        if (activeTranslation.isSource) {
+          if (event.text == null) return
+          partial.value = event.text
+        } else if (event.translations) {
+          const match = event.translations.find(
+            (t) => t.translationId === activeTranslation.id,
+          )
+          partial.value = match?.text ?? null
+        } else {
+          return
+        }
+
         triggerRef(partial)
       }
 
       function onFinal(event: LiveFinalEvent, channelId: string): void {
-        core.speakers.ensure(event.speakerId)
+        if (event.speakerId) core.speakers.ensure(event.speakerId)
 
-        const target = { channelId }
-        const hasWords = event.words.length > 0
+        // 1. Source turn — only if text is provided
+        if (event.text != null) {
+          const hasWords = event.words.length > 0
+          const turnData = {
+            speakerId: event.speakerId,
+            text: hasWords ? null : event.text,
+            words: event.words,
+            startTime: event.startTime,
+            endTime: event.endTime,
+            language: event.language,
+          }
 
-        const turnData = {
-          speakerId: event.speakerId,
-          text: hasWords ? null : event.text,
-          words: event.words,
-          startTime: event.startTime,
-          endTime: event.endTime,
-          language: event.language,
+          const sourceHandle = core.withTranslation({ channelId })
+          if (sourceHandle) {
+            const exists = sourceHandle.turns.value.some(
+              (t) => t.id === event.turnId,
+            )
+            if (exists) sourceHandle.updateTurn(event.turnId, turnData)
+            else sourceHandle.addTurn({ id: event.turnId, ...turnData })
+          }
         }
 
-        const handle = core.withTranslation(target)
-        if (!handle) return
+        // 2. Translations
+        if (event.translations) {
+          for (const tr of event.translations) {
+            const handle = core.withTranslation({
+              channelId,
+              translationId: tr.translationId,
+            })
+            if (!handle) continue
 
-        const exists = handle.turns.value.some((t) => t.id === event.turnId)
+            const trTurnData = {
+              speakerId: event.speakerId,
+              text: tr.text,
+              words: [],
+              startTime: event.startTime,
+              endTime: event.endTime,
+              language: tr.language,
+            }
 
-        if (exists) {
-          handle.updateTurn(event.turnId, turnData)
-        } else {
-          handle.addTurn({ id: event.turnId, ...turnData })
+            const exists = handle.turns.value.some(
+              (t) => t.id === event.turnId,
+            )
+            if (exists) handle.updateTurn(event.turnId, trTurnData)
+            else handle.addTurn({ id: event.turnId, ...trTurnData })
+          }
         }
 
         clearPartial()
@@ -77,6 +116,7 @@ export function createLivePlugin(): EditorPlugin {
       }
 
       const unsubChannelChange = core.on("channel:change", clearPartial)
+      const unsubTranslationChange = core.on("translation:change", clearPartial)
       const unsubTranslationSync = core.on("translation:sync", clearPartial)
       const unsubChannelSync = core.on("channel:sync", clearPartial)
 
@@ -84,6 +124,7 @@ export function createLivePlugin(): EditorPlugin {
 
       return () => {
         unsubChannelChange()
+        unsubTranslationChange()
         unsubTranslationSync()
         unsubChannelSync()
         core.live = undefined

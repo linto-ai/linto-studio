@@ -11,6 +11,7 @@ import {
   createSubtitlePlugin,
 } from "@linto/studio-editor/webcomponent"
 import computeSessionTurnUniqueId from "@/const/computeSessionTurnUniqueId"
+import classifySessionTurn from "@/tools/classifySessionTurn"
 
 export default {
   mixins: [sessionModelMixin],
@@ -27,7 +28,18 @@ export default {
       activeChannelIndex: null,
     }
   },
-  computed: {},
+  computed: {
+    activeChannelObj() {
+      return (
+        this.session.channels?.find(
+          (c) => String(c.id) === String(this.activeChannelIndex),
+        ) ?? null
+      )
+    },
+    hasDiarization() {
+      return !!this.activeChannelObj?.diarization
+    },
+  },
   watch: {
     "websocketInstance.state.isConnected"(connected) {
       if (connected) this.subscribeToWebsocket()
@@ -82,42 +94,61 @@ export default {
     },
 
     onPartial(content) {
-      console.log("partial", { text: content.text }, this.activeChannelIndex)
-      this.editor.live.onPartial(
-        {
-          text: content.text,
-        },
-        this.activeChannelIndex,
-      )
+      const type = classifySessionTurn(content, this.hasDiarization)
+      if (type === "bot") return
+
+      if (type === "original") {
+        this.editor.live.onPartial(
+          { text: content.text },
+          this.activeChannelIndex,
+        )
+      } else {
+        const translations = Object.entries(content.translations || {})
+          .filter(([, text]) => text)
+          .map(([lang, text]) => ({ translationId: lang, text }))
+        this.editor.live.onPartial({ translations }, this.activeChannelIndex)
+      }
     },
 
     onFinal(content) {
-      const activeChannel = this.editor.activeChannel.value
-      console.log("final", this.activeChannelIndex)
+      const type = classifySessionTurn(content, this.hasDiarization)
+      if (type === "bot") return
 
-      this.editor.live.onFinal(
-        {
-          turnId: computeSessionTurnUniqueId(content),
-          speakerId: content.locutor ?? null,
-          text: content.text,
-          words: [],
-          startTime: Math.max(
-            0,
-            (new Date(content.astart).getTime() - this.sessionStartMs) / 1000 +
-              content.start,
-          ),
-          endTime: Math.max(
-            0,
-            (new Date(content.astart).getTime() - this.sessionStartMs) / 1000 +
-              content.end,
-          ),
-          language:
-            content.lang ??
-            activeChannel.translations.find((t) => t.isSource)?.languages[0] ??
-            "*",
-        },
-        this.activeChannelIndex,
-      )
+      const activeChannel = this.editor.activeChannel.value
+      const baseTurn = {
+        turnId: computeSessionTurnUniqueId(content),
+        speakerId: content.locutor ?? null,
+        words: [],
+        startTime: Math.max(
+          0,
+          (new Date(content.astart).getTime() - this.sessionStartMs) / 1000 +
+            content.start,
+        ),
+        endTime: Math.max(
+          0,
+          (new Date(content.astart).getTime() - this.sessionStartMs) / 1000 +
+            content.end,
+        ),
+        language:
+          content.lang ??
+          activeChannel.translations.find((t) => t.isSource)?.languages[0] ??
+          "*",
+      }
+
+      if (type === "original") {
+        this.editor.live.onFinal(
+          { ...baseTurn, text: content.text },
+          this.activeChannelIndex,
+        )
+      } else {
+        const translations = Object.entries(content.translations || {})
+          .filter(([, text]) => text)
+          .map(([lang, text]) => ({ translationId: lang, text, language: lang }))
+        this.editor.live.onFinal(
+          { ...baseTurn, translations },
+          this.activeChannelIndex,
+        )
+      }
     },
 
     onTranslation(content) {

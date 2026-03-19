@@ -1,4 +1,5 @@
 import computeSessionTurnUniqueId from "@/const/computeSessionTurnUniqueId"
+import classifySessionTurn from "@/tools/classifySessionTurn"
 
 /**
  * Converts a live session object into an EditorDocument.
@@ -20,6 +21,9 @@ export default function sessionToEditorDocument(session) {
   const channels = session.channels.map((channel) => {
     const originalTurns = (channel.closedCaptions ?? [])
       .filter((c) => c.segmentId != null)
+      .filter(
+        (c) => classifySessionTurn(c, channel.diarization) === "original",
+      )
       .map((c) => ({
         id: computeSessionTurnUniqueId(c),
         text: c.text ?? null,

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { SwitchRoot, SwitchThumb } from 'reka-ui'
 import SpeakerIndicator from './atoms/SpeakerIndicator.vue'
+import SwitchToggle from './atoms/SwitchToggle.vue'
 import SidebarSelect from './atoms/SidebarSelect.vue'
 import ChannelSelector from './ChannelSelector.vue'
 import { useI18n } from '../i18n'
@@ -64,15 +64,10 @@ const translationItems = computed(() =>
     </section>
     <section v-if="editor.subtitle" class="sidebar-section">
       <h2 class="sidebar-title">{{ t('sidebar.subtitle') }}</h2>
-      <label class="subtitle-toggle">
+      <div class="subtitle-toggle">
         <span class="subtitle-toggle-label">{{ t('subtitle.show') }}</span>
-        <SwitchRoot
-          v-model:checked="editor.subtitle.isVisible.value"
-          class="switch-root"
-        >
-          <SwitchThumb class="switch-thumb" />
-        </SwitchRoot>
-      </label>
+        <SwitchToggle v-model="editor.subtitle.isVisible.value" />
+      </div>
       <label class="subtitle-slider">
         <span class="subtitle-slider-label">
           {{ t('subtitle.fontSize') }}
@@ -150,41 +145,11 @@ const translationItems = computed(() =>
   justify-content: space-between;
   padding: var(--spacing-sm);
   border-radius: var(--radius-md);
-  cursor: pointer;
 }
 
 .subtitle-toggle-label {
   font-size: var(--font-size-sm);
   color: var(--color-text-primary);
-}
-
-.switch-root {
-  position: relative;
-  width: 36px;
-  height: 20px;
-  border-radius: 10px;
-  background-color: var(--color-border);
-  flex-shrink: 0;
-  cursor: pointer;
-  transition: background-color 150ms;
-}
-
-.switch-root[data-state="checked"] {
-  background-color: var(--color-primary);
-}
-
-.switch-thumb {
-  display: block;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background-color: white;
-  transition: transform 150ms;
-  transform: translateX(2px);
-}
-
-.switch-thumb[data-state="checked"] {
-  transform: translateX(18px);
 }
 
 .subtitle-slider {

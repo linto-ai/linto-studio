@@ -1,13 +1,17 @@
 /** Live transcription event types — placeholder, to adapt to backend format */
 
 export interface LivePartialEvent {
-  text: string
+  text?: string
+  translations?: Array<{
+    translationId: string
+    text: string
+  }>
 }
 
 export interface LiveFinalEvent {
   turnId: string
   speakerId: string | null
-  text: string
+  text?: string
   words: Array<{
     id: string
     text: string
@@ -18,6 +22,11 @@ export interface LiveFinalEvent {
   startTime: number
   endTime: number
   language: string
+  translations?: Array<{
+    translationId: string
+    text: string
+    language: string
+  }>
 }
 
 export interface LiveTranslationEvent {
