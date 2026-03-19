@@ -74,7 +74,6 @@ export default {
   beforeDestroy() {
     this._abortCtrl?.abort()
     this.$apiEventWS.unSubscribeMediaUdate()
-    this.$apiEventWS.unSubscribeFolderUpdate()
     bus.$off("conversation_folder_changed", this.onConversationFolderChanged)
     clearTimeout(this._folderChangedTimer)
   },

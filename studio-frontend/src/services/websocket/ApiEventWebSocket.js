@@ -54,6 +54,7 @@ export default class ApiEventWebSocket {
       this.socket.on("connect", (msg) => {
         debugWSSession("connected to socket.io server", msg)
         this.state.isConnected = true
+        this.subscribeFolderUpdate()
 
         if (this.state.connexionLost) {
           this.handleConnexionRestored()

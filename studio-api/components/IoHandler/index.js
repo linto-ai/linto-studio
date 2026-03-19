@@ -46,39 +46,44 @@ async function checkSocketAccess(socket, roomId) {
     const hasPassword =
       protectedSession?.[0]?.password && protectedSession.length > 0
 
-    // Public session + no protection
-    if (session.visibility === "public" && !hasPassword) {
-      return { allowed: true, userId }
-    }
+    // Determine session access
+    let allowed = false
 
-    // User is not authenticated
-    if (!isAuth) {
+    if (session.visibility === "public" && !hasPassword) {
+      allowed = true
+    } else if (!isAuth) {
       denySocket(socket)
       return { allowed: false, userId: undefined }
-    }
-
-    // Public session + password-protected, sessionId matches
-    if (
+    } else if (
       session.visibility === "public" &&
       sessionId === session.id &&
       hasPassword
     ) {
-      return { allowed: true, userId }
+      allowed = true
+    } else if (await sessionSocketAccess(session, userId)) {
+      allowed = true
+    } else if (session.visibility === "private" && session.owner === userId) {
+      allowed = true
     }
 
-    // Organization access
-    const access = await sessionSocketAccess(session, userId)
-    if (access === true) {
-      return { allowed: true, userId }
+    if (!allowed) {
+      denySocket(socket)
+      return { allowed: false, userId: undefined }
     }
 
-    // Private session & is owner
-    if (session.visibility === "private" && session.owner === userId) {
-      return { allowed: true, userId }
+    // Determine org access (separate from session access)
+    let organizationId = undefined
+    if (isAuth && userId && session.organizationId) {
+      const orgAccess = await model.organizations.getByIdAndUser(
+        session.organizationId,
+        userId,
+      )
+      if (orgAccess && orgAccess.length > 0) {
+        organizationId = session.organizationId
+      }
     }
 
-    denySocket(socket)
-    return { allowed: false, userId: undefined }
+    return { allowed: true, userId, organizationId }
   } catch (err) {
     LogManager.logSocketEvent(
       socket,
@@ -132,7 +137,7 @@ class IoHandler extends Component {
       }
 
       socket.on("join_room", async (roomId) => {
-        const { allowed, userId } = await checkSocketAccess(socket, roomId)
+        const { allowed, userId, organizationId } = await checkSocketAccess(socket, roomId)
         if (!allowed) return
         LogManager.logSocketEvent(socket, {
           sessionId: roomId,
@@ -142,6 +147,11 @@ class IoHandler extends Component {
         })
 
         this.addSocketInRoom(roomId, socket)
+
+        // Auto-join org room if user has org-level access (not public session guests)
+        if (organizationId) {
+          socket.join(organizationId)
+        }
       })
 
       socket.on("leave_room", (roomId) => {
