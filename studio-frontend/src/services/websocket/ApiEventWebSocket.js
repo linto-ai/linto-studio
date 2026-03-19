@@ -54,6 +54,7 @@ export default class ApiEventWebSocket {
       this.socket.on("connect", (msg) => {
         debugWSSession("connected to socket.io server", msg)
         this.state.isConnected = true
+        this.subscribeFolderUpdate()
 
         if (this.state.connexionLost) {
           this.handleConnexionRestored()
@@ -143,7 +144,13 @@ export default class ApiEventWebSocket {
     this.state.isConnected = false
   }
 
-  subscribeSessionRoom(sessionId, channelIndex, onPartial, onFinal, onTranslation) {
+  subscribeSessionRoom(
+    sessionId,
+    channelIndex,
+    onPartial,
+    onFinal,
+    onTranslation,
+  ) {
     // TODO: rewrite by emitting event via bus
     return new Promise((resolve, reject) => {
       this.unSubscribeSessionRoom()
@@ -229,6 +236,16 @@ export default class ApiEventWebSocket {
 
     this.socket.on("conversation_created", (media) => {
       debugWSMedia("conversation_created", media)
+      if (media.jobs?.transcription?.state === "done") {
+        store.dispatch(
+          `${this.currentMediaOrganizationId}/done/conversations/prependMedias`,
+          [media],
+        )
+        store.dispatch(
+          `${this.currentMediaOrganizationId}/done/conversations/increaseCount`,
+        )
+        return
+      }
       store.dispatch(
         `${this.currentMediaOrganizationId}/processing/conversations/prependMedias`,
         [media],
@@ -254,9 +271,10 @@ export default class ApiEventWebSocket {
     this.socket.on("conversation_processing_done", (mediaId) => {
       debugWSMedia("conversation_processing_done", mediaId)
 
-      const processingMedia = store.getters[
-        `${this.currentMediaOrganizationId}/processing/conversations/getMediaById`
-      ](mediaId)
+      const processingMedia =
+        store.getters[
+          `${this.currentMediaOrganizationId}/processing/conversations/getMediaById`
+        ](mediaId)
 
       // Remove from processing store
       if (processingMedia) {
@@ -272,7 +290,11 @@ export default class ApiEventWebSocket {
       // Add to done store (inbox)
       store.dispatch(
         `${this.currentMediaOrganizationId}/done/conversations/prependMedias`,
-        [processingMedia ? { ...processingMedia, jobs: { transcription: { state: "done" } } } : mediaId],
+        [
+          processingMedia
+            ? { ...processingMedia, jobs: { transcription: { state: "done" } } }
+            : mediaId,
+        ],
       )
       store.dispatch(
         `${this.currentMediaOrganizationId}/done/conversations/increaseCount`,
@@ -282,9 +304,10 @@ export default class ApiEventWebSocket {
     this.socket.on("conversation_processing_error", (mediaId) => {
       debugWSMedia("conversation_processing_error", mediaId)
 
-      const processingMedia = store.getters[
-        `${this.currentMediaOrganizationId}/processing/conversations/getMediaById`
-      ](mediaId)
+      const processingMedia =
+        store.getters[
+          `${this.currentMediaOrganizationId}/processing/conversations/getMediaById`
+        ](mediaId)
 
       // Remove from processing store
       if (processingMedia) {

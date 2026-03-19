@@ -9,6 +9,12 @@ services:
     networks:
       - internal
 
+  studio-redis:
+    container_name: studio-redis
+    image: redis:7-alpine
+    networks:
+      - internal
+
   studio-api:
     container_name: studio-api
     image: linto-studio/studio-api
