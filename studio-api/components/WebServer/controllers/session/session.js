@@ -59,7 +59,7 @@ async function forceQueryParams(req, next) {
   try {
     if (req.body && Object.keys(req.body).length !== 0) {
       req.body.name = "@" + req.payload.data.userId
-      req.body.visibility = "private"
+      req.body.visibility = "user"
       req.query.organizationId = req.params.organizationId || ""
 
       if (req.body.channel && req.body.channels.length === 1)
