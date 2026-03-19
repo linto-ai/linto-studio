@@ -15,10 +15,12 @@ export function createSubtitlePlugin(
 
     install(core: EditorCore) {
       const fontSize = ref(options.fontSize ?? 40)
+      const isVisible = ref(true)
       const isFullscreen = ref(false)
 
       const api: SubtitlePluginApi = {
         fontSize,
+        isVisible,
         isFullscreen,
         enterFullscreen() {
           isFullscreen.value = true
@@ -31,6 +33,7 @@ export function createSubtitlePlugin(
       core.subtitle = api
 
       return () => {
+        isVisible.value = false
         isFullscreen.value = false
         core.subtitle = undefined
       }

@@ -78,7 +78,6 @@ defineExpose({ seekTo, pause })
 }
 
 .waveform-container {
-  /* padding: var(--spacing-md) var(--spacing-lg); */
   min-height: 32px;
 }
 
@@ -107,18 +106,5 @@ defineExpose({ seekTo, pause })
   .waveform-container--loading {
     animation: none;
   }
-}
-</style>
-
-<!-- Unscoped: ::part() cannot pierce Shadow DOM from Vue scoped styles -->
-<style>
-.waveform-container ::part(region) {
-  backdrop-filter: blur(0.5px);
-  -webkit-backdrop-filter: blur(0.5px);
-  border-top: 2px solid var(--region-color, rgba(255, 255, 255, 0.4));
-  border-bottom: 1px solid var(--region-color, rgba(255, 255, 255, 0.4));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    0 1px 4px rgba(0, 0, 0, 0.1);
 }
 </style>

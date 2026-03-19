@@ -90,6 +90,7 @@ export interface AudioPluginApi {
 
 export interface SubtitlePluginApi {
   fontSize: Ref<number>
+  isVisible: Ref<boolean>
   isFullscreen: Ref<boolean>
   enterFullscreen(): void
   exitFullscreen(): void

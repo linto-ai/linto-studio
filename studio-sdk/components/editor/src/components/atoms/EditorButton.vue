@@ -111,21 +111,17 @@ const classes = computed(() => [
   background-color: var(--color-primary-hover);
 }
 
-.editor-btn--secondary {
-  color: var(--color-text-secondary);
-  background: none;
-  border: 1px solid var(--color-border);
-}
-
-.editor-btn--secondary:hover:not(:disabled) {
-  background-color: var(--color-surface-hover);
-}
-
+.editor-btn--secondary,
 .editor-btn--ghost {
   color: var(--color-text-secondary);
   background: none;
 }
 
+.editor-btn--secondary {
+  border: 1px solid var(--color-border);
+}
+
+.editor-btn--secondary:hover:not(:disabled),
 .editor-btn--ghost:hover:not(:disabled) {
   background-color: var(--color-surface-hover);
 }

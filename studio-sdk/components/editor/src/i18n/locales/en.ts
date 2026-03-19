@@ -25,6 +25,9 @@ const en: Record<keyof typeof fr, string> = {
   'language.wildcard': 'Multilingual',
   'select.filter': 'Search\u2026',
   'subtitle.exitFullscreen': 'Exit fullscreen',
+  'subtitle.show': 'Show subtitles',
+  'subtitle.fontSize': 'Font size',
+  'sidebar.subtitle': 'Subtitles',
 }
 
 export default en

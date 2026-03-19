@@ -48,10 +48,8 @@
   --glass-border: rgba(255, 255, 255, 0.3);
 }
 
-:host {
-  /* Shadow DOM host styles */
-  display: block;
-  height: 100%;
+:host,
+body {
   font-family: var(--font-family);
   font-size: var(--font-size-base);
   line-height: var(--line-height);
@@ -59,6 +57,11 @@
   background-color: var(--color-background);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+:host {
+  display: block;
+  height: 100%;
   overflow: hidden;
 }
 
@@ -76,16 +79,6 @@ html,
 body {
   height: 100%;
   overflow: hidden;
-}
-
-body {
-  font-family: var(--font-family);
-  font-size: var(--font-size-base);
-  line-height: var(--line-height);
-  color: var(--color-text-primary);
-  background-color: var(--color-background);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 #app {

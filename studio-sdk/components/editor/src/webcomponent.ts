@@ -4,13 +4,15 @@ import { createEditorCore, provideEditorCore } from "./core"
 import { createAudioPlugin } from "./plugins/audio"
 import { provideI18n, type Locale } from "./i18n"
 import styles from "./styles/variables.css?inline"
+import baseStyles from "./styles/base.css?inline"
+import selectStyles from "./styles/sidebar-select.css?inline"
 
 const LintoEditor = defineCustomElement({
   props: {
     locale: { type: String, default: "fr" },
     noHeader: { type: Boolean, default: false },
   },
-  styles: [styles],
+  styles: [styles, baseStyles, selectStyles],
   setup(props, { expose }) {
     console.log(props)
     const locale = ref<Locale>(props.locale as Locale)

@@ -1,17 +1,9 @@
 <script setup lang="ts">
 import { computed, ref, useTemplateRef, watch } from "vue"
-import {
-  DialogRoot,
-  DialogPortal,
-  DialogOverlay,
-  DialogContent,
-  DialogTitle,
-  DialogClose,
-} from "reka-ui"
-import { X } from "lucide-vue-next"
 import EditorHeader from "./EditorHeader.vue"
 import TranscriptionPanel from "./TranscriptionPanel.vue"
 import SpeakerSidebar from "./SpeakerSidebar.vue"
+import SidebarDrawer from "./SidebarDrawer.vue"
 import AudioPlayer from "./AudioPlayer.vue"
 import SubtitleBanner from "./SubtitleBanner.vue"
 import SubtitleFullscreen from "./SubtitleFullscreen.vue"
@@ -105,29 +97,16 @@ function onTranslationChange(translationId: string) {
         @update:selected-channel-id="onChannelChange"
         @update:selected-translation-id="onTranslationChange" />
 
-      <DialogRoot v-model:open="isSidebarOpen">
-        <DialogPortal disabled>
-          <DialogOverlay class="sidebar-overlay" />
-          <DialogContent class="sidebar-drawer">
-            <DialogTitle class="sr-only">{{
-              t("sidebar.speakers")
-            }}</DialogTitle>
-            <DialogClose
-              class="sidebar-close"
-              :aria-label="t('header.closeSidebar')">
-              <X :size="20" />
-            </DialogClose>
-            <SpeakerSidebar
-              :speakers="speakerList"
-              :channels="channels"
-              :selected-channel-id="editor.activeChannelId.value"
-              :translations="translations"
-              :selected-translation-id="activeTranslationId"
-              @update:selected-channel-id="onChannelChange"
-              @update:selected-translation-id="onTranslationChange" />
-          </DialogContent>
-        </DialogPortal>
-      </DialogRoot>
+      <SidebarDrawer v-model:open="isSidebarOpen">
+        <SpeakerSidebar
+          :speakers="speakerList"
+          :channels="channels"
+          :selected-channel-id="editor.activeChannelId.value"
+          :translations="translations"
+          :selected-translation-id="activeTranslationId"
+          @update:selected-channel-id="onChannelChange"
+          @update:selected-translation-id="onTranslationChange" />
+      </SidebarDrawer>
     </main>
     <AudioPlayer
       v-if="editor.audio?.src.value"
@@ -137,7 +116,7 @@ function onTranslationChange(translationId: string) {
       :speakers="speakers"
       @timeupdate="onTimeUpdate"
       @play-state-change="(v: boolean) => { if (editor.audio) editor.audio.isPlaying.value = v }" />
-    <SubtitleBanner v-if="editor.subtitle && !isMobile && !editor.subtitle.isFullscreen.value" />
+    <SubtitleBanner v-if="editor.subtitle?.isVisible.value && !isMobile && !editor.subtitle.isFullscreen.value" />
     <SubtitleFullscreen v-if="editor.subtitle?.isFullscreen.value" />
     <div v-if="isMobile" class="mobile-selectors">
       <ChannelSelector
@@ -188,91 +167,6 @@ function onTranslationChange(translationId: string) {
 @media (max-width: 767px) {
   .editor-body {
     grid-template-columns: 1fr;
-  }
-}
-</style>
-
-<!-- Unscoped: styles need to reach DialogContent children -->
-<style>
-.sidebar-overlay {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.4);
-  z-index: 50;
-  animation: overlay-fade-in 200ms ease;
-}
-
-.sidebar-drawer {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: min(320px, 85vw);
-  z-index: 51;
-  background-color: var(--color-surface);
-  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.15);
-  animation: drawer-slide-in 250ms ease;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-}
-
-.sidebar-close {
-  position: absolute;
-  top: var(--spacing-sm);
-  right: var(--spacing-sm);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border: none;
-  background: none;
-  color: var(--color-text-muted);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  z-index: 1;
-}
-
-.sidebar-close:hover {
-  background-color: var(--color-surface-hover);
-  color: var(--color-text-primary);
-}
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
-}
-
-@keyframes overlay-fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes drawer-slide-in {
-  from {
-    translate: 100% 0;
-  }
-  to {
-    translate: 0 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .sidebar-overlay,
-  .sidebar-drawer {
-    animation: none;
   }
 }
 </style>

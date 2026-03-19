@@ -23,6 +23,9 @@ const fr = {
   'language.wildcard': 'Multi-langue',
   'select.filter': 'Rechercher\u2026',
   'subtitle.exitFullscreen': 'Quitter le plein écran',
+  'subtitle.show': 'Afficher les sous-titres',
+  'subtitle.fontSize': 'Taille de police',
+  'sidebar.subtitle': 'Sous-titres',
 } as const
 
 export default fr
