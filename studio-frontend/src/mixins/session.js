@@ -123,7 +123,9 @@ export const sessionMixin = {
       // Use another WS instance for public session to avoid conflict with main app WS
       if (this.isFromPublicLink) {
         this.websocketInstance = new ApiEventWebSocket()
-        this.websocketInstance.connect(this.session.publicSessionToken)
+        this.websocketInstance.connect(this.session.publicSessionToken, {
+          isPublic: true,
+        })
       } else {
         this.websocketInstance = this.$apiEventWS
       }

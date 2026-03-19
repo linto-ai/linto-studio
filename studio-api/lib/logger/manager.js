@@ -68,10 +68,11 @@ class LogManager {
 
       switch (event.action) {
         case SOCKET_EVENTS.JOIN:
-          // For anonymous users, try visitorId lookup if socket.id didn't match
+          // For anonymous users, try visitorId lookup if socket.id didn't match.
+          // Same visitorId + same session = same viewer (handles reconnects and multi-tab).
           if (!activityLog && ctx.socket.visitorId && !ctx.user?.id) {
             activityLog = (
-              await model.activityLog.getByVisitorAndSession(
+              await model.activityLog.getLastByVisitorAndSession(
                 ctx.socket.visitorId,
                 ctx.session.sessionId,
               )
@@ -106,12 +107,11 @@ class LogManager {
       let activityLogs = await model.activityLog.getBySocketId(ctx.socket.id)
       let activityLog = reduceToLastActivity(activityLogs)
 
-      // For anonymous users, try visitorId if socket.id didn't match
+      // For anonymous users, try visitorId on entries still active
       if (!activityLog && ctx.socket.visitorId) {
-        activityLogs = await model.activityLog.getByVisitorId(
-          ctx.socket.visitorId,
-        )
-        activityLog = reduceToLastActivity(activityLogs)
+        activityLog = (
+          await model.activityLog.getActiveByVisitorId(ctx.socket.visitorId)
+        )[0]
       }
 
       if (!activityLog) return

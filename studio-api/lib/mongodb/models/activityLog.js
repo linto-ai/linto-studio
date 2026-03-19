@@ -78,25 +78,32 @@ class ActivityLog extends MongoModel {
     }
   }
 
-  async getByVisitorAndSession(visitorId, sessionId) {
+  async getLastByVisitorAndSession(visitorId, sessionId) {
     try {
       const query = {
         "socket.visitorId": visitorId,
         "session.sessionId": sessionId,
       }
-      return await this.mongoRequest(query)
+      return await this.mongoRequest(query, {
+        sort: { timestamp: -1 },
+        limit: 1,
+      })
     } catch (error) {
       console.error(error)
       return error
     }
   }
 
-  async getByVisitorId(visitorId) {
+  async getActiveByVisitorId(visitorId) {
     try {
       const query = {
         "socket.visitorId": visitorId,
+        lastDisconnectionAt: null,
       }
-      return await this.mongoRequest(query)
+      return await this.mongoRequest(query, {
+        sort: { timestamp: -1 },
+        limit: 1,
+      })
     } catch (error) {
       console.error(error)
       return error
@@ -105,7 +112,6 @@ class ActivityLog extends MongoModel {
 
   async socketReconnect(activity, timestamp, newSocketId = null) {
     try {
-      const operator = "$set"
       const query = { _id: activity._id }
       const payload = activity.socket
 
@@ -113,9 +119,10 @@ class ActivityLog extends MongoModel {
       payload.lastJoinedAt = timestamp
       if (newSocketId) payload.id = newSocketId
 
-      await this.mongoUpdateOne(query, operator, {
+      await this.mongoUpdateOne(query, "$set", {
         socket: payload,
         timestamp: timestamp,
+        lastDisconnectionAt: null,
       })
     } catch (error) {
       console.error(error)
