@@ -78,7 +78,32 @@ class ActivityLog extends MongoModel {
     }
   }
 
-  async socketReconnect(activity, timestamp) {
+  async getByVisitorAndSession(visitorId, sessionId) {
+    try {
+      const query = {
+        "socket.visitorId": visitorId,
+        "session.sessionId": sessionId,
+      }
+      return await this.mongoRequest(query)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async getByVisitorId(visitorId) {
+    try {
+      const query = {
+        "socket.visitorId": visitorId,
+      }
+      return await this.mongoRequest(query)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async socketReconnect(activity, timestamp, newSocketId = null) {
     try {
       const operator = "$set"
       const query = { _id: activity._id }
@@ -86,6 +111,7 @@ class ActivityLog extends MongoModel {
 
       payload.connectionCount = ++activity.socket.connectionCount
       payload.lastJoinedAt = timestamp
+      if (newSocketId) payload.id = newSocketId
 
       await this.mongoUpdateOne(query, operator, {
         socket: payload,

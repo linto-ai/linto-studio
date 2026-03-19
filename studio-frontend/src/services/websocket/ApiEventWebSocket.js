@@ -11,6 +11,16 @@ import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
 const socketioUrl = getEnv("VUE_APP_SESSION_WS")
 const socketioPath = getEnv("VUE_APP_SESSION_WS_PATH")
 
+const VISITOR_ID_KEY = "linto_visitor_id"
+function getVisitorId() {
+  let id = localStorage.getItem(VISITOR_ID_KEY)
+  if (!id) {
+    id = crypto.randomUUID()
+    localStorage.setItem(VISITOR_ID_KEY, id)
+  }
+  return id
+}
+
 const debugWSSession = customDebug("Websocket:Session:debug")
 const debugWSMedia = customDebug("Websocket:Media:debug")
 export default class ApiEventWebSocket {
@@ -47,6 +57,7 @@ export default class ApiEventWebSocket {
         path: socketioPath,
         auth: {
           token: userToken,
+          visitorId: getVisitorId(),
         },
         transports: transports,
       })
