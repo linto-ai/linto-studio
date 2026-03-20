@@ -95,7 +95,10 @@ async function createUser(req, res, next) {
       ? "Account created."
       : "Account created. An email has been sent to you. Please open it and click on the link to validate your email address."
 
-    res.status(201).send({ message })
+    const organizationCreationDisabled =
+      process.env.DISABLE_DEFAULT_ORGANIZATION_CREATION === "true"
+
+    res.status(201).send({ message, organizationCreationDisabled })
   } catch (err) {
     next(err)
   }
