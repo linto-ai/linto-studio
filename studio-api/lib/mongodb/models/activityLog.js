@@ -1,5 +1,7 @@
 const MongoModel = require("../model")
 
+const VIEWER_THRESHOLD_SECONDS = 300
+
 function buildActivityMatchQuery(activity, orgaId, startDate, endDate) {
   const timestampQuery = {}
 
@@ -69,6 +71,19 @@ class ActivityLog extends MongoModel {
     try {
       const query = {
         "socket.id": socketId,
+        "session.sessionId": sessionId,
+      }
+      return await this.mongoRequest(query)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async getByUserAndSession(userId, sessionId) {
+    try {
+      const query = {
+        "user.id": userId,
         "session.sessionId": sessionId,
       }
       return await this.mongoRequest(query)
@@ -316,8 +331,7 @@ class ActivityLog extends MongoModel {
           if (event.action === "mount") {
             mountTime = new Date(event.timestamp)
           } else if (event.action === "unmount" && mountTime) {
-            totalStreamingTime +=
-              (new Date(event.timestamp) - mountTime) / 1000
+            totalStreamingTime += (new Date(event.timestamp) - mountTime) / 1000
             mountTime = null
           }
         }
@@ -372,18 +386,30 @@ class ActivityLog extends MongoModel {
             organization: { $first: "$organization" },
             usersAbove5Min: {
               $sum: {
-                $cond: [{ $gte: ["$socket.totalWatchTime", 300] }, 1, 0],
+                $cond: [
+                  {
+                    $gte: ["$socket.totalWatchTime", VIEWER_THRESHOLD_SECONDS],
+                  },
+                  1,
+                  0,
+                ],
               },
             },
             usersBelow5Min: {
               $sum: {
-                $cond: [{ $lt: ["$socket.totalWatchTime", 300] }, 1, 0],
+                $cond: [
+                  { $lt: ["$socket.totalWatchTime", VIEWER_THRESHOLD_SECONDS] },
+                  1,
+                  0,
+                ],
               },
             },
             avgWatchTimeAbove5Min: {
               $avg: {
                 $cond: [
-                  { $gte: ["$socket.totalWatchTime", 300] },
+                  {
+                    $gte: ["$socket.totalWatchTime", VIEWER_THRESHOLD_SECONDS],
+                  },
                   "$socket.totalWatchTime",
                   null,
                 ],
@@ -392,7 +418,7 @@ class ActivityLog extends MongoModel {
             avgWatchTimeBelow5Min: {
               $avg: {
                 $cond: [
-                  { $lt: ["$socket.totalWatchTime", 300] },
+                  { $lt: ["$socket.totalWatchTime", VIEWER_THRESHOLD_SECONDS] },
                   "$socket.totalWatchTime",
                   null,
                 ],
@@ -555,13 +581,13 @@ class ActivityLog extends MongoModel {
       )
       // Get first mount and last unmount across all channels
       const allMounts = channels.flatMap((ch) => ch.mountedAt).filter(Boolean)
-      const allUnmounts = channels.flatMap((ch) => ch.unmountedAt).filter(Boolean)
-      const firstMountAt = allMounts.length > 0
-        ? allMounts.sort((a, b) => a - b)[0]
-        : null
-      const lastUnmountAt = allUnmounts.length > 0
-        ? allUnmounts.sort((a, b) => b - a)[0]
-        : null
+      const allUnmounts = channels
+        .flatMap((ch) => ch.unmountedAt)
+        .filter(Boolean)
+      const firstMountAt =
+        allMounts.length > 0 ? allMounts.sort((a, b) => a - b)[0] : null
+      const lastUnmountAt =
+        allUnmounts.length > 0 ? allUnmounts.sort((a, b) => b - a)[0] : null
 
       return {
         channels,
