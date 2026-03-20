@@ -59,7 +59,7 @@ class LogManager {
     delete ctx.message
 
     if (ctx?.session?.sessionId) {
-      const activityLog = (
+      let activityLog = (
         await model.activityLog.getBySocketAndSession(
           ctx.socket.id,
           ctx.session.sessionId,
@@ -68,10 +68,26 @@ class LogManager {
 
       switch (event.action) {
         case SOCKET_EVENTS.JOIN:
+          // For anonymous users, try visitorId lookup if socket.id didn't match.
+          // Same visitorId + same session = same viewer (handles reconnects and multi-tab).
+          if (!activityLog && ctx.socket.visitorId && !ctx.user?.id) {
+            activityLog = (
+              await model.activityLog.getLastByVisitorAndSession(
+                ctx.socket.visitorId,
+                ctx.session.sessionId,
+              )
+            )[0]
+          }
+
           if (!activityLog) {
             ctx.firstConnectionAt = ctx.timestamp
             model.activityLog.create(ctx)
-          } else model.activityLog.socketReconnect(activityLog, ctx.timestamp)
+          } else
+            model.activityLog.socketReconnect(
+              activityLog,
+              ctx.timestamp,
+              ctx.socket.id,
+            )
           break
         case SOCKET_EVENTS.LEAVE:
         case SOCKET_EVENTS.DISCONNECT:
@@ -88,8 +104,16 @@ class LogManager {
 
       // On browser closed we don't have a sessionId
     } else if (event.action === SOCKET_EVENTS.DISCONNECT) {
-      const activityLogs = await model.activityLog.getBySocketId(ctx.socket.id)
-      const activityLog = reduceToLastActivity(activityLogs)
+      let activityLogs = await model.activityLog.getBySocketId(ctx.socket.id)
+      let activityLog = reduceToLastActivity(activityLogs)
+
+      // For anonymous users, try visitorId on entries still active
+      if (!activityLog && ctx.socket.visitorId) {
+        activityLog = (
+          await model.activityLog.getActiveByVisitorId(ctx.socket.visitorId)
+        )[0]
+      }
+
       if (!activityLog) return
 
       const socketPayload = calculateWatchTime(activityLog, ctx)

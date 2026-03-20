@@ -7,9 +7,20 @@ import { getEnv } from "@/tools/getEnv"
 import store from "@/store/index.js"
 import i18n from "@/i18n"
 import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
+import { generateId } from "@/tools/generateId"
 
 const socketioUrl = getEnv("VUE_APP_SESSION_WS")
 const socketioPath = getEnv("VUE_APP_SESSION_WS_PATH")
+
+const VISITOR_ID_KEY = "linto_visitor_id"
+function getVisitorId() {
+  let id = localStorage.getItem(VISITOR_ID_KEY)
+  if (!id) {
+    id = generateId()
+    localStorage.setItem(VISITOR_ID_KEY, id)
+  }
+  return id
+}
 
 const debugWSSession = customDebug("Websocket:Session:debug")
 const debugWSMedia = customDebug("Websocket:Media:debug")
@@ -31,7 +42,7 @@ export default class ApiEventWebSocket {
     this.currentToken = null
   }
 
-  connect(token) {
+  connect(token, { isPublic = false } = {}) {
     this.clearNotifs()
     if (this.state.isConnected) {
       debugWSSession("already connected to socket.io server")
@@ -43,11 +54,12 @@ export default class ApiEventWebSocket {
 
     return new Promise((resolve, reject) => {
       const transports = getEnv("VUE_APP_WEBSOCKET_TRANSPORTS").split(",")
+      const auth = { token: userToken }
+      if (isPublic) auth.visitorId = getVisitorId()
+
       this.socket = io(socketioUrl, {
         path: socketioPath,
-        auth: {
-          token: userToken,
-        },
+        auth,
         transports: transports,
       })
 

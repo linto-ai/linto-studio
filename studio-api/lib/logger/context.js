@@ -231,6 +231,8 @@ class LoggerContext {
     { source = "socketio", level = DEFAULT_LEVEL, activity = "session" } = {},
   ) {
     try {
+      const visitorId = socket?.handshake?.auth?.visitorId || null
+
       const context = {
         source,
         level,
@@ -238,6 +240,7 @@ class LoggerContext {
         activity,
         socket: {
           id: socket.id,
+          ...(visitorId && { visitorId }),
           connectionCount: 1,
           totalWatchTime: 0,
         },

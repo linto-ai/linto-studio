@@ -78,18 +78,51 @@ class ActivityLog extends MongoModel {
     }
   }
 
-  async socketReconnect(activity, timestamp) {
+  async getLastByVisitorAndSession(visitorId, sessionId) {
     try {
-      const operator = "$set"
+      const query = {
+        "socket.visitorId": visitorId,
+        "session.sessionId": sessionId,
+      }
+      return await this.mongoRequest(query, {
+        sort: { timestamp: -1 },
+        limit: 1,
+      })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async getActiveByVisitorId(visitorId) {
+    try {
+      const query = {
+        "socket.visitorId": visitorId,
+        lastDisconnectionAt: null,
+      }
+      return await this.mongoRequest(query, {
+        sort: { timestamp: -1 },
+        limit: 1,
+      })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async socketReconnect(activity, timestamp, newSocketId = null) {
+    try {
       const query = { _id: activity._id }
       const payload = activity.socket
 
       payload.connectionCount = ++activity.socket.connectionCount
       payload.lastJoinedAt = timestamp
+      if (newSocketId) payload.id = newSocketId
 
-      await this.mongoUpdateOne(query, operator, {
+      await this.mongoUpdateOne(query, "$set", {
         socket: payload,
         timestamp: timestamp,
+        lastDisconnectionAt: null,
       })
     } catch (error) {
       console.error(error)

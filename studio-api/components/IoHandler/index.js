@@ -276,7 +276,11 @@ class IoHandler extends Component {
     const redisPassword = process.env.SOCKETIO_REDIS_PASSWORD
 
     const clientOpts = {
-      socket: { host: redisHost, port: Number(redisPort) },
+      socket: {
+        host: redisHost,
+        port: Number(redisPort),
+        reconnectStrategy: false,
+      },
     }
     if (redisPassword) clientOpts.password = redisPassword
 
@@ -285,14 +289,28 @@ class IoHandler extends Component {
       pubClient = createClient(clientOpts)
       subClient = pubClient.duplicate()
 
-      pubClient.on("error", (err) =>
-        debug("Redis pub client error:", err.message),
-      )
-      subClient.on("error", (err) =>
-        debug("Redis sub client error:", err.message),
-      )
+      // Fallback to in-memory if Redis disconnects at runtime
+      let connected = false
+      let disconnected = false
+      const fallbackToInMemory = (label, err) => {
+        if (!connected || disconnected) return
+        disconnected = true
+        LogManager.logSystemEvent(
+          `Redis ${label} connection lost (${err.message}), falling back to in-memory adapter`,
+        )
+        const { Adapter } = require("socket.io-adapter")
+        this.io.adapter(Adapter)
+        this.redisPubClient = null
+        this.redisSubClient = null
+        pubClient.disconnect().catch(() => {})
+        subClient.disconnect().catch(() => {})
+      }
+
+      pubClient.on("error", (err) => fallbackToInMemory("pub", err))
+      subClient.on("error", (err) => fallbackToInMemory("sub", err))
 
       await Promise.all([pubClient.connect(), subClient.connect()])
+      connected = true
 
       this.redisPubClient = pubClient
       this.redisSubClient = subClient
