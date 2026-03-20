@@ -295,6 +295,14 @@ export default {
           this.state = "personal-information"
           this.email.error = this.$t("user_creation.email_already_exists")
         } else if (res.status === "success") {
+          if (res.data?.organizationCreationDisabled === true) {
+            this.$router.push({
+              name: "login",
+              query: { notice: "account_created" },
+            })
+            return
+          }
+
           this.firstname = { ...EMPTY_FIELD }
           this.lastname = { ...EMPTY_FIELD }
           this.email = { ...EMPTY_FIELD }

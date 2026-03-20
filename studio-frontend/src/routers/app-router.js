@@ -9,6 +9,7 @@ import { apiLoginUserMagicLink } from "@/api/user"
 import { apiGetUserRightFromConversation } from "@/api/conversation"
 import PUBLIC_ROUTES from "../const/publicRoutes"
 import { logout } from "../tools/logout"
+import { resetCookie } from "../tools/resetCookie"
 import { customDebug } from "@/tools/customDebug.js"
 import { generateId } from "@/tools/generateId.js"
 
@@ -890,11 +891,10 @@ router.beforeEach(async (to, from, next) => {
 
       // Redirect to login if user is not admin else go to backoffice
       if (platformRole <= 1) {
-        logout()
-        return next({
-          name: "login",
-          query: { next: from.query.next || to.fullPath },
-        })
+        resetCookie()
+        const next_url = from.query.next || to.fullPath
+        window.location.href = `/login?error=no_organization&next=${encodeURIComponent(next_url)}`
+        return
       } else {
         if (to.meta?.backoffice) {
           return next()
