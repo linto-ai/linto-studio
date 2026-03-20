@@ -1,5 +1,5 @@
 import { ref, shallowRef, triggerRef } from "vue"
-import type { EditorCore, EditorPlugin, LivePluginApi } from "../../core/types"
+import type { EditorStore, EditorPlugin, LivePluginApi } from "../../core/types"
 import type {
   LivePartialEvent,
   LiveFinalEvent,
@@ -17,7 +17,7 @@ export function createLivePlugin(): EditorPlugin {
   return {
     name: "live",
 
-    install(core: EditorCore) {
+    install(core: EditorStore) {
       const partial = shallowRef<string | null>(null)
       const hasLiveUpdate = ref(false)
 
@@ -31,7 +31,7 @@ export function createLivePlugin(): EditorPlugin {
       function onPartial(event: LivePartialEvent, channelId: string): void {
         if (core.activeChannelId.value !== channelId) return
 
-        const activeTranslation = core.activeChannel.activeTranslation.data.value
+        const activeTranslation = core.activeChannel.value.activeTranslation.value
 
         if (activeTranslation.isSource) {
           if (event.text == null) return
@@ -68,8 +68,10 @@ export function createLivePlugin(): EditorPlugin {
       function onFinal(event: LiveFinalEvent, channelId: string): void {
         if (event.speakerId) core.speakers.ensure(event.speakerId)
 
+        const channel = core.channels.get(channelId)
+
         // 1. Source turn — only if text is provided
-        if (event.text != null) {
+        if (event.text != null && channel) {
           const hasWords = event.words.length > 0
           const turnData = {
             speakerId: event.speakerId,
@@ -80,24 +82,19 @@ export function createLivePlugin(): EditorPlugin {
             language: event.language,
           }
 
-          const sourceHandle = core.withTranslation({ channelId })
-          if (sourceHandle) {
-            const exists = sourceHandle.turns.value.some(
-              (t) => t.id === event.turnId,
-            )
-            if (exists) sourceHandle.updateTurn(event.turnId, turnData)
-            else sourceHandle.addTurn({ id: event.turnId, ...turnData })
-          }
+          const sourceStore = channel.sourceTranslation
+          const exists = sourceStore.turns.value.some(
+            (t) => t.id === event.turnId,
+          )
+          if (exists) sourceStore.updateTurn(event.turnId, turnData)
+          else sourceStore.addTurn({ id: event.turnId, ...turnData })
         }
 
         // 2. Translations
-        if (event.translations) {
+        if (event.translations && channel) {
           for (const tr of event.translations) {
-            const handle = core.withTranslation({
-              channelId,
-              translationId: tr.translationId,
-            })
-            if (!handle) continue
+            const trStore = channel.translations.get(tr.translationId)
+            if (!trStore) continue
 
             const trTurnData = {
               speakerId: event.speakerId,
@@ -108,11 +105,11 @@ export function createLivePlugin(): EditorPlugin {
               language: tr.language,
             }
 
-            const exists = handle.turns.value.some(
+            const exists = trStore.turns.value.some(
               (t) => t.id === event.turnId,
             )
-            if (exists) handle.updateTurn(event.turnId, trTurnData)
-            else handle.addTurn({ id: event.turnId, ...trTurnData })
+            if (exists) trStore.updateTurn(event.turnId, trTurnData)
+            else trStore.addTurn({ id: event.turnId, ...trTurnData })
           }
         }
 

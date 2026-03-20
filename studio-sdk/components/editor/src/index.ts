@@ -1,14 +1,18 @@
 // Core
-export { createEditorCore, provideEditorCore, useEditorCore } from './core'
+export {
+  createEditorStore,
+  provideEditorStore,
+  useEditorStore,
+} from './core'
 export type {
-  EditorCore,
+  EditorStore,
   EditorPlugin,
   EditorEventMap,
-  EditorCoreOptions,
+  EditorStoreOptions,
   EditorCapabilities,
-  ChannelHandle,
-  TranslationHandle,
-  SpeakersHandle,
+  TranslationStore,
+  ChannelStore,
+  SpeakersStore,
   AudioPluginApi,
   LivePluginApi,
   SubtitlePluginApi,
@@ -32,7 +36,7 @@ export { provideI18n } from './i18n'
 export type { Locale } from './i18n'
 
 // Validation
-export { validateEditorDocument, DocumentValidationError } from './utils/validateDocument'
+export { validateEditorDocument, DocumentValidationError } from './utils'
 
 // Types
 export type { EditorDocument, Turn, Speaker, Word, Channel, Translation, AudioSource } from './types/editor'

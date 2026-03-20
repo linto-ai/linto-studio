@@ -1,5 +1,3 @@
-import type { Translation } from "../types/editor"
-
 export function getLanguageDisplayName(
   code: string,
   locale: string,
@@ -15,7 +13,7 @@ export function getLanguageDisplayName(
 }
 
 export function buildTranslationItems(
-  translations: Translation[],
+  translations: { id: string; languages: string[]; isSource: boolean }[],
   locale: string,
   originalLabel: string,
   wildcardLabel = "*",

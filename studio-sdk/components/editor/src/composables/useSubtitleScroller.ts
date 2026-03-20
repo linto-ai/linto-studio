@@ -1,5 +1,5 @@
 import { onMounted, onUnmounted, watch, type Ref } from "vue"
-import { useEditorCore } from "../core"
+import { useEditorStore } from "../core"
 import { SubtitleScroller } from "../plugins/subtitle/SubtitleScroller"
 
 interface UseSubtitleScrollerOptions {
@@ -13,7 +13,7 @@ interface UseSubtitleScrollerOptions {
  * Handles creation on mount and full cleanup on unmount.
  */
 export function useSubtitleScroller(options: UseSubtitleScrollerOptions) {
-  const editor = useEditorCore()
+  const editor = useEditorStore()
   let scroller: SubtitleScroller | null = null
 
   onMounted(() => {
@@ -31,7 +31,7 @@ export function useSubtitleScroller(options: UseSubtitleScrollerOptions) {
     },
   )
 
-  const unsubTurnAdd = editor.activeChannel.activeTranslation.on("turn:add", ({ turn }) => {
+  const unsubTurnAdd = editor.onActiveTranslation("turn:add", ({ turn }) => {
     if (!scroller) return
     const text = turn.words.length > 0
       ? turn.words.map((w) => w.text).join(" ")

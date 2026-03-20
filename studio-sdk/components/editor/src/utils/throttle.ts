@@ -20,4 +20,4 @@ function throttle(fn: (...args: unknown[]) => void, delay = 250) {
   }
 }
 
-export default throttle
+export { throttle }

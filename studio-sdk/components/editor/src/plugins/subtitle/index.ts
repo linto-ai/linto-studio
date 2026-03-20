@@ -1,5 +1,5 @@
 import { ref } from "vue"
-import type { EditorCore, EditorPlugin, SubtitlePluginApi } from "../../core/types"
+import type { EditorStore, EditorPlugin, SubtitlePluginApi } from "../../core/types"
 
 export type { SubtitlePluginApi }
 
@@ -13,7 +13,7 @@ export function createSubtitlePlugin(
   return {
     name: "subtitle",
 
-    install(core: EditorCore) {
+    install(core: EditorStore) {
       const fontSize = ref(options.fontSize ?? 40)
       const isVisible = ref(true)
       const isFullscreen = ref(false)

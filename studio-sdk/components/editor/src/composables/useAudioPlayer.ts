@@ -8,9 +8,7 @@ import {
 } from 'vue'
 import WaveSurfer from 'wavesurfer.js'
 import RegionsPlugin from 'wavesurfer.js/dist/plugins/regions.esm.js'
-import { hexToRgba } from '../utils/color'
-import { formatTime } from '../utils/time'
-import { renderWaveform } from '../utils/waveform'
+import * as utils from "../utils"
 import type { Turn, Speaker } from '../types/editor'
 
 export interface UseAudioPlayerOptions {
@@ -37,8 +35,8 @@ export function useAudioPlayer(options: UseAudioPlayerOptions) {
   const playbackRate = ref(1)
   const isMuted = ref(false)
 
-  const formattedCurrentTime = computed(() => formatTime(currentTime.value))
-  const formattedDuration = computed(() => formatTime(duration.value))
+  const formattedCurrentTime = computed(() => utils.formatTime(currentTime.value))
+  const formattedDuration = computed(() => utils.formatTime(duration.value))
 
   function initWaveSurfer(container: HTMLElement, src: string) {
     destroy()
@@ -62,7 +60,7 @@ export function useAudioPlayer(options: UseAudioPlayerOptions) {
       barHeight: 0.8,
       normalize: true,
       backend: 'MediaElement',
-      renderFunction: renderWaveform,
+      renderFunction: utils.renderWaveform,
       url: src,
       plugins: [regionsPlugin],
     })
@@ -107,7 +105,7 @@ export function useAudioPlayer(options: UseAudioPlayerOptions) {
       const region = regionsPlugin.addRegion({
         start: turn.startTime,
         end: turn.endTime,
-        color: hexToRgba(color, 0.25),
+        color: utils.hexToRgba(color, 0.25),
         drag: false,
         resize: false,
       })

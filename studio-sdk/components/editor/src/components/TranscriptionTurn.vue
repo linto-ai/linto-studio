@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from "vue"
 import SpeakerLabel from "./SpeakerLabel.vue"
-import { useEditorCore } from "../core"
-import { findActiveWord, hasWordTimestamps } from "../utils/words"
+import { useEditorStore } from "../core"
+import * as utils from "../utils"
 import type { Turn, Speaker } from "../types/editor"
 
 const props = defineProps<{
@@ -12,7 +12,7 @@ const props = defineProps<{
   live?: boolean
 }>()
 
-const editor = useEditorCore()
+const editor = useEditorStore()
 
 const hasWords = computed(() => props.turn.words.length > 0)
 
@@ -22,13 +22,13 @@ const activeWordId = computed(() => {
   const { startTime, endTime, words } = props.turn
   if (startTime == null || endTime == null) return null
   if (time < startTime || time > endTime) return null
-  return findActiveWord(words, time)
+  return utils.findActiveWord(words, time)
 })
 
 const isTurnActive = computed(() => {
   if (!editor.audio?.src.value) return false
   if (props.turn.startTime == null || props.turn.endTime == null) return false
-  if (hasWordTimestamps(props.turn.words)) return false
+  if (utils.hasWordTimestamps(props.turn.words)) return false
   const time = editor.audio.currentTime.value
   return time >= props.turn.startTime && time <= props.turn.endTime
 })

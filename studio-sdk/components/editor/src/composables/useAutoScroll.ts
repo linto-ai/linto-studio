@@ -6,7 +6,7 @@ import {
   type DeepReadonly,
   type Ref,
 } from "vue"
-import throttle from "../utils/throttle"
+import * as utils from "../utils"
 
 interface UseAutoScrollOptions {
   panelRef: Ref<HTMLElement | null>
@@ -51,7 +51,7 @@ export function useAutoScroll({
     })
   }
 
-  const throttledScrollToActive = throttle(scrollToActive)
+  const throttledScrollToActive = utils.throttle(scrollToActive)
 
   function onScroll() {
     if (!viewport) return

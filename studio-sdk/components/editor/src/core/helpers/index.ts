@@ -1,7 +1,3 @@
-export { findChannel } from "./findChannel"
-export { findSourceTranslation } from "./findSourceTranslation"
-export { findActiveTranslation } from "./findActiveTranslation"
-export { resolveTranslation } from "./resolveTranslation"
 export { addSpeaker } from "./addSpeaker"
 export { ensureSpeaker } from "./ensureSpeaker"
 export { updateSpeaker } from "./updateSpeaker"

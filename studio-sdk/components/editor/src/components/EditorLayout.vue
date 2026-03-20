@@ -10,9 +10,9 @@ import SubtitleFullscreen from "./SubtitleFullscreen.vue"
 import ChannelSelector from "./ChannelSelector.vue"
 import SidebarSelect from "./atoms/SidebarSelect.vue"
 import { useIsMobile } from "../composables/useIsMobile"
-import { useEditorCore } from "../core"
+import { useEditorStore } from "../core"
 import { useI18n } from "../i18n"
-import { buildTranslationItems } from "../utils/intl"
+import * as utils from "../utils"
 
 const props = withDefaults(defineProps<{
   showHeader?: boolean
@@ -20,18 +20,18 @@ const props = withDefaults(defineProps<{
   showHeader: true,
 })
 
-const editor = useEditorCore()
+const editor = useEditorStore()
 const { t, locale } = useI18n()
 const { isMobile } = useIsMobile()
 const isSidebarOpen = ref(false)
 
-const activeTurns = editor.activeChannel.activeTranslation.turns
+const activeTurns = computed(() => editor.activeChannel.value.activeTranslation.value.turns.value)
 const speakers = editor.speakers.all
 
-const channels = computed(() => editor.document.value.channels)
-const translations = computed(() => editor.activeChannel.data.value.translations)
-const activeTranslationId = computed(() => editor.activeChannel.activeTranslation.data.value.id)
-const speakerList = computed(() => Array.from(speakers.value.values()))
+const channels = computed(() => [...editor.channels.values()])
+const translations = computed(() => [...editor.activeChannel.value.translations.values()])
+const activeTranslationId = computed(() => editor.activeChannel.value.activeTranslation.value.id)
+const speakerList = computed(() => Array.from(speakers.values()))
 
 const audioPlayerRef =
   useTemplateRef<InstanceType<typeof AudioPlayer>>("audioPlayer")
@@ -58,7 +58,7 @@ if (editor.audio) {
 }
 
 const translationItems = computed(() =>
-  buildTranslationItems(
+  utils.buildTranslationItems(
     translations.value,
     locale.value,
     t("sidebar.originalLanguage"),
@@ -71,7 +71,7 @@ function onChannelChange(channelId: string) {
 }
 
 function onTranslationChange(translationId: string) {
-  editor.activeChannel.setActiveTranslation(translationId)
+  editor.activeChannel.value.setActiveTranslation(translationId)
 }
 
 </script>
@@ -80,8 +80,8 @@ function onTranslationChange(translationId: string) {
   <div class="editor-layout">
     <EditorHeader
       v-if="props.showHeader"
-      :title="editor.document.value.title"
-      :duration="editor.activeChannel.data.value.duration"
+      :title="editor.title.value"
+      :duration="editor.activeChannel.value.duration"
       :language="activeTranslationId"
       :is-mobile="isMobile"
       @toggle-sidebar="isSidebarOpen = !isSidebarOpen" />

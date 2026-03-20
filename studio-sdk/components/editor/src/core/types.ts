@@ -1,19 +1,12 @@
 import type { ComputedRef, Ref, ShallowRef } from "vue"
 import type {
+  AudioSource,
   Channel,
   EditorDocument,
-  Translation,
-  Turn,
   Speaker,
+  Turn,
   Word,
 } from "../types/editor"
-
-// ── Turn Target ─────────────────────────────────────────────────────────
-
-export interface TurnTarget {
-  channelId?: string
-  translationId?: string
-}
 
 // ── Capabilities ────────────────────────────────────────────────────────
 
@@ -37,26 +30,16 @@ export interface EditorEventMap {
   destroy: void
 }
 
-// ── Plugin ─────────────────────────────────────────────────────────────
+export type TurnEventKey = "turn:add" | "turn:update" | "turn:remove"
 
-export interface EditorPlugin {
-  name: string
-  install(editor: EditorCore): (() => void) | void
-}
+// ── Stores ─────────────────────────────────────────────────────────────
 
-// ── Core Options ───────────────────────────────────────────────────────
-
-export interface EditorCoreOptions {
-  document?: EditorDocument
-  activeChannelId?: string
-  capabilities?: EditorCapabilities
-}
-
-// ── Handles ─────────────────────────────────────────────────────────────
-
-export interface TranslationHandle {
-  data: ComputedRef<Translation>
-  turns: ComputedRef<Turn[]>
+export interface TranslationStore {
+  readonly id: string
+  readonly languages: string[]
+  readonly isSource: boolean
+  readonly audio?: AudioSource
+  readonly turns: Ref<Turn[]>
   addTurn(turn: Turn): void
   updateTurn(turnId: string, patch: Partial<Turn>): void
   removeTurn(turnId: string): void
@@ -64,25 +47,36 @@ export interface TranslationHandle {
   setTurns(turns: Turn[]): void
 }
 
-export type TurnEventKey = "turn:add" | "turn:update" | "turn:remove"
-
-export interface ActiveTranslationHandle extends TranslationHandle {
-  on<K extends TurnEventKey>(
-    event: K,
-    handler: (payload: EditorEventMap[K]) => void,
-  ): () => void
-}
-
-export interface ChannelHandle {
-  data: ComputedRef<Channel>
-  activeTranslation: ActiveTranslationHandle
+export interface ChannelStore {
+  readonly id: string
+  readonly name: string
+  readonly description?: string
+  readonly duration: number
+  readonly translations: Map<string, TranslationStore>
+  readonly sourceTranslation: TranslationStore
+  readonly activeTranslation: ComputedRef<TranslationStore>
   setActiveTranslation(translationId: string | null): void
 }
 
-export interface SpeakersHandle {
-  all: ComputedRef<Map<string, Speaker>>
+export interface SpeakersStore {
+  readonly all: Map<string, Speaker>
   ensure(speakerId: string | null, name?: string): void
   update(speakerId: string, patch: Partial<Omit<Speaker, "id">>): void
+}
+
+// ── Plugin ─────────────────────────────────────────────────────────────
+
+export interface EditorPlugin {
+  name: string
+  install(editor: EditorStore): (() => void) | void
+}
+
+// ── Store Options ───────────────────────────────────────────────────────
+
+export interface EditorStoreOptions {
+  document?: EditorDocument
+  activeChannelId?: string
+  capabilities?: EditorCapabilities
 }
 
 // ── Audio Plugin API ────────────────────────────────────────────────────
@@ -140,23 +134,29 @@ export interface LivePluginApi {
   onTranslation(event: { turnId: string; language: string; text: string }): void
 }
 
-// ── Core ───────────────────────────────────────────────────────────────
+// ── Editor Store ────────────────────────────────────────────────────────
 
-export interface EditorCore {
+export interface EditorStore {
   // ── State ────────────────────────────────────────────────────────────
-  document: Ref<EditorDocument>
-  activeChannelId: Ref<string>
-  capabilities: Ref<EditorCapabilities>
+  readonly title: Ref<string>
+  readonly activeChannelId: Ref<string>
+  readonly capabilities: Ref<EditorCapabilities>
 
-  // ── Handles ──────────────────────────────────────────────────────────
-  activeChannel: ChannelHandle
-  speakers: SpeakersHandle
+  // ── Stores ───────────────────────────────────────────────────────────
+  readonly speakers: SpeakersStore
+  readonly channels: Map<string, ChannelStore>
+  readonly activeChannel: ComputedRef<ChannelStore>
 
   // ── Navigation ───────────────────────────────────────────────────────
   setDocument(doc: EditorDocument): void
   setActiveChannel(channelId: string): void
   setChannel(channelId: string, channel: Channel): void
-  withTranslation(target?: TurnTarget): TranslationHandle | null
+
+  // ── Scoped events ────────────────────────────────────────────────────
+  onActiveTranslation<K extends TurnEventKey>(
+    event: K,
+    handler: (payload: EditorEventMap[K]) => void,
+  ): () => void
 
   // ── Plugin slots ─────────────────────────────────────────────────────
   audio?: AudioPluginApi

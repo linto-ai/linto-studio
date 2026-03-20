@@ -131,7 +131,7 @@ export default {
         ),
         language:
           content.lang ??
-          activeChannel.translations.find((t) => t.isSource)?.languages[0] ??
+          activeChannel.sourceTranslation.languages[0] ??
           "*",
       }
 

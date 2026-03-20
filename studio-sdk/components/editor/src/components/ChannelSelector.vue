@@ -2,10 +2,9 @@
 import { computed } from 'vue'
 import SidebarSelect from './atoms/SidebarSelect.vue'
 import { useI18n } from '../i18n'
-import type { Channel } from '../types/editor'
 
 const props = defineProps<{
-  channels: Channel[]
+  channels: { id: string; name: string }[]
   selectedChannelId: string
 }>()
 

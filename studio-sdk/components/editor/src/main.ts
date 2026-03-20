@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import './styles/fonts.css'
 import './styles/variables.css'
 import './styles/base.css'
 import './styles/sidebar-select.css'

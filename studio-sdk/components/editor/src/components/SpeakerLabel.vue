@@ -3,8 +3,7 @@ import { computed } from "vue"
 import SpeakerIndicator from "./atoms/SpeakerIndicator.vue"
 import EditorBadge from "./atoms/EditorBadge.vue"
 import { useI18n } from "../i18n"
-import { formatTime } from "../utils/time"
-import { getLanguageDisplayName } from "../utils/intl"
+import * as utils from "../utils"
 import type { Speaker } from "../types/editor"
 
 const props = defineProps<{
@@ -16,11 +15,11 @@ const props = defineProps<{
 const { t, locale } = useI18n()
 
 const languageName = computed(() =>
-  getLanguageDisplayName(props.language, locale.value, t("language.wildcard")),
+  utils.getLanguageDisplayName(props.language, locale.value, t("language.wildcard")),
 )
 
 const formattedTime = computed(() =>
-  props.startTime != null ? formatTime(props.startTime) : null,
+  props.startTime != null ? utils.formatTime(props.startTime) : null,
 )
 
 const isoDuration = computed(() =>

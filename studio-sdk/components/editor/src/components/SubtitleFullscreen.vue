@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, useTemplateRef } from "vue"
 import { X } from "lucide-vue-next"
-import { useEditorCore } from "../core"
+import { useEditorStore } from "../core"
 import { useI18n } from "../i18n"
 import { useSubtitleScroller } from "../composables/useSubtitleScroller"
 
-const editor = useEditorCore()
+const editor = useEditorStore()
 const { t } = useI18n()
 const containerRef = useTemplateRef<HTMLDivElement>("container")
 const canvasRef = useTemplateRef<HTMLCanvasElement>("canvas")

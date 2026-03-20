@@ -10,7 +10,7 @@ import { ArrowDown } from "lucide-vue-next"
 import TranscriptionTurn from "./TranscriptionTurn.vue"
 import EditorButton from "./atoms/EditorButton.vue"
 import { useAutoScroll } from "../composables/useAutoScroll"
-import { useEditorCore } from "../core"
+import { useEditorStore } from "../core"
 import { useI18n } from "../i18n"
 import type { Turn, Speaker } from "../types/editor"
 
@@ -20,7 +20,7 @@ defineProps<{
 }>()
 
 const { t } = useI18n()
-const editor = useEditorCore()
+const editor = useEditorStore()
 const panelRef = useTemplateRef<HTMLElement>("panel")
 
 const partialTurn = computed(() => {
@@ -31,7 +31,8 @@ const partialTurn = computed(() => {
     speakerId: null,
     text,
     words: [],
-    language: editor.activeChannel.activeTranslation.data.value.languages[0] ?? "",
+    language:
+      editor.activeChannel.value.activeTranslation.value.languages[0] ?? "",
     startTime: undefined,
     endTime: undefined,
   } as Turn
@@ -52,9 +53,7 @@ const { isFollowing, resumeFollow } = useAutoScroll({ panelRef })
             v-for="(turn, i) in turns"
             :key="turn.id"
             :turn="turn"
-            :speaker="
-              turn.speakerId ? speakers.get(turn.speakerId) : undefined
-            "
+            :speaker="turn.speakerId ? speakers.get(turn.speakerId) : undefined"
             :live="hasLiveUpdate && !partialTurn && i === turns.length - 1" />
           <TranscriptionTurn
             v-if="partialTurn"
@@ -86,6 +85,7 @@ const { isFollowing, resumeFollow } = useAutoScroll({ panelRef })
 .transcription-panel {
   min-height: 0;
   overflow: hidden;
+  background-color: var(--color-surface);
 }
 
 .scroll-root {

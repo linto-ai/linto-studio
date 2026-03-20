@@ -5,15 +5,15 @@ import SwitchToggle from './atoms/SwitchToggle.vue'
 import SidebarSelect from './atoms/SidebarSelect.vue'
 import ChannelSelector from './ChannelSelector.vue'
 import { useI18n } from '../i18n'
-import { useEditorCore } from '../core'
-import { buildTranslationItems } from '../utils/intl'
-import type { Speaker, Channel, Translation } from '../types/editor'
+import { useEditorStore } from '../core'
+import * as utils from "../utils"
+import type { Speaker } from '../types/editor'
 
 const props = defineProps<{
   speakers: Speaker[]
-  channels: Channel[]
+  channels: { id: string; name: string }[]
   selectedChannelId: string
-  translations: Translation[]
+  translations: { id: string; languages: string[]; isSource: boolean }[]
   selectedTranslationId: string
 }>()
 
@@ -22,11 +22,11 @@ defineEmits<{
   'update:selectedTranslationId': [id: string]
 }>()
 
-const editor = useEditorCore()
+const editor = useEditorStore()
 const { t, locale } = useI18n()
 
 const translationItems = computed(() =>
-  buildTranslationItems(props.translations, locale.value, t('sidebar.originalLanguage'), t('language.wildcard'))
+  utils.buildTranslationItems(props.translations, locale.value, t('sidebar.originalLanguage'), t('language.wildcard'))
 )
 </script>
 

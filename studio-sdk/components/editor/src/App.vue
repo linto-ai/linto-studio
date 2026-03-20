@@ -3,7 +3,7 @@ import { ref, onMounted, onUnmounted } from "vue"
 import EditorLayout from "./components/EditorLayout.vue"
 import { mapApiDocument } from "./adapters/apiAdapter"
 import { provideI18n, type Locale } from "./i18n"
-import { createEditorCore, provideEditorCore } from "./core"
+import { createEditorStore, provideEditorStore } from "./core"
 //import { createAudioPlugin } from "./plugins/audio"
 import { createLivePlugin } from "./plugins/live"
 import { createSubtitlePlugin } from "./plugins/subtitle"
@@ -14,11 +14,11 @@ import type { Channel, Speaker } from "./types/editor"
 const locale = ref<Locale>("fr")
 const { t } = provideI18n(locale)
 
-const editor = createEditorCore()
+const editor = createEditorStore()
 //editor.use(createAudioPlugin())
 editor.use(createLivePlugin())
 editor.use(createSubtitlePlugin())
-provideEditorCore(editor)
+provideEditorStore(editor)
 
 const error = ref<string | null>(null)
 const loading = ref(true)

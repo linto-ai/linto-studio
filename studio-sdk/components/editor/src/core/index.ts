@@ -1,15 +1,15 @@
-export { createEditorCore } from './createEditorCore'
-export { provideEditorCore, useEditorCore } from './useEditorCore'
+export { createEditorStore } from './createEditorStore'
+export { provideEditorStore, useEditorStore } from './useEditorStore'
 export type {
-  EditorCore,
+  EditorStore,
   EditorPlugin,
   EditorEventMap,
-  EditorCoreOptions,
+  EditorStoreOptions,
   EditorCapabilities,
-  TurnTarget,
-  ChannelHandle,
-  TranslationHandle,
-  SpeakersHandle,
+  TurnEventKey,
+  TranslationStore,
+  ChannelStore,
+  SpeakersStore,
   AudioPluginApi,
   LivePluginApi,
   SubtitlePluginApi,

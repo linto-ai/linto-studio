@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, useTemplateRef } from "vue"
-import { useEditorCore } from "../core"
+import { useEditorStore } from "../core"
 import { useSubtitleScroller } from "../composables/useSubtitleScroller"
 
-const editor = useEditorCore()
+const editor = useEditorStore()
 const canvasRef = useTemplateRef<HTMLCanvasElement>("canvas")
 
 const fontSize = computed(() => editor.subtitle?.fontSize.value ?? 40)

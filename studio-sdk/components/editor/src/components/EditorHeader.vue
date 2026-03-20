@@ -4,8 +4,7 @@ import { Download, Settings, Users } from 'lucide-vue-next'
 import EditorBadge from './atoms/EditorBadge.vue'
 import EditorButton from './atoms/EditorButton.vue'
 import { useI18n } from '../i18n'
-import { formatTime } from '../utils/time'
-import { getLanguageDisplayName } from '../utils/intl'
+import * as utils from "../utils"
 const props = defineProps<{
   title: string
   duration: number
@@ -19,9 +18,9 @@ defineEmits<{
 
 const { t, locale } = useI18n()
 
-const languageName = computed(() => getLanguageDisplayName(props.language, locale.value, t('language.wildcard')))
+const languageName = computed(() => utils.getLanguageDisplayName(props.language, locale.value, t('language.wildcard')))
 
-const formattedDuration = computed(() => formatTime(props.duration))
+const formattedDuration = computed(() => utils.formatTime(props.duration))
 
 const formattedTitle = computed(() => {
   return props.title.replace(/-/g, ' ')

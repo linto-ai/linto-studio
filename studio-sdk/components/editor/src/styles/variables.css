@@ -1,5 +1,4 @@
 /* Design tokens */
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap");
 
 :root,
 :host {
@@ -16,11 +15,12 @@
   --color-border-light: #e9ecef;
 
   /* Typography */
-  --font-family: "Inter", system-ui, -apple-system, sans-serif;
-  --font-family-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-family:
+    "Atkinson Hyperlegible Next", system-ui, -apple-system, sans-serif;
+  --font-family-mono: "Atkinson Hyperlegible Mono", ui-monospace, monospace;
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.8125rem;
-  --font-size-base: 0.9375rem;
+  --font-size-base: 1rem;
   --font-size-lg: 1.125rem;
   --font-size-xl: 1.5rem;
   --line-height: 1.6;
