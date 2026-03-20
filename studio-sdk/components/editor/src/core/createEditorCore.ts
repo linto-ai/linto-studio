@@ -42,7 +42,7 @@ export function createEditorCore(options: EditorCoreOptions = {}): EditorCore {
   )
 
   const speakers = createSpeakersHandle(document, emit)
-  const activeChannel = createChannelHandle(activeChannelComputed, emit, speakers.ensure)
+  const activeChannel = createChannelHandle(activeChannelComputed, emit, on, speakers.ensure)
 
   // ── Document ─────────────────────────────────────────────────────────
 

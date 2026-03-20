@@ -39,7 +39,7 @@ const speakerColor = computed(() => props.speaker?.color ?? "transparent")
 <template>
   <section
     class="turn"
-    :class="{ 'turn--active': isTurnActive || live, 'turn--partial': partial }"
+    :class="{ 'turn--active': isTurnActive, 'turn--partial': partial }"
     :data-turn-active="isTurnActive || partial || live || undefined"
     :style="{ '--speaker-color': speakerColor }">
     <SpeakerLabel

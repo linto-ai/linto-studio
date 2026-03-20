@@ -48,6 +48,23 @@ export function createLivePlugin(): EditorPlugin {
         triggerRef(partial)
       }
 
+      let clearPartialTimeout: ReturnType<typeof setTimeout> | null = null
+
+      function deferredClearPartial(): void {
+        if (clearPartialTimeout !== null) return
+        clearPartialTimeout = setTimeout(() => {
+          clearPartialTimeout = null
+          clearPartial()
+        }, 150)
+      }
+
+      function cancelDeferredClear(): void {
+        if (clearPartialTimeout !== null) {
+          clearTimeout(clearPartialTimeout)
+          clearPartialTimeout = null
+        }
+      }
+
       function onFinal(event: LiveFinalEvent, channelId: string): void {
         if (event.speakerId) core.speakers.ensure(event.speakerId)
 
@@ -99,6 +116,11 @@ export function createLivePlugin(): EditorPlugin {
           }
         }
 
+        immediateClearPartial()
+      }
+
+      function immediateClearPartial(): void {
+        cancelDeferredClear()
         clearPartial()
       }
 
@@ -115,14 +137,15 @@ export function createLivePlugin(): EditorPlugin {
         onTranslation,
       }
 
-      const unsubChannelChange = core.on("channel:change", clearPartial)
-      const unsubTranslationChange = core.on("translation:change", clearPartial)
-      const unsubTranslationSync = core.on("translation:sync", clearPartial)
-      const unsubChannelSync = core.on("channel:sync", clearPartial)
+      const unsubChannelChange = core.on("channel:change", immediateClearPartial)
+      const unsubTranslationChange = core.on("translation:change", immediateClearPartial)
+      const unsubTranslationSync = core.on("translation:sync", deferredClearPartial)
+      const unsubChannelSync = core.on("channel:sync", deferredClearPartial)
 
       core.live = api
 
       return () => {
+        immediateClearPartial()
         unsubChannelChange()
         unsubTranslationChange()
         unsubTranslationSync()

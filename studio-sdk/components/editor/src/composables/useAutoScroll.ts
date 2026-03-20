@@ -26,16 +26,10 @@ export function useAutoScroll({
     "(prefers-reduced-motion: reduce)",
   )
 
-  function getViewport(): HTMLElement | null {
-    return (
-      panelRef.value?.querySelector("[data-reka-scroll-area-viewport]") ?? null
-    )
-  }
+  let viewport: HTMLElement | null = null
 
   function scrollToActive() {
     if (!isFollowing.value) return
-
-    const viewport = getViewport()
     if (!viewport) return
 
     const activeEl =
@@ -59,10 +53,10 @@ export function useAutoScroll({
 
   const throttledScrollToActive = throttle(scrollToActive)
 
-  // wheel and touchstart are ONLY dispatched by user actions,
-  // never by scrollIntoView — no need for a programmatic scroll guard.
-  function onUserScroll() {
-    isFollowing.value = false
+  function onScroll() {
+    if (!viewport) return
+    isFollowing.value =
+      viewport.scrollHeight - viewport.scrollTop < viewport.clientHeight + 150
   }
 
   function resumeFollow() {
@@ -73,11 +67,13 @@ export function useAutoScroll({
   let observer: MutationObserver | undefined
 
   onMounted(() => {
-    const viewport = getViewport()
+    viewport =
+      panelRef.value?.querySelector("[data-reka-scroll-area-viewport]") ?? null
     if (!viewport) return
 
-    viewport.addEventListener("wheel", onUserScroll, { passive: true })
-    viewport.addEventListener("touchstart", onUserScroll, { passive: true })
+    viewport.scrollTop = viewport.scrollHeight
+
+    viewport.addEventListener("scroll", onScroll, { passive: true })
 
     observer = new MutationObserver(throttledScrollToActive)
     observer.observe(viewport, {
@@ -90,10 +86,9 @@ export function useAutoScroll({
   })
 
   onBeforeUnmount(() => {
-    const viewport = getViewport()
     if (viewport) {
-      viewport.removeEventListener("wheel", onUserScroll)
-      viewport.removeEventListener("touchstart", onUserScroll)
+      viewport.removeEventListener("scroll", onScroll)
+      viewport = null
     }
     observer?.disconnect()
   })

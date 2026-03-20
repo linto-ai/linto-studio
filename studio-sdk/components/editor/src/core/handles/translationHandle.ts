@@ -15,7 +15,7 @@ export function createTranslationHandle(
     const translation = getTranslation()
     speakersEnsure(turn.speakerId)
     translation.turns = m.insertTurn(translation.turns, turn)
-    emit("turn:add", { turn })
+    emit("turn:add", { turn, translationId: getTranslation().id })
   }
 
   function updateTurn(turnId: string, patch: Partial<Turn>): void {
@@ -23,7 +23,7 @@ export function createTranslationHandle(
     const result = m.patchTurn(translation.turns, turnId, patch)
     if (!result) return
     translation.turns = result.turns
-    emit("turn:update", { turn: result.updated })
+    emit("turn:update", { turn: result.updated, translationId: getTranslation().id })
   }
 
   function removeTurn(turnId: string): void {
@@ -31,7 +31,7 @@ export function createTranslationHandle(
     const turns = m.removeTurn(translation.turns, turnId)
     if (!turns) return
     translation.turns = turns
-    emit("turn:remove", { turnId })
+    emit("turn:remove", { turnId, translationId: translation.id })
   }
 
   function updateWords(turnId: string, words: Word[]): void {
@@ -39,7 +39,7 @@ export function createTranslationHandle(
     const result = m.updateTurnWords(translation.turns, turnId, words)
     if (!result) return
     translation.turns = result.turns
-    emit("turn:update", { turn: result.updated })
+    emit("turn:update", { turn: result.updated, translationId: getTranslation().id })
   }
 
   function setTurns(turns: Turn[]): void {

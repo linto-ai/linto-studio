@@ -31,7 +31,7 @@ export function useSubtitleScroller(options: UseSubtitleScrollerOptions) {
     },
   )
 
-  const unsubTurnAdd = editor.on("turn:add", ({ turn }) => {
+  const unsubTurnAdd = editor.activeChannel.activeTranslation.on("turn:add", ({ turn }) => {
     if (!scroller) return
     const text = turn.words.length > 0
       ? turn.words.map((w) => w.text).join(" ")

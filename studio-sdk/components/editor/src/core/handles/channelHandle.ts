@@ -1,12 +1,13 @@
 import { ref, watch, type ComputedRef } from "vue"
 import type { Channel } from "../../types/editor"
-import type { EditorEventMap, ChannelHandle } from "../types"
+import type { EditorEventMap, ChannelHandle, TurnEventKey } from "../types"
 import { createTranslationHandle } from "./translationHandle"
 import * as m from "../mutations"
 
 export function createChannelHandle(
   activeChannel: ComputedRef<Channel>,
   emit: <K extends keyof EditorEventMap>(event: K, payload: EditorEventMap[K]) => void,
+  on: <K extends keyof EditorEventMap>(event: K, handler: (payload: EditorEventMap[K]) => void) => () => void,
   speakersEnsure: (speakerId: string | null, name?: string) => void,
 ): ChannelHandle {
   const activeTranslationId = ref<string | null>(null)
@@ -30,9 +31,20 @@ export function createChannelHandle(
     emit("translation:change", { translationId: activeTranslationId.value })
   }
 
+  function scopedOn<K extends TurnEventKey>(
+    event: K,
+    handler: (payload: EditorEventMap[K]) => void,
+  ): () => void {
+    return on(event, (payload) => {
+      if (payload.translationId === activeTranslation.data.value.id) {
+        handler(payload)
+      }
+    })
+  }
+
   return {
     data: activeChannel,
-    activeTranslation,
+    activeTranslation: { ...activeTranslation, on: scopedOn },
     setActiveTranslation,
   }
 }

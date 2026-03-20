@@ -27,9 +27,9 @@ export interface EditorCapabilities {
 export interface EditorEventMap {
   "channel:change": { channelId: string }
   "translation:change": { translationId: string | null }
-  "turn:add": { turn: Turn }
-  "turn:update": { turn: Turn }
-  "turn:remove": { turnId: string }
+  "turn:add": { turn: Turn; translationId: string }
+  "turn:update": { turn: Turn; translationId: string }
+  "turn:remove": { turnId: string; translationId: string }
   "speaker:update": { speaker: Speaker }
   "speaker:add": { speaker: Speaker }
   "translation:sync": { translationId: string }
@@ -64,9 +64,18 @@ export interface TranslationHandle {
   setTurns(turns: Turn[]): void
 }
 
+export type TurnEventKey = "turn:add" | "turn:update" | "turn:remove"
+
+export interface ActiveTranslationHandle extends TranslationHandle {
+  on<K extends TurnEventKey>(
+    event: K,
+    handler: (payload: EditorEventMap[K]) => void,
+  ): () => void
+}
+
 export interface ChannelHandle {
   data: ComputedRef<Channel>
-  activeTranslation: TranslationHandle
+  activeTranslation: ActiveTranslationHandle
   setActiveTranslation(translationId: string | null): void
 }
 
