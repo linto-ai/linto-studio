@@ -12,6 +12,7 @@ const {
   forwardSessionAliasPublic,
   checkTranscriberProfileAccess,
   afterProxyAccess,
+  cleanPublicSessionContent,
   generatPublicToken,
   checkSessionMatchingOrganization,
 } = require(

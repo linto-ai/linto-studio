@@ -138,7 +138,10 @@ async function generatPublicToken(jsonString, req) {
       let session = JSON.parse(jsonString)
 
       // Include organizationId in token for WebSocket access validation
-      const token = PublicToken.generateTokens(session.id, session.organizationId)
+      const token = PublicToken.generateTokens(
+        session.id,
+        session.organizationId,
+      )
       session.publicSessionToken = token
       return JSON.stringify(session)
     }
@@ -159,6 +162,22 @@ async function checkSessionMatchingOrganization(req, next) {
   } catch (err) {
     next(err)
   }
+}
+
+function cleanPublicSessionContent(jsonString) {
+  let session = JSON.parse(jsonString)
+
+  if (session.visibility === "public") {
+    session.channels.forEach((channel) => {
+      if (channel.streamEndpoints) {
+        delete channel.streamEndpoints
+      }
+    })
+
+    return JSON.stringify(session)
+  }
+
+  throw new UnauthorizedProxy()
 }
 
 module.exports = {
