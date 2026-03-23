@@ -1,6 +1,8 @@
 const debug = require("debug")("linto:components:IoHandler:index")
 const Component = require(`../component.js`)
 const socketIO = require("socket.io")
+const { createAdapter } = require("@socket.io/redis-adapter")
+const { createClient } = require("redis")
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 const LogManager = require(`${process.cwd()}/lib/logger/manager`)
 
@@ -44,39 +46,44 @@ async function checkSocketAccess(socket, roomId) {
     const hasPassword =
       protectedSession?.[0]?.password && protectedSession.length > 0
 
-    // Public session + no protection
-    if (session.visibility === "public" && !hasPassword) {
-      return { allowed: true, userId }
-    }
+    // Determine session access
+    let allowed = false
 
-    // User is not authenticated
-    if (!isAuth) {
+    if (session.visibility === "public" && !hasPassword) {
+      allowed = true
+    } else if (!isAuth) {
       denySocket(socket)
       return { allowed: false, userId: undefined }
-    }
-
-    // Public session + password-protected, sessionId matches
-    if (
+    } else if (
       session.visibility === "public" &&
       sessionId === session.id &&
       hasPassword
     ) {
-      return { allowed: true, userId }
+      allowed = true
+    } else if (await sessionSocketAccess(session, userId)) {
+      allowed = true
+    } else if (session.visibility === "private" && session.owner === userId) {
+      allowed = true
     }
 
-    // Organization access
-    const access = await sessionSocketAccess(session, userId)
-    if (access === true) {
-      return { allowed: true, userId }
+    if (!allowed) {
+      denySocket(socket)
+      return { allowed: false, userId: undefined }
     }
 
-    // Private session & is owner
-    if (session.visibility === "private" && session.owner === userId) {
-      return { allowed: true, userId }
+    // Determine org access (separate from session access)
+    let organizationId = undefined
+    if (isAuth && userId && session.organizationId) {
+      const orgAccess = await model.organizations.getByIdAndUser(
+        session.organizationId,
+        userId,
+      )
+      if (orgAccess && orgAccess.length > 0) {
+        organizationId = session.organizationId
+      }
     }
 
-    denySocket(socket)
-    return { allowed: false, userId: undefined }
+    return { allowed: true, userId, organizationId }
   } catch (err) {
     LogManager.logSocketEvent(
       socket,
@@ -130,7 +137,7 @@ class IoHandler extends Component {
       }
 
       socket.on("join_room", async (roomId) => {
-        const { allowed, userId } = await checkSocketAccess(socket, roomId)
+        const { allowed, userId, organizationId } = await checkSocketAccess(socket, roomId)
         if (!allowed) return
         LogManager.logSocketEvent(socket, {
           sessionId: roomId,
@@ -140,6 +147,11 @@ class IoHandler extends Component {
         })
 
         this.addSocketInRoom(roomId, socket)
+
+        // Auto-join org room if user has org-level access (not public session guests)
+        if (organizationId) {
+          socket.join(organizationId)
+        }
       })
 
       socket.on("leave_room", (roomId) => {
@@ -253,6 +265,71 @@ class IoHandler extends Component {
     return this.init()
   }
 
+  async setupRedisAdapter() {
+    const redisHost = process.env.SOCKETIO_REDIS_HOST
+    if (!redisHost) {
+      debug("No SOCKETIO_REDIS_HOST configured, using in-memory adapter")
+      return
+    }
+
+    const redisPort = process.env.SOCKETIO_REDIS_PORT || 6379
+    const redisPassword = process.env.SOCKETIO_REDIS_PASSWORD
+
+    const clientOpts = {
+      socket: {
+        host: redisHost,
+        port: Number(redisPort),
+        reconnectStrategy: false,
+      },
+    }
+    if (redisPassword) clientOpts.password = redisPassword
+
+    let pubClient, subClient
+    try {
+      pubClient = createClient(clientOpts)
+      subClient = pubClient.duplicate()
+
+      // Fallback to in-memory if Redis disconnects at runtime
+      let connected = false
+      let disconnected = false
+      const fallbackToInMemory = (label, err) => {
+        if (!connected || disconnected) return
+        disconnected = true
+        LogManager.logSystemEvent(
+          `Redis ${label} connection lost (${err.message}), falling back to in-memory adapter`,
+        )
+        const { Adapter } = require("socket.io-adapter")
+        this.io.adapter(Adapter)
+        this.redisPubClient = null
+        this.redisSubClient = null
+        pubClient.disconnect().catch(() => {})
+        subClient.disconnect().catch(() => {})
+      }
+
+      pubClient.on("error", (err) => fallbackToInMemory("pub", err))
+      subClient.on("error", (err) => fallbackToInMemory("sub", err))
+
+      await Promise.all([pubClient.connect(), subClient.connect()])
+      connected = true
+
+      this.redisPubClient = pubClient
+      this.redisSubClient = subClient
+      this.io.adapter(createAdapter(pubClient, subClient))
+      debug(`Socket.IO Redis adapter connected at ${redisHost}:${redisPort}`)
+    } catch (err) {
+      if (pubClient) pubClient.disconnect().catch(() => {})
+      if (subClient) subClient.disconnect().catch(() => {})
+      LogManager.logSystemEvent(
+        `Failed to connect to Redis at ${redisHost}:${redisPort}, falling back to in-memory adapter: ${err.message}`,
+      )
+    }
+  }
+
+  async init() {
+    await this.setupRedisAdapter()
+    return super.init()
+  }
+
   async addSocketInMedia(orgaId, socket) {
     socket.join(orgaId)
     if (this.medias.hasOwnProperty(orgaId)) {
@@ -267,13 +344,13 @@ class IoHandler extends Component {
     if (listProcessingConversations?.length === 0) {
       return
     }
-    this.io
+    this.io.local
       .to(orgaId)
       .emit("conversation_processing", listProcessingConversations)
 
     if (this.memoryMedias[orgaId] === undefined) {
       this.memoryMedias[orgaId] = watchConversation(
-        this.io.to(orgaId),
+        this.io.local.to(orgaId),
         listProcessingConversations,
       )
     }
@@ -368,11 +445,9 @@ class IoHandler extends Component {
     }
   }
 
-  //broadcasts to connected sockets
+  //broadcasts to connected sockets (MQTT-triggered, all instances receive the event)
   notify(roomId, action, message) {
-    if (this.io.sockets.adapter.rooms.has(roomId)) {
-      this.io.to(roomId).emit(action, message)
-    }
+    this.io.local.to(roomId).emit(action, message)
   }
 
   async notify_sessions(roomId, action, sessions) {
@@ -385,10 +460,7 @@ class IoHandler extends Component {
 
     const merged = await groupSessionsByOrg(differences, this.memorySessions)
     Object.keys(merged).forEach((orgaId) => {
-      //Verify if a websocket connection is establish to the room
-      if (this.io.sockets.adapter.rooms.has(orgaId)) {
-        this.io.to(orgaId).emit(`orga_${orgaId}_${action}`, merged[orgaId])
-      }
+      this.io.local.to(orgaId).emit(`orga_${orgaId}_${action}`, merged[orgaId])
     })
     this.sessionsCache = sessions
   }
@@ -407,7 +479,7 @@ class IoHandler extends Component {
           await model.conversations.listProcessingConversations(orgaId)
 
         this.memoryMedias[orgaId] = refreshInterval(
-          this.io.to(orgaId),
+          this.io.local.to(orgaId),
           this.memoryMedias[orgaId],
           processConv,
         )
@@ -437,7 +509,7 @@ class IoHandler extends Component {
         let processConv =
           await model.conversations.listProcessingConversations(orgaId)
         this.memoryMedias[orgaId] = refreshInterval(
-          this.io.to(orgaId),
+          this.io.local.to(orgaId),
           this.memoryMedias[orgaId],
           processConv,
         )
@@ -446,13 +518,13 @@ class IoHandler extends Component {
   }
 
   brokerOk(message = "Broker connection established") {
-    this.io.emit("broker_ok")
+    this.io.local.emit("broker_ok")
     LogManager.logSystemEvent(message)
   }
 
   brokerKo(notify = false) {
     if (notify) {
-      this.io.emit("broker_ko")
+      this.io.local.emit("broker_ko")
       LogManager.logSystemEvent("Broker connection lost")
     }
   }

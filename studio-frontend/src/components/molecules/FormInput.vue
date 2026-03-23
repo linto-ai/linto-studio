@@ -88,6 +88,7 @@
 import { Fragment } from "vue-fragment"
 import LabeledValue from "@/components/atoms/LabeledValue.vue"
 import Button from "@/components/atoms/Button.vue"
+import { generateId } from "@/tools/generateId.js"
 export default {
   props: {
     field: {
@@ -142,7 +143,7 @@ export default {
   data() {
     const initialValue = this.modelValue ?? this.value ?? this.field.value ?? ""
     return {
-      id: this.inputId || Math.random().toString(36).substr(2, 9),
+      id: this.inputId || generateId(),
       editValue: initialValue,
       originalValue: initialValue,
     }

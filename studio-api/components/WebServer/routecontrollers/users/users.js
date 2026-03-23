@@ -95,7 +95,10 @@ async function createUser(req, res, next) {
       ? "Account created."
       : "Account created. An email has been sent to you. Please open it and click on the link to validate your email address."
 
-    res.status(201).send({ message })
+    const organizationCreationDisabled =
+      process.env.DISABLE_DEFAULT_ORGANIZATION_CREATION === "true"
+
+    res.status(201).send({ message, organizationCreationDisabled })
   } catch (err) {
     next(err)
   }
@@ -185,8 +188,7 @@ async function updateUser(req, res, next) {
         req.body.accountNotifications ||
         req.body.emailNotifications ||
         req.body.private !== undefined ||
-        req.body.password ||
-        req.body.defaultOrganization
+        req.body.password
       )
     )
       throw new UserUnsupportedMediaType()
@@ -219,8 +221,6 @@ async function updateUser(req, res, next) {
     if (req.body.lastname) user.lastname = req.body.lastname
     if (req.body.private !== undefined) user.private = req.body.private
     if (req.body.password) user.password = req.body.password
-    if (req.body.defaultOrganization)
-      user.defaultOrganization = req.body.defaultOrganization
 
     if (req.body.accountNotifications) {
       for (let key of Object.keys(req.body.accountNotifications)) {

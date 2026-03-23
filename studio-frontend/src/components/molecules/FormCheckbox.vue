@@ -42,6 +42,7 @@ import { Fragment } from "vue-fragment"
 import LabeledValue from "@/components/atoms/LabeledValue.vue"
 import SwitchInput from "@/components/atoms/SwitchInput.vue"
 import Checkbox from "@/components/atoms/Checkbox.vue"
+import { generateId } from "@/tools/generateId.js"
 export default {
   props: {
     /*
@@ -79,7 +80,7 @@ export default {
   data() {
     return {
       value: this.field.value,
-      id: this.inputId || Math.random().toString(36).substr(2, 9),
+      id: this.inputId || generateId(),
       classes: this.column
         ? "form-field flex col-reverse"
         : "form-field flex row align-center form-field-checkbox gap-small",

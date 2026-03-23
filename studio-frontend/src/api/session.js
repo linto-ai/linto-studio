@@ -13,7 +13,11 @@ async function fetchAllSessionPages(url, method, baseParams, notif) {
 
   if (totalItems > SESSION_PAGE_SIZE) {
     const remaining = []
-    for (let offset = SESSION_PAGE_SIZE; offset < totalItems; offset += SESSION_PAGE_SIZE) {
+    for (
+      let offset = SESSION_PAGE_SIZE;
+      offset < totalItems;
+      offset += SESSION_PAGE_SIZE
+    ) {
       remaining.push(sendRequest(url, { method }, { ...params, offset }, notif))
     }
     const pages = await Promise.all(remaining)
@@ -220,9 +224,13 @@ export async function apiSearchSessionByName(
   notif,
 ) {
   const search = await sendRequest(
-    `${BASE_API}/organizations/${organizationScope}/sessions?searchName=${sessionName}&organizationId=${organizationScope}`,
+    `${BASE_API}/organizations/${organizationScope}/sessions`,
     { method: "get" },
-    {},
+    {
+      searchName: sessionName,
+      organizationId: organizationScope,
+      excludeVisibility: "user",
+    },
     notif,
   )
 
@@ -230,11 +238,15 @@ export async function apiSearchSessionByName(
 }
 
 export async function apiGetActiveSessions(organizationScope, notif) {
-  const url = `${BASE_API}/organizations/${organizationScope}/sessions?statusList=active&organizationId=${organizationScope}`
+  const url = `${BASE_API}/organizations/${organizationScope}/sessions`
   const result = await fetchAllSessionPages(
     url,
     "get",
-    { statusList: "active, ready" },
+    {
+      statusList: "active, ready",
+      organizationId: organizationScope,
+      excludeVisibility: "user",
+    },
     notif,
   )
 
@@ -247,7 +259,7 @@ export async function apiGetStartedSessions(organizationScope, notif) {
   const allSessions = await fetchAllSessionPages(
     url,
     "get",
-    { organizationId: organizationScope },
+    { organizationId: organizationScope, excludeVisibility: "user" },
     notif,
   )
 
@@ -264,7 +276,11 @@ export async function apiHasSessions(organizationScope) {
     const res = await sendRequest(
       `${BASE_API}/organizations/${organizationScope}/sessions`,
       { method: "get" },
-      { limit: 1, organizationId: organizationScope },
+      {
+        limit: 1,
+        organizationId: organizationScope,
+        excludeVisibility: "user",
+      },
     )
     return (res?.data?.totalItems ?? 0) > 0
   } catch {
@@ -274,9 +290,14 @@ export async function apiHasSessions(organizationScope) {
 
 export async function apiCountActiveSessions(organizationScope, notif) {
   const getStartedSessions = await sendRequest(
-    `${BASE_API}/organizations/${organizationScope}/sessions?statusList=active&organizationId=${organizationScope}`,
+    `${BASE_API}/organizations/${organizationScope}/sessions`,
     { method: "get" },
-    { limit: 1 },
+    {
+      limit: 1,
+      statusList: "active",
+      organizationId: organizationScope,
+      excludeVisibility: "user",
+    },
     notif,
   )
 
@@ -284,15 +305,28 @@ export async function apiCountActiveSessions(organizationScope, notif) {
 }
 
 export async function apiGetFutureSessions(organizationScope, notif) {
-  const url = `${BASE_API}/organizations/${organizationScope}/sessions?organizationId=${organizationScope}`
-  return await fetchAllSessionPages(url, "get", {}, notif)
+  const url = `${BASE_API}/organizations/${organizationScope}/sessions`
+  return await fetchAllSessionPages(
+    url,
+    "get",
+    {
+      organizationId: organizationScope,
+      excludeVisibility: "user",
+    },
+    notif,
+  )
 }
 
 export async function apiCountFutureSessions(organizationScope, notif) {
   const getStartedSessions = await sendRequest(
-    `${BASE_API}/organizations/${organizationScope}/sessions?status=ready&organizationId=${organizationScope}`,
+    `${BASE_API}/organizations/${organizationScope}/sessions`,
     { method: "get" },
-    { limit: 1 },
+    {
+      limit: 1,
+      status: "ready",
+      organizationId: organizationScope,
+      excludeVisibility: "user",
+    },
     notif,
   )
 
@@ -322,6 +356,7 @@ export async function apiGetSessionsBetweenDates(
     "get",
     {
       organizationId: organizationScope,
+      excludeVisibility: "user",
       "scheduleOn[before]": end_date,
       "scheduleOn[after]": start_date,
     },

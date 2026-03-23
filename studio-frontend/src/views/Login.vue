@@ -1,67 +1,80 @@
 <template>
   <MainContentPublic>
-    <form
-      class="flex col login-page__form gap-small"
-      @submit="handleForm"
-      v-if="hasLocalLogin">
-      <h2 class="login-title">{{ $t("login.title") }}</h2>
+    <div
+      v-if="noAccessNotice"
+      class="flex col no-access-notice">
+      <h2 class="no-access-notice__title">{{ noAccessContent.title }}</h2>
+      <p class="no-access-notice__detail">{{ noAccessContent.detail }}</p>
+      <p class="no-access-notice__action">{{ noAccessContent.action }}</p>
+      <router-link to="/login" class="underline no-access-notice__link">
+        {{ $t("no_orga.back_to_login") }}
+      </router-link>
+    </div>
 
-      <FormInput :field="email" v-model="email.value" focus inputFullWidth />
-      <FormInput :field="password" v-model="password.value" inputFullWidth>
-        <template #content-bottom-input>
-          <router-link
-            to="/reset-password"
-            class="toggle-login-link underline"
-            >{{ $t("login.recover_password") }}</router-link
-          >
-        </template>
-      </FormInput>
+    <template v-else>
+      <form
+        class="flex col login-page__form gap-small"
+        @submit="handleForm"
+        v-if="hasLocalLogin">
+        <h2 class="login-title">{{ $t("login.title") }}</h2>
 
-      <div class="form-field flex col gap-tiny">
+        <FormInput :field="email" v-model="email.value" focus inputFullWidth />
+        <FormInput :field="password" v-model="password.value" inputFullWidth>
+          <template #content-bottom-input>
+            <router-link
+              to="/reset-password"
+              class="toggle-login-link underline"
+              >{{ $t("login.recover_password") }}</router-link
+            >
+          </template>
+        </FormInput>
+
+        <div class="form-field flex col gap-tiny">
+          <Button
+            type="submit"
+            :label="$t('login.login_button')"
+            block
+            variant="primary"
+            class="login-page__form__submit"></Button>
+          <div class="login-page__form__create-account" v-if="enable_inscription">
+            <span>{{ $t("login.not_registered") }}</span>
+            <router-link
+              to="/create-account"
+              id="create-account-link"
+              class="underline">
+              {{ $t("login.create_account_button") }}
+            </router-link>
+          </div>
+        </div>
+      </form>
+
+      <div v-if="emailNotVerified" class="email-not-verified-notice flex col gap-small">
+        <p>{{ $t("login.email_not_verified") }}</p>
         <Button
-          type="submit"
-          :label="$t('login.login_button')"
-          block
+          :label="$t('login.resend_verification')"
+          :disabled="resendingVerification"
           variant="primary"
-          class="login-page__form__submit"></Button>
-        <div class="login-page__form__create-account" v-if="enable_inscription">
-          <span>{{ $t("login.not_registered") }}</span>
-          <router-link
-            to="/create-account"
-            id="create-account-link"
-            class="underline">
-            {{ $t("login.create_account_button") }}
-          </router-link>
+          block
+          @click="handleResendVerification" />
+      </div>
+
+      <div
+        class="oidc-form flex col gap-medium"
+        v-if="oidcList && oidcList.length">
+        <div class="flex align-center gap-small">
+          <hr class="oidc-form__separator flex1" />
+          <div>{{ $t("login.or_continue_with") }}</div>
+          <hr class="oidc-form__separator flex1" />
+        </div>
+        <div class="flex justify-center oidc-form__buttons">
+          <OidcLoginButton
+            v-for="oidcInfo of oidcList"
+            :key="oidcInfo.name"
+            :path="oidcInfo.path"
+            :name="oidcInfo.name"></OidcLoginButton>
         </div>
       </div>
-    </form>
-
-    <div v-if="emailNotVerified" class="email-not-verified-notice flex col gap-small">
-      <p>{{ $t("login.email_not_verified") }}</p>
-      <Button
-        :label="$t('login.resend_verification')"
-        :disabled="resendingVerification"
-        variant="primary"
-        block
-        @click="handleResendVerification" />
-    </div>
-
-    <div
-      class="oidc-form flex col gap-medium"
-      v-if="oidcList && oidcList.length">
-      <div class="flex align-center gap-small">
-        <hr class="oidc-form__separator flex1" />
-        <div>{{ $t("login.or_continue_with") }}</div>
-        <hr class="oidc-form__separator flex1" />
-      </div>
-      <div class="flex justify-center oidc-form__buttons">
-        <OidcLoginButton
-          v-for="oidcInfo of oidcList"
-          :key="oidcInfo.name"
-          :path="oidcInfo.path"
-          :name="oidcInfo.name"></OidcLoginButton>
-      </div>
-    </div>
+    </template>
   </MainContentPublic>
 
   <!--
@@ -113,7 +126,6 @@ export default {
   },
   mounted() {
     this.fetchLoginMethods()
-    //this.$refs.email.focus()
   },
   computed: {
     formValid() {
@@ -130,6 +142,23 @@ export default {
     },
     show_footer() {
       return getEnv("VUE_APP_SHOW_LOGIN_FOOTER") === "true"
+    },
+    noAccessNotice() {
+      return (
+        this.$route?.query?.notice === "account_created" ||
+        this.$route?.query?.error === "no_organization"
+      )
+    },
+    noAccessContent() {
+      const prefix =
+        this.$route?.query?.notice === "account_created"
+          ? "no_orga.account_created_no_access"
+          : "no_orga.login_no_access"
+      return {
+        title: this.$t(prefix + "_title"),
+        detail: this.$t("no_orga.no_access_detail"),
+        action: this.$t("no_orga.no_access_action"),
+      }
     },
     hasLocalLogin() {
       return (
@@ -268,5 +297,38 @@ export default {
 
 .oidc-form__buttons {
   gap: 1.5rem;
+}
+
+.no-access-notice {
+  gap: 1.2rem;
+  padding: 1rem 0;
+  justify-content: center;
+  height: 100%;
+  margin-top: -3rem;
+}
+
+.no-access-notice__title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  text-align: center;
+  margin: 0;
+}
+
+.no-access-notice__detail {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.no-access-notice__action {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin: 0;
+}
+
+.no-access-notice__link {
+  margin-top: 0.5rem;
 }
 </style>

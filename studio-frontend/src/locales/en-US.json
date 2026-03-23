@@ -37,7 +37,8 @@
     "visibility": {
       "private": "Private",
       "organization": "Organization",
-      "public": "Public"
+      "public": "Public",
+      "user": "User"
     },
     "remove_session_button": "Delete session | Delete {count} sessions"
   },
@@ -825,7 +826,8 @@
     "title": "Switch organization",
     "current": "Current",
     "create_organization": "Create an organization",
-    "backoffice": "Backoffice"
+    "backoffice": "Backoffice",
+    "favorite": "Set as default organization"
   },
   "navigation": {
     "account": {
@@ -865,7 +867,12 @@
       "subtitle_line_one": "Your user does not belong to any organization.",
       "subtitle_line_two": "Please contact an administrator.",
       "title": "Your account is not provisioned"
-    }
+    },
+    "account_created_no_access_title": "Account created, access pending",
+    "login_no_access_title": "Login successful, access pending",
+    "no_access_detail": "You do not yet belong to an organization. An administrator must add you to one before you can access the platform's resources.",
+    "no_access_action": "Please contact your organization's administrator to obtain access.",
+    "back_to_login": "Back to login page"
   },
   "organisation": {
     "add_member_description": "Use the search form to find users by their firstname, lastname or email address",

@@ -28,6 +28,16 @@ module.exports = async function (db, collectionName) {
       "organization.id": 1,
     })
 
+    await collection.createIndex({ "socket.id": 1 })
+    await collection.createIndex({
+      "socket.visitorId": 1,
+      "session.sessionId": 1,
+    })
+    await collection.createIndex({
+      "user.id": 1,
+      "session.sessionId": 1,
+    })
+
   } catch (error) {
     logger.error("Error creating collection:", error)
   }

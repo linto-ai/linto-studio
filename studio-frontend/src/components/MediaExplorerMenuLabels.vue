@@ -35,9 +35,6 @@ export default {
         this.fetchTags()
       }
     },
-    "$route.params.folderId"() {
-      this.fetchTags()
-    },
     searchActive() {
       this.fetchTags()
     },
