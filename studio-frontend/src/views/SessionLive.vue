@@ -131,10 +131,8 @@ import { sessionMicrophoneMixin } from "@/mixins/sessionMicrophone.js"
 import { getEnv } from "@/tools/getEnv"
 import { isQualifiedForCrossSubtitles } from "@/tools/translationUtils.js"
 
-import SessionLiveContent from "@/components/SessionLiveContent.vue"
 import Loading from "@/components/atoms/Loading.vue"
 import SessionEnded from "@/components/SessionEnded.vue"
-import SessionLiveToolbar from "@/components/SessionLiveToolbar.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
 import SessionLiveMicrophoneStatus from "@/components/SessionLiveMicrophoneStatus.vue"
@@ -247,8 +245,6 @@ export default {
   },
   components: {
     LayoutV2,
-    SessionLiveContent,
-    SessionLiveToolbar,
     Loading,
     SessionEnded,
     Modal,
