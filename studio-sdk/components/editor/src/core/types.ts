@@ -25,6 +25,8 @@ export interface EditorEventMap {
   "turn:remove": { turnId: string; translationId: string }
   "speaker:update": { speaker: Speaker }
   "speaker:add": { speaker: Speaker }
+  "turns:prepend": { turns: Turn[]; translationId: string }
+  "scroll:top": { translationId: string }
   "translation:sync": { translationId: string }
   "channel:sync": { channelId: string }
   destroy: void
@@ -40,7 +42,10 @@ export interface TranslationStore {
   readonly isSource: boolean
   readonly audio?: AudioSource
   readonly turns: Ref<Turn[]>
+  readonly isLoadingHistory: Ref<boolean>
+  readonly hasMoreHistory: Ref<boolean>
   addTurn(turn: Turn): void
+  prependTurns(turns: Turn[]): void
   updateTurn(turnId: string, patch: Partial<Turn>): void
   removeTurn(turnId: string): void
   updateWords(turnId: string, words: Word[]): void
@@ -101,36 +106,42 @@ export interface SubtitlePluginApi {
 
 // ── Live Plugin API ─────────────────────────────────────────────────────
 
+export interface LivePartialEventData {
+  text?: string
+  translations?: Array<{
+    translationId: string
+    text: string
+  }>
+}
+
+export interface LiveFinalEventData {
+  turnId: string
+  speakerId: string | null
+  text?: string
+  words: Array<{
+    id: string
+    text: string
+    startTime?: number
+    endTime?: number
+    confidence?: number
+  }>
+  startTime: number
+  endTime: number
+  language: string
+  translations?: Array<{
+    translationId: string
+    text: string
+    language: string
+  }>
+}
+
 export interface LivePluginApi {
   partial: ShallowRef<string | null>
   hasLiveUpdate: Ref<boolean>
-  onPartial(event: {
-    text?: string
-    translations?: Array<{
-      translationId: string
-      text: string
-    }>
-  }, channelId: string): void
-  onFinal(event: {
-    turnId: string
-    speakerId: string | null
-    text?: string
-    words: Array<{
-      id: string
-      text: string
-      startTime?: number
-      endTime?: number
-      confidence?: number
-    }>
-    startTime: number
-    endTime: number
-    language: string
-    translations?: Array<{
-      translationId: string
-      text: string
-      language: string
-    }>
-  }, channelId: string): void
+  onPartial(event: LivePartialEventData, channelId: string): void
+  onFinal(event: LiveFinalEventData, channelId: string): void
+  prependFinal(event: LiveFinalEventData, channelId: string): void
+  prependFinalBatch(events: LiveFinalEventData[], channelId: string): void
   onTranslation(event: { turnId: string; language: string; text: string }): void
 }
 

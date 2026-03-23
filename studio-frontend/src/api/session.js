@@ -366,7 +366,7 @@ export async function apiGetSessionsBetweenDates(
 
 export async function apiGetPublicSession(sessionId, password, notif) {
   const getSession = await sendRequest(
-    `${BASE_API}/sessions/${sessionId}/public`,
+    `${BASE_API}/sessions/public/${sessionId}`,
     { method: "get" },
     { password },
     notif,
@@ -423,6 +423,19 @@ export async function apiDeleteSession(
   return resRequest
 }
 
+export async function apiGetSessionChannelTurns(
+  organizationScope,
+  sessionId,
+  channelId,
+  { limit = 50, offset = 0 } = {},
+) {
+  return sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}/channels/${channelId}`,
+    { method: "get" },
+    { limit, offset },
+  )
+}
+
 export async function apiGetSessionChannel(
   organizationScope,
   sessionId,
@@ -446,7 +459,7 @@ export async function apiGetPublicSessionChannel(
   notif,
 ) {
   const getSessionChannel = await sendRequest(
-    `${BASE_API}/sessions/${sessionId}/public`,
+    `${BASE_API}/sessions/public/${sessionId}`,
     { method: "get" },
     { transcriber_id: transcriberId, password },
     notif,

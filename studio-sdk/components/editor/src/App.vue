@@ -25,6 +25,82 @@ const loading = ref(true)
 
 // ── Live POC: simulate partials + finals ──────────────────────────────
 
+// ── History simulation ───────────────────────────────────────────────
+
+const HISTORY_SENTENCES = [
+  "On a validé le périmètre fonctionnel la semaine dernière.",
+  "Le design system est quasiment finalisé.",
+  "Il reste quelques ajustements sur les couleurs.",
+  "L'intégration avec l'API de recherche est en cours.",
+  "On devrait pouvoir livrer la première version d'ici vendredi.",
+]
+
+let historyPageCount = 0
+const MAX_HISTORY_PAGES = 3
+let historyTime = 0 // will be set after document load
+let historyTurnCounter = 0
+let unsubScrollTop: (() => void) | undefined
+
+function startHistorySimulation() {
+  if (!editor.live) return
+
+  // Set initial historyTime before the first turn of the document
+  const sourceTr = editor.activeChannel.value.activeTranslation.value
+  const firstTurn = sourceTr.turns.value[0]
+  historyTime = firstTurn?.startTime ?? 0
+
+  sourceTr.hasMoreHistory.value = true
+
+  unsubScrollTop = editor.on("scroll:top", () => {
+    if (historyPageCount >= MAX_HISTORY_PAGES) return
+
+    const translation = editor.activeChannel.value.activeTranslation.value
+    translation.isLoadingHistory.value = true
+
+    setTimeout(() => {
+      const events: LiveFinalEvent[] = []
+      const pageSize = HISTORY_SENTENCES.length
+
+      for (let i = pageSize - 1; i >= 0; i--) {
+        historyTurnCounter++
+        const text = HISTORY_SENTENCES[i]!
+        const words = text.split(" ")
+        const duration = words.length * 0.4
+        const turnEnd = historyTime - 0.5
+        const turnStart = turnEnd - duration
+
+        events.unshift({
+          turnId: `history-turn-${historyTurnCounter}`,
+          speakerId: SPEAKERS[i % SPEAKERS.length]!,
+          text,
+          words: words.map((w, j) => ({
+            id: `hw-${historyTurnCounter}-${j}`,
+            text: w,
+            startTime: turnStart + j * 0.4,
+            endTime: turnStart + (j + 1) * 0.4,
+            confidence: 0.9,
+          })),
+          startTime: turnStart,
+          endTime: turnEnd,
+          language: "fr",
+        })
+
+        historyTime = turnStart
+      }
+
+      editor.live!.prependFinalBatch(events, "ch-1")
+      historyPageCount++
+
+      translation.isLoadingHistory.value = false
+      if (historyPageCount >= MAX_HISTORY_PAGES) {
+        translation.hasMoreHistory.value = false
+      }
+    }, 800)
+  })
+}
+
+// ── Live POC: simulate partials + finals ──────────────────────────────
+
 const SENTENCES = [
   "Bonjour à tous, merci d'être présents pour cette réunion.",
   "On va commencer par le point sur le sprint en cours.",
@@ -180,6 +256,7 @@ onMounted(async () => {
 
     // Start live simulation on channel 1
     startLiveSimulation("ch-1")
+    startHistorySimulation()
   } catch (e) {
     error.value = e instanceof Error ? e.message : t("editor.loadError")
     loading.value = false
@@ -188,6 +265,7 @@ onMounted(async () => {
 
 onUnmounted(() => {
   if (liveTimer) clearTimeout(liveTimer)
+  unsubScrollTop?.()
   editor.destroy()
 })
 </script>

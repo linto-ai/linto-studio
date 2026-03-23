@@ -6,12 +6,16 @@
 import { markRaw } from "vue"
 import { sessionModelMixin } from "@/mixins/sessionModel.js"
 import sessionToEditorDocument from "@/tools/sessionToEditorDocument.js"
+import closedCaptionsToLiveFinalEvents from "@/tools/closedCaptionsToLiveFinalEvents.js"
+import { apiGetSessionChannelTurns } from "@/api/session.js"
 import {
   createLivePlugin,
   createSubtitlePlugin,
 } from "@linto/studio-editor/webcomponent"
 import computeSessionTurnUniqueId from "@/const/computeSessionTurnUniqueId"
 import classifySessionTurn from "@/tools/classifySessionTurn"
+
+const PAGE_SIZE = 50
 
 export default {
   mixins: [sessionModelMixin],
@@ -24,8 +28,10 @@ export default {
       livePlugin: null,
       editor: null,
       offChannelChange: null,
+      offScrollTop: null,
       sessionStartMs: new Date(this.session.startTime).getTime(),
       activeChannelIndex: null,
+      historyOffset: 0,
     }
   },
   computed: {
@@ -53,10 +59,11 @@ export default {
   },
   beforeDestroy() {
     this.offChannelChange?.()
+    this.offScrollTop?.()
     this.websocketInstance.unSubscribeSessionRoom()
   },
   methods: {
-    initEditor() {
+    async initEditor() {
       const el = this.$refs.editor
       const { editor } = el
       this.editor = markRaw(editor)
@@ -66,15 +73,35 @@ export default {
 
       editor.use(createSubtitlePlugin())
 
-      const doc = sessionToEditorDocument(this.session)
-      console.log(doc)
+      const sessionForDoc = {
+        ...this.session,
+        channels: this.session.channels.map((ch) => ({
+          ...ch,
+          closedCaptions: [],
+          translatedCaptions: [],
+        })),
+      }
+      const doc = sessionToEditorDocument(sessionForDoc)
       editor.setDocument(doc)
 
       this.activeChannelIndex = this.editor?.activeChannelId.value ?? null
 
+      // Load initial page of turns
+      await this.fetchTurnsPage()
+
+      this.offScrollTop = editor.on("scroll:top", () => this.fetchTurnsPage())
+
       this.offChannelChange = editor.on("channel:change", ({ channelId }) => {
         this.activeChannelIndex = channelId
+        this.historyOffset = 0
+
+        const channel = this.editor.channels.get(channelId)
+        if (channel) {
+          channel.sourceTranslation.hasMoreHistory.value = true
+        }
+
         this.subscribeToWebsocket()
+        this.fetchTurnsPage()
       })
 
       if (this.websocketInstance.state.isConnected) {
@@ -82,8 +109,54 @@ export default {
       }
     },
 
+    async fetchTurnsPage() {
+      const translation =
+        this.editor.activeChannel.value.sourceTranslation
+      if (translation.isLoadingHistory.value) return
+      if (!translation.hasMoreHistory.value) return
+
+      translation.isLoadingHistory.value = true
+
+      try {
+        const res = await apiGetSessionChannelTurns(
+          this.sessionOrganizationId,
+          this.session.id,
+          this.activeChannelIndex,
+          { limit: PAGE_SIZE, offset: this.historyOffset },
+        )
+
+        const closedCaptions = res?.data?.closedCaptions ?? []
+        const total = res?.data?.totalClosedCaptions ?? 0
+
+        if (closedCaptions.length === 0) {
+          translation.hasMoreHistory.value = false
+          return
+        }
+
+        const events = closedCaptionsToLiveFinalEvents(
+          closedCaptions,
+          this.sessionStartMs,
+          this.hasDiarization,
+          this.activeChannelObj?.languages?.[0] ?? "*",
+        )
+
+        if (events.length > 0) {
+          this.editor.live.prependFinalBatch(events, this.activeChannelIndex)
+        }
+
+        this.historyOffset += closedCaptions.length
+
+        if (this.historyOffset >= total) {
+          translation.hasMoreHistory.value = false
+        }
+      } catch (err) {
+        console.error("[SessionLiveNG] Error fetching turns", err)
+      } finally {
+        translation.isLoadingHistory.value = false
+      }
+    },
+
     subscribeToWebsocket() {
-      console.log(this.activeChannelIndex)
       this.websocketInstance.subscribeSessionRoom(
         this.session.id,
         this.activeChannelIndex,

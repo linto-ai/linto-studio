@@ -10,6 +10,7 @@ import * as utils from "../utils"
 
 interface UseAutoScrollOptions {
   panelRef: Ref<HTMLElement | null>
+  isPrepending?: Ref<boolean>
 }
 
 interface UseAutoScrollReturn {
@@ -19,6 +20,7 @@ interface UseAutoScrollReturn {
 
 export function useAutoScroll({
   panelRef,
+  isPrepending,
 }: UseAutoScrollOptions): UseAutoScrollReturn {
   const isFollowing = ref(true)
 
@@ -30,6 +32,7 @@ export function useAutoScroll({
 
   function scrollToActive() {
     if (!isFollowing.value) return
+    if (isPrepending?.value) return
     if (!viewport) return
 
     const activeEl =

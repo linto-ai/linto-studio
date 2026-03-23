@@ -5,6 +5,7 @@ import type {
   LiveFinalEvent,
   LiveTranslationEvent,
 } from "./types"
+import type { Turn } from "../../types/editor"
 
 export type {
   LivePartialEvent,
@@ -12,6 +13,19 @@ export type {
   LiveTranslationEvent,
 }
 export type { LivePluginApi }
+
+function finalEventToTurnData(event: LiveFinalEvent): Turn {
+  const hasWords = event.words.length > 0
+  return {
+    id: event.turnId,
+    speakerId: event.speakerId,
+    text: hasWords ? null : (event.text ?? null),
+    words: event.words,
+    startTime: event.startTime,
+    endTime: event.endTime,
+    language: event.language,
+  }
+}
 
 export function createLivePlugin(): EditorPlugin {
   return {
@@ -72,22 +86,13 @@ export function createLivePlugin(): EditorPlugin {
 
         // 1. Source turn — only if text is provided
         if (event.text != null && channel) {
-          const hasWords = event.words.length > 0
-          const turnData = {
-            speakerId: event.speakerId,
-            text: hasWords ? null : event.text,
-            words: event.words,
-            startTime: event.startTime,
-            endTime: event.endTime,
-            language: event.language,
-          }
-
+          const turnData = finalEventToTurnData(event)
           const sourceStore = channel.sourceTranslation
           const exists = sourceStore.turns.value.some(
             (t) => t.id === event.turnId,
           )
           if (exists) sourceStore.updateTurn(event.turnId, turnData)
-          else sourceStore.addTurn({ id: event.turnId, ...turnData })
+          else sourceStore.addTurn(turnData)
         }
 
         // 2. Translations
@@ -96,7 +101,8 @@ export function createLivePlugin(): EditorPlugin {
             const trStore = channel.translations.get(tr.translationId)
             if (!trStore) continue
 
-            const trTurnData = {
+            const trTurnData: Turn = {
+              id: event.turnId,
               speakerId: event.speakerId,
               text: tr.text,
               words: [],
@@ -109,11 +115,94 @@ export function createLivePlugin(): EditorPlugin {
               (t) => t.id === event.turnId,
             )
             if (exists) trStore.updateTurn(event.turnId, trTurnData)
-            else trStore.addTurn({ id: event.turnId, ...trTurnData })
+            else trStore.addTurn(trTurnData)
           }
         }
 
         immediateClearPartial()
+      }
+
+      function prependFinal(event: LiveFinalEvent, channelId: string): void {
+        if (event.speakerId) core.speakers.ensure(event.speakerId)
+
+        const channel = core.channels.get(channelId)
+        if (!channel) return
+
+        // 1. Source turn
+        if (event.text != null) {
+          const turnData = finalEventToTurnData(event)
+          channel.sourceTranslation.prependTurns([turnData])
+        }
+
+        // 2. Translations
+        if (event.translations) {
+          for (const tr of event.translations) {
+            const trStore = channel.translations.get(tr.translationId)
+            if (!trStore) continue
+
+            const trTurnData: Turn = {
+              id: event.turnId,
+              speakerId: event.speakerId,
+              text: tr.text,
+              words: [],
+              startTime: event.startTime,
+              endTime: event.endTime,
+              language: tr.language,
+            }
+            trStore.prependTurns([trTurnData])
+          }
+        }
+      }
+
+      function prependFinalBatch(events: LiveFinalEvent[], channelId: string): void {
+        const channel = core.channels.get(channelId)
+        if (!channel) return
+
+        // Ensure all speakers at once
+        const seen = new Set<string>()
+        for (const event of events) {
+          if (event.speakerId && !seen.has(event.speakerId)) {
+            seen.add(event.speakerId)
+            core.speakers.ensure(event.speakerId)
+          }
+        }
+
+        // 1. Source turns — batch prepend
+        const sourceTurns: Turn[] = []
+        for (const event of events) {
+          if (event.text != null) {
+            sourceTurns.push(finalEventToTurnData(event))
+          }
+        }
+        if (sourceTurns.length > 0) {
+          channel.sourceTranslation.prependTurns(sourceTurns)
+        }
+
+        // 2. Translations — group by translationId, batch prepend each
+        const translationTurns = new Map<string, Turn[]>()
+        for (const event of events) {
+          if (!event.translations) continue
+          for (const tr of event.translations) {
+            let list = translationTurns.get(tr.translationId)
+            if (!list) {
+              list = []
+              translationTurns.set(tr.translationId, list)
+            }
+            list.push({
+              id: event.turnId,
+              speakerId: event.speakerId,
+              text: tr.text,
+              words: [],
+              startTime: event.startTime,
+              endTime: event.endTime,
+              language: tr.language,
+            })
+          }
+        }
+        for (const [translationId, turns] of translationTurns) {
+          const trStore = channel.translations.get(translationId)
+          if (trStore) trStore.prependTurns(turns)
+        }
       }
 
       function immediateClearPartial(): void {
@@ -131,6 +220,8 @@ export function createLivePlugin(): EditorPlugin {
         hasLiveUpdate,
         onPartial,
         onFinal,
+        prependFinal,
+        prependFinalBatch,
         onTranslation,
       }
 

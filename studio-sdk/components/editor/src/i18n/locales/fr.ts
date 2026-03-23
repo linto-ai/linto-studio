@@ -26,6 +26,8 @@ const fr = {
   'subtitle.show': 'Afficher les sous-titres',
   'subtitle.fontSize': 'Taille de police',
   'sidebar.subtitle': 'Sous-titres',
+  'transcription.historyStart': 'Début de la transcription',
+  'transcription.loadingHistory': 'Chargement\u2026',
 } as const
 
 export default fr

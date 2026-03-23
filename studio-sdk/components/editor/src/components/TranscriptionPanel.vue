@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, useTemplateRef } from "vue"
+import { computed, ref, useTemplateRef, onMounted, onBeforeUnmount, nextTick } from "vue"
 import {
   ScrollAreaRoot,
   ScrollAreaViewport,
@@ -12,9 +12,10 @@ import EditorButton from "./atoms/EditorButton.vue"
 import { useAutoScroll } from "../composables/useAutoScroll"
 import { useEditorStore } from "../core"
 import { useI18n } from "../i18n"
+import { throttle } from "../utils"
 import type { Turn, Speaker } from "../types/editor"
 
-defineProps<{
+const props = defineProps<{
   turns: Turn[]
   speakers: Map<string, Speaker>
 }>()
@@ -41,7 +42,60 @@ const partialTurn = computed(() => {
 const hasLiveUpdate = computed(() => editor.live?.hasLiveUpdate.value ?? false)
 const isPlaying = computed(() => editor.audio?.isPlaying.value ?? false)
 
-const { isFollowing, resumeFollow } = useAutoScroll({ panelRef })
+const activeTranslation = computed(() => editor.activeChannel.value.activeTranslation.value)
+const isLoadingHistory = computed(() => activeTranslation.value.isLoadingHistory.value)
+const hasMoreHistory = computed(() => activeTranslation.value.hasMoreHistory.value)
+
+// ── Scroll top detection + scroll preservation ──────────────────────────
+
+const isPrepending = ref(false)
+let viewport: HTMLElement | null = null
+
+const emitScrollTop = throttle(() => {
+  const translation = activeTranslation.value
+  if (!translation.hasMoreHistory.value) return
+  if (translation.isLoadingHistory.value) return
+  if (props.turns.length === 0) return
+  editor.emit("scroll:top", { translationId: translation.id })
+}, 500)
+
+function onScrollTop() {
+  if (!viewport) return
+  if (viewport.scrollTop < 100) {
+    emitScrollTop()
+  }
+}
+
+let unsubPrepend: (() => void) | undefined
+
+onMounted(() => {
+  viewport = panelRef.value?.querySelector("[data-reka-scroll-area-viewport]") ?? null
+  if (viewport) {
+    viewport.addEventListener("scroll", onScrollTop, { passive: true })
+  }
+
+  unsubPrepend = editor.on("turns:prepend", () => {
+    if (!viewport) return
+    const prevScrollHeight = viewport.scrollHeight
+    isPrepending.value = true
+    nextTick(() => {
+      if (!viewport) return
+      const delta = viewport.scrollHeight - prevScrollHeight
+      viewport.scrollTop += delta
+      isPrepending.value = false
+    })
+  })
+})
+
+onBeforeUnmount(() => {
+  if (viewport) {
+    viewport.removeEventListener("scroll", onScrollTop)
+    viewport = null
+  }
+  unsubPrepend?.()
+})
+
+const { isFollowing, resumeFollow } = useAutoScroll({ panelRef, isPrepending })
 </script>
 
 <template>
@@ -49,6 +103,12 @@ const { isFollowing, resumeFollow } = useAutoScroll({ panelRef })
     <ScrollAreaRoot class="scroll-root">
       <ScrollAreaViewport class="scroll-viewport">
         <div class="turns-container">
+          <div v-if="isLoadingHistory" class="history-loading" role="status">
+            <progress />
+          </div>
+          <div v-if="!hasMoreHistory && turns.length > 0" class="history-start">
+            {{ t('transcription.historyStart') }}
+          </div>
           <TranscriptionTurn
             v-for="(turn, i) in turns"
             :key="turn.id"
@@ -109,6 +169,22 @@ const { isFollowing, resumeFollow } = useAutoScroll({ panelRef })
   max-width: 80ch;
   margin-inline: auto;
   padding: var(--spacing-lg);
+}
+
+.history-loading {
+  text-align: center;
+  padding: var(--spacing-md);
+}
+
+.history-loading progress {
+  width: 120px;
+}
+
+.history-start {
+  text-align: center;
+  padding: var(--spacing-md);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
 }
 
 .scrollbar {
