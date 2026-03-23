@@ -21,7 +21,9 @@ export default {
     sharedTags: [],
     favoritesTags: [],
     tags: [],
+    allTags: [],
     loading: false,
+    allTagsLoading: false,
     error: null,
   },
   mutations: {
@@ -40,8 +42,14 @@ export default {
     setTags(state, tags) {
       state.tags = tags
     },
+    setAllTags(state, tags) {
+      state.allTags = tags
+    },
     setLoading(state, loading) {
       state.loading = loading
+    },
+    setAllTagsLoading(state, loading) {
+      state.allTagsLoading = loading
     },
     setError(state, error) {
       state.error = error
@@ -55,6 +63,7 @@ export default {
   },
   getters: {
     getTags: (state) => state.tags,
+    getAllTags: (state) => state.allTags,
     getSharedTags: (state) => state.sharedTags,
     getFavoritesTags: (state) => state.favoritesTags,
     getLoading: (state) => state.loading,
@@ -113,6 +122,36 @@ export default {
         throw error
       } finally {
         commit("setLoading", false)
+      }
+    },
+    async fetchAllTags({ commit, state, rootGetters }) {
+      if (state.allTagsLoading) return
+
+      commit("setAllTagsLoading", true)
+      try {
+        const data = await apiGetSystemCategories(
+          rootGetters["organizations/getCurrentOrganizationScope"],
+        )
+
+        const tagsCategory = data.find(
+          (category) => category.name.toLowerCase() === "tags",
+        )
+
+        if (tagsCategory) {
+          const tags = await apiGetTagsByCategory(
+            rootGetters["organizations/getCurrentOrganizationScope"],
+            tagsCategory._id,
+          )
+          commit("setAllTags", tags)
+        } else {
+          commit("setAllTags", [])
+        }
+      } catch (error) {
+        console.error("Error fetching all tags:", error)
+        commit("setError", error)
+        throw error
+      } finally {
+        commit("setAllTagsLoading", false)
       }
     },
     async fetchSharedTags({ commit, getters, rootGetters, state }) {

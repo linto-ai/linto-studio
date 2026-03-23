@@ -834,7 +834,10 @@ router.beforeEach(async (to, from, next) => {
       from.params.folderId !== to.params.folderId
     ) {
       const tagFolderId = to.params.folderId ?? null
-      await store.dispatch("tags/fetchTags", { folderId: tagFolderId })
+      await Promise.all([
+        store.dispatch("tags/fetchTags", { folderId: tagFolderId }),
+        store.dispatch("tags/fetchAllTags"),
+      ])
       //store.dispatch("system/setIsLoading", false)
       routerDebug("Short-circuit folder navigation")
       return next()
@@ -927,10 +930,13 @@ router.beforeEach(async (to, from, next) => {
       return next(orgScopeResult.nextRoute)
     }
 
-    // Fetch tags scoped to the target folder
+    // Fetch tags scoped to the target folder + all org tags for header selector
     const tagFolderId =
       to.params.folderId || (to.name === "explore" ? null : undefined)
-    await store.dispatch("tags/fetchTags", { folderId: tagFolderId })
+    await Promise.all([
+      store.dispatch("tags/fetchTags", { folderId: tagFolderId }),
+      store.dispatch("tags/fetchAllTags"),
+    ])
     routerDebug("Tags fetched")
 
     if (to.name === "explore-favorites") {
