@@ -1,3 +1,25 @@
+# 1.8.3
+
+_2026_03_23_
+
+- Suivi des sessions
+  - Suivi des visiteurs anonymes via visitorId sur les sessions publiques
+  - Dédoublonnage des spectateurs par userId et cumul du temps de visionnage à la reconnexion
+  - Nouveau type de visibilité utilisateur sur les sessions
+- Organisation favorite
+  - Les utilisateurs peuvent marquer une organisation comme favorite pour y accéder plus rapidement
+- Infrastructure WebSocket
+  - Intégration Redis pub/sub pour synchroniser les événements WebSocket entre réplicas
+  - Meilleure gestion de la connexion Redis en cas d'échec initial
+- Accès utilisateur
+  - Message explicite sur la page de connexion lorsqu'un utilisateur n'est associé à aucune organisation
+  - Adaptation de la page de connexion quand la création de compte est désactivée
+- Bugfix
+  - Correction de la liste des sessions limitée à 100 éléments
+  - Correction du double appel API pour les tags lors de la navigation dans les dossiers
+  - Correction de la cible de migration DB (DB_MIGRATION_TARGET)
+  - Masquage de la sidebar topics hors des pages explore
+
 # 1.8.2
 
 _2026_03_11_
