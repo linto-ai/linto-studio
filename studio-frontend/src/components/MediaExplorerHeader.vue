@@ -95,8 +95,7 @@ export default {
   },
   computed: {
     getTags() {
-      const tags = this.$store.getters["tags/getTags"]
-      return tags
+      return this.$store.getters["tags/getAllTags"]
     },
     isAllSelected: {
       get() {

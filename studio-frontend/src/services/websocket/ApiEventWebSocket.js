@@ -7,9 +7,20 @@ import { getEnv } from "@/tools/getEnv"
 import store from "@/store/index.js"
 import i18n from "@/i18n"
 import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
+import { generateId } from "@/tools/generateId"
 
 const socketioUrl = getEnv("VUE_APP_SESSION_WS")
 const socketioPath = getEnv("VUE_APP_SESSION_WS_PATH")
+
+const VISITOR_ID_KEY = "linto_visitor_id"
+function getVisitorId() {
+  let id = localStorage.getItem(VISITOR_ID_KEY)
+  if (!id) {
+    id = generateId()
+    localStorage.setItem(VISITOR_ID_KEY, id)
+  }
+  return id
+}
 
 const debugWSSession = customDebug("Websocket:Session:debug")
 const debugWSMedia = customDebug("Websocket:Media:debug")
@@ -31,7 +42,7 @@ export default class ApiEventWebSocket {
     this.currentToken = null
   }
 
-  connect(token) {
+  connect(token, { isPublic = false } = {}) {
     this.clearNotifs()
     if (this.state.isConnected) {
       debugWSSession("already connected to socket.io server")
@@ -43,17 +54,19 @@ export default class ApiEventWebSocket {
 
     return new Promise((resolve, reject) => {
       const transports = getEnv("VUE_APP_WEBSOCKET_TRANSPORTS").split(",")
+      const auth = { token: userToken }
+      if (isPublic) auth.visitorId = getVisitorId()
+
       this.socket = io(socketioUrl, {
         path: socketioPath,
-        auth: {
-          token: userToken,
-        },
+        auth,
         transports: transports,
       })
 
       this.socket.on("connect", (msg) => {
         debugWSSession("connected to socket.io server", msg)
         this.state.isConnected = true
+        this.subscribeFolderUpdate()
 
         if (this.state.connexionLost) {
           this.handleConnexionRestored()
@@ -143,7 +156,13 @@ export default class ApiEventWebSocket {
     this.state.isConnected = false
   }
 
-  subscribeSessionRoom(sessionId, channelIndex, onPartial, onFinal, onTranslation) {
+  subscribeSessionRoom(
+    sessionId,
+    channelIndex,
+    onPartial,
+    onFinal,
+    onTranslation,
+  ) {
     // TODO: rewrite by emitting event via bus
     return new Promise((resolve, reject) => {
       this.unSubscribeSessionRoom()
@@ -229,6 +248,16 @@ export default class ApiEventWebSocket {
 
     this.socket.on("conversation_created", (media) => {
       debugWSMedia("conversation_created", media)
+      if (media.jobs?.transcription?.state === "done") {
+        store.dispatch(
+          `${this.currentMediaOrganizationId}/done/conversations/prependMedias`,
+          [media],
+        )
+        store.dispatch(
+          `${this.currentMediaOrganizationId}/done/conversations/increaseCount`,
+        )
+        return
+      }
       store.dispatch(
         `${this.currentMediaOrganizationId}/processing/conversations/prependMedias`,
         [media],
@@ -254,9 +283,10 @@ export default class ApiEventWebSocket {
     this.socket.on("conversation_processing_done", (mediaId) => {
       debugWSMedia("conversation_processing_done", mediaId)
 
-      const processingMedia = store.getters[
-        `${this.currentMediaOrganizationId}/processing/conversations/getMediaById`
-      ](mediaId)
+      const processingMedia =
+        store.getters[
+          `${this.currentMediaOrganizationId}/processing/conversations/getMediaById`
+        ](mediaId)
 
       // Remove from processing store
       if (processingMedia) {
@@ -272,7 +302,11 @@ export default class ApiEventWebSocket {
       // Add to done store (inbox)
       store.dispatch(
         `${this.currentMediaOrganizationId}/done/conversations/prependMedias`,
-        [processingMedia ? { ...processingMedia, jobs: { transcription: { state: "done" } } } : mediaId],
+        [
+          processingMedia
+            ? { ...processingMedia, jobs: { transcription: { state: "done" } } }
+            : mediaId,
+        ],
       )
       store.dispatch(
         `${this.currentMediaOrganizationId}/done/conversations/increaseCount`,
@@ -282,9 +316,10 @@ export default class ApiEventWebSocket {
     this.socket.on("conversation_processing_error", (mediaId) => {
       debugWSMedia("conversation_processing_error", mediaId)
 
-      const processingMedia = store.getters[
-        `${this.currentMediaOrganizationId}/processing/conversations/getMediaById`
-      ](mediaId)
+      const processingMedia =
+        store.getters[
+          `${this.currentMediaOrganizationId}/processing/conversations/getMediaById`
+        ](mediaId)
 
       // Remove from processing store
       if (processingMedia) {

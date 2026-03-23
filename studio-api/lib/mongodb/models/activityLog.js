@@ -1,5 +1,7 @@
 const MongoModel = require("../model")
 
+const VIEWER_THRESHOLD_SECONDS = 300
+
 function buildActivityMatchQuery(activity, orgaId, startDate, endDate) {
   const timestampQuery = {}
 
@@ -78,18 +80,64 @@ class ActivityLog extends MongoModel {
     }
   }
 
-  async socketReconnect(activity, timestamp) {
+  async getByUserAndSession(userId, sessionId) {
     try {
-      const operator = "$set"
+      const query = {
+        "user.id": userId,
+        "session.sessionId": sessionId,
+      }
+      return await this.mongoRequest(query)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async getLastByVisitorAndSession(visitorId, sessionId) {
+    try {
+      const query = {
+        "socket.visitorId": visitorId,
+        "session.sessionId": sessionId,
+      }
+      return await this.mongoRequest(query, {
+        sort: { timestamp: -1 },
+        limit: 1,
+      })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async getActiveByVisitorId(visitorId) {
+    try {
+      const query = {
+        "socket.visitorId": visitorId,
+        lastDisconnectionAt: null,
+      }
+      return await this.mongoRequest(query, {
+        sort: { timestamp: -1 },
+        limit: 1,
+      })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async socketReconnect(activity, timestamp, newSocketId = null) {
+    try {
       const query = { _id: activity._id }
       const payload = activity.socket
 
       payload.connectionCount = ++activity.socket.connectionCount
       payload.lastJoinedAt = timestamp
+      if (newSocketId) payload.id = newSocketId
 
-      await this.mongoUpdateOne(query, operator, {
+      await this.mongoUpdateOne(query, "$set", {
         socket: payload,
         timestamp: timestamp,
+        lastDisconnectionAt: null,
       })
     } catch (error) {
       console.error(error)
@@ -283,8 +331,7 @@ class ActivityLog extends MongoModel {
           if (event.action === "mount") {
             mountTime = new Date(event.timestamp)
           } else if (event.action === "unmount" && mountTime) {
-            totalStreamingTime +=
-              (new Date(event.timestamp) - mountTime) / 1000
+            totalStreamingTime += (new Date(event.timestamp) - mountTime) / 1000
             mountTime = null
           }
         }
@@ -339,18 +386,30 @@ class ActivityLog extends MongoModel {
             organization: { $first: "$organization" },
             usersAbove5Min: {
               $sum: {
-                $cond: [{ $gte: ["$socket.totalWatchTime", 300] }, 1, 0],
+                $cond: [
+                  {
+                    $gte: ["$socket.totalWatchTime", VIEWER_THRESHOLD_SECONDS],
+                  },
+                  1,
+                  0,
+                ],
               },
             },
             usersBelow5Min: {
               $sum: {
-                $cond: [{ $lt: ["$socket.totalWatchTime", 300] }, 1, 0],
+                $cond: [
+                  { $lt: ["$socket.totalWatchTime", VIEWER_THRESHOLD_SECONDS] },
+                  1,
+                  0,
+                ],
               },
             },
             avgWatchTimeAbove5Min: {
               $avg: {
                 $cond: [
-                  { $gte: ["$socket.totalWatchTime", 300] },
+                  {
+                    $gte: ["$socket.totalWatchTime", VIEWER_THRESHOLD_SECONDS],
+                  },
                   "$socket.totalWatchTime",
                   null,
                 ],
@@ -359,7 +418,7 @@ class ActivityLog extends MongoModel {
             avgWatchTimeBelow5Min: {
               $avg: {
                 $cond: [
-                  { $lt: ["$socket.totalWatchTime", 300] },
+                  { $lt: ["$socket.totalWatchTime", VIEWER_THRESHOLD_SECONDS] },
                   "$socket.totalWatchTime",
                   null,
                 ],
@@ -522,13 +581,13 @@ class ActivityLog extends MongoModel {
       )
       // Get first mount and last unmount across all channels
       const allMounts = channels.flatMap((ch) => ch.mountedAt).filter(Boolean)
-      const allUnmounts = channels.flatMap((ch) => ch.unmountedAt).filter(Boolean)
-      const firstMountAt = allMounts.length > 0
-        ? allMounts.sort((a, b) => a - b)[0]
-        : null
-      const lastUnmountAt = allUnmounts.length > 0
-        ? allUnmounts.sort((a, b) => b - a)[0]
-        : null
+      const allUnmounts = channels
+        .flatMap((ch) => ch.unmountedAt)
+        .filter(Boolean)
+      const firstMountAt =
+        allMounts.length > 0 ? allMounts.sort((a, b) => a - b)[0] : null
+      const lastUnmountAt =
+        allUnmounts.length > 0 ? allUnmounts.sort((a, b) => b - a)[0] : null
 
       return {
         channels,

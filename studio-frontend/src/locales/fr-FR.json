@@ -38,7 +38,8 @@
     "visibility": {
       "private": "Privé",
       "organization": "Organisation",
-      "public": "Public"
+      "public": "Public",
+      "user": "Utilisateur"
     },
     "remove_session_button": "Supprimer la session | Supprimer {count} sessions"
   },
@@ -861,7 +862,12 @@
       "subtitle_line_one": "Votre utilisateur n'appartient à aucune organisation.",
       "subtitle_line_two": "Veuillez contacter un administrateur.",
       "title": "Votre compte n'est pas provisionné"
-    }
+    },
+    "account_created_no_access_title": "Compte créé, accès en attente",
+    "login_no_access_title": "Connexion réussie, accès en attente",
+    "no_access_detail": "Vous n'appartenez pas encore à une organisation. Un administrateur doit vous y ajouter avant que vous puissiez accéder aux ressources de la plateforme.",
+    "no_access_action": "Veuillez contacter l'administrateur de votre organisation pour obtenir l'accès.",
+    "back_to_login": "Retour à la page de connexion"
   },
   "organisation": {
     "add_member_description": "Utilisez le champ de recherche pour chercher des utilisateurs par leur prénom, nom ou adresse électronique",

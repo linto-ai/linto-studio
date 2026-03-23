@@ -9,6 +9,7 @@ import { apiLoginUserMagicLink } from "@/api/user"
 import { apiGetUserRightFromConversation } from "@/api/conversation"
 import PUBLIC_ROUTES from "../const/publicRoutes"
 import { logout } from "../tools/logout"
+import { resetCookie } from "../tools/resetCookie"
 import { customDebug } from "@/tools/customDebug.js"
 import { generateId } from "@/tools/generateId.js"
 
@@ -833,7 +834,10 @@ router.beforeEach(async (to, from, next) => {
       from.params.folderId !== to.params.folderId
     ) {
       const tagFolderId = to.params.folderId ?? null
-      await store.dispatch("tags/fetchTags", { folderId: tagFolderId })
+      await Promise.all([
+        store.dispatch("tags/fetchTags", { folderId: tagFolderId }),
+        store.dispatch("tags/fetchAllTags"),
+      ])
       //store.dispatch("system/setIsLoading", false)
       routerDebug("Short-circuit folder navigation")
       return next()
@@ -890,11 +894,10 @@ router.beforeEach(async (to, from, next) => {
 
       // Redirect to login if user is not admin else go to backoffice
       if (platformRole <= 1) {
-        logout()
-        return next({
-          name: "login",
-          query: { next: from.query.next || to.fullPath },
-        })
+        resetCookie()
+        const next_url = from.query.next || to.fullPath
+        window.location.href = `/login?error=no_organization&next=${encodeURIComponent(next_url)}`
+        return
       } else {
         if (to.meta?.backoffice) {
           return next()
@@ -927,10 +930,13 @@ router.beforeEach(async (to, from, next) => {
       return next(orgScopeResult.nextRoute)
     }
 
-    // Fetch tags scoped to the target folder
+    // Fetch tags scoped to the target folder + all org tags for header selector
     const tagFolderId =
       to.params.folderId || (to.name === "explore" ? null : undefined)
-    await store.dispatch("tags/fetchTags", { folderId: tagFolderId })
+    await Promise.all([
+      store.dispatch("tags/fetchTags", { folderId: tagFolderId }),
+      store.dispatch("tags/fetchAllTags"),
+    ])
     routerDebug("Tags fetched")
 
     if (to.name === "explore-favorites") {
