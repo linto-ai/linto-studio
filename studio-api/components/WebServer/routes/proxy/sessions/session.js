@@ -123,9 +123,6 @@ module.exports = (webServer) => {
               (jsonString) => {
                 return cleanPublicSessionContent(jsonString)
               },
-              (jsonString, req) => {
-                return generatPublicToken(jsonString, req)
-              },
             ],
           },
         ],

@@ -6,9 +6,10 @@ const logger = require(`${process.cwd()}/lib/logger/logger`)
 const { SessionError } = require(
   `${process.cwd()}/components/WebServer/error/exception/session`,
 )
-const { Unauthorized } = require(
+const { Unauthorized, UnauthorizedProxy } = require(
   `${process.cwd()}/components/WebServer/error/exception/auth`,
 )
+
 const { authFailLimiter } = require(
   `${process.cwd()}/components/WebServer/config/express/rateLimiters`,
 )
@@ -167,7 +168,6 @@ async function checkSessionMatchingOrganization(req, next) {
 function cleanPublicSessionContent(jsonString) {
   try {
     let session = JSON.parse(jsonString)
-
     if (session.visibility === "public") {
       session.channels.forEach((channel) => {
         if (channel.streamEndpoints) {
