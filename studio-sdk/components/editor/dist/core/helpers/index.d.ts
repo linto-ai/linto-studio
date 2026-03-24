@@ -1,0 +1,8 @@
+export { addSpeaker } from './addSpeaker';
+export { ensureSpeaker } from './ensureSpeaker';
+export { updateSpeaker } from './updateSpeaker';
+export { insertTurn } from './insertTurn';
+export { patchTurn } from './patchTurn';
+export { removeTurn } from './removeTurn';
+export { updateTurnWords } from './updateTurnWords';
+export { ensureDocumentSpeakers } from './ensureDocumentSpeakers';
