@@ -13,6 +13,7 @@ const {
   checkTranscriberProfileAccess,
   afterProxyAccess,
   cleanPublicSessionContent,
+  cleanPublicChannelContent,
   generatPublicToken,
   checkSessionMatchingOrganization,
 } = require(
@@ -121,7 +122,7 @@ module.exports = (webServer) => {
             executeBeforeResult: forwardSessionAliasPublic,
             executeAfterResult: [
               (jsonString) => {
-                return cleanPublicSessionContent(jsonString)
+                return cleanPublicChannelContent(jsonString)
               },
             ],
           },

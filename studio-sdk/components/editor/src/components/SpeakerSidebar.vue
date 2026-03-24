@@ -49,19 +49,6 @@ const translationItems = computed(() =>
         @update:selected-value="$emit('update:selectedTranslationId', $event)"
       />
     </section>
-    <section v-if="speakers.length" class="sidebar-section">
-      <h2 class="sidebar-title">{{ t('sidebar.speakers') }}</h2>
-      <ul class="speaker-list">
-      <li
-        v-for="speaker in speakers"
-        :key="speaker.id"
-        class="speaker-item"
-      >
-        <SpeakerIndicator :color="speaker.color" />
-        <span class="speaker-name">{{ speaker.name }}</span>
-      </li>
-    </ul>
-    </section>
     <section v-if="editor.subtitle" class="sidebar-section">
       <h2 class="sidebar-title">{{ t('sidebar.subtitle') }}</h2>
       <div class="subtitle-toggle">
@@ -83,6 +70,19 @@ const translationItems = computed(() =>
           @input="editor.subtitle!.fontSize.value = Number(($event.target as HTMLInputElement).value)"
         />
       </label>
+    </section>
+    <section v-if="speakers.length" class="sidebar-section">
+      <h2 class="sidebar-title">{{ t('sidebar.speakers') }}</h2>
+      <ul class="speaker-list">
+      <li
+        v-for="speaker in speakers"
+        :key="speaker.id"
+        class="speaker-item"
+      >
+        <SpeakerIndicator :color="speaker.color" />
+        <span class="speaker-name">{{ speaker.name }}</span>
+      </li>
+    </ul>
     </section>
   </aside>
 </template>

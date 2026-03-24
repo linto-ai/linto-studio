@@ -333,11 +333,11 @@ export async function apiCountFutureSessions(organizationScope, notif) {
   return getStartedSessions?.data?.totalItems ?? 0
 }
 
-export async function apiGetSession(organizationScope, sessionId, notif) {
+export async function apiGetSession(organizationScope, sessionId, params = {}, notif) {
   const getSession = await sendRequest(
     `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}`,
     { method: "get" },
-    {},
+    params,
     notif,
   )
 
@@ -364,11 +364,11 @@ export async function apiGetSessionsBetweenDates(
   )
 }
 
-export async function apiGetPublicSession(sessionId, password, notif) {
+export async function apiGetPublicSession(sessionId, password, params = {}, notif) {
   const getSession = await sendRequest(
     `${BASE_API}/sessions/public/${sessionId}`,
     { method: "get" },
-    { password },
+    { password, ...params },
     notif,
   )
 

@@ -185,6 +185,16 @@ function cleanPublicSessionContent(jsonString) {
   throw new UnauthorizedProxy()
 }
 
+function cleanPublicChannelContent(jsonString) {
+  let channel = JSON.parse(jsonString)
+  if (channel.visibility === "public") {
+    delete channel.streamEndpoints
+    return JSON.stringify(channel)
+  }
+
+  throw new UnauthorizedProxy()
+}
+
 module.exports = {
   forceQueryParams,
   forwardSessionAlias,
@@ -194,4 +204,5 @@ module.exports = {
   generatPublicToken,
   checkSessionMatchingOrganization,
   cleanPublicSessionContent,
+  cleanPublicChannelContent,
 }
