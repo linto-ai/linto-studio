@@ -5,9 +5,9 @@ const {
   STORAGE_MODE,
 } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 
-class SpeakerLabelCollectionModel extends MongoModel {
+class VoiceprintCollectionModel extends MongoModel {
   constructor() {
-    super("speakerLabelCollections")
+    super("voiceprintCollections")
   }
 
   async create(payload) {
@@ -98,4 +98,4 @@ class SpeakerLabelCollectionModel extends MongoModel {
   }
 }
 
-module.exports = new SpeakerLabelCollectionModel()
+module.exports = new VoiceprintCollectionModel()

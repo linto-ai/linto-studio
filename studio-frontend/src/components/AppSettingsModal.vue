@@ -42,6 +42,12 @@
                 <span>{{ $t("app_settings_modal.notifications") }}</span>
               </a>
             </li>
+            <li :class="{ active: selectedTab === 'speakerRecognition' }">
+              <a href="#" @click="selectTab('speakerRecognition')">
+                <ph-icon name="waveform" weight="bold"></ph-icon>
+                <span>{{ $t("app_settings_modal.speaker_recognition") }}</span>
+              </a>
+            </li>
             <!-- <li :class="{ active: selectedTab === 'preferences' }">
               <a href="#" @click="selectTab('preferences')">
                 <ph-icon name="wrench" weight="bold"></ph-icon>
@@ -80,10 +86,10 @@
                 <span>{{ $t("app_settings_modal.tags") }}</span>
               </a>
             </li>
-            <li :class="{ active: selectedTab === 'speakerDiarization' }">
-              <a href="#" @click="selectTab('speakerDiarization')">
+            <li :class="{ active: selectedTab === 'speakerIdentification' }">
+              <a href="#" @click="selectTab('speakerIdentification')">
                 <ph-icon name="microphone" weight="bold"></ph-icon>
-                <span>{{ $t("app_settings_modal.speaker_diarization") }}</span>
+                <span>{{ $t("app_settings_modal.speaker_identification") }}</span>
               </a>
             </li>
             <li :class="{ active: selectedTab === 'apiTokens' }" v-if="isAdmin">
@@ -113,10 +119,12 @@
         <UserSettingsPersonal :userInfo="user" v-if="isAuthenticated" />
         <UserSettingsVisibility :userInfo="user" v-if="isAuthenticated" />
         <UserSettingsPassword :userInfo="user" v-if="isAuthenticated" />
-        <UserSettingsVoiceOptIn v-if="isAuthenticated" />
       </div>
       <div v-if="selectedTab === 'notifications'" class="app-settings__section">
         <UserSettingsNotifications :userInfo="user" v-if="isAuthenticated" />
+      </div>
+      <div v-if="selectedTab === 'speakerRecognition'" class="app-settings__section">
+        <UserSettingsVoiceOptIn v-if="isAuthenticated" />
       </div>
       <div v-if="selectedTab === 'tags'" class="app-settings__section">
         <TagManagement />
@@ -140,9 +148,9 @@
       </div>
 
       <div
-        v-if="selectedTab === 'speakerDiarization'"
+        v-if="selectedTab === 'speakerIdentification'"
         class="app-settings__section">
-        <SpeakerDiarizationSettings :organizationId="organizationId" />
+        <SpeakerIdentificationSettings :organizationId="organizationId" />
       </div>
       <div v-if="selectedTab === 'apiTokens'" class="app-settings__section">
         <ApiTokenSettings v-if="isAdmin" :organizationId="organizationId" />
@@ -174,7 +182,7 @@ import UpdateOrganizationUsers from "@/components/UpdateOrganizationUsers.vue"
 import UpdateOrganizationDeletion from "@/components/UpdateOrganizationDeletion.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import ApiTokenSettings from "@/components/ApiTokenSettings.vue"
-import SpeakerDiarizationSettings from "@/components/SpeakerDiarizationSettings.vue"
+import SpeakerIdentificationSettings from "@/components/SpeakerIdentificationSettings.vue"
 import UserSettingsVoiceOptIn from "@/components/UserSettingsVoiceOptIn.vue"
 
 export default {
@@ -194,7 +202,7 @@ export default {
     UpdateOrganizationDeletion,
     Modal,
     ApiTokenSettings,
-    SpeakerDiarizationSettings,
+    SpeakerIdentificationSettings,
     UserSettingsVoiceOptIn,
   },
   data() {

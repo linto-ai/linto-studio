@@ -46,18 +46,21 @@
       <table v-else class="collection-detail__table">
         <thead>
           <tr>
-            <th style="width: 35%">
+            <th style="width: 30%">
               {{ isOrganizationCollection
                 ? $t("speaker_diarization.user_name")
                 : $t("speaker_diarization.label_name") }}
             </th>
-            <th style="width: 15%">
+            <th style="width: 12%">
               {{ $t("speaker_diarization.signatures_count") }}
             </th>
-            <th style="width: 15%">
+            <th v-if="!isOrganizationCollection" style="width: 12%">
+              {{ $t("speaker_diarization.has_voiceprint") }}
+            </th>
+            <th style="width: 13%">
               {{ $t("speaker_diarization.total_duration") }}
             </th>
-            <th style="width: 15%">
+            <th style="width: 13%">
               {{ $t("speaker_diarization.created_at") }}
             </th>
             <th style="width: 20%">
@@ -82,9 +85,15 @@
                 @keyup.escape="cancelEdit"
                 @click.stop />
             </td>
-            <td>{{ signatureCounts[label._id] || 0 }}</td>
+            <td>{{ sampleCounts[label._id] || 0 }}</td>
+            <td v-if="!isOrganizationCollection">
+              <ph-icon
+                :name="label.hasVoiceprint ? 'check-circle' : 'x-circle'"
+                :class="label.hasVoiceprint ? 'collection-detail__voiceprint-yes' : 'collection-detail__voiceprint-no'"
+                size="sm" />
+            </td>
             <td>{{
-              formatAudioDuration(signatureDurations[label._id] || 0)
+              formatAudioDuration(sampleDurations[label._id] || 0)
             }}</td>
             <td>{{ formatDate(label.created) }}</td>
             <td>
@@ -168,17 +177,17 @@ import Button from "@/components/atoms/Button.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import { formatDateOrDash } from "@/tools/formatDate.js"
 import {
-  apiGetSpeakerLabelCollection,
+  apiGetVoiceprintCollection,
   apiGetOptedInMembers,
-} from "@/api/speakerLabelCollection.js"
+} from "@/api/voiceprintCollection.js"
 import {
   apiGetSpeakerLabels,
   apiCreateSpeakerLabel,
   apiUpdateSpeakerLabel,
   apiDeleteSpeakerLabel,
 } from "@/api/speakerLabel.js"
-import { apiGetVoiceSignatures } from "@/api/voiceSignature.js"
-import { COLLECTION_TYPE } from "@/tools/speakerDiarizationConstants.js"
+import { apiGetVoiceSamples } from "@/api/voiceSample.js"
+import { COLLECTION_TYPE } from "@/tools/voiceprintConstants.js"
 import { formatCompactDuration } from "@/tools/formatDuration.js"
 
 export default {
@@ -192,8 +201,8 @@ export default {
     return {
       collection: null,
       labels: [],
-      signatureCounts: {},
-      signatureDurations: {},
+      sampleCounts: {},
+      sampleDurations: {},
       loading: false,
       showCreateLabelModal: false,
       showDeleteModal: false,
@@ -215,19 +224,17 @@ export default {
     async fetchData() {
       this.loading = true
       try {
-        const collection = await apiGetSpeakerLabelCollection(
+        const collection = await apiGetVoiceprintCollection(
           this.organizationId,
           this.collectionId,
         )
         this.collection = collection
 
         if (collection && collection.type === COLLECTION_TYPE.ORGANIZATION) {
-          // For organization collections, fetch opted-in members
           const members = await apiGetOptedInMembers(
             this.organizationId,
             this.collectionId,
           )
-          // Map members to label-like objects for the table
           this.labels = members.map((m) => ({
             _id: m.userId,
             name: m.name,
@@ -235,11 +242,10 @@ export default {
             userId: m.userId,
           }))
           for (const m of members) {
-            this.$set(this.signatureCounts, m.userId, m.signaturesCount)
-            this.$set(this.signatureDurations, m.userId, m.totalDuration)
+            this.$set(this.sampleCounts, m.userId, m.samplesCount)
+            this.$set(this.sampleDurations, m.userId, m.totalDuration)
           }
         } else {
-          // Custom collection: fetch labels + signature stats
           const labels = await apiGetSpeakerLabels(
             this.organizationId,
             this.collectionId,
@@ -249,20 +255,20 @@ export default {
           await Promise.all(
             this.labels.map(async (label) => {
               try {
-                const sigs = await apiGetVoiceSignatures(
+                const samples = await apiGetVoiceSamples(
                   this.organizationId,
                   this.collectionId,
                   label._id,
                 )
-                this.$set(this.signatureCounts, label._id, sigs.length)
-                const totalDuration = sigs.reduce(
+                this.$set(this.sampleCounts, label._id, samples.length)
+                const totalDuration = samples.reduce(
                   (sum, s) => sum + (s.audioDuration || 0),
                   0,
                 )
-                this.$set(this.signatureDurations, label._id, totalDuration)
+                this.$set(this.sampleDurations, label._id, totalDuration)
               } catch {
-                this.$set(this.signatureCounts, label._id, 0)
-                this.$set(this.signatureDurations, label._id, 0)
+                this.$set(this.sampleCounts, label._id, 0)
+                this.$set(this.sampleDurations, label._id, 0)
               }
             }),
           )
@@ -490,6 +496,14 @@ export default {
 
   &__row {
     cursor: pointer;
+  }
+
+  &__voiceprint-yes {
+    color: var(--green-chart, #4caf50);
+  }
+
+  &__voiceprint-no {
+    color: var(--neutral-40, #999);
   }
 
   &__edit-input {

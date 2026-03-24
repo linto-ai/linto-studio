@@ -1,11 +1,11 @@
 const {
-  getSpeakerLabelCollections,
-  getSpeakerLabelCollection,
-  createSpeakerLabelCollection,
-  updateSpeakerLabelCollection,
-  deleteSpeakerLabelCollection,
+  getVoiceprintCollections,
+  getVoiceprintCollection,
+  createVoiceprintCollection,
+  updateVoiceprintCollection,
+  deleteVoiceprintCollection,
 } = require(
-  `${process.cwd()}/components/WebServer/routecontrollers/organization/speakerLabelCollection.js`,
+  `${process.cwd()}/components/WebServer/routecontrollers/organization/voiceprintCollection.js`,
 )
 
 module.exports = (webserver) => {
@@ -13,35 +13,35 @@ module.exports = (webserver) => {
     {
       path: "/",
       method: "get",
-      controller: getSpeakerLabelCollections,
+      controller: getVoiceprintCollections,
       requireAuth: true,
       requireOrganizationMemberAccess: true,
     },
     {
       path: "/",
       method: "post",
-      controller: createSpeakerLabelCollection,
+      controller: createVoiceprintCollection,
       requireAuth: true,
       requireOrganizationMaintainerAccess: true,
     },
     {
       path: "/:collectionId",
       method: "get",
-      controller: getSpeakerLabelCollection,
+      controller: getVoiceprintCollection,
       requireAuth: true,
       requireOrganizationMemberAccess: true,
     },
     {
       path: "/:collectionId",
       method: "patch",
-      controller: updateSpeakerLabelCollection,
+      controller: updateVoiceprintCollection,
       requireAuth: true,
       requireOrganizationMaintainerAccess: true,
     },
     {
       path: "/:collectionId",
       method: "delete",
-      controller: deleteSpeakerLabelCollection,
+      controller: deleteVoiceprintCollection,
       requireAuth: true,
       requireOrganizationMaintainerAccess: true,
     },

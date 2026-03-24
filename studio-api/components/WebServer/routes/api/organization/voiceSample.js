@@ -1,11 +1,11 @@
 const {
-  getVoiceSignatures,
-  getVoiceSignature,
-  getVoiceSignatureAudio,
-  createVoiceSignature,
-  deleteVoiceSignature,
+  getVoiceSamples,
+  getVoiceSample,
+  getVoiceSampleAudio,
+  createVoiceSample,
+  deleteVoiceSample,
 } = require(
-  `${process.cwd()}/components/WebServer/routecontrollers/organization/voiceSignature.js`,
+  `${process.cwd()}/components/WebServer/routecontrollers/organization/voiceSample.js`,
 )
 
 module.exports = (webserver) => {
@@ -13,35 +13,35 @@ module.exports = (webserver) => {
     {
       path: "/",
       method: "get",
-      controller: getVoiceSignatures,
+      controller: getVoiceSamples,
       requireAuth: true,
       requireOrganizationMemberAccess: true,
     },
     {
       path: "/",
       method: "post",
-      controller: createVoiceSignature,
+      controller: createVoiceSample,
       requireAuth: true,
       requireOrganizationMaintainerAccess: true,
     },
     {
-      path: "/:voiceSignatureId",
+      path: "/:voiceSampleId",
       method: "get",
-      controller: getVoiceSignature,
+      controller: getVoiceSample,
       requireAuth: true,
       requireOrganizationMemberAccess: true,
     },
     {
-      path: "/:voiceSignatureId/audio",
+      path: "/:voiceSampleId/audio",
       method: "get",
-      controller: getVoiceSignatureAudio,
+      controller: getVoiceSampleAudio,
       requireAuth: true,
       requireOrganizationMemberAccess: true,
     },
     {
-      path: "/:voiceSignatureId",
+      path: "/:voiceSampleId",
       method: "delete",
-      controller: deleteVoiceSignature,
+      controller: deleteVoiceSample,
       requireAuth: true,
       requireOrganizationMaintainerAccess: true,
     },

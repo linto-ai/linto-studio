@@ -4,25 +4,25 @@ const {
   SpeakerLabelError,
   SpeakerLabelNotFound,
   SpeakerLabelConflict,
-  SpeakerLabelCollectionNotFound,
+  VoiceprintCollectionNotFound,
 } = require(
-  `${process.cwd()}/components/WebServer/error/exception/speakerDiarization`,
+  `${process.cwd()}/components/WebServer/error/exception/speakerIdentification`,
 )
 
 const { verifyOwnership, sanitizeName } = require(
-  `${process.cwd()}/components/WebServer/routecontrollers/organization/speakerLabelCollection`,
+  `${process.cwd()}/components/WebServer/routecontrollers/organization/voiceprintCollection`,
 )
-const { cascadeDeleteSignatureFiles } = require(
+const { cascadeDeleteSampleFiles } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 
 async function getSpeakerLabels(req, res, next) {
   try {
     await verifyOwnership(
-      model.speakerLabelCollections,
+      model.voiceprintCollections,
       req.params.collectionId,
       req.params.organizationId,
-      SpeakerLabelCollectionNotFound,
+      VoiceprintCollectionNotFound,
     )
 
     const labels = await model.speakerLabels.getByCollectionId(
@@ -59,13 +59,12 @@ async function createSpeakerLabel(req, res, next) {
     }
 
     await verifyOwnership(
-      model.speakerLabelCollections,
+      model.voiceprintCollections,
       req.params.collectionId,
       req.params.organizationId,
-      SpeakerLabelCollectionNotFound,
+      VoiceprintCollectionNotFound,
     )
 
-    // Check for duplicate name in this collection
     const existing = await model.speakerLabels.getByCollectionIdAndName(
       req.params.collectionId,
       name,
@@ -116,7 +115,6 @@ async function updateSpeakerLabel(req, res, next) {
       if (!updatedName) {
         throw new SpeakerLabelError("name is required (max 200 chars)")
       }
-      // Check for duplicate name in the same collection
       const existing = await model.speakerLabels.getByCollectionIdAndName(
         doc.collectionId.toString(),
         updatedName,
@@ -157,15 +155,13 @@ async function deleteSpeakerLabel(req, res, next) {
       throw new SpeakerLabelNotFound()
     }
 
-    // Cascade: delete voice signatures + audio files for this label
-    const signatures = await model.voiceSignatures.getBySpeakerLabelId(
+    const samples = await model.voiceSamples.getBySpeakerLabelId(
       req.params.labelId,
     )
-    cascadeDeleteSignatureFiles(signatures)
+    cascadeDeleteSampleFiles(samples)
 
-    // Delete voice signature records and the label in parallel
     await Promise.all([
-      model.voiceSignatures.deleteAllFromSpeakerLabel(req.params.labelId),
+      model.voiceSamples.deleteAllFromSpeakerLabel(req.params.labelId),
       model.speakerLabels.delete(req.params.labelId),
     ])
 

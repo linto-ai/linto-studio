@@ -1,9 +1,12 @@
 const {
-  createUserVoiceSignature,
-  getUserVoiceSignatures,
-  getUserVoiceSignatureAudio,
-  deleteUserVoiceSignature,
-  deleteAllUserVoiceSignatures,
+  createUserVoiceSample,
+  getUserVoiceSamples,
+  getUserVoiceSampleAudio,
+  deleteUserVoiceSample,
+  deleteAllUserVoiceSamples,
+  updateStorageMode,
+  getUserVoiceOrganizations,
+  updateVoiceOrganization,
 } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/users/userVoiceOptIn.js`,
 )
@@ -11,33 +14,51 @@ const {
 module.exports = (webserver) => {
   return [
     {
-      path: "/voice-signatures",
+      path: "/samples",
       method: "get",
-      controller: getUserVoiceSignatures,
+      controller: getUserVoiceSamples,
       requireAuth: true,
     },
     {
-      path: "/voice-signatures",
+      path: "/samples",
       method: "post",
-      controller: createUserVoiceSignature,
+      controller: createUserVoiceSample,
       requireAuth: true,
     },
     {
-      path: "/voice-signatures",
+      path: "/samples",
       method: "delete",
-      controller: deleteAllUserVoiceSignatures,
+      controller: deleteAllUserVoiceSamples,
       requireAuth: true,
     },
     {
-      path: "/voice-signatures/:id/audio",
+      path: "/samples/:id/audio",
       method: "get",
-      controller: getUserVoiceSignatureAudio,
+      controller: getUserVoiceSampleAudio,
       requireAuth: true,
     },
     {
-      path: "/voice-signatures/:id",
+      path: "/samples/:id",
       method: "delete",
-      controller: deleteUserVoiceSignature,
+      controller: deleteUserVoiceSample,
+      requireAuth: true,
+    },
+    {
+      path: "/storage-mode",
+      method: "patch",
+      controller: updateStorageMode,
+      requireAuth: true,
+    },
+    {
+      path: "/organizations",
+      method: "get",
+      controller: getUserVoiceOrganizations,
+      requireAuth: true,
+    },
+    {
+      path: "/organizations/:orgId",
+      method: "patch",
+      controller: updateVoiceOrganization,
       requireAuth: true,
     },
   ]

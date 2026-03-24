@@ -1,21 +1,21 @@
 const MongoModel = require(`../model`)
 const moment = require("moment")
 const {
-  VOICE_SIGNATURE_TYPE,
+  VOICE_SAMPLE_TYPE,
 } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 
-class VoiceSignatureModel extends MongoModel {
+class VoiceSampleModel extends MongoModel {
   constructor() {
-    super("voiceSignatures")
+    super("voiceSamples")
   }
 
   async create(payload) {
     try {
       const dateTime = moment().format()
 
-      const type = payload.type || VOICE_SIGNATURE_TYPE.LABEL
-      if (!Object.values(VOICE_SIGNATURE_TYPE).includes(type)) {
-        throw new Error(`Invalid voice signature type: ${type}`)
+      const type = payload.type || VOICE_SAMPLE_TYPE.LABEL
+      if (!Object.values(VOICE_SAMPLE_TYPE).includes(type)) {
+        throw new Error(`Invalid voice sample type: ${type}`)
       }
 
       const doc = {
@@ -112,7 +112,7 @@ class VoiceSignatureModel extends MongoModel {
   async getByUserId(userId) {
     try {
       const query = {
-        type: VOICE_SIGNATURE_TYPE.USER,
+        type: VOICE_SAMPLE_TYPE.USER,
         userId: userId,
       }
       return await this.mongoRequest(query, {
@@ -127,7 +127,7 @@ class VoiceSignatureModel extends MongoModel {
   async deleteAllFromUser(userId) {
     try {
       const query = {
-        type: VOICE_SIGNATURE_TYPE.USER,
+        type: VOICE_SAMPLE_TYPE.USER,
         userId: userId,
       }
       return await this.mongoDeleteMany(query)
@@ -188,4 +188,4 @@ class VoiceSignatureModel extends MongoModel {
   }
 }
 
-module.exports = new VoiceSignatureModel()
+module.exports = new VoiceSampleModel()

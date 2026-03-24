@@ -3,11 +3,6 @@
     <h3>{{ $t("speaker_diarization.optin_title") }}</h3>
     <hr />
 
-    <div class="voice-optin__warning">
-      <ph-icon name="warning" size="md" />
-      <p>{{ $t("speaker_diarization.gdpr_warning") }}</p>
-    </div>
-
     <p class="voice-optin__description">
       {{ $t("speaker_diarization.optin_description") }}
     </p>
@@ -33,13 +28,14 @@
     </div>
 
     <template v-else>
+      <!-- Voice samples section -->
       <div class="voice-optin__recordings">
         <div class="flex row gap-medium align-center">
           <h4 class="flex1">
             {{ $t("speaker_diarization.my_recordings") }}
           </h4>
           <Button
-            v-if="optedIn"
+            v-if="hasSamples"
             icon="trash"
             variant="secondary"
             intent="destructive"
@@ -55,192 +51,234 @@
         </div>
 
         <div
-          v-if="signatures.length === 0"
+          v-if="!hasSamples"
           class="voice-optin__empty">
-          <p>{{ $t("speaker_diarization.signatures_empty") }}</p>
+          <p>{{ $t("speaker_diarization.optin_no_samples") }}</p>
         </div>
 
-          <div v-else class="voice-optin__sig-list">
-            <div
-              v-for="(sig, index) in signatures"
-              :key="sig._id"
-              class="voice-optin__sig-item">
-              <span>{{ $t("speaker_diarization.signature_number", { n: index + 1 }) }}</span>
-              <span class="voice-optin__sig-duration">{{
-                formatAudioDuration(sig.audioDuration)
-              }}</span>
-              <span class="voice-optin__sig-date">{{
-                formatDate(sig.created)
-              }}</span>
-              <div class="flex gap-small">
-                <Button
-                  :icon="
-                    playingId === sig._id ? 'stop-circle' : 'play-circle'
-                  "
-                  variant="tertiary"
-                  iconWeight="regular"
-                  @click="toggleAudio(sig)" />
-                <Button
-                  icon="trash"
-                  variant="secondary"
-                  intent="destructive"
-                  iconWeight="regular"
-                  @click="confirmDelete(sig)" />
-              </div>
+        <div v-else class="voice-optin__sig-list">
+          <div
+            v-for="(sig, index) in signatures"
+            :key="sig._id"
+            class="voice-optin__sig-item">
+            <span>{{ $t("speaker_diarization.signature_number", { n: index + 1 }) }}</span>
+            <span class="voice-optin__sig-duration">{{
+              formatAudioDuration(sig.audioDuration)
+            }}</span>
+            <span class="voice-optin__sig-date">{{
+              formatDate(sig.created)
+            }}</span>
+            <div class="flex gap-small">
+              <Button
+                :icon="
+                  playingId === sig._id ? 'stop-circle' : 'play-circle'
+                "
+                variant="tertiary"
+                iconWeight="regular"
+                @click="toggleAudio(sig)" />
+              <Button
+                icon="trash"
+                variant="secondary"
+                intent="destructive"
+                iconWeight="regular"
+                @click="confirmDelete(sig)" />
             </div>
           </div>
+        </div>
 
         <audio
           ref="audioPlayer"
           class="voice-optin__hidden-audio"
           @ended="onAudioEnded"></audio>
-
-        <!-- Record modal for opt-in (keeps microphone) -->
-        <Modal
-          v-model="showRecordModal"
-          :title="$t('speaker_diarization.record_modal_title')"
-          :textActionApply="$t('speaker_diarization.upload_save')"
-          :disabledActionApply="!hasAudio || submitting"
-          :loading="submitting"
-          size="md"
-          @submit="submitRecording">
-          <div class="voice-optin__record">
-            <Tabs
-              :tabs="modeTabs"
-              v-model="mode"
-              variant="inline"
-              :disabled="recording"
-              @input="switchMode" />
-
-            <!-- Record mode -->
-            <template v-if="mode === 'record'">
-              <div class="voice-optin__text-prompt">
-                <label>{{
-                  $t("speaker_diarization.text_to_read_label")
-                }}</label>
-                <div class="voice-optin__text-to-read">
-                  <p>{{ promptText }}</p>
-                </div>
-                <button
-                  class="voice-optin__refresh-btn"
-                  @click="shufflePrompt">
-                  <ph-icon name="arrows-clockwise" size="sm" />
-                  {{ $t("speaker_diarization.change_text") }}
-                </button>
-              </div>
-
-              <div class="voice-optin__controls">
-                <div class="voice-optin__status">
-                  <span
-                    v-if="recording"
-                    class="voice-optin__recording-indicator"></span>
-                  <span v-if="recording">{{
-                    $t("speaker_diarization.recording")
-                  }}</span>
-                  <span v-else-if="audioBlob">{{
-                    $t("speaker_diarization.recording_complete")
-                  }}</span>
-                  <span
-                    v-if="recording || audioBlob"
-                    class="voice-optin__timer"
-                    >{{ formattedTime }}</span
-                  >
-                </div>
-
-                <div class="voice-optin__buttons">
-                  <Button
-                    v-if="!recording && !audioBlob"
-                    @click="startRecording"
-                    variant="primary"
-                    size="sm"
-                    icon="microphone"
-                    :label="$t('speaker_diarization.start_recording')" />
-
-                  <Button
-                    v-if="recording"
-                    @click="stopRecording"
-                    variant="secondary"
-                    intent="destructive"
-                    size="sm"
-                    icon="stop"
-                    :label="$t('speaker_diarization.stop_recording')" />
-
-                  <template v-if="audioBlob && !recording">
-                    <audio
-                      ref="recordPreview"
-                      :src="audioUrl"
-                      controls></audio>
-                    <Button
-                      @click="resetAudio"
-                      variant="secondary"
-                      size="sm"
-                      icon="arrow-counter-clockwise"
-                      :label="$t('speaker_diarization.re_record')" />
-                  </template>
-                </div>
-              </div>
-            </template>
-
-            <!-- Upload mode -->
-            <template v-if="mode === 'upload'">
-              <div v-if="uploadedFile" class="voice-optin__uploaded">
-                <div class="voice-optin__file-info">
-                  <ph-icon name="file-audio" />
-                  <span>{{ uploadedFile.name }}</span>
-                  <Button
-                    variant="tertiary"
-                    icon="x"
-                    iconWeight="regular"
-                    @click="resetAudio" />
-                </div>
-                <audio
-                  ref="uploadAudioPlayer"
-                  :src="audioUrl"
-                  controls></audio>
-              </div>
-              <Droparea
-                v-else
-                :accepts="['audio/*']"
-                @drop="handleDropareaFiles"
-                @error="handleDropareaError">
-                <ph-icon name="file-audio" size="xl" />
-                <p>{{ $t("speaker_diarization.drop_or_browse") }}</p>
-              </Droparea>
-            </template>
-          </div>
-        </Modal>
-
-        <!-- Delete confirmation -->
-        <Modal
-          v-model="showDeleteModal"
-          :title="$t('speaker_diarization.delete_signature_title')"
-          @submit="deleteSignature">
-          <p>{{ $t("speaker_diarization.delete_signature_confirm") }}</p>
-        </Modal>
-
-        <Modal
-          v-model="showDeleteAllModal"
-          :title="$t('speaker_diarization.delete_all_signatures_title')"
-          @submit="deleteAllSignatures">
-          <p>{{ $t("speaker_diarization.delete_all_signatures_confirm") }}</p>
-        </Modal>
       </div>
+
+      <!-- Authorized organizations section -->
+      <div class="voice-optin__orgs">
+        <h4>{{ $t("speaker_diarization.optin_orgs_title") }}</h4>
+        <p class="voice-optin__orgs-desc">
+          {{ $t("speaker_diarization.optin_orgs_description") }}
+        </p>
+
+        <div v-if="!hasSamples" class="voice-optin__orgs-disabled">
+          <ph-icon name="info" size="sm" />
+          <span>{{ $t("speaker_diarization.optin_orgs_no_samples") }}</span>
+        </div>
+
+        <div v-else-if="organizations.length === 0" class="voice-optin__orgs-disabled">
+          <ph-icon name="info" size="sm" />
+          <span>{{ $t("speaker_diarization.optin_orgs_empty") }}</span>
+        </div>
+
+        <table v-else class="voice-optin__orgs-table">
+          <thead>
+            <tr>
+              <th>{{ $t("speaker_diarization.optin_orgs_col_name") }}</th>
+              <th style="width: 100px; text-align: center">{{ $t("speaker_diarization.optin_orgs_col_status") }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="org in organizations" :key="org.organizationId">
+              <td>{{ org.organizationName }}</td>
+              <td class="voice-optin__orgs-switch-cell">
+                <SwitchInput
+                  :value="org.voiceprintEnabled"
+                  :disabled="togglingOrgId === org.organizationId"
+                  :id="'org-voice-' + org.organizationId"
+                  @input="toggleOrg(org, $event)" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Record modal -->
+      <Modal
+        v-model="showRecordModal"
+        :title="$t('speaker_diarization.record_modal_title')"
+        :textActionApply="$t('speaker_diarization.upload_save')"
+        :disabledActionApply="!hasAudio || submitting"
+        :loading="submitting"
+        size="md"
+        @submit="submitRecording">
+        <div class="voice-optin__record">
+          <Tabs
+            :tabs="modeTabs"
+            v-model="mode"
+            variant="inline"
+            :disabled="recording"
+            @input="switchMode" />
+
+          <!-- Record mode -->
+          <template v-if="mode === 'record'">
+            <div class="voice-optin__text-prompt">
+              <label>{{
+                $t("speaker_diarization.text_to_read_label")
+              }}</label>
+              <div class="voice-optin__text-to-read">
+                <p>{{ promptText }}</p>
+              </div>
+              <button
+                class="voice-optin__refresh-btn"
+                @click="shufflePrompt">
+                <ph-icon name="arrows-clockwise" size="sm" />
+                {{ $t("speaker_diarization.change_text") }}
+              </button>
+            </div>
+
+            <div class="voice-optin__controls">
+              <div class="voice-optin__status">
+                <span
+                  v-if="recording"
+                  class="voice-optin__recording-indicator"></span>
+                <span v-if="recording">{{
+                  $t("speaker_diarization.recording")
+                }}</span>
+                <span v-else-if="audioBlob">{{
+                  $t("speaker_diarization.recording_complete")
+                }}</span>
+                <span
+                  v-if="recording || audioBlob"
+                  class="voice-optin__timer"
+                  >{{ formattedTime }}</span
+                >
+              </div>
+
+              <div class="voice-optin__buttons">
+                <Button
+                  v-if="!recording && !audioBlob"
+                  @click="startRecording"
+                  variant="primary"
+                  size="sm"
+                  icon="microphone"
+                  :label="$t('speaker_diarization.start_recording')" />
+
+                <Button
+                  v-if="recording"
+                  @click="stopRecording"
+                  variant="secondary"
+                  intent="destructive"
+                  size="sm"
+                  icon="stop"
+                  :label="$t('speaker_diarization.stop_recording')" />
+
+                <template v-if="audioBlob && !recording">
+                  <audio
+                    ref="recordPreview"
+                    :src="audioUrl"
+                    controls></audio>
+                  <Button
+                    @click="resetAudio"
+                    variant="secondary"
+                    size="sm"
+                    icon="arrow-counter-clockwise"
+                    :label="$t('speaker_diarization.re_record')" />
+                </template>
+              </div>
+            </div>
+          </template>
+
+          <!-- Upload mode -->
+          <template v-if="mode === 'upload'">
+            <div v-if="uploadedFile" class="voice-optin__uploaded">
+              <div class="voice-optin__file-info">
+                <ph-icon name="file-audio" />
+                <span>{{ uploadedFile.name }}</span>
+                <Button
+                  variant="tertiary"
+                  icon="x"
+                  iconWeight="regular"
+                  @click="resetAudio" />
+              </div>
+              <audio
+                ref="uploadAudioPlayer"
+                :src="audioUrl"
+                controls></audio>
+            </div>
+            <Droparea
+              v-else
+              :accepts="['audio/*']"
+              @drop="handleDropareaFiles"
+              @error="handleDropareaError">
+              <ph-icon name="file-audio" size="xl" />
+              <p>{{ $t("speaker_diarization.drop_or_browse") }}</p>
+            </Droparea>
+          </template>
+        </div>
+      </Modal>
+
+      <!-- Delete confirmation -->
+      <Modal
+        v-model="showDeleteModal"
+        :title="$t('speaker_diarization.delete_signature_title')"
+        @submit="deleteSignature">
+        <p>{{ $t("speaker_diarization.delete_signature_confirm") }}</p>
+      </Modal>
+
+      <Modal
+        v-model="showDeleteAllModal"
+        :title="$t('speaker_diarization.delete_all_signatures_title')"
+        @submit="deleteAllSignatures">
+        <p>{{ $t("speaker_diarization.delete_all_signatures_confirm") }}</p>
+      </Modal>
     </template>
   </div>
 </template>
 
 <script>
 import Button from "@/components/atoms/Button.vue"
+import SwitchInput from "@/components/atoms/SwitchInput.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import Tabs from "@/components/molecules/Tabs.vue"
 import Droparea from "@/components/molecules/Droparea.vue"
 import { formatDateOrDash } from "@/tools/formatDate.js"
 import {
-  apiGetUserVoiceSignatures,
-  apiCreateUserVoiceSignature,
-  apiGetUserVoiceSignatureAudio,
-  apiDeleteUserVoiceSignature,
-  apiDeleteAllUserVoiceSignatures,
+  apiGetUserVoiceSamples,
+  apiCreateUserVoiceSample,
+  apiGetUserVoiceSampleAudio,
+  apiDeleteUserVoiceSample,
+  apiDeleteAllUserVoiceSamples,
+  apiGetUserVoiceOrganizations,
+  apiUpdateVoiceOrganization,
 } from "@/api/userVoice.js"
 import { formatDuration, formatCompactDuration } from "@/tools/formatDuration.js"
 import { audioDuration } from "@/tools/audioDuration.js"
@@ -252,13 +290,15 @@ import { voiceSignaturePlaybackMixin } from "@/mixins/voiceSignaturePlayback.js"
 
 export default {
   name: "UserSettingsVoiceOptIn",
-  components: { Button, Modal, Tabs, Droparea },
+  components: { Button, SwitchInput, Modal, Tabs, Droparea },
   mixins: [voiceSignaturePlaybackMixin],
   props: {},
   data() {
     return {
       loading: false,
       signatures: [],
+      organizations: [],
+      togglingOrgId: null,
       showRecordModal: false,
       showDeleteAllModal: false,
       // Recording state
@@ -278,7 +318,7 @@ export default {
     }
   },
   computed: {
-    optedIn() {
+    hasSamples() {
       return this.signatures.length > 0
     },
     modeTabs() {
@@ -310,13 +350,18 @@ export default {
     },
   },
   mounted() {
-    this.fetchStatus()
+    this.fetchData()
   },
   methods: {
-    async fetchStatus() {
+    async fetchData() {
       this.loading = true
       try {
-        this.signatures = await apiGetUserVoiceSignatures()
+        const [samples, orgs] = await Promise.all([
+          apiGetUserVoiceSamples(),
+          apiGetUserVoiceOrganizations(),
+        ])
+        this.signatures = samples
+        this.organizations = orgs
       } catch (err) {
         // silent
       } finally {
@@ -325,8 +370,9 @@ export default {
     },
     async deleteAllSignatures() {
       try {
-        await apiDeleteAllUserVoiceSignatures()
+        await apiDeleteAllUserVoiceSamples()
         this.signatures = []
+        this.organizations.forEach((o) => { o.voiceprintEnabled = false })
         this.$store.dispatch("system/addNotification", {
           message: this.$t("speaker_diarization.optout_success"),
           type: "success",
@@ -340,17 +386,35 @@ export default {
         })
       }
     },
+    async toggleOrg(org, enabled) {
+      if (this.togglingOrgId) return
+      this.togglingOrgId = org.organizationId
+      const previous = org.voiceprintEnabled
+      org.voiceprintEnabled = enabled
+      try {
+        await apiUpdateVoiceOrganization(org.organizationId, enabled)
+      } catch (err) {
+        org.voiceprintEnabled = previous
+        this.$store.dispatch("system/addNotification", {
+          message: err.message || this.$t("speaker_diarization.optin_error"),
+          type: "error",
+          timeout: 5000,
+        })
+      } finally {
+        this.togglingOrgId = null
+      }
+    },
     formatDate: formatDateOrDash,
     formatAudioDuration: formatCompactDuration,
 
     // Mixin contract: provide fetchAudioBlob and deleteSignatureApi
     fetchAudioBlob(signatureId) {
-      return apiGetUserVoiceSignatureAudio(signatureId)
+      return apiGetUserVoiceSampleAudio(signatureId)
     },
     deleteSignatureApi(signatureId) {
-      return apiDeleteUserVoiceSignature(signatureId)
+      return apiDeleteUserVoiceSample(signatureId)
     },
-    // Override mixin: auto-disable opt-in when last signature is deleted
+    // Override mixin: update state when a signature is deleted
     async deleteSignature() {
       if (!this.deletingSignature) return
       try {
@@ -364,9 +428,6 @@ export default {
             type: "success",
             timeout: 5000,
           })
-          if (this.signatures.length === 0) {
-            this.optedIn = false
-          }
         }
       } catch (err) {
         this.$store.dispatch("system/addNotification", {
@@ -497,7 +558,7 @@ export default {
         const extension = getExtensionForMimeType(this.audioBlob.type)
         audioFile = new File(
           [this.audioBlob],
-          `voice-signature.${extension}`,
+          `voice-sample.${extension}`,
           { type: this.audioBlob.type },
         )
         duration = this.recordingTime
@@ -507,7 +568,7 @@ export default {
 
       this.submitting = true
       try {
-        await apiCreateUserVoiceSignature(audioFile, duration)
+        await apiCreateUserVoiceSample(audioFile, duration)
 
         this.$store.dispatch("system/addNotification", {
           message: this.$t("speaker_diarization.upload_success", { count: 1 }),
@@ -517,7 +578,7 @@ export default {
 
         this.resetRecordModal()
         this.showRecordModal = false
-        this.signatures = await apiGetUserVoiceSignatures()
+        this.signatures = await apiGetUserVoiceSamples()
       } catch (err) {
         this.$store.dispatch("system/addNotification", {
           message:
@@ -540,23 +601,6 @@ export default {
 <style lang="scss" scoped>
 .voice-optin {
   margin-top: 1.5rem;
-
-  &__warning {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.5rem;
-    padding: 0.75rem 1rem;
-    margin: 0.5rem 0 1rem;
-    background: var(--orange-soft, #fff3e0);
-    border: 1px solid var(--orange-chart, #ff9800);
-    border-radius: 6px;
-    font-size: 13px;
-    color: var(--text-primary);
-
-    p {
-      margin: 0;
-    }
-  }
 
   &__description {
     color: var(--text-secondary);
@@ -649,6 +693,109 @@ export default {
 
   &__hidden-audio {
     display: none;
+  }
+
+  // Organizations section
+  &__orgs {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--neutral-20);
+
+    h4 {
+      margin: 0 0 0.25rem;
+      font-size: 14px;
+    }
+  }
+
+  &__orgs-desc {
+    color: var(--text-secondary);
+    font-size: 13px;
+    margin: 0 0 0.75rem;
+  }
+
+  &__orgs-disabled {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--neutral-10);
+    border: 1px solid var(--neutral-20);
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  &__orgs-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+
+    th,
+    td {
+      padding: 0.6rem 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--neutral-20);
+      vertical-align: middle;
+    }
+
+    th {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      padding: 0.4rem 0.75rem;
+    }
+
+    td {
+      font-size: 14px;
+    }
+
+    tbody tr:hover {
+      background: var(--neutral-10);
+    }
+  }
+
+  &__orgs-switch-cell {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+  }
+
+  &__orgs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__org-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--neutral-20);
+    border-radius: 6px;
+    font-size: 14px;
+  }
+
+  &__org-name {
+    font-weight: 500;
+  }
+
+  &__org-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+
+    input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+  }
+
+  &__org-toggle-label {
+    font-size: 12px;
+    color: var(--text-secondary);
   }
 
   // Record modal styles

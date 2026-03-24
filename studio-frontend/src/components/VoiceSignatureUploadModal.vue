@@ -45,7 +45,7 @@
 import Modal from "@/components/molecules/Modal.vue"
 import Button from "@/components/atoms/Button.vue"
 import Droparea from "@/components/molecules/Droparea.vue"
-import { apiCreateVoiceSignature } from "@/api/voiceSignature.js"
+import { apiCreateVoiceSample } from "@/api/voiceSample.js"
 import { formatCompactDuration } from "@/tools/formatDuration.js"
 import { audioDuration } from "@/tools/audioDuration.js"
 
@@ -118,7 +118,7 @@ export default {
             const duration = entry.duration
               ? Math.round(entry.duration)
               : undefined
-            return apiCreateVoiceSignature(
+            return apiCreateVoiceSample(
               this.organizationId,
               this.collectionId,
               this.labelId,

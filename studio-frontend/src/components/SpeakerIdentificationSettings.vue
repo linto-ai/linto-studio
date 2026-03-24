@@ -70,12 +70,12 @@
               {{ collection.name }}
             </span>
             <span
-              v-if="collection.description || collection.type === 'organization'"
+              v-if="collection.description || isOrganizationType(collection)"
               class="speaker-diarization__card-desc">
               {{ collection.description || $t("speaker_diarization.auto_managed") }}
             </span>
             <div class="speaker-diarization__card-actions" @click.stop>
-              <template v-if="collection.type !== 'organization'">
+              <template v-if="!isOrganizationType(collection)">
                 <Button
                   icon="pencil-simple"
                   variant="tertiary"
@@ -98,7 +98,7 @@
             </span>
             <span>
               <ph-icon name="waveform" size="sm" />
-              {{ collectionStats[collection._id]?.signatures || 0 }}
+              {{ collectionStats[collection._id]?.samples || 0 }}
               {{ $t("speaker_diarization.samples") }}
             </span>
           </div>
@@ -139,6 +139,13 @@
           <FormRadio
             :field="storageModeField"
             @input="newCollection.storageMode = $event" />
+
+          <p
+            v-if="isEmbeddingsMode"
+            class="speaker-diarization__irreversible-warning">
+            <ph-icon name="warning" size="sm" />
+            {{ $t("speaker_diarization.storage_mode_warning_irreversible") }}
+          </p>
         </div>
       </Modal>
 
@@ -187,19 +194,19 @@ import FormRadio from "@/components/molecules/FormRadio.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import SpeakerLabelCollectionDetail from "@/components/SpeakerLabelCollectionDetail.vue"
 import SpeakerLabelDetail from "@/components/SpeakerLabelDetail.vue"
-import { COLLECTION_TYPE } from "@/tools/speakerDiarizationConstants.js"
+import { COLLECTION_TYPE, STORAGE_MODE } from "@/tools/voiceprintConstants.js"
 import {
-  apiGetSpeakerLabelCollections,
-  apiCreateSpeakerLabelCollection,
-  apiUpdateSpeakerLabelCollection,
-  apiDeleteSpeakerLabelCollection,
+  apiGetVoiceprintCollections,
+  apiCreateVoiceprintCollection,
+  apiUpdateVoiceprintCollection,
+  apiDeleteVoiceprintCollection,
   apiGetOptedInMembers,
-} from "@/api/speakerLabelCollection.js"
+} from "@/api/voiceprintCollection.js"
 import { apiGetSpeakerLabels } from "@/api/speakerLabel.js"
-import { apiGetVoiceSignatures } from "@/api/voiceSignature.js"
+import { apiGetVoiceSamples } from "@/api/voiceSample.js"
 
 export default {
-  name: "SpeakerDiarizationSettings",
+  name: "SpeakerIdentificationSettings",
   components: {
     Button,
     FormRadio,
@@ -241,6 +248,9 @@ export default {
         ],
       }
     },
+    isEmbeddingsMode() {
+      return this.newCollection.storageMode === STORAGE_MODE.EMBEDDINGS
+    },
     sortedCollections() {
       return [...this.collections].sort((a, b) => {
         if (a.type === COLLECTION_TYPE.ORGANIZATION && b.type !== COLLECTION_TYPE.ORGANIZATION) return -1
@@ -262,13 +272,16 @@ export default {
     this.fetchCollections()
   },
   methods: {
+    isOrganizationType(collection) {
+      return collection.type === COLLECTION_TYPE.ORGANIZATION
+    },
     async fetchCollections() {
       this.loading = true
       try {
-        this.collections = await apiGetSpeakerLabelCollections(
+        this.collections = await apiGetVoiceprintCollections(
           this.organizationId,
         )
-        // Fetch stats (speakers + signatures) for all collections in parallel
+        // Fetch stats (speakers + samples) for all collections in parallel
         await Promise.all(
           this.collections.map(async (col) => {
             try {
@@ -277,29 +290,29 @@ export default {
                   this.organizationId,
                   col._id,
                 )
-                const totalSignatures = members.reduce(
-                  (sum, m) => sum + (m.signaturesCount || 0),
+                const totalSamples = members.reduce(
+                  (sum, m) => sum + (m.samplesCount || 0),
                   0,
                 )
                 this.$set(this.collectionStats, col._id, {
                   labels: members.length,
-                  signatures: totalSignatures,
+                  samples: totalSamples,
                 })
               } else {
                 const labels = await apiGetSpeakerLabels(
                   this.organizationId,
                   col._id,
                 )
-                let totalSignatures = 0
+                let totalSamples = 0
                 await Promise.all(
                   labels.map(async (label) => {
                     try {
-                      const sigs = await apiGetVoiceSignatures(
+                      const sigs = await apiGetVoiceSamples(
                         this.organizationId,
                         col._id,
                         label._id,
                       )
-                      totalSignatures += sigs.length
+                      totalSamples += sigs.length
                     } catch {
                       // ignore
                     }
@@ -307,13 +320,13 @@ export default {
                 )
                 this.$set(this.collectionStats, col._id, {
                   labels: labels.length,
-                  signatures: totalSignatures,
+                  samples: totalSamples,
                 })
               }
             } catch {
               this.$set(this.collectionStats, col._id, {
                 labels: 0,
-                signatures: 0,
+                samples: 0,
               })
             }
           }),
@@ -337,7 +350,7 @@ export default {
     },
     async createCollection() {
       try {
-        await apiCreateSpeakerLabelCollection(
+        await apiCreateVoiceprintCollection(
           this.organizationId,
           this.newCollection,
         )
@@ -368,7 +381,7 @@ export default {
     },
     async saveEdit() {
       try {
-        const res = await apiUpdateSpeakerLabelCollection(
+        const res = await apiUpdateVoiceprintCollection(
           this.organizationId,
           this.editCollection._id,
           {
@@ -401,7 +414,7 @@ export default {
       if (!this.deletingCollection) return
 
       try {
-        const res = await apiDeleteSpeakerLabelCollection(
+        const res = await apiDeleteVoiceprintCollection(
           this.organizationId,
           this.deletingCollection._id,
         )
@@ -565,6 +578,19 @@ export default {
       outline: none;
       border-color: var(--primary-hard);
     }
+  }
+
+  &__irreversible-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--orange-soft, #fff3e0);
+    border: 1px solid var(--orange-chart, #ff9800);
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--text-primary);
+    margin: 0;
   }
 }
 </style>

@@ -10,7 +10,7 @@ const CONVERSATION_RIGHTS = require(
 
 const {
   deleteAudioFileIfOrphaned,
-  cascadeDeleteSignatureFiles,
+  cascadeDeleteSampleFiles,
 } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
@@ -158,13 +158,16 @@ async function removeUserFromPlatform(userId) {
       }),
     )
 
-    // Delete all user voice signatures and audio files
+    // Delete all user voice samples, audio files, and opt-in preferences
     try {
-      const signatures = await model.voiceSignatures.getByUserId(userId)
-      cascadeDeleteSignatureFiles(signatures)
-      await model.voiceSignatures.deleteAllFromUser(userId)
+      const samples = await model.voiceSamples.getByUserId(userId)
+      cascadeDeleteSampleFiles(samples)
+      await Promise.all([
+        model.voiceSamples.deleteAllFromUser(userId),
+        model.voiceOptIns.deleteAllFromUser(userId),
+      ])
     } catch (err) {
-      debug("Error cleaning up user voice signatures:", err)
+      debug("Error cleaning up user voice samples:", err)
     }
 
     return true

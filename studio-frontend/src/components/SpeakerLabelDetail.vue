@@ -145,14 +145,14 @@ import Button from "@/components/atoms/Button.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import VoiceSignatureUploadModal from "@/components/VoiceSignatureUploadModal.vue"
 import {
-  apiGetVoiceSignatures,
-  apiGetVoiceSignatureAudio,
-  apiDeleteVoiceSignature,
-} from "@/api/voiceSignature.js"
+  apiGetVoiceSamples,
+  apiGetVoiceSampleAudio,
+  apiDeleteVoiceSample,
+} from "@/api/voiceSample.js"
 import {
-  apiGetOptedInMemberSignatures,
-  apiGetOptedInMemberSignatureAudio,
-} from "@/api/speakerLabelCollection.js"
+  apiGetOptedInMemberSamples,
+  apiGetOptedInMemberSampleAudio,
+} from "@/api/voiceprintCollection.js"
 import { apiGetSpeakerLabel, apiUpdateSpeakerLabel } from "@/api/speakerLabel.js"
 import { formatDateOrDash } from "@/tools/formatDate.js"
 import { formatCompactDuration } from "@/tools/formatDuration.js"
@@ -165,9 +165,7 @@ export default {
   props: {
     organizationId: { type: String, required: true },
     collectionId: { type: String, required: true },
-    // For custom collections: label ID
     labelId: { type: String, default: null },
-    // For org collections: member info (read-only mode)
     memberId: { type: String, default: null },
     memberName: { type: String, default: "" },
     readOnly: { type: Boolean, default: false },
@@ -214,7 +212,7 @@ export default {
       this.loading = true
       try {
         if (this.readOnly) {
-          this.signatures = await apiGetOptedInMemberSignatures(
+          this.signatures = await apiGetOptedInMemberSamples(
             this.organizationId,
             this.collectionId,
             this.memberId,
@@ -226,7 +224,7 @@ export default {
               this.collectionId,
               this.labelId,
             ),
-            apiGetVoiceSignatures(
+            apiGetVoiceSamples(
               this.organizationId,
               this.collectionId,
               this.labelId,
@@ -247,17 +245,16 @@ export default {
     },
     formatDate: formatDateOrDash,
     formatAudioDuration: formatCompactDuration,
-    // Mixin contract: provide fetchAudioBlob and deleteSignatureApi
     fetchAudioBlob(signatureId) {
       if (this.readOnly) {
-        return apiGetOptedInMemberSignatureAudio(
+        return apiGetOptedInMemberSampleAudio(
           this.organizationId,
           this.collectionId,
           this.memberId,
           signatureId,
         )
       }
-      return apiGetVoiceSignatureAudio(
+      return apiGetVoiceSampleAudio(
         this.organizationId,
         this.collectionId,
         this.labelId,
@@ -266,7 +263,7 @@ export default {
     },
     deleteSignatureApi(signatureId) {
       if (this.readOnly) return Promise.resolve({ status: "error" })
-      return apiDeleteVoiceSignature(
+      return apiDeleteVoiceSample(
         this.organizationId,
         this.collectionId,
         this.labelId,

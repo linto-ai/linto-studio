@@ -5,9 +5,9 @@ const BASE_API = getEnv("VUE_APP_CONVO_API")
 
 const BASE_URL = `${BASE_API}/users/self/voice`
 
-export async function apiGetUserVoiceSignatures(notif) {
+export async function apiGetUserVoiceSamples(notif) {
   const requestRes = await sendRequest(
-    `${BASE_URL}/voice-signatures`,
+    `${BASE_URL}/samples`,
     { method: "get" },
     {},
     notif,
@@ -15,7 +15,7 @@ export async function apiGetUserVoiceSignatures(notif) {
   return requestRes?.data || []
 }
 
-export async function apiCreateUserVoiceSignature(
+export async function apiCreateUserVoiceSample(
   audioFile,
   audioDuration,
   notif,
@@ -27,7 +27,7 @@ export async function apiCreateUserVoiceSignature(
   }
 
   const requestRes = await sendRequest(
-    `${BASE_URL}/voice-signatures`,
+    `${BASE_URL}/samples`,
     { method: "post" },
     formData,
     notif,
@@ -37,9 +37,9 @@ export async function apiCreateUserVoiceSignature(
   return requestRes.data
 }
 
-export async function apiGetUserVoiceSignatureAudio(id) {
+export async function apiGetUserVoiceSampleAudio(id) {
   return await sendRequest(
-    `${BASE_URL}/voice-signatures/${id}/audio`,
+    `${BASE_URL}/samples/${id}/audio`,
     {
       method: "get",
       responseType: "blob",
@@ -48,9 +48,9 @@ export async function apiGetUserVoiceSignatureAudio(id) {
   )
 }
 
-export async function apiDeleteUserVoiceSignature(id, notif) {
+export async function apiDeleteUserVoiceSample(id, notif) {
   const requestRes = await sendRequest(
-    `${BASE_URL}/voice-signatures/${id}`,
+    `${BASE_URL}/samples/${id}`,
     { method: "delete" },
     {},
     notif,
@@ -58,12 +58,42 @@ export async function apiDeleteUserVoiceSignature(id, notif) {
   return requestRes
 }
 
-export async function apiDeleteAllUserVoiceSignatures(notif) {
+export async function apiDeleteAllUserVoiceSamples(notif) {
   const requestRes = await sendRequest(
-    `${BASE_URL}/voice-signatures`,
+    `${BASE_URL}/samples`,
     { method: "delete" },
     {},
     notif,
   )
   return requestRes
+}
+
+export async function apiUpdateStorageMode(storageMode, notif) {
+  const requestRes = await sendRequest(
+    `${BASE_URL}/storage-mode`,
+    { method: "patch" },
+    { storageMode },
+    notif,
+  )
+  return requestRes
+}
+
+export async function apiUpdateVoiceOrganization(orgId, enabled, notif) {
+  const requestRes = await sendRequest(
+    `${BASE_URL}/organizations/${orgId}`,
+    { method: "patch" },
+    { enabled },
+    notif,
+  )
+  return requestRes
+}
+
+export async function apiGetUserVoiceOrganizations(notif) {
+  const requestRes = await sendRequest(
+    `${BASE_URL}/organizations`,
+    { method: "get" },
+    {},
+    notif,
+  )
+  return requestRes?.data || []
 }

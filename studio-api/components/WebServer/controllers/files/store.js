@@ -26,7 +26,7 @@ const COLLECTION_TYPE = Object.freeze({
   ORGANIZATION: "organization",
 })
 
-const VOICE_SIGNATURE_TYPE = Object.freeze({
+const VOICE_SAMPLE_TYPE = Object.freeze({
   LABEL: "label",
   USER: "user",
 })
@@ -143,7 +143,7 @@ function getAudioSessionFolder() {
   return process.env.VOLUME_AUDIO_SESSION_PATH
 }
 
-function getVoiceSignaturesFolder() {
+function getVoiceSamplesFolder() {
   return process.env.VOLUME_VOICE_SIGNATURES_PATH
 }
 
@@ -183,12 +183,12 @@ function validateAudioFile(audioFile, UnsupportedMediaTypeError, ValidationError
 }
 
 /**
- * Store a voice signature audio file to disk.
+ * Store a voice sample audio file to disk.
  * @param {object} audioFile - express-fileupload file object
  * @returns {string} relative path within storage folder
  */
-async function storeVoiceSignatureFile(audioFile) {
-  const folder = getVoiceSignaturesFolder()
+async function storeVoiceSampleFile(audioFile) {
+  const folder = getVoiceSamplesFolder()
   const storePath = `${getStorageFolder()}/${folder}`
 
   await fs.promises.mkdir(storePath, { recursive: true })
@@ -218,23 +218,23 @@ function resolveStoragePath(audioFilePath) {
 }
 
 /**
- * Delete a single signature's audio file from disk.
- * @param {object} signature - signature doc with audioFilePath field
+ * Delete a single sample's audio file from disk.
+ * @param {object} sample - sample doc with audioFilePath field
  */
-function deleteSignatureFile(signature) {
-  if (signature && signature.audioFilePath) {
-    deleteFile(`${getStorageFolder()}/${signature.audioFilePath}`)
+function deleteSampleFile(sample) {
+  if (sample && sample.audioFilePath) {
+    deleteFile(`${getStorageFolder()}/${sample.audioFilePath}`)
   }
 }
 
 /**
- * Delete audio files from an array of signature documents.
- * @param {Array} signatures - array of signature docs with audioFilePath field
+ * Delete audio files from an array of sample documents.
+ * @param {Array} samples - array of sample docs with audioFilePath field
  */
-function cascadeDeleteSignatureFiles(signatures) {
-  if (Array.isArray(signatures)) {
-    for (const sig of signatures) {
-      deleteSignatureFile(sig)
+function cascadeDeleteSampleFiles(samples) {
+  if (Array.isArray(samples)) {
+    for (const s of samples) {
+      deleteSampleFile(s)
     }
   }
 }
@@ -262,6 +262,29 @@ async function deleteAudioFileIfOrphaned(filepath) {
   }
 }
 
+/**
+ * Store an audio file, create a voice sample document, and rollback on failure.
+ * @param {object} audioFile - express-fileupload file object
+ * @param {object} payload - fields to merge into the sample document
+ * @param {object} sampleModel - the voiceSamples model instance
+ * @param {Function} ErrorClass - error class to throw on creation failure
+ * @returns {object} the created sample document
+ */
+async function storeAndCreateSample(audioFile, payload, sampleModel, ErrorClass) {
+  const audioFilePath = await storeVoiceSampleFile(audioFile)
+  const fullPayload = { ...payload, audioFilePath }
+
+  const result = await sampleModel.create(fullPayload)
+
+  if (!result || result.insertedCount !== 1) {
+    deleteFile(`${getStorageFolder()}/${audioFilePath}`)
+    throw new ErrorClass("Error during the creation of the voice sample")
+  }
+
+  const created = await sampleModel.getById(result.insertedId.toString())
+  return created[0]
+}
+
 module.exports = {
   storeFile,
   defaultPicture,
@@ -270,15 +293,16 @@ module.exports = {
   getStorageFolder,
   getPictureFolder,
   getAudioFolder,
-  getVoiceSignaturesFolder,
+  getVoiceSamplesFolder,
   validateAudioFile,
-  storeVoiceSignatureFile,
+  storeVoiceSampleFile,
   resolveStoragePath,
-  deleteSignatureFile,
-  cascadeDeleteSignatureFiles,
+  deleteSampleFile,
+  cascadeDeleteSampleFiles,
   parseAudioDuration,
   STORE_TYPE,
   COLLECTION_TYPE,
-  VOICE_SIGNATURE_TYPE,
+  storeAndCreateSample,
+  VOICE_SAMPLE_TYPE,
   STORAGE_MODE,
 }

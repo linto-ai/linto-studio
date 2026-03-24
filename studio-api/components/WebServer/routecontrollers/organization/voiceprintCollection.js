@@ -1,15 +1,15 @@
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const {
-  cascadeDeleteSignatureFiles,
+  cascadeDeleteSampleFiles,
   COLLECTION_TYPE,
   STORAGE_MODE,
 } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 
 const {
-  SpeakerLabelCollectionError,
-  SpeakerLabelCollectionNotFound,
+  VoiceprintCollectionError,
+  VoiceprintCollectionNotFound,
 } = require(
-  `${process.cwd()}/components/WebServer/error/exception/speakerDiarization`,
+  `${process.cwd()}/components/WebServer/error/exception/speakerIdentification`,
 )
 
 const MAX_NAME_LENGTH = 200
@@ -28,10 +28,6 @@ function sanitizeDescription(description) {
   return description.trim().slice(0, MAX_DESCRIPTION_LENGTH)
 }
 
-/**
- * Verify a resource belongs to the expected organization.
- * Works for any model entity that has an organizationId field.
- */
 async function verifyOwnership(modelRef, id, organizationId, NotFoundError) {
   const result = await modelRef.getById(id)
   if (result.length === 0) throw new NotFoundError()
@@ -42,12 +38,12 @@ async function verifyOwnership(modelRef, id, organizationId, NotFoundError) {
 }
 
 async function ensureOrganizationCollection(organizationId) {
-  const all = await model.speakerLabelCollections.getByOrganizationId(organizationId)
+  const all = await model.voiceprintCollections.getByOrganizationId(organizationId)
   const hasOrgCollection = all.some(
     (c) => c.type === COLLECTION_TYPE.ORGANIZATION,
   )
   if (!hasOrgCollection) {
-    const result = await model.speakerLabelCollections.create({
+    const result = await model.voiceprintCollections.create({
       name: "Organization",
       description: "",
       organizationId,
@@ -55,7 +51,7 @@ async function ensureOrganizationCollection(organizationId) {
       storageMode: STORAGE_MODE.AUDIO,
     })
     if (result.insertedCount === 1) {
-      const created = await model.speakerLabelCollections.getById(
+      const created = await model.voiceprintCollections.getById(
         result.insertedId.toString(),
       )
       all.push(created[0])
@@ -64,7 +60,7 @@ async function ensureOrganizationCollection(organizationId) {
   return all
 }
 
-async function getSpeakerLabelCollections(req, res, next) {
+async function getVoiceprintCollections(req, res, next) {
   try {
     const collections = await ensureOrganizationCollection(
       req.params.organizationId,
@@ -75,13 +71,13 @@ async function getSpeakerLabelCollections(req, res, next) {
   }
 }
 
-async function getSpeakerLabelCollection(req, res, next) {
+async function getVoiceprintCollection(req, res, next) {
   try {
     const collection = await verifyOwnership(
-      model.speakerLabelCollections,
+      model.voiceprintCollections,
       req.params.collectionId,
       req.params.organizationId,
-      SpeakerLabelCollectionNotFound,
+      VoiceprintCollectionNotFound,
     )
     res.status(200).send(collection)
   } catch (err) {
@@ -89,28 +85,27 @@ async function getSpeakerLabelCollection(req, res, next) {
   }
 }
 
-async function createSpeakerLabelCollection(req, res, next) {
+async function createVoiceprintCollection(req, res, next) {
   try {
     const name = sanitizeName(req.body.name)
     if (!name) {
-      throw new SpeakerLabelCollectionError("name is required (max 200 chars)")
+      throw new VoiceprintCollectionError("name is required (max 200 chars)")
     }
 
-    // Organization collections cannot be created via the API
     if (req.body.type === COLLECTION_TYPE.ORGANIZATION) {
-      throw new SpeakerLabelCollectionError(
+      throw new VoiceprintCollectionError(
         "Organization collections are managed automatically",
       )
     }
 
     const type = req.body.type || COLLECTION_TYPE.CUSTOM
     if (!Object.values(COLLECTION_TYPE).includes(type)) {
-      throw new SpeakerLabelCollectionError("Invalid collection type")
+      throw new VoiceprintCollectionError("Invalid collection type")
     }
 
     const storageMode = req.body.storageMode || STORAGE_MODE.AUDIO
     if (!Object.values(STORAGE_MODE).includes(storageMode)) {
-      throw new SpeakerLabelCollectionError("Invalid storage mode")
+      throw new VoiceprintCollectionError("Invalid storage mode")
     }
 
     const payload = {
@@ -121,15 +116,15 @@ async function createSpeakerLabelCollection(req, res, next) {
       storageMode,
     }
 
-    const result = await model.speakerLabelCollections.create(payload)
+    const result = await model.voiceprintCollections.create(payload)
 
     if (result.insertedCount !== 1) {
-      throw new SpeakerLabelCollectionError(
-        "Error during the creation of the speaker label collection",
+      throw new VoiceprintCollectionError(
+        "Error during the creation of the voiceprint collection",
       )
     }
 
-    const created = await model.speakerLabelCollections.getById(
+    const created = await model.voiceprintCollections.getById(
       result.insertedId.toString(),
     )
     res.status(201).send(created[0])
@@ -138,18 +133,18 @@ async function createSpeakerLabelCollection(req, res, next) {
   }
 }
 
-async function updateSpeakerLabelCollection(req, res, next) {
+async function updateVoiceprintCollection(req, res, next) {
   try {
     const doc = await verifyOwnership(
-      model.speakerLabelCollections,
+      model.voiceprintCollections,
       req.params.collectionId,
       req.params.organizationId,
-      SpeakerLabelCollectionNotFound,
+      VoiceprintCollectionNotFound,
     )
     if (req.body.name !== undefined) {
       const updatedName = sanitizeName(req.body.name)
       if (!updatedName) {
-        throw new SpeakerLabelCollectionError(
+        throw new VoiceprintCollectionError(
           "name is required (max 200 chars)",
         )
       }
@@ -159,12 +154,12 @@ async function updateSpeakerLabelCollection(req, res, next) {
       doc.description = sanitizeDescription(req.body.description)
     }
 
-    const result = await model.speakerLabelCollections.update(doc)
+    const result = await model.voiceprintCollections.update(doc)
 
     if (result.modifiedCount === 0) {
       res.status(304).send("Nothing to update")
     } else {
-      const updated = await model.speakerLabelCollections.getById(
+      const updated = await model.voiceprintCollections.getById(
         req.params.collectionId,
       )
       res.status(200).send(updated[0])
@@ -174,49 +169,46 @@ async function updateSpeakerLabelCollection(req, res, next) {
   }
 }
 
-async function deleteSpeakerLabelCollection(req, res, next) {
+async function deleteVoiceprintCollection(req, res, next) {
   try {
     await verifyOwnership(
-      model.speakerLabelCollections,
+      model.voiceprintCollections,
       req.params.collectionId,
       req.params.organizationId,
-      SpeakerLabelCollectionNotFound,
+      VoiceprintCollectionNotFound,
     )
 
-    // Cascade: delete all voice signatures + audio files for this collection
-    const signatures = await model.voiceSignatures.getByCollectionId(
+    const samples = await model.voiceSamples.getByCollectionId(
       req.params.collectionId,
     )
-    cascadeDeleteSignatureFiles(signatures)
+    cascadeDeleteSampleFiles(samples)
 
-    // Parallel: delete voice signature records and speaker labels
     await Promise.all([
-      model.voiceSignatures.deleteAllFromCollection(req.params.collectionId),
+      model.voiceSamples.deleteAllFromCollection(req.params.collectionId),
       model.speakerLabels.deleteAllFromCollection(req.params.collectionId),
     ])
 
-    // Delete the collection itself
-    const result = await model.speakerLabelCollections.delete(
+    const result = await model.voiceprintCollections.delete(
       req.params.collectionId,
     )
     if (result.deletedCount !== 1) {
-      throw new SpeakerLabelCollectionError(
-        "Error during the deletion of the speaker label collection",
+      throw new VoiceprintCollectionError(
+        "Error during the deletion of the voiceprint collection",
       )
     }
 
-    res.status(200).send("Speaker label collection deleted")
+    res.status(200).send("Voiceprint collection deleted")
   } catch (err) {
     next(err)
   }
 }
 
 module.exports = {
-  getSpeakerLabelCollections,
-  getSpeakerLabelCollection,
-  createSpeakerLabelCollection,
-  updateSpeakerLabelCollection,
-  deleteSpeakerLabelCollection,
+  getVoiceprintCollections,
+  getVoiceprintCollection,
+  createVoiceprintCollection,
+  updateVoiceprintCollection,
+  deleteVoiceprintCollection,
   verifyOwnership,
   sanitizeName,
 }

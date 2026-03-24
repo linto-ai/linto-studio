@@ -4,7 +4,7 @@ import { getEnv } from "@/tools/getEnv"
 const BASE_API = getEnv("VUE_APP_CONVO_API")
 
 function labelsUrl(organizationId, collectionId) {
-  return `${BASE_API}/organizations/${organizationId}/speaker-label-collections/${collectionId}/labels`
+  return `${BASE_API}/organizations/${organizationId}/voiceprint-collections/${collectionId}/labels`
 }
 
 export async function apiGetSpeakerLabels(

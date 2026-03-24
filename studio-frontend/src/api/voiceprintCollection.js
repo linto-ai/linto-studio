@@ -4,7 +4,7 @@ import { getEnv } from "@/tools/getEnv"
 const BASE_API = getEnv("VUE_APP_CONVO_API")
 
 function collectionsUrl(organizationId, collectionId) {
-  const base = `${BASE_API}/organizations/${organizationId}/speaker-label-collections`
+  const base = `${BASE_API}/organizations/${organizationId}/voiceprint-collections`
   return collectionId ? `${base}/${collectionId}` : base
 }
 
@@ -13,7 +13,7 @@ function optedInMembersUrl(organizationId, collectionId, userId) {
   return userId ? `${base}/${userId}` : base
 }
 
-export async function apiGetSpeakerLabelCollections(organizationId, notif) {
+export async function apiGetVoiceprintCollections(organizationId, notif) {
   const requestRes = await sendRequest(
     collectionsUrl(organizationId),
     { method: "get" },
@@ -23,7 +23,7 @@ export async function apiGetSpeakerLabelCollections(organizationId, notif) {
   return requestRes?.data || []
 }
 
-export async function apiGetSpeakerLabelCollection(
+export async function apiGetVoiceprintCollection(
   organizationId,
   collectionId,
   notif,
@@ -37,7 +37,7 @@ export async function apiGetSpeakerLabelCollection(
   return requestRes?.data || null
 }
 
-export async function apiCreateSpeakerLabelCollection(
+export async function apiCreateVoiceprintCollection(
   organizationId,
   payload,
   notif,
@@ -52,7 +52,7 @@ export async function apiCreateSpeakerLabelCollection(
   return requestRes.data
 }
 
-export async function apiUpdateSpeakerLabelCollection(
+export async function apiUpdateVoiceprintCollection(
   organizationId,
   collectionId,
   payload,
@@ -67,7 +67,7 @@ export async function apiUpdateSpeakerLabelCollection(
   return requestRes
 }
 
-export async function apiDeleteSpeakerLabelCollection(
+export async function apiDeleteVoiceprintCollection(
   organizationId,
   collectionId,
   notif,
@@ -95,14 +95,14 @@ export async function apiGetOptedInMembers(
   return requestRes?.data || []
 }
 
-export async function apiGetOptedInMemberSignatures(
+export async function apiGetOptedInMemberSamples(
   organizationId,
   collectionId,
   userId,
   notif,
 ) {
   const requestRes = await sendRequest(
-    `${optedInMembersUrl(organizationId, collectionId, userId)}/voice-signatures`,
+    `${optedInMembersUrl(organizationId, collectionId, userId)}/voice-samples`,
     { method: "get" },
     {},
     notif,
@@ -110,14 +110,14 @@ export async function apiGetOptedInMemberSignatures(
   return requestRes?.data || []
 }
 
-export async function apiGetOptedInMemberSignatureAudio(
+export async function apiGetOptedInMemberSampleAudio(
   organizationId,
   collectionId,
   userId,
-  sigId,
+  sampleId,
 ) {
   return await sendRequest(
-    `${optedInMembersUrl(organizationId, collectionId, userId)}/voice-signatures/${sigId}/audio`,
+    `${optedInMembersUrl(organizationId, collectionId, userId)}/voice-samples/${sampleId}/audio`,
     {
       method: "get",
       responseType: "blob",

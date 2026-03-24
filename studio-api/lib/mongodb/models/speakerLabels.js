@@ -16,6 +16,7 @@ class SpeakerLabelModel extends MongoModel {
         name: payload.name,
         collectionId: this.getObjectId(payload.collectionId),
         organizationId: this.getObjectId(payload.organizationId),
+        hasVoiceprint: payload.hasVoiceprint || false,
       }
       return await this.mongoInsert(doc)
     } catch (error) {

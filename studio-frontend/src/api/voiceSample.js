@@ -3,18 +3,18 @@ import { getEnv } from "@/tools/getEnv"
 
 const BASE_API = getEnv("VUE_APP_CONVO_API")
 
-function signaturesUrl(organizationId, collectionId, labelId) {
-  return `${BASE_API}/organizations/${organizationId}/speaker-label-collections/${collectionId}/labels/${labelId}/voice-signatures`
+function samplesUrl(organizationId, collectionId, labelId) {
+  return `${BASE_API}/organizations/${organizationId}/voiceprint-collections/${collectionId}/labels/${labelId}/voice-samples`
 }
 
-export async function apiGetVoiceSignatures(
+export async function apiGetVoiceSamples(
   organizationId,
   collectionId,
   labelId,
   notif,
 ) {
   const requestRes = await sendRequest(
-    signaturesUrl(organizationId, collectionId, labelId),
+    samplesUrl(organizationId, collectionId, labelId),
     { method: "get" },
     {},
     notif,
@@ -22,7 +22,7 @@ export async function apiGetVoiceSignatures(
   return requestRes?.data || []
 }
 
-export async function apiCreateVoiceSignature(
+export async function apiCreateVoiceSample(
   organizationId,
   collectionId,
   labelId,
@@ -37,7 +37,7 @@ export async function apiCreateVoiceSignature(
   }
 
   const requestRes = await sendRequest(
-    signaturesUrl(organizationId, collectionId, labelId),
+    samplesUrl(organizationId, collectionId, labelId),
     { method: "post" },
     formData,
     notif,
@@ -47,14 +47,14 @@ export async function apiCreateVoiceSignature(
   return requestRes.data
 }
 
-export async function apiGetVoiceSignatureAudio(
+export async function apiGetVoiceSampleAudio(
   organizationId,
   collectionId,
   labelId,
-  voiceSignatureId,
+  voiceSampleId,
 ) {
   return await sendRequest(
-    `${signaturesUrl(organizationId, collectionId, labelId)}/${voiceSignatureId}/audio`,
+    `${samplesUrl(organizationId, collectionId, labelId)}/${voiceSampleId}/audio`,
     {
       method: "get",
       responseType: "blob",
@@ -63,15 +63,15 @@ export async function apiGetVoiceSignatureAudio(
   )
 }
 
-export async function apiDeleteVoiceSignature(
+export async function apiDeleteVoiceSample(
   organizationId,
   collectionId,
   labelId,
-  voiceSignatureId,
+  voiceSampleId,
   notif,
 ) {
   const requestRes = await sendRequest(
-    `${signaturesUrl(organizationId, collectionId, labelId)}/${voiceSignatureId}`,
+    `${samplesUrl(organizationId, collectionId, labelId)}/${voiceSampleId}`,
     { method: "delete" },
     {},
     notif,

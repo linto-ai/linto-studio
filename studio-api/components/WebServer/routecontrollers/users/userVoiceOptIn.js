@@ -1,107 +1,94 @@
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const {
-  deleteFile,
-  getStorageFolder,
   validateAudioFile: _validateAudioFile,
-  storeVoiceSignatureFile,
   resolveStoragePath,
-  deleteSignatureFile,
-  cascadeDeleteSignatureFiles,
+  deleteSampleFile,
+  cascadeDeleteSampleFiles,
   parseAudioDuration,
-  VOICE_SIGNATURE_TYPE,
+  storeAndCreateSample,
+  VOICE_SAMPLE_TYPE,
+  STORAGE_MODE,
+  COLLECTION_TYPE,
 } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 
 const {
-  UserVoiceSignatureError,
-  UserVoiceSignatureNotFound,
-  UserVoiceSignatureUnsupportedMediaType,
+  UserVoiceSampleError,
+  UserVoiceSampleNotFound,
+  UserVoiceSampleUnsupportedMediaType,
 } = require(
-  `${process.cwd()}/components/WebServer/error/exception/speakerDiarization`,
+  `${process.cwd()}/components/WebServer/error/exception/speakerIdentification`,
 )
 
 function validateAudioFile(audioFile) {
-  _validateAudioFile(audioFile, UserVoiceSignatureUnsupportedMediaType, UserVoiceSignatureError)
+  _validateAudioFile(audioFile, UserVoiceSampleUnsupportedMediaType, UserVoiceSampleError)
 }
 
-async function createUserVoiceSignature(req, res, next) {
+async function verifyUserSampleOwnership(sampleId, userId) {
+  const result = await model.voiceSamples.getById(sampleId)
+  if (result.length === 0) {
+    throw new UserVoiceSampleNotFound()
+  }
+  const sample = result[0]
+  if (sample.userId !== userId) {
+    throw new UserVoiceSampleNotFound()
+  }
+  return sample
+}
+
+async function createUserVoiceSample(req, res, next) {
   try {
     const userId = req.payload.data.userId
 
     if (!req.files || !req.files.audio) {
-      throw new UserVoiceSignatureError("audio file is required")
+      throw new UserVoiceSampleError("audio file is required")
     }
 
     const audioFile = req.files.audio
     validateAudioFile(audioFile)
 
-    const audioFilePath = await storeVoiceSignatureFile(audioFile)
-
     const payload = {
-      type: VOICE_SIGNATURE_TYPE.USER,
+      type: VOICE_SAMPLE_TYPE.USER,
       userId,
-      audioFilePath,
     }
     const audioDuration = parseAudioDuration(req.body.audioDuration)
     if (audioDuration !== undefined) {
       payload.audioDuration = audioDuration
     }
 
-    let result
-    try {
-      result = await model.voiceSignatures.create(payload)
-    } catch (dbErr) {
-      deleteFile(`${getStorageFolder()}/${audioFilePath}`)
-      throw dbErr
-    }
-
-    if (result.insertedCount !== 1) {
-      deleteFile(`${getStorageFolder()}/${audioFilePath}`)
-      throw new UserVoiceSignatureError(
-        "Error during the creation of the voice signature",
-      )
-    }
-
-    const created = await model.voiceSignatures.getById(
-      result.insertedId.toString(),
+    const created = await storeAndCreateSample(
+      audioFile, payload, model.voiceSamples, UserVoiceSampleError,
     )
-    res.status(201).send(created[0])
+    res.status(201).send(created)
   } catch (err) {
     next(err)
   }
 }
 
-async function getUserVoiceSignatures(req, res, next) {
+async function getUserVoiceSamples(req, res, next) {
   try {
     const userId = req.payload.data.userId
-    const signatures = await model.voiceSignatures.getByUserId(userId)
-    res.status(200).send(signatures)
+    const samples = await model.voiceSamples.getByUserId(userId)
+    res.status(200).send(samples)
   } catch (err) {
     next(err)
   }
 }
 
-async function resolveUserSignatureAudio(sigId, userId) {
-  const result = await model.voiceSignatures.getById(sigId)
-  if (result.length === 0) {
-    throw new UserVoiceSignatureNotFound()
+async function resolveUserSampleAudio(sampleId, userId) {
+  const sample = await verifyUserSampleOwnership(sampleId, userId)
+  if (!sample.audioFilePath) {
+    throw new UserVoiceSampleNotFound("Audio file not found")
   }
-  const signature = result[0]
-  if (signature.userId !== userId) {
-    throw new UserVoiceSignatureNotFound()
-  }
-  if (!signature.audioFilePath) {
-    throw new UserVoiceSignatureNotFound("Audio file not found")
-  }
-  const filePath = resolveStoragePath(signature.audioFilePath)
+  const filePath = resolveStoragePath(sample.audioFilePath)
   if (!filePath) {
-    throw new UserVoiceSignatureNotFound("Audio file not found")
+    throw new UserVoiceSampleNotFound("Audio file not found")
   }
   return filePath
 }
 
-async function getUserVoiceSignatureAudio(req, res, next) {
+async function getUserVoiceSampleAudio(req, res, next) {
   try {
-    const filePath = await resolveUserSignatureAudio(
+    const filePath = await resolveUserSampleAudio(
       req.params.id, req.payload.data.userId,
     )
     res.sendFile(filePath)
@@ -110,54 +97,131 @@ async function getUserVoiceSignatureAudio(req, res, next) {
   }
 }
 
-async function deleteUserVoiceSignature(req, res, next) {
+async function deleteUserVoiceSample(req, res, next) {
   try {
     const userId = req.payload.data.userId
-    const sigId = req.params.id
+    const sampleId = req.params.id
 
-    const result = await model.voiceSignatures.getById(sigId)
-    if (result.length === 0) {
-      throw new UserVoiceSignatureNotFound()
-    }
+    const sample = await verifyUserSampleOwnership(sampleId, userId)
 
-    const signature = result[0]
-    if (signature.userId !== userId) {
-      throw new UserVoiceSignatureNotFound()
-    }
+    deleteSampleFile(sample)
 
-    deleteSignatureFile(signature)
-
-    const deleteResult = await model.voiceSignatures.delete(sigId)
+    const deleteResult = await model.voiceSamples.delete(sampleId)
     if (deleteResult.deletedCount !== 1) {
-      throw new UserVoiceSignatureError(
-        "Error during the deletion of the voice signature",
+      throw new UserVoiceSampleError(
+        "Error during the deletion of the voice sample",
       )
     }
 
-    res.status(200).send("Voice signature deleted")
+    res.status(200).send("Voice sample deleted")
   } catch (err) {
     next(err)
   }
 }
 
-async function deleteAllUserVoiceSignatures(req, res, next) {
+async function deleteAllUserVoiceSamples(req, res, next) {
   try {
     const userId = req.payload.data.userId
-    const signatures = await model.voiceSignatures.getByUserId(userId)
-    cascadeDeleteSignatureFiles(signatures)
-    await model.voiceSignatures.deleteAllFromUser(userId)
+    const samples = await model.voiceSamples.getByUserId(userId)
+    cascadeDeleteSampleFiles(samples)
+    await Promise.all([
+      model.voiceSamples.deleteAllFromUser(userId),
+      model.voiceOptIns.deleteAllFromUser(userId),
+    ])
 
-    res.status(200).send("All voice signatures deleted")
+    res.status(200).send("All voice samples deleted")
+  } catch (err) {
+    next(err)
+  }
+}
+
+// Stub: validates the storage mode preference but does not persist yet.
+// Persistence will be added when the user settings model supports storageMode.
+async function updateStorageMode(req, res, next) {
+  try {
+    const { storageMode } = req.body
+
+    if (!storageMode || !Object.values(STORAGE_MODE).includes(storageMode)) {
+      throw new UserVoiceSampleError("Invalid storage mode. Must be 'audio' or 'embeddings'")
+    }
+
+    res.status(501).send({
+      message: "Storage mode preference is not yet persisted. This endpoint will be functional in a future release.",
+      storageMode,
+      warning: storageMode === STORAGE_MODE.EMBEDDINGS
+        ? "Audio files will be deleted after voiceprint calculation. This is irreversible."
+        : null,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
+async function getUserVoiceOrganizations(req, res, next) {
+  try {
+    const userId = req.payload.data.userId
+
+    const [userOrgs, optIns] = await Promise.all([
+      model.organizations.listSelf(userId),
+      model.voiceOptIns.getByUserId(userId),
+    ])
+
+    const optInOrgIds = new Set(
+      optIns.map((o) => o.organizationId.toString()),
+    )
+
+    const result = userOrgs.map((org) => ({
+      organizationId: org._id.toString(),
+      organizationName: org.name,
+      voiceprintEnabled: optInOrgIds.has(org._id.toString()),
+    }))
+
+    res.status(200).send(result)
+  } catch (err) {
+    next(err)
+  }
+}
+
+async function updateVoiceOrganization(req, res, next) {
+  try {
+    const userId = req.payload.data.userId
+    const { orgId } = req.params
+    const { enabled } = req.body
+
+    if (typeof enabled !== "boolean") {
+      throw new UserVoiceSampleError("enabled must be a boolean")
+    }
+
+    // Verify the user is a member of this organization
+    const orgs = await model.organizations.getById(orgId)
+    if (orgs.length === 0) {
+      throw new UserVoiceSampleNotFound("Organization not found")
+    }
+    const isMember = (orgs[0].users || []).some((u) => u.userId === userId)
+    if (!isMember) {
+      throw new UserVoiceSampleNotFound("You are not a member of this organization")
+    }
+
+    if (enabled) {
+      await model.voiceOptIns.setOptIn(userId, orgId)
+    } else {
+      await model.voiceOptIns.removeOptIn(userId, orgId)
+    }
+
+    res.status(200).send({ organizationId: orgId, voiceprintEnabled: enabled })
   } catch (err) {
     next(err)
   }
 }
 
 module.exports = {
-  createUserVoiceSignature,
-  getUserVoiceSignatures,
-  getUserVoiceSignatureAudio,
-  deleteUserVoiceSignature,
-  deleteAllUserVoiceSignatures,
-  resolveUserSignatureAudio,
+  createUserVoiceSample,
+  getUserVoiceSamples,
+  getUserVoiceSampleAudio,
+  deleteUserVoiceSample,
+  deleteAllUserVoiceSamples,
+  resolveUserSampleAudio,
+  updateStorageMode,
+  getUserVoiceOrganizations,
+  updateVoiceOrganization,
 }

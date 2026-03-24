@@ -1,7 +1,7 @@
 const {
   getOptedInMembers,
-  getOptedInMemberSignatures,
-  getOptedInMemberSignatureAudio,
+  getOptedInMemberSamples,
+  getOptedInMemberSampleAudio,
 } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/organization/optedInMembers.js`,
 )
@@ -16,16 +16,16 @@ module.exports = (webserver) => {
       requireOrganizationMemberAccess: true,
     },
     {
-      path: "/:userId/voice-signatures",
+      path: "/:userId/voice-samples",
       method: "get",
-      controller: getOptedInMemberSignatures,
+      controller: getOptedInMemberSamples,
       requireAuth: true,
       requireOrganizationMemberAccess: true,
     },
     {
-      path: "/:userId/voice-signatures/:sigId/audio",
+      path: "/:userId/voice-samples/:sampleId/audio",
       method: "get",
-      controller: getOptedInMemberSignatureAudio,
+      controller: getOptedInMemberSampleAudio,
       requireAuth: true,
       requireOrganizationMemberAccess: true,
     },

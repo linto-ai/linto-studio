@@ -15,7 +15,7 @@ const {
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
 
-const { cascadeDeleteSignatureFiles } = require(
+const { cascadeDeleteSampleFiles } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 
@@ -77,21 +77,24 @@ async function deleteOrganization(req, res, next) {
       organization._id.toString(),
     )
 
-    // Delete all voice signatures and their audio files
-    const voiceSignatures = await model.voiceSignatures.getByOrganizationId(
+    // Delete all voice samples and their audio files
+    const voiceSamples = await model.voiceSamples.getByOrganizationId(
       organization._id.toString(),
     )
-    cascadeDeleteSignatureFiles(voiceSignatures)
+    cascadeDeleteSampleFiles(voiceSamples)
 
-    // Delete all voice signature records, speaker labels, and collections in parallel
+    // Delete all voice sample records, speaker labels, voiceprint collections, and opt-ins in parallel
     await Promise.all([
-      model.voiceSignatures.deleteAllFromOrganization(
+      model.voiceSamples.deleteAllFromOrganization(
         organization._id.toString(),
       ),
       model.speakerLabels.deleteAllFromOrganization(
         organization._id.toString(),
       ),
-      model.speakerLabelCollections.deleteAllFromOrganization(
+      model.voiceprintCollections.deleteAllFromOrganization(
+        organization._id.toString(),
+      ),
+      model.voiceOptIns.deleteAllFromOrganization(
         organization._id.toString(),
       ),
     ])

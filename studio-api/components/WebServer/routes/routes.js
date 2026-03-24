@@ -18,13 +18,13 @@ module.exports = (webServer) => {
       require("./api/organization/tag")(webServer),
     "/api/organizations/:organizationId/folders":
       require("./api/organization/folders")(webServer),
-    "/api/organizations/:organizationId/speaker-label-collections":
-      require("./api/organization/speakerLabelCollection")(webServer),
-    "/api/organizations/:organizationId/speaker-label-collections/:collectionId/labels":
+    "/api/organizations/:organizationId/voiceprint-collections":
+      require("./api/organization/voiceprintCollection")(webServer),
+    "/api/organizations/:organizationId/voiceprint-collections/:collectionId/labels":
       require("./api/organization/speakerLabel")(webServer),
-    "/api/organizations/:organizationId/speaker-label-collections/:collectionId/labels/:labelId/voice-signatures":
-      require("./api/organization/voiceSignature")(webServer),
-    "/api/organizations/:organizationId/speaker-label-collections/:collectionId/opted-in-members":
+    "/api/organizations/:organizationId/voiceprint-collections/:collectionId/labels/:labelId/voice-samples":
+      require("./api/organization/voiceSample")(webServer),
+    "/api/organizations/:organizationId/voiceprint-collections/:collectionId/opted-in-members":
       require("./api/organization/optedInMembers")(webServer),
     "/api/conversations": [
       ...require("./api/conversation/share")(webServer),
