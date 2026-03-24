@@ -49,7 +49,7 @@ const translationItems = computed(() =>
         @update:selected-value="$emit('update:selectedTranslationId', $event)"
       />
     </section>
-    <section class="sidebar-section">
+    <section v-if="speakers.length" class="sidebar-section">
       <h2 class="sidebar-title">{{ t('sidebar.speakers') }}</h2>
       <ul class="speaker-list">
       <li
