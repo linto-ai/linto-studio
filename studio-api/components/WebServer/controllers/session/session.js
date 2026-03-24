@@ -165,16 +165,21 @@ async function checkSessionMatchingOrganization(req, next) {
 }
 
 function cleanPublicSessionContent(jsonString) {
-  let session = JSON.parse(jsonString)
+  try {
+    let session = JSON.parse(jsonString)
 
-  if (session.visibility === "public") {
-    session.channels.forEach((channel) => {
-      if (channel.streamEndpoints) {
-        delete channel.streamEndpoints
-      }
-    })
+    if (session.visibility === "public") {
+      session.channels.forEach((channel) => {
+        if (channel.streamEndpoints) {
+          delete channel.streamEndpoints
+        }
+      })
 
-    return JSON.stringify(session)
+      return JSON.stringify(session)
+    }
+  } catch (error) {
+    logger.warn("error on cleaning session")
+    throw error
   }
 
   throw new UnauthorizedProxy()
@@ -188,4 +193,5 @@ module.exports = {
   afterProxyAccess,
   generatPublicToken,
   checkSessionMatchingOrganization,
+  cleanPublicSessionContent,
 }

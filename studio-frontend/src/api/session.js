@@ -436,6 +436,18 @@ export async function apiGetSessionChannelTurns(
   )
 }
 
+export async function apiGetPublicSessionChannelTurns(
+  sessionId,
+  channelId,
+  { limit = 50, offset = 0 } = {},
+) {
+  return sendRequest(
+    `${BASE_API}/sessions/public/${sessionId}/channels/${channelId}`,
+    { method: "get" },
+    { limit, offset },
+  )
+}
+
 export async function apiGetSessionChannel(
   organizationScope,
   sessionId,

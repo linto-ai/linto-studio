@@ -7,7 +7,10 @@ import { markRaw } from "vue"
 import { sessionModelMixin } from "@/mixins/sessionModel.js"
 import sessionToEditorDocument from "@/tools/sessionToEditorDocument.js"
 import closedCaptionsToLiveFinalEvents from "@/tools/closedCaptionsToLiveFinalEvents.js"
-import { apiGetSessionChannelTurns } from "@/api/session.js"
+import {
+  apiGetSessionChannelTurns,
+  apiGetPublicSessionChannelTurns,
+} from "@/api/session.js"
 import {
   createLivePlugin,
   createSubtitlePlugin,
@@ -22,6 +25,7 @@ export default {
   props: {
     session: { type: Object, required: true },
     websocketInstance: { type: Object, required: true },
+    isFromPublicLink: { type: Boolean, default: false },
   },
   data() {
     return {
@@ -32,6 +36,7 @@ export default {
       sessionStartMs: new Date(this.session.startTime).getTime(),
       activeChannelIndex: null,
       historyOffset: 0,
+      usePublicEndpoint: false,
     }
   },
   computed: {
@@ -118,12 +123,32 @@ export default {
       translation.isLoadingHistory.value = true
 
       try {
-        const res = await apiGetSessionChannelTurns(
-          this.sessionOrganizationId,
-          this.session.id,
-          this.activeChannelIndex,
-          { limit: PAGE_SIZE, offset: this.historyOffset },
-        )
+        const paginationParams = { limit: PAGE_SIZE, offset: this.historyOffset }
+        let res = null
+
+        if (this.isFromPublicLink || this.usePublicEndpoint) {
+          res = await apiGetPublicSessionChannelTurns(
+            this.session.id,
+            this.activeChannelIndex,
+            paginationParams,
+          )
+        } else {
+          res = await apiGetSessionChannelTurns(
+            this.sessionOrganizationId,
+            this.session.id,
+            this.activeChannelIndex,
+            paginationParams,
+          )
+
+          if (!res || res.status === "error") {
+            this.usePublicEndpoint = true
+            res = await apiGetPublicSessionChannelTurns(
+              this.session.id,
+              this.activeChannelIndex,
+              paginationParams,
+            )
+          }
+        }
 
         const closedCaptions = res?.data?.closedCaptions ?? []
         const total = res?.data?.totalClosedCaptions ?? 0

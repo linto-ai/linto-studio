@@ -114,6 +114,20 @@ module.exports = (webServer) => {
               },
             ],
           },
+          {
+            path: "/sessions/public/:id/channels/:channelId",
+            method: ["get"],
+            addParams: [{ "body.visibility": "public" }],
+            executeBeforeResult: forwardSessionAliasPublic,
+            executeAfterResult: [
+              (jsonString) => {
+                return cleanPublicSessionContent(jsonString)
+              },
+              (jsonString, req) => {
+                return generatPublicToken(jsonString, req)
+              },
+            ],
+          },
         ],
         requireAuth: false,
       },

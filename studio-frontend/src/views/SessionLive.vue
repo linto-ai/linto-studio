@@ -93,7 +93,8 @@
         v-else
         ref="sessionLiveNG"
         :session="session"
-        :websocketInstance="websocketInstance" />
+        :websocketInstance="websocketInstance"
+        :isFromPublicLink="isFromPublicLink" />
 
       <Modal
         :withActions="false"
