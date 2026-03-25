@@ -26,7 +26,7 @@ useSubtitleScroller({
 <style scoped>
 .subtitle-banner {
   flex-shrink: 0;
-  background-color: #000;
+  background-color: var(--color-black);
   overflow: hidden;
 }
 

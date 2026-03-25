@@ -97,7 +97,7 @@ function onTranslationChange(translationId: string) {
         @update:selected-channel-id="onChannelChange"
         @update:selected-translation-id="onTranslationChange" />
 
-      <SidebarDrawer v-model:open="isSidebarOpen">
+      <SidebarDrawer v-if="isMobile" v-model:open="isSidebarOpen">
         <SpeakerSidebar
           :speakers="speakerList"
           :channels="channels"

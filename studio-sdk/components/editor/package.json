@@ -28,6 +28,7 @@
     "diff": "^8.0.3",
     "lucide-vue-next": "^0.564.0",
     "reka-ui": "^2.8.0",
+    "vue-stick-to-bottom": "^1.0.0",
     "wavesurfer.js": "^7.12.1"
   },
   "devDependencies": {

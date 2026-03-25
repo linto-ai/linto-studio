@@ -49,7 +49,7 @@ const classes = computed(() => [
   border: none;
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: background-color 150ms, color 150ms;
+  transition: background-color var(--transition-duration), color var(--transition-duration);
   white-space: nowrap;
 }
 
@@ -103,7 +103,7 @@ const classes = computed(() => [
 
 /* Variants */
 .editor-btn--primary {
-  color: #fff;
+  color: var(--color-white);
   background-color: var(--color-primary);
 }
 

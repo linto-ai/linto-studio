@@ -45,17 +45,17 @@ function startHistorySimulation() {
   if (!editor.live) return
 
   // Set initial historyTime before the first turn of the document
-  const sourceTr = editor.activeChannel.value.activeTranslation.value
+  const channel = editor.activeChannel.value
+  const sourceTr = channel.activeTranslation.value
   const firstTurn = sourceTr.turns.value[0]
   historyTime = firstTurn?.startTime ?? 0
 
-  sourceTr.hasMoreHistory.value = true
+  channel.hasMoreHistory.value = true
 
   unsubScrollTop = editor.on("scroll:top", () => {
     if (historyPageCount >= MAX_HISTORY_PAGES) return
 
-    const translation = editor.activeChannel.value.activeTranslation.value
-    translation.isLoadingHistory.value = true
+    channel.isLoadingHistory.value = true
 
     setTimeout(() => {
       const events: LiveFinalEvent[] = []
@@ -91,9 +91,9 @@ function startHistorySimulation() {
       editor.live!.prependFinalBatch(events, "ch-1")
       historyPageCount++
 
-      translation.isLoadingHistory.value = false
+      channel.isLoadingHistory.value = false
       if (historyPageCount >= MAX_HISTORY_PAGES) {
-        translation.hasMoreHistory.value = false
+        channel.hasMoreHistory.value = false
       }
     }, 800)
   })

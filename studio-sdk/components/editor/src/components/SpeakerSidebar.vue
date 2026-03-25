@@ -125,7 +125,7 @@ const translationItems = computed(() =>
   gap: var(--spacing-sm);
   padding: var(--spacing-sm);
   border-radius: var(--radius-md);
-  transition: background-color 150ms;
+  transition: background-color var(--transition-duration);
 }
 
 .speaker-item:hover {

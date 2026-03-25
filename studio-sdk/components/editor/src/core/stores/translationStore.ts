@@ -6,6 +6,7 @@ import { prependTurns as prependTurnsHelper } from "../helpers/prependTurns"
 import { patchTurn } from "../helpers/patchTurn"
 import { removeTurn as removeTurnHelper } from "../helpers/removeTurn"
 import { updateTurnWords } from "../helpers/updateTurnWords"
+import { ensureSpeakersFromTurns } from "../helpers/ensureSpeakersFromTurns"
 
 interface TranslationInit {
   id: string
@@ -25,8 +26,6 @@ export function createTranslationStore(
 ): TranslationStore {
   const { id, languages, isSource, audio } = init
   const turns = ref<Turn[]>(init.turns)
-  const isLoadingHistory = ref(false)
-  const hasMoreHistory = ref(true)
 
   function addTurn(turn: Turn): void {
     speakersEnsure(turn.speakerId)
@@ -56,28 +55,15 @@ export function createTranslationStore(
   }
 
   function prependTurns(newTurns: Turn[]): void {
-    const seen = new Set<string>()
-    for (const turn of newTurns) {
-      if (turn.speakerId && !seen.has(turn.speakerId)) {
-        seen.add(turn.speakerId)
-        speakersEnsure(turn.speakerId)
-      }
-    }
+    ensureSpeakersFromTurns(newTurns, speakersEnsure)
     turns.value = prependTurnsHelper(turns.value, newTurns)
-    emit("turns:prepend", { turns: newTurns, translationId: id })
   }
 
   function setTurns(newTurns: Turn[]): void {
-    const seen = new Set<string>()
-    for (const turn of newTurns) {
-      if (turn.speakerId && !seen.has(turn.speakerId)) {
-        seen.add(turn.speakerId)
-        speakersEnsure(turn.speakerId)
-      }
-    }
+    ensureSpeakersFromTurns(newTurns, speakersEnsure)
     turns.value = newTurns
     emit("translation:sync", { translationId: id })
   }
 
-  return { id, languages, isSource, audio, turns, isLoadingHistory, hasMoreHistory, addTurn, prependTurns, updateTurn, removeTurn, updateWords, setTurns }
+  return { id, languages, isSource, audio, turns, addTurn, prependTurns, updateTurn, removeTurn, updateWords, setTurns }
 }

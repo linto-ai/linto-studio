@@ -6,7 +6,7 @@
 import { markRaw } from "vue"
 import { sessionModelMixin } from "@/mixins/sessionModel.js"
 import sessionToEditorDocument from "@/tools/sessionToEditorDocument.js"
-import closedCaptionsToLiveFinalEvents from "@/tools/closedCaptionsToLiveFinalEvents.js"
+import processSessionCaptions from "@/tools/processSessionCaptions.js"
 import {
   apiGetSessionChannelTurns,
   apiGetPublicSessionChannelTurns,
@@ -115,15 +115,17 @@ export default {
     },
 
     async fetchTurnsPage() {
-      const translation =
-        this.editor.activeChannel.value.sourceTranslation
-      if (translation.isLoadingHistory.value) return
-      if (!translation.hasMoreHistory.value) return
+      const channel = this.editor.activeChannel.value
+      if (channel.isLoadingHistory.value) return
+      if (!channel.hasMoreHistory.value) return
 
-      translation.isLoadingHistory.value = true
+      channel.isLoadingHistory.value = true
 
       try {
-        const paginationParams = { limit: PAGE_SIZE, offset: this.historyOffset }
+        const paginationParams = {
+          limit: PAGE_SIZE,
+          offset: this.historyOffset,
+        }
         let res = null
 
         if (this.isFromPublicLink || this.usePublicEndpoint) {
@@ -151,20 +153,20 @@ export default {
         }
 
         const closedCaptions = res?.data?.closedCaptions ?? []
+        const translatedCaptions = res?.data?.translatedCaptions ?? []
         const total = res?.data?.totalClosedCaptions ?? 0
-
         if (closedCaptions.length === 0) {
-          translation.hasMoreHistory.value = false
+          channel.hasMoreHistory.value = false
           return
         }
 
-        const events = closedCaptionsToLiveFinalEvents(
+        const events = processSessionCaptions({
           closedCaptions,
-          this.sessionStartMs,
-          this.hasDiarization,
-          this.activeChannelObj?.languages?.[0] ?? "*",
-        )
-
+          translatedCaptions,
+          sessionStartMs: this.sessionStartMs,
+          diarization: this.hasDiarization,
+          defaultLanguage: this.activeChannelObj?.languages?.[0] ?? "*",
+        })
         if (events.length > 0) {
           this.editor.live.prependFinalBatch(events, this.activeChannelIndex)
         }
@@ -172,12 +174,12 @@ export default {
         this.historyOffset += closedCaptions.length
 
         if (this.historyOffset >= total) {
-          translation.hasMoreHistory.value = false
+          channel.hasMoreHistory.value = false
         }
       } catch (err) {
         console.error("[SessionLiveNG] Error fetching turns", err)
       } finally {
-        translation.isLoadingHistory.value = false
+        channel.isLoadingHistory.value = false
       }
     },
 
@@ -228,9 +230,7 @@ export default {
             content.end,
         ),
         language:
-          content.lang ??
-          activeChannel.sourceTranslation.languages[0] ??
-          "*",
+          content.lang ?? activeChannel.sourceTranslation.languages[0] ?? "*",
       }
 
       if (type === "original") {
@@ -241,7 +241,11 @@ export default {
       } else {
         const translations = Object.entries(content.translations || {})
           .filter(([, text]) => text)
-          .map(([lang, text]) => ({ translationId: lang, text, language: lang }))
+          .map(([lang, text]) => ({
+            translationId: lang,
+            text,
+            language: lang,
+          }))
         this.editor.live.onFinal(
           { ...baseTurn, translations },
           this.activeChannelIndex,

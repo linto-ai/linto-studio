@@ -16,7 +16,7 @@
   position: fixed;
   inset: 0;
   background-color: rgba(0, 0, 0, 0.4);
-  z-index: 50;
+  z-index: var(--z-overlay);
   animation: overlay-fade-in 200ms ease;
 }
 
@@ -27,9 +27,9 @@
   right: 0;
   bottom: 0;
   width: min(320px, 85vw);
-  z-index: 51;
+  z-index: var(--z-drawer);
   background-color: var(--color-surface);
-  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-md);
   animation: drawer-slide-in 250ms ease;
   overflow-y: auto;
   display: flex;

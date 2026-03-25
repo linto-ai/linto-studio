@@ -88,7 +88,7 @@ onUnmounted(() => {
   justify-content: center;
   width: 100%;
   height: 100%;
-  background-color: #000;
+  background-color: var(--color-black);
 }
 
 .subtitle-fullscreen__close {
@@ -103,10 +103,10 @@ onUnmounted(() => {
   height: 40px;
   border: none;
   background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  color: var(--color-white);
   border-radius: var(--radius-md, 8px);
   cursor: pointer;
-  transition: background-color 150ms ease;
+  transition: background-color var(--transition-duration) ease;
 }
 
 .subtitle-fullscreen__close:hover,

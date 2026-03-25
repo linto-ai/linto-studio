@@ -1,15 +1,22 @@
 <script setup lang="ts">
-import { computed, ref, useTemplateRef, onMounted, onBeforeUnmount, nextTick } from "vue"
+import {
+  computed,
+  useTemplateRef,
+  onMounted,
+  onBeforeUnmount,
+  watch,
+  nextTick,
+} from "vue"
 import {
   ScrollAreaRoot,
   ScrollAreaViewport,
   ScrollAreaScrollbar,
   ScrollAreaThumb,
 } from "reka-ui"
+import { useStickToBottom } from "vue-stick-to-bottom"
 import { ArrowDown } from "lucide-vue-next"
 import TranscriptionTurn from "./TranscriptionTurn.vue"
 import EditorButton from "./atoms/EditorButton.vue"
-import { useAutoScroll } from "../composables/useAutoScroll"
 import { useEditorStore } from "../core"
 import { useI18n } from "../i18n"
 import { throttle } from "../utils"
@@ -42,21 +49,35 @@ const partialTurn = computed(() => {
 const hasLiveUpdate = computed(() => editor.live?.hasLiveUpdate.value ?? false)
 const isPlaying = computed(() => editor.audio?.isPlaying.value ?? false)
 
-const activeTranslation = computed(() => editor.activeChannel.value.activeTranslation.value)
-const isLoadingHistory = computed(() => activeTranslation.value.isLoadingHistory.value)
-const hasMoreHistory = computed(() => activeTranslation.value.hasMoreHistory.value)
+const activeTranslation = computed(
+  () => editor.activeChannel.value.activeTranslation.value,
+)
+const activeChannel = computed(() => editor.activeChannel.value)
+const isLoadingHistory = computed(
+  () => activeChannel.value.isLoadingHistory.value,
+)
+const hasMoreHistory = computed(() => activeChannel.value.hasMoreHistory.value)
 
-// ── Scroll top detection + scroll preservation ──────────────────────────
+// ── Stick to bottom ────────────────────────────────────────────────────
 
-const isPrepending = ref(false)
+const { scrollRef, contentRef, isAtBottom, scrollToBottom } = useStickToBottom()
+
+onMounted(() => {
+  scrollRef.value =
+    panelRef.value?.querySelector("[data-reka-scroll-area-viewport]") ?? null
+  contentRef.value = panelRef.value?.querySelector(".turns-container") ?? null
+})
+
+// ── Scroll top detection ────────────────────────────────────────────────
+
 let viewport: HTMLElement | null = null
 
 const emitScrollTop = throttle(() => {
-  const translation = activeTranslation.value
-  if (!translation.hasMoreHistory.value) return
-  if (translation.isLoadingHistory.value) return
+  const channel = activeChannel.value
+  if (!channel.hasMoreHistory.value) return
+  if (channel.isLoadingHistory.value) return
   if (props.turns.length === 0) return
-  editor.emit("scroll:top", { translationId: translation.id })
+  editor.emit("scroll:top", { translationId: activeTranslation.value.id })
 }, 500)
 
 function onScrollTop() {
@@ -66,25 +87,37 @@ function onScrollTop() {
   }
 }
 
-let unsubPrepend: (() => void) | undefined
+watch(
+  () => props.turns,
+  (newTurns, oldTurns) => {
+    const newLen = newTurns.length
+    const oldLen = oldTurns.length
+    if (
+      newLen > oldLen &&
+      !isAtBottom.value &&
+      newTurns[0]?.id != oldTurns[0]?.id
+    ) {
+      const added = newLen - oldLen
+      const anchorId = props.turns[added]?.id
+      if (!anchorId || !scrollRef.value) return
+
+      nextTick(() => {
+        const el = scrollRef.value?.querySelector(
+          `[data-turn-id="${anchorId}"]`,
+        )
+        el?.scrollIntoView({ block: "start", behavior: "instant" })
+      })
+    }
+  },
+  { flush: "pre" },
+)
 
 onMounted(() => {
-  viewport = panelRef.value?.querySelector("[data-reka-scroll-area-viewport]") ?? null
+  viewport =
+    panelRef.value?.querySelector("[data-reka-scroll-area-viewport]") ?? null
   if (viewport) {
     viewport.addEventListener("scroll", onScrollTop, { passive: true })
   }
-
-  unsubPrepend = editor.on("turns:prepend", () => {
-    if (!viewport) return
-    const prevScrollHeight = viewport.scrollHeight
-    isPrepending.value = true
-    nextTick(() => {
-      if (!viewport) return
-      const delta = viewport.scrollHeight - prevScrollHeight
-      viewport.scrollTop += delta
-      isPrepending.value = false
-    })
-  })
 })
 
 onBeforeUnmount(() => {
@@ -92,10 +125,7 @@ onBeforeUnmount(() => {
     viewport.removeEventListener("scroll", onScrollTop)
     viewport = null
   }
-  unsubPrepend?.()
 })
-
-const { isFollowing, resumeFollow } = useAutoScroll({ panelRef, isPrepending })
 </script>
 
 <template>
@@ -107,10 +137,11 @@ const { isFollowing, resumeFollow } = useAutoScroll({ panelRef, isPrepending })
             <progress />
           </div>
           <div v-if="!hasMoreHistory && turns.length > 0" class="history-start">
-            {{ t('transcription.historyStart') }}
+            {{ t("transcription.historyStart") }}
           </div>
           <TranscriptionTurn
             v-for="(turn, i) in turns"
+            :data-turn-id="turn.id"
             :key="turn.id"
             :turn="turn"
             :speaker="turn.speakerId ? speakers.get(turn.speakerId) : undefined"
@@ -128,11 +159,11 @@ const { isFollowing, resumeFollow } = useAutoScroll({ panelRef, isPrepending })
 
       <Transition name="fade-slide">
         <EditorButton
-          v-if="!isFollowing && (isPlaying || hasLiveUpdate)"
+          v-if="!isAtBottom && (isPlaying || hasLiveUpdate)"
           size="sm"
           class="resume-scroll-btn"
           :aria-label="t('transcription.resumeScroll')"
-          @click="resumeFollow">
+          @click="scrollToBottom()">
           <template #icon><ArrowDown :size="14" /></template>
           {{ t("transcription.resumeScroll") }}
         </EditorButton>
@@ -193,7 +224,7 @@ const { isFollowing, resumeFollow } = useAutoScroll({ panelRef, isPrepending })
   user-select: none;
   padding: var(--spacing-xxs);
   width: 8px;
-  transition: background-color 150ms;
+  transition: background-color var(--transition-duration);
 }
 
 .scrollbar:hover {
@@ -205,7 +236,7 @@ const { isFollowing, resumeFollow } = useAutoScroll({ panelRef, isPrepending })
   background-color: var(--color-text-muted);
   border-radius: var(--radius-lg);
   opacity: 0.4;
-  transition: opacity 150ms;
+  transition: opacity var(--transition-duration);
   position: relative;
 }
 
@@ -219,12 +250,12 @@ const { isFollowing, resumeFollow } = useAutoScroll({ panelRef, isPrepending })
   bottom: var(--spacing-lg);
   left: 50%;
   translate: -50% 0;
-  z-index: 10;
+  z-index: var(--z-sticky);
   background: var(--glass-background);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--color-border);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Transition */

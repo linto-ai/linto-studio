@@ -36,7 +36,15 @@ const inputId = props.id ?? useId()
 }
 
 .switch input {
-  display: none;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
 .switch label {
@@ -47,7 +55,7 @@ const inputId = props.id ?? useId()
   border-radius: 20px;
   cursor: pointer;
   background-color: var(--color-border);
-  transition: background-color 150ms;
+  transition: background-color var(--transition-duration);
 }
 
 .switch .switch-slider {
@@ -58,8 +66,8 @@ const inputId = props.id ?? useId()
   position: relative;
   top: -2px;
   left: -2px;
-  background-color: white;
-  transition: left 150ms;
+  background-color: var(--color-white);
+  transition: left var(--transition-duration);
 }
 
 .switch input:checked + label {

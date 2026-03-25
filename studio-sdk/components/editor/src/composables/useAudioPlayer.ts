@@ -169,6 +169,10 @@ export function useAudioPlayer(options: UseAudioPlayerOptions) {
   }
 
   function destroy() {
+    if (syncTimeout !== null) {
+      clearTimeout(syncTimeout)
+      syncTimeout = null
+    }
     if (wavesurfer.value) {
       wavesurfer.value.destroy()
       wavesurfer.value = null
@@ -186,10 +190,15 @@ export function useAudioPlayer(options: UseAudioPlayerOptions) {
     { immediate: true },
   )
 
+  let syncTimeout: ReturnType<typeof setTimeout> | null = null
+
   watch([turns, speakers], () => {
-    if (isReady.value) {
+    if (!isReady.value) return
+    if (syncTimeout !== null) clearTimeout(syncTimeout)
+    syncTimeout = setTimeout(() => {
+      syncTimeout = null
       syncRegions()
-    }
+    }, 150)
   })
 
   onBeforeUnmount(() => {

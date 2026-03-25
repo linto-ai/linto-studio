@@ -15,7 +15,6 @@ const LintoEditor = defineCustomElement({
   },
   styles: [styles, baseStyles, selectStyles],
   setup(props, { expose }) {
-    console.log(props)
     const locale = ref<Locale>(props.locale as Locale)
     provideI18n(locale)
 

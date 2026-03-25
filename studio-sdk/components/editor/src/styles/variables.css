@@ -13,6 +13,8 @@
   --color-primary-hover: #3b5bdb;
   --color-border: #dee2e6;
   --color-border-light: #e9ecef;
+  --color-white: #ffffff;
+  --color-black: #000000;
 
   /* Typography */
   --font-family:
@@ -41,6 +43,19 @@
   /* Layout */
   --sidebar-width: 260px;
   --header-height: 56px;
+
+  /* Shadows */
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
+
+  /* Transitions */
+  --transition-duration: 150ms;
+
+  /* Z-index scale */
+  --z-sticky: 10;
+  --z-overlay: 50;
+  --z-drawer: 51;
+  --z-dropdown: 100;
 
   /* Glass effect */
   --glass-background: rgba(255, 255, 255, 0.8);

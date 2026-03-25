@@ -35,8 +35,8 @@
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  z-index: 100;
+  box-shadow: var(--shadow-sm);
+  z-index: var(--z-dropdown);
   min-width: var(--reka-select-trigger-width);
   overflow: hidden;
   padding: var(--spacing-xs) 0;
@@ -53,7 +53,7 @@
   cursor: pointer;
   position: relative;
   user-select: none;
-  transition: background-color 150ms;
+  transition: background-color var(--transition-duration);
 }
 
 .sidebar-select-item:hover,
@@ -77,10 +77,10 @@
   left: 0;
   right: 0;
   max-height: 50vh;
-  z-index: 51;
+  z-index: var(--z-drawer);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   background-color: var(--color-surface);
-  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-md);
   overflow-y: auto;
   animation: sheet-slide-up 250ms ease;
   display: flex;

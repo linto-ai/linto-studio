@@ -27,6 +27,8 @@ export function createChannelStore(
   }
 
   const activeTranslationId = ref<string | null>(null)
+  const isLoadingHistory = ref(false)
+  const hasMoreHistory = ref(true)
 
   const activeTranslation = computed<TranslationStore>(() => {
     if (activeTranslationId.value) {
@@ -39,7 +41,7 @@ export function createChannelStore(
     const normalized = translationId === sourceTranslation.id ? null : translationId
     if (normalized === activeTranslationId.value) return
     activeTranslationId.value = normalized
-    emit("translation:change", { translationId: activeTranslationId.value })
+    emit("translation:change", { translationId: activeTranslation.value.id })
   }
 
   return {
@@ -50,6 +52,8 @@ export function createChannelStore(
     translations,
     sourceTranslation,
     activeTranslation,
+    isLoadingHistory,
+    hasMoreHistory,
     setActiveTranslation,
   }
 }

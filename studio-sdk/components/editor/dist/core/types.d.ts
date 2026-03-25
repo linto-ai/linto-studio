@@ -29,10 +29,6 @@ export interface EditorEventMap {
     "speaker:add": {
         speaker: Speaker;
     };
-    "turns:prepend": {
-        turns: Turn[];
-        translationId: string;
-    };
     "scroll:top": {
         translationId: string;
     };
@@ -51,8 +47,6 @@ export interface TranslationStore {
     readonly isSource: boolean;
     readonly audio?: AudioSource;
     readonly turns: Ref<Turn[]>;
-    readonly isLoadingHistory: Ref<boolean>;
-    readonly hasMoreHistory: Ref<boolean>;
     addTurn(turn: Turn): void;
     prependTurns(turns: Turn[]): void;
     updateTurn(turnId: string, patch: Partial<Turn>): void;
@@ -68,6 +62,8 @@ export interface ChannelStore {
     readonly translations: Map<string, TranslationStore>;
     readonly sourceTranslation: TranslationStore;
     readonly activeTranslation: ComputedRef<TranslationStore>;
+    readonly isLoadingHistory: Ref<boolean>;
+    readonly hasMoreHistory: Ref<boolean>;
     setActiveTranslation(translationId: string | null): void;
 }
 export interface SpeakersStore {

@@ -1,5 +1,5 @@
-import computeSessionTurnUniqueId from "@/const/computeSessionTurnUniqueId"
-import classifySessionTurn from "@/tools/classifySessionTurn"
+import processSessionCaptions from "./processSessionCaptions.js"
+import computeSessionTurnUniqueId from "../const/computeSessionTurnUniqueId.js"
 
 /**
  * Converts a live session object into an EditorDocument.
@@ -19,21 +19,25 @@ export default function sessionToEditorDocument(session) {
   }
 
   const channels = session.channels.map((channel) => {
-    const originalTurns = (channel.closedCaptions ?? [])
-      .filter((c) => c.segmentId != null)
-      .filter(
-        (c) => classifySessionTurn(c, channel.diarization) === "original",
-      )
-      .map((c) => ({
-        id: computeSessionTurnUniqueId(c),
-        text: c.text ?? null,
-        words: [],
-        speakerId: c.locutor ?? null,
-        startTime: toSessionTime(c.astart, c.start),
-        endTime: toSessionTime(c.astart, c.end),
-        language: c.lang ?? channel.languages[0] ?? "*",
-      }))
+    const events = processSessionCaptions({
+      closedCaptions: channel.closedCaptions,
+      translatedCaptions: channel.translatedCaptions,
+      sessionStartMs,
+      diarization: channel.diarization,
+      defaultLanguage: channel.languages[0] ?? "*",
+    })
 
+    const sourceTurns = events.map((e) => ({
+      id: e.turnId,
+      text: e.text,
+      words: e.words,
+      speakerId: e.speakerId,
+      startTime: e.startTime,
+      endTime: e.endTime,
+      language: e.language,
+    }))
+
+    // Build translation buckets from declared targets
     const translations = {}
     for (const translationTarget of channel.translations ?? []) {
       translations[translationTarget.target] = {
@@ -44,29 +48,24 @@ export default function sessionToEditorDocument(session) {
       }
     }
 
-    for (const translationCaption of channel.translatedCaptions ?? []) {
-      if (!translations[translationCaption.targetLang]) {
-        translations[translationCaption.targetLang] = {
-          id: translationCaption.targetLang,
-          languages: [translationCaption.targetLang],
+    // Populate from translatedCaptions directly (preserves own timing + handles orphans)
+    for (const tc of channel.translatedCaptions ?? []) {
+      if (!translations[tc.targetLang]) {
+        translations[tc.targetLang] = {
+          id: tc.targetLang,
+          languages: [tc.targetLang],
           isSource: false,
           turns: [],
         }
       }
-      translations[translationCaption.targetLang].turns.push({
-        id: computeSessionTurnUniqueId(translationCaption),
-        startTime: toSessionTime(
-          translationCaption.astart,
-          translationCaption.start,
-        ),
-        endTime: toSessionTime(
-          translationCaption.astart,
-          translationCaption.end,
-        ),
-        language: translationCaption.targetLang,
-        text: translationCaption.text ?? null,
+      translations[tc.targetLang].turns.push({
+        id: computeSessionTurnUniqueId(tc),
+        text: tc.text ?? null,
         words: [],
-        speakerId: translationCaption.locutor ?? null,
+        speakerId: tc.locutor ?? null,
+        startTime: toSessionTime(tc.astart, tc.start),
+        endTime: toSessionTime(tc.astart, tc.end),
+        language: tc.targetLang,
       })
     }
 
@@ -78,7 +77,7 @@ export default function sessionToEditorDocument(session) {
         ...Object.values(translations),
         {
           id: "source",
-          turns: originalTurns,
+          turns: sourceTurns,
           languages: channel.languages,
           isSource: true,
         },

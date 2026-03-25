@@ -13,6 +13,7 @@ import { createSpeakersStore } from "./stores/speakersStore"
 import { createChannelStore } from "./stores/channelStore"
 import type { ChannelStore } from "./types"
 import { ensureDocumentSpeakers } from "./helpers/ensureDocumentSpeakers"
+import { ensureSpeakersFromTurns } from "./helpers/ensureSpeakersFromTurns"
 import * as utils from "../utils"
 
 export function createEditorStore(options: EditorStoreOptions = {}): EditorStore {
@@ -92,14 +93,8 @@ export function createEditorStore(options: EditorStoreOptions = {}): EditorStore
   function setChannel(channelId: string, channel: Channel): void {
     if (!channels.has(channelId)) return
 
-    const seen = new Set<string>()
     for (const translation of channel.translations) {
-      for (const turn of translation.turns) {
-        if (turn.speakerId && !seen.has(turn.speakerId)) {
-          seen.add(turn.speakerId)
-          speakers.ensure(turn.speakerId)
-        }
-      }
+      ensureSpeakersFromTurns(translation.turns, speakers.ensure)
     }
 
     channels.set(channelId, createChannelStore(channel, emit, speakers.ensure))
