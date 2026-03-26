@@ -26,7 +26,7 @@ module.exports = {
     "Not allowed to do this",
   ),
   SessionNotStarted: createException(
-    "TranscriberUnavailable",
+    "SessionNotStarted",
     "session",
     400,
     "Session must be ready or active",
