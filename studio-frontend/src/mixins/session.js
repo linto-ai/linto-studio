@@ -90,6 +90,7 @@ export const sessionMixin = {
         sessionRequest = await apiGetSession(
           this.organizationId,
           this.sessionId,
+          { withCaptions: false },
         )
       }
 
@@ -102,6 +103,7 @@ export const sessionMixin = {
         sessionRequest = await apiGetPublicSession(
           this.sessionId,
           this.usedPassword,
+          { withCaptions: false },
         )
       }
 

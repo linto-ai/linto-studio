@@ -15,6 +15,8 @@ import { getEnv } from "@/tools/getEnv"
 
 import Loading from "vue-loading-overlay"
 
+import { register as registerLintoEditor } from "@linto/studio-editor/webcomponent"
+
 import "vue-loading-overlay/dist/vue-loading.css"
 
 export const bus = new Vue()
@@ -36,3 +38,5 @@ new Vue({
   i18n,
   render: (h) => h(App),
 }).$mount("#app")
+
+registerLintoEditor()

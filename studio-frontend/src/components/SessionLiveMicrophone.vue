@@ -1,21 +1,5 @@
 <template>
   <V2Layout :breadcrumbItems="breadcrumbItems">
-    <template v-slot:sidebar>
-      <!-- <SessionLiveMicrophoneStatus
-        @toggle-microphone="toggleMicrophone"
-        :speaking="speaking"
-        :isRecording="isRecording"
-        :channelWebsocket="channelAudioWebsocket" /> -->
-      <SessionLiveToolbar
-        :channels="channels"
-        :qualifiedForCrossSubtitles="qualifiedForCrossSubtitles"
-        v-bind:selectedTranslation.sync="selectedTranslation"
-        v-bind:displayLiveTranscription.sync="displayLiveTranscription"
-        v-bind:displaySubtitles.sync="displaySubtitles"
-        v-bind:fontSize.sync="fontSize"
-        v-bind:selectedChannel.sync="selectedChannel"
-        quickSession />
-    </template>
     <template v-slot:breadcrumb-actions>
       <div
         class="flex1 flex gap-medium align-center"
@@ -48,22 +32,10 @@
       </div>
     </template>
     <div class="relative flex flex1 col">
-      <SessionLiveContent
-        :websocketInstance="$apiEventWS"
-        :organizationId="currentOrganizationScope"
-        displayLiveTranscription
+      <SessionLiveNG
+        ref="sessionLiveNG"
         :session="session"
-        :displaySubtitles="displaySubtitles"
-        :displayLiveTranscription="displayLiveTranscription"
-        :fontSize="fontSize"
-        noTitle
-        :selectedTranslations="selectedTranslation"
-        :selectedChannel="selectedChannel"
-        fromMicrophone
-        @toggleMicrophone="toggleMicrophone"
-        :speaking="speaking"
-        :isRecording="isRecording"
-        @onSave="$emit('onSave')" />
+        :websocketInstance="$apiEventWS" />
 
       <Modal
         :withActions="false"
@@ -80,23 +52,17 @@
   </V2Layout>
 </template>
 <script>
-import { sessionModelMixin } from "@/mixins/sessionModel.js"
 import { microphoneMixin } from "@/mixins/microphone.js"
 import { sessionMicrophoneMixin } from "@/mixins/sessionMicrophone.js"
 
-import { customDebug } from "@/tools/customDebug.js"
-import { isQualifiedForCrossSubtitles } from "@/tools/translationUtils.js"
-
-import SessionLiveToolbar from "@/components/SessionLiveToolbar.vue"
-import SessionLiveContent from "@/components/SessionLiveContent.vue"
-import SessionLiveMicrophoneStatus from "@/components/SessionLiveMicrophoneStatus.vue"
+import SessionLiveNG from "@/components/SessionLiveNG.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
 
 import V2Layout from "@/layouts/v2-layout.vue"
 
 export default {
-  mixins: [sessionModelMixin, microphoneMixin, sessionMicrophoneMixin],
+  mixins: [microphoneMixin, sessionMicrophoneMixin],
   props: {
     session: {
       type: Object,
@@ -112,28 +78,14 @@ export default {
     },
   },
   data() {
-    const currentChannel = this.currentChannel || this.session.channels[0]
+    const recordingChannel = this.currentChannel || this.session.channels[0]
     return {
-      selectedTranslation: "original",
-      displayLiveTranscription: true,
-      displaySubtitles: false,
-      fontSize: "40",
-      selectedChannel: currentChannel,
+      recordingChannel,
       deviceId: null,
       showMicrophoneSetup: true,
     }
   },
-  mounted() {
-    // this.initMicrophone()
-    // this.setupRecording(this.selectedChannel)
-  },
   computed: {
-    qualifiedForCrossSubtitles() {
-      return isQualifiedForCrossSubtitles(
-        this.selectedChannel.translations,
-        this.selectedChannel.languages,
-      )
-    },
     breadcrumbItems() {
       return [
         {
@@ -147,13 +99,11 @@ export default {
       this.showMicrophoneSetup = false
       this.deviceId = deviceId
       this.initMicrophone()
-      this.setupRecording(this.selectedChannel)
+      this.setupRecording(this.recordingChannel)
     },
   },
   components: {
-    SessionLiveToolbar,
-    SessionLiveContent,
-    SessionLiveMicrophoneStatus,
+    SessionLiveNG,
     V2Layout,
     Modal,
     SessionSetupMicrophone,
