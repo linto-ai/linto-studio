@@ -45,6 +45,7 @@
 
     <template v-slot:sidebar v-if="useMicrophone && sessionLoaded">
       <SessionLiveMicrophoneStatus
+        style="margin-top: 1rem"
         @toggle-microphone="toggleMicrophone"
         :speaking="speaking"
         :isRecording="isRecording"

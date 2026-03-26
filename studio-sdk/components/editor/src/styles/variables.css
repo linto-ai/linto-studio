@@ -44,11 +44,11 @@
   --font-family:
     "Atkinson Hyperlegible Next", system-ui, -apple-system, sans-serif;
   --font-family-mono: "Atkinson Hyperlegible Mono", ui-monospace, monospace;
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.8125rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.5rem;
+  --font-size-xs: 0.875rem;
+  --font-size-sm: 1rem;
+  --font-size-base: 1.125rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.75rem;
   --line-height: 1.6;
 
   /* Spacing */
@@ -65,7 +65,7 @@
   --radius-lg: 12px;
 
   /* Layout */
-  --sidebar-width: 260px;
+  --sidebar-width: 300px;
   --header-height: 56px;
 
   /* Shadows */
