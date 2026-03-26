@@ -17,6 +17,7 @@ const {
 } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
+const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 
 const HEALTH_CHECK_TIMEOUT = 5000 // 5 seconds
 
@@ -68,7 +69,7 @@ async function verifyJobExists(jobId) {
  */
 async function listGenerations(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
+    requireParam(req.params.conversationId, ConversationIdRequire)
 
     const { serviceId } = req.query
     if (!serviceId) {
@@ -130,7 +131,7 @@ async function listGenerations(req, res, next) {
  */
 async function createGeneration(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
+    requireParam(req.params.conversationId, ConversationIdRequire)
 
     const { serviceId, jobId, serviceName } = req.body
 
@@ -190,7 +191,7 @@ async function createGeneration(req, res, next) {
  */
 async function getGeneration(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
+    requireParam(req.params.conversationId, ConversationIdRequire)
 
     const { generationId } = req.params
     if (!generationId) {
@@ -250,7 +251,7 @@ async function updateGenerationStatus(jobId, status, error = null) {
  */
 async function deleteGeneration(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
+    requireParam(req.params.conversationId, ConversationIdRequire)
 
     const { generationId } = req.params
     if (!generationId) {

@@ -21,6 +21,8 @@ const axios = require(`${process.cwd()}/lib/utility/axios`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const crypto = require("crypto")
 
+const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
+
 function verifyPublicSessionPassword(storedHash, inputPassword) {
   const inputKey = crypto.pbkdf2Sync(
     inputPassword,
@@ -34,9 +36,7 @@ function verifyPublicSessionPassword(storedHash, inputPassword) {
 
 function ensurePasswordIfNeeded(sessionData, req) {
   if (sessionData.password && req.payload.fromPublic === true) {
-    if (!req.query.password) {
-      throw new Unauthorized("Password is required for this alias")
-    }
+    requireParam(req.query.password, Unauthorized, "Password is required for this alias")
     if (
       !verifyPublicSessionPassword(sessionData.password, req.query.password)
     ) {

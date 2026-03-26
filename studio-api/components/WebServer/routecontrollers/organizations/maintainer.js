@@ -37,10 +37,13 @@ const { UserError } = require(
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
 
+const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
+
 async function addUserInOrganization(req, res, next) {
   try {
-    if (!req.params.organizationId || !req.body.email || !req.body.role)
-      throw new OrganizationUnsupportedMediaType()
+    requireParam(req.params.organizationId, OrganizationUnsupportedMediaType)
+    requireParam(req.body.email, OrganizationUnsupportedMediaType)
+    requireParam(req.body.role, OrganizationUnsupportedMediaType)
 
     if (isNaN(req.body.role) && ROLES.checkValue(req.body.role))
       throw new OrganizationUnsupportedMediaType("Role value is not valid")
@@ -143,8 +146,9 @@ async function addUserInOrganization(req, res, next) {
 
 async function updateUserFromOrganization(req, res, next) {
   try {
-    if (!req.params.organizationId || !req.body.userId || !req.body.role)
-      throw new OrganizationUnsupportedMediaType()
+    requireParam(req.params.organizationId, OrganizationUnsupportedMediaType)
+    requireParam(req.body.userId, OrganizationUnsupportedMediaType)
+    requireParam(req.body.role, OrganizationUnsupportedMediaType)
 
     if (isNaN(req.body.role) && ROLES.checkValue(req.body.role))
       throw new OrganizationUnsupportedMediaType("Role value is not valid")
@@ -198,8 +202,8 @@ async function updateUserFromOrganization(req, res, next) {
 
 async function deleteUserFromOrganization(req, res, next) {
   try {
-    if (!req.params.organizationId || !req.body.userId)
-      throw new OrganizationUnsupportedMediaType()
+    requireParam(req.params.organizationId, OrganizationUnsupportedMediaType)
+    requireParam(req.body.userId, OrganizationUnsupportedMediaType)
 
     let organization = await model.organizations.getById(
       req.params.organizationId,
@@ -240,7 +244,7 @@ async function deleteUserFromOrganization(req, res, next) {
 
 async function deleteConversationFromOrganization(req, res, next) {
   try {
-    if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
+    requireParam(req.params.organizationId, OrganizationUnsupportedMediaType)
 
     let organization = await model.organizations.getById(
       req.params.organizationId,
@@ -248,7 +252,7 @@ async function deleteConversationFromOrganization(req, res, next) {
     if (organization.length === 0) throw new OrganizationNotFound()
     else organization = organization[0]
 
-    if (!req.body.conversationsId) throw new OrganizationUnsupportedMediaType()
+    requireParam(req.body.conversationsId, OrganizationUnsupportedMediaType)
     const convIds = req.body.conversationsId.split(",")
     const userId = req.payload.data.userId
 
@@ -318,12 +322,12 @@ async function deleteConversationFromOrganization(req, res, next) {
 
 async function updateConversationOwner(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
+    requireParam(req.params.conversationId, ConversationIdRequire)
     const conversation = await model.conversations.getById(
       req.params.conversationId,
     )
     if (conversation.length !== 1) throw new ConversationNotFound()
-    if (!req.body.userId) throw new ConversationError("User ID is required")
+    requireParam(req.body.userId, ConversationError, "User ID is required")
     const user = await model.users.getById(req.body.userId)
     if (user.length !== 1) throw new ConversationError("User not found")
 

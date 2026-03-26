@@ -29,6 +29,7 @@ const {
 } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
+const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 
 const HEALTH_CHECK_TIMEOUT = 5000 // 5 seconds
 
@@ -62,7 +63,7 @@ async function deleteOrphanExportReference(conversationExport) {
 
 async function listExport(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
+    requireParam(req.params.conversationId, ConversationIdRequire)
     let conversationExport = await model.conversationExport.getByConvAndFormat(
       req.params.conversationId,
     )
@@ -159,7 +160,7 @@ async function listExport(req, res, next) {
 
 async function exportConversation(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
+    requireParam(req.params.conversationId, ConversationIdRequire)
     if (!req.query.format)
       throw new ConversationMetadataRequire("format is required")
 
@@ -840,7 +841,7 @@ function secondsToHHMMSSWithDecimals(totalSeconds, secondsDecimals = 0) {
  */
 async function updateExportResult(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
+    requireParam(req.params.conversationId, ConversationIdRequire)
     const { jobId } = req.params
     const { content } = req.body
 
@@ -881,7 +882,7 @@ async function updateExportResult(req, res, next) {
  */
 async function listExportVersions(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
+    requireParam(req.params.conversationId, ConversationIdRequire)
     const { jobId } = req.params
 
     if (!jobId) throw new ConversationMetadataRequire("jobId is required")
@@ -912,7 +913,7 @@ async function listExportVersions(req, res, next) {
  */
 async function getExportVersion(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
+    requireParam(req.params.conversationId, ConversationIdRequire)
     const { jobId, versionNumber } = req.params
 
     if (!jobId) throw new ConversationMetadataRequire("jobId is required")
@@ -944,7 +945,7 @@ async function getExportVersion(req, res, next) {
  */
 async function restoreExportVersion(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
+    requireParam(req.params.conversationId, ConversationIdRequire)
     const { jobId, versionNumber } = req.params
 
     if (!jobId) throw new ConversationMetadataRequire("jobId is required")
@@ -989,7 +990,7 @@ async function restoreExportVersion(req, res, next) {
  */
 async function generateExportDocument(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
+    requireParam(req.params.conversationId, ConversationIdRequire)
     const { jobId } = req.params
     const { format, versionNumber } = req.body
 
@@ -1047,7 +1048,7 @@ async function generateExportDocument(req, res, next) {
  */
 async function getExportContent(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
+    requireParam(req.params.conversationId, ConversationIdRequire)
     const { jobId } = req.params
 
     if (!jobId) throw new ConversationMetadataRequire("jobId is required")
@@ -1151,7 +1152,7 @@ async function getExportContent(req, res, next) {
  */
 async function deleteExportVersion(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
+    requireParam(req.params.conversationId, ConversationIdRequire)
     const { jobId, versionNumber } = req.params
 
     if (!jobId) throw new ConversationMetadataRequire("jobId is required")

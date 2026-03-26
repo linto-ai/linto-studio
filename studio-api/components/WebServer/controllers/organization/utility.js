@@ -14,6 +14,8 @@ const RIGHT = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
 
+const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
+
 function countAdmin(organization, userId) {
   let adminCount = 0
   let isAdmin = false
@@ -82,8 +84,7 @@ async function getOrgaIdFromReq(req) {
   let organizationId = req.params.organizationId
 
   if (organizationId === undefined) {
-    if (!req.params.conversationId)
-      throw new ConversationIdRequire("Conversation id is required")
+    requireParam(req.params.conversationId, ConversationIdRequire, "Conversation id is required")
 
     const conversation = await model.conversations.getById(
       req.params.conversationId,

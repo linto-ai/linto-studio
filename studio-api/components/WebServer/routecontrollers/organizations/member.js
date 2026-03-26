@@ -17,11 +17,12 @@ const {
 } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
+const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 
 async function leaveSelfFromOrganization(req, res, next) {
   try {
     const userId = req.payload.data.userId
-    if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
+    requireParam(req.params.organizationId, OrganizationUnsupportedMediaType)
 
     let organization = await model.organizations.getByIdAndUser(
       req.params.organizationId,
@@ -63,7 +64,7 @@ async function listConversationFromOrganization(req, res, next) {
     req.query.paginate = false
 
     const userId = req.payload.data.userId
-    if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
+    requireParam(req.params.organizationId, OrganizationUnsupportedMediaType)
 
     const organization = (
       await model.organizations.getByIdAndUser(

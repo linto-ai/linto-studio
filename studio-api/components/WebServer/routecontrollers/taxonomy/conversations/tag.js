@@ -15,13 +15,12 @@ const { ConversationIdRequire, ConversationNotFound } = require(
 const { TagError, TagNotFound, TagUnsupportedMediaType } = require(
   `${process.cwd()}/components/WebServer/error/exception/tag`,
 )
+const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 
 async function removeTagFromConversation(req, res, next) {
   try {
-    if (!req.params.conversationId)
-      throw new ConversationIdRequire("Conversation id is required")
-    if (!req.params.tagId)
-      throw new TagUnsupportedMediaType("Tag id is required")
+    requireParam(req.params.conversationId, ConversationIdRequire, "Conversation id is required")
+    requireParam(req.params.tagId, TagUnsupportedMediaType, "Tag id is required")
 
     const conversationId = req.params.conversationId
     const tagId = req.params.tagId

@@ -42,6 +42,7 @@ const {
 const { OrganizationNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
+const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 
 async function transcribeReq(req, res, next) {
   try {
@@ -63,14 +64,10 @@ async function transcribeReq(req, res, next) {
 async function transcribe(isSingleFile, req, res, next) {
   try {
     const userId = req.payload.data.userId
-    if (!req.body.name)
-      throw new ConversationMetadataRequire("name param is required")
-    if (!req.body.lang)
-      throw new ConversationMetadataRequire("lang param is required")
-    if (!req.body.endpoint)
-      throw new ConversationMetadataRequire("serviceEndpoint param is required")
-    if (!req.params.organizationId)
-      throw new ConversationMetadataRequire("organizationId param is required")
+    requireParam(req.body.name, ConversationMetadataRequire, "name param is required")
+    requireParam(req.body.lang, ConversationMetadataRequire, "lang param is required")
+    requireParam(req.body.endpoint, ConversationMetadataRequire, "serviceEndpoint param is required")
+    requireParam(req.params.organizationId, ConversationMetadataRequire, "organizationId param is required")
 
     req.body.membersRight = isNaN(req.body.membersRight)
       ? CONVERSATION_RIGHT.READ

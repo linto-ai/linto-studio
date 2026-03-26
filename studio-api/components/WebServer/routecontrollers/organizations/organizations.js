@@ -10,10 +10,11 @@ const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
 const { OrganizationError, OrganizationUnsupportedMediaType } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
+const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 
 async function createOrganization(req, res, next) {
   try {
-    if (!req.body.name) throw new OrganizationUnsupportedMediaType()
+    requireParam(req.body.name, OrganizationUnsupportedMediaType)
 
     const organization = {
       name: req.body.name,
@@ -42,7 +43,7 @@ async function createOrganization(req, res, next) {
 
 async function getOrganization(req, res, next) {
   try {
-    if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
+    requireParam(req.params.organizationId, OrganizationUnsupportedMediaType)
 
     const lorganization = await model.organizations.getByIdAndUser(
       req.params.organizationId,

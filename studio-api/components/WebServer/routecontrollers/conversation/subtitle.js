@@ -21,6 +21,8 @@ const {
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
 
+const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
+
 const MAX_CHAR_PER_SEGMENT = 80
 const MIN_CHAR_PER_SEGMENT = 20
 
@@ -250,10 +252,8 @@ function splitStringIntoLines(inputString, screenLines) {
 
 async function generateSubtitle(req, res, next) {
   try {
-    if (!req.params.conversationId)
-      throw new SubtitleUnsupportedMediaType("Conversation id is required")
-    if (!req.body.version)
-      throw new SubtitleUnsupportedMediaType("Version name is required")
+    requireParam(req.params.conversationId, SubtitleUnsupportedMediaType, "Conversation id is required")
+    requireParam(req.body.version, SubtitleUnsupportedMediaType, "Version name is required")
 
     const conversationId = req.params.conversationId
 
@@ -498,7 +498,7 @@ async function deleteSubtitle(req, res, next) {
 
 async function deleteManySubtitle(req, res, next) {
   try {
-    if (!req.query.subtitleId) throw new SubtitleUnsupportedMediaType()
+    requireParam(req.query.subtitleId, SubtitleUnsupportedMediaType)
 
     const idsToRemove = req.query.subtitleId.split(",")
     const result = await model.conversationSubtitles.deleteMany(idsToRemove)

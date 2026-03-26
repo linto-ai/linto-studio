@@ -13,15 +13,13 @@ const { KeywordError, KeywordMetadataRequire } = require(
 const { ConversationIdRequire } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
+const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 
 async function keywordExtract(req, res, next) {
   try {
-    if (!req.body.endpoint)
-      throw new KeywordMetadataRequire("endpoint param is required")
-    if (!req.body.serviceName)
-      throw new KeywordMetadataRequire("serviceName param is required")
-
-    if (!req.params.conversationId) throw new ConversationIdRequire()
+    requireParam(req.body.endpoint, KeywordMetadataRequire, "endpoint param is required")
+    requireParam(req.body.serviceName, KeywordMetadataRequire, "serviceName param is required")
+    requireParam(req.params.conversationId, ConversationIdRequire)
     let service = process.env.GATEWAY_SERVICES + "/" + req.body.endpoint
 
     const conversation = await model.conversations.getById(
