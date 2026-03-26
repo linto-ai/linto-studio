@@ -211,10 +211,15 @@ export default {
     },
 
     onFinal(content) {
+      if (this.sessionStartMs === 0) {
+        this.sessionStartMs = new Date().getTime()
+      }
+
       const type = classifySessionTurn(content, this.hasDiarization)
       if (type === "bot") return
 
       const activeChannel = this.editor.activeChannel.value
+
       const baseTurn = {
         turnId: computeSessionTurnUniqueId(content),
         speakerId: content.locutor ?? null,

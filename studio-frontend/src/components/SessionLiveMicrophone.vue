@@ -78,7 +78,6 @@ export default {
     },
   },
   data() {
-    console.log(this.session)
     const recordingChannel = this.currentChannel || this.session.channels[0]
     return {
       recordingChannel,
