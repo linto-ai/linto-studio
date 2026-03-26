@@ -1,5 +1,5 @@
 <template>
-  <linto-editor ref="editor" locale="en" no-header />
+  <linto-editor ref="editor" :locale="$i18n.locale" no-header />
 </template>
 
 <script>
@@ -273,5 +273,17 @@ linto-editor {
   display: block;
   flex: 1;
   min-height: 0;
+
+  /* Map host theme variables to editor tokens */
+  --color-primary: var(--primary-color);
+  --color-primary-hover: var(--primary-color);
+  --color-background: var(--background-app);
+  --color-surface: var(--background-primary);
+  --color-surface-hover: var(--neutral-20);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--neutral-60);
+  --color-border: var(--neutral-30);
+  --color-border-light: var(--neutral-20);
 }
 </style>

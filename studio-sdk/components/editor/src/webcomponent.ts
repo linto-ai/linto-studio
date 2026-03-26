@@ -1,4 +1,4 @@
-import { defineCustomElement, ref, h } from "vue"
+import { defineCustomElement, ref, h, watch } from "vue"
 import EditorLayout from "./components/EditorLayout.vue"
 import { createEditorStore, provideEditorStore } from "./core"
 import { createAudioPlugin } from "./plugins/audio"
@@ -17,6 +17,10 @@ const LintoEditor = defineCustomElement({
   setup(props, { expose }) {
     const locale = ref<Locale>(props.locale as Locale)
     provideI18n(locale)
+
+    watch(() => props.locale, (val) => {
+      locale.value = val as Locale
+    })
 
     const editor = createEditorStore()
     editor.use(createAudioPlugin())

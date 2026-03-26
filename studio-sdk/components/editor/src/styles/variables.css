@@ -1,4 +1,28 @@
-/* Design tokens */
+/*
+ * Design tokens
+ *
+ * Public theming API — these CSS custom properties can be overridden from
+ * outside the web component by setting them on the <linto-editor> element:
+ *
+ *   linto-editor {
+ *     --color-primary: #e63946;
+ *     --color-background: #fafafa;
+ *   }
+ *
+ * Colors:
+ *   --color-primary          Accent / brand color
+ *   --color-primary-hover    Primary hover state
+ *   --color-background       Page background
+ *   --color-surface          Cards, panels, player
+ *   --color-surface-hover    Hover on surfaces
+ *   --color-text-primary     Main text
+ *   --color-text-secondary   Secondary text (timestamps…)
+ *   --color-text-muted       Muted text (labels)
+ *   --color-border           Borders
+ *   --color-border-light     Light borders
+ *
+ * Typography, spacing, radius, and shadows are also overridable.
+ */
 
 :root,
 :host {
