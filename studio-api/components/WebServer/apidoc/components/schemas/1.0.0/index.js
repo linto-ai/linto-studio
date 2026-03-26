@@ -14,4 +14,7 @@ module.exports = {
   ...require("./user.json"),
   ...require("./word.json"),
   ...require("./audiowaveform.json"),
+  ...require("./voice-sample.json"),
+  ...require("./voiceprint-collection.json"),
+  ...require("./speaker-label.json"),
 }
