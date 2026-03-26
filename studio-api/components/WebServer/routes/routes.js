@@ -8,7 +8,6 @@ module.exports = (webServer) => {
     "/auth": [...require("./auth/index.js")(webServer)],
     "/api/users/self/favorites": require("./api/users/favorites.js")(webServer),
     "/api/users": require("./api/users/users.js")(webServer),
-    "/api/users/self/voice": require("./api/users/userVoiceOptIn")(webServer),
     "/api/organizations": require("./api/organization/organizations")(
       webServer,
     ),
@@ -18,14 +17,6 @@ module.exports = (webServer) => {
       require("./api/organization/tag")(webServer),
     "/api/organizations/:organizationId/folders":
       require("./api/organization/folders")(webServer),
-    "/api/organizations/:organizationId/voiceprint-collections":
-      require("./api/organization/voiceprintCollection")(webServer),
-    "/api/organizations/:organizationId/voiceprint-collections/:collectionId/labels":
-      require("./api/organization/speakerLabel")(webServer),
-    "/api/organizations/:organizationId/voiceprint-collections/:collectionId/labels/:labelId/voice-samples":
-      require("./api/organization/voiceSample")(webServer),
-    "/api/organizations/:organizationId/voiceprint-collections/:collectionId/opted-in-members":
-      require("./api/organization/optedInMembers")(webServer),
     "/api/conversations": [
       ...require("./api/conversation/share")(webServer),
       ...require("./api/conversation/conversations")(webServer),
@@ -59,6 +50,17 @@ module.exports = (webServer) => {
     "/api/nlp": require("./api/nlp/nlp")(webServer),
     "/api/services": require("./api/service/services")(webServer, this),
     "/api/publication": require("./api/publication/publication")(webServer),
+  }
+
+    "/api/users/self/voice": require("./api/users/userVoiceOptIn")(webServer),
+    "/api/organizations/:organizationId/voiceprint-collections":
+      require("./api/organization/voiceprintCollection")(webServer),
+    "/api/organizations/:organizationId/voiceprint-collections/:collectionId/labels":
+      require("./api/organization/speakerLabel")(webServer),
+    "/api/organizations/:organizationId/voiceprint-collections/:collectionId/labels/:labelId/voice-samples":
+      require("./api/organization/voiceSample")(webServer),
+    "/api/organizations/:organizationId/voiceprint-collections/:collectionId/opted-in-members":
+      require("./api/organization/optedInMembers")(webServer),
   }
 
   let proxy_routes = []

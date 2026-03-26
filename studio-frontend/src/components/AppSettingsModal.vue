@@ -42,7 +42,7 @@
                 <span>{{ $t("app_settings_modal.notifications") }}</span>
               </a>
             </li>
-            <li :class="{ active: selectedTab === 'speakerRecognition' }">
+            <li v-if="speakerIdentificationEnabled" :class="{ active: selectedTab === 'speakerRecognition' }">
               <a href="#" @click="selectTab('speakerRecognition')">
                 <ph-icon name="waveform" weight="bold"></ph-icon>
                 <span>{{ $t("app_settings_modal.speaker_recognition") }}</span>
@@ -86,7 +86,7 @@
                 <span>{{ $t("app_settings_modal.tags") }}</span>
               </a>
             </li>
-            <li :class="{ active: selectedTab === 'speakerIdentification' }">
+            <li v-if="speakerIdentificationEnabled" :class="{ active: selectedTab === 'speakerIdentification' }">
               <a href="#" @click="selectTab('speakerIdentification')">
                 <ph-icon name="microphone" weight="bold"></ph-icon>
                 <span>{{ $t("app_settings_modal.speaker_identification") }}</span>
@@ -166,6 +166,7 @@
 <script>
 import { mapGetters } from "vuex"
 import { apiSendVerificationLink } from "@/api/user.js"
+import { getEnv } from "@/tools/getEnv"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 
@@ -220,6 +221,9 @@ export default {
       organizationId: "getCurrentOrganizationScope",
     }),
     ...mapGetters("system", ["isMobile"]),
+    speakerIdentificationEnabled() {
+      return getEnv("VUE_APP_ENABLE_SPEAKER_IDENTIFICATION") === "true"
+    },
     isModalOpen: {
       get() {
         return this.$store.state.settings.isModalOpen
