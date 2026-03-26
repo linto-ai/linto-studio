@@ -341,7 +341,7 @@ import {
 import { voiceSignaturePlaybackMixin } from "@/mixins/voiceSignaturePlayback.js"
 
 function defaultVoiceprintStatus() {
-  return { hasVoiceprint: false, storageMode: "audio", audioSamplesCount: 0, lastUpdate: null }
+  return { hasVoiceprint: false, storageMode: STORAGE_MODE.AUDIO, audioSamplesCount: 0, lastUpdate: null }
 }
 
 export default {
@@ -948,44 +948,6 @@ export default {
     text-align: center;
     display: flex;
     justify-content: center;
-  }
-
-  &__orgs-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  &__org-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.5rem 0.75rem;
-    border: 1px solid var(--neutral-20);
-    border-radius: 6px;
-    font-size: 14px;
-  }
-
-  &__org-name {
-    font-weight: 500;
-  }
-
-  &__org-toggle {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-
-    input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
-      cursor: pointer;
-    }
-  }
-
-  &__org-toggle-label {
-    font-size: 12px;
-    color: var(--text-secondary);
   }
 
   // Record modal styles

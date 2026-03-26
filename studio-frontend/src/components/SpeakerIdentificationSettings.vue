@@ -69,10 +69,19 @@
             <span class="speaker-diarization__card-name">
               {{ collection.name }}
             </span>
+            <template v-for="badge in [collectionBadge(collection)]">
+              <span
+                :key="'badge-' + collection._id"
+                class="speaker-diarization__card-badge"
+                :class="badge.cls">
+                <ph-icon :name="badge.icon" size="xs" />
+                {{ badge.label }}
+              </span>
+            </template>
             <span
-              v-if="collection.description || isOrganizationType(collection)"
+              v-if="collection.description"
               class="speaker-diarization__card-desc">
-              {{ collection.description || $t("speaker_diarization.auto_managed") }}
+              {{ collection.description }}
             </span>
             <div class="speaker-diarization__card-actions" @click.stop>
               <template v-if="!isOrganizationType(collection)">
@@ -135,16 +144,25 @@
             "
             class="speaker-diarization__input" />
 
-          <label>{{ $t("speaker_diarization.storage_mode") }}</label>
-          <FormRadio
-            :field="storageModeField"
-            @input="newCollection.storageMode = $event" />
-
+          <div class="speaker-diarization__storage-toggle">
+            <div>
+              <span class="speaker-diarization__storage-label">
+                {{ $t("speaker_diarization.voiceprint_storage_mode_embeddings") }}
+              </span>
+              <span class="speaker-diarization__storage-desc">
+                {{ $t("speaker_diarization.voiceprint_storage_mode_embeddings_desc") }}
+              </span>
+            </div>
+            <SwitchInput
+              :value="isEmbeddingsMode"
+              id="create-storage-mode-toggle"
+              @input="onCreateStorageModeToggle" />
+          </div>
           <p
             v-if="isEmbeddingsMode"
-            class="speaker-diarization__irreversible-warning">
+            class="speaker-diarization__storage-warning">
             <ph-icon name="warning" size="sm" />
-            {{ $t("speaker_diarization.storage_mode_warning_irreversible") }}
+            {{ $t("speaker_diarization.voiceprint_storage_mode_warning") }}
           </p>
         </div>
       </Modal>
@@ -190,7 +208,7 @@
 
 <script>
 import Button from "@/components/atoms/Button.vue"
-import FormRadio from "@/components/molecules/FormRadio.vue"
+import SwitchInput from "@/components/atoms/SwitchInput.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import SpeakerLabelCollectionDetail from "@/components/SpeakerLabelCollectionDetail.vue"
 import SpeakerLabelDetail from "@/components/SpeakerLabelDetail.vue"
@@ -209,7 +227,7 @@ export default {
   name: "SpeakerIdentificationSettings",
   components: {
     Button,
-    FormRadio,
+    SwitchInput,
     Modal,
     SpeakerLabelCollectionDetail,
     SpeakerLabelDetail,
@@ -232,24 +250,14 @@ export default {
       showCreateModal: false,
       showEditModal: false,
       showDeleteModal: false,
-      newCollection: { name: "", description: "", storageMode: "audio" },
+      newCollection: { name: "", description: "", storageMode: STORAGE_MODE.AUDIO },
       editCollection: { _id: null, name: "", description: "" },
       deletingCollection: null,
     }
   },
   computed: {
-    storageModeField() {
-      return {
-        value: this.newCollection.storageMode,
-        error: null,
-        options: [
-          { name: "audio", label: this.$t("speaker_diarization.storage_mode_audio"), description: this.$t("speaker_diarization.storage_mode_audio_desc") },
-          { name: "embeddings", label: this.$t("speaker_diarization.storage_mode_embeddings"), description: this.$t("speaker_diarization.storage_mode_embeddings_desc") },
-        ],
-      }
-    },
     isEmbeddingsMode() {
-      return this.newCollection.storageMode === STORAGE_MODE.EMBEDDINGS
+      return this.isEmbeddingsCollection(this.newCollection)
     },
     sortedCollections() {
       return [...this.collections].sort((a, b) => {
@@ -272,6 +280,23 @@ export default {
     this.fetchCollections()
   },
   methods: {
+    onCreateStorageModeToggle(enabled) {
+      this.newCollection.storageMode = enabled
+        ? STORAGE_MODE.EMBEDDINGS
+        : STORAGE_MODE.AUDIO
+    },
+    isEmbeddingsCollection(collection) {
+      return collection.storageMode === STORAGE_MODE.EMBEDDINGS
+    },
+    collectionBadge(collection) {
+      if (this.isOrganizationType(collection)) {
+        return { cls: "speaker-diarization__card-badge--org", icon: "users", label: this.$t("speaker_diarization.badge_auto_managed") }
+      }
+      if (this.isEmbeddingsCollection(collection)) {
+        return { cls: "speaker-diarization__card-badge--embeddings", icon: "fingerprint", label: this.$t("speaker_diarization.badge_embeddings") }
+      }
+      return { cls: "speaker-diarization__card-badge--audio", icon: "waveform", label: this.$t("speaker_diarization.badge_audio") }
+    },
     isOrganizationType(collection) {
       return collection.type === COLLECTION_TYPE.ORGANIZATION
     },
@@ -359,7 +384,7 @@ export default {
           type: "success",
           timeout: 5000,
         })
-        this.newCollection = { name: "", description: "", storageMode: "audio" }
+        this.newCollection = { name: "", description: "", storageMode: STORAGE_MODE.AUDIO }
         this.showCreateModal = false
         this.fetchCollections()
       } catch (err) {
@@ -525,6 +550,32 @@ export default {
     color: var(--text-primary);
   }
 
+  &__card-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+
+    &--audio {
+      background: var(--blue-soft, #e3f2fd);
+      color: var(--blue-chart, #1976d2);
+    }
+
+    &--embeddings {
+      background: var(--green-soft, #e8f5e9);
+      color: var(--green-chart, #4caf50);
+    }
+
+    &--org {
+      background: var(--neutral-10, #f5f5f5);
+      color: var(--text-secondary, #666);
+    }
+  }
+
   &__card-actions {
     margin-left: auto;
     display: flex;
@@ -580,17 +631,40 @@ export default {
     }
   }
 
-  &__irreversible-warning {
+  &__storage-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem;
+    border: 1px solid var(--neutral-20);
+    border-radius: 6px;
+  }
+
+  &__storage-label {
+    font-weight: 500;
+    font-size: 14px;
+    display: block;
+  }
+
+  &__storage-desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: block;
+    margin-top: 0.15rem;
+  }
+
+  &__storage-warning {
     display: flex;
     align-items: flex-start;
     gap: 0.5rem;
     padding: 0.5rem 0.75rem;
+    margin: 0.5rem 0 0;
     background: var(--orange-soft, #fff3e0);
     border: 1px solid var(--orange-chart, #ff9800);
     border-radius: 6px;
     font-size: 12px;
     color: var(--text-primary);
-    margin: 0;
   }
 }
 </style>

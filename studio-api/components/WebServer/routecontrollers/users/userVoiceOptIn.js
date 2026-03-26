@@ -8,7 +8,6 @@ const {
   storeAndCreateSample,
   VOICE_SAMPLE_TYPE,
   STORAGE_MODE,
-  COLLECTION_TYPE,
   SAMPLE_FORMAT,
 } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 
