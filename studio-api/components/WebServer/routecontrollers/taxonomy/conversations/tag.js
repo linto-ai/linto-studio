@@ -8,20 +8,16 @@ const tagsUtility = require(
 )
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
 
-const { ConversationIdRequire, ConversationNotFound } = require(
+const { ConversationNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
 
 const { TagError, TagNotFound, TagUnsupportedMediaType } = require(
   `${process.cwd()}/components/WebServer/error/exception/tag`,
 )
-const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 
 async function removeTagFromConversation(req, res, next) {
   try {
-    requireParam(req.params.conversationId, ConversationIdRequire, "Conversation id is required")
-    requireParam(req.params.tagId, TagUnsupportedMediaType, "Tag id is required")
-
     const conversationId = req.params.conversationId
     const tagId = req.params.tagId
 

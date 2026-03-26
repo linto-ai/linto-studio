@@ -67,7 +67,6 @@ async function transcribe(isSingleFile, req, res, next) {
     requireParam(req.body.name, ConversationMetadataRequire, "name param is required")
     requireParam(req.body.lang, ConversationMetadataRequire, "lang param is required")
     requireParam(req.body.endpoint, ConversationMetadataRequire, "serviceEndpoint param is required")
-    requireParam(req.params.organizationId, ConversationMetadataRequire, "organizationId param is required")
 
     req.body.membersRight = isNaN(req.body.membersRight)
       ? CONVERSATION_RIGHT.READ

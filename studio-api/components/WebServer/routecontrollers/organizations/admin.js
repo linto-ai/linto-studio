@@ -7,23 +7,16 @@ const { deleteAudioFileIfOrphaned } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 
-const {
-  OrganizationUnsupportedMediaType,
-  OrganizationError,
-  OrganizationConflict,
-} = require(
+const { OrganizationError } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
 
 const { ConversationError } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
-const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 
 async function updateOrganization(req, res, next) {
   try {
-    requireParam(req.params.organizationId, OrganizationUnsupportedMediaType)
-
     let organization = await model.organizations.getById(
       req.params.organizationId,
     )
@@ -48,8 +41,6 @@ async function updateOrganization(req, res, next) {
 
 async function deleteOrganization(req, res, next) {
   try {
-    requireParam(req.params.organizationId, OrganizationUnsupportedMediaType)
-
     let organization = await model.organizations.getById(
       req.params.organizationId,
     )

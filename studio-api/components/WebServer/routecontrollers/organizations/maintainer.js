@@ -41,7 +41,6 @@ const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 
 async function addUserInOrganization(req, res, next) {
   try {
-    requireParam(req.params.organizationId, OrganizationUnsupportedMediaType)
     requireParam(req.body.email, OrganizationUnsupportedMediaType)
     requireParam(req.body.role, OrganizationUnsupportedMediaType)
 
@@ -146,7 +145,6 @@ async function addUserInOrganization(req, res, next) {
 
 async function updateUserFromOrganization(req, res, next) {
   try {
-    requireParam(req.params.organizationId, OrganizationUnsupportedMediaType)
     requireParam(req.body.userId, OrganizationUnsupportedMediaType)
     requireParam(req.body.role, OrganizationUnsupportedMediaType)
 
@@ -202,7 +200,6 @@ async function updateUserFromOrganization(req, res, next) {
 
 async function deleteUserFromOrganization(req, res, next) {
   try {
-    requireParam(req.params.organizationId, OrganizationUnsupportedMediaType)
     requireParam(req.body.userId, OrganizationUnsupportedMediaType)
 
     let organization = await model.organizations.getById(
@@ -244,8 +241,6 @@ async function deleteUserFromOrganization(req, res, next) {
 
 async function deleteConversationFromOrganization(req, res, next) {
   try {
-    requireParam(req.params.organizationId, OrganizationUnsupportedMediaType)
-
     let organization = await model.organizations.getById(
       req.params.organizationId,
     )
@@ -322,7 +317,6 @@ async function deleteConversationFromOrganization(req, res, next) {
 
 async function updateConversationOwner(req, res, next) {
   try {
-    requireParam(req.params.conversationId, ConversationIdRequire)
     const conversation = await model.conversations.getById(
       req.params.conversationId,
     )

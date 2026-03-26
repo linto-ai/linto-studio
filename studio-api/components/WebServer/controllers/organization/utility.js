@@ -3,18 +3,16 @@ const debug = require("debug")(
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
-const { OrganizationNotFound, OrganizationError } = require(
+const { OrganizationError } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
-const { ConversationIdRequire, ConversationNotFound } = require(
+const { ConversationNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
 
 const RIGHT = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
-
-const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 
 function countAdmin(organization, userId) {
   let adminCount = 0
@@ -84,8 +82,6 @@ async function getOrgaIdFromReq(req) {
   let organizationId = req.params.organizationId
 
   if (organizationId === undefined) {
-    requireParam(req.params.conversationId, ConversationIdRequire, "Conversation id is required")
-
     const conversation = await model.conversations.getById(
       req.params.conversationId,
     )

@@ -26,9 +26,6 @@ const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 
 async function checkTokenBelongsToOrganization(params) {
   try {
-    requireParam(params.organizationId, OrganizationUnsupportedMediaType)
-    requireParam(params.tokenId, OrganizationUnsupportedMediaType, "UserId is required")
-
     const user = await model.users.getById(params.tokenId)
     if (user.length !== 1 || user[0].type === USER_TYPE.M2M) {
       throw new UserError("Requested API key not found")
@@ -58,7 +55,6 @@ async function checkTokenBelongsToOrganization(params) {
 }
 async function createApiKey(req, res, next) {
   try {
-    requireParam(req.params.organizationId, OrganizationUnsupportedMediaType)
     requireParam(req.body.role, OrganizationUnsupportedMediaType, "Role is required")
     const role = parseInt(req.body.role, 10)
 
@@ -90,7 +86,6 @@ async function createApiKey(req, res, next) {
 
 async function listApiKeyFromOrga(req, res, next) {
   try {
-    requireParam(req.params.organizationId, OrganizationUnsupportedMediaType)
     const organization = await model.organizations.getById(
       req.params.organizationId,
     )

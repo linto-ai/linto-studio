@@ -252,7 +252,6 @@ function splitStringIntoLines(inputString, screenLines) {
 
 async function generateSubtitle(req, res, next) {
   try {
-    requireParam(req.params.conversationId, SubtitleUnsupportedMediaType, "Conversation id is required")
     requireParam(req.body.version, SubtitleUnsupportedMediaType, "Version name is required")
 
     const conversationId = req.params.conversationId
@@ -327,8 +326,6 @@ async function getSubtitle(req, res, next) {
 
 async function updateScreen(req, res, next) {
   try {
-    if (!req.params.subtitleId || !req.params.screenId)
-      throw new SubtitleUnsupportedMediaType()
     const conv_subtitle = await model.conversationSubtitles.getById(
       req.params.subtitleId,
     )
@@ -359,8 +356,6 @@ async function updateScreen(req, res, next) {
 
 async function addScreen(req, res, next) {
   try {
-    if (!req.params.subtitleId || !req.params.screenId)
-      throw new SubtitleUnsupportedMediaType()
     const conv_subtitle = await model.conversationSubtitles.getById(
       req.params.subtitleId,
     )
@@ -403,8 +398,6 @@ async function addScreen(req, res, next) {
 
 async function deleteScreen(req, res, next) {
   try {
-    if (!req.params.subtitleId || !req.params.screenId)
-      throw new SubtitleUnsupportedMediaType()
     const conv_subtitle = await model.conversationSubtitles.getById(
       req.params.subtitleId,
     )
@@ -516,8 +509,7 @@ async function deleteManySubtitle(req, res, next) {
 
 async function copySubtitle(req, res, next) {
   try {
-    if (!req.params.subtitleId || !req.body.version)
-      throw new SubtitleUnsupportedMediaType()
+    requireParam(req.body.version, SubtitleUnsupportedMediaType)
 
     const subtitle_to_copy = await model.conversationSubtitles.getById(
       req.params.subtitleId,

@@ -142,8 +142,6 @@ async function importTranscription(req, res) {
 
 async function importConversation(req, res, next) {
   try {
-    requireParam(req.params.organizationId, ConversationMetadataRequire, "organizationId param is required")
-
     const organization = await model.organizations.getByIdAndUser(
       req.params.organizationId,
       req.payload.data.userId,

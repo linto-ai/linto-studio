@@ -148,8 +148,6 @@ async function deleteUser(req, res, next) {
 
 async function updateUser(req, res, next) {
   try {
-    requireParam(req.params.userId, UserUnsupportedMediaType)
-
     let user = await model.users.getByIdFilter(
       req.params.userId,
       admin_projection,

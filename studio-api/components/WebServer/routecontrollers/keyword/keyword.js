@@ -9,17 +9,16 @@ const axios = require(`${process.cwd()}/lib/utility/axios`)
 const { KeywordError, KeywordMetadataRequire } = require(
   `${process.cwd()}/components/WebServer/error/exception/keyword`,
 )
-
-const { ConversationIdRequire } = require(
+const { ConversationNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
+
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 
 async function keywordExtract(req, res, next) {
   try {
     requireParam(req.body.endpoint, KeywordMetadataRequire, "endpoint param is required")
     requireParam(req.body.serviceName, KeywordMetadataRequire, "serviceName param is required")
-    requireParam(req.params.conversationId, ConversationIdRequire)
     let service = process.env.GATEWAY_SERVICES + "/" + req.body.endpoint
 
     const conversation = await model.conversations.getById(

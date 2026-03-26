@@ -43,8 +43,6 @@ async function createOrganization(req, res, next) {
 
 async function getOrganization(req, res, next) {
   try {
-    requireParam(req.params.organizationId, OrganizationUnsupportedMediaType)
-
     const lorganization = await model.organizations.getByIdAndUser(
       req.params.organizationId,
       req.payload.data.userId,

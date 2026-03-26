@@ -14,7 +14,6 @@ const { updateChildConversation } = require(
 )
 
 const {
-  ConversationIdRequire,
   ConversationNotFound,
   ConversationMetadataRequire,
   ConversationError,
@@ -26,12 +25,8 @@ const { UserNotFound, UserError } = require(
   `${process.cwd()}/components/WebServer/error/exception/users`,
 )
 
-const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
-
 async function getRightsByConversation(req, res, next) {
   try {
-    requireParam(req.params.conversationId, ConversationIdRequire)
-
     const conversation = await model.conversations.getById(
       req.params.conversationId,
     )
@@ -53,7 +48,6 @@ async function getRightsByConversation(req, res, next) {
 
 async function updateConversationRights(req, res, next) {
   try {
-    requireParam(req.params.conversationId, ConversationIdRequire)
     if (req.body.right === undefined || !req.params.userId)
       throw new ConversationMetadataRequire("UserId is required")
     if (req.params.userId === req.payload.data.userId)
