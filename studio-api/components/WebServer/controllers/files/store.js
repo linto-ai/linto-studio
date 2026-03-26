@@ -36,10 +36,6 @@ const STORAGE_MODE = Object.freeze({
   EMBEDDINGS: "embeddings",
 })
 
-const SAMPLE_FORMAT = Object.freeze({
-  AUDIO: "audio",
-  EMBEDDINGS: "embeddings",
-})
 
 async function storeFile(files, type = STORE_TYPE.AUDIO, name = undefined) {
   try {
@@ -228,7 +224,8 @@ function resolveStoragePath(audioFilePath) {
  */
 function deleteSampleFile(sample) {
   if (sample && sample.audioFilePath) {
-    deleteFile(`${getStorageFolder()}/${sample.audioFilePath}`)
+    const filePath = resolveStoragePath(sample.audioFilePath)
+    if (filePath) deleteFile(filePath)
   }
 }
 
@@ -298,9 +295,7 @@ module.exports = {
   getStorageFolder,
   getPictureFolder,
   getAudioFolder,
-  getVoiceSamplesFolder,
   validateAudioFile,
-  storeVoiceSampleFile,
   resolveStoragePath,
   deleteSampleFile,
   cascadeDeleteSampleFiles,
@@ -310,5 +305,4 @@ module.exports = {
   storeAndCreateSample,
   VOICE_SAMPLE_TYPE,
   STORAGE_MODE,
-  SAMPLE_FORMAT,
 }

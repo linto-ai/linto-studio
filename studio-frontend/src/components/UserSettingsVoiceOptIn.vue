@@ -348,7 +348,6 @@ export default {
   name: "UserSettingsVoiceOptIn",
   components: { Button, SwitchInput, Modal, Tabs, Droparea },
   mixins: [voiceSignaturePlaybackMixin],
-  props: {},
   data() {
     return {
       loading: false,

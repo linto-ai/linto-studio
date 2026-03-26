@@ -145,4 +145,5 @@ module.exports = {
   getOptedInMembers,
   getOptedInMemberSamples,
   getOptedInMemberSampleAudio,
+  verifyOrgMembership,
 }

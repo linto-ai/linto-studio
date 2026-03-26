@@ -8,7 +8,6 @@ const {
   storeAndCreateSample,
   VOICE_SAMPLE_TYPE,
   STORAGE_MODE,
-  SAMPLE_FORMAT,
 } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 
 const {
@@ -17,6 +16,10 @@ const {
   UserVoiceSampleUnsupportedMediaType,
 } = require(
   `${process.cwd()}/components/WebServer/error/exception/speakerIdentification`,
+)
+
+const { verifyOrgMembership } = require(
+  `${process.cwd()}/components/WebServer/routecontrollers/organization/optedInMembers`,
 )
 
 function validateAudioFile(audioFile) {
@@ -48,7 +51,7 @@ async function createUserVoiceSample(req, res, next) {
 
     const payload = {
       type: VOICE_SAMPLE_TYPE.USER,
-      format: SAMPLE_FORMAT.AUDIO,
+      format: STORAGE_MODE.AUDIO,
       userId,
     }
     const audioDuration = parseAudioDuration(req.body.audioDuration)
@@ -242,15 +245,7 @@ async function updateVoiceOrganization(req, res, next) {
       throw new UserVoiceSampleError("enabled must be a boolean")
     }
 
-    // Verify the user is a member of this organization
-    const orgs = await model.organizations.getById(orgId)
-    if (orgs.length === 0) {
-      throw new UserVoiceSampleNotFound("Organization not found")
-    }
-    const isMember = (orgs[0].users || []).some((u) => u.userId === userId)
-    if (!isMember) {
-      throw new UserVoiceSampleNotFound("You are not a member of this organization")
-    }
+    await verifyOrgMembership(orgId, userId)
 
     if (enabled) {
       await model.voiceOptIns.setOptIn(userId, orgId)

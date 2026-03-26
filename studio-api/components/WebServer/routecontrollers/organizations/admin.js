@@ -5,6 +5,7 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const {
   deleteAudioFileIfOrphaned,
+  cascadeDeleteSampleFiles,
 } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 
 const {
@@ -13,10 +14,6 @@ const {
   OrganizationConflict,
 } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
-)
-
-const { cascadeDeleteSampleFiles } = require(
-  `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 
 const { ConversationError } = require(

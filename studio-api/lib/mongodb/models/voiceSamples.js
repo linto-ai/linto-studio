@@ -2,7 +2,7 @@ const MongoModel = require(`../model`)
 const moment = require("moment")
 const {
   VOICE_SAMPLE_TYPE,
-  SAMPLE_FORMAT,
+  STORAGE_MODE,
 } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 
 class VoiceSampleModel extends MongoModel {
@@ -23,7 +23,7 @@ class VoiceSampleModel extends MongoModel {
         created: dateTime,
         last_update: dateTime,
         type,
-        format: payload.format || SAMPLE_FORMAT.AUDIO,
+        format: payload.format || STORAGE_MODE.AUDIO,
         audioFilePath: payload.audioFilePath,
       }
 
@@ -140,7 +140,7 @@ class VoiceSampleModel extends MongoModel {
       const query = {
         type: VOICE_SAMPLE_TYPE.USER,
         userId: userId,
-        format: { $ne: SAMPLE_FORMAT.EMBEDDINGS },
+        format: { $ne: STORAGE_MODE.EMBEDDINGS },
       }
       return await this.mongoRequest(query, {
         sort: { created: -1 },
@@ -156,7 +156,7 @@ class VoiceSampleModel extends MongoModel {
       const query = {
         type: VOICE_SAMPLE_TYPE.USER,
         userId: userId,
-        format: SAMPLE_FORMAT.EMBEDDINGS,
+        format: STORAGE_MODE.EMBEDDINGS,
       }
       return await this.mongoRequest(query)
     } catch (error) {
@@ -187,7 +187,7 @@ class VoiceSampleModel extends MongoModel {
         created: dateTime,
         last_update: dateTime,
         type: VOICE_SAMPLE_TYPE.USER,
-        format: SAMPLE_FORMAT.EMBEDDINGS,
+        format: STORAGE_MODE.EMBEDDINGS,
         userId,
         ...allowed,
       })
@@ -206,7 +206,7 @@ class VoiceSampleModel extends MongoModel {
       const query = {
         type: VOICE_SAMPLE_TYPE.USER,
         userId: userId,
-        format: { $ne: SAMPLE_FORMAT.EMBEDDINGS },
+        format: { $ne: STORAGE_MODE.EMBEDDINGS },
       }
       return await this.mongoDeleteMany(query)
     } catch (error) {
