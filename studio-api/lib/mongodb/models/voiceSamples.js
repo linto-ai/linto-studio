@@ -2,6 +2,7 @@ const MongoModel = require(`../model`)
 const moment = require("moment")
 const {
   VOICE_SAMPLE_TYPE,
+  SAMPLE_FORMAT,
 } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 
 class VoiceSampleModel extends MongoModel {
@@ -22,6 +23,7 @@ class VoiceSampleModel extends MongoModel {
         created: dateTime,
         last_update: dateTime,
         type,
+        format: payload.format || SAMPLE_FORMAT.AUDIO,
         audioFilePath: payload.audioFilePath,
       }
 
@@ -44,6 +46,15 @@ class VoiceSampleModel extends MongoModel {
       if (payload.audioDuration !== undefined) {
         doc.audioDuration = payload.audioDuration
       }
+
+      if (payload.embeddings) {
+        doc.embeddings = payload.embeddings
+      }
+
+      if (payload.storageMode) {
+        doc.storageMode = payload.storageMode
+      }
+
       return await this.mongoInsert(doc)
     } catch (error) {
       console.error(error)
@@ -118,6 +129,86 @@ class VoiceSampleModel extends MongoModel {
       return await this.mongoRequest(query, {
         sort: { created: -1 },
       })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async getAudioSamplesByUserId(userId) {
+    try {
+      const query = {
+        type: VOICE_SAMPLE_TYPE.USER,
+        userId: userId,
+        format: { $ne: SAMPLE_FORMAT.EMBEDDINGS },
+      }
+      return await this.mongoRequest(query, {
+        sort: { created: -1 },
+      })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async getVoiceprintByUserId(userId) {
+    try {
+      const query = {
+        type: VOICE_SAMPLE_TYPE.USER,
+        userId: userId,
+        format: SAMPLE_FORMAT.EMBEDDINGS,
+      }
+      return await this.mongoRequest(query)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async upsertVoiceprint(userId, fields) {
+    try {
+      const allowed = {}
+      if (fields.embeddings !== undefined) allowed.embeddings = fields.embeddings
+      if (fields.storageMode !== undefined) allowed.storageMode = fields.storageMode
+
+      const existing = await this.getVoiceprintByUserId(userId)
+      const dateTime = moment().format()
+
+      if (existing.length > 0) {
+        await this.mongoUpdateOne(
+          { _id: existing[0]._id },
+          "$set",
+          { ...allowed, last_update: dateTime },
+        )
+        return (await this.getVoiceprintByUserId(userId))[0]
+      }
+
+      const result = await this.mongoInsert({
+        created: dateTime,
+        last_update: dateTime,
+        type: VOICE_SAMPLE_TYPE.USER,
+        format: SAMPLE_FORMAT.EMBEDDINGS,
+        userId,
+        ...allowed,
+      })
+      if (result.insertedCount === 1) {
+        return (await this.getVoiceprintByUserId(userId))[0]
+      }
+      return null
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async deleteAudioSamplesFromUser(userId) {
+    try {
+      const query = {
+        type: VOICE_SAMPLE_TYPE.USER,
+        userId: userId,
+        format: { $ne: SAMPLE_FORMAT.EMBEDDINGS },
+      }
+      return await this.mongoDeleteMany(query)
     } catch (error) {
       console.error(error)
       return error

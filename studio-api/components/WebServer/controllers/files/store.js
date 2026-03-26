@@ -36,6 +36,11 @@ const STORAGE_MODE = Object.freeze({
   EMBEDDINGS: "embeddings",
 })
 
+const SAMPLE_FORMAT = Object.freeze({
+  AUDIO: "audio",
+  EMBEDDINGS: "embeddings",
+})
+
 async function storeFile(files, type = STORE_TYPE.AUDIO, name = undefined) {
   try {
     let fileName = uuidv4()
@@ -305,4 +310,5 @@ module.exports = {
   storeAndCreateSample,
   VOICE_SAMPLE_TYPE,
   STORAGE_MODE,
+  SAMPLE_FORMAT,
 }

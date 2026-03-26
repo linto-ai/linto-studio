@@ -71,7 +71,7 @@ async function getOptedInMembers(req, res, next) {
       optedInUserIds.map(async (userId) => {
         try {
           const samples =
-            await model.voiceSamples.getByUserId(userId)
+            await model.voiceSamples.getAudioSamplesByUserId(userId)
           if (!samples || samples.length === 0) return
 
           const users = await model.users.getById(userId, true)
@@ -119,7 +119,7 @@ async function getOptedInMemberSamples(req, res, next) {
       verifyOptIn(organizationId, userId),
     ])
 
-    const samples = await model.voiceSamples.getByUserId(userId)
+    const samples = await model.voiceSamples.getAudioSamplesByUserId(userId)
     res.status(200).send(samples)
   } catch (err) {
     next(err)

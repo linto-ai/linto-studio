@@ -78,6 +78,16 @@ export async function apiUpdateStorageMode(storageMode, notif) {
   return requestRes
 }
 
+export async function apiGetVoiceprintStatus(notif) {
+  const requestRes = await sendRequest(
+    `${BASE_URL}/voiceprint`,
+    { method: "get" },
+    {},
+    notif,
+  )
+  return requestRes?.data || null
+}
+
 export async function apiUpdateVoiceOrganization(orgId, enabled, notif) {
   const requestRes = await sendRequest(
     `${BASE_URL}/organizations/${orgId}`,

@@ -1,7 +1,6 @@
 <template>
   <div class="voice-optin">
     <h3>{{ $t("speaker_diarization.optin_title") }}</h3>
-    <hr />
 
     <p class="voice-optin__description">
       {{ $t("speaker_diarization.optin_description") }}
@@ -90,6 +89,56 @@
           ref="audioPlayer"
           class="voice-optin__hidden-audio"
           @ended="onAudioEnded"></audio>
+      </div>
+
+      <!-- Voiceprint section -->
+      <div class="voice-optin__voiceprint">
+        <h4>{{ $t("speaker_diarization.voiceprint_status_title") }}</h4>
+        <p class="voice-optin__voiceprint-desc">
+          {{ $t("speaker_diarization.voiceprint_status_desc") }}
+        </p>
+
+        <div v-if="voiceprintStatus.hasVoiceprint" class="voice-optin__voiceprint-status voice-optin__voiceprint-status--ok">
+          <ph-icon name="check-circle" class="voice-optin__status-ok" size="md" />
+          <div>
+            <span class="voice-optin__voiceprint-label">
+              {{ $t("speaker_diarization.voiceprint_computed") }}
+            </span>
+            <span v-if="voiceprintStatus.lastUpdate" class="voice-optin__voiceprint-hint">
+              {{ $t("speaker_diarization.voiceprint_last_update", { date: formatDate(voiceprintStatus.lastUpdate) }) }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Storage mode preference -->
+        <div class="voice-optin__storage-mode">
+          <div class="voice-optin__storage-toggle">
+            <div>
+              <span class="voice-optin__storage-label">
+                {{ $t("speaker_diarization.voiceprint_storage_mode_embeddings") }}
+              </span>
+              <span class="voice-optin__storage-desc">
+                {{ $t("speaker_diarization.voiceprint_storage_mode_embeddings_desc") }}
+              </span>
+            </div>
+            <SwitchInput
+              :value="isStorageModeEmbeddings"
+              id="storage-mode-toggle"
+              @input="onStorageModeToggle" />
+          </div>
+          <p
+            v-if="isStorageModeEmbeddings && !voiceprintStatus.hasVoiceprint && hasSamples"
+            class="voice-optin__storage-pending">
+            <ph-icon name="clock" size="sm" />
+            {{ $t("speaker_diarization.voiceprint_not_computed_desc") }}
+          </p>
+          <p
+            v-if="isStorageModeEmbeddings"
+            class="voice-optin__storage-warning">
+            <ph-icon name="warning" size="sm" />
+            {{ $t("speaker_diarization.voiceprint_storage_mode_warning") }}
+          </p>
+        </div>
       </div>
 
       <!-- Authorized organizations section -->
@@ -271,6 +320,7 @@ import Modal from "@/components/molecules/Modal.vue"
 import Tabs from "@/components/molecules/Tabs.vue"
 import Droparea from "@/components/molecules/Droparea.vue"
 import { formatDateOrDash } from "@/tools/formatDate.js"
+import { STORAGE_MODE } from "@/tools/voiceprintConstants.js"
 import {
   apiGetUserVoiceSamples,
   apiCreateUserVoiceSample,
@@ -279,6 +329,8 @@ import {
   apiDeleteAllUserVoiceSamples,
   apiGetUserVoiceOrganizations,
   apiUpdateVoiceOrganization,
+  apiGetVoiceprintStatus,
+  apiUpdateStorageMode,
 } from "@/api/userVoice.js"
 import { formatDuration, formatCompactDuration } from "@/tools/formatDuration.js"
 import { audioDuration } from "@/tools/audioDuration.js"
@@ -287,6 +339,10 @@ import {
   getSupportedRecordingMimeType,
 } from "@/tools/audioMimeTypes.js"
 import { voiceSignaturePlaybackMixin } from "@/mixins/voiceSignaturePlayback.js"
+
+function defaultVoiceprintStatus() {
+  return { hasVoiceprint: false, storageMode: "audio", audioSamplesCount: 0, lastUpdate: null }
+}
 
 export default {
   name: "UserSettingsVoiceOptIn",
@@ -298,6 +354,7 @@ export default {
       loading: false,
       signatures: [],
       organizations: [],
+      voiceprintStatus: defaultVoiceprintStatus(),
       togglingOrgId: null,
       showRecordModal: false,
       showDeleteAllModal: false,
@@ -348,6 +405,9 @@ export default {
     formattedTime() {
       return formatDuration(this.recordingTime, { compact: true }) || "00:00"
     },
+    isStorageModeEmbeddings() {
+      return this.voiceprintStatus.storageMode === STORAGE_MODE.EMBEDDINGS
+    },
   },
   mounted() {
     this.fetchData()
@@ -356,12 +416,16 @@ export default {
     async fetchData() {
       this.loading = true
       try {
-        const [samples, orgs] = await Promise.all([
+        const [samples, orgs, vpStatus] = await Promise.all([
           apiGetUserVoiceSamples(),
           apiGetUserVoiceOrganizations(),
+          apiGetVoiceprintStatus(),
         ])
         this.signatures = samples
         this.organizations = orgs
+        if (vpStatus) {
+          Object.assign(this.voiceprintStatus, vpStatus)
+        }
       } catch (err) {
         // silent
       } finally {
@@ -373,12 +437,35 @@ export default {
         await apiDeleteAllUserVoiceSamples()
         this.signatures = []
         this.organizations.forEach((o) => { o.voiceprintEnabled = false })
+        Object.assign(this.voiceprintStatus, defaultVoiceprintStatus(), {
+          storageMode: this.voiceprintStatus.storageMode,
+        })
         this.$store.dispatch("system/addNotification", {
           message: this.$t("speaker_diarization.optout_success"),
           type: "success",
           timeout: 5000,
         })
       } catch (err) {
+        this.$store.dispatch("system/addNotification", {
+          message: err.message || this.$t("speaker_diarization.optin_error"),
+          type: "error",
+          timeout: 5000,
+        })
+      }
+    },
+    async onStorageModeToggle(enabled) {
+      const newMode = enabled ? STORAGE_MODE.EMBEDDINGS : STORAGE_MODE.AUDIO
+      const previous = this.voiceprintStatus.storageMode
+      this.voiceprintStatus.storageMode = newMode
+      try {
+        await apiUpdateStorageMode(newMode)
+        this.$store.dispatch("system/addNotification", {
+          message: this.$t("speaker_diarization.voiceprint_storage_mode_updated"),
+          type: "success",
+          timeout: 5000,
+        })
+      } catch (err) {
+        this.voiceprintStatus.storageMode = previous
         this.$store.dispatch("system/addNotification", {
           message: err.message || this.$t("speaker_diarization.optin_error"),
           type: "error",
@@ -693,6 +780,109 @@ export default {
 
   &__hidden-audio {
     display: none;
+  }
+
+  // Voiceprint status section
+  &__voiceprint {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--neutral-20);
+
+    h4 {
+      margin: 0 0 0.75rem;
+      font-size: 14px;
+    }
+  }
+
+  &__voiceprint-status {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border: 1px solid var(--neutral-20);
+    border-radius: 6px;
+    margin-bottom: 0.75rem;
+
+    &--ok {
+      background: var(--green-soft, #e8f5e9);
+      border-color: var(--green-chart, #4caf50);
+    }
+  }
+
+  &__voiceprint-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0 0 0.75rem;
+  }
+
+  &__voiceprint-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  &__voiceprint-hint {
+    display: block;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 0.15rem;
+  }
+
+  &__status-ok {
+    color: var(--green-chart, #4caf50);
+  }
+
+  &__storage-mode {
+    margin-top: 0.75rem;
+  }
+
+  &__storage-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem;
+    border: 1px solid var(--neutral-20);
+    border-radius: 6px;
+  }
+
+  &__storage-label {
+    font-weight: 500;
+    font-size: 14px;
+    display: block;
+  }
+
+  &__storage-desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: block;
+    margin-top: 0.15rem;
+  }
+
+  &__storage-pending {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    margin: 0.5rem 0 0;
+    background: var(--primary-soft, #e3f2fd);
+    border: 1px solid var(--primary-hard, #1976d2);
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--text-primary);
+  }
+
+  &__storage-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    margin: 0.5rem 0 0;
+    background: var(--orange-soft, #fff3e0);
+    border: 1px solid var(--orange-chart, #ff9800);
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--text-primary);
   }
 
   // Organizations section

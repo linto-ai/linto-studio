@@ -9,6 +9,7 @@ const {
   VOICE_SAMPLE_TYPE,
   STORAGE_MODE,
   COLLECTION_TYPE,
+  SAMPLE_FORMAT,
 } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 
 const {
@@ -48,6 +49,7 @@ async function createUserVoiceSample(req, res, next) {
 
     const payload = {
       type: VOICE_SAMPLE_TYPE.USER,
+      format: SAMPLE_FORMAT.AUDIO,
       userId,
     }
     const audioDuration = parseAudioDuration(req.body.audioDuration)
@@ -67,7 +69,7 @@ async function createUserVoiceSample(req, res, next) {
 async function getUserVoiceSamples(req, res, next) {
   try {
     const userId = req.payload.data.userId
-    const samples = await model.voiceSamples.getByUserId(userId)
+    const samples = await model.voiceSamples.getAudioSamplesByUserId(userId)
     res.status(200).send(samples)
   } catch (err) {
     next(err)
@@ -135,22 +137,71 @@ async function deleteAllUserVoiceSamples(req, res, next) {
   }
 }
 
-// Stub: validates the storage mode preference but does not persist yet.
-// Persistence will be added when the user settings model supports storageMode.
 async function updateStorageMode(req, res, next) {
   try {
+    const userId = req.payload.data.userId
     const { storageMode } = req.body
 
     if (!storageMode || !Object.values(STORAGE_MODE).includes(storageMode)) {
       throw new UserVoiceSampleError("Invalid storage mode. Must be 'audio' or 'embeddings'")
     }
 
-    res.status(501).send({
-      message: "Storage mode preference is not yet persisted. This endpoint will be functional in a future release.",
-      storageMode,
-      warning: storageMode === STORAGE_MODE.EMBEDDINGS
-        ? "Audio files will be deleted after voiceprint calculation. This is irreversible."
-        : null,
+    const voiceprint = await model.voiceSamples.upsertVoiceprint(userId, { storageMode })
+
+    // TODO: when the diarization service is available, trigger voiceprint
+    // computation here if storageMode is switched to EMBEDDINGS and user has samples.
+
+    res.status(200).send({
+      storageMode: voiceprint?.storageMode || storageMode,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
+async function getVoiceprintStatus(req, res, next) {
+  try {
+    const userId = req.payload.data.userId
+
+    const [voiceprintDocs, audioSamples] = await Promise.all([
+      model.voiceSamples.getVoiceprintByUserId(userId),
+      model.voiceSamples.getAudioSamplesByUserId(userId),
+    ])
+
+    const voiceprint = voiceprintDocs.length > 0 ? voiceprintDocs[0] : null
+
+    res.status(200).send({
+      hasVoiceprint: voiceprint !== null && voiceprint.embeddings !== null && voiceprint.embeddings !== undefined,
+      storageMode: voiceprint?.storageMode || STORAGE_MODE.AUDIO,
+      audioSamplesCount: audioSamples.length,
+      lastUpdate: voiceprint?.last_update || null,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
+async function receiveVoiceprint(req, res, next) {
+  try {
+    const userId = req.payload.data.userId
+    const { embeddings } = req.body
+
+    if (!embeddings || !Array.isArray(embeddings) || embeddings.length === 0) {
+      throw new UserVoiceSampleError("embeddings must be a non-empty array")
+    }
+
+    const voiceprint = await model.voiceSamples.upsertVoiceprint(userId, { embeddings })
+
+    if (voiceprint && voiceprint.storageMode === STORAGE_MODE.EMBEDDINGS) {
+      const audioSamples = await model.voiceSamples.getAudioSamplesByUserId(userId)
+      cascadeDeleteSampleFiles(audioSamples)
+      await model.voiceSamples.deleteAudioSamplesFromUser(userId)
+    }
+
+    res.status(200).send({
+      hasVoiceprint: true,
+      storageMode: voiceprint?.storageMode || STORAGE_MODE.AUDIO,
+      audioFilesDeleted: voiceprint?.storageMode === STORAGE_MODE.EMBEDDINGS,
     })
   } catch (err) {
     next(err)
@@ -222,6 +273,8 @@ module.exports = {
   deleteAllUserVoiceSamples,
   resolveUserSampleAudio,
   updateStorageMode,
+  getVoiceprintStatus,
+  receiveVoiceprint,
   getUserVoiceOrganizations,
   updateVoiceOrganization,
 }
