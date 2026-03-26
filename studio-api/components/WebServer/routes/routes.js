@@ -50,8 +50,6 @@ module.exports = (webServer) => {
     "/api/nlp": require("./api/nlp/nlp")(webServer),
     "/api/services": require("./api/service/services")(webServer, this),
     "/api/publication": require("./api/publication/publication")(webServer),
-  }
-
     "/api/users/self/voice": require("./api/users/userVoiceOptIn")(webServer),
     "/api/organizations/:organizationId/voiceprint-collections":
       require("./api/organization/voiceprintCollection")(webServer),
