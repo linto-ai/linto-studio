@@ -104,8 +104,12 @@ export function createEditorStore(options: EditorStoreOptions = {}): EditorStore
   // ── Plugins ────────────────────────────────────────────────────────
 
   const cleanups: Array<() => void> = []
+  const pluginExtensions: import("@tiptap/core").AnyExtension[] = []
 
   function use(plugin: EditorPlugin): void {
+    if (plugin.tiptapExtensions) {
+      pluginExtensions.push(...plugin.tiptapExtensions)
+    }
     const cleanup = plugin.install(core)
     if (cleanup) cleanups.push(cleanup)
   }
@@ -129,6 +133,7 @@ export function createEditorStore(options: EditorStoreOptions = {}): EditorStore
     title,
     activeChannelId,
     capabilities,
+    pluginExtensions,
     speakers,
     channels,
     activeChannel,

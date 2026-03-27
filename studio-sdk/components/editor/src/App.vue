@@ -4,20 +4,22 @@ import EditorLayout from "./components/EditorLayout.vue"
 import { mapApiDocument } from "./adapters/apiAdapter"
 import { provideI18n, type Locale } from "./i18n"
 import { createEditorStore, provideEditorStore } from "./core"
-//import { createAudioPlugin } from "./plugins/audio"
-import { createLivePlugin } from "./plugins/live"
-import { createSubtitlePlugin } from "./plugins/subtitle"
+import { createAudioPlugin } from "./plugins/audio"
+//import { createLivePlugin } from "./plugins/live"
+//import { createSubtitlePlugin } from "./plugins/subtitle"
 import type { LivePartialEvent, LiveFinalEvent } from "./plugins/live"
 import type { ApiDocument } from "./types/api"
 import type { Channel, Speaker } from "./types/editor"
+import { mapWhisperXDocument } from "./adapters/whisperXAdapter"
+import type { WhisperXDocument } from "./types/whisperx"
 
 const locale = ref<Locale>("fr")
 const { t } = provideI18n(locale)
 
 const editor = createEditorStore()
-//editor.use(createAudioPlugin())
-editor.use(createLivePlugin())
-editor.use(createSubtitlePlugin())
+editor.use(createAudioPlugin())
+//editor.use(createLivePlugin())
+//editor.use(createSubtitlePlugin())
 provideEditorStore(editor)
 
 const error = ref<string | null>(null)
@@ -191,12 +193,12 @@ onMounted(async () => {
       fetch("/test.json"),
       fetch("/test2.json"),
     ])
-    const [raw1, raw2]: [ApiDocument, ApiDocument] = await Promise.all([
+    const [raw1, raw2]: [ApiDocument, WhisperXDocument] = await Promise.all([
       r1.json(),
       r2.json(),
     ])
     const doc1 = mapApiDocument(raw1)
-    const doc2 = mapApiDocument(raw2)
+    const doc2 = mapWhisperXDocument(raw2)
 
     // Merge speakers from both documents
     const speakers = new Map<string, Speaker>(doc1.speakers)
@@ -205,9 +207,21 @@ onMounted(async () => {
     }
 
     // Add live speakers
-    speakers.set("spk-live-1", { id: "spk-live-1", name: "Alice (live)", color: "#42A5F5" })
-    speakers.set("spk-live-2", { id: "spk-live-2", name: "Bob (live)", color: "#66BB6A" })
-    speakers.set("spk-live-3", { id: "spk-live-3", name: "Charlie (live)", color: "#FFA726" })
+    speakers.set("spk-live-1", {
+      id: "spk-live-1",
+      name: "Alice (live)",
+      color: "#42A5F5",
+    })
+    speakers.set("spk-live-2", {
+      id: "spk-live-2",
+      name: "Bob (live)",
+      color: "#66BB6A",
+    })
+    speakers.set("spk-live-3", {
+      id: "spk-live-3",
+      name: "Charlie (live)",
+      color: "#FFA726",
+    })
 
     const sourceTr1 = doc1.channels[0]!.translations[0]!
 
@@ -216,8 +230,12 @@ onMounted(async () => {
       name: "Canal 1",
       duration: doc1.channels[0]!.duration,
       translations: [
-        // { ...sourceTr1, audio: { src: "/chat-gpt-dans-le-texte.mp3" } },
-        { ...sourceTr1, isSource: true },
+        {
+          ...sourceTr1,
+          audio: { src: "/chat-gpt-dans-le-texte.mp3" },
+          isSource: true,
+        },
+        //{ ...sourceTr1, isSource: true },
         {
           id: "tr-en",
           languages: ["en"],

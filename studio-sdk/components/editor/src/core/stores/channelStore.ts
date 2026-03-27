@@ -44,6 +44,15 @@ export function createChannelStore(
     emit("translation:change", { translationId: activeTranslation.value.id })
   }
 
+  function reset(): void {
+    for (const translation of translations.values()) {
+      translation.setTurns([])
+    }
+    isLoadingHistory.value = false
+    hasMoreHistory.value = true
+    emit("channel:reset", { channelId: id })
+  }
+
   return {
     id,
     name,
@@ -55,5 +64,6 @@ export function createChannelStore(
     isLoadingHistory,
     hasMoreHistory,
     setActiveTranslation,
+    reset,
   }
 }

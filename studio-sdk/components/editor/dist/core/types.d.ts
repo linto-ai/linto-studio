@@ -1,4 +1,5 @@
 import { ComputedRef, Ref, ShallowRef } from 'vue';
+import { AnyExtension } from '@tiptap/core';
 import { AudioSource, Channel, EditorDocument, Speaker, Turn, Word } from '../types/editor';
 export interface EditorCapabilities {
     text: "edit" | "view";
@@ -38,6 +39,9 @@ export interface EditorEventMap {
     "channel:sync": {
         channelId: string;
     };
+    "channel:reset": {
+        channelId: string;
+    };
     destroy: void;
 }
 export type TurnEventKey = "turn:add" | "turn:update" | "turn:remove";
@@ -65,6 +69,7 @@ export interface ChannelStore {
     readonly isLoadingHistory: Ref<boolean>;
     readonly hasMoreHistory: Ref<boolean>;
     setActiveTranslation(translationId: string | null): void;
+    reset(): void;
 }
 export interface SpeakersStore {
     readonly all: Map<string, Speaker>;
@@ -74,6 +79,8 @@ export interface SpeakersStore {
 export interface EditorPlugin {
     name: string;
     install(editor: EditorStore): (() => void) | void;
+    /** TipTap extensions contributed by this plugin (e.g. Collaboration, CollaborationCursor) */
+    tiptapExtensions?: AnyExtension[];
 }
 export interface EditorStoreOptions {
     document?: EditorDocument;
@@ -138,6 +145,8 @@ export interface EditorStore {
     readonly title: Ref<string>;
     readonly activeChannelId: Ref<string>;
     readonly capabilities: Ref<EditorCapabilities>;
+    /** TipTap extensions collected from all plugins */
+    readonly pluginExtensions: AnyExtension[];
     readonly speakers: SpeakersStore;
     readonly channels: Map<string, ChannelStore>;
     readonly activeChannel: ComputedRef<ChannelStore>;

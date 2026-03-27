@@ -7,15 +7,10 @@ import {
   watch,
   nextTick,
 } from "vue"
-import {
-  ScrollAreaRoot,
-  ScrollAreaViewport,
-  ScrollAreaScrollbar,
-  ScrollAreaThumb,
-} from "reka-ui"
 import { useStickToBottom } from "vue-stick-to-bottom"
 import { ArrowDown } from "lucide-vue-next"
 import TranscriptionTurn from "./TranscriptionTurn.vue"
+import TranscriptionEmpty from "./TranscriptionEmpty.vue"
 import EditorButton from "./atoms/EditorButton.vue"
 import { useEditorStore } from "../core"
 import { useI18n } from "../i18n"
@@ -29,7 +24,7 @@ const props = defineProps<{
 
 const { t } = useI18n()
 const editor = useEditorStore()
-const panelRef = useTemplateRef<HTMLElement>("panel")
+const scrollContainerRef = useTemplateRef<HTMLElement>("scrollContainer")
 
 const partialTurn = computed(() => {
   const text = editor.live?.partial.value ?? null
@@ -63,14 +58,12 @@ const hasMoreHistory = computed(() => activeChannel.value.hasMoreHistory.value)
 const { scrollRef, contentRef, isAtBottom, scrollToBottom } = useStickToBottom()
 
 onMounted(() => {
-  scrollRef.value =
-    panelRef.value?.querySelector("[data-reka-scroll-area-viewport]") ?? null
-  contentRef.value = panelRef.value?.querySelector(".turns-container") ?? null
+  scrollRef.value = scrollContainerRef.value
+  contentRef.value =
+    scrollContainerRef.value?.querySelector(".turns-container") ?? null
 })
 
 // ── Scroll top detection ────────────────────────────────────────────────
-
-let viewport: HTMLElement | null = null
 
 const emitScrollTop = throttle(() => {
   const channel = activeChannel.value
@@ -81,8 +74,9 @@ const emitScrollTop = throttle(() => {
 }, 500)
 
 function onScrollTop() {
-  if (!viewport) return
-  if (viewport.scrollTop < 100) {
+  const el = scrollContainerRef.value
+  if (!el) return
+  if (el.scrollTop < 100) {
     emitScrollTop()
   }
 }
@@ -113,49 +107,42 @@ watch(
 )
 
 onMounted(() => {
-  viewport =
-    panelRef.value?.querySelector("[data-reka-scroll-area-viewport]") ?? null
-  if (viewport) {
-    viewport.addEventListener("scroll", onScrollTop, { passive: true })
-  }
+  scrollContainerRef.value?.addEventListener("scroll", onScrollTop, {
+    passive: true,
+  })
 })
 
 onBeforeUnmount(() => {
-  if (viewport) {
-    viewport.removeEventListener("scroll", onScrollTop)
-    viewport = null
-  }
+  scrollContainerRef.value?.removeEventListener("scroll", onScrollTop)
 })
 </script>
 
 <template>
-  <article ref="panel" class="transcription-panel">
-    <ScrollAreaRoot class="scroll-root">
-      <ScrollAreaViewport class="scroll-viewport">
-        <div class="turns-container">
-          <div v-if="isLoadingHistory" class="history-loading" role="status">
-            <progress />
-          </div>
-          <div v-if="!hasMoreHistory && turns.length > 0" class="history-start">
-            {{ t("transcription.historyStart") }}
-          </div>
-          <TranscriptionTurn
-            v-for="(turn, i) in turns"
-            :data-turn-id="turn.id"
-            :key="turn.id"
-            :turn="turn"
-            :speaker="turn.speakerId ? speakers.get(turn.speakerId) : undefined"
-            :live="hasLiveUpdate && !partialTurn && i === turns.length - 1" />
-          <TranscriptionTurn
-            v-if="partialTurn"
-            key="__partial__"
-            :turn="partialTurn"
-            partial />
+  <article class="transcription-panel">
+    <div ref="scrollContainer" class="scroll-container">
+      <div class="turns-container">
+        <div v-if="isLoadingHistory" class="history-loading" role="status">
+          <progress />
         </div>
-      </ScrollAreaViewport>
-      <ScrollAreaScrollbar class="scrollbar" orientation="vertical">
-        <ScrollAreaThumb class="scrollbar-thumb" />
-      </ScrollAreaScrollbar>
+        <div v-if="!hasMoreHistory && turns.length > 0" class="history-start">
+          {{ t("transcription.historyStart") }}
+        </div>
+        <TranscriptionEmpty
+          v-if="turns.length === 0 && !isLoadingHistory"
+          class="transcription-empty" />
+        <TranscriptionTurn
+          v-for="(turn, i) in turns"
+          :data-turn-id="turn.id"
+          :key="turn.id"
+          :turn="turn"
+          :speaker="turn.speakerId ? speakers.get(turn.speakerId) : undefined"
+          :live="hasLiveUpdate && !partialTurn && i === turns.length - 1" />
+        <TranscriptionTurn
+          v-if="partialTurn"
+          key="__partial__"
+          :turn="partialTurn"
+          partial />
+      </div>
 
       <Transition name="fade-slide">
         <EditorButton
@@ -168,7 +155,7 @@ onBeforeUnmount(() => {
           {{ t("transcription.resumeScroll") }}
         </EditorButton>
       </Transition>
-    </ScrollAreaRoot>
+    </div>
   </article>
 </template>
 
@@ -179,27 +166,22 @@ onBeforeUnmount(() => {
   background-color: var(--color-surface);
 }
 
-.scroll-root {
+.scroll-container {
   height: 100%;
-  overflow: hidden;
+  overflow: auto;
   position: relative;
-}
-
-.scroll-viewport {
-  height: 100%;
-  width: 100%;
-}
-
-/* Reka ScrollArea viewport needs explicit containment */
-:deep([data-reka-scroll-area-viewport]) {
-  height: 100%;
-  max-height: 100%;
 }
 
 .turns-container {
   max-width: 80ch;
   margin-inline: auto;
   padding: var(--spacing-lg);
+}
+
+.turns-container:has(.transcription-empty) {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
 }
 
 .history-loading {
@@ -218,35 +200,9 @@ onBeforeUnmount(() => {
   font-size: var(--font-size-sm);
 }
 
-.scrollbar {
-  display: flex;
-  touch-action: none;
-  user-select: none;
-  padding: var(--spacing-xxs);
-  width: 8px;
-  transition: background-color var(--transition-duration);
-}
-
-.scrollbar:hover {
-  background-color: var(--color-border-light);
-}
-
-.scrollbar-thumb {
-  flex: 1;
-  background-color: var(--color-text-muted);
-  border-radius: var(--radius-lg);
-  opacity: 0.4;
-  transition: opacity var(--transition-duration);
-  position: relative;
-}
-
-.scrollbar-thumb:hover {
-  opacity: 0.6;
-}
-
 /* Resume scroll button */
 .resume-scroll-btn {
-  position: absolute;
+  position: sticky;
   bottom: var(--spacing-lg);
   left: 50%;
   translate: -50% 0;

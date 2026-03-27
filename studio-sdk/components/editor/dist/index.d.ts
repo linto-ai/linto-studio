@@ -7,8 +7,10 @@ export type { LivePartialEvent, LiveFinalEvent, LiveTranslationEvent } from './p
 export { createSubtitlePlugin } from './plugins/subtitle';
 export type { SubtitlePluginOptions } from './plugins/subtitle';
 export { mapApiDocument } from './adapters/apiAdapter';
+export { mapWhisperXDocument } from './adapters/whisperXAdapter';
 export { provideI18n } from './i18n';
 export type { Locale } from './i18n';
 export { validateEditorDocument, DocumentValidationError } from './utils';
 export type { EditorDocument, Turn, Speaker, Word, Channel, Translation, AudioSource } from './types/editor';
 export type { ApiDocument } from './types/api';
+export type { WhisperXDocument } from './types/whisperx';

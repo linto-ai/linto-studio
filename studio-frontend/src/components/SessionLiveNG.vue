@@ -102,7 +102,7 @@ export default {
 
         const channel = this.editor.channels.get(channelId)
         if (channel) {
-          channel.sourceTranslation.hasMoreHistory.value = true
+          channel.reset()
         }
 
         this.subscribeToWebsocket()

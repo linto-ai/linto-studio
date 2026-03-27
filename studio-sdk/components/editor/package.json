@@ -25,6 +25,11 @@
     "vue": "^3.5.0"
   },
   "dependencies": {
+    "@tiptap/core": "^3.20.5",
+    "@tiptap/extension-history": "^3.20.6",
+    "@tiptap/pm": "^3.20.5",
+    "@tiptap/starter-kit": "^3.20.5",
+    "@tiptap/vue-3": "^3.20.5",
     "diff": "^8.0.3",
     "lucide-vue-next": "^0.564.0",
     "reka-ui": "^2.8.0",

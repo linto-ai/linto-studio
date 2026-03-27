@@ -28,6 +28,7 @@ const en: Record<keyof typeof fr, string> = {
   'subtitle.show': 'Show subtitles',
   'subtitle.fontSize': 'Font size',
   'sidebar.subtitle': 'Subtitles',
+  'transcription.empty': 'No transcription yet',
   'transcription.historyStart': 'Beginning of transcription',
   'transcription.loadingHistory': 'Loading\u2026',
 }

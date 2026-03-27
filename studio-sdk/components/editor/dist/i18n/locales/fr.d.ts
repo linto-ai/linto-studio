@@ -26,6 +26,7 @@ declare const fr: {
     readonly 'subtitle.show': "Afficher les sous-titres";
     readonly 'subtitle.fontSize': "Taille de police";
     readonly 'sidebar.subtitle': "Sous-titres";
+    readonly 'transcription.empty': "Aucune transcription pour le moment";
     readonly 'transcription.historyStart': "Début de la transcription";
     readonly 'transcription.loadingHistory': "Chargement…";
 };
