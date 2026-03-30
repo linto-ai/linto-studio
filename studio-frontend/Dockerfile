@@ -20,8 +20,8 @@ FROM nginx:alpine
 RUN rm -f /etc/nginx/conf.d/default.conf
 
 COPY --from=builder --chown=nginx:nginx /app/studio-frontend/dist /usr/share/nginx/html
-COPY --chown=nginx:nginx studio-frontend/config/nginx/nginx.conf /etc/nginx/nginx.conf
-COPY --chown=nginx:nginx studio-frontend/docker-entrypoint.sh /docker-entrypoint.sh
+COPY --from=builder --chown=nginx:nginx /app/studio-frontend/config/nginx/nginx.conf /etc/nginx/nginx.conf
+COPY --from=builder --chown=nginx:nginx /app/studio-frontend/docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
 RUN mkdir -p /var/cache/nginx/client_temp \
