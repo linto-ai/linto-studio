@@ -1,5 +1,6 @@
 import processSessionCaptions from "./processSessionCaptions.js"
 import computeSessionTurnUniqueId from "../const/computeSessionTurnUniqueId.js"
+import { computeTurnStartTime, computeTurnEndTime } from "./computeTurnTime.js"
 
 /**
  * Converts a live session object into an EditorDocument.
@@ -9,14 +10,6 @@ import computeSessionTurnUniqueId from "../const/computeSessionTurnUniqueId.js"
  */
 export default function sessionToEditorDocument(session) {
   const sessionStartMs = new Date(session.startTime).getTime()
-
-  function toSessionTime(astart, offset) {
-    if (!astart) return offset
-    return Math.max(
-      0,
-      (new Date(astart).getTime() - sessionStartMs) / 1000 + offset,
-    )
-  }
 
   const channels = session.channels.map((channel) => {
     const events = processSessionCaptions({
@@ -63,8 +56,8 @@ export default function sessionToEditorDocument(session) {
         text: tc.text ?? null,
         words: [],
         speakerId: tc.locutor ?? null,
-        startTime: toSessionTime(tc.astart, tc.start),
-        endTime: toSessionTime(tc.astart, tc.end),
+        startTime: computeTurnStartTime(tc, sessionStartMs),
+        endTime: computeTurnEndTime(tc, sessionStartMs),
         language: tc.targetLang,
       })
     }

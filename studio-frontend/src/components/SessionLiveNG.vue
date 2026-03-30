@@ -17,6 +17,10 @@ import {
 } from "@linto/studio-editor/webcomponent"
 import computeSessionTurnUniqueId from "@/const/computeSessionTurnUniqueId"
 import classifySessionTurn from "@/tools/classifySessionTurn"
+import {
+  computeTurnStartTime,
+  computeTurnEndTime,
+} from "@/tools/computeTurnTime.js"
 
 const PAGE_SIZE = 50
 
@@ -224,16 +228,8 @@ export default {
         turnId: computeSessionTurnUniqueId(content),
         speakerId: content.locutor ?? null,
         words: [],
-        startTime: Math.max(
-          0,
-          (new Date(content.astart).getTime() - this.sessionStartMs) / 1000 +
-            content.start,
-        ),
-        endTime: Math.max(
-          0,
-          (new Date(content.astart).getTime() - this.sessionStartMs) / 1000 +
-            content.end,
-        ),
+        startTime: computeTurnStartTime(content, this.sessionStartMs),
+        endTime: computeTurnEndTime(content, this.sessionStartMs),
         language:
           content.lang ?? activeChannel.sourceTranslation.languages[0] ?? "*",
       }
@@ -260,9 +256,13 @@ export default {
 
     onTranslation(content) {
       this.editor.live.onTranslation({
-        turnId: String(content.segmentId),
+        turnId: computeSessionTurnUniqueId(content.segmentId),
         language: content.targetLang,
         text: content.text,
+        partial: content.partial,
+        startTime: computeTurnStartTime(content, this.sessionStartMs),
+        endTime: computeTurnEndTime(content, this.sessionStartMs),
+        speakerId: content.locutor,
       })
     },
 

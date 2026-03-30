@@ -1,5 +1,10 @@
 import { ref, shallowRef, triggerRef } from "vue"
-import type { EditorStore, EditorPlugin, LivePluginApi, TranslationStore } from "../../core/types"
+import type {
+  EditorStore,
+  EditorPlugin,
+  LivePluginApi,
+  TranslationStore,
+} from "../../core/types"
 import type {
   LivePartialEvent,
   LiveFinalEvent,
@@ -7,11 +12,7 @@ import type {
 } from "./types"
 import type { Turn } from "../../types/editor"
 
-export type {
-  LivePartialEvent,
-  LiveFinalEvent,
-  LiveTranslationEvent,
-}
+export type { LivePartialEvent, LiveFinalEvent, LiveTranslationEvent }
 export type { LivePluginApi }
 
 function finalEventToSourceTurn(event: LiveFinalEvent): Turn {
@@ -60,7 +61,8 @@ export function createLivePlugin(): EditorPlugin {
       function onPartial(event: LivePartialEvent, channelId: string): void {
         if (core.activeChannelId.value !== channelId) return
 
-        const activeTranslation = core.activeChannel.value.activeTranslation.value
+        const activeTranslation =
+          core.activeChannel.value.activeTranslation.value
 
         if (activeTranslation.isSource) {
           if (event.text == null) return
@@ -104,16 +106,26 @@ export function createLivePlugin(): EditorPlugin {
         if (event.speakerId) core.speakers.ensure(event.speakerId)
 
         const channel = core.channels.get(channelId)
-        if (!channel) { immediateClearPartial(); return }
+        if (!channel) {
+          immediateClearPartial()
+          return
+        }
 
         if (event.text != null) {
-          updateOrCreateTurn(channel.sourceTranslation, finalEventToSourceTurn(event))
+          updateOrCreateTurn(
+            channel.sourceTranslation,
+            finalEventToSourceTurn(event),
+          )
         }
 
         if (event.translations) {
           for (const tr of event.translations) {
             const trStore = channel.translations.get(tr.translationId)
-            if (trStore) updateOrCreateTurn(trStore, finalEventToTranslationTurn(event, tr))
+            if (trStore)
+              updateOrCreateTurn(
+                trStore,
+                finalEventToTranslationTurn(event, tr),
+              )
           }
         }
 
@@ -124,7 +136,10 @@ export function createLivePlugin(): EditorPlugin {
         prependFinalBatch([event], channelId)
       }
 
-      function prependFinalBatch(events: LiveFinalEvent[], channelId: string): void {
+      function prependFinalBatch(
+        events: LiveFinalEvent[],
+        channelId: string,
+      ): void {
         const channel = core.channels.get(channelId)
         if (!channel) return
 
@@ -173,8 +188,23 @@ export function createLivePlugin(): EditorPlugin {
       }
 
       function onTranslation(_event: LiveTranslationEvent): void {
-        // Placeholder — translation handling will be implemented later
-        console.warn("[live-plugin] onTranslation not yet implemented")
+        const activeTranslation =
+          core.activeChannel.value.activeTranslation.value
+        const channel = core.activeChannel.value
+
+        if (
+          _event.partial &&
+          activeTranslation.languages.includes(_event.language)
+        ) {
+          partial.value = _event.text
+        } else if (!_event.partial) {
+          const trStore = channel.translations.get(_event.language)
+          if (trStore)
+            updateOrCreateTurn(
+              trStore,
+              finalEventToTranslationTurn({ ..._event, words: [] }, _event),
+            )
+        }
       }
 
       const api: LivePluginApi = {
@@ -187,9 +217,18 @@ export function createLivePlugin(): EditorPlugin {
         onTranslation,
       }
 
-      const unsubChannelChange = core.on("channel:change", immediateClearPartial)
-      const unsubTranslationChange = core.on("translation:change", immediateClearPartial)
-      const unsubTranslationSync = core.on("translation:sync", deferredClearPartial)
+      const unsubChannelChange = core.on(
+        "channel:change",
+        immediateClearPartial,
+      )
+      const unsubTranslationChange = core.on(
+        "translation:change",
+        immediateClearPartial,
+      )
+      const unsubTranslationSync = core.on(
+        "translation:sync",
+        deferredClearPartial,
+      )
       const unsubChannelSync = core.on("channel:sync", deferredClearPartial)
 
       core.live = api

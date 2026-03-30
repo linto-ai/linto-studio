@@ -1,5 +1,6 @@
 import computeSessionTurnUniqueId from "../const/computeSessionTurnUniqueId.js"
 import classifySessionTurn from "./classifySessionTurn.js"
+import { computeTurnStartTime, computeTurnEndTime } from "./computeTurnTime.js"
 
 /**
  * Converts closedCaptions + translatedCaptions into LiveFinalEvent[].
@@ -20,14 +21,6 @@ export default function processSessionCaptions({
   diarization,
   defaultLanguage,
 }) {
-  function toSessionTime(astart, offset) {
-    if (!astart) return offset
-    return Math.max(
-      0,
-      (new Date(astart).getTime() - sessionStartMs) / 1000 + offset,
-    )
-  }
-
   // Index translations by segmentId
   const translationsBySegmentId = {}
   for (const tc of translatedCaptions ?? []) {
@@ -49,8 +42,8 @@ export default function processSessionCaptions({
       text: c.text ?? null,
       words: [],
       speakerId: c.locutor ?? null,
-      startTime: toSessionTime(c.astart, c.start),
-      endTime: toSessionTime(c.astart, c.end),
+      startTime: computeTurnStartTime(c, sessionStartMs),
+      endTime: computeTurnEndTime(c, sessionStartMs),
       language: c.lang ?? defaultLanguage,
       translations: translationsBySegmentId[c.segmentId],
     }))
