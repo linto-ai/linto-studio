@@ -128,7 +128,7 @@ onBeforeUnmount(() => {
           {{ t("transcription.historyStart") }}
         </div>
         <TranscriptionEmpty
-          v-if="turns.length === 0 && !isLoadingHistory"
+          v-if="turns.length === 0 && !isLoadingHistory && !partialTurn"
           class="transcription-empty" />
         <TranscriptionTurn
           v-for="(turn, i) in turns"

@@ -6182,7 +6182,7 @@ const gh = /* @__PURE__ */ Ve(hh, [["render", vh]]), yh = { class: "transcriptio
             oe("progress", null, null, -1)
           ])])) : de("", !0),
           !d.value && t.turns.length > 0 ? (M(), le("div", kh, ge(m(n)("transcription.historyStart")), 1)) : de("", !0),
-          t.turns.length === 0 && !u.value ? (M(), G(xh, {
+          t.turns.length === 0 && !u.value && !s.value ? (M(), G(xh, {
             key: 2,
             class: "transcription-empty"
           })) : de("", !0),
@@ -6222,7 +6222,7 @@ const gh = /* @__PURE__ */ Ve(hh, [["render", vh]]), yh = { class: "transcriptio
       ], 512)
     ]));
   }
-}), Ph = ".transcription-panel[data-v-fce2d218]{min-height:0;overflow:hidden;background-color:var(--color-surface)}.scroll-container[data-v-fce2d218]{height:100%;overflow:auto;position:relative}.turns-container[data-v-fce2d218]{max-width:80ch;margin-inline:auto;padding:var(--spacing-lg)}.turns-container[data-v-fce2d218]:has(.transcription-empty){display:flex;flex-direction:column;min-height:100%}.history-loading[data-v-fce2d218]{text-align:center;padding:var(--spacing-md)}.history-loading progress[data-v-fce2d218]{width:120px}.history-start[data-v-fce2d218]{text-align:center;padding:var(--spacing-md);color:var(--color-text-muted);font-size:var(--font-size-sm)}.resume-scroll-btn[data-v-fce2d218]{position:sticky;bottom:var(--spacing-lg);left:50%;translate:-50% 0;z-index:var(--z-sticky);background:var(--glass-background);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--color-border);box-shadow:var(--shadow-sm)}.fade-slide-enter-active[data-v-fce2d218],.fade-slide-leave-active[data-v-fce2d218]{transition:opacity .2s ease,translate .2s ease}.fade-slide-enter-from[data-v-fce2d218],.fade-slide-leave-to[data-v-fce2d218]{opacity:0;translate:-50% 8px}@media(prefers-reduced-motion:reduce){.fade-slide-enter-active[data-v-fce2d218],.fade-slide-leave-active[data-v-fce2d218]{transition:none}}@media(max-width:767px){.turns-container[data-v-fce2d218]{padding:var(--spacing-md)}}", Oh = /* @__PURE__ */ Ve(Ah, [["styles", [Ph]], ["__scopeId", "data-v-fce2d218"]]), Mh = { class: "switch" }, Rh = ["id", "checked"], Ih = ["for"], Lh = /* @__PURE__ */ Z({
+}), Ph = ".transcription-panel[data-v-1b44d24d]{min-height:0;overflow:hidden;background-color:var(--color-surface)}.scroll-container[data-v-1b44d24d]{height:100%;overflow:auto;position:relative}.turns-container[data-v-1b44d24d]{max-width:80ch;margin-inline:auto;padding:var(--spacing-lg)}.turns-container[data-v-1b44d24d]:has(.transcription-empty){display:flex;flex-direction:column;min-height:100%}.history-loading[data-v-1b44d24d]{text-align:center;padding:var(--spacing-md)}.history-loading progress[data-v-1b44d24d]{width:120px}.history-start[data-v-1b44d24d]{text-align:center;padding:var(--spacing-md);color:var(--color-text-muted);font-size:var(--font-size-sm)}.resume-scroll-btn[data-v-1b44d24d]{position:sticky;bottom:var(--spacing-lg);left:50%;translate:-50% 0;z-index:var(--z-sticky);background:var(--glass-background);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--color-border);box-shadow:var(--shadow-sm)}.fade-slide-enter-active[data-v-1b44d24d],.fade-slide-leave-active[data-v-1b44d24d]{transition:opacity .2s ease,translate .2s ease}.fade-slide-enter-from[data-v-1b44d24d],.fade-slide-leave-to[data-v-1b44d24d]{opacity:0;translate:-50% 8px}@media(prefers-reduced-motion:reduce){.fade-slide-enter-active[data-v-1b44d24d],.fade-slide-leave-active[data-v-1b44d24d]{transition:none}}@media(max-width:767px){.turns-container[data-v-1b44d24d]{padding:var(--spacing-md)}}", Oh = /* @__PURE__ */ Ve(Ah, [["styles", [Ph]], ["__scopeId", "data-v-1b44d24d"]]), Mh = { class: "switch" }, Rh = ["id", "checked"], Ih = ["for"], Lh = /* @__PURE__ */ Z({
   __name: "SwitchToggle",
   props: {
     modelValue: { type: Boolean },
@@ -14138,7 +14138,7 @@ function Ub() {
       }
       function p(w) {
         const y = t.activeChannel.value.activeTranslation.value, E = t.activeChannel.value;
-        if (console.warn("[live-plugin] onTranslation not yet implemented"), w.partial && y.languages.includes(w.language))
+        if (w.partial && y.languages.includes(w.language))
           e.value = w.text;
         else if (!w.partial) {
           const C = E.translations.get(w.language);
