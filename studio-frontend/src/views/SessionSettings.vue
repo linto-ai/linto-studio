@@ -613,7 +613,7 @@ export default {
           endOn: endDateTime,
           autoStart: this.fieldAutoStart.value,
           autoEnd: this.fieldAutoStop.value,
-          visibility: this.fieldIsPublic.value ? "public" : "organization",
+          visibility: this.fieldSessionVisibility.value.replace("password", "public"),
           channels: this.localChannels,
         }
 
