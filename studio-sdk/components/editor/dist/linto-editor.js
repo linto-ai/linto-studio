@@ -14138,9 +14138,9 @@ function Ub() {
       }
       function p(w) {
         const y = t.activeChannel.value.activeTranslation.value, E = t.activeChannel.value;
-        if (w.partial && y.languages.includes(w.language))
+        if (!w.final && y.languages.includes(w.language))
           e.value = w.text;
-        else if (!w.partial) {
+        else if (w.final) {
           const C = E.translations.get(w.language);
           C && l(
             C,

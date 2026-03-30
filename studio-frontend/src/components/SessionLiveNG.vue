@@ -259,7 +259,7 @@ export default {
         turnId: computeSessionTurnUniqueId(content.segmentId),
         language: content.targetLang,
         text: content.text,
-        partial: content.partial,
+        final: content.final,
         startTime: computeTurnStartTime(content, this.sessionStartMs),
         endTime: computeTurnEndTime(content, this.sessionStartMs),
         speakerId: content.locutor,

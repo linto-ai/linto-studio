@@ -193,11 +193,11 @@ export function createLivePlugin(): EditorPlugin {
         const channel = core.activeChannel.value
 
         if (
-          _event.partial &&
+          !_event.final &&
           activeTranslation.languages.includes(_event.language)
         ) {
           partial.value = _event.text
-        } else if (!_event.partial) {
+        } else if (_event.final) {
           const trStore = channel.translations.get(_event.language)
           if (trStore)
             updateOrCreateTurn(
