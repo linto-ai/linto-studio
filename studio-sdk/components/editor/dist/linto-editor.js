@@ -13728,21 +13728,21 @@ function hc(t) {
     }));
   }), we(
     () => e.live?.partial.value,
-    (a) => {
-      a && n && n.newPartial(a);
+    (l) => {
+      l && n && n.newPartial(l);
     }
   );
-  const i = e.onActiveTranslation("turn:add", ({ turn: a }) => {
+  const i = e.onActiveTranslation("turn:add", ({ turn: l }) => {
     if (!n) return;
-    const l = a.words.length > 0 ? a.words.map((c) => c.text).join(" ") : a.text ?? "";
-    l && n.newFinal(l);
+    const c = l.words.length > 0 ? l.words.map((u) => u.text).join(" ") : l.text ?? "";
+    c && n.newFinal(c);
   });
   function r() {
     n && (n.resetDrawing(), n.resetAll());
   }
-  const s = e.on("translation:sync", r), o = e.on("channel:sync", r);
+  const s = e.on("translation:change", r), o = e.on("translation:sync", r), a = e.on("channel:sync", r);
   An(() => {
-    i(), s(), o(), n?.dispose(), n = null;
+    i(), s(), o(), a(), n?.dispose(), n = null;
   });
 }
 const gb = ["height"], yb = /* @__PURE__ */ Z({
@@ -13830,7 +13830,13 @@ const gb = ["height"], yb = /* @__PURE__ */ Z({
     showHeader: { type: Boolean, default: !0 }
   },
   setup(t) {
-    const e = t, n = On(), { t: i, locale: r } = Dt(), { isMobile: s } = Su(), o = /* @__PURE__ */ F(!1), a = N(() => n.activeChannel.value.activeTranslation.value.turns.value), l = n.speakers.all, c = N(() => [...n.channels.values()]), u = N(() => [...n.activeChannel.value.translations.values()]), d = N(() => n.activeChannel.value.activeTranslation.value.id), f = N(() => Array.from(l.values())), p = vi("audioPlayer");
+    const e = t, n = On(), { t: i, locale: r } = Dt(), { isMobile: s } = Su(), o = /* @__PURE__ */ F(!1), a = N(
+      () => n.activeChannel.value.activeTranslation.value.turns.value
+    ), l = n.speakers.all, c = N(() => [...n.channels.values()]), u = N(() => [
+      ...n.activeChannel.value.translations.values()
+    ]), d = N(
+      () => n.activeChannel.value.activeTranslation.value.id
+    ), f = N(() => Array.from(l.values())), p = vi("audioPlayer");
     function h(_) {
       n.audio && (n.audio.currentTime.value = _);
     }
@@ -13910,7 +13916,7 @@ const gb = ["height"], yb = /* @__PURE__ */ Z({
       }, null, 8, ["audio-src", "turns", "speakers"])) : fe("", !0),
       m(n).subtitle?.isVisible.value && !m(s) && !m(n).subtitle.isFullscreen.value ? (M(), Y(_b, { key: 2 })) : fe("", !0),
       m(n).subtitle?.isFullscreen.value ? (M(), Y(Tb, { key: 3 })) : fe("", !0),
-      m(s) ? (M(), le("div", Pb, [
+      m(s) && (c.value.length > 1 || u.value.length > 1) ? (M(), le("div", Pb, [
         c.value.length > 1 ? (M(), Y(oc, {
           key: 0,
           channels: c.value,
@@ -13927,7 +13933,7 @@ const gb = ["height"], yb = /* @__PURE__ */ Z({
       ])) : fe("", !0)
     ]));
   }
-}), Mb = ".editor-layout[data-v-084c0e7c]{display:flex;flex-direction:column;height:100%;overflow:hidden;background-color:var(--color-background)}.editor-body[data-v-084c0e7c]{display:grid;grid-template-columns:1fr var(--sidebar-width);flex:1;min-height:0}.mobile-selectors[data-v-084c0e7c]{display:flex;gap:var(--spacing-sm);padding:var(--spacing-sm) var(--spacing-md);border-top:1px solid var(--color-border);background-color:var(--color-surface);flex-shrink:0}.mobile-selectors[data-v-084c0e7c]>*{flex:1;min-width:0}@media(max-width:767px){.editor-body[data-v-084c0e7c]{grid-template-columns:1fr}}", Rb = /* @__PURE__ */ We(Ob, [["styles", [Mb]], ["__scopeId", "data-v-084c0e7c"]]);
+}), Mb = ".editor-layout[data-v-1771a042]{display:flex;flex-direction:column;height:100%;overflow:hidden;background-color:var(--color-background)}.editor-body[data-v-1771a042]{display:grid;grid-template-columns:1fr var(--sidebar-width);flex:1;min-height:0}.mobile-selectors[data-v-1771a042]{display:flex;gap:var(--spacing-sm);padding:var(--spacing-sm) var(--spacing-md);border-top:1px solid var(--color-border);background-color:var(--color-surface);flex-shrink:0}.mobile-selectors[data-v-1771a042]>*{flex:1;min-width:0}@media(max-width:767px){.editor-body[data-v-1771a042]{grid-template-columns:1fr}}", Rb = /* @__PURE__ */ We(Ob, [["styles", [Mb]], ["__scopeId", "data-v-1771a042"]]);
 function Ib() {
   return {
     name: "audio",

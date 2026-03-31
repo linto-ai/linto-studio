@@ -45,11 +45,13 @@ export function useSubtitleScroller(options: UseSubtitleScrollerOptions) {
     scroller.resetAll()
   }
 
+  const unsubTranslationChange = editor.on("translation:change", resetScroller)
   const unsubTranslationSync = editor.on("translation:sync", resetScroller)
   const unsubChannelSync = editor.on("channel:sync", resetScroller)
 
   onUnmounted(() => {
     unsubTurnAdd()
+    unsubTranslationChange()
     unsubTranslationSync()
     unsubChannelSync()
     scroller?.dispose()

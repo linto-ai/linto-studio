@@ -14,23 +14,32 @@ import { useEditorStore } from "../core"
 import { useI18n } from "../i18n"
 import * as utils from "../utils"
 
-const props = withDefaults(defineProps<{
-  showHeader?: boolean
-}>(), {
-  showHeader: true,
-})
+const props = withDefaults(
+  defineProps<{
+    showHeader?: boolean
+  }>(),
+  {
+    showHeader: true,
+  },
+)
 
 const editor = useEditorStore()
 const { t, locale } = useI18n()
 const { isMobile } = useIsMobile()
 const isSidebarOpen = ref(false)
 
-const activeTurns = computed(() => editor.activeChannel.value.activeTranslation.value.turns.value)
+const activeTurns = computed(
+  () => editor.activeChannel.value.activeTranslation.value.turns.value,
+)
 const speakers = editor.speakers.all
 
 const channels = computed(() => [...editor.channels.values()])
-const translations = computed(() => [...editor.activeChannel.value.translations.values()])
-const activeTranslationId = computed(() => editor.activeChannel.value.activeTranslation.value.id)
+const translations = computed(() => [
+  ...editor.activeChannel.value.translations.values(),
+])
+const activeTranslationId = computed(
+  () => editor.activeChannel.value.activeTranslation.value.id,
+)
 const speakerList = computed(() => Array.from(speakers.values()))
 
 const audioPlayerRef =
@@ -73,7 +82,6 @@ function onChannelChange(channelId: string) {
 function onTranslationChange(translationId: string) {
   editor.activeChannel.value.setActiveTranslation(translationId)
 }
-
 </script>
 
 <template>
@@ -115,10 +123,21 @@ function onTranslationChange(translationId: string) {
       :turns="activeTurns"
       :speakers="speakers"
       @timeupdate="onTimeUpdate"
-      @play-state-change="(v: boolean) => { if (editor.audio) editor.audio.isPlaying.value = v }" />
-    <SubtitleBanner v-if="editor.subtitle?.isVisible.value && !isMobile && !editor.subtitle.isFullscreen.value" />
+      @play-state-change="
+        (v: boolean) => {
+          if (editor.audio) editor.audio.isPlaying.value = v
+        }
+      " />
+    <SubtitleBanner
+      v-if="
+        editor.subtitle?.isVisible.value &&
+        !isMobile &&
+        !editor.subtitle.isFullscreen.value
+      " />
     <SubtitleFullscreen v-if="editor.subtitle?.isFullscreen.value" />
-    <div v-if="isMobile" class="mobile-selectors">
+    <div
+      v-if="isMobile && (channels.length > 1 || translations.length > 1)"
+      class="mobile-selectors">
       <ChannelSelector
         v-if="channels.length > 1"
         :channels="channels"

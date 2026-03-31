@@ -4,4 +4,8 @@ export interface LiveTranslationEvent {
     turnId: string;
     language: string;
     text: string;
+    final: boolean;
+    startTime: number;
+    endTime: number;
+    speakerId: string | null;
 }
