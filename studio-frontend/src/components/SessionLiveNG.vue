@@ -210,7 +210,10 @@ export default {
         const translations = Object.entries(content.translations || {})
           .filter(([, text]) => text)
           .map(([lang, text]) => ({ translationId: lang, text }))
-        this.editor.live.onPartial({ translations }, this.activeChannelIndex)
+        this.editor.live.onPartial(
+          { translations, text: type == "both" ? content.text : null },
+          this.activeChannelIndex,
+        )
       }
     },
 
@@ -248,7 +251,11 @@ export default {
             language: lang,
           }))
         this.editor.live.onFinal(
-          { ...baseTurn, translations },
+          {
+            ...baseTurn,
+            translations,
+            text: type == "both" ? content.text : null,
+          },
           this.activeChannelIndex,
         )
       }
@@ -256,7 +263,7 @@ export default {
 
     onTranslation(content) {
       this.editor.live.onTranslation({
-        turnId: computeSessionTurnUniqueId(content.segmentId),
+        turnId: computeSessionTurnUniqueId(content),
         language: content.targetLang,
         text: content.text,
         final: content.final,
