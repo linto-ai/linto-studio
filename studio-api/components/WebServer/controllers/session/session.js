@@ -17,6 +17,7 @@ const PublicToken = require(
   `${process.cwd()}/components/WebServer/config/passport/token/public_generator`,
 )
 
+const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const crypto = require("crypto")
@@ -149,6 +150,27 @@ async function generatPublicToken(jsonString, req) {
   return jsonString
 }
 
+async function filterPrivateSessions(jsonString, req) {
+  try {
+    if (ROLES.hasRoleAccess(req.userRole, ROLES.MEETING_MANAGER)) return jsonString
+
+    const body = JSON.parse(jsonString)
+    const sessions = body.sessions
+    if (!Array.isArray(sessions)) return jsonString
+
+    const userId = req.payload.data.userId
+    body.sessions = sessions.filter(
+      (session) =>
+        session.visibility !== "private" || session.owner === userId,
+    )
+    body.totalItems = body.totalItems - (sessions.length - body.sessions.length)
+    return JSON.stringify(body)
+  } catch (err) {
+    debug("Error filtering private sessions:", err)
+    return jsonString
+  }
+}
+
 async function checkSessionMatchingOrganization(req, next) {
   try {
     const session = await axios.get(
@@ -168,5 +190,6 @@ module.exports = {
   checkTranscriberProfileAccess,
   afterProxyAccess,
   generatPublicToken,
+  filterPrivateSessions,
   checkSessionMatchingOrganization,
 }
