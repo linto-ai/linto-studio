@@ -1,4 +1,4 @@
-class AppError extends Error {
+class StudioError extends Error {
   constructor(message, err) {
     super(message)
     this.name = this.constructor.name
@@ -7,7 +7,7 @@ class AppError extends Error {
 }
 
 function createException(name, type, status, defaultMessage) {
-  const ExceptionClass = class extends AppError {
+  const ExceptionClass = class extends StudioError {
     constructor(message, err) {
       super(message || defaultMessage, err)
       this.type = type
@@ -18,4 +18,4 @@ function createException(name, type, status, defaultMessage) {
   return ExceptionClass
 }
 
-module.exports = { AppError, createException }
+module.exports = { StudioError, createException }
