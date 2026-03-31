@@ -38,7 +38,8 @@
   box-shadow: var(--shadow-sm);
   z-index: var(--z-dropdown);
   min-width: var(--reka-select-trigger-width);
-  overflow: hidden;
+  overflow-y: auto;
+  max-height: var(--reka-select-content-available-height);
   padding: var(--spacing-xs) 0;
   position: absolute;
 }

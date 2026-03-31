@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref, onMounted } from "vue"
 import { ChevronDown, Check } from "lucide-vue-next"
 import {
   SelectRoot,
@@ -22,10 +23,18 @@ defineProps<{
 const emit = defineEmits<{
   "update:selectedValue": [value: string]
 }>()
+
+const selectEl = ref<HTMLElement>()
+const boundary = ref<Element[]>([])
+
+onMounted(() => {
+  const sidebar = selectEl.value?.closest('.speaker-sidebar')
+  if (sidebar) boundary.value = [sidebar]
+})
 </script>
 
 <template>
-  <div class="sidebar-select">
+  <div class="sidebar-select" ref="selectEl">
     <SelectRoot
       :model-value="selectedValue"
       @update:model-value="emit('update:selectedValue', $event as string)">
@@ -41,7 +50,8 @@ const emit = defineEmits<{
           class="sidebar-select-content"
           position="popper"
           :side-offset="4"
-          position-strategy="absolute">
+          position-strategy="absolute"
+          :collision-boundary="boundary">
           <SelectViewport>
             <SelectItem
               v-for="item in items"

@@ -11,9 +11,9 @@ import {
   ListboxContent,
   ListboxItem,
   ListboxItemIndicator,
-  ListboxFilter,
+  //ListboxFilter,
 } from "reka-ui"
-import { useI18n } from "../../i18n"
+//import { useI18n } from "../../i18n"
 
 const props = defineProps<{
   items: { value: string; label: string }[]
@@ -25,9 +25,9 @@ const emit = defineEmits<{
   "update:selectedValue": [value: string]
 }>()
 
-const { t } = useI18n()
+//const { t } = useI18n()
 const isOpen = ref(false)
-const filterThreshold = 7
+//const filterThreshold = 7
 
 const selectedLabel = computed(
   () => props.items.find((i) => i.value === props.selectedValue)?.label ?? "",
@@ -57,10 +57,10 @@ function onSelect(value: string) {
           <ListboxRoot
             :model-value="selectedValue"
             @update:model-value="onSelect($event as string)">
-            <ListboxFilter
+            <!-- <ListboxFilter
               v-if="items.length > filterThreshold"
               class="sheet-filter"
-              :placeholder="t('select.filter')" />
+              :placeholder="t('select.filter')" /> -->
             <ListboxContent class="sheet-list">
               <ListboxItem
                 v-for="item in items"
