@@ -36,7 +36,11 @@ export default function processSessionCaptions({
 
   return (closedCaptions ?? [])
     .filter((c) => c.segmentId != null)
-    .filter((c) => classifySessionTurn(c, diarization) === "original")
+    .filter(
+      (c) =>
+        classifySessionTurn(c, diarization) === "original" ||
+        classifySessionTurn(c, diarization) === "both",
+    )
     .map((c) => ({
       turnId: computeSessionTurnUniqueId(c),
       text: c.text ?? null,
