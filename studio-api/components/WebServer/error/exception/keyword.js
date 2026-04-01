@@ -13,10 +13,4 @@ module.exports = {
     400,
     "Metadata was not provided.",
   ),
-  KeywordUnsupportedMediaType: createException(
-    "KeywordUnsupportedMediaType",
-    "keyword",
-    415,
-    "Request parameter is not supported",
-  ),
 }

@@ -33,7 +33,7 @@ const {
   GenerateMagicLinkError,
 } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
 
-const { NodemailerError, NodemailerInvalidEmail } = require(
+const { NodemailerError } = require(
   `${process.cwd()}/components/WebServer/error/exception/nodemailer`,
 )
 

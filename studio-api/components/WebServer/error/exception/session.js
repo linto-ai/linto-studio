@@ -25,22 +25,10 @@ module.exports = {
     403,
     "Not allowed to do this",
   ),
-  SessionNotStarted: createException(
-    "SessionNotStarted",
-    "session",
-    400,
-    "Session must be ready or active",
-  ),
   SessionConflict: createException(
     "SessionConflict",
     "session",
     409,
     "Session already exists",
-  ),
-  TranscriberUnavailable: createException(
-    "TranscriberUnavailable",
-    "session",
-    409,
-    "Transcriber is not available at the moment",
   ),
 }
