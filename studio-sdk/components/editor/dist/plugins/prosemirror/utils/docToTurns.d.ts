@@ -1,5 +1,5 @@
 import { Node as ProseMirrorNode } from '@tiptap/pm/model';
-import { Turn } from '../../types/editor';
+import { Turn } from '../../../types/editor';
 /**
  * Extract Turn[] from a ProseMirror document.
  * Only extracts the text + attributes — words/timestamps are NOT in ProseMirror,

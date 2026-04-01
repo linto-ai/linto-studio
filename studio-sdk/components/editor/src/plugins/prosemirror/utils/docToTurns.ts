@@ -1,5 +1,5 @@
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model"
-import type { Turn } from "../../types/editor"
+import type { Turn } from "../../../types/editor"
 
 /**
  * Extract Turn[] from a ProseMirror document.

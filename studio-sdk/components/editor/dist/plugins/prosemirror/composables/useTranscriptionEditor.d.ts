@@ -1,5 +1,5 @@
 import { Ref } from 'vue';
-import { EditorStore } from '../core/types';
+import { EditorStore } from '../../../core/types';
 export interface UseTranscriptionEditorOptions {
     store: EditorStore;
     editable?: Ref<boolean> | boolean;

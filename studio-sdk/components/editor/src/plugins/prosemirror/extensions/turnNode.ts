@@ -1,6 +1,6 @@
 import { Node, mergeAttributes } from "@tiptap/core"
 import { VueNodeViewRenderer } from "@tiptap/vue-3"
-import TurnNodeView from "../nodeViews/TurnNodeView.vue"
+import TurnNodeView from "../components/TurnNodeView.vue"
 
 export interface TurnNodeAttributes {
   id: string

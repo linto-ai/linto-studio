@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from "vue"
 import { NodeViewWrapper, NodeViewContent, type NodeViewProps } from "@tiptap/vue-3"
-import SpeakerLabel from "../../components/SpeakerLabel.vue"
-import { useEditorStore } from "../../core"
+import SpeakerLabel from "../../../components/SpeakerLabel.vue"
+import { useEditorStore } from "../../../core"
 
 const props = defineProps<NodeViewProps>()
 

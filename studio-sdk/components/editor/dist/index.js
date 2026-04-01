@@ -8843,7 +8843,13 @@ const fd = ["height"], pd = /* @__PURE__ */ F({
     showHeader: { type: Boolean, default: !0 }
   },
   setup(n) {
-    const e = n, t = Je(), { t: i, locale: s } = Ae(), { isMobile: r } = Ki(), o = A(!1), a = P(() => t.activeChannel.value.activeTranslation.value.turns.value), l = t.speakers.all, u = P(() => [...t.channels.values()]), c = P(() => [...t.activeChannel.value.translations.values()]), d = P(() => t.activeChannel.value.activeTranslation.value.id), h = P(() => Array.from(l.values())), p = mt("audioPlayer");
+    const e = n, t = Je(), { t: i, locale: s } = Ae(), { isMobile: r } = Ki(), o = A(!1), a = P(
+      () => t.activeChannel.value.activeTranslation.value.turns.value
+    ), l = t.speakers.all, u = P(() => [...t.channels.values()]), c = P(() => [
+      ...t.activeChannel.value.translations.values()
+    ]), d = P(
+      () => t.activeChannel.value.activeTranslation.value.id
+    ), h = P(() => Array.from(l.values())), p = mt("audioPlayer");
     function f(S) {
       t.audio && (t.audio.currentTime.value = S);
     }
@@ -8923,7 +8929,7 @@ const fd = ["height"], pd = /* @__PURE__ */ F({
       }, null, 8, ["audio-src", "turns", "speakers"])) : K("", !0),
       m(t).subtitle?.isVisible.value && !m(r) && !m(t).subtitle.isFullscreen.value ? (E(), q(hd, { key: 2 })) : K("", !0),
       m(t).subtitle?.isFullscreen.value ? (E(), q(bd, { key: 3 })) : K("", !0),
-      m(r) ? (E(), W("div", Cd, [
+      m(r) && (u.value.length > 1 || c.value.length > 1) ? (E(), W("div", Cd, [
         u.value.length > 1 ? (E(), q(Os, {
           key: 0,
           channels: u.value,
@@ -8940,7 +8946,7 @@ const fd = ["height"], pd = /* @__PURE__ */ F({
       ])) : K("", !0)
     ]));
   }
-}), Dd = /* @__PURE__ */ oe(xd, [["__scopeId", "data-v-084c0e7c"]]);
+}), Dd = /* @__PURE__ */ oe(xd, [["__scopeId", "data-v-1771a042"]]);
 function Ld() {
   return {
     name: "audio",

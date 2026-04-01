@@ -1,5 +1,5 @@
 import { Extension } from '@tiptap/core';
-import { EditorStore, TranslationStore } from '../../core/types';
+import { EditorStore, TranslationStore } from '../../../core/types';
 export declare function withSuppressedSync(fn: () => void): void;
 export interface StoreSyncOptions {
     store: EditorStore;

@@ -1,4 +1,4 @@
-import type { Turn } from "../../types/editor"
+import type { Turn } from "../../../types/editor"
 import type { JSONContent } from "@tiptap/core"
 
 /** Convert a Turn[] array into TipTap-compatible JSON content */

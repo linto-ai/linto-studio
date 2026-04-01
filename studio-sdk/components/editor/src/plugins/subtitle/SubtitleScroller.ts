@@ -1,4 +1,4 @@
-import splitPartialSubtitles from "./splitPartialSubtitles"
+import splitPartialSubtitles from "./utils/splitPartialSubtitles"
 
 interface DrawerOptions {
   fontSize?: number

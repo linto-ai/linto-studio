@@ -1,9 +1,9 @@
 import { Extension } from "@tiptap/core"
 import { Plugin, PluginKey } from "@tiptap/pm/state"
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model"
-import type { EditorStore, TranslationStore } from "../../core/types"
-import { docToTurns } from "../helpers/docToTurns"
-import type { Turn, Word } from "../../types/editor"
+import type { EditorStore, TranslationStore } from "../../../core/types"
+import { docToTurns } from "../utils/docToTurns"
+import type { Turn, Word } from "../../../types/editor"
 
 const storeSyncKey = new PluginKey("storeSync")
 
