@@ -29,6 +29,7 @@ const SttWrapper = require(
 const { segmentNormalizeText } = require(
   `${process.cwd()}/components/WebServer/controllers/conversation/normalizeSegment`,
 )
+const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 
 async function addFileToConv(conversation, req) {
   if (req.files) {
@@ -63,12 +64,8 @@ async function importConv(req, res) {
 
     delete conversation._id
 
-    if (!conversation.name)
-      throw new ConversationMetadataRequire("Conversation name key is required")
-    if (!conversation.locale)
-      throw new ConversationMetadataRequire(
-        "Conversation locale key is required",
-      )
+    requireParam(conversation.name, ConversationMetadataRequire, "Conversation name key is required")
+    requireParam(conversation.locale, ConversationMetadataRequire, "Conversation locale key is required")
 
     if (!conversation?.organization) {
       conversation.organization = {}
@@ -93,12 +90,9 @@ async function importConv(req, res) {
 }
 
 async function importTranscription(req, res) {
-  if (!req.body.name)
-    throw new ConversationMetadataRequire("name param is required")
-  if (!req.body.lang)
-    throw new ConversationMetadataRequire("lang param is required")
-  if (!req.body.transcription)
-    throw new ConversationMetadataRequire("transcription param is required")
+  requireParam(req.body.name, ConversationMetadataRequire, "name param is required")
+  requireParam(req.body.lang, ConversationMetadataRequire, "lang param is required")
+  requireParam(req.body.transcription, ConversationMetadataRequire, "transcription param is required")
   if (!req.body.membersRight) req.body.membersRight = CONVERSATION_RIGHT.READ
 
   // Parse securityLevel from string (FormData sends strings)
@@ -148,9 +142,6 @@ async function importTranscription(req, res) {
 
 async function importConversation(req, res, next) {
   try {
-    if (!req.params.organizationId)
-      throw new ConversationMetadataRequire("organizationId param is required")
-
     const organization = await model.organizations.getByIdAndUser(
       req.params.organizationId,
       req.payload.data.userId,

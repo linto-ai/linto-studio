@@ -1273,7 +1273,6 @@
       "edit_alias_button": "Gérer l'alias",
       "global_informations_title": "Informations générales",
       "time_informations_title": "Démarrage et arrêt",
-      "isPublic_label": "Autoriser l'accès anonyme à la session",
       "publicLink_label": "Lien de la session",
       "success_message": "Session mise à jour avec succès",
       "error_update_message": "La session n'a pas été mise à jour",
