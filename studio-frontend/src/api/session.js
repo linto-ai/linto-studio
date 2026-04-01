@@ -1,9 +1,9 @@
-import isSessionStarted from "../tools/isSessionStarted"
 import { sendRequest } from "../tools/sendRequest"
 import { getEnv } from "@/tools/getEnv"
 
 const BASE_API = getEnv("VUE_APP_CONVO_API")
 const SESSION_PAGE_SIZE = 100
+const DEFAULT_PAGE_SIZE = 10
 
 async function fetchAllSessionPages(url, method, baseParams, notif) {
   const params = { ...baseParams, limit: SESSION_PAGE_SIZE, offset: 0 }
@@ -253,22 +253,37 @@ export async function apiGetActiveSessions(organizationScope, notif) {
   return result
 }
 
-// started is not a session api status
-export async function apiGetStartedSessions(organizationScope, notif) {
-  const url = `${BASE_API}/organizations/${organizationScope}/sessions`
-  const allSessions = await fetchAllSessionPages(
-    url,
-    "get",
-    { organizationId: organizationScope, excludeVisibility: "user" },
-    notif,
+
+
+export async function apiGetSessionsPaginated(
+  organizationScope,
+  page = 0,
+  {
+    pageSize = DEFAULT_PAGE_SIZE,
+    excludeVisibility = "user",
+  } = {},
+) {
+  const params = {
+    organizationId: organizationScope,
+    excludeVisibility,
+    limit: pageSize,
+    offset: page * pageSize,
+  }
+
+  const res = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions`,
+    { method: "get" },
+    params,
   )
 
-  const allSessionsFiltered = allSessions.sessions.filter(isSessionStarted)
-
-  return {
-    sessions: allSessionsFiltered,
-    totalItems: allSessionsFiltered.length,
+  if (res?.data) {
+    return {
+      list: res.data.sessions || [],
+      count: res.data.totalItems || 0,
+      pageSize,
+    }
   }
+  return { list: [], count: 0, pageSize }
 }
 
 export async function apiHasSessions(organizationScope) {

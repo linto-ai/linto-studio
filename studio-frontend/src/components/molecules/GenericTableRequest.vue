@@ -61,6 +61,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    pageSize: {
+      type: Number,
+      default: 10,
+    },
   },
   data() {
     return {
@@ -94,7 +98,7 @@ export default {
       )
       this.data = req.list
       this.count = req.count
-      this.totalPagesNumber = Math.ceil(req.count / 10)
+      this.totalPagesNumber = Math.ceil(req.count / this.pageSize)
       this.loading = false
     },
     removeElement(id) {
