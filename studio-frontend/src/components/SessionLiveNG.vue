@@ -199,22 +199,12 @@ export default {
 
     onPartial(content) {
       const type = classifySessionTurn(content, this.hasDiarization)
-      if (type === "bot") return
+      if (type !== "original") return
 
-      if (type === "original") {
-        this.editor.live.onPartial(
-          { text: content.text },
-          this.activeChannelIndex,
-        )
-      } else {
-        const translations = Object.entries(content.translations || {})
-          .filter(([, text]) => text)
-          .map(([lang, text]) => ({ translationId: lang, text }))
-        this.editor.live.onPartial(
-          { translations, text: type == "both" ? content.text : null },
-          this.activeChannelIndex,
-        )
-      }
+      this.editor.live.onPartial(
+        { text: content.text },
+        this.activeChannelIndex,
+      )
     },
 
     onFinal(content) {
@@ -223,7 +213,7 @@ export default {
       }
 
       const type = classifySessionTurn(content, this.hasDiarization)
-      if (type === "bot") return
+      if (type !== "original") return
 
       const activeChannel = this.editor.activeChannel.value
 
@@ -237,28 +227,29 @@ export default {
           content.lang ?? activeChannel.sourceTranslation.languages[0] ?? "*",
       }
 
-      if (type === "original") {
-        this.editor.live.onFinal(
-          { ...baseTurn, text: content.text },
-          this.activeChannelIndex,
-        )
-      } else {
-        const translations = Object.entries(content.translations || {})
-          .filter(([, text]) => text)
-          .map(([lang, text]) => ({
-            translationId: lang,
-            text,
-            language: lang,
-          }))
-        this.editor.live.onFinal(
-          {
-            ...baseTurn,
-            translations,
-            text: type == "both" ? content.text : null,
-          },
-          this.activeChannelIndex,
-        )
-      }
+      this.editor.live.onFinal(
+        { ...baseTurn, text: content.text },
+        this.activeChannelIndex,
+      )
+
+      // } else {
+      //   // could be deleted (old format)
+      //   const translations = Object.entries(content.translations || {})
+      //     .filter(([, text]) => text)
+      //     .map(([lang, text]) => ({
+      //       translationId: lang,
+      //       text,
+      //       language: lang,
+      //     }))
+      //   this.editor.live.onFinal(
+      //     {
+      //       ...baseTurn,
+      //       translations,
+      //       text: type == "both" ? content.text : null,
+      //     },
+      //     this.activeChannelIndex,
+      //   )
+      // }
     },
 
     onTranslation(content) {

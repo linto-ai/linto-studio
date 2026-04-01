@@ -10,7 +10,7 @@
  */
 export default function classifySessionTurn(turn, hasDiarization) {
   if (turn?.locutor === "bot") return "bot"
-  if (!hasDiarization) return "both"
+  if (!hasDiarization) return "original"
 
   const isTranslationTurn =
     turn.translations && Object.values(turn.translations).some((v) => v)
