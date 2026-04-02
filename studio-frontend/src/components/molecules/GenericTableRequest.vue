@@ -18,7 +18,7 @@
     <Pagination
       :pages="totalPagesNumber"
       v-model="currentPageNb"
-      v-if="count > 0"></Pagination>
+      v-if="totalPagesNumber > 1"></Pagination>
   </div>
 </template>
 <script>
