@@ -16,7 +16,6 @@
             <PopoverList
               :items="typeItems"
               v-model="currentType"
-              :disabled="isEditMode"
               size="sm" />
           </div>
         </Tooltip>
@@ -26,7 +25,6 @@
             <PopoverList
               :items="organizationItems"
               v-model="selectedOrganizationId"
-              :disabled="isEditMode"
               size="sm" />
           </div>
         </Tooltip>
@@ -175,7 +173,6 @@ export default {
         return this.transcriberProfile.config.type
       },
       set(value) {
-        if (this.isEditMode) return
         this.transcriberProfile = structuredClone(
           TRANSCRIBER_PROFILES_TEMPLATES[value],
         )

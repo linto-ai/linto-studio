@@ -1,6 +1,6 @@
 <template>
   <section>
-    <div class="flex gap-medium small-margin-bottom">
+    <div class="flex gap-medium small-margin-bottom align-center">
       <h2 style="width: auto">
         {{ $t("organisation.transcriber_profiles.title") }}
       </h2>
@@ -13,14 +13,18 @@
             'backoffice.transcriber_profile_list.add_transcriber_profile_button',
           )
         " />
-      <!-- <button @click="showModalCreateTranscriberProfile">
-        <span class="icon plus"></span>
-        <span class="label">{{
-          $t(
-            "backoffice.transcriber_profile_list.add_transcriber_profile_button",
+      <Button
+        @click="deleteSelectedProfiles"
+        :disabled="selectedProfiles.length === 0"
+        variant="secondary"
+        intent="destructive"
+        icon="trash"
+        :label="
+          $tc(
+            'backoffice.transcriber_profile_list.remove_transcriber_profile_button',
+            selectedProfiles.length,
           )
-        }}</span>
-      </button> -->
+        " />
     </div>
     <div v-if="transcriberProfiles.length === 0 && !loading" class="">
       {{ $t("organisation.transcriber_profiles.no_profiles") }}
@@ -28,19 +32,21 @@
     <div v-else>
       <TranscriberProfileTable
         @list_sort_by="sortBy"
+        @edit="editProfile"
         :sortListKey="sortListKey"
         :sortListDirection="sortListDirection"
         :transcriberProfilesList="sortedTranscriberProfiles"
         :loading="loading"
-        :linkTo="{ name: 'backoffice-transcriberProfileDetail' }"
         v-model="selectedProfiles" />
     </div>
 
-    <ModalCreateTranscriberProfiles
-      v-if="showModalCreate"
+    <ModalTranscriberProfile
+      v-if="showModal"
       :organizationId="organizationId"
-      @on-confirm="confirmCreation"
-      @on-cancel="cancelCreation" />
+      :transcriberProfileId="editProfileId"
+      @on-confirm="onModalConfirm"
+      @on-cancel="closeModal"
+      @on-delete="onModalDelete" />
   </section>
 </template>
 <script>
@@ -49,9 +55,10 @@ import { apiGetTranscriberProfilesByOrganization } from "@/api/session.js"
 import { sortArray } from "@/tools/sortList.js"
 
 import { apiAdminDeleteTranscriberProfile } from "@/api/admin.js"
+import bulkRequest from "@/tools/bulkRequest.js"
 
 import TranscriberProfileTable from "@/components/TranscriberProfileTable.vue"
-import ModalCreateTranscriberProfiles from "@/components/ModalTranscriberProfile.vue"
+import ModalTranscriberProfile from "@/components/ModalTranscriberProfile.vue"
 export default {
   props: {
     organizationId: {
@@ -65,7 +72,8 @@ export default {
       transcriberProfiles: [],
       selectedProfiles: [],
       search: "",
-      showModalCreate: false,
+      showModal: false,
+      editProfileId: null,
       sortListKey: "config.name",
       sortListDirection: "asc",
     }
@@ -88,23 +96,68 @@ export default {
       this.loading = false
     },
     showModalCreateTranscriberProfile() {
-      this.showModalCreate = true
+      this.editProfileId = null
+      this.showModal = true
     },
-    confirmCreation() {
-      this.showModalCreate = false
+    editProfile(profileId) {
+      this.editProfileId = profileId
+      this.showModal = true
+    },
+    onModalConfirm() {
+      this.showModal = false
+      this.editProfileId = null
       this.fetchTranscriberProfiles()
     },
-    cancelCreation() {
-      this.showModalCreate = false
+    onModalDelete() {
+      this.showModal = false
+      this.editProfileId = null
+      this.fetchTranscriberProfiles()
+    },
+    closeModal() {
+      this.showModal = false
+      this.editProfileId = null
     },
     async deleteSelectedProfiles() {
       const req = await bulkRequest(
         apiAdminDeleteTranscriberProfile,
-        this.selectedProfiles.map((profile) => profile.id),
+        this.selectedProfiles.map((id) => [id]),
+        (count) => {
+          this.$store.dispatch(
+            "system/removeNotificationById",
+            "profile-deletion-loading",
+          )
+          this.$store.dispatch("system/addNotification", {
+            message: this.$i18n.t(
+              "backoffice.transcriber_profile_list.bulk_remove_loading_notification",
+              { count, total: this.selectedProfiles.length },
+            ),
+            type: "loading",
+            timeout: -1,
+            id: "profile-deletion-loading",
+          })
+        },
       )
-      if (req) {
-        this.fetchTranscriberProfiles()
+      this.$store.dispatch(
+        "system/removeNotificationById",
+        "profile-deletion-loading",
+      )
+      if (req.status === "success") {
+        bus.$emit("app_notif", {
+          status: "success",
+          message: this.$i18n.t(
+            "backoffice.transcriber_profile_list.bulk_remove_success_notification",
+          ),
+        })
+      } else {
+        bus.$emit("app_notif", {
+          status: "error",
+          message: this.$i18n.t(
+            "backoffice.transcriber_profile_list.bulk_remove_error_notification",
+          ),
+        })
       }
+      this.selectedProfiles = []
+      this.fetchTranscriberProfiles()
     },
   },
   computed: {
@@ -119,7 +172,7 @@ export default {
   },
   components: {
     TranscriberProfileTable,
-    ModalCreateTranscriberProfiles,
+    ModalTranscriberProfile,
   },
 }
 </script>

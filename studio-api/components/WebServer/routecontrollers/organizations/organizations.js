@@ -98,7 +98,7 @@ async function listAllOrganization(req, res, next) {
     ) {
       organizations = await model.organizations.getAll()
     } else {
-      return res.status(401).sned({ message: "Unauthorized" })
+      return res.status(401).send({ message: "Unauthorized" })
     }
 
     return res.status(200).send(organizations)
