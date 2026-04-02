@@ -1,302 +1,152 @@
-/****************
- **Conversation***
- *****************/
+const { createException } = require("./base")
 
-const ExceptionType = "conversation"
+// Conversation
+const ConversationError = createException(
+  "ConversationError",
+  "conversation",
+  400,
+  "Error during the operation",
+)
+const ConversationNoFileUploaded = createException(
+  "ConversationNoFileUploaded",
+  "conversation",
+  400,
+  "No files were uploaded.",
+)
+const ConversationURLExtractorError = createException(
+  "ConversationURLExtractorError",
+  "conversation",
+  400,
+  "No files were downloaded.",
+)
+const ConversationMetadataRequire = createException(
+  "ConversationMetadataRequire",
+  "conversation",
+  400,
+  "Metadata was not provided.",
+)
+const ConversationUnsupportedMediaType = createException(
+  "ConversationUnsupportedMediaType",
+  "conversation",
+  415,
+  "Parameter is not supported",
+)
+const ConversationWriteAccessDenied = createException(
+  "ConversationWriteAccessDenied",
+  "conversation",
+  401,
+  "User doesn't have write access to the conversation",
+)
+const ConversationShareAccessDenied = createException(
+  "ConversationShareAccessDenied",
+  "conversation",
+  401,
+  "User doesn't have share access to the conversation",
+)
+const ConversationDeleteAccessDenied = createException(
+  "ConversationDeleteAccessDenied",
+  "conversation",
+  401,
+  "User doesn't have delete access to the conversation",
+)
+const ConversationReadAccessDenied = createException(
+  "ConversationReadAccessDenied",
+  "conversation",
+  401,
+  "User doesn't have read access to the conversation",
+)
+const ConversationNotShared = createException(
+  "ConversationNotShared",
+  "conversation",
+  401,
+  "User doesn't have access to the conversation",
+)
+const ConversationIdRequire = createException(
+  "ConversationIdRequire",
+  "conversation",
+  403,
+  "Conversation id param is required",
+)
+const ConversationNotFound = createException(
+  "ConversationNotFound",
+  "conversation",
+  404,
+  "Requested conversation not found",
+)
 
-class ConversationError extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "ConversationError"
-    this.type = ExceptionType
-    this.status = 400
-    if (message) this.message = message
-    else this.message = "Error during the operation"
-    if (err) this.err = err
-  }
-}
+// Turn
+const TurnIdRequire = createException(
+  "TurnIdRequire",
+  "conversationTurn",
+  403,
+  "Turn id param is required",
+)
+const TurnNotFound = createException(
+  "TurnNotFound",
+  "conversationTurn",
+  404,
+  "Requested turn not found",
+)
 
-class ConversationNoFileUploaded extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "ConversationNoFileUploaded"
-    this.type = ExceptionType
-    this.status = 400
-    if (message) this.message = message
-    else this.message = "No files were uploaded."
-    if (err) this.err = err
-  }
-}
+// Subtitle
+const SubtitleError = createException(
+  "SubtitleError",
+  "conversation",
+  400,
+  "Error during the operation",
+)
+const SubtitleUnsupportedMediaType = createException(
+  "SubtitleUnsupportedMediaType",
+  "conversation",
+  415,
+  "Parameter is not supported",
+)
+const SubtitleMaxVersion = createException(
+  "SubtitleMaxVersion",
+  "conversation",
+  403,
+  "The number of subtitle versions for that conversion has reached its limit.",
+)
+const SubtitleNotFound = createException(
+  "SubtitleNotFound",
+  "conversation",
+  404,
+  "Requested subtitle not found",
+)
 
-class ConversationURLExtractorError extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "ConversationURLExtractorError"
-    this.type = ExceptionType
-    this.status = 400
-    if (message) this.message = message
-    else this.message = "No files were downloaded."
-    if (err) this.err = err
-  }
-}
-class ConversationMetadataRequire extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "ConversationMetadataRequire"
-    this.type = ExceptionType
-    this.status = 400
-    if (message) this.message = message
-    else this.message = "Metadata was not provided."
-    if (err) this.err = err
-  }
-}
+// Export
+const ExportError = createException(
+  "ExportError",
+  "conversation",
+  400,
+  "Error during export operation",
+)
+const ExportNotConfigured = createException(
+  "ExportNotConfigured",
+  "conversation",
+  500,
+  "LLM Gateway not configured",
+)
+const ExportJobNotFound = createException(
+  "ExportJobNotFound",
+  "conversation",
+  404,
+  "Export job not found",
+)
+const ExportGatewayError = createException(
+  "ExportGatewayError",
+  "conversation",
+  502,
+  "LLM Gateway request failed",
+)
 
-class ConversationUnsupportedMediaType extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "ConversationUnsupportedMediaType"
-    this.type = ExceptionType
-    this.status = 415
-    if (message) this.message = message
-    else this.message = "Parameter is not supported"
-    if (err) this.err = err
-  }
-}
-
-class ConversationWriteAccessDenied extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "ConversationWriteAccessDenied"
-    this.type = ExceptionType
-    this.status = 401
-    if (message) this.message = message
-    else this.message = `User doesn't have write access to the conversation`
-    if (err) this.err = err
-  }
-}
-
-class ConversationShareAccessDenied extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "ConversationShareAccessDenied"
-    this.type = ExceptionType
-    this.status = 401
-    if (message) this.message = message
-    else this.message = `User doesn't have share access to the conversation`
-    if (err) this.err = err
-  }
-}
-
-class ConversationDeleteAccessDenied extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "ConversationDeleteAccessDenied"
-    this.type = ExceptionType
-    this.status = 401
-    if (message) this.message = message
-    else this.message = `User doesn't have delete access to the conversation`
-    if (err) this.err = err
-  }
-}
-
-class ConversationReadAccessDenied extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "ConversationReadAccessDenied"
-    this.type = ExceptionType
-    this.status = 401
-    if (message) this.message = message
-    else this.message = `User doesn't have read access to the conversation`
-    if (err) this.err = err
-  }
-}
-class ConversationNotShared extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "ConversationNotShared"
-    this.type = ExceptionType
-    this.status = 401
-    if (message) this.message = message
-    else this.message = `User doesn't have access to the conversation`
-    if (err) this.err = err
-  }
-}
-
-class ConversationIdRequire extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "ConversationIdRequire"
-    this.type = ExceptionType
-    this.status = 403
-    if (message) this.message = message
-    else this.message = `Conversation id param is required`
-    if (err) this.err = err
-  }
-}
-
-class ConversationNotFound extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "ConversationNotFound"
-    this.type = ExceptionType
-    this.status = 404
-    if (message) this.message = message
-    else this.message = "Requested conversation not found"
-    if (err) this.err = err
-  }
-}
-
-/******************************
- ******Conversation Turn*******
- ******************************/
-
-const ExceptionTurnType = ExceptionType + "Turn"
-
-class TurnIdRequire extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "TurnIdRequire"
-    this.type = ExceptionTurnType
-    this.status = 403
-    if (message) this.message = message
-    else this.message = "Turn id param is required"
-    if (err) this.err = err
-  }
-}
-
-class TurnNotFound extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "TurnNotFound"
-    this.type = ExceptionTurnType
-    this.status = 404
-    if (message) this.message = message
-    else this.message = "Requested turn not found"
-    if (err) this.err = err
-  }
-}
-
-/******************************
- **********Subtitle************
- ******************************/
-
-class SubtitleError extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "SubtitleError"
-    this.type = ExceptionType
-    this.status = 400
-    if (message) this.message = message
-    else this.message = "Error during the operation"
-    if (err) this.err = err
-  }
-}
-
-class SubtitleUnsupportedMediaType extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "SubtitleUnsupportedMediaType"
-    this.type = ExceptionType
-    this.status = 415
-    if (message) this.message = message
-    else this.message = "Parameter is not supported"
-    if (err) this.err = err
-  }
-}
-
-class SubtitleMaxVersion extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "SubtitleMaxVersion"
-    this.type = ExceptionType
-    this.status = 403
-    if (message) this.message = message
-    else
-      this.message =
-        "The number of subtitle versions for that conversion has reached its limit."
-    if (err) this.err = err
-  }
-}
-
-class SubtitleNotFound extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "SubtitleNotFound"
-    this.type = ExceptionType
-    this.status = 404
-    if (message) this.message = message
-    else this.message = "Requested subtitle not found"
-    if (err) this.err = err
-  }
-}
-
-/******************************
- ************Export************
- ******************************/
-
-class ExportError extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "ExportError"
-    this.type = ExceptionType
-    this.status = 400
-    if (message) this.message = message
-    else this.message = "Error during export operation"
-    if (err) this.err = err
-  }
-}
-
-class ExportNotConfigured extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "ExportNotConfigured"
-    this.type = ExceptionType
-    this.status = 500
-    if (message) this.message = message
-    else this.message = "LLM Gateway not configured"
-    if (err) this.err = err
-  }
-}
-
-class ExportJobNotFound extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "ExportJobNotFound"
-    this.type = ExceptionType
-    this.status = 404
-    if (message) this.message = message
-    else this.message = "Export job not found"
-    if (err) this.err = err
-  }
-}
-
-class ExportGatewayError extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "ExportGatewayError"
-    this.type = ExceptionType
-    this.status = 502
-    if (message) this.message = message
-    else this.message = "LLM Gateway request failed"
-    if (err) this.err = err
-  }
-}
-
-/******************************
- **********Generation**********
- ******************************/
-
-class GenerationNotFound extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "GenerationNotFound"
-    this.type = ExceptionType
-    this.status = 404
-    if (message) this.message = message
-    else this.message = "Generation not found"
-    if (err) this.err = err
-  }
-}
+// Generation
+const GenerationNotFound = createException(
+  "GenerationNotFound",
+  "conversation",
+  404,
+  "Generation not found",
+)
 
 module.exports = {
   ConversationNoFileUploaded,

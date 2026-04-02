@@ -1278,7 +1278,6 @@
       "edit_alias_button": "Manage the aliases",
       "global_informations_title": "General information",
       "time_informations_title": "Start and stop settings",
-      "isPublic_label": "Allow anonymous access to the session",
       "publicLink_label": "Session link",
       "success_message": "Session successfully updated",
       "error_update_message": "Session has not been updated",

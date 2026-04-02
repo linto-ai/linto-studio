@@ -409,8 +409,6 @@ export default {
   created() {},
   computed: {
     hasChanged() {
-      //const publicChanged = this.fieldIsPublic.value !== this.isPublic
-
       const autoStartChanged = this.fieldAutoStart.value !== this.autoStart
       const autoStopChanged = this.fieldAutoStop.value !== this.autoStop
       const startDateChanged = !isSameDateTimeWithoutSeconds(
@@ -424,7 +422,6 @@ export default {
       )
 
       return (
-        //publicChanged ||
         autoStartChanged ||
         autoStopChanged ||
         startDateChanged ||
@@ -613,7 +610,7 @@ export default {
           endOn: endDateTime,
           autoStart: this.fieldAutoStart.value,
           autoEnd: this.fieldAutoStop.value,
-          visibility: this.fieldIsPublic.value ? "public" : "organization",
+          visibility: this.fieldSessionVisibility.value.replace("password", "public"),
           channels: this.localChannels,
         }
 

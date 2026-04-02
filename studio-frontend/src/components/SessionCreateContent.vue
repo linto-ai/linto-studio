@@ -206,7 +206,6 @@ export default {
       formState: "idle",
       fields: [
         "name",
-        "fieldIsPublic",
         "fieldDiarizationEnabled",
         "fieldAppointment",
       ],
@@ -214,12 +213,6 @@ export default {
         ...EMPTY_FIELD,
         label: this.$i18n.t("session.create_page.name_field.label"),
         testField: testName,
-      },
-      fieldIsPublic: {
-        value: true,
-        error: null,
-        valid: false,
-        label: this.$t("session.settings_page.isPublic_label"),
       },
       fieldSessionVisibility: {
         value: "public",

@@ -1,112 +1,52 @@
-/****************
- *****Publication*******
- *****************/
-
-const ExceptionType = "publication"
-
-class PublicationError extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "PublicationError"
-    this.type = ExceptionType
-    this.status = 400
-    if (message) this.message = message
-    else this.message = "Error during publication operation"
-    if (err) this.err = err
-  }
-}
-
-class PublicationNotConfigured extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "PublicationNotConfigured"
-    this.type = ExceptionType
-    this.status = 500
-    if (message) this.message = message
-    else this.message = "LLM Gateway not configured"
-    if (err) this.err = err
-  }
-}
-
-class PublicationNotFound extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "PublicationNotFound"
-    this.type = ExceptionType
-    this.status = 404
-    if (message) this.message = message
-    else this.message = "Publication not found"
-    if (err) this.err = err
-  }
-}
-
-class PublicationInvalidFormat extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "PublicationInvalidFormat"
-    this.type = ExceptionType
-    this.status = 400
-    if (message) this.message = message
-    else this.message = "Invalid export format"
-    if (err) this.err = err
-  }
-}
-
-class PublicationUploadFailed extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "PublicationUploadFailed"
-    this.type = ExceptionType
-    this.status = 500
-    if (message) this.message = message
-    else this.message = "Template upload failed"
-    if (err) this.err = err
-  }
-}
-
-class PublicationForbidden extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "PublicationForbidden"
-    this.type = ExceptionType
-    this.status = 403
-    if (message) this.message = message
-    else this.message = "Publication access denied"
-    if (err) this.err = err
-  }
-}
-
-class PublicationAuthRequired extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "PublicationAuthRequired"
-    this.type = ExceptionType
-    this.status = 401
-    if (message) this.message = message
-    else this.message = "Authentication required"
-    if (err) this.err = err
-  }
-}
-
-class PublicationIdRequired extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "PublicationIdRequired"
-    this.type = ExceptionType
-    this.status = 400
-    if (message) this.message = message
-    else this.message = "Parameter is required"
-    if (err) this.err = err
-  }
-}
+const { createException } = require("./base")
 
 module.exports = {
-  PublicationError,
-  PublicationNotConfigured,
-  PublicationNotFound,
-  PublicationInvalidFormat,
-  PublicationUploadFailed,
-  PublicationForbidden,
-  PublicationAuthRequired,
-  PublicationIdRequired,
+  PublicationError: createException(
+    "PublicationError",
+    "publication",
+    400,
+    "Error during publication operation",
+  ),
+  PublicationNotConfigured: createException(
+    "PublicationNotConfigured",
+    "publication",
+    500,
+    "LLM Gateway not configured",
+  ),
+  PublicationNotFound: createException(
+    "PublicationNotFound",
+    "publication",
+    404,
+    "Publication not found",
+  ),
+  PublicationInvalidFormat: createException(
+    "PublicationInvalidFormat",
+    "publication",
+    400,
+    "Invalid export format",
+  ),
+  PublicationUploadFailed: createException(
+    "PublicationUploadFailed",
+    "publication",
+    500,
+    "Template upload failed",
+  ),
+  PublicationForbidden: createException(
+    "PublicationForbidden",
+    "publication",
+    403,
+    "Publication access denied",
+  ),
+  PublicationAuthRequired: createException(
+    "PublicationAuthRequired",
+    "publication",
+    401,
+    "Authentication required",
+  ),
+  PublicationIdRequired: createException(
+    "PublicationIdRequired",
+    "publication",
+    400,
+    "Parameter is required",
+  ),
 }

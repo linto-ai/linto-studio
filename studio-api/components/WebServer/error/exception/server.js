@@ -1,21 +1,10 @@
-/****************
- *****Server******
- *****************/
-
-const ExceptionType = "server"
-
-class InternalServerError extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "InternalServerError"
-    this.type = ExceptionType
-    this.status = 500
-    if (message) this.message = message
-    else this.message = "Server error"
-    if (err) this.err = err
-  }
-}
+const { createException } = require("./base")
 
 module.exports = {
-  InternalServerError,
+  InternalServerError: createException(
+    "InternalServerError",
+    "server",
+    500,
+    "Server error",
+  ),
 }

@@ -10,18 +10,12 @@ const orgaUtility = require(
 const RIGHT = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 
-const {
-  OrganizationError,
-  OrganizationForbidden,
-  OrganizationUnsupportedMediaType,
-} = require(
+const { OrganizationError, OrganizationForbidden } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
-
 async function leaveSelfFromOrganization(req, res, next) {
   try {
     const userId = req.payload.data.userId
-    if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
 
     let organization = await model.organizations.getByIdAndUser(
       req.params.organizationId,
@@ -63,7 +57,6 @@ async function listConversationFromOrganization(req, res, next) {
     req.query.paginate = false
 
     const userId = req.payload.data.userId
-    if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
 
     const organization = (
       await model.organizations.getByIdAndUser(

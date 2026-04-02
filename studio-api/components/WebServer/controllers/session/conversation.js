@@ -7,10 +7,11 @@ const axios = require(`${process.cwd()}/lib/utility/axios`)
 const { v4: uuidv4 } = require("uuid")
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
-const DEFAULT_MEMBER_RIGHTS = 3
+const TYPES = require(`${process.cwd()}/lib/dao/conversation/types`)
+const RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
+const DEFAULT_MEMBER_RIGHTS = RIGHTS.READ + RIGHTS.COMMENT
 const DEFAULT_SPEAKER_NAME = "Unknown speaker"
 const DEFAULT_TRANSLATION_NAME = "Automatic Translation"
-const TYPES = require(`${process.cwd()}/lib/dao/conversation/types`)
 const SECURITY_LEVELS = require(
   `${process.cwd()}/lib/dao/conversation/securityLevels`,
 )
@@ -26,6 +27,10 @@ const { sessionReq } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/organizations/uploader/offline.js`,
 )
 
+function getMembersRightFromVisibility(visibility) {
+  return visibility === "private" ? RIGHTS.UNDEFINED : DEFAULT_MEMBER_RIGHTS
+}
+
 function initConversationMultiChannel(
   session,
   name = undefined,
@@ -37,7 +42,7 @@ function initConversationMultiChannel(
     locale: "",
     organization: {
       organizationId: session.organizationId,
-      membersRight: DEFAULT_MEMBER_RIGHTS,
+      membersRight: getMembersRightFromVisibility(session.visibility),
       customRights: [],
     },
     sharedWithUsers: [],
@@ -220,7 +225,7 @@ function initializeCaption(
     locale: channel.languages,
     organization: {
       organizationId: session.organizationId,
-      membersRight: DEFAULT_MEMBER_RIGHTS,
+      membersRight: getMembersRightFromVisibility(session.visibility),
       customRights: [],
     },
     type: {
