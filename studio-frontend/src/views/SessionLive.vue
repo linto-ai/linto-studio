@@ -43,9 +43,9 @@
       </SessionHeader>
     </template>
 
-    <template v-slot:sidebar>
+    <template v-slot:sidebar v-if="useMicrophone && sessionLoaded">
       <SessionLiveMicrophoneStatus
-        v-if="useMicrophone && sessionLoaded"
+        style="margin-top: 1rem"
         @toggle-microphone="toggleMicrophone"
         :speaking="speaking"
         :isRecording="isRecording"
@@ -60,7 +60,7 @@
         }}
       </div>
       <IsMobile>
-        <template #desktop>
+        <!-- <template #desktop>
           <SessionLiveToolbar
             v-if="sessionLoaded"
             :channels="channels"
@@ -76,7 +76,7 @@
             :displayWatermark="displayWatermark"
             :watermarkPinned="watermarkPinned"
             @updateWatermarkSettings="syncWatermarkSettings" />
-        </template>
+        </template> -->
       </IsMobile>
     </template>
 
@@ -90,32 +90,13 @@
         :session="session"
         :isFromPublicLink="isFromPublicLink" />
 
-      <SessionLiveContent
+      <SessionLiveNG
         v-else
-        @closeSubtitleFullscreen="closeSubtitleFullscreen"
-        :websocketInstance="websocketInstance"
-        :password="usedPassword"
-        :showSubtitlesFullscreen="showSubtitlesFullscreen"
-        :selectedTranslations="selectedTranslation"
-        :organizationId="organizationId"
-        :fontSize="fontSize"
-        :displaySubtitles="displaySubtitles"
-        :displayLiveTranscription="displayLiveTranscription"
+        ref="sessionLiveNG"
         :session="session"
-        :selectedChannel="selectedChannel"
-        :displayWatermark="displayWatermark"
-        :watermarkFrequency="watermarkFrequency"
-        :watermarkDuration="watermarkDuration"
-        :watermarkContent="watermarkContent"
-        :watermarkPinned="watermarkPinned" />
-      <IsMobile>
-        <SessionDropdownChannelSelector
-          v-if="sessionLoaded"
-          :channels="channels"
-          :qualifiedForCrossSubtitles="qualifiedForCrossSubtitles"
-          v-bind:selectedChannel.sync="selectedChannel"
-          v-bind:selectedTranslation.sync="selectedTranslation" />
-      </IsMobile>
+        :websocketInstance="websocketInstance"
+        :isFromPublicLink="isFromPublicLink" />
+
       <Modal
         :withActions="false"
         title="Setup microphone"
@@ -152,10 +133,8 @@ import { sessionMicrophoneMixin } from "@/mixins/sessionMicrophone.js"
 import { getEnv } from "@/tools/getEnv"
 import { isQualifiedForCrossSubtitles } from "@/tools/translationUtils.js"
 
-import SessionLiveContent from "@/components/SessionLiveContent.vue"
 import Loading from "@/components/atoms/Loading.vue"
 import SessionEnded from "@/components/SessionEnded.vue"
-import SessionLiveToolbar from "@/components/SessionLiveToolbar.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
 import SessionLiveMicrophoneStatus from "@/components/SessionLiveMicrophoneStatus.vue"
@@ -164,6 +143,7 @@ import LayoutV2 from "@/layouts/v2-layout.vue"
 import SessionDropdownChannelSelector from "@/components-mobile/SessionDropdownChannelSelector.vue"
 import IsMobile from "@/components/atoms/IsMobile.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
+import SessionLiveNG from "@/components/SessionLiveNG.vue"
 
 export default {
   mixins: [
@@ -248,6 +228,7 @@ export default {
       this.updateUrl()
     },
     showMobileSubtitles() {
+      this.$refs["sessionLiveNG"].showMobileSubtitles()
       this.showSubtitlesFullscreen = true
     },
     closeSubtitleFullscreen() {
@@ -266,8 +247,6 @@ export default {
   },
   components: {
     LayoutV2,
-    SessionLiveContent,
-    SessionLiveToolbar,
     Loading,
     SessionEnded,
     Modal,
@@ -276,6 +255,7 @@ export default {
     SessionDropdownChannelSelector,
     SessionHeader,
     FormInput,
+    SessionLiveNG,
   },
 }
 </script>

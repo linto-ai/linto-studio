@@ -48,8 +48,8 @@ services:
     container_name: studio-frontend
     image: linto-studio/studio-frontend
     build:
-      context: ./studio-frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: studio-frontend/Dockerfile
     env_file: ./studio-frontend/.dockerenv
     command:
       - --build

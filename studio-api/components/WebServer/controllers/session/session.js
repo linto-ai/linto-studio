@@ -6,9 +6,10 @@ const logger = require(`${process.cwd()}/lib/logger/logger`)
 const { SessionError } = require(
   `${process.cwd()}/components/WebServer/error/exception/session`,
 )
-const { Unauthorized } = require(
+const { Unauthorized, UnauthorizedProxy } = require(
   `${process.cwd()}/components/WebServer/error/exception/auth`,
 )
+
 const { authFailLimiter } = require(
   `${process.cwd()}/components/WebServer/config/express/rateLimiters`,
 )
@@ -139,7 +140,10 @@ async function generatPublicToken(jsonString, req) {
       let session = JSON.parse(jsonString)
 
       // Include organizationId in token for WebSocket access validation
-      const token = PublicToken.generateTokens(session.id, session.organizationId)
+      const token = PublicToken.generateTokens(
+        session.id,
+        session.organizationId,
+      )
       session.publicSessionToken = token
       return JSON.stringify(session)
     }
@@ -183,6 +187,36 @@ async function checkSessionMatchingOrganization(req, next) {
   }
 }
 
+function cleanPublicSessionContent(jsonString) {
+  try {
+    let session = JSON.parse(jsonString)
+    if (session.visibility === "public") {
+      session.channels.forEach((channel) => {
+        if (channel.streamEndpoints) {
+          delete channel.streamEndpoints
+        }
+      })
+
+      return JSON.stringify(session)
+    }
+  } catch (error) {
+    logger.warn("error on cleaning session")
+    throw error
+  }
+
+  throw new UnauthorizedProxy()
+}
+
+function cleanPublicChannelContent(jsonString) {
+  let channel = JSON.parse(jsonString)
+  if (channel.visibility === "public") {
+    delete channel.streamEndpoints
+    return JSON.stringify(channel)
+  }
+
+  throw new UnauthorizedProxy()
+}
+
 module.exports = {
   forceQueryParams,
   forwardSessionAlias,
@@ -192,4 +226,6 @@ module.exports = {
   generatPublicToken,
   filterPrivateSessions,
   checkSessionMatchingOrganization,
+  cleanPublicSessionContent,
+  cleanPublicChannelContent,
 }

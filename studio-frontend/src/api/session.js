@@ -348,11 +348,11 @@ export async function apiCountFutureSessions(organizationScope, notif) {
   return getStartedSessions?.data?.totalItems ?? 0
 }
 
-export async function apiGetSession(organizationScope, sessionId, notif) {
+export async function apiGetSession(organizationScope, sessionId, params = {}, notif) {
   const getSession = await sendRequest(
     `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}`,
     { method: "get" },
-    {},
+    params,
     notif,
   )
 
@@ -379,11 +379,11 @@ export async function apiGetSessionsBetweenDates(
   )
 }
 
-export async function apiGetPublicSession(sessionId, password, notif) {
+export async function apiGetPublicSession(sessionId, password, params = {}, notif) {
   const getSession = await sendRequest(
-    `${BASE_API}/sessions/${sessionId}/public`,
+    `${BASE_API}/sessions/public/${sessionId}`,
     { method: "get" },
-    { password },
+    { password, ...params },
     notif,
   )
 
@@ -438,6 +438,31 @@ export async function apiDeleteSession(
   return resRequest
 }
 
+export async function apiGetSessionChannelTurns(
+  organizationScope,
+  sessionId,
+  channelId,
+  { limit = 50, offset = 0 } = {},
+) {
+  return sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}/channels/${channelId}`,
+    { method: "get" },
+    { limit, offset },
+  )
+}
+
+export async function apiGetPublicSessionChannelTurns(
+  sessionId,
+  channelId,
+  { limit = 50, offset = 0 } = {},
+) {
+  return sendRequest(
+    `${BASE_API}/sessions/public/${sessionId}/channels/${channelId}`,
+    { method: "get" },
+    { limit, offset },
+  )
+}
+
 export async function apiGetSessionChannel(
   organizationScope,
   sessionId,
@@ -461,7 +486,7 @@ export async function apiGetPublicSessionChannel(
   notif,
 ) {
   const getSessionChannel = await sendRequest(
-    `${BASE_API}/sessions/${sessionId}/public`,
+    `${BASE_API}/sessions/public/${sessionId}`,
     { method: "get" },
     { transcriber_id: transcriberId, password },
     notif,
