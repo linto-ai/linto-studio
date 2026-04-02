@@ -28,6 +28,7 @@ const { UserConflict, UserError, UserUnsupportedMediaType } = require(
 const { NodemailerError } = require(
   `${process.cwd()}/components/WebServer/error/exception/nodemailer`,
 )
+const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 
 const admin_projection = {
   email: 1,
@@ -102,7 +103,7 @@ async function listAllUser(req, res, next) {
 
 async function deleteUser(req, res, next) {
   try {
-    if (!req.body.userIds) throw new UserUnsupportedMediaType()
+    requireParam(req.body.userIds, UserUnsupportedMediaType)
 
     if (!Array.isArray(req.body.userIds))
       throw new UserUnsupportedMediaType("userIds must be an array")
@@ -147,8 +148,6 @@ async function deleteUser(req, res, next) {
 
 async function updateUser(req, res, next) {
   try {
-    if (!req.params.userId) throw new UserUnsupportedMediaType()
-
     let user = await model.users.getByIdFilter(
       req.params.userId,
       admin_projection,

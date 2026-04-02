@@ -21,19 +21,6 @@ export default function processSessionCaptions({
   diarization,
   defaultLanguage,
 }) {
-  // Index translations by segmentId
-  const translationsBySegmentId = {}
-  for (const tc of translatedCaptions ?? []) {
-    if (!translationsBySegmentId[tc.segmentId]) {
-      translationsBySegmentId[tc.segmentId] = []
-    }
-    translationsBySegmentId[tc.segmentId].push({
-      translationId: tc.targetLang,
-      text: tc.text ?? null,
-      language: tc.targetLang,
-    })
-  }
-
   return (closedCaptions ?? [])
     .filter((c) => c.segmentId != null)
     .filter((c) => classifySessionTurn(c, diarization) === "original")
@@ -45,6 +32,10 @@ export default function processSessionCaptions({
       startTime: computeTurnStartTime(c, sessionStartMs),
       endTime: computeTurnEndTime(c, sessionStartMs),
       language: c.lang ?? defaultLanguage,
-      translations: translationsBySegmentId[c.segmentId],
+      translations: translatedCaptions[c.segmentId].map((tr) => ({
+        translationId: tr.targetLang,
+        text: tr.text ?? null,
+        language: tr.targetLang,
+      })),
     }))
 }

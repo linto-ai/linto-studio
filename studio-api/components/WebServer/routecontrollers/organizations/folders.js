@@ -14,6 +14,8 @@ const { hasConversationWriteAccess } = require(
   `${process.cwd()}/components/WebServer/middlewares/access/folder`,
 )
 
+const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
+
 const MAX_FOLDER_DEPTH = 10
 
 // --- Validation helpers ---
@@ -411,7 +413,7 @@ async function getFolder(req, res, next) {
 async function createFolder(req, res, next) {
   try {
     validateBody(req.body)
-    if (!req.body.name) throw new FolderError("name is required")
+    requireParam(req.body.name, FolderError, "name is required")
 
     const parentId = req.body.parentId || null
     const userId = req.payload.data.userId

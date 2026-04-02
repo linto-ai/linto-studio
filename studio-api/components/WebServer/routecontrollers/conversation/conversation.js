@@ -23,16 +23,13 @@ const { fetchJob } = require(
 )
 
 const {
-  ConversationIdRequire,
   ConversationNotFound,
   ConversationError,
 } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
-
 async function deleteConversation(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
     const conversation = await model.conversations.getById(
       req.params.conversationId,
     )
@@ -69,7 +66,6 @@ async function deleteConversation(req, res, next) {
 
 async function updateConversation(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
     const conversation = await model.conversations.getById(
       req.params.conversationId,
     )
@@ -93,8 +89,6 @@ async function updateConversation(req, res, next) {
 
 async function getConversation(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
-
     let conversation = await model.conversations.getById(
       req.params.conversationId,
       ["jobs", "type"],
@@ -165,8 +159,6 @@ async function getConversation(req, res, next) {
 
 async function getUsersByConversation(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
-
     const conversation = await model.conversations.getById(
       req.params.conversationId,
     )
@@ -219,7 +211,6 @@ async function getUsersByConversationList(req, res, next) {
 
 async function getChildConversation(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
     const conversation = await model.conversations.getById(
       req.params.conversationId,
     )
@@ -243,7 +234,6 @@ async function getChildConversation(req, res, next) {
 
 async function duplicateConversation(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
     const conversation = await model.conversations.getById(
       req.params.conversationId,
     )

@@ -15,6 +15,7 @@ const {
   cleanPublicSessionContent,
   cleanPublicChannelContent,
   generatPublicToken,
+  filterPrivateSessions,
   checkSessionMatchingOrganization,
 } = require(
   `${process.cwd()}/components/WebServer/controllers/session/session.js`,
@@ -151,6 +152,7 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/sessions",
             method: ["get"],
             forwardParams: proxyForwardParams,
+            executeAfterResult: [filterPrivateSessions],
           },
         ],
         requireAuth: true,
