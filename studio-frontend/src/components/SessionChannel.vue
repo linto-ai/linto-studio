@@ -399,14 +399,15 @@ export default {
           }
         })
 
-        // Merge stored translations into previous turns
-        const translatedCaptions = channel?.translatedCaptions || []
-        for (const tc of translatedCaptions) {
-          const matchingTurn = this.previousTurns.find(
-            (t) => t.segmentId === tc.segmentId,
-          )
-          if (matchingTurn) {
-            this.setTurnTranslation(matchingTurn, tc.targetLang, tc.text)
+        const translatedCaptions = channel?.translatedCaptions || {}
+        for (const segmentTranslations of Object.values(translatedCaptions)) {
+          for (const tc of segmentTranslations) {
+            const matchingTurn = this.previousTurns.find(
+              (t) => t.segmentId === tc.segmentId,
+            )
+            if (matchingTurn) {
+              this.setTurnTranslation(matchingTurn, tc.targetLang, tc.text)
+            }
           }
         }
       }
