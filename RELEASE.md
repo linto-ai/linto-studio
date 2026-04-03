@@ -1,3 +1,31 @@
+# 1.8.4
+
+_2026_04_03_
+
+- Live session viewer
+  - New Vue 3 editor component for live sessions (replaces SessionLiveContent)
+  - Paginated turn history loading with scroll-to-top fetch
+  - Handle translation events with final/partial distinction
+  - Clear subtitles when switching translation and hide mobile navbar when channels and translations are unique
+  - Fix empty placeholder shown before first partial is displayed
+- Translation format
+  - Support new translatedCaptions format from session API
+  - Remove legacy translation format support
+- Session management
+  - Add pagination to session listing page
+  - Fix session visibility for private and internal sessions
+  - Stop reconnecting websocket when server ends the session
+- Backoffice
+  - Add transcriber profile management to organization page
+  - Fix locked selectors in transcriber profile editor
+- Search & tags
+  - Hide tags with no associated media from search bar
+- API & backend
+  - Refactor exception classes with factory pattern (AppError renamed to StudioError)
+  - Add requireParam handler for cleaner required parameter validation
+  - Remove redundant parameter checks already guaranteed by Express routing
+  - Clean up dead code and leftover references in studio-api
+
 # 1.8.3
 
 _2026_03_23_
