@@ -2,23 +2,23 @@
 
 _2026_03_23_
 
-- Suivi des sessions
-  - Suivi des visiteurs anonymes via visitorId sur les sessions publiques
-  - Dédoublonnage des spectateurs par userId et cumul du temps de visionnage à la reconnexion
-  - Nouveau type de visibilité utilisateur sur les sessions
-- Organisation favorite
-  - Les utilisateurs peuvent marquer une organisation comme favorite pour y accéder plus rapidement
-- Infrastructure WebSocket
-  - Intégration Redis pub/sub pour synchroniser les événements WebSocket entre réplicas
-  - Meilleure gestion de la connexion Redis en cas d'échec initial
-- Accès utilisateur
-  - Message explicite sur la page de connexion lorsqu'un utilisateur n'est associé à aucune organisation
-  - Adaptation de la page de connexion quand la création de compte est désactivée
+- Session tracking
+  - Track anonymous visitors via visitorId on public sessions
+  - Deduplicate viewers by userId and accumulate watch time on reconnection
+  - New user visibility type on sessions
+- Favorite organization
+  - Users can mark an organization as favorite for quicker access
+- WebSocket infrastructure
+  - Redis pub/sub integration to synchronize WebSocket events across replicas
+  - Improved Redis connection handling on initial failure
+- User access
+  - Explicit message on login page when a user is not associated with any organization
+  - Adapted login page when account creation is disabled
 - Bugfix
-  - Correction de la liste des sessions limitée à 100 éléments
-  - Correction du double appel API pour les tags lors de la navigation dans les dossiers
-  - Correction de la cible de migration DB (DB_MIGRATION_TARGET)
-  - Masquage de la sidebar topics hors des pages explore
+  - Fix session list limited to 100 items
+  - Fix duplicate API call for tags when navigating folders
+  - Fix DB migration target (DB_MIGRATION_TARGET)
+  - Hide topics sidebar outside of explore pages
 
 # 1.8.2
 
