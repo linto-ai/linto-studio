@@ -29,16 +29,18 @@ const { isMobile } = useIsMobile()
 const isSidebarOpen = ref(false)
 
 const activeTurns = computed(
-  () => core.activeChannel.value.activeTranslation.value.turns.value,
+  () => core.activeChannel.value?.activeTranslation.value.turns.value ?? [],
 )
 const speakers = core.speakers.all
 
 const channels = computed(() => [...core.channels.values()])
-const translations = computed(() => [
-  ...core.activeChannel.value.translations.values(),
-])
+const translations = computed(() =>
+  core.activeChannel.value
+    ? [...core.activeChannel.value.translations.values()]
+    : [],
+)
 const activeTranslationId = computed(
-  () => core.activeChannel.value.activeTranslation.value.id,
+  () => core.activeChannel.value?.activeTranslation.value.id ?? "",
 )
 const speakerList = computed(() => Array.from(speakers.values()))
 
@@ -80,7 +82,7 @@ function onChannelChange(channelId: string) {
 }
 
 function onTranslationChange(translationId: string) {
-  core.activeChannel.value.setActiveTranslation(translationId)
+  core.activeChannel.value?.setActiveTranslation(translationId)
 }
 </script>
 
@@ -89,7 +91,7 @@ function onTranslationChange(translationId: string) {
     <Header
       v-if="props.showHeader"
       :title="core.title.value"
-      :duration="core.activeChannel.value.duration"
+      :duration="core.activeChannel.value?.duration ?? 0"
       :language="activeTranslationId"
       :is-mobile="isMobile"
       @toggle-sidebar="isSidebarOpen = !isSidebarOpen" />

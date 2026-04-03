@@ -100,8 +100,18 @@ export interface AudioPluginApi {
 
 // ── Transcription Editor Plugin API (TipTap rich-text editing) ──────────
 
+export interface YjsUser {
+  clientId: number
+  [key: string]: unknown
+}
+
 export interface TranscriptionEditorPluginApi {
-  readonly editor: ShallowRef<import("@tiptap/core").Editor | undefined>
+  readonly tiptapEditor: ShallowRef<import("@tiptap/vue-3").Editor | undefined>
+  readonly doc: import("yjs").Doc
+  readonly fragment: import("yjs").XmlFragment
+  readonly users: Ref<YjsUser[]>
+  readonly isConnected: Ref<boolean>
+  updateUser(attrs: Record<string, unknown>): void
 }
 
 // ── Subtitle Plugin API ──────────────────────────────────────────────────
@@ -168,7 +178,7 @@ export interface Core {
   // ── Stores ───────────────────────────────────────────────────────────
   readonly speakers: SpeakersStore
   readonly channels: Map<string, ChannelStore>
-  readonly activeChannel: ComputedRef<ChannelStore>
+  readonly activeChannel: ComputedRef<ChannelStore | undefined>
 
   // ── Navigation ───────────────────────────────────────────────────────
   setDocument(doc: EditorDocument): void
@@ -196,10 +206,7 @@ export interface Core {
     event: K,
     handler: (payload: CoreEventMap[K]) => void,
   ): void
-  emit<K extends keyof CoreEventMap>(
-    event: K,
-    payload: CoreEventMap[K],
-  ): void
+  emit<K extends keyof CoreEventMap>(event: K, payload: CoreEventMap[K]): void
 
   // ── Plugins ──────────────────────────────────────────────────────────
   use(plugin: CorePlugin): void

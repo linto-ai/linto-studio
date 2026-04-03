@@ -60,9 +60,10 @@ export function createLivePlugin(): CorePlugin {
 
       function onPartial(event: LivePartialEvent, channelId: string): void {
         if (core.activeChannelId.value !== channelId) return
+        const channel = core.activeChannel.value
+        if (!channel) return
 
-        const activeTranslation =
-          core.activeChannel.value.activeTranslation.value
+        const activeTranslation = channel.activeTranslation.value
 
         if (activeTranslation.isSource) {
           if (event.text == null) return
@@ -188,9 +189,9 @@ export function createLivePlugin(): CorePlugin {
       }
 
       function onTranslation(_event: LiveTranslationEvent): void {
-        const activeTranslation =
-          core.activeChannel.value.activeTranslation.value
         const channel = core.activeChannel.value
+        if (!channel) return
+        const activeTranslation = channel.activeTranslation.value
 
         if (
           !_event.final &&

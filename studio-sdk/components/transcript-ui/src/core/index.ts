@@ -12,6 +12,7 @@ export type {
   SpeakersStore,
   AudioPluginApi,
   TranscriptionEditorPluginApi,
+  YjsUser,
   LivePluginApi,
   SubtitlePluginApi,
 } from './types'

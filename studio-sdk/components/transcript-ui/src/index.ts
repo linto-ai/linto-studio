@@ -15,6 +15,7 @@ export type {
   SpeakersStore,
   AudioPluginApi,
   TranscriptionEditorPluginApi,
+  YjsUser,
   LivePluginApi,
   SubtitlePluginApi,
 } from './core'
@@ -25,6 +26,7 @@ export { default as Layout } from './components/Layout.vue'
 // Plugins
 export { createAudioPlugin } from './plugins/audio'
 export { createTranscriptionEditorPlugin } from './plugins/transcriptionEditor'
+export type { TranscriptionEditorOptions } from './plugins/transcriptionEditor'
 export { createLivePlugin } from './plugins/live'
 export type { LivePartialEvent, LiveFinalEvent, LiveTranslationEvent } from './plugins/live'
 export { createSubtitlePlugin } from './plugins/subtitle'

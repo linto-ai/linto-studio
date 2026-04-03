@@ -56,6 +56,14 @@ const isTurnActive = computed(() => {
   background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);
 }
 
+:deep(.word--active) {
+  text-decoration: underline;
+  text-decoration-color: var(--speaker-color);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  color: var(--speaker-color);
+}
+
 @media (max-width: 767px) {
   .turn {
     padding: var(--spacing-sm) var(--spacing-md);

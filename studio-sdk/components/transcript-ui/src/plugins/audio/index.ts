@@ -13,7 +13,7 @@ export function createAudioPlugin(): CorePlugin {
       let seekHandler: ((time: number) => void) | null = null
 
       const src = computed(
-        () => core.activeChannel.value.activeTranslation.value.audio?.src ?? null,
+        () => core.activeChannel.value?.activeTranslation.value.audio?.src ?? null,
       )
 
       function seekTo(time: number) {

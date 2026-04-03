@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue"
+import { Doc } from "yjs"
 import Layout from "./components/Layout.vue"
 import { mapApiDocument } from "./adapters/apiAdapter"
 import { provideI18n, type Locale } from "./i18n"
 import { createCore, provideCore } from "./core"
 import { createAudioPlugin } from "./plugins/audio"
+import { createTranscriptionEditorPlugin } from "./plugins/transcriptionEditor"
 //import { createLivePlugin } from "./plugins/live"
 //import { createSubtitlePlugin } from "./plugins/subtitle"
 import type { LivePartialEvent, LiveFinalEvent } from "./plugins/live"
@@ -16,8 +18,11 @@ import type { WhisperXDocument } from "./types/whisperx"
 const locale = ref<Locale>("fr")
 const { t } = provideI18n(locale)
 
+const ydoc = new Doc()
+
 const core = createCore()
 core.use(createAudioPlugin())
+core.use(createTranscriptionEditorPlugin({ document: ydoc }))
 //core.use(createLivePlugin())
 //core.use(createSubtitlePlugin())
 provideCore(core)
@@ -48,6 +53,7 @@ function startHistorySimulation() {
 
   // Set initial historyTime before the first turn of the document
   const channel = core.activeChannel.value
+  if (!channel) return
   const sourceTr = channel.activeTranslation.value
   const firstTurn = sourceTr.turns.value[0]
   historyTime = firstTurn?.startTime ?? 0

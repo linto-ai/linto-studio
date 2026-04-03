@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@tiptap/core": "^3.20.5",
+    "@tiptap/extension-collaboration": "^3.22.1",
     "@tiptap/extension-history": "^3.20.6",
     "@tiptap/pm": "^3.20.5",
     "@tiptap/starter-kit": "^3.20.5",
@@ -34,7 +35,8 @@
     "lucide-vue-next": "^0.564.0",
     "reka-ui": "^2.8.0",
     "vue-stick-to-bottom": "^1.0.0",
-    "wavesurfer.js": "^7.12.1"
+    "wavesurfer.js": "^7.12.1",
+    "yjs": "^13.6.30"
   },
   "devDependencies": {
     "@types/diff": "^8.0.0",
@@ -45,6 +47,8 @@
     "vite": "^7.3.1",
     "vite-plugin-dts": "^4.5.4",
     "vue": "^3.5.25",
-    "vue-tsc": "^3.1.5"
+    "vue-tsc": "^3.1.5",
+    "y-protocols": "^1.0.7",
+    "y-websocket": "^3.0.0"
   }
 }

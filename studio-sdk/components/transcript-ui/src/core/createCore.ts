@@ -38,8 +38,8 @@ export function createCore(options: CoreOptions = {}): Core {
 
   const channels = shallowReactive(new Map<string, ChannelStore>())
 
-  const activeChannel = computed<ChannelStore>(() =>
-    channels.get(activeChannelId.value) ?? [...channels.values()][0]!,
+  const activeChannel = computed<ChannelStore | undefined>(() =>
+    channels.get(activeChannelId.value) ?? [...channels.values()][0],
   )
 
   // ── Scoped events ─────────────────────────────────────────────────
@@ -49,7 +49,8 @@ export function createCore(options: CoreOptions = {}): Core {
     handler: (payload: CoreEventMap[K]) => void,
   ): () => void {
     return on(event, (payload) => {
-      if (payload.translationId === activeChannel.value.activeTranslation.value.id) {
+      const channel = activeChannel.value
+      if (channel && payload.translationId === channel.activeTranslation.value.id) {
         handler(payload)
       }
     })

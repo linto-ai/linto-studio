@@ -94,8 +94,17 @@ export interface AudioPluginApi {
     seekTo(time: number): void;
     setSeekHandler(handler: ((time: number) => void) | null): void;
 }
+export interface YjsUser {
+    clientId: number;
+    [key: string]: unknown;
+}
 export interface TranscriptionEditorPluginApi {
-    readonly editor: ShallowRef<import('@tiptap/core').Editor | undefined>;
+    readonly tiptapEditor: ShallowRef<import('@tiptap/vue-3').Editor | undefined>;
+    readonly doc: import('yjs').Doc;
+    readonly fragment: import('yjs').XmlFragment;
+    readonly users: Ref<YjsUser[]>;
+    readonly isConnected: Ref<boolean>;
+    updateUser(attrs: Record<string, unknown>): void;
 }
 export interface SubtitlePluginApi {
     fontSize: Ref<number>;
@@ -152,7 +161,7 @@ export interface Core {
     readonly pluginExtensions: AnyExtension[];
     readonly speakers: SpeakersStore;
     readonly channels: Map<string, ChannelStore>;
-    readonly activeChannel: ComputedRef<ChannelStore>;
+    readonly activeChannel: ComputedRef<ChannelStore | undefined>;
     setDocument(doc: EditorDocument): void;
     setActiveChannel(channelId: string): void;
     setChannel(channelId: string, channel: Channel): void;

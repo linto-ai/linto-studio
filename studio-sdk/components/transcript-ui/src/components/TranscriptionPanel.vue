@@ -14,9 +14,10 @@ import TranscriptionEmpty from "./TranscriptionEmpty.vue"
 import Button from "./atoms/Button.vue"
 import { useCore } from "../core"
 import { useI18n } from "../i18n"
+import { useFollowPlayback } from "../composables/useFollowPlayback"
 import { throttle } from "../utils"
 import type { Turn, Speaker } from "../types/editor"
-
+import { EditorContent } from "@tiptap/vue-3"
 const props = defineProps<{
   turns: Turn[]
   speakers: Map<string, Speaker>
@@ -35,25 +36,37 @@ const partialTurn = computed(() => {
     text,
     words: [],
     language:
-      core.activeChannel.value.activeTranslation.value.languages[0] ?? "",
+      core.activeChannel.value?.activeTranslation.value.languages[0] ?? "",
     startTime: undefined,
     endTime: undefined,
   } as Turn
+})
+
+const tiptapEditor = computed(() => {
+  return core.transcriptionEditor?.tiptapEditor.value!
 })
 
 const hasLiveUpdate = computed(() => core.live?.hasLiveUpdate.value ?? false)
 const isPlaying = computed(() => core.audio?.isPlaying.value ?? false)
 
 const activeTranslation = computed(
-  () => core.activeChannel.value.activeTranslation.value,
+  () => core.activeChannel.value?.activeTranslation.value,
 )
 const activeChannel = computed(() => core.activeChannel.value)
 const isLoadingHistory = computed(
-  () => activeChannel.value.isLoadingHistory.value,
+  () => activeChannel.value?.isLoadingHistory.value ?? false,
 )
-const hasMoreHistory = computed(() => activeChannel.value.hasMoreHistory.value)
+const hasMoreHistory = computed(() => activeChannel.value?.hasMoreHistory.value ?? false)
 
-// ── Stick to bottom ────────────────────────────────────────────────────
+// ── Follow playback ────────────────────────────────────────────────────
+
+const turnsRef = computed(() => props.turns)
+const { isFollowing, resumeFollow } = useFollowPlayback(
+  scrollContainerRef,
+  turnsRef,
+)
+
+// ── Stick to bottom (live only) ────────────────────────────────────────
 
 const { scrollRef, contentRef, isAtBottom, scrollToBottom } = useStickToBottom()
 
@@ -63,14 +76,30 @@ onMounted(() => {
     scrollContainerRef.value?.querySelector(".turns-container") ?? null
 })
 
+const showResumeButton = computed(
+  () =>
+    (!isFollowing.value && isPlaying.value) ||
+    (!isAtBottom.value && hasLiveUpdate.value),
+)
+
+function onResumeClick() {
+  if (isPlaying.value) {
+    resumeFollow()
+  } else {
+    scrollToBottom()
+  }
+}
+
 // ── Scroll top detection ────────────────────────────────────────────────
 
 const emitScrollTop = throttle(() => {
   const channel = activeChannel.value
-  if (!channel.hasMoreHistory.value) return
+  if (!channel?.hasMoreHistory.value) return
   if (channel.isLoadingHistory.value) return
   if (props.turns.length === 0) return
-  core.emit("scroll:top", { translationId: activeTranslation.value.id })
+  const translation = activeTranslation.value
+  if (!translation) return
+  core.emit("scroll:top", { translationId: translation.id })
 }, 500)
 
 function onScrollTop() {
@@ -130,7 +159,9 @@ onBeforeUnmount(() => {
         <TranscriptionEmpty
           v-if="turns.length === 0 && !isLoadingHistory && !partialTurn"
           class="transcription-empty" />
+        <EditorContent v-if="tiptapEditor" :editor="tiptapEditor" />
         <TranscriptionTurn
+          v-else
           v-for="(turn, i) in turns"
           :data-turn-id="turn.id"
           :key="turn.id"
@@ -146,11 +177,11 @@ onBeforeUnmount(() => {
 
       <Transition name="fade-slide">
         <Button
-          v-if="!isAtBottom && (isPlaying || hasLiveUpdate)"
+          v-if="showResumeButton"
           size="sm"
           class="resume-scroll-btn"
           :aria-label="t('transcription.resumeScroll')"
-          @click="scrollToBottom()">
+          @click="onResumeClick">
           <template #icon><ArrowDown :size="14" /></template>
           {{ t("transcription.resumeScroll") }}
         </Button>
