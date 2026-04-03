@@ -1,0 +1,69 @@
+import { ref, computed, shallowReactive } from "vue"
+import type { Channel } from "../../types/editor"
+import type { ChannelStore, CoreEventMap, TranslationStore } from "../types"
+import { createTranslationStore } from "./translationStore"
+
+type Emit = <K extends keyof CoreEventMap>(event: K, payload: CoreEventMap[K]) => void
+type SpeakersEnsure = (speakerId: string | null, name?: string) => void
+
+export function createChannelStore(
+  channel: Channel,
+  emit: Emit,
+  speakersEnsure: SpeakersEnsure,
+): ChannelStore {
+  const { id, name, description, duration } = channel
+
+  const translations = shallowReactive(new Map<string, TranslationStore>())
+  let sourceTranslation!: TranslationStore
+
+  for (const tr of channel.translations) {
+    const store = createTranslationStore(tr, emit, speakersEnsure)
+    translations.set(tr.id, store)
+    if (tr.isSource && !sourceTranslation) sourceTranslation = store
+  }
+
+  if (!sourceTranslation) {
+    sourceTranslation = translations.values().next().value!
+  }
+
+  const activeTranslationId = ref<string | null>(null)
+  const isLoadingHistory = ref(false)
+  const hasMoreHistory = ref(true)
+
+  const activeTranslation = computed<TranslationStore>(() => {
+    if (activeTranslationId.value) {
+      return translations.get(activeTranslationId.value) ?? sourceTranslation
+    }
+    return sourceTranslation
+  })
+
+  function setActiveTranslation(translationId: string | null): void {
+    const normalized = translationId === sourceTranslation.id ? null : translationId
+    if (normalized === activeTranslationId.value) return
+    activeTranslationId.value = normalized
+    emit("translation:change", { translationId: activeTranslation.value.id })
+  }
+
+  function reset(): void {
+    for (const translation of translations.values()) {
+      translation.setTurns([])
+    }
+    isLoadingHistory.value = false
+    hasMoreHistory.value = true
+    emit("channel:reset", { channelId: id })
+  }
+
+  return {
+    id,
+    name,
+    description,
+    duration,
+    translations,
+    sourceTranslation,
+    activeTranslation,
+    isLoadingHistory,
+    hasMoreHistory,
+    setActiveTranslation,
+    reset,
+  }
+}

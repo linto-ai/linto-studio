@@ -1,0 +1,54 @@
+{
+  "name": "@linto/transcript-ui",
+  "version": "0.1.0",
+  "type": "module",
+  "license": "AGPL-3.0",
+  "files": ["dist"],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./style.css": "./dist/style.css",
+    "./webcomponent": "./dist/linto-editor.js"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "build:wc": "vue-tsc -b && vite build --config vite.config.wc.ts",
+    "preview": "vite preview"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.0"
+  },
+  "dependencies": {
+    "@tiptap/core": "^3.20.5",
+    "@tiptap/extension-collaboration": "^3.22.1",
+    "@tiptap/extension-history": "^3.20.6",
+    "@tiptap/pm": "^3.20.5",
+    "@tiptap/starter-kit": "^3.20.5",
+    "@tiptap/vue-3": "^3.20.5",
+    "diff": "^8.0.3",
+    "lucide-vue-next": "^0.564.0",
+    "reka-ui": "^2.8.0",
+    "vue-stick-to-bottom": "^1.0.0",
+    "wavesurfer.js": "^7.12.1",
+    "yjs": "^13.6.30"
+  },
+  "devDependencies": {
+    "@types/diff": "^8.0.0",
+    "@types/node": "^24.10.1",
+    "@vitejs/plugin-vue": "^6.0.2",
+    "@vue/tsconfig": "^0.8.1",
+    "typescript": "~5.9.3",
+    "vite": "^7.3.1",
+    "vite-plugin-dts": "^4.5.4",
+    "vue": "^3.5.25",
+    "vue-tsc": "^3.1.5",
+    "y-protocols": "^1.0.7",
+    "y-websocket": "^3.0.0"
+  }
+}
