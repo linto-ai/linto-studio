@@ -53,10 +53,6 @@ def performBuildForFile(changedFiles, version, commit_sha) {
         buildDockerfile('studio-websocket', version, commit_sha)
     }
 
-    if (changedFiles.contains('studio-dashboard')) {
-        echo 'Files in studio-dashboard path are modified. Running specific build steps for studio-dashboard...'
-        buildDockerfile('studio-dashboard', version, commit_sha)
-    }
 }
 
 pipeline {

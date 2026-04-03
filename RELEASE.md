@@ -25,6 +25,8 @@ _2026_04_03_
   - Add requireParam handler for cleaner required parameter validation
   - Remove redundant parameter checks already guaranteed by Express routing
   - Clean up dead code and leftover references in studio-api
+- Removed
+  - Remove obsolete studio-dashboard service
 
 # 1.8.3
 
