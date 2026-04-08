@@ -33,14 +33,15 @@
           </label>
           <div class="flex row gap-small">
             <input
-              type="search"
-              class="flex1"
+              type="email"
+              class="invite-user-input"
               autocomplete="off"
               v-model="searchMemberValue.value"
               id="dropdown-search-tags" />
-            <button
+            <Button
               type="submit"
-              class="btn primary"
+              variant="primary"
+              :label="$t('invite_user.invite')"
               :title="
                 enable_invitation
                   ? null
@@ -48,9 +49,7 @@
               "
               :disabled="
                 searchMemberValue.valid && enable_invitation ? null : true
-              ">
-              <span class="label">{{ $t("invite_user.invite") }}</span>
-            </button>
+              " />
           </div>
         </form>
         <div class="flex col gap-small small-padding">
@@ -158,3 +157,11 @@ export default {
   components: { Fragment, SearchUsersListComponent },
 }
 </script>
+
+<style lang="scss" scoped>
+.invite-user-input {
+  flex: 1;
+  min-width: 0;
+  max-width: none;
+}
+</style>
