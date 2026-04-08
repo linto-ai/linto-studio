@@ -177,8 +177,8 @@ async function usersCheck(users_list, method) {
 }
 
 async function inviteNewUser(email) {
-  if (process.env.DISABLE_USER_CREATION === "true")
-    throw new UserError("User creation is disabled")
+  if (process.env.DISABLE_USER_INVITATION === "true")
+    throw new UserError("User invitation is disabled")
   const createdUser = await model.users.createExternal({ email })
   // Create new user personal organization
 

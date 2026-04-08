@@ -152,8 +152,8 @@ async function updateConversationRights(req, res, next) {
 
 async function inviteNewUser(req, res, next) {
   try {
-    if (process.env.DISABLE_USER_CREATION === "true")
-      throw new UserError("User creation is disabled")
+    if (process.env.DISABLE_USER_INVITATION === "true")
+      throw new UserError("User invitation is disabled")
 
     const email = req.body.email
     const createdUser = await model.users.createExternal({ email })

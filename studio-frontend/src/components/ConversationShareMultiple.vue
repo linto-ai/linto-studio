@@ -85,9 +85,9 @@
                   type="submit"
                   :icon="'plus'"
                   :label="$t('share_menu.invite_user_button')"
-                  :disabled="!isValidEmail || !enable_inscription"
+                  :disabled="!isValidEmail || !enable_invitation"
                   :title="
-                    enable_inscription
+                    enable_invitation
                       ? null
                       : $t('share_menu.inscription_disabled')
                   "
@@ -295,8 +295,8 @@ export default {
     isValidEmail() {
       return this.searchMemberValue.value.indexOf("@") > 0
     },
-    enable_inscription() {
-      return getEnv("VUE_APP_DISABLE_USER_CREATION") !== "true"
+    enable_invitation() {
+      return getEnv("VUE_APP_DISABLE_USER_INVITATION") !== "true"
     },
   },
   watch: {

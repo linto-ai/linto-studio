@@ -42,12 +42,12 @@
               type="submit"
               class="btn primary"
               :title="
-                enable_inscription
+                enable_invitation
                   ? null
                   : $t('invite_user.inscription_disabled')
               "
               :disabled="
-                searchMemberValue.valid && enable_inscription ? null : true
+                searchMemberValue.valid && enable_invitation ? null : true
               ">
               <span class="label">{{ $t("invite_user.invite") }}</span>
             </button>
@@ -126,8 +126,8 @@ export default {
     },
   },
   computed: {
-    enable_inscription() {
-      return getEnv("VUE_APP_DISABLE_USER_CREATION") !== "true"
+    enable_invitation() {
+      return getEnv("VUE_APP_DISABLE_USER_INVITATION") !== "true"
     },
   },
   methods: {
