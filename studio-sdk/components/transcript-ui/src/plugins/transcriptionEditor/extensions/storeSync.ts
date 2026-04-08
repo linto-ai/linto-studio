@@ -1,11 +1,14 @@
 import { Extension } from "@tiptap/core"
 import { Plugin, PluginKey } from "@tiptap/pm/state"
+import type { EditorState, Transaction } from "@tiptap/pm/state"
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model"
 import type { Core, TranslationStore } from "../../../core/types"
 import { docToTurns } from "../utils/docToTurns"
 import type { Turn, Word } from "../../../types/editor"
 
 const storeSyncKey = new PluginKey("storeSync")
+
+// TODO: optimize all this sync code
 
 /**
  * Flag to prevent feedback loops when the store dispatches
@@ -41,6 +44,12 @@ export const StoreSync = Extension.create<StoreSyncOptions>({
           if (suppressSync) return null
           if (oldState.doc.eq(newState.doc)) return null
 
+          // Split : ProseMirror duplique tous les attributs (dont l'id) sur la
+          // nouvelle moitié. On détecte les doublons et on réassigne un id frais
+          // avant la synchro, pour que turn:add soit émis correctement.
+          const fixTr = fixDuplicateTurnIds(newState)
+          if (fixTr) return fixTr
+
           const translation = getTranslation()
           if (!translation) return null
 
@@ -66,9 +75,10 @@ function syncDocToStore(
     if (!old) return newTurn
 
     // Preserve words/timestamps if text hasn't changed
-    const oldText = old.words.length > 0
-      ? old.words.map((w: Word) => w.text).join(" ")
-      : old.text ?? ""
+    const oldText =
+      old.words.length > 0
+        ? old.words.map((w: Word) => w.text).join(" ")
+        : (old.text ?? "")
 
     if (newTurn.text === oldText) {
       return { ...newTurn, words: old.words }
@@ -101,6 +111,31 @@ function syncDocToStore(
 
   // Update the store silently (we already emitted the events)
   translation.turns.value = mergedTurns
+}
+
+function fixDuplicateTurnIds(state: EditorState): Transaction | null {
+  const seen = new Set<string>()
+  const duplicates: Array<{ pos: number; attrs: Record<string, unknown> }> = []
+
+  state.doc.forEach((node, offset) => {
+    if (node.type.name !== "turn") return
+    const id = node.attrs.id as string | null
+    if (!id) return
+    if (seen.has(id)) {
+      duplicates.push({ pos: offset, attrs: node.attrs })
+    } else {
+      seen.add(id)
+    }
+  })
+
+  if (duplicates.length === 0) return null
+
+  const tr = state.tr
+  for (const { pos, attrs } of duplicates) {
+    tr.setNodeMarkup(pos, undefined, { ...attrs, id: crypto.randomUUID() })
+  }
+  tr.setMeta("addToHistory", false)
+  return tr
 }
 
 function hasTurnChanged(a: Turn, b: Turn): boolean {
