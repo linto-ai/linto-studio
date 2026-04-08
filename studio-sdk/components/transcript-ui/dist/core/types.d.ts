@@ -91,6 +91,10 @@ export interface AudioPluginApi {
     currentTime: Ref<number>;
     isPlaying: Ref<boolean>;
     src: ComputedRef<string | null>;
+    /** ID du mot en cours de lecture (null si pas de timestamps de mots ou pas en lecture). */
+    activeWordId: Ref<string | null>;
+    /** ID du turn en cours de lecture (null si hors plage ou pas en lecture). */
+    activeTurnId: Ref<string | null>;
     seekTo(time: number): void;
     setSeekHandler(handler: ((time: number) => void) | null): void;
 }

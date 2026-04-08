@@ -1,6 +1,5 @@
-import { ref, computed, watch, onMounted, onBeforeUnmount, type Ref } from "vue"
+import { ref, watch, onMounted, onBeforeUnmount, type Ref } from "vue"
 import { useCore } from "../core"
-import type { Turn } from "../types/editor"
 
 const SCROLL_KEYS = new Set([
   "ArrowUp",
@@ -14,55 +13,48 @@ const SCROLL_KEYS = new Set([
 
 export function useFollowPlayback(
   scrollContainer: Readonly<Ref<HTMLElement | null | undefined>>,
-  turns: Ref<Turn[]>,
 ) {
   const core = useCore()
   const isFollowing = ref(true)
-
-  const activeTurnId = computed(() => {
-    // todo: optimize...
-    if (!core.audio?.isPlaying.value) return null
-    const time = core.audio.currentTime.value
-    for (const turn of turns.value) {
-      if (
-        turn.startTime != null &&
-        turn.endTime != null &&
-        time >= turn.startTime &&
-        time <= turn.endTime
-      ) {
-        return turn.id
-      }
-    }
-    return null
-  })
-
   const prefersReducedMotion = window.matchMedia(
     "(prefers-reduced-motion: reduce)",
   ).matches
 
   function scrollToActive() {
-    console.log("scroll")
     const container = scrollContainer.value
-    if (!container || !activeTurnId.value) return
+    if (!container || !isFollowing.value) return
 
+    const turnId = core.audio?.activeTurnId.value
     const target =
       container.querySelector<HTMLElement>("[data-word-active]") ??
-      container.querySelector<HTMLElement>(
-        `[data-turn-id="${activeTurnId.value}"]`,
-      )
+      (turnId
+        ? container.querySelector<HTMLElement>(`[data-turn-id="${turnId}"]`)
+        : null)
     if (!target) return
 
     target.scrollIntoView({
-      block: "center",
       behavior: prefersReducedMotion ? "instant" : "smooth",
+      block: "center",
     })
   }
 
-  watch(activeTurnId, (id) => {
-    console.log("active", id)
-    if (!id || !isFollowing.value) return
-    scrollToActive()
-  })
+  // Suit le mot actif (fonctionne avec l'éditeur + word timestamps)
+  watch(
+    () => core.audio?.activeWordId.value,
+    (id) => {
+      if (id) scrollToActive()
+    },
+    { flush: "post" },
+  )
+
+  // Fallback : suit au moins le turn (sans éditeur ou sans timestamps de mots)
+  watch(
+    () => core.audio?.activeTurnId.value,
+    (id) => {
+      if (id) scrollToActive()
+    },
+    { flush: "post" },
+  )
 
   // Re-enable follow when playback starts
   watch(
@@ -72,7 +64,6 @@ export function useFollowPlayback(
     },
   )
 
-  // Detect manual scroll to pause follow
   function onManualScroll() {
     isFollowing.value = false
   }
@@ -83,34 +74,22 @@ export function useFollowPlayback(
     }
   }
 
-  function setupScrollListener(handler: any) {
-    // mouse wheel
-    scrollContainer.value?.addEventListener("wheel", handler, { passive: true })
-
-    // Tactile
-    scrollContainer.value?.addEventListener("touchstart", handler, {
-      passive: true,
-    })
-
-    // Scrollbar click
-    scrollContainer.value?.addEventListener("pointerdown", handler, {
-      passive: true,
-    })
-
-    scrollContainer.value?.addEventListener("keydown", checkKeyDownIsScroll)
+  function setupScrollListener(handler: (e: Event) => void) {
+    const el = scrollContainer.value
+    if (!el) return
+    el.addEventListener("wheel", handler, { passive: true })
+    el.addEventListener("touchstart", handler, { passive: true })
+    el.addEventListener("pointerdown", handler, { passive: true })
+    el.addEventListener("keydown", checkKeyDownIsScroll)
   }
 
-  function downScrollListener(handler: any) {
-    // mouse wheel
-    scrollContainer.value?.removeEventListener("wheel", handler)
-
-    // Tactile
-    scrollContainer.value?.removeEventListener("touchstart", handler)
-
-    // Scrollbar click
-    scrollContainer.value?.removeEventListener("pointerdown", handler)
-
-    scrollContainer.value?.removeEventListener("keydown", checkKeyDownIsScroll)
+  function downScrollListener(handler: (e: Event) => void) {
+    const el = scrollContainer.value
+    if (!el) return
+    el.removeEventListener("wheel", handler)
+    el.removeEventListener("touchstart", handler)
+    el.removeEventListener("pointerdown", handler)
+    el.removeEventListener("keydown", checkKeyDownIsScroll)
   }
 
   onMounted(() => {
@@ -126,5 +105,5 @@ export function useFollowPlayback(
     scrollToActive()
   }
 
-  return { isFollowing, activeTurnId, resumeFollow }
+  return { isFollowing, resumeFollow }
 }

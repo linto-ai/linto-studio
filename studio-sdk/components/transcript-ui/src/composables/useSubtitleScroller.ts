@@ -33,9 +33,10 @@ export function useSubtitleScroller(options: UseSubtitleScrollerOptions) {
 
   const unsubTurnAdd = core.onActiveTranslation("turn:add", ({ turn }) => {
     if (!scroller) return
-    const text = turn.words.length > 0
-      ? turn.words.map((w) => w.text).join(" ")
-      : turn.text ?? ""
+    const text =
+      turn.words.length > 0
+        ? turn.words.map((w) => w.text).join(" ")
+        : (turn.text ?? "")
     if (text) scroller.newFinal(text)
   })
 

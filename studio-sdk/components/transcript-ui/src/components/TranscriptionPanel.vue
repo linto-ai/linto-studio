@@ -60,11 +60,7 @@ const hasMoreHistory = computed(() => activeChannel.value?.hasMoreHistory.value 
 
 // ── Follow playback ────────────────────────────────────────────────────
 
-const turnsRef = computed(() => props.turns)
-const { isFollowing, resumeFollow } = useFollowPlayback(
-  scrollContainerRef,
-  turnsRef,
-)
+const { isFollowing, resumeFollow } = useFollowPlayback(scrollContainerRef)
 
 // ── Stick to bottom (live only) ────────────────────────────────────────
 
