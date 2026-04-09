@@ -1,24 +1,54 @@
+# 1.8.4
+
+_2026_04_03_
+
+- Live session viewer
+  - New Vue 3 editor component for live sessions (replaces SessionLiveContent)
+  - Paginated turn history loading with scroll-to-top fetch
+  - Handle translation events with final/partial distinction
+  - Clear subtitles when switching translation and hide mobile navbar when channels and translations are unique
+  - Fix empty placeholder shown before first partial is displayed
+- Translation format
+  - Support new translatedCaptions format from session API
+  - Remove legacy translation format support
+- Session management
+  - Add pagination to session listing page
+  - Fix session visibility for private and internal sessions
+  - Stop reconnecting websocket when server ends the session
+- Backoffice
+  - Add transcriber profile management to organization page
+  - Fix locked selectors in transcriber profile editor
+- Search & tags
+  - Hide tags with no associated media from search bar
+- API & backend
+  - Refactor exception classes with factory pattern (AppError renamed to StudioError)
+  - Add requireParam handler for cleaner required parameter validation
+  - Remove redundant parameter checks already guaranteed by Express routing
+  - Clean up dead code and leftover references in studio-api
+- Removed
+  - Remove obsolete studio-dashboard service
+
 # 1.8.3
 
 _2026_03_23_
 
-- Suivi des sessions
-  - Suivi des visiteurs anonymes via visitorId sur les sessions publiques
-  - Dédoublonnage des spectateurs par userId et cumul du temps de visionnage à la reconnexion
-  - Nouveau type de visibilité utilisateur sur les sessions
-- Organisation favorite
-  - Les utilisateurs peuvent marquer une organisation comme favorite pour y accéder plus rapidement
-- Infrastructure WebSocket
-  - Intégration Redis pub/sub pour synchroniser les événements WebSocket entre réplicas
-  - Meilleure gestion de la connexion Redis en cas d'échec initial
-- Accès utilisateur
-  - Message explicite sur la page de connexion lorsqu'un utilisateur n'est associé à aucune organisation
-  - Adaptation de la page de connexion quand la création de compte est désactivée
+- Session tracking
+  - Track anonymous visitors via visitorId on public sessions
+  - Deduplicate viewers by userId and accumulate watch time on reconnection
+  - New user visibility type on sessions
+- Favorite organization
+  - Users can mark an organization as favorite for quicker access
+- WebSocket infrastructure
+  - Redis pub/sub integration to synchronize WebSocket events across replicas
+  - Improved Redis connection handling on initial failure
+- User access
+  - Explicit message on login page when a user is not associated with any organization
+  - Adapted login page when account creation is disabled
 - Bugfix
-  - Correction de la liste des sessions limitée à 100 éléments
-  - Correction du double appel API pour les tags lors de la navigation dans les dossiers
-  - Correction de la cible de migration DB (DB_MIGRATION_TARGET)
-  - Masquage de la sidebar topics hors des pages explore
+  - Fix session list limited to 100 items
+  - Fix duplicate API call for tags when navigating folders
+  - Fix DB migration target (DB_MIGRATION_TARGET)
+  - Hide topics sidebar outside of explore pages
 
 # 1.8.2
 

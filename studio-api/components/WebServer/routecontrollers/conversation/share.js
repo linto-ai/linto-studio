@@ -21,6 +21,10 @@ const {
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
 
+const { OrganizationNotFound } = require(
+  `${process.cwd()}/components/WebServer/error/exception/organization`,
+)
+
 const { UserNotFound, UserError } = require(
   `${process.cwd()}/components/WebServer/error/exception/users`,
 )

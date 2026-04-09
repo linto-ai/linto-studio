@@ -26,7 +26,7 @@ const {
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
 
-const { ConversationError } = require(
+const { ConversationError, ConversationNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
 

@@ -3,11 +3,13 @@
   <ErrorPage v-else-if="error" :error="error" />
   <div v-else-if="sessionList.length > 0" class="flex flex1 col">
     <SessionListLine
-      v-if="sessionList.length > 0"
       v-for="session in sessionList"
       :key="session.id"
       :session="session"></SessionListLine>
-    <!-- todo: pagination -->
+    <Pagination
+      v-if="totalPages > 1"
+      :pages="totalPages"
+      v-model="currentPage" />
   </div>
   <div v-else>
     <h2 class="center-text">
@@ -18,13 +20,14 @@
 <script>
 import { bus } from "@/main"
 
-import { apiGetStartedSessions } from "@/api/session.js"
+import { apiGetSessionsPaginated } from "@/api/session.js"
 import { genericSessionList } from "@/mixins/genericSessionList"
 import sortSessionByDate from "@/tools/sortSessionByDate"
 
 import Loading from "@/components/atoms/Loading.vue"
 import ErrorPage from "@/components/ErrorPage.vue"
 import SessionListLine from "@/components/SessionListLine.vue"
+import Pagination from "@/components/molecules/Pagination.vue"
 
 export default {
   mixins: [genericSessionList],
@@ -34,17 +37,29 @@ export default {
       required: true,
     },
   },
-  mounted() {},
+  data() {
+    return {
+      currentPage: 0,
+      totalPages: 0,
+    }
+  },
+  watch: {
+    currentPage() {
+      this.fetchSessions()
+    },
+  },
   methods: {
     async fetchSessions() {
       this.loading = true
       try {
-        const sessions = await apiGetStartedSessions(
+        const result = await apiGetSessionsPaginated(
           this.currentOrganizationScope,
+          this.currentPage,
         )
-        this.sessionList = sessions.sessions
+        this.sessionList = result.list
           .filter((s) => s.name[0] != "@")
           .sort(sortSessionByDate)
+        this.totalPages = Math.ceil(result.count / result.pageSize)
       } catch (e) {
         console.error(e)
         this.error = e
@@ -57,6 +72,7 @@ export default {
     Loading,
     ErrorPage,
     SessionListLine,
+    Pagination,
   },
 }
 </script>

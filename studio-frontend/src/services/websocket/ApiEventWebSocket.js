@@ -75,8 +75,8 @@ export default class ApiEventWebSocket {
         resolve()
       })
 
-      this.socket.on("disconnect", (msg) => {
-        this.handleDisconnection()
+      this.socket.on("disconnect", (reason) => {
+        this.handleDisconnection(reason)
       })
 
       this.socket.on("connect_error", () => {
@@ -123,13 +123,20 @@ export default class ApiEventWebSocket {
     })
   }
 
-  handleDisconnection() {
-    debugWSSession("disconnected from socket.io server")
+  handleDisconnection(reason) {
+    debugWSSession("disconnected from socket.io server, reason:", reason)
     this.state.connexionLost = true
     this.state.isConnected = false
     this.isConnectedToSessionBroker = false
     this.state.connexionRestored = false
     this.clearNotifs()
+
+    // "io server disconnect" is a Socket.IO built-in reason
+    // emitted when the server calls socket.disconnect()
+    if (reason === "io server disconnect") {
+      return
+    }
+
     store.dispatch("system/addNotification", {
       id: "websocket-disconnected",
       message: i18n.t("websocket.lost_connexion"),

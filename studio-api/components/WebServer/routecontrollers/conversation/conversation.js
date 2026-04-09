@@ -28,6 +28,10 @@ const {
 } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
+
+const { OrganizationNotFound } = require(
+  `${process.cwd()}/components/WebServer/error/exception/organization`,
+)
 async function deleteConversation(req, res, next) {
   try {
     const conversation = await model.conversations.getById(

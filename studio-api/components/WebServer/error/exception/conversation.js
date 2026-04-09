@@ -75,12 +75,6 @@ const ConversationNotFound = createException(
 )
 
 // Turn
-const TurnIdRequire = createException(
-  "TurnIdRequire",
-  "conversationTurn",
-  403,
-  "Turn id param is required",
-)
 const TurnNotFound = createException(
   "TurnNotFound",
   "conversationTurn",
@@ -115,23 +109,11 @@ const SubtitleNotFound = createException(
 )
 
 // Export
-const ExportError = createException(
-  "ExportError",
-  "conversation",
-  400,
-  "Error during export operation",
-)
 const ExportNotConfigured = createException(
   "ExportNotConfigured",
   "conversation",
   500,
   "LLM Gateway not configured",
-)
-const ExportJobNotFound = createException(
-  "ExportJobNotFound",
-  "conversation",
-  404,
-  "Export job not found",
 )
 const ExportGatewayError = createException(
   "ExportGatewayError",
@@ -161,15 +143,12 @@ module.exports = {
   ConversationIdRequire,
   ConversationError,
   ConversationNotFound,
-  TurnIdRequire,
   TurnNotFound,
   SubtitleUnsupportedMediaType,
   SubtitleError,
   SubtitleMaxVersion,
   SubtitleNotFound,
-  ExportError,
   ExportNotConfigured,
-  ExportJobNotFound,
   ExportGatewayError,
   GenerationNotFound,
 }
