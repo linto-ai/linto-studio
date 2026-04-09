@@ -1,4 +1,5 @@
 const MongoModel = require(`../model`)
+const MongoDriver = require(`../driver`)
 const debug = require("debug")("linto:lib:mongodb:models:conversations")
 
 const moment = require("moment")
@@ -374,6 +375,65 @@ class ConvoModel extends MongoModel {
       }
 
       return await this.mongoUpdateOne(query, operator, mutableElements)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  /**
+   * Update a single turn in-place using MongoDB positional operator.
+   * Unlike updateTurn(), this does NOT read-modify-write the whole text array.
+   */
+  async updateTurnAtomic(conversationId, turnId, newTurn) {
+    try {
+      const query = {
+        _id: this.getObjectId(conversationId),
+        "text.turn_id": turnId,
+      }
+      const dateTime = moment().format()
+      return await this.mongoUpdateOne(query, "$set", {
+        "text.$": { ...newTurn, turn_id: turnId },
+        last_update: dateTime,
+      })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  /**
+   * Append a new turn to the text array atomically.
+   */
+  async addTurnAtomic(conversationId, newTurn) {
+    try {
+      const query = { _id: this.getObjectId(conversationId) }
+      const dateTime = moment().format()
+      return await MongoDriver.constructor.db
+        .collection(this.collection)
+        .updateOne(query, {
+          $push: { text: newTurn },
+          $set: { last_update: dateTime },
+        })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  /**
+   * Remove a turn from the text array atomically.
+   */
+  async removeTurnAtomic(conversationId, turnId) {
+    try {
+      const query = { _id: this.getObjectId(conversationId) }
+      const dateTime = moment().format()
+      return await MongoDriver.constructor.db
+        .collection(this.collection)
+        .updateOne(query, {
+          $pull: { text: { turn_id: turnId } },
+          $set: { last_update: dateTime },
+        })
     } catch (error) {
       console.error(error)
       return error

@@ -27,6 +27,7 @@
   "dependencies": {
     "@tiptap/core": "^3.20.5",
     "@tiptap/extension-collaboration": "^3.22.1",
+    "@tiptap/y-tiptap": "^3.0.2",
     "@tiptap/extension-history": "^3.20.6",
     "@tiptap/pm": "^3.20.5",
     "@tiptap/starter-kit": "^3.20.5",
