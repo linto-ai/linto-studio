@@ -253,15 +253,10 @@ export async function apiGetActiveSessions(organizationScope, notif) {
   return result
 }
 
-
-
 export async function apiGetSessionsPaginated(
   organizationScope,
   page = 0,
-  {
-    pageSize = DEFAULT_PAGE_SIZE,
-    excludeVisibility = "user",
-  } = {},
+  { pageSize = DEFAULT_PAGE_SIZE, excludeVisibility = "user" } = {},
 ) {
   const params = {
     organizationId: organizationScope,
@@ -348,7 +343,12 @@ export async function apiCountFutureSessions(organizationScope, notif) {
   return getStartedSessions?.data?.totalItems ?? 0
 }
 
-export async function apiGetSession(organizationScope, sessionId, params = {}, notif) {
+export async function apiGetSession(
+  organizationScope,
+  sessionId,
+  params = {},
+  notif,
+) {
   const getSession = await sendRequest(
     `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}`,
     { method: "get" },
@@ -379,7 +379,12 @@ export async function apiGetSessionsBetweenDates(
   )
 }
 
-export async function apiGetPublicSession(sessionId, password, params = {}, notif) {
+export async function apiGetPublicSession(
+  sessionId,
+  password,
+  params = {},
+  notif,
+) {
   const getSession = await sendRequest(
     `${BASE_API}/sessions/public/${sessionId}`,
     { method: "get" },

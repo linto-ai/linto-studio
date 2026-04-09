@@ -276,12 +276,13 @@ const createProxyRoutes = (webServer, proxy_routes) => {
                 async (responseBuffer, proxyRes, req, res) => {
                   try {
                     if (path.executeAfterResult) {
-                      let result
+                      let result = Buffer.from(
+                        responseBuffer,
+                        "utf-8",
+                      ).toString("utf-8")
 
                       for (let proxyAfterFunction of path.executeAfterResult) {
-                        const buffer = Buffer.from(responseBuffer, "utf-8")
-                        const jsonString = buffer.toString("utf-8")
-                        result = await proxyAfterFunction(jsonString, req)
+                        result = await proxyAfterFunction(result, req)
                       }
                       return result.toString()
                     } else {
