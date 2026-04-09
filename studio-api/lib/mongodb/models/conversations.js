@@ -1,10 +1,13 @@
 const MongoModel = require(`../model`)
 const debug = require("debug")("linto:lib:mongodb:models:conversations")
+const { calculateObjectSize } = require("bson")
 
 const moment = require("moment")
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const TYPE = require(`${process.cwd()}/lib/dao/conversation/types`)
+
+const BSON_MAX_SIZE = 16 * 1024 * 1024
 class ConvoModel extends MongoModel {
   constructor() {
     super("conversations")
@@ -15,6 +18,23 @@ class ConvoModel extends MongoModel {
       const dateTime = moment().format()
       conversation.created = dateTime
       conversation.last_update = dateTime
+
+      if (conversation.text?.length > 0) {
+        let docSize = calculateObjectSize(conversation)
+        if (docSize > BSON_MAX_SIZE) {
+          const originalCount = conversation.text.length
+          while (docSize > BSON_MAX_SIZE && conversation.text.length > 0) {
+            conversation.text = conversation.text.slice(
+              0,
+              Math.floor(conversation.text.length * 0.8),
+            )
+            docSize = calculateObjectSize(conversation)
+          }
+          debug(
+            `Conversation document exceeded BSON 16MB limit (${originalCount} turns), truncated to ${conversation.text.length} turns`,
+          )
+        }
+      }
 
       return await this.mongoInsert(conversation)
     } catch (error) {

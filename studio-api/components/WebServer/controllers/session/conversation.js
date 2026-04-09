@@ -11,7 +11,6 @@ const TYPES = require(`${process.cwd()}/lib/dao/conversation/types`)
 const RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const DEFAULT_MEMBER_RIGHTS = RIGHTS.READ + RIGHTS.COMMENT
 const DEFAULT_SPEAKER_NAME = "Unknown speaker"
-const MAX_CLOSED_CAPTIONS = 3600
 const DEFAULT_TRANSLATION_NAME = "Automatic Translation"
 const SECURITY_LEVELS = require(
   `${process.cwd()}/lib/dao/conversation/securityLevels`,
@@ -315,13 +314,6 @@ function processChannelCaptions(channel, caption, main = true) {
       closedCaptions.push(segment) // Only push non-bot segments
     }
   })
-
-  if (closedCaptions.length > MAX_CLOSED_CAPTIONS) {
-    debug(
-      `Channel has ${closedCaptions.length} closedCaptions, truncating to ${MAX_CLOSED_CAPTIONS} to avoid exceeding MongoDB document size limit`,
-    )
-    closedCaptions = closedCaptions.slice(0, MAX_CLOSED_CAPTIONS)
-  }
 
   let prevSegmentWithTimestamps = undefined
 
