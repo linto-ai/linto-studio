@@ -8,12 +8,33 @@ import styles from "./styles/variables.css?inline"
 import baseStyles from "./styles/base.css?inline"
 import selectStyles from "./styles/sidebar-select.css?inline"
 
+// Components rendered by Tiptap's VueNodeViewRenderer (outside Vue's component tree)
+// Their styles are not auto-injected into the Shadow DOM, so we collect them manually.
+import TurnNodeView from "./plugins/transcriptionEditor/components/TurnNodeView.vue"
+import SpeakerLabel from "./components/SpeakerLabel.vue"
+import SpeakerIndicator from "./components/atoms/SpeakerIndicator.vue"
+import Badge from "./components/atoms/Badge.vue"
+import cursorStyles from "./plugins/transcriptionEditor/cursor.css?inline"
+
+function getComponentStyles(comp: unknown): string[] {
+  return (comp as { styles?: string[] }).styles ?? []
+}
+
 const LintoEditor = defineCustomElement({
   props: {
     locale: { type: String, default: "fr" },
     noHeader: { type: Boolean, default: false },
   },
-  styles: [styles, baseStyles, selectStyles],
+  styles: [
+    styles,
+    baseStyles,
+    selectStyles,
+    cursorStyles,
+    ...getComponentStyles(TurnNodeView),
+    ...getComponentStyles(SpeakerLabel),
+    ...getComponentStyles(SpeakerIndicator),
+    ...getComponentStyles(Badge),
+  ],
   setup(props, { expose }) {
     const locale = ref<Locale>(props.locale as Locale)
     provideI18n(locale)
