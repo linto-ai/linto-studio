@@ -12,8 +12,8 @@ const canvasHeight = computed(() => 2.4 * fontSize.value)
 
 useSubtitleScroller({
   canvasRef,
-  fontSize: fontSize.value,
-  lineHeight: lineHeight.value,
+  fontSize,
+  lineHeight,
 })
 </script>
 

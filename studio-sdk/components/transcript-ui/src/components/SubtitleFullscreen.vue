@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, useTemplateRef } from "vue"
+import { computed, onMounted, onUnmounted, useTemplateRef } from "vue"
 import { X } from "lucide-vue-next"
 import { useCore } from "../core"
 import { useI18n } from "../i18n"
@@ -10,12 +10,13 @@ const { t } = useI18n()
 const containerRef = useTemplateRef<HTMLDivElement>("container")
 const canvasRef = useTemplateRef<HTMLCanvasElement>("canvas")
 
-const FULLSCREEN_FONT_SIZE = 48
+const fontSize = computed(() => core.subtitle?.fontSize.value ?? 48)
+const lineHeight = computed(() => 1.2 * fontSize.value)
 
 useSubtitleScroller({
   canvasRef,
-  fontSize: FULLSCREEN_FONT_SIZE,
-  lineHeight: 1.2 * FULLSCREEN_FONT_SIZE,
+  fontSize,
+  lineHeight,
 })
 
 onMounted(async () => {

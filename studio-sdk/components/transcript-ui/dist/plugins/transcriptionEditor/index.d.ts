@@ -1,13 +1,14 @@
-import { Ref } from 'vue';
-import { Doc } from 'yjs';
-import { Awareness } from 'y-protocols/awareness';
 import { CorePlugin, TranscriptionEditorPluginApi } from '../../core/types';
 export type { TranscriptionEditorPluginApi };
+export interface CollabOptions {
+    /** Hocuspocus WebSocket URL (e.g. "ws://localhost/ws/editor") */
+    url: string;
+    /** JWT token for authentication */
+    token: string;
+}
 export interface TranscriptionEditorOptions {
-    /** Existing Y.Doc (collaborative mode). If absent, a local Y.Doc is created. */
-    document?: Doc;
-    /** Awareness instance for collaborative cursors (optional). */
-    awareness?: Awareness;
+    /** Collaborative mode configuration. If absent, local-only mode. */
+    collab?: CollabOptions;
     /** Name of the XmlFragment in the Y.Doc. @default "default" */
     field?: string;
     /** Local user info for cursor display. */
@@ -16,8 +17,6 @@ export interface TranscriptionEditorOptions {
         color: string;
         [key: string]: unknown;
     };
-    /** Reactive boolean ref managed by the provider for connection status. */
-    isConnected?: Ref<boolean>;
 }
 export declare function createTranscriptionEditorPlugin(options?: TranscriptionEditorOptions): CorePlugin;
 export { TranscriptionDocument } from './extensions/transcriptionDocument';

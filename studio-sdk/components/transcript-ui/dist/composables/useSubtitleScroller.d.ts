@@ -1,8 +1,8 @@
-import { Ref } from 'vue';
+import { ComputedRef, Ref } from 'vue';
 interface UseSubtitleScrollerOptions {
     canvasRef: Readonly<Ref<HTMLCanvasElement | null>>;
-    fontSize: number;
-    lineHeight: number;
+    fontSize: Ref<number> | ComputedRef<number>;
+    lineHeight: Ref<number> | ComputedRef<number>;
 }
 /**
  * Wires a SubtitleScroller to editor events (live partials, turn adds, sync resets).

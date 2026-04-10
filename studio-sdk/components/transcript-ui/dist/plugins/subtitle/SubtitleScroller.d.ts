@@ -16,6 +16,7 @@ export declare class SubtitleDrawer {
     private resizeObserver;
     constructor(canvas: HTMLCanvasElement, { fontSize, lineHeight, color, font, paddingInline, }?: DrawerOptions);
     dispose(): void;
+    setFontSize(fontSize: number, lineHeight: number): void;
     resetDrawing(): void;
     protected drawText(text: string, x: number, y: number): void;
     protected drawFirstLine(text: string): void;

@@ -1,11 +1,11 @@
-import { onMounted, onUnmounted, watch, type Ref } from "vue"
+import { onMounted, onUnmounted, watch, type ComputedRef, type Ref } from "vue"
 import { useCore } from "../core"
 import { SubtitleScroller } from "../plugins/subtitle/SubtitleScroller"
 
 interface UseSubtitleScrollerOptions {
   canvasRef: Readonly<Ref<HTMLCanvasElement | null>>
-  fontSize: number
-  lineHeight: number
+  fontSize: Ref<number> | ComputedRef<number>
+  lineHeight: Ref<number> | ComputedRef<number>
 }
 
 /**
@@ -19,9 +19,14 @@ export function useSubtitleScroller(options: UseSubtitleScrollerOptions) {
   onMounted(() => {
     if (!options.canvasRef.value) return
     scroller = new SubtitleScroller(options.canvasRef.value, {
-      fontSize: options.fontSize,
-      lineHeight: options.lineHeight,
+      fontSize: options.fontSize.value,
+      lineHeight: options.lineHeight.value,
     })
+  })
+
+  watch([options.fontSize, options.lineHeight], ([fs, lh]) => {
+    if (!scroller) return
+    scroller.setFontSize(fs, lh)
   })
 
   watch(
