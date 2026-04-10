@@ -157,7 +157,7 @@ export default {
         }
 
         const closedCaptions = res?.data?.closedCaptions ?? []
-        const translatedCaptions = res?.data?.translatedCaptions ?? []
+        const translatedCaptions = res?.data?.translatedCaptions ?? {}
         const total = res?.data?.totalClosedCaptions ?? 0
         if (closedCaptions.length === 0) {
           channel.hasMoreHistory.value = false
