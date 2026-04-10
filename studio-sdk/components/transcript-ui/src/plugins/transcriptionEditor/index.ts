@@ -1,16 +1,16 @@
-import { computed, ref, watch, shallowRef, type Ref } from "vue"
+import { computed, ref, watch, shallowRef } from "vue"
 import { Doc } from "yjs"
 import { Editor, getSchema } from "@tiptap/vue-3"
 import { Text } from "@tiptap/extension-text"
 import { Collaboration } from "@tiptap/extension-collaboration"
 import { prosemirrorJSONToYXmlFragment } from "@tiptap/y-tiptap"
+import { HocuspocusProvider } from "@hocuspocus/provider"
 import { TranscriptionDocument } from "./extensions/transcriptionDocument"
 import { TurnNode } from "./extensions/turnNode"
-import { StoreSync, withSuppressedSync } from "./extensions/storeSync"
+import { StoreSync } from "./extensions/storeSync"
 import { WordHighlight } from "./extensions/wordHighlight"
 import { CollaborationCursor } from "./extensions/collaborationCursor"
 import { turnsToDoc } from "./utils/turnsToDoc"
-import type { Awareness } from "y-protocols/awareness"
 import type {
   Core,
   CorePlugin,
@@ -18,81 +18,151 @@ import type {
   YjsUser,
   TranslationStore,
 } from "../../core/types"
-import type { Turn } from "../../types/editor"
 import "./cursor.css"
 
 export type { TranscriptionEditorPluginApi }
 
+export interface CollabOptions {
+  /** Hocuspocus WebSocket URL (e.g. "ws://localhost/ws/editor") */
+  url: string
+  /** JWT token for authentication */
+  token: string
+}
+
 export interface TranscriptionEditorOptions {
-  /** Existing Y.Doc (collaborative mode). If absent, a local Y.Doc is created. */
-  document?: Doc
-  /** Awareness instance for collaborative cursors (optional). */
-  awareness?: Awareness
+  /** Collaborative mode configuration. If absent, local-only mode. */
+  collab?: CollabOptions
   /** Name of the XmlFragment in the Y.Doc. @default "default" */
   field?: string
   /** Local user info for cursor display. */
   user?: { name: string; color: string; [key: string]: unknown }
-  /** Reactive boolean ref managed by the provider for connection status. */
-  isConnected?: Ref<boolean>
 }
 
 export function createTranscriptionEditorPlugin(
   options: TranscriptionEditorOptions = {},
 ): CorePlugin {
   const {
-    document: externalDoc,
-    awareness,
+    collab,
     field = "default",
     user = { name: "Anonymous", color: "#999999" },
-    isConnected: externalConnected,
   } = options
-
-  const ydoc = externalDoc ?? new Doc()
-  const fragment = ydoc.getXmlFragment(field)
-  const users = ref<YjsUser[]>([])
-  const isConnected = externalConnected ?? ref(false)
 
   return {
     name: "transcriptionEditor",
 
     install(core: Core) {
       const tiptapEditor = shallowRef<Editor | undefined>(undefined)
+      const users = ref<YjsUser[]>([])
+      const isConnected = ref(false)
       const cleanups: Array<() => void> = []
 
-      // Awareness tracking
-      if (awareness) {
-        const onAwarenessUpdate = () => {
-          users.value = awarenessStatesToArray(awareness.states)
-        }
-        awareness.on("update", onAwarenessUpdate)
-        onAwarenessUpdate()
-        cleanups.push(() => awareness.off("update", onAwarenessUpdate))
-      }
-
-      const updateUser = (attrs: Record<string, unknown>) => {
-        if (awareness) {
-          Object.assign(user, attrs)
-          awareness.setLocalStateField("user", user)
-        }
-      }
+      // Current provider/doc state (managed internally in collab mode)
+      let currentProvider: HocuspocusProvider | null = null
+      let currentDoc: Doc | null = null
 
       const api: TranscriptionEditorPluginApi = {
         tiptapEditor,
-        doc: ydoc,
-        fragment,
+        get doc() {
+          return currentDoc!
+        },
+        get fragment() {
+          return currentDoc!.getXmlFragment(field)
+        },
         users,
         isConnected,
-        updateUser,
+        updateUser(attrs: Record<string, unknown>) {
+          if (currentProvider?.awareness) {
+            Object.assign(user, attrs)
+            currentProvider.awareness.setLocalStateField("user", user)
+          }
+        },
       }
       core.transcriptionEditor = api
 
-      // Wait for activeChannel to be available before creating the editor
+      function destroyCurrentSession() {
+        tiptapEditor.value?.destroy()
+        tiptapEditor.value = undefined
+        if (currentProvider) {
+          currentProvider.destroy()
+          currentProvider = null
+        }
+        if (currentDoc) {
+          currentDoc.destroy()
+          currentDoc = null
+        }
+        isConnected.value = false
+        users.value = []
+      }
+
+      function startSession(translationId: string, translation: TranslationStore) {
+        destroyCurrentSession()
+
+        const ydoc = new Doc()
+        currentDoc = ydoc
+
+        if (collab) {
+          // Collaborative mode: provider connects to server, server seeds the Y.Doc
+          const provider = new HocuspocusProvider({
+            url: collab.url,
+            name: translationId,
+            token: collab.token,
+            document: ydoc,
+            onSynced() {
+              isConnected.value = true
+            },
+            onDisconnect() {
+              isConnected.value = false
+            },
+            onAwarenessUpdate({ states }) {
+              users.value = states.map((s: Record<string, unknown>) => ({
+                clientId: s.clientId as number,
+                ...(s.user as Record<string, unknown> | undefined),
+              }))
+            },
+          })
+          currentProvider = provider
+
+          // Wait for initial sync before creating editor
+          const stopSync = watch(isConnected, (synced) => {
+            if (!synced) return
+            stopSync()
+            createTiptapEditor(core, options, ydoc, field, tiptapEditor, provider.awareness, cleanups)
+          }, { immediate: true })
+          cleanups.push(stopSync)
+        } else {
+          // Local mode: seed from store turns, no provider
+          const fragment = ydoc.getXmlFragment(field)
+          const initialContent = turnsToDoc(translation.turns.value)
+          const schema = getSchema([TranscriptionDocument, TurnNode, Text])
+          prosemirrorJSONToYXmlFragment(schema, initialContent, fragment)
+          isConnected.value = true
+
+          createTiptapEditor(core, options, ydoc, field, tiptapEditor, null, cleanups)
+        }
+      }
+
+      // Start session when activeChannel + activeTranslation are ready
       const stopWaiting = watch(
         () => core.activeChannel.value,
         (channel) => {
           if (!channel) return
           stopWaiting()
-          initEditor(core, options, ydoc, field, tiptapEditor, cleanups)
+
+          const activeTranslation = computed<TranslationStore>(
+            () => core.activeChannel.value!.activeTranslation.value,
+          )
+
+          // Start initial session
+          startSession(activeTranslation.value.id, activeTranslation.value)
+
+          // Watch for translation changes → restart session
+          const stopTranslation = watch(
+            () => activeTranslation.value.id,
+            (newId) => {
+              startSession(newId, activeTranslation.value)
+            },
+          )
+          cleanups.push(stopTranslation)
         },
         { immediate: true },
       )
@@ -100,20 +170,20 @@ export function createTranscriptionEditorPlugin(
       return () => {
         stopWaiting()
         cleanups.forEach((fn) => fn())
-        tiptapEditor.value?.destroy()
-        if (!externalDoc) ydoc.destroy()
+        destroyCurrentSession()
         core.transcriptionEditor = undefined
       }
     },
   }
 }
 
-function initEditor(
+function createTiptapEditor(
   core: Core,
   options: TranscriptionEditorOptions,
   ydoc: Doc,
   field: string,
   tiptapEditor: ReturnType<typeof shallowRef<Editor | undefined>>,
+  awareness: import("y-protocols/awareness").Awareness | null,
   cleanups: Array<() => void>,
 ): void {
   const activeTranslation = computed<TranslationStore>(
@@ -136,39 +206,18 @@ function initEditor(
     ...core.pluginExtensions,
   ]
 
-  if (options.awareness) {
+  if (awareness) {
     extensions.push(
       CollaborationCursor.configure({
-        awareness: options.awareness,
+        awareness,
         user: options.user ?? { name: "Anonymous", color: "#999999" },
       }),
     )
   }
 
-  // Pre-populate the Y.XmlFragment if empty (local/new doc).
-  // Must happen before Editor creation because ySyncPlugin initializes from the fragment.
-  const fragment = ydoc.getXmlFragment(field)
-  if (fragment.length === 0) {
-    const initialContent = turnsToDoc(activeTranslation.value.turns.value)
-    const schema = getSchema(extensions)
-    prosemirrorJSONToYXmlFragment(schema, initialContent, fragment)
-  }
-
   tiptapEditor.value = new Editor({
     extensions,
   })
-
-  // Watch active translation changes to reload content
-  let currentTranslationId = activeTranslation.value.id
-
-  const unsubTranslation = watch(
-    () => activeTranslation.value.id,
-    (newId) => {
-      if (newId === currentTranslationId) return
-      currentTranslationId = newId
-      reloadContent(tiptapEditor.value, activeTranslation.value.turns.value)
-    },
-  )
 
   const unsubSync = core.on("translation:sync", () => {
     console.warn(
@@ -182,24 +231,7 @@ function initEditor(
     )
   })
 
-  cleanups.push(unsubTranslation, unsubSync, unsubChannelSync)
-}
-
-function reloadContent(editor: Editor | undefined, turns: Turn[]): void {
-  if (!editor) return
-  const content = turnsToDoc(turns)
-  withSuppressedSync(() => {
-    editor.commands.setContent(content)
-  })
-}
-
-function awarenessStatesToArray(
-  states: Map<number, Record<string, unknown>>,
-): YjsUser[] {
-  return Array.from(states.entries()).map(([clientId, state]) => ({
-    clientId,
-    ...(state.user as Record<string, unknown> | undefined),
-  }))
+  cleanups.push(unsubSync, unsubChannelSync)
 }
 
 // Re-export internals for advanced usage

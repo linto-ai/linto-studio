@@ -1,7 +1,7 @@
 import { defineCustomElement, ref, h, watch } from "vue"
 import Layout from "./components/Layout.vue"
 import { createCore, provideCore } from "./core"
-import { createAudioPlugin } from "./plugins/audio"
+
 import { provideI18n, type Locale } from "./i18n"
 import fontsStyles from "./styles/fonts.css?inline"
 import styles from "./styles/variables.css?inline"
@@ -18,12 +18,15 @@ const LintoEditor = defineCustomElement({
     const locale = ref<Locale>(props.locale as Locale)
     provideI18n(locale)
 
-    watch(() => props.locale, (val) => {
-      locale.value = val as Locale
-    })
+    watch(
+      () => props.locale,
+      (val) => {
+        locale.value = val as Locale
+      },
+    )
 
     const core = createCore()
-    core.use(createAudioPlugin())
+    //core.use(createAudioPlugin())
     provideCore(core)
 
     expose({ core })
@@ -56,3 +59,4 @@ export { LintoEditor }
 export { createLivePlugin } from "./plugins/live"
 export { createAudioPlugin } from "./plugins/audio"
 export { createSubtitlePlugin } from "./plugins/subtitle"
+export { createTranscriptionEditorPlugin } from "./plugins/transcriptionEditor"

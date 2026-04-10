@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue"
-import { Doc } from "yjs"
 import Layout from "./components/Layout.vue"
 import { mapApiDocument } from "./adapters/apiAdapter"
 import { provideI18n, type Locale } from "./i18n"
@@ -18,11 +17,9 @@ import type { WhisperXDocument } from "./types/whisperx"
 const locale = ref<Locale>("fr")
 const { t } = provideI18n(locale)
 
-const ydoc = new Doc()
-
 const core = createCore()
 core.use(createAudioPlugin())
-core.use(createTranscriptionEditorPlugin({ document: ydoc }))
+core.use(createTranscriptionEditorPlugin())
 //core.use(createLivePlugin())
 //core.use(createSubtitlePlugin())
 provideCore(core)
