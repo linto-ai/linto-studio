@@ -57,6 +57,13 @@ export class SubtitleDrawer {
     this.resizeObserver.disconnect()
   }
 
+  setFontSize(fontSize: number, lineHeight: number): void {
+    this.fontSize = fontSize
+    this.lineHeight = lineHeight
+    this.resetDrawing()
+    this.onResize()
+  }
+
   resetDrawing(): void {
     const ctx = this.canvas.getContext("2d")!
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
