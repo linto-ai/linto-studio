@@ -119,6 +119,10 @@ class IoHandler extends Component {
         methods: ["GET", "POST"],
         credentials: true,
       },
+      // Allow other WebSocket handlers (e.g. EditorHandler/Hocuspocus) to coexist
+      // on the same httpServer. Without this, engine.io destroys upgrade sockets
+      // on unrecognized paths after 1s.
+      destroyUpgrade: false,
     })
 
     this.io.use(auth_middlewares.isAuthenticateSocket) // Used initialy to require authentication, disabling annonymous sessions
