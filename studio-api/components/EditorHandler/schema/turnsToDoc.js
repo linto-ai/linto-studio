@@ -17,12 +17,15 @@ function turnToNode(turn) {
       ? turn.words.map((w) => w.word).join(" ")
       : turn.segment || ""
 
-  const startTime =
-    turn.words && turn.words.length > 0 ? turn.words[0].stime : undefined
-  const endTime =
+  const firstWordStime =
+    turn.words && turn.words.length > 0 ? turn.words[0]?.stime : null
+  const startTime = firstWordStime ?? turn.stime
+
+  const lastWordEtime =
     turn.words && turn.words.length > 0
-      ? turn.words[turn.words.length - 1].etime
-      : undefined
+      ? turn.words[turn.words.length - 1]?.etime
+      : null
+  const endTime = lastWordEtime ?? turn.etime
 
   return {
     type: "turn",
@@ -31,7 +34,7 @@ function turnToNode(turn) {
       speakerId: turn.speaker_id || null,
       startTime,
       endTime,
-      language: turn.language || "",
+      language: turn.language || turn.lang || "",
     },
     content: text ? [{ type: "text", text }] : undefined,
   }
