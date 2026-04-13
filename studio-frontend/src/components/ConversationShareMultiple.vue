@@ -85,13 +85,13 @@
                   type="submit"
                   :icon="'plus'"
                   :label="$t('share_menu.invite_user_button')"
-                  :disabled="!isValidEmail || !enable_inscription"
+                  :disabled="!isValidEmail || !enable_invitation"
                   :title="
-                    enable_inscription
+                    enable_invitation
                       ? null
                       : $t('share_menu.inscription_disabled')
                   "
-                  color="primary"
+                  variant="primary"
                   size="md"
                   class="conversation-share__invite-button" />
               </div>
@@ -295,8 +295,8 @@ export default {
     isValidEmail() {
       return this.searchMemberValue.value.indexOf("@") > 0
     },
-    enable_inscription() {
-      return getEnv("VUE_APP_DISABLE_USER_CREATION") !== "true"
+    enable_invitation() {
+      return getEnv("VUE_APP_DISABLE_USER_INVITATION") !== "true"
     },
   },
   watch: {
@@ -561,17 +561,15 @@ export default {
     gap: 0;
     align-items: stretch;
     width: 100%;
+    border-radius: 4px;
+    overflow: hidden;
   }
 
   &__invite-input-field {
     flex: 1;
     min-width: 0;
     padding: 0.5rem 0.75rem;
-    // border: 1px solid var(--neutral-30);
-    border-top-right-radius: 0px;
-    border-bottom-right-radius: 0px;
-    // border-bottom-left-radius: var(--border-radius-sm);
-    border-right: none;
+    border-radius: 0;
     font-size: 0.875rem;
     color: var(--text-primary);
     background-color: var(--background-primary);
@@ -581,7 +579,8 @@ export default {
     &:focus {
       outline: none;
       border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px var(--primary-soft);
+      position: relative;
+      z-index: 1;
     }
 
     &::placeholder {
@@ -591,8 +590,8 @@ export default {
 
   &__invite-button {
     white-space: nowrap;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
+    border-radius: 0;
+    margin-left: -1px;
   }
 
   &__right-select {
