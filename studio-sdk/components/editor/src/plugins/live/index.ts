@@ -129,7 +129,10 @@ export function createLivePlugin(): EditorPlugin {
           }
         }
 
-        immediateClearPartial()
+        const active = core.activeChannel.value.activeTranslation.value
+        if (active.isSource) {
+          immediateClearPartial()
+        }
       }
 
       function prependFinal(event: LiveFinalEvent, channelId: string): void {
@@ -204,6 +207,9 @@ export function createLivePlugin(): EditorPlugin {
               trStore,
               finalEventToTranslationTurn({ ..._event, words: [] }, _event),
             )
+          if (activeTranslation.languages.includes(_event.language)) {
+            immediateClearPartial()
+          }
         }
       }
 
