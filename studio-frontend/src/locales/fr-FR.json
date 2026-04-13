@@ -76,6 +76,8 @@
     "token_role_label": "Rôle",
     "token_platform_role_label": "Rôles de plateforme",
     "token_actions_label": "Actions",
+    "token_expired": "Expirée",
+    "token_expiring_soon": "Expire bientôt",
     "modal_create": {
       "title": "Créer une clé d'API",
       "expiration_label": "Durée de validité"
