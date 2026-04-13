@@ -1,26 +1,29 @@
 <script setup lang="ts">
-import { computed, useSlots } from 'vue'
+import { computed, useSlots } from "vue"
 
-const props = withDefaults(defineProps<{
-  variant?: 'primary' | 'secondary' | 'ghost'
-  size?: 'sm' | 'md'
-  disabled?: boolean
-  ariaLabel?: string
-}>(), {
-  variant: 'secondary',
-  size: 'md',
-  disabled: false,
-})
+const props = withDefaults(
+  defineProps<{
+    variant?: "primary" | "secondary" | "ghost"
+    size?: "sm" | "md"
+    disabled?: boolean
+    ariaLabel?: string
+  }>(),
+  {
+    variant: "secondary",
+    size: "md",
+    disabled: false,
+  },
+)
 
 const slots = useSlots()
 
 const isIconOnly = computed(() => !!slots.icon && !slots.default)
 
 const classes = computed(() => [
-  'editor-btn',
+  "editor-btn",
   `editor-btn--${props.variant}`,
   `editor-btn--${props.size}`,
-  isIconOnly.value && 'editor-btn--icon-only',
+  isIconOnly.value && "editor-btn--icon-only",
 ])
 </script>
 
@@ -29,8 +32,7 @@ const classes = computed(() => [
     type="button"
     :class="classes"
     :disabled="disabled"
-    :aria-label="ariaLabel"
-  >
+    :aria-label="ariaLabel">
     <span v-if="$slots.icon" class="editor-btn__icon" aria-hidden="true">
       <slot name="icon" />
     </span>
@@ -47,9 +49,11 @@ const classes = computed(() => [
   font-family: var(--font-family);
   font-weight: 500;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: background-color var(--transition-duration), color var(--transition-duration);
+  transition:
+    background-color var(--transition-duration),
+    color var(--transition-duration);
   white-space: nowrap;
 }
 

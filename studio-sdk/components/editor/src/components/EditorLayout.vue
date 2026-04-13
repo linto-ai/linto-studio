@@ -10,6 +10,7 @@ import SubtitleFullscreen from "./SubtitleFullscreen.vue"
 import ChannelSelector from "./ChannelSelector.vue"
 import SidebarSelect from "./atoms/SidebarSelect.vue"
 import { useIsMobile } from "../composables/useIsMobile"
+import { provideTurnSelection } from "../composables/useTurnSelection"
 import { useEditorStore } from "../core"
 import { useI18n } from "../i18n"
 import * as utils from "../utils"
@@ -32,6 +33,8 @@ const activeTurns = computed(
   () => editor.activeChannel.value.activeTranslation.value.turns.value,
 )
 const speakers = editor.speakers.all
+
+provideTurnSelection(activeTurns, speakers, editor)
 
 const channels = computed(() => [...editor.channels.values()])
 const translations = computed(() => [

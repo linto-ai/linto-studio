@@ -29,5 +29,11 @@ declare const fr: {
     readonly 'transcription.empty': "Aucune transcription pour le moment";
     readonly 'transcription.historyStart': "Début de la transcription";
     readonly 'transcription.loadingHistory': "Chargement…";
+    readonly 'selection.count': "sélectionné(s)";
+    readonly 'selection.copyText': "Copier le texte";
+    readonly 'selection.copyWithMetadata': "Copier avec métadonnées";
+    readonly 'selection.cancel': "Annuler";
+    readonly 'selection.select': "Sélectionner {name}";
+    readonly 'selection.deselect': "Désélectionner {name}";
 };
 export default fr;

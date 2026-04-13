@@ -11,6 +11,7 @@ import { useStickToBottom } from "vue-stick-to-bottom"
 import { ArrowDown } from "lucide-vue-next"
 import TranscriptionTurn from "./TranscriptionTurn.vue"
 import TranscriptionEmpty from "./TranscriptionEmpty.vue"
+import SelectionActionBar from "./SelectionActionBar.vue"
 import EditorButton from "./atoms/EditorButton.vue"
 import { useEditorStore } from "../core"
 import { useI18n } from "../i18n"
@@ -121,6 +122,7 @@ onBeforeUnmount(() => {
   <article class="transcription-panel">
     <div ref="scrollContainer" class="scroll-container">
       <div class="turns-container">
+        <SelectionActionBar />
         <div v-if="isLoadingHistory" class="history-loading" role="status">
           <progress />
         </div>

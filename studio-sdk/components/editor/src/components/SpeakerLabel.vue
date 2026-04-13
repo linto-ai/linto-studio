@@ -15,7 +15,11 @@ const props = defineProps<{
 const { t, locale } = useI18n()
 
 const languageName = computed(() =>
-  utils.getLanguageDisplayName(props.language, locale.value, t("language.wildcard")),
+  utils.getLanguageDisplayName(
+    props.language,
+    locale.value,
+    t("language.wildcard"),
+  ),
 )
 
 const formattedTime = computed(() =>
@@ -26,7 +30,7 @@ const isoDuration = computed(() =>
   props.startTime != null ? `PT${props.startTime.toFixed(1)}S` : undefined,
 )
 
-const speakerColor = computed(() => props.speaker?.color ?? 'transparent')
+const speakerColor = computed(() => props.speaker?.color ?? "transparent")
 </script>
 
 <template>
@@ -57,5 +61,8 @@ const speakerColor = computed(() => props.speaker?.color ?? 'transparent')
   font-size: var(--font-size-xs);
   font-family: var(--font-family-mono);
   color: var(--color-text-muted);
+  position: relative;
+  top: 1px;
+  line-height: 1em;
 }
 </style>
