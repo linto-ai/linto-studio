@@ -2,6 +2,7 @@ import { Extension } from "@tiptap/core"
 import { Plugin, PluginKey } from "@tiptap/pm/state"
 import type { EditorState, Transaction } from "@tiptap/pm/state"
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model"
+import { ySyncPluginKey } from "@tiptap/y-tiptap"
 import type { Core, TranslationStore } from "../../../core/types"
 import { docToTurns } from "../utils/docToTurns"
 import type { Turn, Word } from "../../../types/editor"
@@ -40,15 +41,25 @@ export const StoreSync = Extension.create<StoreSyncOptions>({
     return [
       new Plugin({
         key: storeSyncKey,
-        appendTransaction(_transactions, oldState, newState) {
+        appendTransaction(transactions, oldState, newState) {
           if (suppressSync) return null
           if (oldState.doc.eq(newState.doc)) return null
 
-          // Split : ProseMirror duplique tous les attributs (dont l'id) sur la
-          // nouvelle moitié. On détecte les doublons et on réassigne un id frais
-          // avant la synchro, pour que turn:add soit émis correctement.
-          const fixTr = fixDuplicateTurnIds(newState)
-          if (fixTr) return fixTr
+          // Skip fixDuplicateTurnIds for remote Yjs changes:
+          // - The originating client already assigned the correct ID
+          // - Running fixDuplicateTurnIds during _typeChanged (which holds the
+          //   Yjs binding mutex) would create a PM transaction that can't sync
+          //   back to Yjs, causing PM/Yjs divergence
+          // - Generating a different UUID locally would create a Yjs attribute
+          //   conflict with the originating client's UUID
+          const isRemote = transactions.some(
+            (tr) => tr.getMeta(ySyncPluginKey),
+          )
+
+          if (!isRemote) {
+            const fixTr = fixDuplicateTurnIds(newState)
+            if (fixTr) return fixTr
+          }
 
           const translation = getTranslation()
           if (!translation) return null
