@@ -49,6 +49,7 @@ export interface TranslationStore {
   removeTurn(turnId: string): void
   updateWords(turnId: string, words: Word[]): void
   setTurns(turns: Turn[]): void
+  hasTurn(turnId: string): boolean
 }
 
 export interface ChannelStore {

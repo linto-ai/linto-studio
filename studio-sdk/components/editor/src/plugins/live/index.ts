@@ -97,8 +97,7 @@ export function createLivePlugin(): EditorPlugin {
       }
 
       function updateOrCreateTurn(store: TranslationStore, turn: Turn): void {
-        const exists = store.turns.value.some((t) => t.id === turn.id)
-        if (exists) store.updateTurn(turn.id, turn)
+        if (store.hasTurn(turn.id)) store.updateTurn(turn.id, turn)
         else store.addTurn(turn)
       }
 

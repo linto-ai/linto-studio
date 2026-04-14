@@ -1,4 +1,4 @@
-import { ref } from "vue"
+import { ref, triggerRef } from "vue"
 import type { AudioSource, Turn, Word } from "../../types/editor"
 import type { EditorEventMap, TranslationStore } from "../types"
 import { insertTurn } from "../helpers/insertTurn"
@@ -7,6 +7,7 @@ import { patchTurn } from "../helpers/patchTurn"
 import { removeTurn as removeTurnHelper } from "../helpers/removeTurn"
 import { updateTurnWords } from "../helpers/updateTurnWords"
 import { ensureSpeakersFromTurns } from "../helpers/ensureSpeakersFromTurns"
+import { findTurnIndex } from "../helpers/findTurnIndex"
 
 interface TranslationInit {
   id: string
@@ -29,15 +30,16 @@ export function createTranslationStore(
 
   function addTurn(turn: Turn): void {
     speakersEnsure(turn.speakerId)
-    turns.value = insertTurn(turns.value, turn)
+    insertTurn(turns.value, turn)
+    triggerRef(turns)
     emit("turn:add", { turn, translationId: id })
   }
 
   function updateTurn(turnId: string, patch: Partial<Turn>): void {
-    const result = patchTurn(turns.value, turnId, patch)
-    if (!result) return
-    turns.value = result.turns
-    emit("turn:update", { turn: result.updated, translationId: id })
+    const updated = patchTurn(turns.value, turnId, patch)
+    if (!updated) return
+    triggerRef(turns)
+    emit("turn:update", { turn: updated, translationId: id })
   }
 
   function removeTurn(turnId: string): void {
@@ -48,10 +50,10 @@ export function createTranslationStore(
   }
 
   function updateWords(turnId: string, words: Word[]): void {
-    const result = updateTurnWords(turns.value, turnId, words)
-    if (!result) return
-    turns.value = result.turns
-    emit("turn:update", { turn: result.updated, translationId: id })
+    const updated = updateTurnWords(turns.value, turnId, words)
+    if (!updated) return
+    triggerRef(turns)
+    emit("turn:update", { turn: updated, translationId: id })
   }
 
   function prependTurns(newTurns: Turn[]): void {
@@ -65,5 +67,9 @@ export function createTranslationStore(
     emit("translation:sync", { translationId: id })
   }
 
-  return { id, languages, isSource, audio, turns, addTurn, prependTurns, updateTurn, removeTurn, updateWords, setTurns }
+  function hasTurn(turnId: string): boolean {
+    return findTurnIndex(turns.value, turnId) !== -1
+  }
+
+  return { id, languages, isSource, audio, turns, addTurn, prependTurns, updateTurn, removeTurn, updateWords, setTurns, hasTurn }
 }

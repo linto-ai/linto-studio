@@ -1,11 +1,12 @@
 import type { Turn, Word } from "../../types/editor"
+import { findTurnIndex } from "./findTurnIndex"
 
 export function updateTurnWords(
   turns: Turn[],
   turnId: string,
   words: Word[],
-): { turns: Turn[]; updated: Turn } | null {
-  const idx = turns.findIndex((t) => t.id === turnId)
+): Turn | null {
+  const idx = findTurnIndex(turns, turnId)
   if (idx === -1) return null
   const turn = turns[idx]!
   const updated = {
@@ -15,8 +16,6 @@ export function updateTurnWords(
     startTime: words[0]?.startTime ?? turn.startTime,
     endTime: words[words.length - 1]?.endTime ?? turn.endTime,
   }
-  return {
-    turns: turns.map((t, i) => (i === idx ? updated : t)),
-    updated,
-  }
+  turns[idx] = updated
+  return updated
 }
