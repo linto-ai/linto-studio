@@ -1,4 +1,5 @@
 const debug = require("debug")("linto:components:IoHandler:index")
+const jwt = require("jsonwebtoken")
 const Component = require(`../component.js`)
 const socketIO = require("socket.io")
 const { createAdapter } = require("@socket.io/redis-adapter")
@@ -23,28 +24,22 @@ const { sessionSocketAccess, checkSocketOrganizationAccess } = require(
   `${process.cwd()}/components/WebServer/middlewares/access/organization.js`,
 )
 
+const PUBLIC_SESSION_ROOM_PREFIX = "public_session/"
+
 function denySocket(socket) {
   socket.emit("unauthorized")
   socket.disconnect(true)
   return false
 }
 
-function validatePublicSessionToken(socket, orgaId) {
-  const token = socket.handshake?.auth?.token
-  if (!token) return null
+async function validatePublicSessionToken(socket, orgaId) {
+  const auth = await auth_middlewares.checkSocket(socket)
+  if (!auth?.sessionId) return null
+
   try {
-    const jwt = require("jsonwebtoken")
-    const PublicToken = require(
-      `${process.cwd()}/components/WebServer/config/passport/token/public_generator`,
-    )
-    const decoded = jwt.decode(token)
-    if (!decoded?.data?.fromPublic) return null
-    const sessionId = decoded?.data?.fromSession
-    if (!sessionId) return null
+    const decoded = jwt.decode(socket.handshake?.auth?.token)
     if (decoded?.data?.organizationId !== orgaId) return null
-    const validated = PublicToken.validateToken(token, sessionId)
-    if (!validated || validated.data?.organizationId !== orgaId) return null
-    return sessionId
+    return auth.sessionId
   } catch (err) {
     debug(`[Session] Invalid public token: ${err.message}`)
     return null
@@ -198,12 +193,12 @@ class IoHandler extends Component {
           return
         }
 
-        const publicSessionId = validatePublicSessionToken(socket, orgaId)
+        const publicSessionId = await validatePublicSessionToken(socket, orgaId)
         if (!publicSessionId) {
           debug(`[Session] User denied access to org ${orgaId}`)
           return
         }
-        const publicRoom = `public_session/${publicSessionId}`
+        const publicRoom = `${PUBLIC_SESSION_ROOM_PREFIX}${publicSessionId}`
         socket.join(publicRoom)
         socket.publicSessionRoom = publicRoom
       })
@@ -520,7 +515,7 @@ class IoHandler extends Component {
       // see updates about that one session.
       for (const session of payload.updated) {
         this.io.local
-          .to(`public_session/${session.id}`)
+          .to(`${PUBLIC_SESSION_ROOM_PREFIX}${session.id}`)
           .emit(`orga_${orgaId}_${action}`, {
             added: [],
             removed: [],

@@ -11,27 +11,40 @@ module.exports = function () {
   const getRedisClient = () =>
     this.app.components["IoHandler"]?.redisPubClient || null
 
-  const getLastObservedStatus = async (sessionId, channelId) => {
+  const readAllChannelStates = async (keys) => {
+    const result = new Map()
+    if (keys.length === 0) return result
+
     const redis = getRedisClient()
     if (redis) {
-      const cachedStatus = await redis.hGet(
-        REDIS_HASH_KEY,
-        `${sessionId}:${channelId}`,
-      )
-      return cachedStatus || null
+      const values = await redis.hmGet(REDIS_HASH_KEY, keys)
+      keys.forEach((k, i) => result.set(k, values[i] || null))
+      return result
     }
-    const lastEvent = await model.activityLog.getLastChannelEvent(
-      sessionId,
-      channelId,
-    )
-    if (!lastEvent) return null
-    return lastEvent.action === "mount" ? "active" : "inactive"
+
+    for (const key of keys) {
+      const [sessionId, channelId] = key.split(":")
+      const lastEvent = await model.activityLog.getLastChannelEvent(
+        sessionId,
+        channelId,
+      )
+      result.set(
+        key,
+        lastEvent
+          ? lastEvent.action === "mount"
+            ? "active"
+            : "inactive"
+          : null,
+      )
+    }
+    return result
   }
 
-  const recordObservedStatus = async (sessionId, channelId, status) => {
+  const writeAllChannelStates = async (updates) => {
+    if (updates.size === 0) return
     const redis = getRedisClient()
     if (!redis) return
-    await redis.hSet(REDIS_HASH_KEY, `${sessionId}:${channelId}`, status)
+    await redis.hSet(REDIS_HASH_KEY, Object.fromEntries(updates))
   }
 
   this.activityLogClient.on("message", async (topic, message) => {
@@ -45,40 +58,53 @@ module.exports = function () {
 
     if (!Array.isArray(sessions)) return
 
+    const keys = []
     for (const session of sessions) {
       for (const channel of session.channels || []) {
-        try {
-          const lastStatus = await getLastObservedStatus(session.id, channel.id)
-          // Unknown channels default to "inactive": a first observation as
-          // active produces a mount event, slightly off in time but every
-          // subsequent transition is detected exactly.
-          const prevStatus = lastStatus ?? "inactive"
-          const newStatus = channel.streamStatus
+        keys.push(`${session.id}:${channel.id}`)
+      }
+    }
 
-          if (prevStatus === newStatus) continue
+    let stateMap
+    try {
+      stateMap = await readAllChannelStates(keys)
+    } catch (err) {
+      logger.error(`activityLog: failed to read channel states: ${err}`)
+      return
+    }
 
-          await recordObservedStatus(session.id, channel.id, newStatus)
+    const writes = new Map()
+    for (const session of sessions) {
+      for (const channel of session.channels || []) {
+        const key = `${session.id}:${channel.id}`
+        // Unknown channels default to "inactive": a first observation as
+        // active produces a mount event, slightly off in time but every
+        // subsequent transition is detected exactly.
+        const prevStatus = stateMap.get(key) ?? "inactive"
+        const newStatus = channel.streamStatus
 
-          if (newStatus === "active") {
-            LogManager.logChannelEvent(session, channel, "mount").catch((err) =>
-              logger.error(`activityLog: logChannelEvent mount failed: ${err}`),
-            )
-          } else if (prevStatus === "active") {
-            LogManager.logChannelEvent(session, channel, "unmount").catch(
-              (err) =>
-                logger.error(
-                  `activityLog: logChannelEvent unmount failed: ${err}`,
-                ),
-            )
-          }
-        } catch (err) {
-          logger.error(
-            `activityLog: failed to process channel ${session.id}/${channel.id}: ${err}`,
+        if (prevStatus === newStatus) continue
+
+        writes.set(key, newStatus)
+
+        if (newStatus === "active") {
+          LogManager.logChannelEvent(session, channel, "mount").catch((err) =>
+            logger.error(`activityLog: logChannelEvent mount failed: ${err}`),
+          )
+        } else if (prevStatus === "active") {
+          LogManager.logChannelEvent(session, channel, "unmount").catch((err) =>
+            logger.error(`activityLog: logChannelEvent unmount failed: ${err}`),
           )
         }
       }
     }
 
-    debug(`processed ${sessions.length} sessions`)
+    try {
+      await writeAllChannelStates(writes)
+    } catch (err) {
+      logger.error(`activityLog: failed to persist channel states: ${err}`)
+    }
+
+    debug(`processed ${sessions.length} sessions, ${writes.size} transitions`)
   })
 }
