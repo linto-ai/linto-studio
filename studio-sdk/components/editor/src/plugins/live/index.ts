@@ -1,4 +1,4 @@
-import { ref, shallowRef, triggerRef } from "vue"
+import { ref, shallowRef } from "vue"
 import type {
   EditorStore,
   EditorPlugin,
@@ -54,8 +54,8 @@ export function createLivePlugin(): EditorPlugin {
       hasLiveUpdate.value = true
 
       function clearPartial(): void {
+        // shallowRef detects the change on its own, no triggerRef needed
         partial.value = null
-        triggerRef(partial)
       }
 
       function onPartial(event: LivePartialEvent, channelId: string): void {
@@ -75,8 +75,6 @@ export function createLivePlugin(): EditorPlugin {
         } else {
           return
         }
-
-        triggerRef(partial)
       }
 
       let clearPartialTimeout: ReturnType<typeof setTimeout> | null = null
@@ -201,11 +199,17 @@ export function createLivePlugin(): EditorPlugin {
           partial.value = _event.text
         } else if (_event.final) {
           const trStore = channel.translations.get(_event.language)
-          if (trStore)
-            updateOrCreateTurn(
-              trStore,
-              finalEventToTranslationTurn({ ..._event, words: [] }, _event),
+          if (trStore) {
+            const turn = finalEventToTranslationTurn(
+              { ..._event, words: [] },
+              _event,
             )
+            if (trStore === activeTranslation) {
+              updateOrCreateTurn(trStore, turn)
+            } else {
+              trStore.updateOrCreateTurnSilent(turn)
+            }
+          }
           if (activeTranslation.languages.includes(_event.language)) {
             immediateClearPartial()
           }

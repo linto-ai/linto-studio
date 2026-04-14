@@ -132,6 +132,7 @@ onBeforeUnmount(() => {
           class="transcription-empty" />
         <TranscriptionTurn
           v-for="(turn, i) in turns"
+          v-memo="[turn, speakers.get(turn.speakerId ?? ''), hasLiveUpdate && !partialTurn && i === turns.length - 1]"
           :data-turn-id="turn.id"
           :key="turn.id"
           :turn="turn"

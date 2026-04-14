@@ -100,7 +100,7 @@ function syncDocToStore(
   }
 
   // Update the store silently (we already emitted the events)
-  translation.turns.value = mergedTurns
+  translation.replaceTurns(mergedTurns)
 }
 
 function hasTurnChanged(a: Turn, b: Turn): boolean {
