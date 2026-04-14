@@ -33,13 +33,16 @@ function denySocket(socket) {
 }
 
 async function validatePublicSessionToken(socket, orgaId) {
-  const auth = await auth_middlewares.checkSocket(socket)
-  if (!auth?.sessionId) return null
+  const token = socket.handshake?.auth?.token
+  if (!token) return null
 
   try {
-    const decoded = jwt.decode(socket.handshake?.auth?.token)
+    const decoded = jwt.decode(token)
+    if (!decoded?.data?.fromPublic) return null
     if (decoded?.data?.organizationId !== orgaId) return null
-    return auth.sessionId
+
+    const auth = await auth_middlewares.checkSocket(socket)
+    return auth?.sessionId || null
   } catch (err) {
     debug(`[Session] Invalid public token: ${err.message}`)
     return null
