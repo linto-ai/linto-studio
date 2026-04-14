@@ -1,6 +1,6 @@
 type __VLS_Props = {
-    variant?: 'primary' | 'secondary' | 'ghost';
-    size?: 'sm' | 'md';
+    variant?: "primary" | "secondary" | "ghost";
+    size?: "sm" | "md";
     disabled?: boolean;
     ariaLabel?: string;
 };
