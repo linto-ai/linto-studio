@@ -5,10 +5,11 @@ export function patchTurn(
   turns: Turn[],
   turnId: string,
   patch: Partial<Turn>,
-): Turn | null {
+): { turns: Turn[]; updated: Turn } | null {
   const idx = findTurnIndex(turns, turnId)
   if (idx === -1) return null
   const updated = { ...turns[idx]!, ...patch, id: turnId }
-  turns[idx] = updated
-  return updated
+  const next = turns.slice()
+  next[idx] = updated
+  return { turns: next, updated }
 }
