@@ -9,7 +9,7 @@ const LogManager = require(`${process.cwd()}/lib/logger/manager`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const SOCKET_EVENTS = require(`${process.cwd()}/lib/dao/log/socketEvent`)
 
-const { diffSessions, groupSessionsByOrg, handleChannelChanges } = require(
+const { diffSessions, groupSessionsByOrg } = require(
   `${process.cwd()}/components/IoHandler/controllers/SessionHandling`,
 )
 const { watchConversation, refreshInterval } = require(
@@ -27,6 +27,28 @@ function denySocket(socket) {
   socket.emit("unauthorized")
   socket.disconnect(true)
   return false
+}
+
+function validatePublicSessionToken(socket, orgaId) {
+  const token = socket.handshake?.auth?.token
+  if (!token) return null
+  try {
+    const jwt = require("jsonwebtoken")
+    const PublicToken = require(
+      `${process.cwd()}/components/WebServer/config/passport/token/public_generator`,
+    )
+    const decoded = jwt.decode(token)
+    if (!decoded?.data?.fromPublic) return null
+    const sessionId = decoded?.data?.fromSession
+    if (!sessionId) return null
+    if (decoded?.data?.organizationId !== orgaId) return null
+    const validated = PublicToken.validateToken(token, sessionId)
+    if (!validated || validated.data?.organizationId !== orgaId) return null
+    return sessionId
+  } catch (err) {
+    debug(`[Session] Invalid public token: ${err.message}`)
+    return null
+  }
 }
 
 async function checkSocketAccess(socket, roomId) {
@@ -131,13 +153,16 @@ class IoHandler extends Component {
 
       if (
         !this.app.components["BrokerClient"] ||
-        this.app.components["BrokerClient"].deliveryState !== "ready"
+        this.app.components["BrokerClient"].mainState !== "ready"
       ) {
         socket.emit("broker_ko")
       }
 
       socket.on("join_room", async (roomId) => {
-        const { allowed, userId, organizationId } = await checkSocketAccess(socket, roomId)
+        const { allowed, userId, organizationId } = await checkSocketAccess(
+          socket,
+          roomId,
+        )
         if (!allowed) return
         LogManager.logSocketEvent(socket, {
           sessionId: roomId,
@@ -164,20 +189,38 @@ class IoHandler extends Component {
       })
 
       socket.on("watch_organization_session", async (orgaId) => {
-        const { authorized } = await checkSocketOrganizationAccess(socket, orgaId)
-        if (!authorized) {
+        const { authorized } = await checkSocketOrganizationAccess(
+          socket,
+          orgaId,
+        )
+        if (authorized) {
+          this.addSocketInOrga(orgaId, socket, "session")
+          return
+        }
+
+        const publicSessionId = validatePublicSessionToken(socket, orgaId)
+        if (!publicSessionId) {
           debug(`[Session] User denied access to org ${orgaId}`)
           return
         }
-        this.addSocketInOrga(orgaId, socket, "session")
+        const publicRoom = `public_session/${publicSessionId}`
+        socket.join(publicRoom)
+        socket.publicSessionRoom = publicRoom
       })
 
       socket.on("unwatch_organization_session", (orgaId) => {
         this.removeSocketFromOrga(orgaId, socket)
+        if (socket.publicSessionRoom) {
+          socket.leave(socket.publicSessionRoom)
+          delete socket.publicSessionRoom
+        }
       })
 
       socket.on("watch_organization_media", async (orgaId) => {
-        const { authorized } = await checkSocketOrganizationAccess(socket, orgaId)
+        const { authorized } = await checkSocketOrganizationAccess(
+          socket,
+          orgaId,
+        )
         if (!authorized) {
           debug(`[Media] User denied access to org ${orgaId}`)
           return
@@ -203,11 +246,16 @@ class IoHandler extends Component {
         if (!organizationId) return
 
         // First, try normal authentication
-        const { authorized, userId } = await checkSocketOrganizationAccess(socket, organizationId)
+        const { authorized, userId } = await checkSocketOrganizationAccess(
+          socket,
+          organizationId,
+        )
 
         if (!authorized) {
           // Check for public session token
-          const publicToken = socket.handshake?.auth?.publicToken || socket.handshake?.query?.publicToken
+          const publicToken =
+            socket.handshake?.auth?.publicToken ||
+            socket.handshake?.query?.publicToken
           if (publicToken) {
             // Validate token and check if organizationId matches
             const PublicToken = require(
@@ -217,10 +265,21 @@ class IoHandler extends Component {
               // Decode without verification first to get the session ID
               const jwt = require("jsonwebtoken")
               const decoded = jwt.decode(publicToken)
-              if (decoded?.data?.fromSession && decoded?.data?.organizationId === organizationId) {
-                const validated = PublicToken.validateToken(publicToken, decoded.data.fromSession)
-                if (validated && validated.data?.organizationId === organizationId) {
-                  debug(`[LLM] Public session user joined room for org ${organizationId}`)
+              if (
+                decoded?.data?.fromSession &&
+                decoded?.data?.organizationId === organizationId
+              ) {
+                const validated = PublicToken.validateToken(
+                  publicToken,
+                  decoded.data.fromSession,
+                )
+                if (
+                  validated &&
+                  validated.data?.organizationId === organizationId
+                ) {
+                  debug(
+                    `[LLM] Public session user joined room for org ${organizationId}`,
+                  )
                   const orgRoom = `llm/${organizationId}`
                   socket.join(orgRoom)
                   return
@@ -452,15 +511,22 @@ class IoHandler extends Component {
 
   async notify_sessions(roomId, action, sessions) {
     const differences = diffSessions(this.sessionsCache, sessions)
-
-    // Handle channel status changes (log to activityLog)
-    if (differences.channelChanges?.length > 0) {
-      await handleChannelChanges(differences.channelChanges)
-    }
-
     const merged = await groupSessionsByOrg(differences, this.memorySessions)
     Object.keys(merged).forEach((orgaId) => {
-      this.io.local.to(orgaId).emit(`orga_${orgaId}_${action}`, merged[orgaId])
+      const payload = merged[orgaId]
+      this.io.local.to(orgaId).emit(`orga_${orgaId}_${action}`, payload)
+
+      // Public viewers are scoped to a single session room and must only
+      // see updates about that one session.
+      for (const session of payload.updated) {
+        this.io.local
+          .to(`public_session/${session.id}`)
+          .emit(`orga_${orgaId}_${action}`, {
+            added: [],
+            removed: [],
+            updated: [session],
+          })
+      }
     })
     this.sessionsCache = sessions
   }
