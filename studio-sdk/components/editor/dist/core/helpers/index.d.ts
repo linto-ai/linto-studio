@@ -1,6 +1,7 @@
 export { addSpeaker } from './addSpeaker';
 export { ensureSpeaker } from './ensureSpeaker';
 export { updateSpeaker } from './updateSpeaker';
+export { findTurnIndex } from './findTurnIndex';
 export { insertTurn } from './insertTurn';
 export { patchTurn } from './patchTurn';
 export { removeTurn } from './removeTurn';
