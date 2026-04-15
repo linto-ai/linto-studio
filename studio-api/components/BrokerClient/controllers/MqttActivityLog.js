@@ -1,6 +1,3 @@
-const debug = require("debug")(
-  "linto:components:BrokerClient:controllers:MqttActivityLog",
-)
 const logger = require(`${process.cwd()}/lib/logger/logger`)
 const LogManager = require(`${process.cwd()}/lib/logger/manager`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
@@ -47,7 +44,9 @@ module.exports = function () {
     await redis.hSet(REDIS_HASH_KEY, Object.fromEntries(updates))
   }
 
-  this.activityLogClient.on("message", async (topic, message) => {
+  this.sharedClient.on("message", async (topic, message) => {
+    if (topic !== "system/out/sessions/statuses") return
+
     let sessions
     try {
       sessions = JSON.parse(message.toString())
@@ -104,7 +103,5 @@ module.exports = function () {
     } catch (err) {
       logger.error(`activityLog: failed to persist channel states: ${err}`)
     }
-
-    debug(`processed ${sessions.length} sessions, ${writes.size} transitions`)
   })
 }

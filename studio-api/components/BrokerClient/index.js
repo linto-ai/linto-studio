@@ -1,4 +1,3 @@
-const debug = require(`debug`)(`linto:components:BrokerClient:index`)
 const logger = require(`${process.cwd()}/lib/logger/logger`)
 
 const Component = require(`../component.js`)
@@ -54,34 +53,34 @@ class BrokerClient extends Component {
       }
     })
 
-    // Separate client: a single MQTT client subscribing to both a shared
-    // and a non-shared filter on the same topic would receive each message
-    // twice. Round-robin distribution across replicas is what dedupes
-    // activity log writes.
-    this.activityLogSubs = [`$share/studio-api/system/out/sessions/statuses`]
-    this.activityLogClient = new MqttClient({
-      subs: this.activityLogSubs,
-      uniqueId: "studio-api-activity-log",
+    // Separate client for $share/ subscriptions: a single MQTT client
+    // subscribing to both shared and non-shared filters on the same topic
+    // would receive each message twice.
+    this.sharedSubs = [
+      `$share/studio-api/system/out/sessions/statuses`,
+      `$share/studio-api/system/out/sessions/ended`,
+    ]
+    this.sharedClient = new MqttClient({
+      subs: this.sharedSubs,
+      uniqueId: "studio-api-shared",
     })
-    this.activityLogClient.on("ready", () => {
-      this.activityLogState = READY
+    this.sharedClient.on("ready", () => {
+      this.sharedState = READY
     })
-    this.activityLogClient.on("error", (err) => {
-      this.activityLogState = ERROR
+    this.sharedClient.on("error", () => {
+      this.sharedState = ERROR
     })
 
     this.init() // binds controllers, those will handle messages
   }
 
   subscribe(roomId) {
-    debug(`Subscribe to transcriber ${roomId}`)
     for (const sub_template of this.deliverySubTemplates) {
       this.mainClient.subscribe(sub_template(roomId))
     }
   }
 
   unsubscribe(roomId) {
-    debug(`Unsubscribe from transcriber ${roomId}`)
     for (const sub_template of this.deliverySubTemplates) {
       this.mainClient.unsubscribe(sub_template(roomId))
     }
