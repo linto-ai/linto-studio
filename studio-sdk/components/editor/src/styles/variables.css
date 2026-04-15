@@ -39,6 +39,9 @@
   --color-border-light: #e9ecef;
   --color-white: #ffffff;
   --color-black: #000000;
+  --color-danger: #e53935;
+  --color-danger-hover: #c62828;
+  --color-danger-soft: #fdecea;
 
   /* Typography */
   --font-family:
