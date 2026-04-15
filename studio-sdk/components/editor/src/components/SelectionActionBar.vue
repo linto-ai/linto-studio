@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { X } from "lucide-vue-next"
 import EditorButton from "./atoms/EditorButton.vue"
 import CopyButton from "./atoms/CopyButton.vue"
 import { useTurnSelection } from "../composables/useTurnSelection"
@@ -19,14 +18,16 @@ const { t } = useI18n()
       {{ selection.count.value }} {{ t("selection.count") }}
     </span>
     <div class="selection-actions">
-      <CopyButton icon="copy" :copy-fn="selection.copyText">
+      <CopyButton
+        icon="clipboard-type"
+        :copy-fn="selection.copyText"
+        variant="secondary">
         {{ t("selection.copyText") }}
       </CopyButton>
       <CopyButton icon="clipboard-list" :copy-fn="selection.copyWithMetadata">
         {{ t("selection.copyWithMetadata") }}
       </CopyButton>
-      <EditorButton size="sm" variant="ghost" @click="selection.clear()">
-        <template #icon><X :size="14" /></template>
+      <EditorButton variant="transparent" icon="x" @click="selection.clear()">
         {{ t("selection.cancel") }}
       </EditorButton>
     </div>
@@ -35,9 +36,7 @@ const { t } = useI18n()
 
 <style scoped>
 .selection-bar {
-  position: sticky;
-  top: 0;
-  z-index: var(--z-sticky);
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;

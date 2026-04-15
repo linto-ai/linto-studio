@@ -8,10 +8,9 @@ import {
   nextTick,
 } from "vue"
 import { useStickToBottom } from "vue-stick-to-bottom"
-import { ArrowDown } from "lucide-vue-next"
 import TranscriptionTurn from "./TranscriptionTurn.vue"
 import TranscriptionEmpty from "./TranscriptionEmpty.vue"
-import SelectionActionBar from "./SelectionActionBar.vue"
+
 import EditorButton from "./atoms/EditorButton.vue"
 import { useEditorStore } from "../core"
 import { useI18n } from "../i18n"
@@ -122,7 +121,6 @@ onBeforeUnmount(() => {
   <article class="transcription-panel">
     <div ref="scrollContainer" class="scroll-container">
       <div class="turns-container">
-        <SelectionActionBar />
         <div v-if="isLoadingHistory" class="history-loading" role="status">
           <progress />
         </div>
@@ -150,11 +148,10 @@ onBeforeUnmount(() => {
       <Transition name="fade-slide">
         <EditorButton
           v-if="!isAtBottom && (isPlaying || hasLiveUpdate)"
-          size="sm"
+          icon="arrow-down"
           class="resume-scroll-btn"
           :aria-label="t('transcription.resumeScroll')"
           @click="scrollToBottom()">
-          <template #icon><ArrowDown :size="14" /></template>
           {{ t("transcription.resumeScroll") }}
         </EditorButton>
       </Transition>

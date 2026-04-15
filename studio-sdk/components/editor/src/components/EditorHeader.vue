@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { Download, Settings, Users } from 'lucide-vue-next'
 import EditorBadge from './atoms/EditorBadge.vue'
 import EditorButton from './atoms/EditorButton.vue'
 import { useI18n } from '../i18n'
@@ -41,22 +40,24 @@ const formattedTitle = computed(() => {
     <div class="header-right">
       <EditorButton
         v-if="isMobile"
-        variant="ghost"
+        variant="transparent"
+        icon="users"
         :aria-label="t('header.openSidebar')"
-        @click="$emit('toggleSidebar')"
-      >
-        <template #icon><Users :size="16" /></template>
-      </EditorButton>
-      <EditorButton v-if="isMobile" variant="secondary" disabled :aria-label="t('header.export')">
-        <template #icon><Download :size="16" /></template>
-      </EditorButton>
-      <EditorButton v-else variant="secondary" disabled>
-        <template #icon><Download :size="16" /></template>
+        @click="$emit('toggleSidebar')" />
+      <EditorButton
+        v-if="isMobile"
+        variant="tertiary"
+        icon="download"
+        disabled
+        :aria-label="t('header.export')" />
+      <EditorButton v-else variant="tertiary" icon="download" disabled>
         {{ t('header.export') }}
       </EditorButton>
-      <EditorButton variant="ghost" disabled :aria-label="t('header.settings')">
-        <template #icon><Settings :size="16" /></template>
-      </EditorButton>
+      <EditorButton
+        variant="transparent"
+        icon="settings"
+        disabled
+        :aria-label="t('header.settings')" />
     </div>
   </header>
 </template>

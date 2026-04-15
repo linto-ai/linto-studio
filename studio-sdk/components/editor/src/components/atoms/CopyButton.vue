@@ -1,12 +1,18 @@
 <script setup lang="ts">
-import { ref } from "vue"
-import { Copy, ClipboardList, Check } from "lucide-vue-next"
+import { computed, ref } from "vue"
 import EditorButton from "./EditorButton.vue"
+import EditorIcon from "./EditorIcon.vue"
+import { ICON_SIZES } from "./icons"
 
 const props = withDefaults(
   defineProps<{
-    icon?: "copy" | "clipboard-list"
+    icon?: "copy" | "clipboard-list" | "clipboard-type"
     copyFn: () => Promise<void>
+    variant?: "primary" | "secondary" | "tertiary" | "transparent"
+    size?: "sm" | "md" | "lg"
+    disabled?: boolean
+    block?: boolean
+    ariaLabel?: string
   }>(),
   {
     icon: "copy",
@@ -29,16 +35,32 @@ async function onClick() {
   }
 }
 
-defineExpose({ reset: () => { copied.value = false; clearTimeout(timer) } })
+defineExpose({
+  reset: () => {
+    copied.value = false
+    clearTimeout(timer)
+  },
+})
+
+const currentIconName = computed(() => (copied.value ? "check" : props.icon))
+const iconSize = computed(() => ICON_SIZES[props.size ?? "sm"])
 </script>
 
 <template>
-  <EditorButton size="sm" :class="{ 'copy-btn--copied': copied }" @click="onClick">
+  <EditorButton
+    :variant="variant"
+    :size="size"
+    :disabled="disabled"
+    :block="block"
+    :aria-label="ariaLabel"
+    :class="{ 'copy-btn--copied': copied }"
+    @click="onClick">
     <template #icon>
       <Transition name="copy-icon" mode="out-in">
-        <Check v-if="copied" :size="14" />
-        <Copy v-else-if="icon === 'copy'" :size="14" />
-        <ClipboardList v-else :size="14" />
+        <EditorIcon
+          :key="currentIconName"
+          :name="currentIconName"
+          :size="iconSize" />
       </Transition>
     </template>
     <slot />
@@ -52,7 +74,8 @@ defineExpose({ reset: () => { copied.value = false; clearTimeout(timer) } })
 
 .copy-icon-enter-active,
 .copy-icon-leave-active {
-  transition: opacity var(--transition-duration) ease,
+  transition:
+    opacity var(--transition-duration) ease,
     scale var(--transition-duration) ease;
 }
 

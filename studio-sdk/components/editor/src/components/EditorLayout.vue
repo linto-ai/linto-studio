@@ -8,6 +8,7 @@ import AudioPlayer from "./AudioPlayer.vue"
 import SubtitleBanner from "./SubtitleBanner.vue"
 import SubtitleFullscreen from "./SubtitleFullscreen.vue"
 import ChannelSelector from "./ChannelSelector.vue"
+import SelectionActionBar from "./SelectionActionBar.vue"
 import SidebarSelect from "./atoms/SidebarSelect.vue"
 import { useIsMobile } from "../composables/useIsMobile"
 import { provideTurnSelection } from "../composables/useTurnSelection"
@@ -96,6 +97,7 @@ function onTranslationChange(translationId: string) {
       :language="activeTranslationId"
       :is-mobile="isMobile"
       @toggle-sidebar="isSidebarOpen = !isSidebarOpen" />
+    <SelectionActionBar />
     <main class="editor-body">
       <TranscriptionPanel :turns="activeTurns" :speakers="speakers" />
       <SpeakerSidebar

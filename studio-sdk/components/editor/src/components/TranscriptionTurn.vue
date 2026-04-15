@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue"
 import SpeakerLabel from "./SpeakerLabel.vue"
+import EditorCheckbox from "./atoms/EditorCheckbox.vue"
 import { useEditorStore } from "../core"
 import { useTurnSelection } from "../composables/useTurnSelection"
 import { useI18n } from "../i18n"
@@ -39,7 +40,9 @@ const isTurnActive = computed(() => {
 
 const speakerColor = computed(() => props.speaker?.color ?? "transparent")
 
-const isSelected = computed(() => selection.selectedIds.value.has(props.turn.id))
+const isSelected = computed(() =>
+  selection.selectedIds.value.has(props.turn.id),
+)
 
 const checkboxLabel = computed(() => {
   const name = props.speaker?.name ?? ""
@@ -55,7 +58,7 @@ function onHeaderClick(event: MouseEvent) {
   }
 }
 
-function onCheckboxClick(event: MouseEvent) {
+function onCheckboxChange(event: MouseEvent) {
   if (event.shiftKey) {
     selection.selectRange(props.turn.id)
   } else {
@@ -75,12 +78,10 @@ function onCheckboxClick(event: MouseEvent) {
     :data-turn-active="isTurnActive || partial || live || undefined"
     :style="{ '--speaker-color': speakerColor }">
     <div v-if="!partial" class="turn-header" @click="onHeaderClick">
-      <input
-        type="checkbox"
-        class="turn-checkbox"
-        :checked="isSelected"
+      <EditorCheckbox
+        :model-value="isSelected"
         :aria-label="checkboxLabel"
-        @click.stop="onCheckboxClick" />
+        @click.stop="onCheckboxChange" />
       <SpeakerLabel
         :speaker="speaker"
         :start-time="turn.startTime"
@@ -116,17 +117,8 @@ function onCheckboxClick(event: MouseEvent) {
   padding: var(--spacing-xxs) 0;
 }
 
-.turn-header:hover {
+.turn:has(.turn-header:hover) {
   background-color: var(--color-surface-hover);
-}
-
-.turn-checkbox {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-  cursor: pointer;
-  accent-color: var(--color-primary);
-  margin: 0;
 }
 
 .turn-text {
