@@ -1205,6 +1205,7 @@
       "session_ended_link_to_inbox": "Accéder à la bibliothèque des médias",
       "session_not_started_title": "La session n'a pas encore commencé",
       "settings_button": "Paramètres",
+      "delete_session_button": "Supprimer la session",
       "stop_button": "Arrêter et enregistrer la transcription",
       "stop_force_button": "Forcer l'arrêt de la session",
       "stop_session_error_message": "La session n'a pas pu être arrêtée",

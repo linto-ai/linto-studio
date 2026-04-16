@@ -59,7 +59,10 @@ export const sessionModelMixin = {
       }
     },
     isPending() {
-      return this?.session?.status === "ready"
+      return (
+        this?.session?.status === "ready" ||
+        this?.session?.status === "on_schedule"
+      )
     },
     isStarted() {
       return isSessionStarted(this.session)

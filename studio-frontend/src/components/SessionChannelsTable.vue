@@ -83,6 +83,7 @@
       <Button
         v-if="from === 'sessionSettings'"
         @click="connectMicrophone(channelsList.indexOf(element))"
+        :disabled="microphoneDisabled"
         :title="$t('session.channels_list.connect_microphone')"
         :aria-label="$t('session.channels_list.connect_microphone')"
         icon="microphone" />
@@ -110,6 +111,10 @@ export default {
     from: {
       type: String,
       default: "formCreateSession",
+    },
+    microphoneDisabled: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
