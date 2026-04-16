@@ -2,7 +2,7 @@
   <div>
     <GenericTable
       :columns="columns"
-      :content="tokenList"
+      :content="decoratedTokens"
       :loading="loading"
       :sortListKey="sortListKey"
       :sortListDirection="sortListDirection"
@@ -26,7 +26,7 @@
             red
             :value="$t('api_tokens_settings.token_expired')" />
           <Chip
-            v-else-if="isExpiringSoon(element)"
+            v-else-if="element.expiringSoon"
             yellow
             :value="$t('api_tokens_settings.token_expiring_soon')" />
         </div>
@@ -83,10 +83,7 @@ import ModalDeleteToken from "./ModalDeleteToken.vue"
 import ModalRenewToken from "./ModalRenewToken.vue"
 import ModalViewToken from "./ModalViewToken.vue"
 import { formatDateLocale } from "@/tools/formatDate"
-
-const EXPIRING_SOON_RATIO = 0.2
-const EXPIRING_SOON_MIN_MS = 24 * 60 * 60 * 1000
-const EXPIRING_SOON_MAX_MS = 30 * 24 * 60 * 60 * 1000
+import { isTokenExpiringSoon } from "@/tools/isTokenExpiringSoon"
 
 export default {
   props: {
@@ -134,24 +131,12 @@ export default {
         { key: "actions", label: this.$t("api_tokens_settings.token_actions_label"), width: "auto" },
       ]
     },
-    expiringSoonSet() {
+    decoratedTokens() {
       const now = Date.now()
-      const set = new Set()
-      for (const line of this.tokenList) {
-        if (line.expired || !line.createdAt || !line.expiresAt) continue
-        const created = new Date(line.createdAt).getTime()
-        const expires = new Date(line.expiresAt).getTime()
-        if (isNaN(created) || isNaN(expires)) continue
-        const total = expires - created
-        const remaining = expires - now
-        if (total <= 0 || remaining <= 0) continue
-        const threshold = Math.min(
-          EXPIRING_SOON_MAX_MS,
-          Math.max(EXPIRING_SOON_MIN_MS, total * EXPIRING_SOON_RATIO),
-        )
-        if (remaining < threshold) set.add(line.userId)
-      }
-      return set
+      return this.tokenList.map((token) => ({
+        ...token,
+        expiringSoon: isTokenExpiringSoon(token, now),
+      }))
     },
   },
   methods: {
@@ -159,12 +144,9 @@ export default {
     sortBy(event) {
       this.$emit("list_sort_by", event)
     },
-    isExpiringSoon(line) {
-      return this.expiringSoonSet.has(line.userId)
-    },
     rowClass(line) {
       if (line.expired) return "token-row-expired"
-      if (this.isExpiringSoon(line)) return "token-row-expiring"
+      if (line.expiringSoon) return "token-row-expiring"
       return ""
     },
     openViewModal(token) {
