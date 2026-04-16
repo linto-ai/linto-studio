@@ -29,6 +29,12 @@ const fr = {
   'transcription.empty': 'Aucune transcription pour le moment',
   'transcription.historyStart': 'Début de la transcription',
   'transcription.loadingHistory': 'Chargement\u2026',
+  'selection.count': 'sélectionné(s)',
+  'selection.copyText': 'Copier le texte',
+  'selection.copyWithMetadata': 'Copier avec métadonnées',
+  'selection.cancel': 'Annuler',
+  'selection.select': 'Sélectionner {name}',
+  'selection.deselect': 'Désélectionner {name}',
 } as const
 
 export default fr

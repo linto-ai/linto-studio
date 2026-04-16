@@ -1,56 +1,117 @@
 <script setup lang="ts">
-import { computed, useSlots } from 'vue'
+import { computed, useSlots } from "vue"
+import EditorIcon from "./EditorIcon.vue"
+import { resolveIcon, ICON_SIZES } from "./icons"
 
-const props = withDefaults(defineProps<{
-  variant?: 'primary' | 'secondary' | 'ghost'
-  size?: 'sm' | 'md'
-  disabled?: boolean
-  ariaLabel?: string
-}>(), {
-  variant: 'secondary',
-  size: 'md',
-  disabled: false,
-})
+const props = withDefaults(
+  defineProps<{
+    label?: string
+    icon?: string
+    iconRight?: string
+    variant?: "primary" | "secondary" | "tertiary" | "transparent"
+    intent?: "default" | "destructive"
+    size?: "sm" | "md" | "lg"
+    disabled?: boolean
+    loading?: boolean
+    block?: boolean
+    type?: "button" | "submit"
+    ariaLabel?: string
+  }>(),
+  {
+    variant: "tertiary",
+    intent: "default",
+    size: "sm",
+    disabled: false,
+    loading: false,
+    block: false,
+    type: "button",
+  },
+)
 
 const slots = useSlots()
 
-const isIconOnly = computed(() => !!slots.icon && !slots.default)
+const hasResolvedIcon = computed(() => !!resolveIcon(props.icon))
+const hasResolvedIconRight = computed(() => !!resolveIcon(props.iconRight))
+const iconSize = computed(() => ICON_SIZES[props.size])
+
+const isDisabled = computed(() => props.disabled || props.loading)
+const hasLabel = computed(() => !!props.label || !!slots.default)
+const hasLeftIcon = computed(
+  () => props.loading || hasResolvedIcon.value || !!slots.icon,
+)
+const isIconOnly = computed(() => hasLeftIcon.value && !hasLabel.value)
 
 const classes = computed(() => [
-  'editor-btn',
+  "editor-btn",
   `editor-btn--${props.variant}`,
+  `editor-btn--${props.intent}`,
   `editor-btn--${props.size}`,
-  isIconOnly.value && 'editor-btn--icon-only',
+  isIconOnly.value && "editor-btn--icon-only",
+  props.block && "editor-btn--block",
 ])
 </script>
 
 <template>
   <button
-    type="button"
+    :type="type"
     :class="classes"
-    :disabled="disabled"
-    :aria-label="ariaLabel"
-  >
-    <span v-if="$slots.icon" class="editor-btn__icon" aria-hidden="true">
-      <slot name="icon" />
+    :disabled="isDisabled"
+    :aria-disabled="isDisabled"
+    :aria-label="ariaLabel">
+    <EditorIcon v-if="loading" name="spinner" spin :size="iconSize" />
+    <EditorIcon v-else-if="hasResolvedIcon" :name="icon!" :size="iconSize" />
+    <slot v-else-if="$slots.icon" name="icon" />
+    <span v-if="hasLabel" class="editor-btn__label">
+      <slot>{{ label }}</slot>
     </span>
-    <slot />
+    <EditorIcon
+      v-if="hasResolvedIconRight"
+      :name="iconRight!"
+      :size="iconSize" />
+    <slot v-else-if="$slots['icon-right']" name="icon-right" />
   </button>
 </template>
 
 <style scoped>
 .editor-btn {
+  /* Default tokens — overridden by variant/intent/size modifiers */
+  --btn-bg: transparent;
+  --btn-text: var(--color-text-secondary);
+  --btn-border-color: var(--color-border);
+  --btn-hover-bg: var(--color-surface-hover);
+  --btn-hover-text: var(--color-text-primary);
+  --btn-padding-y: 0;
+  --btn-padding-x: var(--spacing-sm);
+  --btn-font-size: var(--font-size-xs);
+  --btn-height: 32px;
+  --btn-gap: var(--spacing-xs);
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-xs);
+  gap: var(--btn-gap);
+  box-sizing: border-box;
+  height: var(--btn-height);
+  padding: var(--btn-padding-y) var(--btn-padding-x);
   font-family: var(--font-family);
+  font-size: var(--btn-font-size);
   font-weight: 500;
-  border: none;
-  border-radius: var(--radius-md);
+  line-height: 1;
+  color: var(--btn-text);
+  background-color: var(--btn-bg);
+  border: 1px solid var(--btn-border-color);
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: background-color var(--transition-duration), color var(--transition-duration);
   white-space: nowrap;
+  transition:
+    background-color var(--transition-duration),
+    color var(--transition-duration),
+    border-color var(--transition-duration);
+}
+
+.editor-btn:hover:not(:disabled) {
+  background-color: var(--btn-hover-bg);
+  color: var(--btn-hover-text);
 }
 
 .editor-btn:focus-visible {
@@ -60,69 +121,101 @@ const classes = computed(() => [
 
 .editor-btn:disabled {
   opacity: 0.5;
-  cursor: default;
+  cursor: not-allowed;
   pointer-events: none;
+}
+
+.editor-btn__label {
+  /* //overflow: hidden;
+  text-overflow: ellipsis; */
+  text-overflow: ellipsis;
+  text-box: cap alphabetic;
 }
 
 /* Sizes */
 .editor-btn--sm {
-  padding: var(--spacing-xs) var(--spacing-sm);
-  font-size: var(--font-size-xs);
-  height: 28px;
+  /* defaults */
 }
 
 .editor-btn--md {
-  padding: var(--spacing-xs) var(--spacing-sm);
-  font-size: var(--font-size-sm);
-  height: 32px;
+  --btn-padding-y: 0;
+  --btn-padding-x: var(--spacing-md);
+  --btn-font-size: var(--font-size-sm);
+  --btn-height: 40px;
 }
 
-/* Icon sizing */
-.editor-btn--sm .editor-btn__icon {
-  display: inline-flex;
-  width: 14px;
-  height: 14px;
-}
-
-.editor-btn--md .editor-btn__icon {
-  display: inline-flex;
-  width: 16px;
-  height: 16px;
+.editor-btn--lg {
+  --btn-padding-y: 0;
+  --btn-padding-x: var(--spacing-md);
+  --btn-font-size: var(--font-size-base);
+  --btn-height: 44px;
 }
 
 /* Icon-only: square */
-.editor-btn--icon-only.editor-btn--sm {
-  width: 28px;
+.editor-btn--icon-only {
+  width: var(--btn-height);
   padding: 0;
 }
 
-.editor-btn--icon-only.editor-btn--md {
-  width: 32px;
-  padding: 0;
+.editor-btn--block {
+  display: flex;
+  width: 100%;
 }
 
-/* Variants */
+/* Variants — default intent */
 .editor-btn--primary {
-  color: var(--color-white);
-  background-color: var(--color-primary);
-}
-
-.editor-btn--primary:hover:not(:disabled) {
-  background-color: var(--color-primary-hover);
-}
-
-.editor-btn--secondary,
-.editor-btn--ghost {
-  color: var(--color-text-secondary);
-  background: none;
+  --btn-bg: var(--color-primary);
+  --btn-text: var(--color-white);
+  --btn-border-color: var(--color-primary);
+  --btn-hover-bg: var(--color-primary-hover);
+  --btn-hover-text: var(--color-white);
 }
 
 .editor-btn--secondary {
-  border: 1px solid var(--color-border);
+  --btn-bg: transparent;
+  --btn-text: var(--color-primary);
+  --btn-border-color: var(--color-primary);
+  --btn-hover-bg: var(--color-primary);
+  --btn-hover-text: var(--color-white);
 }
 
-.editor-btn--secondary:hover:not(:disabled),
-.editor-btn--ghost:hover:not(:disabled) {
-  background-color: var(--color-surface-hover);
+.editor-btn--tertiary {
+  --btn-bg: transparent;
+  --btn-text: var(--color-text-primary);
+  --btn-border-color: var(--color-border);
+  --btn-hover-bg: var(--color-surface-hover);
+  --btn-hover-text: var(--color-text-primary);
+}
+
+.editor-btn--transparent {
+  --btn-bg: transparent;
+  --btn-text: var(--color-text-secondary);
+  --btn-border-color: transparent;
+  --btn-hover-bg: var(--color-surface-hover);
+  --btn-hover-text: var(--color-text-primary);
+}
+
+/* Destructive intent overrides */
+.editor-btn--destructive.editor-btn--primary {
+  --btn-bg: var(--color-danger);
+  --btn-text: var(--color-white);
+  --btn-border-color: var(--color-danger);
+  --btn-hover-bg: var(--color-danger-hover);
+  --btn-hover-text: var(--color-white);
+}
+
+.editor-btn--destructive.editor-btn--secondary {
+  --btn-bg: transparent;
+  --btn-text: var(--color-danger);
+  --btn-border-color: var(--color-danger);
+  --btn-hover-bg: var(--color-danger);
+  --btn-hover-text: var(--color-white);
+}
+
+.editor-btn--destructive.editor-btn--tertiary,
+.editor-btn--destructive.editor-btn--transparent {
+  --btn-text: var(--color-danger);
+  --btn-hover-bg: var(--color-danger-soft);
+  --btn-hover-text: var(--color-danger);
 }
 </style>

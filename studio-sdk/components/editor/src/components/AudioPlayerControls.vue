@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX } from 'lucide-vue-next'
 import EditorButton from './atoms/EditorButton.vue'
 import { useI18n } from '../i18n'
 
@@ -37,40 +36,28 @@ function onVolumeInput(event: Event) {
   <div class="player-controls">
     <div class="controls-left">
       <EditorButton
-        variant="ghost"
-        size="md"
+        variant="transparent"
+        icon="skip-back"
         class="skip-button"
         :aria-label="t('player.skipBack')"
         :disabled="!isReady"
-        @click="emit('skipBack')"
-      >
-        <template #icon><SkipBack :size="16" /></template>
-      </EditorButton>
+        @click="emit('skipBack')" />
 
       <EditorButton
-        variant="ghost"
-        size="md"
+        variant="transparent"
+        :icon="isPlaying ? 'pause' : 'play'"
         class="play-button"
         :aria-label="isPlaying ? t('player.pause') : t('player.play')"
         :disabled="!isReady"
-        @click="emit('togglePlay')"
-      >
-        <template #icon>
-          <Pause v-if="isPlaying" :size="20" />
-          <Play v-else :size="20" />
-        </template>
-      </EditorButton>
+        @click="emit('togglePlay')" />
 
       <EditorButton
-        variant="ghost"
-        size="md"
+        variant="transparent"
+        icon="skip-forward"
         class="skip-button"
         :aria-label="t('player.skipForward')"
         :disabled="!isReady"
-        @click="emit('skipForward')"
-      >
-        <template #icon><SkipForward :size="16" /></template>
-      </EditorButton>
+        @click="emit('skipForward')" />
     </div>
 
     <div class="controls-time">
@@ -86,17 +73,11 @@ function onVolumeInput(event: Event) {
         @mouseleave="showVolumeSlider = false"
       >
         <EditorButton
-          variant="ghost"
-          size="md"
+          variant="transparent"
+          :icon="isMuted ? 'volume-mute' : 'volume'"
           :aria-label="isMuted ? t('player.unmute') : t('player.mute')"
           :disabled="!isReady"
-          @click="emit('toggleMute')"
-        >
-          <template #icon>
-            <VolumeX v-if="isMuted" :size="16" />
-            <Volume2 v-else :size="16" />
-          </template>
-        </EditorButton>
+          @click="emit('toggleMute')" />
         <input
           v-show="showVolumeSlider"
           type="range"
@@ -112,8 +93,7 @@ function onVolumeInput(event: Event) {
       </div>
 
       <EditorButton
-        variant="ghost"
-        size="md"
+        variant="transparent"
         class="speed-button"
         :aria-label="t('player.speed')"
         :disabled="!isReady"
@@ -181,8 +161,8 @@ function onVolumeInput(event: Event) {
 }
 
 .play-button {
-  width: 40px;
-  height: 40px;
+  --btn-height: 40px;
+  --btn-icon-size: 20px;
 }
 
 .speed-button {

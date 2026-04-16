@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { computed } from "vue"
 import SpeakerLabel from "./SpeakerLabel.vue"
+import EditorCheckbox from "./atoms/EditorCheckbox.vue"
 import { useEditorStore } from "../core"
+import { useTurnSelection } from "../composables/useTurnSelection"
+import { useI18n } from "../i18n"
 import * as utils from "../utils"
 import type { Turn, Speaker } from "../types/editor"
 
@@ -13,6 +16,8 @@ const props = defineProps<{
 }>()
 
 const editor = useEditorStore()
+const selection = useTurnSelection()
+const { t } = useI18n()
 
 const hasWords = computed(() => props.turn.words.length > 0)
 
@@ -34,19 +39,53 @@ const isTurnActive = computed(() => {
 })
 
 const speakerColor = computed(() => props.speaker?.color ?? "transparent")
+
+const isSelected = computed(() => selection.isSelected(props.turn.id))
+
+const checkboxLabel = computed(() => {
+  const name = props.speaker?.name ?? ""
+  const key = isSelected.value ? "selection.deselect" : "selection.select"
+  return t(key).replace("{name}", name)
+})
+
+function onHeaderClick(event: MouseEvent) {
+  if (event.shiftKey) {
+    selection.selectRange(props.turn.id)
+  } else {
+    selection.toggle(props.turn.id)
+  }
+}
+
+function onCheckboxChange(event: MouseEvent) {
+  if (event.shiftKey) {
+    selection.selectRange(props.turn.id)
+  } else {
+    selection.toggle(props.turn.id)
+  }
+}
 </script>
 
 <template>
   <section
     class="turn"
-    :class="{ 'turn--active': isTurnActive, 'turn--partial': partial }"
+    :class="{
+      'turn--active': isTurnActive,
+      'turn--partial': partial,
+      'turn--selected': isSelected,
+    }"
     :data-turn-active="isTurnActive || partial || live || undefined"
-    :style="{ '--speaker-color': speakerColor }">
-    <SpeakerLabel
-      v-if="!partial"
-      :speaker="speaker"
-      :start-time="turn.startTime"
-      :language="turn.language" />
+    :style="{ '--speaker-color': speakerColor }"
+    :aria-selected="isSelected">
+    <div v-if="!partial" class="turn-header" @click="onHeaderClick">
+      <EditorCheckbox
+        :model-value="isSelected"
+        :aria-label="checkboxLabel"
+        @click.stop="onCheckboxChange" />
+      <SpeakerLabel
+        :speaker="speaker"
+        :start-time="turn.startTime"
+        :language="turn.language" />
+    </div>
     <p class="turn-text">
       <template v-if="hasWords">
         <template v-for="(word, i) in turn.words" :key="word.id">
@@ -67,9 +106,19 @@ const speakerColor = computed(() => props.speaker?.color ?? "transparent")
   padding: var(--spacing-sm) var(--spacing-lg);
 }
 
-/* .turn + .turn {
-  margin-top: var(--spacing-sm);
-} */
+.turn-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+  user-select: none;
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-xxs) 0;
+}
+
+.turn:has(.turn-header:hover) {
+  background-color: var(--color-surface-hover);
+}
 
 .turn-text {
   margin-top: var(--spacing-xs);
@@ -78,9 +127,16 @@ const speakerColor = computed(() => props.speaker?.color ?? "transparent")
   color: var(--color-text-primary);
 }
 
-.turn--active {
+.turn--selected {
+  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);
+  border-left: 3px solid var(--color-primary);
+  padding-left: calc(var(--spacing-lg) - 3px);
+}
+
+.turn--active:not(.turn--selected) {
   border-left: 3px solid var(--speaker-color);
   background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);
+  padding-left: calc(var(--spacing-lg) - 3px);
 }
 
 .word--active {
@@ -115,6 +171,11 @@ const speakerColor = computed(() => props.speaker?.color ?? "transparent")
 @media (max-width: 767px) {
   .turn {
     padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .turn--selected,
+  .turn--active:not(.turn--selected) {
+    padding-left: calc(var(--spacing-md) - 3px);
   }
 }
 </style>
