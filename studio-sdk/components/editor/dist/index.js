@@ -6505,18 +6505,19 @@ const bc = ["data-turn-active", "aria-selected"], wc = { class: "turn-text" }, S
       }]),
       "data-turn-active": a.value || n.partial || n.live || void 0,
       style: Je({ "--speaker-color": l.value }),
-      "aria-selected": u.value
+      "aria-selected": p(i).hasSelection.value ? u.value : void 0
     }, [
       n.partial ? K("", !0) : (E(), N("div", {
         key: 0,
         class: "turn-header",
         onClick: d
       }, [
-        B(gc, {
+        p(i).hasSelection.value ? (E(), M(gc, {
+          key: 0,
           "model-value": u.value,
           "aria-label": c.value,
           onClick: Pe(h, ["stop"])
-        }, null, 8, ["model-value", "aria-label"]),
+        }, null, 8, ["model-value", "aria-label"])) : K("", !0),
         B(kr, {
           speaker: n.speaker,
           "start-time": n.turn.startTime,
@@ -6538,7 +6539,7 @@ const bc = ["data-turn-active", "aria-selected"], wc = { class: "turn-text" }, S
       ])
     ], 14, bc));
   }
-}), Ri = /* @__PURE__ */ se(Cc, [["__scopeId", "data-v-6bd1511b"]]), xc = {}, _c = {
+}), Ri = /* @__PURE__ */ se(Cc, [["__scopeId", "data-v-a69afe32"]]), xc = {}, _c = {
   viewBox: "0 0 938 604",
   fill: "none",
   xmlns: "http://www.w3.org/2000/svg"

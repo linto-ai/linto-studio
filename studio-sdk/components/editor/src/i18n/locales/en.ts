@@ -33,7 +33,7 @@ const en: Record<keyof typeof fr, string> = {
   'transcription.loadingHistory': 'Loading\u2026',
   'selection.count': 'selected',
   'selection.copyText': 'Copy text',
-  'selection.copyWithMetadata': 'Copy with metadata',
+  'selection.copyWithMetadata': 'Copy with timestamps',
   'selection.cancel': 'Cancel',
   'selection.select': 'Select {name}',
   'selection.deselect': 'Deselect {name}',

@@ -31,7 +31,7 @@ const fr = {
   'transcription.loadingHistory': 'Chargement\u2026',
   'selection.count': 'sélectionné(s)',
   'selection.copyText': 'Copier le texte',
-  'selection.copyWithMetadata': 'Copier avec métadonnées',
+  'selection.copyWithMetadata': 'Copier avec les timestamps',
   'selection.cancel': 'Annuler',
   'selection.select': 'Sélectionner {name}',
   'selection.deselect': 'Désélectionner {name}',

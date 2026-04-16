@@ -75,9 +75,10 @@ function onCheckboxChange(event: MouseEvent) {
     }"
     :data-turn-active="isTurnActive || partial || live || undefined"
     :style="{ '--speaker-color': speakerColor }"
-    :aria-selected="isSelected">
+    :aria-selected="selection.hasSelection.value ? isSelected : undefined">
     <div v-if="!partial" class="turn-header" @click="onHeaderClick">
       <EditorCheckbox
+        v-if="selection.hasSelection.value"
         :model-value="isSelected"
         :aria-label="checkboxLabel"
         @click.stop="onCheckboxChange" />

@@ -5356,7 +5356,7 @@ const Tu = {
   "transcription.loadingHistory": "Chargement…",
   "selection.count": "sélectionné(s)",
   "selection.copyText": "Copier le texte",
-  "selection.copyWithMetadata": "Copier avec métadonnées",
+  "selection.copyWithMetadata": "Copier avec les timestamps",
   "selection.cancel": "Annuler",
   "selection.select": "Sélectionner {name}",
   "selection.deselect": "Désélectionner {name}"
@@ -5393,7 +5393,7 @@ const Tu = {
   "transcription.loadingHistory": "Loading…",
   "selection.count": "selected",
   "selection.copyText": "Copy text",
-  "selection.copyWithMetadata": "Copy with metadata",
+  "selection.copyWithMetadata": "Copy with timestamps",
   "selection.cancel": "Cancel",
   "selection.select": "Select {name}",
   "selection.deselect": "Deselect {name}"
@@ -11489,18 +11489,19 @@ const yy = ["data-turn-active", "aria-selected"], by = { class: "turn-text" }, w
       }]),
       "data-turn-active": a.value || t.partial || t.live || void 0,
       style: Ct({ "--speaker-color": l.value }),
-      "aria-selected": c.value
+      "aria-selected": v(i).hasSelection.value ? c.value : void 0
     }, [
       t.partial ? de("", !0) : (I(), oe("div", {
         key: 0,
         class: "turn-header",
         onClick: d
       }, [
-        H(ny, {
+        v(i).hasSelection.value ? (I(), U(ny, {
+          key: 0,
           "model-value": c.value,
           "aria-label": u.value,
           onClick: Lt(p, ["stop"])
-        }, null, 8, ["model-value", "aria-label"]),
+        }, null, 8, ["model-value", "aria-label"])) : de("", !0),
         H(hh, {
           speaker: t.speaker,
           "start-time": t.turn.startTime,
@@ -11522,7 +11523,7 @@ const yy = ["data-turn-active", "aria-selected"], by = { class: "turn-text" }, w
       ])
     ], 14, yy));
   }
-}), xy = ".turn[data-v-6bd1511b]{padding:var(--spacing-sm) var(--spacing-lg)}.turn-header[data-v-6bd1511b]{display:flex;align-items:center;gap:var(--spacing-sm);cursor:pointer;-webkit-user-select:none;user-select:none;border-radius:var(--radius-sm);padding:var(--spacing-xxs) 0}.turn[data-v-6bd1511b]:has(.turn-header:hover){background-color:var(--color-surface-hover)}.turn-text[data-v-6bd1511b]{margin-top:var(--spacing-xs);font-size:var(--font-size-base);line-height:var(--line-height);color:var(--color-text-primary)}.turn--selected[data-v-6bd1511b]{background-color:color-mix(in srgb,var(--color-primary) 8%,transparent);border-left:3px solid var(--color-primary);padding-left:calc(var(--spacing-lg) - 3px)}.turn--active[data-v-6bd1511b]:not(.turn--selected){border-left:3px solid var(--speaker-color);background-color:color-mix(in srgb,var(--speaker-color) 8%,transparent);padding-left:calc(var(--spacing-lg) - 3px)}.word--active[data-v-6bd1511b]{text-decoration:underline;text-decoration-color:var(--speaker-color);text-decoration-thickness:2px;text-underline-offset:3px;color:var(--speaker-color)}.turn--partial .turn-text[data-v-6bd1511b]{font-style:italic;color:var(--color-text-muted);animation:partial-fade-in-6bd1511b .2s ease}@keyframes partial-fade-in-6bd1511b{0%{opacity:0}to{opacity:1}}@media(prefers-reduced-motion:reduce){.turn--partial .turn-text[data-v-6bd1511b]{animation:none}}@media(max-width:767px){.turn[data-v-6bd1511b]{padding:var(--spacing-sm) var(--spacing-md)}.turn--selected[data-v-6bd1511b],.turn--active[data-v-6bd1511b]:not(.turn--selected){padding-left:calc(var(--spacing-md) - 3px)}}", ja = /* @__PURE__ */ Le(_y, [["styles", [xy]], ["__scopeId", "data-v-6bd1511b"]]), Sy = {}, Cy = {
+}), xy = ".turn[data-v-a69afe32]{padding:var(--spacing-sm) var(--spacing-lg)}.turn-header[data-v-a69afe32]{display:flex;align-items:center;gap:var(--spacing-sm);cursor:pointer;-webkit-user-select:none;user-select:none;border-radius:var(--radius-sm);padding:var(--spacing-xxs) 0}.turn[data-v-a69afe32]:has(.turn-header:hover){background-color:var(--color-surface-hover)}.turn-text[data-v-a69afe32]{margin-top:var(--spacing-xs);font-size:var(--font-size-base);line-height:var(--line-height);color:var(--color-text-primary)}.turn--selected[data-v-a69afe32]{background-color:color-mix(in srgb,var(--color-primary) 8%,transparent);border-left:3px solid var(--color-primary);padding-left:calc(var(--spacing-lg) - 3px)}.turn--active[data-v-a69afe32]:not(.turn--selected){border-left:3px solid var(--speaker-color);background-color:color-mix(in srgb,var(--speaker-color) 8%,transparent);padding-left:calc(var(--spacing-lg) - 3px)}.word--active[data-v-a69afe32]{text-decoration:underline;text-decoration-color:var(--speaker-color);text-decoration-thickness:2px;text-underline-offset:3px;color:var(--speaker-color)}.turn--partial .turn-text[data-v-a69afe32]{font-style:italic;color:var(--color-text-muted);animation:partial-fade-in-a69afe32 .2s ease}@keyframes partial-fade-in-a69afe32{0%{opacity:0}to{opacity:1}}@media(prefers-reduced-motion:reduce){.turn--partial .turn-text[data-v-a69afe32]{animation:none}}@media(max-width:767px){.turn[data-v-a69afe32]{padding:var(--spacing-sm) var(--spacing-md)}.turn--selected[data-v-a69afe32],.turn--active[data-v-a69afe32]:not(.turn--selected){padding-left:calc(var(--spacing-md) - 3px)}}", ja = /* @__PURE__ */ Le(_y, [["styles", [xy]], ["__scopeId", "data-v-a69afe32"]]), Sy = {}, Cy = {
   viewBox: "0 0 938 604",
   fill: "none",
   xmlns: "http://www.w3.org/2000/svg"
