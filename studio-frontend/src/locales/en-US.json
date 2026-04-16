@@ -1208,6 +1208,7 @@
       "session_ended_link_to_inbox": "Go to the media library",
       "session_not_started_title": "The session has not started yet",
       "settings_button": "Settings",
+      "delete_session_button": "Delete session",
       "stop_button": "Stop and save session to library",
       "stop_force_button": "Force stop and save session to library",
       "stop_session_error_message": "The session could not be stopped",
