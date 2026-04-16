@@ -6,6 +6,7 @@ import {
   apiDeleteSession,
   apiGetPublicSession,
   apiGetSessionDataBySessionId,
+  apiAddSessionData,
   apiUpdateSession,
   apiUpdateSessionData,
   apiPatchSession,
@@ -263,10 +264,12 @@ export const sessionMixin = {
           )
         }
       } else if (password) {
-        req = await apiAddSessionData(organizationScope, {
+        req = await apiAddSessionData(this.currentOrganizationScope, {
           sessionId: this.sessionId,
-          password: data.password,
+          password,
         })
+      } else {
+        return
       }
 
       if (req.status === "error") {
@@ -274,13 +277,7 @@ export const sessionMixin = {
           message: this.$i18n.t("session.settings_page.error_update_password"),
           type: "error",
         })
-        return
       }
-
-      this.$store.dispatch("system/addNotification", {
-        message: this.$i18n.t("session.settings_page.success_update_password"),
-        type: "success",
-      })
     },
     async syncWatermarkSettings(
       { frequency, duration, content, pinned, display },

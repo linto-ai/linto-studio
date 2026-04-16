@@ -109,6 +109,24 @@ class ActivityLog extends MongoModel {
     }
   }
 
+  async getLastChannelEvent(sessionId, channelId) {
+    try {
+      const events = await this.mongoRequest(
+        {
+          activity: "channel",
+          source: "mqtt",
+          "session.sessionId": sessionId,
+          "channel.channelId": channelId,
+        },
+        { sort: { timestamp: -1 }, limit: 1 },
+      )
+      return events?.[0] || null
+    } catch (error) {
+      console.error(error)
+      return null
+    }
+  }
+
   async getActiveByVisitorId(visitorId) {
     try {
       const query = {
