@@ -1,5 +1,5 @@
 import {
-  ref,
+  shallowReactive,
   computed,
   watch,
   onMounted,
@@ -15,9 +15,9 @@ import type { EditorStore } from "../core/types"
 import { formatTime } from "../utils/time"
 
 export interface TurnSelection {
-  readonly selectedIds: Ref<Set<string>>
   readonly count: ComputedRef<number>
   readonly hasSelection: ComputedRef<boolean>
+  isSelected(turnId: string): boolean
   toggle(turnId: string): void
   selectRange(turnId: string): void
   clear(): void
@@ -39,20 +39,22 @@ export function provideTurnSelection(
   speakers: Map<string, Speaker>,
   editor: EditorStore,
 ): TurnSelection {
-  const selectedIds = ref(new Set<string>())
+  const selectedIds = shallowReactive(new Map<string, true>())
   let lastToggledId: string | null = null
 
-  const count = computed(() => selectedIds.value.size)
-  const hasSelection = computed(() => selectedIds.value.size > 0)
+  const count = computed(() => selectedIds.size)
+  const hasSelection = computed(() => selectedIds.size > 0)
+
+  function isSelected(turnId: string): boolean {
+    return selectedIds.has(turnId)
+  }
 
   function toggle(turnId: string) {
-    const next = new Set(selectedIds.value)
-    if (next.has(turnId)) {
-      next.delete(turnId)
+    if (selectedIds.has(turnId)) {
+      selectedIds.delete(turnId)
     } else {
-      next.add(turnId)
+      selectedIds.set(turnId, true)
     }
-    selectedIds.value = next
     lastToggledId = turnId
   }
 
@@ -70,27 +72,25 @@ export function provideTurnSelection(
     }
     const start = Math.min(fromIndex, toIndex)
     const end = Math.max(fromIndex, toIndex)
-    const next = new Set(selectedIds.value)
     for (let i = start; i <= end; i++) {
       const id = ids[i]
-      if (id != null) next.add(id)
+      if (id != null) selectedIds.set(id, true)
     }
-    selectedIds.value = next
   }
 
   function clear() {
-    selectedIds.value = new Set()
+    selectedIds.clear()
     lastToggledId = null
   }
 
   async function copyText(): Promise<void> {
-    const selected = turns.value.filter((t) => selectedIds.value.has(t.id))
+    const selected = turns.value.filter((t) => selectedIds.has(t.id))
     const text = selected.map(getTurnText).join("\n\n")
     await navigator.clipboard.writeText(text)
   }
 
   async function copyWithMetadata(): Promise<void> {
-    const selected = turns.value.filter((t) => selectedIds.value.has(t.id))
+    const selected = turns.value.filter((t) => selectedIds.has(t.id))
     const blocks = selected.map((turn) => {
       const speaker = turn.speakerId
         ? speakers.get(turn.speakerId)
@@ -108,13 +108,10 @@ export function provideTurnSelection(
   watch(
     () => turns.value,
     (currentTurns) => {
-      if (selectedIds.value.size === 0) return
+      if (selectedIds.size === 0) return
       const currentIds = new Set(currentTurns.map((t) => t.id))
-      const pruned = new Set(
-        [...selectedIds.value].filter((id) => currentIds.has(id)),
-      )
-      if (pruned.size !== selectedIds.value.size) {
-        selectedIds.value = pruned
+      for (const id of [...selectedIds.keys()]) {
+        if (!currentIds.has(id)) selectedIds.delete(id)
       }
     },
   )
@@ -125,7 +122,7 @@ export function provideTurnSelection(
 
   // Escape to clear
   function onKeydown(e: KeyboardEvent) {
-    if (e.key === "Escape" && selectedIds.value.size > 0) {
+    if (e.key === "Escape" && selectedIds.size > 0) {
       clear()
     }
   }
@@ -141,9 +138,9 @@ export function provideTurnSelection(
   })
 
   const selection: TurnSelection = {
-    selectedIds,
     count,
     hasSelection,
+    isSelected,
     toggle,
     selectRange,
     clear,

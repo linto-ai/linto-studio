@@ -2,9 +2,9 @@ import { Ref, ComputedRef } from 'vue';
 import { Turn, Speaker } from '../types/editor';
 import { EditorStore } from '../core/types';
 export interface TurnSelection {
-    readonly selectedIds: Ref<Set<string>>;
     readonly count: ComputedRef<number>;
     readonly hasSelection: ComputedRef<boolean>;
+    isSelected(turnId: string): boolean;
     toggle(turnId: string): void;
     selectRange(turnId: string): void;
     clear(): void;

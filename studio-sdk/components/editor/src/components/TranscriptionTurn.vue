@@ -40,9 +40,7 @@ const isTurnActive = computed(() => {
 
 const speakerColor = computed(() => props.speaker?.color ?? "transparent")
 
-const isSelected = computed(() =>
-  selection.selectedIds.value.has(props.turn.id),
-)
+const isSelected = computed(() => selection.isSelected(props.turn.id))
 
 const checkboxLabel = computed(() => {
   const name = props.speaker?.name ?? ""
@@ -76,7 +74,8 @@ function onCheckboxChange(event: MouseEvent) {
       'turn--selected': isSelected,
     }"
     :data-turn-active="isTurnActive || partial || live || undefined"
-    :style="{ '--speaker-color': speakerColor }">
+    :style="{ '--speaker-color': speakerColor }"
+    :aria-selected="isSelected">
     <div v-if="!partial" class="turn-header" @click="onHeaderClick">
       <EditorCheckbox
         :model-value="isSelected"
