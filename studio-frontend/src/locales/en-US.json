@@ -75,6 +75,8 @@
     "token_role_label": "Role",
     "token_platform_role_label": "Platform roles",
     "token_actions_label": "Actions",
+    "token_expired": "Expired",
+    "token_expiring_soon": "Expiring soon",
     "modal_create": {
       "title": "Create a new key",
       "expiration_label": "Validity duration"
@@ -558,7 +560,8 @@
     "s": "Second | Seconds",
     "d": "Day | Days",
     "h": "Hour | Hours",
-    "m": "Minute | Minutes"
+    "m": "Minute | Minutes",
+    "y": "Year | Years"
   },
   "error": {
     "server_error": {
