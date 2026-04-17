@@ -163,7 +163,7 @@ export default {
               closable: false,
             })
 
-            let conversationHasBeenCreated = await apiCreateConversation(
+            let creationResult = await apiCreateConversation(
               this.currentOrganizationScope,
               {
                 name: convName,
@@ -196,16 +196,19 @@ export default {
               },
             )
 
-            if (!conversationHasBeenCreated) {
-              this.emitError(
-                this.$i18n.t(
-                  "conversation.conversation_creation_error_multiple_unknown",
-                  {
-                    count: audioFileIndex - 1,
-                    total: total,
-                  },
-                ),
-              )
+            if (!creationResult.success) {
+              this.$store.dispatch("system/removeNotificationById", notifId)
+              const errorMessage =
+                creationResult.errorCode === "FILE_TOO_LARGE"
+                  ? creationResult.errorMessage
+                  : this.$i18n.t(
+                      "conversation.conversation_creation_error_multiple_unknown",
+                      {
+                        count: audioFileIndex - 1,
+                        total: total,
+                      },
+                    )
+              this.emitError(errorMessage)
               this.formSubmitLabel = this.$i18n.t(
                 "conversation.conversation_creation_button.retry",
               )
@@ -254,7 +257,7 @@ export default {
 
           const convName = this.linkFields[2].value
 
-          let conversationHasBeenCreated = await apiCreateConversation(
+          let creationResult = await apiCreateConversation(
             this.currentOrganizationScope,
             {
               name: convName,
@@ -274,7 +277,7 @@ export default {
             },
           )
 
-          if (conversationHasBeenCreated) {
+          if (creationResult.success) {
             this.formState = "success"
             // bus.$emit("set_organization_scope", {
             //   organizationId: this.conversationOrganization.value,
@@ -291,9 +294,11 @@ export default {
               params: { organizationId: this.conversationOrganization.value },
             })
           } else {
-            this.emitError(
-              this.$i18n.t("conversation.conversation_creation_error_unknown"),
-            )
+            const errorMessage =
+              creationResult.errorCode === "FILE_TOO_LARGE"
+                ? creationResult.errorMessage
+                : this.$i18n.t("conversation.conversation_creation_error_unknown")
+            this.emitError(errorMessage)
             this.formSubmitLabel = this.$i18n.t(
               "conversation.conversation_creation_button.retry",
             )

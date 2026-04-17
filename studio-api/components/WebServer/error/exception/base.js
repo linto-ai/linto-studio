@@ -1,17 +1,20 @@
 class StudioError extends Error {
-  constructor(message, err) {
+  constructor(message) {
     super(message)
     this.name = this.constructor.name
-    if (err) this.err = err
   }
 }
 
-function createException(name, type, status, defaultMessage) {
+function createException(name, type, status, defaultMessage, code) {
   const ExceptionClass = class extends StudioError {
-    constructor(message, err) {
-      super(message || defaultMessage, err)
+    constructor(message, extras) {
+      super(message || defaultMessage)
       this.type = type
       this.status = status
+      if (code) this.code = code
+      if (extras && typeof extras === "object") {
+        Object.assign(this, extras)
+      }
     }
   }
   Object.defineProperty(ExceptionClass, "name", { value: name })

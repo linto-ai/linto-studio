@@ -288,6 +288,7 @@
     },
     "acoustic_label": "Acoustic:",
     "audio_file_too_big": "The audio file is too big. The maximum size is 1GB.",
+    "file_too_big": "The file is too large to be uploaded. The maximum allowed size is {maxSize}.",
     "channel": {
       "live_transcription": "Live transcription",
       "offline_transcription": "Offline transcription"

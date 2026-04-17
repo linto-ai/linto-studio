@@ -312,10 +312,15 @@ export async function apiCreateConversation(
       onUploadProgress,
     )
 
-    return req.status == "success"
+    if (req.status === "success") return { success: true }
+    return {
+      success: false,
+      errorCode: req.error?.response?.data?.code,
+      errorMessage: req.message,
+    }
   } catch (e) {
     console.error(e)
-    return false
+    return { success: false }
   }
 }
 

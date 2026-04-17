@@ -13,6 +13,13 @@ const ConversationNoFileUploaded = createException(
   400,
   "No files were uploaded.",
 )
+const ConversationFileTooLarge = createException(
+  "ConversationFileTooLarge",
+  "conversation",
+  413,
+  "File exceeds the maximum allowed size",
+  "FILE_TOO_LARGE",
+)
 const ConversationURLExtractorError = createException(
   "ConversationURLExtractorError",
   "conversation",
@@ -132,6 +139,7 @@ const GenerationNotFound = createException(
 
 module.exports = {
   ConversationNoFileUploaded,
+  ConversationFileTooLarge,
   ConversationURLExtractorError,
   ConversationMetadataRequire,
   ConversationUnsupportedMediaType,
