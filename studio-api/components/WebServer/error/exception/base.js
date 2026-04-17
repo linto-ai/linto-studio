@@ -9,12 +9,12 @@ function createException(name, type, status, defaultMessage, code) {
   const ExceptionClass = class extends StudioError {
     constructor(message, extras) {
       super(message || defaultMessage)
-      this.type = type
-      this.status = status
-      if (code) this.code = code
       if (extras && typeof extras === "object") {
         Object.assign(this, extras)
       }
+      this.type = type
+      this.status = status
+      if (code) this.code = code
     }
   }
   Object.defineProperty(ExceptionClass, "name", { value: name })

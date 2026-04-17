@@ -5,6 +5,10 @@ const { ConversationFileTooLarge } = require("./exception/conversation")
 
 const JWT_DEFAULT_EXCEPTION = "UnauthorizedError" // Default JWT exception
 
+const MAX_PAYLOAD_BYTES =
+  bytes.parse(process.env.EXPRESS_SIZE_FILE_MAX) || 500 * 1024 * 1024
+const MAX_PAYLOAD_LABEL = bytes.format(MAX_PAYLOAD_BYTES)
+
 function buildErrorBody(err) {
   const body = { message: err.message }
   if (err.code) body.code = err.code
@@ -16,11 +20,9 @@ function buildErrorBody(err) {
 let init = function (webserver) {
   webserver.express.use(function (err, req, res, next) {
     if (err && err.type === "entity.too.large") {
-      const maxSizeBytes =
-        bytes.parse(process.env.EXPRESS_SIZE_FILE_MAX) || 500 * 1024 * 1024
       err = new ConversationFileTooLarge(
-        `Payload exceeds the maximum allowed size of ${bytes.format(maxSizeBytes)}`,
-        { maxSize: bytes.format(maxSizeBytes), maxSizeBytes },
+        `Payload exceeds the maximum allowed size of ${MAX_PAYLOAD_LABEL}`,
+        { maxSize: MAX_PAYLOAD_LABEL, maxSizeBytes: MAX_PAYLOAD_BYTES },
       )
     }
 
