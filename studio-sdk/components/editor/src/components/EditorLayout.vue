@@ -8,13 +8,11 @@ import AudioPlayer from "./AudioPlayer.vue"
 import SubtitleBanner from "./SubtitleBanner.vue"
 import SubtitleFullscreen from "./SubtitleFullscreen.vue"
 import ChannelSelector from "./ChannelSelector.vue"
+import TranslationSelector from "./TranslationSelector.vue"
 import SelectionActionBar from "./SelectionActionBar.vue"
-import SidebarSelect from "./atoms/SidebarSelect.vue"
 import { useIsMobile } from "../composables/useIsMobile"
 import { provideTurnSelection } from "../composables/useTurnSelection"
 import { useEditorStore } from "../core"
-import { useI18n } from "../i18n"
-import * as utils from "../utils"
 
 const props = withDefaults(
   defineProps<{
@@ -26,7 +24,6 @@ const props = withDefaults(
 )
 
 const editor = useEditorStore()
-const { t, locale } = useI18n()
 const { isMobile } = useIsMobile()
 const isSidebarOpen = ref(false)
 
@@ -69,15 +66,6 @@ watch(
 if (editor.audio) {
   editor.audio.setSeekHandler((t) => audioPlayerRef.value?.seekTo(t))
 }
-
-const translationItems = computed(() =>
-  utils.buildTranslationItems(
-    translations.value,
-    locale.value,
-    t("sidebar.originalLanguage"),
-    t("language.wildcard"),
-  ),
-)
 
 function onChannelChange(channelId: string) {
   editor.setActiveChannel(channelId)
@@ -148,12 +136,11 @@ function onTranslationChange(translationId: string) {
         :channels="channels"
         :selected-channel-id="editor.activeChannelId.value"
         @update:selected-channel-id="onChannelChange" />
-      <SidebarSelect
+      <TranslationSelector
         v-if="translations.length > 1"
-        :items="translationItems"
-        :selected-value="activeTranslationId"
-        :ariaLabel="t('sidebar.translationLabel')"
-        @update:selected-value="onTranslationChange" />
+        :translations="translations"
+        :selected-translation-id="activeTranslationId"
+        @update:selected-translation-id="onTranslationChange" />
     </div>
   </div>
 </template>

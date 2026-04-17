@@ -1,15 +1,13 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import SpeakerIndicator from './atoms/SpeakerIndicator.vue'
 import SwitchToggle from './atoms/SwitchToggle.vue'
-import SidebarSelect from './atoms/SidebarSelect.vue'
 import ChannelSelector from './ChannelSelector.vue'
+import TranslationSelector from './TranslationSelector.vue'
 import { useI18n } from '../i18n'
 import { useEditorStore } from '../core'
-import * as utils from "../utils"
 import type { Speaker } from '../types/editor'
 
-const props = defineProps<{
+defineProps<{
   speakers: Speaker[]
   channels: { id: string; name: string }[]
   selectedChannelId: string
@@ -23,11 +21,7 @@ defineEmits<{
 }>()
 
 const editor = useEditorStore()
-const { t, locale } = useI18n()
-
-const translationItems = computed(() =>
-  utils.buildTranslationItems(props.translations, locale.value, t('sidebar.originalLanguage'), t('language.wildcard'))
-)
+const { t } = useI18n()
 </script>
 
 <template>
@@ -42,11 +36,10 @@ const translationItems = computed(() =>
     </section>
     <section v-if="translations.length > 1" class="sidebar-section sidebar-section--selector">
       <h2 class="sidebar-title">{{ t('sidebar.translation') }}</h2>
-      <SidebarSelect
-        :items="translationItems"
-        :selected-value="selectedTranslationId"
-        :ariaLabel="t('sidebar.translationLabel')"
-        @update:selected-value="$emit('update:selectedTranslationId', $event)"
+      <TranslationSelector
+        :translations="translations"
+        :selected-translation-id="selectedTranslationId"
+        @update:selected-translation-id="$emit('update:selectedTranslationId', $event)"
       />
     </section>
     <section v-if="editor.subtitle" class="sidebar-section">
