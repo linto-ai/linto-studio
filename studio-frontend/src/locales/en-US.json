@@ -5,7 +5,7 @@
     "http_method_label": "Method",
     "http_endpoint_label": "URL",
     "http_status_label": "Status",
-    "organization_name_label": "Organization",
+    "organization_name_label": "Organisation",
     "organization_role_label": "Role",
     "user_label": "User",
     "user_filter_label": "Filter by a user",
@@ -28,7 +28,7 @@
     "columns": {
       "name": "Name",
       "status": "Status",
-      "organization": "Organization",
+      "organization": "Organisation",
       "visibility": "Visibility",
       "start_date": "Start",
       "end_date": "Scheduled end",
@@ -36,7 +36,7 @@
     },
     "visibility": {
       "private": "Private",
-      "organization": "Organization",
+      "organization": "Organisation",
       "public": "Public",
       "user": "User"
     },
@@ -121,8 +121,8 @@
     "account_title": "My account",
     "account_information": "Account information",
     "billing": "Billing",
-    "organization_information": "Organization information",
-    "organization_members": "Organization members",
+    "organization_information": "Organisation information",
+    "organization_members": "Organisation members",
     "preferences": "Preferences",
     "notifications": "Notifications",
     "tags": "Topics",
@@ -135,11 +135,11 @@
       "activities": "Activity log",
       "home": "Home",
       "users": "Users",
-      "organisations": "Organizations",
+      "organisations": "Organisations",
       "tokens": "Api keys",
       "transcriberProfiles": "Transcriber Profiles",
       "sessions": "Sessions",
-      "back_to_org": "Back to organization"
+      "back_to_org": "Back to organisation"
     },
     "activity_list": {
       "title": "Activity log"
@@ -163,8 +163,8 @@
         "duration_title": "Transcribed media duration (hours)"
       },
       "filters": {
-        "organization": "Organization",
-        "all_organizations": "All Organizations",
+        "organization": "Organisation",
+        "all_organizations": "All Organisations",
         "start_date": "From",
         "start_date_placeholder": "dd/mm/yyyy",
         "end_date": "To",
@@ -179,11 +179,11 @@
       "remove_user_button": "Delete a user | Delete {count} users"
     },
     "organisation_list": {
-      "title": "Organizations",
-      "add_organisation_button": "Add an organization",
-      "personal_organizations_shown": "Personal organizations shown",
-      "personal_organizations_hidden": "Personal organizations hidden",
-      "remove_organisation_button": "Delete an organization | Delete {count} organizations"
+      "title": "Organisations",
+      "add_organisation_button": "Add an organisation",
+      "personal_organizations_shown": "Personal organisations shown",
+      "personal_organizations_hidden": "Personal organisations hidden",
+      "remove_organisation_button": "Delete an organisation | Delete {count} organisations"
     },
     "token_list": {
       "title": "API Keys",
@@ -214,7 +214,7 @@
       "options_title": "Options",
       "credentials_title": "Credentials",
       "warning_global": {
-        "line_1": "This profile will be visible in all organizations."
+        "line_1": "This profile will be visible in all organisations."
       },
       "amazon_certificate_label": "Certificate (.crt)",
       "amazon_private_key_label": "Private Key (.pem, PKCS#8)",
@@ -249,7 +249,7 @@
       "bulk_remove_success_notification": "Profiles successfully deleted",
       "bulk_remove_error_notification": "An error occurred while deleting profiles",
       "warning_global": {
-        "line_1": "Listed transcriber profiles are enabled for all organizations."
+        "line_1": "Listed transcriber profiles are enabled for all organisations."
       },
       "all_profiles_shown": "All profiles are shown",
       "global_profiles_shown": "Only global profiles are shown",
@@ -260,12 +260,12 @@
     "activities": "Activity log",
     "backoffice": "Backoffice",
     "createConversation": "Create a conversation",
-    "createorganization": "Create an organization",
-    "createOrganization": "Create an organization",
+    "createorganization": "Create an organisation",
+    "createOrganization": "Create an organisation",
     "createSession": "Create a session",
     "explore": "Inbox",
-    "favorites": "Favorites",
-    "organizations": "Organizations",
+    "favorites": "Favourites",
+    "organizations": "Organisations",
     "publish": "Publish",
     "quickSession": "Quick session",
     "quickSession_microphone": "Recording",
@@ -444,7 +444,7 @@
       "diarization_label": "Speakers diarization",
       "language_label": "Language",
       "number_of_speaker_label": "Number of speakers",
-      "player_error": "An error has occurred while initializing player.",
+      "player_error": "An error has occurred while initialising player.",
       "punctuation_disabled": "Disabled",
       "punctuation_label": "Punctuation",
       "punctuation_value_whisper": "Automatic"
@@ -457,9 +457,9 @@
     "transcription_service_list_empty": "No transcription service available",
     "transcription_service_title": "Transcription AI selection",
     "turn_cant_merge": "There are too many characters in the turn to merge it",
-    "turn_sync_error_title": "The turn is not well synchronized",
+    "turn_sync_error_title": "The turn is not well synchronised",
     "websocket_error_content": "Document update failed, save your change and reload the page.",
-    "websocket_error_title": "Synchronization error."
+    "websocket_error_title": "Synchronisation error."
   },
   "conversation_creation": {
     "tabs": {
@@ -513,9 +513,9 @@
     "rights": {
       "title": "Media rights",
       "owner_label": "Media owner",
-      "orga_right_label": "Rights of other members of the organization",
-      "orga_right_update_success": "The rights for members of the organization have been updated.",
-      "orga_right_update_error": "An error has occurred, the rights for organization members have not been modified"
+      "orga_right_label": "Rights of other members of the organisation",
+      "orga_right_update_success": "The rights for members of the organisation have been updated.",
+      "orga_right_update_error": "An error has occurred, the rights for organisation members have not been modified"
     },
     "audio": {
       "file_label_inline": "Audio file",
@@ -538,9 +538,9 @@
     "first_name_label": "First name",
     "image_label": "Image (.png, .jpg) :",
     "last_name_label": "Last name",
-    "organization_description": "Create and share your transcripts, invite collaborators within organizations.",
-    "organization_name_label": "One last step : please name your first organization, you can create others later",
-    "organization_title": "Name your organization",
+    "organization_description": "Create and share your transcripts, invite collaborators within organisations.",
+    "organization_name_label": "One last step : please name your first organisation, you can create others later",
+    "organization_title": "Name your organisation",
     "password_confirmation_label": "Password confirmation",
     "password_label": "Password",
     "personal_button": "Next",
@@ -643,7 +643,7 @@
       },
       "collaborate": {
         "title": "Collaborate",
-        "desc": "Organize, share and edit your content"
+        "desc": "Organise, share and edit your content"
       },
       "ia": {
         "title": "Trusted AI",
@@ -712,7 +712,7 @@
     "message": "Are you sure you want to delete this topic ?"
   },
   "media_explorer": {
-    "favorite": "Favorite",
+    "favorite": "Favourite",
     "source": {
       "media": "Source: audio file",
       "live": "Source: live"
@@ -789,7 +789,7 @@
     "delete": "Delete"
   },
   "modal_create_organization": {
-    "title": "Create new organization",
+    "title": "Create new organisation",
     "label_name": "Name",
     "action_btn": "Create"
   },
@@ -807,7 +807,7 @@
     "notif_delete_error": "An error occurred while deleting the transcriber profile",
     "notif_fetch_error": "An error occurred while loading the transcriber profile",
     "platform_global": "Platform (global)",
-    "organization_tooltip": "Select organization",
+    "organization_tooltip": "Select organisation",
     "type_tooltip": "Transcription engine",
     "security_level_tooltip": "Security level"
   },
@@ -818,19 +818,19 @@
     "error": "An error occurred while deleting the user | An error occurred while deleting {count} users"
   },
   "modal_delete_multiple_organizations": {
-    "title": "Delete organization | Delete {count} organizations",
-    "content": "Are you sure you want to delete this organization ? | Are you sure you want to delete {count} organizations ?",
+    "title": "Delete organisation | Delete {count} organisations",
+    "content": "Are you sure you want to delete this organisation ? | Are you sure you want to delete {count} organisations ?",
     "action_btn": "Confirm deletion",
-    "error": "An error occurred while deleting the organization | An error occurred while deleting {count} organizations",
-    "loading_notification": "Deleting organization {count} of {total}.",
-    "success_notification": "Organizations successfully deleted"
+    "error": "An error occurred while deleting the organisation | An error occurred while deleting {count} organisations",
+    "loading_notification": "Deleting organisation {count} of {total}.",
+    "success_notification": "Organisations successfully deleted"
   },
   "modal_switch_org": {
-    "title": "Switch organization",
+    "title": "Switch organisation",
     "current": "Current",
-    "create_organization": "Create an organization",
+    "create_organization": "Create an organisation",
     "backoffice": "Backoffice",
-    "favorite": "Set as default organization"
+    "favorite": "Set as default organisation"
   },
   "navigation": {
     "account": {
@@ -843,14 +843,14 @@
       "start": "Transcribe"
     },
     "sections": {
-      "organization": "Organization",
+      "organization": "Organisation",
       "media": "Media",
       "personal": "Personal",
       "my_space": "My space"
     },
     "tabs": {
       "explore": "Inbox",
-      "favorites": "Favorites",
+      "favorites": "Favourites",
       "sessions": "Live transcriptions",
       "shared": "Shared with me",
       "tags": "Topics",
@@ -860,44 +860,44 @@
   },
   "no_orga": {
     "can_create": {
-      "create": "Create an organization",
-      "creating": "Creating organization...",
-      "label": "Name your organization, you can create others later",
-      "subtitle": "Create an organization to create and share your transcriptions.",
+      "create": "Create an organisation",
+      "creating": "Creating organisation...",
+      "label": "Name your organisation, you can create others later",
+      "subtitle": "Create an organisation to create and share your transcriptions.",
       "title": "Discover LinTO Studio again"
     },
     "cannot_create": {
-      "subtitle_line_one": "Your user does not belong to any organization.",
+      "subtitle_line_one": "Your user does not belong to any organisation.",
       "subtitle_line_two": "Please contact an administrator.",
       "title": "Your account is not provisioned"
     },
     "account_created_no_access_title": "Account created, access pending",
     "login_no_access_title": "Login successful, access pending",
-    "no_access_detail": "You do not yet belong to an organization. An administrator must add you to one before you can access the platform's resources.",
-    "no_access_action": "Please contact your organization's administrator to obtain access.",
+    "no_access_detail": "You do not yet belong to an organisation. An administrator must add you to one before you can access the platform's resources.",
+    "no_access_action": "Please contact your organisation's administrator to obtain access.",
     "back_to_login": "Back to login page"
   },
   "organisation": {
     "add_member_description": "Use the search form to find users by their firstname, lastname or email address",
     "add_member_label": "Add a member",
     "create": {
-      "error_already_exists": "An organization with this name already exists",
-      "error_message": "An error occurred while creating the organization",
-      "submit_label": "Create organization",
-      "success_message": "Organization successfully created",
-      "title": "Create organization"
+      "error_already_exists": "An organisation with this name already exists",
+      "error_message": "An error occurred while creating the organisation",
+      "submit_label": "Create organisation",
+      "success_message": "Organisation successfully created",
+      "title": "Create organisation"
     },
     "danger_zone": "Danger zone",
-    "delete_error_message": "An error occurred while deleting the organization",
+    "delete_error_message": "An error occurred while deleting the organisation",
     "delete_modal": {
       "action": "Delete",
-      "content": "Are you sure you want to delete the organization \"{name}\" ? This action cannot be undone. All the organization media will be deleted.",
-      "title": "Delete organization"
+      "content": "Are you sure you want to delete the organisation \"{name}\" ? This action cannot be undone. All the organisation media will be deleted.",
+      "title": "Delete organisation"
     },
-    "delete_organization": "Delete organization",
-    "delete_success_message": "Organization successfully deleted",
+    "delete_organization": "Delete organisation",
+    "delete_success_message": "Organisation successfully deleted",
     "sessions_kpi_link": "Session statistics",
-    "description_description": "The description of your organization",
+    "description_description": "The description of your organisation",
     "description_label": "Description",
     "general_settings": "General settings",
     "kpi": {
@@ -906,7 +906,7 @@
       "session_total_connections": "Number of connections",
       "transcription_count": "Number of transcribed media",
       "transcription_avg_duration": "Average duration of media",
-      "title": "Organization statistics",
+      "title": "Organisation statistics",
       "sessions_title": "Live transcription",
       "media_title": "Media",
       "time_step": {
@@ -917,21 +917,21 @@
     },
     "leave_modal": {
       "action": "Leave",
-      "content": "Are you sure you want to leave the organization \"{name}\" ?",
-      "title": "Leave organization",
-      "success_message": "You have successfully left the organization",
-      "error_message": "An error occurred while leaving the organization"
+      "content": "Are you sure you want to leave the organisation \"{name}\" ?",
+      "title": "Leave organisation",
+      "success_message": "You have successfully left the organisation",
+      "error_message": "An error occurred while leaving the organisation"
     },
     "remove_user_modal": {
-      "action": "Remove user from organization",
-      "content": "Are you sure you want to remove \"{name}\" from the organization?",
-      "title": "Remove user from organization"
+      "action": "Remove user from organisation",
+      "content": "Are you sure you want to remove \"{name}\" from the organisation?",
+      "title": "Remove user from organisation"
     },
-    "name_description": "The name of your organization",
+    "name_description": "The name of your organisation",
     "name_label": "Name",
-    "organization_users": "Organization users",
+    "organization_users": "Organisation users",
     "organization_permissions": {
-      "title": "Organization permissions",
+      "title": "Organisation permissions",
       "upload_permission": "Upload media",
       "summary_permission": "Generate summary",
       "session_permission": "Create session",
@@ -946,50 +946,50 @@
       "apply_button": "Invite all users matching criteria"
     },
     "organization_stats": {
-      "title": "Organization statistics",
+      "title": "Organisation statistics",
       "medias": "Medias"
     },
     "transcriber_profiles": {
       "title": "Transcriber profiles",
-      "no_profiles": "No transcriber profiles link to this organization"
+      "no_profiles": "No transcriber profiles link to this organisation"
     },
-    "update_button": "Update organization",
+    "update_button": "Update organisation",
     "user": {
-      "leave_button": "Leave organization",
+      "leave_button": "Leave organisation",
       "remove_button": "remove",
-      "remove_description": "Revoke member access to the organization",
+      "remove_description": "Revoke member access to the organisation",
       "remove_label": "Remove",
       "remove_label_inline": "\"Remove\" : ",
-      "role_description": "User organization role (Admin, Maintainer, Member)",
+      "role_description": "User organisation role (Admin, Maintainer, Member)",
       "role_label": "Role",
       "role_label_inline": "\"Role\" : "
     },
     "user_description": "User firstname, lastname, email and picture",
     "user_label": "User",
     "user_label_inline": "\"User\" : ",
-    "user_list_description": "The list of the organization users:",
+    "user_list_description": "The list of the organisation users:",
     "user_list_label": "Users list",
     "visibility": {
-      "private_description": ": Avoid external users to search and list your organization",
+      "private_description": ": Avoid external users to search and list your organisation",
       "private_inline": "\"Private\" : ",
-      "public_description": "Allows external users to search and list your organization",
+      "public_description": "Allows external users to search and list your organisation",
       "public_inline": "\"Public\" : "
     },
     "visibility_label": "Visibility"
   },
   "organization_role": {
     "member": "Member",
-    "member_description": "Access and view the organization's media",
+    "member_description": "Access and view the organisation's media",
     "uploader": "Contributor",
     "uploader_description": "Upload new media and start transcription",
     "quick_meeting": "Live contributor",
     "quick_meeting_description": "Start live transcription during a video conference or from a microphone",
     "session_operator": "Producer",
-    "session_operator_description": "Manage and configure advanced live streams for transcription (if available in your organization)",
+    "session_operator_description": "Manage and configure advanced live streams for transcription (if available in your organisation)",
     "maintainer": "Manager",
-    "maintainer_description": "Manage users and their roles within the organization",
+    "maintainer_description": "Manage users and their roles within the organisation",
     "administrator": "Administrator",
-    "administrator_description": "Full permissions over the organization"
+    "administrator_description": "Full permissions over the organisation"
   },
   "publish": {
     "error_first_line": {
@@ -1006,7 +1006,7 @@
     },
     "phase": {
       "processing": "Processing segments",
-      "reducing": "Reducing and summarizing",
+      "reducing": "Reducing and summarising",
       "extracting": "Extracting information",
       "categorizing": "Categorizing"
     },
@@ -1099,7 +1099,7 @@
       "template_category": "Category",
       "template_scope": "Scope",
       "scope_personal": "Personal (visible only to me)",
-      "scope_organization": "Organization (visible to all members)",
+      "scope_organization": "Organisation (visible to all members)",
       "create_button": "Create",
       "create_success": "Template created successfully",
       "create_error": "Error creating template",
@@ -1117,7 +1117,7 @@
       "template_name_placeholder": "Template name",
       "template_description_placeholder": "Optional description",
       "scope_personal_hint": "Visible only to you",
-      "scope_organization_hint": "Visible to the entire organization",
+      "scope_organization_hint": "Visible to the entire organisation",
       "upload_button": "Upload",
       "upload_success": "Template uploaded successfully",
       "upload_error": "Error uploading template",
@@ -1267,7 +1267,7 @@
         "type": "Type",
         "translations": "Translations",
         "diarization": "Diarization",
-        "organization": "Organization"
+        "organization": "Organisation"
       },
       "title": "Selection of transcription profiles",
       "translation_not_available": "No translation available",
@@ -1317,7 +1317,7 @@
       "visibility_private_label": "Private",
       "visibility_private_description": "The transcript can be viewed only by your user and administrators",
       "visibility_organization_label": "Internal",
-      "visibility_organization_description": "The transcript can be viewed by all users of your organization",
+      "visibility_organization_description": "The transcript can be viewed by all users of your organisation",
       "visibility_public_label": "Public",
       "visibility_public_description": "The transcript can be viewed by any user with access to the public link",
       "visibility_title": "Visibility",
@@ -1446,7 +1446,7 @@
     "invite_user_button": "Invite user",
     "no_conversation_selected_content": "Please select at least one media to share.",
     "no_conversation_selected_title": "No media selected",
-    "organization_members": "organization members",
+    "organization_members": "organisation members",
     "user_has_been_invited": "User has been invited",
     "user_right_updated": "User rights have been updated"
   },
@@ -1474,10 +1474,10 @@
         "update_label": "When your media rights are updated"
       },
       "organizations": {
-        "add_label": "When you joined an organization",
-        "del_label": "When you left an organization",
-        "title": "Organizations",
-        "update_label": "When your role in the organization is updated"
+        "add_label": "When you joined an organisation",
+        "del_label": "When you left an organisation",
+        "title": "Organisations",
+        "update_label": "When your role in the organisation is updated"
       },
       "submit_button": "Update notifications",
       "title": "Notifications by email"
@@ -1485,7 +1485,7 @@
     "notif_success": "User information updated",
     "notif_error": "An error occurred while updating user information",
     "organizations_section": {
-      "title": "Organizations"
+      "title": "Organisations"
     },
     "personal_information": "Personal information",
     "picture_label": "Picture",
@@ -1537,12 +1537,12 @@
     "edit_button_label": "Edit"
   },
   "platform_role": {
-    "organization_initiator": "Organization initiator",
-    "organization_initiator_description": "Rights to create new organizations",
+    "organization_initiator": "Organisation initiator",
+    "organization_initiator_description": "Rights to create new organisations",
     "session_operator": "Session operator",
     "session_operator_description": "Rights to manage and configure live streams for transcription",
     "system_administrator": "System administrator",
-    "system_administrator_description": "Rights to manage users and organizations on the platform",
+    "system_administrator_description": "Rights to manage users and organisations on the platform",
     "super_administrator_description": "All rights on the platform",
     "super_administrator": "Super administrator",
     "user": "User",
