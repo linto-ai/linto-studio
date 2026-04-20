@@ -27,6 +27,8 @@ const en: Record<keyof typeof fr, string> = {
   'subtitle.exitFullscreen': 'Exit fullscreen',
   'subtitle.show': 'Show subtitles',
   'subtitle.fontSize': 'Font size',
+  'subtitle.showWatermark': 'Show watermark',
+  'subtitle.pinWatermark': 'Pin watermark',
   'sidebar.subtitle': 'Subtitles',
   'transcription.empty': 'No transcription yet',
   'transcription.historyStart': 'Beginning of transcription',

@@ -14,6 +14,7 @@
     <div class="flex flex1 col">
       <SessionLiveNG
         :session="session"
+        :currentOrganizationScope="currentOrganizationScope"
         :websocketInstance="$apiEventWS" />
     </div>
   </V2Layout>

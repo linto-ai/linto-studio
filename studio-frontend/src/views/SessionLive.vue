@@ -94,6 +94,7 @@
         v-else
         ref="sessionLiveNG"
         :session="session"
+        :currentOrganizationScope="currentOrganizationScope"
         :websocketInstance="websocketInstance"
         :isFromPublicLink="isFromPublicLink" />
 

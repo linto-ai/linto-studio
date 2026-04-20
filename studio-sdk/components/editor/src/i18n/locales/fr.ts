@@ -25,6 +25,8 @@ const fr = {
   'subtitle.exitFullscreen': 'Quitter le plein écran',
   'subtitle.show': 'Afficher les sous-titres',
   'subtitle.fontSize': 'Taille de police',
+  'subtitle.showWatermark': 'Afficher le watermark',
+  'subtitle.pinWatermark': 'Épingler le watermark',
   'sidebar.subtitle': 'Sous-titres',
   'transcription.empty': 'Aucune transcription pour le moment',
   'transcription.historyStart': 'Début de la transcription',

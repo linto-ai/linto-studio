@@ -10,6 +10,7 @@ import processSessionCaptions from "@/tools/processSessionCaptions.js"
 import {
   apiGetSessionChannelTurns,
   apiGetPublicSessionChannelTurns,
+  apiPatchSession,
 } from "@/api/session.js"
 import {
   createLivePlugin,
@@ -30,6 +31,7 @@ export default {
     session: { type: Object, required: true },
     websocketInstance: { type: Object, required: true },
     isFromPublicLink: { type: Boolean, default: false },
+    currentOrganizationScope: { type: String, required: false, default: null },
   },
   data() {
     return {
@@ -37,6 +39,9 @@ export default {
       editor: null,
       offChannelChange: null,
       offScrollTop: null,
+      offWatermarkDisplay: null,
+      offWatermarkPin: null,
+      unwatchWatermarkHost: [],
       sessionStartMs: new Date(this.session.startTime).getTime(),
       activeChannelIndex: null,
       historyOffset: 0,
@@ -69,6 +74,9 @@ export default {
   beforeDestroy() {
     this.offChannelChange?.()
     this.offScrollTop?.()
+    this.offWatermarkDisplay?.()
+    this.offWatermarkPin?.()
+    this.unwatchWatermarkHost.forEach((stop) => stop())
     this.websocketInstance.unSubscribeSessionRoom()
   },
   methods: {
@@ -80,7 +88,25 @@ export default {
       this.livePlugin = createLivePlugin()
       editor.use(this.livePlugin)
 
-      editor.use(createSubtitlePlugin())
+      editor.use(
+        createSubtitlePlugin({
+          watermark: {
+            display: this.displayWatermark,
+            pinned: this.watermarkPinned,
+            content: this.watermarkContent,
+            frequency: this.watermarkFrequency,
+            duration: this.watermarkDuration,
+            tokens: {
+              linto: { src: "/img/linto.svg", alt: "LinTO" },
+              linagora: { src: "/img/linagora.png", alt: "Linagora" },
+            },
+            readonly: this.isFromPublicLink,
+          },
+        }),
+      )
+      if (!this.isFromPublicLink) {
+        this.bindWatermarkSync()
+      }
 
       const sessionForDoc = {
         ...this.session,
@@ -266,6 +292,73 @@ export default {
 
     showMobileSubtitles() {
       this.editor.subtitle.enterFullscreen()
+    },
+
+    async patchWatermark(settings) {
+      const next = {
+        display: settings.display,
+        pinned: settings.pinned,
+        content: settings.content,
+        frequency: settings.frequency,
+        duration: settings.duration,
+      }
+      const req = await apiPatchSession(
+        this.currentOrganizationScope,
+        this.session.id,
+        {
+          meta: { ...this.session.meta, "@watermark": next },
+        },
+      )
+      if (req?.status === "error") {
+        console.error("[SessionLiveNG] watermark PATCH failed", req)
+        return
+      }
+      this.session.meta["@watermark"] = next
+    },
+
+    bindWatermarkSync() {
+      const wm = this.editor.subtitle?.watermark
+      if (!wm) return
+
+      const patchAll = (overrides = {}) =>
+        this.patchWatermark({
+          display: wm.display.value,
+          pinned: wm.pinned.value,
+          content: wm.content.value,
+          frequency: wm.frequency.value,
+          duration: wm.duration.value,
+          ...overrides,
+        })
+
+      this.offWatermarkDisplay = this.editor.on(
+        "watermark:display",
+        ({ display }) => {
+          if (this.displayWatermark === display) return
+          patchAll({ display })
+        },
+      )
+      this.offWatermarkPin = this.editor.on("watermark:pin", ({ pinned }) => {
+        if (this.watermarkPinned === pinned) return
+        patchAll({ pinned })
+      })
+
+      this.unwatchWatermarkHost = [
+        this.$watch("displayWatermark", (v) => {
+          wm.display.value = v
+        }),
+        this.$watch("watermarkPinned", (v) => {
+          wm.pinned.value = v
+        }),
+        this.$watch("watermarkContent", (v) => {
+          wm.content.value = v
+        }),
+        this.$watch("watermarkFrequency", (v) => {
+          wm.frequency.value = v
+        }),
+        this.$watch("watermarkDuration", (v) => {
+          wm.duration.value = v
+        }),
+      ]
     },
   },
 }

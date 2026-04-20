@@ -34,6 +34,7 @@
     <div class="relative flex flex1 col">
       <SessionLiveNG
         ref="sessionLiveNG"
+        :currentOrganizationScope="currentOrganizationScope"
         :session="session"
         :websocketInstance="$apiEventWS" />
 

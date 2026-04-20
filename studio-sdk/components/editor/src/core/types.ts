@@ -30,6 +30,8 @@ export interface EditorEventMap {
   "translation:sync": { translationId: string }
   "channel:sync": { channelId: string }
   "channel:reset": { channelId: string }
+  "watermark:display": { display: boolean }
+  "watermark:pin": { pinned: boolean }
   destroy: void
 }
 
@@ -103,12 +105,28 @@ export interface AudioPluginApi {
 
 // ── Subtitle Plugin API ──────────────────────────────────────────────────
 
+export interface WatermarkToken {
+  src: string
+  alt?: string
+}
+
+export interface WatermarkPluginApi {
+  display: Ref<boolean>
+  pinned: Ref<boolean>
+  content: Ref<string>
+  frequency: Ref<number>
+  duration: Ref<number>
+  tokens: Ref<Record<string, WatermarkToken>>
+  readonly: boolean
+}
+
 export interface SubtitlePluginApi {
   fontSize: Ref<number>
   isVisible: Ref<boolean>
   isFullscreen: Ref<boolean>
   enterFullscreen(): void
   exitFullscreen(): void
+  watermark?: WatermarkPluginApi
 }
 
 // ── Live Plugin API ─────────────────────────────────────────────────────

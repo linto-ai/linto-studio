@@ -63,6 +63,30 @@ const { t } = useI18n()
           @input="editor.subtitle!.fontSize.value = Number(($event.target as HTMLInputElement).value)"
         />
       </label>
+      <div
+        v-if="editor.subtitle.watermark && !editor.subtitle.watermark.readonly"
+        class="subtitle-toggle"
+      >
+        <span class="subtitle-toggle-label">{{ t('subtitle.showWatermark') }}</span>
+        <SwitchToggle
+          v-model="editor.subtitle.watermark.display.value"
+          :disabled="!editor.subtitle.isVisible.value"
+        />
+      </div>
+      <div
+        v-if="
+          editor.subtitle.watermark &&
+          !editor.subtitle.watermark.readonly &&
+          editor.subtitle.watermark.display.value
+        "
+        class="subtitle-toggle"
+      >
+        <span class="subtitle-toggle-label">{{ t('subtitle.pinWatermark') }}</span>
+        <SwitchToggle
+          v-model="editor.subtitle.watermark.pinned.value"
+          :disabled="!editor.subtitle.isVisible.value"
+        />
+      </div>
     </section>
     <section v-if="speakers.length" class="sidebar-section">
       <h2 class="sidebar-title">{{ t('sidebar.speakers') }}</h2>
