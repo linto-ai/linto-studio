@@ -1,5 +1,5 @@
 <template>
-  <linto-editor ref="editor" :locale="$i18n.locale" no-header />
+  <linto-editor ref="editor" :locale="$i18n.locale.split('-')[0]" no-header />
 </template>
 
 <script>

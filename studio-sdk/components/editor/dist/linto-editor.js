@@ -5363,8 +5363,8 @@ const Pu = {
   "subtitle.exitFullscreen": "Quitter le plein écran",
   "subtitle.show": "Afficher les sous-titres",
   "subtitle.fontSize": "Taille de police",
-  "subtitle.showWatermark": "Afficher le watermark",
-  "subtitle.pinWatermark": "Épingler le watermark",
+  "subtitle.showWatermark": "Afficher le filigrane",
+  "subtitle.pinWatermark": "Épingler le filigrane",
   "sidebar.subtitle": "Sous-titres",
   "transcription.empty": "Aucune transcription pour le moment",
   "transcription.historyStart": "Début de la transcription",
@@ -14402,7 +14402,7 @@ const f0 = {
       _: 1
     }));
   }
-}), m0 = ".watermark[data-v-cde9acb9]{position:absolute;right:var(--spacing-md, 16px);bottom:var(--spacing-md, 16px);display:inline-flex;align-items:center;gap:.25em;font-size:1.2rem;color:var(--color-white, #fff);pointer-events:none;line-height:1}.watermark__img[data-v-cde9acb9]{height:1em;vertical-align:middle}.watermark-enter-active[data-v-cde9acb9],.watermark-leave-active[data-v-cde9acb9]{transition:opacity .4s ease,transform .4s ease}.watermark-enter-from[data-v-cde9acb9],.watermark-leave-to[data-v-cde9acb9]{opacity:0;transform:translate(6px,6px)}@media(prefers-reduced-motion:reduce){.watermark-enter-active[data-v-cde9acb9],.watermark-leave-active[data-v-cde9acb9]{transition:opacity .01s;transform:none}}", Lc = /* @__PURE__ */ Pe(v0, [["styles", [m0]], ["__scopeId", "data-v-cde9acb9"]]), g0 = ["height"], y0 = /* @__PURE__ */ X({
+}), m0 = ".watermark[data-v-7d6bdc7d]{position:absolute;right:var(--spacing-md, 16px);bottom:4px;display:inline-flex;align-items:center;gap:.25em;font-size:1.2rem;color:var(--color-white, #fff);pointer-events:none;line-height:1}.watermark__img[data-v-7d6bdc7d]{height:1em;vertical-align:middle}.watermark-enter-active[data-v-7d6bdc7d],.watermark-leave-active[data-v-7d6bdc7d]{transition:opacity .4s ease,transform .4s ease}.watermark-enter-from[data-v-7d6bdc7d],.watermark-leave-to[data-v-7d6bdc7d]{opacity:0;transform:translate(6px,6px)}@media(prefers-reduced-motion:reduce){.watermark-enter-active[data-v-7d6bdc7d],.watermark-leave-active[data-v-7d6bdc7d]{transition:opacity .01s;transform:none}}", Lc = /* @__PURE__ */ Pe(v0, [["styles", [m0]], ["__scopeId", "data-v-7d6bdc7d"]]), g0 = ["height"], y0 = /* @__PURE__ */ X({
   __name: "SubtitleBanner",
   setup(t) {
     const e = yn(), n = _i("canvas"), i = R(() => e.subtitle?.fontSize.value ?? 40), r = R(() => 1.2 * i.value), s = R(() => 2.4 * i.value);

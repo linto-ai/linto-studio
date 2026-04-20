@@ -33,7 +33,7 @@ const parts = computed(() => {
 .watermark {
   position: absolute;
   right: var(--spacing-md, 16px);
-  bottom: var(--spacing-md, 16px);
+  bottom: 4px;
   display: inline-flex;
   align-items: center;
   gap: 0.25em;
@@ -50,7 +50,9 @@ const parts = computed(() => {
 
 .watermark-enter-active,
 .watermark-leave-active {
-  transition: opacity 0.4s ease, transform 0.4s ease;
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s ease;
 }
 
 .watermark-enter-from,
