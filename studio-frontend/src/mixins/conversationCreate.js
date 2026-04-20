@@ -163,7 +163,7 @@ export default {
               closable: false,
             })
 
-            let conversationHasBeenCreated = await apiCreateConversation(
+            let creationResult = await apiCreateConversation(
               this.currentOrganizationScope,
               {
                 name: convName,
@@ -196,14 +196,13 @@ export default {
               },
             )
 
-            if (!conversationHasBeenCreated) {
+            if (!creationResult.success) {
+              this.$store.dispatch("system/removeNotificationById", notifId)
               this.emitError(
-                this.$i18n.t(
+                this.resolveCreationErrorMessage(
+                  creationResult,
                   "conversation.conversation_creation_error_multiple_unknown",
-                  {
-                    count: audioFileIndex - 1,
-                    total: total,
-                  },
+                  { count: audioFileIndex - 1, total: total },
                 ),
               )
               this.formSubmitLabel = this.$i18n.t(
@@ -254,7 +253,7 @@ export default {
 
           const convName = this.linkFields[2].value
 
-          let conversationHasBeenCreated = await apiCreateConversation(
+          let creationResult = await apiCreateConversation(
             this.currentOrganizationScope,
             {
               name: convName,
@@ -274,7 +273,7 @@ export default {
             },
           )
 
-          if (conversationHasBeenCreated) {
+          if (creationResult.success) {
             this.formState = "success"
             // bus.$emit("set_organization_scope", {
             //   organizationId: this.conversationOrganization.value,
@@ -292,7 +291,10 @@ export default {
             })
           } else {
             this.emitError(
-              this.$i18n.t("conversation.conversation_creation_error_unknown"),
+              this.resolveCreationErrorMessage(
+                creationResult,
+                "conversation.conversation_creation_error_unknown",
+              ),
             )
             this.formSubmitLabel = this.$i18n.t(
               "conversation.conversation_creation_button.retry",
@@ -308,6 +310,12 @@ export default {
         message: errorMessage,
         timeout: null,
       })
+    },
+    resolveCreationErrorMessage(creationResult, fallbackKey, fallbackParams) {
+      if (creationResult.errorCode === "FILE_TOO_LARGE") {
+        return creationResult.errorMessage
+      }
+      return this.$i18n.t(fallbackKey, fallbackParams)
     },
     getOrganizationById(id) {
       return this.userOrganizations.find((orga) => orga._id === id)

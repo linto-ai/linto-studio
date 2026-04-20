@@ -1,5 +1,6 @@
 import axios from "axios"
 import { bus } from "@/main.js"
+import i18n from "@/i18n"
 import { getCookie } from "./getCookie"
 
 export async function sendRequest(
@@ -77,6 +78,14 @@ export async function sendRequest(
   } catch (error) {
     if (error.code === "ERR_CANCELED") return
     let errMsg = error?.response?.data?.message || error.code || error.message
+    if (
+      error?.response?.status === 413 &&
+      error?.response?.data?.code === "FILE_TOO_LARGE"
+    ) {
+      errMsg = i18n.t("conversation.file_too_big", {
+        maxSize: error.response.data.maxSize,
+      })
+    }
     if (notif) {
       bus.$emit("app_notif", {
         status: "error",

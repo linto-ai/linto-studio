@@ -5,6 +5,10 @@ const express = require("express")
 const fileUpload = require("express-fileupload")
 const passport = require("passport")
 const bodyParser = require("body-parser")
+const bytes = require("bytes")
+const {
+  ConversationFileTooLarge,
+} = require("./error/exception/conversation")
 const WebServerErrorHandler = require("./error/handler")
 const cookieParser = require("cookie-parser")
 const cookieSession = require("cookie-session")
@@ -83,9 +87,25 @@ class WebServer extends Component {
     )
     this.express.use(cookieParser())
 
+    const fileSizeLimit =
+      bytes.parse(process.env.EXPRESS_SIZE_FILE_MAX) || 500 * 1024 * 1024
+
     this.express.use(
       fileUpload({
         uriDecodeFileNames: true,
+        limits: { fileSize: fileSizeLimit },
+        abortOnLimit: true,
+        limitHandler: (req, res, next) => {
+          next(
+            new ConversationFileTooLarge(
+              `File exceeds the maximum allowed size of ${bytes.format(fileSizeLimit)}`,
+              {
+                maxSize: bytes.format(fileSizeLimit),
+                maxSizeBytes: fileSizeLimit,
+              },
+            ),
+          )
+        },
       }),
     )
 
