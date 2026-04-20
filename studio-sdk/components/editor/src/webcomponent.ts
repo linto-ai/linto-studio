@@ -1,42 +1,51 @@
-import { defineCustomElement, ref, h, watch } from "vue"
-import EditorLayout from "./components/EditorLayout.vue"
-import { createEditorStore, provideEditorStore } from "./core"
-import { createAudioPlugin } from "./plugins/audio"
-import { provideI18n, type Locale } from "./i18n"
+import { defineCustomElement } from "vue"
+// import EditorLayout from "./components/EditorLayout.vue"
+// import { createEditorStore, provideEditorStore } from "./core"
+// // import { createAudioPlugin } from "./plugins/audio"
+// import { provideI18n, type Locale } from "./i18n"
 import fontsStyles from "./styles/fonts.css?inline"
-import styles from "./styles/variables.css?inline"
-import baseStyles from "./styles/base.css?inline"
-import selectStyles from "./styles/sidebar-select.css?inline"
+// import styles from "./styles/variables.css?inline"
+// import baseStyles from "./styles/base.css?inline"
+// import selectStyles from "./styles/sidebar-select.css?inline"
 
-const LintoEditor = defineCustomElement({
-  props: {
-    locale: { type: String, default: "fr" },
-    noHeader: { type: Boolean, default: false },
-  },
-  styles: [styles, baseStyles, selectStyles],
-  setup(props, { expose }) {
-    const locale = ref<Locale>(props.locale as Locale)
-    provideI18n(locale)
+import WebComponent from "./WebComponent.vue"
 
-    watch(() => props.locale, (val) => {
-      locale.value = val as Locale
-    })
+const LintoEditor = defineCustomElement(WebComponent)
 
-    const editor = createEditorStore()
-    editor.use(createAudioPlugin())
-    provideEditorStore(editor)
+// const LintoEditor = defineCustomElement({
+//   props: {
+//     locale: { type: String, default: "fr" },
+//     noHeader: { type: Boolean, default: false },
+//   },
+//   styles: [styles, baseStyles, selectStyles],
+//   setup(props, { slots, expose }) {
+//     console.log(Object.keys(slots), slots.logo)
+//     const locale = ref<Locale>(props.locale as Locale)
+//     provideI18n(locale)
 
-    expose({ editor })
+//     watch(
+//       () => props.locale,
+//       (val) => {
+//         locale.value = val as Locale
+//       },
+//     )
 
-    return () => {
-      if (editor.channels.size) {
-        return h(EditorLayout, { showHeader: !props.noHeader })
-      }
+//     const editor = createEditorStore()
+//     //editor.use(createAudioPlugin())
+//     provideEditorStore(editor)
 
-      return null
-    }
-  },
-})
+//     expose({ editor })
+
+//     return () => {
+//       if (!editor.channels.size) return null
+//       return h(
+//         EditorLayout,
+//         { showHeader: !props.noHeader },
+//         { logo: slots.logo },
+//       )
+//     }
+//   },
+// })
 
 function injectFonts(): void {
   const id = "linto-editor-fonts"
