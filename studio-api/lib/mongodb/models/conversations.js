@@ -7,6 +7,17 @@ const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const TYPE = require(`${process.cwd()}/lib/dao/conversation/types`)
 
+const { toObjectIds } = require("../queryBuilders/ids")
+const {
+  customRightsAllowed,
+  customRightsNotMember,
+  sharedWithUsersAllowed,
+} = require("../queryBuilders/rights")
+const {
+  applyNameTextSearch,
+  applyTagAllFilter,
+} = require("../queryBuilders/filters")
+
 const BSON_MAX_SIZE = 16 * 1024 * 1024
 class ConvoModel extends MongoModel {
   constructor() {
@@ -86,23 +97,6 @@ class ConvoModel extends MongoModel {
     }
   }
 
-  async getConvos() {
-    try {
-      const query = {}
-      const projection = {
-        text: 0,
-        speakers: 0,
-        keywords: 0,
-        highlights: 0,
-      }
-
-      return await this.mongoRequest(query, projection)
-    } catch (error) {
-      console.error(error)
-      throw error
-    }
-  }
-
   async getConversationFromParent(id, projectionArray) {
     try {
       let query = {
@@ -156,10 +150,7 @@ class ConvoModel extends MongoModel {
 
   async getConvsListByIds(convIds, filter) {
     try {
-      convIds = convIds.map((id) => {
-        if (typeof id === "string") return this.getObjectId(id)
-        else return id
-      })
+      convIds = toObjectIds(convIds, this.getObjectId)
       const query = {
         _id: {
           $in: convIds,
@@ -246,36 +237,6 @@ class ConvoModel extends MongoModel {
     return await this.mongoRequest(query, projection)
   }
 
-  async getTagByShare(idUser, filter = undefined) {
-    const query = {
-      sharedWithUsers: {
-        $elemMatch: {
-          userId: idUser.toString(),
-        },
-      },
-    }
-    if (filter.tags) {
-      filter.tags = filter.tags.split(",")
-      query.tags = {
-        $elemMatch: {
-          $in: filter.tags,
-        },
-      }
-    }
-
-    const projection = {
-      tags: 1,
-      name: 1,
-    }
-
-    return await this.mongoRequest(query, projection)
-  }
-
-  // list conversation from an organization id
-  async getConvoByOrga(idOrga) {
-    getByOrga(idOrga)
-  }
-
   async getByOrga(idOrga, projection) {
     try {
       const query = {
@@ -313,31 +274,6 @@ class ConvoModel extends MongoModel {
         sharedWithUsers: 1,
         organization: 1,
       })
-    } catch (err) {
-      console.error(err)
-      return err
-    }
-  }
-
-  async listConversationByOrgaRole(
-    idOrga,
-    role,
-    projection,
-    filter = undefined,
-  ) {
-    try {
-      const query = {
-        "organization.organizationId": idOrga.toString(),
-      }
-      if (!projection) {
-        projection = {
-          text: 0,
-          speakers: 0,
-          keywords: 0,
-          highlights: 0,
-        }
-      }
-      return await this.mongoRequest(query, projection)
     } catch (err) {
       console.error(err)
       return err
@@ -391,23 +327,6 @@ class ConvoModel extends MongoModel {
       let mutableElements = {
         text: [...text],
         last_update: dateTime,
-      }
-
-      return await this.mongoUpdateOne(query, operator, mutableElements)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
-  }
-
-  async updateCategory(_id, category) {
-    try {
-      const operator = "$set"
-      const query = {
-        _id: this.getObjectId(_id),
-      }
-      let mutableElements = {
-        category: [...category],
       }
 
       return await this.mongoUpdateOne(query, operator, mutableElements)
@@ -520,23 +439,8 @@ class ConvoModel extends MongoModel {
         "organization.organizationId": organizationId.toString(),
         "type.mode": TYPE.CANONICAL,
         $or: [
-          {
-            "organization.customRights": {
-              $elemMatch: {
-                userId: userId,
-                right: { $bitsAnySet: desiredAccess },
-              },
-            },
-          },
-          {
-            "organization.customRights": {
-              $not: {
-                $elemMatch: {
-                  userId: userId,
-                },
-              },
-            },
-          },
+          customRightsAllowed(userId, desiredAccess),
+          customRightsNotMember(userId),
         ],
       }
 
@@ -578,20 +482,6 @@ class ConvoModel extends MongoModel {
         }
       }
 
-      const searchConditions = []
-
-      if (filter?.name) {
-        searchConditions.push({
-          name: { $regex: filter.name, $options: "i" },
-        })
-      }
-
-      if (filter?.text) {
-        searchConditions.push({
-          "text.raw_segment": { $regex: filter.text, $options: "i" },
-        })
-      }
-
       if (["pending", "processing", "queued"].includes(filter?.processing)) {
         query["jobs.transcription.state"] = {
           $nin: ["error", "done"],
@@ -603,10 +493,7 @@ class ConvoModel extends MongoModel {
         query["jobs.transcription.state"] = "error"
       }
 
-      if (searchConditions.length > 0) {
-        // Ensure conversations match at least one of the search terms
-        query.$and = [{ $or: searchConditions }]
-      }
+      applyNameTextSearch(query, filter)
 
       if (userRole === ROLES.MEMBER) {
         // A member can only see conversation where he has access
@@ -634,10 +521,7 @@ class ConvoModel extends MongoModel {
     filter = {},
   ) {
     try {
-      convIds = convIds.map((id) => {
-        if (typeof id === "string") return this.getObjectId(id)
-        else return id
-      })
+      convIds = toObjectIds(convIds, this.getObjectId)
 
       let query = {
         _id: {
@@ -645,31 +529,9 @@ class ConvoModel extends MongoModel {
         },
         "type.mode": TYPE.CANONICAL,
         $or: [
-          {
-            "organization.customRights": {
-              $elemMatch: {
-                userId: userId,
-                right: { $bitsAnySet: desiredAccess },
-              },
-            },
-          },
-          {
-            "organization.customRights": {
-              $not: {
-                $elemMatch: {
-                  userId: userId,
-                },
-              },
-            },
-          },
-          {
-            sharedWithUsers: {
-              $elemMatch: {
-                userId: userId,
-                right: { $bitsAnySet: desiredAccess },
-              },
-            },
-          },
+          customRightsAllowed(userId, desiredAccess),
+          customRightsNotMember(userId),
+          sharedWithUsersAllowed(userId, desiredAccess),
         ],
       }
 
@@ -680,29 +542,8 @@ class ConvoModel extends MongoModel {
         }
       }
 
-      if (filter.tags) {
-        query.tags = {
-          $all: filter.tags.split(","),
-        }
-      }
-
-      const searchConditions = []
-      if (filter?.name) {
-        searchConditions.push({
-          name: { $regex: filter.name, $options: "i" },
-        })
-      }
-      if (filter?.text) {
-        searchConditions.push({
-          "text.raw_segment": {
-            $regex: filter.text,
-            $options: "i",
-          },
-        })
-      }
-      if (searchConditions.length > 0) {
-        query.$and = [{ $or: searchConditions }]
-      }
+      applyTagAllFilter(query, filter)
+      applyNameTextSearch(query, filter)
 
       const projection = {
         page: 0,
@@ -725,10 +566,7 @@ class ConvoModel extends MongoModel {
         "jobs.transcription.job_logs": 0,
       }
 
-      convIds = convIds.map((id) => {
-        if (typeof id === "string") return this.getObjectId(id)
-        else return id
-      })
+      convIds = toObjectIds(convIds, this.getObjectId)
 
       let query = {
         _id: {
@@ -737,21 +575,7 @@ class ConvoModel extends MongoModel {
         "type.mode": TYPE.CANONICAL,
       }
 
-      /* ----------------------- SEARCH name OR text ----------------------------- */
-      const favSearch = []
-      if (filter?.text) {
-        favSearch.push({
-          "text.raw_segment": { $regex: filter.text, $options: "i" },
-        })
-      }
-      if (filter?.name) {
-        favSearch.push({
-          name: { $regex: filter.name, $options: "i" },
-        })
-      }
-      if (favSearch.length > 0) {
-        query.$and = [{ $or: favSearch }]
-      }
+      applyNameTextSearch(query, filter)
 
       return await this.mongoAggregatePaginate(query, projection, filter)
     } catch (error) {
@@ -760,97 +584,9 @@ class ConvoModel extends MongoModel {
     }
   }
 
-  async listConvFromAccess(
-    convIds,
-    userId,
-    orgaId,
-    userRole,
-    desiredAccess = 1,
-    filter = {},
-  ) {
-    try {
-      convIds = convIds.map((id) => {
-        if (typeof id === "string") return this.getObjectId(id)
-        else return id
-      })
-
-      let query = {
-        _id: {
-          $in: convIds,
-        },
-        "type.mode": TYPE.CANONICAL,
-        $or: [
-          {
-            sharedWithUsers: {
-              $elemMatch: {
-                userId: userId,
-                right: { $bitsAnySet: desiredAccess },
-              },
-            },
-          },
-        ],
-      }
-
-      if (userRole && userRole > ROLES.UNDEFINED) {
-        query["$or"].push({
-          "organization.organizationId": orgaId,
-          "organization.customRights": {
-            $elemMatch: {
-              userId: userId,
-              right: { $bitsAnySet: desiredAccess },
-            },
-          },
-        })
-        query["$or"].push({
-          "organization.organizationId": orgaId,
-          "organization.customRights": {
-            $not: {
-              $elemMatch: {
-                userId: userId,
-              },
-            },
-          },
-        })
-
-        if (userRole === ROLES.MEMBER)
-          // A member can only see conversation where he has access
-          query["$or"][2]["organization.membersRight"] = {
-            $bitsAnySet: desiredAccess,
-          }
-      }
-
-      /* ------------------------ TAG & SEARCH filters --------------------------- */
-      if (filter.tags) {
-        query.tags = { $all: filter.tags.split(",") }
-      }
-
-      const accSearch = []
-      if (filter?.name)
-        accSearch.push({ name: { $regex: filter.name, $options: "i" } })
-      if (filter?.text)
-        accSearch.push({
-          "text.raw_segment": { $regex: filter.text, $options: "i" },
-        })
-      if (accSearch.length > 0) query.$and = [{ $or: accSearch }]
-
-      const projectionAcc = {
-        page: 0,
-        text: 0,
-        "jobs.transcription.job_logs": 0,
-      }
-
-      return await this.mongoRequest(query, projectionAcc)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
-  }
-
   async listConvFromOwner(convIds, userId) {
     try {
-      const objectIds = convIds
-        .split(",")
-        .map((id) => (typeof id === "string" ? this.getObjectId(id) : id))
+      const objectIds = toObjectIds(convIds.split(","), this.getObjectId)
       const query = {
         _id: { $in: objectIds },
         owner: userId.toString(),
@@ -885,9 +621,7 @@ class ConvoModel extends MongoModel {
 
   async updateFolderBatch(conversationIds, folderId, organizationId) {
     try {
-      const objectIds = conversationIds.map((id) =>
-        typeof id === "string" ? this.getObjectId(id) : id,
-      )
+      const objectIds = toObjectIds(conversationIds, this.getObjectId)
       const query = {
         _id: { $in: objectIds },
         "organization.organizationId": organizationId,

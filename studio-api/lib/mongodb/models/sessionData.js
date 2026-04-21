@@ -76,14 +76,6 @@ class SessionData extends MongoModel {
     }
   }
 
-  async getByOrganizationAndName(organizationId, name) {
-    try {
-      return this.getByField({ organizationId, name })
-    } catch (error) {
-      throw error
-    }
-  }
-
   async getByOrganizationAndId(organizationId, id) {
     try {
       return this.getByField({ organizationId, _id: id })

@@ -8,42 +8,10 @@ class TagModel extends MongoModel {
     super("tags") // define name of 'users' collection elsewhere?
   }
 
-  async getByIds(idList, orgaId) {
-    try {
-      let searchId = idList.map((id) => this.getObjectId(id))
-      const query = {
-        _id: {
-          $in: searchId,
-        },
-        organizationId: orgaId,
-      }
-      return await this.mongoRequest(query)
-    } catch (err) {
-      console.error(err)
-      return err
-    }
-  }
-
   async getByCategory(id) {
     try {
       const query = {
         categoryId: id,
-      }
-      return await this.mongoRequest(query)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
-  }
-
-  async searchByName(orgaId, name) {
-    try {
-      const query = {
-        organizationId: orgaId,
-        name: {
-          $regex: name,
-          $options: "i",
-        },
       }
       return await this.mongoRequest(query)
     } catch (error) {

@@ -8,21 +8,6 @@ class ConvoModel extends MongoModel {
     super("conversations")
   }
 
-  async getByTagAndOrga(idOrga, tagList) {
-    try {
-      const query = {
-        "organization.organizationId": idOrga,
-        tags: {
-          $all: tagList,
-        },
-      }
-      return await this.mongoRequest(query)
-    } catch (err) {
-      console.error(err)
-      return err
-    }
-  }
-
   async getByIdsAndTag(idList, tagList) {
     try {
       idList = idList.map((id) => {

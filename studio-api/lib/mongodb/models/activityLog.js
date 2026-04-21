@@ -179,28 +179,6 @@ class ActivityLog extends MongoModel {
     }
   }
 
-  async deleteLog(activityId) {
-    try {
-      await this.mongoDelete({ _id: activityId })
-    } catch (error) {
-      console.error(error)
-      return error
-    }
-  }
-
-  async deleteAllSocketLog(socketId, underDuration) {
-    try {
-      const query = {
-        "socket.id": socketId,
-        "socket.totalWatchTime": { $lt: underDuration }, // Delete all tuple being inferior to underDuration value
-      }
-      await this.mongoDelete(query)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
-  }
-
   async getKpiLlm(orgaId, startDate, endDate) {
     try {
       const matchQuery = buildActivityMatchQuery(
@@ -474,17 +452,6 @@ class ActivityLog extends MongoModel {
       return await this.mongoAggregate(query)
     } catch (error) {
       console.error("Error in kpiSessionById:", error)
-      return error
-    }
-  }
-
-  async findOrganizationsWithActivity() {
-    try {
-      return await this.mongoDistinct("organization.id", {
-        "organization.id": { $exists: true, $ne: null },
-      })
-    } catch (error) {
-      console.error("Error in findOrganizationsWithActivity:", error)
       return error
     }
   }

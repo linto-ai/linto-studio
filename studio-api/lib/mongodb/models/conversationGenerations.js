@@ -137,55 +137,6 @@ class ConversationGenerationsModel extends MongoModel {
   }
 
   /**
-   * Get the current active generation for a conversation and service
-   * @param {string} conversationId - Conversation ID
-   * @param {string} serviceId - Service ID
-   * @returns {Promise<Object|null>} - Current generation or null
-   */
-  async getCurrentGeneration(conversationId, serviceId) {
-    try {
-      const query = {
-        conversationId: conversationId.toString(),
-        serviceId: serviceId,
-        isCurrent: true,
-      }
-      const results = await this.mongoRequest(query)
-      return results.length > 0 ? results[0] : null
-    } catch (error) {
-      console.error(error)
-      return error
-    }
-  }
-
-  /**
-   * Archive a generation (mark as not current)
-   * @param {string} conversationId - Conversation ID
-   * @param {string} serviceId - Service ID
-   * @param {string} jobId - Job ID to archive
-   * @returns {Promise<Object>} - Update result
-   */
-  async archiveGeneration(conversationId, serviceId, jobId) {
-    try {
-      const operator = "$set"
-      const query = {
-        conversationId: conversationId.toString(),
-        serviceId: serviceId,
-        jobId: jobId,
-      }
-      const dateTime = moment().format()
-      const mutableElements = {
-        isCurrent: false,
-        updatedAt: dateTime,
-      }
-
-      return await this.mongoUpdateOne(query, operator, mutableElements)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
-  }
-
-  /**
    * Archive all generations for a conversation and service (mark all as not current)
    * @param {string} conversationId - Conversation ID
    * @param {string} serviceId - Service ID
@@ -258,22 +209,6 @@ class ConversationGenerationsModel extends MongoModel {
     }
   }
 
-  /**
-   * Delete all generations for a conversation
-   * @param {string} conversationId - Conversation ID
-   * @returns {Promise<Object>} - Delete result
-   */
-  async deleteAllByConversation(conversationId) {
-    try {
-      const query = {
-        conversationId: conversationId.toString(),
-      }
-      return await this.mongoDeleteMany(query)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
-  }
 }
 
 module.exports = new ConversationGenerationsModel()
