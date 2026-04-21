@@ -21,10 +21,12 @@ const {
   MalformedToken,
   MultipleUserFound,
   InvalidCredential,
+  Unauthorized,
   UserNotFound,
 } = require(`${process.cwd()}/components/WebServer/error/exception/auth`)
 const refreshToken = require("./token/refresh")
 
+const LogManager = require(`${process.cwd()}/lib/logger/manager`)
 const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
 
 PROVIDER.loadEnabledStrategies()
@@ -130,12 +132,33 @@ module.exports = {
       }
 
       if (req.query.impersonateUser) {
-        const user = await model.users.getById(tokenData.data.userId, true)
-        // We need to check if the user is a super admin
-        if (user[0].role >= ROLE.SYSTEM_ADMINISTRATOR) {
-          req.payload.data.adminId = tokenData.data.userId
-          req.payload.data.userId = req.query.impersonateUser
+        const adminId = tokenData.data.userId
+        const targetUserId = req.query.impersonateUser
+
+        const [admin] = await model.users.getById(adminId, true)
+        if (!admin || admin.role < ROLE.SYSTEM_ADMINISTRATOR) {
+          LogManager.logSystemEvent(
+            "Impersonation rejected: requester is not a system administrator",
+            {
+              adminId,
+              targetUserId,
+              route: req.originalUrl,
+            },
+          )
+          throw new Unauthorized()
         }
+
+        const [target] = await model.users.getById(targetUserId, true)
+        if (!target) throw new UserNotFound()
+
+        LogManager.logSystemEvent("Admin impersonation", {
+          adminId,
+          targetUserId,
+          route: req.originalUrl,
+        })
+
+        req.payload.data.adminId = adminId
+        req.payload.data.userId = targetUserId
       }
       next()
     },
