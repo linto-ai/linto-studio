@@ -11,7 +11,11 @@ import { getEnv } from "@/tools/getEnv"
 
 import { apiGetConversationAsDoc } from "@/api/conversation.d/apiGetConversationAsDoc.js"
 
-import { createTranscriptionEditorPlugin } from "@linto/transcript-ui/webcomponent"
+import {
+  createTranscriptionEditorPlugin,
+  createAudioPlugin,
+} from "@linto/transcript-ui/webcomponent"
+
 import LayoutV2 from "@/layouts/v2-layout.vue"
 
 export default {
@@ -36,6 +40,7 @@ export default {
       const ws_url = new URL(getEnv("VUE_APP_CONVO_API"))
       ws_url.protocol = "ws"
       this.core = markRaw(core)
+      core.use(createAudioPlugin())
 
       core.use(
         createTranscriptionEditorPlugin({
