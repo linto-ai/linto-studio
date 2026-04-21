@@ -6,9 +6,10 @@ const logger = require(`${process.cwd()}/lib/logger/logger`)
 const { SessionError } = require(
   `${process.cwd()}/components/WebServer/error/exception/session`,
 )
-const { Unauthorized } = require(
+const { Unauthorized, UnauthorizedProxy } = require(
   `${process.cwd()}/components/WebServer/error/exception/auth`,
 )
+
 const { authFailLimiter } = require(
   `${process.cwd()}/components/WebServer/config/express/rateLimiters`,
 )
@@ -17,9 +18,12 @@ const PublicToken = require(
   `${process.cwd()}/components/WebServer/config/passport/token/public_generator`,
 )
 
+const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const crypto = require("crypto")
+
+const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 
 function verifyPublicSessionPassword(storedHash, inputPassword) {
   const inputKey = crypto.pbkdf2Sync(
@@ -34,9 +38,7 @@ function verifyPublicSessionPassword(storedHash, inputPassword) {
 
 function ensurePasswordIfNeeded(sessionData, req) {
   if (sessionData.password && req.payload.fromPublic === true) {
-    if (!req.query.password) {
-      throw new Unauthorized("Password is required for this alias")
-    }
+    requireParam(req.query.password, Unauthorized, "Password is required for this alias")
     if (
       !verifyPublicSessionPassword(sessionData.password, req.query.password)
     ) {
@@ -138,7 +140,10 @@ async function generatPublicToken(jsonString, req) {
       let session = JSON.parse(jsonString)
 
       // Include organizationId in token for WebSocket access validation
-      const token = PublicToken.generateTokens(session.id, session.organizationId)
+      const token = PublicToken.generateTokens(
+        session.id,
+        session.organizationId,
+      )
       session.publicSessionToken = token
       return JSON.stringify(session)
     }
@@ -147,6 +152,27 @@ async function generatPublicToken(jsonString, req) {
     logger.warn("Failed to generate public session token:", err)
   }
   return jsonString
+}
+
+async function filterPrivateSessions(jsonString, req) {
+  try {
+    if (ROLES.hasRoleAccess(req.userRole, ROLES.MEETING_MANAGER)) return jsonString
+
+    const body = JSON.parse(jsonString)
+    const sessions = body.sessions
+    if (!Array.isArray(sessions)) return jsonString
+
+    const userId = req.payload.data.userId
+    body.sessions = sessions.filter(
+      (session) =>
+        session.visibility !== "private" || session.owner === userId,
+    )
+    body.totalItems = body.totalItems - (sessions.length - body.sessions.length)
+    return JSON.stringify(body)
+  } catch (err) {
+    debug("Error filtering private sessions:", err)
+    return jsonString
+  }
 }
 
 async function checkSessionMatchingOrganization(req, next) {
@@ -161,6 +187,36 @@ async function checkSessionMatchingOrganization(req, next) {
   }
 }
 
+function cleanPublicSessionContent(jsonString) {
+  try {
+    let session = JSON.parse(jsonString)
+    if (session.visibility === "public") {
+      session.channels.forEach((channel) => {
+        if (channel.streamEndpoints) {
+          delete channel.streamEndpoints
+        }
+      })
+
+      return JSON.stringify(session)
+    }
+  } catch (error) {
+    logger.warn("error on cleaning session")
+    throw error
+  }
+
+  throw new UnauthorizedProxy()
+}
+
+function cleanPublicChannelContent(jsonString) {
+  let channel = JSON.parse(jsonString)
+  if (channel.visibility === "public") {
+    delete channel.streamEndpoints
+    return JSON.stringify(channel)
+  }
+
+  throw new UnauthorizedProxy()
+}
+
 module.exports = {
   forceQueryParams,
   forwardSessionAlias,
@@ -168,5 +224,8 @@ module.exports = {
   checkTranscriberProfileAccess,
   afterProxyAccess,
   generatPublicToken,
+  filterPrivateSessions,
   checkSessionMatchingOrganization,
+  cleanPublicSessionContent,
+  cleanPublicChannelContent,
 }

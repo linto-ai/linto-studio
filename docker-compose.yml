@@ -48,8 +48,8 @@ services:
     container_name: studio-frontend
     image: linto-studio/studio-frontend
     build:
-      context: ./studio-frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: studio-frontend/Dockerfile
     env_file: ./studio-frontend/.dockerenv
     command:
       - --build
@@ -57,18 +57,6 @@ services:
       - "8003:80"
     networks:
       - internal
-
-  # studio-dashboard:
-  #   container_name: studio-dashboard
-  #   image: linto-studio/studio-dashboard
-  #   build:
-  #     context: ./studio-dashboard
-  #     dockerfile: Dockerfile
-  #   env_file: ./studio-dashboard/.dockerenv
-  #   ports:
-  #     - "8004:80"
-  #   networks:
-  #     - internal
 
 networks:
   internal:

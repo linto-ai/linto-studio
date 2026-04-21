@@ -7,7 +7,7 @@ export default function isSessionStarted(session) {
     return true
   }
 
-  if (session.status === "ready") {
+  if (session.status === "ready" || session.status === "on_schedule") {
     if (!session.scheduleOn) {
       return true
     }
@@ -15,15 +15,7 @@ export default function isSessionStarted(session) {
     const startTime = new Date(session?.scheduleOn)
     const now = new Date()
 
-    //if (!session.endTime) {
     return startTime < now
-    //}
-
-    // const endTime = new Date(session?.endTime)
-
-    // if (startTime < now && endTime > now) {
-    //   return true
-    // }
   }
 
   return false

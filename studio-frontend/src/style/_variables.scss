@@ -41,6 +41,7 @@
     --danger-contrast: white;
     --warning-color: #{$yellowHard};
     --warning-soft: #{$yellowSoft};
+    --warning-text: #{oklch(0.45 0.13 76.2)};
     --linkHard: #{$blueHard};
     --linkSoft: #{$blueSoft};
 

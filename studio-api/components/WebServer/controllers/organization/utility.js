@@ -3,10 +3,10 @@ const debug = require("debug")(
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
-const { OrganizationNotFound, OrganizationError } = require(
+const { OrganizationError } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
-const { ConversationIdRequire, ConversationNotFound } = require(
+const { ConversationNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
 
@@ -82,9 +82,6 @@ async function getOrgaIdFromReq(req) {
   let organizationId = req.params.organizationId
 
   if (organizationId === undefined) {
-    if (!req.params.conversationId)
-      throw new ConversationIdRequire("Conversation id is required")
-
     const conversation = await model.conversations.getById(
       req.params.conversationId,
     )

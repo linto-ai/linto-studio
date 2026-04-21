@@ -23,7 +23,7 @@ DB_PASS=example
 DB_NAME=conversations
 
 # Request a specific version of the database (optional)
-DB_MIGRATION_TARGET=1.8.3
+DB_MIGRATION_TARGET=1.8.4
 
 # STT Config
 GATEWAY_SERVICES=https://<domain>
@@ -72,6 +72,7 @@ VOLUME_AUDIO_PATH=audios
 VOLUME_PROFILE_PICTURE_PATH=pictures
 
 DISABLE_USER_CREATION=false
+DISABLE_USER_INVITATION=false
 DISABLE_DEFAULT_ORGANIZATION_CREATION=false
 DEFAULT_TAGS=
 

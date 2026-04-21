@@ -10,21 +10,17 @@ const { isTurnLonger } = require(
 )
 
 const {
-  ConversationIdRequire,
   ConversationNotFound,
   ConversationError,
-  TurnIdRequire,
   TurnNotFound,
   ConversationUnsupportedMediaType,
 } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
+const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 
 async function addTurn(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
-    if (!req.params.turnId) throw new TurnIdRequire() // Will add a turn after that turnId
-
     let conversationId = req.params.conversationId
     const conversation = await model.conversations.getById(conversationId)
     if (conversation.length !== 1) throw new ConversationNotFound()
@@ -57,9 +53,6 @@ async function addTurn(req, res, next) {
 
 async function deleteTurn(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
-    if (!req.params.turnId) throw new TurnIdRequire()
-
     let conversationId = req.params.conversationId
     const conversation = await model.conversations.getById(conversationId)
     if (conversation.length !== 1) throw new ConversationNotFound()
@@ -86,9 +79,6 @@ async function deleteTurn(req, res, next) {
 
 async function updateTurn(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
-    if (!req.params.turnId) throw new TurnIdRequire()
-
     let conversationId = req.params.conversationId
     let conversation = await model.conversations.getById(conversationId)
     if (conversation.length !== 1) throw new ConversationNotFound()
@@ -123,11 +113,6 @@ async function updateTurn(req, res, next) {
 
 async function mergeTurn(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
-    if (!req.params.turnId) throw new TurnIdRequire()
-    if (!req.params.direction)
-      throw new ConversationUnsupportedMediaType("Direction is required")
-
     //direction must be next or previous
     const direction = req.params.direction
     if (direction !== "next" && direction !== "previous")
@@ -210,8 +195,7 @@ async function mergeTurn(req, res, next) {
 
 async function search(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
-    if (!req.query.text) throw new ConversationUnsupportedMediaType()
+    requireParam(req.query.text, ConversationUnsupportedMediaType)
 
     let turns = []
     const conversation = await model.conversations.getById(

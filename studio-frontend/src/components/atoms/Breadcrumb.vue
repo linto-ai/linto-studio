@@ -1,5 +1,10 @@
 <template>
   <nav class="breadcrumb flex flex1" aria-label="Breadcrumb">
+    <img
+      v-if="logo && !isAuthenticated"
+      :src="logo"
+      class="breadcrumb__logo"
+      slot="logo" />
     <template v-if="noBreadcrumb">
       <slot name="breadcrumb-actions"></slot>
     </template>
@@ -11,6 +16,7 @@
       <template #desktop>
         <ol class="breadcrumb-list flex flex1">
           <li
+            v-if="isAuthenticated"
             v-for="(item, index) in breadcrumbItems"
             :key="`${item.name}-${index}`"
             class="breadcrumb-item">
@@ -48,6 +54,9 @@
 </template>
 
 <script>
+import isAuthenticated from "@/tools/isAuthenticated.js"
+import { getEnv } from "@/tools/getEnv"
+
 export default {
   name: "Breadcrumb",
   props: {
@@ -78,6 +87,13 @@ export default {
   computed: {
     currentOrganization() {
       return this.$store.getters["organizations/getCurrentOrganization"]
+    },
+    isAuthenticated: function () {
+      return isAuthenticated()
+    },
+
+    logo() {
+      return getEnv("VUE_APP_LOGO") ? `/img/${getEnv("VUE_APP_LOGO")}` : false
     },
   },
 
@@ -296,6 +312,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.breadcrumb__logo {
+  height: 80%;
+  margin-right: 1rem;
+}
+
 .breadcrumb {
   height: 54px;
   padding: 0;

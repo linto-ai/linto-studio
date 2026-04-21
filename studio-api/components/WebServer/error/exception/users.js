@@ -1,86 +1,35 @@
-/****************
- *****Users*******
- *****************/
-
-const ExceptionType = "users"
-
-class UserError extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "UserError"
-    this.type = ExceptionType
-    this.status = 400
-    if (message) this.message = message
-    else this.message = "Error during the operation"
-    if (err) this.err = err
-  }
-}
-
-class UserConflict extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "UserConflict"
-    this.type = ExceptionType
-    this.status = 409
-    if (message) this.message = message
-    else this.message = "User address already used"
-    if (err) this.err = err
-  }
-}
-
-class UserForbidden extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "UserForbidden"
-    this.type = ExceptionType
-    this.status = 403
-    if (message) this.message = message
-    else this.message = "Not allowed to do this"
-    if (err) this.err = err
-  }
-}
-
-class UserNotFound extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "UserNotFound"
-    this.type = ExceptionType
-    this.status = 404
-    if (message) this.message = message
-    else this.message = "User not found"
-    if (err) this.err = err
-  }
-}
-
-class UserUnsupportedMediaType extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "UserUnsupportedMediaType"
-    this.type = ExceptionType
-    this.status = 415
-    if (message) this.message = message
-    else this.message = "Parameter is not supported"
-    if (err) this.err = err
-  }
-}
-
-class GenerateMagicLinkError extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "GenerateMagicLinkError"
-    this.type = ExceptionType
-    this.status = 424 // Method failure
-    if (message) this.message = message
-    else this.message = "Error on generating authentication link."
-    if (err) this.err = err
-  }
-}
+const { createException } = require("./base")
 
 module.exports = {
-  UserConflict,
-  UserError,
-  UserForbidden,
-  UserNotFound,
-  UserUnsupportedMediaType,
-  GenerateMagicLinkError,
+  UserError: createException(
+    "UserError",
+    "users",
+    400,
+    "Error during the operation",
+  ),
+  UserConflict: createException(
+    "UserConflict",
+    "users",
+    409,
+    "User address already used",
+  ),
+  UserForbidden: createException(
+    "UserForbidden",
+    "users",
+    403,
+    "Not allowed to do this",
+  ),
+  UserNotFound: createException("UserNotFound", "users", 404, "User not found"),
+  UserUnsupportedMediaType: createException(
+    "UserUnsupportedMediaType",
+    "users",
+    415,
+    "Parameter is not supported",
+  ),
+  GenerateMagicLinkError: createException(
+    "GenerateMagicLinkError",
+    "users",
+    424,
+    "Error on generating authentication link.",
+  ),
 }

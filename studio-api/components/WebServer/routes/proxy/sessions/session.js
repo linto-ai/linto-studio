@@ -12,7 +12,10 @@ const {
   forwardSessionAliasPublic,
   checkTranscriberProfileAccess,
   afterProxyAccess,
+  cleanPublicSessionContent,
+  cleanPublicChannelContent,
   generatPublicToken,
+  filterPrivateSessions,
   checkSessionMatchingOrganization,
 } = require(
   `${process.cwd()}/components/WebServer/controllers/session/session.js`,
@@ -97,35 +100,30 @@ module.exports = (webServer) => {
       /*************************/
       {
         //public access
-        scrapPath: /\/public$/,
+        scrapPath: /\/public/,
         paths: [
           {
-            path: "/sessions/:id/public",
+            path: "/sessions/public/:id",
             method: ["get"],
             addParams: [{ "body.visibility": "public" }],
             executeBeforeResult: forwardSessionAliasPublic,
             executeAfterResult: [
               (jsonString) => {
-                try {
-                  let session = JSON.parse(jsonString)
-
-                  if (session.visibility === "public") {
-                    session.channels.forEach((channel) => {
-                      if (channel.streamEndpoints) {
-                        delete channel.streamEndpoints
-                      }
-                    })
-
-                    return JSON.stringify(session)
-                  }
-
-                  throw new UnauthorizedProxy()
-                } catch (err) {
-                  throw err
-                }
+                return cleanPublicSessionContent(jsonString)
               },
               (jsonString, req) => {
                 return generatPublicToken(jsonString, req)
+              },
+            ],
+          },
+          {
+            path: "/sessions/public/:id/channels/:channelId",
+            method: ["get"],
+            addParams: [{ "body.visibility": "public" }],
+            executeBeforeResult: forwardSessionAliasPublic,
+            executeAfterResult: [
+              (jsonString) => {
+                return cleanPublicChannelContent(jsonString)
               },
             ],
           },
@@ -144,9 +142,17 @@ module.exports = (webServer) => {
             forwardParams: proxyForwardParams,
           },
           {
+            path: "/organizations/:organizationId/sessions/:id/channels/:channelId",
+            method: ["get"],
+            executeBeforeResult: forwardSessionAlias,
+            executeAfterResult: [afterProxyAccess],
+            forwardParams: proxyForwardParams,
+          },
+          {
             path: "/organizations/:organizationId/sessions",
             method: ["get"],
             forwardParams: proxyForwardParams,
+            executeAfterResult: [filterPrivateSessions],
           },
         ],
         requireAuth: true,

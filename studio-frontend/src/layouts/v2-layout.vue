@@ -1,11 +1,15 @@
 <template>
-  <div class="v2-layout" :class="{ 'no-sidebar': !sidebarOpen || fullscreen }">
+  <div
+    class="v2-layout"
+    :class="{ 'no-sidebar': !sidebarOpen || fullscreen || !isAuthenticated }">
     <QuickSessionNotif v-if="quickSession && !isQuickSessionPage" />
     <div class="v2-layout__content">
       <aside
         v-if="!fullscreen"
         class="v2-layout__sidebar flex1"
-        :class="{ 'v2-layout__sidebar--hidden': !sidebarOpen }">
+        :class="{
+          'v2-layout__sidebar--hidden': !sidebarOpen || !isAuthenticated,
+        }">
         <BurgerMenu :backoffice="backoffice">
           <slot name="sidebar"></slot>
         </BurgerMenu>

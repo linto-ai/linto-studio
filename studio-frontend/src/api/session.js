@@ -386,7 +386,7 @@ export async function apiGetPublicSession(
   notif,
 ) {
   const getSession = await sendRequest(
-    `${BASE_API}/sessions/${sessionId}/public`,
+    `${BASE_API}/sessions/public/${sessionId}`,
     { method: "get" },
     { password, ...params },
     notif,
@@ -491,7 +491,7 @@ export async function apiGetPublicSessionChannel(
   notif,
 ) {
   const getSessionChannel = await sendRequest(
-    `${BASE_API}/sessions/${sessionId}/public`,
+    `${BASE_API}/sessions/public/${sessionId}`,
     { method: "get" },
     { transcriber_id: transcriberId, password },
     notif,

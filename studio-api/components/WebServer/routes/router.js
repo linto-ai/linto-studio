@@ -5,6 +5,9 @@ const auth_middlewares = require(`../config/passport/middleware`)
 const { logger } = require(
   `${process.cwd()}/components/WebServer/middlewares/logger/logger.js`,
 )
+
+const logger_system = require(`${process.cwd()}/lib/logger/logger`)
+
 const conversation_middlewares = require(
   `${process.cwd()}/components/WebServer/middlewares/access/conversation.js`,
 )
@@ -286,6 +289,10 @@ const createProxyRoutes = (webServer, proxy_routes) => {
                       return responseBuffer
                     }
                   } catch (error) {
+                    logger_system.warn(
+                      "Error in proxy response processing:",
+                      error,
+                    )
                     if (
                       error instanceof Unauthorized ||
                       error instanceof UnauthorizedProxy

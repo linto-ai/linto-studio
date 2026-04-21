@@ -422,7 +422,7 @@ export default {
           })
         } else {
           this.$emit("click", item)
-          this.emitValue(item.value ?? item.id)
+          this.emitValue("value" in item ? item.value : item.id)
           if (this.closeOnItemClick) {
             this.$nextTick(() => {
               this.$refs.popover && this.$refs.popover.close()

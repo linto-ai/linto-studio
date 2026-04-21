@@ -7,10 +7,11 @@ const axios = require(`${process.cwd()}/lib/utility/axios`)
 const { v4: uuidv4 } = require("uuid")
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
-const DEFAULT_MEMBER_RIGHTS = 3
+const TYPES = require(`${process.cwd()}/lib/dao/conversation/types`)
+const RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
+const DEFAULT_MEMBER_RIGHTS = RIGHTS.READ + RIGHTS.COMMENT
 const DEFAULT_SPEAKER_NAME = "Unknown speaker"
 const DEFAULT_TRANSLATION_NAME = "Automatic Translation"
-const TYPES = require(`${process.cwd()}/lib/dao/conversation/types`)
 const SECURITY_LEVELS = require(
   `${process.cwd()}/lib/dao/conversation/securityLevels`,
 )
@@ -26,6 +27,10 @@ const { sessionReq } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/organizations/uploader/offline.js`,
 )
 
+function getMembersRightFromVisibility(visibility) {
+  return visibility === "private" ? RIGHTS.UNDEFINED : DEFAULT_MEMBER_RIGHTS
+}
+
 function initConversationMultiChannel(
   session,
   name = undefined,
@@ -37,7 +42,7 @@ function initConversationMultiChannel(
     locale: "",
     organization: {
       organizationId: session.organizationId,
-      membersRight: DEFAULT_MEMBER_RIGHTS,
+      membersRight: getMembersRightFromVisibility(session.visibility),
       customRights: [],
     },
     sharedWithUsers: [],
@@ -142,18 +147,19 @@ async function initCaptionsForConversation(sessionData, name) {
         session.channels.length,
       )
 
-      // Merge translatedCaptions into closedCaptions translations dict
-      // New format stores translated text in channel.translatedCaptions
-      // instead of closedCaptions[].translations
       if (channel.translatedCaptions) {
-        for (const tc of channel.translatedCaptions) {
-          const cc = channel.closedCaptions.find(
-            (cc) => cc.segmentId === tc.segmentId,
-          )
-          if (cc) {
-            if (!cc.translations || typeof cc.translations !== "object")
-              cc.translations = {}
-            cc.translations[tc.targetLang] = tc.text
+        for (const segmentTranslations of Object.values(
+          channel.translatedCaptions,
+        )) {
+          for (const tc of segmentTranslations) {
+            const cc = channel.closedCaptions.find(
+              (cc) => cc.segmentId === tc.segmentId,
+            )
+            if (cc) {
+              if (!cc.translations || typeof cc.translations !== "object")
+                cc.translations = {}
+              cc.translations[tc.targetLang] = tc.text
+            }
           }
         }
       }
@@ -220,7 +226,7 @@ function initializeCaption(
     locale: channel.languages,
     organization: {
       organizationId: session.organizationId,
-      membersRight: DEFAULT_MEMBER_RIGHTS,
+      membersRight: getMembersRightFromVisibility(session.visibility),
       customRights: [],
     },
     type: {
@@ -603,6 +609,7 @@ async function storeQuickMeetingFromStop(req, next) {
 
 module.exports = {
   storeProxyResponse,
+  storeSession,
   storeSessionFromStop,
   storeQuickMeetingFromStop,
 }

@@ -186,8 +186,17 @@
           </section>
         </div>
         <div class="flex col gap-medium session-settings-right align-center">
-          <div class="flex col gap-medium">
+          <div class="flex col gap-medium session-settings-actions">
             <!-- Delete and save -->
+            <Button
+              v-if="isPending && !isStarted"
+              icon="trash"
+              :label="$t('session.detail_page.delete_session_button')"
+              @click="deleteSession"
+              variant="primary"
+              intent="destructive"
+              size="sm"
+              class="btn--delete-scheduled"></Button>
             <Button
               v-if="isStarted && !isActive"
               icon="stop"
@@ -216,6 +225,7 @@
           <SessionChannelsTable
             v-if="channels.length > 0"
             from="sessionSettings"
+            :microphoneDisabled="!isStarted"
             @connectMicrophone="connectMicrophone"
             @updateName="updateChannelName"
             :channelsList="localChannels"></SessionChannelsTable>
@@ -409,8 +419,6 @@ export default {
   created() {},
   computed: {
     hasChanged() {
-      //const publicChanged = this.fieldIsPublic.value !== this.isPublic
-
       const autoStartChanged = this.fieldAutoStart.value !== this.autoStart
       const autoStopChanged = this.fieldAutoStop.value !== this.autoStop
       const startDateChanged = !isSameDateTimeWithoutSeconds(
@@ -424,7 +432,6 @@ export default {
       )
 
       return (
-        //publicChanged ||
         autoStartChanged ||
         autoStopChanged ||
         startDateChanged ||
@@ -613,7 +620,7 @@ export default {
           endOn: endDateTime,
           autoStart: this.fieldAutoStart.value,
           autoEnd: this.fieldAutoStop.value,
-          visibility: this.fieldIsPublic.value ? "public" : "organization",
+          visibility: this.fieldSessionVisibility.value.replace("password", "public"),
           channels: this.localChannels,
         }
 

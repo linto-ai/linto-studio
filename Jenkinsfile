@@ -10,13 +10,14 @@ def notifyLintoDeploy(service_name, tag, commit_sha) {
     }
 }
 
-def buildDockerfile(folder_name, version, commit_sha, dockerfile = 'Dockerfile', tagSuffix = '') {
-    echo "Building ${dockerfile} at ${folder_name}/${dockerfile} for ${folder_name}... with version ${version}${tagSuffix}"
+def buildDockerfile(folder_name, version, commit_sha, tagSuffix = '', context = '') {
+    def buildContext = context ?: "./${folder_name}"
+    echo "Building Dockerfile at ${folder_name}/Dockerfile for ${folder_name}... with version ${version}${tagSuffix}"
 
     // Build Docker image using the specified Dockerfile
     script {
         def completeImageName = "${env.DOCKER_HUB_REPO}/${folder_name}" // Concatenate repo with image name
-        def image = docker.build(completeImageName, "-f ${folder_name}/${dockerfile} ./${folder_name}")
+        def image = docker.build(completeImageName, "-f ${folder_name}/Dockerfile ${buildContext}")
 
         echo "Prepare to release newer version ${completeImageName}:${version}${tagSuffix}"
         docker.withRegistry('https://registry.hub.docker.com', env.DOCKER_HUB_CRED) {
@@ -42,9 +43,9 @@ def performBuildForFile(changedFiles, version, commit_sha) {
         buildDockerfile('studio-api', version, commit_sha)
     }
 
-    if (changedFiles.contains('studio-frontend')) {
+    if (changedFiles.contains('studio-frontend') || changedFiles.contains('studio-sdk')) {
         echo 'Files in studio-frontend path are modified. Running specific build steps for studio-frontend...'
-        buildDockerfile('studio-frontend', version, commit_sha)
+        buildDockerfile('studio-frontend', version, commit_sha, '', '.')
     }
 
     if (changedFiles.contains('studio-websocket')) {
@@ -52,10 +53,6 @@ def performBuildForFile(changedFiles, version, commit_sha) {
         buildDockerfile('studio-websocket', version, commit_sha)
     }
 
-    if (changedFiles.contains('studio-dashboard')) {
-        echo 'Files in studio-dashboard path are modified. Running specific build steps for studio-dashboard...'
-        buildDockerfile('studio-dashboard', version, commit_sha)
-    }
 }
 
 pipeline {
