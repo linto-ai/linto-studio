@@ -9311,7 +9311,7 @@ const GA = {
   positionStrategy: "fixed",
   updatePositionStrategy: "optimized",
   prioritizePosition: !1
-}, [F3, XA] = fn("PopperContent");
+}, [z3, XA] = fn("PopperContent");
 var QA = /* @__PURE__ */ Y({
   inheritAttrs: !1,
   __name: "PopperContent",
@@ -28261,7 +28261,7 @@ function Sd(t, e) {
     language: e.language
   };
 }
-function j3() {
+function W3() {
   return {
     name: "live",
     install(t) {
@@ -28388,7 +28388,7 @@ function j3() {
     }
   };
 }
-function W3() {
+function K3() {
   return {
     name: "audio",
     install(t) {
@@ -28428,7 +28428,7 @@ function W3() {
     }
   };
 }
-function K3(t = {}) {
+function J3(t = {}) {
   return {
     name: "subtitle",
     install(e) {
@@ -37669,19 +37669,27 @@ const ua = new en("wordHighlight"), I3 = tn.create({
     name: "collaborationCursor",
     addProseMirrorPlugins() {
       const { awareness: t, user: e } = this.options;
-      return t.setLocalStateField("user", e), [
+      t.setLocalStateField("user", e);
+      const n = /* @__PURE__ */ new Map();
+      return [
         iV(t, {
-          cursorBuilder: N3
+          cursorBuilder: (r, i) => N3(n, r, i)
         })
       ];
     }
   }
 );
-function N3(t) {
-  const e = document.createElement("span");
-  e.classList.add("collaboration-cursor__caret"), e.style.borderColor = String(t.color ?? "#999");
-  const n = document.createElement("div");
-  return n.classList.add("collaboration-cursor__label"), n.style.backgroundColor = String(t.color ?? "#999"), n.textContent = String(t.name ?? "Anonymous"), e.appendChild(n), e;
+function N3(t, e, n) {
+  let r = t.get(n);
+  if (!r) {
+    r = document.createElement("span"), r.classList.add("collaboration-cursor__caret");
+    const o = document.createElement("div");
+    o.classList.add("collaboration-cursor__label"), r.appendChild(o), t.set(n, r);
+  }
+  const i = String(e.color ?? "#999");
+  r.style.borderColor = i;
+  const s = r.firstElementChild;
+  return s.style.backgroundColor = i, s.textContent = String(e.name ?? "Anonymous"), r;
 }
 function R3(t) {
   return {
@@ -37703,7 +37711,7 @@ function $3(t) {
     content: e ? [{ type: "text", text: e }] : void 0
   };
 }
-function X3(t = {}) {
+function Q3(t = {}) {
   const {
     collab: e,
     field: n = "default",
@@ -37862,14 +37870,19 @@ function B3() {
   const e = document.createElement("style");
   e.id = t, e.textContent = K$, document.head.appendChild(e);
 }
-function Q3(t = "linto-editor") {
-  B3(), customElements.define(t, L3);
+function F3() {
+  if (typeof ShadowRoot > "u") return;
+  const t = ShadowRoot.prototype;
+  typeof t.createRange != "function" && (t.createRange = () => document.createRange());
+}
+function Z3(t = "linto-editor") {
+  B3(), F3(), customElements.define(t, L3);
 }
 export {
   L3 as LintoEditor,
-  W3 as createAudioPlugin,
-  j3 as createLivePlugin,
-  K3 as createSubtitlePlugin,
-  X3 as createTranscriptionEditorPlugin,
-  Q3 as register
+  K3 as createAudioPlugin,
+  W3 as createLivePlugin,
+  J3 as createSubtitlePlugin,
+  Q3 as createTranscriptionEditorPlugin,
+  Z3 as register
 };

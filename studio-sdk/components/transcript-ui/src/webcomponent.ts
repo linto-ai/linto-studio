@@ -71,8 +71,21 @@ function injectFonts(): void {
   document.head.appendChild(style)
 }
 
+// ProseMirror/y-prosemirror appellent `editorView._root.createRange()`
+// qui n'existe pas sur ShadowRoot — on délègue à `document`.
+function patchShadowRoot(): void {
+  if (typeof ShadowRoot === "undefined") return
+  const proto = ShadowRoot.prototype as ShadowRoot & {
+    createRange?: () => Range
+  }
+  if (typeof proto.createRange !== "function") {
+    proto.createRange = () => document.createRange()
+  }
+}
+
 export function register(tagName = "linto-editor") {
   injectFonts()
+  patchShadowRoot()
   customElements.define(tagName, LintoEditor)
 }
 

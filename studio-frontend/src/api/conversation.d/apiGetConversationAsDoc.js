@@ -31,7 +31,6 @@ function channel(conv, translations) {
 
 export async function apiGetConversationAsDoc(convId) {
   const canonical = await apiGetCanonicalConv(convId)
-  console.log(canonical)
 
   // no children: one channel, no translations
   if (canonical.type.child_conversations.length === 0) {
