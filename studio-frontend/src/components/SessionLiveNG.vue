@@ -46,6 +46,7 @@ export default {
       activeChannelIndex: null,
       historyOffset: 0,
       usePublicEndpoint: false,
+      wakeLock: null,
     }
   },
   computed: {
@@ -70,6 +71,8 @@ export default {
   },
   mounted() {
     this.initEditor()
+    this.aquireWakeLock()
+    document.addEventListener("visibilitychange", this.renewWakeLock)
   },
   beforeDestroy() {
     this.offChannelChange?.()
@@ -78,8 +81,31 @@ export default {
     this.offWatermarkPin?.()
     this.unwatchWatermarkHost.forEach((stop) => stop())
     this.websocketInstance.unSubscribeSessionRoom()
+    this.releaseWakeLock()
+    document.removeEventListener("visibilitychange", this.renewWakeLock)
   },
   methods: {
+    async renewWakeLock() {
+      if (this.wakeLock) {
+        await this.wakeLock.release()
+      }
+      await this.aquireWakeLock()
+    },
+    async aquireWakeLock() {
+      try {
+        this.wakeLock = await navigator.wakeLock.request("screen")
+        this.wakeLock.addEventListener("release", () => {
+          this.wakeLock = null
+        })
+      } catch (error) {
+        console.warn("WakeLock error", error)
+      }
+    },
+    async releaseWakeLock() {
+      if (this.wakeLock) {
+        await this.wakeLock.release()
+      }
+    },
     async initEditor() {
       const el = this.$refs.editor
       const { editor } = el
