@@ -1,13 +1,20 @@
+function escapeRegex(input) {
+  return String(input).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+}
+
 function applyNameTextSearch(query, filter) {
   const searchConditions = []
   if (filter?.name) {
     searchConditions.push({
-      name: { $regex: filter.name, $options: "i" },
+      name: { $regex: escapeRegex(filter.name), $options: "i" },
     })
   }
   if (filter?.text) {
     searchConditions.push({
-      "text.raw_segment": { $regex: filter.text, $options: "i" },
+      "text.raw_segment": {
+        $regex: escapeRegex(filter.text),
+        $options: "i",
+      },
     })
   }
   if (searchConditions.length > 0) {
@@ -24,6 +31,7 @@ function applyTagAllFilter(query, filter) {
 }
 
 module.exports = {
+  escapeRegex,
   applyNameTextSearch,
   applyTagAllFilter,
 }

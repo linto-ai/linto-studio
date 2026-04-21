@@ -1,10 +1,9 @@
-const debug = require("debug")(
-  "linto:lib:mongodb:models:categories",
-)
+const debug = require("debug")("linto:lib:mongodb:models:categories")
 const MongoModel = require(`../model`)
 
 const moment = require("moment")
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
+const { escapeRegex } = require("../queryBuilders/filters")
 
 class CategoryModel extends MongoModel {
   constructor() {
@@ -105,7 +104,7 @@ class CategoryModel extends MongoModel {
       let query = {
         scopeId: scopeId,
         name: {
-          $regex: name,
+          $regex: escapeRegex(name),
           $options: "i",
         },
       }

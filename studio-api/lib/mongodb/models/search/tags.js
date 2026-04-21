@@ -1,7 +1,6 @@
-const debug = require("debug")(
-  "linto:lib:mongodb:models:search:tags",
-)
+const debug = require("debug")("linto:lib:mongodb:models:search:tags")
 const MongoModel = require(`../../model`)
+const { escapeRegex } = require("../../queryBuilders/filters")
 
 class TagModel extends MongoModel {
   constructor() {
@@ -20,16 +19,15 @@ class TagModel extends MongoModel {
     }
   }
 
-  async searchTagByCategory(categoryList, name = ".") {
+  async searchTagByCategory(categoryList, name) {
     try {
       const query = {
         categoryId: {
           $in: categoryList,
         },
-        name: {
-          $regex: name,
-          $options: "i",
-        },
+      }
+      if (name) {
+        query.name = { $regex: escapeRegex(name), $options: "i" }
       }
       return await this.mongoRequest(query)
     } catch (error) {
@@ -38,7 +36,7 @@ class TagModel extends MongoModel {
     }
   }
 
-  async searchTag(idList, name = ".") {
+  async searchTag(idList, name) {
     try {
       idList = idList.map((id) => {
         if (typeof id === "string") return this.getObjectId(id)
@@ -48,10 +46,9 @@ class TagModel extends MongoModel {
         _id: {
           $in: idList,
         },
-        name: {
-          $regex: name,
-          $options: "i",
-        },
+      }
+      if (name) {
+        query.name = { $regex: escapeRegex(name), $options: "i" }
       }
       return await this.mongoRequest(query)
     } catch (error) {

@@ -16,18 +16,16 @@ urlMongo += process.env.DB_HOST + ":" + process.env.DB_PORT + "/"
 if (process.env.DB_REQUIRE_LOGIN === "true")
   urlMongo += "?authSource=" + process.env.DB_NAME
 
-// Create an instance of a MongoDb client. Handle connection/close connection/reconnect/error
 class MongoDriver {
   static db
   static mongoDb = mongoDb
   static urlMongo = urlMongo
-  // static client = mongoDb.MongoClient
   static client = new MongoClient(MongoDriver.urlMongo, {
     connectTimeoutMS: 5000,
-    maxPoolSize: 40, // Adjust the pool size as needed
+    maxPoolSize: 40,
   })
+  static readyPromise = null
 
-  // Check mongo db connection status
   static checkConnection() {
     try {
       if (!!MongoDriver.db && MongoDriver.db.serverConfig) {
@@ -42,38 +40,43 @@ class MongoDriver {
   }
 
   static async connect() {
-    if (!MongoDriver.db) {
-      try {
-        await MongoDriver.client.connect()
-        logger.info("> MongoDB : Connected")
-        MongoDriver.db = MongoDriver.client.db(process.env.DB_NAME)
-        logger.info(
-          `> MongoDB : Successfully connected to database "${process.env.DB_NAME}"`,
-        )
+    if (MongoDriver.db) return
+    try {
+      await MongoDriver.client.connect()
+      logger.info("> MongoDB : Connected")
+      MongoDriver.db = MongoDriver.client.db(process.env.DB_NAME)
+      logger.info(
+        `> MongoDB : Successfully connected to database "${process.env.DB_NAME}"`,
+      )
 
-        // Event handling
-        MongoDriver.client.on("close", () => {
-          logger.error("> MongoDb : Connection lost")
-        })
-        MongoDriver.client.on("error", (e) => {
-          logger.error("> MongoDb ERROR: ", e)
-        })
-        MongoDriver.client.on("reconnect", () => {
-          logger.info("> MongoDb : Reconnected")
-        })
+      MongoDriver.client.on("close", () => {
+        logger.error("> MongoDb : Connection lost")
+      })
+      MongoDriver.client.on("error", (e) => {
+        logger.error("> MongoDb ERROR: ", e)
+      })
+      MongoDriver.client.on("reconnect", () => {
+        logger.info("> MongoDb : Reconnected")
+      })
 
-        // Optionally, create indexes
-        index.createIndex(MongoDriver)
-        user.createSuperAdmin()
-      } catch (err) {
-        logger.error("> MongoDB ERROR unable to connect:", err)
-      }
+      index.createIndex(MongoDriver)
+      user.createSuperAdmin()
+    } catch (err) {
+      logger.error("> MongoDB ERROR unable to connect:", err)
+      throw err
     }
+  }
+
+  static ready() {
+    if (!MongoDriver.readyPromise) {
+      MongoDriver.readyPromise = MongoDriver.connect()
+    }
+    return MongoDriver.readyPromise
   }
 
   constructor() {
     if (!MongoDriver.checkConnection()) {
-      MongoDriver.connect()
+      MongoDriver.ready()
     }
   }
 }

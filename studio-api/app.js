@@ -7,6 +7,8 @@ class App {
       // Load env variables
       require("./config")
 
+      const MongoDriver = require(`${__dirname}/lib/mongodb/driver`)
+
       // Auto-loads components based on process.env.COMPONENTS list
       this.components = {}
       process.env.COMPONENTS.split(",")
@@ -14,7 +16,7 @@ class App {
           return prev.then(async () => {
             await this.use(componentFolderName)
           })
-        }, Promise.resolve())
+        }, MongoDriver.constructor.ready())
         .then(async () => {
           if (this.components["WorkerWatcher"] !== undefined) {
             await this.components["WorkerWatcher"].discovery()

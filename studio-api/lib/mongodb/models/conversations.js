@@ -16,6 +16,7 @@ const {
 const {
   applyNameTextSearch,
   applyTagAllFilter,
+  escapeRegex,
 } = require("../queryBuilders/filters")
 
 const BSON_MAX_SIZE = 16 * 1024 * 1024
@@ -197,14 +198,14 @@ class ConvoModel extends MongoModel {
 
       if (filter?.name) {
         query.name = {
-          $regex: filter.name,
+          $regex: escapeRegex(filter.name),
           $options: "i",
         }
       }
 
       if (filter?.description) {
         query.description = {
-          $regex: filter.description,
+          $regex: escapeRegex(filter.description),
           $options: "i",
         }
       }
@@ -217,7 +218,7 @@ class ConvoModel extends MongoModel {
 
       if (filter?.text) {
         query["text.raw_segment"] = {
-          $regex: filter.text,
+          $regex: escapeRegex(filter.text),
           $options: "i",
         }
       }

@@ -1,9 +1,8 @@
-const debug = require("debug")(
-  "linto:lib:mongodb:models:tags",
-)
+const debug = require("debug")("linto:lib:mongodb:models:tags")
 const MongoModel = require(`../model`)
 const COLOR = require(`${process.cwd()}/lib/dao/organization/color`)
 const DEFAULT_TAGS = require(`${process.cwd()}/config/tags`)
+const { escapeRegex } = require("../queryBuilders/filters")
 
 const moment = require("moment")
 
@@ -32,7 +31,10 @@ class TagModel extends MongoModel {
     const defaultsTags = [
       ...DEFAULT_TAGS,
       ...(process.env.DEFAULT_TAGS
-        ? process.env.DEFAULT_TAGS.split(",").map((name) => ({ name: name.trim(), emoji: null }))
+        ? process.env.DEFAULT_TAGS.split(",").map((name) => ({
+            name: name.trim(),
+            emoji: null,
+          }))
         : []),
     ]
 
@@ -105,7 +107,7 @@ class TagModel extends MongoModel {
       }
       if (properties.name) {
         query.name = {
-          $regex: properties.name,
+          $regex: escapeRegex(properties.name),
           $options: "i",
         }
       }
@@ -195,7 +197,7 @@ class TagModel extends MongoModel {
       }
       if (name) {
         query.name = {
-          $regex: name,
+          $regex: escapeRegex(name),
           $options: "i",
         }
       }
@@ -220,7 +222,7 @@ class TagModel extends MongoModel {
       }
       if (name) {
         query.name = {
-          $regex: name,
+          $regex: escapeRegex(name),
           $options: "i",
         }
       }

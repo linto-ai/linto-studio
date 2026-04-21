@@ -1,6 +1,4 @@
-const debug = require("debug")(
-  "linto:lib:mongodb:models:organizations",
-)
+const debug = require("debug")("linto:lib:mongodb:models:organizations")
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
 const COLOR = require(`${process.cwd()}/lib/dao/organization/color`)
@@ -12,6 +10,7 @@ const MongoModel = require(`../model`)
 
 const categoriesModel = require(`./categories`)
 const tagsModel = require(`./tags`)
+const { escapeRegex } = require("../queryBuilders/filters")
 
 const moment = require("moment")
 
@@ -140,13 +139,13 @@ class OrganizationModel extends MongoModel {
       let query = {}
       if (filter.name) {
         query.name = {
-          $regex: filter.name,
+          $regex: escapeRegex(filter.name),
           $options: "i",
         }
       }
       if (filter.matchingMail) {
         query.matchingMail = {
-          $regex: filter.matchingMail,
+          $regex: escapeRegex(filter.matchingMail),
           $options: "i",
         }
       }
@@ -221,9 +220,8 @@ class OrganizationModel extends MongoModel {
       if (organizations.length === 0) return organizations
 
       const orgIds = organizations.map((o) => o._id.toString())
-      const allCategories = await categoriesModel.getSystemCategoriesByOrgIds(
-        orgIds,
-      )
+      const allCategories =
+        await categoriesModel.getSystemCategoriesByOrgIds(orgIds)
 
       const categoriesByOrg = new Map()
       for (const cat of allCategories) {
