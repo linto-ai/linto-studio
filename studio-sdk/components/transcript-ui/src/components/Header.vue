@@ -41,7 +41,7 @@ const formattedTitle = computed(() => {
     <div class="header-right">
       <Button
         v-if="isMobile"
-        variant="ghost"
+        variant="transparent"
         :aria-label="t('header.openSidebar')"
         @click="$emit('toggleSidebar')"
       >
@@ -54,7 +54,7 @@ const formattedTitle = computed(() => {
         <template #icon><Download :size="16" /></template>
         {{ t('header.export') }}
       </Button>
-      <Button variant="ghost" disabled :aria-label="t('header.settings')">
+      <Button variant="transparent" disabled :aria-label="t('header.settings')">
         <template #icon><Settings :size="16" /></template>
       </Button>
     </div>

@@ -104,10 +104,11 @@ async function updateConversationRights(req, res, next) {
         let sharedBy = await model.users.getById(req.payload.data.userId)
 
         if (sharedBy.length !== 1) throw new UserNotFound()
+        const sharedByEmail = sharedBy[0].email || sharedBy[0].firstname || "LinTO Studio"
         await Mailing.conversationRightUpdate(
           user,
           req,
-          sharedBy[0].email,
+          sharedByEmail,
           req.params.conversationId,
         )
       }
@@ -116,11 +117,12 @@ async function updateConversationRights(req, res, next) {
     if (!isUpdated) {
       let sharedBy = await model.users.getById(req.payload.data.userId)
       if (sharedBy.length !== 1) throw new UserNotFound()
+      const sharedByEmail = sharedBy[0].email || sharedBy[0].firstname || "LinTO Studio"
 
       Mailing.conversationShared(
         user,
         req,
-        sharedBy[0].email,
+        sharedByEmail,
         req.params.conversationId,
       )
 
@@ -152,8 +154,8 @@ async function updateConversationRights(req, res, next) {
 
 async function inviteNewUser(req, res, next) {
   try {
-    if (process.env.DISABLE_USER_CREATION === "true")
-      throw new UserError("User creation is disabled")
+    if (process.env.DISABLE_USER_INVITATION === "true")
+      throw new UserError("User invitation is disabled")
 
     const email = req.body.email
     const createdUser = await model.users.createExternal({ email })
@@ -174,14 +176,15 @@ async function inviteNewUser(req, res, next) {
         throw new UserError()
       }
 
-      // Share converation to created user
+      // Share conversation to created user
       const sharedBy = await model.users.getById(req.payload.data.userId)
       if (sharedBy.length !== 1) throw new UserNotFound()
+      const sharedByEmail = sharedBy[0].email || sharedBy[0].firstname || "LinTO Studio"
       await Mailing.conversationSharedNewUser(
         email,
         req,
         magicId,
-        sharedBy[0].email,
+        sharedByEmail,
         req.params.conversationId,
       )
 

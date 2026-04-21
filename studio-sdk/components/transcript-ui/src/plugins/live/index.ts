@@ -1,4 +1,4 @@
-import { ref, shallowRef, triggerRef } from "vue"
+import { ref, shallowRef } from "vue"
 import type {
   Core,
   CorePlugin,
@@ -54,8 +54,8 @@ export function createLivePlugin(): CorePlugin {
       hasLiveUpdate.value = true
 
       function clearPartial(): void {
+        // shallowRef detects the change on its own, no triggerRef needed
         partial.value = null
-        triggerRef(partial)
       }
 
       function onPartial(event: LivePartialEvent, channelId: string): void {
@@ -76,8 +76,6 @@ export function createLivePlugin(): CorePlugin {
         } else {
           return
         }
-
-        triggerRef(partial)
       }
 
       let clearPartialTimeout: ReturnType<typeof setTimeout> | null = null
@@ -98,8 +96,7 @@ export function createLivePlugin(): CorePlugin {
       }
 
       function updateOrCreateTurn(store: TranslationStore, turn: Turn): void {
-        const exists = store.turns.value.some((t) => t.id === turn.id)
-        if (exists) store.updateTurn(turn.id, turn)
+        if (store.hasTurn(turn.id)) store.updateTurn(turn.id, turn)
         else store.addTurn(turn)
       }
 
@@ -130,7 +127,10 @@ export function createLivePlugin(): CorePlugin {
           }
         }
 
-        immediateClearPartial()
+        const active = core.activeChannel.value?.activeTranslation.value
+        if (active?.isSource) {
+          immediateClearPartial()
+        }
       }
 
       function prependFinal(event: LiveFinalEvent, channelId: string): void {
@@ -200,11 +200,20 @@ export function createLivePlugin(): CorePlugin {
           partial.value = _event.text
         } else if (_event.final) {
           const trStore = channel.translations.get(_event.language)
-          if (trStore)
-            updateOrCreateTurn(
-              trStore,
-              finalEventToTranslationTurn({ ..._event, words: [] }, _event),
+          if (trStore) {
+            const turn = finalEventToTranslationTurn(
+              { ..._event, words: [] },
+              _event,
             )
+            if (trStore === activeTranslation) {
+              updateOrCreateTurn(trStore, turn)
+            } else {
+              trStore.updateOrCreateTurnSilent(turn)
+            }
+          }
+          if (activeTranslation.languages.includes(_event.language)) {
+            immediateClearPartial()
+          }
         }
       }
 

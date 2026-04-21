@@ -99,7 +99,7 @@ function processTurnTable(paragraphs_content, conversation, data, query) {
     const dt = DateTime.now().setZone(TZ)
     if (!dt.isValid) TZ = systemTimezone
 
-    offsetMinutes = DateTime.now().setZone(systemTimezone).offset
+    offsetMinutes = DateTime.now().setZone(TZ).offset
   }
 
   let lang = conversation.locale

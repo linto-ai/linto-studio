@@ -9,9 +9,9 @@ RUN apk upgrade --no-cache && apk add --no-cache \
 
 WORKDIR /usr/src/app
 
-COPY package.json ./
+COPY package.json package-lock.json ./
 
-RUN npm install --omit=dev
+RUN npm ci --omit=dev
 COPY . .
 
 HEALTHCHECK CMD curl -f http://localhost

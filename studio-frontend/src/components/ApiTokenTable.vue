@@ -2,10 +2,11 @@
   <div>
     <GenericTable
       :columns="columns"
-      :content="tokenList"
+      :content="decoratedTokens"
       :loading="loading"
       :sortListKey="sortListKey"
       :sortListDirection="sortListDirection"
+      :rowClass="rowClass"
       idKey="userId"
       @list_sort_by="sortBy">
       <template #cell-firstname="{ element }">
@@ -17,8 +18,18 @@
       <template #cell-createdAt="{ value }">
         {{ formatDate(value) }}
       </template>
-      <template #cell-expiresAt="{ value }">
-        {{ formatDate(value) }}
+      <template #cell-expiresAt="{ value, element }">
+        <div class="flex gap-small align-center">
+          <span>{{ formatDate(value) }}</span>
+          <Chip
+            v-if="element.expired"
+            red
+            :value="$t('api_tokens_settings.token_expired')" />
+          <Chip
+            v-else-if="element.expiringSoon"
+            yellow
+            :value="$t('api_tokens_settings.token_expiring_soon')" />
+        </div>
       </template>
       <template #cell-actions="{ element }">
         <div class="flex gap-small">
@@ -65,11 +76,14 @@
 
 <script>
 import { apiGetToken } from "@/api/token"
+import Chip from "@/components/atoms/Chip.vue"
 import GenericTable from "@/components/molecules/GenericTable.vue"
 import OrgaRoleSelector from "./molecules/OrgaRoleSelector.vue"
 import ModalDeleteToken from "./ModalDeleteToken.vue"
 import ModalRenewToken from "./ModalRenewToken.vue"
 import ModalViewToken from "./ModalViewToken.vue"
+import { formatDateLocale } from "@/tools/formatDate"
+import { isTokenExpiringSoon } from "@/tools/isTokenExpiringSoon"
 
 export default {
   props: {
@@ -117,13 +131,23 @@ export default {
         { key: "actions", label: this.$t("api_tokens_settings.token_actions_label"), width: "auto" },
       ]
     },
+    decoratedTokens() {
+      const now = Date.now()
+      return this.tokenList.map((token) => ({
+        ...token,
+        expiringSoon: isTokenExpiringSoon(token, now),
+      }))
+    },
   },
   methods: {
+    formatDate: formatDateLocale,
     sortBy(event) {
       this.$emit("list_sort_by", event)
     },
-    formatDate(date) {
-      return new Date(date).toLocaleDateString()
+    rowClass(line) {
+      if (line.expired) return "token-row-expired"
+      if (line.expiringSoon) return "token-row-expiring"
+      return ""
     },
     openViewModal(token) {
       this.selectedToken = token
@@ -174,6 +198,7 @@ export default {
     },
   },
   components: {
+    Chip,
     GenericTable,
     OrgaRoleSelector,
     ModalViewToken,
@@ -182,3 +207,12 @@ export default {
   },
 }
 </script>
+
+<style lang="scss">
+.table-grid tr.token-row-expired > td {
+  background-color: var(--danger-soft);
+}
+.table-grid tr.token-row-expiring > td {
+  background-color: var(--warning-soft);
+}
+</style>

@@ -37,7 +37,7 @@ function onVolumeInput(event: Event) {
   <div class="player-controls">
     <div class="controls-left">
       <Button
-        variant="ghost"
+        variant="transparent"
         size="md"
         class="skip-button"
         :aria-label="t('player.skipBack')"
@@ -48,7 +48,7 @@ function onVolumeInput(event: Event) {
       </Button>
 
       <Button
-        variant="ghost"
+        variant="transparent"
         size="md"
         class="play-button"
         :aria-label="isPlaying ? t('player.pause') : t('player.play')"
@@ -62,7 +62,7 @@ function onVolumeInput(event: Event) {
       </Button>
 
       <Button
-        variant="ghost"
+        variant="transparent"
         size="md"
         class="skip-button"
         :aria-label="t('player.skipForward')"
@@ -86,7 +86,7 @@ function onVolumeInput(event: Event) {
         @mouseleave="showVolumeSlider = false"
       >
         <Button
-          variant="ghost"
+          variant="transparent"
           size="md"
           :aria-label="isMuted ? t('player.unmute') : t('player.mute')"
           :disabled="!isReady"
@@ -112,7 +112,7 @@ function onVolumeInput(event: Event) {
       </div>
 
       <Button
-        variant="ghost"
+        variant="transparent"
         size="md"
         class="speed-button"
         :aria-label="t('player.speed')"

@@ -127,6 +127,104 @@ class StudioApiService:
 
         return await self._send_request("POST", url, data=form, token=kwargs["token"])
 
+    # --- LLM / Summary methods ---
+
+    @with_token
+    @with_organization_id
+    async def fetch_llm_services(self, **kwargs):
+        """List available LLM services for the organization."""
+        org_id = kwargs["organizationId"]
+        url = f"{self.base_api_url}/services/{org_id}/llm"
+        return await self._send_request("GET", url, **kwargs)
+
+    @with_token
+    async def trigger_summary(self, conversationId, format, flavor=None, **kwargs):
+        """Trigger LLM summary generation for a conversation."""
+        url = f"{self.base_api_url}/conversations/{conversationId}/download?format={format}"
+        if flavor:
+            url += f"&flavor={flavor}"
+        return await self._send_request("POST", url, **kwargs)
+
+    @with_token
+    async def get_export_list(self, conversationId, **kwargs):
+        """Get list of exports for a conversation."""
+        url = f"{self.base_api_url}/conversations/{conversationId}/export/list"
+        return await self._send_request("GET", url, **kwargs)
+
+    @with_token
+    async def get_export_content(self, conversationId, jobId, **kwargs):
+        """Get the content of a completed export."""
+        url = f"{self.base_api_url}/conversations/{conversationId}/export/{jobId}/content"
+        return await self._send_request("GET", url, **kwargs)
+
+    # --- Sharing methods ---
+
+    @with_token
+    async def share_conversation(self, conversationId, email, right=1, **kwargs):
+        """Share a conversation with a user by email.
+
+        LinTO Studio automatically sends an email notification.
+        If the user doesn't exist, an external account with magic link is created.
+        """
+        url = f"{self.base_api_url}/conversations/{conversationId}/invite"
+        return await self._send_request(
+            "POST", url, json={"email": email, "right": right}, **kwargs
+        )
+
+    # --- User methods ---
+
+    @with_token
+    async def search_users(self, search, **kwargs):
+        """Search users by email or name."""
+        url = f"{self.base_api_url}/users/search?search={search}"
+        return await self._send_request("GET", url, **kwargs)
+
+    # --- Conversation management methods ---
+
+    @with_token
+    async def update_conversation(self, conversationId, data, **kwargs):
+        """Update conversation fields (owner, sharedWithUsers, etc.)."""
+        url = f"{self.base_api_url}/conversations/{conversationId}"
+        return await self._send_request("PATCH", url, json=data, **kwargs)
+
+    # --- Download methods ---
+
+    @with_token
+    async def download_conversation(self, conversationId, format="docx", **kwargs):
+        """Download transcription in the given format (docx, text, json, etc.)."""
+        url = f"{self.base_api_url}/conversations/{conversationId}/download?format={format}"
+        response_type = "binary" if format in ("docx", "odt", "verbatim") else None
+        return await self._send_request("POST", url, response_type=response_type, **kwargs)
+
+    # --- Publication methods ---
+
+    @with_token
+    @with_organization_id
+    async def get_publication_templates(self, **kwargs):
+        """Get available publication templates for the organization."""
+        org_id = kwargs["organizationId"]
+        url = f"{self.base_api_url}/publication/templates?organization_id={org_id}"
+        return await self._send_request("GET", url, **kwargs)
+
+    @with_token
+    async def get_template_placeholders(self, templateId, **kwargs):
+        """Get placeholders for a specific publication template."""
+        url = f"{self.base_api_url}/publication/templates/{templateId}/placeholders"
+        return await self._send_request("GET", url, **kwargs)
+
+    @with_token
+    async def export_with_template(self, jobId, format, templateId=None, versionNumber=None, **kwargs):
+        """Export a document using a publication template. Returns binary content (PDF/DOCX)."""
+        url = f"{self.base_api_url}/publication/{jobId}/export/{format}"
+        params = []
+        if templateId:
+            params.append(f"templateId={templateId}")
+        if versionNumber is not None:
+            params.append(f"versionNumber={versionNumber}")
+        if params:
+            url += "?" + "&".join(params)
+        return await self._send_request("GET", url, response_type="binary", **kwargs)
+
     async def login(self, email: str, password: str):
         async with aiohttp.ClientSession() as session:
             async with session.post(
@@ -171,4 +269,8 @@ class StudioApiService:
                         request_info=resp.request_info,
                         history=resp.history,
                     )
+                if resp.status == 204:
+                    return None
+                if kwargs.get("response_type") == "binary":
+                    return await resp.read()
                 return await resp.json()

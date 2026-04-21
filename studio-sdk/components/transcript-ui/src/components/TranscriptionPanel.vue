@@ -8,10 +8,10 @@ import {
   nextTick,
 } from "vue"
 import { useStickToBottom } from "vue-stick-to-bottom"
-import { ArrowDown } from "lucide-vue-next"
 import TranscriptionTurn from "./TranscriptionTurn.vue"
 import TranscriptionEmpty from "./TranscriptionEmpty.vue"
 import Button from "./atoms/Button.vue"
+import { ArrowDown } from "lucide-vue-next"
 import { useCore } from "../core"
 import { useI18n } from "../i18n"
 import { useFollowPlayback } from "../composables/useFollowPlayback"
@@ -159,6 +159,7 @@ onBeforeUnmount(() => {
         <TranscriptionTurn
           v-else
           v-for="(turn, i) in turns"
+          v-memo="[turn, speakers.get(turn.speakerId ?? ''), hasLiveUpdate && !partialTurn && i === turns.length - 1]"
           :data-turn-id="turn.id"
           :key="turn.id"
           :turn="turn"

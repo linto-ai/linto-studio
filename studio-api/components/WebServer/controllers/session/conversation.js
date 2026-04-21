@@ -609,6 +609,7 @@ async function storeQuickMeetingFromStop(req, next) {
 
 module.exports = {
   storeProxyResponse,
+  storeSession,
   storeSessionFromStop,
   storeQuickMeetingFromStop,
 }

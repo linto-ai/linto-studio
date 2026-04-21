@@ -186,8 +186,17 @@
           </section>
         </div>
         <div class="flex col gap-medium session-settings-right align-center">
-          <div class="flex col gap-medium">
+          <div class="flex col gap-medium session-settings-actions">
             <!-- Delete and save -->
+            <Button
+              v-if="isPending && !isStarted"
+              icon="trash"
+              :label="$t('session.detail_page.delete_session_button')"
+              @click="deleteSession"
+              variant="primary"
+              intent="destructive"
+              size="sm"
+              class="btn--delete-scheduled"></Button>
             <Button
               v-if="isStarted && !isActive"
               icon="stop"
@@ -216,6 +225,7 @@
           <SessionChannelsTable
             v-if="channels.length > 0"
             from="sessionSettings"
+            :microphoneDisabled="!isStarted"
             @connectMicrophone="connectMicrophone"
             @updateName="updateChannelName"
             :channelsList="localChannels"></SessionChannelsTable>

@@ -121,7 +121,7 @@ function syncDocToStore(
   }
 
   // Update the store silently (we already emitted the events)
-  translation.turns.value = mergedTurns
+  translation.replaceTurns(mergedTurns)
 }
 
 function fixDuplicateTurnIds(state: EditorState): Transaction | null {

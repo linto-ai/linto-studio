@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends { value: string; label: string }">
 import { ref, computed } from "vue"
 import { Check } from "lucide-vue-next"
 import {
@@ -16,7 +16,7 @@ import {
 //import { useI18n } from "../../i18n"
 
 const props = defineProps<{
-  items: { value: string; label: string }[]
+  items: T[]
   selectedValue: string
   ariaLabel: string
 }>()
@@ -25,12 +25,17 @@ const emit = defineEmits<{
   "update:selectedValue": [value: string]
 }>()
 
+defineSlots<{
+  item(props: { item: T }): unknown
+  trigger(props: { item: T | undefined }): unknown
+}>()
+
 //const { t } = useI18n()
 const isOpen = ref(false)
 //const filterThreshold = 7
 
-const selectedLabel = computed(
-  () => props.items.find((i) => i.value === props.selectedValue)?.label ?? "",
+const selectedItem = computed(() =>
+  props.items.find((i) => i.value === props.selectedValue),
 )
 
 function onSelect(value: string) {
@@ -45,7 +50,9 @@ function onSelect(value: string) {
       class="sidebar-select-trigger"
       :aria-label="ariaLabel"
       @click="isOpen = true">
-      <span class="sidebar-select-trigger-label">{{ selectedLabel }}</span>
+      <span class="sidebar-select-trigger-label">
+        <slot name="trigger" :item="selectedItem">{{ selectedItem?.label ?? "" }}</slot>
+      </span>
     </button>
 
     <DialogRoot v-model:open="isOpen">
@@ -70,7 +77,7 @@ function onSelect(value: string) {
                 <ListboxItemIndicator class="sheet-item-indicator">
                   <Check :size="16" />
                 </ListboxItemIndicator>
-                <span>{{ item.label }}</span>
+                <slot name="item" :item="item">{{ item.label }}</slot>
               </ListboxItem>
             </ListboxContent>
           </ListboxRoot>

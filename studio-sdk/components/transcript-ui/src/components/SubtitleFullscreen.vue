@@ -4,6 +4,8 @@ import { X } from "lucide-vue-next"
 import { useCore } from "../core"
 import { useI18n } from "../i18n"
 import { useSubtitleScroller } from "../composables/useSubtitleScroller"
+import { useWatermarkCycle } from "../plugins/subtitle/useWatermarkCycle"
+import SubtitleWatermark from "../plugins/subtitle/SubtitleWatermark.vue"
 
 const core = useCore()
 const { t } = useI18n()
@@ -18,6 +20,10 @@ useSubtitleScroller({
   fontSize,
   lineHeight,
 })
+
+const { visible: watermarkVisible } = useWatermarkCycle(
+  core.subtitle?.watermark,
+)
 
 onMounted(async () => {
   const el = containerRef.value
@@ -77,7 +83,11 @@ onUnmounted(() => {
       @click="close">
       <X :size="24" />
     </button>
-    <canvas ref="canvas" class="subtitle-fullscreen__canvas"></canvas>
+    <canvas
+      ref="canvas"
+      class="subtitle-fullscreen__canvas"
+      :class="{ 'subtitle-fullscreen__canvas--shrunk': watermarkVisible }"></canvas>
+    <SubtitleWatermark :visible="watermarkVisible" />
   </div>
 </template>
 
@@ -121,10 +131,17 @@ onUnmounted(() => {
   display: block;
   width: 100%;
   height: 100%;
+  transition: transform 0.4s ease;
+  transform-origin: center;
+}
+
+.subtitle-fullscreen__canvas--shrunk {
+  transform: scale(0.85) translateY(-4%);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .subtitle-fullscreen__close {
+  .subtitle-fullscreen__close,
+  .subtitle-fullscreen__canvas {
     transition: none;
   }
 }
