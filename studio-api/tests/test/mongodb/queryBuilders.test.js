@@ -1,13 +1,14 @@
-const { toObjectIds } = require(`${process.cwd()}/lib/mongodb/queryBuilders/ids`)
+const { toObjectIds } = require(
+  `${process.cwd()}/lib/mongodb/queryBuilders/ids`,
+)
 const {
   customRightsAllowed,
   customRightsNotMember,
   sharedWithUsersAllowed,
 } = require(`${process.cwd()}/lib/mongodb/queryBuilders/rights`)
-const {
-  applyNameTextSearch,
-  applyTagAllFilter,
-} = require(`${process.cwd()}/lib/mongodb/queryBuilders/filters`)
+const { applyNameTextSearch, applyTagAllFilter } = require(
+  `${process.cwd()}/lib/mongodb/queryBuilders/filters`,
+)
 
 describe("queryBuilders/ids", () => {
   const fakeGetObjectId = (id) => ({ wrapped: id })

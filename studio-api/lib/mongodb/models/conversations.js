@@ -19,6 +19,20 @@ const {
 } = require("../queryBuilders/filters")
 
 const BSON_MAX_SIZE = 16 * 1024 * 1024
+
+const LIGHT_CONVERSATION_PROJECTION = {
+  text: 0,
+  speakers: 0,
+  keywords: 0,
+  highlights: 0,
+}
+
+const LIST_CONVERSATION_PROJECTION = {
+  page: 0,
+  text: 0,
+  "jobs.transcription.job_logs": 0,
+}
+
 class ConvoModel extends MongoModel {
   constructor() {
     super("conversations")
@@ -167,10 +181,7 @@ class ConvoModel extends MongoModel {
   async getByShare(idUser, filter = undefined) {
     try {
       let projection = {
-        text: 0,
-        speakers: 0,
-        keywords: 0,
-        highlights: 0,
+        ...LIGHT_CONVERSATION_PROJECTION,
         "jobs.transcription.job_logs": 0,
       }
 
@@ -244,12 +255,7 @@ class ConvoModel extends MongoModel {
         "type.mode": TYPE.CANONICAL,
       }
       if (!projection) {
-        projection = {
-          text: 0,
-          speakers: 0,
-          keywords: 0,
-          highlights: 0,
-        }
+        projection = { ...LIGHT_CONVERSATION_PROJECTION }
       }
       return await this.mongoRequest(query, projection)
     } catch (err) {
@@ -381,7 +387,7 @@ class ConvoModel extends MongoModel {
         },
       }
       return await this.mongoUpdateMany(query, operator, values)
-    } catch (err) {
+    } catch (error) {
       console.error(error)
       return error
     }
@@ -429,11 +435,7 @@ class ConvoModel extends MongoModel {
     filter,
   ) {
     try {
-      let projection = {
-        page: 0,
-        text: 0,
-        "jobs.transcription.job_logs": 0,
-      }
+      let projection = { ...LIST_CONVERSATION_PROJECTION }
 
       let query = {
         "organization.organizationId": organizationId.toString(),
@@ -467,16 +469,10 @@ class ConvoModel extends MongoModel {
       }
 
       if (filter.tags && filter.filter === "notags") {
-        // notags rules don't apply for highlighs category
         query.tags = {
           $nin: filter.tags,
         }
       } else if (filter.tags) {
-        query.tags = {
-          $all: filter.tags.split(","),
-        }
-      }
-      if (filter.tags && filter.filter !== "notags") {
         query.tags = {
           $all: filter.tags.split(","),
         }
@@ -545,11 +541,7 @@ class ConvoModel extends MongoModel {
       applyTagAllFilter(query, filter)
       applyNameTextSearch(query, filter)
 
-      const projection = {
-        page: 0,
-        text: 0,
-        "jobs.transcription.job_logs": 0,
-      }
+      const projection = { ...LIST_CONVERSATION_PROJECTION }
 
       return await this.mongoAggregatePaginate(query, projection, filter)
     } catch (error) {
@@ -560,11 +552,7 @@ class ConvoModel extends MongoModel {
 
   async listConvFromFavorite(convIds, filter) {
     try {
-      let projection = {
-        page: 0,
-        text: 0,
-        "jobs.transcription.job_logs": 0,
-      }
+      let projection = { ...LIST_CONVERSATION_PROJECTION }
 
       convIds = toObjectIds(convIds, this.getObjectId)
 
