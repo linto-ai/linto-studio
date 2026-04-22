@@ -1,6 +1,4 @@
-const debug = require("debug")(
-  "linto:lib:mongodb:models:chatMessages",
-)
+const debug = require("debug")("linto:lib:mongodb:models:chatMessages")
 const MongoModel = require(`../model`)
 
 /**
@@ -22,36 +20,21 @@ class ChatMessageModel extends MongoModel {
   }
 
   async create(message) {
-    try {
-      message.created_at = new Date()
-      return await this.mongoInsert(message)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    message.created_at = new Date()
+    return await this.mongoInsert(message)
   }
 
   async getBySession(sessionId) {
-    try {
-      return await this.mongoRequest(
-        { sessionId: sessionId.toString() },
-        { sort: { created_at: 1 } },
-      )
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoRequest(
+      { sessionId: sessionId.toString() },
+      { sort: { created_at: 1 } },
+    )
   }
 
   async deleteBySession(sessionId) {
-    try {
-      return await this.mongoDeleteMany({
-        sessionId: sessionId.toString(),
-      })
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoDeleteMany({
+      sessionId: sessionId.toString(),
+    })
   }
 }
 

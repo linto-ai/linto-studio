@@ -1,6 +1,4 @@
-const debug = require("debug")(
-  "linto:lib:mongodb:models:chatSessions",
-)
+const debug = require("debug")("linto:lib:mongodb:models:chatSessions")
 const MongoModel = require(`../model`)
 
 /**
@@ -24,62 +22,37 @@ class ChatSessionModel extends MongoModel {
   }
 
   async create(session) {
-    try {
-      const now = new Date()
-      session.created_at = now
-      session.updated_at = now
-      return await this.mongoInsert(session)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    const now = new Date()
+    session.created_at = now
+    session.updated_at = now
+    return await this.mongoInsert(session)
   }
 
   async getByConversationAndUser(conversationId, userId) {
-    try {
-      return await this.mongoRequest(
-        { conversationId, userId },
-        { sort: { created_at: -1 } },
-      )
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoRequest(
+      { conversationId, userId },
+      { sort: { created_at: -1 } },
+    )
   }
 
   async getById(sessionId) {
-    try {
-      return await this.mongoRequest({
-        _id: this.getObjectId(sessionId),
-      })
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoRequest({
+      _id: this.getObjectId(sessionId),
+    })
   }
 
   async delete(sessionId) {
-    try {
-      return await this.mongoDelete({
-        _id: this.getObjectId(sessionId),
-      })
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoDelete({
+      _id: this.getObjectId(sessionId),
+    })
   }
 
   async updateTitle(sessionId, title) {
-    try {
-      return await this.mongoUpdateOne(
-        { _id: this.getObjectId(sessionId) },
-        "$set",
-        { title, updated_at: new Date() },
-      )
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoUpdateOne(
+      { _id: this.getObjectId(sessionId) },
+      "$set",
+      { title, updated_at: new Date() },
+    )
   }
 }
 

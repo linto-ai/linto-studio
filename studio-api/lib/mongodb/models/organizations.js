@@ -11,10 +11,11 @@ const MongoModel = require(`../model`)
 const categoriesModel = require(`./categories`)
 const tagsModel = require(`./tags`)
 const { escapeRegex } = require("../queryBuilders/filters")
+const {
+  ORGANIZATION_PUBLIC_PROJECTION: public_projection,
+} = require("../queryBuilders/projections")
 
 const moment = require("moment")
-
-const public_projection = { token: 0 }
 
 class OrganizationModel extends MongoModel {
   constructor() {
@@ -22,256 +23,154 @@ class OrganizationModel extends MongoModel {
   }
 
   async create(payload) {
-    try {
-      payload.permissions = DEFAULT_PERMISSION // We don't allow user to set permissions orga permissions
-      const dateTime = moment().format()
-      payload.created = dateTime
-      payload.last_update = dateTime
-      payload.personal = false
+    payload.permissions = DEFAULT_PERMISSION
+    const dateTime = moment().format()
+    payload.created = dateTime
+    payload.last_update = dateTime
+    payload.personal = false
 
-      const result = await this.mongoInsert(payload)
+    const result = await this.mongoInsert(payload)
 
-      const { systemCategory, labelsCategory, tagsCategory } =
-        await this.createOrganizationSystemCategories(
-          result.insertedId.toString(),
-        )
+    const { systemCategory, labelsCategory, tagsCategory } =
+      await this.createOrganizationSystemCategories(
+        result.insertedId.toString(),
+      )
 
-      result.categories = [systemCategory, labelsCategory, tagsCategory]
-
-      return result
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    result.categories = [systemCategory, labelsCategory, tagsCategory]
+    return result
   }
 
   async createOrganizationSystemCategories(organizationId) {
-    try {
-      const labelsCategory = await categoriesModel.create({
-        color: COLOR.getRandomColor(),
-        name: "labels",
-        scopeId: organizationId,
-        type: TYPE.SYSTEM,
-      })
-      const tagsCategory = await categoriesModel.create({
-        color: COLOR.getRandomColor(),
-        name: "tags",
-        scopeId: organizationId,
-        type: TYPE.SYSTEM,
-      })
-      await tagsModel.createDefaultTags(organizationId, tagsCategory.insertedId)
-
-      return { labelsCategory, tagsCategory }
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    const labelsCategory = await categoriesModel.create({
+      color: COLOR.getRandomColor(),
+      name: "labels",
+      scopeId: organizationId,
+      type: TYPE.SYSTEM,
+    })
+    const tagsCategory = await categoriesModel.create({
+      color: COLOR.getRandomColor(),
+      name: "tags",
+      scopeId: organizationId,
+      type: TYPE.SYSTEM,
+    })
+    await tagsModel.createDefaultTags(organizationId, tagsCategory.insertedId)
+    return { labelsCategory, tagsCategory }
   }
 
   async createDefault(userId, organizationName, oPayload) {
-    try {
-      let payload = {
-        owner: userId,
-        name: organizationName,
-        users: [{ userId: userId, role: ROLES.ADMIN }],
-        personal: true,
-        ...oPayload,
-      }
-      const dateTime = moment().format()
-      payload.created = dateTime
-      payload.last_update = dateTime
-
-      payload.permissions = DEFAULT_PERMISSION // We don't allow user to set permissions orga permissions
-
-      const result = await this.mongoInsert(payload)
-
-      // When a new organization is created, we create the main category "system"
-      const { labelsCategory, tagsCategory } =
-        await this.createOrganizationSystemCategories(
-          result.insertedId.toString(),
-        )
-
-      // We add the default categories to the organization
-      result.categories = [labelsCategory, tagsCategory]
-
-      return result
-    } catch (error) {
-      console.error(error)
-      return error
+    const dateTime = moment().format()
+    const payload = {
+      owner: userId,
+      name: organizationName,
+      users: [{ userId, role: ROLES.ADMIN }],
+      personal: true,
+      ...oPayload,
+      created: dateTime,
+      last_update: dateTime,
+      permissions: DEFAULT_PERMISSION,
     }
+
+    const result = await this.mongoInsert(payload)
+
+    const { labelsCategory, tagsCategory } =
+      await this.createOrganizationSystemCategories(
+        result.insertedId.toString(),
+      )
+
+    result.categories = [labelsCategory, tagsCategory]
+    return result
   }
 
   async createOrgaByAdmin(payload) {
-    try {
-      const dateTime = moment().format()
-      payload.created = dateTime
-      payload.last_update = dateTime
-      const result = await this.mongoInsert(payload)
-      return result
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    const dateTime = moment().format()
+    payload.created = dateTime
+    payload.last_update = dateTime
+    return await this.mongoInsert(payload)
   }
 
-  // update an organization
   async updateOrgaByAdmin(payload) {
-    try {
-      const operator = "$set"
-      const query = {
-        _id: this.getObjectId(payload._id),
-      }
-      if (payload.organizationId) delete payload.organizationId
-      delete payload._id
-      payload.last_update = moment().format()
-
-      let mutableElements = payload
-      return await this.mongoUpdateOne(query, operator, mutableElements)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    const query = { _id: this.getObjectId(payload._id) }
+    if (payload.organizationId) delete payload.organizationId
+    delete payload._id
+    payload.last_update = moment().format()
+    return await this.mongoUpdateOne(query, "$set", payload)
   }
 
-  // get all organizations
   async getAll(filter) {
-    try {
-      let query = {}
-      if (filter.name) {
-        query.name = {
-          $regex: escapeRegex(filter.name),
-          $options: "i",
-        }
-      }
-      if (filter.matchingMail) {
-        query.matchingMail = {
-          $regex: escapeRegex(filter.matchingMail),
-          $options: "i",
-        }
-      }
-
-      if (filter.hidePersonal === "true") {
-        query.personal = false
-      }
-
-      if (!filter) return await this.mongoRequest(query)
-      else
-        return await this.mongoAggregatePaginate(
-          query,
-          public_projection,
-          filter,
-        )
-    } catch (error) {
-      console.error(error)
-      return error
+    const query = {}
+    if (filter.name) {
+      query.name = { $regex: escapeRegex(filter.name), $options: "i" }
     }
+    if (filter.matchingMail) {
+      query.matchingMail = {
+        $regex: escapeRegex(filter.matchingMail),
+        $options: "i",
+      }
+    }
+    if (filter.hidePersonal === "true") {
+      query.personal = false
+    }
+
+    if (!filter) return await this.mongoRequest(query)
+    return await this.mongoAggregatePaginate(query, public_projection, filter)
   }
 
   async getById(id) {
-    try {
-      const query = {
-        _id: this.getObjectId(id),
-      }
-      return await this.mongoRequest(query)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoRequest({ _id: this.getObjectId(id) })
   }
 
   async getByIdAndUser(orgaId, userId) {
-    try {
-      const query = {
+    return await this.mongoRequest(
+      {
         _id: this.getObjectId(orgaId),
-        users: {
-          $elemMatch: {
-            userId: userId.toString(),
-          },
-        },
-      }
-      return await this.mongoRequest(query, public_projection)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+        users: { $elemMatch: { userId: userId.toString() } },
+      },
+      public_projection,
+    )
   }
 
   async getByName(name) {
-    try {
-      const query = { name }
-      return await this.mongoRequest(query, public_projection)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoRequest({ name }, public_projection)
   }
 
   async listSelf(userId) {
-    try {
-      const query = {
-        users: {
-          $elemMatch: {
-            userId: userId.toString(),
-          },
-        },
-      }
-      const organizations = await this.mongoRequest(query, public_projection)
-
-      if (organizations.length === 0) return organizations
-
-      const orgIds = organizations.map((o) => o._id.toString())
-      const allCategories =
-        await categoriesModel.getSystemCategoriesByOrgIds(orgIds)
-
-      const categoriesByOrg = new Map()
-      for (const cat of allCategories) {
-        const key = cat.scopeId
-        if (!categoriesByOrg.has(key)) categoriesByOrg.set(key, [])
-        categoriesByOrg.get(key).push(cat)
-      }
-
-      for (const organization of organizations) {
-        organization.categories =
-          categoriesByOrg.get(organization._id.toString()) || []
-      }
-
-      return organizations
-    } catch (error) {
-      console.error(error)
-      return error
+    const query = {
+      users: { $elemMatch: { userId: userId.toString() } },
     }
+    const organizations = await this.mongoRequest(query, public_projection)
+
+    if (organizations.length === 0) return organizations
+
+    const orgIds = organizations.map((o) => o._id.toString())
+    const allCategories =
+      await categoriesModel.getSystemCategoriesByOrgIds(orgIds)
+
+    const categoriesByOrg = new Map()
+    for (const cat of allCategories) {
+      const key = cat.scopeId
+      if (!categoriesByOrg.has(key)) categoriesByOrg.set(key, [])
+      categoriesByOrg.get(key).push(cat)
+    }
+
+    for (const organization of organizations) {
+      organization.categories =
+        categoriesByOrg.get(organization._id.toString()) || []
+    }
+
+    return organizations
   }
 
-  // update an organization
   async update(payload) {
-    try {
-      const operator = "$set"
-      const query = {
-        _id: this.getObjectId(payload._id),
-      }
-      if (payload.organizationId) delete payload.organizationId
-      delete payload.permissions
-      delete payload._id
-      payload.last_update = moment().format()
-
-      let mutableElements = payload
-      return await this.mongoUpdateOne(query, operator, mutableElements)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    const query = { _id: this.getObjectId(payload._id) }
+    if (payload.organizationId) delete payload.organizationId
+    delete payload.permissions
+    delete payload._id
+    payload.last_update = moment().format()
+    return await this.mongoUpdateOne(query, "$set", payload)
   }
 
   async delete(id) {
-    try {
-      const query = {
-        _id: this.getObjectId(id),
-      }
-      return await this.mongoDelete(query)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoDelete({ _id: this.getObjectId(id) })
   }
 }
 

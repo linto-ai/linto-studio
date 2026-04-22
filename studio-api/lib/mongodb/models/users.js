@@ -8,24 +8,13 @@ const VALIDITY_DATE = require(
   `${process.cwd()}/lib/dao/validityDate/validityDate.js`,
 )
 const { escapeRegex } = require("../queryBuilders/filters")
+const {
+  USER_PUBLIC_PROJECTION: public_projection,
+  USER_PERSONAL_PROJECTION: personal_projection,
+} = require("../queryBuilders/projections")
 
 const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
 const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
-
-const public_projection = {
-  email: 1,
-  firstname: 1,
-  lastname: 1,
-  img: 1,
-  private: 1,
-}
-
-const personal_projection = {
-  salt: 0,
-  passwordHash: 0,
-  keyToken: 0,
-  authLink: 0,
-}
 
 const defaultUserPayload = {
   keyToken: null,
@@ -56,301 +45,195 @@ function generateAuthLink() {
       charset: "alphanumeric",
       length: 20,
     }),
-    validityDate: VALIDITY_DATE.generateValidityDate(VALIDITY_DATE.SHORT), // 30 minutes
+    validityDate: VALIDITY_DATE.generateValidityDate(VALIDITY_DATE.SHORT),
   }
 }
 
 class UsersModel extends MongoModel {
   constructor() {
-    super("users") // define name of 'users' collection elsewhere?
+    super("users")
   }
 
   async createSuperAdmin(user) {
-    try {
-      const { salt, passwordHash } = generatePasswordHash(user.password)
-      delete user.password
-      const dateTime = moment().format()
+    const { salt, passwordHash } = generatePasswordHash(user.password)
+    delete user.password
+    const dateTime = moment().format()
 
-      const adminPayload = {
-        ...defaultUserPayload,
-        ...user,
-        email: user.email,
-        salt,
-        passwordHash,
-        authLink: generateAuthLink(),
-        created: dateTime,
-        last_update: dateTime,
-        fromSso: false,
-        type: USER_TYPE.USER,
-      }
-
-      // If SMTP is not configured, mark the email as verified
-      if (!process.env.SMTP_HOST) {
-        adminPayload.emailIsVerified = true
-        adminPayload.verifiedEmail.push(adminPayload.email)
-      }
-
-      return await this.mongoInsert(adminPayload)
-    } catch (error) {
-      console.error(error)
-      return error
+    const adminPayload = {
+      ...defaultUserPayload,
+      ...user,
+      email: user.email,
+      salt,
+      passwordHash,
+      authLink: generateAuthLink(),
+      created: dateTime,
+      last_update: dateTime,
+      fromSso: false,
+      type: USER_TYPE.USER,
     }
+
+    if (!process.env.SMTP_HOST) {
+      adminPayload.emailIsVerified = true
+      adminPayload.verifiedEmail.push(adminPayload.email)
+    }
+
+    return await this.mongoInsert(adminPayload)
   }
 
   async create(payload) {
-    try {
-      const dateTime = moment().format()
-      delete payload.password
+    const dateTime = moment().format()
+    delete payload.password
 
-      if (!payload.fromSso) payload.fromSso = false
-      const userPayload = {
-        ...payload,
-        authLink: generateAuthLink(),
-        ...defaultUserPayload,
-        role: ROLE.defaultUserRole(),
-        created: dateTime,
-        last_update: dateTime,
-        type: USER_TYPE.USER,
-      }
-
-      // If SMTP is not configured, mark the email as verified
-      if (!process.env.SMTP_HOST) {
-        userPayload.emailIsVerified = true
-        userPayload.verifiedEmail.push(userPayload.email)
-      }
-
-      return await this.mongoInsert(userPayload)
-    } catch (error) {
-      console.error(error)
-      return error
+    if (!payload.fromSso) payload.fromSso = false
+    const userPayload = {
+      ...payload,
+      authLink: generateAuthLink(),
+      ...defaultUserPayload,
+      role: ROLE.defaultUserRole(),
+      created: dateTime,
+      last_update: dateTime,
+      type: USER_TYPE.USER,
     }
+
+    if (!process.env.SMTP_HOST) {
+      userPayload.emailIsVerified = true
+      userPayload.verifiedEmail.push(userPayload.email)
+    }
+
+    return await this.mongoInsert(userPayload)
   }
 
   async createApiKey(payload, role = ROLE.UNDEFINED) {
-    try {
-      const dateTime = moment().format()
-      const userPayload = {
-        ...payload,
-        created: dateTime,
-        last_update: dateTime,
-        fromSso: false,
-        private: true,
-        role: role,
-        type: USER_TYPE.M2M,
-      }
-
-      return await this.mongoInsert(userPayload)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    const dateTime = moment().format()
+    return await this.mongoInsert({
+      ...payload,
+      created: dateTime,
+      last_update: dateTime,
+      fromSso: false,
+      private: true,
+      role,
+      type: USER_TYPE.M2M,
+    })
   }
 
   async createUser(payload) {
-    try {
-      const { salt, passwordHash } = generatePasswordHash(payload.password)
-      delete payload.password
+    const { salt, passwordHash } = generatePasswordHash(payload.password)
+    delete payload.password
 
-      const dateTime = moment().format()
-
-      const userPayload = {
-        ...payload,
-        salt,
-        passwordHash,
-        accountNotifications: {
-          updatePassword: false,
-          inviteAccount: false,
-        },
-        created: dateTime,
-        last_update: dateTime,
-        fromSso: false,
-      }
-
-      return await this.create(userPayload)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    const dateTime = moment().format()
+    return await this.create({
+      ...payload,
+      salt,
+      passwordHash,
+      accountNotifications: {
+        updatePassword: false,
+        inviteAccount: false,
+      },
+      created: dateTime,
+      last_update: dateTime,
+      fromSso: false,
+    })
   }
 
   async createExternal(payload, fromSso = false) {
-    try {
-      const dateTime = moment().format()
-      delete payload.password
+    const dateTime = moment().format()
+    delete payload.password
 
-      const externalPayload = {
-        lastname: "",
-        firstname: "",
-        ...payload,
-        img: "pictures/default.jpg",
-        passwordHash: null,
-        accountNotifications: {
-          updatePassword: false,
-          inviteAccount: true,
-        },
-        created: dateTime,
-        last_update: dateTime,
-        fromSso,
-      }
-      if (fromSso) {
-        externalPayload.emailIsVerified = true
-        externalPayload.verifiedEmail = [payload.email]
-      }
-
-      return await this.create(externalPayload)
-    } catch (error) {
-      console.error(error)
-      return error
+    const externalPayload = {
+      lastname: "",
+      firstname: "",
+      ...payload,
+      img: "pictures/default.jpg",
+      passwordHash: null,
+      accountNotifications: {
+        updatePassword: false,
+        inviteAccount: true,
+      },
+      created: dateTime,
+      last_update: dateTime,
+      fromSso,
     }
+    if (fromSso) {
+      externalPayload.emailIsVerified = true
+      externalPayload.verifiedEmail = [payload.email]
+    }
+
+    return await this.create(externalPayload)
   }
 
   async listPublicUsers() {
-    try {
-      const query = {
-        private: false,
-        emailIsVerified: true,
-      }
-      return await this.mongoRequest(query, public_projection)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoRequest(
+      { private: false, emailIsVerified: true },
+      public_projection,
+    )
   }
 
   async listAllUsers(filter) {
-    try {
-      let query = {}
+    const query = {}
 
-      if (filter.name) {
-        query.name = {
-          $regex: escapeRegex(filter.name),
-          $options: "i",
-        }
-      }
-
-      if (filter.lastname) {
-        query.lastname = {
-          $regex: escapeRegex(filter.lastname),
-          $options: "i",
-        }
-      }
-
-      if (filter.email) {
-        query.email = {
-          $regex: escapeRegex(filter.email),
-          $options: "i",
-        }
-      }
-
-      if (filter.type) {
-        query.type = {
-          $regex: escapeRegex(filter.type),
-          $options: "i",
-        }
-      }
-
-      if (!filter) return await this.mongoRequest(query, personal_projection)
-      else
-        return await this.mongoAggregatePaginate(
-          query,
-          personal_projection,
-          filter,
-        )
-    } catch (error) {
-      console.error(error)
-      return error
+    if (filter.name) {
+      query.name = { $regex: escapeRegex(filter.name), $options: "i" }
     }
+    if (filter.lastname) {
+      query.lastname = { $regex: escapeRegex(filter.lastname), $options: "i" }
+    }
+    if (filter.email) {
+      query.email = { $regex: escapeRegex(filter.email), $options: "i" }
+    }
+    if (filter.type) {
+      query.type = { $regex: escapeRegex(filter.type), $options: "i" }
+    }
+
+    if (!filter) return await this.mongoRequest(query, personal_projection)
+    return await this.mongoAggregatePaginate(query, personal_projection, filter)
   }
 
   async listApiKey(filter = {}) {
-    try {
-      const query = {
-        type: USER_TYPE.M2M,
-      }
-      return await this.mongoAggregatePaginate(
-        query,
-        personal_projection,
-        filter,
-      )
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoAggregatePaginate(
+      { type: USER_TYPE.M2M },
+      personal_projection,
+      filter,
+    )
   }
 
   async listApiKeyList(ids, projection = {}) {
-    try {
-      const objectIdArray = ids.map((id) => {
-        if (typeof id === "string") return this.getObjectId(id)
-        else if (typeof id === "object") return id
-      })
-      const query = {
-        _id: { $in: objectIdArray },
-        type: USER_TYPE.M2M,
-      }
-      return await this.mongoRequest(query, projection)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    const objectIdArray = ids.map((id) => {
+      if (typeof id === "string") return this.getObjectId(id)
+      else if (typeof id === "object") return id
+    })
+    return await this.mongoRequest(
+      { _id: { $in: objectIdArray }, type: USER_TYPE.M2M },
+      projection,
+    )
   }
 
   async getPersonalInfo(id) {
-    try {
-      const query = {
-        _id: this.getObjectId(id),
-      }
-      return await this.mongoRequest(query, personal_projection)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoRequest(
+      { _id: this.getObjectId(id) },
+      personal_projection,
+    )
   }
 
   async getById(id, serverAccess = false) {
-    try {
-      const query = {
-        _id: this.getObjectId(id),
-      }
-
-      if (serverAccess) return await this.mongoRequest(query)
-      else return await this.mongoRequest(query, public_projection)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    const query = { _id: this.getObjectId(id) }
+    if (serverAccess) return await this.mongoRequest(query)
+    return await this.mongoRequest(query, public_projection)
   }
 
   async getByIdFilter(id, filter = undefined) {
-    try {
-      const query = {
-        _id: this.getObjectId(id),
-      }
-      return await this.mongoRequest(query, { ...filter })
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoRequest({ _id: this.getObjectId(id) }, { ...filter })
   }
 
   async getByEmail(email, serverAccess = false) {
-    try {
-      const query = {
-        $or: [{ email }, { verifiedEmail: { $in: [email] } }],
-      }
-      if (serverAccess) return await this.mongoRequest(query)
-      else return await this.mongoRequest(query, public_projection)
-    } catch (error) {
-      console.error(error)
-      return error
+    const query = {
+      $or: [{ email }, { verifiedEmail: { $in: [email] } }],
     }
+    if (serverAccess) return await this.mongoRequest(query)
+    return await this.mongoRequest(query, public_projection)
   }
 
   async update(payload) {
-    const operator = "$set"
-    const query = {
-      _id: this.getObjectId(payload._id),
-    }
+    const query = { _id: this.getObjectId(payload._id) }
     delete payload._id
     payload.last_update = moment().format()
 
@@ -370,128 +253,71 @@ class UsersModel extends MongoModel {
         },
       }
     }
-    let mutableElements = payload
-    return await this.mongoUpdateOne(query, operator, mutableElements)
+    return await this.mongoUpdateOne(query, "$set", payload)
   }
 
   async generateMagicLink(payload) {
-    try {
-      const operator = "$set"
-      const query = {
-        _id: this.getObjectId(payload._id),
-      }
-      const magicId = randomstring.generate({
-        charset: "alphanumeric",
-        length: 20,
-      })
-      const validityDate = VALIDITY_DATE.generateValidityDate(
-        VALIDITY_DATE.SHORT,
-      )
+    const magicId = randomstring.generate({
+      charset: "alphanumeric",
+      length: 20,
+    })
+    const validityDate = VALIDITY_DATE.generateValidityDate(VALIDITY_DATE.SHORT)
 
-      let mutableElements = {
-        authLink: {
-          magicId,
-          validityDate,
-        },
-      }
-
-      if (payload.accountNotifications) {
-        // in case accountNotifications is define, but the necessary key are not provided, we set then to false by default
-        mutableElements.accountNotifications = {
-          inviteAccount: payload.accountNotifications.inviteAccount || false,
-          updatePassword: payload.accountNotifications.updatePassword || false,
-        }
-      }
-
-      const mongo_result = await this.mongoUpdateOne(
-        query,
-        operator,
-        mutableElements,
-      )
-      return {
-        ...mongo_result,
-        data: { magicId },
-      }
-    } catch (error) {
-      return error
+    const values = {
+      authLink: { magicId, validityDate },
     }
+
+    if (payload.accountNotifications) {
+      values.accountNotifications = {
+        inviteAccount: payload.accountNotifications.inviteAccount || false,
+        updatePassword: payload.accountNotifications.updatePassword || false,
+      }
+    }
+
+    const mongo_result = await this.mongoUpdateOne(
+      { _id: this.getObjectId(payload._id) },
+      "$set",
+      values,
+    )
+    return { ...mongo_result, data: { magicId } }
   }
 
   async getByMagicId(magicId, serverAccess = false) {
-    try {
-      const query = { "authLink.magicId": magicId }
-      if (serverAccess) return await this.mongoRequest(query)
-      else return await this.mongoRequest(query, public_projection)
-    } catch (error) {
-      return error
-    }
+    const query = { "authLink.magicId": magicId }
+    if (serverAccess) return await this.mongoRequest(query)
+    return await this.mongoRequest(query, public_projection)
   }
 
   // Should not be open to the REST API
   async getTokenById(id) {
-    try {
-      const query = {
-        _id: this.getObjectId(id),
-      }
-      return await this.mongoRequest(query)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
-  }
-  async getTokenByEmail(email) {
-    try {
-      const query = { email }
-      return await this.mongoRequest(query)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoRequest({ _id: this.getObjectId(id) })
   }
 
-  // delete a user
+  async getTokenByEmail(email) {
+    return await this.mongoRequest({ email })
+  }
+
   async delete(id) {
-    try {
-      const query = {
-        _id: this.getObjectId(id),
-      }
-      return await this.mongoDelete(query)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoDelete({ _id: this.getObjectId(id) })
   }
 
   async countSuperAdmins() {
-    try {
-      const query = {
+    const result = await this.mongoRequest(
+      {
         role: { $bitsAllSet: ROLE.SUPER_ADMINISTRATOR },
         type: USER_TYPE.USER,
-      }
-      const result = await this.mongoRequest(query, { _id: 1 })
-      return result.length
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+      },
+      { _id: 1 },
+    )
+    return result.length
   }
 
   async deleteMany(ids) {
-    try {
-      const objectIdArray = ids.map((id) => {
-        if (typeof id === "string") return this.getObjectId(id)
-        else if (typeof id === "object") return id
-      })
-
-      const query = {
-        _id: { $in: objectIdArray },
-      }
-
-      return await this.mongoDeleteMany(query)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    const objectIdArray = ids.map((id) => {
+      if (typeof id === "string") return this.getObjectId(id)
+      else if (typeof id === "object") return id
+    })
+    return await this.mongoDeleteMany({ _id: { $in: objectIdArray } })
   }
 }
 

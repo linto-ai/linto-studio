@@ -1,6 +1,4 @@
-const debug = require("debug")(
-  "linto:lib:mongodb:models:conversationExport",
-)
+const debug = require("debug")("linto:lib:mongodb:models:conversationExport")
 const MongoModel = require(`../model`)
 
 const moment = require("moment")
@@ -59,165 +57,82 @@ class ConversationExportModel extends MongoModel {
   }
 
   async create(payload) {
-    try {
-      const dateTime = moment().format()
-      payload.created = dateTime
-      payload.last_update = dateTime
+    const dateTime = moment().format()
+    payload.created = dateTime
+    payload.last_update = dateTime
 
-      // Initialize V2 fields if not provided
-      if (payload.progress === undefined) {
-        payload.progress = {
-          current: 0,
-          total: 100,
-          percentage: 0,
-          phase: "processing",
-        }
+    if (payload.progress === undefined) {
+      payload.progress = {
+        current: 0,
+        total: 100,
+        percentage: 0,
+        phase: "processing",
       }
-
-      return await this.mongoInsert(payload)
-    } catch (error) {
-      console.error(error)
-      return error
     }
+    return await this.mongoInsert(payload)
   }
 
   async update(payload) {
-    try {
-      const operator = "$set"
-      const query = {
-        _id: this.getObjectId(payload._id),
-      }
-      const dateTime = moment().format()
-      payload.last_update = dateTime
-
-      let mutableElements = payload
-      return await this.mongoUpdateOne(query, operator, mutableElements)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    const query = { _id: this.getObjectId(payload._id) }
+    payload.last_update = moment().format()
+    return await this.mongoUpdateOne(query, "$set", payload)
   }
 
-  /**
-   * Update status and V2 progress fields
-   */
   async updateStatus(payload) {
-    try {
-      const operator = "$set"
-      const query = {
-        convId: payload.convId,
-        format: payload.format,
-      }
-      const dateTime = moment().format()
-      payload.last_update = dateTime
+    const query = { convId: payload.convId, format: payload.format }
+    const dateTime = moment().format()
 
-      // Build update object with all V2 fields
-      const mutableElements = {
-        status: payload.status,
-        processing: payload.processing,
-        last_update: dateTime,
-      }
-
-      // Include V2 fields if present
-      if (payload.data !== undefined) mutableElements.data = payload.data
-      if (payload.error !== undefined) mutableElements.error = payload.error
-      if (payload.jobId !== undefined) mutableElements.jobId = payload.jobId
-      if (payload.organizationId !== undefined) mutableElements.organizationId = payload.organizationId
-      if (payload.progress !== undefined) mutableElements.progress = payload.progress
-      if (payload.tokenMetrics !== undefined) mutableElements.tokenMetrics = payload.tokenMetrics
-      if (payload.serviceId !== undefined) mutableElements.serviceId = payload.serviceId
-      if (payload.serviceName !== undefined) mutableElements.serviceName = payload.serviceName
-      if (payload.flavorId !== undefined) mutableElements.flavorId = payload.flavorId
-      if (payload.flavorName !== undefined) mutableElements.flavorName = payload.flavorName
-      if (payload.fallbackApplied !== undefined) mutableElements.fallbackApplied = payload.fallbackApplied
-      if (payload.originalFlavorName !== undefined) mutableElements.originalFlavorName = payload.originalFlavorName
-      if (payload.fallbackReason !== undefined) mutableElements.fallbackReason = payload.fallbackReason
-
-      return await this.mongoUpdateOne(query, operator, mutableElements)
-    } catch (error) {
-      console.error(error)
-      return error
+    const values = {
+      status: payload.status,
+      processing: payload.processing,
+      last_update: dateTime,
     }
+    const passthrough = [
+      "data",
+      "error",
+      "jobId",
+      "organizationId",
+      "progress",
+      "tokenMetrics",
+      "serviceId",
+      "serviceName",
+      "flavorId",
+      "flavorName",
+      "fallbackApplied",
+      "originalFlavorName",
+      "fallbackReason",
+    ]
+    for (const key of passthrough) {
+      if (payload[key] !== undefined) values[key] = payload[key]
+    }
+    return await this.mongoUpdateOne(query, "$set", values)
   }
 
   async delete(id) {
-    try {
-      const query = {
-        _id: this.getObjectId(id),
-      }
-      return await this.mongoDelete(query)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoDelete({ _id: this.getObjectId(id) })
   }
 
   async deleteAllFromConv(idConv) {
-    try {
-      if (typeof idConv === "string") idConv = this.getObjectId(idConv)
-      const query = { conv_id: idConv }
-
-      return await this.mongoDeleteMany(query)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    if (typeof idConv === "string") idConv = this.getObjectId(idConv)
+    return await this.mongoDeleteMany({ conv_id: idConv })
   }
 
   async getById(id) {
-    try {
-      const query = {
-        _id: this.getObjectId(id),
-      }
-
-      return await this.mongoRequest(query)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoRequest({ _id: this.getObjectId(id) })
   }
 
   async getByConvAndFormat(id, format = undefined) {
-    try {
-      let query = {
-        convId: id.toString(),
-      }
-
-      if (format) {
-        query.format = format
-      }
-
-      return await this.mongoRequest(query)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    const query = { convId: id.toString() }
+    if (format) query.format = format
+    return await this.mongoRequest(query)
   }
 
   async getByConvId(id, projection) {
-    try {
-      const query = {
-        convId: id.toString(),
-      }
-
-      return await this.mongoRequest(query, projection)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoRequest({ convId: id.toString() }, projection)
   }
 
   async getByJobId(id) {
-    try {
-      let query = {
-        jobId: id.toString(),
-      }
-
-      return await this.mongoRequest(query)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoRequest({ jobId: id.toString() })
   }
 }
 

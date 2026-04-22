@@ -25,88 +25,51 @@ class ActivityLog extends MongoModel {
   }
 
   async create(payload) {
-    try {
-      return await this.mongoInsert(payload)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoInsert(payload)
   }
 
   async getAll(params) {
-    try {
-      const filterKeys = ["size", "page", "sortField", "sortCriteria"]
-      const projection = { skipProjection: true }
+    const filterKeys = ["size", "page", "sortField", "sortCriteria"]
+    const projection = { skipProjection: true }
 
-      const filter = {}
-      const query = {}
+    const filter = {}
+    const query = {}
 
-      for (const [key, value] of Object.entries(params)) {
-        if (key === "userScope") continue
+    for (const [key, value] of Object.entries(params)) {
+      if (key === "userScope") continue
 
-        if (filterKeys.includes(key)) filter[key] = value
-        else query[key] = value
-      }
-      return await this.mongoAggregatePaginate(query, projection, filter)
-    } catch (error) {
-      console.error(error)
-      return error
+      if (filterKeys.includes(key)) filter[key] = value
+      else query[key] = value
     }
+    return await this.mongoAggregatePaginate(query, projection, filter)
   }
 
   async getBySocketId(socketId) {
-    try {
-      const query = {
-        "socket.id": socketId,
-      }
-
-      return await this.mongoRequest(query)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoRequest({ "socket.id": socketId })
   }
 
   async getBySocketAndSession(socketId, sessionId) {
-    try {
-      const query = {
-        "socket.id": socketId,
-        "session.sessionId": sessionId,
-      }
-      return await this.mongoRequest(query)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoRequest({
+      "socket.id": socketId,
+      "session.sessionId": sessionId,
+    })
   }
 
   async getByUserAndSession(userId, sessionId) {
-    try {
-      const query = {
-        "user.id": userId,
-        "session.sessionId": sessionId,
-      }
-      return await this.mongoRequest(query)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoRequest({
+      "user.id": userId,
+      "session.sessionId": sessionId,
+    })
   }
 
   async getLastByVisitorAndSession(visitorId, sessionId) {
-    try {
-      const query = {
+    return await this.mongoRequest(
+      {
         "socket.visitorId": visitorId,
         "session.sessionId": sessionId,
-      }
-      return await this.mongoRequest(query, {
-        sort: { timestamp: -1 },
-        limit: 1,
-      })
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+      },
+      { sort: { timestamp: -1 }, limit: 1 },
+    )
   }
 
   async getLastChannelEvent(sessionId, channelId) {
@@ -128,353 +91,296 @@ class ActivityLog extends MongoModel {
   }
 
   async getActiveByVisitorId(visitorId) {
-    try {
-      const query = {
+    return await this.mongoRequest(
+      {
         "socket.visitorId": visitorId,
         lastDisconnectionAt: null,
-      }
-      return await this.mongoRequest(query, {
-        sort: { timestamp: -1 },
-        limit: 1,
-      })
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+      },
+      { sort: { timestamp: -1 }, limit: 1 },
+    )
   }
 
   async socketReconnect(activity, timestamp, newSocketId = null) {
-    try {
-      const query = { _id: activity._id }
-      const payload = activity.socket
+    const payload = activity.socket
+    payload.connectionCount = ++activity.socket.connectionCount
+    payload.lastJoinedAt = timestamp
+    if (newSocketId) payload.id = newSocketId
 
-      payload.connectionCount = ++activity.socket.connectionCount
-      payload.lastJoinedAt = timestamp
-      if (newSocketId) payload.id = newSocketId
-
-      await this.mongoUpdateOne(query, "$set", {
-        socket: payload,
-        timestamp: timestamp,
-        lastDisconnectionAt: null,
-      })
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    await this.mongoUpdateOne({ _id: activity._id }, "$set", {
+      socket: payload,
+      timestamp,
+      lastDisconnectionAt: null,
+    })
   }
 
   async socketLeft(activity, socket, timestamp) {
-    try {
-      const operator = "$set"
-      const query = { _id: activity._id }
-
-      await this.mongoUpdateOne(query, operator, {
-        socket: socket,
-        timestamp: timestamp,
-        lastDisconnectionAt: new Date().toISOString(),
-      })
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    await this.mongoUpdateOne({ _id: activity._id }, "$set", {
+      socket,
+      timestamp,
+      lastDisconnectionAt: new Date().toISOString(),
+    })
   }
 
   async getKpiLlm(orgaId, startDate, endDate) {
-    try {
-      const matchQuery = buildActivityMatchQuery(
-        "llm",
-        orgaId,
-        startDate,
-        endDate,
-      )
+    const matchQuery = buildActivityMatchQuery(
+      "llm",
+      orgaId,
+      startDate,
+      endDate,
+    )
 
-      const query = [
-        matchQuery,
-        {
-          $group: {
-            _id: null,
-            generated: { $sum: 1 },
-            tokens: { $sum: "$llm.contentLength" },
-          },
+    return await this.mongoAggregate([
+      matchQuery,
+      {
+        $group: {
+          _id: null,
+          generated: { $sum: 1 },
+          tokens: { $sum: "$llm.contentLength" },
         },
-        {
-          $project: {
-            _id: 0,
-            generated: 1,
-            tokens: 1,
-          },
+      },
+      {
+        $project: {
+          _id: 0,
+          generated: 1,
+          tokens: 1,
         },
-      ]
-      return await this.mongoAggregate(query)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+      },
+    ])
   }
 
   async getKpiTranscription(orgaId, startDate, endDate) {
-    try {
-      const matchQuery = buildActivityMatchQuery(
-        "transcription",
-        orgaId,
-        startDate,
-        endDate,
-      )
+    const matchQuery = buildActivityMatchQuery(
+      "transcription",
+      orgaId,
+      startDate,
+      endDate,
+    )
 
-      const groupId = orgaId ? "$organization.id" : null
-      const query = [
-        matchQuery,
-        {
-          $group: {
-            _id: groupId,
-            generated: { $sum: 1 },
-            duration: {
-              $sum: "$transcription.duration",
-            },
-          },
+    const groupId = orgaId ? "$organization.id" : null
+    return await this.mongoAggregate([
+      matchQuery,
+      {
+        $group: {
+          _id: groupId,
+          generated: { $sum: 1 },
+          duration: { $sum: "$transcription.duration" },
         },
-        {
-          $project: {
-            _id: 0,
-            generated: 1,
-            duration: 1,
-          },
+      },
+      {
+        $project: {
+          _id: 0,
+          generated: 1,
+          duration: 1,
         },
-      ]
-      return await this.mongoAggregate(query)
-    } catch (error) {
-      console.error("Error in kpiTranscription:", error)
-      return error
-    }
+      },
+    ])
   }
 
   async getKpiSession(orgaId, startDate, endDate) {
-    try {
-      const sessionMatchQuery = buildActivityMatchQuery(
-        "session",
-        orgaId,
-        startDate,
-        endDate,
-      )
+    const sessionMatchQuery = buildActivityMatchQuery(
+      "session",
+      orgaId,
+      startDate,
+      endDate,
+    )
 
-      const groupId = orgaId ? "$organization.id" : null
-      const sessionQuery = [
-        sessionMatchQuery,
-        {
-          $group: {
-            _id: groupId,
-            totalConnections: { $sum: 1 },
-            watchTime: { $sum: "$socket.totalWatchTime" },
-            uniqueSessions: { $addToSet: "$session.sessionId" },
+    const groupId = orgaId ? "$organization.id" : null
+    const sessionQuery = [
+      sessionMatchQuery,
+      {
+        $group: {
+          _id: groupId,
+          totalConnections: { $sum: 1 },
+          watchTime: { $sum: "$socket.totalWatchTime" },
+          uniqueSessions: { $addToSet: "$session.sessionId" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          totalConnections: 1,
+          watchTime: 1,
+          totalSessions: { $size: "$uniqueSessions" },
+        },
+      },
+    ]
+
+    const timestampQuery = {}
+    if (startDate) timestampQuery.$gte = startDate
+    if (endDate) timestampQuery.$lte = endDate
+
+    const channelMatchQuery = {
+      $match: {
+        activity: "channel",
+        source: "mqtt",
+        ...(orgaId && { "organization.id": orgaId }),
+        ...(Object.keys(timestampQuery).length > 0 && {
+          timestamp: timestampQuery,
+        }),
+      },
+    }
+
+    const channelQuery = [
+      channelMatchQuery,
+      { $sort: { timestamp: 1 } },
+      {
+        $group: {
+          _id: {
+            sessionId: "$session.sessionId",
+            channelId: "$channel.channelId",
           },
-        },
-        {
-          $project: {
-            _id: 0,
-            totalConnections: 1,
-            watchTime: 1,
-            totalSessions: { $size: "$uniqueSessions" },
-          },
-        },
-      ]
-
-      // Build channel match query for totalStreamingTime
-      const timestampQuery = {}
-      if (startDate) timestampQuery.$gte = startDate
-      if (endDate) timestampQuery.$lte = endDate
-
-      const channelMatchQuery = {
-        $match: {
-          activity: "channel",
-          source: "mqtt",
-          ...(orgaId && { "organization.id": orgaId }),
-          ...(Object.keys(timestampQuery).length > 0 && {
-            timestamp: timestampQuery,
-          }),
-        },
-      }
-
-      const channelQuery = [
-        channelMatchQuery,
-        { $sort: { timestamp: 1 } },
-        {
-          $group: {
-            _id: {
-              sessionId: "$session.sessionId",
-              channelId: "$channel.channelId",
-            },
-            events: {
-              $push: {
-                action: "$action",
-                timestamp: "$timestamp",
-              },
+          events: {
+            $push: {
+              action: "$action",
+              timestamp: "$timestamp",
             },
           },
         },
-      ]
+      },
+    ]
 
-      // Run both aggregations in parallel
-      const [sessionResult, channelGroups] = await Promise.all([
-        this.mongoAggregate(sessionQuery),
-        this.mongoAggregate(channelQuery),
-      ])
+    const [sessionResult, channelGroups] = await Promise.all([
+      this.mongoAggregate(sessionQuery),
+      this.mongoAggregate(channelQuery),
+    ])
 
-      // Calculate totalStreamingTime from channel mount/unmount pairs
-      let totalStreamingTime = 0
-      for (const group of channelGroups) {
-        let mountTime = null
-        for (const event of group.events) {
-          if (event.action === "mount") {
-            mountTime = new Date(event.timestamp)
-          } else if (event.action === "unmount" && mountTime) {
-            totalStreamingTime += (new Date(event.timestamp) - mountTime) / 1000
-            mountTime = null
-          }
+    let totalStreamingTime = 0
+    for (const group of channelGroups) {
+      let mountTime = null
+      for (const event of group.events) {
+        if (event.action === "mount") {
+          mountTime = new Date(event.timestamp)
+        } else if (event.action === "unmount" && mountTime) {
+          totalStreamingTime += (new Date(event.timestamp) - mountTime) / 1000
+          mountTime = null
         }
       }
+    }
 
-      // Merge results
-      if (sessionResult.length > 0) {
-        return [
-          {
-            ...sessionResult[0],
-            totalStreamingTime: Math.round(totalStreamingTime),
-          },
-        ]
-      }
-
-      // Return default values if no session data
+    if (sessionResult.length > 0) {
       return [
         {
-          totalConnections: 0,
-          watchTime: 0,
-          totalSessions: 0,
+          ...sessionResult[0],
           totalStreamingTime: Math.round(totalStreamingTime),
         },
       ]
-    } catch (error) {
-      console.error("Error in kpiSession:", error)
-      return error
     }
+
+    return [
+      {
+        totalConnections: 0,
+        watchTime: 0,
+        totalSessions: 0,
+        totalStreamingTime: Math.round(totalStreamingTime),
+      },
+    ]
   }
 
   async kpiSessionById(sessionId) {
-    try {
-      if (!sessionId) throw new Error("Missing sessionId")
+    if (!sessionId) throw new Error("Missing sessionId")
 
-      const query = [
-        {
-          $match: {
-            activity: "session",
-            "session.sessionId": sessionId,
-          },
+    return await this.mongoAggregate([
+      {
+        $match: {
+          activity: "session",
+          "session.sessionId": sessionId,
         },
-        {
-          $group: {
-            _id: "$session.sessionId",
-            totalWatchTime: { $sum: "$socket.totalWatchTime" },
-            avgWatchTime: { $avg: "$socket.totalWatchTime" },
-            totalConnections: { $sum: "$socket.connectionCount" },
-            firstConnectionAt: { $min: "$firstConnectionAt" },
-            lastDisconnectionAt: { $max: "$lastDisconnectionAt" },
-            userCount: { $sum: 1 },
-            session: { $first: "$session" },
-            organization: { $first: "$organization" },
-            usersAbove5Min: {
-              $sum: {
-                $cond: [
-                  {
-                    $gte: ["$socket.totalWatchTime", VIEWER_THRESHOLD_SECONDS],
-                  },
-                  1,
-                  0,
-                ],
-              },
-            },
-            usersBelow5Min: {
-              $sum: {
-                $cond: [
-                  { $lt: ["$socket.totalWatchTime", VIEWER_THRESHOLD_SECONDS] },
-                  1,
-                  0,
-                ],
-              },
-            },
-            avgWatchTimeAbove5Min: {
-              $avg: {
-                $cond: [
-                  {
-                    $gte: ["$socket.totalWatchTime", VIEWER_THRESHOLD_SECONDS],
-                  },
-                  "$socket.totalWatchTime",
-                  null,
-                ],
-              },
-            },
-            avgWatchTimeBelow5Min: {
-              $avg: {
-                $cond: [
-                  { $lt: ["$socket.totalWatchTime", VIEWER_THRESHOLD_SECONDS] },
-                  "$socket.totalWatchTime",
-                  null,
-                ],
-              },
+      },
+      {
+        $group: {
+          _id: "$session.sessionId",
+          totalWatchTime: { $sum: "$socket.totalWatchTime" },
+          avgWatchTime: { $avg: "$socket.totalWatchTime" },
+          totalConnections: { $sum: "$socket.connectionCount" },
+          firstConnectionAt: { $min: "$firstConnectionAt" },
+          lastDisconnectionAt: { $max: "$lastDisconnectionAt" },
+          userCount: { $sum: 1 },
+          session: { $first: "$session" },
+          organization: { $first: "$organization" },
+          usersAbove5Min: {
+            $sum: {
+              $cond: [
+                {
+                  $gte: ["$socket.totalWatchTime", VIEWER_THRESHOLD_SECONDS],
+                },
+                1,
+                0,
+              ],
             },
           },
-        },
-        {
-          $project: {
-            _id: 0,
-            sessionId: "$session.sessionId",
-            organizationId: "$organization.id",
-            session: {
-              name: "$session.name",
-              visibility: "$session.visibility",
+          usersBelow5Min: {
+            $sum: {
+              $cond: [
+                { $lt: ["$socket.totalWatchTime", VIEWER_THRESHOLD_SECONDS] },
+                1,
+                0,
+              ],
             },
-            userCount: {
-              total: "$userCount",
-              reconnections: "$totalConnections",
-              above5Min: "$usersAbove5Min",
-              below5Min: "$usersBelow5Min",
+          },
+          avgWatchTimeAbove5Min: {
+            $avg: {
+              $cond: [
+                {
+                  $gte: ["$socket.totalWatchTime", VIEWER_THRESHOLD_SECONDS],
+                },
+                "$socket.totalWatchTime",
+                null,
+              ],
             },
-            watchTime: {
-              total: "$totalWatchTime",
-              average: "$avgWatchTime",
-              avgAbove5Min: "$avgWatchTimeAbove5Min",
-              avgUnder5Min: "$avgWatchTimeBelow5Min",
+          },
+          avgWatchTimeBelow5Min: {
+            $avg: {
+              $cond: [
+                { $lt: ["$socket.totalWatchTime", VIEWER_THRESHOLD_SECONDS] },
+                "$socket.totalWatchTime",
+                null,
+              ],
             },
-            firstConnectionAt: 1,
-            lastDisconnectionAt: 1,
           },
         },
-      ]
-
-      return await this.mongoAggregate(query)
-    } catch (error) {
-      console.error("Error in kpiSessionById:", error)
-      return error
-    }
+      },
+      {
+        $project: {
+          _id: 0,
+          sessionId: "$session.sessionId",
+          organizationId: "$organization.id",
+          session: {
+            name: "$session.name",
+            visibility: "$session.visibility",
+          },
+          userCount: {
+            total: "$userCount",
+            reconnections: "$totalConnections",
+            above5Min: "$usersAbove5Min",
+            below5Min: "$usersBelow5Min",
+          },
+          watchTime: {
+            total: "$totalWatchTime",
+            average: "$avgWatchTime",
+            avgAbove5Min: "$avgWatchTimeAbove5Min",
+            avgUnder5Min: "$avgWatchTimeBelow5Min",
+          },
+          firstConnectionAt: 1,
+          lastDisconnectionAt: 1,
+        },
+      },
+    ])
   }
 
   async findSessionsWithActivity(sinceTimestamp) {
-    try {
-      const query = {
-        "session.sessionId": { $exists: true, $ne: null },
-      }
-      if (sinceTimestamp) {
-        const iso =
-          sinceTimestamp instanceof Date
-            ? sinceTimestamp.toISOString()
-            : new Date(sinceTimestamp).toISOString()
-
-        query.timestamp = { $gt: iso }
-      }
-
-      return await this.mongoDistinct("session.sessionId", query)
-    } catch (error) {
-      console.error("Error in findSessionInActivity:", error)
-      return error
+    const query = {
+      "session.sessionId": { $exists: true, $ne: null },
     }
+    if (sinceTimestamp) {
+      const iso =
+        sinceTimestamp instanceof Date
+          ? sinceTimestamp.toISOString()
+          : new Date(sinceTimestamp).toISOString()
+
+      query.timestamp = { $gt: iso }
+    }
+
+    return await this.mongoDistinct("session.sessionId", query)
   }
 
   async aggregateChannelMetrics(sessionId) {
@@ -492,7 +398,6 @@ class ActivityLog extends MongoModel {
             _id: "$channel.channelId",
             channelId: { $first: "$channel.channelId" },
             translations: { $first: "$channel.translations" },
-            // Transcriber profile fields (flattened in channel)
             type: { $first: "$channel.type" },
             name: { $first: "$channel.name" },
             description: { $first: "$channel.description" },
@@ -521,7 +426,6 @@ class ActivityLog extends MongoModel {
 
       const channelGroups = await this.mongoAggregate(query)
 
-      // Calculate durations from event pairs and collect all timestamps
       const channels = channelGroups.map((group) => {
         let totalDuration = 0
         let mountTime = null
@@ -545,26 +449,22 @@ class ActivityLog extends MongoModel {
         return {
           channelId: group.channelId,
           translations: group.translations,
-          // Transcriber profile fields (flattened)
           type: group.type,
           name: group.name,
           description: group.description,
           languages: group.languages,
           region: group.region,
           hasDiarization: group.hasDiarization,
-          // Timing metrics (arrays for multiple mount/unmount events)
           mountedAt: mountedAtList,
           unmountedAt: unmountedAtList,
           activeDuration: Math.round(totalDuration),
         }
       })
 
-      // Calculate aggregate metrics
       const totalStreamingTime = channels.reduce(
         (sum, ch) => sum + ch.activeDuration,
         0,
       )
-      // Get first mount and last unmount across all channels
       const allMounts = channels.flatMap((ch) => ch.mountedAt).filter(Boolean)
       const allUnmounts = channels
         .flatMap((ch) => ch.unmountedAt)

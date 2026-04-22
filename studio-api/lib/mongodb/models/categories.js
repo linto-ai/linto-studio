@@ -7,159 +7,74 @@ const { escapeRegex } = require("../queryBuilders/filters")
 
 class CategoryModel extends MongoModel {
   constructor() {
-    super("categories") // define name of 'users' collection elsewhere?
+    super("categories")
   }
 
   async createDefaultCategories(name, scopeId) {
-    const category = {
-      name: name,
+    return await this.create({
+      name,
       scope: "nlp-" + name,
-      scopeId: scopeId,
+      scopeId,
       type: TYPE.HIGHLIGHT,
       color: "deep-purple",
-    }
-    return await this.create(category)
+    })
   }
 
   async create(payload) {
-    try {
-      const dateTime = moment().format()
-      payload.created = dateTime
-      payload.last_update = dateTime
-
-      return await this.mongoInsert(payload)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    const dateTime = moment().format()
+    payload.created = dateTime
+    payload.last_update = dateTime
+    return await this.mongoInsert(payload)
   }
 
   async getById(id) {
-    try {
-      let query = {
-        _id: this.getObjectId(id),
-      }
-
-      return await this.mongoRequest(query)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoRequest({ _id: this.getObjectId(id) })
   }
 
   async getSystemCategories(organizationId = undefined) {
-    try {
-      let query = {
-        type: TYPE.SYSTEM,
-      }
-      if (organizationId) {
-        query.scopeId = organizationId
-      }
-      return await this.mongoRequest(query)
-    } catch (error) {
-      console.error(error)
-      return error
+    const query = { type: TYPE.SYSTEM }
+    if (organizationId) {
+      query.scopeId = organizationId
     }
+    return await this.mongoRequest(query)
   }
 
   async getSystemCategoriesByOrgIds(orgIds) {
-    try {
-      const query = {
-        type: TYPE.SYSTEM,
-        scopeId: { $in: orgIds },
-      }
-      return await this.mongoRequest(query)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoRequest({
+      type: TYPE.SYSTEM,
+      scopeId: { $in: orgIds },
+    })
   }
 
   async getByOrganizationId(organizationId) {
-    try {
-      let query = {
-        organizationId: organizationId,
-      }
-      return await this.mongoRequest(query)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoRequest({ organizationId })
   }
 
   async getByScope(id) {
-    try {
-      let query = {
-        scopeId: id,
-      }
-      return await this.mongoRequest(query)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoRequest({ scopeId: id })
   }
 
   async searchByScopeAndName(scopeId, name) {
-    try {
-      let query = {
-        scopeId: scopeId,
-        name: {
-          $regex: escapeRegex(name),
-          $options: "i",
-        },
-      }
-
-      return await this.mongoRequest(query)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoRequest({
+      scopeId,
+      name: { $regex: escapeRegex(name), $options: "i" },
+    })
   }
 
   async getByScopeAndName(scopeId, name, type = undefined) {
-    try {
-      let query = {
-        scopeId: scopeId,
-        name: name,
-      }
-
-      if (type) query.type = type
-
-      return await this.mongoRequest(query)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    const query = { scopeId, name }
+    if (type) query.type = type
+    return await this.mongoRequest(query)
   }
 
   async update(payload) {
-    try {
-      const operator = "$set"
-      const query = {
-        _id: this.getObjectId(payload._id),
-      }
-      const dateTime = moment().format()
-      payload.last_update = dateTime
-
-      let mutableElements = payload
-      return await this.mongoUpdateOne(query, operator, mutableElements)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    const query = { _id: this.getObjectId(payload._id) }
+    payload.last_update = moment().format()
+    return await this.mongoUpdateOne(query, "$set", payload)
   }
 
-  // delete a user
   async delete(id) {
-    try {
-      const query = {
-        _id: this.getObjectId(id),
-      }
-      return await this.mongoDelete(query)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoDelete({ _id: this.getObjectId(id) })
   }
 }
 

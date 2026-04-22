@@ -18,21 +18,12 @@ const {
   applyTagAllFilter,
   escapeRegex,
 } = require("../queryBuilders/filters")
+const {
+  LIGHT_CONVERSATION_PROJECTION,
+  LIST_CONVERSATION_PROJECTION,
+} = require("../queryBuilders/projections")
 
 const BSON_MAX_SIZE = 16 * 1024 * 1024
-
-const LIGHT_CONVERSATION_PROJECTION = {
-  text: 0,
-  speakers: 0,
-  keywords: 0,
-  highlights: 0,
-}
-
-const LIST_CONVERSATION_PROJECTION = {
-  page: 0,
-  text: 0,
-  "jobs.transcription.job_logs": 0,
-}
 
 class ConvoModel extends MongoModel {
   constructor() {
@@ -40,55 +31,36 @@ class ConvoModel extends MongoModel {
   }
 
   async create(conversation) {
-    try {
-      const dateTime = moment().format()
-      conversation.created = dateTime
-      conversation.last_update = dateTime
+    const dateTime = moment().format()
+    conversation.created = dateTime
+    conversation.last_update = dateTime
 
-      if (conversation.text?.length > 0) {
-        let docSize = calculateObjectSize(conversation)
-        if (docSize > BSON_MAX_SIZE) {
-          const originalCount = conversation.text.length
-          while (docSize > BSON_MAX_SIZE && conversation.text.length > 0) {
-            conversation.text = conversation.text.slice(
-              0,
-              Math.floor(conversation.text.length * 0.8),
-            )
-            docSize = calculateObjectSize(conversation)
-          }
-          debug(
-            `Conversation document exceeded BSON 16MB limit (${originalCount} turns), truncated to ${conversation.text.length} turns`,
+    if (conversation.text?.length > 0) {
+      let docSize = calculateObjectSize(conversation)
+      if (docSize > BSON_MAX_SIZE) {
+        const originalCount = conversation.text.length
+        while (docSize > BSON_MAX_SIZE && conversation.text.length > 0) {
+          conversation.text = conversation.text.slice(
+            0,
+            Math.floor(conversation.text.length * 0.8),
           )
+          docSize = calculateObjectSize(conversation)
         }
+        debug(
+          `Conversation document exceeded BSON 16MB limit (${originalCount} turns), truncated to ${conversation.text.length} turns`,
+        )
       }
-
-      return await this.mongoInsert(conversation)
-    } catch (error) {
-      console.error(error)
-      return error
     }
+
+    return await this.mongoInsert(conversation)
   }
 
   async update(payload) {
-    try {
-      const operator = "$set"
-      const query = {
-        _id: this.getObjectId(payload._id),
-      }
-
-      if (payload.organizationId) delete payload.organizationId
-
-      const dateTime = moment().format()
-      payload.last_update = dateTime
-
-      delete payload._id
-      let mutableElements = payload
-
-      return await this.mongoUpdateOne(query, operator, mutableElements)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    const query = { _id: this.getObjectId(payload._id) }
+    if (payload.organizationId) delete payload.organizationId
+    delete payload._id
+    payload.last_update = moment().format()
+    return await this.mongoUpdateOne(query, "$set", payload)
   }
 
   async updateRights(
@@ -97,138 +69,93 @@ class ConvoModel extends MongoModel {
     membersRight,
     customRights,
   ) {
-    try {
-      const query = {
+    return await this.mongoUpdateOne(
+      {
         _id: this.getObjectId(conversationId),
         "organization.organizationId": organizationId,
-      }
-      return await this.mongoUpdateOne(query, "$set", {
+      },
+      "$set",
+      {
         "organization.membersRight": membersRight,
         "organization.customRights": customRights,
-      })
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+      },
+    )
   }
 
   async getConversationFromParent(id, projectionArray) {
-    try {
-      let query = {
-        "type.from_parent_id": id,
-      }
-
-      let projection = {}
-      if (projectionArray) {
-        projectionArray.map((element) => {
-          projection[element] = 1
-        })
-      }
-
-      return await this.mongoRequest(query, projection)
-    } catch (error) {
-      console.error(error)
-      return error
+    const projection = {}
+    if (projectionArray) {
+      projectionArray.map((element) => {
+        projection[element] = 1
+      })
     }
+    return await this.mongoRequest({ "type.from_parent_id": id }, projection)
   }
 
   async getByIdWithFilter(convId, projection) {
-    try {
-      const query = {
-        _id: this.getObjectId(convId),
-      }
-
-      return await this.mongoRequest(query, projection)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoRequest(
+      { _id: this.getObjectId(convId) },
+      projection,
+    )
   }
 
   async getById(convoId, projectionArray) {
-    try {
-      const query = {
-        _id: this.getObjectId(convoId),
-      }
-      let projection = {}
-      if (projectionArray) {
-        projectionArray.map((element) => {
-          projection[element] = 1
-        })
-      }
-      return await this.mongoRequest(query, projection)
-    } catch (error) {
-      console.error(error)
-      return error
+    const projection = {}
+    if (projectionArray) {
+      projectionArray.map((element) => {
+        projection[element] = 1
+      })
     }
+    return await this.mongoRequest(
+      { _id: this.getObjectId(convoId) },
+      projection,
+    )
   }
 
   async getConvsListByIds(convIds, filter) {
-    try {
-      convIds = toObjectIds(convIds, this.getObjectId)
-      const query = {
-        _id: {
-          $in: convIds,
-        },
-      }
-      return await this.mongoRequest(query, filter)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    convIds = toObjectIds(convIds, this.getObjectId)
+    return await this.mongoRequest({ _id: { $in: convIds } }, filter)
   }
 
   // list conversation shared to the user
   async getByShare(idUser, filter = undefined) {
-    try {
-      let projection = {
-        ...LIGHT_CONVERSATION_PROJECTION,
-        "jobs.transcription.job_logs": 0,
-      }
-
-      const query = {
-        "type.mode": TYPE.CANONICAL,
-        sharedWithUsers: {
-          $elemMatch: {
-            userId: idUser.toString(),
-            right: { $bitsAnySet: RIGHTS.READ }, // Only get conversation where user has read access
-          },
-        },
-      }
-
-      if (filter?.name) {
-        query.name = {
-          $regex: escapeRegex(filter.name),
-          $options: "i",
-        }
-      }
-
-      if (filter?.description) {
-        query.description = {
-          $regex: escapeRegex(filter.description),
-          $options: "i",
-        }
-      }
-      if (filter?.tags) {
-        filter.tags = filter.tags.split(",")
-        query.tags = {
-          $all: filter.tags,
-        }
-      }
-
-      if (filter?.text) {
-        query["text.raw_segment"] = {
-          $regex: escapeRegex(filter.text),
-          $options: "i",
-        }
-      }
-
-      if (!filter) return await this.mongoRequest(query, projection)
-      else return await this.mongoAggregatePaginate(query, projection, filter)
-    } catch (err) {
-      console.error(err)
-      return err
+    const projection = {
+      ...LIGHT_CONVERSATION_PROJECTION,
+      "jobs.transcription.job_logs": 0,
     }
+
+    const query = {
+      "type.mode": TYPE.CANONICAL,
+      sharedWithUsers: {
+        $elemMatch: {
+          userId: idUser.toString(),
+          right: { $bitsAnySet: RIGHTS.READ },
+        },
+      },
+    }
+
+    if (filter?.name) {
+      query.name = { $regex: escapeRegex(filter.name), $options: "i" }
+    }
+    if (filter?.description) {
+      query.description = {
+        $regex: escapeRegex(filter.description),
+        $options: "i",
+      }
+    }
+    if (filter?.tags) {
+      filter.tags = filter.tags.split(",")
+      query.tags = { $all: filter.tags }
+    }
+    if (filter?.text) {
+      query["text.raw_segment"] = {
+        $regex: escapeRegex(filter.text),
+        $options: "i",
+      }
+    }
+
+    if (!filter) return await this.mongoRequest(query, projection)
+    return await this.mongoAggregatePaginate(query, projection, filter)
   }
 
   async getTagByOrga(idOrga, tags) {
@@ -236,195 +163,92 @@ class ConvoModel extends MongoModel {
       "organization.organizationId": idOrga.toString(),
     }
     if (tags) {
-      tags = tags.split(",")
-      query.tags = {
-        $all: tags,
-      }
+      query.tags = { $all: tags.split(",") }
     }
-
-    const projection = {
-      tags: 1,
-    }
-
-    return await this.mongoRequest(query, projection)
+    return await this.mongoRequest(query, { tags: 1 })
   }
 
   async getByOrga(idOrga, projection) {
-    try {
-      const query = {
-        "organization.organizationId": idOrga.toString(),
-        "type.mode": TYPE.CANONICAL,
-      }
-      if (!projection) {
-        projection = { ...LIGHT_CONVERSATION_PROJECTION }
-      }
-      return await this.mongoRequest(query, projection)
-    } catch (err) {
-      console.error(err)
-      return err
+    const query = {
+      "organization.organizationId": idOrga.toString(),
+      "type.mode": TYPE.CANONICAL,
     }
+    if (!projection) {
+      projection = { ...LIGHT_CONVERSATION_PROJECTION }
+    }
+    return await this.mongoRequest(query, projection)
   }
 
   async getSharedConvFromOrga(idOrga, idUser) {
-    try {
-      const query = {
+    return await this.mongoRequest(
+      {
         "organization.organizationId": idOrga.toString(),
         "type.mode": TYPE.CANONICAL,
-        sharedWithUsers: {
-          $elemMatch: {
-            userId: idUser.toString(),
-          },
-        },
-      }
-      return await this.mongoRequest(query, {
+        sharedWithUsers: { $elemMatch: { userId: idUser.toString() } },
+      },
+      {
         _id: 1,
         sharedWithUsers: 1,
         organization: 1,
-      })
-    } catch (err) {
-      console.error(err)
-      return err
-    }
+      },
+    )
   }
 
   async updateConvOnTranscriptionResult(_id, conversation) {
-    try {
-      const operator = "$set"
-      const query = {
-        _id: this.getObjectId(_id),
-      }
-
-      let mutableElements = {
-        speakers: conversation.speakers,
-        text: conversation.text,
-        metadata: conversation.metadata,
-        jobs: conversation.jobs,
-      }
-
-      return await this.mongoUpdateOne(query, operator, mutableElements)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoUpdateOne({ _id: this.getObjectId(_id) }, "$set", {
+      speakers: conversation.speakers,
+      text: conversation.text,
+      metadata: conversation.metadata,
+      jobs: conversation.jobs,
+    })
   }
 
   async updateJob(_id, jobPayload) {
-    try {
-      const operator = "$set"
-      const query = {
-        _id: this.getObjectId(_id),
-      }
-      let mutableElements = {
-        jobs: { ...jobPayload },
-      }
-      return await this.mongoUpdateOne(query, operator, mutableElements)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoUpdateOne({ _id: this.getObjectId(_id) }, "$set", {
+      jobs: { ...jobPayload },
+    })
   }
 
   async updateTurn(_id, text) {
-    try {
-      const operator = "$set"
-      const query = {
-        _id: this.getObjectId(_id),
-      }
-      const dateTime = moment().format()
-      let mutableElements = {
-        text: [...text],
-        last_update: dateTime,
-      }
-
-      return await this.mongoUpdateOne(query, operator, mutableElements)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoUpdateOne({ _id: this.getObjectId(_id) }, "$set", {
+      text: [...text],
+      last_update: moment().format(),
+    })
   }
 
   async updateTag(_id, tags) {
-    try {
-      const operator = "$set"
-      const query = {
-        _id: this.getObjectId(_id),
-      }
-      let mutableElements = {
-        tags: [...tags],
-      }
-
-      return await this.mongoUpdateOne(query, operator, mutableElements)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoUpdateOne({ _id: this.getObjectId(_id) }, "$set", {
+      tags: [...tags],
+    })
   }
 
   async delete(id) {
-    try {
-      const query = {
-        _id: this.getObjectId(id),
-      }
-      return await this.mongoDelete(query)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoDelete({ _id: this.getObjectId(id) })
   }
 
   async deleteTag(orgaId, tags) {
-    try {
-      const query = {
-        "organization.organizationId": orgaId.toString(),
-      }
-      const operator = "$pull"
-
-      let tagIds = tags
-      if (typeof tags === "string") tagIds = tags.split(",")
-
-      const values = {
-        tags: {
-          $in: tagIds,
-        },
-      }
-      return await this.mongoUpdateMany(query, operator, values)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    const tagIds = typeof tags === "string" ? tags.split(",") : tags
+    return await this.mongoUpdateMany(
+      { "organization.organizationId": orgaId.toString() },
+      "$pull",
+      { tags: { $in: tagIds } },
+    )
   }
 
   async addSharedUser(id, shared) {
-    try {
-      const query = {
-        _id: this.getObjectId(id),
-      }
-      const operator = "$addToSet"
-      const values = {
-        sharedWithUsers: shared,
-      }
-      return await this.mongoUpdateOne(query, operator, values)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoUpdateOne(
+      { _id: this.getObjectId(id) },
+      "$addToSet",
+      { sharedWithUsers: shared },
+    )
   }
 
   async listProcessingConversations(organizationId) {
-    try {
-      const query = {
-        "organization.organizationId": organizationId.toString(),
-        "jobs.transcription.state": {
-          $nin: ["error", "done"],
-        },
-        "type.mode": TYPE.CANONICAL,
-      }
-
-      return await this.mongoRequest(query)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoRequest({
+      "organization.organizationId": organizationId.toString(),
+      "jobs.transcription.state": { $nin: ["error", "done"] },
+      "type.mode": TYPE.CANONICAL,
+    })
   }
 
   // Default right is 1 (read)
@@ -435,79 +259,68 @@ class ConvoModel extends MongoModel {
     desiredAccess = 1,
     filter,
   ) {
-    try {
-      let projection = { ...LIST_CONVERSATION_PROJECTION }
+    const projection = { ...LIST_CONVERSATION_PROJECTION }
 
-      let query = {
-        "organization.organizationId": organizationId.toString(),
-        "type.mode": TYPE.CANONICAL,
-        $or: [
-          customRightsAllowed(userId, desiredAccess),
-          customRightsNotMember(userId),
-        ],
-      }
+    const query = {
+      "organization.organizationId": organizationId.toString(),
+      "type.mode": TYPE.CANONICAL,
+      $or: [
+        customRightsAllowed(userId, desiredAccess),
+        customRightsNotMember(userId),
+      ],
+    }
 
-      if (filter.folderId !== undefined) {
-        if (filter.folderId === null || filter.folderId === "null") {
-          query.$and = query.$and || []
-          query.$and.push({
-            $or: [{ folderId: null }, { folderId: { $exists: false } }],
-          })
-        } else {
-          query.folderId = filter.folderId
-        }
-      }
-
-      if (filter.excludeFolderIds && filter.excludeFolderIds.length > 0) {
+    if (filter.folderId !== undefined) {
+      if (filter.folderId === null || filter.folderId === "null") {
         query.$and = query.$and || []
         query.$and.push({
-          $or: [
-            { folderId: { $nin: filter.excludeFolderIds } },
-            { folderId: null },
-            { folderId: { $exists: false } },
-          ],
+          $or: [{ folderId: null }, { folderId: { $exists: false } }],
         })
+      } else {
+        query.folderId = filter.folderId
       }
-
-      if (filter.tags && filter.filter === "notags") {
-        query.tags = {
-          $nin: filter.tags,
-        }
-      } else if (filter.tags) {
-        query.tags = {
-          $all: filter.tags.split(","),
-        }
-      }
-
-      if (["pending", "processing", "queued"].includes(filter?.processing)) {
-        query["jobs.transcription.state"] = {
-          $nin: ["error", "done"],
-        }
-        projection.skipProjection = true
-      } else if (filter?.processing === "done") {
-        query["jobs.transcription.state"] = "done"
-      } else if (filter?.processing === "error") {
-        query["jobs.transcription.state"] = "error"
-      }
-
-      applyNameTextSearch(query, filter)
-
-      if (userRole === ROLES.MEMBER) {
-        // A member can only see conversation where he has access
-        query["$or"][1]["organization.membersRight"] = {
-          $bitsAnySet: desiredAccess,
-        }
-      }
-      if (userRole >= ROLES.MAINTAINER) {
-        // A maintainer can see all conversations in the organization
-        delete query["$or"]
-      }
-
-      return await this.mongoAggregatePaginate(query, projection, filter)
-    } catch (error) {
-      console.error(error)
-      return error
     }
+
+    if (filter.excludeFolderIds && filter.excludeFolderIds.length > 0) {
+      query.$and = query.$and || []
+      query.$and.push({
+        $or: [
+          { folderId: { $nin: filter.excludeFolderIds } },
+          { folderId: null },
+          { folderId: { $exists: false } },
+        ],
+      })
+    }
+
+    if (filter.tags && filter.filter === "notags") {
+      query.tags = { $nin: filter.tags }
+    } else if (filter.tags) {
+      query.tags = { $all: filter.tags.split(",") }
+    }
+
+    if (["pending", "processing", "queued"].includes(filter?.processing)) {
+      query["jobs.transcription.state"] = { $nin: ["error", "done"] }
+      projection.skipProjection = true
+    } else if (filter?.processing === "done") {
+      query["jobs.transcription.state"] = "done"
+    } else if (filter?.processing === "error") {
+      query["jobs.transcription.state"] = "error"
+    }
+
+    applyNameTextSearch(query, filter)
+
+    if (userRole === ROLES.MEMBER) {
+      // A member can only see conversation where he has access
+      query["$or"][1]["organization.membersRight"] = {
+        $bitsAnySet: desiredAccess,
+      }
+    }
+    if (userRole >= ROLES.MAINTAINER) {
+      // A maintainer can see all conversations in the organization
+      delete query["$or"]
+    }
+
+    return await this.mongoAggregatePaginate(query, projection, filter)
   }
 
   async listConvFromConvIds(
@@ -517,126 +330,100 @@ class ConvoModel extends MongoModel {
     desiredAccess = 1,
     filter = {},
   ) {
-    try {
-      convIds = toObjectIds(convIds, this.getObjectId)
+    convIds = toObjectIds(convIds, this.getObjectId)
 
-      let query = {
-        _id: {
-          $in: convIds,
-        },
-        "type.mode": TYPE.CANONICAL,
-        $or: [
-          customRightsAllowed(userId, desiredAccess),
-          customRightsNotMember(userId),
-          sharedWithUsersAllowed(userId, desiredAccess),
-        ],
-      }
-
-      if (userRole === ROLES.MEMBER) {
-        // A member can only see conversation where he has access
-        query["$or"][1]["organization.membersRight"] = {
-          $bitsAnySet: desiredAccess,
-        }
-      }
-
-      applyTagAllFilter(query, filter)
-      applyNameTextSearch(query, filter)
-
-      const projection = { ...LIST_CONVERSATION_PROJECTION }
-
-      return await this.mongoAggregatePaginate(query, projection, filter)
-    } catch (error) {
-      console.error(error)
-      return error
+    const query = {
+      _id: { $in: convIds },
+      "type.mode": TYPE.CANONICAL,
+      $or: [
+        customRightsAllowed(userId, desiredAccess),
+        customRightsNotMember(userId),
+        sharedWithUsersAllowed(userId, desiredAccess),
+      ],
     }
+
+    if (userRole === ROLES.MEMBER) {
+      // A member can only see conversation where he has access
+      query["$or"][1]["organization.membersRight"] = {
+        $bitsAnySet: desiredAccess,
+      }
+    }
+
+    applyTagAllFilter(query, filter)
+    applyNameTextSearch(query, filter)
+
+    return await this.mongoAggregatePaginate(
+      query,
+      { ...LIST_CONVERSATION_PROJECTION },
+      filter,
+    )
   }
 
   async listConvFromFavorite(convIds, filter) {
-    try {
-      let projection = { ...LIST_CONVERSATION_PROJECTION }
+    convIds = toObjectIds(convIds, this.getObjectId)
 
-      convIds = toObjectIds(convIds, this.getObjectId)
-
-      let query = {
-        _id: {
-          $in: convIds,
-        },
-        "type.mode": TYPE.CANONICAL,
-      }
-
-      applyNameTextSearch(query, filter)
-
-      return await this.mongoAggregatePaginate(query, projection, filter)
-    } catch (error) {
-      console.error(error)
-      throw error
+    const query = {
+      _id: { $in: convIds },
+      "type.mode": TYPE.CANONICAL,
     }
+
+    applyNameTextSearch(query, filter)
+
+    return await this.mongoAggregatePaginate(
+      query,
+      { ...LIST_CONVERSATION_PROJECTION },
+      filter,
+    )
   }
 
   async listConvFromOwner(convIds, userId) {
-    try {
-      const objectIds = toObjectIds(convIds.split(","), this.getObjectId)
-      const query = {
+    const objectIds = toObjectIds(convIds.split(","), this.getObjectId)
+    const result = await this.mongoRequest(
+      {
         _id: { $in: objectIds },
         owner: userId.toString(),
-      }
-
-      const result = await this.mongoRequest(query, {})
-      if (result.length === objectIds.length) return result
-      else return []
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+      },
+      {},
+    )
+    return result.length === objectIds.length ? result : []
   }
 
   async getByFolderIds(folderIds, organizationId) {
-    try {
-      const query = {
+    return await this.mongoRequest(
+      {
         folderId: { $in: folderIds },
         "organization.organizationId": organizationId,
-      }
-      return await this.mongoRequest(query, {
+      },
+      {
         owner: 1,
         "organization.customRights": 1,
         "organization.membersRight": 1,
         "organization.organizationId": 1,
-      })
-    } catch (error) {
-      console.error(error)
-      throw error
-    }
+      },
+    )
   }
 
   async updateFolderBatch(conversationIds, folderId, organizationId) {
-    try {
-      const objectIds = toObjectIds(conversationIds, this.getObjectId)
-      const query = {
+    const objectIds = toObjectIds(conversationIds, this.getObjectId)
+    return await this.mongoUpdateMany(
+      {
         _id: { $in: objectIds },
         "organization.organizationId": organizationId,
-      }
-      return await this.mongoUpdateMany(query, "$set", {
-        folderId: folderId,
-      })
-    } catch (error) {
-      console.error(error)
-      throw error
-    }
+      },
+      "$set",
+      { folderId },
+    )
   }
 
   async unsetFolderReferences(folderId, newFolderId, organizationId) {
-    try {
-      const query = {
-        folderId: folderId,
+    return await this.mongoUpdateMany(
+      {
+        folderId,
         "organization.organizationId": organizationId,
-      }
-      return await this.mongoUpdateMany(query, "$set", {
-        folderId: newFolderId,
-      })
-    } catch (error) {
-      console.error(error)
-      throw error
-    }
+      },
+      "$set",
+      { folderId: newFolderId },
+    )
   }
 
   async updateRightsBatchByFolderId(
@@ -645,25 +432,25 @@ class ConvoModel extends MongoModel {
     membersRight,
     customRights,
   ) {
-    try {
-      const query = {
-        folderId: folderId,
+    return await this.mongoUpdateMany(
+      {
+        folderId,
         "organization.organizationId": organizationId,
-      }
-      return await this.mongoUpdateMany(query, "$set", {
+      },
+      "$set",
+      {
         "organization.membersRight": membersRight,
         "organization.customRights": customRights,
-      })
-    } catch (error) {
-      console.error(error)
-      throw error
-    }
+      },
+    )
   }
 
   async countByAudioFilepath(filepath) {
     try {
-      const query = { "metadata.audio.filepath": filepath }
-      const result = await this.mongoRequest(query, { _id: 1 })
+      const result = await this.mongoRequest(
+        { "metadata.audio.filepath": filepath },
+        { _id: 1 },
+      )
       return result.length
     } catch (error) {
       console.error(error)
@@ -672,24 +459,19 @@ class ConvoModel extends MongoModel {
   }
 
   async countMediaFromOrga(orgaIds) {
-    try {
-      return await this.mongoAggregate([
-        {
-          $match: {
-            "organization.organizationId": { $in: orgaIds },
-          },
+    return await this.mongoAggregate([
+      {
+        $match: {
+          "organization.organizationId": { $in: orgaIds },
         },
-        {
-          $group: {
-            _id: "$organization.organizationId",
-            total: { $sum: 1 },
-          },
+      },
+      {
+        $group: {
+          _id: "$organization.organizationId",
+          total: { $sum: 1 },
         },
-      ])
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+      },
+    ])
   }
 }
 

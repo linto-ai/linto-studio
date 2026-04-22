@@ -1,61 +1,34 @@
-const debug = require("debug")(
-  "linto:lib:mongodb:models:favorites",
-)
+const debug = require("debug")("linto:lib:mongodb:models:favorites")
 const MongoModel = require(`../model`)
-
-const favorites_projection = { favorites: 1 }
+const {
+  USER_FAVORITES_PROJECTION: favorites_projection,
+} = require("../queryBuilders/projections")
 
 // Manage user favorites conversations
 class UsersModel extends MongoModel {
   constructor() {
-    super("users") // define name of 'users' collection elsewhere?
+    super("users")
   }
 
   async add(id, convId) {
-    try {
-      const query = {
-        _id: this.getObjectId(id),
-      }
-      const operator = "$addToSet"
-      const values = {
-        favorites: convId,
-      }
-
-      return await this.mongoUpdateOne(query, operator, values)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoUpdateOne(
+      { _id: this.getObjectId(id) },
+      "$addToSet",
+      { favorites: convId },
+    )
   }
 
   async deleteFav(id, convId) {
-    try {
-      const query = {
-        _id: this.getObjectId(id),
-      }
-      const operator = "$pull"
-      const values = {
-        favorites: convId,
-      }
-
-      return await this.mongoUpdateOne(query, operator, values)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoUpdateOne({ _id: this.getObjectId(id) }, "$pull", {
+      favorites: convId,
+    })
   }
 
   async listFav(id) {
-    try {
-      const query = {
-        _id: this.getObjectId(id),
-      }
-
-      return await this.mongoRequest(query, favorites_projection)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    return await this.mongoRequest(
+      { _id: this.getObjectId(id) },
+      favorites_projection,
+    )
   }
 }
 

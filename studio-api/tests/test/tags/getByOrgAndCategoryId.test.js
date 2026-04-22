@@ -160,17 +160,17 @@ describe("TagModel.getByOrgAndCategoryId", () => {
   })
 
   describe("error handling", () => {
-    it("should return error on failure", async () => {
+    it("should throw on failure", async () => {
       const error = new Error("DB error")
       tagsModel.mongoRequest = jest.fn().mockRejectedValue(error)
 
-      const result = await tagsModel.getByOrgAndCategoryId(
-        orgId.toString(),
-        catId.toString(),
-        true,
-      )
-
-      expect(result).toBe(error)
+      await expect(
+        tagsModel.getByOrgAndCategoryId(
+          orgId.toString(),
+          catId.toString(),
+          true,
+        ),
+      ).rejects.toBe(error)
     })
   })
 })
