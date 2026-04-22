@@ -1,4 +1,5 @@
 import uuidv4 from "uuid/v4.js"
+import { getEnv } from "./getEnv"
 
 export function mergeTurn(startTurn, endTurn) {
   const words = [...startTurn.words, ...endTurn.words]
@@ -27,5 +28,5 @@ export function mergeTurn(startTurn, endTurn) {
 }
 
 function generateID() {
-  return process.env["TEST"] ? "id" : uuidv4()
+  return getEnv("TEST") ? "id" : uuidv4()
 }

@@ -70,18 +70,19 @@ class MqttClient extends EventEmitter {
   async init() {
     this.client = Mqtt.connect(this.cnxParam)
     this.client.on("connect", () => {
-      if (!this.options.subs || this.options.subs.length == 0) {
+      const subs = (this.options.subs || []).filter(Boolean)
+      if (subs.length === 0) {
         this.emit("ready")
         return
       }
       //clean any previous subscriptions
-      this.client.unsubscribe(this.options.subs, (error) => {
+      this.client.unsubscribe(subs, (error) => {
         if (error) {
           this.emit(`error`, error) //non blocking error, keeps connecting
         } else {
           //subscribe to the inTopic /# to receive all messages sent to this client
           this.client.subscribe(
-            this.options.subs,
+            subs,
             { qos: this.options.qos },
             (error) => {
               if (error) {
@@ -138,7 +139,7 @@ class MqttClient extends EventEmitter {
   unsubscribe(topic) {
     const topicIndex = this.options.subs.indexOf(topic)
     if (topicIndex >= 0) {
-      delete this.options.subs[topicIndex]
+      this.options.subs.splice(topicIndex, 1)
     }
 
     this.client.unsubscribe(topic, { qos: this.options.qos }, (error) => {
