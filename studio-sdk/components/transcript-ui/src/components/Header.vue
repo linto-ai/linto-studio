@@ -1,0 +1,119 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+import { Download, Settings, Users } from 'lucide-vue-next'
+import Badge from './atoms/Badge.vue'
+import Button from './atoms/Button.vue'
+import { useI18n } from '../i18n'
+import * as utils from "../utils"
+const props = defineProps<{
+  title: string
+  duration: number
+  language: string
+  isMobile: boolean
+}>()
+
+defineEmits<{
+  toggleSidebar: []
+}>()
+
+const { t, locale } = useI18n()
+
+const languageName = computed(() => utils.getLanguageDisplayName(props.language, locale.value, t('language.wildcard')))
+
+const formattedDuration = computed(() => utils.formatTime(props.duration))
+
+const formattedTitle = computed(() => {
+  return props.title.replace(/-/g, ' ')
+})
+</script>
+
+<template>
+  <header class="editor-header">
+    <div class="header-left">
+      <h1 class="document-title">{{ formattedTitle }}</h1>
+      <div class="badges">
+        <Badge>{{ languageName }}</Badge>
+        <Badge>
+          <time :datetime="`PT${duration}S`">{{ formattedDuration }}</time>
+        </Badge>
+      </div>
+    </div>
+    <div class="header-right">
+      <Button
+        v-if="isMobile"
+        variant="transparent"
+        :aria-label="t('header.openSidebar')"
+        @click="$emit('toggleSidebar')"
+      >
+        <template #icon><Users :size="16" /></template>
+      </Button>
+      <Button v-if="isMobile" variant="secondary" disabled :aria-label="t('header.export')">
+        <template #icon><Download :size="16" /></template>
+      </Button>
+      <Button v-else variant="secondary" disabled>
+        <template #icon><Download :size="16" /></template>
+        {{ t('header.export') }}
+      </Button>
+      <Button variant="transparent" disabled :aria-label="t('header.settings')">
+        <template #icon><Settings :size="16" /></template>
+      </Button>
+    </div>
+  </header>
+</template>
+
+<style scoped>
+.editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--spacing-lg);
+  height: var(--header-height);
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  flex-shrink: 0;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  min-width: 0;
+}
+
+.document-title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.badges {
+  display: flex;
+  gap: var(--spacing-xs);
+  flex-shrink: 0;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
+}
+
+@media (max-width: 767px) {
+  .editor-header {
+    padding: 0 var(--spacing-md);
+    height: 48px;
+  }
+
+  .badges {
+    display: none;
+  }
+
+  .document-title {
+    font-size: var(--font-size-base);
+  }
+}
+</style>

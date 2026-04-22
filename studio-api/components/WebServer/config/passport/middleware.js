@@ -162,6 +162,8 @@ module.exports = {
   ],
 
   // Socket middleware need to return an expcetion in case of error
+  generateSecretFromHeaders,
+
   isAuthenticateSocket: async (socket, next) => {
     try {
       const token = socket?.handshake?.auth?.token
