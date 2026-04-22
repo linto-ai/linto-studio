@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue"
 import SpeakerIndicator from "./atoms/SpeakerIndicator.vue"
-import Badge from "./atoms/Badge.vue"
 import { useI18n } from "../i18n"
 import * as utils from "../utils"
 import type { Speaker } from "../types/editor"
@@ -36,7 +35,7 @@ const speakerColor = computed(() => props.speaker?.color ?? 'transparent')
     <time v-if="formattedTime" class="timestamp" :datetime="isoDuration">{{
       formattedTime
     }}</time>
-    <Badge>{{ languageName }}</Badge>
+    <span class="lang">{{ languageName }}</span>
   </div>
 </template>
 
@@ -57,5 +56,14 @@ const speakerColor = computed(() => props.speaker?.color ?? 'transparent')
   font-size: var(--font-size-xs);
   font-family: var(--font-family-mono);
   color: var(--color-text-muted);
+  /* not supported on firefox yet */
+  text-box: trim-both cap alphabetic;
+}
+
+.lang {
+  font-size: var(--font-size-xs);
+  font-weight: 400;
+  /* not supported on firefox yet */
+  text-box: trim-both cap alphabetic;
 }
 </style>

@@ -1,10 +1,23 @@
-import { ref, computed, watchEffect } from "vue"
+import { ref, computed, watch, watchEffect } from "vue"
 import type { Core, CorePlugin, AudioPluginApi } from "../../core/types"
+import type { AudioSource } from "../../types/editor"
 import { findActiveWord, hasWordTimestamps } from "../../utils/words"
 
 export type { AudioPluginApi }
 
-export function createAudioPlugin(): CorePlugin {
+export interface AudioPluginOptions {
+  /**
+   * Résout une `AudioSource` en URL jouable. Permet à l'hôte d'ajouter un
+   * bearer token, de fetch en blob puis `URL.createObjectURL`, etc.
+   * Si absent, `source.src` est utilisé tel quel.
+   *
+   * Toute URL `blob:` retournée est révoquée automatiquement au changement
+   * de source ou au destroy du plugin.
+   */
+  resolveSrc?: (source: AudioSource) => string | Promise<string>
+}
+
+export function createAudioPlugin(options: AudioPluginOptions = {}): CorePlugin {
   return {
     name: "audio",
 
@@ -15,9 +28,41 @@ export function createAudioPlugin(): CorePlugin {
       const activeTurnId = ref<string | null>(null)
       let seekHandler: ((time: number) => void) | null = null
 
-      const src = computed(
-        () => core.activeChannel.value?.activeTranslation.value.audio?.src ?? null,
+      const rawSource = computed(
+        () => core.activeChannel.value?.activeTranslation.value.audio ?? null,
       )
+
+      const resolvedSrc = ref<string | null>(null)
+      let ownedObjectUrl: string | null = null
+
+      function revokeOwned() {
+        if (ownedObjectUrl) {
+          URL.revokeObjectURL(ownedObjectUrl)
+          ownedObjectUrl = null
+        }
+      }
+
+      const stopSourceWatch = watch(
+        rawSource,
+        async (source) => {
+          revokeOwned()
+          resolvedSrc.value = null
+          if (!source) return
+
+          try {
+            const url = options.resolveSrc
+              ? await options.resolveSrc(source)
+              : source.src
+            resolvedSrc.value = url
+            if (url.startsWith("blob:")) ownedObjectUrl = url
+          } catch (err) {
+            console.error("[audio] resolveSrc failed", err)
+          }
+        },
+        { immediate: true },
+      )
+
+      const src = computed(() => resolvedSrc.value)
 
       // Source de vérité unique : calcule activeTurnId / activeWordId à chaque tick.
       // Pas de reset à null en pause : on conserve la dernière position connue.
@@ -64,7 +109,9 @@ export function createAudioPlugin(): CorePlugin {
       core.audio = api
 
       return () => {
+        stopSourceWatch()
         stopTracker()
+        revokeOwned()
         core.audio = undefined
       }
     },

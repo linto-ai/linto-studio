@@ -1,6 +1,6 @@
 import { Ref, ComputedRef } from 'vue';
 import { Turn, Speaker } from '../types/editor';
-import { EditorStore } from '../core/types';
+import { Core } from '../core/types';
 export interface TurnSelection {
     readonly count: ComputedRef<number>;
     readonly hasSelection: ComputedRef<boolean>;
@@ -11,5 +11,5 @@ export interface TurnSelection {
     copyText(): Promise<void>;
     copyWithMetadata(): Promise<void>;
 }
-export declare function provideTurnSelection(turns: Ref<Turn[]> | ComputedRef<Turn[]>, speakers: Map<string, Speaker>, editor: EditorStore): TurnSelection;
+export declare function provideTurnSelection(turns: Ref<Turn[]> | ComputedRef<Turn[]>, speakers: Map<string, Speaker>, core: Core): TurnSelection;
 export declare function useTurnSelection(): TurnSelection;

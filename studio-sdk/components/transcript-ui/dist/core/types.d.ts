@@ -30,6 +30,9 @@ export interface CoreEventMap {
     "speaker:add": {
         speaker: Speaker;
     };
+    "speaker:remove": {
+        speakerId: string;
+    };
     "scroll:top": {
         translationId: string;
     };
@@ -41,6 +44,12 @@ export interface CoreEventMap {
     };
     "channel:reset": {
         channelId: string;
+    };
+    "watermark:display": {
+        display: boolean;
+    };
+    "watermark:pin": {
+        pinned: boolean;
     };
     destroy: void;
 }
@@ -78,6 +87,8 @@ export interface SpeakersStore {
     readonly all: Map<string, Speaker>;
     ensure(speakerId: string | null, name?: string): void;
     update(speakerId: string, patch: Partial<Omit<Speaker, "id">>): void;
+    updateOrCreate(speaker: Speaker): void;
+    delete(speakerId: string): void;
 }
 export interface CorePlugin {
     name: string;
@@ -109,9 +120,26 @@ export interface TranscriptionEditorPluginApi {
     readonly tiptapEditor: ShallowRef<import('@tiptap/vue-3').Editor | undefined>;
     readonly doc: import('yjs').Doc | null;
     readonly fragment: import('yjs').XmlFragment | null;
+    readonly speakersMap: import('yjs').Map<{
+        name: string;
+        color: string;
+    }> | null;
     readonly users: Ref<YjsUser[]>;
     readonly isConnected: Ref<boolean>;
     updateUser(attrs: Record<string, unknown>): void;
+}
+export interface WatermarkToken {
+    src: string;
+    alt?: string;
+}
+export interface WatermarkPluginApi {
+    display: Ref<boolean>;
+    pinned: Ref<boolean>;
+    content: Ref<string>;
+    frequency: Ref<number>;
+    duration: Ref<number>;
+    tokens: Ref<Record<string, WatermarkToken>>;
+    readonly: boolean;
 }
 export interface SubtitlePluginApi {
     fontSize: Ref<number>;
@@ -119,6 +147,7 @@ export interface SubtitlePluginApi {
     isFullscreen: Ref<boolean>;
     enterFullscreen(): void;
     exitFullscreen(): void;
+    watermark?: WatermarkPluginApi;
 }
 export interface LivePartialEventData {
     text?: string;

@@ -56,5 +56,6 @@ export function register(tagName = "linto-editor") {
 export { LintoEditor }
 export { createLivePlugin } from "./plugins/live"
 export { createAudioPlugin } from "./plugins/audio"
+export type { AudioPluginOptions } from "./plugins/audio"
 export { createSubtitlePlugin } from "./plugins/subtitle"
 export { createTranscriptionEditorPlugin } from "./plugins/transcriptionEditor"

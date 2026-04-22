@@ -26,6 +26,7 @@ export interface CoreEventMap {
   "turn:remove": { turnId: string; translationId: string }
   "speaker:update": { speaker: Speaker }
   "speaker:add": { speaker: Speaker }
+  "speaker:remove": { speakerId: string }
   "scroll:top": { translationId: string }
   "translation:sync": { translationId: string }
   "channel:sync": { channelId: string }
@@ -74,6 +75,8 @@ export interface SpeakersStore {
   readonly all: Map<string, Speaker>
   ensure(speakerId: string | null, name?: string): void
   update(speakerId: string, patch: Partial<Omit<Speaker, "id">>): void
+  updateOrCreate(speaker: Speaker): void
+  delete(speakerId: string): void
 }
 
 // ── Plugin ─────────────────────────────────────────────────────────────
@@ -118,6 +121,7 @@ export interface TranscriptionEditorPluginApi {
   readonly tiptapEditor: ShallowRef<import("@tiptap/vue-3").Editor | undefined>
   readonly doc: import("yjs").Doc | null
   readonly fragment: import("yjs").XmlFragment | null
+  readonly speakersMap: import("yjs").Map<{ name: string; color: string }> | null
   readonly users: Ref<YjsUser[]>
   readonly isConnected: Ref<boolean>
   updateUser(attrs: Record<string, unknown>): void

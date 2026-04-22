@@ -1,14 +1,23 @@
 import { apiGetConversationChild } from "@/api/conversation.js"
 import { apiGetCanonicalConv } from "./apiGetCanonicalConv.js"
+import { getEnv } from "@/tools/getEnv"
+
+const BASE_API = getEnv("VUE_APP_CONVO_API")
 
 function sourceTranslation(conv) {
-  return {
+  const tr = {
     id: conv._id,
     isSource: true,
-    audio: conv?.metadata?.audio?.filename,
     languages: [conv.locale],
     turns: [],
   }
+  if (conv?.metadata?.audio) {
+    tr.audio = {
+      src: conv._id,
+      filename: conv.metadata.audio.filename,
+    }
+  }
+  return tr
 }
 
 function translation(conv) {

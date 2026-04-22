@@ -11,6 +11,11 @@ import { StoreSync } from "./extensions/storeSync"
 import { WordHighlight } from "./extensions/wordHighlight"
 import { CollaborationCursor } from "./extensions/collaborationCursor"
 import { turnsToDoc } from "./utils/turnsToDoc"
+import {
+  setupSpeakersSync,
+  SPEAKERS_MAP_KEY,
+  type SpeakerData,
+} from "./utils/speakersSync"
 import type {
   Core,
   CorePlugin,
@@ -55,6 +60,7 @@ export function createTranscriptionEditorPlugin(
       const users = ref<YjsUser[]>([])
       const isConnected = ref(false)
       const cleanups: Array<() => void> = []
+      const sessionCleanups: Array<() => void> = []
 
       // Current provider/doc state (managed internally in collab mode)
       let currentProvider: HocuspocusProvider | null = null
@@ -67,6 +73,9 @@ export function createTranscriptionEditorPlugin(
         },
         get fragment() {
           return currentDoc!.getXmlFragment(field)
+        },
+        get speakersMap() {
+          return currentDoc?.getMap<SpeakerData>(SPEAKERS_MAP_KEY) ?? null
         },
         users,
         isConnected,
@@ -82,6 +91,8 @@ export function createTranscriptionEditorPlugin(
       function destroyCurrentSession() {
         tiptapEditor.value?.destroy()
         tiptapEditor.value = undefined
+        sessionCleanups.forEach((fn) => fn())
+        sessionCleanups.length = 0
         if (currentProvider) {
           currentProvider.destroy()
           currentProvider = null
@@ -126,6 +137,9 @@ export function createTranscriptionEditorPlugin(
           const stopSync = watch(isConnected, (synced) => {
             if (!synced) return
             stopSync()
+            sessionCleanups.push(
+              setupSpeakersSync({ core, ydoc, translation, seedFromCore: false }),
+            )
             createTiptapEditor(core, options, ydoc, field, tiptapEditor, provider.awareness, cleanups)
           }, { immediate: true })
           cleanups.push(stopSync)
@@ -136,6 +150,10 @@ export function createTranscriptionEditorPlugin(
           const schema = getSchema([TranscriptionDocument, TurnNode, Text])
           prosemirrorJSONToYXmlFragment(schema, initialContent, fragment)
           isConnected.value = true
+
+          sessionCleanups.push(
+            setupSpeakersSync({ core, ydoc, translation, seedFromCore: true }),
+          )
 
           createTiptapEditor(core, options, ydoc, field, tiptapEditor, null, cleanups)
         }

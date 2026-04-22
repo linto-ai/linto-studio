@@ -1,5 +1,5 @@
 <template>
-  <LayoutV2 :fullscreen="isMobile && !isAuthenticated">
+  <LayoutV2>
     <linto-editor ref="editor" :locale="$i18n.locale" no-header />
   </LayoutV2>
 </template>
@@ -17,6 +17,7 @@ import {
 } from "@linto/transcript-ui/webcomponent"
 
 import LayoutV2 from "@/layouts/v2-layout.vue"
+import { apiGetAudioFileFromConversation } from "@/api/conversation"
 
 export default {
   components: { LayoutV2 },
@@ -35,12 +36,23 @@ export default {
   },
   methods: {
     async initEditor(doc) {
+      console.log(doc)
       const el = this.$refs.editor
       const { core } = el
       const ws_url = new URL(getEnv("VUE_APP_CONVO_API"))
       ws_url.protocol = "ws"
       this.core = markRaw(core)
-      core.use(createAudioPlugin())
+      core.use(
+        createAudioPlugin({
+          resolveSrc: async (source) => {
+            const res = await apiGetAudioFileFromConversation(source.src, false)
+            if (res?.status !== "success" || !res.data || res.data.size === 0) {
+              throw new Error("Audio unavailable")
+            }
+            return URL.createObjectURL(res.data)
+          },
+        }),
+      )
 
       core.use(
         createTranscriptionEditorPlugin({
