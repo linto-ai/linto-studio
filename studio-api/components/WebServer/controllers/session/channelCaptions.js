@@ -84,37 +84,29 @@ function createTurn(
 function processChannelCaptions(channel, caption, main = true) {
   let closedCaptions = []
   let offset = 0
-  channel.closedCaptions.forEach((segment) => {
-    if (segment.locutor === "bot" && segment.aend) {
-      // Calculate duration and add it to offset when caption was cut off
-      const startDate = new Date(segment.astart)
-      const endDate = new Date(segment.aend)
-      const durationSeconds = (endDate - startDate) / 1000
-      offset += durationSeconds
-    } else {
-      // Adjust timing for non-bot segments on multiple captions
-      if (offset > 0) {
-        segment.start = Number((segment.start + offset).toFixed(2))
-        segment.end = Number((segment.end + offset).toFixed(2))
-      }
-      closedCaptions.push(segment) // Only push non-bot segments
-    }
-  })
 
-  let prevSegmentWithTimestamps = undefined
+  for (const segment of channel.closedCaptions) {
+    // Bot segments delimit each flux: their astart/aend span is the flux's
+    // wall-clock duration, which matches the audio recorded for that flux.
+    // Accumulate it so the next flux's segments are shifted into the concat.
+    if (segment.locutor === "bot" && segment.aend) {
+      offset += (new Date(segment.aend) - new Date(segment.astart)) / 1000
+      continue
+    }
+
+    segment.start = Number((segment.start + offset).toFixed(2))
+    segment.end = Number((segment.end + offset).toFixed(2))
+    closedCaptions.push(segment)
+  }
 
   for (const channel_caption of closedCaptions) {
     let spk_id = ensureSpeaker(caption, channel_caption)
-    if (channel_caption.locutor === "bot") {
-      prevSegmentWithTimestamps = channel_caption
-    }
     let turn = createTurn(
       channel_caption,
       spk_id,
       main,
       channel.diarization,
       caption,
-      prevSegmentWithTimestamps,
     )
     if (!turn) continue
     caption.text.push(turn)

@@ -1,10 +1,12 @@
 const cp = structuredClone
-const {
-  processChannelCaptions,
-} = require(`${process.cwd()}/components/WebServer/controllers/session/channelCaptions`)
+const { processChannelCaptions } = require(
+  `${process.cwd()}/components/WebServer/controllers/session/channelCaptions`,
+)
 const TYPES = require(`${process.cwd()}/lib/dao/conversation/types`)
 
-const SAMPLE = require(`${process.cwd()}/tests/data/session/channelCaptions-sample.json`)
+const SAMPLE = require(
+  `${process.cwd()}/tests/data/session/channelCaptions-sample.json`,
+)
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
@@ -225,10 +227,38 @@ describe("processChannelCaptions", () => {
       const channel = {
         diarization: true,
         closedCaptions: [
-          { segmentId: 1, start: 0, end: 1, text: "a1", lang: "fr-FR", locutor: "Alice" },
-          { segmentId: 2, start: 1, end: 2, text: "b1", lang: "fr-FR", locutor: "Bob" },
-          { segmentId: 3, start: 2, end: 3, text: "a2", lang: "fr-FR", locutor: "Alice" },
-          { segmentId: 4, start: 3, end: 4, text: "c1", lang: "fr-FR", locutor: "Carol" },
+          {
+            segmentId: 1,
+            start: 0,
+            end: 1,
+            text: "a1",
+            lang: "fr-FR",
+            locutor: "Alice",
+          },
+          {
+            segmentId: 2,
+            start: 1,
+            end: 2,
+            text: "b1",
+            lang: "fr-FR",
+            locutor: "Bob",
+          },
+          {
+            segmentId: 3,
+            start: 2,
+            end: 3,
+            text: "a2",
+            lang: "fr-FR",
+            locutor: "Alice",
+          },
+          {
+            segmentId: 4,
+            start: 3,
+            end: 4,
+            text: "c1",
+            lang: "fr-FR",
+            locutor: "Carol",
+          },
         ],
       }
       const caption = makeCaption()
@@ -238,8 +268,9 @@ describe("processChannelCaptions", () => {
       expect(names).toEqual(["Alice", "Bob", "Carol"])
 
       // Alice's two turns share the same speaker_id
-      const aliceId = caption.speakers.find((s) => s.speaker_name === "Alice")
-        .speaker_id
+      const aliceId = caption.speakers.find(
+        (s) => s.speaker_name === "Alice",
+      ).speaker_id
       const aliceTurns = caption.text.filter((t) => t.speaker_id === aliceId)
       expect(aliceTurns).toHaveLength(2)
     })
@@ -275,6 +306,136 @@ describe("processChannelCaptions", () => {
 
       expect(caption.text).toHaveLength(1)
       expect(caption.text[0].raw_segment).toEqual("et text")
+    })
+  })
+
+  describe("flux cut with bot marker closing the flux", () => {
+    it("offsets the resumed flux by the previous flux's bot duration", () => {
+      // Speak 10s, bot closes flux1 (astart→aend = 10s = flux1 audio duration),
+      // 30s wall-clock gap (no audio), resume flux2 and speak 5s.
+      // Reconstructed: turn1 [0, 10], turn2 [10, 15].
+      const channel = {
+        diarization: false,
+        closedCaptions: [
+          {
+            segmentId: 1,
+            start: 0,
+            end: 10,
+            text: "flux1 segment",
+            lang: "fr-FR",
+            locutor: null,
+            astart: "2026-04-14T12:00:00.000Z",
+            aend: null,
+          },
+          {
+            segmentId: null,
+            start: null,
+            end: null,
+            text: "",
+            astart: "2026-04-14T12:00:00.000Z",
+            aend: "2026-04-14T12:00:10.000Z",
+            lang: null,
+            locutor: "bot",
+          },
+          {
+            segmentId: 2,
+            start: 0,
+            end: 5,
+            text: "flux2 segment",
+            lang: "fr-FR",
+            locutor: null,
+            astart: "2026-04-14T12:00:40.000Z",
+            aend: null,
+          },
+        ],
+      }
+      const caption = makeCaption()
+      processChannelCaptions(channel, caption, true)
+
+      expect(caption.text).toHaveLength(2)
+      expect(caption.text[0].stime).toEqual(0)
+      expect(caption.text[0].etime).toEqual(10)
+      expect(caption.text[1].stime).toEqual(10)
+      expect(caption.text[1].etime).toEqual(15)
+    })
+
+    it("matches the real session 130 shape (two fluxes each closed by a bot)", () => {
+      // Mirror of the payload the session API returns: 4 segments in flux1, bot,
+      // 4 segments in flux2, bot. Bot1 = 18.249s, Bot2 = 17.576s.
+      const channel = {
+        diarization: false,
+        closedCaptions: [
+          {
+            segmentId: 1,
+            start: 0,
+            end: 4.6058,
+            text: "s1",
+            astart: "2026-04-23T13:58:45.231Z",
+            aend: null,
+            lang: "fr-FR",
+            locutor: null,
+          },
+          {
+            segmentId: 4,
+            start: 12.0382514058,
+            end: 15.8818382514058,
+            text: "s4",
+            astart: "2026-04-23T13:58:45.231Z",
+            aend: null,
+            lang: "fr-FR",
+            locutor: null,
+          },
+          {
+            segmentId: null,
+            start: null,
+            end: null,
+            text: "",
+            astart: "2026-04-23T13:58:45.231Z",
+            aend: "2026-04-23T13:59:03.480Z",
+            lang: null,
+            locutor: "bot",
+          },
+          {
+            segmentId: 6,
+            start: 0,
+            end: 5.1308,
+            text: "s6",
+            astart: "2026-04-23T13:59:17.572Z",
+            aend: null,
+            lang: "fr-FR",
+            locutor: null,
+          },
+          {
+            segmentId: 9,
+            start: 11.2832639308,
+            end: 15.126083263930798,
+            text: "s9",
+            astart: "2026-04-23T13:59:17.572Z",
+            aend: null,
+            lang: "fr-FR",
+            locutor: null,
+          },
+          {
+            segmentId: null,
+            start: null,
+            end: null,
+            text: "",
+            astart: "2026-04-23T13:59:17.572Z",
+            aend: "2026-04-23T13:59:35.148Z",
+            lang: null,
+            locutor: "bot",
+          },
+        ],
+      }
+      const caption = makeCaption()
+      processChannelCaptions(channel, caption, true)
+
+      // Flux 1 (offset = 0): segments keep their raw timings.
+      expect(caption.text[0].stime).toEqual(0)
+      expect(caption.text[1].etime).toEqual(15.88)
+      // Flux 2 (offset = 18.249s): first segment starts right after flux1 audio.
+      expect(caption.text[2].stime).toEqual(18.25)
+      expect(caption.text[3].etime).toEqual(33.38)
     })
   })
 
