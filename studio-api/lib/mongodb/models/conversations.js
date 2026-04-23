@@ -483,19 +483,10 @@ class ConvoModel extends MongoModel {
 
       if (userRole < ROLES.MAINTAINER) {
         matchStage.$or = [
+          customRightsAllowed(userId, RIGHTS.READ),
           {
-            "organization.customRights": {
-              $elemMatch: {
-                userId: userId,
-                right: { $bitsAnySet: 1 },
-              },
-            },
-          },
-          {
-            "organization.customRights": {
-              $not: { $elemMatch: { userId: userId } },
-            },
-            "organization.membersRight": { $bitsAnySet: 1 },
+            ...customRightsNotMember(userId),
+            "organization.membersRight": { $bitsAnySet: RIGHTS.READ },
           },
         ]
       }
