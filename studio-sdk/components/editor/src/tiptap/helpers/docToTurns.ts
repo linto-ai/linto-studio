@@ -20,6 +20,8 @@ export function docToTurns(doc: ProseMirrorNode): Turn[] {
       words: [],
       startTime: node.attrs.startTime as number | undefined,
       endTime: node.attrs.endTime as number | undefined,
+      startDate: node.attrs.startDate as number | undefined,
+      endDate: node.attrs.endDate as number | undefined,
       language: (node.attrs.language as string) ?? "",
     })
   })

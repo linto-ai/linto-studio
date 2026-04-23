@@ -35,9 +35,9 @@ const sessionWithRestart = {
   ],
 }
 
-// Helper: compute expected absolute time in seconds from session start (clamped to 0)
-function expectedTime(sessionStartTime, astart, offset) {
-  return Math.max(0, (new Date(astart).getTime() - new Date(sessionStartTime).getTime()) / 1000 + offset)
+// Helper: absolute Unix timestamp in seconds = astart + offset
+function expectedDate(astart, offset) {
+  return new Date(astart).getTime() / 1000 + offset
 }
 
 test("bot markers are filtered out", (t) => {
@@ -46,25 +46,24 @@ test("bot markers are filtered out", (t) => {
   t.is(turns.length, 6)
 })
 
-test("startTime/endTime use astart, not raw stream offset", (t) => {
+test("startDate/endDate use astart + offset", (t) => {
   const doc = sessionToEditorDocument(sessionWithRestart)
   const turns = doc.channels[0].translations.find((tr) => tr.isSource).turns
-  const S = sessionWithRestart.startTime
 
-  // Stream 1 — astart ≈ session.startTime, so times stay close to raw values
-  t.is(turns[0].startTime, expectedTime(S, "2026-02-24T09:40:15.001Z", 0))
-  t.is(turns[0].endTime, expectedTime(S, "2026-02-24T09:40:15.001Z", 3.5828))
-  t.is(turns[1].startTime, expectedTime(S, "2026-02-24T09:40:15.001Z", 3.5828))
-  t.is(turns[1].endTime, expectedTime(S, "2026-02-24T09:40:15.001Z", 9.9863828))
+  // Stream 1
+  t.is(turns[0].startDate, expectedDate("2026-02-24T09:40:15.001Z", 0))
+  t.is(turns[0].endDate, expectedDate("2026-02-24T09:40:15.001Z", 3.5828))
+  t.is(turns[1].startDate, expectedDate("2026-02-24T09:40:15.001Z", 3.5828))
+  t.is(turns[1].endDate, expectedDate("2026-02-24T09:40:15.001Z", 9.9863828))
 
-  // Stream 2 — 3 days later, start=0 but absolute time must NOT reset
-  t.is(turns[2].startTime, expectedTime(S, "2026-02-27T14:41:11.104Z", 0))
-  t.is(turns[2].endTime, expectedTime(S, "2026-02-27T14:41:11.104Z", 6.4008))
-  t.true(turns[2].startTime > turns[1].endTime, "stream 2 starts after stream 1 ends")
+  // Stream 2 — 3 days later, start=0 but absolute date must NOT reset
+  t.is(turns[2].startDate, expectedDate("2026-02-27T14:41:11.104Z", 0))
+  t.is(turns[2].endDate, expectedDate("2026-02-27T14:41:11.104Z", 6.4008))
+  t.true(turns[2].startDate > turns[1].endDate, "stream 2 starts after stream 1 ends")
 
   // Stream 4 — another restart
-  t.is(turns[4].startTime, expectedTime(S, "2026-02-27T14:45:34.257Z", 0))
-  t.true(turns[4].startTime > turns[3].endTime, "stream 4 starts after stream 2 ends")
+  t.is(turns[4].startDate, expectedDate("2026-02-27T14:45:34.257Z", 0))
+  t.true(turns[4].startDate > turns[3].endDate, "stream 4 starts after stream 2 ends")
 })
 
 test("turns are in chronological order across stream restarts", (t) => {
@@ -73,8 +72,8 @@ test("turns are in chronological order across stream restarts", (t) => {
 
   for (let i = 1; i < turns.length; i++) {
     t.true(
-      turns[i].startTime >= turns[i - 1].startTime,
-      `turn ${i} (startTime=${turns[i].startTime}) should be >= turn ${i - 1} (startTime=${turns[i - 1].startTime})`,
+      turns[i].startDate >= turns[i - 1].startDate,
+      `turn ${i} (startDate=${turns[i].startDate}) should be >= turn ${i - 1} (startDate=${turns[i - 1].startDate})`,
     )
   }
 })
@@ -127,11 +126,11 @@ test("creates bucket for translatedCaption with undeclared targetLang", (t) => {
   t.truthy(deTr, "de translation bucket should be created")
   t.is(deTr.turns.length, 1)
   t.is(deTr.turns[0].language, "de")
-  t.is(deTr.turns[0].startTime, 0)
-  t.is(deTr.turns[0].endTime, 1)
+  t.is(deTr.turns[0].startDate, expectedDate("2026-02-24T09:40:15.000Z", 0))
+  t.is(deTr.turns[0].endDate, expectedDate("2026-02-24T09:40:15.000Z", 1))
 })
 
-test("translatedCaptions also use absolute times", (t) => {
+test("translatedCaptions also use absolute dates", (t) => {
   const session = {
     name: "with-translations",
     startTime: "2026-02-24T09:40:15.000Z",
@@ -145,7 +144,7 @@ test("translatedCaptions also use absolute times", (t) => {
         translatedCaptions: [
           // Stream 1
           { segmentId: 1, start: 0, end: 3, astart: "2026-02-24T09:40:15.000Z", text: "hello", targetLang: "en", locutor: null },
-          // Stream 2 (later)
+          // Stream 2 (1 minute later)
           { segmentId: 2, start: 0, end: 5, astart: "2026-02-24T09:41:15.000Z", text: "world", targetLang: "en", locutor: null },
         ],
       },
@@ -153,8 +152,9 @@ test("translatedCaptions also use absolute times", (t) => {
   }
   const doc = sessionToEditorDocument(session)
   const enTr = doc.channels[0].translations.find((t) => t.id === "en")
-  t.is(enTr.turns[0].startTime, 0)
-  t.is(enTr.turns[0].endTime, 3)
-  t.is(enTr.turns[1].startTime, 60) // 1 minute later
-  t.is(enTr.turns[1].endTime, 65) // 60 + 5
+  t.is(enTr.turns[0].startDate, expectedDate("2026-02-24T09:40:15.000Z", 0))
+  t.is(enTr.turns[0].endDate, expectedDate("2026-02-24T09:40:15.000Z", 3))
+  t.is(enTr.turns[1].startDate, expectedDate("2026-02-24T09:41:15.000Z", 0))
+  t.is(enTr.turns[1].endDate, expectedDate("2026-02-24T09:41:15.000Z", 5))
+  t.is(enTr.turns[1].startDate - enTr.turns[0].startDate, 60) // 1 minute apart
 })
