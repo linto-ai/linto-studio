@@ -15,6 +15,8 @@ export interface Turn {
   words: Word[] // non-empty for word-level detail (ASR), empty when text is the source
   startTime?: number
   endTime?: number
+  startDate?: number // Unix timestamp in seconds — wall-clock fallback when startTime is absent
+  endDate?: number
   language: string
 }
 

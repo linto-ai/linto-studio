@@ -85,6 +85,7 @@ function onCheckboxChange(event: MouseEvent) {
       <SpeakerLabel
         :speaker="speaker"
         :start-time="turn.startTime"
+        :start-date="turn.startDate"
         :language="turn.language" />
     </div>
     <p class="turn-text">

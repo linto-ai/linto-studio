@@ -10,3 +10,12 @@ export function formatTime(seconds: number): string {
   }
   return `${mm}:${ss}`
 }
+
+export function formatShortDateTime(unixSeconds: number, locale: string): string {
+  return new Intl.DateTimeFormat(locale, {
+    day: "numeric",
+    month: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(unixSeconds * 1000))
+}
