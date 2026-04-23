@@ -94,56 +94,6 @@ class FolderModel extends MongoModel {
     return descendants
   }
 
-  async countConversationsByFolderIds(folderIds, organizationId, userId, userRole) {
-    try {
-      const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
-
-      const matchStage = {
-        folderId: { $in: folderIds },
-        "organization.organizationId": organizationId,
-      }
-
-      if (userRole < ROLES.MAINTAINER) {
-        matchStage.$or = [
-          {
-            "organization.customRights": {
-              $elemMatch: {
-                userId: userId,
-                right: { $bitsAnySet: 1 },
-              },
-            },
-          },
-          {
-            "organization.customRights": {
-              $not: { $elemMatch: { userId: userId } },
-            },
-            "organization.membersRight": { $bitsAnySet: 1 },
-          },
-        ]
-      }
-
-      const pipeline = [
-        { $match: matchStage },
-        { $group: { _id: "$folderId", count: { $sum: 1 } } },
-      ]
-
-      const MongoDriver = require("../driver")
-      const result = await MongoDriver.constructor.db
-        .collection("conversations")
-        .aggregate(pipeline)
-        .toArray()
-
-      const counts = {}
-      result.forEach((r) => {
-        counts[r._id] = r.count
-      })
-      return counts
-    } catch (error) {
-      console.error(error)
-      return {}
-    }
-  }
-
   async update(payload) {
     const operator = "$set"
     const query = {

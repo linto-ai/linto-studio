@@ -473,6 +473,48 @@ class ConvoModel extends MongoModel {
       },
     ])
   }
+
+  async countByFolderIds(folderIds, organizationId, userId, userRole) {
+    try {
+      const matchStage = {
+        folderId: { $in: folderIds },
+        "organization.organizationId": organizationId,
+      }
+
+      if (userRole < ROLES.MAINTAINER) {
+        matchStage.$or = [
+          {
+            "organization.customRights": {
+              $elemMatch: {
+                userId: userId,
+                right: { $bitsAnySet: 1 },
+              },
+            },
+          },
+          {
+            "organization.customRights": {
+              $not: { $elemMatch: { userId: userId } },
+            },
+            "organization.membersRight": { $bitsAnySet: 1 },
+          },
+        ]
+      }
+
+      const result = await this.mongoAggregate([
+        { $match: matchStage },
+        { $group: { _id: "$folderId", count: { $sum: 1 } } },
+      ])
+
+      const counts = {}
+      result.forEach((r) => {
+        counts[r._id] = r.count
+      })
+      return counts
+    } catch (error) {
+      console.error(error)
+      return {}
+    }
+  }
 }
 
 module.exports = new ConvoModel()

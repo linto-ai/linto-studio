@@ -379,7 +379,7 @@ async function listFolders(req, res, next) {
     folders = filterFoldersByAccess(folders, userId, userRole)
 
     if (req.query.withConversationCount === "true" && folders.length > 0) {
-      const counts = await model.folders.countConversationsByFolderIds(
+      const counts = await model.conversations.countByFolderIds(
         folders.map((f) => f._id.toString()),
         organizationId,
         userId,
@@ -461,7 +461,11 @@ async function createFolder(req, res, next) {
     const folder = await model.folders.getById(result.insertedId.toString())
 
     if (this?.app?.components?.IoHandler) {
-      this.app.components.IoHandler.emit("folder_created", organizationId, folder[0])
+      this.app.components.IoHandler.emit(
+        "folder_created",
+        organizationId,
+        folder[0],
+      )
     }
 
     res.status(201).send(folder[0])
@@ -562,7 +566,8 @@ async function updateFolder(req, res, next) {
     if (req.body.position !== undefined)
       updatePayload.position = req.body.position
     if (newVisibility !== undefined) updatePayload.visibility = newVisibility
-    if (newVisibility === "private" && !folder.owner) updatePayload.owner = userId
+    if (newVisibility === "private" && !folder.owner)
+      updatePayload.owner = userId
     if (newMembers !== undefined) updatePayload.members = newMembers
 
     const result = await model.folders.update(updatePayload)
@@ -571,7 +576,12 @@ async function updateFolder(req, res, next) {
     // Handle visibility transitions
     let visibilityCascaded = false
     if (newParent && newParent.visibility === "private") {
-      await handleInheritFromPrivateParent(folderId, organizationId, newParent, userId)
+      await handleInheritFromPrivateParent(
+        folderId,
+        organizationId,
+        newParent,
+        userId,
+      )
       visibilityCascaded = true
     } else if (currentVisibility !== "private" && newVisibility === "private") {
       await handlePublicToPrivate(
@@ -610,7 +620,11 @@ async function updateFolder(req, res, next) {
       if (visibilityCascaded) {
         this.app.components.IoHandler.emit("folders_refresh", organizationId)
       } else {
-        this.app.components.IoHandler.emit("folder_updated", organizationId, updated[0])
+        this.app.components.IoHandler.emit(
+          "folder_updated",
+          organizationId,
+          updated[0],
+        )
       }
     }
 
@@ -666,7 +680,11 @@ async function deleteFolder(req, res, next) {
       throw new FolderError("Error during the deletion of the folder")
 
     if (this?.app?.components?.IoHandler) {
-      this.app.components.IoHandler.emit("folder_deleted", organizationId, folderId)
+      this.app.components.IoHandler.emit(
+        "folder_deleted",
+        organizationId,
+        folderId,
+      )
       this.app.components.IoHandler.emit("folders_refresh", organizationId)
     }
 
@@ -710,16 +728,18 @@ async function moveConversation(req, res, next) {
       this.app.components.IoHandler.emit(
         "conversation_folder_changed",
         organizationId,
-        { conversationIds: [conversationId], fromFolderId, toFolderId: folderId },
+        {
+          conversationIds: [conversationId],
+          fromFolderId,
+          toFolderId: folderId,
+        },
       )
     }
 
-    res
-      .status(200)
-      .send({
-        message: "Conversation moved",
-        modifiedCount: result.modifiedCount,
-      })
+    res.status(200).send({
+      message: "Conversation moved",
+      modifiedCount: result.modifiedCount,
+    })
   } catch (err) {
     next(err)
   }
