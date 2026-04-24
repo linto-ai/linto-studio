@@ -8,8 +8,11 @@ import fontsStyles from "./styles/fonts.css?inline"
 // et on les ajoute au tableau `styles` du SFC.
 import TurnNodeView from "./plugins/transcriptionEditor/components/TurnNodeView.vue"
 import SpeakerLabel from "./components/SpeakerLabel.vue"
+import SpeakerPopover from "./components/molecules/SpeakerPopover.vue"
+import FormInput from "./components/molecules/FormInput.vue"
 import SpeakerIndicator from "./components/atoms/SpeakerIndicator.vue"
 import Badge from "./components/atoms/Badge.vue"
+import Button from "./components/atoms/Button.vue"
 
 function getComponentStyles(comp: unknown): string[] {
   return (comp as { styles?: string[] }).styles ?? []
@@ -20,8 +23,11 @@ wc.styles = [
   ...(wc.styles ?? []),
   ...getComponentStyles(TurnNodeView),
   ...getComponentStyles(SpeakerLabel),
+  ...getComponentStyles(SpeakerPopover),
+  ...getComponentStyles(FormInput),
   ...getComponentStyles(SpeakerIndicator),
   ...getComponentStyles(Badge),
+  ...getComponentStyles(Button),
 ]
 
 const LintoEditor = defineCustomElement(WebComponent)

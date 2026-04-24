@@ -1,2 +1,7 @@
-import { Speaker } from '../../types/editor';
-export declare function speakerEquals(a: Pick<Speaker, "name" | "color">, b: Pick<Speaker, "name" | "color">): boolean;
+export declare function speakerEquals(a: {
+    name: string;
+    color?: string;
+}, b: {
+    name: string;
+    color?: string;
+}): boolean;

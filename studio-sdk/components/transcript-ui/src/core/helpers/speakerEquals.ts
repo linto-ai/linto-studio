@@ -1,8 +1,6 @@
-import type { Speaker } from "../../types/editor"
-
 export function speakerEquals(
-  a: Pick<Speaker, "name" | "color">,
-  b: Pick<Speaker, "name" | "color">,
+  a: { name: string; color?: string },
+  b: { name: string; color?: string },
 ): boolean {
   return a.name === b.name && a.color === b.color
 }

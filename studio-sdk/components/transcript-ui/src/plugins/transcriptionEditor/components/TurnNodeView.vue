@@ -2,6 +2,7 @@
 import { computed } from "vue"
 import { NodeViewWrapper, NodeViewContent, type NodeViewProps } from "@tiptap/vue-3"
 import SpeakerLabel from "../../../components/SpeakerLabel.vue"
+import SpeakerPopover from "../../../components/molecules/SpeakerPopover.vue"
 import { useCore } from "../../../core"
 
 const props = defineProps<NodeViewProps>()
@@ -14,6 +15,10 @@ const speaker = computed(() => {
 })
 
 const speakerColor = computed(() => speaker.value?.color ?? "transparent")
+
+const canEditSpeakers = computed(
+  () => core.capabilities.value.speakers === "edit",
+)
 
 const isTurnActive = computed(() => {
   if (!core.audio?.src.value) return false
@@ -31,10 +36,22 @@ const isTurnActive = computed(() => {
     :class="{ 'turn--active': isTurnActive }"
     :style="{ '--speaker-color': speakerColor }"
     :data-turn-id="node.attrs.id">
-    <SpeakerLabel
-      :speaker="speaker"
-      :start-time="node.attrs.startTime"
-      :language="node.attrs.language" />
+    <div contenteditable="false" class="turn-header">
+      <SpeakerPopover
+        v-if="canEditSpeakers"
+        :turn-id="node.attrs.id"
+        :current-speaker-id="node.attrs.speakerId">
+        <SpeakerLabel
+          :speaker="speaker"
+          :start-time="node.attrs.startTime"
+          :language="node.attrs.language" />
+      </SpeakerPopover>
+      <SpeakerLabel
+        v-else
+        :speaker="speaker"
+        :start-time="node.attrs.startTime"
+        :language="node.attrs.language" />
+    </div>
     <NodeViewContent as="p" class="turn-text" />
   </NodeViewWrapper>
 </template>

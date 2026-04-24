@@ -121,7 +121,7 @@ export interface TranscriptionEditorPluginApi {
   readonly tiptapEditor: ShallowRef<import("@tiptap/vue-3").Editor | undefined>
   readonly doc: import("yjs").Doc | null
   readonly fragment: import("yjs").XmlFragment | null
-  readonly speakersMap: import("yjs").Map<{ name: string; color: string }> | null
+  readonly speakersMap: import("yjs").Map<{ name: string; color?: string }> | null
   readonly users: Ref<YjsUser[]>
   readonly isConnected: Ref<boolean>
   updateUser(attrs: Record<string, unknown>): void

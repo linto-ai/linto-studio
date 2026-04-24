@@ -1,10 +1,15 @@
 <script setup lang="ts">
+import { computed, ref } from 'vue'
 import SpeakerIndicator from './atoms/SpeakerIndicator.vue'
 import SwitchToggle from './atoms/SwitchToggle.vue'
+import EditableText from './atoms/EditableText.vue'
+import SpeakerMenu from './molecules/SpeakerMenu.vue'
+import MergeDialog from './molecules/MergeDialog.vue'
 import ChannelSelector from './ChannelSelector.vue'
 import TranslationSelector from './TranslationSelector.vue'
 import { useI18n } from '../i18n'
 import { useCore } from '../core'
+import { renameSpeaker } from '../plugins/transcriptionEditor/utils/speakerActions'
 import type { Speaker } from '../types/editor'
 
 defineProps<{
@@ -22,6 +27,20 @@ defineEmits<{
 
 const core = useCore()
 const { t } = useI18n()
+
+const canEditSpeakers = computed(() => core.capabilities.value.speakers === 'edit')
+
+const mergeOpen = ref(false)
+const mergeFromId = ref<string | null>(null)
+
+function onRename(speakerId: string, newName: string): void {
+  renameSpeaker(core, speakerId, newName)
+}
+
+function onOpenMerge(speakerId: string): void {
+  mergeFromId.value = speakerId
+  mergeOpen.value = true
+}
 </script>
 
 <template>
@@ -97,10 +116,23 @@ const { t } = useI18n()
         class="speaker-item"
       >
         <SpeakerIndicator :color="speaker.color" />
-        <span class="speaker-name">{{ speaker.name }}</span>
+        <EditableText
+          class="speaker-name"
+          :model-value="speaker.name"
+          :disabled="!canEditSpeakers"
+          :aria-label="t('sidebar.renameSpeaker')"
+          @commit="onRename(speaker.id, $event)" />
+        <SpeakerMenu
+          v-if="canEditSpeakers && speakers.length > 1"
+          :speaker-name="speaker.name"
+          @merge="onOpenMerge(speaker.id)" />
       </li>
     </ul>
     </section>
+    <MergeDialog
+      v-if="canEditSpeakers"
+      v-model:open="mergeOpen"
+      :from-speaker-id="mergeFromId" />
   </aside>
 </template>
 

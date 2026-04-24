@@ -8,11 +8,13 @@ import {
   Copy,
   Download,
   Loader2,
+  MoreVertical,
   Pause,
   Play,
   Settings,
   SkipBack,
   SkipForward,
+  UserPlus,
   Users,
   Volume2,
   VolumeX,
@@ -38,6 +40,8 @@ export const iconMap: Record<string, Component> = {
   x: X,
   "circle-notch": Loader2,
   spinner: Loader2,
+  "more-vertical": MoreVertical,
+  "user-plus": UserPlus,
 }
 
 export function resolveIcon(name?: string): Component | undefined {

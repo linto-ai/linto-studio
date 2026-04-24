@@ -9,6 +9,7 @@ class EditorHandler extends Component {
     this.id = this.constructor.name
     this.app = app
     this.lastFlushedTurns = new Map()
+    this.lastFlushedSpeakers = new Map()
 
     const httpServer = this.app.components["WebServer"].httpServer
     if (!httpServer) {
@@ -34,6 +35,7 @@ class EditorHandler extends Component {
       },
       async afterUnloadDocument({ documentName }) {
         self.lastFlushedTurns.delete(documentName)
+        self.lastFlushedSpeakers.delete(documentName)
         debug(`Unloaded doc=${documentName}, cleared cache`)
       },
     })
@@ -115,6 +117,7 @@ class EditorHandler extends Component {
   async _onLoadDocument({ document, documentName, context }) {
     const model = require(`${process.cwd()}/lib/mongodb/models`)
     const { seedYDoc } = require("./schema/seedYDoc")
+    const { seedSpeakers } = require("./schema/seedSpeakers")
 
     debug(`onLoadDocument: doc=${documentName} user=${context?.userId}`)
 
@@ -124,28 +127,40 @@ class EditorHandler extends Component {
     }
 
     const turns = conversation[0].text || []
+    const speakers = conversation[0].speakers || []
 
     // Store the full turns (with words) in memory for diff in onStoreDocument
     this.lastFlushedTurns.set(documentName, turns)
+    this.lastFlushedSpeakers.set(
+      documentName,
+      speakers.map((s) => ({ speaker_id: s.speaker_id, speaker_name: s.speaker_name })),
+    )
 
     seedYDoc(document, turns)
+    seedSpeakers(document, speakers)
     return document
   }
 
   async _onStoreDocument({ document, documentName }) {
     const model = require(`${process.cwd()}/lib/mongodb/models`)
     const { docToTurns } = require("./schema/docToTurns")
+    const { docToSpeakers } = require("./schema/docToSpeakers")
     const { computeDiff } = require("./flush/diff")
+    const { speakersChanged } = require("./flush/speakersDiff")
 
     const newTurns = docToTurns(document)
     const oldTurns = this.lastFlushedTurns.get(documentName) || []
-
     const diff = computeDiff(oldTurns, newTurns)
+
+    const newSpeakers = docToSpeakers(document)
+    const oldSpeakers = this.lastFlushedSpeakers.get(documentName) || []
+    const speakersDirty = speakersChanged(oldSpeakers, newSpeakers)
 
     if (
       diff.updates.length === 0 &&
       diff.additions.length === 0 &&
-      diff.deletions.length === 0
+      diff.deletions.length === 0 &&
+      !speakersDirty
     ) {
       return
     }
@@ -164,14 +179,18 @@ class EditorHandler extends Component {
       for (const turnId of diff.deletions) {
         await model.conversations.removeTurnAtomic(documentName, turnId)
       }
+      if (speakersDirty) {
+        await model.conversations.updateSpeakers(documentName, newSpeakers)
+      }
 
       this.lastFlushedTurns.set(documentName, newTurns)
+      this.lastFlushedSpeakers.set(documentName, newSpeakers)
       debug(
-        `Flushed doc=${documentName}: ${diff.updates.length}U ${diff.additions.length}A ${diff.deletions.length}D`,
+        `Flushed doc=${documentName}: ${diff.updates.length}U ${diff.additions.length}A ${diff.deletions.length}D speakers=${speakersDirty ? "Y" : "N"}`,
       )
     } catch (err) {
       console.error(`Flush failed for doc=${documentName}:`, err)
-      // Don't update lastFlushedTurns — will retry on next flush
+      // Don't update caches — will retry on next flush
     }
   }
 }

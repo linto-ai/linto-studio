@@ -460,6 +460,23 @@ class ConvoModel extends MongoModel {
     }
   }
 
+  /**
+   * Replace the speakers array on a conversation.
+   */
+  async updateSpeakers(conversationId, speakers) {
+    try {
+      const query = { _id: this.getObjectId(conversationId) }
+      const dateTime = moment().format()
+      return await this.mongoUpdateOne(query, "$set", {
+        speakers,
+        last_update: dateTime,
+      })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   async updateCategory(_id, category) {
     try {
       const operator = "$set"

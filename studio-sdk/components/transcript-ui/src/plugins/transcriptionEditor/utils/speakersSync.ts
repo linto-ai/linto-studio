@@ -3,12 +3,30 @@ import type { Core } from "../../../core/types"
 import type { Speaker } from "../../../types/editor"
 import type { TranslationStore } from "../../../core/types"
 import { speakerEquals } from "../../../core/helpers/speakerEquals"
+import { SPEAKER_COLORS } from "../../../constants/speakers"
 
 export const SPEAKERS_MAP_KEY = "speakers"
 
+/** Color may be absent when the server seeded the Y.Map (server doesn't persist colors). */
 export interface SpeakerData {
   name: string
-  color: string
+  color?: string
+}
+
+function fallbackColor(speakerId: string): string {
+  let h = 5381
+  for (let i = 0; i < speakerId.length; i++) {
+    h = ((h << 5) + h) ^ speakerId.charCodeAt(i)
+  }
+  return SPEAKER_COLORS[(h >>> 0) % SPEAKER_COLORS.length]!
+}
+
+function resolveColor(
+  id: string,
+  data: SpeakerData,
+  existing: Speaker | undefined,
+): string {
+  return data.color ?? existing?.color ?? fallbackColor(id)
 }
 
 export interface SetupSpeakersSyncOptions {
@@ -47,7 +65,8 @@ export function setupSpeakersSync(
   }
 
   for (const [id, data] of speakersMap.entries()) {
-    core.speakers.updateOrCreate({ id, name: data.name, color: data.color })
+    const color = resolveColor(id, data, core.speakers.all.get(id))
+    core.speakers.updateOrCreate({ id, name: data.name, color })
   }
 
   const observer = (event: YMapEvent<SpeakerData>) => {
@@ -57,7 +76,8 @@ export function setupSpeakersSync(
       } else {
         const data = speakersMap.get(id)
         if (!data) return
-        core.speakers.updateOrCreate({ id, name: data.name, color: data.color })
+        const color = resolveColor(id, data, core.speakers.all.get(id))
+        core.speakers.updateOrCreate({ id, name: data.name, color })
       }
     })
   }

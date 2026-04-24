@@ -7,6 +7,18 @@ declare const fr: {
     readonly "header.closeSidebar": "Fermer le panneau";
     readonly "sidebar.channel": "Canal";
     readonly "sidebar.speakers": "Intervenants";
+    readonly "sidebar.renameSpeaker": "Renommer l'intervenant";
+    readonly "form.apply": "Valider";
+    readonly "form.cancel": "Annuler";
+    readonly "speakerPopover.newSpeaker": "Nouvel intervenant";
+    readonly "speakerPopover.newSpeakerPlaceholder": "Nom de l'intervenant…";
+    readonly "speakerMenu.openMenu": "Ouvrir le menu";
+    readonly "speakerMenu.merge": "Fusionner dans…";
+    readonly "mergeDialog.title": "Fusionner l'intervenant";
+    readonly "mergeDialog.turnsAffected": "interventions seront réassignées";
+    readonly "mergeDialog.targetLabel": "Destinataire";
+    readonly "mergeDialog.cancel": "Annuler";
+    readonly "mergeDialog.confirm": "Fusionner";
     readonly "player.play": "Lecture";
     readonly "player.pause": "Pause";
     readonly "player.skipBack": "Reculer de 10 secondes";

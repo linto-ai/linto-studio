@@ -1,9 +1,10 @@
 import { Doc } from 'yjs';
 import { Core, TranslationStore } from '../../../core/types';
 export declare const SPEAKERS_MAP_KEY = "speakers";
+/** Color may be absent when the server seeded the Y.Map (server doesn't persist colors). */
 export interface SpeakerData {
     name: string;
-    color: string;
+    color?: string;
 }
 export interface SetupSpeakersSyncOptions {
     core: Core;

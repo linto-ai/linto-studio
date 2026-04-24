@@ -122,7 +122,7 @@ export interface TranscriptionEditorPluginApi {
     readonly fragment: import('yjs').XmlFragment | null;
     readonly speakersMap: import('yjs').Map<{
         name: string;
-        color: string;
+        color?: string;
     }> | null;
     readonly users: Ref<YjsUser[]>;
     readonly isConnected: Ref<boolean>;
