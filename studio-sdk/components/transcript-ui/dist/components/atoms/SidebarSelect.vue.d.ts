@@ -12,17 +12,17 @@ declare const _default: <T extends {
     expose(exposed: import('vue').ShallowUnwrapRef<{}>): void;
     attrs: any;
     slots: Readonly<{
-        item(props: {
+        item?(props: {
             item: T;
         }): unknown;
-        trigger(props: {
+        trigger?(props: {
             item: T | undefined;
         }): unknown;
     }> & {
-        item(props: {
+        item?(props: {
             item: T;
         }): unknown;
-        trigger(props: {
+        trigger?(props: {
             item: T | undefined;
         }): unknown;
     };

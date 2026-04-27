@@ -1,6 +1,6 @@
 import computeSessionTurnUniqueId from "../const/computeSessionTurnUniqueId.js"
 import classifySessionTurn from "./classifySessionTurn.js"
-import { computeTurnStartTime, computeTurnEndTime } from "./computeTurnTime.js"
+import { computeTurnStartDate, computeTurnEndDate } from "./computeTurnTime.js"
 
 /**
  * Converts closedCaptions + translatedCaptions into LiveFinalEvent[].
@@ -9,7 +9,6 @@ import { computeTurnStartTime, computeTurnEndTime } from "./computeTurnTime.js"
  * @param {object} options
  * @param {Array} options.closedCaptions
  * @param {Array} options.translatedCaptions
- * @param {number} options.sessionStartMs
  * @param {boolean} options.diarization
  * @param {string} options.defaultLanguage
  * @returns {Array} LiveFinalEvent[]
@@ -17,7 +16,6 @@ import { computeTurnStartTime, computeTurnEndTime } from "./computeTurnTime.js"
 export default function processSessionCaptions({
   closedCaptions,
   translatedCaptions,
-  sessionStartMs,
   diarization,
   defaultLanguage,
 }) {
@@ -30,11 +28,11 @@ export default function processSessionCaptions({
         text: c.text ?? null,
         words: [],
         speakerId: c.locutor ?? null,
-        startTime: computeTurnStartTime(c, sessionStartMs),
-        endTime: computeTurnEndTime(c, sessionStartMs),
+        startDate: computeTurnStartDate(c),
+        endDate: computeTurnEndDate(c),
         language: c.lang ?? defaultLanguage,
         translations:
-          c.segmentId in translatedCaptions
+          translatedCaptions && c.segmentId in translatedCaptions
             ? translatedCaptions[c.segmentId].map((tr) => ({
                 translationId: tr.targetLang,
                 text: tr.text ?? null,

@@ -169,6 +169,8 @@ export interface LiveFinalEventData {
     }>;
     startTime: number;
     endTime: number;
+    startDate?: number;
+    endDate?: number;
     language: string;
     translations?: Array<{
         translationId: string;

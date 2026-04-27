@@ -4,6 +4,8 @@ export interface TurnNodeAttributes {
     speakerId: string | null;
     startTime: number | undefined;
     endTime: number | undefined;
+    startDate: number | undefined;
+    endDate: number | undefined;
     language: string;
 }
 export declare const TurnNode: Node<any, any>;

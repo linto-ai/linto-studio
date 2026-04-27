@@ -1,31 +1,21 @@
 /**
- * Computes the absolute start time of a turn relative to session start.
+ * Computes the absolute start date of a turn (astart + start).
  *
- * @param {object} content - Turn object with .astart (ISO string), .start (number)
- * @param {number} sessionStartMs - Session start time in epoch milliseconds
- * @returns {number} Start time in seconds relative to session start
+ * @param {object} content - Turn object with .astart (ISO string) and .start (seconds)
+ * @returns {number|undefined} Unix timestamp in seconds, or undefined if .astart is missing
  */
-export function computeTurnStartTime(content, sessionStartMs) {
-  if (!content.astart) return content.start
-  return Math.max(
-    0,
-    (new Date(content.astart).getTime() - sessionStartMs) / 1000 +
-      content.start,
-  )
+export function computeTurnStartDate(content) {
+  if (!content.astart) return undefined
+  return new Date(content.astart).getTime() / 1000 + content.start
 }
 
 /**
- * Computes the absolute end time of a turn relative to session start.
+ * Computes the absolute end date of a turn (astart + end).
  *
- * @param {object} content - Turn object with .astart (ISO string), .end (number)
- * @param {number} sessionStartMs - Session start time in epoch milliseconds
- * @returns {number} End time in seconds relative to session start
+ * @param {object} content - Turn object with .astart (ISO string) and .end (seconds)
+ * @returns {number|undefined} Unix timestamp in seconds, or undefined if .astart is missing
  */
-export function computeTurnEndTime(content, sessionStartMs) {
-  if (!content.astart) return content.end
-  return Math.max(
-    0,
-    (new Date(content.astart).getTime() - sessionStartMs) / 1000 +
-      content.end,
-  )
+export function computeTurnEndDate(content) {
+  if (!content.astart) return undefined
+  return new Date(content.astart).getTime() / 1000 + content.end
 }

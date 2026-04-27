@@ -19,8 +19,8 @@ import {
 import computeSessionTurnUniqueId from "@/const/computeSessionTurnUniqueId"
 import classifySessionTurn from "@/tools/classifySessionTurn"
 import {
-  computeTurnStartTime,
-  computeTurnEndTime,
+  computeTurnStartDate,
+  computeTurnEndDate,
 } from "@/tools/computeTurnTime.js"
 
 const PAGE_SIZE = 50
@@ -42,10 +42,10 @@ export default {
       offWatermarkDisplay: null,
       offWatermarkPin: null,
       unwatchWatermarkHost: [],
-      sessionStartMs: new Date(this.session.startTime).getTime(),
       activeChannelIndex: null,
       historyOffset: 0,
       usePublicEndpoint: false,
+      wakeLock: null,
     }
   },
   computed: {
@@ -70,6 +70,8 @@ export default {
   },
   mounted() {
     this.initEditor()
+    this.aquireWakeLock()
+    document.addEventListener("visibilitychange", this.renewWakeLock)
   },
   beforeDestroy() {
     this.offChannelChange?.()
@@ -78,8 +80,31 @@ export default {
     this.offWatermarkPin?.()
     this.unwatchWatermarkHost.forEach((stop) => stop())
     this.websocketInstance.unSubscribeSessionRoom()
+    this.releaseWakeLock()
+    document.removeEventListener("visibilitychange", this.renewWakeLock)
   },
   methods: {
+    async renewWakeLock() {
+      if (this.wakeLock) {
+        await this.wakeLock.release()
+      }
+      await this.aquireWakeLock()
+    },
+    async aquireWakeLock() {
+      try {
+        this.wakeLock = await navigator.wakeLock.request("screen")
+        this.wakeLock.addEventListener("release", () => {
+          this.wakeLock = null
+        })
+      } catch (error) {
+        console.warn("WakeLock error", error)
+      }
+    },
+    async releaseWakeLock() {
+      if (this.wakeLock) {
+        await this.wakeLock.release()
+      }
+    },
     async initEditor() {
       const el = this.$refs.editor
       const { core } = el
@@ -193,7 +218,6 @@ export default {
         const events = processSessionCaptions({
           closedCaptions,
           translatedCaptions,
-          sessionStartMs: this.sessionStartMs,
           diarization: this.hasDiarization,
           defaultLanguage: this.activeChannelObj?.languages?.[0] ?? "*",
         })
@@ -234,10 +258,6 @@ export default {
     },
 
     onFinal(content) {
-      if (this.sessionStartMs === 0) {
-        this.sessionStartMs = new Date().getTime()
-      }
-
       const type = classifySessionTurn(content, this.hasDiarization)
       if (type !== "original") return
 
@@ -247,8 +267,8 @@ export default {
         turnId: computeSessionTurnUniqueId(content),
         speakerId: content.locutor ?? null,
         words: [],
-        startTime: computeTurnStartTime(content, this.sessionStartMs),
-        endTime: computeTurnEndTime(content, this.sessionStartMs),
+        startDate: computeTurnStartDate(content),
+        endDate: computeTurnEndDate(content),
         language:
           content.lang ?? activeChannel.sourceTranslation.languages[0] ?? "*",
       }
@@ -284,8 +304,8 @@ export default {
         language: content.targetLang,
         text: content.text,
         final: content.final,
-        startTime: computeTurnStartTime(content, this.sessionStartMs),
-        endTime: computeTurnEndTime(content, this.sessionStartMs),
+        startDate: computeTurnStartDate(content),
+        endDate: computeTurnEndDate(content),
         speakerId: content.locutor,
       })
     },

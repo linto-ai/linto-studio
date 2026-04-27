@@ -24,6 +24,8 @@ function finalEventToSourceTurn(event: LiveFinalEvent): Turn {
     words: event.words,
     startTime: event.startTime,
     endTime: event.endTime,
+    startDate: event.startDate,
+    endDate: event.endDate,
     language: event.language,
   }
 }
@@ -39,6 +41,8 @@ function finalEventToTranslationTurn(
     words: [],
     startTime: event.startTime,
     endTime: event.endTime,
+    startDate: event.startDate,
+    endDate: event.endDate,
     language: tr.language,
   }
 }

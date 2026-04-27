@@ -14,8 +14,8 @@ const emit = defineEmits<{
 }>()
 
 defineSlots<{
-  item(props: { item: T }): unknown
-  trigger(props: { item: T | undefined }): unknown
+  item?(props: { item: T }): unknown
+  trigger?(props: { item: T | undefined }): unknown
 }>()
 
 const { isMobile } = useIsMobile()

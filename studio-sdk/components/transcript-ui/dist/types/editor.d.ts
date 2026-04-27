@@ -13,6 +13,8 @@ export interface Turn {
     words: Word[];
     startTime?: number;
     endTime?: number;
+    startDate?: number;
+    endDate?: number;
     language: string;
 }
 export interface Speaker {
