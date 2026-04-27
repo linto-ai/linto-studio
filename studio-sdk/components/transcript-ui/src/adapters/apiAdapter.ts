@@ -1,7 +1,7 @@
 import type { ApiDocument, ApiWord } from '../types/api'
 import type { EditorDocument, Speaker, Turn, Word } from '../types/editor'
 
-function mapWord(w: ApiWord): Word {
+export function mapWord(w: ApiWord): Word {
   return {
     id: w.wid,
     text: w.word,

@@ -15,6 +15,8 @@ const TurnNode = Node.create({
       speakerId: { default: null },
       startTime: { default: undefined },
       endTime: { default: undefined },
+      startDate: { default: undefined },
+      endDate: { default: undefined },
       language: { default: "" },
     }
   },

@@ -8,8 +8,6 @@ class EditorHandler extends Component {
     super(app, "WebServer")
     this.id = this.constructor.name
     this.app = app
-    this.lastFlushedTurns = new Map()
-    this.lastFlushedSpeakers = new Map()
 
     const httpServer = this.app.components["WebServer"].httpServer
     if (!httpServer) {
@@ -19,8 +17,8 @@ class EditorHandler extends Component {
     const self = this
     this.hocuspocus = new Hocuspocus({
       name: "linto-editor",
-      debounce: 10000,
-      maxDebounce: 30000,
+      debounce: 5000,
+      maxDebounce: 15000,
       quiet: true,
       extensions: this.buildExtensions(),
 
@@ -33,10 +31,8 @@ class EditorHandler extends Component {
       async onStoreDocument(data) {
         return self._onStoreDocument(data)
       },
-      async afterUnloadDocument({ documentName }) {
-        self.lastFlushedTurns.delete(documentName)
-        self.lastFlushedSpeakers.delete(documentName)
-        debug(`Unloaded doc=${documentName}, cleared cache`)
+      async connected(data) {
+        return self._onConnected(data)
       },
     })
 
@@ -129,68 +125,96 @@ class EditorHandler extends Component {
     const turns = conversation[0].text || []
     const speakers = conversation[0].speakers || []
 
-    // Store the full turns (with words) in memory for diff in onStoreDocument
-    this.lastFlushedTurns.set(documentName, turns)
-    this.lastFlushedSpeakers.set(
-      documentName,
-      speakers.map((s) => ({ speaker_id: s.speaker_id, speaker_name: s.speaker_name })),
-    )
-
     seedYDoc(document, turns)
     seedSpeakers(document, speakers)
     return document
+  }
+
+  async _onConnected({ documentName, connection }) {
+    // Sent right after the Y.Doc sync state has been pushed to the new client.
+    // The Y.Doc carries segments only — we need to deliver words+timestamps
+    // through a separate stateless message, targeted to this connection.
+    if (!connection) return
+
+    const model = require(`${process.cwd()}/lib/mongodb/models`)
+    try {
+      const conversation = await model.conversations.getById(documentName)
+      if (!conversation || conversation.length !== 1) return
+
+      const turnsWithWords = (conversation[0].text || [])
+        .filter((t) => Array.isArray(t.words) && t.words.length > 0)
+        .map((t) => ({ turn_id: t.turn_id, words: t.words }))
+
+      if (turnsWithWords.length === 0) return
+
+      connection.sendStateless(
+        JSON.stringify({
+          type: "timestamps_recalc",
+          turns: turnsWithWords,
+        }),
+      )
+      debug(
+        `Seeded words for doc=${documentName}: ${turnsWithWords.length} turns`,
+      )
+    } catch (err) {
+      debug(`onConnected seed failed for doc=${documentName}: ${err.message}`)
+    }
   }
 
   async _onStoreDocument({ document, documentName }) {
     const model = require(`${process.cwd()}/lib/mongodb/models`)
     const { docToTurns } = require("./schema/docToTurns")
     const { docToSpeakers } = require("./schema/docToSpeakers")
-    const { computeDiff } = require("./flush/diff")
+    const { enrichDiff } = require("./flush/enrichDiff")
     const { speakersChanged } = require("./flush/speakersDiff")
 
-    const newTurns = docToTurns(document)
-    const oldTurns = this.lastFlushedTurns.get(documentName) || []
-    const diff = computeDiff(oldTurns, newTurns)
-
-    const newSpeakers = docToSpeakers(document)
-    const oldSpeakers = this.lastFlushedSpeakers.get(documentName) || []
-    const speakersDirty = speakersChanged(oldSpeakers, newSpeakers)
-
-    if (
-      diff.updates.length === 0 &&
-      diff.additions.length === 0 &&
-      diff.deletions.length === 0 &&
-      !speakersDirty
-    ) {
+    // Fresh read from Mongo: cross-instance source of truth for words+timestamps.
+    // Protected by Hocuspocus extension-redis Redlock — only one instance per doc.
+    const conversation = await model.conversations.getById(documentName)
+    if (!conversation || conversation.length !== 1) {
+      debug(`onStoreDocument: doc=${documentName} not found`)
       return
     }
+    const oldTurns = conversation[0].text || []
+    const oldSpeakers = (conversation[0].speakers || []).map((s) => ({
+      speaker_id: s.speaker_id,
+      speaker_name: s.speaker_name,
+    }))
+
+    const newTurns = docToTurns(document)
+    const newSpeakers = docToSpeakers(document)
+
+    const { finalTurns, changedTurns, hasChanges } = enrichDiff(oldTurns, newTurns)
+    const speakersDirty = speakersChanged(oldSpeakers, newSpeakers)
+
+    if (!hasChanges && !speakersDirty) return
 
     try {
-      for (const turn of diff.updates) {
-        await model.conversations.updateTurnAtomic(
-          documentName,
-          turn.turn_id,
-          turn,
-        )
-      }
-      for (const turn of diff.additions) {
-        await model.conversations.addTurnAtomic(documentName, turn)
-      }
-      for (const turnId of diff.deletions) {
-        await model.conversations.removeTurnAtomic(documentName, turnId)
+      if (hasChanges) {
+        await model.conversations.replaceTurns(documentName, finalTurns)
       }
       if (speakersDirty) {
         await model.conversations.updateSpeakers(documentName, newSpeakers)
       }
 
-      this.lastFlushedTurns.set(documentName, newTurns)
-      this.lastFlushedSpeakers.set(documentName, newSpeakers)
       debug(
-        `Flushed doc=${documentName}: ${diff.updates.length}U ${diff.additions.length}A ${diff.deletions.length}D speakers=${speakersDirty ? "Y" : "N"}`,
+        `Flushed doc=${documentName}: turns=${finalTurns.length} changed=${changedTurns.length} speakers=${speakersDirty ? "Y" : "N"}`,
       )
+
+      if (changedTurns.length > 0) {
+        try {
+          document.broadcastStateless(
+            JSON.stringify({
+              type: "timestamps_recalc",
+              turns: changedTurns,
+            }),
+          )
+        } catch (err) {
+          debug(`broadcastStateless failed for doc=${documentName}: ${err.message}`)
+        }
+      }
     } catch (err) {
       console.error(`Flush failed for doc=${documentName}:`, err)
-      // Don't update caches — will retry on next flush
     }
   }
 }

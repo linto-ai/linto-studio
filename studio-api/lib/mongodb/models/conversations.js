@@ -461,6 +461,25 @@ class ConvoModel extends MongoModel {
   }
 
   /**
+   * Replace the entire text array on a conversation.
+   * Used by the collaborative editor flush so that turn order is preserved
+   * exactly as it appears in the Y.Doc (atomic single-document write).
+   */
+  async replaceTurns(conversationId, turns) {
+    try {
+      const query = { _id: this.getObjectId(conversationId) }
+      const dateTime = moment().format()
+      return await this.mongoUpdateOne(query, "$set", {
+        text: turns,
+        last_update: dateTime,
+      })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  /**
    * Replace the speakers array on a conversation.
    */
   async updateSpeakers(conversationId, speakers) {

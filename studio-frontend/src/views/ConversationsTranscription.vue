@@ -1,6 +1,6 @@
 <template>
-  <LayoutV2>
-    <linto-editor ref="editor" :locale="$i18n.locale" no-header />
+  <LayoutV2 noHeader>
+    <linto-editor ref="editor" :locale="$i18n.locale" />
   </LayoutV2>
 </template>
 <script>

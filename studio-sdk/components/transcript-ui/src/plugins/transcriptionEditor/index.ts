@@ -11,6 +11,8 @@ import { StoreSync } from "./extensions/storeSync"
 import { WordHighlight } from "./extensions/wordHighlight"
 import { CollaborationCursor } from "./extensions/collaborationCursor"
 import { turnsToDoc } from "./utils/turnsToDoc"
+import { mapWord } from "../../adapters/apiAdapter"
+import type { ApiWord } from "../../types/api"
 import {
   setupSpeakersSync,
   SPEAKERS_MAP_KEY,
@@ -130,6 +132,9 @@ export function createTranscriptionEditorPlugin(
                 ...(s.user as Record<string, unknown> | undefined),
               }))
             },
+            onStateless({ payload }) {
+              applyStatelessPayload(payload, translation)
+            },
           })
           currentProvider = provider
 
@@ -193,6 +198,50 @@ export function createTranscriptionEditorPlugin(
       }
     },
   }
+}
+
+interface TimestampsRecalcPayload {
+  type: "timestamps_recalc"
+  turns: Array<{ turn_id: string; words: ApiWord[] }>
+}
+
+function applyStatelessPayload(payload: string, translation: TranslationStore): void {
+  let msg: TimestampsRecalcPayload
+  try {
+    msg = JSON.parse(payload)
+  } catch {
+    return
+  }
+  if (!msg || msg.type !== "timestamps_recalc" || !Array.isArray(msg.turns)) return
+
+  for (const t of msg.turns) {
+    if (!t || !t.turn_id || !Array.isArray(t.words)) continue
+
+    const currentTurn = translation.turns.value.find((x) => x.id === t.turn_id)
+    if (!currentTurn) continue
+
+    const words = t.words.map(mapWord)
+
+    // Drop stale payloads: if the words don't describe the current segment
+    // (because the user kept editing while the server was recomputing), skip.
+    // The next debounce tick will resend a coherent payload.
+    const wordsText = normalizeText(
+      words
+        .filter((w) => w.text !== "")
+        .map((w) => w.text)
+        .join(" "),
+    )
+    const currentText = normalizeText(
+      currentTurn.text ?? currentTurn.words.map((w) => w.text).join(" "),
+    )
+    if (wordsText !== currentText) continue
+
+    translation.updateWords(t.turn_id, words)
+  }
+}
+
+function normalizeText(s: string): string {
+  return s.replace(/\s+/g, " ").trim()
 }
 
 function createTiptapEditor(
