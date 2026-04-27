@@ -82,10 +82,18 @@
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   background-color: var(--color-surface);
   box-shadow: var(--shadow-md);
-  overflow-y: auto;
+  overflow: hidden;
+  overscroll-behavior: contain;
   animation: sheet-slide-up 250ms ease;
   display: flex;
   flex-direction: column;
+}
+
+.sheet-listbox {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
 }
 
 .sheet-handle {
@@ -117,7 +125,10 @@
 }
 
 .sheet-list {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   padding: var(--spacing-xs) 0;
 }
 

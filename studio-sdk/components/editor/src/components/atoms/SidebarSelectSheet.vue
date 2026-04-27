@@ -62,6 +62,7 @@ function onSelect(value: string) {
           <DialogTitle class="sr-only">{{ ariaLabel }}</DialogTitle>
           <div class="sheet-handle" />
           <ListboxRoot
+            class="sheet-listbox"
             :model-value="selectedValue"
             @update:model-value="onSelect($event as string)">
             <!-- <ListboxFilter
