@@ -92,12 +92,17 @@ function processChannelCaptions(channel, caption, main = true) {
       const durationSeconds = (endDate - startDate) / 1000
       offset += durationSeconds
     } else {
-      // Adjust timing for non-bot segments on multiple captions
+      // Don't mutate: segment is shared across canonical + translation
+      // calls, so mutation would accumulate the offset on each pass.
       if (offset > 0) {
-        segment.start = Number((segment.start + offset).toFixed(2))
-        segment.end = Number((segment.end + offset).toFixed(2))
+        closedCaptions.push({
+          ...segment,
+          start: Number((segment.start + offset).toFixed(2)),
+          end: Number((segment.end + offset).toFixed(2)),
+        })
+      } else {
+        closedCaptions.push(segment)
       }
-      closedCaptions.push(segment) // Only push non-bot segments
     }
   })
 

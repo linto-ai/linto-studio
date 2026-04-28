@@ -1,10 +1,12 @@
 const cp = structuredClone
-const {
-  processChannelCaptions,
-} = require(`${process.cwd()}/components/WebServer/controllers/session/channelCaptions`)
+const { processChannelCaptions } = require(
+  `${process.cwd()}/components/WebServer/controllers/session/channelCaptions`,
+)
 const TYPES = require(`${process.cwd()}/lib/dao/conversation/types`)
 
-const SAMPLE = require(`${process.cwd()}/tests/data/session/channelCaptions-sample.json`)
+const SAMPLE = require(
+  `${process.cwd()}/tests/data/session/channelCaptions-sample.json`,
+)
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
@@ -225,10 +227,38 @@ describe("processChannelCaptions", () => {
       const channel = {
         diarization: true,
         closedCaptions: [
-          { segmentId: 1, start: 0, end: 1, text: "a1", lang: "fr-FR", locutor: "Alice" },
-          { segmentId: 2, start: 1, end: 2, text: "b1", lang: "fr-FR", locutor: "Bob" },
-          { segmentId: 3, start: 2, end: 3, text: "a2", lang: "fr-FR", locutor: "Alice" },
-          { segmentId: 4, start: 3, end: 4, text: "c1", lang: "fr-FR", locutor: "Carol" },
+          {
+            segmentId: 1,
+            start: 0,
+            end: 1,
+            text: "a1",
+            lang: "fr-FR",
+            locutor: "Alice",
+          },
+          {
+            segmentId: 2,
+            start: 1,
+            end: 2,
+            text: "b1",
+            lang: "fr-FR",
+            locutor: "Bob",
+          },
+          {
+            segmentId: 3,
+            start: 2,
+            end: 3,
+            text: "a2",
+            lang: "fr-FR",
+            locutor: "Alice",
+          },
+          {
+            segmentId: 4,
+            start: 3,
+            end: 4,
+            text: "c1",
+            lang: "fr-FR",
+            locutor: "Carol",
+          },
         ],
       }
       const caption = makeCaption()
@@ -238,8 +268,9 @@ describe("processChannelCaptions", () => {
       expect(names).toEqual(["Alice", "Bob", "Carol"])
 
       // Alice's two turns share the same speaker_id
-      const aliceId = caption.speakers.find((s) => s.speaker_name === "Alice")
-        .speaker_id
+      const aliceId = caption.speakers.find(
+        (s) => s.speaker_name === "Alice",
+      ).speaker_id
       const aliceTurns = caption.text.filter((t) => t.speaker_id === aliceId)
       expect(aliceTurns).toHaveLength(2)
     })
@@ -275,6 +306,69 @@ describe("processChannelCaptions", () => {
 
       expect(caption.text).toHaveLength(1)
       expect(caption.text[0].raw_segment).toEqual("et text")
+    })
+  })
+
+  describe("repeated calls on the same channel (canonical + translations)", () => {
+    // Regression: processChannelCaptions used to mutate segment.start/end
+    // in place, so when conversation.js called it once for the canonical
+    // caption and once per target language on the SAME channel object,
+    // the offset compounded by the rank of the call.
+    it("produces identical stime/etime for canonical and each translation", () => {
+      const session = cp(SAMPLE)
+      const channel = session.channels[0]
+      applyTranslationsToSegments(channel)
+      const targetLangs = ["et", "en", "de"]
+
+      const canonical = makeCaption({ mode: TYPES.CHILD })
+      processChannelCaptions(channel, canonical, true)
+
+      const translations = targetLangs.map((locale) => {
+        const c = makeCaption({ mode: TYPES.TRANSLATION, locale })
+        processChannelCaptions(channel, c, false)
+        return { locale, caption: c }
+      })
+
+      const canonicalBySegId = Object.fromEntries(
+        canonical.text.map((t) => [t.raw_segment.match(/segment (\d+)/)[1], t]),
+      )
+
+      for (const { locale, caption } of translations) {
+        for (const turn of caption.text) {
+          const segId = turn.raw_segment.match(/translation (\d+) /)[1]
+          const canonicalTurn = canonicalBySegId[segId]
+          expect({
+            locale,
+            segId,
+            stime: turn.stime,
+            etime: turn.etime,
+          }).toEqual({
+            locale,
+            segId,
+            stime: canonicalTurn.stime,
+            etime: canonicalTurn.etime,
+          })
+        }
+      }
+    })
+
+    it("does not mutate channel.closedCaptions across calls", () => {
+      const session = cp(SAMPLE)
+      const channel = session.channels[0]
+      applyTranslationsToSegments(channel)
+      const before = cp(channel.closedCaptions)
+
+      const c1 = makeCaption({ mode: TYPES.CHILD })
+      processChannelCaptions(channel, c1, true)
+      const c2 = makeCaption({ mode: TYPES.TRANSLATION, locale: "et" })
+      processChannelCaptions(channel, c2, false)
+      const c3 = makeCaption({ mode: TYPES.TRANSLATION, locale: "en" })
+      processChannelCaptions(channel, c3, false)
+
+      for (let i = 0; i < before.length; i++) {
+        expect(channel.closedCaptions[i].start).toEqual(before[i].start)
+        expect(channel.closedCaptions[i].end).toEqual(before[i].end)
+      }
     })
   })
 
