@@ -1,10 +1,6 @@
-<script setup lang="ts" generic="T extends { value: string; label: string }">
-import { useIsMobile } from "../../composables/useIsMobile"
-import SidebarSelectDropdown from "./SidebarSelectDropdown.vue"
-import SidebarSelectSheet from "./SidebarSelectSheet.vue"
-
+<script setup lang="ts">
 defineProps<{
-  items: T[]
+  items: { value: string; label: string }[]
   selectedValue: string
   ariaLabel: string
 }>()
@@ -12,36 +8,16 @@ defineProps<{
 const emit = defineEmits<{
   "update:selectedValue": [value: string]
 }>()
-
-defineSlots<{
-  item(props: { item: T }): unknown
-  trigger(props: { item: T | undefined }): unknown
-}>()
-
-const { isMobile } = useIsMobile()
 </script>
 
 <template>
-  <SidebarSelectSheet
-    v-if="isMobile"
-    v-bind="$props"
-    @update:selected-value="emit('update:selectedValue', $event)">
-    <template v-if="$slots.item" #item="{ item }">
-      <slot name="item" :item="item" />
-    </template>
-    <template v-if="$slots.trigger" #trigger="{ item }">
-      <slot name="trigger" :item="item" />
-    </template>
-  </SidebarSelectSheet>
-  <SidebarSelectDropdown
-    v-else
-    v-bind="$props"
-    @update:selected-value="emit('update:selectedValue', $event)">
-    <template v-if="$slots.item" #item="{ item }">
-      <slot name="item" :item="item" />
-    </template>
-    <template v-if="$slots.trigger" #trigger="{ item }">
-      <slot name="trigger" :item="item" />
-    </template>
-  </SidebarSelectDropdown>
+  <select
+    class="sidebar-select"
+    :value="selectedValue"
+    :aria-label="ariaLabel"
+    @change="emit('update:selectedValue', ($event.target as HTMLSelectElement).value)">
+    <option v-for="item in items" :key="item.value" :value="item.value">
+      {{ item.label }}
+    </option>
+  </select>
 </template>

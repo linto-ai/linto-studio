@@ -21,7 +21,7 @@ const en: Record<keyof typeof fr, string> = {
   'header.channelLabel': 'Select a channel',
   'sidebar.translation': 'Translation',
   'sidebar.translationLabel': 'Translation',
-  'sidebar.originalLanguage': 'original',
+  'sidebar.originalLanguage': 'Original language',
   'language.wildcard': 'Multilingual',
   'select.filter': 'Search\u2026',
   'subtitle.exitFullscreen': 'Exit fullscreen',
