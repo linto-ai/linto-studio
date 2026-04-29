@@ -8,6 +8,10 @@ const SAMPLE = require(
   `${process.cwd()}/tests/data/session/channelCaptions-sample.json`,
 )
 
+const MICROSOFT = require(
+  `${process.cwd()}/tests/data/session/session-microsoft.json`,
+)
+
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
 function makeCaption(overrides = {}) {
@@ -72,9 +76,11 @@ describe("processChannelCaptions", () => {
     })
 
     it("applies cumulative offsets after each bot pause", () => {
-      // Bot 1 duration: 2026-04-14T12:37:40.442Z - 2026-04-14T12:36:38.948Z = 61.494s
-      // Bot 2 duration: 2026-04-14T13:46:26.698Z - 2026-04-14T13:38:01.192Z = 505.506s
-      // Bot 3 duration: 2026-04-20T12:19:28.722Z - 2026-04-20T12:01:44.741Z = 1063.981s
+      // Offsets are anchored on the previous flux's last caption end
+      // (post-shift), not on bot.aend - bot.astart wall-clock spans.
+      // Flux 0 emax = 37.13 → flux 1 starts here.
+      // Flux 1 emax (post-shift) = 37.13 + 35.07 = 72.20 → flux 2 here.
+      // Flux 2 emax (post-shift) = 72.20 + 56.75 = 128.95 → flux 3 here.
       const turnsBySegmentText = Object.fromEntries(
         caption.text.map((t) => [t.raw_segment, t]),
       )
@@ -83,24 +89,20 @@ describe("processChannelCaptions", () => {
       expect(turnsBySegmentText["canonical segment 1 fr"].stime).toEqual(0.07)
       expect(turnsBySegmentText["canonical segment 11 fr"].stime).toEqual(34.97)
 
-      // Segments 13-16: offset = 61.494
-      expect(turnsBySegmentText["canonical segment 13 fr"].stime).toEqual(61.56)
-      expect(turnsBySegmentText["canonical segment 13 fr"].etime).toEqual(79.28)
+      // Segments 13-16: offset = 37.13
+      expect(turnsBySegmentText["canonical segment 13 fr"].stime).toEqual(37.2)
+      expect(turnsBySegmentText["canonical segment 13 fr"].etime).toEqual(54.92)
 
-      // Segments 17-19: offset = 61.494 + 505.506 = 567.0
-      expect(turnsBySegmentText["canonical segment 17 fr"].stime).toEqual(
-        567.11,
-      )
-      expect(turnsBySegmentText["canonical segment 17 fr"].etime).toEqual(
-        588.59,
-      )
+      // Segments 17-19: offset = 72.20
+      expect(turnsBySegmentText["canonical segment 17 fr"].stime).toEqual(72.31)
+      expect(turnsBySegmentText["canonical segment 17 fr"].etime).toEqual(93.79)
 
-      // Segments 20-32: offset = 567.0 + 1063.981 = 1630.981
+      // Segments 20-32: offset = 128.95
       expect(turnsBySegmentText["canonical segment 20 fr"].stime).toEqual(
-        1631.05,
+        129.02,
       )
       expect(turnsBySegmentText["canonical segment 32 fr"].stime).toEqual(
-        1709.95,
+        207.92,
       )
     })
 
@@ -369,6 +371,207 @@ describe("processChannelCaptions", () => {
         expect(channel.closedCaptions[i].start).toEqual(before[i].start)
         expect(channel.closedCaptions[i].end).toEqual(before[i].end)
       }
+    })
+  })
+
+  describe("with the real Microsoft session fixture", () => {
+    // Real session payload from session-api, trimmed to what the tests
+    // exercise: 1 channel, 12 non-bot segments split across 3 flux
+    // (4 / 6 / 2), 2 translation targets (ar, eu). Captures real STT
+    // timestamps; segment & translation texts are placeholders.
+    const FLUX_ENDS = [41.36, 89.35, 102.78]
+
+    let channel, canonical
+    beforeEach(() => {
+      const session = cp(MICROSOFT)
+      channel = session.channels[0]
+      applyTranslationsToSegments(channel)
+      canonical = makeCaption({ mode: TYPES.CHILD })
+      processChannelCaptions(channel, canonical, true)
+    })
+
+    it("emits one turn per non-bot segment (12 total)", () => {
+      expect(canonical.text).toHaveLength(12)
+    })
+
+    it("does not bump the first segment start (it is already 0.07)", () => {
+      expect(canonical.text[0].stime).toEqual(0.07)
+    })
+
+    it("anchors flux N+1 on the previous flux's last caption end", () => {
+      expect(canonical.text[3].etime).toEqual(FLUX_ENDS[0])
+      expect(canonical.text[4].stime).toEqual(
+        Number((0.07 + FLUX_ENDS[0]).toFixed(2)),
+      )
+      expect(canonical.text[9].etime).toEqual(FLUX_ENDS[1])
+      expect(canonical.text[10].stime).toEqual(
+        Number((0.07 + FLUX_ENDS[1]).toFixed(2)),
+      )
+      expect(canonical.text[11].etime).toEqual(FLUX_ENDS[2])
+    })
+
+    it("produces stime monotonically increasing across all turns", () => {
+      for (let i = 1; i < canonical.text.length; i++) {
+        expect(canonical.text[i].stime).toBeGreaterThanOrEqual(
+          canonical.text[i - 1].stime,
+        )
+      }
+    })
+
+    it("aligns every translation target with the canonical timeline", () => {
+      const targetLangs = MICROSOFT.channels[0].translations.map(
+        (t) => t.target,
+      )
+      expect(targetLangs).toEqual(["ar", "eu"])
+
+      for (const locale of targetLangs) {
+        const tlCaption = makeCaption({ mode: TYPES.TRANSLATION, locale })
+        processChannelCaptions(channel, tlCaption, false)
+        expect(tlCaption.text).toHaveLength(canonical.text.length)
+        for (let i = 0; i < canonical.text.length; i++) {
+          expect({
+            locale,
+            i,
+            stime: tlCaption.text[i].stime,
+            etime: tlCaption.text[i].etime,
+          }).toEqual({
+            locale,
+            i,
+            stime: canonical.text[i].stime,
+            etime: canonical.text[i].etime,
+          })
+        }
+      }
+    })
+
+    it("uses 'Automatic Translation' as the speaker for every translation", () => {
+      const tlCaption = makeCaption({ mode: TYPES.TRANSLATION, locale: "ar" })
+      processChannelCaptions(channel, tlCaption, false)
+      expect(tlCaption.speakers).toHaveLength(1)
+      expect(tlCaption.speakers[0].speaker_name).toEqual(
+        "Automatic Translation",
+      )
+    })
+  })
+
+  describe("first caption start normalization", () => {
+    it("bumps the very first caption start from 0 to 0.01", () => {
+      const channel = {
+        diarization: false,
+        closedCaptions: [
+          {
+            segmentId: 1,
+            start: 0,
+            end: 1.5,
+            text: "first",
+            lang: "fr-FR",
+            locutor: null,
+          },
+          {
+            segmentId: 2,
+            start: 2,
+            end: 3,
+            text: "second",
+            lang: "fr-FR",
+            locutor: null,
+          },
+        ],
+      }
+      const caption = makeCaption()
+      processChannelCaptions(channel, caption, true)
+
+      expect(caption.text[0].stime).toEqual(0.01)
+      expect(caption.text[0].etime).toEqual(1.5)
+      expect(caption.text[1].stime).toEqual(2)
+    })
+
+    it("does not touch a non-zero first caption start", () => {
+      const channel = {
+        diarization: false,
+        closedCaptions: [
+          {
+            segmentId: 1,
+            start: 0.5,
+            end: 1,
+            text: "first",
+            lang: "fr-FR",
+            locutor: null,
+          },
+        ],
+      }
+      const caption = makeCaption()
+      processChannelCaptions(channel, caption, true)
+
+      expect(caption.text[0].stime).toEqual(0.5)
+    })
+
+    it("leaves start=0 untouched on captions following a bot", () => {
+      const channel = {
+        diarization: false,
+        closedCaptions: [
+          {
+            segmentId: 1,
+            start: 1,
+            end: 5,
+            text: "first",
+            lang: "fr-FR",
+            locutor: null,
+          },
+          {
+            segmentId: null,
+            start: null,
+            end: null,
+            text: "",
+            astart: "2026-04-14T12:36:38.948Z",
+            aend: "2026-04-14T12:37:38.948Z",
+            lang: null,
+            locutor: "bot",
+          },
+          {
+            segmentId: 2,
+            start: 0,
+            end: 2,
+            text: "after-bot",
+            lang: "fr-FR",
+            locutor: null,
+          },
+        ],
+      }
+      const caption = makeCaption()
+      processChannelCaptions(channel, caption, true)
+
+      // flux 0 emax=5 → offset for next flux = 5; post-bot start=0+5=5 (no bump).
+      expect(caption.text[1].stime).toEqual(5)
+    })
+
+    it("does not bump start=0 when a leading bot precedes the first caption", () => {
+      const channel = {
+        diarization: false,
+        closedCaptions: [
+          {
+            segmentId: null,
+            start: null,
+            end: null,
+            text: "",
+            astart: "2026-04-14T12:36:38.948Z",
+            aend: "2026-04-14T12:37:38.948Z",
+            lang: null,
+            locutor: "bot",
+          },
+          {
+            segmentId: 1,
+            start: 0,
+            end: 1,
+            text: "after-leading-bot",
+            lang: "fr-FR",
+            locutor: null,
+          },
+        ],
+      }
+      const caption = makeCaption()
+      processChannelCaptions(channel, caption, true)
+
+      expect(caption.text[0].stime).toEqual(0)
     })
   })
 
