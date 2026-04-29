@@ -316,7 +316,7 @@ export async function apiCreateConversation(
     return {
       success: false,
       errorCode: req.error?.response?.data?.code,
-      errorMessage: req.message,
+      errorData: req.error?.response?.data,
     }
   } catch (e) {
     console.error(e)

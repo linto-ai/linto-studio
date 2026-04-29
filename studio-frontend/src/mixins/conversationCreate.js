@@ -312,10 +312,14 @@ export default {
       })
     },
     resolveCreationErrorMessage(creationResult, fallbackKey, fallbackParams) {
-      if (creationResult.errorCode === "FILE_TOO_LARGE") {
-        return creationResult.errorMessage
+      switch (creationResult.errorCode) {
+        case "FILE_TOO_LARGE":
+          return this.$i18n.t("conversation.file_too_big", {
+            maxSize: creationResult.errorData?.maxSize,
+          })
+        default:
+          return this.$i18n.t(fallbackKey, fallbackParams)
       }
-      return this.$i18n.t(fallbackKey, fallbackParams)
     },
     getOrganizationById(id) {
       return this.userOrganizations.find((orga) => orga._id === id)
