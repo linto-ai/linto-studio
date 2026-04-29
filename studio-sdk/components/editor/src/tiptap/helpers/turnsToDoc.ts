@@ -21,6 +21,8 @@ function turnToNode(turn: Turn): JSONContent {
       speakerId: turn.speakerId,
       startTime: turn.startTime,
       endTime: turn.endTime,
+      startDate: turn.startDate,
+      endDate: turn.endDate,
       language: turn.language,
     },
     content: text ? [{ type: "text", text }] : undefined,

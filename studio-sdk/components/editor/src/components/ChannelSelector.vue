@@ -24,6 +24,7 @@ const items = computed(() =>
     :items="items"
     :selected-value="selectedChannelId"
     :ariaLabel="t('header.channelLabel')"
+    :label="t('sidebar.channelSelectLabel')"
     @update:selected-value="emit('update:selectedChannelId', $event)"
   />
 </template>

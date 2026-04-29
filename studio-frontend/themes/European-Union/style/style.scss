@@ -35,4 +35,10 @@
     --text-primary: #ffffff;
     --text-secondary: #cccccc;
   }
+
+  @media (max-width: 768px) {
+    .header-bar {
+      border-top: 12px solid #0c4da2;
+    }
+  }
 }

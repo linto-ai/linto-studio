@@ -7,6 +7,8 @@ export interface TurnNodeAttributes {
   speakerId: string | null
   startTime: number | undefined
   endTime: number | undefined
+  startDate: number | undefined
+  endDate: number | undefined
   language: string
 }
 
@@ -21,6 +23,8 @@ export const TurnNode = Node.create({
       speakerId: { default: null },
       startTime: { default: undefined },
       endTime: { default: undefined },
+      startDate: { default: undefined },
+      endDate: { default: undefined },
       language: { default: "" },
     }
   },

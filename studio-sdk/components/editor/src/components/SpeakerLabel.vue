@@ -9,6 +9,7 @@ import type { Speaker } from "../types/editor"
 const props = defineProps<{
   speaker?: Speaker
   startTime?: number
+  startDate?: number
   language: string
 }>()
 
@@ -22,13 +23,22 @@ const languageName = computed(() =>
   ),
 )
 
-const formattedTime = computed(() =>
-  props.startTime != null ? utils.formatTime(props.startTime) : null,
-)
-
-const isoDuration = computed(() =>
-  props.startTime != null ? `PT${props.startTime.toFixed(1)}S` : undefined,
-)
+const timestamp = computed<{ text: string; datetime: string } | null>(() => {
+  if (props.startTime != null) {
+    return {
+      text: utils.formatTime(props.startTime),
+      datetime: `PT${props.startTime.toFixed(1)}S`,
+    }
+  }
+  if (props.startDate != null) {
+    const date = new Date(props.startDate * 1000)
+    return {
+      text: utils.formatShortDateTime(props.startDate, locale.value),
+      datetime: date.toISOString(),
+    }
+  }
+  return null
+})
 
 const speakerColor = computed(() => props.speaker?.color ?? "transparent")
 </script>
@@ -37,8 +47,8 @@ const speakerColor = computed(() => props.speaker?.color ?? "transparent")
   <div class="speaker-label">
     <SpeakerIndicator v-if="speaker" :color="speakerColor" />
     <span v-if="speaker" class="speaker-name">{{ speaker.name }}</span>
-    <time v-if="formattedTime" class="timestamp" :datetime="isoDuration">{{
-      formattedTime
+    <time v-if="timestamp" class="timestamp" :datetime="timestamp.datetime">{{
+      timestamp.text
     }}</time>
     <span class="lang">{{ languageName }}</span>
   </div>
