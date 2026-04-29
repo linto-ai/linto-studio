@@ -289,6 +289,7 @@
     },
     "acoustic_label": "Acoustique :",
     "audio_file_too_big": "Le fichier audio est trop volumineux. La taille maximale autorisée est de 1Go.",
+    "file_too_big": "Le fichier est trop volumineux pour être envoyé. La taille maximale autorisée est de {maxSize}.",
     "channel": {
       "live_transcription": "Transcription en direct",
       "offline_transcription": "Transcription après l'enregistrement"
