@@ -1,7 +1,8 @@
 type __VLS_Props = {
     title: string;
+    date: string | number | null;
     duration: number;
-    language: string;
+    speakerCount: number;
     isMobile: boolean;
 };
 declare const _default: import('vue').DefineComponent<__VLS_Props, {}, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {

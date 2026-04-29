@@ -33,6 +33,10 @@ export interface CoreEventMap {
   "channel:reset": { channelId: string }
   "watermark:display": { display: boolean }
   "watermark:pin": { pinned: boolean }
+  "llmService:regenerate": { id: string }
+  "llmService:export": { id: string; format: string }
+  "llmService:active": { id: string | null }
+  "verbatim:export": { format: string }
   destroy: void
 }
 
@@ -153,6 +157,58 @@ export interface SubtitlePluginApi {
   watermark?: WatermarkPluginApi
 }
 
+// ── LLM Services Plugin API ─────────────────────────────────────────────
+
+export type LLMServiceStatus =
+  | "idle"
+  | "queued"
+  | "processing"
+  | "complete"
+  | "error"
+
+export interface LLMServiceInit {
+  id: string
+  label: string
+  description?: string
+  content?: string
+  status?: LLMServiceStatus
+  progress?: number
+  phase?: string | null
+  error?: string | null
+  lastUpdate?: number | null
+}
+
+export interface LLMService {
+  readonly id: string
+  readonly label: Ref<string>
+  readonly description: Ref<string | null>
+  readonly content: Ref<string>
+  readonly status: Ref<LLMServiceStatus>
+  readonly progress: Ref<number>
+  readonly phase: Ref<string | null>
+  readonly error: Ref<string | null>
+  readonly lastUpdate: Ref<number | null>
+}
+
+export interface LLMServicesPluginApi {
+  readonly list: Ref<LLMService[]>
+  readonly activeId: Ref<string | null>
+  readonly active: ComputedRef<LLMService | null>
+
+  setActive(id: string | null): void
+
+  register(init: LLMServiceInit): LLMService
+  unregister(id: string): void
+  clear(): void
+  get(id: string): LLMService | undefined
+
+  setLabel(id: string, label: string): void
+  setStatus(id: string, status: LLMServiceStatus): void
+  setProgress(id: string, percentage: number, phase?: string | null): void
+  setContent(id: string, content: string, lastUpdate?: number | null): void
+  setError(id: string, error: string | null): void
+}
+
 // ── Live Plugin API ─────────────────────────────────────────────────────
 
 export interface LivePartialEventData {
@@ -201,6 +257,7 @@ export interface LivePluginApi {
 export interface Core {
   // ── State ────────────────────────────────────────────────────────────
   readonly title: Ref<string>
+  readonly date: Ref<string | number | null>
   readonly activeChannelId: Ref<string>
   readonly capabilities: Ref<CoreCapabilities>
   /** TipTap extensions collected from all plugins */
@@ -227,6 +284,7 @@ export interface Core {
   transcriptionEditor?: TranscriptionEditorPluginApi
   live?: LivePluginApi
   subtitle?: SubtitlePluginApi
+  llmServices?: LLMServicesPluginApi
 
   // ── Events ───────────────────────────────────────────────────────────
   on<K extends keyof CoreEventMap>(

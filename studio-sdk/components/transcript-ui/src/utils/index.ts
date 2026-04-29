@@ -1,7 +1,13 @@
 export { hexToRgba } from "./color"
 export { getLanguageDisplayName, buildTranslationItems } from "./intl"
 export { throttle } from "./throttle"
-export { formatTime, formatShortDateTime } from "./time"
+export {
+  formatTime,
+  formatShortDateTime,
+  formatLongDate,
+  formatDurationMinutes,
+  formatRelativeFromNow,
+} from "./time"
 export { validateEditorDocument, DocumentValidationError } from "./validateDocument"
 export { renderWaveform } from "./waveform"
 export { findActiveWord, hasWordTimestamps } from "./words"

@@ -3,7 +3,7 @@ import { default as fr } from './locales/fr';
 export type Locale = 'fr' | 'en';
 export type TranslationKey = keyof typeof fr;
 interface I18nContext {
-    t: (key: TranslationKey) => string;
+    t: (key: TranslationKey, params?: Record<string, string | number>) => string;
     locale: Ref<Locale>;
 }
 export declare function provideI18n(locale: Ref<Locale>): I18nContext;

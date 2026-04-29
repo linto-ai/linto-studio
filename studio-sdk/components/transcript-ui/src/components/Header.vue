@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { Download, Settings, Users } from 'lucide-vue-next'
-import Badge from './atoms/Badge.vue'
-import Button from './atoms/Button.vue'
-import { useI18n } from '../i18n'
+import { computed } from "vue"
+import { Sparkles, Users } from "lucide-vue-next"
+import Button from "./atoms/Button.vue"
+import { useI18n } from "../i18n"
 import * as utils from "../utils"
+
 const props = defineProps<{
   title: string
+  date: string | number | null
   duration: number
-  language: string
+  speakerCount: number
   isMobile: boolean
 }>()
 
@@ -18,24 +19,34 @@ defineEmits<{
 
 const { t, locale } = useI18n()
 
-const languageName = computed(() => utils.getLanguageDisplayName(props.language, locale.value, t('language.wildcard')))
+const formattedTitle = computed(() => props.title.replace(/-/g, " "))
+const formattedDate = computed(() =>
+  props.date != null ? utils.formatLongDate(props.date, locale.value) : "",
+)
+const formattedDuration = computed(() =>
+  utils.formatDurationMinutes(props.duration, locale.value),
+)
+const formattedSpeakerCount = computed(() =>
+  t("header.speakerCount", { count: props.speakerCount }),
+)
 
-const formattedDuration = computed(() => utils.formatTime(props.duration))
-
-const formattedTitle = computed(() => {
-  return props.title.replace(/-/g, ' ')
-})
+const metaParts = computed(() =>
+  [
+    formattedDate.value,
+    formattedDuration.value,
+    formattedSpeakerCount.value,
+  ].filter(Boolean),
+)
 </script>
 
 <template>
   <header class="editor-header">
-    <div class="header-left">
+    <div class="header-main">
       <h1 class="document-title">{{ formattedTitle }}</h1>
-      <div class="badges">
-        <Badge>{{ languageName }}</Badge>
-        <Badge>
-          <time :datetime="`PT${duration}S`">{{ formattedDuration }}</time>
-        </Badge>
+      <div v-if="metaParts.length" class="document-meta">
+        <span v-for="(part, i) in metaParts" :key="i" class="document-meta__part">
+          {{ part }}
+        </span>
       </div>
     </div>
     <div class="header-right">
@@ -43,19 +54,12 @@ const formattedTitle = computed(() => {
         v-if="isMobile"
         variant="transparent"
         :aria-label="t('header.openSidebar')"
-        @click="$emit('toggleSidebar')"
-      >
+        @click="$emit('toggleSidebar')">
         <template #icon><Users :size="16" /></template>
       </Button>
-      <Button v-if="isMobile" variant="secondary" disabled :aria-label="t('header.export')">
-        <template #icon><Download :size="16" /></template>
-      </Button>
-      <Button v-else variant="secondary" disabled>
-        <template #icon><Download :size="16" /></template>
-        {{ t('header.export') }}
-      </Button>
-      <Button variant="transparent" disabled :aria-label="t('header.settings')">
-        <template #icon><Settings :size="16" /></template>
+      <Button variant="primary" :aria-label="t('header.ask')" disabled>
+        <template #icon><Sparkles :size="16" /></template>
+        <span v-if="!isMobile">{{ t("header.ask") }}</span>
       </Button>
     </div>
   </header>
@@ -66,18 +70,20 @@ const formattedTitle = computed(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 var(--spacing-lg);
-  height: var(--header-height);
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  min-height: var(--header-height);
   border-bottom: 1px solid var(--color-border);
   background-color: var(--color-surface);
   flex-shrink: 0;
 }
 
-.header-left {
+.header-main {
   display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
+  flex-direction: column;
+  gap: 2px;
   min-width: 0;
+  flex: 1;
 }
 
 .document-title {
@@ -87,12 +93,25 @@ const formattedTitle = computed(() => {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin: 0;
 }
 
-.badges {
+.document-meta {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: var(--spacing-xs);
-  flex-shrink: 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.document-meta__part {
+  text-box: cap alphabetic;
+}
+
+.document-meta__part + .document-meta__part::before {
+  content: "·";
+  margin-right: var(--spacing-xs);
 }
 
 .header-right {
@@ -104,12 +123,7 @@ const formattedTitle = computed(() => {
 
 @media (max-width: 767px) {
   .editor-header {
-    padding: 0 var(--spacing-md);
-    height: 48px;
-  }
-
-  .badges {
-    display: none;
+    padding: var(--spacing-xs) var(--spacing-md);
   }
 
   .document-title {

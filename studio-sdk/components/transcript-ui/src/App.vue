@@ -6,6 +6,7 @@ import { provideI18n, type Locale } from "./i18n"
 import { createCore, provideCore } from "./core"
 import { createAudioPlugin } from "./plugins/audio"
 import { createTranscriptionEditorPlugin } from "./plugins/transcriptionEditor"
+import { createLLMServicesPlugin } from "./plugins/llmServices"
 //import { createLivePlugin } from "./plugins/live"
 //import { createSubtitlePlugin } from "./plugins/subtitle"
 import type { LivePartialEvent, LiveFinalEvent } from "./plugins/live"
@@ -20,9 +21,93 @@ const { t } = provideI18n(locale)
 const core = createCore()
 core.use(createAudioPlugin())
 core.use(createTranscriptionEditorPlugin())
+core.use(createLLMServicesPlugin())
 //core.use(createLivePlugin())
 //core.use(createSubtitlePlugin())
 provideCore(core)
+
+// ── Mock LLM services demo ────────────────────────────────────────────
+
+const SUMMARY_MARKDOWN = `# Compte rendu — Réunion projet X
+
+## Contexte
+
+La réunion porte sur **l'avancement du déploiement** de la nouvelle plateforme.
+Sept intervenants présents, dont Marie (chef de projet) et Thomas (lead back).
+
+## Décisions
+
+- Migration des données validée pour la semaine prochaine
+- Cache distribué reporté de deux semaines
+- Audit sécurité programmé avant la mise en production
+
+## Points clés
+
+1. La charge réseau est plus élevée que prévue pendant les pics
+2. L'API de transcription est stable depuis vendredi
+3. Trois optimisations envisagées pour le cache
+
+## Actions
+
+| Qui | Quoi | Quand |
+|---|---|---|
+| Marie | Préparer le plan de migration | 2026-04-30 |
+| Thomas | Tester le cache distribué | 2026-05-05 |
+| Julie | Recueillir les retours client | 2026-05-02 |
+`
+
+const KEYPOINTS_MARKDOWN = `# Points clés
+
+- **Charge réseau** au-dessus des prévisions pendant les pics
+- **Cache distribué** : 3 pistes envisagées, dont la mise en cache distribuée
+- **Migration** prévue la semaine prochaine — backend prêt
+- **Risque** : revoir le schéma d'invalidation si on choisit le cache distribué (~2 semaines)
+`
+
+if (core.llmServices) {
+  core.llmServices.register({
+    id: "compte-rendu",
+    label: "Compte rendu",
+    content: SUMMARY_MARKDOWN,
+    status: "complete",
+    lastUpdate: Date.now() - 2 * 60 * 1000,
+  })
+  core.llmServices.register({
+    id: "points-cles",
+    label: "Points clés",
+    content: KEYPOINTS_MARKDOWN,
+    status: "complete",
+    lastUpdate: Date.now() - 12 * 60 * 1000,
+  })
+}
+
+core.on("llmService:regenerate", ({ id }) => {
+  if (!core.llmServices) return
+  console.log("[demo] regenerate", id)
+  core.llmServices.setStatus(id, "processing")
+  let progress = 0
+  const interval = setInterval(() => {
+    progress += 15
+    if (progress >= 100) {
+      clearInterval(interval)
+      core.llmServices?.setContent(
+        id,
+        `${id === "compte-rendu" ? SUMMARY_MARKDOWN : KEYPOINTS_MARKDOWN}\n\n*Régénéré ${new Date().toLocaleTimeString()}*`,
+      )
+      core.llmServices?.setStatus(id, "complete")
+    } else {
+      core.llmServices?.setProgress(id, progress, "analyzing")
+    }
+  }, 400)
+})
+
+core.on("llmService:export", ({ id, format }) => {
+  console.log("[demo] export", id, format)
+})
+
+core.on("verbatim:export", ({ format }) => {
+  console.log("[demo] verbatim export", format)
+})
 
 const error = ref<string | null>(null)
 const loading = ref(true)
@@ -270,6 +355,7 @@ onMounted(async () => {
 
     core.setDocument({
       title: doc1.title,
+      date: doc1.date ?? "2026-04-24",
       speakers,
       channels: [ch1, ch2],
     })

@@ -15,4 +15,8 @@ export type {
   YjsUser,
   LivePluginApi,
   SubtitlePluginApi,
+  LLMService,
+  LLMServiceInit,
+  LLMServiceStatus,
+  LLMServicesPluginApi,
 } from './types'

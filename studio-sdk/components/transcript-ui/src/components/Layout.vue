@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { computed, ref, useTemplateRef, watch } from "vue"
 import Header from "./Header.vue"
+import TabBar from "./TabBar.vue"
+import { TRANSCRIPTION_TAB, VERBATIM_TAB } from "./TabBar.constants"
 import TranscriptionPanel from "./TranscriptionPanel.vue"
+import VerbatimPanel from "./VerbatimPanel.vue"
+import LLMServicePanel from "./LLMServicePanel.vue"
 import SpeakerSidebar from "./SpeakerSidebar.vue"
 import SidebarDrawer from "./SidebarDrawer.vue"
 import AudioPlayer from "./AudioPlayer.vue"
@@ -27,6 +31,8 @@ const core = useCore()
 const { isMobile } = useIsMobile()
 const isSidebarOpen = ref(false)
 
+const activeTab = ref<string>(TRANSCRIPTION_TAB)
+
 const activeTurns = computed(
   () => core.activeChannel.value?.activeTranslation.value.turns.value ?? [],
 )
@@ -44,6 +50,35 @@ const activeTranslationId = computed(
   () => core.activeChannel.value?.activeTranslation.value.id ?? "",
 )
 const speakerList = computed(() => Array.from(speakers.values()))
+
+const showTranscription = computed(() => activeTab.value === TRANSCRIPTION_TAB)
+const showVerbatim = computed(() => activeTab.value === VERBATIM_TAB)
+const activeService = computed(() => {
+  if (showTranscription.value || showVerbatim.value) return null
+  return core.llmServices?.get(activeTab.value) ?? null
+})
+
+watch(activeTab, (id) => {
+  if (!core.llmServices) return
+  if (id === TRANSCRIPTION_TAB || id === VERBATIM_TAB) {
+    core.llmServices.setActive(null)
+  } else {
+    core.llmServices.setActive(id)
+  }
+})
+
+watch(
+  () => core.llmServices?.list.value.map((s) => s.id).join("|"),
+  () => {
+    if (
+      activeTab.value !== TRANSCRIPTION_TAB &&
+      activeTab.value !== VERBATIM_TAB &&
+      !core.llmServices?.get(activeTab.value)
+    ) {
+      activeTab.value = TRANSCRIPTION_TAB
+    }
+  },
+)
 
 const audioPlayerRef =
   useTemplateRef<InstanceType<typeof AudioPlayer>>("audioPlayer")
@@ -83,13 +118,27 @@ function onTranslationChange(translationId: string) {
     <Header
       v-if="props.showHeader"
       :title="core.title.value"
+      :date="core.date.value"
       :duration="core.activeChannel.value?.duration ?? 0"
-      :language="activeTranslationId"
+      :speaker-count="speakers.size"
       :is-mobile="isMobile"
       @toggle-sidebar="isSidebarOpen = !isSidebarOpen" />
-    <SelectionActionBar />
+    <TabBar v-model="activeTab" />
+    <SelectionActionBar v-if="showTranscription" />
     <main class="editor-body">
-      <TranscriptionPanel :turns="activeTurns" :speakers="speakers" />
+      <TranscriptionPanel
+        v-if="showTranscription"
+        :turns="activeTurns"
+        :speakers="speakers" />
+      <VerbatimPanel v-else-if="showVerbatim" />
+      <LLMServicePanel
+        v-else-if="activeService"
+        :key="activeService.id"
+        :service="activeService" />
+      <TranscriptionPanel
+        v-else
+        :turns="activeTurns"
+        :speakers="speakers" />
       <SpeakerSidebar
         v-if="!isMobile"
         :speakers="speakerList"

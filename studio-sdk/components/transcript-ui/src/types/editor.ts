@@ -50,6 +50,8 @@ export interface Channel {
 export interface EditorDocument {
   title: string
   description?: string
+  /** ISO date string or Unix timestamp (seconds) — date the recording took place */
+  date?: string | number
   speakers: Map<string, Speaker>
   channels: Channel[]
 }

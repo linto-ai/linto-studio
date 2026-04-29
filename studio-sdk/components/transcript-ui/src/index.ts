@@ -18,6 +18,10 @@ export type {
   YjsUser,
   LivePluginApi,
   SubtitlePluginApi,
+  LLMService,
+  LLMServiceInit,
+  LLMServiceStatus,
+  LLMServicesPluginApi,
 } from './core'
 
 // Composant principal
@@ -32,6 +36,7 @@ export { createLivePlugin } from './plugins/live'
 export type { LivePartialEvent, LiveFinalEvent, LiveTranslationEvent } from './plugins/live'
 export { createSubtitlePlugin } from './plugins/subtitle'
 export type { SubtitlePluginOptions } from './plugins/subtitle'
+export { createLLMServicesPlugin } from './plugins/llmServices'
 
 // Adapter API LinTO
 export { mapApiDocument } from './adapters/apiAdapter'

@@ -135,7 +135,7 @@ declare const _default: import('vue').DefineComponent<__VLS_Props, {}, {}, {}, {
         onFocus?: ((event: FocusEvent) => any) | undefined;
         "onOn-confirm"?: (() => any) | undefined;
         "onOn-cancel"?: (() => any) | undefined;
-    }>, "select" | "size" | "blur" | "focus"> & import('vue').ShallowUnwrapRef<{
+    }>, "size" | "select" | "blur" | "focus"> & import('vue').ShallowUnwrapRef<{
         focus: () => void | undefined;
         blur: () => void | undefined;
         select: () => void | undefined;

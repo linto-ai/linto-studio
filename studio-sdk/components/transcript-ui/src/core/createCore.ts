@@ -20,6 +20,7 @@ export function createCore(options: CoreOptions = {}): Core {
   // ── State ──────────────────────────────────────────────────────────
 
   const title = ref("")
+  const date = ref<string | number | null>(null)
   const activeChannelId = ref(options.activeChannelId ?? "")
   const capabilities = ref<CoreCapabilities>(
     options.capabilities ?? { text: "edit", speakers: "edit" },
@@ -60,6 +61,7 @@ export function createCore(options: CoreOptions = {}): Core {
 
   function buildFromDocument(doc: EditorDocument): void {
     title.value = doc.title
+    date.value = doc.date ?? null
     speakersInternal.clear()
     channels.clear()
 
@@ -132,6 +134,7 @@ export function createCore(options: CoreOptions = {}): Core {
 
   const core: Core = {
     title,
+    date,
     activeChannelId,
     capabilities,
     pluginExtensions,

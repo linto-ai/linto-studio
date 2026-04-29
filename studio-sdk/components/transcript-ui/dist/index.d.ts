@@ -1,5 +1,5 @@
 export { createCore, provideCore, useCore, } from './core';
-export type { Core, CorePlugin, CoreEventMap, CoreOptions, CoreCapabilities, TranslationStore, ChannelStore, SpeakersStore, AudioPluginApi, TranscriptionEditorPluginApi, YjsUser, LivePluginApi, SubtitlePluginApi, } from './core';
+export type { Core, CorePlugin, CoreEventMap, CoreOptions, CoreCapabilities, TranslationStore, ChannelStore, SpeakersStore, AudioPluginApi, TranscriptionEditorPluginApi, YjsUser, LivePluginApi, SubtitlePluginApi, LLMService, LLMServiceInit, LLMServiceStatus, LLMServicesPluginApi, } from './core';
 export { default as Layout } from './components/Layout.vue';
 export { createAudioPlugin } from './plugins/audio';
 export type { AudioPluginOptions } from './plugins/audio';
@@ -9,6 +9,7 @@ export { createLivePlugin } from './plugins/live';
 export type { LivePartialEvent, LiveFinalEvent, LiveTranslationEvent } from './plugins/live';
 export { createSubtitlePlugin } from './plugins/subtitle';
 export type { SubtitlePluginOptions } from './plugins/subtitle';
+export { createLLMServicesPlugin } from './plugins/llmServices';
 export { mapApiDocument } from './adapters/apiAdapter';
 export { mapWhisperXDocument } from './adapters/whisperXAdapter';
 export { provideI18n } from './i18n';

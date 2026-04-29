@@ -7,13 +7,17 @@ import {
   ClipboardType,
   Copy,
   Download,
+  FileText,
   Loader2,
+  MessageCircle,
   MoreVertical,
   Pause,
   Play,
+  RefreshCw,
   Settings,
   SkipBack,
   SkipForward,
+  Sparkles,
   UserPlus,
   Users,
   Volume2,
@@ -42,6 +46,10 @@ export const iconMap: Record<string, Component> = {
   spinner: Loader2,
   "more-vertical": MoreVertical,
   "user-plus": UserPlus,
+  "file-text": FileText,
+  "message-circle": MessageCircle,
+  "refresh-cw": RefreshCw,
+  sparkles: Sparkles,
 }
 
 export function resolveIcon(name?: string): Component | undefined {
