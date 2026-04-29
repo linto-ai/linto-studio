@@ -219,6 +219,7 @@ function onTranslationChange(translationId: string) {
   border-top: 1px solid var(--color-border);
   background-color: var(--color-surface);
   flex-shrink: 0;
+  box-shadow: var(--shadow-block);
 }
 
 .mobile-selectors > * {

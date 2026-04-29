@@ -1,7 +1,7 @@
-import type fr from './fr'
+import type fr from "./fr"
 
 const en: Record<keyof typeof fr, string> = {
-  'editor.loading': 'Loading\u2026',
+  'editor.loading': 'Loading…',
   'editor.loadError': 'Loading error',
   'header.export': 'Export',
   'header.settings': 'Settings',
@@ -31,11 +31,13 @@ const en: Record<keyof typeof fr, string> = {
   'player.speed': 'Playback speed',
   'transcription.resumeScroll': 'Resume follow',
   'header.channelLabel': 'Select a channel',
+  'sidebar.channelSelectLabel': 'Select a channel',
   'sidebar.translation': 'Translation',
   'sidebar.translationLabel': 'Translation',
+  'sidebar.translationSelectLabel': 'Select original/translation',
   'sidebar.originalLanguage': 'Original language',
   'language.wildcard': 'Multilingual',
-  'select.filter': 'Search\u2026',
+  'select.filter': 'Search…',
   'subtitle.exitFullscreen': 'Exit fullscreen',
   'subtitle.show': 'Show subtitles',
   'subtitle.fontSize': 'Font size',
@@ -44,7 +46,7 @@ const en: Record<keyof typeof fr, string> = {
   'sidebar.subtitle': 'Subtitles',
   'transcription.empty': 'No transcription yet',
   'transcription.historyStart': 'Beginning of transcription',
-  'transcription.loadingHistory': 'Loading\u2026',
+  'transcription.loadingHistory': 'Loading…',
   'selection.count': 'selected',
   'selection.copyText': 'Copy text',
   'selection.copyWithMetadata': 'Copy with timestamps',

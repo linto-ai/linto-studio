@@ -30,6 +30,7 @@ const items = computed(() =>
     :items="items"
     :selected-value="selectedTranslationId"
     :ariaLabel="t('sidebar.translationLabel')"
+    :label="t('sidebar.translationSelectLabel')"
     @update:selected-value="emit('update:selectedTranslationId', $event)">
     <template #item="{ item }">
       <span class="translation-row">
