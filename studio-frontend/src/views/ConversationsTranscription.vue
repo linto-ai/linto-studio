@@ -1,6 +1,11 @@
 <template>
   <LayoutV2 noHeader>
     <linto-editor ref="editor" :locale="$i18n.locale" />
+    <PublicationModal
+      v-model="publicationModal.open"
+      :jobId="publicationModal.jobId"
+      :organizationId="organizationId"
+      :conversationName="conversationName" />
   </LayoutV2>
 </template>
 <script>
@@ -16,11 +21,14 @@ import {
   createAudioPlugin,
 } from "@linto/transcript-ui/webcomponent"
 
+import { setupLLMServices } from "@/services/llmServicesIntegration.js"
+
 import LayoutV2 from "@/layouts/v2-layout.vue"
+import PublicationModal from "@/components/molecules/PublicationModal.vue"
 import { apiGetAudioFileFromConversation } from "@/api/conversation"
 
 export default {
-  components: { LayoutV2 },
+  components: { LayoutV2, PublicationModal },
   props: {
     userInfo: { type: Object, required: true },
   },
@@ -28,15 +36,25 @@ export default {
     return {
       conversationId: this.$route.params.conversationId,
       core: null,
+      llmDispose: null,
+      organizationId: null,
+      conversationName: "",
+      publicationModal: { open: false, jobId: null },
     }
   },
   async mounted() {
-    const doc = await apiGetConversationAsDoc(this.conversationId)
-    await this.initEditor(doc)
+    const { doc, organizationId, securityLevel, name } =
+      await apiGetConversationAsDoc(this.conversationId)
+    this.organizationId = organizationId
+    this.conversationName = name
+    await this.initEditor(doc, { organizationId, securityLevel, name })
+  },
+  beforeDestroy() {
+    this.llmDispose?.()
+    this.llmDispose = null
   },
   methods: {
-    async initEditor(doc) {
-      console.log(doc)
+    async initEditor(doc, meta) {
       const el = this.$refs.editor
       const { core } = el
       const ws_url = new URL(getEnv("VUE_APP_CONVO_API"))
@@ -63,6 +81,21 @@ export default {
           user: { name: "test", color: "#E57373" },
         }),
       )
+
+      this.llmDispose = setupLLMServices(core, {
+        conversationId: this.conversationId,
+        organizationId: meta.organizationId,
+        securityLevel: meta.securityLevel,
+        conversationName: meta.name,
+        apiEventWS: this.$apiEventWS,
+        locale: this.$i18n.locale,
+        t: (key, params) => this.$t(key, params),
+        notify: (type, message) =>
+          this.$store.dispatch("system/addNotification", { type, message }),
+        openPublication: ({ jobId }) => {
+          this.publicationModal = { open: true, jobId }
+        },
+      })
 
       core.setDocument(doc)
     },

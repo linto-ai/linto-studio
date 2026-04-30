@@ -101,8 +101,8 @@ core.on("llmService:regenerate", ({ id }) => {
   }, 400)
 })
 
-core.on("llmService:export", ({ id, format }) => {
-  console.log("[demo] export", id, format)
+core.on("llmService:export", ({ id }) => {
+  console.log("[demo] export", id)
 })
 
 core.on("verbatim:export", ({ format }) => {

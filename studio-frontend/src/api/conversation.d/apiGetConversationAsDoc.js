@@ -38,16 +38,25 @@ function channel(conv, translations) {
   }
 }
 
+function buildResult(canonical, doc) {
+  return {
+    doc,
+    name: canonical.name,
+    organizationId: canonical.organization?.organizationId ?? null,
+    securityLevel: canonical.securityLevel ?? null,
+  }
+}
+
 export async function apiGetConversationAsDoc(convId) {
   const canonical = await apiGetCanonicalConv(convId)
 
   // no children: one channel, no translations
   if (canonical.type.child_conversations.length === 0) {
-    return {
+    return buildResult(canonical, {
       title: canonical.name,
       speakers: new Map(),
       channels: [channel(canonical, [sourceTranslation(canonical)])],
-    }
+    })
   }
 
   const childs = await apiGetConversationChild(canonical._id, [
@@ -89,9 +98,9 @@ export async function apiGetConversationAsDoc(convId) {
       break
   }
 
-  return {
+  return buildResult(canonical, {
     title: canonical.name,
     speakers: new Map(),
     channels,
-  }
+  })
 }

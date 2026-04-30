@@ -34,7 +34,7 @@ export interface CoreEventMap {
   "watermark:display": { display: boolean }
   "watermark:pin": { pinned: boolean }
   "llmService:regenerate": { id: string }
-  "llmService:export": { id: string; format: string }
+  "llmService:export": { id: string }
   "llmService:active": { id: string | null }
   "verbatim:export": { format: string }
   destroy: void

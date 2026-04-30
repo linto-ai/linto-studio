@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { computed } from "vue"
 import MarkdownView from "./atoms/MarkdownView.vue"
+import Button from "./atoms/Button.vue"
 import DocumentArticle, {
   type DocumentArticleStatus,
 } from "./molecules/DocumentArticle.vue"
-import type { DownloadFormat } from "./molecules/DownloadMenu.vue"
 import { useI18n } from "../i18n"
 import { useCore } from "../core"
-import * as utils from "../utils"
 import type { LLMService } from "../core"
 
 const props = defineProps<{
@@ -15,12 +14,7 @@ const props = defineProps<{
 }>()
 
 const core = useCore()
-const { t, locale } = useI18n()
-
-const formats: DownloadFormat[] = [
-  { format: "docx", labelKey: "format.docx" },
-  { format: "pdf", labelKey: "format.pdf" },
-]
+const { t } = useI18n()
 
 const articleStatus = computed<DocumentArticleStatus>(() => {
   const s = props.service.status.value
@@ -29,52 +23,33 @@ const articleStatus = computed<DocumentArticleStatus>(() => {
   return "done"
 })
 
-const metaLabel = computed(() => {
-  const s = props.service.status.value
-  if (s === "error") {
-    return props.service.error.value || t("llmService.error")
-  }
-  if (s === "queued") return t("llmService.queued")
-  if (s === "processing") return t("llmService.processing")
-  const lastUpdate = props.service.lastUpdate.value
-  if (lastUpdate != null) {
-    const rel = utils.formatRelativeFromNow(lastUpdate, locale.value)
-    return `${t("llmService.generated")} · ${rel}`
-  }
-  return t("llmService.generated")
-})
-
-const metaProgress = computed(() => {
-  if (articleStatus.value !== "processing") return undefined
-  const value = props.service.progress.value
-  return value > 0 ? value : undefined
-})
-
+const progress = computed(() => props.service.progress.value)
+// keep generic message
+// const errorMessage = computed(() => props.service.error.value ?? undefined)
 const content = computed(() => props.service.content.value)
 
 function onRegenerate(): void {
   core.emit("llmService:regenerate", { id: props.service.id })
 }
 
-function onExport(format: string): void {
-  core.emit("llmService:export", { id: props.service.id, format })
+function onExport(): void {
+  core.emit("llmService:export", { id: props.service.id })
 }
 </script>
 
 <template>
   <section class="llm-service-panel">
     <DocumentArticle
-      :meta-label="metaLabel"
-      meta-icon="sparkles"
-      :meta-progress="metaProgress"
       :status="articleStatus"
+      :progress="progress"
       show-regenerate
-      :formats="formats"
       @regenerate="onRegenerate"
       @export="onExport">
       <MarkdownView v-if="content" :source="content" />
-      <div v-else class="llm-service-panel__placeholder">
-        <p>{{ t("llmService.empty") }}</p>
+      <div v-else class="llm-service-panel__empty">
+        <Button variant="primary" icon="sparkles" @click="onRegenerate">
+          {{ t("llmService.generate") }}
+        </Button>
       </div>
     </DocumentArticle>
   </section>
@@ -90,10 +65,10 @@ function onExport(format: string): void {
   /* padding: var(--spacing-lg); */
 }
 
-.llm-service-panel__placeholder {
-  text-align: center;
-  color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
+.llm-service-panel__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: var(--spacing-xl) 0;
 }
 

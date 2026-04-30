@@ -63,17 +63,15 @@ function turnText(turn: {
   return turn.words.map((w) => w.text).join(" ")
 }
 
-function onExport(format: string): void {
+function onExport(format?: string): void {
+  if (!format) return
   core.emit("verbatim:export", { format })
 }
 </script>
 
 <template>
   <section class="verbatim-panel">
-    <DocumentArticle
-      :meta-label="t('verbatim.title')"
-      :formats="formats"
-      @export="onExport">
+    <DocumentArticle :formats="formats" @export="onExport">
       <header class="verbatim-panel__header">
         <h1 class="verbatim-panel__doc-title">{{ title }}</h1>
         <p v-if="subtitleParts.length" class="verbatim-panel__subtitle">

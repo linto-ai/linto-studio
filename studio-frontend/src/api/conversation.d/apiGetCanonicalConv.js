@@ -1,6 +1,15 @@
 import { apiGetConversationById } from "@/api/conversation.js"
 
-const PROJECTION = { text: 0, type: 1, _id: 1 }
+const PROJECTION = {
+  text: 0,
+  type: 1,
+  _id: 1,
+  name: 1,
+  locale: 1,
+  metadata: 1,
+  organization: 1,
+  securityLevel: 1,
+}
 
 export async function apiGetCanonicalConv(convId) {
   const conversation = await apiGetConversationById(convId, PROJECTION)
