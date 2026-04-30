@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, useTemplateRef } from "vue"
 import Button from "../atoms/Button.vue"
+import FormInput from "./FormInput.vue"
 import { useCore } from "../../core"
 import { useI18n } from "../../i18n"
 import {
@@ -32,6 +33,15 @@ const candidates = computed(() =>
     (s) => s.id !== props.fromSpeakerId,
   ),
 )
+
+const targetOptions = computed(() =>
+  candidates.value.map((c) => ({ value: c.id, label: c.name })),
+)
+
+const targetField = computed(() => ({
+  label: t("mergeDialog.targetLabel"),
+  required: true,
+}))
 
 const affectedCount = computed(() => {
   const editor = core.transcriptionEditor?.tiptapEditor.value
@@ -76,17 +86,11 @@ function onConfirm(): void {
         <strong>{{ fromSpeaker.name }}</strong> · {{ affectedCount }}
         {{ t('mergeDialog.turnsAffected') }}
       </p>
-      <label class="merge-dialog-label">
-        {{ t('mergeDialog.targetLabel') }}
-        <select v-model="targetId" class="merge-dialog-select" required>
-          <option
-            v-for="candidate in candidates"
-            :key="candidate.id"
-            :value="candidate.id">
-            {{ candidate.name }}
-          </option>
-        </select>
-      </label>
+      <FormInput
+        select
+        :field="targetField"
+        :options="targetOptions"
+        v-model="targetId" />
       <div class="merge-dialog-actions">
         <Button variant="tertiary" type="button" @click="onClose">
           {{ t('mergeDialog.cancel') }}
@@ -134,24 +138,6 @@ function onConfirm(): void {
   margin: 0;
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
-}
-
-.merge-dialog-label {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-}
-
-.merge-dialog-select {
-  font-family: inherit;
-  font-size: var(--font-size-sm);
-  color: var(--color-text-primary);
-  padding: var(--spacing-xs) var(--spacing-sm);
-  background-color: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
 }
 
 .merge-dialog-actions {

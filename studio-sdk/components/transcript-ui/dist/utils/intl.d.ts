@@ -6,5 +6,4 @@ export declare function buildTranslationItems(translations: {
 }[], locale: string, originalLabel: string, wildcardLabel?: string): {
     value: string;
     label: string;
-    originalLabel?: string;
 }[];

@@ -32,6 +32,11 @@ declare const _default: import('vue').DefineComponent<__VLS_Props, {}, {}, {}, {
             readonly size?: "sm" | "md" | "lg" | undefined;
             readonly textarea?: boolean | undefined;
             readonly code?: boolean | undefined;
+            readonly select?: boolean | undefined;
+            readonly options?: {
+                value: string;
+                label: string;
+            }[] | undefined;
             readonly inputId?: string | undefined;
             readonly onInput?: ((value: string) => any) | undefined;
             readonly "onUpdate:modelValue"?: ((value: string) => any) | undefined;
@@ -69,6 +74,11 @@ declare const _default: import('vue').DefineComponent<__VLS_Props, {}, {}, {}, {
             size?: "sm" | "md" | "lg";
             textarea?: boolean;
             code?: boolean;
+            select?: boolean;
+            options?: {
+                value: string;
+                label: string;
+            }[];
             inputId?: string;
         }> & Readonly<{
             onInput?: ((value: string) => any) | undefined;
@@ -126,6 +136,11 @@ declare const _default: import('vue').DefineComponent<__VLS_Props, {}, {}, {}, {
         size?: "sm" | "md" | "lg";
         textarea?: boolean;
         code?: boolean;
+        select?: boolean;
+        options?: {
+            value: string;
+            label: string;
+        }[];
         inputId?: string;
     }> & Readonly<{
         onInput?: ((value: string) => any) | undefined;

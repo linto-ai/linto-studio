@@ -65,6 +65,8 @@ const props = withDefaults(
     // Variants
     textarea?: boolean
     code?: boolean
+    select?: boolean
+    options?: { value: string; label: string }[]
 
     // IDs
     inputId?: string
@@ -98,7 +100,9 @@ const { t } = useI18n()
 
 const autoId = useId()
 const id = computed(() => props.inputId ?? autoId)
-const inputRef = useTemplateRef<HTMLInputElement | HTMLTextAreaElement>("input")
+const inputRef = useTemplateRef<
+  HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+>("input")
 
 const initialValue = props.modelValue ?? props.field.value ?? ""
 const draft = ref<string>(initialValue)
@@ -243,6 +247,27 @@ defineExpose({
 
       <!-- TODO readonly mode: render plain text (<div> or <pre> when `code`) -->
       <!-- TODO textarea mode: render <textarea> instead. -->
+
+      <select
+        v-else-if="select"
+        ref="input"
+        v-model="draft"
+        :class="[inputClasses, 'form-field__input--select']"
+        :id="id"
+        :disabled="isDisabled"
+        :required="isRequired"
+        :aria-required="isRequired || undefined"
+        :aria-invalid="hasError || undefined"
+        :aria-describedby="hasError ? `${id}-error` : undefined"
+        v-bind="field.customParams"
+        @change="onInput"
+        @keydown="onKeydown"
+        @blur="emit('blur', $event)"
+        @focus="emit('focus', $event)">
+        <option v-for="opt in options" :key="opt.value" :value="opt.value">
+          {{ opt.label }}
+        </option>
+      </select>
 
       <input
         v-else
@@ -409,6 +434,11 @@ defineExpose({
 .form-field__input--fullwidth {
   width: 100%;
   max-width: none;
+}
+
+.form-field__input--select {
+  cursor: pointer;
+  appearance: auto;
 }
 
 .form-field__input--error {

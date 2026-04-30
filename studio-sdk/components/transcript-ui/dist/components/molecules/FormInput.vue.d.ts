@@ -29,6 +29,11 @@ declare const _default: __VLS_WithTemplateSlots<import('vue').DefineComponent<{
     size?: "sm" | "md" | "lg";
     textarea?: boolean;
     code?: boolean;
+    select?: boolean;
+    options?: {
+        value: string;
+        label: string;
+    }[];
     inputId?: string;
 }, {
     focus: () => void | undefined;
@@ -54,6 +59,11 @@ declare const _default: __VLS_WithTemplateSlots<import('vue').DefineComponent<{
     size?: "sm" | "md" | "lg";
     textarea?: boolean;
     code?: boolean;
+    select?: boolean;
+    options?: {
+        value: string;
+        label: string;
+    }[];
     inputId?: string;
 }> & Readonly<{
     onInput?: ((value: string) => any) | undefined;

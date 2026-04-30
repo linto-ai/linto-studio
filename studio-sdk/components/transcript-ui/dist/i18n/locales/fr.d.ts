@@ -29,9 +29,11 @@ declare const fr: {
     readonly "player.speed": "Vitesse de lecture";
     readonly "transcription.resumeScroll": "Reprendre le suivi";
     readonly "header.channelLabel": "Sélectionner un canal";
+    readonly "sidebar.channelSelectLabel": "Sélectionner le canal";
     readonly "sidebar.translation": "Traduction";
     readonly "sidebar.translationLabel": "Traduction";
-    readonly "sidebar.originalLanguage": "original";
+    readonly "sidebar.translationSelectLabel": "Sélectionner l'original ou la traduction";
+    readonly "sidebar.originalLanguage": "Langue originale";
     readonly "language.wildcard": "Multi-langue";
     readonly "select.filter": "Rechercher…";
     readonly "subtitle.exitFullscreen": "Quitter le plein écran";

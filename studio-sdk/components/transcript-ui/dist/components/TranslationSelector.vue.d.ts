@@ -10,5 +10,5 @@ declare const _default: import('vue').DefineComponent<__VLS_Props, {}, {}, {}, {
     "update:selectedTranslationId": (id: string) => any;
 }, string, import('vue').PublicProps, Readonly<__VLS_Props> & Readonly<{
     "onUpdate:selectedTranslationId"?: ((id: string) => any) | undefined;
-}>, {}, {}, {}, {}, string, import('vue').ComponentProvideOptions, false, {}, any>;
+}>, {}, {}, {}, {}, string, import('vue').ComponentProvideOptions, false, {}, HTMLDivElement>;
 export default _default;

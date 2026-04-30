@@ -40,7 +40,6 @@ defineExpose({ core })
 <style lang="css">
 @import "./styles/variables.css";
 @import "./styles/base.css";
-@import "./styles/sidebar-select.css";
 @import "./styles/popover-list.css";
 @import "./plugins/transcriptionEditor/cursor.css";
 </style>
