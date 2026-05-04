@@ -56,7 +56,9 @@ const activeChannel = computed(() => core.activeChannel.value)
 const isLoadingHistory = computed(
   () => activeChannel.value?.isLoadingHistory.value ?? false,
 )
-const hasMoreHistory = computed(() => activeChannel.value?.hasMoreHistory.value ?? false)
+const hasMoreHistory = computed(
+  () => activeChannel.value?.hasMoreHistory.value ?? false,
+)
 
 // ── Follow playback ────────────────────────────────────────────────────
 
@@ -67,6 +69,7 @@ const { isFollowing, resumeFollow } = useFollowPlayback(scrollContainerRef)
 const { scrollRef, contentRef, isAtBottom, scrollToBottom } = useStickToBottom()
 
 onMounted(() => {
+  if (core.transcriptionEditor) return
   scrollRef.value = scrollContainerRef.value
   contentRef.value =
     scrollContainerRef.value?.querySelector(".turns-container") ?? null
@@ -159,7 +162,11 @@ onBeforeUnmount(() => {
         <TranscriptionTurn
           v-else
           v-for="(turn, i) in turns"
-          v-memo="[turn, speakers.get(turn.speakerId ?? ''), hasLiveUpdate && !partialTurn && i === turns.length - 1]"
+          v-memo="[
+            turn,
+            speakers.get(turn.speakerId ?? ''),
+            hasLiveUpdate && !partialTurn && i === turns.length - 1,
+          ]"
           :data-turn-id="turn.id"
           :key="turn.id"
           :turn="turn"

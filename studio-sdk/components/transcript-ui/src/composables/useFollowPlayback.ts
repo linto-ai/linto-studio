@@ -31,7 +31,6 @@ export function useFollowPlayback(
         ? container.querySelector<HTMLElement>(`[data-turn-id="${turnId}"]`)
         : null)
     if (!target) return
-
     target.scrollIntoView({
       behavior: prefersReducedMotion ? "instant" : "smooth",
       block: "center",

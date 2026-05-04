@@ -135,10 +135,7 @@ function onTranslationChange(translationId: string) {
         v-else-if="activeService"
         :key="activeService.id"
         :service="activeService" />
-      <TranscriptionPanel
-        v-else
-        :turns="activeTurns"
-        :speakers="speakers" />
+      <TranscriptionPanel v-else :turns="activeTurns" :speakers="speakers" />
       <SpeakerSidebar
         v-if="!isMobile"
         :speakers="speakerList"
@@ -161,7 +158,7 @@ function onTranslationChange(translationId: string) {
       </SidebarDrawer>
     </main>
     <AudioPlayer
-      v-if="core.audio?.src.value"
+      v-if="core.audio?.src.value && showTranscription"
       ref="audioPlayer"
       :audio-src="core.audio.src.value"
       :turns="activeTurns"
