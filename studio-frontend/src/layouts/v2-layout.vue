@@ -4,7 +4,7 @@
     :class="{ 'no-sidebar': !sidebarOpen || fullscreen || !isAuthenticated }">
     <QuickSessionNotif v-if="quickSession && !isQuickSessionPage" />
     <div class="v2-layout__content">
-      <aside
+      <div
         v-if="!fullscreen"
         class="v2-layout__sidebar flex1"
         :class="{
@@ -13,7 +13,7 @@
         <BurgerMenu :backoffice="backoffice">
           <slot name="sidebar"></slot>
         </BurgerMenu>
-      </aside>
+      </div>
       <main class="v2-layout__main" @click="closeSidebar">
         <HeaderBar
           :breadcrumbItems="breadcrumbItems"

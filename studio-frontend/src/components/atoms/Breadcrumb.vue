@@ -1,56 +1,59 @@
 <template>
-  <nav class="breadcrumb flex flex1" aria-label="Breadcrumb">
+  <div class="breadcrumb flex flex1">
     <img
       v-if="logo && !isAuthenticated"
       :src="logo"
-      class="breadcrumb__logo"
-      slot="logo" />
-    <template v-if="noBreadcrumb">
-      <slot name="breadcrumb-actions"></slot>
-    </template>
-    <IsMobile v-else class="flex flex1">
-      <slot
-        name="breadcrumb-actions"
-        v-if="$slots['breadcrumb-actions']"></slot>
-      <h2 v-else>{{ lastItem.label }}</h2>
-      <template #desktop>
-        <ol class="breadcrumb-list flex flex1">
-          <li
+      class="breadcrumb__logo" />
+    <template v-if="!noBreadcrumb">
+      <IsMobile>
+        <h2 v-if="!$slots['breadcrumb-actions']">{{ lastItem.label }}</h2>
+
+        <template #desktop>
+          <nav
             v-if="isAuthenticated"
-            v-for="(item, index) in breadcrumbItems"
-            :key="`${item.name}-${index}`"
-            class="breadcrumb-item">
-            <router-link :to="item.to" class="breadcrumb-link" v-if="item.to">
-              {{ item.label }}
-            </router-link>
-            <span v-else class="breadcrumb-text">{{ item.label }}</span>
-            <span class="breadcrumb-separator" aria-hidden="true"> > </span>
-          </li>
+            aria-label="Breadcrumb"
+            class="breadcrumb-nav">
+            <ol class="breadcrumb-list">
+              <li
+                v-for="(item, index) in breadcrumbItems"
+                :key="`${item.name}-${index}`"
+                class="breadcrumb-item">
+                <router-link
+                  :to="item.to"
+                  class="breadcrumb-link"
+                  v-if="item.to">
+                  {{ item.label }}
+                </router-link>
+                <span v-else class="breadcrumb-text">{{ item.label }}</span>
+                <span class="breadcrumb-separator" aria-hidden="true">
+                  >
+                </span>
+              </li>
 
-          <li
-            :key="`${lastItem.name}-last`"
-            class="breadcrumb-item flex1 is-active">
-            <span
-              class="breadcrumb-text"
-              aria-current="page"
-              v-if="
-                (additionalbreadcrumbItems &&
-                  additionalbreadcrumbItems.length > 0) ||
-                !$slots['breadcrumb-actions']
-              ">
-              {{ lastItem.label }}
-            </span>
+              <li
+                v-if="
+                  (additionalbreadcrumbItems &&
+                    additionalbreadcrumbItems.length > 0) ||
+                  !$slots['breadcrumb-actions']
+                "
+                :key="`${lastItem.name}-last`"
+                class="breadcrumb-item is-active">
+                <span class="breadcrumb-text" aria-current="page">
+                  {{ lastItem.label }}
+                </span>
+              </li>
+            </ol>
+          </nav>
+        </template>
+      </IsMobile>
+    </template>
 
-            <slot
-              name="breadcrumb-actions"
-              v-if="$slots['breadcrumb-actions']"></slot>
-          </li>
-        </ol>
-      </template>
-    </IsMobile>
-
-    <!-- <slot name="breadcrumb-actions" class="flex1"></slot> -->
-  </nav>
+    <div
+      v-if="$slots['breadcrumb-actions']"
+      class="breadcrumb-actions flex flex1">
+      <slot name="breadcrumb-actions"></slot>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -329,6 +332,17 @@ export default {
 
   li {
     margin: 0;
+  }
+
+  &-nav {
+    display: contents;
+  }
+
+  &-actions {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
   }
 
   &-list {
