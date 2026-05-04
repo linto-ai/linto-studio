@@ -7,9 +7,7 @@
     color="neutral"
     ref="popoverList">
     <template #trigger="{ open }">
-      <Button variant="tertiary" size="sm">
-        {{ localTxt }}
-      </Button>
+      <Button variant="tertiary" size="sm" :label="localTxt" icon="translate" />
     </template>
   </PopoverList>
 </template>
@@ -21,8 +19,8 @@ export default {
   data() {
     return {
       langList: [
-        { value: "fr-FR", text: "Français", avatarText: "🇫🇷" },
-        { value: "en-US", text: "English", avatarText: "🇬🇧" },
+        { value: "fr-FR", text: "Français" },
+        { value: "en-US", text: "English" },
       ],
     }
   },
@@ -35,11 +33,8 @@ export default {
     },
   },
   computed: {
-    localIcon() {
-      return this.$i18n.locale === "fr-FR" ? "🇫🇷" : "🇬🇧"
-    },
     localTxt() {
-      return this.$i18n.locale === "fr-FR" ? "🇫🇷 Français" : "🇬🇧 English"
+      return this.$i18n.locale === "fr-FR" ? "Français" : "English"
     },
     local() {
       return this.$i18n.locale
