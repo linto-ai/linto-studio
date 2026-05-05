@@ -3,6 +3,7 @@
     <img
       v-if="logo && !isAuthenticated"
       :src="logo"
+      :alt="logoAlt"
       class="breadcrumb__logo" />
     <template v-if="!noBreadcrumb">
       <IsMobile>
@@ -59,6 +60,7 @@
 <script>
 import isAuthenticated from "@/tools/isAuthenticated.js"
 import { getEnv } from "@/tools/getEnv"
+import { getLogoAltName } from "@/tools/getLogoAltName"
 
 export default {
   name: "Breadcrumb",
@@ -97,6 +99,9 @@ export default {
 
     logo() {
       return getEnv("VUE_APP_LOGO") ? `/img/${getEnv("VUE_APP_LOGO")}` : false
+    },
+    logoAlt() {
+      return getLogoAltName()
     },
   },
 

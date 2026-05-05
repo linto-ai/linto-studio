@@ -5,10 +5,10 @@
     <QuickSessionNotif v-if="quickSession && !isQuickSessionPage" />
     <div class="v2-layout__content">
       <div
-        v-if="!fullscreen"
+        v-if="!fullscreen && isAuthenticated"
         class="v2-layout__sidebar flex1"
         :class="{
-          'v2-layout__sidebar--hidden': !sidebarOpen || !isAuthenticated,
+          'v2-layout__sidebar--hidden': !sidebarOpen,
         }">
         <BurgerMenu :backoffice="backoffice">
           <slot name="sidebar"></slot>
