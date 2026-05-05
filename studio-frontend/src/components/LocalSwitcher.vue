@@ -5,9 +5,19 @@
     @click="setLocale"
     class="local-switcher"
     color="neutral"
+    :aria-label="$t('local_switcher.list_label')"
     ref="popoverList">
-    <template #trigger="{ open }">
-      <Button variant="tertiary" size="sm" :label="localTxt" icon="translate" />
+    <template #trigger="{ ariaProps }">
+      <Button
+        v-bind="ariaProps"
+        variant="tertiary"
+        size="sm"
+        :label="localTxt"
+        :aria-label="$t('local_switcher.change_language', { lang: localTxt })"
+        icon="translate" />
+    </template>
+    <template #item="{ item }">
+      <span :lang="item.value.split('-')[0]">{{ item.text }}</span>
     </template>
   </PopoverList>
 </template>

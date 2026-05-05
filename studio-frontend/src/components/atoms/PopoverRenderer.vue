@@ -144,10 +144,15 @@ export default {
     },
     focus() {
       if (!this.$refs.wrapper) return
-      // Check for autofocus element inside the popover
       const autofocusEl = this.$refs.wrapper.querySelector('[autofocus]')
+      const combobox = this.$refs.wrapper.querySelector('[role="combobox"]')
+      const listbox = this.$refs.wrapper.querySelector('[role="listbox"]')
       if (autofocusEl) {
         autofocusEl.focus()
+      } else if (combobox) {
+        combobox.focus()
+      } else if (listbox) {
+        listbox.focus()
       } else {
         this.$refs.wrapper.focus()
       }

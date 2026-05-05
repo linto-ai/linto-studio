@@ -652,6 +652,10 @@
       }
     }
   },
+  "local_switcher": {
+    "change_language": "Change language, current: {lang}",
+    "list_label": "Select language"
+  },
   "folders": {
     "uncategorized": "Inbox",
     "create": "Create folder",

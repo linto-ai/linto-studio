@@ -646,6 +646,10 @@
       }
     }
   },
+  "local_switcher": {
+    "change_language": "Changer de langue, actuelle : {lang}",
+    "list_label": "Choisir la langue"
+  },
   "folders": {
     "uncategorized": "Médias",
     "create": "Créer un dossier",
