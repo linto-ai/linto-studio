@@ -13,6 +13,14 @@
       :field="fieldSessionPermission"
       v-model="fieldSessionPermission.value"></FormCheckbox>
 
+    <FormCheckbox
+      :field="fieldMicrophonePermission"
+      v-model="fieldMicrophonePermission.value"></FormCheckbox>
+
+    <FormCheckbox
+      :field="fieldBotPermission"
+      v-model="fieldBotPermission.value"></FormCheckbox>
+
     <div>
       <Button
         v-if="isAdmin || isSystemAdministrator"
@@ -34,10 +42,7 @@
   </section>
 </template>
 <script>
-import {
-  organizationPermissionsMixin,
-  PERMISSIONS,
-} from "@/mixins/organizationPermissions"
+import { organizationPermissionsMixin } from "@/mixins/organizationPermissions"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 
@@ -79,6 +84,22 @@ export default {
           "organisation.organization_permissions.session_permission",
         ),
       },
+      fieldMicrophonePermission: {
+        ...EMPTY_FIELD,
+        value: this.hasMicrophonePermission(
+          this.currentOrganization.permissions,
+        ),
+        label: this.$t(
+          "organisation.organization_permissions.microphone_permission",
+        ),
+      },
+      fieldBotPermission: {
+        ...EMPTY_FIELD,
+        value: this.hasBotPermission(this.currentOrganization.permissions),
+        label: this.$t(
+          "organisation.organization_permissions.bot_permission",
+        ),
+      },
       organizationId: this.currentOrganization._id,
     }
   },
@@ -91,6 +112,8 @@ export default {
           upload: this.fieldUploadPermission.value,
           summary: this.fieldSummaryPermission.value,
           session: this.fieldSessionPermission.value,
+          microphone: this.fieldMicrophonePermission.value,
+          bot: this.fieldBotPermission.value,
         }),
       }
 

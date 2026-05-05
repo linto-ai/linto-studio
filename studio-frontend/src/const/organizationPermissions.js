@@ -1,0 +1,8 @@
+export const ORGANIZATION_PERMISSIONS = Object.freeze({
+  UNDEFINED: 0,
+  UPLOAD: 1,
+  SUMMARY: 2,
+  MICROPHONE: 4,
+  BOT: 8,
+  SESSION: 16,
+})

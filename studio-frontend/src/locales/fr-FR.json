@@ -930,6 +930,8 @@
       "upload_permission": "Publier des médias",
       "summary_permission": "Générer des résumés",
       "session_permission": "Créer des sessions",
+      "microphone_permission": "Créer des sessions microphone",
+      "bot_permission": "Créer des sessions bot",
       "update_button": "Mettre à jour les permissions"
     },
     "matching_users": {

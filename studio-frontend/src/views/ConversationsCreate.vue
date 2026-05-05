@@ -198,7 +198,14 @@ export default {
     canCreateSession() {
       const enableSession = getEnv("VUE_APP_ENABLE_SESSION") === "true"
 
-      return enableSession && this.canSessionInCurrentOrganization
+      // True when the org has at least one session-related permission
+      // (SESSION, MICROPHONE, or BOT). Each tab is gated by its own permission below.
+      return (
+        enableSession &&
+        (this.canSessionInCurrentOrganization ||
+          this.canMicrophoneInCurrentOrganization ||
+          this.canBotInCurrentOrganization)
+      )
     },
     loadingSessionData() {
       return (
@@ -231,32 +238,41 @@ export default {
         )
       }
 
-      if (this.canCreateSession) {
-        const loading = this.loadingSessionData
-        if (this.isAtLeastQuickMeeting) {
-          res.push({
-            name: "live",
-            label: this.$t("conversation_creation.tabs.quick_meeting"),
-            icon: "microphone",
-            disabled:
-              this.transcriberProfilesQuickMeeting.length === 0 || loading,
-          })
-          res.push({
-            name: "visio",
-            label: this.$t("conversation_creation.tabs.visio"),
-            icon: "webcam",
-            disabled:
-              this.transcriberProfilesQuickMeeting.length === 0 || loading,
-          })
-        }
-        if (this.isAtLeastMeetingManager) {
-          res.push({
-            name: "session",
-            label: this.$i18n.t("conversation_creation.tabs.session"),
-            icon: "plugs-connected",
-            disabled: this.transcriberProfiles.length === 0 || loading,
-          })
-        }
+      if (!this.canCreateSession) return res
+
+      const loading = this.loadingSessionData
+      const quickMeetingDisabled =
+        this.transcriberProfilesQuickMeeting.length === 0 || loading
+
+      if (
+        this.isAtLeastQuickMeeting &&
+        this.canMicrophoneInCurrentOrganization
+      ) {
+        res.push({
+          name: "live",
+          label: this.$t("conversation_creation.tabs.quick_meeting"),
+          icon: "microphone",
+          disabled: quickMeetingDisabled,
+        })
+      }
+      if (this.isAtLeastQuickMeeting && this.canBotInCurrentOrganization) {
+        res.push({
+          name: "visio",
+          label: this.$t("conversation_creation.tabs.visio"),
+          icon: "webcam",
+          disabled: quickMeetingDisabled,
+        })
+      }
+      if (
+        this.isAtLeastMeetingManager &&
+        this.canSessionInCurrentOrganization
+      ) {
+        res.push({
+          name: "session",
+          label: this.$i18n.t("conversation_creation.tabs.session"),
+          icon: "plugs-connected",
+          disabled: this.transcriberProfiles.length === 0 || loading,
+        })
       }
 
       return res
