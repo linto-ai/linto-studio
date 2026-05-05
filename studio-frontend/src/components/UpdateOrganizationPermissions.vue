@@ -10,16 +10,16 @@
       v-model="fieldSummaryPermission.value"></FormCheckbox>
 
     <FormCheckbox
-      :field="fieldSessionPermission"
-      v-model="fieldSessionPermission.value"></FormCheckbox>
-
-    <FormCheckbox
       :field="fieldMicrophonePermission"
       v-model="fieldMicrophonePermission.value"></FormCheckbox>
 
     <FormCheckbox
       :field="fieldBotPermission"
       v-model="fieldBotPermission.value"></FormCheckbox>
+
+    <FormCheckbox
+      :field="fieldSessionPermission"
+      v-model="fieldSessionPermission.value"></FormCheckbox>
 
     <div>
       <Button
@@ -77,13 +77,6 @@ export default {
           "organisation.organization_permissions.summary_permission",
         ),
       },
-      fieldSessionPermission: {
-        ...EMPTY_FIELD,
-        value: this.hasSessionPermission(this.currentOrganization.permissions),
-        label: this.$t(
-          "organisation.organization_permissions.session_permission",
-        ),
-      },
       fieldMicrophonePermission: {
         ...EMPTY_FIELD,
         value: this.hasMicrophonePermission(
@@ -100,6 +93,13 @@ export default {
           "organisation.organization_permissions.bot_permission",
         ),
       },
+      fieldSessionPermission: {
+        ...EMPTY_FIELD,
+        value: this.hasSessionPermission(this.currentOrganization.permissions),
+        label: this.$t(
+          "organisation.organization_permissions.session_permission",
+        ),
+      },
       organizationId: this.currentOrganization._id,
     }
   },
@@ -111,9 +111,9 @@ export default {
         permissions: this.computePermissionsNumber({
           upload: this.fieldUploadPermission.value,
           summary: this.fieldSummaryPermission.value,
-          session: this.fieldSessionPermission.value,
           microphone: this.fieldMicrophonePermission.value,
           bot: this.fieldBotPermission.value,
+          session: this.fieldSessionPermission.value,
         }),
       }
 
