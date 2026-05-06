@@ -752,6 +752,8 @@
       "created": "Created",
       "tags": "Topics",
       "metadata": "Metadata",
+      "template_label": "Session configuration",
+      "use_template_button": "Use this template",
       "default_title": "No title",
       "default_description": "No description",
       "selected_count": "{count} media selected",
@@ -1444,7 +1446,7 @@
   "share_menu": {
     "invite_new_user": "Invite a new user",
     "email_placeholder": "Email",
-    "button": "share",
+    "button": "Share",
     "conversation_error_title": "Some conversations cannot be shared",
     "external_members": "External users",
     "inscription_disabled": "Registration and invitations are deactivated on the platform",

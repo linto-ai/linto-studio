@@ -188,6 +188,10 @@ export default {
       type: Object, // { sessionTemplates: [...] totalItems: number }
       Required: true,
     },
+    preloadTemplateName: {
+      type: String,
+      default: null,
+    },
   },
   data() {
     let defaultMetadata = []
@@ -298,8 +302,13 @@ export default {
       formError: null,
     }
   },
-  mounted() {},
+  mounted() {
+    this.applyPreloadedTemplate()
+  },
   watch: {
+    preloadTemplateName() {
+      this.applyPreloadedTemplate()
+    },
     selectedProfiles() {
       this.channelsError = null
     },
@@ -358,6 +367,14 @@ export default {
   },
 
   methods: {
+    applyPreloadedTemplate() {
+      if (!this.preloadTemplateName) return
+      if (this.selectedTemplateId) return
+      const match = this.localSessionTemplates.sessionTemplates.find(
+        (t) => t.name === this.preloadTemplateName,
+      )
+      if (match) this.selectedTemplateId = match.id
+    },
     applyTemplate(template) {
       let nameToApply
       let channelsToApply
@@ -532,6 +549,9 @@ export default {
           })),
           meta: {
             ...Object.fromEntries(this.fieldMetadata.value),
+            ...(this.selectedTemplate
+              ? { template: this.selectedTemplate.name }
+              : {}),
             securityLevel: this.securityLevel,
           },
           scheduleOn: startDateTime,

@@ -34,6 +34,12 @@
             <h2>
               {{ $t("session.settings_page.global_informations_title") }}
             </h2>
+            <div v-if="templateName" class="form-field flex col">
+              <label class="form-label">
+                {{ $t("media_explorer.panel.template_label") }}
+              </label>
+              <span>{{ templateName }}</span>
+            </div>
             <FormInput :field="fieldPublicLink">
               <template v-slot:content-after-input>
                 <Button

@@ -102,6 +102,27 @@
             @change="handleFolderChange" />
         </div>
 
+        <!-- Template used -->
+        <div class="media-section" v-if="templateName">
+          <h4 class="section-title">
+            {{ $t("media_explorer.panel.template_label") }}
+          </h4>
+          <div class="template-row">
+            <span class="template-name">{{ templateName }}</span>
+            <Button
+              v-if="canSessionInCurrentOrganization"
+              variant="secondary"
+              icon="plus"
+              size="sm"
+              :label="$t('media_explorer.panel.use_template_button')"
+              :to="{
+                name: 'conversations create',
+                params: { organizationId: mediaOrganizationId },
+                query: { template: templateName },
+              }" />
+          </div>
+        </div>
+
         <!-- Media metadata -->
         <div v-if="false" class="media-section">
           <h4 class="section-title">
@@ -191,6 +212,7 @@ import ChipTag from "@/components/atoms/ChipTag.vue"
 import Button from "@/components/atoms/Button.vue"
 import ModalDeleteConversations from "./ModalDeleteConversations.vue"
 import { mediaExplorerRightPanelMixin } from "@/mixins/mediaExplorerRightPanel.js"
+import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
 import FormInput from "@/components/molecules/FormInput.vue"
 import EMPTY_FIELD from "@/const/emptyField"
 import ConversationShareMultiple from "./ConversationShareMultiple.vue"
@@ -199,7 +221,11 @@ import { mapGetters } from "vuex"
 
 export default {
   name: "MediaExplorerRightPanelItem",
-  mixins: [mediaExplorerRightPanelMixin, mediaScopeMixin],
+  mixins: [
+    mediaExplorerRightPanelMixin,
+    mediaScopeMixin,
+    organizationPermissionsMixin,
+  ],
   components: {
     TimeDuration,
     InputSelector,
@@ -257,6 +283,15 @@ export default {
       return media.tags
         .map((tagId) => this.getTagById(tagId))
         .filter((tag) => !!tag)
+    },
+    templateName() {
+      return this.reactiveSelectedMedia?.metadata?.template ?? null
+    },
+    mediaOrganizationId() {
+      return (
+        this.reactiveSelectedMedia?.organization?.organizationId ??
+        this.currentOrganizationScope
+      )
     },
   },
   watch: {
@@ -573,5 +608,18 @@ export default {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
+}
+
+.template-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.template-name {
+  font-size: 0.95rem;
+  color: var(--text-primary, #000);
+  word-break: break-word;
 }
 </style>

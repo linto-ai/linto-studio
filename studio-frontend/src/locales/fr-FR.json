@@ -746,6 +746,8 @@
       "created": "Créé le",
       "tags": "Thématiques",
       "metadata": "Métadonnées",
+      "template_label": "Configuration session",
+      "use_template_button": "Utiliser ce modèle",
       "default_title": "Sans titre",
       "default_description": "Aucune description",
       "selected_count": "{count} médias sélectionnés",

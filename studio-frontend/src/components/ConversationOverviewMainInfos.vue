@@ -16,6 +16,25 @@
         v-model="descriptionField.value"
         textarea
         :readonly="!canEdit" />
+      <div v-if="templateName" class="form-field flex col">
+        <label class="form-label">
+          {{ $t("media_explorer.panel.template_label") }}
+        </label>
+        <div class="flex align-center gap-small">
+          <span>{{ templateName }}</span>
+          <Button
+            v-if="canSessionInCurrentOrganization"
+            variant="secondary"
+            icon="plus"
+            size="sm"
+            :label="$t('media_explorer.panel.use_template_button')"
+            :to="{
+              name: 'conversations create',
+              params: { organizationId: organizationId },
+              query: { template: templateName },
+            }" />
+        </div>
+      </div>
       <Button
         v-if="canEdit"
         type="submit"
@@ -34,11 +53,12 @@ import { testName } from "@/tools/fields/testName"
 
 import { formsMixin } from "@/mixins/forms.js"
 import { conversationModelMixin } from "@/mixins/conversationModel.js"
+import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
 
 import FormInput from "@/components/molecules/FormInput.vue"
 
 export default {
-  mixins: [formsMixin, conversationModelMixin],
+  mixins: [formsMixin, conversationModelMixin, organizationPermissionsMixin],
   props: {
     conversation: {
       type: Object,
@@ -77,6 +97,21 @@ export default {
   },
   mounted() {
     this.initFields()
+  },
+  computed: {
+    templateName() {
+      return (
+        this.conversation?.metadata?.template ??
+        this.rootConversation?.metadata?.template ??
+        null
+      )
+    },
+    organizationId() {
+      return (
+        this.conversation?.organization?.organizationId ??
+        this.rootConversation?.organization?.organizationId
+      )
+    },
   },
   methods: {
     initFields() {

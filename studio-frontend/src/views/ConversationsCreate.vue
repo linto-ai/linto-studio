@@ -106,7 +106,8 @@
         v-if="currentTab === 'session' && !loadingSessionData"
         :sessionTemplates="sessionTemplates"
         :transcriberProfiles="transcriberProfiles"
-        :currentOrganizationScope="currentOrganizationScope" />
+        :currentOrganizationScope="currentOrganizationScope"
+        :preloadTemplateName="preloadTemplateName" />
     </div>
   </LayoutV2>
 </template>
@@ -172,10 +173,15 @@ export default {
     }
   },
   async created() {
-    if (this.mainTabs.length > 0) {
-      this.currentTab = this.mainTabs[0].name
-    } else {
+    if (this.mainTabs.length === 0) {
       this.$router.push({ name: "not_found" })
+      return
+    }
+    const sessionTab = this.mainTabs.find((tab) => tab.name === "session")
+    if (this.preloadTemplateName && sessionTab) {
+      this.currentTab = sessionTab.name
+    } else {
+      this.currentTab = this.mainTabs[0].name
     }
   },
   computed: {
@@ -199,6 +205,9 @@ export default {
       const enableSession = getEnv("VUE_APP_ENABLE_SESSION") === "true"
 
       return enableSession && this.canSessionInCurrentOrganization
+    },
+    preloadTemplateName() {
+      return this.$route.query.template ?? null
     },
     loadingSessionData() {
       return (
