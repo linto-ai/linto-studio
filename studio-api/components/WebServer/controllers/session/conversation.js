@@ -57,6 +57,7 @@ function initConversationMultiChannel(
         channel_start_time: session.startTime,
         channel_end_time: session.endTime,
       },
+      ...(session.meta?.template ? { template: session.meta.template } : {}),
     },
     jobs: {
       transcription: { state: "done" },
@@ -247,6 +248,7 @@ function initializeCaption(
         channel_end_time: session.endTime,
       },
       normalize: { filter: {} },
+      ...(session.meta?.template ? { template: session.meta.template } : {}),
     },
     sharedWithUsers: [],
     description: "",
