@@ -1,18 +1,10 @@
 <script setup lang="ts">
-import { ref, toRef, watch } from 'vue'
+import { ref, toRef } from 'vue'
 import AudioPlayerControls from './AudioPlayerControls.vue'
 import { useAudioPlayer } from '../composables/useAudioPlayer'
-import type { Turn, Speaker } from '../types/editor'
 
 const props = defineProps<{
   audioSrc?: string
-  turns: Turn[]
-  speakers: Map<string, Speaker>
-}>()
-
-const emit = defineEmits<{
-  timeupdate: [time: number]
-  playStateChange: [playing: boolean]
 }>()
 
 const waveformRef = ref<HTMLElement | null>(null)
@@ -24,7 +16,6 @@ const {
   volume,
   playbackRate,
   isMuted,
-  currentTime,
   formattedCurrentTime,
   formattedDuration,
   togglePlay,
@@ -37,12 +28,7 @@ const {
 } = useAudioPlayer({
   containerRef: waveformRef,
   audioSrc: toRef(() => props.audioSrc),
-  turns: toRef(() => props.turns),
-  speakers: toRef(() => props.speakers),
 })
-
-watch(currentTime, (t) => emit('timeupdate', t))
-watch(isPlaying, (v) => emit('playStateChange', v))
 
 defineExpose({ seekTo, pause })
 </script>

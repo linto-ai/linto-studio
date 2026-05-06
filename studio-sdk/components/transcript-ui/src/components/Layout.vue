@@ -83,11 +83,6 @@ watch(
 const audioPlayerRef =
   useTemplateRef<InstanceType<typeof AudioPlayer>>("audioPlayer")
 
-function onTimeUpdate(time: number) {
-  if (!core.audio) return
-  core.audio.currentTime.value = time
-}
-
 watch(
   () => core.activeChannelId.value,
   () => {
@@ -100,9 +95,9 @@ watch(
   },
 )
 
-if (core.audio) {
-  core.audio.setSeekHandler((t) => audioPlayerRef.value?.seekTo(t))
-}
+watch(showTranscription, (visible) => {
+  if (!visible) audioPlayerRef.value?.pause()
+})
 
 function onChannelChange(channelId: string) {
   core.setActiveChannel(channelId)
@@ -158,17 +153,10 @@ function onTranslationChange(translationId: string) {
       </SidebarDrawer>
     </main>
     <AudioPlayer
-      v-if="core.audio?.src.value && showTranscription"
+      v-if="core.audio?.src.value"
+      v-show="showTranscription"
       ref="audioPlayer"
-      :audio-src="core.audio.src.value"
-      :turns="activeTurns"
-      :speakers="speakers"
-      @timeupdate="onTimeUpdate"
-      @play-state-change="
-        (v: boolean) => {
-          if (core.audio) core.audio.isPlaying.value = v
-        }
-      " />
+      :audio-src="core.audio.src.value" />
     <SubtitleBanner
       v-if="
         core.subtitle?.isVisible.value &&

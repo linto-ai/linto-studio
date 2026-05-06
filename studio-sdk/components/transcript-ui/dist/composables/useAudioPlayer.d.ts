@@ -1,10 +1,7 @@
 import { Ref } from 'vue';
-import { Turn, Speaker } from '../types/editor';
 export interface UseAudioPlayerOptions {
     containerRef: Ref<HTMLElement | null>;
     audioSrc: Ref<string | undefined>;
-    turns: Ref<Turn[]>;
-    speakers: Ref<Map<string, Speaker>>;
 }
 export declare function useAudioPlayer(options: UseAudioPlayerOptions): {
     currentTime: Ref<number, number>;
@@ -12,6 +9,7 @@ export declare function useAudioPlayer(options: UseAudioPlayerOptions): {
     isPlaying: Ref<boolean, boolean>;
     isReady: Ref<boolean, boolean>;
     isLoading: Ref<boolean, boolean>;
+    loadError: Ref<string | null, string | null>;
     volume: Ref<number, number>;
     playbackRate: Ref<number, number>;
     isMuted: Ref<boolean, boolean>;

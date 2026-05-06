@@ -6,18 +6,10 @@ declare const _default: import('vue').DefineComponent<__VLS_Props, {}, {}, {}, {
 }, {}, {}, {}, string, import('vue').ComponentProvideOptions, false, {
     audioPlayer: import('vue').CreateComponentPublicInstanceWithMixins<Readonly<{
         audioSrc?: string;
-        turns: import('..').Turn[];
-        speakers: Map<string, import('..').Speaker>;
-    }> & Readonly<{
-        onTimeupdate?: ((time: number) => any) | undefined;
-        onPlayStateChange?: ((playing: boolean) => any) | undefined;
-    }>, {
+    }> & Readonly<{}>, {
         seekTo: (time: number) => void;
         pause: () => void;
-    }, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {
-        timeupdate: (time: number) => any;
-        playStateChange: (playing: boolean) => any;
-    }, import('vue').PublicProps, {}, false, {}, {}, import('vue').GlobalComponents, import('vue').GlobalDirectives, string, {
+    }, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {}, import('vue').PublicProps, {}, false, {}, {}, import('vue').GlobalComponents, import('vue').GlobalDirectives, string, {
         waveformRef: HTMLDivElement;
     }, HTMLElement, import('vue').ComponentProvideOptions, {
         P: {};
@@ -28,12 +20,7 @@ declare const _default: import('vue').DefineComponent<__VLS_Props, {}, {}, {}, {
         Defaults: {};
     }, Readonly<{
         audioSrc?: string;
-        turns: import('..').Turn[];
-        speakers: Map<string, import('..').Speaker>;
-    }> & Readonly<{
-        onTimeupdate?: ((time: number) => any) | undefined;
-        onPlayStateChange?: ((playing: boolean) => any) | undefined;
-    }>, {
+    }> & Readonly<{}>, {
         seekTo: (time: number) => void;
         pause: () => void;
     }, {}, {}, {}, {}> | null;

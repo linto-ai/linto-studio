@@ -1,12 +1,11 @@
 import { DownloadFormat } from './DownloadMenu.vue';
 export type DocumentArticleStatus = "done" | "processing" | "error";
 type __VLS_Props = {
-    metaLabel: string;
-    metaIcon?: string;
-    metaProgress?: number;
     status?: DocumentArticleStatus;
+    progress?: number;
+    errorMessage?: string;
     showRegenerate?: boolean;
-    formats: DownloadFormat[];
+    formats?: DownloadFormat[];
 };
 declare function __VLS_template(): {
     attrs: Partial<{}>;
@@ -19,10 +18,10 @@ declare function __VLS_template(): {
 type __VLS_TemplateResult = ReturnType<typeof __VLS_template>;
 declare const __VLS_component: import('vue').DefineComponent<__VLS_Props, {}, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {
     regenerate: () => any;
-    export: (format: string) => any;
+    export: (format?: string | undefined) => any;
 }, string, import('vue').PublicProps, Readonly<__VLS_Props> & Readonly<{
     onRegenerate?: (() => any) | undefined;
-    onExport?: ((format: string) => any) | undefined;
+    onExport?: ((format?: string | undefined) => any) | undefined;
 }>, {
     status: DocumentArticleStatus;
     showRegenerate: boolean;

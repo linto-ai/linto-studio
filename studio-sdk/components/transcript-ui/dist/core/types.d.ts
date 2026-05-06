@@ -56,7 +56,6 @@ export interface CoreEventMap {
     };
     "llmService:export": {
         id: string;
-        format: string;
     };
     "llmService:active": {
         id: string | null;

@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { computed } from "vue"
-import { NodeViewWrapper, NodeViewContent, type NodeViewProps } from "@tiptap/vue-3"
+import {
+  NodeViewWrapper,
+  NodeViewContent,
+  type NodeViewProps,
+} from "@tiptap/vue-3"
 import SpeakerLabel from "../../../components/SpeakerLabel.vue"
 import SpeakerPopover from "../../../components/molecules/SpeakerPopover.vue"
 import { useCore } from "../../../core"
@@ -59,6 +63,7 @@ const isTurnActive = computed(() => {
 <style scoped>
 .turn {
   padding: var(--spacing-sm) var(--spacing-lg);
+  border-left: 3px solid transparent;
 }
 
 .turn-text {
