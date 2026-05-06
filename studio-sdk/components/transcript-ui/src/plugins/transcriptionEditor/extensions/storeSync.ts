@@ -4,12 +4,9 @@ import type { EditorState, Transaction } from "@tiptap/pm/state"
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model"
 import { ySyncPluginKey } from "@tiptap/y-tiptap"
 import type { Core, TranslationStore } from "../../../core/types"
-import { docToTurns } from "../utils/docToTurns"
-import type { Turn, Word } from "../../../types/editor"
+import type { Turn } from "../../../types/editor"
 
 const storeSyncKey = new PluginKey("storeSync")
-
-// TODO: optimize all this sync code
 
 /**
  * Flag to prevent feedback loops when the store dispatches
@@ -64,7 +61,7 @@ export const StoreSync = Extension.create<StoreSyncOptions>({
           const translation = getTranslation()
           if (!translation) return null
 
-          syncDocToStore(newState.doc, translation, store)
+          syncDocToStore(newState.doc, oldState.doc, translation, store)
           return null
         },
       }),
@@ -73,55 +70,77 @@ export const StoreSync = Extension.create<StoreSyncOptions>({
 })
 
 function syncDocToStore(
-  doc: ProseMirrorNode,
+  newDoc: ProseMirrorNode,
+  oldDoc: ProseMirrorNode,
   translation: TranslationStore,
   store: Core,
 ): void {
-  const newTurns = docToTurns(doc)
-  const oldTurns = translation.turns.value
-  const oldById = new Map(oldTurns.map((t) => [t.id, t]))
+  const translationId = translation.id
 
-  const mergedTurns = newTurns.map((newTurn) => {
-    const old = oldById.get(newTurn.id)
-    if (!old) return newTurn
+  const oldNodesById = new Map<string, ProseMirrorNode>()
+  oldDoc.forEach((node) => {
+    if (node.type.name === "turn") {
+      oldNodesById.set(node.attrs.id as string, node)
+    }
+  })
+
+  const oldTurnsById = new Map(
+    translation.turns.value.map((t) => [t.id, t]),
+  )
+
+  const newIds = new Set<string>()
+
+  newDoc.forEach((newNode) => {
+    if (newNode.type.name !== "turn") return
+    const id = newNode.attrs.id as string
+    newIds.add(id)
+
+    const oldNode = oldNodesById.get(id)
+    const oldTurn = oldTurnsById.get(id)
+
+    // Fast path: PM reuses node references for unchanged sub-trees
+    if (oldNode === newNode && oldTurn) return
+
+    const newTurn = nodeToTurn(newNode)
+
+    if (!oldTurn) {
+      translation.updateOrCreateTurnSilent(newTurn)
+      store.emit("turn:add", { turn: newTurn, translationId })
+      return
+    }
 
     // Preserve words/timestamps if text hasn't changed
     const oldText =
-      old.words.length > 0
-        ? old.words.map((w: Word) => w.text).join(" ")
-        : (old.text ?? "")
+      oldTurn.text ?? oldTurn.words.map((w) => w.text).join(" ")
+    const merged: Turn =
+      newTurn.text === oldText
+        ? { ...newTurn, words: oldTurn.words }
+        : newTurn
 
-    if (newTurn.text === oldText) {
-      return { ...newTurn, words: old.words }
+    if (hasTurnChanged(oldTurn, merged)) {
+      translation.updateTurn(id, merged)
     }
-
-    // Text changed: words are stale, return empty words
-    return newTurn
   })
 
-  // Detect changes and emit appropriate events
-  const translationId = translation.id
-  const newById = new Map(mergedTurns.map((t) => [t.id, t]))
-
-  // Removed turns
-  for (const old of oldTurns) {
-    if (!newById.has(old.id)) {
-      store.emit("turn:remove", { turnId: old.id, translationId })
+  for (const [id] of oldTurnsById) {
+    if (!newIds.has(id)) {
+      translation.removeTurn(id)
     }
   }
+}
 
-  // Added or updated turns
-  for (const turn of mergedTurns) {
-    const old = oldById.get(turn.id)
-    if (!old) {
-      store.emit("turn:add", { turn, translationId })
-    } else if (hasTurnChanged(old, turn)) {
-      store.emit("turn:update", { turn, translationId })
-    }
+function nodeToTurn(node: ProseMirrorNode): Turn {
+  return {
+    id: node.attrs.id as string,
+    speakerId: (node.attrs.speakerId as string) ?? null,
+    text: node.textContent || null,
+    words: [],
+    startTime: node.attrs.startTime as number | undefined,
+    endTime: node.attrs.endTime as number | undefined,
+    startDate: node.attrs.startDate as number | undefined,
+    endDate: node.attrs.endDate as number | undefined,
+    language: (node.attrs.language as string) ?? "",
   }
-
-  // Update the store silently (we already emitted the events)
-  translation.replaceTurns(mergedTurns)
 }
 
 function fixDuplicateTurnIds(state: EditorState): Transaction | null {

@@ -39544,32 +39544,13 @@ const XS = Mp.create({
   addNodeView() {
     return m2(u1);
   }
-});
-function F4(t) {
-  const e = [];
-  return t.forEach((n) => {
-    if (n.type.name !== "turn") return;
-    const r = n.textContent;
-    e.push({
-      id: n.attrs.id,
-      speakerId: n.attrs.speakerId ?? null,
-      text: r || null,
-      words: [],
-      startTime: n.attrs.startTime,
-      endTime: n.attrs.endTime,
-      startDate: n.attrs.startDate,
-      endDate: n.attrs.endDate,
-      language: n.attrs.language ?? ""
-    });
-  }), e;
-}
-const V4 = new tn("storeSync"), q4 = nn.create({
+}), F4 = new tn("storeSync"), V4 = nn.create({
   name: "storeSync",
   addProseMirrorPlugins() {
     const { store: t, getTranslation: e } = this.options;
     return [
       new mt({
-        key: V4,
+        key: F4,
         appendTransaction(n, r, s) {
           if (r.doc.eq(s.doc)) return null;
           if (!n.some(
@@ -39579,26 +39560,49 @@ const V4 = new tn("storeSync"), q4 = nn.create({
             if (l) return l;
           }
           const o = e();
-          return o && U4(s.doc, o, t), null;
+          return o && q4(s.doc, r.doc, o, t), null;
         }
       })
     ];
   }
 });
-function U4(t, e, n) {
-  const r = F4(t), s = e.turns.value, i = new Map(s.map((c) => [c.id, c])), o = r.map((c) => {
-    const u = i.get(c.id);
-    if (!u) return c;
-    const d = u.words.length > 0 ? u.words.map((f) => f.text).join(" ") : u.text ?? "";
-    return c.text === d ? { ...c, words: u.words } : c;
-  }), l = e.id, a = new Map(o.map((c) => [c.id, c]));
-  for (const c of s)
-    a.has(c.id) || n.emit("turn:remove", { turnId: c.id, translationId: l });
-  for (const c of o) {
-    const u = i.get(c.id);
-    u ? H4(u, c) && n.emit("turn:update", { turn: c, translationId: l }) : n.emit("turn:add", { turn: c, translationId: l });
-  }
-  e.replaceTurns(o);
+function q4(t, e, n, r) {
+  const s = n.id, i = /* @__PURE__ */ new Map();
+  e.forEach((a) => {
+    a.type.name === "turn" && i.set(a.attrs.id, a);
+  });
+  const o = new Map(
+    n.turns.value.map((a) => [a.id, a])
+  ), l = /* @__PURE__ */ new Set();
+  t.forEach((a) => {
+    if (a.type.name !== "turn") return;
+    const c = a.attrs.id;
+    l.add(c);
+    const u = i.get(c), d = o.get(c);
+    if (u === a && d) return;
+    const f = U4(a);
+    if (!d) {
+      n.updateOrCreateTurnSilent(f), r.emit("turn:add", { turn: f, translationId: s });
+      return;
+    }
+    const h = d.text ?? d.words.map((m) => m.text).join(" "), p = f.text === h ? { ...f, words: d.words } : f;
+    H4(d, p) && n.updateTurn(c, p);
+  });
+  for (const [a] of o)
+    l.has(a) || n.removeTurn(a);
+}
+function U4(t) {
+  return {
+    id: t.attrs.id,
+    speakerId: t.attrs.speakerId ?? null,
+    text: t.textContent || null,
+    words: [],
+    startTime: t.attrs.startTime,
+    endTime: t.attrs.endTime,
+    startDate: t.attrs.startDate,
+    endDate: t.attrs.endDate,
+    language: t.attrs.language ?? ""
+  };
 }
 function j4(t) {
   const e = /* @__PURE__ */ new Set(), n = [];
@@ -39921,7 +39925,7 @@ function tb(t, e, n, r, s, i, o) {
       document: n,
       field: r
     }),
-    q4.configure({
+    V4.configure({
       store: t,
       getTranslation: () => l.value
     }),

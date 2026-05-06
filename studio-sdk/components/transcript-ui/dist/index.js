@@ -23901,7 +23901,9 @@ function CA(n) {
   const { containerRef: e, audioSrc: t } = n, r = ze();
   if (!r.audio)
     throw new Error("useAudioPlayer requires the audio plugin (core.audio)");
-  const i = r.audio, s = Lt(null), o = Lt(null), a = i.currentTime, l = i.isPlaying, c = _(0), u = _(!1), d = _(!1), f = _(null), h = _(1), p = _(1), m = _(!1), g = E(() => ss(a.value)), y = E(() => ss(c.value)), b = /* @__PURE__ */ new Map(), v = [];
+  const i = r.audio, s = Lt(null), o = Lt(null), a = i.currentTime, l = i.isPlaying, c = _(0), u = _(!1), d = _(!1), f = _(null), h = _(1), p = _(1), m = _(!1), g = E(
+    () => ss(a.value)
+  ), y = E(() => ss(c.value)), b = /* @__PURE__ */ new Map(), v = [];
   function w(V) {
     const te = o.value;
     if (!te) return;
@@ -23920,7 +23922,10 @@ function CA(n) {
         start: V.startTime,
         end: V.endTime,
         color: qe
-      }), Ai.region.element?.style.setProperty("--region-color", Ve.color), Ai.speakerId = V.speakerId;
+      }), Ai.region.element?.style.setProperty(
+        "--region-color",
+        Ve.color
+      ), Ai.speakerId = V.speakerId;
       return;
     }
     const wc = te.addRegion({
@@ -23960,11 +23965,14 @@ function CA(n) {
     C(V);
   }
   function D({ speaker: V }) {
+    console.log("plop");
     const te = Tc(V.color, 0.25);
     for (const [, Ve] of b)
       Ve.speakerId === V.id && (Ve.region.setOptions({ color: te }), Ve.region.element?.style.setProperty("--region-color", V.color));
   }
-  function I({ speakerId: V }) {
+  function I({
+    speakerId: V
+  }) {
     for (const [te, Ve] of [...b])
       Ve.speakerId === V && C(te);
   }
@@ -28416,7 +28424,7 @@ const Dg = Jl.create({
       _: 1
     }, 8, ["class", "style", "data-turn-id"]));
   }
-}), WP = /* @__PURE__ */ ne(UP, [["__scopeId", "data-v-a99ead44"]]), _g = Jl.create({
+}), WP = /* @__PURE__ */ ne(UP, [["__scopeId", "data-v-b54c3232"]]), _g = Jl.create({
   name: "turn",
   group: "block",
   content: "inline*",
@@ -28458,32 +28466,13 @@ const Dg = Jl.create({
   addNodeView() {
     return $T(WP);
   }
-});
-function jP(n) {
-  const e = [];
-  return n.forEach((t) => {
-    if (t.type.name !== "turn") return;
-    const r = t.textContent;
-    e.push({
-      id: t.attrs.id,
-      speakerId: t.attrs.speakerId ?? null,
-      text: r || null,
-      words: [],
-      startTime: t.attrs.startTime,
-      endTime: t.attrs.endTime,
-      startDate: t.attrs.startDate,
-      endDate: t.attrs.endDate,
-      language: t.attrs.language ?? ""
-    });
-  }), e;
-}
-const HP = new nt("storeSync"), KP = rt.create({
+}), jP = new nt("storeSync"), HP = rt.create({
   name: "storeSync",
   addProseMirrorPlugins() {
     const { store: n, getTranslation: e } = this.options;
     return [
       new Ie({
-        key: HP,
+        key: jP,
         appendTransaction(t, r, i) {
           if (r.doc.eq(i.doc)) return null;
           if (!t.some(
@@ -28493,26 +28482,49 @@ const HP = new nt("storeSync"), KP = rt.create({
             if (a) return a;
           }
           const o = e();
-          return o && JP(i.doc, o, n), null;
+          return o && KP(i.doc, r.doc, o, n), null;
         }
       })
     ];
   }
 });
-function JP(n, e, t) {
-  const r = jP(n), i = e.turns.value, s = new Map(i.map((c) => [c.id, c])), o = r.map((c) => {
-    const u = s.get(c.id);
-    if (!u) return c;
-    const d = u.words.length > 0 ? u.words.map((f) => f.text).join(" ") : u.text ?? "";
-    return c.text === d ? { ...c, words: u.words } : c;
-  }), a = e.id, l = new Map(o.map((c) => [c.id, c]));
-  for (const c of i)
-    l.has(c.id) || t.emit("turn:remove", { turnId: c.id, translationId: a });
-  for (const c of o) {
-    const u = s.get(c.id);
-    u ? GP(u, c) && t.emit("turn:update", { turn: c, translationId: a }) : t.emit("turn:add", { turn: c, translationId: a });
-  }
-  e.replaceTurns(o);
+function KP(n, e, t, r) {
+  const i = t.id, s = /* @__PURE__ */ new Map();
+  e.forEach((l) => {
+    l.type.name === "turn" && s.set(l.attrs.id, l);
+  });
+  const o = new Map(
+    t.turns.value.map((l) => [l.id, l])
+  ), a = /* @__PURE__ */ new Set();
+  n.forEach((l) => {
+    if (l.type.name !== "turn") return;
+    const c = l.attrs.id;
+    a.add(c);
+    const u = s.get(c), d = o.get(c);
+    if (u === l && d) return;
+    const f = JP(l);
+    if (!d) {
+      t.updateOrCreateTurnSilent(f), r.emit("turn:add", { turn: f, translationId: i });
+      return;
+    }
+    const h = d.text ?? d.words.map((m) => m.text).join(" "), p = f.text === h ? { ...f, words: d.words } : f;
+    GP(d, p) && t.updateTurn(c, p);
+  });
+  for (const [l] of o)
+    a.has(l) || t.removeTurn(l);
+}
+function JP(n) {
+  return {
+    id: n.attrs.id,
+    speakerId: n.attrs.speakerId ?? null,
+    text: n.textContent || null,
+    words: [],
+    startTime: n.attrs.startTime,
+    endTime: n.attrs.endTime,
+    startDate: n.attrs.startDate,
+    endDate: n.attrs.endDate,
+    language: n.attrs.language ?? ""
+  };
 }
 function XP(n) {
   const e = /* @__PURE__ */ new Set(), t = [];
@@ -28880,7 +28892,7 @@ function Hd(n, e, t, r, i, s, o) {
       document: t,
       field: r
     }),
-    KP.configure({
+    HP.configure({
       store: n,
       getTranslation: () => a.value
     }),
