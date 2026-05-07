@@ -4,7 +4,7 @@
       <div class="login-page__container__left flex col">
         <div
           class="login-page__decoration__header center-text flex col gap-small align-center">
-          <img v-if="logo" :src="logo" class="login-page__logo" />
+          <img v-if="logo" :src="logo" :alt="logoAlt" class="login-page__logo" />
           <h1 class="center-text login-page__main-title">
             {{ title }}
           </h1>
@@ -68,6 +68,7 @@
 <script>
 import LocalSwitcher from "@/components/LocalSwitcher.vue"
 import { getEnv } from "@/tools/getEnv"
+import { getLogoAltName } from "@/tools/getLogoAltName"
 import { mapActions, mapGetters } from "vuex"
 
 export default {
@@ -84,6 +85,9 @@ export default {
     },
     logo() {
       return getEnv("VUE_APP_LOGO") ? `/img/${getEnv("VUE_APP_LOGO")}` : false
+    },
+    logoAlt() {
+      return getLogoAltName()
     },
   },
   components: { LocalSwitcher },

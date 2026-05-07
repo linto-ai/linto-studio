@@ -84,37 +84,41 @@ function createTurn(
 function processChannelCaptions(channel, caption, main = true) {
   let closedCaptions = []
   let offset = 0
+  let maxEnd = 0
+  let isFirst = true
   channel.closedCaptions.forEach((segment) => {
     if (segment.locutor === "bot" && segment.aend) {
-      // Calculate duration and add it to offset when caption was cut off
-      const startDate = new Date(segment.astart)
-      const endDate = new Date(segment.aend)
-      const durationSeconds = (endDate - startDate) / 1000
-      offset += durationSeconds
-    } else {
-      // Adjust timing for non-bot segments on multiple captions
-      if (offset > 0) {
-        segment.start = Number((segment.start + offset).toFixed(2))
-        segment.end = Number((segment.end + offset).toFixed(2))
-      }
-      closedCaptions.push(segment) // Only push non-bot segments
+      // Anchor next flux on previous flux's last caption end.
+      // bot.astart/aend wall-clock overshoots the recorded audio.
+      offset = maxEnd
+      isFirst = false
+      return
     }
+    // Push a copy: segment is shared across canonical + translation passes.
+    let shifted = segment
+    if (offset > 0) {
+      shifted = {
+        ...segment,
+        start: Number((segment.start + offset).toFixed(2)),
+        end: Number((segment.end + offset).toFixed(2)),
+      }
+    } else if (isFirst && segment.start === 0) {
+      // Leading turn must not start at 0; post-bot start=0 stays untouched.
+      shifted = { ...segment, start: 0.01 }
+    }
+    isFirst = false
+    if (shifted.end > maxEnd) maxEnd = shifted.end
+    closedCaptions.push(shifted)
   })
 
-  let prevSegmentWithTimestamps = undefined
-
   for (const channel_caption of closedCaptions) {
-    let spk_id = ensureSpeaker(caption, channel_caption)
-    if (channel_caption.locutor === "bot") {
-      prevSegmentWithTimestamps = channel_caption
-    }
-    let turn = createTurn(
+    const spk_id = ensureSpeaker(caption, channel_caption)
+    const turn = createTurn(
       channel_caption,
       spk_id,
       main,
       channel.diarization,
       caption,
-      prevSegmentWithTimestamps,
     )
     if (!turn) continue
     caption.text.push(turn)

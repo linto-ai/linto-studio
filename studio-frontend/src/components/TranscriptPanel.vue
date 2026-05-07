@@ -11,7 +11,7 @@
         class="transcript-panel__turn">
         <div class="transcript-panel__speaker">
           <span class="transcript-panel__speaker-name">{{ speakersMap[turn.speaker_id] || turn.speaker_id }}</span>
-          <span class="transcript-panel__time">{{ formatTime(turn.stime) }}</span>
+          <span class="transcript-panel__time">{{ formatTime(turnStime(turn)) }}</span>
         </div>
         <p class="transcript-panel__text">{{ turn.segment }}</p>
       </div>
@@ -44,6 +44,9 @@ export default {
     },
   },
   methods: {
+    turnStime(turn) {
+      return turn.words?.find((w) => w.word !== "")?.stime ?? turn.stime
+    },
     formatTime(stime) {
       return timeToHMS(stime, { stripHourZeros: true })
     },

@@ -2,12 +2,13 @@ export function getLanguageDisplayName(
   code: string,
   locale: string,
   wildcardLabel = "*",
+  stripRegion = true,
 ): string {
   if (code === "*") return wildcardLabel
-  const langCode: string = code.split("-")[0] ?? code
+  const lookup = stripRegion ? (code.split("-")[0] ?? code) : code
   try {
     const display = new Intl.DisplayNames([locale], { type: "language" })
-    return display.of(langCode) ?? langCode
+    return display.of(lookup) ?? display.of(code.split("-")[0] ?? code) ?? code
   } catch {
     return code
   }
@@ -27,7 +28,9 @@ export function buildTranslationItems(
     label: tr.isSource
       ? originalLabel
       : tr.languages
-          .map((code) => getLanguageDisplayName(code, locale, wildcardLabel))
+          .map((code) =>
+            getLanguageDisplayName(code, locale, wildcardLabel, false),
+          )
           .join(", "),
   }))
 }
