@@ -59,9 +59,6 @@ export default {
     }
   },
   computed: {
-    logo() {
-      return `/img/${getEnv("VUE_APP_LOGO")}`
-    },
     title() {
       return getEnv("VUE_APP_NAME")
     },

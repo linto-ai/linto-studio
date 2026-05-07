@@ -134,9 +134,6 @@ export default {
     enable_inscription() {
       return getEnv("VUE_APP_DISABLE_USER_CREATION") !== "true"
     },
-    logo() {
-      return `/img/${getEnv("VUE_APP_LOGO")}`
-    },
     title() {
       return getEnv("VUE_APP_NAME")
     },

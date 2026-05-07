@@ -1,4 +1,4 @@
-export declare function getLanguageDisplayName(code: string, locale: string, wildcardLabel?: string): string;
+export declare function getLanguageDisplayName(code: string, locale: string, wildcardLabel?: string, stripRegion?: boolean): string;
 export declare function buildTranslationItems(translations: {
     id: string;
     languages: string[];
