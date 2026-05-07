@@ -107,7 +107,10 @@ export function createTranscriptionEditorPlugin(
         users.value = []
       }
 
-      function startSession(translationId: string, translation: TranslationStore) {
+      function startSession(
+        translationId: string,
+        translation: TranslationStore,
+      ) {
         destroyCurrentSession()
 
         const ydoc = new Doc()
@@ -139,14 +142,31 @@ export function createTranscriptionEditorPlugin(
           currentProvider = provider
 
           // Wait for initial sync before creating editor
-          const stopSync = watch(isConnected, (synced) => {
-            if (!synced) return
-            stopSync()
-            sessionCleanups.push(
-              setupSpeakersSync({ core, ydoc, translation, seedFromCore: false }),
-            )
-            createTiptapEditor(core, options, ydoc, field, tiptapEditor, provider.awareness, cleanups)
-          }, { immediate: true })
+          const stopSync = watch(
+            isConnected,
+            (synced) => {
+              if (!synced) return
+              stopSync()
+              sessionCleanups.push(
+                setupSpeakersSync({
+                  core,
+                  ydoc,
+                  translation,
+                  seedFromCore: false,
+                }),
+              )
+              createTiptapEditor(
+                core,
+                options,
+                ydoc,
+                field,
+                tiptapEditor,
+                provider.awareness,
+                cleanups,
+              )
+            },
+            { immediate: true },
+          )
           cleanups.push(stopSync)
         } else {
           // Local mode: seed from store turns, no provider
@@ -160,7 +180,15 @@ export function createTranscriptionEditorPlugin(
             setupSpeakersSync({ core, ydoc, translation, seedFromCore: true }),
           )
 
-          createTiptapEditor(core, options, ydoc, field, tiptapEditor, null, cleanups)
+          createTiptapEditor(
+            core,
+            options,
+            ydoc,
+            field,
+            tiptapEditor,
+            null,
+            cleanups,
+          )
         }
       }
 
@@ -205,14 +233,18 @@ interface TimestampsRecalcPayload {
   turns: Array<{ turn_id: string; words: ApiWord[] }>
 }
 
-function applyStatelessPayload(payload: string, translation: TranslationStore): void {
+function applyStatelessPayload(
+  payload: string,
+  translation: TranslationStore,
+): void {
   let msg: TimestampsRecalcPayload
   try {
     msg = JSON.parse(payload)
   } catch {
     return
   }
-  if (!msg || msg.type !== "timestamps_recalc" || !Array.isArray(msg.turns)) return
+  if (!msg || msg.type !== "timestamps_recalc" || !Array.isArray(msg.turns))
+    return
 
   for (const t of msg.turns) {
     if (!t || !t.turn_id || !Array.isArray(t.words)) continue
