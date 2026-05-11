@@ -1,5 +1,5 @@
 <template>
-  <div :class="classes">
+  <div :class="classes" :disabled="p_disabled">
     <div class="flex align-center">
       <!-- <input
         type="checkbox"
@@ -25,7 +25,7 @@
       class="flex row align-center"
       v-if="field.label"
       :title="p_disabled ? p_disabledReason : ''">
-      <label class="form-label" :for="id">
+      <label class="form-label" :for="id" :disabled="p_disabled">
         {{ field.label }}
       </label>
       <slot name="content-after-label"></slot>
