@@ -2,13 +2,12 @@
 import { computed } from "vue"
 import DocumentArticle from "./molecules/DocumentArticle.vue"
 import type { DownloadFormat } from "./molecules/DownloadMenu.vue"
-import SpeakerIndicator from "./atoms/SpeakerIndicator.vue"
 import { useI18n } from "../i18n"
 import { useCore } from "../core"
 import * as utils from "../utils"
 
 const core = useCore()
-const { t, locale } = useI18n()
+const { locale } = useI18n()
 
 const formats: DownloadFormat[] = [
   { format: "docx", labelKey: "format.docx" },
@@ -24,25 +23,9 @@ const turns = computed(
 const speakers = core.speakers.all
 
 const title = computed(() => core.title.value)
-const date = computed(() => core.date.value)
-const duration = computed(() => core.activeChannel.value?.duration ?? 0)
-const speakerCount = computed(() => speakers.size)
 
-const formattedDate = computed(() =>
-  date.value != null ? utils.formatLongDate(date.value, locale.value) : "",
-)
-const formattedDuration = computed(() =>
-  utils.formatDurationMinutes(duration.value, locale.value),
-)
-const formattedSpeakers = computed(() =>
-  t("header.speakerCount", { count: speakerCount.value }),
-)
-const subtitleParts = computed(() =>
-  [
-    formattedDate.value,
-    formattedDuration.value,
-    formattedSpeakers.value,
-  ].filter(Boolean),
+const displayNames = computed(
+  () => new Intl.DisplayNames([locale.value], { type: "language" }),
 )
 
 function speakerName(id: string | null): string {
@@ -50,9 +33,9 @@ function speakerName(id: string | null): string {
   return speakers.get(id)?.name ?? id
 }
 
-function speakerColor(id: string | null): string | undefined {
-  if (id == null) return undefined
-  return speakers.get(id)?.color
+function languageName(code: string): string {
+  if (!code) return ""
+  return displayNames.value.of(code) ?? code
 }
 
 function turnText(turn: {
@@ -74,26 +57,25 @@ function onExport(format?: string): void {
     <DocumentArticle :formats="formats" @export="onExport">
       <header class="verbatim-panel__header">
         <h1 class="verbatim-panel__doc-title">{{ title }}</h1>
-        <p v-if="subtitleParts.length" class="verbatim-panel__subtitle">
-          <span
-            v-for="(part, i) in subtitleParts"
-            :key="i"
-            class="verbatim-panel__subtitle-part">
-            {{ part }}
-          </span>
-        </p>
       </header>
 
       <ul class="verbatim-panel__turns">
         <li v-for="turn in turns" :key="turn.id" class="verbatim-panel__turn">
-          <div class="verbatim-panel__speaker">
-            <SpeakerIndicator
-              v-if="turn.speakerId"
-              :color="speakerColor(turn.speakerId) ?? '#888'" />
-            <span class="verbatim-panel__speaker-name">
+          <header class="verbatim-panel__turn-header">
+            <strong class="verbatim-panel__speaker-name">
               {{ speakerName(turn.speakerId) }}
+            </strong>
+            <span
+              v-if="turn.startTime != null"
+              class="verbatim-panel__meta">
+              <span class="verbatim-panel__sep" aria-hidden="true">·</span>
+              <time>{{ utils.formatTime(turn.startTime) }}</time>
             </span>
-          </div>
+            <span v-if="turn.language" class="verbatim-panel__meta">
+              <span class="verbatim-panel__sep" aria-hidden="true">·</span>
+              {{ languageName(turn.language) }}
+            </span>
+          </header>
           <p class="verbatim-panel__text">{{ turnText(turn) }}</p>
         </li>
       </ul>
@@ -108,7 +90,6 @@ function onExport(format?: string): void {
   min-width: 0;
   min-height: 0;
   overflow-y: auto;
-  /* padding: var(--spacing-lg); */
 }
 
 .verbatim-panel__header {
@@ -120,22 +101,8 @@ function onExport(format?: string): void {
 .verbatim-panel__doc-title {
   font-size: var(--font-size-xl);
   font-weight: 700;
-  margin: 0 0 var(--spacing-xs);
-  color: var(--color-text-primary);
-}
-
-.verbatim-panel__subtitle {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-xs);
   margin: 0;
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
-}
-
-.verbatim-panel__subtitle-part + .verbatim-panel__subtitle-part::before {
-  content: "·";
-  margin-right: var(--spacing-xs);
+  color: var(--color-text-primary);
 }
 
 .verbatim-panel__turns {
@@ -144,32 +111,37 @@ function onExport(format?: string): void {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
+  gap: var(--spacing-lg);
 }
 
 .verbatim-panel__turn {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
+  display: block;
 }
 
-.verbatim-panel__speaker {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  font-size: var(--font-size-sm);
-  font-weight: 600;
-  color: var(--color-text-primary);
+.verbatim-panel__turn-header {
+  margin: 0 0 var(--spacing-xs);
+  font-size: var(--font-size-base);
+  line-height: 1.4;
 }
 
 .verbatim-panel__speaker-name {
-  text-box: cap alphabetic;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.verbatim-panel__meta {
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+.verbatim-panel__sep {
+  margin: 0 0.35em;
 }
 
 .verbatim-panel__text {
   margin: 0;
   font-size: var(--font-size-base);
-  line-height: var(--line-height);
+  line-height: 1.6;
   color: var(--color-text-primary);
 }
 

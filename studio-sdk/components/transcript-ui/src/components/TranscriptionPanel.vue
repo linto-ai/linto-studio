@@ -201,6 +201,16 @@ onBeforeUnmount(() => {
   background-color: var(--color-surface);
 }
 
+.transcription-panel:has(.ProseMirror:focus) {
+  background-color: var(--color-background);
+}
+
+.transcription-panel :deep(.ProseMirror:focus) {
+  outline: 1px solid var(--color-primary);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
 .scroll-container {
   height: 100%;
   overflow: auto;
