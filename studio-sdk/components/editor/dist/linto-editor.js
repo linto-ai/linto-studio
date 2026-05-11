@@ -5396,11 +5396,12 @@ function Vd(t, e) {
   const n = t.replace("#", ""), i = parseInt(n.substring(0, 2), 16), s = parseInt(n.substring(2, 4), 16), r = parseInt(n.substring(4, 6), 16);
   return `rgba(${i}, ${s}, ${r}, ${e})`;
 }
-function nr(t, e, n = "*") {
+function nr(t, e, n = "*", i = !0) {
   if (t === "*") return n;
-  const i = t.split("-")[0] ?? t;
+  const s = i ? t.split("-")[0] ?? t : t;
   try {
-    return new Intl.DisplayNames([e], { type: "language" }).of(i) ?? i;
+    const r = new Intl.DisplayNames([e], { type: "language" });
+    return r.of(s) ?? r.of(t.split("-")[0] ?? t) ?? t;
   } catch {
     return t;
   }
@@ -5410,7 +5411,7 @@ function qd(t, e, n, i = "*") {
     (r, o) => Number(o.isSource) - Number(r.isSource)
   ).map((r) => ({
     value: r.id,
-    label: r.isSource ? n : r.languages.map((o) => nr(o, e, i)).join(", ")
+    label: r.isSource ? n : r.languages.map((o) => nr(o, e, i, !1)).join(", ")
   }));
 }
 function Ud(t, e = 250) {

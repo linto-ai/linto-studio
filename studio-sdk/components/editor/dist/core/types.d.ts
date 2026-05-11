@@ -42,6 +42,12 @@ export interface EditorEventMap {
     "channel:reset": {
         channelId: string;
     };
+    "watermark:display": {
+        display: boolean;
+    };
+    "watermark:pin": {
+        pinned: boolean;
+    };
     destroy: void;
 }
 export type TurnEventKey = "turn:add" | "turn:update" | "turn:remove";
@@ -97,12 +103,26 @@ export interface AudioPluginApi {
     seekTo(time: number): void;
     setSeekHandler(handler: ((time: number) => void) | null): void;
 }
+export interface WatermarkToken {
+    src: string;
+    alt?: string;
+}
+export interface WatermarkPluginApi {
+    display: Ref<boolean>;
+    pinned: Ref<boolean>;
+    content: Ref<string>;
+    frequency: Ref<number>;
+    duration: Ref<number>;
+    tokens: Ref<Record<string, WatermarkToken>>;
+    readonly: boolean;
+}
 export interface SubtitlePluginApi {
     fontSize: Ref<number>;
     isVisible: Ref<boolean>;
     isFullscreen: Ref<boolean>;
     enterFullscreen(): void;
     exitFullscreen(): void;
+    watermark?: WatermarkPluginApi;
 }
 export interface LivePartialEventData {
     text?: string;
@@ -124,6 +144,8 @@ export interface LiveFinalEventData {
     }>;
     startTime: number;
     endTime: number;
+    startDate?: number;
+    endDate?: number;
     language: string;
     translations?: Array<{
         translationId: string;
