@@ -11,9 +11,7 @@
     <template #header-actions v-if="template">
       <Chip
         :value="
-          $t(
-            `session.settings_page.visibility_${template.visibility}_label`,
-          )
+          $t(`session.settings_page.visibility_${template.visibility}_label`)
         " />
     </template>
 
@@ -128,12 +126,9 @@ export default {
           translations: c.translations ?? [],
           diarization: !!c.diarization,
           keepAudio: !!c.keepAudio,
-          profileName:
-            profile?.config?.name ?? `#${c.transcriberProfileId}`,
+          profileName: profile?.config?.name ?? `#${c.transcriberProfileId}`,
           type: profile?.config?.type ?? "",
-          languages: (profile?.config?.languages ?? []).map(
-            (l) => l.candidate,
-          ),
+          languages: (profile?.config?.languages ?? []).map((l) => l.candidate),
         }
       })
     },
@@ -201,7 +196,7 @@ h3 {
 <style lang="scss">
 .modal-session-template-info {
   .modal-body {
-    background: var(--neutral-05);
+    background: var(--neutral-0);
   }
 }
 </style>
