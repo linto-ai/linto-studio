@@ -490,9 +490,9 @@ export default {
     }
   }
 
-  &--disabled {
-    opacity: 0.7;
-  }
+  // &--disabled {
+  //   opacity: 0.7;
+  // }
 
   &--error {
     .form-field__label {

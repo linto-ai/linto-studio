@@ -752,7 +752,7 @@
       "created": "Created",
       "tags": "Topics",
       "metadata": "Metadata",
-      "template_label": "Session configuration",
+      "template_label": "Session template",
       "use_template_button": "Use this template",
       "default_title": "No title",
       "default_description": "No description",

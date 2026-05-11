@@ -59,7 +59,9 @@
         </div>
       </section>
 
-      <SecurityLevelSelector v-if="enableSecurityLevel" v-model="securityLevel" />
+      <SecurityLevelSelector
+        v-if="enableSecurityLevel"
+        v-model="securityLevel" />
 
       <!-- Channels section -->
       <section class="flex col">
@@ -208,11 +210,7 @@ export default {
       localSessionTemplates: structuredClone(this.sessionTemplates),
       selectedTemplateId: "",
       formState: "idle",
-      fields: [
-        "name",
-        "fieldDiarizationEnabled",
-        "fieldAppointment",
-      ],
+      fields: ["name", "fieldDiarizationEnabled", "fieldAppointment"],
       name: {
         ...EMPTY_FIELD,
         label: this.$i18n.t("session.create_page.name_field.label"),
@@ -550,7 +548,7 @@ export default {
           meta: {
             ...Object.fromEntries(this.fieldMetadata.value),
             ...(this.selectedTemplate
-              ? { template: this.selectedTemplate.name }
+              ? { "@template": this.selectedTemplate.name }
               : {}),
             securityLevel: this.securityLevel,
           },

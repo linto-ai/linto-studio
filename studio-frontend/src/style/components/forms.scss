@@ -161,6 +161,9 @@
     &:hover {
       cursor: pointer;
     }
+    &[disabled]:hover {
+      cursor: not-allowed;
+    }
     color: var(--text-secondary);
     margin-bottom: 0.5rem;
 
@@ -179,6 +182,10 @@
     color: var(--text-primary, #222);
     line-height: 1.2;
     margin: 0;
+  }
+
+  .form-field-checkbox[disabled] {
+    cursor: not-allowed;
   }
 
   .form-field-checkbox .form-label {

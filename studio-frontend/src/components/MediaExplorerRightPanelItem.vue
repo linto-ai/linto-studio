@@ -113,7 +113,7 @@
               v-if="canSessionInCurrentOrganization"
               variant="secondary"
               icon="plus"
-              size="sm"
+              size="xs"
               :label="$t('media_explorer.panel.use_template_button')"
               :to="{
                 name: 'conversations create',
