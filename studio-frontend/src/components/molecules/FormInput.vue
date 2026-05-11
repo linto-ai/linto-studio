@@ -18,11 +18,13 @@
         :is="code ? 'pre' : 'div'"
         v-else-if="readonly && editValue"
         class="form-field__readonly"
+        :class="{ 'form-field__readonly--fit-content': readonlyFitContent }"
         >{{ editValue }}</component
       >
       <div
         v-else-if="readonly && !editValue"
-        class="form-field__readonly empty">
+        class="form-field__readonly empty"
+        :class="{ 'form-field__readonly--fit-content': readonlyFitContent }">
         {{ $t("form_field.empty_value") }}
       </div>
       <input
@@ -128,6 +130,10 @@ export default {
       default: false,
     },
     readonly: {
+      type: Boolean,
+      default: false,
+    },
+    readonlyFitContent: {
       type: Boolean,
       default: false,
     },
@@ -301,6 +307,10 @@ export default {
 
     &.empty {
       font-style: italic;
+    }
+
+    &--fit-content {
+      flex: 0 1 auto;
     }
   }
 

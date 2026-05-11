@@ -110,7 +110,10 @@ export const sessionModelMixin = {
       return this?.session?.meta ?? {}
     },
     templateName() {
-      return this?.session?.meta?.["@template"] ?? null
+      return this?.session?.meta?.["@template"]?.name ?? null
+    },
+    templateId() {
+      return this?.session?.meta?.["@template"]?.id ?? null
     },
     displayWatermark() {
       return this?.session?.meta?.["@watermark"]?.display ?? false

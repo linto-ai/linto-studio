@@ -11,7 +11,14 @@
         name="users"
         :title="$t('session.channels_list.labels.diarization')" />
     </template>
-    <template v-if="from === 'formCreateSession'" #cell-type="{ element }">
+    <template #header-keepAudio>
+      <PhIcon
+        name="speaker-high"
+        :title="$t('session.channels_list.labels.keep_audio')" />
+    </template>
+    <template
+      v-if="from === 'formCreateSession' || from === 'templateInfo'"
+      #cell-type="{ element }">
       <img
         class="icon medium"
         :src="channelTypeImage(element)"
@@ -23,10 +30,10 @@
         :value="nameFieldFor(element).value"
         @input="onNameInput(element, $event)"
         :field="nameFieldFor(element)"
-        :readonly="from === 'sessionSettings'" />
+        :readonly="from === 'sessionSettings' || from === 'templateInfo'" />
     </template>
     <template
-      v-if="from === 'formCreateSession'"
+      v-if="from === 'formCreateSession' || from === 'templateInfo'"
       #cell-profileName="{ element }">
       {{ element.profileName || "" }}
     </template>
@@ -66,11 +73,19 @@
         {{ formatTranslations(element) }}
       </template>
     </template>
-    <template v-if="from === 'sessionSettings'" #cell-diarization="{ element }">
+    <template
+      v-if="from === 'sessionSettings' || from === 'templateInfo'"
+      #cell-diarization="{ element }">
       <Checkbox
         :value="element.diarization"
         disabled
         :id="'diarization-' + element.id" />
+    </template>
+    <template v-if="from === 'templateInfo'" #cell-keepAudio="{ element }">
+      <Checkbox
+        :value="element.keepAudio"
+        disabled
+        :id="'keepAudio-' + element.id" />
     </template>
     <template #cell-actions="{ element }">
       <Button
@@ -127,7 +142,7 @@ export default {
   computed: {
     columns() {
       const cols = []
-      if (this.from === "formCreateSession") {
+      if (this.from === "formCreateSession" || this.from === "templateInfo") {
         cols.push({
           key: "type",
           label: this.$t("session.channels_list.labels.type"),
@@ -139,7 +154,7 @@ export default {
         label: this.$t("session.channels_list.labels.name"),
         width: "1fr",
       })
-      if (this.from === "formCreateSession") {
+      if (this.from === "formCreateSession" || this.from === "templateInfo") {
         cols.push({
           key: "profileName",
           label: this.$t("session.channels_list.labels.profile_name"),
@@ -168,10 +183,15 @@ export default {
         label: this.$t("session.channels_list.labels.translations"),
         width: "auto",
       })
-      if (this.from === "sessionSettings") {
+      if (this.from === "sessionSettings" || this.from === "templateInfo") {
         cols.push({ key: "diarization", label: "", width: "auto" })
       }
-      cols.push({ key: "actions", label: "", width: "auto" })
+      if (this.from === "templateInfo") {
+        cols.push({ key: "keepAudio", label: "", width: "auto" })
+      }
+      if (this.from !== "templateInfo") {
+        cols.push({ key: "actions", label: "", width: "auto" })
+      }
       return cols
     },
   },

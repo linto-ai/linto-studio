@@ -110,6 +110,13 @@
           <div class="template-row">
             <span class="template-name">{{ templateName }}</span>
             <Button
+              v-if="templateId"
+              variant="secondary"
+              icon="eye"
+              size="xs"
+              :label="$t('media_explorer.panel.show_template_button')"
+              @click="showTemplateInfo = true" />
+            <Button
               v-if="canSessionInCurrentOrganization"
               variant="secondary"
               icon="plus"
@@ -118,9 +125,14 @@
               :to="{
                 name: 'conversations create',
                 params: { organizationId: mediaOrganizationId },
-                query: { template: templateName },
+                query: { template: templateId },
               }" />
           </div>
+          <ModalSessionTemplateInfo
+            v-if="templateId"
+            v-model="showTemplateInfo"
+            :templateId="templateId"
+            :organizationId="mediaOrganizationId" />
         </div>
 
         <!-- Media metadata -->
@@ -211,6 +223,7 @@ import InputSelector from "@/components/atoms/InputSelector.vue"
 import ChipTag from "@/components/atoms/ChipTag.vue"
 import Button from "@/components/atoms/Button.vue"
 import ModalDeleteConversations from "./ModalDeleteConversations.vue"
+import ModalSessionTemplateInfo from "./ModalSessionTemplateInfo.vue"
 import { mediaExplorerRightPanelMixin } from "@/mixins/mediaExplorerRightPanel.js"
 import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
 import FormInput from "@/components/molecules/FormInput.vue"
@@ -232,6 +245,7 @@ export default {
     ChipTag,
     Button,
     ModalDeleteConversations,
+    ModalSessionTemplateInfo,
     FormInput,
     ConversationShareMultiple,
     FolderSelector,
@@ -249,6 +263,7 @@ export default {
   data() {
     return {
       showDeleteModal: false,
+      showTemplateInfo: false,
       downloadLoading: false,
       duplicateLoading: false,
       titleField: {
@@ -285,7 +300,10 @@ export default {
         .filter((tag) => !!tag)
     },
     templateName() {
-      return this.reactiveSelectedMedia?.metadata?.template ?? null
+      return this.reactiveSelectedMedia?.metadata?.template?.name ?? null
+    },
+    templateId() {
+      return this.reactiveSelectedMedia?.metadata?.template?.id ?? null
     },
     mediaOrganizationId() {
       return (

@@ -748,6 +748,7 @@
       "metadata": "Métadonnées",
       "template_label": "Template de la session",
       "use_template_button": "Utiliser ce modèle",
+      "show_template_button": "Voir",
       "default_title": "Sans titre",
       "default_description": "Aucune description",
       "selected_count": "{count} médias sélectionnés",
@@ -787,7 +788,8 @@
   "modal": {
     "apply": "Appliquer",
     "cancel": "Annuler",
-    "delete": "Supprimer"
+    "delete": "Supprimer",
+    "close": "Fermer"
   },
   "modal_create_organization": {
     "title": "Créer une organisation",
@@ -1155,7 +1157,8 @@
         "transcriber_status": "Statut du transcriber",
         "type": "Type",
         "translations": "Traductions",
-        "diarization": "Séparation des locuteurs"
+        "diarization": "Séparation des locuteurs",
+        "keep_audio": "Conserver l'audio"
       },
       "modal_add": {
         "main_button": "Ajouter 1 canal | Ajouter {count} canaux",
@@ -1331,6 +1334,13 @@
       "title": "Un mot de passe est requis pour accéder à la transcription",
       "password_label": "Mot de passe",
       "apply": "Continuer"
+    },
+    "template_info": {
+      "title": "Template de la session",
+      "title_with_name": "Template : {name}",
+      "behavior_title": "Comportement",
+      "channels_title": "Canaux ({count})",
+      "error_not_found": "Ce template n'est plus disponible."
     }
   },
   "session_kpi": {

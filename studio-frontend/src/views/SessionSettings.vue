@@ -35,16 +35,23 @@
               {{ $t("session.settings_page.global_informations_title") }}
             </h2>
             <div v-if="templateName" class="form-field flex col">
-              <!-- <label class="form-label">
-                {{  }}
-              </label>
-              <span>{{ templateName }}</span> -->
               <FormInput
                 :field="{
                   label: $t('media_explorer.panel.template_label'),
                   value: templateName,
                 }"
-                readonly />
+                readonly
+                readonlyFitContent>
+                <template v-slot:content-after-input>
+                  <Button
+                    v-if="templateId"
+                    variant="secondary"
+                    icon="eye"
+                    size="sm"
+                    :label="$t('media_explorer.panel.show_template_button')"
+                    @click="showTemplateInfo = true" />
+                </template>
+              </FormInput>
             </div>
             <FormInput :field="fieldPublicLink">
               <template v-slot:content-after-input>
@@ -263,6 +270,12 @@
         @on-close="closeModalDeleteSession"
         @on-confirm="stopSession" />
 
+      <ModalSessionTemplateInfo
+        v-if="templateId"
+        v-model="showTemplateInfo"
+        :templateId="templateId"
+        :organizationId="organizationId" />
+
       <ModalEditSessionAlias
         :organizationId="organizationId"
         :sessionId="session.id"
@@ -302,6 +315,7 @@ import FormRadio from "@/components/molecules/FormRadio.vue"
 import SessionChannelsTable from "@/components/SessionChannelsTable.vue"
 import AppointmentSelector from "@/components/AppointmentSelector.vue"
 import ModalForceDeleteSession from "@/components/ModalForceDeleteSession.vue"
+import ModalSessionTemplateInfo from "@/components/ModalSessionTemplateInfo.vue"
 import MetadataList from "@/components/MetadataList.vue"
 import SessionHeader from "@/components/SessionHeader.vue"
 import ModalEditSessionAlias from "@/components/ModalEditSessionAlias.vue"
@@ -419,6 +433,7 @@ export default {
       linkHasBeenCopied: false,
       showModalDeleteSession: false,
       showModalEditSessionAlias: false,
+      showTemplateInfo: false,
       formState: "idle",
       localChannels: [],
       channelsHasChanged: false,
@@ -672,6 +687,7 @@ export default {
     SessionChannelsTable,
     AppointmentSelector,
     ModalForceDeleteSession,
+    ModalSessionTemplateInfo,
     MetadataList,
     SessionHeader,
     ModalEditSessionAlias,

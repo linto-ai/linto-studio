@@ -190,7 +190,7 @@ export default {
       type: Object, // { sessionTemplates: [...] totalItems: number }
       Required: true,
     },
-    preloadTemplateName: {
+    preloadTemplateId: {
       type: String,
       default: null,
     },
@@ -304,7 +304,7 @@ export default {
     this.applyPreloadedTemplate()
   },
   watch: {
-    preloadTemplateName() {
+    preloadTemplateId() {
       this.applyPreloadedTemplate()
     },
     selectedProfiles() {
@@ -366,10 +366,10 @@ export default {
 
   methods: {
     applyPreloadedTemplate() {
-      if (!this.preloadTemplateName) return
+      if (!this.preloadTemplateId) return
       if (this.selectedTemplateId) return
       const match = this.localSessionTemplates.sessionTemplates.find(
-        (t) => t.name === this.preloadTemplateName,
+        (t) => t.id === this.preloadTemplateId,
       )
       if (match) this.selectedTemplateId = match.id
     },
@@ -548,7 +548,12 @@ export default {
           meta: {
             ...Object.fromEntries(this.fieldMetadata.value),
             ...(this.selectedTemplate
-              ? { "@template": this.selectedTemplate.name }
+              ? {
+                  "@template": {
+                    id: this.selectedTemplate.id,
+                    name: this.selectedTemplate.name,
+                  },
+                }
               : {}),
             securityLevel: this.securityLevel,
           },

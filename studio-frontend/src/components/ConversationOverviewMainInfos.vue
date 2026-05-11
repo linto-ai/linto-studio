@@ -23,6 +23,13 @@
         <div class="flex align-center gap-small">
           <span>{{ templateName }}</span>
           <Button
+            v-if="templateId"
+            variant="secondary"
+            icon="eye"
+            size="sm"
+            :label="$t('media_explorer.panel.show_template_button')"
+            @click="showTemplateInfo = true" />
+          <Button
             v-if="canSessionInCurrentOrganization"
             variant="secondary"
             icon="plus"
@@ -31,9 +38,14 @@
             :to="{
               name: 'conversations create',
               params: { organizationId: organizationId },
-              query: { template: templateName },
+              query: { template: templateId },
             }" />
         </div>
+        <ModalSessionTemplateInfo
+          v-if="templateId"
+          v-model="showTemplateInfo"
+          :templateId="templateId"
+          :organizationId="organizationId" />
       </div>
       <Button
         v-if="canEdit"
@@ -56,9 +68,11 @@ import { conversationModelMixin } from "@/mixins/conversationModel.js"
 import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
 
 import FormInput from "@/components/molecules/FormInput.vue"
+import ModalSessionTemplateInfo from "@/components/ModalSessionTemplateInfo.vue"
 
 export default {
   mixins: [formsMixin, conversationModelMixin, organizationPermissionsMixin],
+  components: { ModalSessionTemplateInfo },
   props: {
     conversation: {
       type: Object,
@@ -93,18 +107,25 @@ export default {
         ),
       },
       fields: ["nameField", "descriptionField"],
+      showTemplateInfo: false,
     }
   },
   mounted() {
     this.initFields()
   },
   computed: {
-    templateName() {
+    template() {
       return (
         this.conversation?.metadata?.template ??
         this.rootConversation?.metadata?.template ??
         null
       )
+    },
+    templateName() {
+      return this.template?.name ?? null
+    },
+    templateId() {
+      return this.template?.id ?? null
     },
     organizationId() {
       return (

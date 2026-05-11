@@ -107,7 +107,7 @@
         :sessionTemplates="sessionTemplates"
         :transcriberProfiles="transcriberProfiles"
         :currentOrganizationScope="currentOrganizationScope"
-        :preloadTemplateName="preloadTemplateName" />
+        :preloadTemplateId="preloadTemplateId" />
     </div>
   </LayoutV2>
 </template>
@@ -178,7 +178,7 @@ export default {
       return
     }
     const sessionTab = this.mainTabs.find((tab) => tab.name === "session")
-    if (this.preloadTemplateName && sessionTab) {
+    if (this.preloadTemplateId && sessionTab) {
       this.currentTab = sessionTab.name
     } else {
       this.currentTab = this.mainTabs[0].name
@@ -206,7 +206,7 @@ export default {
 
       return enableSession && this.canSessionInCurrentOrganization
     },
-    preloadTemplateName() {
+    preloadTemplateId() {
       return this.$route.query.template ?? null
     },
     loadingSessionData() {
