@@ -59,7 +59,9 @@
         </div>
       </section>
 
-      <SecurityLevelSelector v-if="enableSecurityLevel" v-model="securityLevel" />
+      <SecurityLevelSelector
+        v-if="enableSecurityLevel"
+        v-model="securityLevel" />
 
       <!-- Channels section -->
       <section class="flex col">
@@ -188,6 +190,10 @@ export default {
       type: Object, // { sessionTemplates: [...] totalItems: number }
       Required: true,
     },
+    preloadTemplateId: {
+      type: String,
+      default: null,
+    },
   },
   data() {
     let defaultMetadata = []
@@ -204,11 +210,7 @@ export default {
       localSessionTemplates: structuredClone(this.sessionTemplates),
       selectedTemplateId: "",
       formState: "idle",
-      fields: [
-        "name",
-        "fieldDiarizationEnabled",
-        "fieldAppointment",
-      ],
+      fields: ["name", "fieldDiarizationEnabled", "fieldAppointment"],
       name: {
         ...EMPTY_FIELD,
         label: this.$i18n.t("session.create_page.name_field.label"),
@@ -298,8 +300,13 @@ export default {
       formError: null,
     }
   },
-  mounted() {},
+  mounted() {
+    this.applyPreloadedTemplate()
+  },
   watch: {
+    preloadTemplateId() {
+      this.applyPreloadedTemplate()
+    },
     selectedProfiles() {
       this.channelsError = null
     },
@@ -358,6 +365,14 @@ export default {
   },
 
   methods: {
+    applyPreloadedTemplate() {
+      if (!this.preloadTemplateId) return
+      if (this.selectedTemplateId) return
+      const match = this.localSessionTemplates.sessionTemplates.find(
+        (t) => t.id === this.preloadTemplateId,
+      )
+      if (match) this.selectedTemplateId = match.id
+    },
     applyTemplate(template) {
       let nameToApply
       let channelsToApply
@@ -532,6 +547,14 @@ export default {
           })),
           meta: {
             ...Object.fromEntries(this.fieldMetadata.value),
+            ...(this.selectedTemplate
+              ? {
+                  "@template": {
+                    id: this.selectedTemplate.id,
+                    name: this.selectedTemplate.name,
+                  },
+                }
+              : {}),
             securityLevel: this.securityLevel,
           },
           scheduleOn: startDateTime,

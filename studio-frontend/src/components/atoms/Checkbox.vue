@@ -100,6 +100,7 @@ export default {
   input:disabled + label {
     background-color: var(--neutral-20);
     border: 1px solid var(--neutral-40);
+    cursor: not-allowed;
   }
 
   &.indeterminate label {

@@ -752,6 +752,9 @@
       "created": "Created",
       "tags": "Topics",
       "metadata": "Metadata",
+      "template_label": "Session template",
+      "use_template_button": "Use this template",
+      "show_template_button": "Show",
       "default_title": "No title",
       "default_description": "No description",
       "selected_count": "{count} media selected",
@@ -791,7 +794,8 @@
   "modal": {
     "apply": "Apply",
     "cancel": "Cancel",
-    "delete": "Delete"
+    "delete": "Delete",
+    "close": "Close"
   },
   "modal_create_organization": {
     "title": "Create new organisation",
@@ -1159,7 +1163,8 @@
         "transcriber_status": "Transcriber status",
         "type": "Type",
         "translations": "Translations",
-        "diarization": "Diarization"
+        "diarization": "Diarization",
+        "keep_audio": "Keep audio"
       },
       "modal_add": {
         "main_button": "Create 1 channel | Create {count} channels",
@@ -1335,6 +1340,13 @@
       "title": "A password is required to access the live transcription",
       "password_label": "Password",
       "apply": "Continue"
+    },
+    "template_info": {
+      "title": "Session template",
+      "title_with_name": "Template: {name}",
+      "behavior_title": "Behavior",
+      "channels_title": "Channels ({count})",
+      "error_not_found": "This template is no longer available."
     }
   },
   "session_kpi": {
@@ -1444,7 +1456,7 @@
   "share_menu": {
     "invite_new_user": "Invite a new user",
     "email_placeholder": "Email",
-    "button": "share",
+    "button": "Share",
     "conversation_error_title": "Some conversations cannot be shared",
     "external_members": "External users",
     "inscription_disabled": "Registration and invitations are deactivated on the platform",

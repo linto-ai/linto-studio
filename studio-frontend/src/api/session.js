@@ -132,6 +132,19 @@ export async function apiGetSessionTemplates(organizationScope, notif) {
   return getSessionTemplates?.data ?? { sessionTemplates: [], totalItems: 0 }
 }
 
+export async function apiGetSessionTemplate(
+  organizationScope,
+  templateId,
+  notif,
+) {
+  return await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/templates/${templateId}`,
+    { method: "get" },
+    {},
+    notif,
+  )
+}
+
 export async function apiCreateSessionTemplate(organizationScope, data, notif) {
   const createSessionTemplate = await sendRequest(
     `${BASE_API}/organizations/${organizationScope}/templates`,

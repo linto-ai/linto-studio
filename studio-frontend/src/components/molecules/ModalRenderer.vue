@@ -204,7 +204,10 @@ export default {
     // Remove keydown listener
     document.removeEventListener("keydown", this.handleKeyDown)
     // Restore focus to previously focused element
-    if (this.previouslyFocused && typeof this.previouslyFocused.focus === "function") {
+    if (
+      this.previouslyFocused &&
+      typeof this.previouslyFocused.focus === "function"
+    ) {
       this.previouslyFocused.focus()
     }
   },
@@ -215,7 +218,7 @@ export default {
       const modal = this.$refs.modalContent
       if (!modal) return []
       return Array.from(modal.querySelectorAll(selector)).filter(
-        (el) => el.offsetParent !== null
+        (el) => el.offsetParent !== null,
       )
     },
     focusFirstElement() {
@@ -435,6 +438,7 @@ now, let's copy them over.
 
 .modal-body {
   border-top: 1px solid var(--neutral-20);
+  border-bottom: 1px solid var(--neutral-20);
   background: var(--primary-soft);
   padding: 1em;
   overflow-y: auto;
