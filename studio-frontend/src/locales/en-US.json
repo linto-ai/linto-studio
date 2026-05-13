@@ -355,6 +355,14 @@
       "share": "Share",
       "write": "Write"
     },
+    "members_right_desc": {
+      "none": "Cannot access the conversation",
+      "read": "Can view the conversation",
+      "comment": "Can view and comment",
+      "write": "Can edit the conversation",
+      "share": "Can edit and share with other users",
+      "full_rights": "Can do anything, including deleting the conversation"
+    },
     "security_level_txt": {
       "0": "Publicly available",
       "1": "Commission use",
@@ -750,7 +758,7 @@
       "description_updated": "Description updated",
       "duration": "Duration",
       "created": "Created",
-      "tags": "Topics",
+      "tags": "Topic assignment",
       "metadata": "Metadata",
       "template_label": "Session template",
       "use_template_button": "Use this template",
@@ -1463,9 +1471,26 @@
     "invite_user_button": "Invite user",
     "no_conversation_selected_content": "Please select at least one media to share.",
     "no_conversation_selected_title": "No media selected",
-    "organization_members": "organisation members",
+    "organization_members": "Organization members",
     "user_has_been_invited": "User has been invited",
-    "user_right_updated": "User rights have been updated"
+    "user_right_updated": "User rights have been updated",
+    "search_label": "Search a user or invite by email",
+    "search_placeholder": "mail@example.com",
+    "default_right_label": "Default right",
+    "exceptions_label": "Exceptions",
+    "no_exceptions": "No exceptions: every member uses the default right.",
+    "show_other_members": "Show other members ({count})",
+    "show_admins": "Show administrators and managers ({count})",
+    "all_members_label": "All members",
+    "invite_email_action": "Invite {email} by email",
+    "badge_org": "Organization",
+    "badge_default": "Default",
+    "reset_to_default": "Reset to default right",
+    "no_search_results": "No user found",
+    "column_user": "User",
+    "column_status": "Status",
+    "column_right": "Right",
+    "column_actions": ""
   },
   "tags": {
     "add_tag_to_conversation": "Add tag",

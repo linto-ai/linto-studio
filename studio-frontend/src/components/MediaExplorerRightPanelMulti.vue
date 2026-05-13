@@ -118,9 +118,6 @@
         {{ $t("media_explorer.panel.danger_zone") }}
       </h4>
       <div class="actions-container">
-        <ConversationShareMultiple
-          :selectedConversations="selectedMedias"
-          :currentOrganizationScope="currentOrganizationScope" />
         <Button
           @click="handleDelete"
           :label="$t('media_explorer.delete')"
@@ -149,9 +146,7 @@ import Avatar from "@/components/atoms/Avatar.vue"
 import InputSelector from "@/components/atoms/InputSelector.vue"
 import Tooltip from "@/components/atoms/Tooltip.vue"
 import ModalDeleteConversations from "./ModalDeleteConversations.vue"
-import ConversationShareMultiple from "./ConversationShareMultiple.vue"
 import { mediaExplorerRightPanelMixin } from "@/mixins/mediaExplorerRightPanel.js"
-import ChipTag from "./atoms/ChipTag.vue"
 import FolderSelector from "./FolderSelector.vue"
 
 export default {
@@ -162,7 +157,6 @@ export default {
     InputSelector,
     Tooltip,
     ModalDeleteConversations,
-    ConversationShareMultiple,
     FolderSelector,
   },
   props: {
@@ -450,13 +444,6 @@ export default {
   margin: 0;
 }
 
-.section-content {
-  margin: 0;
-  font-size: 0.95rem;
-  color: var(--text-primary, #000);
-  line-height: 1.4;
-}
-
 .actions-container {
   display: flex;
   gap: 0.5rem;
@@ -542,35 +529,10 @@ export default {
   gap: 0.75rem;
 }
 
-.actions-title {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
-}
-
 .bulk-tag-management {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-}
-
-.common-tags {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.common-tags-title {
-  margin: 0;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-.tags-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
 }
 
 .no-common-tags {

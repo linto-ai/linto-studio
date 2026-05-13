@@ -356,6 +356,14 @@
       "share": "Partager",
       "write": "Écriture"
     },
+    "members_right_desc": {
+      "none": "Pas d'accès à la conversation",
+      "read": "Peut consulter la conversation",
+      "comment": "Peut consulter et commenter",
+      "write": "Peut éditer la conversation",
+      "share": "Peut éditer et partager avec d'autres utilisateurs",
+      "full_rights": "Peut tout faire, y compris supprimer la conversation"
+    },
     "security_level_txt": {
       "0": "Diffusion publique",
       "1": "Usage commission",
@@ -744,7 +752,7 @@
       "description_updated": "Description mise à jour",
       "duration": "Durée",
       "created": "Créé le",
-      "tags": "Thématiques",
+      "tags": "Assignation de thématiques",
       "metadata": "Métadonnées",
       "template_label": "Template de la session",
       "use_template_button": "Utiliser ce modèle",
@@ -1459,7 +1467,24 @@
     "no_conversation_selected_title": "Aucun média sélectionné",
     "organization_members": "Membres de l'organisation",
     "user_has_been_invited": "L'utilisateur a été invité",
-    "user_right_updated": "Les droits de l'utilisateur ont été mis à jour"
+    "user_right_updated": "Les droits de l'utilisateur ont été mis à jour",
+    "search_label": "Rechercher un utilisateur ou inviter par email",
+    "search_placeholder": "mail@example.com",
+    "default_right_label": "Droit par défaut",
+    "exceptions_label": "Exceptions",
+    "no_exceptions": "Aucune exception : tous les membres suivent le droit par défaut.",
+    "show_other_members": "Voir les autres membres ({count})",
+    "show_admins": "Voir les administrateurs et gestionnaires ({count})",
+    "all_members_label": "Tous les membres",
+    "invite_email_action": "Inviter {email} par email",
+    "badge_org": "Organisation",
+    "badge_default": "Défaut",
+    "reset_to_default": "Réinitialiser au droit par défaut",
+    "no_search_results": "Aucun utilisateur trouvé",
+    "column_user": "Utilisateur",
+    "column_status": "Statut",
+    "column_right": "Droit",
+    "column_actions": ""
   },
   "tags": {
     "add_tag_to_conversation": "Ajouter le tag",
