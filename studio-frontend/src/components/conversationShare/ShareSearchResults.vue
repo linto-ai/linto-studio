@@ -40,13 +40,17 @@
         </div>
       </template>
       <template #cell-user="{ element }">
-        <UserInfoInline :user="element" :user-id="element._id" />
+        <UserInfoInline
+          :user="element"
+          :user-id="element._id"
+          :role="element.role" />
       </template>
       <template #cell-right="{ element }">
         <Loading v-if="usersLoading[element._id]" />
         <RightSelect
           v-else
           :value="element.effectiveRight"
+          :readonly="element.isPrivileged"
           @input="$emit('update:userRight', { user: element, right: $event })" />
       </template>
     </GenericTable>
@@ -71,8 +75,11 @@ import Loading from "@/components/atoms/Loading.vue"
 import Button from "@/components/atoms/Button.vue"
 import Chip from "@/components/atoms/Chip.vue"
 import RightSelect from "./RightSelect.vue"
+import { ORGANIZATION_ROLES } from "@/const/organizationRoles.js"
+import { isValidEmail } from "@/tools/isValidEmail.js"
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const ADMIN_RIGHT = 31
+const MAINTAINER_RIGHT = 23
 
 export default {
   name: "ShareSearchResults",
@@ -106,10 +113,13 @@ export default {
       return this.searchValue.trim()
     },
     isEmail() {
-      return EMAIL_RE.test(this.trimmedSearch)
+      return isValidEmail(this.trimmedSearch)
     },
     orgUserIds() {
       return new Set(this.orgUsers.map((u) => u._id))
+    },
+    orgUserRoleById() {
+      return new Map(this.orgUsers.map((u) => [u._id, u.role]))
     },
     sharedById() {
       return new Map(this.sharedUsers.map((u) => [u._id, u]))
@@ -125,13 +135,31 @@ export default {
       return this.results.map((user) => {
         const shared = this.sharedById.get(user._id)
         const inOrg = this.orgUserIds.has(user._id)
+        const role = this.orgUserRoleById.get(user._id) ?? null
+        const isPrivileged = role >= ORGANIZATION_ROLES.MAINTAINER
         const isException = shared && shared.right !== this.defaultRight
-        const atDefault = inOrg && !isException
+        const atDefault = inOrg && !isException && !isPrivileged
         let effectiveRight
-        if (shared) effectiveRight = shared.right
-        else if (inOrg) effectiveRight = this.defaultRight
-        else effectiveRight = 0
-        return { ...user, effectiveRight, inOrg, atDefault }
+        if (isPrivileged) {
+          effectiveRight =
+            role === ORGANIZATION_ROLES.ADMINISTRATOR
+              ? ADMIN_RIGHT
+              : MAINTAINER_RIGHT
+        } else if (shared) {
+          effectiveRight = shared.right
+        } else if (inOrg) {
+          effectiveRight = this.defaultRight
+        } else {
+          effectiveRight = 0
+        }
+        return {
+          ...user,
+          role,
+          effectiveRight,
+          inOrg,
+          atDefault,
+          isPrivileged,
+        }
       })
     },
     showInviteRow() {

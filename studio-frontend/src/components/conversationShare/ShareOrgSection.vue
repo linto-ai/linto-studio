@@ -29,7 +29,10 @@
         sortListDirection=""
         sortListKey="">
         <template #cell-user="{ element }">
-          <UserInfoInline :user="element" :user-id="element._id" />
+          <UserInfoInline
+            :user="element"
+            :user-id="element._id"
+            :role="element.role" />
         </template>
         <template #cell-right="{ element }">
           <Loading v-if="usersLoading[element._id]" />
@@ -59,7 +62,9 @@
     <details class="share-org__all" v-if="membersAtDefault.length > 0">
       <summary class="share-org__all-summary">
         {{
-          $t("share_menu.show_other_members", { count: membersAtDefault.length })
+          $t("share_menu.show_other_members", {
+            count: membersAtDefault.length,
+          })
         }}
       </summary>
       <GenericTable
@@ -68,7 +73,10 @@
         sortListDirection=""
         sortListKey="">
         <template #cell-user="{ element }">
-          <UserInfoInline :user="element" :user-id="element._id" />
+          <UserInfoInline
+            :user="element"
+            :user-id="element._id"
+            :role="element.role" />
         </template>
         <template #cell-right="{ element }">
           <Loading v-if="usersLoading[element._id]" />
@@ -82,6 +90,27 @@
         </template>
       </GenericTable>
     </details>
+
+    <details class="share-org__all" v-if="admins.length > 0">
+      <summary class="share-org__all-summary">
+        {{ $t("share_menu.show_admins", { count: admins.length }) }}
+      </summary>
+      <GenericTable
+        :columns="allMembersColumns"
+        :content="adminsWithForcedRight"
+        sortListDirection=""
+        sortListKey="">
+        <template #cell-user="{ element }">
+          <UserInfoInline
+            :user="element"
+            :user-id="element._id"
+            :role="element.role" />
+        </template>
+        <template #cell-right="{ element }">
+          <RightSelect :value="element.right" readonly />
+        </template>
+      </GenericTable>
+    </details>
   </section>
 </template>
 
@@ -92,8 +121,12 @@ import FormInput from "@/components/molecules/FormInput.vue"
 import Loading from "@/components/atoms/Loading.vue"
 import Button from "@/components/atoms/Button.vue"
 import RightSelect from "./RightSelect.vue"
+import { ORGANIZATION_ROLES } from "@/const/organizationRoles.js"
 
 const MULTIPLE_VALUE = -1
+
+const ADMIN_RIGHT = 31
+const MAINTAINER_RIGHT = 23
 
 export default {
   name: "ShareOrgSection",
@@ -109,6 +142,7 @@ export default {
     defaultRight: { type: Number, required: true },
     members: { type: Array, required: true },
     exceptions: { type: Array, required: true },
+    admins: { type: Array, default: () => [] },
     usersLoading: { type: Object, default: () => ({}) },
   },
   data() {
@@ -121,6 +155,15 @@ export default {
     membersAtDefault() {
       const exceptionIds = new Set(this.exceptions.map((u) => u._id))
       return this.members.filter((u) => !exceptionIds.has(u._id))
+    },
+    adminsWithForcedRight() {
+      return this.admins.map((u) => ({
+        ...u,
+        right:
+          u.role === ORGANIZATION_ROLES.ADMINISTRATOR
+            ? ADMIN_RIGHT
+            : MAINTAINER_RIGHT,
+      }))
     },
     columns() {
       return [
@@ -195,7 +238,7 @@ export default {
 
   &__all {
     //border-top: 1px solid var(--neutral-20);
-    padding-top: 0.75rem;
+    //padding-top: 0.75rem;
   }
 
   &__all-summary {

@@ -402,12 +402,6 @@ export default {
   height: 100%;
   min-width: 400px;
   max-width: 800px;
-
-  .button-group-right {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
 }
 
 .resize-handle {
@@ -437,28 +431,12 @@ export default {
   background: transparent;
 }
 
-// .panel-header {
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   padding: 0 0.5rem;
-//   border: var(--border-block, 1px solid var(--neutral-30));
-//   background-color: var(--primary-soft);
-//   margin: 0.5em;
-//   height: 50px;
-// }
-
 .panel-header {
   // border-bottom: var(--border-block);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   background-color: var(--primary-soft);
-}
-
-.panel-header h3 {
-  padding: 0;
-  //padding-left: 0.5rem;
 }
 
 .panel-header-actions {
@@ -469,13 +447,6 @@ export default {
   margin-bottom: 0px;
   // padding: 2px 0.5em;
   //overflow: auto !important;
-}
-
-.panel-title {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-primary, #000);
 }
 
 .media-explorer-right-panel {

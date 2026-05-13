@@ -514,13 +514,6 @@ export default {
   margin: 0;
 }
 
-.section-content {
-  margin: 0;
-  font-size: 0.95rem;
-  color: var(--text-primary, #000);
-  line-height: 1.4;
-}
-
 .tags-container {
   display: flex;
   flex-wrap: wrap;
@@ -537,33 +530,6 @@ export default {
   font-size: 0.875rem;
   color: var(--text-secondary, #666);
   font-style: italic;
-}
-
-.metadata-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.metadata-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  padding: 0.5rem;
-  background-color: var(--background-tertiary, #f0f0f0);
-  border-radius: var(--border-radius-sm, 4px);
-}
-
-.metadata-key {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text-secondary, #666);
-}
-
-.metadata-value {
-  font-size: 0.9rem;
-  color: var(--text-primary, #000);
-  word-break: break-word;
 }
 
 .actions-container {

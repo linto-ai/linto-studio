@@ -45,6 +45,7 @@
           :defaultRight="defaultRight"
           :members="orgMembers"
           :exceptions="orgExceptions"
+          :admins="orgAdmins"
           :usersLoading="usersLoading"
           @update:defaultRight="onDefaultRightUpdate"
           @update:userRight="onUserRightUpdate"
@@ -76,6 +77,7 @@ import { indexConversationRightByUsers } from "@/tools/indexConversationRightByU
 
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { convRoleMixin } from "@/mixins/convRole.js"
+import { ORGANIZATION_ROLES } from "@/const/organizationRoles.js"
 
 import Loading from "@/components/atoms/Loading.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
@@ -112,6 +114,12 @@ export default {
   },
   computed: {
     ...mapGetters("userInfos", { user: "getUserInfos" }),
+    ...mapGetters("organizations", {
+      orgUsers: "getCurrentOrganizationUsers",
+    }),
+    orgUserRoleById() {
+      return new Map(this.orgUsers.map((u) => [u._id, u.role]))
+    },
     normalizedConversations() {
       if (Array.isArray(this.selectedConversations)) {
         return this.selectedConversations.filter(Boolean)
@@ -129,8 +137,21 @@ export default {
       const first = values[0]
       return values.every((v) => v === first) ? first : MULTIPLE_VALUE
     },
+    orgMembersWithRole() {
+      return this.userRights.organization_members.map((u) => ({
+        ...u,
+        role: this.orgUserRoleById.get(u._id) ?? null,
+      }))
+    },
+    orgAdmins() {
+      return this.orgMembersWithRole.filter(
+        (u) => u.role >= ORGANIZATION_ROLES.MAINTAINER,
+      )
+    },
     orgMembers() {
-      return this.userRights.organization_members
+      return this.orgMembersWithRole.filter(
+        (u) => u.role == null || u.role < ORGANIZATION_ROLES.MAINTAINER,
+      )
     },
     orgExceptions() {
       return this.orgMembers.filter((u) => u.right !== this.defaultRight)
@@ -142,6 +163,7 @@ export default {
       return {
         type: "search",
         placeholder: this.$t("share_menu.search_placeholder"),
+        label: this.$t("share_menu.search_label"),
       }
     },
     sharedUsers() {
