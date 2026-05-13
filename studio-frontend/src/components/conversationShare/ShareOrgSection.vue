@@ -196,6 +196,11 @@ export default {
   flex-direction: column;
   gap: 1rem;
 
+  border-radius: 4px;
+  padding: 0.5rem;
+  border: 1px solid var(--neutral-20);
+  box-shadow: var(--shadow-1);
+
   &__header {
     display: flex;
     flex-direction: column;

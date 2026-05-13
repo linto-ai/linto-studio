@@ -20,7 +20,9 @@
           v-else
           :value="element.right"
           :withMultiple="element.right === -1"
-          @input="$emit('update:userRight', { user: element, right: $event })" />
+          @input="
+            $emit('update:userRight', { user: element, right: $event })
+          " />
       </template>
       <template #cell-actions="{ element }">
         <Button
@@ -52,7 +54,11 @@ export default {
     columns() {
       return [
         { key: "user", label: this.$t("share_menu.column_user"), width: "1fr" },
-        { key: "right", label: this.$t("share_menu.column_right"), width: "auto" },
+        {
+          key: "right",
+          label: this.$t("share_menu.column_right"),
+          width: "auto",
+        },
         { key: "actions", label: "", width: "auto" },
       ]
     },
@@ -65,6 +71,11 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+
+  border-radius: 4px;
+  padding: 0.5rem;
+  border: 1px solid var(--neutral-20);
+  box-shadow: var(--shadow-1);
 
   &__title {
     margin: 0;
