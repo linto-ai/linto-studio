@@ -14,50 +14,61 @@
       <!-- Header -->
 
       <header class="panel-header">
-        <div class="panel-header-title flex align-center">
-          <h3 class="panel-title">
-            {{
-              isMultiMode
-                ? $t("media_explorer.panel.selected_count", {
-                    count: selectedMedias.length,
-                  })
-                : $t("media_explorer.panel.overview")
-            }}
-          </h3>
-          <Button icon="x" variant="transparent" @click="close" />
-        </div>
-
-        <div class="flex panel-header-actions" v-if="!isMultiMode">
-          <!-- Actions for single media (edition etc...)-->
-          <div class="button-group" ref="panelActions">
-            <Button
-              v-for="action in singleMediaActions"
-              :key="action.id"
-              :to="action.to"
-              :label="action.label"
-              :icon="action.icon"
-              size="sm"
-              variant="secondary"
-              :disabled="action.disabled"
-              :color="action.color || 'primary'"
-              @click="handleActionClick(action)" />
-          </div>
+        <div class="flex align-center">
+          <Tabs
+            v-if="shouldShowPanel"
+            :tabs="tabs"
+            :value="activeTab"
+            variant="secondary"
+            @input="activeTab = $event"
+            class="panel-tabs flex1" />
+          <Button
+            icon="x"
+            variant="transparent"
+            @click="close"
+            class="small-margin-right" />
         </div>
       </header>
 
-      <!-- Multi-selection mode -->
-      <MediaExplorerRightPanelMulti
-        v-if="isMultiMode"
-        :selected-medias="selectedMedias"
-        :selected-media-ids="selectedMediaIds"
-        @update:selectedMediaIds="$emit('update:selectedMediaIds', $event)" />
+      <div
+        class="flex panel-header-actions"
+        v-if="!isMultiMode && activeTab === 'overview'">
+        <!-- Actions for single media (edition etc...)-->
+        <div class="button-group" ref="panelActions">
+          <Button
+            v-for="action in singleMediaActions"
+            :key="action.id"
+            :to="action.to"
+            :label="action.label"
+            :icon="action.icon"
+            size="xs"
+            variant="secondary"
+            :disabled="action.disabled"
+            :color="action.color || 'primary'"
+            @click="handleActionClick(action)" />
+        </div>
+      </div>
 
-      <!-- Single media mode -->
-      <MediaExplorerRightPanelItem
-        v-else-if="selectedMediaForOverview"
-        :selectedMedia="selectedMediaForOverview"
-        :selectedMedias="selectedMedias"
-        @clear-selection="$emit('update:selectedMediaIds', [])" />
+      <template v-if="activeTab === 'overview'">
+        <!-- Multi-selection mode -->
+        <MediaExplorerRightPanelMulti
+          v-if="isMultiMode"
+          :selected-medias="selectedMedias"
+          :selected-media-ids="selectedMediaIds"
+          @update:selectedMediaIds="$emit('update:selectedMediaIds', $event)" />
+
+        <!-- Single media mode -->
+        <MediaExplorerRightPanelItem
+          v-else-if="selectedMediaForOverview"
+          :selectedMedia="selectedMediaForOverview"
+          :selectedMedias="selectedMedias"
+          @clear-selection="$emit('update:selectedMediaIds', [])" />
+      </template>
+
+      <ConversationShareContent
+        v-else-if="activeTab === 'share'"
+        :selectedConversations="selectedMedias"
+        :currentOrganizationScope="currentOrganizationScope" />
     </div>
   </div>
 </template>
@@ -67,8 +78,10 @@ import { mediaScopeMixin } from "@/mixins/mediaScope"
 import { mediaProgressMixin } from "@/mixins/mediaProgress"
 
 import Button from "@/components/atoms/Button.vue"
+import Tabs from "@/components/molecules/Tabs.vue"
 import MediaExplorerRightPanelItem from "@/components/MediaExplorerRightPanelItem.vue"
 import MediaExplorerRightPanelMulti from "@/components/MediaExplorerRightPanelMulti.vue"
+import ConversationShareContent from "@/components/conversationShare/ConversationShareContent.vue"
 import { mediaExplorerRightPanelMixin } from "@/mixins/mediaExplorerRightPanel.js"
 
 export default {
@@ -76,8 +89,10 @@ export default {
   mixins: [mediaExplorerRightPanelMixin, mediaScopeMixin, mediaProgressMixin],
   components: {
     Button,
+    Tabs,
     MediaExplorerRightPanelItem,
     MediaExplorerRightPanelMulti,
+    ConversationShareContent,
   },
   props: {
     initialWidth: {
@@ -118,9 +133,28 @@ export default {
       startWidth: 0,
       showDeleteModal: false,
       isDeleting: false,
+      activeTab: "overview",
     }
   },
   computed: {
+    tabs() {
+      return [
+        {
+          name: "overview",
+          label: this.isMultiMode
+            ? this.$t("media_explorer.panel.selected_count", {
+                count: this.selectedMedias.length,
+              })
+            : this.$t("media_explorer.panel.overview"),
+          icon: "eye",
+        },
+        {
+          name: "share",
+          icon: "share-network",
+          label: this.$t("share_menu.button"),
+        },
+      ]
+    },
     isMultiMode() {
       return this.selectedMedias.length > 1
     },
@@ -179,6 +213,11 @@ export default {
         //   color: "tertiary",
         // },
       ]
+    },
+  },
+  watch: {
+    selectedMediaIds() {
+      this.activeTab = "overview"
     },
   },
   mounted() {
@@ -410,8 +449,7 @@ export default {
 // }
 
 .panel-header {
-  border-bottom: var(--border-block);
-  padding: 1rem;
+  // border-bottom: var(--border-block);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -427,6 +465,8 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin: 1rem;
+  margin-bottom: 0px;
   // padding: 2px 0.5em;
   //overflow: auto !important;
 }

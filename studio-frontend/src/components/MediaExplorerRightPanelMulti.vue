@@ -118,9 +118,6 @@
         {{ $t("media_explorer.panel.danger_zone") }}
       </h4>
       <div class="actions-container">
-        <ConversationShareMultiple
-          :selectedConversations="selectedMedias"
-          :currentOrganizationScope="currentOrganizationScope" />
         <Button
           @click="handleDelete"
           :label="$t('media_explorer.delete')"
@@ -149,9 +146,7 @@ import Avatar from "@/components/atoms/Avatar.vue"
 import InputSelector from "@/components/atoms/InputSelector.vue"
 import Tooltip from "@/components/atoms/Tooltip.vue"
 import ModalDeleteConversations from "./ModalDeleteConversations.vue"
-import ConversationShareMultiple from "./ConversationShareMultiple.vue"
 import { mediaExplorerRightPanelMixin } from "@/mixins/mediaExplorerRightPanel.js"
-import ChipTag from "./atoms/ChipTag.vue"
 import FolderSelector from "./FolderSelector.vue"
 
 export default {
@@ -162,7 +157,6 @@ export default {
     InputSelector,
     Tooltip,
     ModalDeleteConversations,
-    ConversationShareMultiple,
     FolderSelector,
   },
   props: {
