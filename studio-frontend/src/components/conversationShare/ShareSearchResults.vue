@@ -31,14 +31,6 @@
       :content="enrichedResults"
       sortListDirection=""
       sortListKey="">
-      <template #cell-status="{ element }">
-        <div class="share-search__badges">
-          <Chip v-if="element.inOrg" :value="$t('share_menu.badge_org')" />
-          <Chip
-            v-if="element.atDefault"
-            :value="$t('share_menu.badge_default')" />
-        </div>
-      </template>
       <template #cell-user="{ element }">
         <UserInfoInline
           :user="element"
@@ -73,7 +65,6 @@ import GenericTable from "@/components/molecules/GenericTable.vue"
 import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 import Loading from "@/components/atoms/Loading.vue"
 import Button from "@/components/atoms/Button.vue"
-import Chip from "@/components/atoms/Chip.vue"
 import RightSelect from "./RightSelect.vue"
 import { ORGANIZATION_ROLES } from "@/const/organizationRoles.js"
 import { isValidEmail } from "@/tools/isValidEmail.js"
@@ -89,7 +80,6 @@ export default {
     UserInfoInline,
     Loading,
     Button,
-    Chip,
     RightSelect,
   },
   props: {
@@ -137,8 +127,6 @@ export default {
         const inOrg = this.orgUserIds.has(user._id)
         const role = this.orgUserRoleById.get(user._id) ?? null
         const isPrivileged = role >= ORGANIZATION_ROLES.MAINTAINER
-        const isException = shared && shared.right !== this.defaultRight
-        const atDefault = inOrg && !isException && !isPrivileged
         let effectiveRight
         if (isPrivileged) {
           effectiveRight =
@@ -157,7 +145,6 @@ export default {
           role,
           effectiveRight,
           inOrg,
-          atDefault,
           isPrivileged,
         }
       })
@@ -173,11 +160,6 @@ export default {
     },
     columns() {
       return [
-        {
-          key: "status",
-          label: this.$t("share_menu.column_status"),
-          width: "auto",
-        },
         { key: "user", label: this.$t("share_menu.column_user"), width: "1fr" },
         {
           key: "right",
@@ -247,12 +229,6 @@ export default {
     text-align: center;
     color: var(--text-secondary);
     font-size: 0.875rem;
-  }
-
-  &__badges {
-    display: flex;
-    gap: 0.25rem;
-    flex-wrap: wrap;
   }
 }
 </style>
