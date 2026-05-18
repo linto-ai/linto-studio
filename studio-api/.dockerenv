@@ -52,3 +52,6 @@ VOLUME_PROFILE_PICTURE_PATH=pictures
 
 EXPORT_TEMPLATE=default
 ORGANIZATION_DEFAULT_PERMISSIONS=upload,summary,session
+
+SUPER_ADMIN_EMAIL=admin@mail.com
+SUPER_ADMIN_PWD=superadminpassword
