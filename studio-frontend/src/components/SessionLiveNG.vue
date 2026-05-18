@@ -22,6 +22,7 @@ import {
   computeTurnStartDate,
   computeTurnEndDate,
 } from "@/tools/computeTurnTime.js"
+import { bus } from "@/main.js"
 
 const PAGE_SIZE = 50
 
@@ -72,6 +73,10 @@ export default {
     this.initEditor()
     this.aquireWakeLock()
     document.addEventListener("visibilitychange", this.renewWakeLock)
+    bus.$on(
+      `websocket/orga_${this.currentOrganizationScope}_session_cleared`,
+      this.clear,
+    )
   },
   beforeDestroy() {
     this.offChannelChange?.()
@@ -82,8 +87,19 @@ export default {
     this.websocketInstance.unSubscribeSessionRoom()
     this.releaseWakeLock()
     document.removeEventListener("visibilitychange", this.renewWakeLock)
+    bus.$off(
+      `websocket/orga_${this.currentOrganizationScope}_session_cleared`,
+      this.clear,
+    )
   },
   methods: {
+    clear() {
+      const channel = this.editor.activeChannel.value
+
+      if (channel) {
+        channel.reset()
+      }
+    },
     async renewWakeLock() {
       if (this.wakeLock) {
         await this.wakeLock.release()

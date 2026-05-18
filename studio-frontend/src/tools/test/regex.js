@@ -29,7 +29,7 @@ test("test regex on invalid names", (t) => {
 /* Regex Title/descriptions */
 const regexContent = new RegExp(
   "^[ a-zA-ZÀ-ÿ0-9-’'&@#*/._!?;,:$€\"()+=]+$",
-  "g"
+  "g",
 )
 
 test("test regex on simple content", (t) => {

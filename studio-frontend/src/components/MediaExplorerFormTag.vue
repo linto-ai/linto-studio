@@ -570,7 +570,7 @@ export default {
     onSubmit() {
       // Ensure we always have a color (fallback to random if somehow undefined)
       const finalColor = this.color || getRandomColor()
-      
+
       this.$emit("submit", {
         name: this.tag.name,
         description: this.tag.description,

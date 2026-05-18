@@ -13,10 +13,7 @@
         <Tooltip :text="$t('modal_transcriber_profile.type_tooltip')">
           <div class="header-selector">
             <!-- <ph-icon name="microphone" size="sm" /> -->
-            <PopoverList
-              :items="typeItems"
-              v-model="currentType"
-              size="sm" />
+            <PopoverList :items="typeItems" v-model="currentType" size="sm" />
           </div>
         </Tooltip>
         <Tooltip :text="$t('modal_transcriber_profile.organization_tooltip')">
@@ -28,7 +25,9 @@
               size="sm" />
           </div>
         </Tooltip>
-        <Tooltip v-if="enableSecurityLevel" :text="$t('modal_transcriber_profile.security_level_tooltip')">
+        <Tooltip
+          v-if="enableSecurityLevel"
+          :text="$t('modal_transcriber_profile.security_level_tooltip')">
           <div class="header-selector">
             <!-- <ph-icon :name="securityLevelIcon" size="sm" /> -->
             <PopoverList

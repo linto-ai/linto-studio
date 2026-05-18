@@ -55,7 +55,7 @@
       class="relative">
       <template #trigger="{ open }">
         <Button :iconRight="open ? 'caret-up' : 'caret-down'">
-          Avec recherche: {{ popoverSearchValue || 'Aucun' }}
+          Avec recherche: {{ popoverSearchValue || "Aucun" }}
         </Button>
       </template>
     </PopoverList>

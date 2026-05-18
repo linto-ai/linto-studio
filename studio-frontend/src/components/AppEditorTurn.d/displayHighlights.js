@@ -11,14 +11,14 @@ export default async function displayHighlights() {
   // then highlight all
   for (let hightlightCat of this.hightlightsCategories) {
     let { tagsWithoutRangeMetadata, rangesFromMetadata } = divideTags(
-      hightlightCat.tags
+      hightlightCat.tags,
     )
 
     let rangesFromText = findExpressionInWordsList(
       tagsWithoutRangeMetadata,
       this.words.filter((w) => w.word !== ""),
       (k) => k.name,
-      (w) => w.word
+      (w) => w.word,
     )
 
     let domRanges = rangesFromText
@@ -43,7 +43,7 @@ function divideTags(tags) {
     if (ranges.length > 0) {
       tagsWithRangeMetadata.push(tag)
       rangesFromMetadata = rangesFromMetadata.concat(
-        ranges.map((r) => ({ ...r, tag }))
+        ranges.map((r) => ({ ...r, tag })),
       )
     } else {
       tagsWithoutRangeMetadata.push(tag)

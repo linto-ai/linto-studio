@@ -14,7 +14,7 @@ export const debounceMixin = {
               const result = await this.queriedSearch(
                 query,
                 queryParams,
-                propertyLoading
+                propertyLoading,
               )
               resolve(result)
             } catch (error) {

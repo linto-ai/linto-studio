@@ -164,7 +164,9 @@ export default function createMediaModule(scope, status = "done") {
       },
       toggleSidebarFilterTagId(state, id) {
         if (state.sidebarFilterTagIds.includes(id)) {
-          state.sidebarFilterTagIds = state.sidebarFilterTagIds.filter((t) => t !== id)
+          state.sidebarFilterTagIds = state.sidebarFilterTagIds.filter(
+            (t) => t !== id,
+          )
         } else {
           state.sidebarFilterTagIds = [...state.sidebarFilterTagIds, id]
         }

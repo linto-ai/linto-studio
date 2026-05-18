@@ -36,26 +36,26 @@ async function test() {
 
   const deviations = erroredWords.map((word) => Math.abs(word[1] - word[2]))
   const deviationsCalc = Math.sqrt(
-    deviations.reduce((a, b) => a + b * b, 0) / deviations.length
+    deviations.reduce((a, b) => a + b * b, 0) / deviations.length,
   )
   console.log(`Standard deviation for errored words: ${deviationsCalc}`)
   //print average between real and computed count for errored words
   console.log(
     `Average error for errored words: ${
       deviations.reduce((a, b) => a + b, 0) / deviations.length
-    }`
+    }`,
   )
   //global accuracy
   const allWords = erroredWords.concat(perfectWords)
   const globalDeviations = allWords.map((word) => Math.abs(word[1] - word[2]))
   const globalDeviationsCalc = Math.sqrt(
-    globalDeviations.reduce((a, b) => a + b * b, 0) / globalDeviations.length
+    globalDeviations.reduce((a, b) => a + b * b, 0) / globalDeviations.length,
   )
   console.log(`Standard deviation for a given word: ${globalDeviationsCalc}`)
   console.log(
     `Average error for a given word: ${
       globalDeviations.reduce((a, b) => a + b, 0) / globalDeviations.length
-    }`
+    }`,
   )
   //Top errored words
   console.log("Top errored words", "\n", "-------------------")
@@ -63,7 +63,7 @@ async function test() {
   let topErroredWords
   for (let i = 1; i < 10; i++) {
     topErroredWords = erroredWords.filter(
-      (word) => Math.abs(word[2] - word[1]) == i
+      (word) => Math.abs(word[2] - word[1]) == i,
     )
     console.log(topErroredWords.length, `words with errors == ${i}`)
   }

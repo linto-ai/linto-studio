@@ -1,8 +1,6 @@
 <template>
   <section class="share-search">
-    <div
-      v-if="showInviteRow"
-      class="share-search__invite">
+    <div v-if="showInviteRow" class="share-search__invite">
       <div class="share-search__invite-info">
         <ph-icon name="envelope-simple" size="md" />
         <span class="share-search__invite-email">{{ trimmedSearch }}</span>
@@ -43,7 +41,9 @@
           v-else
           :value="element.effectiveRight"
           :readonly="element.isPrivileged"
-          @input="$emit('update:userRight', { user: element, right: $event })" />
+          @input="
+            $emit('update:userRight', { user: element, right: $event })
+          " />
       </template>
     </GenericTable>
 

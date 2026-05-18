@@ -3,15 +3,26 @@
     <button
       type="button"
       class="folder-selector__trigger"
-      :class="{ 'folder-selector__trigger--open': isOpen, 'folder-selector__trigger--readonly': readonly }"
+      :class="{
+        'folder-selector__trigger--open': isOpen,
+        'folder-selector__trigger--readonly': readonly,
+      }"
       @click="toggle"
       :disabled="readonly">
       <ph-icon :name="selectedFolder ? 'folder' : 'tray'" size="16" />
       <span class="folder-selector__label">
         {{ selectedFolder ? selectedFolder.name : $t("folders.uncategorized") }}
       </span>
-      <ph-icon v-if="selectedFolder && selectedFolder.visibility === 'private'" name="lock-simple" size="12" class="folder-selector__lock" />
-      <ph-icon v-if="!readonly" name="caret-down" size="14" class="folder-selector__caret" />
+      <ph-icon
+        v-if="selectedFolder && selectedFolder.visibility === 'private'"
+        name="lock-simple"
+        size="12"
+        class="folder-selector__lock" />
+      <ph-icon
+        v-if="!readonly"
+        name="caret-down"
+        size="14"
+        class="folder-selector__caret" />
     </button>
 
     <div v-if="isOpen" class="folder-selector__dropdown">
@@ -27,11 +38,18 @@
         :key="folder._id"
         class="folder-selector__option"
         :class="{ 'folder-selector__option--active': value === folder._id }"
-        :style="{ paddingLeft: (folder.depth * 0.75) + 0.5 + 'rem' }"
+        :style="{ paddingLeft: folder.depth * 0.75 + 0.5 + 'rem' }"
         @click="select(folder._id)">
-        <ph-icon name="folder" size="16" :style="folder.color ? { color: folder.color } : {}" />
+        <ph-icon
+          name="folder"
+          size="16"
+          :style="folder.color ? { color: folder.color } : {}" />
         <span>{{ folder.name }}</span>
-        <ph-icon v-if="folder.visibility === 'private'" name="lock-simple" size="12" class="folder-selector__lock" />
+        <ph-icon
+          v-if="folder.visibility === 'private'"
+          name="lock-simple"
+          size="12"
+          class="folder-selector__lock" />
       </div>
     </div>
   </div>

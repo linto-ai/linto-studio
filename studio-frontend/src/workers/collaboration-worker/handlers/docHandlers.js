@@ -6,7 +6,7 @@ import { customDebug } from "../../../tools/customDebug"
 const debugSendDocUpdate = customDebug("Worker:debug:send:docUpdate")
 const debugReceiveTurnUpdate = customDebug("Worker:debug:receive:turnUpdate")
 const debugReceiveSpeakerUpdate = customDebug(
-  "Worker:debug:receive:speakerUpdate"
+  "Worker:debug:receive:speakerUpdate",
 )
 
 let tmpBinaryDelta = []
@@ -38,7 +38,7 @@ export function sendDescriptionUpdateToViewWrapper(sendMessage, conversation) {
       sendMessage,
       conversation,
       YTextEvent,
-      transaction
+      transaction,
     )
 }
 
@@ -84,7 +84,7 @@ function sendSpeakersUpdateToView(
   sendMessage,
   conversation,
   YEvent,
-  transaction
+  transaction,
 ) {
   for (const event of YEvent) {
     if (event.childListChanged) {
@@ -92,14 +92,14 @@ function sendSpeakersUpdateToView(
         sendMessage,
         conversation,
         YEvent,
-        transaction
+        transaction,
       )
     } else {
       sendSpeakersListUpdateToView(
         sendMessage,
         conversation,
         YEvent,
-        transaction
+        transaction,
       )
     }
   }
@@ -109,12 +109,12 @@ function sendNameUpdateToView(
   sendMessage,
   conversation,
   YTextEvent,
-  transaction
+  transaction,
 ) {
   if (transaction.origin == "websocket") {
     debugReceiveSpeakerUpdate(
       "name update: delta %o",
-      YTextEvent?.changes?.delta
+      YTextEvent?.changes?.delta,
     )
     const title = conversation.getYdoc().getText("name").toString()
     sendMessage("title_updated", {
@@ -129,11 +129,11 @@ function sendSpeakersListUpdateToView(
   sendMessage,
   conversation,
   event,
-  transaction
+  transaction,
 ) {
   debugReceiveSpeakerUpdate(
     "spk list update: value %o",
-    conversation?.getSpeakers()
+    conversation?.getSpeakers(),
   )
   sendMessage("speaker_list_updated", {
     value: conversation.getSpeakers(),
@@ -145,7 +145,7 @@ function sendDescriptionUpdateToView(
   sendMessage,
   conversation,
   YTextEvent,
-  transaction
+  transaction,
 ) {
   if (transaction.origin == "websocket") {
     const description = conversation.getYdoc().getText("description").toString()
@@ -161,7 +161,7 @@ function sendSpeakerNameUpdateToView(
   sendMessage,
   conversation,
   YTextEvent,
-  transaction
+  transaction,
 ) {
   const speakers = conversation.getYdoc().getArray("speakers").toJSON()
   let value = YTextEvent[0].target._item.parent.toJSON()
@@ -178,7 +178,7 @@ function sendOrgaUpdateToView(
   sendMessage,
   conversation,
   YTextEvent,
-  transaction
+  transaction,
 ) {
   if (transaction.origin == "websocket") {
     sendMessage("conv_orga_updated", {
@@ -204,7 +204,7 @@ function sendTextUpdateToView(sendMessage, conversation, YEvent, transaction) {
               conversation,
               event,
               transaction,
-              turnIndex
+              turnIndex,
             )
             break
 
@@ -223,7 +223,7 @@ function sendTextUpdateToView(sendMessage, conversation, YEvent, transaction) {
             conversation,
             event,
             transaction,
-            turnIndex
+            turnIndex,
           )
           break
         case "words":
@@ -232,7 +232,7 @@ function sendTextUpdateToView(sendMessage, conversation, YEvent, transaction) {
             conversation,
             event,
             transaction,
-            turnIndex
+            turnIndex,
           )
           break
         case "speaker_id":
@@ -253,12 +253,12 @@ function sendWordsUpdate(
   conversation,
   event,
   transaction,
-  turnIndex
+  turnIndex,
 ) {
   debugReceiveTurnUpdate(
     "Words update: id %o, value '%o'",
     conversation.getConversationText()[turnIndex].turn_id,
-    conversation.getConversationText()[turnIndex].words
+    conversation.getConversationText()[turnIndex].words,
   )
   sendMessage("words_updated", {
     conversationId: conversation.getObj()._id,
@@ -275,12 +275,12 @@ function sendSegmentUpdate(
   conversation,
   event,
   transaction,
-  turnIndex
+  turnIndex,
 ) {
   debugReceiveTurnUpdate(
     "Segment update: id %o, value '%s'",
     conversation.getConversationText()[turnIndex].turn_id,
-    conversation.getConversationText()[turnIndex].segment
+    conversation.getConversationText()[turnIndex].segment,
   )
   sendMessage("segment_updated", {
     conversationId: conversation.getObj()._id,
@@ -296,7 +296,7 @@ function sendTurnsListUpdate(sendMessage, conversation, event, transaction) {
   debugReceiveTurnUpdate(
     "Turns list update: delta %o, value '%o'",
     event?.changes?.delta,
-    conversation?.getConversationText()
+    conversation?.getConversationText(),
   )
   const delta = JSON.parse(JSON.stringify(event.changes.delta))
 
@@ -314,12 +314,12 @@ function sendTurnSpeakerUpdate(
   conversation,
   event,
   transaction,
-  turnIndex
+  turnIndex,
 ) {
   debugReceiveTurnUpdate(
     "Segment speaker update: id %o, value '%s'",
     conversation.getConversationText()[turnIndex].turn_id,
-    conversation.getConversationText()[turnIndex].speaker_id
+    conversation.getConversationText()[turnIndex].speaker_id,
   )
   sendMessage("turn_speaker_update", {
     conversationId: conversation.getObj()._id,
@@ -366,7 +366,7 @@ function sendScreenUpdateToView(sendMessage, subtitle, events, transaction) {
       sendMessage,
       subtitle,
       events[0],
-      transaction.origin
+      transaction.origin,
     )
 }
 

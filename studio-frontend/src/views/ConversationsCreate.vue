@@ -61,7 +61,9 @@
           </div>
         </section>
 
-        <SecurityLevelSelector v-if="enableSecurityLevel" v-model="securityLevel" />
+        <SecurityLevelSelector
+          v-if="enableSecurityLevel"
+          v-model="securityLevel" />
 
         <!-- services -->
         <section class="flex col gap-small">

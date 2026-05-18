@@ -9,9 +9,7 @@
       id="channel-selector"
       :aria-label="$t('session.live_page.channel_selector.label')"
       :options="channelsList" />
-    <span
-      v-if="hasProcessingChannels"
-      class="channels-processing-hint">
+    <span v-if="hasProcessingChannels" class="channels-processing-hint">
       <span class="icon loading"></span>
       {{ $t("app_editor_channels_selector.transcription_in_progress") }}
     </span>
@@ -41,9 +39,7 @@ export default {
       return "name"
     },
     hasProcessingChannels() {
-      return this.channels.some(
-        (channel) => this.isChannelProcessing(channel),
-      )
+      return this.channels.some((channel) => this.isChannelProcessing(channel))
     },
     channelsList() {
       let channelsList

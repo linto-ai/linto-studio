@@ -13,7 +13,10 @@ import {
 export function normalizeSecurityLevel(level) {
   // Convert string to number if needed
   const numLevel = typeof level === "string" ? parseInt(level, 10) : level
-  if (typeof numLevel === "number" && SECURITY_HIERARCHY[numLevel] !== undefined) {
+  if (
+    typeof numLevel === "number" &&
+    SECURITY_HIERARCHY[numLevel] !== undefined
+  ) {
     return numLevel
   }
   return DEFAULT_SECURITY_LEVEL

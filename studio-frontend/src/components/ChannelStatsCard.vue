@@ -53,7 +53,12 @@
       :segments="timelineSegments"
       :label="$t('session_stats_modal.timeline.title')"
       :legend="timelineLegend"
-      :aria-label="$t('session_stats_modal.timeline.active') + ': ' + timelinePercentage + '%'" />
+      :aria-label="
+        $t('session_stats_modal.timeline.active') +
+        ': ' +
+        timelinePercentage +
+        '%'
+      " />
   </div>
 </template>
 
@@ -135,12 +140,23 @@ export default {
       if (!this.hasTimelineData || this.sessionDuration <= 0) return 100
       // Use activeDuration which already accounts for all mount/unmount pairs
       const activeDurationMs = (this.channel.activeDuration || 0) * 1000
-      return Math.round(Math.min(100, Math.max(0, (activeDurationMs / this.sessionDuration) * 100)))
+      return Math.round(
+        Math.min(
+          100,
+          Math.max(0, (activeDurationMs / this.sessionDuration) * 100),
+        ),
+      )
     },
     timelineLegend() {
       return [
-        { label: this.$t("session_stats_modal.timeline.active"), type: "active" },
-        { label: this.$t("session_stats_modal.timeline.inactive"), type: "inactive" },
+        {
+          label: this.$t("session_stats_modal.timeline.active"),
+          type: "active",
+        },
+        {
+          label: this.$t("session_stats_modal.timeline.inactive"),
+          type: "inactive",
+        },
       ]
     },
     timelineSegments() {
@@ -170,9 +186,16 @@ export default {
           left: Math.max(0, left),
           width: Math.min(100 - left, Math.max(0, width)),
           tooltip: {
-            [this.$t("session_stats_modal.channels.started_at")]: formatTime(mountDate, locale),
-            [this.$t("session_stats_modal.channels.ended_at")]: formatTime(unmountDate, locale),
-            [this.$t("session_stats_modal.channels.active_duration")]: formatDuration(durationSec, { compact: true }),
+            [this.$t("session_stats_modal.channels.started_at")]: formatTime(
+              mountDate,
+              locale,
+            ),
+            [this.$t("session_stats_modal.channels.ended_at")]: formatTime(
+              unmountDate,
+              locale,
+            ),
+            [this.$t("session_stats_modal.channels.active_duration")]:
+              formatDuration(durationSec, { compact: true }),
           },
         })
       }

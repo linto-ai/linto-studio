@@ -244,6 +244,24 @@ module.exports = (webServer) => {
             executeBeforeResult: checkSessionMatchingOrganization,
           },
           {
+            path: "/organizations/:organizationId/sessions/:id/pause",
+            method: ["put"],
+            forwardParams: proxyForwardParams,
+            executeBeforeResult: checkSessionMatchingOrganization,
+          },
+          {
+            path: "/organizations/:organizationId/sessions/:id/resume",
+            method: ["put"],
+            forwardParams: proxyForwardParams,
+            executeBeforeResult: checkSessionMatchingOrganization,
+          },
+          {
+            path: "/organizations/:organizationId/sessions/:id/clear",
+            method: ["put"],
+            forwardParams: proxyForwardParams,
+            executeBeforeResult: checkSessionMatchingOrganization,
+          },
+          {
             path: "/organizations/:organizationId/sessions/purge",
             method: ["post"],
             forwardParams: proxyForwardParams,

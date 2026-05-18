@@ -411,7 +411,7 @@ test("divide turn", (t) => {
         etime: 1.35,
         word: "bonjour",
       },
-      syllabicFr
+      syllabicFr,
     ),
     [
       {
@@ -426,7 +426,7 @@ test("divide turn", (t) => {
         etime: 1.35,
         word: "jour",
       },
-    ]
+    ],
   )
 })
 

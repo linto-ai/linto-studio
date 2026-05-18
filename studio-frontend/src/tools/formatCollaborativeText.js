@@ -2,7 +2,7 @@ export default function formatCollaborativeText(
   inputField,
   cursorPosition,
   lineIndex,
-  enableMultiline
+  enableMultiline,
 ) {
   let numberOfSpaceToRemove
   let numberOfLineToRemove = 0
@@ -39,7 +39,7 @@ export default function formatCollaborativeText(
     if (textWithoutDoubleSpace !== "\n") {
       textWithoutDoubleSpace = textWithoutDoubleSpace.substring(
         0,
-        textWithoutDoubleSpace.length - 1
+        textWithoutDoubleSpace.length - 1,
       )
     }
   } else {

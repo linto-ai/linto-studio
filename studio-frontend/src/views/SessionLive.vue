@@ -5,7 +5,8 @@
         :sessionListRoute="sessionListRoute"
         :sessionLoaded="sessionLoaded"
         :name="name"
-        :session="session">
+        :session="session"
+        :showActions="isAtLeastMeetingManager && !isFromPublicLink">
         <IsMobile>
           <div class="flex gap-small">
             <Button

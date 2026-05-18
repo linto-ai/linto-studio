@@ -3,7 +3,11 @@
     class="user-profile-picture-container"
     :data-info="hover ? userName : false">
     <img v-if="userAvatar" :src="userAvatar" class="user-profile-picture" />
-    <span v-else-if="userInitials" class="user-profile-picture user-profile-picture--initials">{{ userInitials }}</span>
+    <span
+      v-else-if="userInitials"
+      class="user-profile-picture user-profile-picture--initials"
+      >{{ userInitials }}</span
+    >
     <ph-icon v-else name="user" class="user-profile-picture" size="xs" />
   </div>
 </template>

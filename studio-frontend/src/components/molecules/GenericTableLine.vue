@@ -1,7 +1,10 @@
 <template>
   <tr
     @click="onRowClick"
-    :class="[{ 'selectable-row': selectable, selected: isSelected }, rowClass?.(line)]">
+    :class="[
+      { 'selectable-row': selectable, selected: isSelected },
+      rowClass?.(line),
+    ]">
     <td v-if="selectable && selectMode !== 'single'">
       <Checkbox
         v-model="p_selectedRows"
