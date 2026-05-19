@@ -1,5 +1,6 @@
 import { StudioApiService } from "./src/services/studioApiService.js"
 import { PollingService } from "./src/services/pollingService.js"
+import { SummaryPollingService } from "./src/services/summaryPollingService.js"
 class LinTO {
   constructor({ authToken, baseUrl = "https://studio.linto.ai/cm-api" } = {}) {
     this.baseUrl = baseUrl
@@ -50,6 +51,19 @@ class LinTO {
       delete s.serviceName
       return s
     })
+  }
+
+  async listLlmServices() {
+    return await this.apiService.fetchLlmServices()
+  }
+
+  async summarize(conversationId, serviceRoute, { flavor } = {}) {
+    await this.apiService.triggerSummary({
+      conversationId,
+      format: serviceRoute,
+      flavor,
+    })
+    return new SummaryPollingService(conversationId, serviceRoute, this.apiService)
   }
 }
 

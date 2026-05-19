@@ -48,6 +48,33 @@ export class StudioApiService {
     )(args)
   }
 
+  // -- LLM / Summary methods --
+
+  async fetchLlmServices(args) {
+    return await this.#withToken(
+      this.#withOrganizationId(this.#fetchLlmServices.bind(this))
+    )(args)
+  }
+
+  async triggerSummary({ conversationId, format, flavor } = {}) {
+    return await this.#withToken(this.#triggerSummary)({
+      conversationId,
+      format,
+      flavor,
+    })
+  }
+
+  async getExportList({ conversationId } = {}) {
+    return await this.#withToken(this.#getExportList)({ conversationId })
+  }
+
+  async getExportContent({ conversationId, jobId } = {}) {
+    return await this.#withToken(this.#getExportContent)({
+      conversationId,
+      jobId,
+    })
+  }
+
   async login({ email, password }) {
     const req = prepareRequest(`${this.baseAuthUrl}/login`, "POST", {
       email,
@@ -182,6 +209,45 @@ export class StudioApiService {
       formData
     )
 
+    return await sendRequest(req)
+  }
+
+  // -- LLM / Summary private implementations --
+
+  async #fetchLlmServices({ token, organizationId }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/services/${organizationId}/llm`,
+      "GET",
+      { token }
+    )
+
+    return await sendRequest(req)
+  }
+
+  async #triggerSummary({ token, conversationId, format, flavor }) {
+    let url = `${this.baseApiUrl}/conversations/${conversationId}/download?format=${encodeURIComponent(format)}`
+    if (flavor) {
+      url += `&flavor=${encodeURIComponent(flavor)}`
+    }
+    const req = prepareRequest(url, "POST", { token })
+    return await sendRequest(req)
+  }
+
+  async #getExportList({ token, conversationId }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/conversations/${conversationId}/export/list`,
+      "GET",
+      { token }
+    )
+    return await sendRequest(req)
+  }
+
+  async #getExportContent({ token, conversationId, jobId }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/conversations/${conversationId}/export/${jobId}/content`,
+      "GET",
+      { token }
+    )
     return await sendRequest(req)
   }
 }
