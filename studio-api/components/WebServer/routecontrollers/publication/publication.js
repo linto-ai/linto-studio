@@ -15,9 +15,7 @@ const {
   PublicationForbidden,
   PublicationAuthRequired,
   PublicationIdRequired,
-} = require(
-  `${process.cwd()}/components/WebServer/error/exception/publication`,
-)
+} = require(`${process.cwd()}/components/WebServer/error/exception/publication`)
 
 /**
  * Get all publication templates from LLM Gateway
@@ -62,7 +60,7 @@ async function getTemplates(req, res, next) {
     // Return with status wrapper, preserve all fields from LLM Gateway (including name_fr, name_en, etc.)
     return res.status(200).json({
       status: "success",
-      templates: response || []
+      templates: response || [],
     })
   } catch (err) {
     next(err)
@@ -95,7 +93,7 @@ async function getTemplatePlaceholders(req, res, next) {
     // Return with status wrapper per API contract
     return res.status(200).json({
       status: "success",
-      placeholders: response || []
+      placeholders: response || [],
     })
   } catch (err) {
     if (err.response?.status === 404) {
@@ -126,7 +124,9 @@ async function exportWithTemplate(req, res, next) {
       throw new PublicationIdRequired("jobId is required")
     }
     if (!format || !["pdf", "docx", "html"].includes(format)) {
-      throw new PublicationInvalidFormat("Invalid format. Allowed: pdf, docx, html")
+      throw new PublicationInvalidFormat(
+        "Invalid format. Allowed: pdf, docx, html",
+      )
     }
 
     const baseUrl = process.env.LLM_GATEWAY_SERVICES
@@ -153,6 +153,9 @@ async function exportWithTemplate(req, res, next) {
     if (req.query.versionNumber) {
       queryParams.append("version_number", req.query.versionNumber)
     }
+    if (req.query.timezone) {
+      queryParams.append("timezone", req.query.timezone)
+    }
 
     if (queryParams.toString()) {
       url += `?${queryParams.toString()}`
@@ -175,7 +178,10 @@ async function exportWithTemplate(req, res, next) {
       res.setHeader("Content-Disposition", `attachment; filename="export.pdf"`)
       res.send(Buffer.from(response))
     } else {
-      res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      )
       res.setHeader("Content-Disposition", `attachment; filename="export.docx"`)
       res.send(Buffer.from(response))
     }
@@ -184,7 +190,7 @@ async function exportWithTemplate(req, res, next) {
     let errorDetail = err.message
     if (err.response?.data) {
       try {
-        const errorText = Buffer.from(err.response.data).toString('utf8')
+        const errorText = Buffer.from(err.response.data).toString("utf8")
         const errorJson = JSON.parse(errorText)
         errorDetail = errorJson.detail || errorJson.message || errorText
       } catch (e) {
@@ -237,7 +243,14 @@ async function createTemplate(req, res, next) {
     }
 
     const file = req.files.file
-    const { name_fr, name_en, description_fr, description_en, organization_id, scope } = req.body
+    const {
+      name_fr,
+      name_en,
+      description_fr,
+      description_en,
+      organization_id,
+      scope,
+    } = req.body
 
     // Validate required fields
     if (!name_fr || !name_fr.trim()) {
@@ -247,13 +260,16 @@ async function createTemplate(req, res, next) {
     // Validate file type
     const validMimeTypes = [
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      "application/octet-stream" // Some browsers send this for .docx
+      "application/octet-stream", // Some browsers send this for .docx
     ]
-    const isValidType = validMimeTypes.includes(file.mimetype) ||
-                        file.name.toLowerCase().endsWith(".docx")
+    const isValidType =
+      validMimeTypes.includes(file.mimetype) ||
+      file.name.toLowerCase().endsWith(".docx")
 
     if (!isValidType) {
-      throw new PublicationInvalidFormat("Invalid file type. Only DOCX files are accepted.")
+      throw new PublicationInvalidFormat(
+        "Invalid file type. Only DOCX files are accepted.",
+      )
     }
 
     // Check file size (max 10MB)
@@ -273,7 +289,9 @@ async function createTemplate(req, res, next) {
     // Append file - express-fileupload provides file.data as Buffer
     formData.append("file", file.data, {
       filename: file.name,
-      contentType: file.mimetype || "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      contentType:
+        file.mimetype ||
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     })
 
     // Append required field
@@ -306,7 +324,9 @@ async function createTemplate(req, res, next) {
       // Personal/user-scoped template (default): org_id + user_id
       // Use authenticated user's MongoDB ObjectId directly (LLM Gateway accepts any string ID)
       formData.append("user_id", authenticatedUserId)
-      debug(`Creating user-scoped template for user: ${authenticatedUserId} in org: ${organization_id}`)
+      debug(
+        `Creating user-scoped template for user: ${authenticatedUserId} in org: ${organization_id}`,
+      )
     }
 
     // Forward to LLM Gateway
@@ -327,12 +347,13 @@ async function createTemplate(req, res, next) {
 
     return res.status(201).json({
       status: "success",
-      template: response.data || {}
+      template: response.data || {},
     })
   } catch (err) {
     // Handle axios errors from LLM Gateway
     if (err.response?.status) {
-      let errorDetail = err.response?.data?.detail || err.response?.data?.message || err.message
+      let errorDetail =
+        err.response?.data?.detail || err.response?.data?.message || err.message
       if (err.response.status === 400) {
         return next(new PublicationError(errorDetail))
       }
@@ -405,7 +426,7 @@ async function deleteTemplate(req, res, next) {
 
     return res.status(200).json({
       status: "success",
-      message: "Template deleted successfully"
+      message: "Template deleted successfully",
     })
   } catch (err) {
     next(err)

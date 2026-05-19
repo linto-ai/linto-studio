@@ -1,21 +1,10 @@
-/****************
- **** Service ****
- *****************/
-
-const ExceptionType = "service"
-
-class ServiceError extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "ServiceError"
-    this.type = ExceptionType
-    this.status = 400
-    if (message) this.message = message
-    else this.message = "Error during the operation"
-    if (err) this.err = err
-  }
-}
+const { createException } = require("./base")
 
 module.exports = {
-  ServiceError,
+  ServiceError: createException(
+    "ServiceError",
+    "service",
+    400,
+    "Error during the operation",
+  ),
 }

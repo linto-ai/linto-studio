@@ -54,7 +54,7 @@
           </div>
         </footer>
         <footer class="footer-logo" v-else>
-          <img :src="logo" class="footer-logo__logo" />
+          <img :src="logo" :alt="logoAlt" class="footer-logo__logo" />
           <div class="footer-logo__title">{{ title }}</div>
         </footer>
       </div>
@@ -65,6 +65,7 @@
 import { mapGetters } from "vuex"
 
 import { getEnv } from "@/tools/getEnv"
+import { getLogoAltName } from "@/tools/getLogoAltName"
 import UserAccountSelector from "@/components/UserAccountSelector.vue"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
@@ -116,6 +117,9 @@ export default {
     }),
     logo() {
       return getEnv("VUE_APP_LOGO") ? `/img/${getEnv("VUE_APP_LOGO")}` : false
+    },
+    logoAlt() {
+      return getLogoAltName()
     },
     organizationsList() {
       return Object.values(this.organizations)

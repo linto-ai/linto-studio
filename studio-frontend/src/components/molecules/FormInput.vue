@@ -18,11 +18,13 @@
         :is="code ? 'pre' : 'div'"
         v-else-if="readonly && editValue"
         class="form-field__readonly"
+        :class="{ 'form-field__readonly--fit-content': readonlyFitContent }"
         >{{ editValue }}</component
       >
       <div
         v-else-if="readonly && !editValue"
-        class="form-field__readonly empty">
+        class="form-field__readonly empty"
+        :class="{ 'form-field__readonly--fit-content': readonlyFitContent }">
         {{ $t("form_field.empty_value") }}
       </div>
       <input
@@ -88,6 +90,7 @@
 import { Fragment } from "vue-fragment"
 import LabeledValue from "@/components/atoms/LabeledValue.vue"
 import Button from "@/components/atoms/Button.vue"
+import { generateId } from "@/tools/generateId.js"
 export default {
   props: {
     field: {
@@ -130,6 +133,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    readonlyFitContent: {
+      type: Boolean,
+      default: false,
+    },
     inline: {
       type: Boolean,
       default: false,
@@ -142,7 +149,7 @@ export default {
   data() {
     const initialValue = this.modelValue ?? this.value ?? this.field.value ?? ""
     return {
-      id: this.inputId || Math.random().toString(36).substr(2, 9),
+      id: this.inputId || generateId(),
       editValue: initialValue,
       originalValue: initialValue,
     }
@@ -300,6 +307,10 @@ export default {
 
     &.empty {
       font-style: italic;
+    }
+
+    &--fit-content {
+      flex: 0 1 auto;
     }
   }
 
@@ -489,9 +500,9 @@ export default {
     }
   }
 
-  &--disabled {
-    opacity: 0.7;
-  }
+  // &--disabled {
+  //   opacity: 0.7;
+  // }
 
   &--error {
     .form-field__label {

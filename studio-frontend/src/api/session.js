@@ -1,9 +1,9 @@
-import isSessionStarted from "../tools/isSessionStarted"
 import { sendRequest } from "../tools/sendRequest"
 import { getEnv } from "@/tools/getEnv"
 
 const BASE_API = getEnv("VUE_APP_CONVO_API")
 const SESSION_PAGE_SIZE = 100
+const DEFAULT_PAGE_SIZE = 10
 
 async function fetchAllSessionPages(url, method, baseParams, notif) {
   const params = { ...baseParams, limit: SESSION_PAGE_SIZE, offset: 0 }
@@ -13,7 +13,11 @@ async function fetchAllSessionPages(url, method, baseParams, notif) {
 
   if (totalItems > SESSION_PAGE_SIZE) {
     const remaining = []
-    for (let offset = SESSION_PAGE_SIZE; offset < totalItems; offset += SESSION_PAGE_SIZE) {
+    for (
+      let offset = SESSION_PAGE_SIZE;
+      offset < totalItems;
+      offset += SESSION_PAGE_SIZE
+    ) {
       remaining.push(sendRequest(url, { method }, { ...params, offset }, notif))
     }
     const pages = await Promise.all(remaining)
@@ -128,6 +132,19 @@ export async function apiGetSessionTemplates(organizationScope, notif) {
   return getSessionTemplates?.data ?? { sessionTemplates: [], totalItems: 0 }
 }
 
+export async function apiGetSessionTemplate(
+  organizationScope,
+  templateId,
+  notif,
+) {
+  return await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/templates/${templateId}`,
+    { method: "get" },
+    {},
+    notif,
+  )
+}
+
 export async function apiCreateSessionTemplate(organizationScope, data, notif) {
   const createSessionTemplate = await sendRequest(
     `${BASE_API}/organizations/${organizationScope}/templates`,
@@ -220,9 +237,13 @@ export async function apiSearchSessionByName(
   notif,
 ) {
   const search = await sendRequest(
-    `${BASE_API}/organizations/${organizationScope}/sessions?searchName=${sessionName}&organizationId=${organizationScope}`,
+    `${BASE_API}/organizations/${organizationScope}/sessions`,
     { method: "get" },
-    {},
+    {
+      searchName: sessionName,
+      organizationId: organizationScope,
+      excludeVisibility: "user",
+    },
     notif,
   )
 
@@ -230,33 +251,47 @@ export async function apiSearchSessionByName(
 }
 
 export async function apiGetActiveSessions(organizationScope, notif) {
-  const url = `${BASE_API}/organizations/${organizationScope}/sessions?statusList=active&organizationId=${organizationScope}`
+  const url = `${BASE_API}/organizations/${organizationScope}/sessions`
   const result = await fetchAllSessionPages(
     url,
     "get",
-    { statusList: "active, ready" },
+    {
+      statusList: "active, ready",
+      organizationId: organizationScope,
+      excludeVisibility: "user",
+    },
     notif,
   )
 
   return result
 }
 
-// started is not a session api status
-export async function apiGetStartedSessions(organizationScope, notif) {
-  const url = `${BASE_API}/organizations/${organizationScope}/sessions`
-  const allSessions = await fetchAllSessionPages(
-    url,
-    "get",
-    { organizationId: organizationScope },
-    notif,
+export async function apiGetSessionsPaginated(
+  organizationScope,
+  page = 0,
+  { pageSize = DEFAULT_PAGE_SIZE, excludeVisibility = "user" } = {},
+) {
+  const params = {
+    organizationId: organizationScope,
+    excludeVisibility,
+    limit: pageSize,
+    offset: page * pageSize,
+  }
+
+  const res = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions`,
+    { method: "get" },
+    params,
   )
 
-  const allSessionsFiltered = allSessions.sessions.filter(isSessionStarted)
-
-  return {
-    sessions: allSessionsFiltered,
-    totalItems: allSessionsFiltered.length,
+  if (res?.data) {
+    return {
+      list: res.data.sessions || [],
+      count: res.data.totalItems || 0,
+      pageSize,
+    }
   }
+  return { list: [], count: 0, pageSize }
 }
 
 export async function apiHasSessions(organizationScope) {
@@ -264,7 +299,11 @@ export async function apiHasSessions(organizationScope) {
     const res = await sendRequest(
       `${BASE_API}/organizations/${organizationScope}/sessions`,
       { method: "get" },
-      { limit: 1, organizationId: organizationScope },
+      {
+        limit: 1,
+        organizationId: organizationScope,
+        excludeVisibility: "user",
+      },
     )
     return (res?.data?.totalItems ?? 0) > 0
   } catch {
@@ -274,9 +313,14 @@ export async function apiHasSessions(organizationScope) {
 
 export async function apiCountActiveSessions(organizationScope, notif) {
   const getStartedSessions = await sendRequest(
-    `${BASE_API}/organizations/${organizationScope}/sessions?statusList=active&organizationId=${organizationScope}`,
+    `${BASE_API}/organizations/${organizationScope}/sessions`,
     { method: "get" },
-    { limit: 1 },
+    {
+      limit: 1,
+      statusList: "active",
+      organizationId: organizationScope,
+      excludeVisibility: "user",
+    },
     notif,
   )
 
@@ -284,26 +328,44 @@ export async function apiCountActiveSessions(organizationScope, notif) {
 }
 
 export async function apiGetFutureSessions(organizationScope, notif) {
-  const url = `${BASE_API}/organizations/${organizationScope}/sessions?organizationId=${organizationScope}`
-  return await fetchAllSessionPages(url, "get", {}, notif)
+  const url = `${BASE_API}/organizations/${organizationScope}/sessions`
+  return await fetchAllSessionPages(
+    url,
+    "get",
+    {
+      organizationId: organizationScope,
+      excludeVisibility: "user",
+    },
+    notif,
+  )
 }
 
 export async function apiCountFutureSessions(organizationScope, notif) {
   const getStartedSessions = await sendRequest(
-    `${BASE_API}/organizations/${organizationScope}/sessions?status=ready&organizationId=${organizationScope}`,
+    `${BASE_API}/organizations/${organizationScope}/sessions`,
     { method: "get" },
-    { limit: 1 },
+    {
+      limit: 1,
+      status: "ready",
+      organizationId: organizationScope,
+      excludeVisibility: "user",
+    },
     notif,
   )
 
   return getStartedSessions?.data?.totalItems ?? 0
 }
 
-export async function apiGetSession(organizationScope, sessionId, notif) {
+export async function apiGetSession(
+  organizationScope,
+  sessionId,
+  params = {},
+  notif,
+) {
   const getSession = await sendRequest(
     `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}`,
     { method: "get" },
-    {},
+    params,
     notif,
   )
 
@@ -322,6 +384,7 @@ export async function apiGetSessionsBetweenDates(
     "get",
     {
       organizationId: organizationScope,
+      excludeVisibility: "user",
       "scheduleOn[before]": end_date,
       "scheduleOn[after]": start_date,
     },
@@ -329,11 +392,16 @@ export async function apiGetSessionsBetweenDates(
   )
 }
 
-export async function apiGetPublicSession(sessionId, password, notif) {
+export async function apiGetPublicSession(
+  sessionId,
+  password,
+  params = {},
+  notif,
+) {
   const getSession = await sendRequest(
-    `${BASE_API}/sessions/${sessionId}/public`,
+    `${BASE_API}/sessions/public/${sessionId}`,
     { method: "get" },
-    { password },
+    { password, ...params },
     notif,
   )
 
@@ -388,6 +456,31 @@ export async function apiDeleteSession(
   return resRequest
 }
 
+export async function apiGetSessionChannelTurns(
+  organizationScope,
+  sessionId,
+  channelId,
+  { limit = 50, offset = 0 } = {},
+) {
+  return sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}/channels/${channelId}`,
+    { method: "get" },
+    { limit, offset },
+  )
+}
+
+export async function apiGetPublicSessionChannelTurns(
+  sessionId,
+  channelId,
+  { limit = 50, offset = 0 } = {},
+) {
+  return sendRequest(
+    `${BASE_API}/sessions/public/${sessionId}/channels/${channelId}`,
+    { method: "get" },
+    { limit, offset },
+  )
+}
+
 export async function apiGetSessionChannel(
   organizationScope,
   sessionId,
@@ -411,7 +504,7 @@ export async function apiGetPublicSessionChannel(
   notif,
 ) {
   const getSessionChannel = await sendRequest(
-    `${BASE_API}/sessions/${sessionId}/public`,
+    `${BASE_API}/sessions/public/${sessionId}`,
     { method: "get" },
     { transcriber_id: transcriberId, password },
     notif,

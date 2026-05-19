@@ -37,6 +37,7 @@
 </template>
 <script>
 import Radio from "@/components/atoms/Radio.vue"
+import { generateId } from "@/tools/generateId.js"
 export default {
   props: {
     /*
@@ -67,7 +68,7 @@ export default {
   },
   data() {
     return {
-      id: this.inputId || Math.random().toString(36).substr(2, 9),
+      id: this.inputId || generateId(),
     }
   },
   computed: {

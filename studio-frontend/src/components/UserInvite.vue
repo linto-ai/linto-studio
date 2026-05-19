@@ -33,24 +33,23 @@
           </label>
           <div class="flex row gap-small">
             <input
-              type="search"
-              class="flex1"
+              type="email"
+              class="invite-user-input"
               autocomplete="off"
               v-model="searchMemberValue.value"
               id="dropdown-search-tags" />
-            <button
+            <Button
               type="submit"
-              class="btn primary"
+              variant="primary"
+              :label="$t('invite_user.invite')"
               :title="
-                enable_inscription
+                enable_invitation
                   ? null
                   : $t('invite_user.inscription_disabled')
               "
               :disabled="
-                searchMemberValue.valid && enable_inscription ? null : true
-              ">
-              <span class="label">{{ $t("invite_user.invite") }}</span>
-            </button>
+                searchMemberValue.valid && enable_invitation ? null : true
+              " />
           </div>
         </form>
         <div class="flex col gap-small small-padding">
@@ -126,8 +125,8 @@ export default {
     },
   },
   computed: {
-    enable_inscription() {
-      return getEnv("VUE_APP_DISABLE_USER_CREATION") !== "true"
+    enable_invitation() {
+      return getEnv("VUE_APP_DISABLE_USER_INVITATION") !== "true"
     },
   },
   methods: {
@@ -158,3 +157,11 @@ export default {
   components: { Fragment, SearchUsersListComponent },
 }
 </script>
+
+<style lang="scss" scoped>
+.invite-user-input {
+  flex: 1;
+  min-width: 0;
+  max-width: none;
+}
+</style>

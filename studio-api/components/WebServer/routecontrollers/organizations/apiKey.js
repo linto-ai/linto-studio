@@ -22,13 +22,10 @@ const { addM2mUserToOrganization } = require(
 const TokenHandler = require(
   `${process.cwd()}/components/WebServer/controllers/apikey/token`,
 )
+const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 
 async function checkTokenBelongsToOrganization(params) {
   try {
-    if (!params.organizationId) throw new OrganizationUnsupportedMediaType()
-    if (!params.tokenId)
-      throw new OrganizationUnsupportedMediaType("UserId is required")
-
     const user = await model.users.getById(params.tokenId)
     if (user.length !== 1 || user[0].type === USER_TYPE.M2M) {
       throw new UserError("Requested API key not found")
@@ -58,9 +55,7 @@ async function checkTokenBelongsToOrganization(params) {
 }
 async function createApiKey(req, res, next) {
   try {
-    if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
-    if (!req.body.role)
-      throw new OrganizationUnsupportedMediaType("Role is required")
+    requireParam(req.body.role, OrganizationUnsupportedMediaType, "Role is required")
     const role = parseInt(req.body.role, 10)
 
     if (isNaN(role) && ROLES.checkValue(role)) {
@@ -91,7 +86,6 @@ async function createApiKey(req, res, next) {
 
 async function listApiKeyFromOrga(req, res, next) {
   try {
-    if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
     const organization = await model.organizations.getById(
       req.params.organizationId,
     )

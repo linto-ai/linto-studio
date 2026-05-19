@@ -15,6 +15,7 @@ const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const { ConversationMetadataRequire } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
+const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 
 const { OrganizationNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
@@ -26,12 +27,8 @@ const { UserError } = require(
 
 async function batchShareConversation(req, res, next) {
   try {
-    if (!req.body.conversations)
-      throw new ConversationMetadataRequire("A conversations ids list is")
-    if (!req.body.users)
-      throw new ConversationMetadataRequire(
-        "A users list with desired rights is required",
-      )
+    requireParam(req.body.conversations, ConversationMetadataRequire, "A conversations ids list is")
+    requireParam(req.body.users, ConversationMetadataRequire, "A users list with desired rights is required")
 
     let auth_user = {
       id: req.payload.data.userId,
@@ -180,8 +177,8 @@ async function usersCheck(users_list, method) {
 }
 
 async function inviteNewUser(email) {
-  if (process.env.DISABLE_USER_CREATION === "true")
-    throw new UserError("User creation is disabled")
+  if (process.env.DISABLE_USER_INVITATION === "true")
+    throw new UserError("User invitation is disabled")
   const createdUser = await model.users.createExternal({ email })
   // Create new user personal organization
 

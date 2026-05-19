@@ -15,7 +15,7 @@
         </div>
 
         <!-- Media description -->
-        <div class="media-section">
+        <div class="media-section media-section--description">
           <FormInput
             inputFullWidth
             :field="descriptionField"
@@ -24,45 +24,6 @@
             textarea
             with-confirmation
             @on-confirm="handleDescriptionUpdate" />
-        </div>
-
-        <!-- Media duration -->
-        <div
-          class="media-section"
-          v-if="reactiveSelectedMedia?.metadata?.audio?.duration">
-          <h4 class="section-title">
-            {{ $t("media_explorer.panel.duration") }}
-          </h4>
-          <p class="section-content">
-            <TimeDuration
-              :duration="reactiveSelectedMedia.metadata?.audio?.duration" />
-          </p>
-        </div>
-
-        <!-- Media creation date -->
-        <div class="media-section" v-if="reactiveSelectedMedia?.created">
-          <h4 class="section-title">
-            {{ $t("media_explorer.panel.created") }}
-          </h4>
-          <p class="section-content">
-            {{
-              formatDate(reactiveSelectedMedia.created, {
-                month: "long",
-                hour: "2-digit",
-                minute: "2-digit",
-              })
-            }}
-          </p>
-        </div>
-
-        <!-- Media duration (alternative) -->
-        <div class="media-section" v-if="reactiveSelectedMedia?.metadata?.au">
-          <h4 class="section-title">
-            {{ $t("media_explorer.panel.duration") }}
-          </h4>
-          <p class="section-content">
-            {{ formatDuration(reactiveSelectedMedia.duration) }}
-          </p>
         </div>
 
         <!-- Media tags -->
@@ -102,20 +63,37 @@
             @change="handleFolderChange" />
         </div>
 
-        <!-- Media metadata -->
-        <div v-if="false" class="media-section">
+        <!-- Template used -->
+        <div class="media-section" v-if="templateName">
           <h4 class="section-title">
-            {{ $t("media_explorer.panel.metadata") }}
+            {{ $t("media_explorer.panel.template_label") }}
           </h4>
-          <div class="metadata-grid">
-            <div
-              v-for="(value, key) in reactiveSelectedMedia?.metadata"
-              :key="key"
-              class="metadata-item">
-              <span class="metadata-key">{{ key }}:</span>
-              <span class="metadata-value">{{ value }}</span>
-            </div>
+          <div class="template-row">
+            <span class="template-name">{{ templateName }}</span>
+            <Button
+              v-if="templateId"
+              variant="secondary"
+              icon="eye"
+              size="xs"
+              :label="$t('media_explorer.panel.show_template_button')"
+              @click="showTemplateInfo = true" />
+            <Button
+              v-if="canSessionInCurrentOrganization"
+              variant="secondary"
+              icon="plus"
+              size="xs"
+              :label="$t('media_explorer.panel.use_template_button')"
+              :to="{
+                name: 'conversations create',
+                params: { organizationId: mediaOrganizationId },
+                query: { template: templateId },
+              }" />
           </div>
+          <ModalSessionTemplateInfo
+            v-if="templateId"
+            v-model="showTemplateInfo"
+            :templateId="templateId"
+            :organizationId="mediaOrganizationId" />
         </div>
 
         <!-- Actions section -->
@@ -159,9 +137,6 @@
             {{ $t("media_explorer.panel.danger_zone") }}
           </h4>
           <div class="actions-container">
-            <ConversationShareMultiple
-              :selectedConversations="[reactiveSelectedMedia || selectedMedia]"
-              :currentOrganizationScope="currentOrganizationScope" />
             <Button
               @click="handleDelete"
               :label="$t('media_explorer.delete')"
@@ -185,29 +160,32 @@
 <script>
 import { mediaScopeMixin } from "@/mixins/mediaScope"
 
-import TimeDuration from "@/components/atoms/TimeDuration.vue"
 import InputSelector from "@/components/atoms/InputSelector.vue"
 import ChipTag from "@/components/atoms/ChipTag.vue"
 import Button from "@/components/atoms/Button.vue"
 import ModalDeleteConversations from "./ModalDeleteConversations.vue"
+import ModalSessionTemplateInfo from "./ModalSessionTemplateInfo.vue"
 import { mediaExplorerRightPanelMixin } from "@/mixins/mediaExplorerRightPanel.js"
+import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
 import FormInput from "@/components/molecules/FormInput.vue"
 import EMPTY_FIELD from "@/const/emptyField"
-import ConversationShareMultiple from "./ConversationShareMultiple.vue"
 import FolderSelector from "./FolderSelector.vue"
 import { mapGetters } from "vuex"
 
 export default {
   name: "MediaExplorerRightPanelItem",
-  mixins: [mediaExplorerRightPanelMixin, mediaScopeMixin],
+  mixins: [
+    mediaExplorerRightPanelMixin,
+    mediaScopeMixin,
+    organizationPermissionsMixin,
+  ],
   components: {
-    TimeDuration,
     InputSelector,
     ChipTag,
     Button,
     ModalDeleteConversations,
+    ModalSessionTemplateInfo,
     FormInput,
-    ConversationShareMultiple,
     FolderSelector,
   },
   props: {
@@ -223,6 +201,7 @@ export default {
   data() {
     return {
       showDeleteModal: false,
+      showTemplateInfo: false,
       downloadLoading: false,
       duplicateLoading: false,
       titleField: {
@@ -257,6 +236,18 @@ export default {
       return media.tags
         .map((tagId) => this.getTagById(tagId))
         .filter((tag) => !!tag)
+    },
+    templateName() {
+      return this.reactiveSelectedMedia?.metadata?.template?.name ?? null
+    },
+    templateId() {
+      return this.reactiveSelectedMedia?.metadata?.template?.id ?? null
+    },
+    mediaOrganizationId() {
+      return (
+        this.reactiveSelectedMedia?.organization?.organizationId ??
+        this.currentOrganizationScope
+      )
     },
   },
   watch: {
@@ -508,6 +499,12 @@ export default {
   gap: 0.5rem;
 }
 
+.media-section--description :deep(.form-field__textarea) {
+  min-height: 2.75rem;
+  max-height: 2.75rem;
+  resize: none;
+}
+
 .section-title {
   display: block;
   font-weight: 600;
@@ -515,13 +512,6 @@ export default {
   color: var(--text-primary, #222);
   line-height: 1.2;
   margin: 0;
-}
-
-.section-content {
-  margin: 0;
-  font-size: 0.95rem;
-  color: var(--text-primary, #000);
-  line-height: 1.4;
 }
 
 .tags-container {
@@ -542,36 +532,22 @@ export default {
   font-style: italic;
 }
 
-.metadata-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.metadata-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  padding: 0.5rem;
-  background-color: var(--background-tertiary, #f0f0f0);
-  border-radius: var(--border-radius-sm, 4px);
-}
-
-.metadata-key {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text-secondary, #666);
-}
-
-.metadata-value {
-  font-size: 0.9rem;
-  color: var(--text-primary, #000);
-  word-break: break-word;
-}
-
 .actions-container {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
+}
+
+.template-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.template-name {
+  font-size: 0.95rem;
+  color: var(--text-primary, #000);
+  word-break: break-word;
 }
 </style>

@@ -1,151 +1,62 @@
-/****************
- ******Auth*******
- *****************/
-const ExceptionType = "auth"
-
-class InvalidCredential extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "InvalidCredential"
-    this.type = ExceptionType
-    this.status = 401
-    if (message) this.message = message
-    else this.message = "Invalid credentials"
-    if (err) this.err = err
-  }
-}
-
-class UnableToGenerateKeyToken extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "UnableToGenerateKeyToken"
-    this.type = ExceptionType
-    this.status = 401
-    if (message) this.message = message
-    else this.message = "Unable to generate the keyToken"
-    if (err) this.err = err
-  }
-}
-
-class UserNotFound extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "UserNotFound"
-    this.type = ExceptionType
-    this.status = 401
-    if (message) this.message = message
-    else this.message = "Invalid credentials"
-    if (err) this.err = err
-  }
-}
-
-class MultipleUserFound extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "MultipleUserFound"
-    this.type = ExceptionType
-    this.status = 401
-    if (message) this.message = message
-    else
-      this.message =
-        "Multiple user have been found, please check with an administrator"
-    if (err) this.err = err
-  }
-}
-
-/****************
- ***Passport******
- ****************/
-
-class MalformedToken extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "MalformedToken"
-    this.type = ExceptionType
-    this.status = 401
-    if (message) this.message = message
-    else this.message = "Malformed token"
-    if (err) this.err = err
-  }
-}
-
-class ExpiredLink extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "ExpiredLink"
-    this.type = ExceptionType
-    this.status = 401
-    if (message) this.message = message
-    else this.message = "Link is expired"
-    if (err) this.err = err
-  }
-}
-
-class DisabledUser extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "DisabledUser"
-    this.type = ExceptionType
-    this.status = 423
-    if (message) this.message = message
-    else
-      this.message =
-        "Your account is disabled. Contact support to reactivate it."
-    if (err) this.err = err
-  }
-}
-
-class EmailNotVerified extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "EmailNotVerified"
-    this.type = ExceptionType
-    this.status = 403
-    if (message) this.message = message
-    else this.message = "Email address not verified"
-    if (err) this.err = err
-  }
-}
-
-class Unauthorized extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "Unauthorized"
-    this.type = ExceptionType
-    this.status = 401
-    if (message) this.message = message
-    else this.message = "You are not authorized to access this resource"
-    if (err) this.err = err
-  }
-}
-
-/****************
- *****Proxy******
- ****************/
-class UnauthorizedProxy extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "Unauthorized"
-    this.type = ExceptionType
-    this.status = 403
-    if (message) this.message = message
-    else this.message = "You are not authorized to access this resource"
-    if (err) this.err = err
-  }
-}
+const { createException } = require("./base")
 
 module.exports = {
-  //Auth Exception
-  InvalidCredential,
-  MultipleUserFound,
-  UnableToGenerateKeyToken,
-  UserNotFound,
-  DisabledUser,
-  EmailNotVerified,
-  //Passport Exception
-  Unauthorized,
-  MalformedToken,
-  ExpiredLink,
-  // Proxy Exception
-  UnauthorizedProxy,
+  // Auth
+  InvalidCredential: createException(
+    "InvalidCredential",
+    "auth",
+    401,
+    "Invalid credentials",
+  ),
+  UnableToGenerateKeyToken: createException(
+    "UnableToGenerateKeyToken",
+    "auth",
+    401,
+    "Unable to generate the keyToken",
+  ),
+  UserNotFound: createException(
+    "UserNotFound",
+    "auth",
+    401,
+    "Invalid credentials",
+  ),
+  MultipleUserFound: createException(
+    "MultipleUserFound",
+    "auth",
+    401,
+    "Multiple user have been found, please check with an administrator",
+  ),
+  // Passport
+  MalformedToken: createException(
+    "MalformedToken",
+    "auth",
+    401,
+    "Malformed token",
+  ),
+  ExpiredLink: createException("ExpiredLink", "auth", 401, "Link is expired"),
+  DisabledUser: createException(
+    "DisabledUser",
+    "auth",
+    423,
+    "Your account is disabled. Contact support to reactivate it.",
+  ),
+  EmailNotVerified: createException(
+    "EmailNotVerified",
+    "auth",
+    403,
+    "Email address not verified",
+  ),
+  Unauthorized: createException(
+    "Unauthorized",
+    "auth",
+    401,
+    "You are not authorized to access this resource",
+  ),
+  // Proxy
+  UnauthorizedProxy: createException(
+    "Unauthorized",
+    "auth",
+    403,
+    "You are not authorized to access this resource",
+  ),
 }

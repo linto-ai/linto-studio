@@ -27,15 +27,10 @@
             :checkbox-value="media._id"
             class="media-explorer-item__checkbox" />
         </div>
-        <Button
-          class="media-explorer-item__favorite"
-          :class="{ active: isFavorite }"
-          @click.stop="toggleFavorite"
-          icon="star"
+        <FavoriteStar
+          :value="isFavorite"
           :title="$t('media_explorer.favorite')"
-          :iconWeight="isFavorite ? 'fill' : 'regular'"
-          :variant="isFavorite ? 'primary' : 'transparent'"
-          size="sm" />
+          @input="toggleFavorite" />
         <!-- Media type icon -->
         <Tooltip
           :text="
@@ -177,6 +172,7 @@ import ModalDeleteConversations from "@/components/ModalDeleteConversations.vue"
 import TimeDuration from "@/components/atoms/TimeDuration.vue"
 import PopoverList from "@/components/atoms/PopoverList.vue"
 import Checkbox from "@/components/atoms/Checkbox.vue"
+import FavoriteStar from "@/components/atoms/FavoriteStar.vue"
 
 import { getEnv } from "@/tools/getEnv"
 import { userName } from "@/tools/userName"
@@ -196,6 +192,7 @@ export default {
     MediaExplorerChipStatus,
     SecurityLevelIndicator,
     Checkbox,
+    FavoriteStar,
   },
   props: {
     media: {
@@ -524,35 +521,6 @@ export default {
   // border-radius: 4px;
   // background-color: var(--neutral-10);
   flex-shrink: 0;
-}
-
-.media-explorer-item__favorite {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  border: none;
-  background: transparent;
-  color: var(--neutral-60);
-  border-radius: 2px;
-  cursor: pointer;
-  transition: color 0.2s ease;
-  box-shadow: none !important;
-
-  &:hover {
-    color: var(--primary-color);
-    box-shadow: none !important;
-    transform: none;
-  }
-
-  &.active {
-    color: var(--primary-color);
-
-    &:hover {
-      color: var(--neutral-60);
-    }
-  }
 }
 
 .media-explorer-item__checkbox {

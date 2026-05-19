@@ -74,6 +74,7 @@ import ModalCreateSystemToken from "@/components/ModalCreateSystemToken.vue"
 import ModalDeleteToken from "@/components/ModalDeleteToken.vue"
 import ModalRenewSystemToken from "@/components/ModalRenewSystemToken.vue"
 import ModalViewToken from "@/components/ModalViewToken.vue"
+import { formatDateLocale } from "@/tools/formatDate"
 
 export default {
   mixins: [platformRoleMixin],
@@ -128,9 +129,7 @@ export default {
         throw new Error(req.message)
       }
     },
-    formatDate(date) {
-      return new Date(date).toLocaleDateString()
-    },
+    formatDate: formatDateLocale,
     viewToken(id, element) {
       this.selectedToken = element
       this.isModalViewTokenOpen = true

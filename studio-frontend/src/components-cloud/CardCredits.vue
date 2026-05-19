@@ -14,19 +14,12 @@
 </template>
 
 <script>
-import { getEnv } from "@/tools/getEnv"
-
 export default {
     name: "CardCredits",
     data() {
         return {
             isFreePlan: true,
             isPaidPlan: false,
-        }
-    },
-    computed: {
-        logo() {
-            return `/img/${getEnv("VUE_APP_LOGO")}`
         }
     },
 }

@@ -7,6 +7,7 @@ import { getEnv } from "@/tools/getEnv"
 const BASE_API = getEnv("VUE_APP_CONVO_API")
 
 const DEFAULT_PAGE_SIZE = conversationsPerPage
+const CLIENT_TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone
 
 export async function apiGetGenericConversationsList(
   scope,
@@ -311,10 +312,15 @@ export async function apiCreateConversation(
       onUploadProgress,
     )
 
-    return req.status == "success"
+    if (req.status === "success") return { success: true }
+    return {
+      success: false,
+      errorCode: req.error?.response?.data?.code,
+      errorData: req.error?.response?.data,
+    }
   } catch (e) {
     console.error(e)
-    return false
+    return { success: false }
   }
 }
 
@@ -417,7 +423,7 @@ export async function apiGetJsonFileFromConversation(
   notif,
 ) {
   return await sendRequest(
-    `${BASE_API}/conversations/${conversationId}/download?format=${format}`,
+    `${BASE_API}/conversations/${conversationId}/download?format=${format}&timezone=${CLIENT_TIMEZONE}`,
     { method: "post" },
     {
       filter: { speaker: speakers.join(","), keyword: keywords.join(",") },
@@ -440,7 +446,7 @@ export async function apiGetTextFileFromConversation(
   notif,
 ) {
   return await sendRequest(
-    `${BASE_API}/conversations/${conversationId}/download?format=text`,
+    `${BASE_API}/conversations/${conversationId}/download?format=text&timezone=${CLIENT_TIMEZONE}`,
     { method: "post" },
     {
       filter: { speaker: speakers.join(","), keyword: keywords.join(",") },
@@ -462,7 +468,7 @@ export async function apiGetDocxFileFromConversation(
   notif,
 ) {
   return await sendRequest(
-    `${BASE_API}/conversations/${conversationId}/download?format=docx&preview=${preview}`,
+    `${BASE_API}/conversations/${conversationId}/download?format=docx&preview=${preview}&timezone=${CLIENT_TIMEZONE}`,
     { method: "post", responseType: "blob" },
     {
       filter: { speaker: speakers.join(","), keyword: keywords.join(",") },
@@ -496,7 +502,7 @@ export async function apiGetGenericFileFromConversation(
   const safeFlavor = flavor ?? ""
   const safeOutputType = llmOutputType ?? ""
   return await sendRequest(
-    `${BASE_API}/conversations/${conversationId}/download?format=${format}&preview=${preview}&flavor=${safeFlavor}&regenerate=${regenerate}&title=${title}&llmOutputType=${safeOutputType}`,
+    `${BASE_API}/conversations/${conversationId}/download?format=${format}&preview=${preview}&flavor=${safeFlavor}&regenerate=${regenerate}&title=${title}&llmOutputType=${safeOutputType}&timezone=${CLIENT_TIMEZONE}`,
     { method: "post", responseType: "blob" },
     {
       filter: { speaker: speakers.join(","), keyword: keywords.join(",") },

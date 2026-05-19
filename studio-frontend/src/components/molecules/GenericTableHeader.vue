@@ -34,6 +34,7 @@
 <script>
 import ArrayHeader from "@/components/ArrayHeader.vue"
 import Checkbox from "@/components/atoms/Checkbox.vue"
+import { generateId } from "@/tools/generateId.js"
 export default {
   props: {
     // { key, label, sortable, width, component, mainLabel}
@@ -68,7 +69,7 @@ export default {
   },
   data() {
     return {
-      randomId: Math.random().toString(36).substring(2, 15),
+      randomId: generateId(),
     }
   },
   mounted() {},

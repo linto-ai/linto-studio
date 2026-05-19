@@ -13,6 +13,7 @@
             name: 'backoffice',
           }"
           class="modal-switch-org__list__item">
+          <span class="modal-switch-org__list__item__favorite-spacer" />
           <Avatar
             icon="key"
             size="sm"
@@ -32,6 +33,10 @@
           v-for="org in sortedOrganizations"
           :key="org._id"
           class="modal-switch-org__list__item">
+          <FavoriteStar
+            :value="isFavoriteOrganization(org._id)"
+            :title="$t('modal_switch_org.favorite')"
+            @input="toggleFavoriteOrganization(org._id)" />
           <Avatar
             :text="org.name.slice(0, 1)"
             :size="isMobile ? 'md' : 'sm'"
@@ -74,9 +79,10 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex"
+import { mapGetters, mapActions } from "vuex"
 import Modal from "@/components/molecules/Modal.vue"
 import ModalCreateOrganization from "@/components/ModalCreateOrganization.vue"
+import FavoriteStar from "@/components/atoms/FavoriteStar.vue"
 import { orgDisplayName } from "@/tools/orgDisplayName"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
@@ -87,6 +93,7 @@ export default {
   components: {
     Modal,
     ModalCreateOrganization,
+    FavoriteStar,
   },
   mixins: [platformRoleMixin, orgaRoleMixin],
   props: {
@@ -98,6 +105,7 @@ export default {
   data() {
     return {
       isCreateModalOpen: false,
+      sortedOrganizations: [],
     }
   },
   computed: {
@@ -107,6 +115,7 @@ export default {
     }),
     ...mapGetters("user", {
       userInfo: "getUserInfos",
+      isFavoriteOrganization: "isFavoriteOrganization",
     }),
     ...mapGetters("system", ["isMobile"]),
     isOpen: {
@@ -117,21 +126,32 @@ export default {
         this.$emit("input", value)
       },
     },
-    sortedOrganizations() {
-      return this.organizations
-        .map((org) => ({
-          ...org,
-          role: getUserRoleInOrganization(org, this.userInfo._id),
-        }))
-        .sort((a, b) => {
-          if (a.role > b.role) return -1
-          if (a.role < b.role) return 1
+  },
+  watch: {
+    value: {
+      immediate: true,
+      handler(open) {
+        if (open) {
+          this.sortedOrganizations = this.organizations
+            .map((org) => ({
+              ...org,
+              role: getUserRoleInOrganization(org, this.userInfo._id),
+              isFav: this.isFavoriteOrganization(org._id),
+            }))
+            .sort((a, b) => {
+              if (a.isFav !== b.isFav) return a.isFav ? -1 : 1
 
-          return a.name.localeCompare(b.name)
-        })
+              if (a.role > b.role) return -1
+              if (a.role < b.role) return 1
+
+              return a.name.localeCompare(b.name)
+            })
+        }
+      },
     },
   },
   methods: {
+    ...mapActions("user", ["toggleFavoriteOrganization"]),
     close() {
       this.$emit("close")
     },
@@ -173,6 +193,12 @@ export default {
         &__role {
           color: var(--text-secondary);
         }
+      }
+
+      &__favorite-spacer {
+        display: inline-block;
+        width: 20px;
+        flex-shrink: 0;
       }
 
       &.new-org {

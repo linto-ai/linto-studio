@@ -10,7 +10,6 @@ const llm = require(
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 
 const {
-  ConversationIdRequire,
   ConversationNotFound,
   ConversationMetadataRequire,
   GenerationNotFound,
@@ -68,8 +67,6 @@ async function verifyJobExists(jobId) {
  */
 async function listGenerations(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
-
     const { serviceId } = req.query
     if (!serviceId) {
       throw new ConversationMetadataRequire("serviceId query parameter is required")
@@ -130,8 +127,6 @@ async function listGenerations(req, res, next) {
  */
 async function createGeneration(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
-
     const { serviceId, jobId, serviceName } = req.body
 
     if (!serviceId) {
@@ -190,8 +185,6 @@ async function createGeneration(req, res, next) {
  */
 async function getGeneration(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
-
     const { generationId } = req.params
     if (!generationId) {
       throw new ConversationMetadataRequire("generationId is required")
@@ -250,8 +243,6 @@ async function updateGenerationStatus(jobId, status, error = null) {
  */
 async function deleteGeneration(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
-
     const { generationId } = req.params
     if (!generationId) {
       throw new ConversationMetadataRequire("generationId is required")

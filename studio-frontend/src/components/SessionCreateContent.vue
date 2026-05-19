@@ -59,7 +59,9 @@
         </div>
       </section>
 
-      <SecurityLevelSelector v-if="enableSecurityLevel" v-model="securityLevel" />
+      <SecurityLevelSelector
+        v-if="enableSecurityLevel"
+        v-model="securityLevel" />
 
       <!-- Channels section -->
       <section class="flex col">
@@ -151,6 +153,7 @@ import { bus } from "@/main.js"
 
 import { testName } from "@/tools/fields/testName"
 import { getEnv } from "@/tools/getEnv"
+import { generateId } from "@/tools/generateId.js"
 import { meetsMetaSecurityLevel } from "@/tools/filterBySecurityLevel"
 
 import EMPTY_FIELD from "@/const/emptyField"
@@ -187,6 +190,10 @@ export default {
       type: Object, // { sessionTemplates: [...] totalItems: number }
       Required: true,
     },
+    preloadTemplateId: {
+      type: String,
+      default: null,
+    },
   },
   data() {
     let defaultMetadata = []
@@ -203,22 +210,11 @@ export default {
       localSessionTemplates: structuredClone(this.sessionTemplates),
       selectedTemplateId: "",
       formState: "idle",
-      fields: [
-        "name",
-        "fieldIsPublic",
-        "fieldDiarizationEnabled",
-        "fieldAppointment",
-      ],
+      fields: ["name", "fieldDiarizationEnabled", "fieldAppointment"],
       name: {
         ...EMPTY_FIELD,
         label: this.$i18n.t("session.create_page.name_field.label"),
         testField: testName,
-      },
-      fieldIsPublic: {
-        value: true,
-        error: null,
-        valid: false,
-        label: this.$t("session.settings_page.isPublic_label"),
       },
       fieldSessionVisibility: {
         value: "public",
@@ -304,8 +300,13 @@ export default {
       formError: null,
     }
   },
-  mounted() {},
+  mounted() {
+    this.applyPreloadedTemplate()
+  },
   watch: {
+    preloadTemplateId() {
+      this.applyPreloadedTemplate()
+    },
     selectedProfiles() {
       this.channelsError = null
     },
@@ -364,6 +365,14 @@ export default {
   },
 
   methods: {
+    applyPreloadedTemplate() {
+      if (!this.preloadTemplateId) return
+      if (this.selectedTemplateId) return
+      const match = this.localSessionTemplates.sessionTemplates.find(
+        (t) => t.id === this.preloadTemplateId,
+      )
+      if (match) this.selectedTemplateId = match.id
+    },
     applyTemplate(template) {
       let nameToApply
       let channelsToApply
@@ -399,7 +408,7 @@ export default {
     convertTemplateChannelToEditableChannel(templateChannel) {
       let channel = {}
 
-      channel.id = templateChannel.id
+      channel.id = generateId()
       channel.name = templateChannel.name
       channel.translations = structuredClone(templateChannel.translations)
       channel.languages = templateChannel.languages
@@ -538,6 +547,14 @@ export default {
           })),
           meta: {
             ...Object.fromEntries(this.fieldMetadata.value),
+            ...(this.selectedTemplate
+              ? {
+                  "@template": {
+                    id: this.selectedTemplate.id,
+                    name: this.selectedTemplate.name,
+                  },
+                }
+              : {}),
             securityLevel: this.securityLevel,
           },
           scheduleOn: startDateTime,

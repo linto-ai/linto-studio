@@ -1,10 +1,13 @@
 const MongoModel = require(`../model`)
 const debug = require("debug")("linto:lib:mongodb:models:conversations")
+const { calculateObjectSize } = require("bson")
 
 const moment = require("moment")
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const TYPE = require(`${process.cwd()}/lib/dao/conversation/types`)
+
+const BSON_MAX_SIZE = 16 * 1024 * 1024
 class ConvoModel extends MongoModel {
   constructor() {
     super("conversations")
@@ -15,6 +18,23 @@ class ConvoModel extends MongoModel {
       const dateTime = moment().format()
       conversation.created = dateTime
       conversation.last_update = dateTime
+
+      if (conversation.text?.length > 0) {
+        let docSize = calculateObjectSize(conversation)
+        if (docSize > BSON_MAX_SIZE) {
+          const originalCount = conversation.text.length
+          while (docSize > BSON_MAX_SIZE && conversation.text.length > 0) {
+            conversation.text = conversation.text.slice(
+              0,
+              Math.floor(conversation.text.length * 0.8),
+            )
+            docSize = calculateObjectSize(conversation)
+          }
+          debug(
+            `Conversation document exceeded BSON 16MB limit (${originalCount} turns), truncated to ${conversation.text.length} turns`,
+          )
+        }
+      }
 
       return await this.mongoInsert(conversation)
     } catch (error) {
@@ -45,7 +65,12 @@ class ConvoModel extends MongoModel {
     }
   }
 
-  async updateRights(conversationId, organizationId, membersRight, customRights) {
+  async updateRights(
+    conversationId,
+    organizationId,
+    membersRight,
+    customRights,
+  ) {
     try {
       const query = {
         _id: this.getObjectId(conversationId),
@@ -74,7 +99,7 @@ class ConvoModel extends MongoModel {
       return await this.mongoRequest(query, projection)
     } catch (error) {
       console.error(error)
-      return errorMonitor
+      throw error
     }
   }
 
@@ -437,7 +462,10 @@ class ConvoModel extends MongoModel {
         },
       }
       return await this.mongoUpdateMany(query, operator, values)
-    } catch (err) {}
+    } catch (err) {
+      console.error(error)
+      return error
+    }
   }
 
   async addSharedUser(id, shared) {
@@ -516,10 +544,7 @@ class ConvoModel extends MongoModel {
         if (filter.folderId === null || filter.folderId === "null") {
           query.$and = query.$and || []
           query.$and.push({
-            $or: [
-              { folderId: null },
-              { folderId: { $exists: false } },
-            ],
+            $or: [{ folderId: null }, { folderId: { $exists: false } }],
           })
         } else {
           query.folderId = filter.folderId
@@ -891,7 +916,12 @@ class ConvoModel extends MongoModel {
     }
   }
 
-  async updateRightsBatchByFolderId(folderId, organizationId, membersRight, customRights) {
+  async updateRightsBatchByFolderId(
+    folderId,
+    organizationId,
+    membersRight,
+    customRights,
+  ) {
     try {
       const query = {
         folderId: folderId,

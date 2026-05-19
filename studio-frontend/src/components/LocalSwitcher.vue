@@ -5,11 +5,19 @@
     @click="setLocale"
     class="local-switcher"
     color="neutral"
+    :aria-label="$t('local_switcher.list_label')"
     ref="popoverList">
-    <template #trigger="{ open }">
-      <Button variant="tertiary" size="sm">
-        {{ localTxt }}
-      </Button>
+    <template #trigger="{ ariaProps }">
+      <Button
+        v-bind="ariaProps"
+        variant="tertiary"
+        size="sm"
+        :label="localTxt"
+        :aria-label="$t('local_switcher.change_language', { lang: localTxt })"
+        icon="translate" />
+    </template>
+    <template #item="{ item }">
+      <span :lang="item.value.split('-')[0]">{{ item.text }}</span>
     </template>
   </PopoverList>
 </template>
@@ -21,8 +29,8 @@ export default {
   data() {
     return {
       langList: [
-        { value: "fr-FR", text: "Français", avatarText: "🇫🇷" },
-        { value: "en-US", text: "English", avatarText: "🇬🇧" },
+        { value: "fr-FR", text: "Français" },
+        { value: "en-US", text: "English" },
       ],
     }
   },
@@ -35,11 +43,8 @@ export default {
     },
   },
   computed: {
-    localIcon() {
-      return this.$i18n.locale === "fr-FR" ? "🇫🇷" : "🇬🇧"
-    },
     localTxt() {
-      return this.$i18n.locale === "fr-FR" ? "🇫🇷 Français" : "🇬🇧 English"
+      return this.$i18n.locale === "fr-FR" ? "Français" : "English"
     },
     local() {
       return this.$i18n.locale

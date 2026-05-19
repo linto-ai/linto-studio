@@ -1,4 +1,6 @@
-const debug = require("debug")("linto:components:IoHandler:controllers:MqttEvents")
+const debug = require("debug")(
+  "linto:components:IoHandler:controllers:MqttEvents",
+)
 
 const retryInterval = 10000 // Retry every 10 seconds
 const maxRetries = 5 // Maximum number of retries
@@ -21,49 +23,27 @@ module.exports = function () {
   if (!this.app.components["BrokerClient"]) {
     return
   }
-  this.app.components["BrokerClient"].deliveryClient.on("error", () => {
+  const mainClient = this.app.components["BrokerClient"].mainClient
+
+  mainClient.on("error", () => {
     retryConnectionOperation(
       () => this.app.components["IoHandler"].brokerKo(),
       this.app,
     )
   })
 
-  this.app.components["BrokerClient"].deliveryClient.on("offline", () => {
+  mainClient.on("offline", () => {
     retryConnectionOperation(
       () => this.app.components["IoHandler"].brokerKo(),
       this.app,
     )
   })
 
-  this.app.components["BrokerClient"].deliveryClient.on("ready", () => {
+  mainClient.on("ready", () => {
     retryConnectionOperation(
       () =>
         this.app.components["IoHandler"].brokerOk(
-          "Delivery broker connection established",
-        ),
-      this.app,
-    )
-  })
-
-  this.app.components["BrokerClient"].organizationClient.on("error", () => {
-    retryConnectionOperation(
-      () => this.app.components["IoHandler"].brokerKo(),
-      this.app,
-    )
-  })
-
-  this.app.components["BrokerClient"].organizationClient.on("offline", () => {
-    retryConnectionOperation(
-      () => this.app.components["IoHandler"].brokerKo(),
-      this.app,
-    )
-  })
-
-  this.app.components["BrokerClient"].organizationClient.on("ready", () => {
-    retryConnectionOperation(
-      () =>
-        this.app.components["IoHandler"].brokerOk(
-          "Organization broker connection established",
+          "Broker connection established",
         ),
       this.app,
     )

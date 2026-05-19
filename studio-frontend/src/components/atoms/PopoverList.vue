@@ -11,18 +11,20 @@
     @input="onPopoverToggle"
     @keydown="onKeyDown">
     <template #trigger="{ open }">
-      <slot name="trigger" :open="open">
+      <slot
+        name="trigger"
+        :open="open"
+        :listboxId="listboxId"
+        :ariaProps="triggerAriaProps(open)">
         <Button
           :iconRight="open ? 'caret-up' : 'caret-down'"
-          v-bind="$attrs"
+          v-bind="{ ...$attrs, ...triggerAriaProps(open) }"
           :block="fullWidth"
           :avatar="selectedItem?.avatar"
           :icon="selectedItem?.icon"
           :icon-weight="selectedItem?.iconWeight"
           :label="labelButton"
-          class="popover-list__trigger"
-          aria-haspopup="listbox"
-          :aria-expanded="open" />
+          class="popover-list__trigger" />
       </slot>
     </template>
     <template #content>
@@ -31,7 +33,7 @@
         v-if="asyncSearch || (items && items.length)">
         <!-- Header: select all + search -->
         <div
-          v-if="searchable || asyncSearch || (selection && multiple)"
+          v-if="hasSearch || (selection && multiple)"
           class="popover-list__header"
           @click.stop>
           <Checkbox
@@ -42,10 +44,14 @@
             class="popover-list__checkbox"
             :aria-label="$t('popover_list.select_all')" />
           <input
-            v-if="searchable || asyncSearch"
+            v-if="hasSearch"
             type="text"
             v-model="searchQuery"
-            autofocus
+            role="combobox"
+            :aria-controls="listboxId"
+            aria-expanded="true"
+            :aria-activedescendant="activeDescendantId"
+            aria-autocomplete="list"
             :placeholder="effectiveSearchPlaceholder"
             class="popover-list__search-input"
             :aria-label="$t('popover_list.search')"
@@ -57,7 +63,8 @@
           :id="listboxId"
           :aria-label="ariaLabel"
           :aria-multiselectable="multiple || null"
-          :aria-activedescendant="activeDescendantId">
+          :aria-activedescendant="hasSearch ? null : activeDescendantId"
+          :tabindex="hasSearch ? null : 0">
           <!-- Loading state -->
           <div v-if="loading" class="popover-list__loading">
             <Loading block :background="false" />
@@ -73,12 +80,15 @@
                 class="popover-list__item popover-list__item--selection"
                 role="option"
                 :aria-selected="true"
-                @click.stop>
+                @click.stop="onSelectionItemClick(item, $event)">
                 <Checkbox
+                  :id="getCheckboxId('selected-' + index)"
                   :value="true"
                   @input="toggleSelection(item)"
                   class="popover-list__checkbox" />
-                <label class="popover-list__checkbox-label">
+                <label
+                  :for="getCheckboxId('selected-' + index)"
+                  class="popover-list__checkbox-label">
                   <slot name="item" :item="item">
                     <span class="popover-list__item__name">{{
                       item.name || item.text
@@ -113,7 +123,7 @@
               }"
               role="option"
               :aria-selected="isSelected(item)"
-              @click.stop>
+              @click.stop="onSelectionItemClick(item, $event)">
               <Checkbox
                 :id="getCheckboxId(index)"
                 :value="isSelected(item)"
@@ -183,6 +193,7 @@ import Popover from "./Popover.vue"
 import Loading from "./Loading.vue"
 import Checkbox from "./Checkbox.vue"
 import { debounceMixin } from "@/mixins/debounce"
+import { generateId } from "@/tools/generateId.js"
 
 export default {
   name: "PopoverList",
@@ -394,6 +405,11 @@ export default {
 
       this.emitValue(updated)
     },
+    onSelectionItemClick(item, event) {
+      if (event.target === event.currentTarget) {
+        this.toggleSelection(item)
+      }
+    },
     handleClickItem(item) {
       if (this.selection) {
         this.toggleSelection(item)
@@ -413,7 +429,7 @@ export default {
           })
         } else {
           this.$emit("click", item)
-          this.emitValue(item.value ?? item.id)
+          this.emitValue("value" in item ? item.value : item.id)
           if (this.closeOnItemClick) {
             this.$nextTick(() => {
               this.$refs.popover && this.$refs.popover.close()
@@ -508,6 +524,13 @@ export default {
     onSearchKeyDown(e) {
       this.handleKeyboardNavigation(e)
     },
+    triggerAriaProps(open) {
+      return {
+        "aria-haspopup": "listbox",
+        "aria-expanded": open,
+        "aria-controls": this.listboxId,
+      }
+    },
     highlightNext() {
       if (this.filteredItems.length === 0) return
       if (this.highlightedIndex >= this.filteredItems.length - 1) {
@@ -560,7 +583,7 @@ export default {
   data() {
     return {
       highlightedIndex: 0,
-      uid: Math.random().toString(36).substring(2, 9),
+      uid: generateId(),
       searchQuery: "",
       loading: false,
       asyncItems: [],
@@ -569,6 +592,9 @@ export default {
   },
   computed: {
     ...mapGetters("system", ["isMobile"]),
+    hasSearch() {
+      return this.searchable || !!this.asyncSearch
+    },
     effectiveSearchPlaceholder() {
       return (
         this.searchPlaceholder ?? this.$t("popover_list.search_placeholder")

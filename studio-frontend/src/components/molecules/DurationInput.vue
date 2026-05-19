@@ -26,7 +26,7 @@ export default {
     steps: {
       type: Array,
       default: () => {
-        return ["h", "d", "y"]
+        return ["m", "h", "d", "y"]
       },
     },
   },

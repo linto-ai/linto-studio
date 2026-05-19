@@ -14,6 +14,12 @@ const getters = {
   getUserPlatformRole(state) {
     return state.userInfos.role
   },
+  getFavoriteOrganizationId(state) {
+    return state.userInfos?.defaultOrganization ?? null
+  },
+  isFavoriteOrganization: (state) => (id) => {
+    return state.userInfos?.defaultOrganization === id
+  },
   isFavoriteConversation: (state) => (id) => {
     return state.favoritesConversationIds.includes(id)
   },

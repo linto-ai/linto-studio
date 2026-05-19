@@ -34,6 +34,25 @@
             <h2>
               {{ $t("session.settings_page.global_informations_title") }}
             </h2>
+            <div v-if="templateName" class="form-field flex col">
+              <FormInput
+                :field="{
+                  label: $t('media_explorer.panel.template_label'),
+                  value: templateName,
+                }"
+                readonly
+                readonlyFitContent>
+                <template v-slot:content-after-input>
+                  <Button
+                    v-if="templateId"
+                    variant="secondary"
+                    icon="eye"
+                    size="sm"
+                    :label="$t('media_explorer.panel.show_template_button')"
+                    @click="showTemplateInfo = true" />
+                </template>
+              </FormInput>
+            </div>
             <FormInput :field="fieldPublicLink">
               <template v-slot:content-after-input>
                 <Button
@@ -186,8 +205,17 @@
           </section>
         </div>
         <div class="flex col gap-medium session-settings-right align-center">
-          <div class="flex col gap-medium">
+          <div class="flex col gap-medium session-settings-actions">
             <!-- Delete and save -->
+            <Button
+              v-if="isPending && !isStarted"
+              icon="trash"
+              :label="$t('session.detail_page.delete_session_button')"
+              @click="deleteSession"
+              variant="primary"
+              intent="destructive"
+              size="sm"
+              class="btn--delete-scheduled"></Button>
             <Button
               v-if="isStarted && !isActive"
               icon="stop"
@@ -216,6 +244,7 @@
           <SessionChannelsTable
             v-if="channels.length > 0"
             from="sessionSettings"
+            :microphoneDisabled="!isStarted"
             @connectMicrophone="connectMicrophone"
             @updateName="updateChannelName"
             :channelsList="localChannels"></SessionChannelsTable>
@@ -227,10 +256,7 @@
         class="flex gap-medium conversation-create-footer align-center"
         v-if="hasChanged">
         <div class="flex1 small-padding-left">Session has been modified</div>
-        <Button
-          variant="secondary"
-          @click="resetSession"
-          label="Reset" />
+        <Button variant="secondary" @click="resetSession" label="Reset" />
 
         <Button
           variant="primary"
@@ -243,6 +269,12 @@
         v-if="showModalDeleteSession"
         @on-close="closeModalDeleteSession"
         @on-confirm="stopSession" />
+
+      <ModalSessionTemplateInfo
+        v-if="templateId"
+        v-model="showTemplateInfo"
+        :templateId="templateId"
+        :organizationId="organizationId" />
 
       <ModalEditSessionAlias
         :organizationId="organizationId"
@@ -283,6 +315,7 @@ import FormRadio from "@/components/molecules/FormRadio.vue"
 import SessionChannelsTable from "@/components/SessionChannelsTable.vue"
 import AppointmentSelector from "@/components/AppointmentSelector.vue"
 import ModalForceDeleteSession from "@/components/ModalForceDeleteSession.vue"
+import ModalSessionTemplateInfo from "@/components/ModalSessionTemplateInfo.vue"
 import MetadataList from "@/components/MetadataList.vue"
 import SessionHeader from "@/components/SessionHeader.vue"
 import ModalEditSessionAlias from "@/components/ModalEditSessionAlias.vue"
@@ -400,6 +433,7 @@ export default {
       linkHasBeenCopied: false,
       showModalDeleteSession: false,
       showModalEditSessionAlias: false,
+      showTemplateInfo: false,
       formState: "idle",
       localChannels: [],
       channelsHasChanged: false,
@@ -409,8 +443,6 @@ export default {
   created() {},
   computed: {
     hasChanged() {
-      //const publicChanged = this.fieldIsPublic.value !== this.isPublic
-
       const autoStartChanged = this.fieldAutoStart.value !== this.autoStart
       const autoStopChanged = this.fieldAutoStop.value !== this.autoStop
       const startDateChanged = !isSameDateTimeWithoutSeconds(
@@ -424,7 +456,6 @@ export default {
       )
 
       return (
-        //publicChanged ||
         autoStartChanged ||
         autoStopChanged ||
         startDateChanged ||
@@ -498,7 +529,9 @@ export default {
       this.fieldAppointment.value = [this.startTime, this.endTime]
       this.localChannels = structuredClone(this.session.channels)
 
-      this.fieldMetadata.value = Object.entries(this.metadata)
+      this.fieldMetadata.value = Object.entries(this.metadata).filter(
+        (m) => !m[0].startsWith("@"),
+      )
     },
     updateChannelName(index, value) {
       this.localChannels[index].name = value
@@ -613,7 +646,10 @@ export default {
           endOn: endDateTime,
           autoStart: this.fieldAutoStart.value,
           autoEnd: this.fieldAutoStop.value,
-          visibility: this.fieldIsPublic.value ? "public" : "organization",
+          visibility: this.fieldSessionVisibility.value.replace(
+            "password",
+            "public",
+          ),
           channels: this.localChannels,
         }
 
@@ -651,6 +687,7 @@ export default {
     SessionChannelsTable,
     AppointmentSelector,
     ModalForceDeleteSession,
+    ModalSessionTemplateInfo,
     MetadataList,
     SessionHeader,
     ModalEditSessionAlias,

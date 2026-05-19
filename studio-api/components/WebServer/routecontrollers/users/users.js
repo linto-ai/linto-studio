@@ -33,13 +33,14 @@ const {
   GenerateMagicLinkError,
 } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
 
-const { NodemailerError, NodemailerInvalidEmail } = require(
+const { NodemailerError } = require(
   `${process.cwd()}/components/WebServer/error/exception/nodemailer`,
 )
 
 const { populateUserToOrganization } = require(
   `${process.cwd()}/components/WebServer/controllers/organization/utility`,
 )
+const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 
 async function createUser(req, res, next) {
   try {
@@ -95,7 +96,10 @@ async function createUser(req, res, next) {
       ? "Account created."
       : "Account created. An email has been sent to you. Please open it and click on the link to validate your email address."
 
-    res.status(201).send({ message })
+    const organizationCreationDisabled =
+      process.env.DISABLE_DEFAULT_ORGANIZATION_CREATION === "true"
+
+    res.status(201).send({ message, organizationCreationDisabled })
   } catch (err) {
     next(err)
   }
@@ -112,7 +116,7 @@ async function listUser(req, res, next) {
 
 async function searchUser(req, res, next) {
   try {
-    if (!req.query.search) throw new UserUnsupportedMediaType()
+    requireParam(req.query.search, UserUnsupportedMediaType)
 
     const userList = (await model.users.listPublicUsers()).filter((user) => {
       const userField = [
@@ -185,8 +189,7 @@ async function updateUser(req, res, next) {
         req.body.accountNotifications ||
         req.body.emailNotifications ||
         req.body.private !== undefined ||
-        req.body.password ||
-        req.body.defaultOrganization
+        req.body.password
       )
     )
       throw new UserUnsupportedMediaType()
@@ -219,8 +222,6 @@ async function updateUser(req, res, next) {
     if (req.body.lastname) user.lastname = req.body.lastname
     if (req.body.private !== undefined) user.private = req.body.private
     if (req.body.password) user.password = req.body.password
-    if (req.body.defaultOrganization)
-      user.defaultOrganization = req.body.defaultOrganization
 
     if (req.body.accountNotifications) {
       for (let key of Object.keys(req.body.accountNotifications)) {
@@ -287,7 +288,7 @@ async function logout(req, res, next) {
 
 async function recoveryAuth(req, res, next) {
   try {
-    if (!req.body.email) throw new UserUnsupportedMediaType()
+    requireParam(req.body.email, UserUnsupportedMediaType)
     const user = await model.users.getByEmail(req.body.email, true)
     if (user.length !== 1) {
       debug(
@@ -321,7 +322,7 @@ async function recoveryAuth(req, res, next) {
 
 async function resendVerificationEmail(req, res, next) {
   try {
-    if (!req.body.email) throw new UserUnsupportedMediaType()
+    requireParam(req.body.email, UserUnsupportedMediaType)
 
     const successMessage = {
       message: "If this email exists and is not yet verified, a verification link has been sent.",

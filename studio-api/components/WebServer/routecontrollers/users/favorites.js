@@ -19,7 +19,6 @@ const conversationUtility = require(
 
 async function addFav(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
     const result = await model.favorites.add(
       req.payload.data.userId,
       req.params.conversationId,
@@ -34,7 +33,6 @@ async function addFav(req, res, next) {
 
 async function deleteFav(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
     const result = await model.favorites.deleteFav(
       req.payload.data.userId,
       req.params.conversationId,

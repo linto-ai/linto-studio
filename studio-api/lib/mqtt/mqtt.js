@@ -37,7 +37,11 @@ class MqttClient extends EventEmitter {
       ],
       keepalive: parseInt(this.options.keepalive), //can live for LOCAL_MQTT_KEEP_ALIVE seconds without a single message sent on broker
       reconnectPeriod: Math.floor(Math.random() * 3000) + 2000, // ms for reconnect, ensure that all clients don't reconnect at the same time
-      will: {
+      qos: this.options.qos,
+    }
+    // Consumer-only clients omit `pub` and skip the will entirely.
+    if (this.options.pub) {
+      this.cnxParam.will = {
         topic: `${this.options.pub}/status`,
         retain: this.options.retain,
         //Do not work for some reason ... currently using mosquitto
@@ -51,8 +55,7 @@ class MqttClient extends EventEmitter {
           uniqueId: this.options.uniqueId,
           online: false,
         }),
-      },
-      qos: this.options.qos,
+      }
     }
     this.init()
   }
@@ -67,7 +70,7 @@ class MqttClient extends EventEmitter {
   async init() {
     this.client = Mqtt.connect(this.cnxParam)
     this.client.on("connect", () => {
-      if ((!"subs") in this.options || this.options.subs.length == 0) {
+      if (!this.options.subs || this.options.subs.length == 0) {
         this.emit("ready")
         return
       }

@@ -184,6 +184,10 @@
     background-color: var(--bg-highlight);
   }
 
+  .session-settings-actions .btn--delete-scheduled {
+    width: 250px;
+  }
+
   .session-settings-qr-code {
     max-width: 300px;
   }

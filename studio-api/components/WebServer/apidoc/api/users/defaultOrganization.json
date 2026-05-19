@@ -1,0 +1,81 @@
+{
+  "/api/users/self/default-organization": {
+    "put": {
+      "tags": ["users favorites"],
+      "summary": "Set the default organization for the connected user",
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["organizationId"],
+              "properties": {
+                "organizationId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "The organization ID to set as default"
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Default organization updated"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "415": {
+          "$ref": "#/components/responses/UnsupportedMediaType"
+        }
+      }
+    },
+    "delete": {
+      "tags": ["users favorites"],
+      "summary": "Remove the default organization for the connected user",
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Default organization removed"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  }
+}

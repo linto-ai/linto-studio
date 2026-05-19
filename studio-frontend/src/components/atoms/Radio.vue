@@ -15,6 +15,7 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
+import { generateId } from "@/tools/generateId.js"
 export default {
   name: "Radio",
   props: {
@@ -42,7 +43,7 @@ export default {
       },
     },
     _id() {
-      return this.id || Math.random().toString(36).substring(2, 15)
+      return this.id || generateId()
     },
   },
   components: { Fragment },

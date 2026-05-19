@@ -23,6 +23,7 @@
 <script>
 import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
+import { generateId } from "@/tools/generateId.js"
 
 import Modal from "@/components/molecules/Modal.vue"
 import TranscriberProfileSelector from "@/components/TranscriberProfileSelector.vue"
@@ -53,7 +54,7 @@ export default {
     addChannels() {
       const newChannels = this.selectedProfiles.map((profile) => {
         return {
-          id: profile.id,
+          id: generateId(),
           name: profile.config.description,
           type: profile.config.type,
           profileName: profile.config.name,

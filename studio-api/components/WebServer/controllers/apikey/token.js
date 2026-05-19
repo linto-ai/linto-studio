@@ -35,12 +35,17 @@ async function generateApiKeyToken(
     expires_in = getExpiresIn(expires_in)
     if (token === undefined) {
       token_salt = require("randomstring").generate(12)
-      token = await model.tokens.insert(
-        user[0]._id,
-        token_salt,
-        expires_in,
-        true,
-      )
+      const tokenCreatedAt = new Date()
+      const tokenExpiresAt = new Date(Date.now() + expires_in)
+      const [insertedToken] = await Promise.all([
+        model.tokens.insert(user[0]._id, token_salt, expires_in, true),
+        model.users.update({
+          _id: user[0]._id.toString(),
+          tokenCreatedAt,
+          tokenExpiresAt,
+        }),
+      ])
+      token = insertedToken
     } else {
       token_salt = token.salt
     }
@@ -109,6 +114,8 @@ async function listApiKey(idList, orgaRoles = undefined) {
     firstname: true,
     lastname: true,
     role: true,
+    tokenCreatedAt: true,
+    tokenExpiresAt: true,
   }
   const users = await model.users.listApiKeyList(idList, projection)
   const tokens = await model.tokens.getTokenByList(idList)
@@ -119,17 +126,32 @@ async function listApiKey(idList, orgaRoles = undefined) {
   const tokenMap = new Map(tokens.map((t) => [t.userId, t]))
   const roleMap = new Map(orgaRoles?.map((r) => [r.userId, r]) || [])
 
+  const now = Date.now()
+
   const merged = idList.map((id) => {
-    const user = userMap.get(id)
+    const userDoc = userMap.get(id)
     const token = tokenMap.get(id)
     const roleData = roleMap.get(id)
 
-    if (user) delete user._id
+    const {
+      _id,
+      tokenCreatedAt,
+      tokenExpiresAt,
+      ...user
+    } = userDoc || {}
+
+    const createdAt = token?.createdAt || tokenCreatedAt
+    const expiresAt = token?.expiresAt || tokenExpiresAt
+    const expiresIn = token?.expiresIn
+    const expired = !token || (expiresAt && new Date(expiresAt).getTime() < now)
 
     return {
       userId: id,
       ...user,
-      ...token,
+      ...(createdAt ? { createdAt } : {}),
+      ...(expiresAt ? { expiresAt } : {}),
+      ...(expiresIn ? { expiresIn } : {}),
+      expired: !!expired,
       ...(orgaRoles
         ? {
             type: roleData?.type || "",

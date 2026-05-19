@@ -6,6 +6,7 @@ import {
   apiDeleteSession,
   apiGetPublicSession,
   apiGetSessionDataBySessionId,
+  apiAddSessionData,
   apiUpdateSession,
   apiUpdateSessionData,
   apiPatchSession,
@@ -90,6 +91,7 @@ export const sessionMixin = {
         sessionRequest = await apiGetSession(
           this.organizationId,
           this.sessionId,
+          { withCaptions: false },
         )
       }
 
@@ -102,6 +104,7 @@ export const sessionMixin = {
         sessionRequest = await apiGetPublicSession(
           this.sessionId,
           this.usedPassword,
+          { withCaptions: false },
         )
       }
 
@@ -123,7 +126,9 @@ export const sessionMixin = {
       // Use another WS instance for public session to avoid conflict with main app WS
       if (this.isFromPublicLink) {
         this.websocketInstance = new ApiEventWebSocket()
-        this.websocketInstance.connect(this.session.publicSessionToken)
+        this.websocketInstance.connect(this.session.publicSessionToken, {
+          isPublic: true,
+        })
       } else {
         this.websocketInstance = this.$apiEventWS
       }
@@ -259,10 +264,12 @@ export const sessionMixin = {
           )
         }
       } else if (password) {
-        req = await apiAddSessionData(organizationScope, {
+        req = await apiAddSessionData(this.currentOrganizationScope, {
           sessionId: this.sessionId,
-          password: data.password,
+          password,
         })
+      } else {
+        return
       }
 
       if (req.status === "error") {
@@ -270,13 +277,7 @@ export const sessionMixin = {
           message: this.$i18n.t("session.settings_page.error_update_password"),
           type: "error",
         })
-        return
       }
-
-      this.$store.dispatch("system/addNotification", {
-        message: this.$i18n.t("session.settings_page.success_update_password"),
-        type: "success",
-      })
     },
     async syncWatermarkSettings(
       { frequency, duration, content, pinned, display },

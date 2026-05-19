@@ -1,3 +1,48 @@
+# 1.8.4
+
+_2026_04_20_
+
+- Live session viewer (Vue 3 rewrite)
+  - New Vue 3 editor component replacing the previous live session view
+  - Paginated turn history with scroll-to-top fetch
+- Session management
+  - Add pagination to session listing page
+  - Fix session visibility for private and internal sessions
+  - Add delete button and disable microphone on pre-scheduled sessions
+  - Auto-create conversation media when the scheduler ends a session
+  - Show organization logo in public session mode
+- Users & invitations
+  - Separate settings for inviting users and creating users
+  - Fix email notification for users without a verified email address
+- Deduplicate activity log entries across replicas
+- Show API key expiration status and preserve expiration dates
+- Transcriber profile management to the backoffice organization page
+- Hide tags with no associated media from the search bar
+- Add summary, sharing, download and publication features to the Python SDK
+- Remove obsolete studio-dashboard service
+
+# 1.8.3
+
+_2026_03_23_
+
+- Session tracking
+  - Track anonymous visitors via visitorId on public sessions
+  - Deduplicate viewers by userId and accumulate watch time on reconnection
+  - New user visibility type on sessions
+- Favorite organization
+  - Users can mark an organization as favorite for quicker access
+- WebSocket infrastructure
+  - Redis pub/sub integration to synchronize WebSocket events across replicas
+  - Improved Redis connection handling on initial failure
+- User access
+  - Explicit message on login page when a user is not associated with any organization
+  - Adapted login page when account creation is disabled
+- Bugfix
+  - Fix session list limited to 100 items
+  - Fix duplicate API call for tags when navigating folders
+  - Fix DB migration target (DB_MIGRATION_TARGET)
+  - Hide topics sidebar outside of explore pages
+
 # 1.8.2
 
 _2026_03_11_

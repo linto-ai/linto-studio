@@ -95,8 +95,9 @@ export default {
   },
   computed: {
     getTags() {
-      const tags = this.$store.getters["tags/getTags"]
-      return tags
+      return this.$store.getters["tags/getAllTags"].filter(
+        (tag) => tag.mediaCount > 0,
+      )
     },
     isAllSelected: {
       get() {

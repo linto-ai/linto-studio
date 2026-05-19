@@ -6,12 +6,11 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const { TagError, TagConflict, TagUnsupportedMediaType } = require(
   `${process.cwd()}/components/WebServer/error/exception/tag`,
 )
+const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 
 function checkBody(req, res, next) {
-  if (!req.body.organizationId)
-    throw new TagUnsupportedMediaType("organizationId is required")
-  if (!req.body.categoryId)
-    throw new TagUnsupportedMediaType("categoryId is required")
+  requireParam(req.body.organizationId, TagUnsupportedMediaType, "organizationId is required")
+  requireParam(req.body.categoryId, TagUnsupportedMediaType, "categoryId is required")
   if (req.body.name && !req.body.name.match(/^[a-zA-Z0-9]{1,255}$/))
     throw new TagUnsupportedMediaType(
       "name must be alphanumeric and less than 255 characters",
@@ -30,7 +29,7 @@ function checkBody(req, res, next) {
 
 async function getTags(req, res, next) {
   try {
-    if (!req.query.categoryId) throw new TagError("categoryId is required")
+    requireParam(req.query.categoryId, TagError, "categoryId is required")
 
     const tags = await model.tags.getByOrgAndCategoryId(
       req.params.organizationId,

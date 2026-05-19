@@ -7,7 +7,6 @@ const axios = require(`${process.cwd()}/lib/utility/axios`)
 const appLogger = require(`${process.cwd()}/lib/logger/logger.js`)
 
 const {
-  ConversationIdRequire,
   ConversationNotFound,
 } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
@@ -92,8 +91,6 @@ async function resolveDefaultChatFlavor() {
  */
 async function createSession(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
-
     const { conversationId } = req.params
     const userId = req.payload.data.userId
     const organizationId =
@@ -137,8 +134,6 @@ async function createSession(req, res, next) {
  */
 async function listSessions(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
-
     const { conversationId } = req.params
     const userId = req.payload.data.userId
 
@@ -176,8 +171,6 @@ async function listSessions(req, res, next) {
  */
 async function getSession(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
-
     const { sessionId } = req.params
 
     const sessions = await model.chatSessions.getById(sessionId)
@@ -220,8 +213,6 @@ async function getSession(req, res, next) {
  */
 async function updateSession(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
-
     const { sessionId } = req.params
     const { title } = req.body
 
@@ -260,8 +251,6 @@ async function updateSession(req, res, next) {
  */
 async function deleteSession(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
-
     const { sessionId } = req.params
 
     // Verify session exists and belongs to current user

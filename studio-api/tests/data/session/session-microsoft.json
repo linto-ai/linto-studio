@@ -1,0 +1,300 @@
+{
+  "channels": [
+    {
+      "diarization": false,
+      "translations": [
+        {
+          "mode": "discrete",
+          "target": "ar"
+        },
+        {
+          "mode": "discrete",
+          "target": "eu"
+        }
+      ],
+      "translatedCaptions": {
+        "1": [
+          {
+            "segmentId": 1,
+            "targetLang": "ar",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do "
+          },
+          {
+            "segmentId": 1,
+            "targetLang": "eu",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqu"
+          }
+        ],
+        "2": [
+          {
+            "segmentId": 2,
+            "targetLang": "ar",
+            "text": "eiusmod tempor incididunt ut labore"
+          },
+          {
+            "segmentId": 2,
+            "targetLang": "eu",
+            "text": "a. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris "
+          }
+        ],
+        "3": [
+          {
+            "segmentId": 3,
+            "targetLang": "ar",
+            "text": " et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint "
+          },
+          {
+            "segmentId": 3,
+            "targetLang": "eu",
+            "text": "nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad mi"
+          }
+        ],
+        "4": [
+          {
+            "segmentId": 4,
+            "targetLang": "ar",
+            "text": "occaecat cupidatat non proid"
+          },
+          {
+            "segmentId": 4,
+            "targetLang": "eu",
+            "text": "nim veniam, quis nostrud exerci"
+          }
+        ],
+        "6": [
+          {
+            "segmentId": 6,
+            "targetLang": "ar",
+            "text": "ent, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum d"
+          },
+          {
+            "segmentId": 6,
+            "targetLang": "eu",
+            "text": "tation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur"
+          }
+        ],
+        "7": [
+          {
+            "segmentId": 7,
+            "targetLang": "ar",
+            "text": "olor sit amet, consectetur adipis"
+          },
+          {
+            "segmentId": 7,
+            "targetLang": "eu",
+            "text": ". Excepteur sint occaecat cupidatat non proident,"
+          }
+        ],
+        "8": [
+          {
+            "segmentId": 8,
+            "targetLang": "ar",
+            "text": "cing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad m"
+          },
+          {
+            "segmentId": 8,
+            "targetLang": "eu",
+            "text": " sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor in"
+          }
+        ],
+        "9": [
+          {
+            "segmentId": 9,
+            "targetLang": "ar",
+            "text": "inim veniam,"
+          },
+          {
+            "segmentId": 9,
+            "targetLang": "eu",
+            "text": "cididunt ut labo"
+          }
+        ],
+        "10": [
+          {
+            "segmentId": 10,
+            "targetLang": "ar",
+            "text": " quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehen"
+          },
+          {
+            "segmentId": 10,
+            "targetLang": "eu",
+            "text": "re et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu "
+          }
+        ],
+        "11": [
+          {
+            "segmentId": 11,
+            "targetLang": "ar",
+            "text": "derit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui of"
+          },
+          {
+            "segmentId": 11,
+            "targetLang": "eu",
+            "text": "fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do "
+          }
+        ],
+        "13": [
+          {
+            "segmentId": 13,
+            "targetLang": "ar",
+            "text": "ficia deserunt mollit anim id est laborum. Lorem ipsum d"
+          },
+          {
+            "segmentId": 13,
+            "targetLang": "eu",
+            "text": "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veni"
+          }
+        ],
+        "14": [
+          {
+            "segmentId": 14,
+            "targetLang": "ar",
+            "text": "olor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut "
+          },
+          {
+            "segmentId": 14,
+            "targetLang": "eu",
+            "text": "am, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptat"
+          }
+        ]
+      },
+      "closedCaptions": [
+        {
+          "segmentId": 1,
+          "start": 0.07,
+          "end": 7.15,
+          "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et d",
+          "aend": null,
+          "lang": "fr-FR",
+          "locutor": null
+        },
+        {
+          "segmentId": 2,
+          "start": 8.15,
+          "end": 11.51,
+          "text": "olore magna aliqua. Ut enim ad minim veniam, quis nostrud exerc",
+          "aend": null,
+          "lang": "fr-FR",
+          "locutor": null
+        },
+        {
+          "segmentId": 3,
+          "start": 12.35,
+          "end": 37.39,
+          "text": "itation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt u",
+          "aend": null,
+          "lang": "fr-FR",
+          "locutor": null
+        },
+        {
+          "segmentId": 4,
+          "start": 38.12,
+          "end": 41.36,
+          "text": "t labore et dolore magna aliqua. Ut e",
+          "aend": null,
+          "lang": "fr-FR",
+          "locutor": null
+        },
+        {
+          "segmentId": null,
+          "start": null,
+          "end": null,
+          "text": "",
+          "aend": "2026-04-28T08:54:48.081Z",
+          "lang": null,
+          "locutor": "bot"
+        },
+        {
+          "segmentId": 6,
+          "start": 0.07,
+          "end": 11.95,
+          "text": "nim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor i",
+          "aend": null,
+          "lang": "fr-FR",
+          "locutor": null
+        },
+        {
+          "segmentId": 7,
+          "start": 12.59,
+          "end": 16.43,
+          "text": "n reprehenderit in voluptate velit esse cillum ",
+          "aend": null,
+          "lang": "fr-FR",
+          "locutor": null
+        },
+        {
+          "segmentId": 8,
+          "start": 17.07,
+          "end": 23.03,
+          "text": "dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit ani",
+          "aend": null,
+          "lang": "fr-FR",
+          "locutor": null
+        },
+        {
+          "segmentId": 9,
+          "start": 23.95,
+          "end": 24.75,
+          "text": "m id est labor",
+          "aend": null,
+          "lang": "fr-FR",
+          "locutor": null
+        },
+        {
+          "segmentId": 10,
+          "start": 26.28,
+          "end": 38.44,
+          "text": "um. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatio",
+          "aend": null,
+          "lang": "fr-FR",
+          "locutor": null
+        },
+        {
+          "segmentId": 11,
+          "start": 39.39,
+          "end": 47.99,
+          "text": "n ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Ex",
+          "aend": null,
+          "lang": "fr-FR",
+          "locutor": null
+        },
+        {
+          "segmentId": null,
+          "start": null,
+          "end": null,
+          "text": "",
+          "aend": "2026-04-28T08:58:07.879Z",
+          "lang": null,
+          "locutor": "bot"
+        },
+        {
+          "segmentId": 13,
+          "start": 0.07,
+          "end": 5.23,
+          "text": "cepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mo",
+          "aend": null,
+          "lang": "fr-FR",
+          "locutor": null
+        },
+        {
+          "segmentId": 14,
+          "start": 5.99,
+          "end": 13.43,
+          "text": "llit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor ",
+          "aend": null,
+          "lang": "fr-FR",
+          "locutor": null
+        },
+        {
+          "segmentId": null,
+          "start": null,
+          "end": null,
+          "text": "",
+          "aend": "2026-04-28T09:01:28.123Z",
+          "lang": null,
+          "locutor": "bot"
+        }
+      ]
+    }
+  ]
+}

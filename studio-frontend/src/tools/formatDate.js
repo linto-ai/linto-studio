@@ -35,6 +35,13 @@ export function formatDateTime(dateString) {
   })
 }
 
+export function formatDateLocale(dateString, fallback = "—") {
+  if (!dateString) return fallback
+  const d = new Date(dateString)
+  if (isNaN(d.getTime())) return fallback
+  return d.toLocaleDateString()
+}
+
 export function formatDateShort(dateString) {
   if (!dateString) return ""
   const lang = document.documentElement.lang || "en"

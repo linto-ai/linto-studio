@@ -30,9 +30,13 @@ class Mailing {
     try {
       if (user.emailIsVerified === false) {
         // check if the user has a verified email
-        if (user.verifiedEmail.length === 0) return false
-
-        user.email = user.verifiedEmail[user.verifiedEmail.length - 1] // use the last verified email
+        if (user.verifiedEmail && user.verifiedEmail.length > 0) {
+          user.email = user.verifiedEmail[user.verifiedEmail.length - 1] // use the last verified email
+        } else if (!user.email) {
+          // No verified email and no primary email — skip notification
+          return false
+        }
+        // If user has a primary email (e.g. external user created via sharing), allow sending
       }
 
       if (user.emailNotifications === undefined) {

@@ -1,86 +1,35 @@
-/****************
- **Folder***
- *****************/
-
-const ExceptionType = "folder"
-
-class FolderError extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "FolderError"
-    this.type = ExceptionType
-    this.status = 400
-    if (message) this.message = message
-    else this.message = `Folder error`
-    if (err) this.err = err
-  }
-}
-
-class FolderNotFound extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "FolderNotFound"
-    this.type = ExceptionType
-    this.status = 404
-    if (message) this.message = message
-    else this.message = `Folder not found`
-    if (err) this.err = err
-  }
-}
-
-class FolderConflict extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "FolderConflict"
-    this.type = ExceptionType
-    this.status = 409
-    if (message) this.message = message
-    else this.message = `Folder conflict`
-    if (err) this.err = err
-  }
-}
-
-class FolderCycleDetected extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "FolderCycleDetected"
-    this.type = ExceptionType
-    this.status = 422
-    if (message) this.message = message
-    else this.message = `Moving this folder would create a cycle`
-    if (err) this.err = err
-  }
-}
-
-class FolderDepthLimitExceeded extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "FolderDepthLimitExceeded"
-    this.type = ExceptionType
-    this.status = 422
-    if (message) this.message = message
-    else this.message = `Maximum folder nesting depth reached`
-    if (err) this.err = err
-  }
-}
-
-class FolderForbidden extends Error {
-  constructor(message, err) {
-    super()
-    this.name = "FolderForbidden"
-    this.type = ExceptionType
-    this.status = 403
-    if (message) this.message = message
-    else this.message = `Folder access denied`
-    if (err) this.err = err
-  }
-}
+const { createException } = require("./base")
 
 module.exports = {
-  FolderError,
-  FolderNotFound,
-  FolderConflict,
-  FolderCycleDetected,
-  FolderDepthLimitExceeded,
-  FolderForbidden,
+  FolderError: createException("FolderError", "folder", 400, "Folder error"),
+  FolderNotFound: createException(
+    "FolderNotFound",
+    "folder",
+    404,
+    "Folder not found",
+  ),
+  FolderConflict: createException(
+    "FolderConflict",
+    "folder",
+    409,
+    "Folder conflict",
+  ),
+  FolderCycleDetected: createException(
+    "FolderCycleDetected",
+    "folder",
+    422,
+    "Moving this folder would create a cycle",
+  ),
+  FolderDepthLimitExceeded: createException(
+    "FolderDepthLimitExceeded",
+    "folder",
+    422,
+    "Maximum folder nesting depth reached",
+  ),
+  FolderForbidden: createException(
+    "FolderForbidden",
+    "folder",
+    403,
+    "Folder access denied",
+  ),
 }

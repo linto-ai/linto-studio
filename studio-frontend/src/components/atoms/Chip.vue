@@ -1,5 +1,10 @@
 <template>
-  <div class="chip" :primary="primary" :red="red" :style="style">
+  <div
+    class="chip"
+    :primary="primary"
+    :red="red"
+    :yellow="yellow"
+    :style="style">
     <span>{{ value }}</span>
     <!-- <span v-if="removable" class="chip__remove" @click="onRemove">x</span> -->
   </div>
@@ -13,6 +18,7 @@ export default {
     removable: { type: Boolean, default: false },
     primary: { type: Boolean, default: false },
     red: { type: Boolean, default: false },
+    yellow: { type: Boolean, default: false },
     color: { type: String, default: null },
   },
   data() {
@@ -55,9 +61,15 @@ export default {
   }
 
   &[red] {
-    background-color: var(--red-chart);
-    border-color: var(--red-chart);
-    color: var(--primary-contrast);
+    background-color: var(--danger-soft);
+    border-color: var(--danger-color);
+    color: var(--danger-color);
+  }
+
+  &[yellow] {
+    background-color: var(--warning-soft);
+    border-color: var(--warning-color);
+    color: var(--warning-text);
   }
 }
 </style>

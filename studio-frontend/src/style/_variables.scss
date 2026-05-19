@@ -41,6 +41,7 @@
     --danger-contrast: white;
     --warning-color: #{$yellowHard};
     --warning-soft: #{$yellowSoft};
+    --warning-text: #{oklch(0.45 0.13 76.2)};
     --linkHard: #{$blueHard};
     --linkSoft: #{$blueSoft};
 
@@ -75,7 +76,7 @@
 
     --text-primary: var(--dark-100);
     --text-secondary: var(--dark-80);
-    --text-disabled: #aaa;
+    --text-disabled: #666;
     --small-contrast: var(--dark-60);
 
     --background-disabled: #f6f6f6;
