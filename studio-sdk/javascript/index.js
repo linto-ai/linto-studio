@@ -65,6 +65,128 @@ class LinTO {
     })
     return new SummaryPollingService(conversationId, serviceRoute, this.apiService)
   }
+
+  // --- Taxonomy: categories, tags, folders ---
+
+  async listCategories() {
+    return await this.apiService.listCategories()
+  }
+
+  async listTags(categoryId) {
+    return await this.apiService.listTags({ categoryId })
+  }
+
+  async createTag(categoryId, name, { color, emoji } = {}) {
+    return await this.apiService.createTag({ categoryId, name, color, emoji })
+  }
+
+  async ensureTag(name, { categoryName = "tags", color, emoji } = {}) {
+    const categories = await this.listCategories()
+    if (!Array.isArray(categories) || categories.length === 0) {
+      return null
+    }
+
+    let cat = null
+    for (const c of categories) {
+      if (
+        String(c?.name ?? "").toLowerCase() === String(categoryName).toLowerCase()
+      ) {
+        cat = c
+        break
+      }
+    }
+    if (cat === null) {
+      cat = categories[0]
+    }
+    const categoryId = String(cat?._id ?? cat?.id ?? "")
+    if (!categoryId) {
+      return null
+    }
+
+    const tags = await this.listTags(categoryId)
+    if (Array.isArray(tags)) {
+      for (const t of tags) {
+        if (String(t?.name ?? "").toLowerCase() === String(name).toLowerCase()) {
+          return String(t?._id ?? t?.id ?? "")
+        }
+      }
+    }
+
+    const created = await this.createTag(categoryId, name, { color, emoji })
+    if (created && typeof created === "object") {
+      return String(created._id ?? created.id ?? "") || null
+    }
+    return null
+  }
+
+  async addConversationTag(conversationId, tagId) {
+    if (!tagId) {
+      return null
+    }
+    const conv = await this.apiService.getConversation({ conversationId })
+    let existing = []
+    if (conv && typeof conv === "object") {
+      const raw = conv.tags ?? []
+      if (Array.isArray(raw)) {
+        existing = raw.filter((t) => t).map((t) => String(t))
+      }
+    }
+    if (existing.includes(tagId)) {
+      return existing
+    }
+    const newTags = [...existing, tagId]
+    await this.apiService.updateConversation({
+      conversationId,
+      data: { tags: newTags },
+    })
+    return newTags
+  }
+
+  async listFolders({ tree = false, withConversationCount = false } = {}) {
+    return await this.apiService.listFolders({ tree, withConversationCount })
+  }
+
+  async createFolder(
+    name,
+    { parentId, color, emoji, visibility = "public" } = {}
+  ) {
+    return await this.apiService.createFolder({
+      name,
+      parentId,
+      color,
+      emoji,
+      visibility,
+    })
+  }
+
+  async ensureFolder(name, { parentId, visibility = "public" } = {}) {
+    const folders = await this.listFolders()
+    if (Array.isArray(folders)) {
+      for (const f of folders) {
+        const folderParent = f?.parentId ?? null
+        const targetParent = parentId ?? null
+        if (
+          String(f?.name ?? "").toLowerCase() === String(name).toLowerCase() &&
+          folderParent === targetParent
+        ) {
+          return String(f?._id ?? f?.id ?? "")
+        }
+      }
+    }
+
+    const created = await this.createFolder(name, { parentId, visibility })
+    if (created && typeof created === "object") {
+      return String(created._id ?? created.id ?? "") || null
+    }
+    return null
+  }
+
+  async moveToFolder(folderId, conversationId) {
+    return await this.apiService.moveConversationToFolder({
+      folderId,
+      conversationId,
+    })
+  }
 }
 
 try {

@@ -75,6 +75,65 @@ export class StudioApiService {
     })
   }
 
+  // -- Taxonomy methods (categories, tags, folders) --
+
+  async listCategories(args = {}) {
+    return await this.#withToken(
+      this.#withOrganizationId(this.#listCategories.bind(this))
+    )(args)
+  }
+
+  async listTags({ categoryId } = {}) {
+    return await this.#withToken(
+      this.#withOrganizationId(this.#listTags.bind(this))
+    )({ categoryId })
+  }
+
+  async createTag({ categoryId, name, color, emoji, description } = {}) {
+    return await this.#withToken(
+      this.#withOrganizationId(this.#createTag.bind(this))
+    )({ categoryId, name, color, emoji, description })
+  }
+
+  async listFolders({ tree = false, withConversationCount = false } = {}) {
+    return await this.#withToken(
+      this.#withOrganizationId(this.#listFolders.bind(this))
+    )({ tree, withConversationCount })
+  }
+
+  async createFolder({
+    name,
+    parentId,
+    color,
+    emoji,
+    visibility = "public",
+  } = {}) {
+    return await this.#withToken(
+      this.#withOrganizationId(this.#createFolder.bind(this))
+    )({ name, parentId, color, emoji, visibility })
+  }
+
+  async moveConversationToFolder({ folderId, conversationId } = {}) {
+    return await this.#withToken(
+      this.#withOrganizationId(this.#moveConversationToFolder.bind(this))
+    )({ folderId, conversationId })
+  }
+
+  async getConversation({ conversationId } = {}) {
+    return await this.#withToken(this.#getConversation)({ conversationId })
+  }
+
+  async searchUsers({ search } = {}) {
+    return await this.#withToken(this.#searchUsers)({ search })
+  }
+
+  async updateConversation({ conversationId, data } = {}) {
+    return await this.#withToken(this.#updateConversation)({
+      conversationId,
+      data,
+    })
+  }
+
   async login({ email, password }) {
     const req = prepareRequest(`${this.baseAuthUrl}/login`, "POST", {
       email,
@@ -249,6 +308,126 @@ export class StudioApiService {
       { token }
     )
     return await sendRequest(req)
+  }
+
+  // -- Taxonomy private implementations --
+
+  async #listCategories({ token, organizationId }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/categories`,
+      "GET",
+      { token }
+    )
+    return await sendRequest(req)
+  }
+
+  async #listTags({ token, organizationId, categoryId }) {
+    const url = `${this.baseApiUrl}/organizations/${organizationId}/tags?categoryId=${encodeURIComponent(categoryId)}`
+    const req = prepareRequest(url, "GET", { token })
+    return await sendRequest(req)
+  }
+
+  async #createTag({
+    token,
+    organizationId,
+    categoryId,
+    name,
+    color,
+    emoji,
+    description,
+  }) {
+    const payload = {
+      organizationId,
+      categoryId,
+      name,
+    }
+    if (color !== undefined && color !== null) payload.color = color
+    if (emoji !== undefined && emoji !== null) payload.emoji = emoji
+    if (description !== undefined && description !== null)
+      payload.description = description
+
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/tags`,
+      "POST",
+      { token, ...payload }
+    )
+    return await sendRequest(req)
+  }
+
+  async #listFolders({ token, organizationId, tree, withConversationCount }) {
+    const params = []
+    if (tree) params.push("tree=true")
+    if (withConversationCount) params.push("withConversationCount=true")
+    let url = `${this.baseApiUrl}/organizations/${organizationId}/folders`
+    if (params.length > 0) {
+      url += "?" + params.join("&")
+    }
+    const req = prepareRequest(url, "GET", { token })
+    return await sendRequest(req)
+  }
+
+  async #createFolder({
+    token,
+    organizationId,
+    name,
+    parentId,
+    color,
+    emoji,
+    visibility,
+  }) {
+    const payload = { name, visibility }
+    if (parentId !== undefined && parentId !== null) payload.parentId = parentId
+    if (color !== undefined && color !== null) payload.color = color
+    if (emoji !== undefined && emoji !== null) payload.emoji = emoji
+
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/folders`,
+      "POST",
+      { token, ...payload }
+    )
+    return await sendRequest(req)
+  }
+
+  async #moveConversationToFolder({
+    token,
+    organizationId,
+    folderId,
+    conversationId,
+  }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/folders/${folderId}/conversations/${conversationId}`,
+      "POST",
+      { token }
+    )
+    return await sendRequest(req)
+  }
+
+  async #getConversation({ token, conversationId }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/conversations/${conversationId}`,
+      "GET",
+      { token }
+    )
+    return await sendRequest(req)
+  }
+
+  async #searchUsers({ token, search }) {
+    const url = `${this.baseApiUrl}/users/search?search=${encodeURIComponent(search)}`
+    const req = prepareRequest(url, "GET", { token })
+    return await sendRequest(req)
+  }
+
+  async #updateConversation({ token, conversationId, data }) {
+    const url = `${this.baseApiUrl}/conversations/${conversationId}`
+    const requestObj = new Request(url, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token ? `Bearer ${token}` : null,
+      },
+      body: JSON.stringify(data ?? {}),
+    })
+    return await sendRequest(requestObj)
   }
 }
 
