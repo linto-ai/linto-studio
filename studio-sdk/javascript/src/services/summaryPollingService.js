@@ -1,3 +1,9 @@
+/**
+ * Polls an LLM summary export until it finishes.
+ *
+ * Emits `update`, `done` (with `{ content, jobId }`), `error`, and `cancelled`.
+ * Call `.stop()` to clear the underlying interval.
+ */
 export class SummaryPollingService extends EventTarget {
   #intervalId = null
 

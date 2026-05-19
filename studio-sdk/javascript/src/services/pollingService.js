@@ -1,3 +1,10 @@
+/**
+ * Polls a transcription job until it finishes.
+ *
+ * Emits `update` (in-progress job), `done` (final media), `error` (failure),
+ * and `cancelled` (after `.stop()`). Call `.stop()` once you no longer need
+ * it to clear the underlying interval.
+ */
 export class PollingService extends EventTarget {
   #intervalId = null
 

@@ -6,6 +6,12 @@ import {
 
 import mediaFactory from "../models/media.js"
 
+/**
+ * Low-level HTTP client for the LinTO Studio API.
+ *
+ * Used internally by {@link LinTO}; prefer the high-level wrapper unless you
+ * need direct access to an endpoint.
+ */
 export class StudioApiService {
   constructor({ baseUrl = "https://studio.linto.ai", token = null }) {
     this.baseApiUrl = baseUrl + "/api"
