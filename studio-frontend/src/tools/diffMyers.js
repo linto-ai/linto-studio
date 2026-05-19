@@ -66,7 +66,7 @@ export function backtrack(wordsBefore, wordsAfter, shortestEdit) {
 
     if (d > 0) {
       res = translateToDelta({ x1: prev_x, y1: prev_y, x2: x, y2: y }).concat(
-        res
+        res,
       )
     }
     x = prev_x
@@ -98,7 +98,7 @@ export function diffMyers(wordsBefore, wordsAfter) {
     oldEnd, // number,
     newArr, // T[],
     newStart, // number,
-    newEnd // number
+    newEnd, // number
   ) {
     if (type === "same") {
       delta.push({ retain: oldEnd - oldStart })
@@ -121,7 +121,7 @@ export function diffMyers(wordsBefore, wordsAfter) {
     wordsBefore,
     wordsAfter,
     (a, b) => a.word == b.word,
-    pushChange
+    pushChange,
   )
 
   //console.log(shortestEdit)

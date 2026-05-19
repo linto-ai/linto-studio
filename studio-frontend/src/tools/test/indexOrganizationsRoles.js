@@ -57,6 +57,6 @@ test("index organization by _id and index their users", (t) => {
           ]),
         },
       ],
-    ])
+    ]),
   )
 })

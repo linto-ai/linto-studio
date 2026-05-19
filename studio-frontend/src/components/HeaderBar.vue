@@ -14,7 +14,10 @@
       border-color="transparent"
       @click.stop="toggleSidebar"
       class="sidebar-toggle icon-only" />
-    <Breadcrumb class="flex1" :additionalbreadcrumbItems="breadcrumbItems" :noBreadcrumb="noBreadcrumb">
+    <Breadcrumb
+      class="flex1"
+      :additionalbreadcrumbItems="breadcrumbItems"
+      :noBreadcrumb="noBreadcrumb">
       <template v-slot:breadcrumb-actions>
         <slot name="breadcrumb-actions"></slot>
       </template>

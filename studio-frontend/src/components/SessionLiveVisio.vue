@@ -4,6 +4,12 @@
       <div class="flex1 flex gap-small align-center">
         <div style="font-style: italic">({{ quickSessionBot?.url }})</div>
         <div class="flex1"></div>
+        <SessionLiveActions
+          :session="session"
+          :showStop="false"
+          :showDelete="false"
+          fakeStatus="active"
+          :disablePauseResume="true" />
         <Button
           @click="$emit('onSave')"
           :label="$t('quick_session.live.save_button')"
@@ -21,6 +27,7 @@
 </template>
 <script>
 import SessionLiveNG from "@/components/SessionLiveNG.vue"
+import SessionLiveActions from "@/components/SessionLiveActions.vue"
 import V2Layout from "@/layouts/v2-layout.vue"
 
 export default {
@@ -49,6 +56,7 @@ export default {
   },
   components: {
     SessionLiveNG,
+    SessionLiveActions,
     V2Layout,
   },
 }

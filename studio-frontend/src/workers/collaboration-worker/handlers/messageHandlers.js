@@ -15,7 +15,7 @@ const dmp = new DiffMatchPatch()
 const debugWorker = customDebug("Worker:debug")
 const debugturnEditText = customDebug("Worker:debug:turn:EditText")
 const debugturnInsertParagraph = customDebug(
-  "Worker:debug:turn:InsertParagraph"
+  "Worker:debug:turn:InsertParagraph",
 )
 const debugturnMergeParagraph = customDebug("Worker:debug:turn:MergeParagraph")
 const debugAddSpeaker = customDebug("Worker:debug:Speaker:AddSpeaker")
@@ -40,7 +40,7 @@ function findScreenIndex(screens, screenId) {
 function cleanSpeakers(rootDoc, currentSpeakerId) {
   const turns = rootDoc.getArray("text").toJSON()
   const prevSpkTurns = turns.find(
-    (turn) => turn.speaker_id === currentSpeakerId
+    (turn) => turn.speaker_id === currentSpeakerId,
   )
   if (prevSpkTurns == undefined) {
     const delIndex = rootDoc
@@ -64,7 +64,7 @@ export function updateConversationDescription(params, conversationId, rootDoc) {
   const { conversationDescription } = params
   const yDelta = getYdelta(
     rootDoc.getText("description").toString(),
-    conversationDescription
+    conversationDescription,
   )
 
   rootDoc.transact(() => {
@@ -81,7 +81,7 @@ export function updateConversationSpeakerName(params, conversationId, rootDoc) {
 
   const yDelta = getYdelta(
     rootDoc.getArray("speakers").get(spkIndex).get("speaker_name").toString(),
-    newSpeakerName
+    newSpeakerName,
   )
 
   rootDoc.transact(() => {
@@ -93,7 +93,7 @@ export function updateConversationSpeakerName(params, conversationId, rootDoc) {
     debugEditSpeaker(
       "Update speaker_name '%s' on speaker %s",
       newSpeakerName,
-      spkIndex
+      spkIndex,
     )
   }, "conversation_speaker_name")
 }
@@ -113,7 +113,7 @@ export function turnEditText(params, conversationId, rootDoc, syllabic) {
     splitText,
     {
       comparator: (a, b) => a.word === b.word,
-    }
+    },
   )
 
   const wordObjDelta = wordsDeltafromPlainDiff(splitText, words, diff, syllabic)
@@ -125,7 +125,7 @@ export function turnEditText(params, conversationId, rootDoc, syllabic) {
   rootDoc.transact(() => {
     applyDeltaOnYArray(
       rootDoc.getArray("text").get(index).get("words"),
-      wordObjDelta
+      wordObjDelta,
     )
     debugturnEditText("WordObjDelta applied")
 
@@ -136,7 +136,7 @@ export function turnEditText(params, conversationId, rootDoc, syllabic) {
     }
     const deltaSegment = getYdelta(
       rootDoc.getArray("text").get(index).get("segment").toString(),
-      newSeg.trim()
+      newSeg.trim(),
     )
     debugturnEditText("deltaSegment %o", deltaSegment)
 
@@ -156,7 +156,7 @@ export function turnInsertParagraph(params, conversationId, rootDoc, syllabic) {
     turn,
     textBefore.trim(),
     textAfter.trim(),
-    syllabic
+    syllabic,
   )
   debugturnInsertParagraph("newTurns %o at index %s", newTurns, index)
 
@@ -218,7 +218,7 @@ export function turnMergeSpeaker(params, conversationId, rootDoc) {
     // find all turn with currentSpeakerId and update speaker_id to newSpeakerId
     const turns = rootDoc.getArray("text").toJSON()
     const turnIndexes = turns.map((turn, index) =>
-      turn.speaker_id === currentSpeakerId ? index : -1
+      turn.speaker_id === currentSpeakerId ? index : -1,
     )
 
     turnIndexes.forEach((index) => {
@@ -238,7 +238,7 @@ export function updateSubtitleScreenText({ screenId, newText }, rootDoc) {
   rootDoc.transact(() => {
     const screenIndex = findScreenIndex(
       rootDoc.getArray("screens").toJSON(),
-      screenId
+      screenId,
     )
     let screen = rootDoc.getArray("screens").get(screenIndex)
     const newlines = newText.toString().split("\n")
@@ -263,12 +263,12 @@ export function updateSubtitleScreenTime(params, rootDoc) {
   const { screen } = params
   const screenIndex = findScreenIndex(
     rootDoc.getArray("screens").toJSON(),
-    screen.screen_id
+    screen.screen_id,
   )
 
   rootDoc.transact(() => {
     debugEditScreen(
-      `update screen ${screen.screen_id} with new timestamp: ${screen.stime} - ${screen.etime}`
+      `update screen ${screen.screen_id} with new timestamp: ${screen.stime} - ${screen.etime}`,
     )
     rootDoc.getArray("screens").get(screenIndex).set("stime", screen.stime)
     rootDoc.getArray("screens").get(screenIndex).set("etime", screen.etime)
@@ -278,7 +278,7 @@ export function updateSubtitleScreenTime(params, rootDoc) {
 export function deleteSubtitleScreen(screenId, rootDoc) {
   const screenIndex = findScreenIndex(
     rootDoc.getArray("screens").toJSON(),
-    screenId
+    screenId,
   )
   rootDoc.transact(() => {
     debugEditScreen(`delete screen ${screenId}`)
@@ -338,7 +338,7 @@ export function updateConversationAddSpeaker(params, conversationId, rootDoc) {
     debugAddSpeaker(
       "Update speaker_id %s on turn %s",
       yspeaker?.get("speaker_id"),
-      turnIndex
+      turnIndex,
     )
 
     // Check if updated speakers still have turns
@@ -395,7 +395,7 @@ export function copySubtitles(
   conversationId,
   subtitleId,
   data,
-  socket
+  socket,
 ) {
   socket.emit("copy_subtitles", { userToken, conversationId, subtitleId, data })
 }
@@ -404,7 +404,7 @@ export function deleteSubtitles(
   userToken,
   conversationId,
   subtitleIds,
-  socket
+  socket,
 ) {
   socket.emit("delete_subtitles", { userToken, conversationId, subtitleIds })
 }

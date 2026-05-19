@@ -16,6 +16,10 @@ module.exports = function () {
     this.notify_sessions(roomId, "session_update", sessions)
   })
 
+  this.on("session_cleared", (orgaId, sessionId) => {
+    this.notify_session_cleared(orgaId, sessionId)
+  })
+
   this.on("new_conversation_from_session", (session) => {
     this.notify_sessions_created(session.organizationId, session)
   })

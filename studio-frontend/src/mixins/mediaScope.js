@@ -13,7 +13,8 @@ export const mediaScopeMixin = {
       "getStoreScope",
     ]),
     isSelectAll() {
-      const value = this.$store.state[this.storeScope]?.autoselectMedias ?? false
+      const value =
+        this.$store.state[this.storeScope]?.autoselectMedias ?? false
       return value
     },
     selectedTagsIds() {

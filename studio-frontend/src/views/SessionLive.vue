@@ -1,11 +1,12 @@
 <template>
-  <LayoutV2 :fullscreen="isMobile && !isAuthenticated">
+  <LayoutV2 :fullscreen="isMobile && !isAuthenticated" noBreadcrumb>
     <template v-slot:breadcrumb-actions>
       <SessionHeader
         :sessionListRoute="sessionListRoute"
         :sessionLoaded="sessionLoaded"
         :name="name"
-        :session="session">
+        :session="session"
+        :showActions="isAtLeastMeetingManager && !isFromPublicLink">
         <IsMobile>
           <div class="flex gap-small">
             <Button

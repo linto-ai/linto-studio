@@ -70,6 +70,9 @@ export const sessionModelMixin = {
     isActive() {
       return this?.session?.status === "active"
     },
+    isPaused() {
+      return this?.session?.status === "paused"
+    },
     isTerminated() {
       return this?.session?.status === "terminated"
     },

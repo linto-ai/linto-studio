@@ -3,7 +3,7 @@ export default function isSessionStarted(session) {
     return false
   }
 
-  if (session.status === "active") {
+  if (session.status === "active" || session.status === "paused") {
     return true
   }
 

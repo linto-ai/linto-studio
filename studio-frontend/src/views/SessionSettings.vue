@@ -6,7 +6,8 @@
         :isAuthenticated="isAuthenticated"
         :sessionLoaded="sessionLoaded"
         :name="name"
-        :session="session">
+        :session="session"
+        :showActions="isAtLeastMeetingManager && !isFromPublicLink">
         <IsMobile>
           <Button
             :to="liveRoute"
@@ -205,34 +206,6 @@
           </section>
         </div>
         <div class="flex col gap-medium session-settings-right align-center">
-          <div class="flex col gap-medium session-settings-actions">
-            <!-- Delete and save -->
-            <Button
-              v-if="isPending && !isStarted"
-              icon="trash"
-              :label="$t('session.detail_page.delete_session_button')"
-              @click="deleteSession"
-              variant="primary"
-              intent="destructive"
-              size="sm"
-              class="btn--delete-scheduled"></Button>
-            <Button
-              v-if="isStarted && !isActive"
-              icon="stop"
-              :label="$t('session.detail_page.stop_button')"
-              @click="stopSession"
-              variant="primary"
-              intent="destructive"
-              size="sm"></Button>
-            <Button
-              v-if="isActive"
-              icon="stop"
-              :label="$t('session.detail_page.stop_force_button')"
-              @click="openModalDeleteSession"
-              variant="primary"
-              intent="destructive"
-              size="sm"></Button>
-          </div>
           <Qrcode :value="publicLink" class="session-settings-qr-code" />
         </div>
       </div>
@@ -265,11 +238,6 @@
           label="Sauvegarder" />
       </div>
 
-      <ModalForceDeleteSession
-        v-if="showModalDeleteSession"
-        @on-close="closeModalDeleteSession"
-        @on-confirm="stopSession" />
-
       <ModalSessionTemplateInfo
         v-if="templateId"
         v-model="showTemplateInfo"
@@ -297,6 +265,7 @@
 import { bus } from "@/main.js"
 
 import { sessionMixin } from "@/mixins/session.js"
+import { orgaRoleMixin } from "@/mixins/orgaRole"
 
 import EMPTY_FIELD from "@/const/emptyField"
 
@@ -314,7 +283,6 @@ import FormRadio from "@/components/molecules/FormRadio.vue"
 
 import SessionChannelsTable from "@/components/SessionChannelsTable.vue"
 import AppointmentSelector from "@/components/AppointmentSelector.vue"
-import ModalForceDeleteSession from "@/components/ModalForceDeleteSession.vue"
 import ModalSessionTemplateInfo from "@/components/ModalSessionTemplateInfo.vue"
 import MetadataList from "@/components/MetadataList.vue"
 import SessionHeader from "@/components/SessionHeader.vue"
@@ -324,7 +292,7 @@ import ModalWatermarkSettings from "@/components/ModalWatermarkSettings.vue"
 import LayoutV2 from "@/layouts/v2-layout.vue"
 
 export default {
-  mixins: [sessionMixin, formsMixin],
+  mixins: [sessionMixin, orgaRoleMixin, formsMixin],
   props: {},
   data() {
     return {
@@ -431,7 +399,6 @@ export default {
         label: this.$t("session.create_page.metadata_label"),
       },
       linkHasBeenCopied: false,
-      showModalDeleteSession: false,
       showModalEditSessionAlias: false,
       showTemplateInfo: false,
       formState: "idle",
@@ -462,11 +429,6 @@ export default {
         stopDateChanged ||
         this.channelsHasChanged
       )
-    },
-    titleButtonDelete() {
-      return this.isActive
-        ? this.$t("session.detail_page.stop_button_title_session_running")
-        : null
     },
     isAuthenticated() {
       return isAuthenticated()
@@ -544,12 +506,6 @@ export default {
         microphone: "true",
       }
       this.$router.push(route)
-    },
-    openModalDeleteSession() {
-      this.showModalDeleteSession = true
-    },
-    closeModalDeleteSession() {
-      this.showModalDeleteSession = false
     },
     openModalEditSessionAlias() {
       this.showModalEditSessionAlias = true
@@ -686,7 +642,6 @@ export default {
     FormRadio,
     SessionChannelsTable,
     AppointmentSelector,
-    ModalForceDeleteSession,
     ModalSessionTemplateInfo,
     MetadataList,
     SessionHeader,

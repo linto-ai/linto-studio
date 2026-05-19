@@ -4,7 +4,11 @@
       <div class="login-page__container__left flex col">
         <div
           class="login-page__decoration__header center-text flex col gap-small align-center">
-          <img v-if="logo" :src="logo" :alt="logoAlt" class="login-page__logo" />
+          <img
+            v-if="logo"
+            :src="logo"
+            :alt="logoAlt"
+            class="login-page__logo" />
           <h1 class="center-text login-page__main-title">
             {{ title }}
           </h1>

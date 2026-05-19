@@ -40,7 +40,7 @@ import findParentByClass from "@/tools/findParentByClass"
     </ContextMenu>
   </container>
 */
-export default {  
+export default {
   name: "ContextMenu",
   props: {
     x: {

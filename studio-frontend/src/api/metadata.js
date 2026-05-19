@@ -9,13 +9,13 @@ export function apiPostMetadata(
   tagId,
   metadataSchema,
   metadataValue,
-  notif
+  notif,
 ) {
   return sendRequest(
     `${BASE_API}/conversations/${scopeId}/tags/${tagId}/metadata`,
     { method: "post" },
     { schema: metadataSchema, value: metadataValue },
-    notif
+    notif,
   )
 }
 
@@ -24,12 +24,12 @@ export function apiUpdateMetadata(
   tagId,
   metadataId,
   metadataValue,
-  notif
+  notif,
 ) {
   return sendRequest(
     `${BASE_API}/conversations/${scopeId}/tags/${tagId}/metadata/${metadataId}`,
     { method: "patch" },
     { value: metadataValue },
-    notif
+    notif,
   )
 }

@@ -18,13 +18,19 @@
       <span v-else class="icon close" />
     </template>
     <template #cell-config.name="{ element }">
-      <span class="clickable" @click="onEdit(element.id)">{{ element.config.name }}</span>
+      <span class="clickable" @click="onEdit(element.id)">{{
+        element.config.name
+      }}</span>
     </template>
     <template #cell-config.description="{ element }">
-      <span class="clickable" @click="onEdit(element.id)">{{ element.config.description }}</span>
+      <span class="clickable" @click="onEdit(element.id)">{{
+        element.config.description
+      }}</span>
     </template>
     <template #cell-config.languages.0.candidate="{ element }">
-      <span class="clickable" @click="onEdit(element.id)">{{ formatLanguages(element) }}</span>
+      <span class="clickable" @click="onEdit(element.id)">{{
+        formatLanguages(element)
+      }}</span>
     </template>
     <template #cell-actions="{ element }">
       <Button
@@ -68,9 +74,21 @@ export default {
     columns() {
       return [
         { key: "organizationId", label: "", width: "auto" },
-        { key: "config.name", label: this.$t("session.profile_selector.labels.name"), width: "1fr" },
-        { key: "config.description", label: this.$t("session.profile_selector.labels.description"), width: "1fr" },
-        { key: "config.languages.0.candidate", label: this.$t("session.profile_selector.labels.languages"), width: "1fr" },
+        {
+          key: "config.name",
+          label: this.$t("session.profile_selector.labels.name"),
+          width: "1fr",
+        },
+        {
+          key: "config.description",
+          label: this.$t("session.profile_selector.labels.description"),
+          width: "1fr",
+        },
+        {
+          key: "config.languages.0.candidate",
+          label: this.$t("session.profile_selector.labels.languages"),
+          width: "1fr",
+        },
         { key: "actions", label: "", width: "auto" },
       ]
     },

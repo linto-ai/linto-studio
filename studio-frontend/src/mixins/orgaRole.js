@@ -48,7 +48,11 @@ export const orgaRoleMixin = {
       )
     },
     roleToString(role) {
-      if (role > ORGANIZATION_ROLES.ADMINISTRATOR || role < ORGANIZATION_ROLES.MEMBER) return this.$t("Unknown")
+      if (
+        role > ORGANIZATION_ROLES.ADMINISTRATOR ||
+        role < ORGANIZATION_ROLES.MEMBER
+      )
+        return this.$t("Unknown")
       return ROLES_INDEXED_BY_VALUE[role].name
     },
   },
@@ -97,7 +101,11 @@ export const orgaRoleMixin = {
       return ROLES
     },
     currentRoleToString() {
-      if (this.userRole > ORGANIZATION_ROLES.ADMINISTRATOR || this.userRole < ORGANIZATION_ROLES.MEMBER) return this.$t("Unknown")
+      if (
+        this.userRole > ORGANIZATION_ROLES.ADMINISTRATOR ||
+        this.userRole < ORGANIZATION_ROLES.MEMBER
+      )
+        return this.$t("Unknown")
       return ROLES_INDEXED_BY_VALUE[this.userRole].name
     },
   },

@@ -7,7 +7,9 @@
     border-radius: 12px;
     width: fit-content;
     box-shadow: var(--shadow-2);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
     text-decoration: none;
     color: inherit;
     gap: var(--md-gap);

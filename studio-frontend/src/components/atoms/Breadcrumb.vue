@@ -26,9 +26,7 @@
                   {{ item.label }}
                 </router-link>
                 <span v-else class="breadcrumb-text">{{ item.label }}</span>
-                <span class="breadcrumb-separator" aria-hidden="true">
-                  >
-                </span>
+                <span class="breadcrumb-separator" aria-hidden="true"> > </span>
               </li>
 
               <li

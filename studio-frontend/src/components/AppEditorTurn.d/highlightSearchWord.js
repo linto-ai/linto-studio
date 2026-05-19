@@ -5,7 +5,7 @@ export default function highlightSearchWord(
   category,
   i18n,
   { isLastWord = false, isFirstWord = false } = {},
-  iscurrent = false
+  iscurrent = false,
 ) {
   word.setAttribute("found", "true")
   if (isFirstWord) {

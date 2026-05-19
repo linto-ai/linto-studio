@@ -387,7 +387,9 @@ export default {
 
     toggleSelection() {
       if (this.isSelected) {
-        const remaining = this.selectedMediaIds.filter((id) => id !== this.media._id)
+        const remaining = this.selectedMediaIds.filter(
+          (id) => id !== this.media._id,
+        )
         this.$emit("update:selectedMediaIds", remaining)
       } else {
         this.$emit("update:selectedMediaIds", [

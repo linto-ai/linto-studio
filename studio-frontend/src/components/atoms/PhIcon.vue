@@ -59,7 +59,6 @@ export default {
   vertical-align: middle;
   background: none;
 
-
   &.pulse :deep(svg) {
     animation: pulse 2s infinite;
   }
