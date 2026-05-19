@@ -75,6 +75,41 @@ export class StudioApiService {
     })
   }
 
+  // -- Download / Publication methods --
+
+  async downloadConversation({ conversationId, format = "docx" } = {}) {
+    return await this.#withToken(this.#downloadConversation)({
+      conversationId,
+      format,
+    })
+  }
+
+  async getPublicationTemplates(args = {}) {
+    return await this.#withToken(
+      this.#withOrganizationId(this.#getPublicationTemplates.bind(this))
+    )(args)
+  }
+
+  async getTemplatePlaceholders({ templateId } = {}) {
+    return await this.#withToken(this.#getTemplatePlaceholders)({
+      templateId,
+    })
+  }
+
+  async exportWithTemplate({
+    jobId,
+    format = "pdf",
+    templateId,
+    versionNumber,
+  } = {}) {
+    return await this.#withToken(this.#exportWithTemplate)({
+      jobId,
+      format,
+      templateId,
+      versionNumber,
+    })
+  }
+
   // -- Taxonomy methods (categories, tags, folders) --
 
   async listCategories(args = {}) {
@@ -322,6 +357,52 @@ export class StudioApiService {
       { token }
     )
     return await sendRequest(req)
+  }
+
+  // -- Download / Publication private implementations --
+
+  async #downloadConversation({ token, conversationId, format }) {
+    const url = `${this.baseApiUrl}/conversations/${conversationId}/download?format=${encodeURIComponent(format)}`
+    const req = prepareRequest(url, "POST", { token })
+    const isBinary =
+      format === "docx" || format === "odt" || format === "verbatim"
+    return await sendRequest(req, {
+      responseType: isBinary ? "binary" : undefined,
+    })
+  }
+
+  async #getPublicationTemplates({ token, organizationId }) {
+    const url = `${this.baseApiUrl}/publication/templates?organization_id=${encodeURIComponent(organizationId)}`
+    const req = prepareRequest(url, "GET", { token })
+    return await sendRequest(req)
+  }
+
+  async #getTemplatePlaceholders({ token, templateId }) {
+    const url = `${this.baseApiUrl}/publication/templates/${templateId}/placeholders`
+    const req = prepareRequest(url, "GET", { token })
+    return await sendRequest(req)
+  }
+
+  async #exportWithTemplate({
+    token,
+    jobId,
+    format,
+    templateId,
+    versionNumber,
+  }) {
+    let url = `${this.baseApiUrl}/publication/${jobId}/export/${format}`
+    const params = []
+    if (templateId !== undefined && templateId !== null && templateId !== "") {
+      params.push(`templateId=${encodeURIComponent(templateId)}`)
+    }
+    if (versionNumber !== undefined && versionNumber !== null) {
+      params.push(`versionNumber=${encodeURIComponent(versionNumber)}`)
+    }
+    if (params.length > 0) {
+      url += `?${params.join("&")}`
+    }
+    const req = prepareRequest(url, "GET", { token })
+    return await sendRequest(req, { responseType: "binary" })
   }
 
   // -- Taxonomy private implementations --

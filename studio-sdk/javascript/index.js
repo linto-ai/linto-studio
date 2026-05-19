@@ -66,6 +66,43 @@ class LinTO {
     return new SummaryPollingService(conversationId, serviceRoute, this.apiService)
   }
 
+  // --- Exports / Download / Publication ---
+
+  async getExportList(conversationId) {
+    return await this.apiService.getExportList({ conversationId })
+  }
+
+  async getExportContent(conversationId, jobId) {
+    return await this.apiService.getExportContent({ conversationId, jobId })
+  }
+
+  async downloadConversation(conversationId, { format = "docx" } = {}) {
+    return await this.apiService.downloadConversation({
+      conversationId,
+      format,
+    })
+  }
+
+  async getPublicationTemplates() {
+    return await this.apiService.getPublicationTemplates()
+  }
+
+  async getTemplatePlaceholders(templateId) {
+    return await this.apiService.getTemplatePlaceholders({ templateId })
+  }
+
+  async exportWithTemplate(
+    jobId,
+    { format = "pdf", templateId, versionNumber } = {}
+  ) {
+    return await this.apiService.exportWithTemplate({
+      jobId,
+      format,
+      templateId,
+      versionNumber,
+    })
+  }
+
   // --- Taxonomy: categories, tags, folders ---
 
   async listCategories() {
