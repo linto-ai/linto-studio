@@ -2,19 +2,16 @@ const PERMISSIONS = Object.freeze({
   NONE: 0,
   UPLOAD: 1,
   SUMMARY: 2,
-  SESSION: 4,
+  MICROPHONE: 4,
+  BOT: 8,
+  SESSION: 16,
 
   hasRightAccess: (orgaPermission, desiredPermission) =>
     (orgaPermission & desiredPermission) == desiredPermission,
 
   isValidPermission: (value) => {
     if (value === undefined) return false
-    const validPermissions =
-      PERMISSIONS.NONE |
-      PERMISSIONS.UPLOAD |
-      PERMISSIONS.SUMMARY |
-      PERMISSIONS.SESSION
-    return (value & ~validPermissions) === 0
+    return (value & ~VALID_PERMISSIONS_MASK) === 0
   },
   getDefaultPermissions() {
     let permissionsSum = PERMISSIONS.NONE // Start with no permissions
@@ -39,5 +36,13 @@ const PERMISSIONS = Object.freeze({
     else return this.getDefaultPermissions()
   },
 })
+
+const VALID_PERMISSIONS_MASK =
+  PERMISSIONS.NONE |
+  PERMISSIONS.UPLOAD |
+  PERMISSIONS.SUMMARY |
+  PERMISSIONS.MICROPHONE |
+  PERMISSIONS.BOT |
+  PERMISSIONS.SESSION
 
 module.exports = PERMISSIONS

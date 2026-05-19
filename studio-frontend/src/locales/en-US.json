@@ -952,6 +952,8 @@
       "upload_permission": "Upload media",
       "summary_permission": "Generate summary",
       "session_permission": "Create session",
+      "microphone_permission": "Create microphone sessions",
+      "bot_permission": "Create bot sessions",
       "update_button": "Update permissions"
     },
     "matching_users": {

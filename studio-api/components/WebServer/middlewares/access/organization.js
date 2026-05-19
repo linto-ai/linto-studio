@@ -98,6 +98,12 @@ module.exports = {
   permissionSession: async (req, res, next) => {
     await permissionAccess(req, res, next, PERMISSIONS.SESSION)
   },
+  permissionMicrophone: async (req, res, next) => {
+    await permissionAccess(req, res, next, PERMISSIONS.MICROPHONE)
+  },
+  permissionBot: async (req, res, next) => {
+    await permissionAccess(req, res, next, PERMISSIONS.BOT)
+  },
   sessionSocketAccess: async (session, userId) => {
     return await sessionSocketAccess(session, userId, ROLES.MEMBER)
   },

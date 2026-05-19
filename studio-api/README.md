@@ -92,13 +92,15 @@ By default, each newly created organization is granted the following permissions
 
 - **Upload**: Grants access to use the transcription service to upload and process media.
 - **Summary**: Enables the use of large language models (LLM) to generate summaries for uploaded media.
-- **Session**: Provides access to the Session API, allowing the organization to create live meetings.
+- **Session**: Provides access to the Session API for managing live meeting sessions and templates.
+- **Microphone**: Allows the organization to create microphone-based live sessions (quick meetings).
+- **Bot**: Allows the organization to create bot-based live sessions (visioconference).
 
 These default permissions can be set up on project startup or adjusted individually in the back office by the superuser.
 To configure default permissions at startup, set the following variable in the `.env` file:
 
 ```bash
-ORGANIZATION_DEFAULT_PERMISSIONS=upload,summary,session
+ORGANIZATION_DEFAULT_PERMISSIONS=upload,summary,session,microphone,bot
 ```
 
 > **Note**: If any default permission is removed, future organizations will not have access to that functionality unless the superuser grants it in the back office.
