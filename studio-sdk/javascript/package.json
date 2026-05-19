@@ -13,7 +13,8 @@
     "Timestamps"
   ],
   "scripts": {
-    "test": "node test.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:example": "node test.js",
     "prepublishOnly": "cp ../README.md ./README.md"
   },
   "repository": {
@@ -26,5 +27,16 @@
     "url": "https://github.com/linto-ai/linto-studio/issues"
   },
   "homepage": "linto.ai",
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "transform": {},
+    "testMatch": [
+      "<rootDir>/test/**/*.test.js"
+    ]
+  }
 }
