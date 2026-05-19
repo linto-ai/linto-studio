@@ -187,6 +187,51 @@ class LinTO {
       conversationId,
     })
   }
+
+  // --- Sharing & user management ---
+
+  async shareConversation(conversationId, email, { right = 1, notify = true } = {}) {
+    return await this.apiService.shareConversation({
+      conversationId,
+      email,
+      right,
+      notify,
+    })
+  }
+
+  async searchUsers(search) {
+    return await this.apiService.searchUsers({ search })
+  }
+
+  async updateConversation(conversationId, data) {
+    return await this.apiService.updateConversation({ conversationId, data })
+  }
+
+  async setConversationOwner(conversationId, email) {
+    const users = await this.searchUsers(email)
+    if (!users || !Array.isArray(users) || users.length === 0) {
+      return null
+    }
+
+    let userId = null
+    const target = String(email).toLowerCase()
+    for (const u of users) {
+      if (String(u?.email ?? "").toLowerCase() === target) {
+        userId = String(u?._id ?? "")
+        break
+      }
+    }
+
+    if (!userId) {
+      return null
+    }
+
+    await this.updateConversation(conversationId, {
+      owner: userId,
+      sharedWithUsers: [],
+    })
+    return userId
+  }
 }
 
 try {

@@ -134,6 +134,20 @@ export class StudioApiService {
     })
   }
 
+  async shareConversation({
+    conversationId,
+    email,
+    right = 1,
+    notify = true,
+  } = {}) {
+    return await this.#withToken(this.#shareConversation)({
+      conversationId,
+      email,
+      right,
+      notify,
+    })
+  }
+
   async login({ email, password }) {
     const req = prepareRequest(`${this.baseAuthUrl}/login`, "POST", {
       email,
@@ -426,6 +440,23 @@ export class StudioApiService {
         Authorization: token ? `Bearer ${token}` : null,
       },
       body: JSON.stringify(data ?? {}),
+    })
+    return await sendRequest(requestObj)
+  }
+
+  async #shareConversation({ token, conversationId, email, right, notify }) {
+    const url = `${this.baseApiUrl}/conversations/${conversationId}/invite`
+    const payload = { email, right }
+    if (notify === false) {
+      payload.notify = false
+    }
+    const requestObj = new Request(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token ? `Bearer ${token}` : null,
+      },
+      body: JSON.stringify(payload),
     })
     return await sendRequest(requestObj)
   }
