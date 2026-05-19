@@ -7,7 +7,9 @@
         <SessionLiveActions
           :session="session"
           :showStop="false"
-          :showDelete="false" />
+          :showDelete="false"
+          fakeStatus="active"
+          :disablePauseResume="true" />
         <Button
           @click="$emit('onSave')"
           :label="$t('quick_session.live.save_button')"

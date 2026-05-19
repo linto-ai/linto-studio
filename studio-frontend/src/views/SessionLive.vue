@@ -1,5 +1,5 @@
 <template>
-  <LayoutV2 :fullscreen="isMobile && !isAuthenticated">
+  <LayoutV2 :fullscreen="isMobile && !isAuthenticated" noBreadcrumb>
     <template v-slot:breadcrumb-actions>
       <SessionHeader
         :sessionListRoute="sessionListRoute"

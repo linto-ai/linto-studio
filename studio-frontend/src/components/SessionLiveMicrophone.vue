@@ -15,6 +15,7 @@
           :session="session"
           :showStop="false"
           :showDelete="false"
+          :fakeStatus="isRecording ? 'active' : 'paused'"
           @paused="pauseMicrophone"
           @resumed="startMicrophone"
           @cleared="$emit('onSessionUpdated')" />

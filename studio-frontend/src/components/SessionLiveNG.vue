@@ -93,7 +93,10 @@ export default {
     )
   },
   methods: {
-    clear() {
+    clear(sessionId) {
+      if (sessionId != this.session.id) {
+        return
+      }
       const channel = this.editor.activeChannel.value
 
       if (channel) {

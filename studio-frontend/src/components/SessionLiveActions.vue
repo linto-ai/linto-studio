@@ -4,7 +4,7 @@
     <IsMobile v-if="isActive">
       <Button
         @click="onPause"
-        :disabled="busy"
+        :disabled="busy || disablePauseResume"
         variant="secondary"
         :aria-label="$t('session.detail_page.pause_button')"
         :title="$t('session.detail_page.pause_button')"
@@ -12,7 +12,7 @@
       <template #desktop>
         <Button
           @click="onPause"
-          :disabled="busy"
+          :disabled="busy || disablePauseResume"
           variant="secondary"
           size="sm"
           :label="$t('session.detail_page.pause_button')"
@@ -24,7 +24,7 @@
     <IsMobile v-else-if="isPaused">
       <Button
         @click="onResume"
-        :disabled="busy"
+        :disabled="busy || disablePauseResume"
         variant="secondary"
         :aria-label="$t('session.detail_page.resume_button')"
         :title="$t('session.detail_page.resume_button')"
@@ -32,7 +32,7 @@
       <template #desktop>
         <Button
           @click="onResume"
-          :disabled="busy"
+          :disabled="busy || disablePauseResume"
           variant="secondary"
           size="sm"
           :label="$t('session.detail_page.resume_button')"
@@ -141,6 +141,7 @@
 import { bus } from "@/main.js"
 
 import { sessionModelMixin } from "@/mixins/sessionModel.js"
+import isSessionStarted from "@/tools/isSessionStarted.js"
 
 import {
   apiPauseSession,
@@ -165,6 +166,8 @@ export default {
     },
     showStop: { type: Boolean, default: true },
     showDelete: { type: Boolean, default: true },
+    fakeStatus: { type: String, default: null },
+    disablePauseResume: { type: Boolean, default: false },
   },
   data() {
     return {
@@ -172,6 +175,29 @@ export default {
       showClearConfirm: false,
       showForceStopConfirm: false,
     }
+  },
+  computed: {
+    effectiveSession() {
+      if (this.fakeStatus) {
+        return { ...this.session, status: this.fakeStatus }
+      }
+      return this.session
+    },
+    isActive() {
+      return this.effectiveSession?.status === "active"
+    },
+    isPaused() {
+      return this.effectiveSession?.status === "paused"
+    },
+    isPending() {
+      return (
+        this.effectiveSession?.status === "ready" ||
+        this.effectiveSession?.status === "on_schedule"
+      )
+    },
+    isStarted() {
+      return isSessionStarted(this.effectiveSession)
+    },
   },
   methods: {
     async onPause() {
