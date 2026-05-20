@@ -249,10 +249,18 @@ export class StudioApiService {
         throw new Error(`No ASR services available for lang=${lang}`)
       }
 
+      // Accept both camelCase (JS convention) and snake_case (Python parity)
+      // so a caller passing enable_diarization is not silently ignored.
+      const pick = (...keys) => {
+        for (const key of keys) {
+          if (args[key] !== undefined) return args[key]
+        }
+        return undefined
+      }
       const serviceConfig = generateServiceConfig(selectedService, {
-        enablePunctuation: args["enablePunctuation"],
-        enableDiarization: args["enableDiarization"],
-        numberOfSpeaker: args["numberOfSpeaker"],
+        enablePunctuation: pick("enablePunctuation", "enable_punctuation"),
+        enableDiarization: pick("enableDiarization", "enable_diarization"),
+        numberOfSpeaker: pick("numberOfSpeaker", "number_of_speaker"),
       })
 
       args["serviceName"] = args["serviceName"] ?? serviceConfig.serviceName
@@ -555,7 +563,7 @@ function getServiceByQualityAndLang(services, quality, lang) {
   })
 }
 
-function generateServiceConfig(
+export function generateServiceConfig(
   service,
   {
     enablePunctuation = false,
@@ -567,17 +575,30 @@ function generateServiceConfig(
   const isWhisper = service?.model_type === "whisper"
   const subServices = service?.sub_services
 
-  const punctuationServiceList = subServices?.punctuation
+  const punctuationServiceList = subServices?.punctuation ?? []
   const punctuationService =
     enablePunctuation && !isWhisper && punctuationServiceList.length > 0
       ? punctuationServiceList[0].service_name
       : null
 
-  const diarizationServiceList = subServices?.diarization
+  const diarizationServiceList = subServices?.diarization ?? []
   const diarizationService =
     enableDiarization && diarizationServiceList.length > 0
       ? diarizationServiceList[0].service_name
       : null
+
+  // Diarization is only effectively enabled when a worker is actually
+  // available. When the caller asks for it but the selected ASR service
+  // exposes no diarization sub-service, fall back gracefully instead of
+  // sending enableDiarization=true with serviceName=null, which silently
+  // hangs the transcription on the gateway side.
+  const diarizationEffective = Boolean(enableDiarization && diarizationService)
+
+  // numberOfSpeaker may arrive as a string from env-style configuration.
+  const numberOfSpeakerInt = Number.parseInt(numberOfSpeaker, 10)
+  const numberOfSpeakerSafe = Number.isFinite(numberOfSpeakerInt)
+    ? numberOfSpeakerInt
+    : 0
 
   return {
     serviceName: service.serviceName,
@@ -590,12 +611,12 @@ function generateServiceConfig(
         serviceName: punctuationService,
       },
       diarizationConfig: {
-        enableDiarization: enableDiarization,
+        enableDiarization: diarizationEffective,
         numberOfSpeaker:
-          enableDiarization && numberOfSpeaker > 0
-            ? parseInt(numberOfSpeaker)
+          diarizationEffective && numberOfSpeakerSafe > 0
+            ? numberOfSpeakerSafe
             : null,
-        maxNumberOfSpeaker: enableDiarization ? 100 : null,
+        maxNumberOfSpeaker: diarizationEffective ? 100 : null,
         serviceName: diarizationService,
       },
       enableNormalization: true,
