@@ -70,11 +70,27 @@ def with_upload_config(method):
                 f"Check gateway service configuration."
             )
 
+        # Accept both snake_case (PEP 8) and camelCase keys: callers from
+        # within the SDK (e.g. LinTO.transcribe) use snake_case while public
+        # kwargs historically used camelCase. Resolving both avoids the bug
+        # where enable_diarization=True at the caller silently became False.
+        def _pick(*keys, default=None):
+            for key in keys:
+                if key in kwargs:
+                    return kwargs[key]
+            return default
+
         service_config = generate_service_config(
             selected,
-            enable_punctuation=kwargs.get("enablePunctuation", False),
-            enable_diarization=kwargs.get("enableDiarization", False),
-            number_of_speaker=kwargs.get("numberOfSpeaker", 0),
+            enable_punctuation=_pick(
+                "enablePunctuation", "enable_punctuation", default=False
+            ),
+            enable_diarization=_pick(
+                "enableDiarization", "enable_diarization", default=False
+            ),
+            number_of_speaker=_pick(
+                "numberOfSpeaker", "number_of_speaker", default=0
+            ),
             language_value=lang,
         )
 

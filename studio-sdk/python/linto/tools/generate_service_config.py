@@ -28,6 +28,20 @@ def generate_service_config(
         else None
     )
 
+    # Diarization is only effectively enabled when a worker is actually
+    # available for it. When the caller asks for it but the selected ASR
+    # service exposes no diarization sub-service, fall back gracefully
+    # instead of sending enableDiarization=True with serviceName=null
+    # (which would silently hang the transcription on the gateway side).
+    diarization_effective = bool(enable_diarization and diarization_service)
+
+    # number_of_speaker may arrive as a string (e.g. "0" or "3") since some
+    # callers (Meet backend) pass it through environment-style configuration.
+    try:
+        number_of_speaker_int = int(number_of_speaker) if number_of_speaker is not None else 0
+    except (TypeError, ValueError):
+        number_of_speaker_int = 0
+
     return {
         "serviceName": service["serviceName"],
         "endpoint": remove_leading_slash(service["endpoints"][0]["endpoint"]),
@@ -39,13 +53,13 @@ def generate_service_config(
                 "serviceName": punctuation_service,
             },
             "diarizationConfig": {
-                "enableDiarization": enable_diarization,
+                "enableDiarization": diarization_effective,
                 "numberOfSpeaker": (
-                    int(number_of_speaker)
-                    if enable_diarization and number_of_speaker > 0
+                    number_of_speaker_int
+                    if diarization_effective and number_of_speaker_int > 0
                     else None
                 ),
-                "maxNumberOfSpeaker": 100 if enable_diarization else None,
+                "maxNumberOfSpeaker": 100 if diarization_effective else None,
                 "serviceName": diarization_service,
             },
             "enableNormalization": True,
