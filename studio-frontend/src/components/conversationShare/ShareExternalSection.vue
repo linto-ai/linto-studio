@@ -76,6 +76,7 @@ export default {
   padding: 0.5rem;
   border: 1px solid var(--neutral-20);
   box-shadow: var(--shadow-1);
+  background-color: var(--background-primary);
 
   &__title {
     margin: 0;

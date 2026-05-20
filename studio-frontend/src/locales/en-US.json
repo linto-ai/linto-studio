@@ -1480,6 +1480,8 @@
     "invite_new_user": "Invite a new user",
     "email_placeholder": "Email",
     "button": "Share",
+    "loading_users": "Loading users…",
+    "clear_search": "Clear search",
     "conversation_error_title": "Some conversations cannot be shared",
     "external_members": "External users",
     "inscription_disabled": "Registration and invitations are deactivated on the platform",

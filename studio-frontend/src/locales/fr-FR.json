@@ -1474,6 +1474,8 @@
     "invite_new_user": "Inviter un nouvel utilisateur",
     "email_placeholder": "Email",
     "button": "Partager",
+    "loading_users": "Chargement des utilisateurs…",
+    "clear_search": "Effacer la recherche",
     "conversation_error_title": "Des conversations ne peuvent pas être partagées",
     "external_members": "Utilisateurs externes",
     "inscription_disabled": "Les inscriptions et les invitations sont désactivées sur la plateforme",
