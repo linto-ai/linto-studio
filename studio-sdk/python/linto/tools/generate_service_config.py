@@ -1,4 +1,5 @@
 from .remove_leading_slash import remove_leading_slash
+from .safe_int import safe_int
 
 def generate_service_config(
     service,
@@ -35,12 +36,8 @@ def generate_service_config(
     # (which would silently hang the transcription on the gateway side).
     diarization_effective = bool(enable_diarization and diarization_service)
 
-    # number_of_speaker may arrive as a string (e.g. "0" or "3") since some
-    # callers (Meet backend) pass it through environment-style configuration.
-    try:
-        number_of_speaker_int = int(number_of_speaker) if number_of_speaker is not None else 0
-    except (TypeError, ValueError):
-        number_of_speaker_int = 0
+    # Meet backend may pass number_of_speaker as a string (e.g. "0" or "3").
+    number_of_speaker_int = safe_int(number_of_speaker)
 
     return {
         "serviceName": service["serviceName"],
