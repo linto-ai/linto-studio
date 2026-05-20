@@ -5,6 +5,7 @@ import logging
 from datetime import datetime
 from ..models.media import Media
 from ..tools.generate_service_config import generate_service_config
+from ..tools.pick_kwarg import pick_kwarg
 
 def _lang_matches(service_lang, requested_lang):
     if requested_lang == "*":
@@ -74,22 +75,16 @@ def with_upload_config(method):
         # within the SDK (e.g. LinTO.transcribe) use snake_case while public
         # kwargs historically used camelCase. Resolving both avoids the bug
         # where enable_diarization=True at the caller silently became False.
-        def _pick(*keys, default=None):
-            for key in keys:
-                if key in kwargs:
-                    return kwargs[key]
-            return default
-
         service_config = generate_service_config(
             selected,
-            enable_punctuation=_pick(
-                "enablePunctuation", "enable_punctuation", default=False
+            enable_punctuation=pick_kwarg(
+                kwargs, "enablePunctuation", "enable_punctuation", default=False
             ),
-            enable_diarization=_pick(
-                "enableDiarization", "enable_diarization", default=False
+            enable_diarization=pick_kwarg(
+                kwargs, "enableDiarization", "enable_diarization", default=False
             ),
-            number_of_speaker=_pick(
-                "numberOfSpeaker", "number_of_speaker", default=0
+            number_of_speaker=pick_kwarg(
+                kwargs, "numberOfSpeaker", "number_of_speaker", default=0
             ),
             language_value=lang,
         )
