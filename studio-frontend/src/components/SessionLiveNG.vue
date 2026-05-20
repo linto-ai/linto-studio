@@ -97,11 +97,15 @@ export default {
       if (sessionId != this.session.id) {
         return
       }
+
       const channel = this.editor.activeChannel.value
 
-      if (channel) {
-        channel.reset()
+      if (!channel) {
+        return
       }
+
+      this.historyOffset = 0
+      channel.reset()
     },
     async renewWakeLock() {
       if (this.wakeLock) {
