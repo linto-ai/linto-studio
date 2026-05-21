@@ -40,6 +40,7 @@ class LinTO {
    * @param {string} [options.endpointAsr] - Override ASR endpoint URL.
    * @param {string} [options.diarizationServiceName] - Force a diarization service.
    * @param {string} [options.punctuationServiceName] - Force a punctuation service.
+   * @param {number} [options.membersRight] - Default permission bitmask for organization members on the resulting conversation.
    * @returns {Promise<PollingService>} Polling handle emitting "update", "done", "error".
    */
   async transcribe(
@@ -56,6 +57,7 @@ class LinTO {
       endpointAsr = null,
       diarizationServiceName = null,
       punctuationServiceName = null,
+      membersRight = null,
     } = {}
   ) {
     const res = await this.apiService.uploadFile({
@@ -71,6 +73,7 @@ class LinTO {
       endpointAsr,
       diarizationServiceName,
       punctuationServiceName,
+      membersRight,
     })
     const mediaId = res.conversationId
     return new PollingService(mediaId, this.apiService)

@@ -312,6 +312,7 @@ export class StudioApiService {
     endpoint,
     lang,
     segmentCharSize,
+    membersRight,
   }) {
     if (!file) {
       throw new Error("File is required")
@@ -325,6 +326,9 @@ export class StudioApiService {
     formData.append("segmentCharSize", segmentCharSize)
     formData.append("lang", lang)
     formData.append("endpoint", endpoint)
+    if (membersRight != null) {
+      formData.append("membersRight", String(parseInt(membersRight, 10)))
+    }
     const req = prepareMultipartFormData(
       `${this.baseApiUrl}/organizations/${organizationId}/conversations/create`,
       token,
