@@ -5,6 +5,7 @@ import {
 } from "../request.js"
 
 import mediaFactory from "../models/media.js"
+import { pickKwarg } from "../tools/pickKwarg.js"
 
 /**
  * Low-level HTTP client for the LinTO Studio API.
@@ -251,16 +252,10 @@ export class StudioApiService {
 
       // Accept both camelCase (JS convention) and snake_case (Python parity)
       // so a caller passing enable_diarization is not silently ignored.
-      const pick = (...keys) => {
-        for (const key of keys) {
-          if (args[key] !== undefined) return args[key]
-        }
-        return undefined
-      }
       const serviceConfig = generateServiceConfig(selectedService, {
-        enablePunctuation: pick("enablePunctuation", "enable_punctuation"),
-        enableDiarization: pick("enableDiarization", "enable_diarization"),
-        numberOfSpeaker: pick("numberOfSpeaker", "number_of_speaker"),
+        enablePunctuation: pickKwarg(args, "enablePunctuation", "enable_punctuation"),
+        enableDiarization: pickKwarg(args, "enableDiarization", "enable_diarization"),
+        numberOfSpeaker: pickKwarg(args, "numberOfSpeaker", "number_of_speaker"),
       })
 
       args["serviceName"] = args["serviceName"] ?? serviceConfig.serviceName
