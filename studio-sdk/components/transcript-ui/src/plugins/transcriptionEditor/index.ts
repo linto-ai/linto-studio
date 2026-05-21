@@ -2,14 +2,9 @@ import { computed, ref, watch, shallowRef } from "vue"
 import { Doc } from "yjs"
 import { Editor, getSchema } from "@tiptap/vue-3"
 import { Text } from "@tiptap/extension-text"
-import { Collaboration } from "@tiptap/extension-collaboration"
 import { prosemirrorJSONToYXmlFragment } from "@tiptap/y-tiptap"
 import { HocuspocusProvider } from "@hocuspocus/provider"
-import { TranscriptionDocument } from "./extensions/transcriptionDocument"
-import { TurnNode } from "./extensions/turnNode"
-import { StoreSync } from "./extensions/storeSync"
-import { WordHighlight } from "./extensions/wordHighlight"
-import { CollaborationCursor } from "./extensions/collaborationCursor"
+
 import { turnsToDoc } from "./utils/turnsToDoc"
 import { mapWord } from "../../adapters/apiAdapter"
 import type { ApiWord } from "../../types/api"
@@ -25,6 +20,16 @@ import type {
   YjsUser,
   TranslationStore,
 } from "../../core/types"
+
+import { Collaboration } from "@tiptap/extension-collaboration"
+import { TranscriptionDocument } from "./extensions/transcriptionDocument"
+import { TurnNode } from "./extensions/turnNode"
+import { StoreSync } from "./extensions/storeSync"
+import { WordHighlight } from "./extensions/wordHighlight"
+import { CollaborationCursor } from "./extensions/collaborationCursor"
+import { ClickHandler } from "./extensions/clickHandler"
+import { PauseOnEdit } from "./extensions/pauseOnEdit"
+
 import "./cursor.css"
 
 export type { TranscriptionEditorPluginApi }
@@ -302,6 +307,8 @@ function createTiptapEditor(
       getTranslation: () => activeTranslation.value,
     }),
     WordHighlight.configure({ core }),
+    ClickHandler.configure({ core }),
+    PauseOnEdit.configure({ core }),
     ...core.pluginExtensions,
   ]
 

@@ -27,6 +27,7 @@ export function createAudioPlugin(options: AudioPluginOptions = {}): CorePlugin 
       const activeWordId = ref<string | null>(null)
       const activeTurnId = ref<string | null>(null)
       let seekHandler: ((time: number) => void) | null = null
+      let pauseHandler: (() => void) | null = null
 
       const rawSource = computed(
         () => core.activeChannel.value?.activeTranslation.value.audio ?? null,
@@ -96,6 +97,14 @@ export function createAudioPlugin(options: AudioPluginOptions = {}): CorePlugin 
         seekHandler = fn
       }
 
+      function pause() {
+        pauseHandler?.()
+      }
+
+      function setPauseHandler(fn: (() => void) | null) {
+        pauseHandler = fn
+      }
+
       const api: AudioPluginApi = {
         currentTime,
         isPlaying,
@@ -104,6 +113,8 @@ export function createAudioPlugin(options: AudioPluginOptions = {}): CorePlugin 
         activeTurnId,
         seekTo,
         setSeekHandler,
+        pause,
+        setPauseHandler,
       }
 
       core.audio = api

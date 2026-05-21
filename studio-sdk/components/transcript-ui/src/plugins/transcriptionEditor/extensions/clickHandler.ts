@@ -1,0 +1,61 @@
+import { Extension } from "@tiptap/core"
+import { Plugin, PluginKey } from "@tiptap/pm/state"
+import type { Core } from "../../../core/types"
+
+export interface ClickHandlerOptions {
+  core: Core
+}
+
+export const ClickHandler = Extension.create<ClickHandlerOptions>({
+  name: "clickHandler",
+
+  addProseMirrorPlugins() {
+    const { core } = this.options
+
+    return [
+      new Plugin({
+        key: new PluginKey("clickHandler"),
+        props: {
+          handleClick(view, pos) {
+            const $pos = view.state.doc.resolve(pos)
+            const turnNode = $pos.parent
+            if (turnNode.type.name !== "turn") return false
+
+            const turnId = turnNode.attrs.id as string | null
+            if (!turnId) return false
+
+            const translation =
+              core.activeChannel.value?.activeTranslation.value
+            if (!translation) return false
+
+            const turn = translation.turns.value.find((t) => t.id === turnId)
+            if (!turn) return false
+
+            // parentOffset = char index within the turn's text content
+            // (inverse mapping of what wordHighlight.ts does)
+            const charPos = $pos.parentOffset
+            const text = turnNode.textContent
+
+            let cursor = 0
+            for (const word of turn.words) {
+              const idx = text.indexOf(word.text, cursor)
+              if (idx === -1) break
+              const end = idx + word.text.length
+              if (charPos >= idx && charPos <= end) {
+                if (word.startTime) {
+                  core.audio?.seekTo(word.startTime)
+                } else if (turn.startTime) {
+                  core.audio?.seekTo(turn.startTime)
+                }
+                core.audio?.pause()
+                return false
+              }
+              cursor = end
+            }
+            return false
+          },
+        },
+      }),
+    ]
+  },
+})

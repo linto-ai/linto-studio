@@ -123,6 +123,8 @@ export interface AudioPluginApi {
     activeTurnId: Ref<string | null>;
     seekTo(time: number): void;
     setSeekHandler(handler: ((time: number) => void) | null): void;
+    pause(): void;
+    setPauseHandler(handler: (() => void) | null): void;
 }
 export interface YjsUser {
     clientId: number;

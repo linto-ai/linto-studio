@@ -348,9 +348,11 @@ export function useAudioPlayer(options: UseAudioPlayerOptions) {
   )
 
   audio.setSeekHandler(seekTo)
+  audio.setPauseHandler(pause)
 
   onBeforeUnmount(() => {
     audio.setSeekHandler(null)
+    audio.setPauseHandler(null)
     destroy()
   })
 
