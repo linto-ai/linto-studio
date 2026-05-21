@@ -200,3 +200,179 @@ class TestTranscriptionConfigLanguage:
         config = json.loads(captured["transcriptionConfig"])
         assert config["language"] == "fr"
         assert captured["lang"] == "fr"
+
+
+@pytest.mark.asyncio
+class TestDiarizationPropagation:
+    """Regression tests for the snake_case vs camelCase naming mismatch
+    between LinTO.transcribe() and the with_upload_config decorator.
+
+    Before the fix, enable_diarization=True at the caller silently became
+    False inside generate_service_config because the decorator only checked
+    for the camelCase key.
+    """
+
+    @staticmethod
+    def _service_with_diarization():
+        return {
+            "serviceName": "stt-fr",
+            "language": "fr-FR",
+            "scope": ["stt"],
+            "endpoints": [{"endpoint": "/stt-fr"}],
+            "model_type": "whisper",
+            "sub_services": {
+                "diarization": [{"service_name": "stt-diarization"}],
+                "punctuation": [],
+            },
+        }
+
+    @staticmethod
+    def _service_without_diarization():
+        return {
+            "serviceName": "stt-fr",
+            "language": "fr-FR",
+            "scope": ["stt"],
+            "endpoints": [{"endpoint": "/stt-fr"}],
+            "model_type": "whisper",
+            "sub_services": {"diarization": [], "punctuation": []},
+        }
+
+    async def _capture_transcription_config(
+        self, monkeypatch, service=None, **transcribe_kwargs
+    ):
+        captured = {}
+
+        async def fake_send_request(self_, method, url, **kwargs):
+            data = kwargs.get("data")
+            if data is not None:
+                for field in data._fields:
+                    captured[field[0]["name"]] = field[2]
+            return {"conversationId": "conv-1"}
+
+        monkeypatch.setattr(StudioApiService, "_send_request", fake_send_request)
+
+        client = LinTO(auth_token="dummy", base_url="http://test")
+        client.api_service.asr_services = [service or self._service_with_diarization()]
+        client.api_service.organizations = [{"_id": "org-1"}]
+
+        await client.transcribe(file=b"audio", **transcribe_kwargs)
+        return json.loads(captured["transcriptionConfig"])
+
+    async def test_snake_case_enable_diarization_reaches_config(self, monkeypatch):
+        config = await self._capture_transcription_config(
+            monkeypatch, language="fr", enable_diarization=True
+        )
+        assert config["diarizationConfig"]["enableDiarization"] is True
+        assert config["diarizationConfig"]["serviceName"] == "stt-diarization"
+
+    async def test_camel_case_enableDiarization_reaches_config(self, monkeypatch):
+        # Bypass the LinTO.transcribe wrapper so we can send camelCase.
+        captured = {}
+
+        async def fake_send_request(self_, method, url, **kwargs):
+            data = kwargs.get("data")
+            if data is not None:
+                for field in data._fields:
+                    captured[field[0]["name"]] = field[2]
+            return {"conversationId": "conv-1"}
+
+        monkeypatch.setattr(StudioApiService, "_send_request", fake_send_request)
+
+        service = StudioApiService(token="dummy")
+        service.asr_services = [self._service_with_diarization()]
+        service.organizations = [{"_id": "org-1"}]
+
+        await service.upload_file(file=b"audio", lang="fr", enableDiarization=True)
+
+        config = json.loads(captured["transcriptionConfig"])
+        assert config["diarizationConfig"]["enableDiarization"] is True
+        assert config["diarizationConfig"]["serviceName"] == "stt-diarization"
+
+    async def test_diarization_off_by_default(self, monkeypatch):
+        config = await self._capture_transcription_config(
+            monkeypatch, language="fr", enable_diarization=False
+        )
+        assert config["diarizationConfig"]["enableDiarization"] is False
+        assert config["diarizationConfig"]["serviceName"] is None
+
+    async def test_number_of_speaker_snake_case_reaches_config(self, monkeypatch):
+        config = await self._capture_transcription_config(
+            monkeypatch,
+            language="fr",
+            enable_diarization=True,
+            number_of_speaker="3",
+        )
+        assert config["diarizationConfig"]["numberOfSpeaker"] == 3
+
+
+@pytest.mark.asyncio
+class TestDiarizationGracefulFallback:
+    """Regression tests: when the caller requests diarization but the selected
+    ASR service exposes no diarization sub-service, the SDK must fall back
+    gracefully (enableDiarization=False) instead of sending a payload with
+    enableDiarization=True + serviceName=null — which silently hangs the
+    transcription on the gateway side.
+    """
+
+    @staticmethod
+    def _build_service(diarization_workers=()):
+        return {
+            "serviceName": "stt-fr",
+            "language": "fr-FR",
+            "scope": ["stt"],
+            "endpoints": [{"endpoint": "/stt-fr"}],
+            "model_type": "whisper",
+            "sub_services": {
+                "diarization": [
+                    {"service_name": name} for name in diarization_workers
+                ],
+                "punctuation": [],
+            },
+        }
+
+    async def _capture(self, monkeypatch, service, **kwargs):
+        captured = {}
+
+        async def fake_send_request(self_, method, url, **request_kwargs):
+            data = request_kwargs.get("data")
+            if data is not None:
+                for field in data._fields:
+                    captured[field[0]["name"]] = field[2]
+            return {"conversationId": "conv-1"}
+
+        monkeypatch.setattr(StudioApiService, "_send_request", fake_send_request)
+
+        client = LinTO(auth_token="dummy", base_url="http://test")
+        client.api_service.asr_services = [service]
+        client.api_service.organizations = [{"_id": "org-1"}]
+
+        await client.transcribe(file=b"audio", **kwargs)
+        return json.loads(captured["transcriptionConfig"])
+
+    async def test_falls_back_when_no_diarization_worker(self, monkeypatch):
+        """Requesting diarization on a service without workers MUST result
+        in enableDiarization=False, serviceName=null, numberOfSpeaker=null."""
+        config = await self._capture(
+            monkeypatch,
+            self._build_service(diarization_workers=()),
+            language="fr",
+            enable_diarization=True,
+            number_of_speaker="2",
+        )
+        diar = config["diarizationConfig"]
+        assert diar["enableDiarization"] is False, "Fallback must disable"
+        assert diar["serviceName"] is None
+        assert diar["numberOfSpeaker"] is None
+        assert diar["maxNumberOfSpeaker"] is None
+
+    async def test_enabled_when_diarization_worker_present(self, monkeypatch):
+        """Sanity: with a worker, enableDiarization stays True."""
+        config = await self._capture(
+            monkeypatch,
+            self._build_service(diarization_workers=["stt-diar-1"]),
+            language="fr",
+            enable_diarization=True,
+        )
+        diar = config["diarizationConfig"]
+        assert diar["enableDiarization"] is True
+        assert diar["serviceName"] == "stt-diar-1"
