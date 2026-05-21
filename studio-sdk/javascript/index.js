@@ -1,6 +1,8 @@
 import { StudioApiService } from "./src/services/studioApiService.js"
 import { PollingService } from "./src/services/pollingService.js"
 import { SummaryPollingService } from "./src/services/summaryPollingService.js"
+import { getId } from "./src/tools/getId.js"
+import { equalsIgnoreCase } from "./src/tools/equalsIgnoreCase.js"
 
 /**
  * High-level client for the LinTO Studio API.
@@ -252,41 +254,22 @@ class LinTO {
    */
   async ensureTag(name, { categoryName = "tags", color, emoji } = {}) {
     const categories = await this.listCategories()
-    if (!Array.isArray(categories) || categories.length === 0) {
-      return null
-    }
+    if (!Array.isArray(categories) || categories.length === 0) return null
 
-    let cat = null
-    for (const c of categories) {
-      if (
-        String(c?.name ?? "").toLowerCase() === String(categoryName).toLowerCase()
-      ) {
-        cat = c
-        break
-      }
-    }
-    if (cat === null) {
-      cat = categories[0]
-    }
-    const categoryId = String(cat?._id ?? cat?.id ?? "")
-    if (!categoryId) {
-      return null
-    }
+    const cat =
+      categories.find((c) => equalsIgnoreCase(c?.name, categoryName)) ??
+      categories[0]
+    const categoryId = getId(cat)
+    if (!categoryId) return null
 
     const tags = await this.listTags(categoryId)
-    if (Array.isArray(tags)) {
-      for (const t of tags) {
-        if (String(t?.name ?? "").toLowerCase() === String(name).toLowerCase()) {
-          return String(t?._id ?? t?.id ?? "")
-        }
-      }
-    }
+    const existing = Array.isArray(tags)
+      ? tags.find((t) => equalsIgnoreCase(t?.name, name))
+      : null
+    if (existing) return getId(existing)
 
     const created = await this.createTag(categoryId, name, { color, emoji })
-    if (created && typeof created === "object") {
-      return String(created._id ?? created.id ?? "") || null
-    }
-    return null
+    return getId(created) || null
   }
 
   /**
@@ -370,24 +353,17 @@ class LinTO {
    */
   async ensureFolder(name, { parentId, visibility = "public" } = {}) {
     const folders = await this.listFolders()
-    if (Array.isArray(folders)) {
-      for (const f of folders) {
-        const folderParent = f?.parentId ?? null
-        const targetParent = parentId ?? null
-        if (
-          String(f?.name ?? "").toLowerCase() === String(name).toLowerCase() &&
-          folderParent === targetParent
-        ) {
-          return String(f?._id ?? f?.id ?? "")
-        }
-      }
-    }
+    const existing = Array.isArray(folders)
+      ? folders.find(
+          (f) =>
+            equalsIgnoreCase(f?.name, name) &&
+            (f?.parentId ?? null) === (parentId ?? null)
+        )
+      : null
+    if (existing) return getId(existing)
 
     const created = await this.createFolder(name, { parentId, visibility })
-    if (created && typeof created === "object") {
-      return String(created._id ?? created.id ?? "") || null
-    }
-    return null
+    return getId(created) || null
   }
 
   /**
@@ -465,22 +441,11 @@ class LinTO {
    */
   async setConversationOwner(conversationId, email) {
     const users = await this.searchUsers(email)
-    if (!users || !Array.isArray(users) || users.length === 0) {
-      return null
-    }
-
-    let userId = null
-    const target = String(email).toLowerCase()
-    for (const u of users) {
-      if (String(u?.email ?? "").toLowerCase() === target) {
-        userId = String(u?._id ?? "")
-        break
-      }
-    }
-
-    if (!userId) {
-      return null
-    }
+    const user = Array.isArray(users)
+      ? users.find((u) => equalsIgnoreCase(u?.email, email))
+      : null
+    const userId = getId(user)
+    if (!userId) return null
 
     await this.updateConversation(conversationId, {
       owner: userId,

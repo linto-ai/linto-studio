@@ -1,25 +1,12 @@
 export function prepareRequest(url, method, { token, ...args } = {}) {
-  const defaultQueryParams = {
-    t: Date.now(),
-  }
-
-  const queryParams = new URLSearchParams({
-    ...defaultQueryParams,
-    ...(method === "get" ? data : {}),
-  }).toString()
-
-  const fullUrl = `${url}?${queryParams}`
-
-  const requestObj = new Request(fullUrl, {
+  return new Request(url, {
     method,
     headers: {
       "Content-Type": "application/json",
       Authorization: token ? `Bearer ${token}` : null,
     },
-    body: method != "GET" ? JSON.stringify(args) : null,
+    body: method !== "GET" ? JSON.stringify(args) : null,
   })
-
-  return requestObj
 }
 
 export function prepareMultipartFormData(url, token, formData) {

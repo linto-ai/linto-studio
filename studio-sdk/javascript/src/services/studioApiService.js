@@ -527,33 +527,25 @@ export class StudioApiService {
   }
 
   async #updateConversation({ token, conversationId, data }) {
-    const url = `${this.baseApiUrl}/conversations/${conversationId}`
-    const requestObj = new Request(url, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: token ? `Bearer ${token}` : null,
-      },
-      body: JSON.stringify(data ?? {}),
-    })
-    return await sendRequest(requestObj)
+    const req = prepareRequest(
+      `${this.baseApiUrl}/conversations/${conversationId}`,
+      "PATCH",
+      { token, ...(data ?? {}) }
+    )
+    return await sendRequest(req)
   }
 
   async #shareConversation({ token, conversationId, email, right, notify }) {
-    const url = `${this.baseApiUrl}/conversations/${conversationId}/invite`
     const payload = { email, right }
     if (notify === false) {
       payload.notify = false
     }
-    const requestObj = new Request(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: token ? `Bearer ${token}` : null,
-      },
-      body: JSON.stringify(payload),
-    })
-    return await sendRequest(requestObj)
+    const req = prepareRequest(
+      `${this.baseApiUrl}/conversations/${conversationId}/invite`,
+      "POST",
+      { token, ...payload }
+    )
+    return await sendRequest(req)
   }
 }
 
