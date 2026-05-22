@@ -5,6 +5,7 @@ import type {
   LLMService,
   LLMServiceInit,
   LLMServiceStatus,
+  LLMServiceVersion,
   LLMServicesPluginApi,
 } from "../../core/types"
 
@@ -12,6 +13,7 @@ export type {
   LLMService,
   LLMServiceInit,
   LLMServiceStatus,
+  LLMServiceVersion,
   LLMServicesPluginApi,
 }
 
@@ -25,6 +27,10 @@ interface InternalLLMService {
   readonly phase: Ref<string | null>
   readonly error: Ref<string | null>
   readonly lastUpdate: Ref<number | null>
+  readonly versions: Ref<LLMServiceVersion[]>
+  readonly activeVersionNumber: Ref<number | null>
+  readonly busy: Ref<boolean>
+  readonly dirty: Ref<boolean>
 }
 
 function createService(init: LLMServiceInit): InternalLLMService {
@@ -38,6 +44,10 @@ function createService(init: LLMServiceInit): InternalLLMService {
     phase: ref<string | null>(init.phase ?? null),
     error: ref<string | null>(init.error ?? null),
     lastUpdate: ref<number | null>(init.lastUpdate ?? null),
+    versions: ref<LLMServiceVersion[]>(init.versions ?? []),
+    activeVersionNumber: ref<number | null>(init.activeVersionNumber ?? null),
+    busy: ref<boolean>(false),
+    dirty: ref<boolean>(false),
   }
 }
 
@@ -79,6 +89,9 @@ export function createLLMServicesPlugin(): CorePlugin {
           if (init.error !== undefined) existing.error.value = init.error
           if (init.lastUpdate !== undefined)
             existing.lastUpdate.value = init.lastUpdate
+          if (init.versions !== undefined) existing.versions.value = init.versions
+          if (init.activeVersionNumber !== undefined)
+            existing.activeVersionNumber.value = init.activeVersionNumber
           return existing
         }
 
@@ -163,6 +176,33 @@ export function createLLMServicesPlugin(): CorePlugin {
         if (error) service.status.value = "error"
       }
 
+      function setVersions(id: string, versions: LLMServiceVersion[]): void {
+        const service = require(id)
+        if (!service) return
+        service.versions.value = versions
+      }
+
+      function setActiveVersion(
+        id: string,
+        versionNumber: number | null,
+      ): void {
+        const service = require(id)
+        if (!service) return
+        service.activeVersionNumber.value = versionNumber
+      }
+
+      function setBusy(id: string, busy: boolean): void {
+        const service = require(id)
+        if (!service) return
+        service.busy.value = busy
+      }
+
+      function setDirty(id: string, dirty: boolean): void {
+        const service = require(id)
+        if (!service) return
+        service.dirty.value = dirty
+      }
+
       const active = computed<LLMService | null>(() => {
         const id = activeId.value
         if (id === null) return null
@@ -183,6 +223,10 @@ export function createLLMServicesPlugin(): CorePlugin {
         setProgress,
         setContent,
         setError,
+        setVersions,
+        setActiveVersion,
+        setBusy,
+        setDirty,
       }
 
       core.llmServices = api

@@ -42,6 +42,7 @@ const progressValue = computed(() => {
 <template>
   <article class="document-article" :data-status="props.status">
     <div class="document-article__toolbar" role="toolbar">
+      <slot name="toolbar-actions" />
       <Button
         v-if="props.showRegenerate"
         variant="tertiary"

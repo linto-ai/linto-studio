@@ -10,6 +10,7 @@ type __VLS_Props = {
 declare function __VLS_template(): {
     attrs: Partial<{}>;
     slots: {
+        'toolbar-actions'?(_: {}): any;
         default?(_: {}): any;
     };
     refs: {};

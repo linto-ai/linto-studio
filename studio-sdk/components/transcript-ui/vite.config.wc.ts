@@ -12,6 +12,8 @@ export default defineConfig({
   build: {
     emptyOutDir: false,
     copyPublicDir: false,
+    sourcemap: true,
+    minify: false,
     lib: {
       entry: resolve(__dirname, 'src/webcomponent.ts'),
       formats: ['es', 'iife'],

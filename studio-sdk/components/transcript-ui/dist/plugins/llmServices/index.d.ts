@@ -1,3 +1,3 @@
-import { CorePlugin, LLMService, LLMServiceInit, LLMServiceStatus, LLMServicesPluginApi } from '../../core/types';
-export type { LLMService, LLMServiceInit, LLMServiceStatus, LLMServicesPluginApi, };
+import { CorePlugin, LLMService, LLMServiceInit, LLMServiceStatus, LLMServiceVersion, LLMServicesPluginApi } from '../../core/types';
+export type { LLMService, LLMServiceInit, LLMServiceStatus, LLMServiceVersion, LLMServicesPluginApi, };
 export declare function createLLMServicesPlugin(): CorePlugin;

@@ -21,7 +21,7 @@ import {
   createAudioPlugin,
 } from "@linto/transcript-ui/webcomponent"
 
-import { setupLLMServices } from "@/services/llmServicesIntegration.js"
+import { setupLLMServices } from "@/services/llmServicesIntegration"
 
 import LayoutV2 from "@/layouts/v2-layout.vue"
 import PublicationModal from "@/components/molecules/PublicationModal.vue"
@@ -35,10 +35,11 @@ export default {
   data() {
     return {
       conversationId: this.$route.params.conversationId,
+      organizationId: null,
+      securityLevel: null,
+      conversationName: "",
       core: null,
       llmDispose: null,
-      organizationId: null,
-      conversationName: "",
       publicationModal: { open: false, jobId: null },
     }
   },
@@ -46,15 +47,16 @@ export default {
     const { doc, organizationId, securityLevel, name } =
       await apiGetConversationAsDoc(this.conversationId)
     this.organizationId = organizationId
+    this.securityLevel = securityLevel
     this.conversationName = name
-    await this.initEditor(doc, { organizationId, securityLevel, name })
+    await this.initEditor(doc)
   },
   beforeDestroy() {
     this.llmDispose?.()
     this.llmDispose = null
   },
   methods: {
-    async initEditor(doc, meta) {
+    async initEditor(doc) {
       const el = this.$refs.editor
       const { core } = el
       const ws_url = new URL(getEnv("VUE_APP_CONVO_API"))
@@ -84,9 +86,9 @@ export default {
 
       this.llmDispose = setupLLMServices(core, {
         conversationId: this.conversationId,
-        organizationId: meta.organizationId,
-        securityLevel: meta.securityLevel,
-        conversationName: meta.name,
+        organizationId: this.organizationId,
+        securityLevel: this.securityLevel,
+        conversationName: this.conversationName,
         apiEventWS: this.$apiEventWS,
         locale: this.$i18n.locale,
         t: (key, params) => this.$t(key, params),

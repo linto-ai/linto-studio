@@ -60,6 +60,14 @@ export interface CoreEventMap {
     "llmService:active": {
         id: string | null;
     };
+    "llmService:selectVersion": {
+        id: string;
+        versionNumber: number;
+    };
+    "llmService:saveVersion": {
+        id: string;
+        content: string;
+    };
     "verbatim:export": {
         format: string;
     };
@@ -164,6 +172,10 @@ export interface SubtitlePluginApi {
     watermark?: WatermarkPluginApi;
 }
 export type LLMServiceStatus = "idle" | "queued" | "processing" | "complete" | "error";
+export interface LLMServiceVersion {
+    versionNumber: number;
+    createdAt: number;
+}
 export interface LLMServiceInit {
     id: string;
     label: string;
@@ -174,6 +186,8 @@ export interface LLMServiceInit {
     phase?: string | null;
     error?: string | null;
     lastUpdate?: number | null;
+    versions?: LLMServiceVersion[];
+    activeVersionNumber?: number | null;
 }
 export interface LLMService {
     readonly id: string;
@@ -185,6 +199,10 @@ export interface LLMService {
     readonly phase: Ref<string | null>;
     readonly error: Ref<string | null>;
     readonly lastUpdate: Ref<number | null>;
+    readonly versions: Ref<LLMServiceVersion[]>;
+    readonly activeVersionNumber: Ref<number | null>;
+    readonly busy: Ref<boolean>;
+    readonly dirty: Ref<boolean>;
 }
 export interface LLMServicesPluginApi {
     readonly list: Ref<LLMService[]>;
@@ -200,6 +218,10 @@ export interface LLMServicesPluginApi {
     setProgress(id: string, percentage: number, phase?: string | null): void;
     setContent(id: string, content: string, lastUpdate?: number | null): void;
     setError(id: string, error: string | null): void;
+    setVersions(id: string, versions: LLMServiceVersion[]): void;
+    setActiveVersion(id: string, versionNumber: number | null): void;
+    setBusy(id: string, busy: boolean): void;
+    setDirty(id: string, dirty: boolean): void;
 }
 export interface LivePartialEventData {
     text?: string;

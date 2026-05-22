@@ -18,5 +18,6 @@ export type {
   LLMService,
   LLMServiceInit,
   LLMServiceStatus,
+  LLMServiceVersion,
   LLMServicesPluginApi,
 } from './types'
