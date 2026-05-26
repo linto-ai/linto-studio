@@ -1,6 +1,7 @@
 import { apiGetExportContent } from "@/api/service.js"
 import { resolveServiceId } from "../resolveServiceId.js"
 import { loadVersions } from "../loadVersions.js"
+import { loadGenerations } from "../loadGenerations.js"
 
 export async function onLlmJobComplete(
   { core, store, state, conversationId, t },
@@ -19,7 +20,10 @@ export async function onLlmJobComplete(
     if (state.destroyed) return
     if (r?.status === "success" && typeof r.content === "string") {
       core.llmServices.setContent(id, r.content, Date.now())
-      await loadVersions({ core, store, state, conversationId, id })
+      await Promise.allSettled([
+        loadVersions({ core, store, state, conversationId, id }),
+        loadGenerations({ core, store, state, conversationId, id }),
+      ])
     } else {
       core.llmServices.setError(id, t("publish.llm_gateway_unavailable"))
     }

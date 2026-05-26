@@ -38,6 +38,7 @@ export interface CoreEventMap {
   "llmService:active": { id: string | null }
   "llmService:selectVersion": { id: string; versionNumber: number }
   "llmService:saveVersion": { id: string; content: string }
+  "llmService:selectGeneration": { id: string; generationId: string }
   "verbatim:export": { format: string }
   destroy: void
 }
@@ -175,6 +176,18 @@ export interface LLMServiceVersion {
   createdAt: number
 }
 
+export type LLMServiceGenerationStatus =
+  | "completed"
+  | "error"
+  | "processing"
+  | "queued"
+
+export interface LLMServiceGeneration {
+  generationId: string
+  createdAt: number
+  status: LLMServiceGenerationStatus
+}
+
 export interface LLMServiceInit {
   id: string
   label: string
@@ -187,6 +200,8 @@ export interface LLMServiceInit {
   lastUpdate?: number | null
   versions?: LLMServiceVersion[]
   activeVersionNumber?: number | null
+  generations?: LLMServiceGeneration[]
+  currentGenerationId?: string | null
 }
 
 export interface LLMService {
@@ -201,6 +216,8 @@ export interface LLMService {
   readonly lastUpdate: Ref<number | null>
   readonly versions: Ref<LLMServiceVersion[]>
   readonly activeVersionNumber: Ref<number | null>
+  readonly generations: Ref<LLMServiceGeneration[]>
+  readonly currentGenerationId: Ref<string | null>
   readonly busy: Ref<boolean>
   readonly dirty: Ref<boolean>
 }
@@ -224,6 +241,8 @@ export interface LLMServicesPluginApi {
   setError(id: string, error: string | null): void
   setVersions(id: string, versions: LLMServiceVersion[]): void
   setActiveVersion(id: string, versionNumber: number | null): void
+  setGenerations(id: string, generations: LLMServiceGeneration[]): void
+  setCurrentGeneration(id: string, generationId: string | null): void
   setBusy(id: string, busy: boolean): void
   setDirty(id: string, dirty: boolean): void
 }

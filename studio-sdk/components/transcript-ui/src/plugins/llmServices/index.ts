@@ -6,6 +6,7 @@ import type {
   LLMServiceInit,
   LLMServiceStatus,
   LLMServiceVersion,
+  LLMServiceGeneration,
   LLMServicesPluginApi,
 } from "../../core/types"
 
@@ -14,6 +15,7 @@ export type {
   LLMServiceInit,
   LLMServiceStatus,
   LLMServiceVersion,
+  LLMServiceGeneration,
   LLMServicesPluginApi,
 }
 
@@ -29,6 +31,8 @@ interface InternalLLMService {
   readonly lastUpdate: Ref<number | null>
   readonly versions: Ref<LLMServiceVersion[]>
   readonly activeVersionNumber: Ref<number | null>
+  readonly generations: Ref<LLMServiceGeneration[]>
+  readonly currentGenerationId: Ref<string | null>
   readonly busy: Ref<boolean>
   readonly dirty: Ref<boolean>
 }
@@ -46,6 +50,8 @@ function createService(init: LLMServiceInit): InternalLLMService {
     lastUpdate: ref<number | null>(init.lastUpdate ?? null),
     versions: ref<LLMServiceVersion[]>(init.versions ?? []),
     activeVersionNumber: ref<number | null>(init.activeVersionNumber ?? null),
+    generations: ref<LLMServiceGeneration[]>(init.generations ?? []),
+    currentGenerationId: ref<string | null>(init.currentGenerationId ?? null),
     busy: ref<boolean>(false),
     dirty: ref<boolean>(false),
   }
@@ -92,6 +98,10 @@ export function createLLMServicesPlugin(): CorePlugin {
           if (init.versions !== undefined) existing.versions.value = init.versions
           if (init.activeVersionNumber !== undefined)
             existing.activeVersionNumber.value = init.activeVersionNumber
+          if (init.generations !== undefined)
+            existing.generations.value = init.generations
+          if (init.currentGenerationId !== undefined)
+            existing.currentGenerationId.value = init.currentGenerationId
           return existing
         }
 
@@ -191,6 +201,24 @@ export function createLLMServicesPlugin(): CorePlugin {
         service.activeVersionNumber.value = versionNumber
       }
 
+      function setGenerations(
+        id: string,
+        generations: LLMServiceGeneration[],
+      ): void {
+        const service = require(id)
+        if (!service) return
+        service.generations.value = generations
+      }
+
+      function setCurrentGeneration(
+        id: string,
+        generationId: string | null,
+      ): void {
+        const service = require(id)
+        if (!service) return
+        service.currentGenerationId.value = generationId
+      }
+
       function setBusy(id: string, busy: boolean): void {
         const service = require(id)
         if (!service) return
@@ -225,6 +253,8 @@ export function createLLMServicesPlugin(): CorePlugin {
         setError,
         setVersions,
         setActiveVersion,
+        setGenerations,
+        setCurrentGeneration,
         setBusy,
         setDirty,
       }

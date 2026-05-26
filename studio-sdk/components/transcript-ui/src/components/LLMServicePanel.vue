@@ -2,7 +2,6 @@
 import { computed, ref, watch } from "vue"
 import MarkdownEditor from "./atoms/MarkdownEditor.vue"
 import Button from "./atoms/Button.vue"
-import FormInput from "./molecules/FormInput.vue"
 import DocumentArticle, {
   type DocumentArticleStatus,
 } from "./molecules/DocumentArticle.vue"
@@ -26,17 +25,8 @@ const articleStatus = computed<DocumentArticleStatus>(() => {
 
 const progress = computed(() => props.service.progress.value)
 const content = computed(() => props.service.content.value)
-const versions = computed(() => props.service.versions.value)
-const activeVersionNumber = computed(
-  () => props.service.activeVersionNumber.value,
-)
 const busy = computed(() => props.service.busy.value)
 const dirty = computed(() => props.service.dirty.value)
-
-const dateFormat = new Intl.DateTimeFormat(undefined, {
-  dateStyle: "short",
-  timeStyle: "short",
-})
 
 const draft = ref(content.value)
 
@@ -53,37 +43,6 @@ watch(draft, (next) => {
     core.llmServices?.setDirty(props.service.id, isDirty)
   }
 })
-
-const versionOptions = computed(() =>
-  versions.value
-    .slice()
-    .sort((a, b) => b.versionNumber - a.versionNumber)
-    .map((v) => ({
-      value: String(v.versionNumber),
-      label: `v${v.versionNumber} — ${dateFormat.format(v.createdAt)}`,
-    })),
-)
-
-const selectedVersion = computed<string>({
-  get() {
-    return activeVersionNumber.value !== null
-      ? String(activeVersionNumber.value)
-      : ""
-  },
-  set(value: string) {
-    const n = Number(value)
-    if (!Number.isFinite(n) || n === activeVersionNumber.value) return
-    core.emit("llmService:selectVersion", {
-      id: props.service.id,
-      versionNumber: n,
-    })
-  },
-})
-
-const versionField = computed(() => ({
-  label: t("llmService.version"),
-  value: selectedVersion.value,
-}))
 
 function onRegenerate(): void {
   core.emit("llmService:regenerate", { id: props.service.id })
@@ -103,19 +62,6 @@ function onSave(): void {
 
 <template>
   <section class="llm-service-panel">
-    <div
-      v-if="versionOptions.length > 0"
-      class="llm-service-panel__controls">
-      <FormInput
-        v-model="selectedVersion"
-        :field="versionField"
-        select
-        :options="versionOptions"
-        :disabled="busy"
-        inline
-        size="sm" />
-    </div>
-
     <DocumentArticle
       :status="articleStatus"
       :progress="progress"
@@ -144,19 +90,6 @@ function onSave(): void {
   min-width: 0;
   min-height: 0;
   overflow-y: auto;
-}
-
-.llm-service-panel__controls {
-  display: flex;
-  align-items: flex-end;
-  gap: var(--spacing-md);
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.llm-service-panel__controls :deep(.form-field) {
-  width: auto;
-  min-width: 240px;
 }
 
 @media (max-width: 767px) {

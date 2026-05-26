@@ -42,6 +42,13 @@ declare const fr: {
     readonly "subtitle.showWatermark": "Afficher le filigrane";
     readonly "subtitle.pinWatermark": "Épingler le filigrane";
     readonly "sidebar.subtitle": "Sous-titres";
+    readonly "sidebar.history": "Historique";
+    readonly "sidebar.generationLabel": "Génération {date}";
+    readonly "sidebar.versionLabel": "v{n} — {date}";
+    readonly "sidebar.statusCompleted": "Terminé";
+    readonly "sidebar.statusError": "Erreur";
+    readonly "sidebar.statusProcessing": "En cours";
+    readonly "sidebar.statusQueued": "En attente";
     readonly "transcription.empty": "Aucune transcription pour le moment";
     readonly "transcription.historyStart": "Début de la transcription";
     readonly "transcription.loadingHistory": "Chargement…";

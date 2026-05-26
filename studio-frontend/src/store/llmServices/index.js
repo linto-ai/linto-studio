@@ -1,7 +1,8 @@
 // Vuex module: gateway-side metadata for each LLM service
-// (format, route, flavor, jobId, lastUpdate) — keyed by the service id used
-// in the SDK core. The core itself keeps content/status/versions; this module
-// holds the host-only info needed to talk to the gateway.
+// (format, route, flavor, jobId, lastUpdate, generation→jobId index) —
+// keyed by the service id used in the SDK core. The core itself keeps
+// content/status/versions/generations; this module holds the host-only
+// info needed to talk to the gateway.
 
 export default {
   namespaced: true,
@@ -12,7 +13,10 @@ export default {
 
   mutations: {
     REGISTER(state, { id, data }) {
-      state.services = { ...state.services, [id]: { ...data } }
+      state.services = {
+        ...state.services,
+        [id]: { generationJobIds: {}, ...data },
+      }
     },
 
     SET_JOB_ID(state, { id, jobId }) {
@@ -30,6 +34,15 @@ export default {
       state.services = {
         ...state.services,
         [id]: { ...current, lastUpdate },
+      }
+    },
+
+    SET_GENERATION_JOB_IDS(state, { id, mapping }) {
+      const current = state.services[id]
+      if (!current) return
+      state.services = {
+        ...state.services,
+        [id]: { ...current, generationJobIds: { ...mapping } },
       }
     },
 
@@ -57,6 +70,12 @@ export default {
         if (entry.format === format || id === format) return id
       }
       return null
+    },
+
+    jobIdForGeneration: (state) => (id, generationId) => {
+      const entry = state.services[id]
+      if (!entry || !generationId) return null
+      return entry.generationJobIds?.[generationId] ?? null
     },
   },
 }

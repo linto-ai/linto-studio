@@ -7,6 +7,7 @@ import getDescriptionByLanguage from "@/tools/getDescriptionByLanguage.js"
 import { filterLLMServicesBySecurityLevel } from "@/tools/filterBySecurityLevel.js"
 import { mapStatus } from "@/tools/llm/mapStatus.js"
 import { loadVersions } from "../loadVersions.js"
+import { loadGenerations } from "../loadGenerations.js"
 
 export async function loadServices({
   core,
@@ -99,6 +100,7 @@ export async function loadServices({
         }
       })(),
       loadVersions({ core, store, state, conversationId, id }),
+      loadGenerations({ core, store, state, conversationId, id }),
     ]),
   )
 }
