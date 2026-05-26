@@ -2,7 +2,6 @@
 import { computed } from "vue"
 import EditorIcon from "../atoms/EditorIcon.vue"
 import Button from "../atoms/Button.vue"
-import DownloadMenu, { type DownloadFormat } from "./DownloadMenu.vue"
 import { useI18n } from "../../i18n"
 
 export type DocumentArticleStatus = "done" | "processing" | "error"
@@ -12,18 +11,12 @@ const props = withDefaults(
     status?: DocumentArticleStatus
     progress?: number
     errorMessage?: string
-    showRegenerate?: boolean
-    formats?: DownloadFormat[]
   }>(),
-  {
-    status: "done",
-    showRegenerate: false,
-  },
+  { status: "done" },
 )
 
 const emit = defineEmits<{
-  regenerate: []
-  export: [format?: string]
+  retry: []
 }>()
 
 const { t } = useI18n()
@@ -42,29 +35,15 @@ const progressValue = computed(() => {
 <template>
   <article class="document-article" :data-status="props.status">
     <div class="document-article__toolbar" role="toolbar">
-      <slot name="toolbar-actions" />
-      <Button
-        v-if="props.showRegenerate"
-        variant="tertiary"
-        icon="refresh-cw"
-        :loading="props.status === 'processing'"
-        :disabled="props.status === 'processing'"
-        @click="emit('regenerate')">
-        {{ t("llmService.regenerate") }}
-      </Button>
-      <DownloadMenu
-        v-if="props.formats"
-        :formats="props.formats"
-        :disabled="props.status === 'processing'"
-        @select="emit('export', $event)" />
-      <Button
-        v-else
-        variant="primary"
-        icon="download"
-        :disabled="props.status === 'processing'"
-        @click="emit('export')">
-        {{ t("llmService.download") }}
-      </Button>
+      <div class="document-article__toolbar-left">
+        <slot name="toolbar-left" />
+      </div>
+      <div class="document-article__toolbar-center">
+        <slot name="toolbar-center" />
+      </div>
+      <div class="document-article__toolbar-right">
+        <slot name="toolbar-right" />
+      </div>
     </div>
 
     <div class="document-article__body">
@@ -90,10 +69,9 @@ const progressValue = computed(() => {
         role="alert">
         <p class="document-article__error-text">{{ errorText }}</p>
         <Button
-          v-if="props.showRegenerate"
           variant="primary"
           icon="refresh-cw"
-          @click="emit('regenerate')">
+          @click="emit('retry')">
           {{ t("llmService.retry") }}
         </Button>
       </div>
@@ -117,11 +95,9 @@ const progressValue = computed(() => {
 .document-article__toolbar {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
   gap: var(--spacing-sm);
   padding: var(--spacing-sm) var(--spacing-md);
   border-bottom: 1px solid var(--color-border);
-  flex-wrap: wrap;
   position: sticky;
   top: 0;
   background-color: var(--color-surface);
@@ -129,8 +105,23 @@ const progressValue = computed(() => {
   z-index: 1;
 }
 
+.document-article__toolbar-left,
+.document-article__toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  flex-shrink: 0;
+}
+
+.document-article__toolbar-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 0;
+}
+
 .document-article__body {
-  padding: var(--spacing-lg) var(--spacing-xl);
   flex: 1;
   min-height: 0;
 }
@@ -170,11 +161,5 @@ const progressValue = computed(() => {
   font-size: var(--font-size-sm);
   line-height: var(--line-height);
   color: var(--color-text-secondary);
-}
-
-@media (max-width: 767px) {
-  .document-article__body {
-    padding: var(--spacing-md);
-  }
 }
 </style>

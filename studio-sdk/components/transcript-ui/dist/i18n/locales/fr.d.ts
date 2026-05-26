@@ -77,6 +77,8 @@ declare const fr: {
     readonly "llmService.retry": "Réessayer";
     readonly "llmService.version": "Version";
     readonly "llmService.save": "Enregistrer";
+    readonly "llmService.statusUpdated": "À jour";
+    readonly "llmService.statusOutdated": "Transcription modifiée";
     readonly "mdToolbar.label": "Mise en forme";
     readonly "mdToolbar.h1": "Titre 1";
     readonly "mdToolbar.h2": "Titre 2";

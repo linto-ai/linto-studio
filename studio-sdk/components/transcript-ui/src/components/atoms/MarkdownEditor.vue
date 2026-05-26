@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, reactive, useTemplateRef, watch } from "vue"
+import {
+  onBeforeUnmount,
+  onMounted,
+  reactive,
+  useTemplateRef,
+  watch,
+} from "vue"
 import { marked } from "marked"
 import TurndownService from "turndown"
 import { gfm } from "turndown-plugin-gfm"
@@ -235,7 +241,9 @@ function getParentBlock(node: Node | null): HTMLElement | null {
   while (n && n !== el) {
     if (
       n.nodeType === 1 &&
-      /^(P|H[1-6]|BLOCKQUOTE|PRE|UL|OL|LI|DIV)$/.test((n as HTMLElement).tagName)
+      /^(P|H[1-6]|BLOCKQUOTE|PRE|UL|OL|LI|DIV)$/.test(
+        (n as HTMLElement).tagName,
+      )
     ) {
       return n as HTMLElement
     }
@@ -410,7 +418,7 @@ watch(
   flex-wrap: wrap;
   align-items: center;
   gap: var(--spacing-xs);
-  padding: var(--spacing-xs) var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-md);
   border-bottom: 1px solid var(--color-border);
   background-color: var(--color-surface);
   position: sticky;

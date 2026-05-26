@@ -84,6 +84,9 @@ export interface TranslationStore {
     readonly isSource: boolean;
     readonly audio?: AudioSource;
     readonly turns: Ref<Turn[]>;
+    /** Epoch ms — last time the transcription was modified (host-pushed). */
+    readonly lastModifiedAt: Ref<number | null>;
+    setLastModifiedAt(ts: number | null): void;
     addTurn(turn: Turn): void;
     prependTurns(turns: Turn[]): void;
     updateTurn(turnId: string, patch: Partial<Turn>): void;

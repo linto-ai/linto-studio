@@ -1,4 +1,4 @@
-import { shallowRef } from "vue"
+import { ref, shallowRef } from "vue"
 import type { AudioSource, Turn, Word } from "../../types/editor"
 import type { CoreEventMap, TranslationStore } from "../types"
 import { insertTurn } from "../helpers/insertTurn"
@@ -26,6 +26,11 @@ export function createTranslationStore(
 ): TranslationStore {
   const { id, languages, isSource, audio } = init
   const turns = shallowRef<Turn[]>(init.turns)
+  const lastModifiedAt = ref<number | null>(null)
+
+  function setLastModifiedAt(ts: number | null): void {
+    lastModifiedAt.value = ts
+  }
 
   // ── Index: turnId → array position (O(1) lookup) ─────────────────────
   const indexMap = new Map<string, number>()
@@ -100,5 +105,22 @@ export function createTranslationStore(
     return indexMap.has(turnId)
   }
 
-  return { id, languages, isSource, audio, turns, addTurn, prependTurns, updateTurn, removeTurn, updateWords, setTurns, replaceTurns, updateOrCreateTurnSilent, hasTurn }
+  return {
+    id,
+    languages,
+    isSource,
+    audio,
+    turns,
+    lastModifiedAt,
+    setLastModifiedAt,
+    addTurn,
+    prependTurns,
+    updateTurn,
+    removeTurn,
+    updateWords,
+    setTurns,
+    replaceTurns,
+    updateOrCreateTurnSilent,
+    hasTurn,
+  }
 }

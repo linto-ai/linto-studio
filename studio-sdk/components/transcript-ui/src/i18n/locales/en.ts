@@ -79,6 +79,8 @@ const en: Record<keyof typeof fr, string> = {
   'llmService.retry': 'Retry',
   'llmService.version': 'Version',
   'llmService.save': 'Save',
+  'llmService.statusUpdated': 'Up to date',
+  'llmService.statusOutdated': 'Transcription edited',
   'mdToolbar.label': 'Formatting',
   'mdToolbar.h1': 'Heading 1',
   'mdToolbar.h2': 'Heading 2',

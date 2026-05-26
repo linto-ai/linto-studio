@@ -119,10 +119,16 @@ const classes = computed(() => [
   outline-offset: 2px;
 }
 
+/* Note: this rule is repeated lower in the file (after variants) to win the
+   cascade on the variant CSS vars. Keep this lightweight version for the
+   cursor and hover suppression. */
 .editor-btn:disabled {
-  opacity: 0.5;
   cursor: not-allowed;
-  pointer-events: none;
+}
+
+.editor-btn:disabled:hover {
+  background-color: var(--btn-bg);
+  color: var(--btn-text);
 }
 
 .editor-btn__label {
@@ -217,5 +223,15 @@ const classes = computed(() => [
   --btn-text: var(--color-danger);
   --btn-hover-bg: var(--color-danger-soft);
   --btn-hover-text: var(--color-danger);
+}
+
+/* Disabled: gray-out regardless of variant. Placed after the variants so the
+   CSS var overrides win the cascade (same specificity, last declaration). */
+.editor-btn:disabled {
+  --btn-bg: var(--color-surface);
+  --btn-text: var(--color-text-muted);
+  --btn-border-color: var(--color-border);
+  --btn-hover-bg: var(--color-surface);
+  --btn-hover-text: var(--color-text-muted);
 }
 </style>

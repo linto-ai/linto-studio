@@ -1,5 +1,6 @@
 import type { Component } from "vue"
 import {
+  AlertTriangle,
   ArrowDown,
   Bold,
   Check,
@@ -40,6 +41,7 @@ import {
 
 export const iconMap: Record<string, Component> = {
   "arrow-down": ArrowDown,
+  warning: AlertTriangle,
   bold: Bold,
   check: Check,
   "chevron-down": ChevronDown,

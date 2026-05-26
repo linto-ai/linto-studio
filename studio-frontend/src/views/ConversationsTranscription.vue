@@ -15,6 +15,7 @@ import { getCookie } from "@/tools/getCookie"
 import { getEnv } from "@/tools/getEnv"
 
 import { apiGetConversationAsDoc } from "@/api/conversation.d/apiGetConversationAsDoc.js"
+import { apiGetConversationLastUpdate } from "@/api/conversation"
 
 import {
   createTranscriptionEditorPlugin,
@@ -40,6 +41,7 @@ export default {
       conversationName: "",
       core: null,
       llmDispose: null,
+      editListeners: [],
       publicationModal: { open: false, jobId: null },
     }
   },
@@ -52,6 +54,8 @@ export default {
     await this.initEditor(doc)
   },
   beforeDestroy() {
+    this.editListeners.forEach((fn) => fn?.())
+    this.editListeners = []
     this.llmDispose?.()
     this.llmDispose = null
   },
@@ -100,6 +104,45 @@ export default {
       })
 
       core.setDocument(doc)
+      this.pushTranscriptionLastUpdate()
+      this.attachEditListeners()
+    },
+
+    async pushTranscriptionLastUpdate() {
+      try {
+        const res = await apiGetConversationLastUpdate(this.conversationId)
+        const lastUpdate = res?.last_update
+        if (!lastUpdate) return
+        const ts = new Date(lastUpdate).getTime()
+        if (!Number.isFinite(ts)) return
+        this.markTranscriptionEdited(ts)
+      } catch (e) {
+        console.error("[host] failed to fetch conversation last update", e)
+      }
+    },
+
+    // Pushes a "last modified" timestamp to the active translation so the
+    // SDK can drive the "compte rendu obsolète" status. Triggered by:
+    //   - initial fetch (server-side timestamp at mount)
+    //   - every local edit event (turn:* / speaker:*)
+    markTranscriptionEdited(ts) {
+      const translation =
+        this.core?.activeChannel?.value?.activeTranslation?.value
+      translation?.setLastModifiedAt(ts ?? Date.now())
+    },
+
+    attachEditListeners() {
+      const core = this.core
+      if (!core) return
+      const bump = () => this.markTranscriptionEdited()
+      this.editListeners = [
+        core.on("turn:add", bump),
+        core.on("turn:update", bump),
+        core.on("turn:remove", bump),
+        core.on("speaker:add", bump),
+        core.on("speaker:update", bump),
+        core.on("speaker:remove", bump),
+      ]
     },
   },
 }

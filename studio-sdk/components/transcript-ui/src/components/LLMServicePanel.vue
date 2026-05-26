@@ -2,6 +2,7 @@
 import { computed, ref, watch } from "vue"
 import MarkdownEditor from "./atoms/MarkdownEditor.vue"
 import Button from "./atoms/Button.vue"
+import EditorIcon from "./atoms/EditorIcon.vue"
 import DocumentArticle, {
   type DocumentArticleStatus,
 } from "./molecules/DocumentArticle.vue"
@@ -27,16 +28,34 @@ const progress = computed(() => props.service.progress.value)
 const content = computed(() => props.service.content.value)
 const busy = computed(() => props.service.busy.value)
 const dirty = computed(() => props.service.dirty.value)
+const versions = computed(() => props.service.versions.value)
+const activeVersionNumber = computed(
+  () => props.service.activeVersionNumber.value,
+)
+
+// "À jour" = la version courante est postérieure à la dernière modif
+// de la transcription. Si l'une des deux dates manque, on considère "à jour"
+// par défaut (pas de signal négatif à donner).
+const isUpdated = computed<boolean>(() => {
+  const transcriptionLastModified =
+    core.activeChannel.value?.activeTranslation.value?.lastModifiedAt.value ??
+    null
+  if (transcriptionLastModified == null) return true
+  const activeVersion = versions.value.find(
+    (v) => v.versionNumber === activeVersionNumber.value,
+  )
+  const versionTs = activeVersion?.createdAt ?? props.service.lastUpdate.value
+  if (versionTs == null) return true
+  return versionTs >= transcriptionLastModified
+})
 
 const draft = ref(content.value)
 
-// External content change → sync draft and clear dirty.
 watch(content, (next) => {
   draft.value = next
   core.llmServices?.setDirty(props.service.id, false)
 })
 
-// Local edit → push dirty if draft diverges from the loaded content.
 watch(draft, (next) => {
   const isDirty = next !== content.value
   if (props.service.dirty.value !== isDirty) {
@@ -65,19 +84,54 @@ function onSave(): void {
     <DocumentArticle
       :status="articleStatus"
       :progress="progress"
-      show-regenerate
-      @regenerate="onRegenerate"
-      @export="onExport">
-      <template #toolbar-actions>
+      @retry="onRegenerate">
+      <template #toolbar-left>
         <Button
-          v-if="dirty"
           variant="primary"
           icon="check"
-          :disabled="busy"
-          @click="onSave">
-          {{ t("llmService.save") }}
+          :disabled="!dirty || busy"
+          :aria-label="t('llmService.save')"
+          :title="t('llmService.save')"
+          @click="onSave" />
+        <Button
+          variant="secondary"
+          icon="refresh-cw"
+          :loading="articleStatus === 'processing'"
+          :disabled="isUpdated || busy || articleStatus === 'processing'"
+          :aria-label="t('llmService.regenerate')"
+          :title="t('llmService.regenerate')"
+          @click="onRegenerate" />
+      </template>
+
+      <template #toolbar-center>
+        <span
+          class="llm-service-panel__status"
+          :class="[
+            isUpdated
+              ? 'llm-service-panel__status--ok'
+              : 'llm-service-panel__status--warn',
+          ]">
+          <EditorIcon :name="isUpdated ? 'check' : 'warning'" :size="14" />
+          <span>{{
+            isUpdated
+              ? t("llmService.statusUpdated")
+              : t("llmService.statusOutdated")
+          }}</span>
+        </span>
+      </template>
+
+      <template #toolbar-right>
+        <Button
+          variant="primary"
+          icon="download"
+          :disabled="articleStatus === 'processing'"
+          :aria-label="t('llmService.download')"
+          :title="t('llmService.download')"
+          @click="onExport">
+          {{ t("llmService.download") }}
         </Button>
       </template>
+
       <MarkdownEditor v-model="draft" :disabled="busy" />
     </DocumentArticle>
   </section>
@@ -90,6 +144,22 @@ function onSave(): void {
   min-width: 0;
   min-height: 0;
   overflow-y: auto;
+}
+
+.llm-service-panel__status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+}
+
+.llm-service-panel__status--ok {
+  color: var(--color-success, #2e7d32);
+}
+
+.llm-service-panel__status--warn {
+  color: var(--color-warning, #ed6c02);
 }
 
 @media (max-width: 767px) {

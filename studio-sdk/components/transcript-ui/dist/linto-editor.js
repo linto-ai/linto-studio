@@ -8582,6 +8582,17 @@ const Table = createLucideIcon("table", [
   ["path", { d: "M3 9h18", key: "1pudct" }],
   ["path", { d: "M3 15h18", key: "5xshup" }]
 ]);
+const TriangleAlert = createLucideIcon("triangle-alert", [
+  [
+    "path",
+    {
+      d: "m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3",
+      key: "wmoenq"
+    }
+  ],
+  ["path", { d: "M12 9v4", key: "juzpu7" }],
+  ["path", { d: "M12 17h.01", key: "p32p05" }]
+]);
 const Undo2 = createLucideIcon("undo-2", [
   ["path", { d: "M9 14 4 9l5-5", key: "102s5s" }],
   ["path", { d: "M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11", key: "f3b9sd" }]
@@ -8626,6 +8637,7 @@ const X$1 = createLucideIcon("x", [
 ]);
 const iconMap = {
   "arrow-down": ArrowDown,
+  warning: TriangleAlert,
   bold: Bold,
   check: Check,
   "chevron-down": ChevronDown,
@@ -8677,7 +8689,7 @@ const _hoisted_1$s = {
   class: "editor-icon editor-icon--missing",
   "aria-hidden": "true"
 };
-const _sfc_main$C = /* @__PURE__ */ defineComponent({
+const _sfc_main$B = /* @__PURE__ */ defineComponent({
   __name: "EditorIcon",
   props: {
     name: { type: String },
@@ -8708,13 +8720,13 @@ const _export_sfc = (sfc, props) => {
   }
   return target;
 };
-const EditorIcon = /* @__PURE__ */ _export_sfc(_sfc_main$C, [["styles", [_style_0$u]], ["__scopeId", "data-v-210c7f09"]]);
+const EditorIcon = /* @__PURE__ */ _export_sfc(_sfc_main$B, [["styles", [_style_0$u]], ["__scopeId", "data-v-210c7f09"]]);
 const _hoisted_1$r = ["type", "disabled", "aria-disabled", "aria-label"];
 const _hoisted_2$k = {
   key: 3,
   class: "editor-btn__label"
 };
-const _sfc_main$B = /* @__PURE__ */ defineComponent({
+const _sfc_main$A = /* @__PURE__ */ defineComponent({
   __name: "Button",
   props: {
     label: { type: String },
@@ -8781,8 +8793,8 @@ const _sfc_main$B = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$t = "\n.editor-btn[data-v-2212567e] {\n  /* Default tokens — overridden by variant/intent/size modifiers */\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-sm);\n  --btn-font-size: var(--font-size-xs);\n  --btn-height: 32px;\n  --btn-gap: var(--spacing-xs);\n\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: var(--btn-gap);\n  box-sizing: border-box;\n  height: var(--btn-height);\n  padding: var(--btn-padding-y) var(--btn-padding-x);\n  font-family: var(--font-family);\n  font-size: var(--btn-font-size);\n  font-weight: 500;\n  line-height: 1;\n  color: var(--btn-text);\n  background-color: var(--btn-bg);\n  border: 1px solid var(--btn-border-color);\n  border-radius: var(--radius-sm);\n  cursor: pointer;\n  white-space: nowrap;\n  transition:\n    background-color var(--transition-duration),\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.editor-btn[data-v-2212567e]:hover:not(:disabled) {\n  background-color: var(--btn-hover-bg);\n  color: var(--btn-hover-text);\n}\n.editor-btn[data-v-2212567e]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.editor-btn[data-v-2212567e]:disabled {\n  opacity: 0.5;\n  cursor: not-allowed;\n  pointer-events: none;\n}\n.editor-btn__label[data-v-2212567e] {\n  /* //overflow: hidden;\n  text-overflow: ellipsis; */\n  text-overflow: ellipsis;\n  text-box: cap alphabetic;\n}\n\n/* Sizes */\n.editor-btn--sm[data-v-2212567e] {\n  /* defaults */\n}\n.editor-btn--md[data-v-2212567e] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-sm);\n  --btn-height: 40px;\n}\n.editor-btn--lg[data-v-2212567e] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-base);\n  --btn-height: 44px;\n}\n\n/* Icon-only: square */\n.editor-btn--icon-only[data-v-2212567e] {\n  width: var(--btn-height);\n  padding: 0;\n}\n.editor-btn--block[data-v-2212567e] {\n  display: flex;\n  width: 100%;\n}\n\n/* Variants — default intent */\n.editor-btn--primary[data-v-2212567e] {\n  --btn-bg: var(--color-primary);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary-hover);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--secondary[data-v-2212567e] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-primary);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--tertiary[data-v-2212567e] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-primary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n.editor-btn--transparent[data-v-2212567e] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n\n/* Destructive intent overrides */\n.editor-btn--destructive.editor-btn--primary[data-v-2212567e] {\n  --btn-bg: var(--color-danger);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-hover);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--destructive.editor-btn--secondary[data-v-2212567e] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-danger);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--destructive.editor-btn--tertiary[data-v-2212567e],\n.editor-btn--destructive.editor-btn--transparent[data-v-2212567e] {\n  --btn-text: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-soft);\n  --btn-hover-text: var(--color-danger);\n}\n";
-const Button = /* @__PURE__ */ _export_sfc(_sfc_main$B, [["styles", [_style_0$t]], ["__scopeId", "data-v-2212567e"]]);
+const _style_0$t = "\n.editor-btn[data-v-3b0709a9] {\n  /* Default tokens — overridden by variant/intent/size modifiers */\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-sm);\n  --btn-font-size: var(--font-size-xs);\n  --btn-height: 32px;\n  --btn-gap: var(--spacing-xs);\n\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: var(--btn-gap);\n  box-sizing: border-box;\n  height: var(--btn-height);\n  padding: var(--btn-padding-y) var(--btn-padding-x);\n  font-family: var(--font-family);\n  font-size: var(--btn-font-size);\n  font-weight: 500;\n  line-height: 1;\n  color: var(--btn-text);\n  background-color: var(--btn-bg);\n  border: 1px solid var(--btn-border-color);\n  border-radius: var(--radius-sm);\n  cursor: pointer;\n  white-space: nowrap;\n  transition:\n    background-color var(--transition-duration),\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.editor-btn[data-v-3b0709a9]:hover:not(:disabled) {\n  background-color: var(--btn-hover-bg);\n  color: var(--btn-hover-text);\n}\n.editor-btn[data-v-3b0709a9]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n\n/* Note: this rule is repeated lower in the file (after variants) to win the\n   cascade on the variant CSS vars. Keep this lightweight version for the\n   cursor and hover suppression. */\n.editor-btn[data-v-3b0709a9]:disabled {\n  cursor: not-allowed;\n}\n.editor-btn[data-v-3b0709a9]:disabled:hover {\n  background-color: var(--btn-bg);\n  color: var(--btn-text);\n}\n.editor-btn__label[data-v-3b0709a9] {\n  /* //overflow: hidden;\n  text-overflow: ellipsis; */\n  text-overflow: ellipsis;\n  text-box: cap alphabetic;\n}\n\n/* Sizes */\n.editor-btn--sm[data-v-3b0709a9] {\n  /* defaults */\n}\n.editor-btn--md[data-v-3b0709a9] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-sm);\n  --btn-height: 40px;\n}\n.editor-btn--lg[data-v-3b0709a9] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-base);\n  --btn-height: 44px;\n}\n\n/* Icon-only: square */\n.editor-btn--icon-only[data-v-3b0709a9] {\n  width: var(--btn-height);\n  padding: 0;\n}\n.editor-btn--block[data-v-3b0709a9] {\n  display: flex;\n  width: 100%;\n}\n\n/* Variants — default intent */\n.editor-btn--primary[data-v-3b0709a9] {\n  --btn-bg: var(--color-primary);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary-hover);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--secondary[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-primary);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--tertiary[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-primary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n.editor-btn--transparent[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n\n/* Destructive intent overrides */\n.editor-btn--destructive.editor-btn--primary[data-v-3b0709a9] {\n  --btn-bg: var(--color-danger);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-hover);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--destructive.editor-btn--secondary[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-danger);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--destructive.editor-btn--tertiary[data-v-3b0709a9],\n.editor-btn--destructive.editor-btn--transparent[data-v-3b0709a9] {\n  --btn-text: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-soft);\n  --btn-hover-text: var(--color-danger);\n}\n\n/* Disabled: gray-out regardless of variant. Placed after the variants so the\n   CSS var overrides win the cascade (same specificity, last declaration). */\n.editor-btn[data-v-3b0709a9]:disabled {\n  --btn-bg: var(--color-surface);\n  --btn-text: var(--color-text-muted);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface);\n  --btn-hover-text: var(--color-text-muted);\n}\n";
+const Button = /* @__PURE__ */ _export_sfc(_sfc_main$A, [["styles", [_style_0$t]], ["__scopeId", "data-v-3b0709a9"]]);
 const fr = {
   "editor.loading": "Chargement…",
   "editor.loadError": "Erreur de chargement",
@@ -8862,6 +8874,8 @@ const fr = {
   "llmService.retry": "Réessayer",
   "llmService.version": "Version",
   "llmService.save": "Enregistrer",
+  "llmService.statusUpdated": "À jour",
+  "llmService.statusOutdated": "Transcription modifiée",
   "mdToolbar.label": "Mise en forme",
   "mdToolbar.h1": "Titre 1",
   "mdToolbar.h2": "Titre 2",
@@ -8966,6 +8980,8 @@ const en = {
   "llmService.retry": "Retry",
   "llmService.version": "Version",
   "llmService.save": "Save",
+  "llmService.statusUpdated": "Up to date",
+  "llmService.statusOutdated": "Transcription edited",
   "mdToolbar.label": "Formatting",
   "mdToolbar.h1": "Heading 1",
   "mdToolbar.h2": "Heading 2",
@@ -9249,7 +9265,7 @@ const _hoisted_4$7 = {
 };
 const _hoisted_5$6 = { class: "header-right" };
 const _hoisted_6$5 = { key: 0 };
-const _sfc_main$A = /* @__PURE__ */ defineComponent({
+const _sfc_main$z = /* @__PURE__ */ defineComponent({
   __name: "Header",
   props: {
     title: { type: String },
@@ -9323,9 +9339,9 @@ const _sfc_main$A = /* @__PURE__ */ defineComponent({
   }
 });
 const _style_0$s = '\n.editor-header[data-v-7975aaa4] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-md);\n  padding: var(--spacing-sm) var(--spacing-lg);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.header-main[data-v-7975aaa4] {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  min-width: 0;\n  flex: 1;\n}\n.document-title[data-v-7975aaa4] {\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n  color: var(--color-text-primary);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  margin: 0;\n}\n.document-meta[data-v-7975aaa4] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.document-meta__part[data-v-7975aaa4] {\n  text-box: cap alphabetic;\n}\n.document-meta__part + .document-meta__part[data-v-7975aaa4]::before {\n  content: "·";\n  margin-right: var(--spacing-xs);\n}\n.header-right[data-v-7975aaa4] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  flex-shrink: 0;\n}\n@media (max-width: 767px) {\n.editor-header[data-v-7975aaa4] {\n    padding: var(--spacing-xs) var(--spacing-md);\n}\n.document-title[data-v-7975aaa4] {\n    font-size: var(--font-size-base);\n}\n}\n';
-const Header = /* @__PURE__ */ _export_sfc(_sfc_main$A, [["styles", [_style_0$s]], ["__scopeId", "data-v-7975aaa4"]]);
+const Header = /* @__PURE__ */ _export_sfc(_sfc_main$z, [["styles", [_style_0$s]], ["__scopeId", "data-v-7975aaa4"]]);
 const _hoisted_1$p = ["aria-label"];
-const _sfc_main$z = /* @__PURE__ */ defineComponent({
+const _sfc_main$y = /* @__PURE__ */ defineComponent({
   __name: "Badge",
   props: {
     ariaLabel: { type: String }
@@ -9342,11 +9358,11 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
   }
 });
 const _style_0$r = "\n.editor-badge[data-v-732d4c24] {\n  display: inline-flex;\n  align-items: center;\n  padding: 2px var(--spacing-sm);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n  color: var(--color-text-muted);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border-light);\n  border-radius: var(--radius-sm);\n  white-space: nowrap;\n}\n";
-const Badge = /* @__PURE__ */ _export_sfc(_sfc_main$z, [["styles", [_style_0$r]], ["__scopeId", "data-v-732d4c24"]]);
+const Badge = /* @__PURE__ */ _export_sfc(_sfc_main$y, [["styles", [_style_0$r]], ["__scopeId", "data-v-732d4c24"]]);
 const _hoisted_1$o = ["aria-label"];
 const _hoisted_2$i = ["aria-selected", "aria-disabled", "disabled", "onClick"];
 const _hoisted_3$f = { class: "tab__label" };
-const _sfc_main$y = /* @__PURE__ */ defineComponent({
+const _sfc_main$x = /* @__PURE__ */ defineComponent({
   __name: "Tabs",
   props: {
     tabs: { type: Array },
@@ -9402,7 +9418,7 @@ const _sfc_main$y = /* @__PURE__ */ defineComponent({
   }
 });
 const _style_0$q = "\n.tabs[data-v-24f9730e] {\n  display: flex;\n  align-items: stretch;\n  gap: var(--spacing-xs);\n  padding: 0 var(--spacing-lg);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-x: auto;\n  scrollbar-width: thin;\n}\n.tab[data-v-24f9730e] {\n  all: unset;\n  box-sizing: border-box;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  height: 44px;\n  padding: 0 var(--spacing-sm);\n  font-family: var(--font-family);\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-secondary);\n  cursor: pointer;\n  white-space: nowrap;\n  border-bottom: 2px solid transparent;\n  transition:\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.tab[data-v-24f9730e]:hover:not([disabled]) {\n  color: var(--color-text-primary);\n}\n.tab[data-v-24f9730e]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: -2px;\n  border-radius: var(--radius-sm);\n}\n.tab--active[data-v-24f9730e] {\n  color: var(--color-text-primary);\n  border-bottom-color: var(--color-primary);\n}\n.tab[disabled][data-v-24f9730e] {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n.tab__icon[data-v-24f9730e] {\n  flex-shrink: 0;\n  color: currentColor;\n}\n.tab__label[data-v-24f9730e] {\n  text-box: cap alphabetic;\n}\n.tab__badge[data-v-24f9730e] {\n  margin-left: var(--spacing-xs);\n}\n";
-const Tabs = /* @__PURE__ */ _export_sfc(_sfc_main$y, [["styles", [_style_0$q]], ["__scopeId", "data-v-24f9730e"]]);
+const Tabs = /* @__PURE__ */ _export_sfc(_sfc_main$x, [["styles", [_style_0$q]], ["__scopeId", "data-v-24f9730e"]]);
 const TRANSCRIPTION_TAB = "__transcription__";
 const VERBATIM_TAB = "__verbatim__";
 function createEventBus() {
@@ -9549,6 +9565,10 @@ function ensureSpeakersFromTurns(turns, ensure) {
 function createTranslationStore(init, emit2, speakersEnsure) {
   const { id: id2, languages, isSource, audio } = init;
   const turns = /* @__PURE__ */ shallowRef(init.turns);
+  const lastModifiedAt = /* @__PURE__ */ ref(null);
+  function setLastModifiedAt(ts) {
+    lastModifiedAt.value = ts;
+  }
   const indexMap = /* @__PURE__ */ new Map();
   function rebuildIndex() {
     indexMap.clear();
@@ -9610,7 +9630,24 @@ function createTranslationStore(init, emit2, speakersEnsure) {
   function hasTurn(turnId) {
     return indexMap.has(turnId);
   }
-  return { id: id2, languages, isSource, audio, turns, addTurn, prependTurns: prependTurns$1, updateTurn, removeTurn: removeTurn$1, updateWords, setTurns, replaceTurns, updateOrCreateTurnSilent, hasTurn };
+  return {
+    id: id2,
+    languages,
+    isSource,
+    audio,
+    turns,
+    lastModifiedAt,
+    setLastModifiedAt,
+    addTurn,
+    prependTurns: prependTurns$1,
+    updateTurn,
+    removeTurn: removeTurn$1,
+    updateWords,
+    setTurns,
+    replaceTurns,
+    updateOrCreateTurnSilent,
+    hasTurn
+  };
 }
 function createChannelStore(channel, emit2, speakersEnsure) {
   const { id: id2, name, description, duration } = channel;
@@ -9784,7 +9821,7 @@ function useCore() {
   }
   return core;
 }
-const _sfc_main$x = /* @__PURE__ */ defineComponent({
+const _sfc_main$w = /* @__PURE__ */ defineComponent({
   __name: "TabBar",
   props: {
     modelValue: { type: String }
@@ -10255,7 +10292,7 @@ function useStickToBottom(options = {}) {
     setOptions: (next2) => engine.setOptions(next2)
   };
 }
-const _sfc_main$w = /* @__PURE__ */ defineComponent({
+const _sfc_main$v = /* @__PURE__ */ defineComponent({
   __name: "SpeakerIndicator",
   props: {
     color: { type: String }
@@ -10271,7 +10308,7 @@ const _sfc_main$w = /* @__PURE__ */ defineComponent({
   }
 });
 const _style_0$p = "\n.speaker-indicator[data-v-9bffeda8] {\n  display: inline-block;\n  width: 8px;\n  height: 8px;\n  border-radius: 50%;\n  flex-shrink: 0;\n}\n";
-const SpeakerIndicator = /* @__PURE__ */ _export_sfc(_sfc_main$w, [["styles", [_style_0$p]], ["__scopeId", "data-v-9bffeda8"]]);
+const SpeakerIndicator = /* @__PURE__ */ _export_sfc(_sfc_main$v, [["styles", [_style_0$p]], ["__scopeId", "data-v-9bffeda8"]]);
 const _hoisted_1$n = { class: "speaker-label" };
 const _hoisted_2$h = {
   key: 1,
@@ -10279,7 +10316,7 @@ const _hoisted_2$h = {
 };
 const _hoisted_3$e = ["datetime"];
 const _hoisted_4$6 = { class: "lang" };
-const _sfc_main$v = /* @__PURE__ */ defineComponent({
+const _sfc_main$u = /* @__PURE__ */ defineComponent({
   __name: "SpeakerLabel",
   props: {
     speaker: { type: Object },
@@ -10328,7 +10365,7 @@ const _sfc_main$v = /* @__PURE__ */ defineComponent({
   }
 });
 const _style_0$o = "\n.speaker-label[data-v-b451886f] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.speaker-name[data-v-b451886f] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.timestamp[data-v-b451886f] {\n  font-size: var(--font-size-xs);\n  font-family: var(--font-family-mono);\n  color: var(--color-text-muted);\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n.lang[data-v-b451886f] {\n  font-size: var(--font-size-xs);\n  font-weight: 400;\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n";
-const SpeakerLabel = /* @__PURE__ */ _export_sfc(_sfc_main$v, [["styles", [_style_0$o]], ["__scopeId", "data-v-b451886f"]]);
+const SpeakerLabel = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["styles", [_style_0$o]], ["__scopeId", "data-v-b451886f"]]);
 function serialize(o2) {
   return typeof o2 == "string" ? `'${o2}'` : new c$1().serialize(o2);
 }
@@ -10554,6 +10591,11 @@ typeof WorkerGlobalScope !== "undefined" && globalThis instanceof WorkerGlobalSc
 const isDef = (val) => typeof val !== "undefined";
 const toString = Object.prototype.toString;
 const isObject$2 = (val) => toString.call(val) === "[object Object]";
+const isIOS = /* @__PURE__ */ getIsIOS();
+function getIsIOS() {
+  var _window, _window2, _window3;
+  return isClient && !!((_window = window) === null || _window === void 0 || (_window = _window.navigator) === null || _window === void 0 ? void 0 : _window.userAgent) && (/iP(?:ad|hone|od)/.test(window.navigator.userAgent) || ((_window2 = window) === null || _window2 === void 0 || (_window2 = _window2.navigator) === null || _window2 === void 0 ? void 0 : _window2.maxTouchPoints) > 2 && /iPad|Macintosh/.test((_window3 = window) === null || _window3 === void 0 ? void 0 : _window3.navigator.userAgent));
+}
 function toArray(value) {
   return Array.isArray(value) ? value : [value];
 }
@@ -10797,12 +10839,14 @@ const useBodyLockStackCount = /* @__PURE__ */ createSharedComposable(() => {
     return false;
   });
   const context2 = injectConfigProviderContext({ scrollBody: /* @__PURE__ */ ref(true) });
+  let stopTouchMoveListener = null;
   const resetBodyStyle = () => {
     document.body.style.paddingRight = "";
     document.body.style.marginRight = "";
     document.body.style.pointerEvents = "";
     document.documentElement.style.removeProperty("--scrollbar-width");
     document.body.style.overflow = initialOverflow.value ?? "";
+    isIOS && stopTouchMoveListener?.();
     initialOverflow.value = void 0;
   };
   watch(locked, (val, oldVal) => {
@@ -10830,6 +10874,7 @@ const useBodyLockStackCount = /* @__PURE__ */ createSharedComposable(() => {
       document.documentElement.style.setProperty("--scrollbar-width", `${verticalScrollbarWidth}px`);
       document.body.style.overflow = "hidden";
     }
+    if (isIOS) stopTouchMoveListener = useEventListener(document, "touchmove", (e3) => preventDefault(e3), { passive: false });
     nextTick(() => {
       document.body.style.pointerEvents = "none";
       document.body.style.overflow = "hidden";
@@ -10852,6 +10897,23 @@ function useBodyScrollLock(initialState) {
     map2.value.delete(id2);
   });
   return locked;
+}
+function checkOverflowScroll(ele) {
+  const style2 = window.getComputedStyle(ele);
+  if (style2.overflowX === "scroll" || style2.overflowY === "scroll" || style2.overflowX === "auto" && ele.clientWidth < ele.scrollWidth || style2.overflowY === "auto" && ele.clientHeight < ele.scrollHeight) return true;
+  else {
+    const parent = ele.parentNode;
+    if (!(parent instanceof Element) || parent.tagName === "BODY") return false;
+    return checkOverflowScroll(parent);
+  }
+}
+function preventDefault(rawEvent) {
+  const e3 = rawEvent || window.event;
+  const _target = e3.target;
+  if (_target instanceof Element && checkOverflowScroll(_target)) return false;
+  if (e3.touches.length > 1) return true;
+  if (e3.preventDefault && e3.cancelable) e3.preventDefault();
+  return false;
 }
 function useDirection(dir) {
   const context2 = injectConfigProviderContext({ dir: /* @__PURE__ */ ref("ltr") });
@@ -16540,7 +16602,7 @@ var DropdownMenuTrigger_vue_vue_type_script_setup_true_lang_default = /* @__PURE
   }
 });
 var DropdownMenuTrigger_default = DropdownMenuTrigger_vue_vue_type_script_setup_true_lang_default;
-const _sfc_main$u = /* @__PURE__ */ defineComponent({
+const _sfc_main$t = /* @__PURE__ */ defineComponent({
   __name: "EditorCheckbox",
   props: {
     modelValue: { type: Boolean },
@@ -16574,7 +16636,7 @@ const _sfc_main$u = /* @__PURE__ */ defineComponent({
   }
 });
 const _style_0$n = '\n.checkbox[data-v-024ee78b] {\n  all: unset;\n  width: 16px;\n  height: 16px;\n  flex-shrink: 0;\n  border: 1.5px solid var(--color-border);\n  border-radius: var(--radius-sm);\n  background-color: var(--color-surface);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  cursor: pointer;\n  transition:\n    background-color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.checkbox[data-v-024ee78b]:hover {\n  border-color: var(--color-primary);\n}\n.checkbox[data-v-024ee78b]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.checkbox[data-state="checked"][data-v-024ee78b] {\n  background-color: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.checkbox-indicator[data-v-024ee78b] {\n  color: var(--color-white, #fff);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n}\n';
-const EditorCheckbox = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["styles", [_style_0$n]], ["__scopeId", "data-v-024ee78b"]]);
+const EditorCheckbox = /* @__PURE__ */ _export_sfc(_sfc_main$t, [["styles", [_style_0$n]], ["__scopeId", "data-v-024ee78b"]]);
 const turnSelectionKey = /* @__PURE__ */ Symbol("turnSelection");
 function getTurnText(turn) {
   if (turn.words.length > 0) {
@@ -16686,7 +16748,7 @@ function useTurnSelection() {
 const _hoisted_1$m = ["data-turn-active", "aria-selected"];
 const _hoisted_2$g = { class: "turn-text" };
 const _hoisted_3$d = ["data-word-active"];
-const _sfc_main$t = /* @__PURE__ */ defineComponent({
+const _sfc_main$s = /* @__PURE__ */ defineComponent({
   __name: "TranscriptionTurn",
   props: {
     turn: { type: Object },
@@ -16785,8 +16847,8 @@ const _sfc_main$t = /* @__PURE__ */ defineComponent({
   }
 });
 const _style_0$m = "\n.turn[data-v-7ea6a240] {\n  padding: var(--spacing-sm) var(--spacing-lg);\n}\n.turn-header[data-v-7ea6a240] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  cursor: pointer;\n  user-select: none;\n  border-radius: var(--radius-sm);\n  padding: var(--spacing-xxs) 0;\n}\n.turn[data-v-7ea6a240]:has(.turn-header:hover) {\n  background-color: var(--color-surface-hover);\n}\n.turn-text[data-v-7ea6a240] {\n  margin-top: var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.turn--selected[data-v-7ea6a240] {\n  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);\n  border-left: 3px solid var(--color-primary);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.turn--active[data-v-7ea6a240]:not(.turn--selected) {\n  border-left: 3px solid var(--speaker-color);\n  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.word--active[data-v-7ea6a240] {\n  text-decoration: underline;\n  text-decoration-color: var(--speaker-color);\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n  color: var(--speaker-color);\n}\n.turn--partial .turn-text[data-v-7ea6a240] {\n  font-style: italic;\n  color: var(--color-text-muted);\n  animation: partial-fade-in-7ea6a240 200ms ease;\n}\n@keyframes partial-fade-in-7ea6a240 {\nfrom {\n    opacity: 0;\n}\nto {\n    opacity: 1;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.turn--partial .turn-text[data-v-7ea6a240] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.turn[data-v-7ea6a240] {\n    padding: var(--spacing-sm) var(--spacing-md);\n}\n.turn--selected[data-v-7ea6a240],\n  .turn--active[data-v-7ea6a240]:not(.turn--selected) {\n    padding-left: calc(var(--spacing-md) - 3px);\n}\n}\n";
-const TranscriptionTurn = /* @__PURE__ */ _export_sfc(_sfc_main$t, [["styles", [_style_0$m]], ["__scopeId", "data-v-7ea6a240"]]);
-const _sfc_main$s = {};
+const TranscriptionTurn = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["styles", [_style_0$m]], ["__scopeId", "data-v-7ea6a240"]]);
+const _sfc_main$r = {};
 const _hoisted_1$l = {
   viewBox: "0 0 938 604",
   fill: "none",
@@ -16797,10 +16859,10 @@ function _sfc_render(_ctx, _cache) {
     createStaticVNode('<polygon points="331.5,533.5 331.5,520.5 702.5,428.5 705.5,443.5" fill="#3f3d56" transform="matrix(1.8176168,0,0,1.8176168,-452.14416,-495.30213)"></polygon><polygon points="564.5,469.5 555.5,452.5 544.5,455.5 542.5,472.5" fill="#3f3d56" transform="matrix(1.8176168,0,0,1.8176168,-452.14416,-495.30213)"></polygon><path d="m 317.61655,19.99224 c 0,0 79.97514,-5.452851 101.78654,56.34612 21.81141,61.79897 72.70468,172.67359 92.69846,189.03214 19.99379,16.35855 41.80519,59.98136 38.16995,74.52229" stroke="#3f3d56" stroke-miterlimit="10" stroke-width="9.08808"></path><path d="m 329.43106,19.083431 c 0,8.532657 -9.0733,15.449743 -23.62902,15.449743 -14.55571,0 -21.8114,-6.917086 -21.8114,-15.449743 0,-8.532657 7.25569,-15.4497427 21.8114,-15.4497427 14.55572,0 23.62902,6.9170857 23.62902,15.4497427 z" fill="currentColor" style="fill:#999999;"></path><polygon points="691.5,439.5 364.5,521.5 377.5,602.5 666.5,602.5" fill="#3f3d56" transform="matrix(1.8176168,0,0,1.8176168,-456.32371,-492.51252)"></polygon>', 5)
   ])]);
 }
-const MicrophoneIllustration = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["render", _sfc_render]]);
+const MicrophoneIllustration = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["render", _sfc_render]]);
 const _hoisted_1$k = { class: "transcription-empty" };
 const _hoisted_2$f = { class: "message" };
-const _sfc_main$r = /* @__PURE__ */ defineComponent({
+const _sfc_main$q = /* @__PURE__ */ defineComponent({
   __name: "TranscriptionEmpty",
   setup(__props) {
     const { t: t2 } = useI18n();
@@ -16816,7 +16878,7 @@ const _sfc_main$r = /* @__PURE__ */ defineComponent({
   }
 });
 const _style_0$l = "\n.transcription-empty[data-v-f82737e5] {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-lg);\n  padding: var(--spacing-xl);\n}\n.illustration[data-v-f82737e5] {\n  width: 180px;\n  height: auto;\n  color: var(--color-text-muted);\n  opacity: 0.5;\n}\n.message[data-v-f82737e5] {\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n  text-align: center;\n  margin: 0;\n}\n";
-const TranscriptionEmpty = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["styles", [_style_0$l]], ["__scopeId", "data-v-f82737e5"]]);
+const TranscriptionEmpty = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["styles", [_style_0$l]], ["__scopeId", "data-v-f82737e5"]]);
 const SCROLL_KEYS = /* @__PURE__ */ new Set([
   "ArrowUp",
   "ArrowDown",
@@ -34835,7 +34897,7 @@ const _hoisted_5$5 = {
   key: 1,
   class: "history-start"
 };
-const _sfc_main$q = /* @__PURE__ */ defineComponent({
+const _sfc_main$p = /* @__PURE__ */ defineComponent({
   __name: "TranscriptionPanel",
   props: {
     turns: { type: Array },
@@ -34998,179 +35060,41 @@ const _sfc_main$q = /* @__PURE__ */ defineComponent({
   }
 });
 const _style_0$k = "\n.transcription-panel[data-v-a3eca6be] {\n  min-height: 0;\n  overflow: hidden;\n  background-color: var(--color-surface);\n}\n.transcription-panel[data-v-a3eca6be]:has(.ProseMirror:focus) {\n  background-color: var(--color-background);\n}\n.transcription-panel[data-v-a3eca6be] .ProseMirror:focus {\n  outline: 1px solid var(--color-primary);\n  background-color: var(--color-surface);\n  box-shadow: var(--shadow-sm);\n}\n.scroll-container[data-v-a3eca6be] {\n  height: 100%;\n  overflow: auto;\n  position: relative;\n}\n.turns-container[data-v-a3eca6be] {\n  max-width: 80ch;\n  margin-inline: auto;\n  padding: var(--spacing-lg);\n}\n.turns-container[data-v-a3eca6be]:has(.transcription-empty) {\n  display: flex;\n  flex-direction: column;\n  min-height: 100%;\n}\n.history-loading[data-v-a3eca6be] {\n  text-align: center;\n  padding: var(--spacing-md);\n}\n.history-loading progress[data-v-a3eca6be] {\n  width: 120px;\n}\n.history-start[data-v-a3eca6be] {\n  text-align: center;\n  padding: var(--spacing-md);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n}\n\n/* Resume scroll button */\n.resume-scroll-btn[data-v-a3eca6be] {\n  position: sticky;\n  bottom: var(--spacing-lg);\n  left: 50%;\n  translate: -50% 0;\n  z-index: var(--z-sticky);\n  background: var(--glass-background);\n  backdrop-filter: var(--glass-blur);\n  -webkit-backdrop-filter: var(--glass-blur);\n  border: 1px solid var(--color-border);\n  box-shadow: var(--shadow-sm);\n}\n\n/* Transition */\n.fade-slide-enter-active[data-v-a3eca6be],\n.fade-slide-leave-active[data-v-a3eca6be] {\n  transition:\n    opacity 200ms ease,\n    translate 200ms ease;\n}\n.fade-slide-enter-from[data-v-a3eca6be],\n.fade-slide-leave-to[data-v-a3eca6be] {\n  opacity: 0;\n  translate: -50% 8px;\n}\n@media (prefers-reduced-motion: reduce) {\n.fade-slide-enter-active[data-v-a3eca6be],\n  .fade-slide-leave-active[data-v-a3eca6be] {\n    transition: none;\n}\n}\n@media (max-width: 767px) {\n.turns-container[data-v-a3eca6be] {\n    padding: var(--spacing-md);\n}\n}\n";
-const TranscriptionPanel = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["styles", [_style_0$k]], ["__scopeId", "data-v-a3eca6be"]]);
-const _hoisted_1$i = {
-  key: 0,
-  class: "popover-list__items"
-};
+const TranscriptionPanel = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["styles", [_style_0$k]], ["__scopeId", "data-v-a3eca6be"]]);
+const _hoisted_1$i = ["data-status"];
 const _hoisted_2$d = {
-  key: 0,
-  class: "popover-list__divider"
-};
-const _hoisted_3$b = { class: "popover-list__footer" };
-const _sfc_main$p = /* @__PURE__ */ defineComponent({
-  __name: "PopoverList",
-  props: {
-    items: { type: Array },
-    itemKey: { type: Function },
-    isCurrent: { type: Function },
-    align: { default: "start", type: String },
-    side: { default: "bottom", type: String },
-    sideOffset: { default: 4, type: Number },
-    open: { type: Boolean }
-  },
-  emits: ["select", "update:open"],
-  setup(__props, { emit: __emit }) {
-    const props = __props;
-    const emit2 = __emit;
-    const internalOpen = /* @__PURE__ */ ref(false);
-    const resolvedOpen = computed({
-      get: () => {
-        if (props.open !== void 0) {
-          return internalOpen.value;
-        }
-        return props.open;
-      },
-      set: (v2) => {
-        internalOpen.value = v2;
-        emit2("update:open", v2);
-      }
-    });
-    function keyFor(item, index) {
-      return props.itemKey ? props.itemKey(item) : index;
-    }
-    return (_ctx, _cache) => {
-      return openBlock(), createBlock(unref(DropdownMenuRoot_default), {
-        open: resolvedOpen.value,
-        "onUpdate:open": _cache[0] || (_cache[0] = ($event) => resolvedOpen.value = $event)
-      }, {
-        default: withCtx(() => [
-          createVNode(unref(DropdownMenuTrigger_default), { "as-child": "" }, {
-            default: withCtx(() => [
-              renderSlot(_ctx.$slots, "trigger")
-            ]),
-            _: 3
-          }),
-          createVNode(unref(DropdownMenuPortal_default), { disabled: "" }, {
-            default: withCtx(() => [
-              createVNode(unref(DropdownMenuContent_default), {
-                class: "popover-list",
-                "position-strategy": "absolute",
-                side: __props.side,
-                align: __props.align,
-                "side-offset": __props.sideOffset
-              }, {
-                default: withCtx(() => [
-                  __props.items.length > 0 ? (openBlock(), createElementBlock("ul", _hoisted_1$i, [
-                    (openBlock(true), createElementBlock(Fragment$1, null, renderList(__props.items, (item, index) => {
-                      return openBlock(), createBlock(unref(DropdownMenuItem_default), {
-                        key: keyFor(item, index),
-                        as: "li",
-                        class: normalizeClass(["popover-list__item", { "popover-list__item--current": __props.isCurrent?.(item) }]),
-                        onSelect: ($event) => emit2("select", item)
-                      }, {
-                        default: withCtx(() => [
-                          renderSlot(_ctx.$slots, "item", { item })
-                        ]),
-                        _: 2
-                      }, 1032, ["class", "onSelect"]);
-                    }), 128))
-                  ])) : createCommentVNode("", true),
-                  _ctx.$slots.footer ? (openBlock(), createElementBlock(Fragment$1, { key: 1 }, [
-                    __props.items.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_2$d)) : createCommentVNode("", true),
-                    createBaseVNode("div", _hoisted_3$b, [
-                      renderSlot(_ctx.$slots, "footer")
-                    ])
-                  ], 64)) : createCommentVNode("", true)
-                ]),
-                _: 3
-              }, 8, ["side", "align", "side-offset"])
-            ]),
-            _: 3
-          })
-        ]),
-        _: 3
-      }, 8, ["open"]);
-    };
-  }
-});
-const _sfc_main$o = /* @__PURE__ */ defineComponent({
-  __name: "DownloadMenu",
-  props: {
-    formats: { type: Array },
-    disabled: { type: Boolean },
-    loading: { type: Boolean }
-  },
-  emits: ["select"],
-  setup(__props, { emit: __emit }) {
-    const props = __props;
-    const emit2 = __emit;
-    const { t: t2 } = useI18n();
-    function onSelect(item) {
-      emit2("select", item.format);
-    }
-    return (_ctx, _cache) => {
-      return openBlock(), createBlock(_sfc_main$p, {
-        items: props.formats,
-        "item-key": (f2) => f2.format,
-        align: "end",
-        onSelect
-      }, {
-        trigger: withCtx(() => [
-          createVNode(Button, {
-            variant: "primary",
-            icon: "download",
-            "icon-right": "chevron-down",
-            disabled: __props.disabled,
-            loading: __props.loading
-          }, {
-            default: withCtx(() => [
-              createTextVNode(toDisplayString(unref(t2)("llmService.download")), 1)
-            ]),
-            _: 1
-          }, 8, ["disabled", "loading"])
-        ]),
-        item: withCtx(({ item }) => [
-          createBaseVNode("span", null, toDisplayString(unref(t2)(item.labelKey)), 1)
-        ]),
-        _: 1
-      }, 8, ["items", "item-key"]);
-    };
-  }
-});
-const _hoisted_1$h = ["data-status"];
-const _hoisted_2$c = {
   class: "document-article__toolbar",
   role: "toolbar"
 };
-const _hoisted_3$a = { class: "document-article__body" };
-const _hoisted_4$4 = {
+const _hoisted_3$b = { class: "document-article__toolbar-left" };
+const _hoisted_4$4 = { class: "document-article__toolbar-center" };
+const _hoisted_5$4 = { class: "document-article__toolbar-right" };
+const _hoisted_6$4 = { class: "document-article__body" };
+const _hoisted_7$4 = {
   key: 0,
   class: "document-article__center document-article__center--processing",
   role: "status",
   "aria-live": "polite"
 };
-const _hoisted_5$4 = ["value"];
-const _hoisted_6$4 = {
+const _hoisted_8$3 = ["value"];
+const _hoisted_9$3 = {
   key: 0,
   class: "document-article__progress-value"
 };
-const _hoisted_7$4 = {
+const _hoisted_10$2 = {
   key: 1,
   class: "document-article__center document-article__center--error",
   role: "alert"
 };
-const _hoisted_8$3 = { class: "document-article__error-text" };
-const _sfc_main$n = /* @__PURE__ */ defineComponent({
+const _hoisted_11$2 = { class: "document-article__error-text" };
+const _sfc_main$o = /* @__PURE__ */ defineComponent({
   __name: "DocumentArticle",
   props: {
     status: { default: "done", type: String },
     progress: { type: Number },
-    errorMessage: { type: String },
-    showRegenerate: { type: Boolean, default: false },
-    formats: { type: Array }
+    errorMessage: { type: String }
   },
-  emits: ["regenerate", "export"],
+  emits: ["retry"],
   setup(__props, { emit: __emit }) {
     const props = __props;
     const emit2 = __emit;
@@ -35188,41 +35112,19 @@ const _sfc_main$n = /* @__PURE__ */ defineComponent({
         class: "document-article",
         "data-status": props.status
       }, [
-        createBaseVNode("div", _hoisted_2$c, [
-          renderSlot(_ctx.$slots, "toolbar-actions", {}, void 0, true),
-          props.showRegenerate ? (openBlock(), createBlock(Button, {
-            key: 0,
-            variant: "tertiary",
-            icon: "refresh-cw",
-            loading: props.status === "processing",
-            disabled: props.status === "processing",
-            onClick: _cache[0] || (_cache[0] = ($event) => emit2("regenerate"))
-          }, {
-            default: withCtx(() => [
-              createTextVNode(toDisplayString(unref(t2)("llmService.regenerate")), 1)
-            ]),
-            _: 1
-          }, 8, ["loading", "disabled"])) : createCommentVNode("", true),
-          props.formats ? (openBlock(), createBlock(_sfc_main$o, {
-            key: 1,
-            formats: props.formats,
-            disabled: props.status === "processing",
-            onSelect: _cache[1] || (_cache[1] = ($event) => emit2("export", $event))
-          }, null, 8, ["formats", "disabled"])) : (openBlock(), createBlock(Button, {
-            key: 2,
-            variant: "primary",
-            icon: "download",
-            disabled: props.status === "processing",
-            onClick: _cache[2] || (_cache[2] = ($event) => emit2("export"))
-          }, {
-            default: withCtx(() => [
-              createTextVNode(toDisplayString(unref(t2)("llmService.download")), 1)
-            ]),
-            _: 1
-          }, 8, ["disabled"]))
+        createBaseVNode("div", _hoisted_2$d, [
+          createBaseVNode("div", _hoisted_3$b, [
+            renderSlot(_ctx.$slots, "toolbar-left", {}, void 0, true)
+          ]),
+          createBaseVNode("div", _hoisted_4$4, [
+            renderSlot(_ctx.$slots, "toolbar-center", {}, void 0, true)
+          ]),
+          createBaseVNode("div", _hoisted_5$4, [
+            renderSlot(_ctx.$slots, "toolbar-right", {}, void 0, true)
+          ])
         ]),
-        createBaseVNode("div", _hoisted_3$a, [
-          props.status === "processing" ? (openBlock(), createElementBlock("div", _hoisted_4$4, [
+        createBaseVNode("div", _hoisted_6$4, [
+          props.status === "processing" ? (openBlock(), createElementBlock("div", _hoisted_7$4, [
             createVNode(EditorIcon, {
               name: "spinner",
               spin: "",
@@ -35232,32 +35134,31 @@ const _sfc_main$n = /* @__PURE__ */ defineComponent({
               class: "document-article__progress",
               max: 100,
               value: progressValue.value ?? void 0
-            }, null, 8, _hoisted_5$4),
-            progressValue.value !== null ? (openBlock(), createElementBlock("span", _hoisted_6$4, toDisplayString(progressValue.value) + "% ", 1)) : createCommentVNode("", true)
-          ])) : props.status === "error" ? (openBlock(), createElementBlock("div", _hoisted_7$4, [
-            createBaseVNode("p", _hoisted_8$3, toDisplayString(errorText.value), 1),
-            props.showRegenerate ? (openBlock(), createBlock(Button, {
-              key: 0,
+            }, null, 8, _hoisted_8$3),
+            progressValue.value !== null ? (openBlock(), createElementBlock("span", _hoisted_9$3, toDisplayString(progressValue.value) + "% ", 1)) : createCommentVNode("", true)
+          ])) : props.status === "error" ? (openBlock(), createElementBlock("div", _hoisted_10$2, [
+            createBaseVNode("p", _hoisted_11$2, toDisplayString(errorText.value), 1),
+            createVNode(Button, {
               variant: "primary",
               icon: "refresh-cw",
-              onClick: _cache[3] || (_cache[3] = ($event) => emit2("regenerate"))
+              onClick: _cache[0] || (_cache[0] = ($event) => emit2("retry"))
             }, {
               default: withCtx(() => [
                 createTextVNode(toDisplayString(unref(t2)("llmService.retry")), 1)
               ]),
               _: 1
-            })) : createCommentVNode("", true)
+            })
           ])) : renderSlot(_ctx.$slots, "default", { key: 2 }, void 0, true)
         ])
-      ], 8, _hoisted_1$h);
+      ], 8, _hoisted_1$i);
     };
   }
 });
-const _style_0$j = "\n.document-article[data-v-5c1b8a9c] {\n  width: 100%;\n  max-width: 760px;\n  margin: var(--spacing-lg) auto;\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  display: flex;\n  flex-direction: column;\n}\n.document-article__toolbar[data-v-5c1b8a9c] {\n  display: flex;\n  align-items: center;\n  justify-content: flex-end;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  flex-wrap: wrap;\n  position: sticky;\n  top: 0;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md) var(--radius-md) 0 0;\n  z-index: 1;\n}\n.document-article__body[data-v-5c1b8a9c] {\n  padding: var(--spacing-lg) var(--spacing-xl);\n  flex: 1;\n  min-height: 0;\n}\n.document-article__center[data-v-5c1b8a9c] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.document-article__center--processing[data-v-5c1b8a9c] {\n  color: var(--color-primary);\n}\n.document-article__center--error[data-v-5c1b8a9c] {\n  color: var(--color-danger, #d33);\n}\n.document-article__progress[data-v-5c1b8a9c] {\n  width: min(280px, 100%);\n  height: 6px;\n}\n.document-article__progress-value[data-v-5c1b8a9c] {\n  font-size: var(--font-size-xs);\n  font-variant-numeric: tabular-nums;\n  color: var(--color-text-muted);\n}\n.document-article__error-text[data-v-5c1b8a9c] {\n  margin: 0;\n  max-width: 480px;\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  color: var(--color-text-secondary);\n}\n@media (max-width: 767px) {\n.document-article__body[data-v-5c1b8a9c] {\n    padding: var(--spacing-md);\n}\n}\n";
-const DocumentArticle = /* @__PURE__ */ _export_sfc(_sfc_main$n, [["styles", [_style_0$j]], ["__scopeId", "data-v-5c1b8a9c"]]);
-const _hoisted_1$g = { class: "verbatim-panel" };
-const _hoisted_2$b = { class: "verbatim-panel__header" };
-const _hoisted_3$9 = { class: "verbatim-panel__doc-title" };
+const _style_0$j = "\n.document-article[data-v-1bb280bc] {\n  width: 100%;\n  max-width: 760px;\n  margin: var(--spacing-lg) auto;\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  display: flex;\n  flex-direction: column;\n}\n.document-article__toolbar[data-v-1bb280bc] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  position: sticky;\n  top: 0;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md) var(--radius-md) 0 0;\n  z-index: 1;\n}\n.document-article__toolbar-left[data-v-1bb280bc],\n.document-article__toolbar-right[data-v-1bb280bc] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  flex-shrink: 0;\n}\n.document-article__toolbar-center[data-v-1bb280bc] {\n  flex: 1;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  min-width: 0;\n}\n.document-article__body[data-v-1bb280bc] {\n  flex: 1;\n  min-height: 0;\n}\n.document-article__center[data-v-1bb280bc] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.document-article__center--processing[data-v-1bb280bc] {\n  color: var(--color-primary);\n}\n.document-article__center--error[data-v-1bb280bc] {\n  color: var(--color-danger, #d33);\n}\n.document-article__progress[data-v-1bb280bc] {\n  width: min(280px, 100%);\n  height: 6px;\n}\n.document-article__progress-value[data-v-1bb280bc] {\n  font-size: var(--font-size-xs);\n  font-variant-numeric: tabular-nums;\n  color: var(--color-text-muted);\n}\n.document-article__error-text[data-v-1bb280bc] {\n  margin: 0;\n  max-width: 480px;\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  color: var(--color-text-secondary);\n}\n";
+const DocumentArticle = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["styles", [_style_0$j]], ["__scopeId", "data-v-1bb280bc"]]);
+const _hoisted_1$h = { class: "verbatim-panel" };
+const _hoisted_2$c = { class: "verbatim-panel__header" };
+const _hoisted_3$a = { class: "verbatim-panel__doc-title" };
 const _hoisted_4$3 = { class: "verbatim-panel__turns" };
 const _hoisted_5$3 = { class: "verbatim-panel__turn-header" };
 const _hoisted_6$3 = { class: "verbatim-panel__speaker-name" };
@@ -35270,7 +35171,7 @@ const _hoisted_8$2 = {
   class: "verbatim-panel__meta"
 };
 const _hoisted_9$2 = { class: "verbatim-panel__text" };
-const _sfc_main$m = /* @__PURE__ */ defineComponent({
+const _sfc_main$n = /* @__PURE__ */ defineComponent({
   __name: "VerbatimPanel",
   setup(__props) {
     const core = useCore();
@@ -35307,14 +35208,14 @@ const _sfc_main$m = /* @__PURE__ */ defineComponent({
       core.emit("verbatim:export", { format: format2 });
     }
     return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("section", _hoisted_1$g, [
+      return openBlock(), createElementBlock("section", _hoisted_1$h, [
         createVNode(DocumentArticle, {
           formats,
           onExport
         }, {
           default: withCtx(() => [
-            createBaseVNode("header", _hoisted_2$b, [
-              createBaseVNode("h1", _hoisted_3$9, toDisplayString(title.value), 1)
+            createBaseVNode("header", _hoisted_2$c, [
+              createBaseVNode("h1", _hoisted_3$a, toDisplayString(title.value), 1)
             ]),
             createBaseVNode("ul", _hoisted_4$3, [
               (openBlock(true), createElementBlock(Fragment$1, null, renderList(turns.value, (turn) => {
@@ -35351,7 +35252,7 @@ const _sfc_main$m = /* @__PURE__ */ defineComponent({
   }
 });
 const _style_0$i = "\n.verbatim-panel[data-v-51627ae9] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.verbatim-panel__header[data-v-51627ae9] {\n  margin-bottom: var(--spacing-lg);\n  padding-bottom: var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n}\n.verbatim-panel__doc-title[data-v-51627ae9] {\n  font-size: var(--font-size-xl);\n  font-weight: 700;\n  margin: 0;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__turns[data-v-51627ae9] {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n}\n.verbatim-panel__turn[data-v-51627ae9] {\n  display: block;\n}\n.verbatim-panel__turn-header[data-v-51627ae9] {\n  margin: 0 0 var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: 1.4;\n}\n.verbatim-panel__speaker-name[data-v-51627ae9] {\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__meta[data-v-51627ae9] {\n  color: var(--color-text-muted);\n  font-weight: 400;\n}\n.verbatim-panel__sep[data-v-51627ae9] {\n  margin: 0 0.35em;\n}\n.verbatim-panel__text[data-v-51627ae9] {\n  margin: 0;\n  font-size: var(--font-size-base);\n  line-height: 1.6;\n  color: var(--color-text-primary);\n}\n@media (max-width: 767px) {\n.verbatim-panel[data-v-51627ae9] {\n    padding: var(--spacing-md);\n}\n}\n";
-const VerbatimPanel = /* @__PURE__ */ _export_sfc(_sfc_main$m, [["styles", [_style_0$i]], ["__scopeId", "data-v-51627ae9"]]);
+const VerbatimPanel = /* @__PURE__ */ _export_sfc(_sfc_main$n, [["styles", [_style_0$i]], ["__scopeId", "data-v-51627ae9"]]);
 function z() {
   return { async: false, breaks: false, extensions: null, gfm: true, hooks: null, pedantic: false, renderer: null, silent: false, tokenizer: null, walkTokens: null };
 }
@@ -37282,10 +37183,10 @@ function gfm(turndownService) {
     taskListItems
   ]);
 }
-const _hoisted_1$f = { class: "markdown-editor" };
-const _hoisted_2$a = ["aria-label"];
-const _hoisted_3$8 = ["contenteditable"];
-const _sfc_main$l = /* @__PURE__ */ defineComponent({
+const _hoisted_1$g = { class: "markdown-editor" };
+const _hoisted_2$b = ["aria-label"];
+const _hoisted_3$9 = ["contenteditable"];
+const _sfc_main$m = /* @__PURE__ */ defineComponent({
   __name: "MarkdownEditor",
   props: {
     modelValue: { type: String },
@@ -37468,7 +37369,9 @@ const _sfc_main$l = /* @__PURE__ */ defineComponent({
       const el = editorRef.value;
       let n2 = node;
       while (n2 && n2 !== el) {
-        if (n2.nodeType === 1 && /^(P|H[1-6]|BLOCKQUOTE|PRE|UL|OL|LI|DIV)$/.test(n2.tagName)) {
+        if (n2.nodeType === 1 && /^(P|H[1-6]|BLOCKQUOTE|PRE|UL|OL|LI|DIV)$/.test(
+          n2.tagName
+        )) {
           return n2;
         }
         n2 = n2.parentNode;
@@ -37506,7 +37409,7 @@ const _sfc_main$l = /* @__PURE__ */ defineComponent({
       }
     );
     return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("div", _hoisted_1$f, [
+      return openBlock(), createElementBlock("div", _hoisted_1$g, [
         !__props.disabled ? (openBlock(), createElementBlock("div", {
           key: 0,
           class: "markdown-editor__toolbar",
@@ -37617,7 +37520,7 @@ const _sfc_main$l = /* @__PURE__ */ defineComponent({
             title: unref(t2)("mdToolbar.redo"),
             onClick: _cache[8] || (_cache[8] = ($event) => execCmd("redo"))
           }, null, 8, ["aria-label", "title"])
-        ], 8, _hoisted_2$a)) : createCommentVNode("", true),
+        ], 8, _hoisted_2$b)) : createCommentVNode("", true),
         createBaseVNode("div", {
           ref: "editorEl",
           class: "markdown-editor__content",
@@ -37627,15 +37530,15 @@ const _sfc_main$l = /* @__PURE__ */ defineComponent({
           onPaste,
           onFocus: startSelectionListener,
           onBlur: stopSelectionListener
-        }, null, 40, _hoisted_3$8)
+        }, null, 40, _hoisted_3$9)
       ]);
     };
   }
 });
-const _style_0$h = "\n.markdown-editor[data-v-8d86faa9] {\n  display: flex;\n  flex-direction: column;\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.markdown-editor__toolbar[data-v-8d86faa9] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-xs) var(--spacing-sm);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  position: sticky;\n  top: 0;\n  z-index: 1;\n}\n.markdown-editor__separator[data-v-8d86faa9] {\n  width: 1px;\n  height: 20px;\n  background-color: var(--color-border);\n  margin: 0 var(--spacing-xs);\n}\n.markdown-editor__content[data-v-8d86faa9] {\n  padding: var(--spacing-md) var(--spacing-md);\n  outline: none;\n  min-height: 200px;\n}\n.markdown-editor__content[data-v-8d86faa9] > *:first-child {\n  margin-top: 0;\n}\n.markdown-editor__content[data-v-8d86faa9] h1,\n.markdown-editor__content[data-v-8d86faa9] h2,\n.markdown-editor__content[data-v-8d86faa9] h3,\n.markdown-editor__content[data-v-8d86faa9] h4 {\n  margin: var(--spacing-lg) 0 var(--spacing-sm);\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.markdown-editor__content[data-v-8d86faa9] h1 {\n  font-size: var(--font-size-xl);\n}\n.markdown-editor__content[data-v-8d86faa9] h2 {\n  font-size: var(--font-size-lg);\n}\n.markdown-editor__content[data-v-8d86faa9] h3 {\n  font-size: var(--font-size-base);\n}\n.markdown-editor__content[data-v-8d86faa9] h4 {\n  font-size: var(--font-size-sm);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-secondary);\n}\n.markdown-editor__content[data-v-8d86faa9] p {\n  margin: 0 0 var(--spacing-md);\n}\n.markdown-editor__content[data-v-8d86faa9] ul,\n.markdown-editor__content[data-v-8d86faa9] ol {\n  margin: 0 0 var(--spacing-md);\n  padding-left: var(--spacing-lg);\n}\n.markdown-editor__content[data-v-8d86faa9] li {\n  margin: var(--spacing-xs) 0;\n}\n.markdown-editor__content[data-v-8d86faa9] blockquote {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-left: 3px solid var(--color-border);\n  color: var(--color-text-secondary);\n  font-style: italic;\n}\n.markdown-editor__content[data-v-8d86faa9] code {\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n  padding: 1px 4px;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-sm);\n}\n.markdown-editor__content[data-v-8d86faa9] pre {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n}\n.markdown-editor__content[data-v-8d86faa9] pre code {\n  padding: 0;\n  background: none;\n}\n.markdown-editor__content[data-v-8d86faa9] a {\n  color: var(--color-primary);\n  text-decoration: underline;\n}\n.markdown-editor__content[data-v-8d86faa9] hr {\n  border: 0;\n  border-top: 1px solid var(--color-border);\n  margin: var(--spacing-lg) 0;\n}\n.markdown-editor__content[data-v-8d86faa9] strong {\n  font-weight: 700;\n}\n.markdown-editor__content[data-v-8d86faa9] table {\n  border-collapse: collapse;\n  margin: var(--spacing-md) 0;\n}\n.markdown-editor__content[data-v-8d86faa9] th,\n.markdown-editor__content[data-v-8d86faa9] td {\n  border: 1px solid var(--color-border);\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.markdown-editor__content[data-v-8d86faa9] th {\n  background-color: var(--color-surface);\n  font-weight: 600;\n}\n";
-const MarkdownEditor = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["styles", [_style_0$h]], ["__scopeId", "data-v-8d86faa9"]]);
-const _hoisted_1$e = { class: "llm-service-panel" };
-const _sfc_main$k = /* @__PURE__ */ defineComponent({
+const _style_0$h = "\n.markdown-editor[data-v-83ab6d33] {\n  display: flex;\n  flex-direction: column;\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.markdown-editor__toolbar[data-v-83ab6d33] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-xs) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  position: sticky;\n  top: 0;\n  z-index: 1;\n}\n.markdown-editor__separator[data-v-83ab6d33] {\n  width: 1px;\n  height: 20px;\n  background-color: var(--color-border);\n  margin: 0 var(--spacing-xs);\n}\n.markdown-editor__content[data-v-83ab6d33] {\n  padding: var(--spacing-md) var(--spacing-md);\n  outline: none;\n  min-height: 200px;\n}\n.markdown-editor__content[data-v-83ab6d33] > *:first-child {\n  margin-top: 0;\n}\n.markdown-editor__content[data-v-83ab6d33] h1,\n.markdown-editor__content[data-v-83ab6d33] h2,\n.markdown-editor__content[data-v-83ab6d33] h3,\n.markdown-editor__content[data-v-83ab6d33] h4 {\n  margin: var(--spacing-lg) 0 var(--spacing-sm);\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.markdown-editor__content[data-v-83ab6d33] h1 {\n  font-size: var(--font-size-xl);\n}\n.markdown-editor__content[data-v-83ab6d33] h2 {\n  font-size: var(--font-size-lg);\n}\n.markdown-editor__content[data-v-83ab6d33] h3 {\n  font-size: var(--font-size-base);\n}\n.markdown-editor__content[data-v-83ab6d33] h4 {\n  font-size: var(--font-size-sm);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-secondary);\n}\n.markdown-editor__content[data-v-83ab6d33] p {\n  margin: 0 0 var(--spacing-md);\n}\n.markdown-editor__content[data-v-83ab6d33] ul,\n.markdown-editor__content[data-v-83ab6d33] ol {\n  margin: 0 0 var(--spacing-md);\n  padding-left: var(--spacing-lg);\n}\n.markdown-editor__content[data-v-83ab6d33] li {\n  margin: var(--spacing-xs) 0;\n}\n.markdown-editor__content[data-v-83ab6d33] blockquote {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-left: 3px solid var(--color-border);\n  color: var(--color-text-secondary);\n  font-style: italic;\n}\n.markdown-editor__content[data-v-83ab6d33] code {\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n  padding: 1px 4px;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-sm);\n}\n.markdown-editor__content[data-v-83ab6d33] pre {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n}\n.markdown-editor__content[data-v-83ab6d33] pre code {\n  padding: 0;\n  background: none;\n}\n.markdown-editor__content[data-v-83ab6d33] a {\n  color: var(--color-primary);\n  text-decoration: underline;\n}\n.markdown-editor__content[data-v-83ab6d33] hr {\n  border: 0;\n  border-top: 1px solid var(--color-border);\n  margin: var(--spacing-lg) 0;\n}\n.markdown-editor__content[data-v-83ab6d33] strong {\n  font-weight: 700;\n}\n.markdown-editor__content[data-v-83ab6d33] table {\n  border-collapse: collapse;\n  margin: var(--spacing-md) 0;\n}\n.markdown-editor__content[data-v-83ab6d33] th,\n.markdown-editor__content[data-v-83ab6d33] td {\n  border: 1px solid var(--color-border);\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.markdown-editor__content[data-v-83ab6d33] th {\n  background-color: var(--color-surface);\n  font-weight: 600;\n}\n";
+const MarkdownEditor = /* @__PURE__ */ _export_sfc(_sfc_main$m, [["styles", [_style_0$h]], ["__scopeId", "data-v-83ab6d33"]]);
+const _hoisted_1$f = { class: "llm-service-panel" };
+const _sfc_main$l = /* @__PURE__ */ defineComponent({
   __name: "LLMServicePanel",
   props: {
     service: { type: Object }
@@ -37654,6 +37557,20 @@ const _sfc_main$k = /* @__PURE__ */ defineComponent({
     const content = computed(() => props.service.content.value);
     const busy = computed(() => props.service.busy.value);
     const dirty = computed(() => props.service.dirty.value);
+    const versions = computed(() => props.service.versions.value);
+    const activeVersionNumber = computed(
+      () => props.service.activeVersionNumber.value
+    );
+    const isUpdated = computed(() => {
+      const transcriptionLastModified = core.activeChannel.value?.activeTranslation.value?.lastModifiedAt.value ?? null;
+      if (transcriptionLastModified == null) return true;
+      const activeVersion = versions.value.find(
+        (v2) => v2.versionNumber === activeVersionNumber.value
+      );
+      const versionTs = activeVersion?.createdAt ?? props.service.lastUpdate.value;
+      if (versionTs == null) return true;
+      return versionTs >= transcriptionLastModified;
+    });
     const draft = /* @__PURE__ */ ref(content.value);
     watch(content, (next2) => {
       draft.value = next2;
@@ -37678,27 +37595,58 @@ const _sfc_main$k = /* @__PURE__ */ defineComponent({
       });
     }
     return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("section", _hoisted_1$e, [
+      return openBlock(), createElementBlock("section", _hoisted_1$f, [
         createVNode(DocumentArticle, {
           status: articleStatus.value,
           progress: progress.value,
-          "show-regenerate": "",
-          onRegenerate,
-          onExport
+          onRetry: onRegenerate
         }, {
-          "toolbar-actions": withCtx(() => [
-            dirty.value ? (openBlock(), createBlock(Button, {
-              key: 0,
+          "toolbar-left": withCtx(() => [
+            createVNode(Button, {
               variant: "primary",
               icon: "check",
-              disabled: busy.value,
+              disabled: !dirty.value || busy.value,
+              "aria-label": unref(t2)("llmService.save"),
+              title: unref(t2)("llmService.save"),
               onClick: onSave
+            }, null, 8, ["disabled", "aria-label", "title"]),
+            createVNode(Button, {
+              variant: "secondary",
+              icon: "refresh-cw",
+              loading: articleStatus.value === "processing",
+              disabled: isUpdated.value || busy.value || articleStatus.value === "processing",
+              "aria-label": unref(t2)("llmService.regenerate"),
+              title: unref(t2)("llmService.regenerate"),
+              onClick: onRegenerate
+            }, null, 8, ["loading", "disabled", "aria-label", "title"])
+          ]),
+          "toolbar-center": withCtx(() => [
+            createBaseVNode("span", {
+              class: normalizeClass(["llm-service-panel__status", [
+                isUpdated.value ? "llm-service-panel__status--ok" : "llm-service-panel__status--warn"
+              ]])
+            }, [
+              createVNode(EditorIcon, {
+                name: isUpdated.value ? "check" : "warning",
+                size: 14
+              }, null, 8, ["name"]),
+              createBaseVNode("span", null, toDisplayString(isUpdated.value ? unref(t2)("llmService.statusUpdated") : unref(t2)("llmService.statusOutdated")), 1)
+            ], 2)
+          ]),
+          "toolbar-right": withCtx(() => [
+            createVNode(Button, {
+              variant: "primary",
+              icon: "download",
+              disabled: articleStatus.value === "processing",
+              "aria-label": unref(t2)("llmService.download"),
+              title: unref(t2)("llmService.download"),
+              onClick: onExport
             }, {
               default: withCtx(() => [
-                createTextVNode(toDisplayString(unref(t2)("llmService.save")), 1)
+                createTextVNode(toDisplayString(unref(t2)("llmService.download")), 1)
               ]),
               _: 1
-            }, 8, ["disabled"])) : createCommentVNode("", true)
+            }, 8, ["disabled", "aria-label", "title"])
           ]),
           default: withCtx(() => [
             createVNode(MarkdownEditor, {
@@ -37713,12 +37661,12 @@ const _sfc_main$k = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$g = "\n.llm-service-panel[data-v-4fbca4df] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n@media (max-width: 767px) {\n.llm-service-panel[data-v-4fbca4df] {\n    padding: var(--spacing-md);\n}\n}\n";
-const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$k, [["styles", [_style_0$g]], ["__scopeId", "data-v-4fbca4df"]]);
-const _hoisted_1$d = { class: "switch" };
-const _hoisted_2$9 = ["id", "checked"];
-const _hoisted_3$7 = ["for"];
-const _sfc_main$j = /* @__PURE__ */ defineComponent({
+const _style_0$g = "\n.llm-service-panel[data-v-0b29c32f] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.llm-service-panel__status[data-v-0b29c32f] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n}\n.llm-service-panel__status--ok[data-v-0b29c32f] {\n  color: var(--color-success, #2e7d32);\n}\n.llm-service-panel__status--warn[data-v-0b29c32f] {\n  color: var(--color-warning, #ed6c02);\n}\n@media (max-width: 767px) {\n.llm-service-panel[data-v-0b29c32f] {\n    padding: var(--spacing-md);\n}\n}\n";
+const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["styles", [_style_0$g]], ["__scopeId", "data-v-0b29c32f"]]);
+const _hoisted_1$e = { class: "switch" };
+const _hoisted_2$a = ["id", "checked"];
+const _hoisted_3$8 = ["for"];
+const _sfc_main$k = /* @__PURE__ */ defineComponent({
   __name: "SwitchToggle",
   props: {
     modelValue: { type: Boolean },
@@ -37730,28 +37678,28 @@ const _sfc_main$j = /* @__PURE__ */ defineComponent({
     const emit2 = __emit;
     const inputId = props.id ?? useId$1();
     return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("div", _hoisted_1$d, [
+      return openBlock(), createElementBlock("div", _hoisted_1$e, [
         createBaseVNode("input", {
           type: "checkbox",
           id: unref(inputId),
           checked: __props.modelValue,
           onChange: _cache[0] || (_cache[0] = ($event) => emit2("update:modelValue", $event.target.checked))
-        }, null, 40, _hoisted_2$9),
+        }, null, 40, _hoisted_2$a),
         createBaseVNode("label", { for: unref(inputId) }, [..._cache[1] || (_cache[1] = [
           createBaseVNode("div", { class: "switch-slider" }, null, -1)
-        ])], 8, _hoisted_3$7)
+        ])], 8, _hoisted_3$8)
       ]);
     };
   }
 });
 const _style_0$f = "\n.switch[data-v-2aa0332f] {\n  display: inline-block;\n  flex-shrink: 0;\n}\n.switch input[data-v-2aa0332f] {\n  position: absolute;\n  width: 1px;\n  height: 1px;\n  padding: 0;\n  margin: -1px;\n  overflow: hidden;\n  clip-path: inset(50%);\n  white-space: nowrap;\n  border: 0;\n}\n.switch label[data-v-2aa0332f] {\n  height: 20px;\n  width: 40px;\n  display: block;\n  border: 1px solid var(--color-border);\n  border-radius: 20px;\n  cursor: pointer;\n  background-color: var(--color-border);\n  transition: background-color var(--transition-duration);\n}\n.switch .switch-slider[data-v-2aa0332f] {\n  height: 22px;\n  width: 22px;\n  border: 1px solid var(--color-border);\n  border-radius: 50%;\n  position: relative;\n  top: -2px;\n  left: -2px;\n  background-color: var(--color-white);\n  transition: left var(--transition-duration);\n}\n.switch input:checked + label[data-v-2aa0332f] {\n  background-color: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.switch input:checked + label .switch-slider[data-v-2aa0332f] {\n  left: 20px;\n  border-color: var(--color-primary);\n}\n";
-const SwitchToggle = /* @__PURE__ */ _export_sfc(_sfc_main$j, [["styles", [_style_0$f]], ["__scopeId", "data-v-2aa0332f"]]);
-const _hoisted_1$c = {
+const SwitchToggle = /* @__PURE__ */ _export_sfc(_sfc_main$k, [["styles", [_style_0$f]], ["__scopeId", "data-v-2aa0332f"]]);
+const _hoisted_1$d = {
   key: 0,
   class: "form-field__header"
 };
-const _hoisted_2$8 = ["for"];
-const _hoisted_3$6 = {
+const _hoisted_2$9 = ["for"];
+const _hoisted_3$7 = {
   key: 0,
   class: "form-field__required",
   "aria-hidden": "true"
@@ -37771,7 +37719,7 @@ const _hoisted_9$1 = {
 };
 const _hoisted_10$1 = ["id"];
 const _hoisted_11$1 = { class: "form-field__error" };
-const _sfc_main$i = /* @__PURE__ */ defineComponent({
+const _sfc_main$j = /* @__PURE__ */ defineComponent({
   __name: "FormInput",
   props: {
     field: { type: Object },
@@ -37881,14 +37829,14 @@ const _sfc_main$i = /* @__PURE__ */ defineComponent({
       return openBlock(), createElementBlock("div", {
         class: normalizeClass(rootClasses.value)
       }, [
-        __props.field.label ? (openBlock(), createElementBlock("div", _hoisted_1$c, [
+        __props.field.label ? (openBlock(), createElementBlock("div", _hoisted_1$d, [
           createBaseVNode("label", {
             class: "form-field__label",
             for: id2.value
           }, [
             createTextVNode(toDisplayString(__props.field.label) + " ", 1),
-            isRequired.value ? (openBlock(), createElementBlock("span", _hoisted_3$6, "*")) : createCommentVNode("", true)
-          ], 8, _hoisted_2$8),
+            isRequired.value ? (openBlock(), createElementBlock("span", _hoisted_3$7, "*")) : createCommentVNode("", true)
+          ], 8, _hoisted_2$9),
           renderSlot(_ctx.$slots, "content-after-label", {}, void 0, true)
         ])) : createCommentVNode("", true),
         createBaseVNode("div", _hoisted_4$2, [
@@ -37980,9 +37928,9 @@ const _sfc_main$i = /* @__PURE__ */ defineComponent({
   }
 });
 const _style_0$e = "\n/* ── Root ──────────────────────────────────────────────────────────── */\n.form-field[data-v-31189879] {\n  --field-height: 40px;\n  --field-padding-x: var(--spacing-md);\n  --field-font-size: var(--font-size-sm);\n\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  width: 100%;\n}\n.form-field--sm[data-v-31189879] {\n  --field-height: 32px;\n  --field-padding-x: var(--spacing-sm);\n  --field-font-size: var(--font-size-xs);\n}\n.form-field--lg[data-v-31189879] {\n  --field-height: 44px;\n  --field-padding-x: var(--spacing-md);\n  --field-font-size: var(--font-size-base);\n}\n.form-field--disabled[data-v-31189879] {\n  opacity: 0.7;\n}\n\n/* ── Header (label row) ────────────────────────────────────────────── */\n.form-field__header[data-v-31189879] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n}\n.form-field__label[data-v-31189879] {\n  display: block;\n  margin: 0;\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  line-height: 1.2;\n  color: var(--color-text-primary);\n}\n.form-field--error .form-field__label[data-v-31189879] {\n  color: var(--color-danger);\n}\n.form-field__required[data-v-31189879] {\n  margin-left: 2px;\n  color: var(--color-danger);\n}\n\n/* ── Input wrapper ─────────────────────────────────────────────────── */\n.form-field__input-wrapper[data-v-31189879] {\n  display: flex;\n  align-items: flex-start;\n  gap: var(--spacing-sm);\n  width: 100%;\n}\n\n/* ── Input ─────────────────────────────────────────────────────────── */\n.form-field__input[data-v-31189879] {\n  flex: 1;\n  box-sizing: border-box;\n  height: var(--field-height);\n  padding: 0 var(--field-padding-x);\n  font-family: inherit;\n  font-size: var(--field-font-size);\n  line-height: 1.4;\n  color: var(--color-text-primary);\n  background-color: var(--color-background);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-sm);\n  outline: none;\n  transition:\n    border-color var(--transition-duration),\n    box-shadow var(--transition-duration);\n}\n.form-field__input[data-v-31189879]::placeholder {\n  color: var(--color-text-muted);\n  opacity: 1;\n}\n.form-field__input[data-v-31189879]:hover:not(:disabled) {\n  border-color: var(--color-text-muted);\n}\n.form-field__input[data-v-31189879]:focus-visible {\n  border-color: var(--color-primary);\n  box-shadow: 0 0 0 3px\n    color-mix(in srgb, var(--color-primary) 20%, transparent);\n}\n.form-field__input[data-v-31189879]:disabled {\n  cursor: not-allowed;\n  background-color: var(--color-surface);\n  color: var(--color-text-muted);\n}\n.form-field__input--fullwidth[data-v-31189879] {\n  width: 100%;\n  max-width: none;\n}\n.form-field__input--select[data-v-31189879] {\n  cursor: pointer;\n  appearance: auto;\n}\n.form-field__input--error[data-v-31189879] {\n  border-color: var(--color-danger);\n}\n.form-field__input--error[data-v-31189879]:focus-visible {\n  border-color: var(--color-danger);\n  box-shadow: 0 0 0 3px\n    color-mix(in srgb, var(--color-danger) 20%, transparent);\n}\n\n/* ── Confirmation actions ──────────────────────────────────────────── */\n.form-field__actions[data-v-31189879] {\n  display: flex;\n  align-items: flex-start;\n  gap: var(--spacing-xs);\n  flex-shrink: 0;\n}\n.form-field__actions--placeholder[data-v-31189879] {\n  /* Reserve space so showing the buttons doesn't shift layout. */\n  width: calc(var(--field-height) * 2 + var(--spacing-xs));\n  height: var(--field-height);\n  pointer-events: none;\n  opacity: 0;\n}\n\n/* ── Info / error ──────────────────────────────────────────────────── */\n.form-field__info[data-v-31189879] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.form-field__error[data-v-31189879] {\n  margin: 0;\n  font-size: var(--font-size-xs);\n  line-height: 1.2;\n  color: var(--color-danger);\n}\n\n/* ── Inline layout ─────────────────────────────────────────────────── */\n.form-field--inline[data-v-31189879] {\n  flex-direction: row;\n  align-items: center;\n  gap: var(--spacing-md);\n}\n.form-field--inline .form-field__header[data-v-31189879] {\n  flex-shrink: 0;\n  min-width: 120px;\n}\n.form-field--inline .form-field__input-wrapper[data-v-31189879] {\n  flex: 1;\n}\n\n/* ── Reduced motion ────────────────────────────────────────────────── */\n@media (prefers-reduced-motion: reduce) {\n.form-field__input[data-v-31189879] {\n    transition: none;\n}\n}\n";
-const FormInput = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["styles", [_style_0$e]], ["__scopeId", "data-v-31189879"]]);
-const _hoisted_1$b = ["disabled", "aria-label"];
-const _sfc_main$h = /* @__PURE__ */ defineComponent({
+const FormInput = /* @__PURE__ */ _export_sfc(_sfc_main$j, [["styles", [_style_0$e]], ["__scopeId", "data-v-31189879"]]);
+const _hoisted_1$c = ["disabled", "aria-label"];
+const _sfc_main$i = /* @__PURE__ */ defineComponent({
   __name: "EditableText",
   props: {
     modelValue: { type: String },
@@ -38056,12 +38004,107 @@ const _sfc_main$h = /* @__PURE__ */ defineComponent({
         disabled: __props.disabled,
         "aria-label": __props.ariaLabel,
         onClick: startEdit
-      }, toDisplayString(__props.modelValue || __props.placeholder), 9, _hoisted_1$b));
+      }, toDisplayString(__props.modelValue || __props.placeholder), 9, _hoisted_1$c));
     };
   }
 });
 const _style_0$d = "\n.editable-text-display[data-v-511d4fb4] {\n  all: unset;\n  cursor: text;\n  text-align: left;\n  font: inherit;\n  color: inherit;\n  line-height: inherit;\n  padding: 0;\n  border: 1px solid transparent;\n  border-radius: var(--radius-sm);\n  min-width: 0;\n}\n.editable-text-display[data-v-511d4fb4]:not(:disabled):hover {\n  border-color: var(--color-border);\n}\n.editable-text-display[data-v-511d4fb4]:disabled {\n  cursor: default;\n}\n";
-const EditableText = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["styles", [_style_0$d]], ["__scopeId", "data-v-511d4fb4"]]);
+const EditableText = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["styles", [_style_0$d]], ["__scopeId", "data-v-511d4fb4"]]);
+const _hoisted_1$b = {
+  key: 0,
+  class: "popover-list__items"
+};
+const _hoisted_2$8 = {
+  key: 0,
+  class: "popover-list__divider"
+};
+const _hoisted_3$6 = { class: "popover-list__footer" };
+const _sfc_main$h = /* @__PURE__ */ defineComponent({
+  __name: "PopoverList",
+  props: {
+    items: { type: Array },
+    itemKey: { type: Function },
+    isCurrent: { type: Function },
+    align: { default: "start", type: String },
+    side: { default: "bottom", type: String },
+    sideOffset: { default: 4, type: Number },
+    open: { type: Boolean }
+  },
+  emits: ["select", "update:open"],
+  setup(__props, { emit: __emit }) {
+    const props = __props;
+    const emit2 = __emit;
+    const internalOpen = /* @__PURE__ */ ref(false);
+    const resolvedOpen = computed({
+      get: () => {
+        if (props.open !== void 0) {
+          return internalOpen.value;
+        }
+        return props.open;
+      },
+      set: (v2) => {
+        internalOpen.value = v2;
+        emit2("update:open", v2);
+      }
+    });
+    function keyFor(item, index) {
+      return props.itemKey ? props.itemKey(item) : index;
+    }
+    return (_ctx, _cache) => {
+      return openBlock(), createBlock(unref(DropdownMenuRoot_default), {
+        open: resolvedOpen.value,
+        "onUpdate:open": _cache[0] || (_cache[0] = ($event) => resolvedOpen.value = $event)
+      }, {
+        default: withCtx(() => [
+          createVNode(unref(DropdownMenuTrigger_default), { "as-child": "" }, {
+            default: withCtx(() => [
+              renderSlot(_ctx.$slots, "trigger")
+            ]),
+            _: 3
+          }),
+          createVNode(unref(DropdownMenuPortal_default), { disabled: "" }, {
+            default: withCtx(() => [
+              createVNode(unref(DropdownMenuContent_default), {
+                class: "popover-list",
+                "position-strategy": "absolute",
+                side: __props.side,
+                align: __props.align,
+                "side-offset": __props.sideOffset
+              }, {
+                default: withCtx(() => [
+                  __props.items.length > 0 ? (openBlock(), createElementBlock("ul", _hoisted_1$b, [
+                    (openBlock(true), createElementBlock(Fragment$1, null, renderList(__props.items, (item, index) => {
+                      return openBlock(), createBlock(unref(DropdownMenuItem_default), {
+                        key: keyFor(item, index),
+                        as: "li",
+                        class: normalizeClass(["popover-list__item", { "popover-list__item--current": __props.isCurrent?.(item) }]),
+                        onSelect: ($event) => emit2("select", item)
+                      }, {
+                        default: withCtx(() => [
+                          renderSlot(_ctx.$slots, "item", { item })
+                        ]),
+                        _: 2
+                      }, 1032, ["class", "onSelect"]);
+                    }), 128))
+                  ])) : createCommentVNode("", true),
+                  _ctx.$slots.footer ? (openBlock(), createElementBlock(Fragment$1, { key: 1 }, [
+                    __props.items.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_2$8)) : createCommentVNode("", true),
+                    createBaseVNode("div", _hoisted_3$6, [
+                      renderSlot(_ctx.$slots, "footer")
+                    ])
+                  ], 64)) : createCommentVNode("", true)
+                ]),
+                _: 3
+              }, 8, ["side", "align", "side-offset"])
+            ]),
+            _: 3
+          })
+        ]),
+        _: 3
+      }, 8, ["open"]);
+    };
+  }
+});
 const _sfc_main$g = /* @__PURE__ */ defineComponent({
   __name: "SpeakerMenu",
   emits: ["merge"],
@@ -38075,7 +38118,7 @@ const _sfc_main$g = /* @__PURE__ */ defineComponent({
       if (action.id === "merge") emit2("merge");
     }
     return (_ctx, _cache) => {
-      return openBlock(), createBlock(_sfc_main$p, {
+      return openBlock(), createBlock(_sfc_main$h, {
         items: items.value,
         "item-key": (a2) => a2.id,
         align: "end",
@@ -41748,7 +41791,7 @@ const _sfc_main$3 = /* @__PURE__ */ defineComponent({
           "is-mobile": unref(isMobile),
           onToggleSidebar: _cache[0] || (_cache[0] = ($event) => isSidebarOpen.value = !isSidebarOpen.value)
         }, null, 8, ["title", "date", "duration", "speaker-count", "is-mobile"])) : createCommentVNode("", true),
-        createVNode(_sfc_main$x, {
+        createVNode(_sfc_main$w, {
           modelValue: activeTab.value,
           "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => activeTab.value = $event)
         }, null, 8, ["modelValue"]),
@@ -42212,7 +42255,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
       isCreatingNew.value = false;
     }
     return (_ctx, _cache) => {
-      return openBlock(), createBlock(_sfc_main$p, {
+      return openBlock(), createBlock(_sfc_main$h, {
         open: isOpen.value,
         "onUpdate:open": _cache[1] || (_cache[1] = ($event) => isOpen.value = $event),
         items: speakers.value,

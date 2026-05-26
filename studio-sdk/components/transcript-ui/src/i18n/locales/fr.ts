@@ -77,6 +77,8 @@ const fr = {
   "llmService.retry": "Réessayer",
   "llmService.version": "Version",
   "llmService.save": "Enregistrer",
+  "llmService.statusUpdated": "À jour",
+  "llmService.statusOutdated": "Transcription modifiée",
   "mdToolbar.label": "Mise en forme",
   "mdToolbar.h1": "Titre 1",
   "mdToolbar.h2": "Titre 2",
