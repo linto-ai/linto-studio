@@ -179,7 +179,13 @@ export default {
       selectedMediaIds: [],
     }
   },
-  mounted() {},
+  mounted() {
+    // Lazily load M2M-augmented users so the owner of a media created by
+    // an API key (e.g. an automated Meet transcription) can be resolved
+    // with its real name and avatar instead of falling back to
+    // "Private user" + the default picture.
+    this.$store.dispatch("organizations/loadCurrentOrganizationAllUsers")
+  },
   beforeDestroy() {
     this.cleanupObserver()
   },

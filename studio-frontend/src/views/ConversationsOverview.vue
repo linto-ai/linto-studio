@@ -110,7 +110,12 @@ export default {
       loadingAudio: false,
     }
   },
-  mounted() {},
+  mounted() {
+    // Make sure the M2M-augmented user list is available so the owner of a
+    // conversation created by an API key renders with its real name and
+    // avatar.
+    this.$store.dispatch("organizations/loadCurrentOrganizationAllUsers")
+  },
   watch: {
     dataLoaded(data) {
       if (data) {

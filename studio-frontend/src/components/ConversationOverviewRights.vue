@@ -68,9 +68,15 @@ export default {
   computed: {
     ...mapGetters("organizations", {
       currentOrganizationUsers: "getCurrentOrganizationUsers",
+      currentOrganizationAllUsers: "getCurrentOrganizationAllUsers",
     }),
     convOwner() {
-      const userList = this.currentOrganizationUsers
+      // Look up the owner in the M2M-augmented list first so an API key
+      // (e.g. an automated transcription service) shows its real name and
+      // avatar. Fall back to the members list before it is loaded.
+      const augmented = this.currentOrganizationAllUsers
+      const fallback = this.currentOrganizationUsers
+      const userList = augmented.length > 0 ? augmented : fallback
       const owner = userList.find((u) => u._id == this.conversation.owner)
       if (owner) {
         return {
