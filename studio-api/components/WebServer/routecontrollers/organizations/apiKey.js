@@ -9,7 +9,7 @@ const { OrganizationUnsupportedMediaType } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
 
-const { UserError } = require(
+const { UserError, UserUnsupportedMediaType } = require(
   `${process.cwd()}/components/WebServer/error/exception/users`,
 )
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
@@ -23,6 +23,30 @@ const TokenHandler = require(
   `${process.cwd()}/components/WebServer/controllers/apikey/token`,
 )
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
+
+const { storeFile, defaultPicture, deleteFile, getStorageFolder } = require(
+  `${process.cwd()}/components/WebServer/controllers/files/store`,
+)
+
+const ACCEPTED_PICTURE_MIME_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "image/bmp",
+  "image/webp",
+]
+
+// Remove a user's custom picture from disk so we do not leak orphan files.
+// The default picture is shared with every user without a custom one — it
+// must never be deleted.
+function deletePictureIfCustom(img) {
+  if (!img || img === defaultPicture()) return
+  try {
+    deleteFile(`${getStorageFolder()}/${img}`)
+  } catch (err) {
+    debug("Failed to remove API key picture %s: %s", img, err.message)
+  }
+}
 
 async function checkTokenBelongsToOrganization(params) {
   try {
@@ -133,7 +157,13 @@ async function getApiKey(req, res, next) {
 
 async function deleteApiKey(req, res, next) {
   try {
-    const { organization } = await checkTokenBelongsToOrganization(req.params)
+    const { organization, user } = await checkTokenBelongsToOrganization(
+      req.params,
+    )
+
+    // Clean up the custom picture file (if any) before deleting the user
+    // so we do not leak orphan files on disk.
+    deletePictureIfCustom(user.img)
 
     organization.users = organization.users.filter(
       (oUser) => oUser.userId !== req.params.tokenId,
@@ -151,10 +181,49 @@ async function deleteApiKey(req, res, next) {
   }
 }
 
+async function updateApiKeyPicture(req, res, next) {
+  try {
+    if (
+      !req.files ||
+      Object.keys(req.files).length === 0 ||
+      !req.files.file
+    ) {
+      throw new UserUnsupportedMediaType("Image file is required")
+    }
+
+    const file = req.files.file
+    if (!ACCEPTED_PICTURE_MIME_TYPES.includes(file.mimetype)) {
+      throw new UserUnsupportedMediaType(
+        `Invalid image type ${file.mimetype}. Accepted: ${ACCEPTED_PICTURE_MIME_TYPES.join(", ")}`,
+      )
+    }
+
+    const { user } = await checkTokenBelongsToOrganization(req.params)
+
+    const imagePath = await storeFile(file, "picture")
+
+    deletePictureIfCustom(user.img)
+
+    const result = await model.users.update({
+      _id: req.params.tokenId,
+      img: imagePath,
+    })
+    if (result.matchedCount === 0) throw new UserError("API key not updated")
+
+    res.status(200).send({
+      message: "API key picture updated",
+      img: imagePath,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 module.exports = {
   createApiKey,
   listApiKeyFromOrga,
   refreshApiKey,
   getApiKey,
   deleteApiKey,
+  updateApiKeyPicture,
 }

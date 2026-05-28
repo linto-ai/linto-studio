@@ -79,7 +79,14 @@
     "token_expiring_soon": "Expiring soon",
     "modal_create": {
       "title": "Create a new key",
-      "expiration_label": "Validity duration"
+      "expiration_label": "Validity duration",
+      "avatar_label": "Avatar (optional)",
+      "avatar_choose": "Choose an image…",
+      "avatar_change": "Change image",
+      "avatar_remove": "Remove",
+      "avatar_invalid_type": "Invalid file type (only jpg, png, gif, bmp, webp)",
+      "avatar_too_large": "File too large (5 MB maximum)",
+      "avatar_upload_failed": "The API key was created but the avatar could not be uploaded"
     },
     "modal_delete": {
       "title": "Delete API token {name}",
