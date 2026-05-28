@@ -4,9 +4,16 @@ import { getEnv } from "@/tools/getEnv"
 
 const BASE_API = getEnv("VUE_APP_CONVO_API")
 
-export async function apiGetOrganizationById(organizationId, notif) {
+export async function apiGetOrganizationById(
+  organizationId,
+  notif,
+  { includeM2m = false } = {},
+) {
+  const url = includeM2m
+    ? `${BASE_API}/organizations/${organizationId}?includeM2m=true`
+    : `${BASE_API}/organizations/${organizationId}`
   const getOrganization = await sendRequest(
-    `${BASE_API}/organizations/${organizationId}`,
+    url,
     { method: "get" },
     null,
     notif,

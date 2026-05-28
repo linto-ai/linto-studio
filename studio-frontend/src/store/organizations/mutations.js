@@ -18,6 +18,9 @@ const mutations = {
   setCurrentOrganization(state, organization) {
     state.currentOrganization = organization
   },
+  setCurrentOrganizationAllUsers(state, users) {
+    state.currentOrganizationAllUsers = Array.isArray(users) ? users : []
+  },
   deleteOrganization(state, id) {
     delete state.organizations[id]
     state.rolesInOrganizations.delete(id)

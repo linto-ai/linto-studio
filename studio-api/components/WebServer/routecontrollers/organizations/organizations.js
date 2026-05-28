@@ -52,9 +52,18 @@ async function getOrganization(req, res, next) {
 
     let organization = lorganization[0]
 
-    organization.users = organization.users.filter(
-      (u) => u.type !== USER_TYPE.M2M,
-    )
+    // M2M users (API keys) are excluded by default to preserve the
+    // legacy contract: most UIs (members listing, permission pickers)
+    // only want human members. Opt-in via ?includeM2m=true when the
+    // caller needs to resolve a conversation/media owner that may be
+    // an API key.
+    const includeM2m =
+      req.query.includeM2m === "true" || req.query.includeM2m === true
+    if (!includeM2m) {
+      organization.users = organization.users.filter(
+        (u) => u.type !== USER_TYPE.M2M,
+      )
+    }
 
     let orgaUser = []
 
