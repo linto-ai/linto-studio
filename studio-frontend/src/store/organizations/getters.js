@@ -42,6 +42,13 @@ const getters = {
   getCurrentOrganizationUsers(state) {
     return state.currentOrganization?.users ?? []
   },
+  // Members + M2M (API keys). Populated lazily by
+  // `loadCurrentOrganizationAllUsers`. Use this getter for owner lookups
+  // (a media owner can be an API key). Do NOT use it for member listings
+  // or invitation pickers — `getCurrentOrganizationUsers` excludes M2M.
+  getCurrentOrganizationAllUsers(state) {
+    return state.currentOrganizationAllUsers ?? []
+  },
   getUserRoleInOrganization: (state, getters, rootState, rootGetters) => {
     let organization = getters.getCurrentOrganization
     const userId = rootGetters["user/getUserId"]

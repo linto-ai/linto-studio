@@ -60,12 +60,41 @@ const actions = {
 
     commit("setCurrentOrganization", organization)
     commit("setCurrentOrganizationScope", organizationId)
+    // Reset the M2M-augmented cache: it belongs to the previous org.
+    commit("setCurrentOrganizationAllUsers", [])
 
     // Clear selected tags when switching organizations
     await dispatch("tags/clearExploreSelectedTags", null, { root: true })
   },
   async setCurrentFilterStatus({ commit }, status) {
     commit("setCurrentFilterStatus", status)
+  },
+  /**
+   * Load the current organization with M2M users (API keys) included in
+   * the users array. Stored separately from currentOrganization to avoid
+   * leaking API keys into UIs that only want human members.
+   *
+   * Idempotent: subsequent calls reuse the cached value unless forceRefresh.
+   */
+  async loadCurrentOrganizationAllUsers(
+    { commit, state },
+    { forceRefresh = false } = {},
+  ) {
+    const organizationId = state.currentOrganizationScope
+    if (!organizationId) return []
+    if (
+      !forceRefresh &&
+      state.currentOrganizationAllUsers &&
+      state.currentOrganizationAllUsers.length > 0
+    ) {
+      return state.currentOrganizationAllUsers
+    }
+    const organization = await apiGetOrganizationById(organizationId, null, {
+      includeM2m: true,
+    })
+    const users = organization?.users ?? []
+    commit("setCurrentOrganizationAllUsers", users)
+    return users
   },
 }
 
