@@ -6,6 +6,9 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const orgaUtility = require(
   `${process.cwd()}/components/WebServer/controllers/organization/utility`,
 )
+const { denyBackofficeAccess } = require(
+  `${process.cwd()}/components/WebServer/middlewares/access/organization`,
+)
 
 const RIGHT = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
@@ -15,6 +18,7 @@ const { OrganizationError, OrganizationForbidden } = require(
 )
 async function leaveSelfFromOrganization(req, res, next) {
   try {
+    denyBackofficeAccess(req)
     const userId = req.payload.data.userId
 
     let organization = await model.organizations.getByIdAndUser(
@@ -22,7 +26,7 @@ async function leaveSelfFromOrganization(req, res, next) {
       userId,
     )
     if (organization.length === 0)
-      throw new OrganizationError("You are not part of " + organization.name)
+      throw new OrganizationError("You are not part of this organization")
 
     const data = orgaUtility.countAdmin(organization[0], userId)
     if (data.adminCount === 1 && data.isAdmin)
@@ -62,17 +66,14 @@ async function listConversationFromOrganization(req, res, next) {
       await model.organizations.getByIdAndUser(
         req.params.organizationId,
         userId,
+        { bypass: req.backofficeAccess },
       )
     )[0]
     if (!organization)
-      throw new OrganizationError("You are not part of " + organization.name)
+      throw new OrganizationError("You are not part of this organization")
 
-    let userRole = ROLES.MEMBER
-    organization.users.map((oUser) => {
-      if (oUser.userId === userId) {
-        userRole = oUser.role
-        return
-      }
+    const userRole = ROLES.getUserRoleInOrg(organization, userId, {
+      backofficeAccess: req.backofficeAccess,
     })
 
     if (req.query.filter === "notags") {
