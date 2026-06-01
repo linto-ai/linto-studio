@@ -11363,7 +11363,7 @@ function Km(t = {}) {
   return {
     name: "subtitle",
     install(e) {
-      const n = /* @__PURE__ */ q(t.fontSize ?? 40), i = /* @__PURE__ */ q(!0), s = /* @__PURE__ */ q(!1);
+      const n = /* @__PURE__ */ q(t.fontSize ?? 40), i = /* @__PURE__ */ q(t.isVisible ?? !1), s = /* @__PURE__ */ q(!1);
       let r;
       const o = [];
       if (t.watermark) {
