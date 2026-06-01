@@ -953,7 +953,8 @@
     "matching_users": {
       "title": "Ajout automatique d'utilisateurs",
       "matching_mail": {
-        "label": "Adresse e-mail d'appartenance à l'organisation"
+        "label": "Adresse e-mail d'appartenance à l'organisation",
+        "required_error": "Veuillez renseigner une adresse e-mail avant d'inviter les utilisateurs"
       },
       "update_button": "Mettre à jour les critères d'appartenance",
       "apply_button": "Inviter les utilisateurs correspondant aux critères"
