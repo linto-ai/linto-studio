@@ -5,6 +5,7 @@ import type { DownloadFormat } from "./molecules/DownloadMenu.vue"
 import { useI18n } from "../i18n"
 import { useCore } from "../core"
 import * as utils from "../utils"
+import DownloadMenu from "./molecules/DownloadMenu.vue"
 
 const core = useCore()
 const { locale } = useI18n()
@@ -55,30 +56,34 @@ function onExport(format?: string): void {
 <template>
   <section class="verbatim-panel">
     <DocumentArticle :formats="formats" @export="onExport">
-      <header class="verbatim-panel__header">
-        <h1 class="verbatim-panel__doc-title">{{ title }}</h1>
-      </header>
+      <template #toolbar-right>
+        <DownloadMenu :formats="formats" @select="onExport" />
+      </template>
 
-      <ul class="verbatim-panel__turns">
-        <li v-for="turn in turns" :key="turn.id" class="verbatim-panel__turn">
-          <header class="verbatim-panel__turn-header">
-            <strong class="verbatim-panel__speaker-name">
-              {{ speakerName(turn.speakerId) }}
-            </strong>
-            <span
-              v-if="turn.startTime != null"
-              class="verbatim-panel__meta">
-              <span class="verbatim-panel__sep" aria-hidden="true">·</span>
-              <time>{{ utils.formatTime(turn.startTime) }}</time>
-            </span>
-            <span v-if="turn.language" class="verbatim-panel__meta">
-              <span class="verbatim-panel__sep" aria-hidden="true">·</span>
-              {{ languageName(turn.language) }}
-            </span>
-          </header>
-          <p class="verbatim-panel__text">{{ turnText(turn) }}</p>
-        </li>
-      </ul>
+      <article class="verbatim-panel__content">
+        <header class="verbatim-panel__header">
+          <h1 class="verbatim-panel__doc-title">{{ title }}</h1>
+        </header>
+
+        <ul class="verbatim-panel__turns">
+          <li v-for="turn in turns" :key="turn.id" class="verbatim-panel__turn">
+            <header class="verbatim-panel__turn-header">
+              <strong class="verbatim-panel__speaker-name">
+                {{ speakerName(turn.speakerId) }}
+              </strong>
+              <span v-if="turn.startTime != null" class="verbatim-panel__meta">
+                <span class="verbatim-panel__sep" aria-hidden="true">·</span>
+                <time>{{ utils.formatTime(turn.startTime) }}</time>
+              </span>
+              <span v-if="turn.language" class="verbatim-panel__meta">
+                <span class="verbatim-panel__sep" aria-hidden="true">·</span>
+                {{ languageName(turn.language) }}
+              </span>
+            </header>
+            <p class="verbatim-panel__text">{{ turnText(turn) }}</p>
+          </li>
+        </ul>
+      </article>
     </DocumentArticle>
   </section>
 </template>
@@ -90,6 +95,10 @@ function onExport(format?: string): void {
   min-width: 0;
   min-height: 0;
   overflow-y: auto;
+}
+
+.verbatim-panel__content {
+  padding: var(--spacing-md) var(--spacing-lg);
 }
 
 .verbatim-panel__header {

@@ -70,7 +70,7 @@ declare const fr: {
     readonly "llmService.generated": "Généré par IA";
     readonly "llmService.processing": "Génération en cours…";
     readonly "llmService.queued": "En file d'attente…";
-    readonly "llmService.empty": "Aucun contenu — cliquez sur Régénérer pour démarrer.";
+    readonly "llmService.empty": "Aucun contenu";
     readonly "llmService.error": "Erreur de génération";
     readonly "llmService.errorTemporary": "Nous n'avons pas pu terminer la tâche en raison d'un problème de connexion temporaire avec le service d'intelligence artificielle. Veuillez réessayer dans un moment.";
     readonly "llmService.generate": "Générer le document";

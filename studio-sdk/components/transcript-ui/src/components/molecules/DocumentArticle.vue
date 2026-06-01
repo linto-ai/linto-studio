@@ -34,7 +34,14 @@ const progressValue = computed(() => {
 
 <template>
   <article class="document-article" :data-status="props.status">
-    <div class="document-article__toolbar" role="toolbar">
+    <div
+      class="document-article__toolbar"
+      role="toolbar"
+      v-if="
+        $slots['toolbar-left'] ||
+        $slots['toolbar-center'] ||
+        $slots['toolbar-right']
+      ">
       <div class="document-article__toolbar-left">
         <slot name="toolbar-left" />
       </div>
@@ -68,10 +75,7 @@ const progressValue = computed(() => {
         class="document-article__center document-article__center--error"
         role="alert">
         <p class="document-article__error-text">{{ errorText }}</p>
-        <Button
-          variant="primary"
-          icon="refresh-cw"
-          @click="emit('retry')">
+        <Button variant="primary" icon="refresh-cw" @click="emit('retry')">
           {{ t("llmService.retry") }}
         </Button>
       </div>

@@ -138,6 +138,7 @@ function onTranslationChange(translationId: string) {
         :selected-channel-id="core.activeChannelId.value"
         :translations="translations"
         :selected-translation-id="activeTranslationId"
+        :show-speakers="showTranscription"
         @update:selected-channel-id="onChannelChange"
         @update:selected-translation-id="onTranslationChange" />
 
@@ -148,6 +149,7 @@ function onTranslationChange(translationId: string) {
           :selected-channel-id="core.activeChannelId.value"
           :translations="translations"
           :selected-translation-id="activeTranslationId"
+          :show-speakers="showTranscription"
           @update:selected-channel-id="onChannelChange"
           @update:selected-translation-id="onTranslationChange" />
       </SidebarDrawer>

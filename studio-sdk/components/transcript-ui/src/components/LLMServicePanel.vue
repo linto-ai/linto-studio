@@ -33,6 +33,13 @@ const activeVersionNumber = computed(
   () => props.service.activeVersionNumber.value,
 )
 
+// Empty = no content has been generated yet AND no saved versions exist.
+// We surface a CTA in place of an empty editor.
+const isEmpty = computed<boolean>(() => {
+  if (articleStatus.value !== "done") return false
+  return !content.value && versions.value.length === 0
+})
+
 // "À jour" = la version courante est postérieure à la dernière modif
 // de la transcription. Si l'une des deux dates manque, on considère "à jour"
 // par défaut (pas de signal négatif à donner).
@@ -88,7 +95,7 @@ function onSave(): void {
       <template #toolbar-left>
         <Button
           variant="primary"
-          icon="check"
+          icon="save"
           :disabled="!dirty || busy"
           :aria-label="t('llmService.save')"
           :title="t('llmService.save')"
@@ -132,7 +139,17 @@ function onSave(): void {
         </Button>
       </template>
 
-      <MarkdownEditor v-model="draft" :disabled="busy" />
+      <div v-if="isEmpty" class="llm-service-panel__empty" role="status">
+        <p class="llm-service-panel__empty-text">{{ t("llmService.empty") }}</p>
+        <Button
+          variant="primary"
+          icon="sparkles"
+          :disabled="busy"
+          @click="onRegenerate">
+          {{ t("llmService.generate") }}
+        </Button>
+      </div>
+      <MarkdownEditor v-else v-model="draft" :disabled="busy" />
     </DocumentArticle>
   </section>
 </template>
@@ -160,6 +177,23 @@ function onSave(): void {
 
 .llm-service-panel__status--warn {
   color: var(--color-warning, #ed6c02);
+}
+
+.llm-service-panel__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-xl) var(--spacing-md);
+  text-align: center;
+}
+
+.llm-service-panel__empty-text {
+  margin: 0;
+  max-width: 400px;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
 }
 
 @media (max-width: 767px) {

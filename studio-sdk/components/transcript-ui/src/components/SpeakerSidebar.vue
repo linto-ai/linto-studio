@@ -14,13 +14,17 @@ import { renameSpeaker } from '../plugins/transcriptionEditor/utils/speakerActio
 import type { Speaker } from '../types/editor'
 import type { LLMServiceGenerationStatus } from '../core'
 
-defineProps<{
-  speakers: Speaker[]
-  channels: { id: string; name: string }[]
-  selectedChannelId: string
-  translations: { id: string; languages: string[]; isSource: boolean }[]
-  selectedTranslationId: string
-}>()
+withDefaults(
+  defineProps<{
+    speakers: Speaker[]
+    channels: { id: string; name: string }[]
+    selectedChannelId: string
+    translations: { id: string; languages: string[]; isSource: boolean }[]
+    selectedTranslationId: string
+    showSpeakers?: boolean
+  }>(),
+  { showSpeakers: true },
+)
 
 defineEmits<{
   'update:selectedChannelId': [id: string]
@@ -232,7 +236,7 @@ function onSelectVersion(versionNumber: number): void {
         </li>
       </ul>
     </section>
-    <section v-if="speakers.length" class="sidebar-section">
+    <section v-if="showSpeakers && speakers.length" class="sidebar-section">
       <h2 class="sidebar-title">{{ t('sidebar.speakers') }}</h2>
       <ul class="speaker-list">
       <li
