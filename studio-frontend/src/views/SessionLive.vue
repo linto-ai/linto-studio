@@ -97,6 +97,7 @@
         :session="session"
         :currentOrganizationScope="currentOrganizationScope"
         :websocketInstance="websocketInstance"
+        :displaySubtitles="displaySubtitles"
         :isFromPublicLink="isFromPublicLink" />
 
       <Modal

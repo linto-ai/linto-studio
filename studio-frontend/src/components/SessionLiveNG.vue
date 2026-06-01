@@ -33,6 +33,7 @@ export default {
     websocketInstance: { type: Object, required: true },
     isFromPublicLink: { type: Boolean, default: false },
     currentOrganizationScope: { type: String, required: false, default: null },
+    displaySubtitles: { type: Boolean, default: false },
   },
   data() {
     return {
@@ -138,6 +139,7 @@ export default {
 
       editor.use(
         createSubtitlePlugin({
+          isVisible: this.displaySubtitles,
           watermark: {
             display: this.displayWatermark,
             pinned: this.watermarkPinned,
