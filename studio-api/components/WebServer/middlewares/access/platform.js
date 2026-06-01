@@ -76,9 +76,31 @@ async function impersonateOwner(req) {
 
 async function setOrganizationOwnerAsUser(req, organizationId) {
   const organization = await model.organizations.getById(organizationId)
-  if (organization.length > 0) {
-    impersonate(req, organization[0].owner)
+  if (organization.length === 0) return
+
+  const validUserId = await resolveImpersonationTarget(organization[0])
+  if (validUserId) {
+    impersonate(req, validUserId)
+  } else {
+    req.bypassOrgMembership = true
+    req.userRole = ORGANIZATION_ROLE.ADMIN
   }
+}
+
+async function resolveImpersonationTarget(organization) {
+  if (organization.owner) {
+    const owner = await model.users.getById(organization.owner)
+    if (owner.length > 0) return organization.owner
+  }
+
+  const orgUsers = organization.users || []
+  const admins = orgUsers.filter((u) => u.role === ORGANIZATION_ROLE.ADMIN)
+  for (const candidate of admins) {
+    const user = await model.users.getById(candidate.userId)
+    if (user.length > 0) return candidate.userId
+  }
+
+  return null
 }
 
 function impersonate(req, userId) {

@@ -43,10 +43,12 @@ async function createOrganization(req, res, next) {
 
 async function getOrganization(req, res, next) {
   try {
-    const lorganization = await model.organizations.getByIdAndUser(
-      req.params.organizationId,
-      req.payload.data.userId,
-    )
+    const lorganization = req.bypassOrgMembership
+      ? await model.organizations.getById(req.params.organizationId)
+      : await model.organizations.getByIdAndUser(
+          req.params.organizationId,
+          req.payload.data.userId,
+        )
     if (lorganization.length !== 1) throw new OrganizationError()
 
     let organization = lorganization[0]
