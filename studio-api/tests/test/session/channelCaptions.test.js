@@ -1,5 +1,5 @@
 const cp = structuredClone
-const { processChannelCaptions } = require(
+const { processChannelCaptions, dedupeClosedCaptionsBySegmentId } = require(
   `${process.cwd()}/components/WebServer/controllers/session/channelCaptions`,
 )
 const TYPES = require(`${process.cwd()}/lib/dao/conversation/types`)
@@ -174,7 +174,7 @@ describe("processChannelCaptions", () => {
   })
 
   describe("diarization flag", () => {
-    it("filters out segments without locutor when main=true and diarization=true", () => {
+    it("keeps segments without locutor under an 'Unknown speaker' when main=true and diarization=true", () => {
       const channel = {
         diarization: true,
         closedCaptions: [
@@ -199,8 +199,65 @@ describe("processChannelCaptions", () => {
       const caption = makeCaption()
       processChannelCaptions(channel, caption, true)
 
-      expect(caption.text).toHaveLength(1)
-      expect(caption.text[0].raw_segment).toEqual("with locutor")
+      // No silent data loss anymore: both segments survive, the locutor-less
+      // one is attached to the default "Unknown speaker".
+      expect(caption.text).toHaveLength(2)
+      const texts = caption.text.map((t) => t.raw_segment).sort()
+      expect(texts).toEqual(["with locutor", "without locutor"])
+
+      const unknown = caption.speakers.find(
+        (s) => s.speaker_name === "Unknown speaker",
+      )
+      const alice = caption.speakers.find((s) => s.speaker_name === "Alice")
+      expect(unknown).toBeDefined()
+      expect(alice).toBeDefined()
+
+      const withoutLocutorTurn = caption.text.find(
+        (t) => t.raw_segment === "without locutor",
+      )
+      expect(withoutLocutorTurn.speaker_id).toEqual(unknown.speaker_id)
+      const withLocutorTurn = caption.text.find(
+        (t) => t.raw_segment === "with locutor",
+      )
+      expect(withLocutorTurn.speaker_id).toEqual(alice.speaker_id)
+    })
+
+    it("never empties the canonical when ALL segments lack a locutor (diarization=true regression)", () => {
+      // Regression for: "Saved transcription is empty when speaker detection
+      // AND translation are both enabled". Previously every locutor-less
+      // segment was dropped, leaving the canonical empty.
+      const channel = {
+        diarization: true,
+        closedCaptions: [
+          {
+            segmentId: 1,
+            start: 0,
+            end: 1,
+            text: "no locutor 1",
+            lang: "fr-FR",
+            locutor: null,
+          },
+          {
+            segmentId: 2,
+            start: 1,
+            end: 2,
+            text: "no locutor 2",
+            lang: "fr-FR",
+            locutor: null,
+          },
+        ],
+      }
+      const caption = makeCaption()
+      processChannelCaptions(channel, caption, true)
+
+      expect(caption.text).toHaveLength(2)
+      expect(caption.speakers).toHaveLength(1)
+      expect(caption.speakers[0].speaker_name).toEqual("Unknown speaker")
+      const speakerId = caption.speakers[0].speaker_id
+      for (const turn of caption.text) {
+        expect(turn.speaker_id).toEqual(speakerId)
+        expect(turn.raw_segment).not.toEqual("")
+      }
     })
 
     it("keeps segments without locutor when diarization=false", () => {
@@ -583,6 +640,229 @@ describe("processChannelCaptions", () => {
 
       expect(caption.text).toEqual([])
       expect(caption.speakers).toEqual([])
+    })
+  })
+
+  describe("dedupeClosedCaptionsBySegmentId", () => {
+    it("collapses two lines sharing a segmentId, preferring the one with a locutor", () => {
+      const closedCaptions = [
+        {
+          segmentId: 1,
+          start: 0,
+          end: 1,
+          text: "hello",
+          lang: "fr-FR",
+          locutor: "Alice",
+        },
+        {
+          segmentId: 1,
+          start: 0,
+          end: 1,
+          text: "",
+          lang: "fr-FR",
+          locutor: null,
+          translations: { de: "hallo" },
+        },
+      ]
+      const result = dedupeClosedCaptionsBySegmentId(closedCaptions)
+      expect(result).toHaveLength(1)
+      expect(result[0].locutor).toEqual("Alice")
+      expect(result[0].text).toEqual("hello")
+      expect(result[0].translations).toEqual({ de: "hallo" })
+    })
+
+    it("unions translations regardless of which line carries the locutor", () => {
+      const closedCaptions = [
+        {
+          segmentId: 7,
+          start: 0,
+          end: 1,
+          text: "x",
+          locutor: null,
+          translations: { de: "de7", en: "en7" },
+        },
+        {
+          segmentId: 7,
+          start: 0,
+          end: 1,
+          text: "x",
+          locutor: "Bob",
+          translations: { es: "es7" },
+        },
+      ]
+      const result = dedupeClosedCaptionsBySegmentId(closedCaptions)
+      expect(result).toHaveLength(1)
+      expect(result[0].locutor).toEqual("Bob")
+      expect(result[0].translations).toEqual({
+        de: "de7",
+        en: "en7",
+        es: "es7",
+      })
+    })
+
+    it("leaves lines without a segmentId untouched and unmerged (bot markers)", () => {
+      const closedCaptions = [
+        { segmentId: null, text: "", locutor: "bot", aend: "x" },
+        { segmentId: null, text: "", locutor: "bot", aend: "y" },
+        {
+          segmentId: 1,
+          start: 0,
+          end: 1,
+          text: "real",
+          locutor: "Alice",
+        },
+      ]
+      const result = dedupeClosedCaptionsBySegmentId(closedCaptions)
+      expect(result).toHaveLength(3)
+      expect(result.filter((c) => c.locutor === "bot")).toHaveLength(2)
+    })
+
+    it("does not mutate the input array or its objects", () => {
+      const closedCaptions = [
+        {
+          segmentId: 1,
+          start: 0,
+          end: 1,
+          text: "a",
+          locutor: "Alice",
+          translations: { de: "da" },
+        },
+        {
+          segmentId: 1,
+          start: 0,
+          end: 1,
+          text: "",
+          locutor: null,
+          translations: { en: "ea" },
+        },
+      ]
+      const before = cp(closedCaptions)
+      dedupeClosedCaptionsBySegmentId(closedCaptions)
+      expect(closedCaptions).toEqual(before)
+    })
+
+    it("is a no-op for mono-recognizer input (one line per segmentId)", () => {
+      const closedCaptions = [
+        { segmentId: 1, start: 0, end: 1, text: "a", locutor: null },
+        { segmentId: 2, start: 1, end: 2, text: "b", locutor: null },
+      ]
+      const result = dedupeClosedCaptionsBySegmentId(closedCaptions)
+      expect(result).toHaveLength(2)
+      expect(result.map((c) => c.text)).toEqual(["a", "b"])
+    })
+  })
+
+  describe("dual-recognizer (speaker detection + translation) end-to-end", () => {
+    // Mimic the full preprocessing pipeline of initCaptionsForConversation:
+    // dedupe by segmentId, then merge translatedCaptions, then build the
+    // canonical (main=true) and a translation pass (main=false).
+    function buildDualRecognizerChannel() {
+      return {
+        diarization: true,
+        translations: [{ target: "de" }],
+        // Two lines per segment: one with locutor+text, one with translations.
+        closedCaptions: [
+          {
+            segmentId: 1,
+            start: 0,
+            end: 2,
+            text: "bonjour",
+            lang: "fr-FR",
+            locutor: "Alice",
+          },
+          {
+            segmentId: 1,
+            start: 0,
+            end: 2,
+            text: "bonjour",
+            lang: "fr-FR",
+            locutor: null,
+          },
+          {
+            segmentId: 2,
+            start: 2,
+            end: 4,
+            text: "ca va",
+            lang: "fr-FR",
+            locutor: "Bob",
+          },
+          {
+            segmentId: 2,
+            start: 2,
+            end: 4,
+            text: "ca va",
+            lang: "fr-FR",
+            locutor: null,
+          },
+        ],
+        translatedCaptions: {
+          de: [
+            { segmentId: 1, targetLang: "de", text: "hallo" },
+            { segmentId: 2, targetLang: "de", text: "wie gehts" },
+          ],
+        },
+      }
+    }
+
+    function preprocess(channel) {
+      channel.closedCaptions = dedupeClosedCaptionsBySegmentId(
+        channel.closedCaptions,
+      )
+      applyTranslationsToSegments(channel)
+    }
+
+    it("produces one non-empty turn per segment attached to the right locutor", () => {
+      const channel = buildDualRecognizerChannel()
+      preprocess(channel)
+
+      const canonical = makeCaption({ mode: TYPES.CHILD })
+      processChannelCaptions(channel, canonical, true)
+
+      expect(canonical.text).toHaveLength(2)
+      const names = canonical.speakers.map((s) => s.speaker_name).sort()
+      expect(names).toEqual(["Alice", "Bob"])
+
+      const aliceId = canonical.speakers.find(
+        (s) => s.speaker_name === "Alice",
+      ).speaker_id
+      const bobId = canonical.speakers.find(
+        (s) => s.speaker_name === "Bob",
+      ).speaker_id
+
+      const t1 = canonical.text.find((t) => t.raw_segment === "bonjour")
+      const t2 = canonical.text.find((t) => t.raw_segment === "ca va")
+      expect(t1.speaker_id).toEqual(aliceId)
+      expect(t2.speaker_id).toEqual(bobId)
+      for (const turn of canonical.text) {
+        expect(turn.raw_segment).not.toEqual("")
+      }
+    })
+
+    it("merges translations deterministically and emits a translated pass", () => {
+      const channel = buildDualRecognizerChannel()
+      preprocess(channel)
+
+      const tlCaption = makeCaption({ mode: TYPES.TRANSLATION, locale: "de" })
+      processChannelCaptions(channel, tlCaption, false)
+
+      expect(tlCaption.text).toHaveLength(2)
+      const texts = tlCaption.text.map((t) => t.raw_segment).sort()
+      expect(texts).toEqual(["hallo", "wie gehts"])
+      expect(tlCaption.speakers).toHaveLength(1)
+      expect(tlCaption.speakers[0].speaker_name).toEqual(
+        "Automatic Translation",
+      )
+    })
+
+    it("does not produce duplicate turns from the duplicated input lines", () => {
+      const channel = buildDualRecognizerChannel()
+      // 4 input lines (2 per segment) collapse to 2 segments.
+      preprocess(channel)
+      expect(channel.closedCaptions).toHaveLength(2)
+
+      const canonical = makeCaption({ mode: TYPES.CHILD })
+      processChannelCaptions(channel, canonical, true)
+      expect(canonical.text).toHaveLength(2)
     })
   })
 

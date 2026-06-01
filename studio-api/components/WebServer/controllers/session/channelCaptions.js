@@ -30,6 +30,70 @@ function ensureSpeaker(caption, channel_caption) {
   return existingSpeaker.speaker_id
 }
 
+// Dual-recognizer sessions (e.g. speaker detection + translation) can emit
+// two closedCaptions lines for the same segmentId: one carrying the locutor
+// and text, another carrying the translations but no locutor. Collapse those
+// into a single line so the downstream translation merge (find by segmentId)
+// is deterministic and processChannelCaptions never produces duplicate turns.
+// Lines without a segmentId (e.g. bot markers) are left untouched.
+function dedupeClosedCaptionsBySegmentId(closedCaptions = []) {
+  const bySegmentId = new Map()
+  const result = []
+
+  for (const cc of closedCaptions) {
+    if (cc.segmentId === undefined || cc.segmentId === null) {
+      // No segmentId (bot markers, etc.) — keep as-is, never merge.
+      result.push(cc)
+      continue
+    }
+
+    const existing = bySegmentId.get(cc.segmentId)
+    if (!existing) {
+      // First line for this segmentId: clone so we never mutate the input.
+      const clone = { ...cc }
+      if (clone.translations && typeof clone.translations === "object")
+        clone.translations = { ...clone.translations }
+      bySegmentId.set(cc.segmentId, clone)
+      result.push(clone)
+      continue
+    }
+
+    // Merge a duplicate line into the already-kept one.
+    // Prefer a non-empty locutor (and its text/timing) over a missing one.
+    if (!existing.locutor && cc.locutor) {
+      const merged = { ...cc }
+      // Preserve any translations already collected on the existing line.
+      const mergedTranslations = {
+        ...(existing.translations && typeof existing.translations === "object"
+          ? existing.translations
+          : {}),
+        ...(cc.translations && typeof cc.translations === "object"
+          ? cc.translations
+          : {}),
+      }
+      if (Object.keys(mergedTranslations).length > 0)
+        merged.translations = mergedTranslations
+      // Replace in place inside the result array.
+      const idx = result.indexOf(existing)
+      if (idx !== -1) result[idx] = merged
+      bySegmentId.set(cc.segmentId, merged)
+      continue
+    }
+
+    // Otherwise keep the existing line and just union the translations.
+    if (cc.translations && typeof cc.translations === "object") {
+      existing.translations = {
+        ...(existing.translations && typeof existing.translations === "object"
+          ? existing.translations
+          : {}),
+        ...cc.translations,
+      }
+    }
+  }
+
+  return result
+}
+
 function createTurn(
   channel_caption,
   spk_id,
@@ -38,10 +102,6 @@ function createTurn(
   caption,
 ) {
   try {
-    if (main && diarization && !channel_caption.locutor) {
-      return
-    }
-
     let turn = {
       speaker_id: spk_id,
       turn_id: uuidv4(),
@@ -129,4 +189,5 @@ module.exports = {
   processChannelCaptions,
   ensureSpeaker,
   createTurn,
+  dedupeClosedCaptionsBySegmentId,
 }
