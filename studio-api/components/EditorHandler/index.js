@@ -4,6 +4,10 @@ const { Hocuspocus } = require("@hocuspocus/server")
 const { WebSocketServer } = require("ws")
 
 class EditorHandler extends Component {
+  // Max time a revoked WRITE right stays effective on an active connection
+  // before _beforeHandleMessage re-checks against Mongo.
+  static RIGHTS_RECHECK_MS = 300000
+
   constructor(app) {
     super(app, "WebServer")
     this.id = this.constructor.name
@@ -24,6 +28,9 @@ class EditorHandler extends Component {
 
       async onAuthenticate(data) {
         return self._onAuthenticate(data)
+      },
+      async beforeHandleMessage(data) {
+        return self._beforeHandleMessage(data)
       },
       async onLoadDocument(data) {
         return self._onLoadDocument(data)
@@ -127,6 +134,47 @@ class EditorHandler extends Component {
     return { userId: userData.userId, canWrite }
   }
 
+  // Re-validate write rights on incoming edits. onAuthenticate only runs at
+  // connect, so a user whose WRITE right is revoked mid-session would otherwise
+  // keep editing until they disconnect. Read-only connections can't write, so
+  // they need no re-check. A per-connection TTL bounds the revocation window
+  // without hitting Mongo on every keystroke.
+  async _beforeHandleMessage({ documentName, context, connection }) {
+    if (!connection || connection.readOnly) return
+    if (!context || !context.userId) return
+
+    const now = Date.now()
+    if (
+      context.rightsCheckedAt &&
+      now - context.rightsCheckedAt < EditorHandler.RIGHTS_RECHECK_MS
+    ) {
+      return
+    }
+
+    const { hasAccess } = require(
+      `${process.cwd()}/components/WebServer/middlewares/access/conversation`,
+    )
+    const CONVERSATION_RIGHTS = require(
+      `${process.cwd()}/lib/dao/conversation/rights`,
+    )
+
+    const stillCanWrite = await hasAccess(
+      documentName,
+      context.userId,
+      CONVERSATION_RIGHTS.WRITE,
+    )
+    if (!stillCanWrite) {
+      // Write right revoked since connect. Reject the message: Hocuspocus
+      // closes the connection. The client may reconnect and will then be
+      // re-evaluated by _onAuthenticate (read-only or forbidden).
+      debug(
+        `beforeHandleMessage: write revoked doc=${documentName} user=${context.userId}, closing`,
+      )
+      throw new Error("Write access revoked")
+    }
+    context.rightsCheckedAt = now
+  }
+
   async _onLoadDocument({ document, documentName, context }) {
     const model = require(`${process.cwd()}/lib/mongodb/models`)
     const { seedYDoc } = require("./schema/seedYDoc")
@@ -201,7 +249,10 @@ class EditorHandler extends Component {
     const newTurns = docToTurns(document)
     const newSpeakers = docToSpeakers(document)
 
-    const { finalTurns, changedTurns, hasChanges } = enrichDiff(oldTurns, newTurns)
+    const { finalTurns, changedTurns, hasChanges } = enrichDiff(
+      oldTurns,
+      newTurns,
+    )
     const speakersDirty = speakersChanged(oldSpeakers, newSpeakers)
 
     if (!hasChanges && !speakersDirty) return
@@ -227,7 +278,9 @@ class EditorHandler extends Component {
             }),
           )
         } catch (err) {
-          debug(`broadcastStateless failed for doc=${documentName}: ${err.message}`)
+          debug(
+            `broadcastStateless failed for doc=${documentName}: ${err.message}`,
+          )
         }
       }
     } catch (err) {
