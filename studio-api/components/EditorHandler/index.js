@@ -89,20 +89,27 @@ class EditorHandler extends Component {
   // --- Hooks ---
 
   async _onAuthenticate({ token, documentName }) {
-    const { verifyJwtStandalone } = require(
-      `${process.cwd()}/components/WebServer/config/passport/jwt`,
+    const { verifyAuthToken } = require(
+      `${process.cwd()}/components/WebServer/config/passport/middleware`,
     )
-    const { hasWriteAccess } = require(
-      `${process.cwd()}/components/WebServer/middlewares/access/conversationAccess`,
+    const { hasAccess } = require(
+      `${process.cwd()}/components/WebServer/middlewares/access/conversation`,
+    )
+    const CONVERSATION_RIGHTS = require(
+      `${process.cwd()}/lib/dao/conversation/rights`,
     )
 
     debug(`onAuthenticate: doc=${documentName}`)
-    const userData = await verifyJwtStandalone(token)
+    const userData = await verifyAuthToken(token)
     if (!userData) {
       throw new Error("Unauthorized")
     }
 
-    const canWrite = await hasWriteAccess(documentName, userData.userId)
+    const canWrite = await hasAccess(
+      documentName,
+      userData.userId,
+      CONVERSATION_RIGHTS.WRITE,
+    )
     if (!canWrite) {
       throw new Error("Forbidden")
     }
