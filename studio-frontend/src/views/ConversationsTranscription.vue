@@ -13,6 +13,7 @@ import { markRaw } from "vue"
 
 import { getCookie } from "@/tools/getCookie"
 import { getEnv } from "@/tools/getEnv"
+import { userName } from "@/tools/userName"
 import USER_RIGHTS from "@/const/userRights.js"
 
 import { apiGetConversationAsDoc } from "@/api/conversation.d/apiGetConversationAsDoc.js"
@@ -77,6 +78,26 @@ export default {
     this.llmDispose = null
   },
   methods: {
+    // Stable cursor color derived from the user id so each collaborator keeps
+    // a consistent, distinct color across sessions.
+    cursorColor(id) {
+      const palette = [
+        "#E57373",
+        "#64B5F6",
+        "#81C784",
+        "#FFB74D",
+        "#BA68C8",
+        "#4DB6AC",
+        "#F06292",
+        "#A1887F",
+      ]
+      const str = String(id || "")
+      let hash = 0
+      for (let i = 0; i < str.length; i++) {
+        hash = (hash * 31 + str.charCodeAt(i)) | 0
+      }
+      return palette[Math.abs(hash) % palette.length]
+    },
     async initEditor(doc) {
       const el = this.$refs.editor
       const { core } = el
@@ -102,7 +123,10 @@ export default {
             url: ws_url.toString(),
             token: getCookie("authToken"),
           },
-          user: { name: "test", color: "#E57373" },
+          user: {
+            name: userName(this.userInfo),
+            color: this.cursorColor(this.userInfo._id),
+          },
           readOnly: !this.canWrite,
         }),
       )
