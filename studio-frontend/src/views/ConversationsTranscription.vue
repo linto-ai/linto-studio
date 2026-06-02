@@ -57,8 +57,16 @@ export default {
     this.securityLevel = securityLevel
     this.conversationName = name
 
-    const { right } = await apiGetUserRightFromConversation(this.conversationId)
-    this.canWrite = USER_RIGHTS.hasRightAccess(right, USER_RIGHTS.WRITE)
+    // A failure here must not block the editor: degrade to read-only.
+    try {
+      const { right } = await apiGetUserRightFromConversation(
+        this.conversationId,
+      )
+      this.canWrite = USER_RIGHTS.hasRightAccess(right, USER_RIGHTS.WRITE)
+    } catch (e) {
+      console.error("[host] failed to fetch conversation right", e)
+      this.canWrite = false
+    }
 
     await this.initEditor(doc)
   },
@@ -73,7 +81,8 @@ export default {
       const el = this.$refs.editor
       const { core } = el
       const ws_url = new URL(getEnv("VUE_APP_CONVO_API"))
-      ws_url.protocol = "ws"
+      ws_url.protocol = ws_url.protocol === "https:" ? "wss:" : "ws:"
+      ws_url.pathname = "/ws/editor"
       this.core = markRaw(core)
       core.use(
         createAudioPlugin({
@@ -90,7 +99,7 @@ export default {
       core.use(
         createTranscriptionEditorPlugin({
           collab: {
-            url: `ws://localhost:8001/ws/editor`,
+            url: ws_url.toString(),
             token: getCookie("authToken"),
           },
           user: { name: "test", color: "#E57373" },
