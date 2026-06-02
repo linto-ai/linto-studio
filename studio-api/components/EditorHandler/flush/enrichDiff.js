@@ -27,6 +27,8 @@ const { mergeTurn } = require("../words/mergeTurn")
 function enrichDiff(oldTurns, newTurns) {
   const oldById = new Map(oldTurns.map((t) => [t.turn_id, t]))
   const oldByIndex = oldTurns
+  const oldIndexById = new Map(oldTurns.map((t, idx) => [t.turn_id, idx]))
+  const newIds = new Set(newTurns.map((t) => t.turn_id))
 
   // Stores Pass 1/2 output keyed by new-turn index, so Pass 3 can reinsert
   // them at their position in Y.Doc order.
@@ -67,10 +69,10 @@ function enrichDiff(oldTurns, newTurns) {
     if (!oldCur) continue
     if (segmentEqual(cur.segment, oldCur.segment)) continue
 
-    const oldCurIdx = oldByIndex.findIndex((t) => t.turn_id === oldCur.turn_id)
-    if (oldCurIdx < 0) continue
+    const oldCurIdx = oldIndexById.get(oldCur.turn_id)
+    if (oldCurIdx === undefined) continue
 
-    const mergeMatch = matchMerge(cur.segment, oldByIndex, oldCurIdx, newTurns)
+    const mergeMatch = matchMerge(cur.segment, oldByIndex, oldCurIdx, newIds)
     if (!mergeMatch) continue
 
     let merged = oldCur
@@ -130,7 +132,9 @@ function enrichDiff(oldTurns, newTurns) {
       newWords = null
     }
     if (newWords == null) {
-      newWords = cur.segment ? cur.segment.split(" ").map((w) => ({ word: w })) : []
+      newWords = cur.segment
+        ? cur.segment.split(" ").map((w) => ({ word: w }))
+        : []
     }
 
     const t = { ...cur, words: newWords, raw_segment: cur.segment }
@@ -143,7 +147,7 @@ function enrichDiff(oldTurns, newTurns) {
   if (!dirty) {
     for (const oldTurn of oldByIndex) {
       if (consumedOldIds.has(oldTurn.turn_id)) continue
-      if (!newTurns.some((t) => t.turn_id === oldTurn.turn_id)) {
+      if (!newIds.has(oldTurn.turn_id)) {
         dirty = true
         break
       }
@@ -203,7 +207,7 @@ function matchSplit(newTurns, i, oldById, oldCur) {
  * Walk forward from oldByIndex[start+1] absorbing disappeared ids until the
  * concatenated segments equal cur.segment. Returns null if no match.
  */
-function matchMerge(curSegment, oldByIndex, start, newTurns) {
+function matchMerge(curSegment, oldByIndex, start, newIds) {
   const target = (curSegment || "").trim()
   if (!target) return null
 
@@ -214,7 +218,7 @@ function matchMerge(curSegment, oldByIndex, start, newTurns) {
 
   for (let k = 1; start + k < oldByIndex.length; k++) {
     const next = oldByIndex[start + k]
-    if (newTurns.some((t) => t.turn_id === next.turn_id)) break // not gone
+    if (newIds.has(next.turn_id)) break // not gone
     const nextSeg = (next.segment || "").trim()
     if (nextSeg) {
       const tentative = (combined + " " + nextSeg).trim()

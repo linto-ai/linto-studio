@@ -3,6 +3,23 @@ const Component = require("../component.js")
 const { Hocuspocus } = require("@hocuspocus/server")
 const { WebSocketServer } = require("ws")
 
+const model = require(`${process.cwd()}/lib/mongodb/models`)
+const { verifyAuthToken } = require(
+  `${process.cwd()}/components/WebServer/config/passport/middleware`,
+)
+const { hasAccess } = require(
+  `${process.cwd()}/components/WebServer/middlewares/access/conversation`,
+)
+const CONVERSATION_RIGHTS = require(
+  `${process.cwd()}/lib/dao/conversation/rights`,
+)
+const { seedYDoc } = require("./schema/seedYDoc")
+const { seedSpeakers } = require("./schema/seedSpeakers")
+const { docToTurns } = require("./schema/docToTurns")
+const { docToSpeakers } = require("./schema/docToSpeakers")
+const { enrichDiff } = require("./flush/enrichDiff")
+const { speakersChanged } = require("./flush/speakersDiff")
+
 class EditorHandler extends Component {
   // Max time a revoked WRITE right stays effective on an active connection
   // before _beforeHandleMessage re-checks against Mongo.
@@ -96,16 +113,6 @@ class EditorHandler extends Component {
   // --- Hooks ---
 
   async _onAuthenticate({ token, documentName, connectionConfig }) {
-    const { verifyAuthToken } = require(
-      `${process.cwd()}/components/WebServer/config/passport/middleware`,
-    )
-    const { hasAccess } = require(
-      `${process.cwd()}/components/WebServer/middlewares/access/conversation`,
-    )
-    const CONVERSATION_RIGHTS = require(
-      `${process.cwd()}/lib/dao/conversation/rights`,
-    )
-
     debug(`onAuthenticate: doc=${documentName}`)
     const userData = await verifyAuthToken(token)
     if (!userData) {
@@ -151,13 +158,6 @@ class EditorHandler extends Component {
       return
     }
 
-    const { hasAccess } = require(
-      `${process.cwd()}/components/WebServer/middlewares/access/conversation`,
-    )
-    const CONVERSATION_RIGHTS = require(
-      `${process.cwd()}/lib/dao/conversation/rights`,
-    )
-
     const stillCanWrite = await hasAccess(
       documentName,
       context.userId,
@@ -176,13 +176,12 @@ class EditorHandler extends Component {
   }
 
   async _onLoadDocument({ document, documentName, context }) {
-    const model = require(`${process.cwd()}/lib/mongodb/models`)
-    const { seedYDoc } = require("./schema/seedYDoc")
-    const { seedSpeakers } = require("./schema/seedSpeakers")
-
     debug(`onLoadDocument: doc=${documentName} user=${context?.userId}`)
 
-    const conversation = await model.conversations.getById(documentName)
+    const conversation = await model.conversations.getById(documentName, [
+      "text",
+      "speakers",
+    ])
     if (!conversation || conversation.length !== 1) {
       throw new Error(`Conversation ${documentName} not found`)
     }
@@ -201,9 +200,10 @@ class EditorHandler extends Component {
     // through a separate stateless message, targeted to this connection.
     if (!connection) return
 
-    const model = require(`${process.cwd()}/lib/mongodb/models`)
     try {
-      const conversation = await model.conversations.getById(documentName)
+      const conversation = await model.conversations.getById(documentName, [
+        "text",
+      ])
       if (!conversation || conversation.length !== 1) return
 
       const turnsWithWords = (conversation[0].text || [])
@@ -227,15 +227,12 @@ class EditorHandler extends Component {
   }
 
   async _onStoreDocument({ document, documentName }) {
-    const model = require(`${process.cwd()}/lib/mongodb/models`)
-    const { docToTurns } = require("./schema/docToTurns")
-    const { docToSpeakers } = require("./schema/docToSpeakers")
-    const { enrichDiff } = require("./flush/enrichDiff")
-    const { speakersChanged } = require("./flush/speakersDiff")
-
     // Fresh read from Mongo: cross-instance source of truth for words+timestamps.
     // Protected by Hocuspocus extension-redis Redlock — only one instance per doc.
-    const conversation = await model.conversations.getById(documentName)
+    const conversation = await model.conversations.getById(documentName, [
+      "text",
+      "speakers",
+    ])
     if (!conversation || conversation.length !== 1) {
       debug(`onStoreDocument: doc=${documentName} not found`)
       return
