@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, useTemplateRef } from "vue"
+import { computed, onBeforeUnmount, onMounted, useTemplateRef, watch } from "vue"
 import { useEditorStore } from "../core"
 import { useSubtitleScroller } from "../composables/useSubtitleScroller"
 import { useWatermarkCycle } from "../plugins/subtitle/useWatermarkCycle"
@@ -21,6 +21,21 @@ useSubtitleScroller({
 const { visible: watermarkVisible } = useWatermarkCycle(
   editor.subtitle?.watermark,
 )
+
+// The v-if in EditorLayout mounts this component exactly when the fixed banner
+// occupies the bottom of the viewport. Notify the consumer so it can reserve
+// space (e.g. padding-bottom) and avoid content being hidden behind the banner.
+onMounted(() => {
+  editor.emit("subtitle:visible", { visible: true, height: canvasHeight.value })
+})
+
+watch(canvasHeight, (height) => {
+  editor.emit("subtitle:visible", { visible: true, height })
+})
+
+onBeforeUnmount(() => {
+  editor.emit("subtitle:visible", { visible: false, height: 0 })
+})
 </script>
 
 <template>
@@ -36,10 +51,14 @@ const { visible: watermarkVisible } = useWatermarkCycle(
 
 <style scoped>
 .subtitle-banner {
-  position: relative;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   flex-shrink: 0;
   background-color: var(--color-black);
   overflow: hidden;
+  z-index: 1001;
 }
 
 .subtitle-canvas {

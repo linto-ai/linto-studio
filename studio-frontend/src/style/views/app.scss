@@ -15,6 +15,9 @@
   margin: 0;
   padding: 0;
   background-color: var(--background-app); // #fbfbfb
+  box-sizing: border-box; // does not inherit: only affects #app-view
+  // Reserve space for the fixed full-width subtitle banner (set by SessionLiveNG)
+  padding-bottom: var(--subtitle-reserve, 0);
 }
 
 .app-view-content {
