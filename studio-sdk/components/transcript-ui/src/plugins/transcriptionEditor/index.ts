@@ -48,6 +48,12 @@ export interface TranscriptionEditorOptions {
   field?: string
   /** Local user info for cursor display. */
   user?: { name: string; color: string; [key: string]: unknown }
+  /**
+   * Read-only mode: the editor is not editable and broadcasts no cursor or
+   * selection to other participants. Remote edits are still received, so the
+   * user keeps seeing others work. @default false
+   */
+  readOnly?: boolean
 }
 
 export function createTranscriptionEditorPlugin(
@@ -312,7 +318,7 @@ function createTiptapEditor(
     ...core.pluginExtensions,
   ]
 
-  if (awareness) {
+  if (awareness && !options.readOnly) {
     extensions.push(
       CollaborationCursor.configure({
         awareness,
@@ -323,6 +329,7 @@ function createTiptapEditor(
 
   tiptapEditor.value = new Editor({
     extensions,
+    editable: !options.readOnly,
   })
 
   const unsubSync = core.on("translation:sync", () => {
