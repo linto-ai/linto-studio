@@ -43,13 +43,13 @@ async function checkAccess(req, role) {
     const userRole = user[0].role
     if (userRole && ROLE.hasPlatformRoleAccess(userRole, role)) {
       if (ROLE.ORGANIZATION_INITIATOR === role) {
-        return true // No impersonate require for organization initiator
+        return true
       } else if (req.query.userScope === "backoffice") {
-        await impersonateOwner(req) // Only impersonate if the user has a super role
+        grantBackofficeAccess(req)
+        return true
       } else {
-        return false // Normal user access behavior
+        return false
       }
-      return true
     }
 
     return false
@@ -58,31 +58,7 @@ async function checkAccess(req, role) {
   }
 }
 
-async function impersonateOwner(req) {
-  const { organizationId, conversationId } = req.params
-  if (req.url.includes("/users/self/")) {
-    return
-  }
-  if (organizationId) {
-    await setOrganizationOwnerAsUser(req, organizationId)
-  } else if (conversationId) {
-    const conversation = await model.conversations.getById(conversationId)
-    if (conversation.length > 0) {
-      const orgId = conversation[0].organization.organizationId
-      await setOrganizationOwnerAsUser(req, orgId)
-    }
-  }
-}
-
-async function setOrganizationOwnerAsUser(req, organizationId) {
-  const organization = await model.organizations.getById(organizationId)
-  if (organization.length > 0) {
-    impersonate(req, organization[0].owner)
-  }
-}
-
-function impersonate(req, userId) {
+function grantBackofficeAccess(req) {
+  req.backofficeAccess = true
   req.userRole = ORGANIZATION_ROLE.ADMIN
-  req.payload.data.adminId = req.payload.data.userId
-  req.payload.data.userId = userId
 }

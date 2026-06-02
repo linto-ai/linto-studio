@@ -91,6 +91,14 @@ export default {
     async applyMatch(event) {
       event.preventDefault()
 
+      if (this.matchingMail.value.trim().length === 0) {
+        this.matchingMail.valid = false
+        this.matchingMail.error = this.$t(
+          "organisation.matching_users.matching_mail.required_error",
+        )
+        return
+      }
+
       if (await this.updateOrganizationRequest()) {
         let req = await apiInviteUsersMachingEmail(this.organizationId, {
           timeout: 3000,

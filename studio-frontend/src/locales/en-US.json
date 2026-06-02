@@ -959,7 +959,8 @@
     "matching_users": {
       "title": "Automatic user invitation",
       "matching_mail": {
-        "label": "Matching email"
+        "label": "Matching email",
+        "required_error": "Please provide a matching email before inviting users"
       },
       "update_button": "Update matching criteria",
       "apply_button": "Invite all users matching criteria"

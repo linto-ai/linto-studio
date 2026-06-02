@@ -46,6 +46,7 @@ async function getOrganization(req, res, next) {
     const lorganization = await model.organizations.getByIdAndUser(
       req.params.organizationId,
       req.payload.data.userId,
+      { bypass: req.backofficeAccess },
     )
     if (lorganization.length !== 1) throw new OrganizationError()
 
