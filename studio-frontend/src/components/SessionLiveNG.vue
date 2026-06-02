@@ -76,6 +76,8 @@ export default {
   beforeDestroy() {
     this.offChannelChange?.()
     this.offScrollTop?.()
+    this.offSubtitle?.()
+    document.documentElement.style.removeProperty("--subtitle-reserve")
     this.offWatermarkDisplay?.()
     this.offWatermarkPin?.()
     this.unwatchWatermarkHost.forEach((stop) => stop())
@@ -141,6 +143,19 @@ export default {
           translatedCaptions: [],
         })),
       }
+      // The subtitle banner is position:fixed at the viewport bottom and overlaps
+      // the bottom of the app. Reserve space via a root CSS variable consumed by
+      // #app-view so the whole layout (editor + sidebar) clears the banner.
+      // Subscribe before setDocument: the banner mounts (and emits on mount) as
+      // soon as channels are populated by setDocument, so the listener must
+      // already be registered to catch the initial emit.
+      this.offSubtitle = editor.on("subtitle:visible", ({ visible, height }) => {
+        document.documentElement.style.setProperty(
+          "--subtitle-reserve",
+          (visible ? height : 0) + "px",
+        )
+      })
+
       const doc = sessionToEditorDocument(sessionForDoc)
       editor.setDocument(doc)
 

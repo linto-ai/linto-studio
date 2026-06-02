@@ -32,6 +32,7 @@ export interface EditorEventMap {
   "channel:reset": { channelId: string }
   "watermark:display": { display: boolean }
   "watermark:pin": { pinned: boolean }
+  "subtitle:visible": { visible: boolean; height: number }
   destroy: void
 }
 
