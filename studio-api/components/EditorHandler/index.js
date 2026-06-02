@@ -88,7 +88,7 @@ class EditorHandler extends Component {
 
   // --- Hooks ---
 
-  async _onAuthenticate({ token, documentName }) {
+  async _onAuthenticate({ token, documentName, connectionConfig }) {
     const { verifyAuthToken } = require(
       `${process.cwd()}/components/WebServer/config/passport/middleware`,
     )
@@ -111,7 +111,17 @@ class EditorHandler extends Component {
       CONVERSATION_RIGHTS.WRITE,
     )
     if (!canWrite) {
-      throw new Error("Forbidden")
+      const canRead = await hasAccess(
+        documentName,
+        userData.userId,
+        CONVERSATION_RIGHTS.READ,
+      )
+      if (!canRead) {
+        throw new Error("Forbidden")
+      }
+      // Read-only access: the client receives live updates but the server
+      // rejects any edit coming from this connection.
+      connectionConfig.readOnly = true
     }
 
     return { userId: userData.userId, canWrite }

@@ -13,9 +13,13 @@ import { markRaw } from "vue"
 
 import { getCookie } from "@/tools/getCookie"
 import { getEnv } from "@/tools/getEnv"
+import USER_RIGHTS from "@/const/userRights.js"
 
 import { apiGetConversationAsDoc } from "@/api/conversation.d/apiGetConversationAsDoc.js"
-import { apiGetConversationLastUpdate } from "@/api/conversation"
+import {
+  apiGetConversationLastUpdate,
+  apiGetUserRightFromConversation,
+} from "@/api/conversation"
 
 import {
   createTranscriptionEditorPlugin,
@@ -42,6 +46,8 @@ export default {
       core: null,
       llmDispose: null,
       editListeners: [],
+      readOnlyWatcher: null,
+      canWrite: false,
       publicationModal: { open: false, jobId: null },
     }
   },
@@ -51,11 +57,17 @@ export default {
     this.organizationId = organizationId
     this.securityLevel = securityLevel
     this.conversationName = name
+
+    const { right } = await apiGetUserRightFromConversation(this.conversationId)
+    this.canWrite = USER_RIGHTS.hasRightAccess(right, USER_RIGHTS.WRITE)
+
     await this.initEditor(doc)
   },
   beforeDestroy() {
     this.editListeners.forEach((fn) => fn?.())
     this.editListeners = []
+    this.readOnlyWatcher?.()
+    this.readOnlyWatcher = null
     this.llmDispose?.()
     this.llmDispose = null
   },
@@ -104,8 +116,26 @@ export default {
       })
 
       core.setDocument(doc)
+      if (!this.canWrite) {
+        this.enforceReadOnly()
+      }
       this.pushTranscriptionLastUpdate()
       this.attachEditListeners()
+    },
+
+    // Read-only users still connect to the collaborative session (to receive
+    // live edits) but must not be able to modify the transcription. The server
+    // also rejects their edits; this keeps the UI consistent.
+    enforceReadOnly() {
+      const api = this.core?.transcriptionEditor
+      if (!api) return
+      const disable = (editor) => editor?.setEditable(false)
+      disable(api.tiptapEditor.value)
+      // The tiptap instance is (re)created once the collab provider connects.
+      this.readOnlyWatcher = this.$watch(
+        () => api.tiptapEditor.value,
+        (editor) => disable(editor),
+      )
     },
 
     async pushTranscriptionLastUpdate() {
