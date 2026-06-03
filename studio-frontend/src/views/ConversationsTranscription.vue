@@ -1,6 +1,12 @@
 <template>
   <LayoutV2 noHeader>
-    <linto-editor ref="editor" :locale="$i18n.locale" />
+    <div class="transcription-editor-wrapper">
+      <linto-editor ref="editor" :locale="$i18n.locale" />
+      <Loading
+        v-if="loading"
+        background
+        :title="$t('conversation.loading.conversation_data')" />
+    </div>
     <PublicationModal
       v-model="publicationModal.open"
       :jobId="publicationModal.jobId"
@@ -31,10 +37,14 @@ import { setupLLMServices } from "@/services/llmServicesIntegration"
 
 import LayoutV2 from "@/layouts/v2-layout.vue"
 import PublicationModal from "@/components/molecules/PublicationModal.vue"
+import Loading from "@/components/atoms/Loading.vue"
 import { apiGetAudioFileFromConversation } from "@/api/conversation"
 
+const COLLAB_SYNC_TIMEOUT_MS = 20000
+const COLLAB_SYNC_POLL_MS = 80
+
 export default {
-  components: { LayoutV2, PublicationModal },
+  components: { LayoutV2, PublicationModal, Loading },
   props: {
     userInfo: { type: Object, required: true },
   },
@@ -48,6 +58,7 @@ export default {
       llmDispose: null,
       editListeners: [],
       canWrite: false,
+      loading: true,
       publicationModal: { open: false, jobId: null },
     }
   },
@@ -72,6 +83,7 @@ export default {
     await this.initEditor(doc)
   },
   beforeDestroy() {
+    this.clearSyncWatchers()
     this.editListeners.forEach((fn) => fn?.())
     this.editListeners = []
     this.llmDispose?.()
@@ -147,8 +159,42 @@ export default {
       })
 
       core.setDocument(doc)
+      this.waitForCollabSync()
       this.pushTranscriptionLastUpdate()
       this.attachEditListeners()
+    },
+
+    // SDK bundles its own Vue runtime, so its `isConnected` ref isn't tracked
+    // by a host-side watch; poll it, with a timeout fallback.
+    waitForCollabSync() {
+      const isSynced = () =>
+        !!this.core?.transcriptionEditor?.isConnected?.value
+      if (isSynced()) {
+        this.loading = false
+        return
+      }
+      this.clearSyncWatchers()
+      this.syncPollTimer = setInterval(() => {
+        if (isSynced()) {
+          this.loading = false
+          this.clearSyncWatchers()
+        }
+      }, COLLAB_SYNC_POLL_MS)
+      this.syncTimeoutTimer = setTimeout(() => {
+        this.loading = false
+        this.clearSyncWatchers()
+      }, COLLAB_SYNC_TIMEOUT_MS)
+    },
+
+    clearSyncWatchers() {
+      if (this.syncPollTimer) {
+        clearInterval(this.syncPollTimer)
+        this.syncPollTimer = null
+      }
+      if (this.syncTimeoutTimer) {
+        clearTimeout(this.syncTimeoutTimer)
+        this.syncTimeoutTimer = null
+      }
     },
 
     async pushTranscriptionLastUpdate() {
@@ -192,6 +238,13 @@ export default {
 </script>
 
 <style scoped>
+.transcription-editor-wrapper {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
 linto-editor {
   display: block;
   flex: 1;
