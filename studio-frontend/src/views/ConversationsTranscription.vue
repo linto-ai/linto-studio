@@ -1,6 +1,12 @@
 <template>
   <LayoutV2 noHeader>
-    <linto-editor ref="editor" :locale="$i18n.locale" />
+    <div class="transcription-editor-wrapper">
+      <linto-editor ref="editor" :locale="$i18n.locale" />
+      <Loading
+        v-if="loading"
+        background
+        :title="$t('conversation.loading.conversation_data')" />
+    </div>
     <PublicationModal
       v-model="publicationModal.open"
       :jobId="publicationModal.jobId"
@@ -13,9 +19,14 @@ import { markRaw } from "vue"
 
 import { getCookie } from "@/tools/getCookie"
 import { getEnv } from "@/tools/getEnv"
+import { userName } from "@/tools/userName"
+import USER_RIGHTS from "@/const/userRights.js"
 
 import { apiGetConversationAsDoc } from "@/api/conversation.d/apiGetConversationAsDoc.js"
-import { apiGetConversationLastUpdate } from "@/api/conversation"
+import {
+  apiGetConversationLastUpdate,
+  apiGetUserRightFromConversation,
+} from "@/api/conversation"
 
 import {
   createTranscriptionEditorPlugin,
@@ -26,10 +37,14 @@ import { setupLLMServices } from "@/services/llmServicesIntegration"
 
 import LayoutV2 from "@/layouts/v2-layout.vue"
 import PublicationModal from "@/components/molecules/PublicationModal.vue"
+import Loading from "@/components/atoms/Loading.vue"
 import { apiGetAudioFileFromConversation } from "@/api/conversation"
 
+const COLLAB_SYNC_TIMEOUT_MS = 20000
+const COLLAB_SYNC_POLL_MS = 80
+
 export default {
-  components: { LayoutV2, PublicationModal },
+  components: { LayoutV2, PublicationModal, Loading },
   props: {
     userInfo: { type: Object, required: true },
   },
@@ -42,6 +57,8 @@ export default {
       core: null,
       llmDispose: null,
       editListeners: [],
+      canWrite: false,
+      loading: true,
       publicationModal: { open: false, jobId: null },
     }
   },
@@ -51,20 +68,54 @@ export default {
     this.organizationId = organizationId
     this.securityLevel = securityLevel
     this.conversationName = name
+
+    // A failure here must not block the editor: degrade to read-only.
+    try {
+      const { right } = await apiGetUserRightFromConversation(
+        this.conversationId,
+      )
+      this.canWrite = USER_RIGHTS.hasRightAccess(right, USER_RIGHTS.WRITE)
+    } catch (e) {
+      console.error("[host] failed to fetch conversation right", e)
+      this.canWrite = false
+    }
+
     await this.initEditor(doc)
   },
   beforeDestroy() {
+    this.clearSyncWatchers()
     this.editListeners.forEach((fn) => fn?.())
     this.editListeners = []
     this.llmDispose?.()
     this.llmDispose = null
   },
   methods: {
+    // Stable cursor color derived from the user id so each collaborator keeps
+    // a consistent, distinct color across sessions.
+    cursorColor(id) {
+      const palette = [
+        "#E57373",
+        "#64B5F6",
+        "#81C784",
+        "#FFB74D",
+        "#BA68C8",
+        "#4DB6AC",
+        "#F06292",
+        "#A1887F",
+      ]
+      const str = String(id || "")
+      let hash = 0
+      for (let i = 0; i < str.length; i++) {
+        hash = (hash * 31 + str.charCodeAt(i)) | 0
+      }
+      return palette[Math.abs(hash) % palette.length]
+    },
     async initEditor(doc) {
       const el = this.$refs.editor
       const { core } = el
       const ws_url = new URL(getEnv("VUE_APP_CONVO_API"))
-      ws_url.protocol = "ws"
+      ws_url.protocol = ws_url.protocol === "https:" ? "wss:" : "ws:"
+      ws_url.pathname = "/ws/editor"
       this.core = markRaw(core)
       core.use(
         createAudioPlugin({
@@ -81,10 +132,14 @@ export default {
       core.use(
         createTranscriptionEditorPlugin({
           collab: {
-            url: `ws://localhost:8001/ws/editor`,
+            url: ws_url.toString(),
             token: getCookie("authToken"),
           },
-          user: { name: "test", color: "#E57373" },
+          user: {
+            name: userName(this.userInfo),
+            color: this.cursorColor(this.userInfo._id),
+          },
+          readOnly: !this.canWrite,
         }),
       )
 
@@ -104,8 +159,42 @@ export default {
       })
 
       core.setDocument(doc)
+      this.waitForCollabSync()
       this.pushTranscriptionLastUpdate()
       this.attachEditListeners()
+    },
+
+    // SDK bundles its own Vue runtime, so its `isConnected` ref isn't tracked
+    // by a host-side watch; poll it, with a timeout fallback.
+    waitForCollabSync() {
+      const isSynced = () =>
+        !!this.core?.transcriptionEditor?.isConnected?.value
+      if (isSynced()) {
+        this.loading = false
+        return
+      }
+      this.clearSyncWatchers()
+      this.syncPollTimer = setInterval(() => {
+        if (isSynced()) {
+          this.loading = false
+          this.clearSyncWatchers()
+        }
+      }, COLLAB_SYNC_POLL_MS)
+      this.syncTimeoutTimer = setTimeout(() => {
+        this.loading = false
+        this.clearSyncWatchers()
+      }, COLLAB_SYNC_TIMEOUT_MS)
+    },
+
+    clearSyncWatchers() {
+      if (this.syncPollTimer) {
+        clearInterval(this.syncPollTimer)
+        this.syncPollTimer = null
+      }
+      if (this.syncTimeoutTimer) {
+        clearTimeout(this.syncTimeoutTimer)
+        this.syncTimeoutTimer = null
+      }
     },
 
     async pushTranscriptionLastUpdate() {
@@ -149,6 +238,13 @@ export default {
 </script>
 
 <style scoped>
+.transcription-editor-wrapper {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
 linto-editor {
   display: block;
   flex: 1;

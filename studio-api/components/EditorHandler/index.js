@@ -3,7 +3,28 @@ const Component = require("../component.js")
 const { Hocuspocus } = require("@hocuspocus/server")
 const { WebSocketServer } = require("ws")
 
+const model = require(`${process.cwd()}/lib/mongodb/models`)
+const { verifyAuthToken } = require(
+  `${process.cwd()}/components/WebServer/config/passport/middleware`,
+)
+const { hasAccess } = require(
+  `${process.cwd()}/components/WebServer/middlewares/access/conversation`,
+)
+const CONVERSATION_RIGHTS = require(
+  `${process.cwd()}/lib/dao/conversation/rights`,
+)
+const { seedYDoc } = require("./schema/seedYDoc")
+const { seedSpeakers } = require("./schema/seedSpeakers")
+const { docToTurns } = require("./schema/docToTurns")
+const { docToSpeakers } = require("./schema/docToSpeakers")
+const { enrichDiff } = require("./flush/enrichDiff")
+const { speakersChanged } = require("./flush/speakersDiff")
+
 class EditorHandler extends Component {
+  // Max time a revoked WRITE right stays effective on an active connection
+  // before _beforeHandleMessage re-checks against Mongo.
+  static RIGHTS_RECHECK_MS = 300000
+
   constructor(app) {
     super(app, "WebServer")
     this.id = this.constructor.name
@@ -24,6 +45,9 @@ class EditorHandler extends Component {
 
       async onAuthenticate(data) {
         return self._onAuthenticate(data)
+      },
+      async beforeHandleMessage(data) {
+        return self._beforeHandleMessage(data)
       },
       async onLoadDocument(data) {
         return self._onLoadDocument(data)
@@ -88,36 +112,76 @@ class EditorHandler extends Component {
 
   // --- Hooks ---
 
-  async _onAuthenticate({ token, documentName }) {
-    const { verifyJwtStandalone } = require(
-      `${process.cwd()}/components/WebServer/config/passport/jwt`,
-    )
-    const { hasWriteAccess } = require(
-      `${process.cwd()}/components/WebServer/middlewares/access/conversationAccess`,
-    )
-
+  async _onAuthenticate({ token, documentName, connectionConfig }) {
     debug(`onAuthenticate: doc=${documentName}`)
-    const userData = await verifyJwtStandalone(token)
+    const userData = await verifyAuthToken(token)
     if (!userData) {
       throw new Error("Unauthorized")
     }
 
-    const canWrite = await hasWriteAccess(documentName, userData.userId)
+    const canWrite = await hasAccess(
+      documentName,
+      userData.userId,
+      CONVERSATION_RIGHTS.WRITE,
+    )
     if (!canWrite) {
-      throw new Error("Forbidden")
+      const canRead = await hasAccess(
+        documentName,
+        userData.userId,
+        CONVERSATION_RIGHTS.READ,
+      )
+      if (!canRead) {
+        throw new Error("Forbidden")
+      }
+      // Read-only access: the client receives live updates but the server
+      // rejects any edit coming from this connection.
+      connectionConfig.readOnly = true
     }
 
     return { userId: userData.userId, canWrite }
   }
 
-  async _onLoadDocument({ document, documentName, context }) {
-    const model = require(`${process.cwd()}/lib/mongodb/models`)
-    const { seedYDoc } = require("./schema/seedYDoc")
-    const { seedSpeakers } = require("./schema/seedSpeakers")
+  // Re-validate write rights on incoming edits. onAuthenticate only runs at
+  // connect, so a user whose WRITE right is revoked mid-session would otherwise
+  // keep editing until they disconnect. Read-only connections can't write, so
+  // they need no re-check. A per-connection TTL bounds the revocation window
+  // without hitting Mongo on every keystroke.
+  async _beforeHandleMessage({ documentName, context, connection }) {
+    if (!connection || connection.readOnly) return
+    if (!context || !context.userId) return
 
+    const now = Date.now()
+    if (
+      context.rightsCheckedAt &&
+      now - context.rightsCheckedAt < EditorHandler.RIGHTS_RECHECK_MS
+    ) {
+      return
+    }
+
+    const stillCanWrite = await hasAccess(
+      documentName,
+      context.userId,
+      CONVERSATION_RIGHTS.WRITE,
+    )
+    if (!stillCanWrite) {
+      // Write right revoked since connect. Reject the message: Hocuspocus
+      // closes the connection. The client may reconnect and will then be
+      // re-evaluated by _onAuthenticate (read-only or forbidden).
+      debug(
+        `beforeHandleMessage: write revoked doc=${documentName} user=${context.userId}, closing`,
+      )
+      throw new Error("Write access revoked")
+    }
+    context.rightsCheckedAt = now
+  }
+
+  async _onLoadDocument({ document, documentName, context }) {
     debug(`onLoadDocument: doc=${documentName} user=${context?.userId}`)
 
-    const conversation = await model.conversations.getById(documentName)
+    const conversation = await model.conversations.getById(documentName, [
+      "text",
+      "speakers",
+    ])
     if (!conversation || conversation.length !== 1) {
       throw new Error(`Conversation ${documentName} not found`)
     }
@@ -136,9 +200,10 @@ class EditorHandler extends Component {
     // through a separate stateless message, targeted to this connection.
     if (!connection) return
 
-    const model = require(`${process.cwd()}/lib/mongodb/models`)
     try {
-      const conversation = await model.conversations.getById(documentName)
+      const conversation = await model.conversations.getById(documentName, [
+        "text",
+      ])
       if (!conversation || conversation.length !== 1) return
 
       const turnsWithWords = (conversation[0].text || [])
@@ -162,15 +227,12 @@ class EditorHandler extends Component {
   }
 
   async _onStoreDocument({ document, documentName }) {
-    const model = require(`${process.cwd()}/lib/mongodb/models`)
-    const { docToTurns } = require("./schema/docToTurns")
-    const { docToSpeakers } = require("./schema/docToSpeakers")
-    const { enrichDiff } = require("./flush/enrichDiff")
-    const { speakersChanged } = require("./flush/speakersDiff")
-
     // Fresh read from Mongo: cross-instance source of truth for words+timestamps.
     // Protected by Hocuspocus extension-redis Redlock — only one instance per doc.
-    const conversation = await model.conversations.getById(documentName)
+    const conversation = await model.conversations.getById(documentName, [
+      "text",
+      "speakers",
+    ])
     if (!conversation || conversation.length !== 1) {
       debug(`onStoreDocument: doc=${documentName} not found`)
       return
@@ -184,7 +246,10 @@ class EditorHandler extends Component {
     const newTurns = docToTurns(document)
     const newSpeakers = docToSpeakers(document)
 
-    const { finalTurns, changedTurns, hasChanges } = enrichDiff(oldTurns, newTurns)
+    const { finalTurns, changedTurns, hasChanges } = enrichDiff(
+      oldTurns,
+      newTurns,
+    )
     const speakersDirty = speakersChanged(oldSpeakers, newSpeakers)
 
     if (!hasChanges && !speakersDirty) return
@@ -210,7 +275,9 @@ class EditorHandler extends Component {
             }),
           )
         } catch (err) {
-          debug(`broadcastStateless failed for doc=${documentName}: ${err.message}`)
+          debug(
+            `broadcastStateless failed for doc=${documentName}: ${err.message}`,
+          )
         }
       }
     } catch (err) {
