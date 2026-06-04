@@ -40,12 +40,17 @@ export type TurnEventKey = "turn:add" | "turn:update" | "turn:remove"
 
 // ── Stores ─────────────────────────────────────────────────────────────
 
-export interface TranslationStore {
+/** Read-only surface of a translation — satisfied by both real and virtual stores. */
+export interface ReadableTranslation {
   readonly id: string
   readonly languages: string[]
   readonly isSource: boolean
   readonly audio?: AudioSource
-  readonly turns: Ref<Turn[]>
+  readonly turns: Readonly<Ref<Turn[]>>
+  getTurn(turnId: string): Turn | undefined
+}
+
+export interface TranslationStore extends ReadableTranslation {
   addTurn(turn: Turn): void
   prependTurns(turns: Turn[]): void
   updateTurn(turnId: string, patch: Partial<Turn>): void
@@ -64,7 +69,11 @@ export interface ChannelStore {
   readonly duration: number
   readonly translations: Map<string, TranslationStore>
   readonly sourceTranslation: TranslationStore
-  readonly activeTranslation: ComputedRef<TranslationStore>
+  /** Virtual bilingual "cross" translation, or null when not applicable. */
+  readonly crossTranslation: ReadableTranslation | null
+  /** Real tracks plus the cross entry when available — what the selector lists. */
+  readonly selectableTranslations: ReadableTranslation[]
+  readonly activeTranslation: ComputedRef<ReadableTranslation>
   readonly isLoadingHistory: Ref<boolean>
   readonly hasMoreHistory: Ref<boolean>
   setActiveTranslation(translationId: string | null): void

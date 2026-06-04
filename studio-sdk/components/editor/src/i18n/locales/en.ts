@@ -24,6 +24,7 @@ const en: Record<keyof typeof fr, string> = {
   "sidebar.translationLabel": "Translation",
   "sidebar.translationSelectLabel": "Select original/translation",
   "sidebar.originalLanguage": "Original language",
+  "sidebar.bilingual": "Cross subtitles",
   "language.wildcard": "Multilingual",
   "select.filter": "Search\u2026",
   "subtitle.exitFullscreen": "Exit fullscreen",
