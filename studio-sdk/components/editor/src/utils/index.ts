@@ -1,4 +1,6 @@
 export { hexToRgba } from "./color"
+export { extractLangCode } from "./extractLangCode"
+export { isSameLanguage } from "./isSameLanguage"
 export { getLanguageDisplayName, buildTranslationItems } from "./intl"
 export { throttle } from "./throttle"
 export { formatTime, formatShortDateTime } from "./time"

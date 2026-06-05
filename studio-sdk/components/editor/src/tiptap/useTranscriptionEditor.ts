@@ -6,7 +6,7 @@ import { TranscriptionDocument } from "./extensions/transcriptionDocument"
 import { TurnNode } from "./extensions/turnNode"
 import { StoreSync, withSuppressedSync } from "./plugins/storeSync"
 import { turnsToDoc } from "./helpers/turnsToDoc"
-import type { EditorStore, TranslationStore } from "../core/types"
+import type { EditorStore, ReadableTranslation } from "../core/types"
 import type { Turn } from "../types/editor"
 import type { Editor } from "@tiptap/core"
 
@@ -18,9 +18,16 @@ export interface UseTranscriptionEditorOptions {
 export function useTranscriptionEditor(options: UseTranscriptionEditorOptions) {
   const { store } = options
 
-  const activeTranslation = computed<TranslationStore>(
+  const activeTranslation = computed<ReadableTranslation>(
     () => store.activeChannel.value.activeTranslation.value,
   )
+
+  // Editable backing store for the active translation, or undefined when the
+  // active one is virtual (the cross translation) — which makes it read-only.
+  const editableTranslation = () => {
+    const channel = store.activeChannel.value
+    return channel.translations.get(channel.activeTranslation.value.id)
+  }
 
   const initialTurns = activeTranslation.value.turns.value
   const initialContent = turnsToDoc(initialTurns)
@@ -37,25 +44,30 @@ export function useTranscriptionEditor(options: UseTranscriptionEditorOptions) {
     ...(!pluginHasHistory ? [History] : []),
     StoreSync.configure({
       store,
-      getTranslation: () => activeTranslation.value,
+      getTranslation: editableTranslation,
     }),
   ]
+
+  // Effective editability: the requested capability, unless the active
+  // translation is virtual (the cross) in which case it is always read-only.
+  const isEditable = computed(() => {
+    const base =
+      typeof options.editable === "object"
+        ? options.editable.value
+        : (options.editable ?? true)
+    return base && editableTranslation() !== undefined
+  })
 
   const editor = useEditor({
     content: initialContent,
     extensions: [...coreExtensions, ...store.pluginExtensions],
-    editable:
-      typeof options.editable === "object"
-        ? options.editable.value
-        : (options.editable ?? true),
+    editable: isEditable.value,
   })
 
-  // Watch editable changes
-  if (typeof options.editable === "object") {
-    watch(options.editable, (value) => {
-      editor.value?.setEditable(value)
-    })
-  }
+  // Watch editability changes (capability or active translation)
+  watch(isEditable, (value) => {
+    editor.value?.setEditable(value)
+  })
 
   // Watch active translation changes to reload content
   let currentTranslationId = activeTranslation.value.id

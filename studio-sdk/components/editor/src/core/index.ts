@@ -7,6 +7,7 @@ export type {
   EditorStoreOptions,
   EditorCapabilities,
   TurnEventKey,
+  ReadableTranslation,
   TranslationStore,
   ChannelStore,
   SpeakersStore,

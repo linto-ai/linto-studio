@@ -35,9 +35,9 @@ const speakers = editor.speakers.all
 provideTurnSelection(activeTurns, speakers, editor)
 
 const channels = computed(() => [...editor.channels.values()])
-const translations = computed(() => [
-  ...editor.activeChannel.value.translations.values(),
-])
+const translations = computed(
+  () => editor.activeChannel.value.selectableTranslations,
+)
 const activeTranslationId = computed(
   () => editor.activeChannel.value.activeTranslation.value.id,
 )

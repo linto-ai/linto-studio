@@ -138,7 +138,6 @@ export default {
 
       this.livePlugin = createLivePlugin()
       editor.use(this.livePlugin)
-      console.log("show", this.displaySubtitles)
       editor.use(
         createSubtitlePlugin({
           isVisible: this.displaySubtitles,
@@ -295,7 +294,11 @@ export default {
       if (type !== "original") return
 
       this.editor.live.onPartial(
-        { text: content.text },
+        {
+          text: content.text,
+          turnId: computeSessionTurnUniqueId(content),
+          language: content.lang,
+        },
         this.activeChannelIndex,
       )
     },
@@ -345,6 +348,7 @@ export default {
       this.editor.live.onTranslation({
         turnId: computeSessionTurnUniqueId(content),
         language: content.targetLang,
+        sourceLanguage: content.sourceLang,
         text: content.text,
         final: content.final,
         startDate: computeTurnStartDate(content),
