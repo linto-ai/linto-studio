@@ -3,6 +3,53 @@ import { splitBlockAs } from "@tiptap/pm/commands"
 import { VueNodeViewRenderer } from "@tiptap/vue-3"
 import TurnNodeView from "../components/TurnNodeView.vue"
 
+// @tiptap/vue-3 registers a `selectionUpdate` listener on EVERY node view, and
+// each one calls getPos() — which is O(n) for a top-level turn. On a long
+// transcript that's O(n²) per keystroke and freezes typing. Turns don't use the
+// node `selected` state, so we wrap the renderer to debounce that listener: the
+// selected-state check runs after the user pauses instead of on every keystroke.
+const SELECTION_DEBOUNCE_MS = 150
+
+interface DebouncableNodeView {
+  editor?: {
+    on(event: string, cb: () => void): void
+    off(event: string, cb: () => void): void
+  }
+  handleSelectionUpdate?: () => void
+  destroy?: () => void
+}
+
+function debouncedTurnNodeViewRenderer(): ReturnType<
+  typeof VueNodeViewRenderer
+> {
+  const base = VueNodeViewRenderer(TurnNodeView)
+  return (props) => {
+    const nodeView = base(props)
+    const nv = nodeView as unknown as DebouncableNodeView
+    const editor = nv.editor
+    const original = nv.handleSelectionUpdate
+    if (editor && typeof original === "function") {
+      editor.off("selectionUpdate", original)
+      let timer: ReturnType<typeof setTimeout> | null = null
+      const debounced = (): void => {
+        if (timer) clearTimeout(timer)
+        timer = setTimeout(() => {
+          timer = null
+          original()
+        }, SELECTION_DEBOUNCE_MS)
+      }
+      editor.on("selectionUpdate", debounced)
+      const originalDestroy = nv.destroy?.bind(nv)
+      nv.destroy = (): void => {
+        editor.off("selectionUpdate", debounced)
+        if (timer) clearTimeout(timer)
+        originalDestroy?.()
+      }
+    }
+    return nodeView
+  }
+}
+
 export interface TurnNodeAttributes {
   id: string
   speakerId: string | null
@@ -62,6 +109,6 @@ export const TurnNode = Node.create({
   },
 
   addNodeView() {
-    return VueNodeViewRenderer(TurnNodeView)
+    return debouncedTurnNodeViewRenderer()
   },
 })

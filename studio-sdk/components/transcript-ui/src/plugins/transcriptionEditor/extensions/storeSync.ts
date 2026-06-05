@@ -59,7 +59,15 @@ export const StoreSync = Extension.create<StoreSyncOptions>({
             (tr) => tr.getMeta(ySyncPluginKey),
           )
 
-          if (!isRemote) {
+          // Turn ids can only become missing/duplicated when the set of turns
+          // changes (split / merge / paste / delete) — never when typing into
+          // an existing turn. So only run the O(n) id scan when the turn count
+          // changed; plain typing skips it, which kept local edits slower than
+          // remote ones on large docs.
+          if (
+            !isRemote &&
+            oldState.doc.childCount !== newState.doc.childCount
+          ) {
             const fixTr = fixTurnIds(newState)
             if (fixTr) return fixTr
           }
