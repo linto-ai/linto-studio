@@ -78,6 +78,8 @@ export interface ChannelStore {
   readonly hasMoreHistory: Ref<boolean>
   setActiveTranslation(translationId: string | null): void
   reset(): void
+  /** Detach internal subscriptions (e.g. the cross-translation relay). */
+  dispose(): void
 }
 
 export interface SpeakersStore {
@@ -142,11 +144,11 @@ export interface SubtitlePluginApi {
 // ── Live Plugin API ─────────────────────────────────────────────────────
 
 export interface LivePartialEventData {
+  /** Segment this partial belongs to — used to match the opposite-language
+   *  translation partial in cross mode. */
+  turnId?: string
   text?: string
-  translations?: Array<{
-    translationId: string
-    text: string
-  }>
+  language: string
 }
 
 export interface LiveFinalEventData {
@@ -172,6 +174,18 @@ export interface LiveFinalEventData {
   }>
 }
 
+export interface LiveTranslationEventData {
+  turnId: string
+  language: string
+  /** Original language of the turn (the side being translated from). */
+  sourceLanguage: string
+  text: string
+  final: boolean
+  startTime: number
+  endTime: number
+  speakerId: string | null
+}
+
 export interface LivePluginApi {
   partial: ShallowRef<string | null>
   hasLiveUpdate: Ref<boolean>
@@ -179,7 +193,7 @@ export interface LivePluginApi {
   onFinal(event: LiveFinalEventData, channelId: string): void
   prependFinal(event: LiveFinalEventData, channelId: string): void
   prependFinalBatch(events: LiveFinalEventData[], channelId: string): void
-  onTranslation(event: { turnId: string; language: string; text: string }): void
+  onTranslation(event: LiveTranslationEventData): void
 }
 
 // ── Editor Store ────────────────────────────────────────────────────────
