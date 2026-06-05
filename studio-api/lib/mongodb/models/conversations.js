@@ -480,6 +480,35 @@ class ConvoModel extends MongoModel {
   }
 
   /**
+   * Update specific turns in place, matched by turn_id, without rewriting the
+   * whole text array. Each turn fully replaces its matching element (same
+   * normalization as replaceTurns, but only for the changed turns). Caller must
+   * ensure no turns were added/removed/reordered — only then is this correct.
+   */
+  async updateTurnsByIds(conversationId, turns) {
+    try {
+      const _id = this.getObjectId(conversationId)
+      const operations = turns.map((turn) => ({
+        updateOne: {
+          filter: { _id },
+          update: { $set: { "text.$[elem]": turn } },
+          arrayFilters: [{ "elem.turn_id": turn.turn_id }],
+        },
+      }))
+      operations.push({
+        updateOne: {
+          filter: { _id },
+          update: { $set: { last_update: moment().format() } },
+        },
+      })
+      return await this.mongoBulkWrite(operations)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  /**
    * Replace the speakers array on a conversation.
    */
   async updateSpeakers(conversationId, speakers) {

@@ -64,6 +64,13 @@ const isTurnActive = computed(() => {
 .turn {
   padding: var(--spacing-sm) var(--spacing-lg);
   border-left: 3px solid transparent;
+
+  /* Skip layout/paint of off-screen turns: the browser only renders turns near
+     the viewport, cutting layout cost on long transcripts (the DOM, selection,
+     cursor and collab are untouched — visually identical). `auto <size>` lets
+     it remember each turn's real height after first render. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 56px;
 }
 
 .turn-text {

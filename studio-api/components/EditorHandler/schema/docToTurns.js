@@ -26,18 +26,21 @@ function docToTurns(ydoc, field = "default") {
   return json.content
     .filter((node) => node.type === "turn")
     .map((node) => {
+      // A turn whose attributes are all at their schema default isn't persisted
+      // with attributes in Yjs, so `attrs` can be undefined after the round-trip.
+      const attrs = node.attrs || {}
       const text = (node.content || [])
         .filter((c) => c.type === "text")
         .map((c) => c.text)
         .join("")
 
       return {
-        turn_id: node.attrs.id,
-        speaker_id: node.attrs.speakerId || null,
+        turn_id: attrs.id,
+        speaker_id: attrs.speakerId || null,
         segment: text,
         raw_segment: text,
         words: [],
-        language: node.attrs.language || "",
+        language: attrs.language || "",
       }
     })
 }

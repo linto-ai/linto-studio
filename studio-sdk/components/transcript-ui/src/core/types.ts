@@ -65,6 +65,7 @@ export interface TranslationStore {
   replaceTurns(turns: Turn[]): void
   updateOrCreateTurnSilent(turn: Turn): void
   hasTurn(turnId: string): boolean
+  getTurn(turnId: string): Turn | undefined
 }
 
 export interface ChannelStore {

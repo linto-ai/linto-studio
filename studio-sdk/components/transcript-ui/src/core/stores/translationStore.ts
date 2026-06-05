@@ -105,6 +105,16 @@ export function createTranslationStore(
     return indexMap.has(turnId)
   }
 
+  function getTurn(turnId: string): Turn | undefined {
+    const idx = indexMap.get(turnId)
+    if (idx === undefined) return undefined
+    const turn = turns.value[idx]
+    // indexMap can lag turns.value after a structural change; verify the id.
+    return turn?.id === turnId
+      ? turn
+      : turns.value.find((t) => t.id === turnId)
+  }
+
   return {
     id,
     languages,
@@ -122,5 +132,6 @@ export function createTranslationStore(
     replaceTurns,
     updateOrCreateTurnSilent,
     hasTurn,
+    getTurn,
   }
 }

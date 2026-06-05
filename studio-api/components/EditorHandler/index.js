@@ -20,10 +20,50 @@ const { docToSpeakers } = require("./schema/docToSpeakers")
 const { enrichDiff } = require("./flush/enrichDiff")
 const { speakersChanged } = require("./flush/speakersDiff")
 
+// Words+timestamps are not carried by the Y.Doc (only segments are), so they
+// are delivered to each client as a stateless message. Build that payload from
+// MongoDB-format turns, keeping only the turns that actually have words.
+function buildWordsPayload(turns) {
+  return (turns || [])
+    .filter((t) => Array.isArray(t.words) && t.words.length > 0)
+    .map((t) => ({ turn_id: t.turn_id, words: t.words }))
+}
+
+// True when the persisted fields of a turn differ. Words are compared by value;
+// any difference (incl. uncertainty) counts as changed so we never skip a real
+// write.
+function turnPersistDiffers(a, b) {
+  return (
+    (a.segment ?? "") !== (b.segment ?? "") ||
+    (a.raw_segment ?? "") !== (b.raw_segment ?? "") ||
+    (a.speaker_id ?? null) !== (b.speaker_id ?? null) ||
+    (a.language ?? "") !== (b.language ?? "") ||
+    JSON.stringify(a.words ?? []) !== JSON.stringify(b.words ?? [])
+  )
+}
+
+// Returns the turns to update in place (matched by turn_id) when the turn set
+// and order are unchanged between old and new, or null when the structure
+// changed (add/remove/reorder/split/merge) and the whole array must be rewritten.
+function inPlaceDirtyTurns(oldTurns, newTurns) {
+  if (oldTurns.length !== newTurns.length) return null
+  const dirty = []
+  for (let i = 0; i < newTurns.length; i++) {
+    if (oldTurns[i].turn_id !== newTurns[i].turn_id) return null
+    if (turnPersistDiffers(oldTurns[i], newTurns[i])) dirty.push(newTurns[i])
+  }
+  return dirty
+}
+
 class EditorHandler extends Component {
   // Max time a revoked WRITE right stays effective on an active connection
   // before _beforeHandleMessage re-checks against Mongo.
   static RIGHTS_RECHECK_MS = 300000
+
+  // Initial words+timestamps are delivered in chunks of this many turns rather
+  // than one large frame: smaller WebSocket messages and the client applies
+  // them progressively instead of in a single blocking burst.
+  static TIMESTAMPS_CHUNK_TURNS = 50
 
   constructor(app) {
     super(app, "WebServer")
@@ -191,39 +231,74 @@ class EditorHandler extends Component {
 
     seedYDoc(document, turns)
     seedSpeakers(document, speakers)
+
+    // Stash the words payload so the first connection (which fires right after
+    // this load) can deliver timestamps without re-reading `text`. Consumed
+    // once in _onConnected; later joiners re-read fresh so edits stay current.
+    document.lintoWordsSeed = buildWordsPayload(turns)
     return document
   }
 
-  async _onConnected({ documentName, connection }) {
+  async _onConnected({ documentName, connection, instance }) {
     // Sent right after the Y.Doc sync state has been pushed to the new client.
     // The Y.Doc carries segments only — we need to deliver words+timestamps
     // through a separate stateless message, targeted to this connection.
     if (!connection) return
 
     try {
-      const conversation = await model.conversations.getById(documentName, [
-        "text",
-      ])
-      if (!conversation || conversation.length !== 1) return
+      const document = instance?.documents?.get(documentName)
+      let turnsWithWords = document?.lintoWordsSeed
 
-      const turnsWithWords = (conversation[0].text || [])
-        .filter((t) => Array.isArray(t.words) && t.words.length > 0)
-        .map((t) => ({ turn_id: t.turn_id, words: t.words }))
+      if (turnsWithWords) {
+        // One-shot seed from _onLoadDocument: the first connection after a cold
+        // load reuses it instead of reading `text` a second time.
+        delete document.lintoWordsSeed
+      } else {
+        // Document already in memory (later joiner): read fresh so word
+        // timestamps reflect any edits flushed since the initial load.
+        const conversation = await model.conversations.getById(documentName, [
+          "text",
+        ])
+        if (!conversation || conversation.length !== 1) return
+        turnsWithWords = buildWordsPayload(conversation[0].text || [])
+      }
 
-      if (turnsWithWords.length === 0) return
+      if (!turnsWithWords || turnsWithWords.length === 0) return
 
-      connection.sendStateless(
-        JSON.stringify({
-          type: "timestamps_recalc",
-          turns: turnsWithWords,
-        }),
-      )
-      debug(
-        `Seeded words for doc=${documentName}: ${turnsWithWords.length} turns`,
+      await this._sendTimestampsChunked(
+        connection,
+        documentName,
+        turnsWithWords,
       )
     } catch (err) {
       debug(`onConnected seed failed for doc=${documentName}: ${err.message}`)
     }
+  }
+
+  // Send the initial timestamps payload as several smaller stateless messages.
+  // Yields between chunks so a very large transcript neither blocks the event
+  // loop nor arrives as one multi-megabyte frame; the client applies each chunk
+  // as a separate onStateless tick.
+  async _sendTimestampsChunked(connection, documentName, turnsWithWords) {
+    const size = EditorHandler.TIMESTAMPS_CHUNK_TURNS
+    const total = turnsWithWords.length
+    for (let i = 0; i < total; i += size) {
+      const chunk = turnsWithWords.slice(i, i + size)
+      connection.sendStateless(
+        JSON.stringify({
+          type: "timestamps_recalc",
+          turns: chunk,
+        }),
+      )
+      if (i + size < total) {
+        await new Promise((resolve) => setImmediate(resolve))
+      }
+    }
+    debug(
+      `Seeded words for doc=${documentName}: ${total} turns in ${Math.ceil(
+        total / size,
+      )} chunk(s)`,
+    )
   }
 
   async _onStoreDocument({ document, documentName }) {
@@ -255,15 +330,31 @@ class EditorHandler extends Component {
     if (!hasChanges && !speakersDirty) return
 
     try {
+      let writeMode = "none"
       if (hasChanges) {
-        await model.conversations.replaceTurns(documentName, finalTurns)
+        const dirtyTurns = inPlaceDirtyTurns(oldTurns, finalTurns)
+        if (
+          dirtyTurns &&
+          dirtyTurns.length > 0 &&
+          dirtyTurns.length * 2 <= finalTurns.length
+        ) {
+          // Structure unchanged and only a minority of turns touched: update
+          // just those in place instead of rewriting the whole text array.
+          await model.conversations.updateTurnsByIds(documentName, dirtyTurns)
+          writeMode = `targeted(${dirtyTurns.length}/${finalTurns.length})`
+        } else {
+          // Structure changed (add/remove/reorder/split/merge) or most turns
+          // touched: rewrite the whole array (always correct).
+          await model.conversations.replaceTurns(documentName, finalTurns)
+          writeMode = `full(${finalTurns.length})`
+        }
       }
       if (speakersDirty) {
         await model.conversations.updateSpeakers(documentName, newSpeakers)
       }
 
       debug(
-        `Flushed doc=${documentName}: turns=${finalTurns.length} changed=${changedTurns.length} speakers=${speakersDirty ? "Y" : "N"}`,
+        `Flushed doc=${documentName}: ${writeMode} changed=${changedTurns.length} speakers=${speakersDirty ? "Y" : "N"}`,
       )
 
       if (changedTurns.length > 0) {
