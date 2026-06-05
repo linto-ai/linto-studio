@@ -24,11 +24,10 @@ function docToTurns(ydoc, field = "default") {
   if (!json || !json.content) return []
 
   return json.content
-    .filter((node) => node.type === "turn")
+    .filter((node) => node.type === "turn" && node.attrs && node.attrs.id)
     .map((node) => {
-      // A turn whose attributes are all at their schema default isn't persisted
-      // with attributes in Yjs, so `attrs` can be undefined after the round-trip.
-      const attrs = node.attrs || {}
+      // Id-less turns are filtered out above (not persisted with a null id).
+      const attrs = node.attrs
       const text = (node.content || [])
         .filter((c) => c.type === "text")
         .map((c) => c.text)

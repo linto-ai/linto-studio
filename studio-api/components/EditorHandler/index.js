@@ -20,36 +20,39 @@ const { docToSpeakers } = require("./schema/docToSpeakers")
 const { enrichDiff } = require("./flush/enrichDiff")
 const { speakersChanged } = require("./flush/speakersDiff")
 
-// Words+timestamps are not carried by the Y.Doc (only segments are), so they
-// are delivered to each client as a stateless message. Build that payload from
-// MongoDB-format turns, keeping only the turns that actually have words.
+// Words+timestamps live outside the Y.Doc; delivered as a stateless message.
 function buildWordsPayload(turns) {
   return (turns || [])
     .filter((t) => Array.isArray(t.words) && t.words.length > 0)
     .map((t) => ({ turn_id: t.turn_id, words: t.words }))
 }
 
-// True when the persisted fields of a turn differ. Words are compared by value;
-// any difference (incl. uncertainty) counts as changed so we never skip a real
-// write.
+const EMPTY_WORDS = []
+
+// Words compared by reference: enrichDiff reuses the old array when a turn is
+// unchanged and allocates a new one when it recomputes (O(1), no false miss).
 function turnPersistDiffers(a, b) {
   return (
     (a.segment ?? "") !== (b.segment ?? "") ||
     (a.raw_segment ?? "") !== (b.raw_segment ?? "") ||
     (a.speaker_id ?? null) !== (b.speaker_id ?? null) ||
     (a.language ?? "") !== (b.language ?? "") ||
-    JSON.stringify(a.words ?? []) !== JSON.stringify(b.words ?? [])
+    (a.words ?? EMPTY_WORDS) !== (b.words ?? EMPTY_WORDS)
   )
 }
 
-// Returns the turns to update in place (matched by turn_id) when the turn set
-// and order are unchanged between old and new, or null when the structure
-// changed (add/remove/reorder/split/merge) and the whole array must be rewritten.
+// Turns to update in place (by turn_id) when the set/order is unchanged; null
+// when the structure changed (add/remove/reorder) so the array must be rewritten.
 function inPlaceDirtyTurns(oldTurns, newTurns) {
   if (oldTurns.length !== newTurns.length) return null
+  const seen = new Set()
   const dirty = []
   for (let i = 0; i < newTurns.length; i++) {
-    if (oldTurns[i].turn_id !== newTurns[i].turn_id) return null
+    const id = newTurns[i].turn_id
+    // Missing/duplicate id → arrayFilter on text.$[elem] is ambiguous; rewrite all.
+    if (!id || seen.has(id)) return null
+    seen.add(id)
+    if (oldTurns[i].turn_id !== id) return null
     if (turnPersistDiffers(oldTurns[i], newTurns[i])) dirty.push(newTurns[i])
   }
   return dirty
@@ -60,9 +63,7 @@ class EditorHandler extends Component {
   // before _beforeHandleMessage re-checks against Mongo.
   static RIGHTS_RECHECK_MS = 300000
 
-  // Initial words+timestamps are delivered in chunks of this many turns rather
-  // than one large frame: smaller WebSocket messages and the client applies
-  // them progressively instead of in a single blocking burst.
+  // Initial words+timestamps are sent in chunks of this many turns, not one frame.
   static TIMESTAMPS_CHUNK_TURNS = 50
 
   constructor(app) {
@@ -232,9 +233,7 @@ class EditorHandler extends Component {
     seedYDoc(document, turns)
     seedSpeakers(document, speakers)
 
-    // Stash the words payload so the first connection (which fires right after
-    // this load) can deliver timestamps without re-reading `text`. Consumed
-    // once in _onConnected; later joiners re-read fresh so edits stay current.
+    // One-shot seed consumed by the first connection (avoids re-reading `text`).
     document.lintoWordsSeed = buildWordsPayload(turns)
     return document
   }
@@ -250,12 +249,10 @@ class EditorHandler extends Component {
       let turnsWithWords = document?.lintoWordsSeed
 
       if (turnsWithWords) {
-        // One-shot seed from _onLoadDocument: the first connection after a cold
-        // load reuses it instead of reading `text` a second time.
+        // Consume the one-shot seed (first connection after a cold load).
         delete document.lintoWordsSeed
       } else {
-        // Document already in memory (later joiner): read fresh so word
-        // timestamps reflect any edits flushed since the initial load.
+        // Later joiner: read fresh so words reflect edits since load.
         const conversation = await model.conversations.getById(documentName, [
           "text",
         ])
@@ -275,10 +272,8 @@ class EditorHandler extends Component {
     }
   }
 
-  // Send the initial timestamps payload as several smaller stateless messages.
-  // Yields between chunks so a very large transcript neither blocks the event
-  // loop nor arrives as one multi-megabyte frame; the client applies each chunk
-  // as a separate onStateless tick.
+  // Send timestamps in several smaller stateless messages, yielding between
+  // chunks so a large transcript doesn't block the loop or send one huge frame.
   async _sendTimestampsChunked(connection, documentName, turnsWithWords) {
     const size = EditorHandler.TIMESTAMPS_CHUNK_TURNS
     const total = turnsWithWords.length
@@ -338,13 +333,11 @@ class EditorHandler extends Component {
           dirtyTurns.length > 0 &&
           dirtyTurns.length * 2 <= finalTurns.length
         ) {
-          // Structure unchanged and only a minority of turns touched: update
-          // just those in place instead of rewriting the whole text array.
+          // Few turns changed, structure intact: update just those in place.
           await model.conversations.updateTurnsByIds(documentName, dirtyTurns)
           writeMode = `targeted(${dirtyTurns.length}/${finalTurns.length})`
         } else {
-          // Structure changed (add/remove/reorder/split/merge) or most turns
-          // touched: rewrite the whole array (always correct).
+          // Structure changed or most turns touched: rewrite the whole array.
           await model.conversations.replaceTurns(documentName, finalTurns)
           writeMode = `full(${finalTurns.length})`
         }

@@ -479,12 +479,7 @@ class ConvoModel extends MongoModel {
     }
   }
 
-  /**
-   * Update specific turns in place, matched by turn_id, without rewriting the
-   * whole text array. Each turn fully replaces its matching element (same
-   * normalization as replaceTurns, but only for the changed turns). Caller must
-   * ensure no turns were added/removed/reordered — only then is this correct.
-   */
+  // Update specific turns in place by turn_id (caller ensures no add/remove/reorder).
   async updateTurnsByIds(conversationId, turns) {
     try {
       const _id = this.getObjectId(conversationId)

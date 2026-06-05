@@ -106,13 +106,14 @@ export function createTranslationStore(
   }
 
   function getTurn(turnId: string): Turn | undefined {
+    // O(1) via indexMap, falling back to a scan when the index is stale (wrong
+    // slot or missing entry) so an existing turn is never reported as missing.
     const idx = indexMap.get(turnId)
-    if (idx === undefined) return undefined
-    const turn = turns.value[idx]
-    // indexMap can lag turns.value after a structural change; verify the id.
-    return turn?.id === turnId
-      ? turn
-      : turns.value.find((t) => t.id === turnId)
+    if (idx !== undefined) {
+      const turn = turns.value[idx]
+      if (turn?.id === turnId) return turn
+    }
+    return turns.value.find((t) => t.id === turnId)
   }
 
   return {

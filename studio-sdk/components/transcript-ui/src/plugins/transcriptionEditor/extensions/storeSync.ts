@@ -8,10 +8,8 @@ import type { Turn } from "../../../types/editor"
 
 const storeSyncKey = new PluginKey("storeSync")
 
-// A legitimate edit (split/paste) introduces at most a handful of missing or
-// duplicate turn ids. A larger count means corrupt data (e.g. a doubled
-// document): rewriting thousands of node ids in one transaction freezes the
-// tab, so the inline repair is skipped above this and fixed at the source.
+// Above this many missing/duplicate ids means corrupt data; skip the inline
+// repair (rewriting thousands of ids in one transaction freezes the tab).
 const MAX_DUPLICATE_REPAIR = 100
 
 /**
@@ -48,26 +46,15 @@ export const StoreSync = Extension.create<StoreSyncOptions>({
           if (suppressSync) return null
           if (oldState.doc.eq(newState.doc)) return null
 
-          // Skip fixTurnIds for remote Yjs changes:
-          // - The originating client already assigned the correct ID
-          // - Running fixTurnIds during _typeChanged (which holds the Yjs
-          //   binding mutex) would create a PM transaction that can't sync
-          //   back to Yjs, causing PM/Yjs divergence
-          // - Generating a different UUID locally would create a Yjs attribute
-          //   conflict with the originating client's UUID
+          // Skip on remote Yjs changes: the originating client already set the
+          // id, and reassigning under the Yjs mutex would diverge PM/Yjs.
           const isRemote = transactions.some(
             (tr) => tr.getMeta(ySyncPluginKey),
           )
 
-          // Turn ids can only become missing/duplicated when the set of turns
-          // changes (split / merge / paste / delete) — never when typing into
-          // an existing turn. So only run the O(n) id scan when the turn count
-          // changed; plain typing skips it, which kept local edits slower than
-          // remote ones on large docs.
-          if (
-            !isRemote &&
-            oldState.doc.childCount !== newState.doc.childCount
-          ) {
+          // Repair missing/duplicate ids on every local change: a count-preserving
+          // paste can introduce one without changing childCount. Scan is O(turns).
+          if (!isRemote) {
             const fixTr = fixTurnIds(newState)
             if (fixTr) return fixTr
           }
@@ -106,11 +93,9 @@ function syncDocToStore(
     }
   }
 
-  // Fast path: an equal child count means edits happened in place (no
-  // add/remove). ProseMirror reuses node references for unchanged subtrees, so
-  // we compare children position-by-position and only touch the turns whose
-  // reference actually changed — avoiding the O(n) lookup maps below on every
-  // keystroke. Any structural signal (reorder / id change) bails to the full diff.
+  // Fast path: equal child count → edits in place. PM reuses node refs for
+  // unchanged subtrees, so compare by reference and touch only changed turns;
+  // any structural signal bails to the full diff below.
   if (oldDoc.childCount === newDoc.childCount) {
     const changedNodes: ProseMirrorNode[] = []
     let structural = false
@@ -208,9 +193,7 @@ function nodeToTurn(node: ProseMirrorNode): Turn {
 
 function fixTurnIds(state: EditorState): Transaction | null {
   const seen = new Set<string>()
-  // Turns whose id is missing (new/split/pasted turns default to a null id that
-  // is never persisted to Yjs — which crashes the server-side docToTurns) or
-  // duplicated. Both get a fresh id assigned.
+  // Turns with a missing (null) or duplicate id — both get a fresh id assigned.
   const invalid: Array<{ pos: number; attrs: Record<string, unknown> }> = []
 
   state.doc.forEach((node, offset) => {

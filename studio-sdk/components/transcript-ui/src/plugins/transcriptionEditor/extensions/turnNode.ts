@@ -3,11 +3,9 @@ import { splitBlockAs } from "@tiptap/pm/commands"
 import { VueNodeViewRenderer } from "@tiptap/vue-3"
 import TurnNodeView from "../components/TurnNodeView.vue"
 
-// @tiptap/vue-3 registers a `selectionUpdate` listener on EVERY node view, and
-// each one calls getPos() — which is O(n) for a top-level turn. On a long
-// transcript that's O(n²) per keystroke and freezes typing. Turns don't use the
-// node `selected` state, so we wrap the renderer to debounce that listener: the
-// selected-state check runs after the user pauses instead of on every keystroke.
+// @tiptap/vue-3 adds a `selectionUpdate` listener per node view, each calling
+// O(n) getPos() — O(n²) per keystroke on a long transcript. Turns don't use the
+// `selected` state, so debounce that listener to run only after the user pauses.
 const SELECTION_DEBOUNCE_MS = 150
 
 interface DebouncableNodeView {

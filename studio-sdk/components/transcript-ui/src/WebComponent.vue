@@ -28,10 +28,8 @@ watch(
 const core = createCore()
 provideCore(core)
 
-// Destroy the editor BEFORE Vue tears down the child component tree. Otherwise
-// the (still-live) ProseMirror view reconciles node views whose DOM is being
-// removed during unmount, throwing "Cannot read properties of null
-// (reading 'nextSibling')" on navigation away.
+// Destroy before Vue tears down the child tree, else the live ProseMirror view
+// reconciles node views whose DOM is being removed ("nextSibling" null crash).
 onBeforeUnmount(() => core.destroy())
 
 defineExpose({ core })

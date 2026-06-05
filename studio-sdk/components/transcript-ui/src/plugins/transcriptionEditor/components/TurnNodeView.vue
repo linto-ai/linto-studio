@@ -24,10 +24,8 @@ const canEditSpeakers = computed(
   () => core.capabilities.value.speakers === "edit",
 )
 
-// Lazily mount the (heavy) Reka SpeakerPopover only on interaction. With
-// thousands of turns this avoids mounting thousands of popover instances up
-// front; the label looks identical until then. `openOnMount` opens it
-// immediately when activated by a click without a prior hover.
+// Mount the heavy Reka SpeakerPopover only on interaction (avoids thousands of
+// instances up front). openOnMount opens it on a click without a prior hover.
 const popoverMounted = ref(false)
 const openOnMount = ref(false)
 function activatePopover(): void {
@@ -90,10 +88,8 @@ const isTurnActive = computed(() => {
   padding: var(--spacing-sm) var(--spacing-lg);
   border-left: 3px solid transparent;
 
-  /* Skip layout/paint of off-screen turns: the browser only renders turns near
-     the viewport, cutting layout cost on long transcripts (the DOM, selection,
-     cursor and collab are untouched — visually identical). `auto <size>` lets
-     it remember each turn's real height after first render. */
+  /* Skip layout/paint of off-screen turns on long transcripts. `auto <size>`
+     remembers each turn's real height after first render. */
   content-visibility: auto;
   contain-intrinsic-size: auto 56px;
 }
@@ -110,8 +106,7 @@ const isTurnActive = computed(() => {
   background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);
 }
 
-/* Matches SpeakerPopover's trigger so the lazy placeholder is visually
-   identical before the popover mounts. */
+/* Matches SpeakerPopover's trigger so the placeholder looks identical. */
 .lazy-speaker-trigger {
   all: unset;
   cursor: pointer;

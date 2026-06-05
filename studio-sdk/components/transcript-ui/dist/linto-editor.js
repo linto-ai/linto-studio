@@ -9644,9 +9644,11 @@ function createTranslationStore(init, emit2, speakersEnsure) {
   }
   function getTurn(turnId) {
     const idx = indexMap.get(turnId);
-    if (idx === void 0) return void 0;
-    const turn = turns.value[idx];
-    return turn?.id === turnId ? turn : turns.value.find((t2) => t2.id === turnId);
+    if (idx !== void 0) {
+      const turn = turns.value[idx];
+      if (turn?.id === turnId) return turn;
+    }
+    return turns.value.find((t2) => t2.id === turnId);
   }
   return {
     id: id2,
@@ -35414,9 +35416,9 @@ const _sfc_main$o = /* @__PURE__ */ defineComponent({
     const resolvedOpen = computed({
       get: () => {
         if (props.open !== void 0) {
-          return internalOpen.value;
+          return props.open;
         }
-        return props.open;
+        return internalOpen.value;
       },
       set: (v2) => {
         internalOpen.value = v2;
@@ -42723,8 +42725,8 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0 = "\n.turn[data-v-01002f77] {\n  padding: var(--spacing-sm) var(--spacing-lg);\n  border-left: 3px solid transparent;\n\n  /* Skip layout/paint of off-screen turns: the browser only renders turns near\n     the viewport, cutting layout cost on long transcripts (the DOM, selection,\n     cursor and collab are untouched — visually identical). `auto <size>` lets\n     it remember each turn's real height after first render. */\n  content-visibility: auto;\n  contain-intrinsic-size: auto 56px;\n}\n.turn-text[data-v-01002f77] {\n  margin-top: var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.turn--active[data-v-01002f77] {\n  border-left: 3px solid var(--speaker-color);\n  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);\n}\n\n/* Matches SpeakerPopover's trigger so the lazy placeholder is visually\n   identical before the popover mounts. */\n.lazy-speaker-trigger[data-v-01002f77] {\n  all: unset;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--radius-sm);\n}\n.lazy-speaker-trigger[data-v-01002f77]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n[data-v-01002f77] .word--active {\n  text-decoration: underline;\n  text-decoration-color: var(--speaker-color);\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n  color: var(--speaker-color);\n}\n@media (max-width: 767px) {\n.turn[data-v-01002f77] {\n    padding: var(--spacing-sm) var(--spacing-md);\n}\n}\n";
-const TurnNodeView = /* @__PURE__ */ _export_sfc(_sfc_main, [["styles", [_style_0]], ["__scopeId", "data-v-01002f77"]]);
+const _style_0 = "\n.turn[data-v-cca1719e] {\n  padding: var(--spacing-sm) var(--spacing-lg);\n  border-left: 3px solid transparent;\n\n  /* Skip layout/paint of off-screen turns on long transcripts. `auto <size>`\n     remembers each turn's real height after first render. */\n  content-visibility: auto;\n  contain-intrinsic-size: auto 56px;\n}\n.turn-text[data-v-cca1719e] {\n  margin-top: var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.turn--active[data-v-cca1719e] {\n  border-left: 3px solid var(--speaker-color);\n  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);\n}\n\n/* Matches SpeakerPopover's trigger so the placeholder looks identical. */\n.lazy-speaker-trigger[data-v-cca1719e] {\n  all: unset;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--radius-sm);\n}\n.lazy-speaker-trigger[data-v-cca1719e]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n[data-v-cca1719e] .word--active {\n  text-decoration: underline;\n  text-decoration-color: var(--speaker-color);\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n  color: var(--speaker-color);\n}\n@media (max-width: 767px) {\n.turn[data-v-cca1719e] {\n    padding: var(--spacing-sm) var(--spacing-md);\n}\n}\n";
+const TurnNodeView = /* @__PURE__ */ _export_sfc(_sfc_main, [["styles", [_style_0]], ["__scopeId", "data-v-cca1719e"]]);
 function finalEventToSourceTurn(event) {
   const hasWords = event.words.length > 0;
   return {
@@ -55832,7 +55834,7 @@ const StoreSync = Extension.create({
           const isRemote = transactions.some(
             (tr) => tr.getMeta(ySyncPluginKey)
           );
-          if (!isRemote && oldState.doc.childCount !== newState.doc.childCount) {
+          if (!isRemote) {
             const fixTr = fixTurnIds(newState);
             if (fixTr) return fixTr;
           }
