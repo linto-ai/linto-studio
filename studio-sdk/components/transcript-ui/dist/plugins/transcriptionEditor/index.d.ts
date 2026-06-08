@@ -17,6 +17,12 @@ export interface TranscriptionEditorOptions {
         color: string;
         [key: string]: unknown;
     };
+    /**
+     * Read-only mode: the editor is not editable and broadcasts no cursor or
+     * selection to other participants. Remote edits are still received, so the
+     * user keeps seeing others work. @default false
+     */
+    readOnly?: boolean;
 }
 export declare function createTranscriptionEditorPlugin(options?: TranscriptionEditorOptions): CorePlugin;
 export { TranscriptionDocument } from './extensions/transcriptionDocument';

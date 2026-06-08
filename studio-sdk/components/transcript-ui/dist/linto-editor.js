@@ -56597,7 +56597,7 @@ function createTiptapEditor(core, options, ydoc, field, tiptapEditor, awareness,
     PauseOnEdit.configure({ core }),
     ...core.pluginExtensions
   ];
-  if (awareness) {
+  if (awareness && !options.readOnly) {
     extensions.push(
       CollaborationCursor.configure({
         awareness,
@@ -56606,7 +56606,8 @@ function createTiptapEditor(core, options, ydoc, field, tiptapEditor, awareness,
     );
   }
   tiptapEditor.value = new Editor2({
-    extensions
+    extensions,
+    editable: !options.readOnly
   });
   const unsubSync = core.on("translation:sync", () => {
     console.warn(
