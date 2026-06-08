@@ -83,7 +83,7 @@
     </IsMobile>
 
     <!-- Stop (ready/pending started, no active stream yet) -->
-    <IsMobile>
+    <IsMobile v-if="showStop && isStarted && !isActive && !isPaused">
       <Button
         :disabled="busy"
         icon="stop"
