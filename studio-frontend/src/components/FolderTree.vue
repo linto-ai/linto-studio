@@ -54,7 +54,10 @@ export default {
     return {
       showCreateInput: false,
       newFolderName: "",
-      createField: { placeholder: this.$t("folders.create_placeholder"), error: null },
+      createField: {
+        placeholder: this.$t("folders.create_placeholder"),
+        error: null,
+      },
       accessFolder: null,
     }
   },
@@ -83,8 +86,9 @@ export default {
       const storeScope = this.$store.getters["organizations/getStoreScope"]
       if (storeScope) {
         const hasSearch = this.$store.getters[`${storeScope}/search`]
-        const hasTags = (this.$store.state[storeScope]?.selectedTagIds ?? []).length > 0
-        if (hasSearch || hasTags) return '__search__'
+        const hasTags =
+          (this.$store.state[storeScope]?.selectedTagIds ?? []).length > 0
+        if (hasSearch || hasTags) return "__search__"
       }
       return this.$route.params.folderId
     },
@@ -104,14 +108,19 @@ export default {
       const storeScope = this.$store.getters["organizations/getStoreScope"]
       if (!storeScope) return
       const hasSearch = !!this.$store.getters[`${storeScope}/search`]
-      const hasTags = (this.$store.state[storeScope]?.selectedTagIds ?? []).length > 0
+      const hasTags =
+        (this.$store.state[storeScope]?.selectedTagIds ?? []).length > 0
       if (!hasSearch && !hasTags) return
       this.$store.dispatch(`${storeScope}/setSearchQuery`, "")
       this.$store.dispatch(`${storeScope}/clearSelectedTagIds`)
     },
     selectFolder(folderId) {
       this.clearSearch()
-      if (this.$route.params.folderId === folderId && this.$route.name === "explore") return
+      if (
+        this.$route.params.folderId === folderId &&
+        this.$route.name === "explore"
+      )
+        return
       this.$router.push({
         name: "explore",
         params: {
@@ -202,9 +211,16 @@ export default {
   &__create {
     padding: 0.25rem 1rem 0.25rem 2.5rem;
 
-    :deep(.form-field) { gap: 0; }
-    :deep(.form-field__input) { padding: 0.3em 0.5em; font-size: 0.85em; }
-    :deep(.form-field__error) { font-size: 0.7em; }
+    :deep(.form-field) {
+      gap: 0;
+    }
+    :deep(.form-field__input) {
+      padding: 0.3em 0.5em;
+      font-size: 0.85em;
+    }
+    :deep(.form-field__error) {
+      font-size: 0.7em;
+    }
   }
 
   &__list {
@@ -232,7 +248,6 @@ export default {
       border-left-color: var(--primary-color);
       font-weight: 600;
     }
-
   }
 }
 </style>

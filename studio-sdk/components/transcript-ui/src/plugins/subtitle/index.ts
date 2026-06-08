@@ -21,6 +21,7 @@ export interface WatermarkOptions {
 
 export interface SubtitlePluginOptions {
   fontSize?: number
+  isVisible?: boolean
   watermark?: WatermarkOptions
 }
 
@@ -32,7 +33,7 @@ export function createSubtitlePlugin(
 
     install(core: Core) {
       const fontSize = ref(options.fontSize ?? 40)
-      const isVisible = ref(true)
+      const isVisible = ref(options.isVisible ?? false)
       const isFullscreen = ref(false)
 
       let watermark: WatermarkPluginApi | undefined

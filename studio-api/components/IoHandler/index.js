@@ -601,6 +601,14 @@ class IoHandler extends Component {
     this.io.to(orgaId).emit(`folder_${action}`, folder)
   }
 
+  notify_session_cleared(orgaId, sessionId) {
+    const event = `orga_${orgaId}_session_cleared`
+    this.io.local.to(orgaId).emit(event, sessionId)
+    this.io.local
+      .to(`${PUBLIC_SESSION_ROOM_PREFIX}${sessionId}`)
+      .emit(event, sessionId)
+  }
+
   /**
    * Broadcast LLM job update to subscribed clients
    * @param {object} update - { organizationId, conversationId, jobId, status, progress, result, error }

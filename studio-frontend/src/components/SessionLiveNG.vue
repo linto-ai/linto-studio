@@ -22,6 +22,7 @@ import {
   computeTurnStartDate,
   computeTurnEndDate,
 } from "@/tools/computeTurnTime.js"
+import { bus } from "@/main.js"
 
 const PAGE_SIZE = 50
 
@@ -32,6 +33,7 @@ export default {
     websocketInstance: { type: Object, required: true },
     isFromPublicLink: { type: Boolean, default: false },
     currentOrganizationScope: { type: String, required: false, default: null },
+    displaySubtitles: { type: Boolean, default: false },
   },
   data() {
     return {
@@ -72,18 +74,42 @@ export default {
     this.initEditor()
     this.aquireWakeLock()
     document.addEventListener("visibilitychange", this.renewWakeLock)
+    bus.$on(
+      `websocket/orga_${this.currentOrganizationScope}_session_cleared`,
+      this.clear,
+    )
   },
   beforeDestroy() {
     this.offChannelChange?.()
     this.offScrollTop?.()
+    this.offSubtitle?.()
+    document.documentElement.style.removeProperty("--subtitle-reserve")
     this.offWatermarkDisplay?.()
     this.offWatermarkPin?.()
     this.unwatchWatermarkHost.forEach((stop) => stop())
     this.websocketInstance.unSubscribeSessionRoom()
     this.releaseWakeLock()
     document.removeEventListener("visibilitychange", this.renewWakeLock)
+    bus.$off(
+      `websocket/orga_${this.currentOrganizationScope}_session_cleared`,
+      this.clear,
+    )
   },
   methods: {
+    clear(sessionId) {
+      if (sessionId != this.session.id) {
+        return
+      }
+
+      const channel = this.core.activeChannel.value
+
+      if (!channel) {
+        return
+      }
+
+      this.historyOffset = 0
+      channel.reset()
+    },
     async renewWakeLock() {
       if (this.wakeLock) {
         await this.wakeLock.release()
@@ -115,6 +141,7 @@ export default {
 
       core.use(
         createSubtitlePlugin({
+          isVisible: this.displaySubtitles,
           watermark: {
             display: this.displayWatermark,
             pinned: this.watermarkPinned,
@@ -141,6 +168,22 @@ export default {
           translatedCaptions: [],
         })),
       }
+      // The subtitle banner is position:fixed at the viewport bottom and overlaps
+      // the bottom of the app. Reserve space via a root CSS variable consumed by
+      // #app-view so the whole layout (editor + sidebar) clears the banner.
+      // Subscribe before setDocument: the banner mounts (and emits on mount) as
+      // soon as channels are populated by setDocument, so the listener must
+      // already be registered to catch the initial emit.
+      this.offSubtitle = core.on(
+        "subtitle:visible",
+        ({ visible, height }) => {
+          document.documentElement.style.setProperty(
+            "--subtitle-reserve",
+            (visible ? height : 0) + "px",
+          )
+        },
+      )
+
       const doc = sessionToEditorDocument(sessionForDoc)
       core.setDocument(doc)
 
@@ -252,7 +295,11 @@ export default {
       if (type !== "original") return
 
       this.core.live.onPartial(
-        { text: content.text },
+        {
+          text: content.text,
+          turnId: computeSessionTurnUniqueId(content),
+          language: content.lang,
+        },
         this.activeChannelIndex,
       )
     },
@@ -302,6 +349,7 @@ export default {
       this.core.live.onTranslation({
         turnId: computeSessionTurnUniqueId(content),
         language: content.targetLang,
+        sourceLanguage: content.sourceLang,
         text: content.text,
         final: content.final,
         startDate: computeTurnStartDate(content),

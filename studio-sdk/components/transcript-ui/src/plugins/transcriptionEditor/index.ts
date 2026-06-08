@@ -210,19 +210,29 @@ export function createTranscriptionEditorPlugin(
           if (!channel) return
           stopWaiting()
 
-          const activeTranslation = computed<TranslationStore>(
-            () => core.activeChannel.value!.activeTranslation.value,
-          )
+          // The editable backing store for the active translation, or undefined
+          // when the active one is virtual (the cross translation) — which has
+          // no collab session and renders read-only.
+          const editableTranslation = (): TranslationStore | undefined => {
+            const ch = core.activeChannel.value
+            if (!ch) return undefined
+            return ch.translations.get(ch.activeTranslation.value.id)
+          }
 
-          // Start initial session
-          startSession(activeTranslation.value.id, activeTranslation.value)
+          function syncSession(): void {
+            const store = editableTranslation()
+            if (store) startSession(store.id, store)
+            else destroyCurrentSession()
+          }
 
-          // Watch for translation changes → restart session
+          // Start initial session (or read-only view when cross is active)
+          syncSession()
+
+          // Watch for translation changes → restart session, or tear it down
+          // when switching to the read-only cross translation
           const stopTranslation = watch(
-            () => activeTranslation.value.id,
-            (newId) => {
-              startSession(newId, activeTranslation.value)
-            },
+            () => core.activeChannel.value?.activeTranslation.value.id,
+            syncSession,
           )
           cleanups.push(stopTranslation)
         },
@@ -296,9 +306,13 @@ function createTiptapEditor(
   awareness: import("y-protocols/awareness").Awareness | null,
   cleanups: Array<() => void>,
 ): void {
-  const activeTranslation = computed<TranslationStore>(
-    () => core.activeChannel.value!.activeTranslation.value,
-  )
+  // Resolve the editable backing store; undefined for the virtual cross
+  // translation (StoreSync then no-ops, keeping the view read-only).
+  const activeTranslation = computed<TranslationStore | undefined>(() => {
+    const channel = core.activeChannel.value
+    if (!channel) return undefined
+    return channel.translations.get(channel.activeTranslation.value.id)
+  })
 
   const extensions = [
     TranscriptionDocument,

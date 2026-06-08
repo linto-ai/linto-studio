@@ -176,7 +176,7 @@ module.exports = (webServer) => {
         },
       },
       {
-        //quick meeting access
+        //quick meeting access (microphone)
         scrapPath: /^\/organizations\/[^/]+/,
         paths: [
           {
@@ -197,6 +197,19 @@ module.exports = (webServer) => {
             forwardParams: proxyForwardParams,
             executeBeforeResult: storeQuickMeetingFromStop.bind(webServer),
           },
+        ],
+        requireAuth: true,
+        orgaPermissionAccess: PERMISSIONS.MICROPHONE,
+        requireOrganizationQuickMeetingAccess: true,
+        rewrite: {
+          fromPath: "/quickMeeting/",
+          toPath: "/sessions/",
+        },
+      },
+      {
+        //bot access
+        scrapPath: /^\/organizations\/[^/]+/,
+        paths: [
           {
             path: "/organizations/:organizationId/bots",
             method: ["get", "post"],
@@ -209,12 +222,8 @@ module.exports = (webServer) => {
           },
         ],
         requireAuth: true,
-        orgaPermissionAccess: PERMISSIONS.SESSION,
+        orgaPermissionAccess: PERMISSIONS.BOT,
         requireOrganizationQuickMeetingAccess: true,
-        rewrite: {
-          fromPath: "/quickMeeting/",
-          toPath: "/sessions/",
-        },
       },
       {
         // Meeting Manager access
@@ -239,6 +248,24 @@ module.exports = (webServer) => {
           },
           {
             path: "/organizations/:organizationId/sessions/:id/stop",
+            method: ["put"],
+            forwardParams: proxyForwardParams,
+            executeBeforeResult: checkSessionMatchingOrganization,
+          },
+          {
+            path: "/organizations/:organizationId/sessions/:id/pause",
+            method: ["put"],
+            forwardParams: proxyForwardParams,
+            executeBeforeResult: checkSessionMatchingOrganization,
+          },
+          {
+            path: "/organizations/:organizationId/sessions/:id/resume",
+            method: ["put"],
+            forwardParams: proxyForwardParams,
+            executeBeforeResult: checkSessionMatchingOrganization,
+          },
+          {
+            path: "/organizations/:organizationId/sessions/:id/clear",
             method: ["put"],
             forwardParams: proxyForwardParams,
             executeBeforeResult: checkSessionMatchingOrganization,

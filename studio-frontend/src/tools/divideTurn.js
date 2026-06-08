@@ -10,7 +10,7 @@ export function divideTurn(turn, textBefore, textAfter, syllabic) {
 
   const indexTurn = findIndexSplit(
     turn.words.map((w) => w.word),
-    textBefore
+    textBefore,
   )
 
   if (
@@ -18,14 +18,14 @@ export function divideTurn(turn, textBefore, textAfter, syllabic) {
       turn.words,
       plainWordsBefore,
       plainWordsAfter,
-      indexTurn
+      indexTurn,
     )
   ) {
     const [splitBefore, splitAfter] = splitWord(
       plainWordsBefore[plainWordsBefore.length - 1],
       plainWordsAfter[0],
       turn.words[indexTurn],
-      syllabic
+      syllabic,
     )
     firstTurnWords = [...turn.words.slice(0, indexTurn), splitBefore]
     secondTurnWords = [splitAfter, ...turn.words.slice(indexTurn + 1)]
@@ -54,7 +54,7 @@ function isDividedInAMiddleOfAWord(
   turnWords,
   plainWordsBefore,
   plainWordsAfter,
-  index
+  index,
 ) {
   return (
     turnWords[index].word ===

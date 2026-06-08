@@ -7,7 +7,10 @@
  * @param {boolean} options.showSeconds - Show seconds (default: true)
  * @returns {string|null} Formatted duration string or null if invalid input
  */
-export function formatDuration(seconds, { compact = false, showZeroHours = false, showSeconds = true } = {}) {
+export function formatDuration(
+  seconds,
+  { compact = false, showZeroHours = false, showSeconds = true } = {},
+) {
   if (seconds == null || isNaN(seconds) || seconds < 0) {
     return null
   }

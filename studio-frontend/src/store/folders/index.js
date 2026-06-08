@@ -27,7 +27,12 @@ export default {
     updateFolder(state, folder) {
       state.folders = state.folders.map((f) =>
         f._id === folder._id
-          ? { ...f, ...folder, conversationCount: folder.conversationCount ?? f.conversationCount }
+          ? {
+              ...f,
+              ...folder,
+              conversationCount:
+                folder.conversationCount ?? f.conversationCount,
+            }
           : f,
       )
     },
@@ -65,7 +70,11 @@ export default {
       })
 
       const sortByName = (arr) => {
-        arr.sort((a, b) => (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" }))
+        arr.sort((a, b) =>
+          (a.name || "").localeCompare(b.name || "", undefined, {
+            sensitivity: "base",
+          }),
+        )
         arr.forEach((item) => sortByName(item.children))
         return arr
       }
@@ -278,7 +287,8 @@ export default {
       { folderId, conversationIds },
     ) {
       try {
-        const organizationId = rootGetters["organizations/getCurrentOrganizationScope"]
+        const organizationId =
+          rootGetters["organizations/getCurrentOrganizationScope"]
         for (const conversationId of conversationIds) {
           await apiMoveConversationToFolder(
             organizationId,

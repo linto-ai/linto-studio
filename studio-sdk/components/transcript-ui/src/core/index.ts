@@ -7,6 +7,7 @@ export type {
   CoreOptions,
   CoreCapabilities,
   TurnEventKey,
+  ReadableTranslation,
   TranslationStore,
   ChannelStore,
   SpeakersStore,

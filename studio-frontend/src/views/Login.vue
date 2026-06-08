@@ -1,8 +1,6 @@
 <template>
   <MainContentPublic>
-    <div
-      v-if="noAccessNotice"
-      class="flex col no-access-notice">
+    <div v-if="noAccessNotice" class="flex col no-access-notice">
       <h2 class="no-access-notice__title">{{ noAccessContent.title }}</h2>
       <p class="no-access-notice__detail">{{ noAccessContent.detail }}</p>
       <p class="no-access-notice__action">{{ noAccessContent.action }}</p>
@@ -36,7 +34,9 @@
             block
             variant="primary"
             class="login-page__form__submit"></Button>
-          <div class="login-page__form__create-account" v-if="enable_inscription">
+          <div
+            class="login-page__form__create-account"
+            v-if="enable_inscription">
             <span>{{ $t("login.not_registered") }}</span>
             <router-link
               to="/create-account"
@@ -48,7 +48,9 @@
         </div>
       </form>
 
-      <div v-if="emailNotVerified" class="email-not-verified-notice flex col gap-small">
+      <div
+        v-if="emailNotVerified"
+        class="email-not-verified-notice flex col gap-small">
         <p>{{ $t("login.email_not_verified") }}</p>
         <Button
           :label="$t('login.resend_verification')"
@@ -93,7 +95,11 @@
 import { getEnv } from "@/tools/getEnv"
 
 import LocalSwitcher from "@/components/LocalSwitcher.vue"
-import { apiLoginUser, apiResendVerificationEmail, getLoginMethods } from "@/api/user"
+import {
+  apiLoginUser,
+  apiResendVerificationEmail,
+  getLoginMethods,
+} from "@/api/user"
 import MainContentPublic from "@/components/MainContentPublic.vue"
 import { testEmail } from "@/tools/fields/testEmail"
 import { testFieldEmpty } from "@/tools/fields/testEmpty"

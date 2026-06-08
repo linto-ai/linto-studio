@@ -124,11 +124,31 @@ export default {
   computed: {
     columns() {
       return [
-        { key: "firstname", label: this.$t("api_tokens_settings.token_name_label"), width: "1fr" },
-        { key: "organizationRole", label: this.$t("api_tokens_settings.token_role_label"), width: "auto" },
-        { key: "createdAt", label: this.$t("api_tokens_settings.token_creation_date_label"), width: "auto" },
-        { key: "expiresAt", label: this.$t("api_tokens_settings.token_expiration_date_label"), width: "auto" },
-        { key: "actions", label: this.$t("api_tokens_settings.token_actions_label"), width: "auto" },
+        {
+          key: "firstname",
+          label: this.$t("api_tokens_settings.token_name_label"),
+          width: "1fr",
+        },
+        {
+          key: "organizationRole",
+          label: this.$t("api_tokens_settings.token_role_label"),
+          width: "auto",
+        },
+        {
+          key: "createdAt",
+          label: this.$t("api_tokens_settings.token_creation_date_label"),
+          width: "auto",
+        },
+        {
+          key: "expiresAt",
+          label: this.$t("api_tokens_settings.token_expiration_date_label"),
+          width: "auto",
+        },
+        {
+          key: "actions",
+          label: this.$t("api_tokens_settings.token_actions_label"),
+          width: "auto",
+        },
       ]
     },
     decoratedTokens() {

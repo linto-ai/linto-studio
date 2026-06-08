@@ -148,12 +148,19 @@ export default {
     changeShowAllProfiles() {
       this.showAllProfiles = !this.showAllProfiles
     },
-    async fetchTranscriberProfiles(pageNumber, { sortField, sortOrder, showAllProfiles }) {
+    async fetchTranscriberProfiles(
+      pageNumber,
+      { sortField, sortOrder, showAllProfiles },
+    ) {
       const allProfiles = await apiAdminGetTranscriberProfiles()
       let filtered = showAllProfiles
         ? allProfiles
         : allProfiles.filter((t) => !t.organizationId)
-      filtered = sortArray(filtered, sortField, sortOrder === 1 ? "asc" : "desc")
+      filtered = sortArray(
+        filtered,
+        sortField,
+        sortOrder === 1 ? "asc" : "desc",
+      )
       return { list: filtered, count: filtered.length }
     },
     showModalCreateTranscriberProfile() {

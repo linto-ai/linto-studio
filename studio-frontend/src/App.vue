@@ -41,7 +41,7 @@ import AppNotifications from "@/components/AppNotifications.vue"
 import "@/style/style.scss"
 
 // Pre-register all theme styles for dynamic loading (Vite glob import)
-const themeStyles = import.meta.glob('../themes/*/style/style.scss')
+const themeStyles = import.meta.glob("../themes/*/style/style.scss")
 
 export default {
   props: {},

@@ -42,10 +42,8 @@ const speakers = core.speakers.all
 provideTurnSelection(activeTurns, speakers, core)
 
 const channels = computed(() => [...core.channels.values()])
-const translations = computed(() =>
-  core.activeChannel.value
-    ? [...core.activeChannel.value.translations.values()]
-    : [],
+const translations = computed(
+  () => core.activeChannel.value?.selectableTranslations ?? [],
 )
 const activeTranslationId = computed(
   () => core.activeChannel.value?.activeTranslation.value.id ?? "",

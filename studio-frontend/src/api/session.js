@@ -294,23 +294,6 @@ export async function apiGetSessionsPaginated(
   return { list: [], count: 0, pageSize }
 }
 
-export async function apiHasSessions(organizationScope) {
-  try {
-    const res = await sendRequest(
-      `${BASE_API}/organizations/${organizationScope}/sessions`,
-      { method: "get" },
-      {
-        limit: 1,
-        organizationId: organizationScope,
-        excludeVisibility: "user",
-      },
-    )
-    return (res?.data?.totalItems ?? 0) > 0
-  } catch {
-    return false
-  }
-}
-
 export async function apiCountActiveSessions(organizationScope, notif) {
   const getStartedSessions = await sendRequest(
     `${BASE_API}/organizations/${organizationScope}/sessions`,
@@ -428,6 +411,39 @@ export async function apiStopSession(organizationScope, sessionId, notif) {
   )
 
   return stopSession
+}
+
+export async function apiPauseSession(organizationScope, sessionId, notif) {
+  const pauseSession = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}/pause`,
+    { method: "put" },
+    {},
+    notif,
+  )
+
+  return pauseSession
+}
+
+export async function apiResumeSession(organizationScope, sessionId, notif) {
+  const resumeSession = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}/resume`,
+    { method: "put" },
+    {},
+    notif,
+  )
+
+  return resumeSession
+}
+
+export async function apiClearSession(organizationScope, sessionId, notif) {
+  const clearSession = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}/clear`,
+    { method: "put" },
+    {},
+    notif,
+  )
+
+  return clearSession
 }
 
 export async function apiDeleteSession(

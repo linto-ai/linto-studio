@@ -30,6 +30,64 @@ function ensureSpeaker(caption, channel_caption) {
   return existingSpeaker.speaker_id
 }
 
+// Shallow-merge two optional translation maps into a fresh object
+// (non-object inputs are treated as empty).
+function unionTranslations(a, b) {
+  return {
+    ...(a && typeof a === "object" ? a : {}),
+    ...(b && typeof b === "object" ? b : {}),
+  }
+}
+
+// Dual-recognizer sessions (e.g. speaker detection + translation) can emit
+// two closedCaptions lines for the same segmentId: one carrying the locutor
+// and text, another carrying the translations but no locutor. Collapse those
+// into a single line so the downstream translation merge (find by segmentId)
+// is deterministic and processChannelCaptions never produces duplicate turns.
+// Lines without a segmentId (e.g. bot markers) are left untouched.
+//
+// The root cause is fixed upstream in emeeting's Transcriber (the secondary
+// recognizer's canonical line is dropped at the source); this stays as a
+// defensive backstop against producer/version skew, legacy recordings and
+// other providers that may still emit a separate translation-only line.
+function dedupeClosedCaptionsBySegmentId(closedCaptions = []) {
+  const keptBySegmentId = new Map() // segmentId -> the kept line, also held in result
+  const result = []
+
+  for (const cc of closedCaptions) {
+    if (cc.segmentId === undefined || cc.segmentId === null) {
+      // No segmentId (bot markers, etc.) — keep as-is, never merge.
+      result.push(cc)
+      continue
+    }
+
+    const existing = keptBySegmentId.get(cc.segmentId)
+    if (!existing) {
+      // First line for this segmentId: clone so we never mutate the input.
+      const clone = { ...cc }
+      if (cc.translations && typeof cc.translations === "object")
+        clone.translations = { ...cc.translations }
+      keptBySegmentId.set(cc.segmentId, clone)
+      result.push(clone)
+      continue
+    }
+
+    // `existing` is the same reference stored in both the Map and `result`, so
+    // mutating it in place updates the kept line everywhere. Collect the union
+    // first, before adopting cc's fields can overwrite existing.translations.
+    const translations = unionTranslations(
+      existing.translations,
+      cc.translations,
+    )
+    // Prefer the line that carries a locutor (and its text/timing).
+    if (!existing.locutor && cc.locutor) Object.assign(existing, cc)
+    if (Object.keys(translations).length > 0)
+      existing.translations = translations
+  }
+
+  return result
+}
+
 function createTurn(
   channel_caption,
   spk_id,
@@ -38,10 +96,6 @@ function createTurn(
   caption,
 ) {
   try {
-    if (main && diarization && !channel_caption.locutor) {
-      return
-    }
-
     let turn = {
       speaker_id: spk_id,
       turn_id: uuidv4(),
@@ -129,4 +183,5 @@ module.exports = {
   processChannelCaptions,
   ensureSpeaker,
   createTurn,
+  dedupeClosedCaptionsBySegmentId,
 }

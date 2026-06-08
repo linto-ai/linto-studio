@@ -119,12 +119,14 @@ async function updateConversationRights(req, res, next) {
       if (sharedBy.length !== 1) throw new UserNotFound()
       const sharedByEmail = sharedBy[0].email || sharedBy[0].firstname || "LinTO Studio"
 
-      Mailing.conversationShared(
-        user,
-        req,
-        sharedByEmail,
-        req.params.conversationId,
-      )
+      if (req.body.notify !== false) {
+        Mailing.conversationShared(
+          user,
+          req,
+          sharedByEmail,
+          req.params.conversationId,
+        )
+      }
 
       if (req.payload.data.adminId) {
         req.payload.data.userId = req.payload.data.adminId // if it's an admin that share the conversation
@@ -180,13 +182,15 @@ async function inviteNewUser(req, res, next) {
       const sharedBy = await model.users.getById(req.payload.data.userId)
       if (sharedBy.length !== 1) throw new UserNotFound()
       const sharedByEmail = sharedBy[0].email || sharedBy[0].firstname || "LinTO Studio"
-      await Mailing.conversationSharedNewUser(
-        email,
-        req,
-        magicId,
-        sharedByEmail,
-        req.params.conversationId,
-      )
+      if (req.body.notify !== false) {
+        await Mailing.conversationSharedNewUser(
+          email,
+          req,
+          magicId,
+          sharedByEmail,
+          req.params.conversationId,
+        )
+      }
 
       await model.conversations.addSharedUser(req.params.conversationId, {
         userId,

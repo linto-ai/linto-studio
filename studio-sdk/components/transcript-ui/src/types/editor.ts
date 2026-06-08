@@ -18,6 +18,8 @@ export interface Turn {
   startDate?: number // Unix timestamp in seconds — wall-clock fallback when startTime is absent
   endDate?: number
   language: string
+  /** Original language of the turn (the side being translated from); live-only. */
+  sourceLanguage?: string
 }
 
 export interface Speaker {

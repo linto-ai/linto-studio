@@ -131,8 +131,16 @@ export default {
   computed: {
     columns() {
       return [
-        { key: "user", label: this.$t("organisation.user_label"), width: "1fr" },
-        { key: "role", label: this.$t("organisation.user.role_label"), width: "1fr" },
+        {
+          key: "user",
+          label: this.$t("organisation.user_label"),
+          width: "1fr",
+        },
+        {
+          key: "role",
+          label: this.$t("organisation.user.role_label"),
+          width: "1fr",
+        },
         { key: "actions", label: "", width: "auto" },
       ]
     },

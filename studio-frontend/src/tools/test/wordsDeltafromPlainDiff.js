@@ -14,7 +14,7 @@ function diffFunction(newText, words, syllabic = syllabicFr) {
     splitText,
     {
       comparator: (a, b) => a.word === b.word,
-    }
+    },
   )
 
   return wordsDeltafromPlainDiff(splitText, words, diff, syllabic)
@@ -1434,7 +1434,7 @@ test("Delete word preceded by words with needed syllabs", (t) => {
     splitText,
     {
       comparator: (a, b) => a.word === b.word,
-    }
+    },
   )
 
   t.deepEqual(diffFunction(newText, words), [

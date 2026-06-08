@@ -393,7 +393,7 @@ function startLiveSimulation(channelId: string) {
       // Build partial text up to current word
       wordIdx++
       const partialText = words.slice(0, wordIdx).join(" ")
-      const partial: LivePartialEvent = { text: partialText }
+      const partial: LivePartialEvent = { text: partialText, language: "fr" }
       live.onPartial(partial, channelId)
 
       // Next word after a short delay

@@ -1,6 +1,4 @@
-const debug = require("debug")(
-  "linto:lib:mongodb:models:organizations",
-)
+const debug = require("debug")("linto:lib:mongodb:models:organizations")
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
 const COLOR = require(`${process.cwd()}/lib/dao/organization/color`)
@@ -180,8 +178,15 @@ class OrganizationModel extends MongoModel {
     }
   }
 
-  async getByIdAndUser(orgaId, userId) {
+  async getByIdAndUser(orgaId, userId, options = {}) {
     try {
+      const { bypass = false } = options
+      if (bypass) {
+        return await this.mongoRequest(
+          { _id: this.getObjectId(orgaId) },
+          public_projection,
+        )
+      }
       const query = {
         _id: this.getObjectId(orgaId),
         users: {
@@ -221,9 +226,8 @@ class OrganizationModel extends MongoModel {
       if (organizations.length === 0) return organizations
 
       const orgIds = organizations.map((o) => o._id.toString())
-      const allCategories = await categoriesModel.getSystemCategoriesByOrgIds(
-        orgIds,
-      )
+      const allCategories =
+        await categoriesModel.getSystemCategoriesByOrgIds(orgIds)
 
       const categoriesByOrg = new Map()
       for (const cat of allCategories) {

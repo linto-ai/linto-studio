@@ -138,13 +138,16 @@ export default {
     },
     handleKeydown(event) {
       // Forward keydown to controller if it has a handler
-      if (this.controller && typeof this.controller.onContentKeydown === "function") {
+      if (
+        this.controller &&
+        typeof this.controller.onContentKeydown === "function"
+      ) {
         this.controller.onContentKeydown(event)
       }
     },
     focus() {
       if (!this.$refs.wrapper) return
-      const autofocusEl = this.$refs.wrapper.querySelector('[autofocus]')
+      const autofocusEl = this.$refs.wrapper.querySelector("[autofocus]")
       const combobox = this.$refs.wrapper.querySelector('[role="combobox"]')
       const listbox = this.$refs.wrapper.querySelector('[role="listbox"]')
       if (autofocusEl) {

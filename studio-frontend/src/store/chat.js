@@ -86,10 +86,7 @@ export default {
       return session
     },
     async loadSession({ commit, state }, sessionId) {
-      const session = await apiGetChatSession(
-        state.conversationId,
-        sessionId,
-      )
+      const session = await apiGetChatSession(state.conversationId, sessionId)
       commit("SET_ACTIVE_SESSION", sessionId)
       commit("SET_MESSAGES", session.messages || [])
     },

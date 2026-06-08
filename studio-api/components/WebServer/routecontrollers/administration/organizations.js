@@ -112,9 +112,23 @@ async function updateOrganizationPlatform(req, res, next) {
         organization.permissions,
       )
 
-    if (matchingMail && matchingMail.includes("@")) {
-      if (matchingMail.includes("@")) organization.matchingMail = matchingMail
-      else next(new OrganizationUnsupportedMediaType("Not an email"))
+    if (matchingMail !== undefined) {
+      if (typeof matchingMail !== "string") {
+        throw new OrganizationUnsupportedMediaType(
+          "matchingMail must be a string",
+        )
+      }
+      const trimmedMail = matchingMail.trim()
+      if (trimmedMail === "") {
+        // empty value clears the matching criteria
+        organization.matchingMail = ""
+      } else if (trimmedMail.includes("@")) {
+        organization.matchingMail = trimmedMail
+      } else {
+        throw new OrganizationUnsupportedMediaType(
+          "matchingMail is not a valid email",
+        )
+      }
     }
 
     // Update organization in the database
@@ -141,10 +155,20 @@ async function inviteMatchingMail(req, res, next) {
     }
     organization = organization[0]
 
+    const matchingMail =
+      typeof organization.matchingMail === "string"
+        ? organization.matchingMail.trim()
+        : ""
+    if (!matchingMail.includes("@")) {
+      throw new OrganizationError(
+        "A matching email is required to invite users",
+      )
+    }
+
     // we search user with the same email as the matchingMail
     // we add them if they are not in the organization
     const users = await model.users.listAllUsers({
-      email: organization.matchingMail,
+      email: matchingMail,
     })
 
     users.list.forEach(async (user) => {

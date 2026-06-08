@@ -6,7 +6,9 @@
     </div>
 
     <!-- KPI Cards -->
-    <div class="dashboard-kpis__cards" :class="{ 'dashboard-kpis__cards--loading': loading }">
+    <div
+      class="dashboard-kpis__cards"
+      :class="{ 'dashboard-kpis__cards--loading': loading }">
       <StatCard
         :count="sessionsCount"
         :title="$t('backoffice.dashboard.sessions_count')"

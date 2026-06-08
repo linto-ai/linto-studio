@@ -1,30 +1,33 @@
 <template>
-  <!-- <ActionBar> -->
-  <div class="flex flex1">
-   
-      
-      <SessionStatus
-        v-if="sessionLoaded"
-        :session="session"
-        :small="isMobile"
-        showName
-        withText
-        class="flex1" />
-      <slot></slot>
+  <div class="flex flex1 align-center gap-small">
+    <SessionStatus
+      v-if="sessionLoaded"
+      :session="session"
+      :small="isMobile"
+      showName
+      withText
+      class="flex1" />
 
-     
-   
-    </div>
+    <SessionLiveActions
+      v-if="sessionLoaded && session && showActions"
+      :session="session"
+      :sessionListRoute="sessionListRoute"
+      @session-updated="$emit('session-updated')"
+      @paused="$emit('paused')"
+      @resumed="$emit('resumed')"
+      @cleared="$emit('cleared')"
+      @stopped="$emit('stopped')"
+      @deleted="$emit('deleted')" />
+
+    <slot></slot>
   </div>
-  <!-- </ActionBar> -->
 </template>
 <script>
-import { bus } from "@/main.js"
 import isAuthenticated from "@/tools/isAuthenticated.js"
 
 import SessionStatus from "@/components/SessionStatus.vue"
-import ActionBar from "@/layouts/ActionBar.vue"
-import { mapActions, mapGetters } from "vuex"
+import SessionLiveActions from "@/components/SessionLiveActions.vue"
+import { mapGetters } from "vuex"
 
 export default {
   props: {
@@ -44,12 +47,11 @@ export default {
       type: String,
       required: true,
     },
+    showActions: {
+      type: Boolean,
+      default: true,
+    },
   },
-  data() {
-    return {}
-  },
-  mounted() {},
-  methods: {},
   computed: {
     isAuthenticated() {
       return isAuthenticated()
@@ -58,7 +60,7 @@ export default {
   },
   components: {
     SessionStatus,
-    ActionBar,
+    SessionLiveActions,
   },
 }
 </script>

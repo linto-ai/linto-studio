@@ -34,6 +34,7 @@ const fr = {
   "sidebar.translationLabel": "Traduction",
   "sidebar.translationSelectLabel": "Sélectionner l'original ou la traduction",
   "sidebar.originalLanguage": "Langue originale",
+  "sidebar.bilingual": "Traductions croisées",
   "language.wildcard": "Multi-langue",
   "select.filter": "Rechercher…",
   "subtitle.exitFullscreen": "Quitter le plein écran",

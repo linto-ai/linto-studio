@@ -49,10 +49,18 @@
             class="sort-select"
             :value="sortField + ':' + sortOrder"
             @change="handleSortChange($event.target.value)">
-            <option value="created:-1">{{ $t('media_explorer.sort.created_desc') }}</option>
-            <option value="created:1">{{ $t('media_explorer.sort.created_asc') }}</option>
-            <option value="last_update:-1">{{ $t('media_explorer.sort.last_update_desc') }}</option>
-            <option value="last_update:1">{{ $t('media_explorer.sort.last_update_asc') }}</option>
+            <option value="created:-1">
+              {{ $t("media_explorer.sort.created_desc") }}
+            </option>
+            <option value="created:1">
+              {{ $t("media_explorer.sort.created_asc") }}
+            </option>
+            <option value="last_update:-1">
+              {{ $t("media_explorer.sort.last_update_desc") }}
+            </option>
+            <option value="last_update:1">
+              {{ $t("media_explorer.sort.last_update_asc") }}
+            </option>
           </select>
         </div>
       </div>
@@ -166,8 +174,11 @@ export default {
       this.toggleSelectedTag(tag)
     },
     handleSortChange(value) {
-      const [field, order] = value.split(':')
-      this.$store.dispatch(`${this.storeScope}/setSort`, { field, order: parseInt(order) })
+      const [field, order] = value.split(":")
+      this.$store.dispatch(`${this.storeScope}/setSort`, {
+        field,
+        order: parseInt(order),
+      })
     },
   },
 }

@@ -44,9 +44,12 @@ const isEmpty = computed<boolean>(() => {
 // de la transcription. Si l'une des deux dates manque, on considère "à jour"
 // par défaut (pas de signal négatif à donner).
 const isUpdated = computed<boolean>(() => {
-  const transcriptionLastModified =
-    core.activeChannel.value?.activeTranslation.value?.lastModifiedAt.value ??
-    null
+  // Resolve the real backing store; the virtual cross translation isn't in the
+  // map (no lastModifiedAt) → treated as up to date.
+  const channel = core.activeChannel.value
+  const activeId = channel?.activeTranslation.value.id
+  const realStore = activeId ? channel?.translations.get(activeId) : undefined
+  const transcriptionLastModified = realStore?.lastModifiedAt.value ?? null
   if (transcriptionLastModified == null) return true
   const activeVersion = versions.value.find(
     (v) => v.versionNumber === activeVersionNumber.value,

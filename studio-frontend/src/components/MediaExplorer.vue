@@ -46,9 +46,7 @@
           <Loading v-if="loading && !pageIsLoading" />
           <div v-if="!loading">
             <!-- Empty state -->
-            <div
-              v-if="medias.length === 0"
-              class="media-explorer__body__empty">
+            <div v-if="medias.length === 0" class="media-explorer__body__empty">
               <slot name="empty">
                 <div class="empty-state">
                   <p>Aucun média trouvé</p>

@@ -8878,6 +8878,7 @@ const fr = {
   "sidebar.translationLabel": "Traduction",
   "sidebar.translationSelectLabel": "Sélectionner l'original ou la traduction",
   "sidebar.originalLanguage": "Langue originale",
+  "sidebar.bilingual": "Traductions croisées",
   "language.wildcard": "Multi-langue",
   "select.filter": "Rechercher…",
   "subtitle.exitFullscreen": "Quitter le plein écran",
@@ -8997,6 +8998,7 @@ const en = {
   "sidebar.translationLabel": "Translation",
   "sidebar.translationSelectLabel": "Select original/translation",
   "sidebar.originalLanguage": "Original language",
+  "sidebar.bilingual": "Cross subtitles",
   "language.wildcard": "Multilingual",
   "select.filter": "Search…",
   "subtitle.exitFullscreen": "Exit fullscreen",
@@ -9127,6 +9129,13 @@ function hexToRgba(hex, alpha) {
   const b2 = parseInt(cleaned.substring(4, 6), 16);
   return `rgba(${r2}, ${g2}, ${b2}, ${alpha})`;
 }
+function extractLangCode(language) {
+  return language.split("-")[0];
+}
+function isSameLanguage(a2, b2) {
+  if (a2 == null || b2 == null) return false;
+  return extractLangCode(a2) === extractLangCode(b2);
+}
 function getLanguageDisplayName(code, locale, wildcardLabel = "*", stripRegion = true) {
   if (code === "*") return wildcardLabel;
   const lookup = stripRegion ? code.split("-")[0] ?? code : code;
@@ -9137,16 +9146,19 @@ function getLanguageDisplayName(code, locale, wildcardLabel = "*", stripRegion =
     return code;
   }
 }
-function buildTranslationItems(translations, locale, originalLabel, wildcardLabel = "*") {
+function buildTranslationItems(translations, locale, originalLabel, wildcardLabel = "*", bilingualLabel = "") {
   const sorted = [...translations].sort(
     (a2, b2) => Number(b2.isSource) - Number(a2.isSource)
   );
-  return sorted.map((tr) => ({
-    value: tr.id,
-    label: tr.isSource ? originalLabel : tr.languages.map(
-      (code) => getLanguageDisplayName(code, locale, wildcardLabel, false)
-    ).join(", ")
-  }));
+  return sorted.map((tr) => {
+    const isBilingual = !tr.isSource && tr.languages.length > 1;
+    return {
+      value: tr.id,
+      label: tr.isSource ? originalLabel : isBilingual && bilingualLabel ? bilingualLabel : tr.languages.map(
+        (code) => getLanguageDisplayName(code, locale, wildcardLabel, false)
+      ).join(", ")
+    };
+  });
 }
 function throttle(fn, delay = 250) {
   let isThrottled = false;
@@ -9711,6 +9723,11 @@ function createTranslationStore(init, emit2, speakersEnsure) {
   function hasTurn(turnId) {
     return indexMap.has(turnId);
   }
+  function getTurn(turnId) {
+    const index = indexMap.get(turnId);
+    if (index === void 0) return void 0;
+    return turns.value[index];
+  }
   return {
     id: id2,
     languages,
@@ -9727,10 +9744,86 @@ function createTranslationStore(init, emit2, speakersEnsure) {
     setTurns,
     replaceTurns,
     updateOrCreateTurnSilent,
-    hasTurn
+    hasTurn,
+    getTurn
   };
 }
-function createChannelStore(channel, emit2, speakersEnsure) {
+const CROSS_TRANSLATION_ID = "cross";
+function createCrossTranslationStore(source, translations, emit2, on) {
+  const langs = source.languages.map(extractLangCode);
+  if (langs.length !== 2) return null;
+  const tracksByLanguage = /* @__PURE__ */ new Map();
+  for (const tr of translations.values()) {
+    if (tr.id === source.id) {
+      continue;
+    }
+    if (tr.languages.length !== 1) {
+      return null;
+    }
+    if (!tr.languages[0]) {
+      return null;
+    }
+    tracksByLanguage.set(extractLangCode(tr.languages[0]), tr);
+  }
+  for (const lang of langs) {
+    if (!tracksByLanguage.has(lang)) {
+      return null;
+    }
+  }
+  const [langA, langB] = langs;
+  if (!langA || !langB) return null;
+  const crossTrackIds = /* @__PURE__ */ new Set([
+    tracksByLanguage.get(langA).id,
+    tracksByLanguage.get(langB).id
+  ]);
+  const turns = computed(
+    () => source.turns.value.map((turn) => getTurn(turn.id) ?? turn)
+  );
+  function getTurn(turnId) {
+    const sourceTurn = source.getTurn(turnId);
+    if (!sourceTurn) return void 0;
+    const target = isSameLanguage(sourceTurn.language, langA) ? langB : langA;
+    if (!target) return sourceTurn;
+    const targetTurn = tracksByLanguage.get(target)?.getTurn(turnId);
+    if (!targetTurn) return sourceTurn;
+    return targetTurn;
+  }
+  const unsubs = [];
+  function isOppositeSide(turn, translationId) {
+    if (!crossTrackIds.has(translationId)) return false;
+    if (turn.sourceLanguage == null) return true;
+    return !isSameLanguage(turn.language, turn.sourceLanguage);
+  }
+  function relayAddOrUpdate(event) {
+    unsubs.push(
+      on(event, ({ turn, translationId }) => {
+        if (!isOppositeSide(turn, translationId)) return;
+        emit2(event, { turn, translationId: CROSS_TRANSLATION_ID });
+      })
+    );
+  }
+  relayAddOrUpdate("turn:add");
+  relayAddOrUpdate("turn:update");
+  unsubs.push(
+    on("turn:remove", ({ turnId, translationId }) => {
+      if (!crossTrackIds.has(translationId)) return;
+      emit2("turn:remove", { turnId, translationId: CROSS_TRANSLATION_ID });
+    })
+  );
+  function dispose() {
+    unsubs.forEach((fn) => fn());
+    unsubs.length = 0;
+  }
+  return {
+    id: CROSS_TRANSLATION_ID,
+    isSource: false,
+    languages: source.languages,
+    turns,
+    getTurn,
+    dispose
+  };
+}
+function createChannelStore(channel, emit2, on, speakersEnsure) {
   const { id: id2, name, description, duration } = channel;
   const translations = /* @__PURE__ */ shallowReactive(/* @__PURE__ */ new Map());
   let sourceTranslation;
@@ -9742,13 +9835,21 @@ function createChannelStore(channel, emit2, speakersEnsure) {
   if (!sourceTranslation) {
     sourceTranslation = translations.values().next().value;
   }
+  const crossTranslation = createCrossTranslationStore(
+    sourceTranslation,
+    translations,
+    emit2,
+    on
+  );
+  const selectableTranslations = [...translations.values()];
+  if (crossTranslation) selectableTranslations.push(crossTranslation);
   const activeTranslationId = /* @__PURE__ */ ref(null);
   const isLoadingHistory = /* @__PURE__ */ ref(false);
   const hasMoreHistory = /* @__PURE__ */ ref(true);
   const activeTranslation = computed(() => {
-    if (activeTranslationId.value) {
-      return translations.get(activeTranslationId.value) ?? sourceTranslation;
-    }
+    const activeId = activeTranslationId.value;
+    if (activeId === CROSS_TRANSLATION_ID) return crossTranslation ?? sourceTranslation;
+    if (activeId) return translations.get(activeId) ?? sourceTranslation;
     return sourceTranslation;
   });
   function setActiveTranslation(translationId) {
@@ -9765,6 +9866,9 @@ function createChannelStore(channel, emit2, speakersEnsure) {
     hasMoreHistory.value = true;
     emit2("channel:reset", { channelId: id2 });
   }
+  function dispose() {
+    crossTranslation?.dispose();
+  }
   return {
     id: id2,
     name,
@@ -9772,11 +9876,14 @@ function createChannelStore(channel, emit2, speakersEnsure) {
     duration,
     translations,
     sourceTranslation,
+    crossTranslation,
+    selectableTranslations,
     activeTranslation,
     isLoadingHistory,
     hasMoreHistory,
     setActiveTranslation,
-    reset
+    reset,
+    dispose
   };
 }
 function ensureDocumentSpeakers(doc2) {
@@ -9824,12 +9931,13 @@ function createCore(options = {}) {
     title.value = doc2.title;
     date.value = doc2.date ?? null;
     speakersInternal.clear();
+    for (const channel of channels.values()) channel.dispose();
     channels.clear();
     for (const spkRef of ensureDocumentSpeakers(doc2)) {
       speakers.ensure(spkRef.id, spkRef.name);
     }
     for (const ch of doc2.channels) {
-      channels.set(ch.id, createChannelStore(ch, emit2, speakers.ensure));
+      channels.set(ch.id, createChannelStore(ch, emit2, on, speakers.ensure));
     }
     if (channels.size > 0 && !channels.has(activeChannelId.value)) {
       activeChannelId.value = channels.keys().next().value;
@@ -9849,7 +9957,8 @@ function createCore(options = {}) {
     for (const translation of channel.translations) {
       ensureSpeakersFromTurns(translation.turns, speakers.ensure);
     }
-    channels.set(channelId, createChannelStore(channel, emit2, speakers.ensure));
+    channels.get(channelId)?.dispose();
+    channels.set(channelId, createChannelStore(channel, emit2, on, speakers.ensure));
     emit2("channel:sync", { channelId });
   }
   const cleanups = [];
@@ -9865,6 +9974,7 @@ function createCore(options = {}) {
     emit2("destroy", void 0);
     cleanups.forEach((fn) => fn());
     cleanups.length = 0;
+    for (const channel of channels.values()) channel.dispose();
     clearEvents();
   }
   if (options.document) {
@@ -37869,7 +37979,10 @@ const _sfc_main$r = /* @__PURE__ */ defineComponent({
       return !content.value && versions.value.length === 0;
     });
     const isUpdated = computed(() => {
-      const transcriptionLastModified = core.activeChannel.value?.activeTranslation.value?.lastModifiedAt.value ?? null;
+      const channel = core.activeChannel.value;
+      const activeId = channel?.activeTranslation.value.id;
+      const realStore = activeId ? channel?.translations.get(activeId) : void 0;
+      const transcriptionLastModified = realStore?.lastModifiedAt.value ?? null;
       if (transcriptionLastModified == null) return true;
       const activeVersion = versions.value.find(
         (v2) => v2.versionNumber === activeVersionNumber.value
@@ -37982,8 +38095,8 @@ const _sfc_main$r = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$n = "\n.llm-service-panel[data-v-7861f37e] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.llm-service-panel__status[data-v-7861f37e] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n}\n.llm-service-panel__status--ok[data-v-7861f37e] {\n  color: var(--color-success, #2e7d32);\n}\n.llm-service-panel__status--warn[data-v-7861f37e] {\n  color: var(--color-warning, #ed6c02);\n}\n.llm-service-panel__empty[data-v-7861f37e] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-7861f37e] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n@media (max-width: 767px) {\n.llm-service-panel[data-v-7861f37e] {\n    padding: var(--spacing-md);\n}\n}\n";
-const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["styles", [_style_0$n]], ["__scopeId", "data-v-7861f37e"]]);
+const _style_0$n = "\n.llm-service-panel[data-v-0dbe6868] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.llm-service-panel__status[data-v-0dbe6868] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n}\n.llm-service-panel__status--ok[data-v-0dbe6868] {\n  color: var(--color-success, #2e7d32);\n}\n.llm-service-panel__status--warn[data-v-0dbe6868] {\n  color: var(--color-warning, #ed6c02);\n}\n.llm-service-panel__empty[data-v-0dbe6868] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-0dbe6868] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n@media (max-width: 767px) {\n.llm-service-panel[data-v-0dbe6868] {\n    padding: var(--spacing-md);\n}\n}\n";
+const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["styles", [_style_0$n]], ["__scopeId", "data-v-0dbe6868"]]);
 const _hoisted_1$k = { class: "switch" };
 const _hoisted_2$f = ["id", "checked"];
 const _hoisted_3$d = ["for"];
@@ -38694,7 +38807,8 @@ const _sfc_main$j = /* @__PURE__ */ defineComponent({
         props.translations,
         locale.value,
         t2("sidebar.originalLanguage"),
-        t2("language.wildcard")
+        t2("language.wildcard"),
+        t2("sidebar.bilingual")
       )
     );
     const field = computed(() => ({ label: t2("sidebar.translationSelectLabel") }));
@@ -41751,6 +41865,15 @@ const _sfc_main$d = /* @__PURE__ */ defineComponent({
     const { visible: watermarkVisible } = useWatermarkCycle(
       core.subtitle?.watermark
     );
+    onMounted(() => {
+      core.emit("subtitle:visible", { visible: true, height: canvasHeight.value });
+    });
+    watch(canvasHeight, (height) => {
+      core.emit("subtitle:visible", { visible: true, height });
+    });
+    onBeforeUnmount(() => {
+      core.emit("subtitle:visible", { visible: false, height: 0 });
+    });
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("div", {
         class: "subtitle-banner",
@@ -41766,8 +41889,8 @@ const _sfc_main$d = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$d = "\n.subtitle-banner[data-v-f62eaf60] {\n  position: relative;\n  flex-shrink: 0;\n  background-color: var(--color-black);\n  overflow: hidden;\n}\n.subtitle-canvas[data-v-f62eaf60] {\n  display: block;\n  width: 100%;\n  height: 100%;\n  transition: transform 0.4s ease;\n  transform-origin: top center;\n}\n.subtitle-canvas--shrunk[data-v-f62eaf60] {\n  transform: scale(0.8) translateY(-8%);\n}\n@media (prefers-reduced-motion: reduce) {\n.subtitle-canvas[data-v-f62eaf60] {\n    transition: none;\n}\n}\n";
-const SubtitleBanner = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["styles", [_style_0$d]], ["__scopeId", "data-v-f62eaf60"]]);
+const _style_0$d = "\n.subtitle-banner[data-v-1baa0a4a] {\n  position: fixed;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  flex-shrink: 0;\n  background-color: var(--color-black);\n  overflow: hidden;\n  z-index: 1001;\n}\n.subtitle-canvas[data-v-1baa0a4a] {\n  display: block;\n  width: 100%;\n  height: 100%;\n  transition: transform 0.4s ease;\n  transform-origin: top center;\n}\n.subtitle-canvas--shrunk[data-v-1baa0a4a] {\n  transform: scale(0.8) translateY(-8%);\n}\n@media (prefers-reduced-motion: reduce) {\n.subtitle-canvas[data-v-1baa0a4a] {\n    transition: none;\n}\n}\n";
+const SubtitleBanner = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["styles", [_style_0$d]], ["__scopeId", "data-v-1baa0a4a"]]);
 const _hoisted_1$a = {
   ref: "container",
   class: "subtitle-fullscreen"
@@ -42461,7 +42584,7 @@ const _sfc_main$3 = /* @__PURE__ */ defineComponent({
     provideTurnSelection(activeTurns, speakers, core);
     const channels = computed(() => [...core.channels.values()]);
     const translations = computed(
-      () => core.activeChannel.value ? [...core.activeChannel.value.translations.values()] : []
+      () => core.activeChannel.value?.selectableTranslations ?? []
     );
     const activeTranslationId = computed(
       () => core.activeChannel.value?.activeTranslation.value.id ?? ""
@@ -42600,8 +42723,8 @@ const _sfc_main$3 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$3 = "\n.editor-layout[data-v-f315416e] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: hidden;\n  background-color: var(--color-background);\n}\n.editor-body[data-v-f315416e] {\n  display: grid;\n  grid-template-columns: 1fr var(--sidebar-width);\n  flex: 1;\n  min-height: 0;\n}\n.mobile-selectors[data-v-f315416e] {\n  display: flex;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n  box-shadow: var(--shadow-md);\n  align-items: end;\n}\n.mobile-selectors[data-v-f315416e] > * {\n  flex: 1;\n  min-width: 0;\n}\n@media (max-width: 767px) {\n.editor-body[data-v-f315416e] {\n    grid-template-columns: 1fr;\n}\n}\n";
-const Layout = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["styles", [_style_0$3]], ["__scopeId", "data-v-f315416e"]]);
+const _style_0$3 = "\n.editor-layout[data-v-5918b5b2] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: hidden;\n  background-color: var(--color-background);\n}\n.editor-body[data-v-5918b5b2] {\n  display: grid;\n  grid-template-columns: 1fr var(--sidebar-width);\n  flex: 1;\n  min-height: 0;\n}\n.mobile-selectors[data-v-5918b5b2] {\n  display: flex;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n  box-shadow: var(--shadow-md);\n  align-items: end;\n}\n.mobile-selectors[data-v-5918b5b2] > * {\n  flex: 1;\n  min-width: 0;\n}\n@media (max-width: 767px) {\n.editor-body[data-v-5918b5b2] {\n    grid-template-columns: 1fr;\n}\n}\n";
+const Layout = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["styles", [_style_0$3]], ["__scopeId", "data-v-5918b5b2"]]);
 const _sfc_main$2 = /* @__PURE__ */ defineComponent({
   __name: "WebComponent",
   props: {
@@ -43131,7 +43254,8 @@ function finalEventToSourceTurn(event) {
     endTime: event.endTime,
     startDate: event.startDate,
     endDate: event.endDate,
-    language: event.language
+    language: event.language,
+    sourceLanguage: event.language
   };
 }
 function finalEventToTranslationTurn(event, tr) {
@@ -43144,7 +43268,8 @@ function finalEventToTranslationTurn(event, tr) {
     endTime: event.endTime,
     startDate: event.startDate,
     endDate: event.endDate,
-    language: tr.language
+    language: tr.language,
+    sourceLanguage: tr.sourceLanguage
   };
 }
 function createLivePlugin() {
@@ -43153,25 +43278,24 @@ function createLivePlugin() {
     install(core) {
       const partial = /* @__PURE__ */ shallowRef(null);
       const hasLiveUpdate = /* @__PURE__ */ ref(false);
+      let lastOriginalPartialEvent = null;
       hasLiveUpdate.value = true;
       function clearPartial() {
         partial.value = null;
+        lastOriginalPartialEvent = null;
+      }
+      function isTranslationTrackFor(active, language) {
+        if (active.isSource) return false;
+        return active.languages.some((l4) => isSameLanguage(l4, language));
       }
       function onPartial(event, channelId) {
         if (core.activeChannelId.value !== channelId) return;
         const channel = core.activeChannel.value;
         if (!channel) return;
+        lastOriginalPartialEvent = event;
         const activeTranslation = channel.activeTranslation.value;
-        if (activeTranslation.isSource) {
-          if (event.text == null) return;
+        if (activeTranslation.isSource && event.text != null) {
           partial.value = event.text;
-        } else if (event.translations) {
-          const match2 = event.translations.find(
-            (t2) => t2.translationId === activeTranslation.id
-          );
-          partial.value = match2?.text ?? null;
-        } else {
-          return;
         }
       }
       let clearPartialTimeout = null;
@@ -43211,7 +43335,10 @@ function createLivePlugin() {
             if (trStore)
               updateOrCreateTurn(
                 trStore,
-                finalEventToTranslationTurn(event, tr)
+                finalEventToTranslationTurn(event, {
+                  ...tr,
+                  sourceLanguage: event.language
+                })
               );
           }
         }
@@ -43251,7 +43378,12 @@ function createLivePlugin() {
               list = [];
               translationTurns.set(tr.translationId, list);
             }
-            list.push(finalEventToTranslationTurn(event, tr));
+            list.push(
+              finalEventToTranslationTurn(event, {
+                ...tr,
+                sourceLanguage: event.language
+              })
+            );
           }
         }
         for (const [translationId, turns] of translationTurns) {
@@ -43267,24 +43399,33 @@ function createLivePlugin() {
         const channel = core.activeChannel.value;
         if (!channel) return;
         const activeTranslation = channel.activeTranslation.value;
-        if (!_event.final && activeTranslation.languages.includes(_event.language)) {
-          partial.value = _event.text;
-        } else if (_event.final) {
-          const trStore = channel.translations.get(_event.language);
-          if (trStore) {
-            const turn = finalEventToTranslationTurn(
-              { ..._event },
-              _event
-            );
-            if (trStore === activeTranslation) {
-              updateOrCreateTurn(trStore, turn);
-            } else {
-              trStore.updateOrCreateTurnSilent(turn);
+        if (!_event.final) {
+          if (activeTranslation.id === CROSS_TRANSLATION_ID) {
+            if (_event.turnId === lastOriginalPartialEvent?.turnId && !isSameLanguage(
+              _event.language,
+              lastOriginalPartialEvent?.language
+            )) {
+              partial.value = _event.text;
             }
+          } else if (isTranslationTrackFor(activeTranslation, _event.language)) {
+            partial.value = _event.text;
           }
-          if (activeTranslation.languages.includes(_event.language)) {
-            immediateClearPartial();
+          return;
+        }
+        const trStore = channel.translations.get(_event.language);
+        if (trStore) {
+          const turn = finalEventToTranslationTurn(
+            { ..._event },
+            _event
+          );
+          if (trStore === activeTranslation || activeTranslation.id === CROSS_TRANSLATION_ID) {
+            updateOrCreateTurn(trStore, turn);
+          } else {
+            trStore.updateOrCreateTurnSilent(turn);
           }
+        }
+        if (isTranslationTrackFor(activeTranslation, _event.language) || activeTranslation.id === CROSS_TRANSLATION_ID) {
+          immediateClearPartial();
         }
       }
       const api = {
@@ -43410,7 +43551,7 @@ function createSubtitlePlugin(options = {}) {
     name: "subtitle",
     install(core) {
       const fontSize = /* @__PURE__ */ ref(options.fontSize ?? 40);
-      const isVisible2 = /* @__PURE__ */ ref(true);
+      const isVisible2 = /* @__PURE__ */ ref(options.isVisible ?? false);
       const isFullscreen = /* @__PURE__ */ ref(false);
       let watermark;
       const unwatchers = [];
@@ -56526,15 +56667,20 @@ function createTranscriptionEditorPlugin(options = {}) {
         (channel) => {
           if (!channel) return;
           stopWaiting();
-          const activeTranslation = computed(
-            () => core.activeChannel.value.activeTranslation.value
-          );
-          startSession(activeTranslation.value.id, activeTranslation.value);
+          const editableTranslation = () => {
+            const ch = core.activeChannel.value;
+            if (!ch) return void 0;
+            return ch.translations.get(ch.activeTranslation.value.id);
+          };
+          function syncSession() {
+            const store = editableTranslation();
+            if (store) startSession(store.id, store);
+            else destroyCurrentSession();
+          }
+          syncSession();
           const stopTranslation = watch(
-            () => activeTranslation.value.id,
-            (newId) => {
-              startSession(newId, activeTranslation.value);
-            }
+            () => core.activeChannel.value?.activeTranslation.value.id,
+            syncSession
           );
           cleanups.push(stopTranslation);
         },
@@ -56577,9 +56723,11 @@ function normalizeText(s2) {
   return s2.replace(/\s+/g, " ").trim();
 }
 function createTiptapEditor(core, options, ydoc, field, tiptapEditor, awareness, cleanups) {
-  const activeTranslation = computed(
-    () => core.activeChannel.value.activeTranslation.value
-  );
+  const activeTranslation = computed(() => {
+    const channel = core.activeChannel.value;
+    if (!channel) return void 0;
+    return channel.translations.get(channel.activeTranslation.value.id);
+  });
   const extensions = [
     TranscriptionDocument,
     TurnNode,

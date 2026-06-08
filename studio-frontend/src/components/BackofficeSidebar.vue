@@ -44,9 +44,7 @@
       :to="{ name: 'backoffice-sessionList' }"
       class="flex row align-center gap-medium tab backoffice-sidebar__link">
       <ph-icon name="broadcast" size="sm"></ph-icon>
-      <span class="tab__label">{{
-        $t("backoffice.navigation.sessions")
-      }}</span>
+      <span class="tab__label">{{ $t("backoffice.navigation.sessions") }}</span>
     </router-link>
     <router-link
       v-if="isAtLeastSystemAdministrator"
@@ -64,10 +62,14 @@
       class="flex row align-center gap-medium tab backoffice-sidebar__link backoffice-sidebar__org-switch"
       @click="modalOrgSelector = true">
       <ph-icon name="arrow-left" size="sm"></ph-icon>
-      <span class="tab__label">{{ $t("backoffice.navigation.back_to_org") }}</span>
+      <span class="tab__label">{{
+        $t("backoffice.navigation.back_to_org")
+      }}</span>
     </a>
 
-    <ModalSwitchOrg v-model="modalOrgSelector" @close="modalOrgSelector = false" />
+    <ModalSwitchOrg
+      v-model="modalOrgSelector"
+      @close="modalOrgSelector = false" />
   </nav>
 </template>
 <script>

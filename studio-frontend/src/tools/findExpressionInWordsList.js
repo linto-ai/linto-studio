@@ -6,7 +6,7 @@ export default function findExpressionInWordsList(
   expressionsList,
   wordsList,
   expressionToString,
-  wordToString
+  wordToString,
 ) {
   if (!wordToString) {
     wordToString = (word) => word
@@ -34,7 +34,7 @@ export default function findExpressionInWordsList(
       } else if (
         compareWithoutPunctuation(
           word,
-          expressionWords[counterInExpressions[j]]
+          expressionWords[counterInExpressions[j]],
         )
       ) {
         if (indexOfWordStartingWithExpression[j] === -1) {

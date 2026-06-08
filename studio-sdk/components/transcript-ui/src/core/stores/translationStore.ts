@@ -105,6 +105,12 @@ export function createTranslationStore(
     return indexMap.has(turnId)
   }
 
+  function getTurn(turnId: string): Turn | undefined {
+    const index = indexMap.get(turnId)
+    if (index === undefined) return undefined
+    return turns.value[index]
+  }
+
   return {
     id,
     languages,
@@ -122,5 +128,6 @@ export function createTranslationStore(
     replaceTurns,
     updateOrCreateTurnSilent,
     hasTurn,
+    getTurn,
   }
 }

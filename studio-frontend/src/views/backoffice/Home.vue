@@ -195,7 +195,13 @@ export default {
       )
     },
     formatHoursDuration(decimalHours) {
-      return formatDuration(Math.round(decimalHours * 3600), { compact: true, showZeroHours: true, showSeconds: false }) || "00:00"
+      return (
+        formatDuration(Math.round(decimalHours * 3600), {
+          compact: true,
+          showZeroHours: true,
+          showSeconds: false,
+        }) || "00:00"
+      )
     },
     formatDate(dateStr) {
       if (!dateStr) return ""
