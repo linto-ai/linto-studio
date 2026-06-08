@@ -56599,7 +56599,7 @@ ${err.toString()}`);
       PauseOnEdit.configure({ core }),
       ...core.pluginExtensions
     ];
-    if (awareness) {
+    if (awareness && !options.readOnly) {
       extensions.push(
         CollaborationCursor.configure({
           awareness,
@@ -56608,7 +56608,8 @@ ${err.toString()}`);
       );
     }
     tiptapEditor.value = new Editor({
-      extensions
+      extensions,
+      editable: !options.readOnly
     });
     const unsubSync = core.on("translation:sync", () => {
       console.warn(
