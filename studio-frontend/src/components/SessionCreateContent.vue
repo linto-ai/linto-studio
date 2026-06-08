@@ -174,6 +174,7 @@ import MetadataList from "@/components/MetadataList.vue"
 import ModalEditMetadata from "@/components/ModalEditMetadata.vue"
 import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
 import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
+import { extractTranslationLangCode } from "@/tools/translationUtils"
 
 export default {
   mixins: [formsMixin],
@@ -410,7 +411,9 @@ export default {
 
       channel.id = generateId()
       channel.name = templateChannel.name
-      channel.translations = structuredClone(templateChannel.translations)
+      channel.translations = templateChannel.translations.map(
+        extractTranslationLangCode,
+      )
       channel.languages = templateChannel.languages
       channel.profileId = templateChannel.transcriberProfileId
 
