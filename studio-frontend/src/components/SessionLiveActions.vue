@@ -83,7 +83,7 @@
     </IsMobile>
 
     <!-- Stop (ready/pending started, no active stream yet) -->
-    <IsMobile v-if="showStop && isStarted && !isActive && !isPaused">
+    <IsMobile>
       <Button
         :disabled="busy"
         icon="stop"
@@ -266,7 +266,7 @@ export default {
     },
     async onStop() {
       this.busy = true
-      const res = await apiStopSession(this.sessionOrganizationId, this.id)
+      const res = await apiDeleteSession(this.sessionOrganizationId, this.id)
       this.busy = false
       if (res.status === "error") {
         bus.$emit("app_notif", {
