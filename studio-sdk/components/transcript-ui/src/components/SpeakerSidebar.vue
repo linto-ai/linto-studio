@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import SpeakerIndicator from './atoms/SpeakerIndicator.vue'
 import SwitchToggle from './atoms/SwitchToggle.vue'
 import EditableText from './atoms/EditableText.vue'
+import SelectableListItem from './atoms/SelectableListItem.vue'
 import EditorIcon from './atoms/EditorIcon.vue'
 import SpeakerMenu from './molecules/SpeakerMenu.vue'
 import MergeDialog from './molecules/MergeDialog.vue'
@@ -183,54 +184,38 @@ function onSelectVersion(versionNumber: number): void {
             'history-generation--current':
               gen.generationId === currentGenerationId,
           }">
-          <button
-            type="button"
-            class="history-generation__header"
+          <SelectableListItem
+            :current="gen.generationId === currentGenerationId"
             :disabled="serviceBusy"
-            :aria-current="
-              gen.generationId === currentGenerationId ? 'true' : undefined
-            "
-            @click="onSelectGeneration(gen.generationId)">
-            <EditorIcon
-              :name="statusIconName(gen.status)"
-              :spin="gen.status === 'processing' || gen.status === 'queued'"
-              :size="14"
-              :class="[
-                'history-generation__status',
-                `history-generation__status--${gen.status}`,
-              ]" />
-            <span class="history-generation__label">
-              <time :datetime="new Date(gen.createdAt).toISOString()">
-                {{ dateFormat.format(gen.createdAt) }}
-              </time>
-            </span>
-            <span class="history-generation__hint">{{
-              statusLabel(gen.status)
-            }}</span>
-          </button>
+            @select="onSelectGeneration(gen.generationId)">
+            <template #leading>
+              <EditorIcon
+                :name="statusIconName(gen.status)"
+                :spin="gen.status === 'processing' || gen.status === 'queued'"
+                :size="14"
+                :class="`history-generation__status--${gen.status}`" />
+            </template>
+            <time :datetime="new Date(gen.createdAt).toISOString()">
+              {{ dateFormat.format(gen.createdAt) }}
+            </time>
+            <template #trailing>{{ statusLabel(gen.status) }}</template>
+          </SelectableListItem>
           <ul
             v-if="gen.generationId === currentGenerationId && versions.length"
             class="history-version-list">
             <li v-for="v in versions" :key="v.versionNumber">
-              <button
-                type="button"
-                class="history-version"
-                :class="{
-                  'history-version--active':
-                    v.versionNumber === activeVersionNumber,
-                }"
+              <SelectableListItem
+                size="sm"
+                :current="v.versionNumber === activeVersionNumber"
                 :disabled="serviceBusy"
-                :aria-current="
-                  v.versionNumber === activeVersionNumber ? 'true' : undefined
-                "
-                @click="onSelectVersion(v.versionNumber)">
-                <span class="history-version__num">v{{ v.versionNumber }}</span>
-                <time
-                  class="history-version__date"
-                  :datetime="new Date(v.createdAt).toISOString()">
-                  {{ dateFormat.format(v.createdAt) }}
-                </time>
-              </button>
+                @select="onSelectVersion(v.versionNumber)">
+                v{{ v.versionNumber }}
+                <template #trailing>
+                  <time :datetime="new Date(v.createdAt).toISOString()">
+                    {{ dateFormat.format(v.createdAt) }}
+                  </time>
+                </template>
+              </SelectableListItem>
             </li>
           </ul>
         </li>
@@ -380,36 +365,6 @@ function onSelectVersion(versionNumber: number): void {
   flex-direction: column;
 }
 
-.history-generation__header {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  width: 100%;
-  padding: var(--spacing-sm);
-  border: 1px solid transparent;
-  border-radius: var(--radius-md);
-  background: none;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: var(--font-size-sm);
-  color: var(--color-text-primary);
-  text-align: left;
-  transition: background-color var(--transition-duration);
-}
-
-.history-generation__header:hover:not(:disabled) {
-  background-color: var(--color-surface-hover);
-}
-
-.history-generation__header:disabled {
-  cursor: not-allowed;
-}
-
-.history-generation--current .history-generation__header {
-  background-color: var(--color-surface-hover);
-  border-color: var(--color-border);
-}
-
 .history-generation__status--completed {
   color: var(--color-success, #2e7d32);
 }
@@ -423,17 +378,6 @@ function onSelectVersion(versionNumber: number): void {
   color: var(--color-primary);
 }
 
-.history-generation__label {
-  flex: 1;
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-}
-
-.history-generation__hint {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
-}
-
 .history-version-list {
   list-style: none;
   display: flex;
@@ -444,46 +388,9 @@ function onSelectVersion(versionNumber: number): void {
   border-left: 1px solid var(--color-border);
 }
 
-.history-version {
-  display: flex;
-  align-items: baseline;
-  gap: var(--spacing-sm);
-  width: 100%;
-  padding: var(--spacing-xs) var(--spacing-sm);
+/* Nudge nested version rows off the connecting border line. */
+.history-version-list :deep(.selectable-list-item) {
   margin-left: var(--spacing-xs);
-  border: 1px solid transparent;
-  border-radius: var(--radius-sm);
-  background: none;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: var(--font-size-xs);
-  color: var(--color-text-secondary);
-  text-align: left;
-  transition: background-color var(--transition-duration);
-}
-
-.history-version:hover:not(:disabled) {
-  background-color: var(--color-surface-hover);
-}
-
-.history-version:disabled {
-  cursor: not-allowed;
-}
-
-.history-version--active {
-  background-color: var(--color-surface-hover);
-  color: var(--color-text-primary);
-  font-weight: 600;
-}
-
-.history-version__num {
-  flex-shrink: 0;
-  font-variant-numeric: tabular-nums;
-}
-
-.history-version__date {
-  color: var(--color-text-muted);
-  font-variant-numeric: tabular-nums;
 }
 
 @media (max-width: 767px) {

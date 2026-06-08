@@ -11,6 +11,7 @@ import SidebarDrawer from "./SidebarDrawer.vue"
 import AudioPlayer from "./AudioPlayer.vue"
 import SubtitleBanner from "./SubtitleBanner.vue"
 import SubtitleFullscreen from "./SubtitleFullscreen.vue"
+import ChatDrawer from "./ChatDrawer.vue"
 import ChannelSelector from "./ChannelSelector.vue"
 import TranslationSelector from "./TranslationSelector.vue"
 import SelectionActionBar from "./SelectionActionBar.vue"
@@ -117,7 +118,9 @@ function onTranslationChange(translationId: string) {
       :duration="core.activeChannel.value?.duration ?? 0"
       :speaker-count="speakers.size"
       :is-mobile="isMobile"
-      @toggle-sidebar="isSidebarOpen = !isSidebarOpen" />
+      :can-ask="!!core.chat"
+      @toggle-sidebar="isSidebarOpen = !isSidebarOpen"
+      @open-chat="core.chat?.setDrawerOpen(true)" />
     <TabBar v-model="activeTab" />
     <SelectionActionBar v-if="showTranscription" />
     <main class="editor-body">
@@ -166,6 +169,7 @@ function onTranslationChange(translationId: string) {
         !core.subtitle.isFullscreen.value
       " />
     <SubtitleFullscreen v-if="core.subtitle?.isFullscreen.value" />
+    <ChatDrawer v-if="core.chat" />
     <div
       v-if="isMobile && (channels.length > 1 || translations.length > 1)"
       class="mobile-selectors">

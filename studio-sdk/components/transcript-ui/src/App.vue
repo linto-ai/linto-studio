@@ -7,6 +7,8 @@ import { createCore, provideCore } from "./core"
 import { createAudioPlugin } from "./plugins/audio"
 import { createTranscriptionEditorPlugin } from "./plugins/transcriptionEditor"
 import { createLLMServicesPlugin } from "./plugins/llmServices"
+import { createChatPlugin } from "./plugins/chat"
+import type { ChatMessage, ChatSession } from "./core/types"
 //import { createLivePlugin } from "./plugins/live"
 //import { createSubtitlePlugin } from "./plugins/subtitle"
 import type { LivePartialEvent, LiveFinalEvent } from "./plugins/live"
@@ -22,9 +24,157 @@ const core = createCore()
 core.use(createAudioPlugin())
 core.use(createTranscriptionEditorPlugin())
 core.use(createLLMServicesPlugin())
+core.use(createChatPlugin())
 //core.use(createLivePlugin())
 //core.use(createSubtitlePlugin())
 provideCore(core)
+
+// ── Mock chat integration (simulates the host: REST + SSE) ────────────
+//
+// In production this lives in studio-frontend's chatIntegration service.
+// Here we fake an in-memory "DB" and a token-by-token streamed reply so the
+// drawer can be exercised end to end.
+
+if (core.chat) {
+  const chat = core.chat
+
+  interface MockSession {
+    session: ChatSession
+    messages: ChatMessage[]
+  }
+
+  const db: MockSession[] = [
+    {
+      session: { id: "s1", title: "Résumé de la réunion" },
+      messages: [
+        {
+          id: "m1",
+          role: "user",
+          content: "Résume les points clés de cette réunion.",
+        },
+        {
+          id: "m2",
+          role: "assistant",
+          content:
+            "Voici les **points clés** :\n\n" +
+            "1. Périmètre fonctionnel validé la semaine dernière\n" +
+            "2. Design system quasiment finalisé\n" +
+            "3. Blocage côté back sur l'API de transcription\n\n" +
+            "> Prochaine étape : prioriser le bug de synchronisation.",
+        },
+      ],
+    },
+    {
+      session: { id: "s2", title: "Questions sur le budget" },
+      messages: [],
+    },
+  ]
+
+  let seq = 0
+  const newId = (prefix: string): string => `${prefix}-${++seq}-${Date.now()}`
+
+  const REPLY_MARKDOWN =
+    "Bonne question. Voici ce que je retiens de la transcription :\n\n" +
+    "- **Charge réseau** au-dessus des prévisions pendant les pics\n" +
+    "- Trois pistes envisagées dont le **cache distribué**\n" +
+    "- Migration prévue la semaine prochaine\n\n" +
+    "```js\n// invalidation à revoir si cache distribué\ncache.invalidate(key)\n```\n\n" +
+    "Tu veux que je détaille un point ?"
+
+  function streamReply(): void {
+    chat.streamStart()
+    const tokens = REPLY_MARKDOWN.match(/\s+|\S+/g) ?? [REPLY_MARKDOWN]
+    let i = 0
+    const tick = (): void => {
+      if (i >= tokens.length) {
+        chat.streamEnd(REPLY_MARKDOWN, { tokenCount: tokens.length })
+        const active = db.find((d) => d.session.id === chat.activeSessionId.value)
+        if (active) {
+          active.messages.push({
+            id: newId("a"),
+            role: "assistant",
+            content: REPLY_MARKDOWN,
+          })
+        }
+        return
+      }
+      chat.streamAppend(tokens[i]!)
+      i++
+      setTimeout(tick, 25)
+    }
+    setTimeout(tick, 300)
+  }
+
+  core.on("chat:loadSessions", () => {
+    chat.setSessions(db.map((d) => d.session))
+  })
+
+  core.on("chat:loadSession", ({ sessionId }) => {
+    chat.setActiveSession(sessionId)
+    chat.setLoadingSession(true)
+    // Simulate the history fetch latency so the spinner is visible.
+    setTimeout(() => {
+      const entry = db.find((d) => d.session.id === sessionId)
+      chat.setMessages(entry ? [...entry.messages] : [])
+      chat.setLoadingSession(false)
+    }, 600)
+  })
+
+  core.on("chat:createSession", () => {
+    const entry: MockSession = {
+      session: { id: newId("s"), title: "Nouvelle conversation" },
+      messages: [],
+    }
+    db.unshift(entry)
+    chat.setSessions(db.map((d) => d.session))
+    chat.setActiveSession(entry.session.id)
+    chat.setMessages([])
+  })
+
+  core.on("chat:renameSession", ({ sessionId, title }) => {
+    const entry = db.find((d) => d.session.id === sessionId)
+    if (entry) entry.session.title = title
+    chat.updateSessionTitle(sessionId, title)
+  })
+
+  core.on("chat:deleteSession", ({ sessionId }) => {
+    const idx = db.findIndex((d) => d.session.id === sessionId)
+    if (idx !== -1) db.splice(idx, 1)
+    chat.setSessions(db.map((d) => d.session))
+    if (chat.activeSessionId.value === sessionId) {
+      chat.setActiveSession(null)
+      chat.setMessages([])
+    }
+  })
+
+  core.on("chat:send", ({ content }) => {
+    // Create a session on first send if none is active.
+    let entry = db.find((d) => d.session.id === chat.activeSessionId.value)
+    if (!entry) {
+      entry = {
+        session: { id: newId("s"), title: content.slice(0, 30) },
+        messages: [],
+      }
+      db.unshift(entry)
+      chat.setSessions(db.map((d) => d.session))
+      chat.setActiveSession(entry.session.id)
+      chat.setMessages([])
+    } else if (entry.messages.length === 0) {
+      // Auto-name the session from the first user message.
+      entry.session.title = content.slice(0, 30)
+      chat.updateSessionTitle(entry.session.id, entry.session.title)
+    }
+
+    const userMessage: ChatMessage = {
+      id: newId("u"),
+      role: "user",
+      content,
+    }
+    entry.messages.push(userMessage)
+    chat.addMessage(userMessage)
+    streamReply()
+  })
+}
 
 // ── Mock LLM services demo ────────────────────────────────────────────
 

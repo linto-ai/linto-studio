@@ -103,6 +103,19 @@ const fr = {
   "time.relative.minutes": "il y a {n} min",
   "time.relative.hours": "il y a {n} h",
   "time.relative.days": "il y a {n} j",
+  "chat.title": "Assistant",
+  "chat.close": "Fermer l'assistant",
+  "chat.history": "Historique",
+  "chat.newChat": "Nouvelle conversation",
+  "chat.rename": "Renommer",
+  "chat.deleteSession": "Supprimer",
+  "chat.deleteConfirm": "Supprimer ?",
+  "chat.cancel": "Annuler",
+  "chat.confirmDelete": "Confirmer",
+  "chat.placeholder": "Écrire un message…",
+  "chat.send": "Envoyer",
+  "chat.emptyState": "Pose une question sur cette transcription.",
+  "chat.emptyChat": "Démarre la conversation.",
 } as const
 
 export default fr

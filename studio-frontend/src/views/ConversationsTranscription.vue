@@ -23,6 +23,8 @@ import {
 } from "@linto/transcript-ui/webcomponent"
 
 import { setupLLMServices } from "@/services/llmServicesIntegration"
+import { setupChat } from "@/services/chatIntegration"
+import { apiGetChatStatus } from "@/api/chat"
 
 import LayoutV2 from "@/layouts/v2-layout.vue"
 import PublicationModal from "@/components/molecules/PublicationModal.vue"
@@ -41,6 +43,7 @@ export default {
       conversationName: "",
       core: null,
       llmDispose: null,
+      chatDispose: null,
       editListeners: [],
       publicationModal: { open: false, jobId: null },
     }
@@ -58,6 +61,8 @@ export default {
     this.editListeners = []
     this.llmDispose?.()
     this.llmDispose = null
+    this.chatDispose?.()
+    this.chatDispose = null
   },
   methods: {
     async initEditor(doc) {
@@ -102,6 +107,17 @@ export default {
           this.publicationModal = { open: true, jobId }
         },
       })
+
+      // Chat assistant: only wire it when the backend feature is enabled, so
+      // the SDK's "ask" button stays disabled otherwise (core.chat absent).
+      const { enabled: chatEnabled } = await apiGetChatStatus().catch(() => ({
+        enabled: false,
+      }))
+      if (chatEnabled) {
+        this.chatDispose = setupChat(core, {
+          conversationId: this.conversationId,
+        })
+      }
 
       core.setDocument(doc)
       this.pushTranscriptionLastUpdate()

@@ -22,4 +22,8 @@ export type {
   LLMServiceGeneration,
   LLMServiceGenerationStatus,
   LLMServicesPluginApi,
+  ChatRole,
+  ChatMessage,
+  ChatSession,
+  ChatPluginApi,
 } from './types'

@@ -22,6 +22,10 @@ export type {
   LLMServiceInit,
   LLMServiceStatus,
   LLMServicesPluginApi,
+  ChatRole,
+  ChatMessage,
+  ChatSession,
+  ChatPluginApi,
 } from './core'
 
 // Composant principal
@@ -37,6 +41,7 @@ export type { LivePartialEvent, LiveFinalEvent, LiveTranslationEvent } from './p
 export { createSubtitlePlugin } from './plugins/subtitle'
 export type { SubtitlePluginOptions } from './plugins/subtitle'
 export { createLLMServicesPlugin } from './plugins/llmServices'
+export { createChatPlugin } from './plugins/chat'
 
 // Adapter API LinTO
 export { mapApiDocument } from './adapters/apiAdapter'

@@ -40,6 +40,12 @@ export interface CoreEventMap {
   "llmService:saveVersion": { id: string; content: string }
   "llmService:selectGeneration": { id: string; generationId: string }
   "verbatim:export": { format: string }
+  "chat:loadSessions": void
+  "chat:createSession": void
+  "chat:loadSession": { sessionId: string }
+  "chat:deleteSession": { sessionId: string }
+  "chat:renameSession": { sessionId: string; title: string }
+  "chat:send": { content: string }
   destroy: void
 }
 
@@ -293,6 +299,57 @@ export interface LivePluginApi {
   onTranslation(event: { turnId: string; language: string; text: string }): void
 }
 
+// ── Chat Plugin API ───────────────────────────────────────────────────────
+
+export type ChatRole = "user" | "assistant"
+
+export interface ChatMessage {
+  id: string
+  role: ChatRole
+  content: string
+  createdAt?: number
+  tokenCount?: number
+  /** True only for the virtual in-flight assistant message during streaming. */
+  streaming?: boolean
+}
+
+export interface ChatSession {
+  id: string
+  title: string
+}
+
+export interface ChatPluginApi {
+  // ── State (read by the UI) ──
+  readonly drawerOpen: Ref<boolean>
+  readonly sessions: Ref<ChatSession[]>
+  readonly activeSessionId: Ref<string | null>
+  readonly messages: Ref<ChatMessage[]>
+  readonly isStreaming: Ref<boolean>
+  readonly streamingContent: Ref<string>
+  readonly isLoadingSession: Ref<boolean>
+  /** messages plus the in-flight assistant message while streaming */
+  readonly allMessages: ComputedRef<ChatMessage[]>
+
+  // ── UI actions (no network) ──
+  setDrawerOpen(open: boolean): void
+
+  // ── State setters (host-pushed after network) ──
+  setSessions(sessions: ChatSession[]): void
+  setActiveSession(sessionId: string | null): void
+  setMessages(messages: ChatMessage[]): void
+  addMessage(message: ChatMessage): void
+  updateSessionTitle(sessionId: string, title: string): void
+  setLoadingSession(loading: boolean): void
+
+  // ── Streaming lifecycle ──
+  streamStart(): void
+  streamAppend(token: string): void
+  /** Finalize the streamed text as a permanent assistant message and reset. */
+  streamEnd(content: string, meta?: { tokenCount?: number }): void
+  /** Abort streaming (error/cancel) without committing a message. */
+  streamAbort(): void
+}
+
 // ── Core ────────────────────────────────────────────────────────────────
 
 export interface Core {
@@ -326,6 +383,7 @@ export interface Core {
   live?: LivePluginApi
   subtitle?: SubtitlePluginApi
   llmServices?: LLMServicesPluginApi
+  chat?: ChatPluginApi
 
   // ── Events ───────────────────────────────────────────────────────────
   on<K extends keyof CoreEventMap>(

@@ -105,6 +105,19 @@ const en: Record<keyof typeof fr, string> = {
   'time.relative.minutes': '{n} min ago',
   'time.relative.hours': '{n} h ago',
   'time.relative.days': '{n} d ago',
+  'chat.title': 'Assistant',
+  'chat.close': 'Close assistant',
+  'chat.history': 'History',
+  'chat.newChat': 'New chat',
+  'chat.rename': 'Rename',
+  'chat.deleteSession': 'Delete',
+  'chat.deleteConfirm': 'Delete?',
+  'chat.cancel': 'Cancel',
+  'chat.confirmDelete': 'Confirm',
+  'chat.placeholder': 'Type a message…',
+  'chat.send': 'Send',
+  'chat.emptyState': 'Ask a question about this transcript.',
+  'chat.emptyChat': 'Start the conversation.',
 }
 
 export default en
