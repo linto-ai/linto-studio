@@ -7,7 +7,13 @@
       :tabs="tabs"
       v-model="currentTab"
       variant="secondary"
-      style="padding-bottom: 0.5rem" />
+      style="padding-bottom: 0.5rem">
+      <template #end>
+        <KpiExportDropdown
+          :exportFn="exportActivityFn"
+          :filenamePrefix="activityFilenamePrefix" />
+      </template>
+    </Tabs>
     <SessionsKpi
       v-if="currentTab === 'sessions_kpi'"
       :organizationId="selectedOrganization">
@@ -32,14 +38,9 @@
       </template>
     </SessionsKpi>
     <div class="flex1 flex col gap-medium" v-else>
-      <div class="flex row align-end justify-between gap-medium">
-        <UserSelector
-          v-model="selecteduser"
-          :label="$t('activity_list.user_filter_label')" />
-        <KpiExportDropdown
-          :exportFn="exportActivityFn"
-          :filenamePrefix="activityFilenamePrefix" />
-      </div>
+      <UserSelector
+        v-model="selecteduser"
+        :label="$t('activity_list.user_filter_label')" />
       <GenericTableRequest
         ref="table"
         idKey="_id"
@@ -77,6 +78,7 @@
 </template>
 <script>
 import { bus } from "@/main.js"
+import { exportKpiSessions } from "@/api/kpi"
 import {
   apiGetHttpActivityLogs,
   apiGetSessionActivityLogs,
@@ -280,7 +282,9 @@ export default {
       }
     },
     activityFilenamePrefix() {
-      return `activity-${this.currentTab}`
+      return this.currentTab === "sessions_kpi"
+        ? "kpi-sessions"
+        : `activity-${this.currentTab}`
     },
   },
   watch: {
@@ -309,6 +313,12 @@ export default {
       this.organizations = res.list || []
     },
     exportActivityFn(format) {
+      if (this.currentTab === "sessions_kpi") {
+        return exportKpiSessions(format, {
+          organizationId: this.selectedOrganization,
+        })
+      }
+
       const scope = ACTIVITY_SCOPE_BY_TAB[this.currentTab] || {}
       return apiExportActivityLogs(format, {
         source: scope.source,
