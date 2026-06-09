@@ -123,6 +123,7 @@
               }"
               role="option"
               :aria-selected="isSelected(item)"
+              @mouseenter="highlightedIndex = index"
               @click.stop="onSelectionItemClick(item, $event)">
               <Checkbox
                 :id="getCheckboxId(index)"
@@ -154,7 +155,8 @@
               :id="getItemId(index)"
               class="popover-list__item"
               role="option"
-              :aria-selected="isSelected(item)">
+              :aria-selected="isSelected(item)"
+              @mouseenter="highlightedIndex = index">
               <Button
                 :icon="itemIcon(item)"
                 :icon-position="item.iconPosition || 'left'"
