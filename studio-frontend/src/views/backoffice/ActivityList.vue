@@ -32,9 +32,14 @@
       </template>
     </SessionsKpi>
     <div class="flex1 flex col gap-medium" v-else>
-      <UserSelector
-        v-model="selecteduser"
-        :label="$t('activity_list.user_filter_label')" />
+      <div class="flex row align-end justify-between gap-medium">
+        <UserSelector
+          v-model="selecteduser"
+          :label="$t('activity_list.user_filter_label')" />
+        <KpiExportDropdown
+          :exportFn="exportActivityFn"
+          :filenamePrefix="activityFilenamePrefix" />
+      </div>
       <GenericTableRequest
         ref="table"
         idKey="_id"
@@ -78,6 +83,8 @@ import {
   apiGetBackofficeActivityLogs,
   apiGetKeysActivityLogs,
   apiGetAllOrganizations,
+  apiExportActivityLogs,
+  ACTIVITY_SCOPE_BY_TAB,
 } from "@/api/admin.js"
 
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
@@ -92,6 +99,7 @@ import UserSelector from "@/components/molecules/UserSelector.vue"
 import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 import SessionsKpi from "@/components/SessionsKpi.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
+import KpiExportDropdown from "@/components/KpiExportDropdown.vue"
 import { timeToHMS } from "@/tools/timeToHMS"
 
 export default {
@@ -271,6 +279,9 @@ export default {
           break
       }
     },
+    activityFilenamePrefix() {
+      return `activity-${this.currentTab}`
+    },
   },
   watch: {
     currentTab() {
@@ -297,6 +308,14 @@ export default {
       const res = await apiGetAllOrganizations(0, { pageSize: 1000 })
       this.organizations = res.list || []
     },
+    exportActivityFn(format) {
+      const scope = ACTIVITY_SCOPE_BY_TAB[this.currentTab] || {}
+      return apiExportActivityLogs(format, {
+        source: scope.source,
+        scope: scope.scope,
+        userId: this.selecteduser?._id,
+      })
+    },
   },
   components: {
     MainContentBackoffice,
@@ -311,6 +330,7 @@ export default {
     UserInfoInline,
     SessionsKpi,
     FormInput,
+    KpiExportDropdown,
   },
 }
 </script>
