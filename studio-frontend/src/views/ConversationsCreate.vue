@@ -63,7 +63,8 @@
 
         <SecurityLevelSelector
           v-if="enableSecurityLevel"
-          v-model="securityLevel" />
+          v-model="securityLevel"
+          :minLevel="organizationSecurityLevel" />
 
         <!-- services -->
         <section class="flex col gap-small">
@@ -75,7 +76,7 @@
             :serviceList="fieldTranscriptionService.list"
             :disabled="formState === 'sending'"
             :loading="fieldTranscriptionService.loading"
-            :securityLevel="securityLevel"
+            :securityLevel="effectiveSecurityLevel"
             v-model="fieldTranscriptionService.value" />
         </section>
 
@@ -119,6 +120,7 @@ import { getEnv } from "@/tools/getEnv.js"
 import ConversationCreateMixin from "@/mixins/conversationCreate.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
+import { organizationSecurityLevelMixin } from "@/mixins/organizationSecurityLevel.js"
 
 import {
   apiGetTranscriberProfilesByOrganization,
@@ -142,6 +144,7 @@ export default {
     ConversationCreateMixin,
     orgaRoleMixin,
     organizationPermissionsMixin,
+    organizationSecurityLevelMixin,
   ],
   props: {
     userInfo: {

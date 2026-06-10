@@ -3,7 +3,7 @@
     class="form-field flex row gap-small wrap"
     v-if="!loading && serviceList.length > 0">
     <ConversationCreateService
-      v-for="(service, index) in serviceList"
+      v-for="(service, index) in sortedServices"
       :key="service.host"
       :value="service"
       @select="select(index, $event)"
@@ -53,6 +53,21 @@ export default {
       type: Number,
       required: false,
       default: null,
+    },
+  },
+  computed: {
+    sortedServices() {
+      // Keep usable services (meeting the required security level) on top and
+      // push the disabled ones to the bottom, preserving their relative order.
+      if (!this.securityLevel) return this.serviceList
+      const usable = []
+      const disabled = []
+      for (const service of this.serviceList) {
+        if (meetsSecurityLevel(service, this.securityLevel))
+          usable.push(service)
+        else disabled.push(service)
+      }
+      return [...usable, ...disabled]
     },
   },
   methods: {

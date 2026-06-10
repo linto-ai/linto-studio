@@ -956,6 +956,11 @@
       "bot_permission": "Create bot sessions",
       "update_button": "Update permissions"
     },
+    "organization_security_level": {
+      "title": "Security level",
+      "label": "Organization minimum security level",
+      "update_button": "Update security level"
+    },
     "matching_users": {
       "title": "Automatic user invitation",
       "matching_mail": {

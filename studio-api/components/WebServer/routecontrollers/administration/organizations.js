@@ -5,6 +5,9 @@ const debug = require("debug")(
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
+const SECURITY_LEVELS = require(
+  `${process.cwd()}/lib/dao/conversation/securityLevels`,
+)
 
 const {
   OrganizationError,
@@ -55,6 +58,7 @@ async function createOrganization(req, res, next) {
       owner: owner,
       token: "",
       permissions: PERMISSIONS.getDefaultPermissions(),
+      securityLevel: SECURITY_LEVELS.getValueOrDefault(req.body.securityLevel),
     }
 
     organization.permissions = PERMISSIONS.validateAndSetPermissions(
@@ -77,7 +81,14 @@ async function createOrganization(req, res, next) {
 async function updateOrganizationPlatform(req, res, next) {
   try {
     const { organizationId } = req.params
-    const { name, token, description, permissions, matchingMail } = req.body
+    const {
+      name,
+      token,
+      description,
+      permissions,
+      matchingMail,
+      securityLevel,
+    } = req.body
 
     // Check if organizationId is provided
     if (!organizationId) {
@@ -111,6 +122,14 @@ async function updateOrganizationPlatform(req, res, next) {
         permissions,
         organization.permissions,
       )
+    if (securityLevel !== undefined) {
+      if (!SECURITY_LEVELS.checkValue(securityLevel)) {
+        throw new OrganizationUnsupportedMediaType(
+          "Invalid securityLevel value. Allowed values: 0, 1, 2",
+        )
+      }
+      organization.securityLevel = securityLevel
+    }
 
     if (matchingMail !== undefined) {
       if (typeof matchingMail !== "string") {

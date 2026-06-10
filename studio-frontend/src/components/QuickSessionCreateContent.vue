@@ -19,12 +19,15 @@
         :profilesList="transcriberProfiles" />
     </section> -->
 
-    <SecurityLevelSelector v-if="enableSecurityLevel" v-model="securityLevel" />
+    <SecurityLevelSelector
+      v-if="enableSecurityLevel"
+      v-model="securityLevel"
+      :minLevel="organizationSecurityLevel" />
 
     <QuickSessionSettings
       :transcriberProfiles="transcriberProfiles"
       :transcriptionServices="transcriptionServices"
-      :securityLevel="securityLevel"
+      :securityLevel="effectiveSecurityLevel"
       :field="quickSessionSettingsField"
       source="micro"
       v-model="quickSessionSettingsField.value" />
@@ -57,6 +60,7 @@ import { testQuickSessionSettings } from "@/tools/fields/testQuickSessionSetting
 import generateServiceConfig from "@/tools/generateServiceConfig"
 
 import { formsMixin } from "@/mixins/forms.js"
+import { organizationSecurityLevelMixin } from "@/mixins/organizationSecurityLevel.js"
 
 import QuickSessionSettings from "@/components/QuickSessionSettings.vue"
 import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
@@ -66,7 +70,7 @@ import { getEnv } from "@/tools/getEnv"
 import { apiCreateQuickSession } from "@/api/session.js"
 
 export default {
-  mixins: [formsMixin],
+  mixins: [formsMixin, organizationSecurityLevelMixin],
   props: {
     transcriberProfiles: {
       type: Array,

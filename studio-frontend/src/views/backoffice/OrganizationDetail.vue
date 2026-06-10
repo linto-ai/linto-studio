@@ -21,6 +21,8 @@
           <UpdateOrganizationMatchingUsers
             :currentOrganization="organization" />
           <UpdateOrganizationPermissions :currentOrganization="organization" />
+          <UpdateOrganizationSecurityLevel
+            :currentOrganization="organization" />
         </div>
 
         <UpdateOrganizationUsers
@@ -69,6 +71,7 @@ import UpdateOrganizationForm from "@/components/UpdateOrganizationForm.vue"
 import UpdateOrganizationUsers from "@/components/UpdateOrganizationUsers.vue"
 import ModalDeleteOrganization from "@/components/ModalDeleteOrganization.vue"
 import UpdateOrganizationPermissions from "@/components/UpdateOrganizationPermissions.vue"
+import UpdateOrganizationSecurityLevel from "@/components/UpdateOrganizationSecurityLevel.vue"
 import UpdateOrganizationMatchingUsers from "@/components/UpdateOrganizationMatchingUsers.vue"
 import UpdateOrganizationTranscriberProfiles from "@/components/UpdateOrganizationTranscriberProfiles.vue"
 import ApiTokenSettings from "@/components/ApiTokenSettings.vue"
@@ -121,6 +124,7 @@ export default {
     UpdateOrganizationForm,
     UpdateOrganizationUsers,
     UpdateOrganizationPermissions,
+    UpdateOrganizationSecurityLevel,
     UpdateOrganizationTranscriberProfiles,
     UpdateOrganizationMatchingUsers,
     ModalDeleteOrganization,

@@ -950,6 +950,11 @@
       "bot_permission": "Créer des sessions bot",
       "update_button": "Mettre à jour les permissions"
     },
+    "organization_security_level": {
+      "title": "Niveau de sécurité",
+      "label": "Niveau de sécurité minimum de l'organisation",
+      "update_button": "Mettre à jour le niveau de sécurité"
+    },
     "matching_users": {
       "title": "Ajout automatique d'utilisateurs",
       "matching_mail": {
