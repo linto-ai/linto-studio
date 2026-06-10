@@ -147,8 +147,6 @@ export default {
         this.sortListKey,
         this.sortListDirection,
       )
-      // Keep usable profiles (meeting the required security level) on top and
-      // push the disabled ones to the bottom, preserving their sorted order.
       if (!this.securityLevel) return sorted
       return sortDisabledLast(sorted, (profile) =>
         this.isSecurityDisabled(profile),
@@ -165,9 +163,6 @@ export default {
       return this.l_profilesList
         .filter((profile) => !this.isSecurityDisabled(profile))
         .map((profile) => profile.id)
-    },
-    selectableIdSet() {
-      return new Set(this.selectableProfileIds)
     },
     showSecurityNotice() {
       return (
@@ -247,7 +242,9 @@ export default {
     emitSelection(ids) {
       // Profiles below the security level are not selectable (covers the
       // header "select all" checkbox, which bypasses the disabled rows).
-      const allowedIds = ids.filter((id) => this.selectableIdSet.has(id))
+      const allowedIds = ids.filter((id) =>
+        this.selectableProfileIds.includes(id),
+      )
       if (this.multiple) {
         const profiles = allowedIds
           .map((id) => this.l_profilesList.find((p) => p.id === id))

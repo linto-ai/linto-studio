@@ -68,8 +68,6 @@ export default {
       )
     },
     sortedServices() {
-      // Keep usable services (meeting the required security level) on top and
-      // push the disabled ones to the bottom, preserving their relative order.
       if (this.disabledServiceNames.size === 0) return this.serviceList
       return sortDisabledLast(this.serviceList, (service) =>
         this.isSecurityDisabled(service),
