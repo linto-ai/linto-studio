@@ -21,6 +21,7 @@ const options = computed(() =>
     locale.value,
     t("sidebar.originalLanguage"),
     t("language.wildcard"),
+    t("sidebar.bilingual"),
   ),
 )
 

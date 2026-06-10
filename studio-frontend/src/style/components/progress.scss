@@ -19,6 +19,9 @@
     border-radius: 50%;
     background:
       radial-gradient(closest-side, white 79%, transparent 80% 100%),
-      conic-gradient(var(--primary-color) calc(var(--progress, 0) * 1%), var(--small-contrast) 0);
+      conic-gradient(
+        var(--primary-color) calc(var(--progress, 0) * 1%),
+        var(--small-contrast) 0
+      );
   }
 }

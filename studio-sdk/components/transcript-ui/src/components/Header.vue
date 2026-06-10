@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue"
-import { Sparkles, Users } from "lucide-vue-next"
 import Button from "./atoms/Button.vue"
+import EditorIcon from "./atoms/EditorIcon.vue"
 import { useI18n } from "../i18n"
 import * as utils from "../utils"
 
@@ -11,10 +11,12 @@ const props = defineProps<{
   duration: number
   speakerCount: number
   isMobile: boolean
+  canAsk?: boolean
 }>()
 
 defineEmits<{
   toggleSidebar: []
+  openChat: []
 }>()
 
 const { t, locale } = useI18n()
@@ -55,10 +57,14 @@ const metaParts = computed(() =>
         variant="transparent"
         :aria-label="t('header.openSidebar')"
         @click="$emit('toggleSidebar')">
-        <template #icon><Users :size="16" /></template>
+        <template #icon><EditorIcon name="users" :size="16" /></template>
       </Button>
-      <Button variant="primary" :aria-label="t('header.ask')" disabled>
-        <template #icon><Sparkles :size="16" /></template>
+      <Button
+        variant="primary"
+        :aria-label="t('header.ask')"
+        :disabled="!props.canAsk"
+        @click="$emit('openChat')">
+        <template #icon><EditorIcon name="sparkles" :size="16" /></template>
         <span v-if="!isMobile">{{ t("header.ask") }}</span>
       </Button>
     </div>

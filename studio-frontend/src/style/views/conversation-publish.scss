@@ -1,5 +1,8 @@
 .publish-main-container {
-  background-color: var(--color-background-secondary, rgba(128, 128, 128, 0.18));
+  background-color: var(
+    --color-background-secondary,
+    rgba(128, 128, 128, 0.18)
+  );
   overflow: auto;
   padding: 5px;
   flex: 1;

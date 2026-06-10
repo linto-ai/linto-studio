@@ -26,6 +26,7 @@ async function searchTag(req, res, next) {
       await organizationUtility.getUserConversationFromOrganization(
         req.payload.data.userId,
         req.params.organizationId,
+        { backofficeAccess: req.backofficeAccess },
       )
     ).map((conv) => conv._id)
 

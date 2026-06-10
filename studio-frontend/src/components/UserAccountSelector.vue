@@ -1,7 +1,11 @@
 <template>
   <div class="user-account-selector flex gap-small flex1 align-center">
     <div class="avatar-container">
-      <Avatar :src="userAvatar" :text="userInitials" size="lg" @click="openSettingsModal" />
+      <Avatar
+        :src="userAvatar"
+        :text="userInitials"
+        size="lg"
+        @click="openSettingsModal" />
       <Tooltip
         v-if="!userInfo.emailIsVerified"
         :text="$t('app_settings_modal.email_not_verified')"
@@ -119,6 +123,5 @@ export default {
     overflow: hidden;
     text-overflow: ellipsis;
   }
-
 }
 </style>

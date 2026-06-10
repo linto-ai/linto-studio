@@ -1,6 +1,6 @@
 export default function unhighlightRange(
   { range },
-  { functionToUnhighlightWord = unhighlightWord } = {}
+  { functionToUnhighlightWord = unhighlightWord } = {},
 ) {
   let { startContainer, endContainer, startOffset, endOffset } = range
   let startWord = startContainer.children.item(startOffset)
@@ -28,6 +28,6 @@ function unhighlightWord(word) {
   word.removeAttribute("highlighted--last-word")
   word.removeAttribute("highlighted--first-word")
   word.classList.remove(
-    ...Array.from(word.classList).filter((c) => c.startsWith("background-"))
+    ...Array.from(word.classList).filter((c) => c.startsWith("background-")),
   )
 }

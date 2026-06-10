@@ -29,7 +29,10 @@ export default {
   },
   computed: {
     iconName() {
-      return SECURITY_LEVEL_ICONS[this.level] ?? SECURITY_LEVEL_ICONS[DEFAULT_SECURITY_LEVEL]
+      return (
+        SECURITY_LEVEL_ICONS[this.level] ??
+        SECURITY_LEVEL_ICONS[DEFAULT_SECURITY_LEVEL]
+      )
     },
     iconColor() {
       return "var(--text-secondary)"

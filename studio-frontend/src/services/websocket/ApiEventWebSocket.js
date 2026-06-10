@@ -220,6 +220,10 @@ export default class ApiEventWebSocket {
       store.dispatch("sessions/updateSession", value)
       bus.$emit(`websocket/orga_${organizationId}_session_update`, value)
     })
+
+    this.socket.on(`orga_${organizationId}_session_cleared`, (value) => {
+      bus.$emit(`websocket/orga_${organizationId}_session_cleared`, value)
+    })
   }
 
   unSubscribeSessionsUpdate() {

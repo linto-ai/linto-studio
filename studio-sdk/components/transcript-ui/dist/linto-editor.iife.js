@@ -8245,7 +8245,7 @@ var LintoEditor = (function(exports) {
       }
       const eventKey = hyphenate(event.key);
       if (modifiers2.some(
-        (k) => k === eventKey || keyNames[k] === eventKey
+        (k2) => k2 === eventKey || keyNames[k2] === eventKey
       )) {
         return fn(event);
       }
@@ -8501,6 +8501,16 @@ var LintoEditor = (function(exports) {
     ["rect", { x: "14", y: "3", width: "5", height: "18", rx: "1", key: "kaeet6" }],
     ["rect", { x: "5", y: "3", width: "5", height: "18", rx: "1", key: "1wsw3u" }]
   ]);
+  const Pencil = createLucideIcon("pencil", [
+    [
+      "path",
+      {
+        d: "M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z",
+        key: "1a8usu"
+      }
+    ],
+    ["path", { d: "m15 5 4 4", key: "1mk7zo" }]
+  ]);
   const Play = createLucideIcon("play", [
     [
       "path",
@@ -8509,6 +8519,10 @@ var LintoEditor = (function(exports) {
         key: "10ikf1"
       }
     ]
+  ]);
+  const Plus = createLucideIcon("plus", [
+    ["path", { d: "M5 12h14", key: "1ays0h" }],
+    ["path", { d: "M12 5v14", key: "s699le" }]
   ]);
   const Quote = createLucideIcon("quote", [
     [
@@ -8546,6 +8560,16 @@ var LintoEditor = (function(exports) {
     ],
     ["path", { d: "M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7", key: "1ydtos" }],
     ["path", { d: "M7 3v4a1 1 0 0 0 1 1h7", key: "t51u73" }]
+  ]);
+  const SendHorizontal = createLucideIcon("send-horizontal", [
+    [
+      "path",
+      {
+        d: "M3.714 3.048a.498.498 0 0 0-.683.627l2.843 7.627a2 2 0 0 1 0 1.396l-2.842 7.627a.498.498 0 0 0 .682.627l18-8.5a.5.5 0 0 0 0-.904z",
+        key: "117uat"
+      }
+    ],
+    ["path", { d: "M6 12h16", key: "s4cdu5" }]
   ]);
   const Settings = createLucideIcon("settings", [
     [
@@ -8594,6 +8618,13 @@ var LintoEditor = (function(exports) {
     ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", key: "afitv7" }],
     ["path", { d: "M3 9h18", key: "1pudct" }],
     ["path", { d: "M3 15h18", key: "5xshup" }]
+  ]);
+  const Trash2 = createLucideIcon("trash-2", [
+    ["path", { d: "M10 11v6", key: "nco0om" }],
+    ["path", { d: "M14 11v6", key: "outv1u" }],
+    ["path", { d: "M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6", key: "miytrc" }],
+    ["path", { d: "M3 6h18", key: "d0wm0j" }],
+    ["path", { d: "M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2", key: "e791ji" }]
   ]);
   const TriangleAlert = createLucideIcon("triangle-alert", [
     [
@@ -8684,6 +8715,10 @@ var LintoEditor = (function(exports) {
     spinner: LoaderCircle,
     "more-vertical": EllipsisVertical,
     "user-plus": UserPlus,
+    plus: Plus,
+    pencil: Pencil,
+    trash: Trash2,
+    send: SendHorizontal,
     "file-text": FileText,
     "message-circle": MessageCircle,
     "refresh-cw": RefreshCw,
@@ -8698,12 +8733,12 @@ var LintoEditor = (function(exports) {
     md: 20,
     lg: 24
   };
-  const _hoisted_1$s = {
+  const _hoisted_1$A = {
     key: 1,
     class: "editor-icon editor-icon--missing",
     "aria-hidden": "true"
   };
-  const _sfc_main$C = /* @__PURE__ */ defineComponent({
+  const _sfc_main$K = /* @__PURE__ */ defineComponent({
     __name: "EditorIcon",
     props: {
       name: { type: String },
@@ -8722,11 +8757,11 @@ var LintoEditor = (function(exports) {
           style: normalizeStyle(style2.value),
           class: normalizeClass(["editor-icon", { "editor-icon--spin": __props.spin }]),
           "aria-hidden": "true"
-        }, null, 8, ["style", "class"])) : (openBlock(), createElementBlock("span", _hoisted_1$s, "?"));
+        }, null, 8, ["style", "class"])) : (openBlock(), createElementBlock("span", _hoisted_1$A, "?"));
       };
     }
   });
-  const _style_0$u = "\n.editor-icon[data-v-210c7f09] {\n  flex-shrink: 0;\n}\n.editor-icon--missing[data-v-210c7f09] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  opacity: 0.5;\n  font-size: 1em;\n  line-height: 1;\n}\n.editor-icon--spin[data-v-210c7f09] {\n  animation: editor-icon-spin-210c7f09 1s linear infinite;\n}\n@keyframes editor-icon-spin-210c7f09 {\nto {\n    transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.editor-icon--spin[data-v-210c7f09] {\n    animation: none;\n}\n}\n";
+  const _style_0$B = "\n.editor-icon[data-v-210c7f09] {\n  flex-shrink: 0;\n}\n.editor-icon--missing[data-v-210c7f09] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  opacity: 0.5;\n  font-size: 1em;\n  line-height: 1;\n}\n.editor-icon--spin[data-v-210c7f09] {\n  animation: editor-icon-spin-210c7f09 1s linear infinite;\n}\n@keyframes editor-icon-spin-210c7f09 {\nto {\n    transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.editor-icon--spin[data-v-210c7f09] {\n    animation: none;\n}\n}\n";
   const _export_sfc = (sfc, props) => {
     const target = sfc.__vccOpts || sfc;
     for (const [key, val] of props) {
@@ -8734,13 +8769,13 @@ var LintoEditor = (function(exports) {
     }
     return target;
   };
-  const EditorIcon = /* @__PURE__ */ _export_sfc(_sfc_main$C, [["styles", [_style_0$u]], ["__scopeId", "data-v-210c7f09"]]);
-  const _hoisted_1$r = ["type", "disabled", "aria-disabled", "aria-label"];
-  const _hoisted_2$l = {
+  const EditorIcon = /* @__PURE__ */ _export_sfc(_sfc_main$K, [["styles", [_style_0$B]], ["__scopeId", "data-v-210c7f09"]]);
+  const _hoisted_1$z = ["type", "disabled", "aria-disabled", "aria-label"];
+  const _hoisted_2$r = {
     key: 3,
     class: "editor-btn__label"
   };
-  const _sfc_main$B = /* @__PURE__ */ defineComponent({
+  const _sfc_main$J = /* @__PURE__ */ defineComponent({
     __name: "Button",
     props: {
       label: { type: String },
@@ -8793,7 +8828,7 @@ var LintoEditor = (function(exports) {
             name: __props.icon,
             size: iconSize.value
           }, null, 8, ["name", "size"])) : _ctx.$slots.icon ? renderSlot(_ctx.$slots, "icon", { key: 2 }, void 0, true) : createCommentVNode("", true),
-          hasLabel.value ? (openBlock(), createElementBlock("span", _hoisted_2$l, [
+          hasLabel.value ? (openBlock(), createElementBlock("span", _hoisted_2$r, [
             renderSlot(_ctx.$slots, "default", {}, () => [
               createTextVNode(toDisplayString(__props.label), 1)
             ], true)
@@ -8803,12 +8838,12 @@ var LintoEditor = (function(exports) {
             name: __props.iconRight,
             size: iconSize.value
           }, null, 8, ["name", "size"])) : _ctx.$slots["icon-right"] ? renderSlot(_ctx.$slots, "icon-right", { key: 5 }, void 0, true) : createCommentVNode("", true)
-        ], 10, _hoisted_1$r);
+        ], 10, _hoisted_1$z);
       };
     }
   });
-  const _style_0$t = "\n.editor-btn[data-v-3b0709a9] {\n  /* Default tokens — overridden by variant/intent/size modifiers */\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-sm);\n  --btn-font-size: var(--font-size-xs);\n  --btn-height: 32px;\n  --btn-gap: var(--spacing-xs);\n\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: var(--btn-gap);\n  box-sizing: border-box;\n  height: var(--btn-height);\n  padding: var(--btn-padding-y) var(--btn-padding-x);\n  font-family: var(--font-family);\n  font-size: var(--btn-font-size);\n  font-weight: 500;\n  line-height: 1;\n  color: var(--btn-text);\n  background-color: var(--btn-bg);\n  border: 1px solid var(--btn-border-color);\n  border-radius: var(--radius-sm);\n  cursor: pointer;\n  white-space: nowrap;\n  transition:\n    background-color var(--transition-duration),\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.editor-btn[data-v-3b0709a9]:hover:not(:disabled) {\n  background-color: var(--btn-hover-bg);\n  color: var(--btn-hover-text);\n}\n.editor-btn[data-v-3b0709a9]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n\n/* Note: this rule is repeated lower in the file (after variants) to win the\n   cascade on the variant CSS vars. Keep this lightweight version for the\n   cursor and hover suppression. */\n.editor-btn[data-v-3b0709a9]:disabled {\n  cursor: not-allowed;\n}\n.editor-btn[data-v-3b0709a9]:disabled:hover {\n  background-color: var(--btn-bg);\n  color: var(--btn-text);\n}\n.editor-btn__label[data-v-3b0709a9] {\n  /* //overflow: hidden;\n  text-overflow: ellipsis; */\n  text-overflow: ellipsis;\n  text-box: cap alphabetic;\n}\n\n/* Sizes */\n.editor-btn--sm[data-v-3b0709a9] {\n  /* defaults */\n}\n.editor-btn--md[data-v-3b0709a9] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-sm);\n  --btn-height: 40px;\n}\n.editor-btn--lg[data-v-3b0709a9] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-base);\n  --btn-height: 44px;\n}\n\n/* Icon-only: square */\n.editor-btn--icon-only[data-v-3b0709a9] {\n  width: var(--btn-height);\n  padding: 0;\n}\n.editor-btn--block[data-v-3b0709a9] {\n  display: flex;\n  width: 100%;\n}\n\n/* Variants — default intent */\n.editor-btn--primary[data-v-3b0709a9] {\n  --btn-bg: var(--color-primary);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary-hover);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--secondary[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-primary);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--tertiary[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-primary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n.editor-btn--transparent[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n\n/* Destructive intent overrides */\n.editor-btn--destructive.editor-btn--primary[data-v-3b0709a9] {\n  --btn-bg: var(--color-danger);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-hover);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--destructive.editor-btn--secondary[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-danger);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--destructive.editor-btn--tertiary[data-v-3b0709a9],\n.editor-btn--destructive.editor-btn--transparent[data-v-3b0709a9] {\n  --btn-text: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-soft);\n  --btn-hover-text: var(--color-danger);\n}\n\n/* Disabled: gray-out regardless of variant. Placed after the variants so the\n   CSS var overrides win the cascade (same specificity, last declaration). */\n.editor-btn[data-v-3b0709a9]:disabled {\n  --btn-bg: var(--color-surface);\n  --btn-text: var(--color-text-muted);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface);\n  --btn-hover-text: var(--color-text-muted);\n}\n";
-  const Button = /* @__PURE__ */ _export_sfc(_sfc_main$B, [["styles", [_style_0$t]], ["__scopeId", "data-v-3b0709a9"]]);
+  const _style_0$A = "\n.editor-btn[data-v-3b0709a9] {\n  /* Default tokens — overridden by variant/intent/size modifiers */\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-sm);\n  --btn-font-size: var(--font-size-xs);\n  --btn-height: 32px;\n  --btn-gap: var(--spacing-xs);\n\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: var(--btn-gap);\n  box-sizing: border-box;\n  height: var(--btn-height);\n  padding: var(--btn-padding-y) var(--btn-padding-x);\n  font-family: var(--font-family);\n  font-size: var(--btn-font-size);\n  font-weight: 500;\n  line-height: 1;\n  color: var(--btn-text);\n  background-color: var(--btn-bg);\n  border: 1px solid var(--btn-border-color);\n  border-radius: var(--radius-sm);\n  cursor: pointer;\n  white-space: nowrap;\n  transition:\n    background-color var(--transition-duration),\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.editor-btn[data-v-3b0709a9]:hover:not(:disabled) {\n  background-color: var(--btn-hover-bg);\n  color: var(--btn-hover-text);\n}\n.editor-btn[data-v-3b0709a9]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n\n/* Note: this rule is repeated lower in the file (after variants) to win the\n   cascade on the variant CSS vars. Keep this lightweight version for the\n   cursor and hover suppression. */\n.editor-btn[data-v-3b0709a9]:disabled {\n  cursor: not-allowed;\n}\n.editor-btn[data-v-3b0709a9]:disabled:hover {\n  background-color: var(--btn-bg);\n  color: var(--btn-text);\n}\n.editor-btn__label[data-v-3b0709a9] {\n  /* //overflow: hidden;\n  text-overflow: ellipsis; */\n  text-overflow: ellipsis;\n  text-box: cap alphabetic;\n}\n\n/* Sizes */\n.editor-btn--sm[data-v-3b0709a9] {\n  /* defaults */\n}\n.editor-btn--md[data-v-3b0709a9] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-sm);\n  --btn-height: 40px;\n}\n.editor-btn--lg[data-v-3b0709a9] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-base);\n  --btn-height: 44px;\n}\n\n/* Icon-only: square */\n.editor-btn--icon-only[data-v-3b0709a9] {\n  width: var(--btn-height);\n  padding: 0;\n}\n.editor-btn--block[data-v-3b0709a9] {\n  display: flex;\n  width: 100%;\n}\n\n/* Variants — default intent */\n.editor-btn--primary[data-v-3b0709a9] {\n  --btn-bg: var(--color-primary);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary-hover);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--secondary[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-primary);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--tertiary[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-primary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n.editor-btn--transparent[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n\n/* Destructive intent overrides */\n.editor-btn--destructive.editor-btn--primary[data-v-3b0709a9] {\n  --btn-bg: var(--color-danger);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-hover);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--destructive.editor-btn--secondary[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-danger);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--destructive.editor-btn--tertiary[data-v-3b0709a9],\n.editor-btn--destructive.editor-btn--transparent[data-v-3b0709a9] {\n  --btn-text: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-soft);\n  --btn-hover-text: var(--color-danger);\n}\n\n/* Disabled: gray-out regardless of variant. Placed after the variants so the\n   CSS var overrides win the cascade (same specificity, last declaration). */\n.editor-btn[data-v-3b0709a9]:disabled {\n  --btn-bg: var(--color-surface);\n  --btn-text: var(--color-text-muted);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface);\n  --btn-hover-text: var(--color-text-muted);\n}\n";
+  const Button = /* @__PURE__ */ _export_sfc(_sfc_main$J, [["styles", [_style_0$A]], ["__scopeId", "data-v-3b0709a9"]]);
   const fr = {
     "editor.loading": "Chargement…",
     "editor.loadError": "Erreur de chargement",
@@ -8845,6 +8880,7 @@ var LintoEditor = (function(exports) {
     "sidebar.translationLabel": "Traduction",
     "sidebar.translationSelectLabel": "Sélectionner l'original ou la traduction",
     "sidebar.originalLanguage": "Langue originale",
+    "sidebar.bilingual": "Traductions croisées",
     "language.wildcard": "Multi-langue",
     "select.filter": "Rechercher…",
     "subtitle.exitFullscreen": "Quitter le plein écran",
@@ -8913,7 +8949,20 @@ var LintoEditor = (function(exports) {
     "time.relative.justNow": "à l'instant",
     "time.relative.minutes": "il y a {n} min",
     "time.relative.hours": "il y a {n} h",
-    "time.relative.days": "il y a {n} j"
+    "time.relative.days": "il y a {n} j",
+    "chat.title": "Assistant",
+    "chat.close": "Fermer l'assistant",
+    "chat.history": "Historique",
+    "chat.newChat": "Nouvelle conversation",
+    "chat.rename": "Renommer",
+    "chat.deleteSession": "Supprimer",
+    "chat.deleteConfirm": "Supprimer ?",
+    "chat.cancel": "Annuler",
+    "chat.confirmDelete": "Confirmer",
+    "chat.placeholder": "Écrire un message…",
+    "chat.send": "Envoyer",
+    "chat.emptyState": "Pose une question sur cette transcription.",
+    "chat.emptyChat": "Démarre la conversation."
   };
   const en = {
     "editor.loading": "Loading…",
@@ -8951,6 +9000,7 @@ var LintoEditor = (function(exports) {
     "sidebar.translationLabel": "Translation",
     "sidebar.translationSelectLabel": "Select original/translation",
     "sidebar.originalLanguage": "Original language",
+    "sidebar.bilingual": "Cross subtitles",
     "language.wildcard": "Multilingual",
     "select.filter": "Search…",
     "subtitle.exitFullscreen": "Exit fullscreen",
@@ -9019,7 +9069,20 @@ var LintoEditor = (function(exports) {
     "time.relative.justNow": "just now",
     "time.relative.minutes": "{n} min ago",
     "time.relative.hours": "{n} h ago",
-    "time.relative.days": "{n} d ago"
+    "time.relative.days": "{n} d ago",
+    "chat.title": "Assistant",
+    "chat.close": "Close assistant",
+    "chat.history": "History",
+    "chat.newChat": "New chat",
+    "chat.rename": "Rename",
+    "chat.deleteSession": "Delete",
+    "chat.deleteConfirm": "Delete?",
+    "chat.cancel": "Cancel",
+    "chat.confirmDelete": "Confirm",
+    "chat.placeholder": "Type a message…",
+    "chat.send": "Send",
+    "chat.emptyState": "Ask a question about this transcript.",
+    "chat.emptyChat": "Start the conversation."
   };
   const locales = { fr, en };
   const i18nKey = /* @__PURE__ */ Symbol("i18n");
@@ -9068,6 +9131,13 @@ var LintoEditor = (function(exports) {
     const b2 = parseInt(cleaned.substring(4, 6), 16);
     return `rgba(${r2}, ${g2}, ${b2}, ${alpha})`;
   }
+  function extractLangCode(language) {
+    return language.split("-")[0];
+  }
+  function isSameLanguage(a2, b2) {
+    if (a2 == null || b2 == null) return false;
+    return extractLangCode(a2) === extractLangCode(b2);
+  }
   function getLanguageDisplayName(code2, locale, wildcardLabel = "*", stripRegion = true) {
     if (code2 === "*") return wildcardLabel;
     const lookup = stripRegion ? code2.split("-")[0] ?? code2 : code2;
@@ -9078,16 +9148,19 @@ var LintoEditor = (function(exports) {
       return code2;
     }
   }
-  function buildTranslationItems(translations, locale, originalLabel, wildcardLabel = "*") {
+  function buildTranslationItems(translations, locale, originalLabel, wildcardLabel = "*", bilingualLabel = "") {
     const sorted = [...translations].sort(
       (a2, b2) => Number(b2.isSource) - Number(a2.isSource)
     );
-    return sorted.map((tr) => ({
-      value: tr.id,
-      label: tr.isSource ? originalLabel : tr.languages.map(
-        (code2) => getLanguageDisplayName(code2, locale, wildcardLabel, false)
-      ).join(", ")
-    }));
+    return sorted.map((tr) => {
+      const isBilingual = !tr.isSource && tr.languages.length > 1;
+      return {
+        value: tr.id,
+        label: tr.isSource ? originalLabel : isBilingual && bilingualLabel ? bilingualLabel : tr.languages.map(
+          (code2) => getLanguageDisplayName(code2, locale, wildcardLabel, false)
+        ).join(", ")
+      };
+    });
   }
   function throttle(fn, delay = 250) {
     let isThrottled = false;
@@ -9270,25 +9343,26 @@ var LintoEditor = (function(exports) {
     }
     return null;
   }
-  const _hoisted_1$q = { class: "editor-header" };
-  const _hoisted_2$k = { class: "header-main" };
-  const _hoisted_3$h = { class: "document-title" };
-  const _hoisted_4$7 = {
+  const _hoisted_1$y = { class: "editor-header" };
+  const _hoisted_2$q = { class: "header-main" };
+  const _hoisted_3$n = { class: "document-title" };
+  const _hoisted_4$c = {
     key: 0,
     class: "document-meta"
   };
-  const _hoisted_5$6 = { class: "header-right" };
-  const _hoisted_6$5 = { key: 0 };
-  const _sfc_main$A = /* @__PURE__ */ defineComponent({
+  const _hoisted_5$b = { class: "header-right" };
+  const _hoisted_6$8 = { key: 0 };
+  const _sfc_main$I = /* @__PURE__ */ defineComponent({
     __name: "Header",
     props: {
       title: { type: String },
       date: { type: [String, Number, null] },
       duration: { type: Number },
       speakerCount: { type: Number },
-      isMobile: { type: Boolean }
+      isMobile: { type: Boolean },
+      canAsk: { type: Boolean }
     },
-    emits: ["toggleSidebar"],
+    emits: ["toggleSidebar", "openChat"],
     setup(__props) {
       const props = __props;
       const { t: t2, locale } = useI18n();
@@ -9310,10 +9384,10 @@ var LintoEditor = (function(exports) {
         ].filter(Boolean)
       );
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("header", _hoisted_1$q, [
-          createBaseVNode("div", _hoisted_2$k, [
-            createBaseVNode("h1", _hoisted_3$h, toDisplayString(formattedTitle.value), 1),
-            metaParts.value.length ? (openBlock(), createElementBlock("div", _hoisted_4$7, [
+        return openBlock(), createElementBlock("header", _hoisted_1$y, [
+          createBaseVNode("div", _hoisted_2$q, [
+            createBaseVNode("h1", _hoisted_3$n, toDisplayString(formattedTitle.value), 1),
+            metaParts.value.length ? (openBlock(), createElementBlock("div", _hoisted_4$c, [
               (openBlock(true), createElementBlock(Fragment$1, null, renderList(metaParts.value, (part, i2) => {
                 return openBlock(), createElementBlock("span", {
                   key: i2,
@@ -9322,7 +9396,7 @@ var LintoEditor = (function(exports) {
               }), 128))
             ])) : createCommentVNode("", true)
           ]),
-          createBaseVNode("div", _hoisted_5$6, [
+          createBaseVNode("div", _hoisted_5$b, [
             __props.isMobile ? (openBlock(), createBlock(Button, {
               key: 0,
               variant: "transparent",
@@ -9330,32 +9404,39 @@ var LintoEditor = (function(exports) {
               onClick: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("toggleSidebar"))
             }, {
               icon: withCtx(() => [
-                createVNode(unref(Users), { size: 16 })
+                createVNode(EditorIcon, {
+                  name: "users",
+                  size: 16
+                })
               ]),
               _: 1
             }, 8, ["aria-label"])) : createCommentVNode("", true),
             createVNode(Button, {
               variant: "primary",
               "aria-label": unref(t2)("header.ask"),
-              disabled: ""
+              disabled: !props.canAsk,
+              onClick: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("openChat"))
             }, {
               icon: withCtx(() => [
-                createVNode(unref(Sparkles), { size: 16 })
+                createVNode(EditorIcon, {
+                  name: "sparkles",
+                  size: 16
+                })
               ]),
               default: withCtx(() => [
-                !__props.isMobile ? (openBlock(), createElementBlock("span", _hoisted_6$5, toDisplayString(unref(t2)("header.ask")), 1)) : createCommentVNode("", true)
+                !__props.isMobile ? (openBlock(), createElementBlock("span", _hoisted_6$8, toDisplayString(unref(t2)("header.ask")), 1)) : createCommentVNode("", true)
               ]),
               _: 1
-            }, 8, ["aria-label"])
+            }, 8, ["aria-label", "disabled"])
           ])
         ]);
       };
     }
   });
-  const _style_0$s = '\n.editor-header[data-v-7975aaa4] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-md);\n  padding: var(--spacing-sm) var(--spacing-lg);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.header-main[data-v-7975aaa4] {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  min-width: 0;\n  flex: 1;\n}\n.document-title[data-v-7975aaa4] {\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n  color: var(--color-text-primary);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  margin: 0;\n}\n.document-meta[data-v-7975aaa4] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.document-meta__part[data-v-7975aaa4] {\n  text-box: cap alphabetic;\n}\n.document-meta__part + .document-meta__part[data-v-7975aaa4]::before {\n  content: "·";\n  margin-right: var(--spacing-xs);\n}\n.header-right[data-v-7975aaa4] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  flex-shrink: 0;\n}\n@media (max-width: 767px) {\n.editor-header[data-v-7975aaa4] {\n    padding: var(--spacing-xs) var(--spacing-md);\n}\n.document-title[data-v-7975aaa4] {\n    font-size: var(--font-size-base);\n}\n}\n';
-  const Header = /* @__PURE__ */ _export_sfc(_sfc_main$A, [["styles", [_style_0$s]], ["__scopeId", "data-v-7975aaa4"]]);
-  const _hoisted_1$p = ["aria-label"];
-  const _sfc_main$z = /* @__PURE__ */ defineComponent({
+  const _style_0$z = '\n.editor-header[data-v-cc84adfc] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-md);\n  padding: var(--spacing-sm) var(--spacing-lg);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.header-main[data-v-cc84adfc] {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  min-width: 0;\n  flex: 1;\n}\n.document-title[data-v-cc84adfc] {\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n  color: var(--color-text-primary);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  margin: 0;\n}\n.document-meta[data-v-cc84adfc] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.document-meta__part[data-v-cc84adfc] {\n  text-box: cap alphabetic;\n}\n.document-meta__part + .document-meta__part[data-v-cc84adfc]::before {\n  content: "·";\n  margin-right: var(--spacing-xs);\n}\n.header-right[data-v-cc84adfc] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  flex-shrink: 0;\n}\n@media (max-width: 767px) {\n.editor-header[data-v-cc84adfc] {\n    padding: var(--spacing-xs) var(--spacing-md);\n}\n.document-title[data-v-cc84adfc] {\n    font-size: var(--font-size-base);\n}\n}\n';
+  const Header = /* @__PURE__ */ _export_sfc(_sfc_main$I, [["styles", [_style_0$z]], ["__scopeId", "data-v-cc84adfc"]]);
+  const _hoisted_1$x = ["aria-label"];
+  const _sfc_main$H = /* @__PURE__ */ defineComponent({
     __name: "Badge",
     props: {
       ariaLabel: { type: String }
@@ -9367,16 +9448,16 @@ var LintoEditor = (function(exports) {
           "aria-label": __props.ariaLabel
         }, [
           renderSlot(_ctx.$slots, "default", {}, void 0, true)
-        ], 8, _hoisted_1$p);
+        ], 8, _hoisted_1$x);
       };
     }
   });
-  const _style_0$r = "\n.editor-badge[data-v-732d4c24] {\n  display: inline-flex;\n  align-items: center;\n  padding: 2px var(--spacing-sm);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n  color: var(--color-text-muted);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border-light);\n  border-radius: var(--radius-sm);\n  white-space: nowrap;\n}\n";
-  const Badge = /* @__PURE__ */ _export_sfc(_sfc_main$z, [["styles", [_style_0$r]], ["__scopeId", "data-v-732d4c24"]]);
-  const _hoisted_1$o = ["aria-label"];
-  const _hoisted_2$j = ["aria-selected", "aria-disabled", "disabled", "onClick"];
-  const _hoisted_3$g = { class: "tab__label" };
-  const _sfc_main$y = /* @__PURE__ */ defineComponent({
+  const _style_0$y = "\n.editor-badge[data-v-732d4c24] {\n  display: inline-flex;\n  align-items: center;\n  padding: 2px var(--spacing-sm);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n  color: var(--color-text-muted);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border-light);\n  border-radius: var(--radius-sm);\n  white-space: nowrap;\n}\n";
+  const Badge = /* @__PURE__ */ _export_sfc(_sfc_main$H, [["styles", [_style_0$y]], ["__scopeId", "data-v-732d4c24"]]);
+  const _hoisted_1$w = ["aria-label"];
+  const _hoisted_2$p = ["aria-selected", "aria-disabled", "disabled", "onClick"];
+  const _hoisted_3$m = { class: "tab__label" };
+  const _sfc_main$G = /* @__PURE__ */ defineComponent({
     __name: "Tabs",
     props: {
       tabs: { type: Array },
@@ -9415,7 +9496,7 @@ var LintoEditor = (function(exports) {
                 size: 16,
                 class: "tab__icon"
               }, null, 8, ["name"])) : createCommentVNode("", true),
-              createBaseVNode("span", _hoisted_3$g, toDisplayString(tab.label), 1),
+              createBaseVNode("span", _hoisted_3$m, toDisplayString(tab.label), 1),
               tab.badge ? (openBlock(), createBlock(Badge, {
                 key: 1,
                 class: "tab__badge"
@@ -9425,14 +9506,14 @@ var LintoEditor = (function(exports) {
                 ]),
                 _: 2
               }, 1024)) : createCommentVNode("", true)
-            ], 10, _hoisted_2$j);
+            ], 10, _hoisted_2$p);
           }), 128))
-        ], 8, _hoisted_1$o);
+        ], 8, _hoisted_1$w);
       };
     }
   });
-  const _style_0$q = "\n.tabs[data-v-24f9730e] {\n  display: flex;\n  align-items: stretch;\n  gap: var(--spacing-xs);\n  padding: 0 var(--spacing-lg);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-x: auto;\n  scrollbar-width: thin;\n}\n.tab[data-v-24f9730e] {\n  all: unset;\n  box-sizing: border-box;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  height: 44px;\n  padding: 0 var(--spacing-sm);\n  font-family: var(--font-family);\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-secondary);\n  cursor: pointer;\n  white-space: nowrap;\n  border-bottom: 2px solid transparent;\n  transition:\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.tab[data-v-24f9730e]:hover:not([disabled]) {\n  color: var(--color-text-primary);\n}\n.tab[data-v-24f9730e]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: -2px;\n  border-radius: var(--radius-sm);\n}\n.tab--active[data-v-24f9730e] {\n  color: var(--color-text-primary);\n  border-bottom-color: var(--color-primary);\n}\n.tab[disabled][data-v-24f9730e] {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n.tab__icon[data-v-24f9730e] {\n  flex-shrink: 0;\n  color: currentColor;\n}\n.tab__label[data-v-24f9730e] {\n  text-box: cap alphabetic;\n}\n.tab__badge[data-v-24f9730e] {\n  margin-left: var(--spacing-xs);\n}\n";
-  const Tabs = /* @__PURE__ */ _export_sfc(_sfc_main$y, [["styles", [_style_0$q]], ["__scopeId", "data-v-24f9730e"]]);
+  const _style_0$x = "\n.tabs[data-v-24f9730e] {\n  display: flex;\n  align-items: stretch;\n  gap: var(--spacing-xs);\n  padding: 0 var(--spacing-lg);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-x: auto;\n  scrollbar-width: thin;\n}\n.tab[data-v-24f9730e] {\n  all: unset;\n  box-sizing: border-box;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  height: 44px;\n  padding: 0 var(--spacing-sm);\n  font-family: var(--font-family);\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-secondary);\n  cursor: pointer;\n  white-space: nowrap;\n  border-bottom: 2px solid transparent;\n  transition:\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.tab[data-v-24f9730e]:hover:not([disabled]) {\n  color: var(--color-text-primary);\n}\n.tab[data-v-24f9730e]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: -2px;\n  border-radius: var(--radius-sm);\n}\n.tab--active[data-v-24f9730e] {\n  color: var(--color-text-primary);\n  border-bottom-color: var(--color-primary);\n}\n.tab[disabled][data-v-24f9730e] {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n.tab__icon[data-v-24f9730e] {\n  flex-shrink: 0;\n  color: currentColor;\n}\n.tab__label[data-v-24f9730e] {\n  text-box: cap alphabetic;\n}\n.tab__badge[data-v-24f9730e] {\n  margin-left: var(--spacing-xs);\n}\n";
+  const Tabs = /* @__PURE__ */ _export_sfc(_sfc_main$G, [["styles", [_style_0$x]], ["__scopeId", "data-v-24f9730e"]]);
   const TRANSCRIPTION_TAB = "__transcription__";
   const VERBATIM_TAB = "__verbatim__";
   function createEventBus() {
@@ -9645,12 +9726,9 @@ var LintoEditor = (function(exports) {
       return indexMap.has(turnId);
     }
     function getTurn(turnId) {
-      const idx = indexMap.get(turnId);
-      if (idx !== void 0) {
-        const turn = turns.value[idx];
-        if (turn?.id === turnId) return turn;
-      }
-      return turns.value.find((t2) => t2.id === turnId);
+      const index = indexMap.get(turnId);
+      if (index === void 0) return void 0;
+      return turns.value[index];
     }
     return {
       id: id2,
@@ -9672,7 +9750,82 @@ var LintoEditor = (function(exports) {
       getTurn
     };
   }
-  function createChannelStore(channel, emit2, speakersEnsure) {
+  const CROSS_TRANSLATION_ID = "cross";
+  function createCrossTranslationStore(source, translations, emit2, on) {
+    const langs = source.languages.map(extractLangCode);
+    if (langs.length !== 2) return null;
+    const tracksByLanguage = /* @__PURE__ */ new Map();
+    for (const tr of translations.values()) {
+      if (tr.id === source.id) {
+        continue;
+      }
+      if (tr.languages.length !== 1) {
+        return null;
+      }
+      if (!tr.languages[0]) {
+        return null;
+      }
+      tracksByLanguage.set(extractLangCode(tr.languages[0]), tr);
+    }
+    for (const lang of langs) {
+      if (!tracksByLanguage.has(lang)) {
+        return null;
+      }
+    }
+    const [langA, langB] = langs;
+    if (!langA || !langB) return null;
+    const crossTrackIds = /* @__PURE__ */ new Set([
+      tracksByLanguage.get(langA).id,
+      tracksByLanguage.get(langB).id
+    ]);
+    const turns = computed(
+      () => source.turns.value.map((turn) => getTurn(turn.id) ?? turn)
+    );
+    function getTurn(turnId) {
+      const sourceTurn = source.getTurn(turnId);
+      if (!sourceTurn) return void 0;
+      const target = isSameLanguage(sourceTurn.language, langA) ? langB : langA;
+      if (!target) return sourceTurn;
+      const targetTurn = tracksByLanguage.get(target)?.getTurn(turnId);
+      if (!targetTurn) return sourceTurn;
+      return targetTurn;
+    }
+    const unsubs = [];
+    function isOppositeSide(turn, translationId) {
+      if (!crossTrackIds.has(translationId)) return false;
+      if (turn.sourceLanguage == null) return true;
+      return !isSameLanguage(turn.language, turn.sourceLanguage);
+    }
+    function relayAddOrUpdate(event) {
+      unsubs.push(
+        on(event, ({ turn, translationId }) => {
+          if (!isOppositeSide(turn, translationId)) return;
+          emit2(event, { turn, translationId: CROSS_TRANSLATION_ID });
+        })
+      );
+    }
+    relayAddOrUpdate("turn:add");
+    relayAddOrUpdate("turn:update");
+    unsubs.push(
+      on("turn:remove", ({ turnId, translationId }) => {
+        if (!crossTrackIds.has(translationId)) return;
+        emit2("turn:remove", { turnId, translationId: CROSS_TRANSLATION_ID });
+      })
+    );
+    function dispose() {
+      unsubs.forEach((fn) => fn());
+      unsubs.length = 0;
+    }
+    return {
+      id: CROSS_TRANSLATION_ID,
+      isSource: false,
+      languages: source.languages,
+      turns,
+      getTurn,
+      dispose
+    };
+  }
+  function createChannelStore(channel, emit2, on, speakersEnsure) {
     const { id: id2, name, description, duration } = channel;
     const translations = /* @__PURE__ */ shallowReactive(/* @__PURE__ */ new Map());
     let sourceTranslation;
@@ -9684,13 +9837,21 @@ var LintoEditor = (function(exports) {
     if (!sourceTranslation) {
       sourceTranslation = translations.values().next().value;
     }
+    const crossTranslation = createCrossTranslationStore(
+      sourceTranslation,
+      translations,
+      emit2,
+      on
+    );
+    const selectableTranslations = [...translations.values()];
+    if (crossTranslation) selectableTranslations.push(crossTranslation);
     const activeTranslationId = /* @__PURE__ */ ref(null);
     const isLoadingHistory = /* @__PURE__ */ ref(false);
     const hasMoreHistory = /* @__PURE__ */ ref(true);
     const activeTranslation = computed(() => {
-      if (activeTranslationId.value) {
-        return translations.get(activeTranslationId.value) ?? sourceTranslation;
-      }
+      const activeId = activeTranslationId.value;
+      if (activeId === CROSS_TRANSLATION_ID) return crossTranslation ?? sourceTranslation;
+      if (activeId) return translations.get(activeId) ?? sourceTranslation;
       return sourceTranslation;
     });
     function setActiveTranslation(translationId) {
@@ -9707,6 +9868,9 @@ var LintoEditor = (function(exports) {
       hasMoreHistory.value = true;
       emit2("channel:reset", { channelId: id2 });
     }
+    function dispose() {
+      crossTranslation?.dispose();
+    }
     return {
       id: id2,
       name,
@@ -9714,11 +9878,14 @@ var LintoEditor = (function(exports) {
       duration,
       translations,
       sourceTranslation,
+      crossTranslation,
+      selectableTranslations,
       activeTranslation,
       isLoadingHistory,
       hasMoreHistory,
       setActiveTranslation,
-      reset
+      reset,
+      dispose
     };
   }
   function ensureDocumentSpeakers(doc2) {
@@ -9766,12 +9933,13 @@ var LintoEditor = (function(exports) {
       title.value = doc2.title;
       date.value = doc2.date ?? null;
       speakersInternal.clear();
+      for (const channel of channels.values()) channel.dispose();
       channels.clear();
       for (const spkRef of ensureDocumentSpeakers(doc2)) {
         speakers.ensure(spkRef.id, spkRef.name);
       }
       for (const ch of doc2.channels) {
-        channels.set(ch.id, createChannelStore(ch, emit2, speakers.ensure));
+        channels.set(ch.id, createChannelStore(ch, emit2, on, speakers.ensure));
       }
       if (channels.size > 0 && !channels.has(activeChannelId.value)) {
         activeChannelId.value = channels.keys().next().value;
@@ -9791,7 +9959,8 @@ var LintoEditor = (function(exports) {
       for (const translation of channel.translations) {
         ensureSpeakersFromTurns(translation.turns, speakers.ensure);
       }
-      channels.set(channelId, createChannelStore(channel, emit2, speakers.ensure));
+      channels.get(channelId)?.dispose();
+      channels.set(channelId, createChannelStore(channel, emit2, on, speakers.ensure));
       emit2("channel:sync", { channelId });
     }
     const cleanups = [];
@@ -9807,6 +9976,7 @@ var LintoEditor = (function(exports) {
       emit2("destroy", void 0);
       cleanups.forEach((fn) => fn());
       cleanups.length = 0;
+      for (const channel of channels.values()) channel.dispose();
       clearEvents();
     }
     if (options.document) {
@@ -9844,7 +10014,7 @@ var LintoEditor = (function(exports) {
     }
     return core;
   }
-  const _sfc_main$x = /* @__PURE__ */ defineComponent({
+  const _sfc_main$F = /* @__PURE__ */ defineComponent({
     __name: "TabBar",
     props: {
       modelValue: { type: String }
@@ -10315,7 +10485,99 @@ var LintoEditor = (function(exports) {
       setOptions: (next2) => engine.setOptions(next2)
     };
   }
-  const _sfc_main$w = /* @__PURE__ */ defineComponent({
+  const StickToBottomKey = /* @__PURE__ */ Symbol("StickToBottom");
+  const _hoisted_1$v = { style: { "position": "relative", "height": "100%", "width": "100%", "flex": "1", "min-height": "0" } };
+  const _sfc_main$E = /* @__PURE__ */ defineComponent({
+    ...{ name: "StickToBottom" },
+    __name: "StickToBottom",
+    props: {
+      resize: {},
+      initial: { type: [Object, Boolean] },
+      targetScrollTop: { type: Function },
+      anchor: {},
+      damping: {},
+      stiffness: {},
+      mass: {}
+    },
+    setup(__props, { expose: __expose }) {
+      const props = __props;
+      const { scrollRef, contentRef, isAtBottom, isNearBottom, escapedFromLock, scrollToBottom, stopScroll, setOptions } = useStickToBottom({
+        resize: props.resize,
+        initial: props.initial,
+        targetScrollTop: props.targetScrollTop,
+        damping: props.damping,
+        stiffness: props.stiffness,
+        mass: props.mass
+      });
+      const context2 = {
+        scrollRef,
+        contentRef,
+        isAtBottom,
+        isNearBottom,
+        escapedFromLock,
+        scrollToBottom,
+        stopScroll
+      };
+      provide(StickToBottomKey, context2);
+      __expose(context2);
+      watch(
+        () => [
+          props.resize,
+          props.initial,
+          props.damping,
+          props.stiffness,
+          props.mass,
+          props.targetScrollTop
+        ],
+        () => {
+          setOptions({
+            resize: props.resize,
+            initial: props.initial,
+            targetScrollTop: props.targetScrollTop,
+            damping: props.damping,
+            stiffness: props.stiffness,
+            mass: props.mass
+          });
+        },
+        { flush: "post" }
+      );
+      const overflowAnchor = computed(() => props.anchor ?? "auto");
+      const slotProps = computed(() => ({
+        isAtBottom: isAtBottom.value,
+        isNearBottom: isNearBottom.value,
+        escapedFromLock: escapedFromLock.value,
+        scrollToBottom,
+        stopScroll
+      }));
+      return (_ctx, _cache) => {
+        return openBlock(), createElementBlock("div", null, [
+          createBaseVNode("div", _hoisted_1$v, [
+            createBaseVNode("div", {
+              ref_key: "scrollRef",
+              ref: scrollRef,
+              style: normalizeStyle({
+                "overflow-anchor": overflowAnchor.value,
+                "overflow": "auto",
+                "height": "100%",
+                "width": "100%",
+                "scrollbar-gutter": "stable both-edges"
+              })
+            }, [
+              createBaseVNode("div", {
+                ref_key: "contentRef",
+                ref: contentRef
+              }, [
+                renderSlot(_ctx.$slots, "default", normalizeProps(guardReactiveProps(slotProps.value)))
+              ], 512)
+            ], 4),
+            renderSlot(_ctx.$slots, "overlay", normalizeProps(guardReactiveProps(slotProps.value)))
+          ]),
+          renderSlot(_ctx.$slots, "after", normalizeProps(guardReactiveProps(slotProps.value)))
+        ]);
+      };
+    }
+  });
+  const _sfc_main$D = /* @__PURE__ */ defineComponent({
     __name: "SpeakerIndicator",
     props: {
       color: { type: String }
@@ -10330,16 +10592,16 @@ var LintoEditor = (function(exports) {
       };
     }
   });
-  const _style_0$p = "\n.speaker-indicator[data-v-9bffeda8] {\n  display: inline-block;\n  width: 8px;\n  height: 8px;\n  border-radius: 50%;\n  flex-shrink: 0;\n}\n";
-  const SpeakerIndicator = /* @__PURE__ */ _export_sfc(_sfc_main$w, [["styles", [_style_0$p]], ["__scopeId", "data-v-9bffeda8"]]);
-  const _hoisted_1$n = { class: "speaker-label" };
-  const _hoisted_2$i = {
+  const _style_0$w = "\n.speaker-indicator[data-v-9bffeda8] {\n  display: inline-block;\n  width: 8px;\n  height: 8px;\n  border-radius: 50%;\n  flex-shrink: 0;\n}\n";
+  const SpeakerIndicator = /* @__PURE__ */ _export_sfc(_sfc_main$D, [["styles", [_style_0$w]], ["__scopeId", "data-v-9bffeda8"]]);
+  const _hoisted_1$u = { class: "speaker-label" };
+  const _hoisted_2$o = {
     key: 1,
     class: "speaker-name"
   };
-  const _hoisted_3$f = ["datetime"];
-  const _hoisted_4$6 = { class: "lang" };
-  const _sfc_main$v = /* @__PURE__ */ defineComponent({
+  const _hoisted_3$l = ["datetime"];
+  const _hoisted_4$b = { class: "lang" };
+  const _sfc_main$C = /* @__PURE__ */ defineComponent({
     __name: "SpeakerLabel",
     props: {
       speaker: { type: Object },
@@ -10371,24 +10633,24 @@ var LintoEditor = (function(exports) {
       });
       const speakerColor = computed(() => props.speaker?.color ?? "transparent");
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$n, [
+        return openBlock(), createElementBlock("div", _hoisted_1$u, [
           __props.speaker ? (openBlock(), createBlock(SpeakerIndicator, {
             key: 0,
             color: speakerColor.value
           }, null, 8, ["color"])) : createCommentVNode("", true),
-          __props.speaker ? (openBlock(), createElementBlock("span", _hoisted_2$i, toDisplayString(__props.speaker.name), 1)) : createCommentVNode("", true),
+          __props.speaker ? (openBlock(), createElementBlock("span", _hoisted_2$o, toDisplayString(__props.speaker.name), 1)) : createCommentVNode("", true),
           timestamp.value ? (openBlock(), createElementBlock("time", {
             key: 2,
             class: "timestamp",
             datetime: timestamp.value.datetime
-          }, toDisplayString(timestamp.value.text), 9, _hoisted_3$f)) : createCommentVNode("", true),
-          createBaseVNode("span", _hoisted_4$6, toDisplayString(languageName.value), 1)
+          }, toDisplayString(timestamp.value.text), 9, _hoisted_3$l)) : createCommentVNode("", true),
+          createBaseVNode("span", _hoisted_4$b, toDisplayString(languageName.value), 1)
         ]);
       };
     }
   });
-  const _style_0$o = "\n.speaker-label[data-v-b451886f] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.speaker-name[data-v-b451886f] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.timestamp[data-v-b451886f] {\n  font-size: var(--font-size-xs);\n  font-family: var(--font-family-mono);\n  color: var(--color-text-muted);\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n.lang[data-v-b451886f] {\n  font-size: var(--font-size-xs);\n  font-weight: 400;\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n";
-  const SpeakerLabel = /* @__PURE__ */ _export_sfc(_sfc_main$v, [["styles", [_style_0$o]], ["__scopeId", "data-v-b451886f"]]);
+  const _style_0$v = "\n.speaker-label[data-v-b451886f] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.speaker-name[data-v-b451886f] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.timestamp[data-v-b451886f] {\n  font-size: var(--font-size-xs);\n  font-family: var(--font-family-mono);\n  color: var(--color-text-muted);\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n.lang[data-v-b451886f] {\n  font-size: var(--font-size-xs);\n  font-weight: 400;\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n";
+  const SpeakerLabel = /* @__PURE__ */ _export_sfc(_sfc_main$C, [["styles", [_style_0$v]], ["__scopeId", "data-v-b451886f"]]);
   function serialize(o2) {
     return typeof o2 == "string" ? `'${o2}'` : new c$1().serialize(o2);
   }
@@ -16600,7 +16862,7 @@ var LintoEditor = (function(exports) {
     }
   });
   var DropdownMenuTrigger_default = DropdownMenuTrigger_vue_vue_type_script_setup_true_lang_default;
-  const _sfc_main$u = /* @__PURE__ */ defineComponent({
+  const _sfc_main$B = /* @__PURE__ */ defineComponent({
     __name: "EditorCheckbox",
     props: {
       modelValue: { type: Boolean },
@@ -16633,8 +16895,8 @@ var LintoEditor = (function(exports) {
       };
     }
   });
-  const _style_0$n = '\n.checkbox[data-v-024ee78b] {\n  all: unset;\n  width: 16px;\n  height: 16px;\n  flex-shrink: 0;\n  border: 1.5px solid var(--color-border);\n  border-radius: var(--radius-sm);\n  background-color: var(--color-surface);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  cursor: pointer;\n  transition:\n    background-color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.checkbox[data-v-024ee78b]:hover {\n  border-color: var(--color-primary);\n}\n.checkbox[data-v-024ee78b]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.checkbox[data-state="checked"][data-v-024ee78b] {\n  background-color: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.checkbox-indicator[data-v-024ee78b] {\n  color: var(--color-white, #fff);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n}\n';
-  const EditorCheckbox = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["styles", [_style_0$n]], ["__scopeId", "data-v-024ee78b"]]);
+  const _style_0$u = '\n.checkbox[data-v-024ee78b] {\n  all: unset;\n  width: 16px;\n  height: 16px;\n  flex-shrink: 0;\n  border: 1.5px solid var(--color-border);\n  border-radius: var(--radius-sm);\n  background-color: var(--color-surface);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  cursor: pointer;\n  transition:\n    background-color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.checkbox[data-v-024ee78b]:hover {\n  border-color: var(--color-primary);\n}\n.checkbox[data-v-024ee78b]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.checkbox[data-state="checked"][data-v-024ee78b] {\n  background-color: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.checkbox-indicator[data-v-024ee78b] {\n  color: var(--color-white, #fff);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n}\n';
+  const EditorCheckbox = /* @__PURE__ */ _export_sfc(_sfc_main$B, [["styles", [_style_0$u]], ["__scopeId", "data-v-024ee78b"]]);
   const turnSelectionKey = /* @__PURE__ */ Symbol("turnSelection");
   function getTurnText(turn) {
     if (turn.words.length > 0) {
@@ -16743,10 +17005,10 @@ ${text}` : text;
       throw new Error("useTurnSelection() requires provideTurnSelection()");
     return sel;
   }
-  const _hoisted_1$m = ["data-turn-active", "aria-selected"];
-  const _hoisted_2$h = { class: "turn-text" };
-  const _hoisted_3$e = ["data-word-active"];
-  const _sfc_main$t = /* @__PURE__ */ defineComponent({
+  const _hoisted_1$t = ["data-turn-active", "aria-selected"];
+  const _hoisted_2$n = { class: "turn-text" };
+  const _hoisted_3$k = ["data-word-active"];
+  const _sfc_main$A = /* @__PURE__ */ defineComponent({
     __name: "TranscriptionTurn",
     props: {
       turn: { type: Object },
@@ -16825,7 +17087,7 @@ ${text}` : text;
               language: __props.turn.language
             }, null, 8, ["speaker", "start-time", "start-date", "language"])
           ])) : createCommentVNode("", true),
-          createBaseVNode("p", _hoisted_2$h, [
+          createBaseVNode("p", _hoisted_2$n, [
             hasWords.value ? (openBlock(true), createElementBlock(Fragment$1, { key: 0 }, renderList(__props.turn.words, (word2, i2) => {
               return openBlock(), createElementBlock(Fragment$1, {
                 key: word2.id
@@ -16833,50 +17095,50 @@ ${text}` : text;
                 createBaseVNode("span", {
                   class: normalizeClass({ "word--active": word2.id === activeWordId.value }),
                   "data-word-active": word2.id === activeWordId.value || void 0
-                }, toDisplayString(word2.text), 11, _hoisted_3$e),
+                }, toDisplayString(word2.text), 11, _hoisted_3$k),
                 createTextVNode(toDisplayString(i2 < __props.turn.words.length - 1 ? " " : ""), 1)
               ], 64);
             }), 128)) : __props.turn.text ? (openBlock(), createElementBlock(Fragment$1, { key: 1 }, [
               createTextVNode(toDisplayString(__props.turn.text), 1)
             ], 64)) : createCommentVNode("", true)
           ])
-        ], 14, _hoisted_1$m);
+        ], 14, _hoisted_1$t);
       };
     }
   });
-  const _style_0$m = "\n.turn[data-v-7ea6a240] {\n  padding: var(--spacing-sm) var(--spacing-lg);\n}\n.turn-header[data-v-7ea6a240] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  cursor: pointer;\n  user-select: none;\n  border-radius: var(--radius-sm);\n  padding: var(--spacing-xxs) 0;\n}\n.turn[data-v-7ea6a240]:has(.turn-header:hover) {\n  background-color: var(--color-surface-hover);\n}\n.turn-text[data-v-7ea6a240] {\n  margin-top: var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.turn--selected[data-v-7ea6a240] {\n  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);\n  border-left: 3px solid var(--color-primary);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.turn--active[data-v-7ea6a240]:not(.turn--selected) {\n  border-left: 3px solid var(--speaker-color);\n  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.word--active[data-v-7ea6a240] {\n  text-decoration: underline;\n  text-decoration-color: var(--speaker-color);\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n  color: var(--speaker-color);\n}\n.turn--partial .turn-text[data-v-7ea6a240] {\n  font-style: italic;\n  color: var(--color-text-muted);\n  animation: partial-fade-in-7ea6a240 200ms ease;\n}\n@keyframes partial-fade-in-7ea6a240 {\nfrom {\n    opacity: 0;\n}\nto {\n    opacity: 1;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.turn--partial .turn-text[data-v-7ea6a240] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.turn[data-v-7ea6a240] {\n    padding: var(--spacing-sm) var(--spacing-md);\n}\n.turn--selected[data-v-7ea6a240],\n  .turn--active[data-v-7ea6a240]:not(.turn--selected) {\n    padding-left: calc(var(--spacing-md) - 3px);\n}\n}\n";
-  const TranscriptionTurn = /* @__PURE__ */ _export_sfc(_sfc_main$t, [["styles", [_style_0$m]], ["__scopeId", "data-v-7ea6a240"]]);
-  const _sfc_main$s = {};
-  const _hoisted_1$l = {
+  const _style_0$t = "\n.turn[data-v-7ea6a240] {\n  padding: var(--spacing-sm) var(--spacing-lg);\n}\n.turn-header[data-v-7ea6a240] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  cursor: pointer;\n  user-select: none;\n  border-radius: var(--radius-sm);\n  padding: var(--spacing-xxs) 0;\n}\n.turn[data-v-7ea6a240]:has(.turn-header:hover) {\n  background-color: var(--color-surface-hover);\n}\n.turn-text[data-v-7ea6a240] {\n  margin-top: var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.turn--selected[data-v-7ea6a240] {\n  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);\n  border-left: 3px solid var(--color-primary);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.turn--active[data-v-7ea6a240]:not(.turn--selected) {\n  border-left: 3px solid var(--speaker-color);\n  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.word--active[data-v-7ea6a240] {\n  text-decoration: underline;\n  text-decoration-color: var(--speaker-color);\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n  color: var(--speaker-color);\n}\n.turn--partial .turn-text[data-v-7ea6a240] {\n  font-style: italic;\n  color: var(--color-text-muted);\n  animation: partial-fade-in-7ea6a240 200ms ease;\n}\n@keyframes partial-fade-in-7ea6a240 {\nfrom {\n    opacity: 0;\n}\nto {\n    opacity: 1;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.turn--partial .turn-text[data-v-7ea6a240] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.turn[data-v-7ea6a240] {\n    padding: var(--spacing-sm) var(--spacing-md);\n}\n.turn--selected[data-v-7ea6a240],\n  .turn--active[data-v-7ea6a240]:not(.turn--selected) {\n    padding-left: calc(var(--spacing-md) - 3px);\n}\n}\n";
+  const TranscriptionTurn = /* @__PURE__ */ _export_sfc(_sfc_main$A, [["styles", [_style_0$t]], ["__scopeId", "data-v-7ea6a240"]]);
+  const _sfc_main$z = {};
+  const _hoisted_1$s = {
     viewBox: "0 0 938 604",
     fill: "none",
     xmlns: "http://www.w3.org/2000/svg"
   };
   function _sfc_render(_ctx, _cache) {
-    return openBlock(), createElementBlock("svg", _hoisted_1$l, [..._cache[0] || (_cache[0] = [
+    return openBlock(), createElementBlock("svg", _hoisted_1$s, [..._cache[0] || (_cache[0] = [
       createStaticVNode('<polygon points="331.5,533.5 331.5,520.5 702.5,428.5 705.5,443.5" fill="#3f3d56" transform="matrix(1.8176168,0,0,1.8176168,-452.14416,-495.30213)"></polygon><polygon points="564.5,469.5 555.5,452.5 544.5,455.5 542.5,472.5" fill="#3f3d56" transform="matrix(1.8176168,0,0,1.8176168,-452.14416,-495.30213)"></polygon><path d="m 317.61655,19.99224 c 0,0 79.97514,-5.452851 101.78654,56.34612 21.81141,61.79897 72.70468,172.67359 92.69846,189.03214 19.99379,16.35855 41.80519,59.98136 38.16995,74.52229" stroke="#3f3d56" stroke-miterlimit="10" stroke-width="9.08808"></path><path d="m 329.43106,19.083431 c 0,8.532657 -9.0733,15.449743 -23.62902,15.449743 -14.55571,0 -21.8114,-6.917086 -21.8114,-15.449743 0,-8.532657 7.25569,-15.4497427 21.8114,-15.4497427 14.55572,0 23.62902,6.9170857 23.62902,15.4497427 z" fill="currentColor" style="fill:#999999;"></path><polygon points="691.5,439.5 364.5,521.5 377.5,602.5 666.5,602.5" fill="#3f3d56" transform="matrix(1.8176168,0,0,1.8176168,-456.32371,-492.51252)"></polygon>', 5)
     ])]);
   }
-  const MicrophoneIllustration = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["render", _sfc_render]]);
-  const _hoisted_1$k = { class: "transcription-empty" };
-  const _hoisted_2$g = { class: "message" };
-  const _sfc_main$r = /* @__PURE__ */ defineComponent({
+  const MicrophoneIllustration = /* @__PURE__ */ _export_sfc(_sfc_main$z, [["render", _sfc_render]]);
+  const _hoisted_1$r = { class: "transcription-empty" };
+  const _hoisted_2$m = { class: "message" };
+  const _sfc_main$y = /* @__PURE__ */ defineComponent({
     __name: "TranscriptionEmpty",
     setup(__props) {
       const { t: t2 } = useI18n();
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$k, [
+        return openBlock(), createElementBlock("div", _hoisted_1$r, [
           createVNode(MicrophoneIllustration, {
             class: "illustration",
             "aria-hidden": "true"
           }),
-          createBaseVNode("p", _hoisted_2$g, toDisplayString(unref(t2)("transcription.empty")), 1)
+          createBaseVNode("p", _hoisted_2$m, toDisplayString(unref(t2)("transcription.empty")), 1)
         ]);
       };
     }
   });
-  const _style_0$l = "\n.transcription-empty[data-v-f82737e5] {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-lg);\n  padding: var(--spacing-xl);\n}\n.illustration[data-v-f82737e5] {\n  width: 180px;\n  height: auto;\n  color: var(--color-text-muted);\n  opacity: 0.5;\n}\n.message[data-v-f82737e5] {\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n  text-align: center;\n  margin: 0;\n}\n";
-  const TranscriptionEmpty = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["styles", [_style_0$l]], ["__scopeId", "data-v-f82737e5"]]);
+  const _style_0$s = "\n.transcription-empty[data-v-f82737e5] {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-lg);\n  padding: var(--spacing-xl);\n}\n.illustration[data-v-f82737e5] {\n  width: 180px;\n  height: auto;\n  color: var(--color-text-muted);\n  opacity: 0.5;\n}\n.message[data-v-f82737e5] {\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n  text-align: center;\n  margin: 0;\n}\n";
+  const TranscriptionEmpty = /* @__PURE__ */ _export_sfc(_sfc_main$y, [["styles", [_style_0$s]], ["__scopeId", "data-v-f82737e5"]]);
   const SCROLL_KEYS = /* @__PURE__ */ new Set([
     "ArrowUp",
     "ArrowDown",
@@ -17381,7 +17643,7 @@ ${text}` : text;
         return Fragment.empty;
       if (!Array.isArray(value))
         throw new RangeError("Invalid input for Fragment.fromJSON");
-      return Fragment.fromArray(value.map(schema.nodeFromJSON));
+      return new Fragment(value.map(schema.nodeFromJSON));
     }
     /**
     Build a fragment from an array of nodes. Ensures that adjacent
@@ -17604,7 +17866,7 @@ ${text}` : text;
     @internal
     */
     insertAt(pos, fragment) {
-      let content = insertInto(this.content, pos + this.openStart, fragment, this.openStart + 1, this.openEnd + 1);
+      let content = insertInto(this.content, pos + this.openStart, fragment);
       return content && new Slice(content, this.openStart, this.openEnd);
     }
     /**
@@ -17675,14 +17937,14 @@ ${text}` : text;
       throw new RangeError("Removing non-flat range");
     return content.replaceChild(index, child.copy(removeRange(child.content, from2 - offset2 - 1, to - offset2 - 1)));
   }
-  function insertInto(content, dist, insert, openStart, openEnd, parent) {
+  function insertInto(content, dist, insert, parent) {
     let { index, offset: offset2 } = content.findIndex(dist), child = content.maybeChild(index);
     if (offset2 == dist || child.isText) {
-      if (parent && openStart <= 0 && openEnd <= 0 && !parent.canReplace(index, index, insert))
+      if (parent && !parent.canReplace(index, index, insert))
         return null;
       return content.cut(0, dist).append(insert).append(content.cut(dist));
     }
-    let inner = insertInto(child.content, dist - offset2 - 1, insert, index == 0 ? openStart - 1 : 0, index == content.childCount - 1 ? openEnd - 1 : 0, child);
+    let inner = insertInto(child.content, dist - offset2 - 1, insert, child);
     return inner && content.replaceChild(index, child.copy(inner));
   }
   function replace($from, $to, slice) {
@@ -18159,11 +18421,10 @@ ${text}` : text;
       this.content.forEach(f2);
     }
     /**
-    Invoke a callback for all descendant nodes recursively overlapping
+    Invoke a callback for all descendant nodes recursively between
     the given two positions that are relative to start of this
-    node's content. This includes all ancestors of the nodes
-    containing the two positions. The callback is invoked with the
-    node, its position relative to the original node (method receiver),
+    node's content. The callback is invoked with the node, its
+    position relative to the original node (method receiver),
     its parent node, and its child index. When the callback returns
     false for a given node, that node's children will not be
     recursed over. The last parameter can be used to specify a
@@ -20117,8 +20378,6 @@ ${text}` : text;
     @internal
     */
     serializeNodeInner(node, options) {
-      if (node.isText)
-        return doc$2(options).createTextNode(node.text);
       let { dom, contentDOM } = renderSpec(doc$2(options), this.nodes[node.type.name](node), null, node.attrs);
       if (contentDOM) {
         if (node.isLeaf)
@@ -20153,8 +20412,6 @@ ${text}` : text;
       return toDOM && renderSpec(doc$2(options), toDOM(mark, inline), null, mark.attrs);
     }
     static renderSpec(doc2, structure, xmlNS = null, blockArraysIn) {
-      if (typeof structure == "string")
-        return { dom: doc2.createTextNode(structure) };
       return renderSpec(doc2, structure, xmlNS, blockArraysIn);
     }
     /**
@@ -20223,9 +20480,11 @@ ${text}` : text;
     return result;
   }
   function renderSpec(doc2, structure, xmlNS, blockArraysIn) {
-    if (structure.nodeType == 1)
+    if (typeof structure == "string")
+      return { dom: doc2.createTextNode(structure) };
+    if (structure.nodeType != null)
       return { dom: structure };
-    if (structure.dom && structure.dom.nodeType == 1)
+    if (structure.dom && structure.dom.nodeType != null)
       return structure;
     let tagName = structure[0], suspicious;
     if (typeof tagName != "string")
@@ -20259,8 +20518,6 @@ ${text}` : text;
         if (i2 < structure.length - 1 || i2 > start)
           throw new RangeError("Content hole must be the only child of its parent node");
         return { dom, contentDOM: dom };
-      } else if (typeof child == "string") {
-        dom.appendChild(doc2.createTextNode(child));
       } else {
         let { dom: inner, contentDOM: innerContent } = renderSpec(doc2, child, xmlNS, blockArraysIn);
         dom.appendChild(inner);
@@ -20858,8 +21115,7 @@ ${text}` : text;
       return new ReplaceStep(this.from, this.from + this.slice.size, doc2.slice(this.from, this.to));
     }
     map(mapping) {
-      let to = mapping.mapResult(this.to, -1);
-      let from2 = this.from == this.to && ReplaceStep.MAP_BIAS < 0 ? to : mapping.mapResult(this.from, 1);
+      let from2 = mapping.mapResult(this.from, 1), to = mapping.mapResult(this.to, -1);
       if (from2.deletedAcross && to.deletedAcross)
         return null;
       return new ReplaceStep(from2.pos, Math.max(from2.pos, to.pos), this.slice, this.structure);
@@ -20894,7 +21150,6 @@ ${text}` : text;
       return new ReplaceStep(json.from, json.to, Slice.fromJSON(schema, json.slice), !!json.structure);
     }
   }
-  ReplaceStep.MAP_BIAS = 1;
   Step.jsonID("replace", ReplaceStep);
   class ReplaceAroundStep extends Step {
     /**
@@ -21724,23 +21979,6 @@ ${text}` : text;
   }
   function deleteRange$1(tr, from2, to) {
     let $from = tr.doc.resolve(from2), $to = tr.doc.resolve(to);
-    if ($from.parent.isTextblock && $to.parent.isTextblock && $from.start() != $to.start() && $from.parentOffset == 0 && $to.parentOffset == 0) {
-      let shared = $from.sharedDepth(to), isolated = false;
-      for (let d2 = $from.depth; d2 > shared; d2--)
-        if ($from.node(d2).type.spec.isolating)
-          isolated = true;
-      for (let d2 = $to.depth; d2 > shared; d2--)
-        if ($to.node(d2).type.spec.isolating)
-          isolated = true;
-      if (!isolated) {
-        for (let d2 = $from.depth; d2 > 0 && from2 == $from.start(d2); d2--)
-          from2 = $from.before(d2);
-        for (let d2 = $to.depth; d2 > 0 && to == $to.start(d2); d2--)
-          to = $to.before(d2);
-        $from = tr.doc.resolve(from2);
-        $to = tr.doc.resolve(to);
-      }
-    }
     let covered = coveredDepths($from, $to);
     for (let i2 = 0; i2 < covered.length; i2++) {
       let depth = covered[i2], last2 = i2 == covered.length - 1;
@@ -26671,7 +26909,7 @@ ${text}` : text;
       const targetDesc = target ? view.docView.nearestDesc(target, true) : null;
       this.target = targetDesc && targetDesc.nodeDOM.nodeType == 1 ? targetDesc.nodeDOM : null;
       let { selection } = view.state;
-      if (event.button == 0 && (targetNode.type.spec.draggable && targetNode.type.spec.selectable !== false || selection instanceof NodeSelection && selection.from <= targetPos && selection.to > targetPos))
+      if (event.button == 0 && targetNode.type.spec.draggable && targetNode.type.spec.selectable !== false || selection instanceof NodeSelection && selection.from <= targetPos && selection.to > targetPos)
         this.mightDrag = {
           node: targetNode,
           pos: targetPos,
@@ -26971,11 +27209,8 @@ ${text}` : text;
   }
   const dragCopyModifier = mac$2 ? "altKey" : "ctrlKey";
   function dragMoves(view, event) {
-    let copy2;
-    view.someProp("dragCopies", (test) => {
-      copy2 = copy2 || test(event);
-    });
-    return copy2 != null ? !copy2 : !event[dragCopyModifier];
+    let moves = view.someProp("dragCopies", (test) => !test(event));
+    return moves != null ? moves : !event[dragCopyModifier];
   }
   handlers.dragstart = (view, _event) => {
     let event = _event;
@@ -29354,9 +29589,7 @@ ${text}` : text;
   function getNodeType(nameOrType, schema) {
     if (typeof nameOrType === "string") {
       if (!schema.nodes[nameOrType]) {
-        throw Error(
-          `There is no node type named '${nameOrType}'. Maybe you forgot to add the extension?`
-        );
+        throw Error(`There is no node type named '${nameOrType}'. Maybe you forgot to add the extension?`);
       }
       return schema.nodes[nameOrType];
     }
@@ -29450,7 +29683,7 @@ ${text}` : text;
     return marks.find((item) => {
       return item.type === type && objectIncludes(
         // Only check equality for the attributes that are provided
-        Object.fromEntries(Object.keys(attributes).map((k) => [k, item.attrs[k]])),
+        Object.fromEntries(Object.keys(attributes).map((k2) => [k2, item.attrs[k2]])),
         attributes
       );
     });
@@ -29499,9 +29732,7 @@ ${text}` : text;
   function getMarkType(nameOrType, schema) {
     if (typeof nameOrType === "string") {
       if (!schema.marks[nameOrType]) {
-        throw Error(
-          `There is no mark type named '${nameOrType}'. Maybe you forgot to add the extension?`
-        );
+        throw Error(`There is no mark type named '${nameOrType}'. Maybe you forgot to add the extension?`);
       }
       return schema.marks[nameOrType];
     }
@@ -29550,25 +29781,15 @@ ${text}` : text;
     const minPos = selectionAtStart.from;
     const maxPos = selectionAtEnd.to;
     if (position === "all") {
-      return TextSelection.create(
-        doc2,
-        minMax(0, minPos, maxPos),
-        minMax(doc2.content.size, minPos, maxPos)
-      );
+      return TextSelection.create(doc2, minMax(0, minPos, maxPos), minMax(doc2.content.size, minPos, maxPos));
     }
-    return TextSelection.create(
-      doc2,
-      minMax(position, minPos, maxPos),
-      minMax(position, minPos, maxPos)
-    );
+    return TextSelection.create(doc2, minMax(position, minPos, maxPos), minMax(position, minPos, maxPos));
   }
   function isAndroid() {
     return navigator.platform === "Android" || /android/i.test(navigator.userAgent);
   }
   function isiOS() {
-    return ["iPad Simulator", "iPhone Simulator", "iPod Simulator", "iPad", "iPhone", "iPod"].includes(
-      navigator.platform
-    ) || // iPad on iOS 13 detection
+    return ["iPad Simulator", "iPhone Simulator", "iPod Simulator", "iPad", "iPhone", "iPod"].includes(navigator.platform) || // iPad on iOS 13 detection
     navigator.userAgent.includes("Mac") && "ontouchend" in document;
   }
   function isSafari() {
@@ -29623,11 +29844,7 @@ ${text}` : text;
     return items.every((item, index) => fn(item, { ...props, index }));
   };
   var insertContent = (value, options) => ({ tr, commands }) => {
-    return commands.insertContentAt(
-      { from: tr.selection.from, to: tr.selection.to },
-      value,
-      options
-    );
+    return commands.insertContentAt({ from: tr.selection.from, to: tr.selection.to }, value, options);
   };
   var removeWhitespaces = (node) => {
     const children = node.childNodes;
@@ -29643,9 +29860,7 @@ ${text}` : text;
   };
   function elementFromString(value) {
     if (typeof window === "undefined") {
-      throw new Error(
-        "[tiptap error]: there is no window object available, so this function cannot be used"
-      );
+      throw new Error("[tiptap error]: there is no window object available, so this function cannot be used");
     }
     const wrappedValue = `<body>${value}</body>`;
     const html = new window.DOMParser().parseFromString(wrappedValue, "text/html").body;
@@ -29708,15 +29923,9 @@ ${text}` : text;
           })
         });
         if (options.slice) {
-          DOMParser$1.fromSchema(contentCheckSchema).parseSlice(
-            elementFromString(content),
-            options.parseOptions
-          );
+          DOMParser$1.fromSchema(contentCheckSchema).parseSlice(elementFromString(content), options.parseOptions);
         } else {
-          DOMParser$1.fromSchema(contentCheckSchema).parse(
-            elementFromString(content),
-            options.parseOptions
-          );
+          DOMParser$1.fromSchema(contentCheckSchema).parse(elementFromString(content), options.parseOptions);
         }
         if (options.errorOnInvalidContent && hasInvalidContent) {
           throw new Error("[tiptap error]: Invalid HTML content", {
@@ -30070,11 +30279,7 @@ ${text}` : text;
             if (markType === mark.type) {
               canReset = true;
               if (dispatch) {
-                tr.addMark(
-                  pos,
-                  pos + node.nodeSize,
-                  markType.create(deleteProps(mark.attrs, attributes))
-                );
+                tr.addMark(pos, pos + node.nodeSize, markType.create(deleteProps(mark.attrs, attributes)));
               }
             }
           });
@@ -30211,11 +30416,7 @@ ${text}` : text;
         options: extension.options,
         storage: extension.storage
       };
-      const addExtensions = getExtensionField(
-        extension,
-        "addExtensions",
-        context2
-      );
+      const addExtensions = getExtensionField(extension, "addExtensions", context2);
       if (addExtensions) {
         return [extension, ...flattenExtensions(addExtensions())];
       }
@@ -30245,9 +30446,7 @@ ${text}` : text;
     return Object.keys(value).length === 0 && value.constructor === Object;
   }
   function splitExtensions(extensions) {
-    const baseExtensions = extensions.filter(
-      (extension) => extension.type === "extension"
-    );
+    const baseExtensions = extensions.filter((extension) => extension.type === "extension");
     const nodeExtensions = extensions.filter((extension) => extension.type === "node");
     const markExtensions = extensions.filter((extension) => extension.type === "mark");
     return {
@@ -30321,7 +30520,11 @@ ${text}` : text;
         options: extension.options,
         storage: extension.storage
       };
-      const addAttributes = getExtensionField(extension, "addAttributes", context2);
+      const addAttributes = getExtensionField(
+        extension,
+        "addAttributes",
+        context2
+      );
       if (!addAttributes) {
         return;
       }
@@ -30419,15 +30622,10 @@ ${text}` : text;
         if (key === "class") {
           const valueClasses = value ? String(value).split(" ") : [];
           const existingClasses = mergedAttributes[key] ? mergedAttributes[key].split(" ") : [];
-          const insertClasses = valueClasses.filter(
-            (valueClass) => !existingClasses.includes(valueClass)
-          );
+          const insertClasses = valueClasses.filter((valueClass) => !existingClasses.includes(valueClass));
           mergedAttributes[key] = [...existingClasses, ...insertClasses].join(" ");
         } else if (key === "style") {
-          const styleMap = new Map([
-            ...parseStyleEntries(mergedAttributes[key]),
-            ...parseStyleEntries(value)
-          ]);
+          const styleMap = new Map([...parseStyleEntries(mergedAttributes[key]), ...parseStyleEntries(value)]);
           mergedAttributes[key] = Array.from(styleMap.entries()).map(([property, val]) => `${property}: ${val}`).join("; ");
         } else {
           mergedAttributes[key] = value;
@@ -30515,9 +30713,7 @@ ${text}` : text;
     const topNode = (_a = nodeExtensions.find((extension) => getExtensionField(extension, "topNode"))) == null ? void 0 : _a.name;
     const nodes = Object.fromEntries(
       nodeExtensions.map((extension) => {
-        const extensionAttributes = allAttributes.filter(
-          (attribute) => attribute.type === extension.name
-        );
+        const extensionAttributes = allAttributes.filter((attribute) => attribute.type === extension.name);
         const context2 = {
           name: extension.name,
           options: extension.options,
@@ -30525,11 +30721,7 @@ ${text}` : text;
           editor
         };
         const extraNodeFields = extensions.reduce((fields, e2) => {
-          const extendNodeSchema = getExtensionField(
-            e2,
-            "extendNodeSchema",
-            context2
-          );
+          const extendNodeSchema = getExtensionField(e2, "extendNodeSchema", context2);
           return {
             ...fields,
             ...extendNodeSchema ? extendNodeSchema(extension) : {}
@@ -30537,62 +30729,36 @@ ${text}` : text;
         }, {});
         const schema = cleanUpSchemaItem({
           ...extraNodeFields,
-          content: callOrReturn(
-            getExtensionField(extension, "content", context2)
-          ),
+          content: callOrReturn(getExtensionField(extension, "content", context2)),
           marks: callOrReturn(getExtensionField(extension, "marks", context2)),
           group: callOrReturn(getExtensionField(extension, "group", context2)),
           inline: callOrReturn(getExtensionField(extension, "inline", context2)),
           atom: callOrReturn(getExtensionField(extension, "atom", context2)),
-          selectable: callOrReturn(
-            getExtensionField(extension, "selectable", context2)
-          ),
-          draggable: callOrReturn(
-            getExtensionField(extension, "draggable", context2)
-          ),
+          selectable: callOrReturn(getExtensionField(extension, "selectable", context2)),
+          draggable: callOrReturn(getExtensionField(extension, "draggable", context2)),
           code: callOrReturn(getExtensionField(extension, "code", context2)),
-          whitespace: callOrReturn(
-            getExtensionField(extension, "whitespace", context2)
-          ),
+          whitespace: callOrReturn(getExtensionField(extension, "whitespace", context2)),
           linebreakReplacement: callOrReturn(
-            getExtensionField(
-              extension,
-              "linebreakReplacement",
-              context2
-            )
+            getExtensionField(extension, "linebreakReplacement", context2)
           ),
-          defining: callOrReturn(
-            getExtensionField(extension, "defining", context2)
-          ),
-          isolating: callOrReturn(
-            getExtensionField(extension, "isolating", context2)
-          ),
+          defining: callOrReturn(getExtensionField(extension, "defining", context2)),
+          isolating: callOrReturn(getExtensionField(extension, "isolating", context2)),
           attrs: Object.fromEntries(extensionAttributes.map(buildAttributeSpec))
         });
-        const parseHTML = callOrReturn(
-          getExtensionField(extension, "parseHTML", context2)
-        );
+        const parseHTML = callOrReturn(getExtensionField(extension, "parseHTML", context2));
         if (parseHTML) {
           schema.parseDOM = parseHTML.map(
             (parseRule) => injectExtensionAttributesToParseRule(parseRule, extensionAttributes)
           );
         }
-        const renderHTML = getExtensionField(
-          extension,
-          "renderHTML",
-          context2
-        );
+        const renderHTML = getExtensionField(extension, "renderHTML", context2);
         if (renderHTML) {
           schema.toDOM = (node) => renderHTML({
             node,
             HTMLAttributes: getRenderedAttributes(node, extensionAttributes)
           });
         }
-        const renderText = getExtensionField(
-          extension,
-          "renderText",
-          context2
-        );
+        const renderText = getExtensionField(extension, "renderText", context2);
         if (renderText) {
           schema.toText = renderText;
         }
@@ -30601,9 +30767,7 @@ ${text}` : text;
     );
     const marks = Object.fromEntries(
       markExtensions.map((extension) => {
-        const extensionAttributes = allAttributes.filter(
-          (attribute) => attribute.type === extension.name
-        );
+        const extensionAttributes = allAttributes.filter((attribute) => attribute.type === extension.name);
         const context2 = {
           name: extension.name,
           options: extension.options,
@@ -30611,11 +30775,7 @@ ${text}` : text;
           editor
         };
         const extraMarkFields = extensions.reduce((fields, e2) => {
-          const extendMarkSchema = getExtensionField(
-            e2,
-            "extendMarkSchema",
-            context2
-          );
+          const extendMarkSchema = getExtensionField(e2, "extendMarkSchema", context2);
           return {
             ...fields,
             ...extendMarkSchema ? extendMarkSchema(extension) : {}
@@ -30623,32 +30783,20 @@ ${text}` : text;
         }, {});
         const schema = cleanUpSchemaItem({
           ...extraMarkFields,
-          inclusive: callOrReturn(
-            getExtensionField(extension, "inclusive", context2)
-          ),
-          excludes: callOrReturn(
-            getExtensionField(extension, "excludes", context2)
-          ),
+          inclusive: callOrReturn(getExtensionField(extension, "inclusive", context2)),
+          excludes: callOrReturn(getExtensionField(extension, "excludes", context2)),
           group: callOrReturn(getExtensionField(extension, "group", context2)),
-          spanning: callOrReturn(
-            getExtensionField(extension, "spanning", context2)
-          ),
+          spanning: callOrReturn(getExtensionField(extension, "spanning", context2)),
           code: callOrReturn(getExtensionField(extension, "code", context2)),
           attrs: Object.fromEntries(extensionAttributes.map(buildAttributeSpec))
         });
-        const parseHTML = callOrReturn(
-          getExtensionField(extension, "parseHTML", context2)
-        );
+        const parseHTML = callOrReturn(getExtensionField(extension, "parseHTML", context2));
         if (parseHTML) {
           schema.parseDOM = parseHTML.map(
             (parseRule) => injectExtensionAttributesToParseRule(parseRule, extensionAttributes)
           );
         }
-        const renderHTML = getExtensionField(
-          extension,
-          "renderHTML",
-          context2
-        );
+        const renderHTML = getExtensionField(extension, "renderHTML", context2);
         if (renderHTML) {
           schema.toDOM = (mark) => renderHTML({
             mark,
@@ -30832,20 +30980,16 @@ ${text}` : text;
   var getTextContentFromNodes = ($from, maxMatch = 500) => {
     let textBefore = "";
     const sliceEndPos = $from.parentOffset;
-    $from.parent.nodesBetween(
-      Math.max(0, sliceEndPos - maxMatch),
-      sliceEndPos,
-      (node, pos, parent, index) => {
-        var _a, _b;
-        const chunk = ((_b = (_a = node.type.spec).toText) == null ? void 0 : _b.call(_a, {
-          node,
-          pos,
-          parent,
-          index
-        })) || node.textContent || "%leaf%";
-        textBefore += node.isAtom && !node.isText ? chunk : chunk.slice(0, Math.max(0, sliceEndPos - pos));
-      }
-    );
+    $from.parent.nodesBetween(Math.max(0, sliceEndPos - maxMatch), sliceEndPos, (node, pos, parent, index) => {
+      var _a, _b;
+      const chunk = ((_b = (_a = node.type.spec).toText) == null ? void 0 : _b.call(_a, {
+        node,
+        pos,
+        parent,
+        index
+      })) || node.textContent || "%leaf%";
+      textBefore += node.isAtom && !node.isText ? chunk : chunk.slice(0, Math.max(0, sliceEndPos - pos));
+    });
     return textBefore;
   };
   function isMarkActive(state, typeOrName, attributes = {}) {
@@ -31181,11 +31325,7 @@ ${text}` : text;
     const { selection, doc: doc2 } = tr;
     const { $from, $to } = selection;
     const extensionAttributes = editor.extensionManager.attributes;
-    const newAttributes = getSplittedAttributes(
-      extensionAttributes,
-      $from.node().type.name,
-      $from.node().attrs
-    );
+    const newAttributes = getSplittedAttributes(extensionAttributes, $from.node().type.name, $from.node().attrs);
     if (selection instanceof NodeSelection && selection.node.isBlock) {
       if (!$from.parentOffset || !canSplit(doc2, $from.pos)) {
         return false;
@@ -31264,7 +31404,7 @@ ${text}` : text;
           wrap2 = Fragment.from($from.node(d2).copy(wrap2));
         }
         const depthAfter = (
-          // oxlint-disable-next-line no-nested-ternary
+          // eslint-disable-next-line no-nested-ternary
           $from.indexAfter(-1) < $from.node(-2).childCount ? 1 : $from.indexAfter(-2) < $from.node(-3).childCount ? 2 : 3
         );
         const newNextTypeAttributes2 = {
@@ -31484,22 +31624,15 @@ ${text}` : text;
     }
     return false;
   };
-  var unsetAllMarks = (options = {}) => ({ tr, dispatch, editor }) => {
-    const { ignoreClearable = false } = options;
+  var unsetAllMarks = () => ({ tr, dispatch }) => {
     const { selection } = tr;
     const { empty: empty2, ranges } = selection;
     if (empty2) {
       return true;
     }
-    const { nonClearableMarks } = editor.extensionManager;
     if (dispatch) {
-      const clearableMarkTypes = Object.values(editor.schema.marks).filter(
-        (markType) => ignoreClearable || !nonClearableMarks.includes(markType.name)
-      );
       ranges.forEach((range) => {
-        for (const markType of clearableMarkTypes) {
-          tr.removeMark(range.$from.pos, range.$to.pos, markType);
-        }
+        tr.removeMark(range.$from.pos, range.$to.pos);
       });
     }
     return true;
@@ -31718,9 +31851,7 @@ ${text}` : text;
     result.data = inputRuleMatch.data;
     if (inputRuleMatch.replaceWith) {
       if (!inputRuleMatch.text.includes(inputRuleMatch.replaceWith)) {
-        console.warn(
-          '[tiptap warn]: "inputRuleMatch.replaceWith" must be part of "inputRuleMatch.text".'
-        );
+        console.warn('[tiptap warn]: "inputRuleMatch.replaceWith" must be part of "inputRuleMatch.text".');
       }
       result.push(inputRuleMatch.replaceWith);
     }
@@ -31922,7 +32053,7 @@ ${text}` : text;
           getExtensionField(this, "addOptions", {
             name: this.name
           })
-        )
+        ) || {}
       };
     }
     get storage() {
@@ -31932,7 +32063,7 @@ ${text}` : text;
             name: this.name,
             options: this.options
           })
-        )
+        ) || {}
       };
     }
     configure(options = {}) {
@@ -32014,9 +32145,7 @@ ${text}` : text;
       result.data = pasteRuleMatch.data;
       if (pasteRuleMatch.replaceWith) {
         if (!pasteRuleMatch.text.includes(pasteRuleMatch.replaceWith)) {
-          console.warn(
-            '[tiptap warn]: "pasteRuleMatch.replaceWith" must be part of "pasteRuleMatch.text".'
-          );
+          console.warn('[tiptap warn]: "pasteRuleMatch.replaceWith" must be part of "pasteRuleMatch.text".');
         }
         result.push(pasteRuleMatch.replaceWith);
       }
@@ -32158,10 +32287,7 @@ ${text}` : text;
                   setTimeout(() => {
                     const selection = dragFromOtherEditor.state.selection;
                     if (selection) {
-                      dragFromOtherEditor.commands.deleteRange({
-                        from: selection.from,
-                        to: selection.to
-                      });
+                      dragFromOtherEditor.commands.deleteRange({ from: selection.from, to: selection.to });
                     }
                   }, 10);
                 }
@@ -32224,7 +32350,6 @@ ${text}` : text;
   var ExtensionManager = class {
     constructor(extensions, editor) {
       this.splittableMarks = [];
-      this.nonClearableMarks = [];
       this.editor = editor;
       this.baseExtensions = extensions;
       this.extensions = resolveExtensions(extensions);
@@ -32244,11 +32369,7 @@ ${text}` : text;
           editor: this.editor,
           type: getSchemaTypeByName(extension.name, this.schema)
         };
-        const addCommands = getExtensionField(
-          extension,
-          "addCommands",
-          context2
-        );
+        const addCommands = getExtensionField(extension, "addCommands", context2);
         if (!addCommands) {
           return commands;
         }
@@ -32293,11 +32414,7 @@ ${text}` : text;
         }
         const keyMapPlugin = keymap(defaultBindings);
         plugins.push(keyMapPlugin);
-        const addInputRules = getExtensionField(
-          extension,
-          "addInputRules",
-          context2
-        );
+        const addInputRules = getExtensionField(extension, "addInputRules", context2);
         if (isExtensionRulesEnabled(extension, editor.options.enableInputRules) && addInputRules) {
           const rules2 = addInputRules();
           if (rules2 && rules2.length) {
@@ -32309,11 +32426,7 @@ ${text}` : text;
             plugins.push(...inputPlugins);
           }
         }
-        const addPasteRules = getExtensionField(
-          extension,
-          "addPasteRules",
-          context2
-        );
+        const addPasteRules = getExtensionField(extension, "addPasteRules", context2);
         if (isExtensionRulesEnabled(extension, editor.options.enablePasteRules) && addPasteRules) {
           const rules2 = addPasteRules();
           if (rules2 && rules2.length) {
@@ -32350,9 +32463,7 @@ ${text}` : text;
       const { nodeExtensions } = splitExtensions(this.extensions);
       return Object.fromEntries(
         nodeExtensions.filter((extension) => !!getExtensionField(extension, "addNodeView")).map((extension) => {
-          const extensionAttributes = this.attributes.filter(
-            (attribute) => attribute.type === extension.name
-          );
+          const extensionAttributes = this.attributes.filter((attribute) => attribute.type === extension.name);
           const context2 = {
             name: extension.name,
             options: extension.options,
@@ -32360,11 +32471,7 @@ ${text}` : text;
             editor,
             type: getNodeType(extension.name, this.schema)
           };
-          const addNodeView = getExtensionField(
-            extension,
-            "addNodeView",
-            context2
-          );
+          const addNodeView = getExtensionField(extension, "addNodeView", context2);
           if (!addNodeView) {
             return [];
           }
@@ -32458,9 +32565,7 @@ ${text}` : text;
       const { markExtensions } = splitExtensions(this.extensions);
       return Object.fromEntries(
         markExtensions.filter((extension) => !!getExtensionField(extension, "addMarkView")).map((extension) => {
-          const extensionAttributes = this.attributes.filter(
-            (attribute) => attribute.type === extension.name
-          );
+          const extensionAttributes = this.attributes.filter((attribute) => attribute.type === extension.name);
           const context2 = {
             name: extension.name,
             options: extension.options,
@@ -32468,11 +32573,7 @@ ${text}` : text;
             editor,
             type: getMarkType(extension.name, this.schema)
           };
-          const addMarkView = getExtensionField(
-            extension,
-            "addMarkView",
-            context2
-          );
+          const addMarkView = getExtensionField(extension, "addMarkView", context2);
           if (!addMarkView) {
             return [];
           }
@@ -32536,7 +32637,7 @@ ${text}` : text;
         extensions.map((extension) => [extension.name, extension.storage])
       );
       extensions.forEach((extension) => {
-        var _a, _b;
+        var _a;
         const context2 = {
           name: extension.name,
           options: extension.options,
@@ -32549,18 +32650,8 @@ ${text}` : text;
           if (keepOnSplit) {
             this.splittableMarks.push(extension.name);
           }
-          const clearable = (_b = callOrReturn(
-            getExtensionField(extension, "clearable", context2)
-          )) != null ? _b : true;
-          if (!clearable) {
-            this.nonClearableMarks.push(extension.name);
-          }
         }
-        const onBeforeCreate = getExtensionField(
-          extension,
-          "onBeforeCreate",
-          context2
-        );
+        const onBeforeCreate = getExtensionField(extension, "onBeforeCreate", context2);
         const onCreate = getExtensionField(extension, "onCreate", context2);
         const onUpdate = getExtensionField(extension, "onUpdate", context2);
         const onSelectionUpdate = getExtensionField(
@@ -32568,11 +32659,7 @@ ${text}` : text;
           "onSelectionUpdate",
           context2
         );
-        const onTransaction = getExtensionField(
-          extension,
-          "onTransaction",
-          context2
-        );
+        const onTransaction = getExtensionField(extension, "onTransaction", context2);
         const onFocus = getExtensionField(extension, "onFocus", context2);
         const onBlur = getExtensionField(extension, "onBlur", context2);
         const onDestroy = getExtensionField(extension, "onDestroy", context2);
@@ -32657,16 +32744,15 @@ ${text}` : text;
               const { editor } = this;
               const { state, schema } = editor;
               const { doc: doc2, selection } = state;
+              const { ranges } = selection;
+              const from2 = Math.min(...ranges.map((range2) => range2.$from.pos));
+              const to = Math.max(...ranges.map((range2) => range2.$to.pos));
               const textSerializers = getTextSerializersFromSchema(schema);
-              const { blockSeparator } = this.options;
-              const options = {
-                ...blockSeparator !== void 0 ? { blockSeparator } : {},
+              const range = { from: from2, to };
+              return getTextBetween(doc2, range, {
+                ...this.options.blockSeparator !== void 0 ? { blockSeparator: this.options.blockSeparator } : {},
                 textSerializers
-              };
-              const sortedRanges = [...selection.ranges].sort((a2, b2) => a2.$from.pos - b2.$from.pos);
-              return sortedRanges.map(
-                ({ $from, $to }) => getTextBetween(doc2, { from: $from.pos, to: $to.pos }, options)
-              ).join(blockSeparator != null ? blockSeparator : "\n\n");
+              });
             }
           }
         })
@@ -32690,35 +32776,28 @@ ${text}` : text;
         if ((_d = (_c2 = (_b2 = (_a2 = this.editor.options.coreExtensionOptions) == null ? void 0 : _a2.delete) == null ? void 0 : _b2.filterTransaction) == null ? void 0 : _c2.call(_b2, transaction)) != null ? _d : transaction.getMeta("y-sync$")) {
           return;
         }
-        const nextTransaction = combineTransactionSteps(transaction.before, [
-          transaction,
-          ...appendedTransactions
-        ]);
+        const nextTransaction = combineTransactionSteps(transaction.before, [transaction, ...appendedTransactions]);
         const changes = getChangedRanges(nextTransaction);
         changes.forEach((change) => {
           if (nextTransaction.mapping.mapResult(change.oldRange.from).deletedAfter && nextTransaction.mapping.mapResult(change.oldRange.to).deletedBefore) {
-            nextTransaction.before.nodesBetween(
-              change.oldRange.from,
-              change.oldRange.to,
-              (node, from2) => {
-                const to = from2 + node.nodeSize - 2;
-                const isFullyWithinRange = change.oldRange.from <= from2 && to <= change.oldRange.to;
-                this.editor.emit("delete", {
-                  type: "node",
-                  node,
-                  from: from2,
-                  to,
-                  newFrom: nextTransaction.mapping.map(from2),
-                  newTo: nextTransaction.mapping.map(to),
-                  deletedRange: change.oldRange,
-                  newRange: change.newRange,
-                  partial: !isFullyWithinRange,
-                  editor: this.editor,
-                  transaction,
-                  combinedTransform: nextTransaction
-                });
-              }
-            );
+            nextTransaction.before.nodesBetween(change.oldRange.from, change.oldRange.to, (node, from2) => {
+              const to = from2 + node.nodeSize - 2;
+              const isFullyWithinRange = change.oldRange.from <= from2 && to <= change.oldRange.to;
+              this.editor.emit("delete", {
+                type: "node",
+                node,
+                from: from2,
+                to,
+                newFrom: nextTransaction.mapping.map(from2),
+                newTo: nextTransaction.mapping.map(to),
+                deletedRange: change.oldRange,
+                newRange: change.newRange,
+                partial: !isFullyWithinRange,
+                editor: this.editor,
+                transaction,
+                combinedTransform: nextTransaction
+              });
+            });
           }
         });
         const mapping = nextTransaction.mapping;
@@ -32898,9 +32977,7 @@ ${text}` : text;
               return;
             }
             const docChanges = transactions.some((transaction) => transaction.docChanged) && !oldState.doc.eq(newState.doc);
-            const ignoreTr = transactions.some(
-              (transaction) => transaction.getMeta("preventClearDocument")
-            );
+            const ignoreTr = transactions.some((transaction) => transaction.getMeta("preventClearDocument"));
             if (!docChanges || ignoreTr) {
               return;
             }
@@ -33067,9 +33144,7 @@ ${text}` : text;
       let to = this.to;
       if (this.isBlock) {
         if (this.content.size === 0) {
-          console.error(
-            `You can’t set content on a block node. Tried to set content on ${this.name} at ${this.pos}`
-          );
+          console.error(`You can’t set content on a block node. Tried to set content on ${this.name} at ${this.pos}`);
           return;
         }
         from2 = this.from + 1;
@@ -33140,12 +33215,7 @@ ${text}` : text;
         if (!isBlock2 && !isInline2 && $pos.depth <= this.depth) {
           return;
         }
-        const childNodePos = new _NodePos(
-          $pos,
-          this.editor,
-          isBlock2,
-          isBlock2 || isInline2 ? node : null
-        );
+        const childNodePos = new _NodePos($pos, this.editor, isBlock2, isBlock2 || isInline2 ? node : null);
         if (isBlock2) {
           childNodePos.actualDepth = this.depth + 1;
         }
@@ -33196,9 +33266,7 @@ ${text}` : text;
           return;
         }
         if (childPos.node.type.name === selector) {
-          const doesAllAttributesMatch = attrKeys.every(
-            (key) => attributes[key] === childPos.node.attrs[key]
-          );
+          const doesAllAttributesMatch = attrKeys.every((key) => attributes[key] === childPos.node.attrs[key]);
           if (doesAllAttributesMatch) {
             nodes.push(childPos);
           }
@@ -33647,9 +33715,7 @@ img.ProseMirror-separator {
           errorOnInvalidContent: this.options.enableContentCheck
         });
       } catch (e2) {
-        if (!(e2 instanceof Error) || !["[tiptap error]: Invalid JSON content", "[tiptap error]: Invalid HTML content"].includes(
-          e2.message
-        )) {
+        if (!(e2 instanceof Error) || !["[tiptap error]: Invalid JSON content", "[tiptap error]: Invalid HTML content"].includes(e2.message)) {
           throw e2;
         }
         this.emit("contentError", {
@@ -33659,9 +33725,7 @@ img.ProseMirror-separator {
             if ("collaboration" in this.storage && typeof this.storage.collaboration === "object" && this.storage.collaboration) {
               this.storage.collaboration.isDisabled = true;
             }
-            this.options.extensions = this.options.extensions.filter(
-              (extension) => extension.name !== "collaboration"
-            );
+            this.options.extensions = this.options.extensions.filter((extension) => extension.name !== "collaboration");
             this.createExtensionManager();
           }
         });
@@ -33779,7 +33843,7 @@ img.ProseMirror-separator {
         this.emit("focus", {
           editor: this,
           event: focus2.event,
-          // oxlint-disable-next-lineno-non-null-assertion
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           transaction: mostRecentFocusTr
         });
       }
@@ -33787,7 +33851,7 @@ img.ProseMirror-separator {
         this.emit("blur", {
           editor: this,
           event: blur2.event,
-          // oxlint-disable-next-lineno-non-null-assertion
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           transaction: mostRecentFocusTr
         });
       }
@@ -34218,9 +34282,7 @@ ${renderedContent}
           return index !== void 0 ? index : -1;
         },
         tokenize(src, _tokens, _lexer) {
-          const tokenPattern = selfClosing ? new RegExp(`^\\[${escapedShortcode}\\s*([^\\]]*)\\]`) : new RegExp(
-            `^\\[${escapedShortcode}\\s*([^\\]]*)\\]([\\s\\S]*?)\\[\\/${escapedShortcode}\\]`
-          );
+          const tokenPattern = selfClosing ? new RegExp(`^\\[${escapedShortcode}\\s*([^\\]]*)\\]`) : new RegExp(`^\\[${escapedShortcode}\\s*([^\\]]*)\\]([\\s\\S]*?)\\[\\/${escapedShortcode}\\]`);
           const match2 = src.match(tokenPattern);
           if (!match2) {
             return void 0;
@@ -34382,8 +34444,8 @@ ${indentedChild}`;
         return;
       }
       let needsUpdate = false;
-      Object.keys(attrs).forEach((k) => {
-        if (attrs[k] !== foundMark.attrs[k]) {
+      Object.keys(attrs).forEach((k2) => {
+        if (attrs[k2] !== foundMark.attrs[k2]) {
           needsUpdate = true;
         }
       });
@@ -34591,10 +34653,7 @@ ${indentedChild}`;
         return false;
       }
       if (this.dom.contains(mutation.target) && mutation.type === "childList" && (isiOS() || isAndroid()) && this.editor.isFocused) {
-        const changedNodes = [
-          ...Array.from(mutation.addedNodes),
-          ...Array.from(mutation.removedNodes)
-        ];
+        const changedNodes = [...Array.from(mutation.addedNodes), ...Array.from(mutation.removedNodes)];
         if (changedNodes.every((node) => node.isContentEditable)) {
           return false;
         }
@@ -34757,21 +34816,6 @@ ${indentedChild}`;
         default: "div"
       }
     },
-    inject: {
-      nodeViewContentRef: { default: void 0 }
-    },
-    mounted() {
-      const ref3 = this.nodeViewContentRef;
-      if (ref3 && this.$el) {
-        ref3(this.$el);
-      }
-    },
-    beforeUnmount() {
-      const ref3 = this.nodeViewContentRef;
-      if (ref3) {
-        ref3(null);
-      }
-    },
     render() {
       return h$2(this.as, {
         style: {
@@ -34926,40 +34970,29 @@ ${indentedChild}`;
           var _a, _b;
           provide("onDragStart", onDragStart);
           provide("decorationClasses", this.decorationClasses);
-          provide("nodeViewContentRef", (el) => {
-            if (!this.contentDOMElement) return;
-            if (el && el.firstChild !== this.contentDOMElement) {
-              el.appendChild(this.contentDOMElement);
-            }
-          });
           return (_b = (_a = this.component).setup) == null ? void 0 : _b.call(_a, reactiveProps, {
             expose: () => void 0
           });
         },
         // add support for scoped styles
         // @ts-ignore
-        // oxlint-disable-next-line
+        // eslint-disable-next-line
         __scopeId: this.component.__scopeId,
         // add support for CSS Modules
         // @ts-ignore
-        // oxlint-disable-next-line
+        // eslint-disable-next-line
         __cssModules: this.component.__cssModules,
         // add support for vue devtools
         // @ts-ignore
-        // oxlint-disable-next-line
+        // eslint-disable-next-line
         __name: this.component.__name,
         // @ts-ignore
-        // oxlint-disable-next-line
+        // eslint-disable-next-line
         __file: this.component.__file
       });
       this.handleSelectionUpdate = this.handleSelectionUpdate.bind(this);
       this.editor.on("selectionUpdate", this.handleSelectionUpdate);
       this.currentPos = this.getPos();
-      if (!this.node.isLeaf) {
-        this.contentDOMElement = document.createElement(this.node.isInline ? "span" : "div");
-        this.contentDOMElement.style.whiteSpace = "inherit";
-        this.contentDOMElement.dataset.nodeViewContentVue = "";
-      }
       this.renderer = new VueRenderer(extendedComponent, {
         editor: this.editor,
         props: mountProps
@@ -34983,7 +35016,7 @@ ${indentedChild}`;
       if (this.node.isLeaf) {
         return null;
       }
-      return this.contentDOMElement;
+      return this.dom.querySelector("[data-node-view-content]");
     }
     /**
      * On editor selection update, check if the node is selected.
@@ -35035,12 +35068,7 @@ ${indentedChild}`;
           newDecorations: decorations,
           oldInnerDecorations,
           innerDecorations,
-          updateProps: () => rerenderComponent({
-            node,
-            decorations,
-            innerDecorations,
-            extension: this.extensionWithSyncedStorage
-          })
+          updateProps: () => rerenderComponent({ node, decorations, innerDecorations, extension: this.extensionWithSyncedStorage })
         });
       }
       if (node.type !== this.node.type) {
@@ -35103,7 +35131,6 @@ ${indentedChild}`;
       if (this.options.trackNodeViewPosition) {
         this.editor.off("update", this.handlePositionUpdate);
       }
-      this.contentDOMElement = null;
     }
   };
   function VueNodeViewRenderer(component, options) {
@@ -35115,22 +35142,22 @@ ${indentedChild}`;
       return new VueNodeView(normalizedComponent, props, options);
     };
   }
-  const _hoisted_1$j = { class: "transcription-panel" };
-  const _hoisted_2$f = {
+  const _hoisted_1$q = { class: "transcription-panel" };
+  const _hoisted_2$l = {
     ref: "scrollContainer",
     class: "scroll-container"
   };
-  const _hoisted_3$d = { class: "turns-container" };
-  const _hoisted_4$5 = {
+  const _hoisted_3$j = { class: "turns-container" };
+  const _hoisted_4$a = {
     key: 0,
     class: "history-loading",
     role: "status"
   };
-  const _hoisted_5$5 = {
+  const _hoisted_5$a = {
     key: 1,
     class: "history-start"
   };
-  const _sfc_main$q = /* @__PURE__ */ defineComponent({
+  const _sfc_main$x = /* @__PURE__ */ defineComponent({
     __name: "TranscriptionPanel",
     props: {
       turns: { type: Array },
@@ -35230,13 +35257,13 @@ ${indentedChild}`;
         scrollContainerRef.value?.removeEventListener("scroll", onScrollTop);
       });
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("article", _hoisted_1$j, [
-          createBaseVNode("div", _hoisted_2$f, [
-            createBaseVNode("div", _hoisted_3$d, [
-              isLoadingHistory.value ? (openBlock(), createElementBlock("div", _hoisted_4$5, [..._cache[2] || (_cache[2] = [
+        return openBlock(), createElementBlock("article", _hoisted_1$q, [
+          createBaseVNode("div", _hoisted_2$l, [
+            createBaseVNode("div", _hoisted_3$j, [
+              isLoadingHistory.value ? (openBlock(), createElementBlock("div", _hoisted_4$a, [..._cache[2] || (_cache[2] = [
                 createBaseVNode("progress", null, null, -1)
               ])])) : createCommentVNode("", true),
-              !hasMoreHistory.value && __props.turns.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_5$5, toDisplayString(unref(t2)("transcription.historyStart")), 1)) : createCommentVNode("", true),
+              !hasMoreHistory.value && __props.turns.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_5$a, toDisplayString(unref(t2)("transcription.historyStart")), 1)) : createCommentVNode("", true),
               __props.turns.length === 0 && !isLoadingHistory.value && !partialTurn.value ? (openBlock(), createBlock(TranscriptionEmpty, {
                 key: 2,
                 class: "transcription-empty"
@@ -35292,18 +35319,18 @@ ${indentedChild}`;
       };
     }
   });
-  const _style_0$k = "\n.transcription-panel[data-v-a3eca6be] {\n  min-height: 0;\n  overflow: hidden;\n  background-color: var(--color-surface);\n}\n.transcription-panel[data-v-a3eca6be]:has(.ProseMirror:focus) {\n  background-color: var(--color-background);\n}\n.transcription-panel[data-v-a3eca6be] .ProseMirror:focus {\n  outline: 1px solid var(--color-primary);\n  background-color: var(--color-surface);\n  box-shadow: var(--shadow-sm);\n}\n.scroll-container[data-v-a3eca6be] {\n  height: 100%;\n  overflow: auto;\n  position: relative;\n}\n.turns-container[data-v-a3eca6be] {\n  max-width: 80ch;\n  margin-inline: auto;\n  padding: var(--spacing-lg);\n}\n.turns-container[data-v-a3eca6be]:has(.transcription-empty) {\n  display: flex;\n  flex-direction: column;\n  min-height: 100%;\n}\n.history-loading[data-v-a3eca6be] {\n  text-align: center;\n  padding: var(--spacing-md);\n}\n.history-loading progress[data-v-a3eca6be] {\n  width: 120px;\n}\n.history-start[data-v-a3eca6be] {\n  text-align: center;\n  padding: var(--spacing-md);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n}\n\n/* Resume scroll button */\n.resume-scroll-btn[data-v-a3eca6be] {\n  position: sticky;\n  bottom: var(--spacing-lg);\n  left: 50%;\n  translate: -50% 0;\n  z-index: var(--z-sticky);\n  background: var(--glass-background);\n  backdrop-filter: var(--glass-blur);\n  -webkit-backdrop-filter: var(--glass-blur);\n  border: 1px solid var(--color-border);\n  box-shadow: var(--shadow-sm);\n}\n\n/* Transition */\n.fade-slide-enter-active[data-v-a3eca6be],\n.fade-slide-leave-active[data-v-a3eca6be] {\n  transition:\n    opacity 200ms ease,\n    translate 200ms ease;\n}\n.fade-slide-enter-from[data-v-a3eca6be],\n.fade-slide-leave-to[data-v-a3eca6be] {\n  opacity: 0;\n  translate: -50% 8px;\n}\n@media (prefers-reduced-motion: reduce) {\n.fade-slide-enter-active[data-v-a3eca6be],\n  .fade-slide-leave-active[data-v-a3eca6be] {\n    transition: none;\n}\n}\n@media (max-width: 767px) {\n.turns-container[data-v-a3eca6be] {\n    padding: var(--spacing-md);\n}\n}\n";
-  const TranscriptionPanel = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["styles", [_style_0$k]], ["__scopeId", "data-v-a3eca6be"]]);
-  const _hoisted_1$i = ["data-status"];
-  const _hoisted_2$e = {
+  const _style_0$r = "\n.transcription-panel[data-v-a3eca6be] {\n  min-height: 0;\n  overflow: hidden;\n  background-color: var(--color-surface);\n}\n.transcription-panel[data-v-a3eca6be]:has(.ProseMirror:focus) {\n  background-color: var(--color-background);\n}\n.transcription-panel[data-v-a3eca6be] .ProseMirror:focus {\n  outline: 1px solid var(--color-primary);\n  background-color: var(--color-surface);\n  box-shadow: var(--shadow-sm);\n}\n.scroll-container[data-v-a3eca6be] {\n  height: 100%;\n  overflow: auto;\n  position: relative;\n}\n.turns-container[data-v-a3eca6be] {\n  max-width: 80ch;\n  margin-inline: auto;\n  padding: var(--spacing-lg);\n}\n.turns-container[data-v-a3eca6be]:has(.transcription-empty) {\n  display: flex;\n  flex-direction: column;\n  min-height: 100%;\n}\n.history-loading[data-v-a3eca6be] {\n  text-align: center;\n  padding: var(--spacing-md);\n}\n.history-loading progress[data-v-a3eca6be] {\n  width: 120px;\n}\n.history-start[data-v-a3eca6be] {\n  text-align: center;\n  padding: var(--spacing-md);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n}\n\n/* Resume scroll button */\n.resume-scroll-btn[data-v-a3eca6be] {\n  position: sticky;\n  bottom: var(--spacing-lg);\n  left: 50%;\n  translate: -50% 0;\n  z-index: var(--z-sticky);\n  background: var(--glass-background);\n  backdrop-filter: var(--glass-blur);\n  -webkit-backdrop-filter: var(--glass-blur);\n  border: 1px solid var(--color-border);\n  box-shadow: var(--shadow-sm);\n}\n\n/* Transition */\n.fade-slide-enter-active[data-v-a3eca6be],\n.fade-slide-leave-active[data-v-a3eca6be] {\n  transition:\n    opacity 200ms ease,\n    translate 200ms ease;\n}\n.fade-slide-enter-from[data-v-a3eca6be],\n.fade-slide-leave-to[data-v-a3eca6be] {\n  opacity: 0;\n  translate: -50% 8px;\n}\n@media (prefers-reduced-motion: reduce) {\n.fade-slide-enter-active[data-v-a3eca6be],\n  .fade-slide-leave-active[data-v-a3eca6be] {\n    transition: none;\n}\n}\n@media (max-width: 767px) {\n.turns-container[data-v-a3eca6be] {\n    padding: var(--spacing-md);\n}\n}\n";
+  const TranscriptionPanel = /* @__PURE__ */ _export_sfc(_sfc_main$x, [["styles", [_style_0$r]], ["__scopeId", "data-v-a3eca6be"]]);
+  const _hoisted_1$p = ["data-status"];
+  const _hoisted_2$k = {
     key: 0,
     class: "document-article__toolbar",
     role: "toolbar"
   };
-  const _hoisted_3$c = { class: "document-article__toolbar-left" };
-  const _hoisted_4$4 = { class: "document-article__toolbar-center" };
-  const _hoisted_5$4 = { class: "document-article__toolbar-right" };
-  const _hoisted_6$4 = { class: "document-article__body" };
+  const _hoisted_3$i = { class: "document-article__toolbar-left" };
+  const _hoisted_4$9 = { class: "document-article__toolbar-center" };
+  const _hoisted_5$9 = { class: "document-article__toolbar-right" };
+  const _hoisted_6$7 = { class: "document-article__body" };
   const _hoisted_7$4 = {
     key: 0,
     class: "document-article__center document-article__center--processing",
@@ -35321,7 +35348,7 @@ ${indentedChild}`;
     role: "alert"
   };
   const _hoisted_11$2 = { class: "document-article__error-text" };
-  const _sfc_main$p = /* @__PURE__ */ defineComponent({
+  const _sfc_main$w = /* @__PURE__ */ defineComponent({
     __name: "DocumentArticle",
     props: {
       status: { default: "done", type: String },
@@ -35346,18 +35373,18 @@ ${indentedChild}`;
           class: "document-article",
           "data-status": props.status
         }, [
-          _ctx.$slots["toolbar-left"] || _ctx.$slots["toolbar-center"] || _ctx.$slots["toolbar-right"] ? (openBlock(), createElementBlock("div", _hoisted_2$e, [
-            createBaseVNode("div", _hoisted_3$c, [
+          _ctx.$slots["toolbar-left"] || _ctx.$slots["toolbar-center"] || _ctx.$slots["toolbar-right"] ? (openBlock(), createElementBlock("div", _hoisted_2$k, [
+            createBaseVNode("div", _hoisted_3$i, [
               renderSlot(_ctx.$slots, "toolbar-left", {}, void 0, true)
             ]),
-            createBaseVNode("div", _hoisted_4$4, [
+            createBaseVNode("div", _hoisted_4$9, [
               renderSlot(_ctx.$slots, "toolbar-center", {}, void 0, true)
             ]),
-            createBaseVNode("div", _hoisted_5$4, [
+            createBaseVNode("div", _hoisted_5$9, [
               renderSlot(_ctx.$slots, "toolbar-right", {}, void 0, true)
             ])
           ])) : createCommentVNode("", true),
-          createBaseVNode("div", _hoisted_6$4, [
+          createBaseVNode("div", _hoisted_6$7, [
             props.status === "processing" ? (openBlock(), createElementBlock("div", _hoisted_7$4, [
               createVNode(EditorIcon, {
                 name: "spinner",
@@ -35384,22 +35411,22 @@ ${indentedChild}`;
               })
             ])) : renderSlot(_ctx.$slots, "default", { key: 2 }, void 0, true)
           ])
-        ], 8, _hoisted_1$i);
+        ], 8, _hoisted_1$p);
       };
     }
   });
-  const _style_0$j = "\n.document-article[data-v-e5e27610] {\n  width: 100%;\n  max-width: 760px;\n  margin: var(--spacing-lg) auto;\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  display: flex;\n  flex-direction: column;\n}\n.document-article__toolbar[data-v-e5e27610] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  position: sticky;\n  top: 0;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md) var(--radius-md) 0 0;\n  z-index: 1;\n}\n.document-article__toolbar-left[data-v-e5e27610],\n.document-article__toolbar-right[data-v-e5e27610] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  flex-shrink: 0;\n}\n.document-article__toolbar-center[data-v-e5e27610] {\n  flex: 1;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  min-width: 0;\n}\n.document-article__body[data-v-e5e27610] {\n  flex: 1;\n  min-height: 0;\n}\n.document-article__center[data-v-e5e27610] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.document-article__center--processing[data-v-e5e27610] {\n  color: var(--color-primary);\n}\n.document-article__center--error[data-v-e5e27610] {\n  color: var(--color-danger, #d33);\n}\n.document-article__progress[data-v-e5e27610] {\n  width: min(280px, 100%);\n  height: 6px;\n}\n.document-article__progress-value[data-v-e5e27610] {\n  font-size: var(--font-size-xs);\n  font-variant-numeric: tabular-nums;\n  color: var(--color-text-muted);\n}\n.document-article__error-text[data-v-e5e27610] {\n  margin: 0;\n  max-width: 480px;\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  color: var(--color-text-secondary);\n}\n";
-  const DocumentArticle = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["styles", [_style_0$j]], ["__scopeId", "data-v-e5e27610"]]);
-  const _hoisted_1$h = {
+  const _style_0$q = "\n.document-article[data-v-e5e27610] {\n  width: 100%;\n  max-width: 760px;\n  margin: var(--spacing-lg) auto;\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  display: flex;\n  flex-direction: column;\n}\n.document-article__toolbar[data-v-e5e27610] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  position: sticky;\n  top: 0;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md) var(--radius-md) 0 0;\n  z-index: 1;\n}\n.document-article__toolbar-left[data-v-e5e27610],\n.document-article__toolbar-right[data-v-e5e27610] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  flex-shrink: 0;\n}\n.document-article__toolbar-center[data-v-e5e27610] {\n  flex: 1;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  min-width: 0;\n}\n.document-article__body[data-v-e5e27610] {\n  flex: 1;\n  min-height: 0;\n}\n.document-article__center[data-v-e5e27610] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.document-article__center--processing[data-v-e5e27610] {\n  color: var(--color-primary);\n}\n.document-article__center--error[data-v-e5e27610] {\n  color: var(--color-danger, #d33);\n}\n.document-article__progress[data-v-e5e27610] {\n  width: min(280px, 100%);\n  height: 6px;\n}\n.document-article__progress-value[data-v-e5e27610] {\n  font-size: var(--font-size-xs);\n  font-variant-numeric: tabular-nums;\n  color: var(--color-text-muted);\n}\n.document-article__error-text[data-v-e5e27610] {\n  margin: 0;\n  max-width: 480px;\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  color: var(--color-text-secondary);\n}\n";
+  const DocumentArticle = /* @__PURE__ */ _export_sfc(_sfc_main$w, [["styles", [_style_0$q]], ["__scopeId", "data-v-e5e27610"]]);
+  const _hoisted_1$o = {
     key: 0,
     class: "popover-list__items"
   };
-  const _hoisted_2$d = {
+  const _hoisted_2$j = {
     key: 0,
     class: "popover-list__divider"
   };
-  const _hoisted_3$b = { class: "popover-list__footer" };
-  const _sfc_main$o = /* @__PURE__ */ defineComponent({
+  const _hoisted_3$h = { class: "popover-list__footer" };
+  const _sfc_main$v = /* @__PURE__ */ defineComponent({
     __name: "PopoverList",
     props: {
       items: { type: Array },
@@ -35452,7 +35479,7 @@ ${indentedChild}`;
                   "side-offset": __props.sideOffset
                 }, {
                   default: withCtx(() => [
-                    __props.items.length > 0 ? (openBlock(), createElementBlock("ul", _hoisted_1$h, [
+                    __props.items.length > 0 ? (openBlock(), createElementBlock("ul", _hoisted_1$o, [
                       (openBlock(true), createElementBlock(Fragment$1, null, renderList(__props.items, (item, index) => {
                         return openBlock(), createBlock(unref(DropdownMenuItem_default), {
                           key: keyFor(item, index),
@@ -35468,8 +35495,8 @@ ${indentedChild}`;
                       }), 128))
                     ])) : createCommentVNode("", true),
                     _ctx.$slots.footer ? (openBlock(), createElementBlock(Fragment$1, { key: 1 }, [
-                      __props.items.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_2$d)) : createCommentVNode("", true),
-                      createBaseVNode("div", _hoisted_3$b, [
+                      __props.items.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_2$j)) : createCommentVNode("", true),
+                      createBaseVNode("div", _hoisted_3$h, [
                         renderSlot(_ctx.$slots, "footer")
                       ])
                     ], 64)) : createCommentVNode("", true)
@@ -35485,7 +35512,7 @@ ${indentedChild}`;
       };
     }
   });
-  const _sfc_main$n = /* @__PURE__ */ defineComponent({
+  const _sfc_main$u = /* @__PURE__ */ defineComponent({
     __name: "DownloadMenu",
     props: {
       formats: { type: Array },
@@ -35501,7 +35528,7 @@ ${indentedChild}`;
         emit2("select", item.format);
       }
       return (_ctx, _cache) => {
-        return openBlock(), createBlock(_sfc_main$o, {
+        return openBlock(), createBlock(_sfc_main$v, {
           items: props.formats,
           "item-key": (f2) => f2.format,
           align: "end",
@@ -35529,12 +35556,12 @@ ${indentedChild}`;
       };
     }
   });
-  const _hoisted_1$g = { class: "verbatim-panel" };
-  const _hoisted_2$c = { class: "verbatim-panel__content" };
-  const _hoisted_3$a = { class: "verbatim-panel__header" };
-  const _hoisted_4$3 = { class: "verbatim-panel__doc-title" };
-  const _hoisted_5$3 = { class: "verbatim-panel__turns" };
-  const _hoisted_6$3 = { class: "verbatim-panel__turn-header" };
+  const _hoisted_1$n = { class: "verbatim-panel" };
+  const _hoisted_2$i = { class: "verbatim-panel__content" };
+  const _hoisted_3$g = { class: "verbatim-panel__header" };
+  const _hoisted_4$8 = { class: "verbatim-panel__doc-title" };
+  const _hoisted_5$8 = { class: "verbatim-panel__turns" };
+  const _hoisted_6$6 = { class: "verbatim-panel__turn-header" };
   const _hoisted_7$3 = { class: "verbatim-panel__speaker-name" };
   const _hoisted_8$2 = {
     key: 0,
@@ -35545,7 +35572,7 @@ ${indentedChild}`;
     class: "verbatim-panel__meta"
   };
   const _hoisted_10$2 = { class: "verbatim-panel__text" };
-  const _sfc_main$m = /* @__PURE__ */ defineComponent({
+  const _sfc_main$t = /* @__PURE__ */ defineComponent({
     __name: "VerbatimPanel",
     setup(__props) {
       const core = useCore();
@@ -35582,29 +35609,29 @@ ${indentedChild}`;
         core.emit("verbatim:export", { format: format2 });
       }
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("section", _hoisted_1$g, [
+        return openBlock(), createElementBlock("section", _hoisted_1$n, [
           createVNode(DocumentArticle, {
             formats,
             onExport
           }, {
             "toolbar-right": withCtx(() => [
-              createVNode(_sfc_main$n, {
+              createVNode(_sfc_main$u, {
                 formats,
                 onSelect: onExport
               })
             ]),
             default: withCtx(() => [
-              createBaseVNode("article", _hoisted_2$c, [
-                createBaseVNode("header", _hoisted_3$a, [
-                  createBaseVNode("h1", _hoisted_4$3, toDisplayString(title.value), 1)
+              createBaseVNode("article", _hoisted_2$i, [
+                createBaseVNode("header", _hoisted_3$g, [
+                  createBaseVNode("h1", _hoisted_4$8, toDisplayString(title.value), 1)
                 ]),
-                createBaseVNode("ul", _hoisted_5$3, [
+                createBaseVNode("ul", _hoisted_5$8, [
                   (openBlock(true), createElementBlock(Fragment$1, null, renderList(turns.value, (turn) => {
                     return openBlock(), createElementBlock("li", {
                       key: turn.id,
                       class: "verbatim-panel__turn"
                     }, [
-                      createBaseVNode("header", _hoisted_6$3, [
+                      createBaseVNode("header", _hoisted_6$6, [
                         createBaseVNode("strong", _hoisted_7$3, toDisplayString(speakerName(turn.speakerId)), 1),
                         turn.startTime != null ? (openBlock(), createElementBlock("span", _hoisted_8$2, [
                           _cache[0] || (_cache[0] = createBaseVNode("span", {
@@ -35633,46 +35660,39 @@ ${indentedChild}`;
       };
     }
   });
-  const _style_0$i = "\n.verbatim-panel[data-v-3034500a] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.verbatim-panel__content[data-v-3034500a] {\n  padding: var(--spacing-md) var(--spacing-lg);\n}\n.verbatim-panel__header[data-v-3034500a] {\n  margin-bottom: var(--spacing-lg);\n  padding-bottom: var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n}\n.verbatim-panel__doc-title[data-v-3034500a] {\n  font-size: var(--font-size-xl);\n  font-weight: 700;\n  margin: 0;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__turns[data-v-3034500a] {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n}\n.verbatim-panel__turn[data-v-3034500a] {\n  display: block;\n}\n.verbatim-panel__turn-header[data-v-3034500a] {\n  margin: 0 0 var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: 1.4;\n}\n.verbatim-panel__speaker-name[data-v-3034500a] {\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__meta[data-v-3034500a] {\n  color: var(--color-text-muted);\n  font-weight: 400;\n}\n.verbatim-panel__sep[data-v-3034500a] {\n  margin: 0 0.35em;\n}\n.verbatim-panel__text[data-v-3034500a] {\n  margin: 0;\n  font-size: var(--font-size-base);\n  line-height: 1.6;\n  color: var(--color-text-primary);\n}\n@media (max-width: 767px) {\n.verbatim-panel[data-v-3034500a] {\n    padding: var(--spacing-md);\n}\n}\n";
-  const VerbatimPanel = /* @__PURE__ */ _export_sfc(_sfc_main$m, [["styles", [_style_0$i]], ["__scopeId", "data-v-3034500a"]]);
-  function M() {
+  const _style_0$p = "\n.verbatim-panel[data-v-3034500a] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.verbatim-panel__content[data-v-3034500a] {\n  padding: var(--spacing-md) var(--spacing-lg);\n}\n.verbatim-panel__header[data-v-3034500a] {\n  margin-bottom: var(--spacing-lg);\n  padding-bottom: var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n}\n.verbatim-panel__doc-title[data-v-3034500a] {\n  font-size: var(--font-size-xl);\n  font-weight: 700;\n  margin: 0;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__turns[data-v-3034500a] {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n}\n.verbatim-panel__turn[data-v-3034500a] {\n  display: block;\n}\n.verbatim-panel__turn-header[data-v-3034500a] {\n  margin: 0 0 var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: 1.4;\n}\n.verbatim-panel__speaker-name[data-v-3034500a] {\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__meta[data-v-3034500a] {\n  color: var(--color-text-muted);\n  font-weight: 400;\n}\n.verbatim-panel__sep[data-v-3034500a] {\n  margin: 0 0.35em;\n}\n.verbatim-panel__text[data-v-3034500a] {\n  margin: 0;\n  font-size: var(--font-size-base);\n  line-height: 1.6;\n  color: var(--color-text-primary);\n}\n@media (max-width: 767px) {\n.verbatim-panel[data-v-3034500a] {\n    padding: var(--spacing-md);\n}\n}\n";
+  const VerbatimPanel = /* @__PURE__ */ _export_sfc(_sfc_main$t, [["styles", [_style_0$p]], ["__scopeId", "data-v-3034500a"]]);
+  function z() {
     return { async: false, breaks: false, extensions: null, gfm: true, hooks: null, pedantic: false, renderer: null, silent: false, tokenizer: null, walkTokens: null };
   }
-  var T = M();
-  function N(l2) {
+  var T = z();
+  function G(l2) {
     T = l2;
   }
   var _ = { exec: () => null };
-  function E$1(l2) {
-    let e2 = [];
-    return (t2) => {
-      let n2 = Math.max(0, Math.min(3, t2 - 1)), s2 = e2[n2];
-      return s2 || (s2 = l2(n2), e2[n2] = s2), s2;
-    };
-  }
-  function d$2(l2, e2 = "") {
+  function k(l2, e2 = "") {
     let t2 = typeof l2 == "string" ? l2 : l2.source, n2 = { replace: (s2, r2) => {
       let i2 = typeof r2 == "string" ? r2 : r2.source;
       return i2 = i2.replace(m$1.caret, "$1"), t2 = t2.replace(s2, i2), n2;
     }, getRegex: () => new RegExp(t2, e2) };
     return n2;
   }
-  var Te = ((l2 = "") => {
+  var Re = ((l2 = "") => {
     try {
       return !!new RegExp("(?<=1)(?<!1)" + l2);
     } catch {
       return false;
     }
-  })(), m$1 = { codeRemoveIndent: /^(?: {1,4}| {0,3}\t)/gm, outputLinkReplace: /\\([\[\]])/g, indentCodeCompensation: /^(\s+)(?:```)/, beginningSpace: /^\s+/, endingHash: /#$/, startingSpaceChar: /^ /, endingSpaceChar: / $/, nonSpaceChar: /[^ ]/, newLineCharGlobal: /\n/g, tabCharGlobal: /\t/g, multipleSpaceGlobal: /\s+/g, blankLine: /^[ \t]*$/, doubleBlankLine: /\n[ \t]*\n[ \t]*$/, blockquoteStart: /^ {0,3}>/, blockquoteSetextReplace: /\n {0,3}((?:=+|-+) *)(?=\n|$)/g, blockquoteSetextReplace2: /^ {0,3}>[ \t]?/gm, listReplaceNesting: /^ {1,4}(?=( {4})*[^ ])/g, listIsTask: /^\[[ xX]\] +\S/, listReplaceTask: /^\[[ xX]\] +/, listTaskCheckbox: /\[[ xX]\]/, anyLine: /\n.*\n/, hrefBrackets: /^<(.*)>$/, tableDelimiter: /[:|]/, tableAlignChars: /^\||\| *$/g, tableRowBlankLine: /\n[ \t]*$/, tableAlignRight: /^ *-+: *$/, tableAlignCenter: /^ *:-+: *$/, tableAlignLeft: /^ *:-+ *$/, startATag: /^<a /i, endATag: /^<\/a>/i, startPreScriptTag: /^<(pre|code|kbd|script)(\s|>)/i, endPreScriptTag: /^<\/(pre|code|kbd|script)(\s|>)/i, startAngleBracket: /^</, endAngleBracket: />$/, pedanticHrefTitle: /^([^'"]*[^\s])\s+(['"])(.*)\2/, unicodeAlphaNumeric: /[\p{L}\p{N}]/u, escapeTest: /[&<>"']/, escapeReplace: /[&<>"']/g, escapeTestNoEncode: /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/, escapeReplaceNoEncode: /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/g, caret: /(^|[^\[])\^/g, percentDecode: /%25/g, findPipe: /\|/g, splitPipe: / \|/, slashPipe: /\\\|/g, carriageReturn: /\r\n|\r/g, spaceLine: /^ +$/gm, notSpaceStart: /^\S*/, endingNewline: /\n$/, listItemRegex: (l2) => new RegExp(`^( {0,3}${l2})((?:[	 ][^\\n]*)?(?:\\n|$))`), nextBulletRegex: E$1((l2) => new RegExp(`^ {0,${l2}}(?:[*+-]|\\d{1,9}[.)])((?:[ 	][^\\n]*)?(?:\\n|$))`)), hrRegex: E$1((l2) => new RegExp(`^ {0,${l2}}((?:- *){3,}|(?:_ *){3,}|(?:\\* *){3,})(?:\\n+|$)`)), fencesBeginRegex: E$1((l2) => new RegExp(`^ {0,${l2}}(?:\`\`\`|~~~)`)), headingBeginRegex: E$1((l2) => new RegExp(`^ {0,${l2}}#`)), htmlBeginRegex: E$1((l2) => new RegExp(`^ {0,${l2}}<(?:[a-z].*>|!--)`, "i")), blockquoteBeginRegex: E$1((l2) => new RegExp(`^ {0,${l2}}>`)) }, Oe = /^(?:[ \t]*(?:\n|$))+/, we = /^((?: {4}| {0,3}\t)[^\n]+(?:\n(?:[ \t]*(?:\n|$))*)?)+/, ye = /^ {0,3}(`{3,}(?=[^`\n]*(?:\n|$))|~{3,})([^\n]*)(?:\n|$)(?:|([\s\S]*?)(?:\n|$))(?: {0,3}\1[~`]* *(?=\n|$)|$)/, B = /^ {0,3}((?:-[\t ]*){3,}|(?:_[ \t]*){3,}|(?:\*[ \t]*){3,})(?:\n+|$)/, Pe = /^ {0,3}(#{1,6})(?=\s|$)(.*)(?:\n+|$)/, j = / {0,3}(?:[*+-]|\d{1,9}[.)])/, oe = /^(?!bull |blockCode|fences|blockquote|heading|html|table)((?:.|\n(?!\s*?\n|bull |blockCode|fences|blockquote|heading|html|table))+?)\n {0,3}(=+|-+) *(?:\n+|$)/, ae = d$2(oe).replace(/bull/g, j).replace(/blockCode/g, /(?: {4}| {0,3}\t)/).replace(/fences/g, / {0,3}(?:`{3,}|~{3,})/).replace(/blockquote/g, / {0,3}>/).replace(/heading/g, / {0,3}#{1,6}/).replace(/html/g, / {0,3}<[^\n>]+>\n/).replace(/\|table/g, "").getRegex(), Se = d$2(oe).replace(/bull/g, j).replace(/blockCode/g, /(?: {4}| {0,3}\t)/).replace(/fences/g, / {0,3}(?:`{3,}|~{3,})/).replace(/blockquote/g, / {0,3}>/).replace(/heading/g, / {0,3}#{1,6}/).replace(/html/g, / {0,3}<[^\n>]+>\n/).replace(/table/g, / {0,3}\|?(?:[:\- ]*\|)+[\:\- ]*\n/).getRegex(), F = /^([^\n]+(?:\n(?!hr|heading|lheading|blockquote|fences|list|html|table| +\n)[^\n]+)*)/, $e = /^[^\n]+/, U = /(?!\s*\])(?:\\[\s\S]|[^\[\]\\])+/, Le = d$2(/^ {0,3}\[(label)\]: *(?:\n[ \t]*)?([^<\s][^\s]*|<.*?>)(?:(?: +(?:\n[ \t]*)?| *\n[ \t]*)(title))? *(?:\n+|$)/).replace("label", U).replace("title", /(?:"(?:\\"?|[^"\\])*"|'[^'\n]*(?:\n[^'\n]+)*\n?'|\([^()]*\))/).getRegex(), _e = d$2(/^(bull)([ \t][^\n]*?)?(?:\n|$)/).replace(/bull/g, j).getRegex(), H = "address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|search|section|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul", K$1 = /<!--(?:-?>|[\s\S]*?(?:-->|$))/, ze = d$2("^ {0,3}(?:<(script|pre|style|textarea)[\\s>][\\s\\S]*?(?:</\\1>[^\\n]*\\n+|$)|comment[^\\n]*(\\n+|$)|<\\?[\\s\\S]*?(?:\\?>\\n*|$)|<![A-Z][\\s\\S]*?(?:>\\n*|$)|<!\\[CDATA\\[[\\s\\S]*?(?:\\]\\]>\\n*|$)|</?(tag)(?: +|\\n|/?>)[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$)|<(?!script|pre|style|textarea)([a-z][\\w-]*)(?:attribute)*? */?>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$)|</(?!script|pre|style|textarea)[a-z][\\w-]*\\s*>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$))", "i").replace("comment", K$1).replace("tag", H).replace("attribute", / +[a-zA-Z:_][\w.:-]*(?: *= *"[^"\n]*"| *= *'[^'\n]*'| *= *[^\s"'=<>`]+)?/).getRegex(), le = d$2(F).replace("hr", B).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("|lheading", "").replace("|table", "").replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)])[ \\t]+[^ \\t\\n]").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", H).getRegex(), Me = d$2(/^( {0,3}> ?(paragraph|[^\n]*)(?:\n|$))+/).replace("paragraph", le).getRegex(), W = { blockquote: Me, code: we, def: Le, fences: ye, heading: Pe, hr: B, html: ze, lheading: ae, list: _e, newline: Oe, paragraph: le, table: _, text: $e }, se = d$2("^ *([^\\n ].*)\\n {0,3}((?:\\| *)?:?-+:? *(?:\\| *:?-+:? *)*(?:\\| *)?)(?:\\n((?:(?! *\\n|hr|heading|blockquote|code|fences|list|html).*(?:\\n|$))*)\\n*|$)").replace("hr", B).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("blockquote", " {0,3}>").replace("code", "(?: {4}| {0,3}	)[^\\n]").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)])[ \\t]").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", H).getRegex(), Ee = { ...W, lheading: Se, table: se, paragraph: d$2(F).replace("hr", B).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("|lheading", "").replace("table", se).replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)])[ \\t]+[^ \\t\\n]").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", H).getRegex() }, Ie = { ...W, html: d$2(`^ *(?:comment *(?:\\n|\\s*$)|<(tag)[\\s\\S]+?</\\1> *(?:\\n{2,}|\\s*$)|<tag(?:"[^"]*"|'[^']*'|\\s[^'"/>\\s]*)*?/?> *(?:\\n{2,}|\\s*$))`).replace("comment", K$1).replace(/tag/g, "(?!(?:a|em|strong|small|s|cite|q|dfn|abbr|data|time|code|var|samp|kbd|sub|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo|span|br|wbr|ins|del|img)\\b)\\w+(?!:|[^\\w\\s@]*@)\\b").getRegex(), def: /^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +(["(][^\n]+[")]))? *(?:\n+|$)/, heading: /^(#{1,6})(.*)(?:\n+|$)/, fences: _, lheading: /^(.+?)\n {0,3}(=+|-+) *(?:\n+|$)/, paragraph: d$2(F).replace("hr", B).replace("heading", ` *#{1,6} *[^
-]`).replace("lheading", ae).replace("|table", "").replace("blockquote", " {0,3}>").replace("|fences", "").replace("|list", "").replace("|html", "").replace("|tag", "").getRegex() }, Ae = /^\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/, Ce = /^(`+)([^`]|[^`][\s\S]*?[^`])\1(?!`)/, ue = /^( {2,}|\\)\n(?!\s*$)/, Be = /^(`+|[^`])(?:(?= {2,}\n)|[\s\S]*?(?:(?=[\\<!\[`*_]|\b_|$)|[^ ](?= {2,}\n)))/, I = /[\p{P}\p{S}]/u, Z = /[\s\p{P}\p{S}]/u, X = /[^\s\p{P}\p{S}]/u, De = d$2(/^((?![*_])punctSpace)/, "u").replace(/punctSpace/g, Z).getRegex(), pe = /(?!~)[\p{P}\p{S}]/u, qe = /(?!~)[\s\p{P}\p{S}]/u, ve = /(?:[^\s\p{P}\p{S}]|~)/u, He = d$2(/link|precode-code|html/, "g").replace("link", /\[(?:[^\[\]`]|(?<a>`+)[^`]+\k<a>(?!`))*?\]\((?:\\[\s\S]|[^\\\(\)]|\((?:\\[\s\S]|[^\\\(\)])*\))*\)/).replace("precode-", Te ? "(?<!`)()" : "(^^|[^`])").replace("code", /(?<b>`+)[^`]+\k<b>(?!`)/).replace("html", /<(?! )[^<>]*?>/).getRegex(), ce = /^(?:\*+(?:((?!\*)punct)|([^\s*]))?)|^_+(?:((?!_)punct)|([^\s_]))?/, Ze = d$2(ce, "u").replace(/punct/g, I).getRegex(), Ge = d$2(ce, "u").replace(/punct/g, pe).getRegex(), he = "^[^_*]*?__[^_*]*?\\*[^_*]*?(?=__)|[^*]+(?=[^*])|(?!\\*)punct(\\*+)(?=[\\s]|$)|notPunctSpace(\\*+)(?!\\*)(?=punctSpace|$)|(?!\\*)punctSpace(\\*+)(?=notPunctSpace)|[\\s](\\*+)(?!\\*)(?=punct)|(?!\\*)punct(\\*+)(?!\\*)(?=punct)|notPunctSpace(\\*+)(?=notPunctSpace)", Ne = d$2(he, "gu").replace(/notPunctSpace/g, X).replace(/punctSpace/g, Z).replace(/punct/g, I).getRegex(), Qe = d$2(he, "gu").replace(/notPunctSpace/g, ve).replace(/punctSpace/g, qe).replace(/punct/g, pe).getRegex(), je = d$2("^[^_*]*?\\*\\*[^_*]*?_[^_*]*?(?=\\*\\*)|[^_]+(?=[^_])|(?!_)punct(_+)(?=[\\s]|$)|notPunctSpace(_+)(?!_)(?=punctSpace|$)|(?!_)punctSpace(_+)(?=notPunctSpace)|[\\s](_+)(?!_)(?=punct)|(?!_)punct(_+)(?!_)(?=punct)", "gu").replace(/notPunctSpace/g, X).replace(/punctSpace/g, Z).replace(/punct/g, I).getRegex(), Fe = d$2(/^~~?(?:((?!~)punct)|[^\s~])/, "u").replace(/punct/g, I).getRegex(), Ue = "^[^~]+(?=[^~])|(?!~)punct(~~?)(?=[\\s]|$)|notPunctSpace(~~?)(?!~)(?=punctSpace|$)|(?!~)punctSpace(~~?)(?=notPunctSpace)|[\\s](~~?)(?!~)(?=punct)|(?!~)punct(~~?)(?!~)(?=punct)|notPunctSpace(~~?)(?=notPunctSpace)", Ke = d$2(Ue, "gu").replace(/notPunctSpace/g, X).replace(/punctSpace/g, Z).replace(/punct/g, I).getRegex(), We = d$2(/\\(punct)/, "gu").replace(/punct/g, I).getRegex(), Xe = d$2(/^<(scheme:[^\s\x00-\x1f<>]*|email)>/).replace("scheme", /[a-zA-Z][a-zA-Z0-9+.-]{1,31}/).replace("email", /[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+(@)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(?![-_])/).getRegex(), Je = d$2(K$1).replace("(?:-->|$)", "-->").getRegex(), Ve = d$2("^comment|^</[a-zA-Z][\\w:-]*\\s*>|^<[a-zA-Z][\\w-]*(?:attribute)*?\\s*/?>|^<\\?[\\s\\S]*?\\?>|^<![a-zA-Z]+\\s[\\s\\S]*?>|^<!\\[CDATA\\[[\\s\\S]*?\\]\\]>").replace("comment", Je).replace("attribute", /\s+[a-zA-Z:_][\w.:-]*(?:\s*=\s*"[^"]*"|\s*=\s*'[^']*'|\s*=\s*[^\s"'=<>`]+)?/).getRegex(), v$1 = /(?:\[(?:\\[\s\S]|[^\[\]\\])*\]|\\[\s\S]|`+(?!`)[^`]*?`+(?!`)|``+(?=\])|[^\[\]\\`])*?/, Ye = d$2(/^!?\[(label)\]\(\s*(href)(?:(?:[ \t]+(?:\n[ \t]*)?|\n[ \t]*)(title))?\s*\)/).replace("label", v$1).replace("href", /<(?:\\.|[^\n<>\\])+>|[^ \t\n\x00-\x1f]*/).replace("title", /"(?:\\"?|[^"\\])*"|'(?:\\'?|[^'\\])*'|\((?:\\\)?|[^)\\])*\)/).getRegex(), ke = d$2(/^!?\[(label)\]\[(ref)\]/).replace("label", v$1).replace("ref", U).getRegex(), de = d$2(/^!?\[(ref)\](?:\[\])?/).replace("ref", U).getRegex(), et = d$2("reflink|nolink(?!\\()", "g").replace("reflink", ke).replace("nolink", de).getRegex(), ie = /[hH][tT][tT][pP][sS]?|[fF][tT][pP]/, J = { _backpedal: _, anyPunctuation: We, autolink: Xe, blockSkip: He, br: ue, code: Ce, del: _, delLDelim: _, delRDelim: _, emStrongLDelim: Ze, emStrongRDelimAst: Ne, emStrongRDelimUnd: je, escape: Ae, link: Ye, nolink: de, punctuation: De, reflink: ke, reflinkSearch: et, tag: Ve, text: Be, url: _ }, tt = { ...J, link: d$2(/^!?\[(label)\]\((.*?)\)/).replace("label", v$1).getRegex(), reflink: d$2(/^!?\[(label)\]\s*\[([^\]]*)\]/).replace("label", v$1).getRegex() }, Q = { ...J, emStrongRDelimAst: Qe, emStrongLDelim: Ge, delLDelim: Fe, delRDelim: Ke, url: d$2(/^((?:protocol):\/\/|www\.)(?:[a-zA-Z0-9\-]+\.?)+[^\s<]*|^email/).replace("protocol", ie).replace("email", /[A-Za-z0-9._+-]+(@)[a-zA-Z0-9-_]+(?:\.[a-zA-Z0-9-_]*[a-zA-Z0-9])+(?![-_])/).getRegex(), _backpedal: /(?:[^?!.,:;*_'"~()&]+|\([^)]*\)|&(?![a-zA-Z0-9]+;$)|[?!.,:;*_'"~)]+(?!$))+/, del: /^(~~?)(?=[^\s~])((?:\\[\s\S]|[^\\])*?(?:\\[\s\S]|[^\s~\\]))\1(?=[^~]|$)/, text: d$2(/^([`~]+|[^`~])(?:(?= {2,}\n)|(?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)|[\s\S]*?(?:(?=[\\<!\[`*~_]|\b_|protocol:\/\/|www\.|$)|[^ ](?= {2,}\n)|[^a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-](?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)))/).replace("protocol", ie).getRegex() }, nt = { ...Q, br: d$2(ue).replace("{2,}", "*").getRegex(), text: d$2(Q.text).replace("\\b_", "\\b_| {2,}\\n").replace(/\{2,\}/g, "*").getRegex() }, D = { normal: W, gfm: Ee, pedantic: Ie }, A = { normal: J, gfm: Q, breaks: nt, pedantic: tt };
-  var rt = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }, ge = (l2) => rt[l2];
+  })(), m$1 = { codeRemoveIndent: /^(?: {1,4}| {0,3}\t)/gm, outputLinkReplace: /\\([\[\]])/g, indentCodeCompensation: /^(\s+)(?:```)/, beginningSpace: /^\s+/, endingHash: /#$/, startingSpaceChar: /^ /, endingSpaceChar: / $/, nonSpaceChar: /[^ ]/, newLineCharGlobal: /\n/g, tabCharGlobal: /\t/g, multipleSpaceGlobal: /\s+/g, blankLine: /^[ \t]*$/, doubleBlankLine: /\n[ \t]*\n[ \t]*$/, blockquoteStart: /^ {0,3}>/, blockquoteSetextReplace: /\n {0,3}((?:=+|-+) *)(?=\n|$)/g, blockquoteSetextReplace2: /^ {0,3}>[ \t]?/gm, listReplaceNesting: /^ {1,4}(?=( {4})*[^ ])/g, listIsTask: /^\[[ xX]\] +\S/, listReplaceTask: /^\[[ xX]\] +/, listTaskCheckbox: /\[[ xX]\]/, anyLine: /\n.*\n/, hrefBrackets: /^<(.*)>$/, tableDelimiter: /[:|]/, tableAlignChars: /^\||\| *$/g, tableRowBlankLine: /\n[ \t]*$/, tableAlignRight: /^ *-+: *$/, tableAlignCenter: /^ *:-+: *$/, tableAlignLeft: /^ *:-+ *$/, startATag: /^<a /i, endATag: /^<\/a>/i, startPreScriptTag: /^<(pre|code|kbd|script)(\s|>)/i, endPreScriptTag: /^<\/(pre|code|kbd|script)(\s|>)/i, startAngleBracket: /^</, endAngleBracket: />$/, pedanticHrefTitle: /^([^'"]*[^\s])\s+(['"])(.*)\2/, unicodeAlphaNumeric: /[\p{L}\p{N}]/u, escapeTest: /[&<>"']/, escapeReplace: /[&<>"']/g, escapeTestNoEncode: /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/, escapeReplaceNoEncode: /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/g, caret: /(^|[^\[])\^/g, percentDecode: /%25/g, findPipe: /\|/g, splitPipe: / \|/, slashPipe: /\\\|/g, carriageReturn: /\r\n|\r/g, spaceLine: /^ +$/gm, notSpaceStart: /^\S*/, endingNewline: /\n$/, listItemRegex: (l2) => new RegExp(`^( {0,3}${l2})((?:[	 ][^\\n]*)?(?:\\n|$))`), nextBulletRegex: (l2) => new RegExp(`^ {0,${Math.min(3, l2 - 1)}}(?:[*+-]|\\d{1,9}[.)])((?:[ 	][^\\n]*)?(?:\\n|$))`), hrRegex: (l2) => new RegExp(`^ {0,${Math.min(3, l2 - 1)}}((?:- *){3,}|(?:_ *){3,}|(?:\\* *){3,})(?:\\n+|$)`), fencesBeginRegex: (l2) => new RegExp(`^ {0,${Math.min(3, l2 - 1)}}(?:\`\`\`|~~~)`), headingBeginRegex: (l2) => new RegExp(`^ {0,${Math.min(3, l2 - 1)}}#`), htmlBeginRegex: (l2) => new RegExp(`^ {0,${Math.min(3, l2 - 1)}}<(?:[a-z].*>|!--)`, "i"), blockquoteBeginRegex: (l2) => new RegExp(`^ {0,${Math.min(3, l2 - 1)}}>`) }, Te = /^(?:[ \t]*(?:\n|$))+/, Oe = /^((?: {4}| {0,3}\t)[^\n]+(?:\n(?:[ \t]*(?:\n|$))*)?)+/, we = /^ {0,3}(`{3,}(?=[^`\n]*(?:\n|$))|~{3,})([^\n]*)(?:\n|$)(?:|([\s\S]*?)(?:\n|$))(?: {0,3}\1[~`]* *(?=\n|$)|$)/, I = /^ {0,3}((?:-[\t ]*){3,}|(?:_[ \t]*){3,}|(?:\*[ \t]*){3,})(?:\n+|$)/, ye = /^ {0,3}(#{1,6})(?=\s|$)(.*)(?:\n+|$)/, Q = / {0,3}(?:[*+-]|\d{1,9}[.)])/, ie = /^(?!bull |blockCode|fences|blockquote|heading|html|table)((?:.|\n(?!\s*?\n|bull |blockCode|fences|blockquote|heading|html|table))+?)\n {0,3}(=+|-+) *(?:\n+|$)/, oe = k(ie).replace(/bull/g, Q).replace(/blockCode/g, /(?: {4}| {0,3}\t)/).replace(/fences/g, / {0,3}(?:`{3,}|~{3,})/).replace(/blockquote/g, / {0,3}>/).replace(/heading/g, / {0,3}#{1,6}/).replace(/html/g, / {0,3}<[^\n>]+>\n/).replace(/\|table/g, "").getRegex(), Pe = k(ie).replace(/bull/g, Q).replace(/blockCode/g, /(?: {4}| {0,3}\t)/).replace(/fences/g, / {0,3}(?:`{3,}|~{3,})/).replace(/blockquote/g, / {0,3}>/).replace(/heading/g, / {0,3}#{1,6}/).replace(/html/g, / {0,3}<[^\n>]+>\n/).replace(/table/g, / {0,3}\|?(?:[:\- ]*\|)+[\:\- ]*\n/).getRegex(), j = /^([^\n]+(?:\n(?!hr|heading|lheading|blockquote|fences|list|html|table| +\n)[^\n]+)*)/, Se = /^[^\n]+/, F = /(?!\s*\])(?:\\[\s\S]|[^\[\]\\])+/, $e = k(/^ {0,3}\[(label)\]: *(?:\n[ \t]*)?([^<\s][^\s]*|<.*?>)(?:(?: +(?:\n[ \t]*)?| *\n[ \t]*)(title))? *(?:\n+|$)/).replace("label", F).replace("title", /(?:"(?:\\"?|[^"\\])*"|'[^'\n]*(?:\n[^'\n]+)*\n?'|\([^()]*\))/).getRegex(), Le = k(/^(bull)([ \t][^\n]+?)?(?:\n|$)/).replace(/bull/g, Q).getRegex(), v$1 = "address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|search|section|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul", U = /<!--(?:-?>|[\s\S]*?(?:-->|$))/, _e = k("^ {0,3}(?:<(script|pre|style|textarea)[\\s>][\\s\\S]*?(?:</\\1>[^\\n]*\\n+|$)|comment[^\\n]*(\\n+|$)|<\\?[\\s\\S]*?(?:\\?>\\n*|$)|<![A-Z][\\s\\S]*?(?:>\\n*|$)|<!\\[CDATA\\[[\\s\\S]*?(?:\\]\\]>\\n*|$)|</?(tag)(?: +|\\n|/?>)[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$)|<(?!script|pre|style|textarea)([a-z][\\w-]*)(?:attribute)*? */?>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$)|</(?!script|pre|style|textarea)[a-z][\\w-]*\\s*>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$))", "i").replace("comment", U).replace("tag", v$1).replace("attribute", / +[a-zA-Z:_][\w.:-]*(?: *= *"[^"\n]*"| *= *'[^'\n]*'| *= *[^\s"'=<>`]+)?/).getRegex(), ae = k(j).replace("hr", I).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("|lheading", "").replace("|table", "").replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)])[ \\t]").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", v$1).getRegex(), Me = k(/^( {0,3}> ?(paragraph|[^\n]*)(?:\n|$))+/).replace("paragraph", ae).getRegex(), K$1 = { blockquote: Me, code: Oe, def: $e, fences: we, heading: ye, hr: I, html: _e, lheading: oe, list: Le, newline: Te, paragraph: ae, table: _, text: Se }, re = k("^ *([^\\n ].*)\\n {0,3}((?:\\| *)?:?-+:? *(?:\\| *:?-+:? *)*(?:\\| *)?)(?:\\n((?:(?! *\\n|hr|heading|blockquote|code|fences|list|html).*(?:\\n|$))*)\\n*|$)").replace("hr", I).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("blockquote", " {0,3}>").replace("code", "(?: {4}| {0,3}	)[^\\n]").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)])[ \\t]").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", v$1).getRegex(), ze = { ...K$1, lheading: Pe, table: re, paragraph: k(j).replace("hr", I).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("|lheading", "").replace("table", re).replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)])[ \\t]").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", v$1).getRegex() }, Ee = { ...K$1, html: k(`^ *(?:comment *(?:\\n|\\s*$)|<(tag)[\\s\\S]+?</\\1> *(?:\\n{2,}|\\s*$)|<tag(?:"[^"]*"|'[^']*'|\\s[^'"/>\\s]*)*?/?> *(?:\\n{2,}|\\s*$))`).replace("comment", U).replace(/tag/g, "(?!(?:a|em|strong|small|s|cite|q|dfn|abbr|data|time|code|var|samp|kbd|sub|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo|span|br|wbr|ins|del|img)\\b)\\w+(?!:|[^\\w\\s@]*@)\\b").getRegex(), def: /^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +(["(][^\n]+[")]))? *(?:\n+|$)/, heading: /^(#{1,6})(.*)(?:\n+|$)/, fences: _, lheading: /^(.+?)\n {0,3}(=+|-+) *(?:\n+|$)/, paragraph: k(j).replace("hr", I).replace("heading", ` *#{1,6} *[^
+]`).replace("lheading", oe).replace("|table", "").replace("blockquote", " {0,3}>").replace("|fences", "").replace("|list", "").replace("|html", "").replace("|tag", "").getRegex() }, Ae = /^\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/, Ce = /^(`+)([^`]|[^`][\s\S]*?[^`])\1(?!`)/, le = /^( {2,}|\\)\n(?!\s*$)/, Ie = /^(`+|[^`])(?:(?= {2,}\n)|[\s\S]*?(?:(?=[\\<!\[`*_]|\b_|$)|[^ ](?= {2,}\n)))/, E$1 = /[\p{P}\p{S}]/u, H = /[\s\p{P}\p{S}]/u, W = /[^\s\p{P}\p{S}]/u, Be = k(/^((?![*_])punctSpace)/, "u").replace(/punctSpace/g, H).getRegex(), ue = /(?!~)[\p{P}\p{S}]/u, De = /(?!~)[\s\p{P}\p{S}]/u, qe = /(?:[^\s\p{P}\p{S}]|~)/u, ve = k(/link|precode-code|html/, "g").replace("link", /\[(?:[^\[\]`]|(?<a>`+)[^`]+\k<a>(?!`))*?\]\((?:\\[\s\S]|[^\\\(\)]|\((?:\\[\s\S]|[^\\\(\)])*\))*\)/).replace("precode-", Re ? "(?<!`)()" : "(^^|[^`])").replace("code", /(?<b>`+)[^`]+\k<b>(?!`)/).replace("html", /<(?! )[^<>]*?>/).getRegex(), pe = /^(?:\*+(?:((?!\*)punct)|([^\s*]))?)|^_+(?:((?!_)punct)|([^\s_]))?/, He = k(pe, "u").replace(/punct/g, E$1).getRegex(), Ze = k(pe, "u").replace(/punct/g, ue).getRegex(), ce = "^[^_*]*?__[^_*]*?\\*[^_*]*?(?=__)|[^*]+(?=[^*])|(?!\\*)punct(\\*+)(?=[\\s]|$)|notPunctSpace(\\*+)(?!\\*)(?=punctSpace|$)|(?!\\*)punctSpace(\\*+)(?=notPunctSpace)|[\\s](\\*+)(?!\\*)(?=punct)|(?!\\*)punct(\\*+)(?!\\*)(?=punct)|notPunctSpace(\\*+)(?=notPunctSpace)", Ge = k(ce, "gu").replace(/notPunctSpace/g, W).replace(/punctSpace/g, H).replace(/punct/g, E$1).getRegex(), Ne = k(ce, "gu").replace(/notPunctSpace/g, qe).replace(/punctSpace/g, De).replace(/punct/g, ue).getRegex(), Qe = k("^[^_*]*?\\*\\*[^_*]*?_[^_*]*?(?=\\*\\*)|[^_]+(?=[^_])|(?!_)punct(_+)(?=[\\s]|$)|notPunctSpace(_+)(?!_)(?=punctSpace|$)|(?!_)punctSpace(_+)(?=notPunctSpace)|[\\s](_+)(?!_)(?=punct)|(?!_)punct(_+)(?!_)(?=punct)", "gu").replace(/notPunctSpace/g, W).replace(/punctSpace/g, H).replace(/punct/g, E$1).getRegex(), je = k(/^~~?(?:((?!~)punct)|[^\s~])/, "u").replace(/punct/g, E$1).getRegex(), Fe = "^[^~]+(?=[^~])|(?!~)punct(~~?)(?=[\\s]|$)|notPunctSpace(~~?)(?!~)(?=punctSpace|$)|(?!~)punctSpace(~~?)(?=notPunctSpace)|[\\s](~~?)(?!~)(?=punct)|(?!~)punct(~~?)(?!~)(?=punct)|notPunctSpace(~~?)(?=notPunctSpace)", Ue = k(Fe, "gu").replace(/notPunctSpace/g, W).replace(/punctSpace/g, H).replace(/punct/g, E$1).getRegex(), Ke = k(/\\(punct)/, "gu").replace(/punct/g, E$1).getRegex(), We = k(/^<(scheme:[^\s\x00-\x1f<>]*|email)>/).replace("scheme", /[a-zA-Z][a-zA-Z0-9+.-]{1,31}/).replace("email", /[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+(@)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(?![-_])/).getRegex(), Xe = k(U).replace("(?:-->|$)", "-->").getRegex(), Je = k("^comment|^</[a-zA-Z][\\w:-]*\\s*>|^<[a-zA-Z][\\w-]*(?:attribute)*?\\s*/?>|^<\\?[\\s\\S]*?\\?>|^<![a-zA-Z]+\\s[\\s\\S]*?>|^<!\\[CDATA\\[[\\s\\S]*?\\]\\]>").replace("comment", Xe).replace("attribute", /\s+[a-zA-Z:_][\w.:-]*(?:\s*=\s*"[^"]*"|\s*=\s*'[^']*'|\s*=\s*[^\s"'=<>`]+)?/).getRegex(), q = /(?:\[(?:\\[\s\S]|[^\[\]\\])*\]|\\[\s\S]|`+(?!`)[^`]*?`+(?!`)|``+(?=\])|[^\[\]\\`])*?/, Ve = k(/^!?\[(label)\]\(\s*(href)(?:(?:[ \t]+(?:\n[ \t]*)?|\n[ \t]*)(title))?\s*\)/).replace("label", q).replace("href", /<(?:\\.|[^\n<>\\])+>|[^ \t\n\x00-\x1f]*/).replace("title", /"(?:\\"?|[^"\\])*"|'(?:\\'?|[^'\\])*'|\((?:\\\)?|[^)\\])*\)/).getRegex(), he = k(/^!?\[(label)\]\[(ref)\]/).replace("label", q).replace("ref", F).getRegex(), ke = k(/^!?\[(ref)\](?:\[\])?/).replace("ref", F).getRegex(), Ye = k("reflink|nolink(?!\\()", "g").replace("reflink", he).replace("nolink", ke).getRegex(), se = /[hH][tT][tT][pP][sS]?|[fF][tT][pP]/, X = { _backpedal: _, anyPunctuation: Ke, autolink: We, blockSkip: ve, br: le, code: Ce, del: _, delLDelim: _, delRDelim: _, emStrongLDelim: He, emStrongRDelimAst: Ge, emStrongRDelimUnd: Qe, escape: Ae, link: Ve, nolink: ke, punctuation: Be, reflink: he, reflinkSearch: Ye, tag: Je, text: Ie, url: _ }, et = { ...X, link: k(/^!?\[(label)\]\((.*?)\)/).replace("label", q).getRegex(), reflink: k(/^!?\[(label)\]\s*\[([^\]]*)\]/).replace("label", q).getRegex() }, N = { ...X, emStrongRDelimAst: Ne, emStrongLDelim: Ze, delLDelim: je, delRDelim: Ue, url: k(/^((?:protocol):\/\/|www\.)(?:[a-zA-Z0-9\-]+\.?)+[^\s<]*|^email/).replace("protocol", se).replace("email", /[A-Za-z0-9._+-]+(@)[a-zA-Z0-9-_]+(?:\.[a-zA-Z0-9-_]*[a-zA-Z0-9])+(?![-_])/).getRegex(), _backpedal: /(?:[^?!.,:;*_'"~()&]+|\([^)]*\)|&(?![a-zA-Z0-9]+;$)|[?!.,:;*_'"~)]+(?!$))+/, del: /^(~~?)(?=[^\s~])((?:\\[\s\S]|[^\\])*?(?:\\[\s\S]|[^\s~\\]))\1(?=[^~]|$)/, text: k(/^([`~]+|[^`~])(?:(?= {2,}\n)|(?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)|[\s\S]*?(?:(?=[\\<!\[`*~_]|\b_|protocol:\/\/|www\.|$)|[^ ](?= {2,}\n)|[^a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-](?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)))/).replace("protocol", se).getRegex() }, tt = { ...N, br: k(le).replace("{2,}", "*").getRegex(), text: k(N.text).replace("\\b_", "\\b_| {2,}\\n").replace(/\{2,\}/g, "*").getRegex() }, B = { normal: K$1, gfm: ze, pedantic: Ee }, A = { normal: X, gfm: N, breaks: tt, pedantic: et };
+  var nt = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }, de = (l2) => nt[l2];
   function O(l2, e2) {
     if (e2) {
-      if (m$1.escapeTest.test(l2)) return l2.replace(m$1.escapeReplace, ge);
-    } else if (m$1.escapeTestNoEncode.test(l2)) return l2.replace(m$1.escapeReplaceNoEncode, ge);
+      if (m$1.escapeTest.test(l2)) return l2.replace(m$1.escapeReplace, de);
+    } else if (m$1.escapeTestNoEncode.test(l2)) return l2.replace(m$1.escapeReplaceNoEncode, de);
     return l2;
   }
-  function V(l2) {
+  function J(l2) {
     try {
       l2 = encodeURI(l2).replace(m$1.percentDecode, "%");
     } catch {
@@ -35680,7 +35700,7 @@ ${indentedChild}`;
     }
     return l2;
   }
-  function Y(l2, e2) {
+  function V(l2, e2) {
     let t2 = l2.replace(m$1.findPipe, (r2, i2, o2) => {
       let u2 = false, a2 = i2;
       for (; --a2 >= 0 && o2[a2] === "\\"; ) u2 = !u2;
@@ -35702,14 +35722,14 @@ ${indentedChild}`;
     }
     return l2.slice(0, n2 - s2);
   }
-  function ee(l2) {
+  function Y(l2) {
     let e2 = l2.split(`
 `), t2 = e2.length - 1;
     for (; t2 >= 0 && m$1.blankLine.test(e2[t2]); ) t2--;
     return e2.length - t2 <= 2 ? l2 : e2.slice(0, t2 + 1).join(`
 `);
   }
-  function fe(l2, e2) {
+  function ge(l2, e2) {
     if (l2.indexOf(e2[1]) === -1) return -1;
     let t2 = 0;
     for (let n2 = 0; n2 < l2.length; n2++) if (l2[n2] === "\\") n2++;
@@ -35717,7 +35737,7 @@ ${indentedChild}`;
     else if (l2[n2] === e2[1] && (t2--, t2 < 0)) return n2;
     return t2 > 0 ? -2 : -1;
   }
-  function me(l2, e2 = 0) {
+  function fe(l2, e2 = 0) {
     let t2 = e2, n2 = "";
     for (let s2 of l2) if (s2 === "	") {
       let r2 = 4 - t2 % 4;
@@ -35725,13 +35745,13 @@ ${indentedChild}`;
     } else n2 += s2, t2++;
     return n2;
   }
-  function xe(l2, e2, t2, n2, s2) {
+  function me(l2, e2, t2, n2, s2) {
     let r2 = e2.href, i2 = e2.title || null, o2 = l2[1].replace(s2.other.outputLinkReplace, "$1");
     n2.state.inLink = true;
     let u2 = { type: l2[0].charAt(0) === "!" ? "image" : "link", raw: t2, href: r2, title: i2, text: o2, tokens: n2.inlineTokens(o2) };
     return n2.state.inLink = false, u2;
   }
-  function st(l2, e2, t2) {
+  function rt(l2, e2, t2) {
     let n2 = l2.match(t2.other.indentCodeCompensation);
     if (n2 === null) return e2;
     let s2 = n2[1];
@@ -35758,14 +35778,14 @@ ${indentedChild}`;
     code(e2) {
       let t2 = this.rules.block.code.exec(e2);
       if (t2) {
-        let n2 = this.options.pedantic ? t2[0] : ee(t2[0]), s2 = n2.replace(this.rules.other.codeRemoveIndent, "");
+        let n2 = this.options.pedantic ? t2[0] : Y(t2[0]), s2 = n2.replace(this.rules.other.codeRemoveIndent, "");
         return { type: "code", raw: n2, codeBlockStyle: "indented", text: s2 };
       }
     }
     fences(e2) {
       let t2 = this.rules.block.fences.exec(e2);
       if (t2) {
-        let n2 = t2[0], s2 = st(n2, t2[3] || "", this.rules);
+        let n2 = t2[0], s2 = rt(n2, t2[3] || "", this.rules);
         return { type: "code", raw: n2, lang: t2[2] ? t2[2].trim().replace(this.rules.inline.anyPunctuation, "$1") : t2[2], text: s2 };
       }
     }
@@ -35804,8 +35824,8 @@ ${indentedChild}`;
           s2 = s2 ? `${s2}
 ${c2}` : c2, r2 = r2 ? `${r2}
 ${p2}` : p2;
-          let k = this.lexer.state.top;
-          if (this.lexer.state.top = true, this.lexer.blockTokens(p2, i2, true), this.lexer.state.top = k, n2.length === 0) break;
+          let d2 = this.lexer.state.top;
+          if (this.lexer.state.top = true, this.lexer.blockTokens(p2, i2, true), this.lexer.state.top = d2, n2.length === 0) break;
           let h2 = i2.at(-1);
           if (h2?.type === "code") break;
           if (h2?.type === "blockquote") {
@@ -35836,25 +35856,25 @@ ${p2}` : p2;
           let a2 = false, c2 = "", p2 = "";
           if (!(t2 = i2.exec(e2)) || this.rules.block.hr.test(e2)) break;
           c2 = t2[0], e2 = e2.substring(c2.length);
-          let k = me(t2[2].split(`
+          let d2 = fe(t2[2].split(`
 `, 1)[0], t2[1].length), h2 = e2.split(`
-`, 1)[0], R = !k.trim(), f2 = 0;
-          if (this.options.pedantic ? (f2 = 2, p2 = k.trimStart()) : R ? f2 = t2[1].length + 1 : (f2 = k.search(this.rules.other.nonSpaceChar), f2 = f2 > 4 ? 1 : f2, p2 = k.slice(f2), f2 += t2[1].length), R && this.rules.other.blankLine.test(h2) && (c2 += h2 + `
+`, 1)[0], R = !d2.trim(), f2 = 0;
+          if (this.options.pedantic ? (f2 = 2, p2 = d2.trimStart()) : R ? f2 = t2[1].length + 1 : (f2 = d2.search(this.rules.other.nonSpaceChar), f2 = f2 > 4 ? 1 : f2, p2 = d2.slice(f2), f2 += t2[1].length), R && this.rules.other.blankLine.test(h2) && (c2 += h2 + `
 `, e2 = e2.substring(h2.length + 1), a2 = true), !a2) {
-            let S2 = this.rules.other.nextBulletRegex(f2), te = this.rules.other.hrRegex(f2), ne = this.rules.other.fencesBeginRegex(f2), re = this.rules.other.headingBeginRegex(f2), be = this.rules.other.htmlBeginRegex(f2), Re = this.rules.other.blockquoteBeginRegex(f2);
+            let S2 = this.rules.other.nextBulletRegex(f2), ee = this.rules.other.hrRegex(f2), te = this.rules.other.fencesBeginRegex(f2), ne = this.rules.other.headingBeginRegex(f2), xe = this.rules.other.htmlBeginRegex(f2), be = this.rules.other.blockquoteBeginRegex(f2);
             for (; e2; ) {
-              let G = e2.split(`
+              let Z = e2.split(`
 `, 1)[0], C2;
-              if (h2 = G, this.options.pedantic ? (h2 = h2.replace(this.rules.other.listReplaceNesting, "  "), C2 = h2) : C2 = h2.replace(this.rules.other.tabCharGlobal, "    "), ne.test(h2) || re.test(h2) || be.test(h2) || Re.test(h2) || S2.test(h2) || te.test(h2)) break;
+              if (h2 = Z, this.options.pedantic ? (h2 = h2.replace(this.rules.other.listReplaceNesting, "  "), C2 = h2) : C2 = h2.replace(this.rules.other.tabCharGlobal, "    "), te.test(h2) || ne.test(h2) || xe.test(h2) || be.test(h2) || S2.test(h2) || ee.test(h2)) break;
               if (C2.search(this.rules.other.nonSpaceChar) >= f2 || !h2.trim()) p2 += `
 ` + C2.slice(f2);
               else {
-                if (R || k.replace(this.rules.other.tabCharGlobal, "    ").search(this.rules.other.nonSpaceChar) >= 4 || ne.test(k) || re.test(k) || te.test(k)) break;
+                if (R || d2.replace(this.rules.other.tabCharGlobal, "    ").search(this.rules.other.nonSpaceChar) >= 4 || te.test(d2) || ne.test(d2) || ee.test(d2)) break;
                 p2 += `
 ` + h2;
               }
-              R = !h2.trim(), c2 += G + `
-`, e2 = e2.substring(G.length + 1), k = C2.slice(f2);
+              R = !h2.trim(), c2 += Z + `
+`, e2 = e2.substring(Z.length + 1), d2 = C2.slice(f2);
             }
           }
           r2.loose || (o2 ? r2.loose = true : this.rules.other.doubleBlankLine.test(c2) && (o2 = true)), r2.items.push({ type: "list_item", raw: c2, task: !!this.options.gfm && this.rules.other.listIsTask.test(p2), loose: false, text: p2, tokens: [] }), r2.raw += c2;
@@ -35864,23 +35884,23 @@ ${p2}` : p2;
         else return;
         r2.raw = r2.raw.trimEnd();
         for (let a2 of r2.items) {
-          this.lexer.state.top = false, a2.tokens = this.lexer.blockTokens(a2.text, []);
-          let c2 = a2.tokens[0];
-          if (a2.task && (c2?.type === "text" || c2?.type === "paragraph")) {
-            a2.text = a2.text.replace(this.rules.other.listReplaceTask, ""), c2.raw = c2.raw.replace(this.rules.other.listReplaceTask, ""), c2.text = c2.text.replace(this.rules.other.listReplaceTask, "");
-            for (let k = this.lexer.inlineQueue.length - 1; k >= 0; k--) if (this.rules.other.listIsTask.test(this.lexer.inlineQueue[k].src)) {
-              this.lexer.inlineQueue[k].src = this.lexer.inlineQueue[k].src.replace(this.rules.other.listReplaceTask, "");
-              break;
+          if (this.lexer.state.top = false, a2.tokens = this.lexer.blockTokens(a2.text, []), a2.task) {
+            if (a2.text = a2.text.replace(this.rules.other.listReplaceTask, ""), a2.tokens[0]?.type === "text" || a2.tokens[0]?.type === "paragraph") {
+              a2.tokens[0].raw = a2.tokens[0].raw.replace(this.rules.other.listReplaceTask, ""), a2.tokens[0].text = a2.tokens[0].text.replace(this.rules.other.listReplaceTask, "");
+              for (let p2 = this.lexer.inlineQueue.length - 1; p2 >= 0; p2--) if (this.rules.other.listIsTask.test(this.lexer.inlineQueue[p2].src)) {
+                this.lexer.inlineQueue[p2].src = this.lexer.inlineQueue[p2].src.replace(this.rules.other.listReplaceTask, "");
+                break;
+              }
             }
-            let p2 = this.rules.other.listTaskCheckbox.exec(a2.raw);
-            if (p2) {
-              let k = { type: "checkbox", raw: p2[0] + " ", checked: p2[0] !== "[ ]" };
-              a2.checked = k.checked, r2.loose ? a2.tokens[0] && ["paragraph", "text"].includes(a2.tokens[0].type) && "tokens" in a2.tokens[0] && a2.tokens[0].tokens ? (a2.tokens[0].raw = k.raw + a2.tokens[0].raw, a2.tokens[0].text = k.raw + a2.tokens[0].text, a2.tokens[0].tokens.unshift(k)) : a2.tokens.unshift({ type: "paragraph", raw: k.raw, text: k.raw, tokens: [k] }) : a2.tokens.unshift(k);
+            let c2 = this.rules.other.listTaskCheckbox.exec(a2.raw);
+            if (c2) {
+              let p2 = { type: "checkbox", raw: c2[0] + " ", checked: c2[0] !== "[ ]" };
+              a2.checked = p2.checked, r2.loose ? a2.tokens[0] && ["paragraph", "text"].includes(a2.tokens[0].type) && "tokens" in a2.tokens[0] && a2.tokens[0].tokens ? (a2.tokens[0].raw = p2.raw + a2.tokens[0].raw, a2.tokens[0].text = p2.raw + a2.tokens[0].text, a2.tokens[0].tokens.unshift(p2)) : a2.tokens.unshift({ type: "paragraph", raw: p2.raw, text: p2.raw, tokens: [p2] }) : a2.tokens.unshift(p2);
             }
-          } else a2.task && (a2.task = false);
+          }
           if (!r2.loose) {
-            let p2 = a2.tokens.filter((h2) => h2.type === "space"), k = p2.length > 0 && p2.some((h2) => this.rules.other.anyLine.test(h2.raw));
-            r2.loose = k;
+            let c2 = a2.tokens.filter((d2) => d2.type === "space"), p2 = c2.length > 0 && c2.some((d2) => this.rules.other.anyLine.test(d2.raw));
+            r2.loose = p2;
           }
         }
         if (r2.loose) for (let a2 of r2.items) {
@@ -35893,7 +35913,7 @@ ${p2}` : p2;
     html(e2) {
       let t2 = this.rules.block.html.exec(e2);
       if (t2) {
-        let n2 = ee(t2[0]);
+        let n2 = Y(t2[0]);
         return { type: "html", block: true, raw: n2, pre: t2[1] === "pre" || t2[1] === "script" || t2[1] === "style", text: n2 };
       }
     }
@@ -35908,13 +35928,13 @@ ${p2}` : p2;
     table(e2) {
       let t2 = this.rules.block.table.exec(e2);
       if (!t2 || !this.rules.other.tableDelimiter.test(t2[2])) return;
-      let n2 = Y(t2[1]), s2 = t2[2].replace(this.rules.other.tableAlignChars, "").split("|"), r2 = t2[3]?.trim() ? t2[3].replace(this.rules.other.tableRowBlankLine, "").split(`
+      let n2 = V(t2[1]), s2 = t2[2].replace(this.rules.other.tableAlignChars, "").split("|"), r2 = t2[3]?.trim() ? t2[3].replace(this.rules.other.tableRowBlankLine, "").split(`
 `) : [], i2 = { type: "table", raw: $$1(t2[0], `
 `), header: [], align: [], rows: [] };
       if (n2.length === s2.length) {
         for (let o2 of s2) this.rules.other.tableAlignRight.test(o2) ? i2.align.push("right") : this.rules.other.tableAlignCenter.test(o2) ? i2.align.push("center") : this.rules.other.tableAlignLeft.test(o2) ? i2.align.push("left") : i2.align.push(null);
         for (let o2 = 0; o2 < n2.length; o2++) i2.header.push({ text: n2[o2], tokens: this.lexer.inline(n2[o2]), header: true, align: i2.align[o2] });
-        for (let o2 of r2) i2.rows.push(Y(o2, i2.header.length).map((u2, a2) => ({ text: u2, tokens: this.lexer.inline(u2), header: false, align: i2.align[a2] })));
+        for (let o2 of r2) i2.rows.push(V(o2, i2.header.length).map((u2, a2) => ({ text: u2, tokens: this.lexer.inline(u2), header: false, align: i2.align[a2] })));
         return i2;
       }
     }
@@ -35955,7 +35975,7 @@ ${p2}` : p2;
           let i2 = $$1(n2.slice(0, -1), "\\");
           if ((n2.length - i2.length) % 2 === 0) return;
         } else {
-          let i2 = fe(t2[2], "()");
+          let i2 = ge(t2[2], "()");
           if (i2 === -2) return;
           if (i2 > -1) {
             let u2 = (t2[0].indexOf("!") === 0 ? 5 : 4) + t2[1].length + i2;
@@ -35967,7 +35987,7 @@ ${p2}` : p2;
           let i2 = this.rules.other.pedanticHrefTitle.exec(s2);
           i2 && (s2 = i2[1], r2 = i2[3]);
         } else r2 = t2[3] ? t2[3].slice(1, -1) : "";
-        return s2 = s2.trim(), this.rules.other.startAngleBracket.test(s2) && (this.options.pedantic && !this.rules.other.endAngleBracket.test(n2) ? s2 = s2.slice(1) : s2 = s2.slice(1, -1)), xe(t2, { href: s2 && s2.replace(this.rules.inline.anyPunctuation, "$1"), title: r2 && r2.replace(this.rules.inline.anyPunctuation, "$1") }, t2[0], this.lexer, this.rules);
+        return s2 = s2.trim(), this.rules.other.startAngleBracket.test(s2) && (this.options.pedantic && !this.rules.other.endAngleBracket.test(n2) ? s2 = s2.slice(1) : s2 = s2.slice(1, -1)), me(t2, { href: s2 && s2.replace(this.rules.inline.anyPunctuation, "$1"), title: r2 && r2.replace(this.rules.inline.anyPunctuation, "$1") }, t2[0], this.lexer, this.rules);
       }
     }
     reflink(e2, t2) {
@@ -35978,7 +35998,7 @@ ${p2}` : p2;
           let i2 = n2[0].charAt(0);
           return { type: "text", raw: i2, text: i2 };
         }
-        return xe(n2, r2, n2[0], this.lexer, this.rules);
+        return me(n2, r2, n2[0], this.lexer, this.rules);
       }
     }
     emStrong(e2, t2, n2 = "") {
@@ -35997,7 +36017,7 @@ ${p2}` : p2;
           }
           if (a2 -= u2, a2 > 0) continue;
           u2 = Math.min(u2, u2 + a2 + c2);
-          let k = [...s2[0]][0].length, h2 = e2.slice(0, i2 + s2.index + k + u2);
+          let d2 = [...s2[0]][0].length, h2 = e2.slice(0, i2 + s2.index + d2 + u2);
           if (Math.min(i2, u2) % 2) {
             let f2 = h2.slice(1, -1);
             return { type: "em", raw: h2, text: f2, tokens: this.lexer.inlineTokens(f2) };
@@ -36031,8 +36051,8 @@ ${p2}` : p2;
           }
           if (a2 -= u2, a2 > 0) continue;
           u2 = Math.min(u2, u2 + a2);
-          let p2 = [...s2[0]][0].length, k = e2.slice(0, i2 + s2.index + p2 + u2), h2 = k.slice(i2, -i2);
-          return { type: "del", raw: k, text: h2, tokens: this.lexer.inlineTokens(h2) };
+          let p2 = [...s2[0]][0].length, d2 = e2.slice(0, i2 + s2.index + p2 + u2), h2 = d2.slice(i2, -i2);
+          return { type: "del", raw: d2, text: h2, tokens: this.lexer.inlineTokens(h2) };
         }
       }
     }
@@ -36074,11 +36094,11 @@ ${p2}` : p2;
     tokenizer;
     constructor(e2) {
       this.tokens = [], this.tokens.links = /* @__PURE__ */ Object.create(null), this.options = e2 || T, this.options.tokenizer = this.options.tokenizer || new w$1(), this.tokenizer = this.options.tokenizer, this.tokenizer.options = this.options, this.tokenizer.lexer = this, this.inlineQueue = [], this.state = { inLink: false, inRawBlock: false, top: true };
-      let t2 = { other: m$1, block: D.normal, inline: A.normal };
-      this.options.pedantic ? (t2.block = D.pedantic, t2.inline = A.pedantic) : this.options.gfm && (t2.block = D.gfm, this.options.breaks ? t2.inline = A.breaks : t2.inline = A.gfm), this.tokenizer.rules = t2;
+      let t2 = { other: m$1, block: B.normal, inline: A.normal };
+      this.options.pedantic ? (t2.block = B.pedantic, t2.inline = A.pedantic) : this.options.gfm && (t2.block = B.gfm, this.options.breaks ? t2.inline = A.breaks : t2.inline = A.gfm), this.tokenizer.rules = t2;
     }
     static get rules() {
-      return { block: D, inline: A };
+      return { block: B, inline: A };
     }
     static lex(e2, t2) {
       return new l2(t2).lex(e2);
@@ -36262,9 +36282,9 @@ ${p2}` : p2;
         }
         let c2 = e2;
         if (this.options.extensions?.startInline) {
-          let p2 = 1 / 0, k = e2.slice(1), h2;
+          let p2 = 1 / 0, d2 = e2.slice(1), h2;
           this.options.extensions.startInline.forEach((R) => {
-            h2 = R.call({ lexer: this }, k), typeof h2 == "number" && h2 >= 0 && (p2 = Math.min(p2, h2));
+            h2 = R.call({ lexer: this }, d2), typeof h2 == "number" && h2 >= 0 && (p2 = Math.min(p2, h2));
           }), p2 < 1 / 0 && p2 >= 0 && (c2 = e2.substring(0, p2 + 1));
         }
         if (a2 = this.tokenizer.inlineText(c2)) {
@@ -36386,7 +36406,7 @@ ${e2}</tr>
       return `<del>${this.parser.parseInline(e2)}</del>`;
     }
     link({ href: e2, title: t2, tokens: n2 }) {
-      let s2 = this.parser.parseInline(n2), r2 = V(e2);
+      let s2 = this.parser.parseInline(n2), r2 = J(e2);
       if (r2 === null) return s2;
       e2 = r2;
       let i2 = '<a href="' + e2 + '"';
@@ -36394,7 +36414,7 @@ ${e2}</tr>
     }
     image({ href: e2, title: t2, text: n2, tokens: s2 }) {
       s2 && (n2 = this.parser.parseInline(s2, this.parser.textRenderer));
-      let r2 = V(e2);
+      let r2 = J(e2);
       if (r2 === null) return O(n2);
       e2 = r2;
       let i2 = `<img src="${e2}" alt="${O(n2)}"`;
@@ -36615,8 +36635,8 @@ ${e2}</tr>
       return e2 ? b$1.parse : b$1.parseInline;
     }
   };
-  var q = class {
-    defaults = M();
+  var D = class {
+    defaults = z();
     options = this.setOptions;
     parse = this.parseMarkdown(true);
     parseInline = this.parseMarkdown(false);
@@ -36706,15 +36726,15 @@ ${e2}</tr>
             let o2 = i2, u2 = n2.hooks[o2], a2 = r2[o2];
             P.passThroughHooks.has(i2) ? r2[o2] = (c2) => {
               if (this.defaults.async && P.passThroughHooksRespectAsync.has(i2)) return (async () => {
-                let k = await u2.call(r2, c2);
-                return a2.call(r2, k);
+                let d2 = await u2.call(r2, c2);
+                return a2.call(r2, d2);
               })();
               let p2 = u2.call(r2, c2);
               return a2.call(r2, p2);
             } : r2[o2] = (...c2) => {
               if (this.defaults.async) return (async () => {
-                let k = await u2.apply(r2, c2);
-                return k === false && (k = await a2.apply(r2, c2)), k;
+                let d2 = await u2.apply(r2, c2);
+                return d2 === false && (d2 = await a2.apply(r2, c2)), d2;
               })();
               let p2 = u2.apply(r2, c2);
               return p2 === false && (p2 = a2.apply(r2, c2)), p2;
@@ -36776,22 +36796,22 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   };
-  var z = new q();
+  var M = new D();
   function g$1(l2, e2) {
-    return z.parse(l2, e2);
+    return M.parse(l2, e2);
   }
   g$1.options = g$1.setOptions = function(l2) {
-    return z.setOptions(l2), g$1.defaults = z.defaults, N(g$1.defaults), g$1;
+    return M.setOptions(l2), g$1.defaults = M.defaults, G(g$1.defaults), g$1;
   };
-  g$1.getDefaults = M;
+  g$1.getDefaults = z;
   g$1.defaults = T;
   g$1.use = function(...l2) {
-    return z.use(...l2), g$1.defaults = z.defaults, N(g$1.defaults), g$1;
+    return M.use(...l2), g$1.defaults = M.defaults, G(g$1.defaults), g$1;
   };
   g$1.walkTokens = function(l2, e2) {
-    return z.walkTokens(l2, e2);
+    return M.walkTokens(l2, e2);
   };
-  g$1.parseInline = z.parseInline;
+  g$1.parseInline = M.parseInline;
   g$1.Parser = b$1;
   g$1.parser = b$1.parse;
   g$1.Renderer = y$1;
@@ -37572,10 +37592,10 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       taskListItems
     ]);
   }
-  const _hoisted_1$f = { class: "markdown-editor" };
-  const _hoisted_2$b = ["aria-label"];
-  const _hoisted_3$9 = ["contenteditable"];
-  const _sfc_main$l = /* @__PURE__ */ defineComponent({
+  const _hoisted_1$m = { class: "markdown-editor" };
+  const _hoisted_2$h = ["aria-label"];
+  const _hoisted_3$f = ["contenteditable"];
+  const _sfc_main$s = /* @__PURE__ */ defineComponent({
     __name: "MarkdownEditor",
     props: {
       modelValue: { type: String },
@@ -37798,7 +37818,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         }
       );
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$f, [
+        return openBlock(), createElementBlock("div", _hoisted_1$m, [
           !__props.disabled ? (openBlock(), createElementBlock("div", {
             key: 0,
             class: "markdown-editor__toolbar",
@@ -37909,7 +37929,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
               title: unref(t2)("mdToolbar.redo"),
               onClick: _cache[8] || (_cache[8] = ($event) => execCmd("redo"))
             }, null, 8, ["aria-label", "title"])
-          ], 8, _hoisted_2$b)) : createCommentVNode("", true),
+          ], 8, _hoisted_2$h)) : createCommentVNode("", true),
           createBaseVNode("div", {
             ref: "editorEl",
             class: "markdown-editor__content",
@@ -37919,21 +37939,21 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
             onPaste,
             onFocus: startSelectionListener,
             onBlur: stopSelectionListener
-          }, null, 40, _hoisted_3$9)
+          }, null, 40, _hoisted_3$f)
         ]);
       };
     }
   });
-  const _style_0$h = "\n.markdown-editor[data-v-83ab6d33] {\n  display: flex;\n  flex-direction: column;\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.markdown-editor__toolbar[data-v-83ab6d33] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-xs) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  position: sticky;\n  top: 0;\n  z-index: 1;\n}\n.markdown-editor__separator[data-v-83ab6d33] {\n  width: 1px;\n  height: 20px;\n  background-color: var(--color-border);\n  margin: 0 var(--spacing-xs);\n}\n.markdown-editor__content[data-v-83ab6d33] {\n  padding: var(--spacing-md) var(--spacing-md);\n  outline: none;\n  min-height: 200px;\n}\n.markdown-editor__content[data-v-83ab6d33] > *:first-child {\n  margin-top: 0;\n}\n.markdown-editor__content[data-v-83ab6d33] h1,\n.markdown-editor__content[data-v-83ab6d33] h2,\n.markdown-editor__content[data-v-83ab6d33] h3,\n.markdown-editor__content[data-v-83ab6d33] h4 {\n  margin: var(--spacing-lg) 0 var(--spacing-sm);\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.markdown-editor__content[data-v-83ab6d33] h1 {\n  font-size: var(--font-size-xl);\n}\n.markdown-editor__content[data-v-83ab6d33] h2 {\n  font-size: var(--font-size-lg);\n}\n.markdown-editor__content[data-v-83ab6d33] h3 {\n  font-size: var(--font-size-base);\n}\n.markdown-editor__content[data-v-83ab6d33] h4 {\n  font-size: var(--font-size-sm);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-secondary);\n}\n.markdown-editor__content[data-v-83ab6d33] p {\n  margin: 0 0 var(--spacing-md);\n}\n.markdown-editor__content[data-v-83ab6d33] ul,\n.markdown-editor__content[data-v-83ab6d33] ol {\n  margin: 0 0 var(--spacing-md);\n  padding-left: var(--spacing-lg);\n}\n.markdown-editor__content[data-v-83ab6d33] li {\n  margin: var(--spacing-xs) 0;\n}\n.markdown-editor__content[data-v-83ab6d33] blockquote {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-left: 3px solid var(--color-border);\n  color: var(--color-text-secondary);\n  font-style: italic;\n}\n.markdown-editor__content[data-v-83ab6d33] code {\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n  padding: 1px 4px;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-sm);\n}\n.markdown-editor__content[data-v-83ab6d33] pre {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n}\n.markdown-editor__content[data-v-83ab6d33] pre code {\n  padding: 0;\n  background: none;\n}\n.markdown-editor__content[data-v-83ab6d33] a {\n  color: var(--color-primary);\n  text-decoration: underline;\n}\n.markdown-editor__content[data-v-83ab6d33] hr {\n  border: 0;\n  border-top: 1px solid var(--color-border);\n  margin: var(--spacing-lg) 0;\n}\n.markdown-editor__content[data-v-83ab6d33] strong {\n  font-weight: 700;\n}\n.markdown-editor__content[data-v-83ab6d33] table {\n  border-collapse: collapse;\n  margin: var(--spacing-md) 0;\n}\n.markdown-editor__content[data-v-83ab6d33] th,\n.markdown-editor__content[data-v-83ab6d33] td {\n  border: 1px solid var(--color-border);\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.markdown-editor__content[data-v-83ab6d33] th {\n  background-color: var(--color-surface);\n  font-weight: 600;\n}\n";
-  const MarkdownEditor = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["styles", [_style_0$h]], ["__scopeId", "data-v-83ab6d33"]]);
-  const _hoisted_1$e = { class: "llm-service-panel" };
-  const _hoisted_2$a = {
+  const _style_0$o = "\n.markdown-editor[data-v-83ab6d33] {\n  display: flex;\n  flex-direction: column;\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.markdown-editor__toolbar[data-v-83ab6d33] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-xs) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  position: sticky;\n  top: 0;\n  z-index: 1;\n}\n.markdown-editor__separator[data-v-83ab6d33] {\n  width: 1px;\n  height: 20px;\n  background-color: var(--color-border);\n  margin: 0 var(--spacing-xs);\n}\n.markdown-editor__content[data-v-83ab6d33] {\n  padding: var(--spacing-md) var(--spacing-md);\n  outline: none;\n  min-height: 200px;\n}\n.markdown-editor__content[data-v-83ab6d33] > *:first-child {\n  margin-top: 0;\n}\n.markdown-editor__content[data-v-83ab6d33] h1,\n.markdown-editor__content[data-v-83ab6d33] h2,\n.markdown-editor__content[data-v-83ab6d33] h3,\n.markdown-editor__content[data-v-83ab6d33] h4 {\n  margin: var(--spacing-lg) 0 var(--spacing-sm);\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.markdown-editor__content[data-v-83ab6d33] h1 {\n  font-size: var(--font-size-xl);\n}\n.markdown-editor__content[data-v-83ab6d33] h2 {\n  font-size: var(--font-size-lg);\n}\n.markdown-editor__content[data-v-83ab6d33] h3 {\n  font-size: var(--font-size-base);\n}\n.markdown-editor__content[data-v-83ab6d33] h4 {\n  font-size: var(--font-size-sm);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-secondary);\n}\n.markdown-editor__content[data-v-83ab6d33] p {\n  margin: 0 0 var(--spacing-md);\n}\n.markdown-editor__content[data-v-83ab6d33] ul,\n.markdown-editor__content[data-v-83ab6d33] ol {\n  margin: 0 0 var(--spacing-md);\n  padding-left: var(--spacing-lg);\n}\n.markdown-editor__content[data-v-83ab6d33] li {\n  margin: var(--spacing-xs) 0;\n}\n.markdown-editor__content[data-v-83ab6d33] blockquote {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-left: 3px solid var(--color-border);\n  color: var(--color-text-secondary);\n  font-style: italic;\n}\n.markdown-editor__content[data-v-83ab6d33] code {\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n  padding: 1px 4px;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-sm);\n}\n.markdown-editor__content[data-v-83ab6d33] pre {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n}\n.markdown-editor__content[data-v-83ab6d33] pre code {\n  padding: 0;\n  background: none;\n}\n.markdown-editor__content[data-v-83ab6d33] a {\n  color: var(--color-primary);\n  text-decoration: underline;\n}\n.markdown-editor__content[data-v-83ab6d33] hr {\n  border: 0;\n  border-top: 1px solid var(--color-border);\n  margin: var(--spacing-lg) 0;\n}\n.markdown-editor__content[data-v-83ab6d33] strong {\n  font-weight: 700;\n}\n.markdown-editor__content[data-v-83ab6d33] table {\n  border-collapse: collapse;\n  margin: var(--spacing-md) 0;\n}\n.markdown-editor__content[data-v-83ab6d33] th,\n.markdown-editor__content[data-v-83ab6d33] td {\n  border: 1px solid var(--color-border);\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.markdown-editor__content[data-v-83ab6d33] th {\n  background-color: var(--color-surface);\n  font-weight: 600;\n}\n";
+  const MarkdownEditor = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["styles", [_style_0$o]], ["__scopeId", "data-v-83ab6d33"]]);
+  const _hoisted_1$l = { class: "llm-service-panel" };
+  const _hoisted_2$g = {
     key: 0,
     class: "llm-service-panel__empty",
     role: "status"
   };
-  const _hoisted_3$8 = { class: "llm-service-panel__empty-text" };
-  const _sfc_main$k = /* @__PURE__ */ defineComponent({
+  const _hoisted_3$e = { class: "llm-service-panel__empty-text" };
+  const _sfc_main$r = /* @__PURE__ */ defineComponent({
     __name: "LLMServicePanel",
     props: {
       service: { type: Object }
@@ -37961,7 +37981,10 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         return !content.value && versions.value.length === 0;
       });
       const isUpdated = computed(() => {
-        const transcriptionLastModified = core.activeChannel.value?.activeTranslation.value?.lastModifiedAt.value ?? null;
+        const channel = core.activeChannel.value;
+        const activeId = channel?.activeTranslation.value.id;
+        const realStore = activeId ? channel?.translations.get(activeId) : void 0;
+        const transcriptionLastModified = realStore?.lastModifiedAt.value ?? null;
         if (transcriptionLastModified == null) return true;
         const activeVersion = versions.value.find(
           (v2) => v2.versionNumber === activeVersionNumber.value
@@ -37994,7 +38017,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         });
       }
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("section", _hoisted_1$e, [
+        return openBlock(), createElementBlock("section", _hoisted_1$l, [
           createVNode(DocumentArticle, {
             status: articleStatus.value,
             progress: progress.value,
@@ -38048,8 +38071,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
               }, 8, ["disabled", "aria-label", "title"])
             ]),
             default: withCtx(() => [
-              isEmpty2.value ? (openBlock(), createElementBlock("div", _hoisted_2$a, [
-                createBaseVNode("p", _hoisted_3$8, toDisplayString(unref(t2)("llmService.empty")), 1),
+              isEmpty2.value ? (openBlock(), createElementBlock("div", _hoisted_2$g, [
+                createBaseVNode("p", _hoisted_3$e, toDisplayString(unref(t2)("llmService.empty")), 1),
                 createVNode(Button, {
                   variant: "primary",
                   icon: "sparkles",
@@ -38074,12 +38097,12 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$g = "\n.llm-service-panel[data-v-7861f37e] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.llm-service-panel__status[data-v-7861f37e] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n}\n.llm-service-panel__status--ok[data-v-7861f37e] {\n  color: var(--color-success, #2e7d32);\n}\n.llm-service-panel__status--warn[data-v-7861f37e] {\n  color: var(--color-warning, #ed6c02);\n}\n.llm-service-panel__empty[data-v-7861f37e] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-7861f37e] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n@media (max-width: 767px) {\n.llm-service-panel[data-v-7861f37e] {\n    padding: var(--spacing-md);\n}\n}\n";
-  const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$k, [["styles", [_style_0$g]], ["__scopeId", "data-v-7861f37e"]]);
-  const _hoisted_1$d = { class: "switch" };
-  const _hoisted_2$9 = ["id", "checked"];
-  const _hoisted_3$7 = ["for"];
-  const _sfc_main$j = /* @__PURE__ */ defineComponent({
+  const _style_0$n = "\n.llm-service-panel[data-v-0dbe6868] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.llm-service-panel__status[data-v-0dbe6868] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n}\n.llm-service-panel__status--ok[data-v-0dbe6868] {\n  color: var(--color-success, #2e7d32);\n}\n.llm-service-panel__status--warn[data-v-0dbe6868] {\n  color: var(--color-warning, #ed6c02);\n}\n.llm-service-panel__empty[data-v-0dbe6868] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-0dbe6868] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n@media (max-width: 767px) {\n.llm-service-panel[data-v-0dbe6868] {\n    padding: var(--spacing-md);\n}\n}\n";
+  const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["styles", [_style_0$n]], ["__scopeId", "data-v-0dbe6868"]]);
+  const _hoisted_1$k = { class: "switch" };
+  const _hoisted_2$f = ["id", "checked"];
+  const _hoisted_3$d = ["for"];
+  const _sfc_main$q = /* @__PURE__ */ defineComponent({
     __name: "SwitchToggle",
     props: {
       modelValue: { type: Boolean },
@@ -38091,35 +38114,35 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       const emit2 = __emit;
       const inputId = props.id ?? useId$1();
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$d, [
+        return openBlock(), createElementBlock("div", _hoisted_1$k, [
           createBaseVNode("input", {
             type: "checkbox",
             id: unref(inputId),
             checked: __props.modelValue,
             onChange: _cache[0] || (_cache[0] = ($event) => emit2("update:modelValue", $event.target.checked))
-          }, null, 40, _hoisted_2$9),
+          }, null, 40, _hoisted_2$f),
           createBaseVNode("label", { for: unref(inputId) }, [..._cache[1] || (_cache[1] = [
             createBaseVNode("div", { class: "switch-slider" }, null, -1)
-          ])], 8, _hoisted_3$7)
+          ])], 8, _hoisted_3$d)
         ]);
       };
     }
   });
-  const _style_0$f = "\n.switch[data-v-2aa0332f] {\n  display: inline-block;\n  flex-shrink: 0;\n}\n.switch input[data-v-2aa0332f] {\n  position: absolute;\n  width: 1px;\n  height: 1px;\n  padding: 0;\n  margin: -1px;\n  overflow: hidden;\n  clip-path: inset(50%);\n  white-space: nowrap;\n  border: 0;\n}\n.switch label[data-v-2aa0332f] {\n  height: 20px;\n  width: 40px;\n  display: block;\n  border: 1px solid var(--color-border);\n  border-radius: 20px;\n  cursor: pointer;\n  background-color: var(--color-border);\n  transition: background-color var(--transition-duration);\n}\n.switch .switch-slider[data-v-2aa0332f] {\n  height: 22px;\n  width: 22px;\n  border: 1px solid var(--color-border);\n  border-radius: 50%;\n  position: relative;\n  top: -2px;\n  left: -2px;\n  background-color: var(--color-white);\n  transition: left var(--transition-duration);\n}\n.switch input:checked + label[data-v-2aa0332f] {\n  background-color: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.switch input:checked + label .switch-slider[data-v-2aa0332f] {\n  left: 20px;\n  border-color: var(--color-primary);\n}\n";
-  const SwitchToggle = /* @__PURE__ */ _export_sfc(_sfc_main$j, [["styles", [_style_0$f]], ["__scopeId", "data-v-2aa0332f"]]);
-  const _hoisted_1$c = {
+  const _style_0$m = "\n.switch[data-v-2aa0332f] {\n  display: inline-block;\n  flex-shrink: 0;\n}\n.switch input[data-v-2aa0332f] {\n  position: absolute;\n  width: 1px;\n  height: 1px;\n  padding: 0;\n  margin: -1px;\n  overflow: hidden;\n  clip-path: inset(50%);\n  white-space: nowrap;\n  border: 0;\n}\n.switch label[data-v-2aa0332f] {\n  height: 20px;\n  width: 40px;\n  display: block;\n  border: 1px solid var(--color-border);\n  border-radius: 20px;\n  cursor: pointer;\n  background-color: var(--color-border);\n  transition: background-color var(--transition-duration);\n}\n.switch .switch-slider[data-v-2aa0332f] {\n  height: 22px;\n  width: 22px;\n  border: 1px solid var(--color-border);\n  border-radius: 50%;\n  position: relative;\n  top: -2px;\n  left: -2px;\n  background-color: var(--color-white);\n  transition: left var(--transition-duration);\n}\n.switch input:checked + label[data-v-2aa0332f] {\n  background-color: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.switch input:checked + label .switch-slider[data-v-2aa0332f] {\n  left: 20px;\n  border-color: var(--color-primary);\n}\n";
+  const SwitchToggle = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["styles", [_style_0$m]], ["__scopeId", "data-v-2aa0332f"]]);
+  const _hoisted_1$j = {
     key: 0,
     class: "form-field__header"
   };
-  const _hoisted_2$8 = ["for"];
-  const _hoisted_3$6 = {
+  const _hoisted_2$e = ["for"];
+  const _hoisted_3$c = {
     key: 0,
     class: "form-field__required",
     "aria-hidden": "true"
   };
-  const _hoisted_4$2 = { class: "form-field__input-wrapper" };
-  const _hoisted_5$2 = ["id", "disabled", "required", "aria-required", "aria-invalid", "aria-describedby"];
-  const _hoisted_6$2 = ["value"];
+  const _hoisted_4$7 = { class: "form-field__input-wrapper" };
+  const _hoisted_5$7 = ["id", "disabled", "required", "aria-required", "aria-invalid", "aria-describedby"];
+  const _hoisted_6$5 = ["value"];
   const _hoisted_7$2 = ["type", "id", "disabled", "readonly", "placeholder", "autocomplete", "required", "aria-required", "aria-invalid", "aria-describedby"];
   const _hoisted_8$1 = {
     key: 3,
@@ -38132,7 +38155,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
   };
   const _hoisted_10$1 = ["id"];
   const _hoisted_11$1 = { class: "form-field__error" };
-  const _sfc_main$i = /* @__PURE__ */ defineComponent({
+  const _sfc_main$p = /* @__PURE__ */ defineComponent({
     __name: "FormInput",
     props: {
       field: { type: Object },
@@ -38242,17 +38265,17 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         return openBlock(), createElementBlock("div", {
           class: normalizeClass(rootClasses.value)
         }, [
-          __props.field.label ? (openBlock(), createElementBlock("div", _hoisted_1$c, [
+          __props.field.label ? (openBlock(), createElementBlock("div", _hoisted_1$j, [
             createBaseVNode("label", {
               class: "form-field__label",
               for: id2.value
             }, [
               createTextVNode(toDisplayString(__props.field.label) + " ", 1),
-              isRequired.value ? (openBlock(), createElementBlock("span", _hoisted_3$6, "*")) : createCommentVNode("", true)
-            ], 8, _hoisted_2$8),
+              isRequired.value ? (openBlock(), createElementBlock("span", _hoisted_3$c, "*")) : createCommentVNode("", true)
+            ], 8, _hoisted_2$e),
             renderSlot(_ctx.$slots, "content-after-label", {}, void 0, true)
           ])) : createCommentVNode("", true),
-          createBaseVNode("div", _hoisted_4$2, [
+          createBaseVNode("div", _hoisted_4$7, [
             renderSlot(_ctx.$slots, "default", {}, void 0, true),
             _ctx.$slots["custom-input"] ? renderSlot(_ctx.$slots, "custom-input", {
               key: 0,
@@ -38279,9 +38302,9 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
                 return openBlock(), createElementBlock("option", {
                   key: opt.value,
                   value: opt.value
-                }, toDisplayString(opt.label), 9, _hoisted_6$2);
+                }, toDisplayString(opt.label), 9, _hoisted_6$5);
               }), 128))
-            ], 16, _hoisted_5$2)), [
+            ], 16, _hoisted_5$7)), [
               [vModelSelect, draft.value]
             ]) : withDirectives((openBlock(), createElementBlock("input", mergeProps({
               key: 2,
@@ -38340,10 +38363,10 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$e = "\n/* ── Root ──────────────────────────────────────────────────────────── */\n.form-field[data-v-31189879] {\n  --field-height: 40px;\n  --field-padding-x: var(--spacing-md);\n  --field-font-size: var(--font-size-sm);\n\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  width: 100%;\n}\n.form-field--sm[data-v-31189879] {\n  --field-height: 32px;\n  --field-padding-x: var(--spacing-sm);\n  --field-font-size: var(--font-size-xs);\n}\n.form-field--lg[data-v-31189879] {\n  --field-height: 44px;\n  --field-padding-x: var(--spacing-md);\n  --field-font-size: var(--font-size-base);\n}\n.form-field--disabled[data-v-31189879] {\n  opacity: 0.7;\n}\n\n/* ── Header (label row) ────────────────────────────────────────────── */\n.form-field__header[data-v-31189879] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n}\n.form-field__label[data-v-31189879] {\n  display: block;\n  margin: 0;\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  line-height: 1.2;\n  color: var(--color-text-primary);\n}\n.form-field--error .form-field__label[data-v-31189879] {\n  color: var(--color-danger);\n}\n.form-field__required[data-v-31189879] {\n  margin-left: 2px;\n  color: var(--color-danger);\n}\n\n/* ── Input wrapper ─────────────────────────────────────────────────── */\n.form-field__input-wrapper[data-v-31189879] {\n  display: flex;\n  align-items: flex-start;\n  gap: var(--spacing-sm);\n  width: 100%;\n}\n\n/* ── Input ─────────────────────────────────────────────────────────── */\n.form-field__input[data-v-31189879] {\n  flex: 1;\n  box-sizing: border-box;\n  height: var(--field-height);\n  padding: 0 var(--field-padding-x);\n  font-family: inherit;\n  font-size: var(--field-font-size);\n  line-height: 1.4;\n  color: var(--color-text-primary);\n  background-color: var(--color-background);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-sm);\n  outline: none;\n  transition:\n    border-color var(--transition-duration),\n    box-shadow var(--transition-duration);\n}\n.form-field__input[data-v-31189879]::placeholder {\n  color: var(--color-text-muted);\n  opacity: 1;\n}\n.form-field__input[data-v-31189879]:hover:not(:disabled) {\n  border-color: var(--color-text-muted);\n}\n.form-field__input[data-v-31189879]:focus-visible {\n  border-color: var(--color-primary);\n  box-shadow: 0 0 0 3px\n    color-mix(in srgb, var(--color-primary) 20%, transparent);\n}\n.form-field__input[data-v-31189879]:disabled {\n  cursor: not-allowed;\n  background-color: var(--color-surface);\n  color: var(--color-text-muted);\n}\n.form-field__input--fullwidth[data-v-31189879] {\n  width: 100%;\n  max-width: none;\n}\n.form-field__input--select[data-v-31189879] {\n  cursor: pointer;\n  appearance: auto;\n}\n.form-field__input--error[data-v-31189879] {\n  border-color: var(--color-danger);\n}\n.form-field__input--error[data-v-31189879]:focus-visible {\n  border-color: var(--color-danger);\n  box-shadow: 0 0 0 3px\n    color-mix(in srgb, var(--color-danger) 20%, transparent);\n}\n\n/* ── Confirmation actions ──────────────────────────────────────────── */\n.form-field__actions[data-v-31189879] {\n  display: flex;\n  align-items: flex-start;\n  gap: var(--spacing-xs);\n  flex-shrink: 0;\n}\n.form-field__actions--placeholder[data-v-31189879] {\n  /* Reserve space so showing the buttons doesn't shift layout. */\n  width: calc(var(--field-height) * 2 + var(--spacing-xs));\n  height: var(--field-height);\n  pointer-events: none;\n  opacity: 0;\n}\n\n/* ── Info / error ──────────────────────────────────────────────────── */\n.form-field__info[data-v-31189879] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.form-field__error[data-v-31189879] {\n  margin: 0;\n  font-size: var(--font-size-xs);\n  line-height: 1.2;\n  color: var(--color-danger);\n}\n\n/* ── Inline layout ─────────────────────────────────────────────────── */\n.form-field--inline[data-v-31189879] {\n  flex-direction: row;\n  align-items: center;\n  gap: var(--spacing-md);\n}\n.form-field--inline .form-field__header[data-v-31189879] {\n  flex-shrink: 0;\n  min-width: 120px;\n}\n.form-field--inline .form-field__input-wrapper[data-v-31189879] {\n  flex: 1;\n}\n\n/* ── Reduced motion ────────────────────────────────────────────────── */\n@media (prefers-reduced-motion: reduce) {\n.form-field__input[data-v-31189879] {\n    transition: none;\n}\n}\n";
-  const FormInput = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["styles", [_style_0$e]], ["__scopeId", "data-v-31189879"]]);
-  const _hoisted_1$b = ["disabled", "aria-label"];
-  const _sfc_main$h = /* @__PURE__ */ defineComponent({
+  const _style_0$l = "\n/* ── Root ──────────────────────────────────────────────────────────── */\n.form-field[data-v-31189879] {\n  --field-height: 40px;\n  --field-padding-x: var(--spacing-md);\n  --field-font-size: var(--font-size-sm);\n\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  width: 100%;\n}\n.form-field--sm[data-v-31189879] {\n  --field-height: 32px;\n  --field-padding-x: var(--spacing-sm);\n  --field-font-size: var(--font-size-xs);\n}\n.form-field--lg[data-v-31189879] {\n  --field-height: 44px;\n  --field-padding-x: var(--spacing-md);\n  --field-font-size: var(--font-size-base);\n}\n.form-field--disabled[data-v-31189879] {\n  opacity: 0.7;\n}\n\n/* ── Header (label row) ────────────────────────────────────────────── */\n.form-field__header[data-v-31189879] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n}\n.form-field__label[data-v-31189879] {\n  display: block;\n  margin: 0;\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  line-height: 1.2;\n  color: var(--color-text-primary);\n}\n.form-field--error .form-field__label[data-v-31189879] {\n  color: var(--color-danger);\n}\n.form-field__required[data-v-31189879] {\n  margin-left: 2px;\n  color: var(--color-danger);\n}\n\n/* ── Input wrapper ─────────────────────────────────────────────────── */\n.form-field__input-wrapper[data-v-31189879] {\n  display: flex;\n  align-items: flex-start;\n  gap: var(--spacing-sm);\n  width: 100%;\n}\n\n/* ── Input ─────────────────────────────────────────────────────────── */\n.form-field__input[data-v-31189879] {\n  flex: 1;\n  box-sizing: border-box;\n  height: var(--field-height);\n  padding: 0 var(--field-padding-x);\n  font-family: inherit;\n  font-size: var(--field-font-size);\n  line-height: 1.4;\n  color: var(--color-text-primary);\n  background-color: var(--color-background);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-sm);\n  outline: none;\n  transition:\n    border-color var(--transition-duration),\n    box-shadow var(--transition-duration);\n}\n.form-field__input[data-v-31189879]::placeholder {\n  color: var(--color-text-muted);\n  opacity: 1;\n}\n.form-field__input[data-v-31189879]:hover:not(:disabled) {\n  border-color: var(--color-text-muted);\n}\n.form-field__input[data-v-31189879]:focus-visible {\n  border-color: var(--color-primary);\n  box-shadow: 0 0 0 3px\n    color-mix(in srgb, var(--color-primary) 20%, transparent);\n}\n.form-field__input[data-v-31189879]:disabled {\n  cursor: not-allowed;\n  background-color: var(--color-surface);\n  color: var(--color-text-muted);\n}\n.form-field__input--fullwidth[data-v-31189879] {\n  width: 100%;\n  max-width: none;\n}\n.form-field__input--select[data-v-31189879] {\n  cursor: pointer;\n  appearance: auto;\n}\n.form-field__input--error[data-v-31189879] {\n  border-color: var(--color-danger);\n}\n.form-field__input--error[data-v-31189879]:focus-visible {\n  border-color: var(--color-danger);\n  box-shadow: 0 0 0 3px\n    color-mix(in srgb, var(--color-danger) 20%, transparent);\n}\n\n/* ── Confirmation actions ──────────────────────────────────────────── */\n.form-field__actions[data-v-31189879] {\n  display: flex;\n  align-items: flex-start;\n  gap: var(--spacing-xs);\n  flex-shrink: 0;\n}\n.form-field__actions--placeholder[data-v-31189879] {\n  /* Reserve space so showing the buttons doesn't shift layout. */\n  width: calc(var(--field-height) * 2 + var(--spacing-xs));\n  height: var(--field-height);\n  pointer-events: none;\n  opacity: 0;\n}\n\n/* ── Info / error ──────────────────────────────────────────────────── */\n.form-field__info[data-v-31189879] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.form-field__error[data-v-31189879] {\n  margin: 0;\n  font-size: var(--font-size-xs);\n  line-height: 1.2;\n  color: var(--color-danger);\n}\n\n/* ── Inline layout ─────────────────────────────────────────────────── */\n.form-field--inline[data-v-31189879] {\n  flex-direction: row;\n  align-items: center;\n  gap: var(--spacing-md);\n}\n.form-field--inline .form-field__header[data-v-31189879] {\n  flex-shrink: 0;\n  min-width: 120px;\n}\n.form-field--inline .form-field__input-wrapper[data-v-31189879] {\n  flex: 1;\n}\n\n/* ── Reduced motion ────────────────────────────────────────────────── */\n@media (prefers-reduced-motion: reduce) {\n.form-field__input[data-v-31189879] {\n    transition: none;\n}\n}\n";
+  const FormInput = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["styles", [_style_0$l]], ["__scopeId", "data-v-31189879"]]);
+  const _hoisted_1$i = ["disabled", "aria-label"];
+  const _sfc_main$o = /* @__PURE__ */ defineComponent({
     __name: "EditableText",
     props: {
       modelValue: { type: String },
@@ -38417,13 +38440,73 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
           disabled: __props.disabled,
           "aria-label": __props.ariaLabel,
           onClick: startEdit
-        }, toDisplayString(__props.modelValue || __props.placeholder), 9, _hoisted_1$b));
+        }, toDisplayString(__props.modelValue || __props.placeholder), 9, _hoisted_1$i));
       };
     }
   });
-  const _style_0$d = "\n.editable-text-display[data-v-511d4fb4] {\n  all: unset;\n  cursor: text;\n  text-align: left;\n  font: inherit;\n  color: inherit;\n  line-height: inherit;\n  padding: 0;\n  border: 1px solid transparent;\n  border-radius: var(--radius-sm);\n  min-width: 0;\n}\n.editable-text-display[data-v-511d4fb4]:not(:disabled):hover {\n  border-color: var(--color-border);\n}\n.editable-text-display[data-v-511d4fb4]:disabled {\n  cursor: default;\n}\n";
-  const EditableText = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["styles", [_style_0$d]], ["__scopeId", "data-v-511d4fb4"]]);
-  const _sfc_main$g = /* @__PURE__ */ defineComponent({
+  const _style_0$k = "\n.editable-text-display[data-v-511d4fb4] {\n  all: unset;\n  cursor: text;\n  text-align: left;\n  font: inherit;\n  color: inherit;\n  line-height: inherit;\n  padding: 0;\n  border: 1px solid transparent;\n  border-radius: var(--radius-sm);\n  min-width: 0;\n}\n.editable-text-display[data-v-511d4fb4]:not(:disabled):hover {\n  border-color: var(--color-border);\n}\n.editable-text-display[data-v-511d4fb4]:disabled {\n  cursor: default;\n}\n";
+  const EditableText = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["styles", [_style_0$k]], ["__scopeId", "data-v-511d4fb4"]]);
+  const _hoisted_1$h = ["disabled", "aria-current"];
+  const _hoisted_2$d = {
+    key: 0,
+    class: "selectable-list-item__leading"
+  };
+  const _hoisted_3$b = { class: "selectable-list-item__label" };
+  const _hoisted_4$6 = {
+    key: 1,
+    class: "selectable-list-item__trailing"
+  };
+  const _hoisted_5$6 = {
+    key: 0,
+    class: "selectable-list-item__actions"
+  };
+  const _sfc_main$n = /* @__PURE__ */ defineComponent({
+    __name: "SelectableListItem",
+    props: {
+      current: { type: Boolean },
+      disabled: { type: Boolean },
+      label: { type: String },
+      size: { default: "md", type: String }
+    },
+    emits: ["select"],
+    setup(__props, { emit: __emit }) {
+      const emit2 = __emit;
+      return (_ctx, _cache) => {
+        return openBlock(), createElementBlock("div", {
+          class: normalizeClass(["selectable-list-item", [
+            `selectable-list-item--${__props.size}`,
+            { "selectable-list-item--current": __props.current }
+          ]])
+        }, [
+          createBaseVNode("button", {
+            type: "button",
+            class: "selectable-list-item__main",
+            disabled: __props.disabled,
+            "aria-current": __props.current ? "true" : void 0,
+            onClick: _cache[0] || (_cache[0] = ($event) => emit2("select"))
+          }, [
+            _ctx.$slots.leading ? (openBlock(), createElementBlock("span", _hoisted_2$d, [
+              renderSlot(_ctx.$slots, "leading", {}, void 0, true)
+            ])) : createCommentVNode("", true),
+            createBaseVNode("span", _hoisted_3$b, [
+              renderSlot(_ctx.$slots, "default", {}, () => [
+                createTextVNode(toDisplayString(__props.label), 1)
+              ], true)
+            ]),
+            _ctx.$slots.trailing ? (openBlock(), createElementBlock("span", _hoisted_4$6, [
+              renderSlot(_ctx.$slots, "trailing", {}, void 0, true)
+            ])) : createCommentVNode("", true)
+          ], 8, _hoisted_1$h),
+          _ctx.$slots.actions ? (openBlock(), createElementBlock("div", _hoisted_5$6, [
+            renderSlot(_ctx.$slots, "actions", {}, void 0, true)
+          ])) : createCommentVNode("", true)
+        ], 2);
+      };
+    }
+  });
+  const _style_0$j = "\n.selectable-list-item[data-v-e227a7de] {\n  position: relative;\n  display: flex;\n  border: 1px solid transparent;\n  transition:\n    background-color var(--transition-duration),\n    box-shadow var(--transition-duration);\n}\n.selectable-list-item--md[data-v-e227a7de] {\n  font-size: var(--font-size-sm);\n}\n.selectable-list-item--sm[data-v-e227a7de] {\n  font-size: var(--font-size-xs);\n}\n.selectable-list-item[data-v-e227a7de]:hover {\n  background-color: var(--color-surface-hover);\n}\n.selectable-list-item--current[data-v-e227a7de],\n.selectable-list-item--current[data-v-e227a7de]:hover {\n  background-color: color-mix(in srgb, var(--color-primary) 12%, transparent);\n  box-shadow: inset 2px 0 0 var(--color-primary);\n}\n\n/* ── The selectable button ── */\n.selectable-list-item__main[data-v-e227a7de] {\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  background: none;\n  border: none;\n  font: inherit;\n  color: var(--color-text-primary);\n  text-align: left;\n  cursor: pointer;\n}\n.selectable-list-item--md .selectable-list-item__main[data-v-e227a7de] {\n  padding: var(--spacing-sm);\n}\n.selectable-list-item--sm .selectable-list-item__main[data-v-e227a7de] {\n  padding: var(--spacing-xs) var(--spacing-sm);\n  color: var(--color-text-secondary);\n}\n.selectable-list-item__main[data-v-e227a7de]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: -2px;\n}\n.selectable-list-item__main[data-v-e227a7de]:disabled {\n  cursor: not-allowed;\n}\n.selectable-list-item--current .selectable-list-item__main[data-v-e227a7de] {\n  color: var(--color-primary);\n  font-weight: 600;\n}\n.selectable-list-item__label[data-v-e227a7de] {\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  font-variant-numeric: tabular-nums;\n}\n.selectable-list-item__leading[data-v-e227a7de],\n.selectable-list-item__trailing[data-v-e227a7de] {\n  display: inline-flex;\n  align-items: center;\n  flex-shrink: 0;\n}\n\n/* Trailing content (hints, dates) stays muted even on the active row. */\n.selectable-list-item__trailing[data-v-e227a7de] {\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n\n/* ── Trailing actions (hover / focus reveal, overlaying the row) ── */\n.selectable-list-item__actions[data-v-e227a7de] {\n  position: absolute;\n  inset-block: 0;\n  inset-inline-end: 0;\n  display: flex;\n  align-items: center;\n  gap: 2px;\n  padding-inline: var(--spacing-md) var(--spacing-xs);\n  /* Fade the label out behind the actions, matching the row surface. */\n  background: linear-gradient(\n    to right,\n    transparent,\n    var(--color-surface-hover) var(--spacing-md)\n  );\n  opacity: 0;\n  pointer-events: none;\n  transition: opacity var(--transition-duration);\n}\n.selectable-list-item:hover .selectable-list-item__actions[data-v-e227a7de],\n.selectable-list-item:focus-within .selectable-list-item__actions[data-v-e227a7de] {\n  opacity: 1;\n  pointer-events: auto;\n}\n\n/* Match the fade to the selected surface on the active row. */\n.selectable-list-item--current .selectable-list-item__actions[data-v-e227a7de] {\n  background: linear-gradient(\n    to right,\n    transparent,\n    color-mix(in srgb, var(--color-primary) 12%, var(--color-surface-hover))\n      var(--spacing-md)\n  );\n}\n@media (prefers-reduced-motion: reduce) {\n.selectable-list-item[data-v-e227a7de],\n  .selectable-list-item__actions[data-v-e227a7de] {\n    transition: none;\n}\n}\n";
+  const SelectableListItem = /* @__PURE__ */ _export_sfc(_sfc_main$n, [["styles", [_style_0$j]], ["__scopeId", "data-v-e227a7de"]]);
+  const _sfc_main$m = /* @__PURE__ */ defineComponent({
     __name: "SpeakerMenu",
     emits: ["merge"],
     setup(__props, { emit: __emit }) {
@@ -38436,7 +38519,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         if (action.id === "merge") emit2("merge");
       }
       return (_ctx, _cache) => {
-        return openBlock(), createBlock(_sfc_main$o, {
+        return openBlock(), createBlock(_sfc_main$v, {
           items: items.value,
           "item-key": (a2) => a2.id,
           align: "end",
@@ -38575,10 +38658,10 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       map2.delete(fromSpeakerId);
     }, origin);
   }
-  const _hoisted_1$a = { class: "merge-dialog-title" };
-  const _hoisted_2$7 = { class: "merge-dialog-description" };
-  const _hoisted_3$5 = { class: "merge-dialog-actions" };
-  const _sfc_main$f = /* @__PURE__ */ defineComponent({
+  const _hoisted_1$g = { class: "merge-dialog-title" };
+  const _hoisted_2$c = { class: "merge-dialog-description" };
+  const _hoisted_3$a = { class: "merge-dialog-actions" };
+  const _sfc_main$l = /* @__PURE__ */ defineComponent({
     __name: "MergeDialog",
     props: {
       open: { type: Boolean },
@@ -38643,8 +38726,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
             class: "merge-dialog-form",
             onSubmit: withModifiers(onConfirm, ["prevent"])
           }, [
-            createBaseVNode("h2", _hoisted_1$a, toDisplayString(unref(t2)("mergeDialog.title")), 1),
-            createBaseVNode("p", _hoisted_2$7, [
+            createBaseVNode("h2", _hoisted_1$g, toDisplayString(unref(t2)("mergeDialog.title")), 1),
+            createBaseVNode("p", _hoisted_2$c, [
               createBaseVNode("strong", null, toDisplayString(fromSpeaker.value.name), 1),
               createTextVNode(" · " + toDisplayString(affectedCount.value) + " " + toDisplayString(unref(t2)("mergeDialog.turnsAffected")), 1)
             ]),
@@ -38655,7 +38738,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
               modelValue: targetId.value,
               "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => targetId.value = $event)
             }, null, 8, ["field", "options", "modelValue"]),
-            createBaseVNode("div", _hoisted_3$5, [
+            createBaseVNode("div", _hoisted_3$a, [
               createVNode(Button, {
                 variant: "tertiary",
                 type: "button",
@@ -38682,9 +38765,9 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$c = "\n.merge-dialog[data-v-be330083] {\n  margin: auto;\n  max-width: 420px;\n  width: 90vw;\n  padding: var(--spacing-lg);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  color: var(--color-text-primary);\n  box-shadow: 0 16px 48px color-mix(in srgb, var(--color-text-primary) 20%, transparent);\n}\n.merge-dialog[data-v-be330083]::backdrop {\n  background-color: color-mix(in srgb, var(--color-text-primary) 35%, transparent);\n  backdrop-filter: blur(2px);\n}\n.merge-dialog-form[data-v-be330083] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-md);\n}\n.merge-dialog-title[data-v-be330083] {\n  margin: 0;\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n}\n.merge-dialog-description[data-v-be330083] {\n  margin: 0;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n.merge-dialog-actions[data-v-be330083] {\n  display: flex;\n  justify-content: flex-end;\n  gap: var(--spacing-sm);\n}\n";
-  const MergeDialog = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["styles", [_style_0$c]], ["__scopeId", "data-v-be330083"]]);
-  const _sfc_main$e = /* @__PURE__ */ defineComponent({
+  const _style_0$i = "\n.merge-dialog[data-v-be330083] {\n  margin: auto;\n  max-width: 420px;\n  width: 90vw;\n  padding: var(--spacing-lg);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  color: var(--color-text-primary);\n  box-shadow: 0 16px 48px color-mix(in srgb, var(--color-text-primary) 20%, transparent);\n}\n.merge-dialog[data-v-be330083]::backdrop {\n  background-color: color-mix(in srgb, var(--color-text-primary) 35%, transparent);\n  backdrop-filter: blur(2px);\n}\n.merge-dialog-form[data-v-be330083] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-md);\n}\n.merge-dialog-title[data-v-be330083] {\n  margin: 0;\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n}\n.merge-dialog-description[data-v-be330083] {\n  margin: 0;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n.merge-dialog-actions[data-v-be330083] {\n  display: flex;\n  justify-content: flex-end;\n  gap: var(--spacing-sm);\n}\n";
+  const MergeDialog = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["styles", [_style_0$i]], ["__scopeId", "data-v-be330083"]]);
+  const _sfc_main$k = /* @__PURE__ */ defineComponent({
     __name: "ChannelSelector",
     props: {
       channels: { type: Array },
@@ -38710,7 +38793,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _sfc_main$d = /* @__PURE__ */ defineComponent({
+  const _sfc_main$j = /* @__PURE__ */ defineComponent({
     __name: "TranslationSelector",
     props: {
       translations: { type: Array },
@@ -38726,7 +38809,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
           props.translations,
           locale.value,
           t2("sidebar.originalLanguage"),
-          t2("language.wildcard")
+          t2("language.wildcard"),
+          t2("sidebar.bilingual")
         )
       );
       const field = computed(() => ({ label: t2("sidebar.translationSelectLabel") }));
@@ -38741,18 +38825,18 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _hoisted_1$9 = { class: "speaker-sidebar" };
-  const _hoisted_2$6 = {
+  const _hoisted_1$f = { class: "speaker-sidebar" };
+  const _hoisted_2$b = {
     key: 0,
     class: "sidebar-section sidebar-section--selector"
   };
-  const _hoisted_3$4 = { class: "sidebar-title" };
-  const _hoisted_4$1 = {
+  const _hoisted_3$9 = { class: "sidebar-title" };
+  const _hoisted_4$5 = {
     key: 1,
     class: "sidebar-section sidebar-section--selector"
   };
-  const _hoisted_5$1 = { class: "sidebar-title" };
-  const _hoisted_6$1 = {
+  const _hoisted_5$5 = { class: "sidebar-title" };
+  const _hoisted_6$4 = {
     key: 2,
     class: "sidebar-section"
   };
@@ -38775,24 +38859,19 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
   const _hoisted_17 = { class: "subtitle-toggle-label" };
   const _hoisted_18 = { class: "sidebar-title" };
   const _hoisted_19 = { class: "history-list" };
-  const _hoisted_20 = ["disabled", "aria-current", "onClick"];
-  const _hoisted_21 = { class: "history-generation__label" };
-  const _hoisted_22 = ["datetime"];
-  const _hoisted_23 = { class: "history-generation__hint" };
-  const _hoisted_24 = {
+  const _hoisted_20 = ["datetime"];
+  const _hoisted_21 = {
     key: 0,
     class: "history-version-list"
   };
-  const _hoisted_25 = ["disabled", "aria-current", "onClick"];
-  const _hoisted_26 = { class: "history-version__num" };
-  const _hoisted_27 = ["datetime"];
-  const _hoisted_28 = {
+  const _hoisted_22 = ["datetime"];
+  const _hoisted_23 = {
     key: 4,
     class: "sidebar-section"
   };
-  const _hoisted_29 = { class: "sidebar-title" };
-  const _hoisted_30 = { class: "speaker-list" };
-  const _sfc_main$c = /* @__PURE__ */ defineComponent({
+  const _hoisted_24 = { class: "sidebar-title" };
+  const _hoisted_25 = { class: "speaker-list" };
+  const _sfc_main$i = /* @__PURE__ */ defineComponent({
     __name: "SpeakerSidebar",
     props: {
       speakers: { type: Array },
@@ -38862,24 +38941,24 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         core.emit("llmService:selectVersion", { id: service.id, versionNumber });
       }
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("aside", _hoisted_1$9, [
-          __props.channels.length > 1 ? (openBlock(), createElementBlock("section", _hoisted_2$6, [
-            createBaseVNode("h2", _hoisted_3$4, toDisplayString(unref(t2)("sidebar.channel")), 1),
-            createVNode(_sfc_main$e, {
+        return openBlock(), createElementBlock("aside", _hoisted_1$f, [
+          __props.channels.length > 1 ? (openBlock(), createElementBlock("section", _hoisted_2$b, [
+            createBaseVNode("h2", _hoisted_3$9, toDisplayString(unref(t2)("sidebar.channel")), 1),
+            createVNode(_sfc_main$k, {
               channels: __props.channels,
               "selected-channel-id": __props.selectedChannelId,
               "onUpdate:selectedChannelId": _cache[0] || (_cache[0] = ($event) => _ctx.$emit("update:selectedChannelId", $event))
             }, null, 8, ["channels", "selected-channel-id"])
           ])) : createCommentVNode("", true),
-          __props.translations.length > 1 ? (openBlock(), createElementBlock("section", _hoisted_4$1, [
-            createBaseVNode("h2", _hoisted_5$1, toDisplayString(unref(t2)("sidebar.translation")), 1),
-            createVNode(_sfc_main$d, {
+          __props.translations.length > 1 ? (openBlock(), createElementBlock("section", _hoisted_4$5, [
+            createBaseVNode("h2", _hoisted_5$5, toDisplayString(unref(t2)("sidebar.translation")), 1),
+            createVNode(_sfc_main$j, {
               translations: __props.translations,
               "selected-translation-id": __props.selectedTranslationId,
               "onUpdate:selectedTranslationId": _cache[1] || (_cache[1] = ($event) => _ctx.$emit("update:selectedTranslationId", $event))
             }, null, 8, ["translations", "selected-translation-id"])
           ])) : createCommentVNode("", true),
-          unref(core).subtitle ? (openBlock(), createElementBlock("section", _hoisted_6$1, [
+          unref(core).subtitle ? (openBlock(), createElementBlock("section", _hoisted_6$4, [
             createBaseVNode("h2", _hoisted_7$1, toDisplayString(unref(t2)("sidebar.subtitle")), 1),
             createBaseVNode("div", _hoisted_8, [
               createBaseVNode("span", _hoisted_9, toDisplayString(unref(t2)("subtitle.show")), 1),
@@ -38933,49 +39012,50 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
                     "history-generation--current": gen.generationId === currentGenerationId.value
                   }])
                 }, [
-                  createBaseVNode("button", {
-                    type: "button",
-                    class: "history-generation__header",
+                  createVNode(SelectableListItem, {
+                    current: gen.generationId === currentGenerationId.value,
                     disabled: serviceBusy.value,
-                    "aria-current": gen.generationId === currentGenerationId.value ? "true" : void 0,
-                    onClick: ($event) => onSelectGeneration(gen.generationId)
-                  }, [
-                    createVNode(EditorIcon, {
-                      name: statusIconName(gen.status),
-                      spin: gen.status === "processing" || gen.status === "queued",
-                      size: 14,
-                      class: normalizeClass([
-                        "history-generation__status",
-                        `history-generation__status--${gen.status}`
-                      ])
-                    }, null, 8, ["name", "spin", "class"]),
-                    createBaseVNode("span", _hoisted_21, [
+                    onSelect: ($event) => onSelectGeneration(gen.generationId)
+                  }, {
+                    leading: withCtx(() => [
+                      createVNode(EditorIcon, {
+                        name: statusIconName(gen.status),
+                        spin: gen.status === "processing" || gen.status === "queued",
+                        size: 14,
+                        class: normalizeClass(`history-generation__status--${gen.status}`)
+                      }, null, 8, ["name", "spin", "class"])
+                    ]),
+                    trailing: withCtx(() => [
+                      createTextVNode(toDisplayString(statusLabel(gen.status)), 1)
+                    ]),
+                    default: withCtx(() => [
                       createBaseVNode("time", {
                         datetime: new Date(gen.createdAt).toISOString()
-                      }, toDisplayString(unref(dateFormat).format(gen.createdAt)), 9, _hoisted_22)
+                      }, toDisplayString(unref(dateFormat).format(gen.createdAt)), 9, _hoisted_20)
                     ]),
-                    createBaseVNode("span", _hoisted_23, toDisplayString(statusLabel(gen.status)), 1)
-                  ], 8, _hoisted_20),
-                  gen.generationId === currentGenerationId.value && versions.value.length ? (openBlock(), createElementBlock("ul", _hoisted_24, [
+                    _: 2
+                  }, 1032, ["current", "disabled", "onSelect"]),
+                  gen.generationId === currentGenerationId.value && versions.value.length ? (openBlock(), createElementBlock("ul", _hoisted_21, [
                     (openBlock(true), createElementBlock(Fragment$1, null, renderList(versions.value, (v2) => {
                       return openBlock(), createElementBlock("li", {
                         key: v2.versionNumber
                       }, [
-                        createBaseVNode("button", {
-                          type: "button",
-                          class: normalizeClass(["history-version", {
-                            "history-version--active": v2.versionNumber === activeVersionNumber.value
-                          }]),
+                        createVNode(SelectableListItem, {
+                          size: "sm",
+                          current: v2.versionNumber === activeVersionNumber.value,
                           disabled: serviceBusy.value,
-                          "aria-current": v2.versionNumber === activeVersionNumber.value ? "true" : void 0,
-                          onClick: ($event) => onSelectVersion(v2.versionNumber)
-                        }, [
-                          createBaseVNode("span", _hoisted_26, "v" + toDisplayString(v2.versionNumber), 1),
-                          createBaseVNode("time", {
-                            class: "history-version__date",
-                            datetime: new Date(v2.createdAt).toISOString()
-                          }, toDisplayString(unref(dateFormat).format(v2.createdAt)), 9, _hoisted_27)
-                        ], 10, _hoisted_25)
+                          onSelect: ($event) => onSelectVersion(v2.versionNumber)
+                        }, {
+                          trailing: withCtx(() => [
+                            createBaseVNode("time", {
+                              datetime: new Date(v2.createdAt).toISOString()
+                            }, toDisplayString(unref(dateFormat).format(v2.createdAt)), 9, _hoisted_22)
+                          ]),
+                          default: withCtx(() => [
+                            createTextVNode(" v" + toDisplayString(v2.versionNumber) + " ", 1)
+                          ]),
+                          _: 2
+                        }, 1032, ["current", "disabled", "onSelect"])
                       ]);
                     }), 128))
                   ])) : createCommentVNode("", true)
@@ -38983,9 +39063,9 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
               }), 128))
             ])
           ], 2)) : createCommentVNode("", true),
-          __props.showSpeakers && __props.speakers.length ? (openBlock(), createElementBlock("section", _hoisted_28, [
-            createBaseVNode("h2", _hoisted_29, toDisplayString(unref(t2)("sidebar.speakers")), 1),
-            createBaseVNode("ul", _hoisted_30, [
+          __props.showSpeakers && __props.speakers.length ? (openBlock(), createElementBlock("section", _hoisted_23, [
+            createBaseVNode("h2", _hoisted_24, toDisplayString(unref(t2)("sidebar.speakers")), 1),
+            createBaseVNode("ul", _hoisted_25, [
               (openBlock(true), createElementBlock(Fragment$1, null, renderList(__props.speakers, (speaker) => {
                 return openBlock(), createElementBlock("li", {
                   key: speaker.id,
@@ -39001,7 +39081,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
                     "aria-label": unref(t2)("sidebar.renameSpeaker"),
                     onCommit: ($event) => onRename(speaker.id, $event)
                   }, null, 8, ["model-value", "disabled", "aria-label", "onCommit"]),
-                  canEditSpeakers.value && __props.speakers.length > 1 ? (openBlock(), createBlock(_sfc_main$g, {
+                  canEditSpeakers.value && __props.speakers.length > 1 ? (openBlock(), createBlock(_sfc_main$m, {
                     key: 0,
                     "speaker-name": speaker.name,
                     onMerge: ($event) => onOpenMerge(speaker.id)
@@ -39020,9 +39100,9 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$b = '\n.speaker-sidebar[data-v-1d2e7d75] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n  padding: var(--spacing-lg);\n  border-left: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-y: auto;\n}\n.sidebar-section[data-v-1d2e7d75] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-sm);\n}\n.sidebar-title[data-v-1d2e7d75] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-muted);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n}\n.speaker-list[data-v-1d2e7d75] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n}\n.speaker-item[data-v-1d2e7d75] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n  transition: background-color var(--transition-duration);\n}\n.speaker-item[data-v-1d2e7d75]:hover {\n  background-color: var(--color-surface-hover);\n}\n.speaker-name[data-v-1d2e7d75] {\n  flex: 1;\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-primary);\n}\n.subtitle-toggle[data-v-1d2e7d75] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n}\n.subtitle-toggle-label[data-v-1d2e7d75] {\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\n.subtitle-slider[data-v-1d2e7d75] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-sm);\n}\n.subtitle-slider-label[data-v-1d2e7d75] {\n  display: flex;\n  justify-content: space-between;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\n.subtitle-slider-value[data-v-1d2e7d75] {\n  color: var(--color-text-muted);\n  font-variant-numeric: tabular-nums;\n}\n.subtitle-slider input[type="range"][data-v-1d2e7d75] {\n  width: 100%;\n  accent-color: var(--color-primary);\n}\n.subtitle-slider input[type="range"][data-v-1d2e7d75]:disabled {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n\n/* ── History (LLM generations + versions) ──────────────────────────── */\n.sidebar-section--busy[data-v-1d2e7d75] {\n  opacity: 0.6;\n  pointer-events: none;\n}\n.history-list[data-v-1d2e7d75] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  margin: 0;\n  padding: 0;\n}\n.history-generation[data-v-1d2e7d75] {\n  display: flex;\n  flex-direction: column;\n}\n.history-generation__header[data-v-1d2e7d75] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  width: 100%;\n  padding: var(--spacing-sm);\n  border: 1px solid transparent;\n  border-radius: var(--radius-md);\n  background: none;\n  cursor: pointer;\n  font-family: inherit;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n  text-align: left;\n  transition: background-color var(--transition-duration);\n}\n.history-generation__header[data-v-1d2e7d75]:hover:not(:disabled) {\n  background-color: var(--color-surface-hover);\n}\n.history-generation__header[data-v-1d2e7d75]:disabled {\n  cursor: not-allowed;\n}\n.history-generation--current .history-generation__header[data-v-1d2e7d75] {\n  background-color: var(--color-surface-hover);\n  border-color: var(--color-border);\n}\n.history-generation__status--completed[data-v-1d2e7d75] {\n  color: var(--color-success, #2e7d32);\n}\n.history-generation__status--error[data-v-1d2e7d75] {\n  color: var(--color-danger, #d33);\n}\n.history-generation__status--processing[data-v-1d2e7d75],\n.history-generation__status--queued[data-v-1d2e7d75] {\n  color: var(--color-primary);\n}\n.history-generation__label[data-v-1d2e7d75] {\n  flex: 1;\n  font-weight: 500;\n  font-variant-numeric: tabular-nums;\n}\n.history-generation__hint[data-v-1d2e7d75] {\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.history-version-list[data-v-1d2e7d75] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  margin: var(--spacing-xs) 0 0 var(--spacing-md);\n  padding: 0;\n  border-left: 1px solid var(--color-border);\n}\n.history-version[data-v-1d2e7d75] {\n  display: flex;\n  align-items: baseline;\n  gap: var(--spacing-sm);\n  width: 100%;\n  padding: var(--spacing-xs) var(--spacing-sm);\n  margin-left: var(--spacing-xs);\n  border: 1px solid transparent;\n  border-radius: var(--radius-sm);\n  background: none;\n  cursor: pointer;\n  font-family: inherit;\n  font-size: var(--font-size-xs);\n  color: var(--color-text-secondary);\n  text-align: left;\n  transition: background-color var(--transition-duration);\n}\n.history-version[data-v-1d2e7d75]:hover:not(:disabled) {\n  background-color: var(--color-surface-hover);\n}\n.history-version[data-v-1d2e7d75]:disabled {\n  cursor: not-allowed;\n}\n.history-version--active[data-v-1d2e7d75] {\n  background-color: var(--color-surface-hover);\n  color: var(--color-text-primary);\n  font-weight: 600;\n}\n.history-version__num[data-v-1d2e7d75] {\n  flex-shrink: 0;\n  font-variant-numeric: tabular-nums;\n}\n.history-version__date[data-v-1d2e7d75] {\n  color: var(--color-text-muted);\n  font-variant-numeric: tabular-nums;\n}\n@media (max-width: 767px) {\n.speaker-sidebar[data-v-1d2e7d75] {\n    border-left: none;\n}\n.sidebar-section--selector[data-v-1d2e7d75] {\n    display: none;\n}\n}\n';
-  const SpeakerSidebar = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["styles", [_style_0$b]], ["__scopeId", "data-v-1d2e7d75"]]);
-  const _sfc_main$b = /* @__PURE__ */ defineComponent({
+  const _style_0$h = '\n.speaker-sidebar[data-v-ecd4afcf] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n  padding: var(--spacing-lg);\n  border-left: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-y: auto;\n}\n.sidebar-section[data-v-ecd4afcf] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-sm);\n}\n.sidebar-title[data-v-ecd4afcf] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-muted);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n}\n.speaker-list[data-v-ecd4afcf] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n}\n.speaker-item[data-v-ecd4afcf] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n  transition: background-color var(--transition-duration);\n}\n.speaker-item[data-v-ecd4afcf]:hover {\n  background-color: var(--color-surface-hover);\n}\n.speaker-name[data-v-ecd4afcf] {\n  flex: 1;\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-primary);\n}\n.subtitle-toggle[data-v-ecd4afcf] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n}\n.subtitle-toggle-label[data-v-ecd4afcf] {\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\n.subtitle-slider[data-v-ecd4afcf] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-sm);\n}\n.subtitle-slider-label[data-v-ecd4afcf] {\n  display: flex;\n  justify-content: space-between;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\n.subtitle-slider-value[data-v-ecd4afcf] {\n  color: var(--color-text-muted);\n  font-variant-numeric: tabular-nums;\n}\n.subtitle-slider input[type="range"][data-v-ecd4afcf] {\n  width: 100%;\n  accent-color: var(--color-primary);\n}\n.subtitle-slider input[type="range"][data-v-ecd4afcf]:disabled {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n\n/* ── History (LLM generations + versions) ──────────────────────────── */\n.sidebar-section--busy[data-v-ecd4afcf] {\n  opacity: 0.6;\n  pointer-events: none;\n}\n.history-list[data-v-ecd4afcf] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  margin: 0;\n  padding: 0;\n}\n.history-generation[data-v-ecd4afcf] {\n  display: flex;\n  flex-direction: column;\n}\n.history-generation__status--completed[data-v-ecd4afcf] {\n  color: var(--color-success, #2e7d32);\n}\n.history-generation__status--error[data-v-ecd4afcf] {\n  color: var(--color-danger, #d33);\n}\n.history-generation__status--processing[data-v-ecd4afcf],\n.history-generation__status--queued[data-v-ecd4afcf] {\n  color: var(--color-primary);\n}\n.history-version-list[data-v-ecd4afcf] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  margin: var(--spacing-xs) 0 0 var(--spacing-md);\n  padding: 0;\n  border-left: 1px solid var(--color-border);\n}\n\n/* Nudge nested version rows off the connecting border line. */\n.history-version-list[data-v-ecd4afcf] .selectable-list-item {\n  margin-left: var(--spacing-xs);\n}\n@media (max-width: 767px) {\n.speaker-sidebar[data-v-ecd4afcf] {\n    border-left: none;\n}\n.sidebar-section--selector[data-v-ecd4afcf] {\n    display: none;\n}\n}\n';
+  const SpeakerSidebar = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["styles", [_style_0$h]], ["__scopeId", "data-v-ecd4afcf"]]);
+  const _sfc_main$h = /* @__PURE__ */ defineComponent({
     __name: "SidebarDrawer",
     props: {
       "open": { type: Boolean, ...{ required: true } },
@@ -39071,14 +39151,14 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _hoisted_1$8 = { class: "player-controls" };
-  const _hoisted_2$5 = { class: "controls-left" };
-  const _hoisted_3$3 = { class: "controls-time" };
-  const _hoisted_4 = { class: "time-display" };
-  const _hoisted_5 = { class: "time-display" };
-  const _hoisted_6 = { class: "controls-right" };
+  const _hoisted_1$e = { class: "player-controls" };
+  const _hoisted_2$a = { class: "controls-left" };
+  const _hoisted_3$8 = { class: "controls-time" };
+  const _hoisted_4$4 = { class: "time-display" };
+  const _hoisted_5$4 = { class: "time-display" };
+  const _hoisted_6$3 = { class: "controls-right" };
   const _hoisted_7 = ["value", "aria-label", "disabled"];
-  const _sfc_main$a = /* @__PURE__ */ defineComponent({
+  const _sfc_main$g = /* @__PURE__ */ defineComponent({
     __name: "AudioPlayerControls",
     props: {
       isPlaying: { type: Boolean },
@@ -39099,8 +39179,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         emit2("update:volume", parseFloat(target.value));
       }
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$8, [
-          createBaseVNode("div", _hoisted_2$5, [
+        return openBlock(), createElementBlock("div", _hoisted_1$e, [
+          createBaseVNode("div", _hoisted_2$a, [
             createVNode(Button, {
               variant: "transparent",
               size: "md",
@@ -39147,12 +39227,12 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
               _: 1
             }, 8, ["aria-label", "disabled"])
           ]),
-          createBaseVNode("div", _hoisted_3$3, [
-            createBaseVNode("time", _hoisted_4, toDisplayString(__props.currentTime), 1),
+          createBaseVNode("div", _hoisted_3$8, [
+            createBaseVNode("time", _hoisted_4$4, toDisplayString(__props.currentTime), 1),
             _cache[7] || (_cache[7] = createBaseVNode("span", { class: "time-separator" }, "/", -1)),
-            createBaseVNode("time", _hoisted_5, toDisplayString(__props.duration), 1)
+            createBaseVNode("time", _hoisted_5$4, toDisplayString(__props.duration), 1)
           ]),
-          createBaseVNode("div", _hoisted_6, [
+          createBaseVNode("div", _hoisted_6$3, [
             createBaseVNode("div", {
               class: "volume-group",
               onMouseenter: _cache[4] || (_cache[4] = ($event) => showVolumeSlider.value = true),
@@ -39208,8 +39288,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$a = "\n.player-controls[data-v-99f700b1] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xs) var(--spacing-lg);\n  height: 44px;\n}\n.controls-left[data-v-99f700b1] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n}\n.controls-time[data-v-99f700b1] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xxs);\n  font-family: var(--font-family-mono);\n  font-size: var(--font-size-sm);\n  color: var(--color-text-muted);\n  user-select: none;\n}\n.time-separator[data-v-99f700b1] {\n  color: var(--color-text-muted);\n  opacity: 0.5;\n}\n.controls-right[data-v-99f700b1] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  margin-left: auto;\n}\n.volume-group[data-v-99f700b1] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n}\n.volume-slider[data-v-99f700b1] {\n  width: 80px;\n  height: 4px;\n  accent-color: var(--color-primary);\n  cursor: pointer;\n}\n.volume-slider[data-v-99f700b1]:disabled {\n  opacity: 0.5;\n  cursor: default;\n}\n.play-button[data-v-99f700b1] {\n  width: 40px;\n  height: 40px;\n}\n.speed-button[data-v-99f700b1] {\n  font-size: var(--font-size-sm);\n  font-family: var(--font-family-mono);\n}\n@media (max-width: 767px) {\n.skip-button[data-v-99f700b1] {\n    display: none;\n}\n.volume-slider[data-v-99f700b1] {\n    display: none;\n}\n.player-controls[data-v-99f700b1] {\n    padding: var(--spacing-xs) var(--spacing-md);\n    gap: var(--spacing-sm);\n}\n}\n";
-  const AudioPlayerControls = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["styles", [_style_0$a]], ["__scopeId", "data-v-99f700b1"]]);
+  const _style_0$g = "\n.player-controls[data-v-99f700b1] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xs) var(--spacing-lg);\n  height: 44px;\n}\n.controls-left[data-v-99f700b1] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n}\n.controls-time[data-v-99f700b1] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xxs);\n  font-family: var(--font-family-mono);\n  font-size: var(--font-size-sm);\n  color: var(--color-text-muted);\n  user-select: none;\n}\n.time-separator[data-v-99f700b1] {\n  color: var(--color-text-muted);\n  opacity: 0.5;\n}\n.controls-right[data-v-99f700b1] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  margin-left: auto;\n}\n.volume-group[data-v-99f700b1] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n}\n.volume-slider[data-v-99f700b1] {\n  width: 80px;\n  height: 4px;\n  accent-color: var(--color-primary);\n  cursor: pointer;\n}\n.volume-slider[data-v-99f700b1]:disabled {\n  opacity: 0.5;\n  cursor: default;\n}\n.play-button[data-v-99f700b1] {\n  width: 40px;\n  height: 40px;\n}\n.speed-button[data-v-99f700b1] {\n  font-size: var(--font-size-sm);\n  font-family: var(--font-family-mono);\n}\n@media (max-width: 767px) {\n.skip-button[data-v-99f700b1] {\n    display: none;\n}\n.volume-slider[data-v-99f700b1] {\n    display: none;\n}\n.player-controls[data-v-99f700b1] {\n    padding: var(--spacing-xs) var(--spacing-md);\n    gap: var(--spacing-sm);\n}\n}\n";
+  const AudioPlayerControls = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["styles", [_style_0$g]], ["__scopeId", "data-v-99f700b1"]]);
   function t$1(t2, e2, i2, n2) {
     return new (i2 || (i2 = Promise))((function(s2, r2) {
       function o2(t3) {
@@ -41074,8 +41154,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       toggleMute
     };
   }
-  const _hoisted_1$7 = { class: "audio-player" };
-  const _sfc_main$9 = /* @__PURE__ */ defineComponent({
+  const _hoisted_1$d = { class: "audio-player" };
+  const _sfc_main$f = /* @__PURE__ */ defineComponent({
     __name: "AudioPlayer",
     props: {
       audioSrc: { type: String }
@@ -41105,7 +41185,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       });
       __expose({ seekTo, pause });
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("footer", _hoisted_1$7, [
+        return openBlock(), createElementBlock("footer", _hoisted_1$d, [
           createBaseVNode("div", {
             ref_key: "waveformRef",
             ref: waveformRef,
@@ -41130,8 +41210,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$9 = "\n.audio-player[data-v-810ae1d6] {\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.waveform-container[data-v-810ae1d6] {\n  min-height: 32px;\n}\n.waveform-container--loading[data-v-810ae1d6] {\n  background: linear-gradient(\n    90deg,\n    var(--color-border-light, var(--color-border)) 25%,\n    var(--color-border) 50%,\n    var(--color-border-light, var(--color-border)) 75%\n  );\n  background-size: 200% 100%;\n  animation: shimmer-810ae1d6 1.5s ease-in-out infinite;\n  border-radius: var(--radius-sm);\n}\n@keyframes shimmer-810ae1d6 {\n0% {\n    background-position: 200% 0;\n}\n100% {\n    background-position: -200% 0;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.waveform-container--loading[data-v-810ae1d6] {\n    animation: none;\n}\n}\n";
-  const AudioPlayer = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["styles", [_style_0$9]], ["__scopeId", "data-v-810ae1d6"]]);
+  const _style_0$f = "\n.audio-player[data-v-810ae1d6] {\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.waveform-container[data-v-810ae1d6] {\n  min-height: 32px;\n}\n.waveform-container--loading[data-v-810ae1d6] {\n  background: linear-gradient(\n    90deg,\n    var(--color-border-light, var(--color-border)) 25%,\n    var(--color-border) 50%,\n    var(--color-border-light, var(--color-border)) 75%\n  );\n  background-size: 200% 100%;\n  animation: shimmer-810ae1d6 1.5s ease-in-out infinite;\n  border-radius: var(--radius-sm);\n}\n@keyframes shimmer-810ae1d6 {\n0% {\n    background-position: 200% 0;\n}\n100% {\n    background-position: -200% 0;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.waveform-container--loading[data-v-810ae1d6] {\n    animation: none;\n}\n}\n";
+  const AudioPlayer = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["styles", [_style_0$f]], ["__scopeId", "data-v-810ae1d6"]]);
   class Diff {
     diff(oldStr, newStr, options = {}) {
       let callback;
@@ -41728,14 +41808,14 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     }
     return parts;
   }
-  const _hoisted_1$6 = {
+  const _hoisted_1$c = {
     key: 0,
     class: "watermark",
     "aria-hidden": "true"
   };
-  const _hoisted_2$4 = ["src", "alt"];
-  const _hoisted_3$2 = { key: 1 };
-  const _sfc_main$8 = /* @__PURE__ */ defineComponent({
+  const _hoisted_2$9 = ["src", "alt"];
+  const _hoisted_3$7 = { key: 1 };
+  const _sfc_main$e = /* @__PURE__ */ defineComponent({
     __name: "SubtitleWatermark",
     props: {
       visible: { type: Boolean }
@@ -41750,7 +41830,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       return (_ctx, _cache) => {
         return openBlock(), createBlock(Transition, { name: "watermark" }, {
           default: withCtx(() => [
-            __props.visible && unref(watermark) ? (openBlock(), createElementBlock("div", _hoisted_1$6, [
+            __props.visible && unref(watermark) ? (openBlock(), createElementBlock("div", _hoisted_1$c, [
               (openBlock(true), createElementBlock(Fragment$1, null, renderList(parts.value, (part, i2) => {
                 return openBlock(), createElementBlock(Fragment$1, { key: i2 }, [
                   part.type === "token" ? (openBlock(), createElementBlock("img", {
@@ -41758,7 +41838,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
                     src: part.src,
                     alt: part.alt,
                     class: "watermark__img"
-                  }, null, 8, _hoisted_2$4)) : (openBlock(), createElementBlock("span", _hoisted_3$2, toDisplayString(part.value), 1))
+                  }, null, 8, _hoisted_2$9)) : (openBlock(), createElementBlock("span", _hoisted_3$7, toDisplayString(part.value), 1))
                 ], 64);
               }), 128))
             ])) : createCommentVNode("", true)
@@ -41768,10 +41848,10 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$8 = "\n.watermark[data-v-b8c2ff2b] {\n  position: absolute;\n  right: var(--spacing-md, 16px);\n  bottom: 4px;\n  display: inline-flex;\n  align-items: center;\n  gap: 0.25em;\n  font-size: 1.2rem;\n  color: var(--color-white, #fff);\n  pointer-events: none;\n  line-height: 1;\n}\n.watermark__img[data-v-b8c2ff2b] {\n  height: 1em;\n  vertical-align: middle;\n}\n.watermark-enter-active[data-v-b8c2ff2b],\n.watermark-leave-active[data-v-b8c2ff2b] {\n  transition:\n    opacity 0.4s ease,\n    transform 0.4s ease;\n}\n.watermark-enter-from[data-v-b8c2ff2b],\n.watermark-leave-to[data-v-b8c2ff2b] {\n  opacity: 0;\n  transform: translate(6px, 6px);\n}\n@media (prefers-reduced-motion: reduce) {\n.watermark-enter-active[data-v-b8c2ff2b],\n  .watermark-leave-active[data-v-b8c2ff2b] {\n    transition: opacity 0.01s;\n    transform: none;\n}\n}\n";
-  const SubtitleWatermark = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["styles", [_style_0$8]], ["__scopeId", "data-v-b8c2ff2b"]]);
-  const _hoisted_1$5 = ["height"];
-  const _sfc_main$7 = /* @__PURE__ */ defineComponent({
+  const _style_0$e = "\n.watermark[data-v-b8c2ff2b] {\n  position: absolute;\n  right: var(--spacing-md, 16px);\n  bottom: 4px;\n  display: inline-flex;\n  align-items: center;\n  gap: 0.25em;\n  font-size: 1.2rem;\n  color: var(--color-white, #fff);\n  pointer-events: none;\n  line-height: 1;\n}\n.watermark__img[data-v-b8c2ff2b] {\n  height: 1em;\n  vertical-align: middle;\n}\n.watermark-enter-active[data-v-b8c2ff2b],\n.watermark-leave-active[data-v-b8c2ff2b] {\n  transition:\n    opacity 0.4s ease,\n    transform 0.4s ease;\n}\n.watermark-enter-from[data-v-b8c2ff2b],\n.watermark-leave-to[data-v-b8c2ff2b] {\n  opacity: 0;\n  transform: translate(6px, 6px);\n}\n@media (prefers-reduced-motion: reduce) {\n.watermark-enter-active[data-v-b8c2ff2b],\n  .watermark-leave-active[data-v-b8c2ff2b] {\n    transition: opacity 0.01s;\n    transform: none;\n}\n}\n";
+  const SubtitleWatermark = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["styles", [_style_0$e]], ["__scopeId", "data-v-b8c2ff2b"]]);
+  const _hoisted_1$b = ["height"];
+  const _sfc_main$d = /* @__PURE__ */ defineComponent({
     __name: "SubtitleBanner",
     setup(__props) {
       const core = useCore();
@@ -41787,6 +41867,15 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       const { visible: watermarkVisible } = useWatermarkCycle(
         core.subtitle?.watermark
       );
+      onMounted(() => {
+        core.emit("subtitle:visible", { visible: true, height: canvasHeight.value });
+      });
+      watch(canvasHeight, (height) => {
+        core.emit("subtitle:visible", { visible: true, height });
+      });
+      onBeforeUnmount(() => {
+        core.emit("subtitle:visible", { visible: false, height: 0 });
+      });
       return (_ctx, _cache) => {
         return openBlock(), createElementBlock("div", {
           class: "subtitle-banner",
@@ -41796,20 +41885,20 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
             ref: "canvas",
             class: normalizeClass(["subtitle-canvas", { "subtitle-canvas--shrunk": unref(watermarkVisible) }]),
             height: canvasHeight.value
-          }, null, 10, _hoisted_1$5),
+          }, null, 10, _hoisted_1$b),
           createVNode(SubtitleWatermark, { visible: unref(watermarkVisible) }, null, 8, ["visible"])
         ], 4);
       };
     }
   });
-  const _style_0$7 = "\n.subtitle-banner[data-v-f62eaf60] {\n  position: relative;\n  flex-shrink: 0;\n  background-color: var(--color-black);\n  overflow: hidden;\n}\n.subtitle-canvas[data-v-f62eaf60] {\n  display: block;\n  width: 100%;\n  height: 100%;\n  transition: transform 0.4s ease;\n  transform-origin: top center;\n}\n.subtitle-canvas--shrunk[data-v-f62eaf60] {\n  transform: scale(0.8) translateY(-8%);\n}\n@media (prefers-reduced-motion: reduce) {\n.subtitle-canvas[data-v-f62eaf60] {\n    transition: none;\n}\n}\n";
-  const SubtitleBanner = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["styles", [_style_0$7]], ["__scopeId", "data-v-f62eaf60"]]);
-  const _hoisted_1$4 = {
+  const _style_0$d = "\n.subtitle-banner[data-v-1baa0a4a] {\n  position: fixed;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  flex-shrink: 0;\n  background-color: var(--color-black);\n  overflow: hidden;\n  z-index: 1001;\n}\n.subtitle-canvas[data-v-1baa0a4a] {\n  display: block;\n  width: 100%;\n  height: 100%;\n  transition: transform 0.4s ease;\n  transform-origin: top center;\n}\n.subtitle-canvas--shrunk[data-v-1baa0a4a] {\n  transform: scale(0.8) translateY(-8%);\n}\n@media (prefers-reduced-motion: reduce) {\n.subtitle-canvas[data-v-1baa0a4a] {\n    transition: none;\n}\n}\n";
+  const SubtitleBanner = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["styles", [_style_0$d]], ["__scopeId", "data-v-1baa0a4a"]]);
+  const _hoisted_1$a = {
     ref: "container",
     class: "subtitle-fullscreen"
   };
-  const _hoisted_2$3 = ["aria-label"];
-  const _sfc_main$6 = /* @__PURE__ */ defineComponent({
+  const _hoisted_2$8 = ["aria-label"];
+  const _sfc_main$c = /* @__PURE__ */ defineComponent({
     __name: "SubtitleFullscreen",
     setup(__props) {
       const core = useCore();
@@ -41867,14 +41956,14 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         }
       });
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$4, [
+        return openBlock(), createElementBlock("div", _hoisted_1$a, [
           createBaseVNode("button", {
             class: "subtitle-fullscreen__close",
             "aria-label": unref(t2)("subtitle.exitFullscreen"),
             onClick: close2
           }, [
             createVNode(unref(X$1), { size: 24 })
-          ], 8, _hoisted_2$3),
+          ], 8, _hoisted_2$8),
           createBaseVNode("canvas", {
             ref: "canvas",
             class: normalizeClass(["subtitle-fullscreen__canvas", { "subtitle-fullscreen__canvas--shrunk": unref(watermarkVisible) }])
@@ -41884,8 +41973,455 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$6 = "\n.subtitle-fullscreen[data-v-e3ae14e0] {\n  position: relative;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 100%;\n  height: 100%;\n  background-color: var(--color-black);\n}\n.subtitle-fullscreen__close[data-v-e3ae14e0] {\n  position: absolute;\n  top: var(--spacing-md, 16px);\n  right: var(--spacing-md, 16px);\n  z-index: 1;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 40px;\n  height: 40px;\n  border: none;\n  background: rgba(255, 255, 255, 0.1);\n  color: var(--color-white);\n  border-radius: var(--radius-md, 8px);\n  cursor: pointer;\n  transition: background-color var(--transition-duration) ease;\n}\n.subtitle-fullscreen__close[data-v-e3ae14e0]:hover,\n.subtitle-fullscreen__close[data-v-e3ae14e0]:focus-visible {\n  background: rgba(255, 255, 255, 0.25);\n  outline: 2px solid rgba(255, 255, 255, 0.5);\n  outline-offset: 2px;\n}\n.subtitle-fullscreen__canvas[data-v-e3ae14e0] {\n  display: block;\n  width: 100%;\n  height: 100%;\n  transition: transform 0.4s ease;\n  transform-origin: center;\n}\n.subtitle-fullscreen__canvas--shrunk[data-v-e3ae14e0] {\n  transform: scale(0.85) translateY(-4%);\n}\n@media (prefers-reduced-motion: reduce) {\n.subtitle-fullscreen__close[data-v-e3ae14e0],\n  .subtitle-fullscreen__canvas[data-v-e3ae14e0] {\n    transition: none;\n}\n}\n";
-  const SubtitleFullscreen = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["styles", [_style_0$6]], ["__scopeId", "data-v-e3ae14e0"]]);
+  const _style_0$c = "\n.subtitle-fullscreen[data-v-e3ae14e0] {\n  position: relative;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 100%;\n  height: 100%;\n  background-color: var(--color-black);\n}\n.subtitle-fullscreen__close[data-v-e3ae14e0] {\n  position: absolute;\n  top: var(--spacing-md, 16px);\n  right: var(--spacing-md, 16px);\n  z-index: 1;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 40px;\n  height: 40px;\n  border: none;\n  background: rgba(255, 255, 255, 0.1);\n  color: var(--color-white);\n  border-radius: var(--radius-md, 8px);\n  cursor: pointer;\n  transition: background-color var(--transition-duration) ease;\n}\n.subtitle-fullscreen__close[data-v-e3ae14e0]:hover,\n.subtitle-fullscreen__close[data-v-e3ae14e0]:focus-visible {\n  background: rgba(255, 255, 255, 0.25);\n  outline: 2px solid rgba(255, 255, 255, 0.5);\n  outline-offset: 2px;\n}\n.subtitle-fullscreen__canvas[data-v-e3ae14e0] {\n  display: block;\n  width: 100%;\n  height: 100%;\n  transition: transform 0.4s ease;\n  transform-origin: center;\n}\n.subtitle-fullscreen__canvas--shrunk[data-v-e3ae14e0] {\n  transform: scale(0.85) translateY(-4%);\n}\n@media (prefers-reduced-motion: reduce) {\n.subtitle-fullscreen__close[data-v-e3ae14e0],\n  .subtitle-fullscreen__canvas[data-v-e3ae14e0] {\n    transition: none;\n}\n}\n";
+  const SubtitleFullscreen = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["styles", [_style_0$c]], ["__scopeId", "data-v-e3ae14e0"]]);
+  const _hoisted_1$9 = ["aria-label"];
+  const _hoisted_2$7 = { class: "chat-session-list__header" };
+  const _hoisted_3$6 = { class: "chat-session-list__title" };
+  const _hoisted_4$3 = { class: "chat-session-list__items" };
+  const _hoisted_5$3 = {
+    key: 1,
+    class: "chat-session-confirm"
+  };
+  const _hoisted_6$2 = { class: "chat-session-confirm__text" };
+  const _sfc_main$b = /* @__PURE__ */ defineComponent({
+    __name: "ChatSessionList",
+    props: {
+      sessions: { type: Array },
+      activeSessionId: { type: [String, null] }
+    },
+    emits: ["select", "create", "rename", "delete"],
+    setup(__props, { emit: __emit }) {
+      const props = __props;
+      const emit2 = __emit;
+      const { t: t2 } = useI18n();
+      const renamingId = /* @__PURE__ */ ref(null);
+      const renameValue = /* @__PURE__ */ ref("");
+      const deleteTargetId = /* @__PURE__ */ ref(null);
+      const renameField = computed(() => ({
+        customParams: { "aria-label": t2("chat.rename") }
+      }));
+      function startRename(session) {
+        deleteTargetId.value = null;
+        renameValue.value = session.title;
+        renamingId.value = session.id;
+      }
+      function confirmRename() {
+        const id2 = renamingId.value;
+        if (!id2) return;
+        renamingId.value = null;
+        const title = renameValue.value.trim();
+        const current = props.sessions.find((s2) => s2.id === id2);
+        if (title && title !== current?.title) emit2("rename", id2, title);
+      }
+      function cancelRename() {
+        renamingId.value = null;
+      }
+      function onRenameKeydown(event) {
+        event.stopPropagation();
+        if (event.key === "Enter") confirmRename();
+        else if (event.key === "Escape") cancelRename();
+      }
+      function requestDelete(sessionId) {
+        deleteTargetId.value = sessionId;
+      }
+      function cancelDelete() {
+        deleteTargetId.value = null;
+      }
+      function confirmDelete() {
+        const id2 = deleteTargetId.value;
+        if (!id2) return;
+        deleteTargetId.value = null;
+        emit2("delete", id2);
+      }
+      return (_ctx, _cache) => {
+        return openBlock(), createElementBlock("nav", {
+          class: "chat-session-list",
+          "aria-label": unref(t2)("chat.history")
+        }, [
+          createBaseVNode("header", _hoisted_2$7, [
+            createBaseVNode("h3", _hoisted_3$6, toDisplayString(unref(t2)("chat.history")), 1),
+            createVNode(Button, {
+              icon: "plus",
+              variant: "transparent",
+              size: "sm",
+              "aria-label": unref(t2)("chat.newChat"),
+              onClick: _cache[0] || (_cache[0] = ($event) => emit2("create"))
+            }, null, 8, ["aria-label"])
+          ]),
+          createBaseVNode("ul", _hoisted_4$3, [
+            (openBlock(true), createElementBlock(Fragment$1, null, renderList(__props.sessions, (session) => {
+              return openBlock(), createElementBlock("li", {
+                key: session.id,
+                class: "chat-session-item"
+              }, [
+                renamingId.value === session.id ? (openBlock(), createBlock(FormInput, {
+                  key: 0,
+                  modelValue: renameValue.value,
+                  "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => renameValue.value = $event),
+                  field: renameField.value,
+                  focus: true,
+                  "full-width": "",
+                  size: "sm",
+                  onKeydown: onRenameKeydown,
+                  onBlur: confirmRename
+                }, null, 8, ["modelValue", "field"])) : deleteTargetId.value === session.id ? (openBlock(), createElementBlock("div", _hoisted_5$3, [
+                  createBaseVNode("span", _hoisted_6$2, toDisplayString(unref(t2)("chat.deleteConfirm")), 1),
+                  createVNode(Button, {
+                    icon: "x",
+                    variant: "transparent",
+                    size: "sm",
+                    "aria-label": unref(t2)("chat.cancel"),
+                    onClick: cancelDelete
+                  }, null, 8, ["aria-label"]),
+                  createVNode(Button, {
+                    icon: "check",
+                    variant: "transparent",
+                    intent: "destructive",
+                    size: "sm",
+                    "aria-label": unref(t2)("chat.confirmDelete"),
+                    onClick: confirmDelete
+                  }, null, 8, ["aria-label"])
+                ])) : (openBlock(), createBlock(SelectableListItem, {
+                  key: 2,
+                  current: session.id === __props.activeSessionId,
+                  label: session.title,
+                  title: session.title,
+                  onSelect: ($event) => emit2("select", session.id)
+                }, {
+                  actions: withCtx(() => [
+                    createVNode(Button, {
+                      icon: "pencil",
+                      variant: "transparent",
+                      size: "sm",
+                      "aria-label": unref(t2)("chat.rename"),
+                      onClick: ($event) => startRename(session)
+                    }, null, 8, ["aria-label", "onClick"]),
+                    createVNode(Button, {
+                      icon: "trash",
+                      variant: "transparent",
+                      intent: "destructive",
+                      size: "sm",
+                      "aria-label": unref(t2)("chat.deleteSession"),
+                      onClick: ($event) => requestDelete(session.id)
+                    }, null, 8, ["aria-label", "onClick"])
+                  ]),
+                  _: 2
+                }, 1032, ["current", "label", "title", "onSelect"]))
+              ]);
+            }), 128))
+          ])
+        ], 8, _hoisted_1$9);
+      };
+    }
+  });
+  const _style_0$b = "\n.chat-session-list[data-v-09ff9dcb] {\n  width: 200px;\n  flex-shrink: 0;\n  display: flex;\n  flex-direction: column;\n  border-right: 1px solid var(--color-border);\n  background-color: var(--color-surface-hover);\n}\n.chat-session-list__header[data-v-09ff9dcb] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-sm) var(--spacing-md);\n}\n.chat-session-list__title[data-v-09ff9dcb] {\n  margin: 0;\n  font-size: var(--font-size-xs);\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-muted);\n}\n.chat-session-list__items[data-v-09ff9dcb] {\n  flex: 1;\n  margin: 0;\n  padding: 0;\n  list-style: none;\n  overflow-y: auto;\n}\n\n/* Delete confirmation row */\n.chat-session-confirm[data-v-09ff9dcb] {\n  display: flex;\n  align-items: center;\n  gap: 2px;\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.chat-session-confirm__text[data-v-09ff9dcb] {\n  flex: 1;\n  min-width: 0;\n  font-size: var(--font-size-xs);\n  color: var(--color-danger);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n";
+  const ChatSessionList = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["styles", [_style_0$b]], ["__scopeId", "data-v-09ff9dcb"]]);
+  const _hoisted_1$8 = ["innerHTML"];
+  const _sfc_main$a = /* @__PURE__ */ defineComponent({
+    __name: "MarkdownView",
+    props: {
+      source: { type: String }
+    },
+    setup(__props) {
+      const props = __props;
+      const html = computed(() => {
+        if (!props.source) return "";
+        return g$1.parse(props.source, { async: false });
+      });
+      return (_ctx, _cache) => {
+        return openBlock(), createElementBlock("div", {
+          class: "markdown-view",
+          innerHTML: html.value
+        }, null, 8, _hoisted_1$8);
+      };
+    }
+  });
+  const _style_0$a = "\n.markdown-view[data-v-d5b7846c] {\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.markdown-view[data-v-d5b7846c] h1,\n.markdown-view[data-v-d5b7846c] h2,\n.markdown-view[data-v-d5b7846c] h3,\n.markdown-view[data-v-d5b7846c] h4 {\n  margin: var(--spacing-lg) 0 var(--spacing-sm);\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.markdown-view[data-v-d5b7846c] h1 {\n  font-size: var(--font-size-xl);\n}\n.markdown-view[data-v-d5b7846c] h2 {\n  font-size: var(--font-size-lg);\n}\n.markdown-view[data-v-d5b7846c] h3 {\n  font-size: var(--font-size-base);\n}\n.markdown-view[data-v-d5b7846c] h4 {\n  font-size: var(--font-size-sm);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-secondary);\n}\n.markdown-view[data-v-d5b7846c] p {\n  margin: 0 0 var(--spacing-md);\n}\n.markdown-view[data-v-d5b7846c] ul,\n.markdown-view[data-v-d5b7846c] ol {\n  margin: 0 0 var(--spacing-md);\n  padding-left: var(--spacing-lg);\n}\n.markdown-view[data-v-d5b7846c] li {\n  margin: var(--spacing-xs) 0;\n}\n.markdown-view[data-v-d5b7846c] blockquote {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-left: 3px solid var(--color-border);\n  color: var(--color-text-secondary);\n  font-style: italic;\n}\n.markdown-view[data-v-d5b7846c] code {\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n  padding: 1px 4px;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-sm);\n}\n.markdown-view[data-v-d5b7846c] pre {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n}\n.markdown-view[data-v-d5b7846c] pre code {\n  padding: 0;\n  background: none;\n}\n.markdown-view[data-v-d5b7846c] a {\n  color: var(--color-primary);\n  text-decoration: underline;\n}\n.markdown-view[data-v-d5b7846c] hr {\n  border: 0;\n  border-top: 1px solid var(--color-border);\n  margin: var(--spacing-lg) 0;\n}\n.markdown-view[data-v-d5b7846c] strong {\n  font-weight: 700;\n}\n.markdown-view[data-v-d5b7846c] table {\n  border-collapse: collapse;\n  margin: var(--spacing-md) 0;\n}\n.markdown-view[data-v-d5b7846c] th,\n.markdown-view[data-v-d5b7846c] td {\n  border: 1px solid var(--color-border);\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.markdown-view[data-v-d5b7846c] th {\n  background-color: var(--color-surface);\n  font-weight: 600;\n}\n";
+  const MarkdownView = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["styles", [_style_0$a]], ["__scopeId", "data-v-d5b7846c"]]);
+  const _hoisted_1$7 = {
+    key: 0,
+    class: "chat-message chat-message--user"
+  };
+  const _hoisted_2$6 = { class: "chat-message__bubble" };
+  const _hoisted_3$5 = {
+    key: 1,
+    class: "chat-message chat-message--assistant"
+  };
+  const _hoisted_4$2 = {
+    class: "chat-message__marker",
+    "aria-hidden": "true"
+  };
+  const _hoisted_5$2 = { class: "chat-message__body" };
+  const _hoisted_6$1 = {
+    key: 1,
+    class: "chat-message__typing",
+    "aria-hidden": "true"
+  };
+  const _sfc_main$9 = /* @__PURE__ */ defineComponent({
+    __name: "ChatMessage",
+    props: {
+      message: { type: Object }
+    },
+    setup(__props) {
+      return (_ctx, _cache) => {
+        return __props.message.role === "user" ? (openBlock(), createElementBlock("div", _hoisted_1$7, [
+          createBaseVNode("div", _hoisted_2$6, toDisplayString(__props.message.content), 1)
+        ])) : (openBlock(), createElementBlock("div", _hoisted_3$5, [
+          createBaseVNode("span", _hoisted_4$2, [
+            createVNode(EditorIcon, {
+              name: "sparkles",
+              size: 16
+            })
+          ]),
+          createBaseVNode("div", _hoisted_5$2, [
+            __props.message.content ? (openBlock(), createBlock(MarkdownView, {
+              key: 0,
+              source: __props.message.content
+            }, null, 8, ["source"])) : createCommentVNode("", true),
+            __props.message.streaming ? (openBlock(), createElementBlock("div", _hoisted_6$1, [..._cache[0] || (_cache[0] = [
+              createBaseVNode("span", null, null, -1),
+              createBaseVNode("span", null, null, -1),
+              createBaseVNode("span", null, null, -1)
+            ])])) : createCommentVNode("", true)
+          ])
+        ]));
+      };
+    }
+  });
+  const _style_0$9 = "\n.chat-message[data-v-8c489bfe] {\n  display: flex;\n}\n\n/* ── User ── */\n.chat-message--user[data-v-8c489bfe] {\n  justify-content: flex-end;\n}\n.chat-message__bubble[data-v-8c489bfe] {\n  max-width: 80%;\n  padding: var(--spacing-sm) var(--spacing-md);\n  background-color: var(--color-primary);\n  color: var(--color-white);\n  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-sm)\n    var(--radius-lg);\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  white-space: pre-wrap;\n  word-break: break-word;\n}\n\n/* ── Assistant ── */\n.chat-message--assistant[data-v-8c489bfe] {\n  gap: var(--spacing-sm);\n  align-items: flex-start;\n}\n.chat-message__marker[data-v-8c489bfe] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  flex-shrink: 0;\n  width: 24px;\n  height: 24px;\n  margin-top: 2px;\n  border-radius: var(--radius-md);\n  color: var(--color-primary);\n  background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);\n}\n.chat-message__body[data-v-8c489bfe] {\n  min-width: 0;\n  flex: 1;\n}\n.chat-message__body[data-v-8c489bfe] .markdown-view {\n  font-size: var(--font-size-sm);\n}\n.chat-message__body[data-v-8c489bfe] .markdown-view > :first-child {\n  margin-top: 0;\n}\n.chat-message__body[data-v-8c489bfe] .markdown-view > :last-child {\n  margin-bottom: 0;\n}\n\n/* ── Streaming typing indicator ── */\n.chat-message__typing[data-v-8c489bfe] {\n  display: inline-flex;\n  gap: 3px;\n  padding-top: var(--spacing-xs);\n}\n.chat-message__typing span[data-v-8c489bfe] {\n  width: 6px;\n  height: 6px;\n  border-radius: 50%;\n  background-color: var(--color-primary);\n  animation: chat-typing-8c489bfe 1.2s infinite;\n}\n.chat-message__typing span[data-v-8c489bfe]:nth-child(2) {\n  animation-delay: 0.2s;\n}\n.chat-message__typing span[data-v-8c489bfe]:nth-child(3) {\n  animation-delay: 0.4s;\n}\n@keyframes chat-typing-8c489bfe {\n0%,\n  60%,\n  100% {\n    opacity: 0.3;\n    transform: scale(0.8);\n}\n30% {\n    opacity: 1;\n    transform: scale(1);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.chat-message__typing span[data-v-8c489bfe] {\n    animation: none;\n}\n}\n";
+  const ChatMessage = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["styles", [_style_0$9]], ["__scopeId", "data-v-8c489bfe"]]);
+  const _hoisted_1$6 = { class: "chat-message-list" };
+  const _hoisted_2$5 = {
+    key: 0,
+    class: "chat-message-list__state",
+    role: "status"
+  };
+  const _hoisted_3$4 = { class: "sr-only" };
+  const _hoisted_4$1 = {
+    key: 1,
+    class: "chat-message-list__state"
+  };
+  const _hoisted_5$1 = {
+    key: 2,
+    class: "chat-message-list__state"
+  };
+  const _hoisted_6 = { class: "chat-message-list__items" };
+  const _sfc_main$8 = /* @__PURE__ */ defineComponent({
+    __name: "ChatMessageList",
+    props: {
+      messages: { type: Array },
+      hasActiveSession: { type: Boolean },
+      isLoading: { type: Boolean }
+    },
+    setup(__props) {
+      const { t: t2 } = useI18n();
+      return (_ctx, _cache) => {
+        return openBlock(), createElementBlock("div", _hoisted_1$6, [
+          __props.isLoading ? (openBlock(), createElementBlock("div", _hoisted_2$5, [
+            createVNode(EditorIcon, {
+              name: "spinner",
+              size: 28,
+              spin: ""
+            }),
+            createBaseVNode("span", _hoisted_3$4, toDisplayString(unref(t2)("editor.loading")), 1)
+          ])) : !__props.hasActiveSession ? (openBlock(), createElementBlock("div", _hoisted_4$1, [
+            createBaseVNode("p", null, toDisplayString(unref(t2)("chat.emptyState")), 1)
+          ])) : __props.messages.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_5$1, [
+            createBaseVNode("p", null, toDisplayString(unref(t2)("chat.emptyChat")), 1)
+          ])) : (openBlock(), createBlock(unref(_sfc_main$E), {
+            key: 3,
+            class: "chat-message-list__scroll",
+            resize: "smooth",
+            initial: true
+          }, {
+            default: withCtx(() => [
+              createBaseVNode("div", _hoisted_6, [
+                (openBlock(true), createElementBlock(Fragment$1, null, renderList(__props.messages, (msg) => {
+                  return openBlock(), createBlock(ChatMessage, {
+                    key: msg.id,
+                    message: msg
+                  }, null, 8, ["message"]);
+                }), 128))
+              ])
+            ]),
+            _: 1
+          }))
+        ]);
+      };
+    }
+  });
+  const _style_0$8 = "\n.chat-message-list[data-v-157ffe30] {\n  flex: 1;\n  min-height: 0;\n  display: flex;\n  flex-direction: column;\n}\n.chat-message-list__state[data-v-157ffe30] {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-lg);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n  text-align: center;\n}\n.chat-message-list__state[data-v-157ffe30] .editor-icon {\n  color: var(--color-primary);\n}\n.chat-message-list__scroll[data-v-157ffe30] {\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n  padding: var(--spacing-lg);\n}\n.chat-message-list__items[data-v-157ffe30] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n}\n";
+  const ChatMessageList = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["styles", [_style_0$8]], ["__scopeId", "data-v-157ffe30"]]);
+  const _hoisted_1$5 = { class: "chat-composer" };
+  const _hoisted_2$4 = ["for"];
+  const _hoisted_3$3 = ["id", "placeholder", "disabled"];
+  const _sfc_main$7 = /* @__PURE__ */ defineComponent({
+    __name: "ChatComposer",
+    props: {
+      disabled: { type: Boolean }
+    },
+    emits: ["send"],
+    setup(__props, { emit: __emit }) {
+      const props = __props;
+      const emit2 = __emit;
+      const { t: t2 } = useI18n();
+      const text = /* @__PURE__ */ ref("");
+      const textareaId = useId$1();
+      function submit() {
+        const content = text.value.trim();
+        if (!content || props.disabled) return;
+        text.value = "";
+        emit2("send", content);
+      }
+      function onKeydown(event) {
+        if (event.key === "Escape") return;
+        event.stopPropagation();
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault();
+          submit();
+        }
+      }
+      return (_ctx, _cache) => {
+        return openBlock(), createElementBlock("div", _hoisted_1$5, [
+          createBaseVNode("label", {
+            for: unref(textareaId),
+            class: "sr-only"
+          }, toDisplayString(unref(t2)("chat.placeholder")), 9, _hoisted_2$4),
+          withDirectives(createBaseVNode("textarea", {
+            id: unref(textareaId),
+            "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => text.value = $event),
+            class: "chat-composer__textarea",
+            placeholder: unref(t2)("chat.placeholder"),
+            disabled: __props.disabled,
+            rows: "2",
+            onKeydown
+          }, null, 40, _hoisted_3$3), [
+            [vModelText, text.value]
+          ]),
+          createVNode(Button, {
+            icon: "send",
+            variant: "primary",
+            size: "md",
+            disabled: !text.value.trim() || __props.disabled,
+            "aria-label": unref(t2)("chat.send"),
+            onClick: submit
+          }, null, 8, ["disabled", "aria-label"])
+        ]);
+      };
+    }
+  });
+  const _style_0$7 = "\n.chat-composer[data-v-3ca9d23e] {\n  display: flex;\n  align-items: flex-end;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  flex-shrink: 0;\n}\n.chat-composer__textarea[data-v-3ca9d23e] {\n  flex: 1;\n  resize: none;\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  padding: var(--spacing-sm) var(--spacing-md);\n  font-family: inherit;\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n  background-color: var(--color-surface);\n  outline: none;\n}\n.chat-composer__textarea[data-v-3ca9d23e]:focus {\n  border-color: var(--color-primary);\n}\n.chat-composer__textarea[data-v-3ca9d23e]:disabled {\n  opacity: 0.6;\n  cursor: not-allowed;\n}\n";
+  const ChatComposer = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["styles", [_style_0$7]], ["__scopeId", "data-v-3ca9d23e"]]);
+  const _hoisted_1$4 = ["aria-labelledby"];
+  const _hoisted_2$3 = { class: "chat-drawer__header" };
+  const _hoisted_3$2 = ["id"];
+  const _hoisted_4 = { class: "chat-drawer__body" };
+  const _hoisted_5 = { class: "chat-drawer__main" };
+  const _sfc_main$6 = /* @__PURE__ */ defineComponent({
+    __name: "ChatDrawer",
+    setup(__props) {
+      const core = useCore();
+      const { t: t2 } = useI18n();
+      const chat = core.chat;
+      const titleId = useId$1();
+      function close2() {
+        chat.setDrawerOpen(false);
+      }
+      function onKeydown(event) {
+        if (event.key === "Escape" && chat.drawerOpen.value) close2();
+      }
+      watch(
+        () => chat.drawerOpen.value,
+        (open) => {
+          if (open) {
+            core.emit("chat:loadSessions", void 0);
+            window.addEventListener("keydown", onKeydown);
+          } else {
+            window.removeEventListener("keydown", onKeydown);
+          }
+        }
+      );
+      onUnmounted(() => window.removeEventListener("keydown", onKeydown));
+      function onSelect(sessionId) {
+        core.emit("chat:loadSession", { sessionId });
+      }
+      function onCreate() {
+        core.emit("chat:createSession", void 0);
+      }
+      function onRename(sessionId, title) {
+        core.emit("chat:renameSession", { sessionId, title });
+      }
+      function onDelete(sessionId) {
+        core.emit("chat:deleteSession", { sessionId });
+      }
+      function onSend(content) {
+        core.emit("chat:send", { content });
+      }
+      return (_ctx, _cache) => {
+        return openBlock(), createBlock(Transition, { name: "chat-drawer" }, {
+          default: withCtx(() => [
+            unref(chat).drawerOpen.value ? (openBlock(), createElementBlock("div", {
+              key: 0,
+              class: "chat-overlay",
+              onClick: withModifiers(close2, ["self"])
+            }, [
+              createBaseVNode("aside", {
+                class: "chat-drawer",
+                role: "dialog",
+                "aria-modal": "true",
+                "aria-labelledby": unref(titleId)
+              }, [
+                createBaseVNode("header", _hoisted_2$3, [
+                  createBaseVNode("h2", {
+                    id: unref(titleId),
+                    class: "chat-drawer__title"
+                  }, [
+                    createVNode(EditorIcon, {
+                      name: "sparkles",
+                      size: 18
+                    }),
+                    createTextVNode(" " + toDisplayString(unref(t2)("chat.title")), 1)
+                  ], 8, _hoisted_3$2),
+                  createVNode(Button, {
+                    icon: "x",
+                    variant: "tertiary",
+                    size: "sm",
+                    "aria-label": unref(t2)("chat.close"),
+                    onClick: close2
+                  }, null, 8, ["aria-label"])
+                ]),
+                createBaseVNode("div", _hoisted_4, [
+                  createVNode(ChatSessionList, {
+                    sessions: unref(chat).sessions.value,
+                    "active-session-id": unref(chat).activeSessionId.value,
+                    onSelect,
+                    onCreate,
+                    onRename,
+                    onDelete
+                  }, null, 8, ["sessions", "active-session-id"]),
+                  createBaseVNode("div", _hoisted_5, [
+                    createVNode(ChatMessageList, {
+                      messages: unref(chat).allMessages.value,
+                      "has-active-session": unref(chat).activeSessionId.value !== null,
+                      "is-loading": unref(chat).isLoadingSession.value
+                    }, null, 8, ["messages", "has-active-session", "is-loading"]),
+                    createVNode(ChatComposer, {
+                      disabled: unref(chat).isStreaming.value || unref(chat).isLoadingSession.value,
+                      onSend
+                    }, null, 8, ["disabled"])
+                  ])
+                ])
+              ], 8, _hoisted_1$4)
+            ])) : createCommentVNode("", true)
+          ]),
+          _: 1
+        });
+      };
+    }
+  });
+  const _style_0$6 = "\n.chat-overlay[data-v-2b0eea3a] {\n  position: fixed;\n  inset: 0;\n  z-index: var(--z-drawer);\n  background-color: rgba(0, 0, 0, 0.4);\n  display: flex;\n  justify-content: flex-end;\n}\n.chat-drawer[data-v-2b0eea3a] {\n  width: min(620px, 100vw);\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n  background-color: var(--color-surface);\n  box-shadow: var(--shadow-md);\n}\n.chat-drawer__header[data-v-2b0eea3a] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  flex-shrink: 0;\n}\n.chat-drawer__title[data-v-2b0eea3a] {\n  margin: 0;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  font-size: var(--font-size-base);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.chat-drawer__title[data-v-2b0eea3a] .editor-icon {\n  color: var(--color-primary);\n}\n.chat-drawer__body[data-v-2b0eea3a] {\n  flex: 1;\n  min-height: 0;\n  display: flex;\n}\n.chat-drawer__main[data-v-2b0eea3a] {\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n}\n\n/* ── Slide + fade transition ── */\n.chat-drawer-enter-active[data-v-2b0eea3a],\n.chat-drawer-leave-active[data-v-2b0eea3a] {\n  transition: opacity 0.2s ease;\n}\n.chat-drawer-enter-active .chat-drawer[data-v-2b0eea3a],\n.chat-drawer-leave-active .chat-drawer[data-v-2b0eea3a] {\n  transition: transform 0.25s ease;\n}\n.chat-drawer-enter-from[data-v-2b0eea3a],\n.chat-drawer-leave-to[data-v-2b0eea3a] {\n  opacity: 0;\n}\n.chat-drawer-enter-from .chat-drawer[data-v-2b0eea3a],\n.chat-drawer-leave-to .chat-drawer[data-v-2b0eea3a] {\n  transform: translateX(100%);\n}\n@media (prefers-reduced-motion: reduce) {\n.chat-drawer-enter-active[data-v-2b0eea3a],\n  .chat-drawer-leave-active[data-v-2b0eea3a],\n  .chat-drawer-enter-active .chat-drawer[data-v-2b0eea3a],\n  .chat-drawer-leave-active .chat-drawer[data-v-2b0eea3a] {\n    transition: none;\n}\n}\n";
+  const ChatDrawer = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["styles", [_style_0$6]], ["__scopeId", "data-v-2b0eea3a"]]);
   const _sfc_main$5 = /* @__PURE__ */ defineComponent({
     __name: "CopyButton",
     props: {
@@ -42029,7 +42565,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
   const _hoisted_1$2 = { class: "editor-layout" };
   const _hoisted_2$1 = { class: "editor-body" };
   const _hoisted_3 = {
-    key: 5,
+    key: 6,
     class: "mobile-selectors"
   };
   const _sfc_main$3 = /* @__PURE__ */ defineComponent({
@@ -42050,7 +42586,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       provideTurnSelection(activeTurns, speakers, core);
       const channels = computed(() => [...core.channels.values()]);
       const translations = computed(
-        () => core.activeChannel.value ? [...core.activeChannel.value.translations.values()] : []
+        () => core.activeChannel.value?.selectableTranslations ?? []
       );
       const activeTranslationId = computed(
         () => core.activeChannel.value?.activeTranslation.value.id ?? ""
@@ -42108,11 +42644,13 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
             duration: unref(core).activeChannel.value?.duration ?? 0,
             "speaker-count": unref(speakers).size,
             "is-mobile": unref(isMobile),
-            onToggleSidebar: _cache[0] || (_cache[0] = ($event) => isSidebarOpen.value = !isSidebarOpen.value)
-          }, null, 8, ["title", "date", "duration", "speaker-count", "is-mobile"])) : createCommentVNode("", true),
-          createVNode(_sfc_main$x, {
+            "can-ask": !!unref(core).chat,
+            onToggleSidebar: _cache[0] || (_cache[0] = ($event) => isSidebarOpen.value = !isSidebarOpen.value),
+            onOpenChat: _cache[1] || (_cache[1] = ($event) => unref(core).chat?.setDrawerOpen(true))
+          }, null, 8, ["title", "date", "duration", "speaker-count", "is-mobile", "can-ask"])) : createCommentVNode("", true),
+          createVNode(_sfc_main$F, {
             modelValue: activeTab.value,
-            "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => activeTab.value = $event)
+            "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => activeTab.value = $event)
           }, null, 8, ["modelValue"]),
           showTranscription.value ? (openBlock(), createBlock(SelectionActionBar, { key: 1 })) : createCommentVNode("", true),
           createBaseVNode("main", _hoisted_2$1, [
@@ -42139,10 +42677,10 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
               "onUpdate:selectedChannelId": onChannelChange,
               "onUpdate:selectedTranslationId": onTranslationChange
             }, null, 8, ["speakers", "channels", "selected-channel-id", "translations", "selected-translation-id", "show-speakers"])) : createCommentVNode("", true),
-            unref(isMobile) ? (openBlock(), createBlock(_sfc_main$b, {
+            unref(isMobile) ? (openBlock(), createBlock(_sfc_main$h, {
               key: 5,
               open: isSidebarOpen.value,
-              "onUpdate:open": _cache[2] || (_cache[2] = ($event) => isSidebarOpen.value = $event)
+              "onUpdate:open": _cache[3] || (_cache[3] = ($event) => isSidebarOpen.value = $event)
             }, {
               default: withCtx(() => [
                 createVNode(SpeakerSidebar, {
@@ -42168,14 +42706,15 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
           ]) : createCommentVNode("", true),
           unref(core).subtitle?.isVisible.value && !unref(isMobile) && !unref(core).subtitle.isFullscreen.value ? (openBlock(), createBlock(SubtitleBanner, { key: 3 })) : createCommentVNode("", true),
           unref(core).subtitle?.isFullscreen.value ? (openBlock(), createBlock(SubtitleFullscreen, { key: 4 })) : createCommentVNode("", true),
+          unref(core).chat ? (openBlock(), createBlock(ChatDrawer, { key: 5 })) : createCommentVNode("", true),
           unref(isMobile) && (channels.value.length > 1 || translations.value.length > 1) ? (openBlock(), createElementBlock("div", _hoisted_3, [
-            channels.value.length > 1 ? (openBlock(), createBlock(_sfc_main$e, {
+            channels.value.length > 1 ? (openBlock(), createBlock(_sfc_main$k, {
               key: 0,
               channels: channels.value,
               "selected-channel-id": unref(core).activeChannelId.value,
               "onUpdate:selectedChannelId": onChannelChange
             }, null, 8, ["channels", "selected-channel-id"])) : createCommentVNode("", true),
-            translations.value.length > 1 ? (openBlock(), createBlock(_sfc_main$d, {
+            translations.value.length > 1 ? (openBlock(), createBlock(_sfc_main$j, {
               key: 1,
               translations: translations.value,
               "selected-translation-id": activeTranslationId.value,
@@ -42186,8 +42725,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$3 = "\n.editor-layout[data-v-1104fab2] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: hidden;\n  background-color: var(--color-background);\n}\n.editor-body[data-v-1104fab2] {\n  display: grid;\n  grid-template-columns: 1fr var(--sidebar-width);\n  flex: 1;\n  min-height: 0;\n}\n.mobile-selectors[data-v-1104fab2] {\n  display: flex;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n  box-shadow: var(--shadow-md);\n  align-items: end;\n}\n.mobile-selectors[data-v-1104fab2] > * {\n  flex: 1;\n  min-width: 0;\n}\n@media (max-width: 767px) {\n.editor-body[data-v-1104fab2] {\n    grid-template-columns: 1fr;\n}\n}\n";
-  const Layout = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["styles", [_style_0$3]], ["__scopeId", "data-v-1104fab2"]]);
+  const _style_0$3 = "\n.editor-layout[data-v-5918b5b2] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: hidden;\n  background-color: var(--color-background);\n}\n.editor-body[data-v-5918b5b2] {\n  display: grid;\n  grid-template-columns: 1fr var(--sidebar-width);\n  flex: 1;\n  min-height: 0;\n}\n.mobile-selectors[data-v-5918b5b2] {\n  display: flex;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n  box-shadow: var(--shadow-md);\n  align-items: end;\n}\n.mobile-selectors[data-v-5918b5b2] > * {\n  flex: 1;\n  min-width: 0;\n}\n@media (max-width: 767px) {\n.editor-body[data-v-5918b5b2] {\n    grid-template-columns: 1fr;\n}\n}\n";
+  const Layout = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["styles", [_style_0$3]], ["__scopeId", "data-v-5918b5b2"]]);
   const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     __name: "WebComponent",
     props: {
@@ -42578,7 +43117,7 @@ to {
         isCreatingNew.value = false;
       }
       return (_ctx, _cache) => {
-        return openBlock(), createBlock(_sfc_main$o, {
+        return openBlock(), createBlock(_sfc_main$v, {
           open: isOpen.value,
           "onUpdate:open": _cache[1] || (_cache[1] = ($event) => isOpen.value = $event),
           items: speakers.value,
@@ -42740,7 +43279,8 @@ to {
       endTime: event.endTime,
       startDate: event.startDate,
       endDate: event.endDate,
-      language: event.language
+      language: event.language,
+      sourceLanguage: event.language
     };
   }
   function finalEventToTranslationTurn(event, tr) {
@@ -42753,7 +43293,8 @@ to {
       endTime: event.endTime,
       startDate: event.startDate,
       endDate: event.endDate,
-      language: tr.language
+      language: tr.language,
+      sourceLanguage: tr.sourceLanguage
     };
   }
   function createLivePlugin() {
@@ -42762,25 +43303,24 @@ to {
       install(core) {
         const partial = /* @__PURE__ */ shallowRef(null);
         const hasLiveUpdate = /* @__PURE__ */ ref(false);
+        let lastOriginalPartialEvent = null;
         hasLiveUpdate.value = true;
         function clearPartial() {
           partial.value = null;
+          lastOriginalPartialEvent = null;
+        }
+        function isTranslationTrackFor(active, language) {
+          if (active.isSource) return false;
+          return active.languages.some((l2) => isSameLanguage(l2, language));
         }
         function onPartial(event, channelId) {
           if (core.activeChannelId.value !== channelId) return;
           const channel = core.activeChannel.value;
           if (!channel) return;
+          lastOriginalPartialEvent = event;
           const activeTranslation = channel.activeTranslation.value;
-          if (activeTranslation.isSource) {
-            if (event.text == null) return;
+          if (activeTranslation.isSource && event.text != null) {
             partial.value = event.text;
-          } else if (event.translations) {
-            const match2 = event.translations.find(
-              (t2) => t2.translationId === activeTranslation.id
-            );
-            partial.value = match2?.text ?? null;
-          } else {
-            return;
           }
         }
         let clearPartialTimeout = null;
@@ -42820,7 +43360,10 @@ to {
               if (trStore)
                 updateOrCreateTurn(
                   trStore,
-                  finalEventToTranslationTurn(event, tr)
+                  finalEventToTranslationTurn(event, {
+                    ...tr,
+                    sourceLanguage: event.language
+                  })
                 );
             }
           }
@@ -42860,7 +43403,12 @@ to {
                 list = [];
                 translationTurns.set(tr.translationId, list);
               }
-              list.push(finalEventToTranslationTurn(event, tr));
+              list.push(
+                finalEventToTranslationTurn(event, {
+                  ...tr,
+                  sourceLanguage: event.language
+                })
+              );
             }
           }
           for (const [translationId, turns] of translationTurns) {
@@ -42876,24 +43424,33 @@ to {
           const channel = core.activeChannel.value;
           if (!channel) return;
           const activeTranslation = channel.activeTranslation.value;
-          if (!_event.final && activeTranslation.languages.includes(_event.language)) {
-            partial.value = _event.text;
-          } else if (_event.final) {
-            const trStore = channel.translations.get(_event.language);
-            if (trStore) {
-              const turn = finalEventToTranslationTurn(
-                { ..._event },
-                _event
-              );
-              if (trStore === activeTranslation) {
-                updateOrCreateTurn(trStore, turn);
-              } else {
-                trStore.updateOrCreateTurnSilent(turn);
+          if (!_event.final) {
+            if (activeTranslation.id === CROSS_TRANSLATION_ID) {
+              if (_event.turnId === lastOriginalPartialEvent?.turnId && !isSameLanguage(
+                _event.language,
+                lastOriginalPartialEvent?.language
+              )) {
+                partial.value = _event.text;
               }
+            } else if (isTranslationTrackFor(activeTranslation, _event.language)) {
+              partial.value = _event.text;
             }
-            if (activeTranslation.languages.includes(_event.language)) {
-              immediateClearPartial();
+            return;
+          }
+          const trStore = channel.translations.get(_event.language);
+          if (trStore) {
+            const turn = finalEventToTranslationTurn(
+              { ..._event },
+              _event
+            );
+            if (trStore === activeTranslation || activeTranslation.id === CROSS_TRANSLATION_ID) {
+              updateOrCreateTurn(trStore, turn);
+            } else {
+              trStore.updateOrCreateTurnSilent(turn);
             }
+          }
+          if (isTranslationTrackFor(activeTranslation, _event.language) || activeTranslation.id === CROSS_TRANSLATION_ID) {
+            immediateClearPartial();
           }
         }
         const api = {
@@ -43019,7 +43576,7 @@ to {
       name: "subtitle",
       install(core) {
         const fontSize = /* @__PURE__ */ ref(options.fontSize ?? 40);
-        const isVisible2 = /* @__PURE__ */ ref(true);
+        const isVisible2 = /* @__PURE__ */ ref(options.isVisible ?? false);
         const isFullscreen = /* @__PURE__ */ ref(false);
         let watermark;
         const unwatchers = [];
@@ -43070,8 +43627,8 @@ to {
   const create$9 = () => /* @__PURE__ */ new Map();
   const copy = (m2) => {
     const r2 = create$9();
-    m2.forEach((v2, k) => {
-      r2.set(k, v2);
+    m2.forEach((v2, k2) => {
+      r2.set(k2, v2);
     });
     return r2;
   };
@@ -44643,8 +45200,8 @@ to {
       );
     } else if ($objectAny.check(o2)) {
       const o22 = {};
-      for (const k in o2) {
-        o22[k] = $(o2[k]);
+      for (const k2 in o2) {
+        o22[k2] = $(o2[k2]);
       }
       return (
         /** @type {any} */
@@ -44736,15 +45293,15 @@ ${err.toString()}`);
       $any
     ).if($$number, (_o, gen) => int53(gen, MIN_SAFE_INTEGER, MAX_SAFE_INTEGER$2)).if($$string, (_o, gen) => word(gen)).if($$boolean, (_o, gen) => bool(gen)).if($$bigint, (_o, gen) => BigInt(int53(gen, MIN_SAFE_INTEGER, MAX_SAFE_INTEGER$2))).if($$union, (o2, gen) => random(gen, oneOf(gen, o2.shape))).if($$object, (o2, gen) => {
       const res = {};
-      for (const k in o2.shape) {
-        let prop = o2.shape[k];
+      for (const k2 in o2.shape) {
+        let prop = o2.shape[k2];
         if ($$optional.check(prop)) {
           if (bool(gen)) {
             continue;
           }
           prop = prop.shape;
         }
-        res[k] = _random(prop, gen);
+        res[k2] = _random(prop, gen);
       }
       return res;
     }).if($$array, (o2, gen) => {
@@ -49523,8 +50080,8 @@ ${err.toString()}`);
           const pos = findPosition(transaction, this, index, !attributes);
           if (!attributes) {
             attributes = {};
-            pos.currentAttributes.forEach((v2, k) => {
-              attributes[k] = v2;
+            pos.currentAttributes.forEach((v2, k2) => {
+              attributes[k2] = v2;
             });
           }
           insertText(transaction, this, pos, text, attributes);
@@ -51484,10 +52041,6 @@ ${err.toString()}`);
       } else {
         left = parentType._map.get(item.parentSub) || null;
       }
-      if (left !== null && /** @type {AbstractType<any>} */
-      left.parent._item !== parentItem) {
-        left = parentType._map.get(item.parentSub) || null;
-      }
     }
     const nextClock = getState(store, ownClientID);
     const nextId = createID(ownClientID, nextClock);
@@ -53110,87 +53663,22 @@ ${err.toString()}`);
   };
   const matchNodeName = (yElement, pNode) => !(pNode instanceof Array) && yElement.nodeName === pNode.type.name;
   let viewsToUpdate = null;
-  class MetaEntry {
-    /**
-     * @param {EditorView} view
-     * @param {any} key
-     * @param {any} value
-     */
-    constructor(view, key, value) {
-      this.view = view;
-      this.key = key;
-      this.value = value;
-    }
-    apply() {
-      const syncState = ySyncPluginKey.getState(this.view.state);
+  const updateMetas = () => {
+    const ups = (
+      /** @type {Map<EditorView, Map<any, any>>} */
+      viewsToUpdate
+    );
+    viewsToUpdate = null;
+    ups.forEach((metas, view) => {
+      const tr = view.state.tr;
+      const syncState = ySyncPluginKey.getState(view.state);
       if (syncState && syncState.binding && !syncState.binding.isDestroyed) {
-        const tr = this.view.state.tr;
-        tr.setMeta(this.key, this.value);
-        this.view.dispatch(tr);
-      }
-    }
-  }
-  class MetaEntriesQueue {
-    /**
-     * @param {Array<MetaEntry>} [entries=[]]
-     */
-    constructor(entries = []) {
-      this.entries = entries;
-    }
-    /**
-     * @return {MetaEntry|undefined}
-     */
-    getFirst() {
-      return this.entries[0];
-    }
-    /**
-     * @return {MetaEntry|undefined}
-     */
-    dequeueFirst() {
-      return this.entries.shift();
-    }
-    /**
-     * @return {boolean}
-     */
-    isEmpty() {
-      return this.entries.length === 0;
-    }
-    static fromViewsToUpdate() {
-      const ups = (
-        /** @type {Map<EditorView, Map<any, any>>} */
-        viewsToUpdate
-      );
-      viewsToUpdate = null;
-      const entries = [];
-      ups.forEach((metas, view) => {
-        metas.forEach((value, key) => {
-          entries.push(new MetaEntry(view, key, value));
+        metas.forEach((val, key) => {
+          tr.setMeta(key, val);
         });
-      });
-      return new MetaEntriesQueue(entries);
-    }
-  }
-  const updateMetas = (metaEntries = MetaEntriesQueue.fromViewsToUpdate(), isRetry = false) => {
-    let isFirst = true;
-    while (!metaEntries.isEmpty()) {
-      const metaEntry = metaEntries.getFirst();
-      try {
-        metaEntry.apply();
-      } catch (err) {
-        if (err instanceof RangeError) {
-          if (isRetry && isFirst) {
-            metaEntries.dequeueFirst();
-          }
-          if (!metaEntries.isEmpty()) {
-            timeout(0, () => updateMetas(metaEntries, true));
-          }
-          return;
-        }
-        throw err;
+        view.dispatch(tr);
       }
-      isFirst = false;
-      metaEntries.dequeueFirst();
-    }
+    });
   };
   const setMeta = (view, key, value) => {
     if (!viewsToUpdate) {
@@ -53395,7 +53883,7 @@ ${err.toString()}`);
       if (!awarenessFilter(y2.clientID, clientId, aw)) {
         return;
       }
-      if (aw && aw.cursor != null) {
+      if (aw.cursor != null) {
         const user = aw.user || {};
         if (user.color == null) {
           user.color = "#ffa500";
@@ -53485,7 +53973,6 @@ ${err.toString()}`);
       };
       const updateCursorInfo = () => {
         const ystate = ySyncPluginKey.getState(view.state);
-        if (!ystate || !ystate.binding) return;
         const current = awareness.getLocalState() || {};
         if (view.hasFocus()) {
           const selection = getSelection2(view.state);
@@ -53555,18 +54042,11 @@ ${err.toString()}`);
     state: {
       init: (initargs, state) => {
         const ystate = ySyncPluginKey.getState(state);
-        let _undoManager = undoManager;
-        if (!_undoManager) {
-          const doc2 = ystate.doc;
-          const destroyListenersBefore = new Set(doc2 ? doc2._observers.get("destroy") : []);
-          _undoManager = new UndoManager(ystate.type, {
-            trackedOrigins: new Set([ySyncPluginKey].concat(trackedOrigins)),
-            deleteFilter: (item) => defaultDeleteFilter(item, protectedNodes),
-            captureTransaction: (tr) => tr.meta.get("addToHistory") !== false
-          });
-          const destroyListenersAfter = doc2 ? doc2._observers.get("destroy") : /* @__PURE__ */ new Set();
-          _undoManager._yTiptapDocDestroyListeners = Array.from(destroyListenersAfter || []).filter((listener) => !destroyListenersBefore.has(listener));
-        }
+        const _undoManager = undoManager || new UndoManager(ystate.type, {
+          trackedOrigins: new Set([ySyncPluginKey].concat(trackedOrigins)),
+          deleteFilter: (item) => defaultDeleteFilter(item, protectedNodes),
+          captureTransaction: (tr) => tr.meta.get("addToHistory") !== false
+        });
         return {
           undoManager: _undoManager,
           prevSel: null,
@@ -53619,11 +54099,6 @@ ${err.toString()}`);
       return {
         destroy: () => {
           undoManager2.destroy();
-          const leakedDestroyListeners = undoManager2._yTiptapDocDestroyListeners;
-          if (leakedDestroyListeners && undoManager2.doc) {
-            leakedDestroyListeners.forEach((listener) => undoManager2.doc.off("destroy", listener));
-            undoManager2._yTiptapDocDestroyListeners = null;
-          }
         }
       };
     }
@@ -55557,12 +56032,7 @@ ${err.toString()}`);
   }
   function getYAbsolutePosition(state, relativePos) {
     const ystate = ySyncPluginKey.getState(state);
-    return relativePositionToAbsolutePosition(
-      ystate.doc,
-      ystate.type,
-      relativePos,
-      ystate.binding.mapping
-    ) || 0;
+    return relativePositionToAbsolutePosition(ystate.doc, ystate.type, relativePos, ystate.binding.mapping) || 0;
   }
   function getYRelativePosition(state, absolutePos) {
     const ystate = ySyncPluginKey.getState(state);
@@ -55735,7 +56205,7 @@ ${err.toString()}`);
                   (_a = fragment.doc) == null ? void 0 : _a.destroy();
                 }
               });
-              return true;
+              return false;
             }
           }
         })
@@ -56293,15 +56763,20 @@ ${err.toString()}`);
           (channel) => {
             if (!channel) return;
             stopWaiting();
-            const activeTranslation = computed(
-              () => core.activeChannel.value.activeTranslation.value
-            );
-            startSession(activeTranslation.value.id, activeTranslation.value);
+            const editableTranslation = () => {
+              const ch = core.activeChannel.value;
+              if (!ch) return void 0;
+              return ch.translations.get(ch.activeTranslation.value.id);
+            };
+            function syncSession() {
+              const store = editableTranslation();
+              if (store) startSession(store.id, store);
+              else destroyCurrentSession();
+            }
+            syncSession();
             const stopTranslation = watch(
-              () => activeTranslation.value.id,
-              (newId) => {
-                startSession(newId, activeTranslation.value);
-              }
+              () => core.activeChannel.value?.activeTranslation.value.id,
+              syncSession
             );
             cleanups.push(stopTranslation);
           },
@@ -56344,9 +56819,11 @@ ${err.toString()}`);
     return s2.replace(/\s+/g, " ").trim();
   }
   function createTiptapEditor(core, options, ydoc, field, tiptapEditor, awareness, cleanups) {
-    const activeTranslation = computed(
-      () => core.activeChannel.value.activeTranslation.value
-    );
+    const activeTranslation = computed(() => {
+      const channel = core.activeChannel.value;
+      if (!channel) return void 0;
+      return channel.translations.get(channel.activeTranslation.value.id);
+    });
     const extensions = [
       TranscriptionDocument,
       TurnNode,
@@ -56578,6 +57055,102 @@ ${err.toString()}`);
       }
     };
   }
+  const STREAMING_MESSAGE_ID = "__streaming__";
+  function createChatPlugin() {
+    return {
+      name: "chat",
+      install(core) {
+        const drawerOpen = /* @__PURE__ */ ref(false);
+        const sessions = /* @__PURE__ */ ref([]);
+        const activeSessionId = /* @__PURE__ */ ref(null);
+        const messages = /* @__PURE__ */ ref([]);
+        const isStreaming = /* @__PURE__ */ ref(false);
+        const streamingContent = /* @__PURE__ */ ref("");
+        const isLoadingSession = /* @__PURE__ */ ref(false);
+        let seq = 0;
+        const nextId = () => `local-${++seq}`;
+        const allMessages = computed(() => {
+          if (!isStreaming.value) return messages.value;
+          return [
+            ...messages.value,
+            {
+              id: STREAMING_MESSAGE_ID,
+              role: "assistant",
+              content: streamingContent.value,
+              streaming: true
+            }
+          ];
+        });
+        const api = {
+          drawerOpen,
+          sessions,
+          activeSessionId,
+          messages,
+          isStreaming,
+          streamingContent,
+          isLoadingSession,
+          allMessages,
+          setDrawerOpen(open) {
+            drawerOpen.value = open;
+          },
+          setSessions(next2) {
+            sessions.value = next2;
+          },
+          setActiveSession(sessionId) {
+            activeSessionId.value = sessionId;
+          },
+          setMessages(next2) {
+            messages.value = next2;
+          },
+          addMessage(message) {
+            messages.value = [...messages.value, message];
+          },
+          updateSessionTitle(sessionId, title) {
+            const session = sessions.value.find((s2) => s2.id === sessionId);
+            if (session) session.title = title;
+          },
+          setLoadingSession(loading) {
+            isLoadingSession.value = loading;
+          },
+          streamStart() {
+            isStreaming.value = true;
+            streamingContent.value = "";
+          },
+          streamAppend(token) {
+            streamingContent.value += token;
+          },
+          streamEnd(content, meta) {
+            messages.value = [
+              ...messages.value,
+              {
+                id: nextId(),
+                role: "assistant",
+                content,
+                tokenCount: meta?.tokenCount
+              }
+            ];
+            isStreaming.value = false;
+            streamingContent.value = "";
+          },
+          streamAbort() {
+            isStreaming.value = false;
+            streamingContent.value = "";
+          }
+        };
+        core.chat = api;
+        return () => {
+          sessions.value = [];
+          messages.value = [];
+          activeSessionId.value = null;
+          isStreaming.value = false;
+          streamingContent.value = "";
+          isLoadingSession.value = false;
+          drawerOpen.value = false;
+          core.chat = void 0;
+        };
+      }
+    };
+  }
   function getComponentStyles(comp) {
     return comp.styles ?? [];
   }
@@ -56615,6 +57188,7 @@ ${err.toString()}`);
   }
   exports.LintoEditor = LintoEditor2;
   exports.createAudioPlugin = createAudioPlugin;
+  exports.createChatPlugin = createChatPlugin;
   exports.createLLMServicesPlugin = createLLMServicesPlugin;
   exports.createLivePlugin = createLivePlugin;
   exports.createSubtitlePlugin = createSubtitlePlugin;

@@ -4,10 +4,9 @@
     :class="{
       selected: isSelected,
       disabled: template.is_active === false,
-      [`scope-${scopeClass}`]: true
+      [`scope-${scopeClass}`]: true,
     }"
     @click="handleClick">
-
     <!-- Document Preview Area -->
     <div class="template-preview" :class="`preview-${scopeClass}`">
       <div class="preview-document">
@@ -89,7 +88,9 @@
             v-if="canDelete"
             class="delete-btn"
             @click.stop="handleDelete"
-            :title="$t('publish.publication.delete_template') || 'Supprimer le modèle'">
+            :title="
+              $t('publish.publication.delete_template') || 'Supprimer le modèle'
+            ">
             <span class="icon trash delete-icon"></span>
           </button>
           <span class="template-action">
@@ -124,7 +125,11 @@ export default {
       if (this.template.name_en) {
         return this.template.name_en
       }
-      return this.template.name_fr || this.template.name || this.$t("publish.publication.no_name")
+      return (
+        this.template.name_fr ||
+        this.template.name ||
+        this.$t("publish.publication.no_name")
+      )
     },
     displayDescription() {
       const locale = this.$i18n.locale
@@ -134,7 +139,11 @@ export default {
       if (this.template.description_en) {
         return this.template.description_en
       }
-      return this.template.description_fr || this.template.description || this.$t("publish.publication.no_description")
+      return (
+        this.template.description_fr ||
+        this.template.description ||
+        this.$t("publish.publication.no_description")
+      )
     },
     scopeClass() {
       const scope = (this.template.scope || "").toLowerCase()
@@ -144,9 +153,12 @@ export default {
     },
     scopeIconClass() {
       switch (this.scopeClass) {
-        case "system": return "pin-on"
-        case "org": return "work"
-        default: return "profile"
+        case "system":
+          return "pin-on"
+        case "org":
+          return "work"
+        default:
+          return "profile"
       }
     },
     scopeLabel() {
@@ -154,9 +166,12 @@ export default {
       const translated = this.$t(translationKey)
       if (translated === translationKey) {
         switch (this.scopeClass) {
-          case "system": return "Modèle système"
-          case "org": return "Organisation"
-          default: return "Personnel"
+          case "system":
+            return "Modèle système"
+          case "org":
+            return "Organisation"
+          default:
+            return "Personnel"
         }
       }
       return translated
@@ -166,48 +181,54 @@ export default {
       return this.template.placeholders || []
     },
     hasTitle() {
-      return this.placeholders.some(p => p.toLowerCase().includes('title'))
+      return this.placeholders.some((p) => p.toLowerCase().includes("title"))
     },
     hasDate() {
-      return this.placeholders.some(p =>
-        p.toLowerCase().includes('date') ||
-        p.toLowerCase().includes('generated_at')
+      return this.placeholders.some(
+        (p) =>
+          p.toLowerCase().includes("date") ||
+          p.toLowerCase().includes("generated_at"),
       )
     },
     hasParticipants() {
-      return this.placeholders.some(p =>
-        p.toLowerCase().includes('participant') ||
-        p.toLowerCase().includes('speaker')
+      return this.placeholders.some(
+        (p) =>
+          p.toLowerCase().includes("participant") ||
+          p.toLowerCase().includes("speaker"),
       )
     },
     hasSummary() {
-      return this.placeholders.some(p => p.toLowerCase().includes('summary'))
+      return this.placeholders.some((p) => p.toLowerCase().includes("summary"))
     },
     hasOutput() {
-      return this.placeholders.some(p => p.toLowerCase() === 'output')
+      return this.placeholders.some((p) => p.toLowerCase() === "output")
     },
     hasKeyPoints() {
-      return this.placeholders.some(p =>
-        p.toLowerCase().includes('key_point') ||
-        p.toLowerCase().includes('keypoint')
+      return this.placeholders.some(
+        (p) =>
+          p.toLowerCase().includes("key_point") ||
+          p.toLowerCase().includes("keypoint"),
       )
     },
     hasActionItems() {
-      return this.placeholders.some(p =>
-        p.toLowerCase().includes('action') ||
-        p.toLowerCase().includes('todo')
+      return this.placeholders.some(
+        (p) =>
+          p.toLowerCase().includes("action") ||
+          p.toLowerCase().includes("todo"),
       )
     },
     hasTopics() {
-      return this.placeholders.some(p => p.toLowerCase().includes('topic'))
+      return this.placeholders.some((p) => p.toLowerCase().includes("topic"))
     },
     isBasicTemplate() {
       // Template with minimal placeholders
-      return this.placeholders.length <= 4 &&
-             !this.hasKeyPoints &&
-             !this.hasActionItems &&
-             !this.hasTopics &&
-             !this.hasParticipants
+      return (
+        this.placeholders.length <= 4 &&
+        !this.hasKeyPoints &&
+        !this.hasActionItems &&
+        !this.hasTopics &&
+        !this.hasParticipants
+      )
     },
     canDelete() {
       // Can only delete non-system templates
@@ -367,10 +388,18 @@ export default {
   flex-shrink: 0;
 }
 
-.preview-line.full { width: 100%; }
-.preview-line.long { width: 85%; }
-.preview-line.medium { width: 65%; }
-.preview-line.short { width: 45%; }
+.preview-line.full {
+  width: 100%;
+}
+.preview-line.long {
+  width: 85%;
+}
+.preview-line.medium {
+  width: 65%;
+}
+.preview-line.short {
+  width: 45%;
+}
 
 .preview-spacer {
   height: 3px;

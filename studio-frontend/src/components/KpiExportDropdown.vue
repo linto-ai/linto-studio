@@ -5,10 +5,7 @@
     color="neutral"
     class="kpi-export-dropdown">
     <template #trigger>
-      <Button
-        icon="download-simple"
-        variant="secondary"
-        :loading="exporting">
+      <Button icon="download-simple" variant="secondary" :loading="exporting">
         {{ $t("session_kpi.export.button") }}
       </Button>
     </template>

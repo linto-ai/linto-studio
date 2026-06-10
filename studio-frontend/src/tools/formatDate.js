@@ -21,7 +21,10 @@ export function timeAgo(date) {
 }
 
 export function formatTimestamp() {
-  return new Date().toISOString().replace(/[-T:.Z]/g, "").slice(0, 14)
+  return new Date()
+    .toISOString()
+    .replace(/[-T:.Z]/g, "")
+    .slice(0, 14)
 }
 
 export function formatDateTime(dateString) {

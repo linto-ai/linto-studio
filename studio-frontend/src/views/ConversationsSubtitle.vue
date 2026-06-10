@@ -148,8 +148,12 @@ export default {
         )
         const link = document.createElement("a")
         link.href = file
-        let filename = this.conversation.metadata.audio.filename
-        filename = filename.split(".").slice(0, -1).join(".")
+        let filename = this.conversation.metadata?.audio?.filename
+        if (filename) {
+          filename = filename.split(".").slice(0, -1).join(".")
+        } else {
+          filename = this.conversation.name || "subtitles"
+        }
         link.download = `${filename} - ${this.subtitleObj.version}.${type}`
         link.click()
       }
@@ -203,11 +207,11 @@ export default {
     addScreen(screen_id, after = true) {
       let stime, etime
       let currentScreen = this.screens.get(screen_id)
-      let audio = this.conversation.metadata.audio
+      let audio = this.conversation.metadata?.audio
       if (after) {
         let next = this.screens.get(currentScreen.next)
         stime = currentScreen.screen.etime
-        etime = next?.screen.stime || audio.duration + 0.01
+        etime = next?.screen.stime || (audio?.duration ?? 0) + 0.01
       } else {
         let prev = this.screens.get(currentScreen.prev)
         stime = prev?.screen.etime || -0.01

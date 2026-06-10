@@ -23,7 +23,7 @@ DB_PASS=example
 DB_NAME=conversations
 
 # Request a specific version of the database (optional)
-DB_MIGRATION_TARGET=1.8.4
+DB_MIGRATION_TARGET=1.8.5
 
 # STT Config
 GATEWAY_SERVICES=https://<domain>
@@ -77,11 +77,12 @@ DISABLE_DEFAULT_ORGANIZATION_CREATION=false
 DEFAULT_TAGS=
 
 EXPORT_TEMPLATE=default
+EXPORT_DISCLAIMER=
 # Export timeout in milliseconds (default: 10 minutes)
 EXPORT_TIMEOUT_MS=600000
 
-# ORGANIZATION_DEFAULT_PERMISSIONS supported value are "upload,summary,session"
-ORGANIZATION_DEFAULT_PERMISSIONS=upload,summary,session
+# ORGANIZATION_DEFAULT_PERMISSIONS supported values are "upload,summary,session,microphone,bot"
+ORGANIZATION_DEFAULT_PERMISSIONS=upload,summary,session,microphone,bot
 
 
 SUPER_ADMIN_EMAIL=

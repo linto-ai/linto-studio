@@ -5,12 +5,12 @@ export function indexConversationRightByUsers(listOfconversationRights) {
   for (const convRights of listOfconversationRights) {
     externalMembers = indexConversationRightSubKey(
       convRights.member.external_members,
-      externalMembers
+      externalMembers,
     )
     organizationMembers = indexConversationRightSubKey(
       convRights.member.organization_members,
       organizationMembers,
-      true
+      true,
     )
   }
 
@@ -33,7 +33,7 @@ export function indexConversationRightByUsers(listOfconversationRights) {
 function indexConversationRightSubKey(
   usersList,
   indexedUsers,
-  keepZero = false
+  keepZero = false,
 ) {
   for (const user of usersList) {
     if (user.right === 0 && !keepZero) {

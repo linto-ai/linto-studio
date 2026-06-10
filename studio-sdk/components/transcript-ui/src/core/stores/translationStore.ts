@@ -16,7 +16,10 @@ interface TranslationInit {
   turns: Turn[]
 }
 
-type Emit = <K extends keyof CoreEventMap>(event: K, payload: CoreEventMap[K]) => void
+type Emit = <K extends keyof CoreEventMap>(
+  event: K,
+  payload: CoreEventMap[K],
+) => void
 type SpeakersEnsure = (speakerId: string | null, name?: string) => void
 
 export function createTranslationStore(
@@ -106,14 +109,9 @@ export function createTranslationStore(
   }
 
   function getTurn(turnId: string): Turn | undefined {
-    // O(1) via indexMap, falling back to a scan when the index is stale (wrong
-    // slot or missing entry) so an existing turn is never reported as missing.
-    const idx = indexMap.get(turnId)
-    if (idx !== undefined) {
-      const turn = turns.value[idx]
-      if (turn?.id === turnId) return turn
-    }
-    return turns.value.find((t) => t.id === turnId)
+    const index = indexMap.get(turnId)
+    if (index === undefined) return undefined
+    return turns.value[index]
   }
 
   return {

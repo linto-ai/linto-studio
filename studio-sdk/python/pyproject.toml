@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "linto"
-version = "1.2.0"
+version = "1.2.8"
 description = "Wrapper around LinTO Studio API"
 readme = "README.md"
 requires-python = ">=3.7"
@@ -17,6 +17,12 @@ authors = [
 
 dependencies = [
   "aiohttp",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=7",
+  "pytest-asyncio>=0.21",
 ]
 
 keywords = [

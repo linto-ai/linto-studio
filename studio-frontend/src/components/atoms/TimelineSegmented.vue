@@ -56,7 +56,9 @@
         class="timeline-segmented__legend-item">
         <span
           class="timeline-segmented__legend-color"
-          :class="item.type ? `timeline-segmented__legend-color--${item.type}` : ''" />
+          :class="
+            item.type ? `timeline-segmented__legend-color--${item.type}` : ''
+          " />
         <span class="timeline-segmented__legend-label">{{ item.label }}</span>
       </div>
     </div>

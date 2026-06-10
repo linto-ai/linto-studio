@@ -103,5 +103,18 @@ declare const fr: {
     readonly "time.relative.minutes": "il y a {n} min";
     readonly "time.relative.hours": "il y a {n} h";
     readonly "time.relative.days": "il y a {n} j";
+    readonly "chat.title": "Assistant";
+    readonly "chat.close": "Fermer l'assistant";
+    readonly "chat.history": "Historique";
+    readonly "chat.newChat": "Nouvelle conversation";
+    readonly "chat.rename": "Renommer";
+    readonly "chat.deleteSession": "Supprimer";
+    readonly "chat.deleteConfirm": "Supprimer ?";
+    readonly "chat.cancel": "Annuler";
+    readonly "chat.confirmDelete": "Confirmer";
+    readonly "chat.placeholder": "Écrire un message…";
+    readonly "chat.send": "Envoyer";
+    readonly "chat.emptyState": "Pose une question sur cette transcription.";
+    readonly "chat.emptyChat": "Démarre la conversation.";
 };
 export default fr;

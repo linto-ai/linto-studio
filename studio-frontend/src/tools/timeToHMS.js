@@ -1,6 +1,6 @@
 export function timeToHMS(
   time,
-  { stripZeros = false, stripHourZeros = false, withCentisecond } = {}
+  { stripZeros = false, stripHourZeros = false, withCentisecond } = {},
 ) {
   if (time == null) {
     return null

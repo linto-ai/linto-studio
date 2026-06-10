@@ -16,7 +16,10 @@ const SECURITY_LEVELS = require(
 const { storeFile } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
-const { processChannelCaptions } = require("./channelCaptions")
+const {
+  processChannelCaptions,
+  dedupeClosedCaptionsBySegmentId,
+} = require("./channelCaptions")
 
 const { SessionError } = require(
   `${process.cwd()}/components/WebServer/error/exception/session`,
@@ -148,6 +151,16 @@ async function initCaptionsForConversation(sessionData, name) {
         name,
         session.channels.length,
       )
+
+      // Dual-recognizer sessions may emit two closedCaptions lines per
+      // segmentId (one with the locutor, one with translations). Collapse
+      // them so the translation merge below and processChannelCaptions are
+      // deterministic and never produce duplicate turns.
+      if (Array.isArray(channel.closedCaptions)) {
+        channel.closedCaptions = dedupeClosedCaptionsBySegmentId(
+          channel.closedCaptions,
+        )
+      }
 
       if (channel.translatedCaptions) {
         for (const segmentTranslations of Object.values(
@@ -501,4 +514,5 @@ module.exports = {
   storeSession,
   storeSessionFromStop,
   storeQuickMeetingFromStop,
+  initCaptionsForConversation,
 }

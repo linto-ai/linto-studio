@@ -94,11 +94,31 @@ export default {
   computed: {
     columns() {
       return [
-        { key: "config.type", label: this.$t("session.profile_selector.labels.type"), width: "auto" },
-        { key: "config.name", label: this.$t("session.profile_selector.labels.name"), width: "1fr" },
-        { key: "config.description", label: this.$t("session.profile_selector.labels.description"), width: "1fr" },
-        { key: "config.languages.0.candidate", label: this.$t("session.profile_selector.labels.languages"), width: "1fr" },
-        { key: "translations", label: this.$t("session.profile_selector.labels.translations"), width: "auto" },
+        {
+          key: "config.type",
+          label: this.$t("session.profile_selector.labels.type"),
+          width: "auto",
+        },
+        {
+          key: "config.name",
+          label: this.$t("session.profile_selector.labels.name"),
+          width: "1fr",
+        },
+        {
+          key: "config.description",
+          label: this.$t("session.profile_selector.labels.description"),
+          width: "1fr",
+        },
+        {
+          key: "config.languages.0.candidate",
+          label: this.$t("session.profile_selector.labels.languages"),
+          width: "1fr",
+        },
+        {
+          key: "translations",
+          label: this.$t("session.profile_selector.labels.translations"),
+          width: "auto",
+        },
       ]
     },
     sortedTranscriberProfiles() {
@@ -149,8 +169,12 @@ export default {
       return langs.join(", ")
     },
     translationOptionsFor(profile) {
-      const translations = normalizeAvailableTranslations(profile?.config?.availableTranslations)
-      const languageNames = new Intl.DisplayNames([this.$i18n.locale], { type: "language" })
+      const translations = normalizeAvailableTranslations(
+        profile?.config?.availableTranslations,
+      )
+      const languageNames = new Intl.DisplayNames([this.$i18n.locale], {
+        type: "language",
+      })
       return translations
         .map((t) => ({ id: t, text: languageNames.of(t) }))
         .sort((a, b) => a.text.localeCompare(b.text))
@@ -179,14 +203,15 @@ export default {
     },
     emitSelection(ids) {
       if (this.multiple) {
-        const profiles = ids.map((id) =>
-          this.l_profilesList.find((p) => p.id === id),
-        ).filter(Boolean)
+        const profiles = ids
+          .map((id) => this.l_profilesList.find((p) => p.id === id))
+          .filter(Boolean)
         this.$emit("input", structuredClone(profiles))
       } else {
-        const profile = ids.length > 0
-          ? this.l_profilesList.find((p) => p.id === ids[0])
-          : null
+        const profile =
+          ids.length > 0
+            ? this.l_profilesList.find((p) => p.id === ids[0])
+            : null
         this.$emit("input", profile ? structuredClone(profile) : null)
       }
     },

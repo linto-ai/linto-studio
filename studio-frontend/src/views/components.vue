@@ -55,12 +55,19 @@
       class="relative">
       <template #trigger="{ open }">
         <Button :iconRight="open ? 'caret-up' : 'caret-down'">
-          Avec recherche: {{ popoverSearchValue || 'Aucun' }}
+          Avec recherche: {{ popoverSearchValue || "Aucun" }}
         </Button>
       </template>
     </PopoverList>
     <OrgaRoleSelector v-model="role" />
     <OrgaRoleSelector v-model="role" readonly />
+    <div class="flex col gap-tiny">
+      <span>OrganizationSelector — value: {{ organizationId }}</span>
+      <OrganizationSelector
+        v-model="organizationId"
+        :pinnedItems="organizationPinnedItems"
+        searchPlaceholder="Rechercher une organisation" />
+    </div>
     <GenericTable
       :content="tableContent"
       :columns="tableColumns"
@@ -82,6 +89,7 @@ import EMPTY_FIELD from "@/const/emptyField"
 import formatDateTimeToIso from "@/tools/date/formatDateTimeToIso"
 import DurationInput from "@/components/molecules/DurationInput.vue"
 import OrgaRoleSelector from "@/components/molecules/OrgaRoleSelector.vue"
+import OrganizationSelector from "@/components/molecules/OrganizationSelector.vue"
 import GenericTable from "@/components/molecules/GenericTable.vue"
 export default {
   props: {},
@@ -146,6 +154,14 @@ export default {
       popoverValue: "select-value-1",
       popoverMultiValue: ["select-value-1", "select-value-3"],
       popoverSearchValue: null,
+      organizationId: null,
+      organizationPinnedItems: [
+        {
+          value: null,
+          text: "Plateforme globale",
+          icon: "globe-hemisphere-west",
+        },
+      ],
       role: 1,
       tableContent: [
         { _id: "1", name: "Alfred", role: 1 },
@@ -172,6 +188,7 @@ export default {
     FormInput,
     DurationInput,
     OrgaRoleSelector,
+    OrganizationSelector,
     GenericTable,
   },
 }

@@ -34,19 +34,21 @@ function countAdmin(organization, userId) {
   }
 }
 
-async function getUserConversationFromOrganization(userId, organizationId) {
+async function getUserConversationFromOrganization(
+  userId,
+  organizationId,
+  options = {},
+) {
   const organization = (
-    await model.organizations.getByIdAndUser(organizationId, userId)
+    await model.organizations.getByIdAndUser(organizationId, userId, {
+      bypass: options.backofficeAccess,
+    })
   )[0]
   if (!organization)
-    throw new OrganizationError("You are not part of " + organization.name)
+    throw new OrganizationError("You are not part of this organization")
 
-  let userRole = ROLES.MEMBER
-  organization.users.map((oUser) => {
-    if (oUser.userId === userId) {
-      userRole = oUser.role
-      return
-    }
+  const userRole = ROLES.getUserRoleInOrg(organization, userId, {
+    backofficeAccess: options.backofficeAccess,
   })
   const projection = {
     speakers: 0,

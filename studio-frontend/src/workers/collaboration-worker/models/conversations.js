@@ -75,7 +75,7 @@ export class Conversation {
         transactionName,
         new Y.UndoManager(this.watchProperties, {
           trackedOrigins: new Set([transactionName]),
-        })
+        }),
       )
     }
 

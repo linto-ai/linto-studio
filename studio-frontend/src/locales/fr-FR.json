@@ -356,6 +356,14 @@
       "share": "Partager",
       "write": "Écriture"
     },
+    "members_right_desc": {
+      "none": "Pas d'accès à la conversation",
+      "read": "Peut consulter la conversation",
+      "comment": "Peut consulter et commenter",
+      "write": "Peut éditer la conversation",
+      "share": "Peut éditer et partager avec d'autres utilisateurs",
+      "full_rights": "Peut tout faire, y compris supprimer la conversation"
+    },
     "security_level_txt": {
       "0": "Diffusion publique",
       "1": "Usage commission",
@@ -744,7 +752,7 @@
       "description_updated": "Description mise à jour",
       "duration": "Durée",
       "created": "Créé le",
-      "tags": "Thématiques",
+      "tags": "Assignation de thématiques",
       "metadata": "Métadonnées",
       "template_label": "Template de la session",
       "use_template_button": "Utiliser ce modèle",
@@ -938,12 +946,15 @@
       "upload_permission": "Publier des médias",
       "summary_permission": "Générer des résumés",
       "session_permission": "Créer des sessions",
+      "microphone_permission": "Créer des sessions microphone",
+      "bot_permission": "Créer des sessions bot",
       "update_button": "Mettre à jour les permissions"
     },
     "matching_users": {
       "title": "Ajout automatique d'utilisateurs",
       "matching_mail": {
-        "label": "Adresse e-mail d'appartenance à l'organisation"
+        "label": "Adresse e-mail d'appartenance à l'organisation",
+        "required_error": "Veuillez renseigner une adresse e-mail avant d'inviter les utilisateurs"
       },
       "update_button": "Mettre à jour les critères d'appartenance",
       "apply_button": "Inviter les utilisateurs correspondant aux critères"
@@ -1142,6 +1153,7 @@
     "sessions_status": {
       "pending": "La session est en attente de recevoir un flux audio",
       "active": "La session est active. Un ou des audio(s) sont transcrits",
+      "paused": "La session est en pause",
       "scheduled": "La session n'a pas démarré",
       "terminated": "La session est terminée"
     },
@@ -1216,10 +1228,22 @@
       "session_not_started_title": "La session n'a pas encore commencé",
       "settings_button": "Paramètres",
       "delete_session_button": "Supprimer la session",
-      "stop_button": "Arrêter et enregistrer la transcription",
-      "stop_force_button": "Forcer l'arrêt de la session",
+      "stop_button": "Arrêter et enregistrer",
+      "stop_force_button": "Forcer l'arrêt",
       "stop_session_error_message": "La session n'a pas pu être arrêtée",
       "stop_session_success": "La session a été arrêtée et enregistrée",
+      "pause_button": "Pause",
+      "resume_button": "Reprendre",
+      "pause_session_success": "La session a été mise en pause",
+      "pause_session_error_message": "La session n'a pas pu être mise en pause",
+      "resume_session_success": "La session a été reprise",
+      "resume_session_error_message": "La session n'a pas pu être reprise",
+      "clear_button": "Effacer",
+      "clear_session_success": "La transcription a été effacée",
+      "clear_session_error_message": "La transcription n'a pas pu être effacée",
+      "clear_confirm_title": "Effacer la transcription",
+      "clear_confirm_message": "Cette action efface définitivement le contenu transcrit de la session active. La session reste démarrée.",
+      "clear_confirm_button": "Effacer",
       "title_interface_settings": "Paramètre d'interface",
       "translation_bot": "Traduction automatique",
       "session_already_started": "La session a déjà démarré",
@@ -1451,6 +1475,8 @@
     "invite_new_user": "Inviter un nouvel utilisateur",
     "email_placeholder": "Email",
     "button": "Partager",
+    "loading_users": "Chargement des utilisateurs…",
+    "clear_search": "Effacer la recherche",
     "conversation_error_title": "Des conversations ne peuvent pas être partagées",
     "external_members": "Utilisateurs externes",
     "inscription_disabled": "Les inscriptions et les invitations sont désactivées sur la plateforme",
@@ -1459,7 +1485,24 @@
     "no_conversation_selected_title": "Aucun média sélectionné",
     "organization_members": "Membres de l'organisation",
     "user_has_been_invited": "L'utilisateur a été invité",
-    "user_right_updated": "Les droits de l'utilisateur ont été mis à jour"
+    "user_right_updated": "Les droits de l'utilisateur ont été mis à jour",
+    "search_label": "Rechercher un utilisateur ou inviter par email",
+    "search_placeholder": "mail@example.com",
+    "default_right_label": "Droit par défaut",
+    "exceptions_label": "Exceptions",
+    "no_exceptions": "Aucune exception : tous les membres suivent le droit par défaut.",
+    "show_other_members": "Voir les autres membres ({count})",
+    "show_admins": "Voir les administrateurs et gestionnaires ({count})",
+    "all_members_label": "Tous les membres",
+    "invite_email_action": "Inviter {email} par email",
+    "badge_org": "Organisation",
+    "badge_default": "Défaut",
+    "reset_to_default": "Réinitialiser au droit par défaut",
+    "no_search_results": "Aucun utilisateur trouvé",
+    "column_user": "Utilisateur",
+    "column_status": "Statut",
+    "column_right": "Droit",
+    "column_actions": ""
   },
   "tags": {
     "add_tag_to_conversation": "Ajouter le tag",

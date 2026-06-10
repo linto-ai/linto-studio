@@ -6,11 +6,7 @@
         <div class="chat-drawer__header">
           <h3 class="chat-drawer__title">{{ $t("chat.title") }}</h3>
           <div class="chat-drawer__header-actions">
-            <Button
-              icon="x"
-              size="sm"
-              variant="tertiary"
-              @click="close" />
+            <Button icon="x" size="sm" variant="tertiary" @click="close" />
           </div>
         </div>
 
@@ -19,7 +15,9 @@
           <!-- Session list sidebar -->
           <div class="chat-drawer__sidebar">
             <div class="chat-drawer__sidebar-header">
-              <span class="chat-drawer__sidebar-label">{{ $t("chat.history") }}</span>
+              <span class="chat-drawer__sidebar-label">{{
+                $t("chat.history")
+              }}</span>
               <button
                 class="chat-drawer__new-chat-btn"
                 :title="$t('chat.new_chat')"
@@ -32,10 +30,15 @@
                 v-for="session in sessions"
                 :key="session._id"
                 class="chat-drawer__session-item"
-                :class="{ 'chat-drawer__session-item--active': session._id === activeSessionId }"
+                :class="{
+                  'chat-drawer__session-item--active':
+                    session._id === activeSessionId,
+                }"
                 @click="onSessionClick(session._id)">
                 <!-- Rename mode -->
-                <div v-if="renamingSessionId === session._id" class="chat-drawer__session-rename">
+                <div
+                  v-if="renamingSessionId === session._id"
+                  class="chat-drawer__session-rename">
                   <input
                     ref="renameInput"
                     v-model="renameValue"
@@ -47,7 +50,9 @@
                 </div>
                 <!-- Normal display -->
                 <template v-else>
-                  <span class="chat-drawer__session-name" :title="session.title">
+                  <span
+                    class="chat-drawer__session-name"
+                    :title="session.title">
                     {{ session.title }}
                   </span>
                   <div class="chat-drawer__session-actions" @click.stop>
@@ -74,7 +79,9 @@
             <!-- Delete confirmation banner -->
             <transition name="chat-confirm-fade">
               <div v-if="deleteTarget" class="chat-drawer__delete-confirm">
-                <span>{{ $t("chat.delete_confirm_inline", { name: deleteTarget.title }) }}</span>
+                <span>{{
+                  $t("chat.delete_confirm_inline", { name: deleteTarget.title })
+                }}</span>
                 <div class="chat-drawer__delete-confirm-actions">
                   <Button
                     size="sm"
@@ -93,9 +100,7 @@
 
             <!-- Messages -->
             <div class="chat-drawer__messages" ref="messageContainer">
-              <div
-                v-if="!activeSessionId"
-                class="chat-drawer__empty">
+              <div v-if="!activeSessionId" class="chat-drawer__empty">
                 <p>{{ $t("chat.empty_state") }}</p>
               </div>
 
@@ -118,7 +123,9 @@
                     'chat-drawer__message--streaming': msg._streaming,
                   }">
                   <div class="chat-drawer__message-bubble">
-                    <div class="chat-drawer__message-content">{{ msg.content }}</div>
+                    <div class="chat-drawer__message-content">
+                      {{ msg.content }}
+                    </div>
                     <div
                       v-if="msg._streaming"
                       class="chat-drawer__typing-indicator">
@@ -238,7 +245,10 @@ export default {
       const title = this.renameValue.trim()
       this.renamingSessionId = null
 
-      if (title && title !== this.sessions.find((s) => s._id === sessionId)?.title) {
+      if (
+        title &&
+        title !== this.sessions.find((s) => s._id === sessionId)?.title
+      ) {
         await this.renameSession({ sessionId, title })
       }
     },

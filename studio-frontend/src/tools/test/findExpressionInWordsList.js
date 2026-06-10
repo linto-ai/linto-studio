@@ -120,7 +120,7 @@ test("use custom getter to access word value", (t) => {
     expressionsList,
     wordsList,
     null,
-    (word) => word.value
+    (word) => word.value,
   )
   t.deepEqual(rangesList, [
     {
@@ -147,7 +147,7 @@ test("use custom getter to access expression value", (t) => {
   let rangesList = findExpressionInWordsList(
     expressionsList,
     wordsList,
-    (expr) => expr.value
+    (expr) => expr.value,
   )
   t.deepEqual(rangesList, [
     {

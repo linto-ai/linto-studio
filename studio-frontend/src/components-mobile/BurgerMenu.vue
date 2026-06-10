@@ -17,7 +17,7 @@
     </div>
     <div class="burger-menu__footer-section">
       <ButtonRoller
-        v-if="isAtLeastUploader"
+        v-if="isAtLeastUploader && canStartConversationInCurrentOrganization"
         @click="startConversation"
         :label="$t('navigation.conversation.start')"
         variant="primary"

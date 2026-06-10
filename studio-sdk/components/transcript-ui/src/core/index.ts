@@ -7,6 +7,7 @@ export type {
   CoreOptions,
   CoreCapabilities,
   TurnEventKey,
+  ReadableTranslation,
   TranslationStore,
   ChannelStore,
   SpeakersStore,
@@ -22,4 +23,8 @@ export type {
   LLMServiceGeneration,
   LLMServiceGenerationStatus,
   LLMServicesPluginApi,
+  ChatRole,
+  ChatMessage,
+  ChatSession,
+  ChatPluginApi,
 } from './types'

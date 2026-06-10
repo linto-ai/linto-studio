@@ -63,6 +63,7 @@ export function createCore(options: CoreOptions = {}): Core {
     title.value = doc.title
     date.value = doc.date ?? null
     speakersInternal.clear()
+    for (const channel of channels.values()) channel.dispose()
     channels.clear()
 
     for (const spkRef of ensureDocumentSpeakers(doc)) {
@@ -70,7 +71,7 @@ export function createCore(options: CoreOptions = {}): Core {
     }
 
     for (const ch of doc.channels) {
-      channels.set(ch.id, createChannelStore(ch, emit, speakers.ensure))
+      channels.set(ch.id, createChannelStore(ch, emit, on, speakers.ensure))
     }
 
     if (channels.size > 0 && !channels.has(activeChannelId.value)) {
@@ -100,7 +101,8 @@ export function createCore(options: CoreOptions = {}): Core {
       ensureSpeakersFromTurns(translation.turns, speakers.ensure)
     }
 
-    channels.set(channelId, createChannelStore(channel, emit, speakers.ensure))
+    channels.get(channelId)?.dispose()
+    channels.set(channelId, createChannelStore(channel, emit, on, speakers.ensure))
     emit("channel:sync", { channelId })
   }
 
@@ -121,6 +123,7 @@ export function createCore(options: CoreOptions = {}): Core {
     emit("destroy", undefined as never)
     cleanups.forEach((fn) => fn())
     cleanups.length = 0
+    for (const channel of channels.values()) channel.dispose()
     clearEvents()
   }
 

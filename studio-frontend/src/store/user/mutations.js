@@ -22,7 +22,7 @@ const mutations = {
       }
     }
 
-    if (typeof favoritesConversationIds === 'string') {
+    if (typeof favoritesConversationIds === "string") {
       state.favoritesConversationIds = append(favoritesConversationIds)
     } else {
       state.favoritesConversationIds = append(favoritesConversationIds)
