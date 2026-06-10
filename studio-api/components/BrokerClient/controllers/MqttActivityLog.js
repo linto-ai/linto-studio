@@ -8,19 +8,19 @@ module.exports = function () {
   const getRedisClient = () =>
     this.app.components["IoHandler"]?.redisPubClient || null
 
-  const readAllChannelStates = async (keys) => {
+  const readAllChannelStates = async (entries) => {
     const result = new Map()
-    if (keys.length === 0) return result
+    if (entries.length === 0) return result
 
     const redis = getRedisClient()
     if (redis) {
+      const keys = entries.map((entry) => entry.key)
       const values = await redis.hmGet(REDIS_HASH_KEY, keys)
       keys.forEach((k, i) => result.set(k, values[i] || null))
       return result
     }
 
-    for (const key of keys) {
-      const [sessionId, channelId] = key.split(":")
+    for (const { key, sessionId, channelId } of entries) {
       const lastEvent = await model.activityLog.getLastChannelEvent(
         sessionId,
         channelId,
@@ -57,16 +57,22 @@ module.exports = function () {
 
     if (!Array.isArray(sessions)) return
 
-    const keys = []
+    // Keep original id types: the Mongo fallback matches channel.channelId
+    // strictly, and channel ids are numbers in the scheduler payload.
+    const entries = []
     for (const session of sessions) {
       for (const channel of session.channels || []) {
-        keys.push(`${session.id}:${channel.id}`)
+        entries.push({
+          key: `${session.id}:${channel.id}`,
+          sessionId: session.id,
+          channelId: channel.id,
+        })
       }
     }
 
     let stateMap
     try {
-      stateMap = await readAllChannelStates(keys)
+      stateMap = await readAllChannelStates(entries)
     } catch (err) {
       logger.error(`activityLog: failed to read channel states: ${err}`)
       return
