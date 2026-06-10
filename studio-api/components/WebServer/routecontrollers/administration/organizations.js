@@ -58,7 +58,8 @@ async function createOrganization(req, res, next) {
       owner: owner,
       token: "",
       permissions: PERMISSIONS.getDefaultPermissions(),
-      securityLevel: SECURITY_LEVELS.getValueOrDefault(req.body.securityLevel),
+      // securityLevel is normalized by the model (defaults to PUBLIC)
+      securityLevel: req.body.securityLevel,
     }
 
     organization.permissions = PERMISSIONS.validateAndSetPermissions(

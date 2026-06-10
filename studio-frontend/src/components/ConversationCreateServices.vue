@@ -56,16 +56,23 @@ export default {
     },
   },
   computed: {
+    disabledServiceNames() {
+      if (!this.securityLevel) return new Set()
+      return new Set(
+        this.serviceList
+          .filter((service) => !meetsSecurityLevel(service, this.securityLevel))
+          .map((service) => service.serviceName),
+      )
+    },
     sortedServices() {
       // Keep usable services (meeting the required security level) on top and
       // push the disabled ones to the bottom, preserving their relative order.
-      if (!this.securityLevel) return this.serviceList
+      if (this.disabledServiceNames.size === 0) return this.serviceList
       const usable = []
       const disabled = []
       for (const service of this.serviceList) {
-        if (meetsSecurityLevel(service, this.securityLevel))
-          usable.push(service)
-        else disabled.push(service)
+        if (this.isSecurityDisabled(service)) disabled.push(service)
+        else usable.push(service)
       }
       return [...usable, ...disabled]
     },
@@ -77,8 +84,7 @@ export default {
       this.$emit("input", value)
     },
     isSecurityDisabled(service) {
-      if (!this.securityLevel) return false
-      return !meetsSecurityLevel(service, this.securityLevel)
+      return this.disabledServiceNames.has(service.serviceName)
     },
   },
   data() {

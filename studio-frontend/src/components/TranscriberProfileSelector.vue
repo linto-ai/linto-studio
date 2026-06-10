@@ -7,6 +7,8 @@
     :selectable="true"
     :selectMode="multiple ? 'multiple' : 'single'"
     :selectedRows="selectedIds"
+    :rowClass="getRowClass"
+    :selectableRowIds="selectableProfileIds"
     idKey="id"
     @list_sort_by="sortBy"
     @update:selectedRows="onSelectionChange">
@@ -57,7 +59,7 @@
 </template>
 <script>
 import { sortArray } from "@/tools/sortList.js"
-import { filterByMetaSecurityLevel } from "@/tools/filterBySecurityLevel"
+import { meetsMetaSecurityLevel } from "@/tools/filterBySecurityLevel"
 import { normalizeAvailableTranslations } from "@/tools/translationUtils.js"
 import transriberImageFromtype from "@/tools/transriberImageFromtype.js"
 import GenericTable from "@/components/molecules/GenericTable.vue"
@@ -121,12 +123,21 @@ export default {
       ]
     },
     sortedTranscriberProfiles() {
-      // Only expose profiles that meet the required security level (level 0 /
-      // unset means no restriction, so all profiles are shown).
-      const profiles = this.securityLevel
-        ? filterByMetaSecurityLevel(this.l_profilesList, this.securityLevel)
-        : this.l_profilesList
-      return sortArray(profiles, this.sortListKey, this.sortListDirection)
+      const sorted = sortArray(
+        this.l_profilesList,
+        this.sortListKey,
+        this.sortListDirection,
+      )
+      // Keep usable profiles (meeting the required security level) on top and
+      // push the disabled ones to the bottom, preserving their sorted order.
+      if (!this.securityLevel) return sorted
+      const usable = []
+      const disabled = []
+      for (const profile of sorted) {
+        if (this.isSecurityDisabled(profile)) disabled.push(profile)
+        else usable.push(profile)
+      }
+      return [...usable, ...disabled]
     },
     selectedIds() {
       if (this.multiple) {
@@ -134,6 +145,11 @@ export default {
       } else {
         return this.value ? [this.value.id] : []
       }
+    },
+    selectableProfileIds() {
+      return this.l_profilesList
+        .filter((profile) => !this.isSecurityDisabled(profile))
+        .map((profile) => profile.id)
     },
   },
   watch: {
@@ -153,6 +169,13 @@ export default {
         this.sortListDirection = "desc"
       }
       this.sortListKey = key
+    },
+    getRowClass(profile) {
+      return { "security-disabled": this.isSecurityDisabled(profile) }
+    },
+    isSecurityDisabled(profile) {
+      if (!this.securityLevel) return false
+      return !meetsMetaSecurityLevel(profile, this.securityLevel)
     },
     typeImage(profile) {
       return transriberImageFromtype(profile.config.type)
@@ -195,15 +218,21 @@ export default {
       this.emitSelection(ids)
     },
     emitSelection(ids) {
+      // Profiles below the security level are not selectable (covers the
+      // header "select all" checkbox, which bypasses the disabled rows).
+      const allowedIds = ids.filter((id) => {
+        const profile = this.l_profilesList.find((p) => p.id === id)
+        return profile && !this.isSecurityDisabled(profile)
+      })
       if (this.multiple) {
-        const profiles = ids
+        const profiles = allowedIds
           .map((id) => this.l_profilesList.find((p) => p.id === id))
           .filter(Boolean)
         this.$emit("input", structuredClone(profiles))
       } else {
         const profile =
-          ids.length > 0
-            ? this.l_profilesList.find((p) => p.id === ids[0])
+          allowedIds.length > 0
+            ? this.l_profilesList.find((p) => p.id === allowedIds[0])
             : null
         this.$emit("input", profile ? structuredClone(profile) : null)
       }

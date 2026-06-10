@@ -27,6 +27,10 @@ export const organizationSecurityLevelMixin = {
   watch: {
     // Keep the selected level at or above the organization floor (covers the
     // case where the organization loads after the component is created).
+    // Note: the watcher and `effectiveSecurityLevel` are intentionally both
+    // kept — the watcher fixes the selector's v-model state, while the
+    // computed still guards downstream filtering when `securityLevel` is set
+    // programmatically below the floor (e.g. restoring a saved template).
     organizationSecurityLevel: {
       immediate: true,
       handler(orgLevel) {

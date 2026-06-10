@@ -478,11 +478,13 @@
     }
   }
 
-  tr.security-disabled {
+  // .table-grid rows are display: contents, so the tr generates no box:
+  // visual styles (opacity, background) must land on the td cells instead.
+  tr.security-disabled > td {
     opacity: 0.4;
     background-color: var(--neutral-10);
     cursor: not-allowed;
-    pointer-events: auto;
+    pointer-events: none;
 
     * {
       cursor: not-allowed;
