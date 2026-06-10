@@ -4,8 +4,23 @@ const debug = require("debug")(
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const kpiHandler = require("../../controllers/activity/kpiHandlers")
 const kpiExport = require("../../controllers/activity/kpiExport")
+const kpiSeriesExport = require("../../controllers/activity/kpiSeriesExport")
 const activityExport = require("../../controllers/activity/activityExport")
 const exportResponse = require("../../controllers/activity/exportResponse")
+
+/**
+ * Validate an optional date range. Sends a 400 response and returns true when
+ * startDate is after endDate.
+ */
+function isInvalidDateRange(startDate, endDate, res) {
+  if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+    res.status(400).json({
+      error: "Invalid date range: startDate must be before endDate",
+    })
+    return true
+  }
+  return false
+}
 
 async function getActivity(req, res, next) {
   try {
@@ -118,14 +133,9 @@ async function refreshSessionKpi(req, res, next) {
 
 async function getKpiSeries(req, res, next) {
   try {
-    const { step, organizationId, startDate, endDate } = req.query
+    const { step, organizationId, userId, startDate, endDate } = req.query
 
-    // Validate date range if both dates are provided
-    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
-      return res.status(400).json({
-        error: "Invalid date range: startDate must be before endDate",
-      })
-    }
+    if (isInvalidDateRange(startDate, endDate, res)) return
 
     const granularity = step || "daily"
     const result = await kpiHandler.getKpiByDateRange(
@@ -133,6 +143,7 @@ async function getKpiSeries(req, res, next) {
       startDate,
       endDate,
       granularity,
+      userId,
     )
 
     res.status(200).json({
@@ -144,18 +155,43 @@ async function getKpiSeries(req, res, next) {
   }
 }
 
+async function exportKpiSeries(req, res, next) {
+  try {
+    const { format, step, organizationId, userId, startDate, endDate } =
+      req.query
+
+    if (exportResponse.isInvalidFormat(format, res)) return
+    if (isInvalidDateRange(startDate, endDate, res)) return
+
+    const granularity = step || "daily"
+    const series = await kpiHandler.getKpiByDateRange(
+      organizationId,
+      startDate,
+      endDate,
+      granularity,
+      userId,
+    )
+
+    const dateStr = new Date().toISOString().split("T")[0]
+
+    return await exportResponse.sendExport(res, format, {
+      filename: `kpi-series-${granularity}-${dateStr}`,
+      list: series,
+      toRows: (list) => list.map(kpiSeriesExport.transformSeriesPoint),
+      generateCsv: kpiSeriesExport.generateCsv,
+      generateXlsx: kpiSeriesExport.generateXlsx,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 async function exportKpiSessions(req, res, next) {
   try {
     const { format, organizationId, startDate, endDate } = req.query
 
     if (exportResponse.isInvalidFormat(format, res)) return
-
-    // Validate date range if both provided
-    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
-      return res.status(400).json({
-        error: "Invalid date range: startDate must be before endDate",
-      })
-    }
+    if (isInvalidDateRange(startDate, endDate, res)) return
 
     // Build query params
     const queryParams = {}
@@ -223,6 +259,7 @@ module.exports = {
   getKpiBySession,
   refreshSessionKpi,
   getKpiSeries,
+  exportKpiSeries,
   exportKpiSessions,
   exportActivity,
 }

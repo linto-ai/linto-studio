@@ -43,6 +43,23 @@
       </template>
     </FormInput>
 
+    <!-- User Filter -->
+    <FormInput
+      :field="{
+        label: $t('backoffice.dashboard.filters.user'),
+        error: null,
+      }"
+      class="dashboard-controls__field">
+      <template #custom-input>
+        <UserSelector
+          :value="selectedUser"
+          @input="$emit('update:selectedUser', $event)"
+          :label="$t('backoffice.dashboard.filters.all_users')"
+          block
+          compact />
+      </template>
+    </FormInput>
+
     <!-- Date Range - Start -->
     <FormInput
       :value="startDate"
@@ -86,6 +103,7 @@
 import FormInput from "@/components/molecules/FormInput.vue"
 import Button from "@/components/atoms/Button.vue"
 import PopoverList from "@/components/atoms/PopoverList.vue"
+import UserSelector from "@/components/molecules/UserSelector.vue"
 
 export default {
   name: "DashboardFilters",
@@ -106,6 +124,10 @@ export default {
       type: String,
       default: null,
     },
+    selectedUser: {
+      type: Object,
+      default: null,
+    },
     startDate: {
       type: String,
       default: null,
@@ -117,7 +139,12 @@ export default {
   },
   computed: {
     hasActiveFilters() {
-      return this.selectedOrganization || this.startDate || this.endDate
+      return (
+        this.selectedOrganization ||
+        this.selectedUser ||
+        this.startDate ||
+        this.endDate
+      )
     },
     today() {
       return new Date().toISOString().split("T")[0]
@@ -143,7 +170,7 @@ export default {
       return org?.name || this.selectedOrganization
     },
   },
-  components: { FormInput, Button, PopoverList },
+  components: { FormInput, Button, PopoverList, UserSelector },
 }
 </script>
 

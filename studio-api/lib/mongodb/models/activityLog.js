@@ -2,7 +2,7 @@ const MongoModel = require("../model")
 
 const VIEWER_THRESHOLD_SECONDS = 300
 
-function buildActivityMatchQuery(activity, orgaId, startDate, endDate) {
+function buildActivityMatchQuery(activity, orgaId, startDate, endDate, userId) {
   const timestampQuery = {}
 
   if (startDate) timestampQuery.$gte = startDate
@@ -12,6 +12,7 @@ function buildActivityMatchQuery(activity, orgaId, startDate, endDate) {
     $match: {
       activity,
       ...(orgaId && { "organization.id": orgaId }),
+      ...(userId && { "user.id": userId }),
       ...(Object.keys(timestampQuery).length > 0 && {
         timestamp: timestampQuery,
       }),
@@ -201,13 +202,14 @@ class ActivityLog extends MongoModel {
     }
   }
 
-  async getKpiLlm(orgaId, startDate, endDate) {
+  async getKpiLlm(orgaId, startDate, endDate, userId) {
     try {
       const matchQuery = buildActivityMatchQuery(
         "llm",
         orgaId,
         startDate,
         endDate,
+        userId,
       )
 
       const query = [
@@ -234,13 +236,14 @@ class ActivityLog extends MongoModel {
     }
   }
 
-  async getKpiTranscription(orgaId, startDate, endDate) {
+  async getKpiTranscription(orgaId, startDate, endDate, userId) {
     try {
       const matchQuery = buildActivityMatchQuery(
         "transcription",
         orgaId,
         startDate,
         endDate,
+        userId,
       )
 
       const groupId = orgaId ? "$organization.id" : null
@@ -270,13 +273,14 @@ class ActivityLog extends MongoModel {
     }
   }
 
-  async getKpiSession(orgaId, startDate, endDate) {
+  async getKpiSession(orgaId, startDate, endDate, userId) {
     try {
       const sessionMatchQuery = buildActivityMatchQuery(
         "session",
         orgaId,
         startDate,
         endDate,
+        userId,
       )
 
       const groupId = orgaId ? "$organization.id" : null
@@ -305,11 +309,28 @@ class ActivityLog extends MongoModel {
       if (startDate) timestampQuery.$gte = startDate
       if (endDate) timestampQuery.$lte = endDate
 
+      // Channel events come from mqtt and carry no user dimension, so a user
+      // filter is applied by scoping them to the sessions that user joined
+      let userSessionIds = null
+      if (userId) {
+        userSessionIds = await this.mongoDistinct("session.sessionId", {
+          activity: "session",
+          "user.id": userId,
+          ...(orgaId && { "organization.id": orgaId }),
+          ...(Object.keys(timestampQuery).length > 0 && {
+            timestamp: timestampQuery,
+          }),
+        })
+      }
+
       const channelMatchQuery = {
         $match: {
           activity: "channel",
           source: "mqtt",
           ...(orgaId && { "organization.id": orgaId }),
+          ...(userSessionIds && {
+            "session.sessionId": { $in: userSessionIds },
+          }),
           ...(Object.keys(timestampQuery).length > 0 && {
             timestamp: timestampQuery,
           }),

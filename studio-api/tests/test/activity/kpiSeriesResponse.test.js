@@ -102,6 +102,7 @@ describe("KPI Series Response - API Contract Compliance (Sprint 2)", () => {
         undefined,
         undefined,
         "daily",
+        undefined,
       )
     })
 
@@ -166,6 +167,7 @@ describe("KPI Series Response - API Contract Compliance (Sprint 2)", () => {
         undefined,
         undefined,
         "daily",
+        undefined,
       )
       expect(mockRes.json).toHaveBeenCalledWith({
         step: "daily",
@@ -190,6 +192,7 @@ describe("KPI Series Response - API Contract Compliance (Sprint 2)", () => {
         undefined,
         undefined,
         "daily",
+        undefined,
       )
       expect(mockRes.status).toHaveBeenCalledWith(200)
     })
@@ -206,7 +209,56 @@ describe("KPI Series Response - API Contract Compliance (Sprint 2)", () => {
         undefined,
         undefined,
         "daily",
+        undefined,
       )
+    })
+  })
+
+  describe("Test 2b: User Filter (user x organization cross)", () => {
+    it("should pass userId to handler when provided", async () => {
+      const mockData = []
+      mockGetKpiByDateRange.mockResolvedValue(mockData)
+
+      const userId = "607f1f77bcf86cd799439022"
+      const req = {
+        query: { step: "daily", userScope: "backoffice", userId },
+      }
+      await getKpiSeries(req, mockRes, mockNext)
+
+      expect(mockGetKpiByDateRange).toHaveBeenCalledWith(
+        undefined,
+        undefined,
+        undefined,
+        "daily",
+        userId,
+      )
+      expect(mockRes.status).toHaveBeenCalledWith(200)
+    })
+
+    it("should pass both organizationId and userId to handler", async () => {
+      const mockData = []
+      mockGetKpiByDateRange.mockResolvedValue(mockData)
+
+      const orgId = "507f1f77bcf86cd799439011"
+      const userId = "607f1f77bcf86cd799439022"
+      const req = {
+        query: {
+          step: "daily",
+          userScope: "backoffice",
+          organizationId: orgId,
+          userId,
+        },
+      }
+      await getKpiSeries(req, mockRes, mockNext)
+
+      expect(mockGetKpiByDateRange).toHaveBeenCalledWith(
+        orgId,
+        undefined,
+        undefined,
+        "daily",
+        userId,
+      )
+      expect(mockRes.status).toHaveBeenCalledWith(200)
     })
   })
 
@@ -260,6 +312,7 @@ describe("KPI Series Response - API Contract Compliance (Sprint 2)", () => {
         "2025-12-01",
         "2025-12-07",
         "daily",
+        undefined,
       )
       expect(mockRes.status).toHaveBeenCalledWith(200)
     })
@@ -304,6 +357,7 @@ describe("KPI Series Response - API Contract Compliance (Sprint 2)", () => {
         "2025-12-01",
         undefined,
         "daily",
+        undefined,
       )
       expect(mockRes.status).toHaveBeenCalledWith(200)
     })
@@ -328,6 +382,7 @@ describe("KPI Series Response - API Contract Compliance (Sprint 2)", () => {
         undefined,
         "2025-12-31",
         "daily",
+        undefined,
       )
       expect(mockRes.status).toHaveBeenCalledWith(200)
     })
@@ -362,6 +417,7 @@ describe("KPI Series Response - API Contract Compliance (Sprint 2)", () => {
         "2025-01-01",
         "2025-06-30",
         "monthly",
+        undefined,
       )
       expect(mockRes.status).toHaveBeenCalledWith(200)
     })
@@ -390,6 +446,7 @@ describe("KPI Series Response - API Contract Compliance (Sprint 2)", () => {
         "2025-01-01",
         "2025-12-31",
         "monthly",
+        undefined,
       )
       expect(mockRes.status).toHaveBeenCalledWith(200)
     })
@@ -418,6 +475,7 @@ describe("KPI Series Response - API Contract Compliance (Sprint 2)", () => {
         "2020-01-01",
         "2025-12-31",
         "yearly",
+        undefined,
       )
       expect(mockRes.status).toHaveBeenCalledWith(200)
     })

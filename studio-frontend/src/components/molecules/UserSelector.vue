@@ -10,12 +10,19 @@
     :overlay="false"
     returnObjects
     :searchPlaceholder="$t('user_selector.search_placeholder')"
-    class="user-selector">
+    :full-width="block"
+    class="user-selector"
+    :class="{
+      'user-selector--block': block,
+      'user-selector--compact': compact,
+    }">
     <template #trigger="{ open }">
       <slot name="trigger" :open="open" :selectedUsers="selectedUsers">
         <Button
+          :block="block"
           :iconRight="open ? 'caret-up' : 'caret-down'"
-          :icon="value ? null : multiple ? 'users' : 'user'">
+          :icon="value ? null : multiple ? 'users' : 'user'"
+          class="user-selector__trigger">
           <UserInfoInline
             v-if="value && !multiple"
             :user="value"
@@ -49,6 +56,15 @@ export default {
     label: {
       type: String,
       default: null,
+    },
+    block: {
+      type: Boolean,
+      default: false,
+    },
+    // Hide the email line so the trigger stays single-line
+    compact: {
+      type: Boolean,
+      default: false,
     },
   },
   computed: {
@@ -104,5 +120,21 @@ export default {
 <style lang="scss">
 .user-selector {
   display: inline-flex;
+
+  &--block {
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  &--block .user-selector__trigger {
+    min-width: 0;
+    overflow: hidden;
+    justify-content: space-between;
+  }
+
+  &--compact .user-info-inline__email {
+    display: none;
+  }
 }
 </style>

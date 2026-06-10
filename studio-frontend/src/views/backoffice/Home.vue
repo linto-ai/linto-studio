@@ -5,6 +5,9 @@
       <h2 class="dashboard-header__title">
         {{ $t("backoffice.dashboard.page_title") }}
       </h2>
+      <KpiExportDropdown
+        :exportFn="exportSeriesFn"
+        filenamePrefix="kpi-dashboard" />
     </div>
 
     <!-- Platform Stats (not affected by filters) -->
@@ -18,10 +21,12 @@
       :timePeriodOptions="timePeriodOptions"
       :timePeriod="currentTimePeriod"
       :selectedOrganization="selectedOrganization"
+      :selectedUser="selectedUser"
       :startDate="startDate"
       :endDate="endDate"
       @update:timePeriod="currentTimePeriod = $event"
       @update:selectedOrganization="selectedOrganization = $event"
+      @update:selectedUser="selectedUser = $event"
       @update:startDate="startDate = $event"
       @update:endDate="endDate = $event"
       @clear="clearFilters" />
@@ -90,7 +95,7 @@
 </template>
 <script>
 import { apiGetAllUsers, apiGetAllOrganizations } from "@/api/admin.js"
-import { apiGetPlatformKpiSeries } from "@/api/kpi.js"
+import { apiGetPlatformKpiSeries, exportKpiSeries } from "@/api/kpi.js"
 
 import { formatDuration } from "@/tools/formatDuration.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
@@ -101,6 +106,7 @@ import Loading from "@/components/atoms/Loading.vue"
 import DashboardStats from "@/components/backoffice/DashboardStats.vue"
 import DashboardFilters from "@/components/backoffice/DashboardFilters.vue"
 import DashboardKPIs from "@/components/backoffice/DashboardKPIs.vue"
+import KpiExportDropdown from "@/components/KpiExportDropdown.vue"
 
 export default {
   mixins: [platformRoleMixin],
@@ -117,6 +123,7 @@ export default {
       currentTimePeriod: "daily",
       // Filter state
       selectedOrganization: null,
+      selectedUser: null,
       startDate: null,
       endDate: null,
       organizations: [],
@@ -164,8 +171,12 @@ export default {
     },
     clearFilters() {
       this.selectedOrganization = null
+      this.selectedUser = null
       this.startDate = null
       this.endDate = null
+    },
+    exportSeriesFn(format) {
+      return exportKpiSeries(format, this.currentFilters)
     },
     updateUrlParams() {
       const query = {}
@@ -230,6 +241,9 @@ export default {
       this.fetchFilteredData()
       //this.updateUrlParams()
     },
+    selectedUser() {
+      this.fetchFilteredData()
+    },
     startDate() {
       this.fetchFilteredData()
       //this.updateUrlParams()
@@ -244,6 +258,7 @@ export default {
       return {
         step: this.currentTimePeriod,
         organizationId: this.selectedOrganization,
+        userId: this.selectedUser?._id,
         startDate: this.startDate,
         endDate: this.endDate,
       }
@@ -294,12 +309,17 @@ export default {
     DashboardStats,
     DashboardFilters,
     DashboardKPIs,
+    KpiExportDropdown,
   },
 }
 </script>
 <style lang="scss" scoped>
 /* Dashboard Header */
 .dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--md-gap);
   margin-bottom: var(--md-gap);
   padding-bottom: var(--sm-gap);
   border-bottom: var(--border-block);

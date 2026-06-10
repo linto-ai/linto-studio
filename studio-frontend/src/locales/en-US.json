@@ -172,6 +172,8 @@
       "filters": {
         "organization": "Organisation",
         "all_organizations": "All Organisations",
+        "user": "User",
+        "all_users": "All Users",
         "start_date": "From",
         "start_date_placeholder": "dd/mm/yyyy",
         "end_date": "To",

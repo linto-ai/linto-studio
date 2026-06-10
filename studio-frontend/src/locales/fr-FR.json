@@ -173,6 +173,8 @@
       "filters": {
         "organization": "Organisation",
         "all_organizations": "Toutes les organisations",
+        "user": "Utilisateur",
+        "all_users": "Tous les utilisateurs",
         "start_date": "Du",
         "start_date_placeholder": "jj/mm/aaaa",
         "end_date": "Au",

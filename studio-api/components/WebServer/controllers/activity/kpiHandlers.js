@@ -27,14 +27,19 @@ async function fillEmptyKpi(activityKpi) {
   return activityKpi
 }
 
-async function generateKpi(organizationId, startDate, endDate) {
+async function generateKpi(organizationId, startDate, endDate, userId) {
+  const [session, llm, transcription] = await Promise.all([
+    kpiHandlers.session(organizationId, startDate, endDate, userId),
+    kpiHandlers.llm(organizationId, startDate, endDate, userId),
+    kpiHandlers.transcription(organizationId, startDate, endDate, userId),
+  ])
+
   let activityKpi = {
     organizationId,
-    session: (await kpiHandlers.session(organizationId, startDate, endDate))[0],
-    llm: (await kpiHandlers.llm(organizationId, startDate, endDate))[0],
-    transcription: (
-      await kpiHandlers.transcription(organizationId, startDate, endDate)
-    )[0],
+    userId,
+    session: session[0],
+    llm: llm[0],
+    transcription: transcription[0],
   }
 
   activityKpi = fillEmptyKpi(activityKpi)
@@ -75,23 +80,23 @@ function getMonthRange(monthOffset) {
   }
 }
 
-async function getLast7DaysKpi(organizationId) {
+async function getLast7DaysKpi(organizationId, userId) {
   const results = []
 
   for (let i = 6; i >= 0; i--) {
     const { startDate, endDate, date } = getDayRange(i)
-    const kpi = await generateKpi(organizationId, startDate, endDate)
+    const kpi = await generateKpi(organizationId, startDate, endDate, userId)
     results.push({ date: date, ...kpi })
   }
   return results
 }
 
-async function getLast12MonthsKpi(organizationId) {
+async function getLast12MonthsKpi(organizationId, userId) {
   const results = []
 
   for (let i = 11; i >= 0; i--) {
     const { startDate, endDate, date } = getMonthRange(i)
-    const kpi = await generateKpi(organizationId, startDate, endDate)
+    const kpi = await generateKpi(organizationId, startDate, endDate, userId)
     results.push({ date: date, ...kpi })
   }
 
@@ -111,12 +116,12 @@ function getYearRange(yearOffset) {
   }
 }
 
-async function getLastYearsKpi(organizationId, years = 5) {
+async function getLastYearsKpi(organizationId, userId, years = 5) {
   const results = []
 
   for (let i = years - 1; i >= 0; i--) {
     const { startDate, endDate, date } = getYearRange(i)
-    const kpi = await generateKpi(organizationId, startDate, endDate)
+    const kpi = await generateKpi(organizationId, startDate, endDate, userId)
     results.push({ date: date, ...kpi })
   }
 
@@ -223,6 +228,7 @@ function getDefaultStartDate(granularity, referenceDate = new Date()) {
  * @param {string|null} startDate - Optional custom start date (ISO 8601)
  * @param {string|null} endDate - Optional custom end date (ISO 8601)
  * @param {string} granularity - "daily", "monthly", or "yearly"
+ * @param {string|null} userId - Optional user filter
  * @returns {Array} Array of KPI data points
  */
 async function getKpiByDateRange(
@@ -230,18 +236,19 @@ async function getKpiByDateRange(
   startDate,
   endDate,
   granularity = "daily",
+  userId,
 ) {
   // If no custom dates provided, use default behavior
   if (!startDate && !endDate) {
     switch (granularity) {
       case "daily":
-        return getLast7DaysKpi(organizationId)
+        return getLast7DaysKpi(organizationId, userId)
       case "monthly":
-        return getLast12MonthsKpi(organizationId)
+        return getLast12MonthsKpi(organizationId, userId)
       case "yearly":
-        return getLastYearsKpi(organizationId)
+        return getLastYearsKpi(organizationId, userId)
       default:
-        return getLast7DaysKpi(organizationId)
+        return getLast7DaysKpi(organizationId, userId)
     }
   }
 
@@ -261,6 +268,7 @@ async function getKpiByDateRange(
       organizationId,
       interval.startDate,
       interval.endDate,
+      userId,
     )
     results.push({ date: interval.label, ...kpi })
   }
