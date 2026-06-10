@@ -23,7 +23,10 @@
 import EMPTY_FIELD from "../const/emptyField"
 import ConversationCreateService from "@/components/ConversationCreateService.vue"
 import Loading from "@/components/atoms/Loading.vue"
-import { meetsSecurityLevel } from "@/tools/filterBySecurityLevel"
+import {
+  meetsSecurityLevel,
+  sortDisabledLast,
+} from "@/tools/filterBySecurityLevel"
 
 export default {
   props: {
@@ -68,13 +71,9 @@ export default {
       // Keep usable services (meeting the required security level) on top and
       // push the disabled ones to the bottom, preserving their relative order.
       if (this.disabledServiceNames.size === 0) return this.serviceList
-      const usable = []
-      const disabled = []
-      for (const service of this.serviceList) {
-        if (this.isSecurityDisabled(service)) disabled.push(service)
-        else usable.push(service)
-      }
-      return [...usable, ...disabled]
+      return sortDisabledLast(this.serviceList, (service) =>
+        this.isSecurityDisabled(service),
+      )
     },
   },
   methods: {

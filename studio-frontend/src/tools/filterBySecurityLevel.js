@@ -127,6 +127,25 @@ export function filterLLMServicesBySecurityLevel(services, requiredLevel) {
     .filter((service) => service.flavors.length > 0)
 }
 
+/**
+ * Reorders items so the ones flagged as disabled are pushed to the end,
+ * preserving the relative order of each group. Used to keep selectable
+ * items on top of security-restricted listings.
+ *
+ * @param {Array} items - Items to reorder
+ * @param {Function} isDisabled - Predicate returning true for disabled items
+ * @returns {Array} Reordered items
+ */
+export function sortDisabledLast(items, isDisabled) {
+  const usable = []
+  const disabled = []
+  for (const item of items) {
+    if (isDisabled(item)) disabled.push(item)
+    else usable.push(item)
+  }
+  return [...usable, ...disabled]
+}
+
 export default {
   normalizeSecurityLevel,
   filterBySecurityLevel,
@@ -134,4 +153,5 @@ export default {
   meetsSecurityLevel,
   meetsMetaSecurityLevel,
   filterLLMServicesBySecurityLevel,
+  sortDisabledLast,
 }

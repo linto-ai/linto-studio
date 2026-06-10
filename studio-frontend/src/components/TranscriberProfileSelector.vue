@@ -1,68 +1,87 @@
 <template>
-  <GenericTable
-    :columns="columns"
-    :content="sortedTranscriberProfiles"
-    :sortListKey="sortListKey"
-    :sortListDirection="sortListDirection"
-    :selectable="true"
-    :selectMode="multiple ? 'multiple' : 'single'"
-    :selectedRows="selectedIds"
-    :rowClass="getRowClass"
-    :selectableRowIds="selectableProfileIds"
-    idKey="id"
-    @list_sort_by="sortBy"
-    @update:selectedRows="onSelectionChange">
-    <template #cell-config.type="{ element }">
-      <img
-        class="icon medium"
-        :src="typeImage(element)"
-        :alt="element.config.type || ''"
-        :title="element.config.type || ''" />
-    </template>
-    <template #cell-config.name="{ element }">
-      {{ element.config.name || "" }}
-    </template>
-    <template #cell-config.description="{ element }">
-      {{ element.config.description || "" }}
-    </template>
-    <template #cell-config.languages.0.candidate="{ element }">
-      {{ formatLanguages(element) }}
-    </template>
-    <template #cell-translations="{ element }">
-      <PopoverList
-        v-if="translationOptionsFor(element).length > 0"
-        selection
-        multiple
-        searchable
-        :close-on-click="false"
-        :value="getTranslations(element)"
-        @input="onTranslationsInput(element, $event)"
-        :items="translationOptionsFor(element)">
-        <template #trigger="{ open }">
-          <Button :icon-right="open ? 'caret-up' : 'caret-down'" size="sm">
-            {{
-              $tc(
-                "session.profile_selector.n_translations_selected",
-                getTranslations(element).length,
-              )
-            }}
-          </Button>
-        </template>
-      </PopoverList>
-      <Button
-        v-else
-        size="sm"
-        disabled
-        :label="$t('session.profile_selector.translation_not_available')" />
-    </template>
-  </GenericTable>
+  <div>
+    <NotificationBanner
+      v-if="showSecurityNotice"
+      variant="info"
+      class="security-level-notice">
+      <ph-icon name="shield-warning" size="sm" />
+      <span>
+        {{
+          $t("session.profile_selector.security_level_notice", {
+            level: securityLevelLabel,
+          })
+        }}
+      </span>
+    </NotificationBanner>
+    <GenericTable
+      :columns="columns"
+      :content="sortedTranscriberProfiles"
+      :sortListKey="sortListKey"
+      :sortListDirection="sortListDirection"
+      :selectable="true"
+      :selectMode="multiple ? 'multiple' : 'single'"
+      :selectedRows="selectedIds"
+      :rowClass="getRowClass"
+      :selectableRowIds="selectableProfileIds"
+      idKey="id"
+      @list_sort_by="sortBy"
+      @update:selectedRows="onSelectionChange">
+      <template #cell-config.type="{ element }">
+        <img
+          class="icon medium"
+          :src="typeImage(element)"
+          :alt="element.config.type || ''"
+          :title="element.config.type || ''" />
+      </template>
+      <template #cell-config.name="{ element }">
+        {{ element.config.name || "" }}
+      </template>
+      <template #cell-config.description="{ element }">
+        {{ element.config.description || "" }}
+      </template>
+      <template #cell-config.languages.0.candidate="{ element }">
+        {{ formatLanguages(element) }}
+      </template>
+      <template #cell-translations="{ element }">
+        <PopoverList
+          v-if="translationOptionsFor(element).length > 0"
+          selection
+          multiple
+          searchable
+          :close-on-click="false"
+          :value="getTranslations(element)"
+          @input="onTranslationsInput(element, $event)"
+          :items="translationOptionsFor(element)">
+          <template #trigger="{ open }">
+            <Button :icon-right="open ? 'caret-up' : 'caret-down'" size="sm">
+              {{
+                $tc(
+                  "session.profile_selector.n_translations_selected",
+                  getTranslations(element).length,
+                )
+              }}
+            </Button>
+          </template>
+        </PopoverList>
+        <Button
+          v-else
+          size="sm"
+          disabled
+          :label="$t('session.profile_selector.translation_not_available')" />
+      </template>
+    </GenericTable>
+  </div>
 </template>
 <script>
 import { sortArray } from "@/tools/sortList.js"
-import { meetsMetaSecurityLevel } from "@/tools/filterBySecurityLevel"
+import {
+  meetsMetaSecurityLevel,
+  sortDisabledLast,
+} from "@/tools/filterBySecurityLevel"
 import { normalizeAvailableTranslations } from "@/tools/translationUtils.js"
 import transriberImageFromtype from "@/tools/transriberImageFromtype.js"
 import GenericTable from "@/components/molecules/GenericTable.vue"
+import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 
 export default {
   props: {
@@ -131,13 +150,9 @@ export default {
       // Keep usable profiles (meeting the required security level) on top and
       // push the disabled ones to the bottom, preserving their sorted order.
       if (!this.securityLevel) return sorted
-      const usable = []
-      const disabled = []
-      for (const profile of sorted) {
-        if (this.isSecurityDisabled(profile)) disabled.push(profile)
-        else usable.push(profile)
-      }
-      return [...usable, ...disabled]
+      return sortDisabledLast(sorted, (profile) =>
+        this.isSecurityDisabled(profile),
+      )
     },
     selectedIds() {
       if (this.multiple) {
@@ -150,6 +165,18 @@ export default {
       return this.l_profilesList
         .filter((profile) => !this.isSecurityDisabled(profile))
         .map((profile) => profile.id)
+    },
+    selectableIdSet() {
+      return new Set(this.selectableProfileIds)
+    },
+    showSecurityNotice() {
+      return (
+        !!this.securityLevel &&
+        this.selectableProfileIds.length < this.l_profilesList.length
+      )
+    },
+    securityLevelLabel() {
+      return this.$t(`conversation.security_level_txt.${this.securityLevel}`)
     },
   },
   watch: {
@@ -220,10 +247,7 @@ export default {
     emitSelection(ids) {
       // Profiles below the security level are not selectable (covers the
       // header "select all" checkbox, which bypasses the disabled rows).
-      const allowedIds = ids.filter((id) => {
-        const profile = this.l_profilesList.find((p) => p.id === id)
-        return profile && !this.isSecurityDisabled(profile)
-      })
+      const allowedIds = ids.filter((id) => this.selectableIdSet.has(id))
       if (this.multiple) {
         const profiles = allowedIds
           .map((id) => this.l_profilesList.find((p) => p.id === id))
@@ -240,6 +264,14 @@ export default {
   },
   components: {
     GenericTable,
+    NotificationBanner,
   },
 }
 </script>
+
+<style lang="scss" scoped>
+.security-level-notice {
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+</style>
