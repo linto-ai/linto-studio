@@ -7,7 +7,6 @@
     :selectable="true"
     :selectMode="multiple ? 'multiple' : 'single'"
     :selectedRows="selectedIds"
-    :rowClass="getRowClass"
     idKey="id"
     @list_sort_by="sortBy"
     @update:selectedRows="onSelectionChange">
@@ -58,7 +57,7 @@
 </template>
 <script>
 import { sortArray } from "@/tools/sortList.js"
-import { meetsMetaSecurityLevel } from "@/tools/filterBySecurityLevel"
+import { filterByMetaSecurityLevel } from "@/tools/filterBySecurityLevel"
 import { normalizeAvailableTranslations } from "@/tools/translationUtils.js"
 import transriberImageFromtype from "@/tools/transriberImageFromtype.js"
 import GenericTable from "@/components/molecules/GenericTable.vue"
@@ -122,11 +121,12 @@ export default {
       ]
     },
     sortedTranscriberProfiles() {
-      return sortArray(
-        this.l_profilesList,
-        this.sortListKey,
-        this.sortListDirection,
-      )
+      // Only expose profiles that meet the required security level (level 0 /
+      // unset means no restriction, so all profiles are shown).
+      const profiles = this.securityLevel
+        ? filterByMetaSecurityLevel(this.l_profilesList, this.securityLevel)
+        : this.l_profilesList
+      return sortArray(profiles, this.sortListKey, this.sortListDirection)
     },
     selectedIds() {
       if (this.multiple) {
@@ -153,13 +153,6 @@ export default {
         this.sortListDirection = "desc"
       }
       this.sortListKey = key
-    },
-    getRowClass(profile) {
-      return { "security-disabled": this.isSecurityDisabled(profile) }
-    },
-    isSecurityDisabled(profile) {
-      if (!this.securityLevel) return false
-      return !meetsMetaSecurityLevel(profile, this.securityLevel)
     },
     typeImage(profile) {
       return transriberImageFromtype(profile.config.type)
