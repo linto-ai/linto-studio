@@ -4,11 +4,23 @@ import { getEnv } from "@/tools/getEnv"
 
 const BASE_API = getEnv("VUE_APP_CONVO_API")
 
+function convertLocaleToLanguages(locales) {
+  switch (true) {
+    case typeof locales === "string":
+      return [locales]
+      break
+    case locales?.length:
+      return locales
+    default:
+      return []
+  }
+}
+
 function sourceTranslation(conv) {
   const tr = {
     id: conv._id,
     isSource: true,
-    languages: [conv.locale],
+    languages: convertLocaleToLanguages(conv.locale),
     turns: [],
   }
   if (conv?.metadata?.audio) {

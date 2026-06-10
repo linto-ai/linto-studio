@@ -9130,6 +9130,7 @@ function hexToRgba(hex, alpha) {
   return `rgba(${r2}, ${g2}, ${b2}, ${alpha})`;
 }
 function extractLangCode(language) {
+  console.log(language);
   return language.split("-")[0];
 }
 function isSameLanguage(a2, b2) {
@@ -9750,6 +9751,7 @@ function createTranslationStore(init, emit2, speakersEnsure) {
 }
 const CROSS_TRANSLATION_ID = "cross";
 function createCrossTranslationStore(source, translations, emit2, on) {
+  console.log(source);
   const langs = source.languages.map(extractLangCode);
   if (langs.length !== 2) return null;
   const tracksByLanguage = /* @__PURE__ */ new Map();

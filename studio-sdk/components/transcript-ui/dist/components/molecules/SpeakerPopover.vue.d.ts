@@ -3,6 +3,7 @@ import { FormField } from './FormInput.vue';
 type __VLS_Props = {
     turnId: string;
     currentSpeakerId: string | null;
+    initialOpen?: boolean;
 };
 declare function __VLS_template(): {
     attrs: Partial<{}>;

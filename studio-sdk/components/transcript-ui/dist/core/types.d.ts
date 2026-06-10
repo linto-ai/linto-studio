@@ -51,6 +51,10 @@ export interface CoreEventMap {
     "watermark:pin": {
         pinned: boolean;
     };
+    "subtitle:visible": {
+        visible: boolean;
+        height: number;
+    };
     "llmService:regenerate": {
         id: string;
     };
@@ -93,12 +97,16 @@ export interface CoreEventMap {
     destroy: void;
 }
 export type TurnEventKey = "turn:add" | "turn:update" | "turn:remove";
-export interface TranslationStore {
+/** Read-only surface of a translation — satisfied by both real and virtual stores. */
+export interface ReadableTranslation {
     readonly id: string;
     readonly languages: string[];
     readonly isSource: boolean;
     readonly audio?: AudioSource;
-    readonly turns: Ref<Turn[]>;
+    readonly turns: Readonly<Ref<Turn[]>>;
+    getTurn(turnId: string): Turn | undefined;
+}
+export interface TranslationStore extends ReadableTranslation {
     /** Epoch ms — last time the transcription was modified (host-pushed). */
     readonly lastModifiedAt: Ref<number | null>;
     setLastModifiedAt(ts: number | null): void;
@@ -111,6 +119,7 @@ export interface TranslationStore {
     replaceTurns(turns: Turn[]): void;
     updateOrCreateTurnSilent(turn: Turn): void;
     hasTurn(turnId: string): boolean;
+    getTurn(turnId: string): Turn | undefined;
 }
 export interface ChannelStore {
     readonly id: string;
@@ -119,11 +128,17 @@ export interface ChannelStore {
     readonly duration: number;
     readonly translations: Map<string, TranslationStore>;
     readonly sourceTranslation: TranslationStore;
-    readonly activeTranslation: ComputedRef<TranslationStore>;
+    /** Virtual bilingual "cross" translation, or null when not applicable. */
+    readonly crossTranslation: ReadableTranslation | null;
+    /** Real tracks plus the cross entry when available — what the selector lists. */
+    readonly selectableTranslations: ReadableTranslation[];
+    readonly activeTranslation: ComputedRef<ReadableTranslation>;
     readonly isLoadingHistory: Ref<boolean>;
     readonly hasMoreHistory: Ref<boolean>;
     setActiveTranslation(translationId: string | null): void;
     reset(): void;
+    /** Detach internal subscriptions (e.g. the cross-translation relay). */
+    dispose(): void;
 }
 export interface SpeakersStore {
     readonly all: Map<string, Speaker>;
@@ -258,11 +273,11 @@ export interface LLMServicesPluginApi {
     setDirty(id: string, dirty: boolean): void;
 }
 export interface LivePartialEventData {
+    /** Segment this partial belongs to — used to match the opposite-language
+     *  translation partial in cross mode. */
+    turnId?: string;
     text?: string;
-    translations?: Array<{
-        translationId: string;
-        text: string;
-    }>;
+    language: string;
 }
 export interface LiveFinalEventData {
     turnId: string;
@@ -286,6 +301,17 @@ export interface LiveFinalEventData {
         language: string;
     }>;
 }
+export interface LiveTranslationEventData {
+    turnId: string;
+    language: string;
+    /** Original language of the turn (the side being translated from). */
+    sourceLanguage: string;
+    text: string;
+    final: boolean;
+    startTime: number;
+    endTime: number;
+    speakerId: string | null;
+}
 export interface LivePluginApi {
     partial: ShallowRef<string | null>;
     hasLiveUpdate: Ref<boolean>;
@@ -293,11 +319,7 @@ export interface LivePluginApi {
     onFinal(event: LiveFinalEventData, channelId: string): void;
     prependFinal(event: LiveFinalEventData, channelId: string): void;
     prependFinalBatch(events: LiveFinalEventData[], channelId: string): void;
-    onTranslation(event: {
-        turnId: string;
-        language: string;
-        text: string;
-    }): void;
+    onTranslation(event: LiveTranslationEventData): void;
 }
 export type ChatRole = "user" | "assistant";
 export interface ChatMessage {

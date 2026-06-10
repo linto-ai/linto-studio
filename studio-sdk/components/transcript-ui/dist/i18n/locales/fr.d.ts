@@ -34,6 +34,7 @@ declare const fr: {
     readonly "sidebar.translationLabel": "Traduction";
     readonly "sidebar.translationSelectLabel": "Sélectionner l'original ou la traduction";
     readonly "sidebar.originalLanguage": "Langue originale";
+    readonly "sidebar.bilingual": "Traductions croisées";
     readonly "language.wildcard": "Multi-langue";
     readonly "select.filter": "Rechercher…";
     readonly "subtitle.exitFullscreen": "Quitter le plein écran";
