@@ -42,7 +42,6 @@ export function createCrossTranslationStore(
   emit: Emit,
   on: On,
 ): CrossTranslationStore | null {
-  console.log(source)
   const langs = source.languages.map(extractLangCode)
   if (langs.length !== 2) return null
   const tracksByLanguage = new Map<string, TranslationStore>()

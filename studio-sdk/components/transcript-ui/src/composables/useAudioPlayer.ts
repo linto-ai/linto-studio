@@ -144,7 +144,6 @@ export function useAudioPlayer(options: UseAudioPlayerOptions) {
   }
 
   function onSpeakerUpdate({ speaker }: CoreEventMap["speaker:update"]): void {
-    console.log("plop")
     const color = utils.hexToRgba(speaker.color, 0.25)
     for (const [, entry] of regionMap) {
       if (entry.speakerId !== speaker.id) continue

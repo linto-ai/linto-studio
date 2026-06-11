@@ -37,7 +37,7 @@ export function useFollowPlayback(
     })
   }
 
-  // Suit le mot actif (fonctionne avec l'éditeur + word timestamps)
+  // Follow the active word (works with the editor + word timestamps)
   watch(
     () => core.audio?.activeWordId.value,
     (id) => {
@@ -46,7 +46,7 @@ export function useFollowPlayback(
     { flush: "post" },
   )
 
-  // Fallback : suit au moins le turn (sans éditeur ou sans timestamps de mots)
+  // Fallback: at least follow the turn (no editor or no word timestamps)
   watch(
     () => core.audio?.activeTurnId.value,
     (id) => {

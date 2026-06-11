@@ -139,9 +139,9 @@ export interface AudioPluginApi {
    * falls back to decoding the audio client-side.
    */
   waveform: Ref<number[] | null>
-  /** ID du mot en cours de lecture (null si pas de timestamps de mots ou pas en lecture). */
+  /** Id of the word being played (null without word timestamps or when not playing). */
   activeWordId: Ref<string | null>
-  /** ID du turn en cours de lecture (null si hors plage ou pas en lecture). */
+  /** Id of the turn being played (null when out of range or not playing). */
   activeTurnId: Ref<string | null>
   seekTo(time: number): void
   setSeekHandler(handler: ((time: number) => void) | null): void

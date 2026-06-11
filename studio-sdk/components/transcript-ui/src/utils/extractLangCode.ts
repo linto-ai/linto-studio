@@ -3,6 +3,5 @@
  * e.g. "fr-FR" → "fr", "en" → "en".
  */
 export function extractLangCode(language: string): string {
-  console.log(language)
   return language.split("-")[0]!
 }

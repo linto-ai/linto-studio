@@ -9132,7 +9132,6 @@ var LintoEditor = (function(exports) {
     return `rgba(${r2}, ${g2}, ${b2}, ${alpha})`;
   }
   function extractLangCode(language) {
-    console.log(language);
     return language.split("-")[0];
   }
   function isSameLanguage(a2, b2) {
@@ -9349,14 +9348,11 @@ var LintoEditor = (function(exports) {
     ctx.closePath();
   }
   function hasWordTimestamps(words) {
-    console.log(words);
     return words.length > 0 && words[0].startTime !== void 0;
   }
   const ACTIVE_WORD_MARGIN = 1;
   function findActiveWord(words, time) {
-    console.log("ff");
     if (!hasWordTimestamps(words)) return null;
-    console.log("ff 2");
     for (const word2 of words) {
       if (word2.startTime - ACTIVE_WORD_MARGIN <= time && time <= word2.endTime) {
         return word2.id;
@@ -9773,7 +9769,6 @@ var LintoEditor = (function(exports) {
   }
   const CROSS_TRANSLATION_ID = "cross";
   function createCrossTranslationStore(source, translations, emit2, on) {
-    console.log(source);
     const langs = source.languages.map(extractLangCode);
     if (langs.length !== 2) return null;
     const tracksByLanguage = /* @__PURE__ */ new Map();
@@ -38120,8 +38115,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$n = "\n.llm-service-panel[data-v-0dbe6868] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.llm-service-panel__status[data-v-0dbe6868] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n}\n.llm-service-panel__status--ok[data-v-0dbe6868] {\n  color: var(--color-success, #2e7d32);\n}\n.llm-service-panel__status--warn[data-v-0dbe6868] {\n  color: var(--color-warning, #ed6c02);\n}\n.llm-service-panel__empty[data-v-0dbe6868] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-0dbe6868] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n@media (max-width: 767px) {\n.llm-service-panel[data-v-0dbe6868] {\n    padding: var(--spacing-md);\n}\n}\n";
-  const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["styles", [_style_0$n]], ["__scopeId", "data-v-0dbe6868"]]);
+  const _style_0$n = "\n.llm-service-panel[data-v-2e197000] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.llm-service-panel__status[data-v-2e197000] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n}\n.llm-service-panel__status--ok[data-v-2e197000] {\n  color: var(--color-success, #2e7d32);\n}\n.llm-service-panel__status--warn[data-v-2e197000] {\n  color: var(--color-warning, #ed6c02);\n}\n.llm-service-panel__empty[data-v-2e197000] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-2e197000] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n@media (max-width: 767px) {\n.llm-service-panel[data-v-2e197000] {\n    padding: var(--spacing-md);\n}\n}\n";
+  const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["styles", [_style_0$n]], ["__scopeId", "data-v-2e197000"]]);
   const _hoisted_1$k = { class: "switch" };
   const _hoisted_2$f = ["id", "checked"];
   const _hoisted_3$d = ["for"];
@@ -40983,7 +40978,6 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       removeRegion(turnId);
     }
     function onSpeakerUpdate({ speaker }) {
-      console.log("plop");
       const color = hexToRgba(speaker.color, 0.25);
       for (const [, entry] of regionMap) {
         if (entry.speakerId !== speaker.id) continue;
@@ -43570,7 +43564,6 @@ to {
           if (!translation) return;
           for (const turn of translation.turns.value) {
             if (turn.startTime != null && turn.endTime != null && time >= turn.startTime && time <= turn.endTime) {
-              console.log("yo");
               activeTurnId.value = turn.id;
               activeWordId.value = hasWordTimestamps(turn.words) ? findActiveWord(turn.words, time) : null;
               return;
@@ -56470,7 +56463,6 @@ ${err.toString()}`);
       }
       function computeDecorations() {
         const activeId = core.audio?.activeWordId.value;
-        console.log(activeId);
         if (!activeId) return DecorationSet.empty;
         const translation = core.activeChannel.value?.activeTranslation.value;
         if (!translation) return DecorationSet.empty;
@@ -56527,13 +56519,9 @@ ${err.toString()}`);
               return DecorationSet.empty;
             },
             apply(tr, old, _oldState, newState) {
-              console.log("l0");
               if (tr.docChanged) return DecorationSet.empty;
-              console.log("l1");
               if (tr.getMeta(wordHighlightKey)) {
-                console.log("plop");
                 if (isEditing(newState)) return old;
-                console.log("truc");
                 return computeDecorations();
               }
               return old;

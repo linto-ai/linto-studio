@@ -7,12 +7,12 @@ export type { AudioPluginApi }
 
 export interface AudioPluginOptions {
   /**
-   * Résout une `AudioSource` en URL jouable. Permet à l'hôte d'ajouter un
-   * bearer token, de fetch en blob puis `URL.createObjectURL`, etc.
-   * Si absent, `source.src` est utilisé tel quel.
+   * Resolves an `AudioSource` into a playable URL. Lets the host add a
+   * bearer token, fetch as a blob then `URL.createObjectURL`, etc.
+   * When absent, `source.src` is used as is.
    *
-   * Toute URL `blob:` retournée est révoquée automatiquement au changement
-   * de source ou au destroy du plugin.
+   * Any returned `blob:` URL is revoked automatically when the source
+   * changes or the plugin is destroyed.
    */
   resolveSrc?: (source: AudioSource) => string | Promise<string>
 
@@ -93,8 +93,8 @@ export function createAudioPlugin(
 
       const src = computed(() => resolvedSrc.value)
 
-      // Source de vérité unique : calcule activeTurnId / activeWordId à chaque tick.
-      // Pas de reset à null en pause : on conserve la dernière position connue.
+      // Single source of truth: computes activeTurnId / activeWordId on every tick.
+      // No reset to null on pause: the last known position is kept.
       const stopTracker = watchEffect(() => {
         if (!isPlaying.value) return
         const time = currentTime.value
@@ -108,7 +108,6 @@ export function createAudioPlugin(
             time >= turn.startTime &&
             time <= turn.endTime
           ) {
-            console.log("yo")
             activeTurnId.value = turn.id
             activeWordId.value = hasWordTimestamps(turn.words)
               ? findActiveWord(turn.words, time)

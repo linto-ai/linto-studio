@@ -2,10 +2,10 @@ import { defineCustomElement } from "vue"
 import WebComponent from "./WebComponent.vue"
 import fontsStyles from "./styles/fonts.css?inline"
 
-// Les composants rendus par VueNodeViewRenderer de Tiptap (TurnNodeView)
-// et ceux qu'il utilise en descendance n'ont pas leurs styles scopés
-// injectés automatiquement dans le Shadow DOM. On les collecte manuellement
-// et on les ajoute au tableau `styles` du SFC.
+// Components rendered through Tiptap's VueNodeViewRenderer (TurnNodeView)
+// and their descendants don't get their scoped styles injected into the
+// Shadow DOM automatically. Collect them manually and append them to the
+// SFC's `styles` array.
 import TurnNodeView from "./plugins/transcriptionEditor/components/TurnNodeView.vue"
 import SpeakerLabel from "./components/SpeakerLabel.vue"
 import SpeakerPopover from "./components/molecules/SpeakerPopover.vue"
@@ -41,8 +41,8 @@ function injectFonts(): void {
   document.head.appendChild(style)
 }
 
-// ProseMirror/y-prosemirror appellent `editorView._root.createRange()`
-// qui n'existe pas sur ShadowRoot — on délègue à `document`.
+// ProseMirror/y-prosemirror call `editorView._root.createRange()`,
+// which doesn't exist on ShadowRoot — delegate to `document`.
 function patchShadowRoot(): void {
   if (typeof ShadowRoot === "undefined") return
   const proto = ShadowRoot.prototype as ShadowRoot & {
