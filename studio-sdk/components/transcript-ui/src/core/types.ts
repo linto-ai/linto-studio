@@ -19,6 +19,8 @@ export interface CoreCapabilities {
 // ── Event Map ──────────────────────────────────────────────────────────
 
 export interface CoreEventMap {
+  /** A new document was loaded via setDocument (channels rebuilt). */
+  "document:change": void
   "channel:change": { channelId: string }
   "translation:change": { translationId: string | null }
   "turn:add": { turn: Turn; translationId: string }
@@ -131,6 +133,12 @@ export interface AudioPluginApi {
   currentTime: Ref<number>
   isPlaying: Ref<boolean>
   src: ComputedRef<string | null>
+  /**
+   * Precomputed waveform peaks for the current source (raw amplitude values,
+   * any scale — the player normalizes). Null when unavailable: the player
+   * falls back to decoding the audio client-side.
+   */
+  waveform: Ref<number[] | null>
   /** ID du mot en cours de lecture (null si pas de timestamps de mots ou pas en lecture). */
   activeWordId: Ref<string | null>
   /** ID du turn en cours de lecture (null si hors plage ou pas en lecture). */

@@ -48,6 +48,7 @@ export const WordHighlight = Extension.create<WordHighlightOptions>({
 
     function computeDecorations(): DecorationSet {
       const activeId = core.audio?.activeWordId.value
+      console.log(activeId)
       if (!activeId) return DecorationSet.empty
 
       const translation = core.activeChannel.value?.activeTranslation.value
@@ -115,9 +116,15 @@ export const WordHighlight = Extension.create<WordHighlightOptions>({
             return DecorationSet.empty
           },
           apply(tr, old, _oldState, newState) {
+            console.log("l0")
+
             if (tr.docChanged) return DecorationSet.empty
+            console.log("l1")
             if (tr.getMeta(wordHighlightKey)) {
+              console.log("plop")
               if (isEditing(newState)) return old
+              console.log("truc")
+
               return computeDecorations()
             }
             return old

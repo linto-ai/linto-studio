@@ -96,8 +96,8 @@ class EditorHandler extends Component {
       async onStoreDocument(data) {
         return self._onStoreDocument(data)
       },
-      async connected(data) {
-        return self._onConnected(data)
+      async onStateless(data) {
+        return self._onStateless(data)
       },
     })
 
@@ -233,23 +233,31 @@ class EditorHandler extends Component {
     seedYDoc(document, turns)
     seedSpeakers(document, speakers)
 
-    // One-shot seed consumed by the first connection (avoids re-reading `text`).
+    // One-shot seed consumed by the first words request (avoids re-reading `text`).
     document.lintoWordsSeed = buildWordsPayload(turns)
     return document
   }
 
-  async _onConnected({ documentName, connection, instance }) {
-    // Sent right after the Y.Doc sync state has been pushed to the new client.
-    // The Y.Doc carries segments only — we need to deliver words+timestamps
-    // through a separate stateless message, targeted to this connection.
+  async _onStateless({ payload, documentName, document, connection }) {
+    // The Y.Doc carries segments only — words+timestamps are delivered through
+    // stateless messages, on client request. The client asks once its store is
+    // hydrated from the Y.Doc sync (pushing at connect raced that hydration:
+    // a payload arriving first was dropped, turn ids not found in the store).
     if (!connection) return
 
+    let msg
     try {
-      const document = instance?.documents?.get(documentName)
+      msg = JSON.parse(payload)
+    } catch (err) {
+      return
+    }
+    if (!msg || msg.type !== "request_words") return
+
+    try {
       let turnsWithWords = document?.lintoWordsSeed
 
       if (turnsWithWords) {
-        // Consume the one-shot seed (first connection after a cold load).
+        // Consume the one-shot seed (first request after a cold load).
         delete document.lintoWordsSeed
       } else {
         // Later joiner: read fresh so words reflect edits since load.
@@ -268,7 +276,7 @@ class EditorHandler extends Component {
         turnsWithWords,
       )
     } catch (err) {
-      debug(`onConnected seed failed for doc=${documentName}: ${err.message}`)
+      debug(`request_words failed for doc=${documentName}: ${err.message}`)
     }
   }
 

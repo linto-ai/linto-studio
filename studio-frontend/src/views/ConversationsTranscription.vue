@@ -40,7 +40,10 @@ import { apiGetChatStatus } from "@/api/chat"
 import LayoutV2 from "@/layouts/v2-layout.vue"
 import PublicationModal from "@/components/molecules/PublicationModal.vue"
 import Loading from "@/components/atoms/Loading.vue"
-import { apiGetAudioFileFromConversation } from "@/api/conversation"
+import {
+  apiGetAudioFileFromConversation,
+  apiGetAudioWaveFormFromConversation,
+} from "@/api/conversation"
 
 const COLLAB_SYNC_TIMEOUT_MS = 20000
 const COLLAB_SYNC_POLL_MS = 80
@@ -130,6 +133,16 @@ export default {
               throw new Error("Audio unavailable")
             }
             return URL.createObjectURL(res.data)
+          },
+          resolveWaveform: async (source) => {
+            const res = await apiGetAudioWaveFormFromConversation(
+              source.src,
+              false,
+            )
+            if (res?.status !== "success" || !Array.isArray(res.data?.data)) {
+              return null
+            }
+            return res.data.data
           },
         }),
       )

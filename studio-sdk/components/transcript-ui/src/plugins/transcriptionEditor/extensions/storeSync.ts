@@ -48,9 +48,7 @@ export const StoreSync = Extension.create<StoreSyncOptions>({
 
           // Skip on remote Yjs changes: the originating client already set the
           // id, and reassigning under the Yjs mutex would diverge PM/Yjs.
-          const isRemote = transactions.some(
-            (tr) => tr.getMeta(ySyncPluginKey),
-          )
+          const isRemote = transactions.some((tr) => tr.getMeta(ySyncPluginKey))
 
           // Repair missing/duplicate ids on every local change: a count-preserving
           // paste can introduce one without changing childCount. Scan is O(turns).
@@ -61,7 +59,6 @@ export const StoreSync = Extension.create<StoreSyncOptions>({
 
           const translation = getTranslation()
           if (!translation) return null
-
           syncDocToStore(newState.doc, oldState.doc, translation, store)
           return null
         },
@@ -127,9 +124,7 @@ function syncDocToStore(
     }
   })
 
-  const oldTurnsById = new Map(
-    translation.turns.value.map((t) => [t.id, t]),
-  )
+  const oldTurnsById = new Map(translation.turns.value.map((t) => [t.id, t]))
 
   const newIds = new Set<string>()
 

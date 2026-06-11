@@ -84,6 +84,7 @@ export function createCore(options: CoreOptions = {}): Core {
   function setDocument(doc: EditorDocument): void {
     utils.validateEditorDocument(doc)
     buildFromDocument(doc)
+    emit("document:change", undefined as never)
   }
 
   // ── Channel ────────────────────────────────────────────────────────

@@ -9304,6 +9304,20 @@ function validateEditorDocument(doc2) {
     }
   }
 }
+function normalizePeaks(data) {
+  const peaks = new Float32Array(data.length);
+  if (data.length === 0) return peaks;
+  const sorted = data.map(Math.abs).sort((a2, b2) => a2 - b2);
+  const reference = sorted[Math.floor((sorted.length - 1) * 0.98)] ?? 0;
+  if (reference === 0) return peaks;
+  const gamma = 1.5;
+  for (let i2 = 0; i2 < data.length; i2++) {
+    const value = (data[i2] ?? 0) / reference;
+    const clipped = Math.max(-1, Math.min(1, value));
+    peaks[i2] = Math.sign(clipped) * Math.abs(clipped) ** gamma;
+  }
+  return peaks;
+}
 function renderWaveform(channels, ctx) {
   const { width, height } = ctx.canvas;
   const channel = channels[0];
@@ -9313,8 +9327,11 @@ function renderWaveform(channels, ctx) {
   ctx.strokeStyle = ctx.fillStyle;
   ctx.beginPath();
   for (let i2 = 0; i2 < width; i2 += step * 2) {
-    const index = Math.floor(i2 * scale);
-    const value = Math.abs(channel[index] ?? 0);
+    const start = Math.floor(i2 * scale);
+    const end = Math.max(start + 1, Math.floor((i2 + step * 2) * scale));
+    let sum = 0;
+    for (let j2 = start; j2 < end; j2++) sum += Math.abs(channel[j2] ?? 0);
+    const value = sum / (end - start);
     let x2 = i2;
     let y3 = value * (height / 2);
     ctx.moveTo(x2, 0);
@@ -9330,11 +9347,14 @@ function renderWaveform(channels, ctx) {
   ctx.closePath();
 }
 function hasWordTimestamps(words) {
+  console.log(words);
   return words.length > 0 && words[0].startTime !== void 0;
 }
 const ACTIVE_WORD_MARGIN = 1;
 function findActiveWord(words, time) {
+  console.log("ff");
   if (!hasWordTimestamps(words)) return null;
+  console.log("ff 2");
   for (const word2 of words) {
     if (word2.startTime - ACTIVE_WORD_MARGIN <= time && time <= word2.endTime) {
       return word2.id;
@@ -9948,6 +9968,7 @@ function createCore(options = {}) {
   function setDocument(doc2) {
     validateEditorDocument(doc2);
     buildFromDocument(doc2);
+    emit2("document:change", void 0);
   }
   function setActiveChannel(channelId) {
     if (channelId === activeChannelId.value) return;
@@ -41032,7 +41053,12 @@ function useAudioPlayer(options) {
     loadError.value = null;
     const regionsPlugin = d.create();
     regions.value = regionsPlugin;
+    const precomputed = audio.waveform.value;
+    const peaks = precomputed?.length ? [normalizePeaks(precomputed)] : void 0;
+    const channelDuration = core.activeChannel.value?.duration;
     const player = w2.create({
+      peaks,
+      duration: peaks && channelDuration ? channelDuration : void 0,
       container,
       height: 32,
       waveColor: "#000000ff",
@@ -43501,6 +43527,7 @@ function createAudioPlugin(options = {}) {
         () => core.activeChannel.value?.activeTranslation.value.audio ?? null
       );
       const resolvedSrc = /* @__PURE__ */ ref(null);
+      const waveform = /* @__PURE__ */ ref(null);
       let ownedObjectUrl = null;
       function revokeOwned() {
         if (ownedObjectUrl) {
@@ -43513,9 +43540,18 @@ function createAudioPlugin(options = {}) {
         async (source) => {
           revokeOwned();
           resolvedSrc.value = null;
+          waveform.value = null;
           if (!source) return;
+          const waveformPromise = options.resolveWaveform ? Promise.resolve(options.resolveWaveform(source)).catch((err) => {
+            console.warn("[audio] resolveWaveform failed", err);
+            return null;
+          }) : Promise.resolve(null);
           try {
-            const url = options.resolveSrc ? await options.resolveSrc(source) : source.src;
+            const [url, peaks] = await Promise.all([
+              options.resolveSrc ? options.resolveSrc(source) : Promise.resolve(source.src),
+              waveformPromise
+            ]);
+            waveform.value = peaks?.length ? peaks : null;
             resolvedSrc.value = url;
             if (url.startsWith("blob:")) ownedObjectUrl = url;
           } catch (err) {
@@ -43532,6 +43568,7 @@ function createAudioPlugin(options = {}) {
         if (!translation) return;
         for (const turn of translation.turns.value) {
           if (turn.startTime != null && turn.endTime != null && time >= turn.startTime && time <= turn.endTime) {
+            console.log("yo");
             activeTurnId.value = turn.id;
             activeWordId.value = hasWordTimestamps(turn.words) ? findActiveWord(turn.words, time) : null;
             return;
@@ -43554,6 +43591,7 @@ function createAudioPlugin(options = {}) {
         currentTime,
         isPlaying,
         src,
+        waveform,
         activeWordId,
         activeTurnId,
         seekTo,
@@ -43623,6 +43661,82 @@ function createSubtitlePlugin(options = {}) {
       };
     }
   };
+}
+const SPEAKERS_MAP_KEY = "speakers";
+function fallbackColor(speakerId) {
+  let h2 = 5381;
+  for (let i2 = 0; i2 < speakerId.length; i2++) {
+    h2 = (h2 << 5) + h2 ^ speakerId.charCodeAt(i2);
+  }
+  return SPEAKER_COLORS[(h2 >>> 0) % SPEAKER_COLORS.length];
+}
+function resolveColor(id2, data, existing) {
+  return data.color ?? existing?.color ?? fallbackColor(id2);
+}
+function seedSpeakersMap(ydoc, translation, speakers) {
+  const speakersMap = ydoc.getMap(SPEAKERS_MAP_KEY);
+  const used = /* @__PURE__ */ new Set();
+  for (const turn of translation.turns.value) {
+    if (turn.speakerId) used.add(turn.speakerId);
+  }
+  ydoc.transact(() => {
+    for (const id2 of used) {
+      if (speakersMap.has(id2)) continue;
+      const speaker = speakers.all.get(id2);
+      if (speaker) {
+        speakersMap.set(id2, { name: speaker.name, color: speaker.color });
+      }
+    }
+  });
+}
+class SpeakersSync {
+  core;
+  speakersMap;
+  observer;
+  offCoreEvents;
+  constructor(core, ydoc) {
+    this.core = core;
+    this.speakersMap = ydoc.getMap(SPEAKERS_MAP_KEY);
+    this.importFromY();
+    this.observer = (event) => this.applyYEvent(event);
+    this.speakersMap.observe(this.observer);
+    this.offCoreEvents = [
+      core.on("speaker:add", ({ speaker }) => this.writeToY(speaker)),
+      core.on("speaker:update", ({ speaker }) => this.writeToY(speaker)),
+      core.on(
+        "speaker:remove",
+        ({ speakerId }) => this.speakersMap.delete(speakerId)
+      )
+    ];
+  }
+  destroy() {
+    this.speakersMap.unobserve(this.observer);
+    this.offCoreEvents.forEach((off) => off());
+  }
+  importFromY() {
+    for (const [id2, data] of this.speakersMap.entries()) {
+      const color = resolveColor(id2, data, this.core.speakers.all.get(id2));
+      this.core.speakers.updateOrCreate({ id: id2, name: data.name, color });
+    }
+  }
+  applyYEvent(event) {
+    event.changes.keys.forEach((change, id2) => {
+      if (change.action === "delete") {
+        this.core.speakers.delete(id2);
+        return;
+      }
+      const data = this.speakersMap.get(id2);
+      if (!data) return;
+      const color = resolveColor(id2, data, this.core.speakers.all.get(id2));
+      this.core.speakers.updateOrCreate({ id: id2, name: data.name, color });
+    });
+  }
+  // speakerEquals breaks the echo loop: Y → core → speaker:update → Y.
+  writeToY(speaker) {
+    const cur = this.speakersMap.get(speaker.id);
+    if (cur && speakerEquals(cur, speaker)) return;
+    this.speakersMap.set(speaker.id, { name: speaker.name, color: speaker.color });
+  }
 }
 const create$9 = () => /* @__PURE__ */ new Map();
 const copy = (m2) => {
@@ -55933,100 +56047,6 @@ class HocuspocusProvider extends EventEmitter2 {
     this.awareness.setLocalStateField(key, value);
   }
 }
-function turnsToDoc(turns) {
-  return {
-    type: "doc",
-    content: turns.map((turn) => turnToNode(turn))
-  };
-}
-function turnToNode(turn) {
-  const text = turn.words.length > 0 ? turn.words.map((w3) => w3.text).join(" ") : turn.text ?? "";
-  return {
-    type: "turn",
-    attrs: {
-      id: turn.id,
-      speakerId: turn.speakerId,
-      startTime: turn.startTime,
-      endTime: turn.endTime,
-      startDate: turn.startDate,
-      endDate: turn.endDate,
-      language: turn.language
-    },
-    content: text ? [{ type: "text", text }] : void 0
-  };
-}
-function mapWord(w3) {
-  return {
-    id: w3.wid,
-    text: w3.word,
-    ...w3.stime !== void 0 && { startTime: w3.stime },
-    ...w3.etime !== void 0 && { endTime: w3.etime },
-    ...w3.confidence !== void 0 && { confidence: w3.confidence }
-  };
-}
-const SPEAKERS_MAP_KEY = "speakers";
-function fallbackColor(speakerId) {
-  let h2 = 5381;
-  for (let i2 = 0; i2 < speakerId.length; i2++) {
-    h2 = (h2 << 5) + h2 ^ speakerId.charCodeAt(i2);
-  }
-  return SPEAKER_COLORS[(h2 >>> 0) % SPEAKER_COLORS.length];
-}
-function resolveColor(id2, data, existing) {
-  return data.color ?? existing?.color ?? fallbackColor(id2);
-}
-function setupSpeakersSync(options) {
-  const { core, ydoc, translation, seedFromCore } = options;
-  const speakersMap = ydoc.getMap(SPEAKERS_MAP_KEY);
-  if (seedFromCore) {
-    const used = /* @__PURE__ */ new Set();
-    for (const turn of translation.turns.value) {
-      if (turn.speakerId) used.add(turn.speakerId);
-    }
-    ydoc.transact(() => {
-      for (const id2 of used) {
-        if (speakersMap.has(id2)) continue;
-        const speaker = core.speakers.all.get(id2);
-        if (speaker) {
-          speakersMap.set(id2, { name: speaker.name, color: speaker.color });
-        }
-      }
-    });
-  }
-  for (const [id2, data] of speakersMap.entries()) {
-    const color = resolveColor(id2, data, core.speakers.all.get(id2));
-    core.speakers.updateOrCreate({ id: id2, name: data.name, color });
-  }
-  const observer = (event) => {
-    event.changes.keys.forEach((change, id2) => {
-      if (change.action === "delete") {
-        core.speakers.delete(id2);
-      } else {
-        const data = speakersMap.get(id2);
-        if (!data) return;
-        const color = resolveColor(id2, data, core.speakers.all.get(id2));
-        core.speakers.updateOrCreate({ id: id2, name: data.name, color });
-      }
-    });
-  };
-  speakersMap.observe(observer);
-  const writeToY = (speaker) => {
-    const cur = speakersMap.get(speaker.id);
-    if (cur && speakerEquals(cur, speaker)) return;
-    speakersMap.set(speaker.id, { name: speaker.name, color: speaker.color });
-  };
-  const offAdd = core.on("speaker:add", ({ speaker }) => writeToY(speaker));
-  const offUpdate = core.on("speaker:update", ({ speaker }) => writeToY(speaker));
-  const offRemove = core.on("speaker:remove", ({ speakerId }) => {
-    speakersMap.delete(speakerId);
-  });
-  return () => {
-    speakersMap.unobserve(observer);
-    offAdd();
-    offUpdate();
-    offRemove();
-  };
-}
 function isChangeOrigin(transaction) {
   return !!transaction.getMeta(ySyncPluginKey);
 }
@@ -56303,9 +56323,7 @@ const StoreSync = Extension.create({
         key: storeSyncKey,
         appendTransaction(transactions, oldState, newState) {
           if (oldState.doc.eq(newState.doc)) return null;
-          const isRemote = transactions.some(
-            (tr) => tr.getMeta(ySyncPluginKey)
-          );
+          const isRemote = transactions.some((tr) => tr.getMeta(ySyncPluginKey));
           if (!isRemote) {
             const fixTr = fixTurnIds(newState);
             if (fixTr) return fixTr;
@@ -56359,9 +56377,7 @@ function syncDocToStore(newDoc, oldDoc, translation, store) {
       oldNodesById.set(node.attrs.id, node);
     }
   });
-  const oldTurnsById = new Map(
-    translation.turns.value.map((t2) => [t2.id, t2])
-  );
+  const oldTurnsById = new Map(translation.turns.value.map((t2) => [t2.id, t2]));
   const newIds = /* @__PURE__ */ new Set();
   newDoc.forEach((newNode) => {
     if (newNode.type.name !== "turn") return;
@@ -56452,6 +56468,7 @@ const WordHighlight = Extension.create({
     }
     function computeDecorations() {
       const activeId = core.audio?.activeWordId.value;
+      console.log(activeId);
       if (!activeId) return DecorationSet.empty;
       const translation = core.activeChannel.value?.activeTranslation.value;
       if (!translation) return DecorationSet.empty;
@@ -56508,9 +56525,13 @@ const WordHighlight = Extension.create({
             return DecorationSet.empty;
           },
           apply(tr, old, _oldState, newState) {
+            console.log("l0");
             if (tr.docChanged) return DecorationSet.empty;
+            console.log("l1");
             if (tr.getMeta(wordHighlightKey)) {
+              console.log("plop");
               if (isEditing(newState)) return old;
+              console.log("truc");
               return computeDecorations();
             }
             return old;
@@ -56632,165 +56653,45 @@ const PauseOnEdit = Extension.create({
     ];
   }
 });
-function createTranscriptionEditorPlugin(options = {}) {
-  const {
-    collab,
-    field = "default",
-    user = { name: "Anonymous", color: "#999999" }
-  } = options;
+function createTiptapEditor(config) {
+  return new Editor2({
+    extensions: buildExtensions(config),
+    editable: !config.readOnly
+  });
+}
+function buildExtensions(config) {
+  const { core, ydoc, field, translation } = config;
+  const extensions = [
+    TranscriptionDocument,
+    TurnNode,
+    Text,
+    Collaboration.configure({ document: ydoc, field }),
+    StoreSync.configure({ store: core, getTranslation: () => translation }),
+    WordHighlight.configure({ core }),
+    ClickHandler.configure({ core }),
+    PauseOnEdit.configure({ core }),
+    ...core.pluginExtensions
+  ];
+  if (config.awareness && !config.readOnly) {
+    extensions.push(
+      CollaborationCursor.configure({
+        awareness: config.awareness,
+        user: config.user
+      })
+    );
+  }
+  return extensions;
+}
+function mapWord(w3) {
   return {
-    name: "transcriptionEditor",
-    install(core) {
-      const tiptapEditor = /* @__PURE__ */ shallowRef(void 0);
-      const users = /* @__PURE__ */ ref([]);
-      const isConnected = /* @__PURE__ */ ref(false);
-      const cleanups = [];
-      const sessionCleanups = [];
-      let currentProvider = null;
-      let currentDoc = null;
-      const api = {
-        tiptapEditor,
-        get doc() {
-          return currentDoc;
-        },
-        get fragment() {
-          return currentDoc.getXmlFragment(field);
-        },
-        get speakersMap() {
-          return currentDoc?.getMap(SPEAKERS_MAP_KEY) ?? null;
-        },
-        users,
-        isConnected,
-        updateUser(attrs) {
-          if (currentProvider?.awareness) {
-            Object.assign(user, attrs);
-            currentProvider.awareness.setLocalStateField("user", user);
-          }
-        }
-      };
-      core.transcriptionEditor = api;
-      function destroyCurrentSession() {
-        tiptapEditor.value?.destroy();
-        tiptapEditor.value = void 0;
-        sessionCleanups.forEach((fn) => fn());
-        sessionCleanups.length = 0;
-        if (currentProvider) {
-          currentProvider.destroy();
-          currentProvider = null;
-        }
-        if (currentDoc) {
-          currentDoc.destroy();
-          currentDoc = null;
-        }
-        isConnected.value = false;
-        users.value = [];
-      }
-      function startSession(translationId, translation) {
-        destroyCurrentSession();
-        const ydoc = new Doc();
-        currentDoc = ydoc;
-        if (collab) {
-          const provider = new HocuspocusProvider({
-            url: collab.url,
-            name: translationId,
-            token: collab.token,
-            document: ydoc,
-            onSynced() {
-              isConnected.value = true;
-            },
-            onDisconnect() {
-              isConnected.value = false;
-            },
-            onAwarenessUpdate({ states }) {
-              users.value = states.map((s2) => ({
-                clientId: s2.clientId,
-                ...s2.user
-              }));
-            },
-            onStateless({ payload }) {
-              applyStatelessPayload(payload, translation);
-            }
-          });
-          currentProvider = provider;
-          const stopSync = watch(
-            isConnected,
-            (synced) => {
-              if (!synced) return;
-              stopSync();
-              sessionCleanups.push(
-                setupSpeakersSync({
-                  core,
-                  ydoc,
-                  translation,
-                  seedFromCore: false
-                })
-              );
-              createTiptapEditor(
-                core,
-                options,
-                ydoc,
-                field,
-                tiptapEditor,
-                provider.awareness,
-                cleanups
-              );
-            },
-            { immediate: true }
-          );
-          cleanups.push(stopSync);
-        } else {
-          const fragment = ydoc.getXmlFragment(field);
-          const initialContent = turnsToDoc(translation.turns.value);
-          const schema = getSchema([TranscriptionDocument, TurnNode, Text]);
-          prosemirrorJSONToYXmlFragment(schema, initialContent, fragment);
-          isConnected.value = true;
-          sessionCleanups.push(
-            setupSpeakersSync({ core, ydoc, translation, seedFromCore: true })
-          );
-          createTiptapEditor(
-            core,
-            options,
-            ydoc,
-            field,
-            tiptapEditor,
-            null,
-            cleanups
-          );
-        }
-      }
-      const stopWaiting = watch(
-        () => core.activeChannel.value,
-        (channel) => {
-          if (!channel) return;
-          stopWaiting();
-          const editableTranslation = () => {
-            const ch = core.activeChannel.value;
-            if (!ch) return void 0;
-            return ch.translations.get(ch.activeTranslation.value.id);
-          };
-          function syncSession() {
-            const store = editableTranslation();
-            if (store) startSession(store.id, store);
-            else destroyCurrentSession();
-          }
-          syncSession();
-          const stopTranslation = watch(
-            () => core.activeChannel.value?.activeTranslation.value.id,
-            syncSession
-          );
-          cleanups.push(stopTranslation);
-        },
-        { immediate: true }
-      );
-      return () => {
-        stopWaiting();
-        cleanups.forEach((fn) => fn());
-        destroyCurrentSession();
-        core.transcriptionEditor = void 0;
-      };
-    }
+    id: w3.wid,
+    text: w3.word,
+    ...w3.stime !== void 0 && { startTime: w3.stime },
+    ...w3.etime !== void 0 && { endTime: w3.etime },
+    ...w3.confidence !== void 0 && { confidence: w3.confidence }
   };
 }
+const REQUEST_WORDS_MESSAGE = JSON.stringify({ type: "request_words" });
 function applyStatelessPayload(payload, translation) {
   let msg;
   try {
@@ -56818,52 +56719,239 @@ function applyStatelessPayload(payload, translation) {
 function normalizeText(s2) {
   return s2.replace(/\s+/g, " ").trim();
 }
-function createTiptapEditor(core, options, ydoc, field, tiptapEditor, awareness, cleanups) {
-  const activeTranslation = computed(() => {
-    const channel = core.activeChannel.value;
-    if (!channel) return void 0;
-    return channel.translations.get(channel.activeTranslation.value.id);
-  });
-  const extensions = [
-    TranscriptionDocument,
-    TurnNode,
-    Text,
-    Collaboration.configure({
-      document: ydoc,
-      field
-    }),
-    StoreSync.configure({
-      store: core,
-      getTranslation: () => activeTranslation.value
-    }),
-    WordHighlight.configure({ core }),
-    ClickHandler.configure({ core }),
-    PauseOnEdit.configure({ core }),
-    ...core.pluginExtensions
-  ];
-  if (awareness && !options.readOnly) {
-    extensions.push(
-      CollaborationCursor.configure({
-        awareness,
-        user: options.user ?? { name: "Anonymous", color: "#999999" }
-      })
-    );
+function turnsToDoc(turns) {
+  return {
+    type: "doc",
+    content: turns.map((turn) => turnToNode(turn))
+  };
+}
+function turnToNode(turn) {
+  const text = turn.words.length > 0 ? turn.words.map((w3) => w3.text).join(" ") : turn.text ?? "";
+  return {
+    type: "turn",
+    attrs: {
+      id: turn.id,
+      speakerId: turn.speakerId,
+      startTime: turn.startTime,
+      endTime: turn.endTime,
+      startDate: turn.startDate,
+      endDate: turn.endDate,
+      language: turn.language
+    },
+    content: text ? [{ type: "text", text }] : void 0
+  };
+}
+class CollabSession {
+  ydoc;
+  deps;
+  provider;
+  editor = null;
+  speakersSync = null;
+  constructor(deps, collab) {
+    this.deps = deps;
+    this.ydoc = new Doc();
+    this.provider = new HocuspocusProvider({
+      url: collab.url,
+      name: deps.translation.id,
+      token: collab.token,
+      document: this.ydoc,
+      onSynced: () => this.handleSynced(),
+      onDisconnect: () => deps.host.setConnected(false),
+      onAwarenessUpdate: ({ states }) => deps.host.setUsers(mapAwarenessStates(states)),
+      onStateless: ({ payload }) => applyStatelessPayload(payload, deps.translation)
+    });
   }
-  tiptapEditor.value = new Editor2({
-    extensions,
-    editable: !options.readOnly
-  });
-  const unsubSync = core.on("translation:sync", () => {
-    console.warn(
-      "[transcriptionEditor] translation:sync is not supported while the editor is active"
+  updateUser() {
+    this.provider.awareness?.setLocalStateField("user", this.deps.host.user);
+  }
+  destroy() {
+    this.editor?.destroy();
+    this.editor = null;
+    this.speakersSync?.destroy();
+    this.speakersSync = null;
+    this.provider.destroy();
+    this.ydoc.destroy();
+  }
+  /** Fires on every (re)sync of the provider, not just the first one. */
+  handleSynced() {
+    this.deps.host.setConnected(true);
+    if (this.editor) {
+      this.requestWords();
+      return;
+    }
+    this.createEditor();
+  }
+  createEditor() {
+    const { core, host, translation, field, readOnly } = this.deps;
+    this.speakersSync = new SpeakersSync(core, this.ydoc);
+    this.editor = createTiptapEditor({
+      core,
+      ydoc: this.ydoc,
+      field,
+      translation,
+      readOnly,
+      awareness: this.provider.awareness,
+      user: host.user
+    });
+    this.requestWordsWhenHydrated(this.editor);
+    host.setEditor(this.editor);
+  }
+  /**
+   * Words+timestamps live outside the Y.Doc and are served on demand
+   * (stateless messages). Request them only once the store holds the turns —
+   * requesting earlier would race the doc sync: applyStatelessPayload would
+   * find no matching turn and silently drop the payload.
+   *
+   * The editor is created after the provider sync, so Tiptap builds its
+   * initial state from the already-populated Y fragment during construction
+   * — no docChanged transaction is dispatched for it (StoreSync fills the
+   * store synchronously through the same path). Only an empty doc still
+   * needs to wait for a first doc-changing transaction.
+   */
+  requestWordsWhenHydrated(editor) {
+    if (isHydrated(editor)) {
+      this.requestWords();
+      return;
+    }
+    const onFirstDocChange = (props) => {
+      if (!props.transaction.docChanged) return;
+      editor.off("transaction", onFirstDocChange);
+      this.requestWords();
+    };
+    editor.on("transaction", onFirstDocChange);
+  }
+  requestWords() {
+    this.provider.sendStateless(REQUEST_WORDS_MESSAGE);
+  }
+}
+class LocalSession {
+  ydoc;
+  editor;
+  speakersSync;
+  constructor(deps) {
+    const { core, host, translation, field, readOnly } = deps;
+    this.ydoc = new Doc();
+    const fragment = this.ydoc.getXmlFragment(field);
+    const schema = getSchema([TranscriptionDocument, TurnNode, Text]);
+    prosemirrorJSONToYXmlFragment(
+      schema,
+      turnsToDoc(translation.turns.value),
+      fragment
     );
-  });
-  const unsubChannelSync = core.on("channel:sync", () => {
-    console.warn(
-      "[transcriptionEditor] channel:sync is not supported while the editor is active"
-    );
-  });
-  cleanups.push(unsubSync, unsubChannelSync);
+    seedSpeakersMap(this.ydoc, translation, core.speakers);
+    this.speakersSync = new SpeakersSync(core, this.ydoc);
+    this.editor = createTiptapEditor({
+      core,
+      ydoc: this.ydoc,
+      field,
+      translation,
+      readOnly,
+      awareness: null,
+      user: host.user
+    });
+    host.setEditor(this.editor);
+    host.setConnected(true);
+  }
+  updateUser() {
+  }
+  destroy() {
+    this.editor.destroy();
+    this.speakersSync.destroy();
+    this.ydoc.destroy();
+  }
+}
+function mapAwarenessStates(states) {
+  return states.map((s2) => ({
+    clientId: s2.clientId,
+    ...s2.user
+  }));
+}
+function isHydrated(editor) {
+  const firstTurn = editor.state.doc.firstChild;
+  return editor.state.doc.childCount > 1 || firstTurn?.attrs.id != null;
+}
+function createTranscriptionEditorPlugin({
+  collab,
+  field = "default",
+  user = { name: "Anonymous", color: "#999999" },
+  readOnly = false
+} = {}) {
+  return {
+    name: "transcriptionEditor",
+    install(core) {
+      const tiptapEditor = /* @__PURE__ */ shallowRef(void 0);
+      const users = /* @__PURE__ */ ref([]);
+      const isConnected = /* @__PURE__ */ ref(false);
+      let session = null;
+      const host = {
+        setEditor: (editor) => {
+          tiptapEditor.value = editor;
+        },
+        setConnected: (connected) => {
+          isConnected.value = connected;
+        },
+        setUsers: (newUsers) => {
+          users.value = newUsers;
+        },
+        user
+      };
+      core.transcriptionEditor = {
+        tiptapEditor,
+        get doc() {
+          return session?.ydoc ?? null;
+        },
+        get fragment() {
+          return session?.ydoc.getXmlFragment(field) ?? null;
+        },
+        get speakersMap() {
+          return session?.ydoc.getMap(SPEAKERS_MAP_KEY) ?? null;
+        },
+        users,
+        isConnected,
+        updateUser(attrs) {
+          Object.assign(user, attrs);
+          session?.updateUser();
+        }
+      };
+      const restart = () => {
+        session?.destroy();
+        session = null;
+        tiptapEditor.value = void 0;
+        users.value = [];
+        isConnected.value = false;
+        const translation = editableTranslation(core);
+        if (!translation) return;
+        const deps = { core, host, translation, field, readOnly };
+        session = collab ? new CollabSession(deps, collab) : new LocalSession(deps);
+      };
+      const warnUnsupported = (event) => () => {
+        if (session) {
+          console.warn(
+            `[transcriptionEditor] ${event} is not supported while the editor is active`
+          );
+        }
+      };
+      const unsubscribes = [
+        core.on("document:change", restart),
+        core.on("channel:change", restart),
+        core.on("translation:change", restart),
+        core.on("translation:sync", warnUnsupported("translation:sync")),
+        core.on("channel:sync", warnUnsupported("channel:sync"))
+      ];
+      restart();
+      return () => {
+        unsubscribes.forEach((off) => off());
+        session?.destroy();
+        session = null;
+        core.transcriptionEditor = void 0;
+      };
+    }
+  };
+}
+function editableTranslation(core) {
+  const channel = core.activeChannel.value;
+  if (!channel) return void 0;
+  return channel.translations.get(channel.activeTranslation.value.id);
 }
 function createService(init) {
   return {

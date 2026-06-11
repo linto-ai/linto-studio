@@ -236,7 +236,19 @@ export function useAudioPlayer(options: UseAudioPlayerOptions) {
     const regionsPlugin = RegionsPlugin.create()
     regions.value = regionsPlugin
 
+    // Precomputed peaks (resolved by the audio plugin) let WaveSurfer draw
+    // the waveform without fetching and decoding the whole audio file.
+    // The duration comes from the document metadata; without it WaveSurfer
+    // waits for the media metadata before the first render.
+    const precomputed = audio.waveform.value
+    const peaks = precomputed?.length
+      ? [utils.normalizePeaks(precomputed)]
+      : undefined
+    const channelDuration = core.activeChannel.value?.duration
+
     const player = WaveSurfer.create({
+      peaks,
+      duration: peaks && channelDuration ? channelDuration : undefined,
       container,
       height: 32,
       waveColor: "#000000ff",

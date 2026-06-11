@@ -11,5 +11,5 @@ export {
   formatRelativeFromNow,
 } from "./time"
 export { validateEditorDocument, DocumentValidationError } from "./validateDocument"
-export { renderWaveform } from "./waveform"
+export { renderWaveform, normalizePeaks } from "./waveform"
 export { findActiveWord, hasWordTimestamps } from "./words"

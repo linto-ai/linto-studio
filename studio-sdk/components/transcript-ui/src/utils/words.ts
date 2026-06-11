@@ -1,6 +1,7 @@
 import type { Word } from "../types/editor"
 
 export function hasWordTimestamps(words: Word[]): boolean {
+  console.log(words)
   return words.length > 0 && words[0]!.startTime !== undefined
 }
 
@@ -17,8 +18,9 @@ const ACTIVE_WORD_MARGIN = 1
  * secondes du temps courant.
  */
 export function findActiveWord(words: Word[], time: number): string | null {
+  console.log("ff")
   if (!hasWordTimestamps(words)) return null
-
+  console.log("ff 2")
   for (const word of words) {
     if (word.startTime! - ACTIVE_WORD_MARGIN <= time && time <= word.endTime!) {
       return word.id

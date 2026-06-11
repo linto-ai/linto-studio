@@ -15,9 +15,20 @@ export interface AudioPluginOptions {
    * de source ou au destroy du plugin.
    */
   resolveSrc?: (source: AudioSource) => string | Promise<string>
+
+  /**
+   * Resolves precomputed waveform peaks for an `AudioSource` (e.g. fetched
+   * from the API). Raw amplitude values, any scale — the player normalizes
+   * them. Return null (or throw) to fall back to client-side decoding.
+   */
+  resolveWaveform?: (
+    source: AudioSource,
+  ) => number[] | null | Promise<number[] | null>
 }
 
-export function createAudioPlugin(options: AudioPluginOptions = {}): CorePlugin {
+export function createAudioPlugin(
+  options: AudioPluginOptions = {},
+): CorePlugin {
   return {
     name: "audio",
 
@@ -34,6 +45,7 @@ export function createAudioPlugin(options: AudioPluginOptions = {}): CorePlugin 
       )
 
       const resolvedSrc = ref<string | null>(null)
+      const waveform = ref<number[] | null>(null)
       let ownedObjectUrl: string | null = null
 
       function revokeOwned() {
@@ -48,12 +60,28 @@ export function createAudioPlugin(options: AudioPluginOptions = {}): CorePlugin 
         async (source) => {
           revokeOwned()
           resolvedSrc.value = null
+          waveform.value = null
           if (!source) return
 
+          // Resolved alongside the src; a failure here only disables the
+          // precomputed waveform, never the audio itself.
+          const waveformPromise = options.resolveWaveform
+            ? Promise.resolve(options.resolveWaveform(source)).catch((err) => {
+                console.warn("[audio] resolveWaveform failed", err)
+                return null
+              })
+            : Promise.resolve(null)
+
           try {
-            const url = options.resolveSrc
-              ? await options.resolveSrc(source)
-              : source.src
+            const [url, peaks] = await Promise.all([
+              options.resolveSrc
+                ? options.resolveSrc(source)
+                : Promise.resolve(source.src),
+              waveformPromise,
+            ])
+            // Peaks are set before the src: the player creates WaveSurfer
+            // when the src changes and reads the waveform at that point.
+            waveform.value = peaks?.length ? peaks : null
             resolvedSrc.value = url
             if (url.startsWith("blob:")) ownedObjectUrl = url
           } catch (err) {
@@ -80,6 +108,7 @@ export function createAudioPlugin(options: AudioPluginOptions = {}): CorePlugin 
             time >= turn.startTime &&
             time <= turn.endTime
           ) {
+            console.log("yo")
             activeTurnId.value = turn.id
             activeWordId.value = hasWordTimestamps(turn.words)
               ? findActiveWord(turn.words, time)
@@ -109,6 +138,7 @@ export function createAudioPlugin(options: AudioPluginOptions = {}): CorePlugin 
         currentTime,
         isPlaying,
         src,
+        waveform,
         activeWordId,
         activeTurnId,
         seekTo,
