@@ -91,6 +91,9 @@ SUPER_ADMIN_PWD=
 # Bellow are the settings require for the session service
 SESSION_API_ENDPOINT=
 SESSION_PSW_SALT=secret_salt
+# Max time studio-api waits for the stop drain barrier (keep above the
+# Session API's SESSION_STOP_FLUSH_TIMEOUT_MS, 10s)
+SESSION_STOP_TIMEOUT_MS=15000
 
 # Socket.IO Redis Adapter (optional, for multi-instance scaling)
 # Leave SOCKETIO_REDIS_HOST empty to use default in-memory adapter
