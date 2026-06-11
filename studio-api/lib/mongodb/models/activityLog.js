@@ -112,12 +112,17 @@ class ActivityLog extends MongoModel {
 
   async getLastChannelEvent(sessionId, channelId) {
     try {
+      // Stored channelIds are numeric; also accept string ids from callers
+      const channelIds = [channelId]
+      const numericChannelId = Number(channelId)
+      if (!Number.isNaN(numericChannelId)) channelIds.push(numericChannelId)
+
       const events = await this.mongoRequest(
         {
           activity: "channel",
           source: "mqtt",
           "session.sessionId": sessionId,
-          "channel.channelId": channelId,
+          "channel.channelId": { $in: channelIds },
         },
         { sort: { timestamp: -1 }, limit: 1 },
       )
@@ -304,6 +309,8 @@ class ActivityLog extends MongoModel {
         },
       ]
 
+      const sessionResultPromise = this.mongoAggregate(sessionQuery)
+
       // Build channel match query for totalStreamingTime
       const timestampQuery = {}
       if (startDate) timestampQuery.$gte = startDate
@@ -313,14 +320,10 @@ class ActivityLog extends MongoModel {
       // filter is applied by scoping them to the sessions that user joined
       let userSessionIds = null
       if (userId) {
-        userSessionIds = await this.mongoDistinct("session.sessionId", {
-          activity: "session",
-          "user.id": userId,
-          ...(orgaId && { "organization.id": orgaId }),
-          ...(Object.keys(timestampQuery).length > 0 && {
-            timestamp: timestampQuery,
-          }),
-        })
+        userSessionIds = await this.mongoDistinct(
+          "session.sessionId",
+          sessionMatchQuery.$match,
+        )
       }
 
       const channelMatchQuery = {
@@ -356,9 +359,8 @@ class ActivityLog extends MongoModel {
         },
       ]
 
-      // Run both aggregations in parallel
       const [sessionResult, channelGroups] = await Promise.all([
-        this.mongoAggregate(sessionQuery),
+        sessionResultPromise,
         this.mongoAggregate(channelQuery),
       ])
 
@@ -376,7 +378,6 @@ class ActivityLog extends MongoModel {
         }
       }
 
-      // Merge results
       if (sessionResult.length > 0) {
         return [
           {
@@ -386,7 +387,6 @@ class ActivityLog extends MongoModel {
         ]
       }
 
-      // Return default values if no session data
       return [
         {
           totalConnections: 0,

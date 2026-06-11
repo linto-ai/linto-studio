@@ -131,24 +131,30 @@ async function refreshSessionKpi(req, res, next) {
   }
 }
 
+async function fetchKpiSeries(query) {
+  const { step, organizationId, userId, startDate, endDate } = query
+  const granularity = step || "daily"
+  const data = await kpiHandler.getKpiByDateRange(
+    organizationId,
+    startDate,
+    endDate,
+    granularity,
+    userId,
+  )
+  return { granularity, data }
+}
+
 async function getKpiSeries(req, res, next) {
   try {
-    const { step, organizationId, userId, startDate, endDate } = req.query
+    const { startDate, endDate } = req.query
 
     if (isInvalidDateRange(startDate, endDate, res)) return
 
-    const granularity = step || "daily"
-    const result = await kpiHandler.getKpiByDateRange(
-      organizationId,
-      startDate,
-      endDate,
-      granularity,
-      userId,
-    )
+    const { granularity, data } = await fetchKpiSeries(req.query)
 
     res.status(200).json({
       step: granularity,
-      data: result,
+      data,
     })
   } catch (err) {
     next(err)
@@ -157,20 +163,12 @@ async function getKpiSeries(req, res, next) {
 
 async function exportKpiSeries(req, res, next) {
   try {
-    const { format, step, organizationId, userId, startDate, endDate } =
-      req.query
+    const { format, startDate, endDate } = req.query
 
     if (exportResponse.isInvalidFormat(format, res)) return
     if (isInvalidDateRange(startDate, endDate, res)) return
 
-    const granularity = step || "daily"
-    const series = await kpiHandler.getKpiByDateRange(
-      organizationId,
-      startDate,
-      endDate,
-      granularity,
-      userId,
-    )
+    const { granularity, data: series } = await fetchKpiSeries(req.query)
 
     const dateStr = new Date().toISOString().split("T")[0]
 
@@ -193,7 +191,6 @@ async function exportKpiSessions(req, res, next) {
     if (exportResponse.isInvalidFormat(format, res)) return
     if (isInvalidDateRange(startDate, endDate, res)) return
 
-    // Build query params
     const queryParams = {}
     if (organizationId) queryParams.organizationId = organizationId
     if (startDate) queryParams.startDate = startDate

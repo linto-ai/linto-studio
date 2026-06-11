@@ -233,22 +233,8 @@ export default {
     },
   },
   watch: {
-    currentTimePeriod() {
-      this.fetchFilteredData()
-      //this.updateUrlParams()
-    },
-    selectedOrganization() {
-      this.fetchFilteredData()
-      //this.updateUrlParams()
-    },
-    selectedUser() {
-      this.fetchFilteredData()
-    },
-    startDate() {
-      this.fetchFilteredData()
-      //this.updateUrlParams()
-    },
-    endDate() {
+    // Single watcher: clearing several filters at once triggers one fetch
+    currentFilters() {
       this.fetchFilteredData()
       //this.updateUrlParams()
     },

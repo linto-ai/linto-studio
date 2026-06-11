@@ -9,7 +9,7 @@ const kpiHandlers = {
   llm: model.activityLog.getKpiLlm.bind(model.activityLog),
 }
 
-async function fillEmptyKpi(activityKpi) {
+function fillEmptyKpi(activityKpi) {
   if (activityKpi.session == null) {
     activityKpi.session = {
       totalConnections: 0,
@@ -34,16 +34,36 @@ async function generateKpi(organizationId, startDate, endDate, userId) {
     kpiHandlers.transcription(organizationId, startDate, endDate, userId),
   ])
 
-  let activityKpi = {
+  return fillEmptyKpi({
     organizationId,
     userId,
     session: session[0],
     llm: llm[0],
     transcription: transcription[0],
-  }
+  })
+}
 
-  activityKpi = fillEmptyKpi(activityKpi)
-  return activityKpi
+// Batch size caps Mongo pressure: each interval runs 3-4 queries, so a
+// batch of 6 means at most ~24 concurrent operations per series request
+const INTERVALS_BATCH_SIZE = 6
+
+async function generateKpiSeries(intervals, organizationId, userId) {
+  const results = []
+  for (let i = 0; i < intervals.length; i += INTERVALS_BATCH_SIZE) {
+    const batch = intervals.slice(i, i + INTERVALS_BATCH_SIZE)
+    const kpis = await Promise.all(
+      batch.map((interval) =>
+        generateKpi(
+          organizationId,
+          interval.startDate,
+          interval.endDate,
+          userId,
+        ),
+      ),
+    )
+    kpis.forEach((kpi, j) => results.push({ date: batch[j].label, ...kpi }))
+  }
+  return results
 }
 
 function getDayRange(dayOffset) {
@@ -57,7 +77,7 @@ function getDayRange(dayOffset) {
   return {
     startDate: start.toISOString(),
     endDate: end.toISOString(),
-    date: start.toISOString().split("T")[0],
+    label: start.toISOString().split("T")[0],
   }
 }
 
@@ -76,31 +96,20 @@ function getMonthRange(monthOffset) {
   return {
     startDate: start.toISOString(),
     endDate: end.toISOString(),
-    date: label,
+    label,
   }
 }
 
 async function getLast7DaysKpi(organizationId, userId) {
-  const results = []
-
-  for (let i = 6; i >= 0; i--) {
-    const { startDate, endDate, date } = getDayRange(i)
-    const kpi = await generateKpi(organizationId, startDate, endDate, userId)
-    results.push({ date: date, ...kpi })
-  }
-  return results
+  const intervals = []
+  for (let i = 6; i >= 0; i--) intervals.push(getDayRange(i))
+  return generateKpiSeries(intervals, organizationId, userId)
 }
 
 async function getLast12MonthsKpi(organizationId, userId) {
-  const results = []
-
-  for (let i = 11; i >= 0; i--) {
-    const { startDate, endDate, date } = getMonthRange(i)
-    const kpi = await generateKpi(organizationId, startDate, endDate, userId)
-    results.push({ date: date, ...kpi })
-  }
-
-  return results
+  const intervals = []
+  for (let i = 11; i >= 0; i--) intervals.push(getMonthRange(i))
+  return generateKpiSeries(intervals, organizationId, userId)
 }
 
 function getYearRange(yearOffset) {
@@ -112,20 +121,14 @@ function getYearRange(yearOffset) {
   return {
     startDate: start.toISOString(),
     endDate: end.toISOString(),
-    date: String(year),
+    label: String(year),
   }
 }
 
 async function getLastYearsKpi(organizationId, userId, years = 5) {
-  const results = []
-
-  for (let i = years - 1; i >= 0; i--) {
-    const { startDate, endDate, date } = getYearRange(i)
-    const kpi = await generateKpi(organizationId, startDate, endDate, userId)
-    results.push({ date: date, ...kpi })
-  }
-
-  return results
+  const intervals = []
+  for (let i = years - 1; i >= 0; i--) intervals.push(getYearRange(i))
+  return generateKpiSeries(intervals, organizationId, userId)
 }
 
 /**
@@ -238,7 +241,6 @@ async function getKpiByDateRange(
   granularity = "daily",
   userId,
 ) {
-  // If no custom dates provided, use default behavior
   if (!startDate && !endDate) {
     switch (granularity) {
       case "daily":
@@ -252,28 +254,13 @@ async function getKpiByDateRange(
     }
   }
 
-  // Parse dates, using defaults if only one is provided
   const end = endDate ? new Date(endDate) : new Date()
   const start = startDate
     ? new Date(startDate)
     : getDefaultStartDate(granularity, end)
 
-  // Compute intervals based on granularity
   const intervals = computeIntervalsForRange(start, end, granularity)
-
-  // Generate KPI for each interval
-  const results = []
-  for (const interval of intervals) {
-    const kpi = await generateKpi(
-      organizationId,
-      interval.startDate,
-      interval.endDate,
-      userId,
-    )
-    results.push({ date: interval.label, ...kpi })
-  }
-
-  return results
+  return generateKpiSeries(intervals, organizationId, userId)
 }
 
 module.exports = {
