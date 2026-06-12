@@ -112,6 +112,9 @@ module.exports = {
   permissionBot: async (req, res, next) => {
     await permissionAccess(req, res, next, PERMISSIONS.BOT)
   },
+  permissionSpeakerIdentification: async (req, res, next) => {
+    await permissionAccess(req, res, next, PERMISSIONS.SPEAKER_IDENTIFICATION)
+  },
   sessionSocketAccess: async (session, userId) => {
     return await sessionSocketAccess(session, userId, ROLES.MEMBER)
   },

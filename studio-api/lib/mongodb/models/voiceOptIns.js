@@ -18,6 +18,11 @@ class VoiceOptInModel extends MongoModel {
         created: moment().format(),
       }
       await this.mongoUpdateOne(query, "$setOnInsert", values, { upsert: true })
+      // consentVersion tracks the consent text version the user validated;
+      // re-opting-in refreshes it (cf. docs/speaker-identification 04 §2.5)
+      await this.mongoUpdateOne(query, "$set", {
+        consentVersion: process.env.SPEAKER_ID_CONSENT_VERSION || "1",
+      })
       const result = await this.getByUserAndOrg(userId, organizationId)
       return result[0] || null
     } catch (error) {

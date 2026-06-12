@@ -8,6 +8,8 @@ const {
   `${process.cwd()}/components/WebServer/routecontrollers/organization/voiceprintCollection.js`,
 )
 
+const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
+
 module.exports = (webserver) => {
   return [
     {
@@ -15,7 +17,8 @@ module.exports = (webserver) => {
       method: "get",
       controller: getVoiceprintCollections,
       requireAuth: true,
-      requireOrganizationMemberAccess: true,
+      requireOrganizationUploaderAccess: true,
+      orgaPermissionAccess: PERMISSIONS.SPEAKER_IDENTIFICATION,
     },
     {
       path: "/",
@@ -23,13 +26,15 @@ module.exports = (webserver) => {
       controller: createVoiceprintCollection,
       requireAuth: true,
       requireOrganizationMaintainerAccess: true,
+      orgaPermissionAccess: PERMISSIONS.SPEAKER_IDENTIFICATION,
     },
     {
       path: "/:collectionId",
       method: "get",
       controller: getVoiceprintCollection,
       requireAuth: true,
-      requireOrganizationMemberAccess: true,
+      requireOrganizationUploaderAccess: true,
+      orgaPermissionAccess: PERMISSIONS.SPEAKER_IDENTIFICATION,
     },
     {
       path: "/:collectionId",
@@ -37,6 +42,7 @@ module.exports = (webserver) => {
       controller: updateVoiceprintCollection,
       requireAuth: true,
       requireOrganizationMaintainerAccess: true,
+      orgaPermissionAccess: PERMISSIONS.SPEAKER_IDENTIFICATION,
     },
     {
       path: "/:collectionId",
@@ -44,6 +50,7 @@ module.exports = (webserver) => {
       controller: deleteVoiceprintCollection,
       requireAuth: true,
       requireOrganizationMaintainerAccess: true,
+      orgaPermissionAccess: PERMISSIONS.SPEAKER_IDENTIFICATION,
     },
   ]
 }

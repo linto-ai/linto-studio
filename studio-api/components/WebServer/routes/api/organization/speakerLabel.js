@@ -8,6 +8,8 @@ const {
   `${process.cwd()}/components/WebServer/routecontrollers/organization/speakerLabel.js`,
 )
 
+const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
+
 module.exports = (webserver) => {
   return [
     {
@@ -15,7 +17,8 @@ module.exports = (webserver) => {
       method: "get",
       controller: getSpeakerLabels,
       requireAuth: true,
-      requireOrganizationMemberAccess: true,
+      requireOrganizationUploaderAccess: true,
+      orgaPermissionAccess: PERMISSIONS.SPEAKER_IDENTIFICATION,
     },
     {
       path: "/",
@@ -23,13 +26,15 @@ module.exports = (webserver) => {
       controller: createSpeakerLabel,
       requireAuth: true,
       requireOrganizationMaintainerAccess: true,
+      orgaPermissionAccess: PERMISSIONS.SPEAKER_IDENTIFICATION,
     },
     {
       path: "/:labelId",
       method: "get",
       controller: getSpeakerLabel,
       requireAuth: true,
-      requireOrganizationMemberAccess: true,
+      requireOrganizationUploaderAccess: true,
+      orgaPermissionAccess: PERMISSIONS.SPEAKER_IDENTIFICATION,
     },
     {
       path: "/:labelId",
@@ -37,6 +42,7 @@ module.exports = (webserver) => {
       controller: updateSpeakerLabel,
       requireAuth: true,
       requireOrganizationMaintainerAccess: true,
+      orgaPermissionAccess: PERMISSIONS.SPEAKER_IDENTIFICATION,
     },
     {
       path: "/:labelId",
@@ -44,6 +50,7 @@ module.exports = (webserver) => {
       controller: deleteSpeakerLabel,
       requireAuth: true,
       requireOrganizationMaintainerAccess: true,
+      orgaPermissionAccess: PERMISSIONS.SPEAKER_IDENTIFICATION,
     },
   ]
 }

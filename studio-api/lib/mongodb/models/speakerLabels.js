@@ -1,5 +1,11 @@
 const MongoModel = require(`../model`)
 const moment = require("moment")
+const { escapeRegex } = require(
+  `${process.cwd()}/lib/dao/speakerIdentification/naming`,
+)
+const { SYNC_STATE } = require(
+  `${process.cwd()}/components/WebServer/controllers/files/store`,
+)
 
 class SpeakerLabelModel extends MongoModel {
   constructor() {
@@ -17,6 +23,7 @@ class SpeakerLabelModel extends MongoModel {
         collectionId: this.getObjectId(payload.collectionId),
         organizationId: this.getObjectId(payload.organizationId),
         hasVoiceprint: payload.hasVoiceprint || false,
+        syncState: payload.syncState || SYNC_STATE.SYNCED,
       }
       return await this.mongoInsert(doc)
     } catch (error) {
@@ -51,11 +58,25 @@ class SpeakerLabelModel extends MongoModel {
     }
   }
 
+  // Case-insensitive lookup: label names are unique per collection
+  // regardless of case (cf. docs/speaker-identification 04 §2.2)
   async getByCollectionIdAndName(collectionId, name) {
     try {
       const query = {
         collectionId: this.getObjectId(collectionId),
-        name: name,
+        name: { $regex: `^${escapeRegex(name)}$`, $options: "i" },
+      }
+      return await this.mongoRequest(query)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async getByOrganizationId(organizationId) {
+    try {
+      const query = {
+        organizationId: this.getObjectId(organizationId),
       }
       return await this.mongoRequest(query)
     } catch (error) {

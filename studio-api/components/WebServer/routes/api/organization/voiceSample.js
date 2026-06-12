@@ -8,6 +8,8 @@ const {
   `${process.cwd()}/components/WebServer/routecontrollers/organization/voiceSample.js`,
 )
 
+const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
+
 module.exports = (webserver) => {
   return [
     {
@@ -15,7 +17,8 @@ module.exports = (webserver) => {
       method: "get",
       controller: getVoiceSamples,
       requireAuth: true,
-      requireOrganizationMemberAccess: true,
+      requireOrganizationUploaderAccess: true,
+      orgaPermissionAccess: PERMISSIONS.SPEAKER_IDENTIFICATION,
     },
     {
       path: "/",
@@ -23,20 +26,23 @@ module.exports = (webserver) => {
       controller: createVoiceSample,
       requireAuth: true,
       requireOrganizationMaintainerAccess: true,
+      orgaPermissionAccess: PERMISSIONS.SPEAKER_IDENTIFICATION,
     },
     {
       path: "/:voiceSampleId",
       method: "get",
       controller: getVoiceSample,
       requireAuth: true,
-      requireOrganizationMemberAccess: true,
+      requireOrganizationUploaderAccess: true,
+      orgaPermissionAccess: PERMISSIONS.SPEAKER_IDENTIFICATION,
     },
     {
       path: "/:voiceSampleId/audio",
       method: "get",
       controller: getVoiceSampleAudio,
       requireAuth: true,
-      requireOrganizationMemberAccess: true,
+      requireOrganizationUploaderAccess: true,
+      orgaPermissionAccess: PERMISSIONS.SPEAKER_IDENTIFICATION,
     },
     {
       path: "/:voiceSampleId",
@@ -44,6 +50,7 @@ module.exports = (webserver) => {
       controller: deleteVoiceSample,
       requireAuth: true,
       requireOrganizationMaintainerAccess: true,
+      orgaPermissionAccess: PERMISSIONS.SPEAKER_IDENTIFICATION,
     },
   ]
 }

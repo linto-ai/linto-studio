@@ -8,6 +8,7 @@ const {
   storeAndCreateSample,
   VOICE_SAMPLE_TYPE,
   STORAGE_MODE,
+  SYNC_STATE,
 } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 
 const {
@@ -17,6 +18,16 @@ const {
 } = require(
   `${process.cwd()}/components/WebServer/error/exception/speakerIdentification`,
 )
+
+const { OrganizationForbidden } = require(
+  `${process.cwd()}/components/WebServer/error/exception/organization`,
+)
+
+const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
+const { SPEAKER_TYPE } = require(
+  `${process.cwd()}/lib/dao/speakerIdentification/naming`,
+)
+const limits = require(`${process.cwd()}/lib/dao/speakerIdentification/limits`)
 
 const { verifyOrgMembership } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/organization/optedInMembers`,
@@ -49,19 +60,39 @@ async function createUserVoiceSample(req, res, next) {
     const audioFile = req.files.audio
     validateAudioFile(audioFile)
 
+    const existingSamples = await model.voiceSamples.getByUserId(userId)
+    if (existingSamples.length >= limits.maxSamplesPerLabel()) {
+      throw new UserVoiceSampleError(
+        `Maximum number of voice samples reached (${limits.maxSamplesPerLabel()})`,
+      )
+    }
+
     const payload = {
       type: VOICE_SAMPLE_TYPE.USER,
-      format: STORAGE_MODE.AUDIO,
       userId,
     }
     const audioDuration = parseAudioDuration(req.body.audioDuration)
     if (audioDuration !== undefined) {
+      const totalDuration = existingSamples.reduce(
+        (sum, s) => sum + (s.audioDuration || 0),
+        0,
+      )
+      if (totalDuration + audioDuration > limits.maxTotalDurationPerLabel()) {
+        throw new UserVoiceSampleError(
+          `Maximum total duration of voice samples reached (${limits.maxTotalDurationPerLabel()}s)`,
+        )
+      }
       payload.audioDuration = audioDuration
     }
 
     const created = await storeAndCreateSample(
       audioFile, payload, model.voiceSamples, UserVoiceSampleError,
     )
+
+    // CONNECTOR_HOOK: recomputeUser(userId) — compute the voiceprint from the
+    // user samples, then upsert the "user:{id}" point in the Organization
+    // collection of every opted-in organization (next step).
+
     res.status(201).send(created)
   } catch (err) {
     next(err)
@@ -71,7 +102,7 @@ async function createUserVoiceSample(req, res, next) {
 async function getUserVoiceSamples(req, res, next) {
   try {
     const userId = req.payload.data.userId
-    const samples = await model.voiceSamples.getAudioSamplesByUserId(userId)
+    const samples = await model.voiceSamples.getByUserId(userId)
     res.status(200).send(samples)
   } catch (err) {
     next(err)
@@ -117,6 +148,10 @@ async function deleteUserVoiceSample(req, res, next) {
       )
     }
 
+    // CONNECTOR_HOOK: recomputeUser(userId) — if samples remain, recompute
+    // the voiceprint; if none remain, the voiceprint is kept (one-way
+    // semantics, cf. docs/speaker-identification 04 §6a).
+
     res.status(200).send("Voice sample deleted")
   } catch (err) {
     next(err)
@@ -131,7 +166,11 @@ async function deleteAllUserVoiceSamples(req, res, next) {
     await Promise.all([
       model.voiceSamples.deleteAllFromUser(userId),
       model.voiceOptIns.deleteAllFromUser(userId),
+      model.voiceprints.deleteAllFromUser(userId),
     ])
+
+    // CONNECTOR_HOOK: deleteSpeaker("user:{userId}") in the Organization
+    // collection of every organization the user had opted in (next step).
 
     res.status(200).send("All voice samples deleted")
   } catch (err) {
@@ -148,13 +187,41 @@ async function updateStorageMode(req, res, next) {
       throw new UserVoiceSampleError("Invalid storage mode. Must be 'audio' or 'embeddings'")
     }
 
-    const voiceprint = await model.voiceSamples.upsertVoiceprint(userId, { storageMode })
+    const voiceprint = await model.voiceprints.getBySubject(
+      SPEAKER_TYPE.USER,
+      userId,
+    )
+    const currentMode = model.voiceprints.getStorageMode(voiceprint)
 
-    // TODO: when the diarization service is available, trigger voiceprint
-    // computation here if storageMode is switched to EMBEDDINGS and user has samples.
+    if (storageMode === currentMode) {
+      return res.status(200).send({ storageMode: currentMode })
+    }
+
+    // One-way transition: audio -> embeddings only
+    if (storageMode === STORAGE_MODE.AUDIO) {
+      throw new UserVoiceSampleError(
+        "Storage mode cannot be reverted from 'embeddings' to 'audio'",
+      )
+    }
+
+    await model.voiceprints.upsert(SPEAKER_TYPE.USER, userId, { storageMode })
+
+    // CONNECTOR_HOOK: recomputeUser(userId) — when the connector is
+    // available, compute the voiceprint from the remaining audio samples
+    // here before purging the files (next step).
+
+    let audioFilesDeleted = false
+    if (model.voiceprints.hasComputedVoiceprint(voiceprint)) {
+      // The voiceprint already exists: audio files are no longer kept
+      const samples = await model.voiceSamples.getByUserId(userId)
+      cascadeDeleteSampleFiles(samples)
+      await model.voiceSamples.deleteAllFromUser(userId)
+      audioFilesDeleted = true
+    }
 
     res.status(200).send({
-      storageMode: voiceprint?.storageMode || storageMode,
+      storageMode,
+      audioFilesDeleted,
     })
   } catch (err) {
     next(err)
@@ -165,45 +232,36 @@ async function getVoiceprintStatus(req, res, next) {
   try {
     const userId = req.payload.data.userId
 
-    const [voiceprintDocs, audioSamples] = await Promise.all([
-      model.voiceSamples.getVoiceprintByUserId(userId),
-      model.voiceSamples.getAudioSamplesByUserId(userId),
+    const [voiceprint, audioSamples] = await Promise.all([
+      model.voiceprints.getBySubject(SPEAKER_TYPE.USER, userId),
+      model.voiceSamples.getByUserId(userId),
     ])
 
-    const voiceprint = voiceprintDocs.length > 0 ? voiceprintDocs[0] : null
+    const hasVoiceprint = model.voiceprints.hasComputedVoiceprint(voiceprint)
+    const storageMode = model.voiceprints.getStorageMode(voiceprint)
 
-    res.status(200).send({
-      hasVoiceprint: voiceprint !== null && voiceprint.embeddings !== null && voiceprint.embeddings !== undefined,
-      storageMode: voiceprint?.storageMode || STORAGE_MODE.AUDIO,
-      audioSamplesCount: audioSamples.length,
-      lastUpdate: voiceprint?.last_update || null,
-    })
-  } catch (err) {
-    next(err)
-  }
-}
-
-async function receiveVoiceprint(req, res, next) {
-  try {
-    const userId = req.payload.data.userId
-    const { embeddings } = req.body
-
-    if (!embeddings || !Array.isArray(embeddings) || embeddings.length === 0) {
-      throw new UserVoiceSampleError("embeddings must be a non-empty array")
-    }
-
-    const voiceprint = await model.voiceSamples.upsertVoiceprint(userId, { embeddings })
-
-    if (voiceprint && voiceprint.storageMode === STORAGE_MODE.EMBEDDINGS) {
-      const audioSamples = await model.voiceSamples.getAudioSamplesByUserId(userId)
-      cascadeDeleteSampleFiles(audioSamples)
-      await model.voiceSamples.deleteAudioSamplesFromUser(userId)
+    // In embeddings-only mode the sample documents are deleted after
+    // computation: counters come from the voiceprint traceability fields
+    let audioSamplesCount = audioSamples.length
+    let totalDuration = audioSamples.reduce(
+      (sum, s) => sum + (s.audioDuration || 0),
+      0,
+    )
+    if (audioSamples.length === 0 && hasVoiceprint) {
+      audioSamplesCount = (voiceprint.sourceSampleIds || []).length
+      totalDuration = voiceprint.sourceDuration || 0
     }
 
     res.status(200).send({
-      hasVoiceprint: true,
-      storageMode: voiceprint?.storageMode || STORAGE_MODE.AUDIO,
-      audioFilesDeleted: voiceprint?.storageMode === STORAGE_MODE.EMBEDDINGS,
+      hasVoiceprint,
+      storageMode,
+      audioSamplesCount,
+      totalDuration,
+      computedAt: voiceprint?.computedAt || null,
+      modelId: voiceprint?.modelId || null,
+      syncState: hasVoiceprint
+        ? voiceprint?.syncState || SYNC_STATE.SYNCED
+        : null,
     })
   } catch (err) {
     next(err)
@@ -223,11 +281,20 @@ async function getUserVoiceOrganizations(req, res, next) {
       optIns.map((o) => o.organizationId.toString()),
     )
 
-    const result = userOrgs.map((org) => ({
-      organizationId: org._id.toString(),
-      organizationName: org.name,
-      voiceprintEnabled: optInOrgIds.has(org._id.toString()),
-    }))
+    // Only organizations with the speaker identification permission are
+    // exposed for opt-in (cf. docs/speaker-identification 02 §5)
+    const result = userOrgs
+      .filter((org) =>
+        PERMISSIONS.hasRightAccess(
+          org.permissions,
+          PERMISSIONS.SPEAKER_IDENTIFICATION,
+        ),
+      )
+      .map((org) => ({
+        organizationId: org._id.toString(),
+        organizationName: org.name,
+        voiceprintEnabled: optInOrgIds.has(org._id.toString()),
+      }))
 
     res.status(200).send(result)
   } catch (err) {
@@ -245,12 +312,26 @@ async function updateVoiceOrganization(req, res, next) {
       throw new UserVoiceSampleError("enabled must be a boolean")
     }
 
-    await verifyOrgMembership(orgId, userId)
+    const org = await verifyOrgMembership(orgId, userId)
+    if (
+      !PERMISSIONS.hasRightAccess(
+        org.permissions,
+        PERMISSIONS.SPEAKER_IDENTIFICATION,
+      )
+    ) {
+      throw new OrganizationForbidden(
+        "Organization does not have the speaker identification permission",
+      )
+    }
 
     if (enabled) {
       await model.voiceOptIns.setOptIn(userId, orgId)
+      // CONNECTOR_HOOK: upsertSpeaker("user:{userId}") in the Organization
+      // collection of this organization (next step).
     } else {
       await model.voiceOptIns.removeOptIn(userId, orgId)
+      // CONNECTOR_HOOK: deleteSpeaker("user:{userId}") in the Organization
+      // collection of this organization (next step).
     }
 
     res.status(200).send({ organizationId: orgId, voiceprintEnabled: enabled })
@@ -268,7 +349,6 @@ module.exports = {
   resolveUserSampleAudio,
   updateStorageMode,
   getVoiceprintStatus,
-  receiveVoiceprint,
   getUserVoiceOrganizations,
   updateVoiceOrganization,
 }

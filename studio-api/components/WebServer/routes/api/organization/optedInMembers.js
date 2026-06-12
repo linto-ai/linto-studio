@@ -6,6 +6,8 @@ const {
   `${process.cwd()}/components/WebServer/routecontrollers/organization/optedInMembers.js`,
 )
 
+const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
+
 module.exports = (webserver) => {
   return [
     {
@@ -13,21 +15,24 @@ module.exports = (webserver) => {
       method: "get",
       controller: getOptedInMembers,
       requireAuth: true,
-      requireOrganizationMemberAccess: true,
+      requireOrganizationUploaderAccess: true,
+      orgaPermissionAccess: PERMISSIONS.SPEAKER_IDENTIFICATION,
     },
     {
       path: "/:userId/voice-samples",
       method: "get",
       controller: getOptedInMemberSamples,
       requireAuth: true,
-      requireOrganizationMemberAccess: true,
+      requireOrganizationMaintainerAccess: true,
+      orgaPermissionAccess: PERMISSIONS.SPEAKER_IDENTIFICATION,
     },
     {
       path: "/:userId/voice-samples/:sampleId/audio",
       method: "get",
       controller: getOptedInMemberSampleAudio,
       requireAuth: true,
-      requireOrganizationMemberAccess: true,
+      requireOrganizationMaintainerAccess: true,
+      orgaPermissionAccess: PERMISSIONS.SPEAKER_IDENTIFICATION,
     },
   ]
 }

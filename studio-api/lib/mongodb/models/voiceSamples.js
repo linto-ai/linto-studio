@@ -1,10 +1,15 @@
 const MongoModel = require(`../model`)
 const moment = require("moment")
-const {
-  VOICE_SAMPLE_TYPE,
-  STORAGE_MODE,
-} = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
+const { VOICE_SAMPLE_TYPE } = require(
+  `${process.cwd()}/components/WebServer/controllers/files/store`,
+)
 
+/**
+ * Voice samples: audio files only. Computed voiceprints live in the
+ * dedicated `voiceprints` collection (cf. docs/speaker-identification
+ * 04 §2.4). In embeddings-only mode sample documents are deleted after the
+ * voiceprint computation.
+ */
 class VoiceSampleModel extends MongoModel {
   constructor() {
     super("voiceSamples")
@@ -23,7 +28,6 @@ class VoiceSampleModel extends MongoModel {
         created: dateTime,
         last_update: dateTime,
         type,
-        format: payload.format || STORAGE_MODE.AUDIO,
         audioFilePath: payload.audioFilePath,
       }
 
@@ -47,12 +51,8 @@ class VoiceSampleModel extends MongoModel {
         doc.audioDuration = payload.audioDuration
       }
 
-      if (payload.embeddings) {
-        doc.embeddings = payload.embeddings
-      }
-
-      if (payload.storageMode) {
-        doc.storageMode = payload.storageMode
+      if (payload.filename) {
+        doc.filename = payload.filename
       }
 
       return await this.mongoInsert(doc)
@@ -129,86 +129,6 @@ class VoiceSampleModel extends MongoModel {
       return await this.mongoRequest(query, {
         sort: { created: -1 },
       })
-    } catch (error) {
-      console.error(error)
-      return error
-    }
-  }
-
-  async getAudioSamplesByUserId(userId) {
-    try {
-      const query = {
-        type: VOICE_SAMPLE_TYPE.USER,
-        userId: userId,
-        format: { $ne: STORAGE_MODE.EMBEDDINGS },
-      }
-      return await this.mongoRequest(query, {
-        sort: { created: -1 },
-      })
-    } catch (error) {
-      console.error(error)
-      return error
-    }
-  }
-
-  async getVoiceprintByUserId(userId) {
-    try {
-      const query = {
-        type: VOICE_SAMPLE_TYPE.USER,
-        userId: userId,
-        format: STORAGE_MODE.EMBEDDINGS,
-      }
-      return await this.mongoRequest(query)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
-  }
-
-  async upsertVoiceprint(userId, fields) {
-    try {
-      const allowed = {}
-      if (fields.embeddings !== undefined) allowed.embeddings = fields.embeddings
-      if (fields.storageMode !== undefined) allowed.storageMode = fields.storageMode
-
-      const existing = await this.getVoiceprintByUserId(userId)
-      const dateTime = moment().format()
-
-      if (existing.length > 0) {
-        await this.mongoUpdateOne(
-          { _id: existing[0]._id },
-          "$set",
-          { ...allowed, last_update: dateTime },
-        )
-        return (await this.getVoiceprintByUserId(userId))[0]
-      }
-
-      const result = await this.mongoInsert({
-        created: dateTime,
-        last_update: dateTime,
-        type: VOICE_SAMPLE_TYPE.USER,
-        format: STORAGE_MODE.EMBEDDINGS,
-        userId,
-        ...allowed,
-      })
-      if (result.insertedCount === 1) {
-        return (await this.getVoiceprintByUserId(userId))[0]
-      }
-      return null
-    } catch (error) {
-      console.error(error)
-      return error
-    }
-  }
-
-  async deleteAudioSamplesFromUser(userId) {
-    try {
-      const query = {
-        type: VOICE_SAMPLE_TYPE.USER,
-        userId: userId,
-        format: { $ne: STORAGE_MODE.EMBEDDINGS },
-      }
-      return await this.mongoDeleteMany(query)
     } catch (error) {
       console.error(error)
       return error

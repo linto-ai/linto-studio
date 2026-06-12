@@ -5,6 +5,7 @@ const PERMISSIONS = Object.freeze({
   MICROPHONE: 4,
   BOT: 8,
   SESSION: 16,
+  SPEAKER_IDENTIFICATION: 32,
 
   hasRightAccess: (orgaPermission, desiredPermission) =>
     (orgaPermission & desiredPermission) == desiredPermission,
@@ -43,6 +44,7 @@ const VALID_PERMISSIONS_MASK =
   PERMISSIONS.SUMMARY |
   PERMISSIONS.MICROPHONE |
   PERMISSIONS.BOT |
-  PERMISSIONS.SESSION
+  PERMISSIONS.SESSION |
+  PERMISSIONS.SPEAKER_IDENTIFICATION
 
 module.exports = PERMISSIONS

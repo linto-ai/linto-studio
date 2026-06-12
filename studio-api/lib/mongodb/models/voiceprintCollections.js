@@ -3,7 +3,11 @@ const moment = require("moment")
 const {
   COLLECTION_TYPE,
   STORAGE_MODE,
+  SYNC_STATE,
 } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
+const { qdrantCollectionName } = require(
+  `${process.cwd()}/lib/dao/speakerIdentification/naming`,
+)
 
 class VoiceprintCollectionModel extends MongoModel {
   constructor() {
@@ -13,15 +17,33 @@ class VoiceprintCollectionModel extends MongoModel {
   async create(payload) {
     try {
       const dateTime = moment().format()
+      const type = payload.type || COLLECTION_TYPE.CUSTOM
+
+      // The _id is generated upfront so the Qdrant collection name can be
+      // frozen at creation time (cf. docs/speaker-identification 04 §2.1)
+      const _id = this.createObjectId()
 
       const doc = {
+        _id,
         created: dateTime,
         last_update: dateTime,
         name: payload.name,
         description: payload.description || "",
         organizationId: this.getObjectId(payload.organizationId),
-        type: payload.type || COLLECTION_TYPE.CUSTOM,
-        storageMode: payload.storageMode || STORAGE_MODE.AUDIO,
+        type,
+        // Organization-type collections have no storage mode of their own:
+        // each opted-in member manages their own (04 §2.1)
+        storageMode:
+          type === COLLECTION_TYPE.ORGANIZATION
+            ? null
+            : payload.storageMode || STORAGE_MODE.AUDIO,
+        qdrantCollectionName: qdrantCollectionName(
+          payload.organizationId,
+          _id,
+        ),
+        modelId: null,
+        modelDim: null,
+        syncState: SYNC_STATE.SYNCED,
       }
       return await this.mongoInsert(doc)
     } catch (error) {

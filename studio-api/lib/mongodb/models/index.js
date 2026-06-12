@@ -19,6 +19,8 @@ module.exports = {
   tokens: require("./tokens.js"),
   voiceOptIns: require("./voiceOptIns.js"),
   voiceprintCollections: require("./voiceprintCollections.js"),
+  voiceprints: require("./voiceprints.js"),
+  speakerIdSyncOps: require("./speakerIdSyncOps.js"),
   speakerLabels: require("./speakerLabels.js"),
   users: require("./users.js"),
   voiceSamples: require("./voiceSamples.js"),

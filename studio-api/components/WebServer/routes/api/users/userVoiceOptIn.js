@@ -6,7 +6,6 @@ const {
   deleteAllUserVoiceSamples,
   updateStorageMode,
   getVoiceprintStatus,
-  receiveVoiceprint,
   getUserVoiceOrganizations,
   updateVoiceOrganization,
 } = require(
@@ -55,12 +54,6 @@ module.exports = (webserver) => {
       path: "/voiceprint",
       method: "get",
       controller: getVoiceprintStatus,
-      requireAuth: true,
-    },
-    {
-      path: "/voiceprint",
-      method: "post",
-      controller: receiveVoiceprint,
       requireAuth: true,
     },
     {

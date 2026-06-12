@@ -36,6 +36,12 @@ const STORAGE_MODE = Object.freeze({
   EMBEDDINGS: "embeddings",
 })
 
+const SYNC_STATE = Object.freeze({
+  SYNCED: "synced",
+  PENDING: "pending",
+  ERROR: "error",
+})
+
 
 async function storeFile(files, type = STORE_TYPE.AUDIO, name = undefined) {
   try {
@@ -274,7 +280,7 @@ async function deleteAudioFileIfOrphaned(filepath) {
  */
 async function storeAndCreateSample(audioFile, payload, sampleModel, ErrorClass) {
   const audioFilePath = await storeVoiceSampleFile(audioFile)
-  const fullPayload = { ...payload, audioFilePath }
+  const fullPayload = { ...payload, audioFilePath, filename: audioFile.name }
 
   const result = await sampleModel.create(fullPayload)
 
@@ -305,4 +311,5 @@ module.exports = {
   storeAndCreateSample,
   VOICE_SAMPLE_TYPE,
   STORAGE_MODE,
+  SYNC_STATE,
 }
