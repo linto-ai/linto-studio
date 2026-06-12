@@ -51,6 +51,29 @@
           "description": "Conversation ID",
           "required": true,
           "type": "string"
+        },
+        {
+          "in": "query",
+          "name": "categoryType",
+          "required": false,
+          "description": "Type of categories to list the tags from",
+          "schema": {
+            "$ref": "#/components/schemas/CategorySearchType"
+          }
+        },
+        {
+          "in": "query",
+          "name": "name",
+          "required": false,
+          "description": "Filter tags by name",
+          "schema": { "type": "string" }
+        },
+        {
+          "in": "query",
+          "name": "expand",
+          "required": false,
+          "description": "When 'true', expand the tags with their category information",
+          "schema": { "type": "string", "enum": ["true", "false"] }
         }
       ],
       "responses": {
@@ -66,6 +89,9 @@
               }
             }
           }
+        },
+        "204": {
+          "$ref": "#/components/responses/NoContent"
         },
         "401": {
           "$ref": "#/components/responses/Unauthorized"

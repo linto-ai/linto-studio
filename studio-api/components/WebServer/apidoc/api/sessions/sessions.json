@@ -191,7 +191,7 @@
     }
   },
 
-  "/api/organizations/{organizationId}/quickMeeting": {
+  "/api/organizations/{organizationId}/quickMeeting/": {
     "get": {
       "tags": ["sessions"],
       "summary": "Get the user quick meeting",
@@ -866,7 +866,7 @@
       }
     }
   },
-  "/api/users/self/quickMeeting": {
+  "/api/users/self/quickMeeting/": {
     "get": {
       "tags": ["sessions"],
       "summary": "Get the quick meeting sessions owned by the current user",

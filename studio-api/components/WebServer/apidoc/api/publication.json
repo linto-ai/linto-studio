@@ -162,9 +162,9 @@
         {
           "in": "path",
           "name": "jobId",
-          "type": "string",
           "required": true,
-          "description": "LLM gateway job ID"
+          "description": "LLM gateway job ID",
+          "schema": { "type": "string" }
         },
         {
           "in": "path",

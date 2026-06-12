@@ -20,19 +20,12 @@
         }
       ],
       "responses": {
-        "200": {
-          "description": "OK",
+        "201": {
+          "description": "Tag added to the conversation",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "description": "Tag added to conversation"
-                }
-              },
-              "example": {
-                "status": "OK"
+              "schema": {
+                "$ref": "#/components/schemas/Tag"
               }
             }
           }
@@ -42,9 +35,6 @@
         },
         "401": {
           "$ref": "#/components/responses/Unauthorized"
-        },
-        "409": {
-          "$ref": "#/components/responses/Conflict"
         },
         "415": {
           "$ref": "#/components/responses/UnsupportedMediaType"
@@ -56,7 +46,7 @@
     },
     "patch": {
       "tags": ["conversations taxonomy"],
-      "summary": "Add a tag to a conversation id",
+      "summary": "Add an existing tag to a conversation",
       "parameters": [
         {
           "name": "conversationId",
@@ -74,19 +64,12 @@
         }
       ],
       "responses": {
-        "200": {
-          "description": "OK",
+        "201": {
+          "description": "Tag added to the conversation",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "description": "Tag added to conversation"
-                }
-              },
-              "example": {
-                "status": "OK"
+              "schema": {
+                "$ref": "#/components/schemas/Tag"
               }
             }
           }
@@ -96,9 +79,6 @@
         },
         "401": {
           "$ref": "#/components/responses/Unauthorized"
-        },
-        "409": {
-          "$ref": "#/components/responses/Conflict"
         },
         "415": {
           "$ref": "#/components/responses/UnsupportedMediaType"
@@ -163,7 +143,7 @@
   "/api/conversations/{conversationId}/tags": {
     "patch": {
       "tags": ["conversations taxonomy"],
-      "summary": "Add a tag to a conversation id",
+      "summary": "Create a tag and add it to a conversation",
       "parameters": [
         {
           "name": "conversationId",
@@ -194,19 +174,12 @@
         }
       },
       "responses": {
-        "200": {
-          "description": "OK",
+        "201": {
+          "description": "Tag added to the conversation",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "description": "Tag added to conversation"
-                }
-              },
-              "example": {
-                "status": "OK"
+              "schema": {
+                "$ref": "#/components/schemas/Tag"
               }
             }
           }
@@ -227,7 +200,7 @@
     },
     "post": {
       "tags": ["conversations taxonomy"],
-      "summary": "Add a tag to a conversation id",
+      "summary": "Create a tag and add it to a conversation",
       "parameters": [
         {
           "name": "conversationId",
@@ -258,19 +231,12 @@
         }
       },
       "responses": {
-        "200": {
-          "description": "OK",
+        "201": {
+          "description": "Tag added to the conversation",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "description": "Tag added to conversation"
-                }
-              },
-              "example": {
-                "status": "OK"
+              "schema": {
+                "$ref": "#/components/schemas/Tag"
               }
             }
           }
