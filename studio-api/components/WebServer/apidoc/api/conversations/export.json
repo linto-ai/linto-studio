@@ -10,7 +10,7 @@
           "type": "string",
           "format": "uuid",
           "required": true,
-          "description": "uuid string identifier for an conversation"
+          "description": "uuid string identifier for a conversation"
         },
         {
           "in": "path",
@@ -50,7 +50,7 @@
           "type": "string",
           "format": "uuid",
           "required": true,
-          "description": "uuid string identifier for an conversation"
+          "description": "uuid string identifier for a conversation"
         },
         {
           "in": "path",
@@ -106,7 +106,7 @@
           "type": "string",
           "format": "uuid",
           "required": true,
-          "description": "uuid string identifier for an conversation"
+          "description": "uuid string identifier for a conversation"
         },
         {
           "in": "path",
@@ -146,7 +146,7 @@
           "type": "string",
           "format": "uuid",
           "required": true,
-          "description": "uuid string identifier for an conversation"
+          "description": "uuid string identifier for a conversation"
         },
         {
           "in": "path",
@@ -191,7 +191,7 @@
           "type": "string",
           "format": "uuid",
           "required": true,
-          "description": "uuid string identifier for an conversation"
+          "description": "uuid string identifier for a conversation"
         },
         {
           "in": "path",
@@ -238,7 +238,7 @@
           "type": "string",
           "format": "uuid",
           "required": true,
-          "description": "uuid string identifier for an conversation"
+          "description": "uuid string identifier for a conversation"
         },
         {
           "in": "path",
@@ -285,7 +285,7 @@
           "type": "string",
           "format": "uuid",
           "required": true,
-          "description": "uuid string identifier for an conversation"
+          "description": "uuid string identifier for a conversation"
         },
         {
           "in": "path",

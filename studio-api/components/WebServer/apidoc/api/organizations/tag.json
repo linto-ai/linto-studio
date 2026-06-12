@@ -118,7 +118,8 @@
   "/api/organizations/{organizationId}/tags/search": {
     "get": {
       "tags": ["organizations members"],
-      "summary": "Retrieve tag information related between conversation",
+      "summary": "Find related tags",
+      "description": "Returns the tags of a category that are used on the same conversations as the given tags.",
       "parameters": [
         {
           "name": "organizationId",
@@ -131,22 +132,15 @@
           "in": "query",
           "name": "tags",
           "required": true,
-          "description": "List of tags id to search for",
+          "description": "Comma separated list of tag ids",
           "example": "5e9b1b9b0f9b2c0017b5f1b5,5e9b1b9b0f9b2c0017b5f1b6,..."
         },
         {
           "in": "query",
           "name": "categoryId",
-          "required": false,
-          "description": "CategoryId to search",
+          "required": true,
+          "description": "Category of the returned tags",
           "example": "5e9b1b9b0f9b2c0017b5f1b5"
-        },
-        {
-          "in": "query",
-          "name": "categoryType",
-          "required": false,
-          "description": "CategoryType to search, this have the priority over the tags parameter",
-          "example": "highlight,conversation_metadata,conversation_text,commentary"
         }
       ],
       "responses": {
@@ -176,7 +170,7 @@
   "/api/organizations/{organizationId}/tags/{tagId}": {
     "get": {
       "tags": ["organizations members"],
-      "summary": "Retrieve tag information",
+      "summary": "Retrieve a tag by ID",
       "parameters": [
         {
           "name": "organizationId",
@@ -215,7 +209,7 @@
     },
     "patch": {
       "tags": ["organizations members"],
-      "summary": "Update tag information",
+      "summary": "Update a tag",
       "parameters": [
         {
           "name": "organizationId",
@@ -283,7 +277,7 @@
     },
     "delete": {
       "tags": ["organizations maintainers"],
-      "summary": "Delete tag information",
+      "summary": "Delete a tag",
       "parameters": [
         {
           "name": "organizationId",

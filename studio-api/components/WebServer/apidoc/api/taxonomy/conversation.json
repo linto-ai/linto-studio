@@ -90,7 +90,7 @@
     },
     "delete": {
       "tags": ["conversations taxonomy"],
-      "summary": "Delete a tag to a conversation id",
+      "summary": "Remove a tag from a conversation",
       "parameters": [
         {
           "name": "conversationId",

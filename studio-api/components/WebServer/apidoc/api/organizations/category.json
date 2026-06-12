@@ -115,7 +115,7 @@
   "/api/organizations/{organizationId}/categories/{categoryId}": {
     "get": {
       "tags": ["organizations members"],
-      "summary": "Retrieve a categories information from an organization",
+      "summary": "Retrieve a category from an organization",
       "parameters": [
         {
           "name": "organizationId",
@@ -154,7 +154,7 @@
     },
     "patch": {
       "tags": ["organizations maintainers"],
-      "summary": "Update a categories from an organization",
+      "summary": "Update a category of an organization",
       "parameters": [
         {
           "name": "organizationId",
@@ -229,7 +229,7 @@
     },
     "delete": {
       "tags": ["organizations maintainers"],
-      "summary": "Delete a categories from an organization",
+      "summary": "Delete a category from an organization",
       "parameters": [
         {
           "name": "organizationId",
@@ -262,7 +262,7 @@
   "/api/organizations/{organizationId}/categories/search": {
     "get": {
       "tags": ["organizations members"],
-      "summary": "Search categories based on the specified research type",
+      "summary": "Search categories based on the specified search type",
       "parameters": [
         {
           "name": "organizationId",

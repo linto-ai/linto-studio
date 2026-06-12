@@ -2,7 +2,7 @@
   "/api/users/self/favorites": {
     "get": {
       "tags": ["users favorites"],
-      "summary": "List favorites conversations of connected user",
+      "summary": "List favorite conversations of connected user",
       "parameters": [
         {
           "in": "query",
@@ -42,7 +42,7 @@
   "/api/users/self/favorites/tags": {
     "get": {
       "tags": ["users favorites"],
-      "summary": "List tags from favorites conversations of the connected user",
+      "summary": "List tags from favorite conversations of the connected user",
       "parameters": [
         {
           "in": "query",

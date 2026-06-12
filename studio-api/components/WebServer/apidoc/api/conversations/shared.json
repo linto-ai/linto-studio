@@ -2,7 +2,7 @@
   "/api/conversations/shared/tags": {
     "get": {
       "tags": ["conversations"],
-      "summary": "List tags from favorites conversations of the connected user",
+      "summary": "List tags from favorite conversations of the connected user",
       "parameters": [
         {
           "in": "query",
@@ -42,7 +42,7 @@
   "/api/conversations/shared/access": {
     "post": {
       "tags": ["conversations"],
-      "summary": "Add access to user from a conversation list",
+      "summary": "Add user access to a list of conversations",
       "requestBody": {
         "content": {
           "multipart/form-data": {
@@ -94,7 +94,7 @@
     },
     "patch": {
       "tags": ["conversations"],
-      "summary": "Update access to user from a conversation list",
+      "summary": "Update user access on a list of conversations",
       "requestBody": {
         "content": {
           "multipart/form-data": {
@@ -146,7 +146,7 @@
     },
     "delete": {
       "tags": ["conversations"],
-      "summary": "Remove access to user from a conversation list",
+      "summary": "Remove user access from a list of conversations",
       "requestBody": {
         "content": {
           "multipart/form-data": {

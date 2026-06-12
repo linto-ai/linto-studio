@@ -2,7 +2,7 @@
   "/api/nlp/conversations/{conversationId}/keywords": {
     "post": {
       "tags": ["conversations nlp"],
-      "summary": "Generate nlp keyword to a conversation",
+      "summary": "Generate NLP keywords for a conversation",
       "parameters": [
         {
           "in": "path",
@@ -10,7 +10,7 @@
           "type": "string",
           "format": "uuid",
           "required": true,
-          "description": "uuid string identifier for an conversation"
+          "description": "uuid string identifier for a conversation"
         }
       ],
       "requestBody": {

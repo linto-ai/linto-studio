@@ -167,7 +167,7 @@
           "description": "uuid string identifier for an organization"
         }
       ],
-      "summary": "Import a conversation from an external source",
+      "summary": "Import a conversation from an external transcription file",
       "requestBody": {
         "content": {
           "multipart/form-data": {
@@ -259,7 +259,7 @@
           "description": "uuid string identifier for an organization"
         }
       ],
-      "summary": "Import a conversation from an external source",
+      "summary": "Import a previously exported conversation",
       "requestBody": {
         "content": {
           "multipart/form-data": {

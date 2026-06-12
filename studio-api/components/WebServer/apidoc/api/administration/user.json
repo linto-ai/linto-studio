@@ -2,7 +2,7 @@
   "/api/administration/users": {
     "post": {
       "tags": ["administration users"],
-      "summary": "Create an user",
+      "summary": "Create a user",
       "parameters": [
         {
           "in": "query",
@@ -160,7 +160,7 @@
   "/api/administration/users/{userId}": {
     "patch": {
       "tags": ["administration users"],
-      "summary": "Update the desired userId",
+      "summary": "Update a user by ID",
       "parameters": [
         {
           "in": "path",
@@ -168,7 +168,7 @@
           "type": "string",
           "format": "uuid",
           "required": true,
-          "description": "uuid string identifier for an user"
+          "description": "uuid string identifier for a user"
         },
         {
           "in": "query",
@@ -265,7 +265,7 @@
   "/api/administration/users/{userId}/organizations/": {
     "get": {
       "tags": ["administration users"],
-      "summary": "List organizations where the user is part of",
+      "summary": "List the organizations the user belongs to",
       "parameters": [
         {
           "in": "query",

@@ -10,7 +10,7 @@
           "type": "string",
           "format": "uuid",
           "required": true,
-          "description": "uuid string identifier for an user"
+          "description": "uuid string identifier for a user"
         }
       ],
       "responses": {
@@ -80,7 +80,7 @@
   "/api/organizations/{organizationId}/conversations": {
     "get": {
       "tags": ["organizations members"],
-      "summary": "Lists all conversations from an organization where the user have an access",
+      "summary": "List all conversations of an organization where the user has access",
       "parameters": [
         {
           "in": "path",

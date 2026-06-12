@@ -2,7 +2,7 @@
   "/api/administration/activity": {
     "get": {
       "tags": ["administration activity"],
-      "summary": "List all activity of the platform",
+      "summary": "List all activity logs of the platform",
       "parameters": [
         {
           "in": "query",
@@ -49,7 +49,7 @@
   "/api/administration/activity/compute": {
     "get": {
       "tags": ["administration activity"],
-      "summary": "Get kpi details for a specific activity from an organization",
+      "summary": "Get KPI details for a specific activity of an organization",
       "parameters": [
         {
           "in": "query",

@@ -2,7 +2,7 @@
   "/api/administration/tokens/": {
     "post": {
       "tags": ["administration"],
-      "summary": "Create an api key token for a backoffice user",
+      "summary": "Create an API key token for a backoffice user",
       "parameters": [
         {
           "in": "query",
@@ -64,7 +64,7 @@
     },
     "get": {
       "tags": ["administration"],
-      "summary": "Retrieve all api key tokens from the platform",
+      "summary": "Retrieve all API key tokens from the platform",
       "parameters": [
         {
           "in": "query",
@@ -104,7 +104,7 @@
   "/api/administration/tokens/{tokenId}": {
     "put": {
       "tags": ["administration"],
-      "summary": "Regenerate an api key token",
+      "summary": "Regenerate an API key token",
       "parameters": [
         {
           "in": "query",
@@ -122,7 +122,7 @@
           "type": "string",
           "format": "uuid",
           "required": true,
-          "description": "uuid string identifier for the api key"
+          "description": "uuid string identifier for the API key"
         }
       ],
       "requestBody": {
@@ -164,7 +164,7 @@
     },
     "get": {
       "tags": ["administration"],
-      "summary": "Retrieve details of a specific api key",
+      "summary": "Retrieve details of a specific API key",
       "parameters": [
         {
           "in": "query",
@@ -182,7 +182,7 @@
           "type": "string",
           "format": "uuid",
           "required": true,
-          "description": "uuid string identifier for the api key"
+          "description": "uuid string identifier for the API key"
         }
       ],
       "responses": {
@@ -207,7 +207,7 @@
     },
     "delete": {
       "tags": ["administration"],
-      "summary": "Delete an api key",
+      "summary": "Delete an API key",
       "parameters": [
         {
           "in": "query",
@@ -225,7 +225,7 @@
           "type": "string",
           "format": "uuid",
           "required": true,
-          "description": "uuid string identifier for the api key"
+          "description": "uuid string identifier for the API key"
         },
         {
           "in": "query",

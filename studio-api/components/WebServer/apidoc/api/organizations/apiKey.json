@@ -2,7 +2,7 @@
   "/api/organizations/{organizationId}/tokens/": {
     "post": {
       "tags": ["organizations admin"],
-      "summary": "Create an api key token for the organization",
+      "summary": "Create an API key token for the organization",
       "parameters": [
         {
           "in": "path",
@@ -62,7 +62,7 @@
     },
     "get": {
       "tags": ["organizations admin"],
-      "summary": "Retrieve all api key id for the organization",
+      "summary": "Retrieve all API keys of the organization",
       "parameters": [
         {
           "in": "path",
@@ -100,7 +100,7 @@
   "/api/organizations/{organizationId}/tokens/{tokenId}": {
     "put": {
       "tags": ["organizations admin"],
-      "summary": "Regenerate an api key token",
+      "summary": "Regenerate an API key token",
       "parameters": [
         {
           "in": "path",
@@ -116,7 +116,7 @@
           "type": "string",
           "format": "uuid",
           "required": true,
-          "description": "uuid string identifier for the api key token"
+          "description": "uuid string identifier for the API key token"
         }
       ],
       "requestBody": {
@@ -158,7 +158,7 @@
     },
     "get": {
       "tags": ["organizations admin"],
-      "summary": "Retrieve details of a specific api key token",
+      "summary": "Retrieve details of a specific API key token",
       "parameters": [
         {
           "in": "path",
@@ -174,7 +174,7 @@
           "type": "string",
           "format": "uuid",
           "required": true,
-          "description": "uuid string identifier for the api key"
+          "description": "uuid string identifier for the API key"
         }
       ],
       "responses": {
@@ -199,7 +199,7 @@
     },
     "delete": {
       "tags": ["organizations admin"],
-      "summary": "Delete an api key user",
+      "summary": "Delete an API key",
       "parameters": [
         {
           "in": "path",
@@ -215,13 +215,13 @@
           "type": "string",
           "format": "uuid",
           "required": true,
-          "description": "uuid string identifier for the api key"
+          "description": "uuid string identifier for the API key"
         },
         {
           "in": "query",
           "name": "revoke",
           "required": false,
-          "description": "Allow to disable or revoke the api key. If revoke=true, it does not delete, but disables. Default to false"
+          "description": "Allow to disable or revoke the API key. If revoke=true, it does not delete, but disables. Default to false"
         }
       ],
       "responses": {

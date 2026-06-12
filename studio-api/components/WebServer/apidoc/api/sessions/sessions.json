@@ -194,7 +194,7 @@
   "/api/organizations/{organizationId}/quickMeeting/": {
     "get": {
       "tags": ["sessions"],
-      "summary": "Get the user quick meeting",
+      "summary": "List the quick meeting sessions of the current user in the organization",
       "parameters": [
         {
           "in": "path",
@@ -318,7 +318,7 @@
     },
     "post": {
       "tags": ["sessions"],
-      "summary": "Create a user quick meeting",
+      "summary": "Create a quick meeting session in the organization",
       "parameters": [
         {
           "in": "path",
@@ -355,7 +355,7 @@
   "/api/organizations/{organizationId}/quickMeeting/{id}": {
     "delete": {
       "tags": ["sessions"],
-      "summary": "Delete the user quick meeting session",
+      "summary": "Delete a quick meeting session",
       "parameters": [
         {
           "in": "path",

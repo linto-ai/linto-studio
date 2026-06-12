@@ -2,7 +2,7 @@
   "/api/services": {
     "get": {
       "tags": ["services"],
-      "summary": "Get all runing services based of the gateway api",
+      "summary": "List all running services from the gateway API",
       "parameters": [
         {
           "name": "securityLevel",
@@ -35,7 +35,7 @@
   "/api/services/{scope}": {
     "get": {
       "tags": ["services"],
-      "summary": "Get all runing services based of the gateway api",
+      "summary": "List all running services from the gateway API",
       "parameters": [
         {
           "name": "scope",
@@ -76,7 +76,7 @@
   "/api/services/{organizationId}/llm": {
     "get": {
       "tags": ["services"],
-      "summary": "Get all llm service listed",
+      "summary": "List the LLM services available to the organization",
       "parameters": [
         {
           "name": "organizationId",

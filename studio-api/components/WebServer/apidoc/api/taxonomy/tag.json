@@ -2,7 +2,7 @@
   "/api/conversations/{conversationId}/tags/{tagId}": {
     "get": {
       "tags": ["conversations taxonomy"],
-      "summary": "Retrieve tag information",
+      "summary": "Retrieve a tag by ID",
       "parameters": [
         {
           "name": "conversationId",

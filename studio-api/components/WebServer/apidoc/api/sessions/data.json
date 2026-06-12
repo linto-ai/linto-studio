@@ -31,7 +31,7 @@
     },
     "post": {
       "tags": ["sessions data"],
-      "summary": "Create a sessuib data",
+      "summary": "Create a session data",
       "parameters": [
         {
           "in": "path",
@@ -124,7 +124,7 @@
     },
     "delete": {
       "tags": ["sessions data"],
-      "summary": "Delete an session data by ID",
+      "summary": "Delete a session data by ID",
       "parameters": [
         {
           "in": "path",
@@ -157,7 +157,7 @@
     },
     "put": {
       "tags": ["sessions data"],
-      "summary": "Update an session data by ID",
+      "summary": "Update a session data by ID",
       "parameters": [
         {
           "in": "path",

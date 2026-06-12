@@ -38,7 +38,7 @@
           "type": "string",
           "format": "uuid",
           "required": true,
-          "description": "uuid string identifier for an conversation"
+          "description": "uuid string identifier for a conversation"
         }
       ],
       "responses": {
@@ -81,7 +81,7 @@
           "type": "string",
           "format": "uuid",
           "required": true,
-          "description": "uuid string identifier for an conversation"
+          "description": "uuid string identifier for a conversation"
         }
       ],
       "requestBody": {
@@ -142,7 +142,7 @@
           "type": "string",
           "format": "uuid",
           "required": true,
-          "description": "uuid string identifier for an conversation"
+          "description": "uuid string identifier for a conversation"
         },
         {
           "in": "path",
@@ -206,7 +206,7 @@
           "type": "string",
           "format": "uuid",
           "required": true,
-          "description": "uuid string identifier for an conversation"
+          "description": "uuid string identifier for a conversation"
         },
         {
           "in": "path",
@@ -268,7 +268,7 @@
           "type": "string",
           "format": "uuid",
           "required": true,
-          "description": "uuid string identifier for an conversation"
+          "description": "uuid string identifier for a conversation"
         },
         {
           "in": "path",
@@ -313,7 +313,7 @@
           "type": "string",
           "format": "uuid",
           "required": true,
-          "description": "uuid string identifier for an conversation"
+          "description": "uuid string identifier for a conversation"
         },
         {
           "in": "path",

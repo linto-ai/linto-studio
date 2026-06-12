@@ -190,7 +190,8 @@
   "/api/organizations/{organizationId}/conversations": {
     "delete": {
       "tags": ["organizations maintainers"],
-      "summary": "Remove all desired conversation from the organization",
+      "summary": "Delete the selected conversations of an organization",
+      "description": "Deletes the conversations and their associated data (subtitles, conversation-scoped categories and tags, audio file when no longer referenced).",
       "parameters": [
         {
           "in": "path",
@@ -265,7 +266,7 @@
           "type": "string",
           "format": "uuid",
           "required": true,
-          "description": "uuid string identifier for an conversation"
+          "description": "uuid string identifier for a conversation"
         }
       ],
       "requestBody": {

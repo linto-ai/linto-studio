@@ -2,7 +2,7 @@
   "/api/users/": {
     "post": {
       "tags": ["users"],
-      "summary": "Create an user",
+      "summary": "Create a user",
       "requestBody": {
         "content": {
           "multipart/form-data": {
@@ -303,7 +303,7 @@
   "/api/users/search/": {
     "get": {
       "tags": ["users"],
-      "summary": "Search users information based on their firstname, lastname or email",
+      "summary": "Search users by first name, last name or email",
       "parameters": [
         {
           "name": "search",
@@ -346,7 +346,7 @@
   "/api/users/{userId}/": {
     "get": {
       "tags": ["users"],
-      "summary": "Get user information based on their uuid",
+      "summary": "Get user information by ID",
       "parameters": [
         {
           "in": "path",
@@ -354,7 +354,7 @@
           "type": "string",
           "format": "uuid",
           "required": true,
-          "description": "uuid string identifier for an user"
+          "description": "uuid string identifier for a user"
         }
       ],
       "responses": {

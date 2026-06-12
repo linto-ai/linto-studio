@@ -77,7 +77,7 @@
     },
     "get": {
       "tags": ["conversations taxonomy"],
-      "summary": "Retrieve all categories from an conversation organization",
+      "summary": "Retrieve all categories from the organization of a conversation",
       "parameters": [
         {
           "name": "organizationId",
@@ -128,7 +128,7 @@
   "/api/conversations/{conversationId}/categories/{categoryId}": {
     "get": {
       "tags": ["conversations taxonomy"],
-      "summary": "Retrieve a categories from an conversation organization",
+      "summary": "Retrieve a category from the organization of a conversation",
       "parameters": [
         {
           "name": "conversationId",
@@ -176,7 +176,7 @@
   "/api/conversations/{conversationId}/categories/search": {
     "get": {
       "tags": ["conversations taxonomy"],
-      "summary": "Search categories based on the specified research type",
+      "summary": "Search categories based on the specified search type",
       "parameters": [
         {
           "name": "conversationId",

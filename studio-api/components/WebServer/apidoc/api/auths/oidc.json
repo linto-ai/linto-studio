@@ -18,7 +18,7 @@
   "/auth/oidc/token": {
     "get": {
       "tags": ["auth"],
-      "summary": "Allow to get the user token for it's OIDC login",
+      "summary": "Get the user token after an OIDC login",
       "responses": {
         "200": {
           "$ref": "#/components/responses/Authenticate"
