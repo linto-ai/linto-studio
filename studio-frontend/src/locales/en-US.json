@@ -963,6 +963,11 @@
       "bot_permission": "Create bot sessions",
       "update_button": "Update permissions"
     },
+    "organization_security_level": {
+      "title": "Security level",
+      "label": "Organization minimum security level",
+      "update_button": "Update security level"
+    },
     "matching_users": {
       "title": "Automatic user invitation",
       "matching_mail": {
@@ -1312,7 +1317,8 @@
       },
       "title": "Selection of transcription profiles",
       "translation_not_available": "No translation available",
-      "n_translations_selected": "No translations | One translation | {n} translations"
+      "n_translations_selected": "No translations | One translation | {n} translations",
+      "security_level_notice": "Only transcriber profiles with a security level of \"{level}\" or higher can be selected"
     },
     "settings_page": {
       "autoStart_label": "Automatic session start",

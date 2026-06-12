@@ -3,7 +3,7 @@
     class="form-field flex row gap-small wrap"
     v-if="!loading && serviceList.length > 0">
     <ConversationCreateService
-      v-for="(service, index) in serviceList"
+      v-for="(service, index) in sortedServices"
       :key="service.host"
       :value="service"
       @select="select(index, $event)"
@@ -23,7 +23,10 @@
 import EMPTY_FIELD from "../const/emptyField"
 import ConversationCreateService from "@/components/ConversationCreateService.vue"
 import Loading from "@/components/atoms/Loading.vue"
-import { meetsSecurityLevel } from "@/tools/filterBySecurityLevel"
+import {
+  meetsSecurityLevel,
+  sortDisabledLast,
+} from "@/tools/filterBySecurityLevel"
 
 export default {
   props: {
@@ -55,6 +58,22 @@ export default {
       default: null,
     },
   },
+  computed: {
+    disabledServiceNames() {
+      if (!this.securityLevel) return new Set()
+      return new Set(
+        this.serviceList
+          .filter((service) => !meetsSecurityLevel(service, this.securityLevel))
+          .map((service) => service.serviceName),
+      )
+    },
+    sortedServices() {
+      if (this.disabledServiceNames.size === 0) return this.serviceList
+      return sortDisabledLast(this.serviceList, (service) =>
+        this.isSecurityDisabled(service),
+      )
+    },
+  },
   methods: {
     select(index, value) {
       if (this.disabled) return
@@ -62,8 +81,7 @@ export default {
       this.$emit("input", value)
     },
     isSecurityDisabled(service) {
-      if (!this.securityLevel) return false
-      return !meetsSecurityLevel(service, this.securityLevel)
+      return this.disabledServiceNames.has(service.serviceName)
     },
   },
   data() {

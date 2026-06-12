@@ -21,6 +21,9 @@
           <UpdateOrganizationMatchingUsers
             :currentOrganization="organization" />
           <UpdateOrganizationPermissions :currentOrganization="organization" />
+          <UpdateOrganizationSecurityLevel
+            v-if="enableSecurityLevel"
+            :currentOrganization="organization" />
         </div>
 
         <UpdateOrganizationUsers
@@ -60,6 +63,7 @@
 </template>
 <script>
 import { bus } from "@/main.js"
+import { getEnv } from "@/tools/getEnv"
 
 import { apiGetOrganizationById } from "@/api/organisation.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
@@ -69,6 +73,7 @@ import UpdateOrganizationForm from "@/components/UpdateOrganizationForm.vue"
 import UpdateOrganizationUsers from "@/components/UpdateOrganizationUsers.vue"
 import ModalDeleteOrganization from "@/components/ModalDeleteOrganization.vue"
 import UpdateOrganizationPermissions from "@/components/UpdateOrganizationPermissions.vue"
+import UpdateOrganizationSecurityLevel from "@/components/UpdateOrganizationSecurityLevel.vue"
 import UpdateOrganizationMatchingUsers from "@/components/UpdateOrganizationMatchingUsers.vue"
 import UpdateOrganizationTranscriberProfiles from "@/components/UpdateOrganizationTranscriberProfiles.vue"
 import ApiTokenSettings from "@/components/ApiTokenSettings.vue"
@@ -100,6 +105,11 @@ export default {
   beforeDestroy() {
     bus.$off("user_orga_update", this.fetchOrganization)
   },
+  computed: {
+    enableSecurityLevel() {
+      return getEnv("VUE_APP_ENABLE_SECURITY_LEVEL") === "true"
+    },
+  },
   methods: {
     async fetchOrganization() {
       this.loading = true
@@ -121,6 +131,7 @@ export default {
     UpdateOrganizationForm,
     UpdateOrganizationUsers,
     UpdateOrganizationPermissions,
+    UpdateOrganizationSecurityLevel,
     UpdateOrganizationTranscriberProfiles,
     UpdateOrganizationMatchingUsers,
     ModalDeleteOrganization,

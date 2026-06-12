@@ -28,10 +28,18 @@ export default {
       type: Number,
       default: DEFAULT_SECURITY_LEVEL,
     },
+    // Lowest selectable level (e.g. the organization floor). Levels below it
+    // are not listed.
+    minLevel: {
+      type: Number,
+      default: DEFAULT_SECURITY_LEVEL,
+    },
   },
   computed: {
     securityLevels() {
-      return SECURITY_LEVELS_LIST((key) => this.$i18n.t(key))
+      return SECURITY_LEVELS_LIST((key) => this.$i18n.t(key)).filter(
+        (level) => level.value >= this.minLevel,
+      )
     },
   },
   methods: {

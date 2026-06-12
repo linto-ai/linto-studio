@@ -1,5 +1,8 @@
 const debug = require("debug")("linto:lib:mongodb:models:organizations")
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
+const SECURITY_LEVELS = require(
+  `${process.cwd()}/lib/dao/conversation/securityLevels`,
+)
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
 const COLOR = require(`${process.cwd()}/lib/dao/organization/color`)
 
@@ -27,6 +30,9 @@ class OrganizationModel extends MongoModel {
       payload.created = dateTime
       payload.last_update = dateTime
       payload.personal = false
+      payload.securityLevel = SECURITY_LEVELS.getValueOrDefault(
+        payload.securityLevel,
+      )
 
       const result = await this.mongoInsert(payload)
 
@@ -81,6 +87,9 @@ class OrganizationModel extends MongoModel {
       payload.last_update = dateTime
 
       payload.permissions = DEFAULT_PERMISSION // We don't allow user to set permissions orga permissions
+      payload.securityLevel = SECURITY_LEVELS.getValueOrDefault(
+        payload.securityLevel,
+      )
 
       const result = await this.mongoInsert(payload)
 
@@ -105,6 +114,9 @@ class OrganizationModel extends MongoModel {
       const dateTime = moment().format()
       payload.created = dateTime
       payload.last_update = dateTime
+      payload.securityLevel = SECURITY_LEVELS.getValueOrDefault(
+        payload.securityLevel,
+      )
       const result = await this.mongoInsert(payload)
       return result
     } catch (error) {
@@ -257,6 +269,7 @@ class OrganizationModel extends MongoModel {
       }
       if (payload.organizationId) delete payload.organizationId
       delete payload.permissions
+      delete payload.securityLevel // security level is backoffice-only
       delete payload._id
       payload.last_update = moment().format()
 
