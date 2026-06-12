@@ -59,7 +59,7 @@ module.exports = (webServer) => {
             method: ["get", "post"],
           },
           {
-            path: "bots/:id",
+            path: "/bots/:id",
             method: ["get", "delete"],
           },
         ],

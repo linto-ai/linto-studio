@@ -1,15 +1,68 @@
 {
   "/api/organizations/{organizationId}/tags": {
+    "get": {
+      "tags": ["organizations members"],
+      "summary": "List the tags of a category in the organization",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        },
+        {
+          "in": "query",
+          "name": "categoryId",
+          "required": true,
+          "description": "Category from which tags are listed",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "in": "query",
+          "name": "withMediaCount",
+          "required": false,
+          "description": "Include the number of conversations using each tag",
+          "schema": {
+            "type": "boolean"
+          }
+        },
+        {
+          "in": "query",
+          "name": "folderId",
+          "required": false,
+          "description": "Restrict the media count to a folder",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
     "post": {
       "tags": ["organizations members"],
       "summary": "Create a tag for an organization",
       "parameters": [
         {
-          "name": "organizationId",
-          "in": "path",
-          "description": "Organization ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/OrganizationId"
         }
       ],
       "requestBody": {
@@ -23,9 +76,25 @@
                 },
                 "categoryId": {
                   "type": "string"
+                },
+                "organizationId": {
+                  "type": "string",
+                  "description": "Organization owning the tag"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Description of the tag"
+                },
+                "color": {
+                  "type": "string",
+                  "description": "Hex color of the tag, format #rrggbb"
+                },
+                "emoji": {
+                  "type": "string",
+                  "description": "Emoji unified code, format [0-9a-f]{5,6}"
                 }
               },
-              "required": ["name", "categoryId"]
+              "required": ["organizationId", "categoryId"]
             }
           }
         }
@@ -35,11 +104,13 @@
           "description": "OK",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "description": "Tag created"
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Tag created"
+                  }
                 }
               },
               "example": {
@@ -63,35 +134,25 @@
   "/api/organizations/{organizationId}/tags/search": {
     "get": {
       "tags": ["organizations members"],
-      "summary": "Retrieve tag information related between conversation",
+      "summary": "Find related tags",
+      "description": "Returns the tags of a category that are used on the same conversations as the given tags.",
       "parameters": [
         {
-          "name": "organizationId",
-          "in": "path",
-          "description": "Organization ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
           "in": "query",
           "name": "tags",
           "required": true,
-          "description": "List of tags id to search for",
+          "description": "Comma separated list of tag ids",
           "example": "5e9b1b9b0f9b2c0017b5f1b5,5e9b1b9b0f9b2c0017b5f1b6,..."
         },
         {
           "in": "query",
           "name": "categoryId",
-          "required": false,
-          "description": "CategoryId to search",
+          "required": true,
+          "description": "Category of the returned tags",
           "example": "5e9b1b9b0f9b2c0017b5f1b5"
-        },
-        {
-          "in": "query",
-          "name": "categoryType",
-          "required": false,
-          "description": "CategoryType to search, this have the priority over the tags parameter",
-          "example": "highlight,conversation_metadata,conversation_text,commentary"
         }
       ],
       "responses": {
@@ -121,21 +182,13 @@
   "/api/organizations/{organizationId}/tags/{tagId}": {
     "get": {
       "tags": ["organizations members"],
-      "summary": "Retrieve tag information",
+      "summary": "Retrieve a tag by ID",
       "parameters": [
         {
-          "name": "organizationId",
-          "in": "path",
-          "description": "Organization ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
-          "name": "tagId",
-          "in": "path",
-          "description": "Tag ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/TagId"
         }
       ],
       "responses": {
@@ -160,21 +213,13 @@
     },
     "patch": {
       "tags": ["organizations members"],
-      "summary": "Update tag information",
+      "summary": "Update a tag",
       "parameters": [
         {
-          "name": "organizationId",
-          "in": "path",
-          "description": "Organization ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
-          "name": "tagId",
-          "in": "path",
-          "description": "Tag ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/TagId"
         }
       ],
       "requestBody": {
@@ -188,8 +233,25 @@
                 },
                 "categoryId": {
                   "type": "string"
+                },
+                "organizationId": {
+                  "type": "string",
+                  "description": "Organization owning the tag"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Description of the tag"
+                },
+                "color": {
+                  "type": "string",
+                  "description": "Hex color of the tag, format #rrggbb"
+                },
+                "emoji": {
+                  "type": "string",
+                  "description": "Emoji unified code, format [0-9a-f]{5,6}"
                 }
-              }
+              },
+              "required": ["organizationId", "categoryId"]
             }
           }
         }
@@ -199,11 +261,13 @@
           "description": "OK",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "description": "Tag updated"
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Tag updated"
+                  }
                 }
               },
               "example": {
@@ -228,21 +292,13 @@
     },
     "delete": {
       "tags": ["organizations maintainers"],
-      "summary": "Delete tag information",
+      "summary": "Delete a tag",
       "parameters": [
         {
-          "name": "organizationId",
-          "in": "path",
-          "description": "Organization ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
-          "name": "tagId",
-          "in": "path",
-          "description": "Tag ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/TagId"
         }
       ],
       "responses": {

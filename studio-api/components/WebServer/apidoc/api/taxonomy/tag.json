@@ -2,21 +2,13 @@
   "/api/conversations/{conversationId}/tags/{tagId}": {
     "get": {
       "tags": ["conversations taxonomy"],
-      "summary": "Retrieve tag information",
+      "summary": "Retrieve a tag by ID",
       "parameters": [
         {
-          "name": "conversationId",
-          "in": "path",
-          "description": "Conversation ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
-          "name": "tagId",
-          "in": "path",
-          "description": "Tag ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/TagId"
         }
       ],
       "responses": {
@@ -36,6 +28,70 @@
         },
         "401": {
           "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
+  },
+  "/api/conversations/{conversationId}/tags": {
+    "get": {
+      "tags": ["conversations taxonomy"],
+      "summary": "List the tags of a conversation",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ConversationId"
+        },
+        {
+          "in": "query",
+          "name": "categoryType",
+          "required": false,
+          "description": "Type of categories to list the tags from (default: label categories)",
+          "schema": {
+            "type": "string",
+            "enum": ["highlight", "conversation_metadata"]
+          }
+        },
+        {
+          "in": "query",
+          "name": "name",
+          "required": false,
+          "description": "Filter tags by name",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "in": "query",
+          "name": "expand",
+          "required": false,
+          "description": "When 'true', expand the tags with their category information",
+          "schema": {
+            "type": "string",
+            "enum": ["true", "false"]
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TagList"
+                }
+              }
+            }
+          }
+        },
+        "204": {
+          "$ref": "#/components/responses/NoContent"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
         }
       }
     }

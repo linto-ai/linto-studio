@@ -1,0 +1,12 @@
+{
+  "UserScope": {
+    "in": "query",
+    "name": "userScope",
+    "required": true,
+    "description": "Scope of the user, must be 'backoffice'",
+    "schema": {
+      "type": "string",
+      "enum": ["backoffice"]
+    }
+  }
+}
