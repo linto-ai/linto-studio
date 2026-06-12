@@ -1,0 +1,229 @@
+{
+  "/api/publication/templates": {
+    "get": {
+      "tags": ["publication"],
+      "summary": "List the available publication templates",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "organization_id",
+          "required": false,
+          "description": "Also include the templates scoped to this organization",
+          "schema": { "type": "string" }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The list of templates",
+          "content": {
+            "application/json": {}
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "503": {
+          "description": "LLM gateway unreachable"
+        }
+      }
+    },
+    "post": {
+      "tags": ["publication"],
+      "summary": "Upload a new publication template",
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "file": {
+                  "type": "string",
+                  "format": "binary",
+                  "description": "Template file (.docx)"
+                },
+                "name_fr": {
+                  "type": "string",
+                  "description": "French name of the template"
+                },
+                "name_en": {
+                  "type": "string",
+                  "description": "English name of the template"
+                },
+                "description_fr": {
+                  "type": "string",
+                  "description": "French description"
+                },
+                "description_en": {
+                  "type": "string",
+                  "description": "English description"
+                },
+                "organization_id": {
+                  "type": "string",
+                  "description": "Organization owning the template"
+                },
+                "scope": {
+                  "type": "string",
+                  "description": "Visibility scope of the template"
+                }
+              },
+              "required": ["file", "name_fr"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Created",
+          "content": {
+            "application/json": {}
+          }
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "503": {
+          "description": "LLM gateway unreachable"
+        }
+      }
+    }
+  },
+  "/api/publication/templates/{templateId}": {
+    "delete": {
+      "tags": ["publication"],
+      "summary": "Delete a publication template",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "templateId",
+          "type": "string",
+          "required": true,
+          "description": "Template ID"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {}
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "503": {
+          "description": "LLM gateway unreachable"
+        }
+      }
+    }
+  },
+  "/api/publication/templates/{templateId}/placeholders": {
+    "get": {
+      "tags": ["publication"],
+      "summary": "List the placeholders of a publication template",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "templateId",
+          "type": "string",
+          "required": true,
+          "description": "Template ID"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The list of placeholders",
+          "content": {
+            "application/json": {}
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "503": {
+          "description": "LLM gateway unreachable"
+        }
+      }
+    }
+  },
+  "/api/publication/{jobId}/export/{format}": {
+    "get": {
+      "tags": ["publication"],
+      "summary": "Export an LLM job result with a publication template",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "jobId",
+          "type": "string",
+          "required": true,
+          "description": "LLM gateway job ID"
+        },
+        {
+          "in": "path",
+          "name": "format",
+          "required": true,
+          "description": "Output format",
+          "schema": {
+            "type": "string",
+            "enum": ["html", "pdf", "docx"]
+          }
+        },
+        {
+          "in": "query",
+          "name": "templateId",
+          "required": false,
+          "description": "Publication template to use",
+          "schema": { "type": "string" }
+        },
+        {
+          "in": "query",
+          "name": "placeholders",
+          "required": false,
+          "description": "JSON object mapping placeholder names to values",
+          "schema": { "type": "string" }
+        },
+        {
+          "in": "query",
+          "name": "versionNumber",
+          "required": false,
+          "description": "Version of the job result to export",
+          "schema": { "type": "integer" }
+        },
+        {
+          "in": "query",
+          "name": "timezone",
+          "required": false,
+          "description": "Timezone used to render dates",
+          "schema": { "type": "string" }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "File download",
+          "content": {
+            "text/html": {},
+            "application/pdf": {},
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document": {}
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "503": {
+          "description": "LLM gateway unreachable"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,364 @@
+{
+  "/api/chat/status": {
+    "get": {
+      "tags": ["conversations chat"],
+      "summary": "Check whether the conversation chat feature is enabled",
+      "description": "Returns enabled=false when the LLM gateway or the chat service is not configured or unreachable.",
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "enabled": { "type": "boolean" }
+                }
+              },
+              "example": {
+                "enabled": true
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
+  },
+  "/api/conversations/{conversationId}/chat/sessions": {
+    "get": {
+      "tags": ["conversations chat"],
+      "summary": "List the chat sessions of the current user on a conversation",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "conversationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an conversation"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "_id": { "type": "string" },
+                    "title": { "type": "string" },
+                    "flavorId": { "type": "string" },
+                    "messageCount": { "type": "integer" },
+                    "created_at": { "type": "string" },
+                    "updated_at": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "post": {
+      "tags": ["conversations chat"],
+      "summary": "Create a chat session on a conversation",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "conversationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an conversation"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "description": "Title of the chat session (default 'New chat')"
+                },
+                "flavorId": {
+                  "type": "string",
+                  "description": "LLM flavor to use. Defaults to the default flavor of the configured chat service."
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Created",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "_id": { "type": "string" },
+                  "conversationId": { "type": "string" },
+                  "organizationId": { "type": "string" },
+                  "userId": { "type": "string" },
+                  "title": { "type": "string" },
+                  "flavorId": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "503": {
+          "description": "Chat feature not configured"
+        }
+      }
+    }
+  },
+  "/api/conversations/{conversationId}/chat/sessions/{sessionId}": {
+    "get": {
+      "tags": ["conversations chat"],
+      "summary": "Get a chat session with all its messages",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "conversationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an conversation"
+        },
+        {
+          "in": "path",
+          "name": "sessionId",
+          "type": "string",
+          "required": true,
+          "description": "Chat session ID"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "_id": { "type": "string" },
+                  "conversationId": { "type": "string" },
+                  "title": { "type": "string" },
+                  "flavorId": { "type": "string" },
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "_id": { "type": "string" },
+                        "role": {
+                          "type": "string",
+                          "enum": ["user", "assistant"]
+                        },
+                        "content": { "type": "string" },
+                        "tokenCount": { "type": "integer" },
+                        "created_at": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "description": "The chat session belongs to another user"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "patch": {
+      "tags": ["conversations chat"],
+      "summary": "Rename a chat session",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "conversationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an conversation"
+        },
+        {
+          "in": "path",
+          "name": "sessionId",
+          "type": "string",
+          "required": true,
+          "description": "Chat session ID"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "description": "New title (200 characters max)"
+                }
+              },
+              "required": ["title"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "example": {
+                "_id": "6392f74a32d603288c910185",
+                "title": "My chat"
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "description": "The chat session belongs to another user"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "delete": {
+      "tags": ["conversations chat"],
+      "summary": "Delete a chat session and all its messages",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "conversationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an conversation"
+        },
+        {
+          "in": "path",
+          "name": "sessionId",
+          "type": "string",
+          "required": true,
+          "description": "Chat session ID"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "example": {
+                "status": "deleted"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "description": "The chat session belongs to another user"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/conversations/{conversationId}/chat/sessions/{sessionId}/messages": {
+    "post": {
+      "tags": ["conversations chat"],
+      "summary": "Send a message in a chat session and stream the assistant answer",
+      "description": "The answer is streamed as Server-Sent Events (text/event-stream) with token, done and error events. The conversation transcript and its latest summary are provided to the LLM as context.",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "conversationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an conversation"
+        },
+        {
+          "in": "path",
+          "name": "sessionId",
+          "type": "string",
+          "required": true,
+          "description": "Chat session ID"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "content": {
+                  "type": "string",
+                  "description": "Message content (50000 characters max)"
+                }
+              },
+              "required": ["content"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Server-Sent Events stream",
+          "content": {
+            "text/event-stream": {}
+          }
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "description": "The chat session belongs to another user"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  }
+}

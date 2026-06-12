@@ -39,5 +39,41 @@
         }
       }
     }
+  },
+  "/api/conversations/{conversationId}/tags": {
+    "get": {
+      "tags": ["conversations taxonomy"],
+      "summary": "List the tags of a conversation",
+      "parameters": [
+        {
+          "name": "conversationId",
+          "in": "path",
+          "description": "Conversation ID",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TagList"
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
   }
 }

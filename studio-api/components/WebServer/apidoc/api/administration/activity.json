@@ -444,5 +444,63 @@
         }
       }
     }
+  },
+  "/api/administration/activity/export": {
+    "get": {
+      "tags": ["administration activity"],
+      "summary": "Export activity logs in various formats",
+      "description": "Accepts the same filters as the activity list endpoint (source, scope, user...). Pagination is ignored, the export contains the full matching dataset.",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
+          "required": true,
+          "description": "Scope of the user, must be 'backoffice'"
+        },
+        {
+          "in": "query",
+          "name": "format",
+          "schema": {
+            "type": "string",
+            "enum": ["json", "csv", "xls"]
+          },
+          "required": true,
+          "description": "Export format"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "File download",
+          "content": {
+            "application/json": {},
+            "text/csv": {},
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
+          }
+        },
+        "400": {
+          "description": "Bad Request - Invalid format",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "error": {
+                    "type": "string",
+                    "example": "Invalid format. Must be one of: json, csv, xls"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
   }
 }

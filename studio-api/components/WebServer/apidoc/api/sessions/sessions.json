@@ -618,10 +618,133 @@
       }
     }
   },
-  "/api/organizations/{organizationId}/sessions/{id}/delete-captions": {
-    "delete": {
+  "/api/organizations/{organizationId}/sessions/{id}/pause": {
+    "put": {
       "tags": ["sessions"],
-      "summary": "Delete captions of a session by ID",
+      "summary": "Pause a session by ID",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
+        },
+        {
+          "name": "id",
+          "in": "path",
+          "description": "Session ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The session",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionAnswerWithCaptions"
+              }
+            }
+          }
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/sessions/{id}/resume": {
+    "put": {
+      "tags": ["sessions"],
+      "summary": "Resume a paused session by ID",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
+        },
+        {
+          "name": "id",
+          "in": "path",
+          "description": "Session ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The session",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionAnswerWithCaptions"
+              }
+            }
+          }
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/sessions/{id}/clear": {
+    "put": {
+      "tags": ["sessions"],
+      "summary": "Clear the closed captions of a session by ID",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
+        },
+        {
+          "name": "id",
+          "in": "path",
+          "description": "Session ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The session",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionAnswerWithCaptions"
+              }
+            }
+          }
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/sessions/{id}/channels/{channelId}": {
+    "get": {
+      "tags": ["sessions"],
+      "summary": "Get a channel of a session by ID",
       "parameters": [
         {
           "in": "path",
@@ -642,33 +765,51 @@
           }
         },
         {
-          "in": "query",
-          "name": "start_time",
-          "description": "Delete captions from this time",
-          "required": false,
+          "name": "channelId",
+          "in": "path",
+          "description": "Channel ID",
+          "required": true,
           "schema": {
-            "type": "string",
-            "format": "time",
-            "example": "00:00:00",
-            "default": null
-          }
-        },
-        {
-          "in": "query",
-          "name": "end_time",
-          "description": "Delete captions to this time",
-          "required": false,
-          "schema": {
-            "type": "string",
-            "format": "time",
-            "example": "00:05:00",
-            "default": null
+            "type": "string"
           }
         }
       ],
       "responses": {
         "200": {
-          "description": "The session",
+          "description": "The channel",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChannelAnswerWithCaptions"
+              }
+            }
+          }
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/sessions/public/{id}": {
+    "get": {
+      "tags": ["sessions"],
+      "summary": "Get a public session by ID or alias, without authentication. Private content is removed from the answer.",
+      "security": [],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "description": "Session ID or alias",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The public session",
           "content": {
             "application/json": {
               "schema": {
@@ -679,18 +820,85 @@
         },
         "404": {
           "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/sessions/public/{id}/channels/{channelId}": {
+    "get": {
+      "tags": ["sessions"],
+      "summary": "Get a channel of a public session by ID, without authentication. Private content is removed from the answer.",
+      "security": [],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "description": "Session ID or alias",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
         },
-        "400": {
-          "description": "Bad Request",
+        {
+          "name": "channelId",
+          "in": "path",
+          "description": "Channel ID",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The public channel",
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "message": {
-                    "type": "string",
-                    "example": "Invalid start_time format. Expected HH:mm:ss or null"
-                  }
+                "$ref": "#/components/schemas/ChannelAnswerWithCaptions"
+              }
+            }
+          }
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/users/self/quickMeeting": {
+    "get": {
+      "tags": ["sessions"],
+      "summary": "Get the quick meeting sessions owned by the current user",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "limit",
+          "description": "Maximum number of sessions in the answer",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "in": "query",
+          "name": "offset",
+          "description": "Offset from the start the number of sessions",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The list of sessions",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SessionPaginationAnswer"
                 }
               }
             }

@@ -1,5 +1,60 @@
 {
   "/api/organizations/{organizationId}/tags": {
+    "get": {
+      "tags": ["organizations members"],
+      "summary": "List the tags of a category in the organization",
+      "parameters": [
+        {
+          "name": "organizationId",
+          "in": "path",
+          "description": "The organization id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "in": "query",
+          "name": "categoryId",
+          "required": true,
+          "description": "Category from which tags are listed",
+          "schema": { "type": "string" }
+        },
+        {
+          "in": "query",
+          "name": "withMediaCount",
+          "required": false,
+          "description": "Include the number of conversations using each tag",
+          "schema": { "type": "boolean" }
+        },
+        {
+          "in": "query",
+          "name": "folderId",
+          "required": false,
+          "description": "Restrict the media count to a folder",
+          "schema": { "type": "string" }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
     "post": {
       "tags": ["organizations members"],
       "summary": "Create a tag for an organization",

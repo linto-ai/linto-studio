@@ -219,5 +219,108 @@
         }
       }
     }
+  },
+  "/api/conversations/{conversationId}/duplicate": {
+    "post": {
+      "tags": ["conversations member"],
+      "summary": "Duplicate a conversation",
+      "description": "Create a copy of the conversation owned by the current user. Shares are not duplicated.",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "conversationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an conversation"
+        }
+      ],
+      "responses": {
+        "201": {
+          "description": "Created",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": { "type": "string" },
+                  "conversationId": { "type": "string" }
+                }
+              },
+              "example": {
+                "message": "Conversation duplicated",
+                "conversationId": "6392f74a32d603288c910185"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/conversations/users": {
+    "post": {
+      "tags": ["conversations member"],
+      "summary": "List the users who have access to a list of conversations",
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "conversations": {
+                  "type": "string",
+                  "description": "Comma separated list of conversation IDs",
+                  "example": "6392f74a32d603288c910185,634eae867d29b677f13e7e6c"
+                }
+              },
+              "required": ["conversations"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "conversationId": { "type": "string" },
+                    "member": {
+                      "type": "object",
+                      "properties": {
+                        "external_members": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/User" }
+                        },
+                        "organization_members": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/User" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
   }
 }

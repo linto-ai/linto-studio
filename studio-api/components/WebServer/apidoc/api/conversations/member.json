@@ -132,7 +132,7 @@
       }
     }
   },
-  "/api/conversations/{conversationId}/user/{userId}": {
+  "/api/conversations/{conversationId}/users/{userId}": {
     "patch": {
       "tags": ["conversations member"],
       "summary": "Grant access to a conversation from a member of an organization",

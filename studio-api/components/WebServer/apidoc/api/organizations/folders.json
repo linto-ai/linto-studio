@@ -322,73 +322,6 @@
     }
   },
   "/api/organizations/{organizationId}/folders/{folderId}/conversations": {
-    "post": {
-      "tags": ["organizations members"],
-      "summary": "Move conversations to a folder",
-      "description": "Batch move multiple conversations into a specific folder.",
-      "parameters": [
-        {
-          "name": "organizationId",
-          "in": "path",
-          "description": "Organization ID",
-          "required": true,
-          "type": "string"
-        },
-        {
-          "name": "folderId",
-          "in": "path",
-          "description": "Target folder ID",
-          "required": true,
-          "type": "string"
-        }
-      ],
-      "requestBody": {
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "conversationIds": {
-                  "type": "array",
-                  "items": { "type": "string" },
-                  "description": "List of conversation IDs to move"
-                }
-              },
-              "required": ["conversationIds"]
-            }
-          }
-        }
-      },
-      "responses": {
-        "200": {
-          "description": "Conversations moved",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "message": { "type": "string" },
-                  "modifiedCount": { "type": "number" }
-                }
-              },
-              "example": {
-                "message": "Conversations moved",
-                "modifiedCount": 3
-              }
-            }
-          }
-        },
-        "400": {
-          "$ref": "#/components/responses/BadRequest"
-        },
-        "401": {
-          "$ref": "#/components/responses/Unauthorized"
-        },
-        "404": {
-          "$ref": "#/components/responses/NotFound"
-        }
-      }
-    },
     "get": {
       "tags": ["organizations members"],
       "summary": "List conversations in a folder",
@@ -477,6 +410,120 @@
               }
             }
           }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/folders/{folderId}/conversations/{conversationId}": {
+    "post": {
+      "tags": ["organizations members"],
+      "summary": "Move a conversation to a folder",
+      "description": "Move a single conversation into a specific folder. The conversation rights are synchronized with the folder visibility.",
+      "parameters": [
+        {
+          "name": "organizationId",
+          "in": "path",
+          "description": "Organization ID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "folderId",
+          "in": "path",
+          "description": "Target folder ID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "conversationId",
+          "in": "path",
+          "description": "Conversation ID to move",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Conversation moved",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": { "type": "string" }
+                }
+              },
+              "example": {
+                "message": "Conversation moved"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/folders/uncategorized/conversations": {
+    "post": {
+      "tags": ["organizations members"],
+      "summary": "Remove conversations from their folder",
+      "description": "Batch remove multiple conversations from their current folder. The conversations become uncategorized.",
+      "parameters": [
+        {
+          "name": "organizationId",
+          "in": "path",
+          "description": "Organization ID",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "conversationIds": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "description": "List of conversation IDs to remove from their folder"
+                }
+              },
+              "required": ["conversationIds"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Conversations removed from folder",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": { "type": "string" }
+                }
+              },
+              "example": {
+                "message": "Conversations removed from folder"
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
         },
         "401": {
           "$ref": "#/components/responses/Unauthorized"

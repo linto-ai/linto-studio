@@ -31,5 +31,75 @@
         }
       }
     }
+  },
+  "/auth/oidc/cb": {
+    "get": {
+      "tags": ["auth"],
+      "summary": "Callback endpoint of the configured OIDC provider. The user is redirected here after authentication, then redirected back to the application.",
+      "responses": {
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "500": {
+          "$ref": "#/components/responses/InternalServer"
+        }
+      }
+    }
+  },
+  "/auth/oidc/google/login": {
+    "get": {
+      "tags": ["auth"],
+      "summary": "Authenticate user with the Google OIDC provider. There is no success response due to the redirection to the provider.",
+      "responses": {
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "500": {
+          "$ref": "#/components/responses/InternalServer"
+        }
+      }
+    }
+  },
+  "/auth/oidc/google/cb": {
+    "get": {
+      "tags": ["auth"],
+      "summary": "Callback endpoint of the Google OIDC provider. The user is redirected here after authentication, then redirected back to the application.",
+      "responses": {
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "500": {
+          "$ref": "#/components/responses/InternalServer"
+        }
+      }
+    }
+  },
+  "/auth/oidc/github/login": {
+    "get": {
+      "tags": ["auth"],
+      "summary": "Authenticate user with the GitHub OIDC provider. There is no success response due to the redirection to the provider.",
+      "responses": {
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "500": {
+          "$ref": "#/components/responses/InternalServer"
+        }
+      }
+    }
+  },
+  "/auth/oidc/github/cb": {
+    "get": {
+      "tags": ["auth"],
+      "summary": "Callback endpoint of the GitHub OIDC provider. The user is redirected here after authentication, then redirected back to the application.",
+      "responses": {
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "500": {
+          "$ref": "#/components/responses/InternalServer"
+        }
+      }
+    }
   }
 }

@@ -337,5 +337,38 @@
         }
       }
     }
+  },
+  "/api/organizations/{organizationId}/categories/system": {
+    "get": {
+      "tags": ["organizations members"],
+      "summary": "List the system categories of an organization",
+      "parameters": [
+        {
+          "name": "organizationId",
+          "in": "path",
+          "description": "The organization id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Category"
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
   }
 }
