@@ -22,6 +22,7 @@
             :currentOrganization="organization" />
           <UpdateOrganizationPermissions :currentOrganization="organization" />
           <UpdateOrganizationSecurityLevel
+            v-if="enableSecurityLevel"
             :currentOrganization="organization" />
         </div>
 
@@ -62,6 +63,7 @@
 </template>
 <script>
 import { bus } from "@/main.js"
+import { getEnv } from "@/tools/getEnv"
 
 import { apiGetOrganizationById } from "@/api/organisation.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
@@ -102,6 +104,11 @@ export default {
   },
   beforeDestroy() {
     bus.$off("user_orga_update", this.fetchOrganization)
+  },
+  computed: {
+    enableSecurityLevel() {
+      return getEnv("VUE_APP_ENABLE_SECURITY_LEVEL") === "true"
+    },
   },
   methods: {
     async fetchOrganization() {
