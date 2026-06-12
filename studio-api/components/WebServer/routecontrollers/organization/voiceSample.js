@@ -22,6 +22,7 @@ const { verifyOwnership } = require(
 const triggers = require(
   `${process.cwd()}/components/WebServer/controllers/speakerIdentification/triggers`,
 )
+const limits = require(`${process.cwd()}/lib/dao/speakerIdentification/limits`)
 
 function validateAudioFile(audioFile) {
   _validateAudioFile(audioFile, VoiceSampleUnsupportedMediaType, VoiceSampleError)
@@ -90,6 +91,16 @@ async function createVoiceSample(req, res, next) {
     const audioFile = req.files.audio
     validateAudioFile(audioFile)
 
+    // Quantitative limits per label (07 §5 Q8)
+    const existingSamples = await model.voiceSamples.getBySpeakerLabelId(
+      req.params.labelId,
+    )
+    if (existingSamples.length >= limits.maxSamplesPerLabel()) {
+      throw new VoiceSampleError(
+        `Maximum number of voice samples per speaker reached (${limits.maxSamplesPerLabel()})`,
+      )
+    }
+
     const payload = {
       speakerLabelId: req.params.labelId,
       collectionId: label.collectionId.toString(),
@@ -97,6 +108,15 @@ async function createVoiceSample(req, res, next) {
     }
     const audioDuration = parseAudioDuration(req.body.audioDuration)
     if (audioDuration !== undefined) {
+      const totalDuration = existingSamples.reduce(
+        (sum, s) => sum + (s.audioDuration || 0),
+        0,
+      )
+      if (totalDuration + audioDuration > limits.maxTotalDurationPerLabel()) {
+        throw new VoiceSampleError(
+          `Maximum total duration of voice samples per speaker reached (${limits.maxTotalDurationPerLabel()}s)`,
+        )
+      }
       payload.audioDuration = audioDuration
     }
 

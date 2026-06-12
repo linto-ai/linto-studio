@@ -19,6 +19,10 @@ async function getSpeakerIdentificationStatus(req, res, next) {
 
     res.status(200).send({
       enabled: Boolean(info && info.enabled),
+      // reachable is false only on a transport/timeout failure (degraded),
+      // true on an explicit answer (enabled or disabled). Default true when the
+      // connector does not report it.
+      reachable: info && info.reachable !== undefined ? info.reachable : true,
       modelId: (info && info.modelId) || null,
       dim: (info && info.dim) || null,
       syncPending,

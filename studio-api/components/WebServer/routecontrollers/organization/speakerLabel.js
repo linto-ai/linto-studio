@@ -18,6 +18,7 @@ const { cascadeDeleteSampleFiles, STORAGE_MODE } = require(
 const triggers = require(
   `${process.cwd()}/components/WebServer/controllers/speakerIdentification/triggers`,
 )
+const limits = require(`${process.cwd()}/lib/dao/speakerIdentification/limits`)
 
 async function getSpeakerLabels(req, res, next) {
   try {
@@ -75,6 +76,16 @@ async function createSpeakerLabel(req, res, next) {
     if (existing.length > 0) {
       throw new SpeakerLabelConflict(
         `A speaker label "${name}" already exists in this collection`,
+      )
+    }
+
+    // Quantitative limit (07 §5 Q8)
+    const collectionLabels = await model.speakerLabels.getByCollectionId(
+      req.params.collectionId,
+    )
+    if (collectionLabels.length >= limits.maxLabelsPerCollection()) {
+      throw new SpeakerLabelError(
+        `Maximum number of speakers per collection reached (${limits.maxLabelsPerCollection()})`,
       )
     }
 

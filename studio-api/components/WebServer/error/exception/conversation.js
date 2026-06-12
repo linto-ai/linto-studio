@@ -7,6 +7,15 @@ const ConversationError = createException(
   400,
   "Error during the operation",
 )
+// Speaker identification: a requested collection does not belong to the
+// organization (contractual 403, cf. docs/speaker-identification 05 §2.2.3,
+// 07 §4.2). Other speaker-id validation errors stay 400 (ConversationError).
+const SpeakerIdentificationForbidden = createException(
+  "SpeakerIdentificationForbidden",
+  "conversation",
+  403,
+  "A speaker identification collection does not belong to this organization",
+)
 const ConversationNoFileUploaded = createException(
   "ConversationNoFileUploaded",
   "conversation",
@@ -150,6 +159,7 @@ module.exports = {
   ConversationNotShared,
   ConversationIdRequire,
   ConversationError,
+  SpeakerIdentificationForbidden,
   ConversationNotFound,
   TurnNotFound,
   SubtitleUnsupportedMediaType,

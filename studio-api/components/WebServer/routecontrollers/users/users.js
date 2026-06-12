@@ -42,6 +42,10 @@ const { populateUserToOrganization } = require(
 )
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 
+const triggers = require(
+  `${process.cwd()}/components/WebServer/controllers/speakerIdentification/triggers`,
+)
+
 async function createUser(req, res, next) {
   try {
     if (process.env.DISABLE_USER_CREATION === "true")
@@ -239,7 +243,15 @@ async function updateUser(req, res, next) {
 
     const result = await model.users.update(user)
     if (result.matchedCount === 0) throw new UserError()
-    else if (result.modifiedCount === 1)
+
+    // The display name carried by the user's Qdrant point must follow a
+    // first/last name change: re-upsert it in every opted-in organization
+    // (fire-and-forget, no-op when no voiceprint exists). cf. 07 §2.3.
+    if (req.body.firstname || req.body.lastname) {
+      triggers.renameUserSpeaker(req.payload.data.userId)
+    }
+
+    if (result.modifiedCount === 1)
       res.status(200).send({ message: "User updated" })
     else res.status(202).send()
   } catch (err) {

@@ -11,7 +11,7 @@
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
-const { ConversationError } = require(
+const { ConversationError, SpeakerIdentificationForbidden } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
 
@@ -22,10 +22,16 @@ function parseConfig(transcriptionConfig) {
   if (typeof transcriptionConfig === "object") {
     return transcriptionConfig
   }
+  if (transcriptionConfig === "") {
+    return {}
+  }
   try {
     return JSON.parse(transcriptionConfig)
   } catch (err) {
-    return {}
+    // Reject malformed config rather than silently dropping it: the client
+    // config is overwritten downstream, so a silent {} would discard the
+    // whole request config without any feedback.
+    throw new ConversationError("transcriptionConfig is not valid JSON")
   }
 }
 
@@ -99,9 +105,7 @@ async function applySpeakerIdentification(body, organization) {
       found.length === 0 ||
       found[0].organizationId.toString() !== organizationId
     ) {
-      throw new ConversationError(
-        "A speaker identification collection does not belong to this organization",
-      )
+      throw new SpeakerIdentificationForbidden()
     }
     qdrantCollections.push(found[0].qdrantCollectionName)
   }

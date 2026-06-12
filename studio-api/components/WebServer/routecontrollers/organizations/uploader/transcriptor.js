@@ -114,7 +114,10 @@ async function transcribe(isSingleFile, req, res, next) {
     // Qdrant collection names). Returns the security headers for the gateway.
     const speakerId = await applySpeakerIdentification(req.body, orgExists[0])
     req.body.transcriptionConfig = JSON.stringify(speakerId.transcriptionConfig)
-    req.body.speakerIdHeaders = speakerId.headers
+    // Keep the security headers (which may carry the shared X-Speaker-Id-Token)
+    // in a local variable: never stash them on req.body, where they could ride
+    // along into a log payload (cf. logger/context.js DELETE body capture).
+    const speakerIdHeaders = speakerId.headers
 
     if (req.body.folderId && req.body.folderId !== "null") {
       const folderResult = await model.folders.getById(req.body.folderId)
@@ -148,8 +151,8 @@ async function transcribe(isSingleFile, req, res, next) {
 
     // Attach the speaker identification security headers (X-Organization-Id
     // and optional token) when an identification config was injected.
-    if (req.body.speakerIdHeaders) {
-      options.headers = { ...options.headers, ...req.body.speakerIdHeaders }
+    if (speakerIdHeaders) {
+      options.headers = { ...options.headers, ...speakerIdHeaders }
     }
 
     const processingJob = await axios.postFormData(

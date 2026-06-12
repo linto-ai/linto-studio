@@ -90,7 +90,8 @@ async function deleteOrganization(req, res, next) {
       orgLabels,
     )
 
-    // Delete all voice sample records, speaker labels, voiceprint collections, and opt-ins in parallel
+    // Delete all voice sample records, speaker labels, voiceprint collections,
+    // opt-ins, and any pending reconciliation ops in parallel
     await Promise.all([
       model.voiceSamples.deleteAllFromOrganization(
         organization._id.toString(),
@@ -102,6 +103,9 @@ async function deleteOrganization(req, res, next) {
         organization._id.toString(),
       ),
       model.voiceOptIns.deleteAllFromOrganization(
+        organization._id.toString(),
+      ),
+      model.speakerIdSyncOps.deleteAllFromOrganization(
         organization._id.toString(),
       ),
     ])

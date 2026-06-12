@@ -120,8 +120,22 @@ async function setLabelState(labelId, syncState, hasVoiceprint) {
 
 async function setCollectionState(collection, syncState, modelId, modelDim) {
   const patch = { _id: collection._id.toString(), syncState }
-  if (modelId !== undefined && !collection.modelId) patch.modelId = modelId
-  if (modelDim !== undefined && !collection.modelDim) patch.modelDim = modelDim
+  // Model drift detection (D10, 04 §5): once a collection is stamped with a
+  // modelId, a worker response carrying a different modelId means the stored
+  // voiceprints are stale and must be recomputed. Surface this as a distinct
+  // error reason instead of letting the upsert loop in reconciliation.
+  if (
+    modelId !== undefined &&
+    collection.modelId &&
+    modelId !== collection.modelId
+  ) {
+    patch.syncState = SYNC_STATE.ERROR
+    patch.syncStateReason = "model_mismatch"
+  } else {
+    if (modelId !== undefined && !collection.modelId) patch.modelId = modelId
+    if (modelDim !== undefined && !collection.modelDim) patch.modelDim = modelDim
+    if (collection.syncStateReason) patch.syncStateReason = null
+  }
   await model.voiceprintCollections.update(patch)
 }
 
@@ -180,9 +194,13 @@ async function recomputeLabel(label) {
     await setLabelState(label._id, state, true)
     await setCollectionState(collection, state, result.modelId, result.dim)
 
-    // Embeddings-only collection: drop the audio once the voiceprint exists
+    // Embeddings-only collection: drop the audio once the voiceprint exists.
+    // Re-read the samples just before purging so the file purge matches the DB
+    // purge: any sample uploaded during the (long) compute would otherwise have
+    // its DB record deleted but its audio file left orphaned on disk.
     if (collection.storageMode === STORAGE_MODE.EMBEDDINGS) {
-      cascadeDeleteSampleFiles(samples)
+      const toPurge = await model.voiceSamples.getBySpeakerLabelId(label._id)
+      cascadeDeleteSampleFiles(toPurge)
       await model.voiceSamples.deleteAllFromSpeakerLabel(label._id)
     }
   } catch (err) {
@@ -376,7 +394,10 @@ async function recomputeUser(userId) {
     })
 
     if (storageMode === STORAGE_MODE.EMBEDDINGS) {
-      cascadeDeleteSampleFiles(samples)
+      // Re-read the samples just before purging so the file purge matches the
+      // DB purge (a sample added during compute would otherwise be orphaned).
+      const toPurge = await model.voiceSamples.getByUserId(userId)
+      cascadeDeleteSampleFiles(toPurge)
       await model.voiceSamples.deleteAllFromUser(userId)
     }
   } catch (err) {
@@ -446,8 +467,17 @@ async function removeUserFromOrg(userId, organizationId) {
 /** Remove the user voiceprint from a set of organizations (delete-all/account). */
 async function removeUserEverywhere(userId, optInDocs) {
   if (!enabled()) return
-  for (const optIn of optInDocs || []) {
-    await removeUserFromOrg(userId, optIn.organizationId.toString())
+  // optInDocs may be an Error object when the upstream model read failed
+  // (the model layer returns the error instead of throwing); guard the
+  // iteration so this fire-and-forget trigger never rejects.
+  if (!Array.isArray(optInDocs)) return
+  try {
+    for (const optIn of optInDocs) {
+      if (!optIn || !optIn.organizationId) continue
+      await removeUserFromOrg(userId, optIn.organizationId.toString())
+    }
+  } catch (err) {
+    debug("removeUserEverywhere failed for %s: %s", userId, err.message)
   }
 }
 

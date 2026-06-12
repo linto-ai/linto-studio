@@ -14,6 +14,7 @@ const {
 const triggers = require(
   `${process.cwd()}/components/WebServer/controllers/speakerIdentification/triggers`,
 )
+const limits = require(`${process.cwd()}/lib/dao/speakerIdentification/limits`)
 
 const MAX_NAME_LENGTH = 200
 const MAX_DESCRIPTION_LENGTH = 1000
@@ -109,6 +110,20 @@ async function createVoiceprintCollection(req, res, next) {
     const storageMode = req.body.storageMode || STORAGE_MODE.AUDIO
     if (!Object.values(STORAGE_MODE).includes(storageMode)) {
       throw new VoiceprintCollectionError("Invalid storage mode")
+    }
+
+    // Quantitative limit (07 §5 Q8): only custom collections count, the
+    // Organization collection is managed automatically.
+    const existing = await model.voiceprintCollections.getByOrganizationId(
+      req.params.organizationId,
+    )
+    const customCount = existing.filter(
+      (c) => c.type === COLLECTION_TYPE.CUSTOM,
+    ).length
+    if (customCount >= limits.maxCollectionsPerOrg()) {
+      throw new VoiceprintCollectionError(
+        `Maximum number of collections per organization reached (${limits.maxCollectionsPerOrg()})`,
+      )
     }
 
     const payload = {

@@ -207,7 +207,10 @@ async function dropCollection(organizationId, qdrantCollection) {
 
 /**
  * Read the speaker identification capability/model info.
- * @returns {Promise<{enabled:boolean, modelId?:string, dim?:number}>}
+ * A 404 from the service is a definitive "disabled" answer (no capable
+ * service); any other error is a transport/timeout failure and is reported as
+ * `reachable:false` so the operator can tell "disabled" from "unreachable".
+ * @returns {Promise<{enabled:boolean, modelId?:string, dim?:number, reachable?:boolean}>}
  */
 async function getInfo(organizationId) {
   try {
@@ -219,7 +222,12 @@ async function getInfo(organizationId) {
     return resp.data
   } catch (err) {
     debug("getInfo failed: %s", err.message)
-    return { enabled: false }
+    if (err.response && err.response.status === 404) {
+      // The service answered: no capable speaker-id service is registered.
+      return { enabled: false, reachable: true }
+    }
+    // Network/timeout/other: the service status is unknown, not "disabled".
+    return { enabled: false, reachable: false }
   }
 }
 
