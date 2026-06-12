@@ -6,19 +6,16 @@
       "description": "Completed generations whose job no longer exists on the LLM gateway are removed from the list.",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
           "in": "query",
           "name": "serviceId",
           "required": true,
           "description": "Service for which generations are listed",
-          "schema": { "type": "string" }
+          "schema": {
+            "type": "string"
+          }
         }
       ],
       "responses": {
@@ -34,13 +31,27 @@
                     "items": {
                       "type": "object",
                       "properties": {
-                        "generationId": { "type": "string" },
-                        "jobId": { "type": "string" },
-                        "createdAt": { "type": "string" },
-                        "serviceId": { "type": "string" },
-                        "serviceName": { "type": "string" },
-                        "status": { "type": "string" },
-                        "isCurrent": { "type": "boolean" }
+                        "generationId": {
+                          "type": "string"
+                        },
+                        "jobId": {
+                          "type": "string"
+                        },
+                        "createdAt": {
+                          "type": "string"
+                        },
+                        "serviceId": {
+                          "type": "string"
+                        },
+                        "serviceName": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string"
+                        },
+                        "isCurrent": {
+                          "type": "boolean"
+                        }
                       }
                     }
                   }
@@ -63,12 +74,7 @@
       "description": "Previous generations of the same service are archived, the new one becomes current.",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         }
       ],
       "requestBody": {
@@ -77,9 +83,15 @@
             "schema": {
               "type": "object",
               "properties": {
-                "serviceId": { "type": "string" },
-                "jobId": { "type": "string" },
-                "serviceName": { "type": "string" }
+                "serviceId": {
+                  "type": "string"
+                },
+                "jobId": {
+                  "type": "string"
+                },
+                "serviceName": {
+                  "type": "string"
+                }
               },
               "required": ["serviceId", "jobId"]
             }
@@ -97,13 +109,27 @@
                   "generation": {
                     "type": "object",
                     "properties": {
-                      "generationId": { "type": "string" },
-                      "jobId": { "type": "string" },
-                      "createdAt": { "type": "string" },
-                      "serviceId": { "type": "string" },
-                      "serviceName": { "type": "string" },
-                      "status": { "type": "string" },
-                      "isCurrent": { "type": "boolean" }
+                      "generationId": {
+                        "type": "string"
+                      },
+                      "jobId": {
+                        "type": "string"
+                      },
+                      "createdAt": {
+                        "type": "string"
+                      },
+                      "serviceId": {
+                        "type": "string"
+                      },
+                      "serviceName": {
+                        "type": "string"
+                      },
+                      "status": {
+                        "type": "string"
+                      },
+                      "isCurrent": {
+                        "type": "boolean"
+                      }
                     }
                   }
                 }
@@ -126,12 +152,7 @@
       "summary": "Get a generation by ID",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
           "in": "path",
@@ -152,13 +173,27 @@
                   "generation": {
                     "type": "object",
                     "properties": {
-                      "generationId": { "type": "string" },
-                      "jobId": { "type": "string" },
-                      "createdAt": { "type": "string" },
-                      "serviceId": { "type": "string" },
-                      "serviceName": { "type": "string" },
-                      "status": { "type": "string" },
-                      "isCurrent": { "type": "boolean" }
+                      "generationId": {
+                        "type": "string"
+                      },
+                      "jobId": {
+                        "type": "string"
+                      },
+                      "createdAt": {
+                        "type": "string"
+                      },
+                      "serviceId": {
+                        "type": "string"
+                      },
+                      "serviceName": {
+                        "type": "string"
+                      },
+                      "status": {
+                        "type": "string"
+                      },
+                      "isCurrent": {
+                        "type": "boolean"
+                      }
                     }
                   }
                 }
@@ -180,12 +215,7 @@
       "description": "The associated job is also deleted on the LLM gateway. If the deleted generation was the current one, the most recent remaining generation becomes current.",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
           "in": "path",

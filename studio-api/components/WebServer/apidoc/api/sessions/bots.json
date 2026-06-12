@@ -32,12 +32,7 @@
           }
         },
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         }
       ],
       "responses": {
@@ -61,12 +56,7 @@
       "summary": "Create a new bot",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         }
       ],
       "requestBody": {
@@ -107,12 +97,7 @@
           }
         },
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         }
       ],
       "responses": {
@@ -145,12 +130,7 @@
           }
         },
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         }
       ],
       "responses": {

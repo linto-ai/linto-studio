@@ -12,7 +12,9 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "enabled": { "type": "boolean" }
+                  "enabled": {
+                    "type": "boolean"
+                  }
                 }
               },
               "example": {
@@ -33,12 +35,7 @@
       "summary": "List the chat sessions of the current user on a conversation",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         }
       ],
       "responses": {
@@ -51,12 +48,24 @@
                 "items": {
                   "type": "object",
                   "properties": {
-                    "_id": { "type": "string" },
-                    "title": { "type": "string" },
-                    "flavorId": { "type": "string" },
-                    "messageCount": { "type": "integer" },
-                    "created_at": { "type": "string" },
-                    "updated_at": { "type": "string" }
+                    "_id": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "flavorId": {
+                      "type": "string"
+                    },
+                    "messageCount": {
+                      "type": "integer"
+                    },
+                    "created_at": {
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "type": "string"
+                    }
                   }
                 }
               }
@@ -76,12 +85,7 @@
       "summary": "Create a chat session on a conversation",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         }
       ],
       "requestBody": {
@@ -111,12 +115,24 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "_id": { "type": "string" },
-                  "conversationId": { "type": "string" },
-                  "organizationId": { "type": "string" },
-                  "userId": { "type": "string" },
-                  "title": { "type": "string" },
-                  "flavorId": { "type": "string" }
+                  "_id": {
+                    "type": "string"
+                  },
+                  "conversationId": {
+                    "type": "string"
+                  },
+                  "organizationId": {
+                    "type": "string"
+                  },
+                  "userId": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "flavorId": {
+                    "type": "string"
+                  }
                 }
               }
             }
@@ -137,12 +153,7 @@
       "summary": "Get a chat session with all its messages",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
           "in": "path",
@@ -160,23 +171,39 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "_id": { "type": "string" },
-                  "conversationId": { "type": "string" },
-                  "title": { "type": "string" },
-                  "flavorId": { "type": "string" },
+                  "_id": {
+                    "type": "string"
+                  },
+                  "conversationId": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "flavorId": {
+                    "type": "string"
+                  },
                   "messages": {
                     "type": "array",
                     "items": {
                       "type": "object",
                       "properties": {
-                        "_id": { "type": "string" },
+                        "_id": {
+                          "type": "string"
+                        },
                         "role": {
                           "type": "string",
                           "enum": ["user", "assistant"]
                         },
-                        "content": { "type": "string" },
-                        "tokenCount": { "type": "integer" },
-                        "created_at": { "type": "string" }
+                        "content": {
+                          "type": "string"
+                        },
+                        "tokenCount": {
+                          "type": "integer"
+                        },
+                        "created_at": {
+                          "type": "string"
+                        }
                       }
                     }
                   }
@@ -201,12 +228,7 @@
       "summary": "Rename a chat session",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
           "in": "path",
@@ -263,12 +285,7 @@
       "summary": "Delete a chat session and all its messages",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
           "in": "path",
@@ -308,12 +325,7 @@
       "description": "The answer is streamed as Server-Sent Events (text/event-stream) with token, done and error events. The conversation transcript and its latest summary are provided to the LLM as context.",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
           "in": "path",

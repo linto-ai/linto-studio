@@ -11,6 +11,26 @@
               "properties": {
                 "name": {
                   "type": "string"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Description of the organization"
+                },
+                "users": {
+                  "type": "array",
+                  "description": "Initial members of the organization",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "userId": {
+                        "type": "string"
+                      },
+                      "role": {
+                        "type": "integer",
+                        "description": "Role of the user in the organization"
+                      }
+                    }
+                  }
                 }
               },
               "required": ["name"]
@@ -23,15 +43,17 @@
           "description": "OK",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "description": "Organization xxxxxx created"
-                },
-                "organizationId": {
-                  "type": "string",
-                  "description": "Organization id"
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Organization xxxxxx created"
+                  },
+                  "organizationId": {
+                    "type": "string",
+                    "description": "Organization id"
+                  }
                 }
               },
               "example": {

@@ -5,28 +5,16 @@
       "summary": "List all conversations that have been shared with the connected user",
       "parameters": [
         {
-          "in": "query",
-          "name": "size",
-          "required": false,
-          "description": "Number of items per page"
+          "$ref": "#/components/parameters/Size"
         },
         {
-          "in": "query",
-          "name": "page",
-          "required": false,
-          "description": "Page number"
+          "$ref": "#/components/parameters/Page"
         },
         {
-          "in": "query",
-          "name": "sortField",
-          "required": false,
-          "description": "Field to sort by"
+          "$ref": "#/components/parameters/SortField"
         },
         {
-          "in": "query",
-          "name": "sortCriteria",
-          "required": false,
-          "description": "Order of sort, supported values: (asc : `1`, dsc: `-1`)"
+          "$ref": "#/components/parameters/SortCriteria"
         },
         {
           "in": "query",
@@ -81,12 +69,7 @@
       "summary": "Invite an external user to access the conversation",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         }
       ],
       "requestBody": {
@@ -102,6 +85,10 @@
                 "right": {
                   "type": "integer",
                   "description": "Right of the user"
+                },
+                "notify": {
+                  "type": "boolean",
+                  "description": "When false, no invitation email is sent (default true)"
                 }
               },
               "required": ["email"]
@@ -114,11 +101,13 @@
           "description": "OK",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "description": "Information about the conversation processus"
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Information about the conversation processus"
+                  }
                 }
               },
               "example": {
@@ -146,19 +135,7 @@
       "description": "Set response type to \"audio/mpeg\" to get the mp3 file, or to \"application/json\" to get audiowavesurfer json file.",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation "
-        },
-        {
-          "in": "query",
-          "name": "mediatype",
-          "type": "string",
-          "required": false,
-          "description": "If the mediatype 'json' is passed as query, return audiowaveform json"
+          "$ref": "#/components/parameters/ConversationId"
         }
       ],
       "responses": {
@@ -166,10 +143,9 @@
           "description": "OK",
           "content": {
             "audio/mpeg": {
-              "type": "file"
-            },
-            "application/json": {
-              "$ref": "#/components/schemas/Audiowaveform"
+              "schema": {
+                "type": "file"
+              }
             }
           }
         },
@@ -178,6 +154,9 @@
         },
         "404": {
           "$ref": "#/components/responses/NotFound"
+        },
+        "204": {
+          "$ref": "#/components/responses/NoContent"
         }
       }
     }
@@ -188,12 +167,16 @@
       "summary": "Retrieve a conversation based on the parent ID",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
+        },
+        {
+          "in": "query",
+          "name": "projection",
+          "required": false,
+          "description": "Comma separated list of fields to return",
+          "schema": {
+            "type": "string"
+          }
         }
       ],
       "responses": {
@@ -227,12 +210,7 @@
       "description": "Create a copy of the conversation owned by the current user. Shares are not duplicated.",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         }
       ],
       "responses": {
@@ -243,8 +221,12 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "message": { "type": "string" },
-                  "conversationId": { "type": "string" }
+                  "message": {
+                    "type": "string"
+                  },
+                  "conversationId": {
+                    "type": "string"
+                  }
                 }
               },
               "example": {
@@ -294,17 +276,23 @@
                 "items": {
                   "type": "object",
                   "properties": {
-                    "conversationId": { "type": "string" },
+                    "conversationId": {
+                      "type": "string"
+                    },
                     "member": {
                       "type": "object",
                       "properties": {
                         "external_members": {
                           "type": "array",
-                          "items": { "$ref": "#/components/schemas/User" }
+                          "items": {
+                            "$ref": "#/components/schemas/User"
+                          }
                         },
                         "organization_members": {
                           "type": "array",
-                          "items": { "$ref": "#/components/schemas/User" }
+                          "items": {
+                            "$ref": "#/components/schemas/User"
+                          }
                         }
                       }
                     }

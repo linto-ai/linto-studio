@@ -5,12 +5,7 @@
       "summary": "Create a new conversation",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         }
       ],
       "requestBody": {
@@ -22,11 +17,11 @@
                 "file": {
                   "type": "file",
                   "format": "binary",
-                  "description": "Audio file to convert into a conversation"
+                  "description": "Audio file to convert into a conversation Either file or url must be provided."
                 },
                 "url": {
                   "type": "string",
-                  "description": "Url to the audio to transcribe, alternative to file"
+                  "description": "URL of the media to transcribe (alternative to file)"
                 },
                 "name": {
                   "type": "string",
@@ -56,13 +51,23 @@
                   "description": "Size of the segment in characters"
                 },
                 "securityLevel": {
+                  "$ref": "#/components/schemas/SecurityLevel"
+                },
+                "folderId": {
+                  "type": "string",
+                  "description": "Folder in which the conversation is created ('null' accepted)"
+                },
+                "segmentWordSize": {
                   "type": "integer",
-                  "enum": [0, 1, 2],
-                  "description": "Security classification of the media. 0 = Publicly available, 1 = Commission use, 2 = Sensitive non-classified. Optional."
+                  "description": "Maximum number of words per segment"
+                },
+                "sharedWithUsers": {
+                  "type": "string",
+                  "description": "Users to share the conversation with"
                 }
-              }
-            },
-            "required": ["file", "name", "endpoint", "lang"]
+              },
+              "required": ["name", "endpoint", "lang"]
+            }
           }
         }
       },
@@ -71,11 +76,13 @@
           "description": "OK",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "description": "Information about the conversation processus"
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Information about the conversation processus"
+                  }
                 }
               },
               "example": {
@@ -105,20 +112,10 @@
       "summary": "Regenerate a conversation based on the original transcription settings",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for the conversation"
+          "$ref": "#/components/parameters/ConversationId"
         }
       ],
       "responses": {
@@ -126,11 +123,13 @@
           "description": "OK",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "description": "Information about the conversation processus"
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Information about the conversation processus"
+                  }
                 }
               },
               "example": {
@@ -159,12 +158,17 @@
       "tags": ["organizations uploader"],
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
+          "$ref": "#/components/parameters/OrganizationId"
+        },
+        {
+          "in": "query",
+          "name": "type",
           "required": true,
-          "description": "uuid string identifier for an organization"
+          "description": "Type of import",
+          "schema": {
+            "type": "string",
+            "enum": ["transcription"]
+          }
         }
       ],
       "summary": "Import a conversation from an external transcription file",
@@ -206,13 +210,23 @@
                   "description": "Size of the segment in characters"
                 },
                 "securityLevel": {
+                  "$ref": "#/components/schemas/SecurityLevel"
+                },
+                "segmentWordSize": {
                   "type": "integer",
-                  "enum": [0, 1, 2],
-                  "description": "Security classification of the media. 0 = Publicly available, 1 = Commission use, 2 = Sensitive non-classified. Optional."
+                  "description": "Maximum number of words per segment"
+                },
+                "folderId": {
+                  "type": "string",
+                  "description": "Folder in which the conversation is created"
+                },
+                "sharedWithUsers": {
+                  "type": "string",
+                  "description": "Users to share the conversation with"
                 }
-              }
-            },
-            "required": ["name", "lang", "transcription"]
+              },
+              "required": ["name", "endpoint", "lang"]
+            }
           }
         }
       },
@@ -221,11 +235,13 @@
           "description": "OK",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "description": "Information about the conversation processus"
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Information about the conversation processus"
+                  }
                 }
               },
               "example": {
@@ -251,12 +267,17 @@
       "tags": ["organizations uploader"],
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
+          "$ref": "#/components/parameters/OrganizationId"
+        },
+        {
+          "in": "query",
+          "name": "type",
           "required": true,
-          "description": "uuid string identifier for an organization"
+          "description": "Type of import",
+          "schema": {
+            "type": "string",
+            "enum": ["conversation"]
+          }
         }
       ],
       "summary": "Import a previously exported conversation",
@@ -269,14 +290,15 @@
                 "file": {
                   "type": "file",
                   "format": "binary",
-                  "description": "Audio file to convert into a conversation"
+                  "description": "Media file of the conversation (optional)"
                 },
                 "conversation": {
-                  "$ref": "#/components/schemas/Conversation"
+                  "$ref": "#/components/schemas/Conversation",
+                  "description": "JSON-encoded conversation export to import (name and locale are validated inside)"
                 }
-              }
-            },
-            "required": ["file", "name", "endpoint", "lang"]
+              },
+              "required": ["conversation"]
+            }
           }
         }
       },
@@ -285,11 +307,13 @@
           "description": "OK",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "description": "Information about the conversation processus"
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Information about the conversation processus"
+                  }
                 }
               },
               "example": {

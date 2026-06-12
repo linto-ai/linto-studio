@@ -23,6 +23,11 @@
                 },
                 "organizationName": {
                   "type": "string"
+                },
+                "file": {
+                  "type": "string",
+                  "format": "binary",
+                  "description": "Avatar picture for the user (optional)"
                 }
               },
               "required": ["email", "password", "firstname", "lastname"]
@@ -147,7 +152,7 @@
                 "emailNotifications": {
                   "type": "object",
                   "schema": {
-                    "$ref": "#/components/schemas/EmailNotifications"
+                    "$ref": "#/components/schemas/EmailNotification"
                   },
                   "example": {
                     "conversations": {
@@ -163,6 +168,14 @@
                       "update": true
                     }
                   }
+                },
+                "password": {
+                  "type": "string",
+                  "description": "New password for the user"
+                },
+                "private": {
+                  "type": "boolean",
+                  "description": "Hide the user from search results"
                 }
               }
             }
@@ -307,7 +320,7 @@
       "parameters": [
         {
           "name": "search",
-          "in": "path",
+          "in": "query",
           "description": "Search string",
           "required": true,
           "type": "string"
@@ -349,12 +362,7 @@
       "summary": "Get user information by ID",
       "parameters": [
         {
-          "in": "path",
-          "name": "userId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a user"
+          "$ref": "#/components/parameters/UserId"
         }
       ],
       "responses": {
@@ -406,6 +414,26 @@
         },
         "404": {
           "$ref": "#/components/responses/NotFound"
+        },
+        "415": {
+          "$ref": "#/components/responses/UnsupportedMediaType"
+        }
+      },
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "description": "Email address of the account to recover"
+                }
+              },
+              "required": ["email"]
+            }
+          }
         }
       }
     }

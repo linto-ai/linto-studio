@@ -5,17 +5,12 @@
       "summary": "Generate NLP keywords for a conversation",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         }
       ],
       "requestBody": {
         "content": {
-          "multipart/form-data": {
+          "application/json": {
             "schema": {
               "type": "object",
               "properties": {
@@ -27,9 +22,9 @@
                   "type": "string",
                   "description": "Service name to use"
                 }
-              }
-            },
-            "required": ["endpoint", "serviceName"]
+              },
+              "required": ["endpoint", "serviceName"]
+            }
           }
         }
       },
@@ -38,11 +33,13 @@
           "description": "OK",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "description": "Message indicating the result of the operation"
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Message indicating the result of the operation"
+                  }
                 }
               },
               "example": {

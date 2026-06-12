@@ -1,0 +1,39 @@
+{
+  "Page": {
+    "in": "query",
+    "name": "page",
+    "required": false,
+    "description": "Page number (default 0)",
+    "schema": {
+      "type": "integer"
+    }
+  },
+  "Size": {
+    "in": "query",
+    "name": "size",
+    "required": false,
+    "description": "Number of items per page (default 100)",
+    "schema": {
+      "type": "integer"
+    }
+  },
+  "SortField": {
+    "in": "query",
+    "name": "sortField",
+    "required": false,
+    "description": "Field to sort by (default _id)",
+    "schema": {
+      "type": "string"
+    }
+  },
+  "SortCriteria": {
+    "in": "query",
+    "name": "sortCriteria",
+    "required": false,
+    "description": "Sort order: 1 ascending, -1 descending",
+    "schema": {
+      "type": "integer",
+      "enum": [1, -1]
+    }
+  }
+}

@@ -5,18 +5,10 @@
       "summary": "Add an existing tag to a conversation",
       "parameters": [
         {
-          "name": "conversationId",
-          "in": "path",
-          "description": "The conversation id",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
-          "name": "tagId",
-          "in": "path",
-          "description": "The tag id",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/TagId"
         }
       ],
       "responses": {
@@ -49,18 +41,10 @@
       "summary": "Add an existing tag to a conversation",
       "parameters": [
         {
-          "name": "conversationId",
-          "in": "path",
-          "description": "The conversation id",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
-          "name": "tagId",
-          "in": "path",
-          "description": "The tag id",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/TagId"
         }
       ],
       "responses": {
@@ -93,18 +77,10 @@
       "summary": "Remove a tag from a conversation",
       "parameters": [
         {
-          "name": "conversationId",
-          "in": "path",
-          "description": "The conversation id",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
-          "name": "tagId",
-          "in": "path",
-          "description": "The tag id",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/TagId"
         }
       ],
       "responses": {
@@ -112,11 +88,13 @@
           "description": "OK",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "description": "Tag deleted from conversation"
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "description": "Tag deleted from conversation"
+                  }
                 }
               },
               "example": {
@@ -146,11 +124,7 @@
       "summary": "Create a tag and add it to a conversation",
       "parameters": [
         {
-          "name": "conversationId",
-          "in": "path",
-          "description": "The conversation id",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/ConversationId"
         }
       ],
       "requestBody": {
@@ -203,11 +177,7 @@
       "summary": "Create a tag and add it to a conversation",
       "parameters": [
         {
-          "name": "conversationId",
-          "in": "path",
-          "description": "The conversation id",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/ConversationId"
         }
       ],
       "requestBody": {

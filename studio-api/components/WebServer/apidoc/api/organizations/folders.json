@@ -6,11 +6,7 @@
       "description": "Retrieve all folders belonging to an organization. Supports tree mode, filtering by parentId, and optional conversation count.",
       "parameters": [
         {
-          "name": "organizationId",
-          "in": "path",
-          "description": "Organization ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
           "in": "query",
@@ -66,11 +62,7 @@
       "summary": "Create a folder in an organization",
       "parameters": [
         {
-          "name": "organizationId",
-          "in": "path",
-          "description": "Organization ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/OrganizationId"
         }
       ],
       "requestBody": {
@@ -101,6 +93,28 @@
                 "position": {
                   "type": "number",
                   "description": "Sort position among siblings (default 0)"
+                },
+                "visibility": {
+                  "type": "string",
+                  "enum": ["public", "private"],
+                  "default": "public",
+                  "description": "Visibility of the folder"
+                },
+                "members": {
+                  "type": "array",
+                  "description": "Members with access when the folder is private",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "userId": {
+                        "type": "string"
+                      },
+                      "right": {
+                        "type": "integer",
+                        "description": "Access right level"
+                      }
+                    }
+                  }
                 }
               },
               "required": ["name"]
@@ -137,18 +151,10 @@
       "summary": "Retrieve a folder by ID",
       "parameters": [
         {
-          "name": "organizationId",
-          "in": "path",
-          "description": "Organization ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
-          "name": "folderId",
-          "in": "path",
-          "description": "Folder ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/FolderId"
         }
       ],
       "responses": {
@@ -176,18 +182,10 @@
       "description": "Update folder properties. If parentId is changed, anti-cycle detection is performed to prevent moving a folder into one of its descendants.",
       "parameters": [
         {
-          "name": "organizationId",
-          "in": "path",
-          "description": "Organization ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
-          "name": "folderId",
-          "in": "path",
-          "description": "Folder ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/FolderId"
         }
       ],
       "requestBody": {
@@ -218,6 +216,31 @@
                 "position": {
                   "type": "number",
                   "description": "Sort position among siblings"
+                },
+                "visibility": {
+                  "type": "string",
+                  "enum": ["public", "private"],
+                  "description": "New visibility of the folder"
+                },
+                "members": {
+                  "type": "array",
+                  "description": "Members with access when the folder is private",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "userId": {
+                        "type": "string"
+                      },
+                      "right": {
+                        "type": "integer",
+                        "description": "Access right level"
+                      }
+                    }
+                  }
+                },
+                "force": {
+                  "type": "boolean",
+                  "description": "Required to make a folder public when its parent is private"
                 }
               }
             }
@@ -268,18 +291,10 @@
       "description": "Delete a folder. By default (strategy=move_to_parent), child folders and conversations are reparented to the deleted folder's parent.",
       "parameters": [
         {
-          "name": "organizationId",
-          "in": "path",
-          "description": "Organization ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
-          "name": "folderId",
-          "in": "path",
-          "description": "Folder ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/FolderId"
         },
         {
           "in": "query",
@@ -328,67 +343,59 @@
       "description": "Retrieve conversations belonging to a specific folder, with support for pagination, sorting, and filtering by tags/text.",
       "parameters": [
         {
-          "name": "organizationId",
-          "in": "path",
-          "description": "Organization ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
-          "name": "folderId",
-          "in": "path",
-          "description": "Folder ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/FolderId"
         },
         {
-          "in": "query",
-          "name": "page",
-          "required": false,
-          "description": "Page number (0-indexed)",
-          "schema": { "type": "number" }
+          "$ref": "#/components/parameters/Page"
         },
         {
-          "in": "query",
-          "name": "size",
-          "required": false,
-          "description": "Number of items per page",
-          "schema": { "type": "number" }
+          "$ref": "#/components/parameters/Size"
         },
         {
-          "in": "query",
-          "name": "sortField",
-          "required": false,
-          "description": "Field to sort by",
-          "schema": { "type": "string" }
+          "$ref": "#/components/parameters/SortField"
         },
         {
-          "in": "query",
-          "name": "sortCriteria",
-          "required": false,
-          "description": "Sort order: 1 for ascending, -1 for descending",
-          "schema": { "type": "number", "enum": [1, -1] }
+          "$ref": "#/components/parameters/SortCriteria"
         },
         {
           "in": "query",
           "name": "tags",
           "required": false,
           "description": "Comma-separated list of tag IDs to filter by",
-          "schema": { "type": "string" }
+          "schema": {
+            "type": "string"
+          }
         },
         {
           "in": "query",
           "name": "name",
           "required": false,
           "description": "Filter conversations by name",
-          "schema": { "type": "string" }
+          "schema": {
+            "type": "string"
+          }
         },
         {
           "in": "query",
           "name": "text",
           "required": false,
           "description": "Full-text search in conversation content",
-          "schema": { "type": "string" }
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "in": "query",
+          "name": "processing",
+          "required": false,
+          "description": "Filter conversations by transcription job state",
+          "schema": {
+            "type": "string",
+            "enum": ["pending", "processing", "queued", "done", "error"]
+          }
         }
       ],
       "responses": {
@@ -399,7 +406,9 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "count": { "type": "number" },
+                  "count": {
+                    "type": "number"
+                  },
                   "list": {
                     "type": "array",
                     "items": {
@@ -427,25 +436,13 @@
       "description": "Move a single conversation into a specific folder. The conversation rights are synchronized with the folder visibility.",
       "parameters": [
         {
-          "name": "organizationId",
-          "in": "path",
-          "description": "Organization ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
-          "name": "folderId",
-          "in": "path",
-          "description": "Target folder ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/FolderId"
         },
         {
-          "name": "conversationId",
-          "in": "path",
-          "description": "Conversation ID to move",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/ConversationId"
         }
       ],
       "responses": {
@@ -456,7 +453,9 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "message": { "type": "string" }
+                  "message": {
+                    "type": "string"
+                  }
                 }
               },
               "example": {
@@ -481,11 +480,7 @@
       "description": "Batch remove multiple conversations from their current folder. The conversations become uncategorized.",
       "parameters": [
         {
-          "name": "organizationId",
-          "in": "path",
-          "description": "Organization ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/OrganizationId"
         }
       ],
       "requestBody": {
@@ -496,7 +491,9 @@
               "properties": {
                 "conversationIds": {
                   "type": "array",
-                  "items": { "type": "string" },
+                  "items": {
+                    "type": "string"
+                  },
                   "description": "List of conversation IDs to remove from their folder"
                 }
               },
@@ -513,7 +510,9 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "message": { "type": "string" }
+                  "message": {
+                    "type": "string"
+                  }
                 }
               },
               "example": {

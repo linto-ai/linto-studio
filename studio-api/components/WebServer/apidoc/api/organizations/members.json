@@ -5,12 +5,17 @@
       "summary": "Retrieve organization information",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a user"
+          "$ref": "#/components/parameters/OrganizationId"
+        },
+        {
+          "in": "query",
+          "name": "includeM2m",
+          "required": false,
+          "description": "When 'true', include M2M (API key) users in the member list",
+          "schema": {
+            "type": "string",
+            "enum": ["true", "false"]
+          }
         }
       ],
       "responses": {
@@ -20,7 +25,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "$ref": "#/components/schemas/organization"
+                "$ref": "#/components/schemas/Organization"
               }
             }
           }
@@ -40,23 +45,20 @@
       "summary": "Leave the requested organization",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         }
       ],
       "responses": {
         "200": {
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "description": "Information"
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "description": "Information"
+                  }
                 }
               },
               "example": {
@@ -83,12 +85,7 @@
       "summary": "List all conversations of an organization where the user has access",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
           "in": "query",
@@ -115,6 +112,34 @@
           "name": "text",
           "required": false,
           "description": "Search for a text inside the conversation"
+        },
+        {
+          "in": "query",
+          "name": "folderId",
+          "required": false,
+          "description": "Filter conversations by folder id, or 'null' for conversations without a folder"
+        },
+        {
+          "in": "query",
+          "name": "processing",
+          "required": false,
+          "description": "Filter conversations by transcription job state",
+          "schema": {
+            "type": "string",
+            "enum": ["pending", "processing", "queued", "done", "error"]
+          }
+        },
+        {
+          "$ref": "#/components/parameters/Page"
+        },
+        {
+          "$ref": "#/components/parameters/Size"
+        },
+        {
+          "$ref": "#/components/parameters/SortField"
+        },
+        {
+          "$ref": "#/components/parameters/SortCriteria"
         }
       ],
       "responses": {

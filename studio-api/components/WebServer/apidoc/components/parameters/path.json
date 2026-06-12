@@ -1,0 +1,87 @@
+{
+  "OrganizationId": {
+    "in": "path",
+    "name": "organizationId",
+    "required": true,
+    "description": "Organization ID",
+    "schema": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "ConversationId": {
+    "in": "path",
+    "name": "conversationId",
+    "required": true,
+    "description": "Conversation ID",
+    "schema": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "UserId": {
+    "in": "path",
+    "name": "userId",
+    "required": true,
+    "description": "User ID",
+    "schema": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "TagId": {
+    "in": "path",
+    "name": "tagId",
+    "required": true,
+    "description": "Tag ID",
+    "schema": {
+      "type": "string"
+    }
+  },
+  "CategoryId": {
+    "in": "path",
+    "name": "categoryId",
+    "required": true,
+    "description": "Category ID",
+    "schema": {
+      "type": "string"
+    }
+  },
+  "FolderId": {
+    "in": "path",
+    "name": "folderId",
+    "required": true,
+    "description": "Folder ID",
+    "schema": {
+      "type": "string"
+    }
+  },
+  "TokenId": {
+    "in": "path",
+    "name": "tokenId",
+    "required": true,
+    "description": "API key token ID",
+    "schema": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "SubtitleId": {
+    "in": "path",
+    "name": "subtitleId",
+    "required": true,
+    "description": "Subtitle ID",
+    "schema": {
+      "type": "string"
+    }
+  },
+  "JobId": {
+    "in": "path",
+    "name": "jobId",
+    "required": true,
+    "description": "LLM gateway job ID",
+    "schema": {
+      "type": "string"
+    }
+  }
+}

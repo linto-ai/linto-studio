@@ -9,7 +9,9 @@
           "name": "organization_id",
           "required": false,
           "description": "Also include the templates scoped to this organization",
-          "schema": { "type": "string" }
+          "schema": {
+            "type": "string"
+          }
         }
       ],
       "responses": {
@@ -63,6 +65,8 @@
                 },
                 "scope": {
                   "type": "string",
+                  "enum": ["personal", "organization"],
+                  "default": "personal",
                   "description": "Visibility scope of the template"
                 }
               },
@@ -160,11 +164,7 @@
       "summary": "Export an LLM job result with a publication template",
       "parameters": [
         {
-          "in": "path",
-          "name": "jobId",
-          "required": true,
-          "description": "LLM gateway job ID",
-          "schema": { "type": "string" }
+          "$ref": "#/components/parameters/JobId"
         },
         {
           "in": "path",
@@ -181,28 +181,36 @@
           "name": "templateId",
           "required": false,
           "description": "Publication template to use",
-          "schema": { "type": "string" }
+          "schema": {
+            "type": "string"
+          }
         },
         {
           "in": "query",
           "name": "placeholders",
           "required": false,
           "description": "JSON object mapping placeholder names to values",
-          "schema": { "type": "string" }
+          "schema": {
+            "type": "string"
+          }
         },
         {
           "in": "query",
           "name": "versionNumber",
           "required": false,
           "description": "Version of the job result to export",
-          "schema": { "type": "integer" }
+          "schema": {
+            "type": "integer"
+          }
         },
         {
           "in": "query",
           "name": "timezone",
           "required": false,
           "description": "Timezone used to render dates",
-          "schema": { "type": "string" }
+          "schema": {
+            "type": "string"
+          }
         }
       ],
       "responses": {

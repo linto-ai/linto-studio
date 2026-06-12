@@ -6,10 +6,27 @@
       "parameters": [
         {
           "in": "query",
-          "name": "tags",
+          "name": "name",
           "required": false,
-          "description": "List of tags id to filter for",
-          "example": "5e9b1b9b0f9b2c0017b5f1b5,5e9b1b9b0f9b2c0017b5f1b6,..."
+          "description": "Filter conversations by name"
+        },
+        {
+          "in": "query",
+          "name": "text",
+          "required": false,
+          "description": "Full-text search in conversation content"
+        },
+        {
+          "$ref": "#/components/parameters/Page"
+        },
+        {
+          "$ref": "#/components/parameters/Size"
+        },
+        {
+          "$ref": "#/components/parameters/SortField"
+        },
+        {
+          "$ref": "#/components/parameters/SortCriteria"
         }
       ],
       "responses": {
@@ -85,12 +102,7 @@
       "summary": "Add a favorite conversation to the connected user",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         }
       ],
       "responses": {
@@ -126,12 +138,7 @@
       "summary": "Delete a conversation from the connected user favorites",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         }
       ],
       "responses": {

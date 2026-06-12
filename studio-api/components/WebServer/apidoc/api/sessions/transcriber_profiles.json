@@ -5,12 +5,7 @@
       "summary": "List the transcriber profiles available to the organization",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
           "in": "query",
@@ -45,14 +40,7 @@
       "summary": "List all transcriber profiles of the platform",
       "parameters": [
         {
-          "in": "query",
-          "name": "userScope",
-          "schema": {
-            "type": "string",
-            "enum": ["backoffice"]
-          },
-          "required": true,
-          "description": "Scope of the user, must be 'backoffice'"
+          "$ref": "#/components/parameters/UserScope"
         }
       ],
       "responses": {
@@ -77,14 +65,7 @@
       "description": "For Amazon profiles, use **multipart/form-data** to upload certificate (.crt) and privateKey (.pem) files. The private key **must** be in PKCS#8 format (BEGIN PRIVATE KEY or BEGIN ENCRYPTED PRIVATE KEY). Traditional RSA format (BEGIN RSA PRIVATE KEY) is **not supported** - convert using: `openssl pkcs8 -topk8 -in old.pem -out new.pem`. For other profiles (Microsoft, LinTO), use application/json.",
       "parameters": [
         {
-          "in": "query",
-          "name": "userScope",
-          "schema": {
-            "type": "string",
-            "enum": ["backoffice"]
-          },
-          "required": true,
-          "description": "Scope of the user, must be 'backoffice'"
+          "$ref": "#/components/parameters/UserScope"
         }
       ],
       "requestBody": {
@@ -134,14 +115,7 @@
       "summary": "Get a transcriber profile by ID",
       "parameters": [
         {
-          "in": "query",
-          "name": "userScope",
-          "schema": {
-            "type": "string",
-            "enum": ["backoffice"]
-          },
-          "required": true,
-          "description": "Scope of the user, must be 'backoffice'"
+          "$ref": "#/components/parameters/UserScope"
         },
         {
           "name": "id",
@@ -175,14 +149,7 @@
       "description": "Updates a transcriber profile with partial data. Only fields provided in the request body will be updated. The config field is merged with the existing configuration. For Amazon profiles, use **multipart/form-data** to update certificate (.crt) and/or privateKey (.pem) files. Private keys **must** be in PKCS#8 format - convert if needed: `openssl pkcs8 -topk8 -in old.pem -out new.pem`.",
       "parameters": [
         {
-          "in": "query",
-          "name": "userScope",
-          "schema": {
-            "type": "string",
-            "enum": ["backoffice"]
-          },
-          "required": true,
-          "description": "Scope of the user, must be 'backoffice'"
+          "$ref": "#/components/parameters/UserScope"
         },
         {
           "name": "id",
@@ -249,14 +216,7 @@
       "summary": "Delete a transcriber profile by ID",
       "parameters": [
         {
-          "in": "query",
-          "name": "userScope",
-          "schema": {
-            "type": "string",
-            "enum": ["backoffice"]
-          },
-          "required": true,
-          "description": "Scope of the user, must be 'backoffice'"
+          "$ref": "#/components/parameters/UserScope"
         },
         {
           "name": "id",

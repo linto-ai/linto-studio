@@ -5,12 +5,7 @@
       "summary": "Retrieve a conversation based on an ID",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
           "in": "query",
@@ -54,12 +49,7 @@
       "summary": "Update a conversation based on an ID",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         }
       ],
       "requestBody": {
@@ -88,11 +78,13 @@
           "description": "OK",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "message": "Information about the success of the request"
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "message": "Information about the success of the request"
+                  }
                 }
               },
               "example": {
@@ -114,12 +106,7 @@
       "summary": "Delete a conversation based on an ID",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         }
       ],
       "responses": {
@@ -139,25 +126,15 @@
       "description": "If the user does not have access to the conversation yet, they are added with the given right (initial share). If they already have access, their right is updated. Sending right=0 for a user outside the organization removes them from the shared list.",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
-          "in": "path",
-          "name": "userId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a user"
+          "$ref": "#/components/parameters/UserId"
         }
       ],
       "requestBody": {
         "content": {
-          "multipart/form-data": {
+          "application/json": {
             "schema": {
               "type": "object",
               "properties": {
@@ -169,9 +146,9 @@
                   "type": "boolean",
                   "description": "When false, no notification email is sent on the initial share (default true)"
                 }
-              }
-            },
-            "required": ["right"]
+              },
+              "required": ["right"]
+            }
           }
         }
       },
@@ -180,11 +157,13 @@
           "description": "OK",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "message": "Information about the success of the request"
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "message": "Information about the success of the request"
+                  }
                 }
               },
               "example": {
@@ -211,12 +190,7 @@
       "summary": "List all users who have access to the conversation",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         }
       ],
       "responses": {
@@ -224,21 +198,23 @@
           "description": "OK",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "conversationUsers": {
-                  "type": "object",
-                  "properties": {
-                    "external_members": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/User"
-                      }
-                    },
-                    "organization_members": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/User"
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "conversationUsers": {
+                    "type": "object",
+                    "properties": {
+                      "external_members": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/User"
+                        }
+                      },
+                      "organization_members": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/User"
+                        }
                       }
                     }
                   }
@@ -288,12 +264,7 @@
       "summary": "Retrieve information about the access rights to the conversation",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         }
       ],
       "responses": {
@@ -336,12 +307,7 @@
       "summary": "Export a conversation in the desired format (json, text, docx or LLM service output)",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
           "in": "query",
@@ -353,7 +319,7 @@
           "description": "Download type of media type:\n * `json` - Segment information with timestamp and speaker \n * `text` - Raw transcription \n * `docx` / `verbatim` - Generate a .docx file to download \n * Other formats - LLM Gateway processing \n"
         },
         {
-          "in": "path",
+          "in": "query",
           "name": "preview",
           "type": "boolean",
           "required": false,
@@ -370,16 +336,51 @@
         },
         {
           "in": "query",
-          "name": "prompt",
-          "type": "string",
+          "name": "llmOutputType",
           "required": false,
-          "example": "Make a resume of my conversation",
-          "description": "Prompt to generate for llm request"
+          "description": "How completed LLM results are returned (stored on the export request)",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "in": "query",
+          "name": "exportFormat",
+          "required": false,
+          "description": "Document format for completed exports",
+          "schema": {
+            "type": "string",
+            "enum": ["docx", "pdf", "odt"]
+          }
+        },
+        {
+          "in": "query",
+          "name": "flavor",
+          "required": false,
+          "description": "LLM flavor name to use (defaults to the service default flavor)"
+        },
+        {
+          "in": "query",
+          "name": "title",
+          "required": false,
+          "description": "Title used for the generated document and the export entry"
+        },
+        {
+          "in": "query",
+          "name": "template",
+          "required": false,
+          "description": "Document template to use for the generated file"
+        },
+        {
+          "in": "query",
+          "name": "timezone",
+          "required": false,
+          "description": "IANA timezone used to render timestamps in generated documents"
         }
       ],
       "requestBody": {
         "content": {
-          "multipart/form-data": {
+          "application/json": {
             "schema": {
               "$ref": "#/components/schemas/ExportRequest"
             }
@@ -406,6 +407,11 @@
     "get": {
       "tags": ["conversations member"],
       "summary": "List all export requests generated by the LLM gateway",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ConversationId"
+        }
+      ],
       "responses": {
         "200": {
           "description": "OK",

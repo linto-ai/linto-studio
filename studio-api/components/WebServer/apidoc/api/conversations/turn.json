@@ -5,12 +5,7 @@
       "summary": "Add a conversation turn after the indicated turnId",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
           "in": "path",
@@ -31,15 +26,17 @@
         }
       },
       "responses": {
-        "201": {
+        "200": {
           "description": "OK",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "description": "Message indicating the result of the operation"
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Message indicating the result of the operation"
+                  }
                 }
               },
               "example": {
@@ -61,12 +58,7 @@
       "summary": "Update a conversation turn",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
           "in": "path",
@@ -91,11 +83,13 @@
           "description": "OK",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "description": "Message indicating the result of the operation"
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Message indicating the result of the operation"
+                  }
                 }
               },
               "example": {
@@ -117,12 +111,7 @@
       "summary": "Delete a conversation turn",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
           "in": "path",
@@ -138,11 +127,13 @@
           "description": "OK",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "description": "Message indicating the result of the operation"
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Message indicating the result of the operation"
+                  }
                 }
               },
               "example": {
@@ -166,12 +157,7 @@
       "summary": "Merge the indicated turn with the next or previous turn",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
           "in": "path",
@@ -219,12 +205,7 @@
       "summary": "Search for a text in the conversation turns",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
           "in": "query",

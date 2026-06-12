@@ -5,18 +5,10 @@
       "summary": "Retrieve a tag by ID",
       "parameters": [
         {
-          "name": "conversationId",
-          "in": "path",
-          "description": "Conversation ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
-          "name": "tagId",
-          "in": "path",
-          "description": "Tag ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/TagId"
         }
       ],
       "responses": {
@@ -46,19 +38,16 @@
       "summary": "List the tags of a conversation",
       "parameters": [
         {
-          "name": "conversationId",
-          "in": "path",
-          "description": "Conversation ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
           "in": "query",
           "name": "categoryType",
           "required": false,
-          "description": "Type of categories to list the tags from",
+          "description": "Type of categories to list the tags from (default: label categories)",
           "schema": {
-            "$ref": "#/components/schemas/CategorySearchType"
+            "type": "string",
+            "enum": ["highlight", "conversation_metadata"]
           }
         },
         {
@@ -66,14 +55,19 @@
           "name": "name",
           "required": false,
           "description": "Filter tags by name",
-          "schema": { "type": "string" }
+          "schema": {
+            "type": "string"
+          }
         },
         {
           "in": "query",
           "name": "expand",
           "required": false,
           "description": "When 'true', expand the tags with their category information",
-          "schema": { "type": "string", "enum": ["true", "false"] }
+          "schema": {
+            "type": "string",
+            "enum": ["true", "false"]
+          }
         }
       ],
       "responses": {

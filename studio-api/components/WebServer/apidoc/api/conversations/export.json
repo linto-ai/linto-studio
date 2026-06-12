@@ -5,19 +5,10 @@
       "summary": "Get the content of an export job from the LLM gateway",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
-          "in": "path",
-          "name": "jobId",
-          "type": "string",
-          "required": true,
-          "description": "LLM gateway job ID of the export"
+          "$ref": "#/components/parameters/JobId"
         }
       ],
       "responses": {
@@ -45,19 +36,10 @@
       "summary": "Update the result of an export job. A new version is created on the LLM gateway.",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
-          "in": "path",
-          "name": "jobId",
-          "type": "string",
-          "required": true,
-          "description": "LLM gateway job ID of the export"
+          "$ref": "#/components/parameters/JobId"
         }
       ],
       "requestBody": {
@@ -101,19 +83,10 @@
       "summary": "List all versions of an export job result",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
-          "in": "path",
-          "name": "jobId",
-          "type": "string",
-          "required": true,
-          "description": "LLM gateway job ID of the export"
+          "$ref": "#/components/parameters/JobId"
         }
       ],
       "responses": {
@@ -141,19 +114,10 @@
       "summary": "Get a specific version of an export job result",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
-          "in": "path",
-          "name": "jobId",
-          "type": "string",
-          "required": true,
-          "description": "LLM gateway job ID of the export"
+          "$ref": "#/components/parameters/JobId"
         },
         {
           "in": "path",
@@ -186,19 +150,10 @@
       "summary": "Delete a specific version of an export job result",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
-          "in": "path",
-          "name": "jobId",
-          "type": "string",
-          "required": true,
-          "description": "LLM gateway job ID of the export"
+          "$ref": "#/components/parameters/JobId"
         },
         {
           "in": "path",
@@ -233,19 +188,10 @@
       "summary": "Restore a specific version as the current export job result",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
-          "in": "path",
-          "name": "jobId",
-          "type": "string",
-          "required": true,
-          "description": "LLM gateway job ID of the export"
+          "$ref": "#/components/parameters/JobId"
         },
         {
           "in": "path",
@@ -280,19 +226,10 @@
       "summary": "Generate a document (PDF or DOCX) from an export job result",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for a conversation"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
-          "in": "path",
-          "name": "jobId",
-          "type": "string",
-          "required": true,
-          "description": "LLM gateway job ID of the export"
+          "$ref": "#/components/parameters/JobId"
         }
       ],
       "requestBody": {

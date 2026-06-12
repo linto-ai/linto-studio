@@ -5,11 +5,7 @@
       "summary": "Create a category in an organization",
       "parameters": [
         {
-          "name": "organizationId",
-          "in": "path",
-          "description": "Organization ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/OrganizationId"
         }
       ],
       "requestBody": {
@@ -26,12 +22,7 @@
                 },
                 "type": {
                   "type": "string",
-                  "enum": [
-                    "keyword",
-                    "conversation_metadata",
-                    "conversation_text",
-                    "commentary"
-                  ]
+                  "enum": ["highlight", "conversation_metadata"]
                 }
               },
               "required": ["name", "type"]
@@ -44,11 +35,13 @@
           "description": "OK",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "description": "Category created"
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Category created"
+                  }
                 }
               },
               "example": {
@@ -73,18 +66,26 @@
       "summary": "Retrieve all categories from an organization",
       "parameters": [
         {
-          "name": "organizationId",
-          "in": "path",
-          "description": "Organization ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
           "in": "query",
-          "name": "type",
+          "name": "expand",
           "required": false,
+          "description": "When 'true', expand each category with its tags",
           "schema": {
-            "$ref": "#/components/schemas/CategoryType"
+            "type": "string",
+            "enum": ["true", "false"]
+          }
+        },
+        {
+          "in": "query",
+          "name": "possess",
+          "required": false,
+          "description": "With expand=true on highlight categories, only return tags present on accessible conversations",
+          "schema": {
+            "type": "string",
+            "enum": ["true", "false"]
           }
         }
       ],
@@ -118,18 +119,20 @@
       "summary": "Retrieve a category from an organization",
       "parameters": [
         {
-          "name": "organizationId",
-          "in": "path",
-          "description": "Organization ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
-          "name": "categoryId",
-          "in": "path",
-          "description": "categoryId ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/CategoryId"
+        },
+        {
+          "in": "query",
+          "name": "metadata",
+          "required": false,
+          "description": "When 'true', attach tag metadata (highlight categories only)",
+          "schema": {
+            "type": "string",
+            "enum": ["true", "false"]
+          }
         }
       ],
       "responses": {
@@ -157,18 +160,10 @@
       "summary": "Update a category of an organization",
       "parameters": [
         {
-          "name": "organizationId",
-          "in": "path",
-          "description": "Organization ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
-          "name": "categoryId",
-          "in": "path",
-          "description": "categoryId ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/CategoryId"
         }
       ],
       "requestBody": {
@@ -185,12 +180,7 @@
                 },
                 "type": {
                   "type": "string",
-                  "enum": [
-                    "keyword",
-                    "conversation_metadata",
-                    "conversation_text",
-                    "commentary"
-                  ]
+                  "enum": ["highlight", "conversation_metadata"]
                 }
               },
               "required": []
@@ -203,11 +193,13 @@
           "description": "OK",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "description": "Category updated"
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Category updated"
+                  }
                 }
               },
               "example": {
@@ -232,18 +224,10 @@
       "summary": "Delete a category from an organization",
       "parameters": [
         {
-          "name": "organizationId",
-          "in": "path",
-          "description": "Organization ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
-          "name": "categoryId",
-          "in": "path",
-          "description": "categoryId ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/CategoryId"
         }
       ],
       "responses": {
@@ -265,11 +249,7 @@
       "summary": "Search categories based on the specified search type",
       "parameters": [
         {
-          "name": "organizationId",
-          "in": "path",
-          "description": "Organization ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
           "in": "query",
@@ -311,7 +291,7 @@
           "name": "categoryType",
           "required": false,
           "description": "CategoryType to search, this have the priority over the tags and categories parameters",
-          "example": "highlight,conversation_metadata,conversation_text,commentary"
+          "example": "highlight,conversation_metadata"
         }
       ],
       "responses": {
@@ -344,11 +324,7 @@
       "summary": "List the system categories of an organization",
       "parameters": [
         {
-          "name": "organizationId",
-          "in": "path",
-          "description": "The organization id",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/OrganizationId"
         }
       ],
       "responses": {

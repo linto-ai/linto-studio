@@ -14,7 +14,6 @@
       }
     }
   },
-
   "/auth/oidc/token": {
     "get": {
       "tags": ["auth"],
@@ -29,7 +28,27 @@
         "500": {
           "$ref": "#/components/responses/InternalServer"
         }
-      }
+      },
+      "parameters": [
+        {
+          "in": "cookie",
+          "name": "auth_token",
+          "required": true,
+          "description": "Authentication token set by the OIDC callback",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "in": "cookie",
+          "name": "user_id",
+          "required": false,
+          "description": "User id set by the OIDC callback",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
     }
   },
   "/auth/oidc/cb": {
