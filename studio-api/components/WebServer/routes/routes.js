@@ -68,6 +68,14 @@ module.exports = (webServer) => {
     api_routes[
       "/api/organizations/:organizationId/voiceprint-collections/:collectionId/opted-in-members"
     ] = require("./api/organization/optedInMembers")(webServer)
+    api_routes[
+      "/api/organizations/:organizationId/speaker-identification"
+    ] = require("./api/organization/speakerIdentificationStatus")(webServer)
+
+    // Start the Qdrant reconciliation worker (replays failed writes)
+    require(
+      `${process.cwd()}/components/WebServer/controllers/speakerIdentification/sync`,
+    ).start()
   }
 
   let proxy_routes = []

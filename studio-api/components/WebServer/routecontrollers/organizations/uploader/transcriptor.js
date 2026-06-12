@@ -44,6 +44,10 @@ const { OrganizationNotFound } = require(
 )
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 
+const { applySpeakerIdentification } = require(
+  `${process.cwd()}/components/WebServer/controllers/speakerIdentification/injection`,
+)
+
 async function transcribeReq(req, res, next) {
   try {
     if (!(req.body.url || (req.files && Object.keys(req.files).length !== 0))) {
@@ -105,6 +109,13 @@ async function transcribe(isSingleFile, req, res, next) {
     )
     if (orgExists.length !== 1) throw new OrganizationNotFound()
 
+    // Speaker identification: validate the requested collections and inject the
+    // server-built config into transcriptionConfig (the client never provides
+    // Qdrant collection names). Returns the security headers for the gateway.
+    const speakerId = await applySpeakerIdentification(req.body, orgExists[0])
+    req.body.transcriptionConfig = JSON.stringify(speakerId.transcriptionConfig)
+    req.body.speakerIdHeaders = speakerId.headers
+
     if (req.body.folderId && req.body.folderId !== "null") {
       const folderResult = await model.folders.getById(req.body.folderId)
       if (folderResult.length === 0)
@@ -134,6 +145,12 @@ async function transcribe(isSingleFile, req, res, next) {
       isSingleFile,
     )
     req.body.file_data = formData.file_data
+
+    // Attach the speaker identification security headers (X-Organization-Id
+    // and optional token) when an identification config was injected.
+    if (req.body.speakerIdHeaders) {
+      options.headers = { ...options.headers, ...req.body.speakerIdHeaders }
+    }
 
     const processingJob = await axios.postFormData(
       transcriptionService,

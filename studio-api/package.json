@@ -17,6 +17,7 @@
     "start-debug": "NODE_ENV=development DEBUG=app/* node app.js",
     "dev": "DEBUG=linto* NODE_ENV=development nodemon app.js",
     "test": "jest",
+    "spkid-resync": "node scripts/spkid-resync.js",
     "format": "prettier components/ lib/ --write",
     "test:format": "prettier components/ lib/ --list-different"
   },

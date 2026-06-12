@@ -28,6 +28,7 @@ const VoiceSampleUnsupportedMediaType = createException("VoiceSampleUnsupportedM
 // User voice sample exceptions (user-scoped)
 const UserVoiceSampleError = createException("UserVoiceSampleError", "userVoiceSample", 400, "User voice sample error")
 const UserVoiceSampleNotFound = createException("UserVoiceSampleNotFound", "userVoiceSample", 404, "User voice sample not found")
+const UserVoiceSampleConflict = createException("UserVoiceSampleConflict", "userVoiceSample", 409, "User voice sample conflict")
 const UserVoiceSampleUnsupportedMediaType = createException("UserVoiceSampleUnsupportedMediaType", "userVoiceSample", 415, "User voice sample unsupported media type")
 
 module.exports = {
@@ -41,5 +42,6 @@ module.exports = {
   VoiceSampleUnsupportedMediaType,
   UserVoiceSampleError,
   UserVoiceSampleNotFound,
+  UserVoiceSampleConflict,
   UserVoiceSampleUnsupportedMediaType,
 }

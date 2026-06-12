@@ -14,6 +14,7 @@ const {
 const {
   UserVoiceSampleError,
   UserVoiceSampleNotFound,
+  UserVoiceSampleConflict,
   UserVoiceSampleUnsupportedMediaType,
 } = require(
   `${process.cwd()}/components/WebServer/error/exception/speakerIdentification`,
@@ -31,6 +32,10 @@ const limits = require(`${process.cwd()}/lib/dao/speakerIdentification/limits`)
 
 const { verifyOrgMembership } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/organization/optedInMembers`,
+)
+
+const triggers = require(
+  `${process.cwd()}/components/WebServer/controllers/speakerIdentification/triggers`,
 )
 
 function validateAudioFile(audioFile) {
@@ -89,9 +94,9 @@ async function createUserVoiceSample(req, res, next) {
       audioFile, payload, model.voiceSamples, UserVoiceSampleError,
     )
 
-    // CONNECTOR_HOOK: recomputeUser(userId) — compute the voiceprint from the
-    // user samples, then upsert the "user:{id}" point in the Organization
-    // collection of every opted-in organization (next step).
+    // Recompute the voiceprint from the user samples and re-upsert it in every
+    // opted-in organization collection (fire-and-forget, status via polling).
+    triggers.recomputeUser(userId)
 
     res.status(201).send(created)
   } catch (err) {
@@ -148,9 +153,9 @@ async function deleteUserVoiceSample(req, res, next) {
       )
     }
 
-    // CONNECTOR_HOOK: recomputeUser(userId) — if samples remain, recompute
-    // the voiceprint; if none remain, the voiceprint is kept (one-way
-    // semantics, cf. docs/speaker-identification 04 §6a).
+    // If samples remain, recompute the voiceprint; if none remain, the
+    // existing voiceprint is kept (one-way semantics, 04 §6a).
+    triggers.recomputeUser(userId)
 
     res.status(200).send("Voice sample deleted")
   } catch (err) {
@@ -162,6 +167,9 @@ async function deleteAllUserVoiceSamples(req, res, next) {
   try {
     const userId = req.payload.data.userId
     const samples = await model.voiceSamples.getByUserId(userId)
+    // Capture the opt-ins before deleting them: they tell us which
+    // Organization collections still hold the user's point.
+    const optIns = await model.voiceOptIns.getByUserId(userId)
     cascadeDeleteSampleFiles(samples)
     await Promise.all([
       model.voiceSamples.deleteAllFromUser(userId),
@@ -169,8 +177,9 @@ async function deleteAllUserVoiceSamples(req, res, next) {
       model.voiceprints.deleteAllFromUser(userId),
     ])
 
-    // CONNECTOR_HOOK: deleteSpeaker("user:{userId}") in the Organization
-    // collection of every organization the user had opted in (next step).
+    // Remove the "user:{userId}" point from every organization the user had
+    // opted in (fire-and-forget, queued on failure).
+    triggers.removeUserEverywhere(userId, optIns)
 
     res.status(200).send("All voice samples deleted")
   } catch (err) {
@@ -206,10 +215,6 @@ async function updateStorageMode(req, res, next) {
 
     await model.voiceprints.upsert(SPEAKER_TYPE.USER, userId, { storageMode })
 
-    // CONNECTOR_HOOK: recomputeUser(userId) — when the connector is
-    // available, compute the voiceprint from the remaining audio samples
-    // here before purging the files (next step).
-
     let audioFilesDeleted = false
     if (model.voiceprints.hasComputedVoiceprint(voiceprint)) {
       // The voiceprint already exists: audio files are no longer kept
@@ -217,6 +222,10 @@ async function updateStorageMode(req, res, next) {
       cascadeDeleteSampleFiles(samples)
       await model.voiceSamples.deleteAllFromUser(userId)
       audioFilesDeleted = true
+    } else {
+      // No voiceprint yet: compute it from the current samples, then the
+      // recompute purges the files (storage mode is now embeddings-only).
+      triggers.recomputeUser(userId)
     }
 
     res.status(200).send({
@@ -325,13 +334,28 @@ async function updateVoiceOrganization(req, res, next) {
     }
 
     if (enabled) {
+      // A voice signature (samples or an already-computed voiceprint) is
+      // required before sharing the voice with an organization.
+      const [voiceprint, samples] = await Promise.all([
+        model.voiceprints.getBySubject(SPEAKER_TYPE.USER, userId),
+        model.voiceSamples.getByUserId(userId),
+      ])
+      if (
+        !model.voiceprints.hasComputedVoiceprint(voiceprint) &&
+        samples.length === 0
+      ) {
+        throw new UserVoiceSampleConflict(
+          "Record your voice before enabling speaker identification for an organization",
+        )
+      }
       await model.voiceOptIns.setOptIn(userId, orgId)
-      // CONNECTOR_HOOK: upsertSpeaker("user:{userId}") in the Organization
-      // collection of this organization (next step).
+      // Upsert the "user:{userId}" point in this organization's collection
+      // (computes the voiceprint first if needed). Fire-and-forget.
+      triggers.upsertUserInOrg(userId, orgId)
     } else {
       await model.voiceOptIns.removeOptIn(userId, orgId)
-      // CONNECTOR_HOOK: deleteSpeaker("user:{userId}") in the Organization
-      // collection of this organization (next step).
+      // Remove the "user:{userId}" point from this organization's collection.
+      triggers.removeUserFromOrg(userId, orgId)
     }
 
     res.status(200).send({ organizationId: orgId, voiceprintEnabled: enabled })

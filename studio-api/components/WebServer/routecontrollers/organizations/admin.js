@@ -16,6 +16,10 @@ const { ConversationError } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
 
+const triggers = require(
+  `${process.cwd()}/components/WebServer/controllers/speakerIdentification/triggers`,
+)
+
 async function updateOrganization(req, res, next) {
   try {
     let organization = await model.organizations.getById(
@@ -71,6 +75,20 @@ async function deleteOrganization(req, res, next) {
       organization._id.toString(),
     )
     cascadeDeleteSampleFiles(voiceSamples)
+
+    // Drop every Qdrant collection of the organization and delete the label
+    // voiceprints (reads collections/labels before the Mongo cascade below).
+    const [orgCollections, orgLabels] = await Promise.all([
+      model.voiceprintCollections.getByOrganizationId(
+        organization._id.toString(),
+      ),
+      model.speakerLabels.getByOrganizationId(organization._id.toString()),
+    ])
+    await triggers.dropOrganizationSpeakers(
+      organization._id.toString(),
+      orgCollections,
+      orgLabels,
+    )
 
     // Delete all voice sample records, speaker labels, voiceprint collections, and opt-ins in parallel
     await Promise.all([

@@ -19,6 +19,9 @@ const {
 const { verifyOwnership } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/organization/voiceprintCollection`,
 )
+const triggers = require(
+  `${process.cwd()}/components/WebServer/controllers/speakerIdentification/triggers`,
+)
 
 function validateAudioFile(audioFile) {
   _validateAudioFile(audioFile, VoiceSampleUnsupportedMediaType, VoiceSampleError)
@@ -100,6 +103,11 @@ async function createVoiceSample(req, res, next) {
     const created = await storeAndCreateSample(
       audioFile, payload, model.voiceSamples, VoiceSampleError,
     )
+
+    // Recompute the label voiceprint and re-upsert it in Qdrant
+    // (fire-and-forget; syncState reflects progress).
+    triggers.recomputeLabel(label)
+
     res.status(201).send(created)
   } catch (err) {
     next(err)
@@ -108,6 +116,9 @@ async function createVoiceSample(req, res, next) {
 
 async function deleteVoiceSample(req, res, next) {
   try {
+    const label = await verifyLabelInCollection(
+      req.params.labelId, req.params.organizationId, req.params.collectionId,
+    )
     const sample = await verifySampleInLabel(
       req.params.voiceSampleId, req.params.organizationId,
       req.params.collectionId, req.params.labelId,
@@ -123,6 +134,10 @@ async function deleteVoiceSample(req, res, next) {
         "Error during the deletion of the voice sample",
       )
     }
+
+    // Recompute the label voiceprint from the remaining samples (the
+    // voiceprint is kept untouched when no sample remains, 04 §6a).
+    triggers.recomputeLabel(label)
 
     res.status(200).send("Voice sample deleted")
   } catch (err) {

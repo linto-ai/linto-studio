@@ -78,6 +78,26 @@ class VoiceprintCollectionModel extends MongoModel {
     }
   }
 
+  /**
+   * Return the (auto-managed) Organization collection of an org, creating it
+   * if it does not exist yet (cf. docs/speaker-identification 04 §2.1).
+   */
+  async getOrCreateOrganizationCollection(organizationId) {
+    const all = await this.getByOrganizationId(organizationId)
+    const existing = all.find((c) => c.type === COLLECTION_TYPE.ORGANIZATION)
+    if (existing) return existing
+    const result = await this.create({
+      name: "Organization",
+      description: "",
+      organizationId,
+      type: COLLECTION_TYPE.ORGANIZATION,
+      storageMode: STORAGE_MODE.AUDIO,
+    })
+    if (result.insertedCount !== 1) return null
+    const created = await this.getById(result.insertedId.toString())
+    return created[0]
+  }
+
   async update(payload) {
     try {
       const operator = "$set"

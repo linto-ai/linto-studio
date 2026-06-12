@@ -11,6 +11,9 @@ const {
 } = require(
   `${process.cwd()}/components/WebServer/error/exception/speakerIdentification`,
 )
+const triggers = require(
+  `${process.cwd()}/components/WebServer/controllers/speakerIdentification/triggers`,
+)
 
 const MAX_NAME_LENGTH = 200
 const MAX_DESCRIPTION_LENGTH = 1000
@@ -154,7 +157,46 @@ async function updateVoiceprintCollection(req, res, next) {
       doc.description = sanitizeDescription(req.body.description)
     }
 
+    // One-way storage mode transition: audio -> embeddings only (04 §2.1).
+    let purgeAudioAfterUpdate = false
+    if (
+      req.body.storageMode !== undefined &&
+      req.body.storageMode !== doc.storageMode
+    ) {
+      if (doc.type === COLLECTION_TYPE.ORGANIZATION) {
+        throw new VoiceprintCollectionError(
+          "The Organization collection storage mode is managed by its members",
+        )
+      }
+      if (req.body.storageMode !== STORAGE_MODE.EMBEDDINGS) {
+        throw new VoiceprintCollectionError(
+          "Storage mode can only be changed from 'audio' to 'embeddings'",
+        )
+      }
+      // Every label must already have a computed voiceprint, otherwise purging
+      // the audio would make it impossible to ever compute it (one-way).
+      const labels = await model.speakerLabels.getByCollectionId(
+        req.params.collectionId,
+      )
+      const missing = labels.filter((l) => !l.hasVoiceprint)
+      if (missing.length > 0) {
+        throw new VoiceprintCollectionError(
+          "All speakers must have a computed voiceprint before switching to embeddings-only mode",
+        )
+      }
+      doc.storageMode = STORAGE_MODE.EMBEDDINGS
+      purgeAudioAfterUpdate = true
+    }
+
     const result = await model.voiceprintCollections.update(doc)
+
+    if (purgeAudioAfterUpdate) {
+      const samples = await model.voiceSamples.getByCollectionId(
+        req.params.collectionId,
+      )
+      cascadeDeleteSampleFiles(samples)
+      await model.voiceSamples.deleteAllFromCollection(req.params.collectionId)
+    }
 
     if (result.modifiedCount === 0) {
       res.status(304).send("Nothing to update")
@@ -171,7 +213,7 @@ async function updateVoiceprintCollection(req, res, next) {
 
 async function deleteVoiceprintCollection(req, res, next) {
   try {
-    await verifyOwnership(
+    const collection = await verifyOwnership(
       model.voiceprintCollections,
       req.params.collectionId,
       req.params.organizationId,
@@ -182,6 +224,10 @@ async function deleteVoiceprintCollection(req, res, next) {
       req.params.collectionId,
     )
     cascadeDeleteSampleFiles(samples)
+
+    // Drop the Qdrant collection and the label voiceprints before removing the
+    // Mongo records (the trigger reads the labels of the collection).
+    await triggers.dropCollectionSpeakers(collection)
 
     await Promise.all([
       model.voiceSamples.deleteAllFromCollection(req.params.collectionId),

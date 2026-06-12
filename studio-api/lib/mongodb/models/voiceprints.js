@@ -54,6 +54,7 @@ class VoiceprintModel extends MongoModel {
         )
       if (fields.sourceDuration !== undefined)
         allowed.sourceDuration = fields.sourceDuration
+      if (fields.syncState !== undefined) allowed.syncState = fields.syncState
       if (
         subjectType === SPEAKER_TYPE.USER &&
         fields.storageMode !== undefined

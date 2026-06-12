@@ -12,8 +12,11 @@ const {
 const { verifyOwnership, sanitizeName } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/organization/voiceprintCollection`,
 )
-const { cascadeDeleteSampleFiles } = require(
+const { cascadeDeleteSampleFiles, STORAGE_MODE } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
+)
+const triggers = require(
+  `${process.cwd()}/components/WebServer/controllers/speakerIdentification/triggers`,
 )
 
 async function getSpeakerLabels(req, res, next) {
@@ -136,6 +139,9 @@ async function updateSpeakerLabel(req, res, next) {
       res.status(304).send("Nothing to update")
     } else {
       const updated = await model.speakerLabels.getById(req.params.labelId)
+      // The Qdrant point payload carries the display name: re-upsert it
+      // (no-op when the label has no voiceprint yet).
+      triggers.renameLabelSpeaker(updated[0])
       res.status(200).send(updated[0])
     }
   } catch (err) {
@@ -165,7 +171,63 @@ async function deleteSpeakerLabel(req, res, next) {
       model.speakerLabels.delete(req.params.labelId),
     ])
 
+    // Delete the label point and its voiceprint from Qdrant.
+    triggers.deleteLabelSpeaker(label)
+
     res.status(200).send("Speaker label deleted")
+  } catch (err) {
+    next(err)
+  }
+}
+
+// Manually recompute a label voiceprint (e.g. after a model version change).
+// Only possible when the audio samples are kept (audio storage mode).
+async function recomputeSpeakerLabel(req, res, next) {
+  try {
+    const label = await verifyOwnership(
+      model.speakerLabels,
+      req.params.labelId,
+      req.params.organizationId,
+      SpeakerLabelNotFound,
+    )
+    if (label.collectionId.toString() !== req.params.collectionId) {
+      throw new SpeakerLabelNotFound()
+    }
+
+    const collections = await model.voiceprintCollections.getById(
+      req.params.collectionId,
+    )
+    if (
+      collections.length > 0 &&
+      collections[0].storageMode === STORAGE_MODE.EMBEDDINGS
+    ) {
+      throw new SpeakerLabelConflict(
+        "Cannot recompute: this collection keeps embeddings only (no audio to recompute from)",
+      )
+    }
+
+    triggers.recomputeLabel(label)
+    res.status(202).send({ syncState: "pending" })
+  } catch (err) {
+    next(err)
+  }
+}
+
+// Delete only the voiceprint of a label (keep the label and its samples).
+async function deleteSpeakerLabelVoiceprint(req, res, next) {
+  try {
+    const label = await verifyOwnership(
+      model.speakerLabels,
+      req.params.labelId,
+      req.params.organizationId,
+      SpeakerLabelNotFound,
+    )
+    if (label.collectionId.toString() !== req.params.collectionId) {
+      throw new SpeakerLabelNotFound()
+    }
+
+    triggers.deleteLabelVoiceprint(label)
+    res.status(200).send("Speaker label voiceprint deleted")
   } catch (err) {
     next(err)
   }
@@ -177,4 +239,6 @@ module.exports = {
   createSpeakerLabel,
   updateSpeakerLabel,
   deleteSpeakerLabel,
+  recomputeSpeakerLabel,
+  deleteSpeakerLabelVoiceprint,
 }

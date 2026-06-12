@@ -132,6 +132,19 @@ class SpeakerIdSyncOpModel extends MongoModel {
       return error
     }
   }
+
+  async countByOrganization(organizationId) {
+    try {
+      const query = {
+        organizationId: this.getObjectId(organizationId),
+      }
+      const result = await this.mongoRequest(query)
+      return Array.isArray(result) ? result.length : 0
+    } catch (error) {
+      console.error(error)
+      return 0
+    }
+  }
 }
 
 module.exports = new SpeakerIdSyncOpModel()

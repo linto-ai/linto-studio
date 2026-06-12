@@ -4,6 +4,8 @@ const {
   createSpeakerLabel,
   updateSpeakerLabel,
   deleteSpeakerLabel,
+  recomputeSpeakerLabel,
+  deleteSpeakerLabelVoiceprint,
 } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/organization/speakerLabel.js`,
 )
@@ -48,6 +50,22 @@ module.exports = (webserver) => {
       path: "/:labelId",
       method: "delete",
       controller: deleteSpeakerLabel,
+      requireAuth: true,
+      requireOrganizationMaintainerAccess: true,
+      orgaPermissionAccess: PERMISSIONS.SPEAKER_IDENTIFICATION,
+    },
+    {
+      path: "/:labelId/recompute",
+      method: "post",
+      controller: recomputeSpeakerLabel,
+      requireAuth: true,
+      requireOrganizationMaintainerAccess: true,
+      orgaPermissionAccess: PERMISSIONS.SPEAKER_IDENTIFICATION,
+    },
+    {
+      path: "/:labelId/voiceprint",
+      method: "delete",
+      controller: deleteSpeakerLabelVoiceprint,
       requireAuth: true,
       requireOrganizationMaintainerAccess: true,
       orgaPermissionAccess: PERMISSIONS.SPEAKER_IDENTIFICATION,
