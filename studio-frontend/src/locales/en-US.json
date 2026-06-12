@@ -1639,9 +1639,7 @@
   },
   "user_selector": {
     "search_placeholder": "Search for a user...",
-    "select_user": "Select a user",
-    "select_users": "Select users",
-    "users_selected": "{count} user(s) selected"
+    "select_user": "Select a user"
   },
   "popover_list": {
     "search": "Search",

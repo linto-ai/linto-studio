@@ -110,5 +110,6 @@ export default {
 <style lang="scss">
 .organization-selector {
   display: inline-flex;
+  max-width: 100%;
 }
 </style>

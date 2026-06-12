@@ -17,7 +17,6 @@
 
     <!-- Filters -->
     <DashboardFilters
-      :organizations="organizations"
       :timePeriodOptions="timePeriodOptions"
       :timePeriod="currentTimePeriod"
       :selectedOrganization="selectedOrganization"
@@ -126,7 +125,6 @@ export default {
       selectedUser: null,
       startDate: null,
       endDate: null,
-      organizations: [],
     }
   },
   mounted() {
@@ -136,7 +134,6 @@ export default {
     }
     this.loadFiltersFromUrl()
     this.fetchPlatformStats()
-    this.fetchOrganizations()
     this.fetchFilteredData()
   },
   methods: {
@@ -164,10 +161,6 @@ export default {
         this.kpiSeries = []
       }
       this.kpiLoading = false
-    },
-    async fetchOrganizations() {
-      const res = await apiGetAllOrganizations(0, { pageSize: 1000 })
-      this.organizations = res.list || []
     },
     clearFilters() {
       this.selectedOrganization = null
