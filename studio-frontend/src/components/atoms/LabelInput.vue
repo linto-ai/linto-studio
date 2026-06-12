@@ -1,12 +1,11 @@
 <template>
   <div class="label-input">
     <!-- Display mode -->
-    <div 
-      v-if="!isEditing" 
+    <div
+      v-if="!isEditing"
       class="label-input__display"
       @click="startEditing"
-      :class="{ 'label-input__display--empty': !modelValue }"
-    >
+      :class="{ 'label-input__display--empty': !modelValue }">
       {{ displayValue || placeholder }}
     </div>
 
@@ -21,24 +20,21 @@
         class="label-input__input"
         @keydown.enter="handleEnterKey"
         @keydown.escape="cancelEdit"
-        @blur="onBlur"
-      />
-      
+        @blur="onBlur" />
+
       <div class="label-input__actions">
-        <button 
+        <button
           type="button"
           class="label-input__btn label-input__btn--cancel"
           @click="cancelEdit"
-          :title="$t ? $t('cancel') : 'Annuler'"
-        >
+          :title="$t ? $t('cancel') : 'Annuler'">
           ✕
         </button>
-        <button 
+        <button
           type="button"
           class="label-input__btn label-input__btn--validate"
           @click="validateEdit"
-          :title="$t ? $t('validate') : 'Valider'"
-        >
+          :title="$t ? $t('validate') : 'Valider'">
           ✓
         </button>
       </div>
@@ -48,53 +44,56 @@
 
 <script>
 export default {
-  name: 'LabelInput',
-  
+  name: "LabelInput",
+
   props: {
     modelValue: {
       type: String,
-      default: ''
+      default: "",
     },
     inputType: {
       type: String,
-      default: 'input',
-      validator: (value) => ['input', 'textarea', 'text', 'email', 'password', 'number'].includes(value)
+      default: "input",
+      validator: (value) =>
+        ["input", "textarea", "text", "email", "password", "number"].includes(
+          value,
+        ),
     },
     placeholder: {
       type: String,
-      default: ''
+      default: "",
     },
     autoFocus: {
       type: Boolean,
-      default: true
+      default: true,
     },
     validateOnBlur: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
 
-  emits: ['update:modelValue', 'edit-start', 'edit-cancel', 'edit-validate'],
+  emits: ["update:modelValue", "edit-start", "edit-cancel", "edit-validate"],
 
   data() {
     return {
       isEditing: false,
-      editValue: ''
+      editValue: "",
     }
   },
 
   computed: {
     displayValue() {
-      return this.modelValue || ''
-    }
+      return this.modelValue || ""
+    },
   },
 
   methods: {
     startEditing() {
       this.isEditing = true
-      this.editValue = this.modelValue || ''
-      this.$emit('edit-start', this.editValue)
-      
+      this.editValue = this.modelValue || ""
+      this.$emit("edit-start", this.editValue)
+
       this.$nextTick(() => {
         if (this.autoFocus && this.$refs.inputElement) {
           this.$refs.inputElement.focus()
@@ -108,21 +107,21 @@ export default {
 
     cancelEdit() {
       this.isEditing = false
-      this.editValue = this.modelValue || ''
-      this.$emit('edit-cancel')
+      this.editValue = this.modelValue || ""
+      this.$emit("edit-cancel")
     },
 
     validateEdit() {
-      this.$emit('update:modelValue', this.editValue)
-      this.$emit('edit-validate', this.editValue)
+      this.$emit("update:modelValue", this.editValue)
+      this.$emit("edit-validate", this.editValue)
       this.isEditing = false
     },
 
     handleEnterKey(event) {
-      if (this.inputType === 'textarea' && event.shiftKey) {
+      if (this.inputType === "textarea" && event.shiftKey) {
         return
       }
-      
+
       event.preventDefault()
       this.validateEdit()
     },
@@ -131,8 +130,8 @@ export default {
       if (this.validateOnBlur) {
         this.validateEdit()
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

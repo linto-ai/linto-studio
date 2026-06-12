@@ -13,7 +13,7 @@ export function getUserRightFromConversation(conversation, userId) {
   const defaultRights = conversation.organization.membersRight
 
   let userCustomRightInOrga = customRightsInOrga.find(
-    (right) => right.userId === userId
+    (right) => right.userId === userId,
   )
   if (userCustomRightInOrga) return userCustomRightInOrga.right
 

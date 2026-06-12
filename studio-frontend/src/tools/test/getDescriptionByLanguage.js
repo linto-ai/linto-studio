@@ -19,7 +19,10 @@ test("getDescriptionByLanguage() handles language codes with region (e.g., fr-FR
     fr: "Description en français",
     en: "English description",
   }
-  t.is(getDescriptionByLanguage(descriptions, "fr-FR"), "Description en français")
+  t.is(
+    getDescriptionByLanguage(descriptions, "fr-FR"),
+    "Description en français",
+  )
   t.is(getDescriptionByLanguage(descriptions, "en-US"), "English description")
 })
 
@@ -41,12 +44,17 @@ test("getDescriptionByLanguage() falls back to first non-empty value when Englis
     es: "Descripción en español",
   }
   const result = getDescriptionByLanguage(descriptions, "fr")
-  t.true(result === "Deutsche Beschreibung" || result === "Descripción en español")
+  t.true(
+    result === "Deutsche Beschreibung" || result === "Descripción en español",
+  )
 })
 
 test("getDescriptionByLanguage() returns custom fallback when no valid description found", (t) => {
   const descriptions = {}
-  t.is(getDescriptionByLanguage(descriptions, "fr", "Default text"), "Default text")
+  t.is(
+    getDescriptionByLanguage(descriptions, "fr", "Default text"),
+    "Default text",
+  )
 })
 
 test("getDescriptionByLanguage() returns null fallback by default when no description found", (t) => {
@@ -138,7 +146,10 @@ test("getDescriptionByLanguage() preserves whitespace in valid descriptions", (t
   const descriptions = {
     fr: "  Description avec espaces  ",
   }
-  t.is(getDescriptionByLanguage(descriptions, "fr"), "  Description avec espaces  ")
+  t.is(
+    getDescriptionByLanguage(descriptions, "fr"),
+    "  Description avec espaces  ",
+  )
 })
 
 test("getDescriptionByLanguage() handles long language codes correctly", (t) => {

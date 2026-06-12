@@ -48,6 +48,10 @@ export interface EditorEventMap {
     "watermark:pin": {
         pinned: boolean;
     };
+    "subtitle:visible": {
+        visible: boolean;
+        height: number;
+    };
     destroy: void;
 }
 export type TurnEventKey = "turn:add" | "turn:update" | "turn:remove";

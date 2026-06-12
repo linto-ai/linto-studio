@@ -79,7 +79,14 @@
     "token_expiring_soon": "Expiring soon",
     "modal_create": {
       "title": "Create a new key",
-      "expiration_label": "Validity duration"
+      "expiration_label": "Validity duration",
+      "avatar_label": "Avatar (optional)",
+      "avatar_choose": "Choose an image…",
+      "avatar_change": "Change image",
+      "avatar_remove": "Remove",
+      "avatar_invalid_type": "Invalid file type (only jpg, png, gif, bmp, webp)",
+      "avatar_too_large": "File too large (5 MB maximum)",
+      "avatar_upload_failed": "The API key was created but the avatar could not be uploaded"
     },
     "modal_delete": {
       "title": "Delete API token {name}",
@@ -954,12 +961,20 @@
       "upload_permission": "Upload media",
       "summary_permission": "Generate summary",
       "session_permission": "Create session",
+      "microphone_permission": "Create microphone sessions",
+      "bot_permission": "Create bot sessions",
       "update_button": "Update permissions"
+    },
+    "organization_security_level": {
+      "title": "Security level",
+      "label": "Organization minimum security level",
+      "update_button": "Update security level"
     },
     "matching_users": {
       "title": "Automatic user invitation",
       "matching_mail": {
-        "label": "Matching email"
+        "label": "Matching email",
+        "required_error": "Please provide a matching email before inviting users"
       },
       "update_button": "Update matching criteria",
       "apply_button": "Invite all users matching criteria"
@@ -1158,6 +1173,7 @@
     "sessions_status": {
       "pending": "Session is pending, waiting to receive audio",
       "active": "Session is active, receiving audio",
+      "paused": "Session is paused",
       "scheduled": "Session has not started yet",
       "terminated": "Session has ended"
     },
@@ -1232,10 +1248,22 @@
       "session_not_started_title": "The session has not started yet",
       "settings_button": "Settings",
       "delete_session_button": "Delete session",
-      "stop_button": "Stop and save session to library",
-      "stop_force_button": "Force stop and save session to library",
+      "stop_button": "Stop and save",
+      "stop_force_button": "Force stop",
       "stop_session_error_message": "The session could not be stopped",
       "stop_session_success": "The session has been stopped and saved",
+      "pause_button": "Pause",
+      "resume_button": "Resume",
+      "pause_session_success": "The session has been paused",
+      "pause_session_error_message": "The session could not be paused",
+      "resume_session_success": "The session has been resumed",
+      "resume_session_error_message": "The session could not be resumed",
+      "clear_button": "Clear transcript",
+      "clear_session_success": "The transcript has been cleared",
+      "clear_session_error_message": "The transcript could not be cleared",
+      "clear_confirm_title": "Clear transcript",
+      "clear_confirm_message": "This will permanently erase the transcript content of the active session. The session stays running.",
+      "clear_confirm_button": "Clear",
       "title_interface_settings": "Interface settings",
       "translation_bot": "Automatic translation",
       "session_already_started": "Session already started",
@@ -1291,7 +1319,8 @@
       },
       "title": "Selection of transcription profiles",
       "translation_not_available": "No translation available",
-      "n_translations_selected": "No translations | One translation | {n} translations"
+      "n_translations_selected": "No translations | One translation | {n} translations",
+      "security_level_notice": "Only transcriber profiles with a security level of \"{level}\" or higher can be selected"
     },
     "settings_page": {
       "autoStart_label": "Automatic session start",
@@ -1467,6 +1496,8 @@
     "invite_new_user": "Invite a new user",
     "email_placeholder": "Email",
     "button": "Share",
+    "loading_users": "Loading users…",
+    "clear_search": "Clear search",
     "conversation_error_title": "Some conversations cannot be shared",
     "external_members": "External users",
     "inscription_disabled": "Registration and invitations are deactivated on the platform",

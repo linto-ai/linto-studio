@@ -4,6 +4,8 @@ const debug = require("debug")(
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const kpiHandler = require("../../controllers/activity/kpiHandlers")
 const kpiExport = require("../../controllers/activity/kpiExport")
+const activityExport = require("../../controllers/activity/activityExport")
+const exportResponse = require("../../controllers/activity/exportResponse")
 
 async function getActivity(req, res, next) {
   try {
@@ -146,13 +148,7 @@ async function exportKpiSessions(req, res, next) {
   try {
     const { format, organizationId, startDate, endDate } = req.query
 
-    // Validate format
-    const validFormats = ["json", "csv", "xls"]
-    if (!format || !validFormats.includes(format)) {
-      return res.status(400).json({
-        error: `Invalid format. Must be one of: ${validFormats.join(", ")}`,
-      })
-    }
+    if (exportResponse.isInvalidFormat(format, res)) return
 
     // Validate date range if both provided
     if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
@@ -174,50 +170,48 @@ async function exportKpiSessions(req, res, next) {
       page: 0,
     })
 
-    // Generate filename with current date
     const dateStr = new Date().toISOString().split("T")[0]
-    const filename = `kpi-sessions-${dateStr}`
 
-    // Return appropriate format
-    switch (format) {
-      case "json":
-        // Return raw database data for JSON
-        res.setHeader("Content-Type", "application/json")
-        res.setHeader(
-          "Content-Disposition",
-          `attachment; filename="${filename}.json"`,
-        )
-        return res.json(sessionKpiList.list)
+    return await exportResponse.sendExport(res, format, {
+      filename: `kpi-sessions-${dateStr}`,
+      list: sessionKpiList.list,
+      // Flatten since each session may have multiple channel rows
+      toRows: (list) => list.flatMap(kpiExport.transformSessionData),
+      generateCsv: kpiExport.generateCsv,
+      generateXlsx: kpiExport.generateXlsx,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
 
-      case "csv":
-        // Transform data (flatten since each session may have multiple channel rows)
-        const csvData = sessionKpiList.list.flatMap(
-          kpiExport.transformSessionData,
-        )
-        const csvContent = kpiExport.generateCsv(csvData)
-        res.setHeader("Content-Type", "text/csv; charset=utf-8")
-        res.setHeader(
-          "Content-Disposition",
-          `attachment; filename="${filename}.csv"`,
-        )
-        return res.send(csvContent)
+async function exportActivity(req, res, next) {
+  try {
+    const { format } = req.query
 
-      case "xls":
-        // Transform data (flatten since each session may have multiple channel rows)
-        const xlsData = sessionKpiList.list.flatMap(
-          kpiExport.transformSessionData,
-        )
-        const xlsxBuffer = await kpiExport.generateXlsx(xlsData)
-        res.setHeader(
-          "Content-Type",
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        )
-        res.setHeader(
-          "Content-Disposition",
-          `attachment; filename="${filename}.xlsx"`,
-        )
-        return res.send(Buffer.from(xlsxBuffer))
-    }
+    if (exportResponse.isInvalidFormat(format, res)) return
+
+    // Forward the same filters as the list endpoint (source, scope, user.id...),
+    // dropping pagination so the export contains the full matching dataset.
+    const filters = { ...req.query }
+    delete filters.format
+
+    const activity = await model.activityLog.getAll({
+      ...filters,
+      size: 10000, // Large limit for export
+      page: 0,
+    })
+
+    const dateStr = new Date().toISOString().split("T")[0]
+    const scopeLabel = req.query.scope || req.query.source || "activity"
+
+    return await exportResponse.sendExport(res, format, {
+      filename: `activity-${scopeLabel}-${dateStr}`,
+      list: activity?.list || [],
+      toRows: (list) => list.map(activityExport.transformActivityLog),
+      generateCsv: activityExport.generateCsv,
+      generateXlsx: activityExport.generateXlsx,
+    })
   } catch (err) {
     next(err)
   }
@@ -230,4 +224,5 @@ module.exports = {
   refreshSessionKpi,
   getKpiSeries,
   exportKpiSessions,
+  exportActivity,
 }

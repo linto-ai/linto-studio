@@ -29,7 +29,7 @@
           @select="handleInboxClick"
           @drop-media="handleInboxDrop" />
         <FolderTreeNode
-          v-if="hasSessions"
+          v-if="sessionEnable"
           :folder="sessionsFolder"
           :virtual="true"
           icon="broadcast"
@@ -77,10 +77,10 @@
 </template>
 
 <script>
-import { apiHasSessions } from "@/api/session.js"
 import { mediaScopeMixin } from "@/mixins/mediaScope"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { orgDisplayName } from "@/tools/orgDisplayName"
+import { getEnv } from "@/tools/getEnv"
 import FolderTree from "@/components/FolderTree.vue"
 import FolderTreeNode from "@/components/FolderTreeNode.vue"
 import ModalSwitchOrg from "@/components/ModalSwitchOrg.vue"
@@ -97,11 +97,13 @@ export default {
   },
   data() {
     return {
-      hasSessions: false,
       modalOrgSelector: false,
     }
   },
   computed: {
+    sessionEnable() {
+      return getEnv("VUE_APP_ENABLE_SESSION") === "true"
+    },
     currentOrganization() {
       return this.$store.getters["organizations/getCurrentOrganization"]
     },
@@ -169,15 +171,9 @@ export default {
   watch: {
     getCurrentOrganizationScope: {
       immediate: true,
-      async handler(orgId, oldOrgId) {
-        if (orgId) {
-          this.hasSessions = await apiHasSessions(orgId)
-          this.$store.dispatch(
-            `${orgId}/processing/conversations/loadStatusCount`,
-          )
-        } else {
-          this.hasSessions = false
-        }
+      handler(orgId) {
+        if (!orgId) return
+        this.$store.dispatch(`${orgId}/processing/conversations/loadStatusCount`)
       },
     },
   },

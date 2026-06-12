@@ -72,7 +72,7 @@ function connect(event) {
   workerConfig = event.data?.params?.config || {}
 
   // Enable debug with config from main thread
-  Debug.enable(workerConfig.VUE_APP_DEBUG || '')
+  Debug.enable(workerConfig.VUE_APP_DEBUG || "")
 
   // get conversationID and userToken
   conversationId = event.data?.params?.conversationId

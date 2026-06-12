@@ -21,11 +21,17 @@ test("normalizeSecurityLevel() returns SECURITY_LEVEL_PUBLIC for integer 0", (t)
 })
 
 test("normalizeSecurityLevel() returns SECURITY_LEVEL_COMMISSION for integer 1", (t) => {
-  t.is(normalizeSecurityLevel(SECURITY_LEVEL_COMMISSION), SECURITY_LEVEL_COMMISSION)
+  t.is(
+    normalizeSecurityLevel(SECURITY_LEVEL_COMMISSION),
+    SECURITY_LEVEL_COMMISSION,
+  )
 })
 
 test("normalizeSecurityLevel() returns SECURITY_LEVEL_SENSITIVE for integer 2", (t) => {
-  t.is(normalizeSecurityLevel(SECURITY_LEVEL_SENSITIVE), SECURITY_LEVEL_SENSITIVE)
+  t.is(
+    normalizeSecurityLevel(SECURITY_LEVEL_SENSITIVE),
+    SECURITY_LEVEL_SENSITIVE,
+  )
 })
 
 test("normalizeSecurityLevel() returns SECURITY_LEVEL_PUBLIC (default) for invalid string values", (t) => {
@@ -83,7 +89,9 @@ test("filterBySecurityLevel() returns only SECURITY_LEVEL_SENSITIVE items when r
     { name: "item3", security_level: SECURITY_LEVEL_SENSITIVE },
   ]
   const result = filterBySecurityLevel(items, SECURITY_LEVEL_SENSITIVE)
-  t.deepEqual(result, [{ name: "item3", security_level: SECURITY_LEVEL_SENSITIVE }])
+  t.deepEqual(result, [
+    { name: "item3", security_level: SECURITY_LEVEL_SENSITIVE },
+  ])
 })
 
 test("filterBySecurityLevel() treats invalid security_level values as SECURITY_LEVEL_PUBLIC (default)", (t) => {
@@ -105,7 +113,9 @@ test("filterBySecurityLevel() treats missing security_level as SECURITY_LEVEL_PU
     { name: "item2", security_level: SECURITY_LEVEL_COMMISSION },
   ]
   const result = filterBySecurityLevel(items, SECURITY_LEVEL_COMMISSION)
-  t.deepEqual(result, [{ name: "item2", security_level: SECURITY_LEVEL_COMMISSION }])
+  t.deepEqual(result, [
+    { name: "item2", security_level: SECURITY_LEVEL_COMMISSION },
+  ])
 })
 
 test("filterBySecurityLevel() uses custom securityKey", (t) => {
@@ -176,7 +186,9 @@ test("filterByMetaSecurityLevel() treats missing meta as SECURITY_LEVEL_PUBLIC",
     { name: "profile2", meta: { securityLevel: SECURITY_LEVEL_SENSITIVE } },
   ]
   const result = filterByMetaSecurityLevel(items, SECURITY_LEVEL_COMMISSION)
-  t.deepEqual(result, [{ name: "profile2", meta: { securityLevel: SECURITY_LEVEL_SENSITIVE } }])
+  t.deepEqual(result, [
+    { name: "profile2", meta: { securityLevel: SECURITY_LEVEL_SENSITIVE } },
+  ])
 })
 
 test("filterByMetaSecurityLevel() treats missing meta.securityLevel as SECURITY_LEVEL_PUBLIC", (t) => {
@@ -185,7 +197,9 @@ test("filterByMetaSecurityLevel() treats missing meta.securityLevel as SECURITY_
     { name: "profile2", meta: { securityLevel: SECURITY_LEVEL_SENSITIVE } },
   ]
   const result = filterByMetaSecurityLevel(items, SECURITY_LEVEL_COMMISSION)
-  t.deepEqual(result, [{ name: "profile2", meta: { securityLevel: SECURITY_LEVEL_SENSITIVE } }])
+  t.deepEqual(result, [
+    { name: "profile2", meta: { securityLevel: SECURITY_LEVEL_SENSITIVE } },
+  ])
 })
 
 // ============================================

@@ -13,7 +13,7 @@ class WorkerSingleton {
 
     this.worker = new Worker(
       new URL("./collaborationWorker.js", import.meta.url),
-      { type: "module" }
+      { type: "module" },
     )
     WorkerSingleton.instance = this
   }
@@ -34,7 +34,7 @@ class WorkerSingleton {
     if (this.isTerminated) {
       this.worker = new Worker(
         new URL("./collaborationWorker.js", import.meta.url),
-        { type: "module" }
+        { type: "module" },
       )
       this.isTerminated = false
     }
@@ -46,10 +46,10 @@ class WorkerSingleton {
         userId,
         conversationFormat,
         config: {
-          VUE_APP_DEBUG: getEnv('VUE_APP_DEBUG'),
-          VUE_APP_WEBSOCKET_SERVER: getEnv('VUE_APP_WEBSOCKET_SERVER'),
-          VUE_APP_WEBSOCKET_PATH: getEnv('VUE_APP_WEBSOCKET_PATH')
-        }
+          VUE_APP_DEBUG: getEnv("VUE_APP_DEBUG"),
+          VUE_APP_WEBSOCKET_SERVER: getEnv("VUE_APP_WEBSOCKET_SERVER"),
+          VUE_APP_WEBSOCKET_PATH: getEnv("VUE_APP_WEBSOCKET_PATH"),
+        },
       },
     })
   }

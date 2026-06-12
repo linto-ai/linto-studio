@@ -28,7 +28,17 @@
         :field="searchField"
         :value="searchValue"
         inputFullWidth
-        @input="searchValue = $event" />
+        @input="searchValue = $event">
+        <template #content-after-input>
+          <Button
+            v-if="searchValue.length > 0"
+            variant="transparent"
+            icon="x"
+            :title="$t('share_menu.clear_search')"
+            :aria-label="$t('share_menu.clear_search')"
+            @click="searchValue = ''" />
+        </template>
+      </FormInput>
 
       <ShareSearchResults
         v-if="searchValue.trim().length > 0"
@@ -323,5 +333,6 @@ export default {
       margin: 0;
     }
   }
+
 }
 </style>

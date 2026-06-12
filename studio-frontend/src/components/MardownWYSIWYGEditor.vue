@@ -264,7 +264,7 @@ export default {
       // Check if pasted text looks like markdown
       const looksLikeMd =
         /^#{1,6}\s|^\s*[-*+]\s|^\s*\d+\.\s|^\s*>|```|\*\*|__|\[.*\]\(/.test(
-          text
+          text,
         )
 
       if (looksLikeMd) {
@@ -369,10 +369,7 @@ export default {
 
     stopSelectionListener() {
       if (this._selectionListener) {
-        document.removeEventListener(
-          "selectionchange",
-          this._selectionListener
-        )
+        document.removeEventListener("selectionchange", this._selectionListener)
         this._selectionListener = null
       }
     },
@@ -444,8 +441,9 @@ export default {
     outline: none;
     padding: 16px 24px;
     min-height: 100%;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      "Helvetica Neue", Arial, sans-serif;
+    font-family:
+      -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+      Arial, sans-serif;
     font-size: 14px;
     line-height: 1.7;
     color: var(--text-primary, #333);

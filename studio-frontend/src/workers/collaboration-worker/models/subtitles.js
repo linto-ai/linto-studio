@@ -81,7 +81,7 @@ export class Subtitle {
         transactionName,
         new Y.UndoManager(this.watchProperties, {
           trackedOrigins: new Set([transactionName]),
-        })
+        }),
       )
     }
 

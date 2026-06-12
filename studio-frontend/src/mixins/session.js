@@ -3,6 +3,9 @@ import {
   apiGetSession,
   apiStartSession,
   apiStopSession,
+  apiPauseSession,
+  apiResumeSession,
+  apiClearSession,
   apiDeleteSession,
   apiGetPublicSession,
   apiGetSessionDataBySessionId,
@@ -179,6 +182,81 @@ export const sessionMixin = {
       this.$router.push(this.sessionListRoute)
       //await this.fetchSession()
       this.isStoping = false
+    },
+    async pauseSession() {
+      this.isPausing = true
+      const res = await apiPauseSession(this.organizationId, this.id)
+
+      if (res.status === "error") {
+        console.error("Error pausing session", res)
+        bus.$emit("app_notif", {
+          status: "error",
+          message: this.$i18n.t(
+            "session.detail_page.pause_session_error_message",
+          ),
+          timeout: null,
+        })
+        this.isPausing = false
+        return
+      }
+
+      bus.$emit("app_notif", {
+        status: "success",
+        message: this.$i18n.t("session.detail_page.pause_session_success"),
+        timeout: null,
+      })
+      await this.fetchSession()
+      this.isPausing = false
+    },
+    async resumeSession() {
+      this.isResuming = true
+      const res = await apiResumeSession(this.organizationId, this.id)
+
+      if (res.status === "error") {
+        console.error("Error resuming session", res)
+        bus.$emit("app_notif", {
+          status: "error",
+          message: this.$i18n.t(
+            "session.detail_page.resume_session_error_message",
+          ),
+          timeout: null,
+        })
+        this.isResuming = false
+        return
+      }
+
+      bus.$emit("app_notif", {
+        status: "success",
+        message: this.$i18n.t("session.detail_page.resume_session_success"),
+        timeout: null,
+      })
+      await this.fetchSession()
+      this.isResuming = false
+    },
+    async clearSession() {
+      this.isClearing = true
+      const res = await apiClearSession(this.organizationId, this.id)
+
+      if (res.status === "error") {
+        console.error("Error clearing session", res)
+        bus.$emit("app_notif", {
+          status: "error",
+          message: this.$i18n.t(
+            "session.detail_page.clear_session_error_message",
+          ),
+          timeout: null,
+        })
+        this.isClearing = false
+        return
+      }
+
+      bus.$emit("app_notif", {
+        status: "success",
+        message: this.$i18n.t("session.detail_page.clear_session_success"),
+        timeout: null,
+      })
+      await this.fetchSession()
+      this.isClearing = false
     },
     async deleteSession() {
       this.isDeleting = true

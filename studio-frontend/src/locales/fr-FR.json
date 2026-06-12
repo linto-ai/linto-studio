@@ -80,7 +80,14 @@
     "token_expiring_soon": "Expire bientôt",
     "modal_create": {
       "title": "Créer une clé d'API",
-      "expiration_label": "Durée de validité"
+      "expiration_label": "Durée de validité",
+      "avatar_label": "Avatar (optionnel)",
+      "avatar_choose": "Choisir une image…",
+      "avatar_change": "Changer l'image",
+      "avatar_remove": "Retirer",
+      "avatar_invalid_type": "Format invalide (jpg, png, gif, bmp, webp uniquement)",
+      "avatar_too_large": "Fichier trop volumineux (5 Mo maximum)",
+      "avatar_upload_failed": "La clé d'API a été créée mais l'avatar n'a pas pu être téléversé"
     },
     "modal_delete": {
       "title": "Supprimer la clé d'API '{name}'",
@@ -948,12 +955,20 @@
       "upload_permission": "Publier des médias",
       "summary_permission": "Générer des résumés",
       "session_permission": "Créer des sessions",
+      "microphone_permission": "Créer des sessions microphone",
+      "bot_permission": "Créer des sessions bot",
       "update_button": "Mettre à jour les permissions"
+    },
+    "organization_security_level": {
+      "title": "Niveau de sécurité",
+      "label": "Niveau de sécurité minimum de l'organisation",
+      "update_button": "Mettre à jour le niveau de sécurité"
     },
     "matching_users": {
       "title": "Ajout automatique d'utilisateurs",
       "matching_mail": {
-        "label": "Adresse e-mail d'appartenance à l'organisation"
+        "label": "Adresse e-mail d'appartenance à l'organisation",
+        "required_error": "Veuillez renseigner une adresse e-mail avant d'inviter les utilisateurs"
       },
       "update_button": "Mettre à jour les critères d'appartenance",
       "apply_button": "Inviter les utilisateurs correspondant aux critères"
@@ -1152,6 +1167,7 @@
     "sessions_status": {
       "pending": "La session est en attente de recevoir un flux audio",
       "active": "La session est active. Un ou des audio(s) sont transcrits",
+      "paused": "La session est en pause",
       "scheduled": "La session n'a pas démarré",
       "terminated": "La session est terminée"
     },
@@ -1226,10 +1242,22 @@
       "session_not_started_title": "La session n'a pas encore commencé",
       "settings_button": "Paramètres",
       "delete_session_button": "Supprimer la session",
-      "stop_button": "Arrêter et enregistrer la transcription",
-      "stop_force_button": "Forcer l'arrêt de la session",
+      "stop_button": "Arrêter et enregistrer",
+      "stop_force_button": "Forcer l'arrêt",
       "stop_session_error_message": "La session n'a pas pu être arrêtée",
       "stop_session_success": "La session a été arrêtée et enregistrée",
+      "pause_button": "Pause",
+      "resume_button": "Reprendre",
+      "pause_session_success": "La session a été mise en pause",
+      "pause_session_error_message": "La session n'a pas pu être mise en pause",
+      "resume_session_success": "La session a été reprise",
+      "resume_session_error_message": "La session n'a pas pu être reprise",
+      "clear_button": "Effacer",
+      "clear_session_success": "La transcription a été effacée",
+      "clear_session_error_message": "La transcription n'a pas pu être effacée",
+      "clear_confirm_title": "Effacer la transcription",
+      "clear_confirm_message": "Cette action efface définitivement le contenu transcrit de la session active. La session reste démarrée.",
+      "clear_confirm_button": "Effacer",
       "title_interface_settings": "Paramètre d'interface",
       "translation_bot": "Traduction automatique",
       "session_already_started": "La session a déjà démarré",
@@ -1285,7 +1313,8 @@
       },
       "title": "Choix des profils de transcription",
       "translation_not_available": "Non disponible",
-      "n_translations_selected": "Aucune traduction | Une traduction | {n} traductions"
+      "n_translations_selected": "Aucune traduction | Une traduction | {n} traductions",
+      "security_level_notice": "Seuls les profils de transcription d'un niveau de sécurité « {level} » ou supérieur peuvent être sélectionnés"
     },
     "settings_page": {
       "autoStart_label": "Démarrage automatique de la session",
@@ -1461,6 +1490,8 @@
     "invite_new_user": "Inviter un nouvel utilisateur",
     "email_placeholder": "Email",
     "button": "Partager",
+    "loading_users": "Chargement des utilisateurs…",
+    "clear_search": "Effacer la recherche",
     "conversation_error_title": "Des conversations ne peuvent pas être partagées",
     "external_members": "Utilisateurs externes",
     "inscription_disabled": "Les inscriptions et les invitations sont désactivées sur la plateforme",

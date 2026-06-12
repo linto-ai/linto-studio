@@ -3,8 +3,7 @@
     class="stat-card flex align-center"
     :class="variantClass"
     :is="componentType"
-    :to="to"
-  >
+    :to="to">
     <span class="stat-card__icon">
       <PhIcon :name="icon" :size="variant === 'secondary' ? 'sm' : 'lg'" />
     </span>

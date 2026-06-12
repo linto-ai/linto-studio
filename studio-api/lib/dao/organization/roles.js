@@ -10,6 +10,11 @@ const roles = Object.freeze({
   canGiveAccess: (newUser, connectedUser) => !(newUser <= connectedUser),
   hasRevokeRoleAccess: (updatedRole, userRole) => updatedRole <= userRole,
   checkValue: (userRole) => userRole >= 1 && userRole <= 6,
+  getUserRoleInOrg(organization, userId, { backofficeAccess = false } = {}) {
+    if (backofficeAccess) return roles.ADMIN
+    const entry = organization?.users?.find((u) => u.userId === userId)
+    return entry ? entry.role : roles.UNDEFINED
+  },
   print(userRole) {
     const sortedRoles = Object.entries(roles).sort((a, b) => b[1] - a[1]) // Sort by value descending
 

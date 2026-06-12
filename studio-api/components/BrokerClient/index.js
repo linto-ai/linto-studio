@@ -59,6 +59,7 @@ class BrokerClient extends Component {
     this.sharedSubs = [
       `$share/studio-api/system/out/sessions/statuses`,
       `$share/studio-api/system/out/sessions/ended`,
+      `$share/studio-api/system/out/sessions/cleared`,
     ]
     this.sharedClient = new MqttClient({
       subs: this.sharedSubs,

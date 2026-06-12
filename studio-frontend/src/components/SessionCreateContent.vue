@@ -61,7 +61,8 @@
 
       <SecurityLevelSelector
         v-if="enableSecurityLevel"
-        v-model="securityLevel" />
+        v-model="securityLevel"
+        :minLevel="organizationSecurityLevel" />
 
       <!-- Channels section -->
       <section class="flex col">
@@ -136,7 +137,7 @@
     <ModalAddSessionChannels
       v-if="modalAddChannelsIsOpen"
       :transcriberProfiles="transcriberProfiles"
-      :securityLevel="securityLevel"
+      :securityLevel="effectiveSecurityLevel"
       v-model="selectedProfiles"
       @on-confirm="confirmAddSessionChannels"
       @on-cancel="closeModalAddSessionChannels" />
@@ -161,6 +162,7 @@ import EMPTY_FIELD from "@/const/emptyField"
 import { apiCreateSession, apiCreateSessionTemplate } from "@/api/session.js"
 
 import { formsMixin } from "@/mixins/forms.js"
+import { organizationSecurityLevelMixin } from "@/mixins/organizationSecurityLevel.js"
 
 import FormInput from "@/components/molecules/FormInput.vue"
 import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
@@ -174,9 +176,10 @@ import MetadataList from "@/components/MetadataList.vue"
 import ModalEditMetadata from "@/components/ModalEditMetadata.vue"
 import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
 import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
+import { extractTranslationLangCode } from "@/tools/translationUtils"
 
 export default {
-  mixins: [formsMixin],
+  mixins: [formsMixin, organizationSecurityLevelMixin],
   props: {
     currentOrganizationScope: {
       type: String,
@@ -327,8 +330,8 @@ export default {
 
       this.applyTemplate(this.selectedTemplate)
     },
-    securityLevel(newLevel) {
-      // Remove channels whose profile doesn't meet the new security level
+    effectiveSecurityLevel(newLevel) {
+      // Remove channels whose profile doesn't meet the effective security level
       this.channels = this.channels.filter((channel) => {
         const profile = this.transcriberProfiles.find(
           (p) => p.id === channel.profileId,
@@ -410,7 +413,9 @@ export default {
 
       channel.id = generateId()
       channel.name = templateChannel.name
-      channel.translations = structuredClone(templateChannel.translations)
+      channel.translations = templateChannel.translations.map(
+        extractTranslationLangCode,
+      )
       channel.languages = templateChannel.languages
       channel.profileId = templateChannel.transcriberProfileId
 

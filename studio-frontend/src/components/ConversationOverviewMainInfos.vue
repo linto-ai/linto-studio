@@ -52,7 +52,9 @@
         type="submit"
         variant="primary"
         icon="check"
-        :label="$t('conversation_overview.main_information.update_information_button')" />
+        :label="
+          $t('conversation_overview.main_information.update_information_button')
+        " />
     </section>
   </form>
 </template>

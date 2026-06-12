@@ -5,11 +5,7 @@
       "summary": "Get all metadata for a conversation",
       "parameters": [
         {
-          "name": "conversationId",
-          "in": "path",
-          "description": "Unique identifier for the conversation.",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/ConversationId"
         }
       ],
       "responses": {
@@ -42,18 +38,10 @@
       "summary": "Create a metadata associated with a specific conversation and tag combination.",
       "parameters": [
         {
-          "name": "conversationId",
-          "in": "path",
-          "description": "Unique identifier for the conversation.",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
-          "name": "tagId",
-          "in": "path",
-          "description": "Unique identifier for the tag.",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/TagId"
         }
       ],
       "requestBody": {
@@ -105,18 +93,10 @@
       "summary": "Retrieve metadata associated with a specific conversation and tag combination.",
       "parameters": [
         {
-          "name": "conversationId",
-          "in": "path",
-          "description": "Unique identifier for the conversation.",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
-          "name": "tagId",
-          "in": "path",
-          "description": "Unique identifier for the tag.",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/TagId"
         }
       ],
       "responses": {
@@ -149,23 +129,15 @@
       "summary": "Update a metadata",
       "parameters": [
         {
-          "name": "conversationId",
-          "in": "path",
-          "description": "Unique identifier for the conversation.",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
-          "name": "tagId",
-          "in": "path",
-          "description": "Unique identifier for the tag.",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/TagId"
         },
         {
-          "name": "tagId",
+          "name": "metadataId",
           "in": "path",
-          "description": "Unique identifier for the tag.",
+          "description": "The metadata id",
           "required": true,
           "type": "string"
         }
@@ -193,11 +165,13 @@
           "description": "OK",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "description": "Message"
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Message"
+                  }
                 }
               },
               "example": {
@@ -222,18 +196,10 @@
       "summary": "Delete a metadata",
       "parameters": [
         {
-          "name": "conversationId",
-          "in": "path",
-          "description": "Unique identifier for the conversation.",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
-          "name": "tagId",
-          "in": "path",
-          "description": "Unique identifier for the tag.",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/TagId"
         },
         {
           "name": "metadataId",
@@ -248,11 +214,13 @@
           "description": "OK",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "description": "Message"
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Message"
+                  }
                 }
               },
               "example": {

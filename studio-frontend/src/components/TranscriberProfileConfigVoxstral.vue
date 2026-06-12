@@ -5,7 +5,11 @@
     <FormInput :field="descriptionField" v-model="localConfig.description" />
 
     <section class="endpoint-section">
-      <h4>{{ $t("backoffice.transcriber_profile_detail.voxstral_endpoint_label") }}</h4>
+      <h4>
+        {{
+          $t("backoffice.transcriber_profile_detail.voxstral_endpoint_label")
+        }}
+      </h4>
       <FormInput :field="endpointField" v-model="localConfig.endpoint" />
     </section>
 

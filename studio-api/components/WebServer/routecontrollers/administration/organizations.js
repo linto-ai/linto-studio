@@ -5,6 +5,9 @@ const debug = require("debug")(
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
+const SECURITY_LEVELS = require(
+  `${process.cwd()}/lib/dao/conversation/securityLevels`,
+)
 
 const {
   OrganizationError,
@@ -55,6 +58,8 @@ async function createOrganization(req, res, next) {
       owner: owner,
       token: "",
       permissions: PERMISSIONS.getDefaultPermissions(),
+      // securityLevel is normalized by the model (defaults to PUBLIC)
+      securityLevel: req.body.securityLevel,
     }
 
     organization.permissions = PERMISSIONS.validateAndSetPermissions(
@@ -77,7 +82,14 @@ async function createOrganization(req, res, next) {
 async function updateOrganizationPlatform(req, res, next) {
   try {
     const { organizationId } = req.params
-    const { name, token, description, permissions, matchingMail } = req.body
+    const {
+      name,
+      token,
+      description,
+      permissions,
+      matchingMail,
+      securityLevel,
+    } = req.body
 
     // Check if organizationId is provided
     if (!organizationId) {
@@ -111,10 +123,32 @@ async function updateOrganizationPlatform(req, res, next) {
         permissions,
         organization.permissions,
       )
+    if (securityLevel !== undefined) {
+      if (!SECURITY_LEVELS.checkValue(securityLevel)) {
+        throw new OrganizationUnsupportedMediaType(
+          "Invalid securityLevel value. Allowed values: 0, 1, 2",
+        )
+      }
+      organization.securityLevel = securityLevel
+    }
 
-    if (matchingMail && matchingMail.includes("@")) {
-      if (matchingMail.includes("@")) organization.matchingMail = matchingMail
-      else next(new OrganizationUnsupportedMediaType("Not an email"))
+    if (matchingMail !== undefined) {
+      if (typeof matchingMail !== "string") {
+        throw new OrganizationUnsupportedMediaType(
+          "matchingMail must be a string",
+        )
+      }
+      const trimmedMail = matchingMail.trim()
+      if (trimmedMail === "") {
+        // empty value clears the matching criteria
+        organization.matchingMail = ""
+      } else if (trimmedMail.includes("@")) {
+        organization.matchingMail = trimmedMail
+      } else {
+        throw new OrganizationUnsupportedMediaType(
+          "matchingMail is not a valid email",
+        )
+      }
     }
 
     // Update organization in the database
@@ -141,10 +175,20 @@ async function inviteMatchingMail(req, res, next) {
     }
     organization = organization[0]
 
+    const matchingMail =
+      typeof organization.matchingMail === "string"
+        ? organization.matchingMail.trim()
+        : ""
+    if (!matchingMail.includes("@")) {
+      throw new OrganizationError(
+        "A matching email is required to invite users",
+      )
+    }
+
     // we search user with the same email as the matchingMail
     // we add them if they are not in the organization
     const users = await model.users.listAllUsers({
-      email: organization.matchingMail,
+      email: matchingMail,
     })
 
     users.list.forEach(async (user) => {

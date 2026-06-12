@@ -1,0 +1,248 @@
+{
+  "/api/conversations/{conversationId}/generations": {
+    "get": {
+      "tags": ["conversations member"],
+      "summary": "List the LLM generations of a conversation for a service",
+      "description": "Completed generations whose job no longer exists on the LLM gateway are removed from the list.",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ConversationId"
+        },
+        {
+          "in": "query",
+          "name": "serviceId",
+          "required": true,
+          "description": "Service for which generations are listed",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "generations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "generationId": {
+                          "type": "string"
+                        },
+                        "jobId": {
+                          "type": "string"
+                        },
+                        "createdAt": {
+                          "type": "string"
+                        },
+                        "serviceId": {
+                          "type": "string"
+                        },
+                        "serviceName": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string"
+                        },
+                        "isCurrent": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "post": {
+      "tags": ["conversations member"],
+      "summary": "Record a new LLM generation for a conversation",
+      "description": "Previous generations of the same service are archived, the new one becomes current.",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ConversationId"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "serviceId": {
+                  "type": "string"
+                },
+                "jobId": {
+                  "type": "string"
+                },
+                "serviceName": {
+                  "type": "string"
+                }
+              },
+              "required": ["serviceId", "jobId"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Created",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "generation": {
+                    "type": "object",
+                    "properties": {
+                      "generationId": {
+                        "type": "string"
+                      },
+                      "jobId": {
+                        "type": "string"
+                      },
+                      "createdAt": {
+                        "type": "string"
+                      },
+                      "serviceId": {
+                        "type": "string"
+                      },
+                      "serviceName": {
+                        "type": "string"
+                      },
+                      "status": {
+                        "type": "string"
+                      },
+                      "isCurrent": {
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/conversations/{conversationId}/generations/{generationId}": {
+    "get": {
+      "tags": ["conversations member"],
+      "summary": "Get a generation by ID",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ConversationId"
+        },
+        {
+          "in": "path",
+          "name": "generationId",
+          "type": "string",
+          "required": true,
+          "description": "Generation ID"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "generation": {
+                    "type": "object",
+                    "properties": {
+                      "generationId": {
+                        "type": "string"
+                      },
+                      "jobId": {
+                        "type": "string"
+                      },
+                      "createdAt": {
+                        "type": "string"
+                      },
+                      "serviceId": {
+                        "type": "string"
+                      },
+                      "serviceName": {
+                        "type": "string"
+                      },
+                      "status": {
+                        "type": "string"
+                      },
+                      "isCurrent": {
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "delete": {
+      "tags": ["conversations member"],
+      "summary": "Delete a generation",
+      "description": "The associated job is also deleted on the LLM gateway. If the deleted generation was the current one, the most recent remaining generation becomes current.",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ConversationId"
+        },
+        {
+          "in": "path",
+          "name": "generationId",
+          "type": "string",
+          "required": true,
+          "description": "Generation ID"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "example": {
+                "status": "success"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  }
+}

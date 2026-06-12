@@ -1,0 +1,11 @@
+{
+  "SecurityLevel": {
+    "in": "query",
+    "name": "securityLevel",
+    "required": false,
+    "description": "Filter transcription services by security level. 0 = Publicly available, 1 = Commission use, 2 = Sensitive non-classified. Services without security_level are treated as 0.",
+    "schema": {
+      "$ref": "#/components/schemas/SecurityLevel"
+    }
+  }
+}

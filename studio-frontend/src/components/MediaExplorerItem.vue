@@ -222,6 +222,7 @@ export default {
   computed: {
     ...mapGetters("organizations", {
       currentOrganizationUsers: "getCurrentOrganizationUsers",
+      currentOrganizationAllUsers: "getCurrentOrganizationAllUsers",
       currentOrganization: "getCurrentOrganization",
     }),
 
@@ -339,7 +340,13 @@ export default {
         }
       }
 
-      const userList = this.currentOrganizationUsers
+      // Look up the owner in the M2M-augmented list first so an API key
+      // (used by automated services like meeting recorders) shows its real
+      // name and avatar. Fall back to the regular members list when the
+      // augmented one has not been loaded yet.
+      const augmented = this.currentOrganizationAllUsers
+      const fallback = this.currentOrganizationUsers
+      const userList = augmented.length > 0 ? augmented : fallback
       const owner = userList.find((u) => u._id == this.media.owner)
       if (owner) {
         return {
@@ -387,7 +394,9 @@ export default {
 
     toggleSelection() {
       if (this.isSelected) {
-        const remaining = this.selectedMediaIds.filter((id) => id !== this.media._id)
+        const remaining = this.selectedMediaIds.filter(
+          (id) => id !== this.media._id,
+        )
         this.$emit("update:selectedMediaIds", remaining)
       } else {
         this.$emit("update:selectedMediaIds", [

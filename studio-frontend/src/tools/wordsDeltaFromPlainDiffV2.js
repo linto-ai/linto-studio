@@ -8,7 +8,7 @@ export function wordsDeltafromPlainDiff(
   oldWords,
   plainDiff,
   syllabic,
-  wordsToSkip = 0
+  wordsToSkip = 0,
 ) {
   if (plainDiff.length == 0) {
     return []
@@ -60,7 +60,7 @@ export function wordsDeltafromPlainDiff(
         newWords,
         numberOfRetainAtTheBeginning + numberOfAddition - 1,
         currentChange.count,
-        syllabic
+        syllabic,
       )
       numberOfAddition += currentChange.count
     }
@@ -69,7 +69,7 @@ export function wordsDeltafromPlainDiff(
         oldWordsWithoutEmpty,
         numberOfRetainAtTheBeginning + numberOfDeletion - 1, // + empty words
         currentChange.count,
-        syllabic
+        syllabic,
       )
       numberOfDeletion += currentChange.count
     }
@@ -89,14 +89,14 @@ export function wordsDeltafromPlainDiff(
   } = numberOfemptyWordBetween(
     oldWords,
     numberOfRetainAtTheBeginning - 1,
-    numberOfRetainAtTheBeginning + numberOfDeletion // we don't remove one because we want to count also empty words after the deletion
+    numberOfRetainAtTheBeginning + numberOfDeletion, // we don't remove one because we want to count also empty words after the deletion
   )
 
   // empty words from the beginning of the text to the last deletion
   const numberOfEmptyWordBeforeLastDeletion = numberOfemptyWordBetween(
     oldWords,
     0,
-    numberOfRetainAtTheBeginning + numberOfDeletion - 1
+    numberOfRetainAtTheBeginning + numberOfDeletion - 1,
   ).numberOfEmptyWords
 
   // -----------------------------------------------------------------------
@@ -108,18 +108,18 @@ export function wordsDeltafromPlainDiff(
   const previousWordsWithNeededSyllabs = getPreviousWordsWithNeededSyllabs(
     oldWordsWithoutEmpty,
     numberOfRetainAtTheBeginning - 1,
-    syllabic
+    syllabic,
   )
   const nextWordsWithNeededSyllabs = getNextWordsWithNeededSyllabs(
     oldWordsWithoutEmpty,
     numberOfRetainAtTheBeginning + numberOfDeletion,
-    syllabic
+    syllabic,
   )
 
   let startTimestamp = computeStartTimestamp(
     oldWordsWithoutEmpty,
     numberOfRetainAtTheBeginning,
-    previousWordsWithNeededSyllabs.words.length
+    previousWordsWithNeededSyllabs.words.length,
   )
 
   let endTimestamp = computeEndTimestamp(
@@ -129,7 +129,7 @@ export function wordsDeltafromPlainDiff(
     numberOfEmptyWords +
       numberOfemptyWordBetween(oldWords, 0, numberOfRetainAtTheBeginning - 1)
         .numberOfEmptyWords,
-    nextWordsWithNeededSyllabs.words.length
+    nextWordsWithNeededSyllabs.words.length,
   )
 
   // TODO: we need to be careful if there is music so currentChange.stime is not the same as changeBefore.etime, maybe stop the loop before. And redo the same after the music.
@@ -146,7 +146,7 @@ export function wordsDeltafromPlainDiff(
   const emptyWordsInRetain = numberOfemptyWordBetween(
     oldWords,
     0,
-    retainWithoutEmptyWords - 1
+    retainWithoutEmptyWords - 1,
   )
 
   return [
@@ -168,27 +168,27 @@ export function wordsDeltafromPlainDiff(
       previousWordsWithNeededSyllabs.words.concat(
         newWords.slice(
           numberOfRetainAtTheBeginning,
-          numberOfRetainAtTheBeginning + numberOfAddition
+          numberOfRetainAtTheBeginning + numberOfAddition,
         ),
-        nextWordsWithNeededSyllabs.words
+        nextWordsWithNeededSyllabs.words,
       ),
-      syllabic
+      syllabic,
     ),
     ...wordsDeltafromPlainDiff(
       newWords.slice(
         numberOfRetainAtTheBeginning +
           numberOfAddition +
-          nextWordsWithNeededSyllabs.words.length
+          nextWordsWithNeededSyllabs.words.length,
       ),
       oldWords.slice(
         numberOfRetainAtTheBeginning +
           numberOfDeletion +
           numberOfEmptyWordBeforeLastDeletion +
-          nextWordsWithNeededSyllabs.words.length
+          nextWordsWithNeededSyllabs.words.length,
       ),
       editablePlainDiff,
       syllabic,
-      nextWordsWithNeededSyllabs.words.length // these words are already in the diff so we need to skip them
+      nextWordsWithNeededSyllabs.words.length, // these words are already in the diff so we need to skip them
     ),
   ]
 }
@@ -196,7 +196,7 @@ export function wordsDeltafromPlainDiff(
 function computeStartTimestamp(
   oldWordsWithoutEmpty,
   numberOfRetainAtTheBeginning,
-  numberOfpreviousMissingSyllabsWords
+  numberOfpreviousMissingSyllabsWords,
 ) {
   if (numberOfRetainAtTheBeginning - numberOfpreviousMissingSyllabsWords > 0) {
     return oldWordsWithoutEmpty[
@@ -212,7 +212,7 @@ function computeEndTimestamp(
   numberOfRetainAtTheBeginning,
   numberOfDeletion,
   numberOfEmptyWords,
-  numberOfNextMissingSyllabsWords
+  numberOfNextMissingSyllabsWords,
 ) {
   if (
     numberOfRetainAtTheBeginning +
@@ -240,7 +240,7 @@ function recomputeTimestamps(
   startTimestamp,
   endTimestamp,
   wordsToAdd,
-  syllabic
+  syllabic,
 ) {
   // Pour l'instant on va mettre pas de timestamp pour les mots qui tiennent pas,
   // une autre solution serait de diviser avec les mots autour, en retenant le timestamp "original" des mots qu'on réduit
@@ -257,10 +257,10 @@ function recomputeTimestamps(
             endTimestamp,
             wordsToAdd,
             simplifyNumber(
-              (endTimestamp - startTimestamp) / numberOfSyllabsToRemove
+              (endTimestamp - startTimestamp) / numberOfSyllabsToRemove,
             ),
             numberOfSyllabsToRemove,
-            syllabic
+            syllabic,
           ),
         },
       ]
@@ -278,7 +278,7 @@ function recomputeTimestamps(
       ]
     case numberOfSyllabsToRemove < numberOfSyllabsAdded:
       let timeForASyllab = simplifyNumber(
-        (endTimestamp - startTimestamp) / numberOfSyllabsToRemove
+        (endTimestamp - startTimestamp) / numberOfSyllabsToRemove,
       )
       return [
         {
@@ -291,7 +291,7 @@ function recomputeTimestamps(
             wordsToAdd,
             timeForASyllab,
             numberOfSyllabsToRemove,
-            syllabic
+            syllabic,
           ),
         },
       ]
@@ -307,7 +307,7 @@ function divideTimestamps(
   wordsToAdd,
   timeForASyllab,
   numberOfSyllabs,
-  syllabic
+  syllabic,
 ) {
   let insert = []
   let index = 0
@@ -328,7 +328,7 @@ function divideTimestamps(
     if (numberOfSyllabs > 0) {
       currentEndTime = simplifyNumber(
         startTimestamp +
-          simplifyNumber(numberOfsyllabsInTheWord * timeForASyllab)
+          simplifyNumber(numberOfsyllabsInTheWord * timeForASyllab),
       )
     } else {
       currentEndTime = endTimestamp
@@ -399,7 +399,9 @@ function getNumberOfSyllabs(words, startIndex, numberOfWords, syllabic) {
 }
 
 function generateID() {
-  return (typeof process !== "undefined" && process.env && process.env["TEST"]) ? "id" : uuidv4()
+  return typeof process !== "undefined" && process.env && process.env["TEST"]
+    ? "id"
+    : uuidv4()
 }
 
 function simplifyNumber(number) {

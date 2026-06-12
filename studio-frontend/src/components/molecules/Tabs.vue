@@ -55,6 +55,10 @@
       </PopoverList>
 
       <div class="flex1 tab" v-if="secondary"></div>
+
+      <div v-if="$slots.end" class="tabs__end">
+        <slot name="end" />
+      </div>
     </div>
   </div>
 </template>
@@ -144,3 +148,18 @@ export default {
   },
 }
 </script>
+
+<style lang="scss" scoped>
+// End-of-bar action zone: pushed right, vertically centered, and visually
+// separated from the navigation tabs so it reads as an action, not a tab.
+.tabs__end {
+  margin-left: auto;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-left: 0.75rem;
+  margin-bottom: 0.25rem;
+  border-left: 1px solid var(--neutral-20);
+}
+</style>

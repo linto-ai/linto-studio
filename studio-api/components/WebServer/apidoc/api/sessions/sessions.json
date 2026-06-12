@@ -5,12 +5,7 @@
       "summary": "Purge terminated sessions or all sessions if force is true",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
           "in": "query",
@@ -35,12 +30,7 @@
       "summary": "Get all sessions",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
           "in": "query",
@@ -159,12 +149,7 @@
       "summary": "Create a new session",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         }
       ],
       "requestBody": {
@@ -190,19 +175,13 @@
       }
     }
   },
-
-  "/api/organizations/{organizationId}/quickMeeting": {
+  "/api/organizations/{organizationId}/quickMeeting/": {
     "get": {
       "tags": ["sessions"],
-      "summary": "Get the user quick meeting",
+      "summary": "List the quick meeting sessions of the current user in the organization",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
           "in": "query",
@@ -318,15 +297,10 @@
     },
     "post": {
       "tags": ["sessions"],
-      "summary": "Create a user quick meeting",
+      "summary": "Create a quick meeting session in the organization",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         }
       ],
       "requestBody": {
@@ -355,15 +329,10 @@
   "/api/organizations/{organizationId}/quickMeeting/{id}": {
     "delete": {
       "tags": ["sessions"],
-      "summary": "Delete the user quick meeting session",
+      "summary": "Delete a quick meeting session",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
           "name": "id",
@@ -395,19 +364,13 @@
       }
     }
   },
-
   "/api/organizations/{organizationId}/sessions/{id}": {
     "get": {
       "tags": ["sessions"],
       "summary": "Get a session by ID",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
           "name": "id",
@@ -441,12 +404,7 @@
       "summary": "Update a session and its channels",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
           "name": "id",
@@ -486,12 +444,7 @@
       "summary": "Update a session",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
           "name": "id",
@@ -531,12 +484,7 @@
       "summary": "Delete a session by ID",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
           "name": "id",
@@ -574,12 +522,7 @@
       "summary": "Stop a session by ID",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
           "name": "id",
@@ -618,18 +561,13 @@
       }
     }
   },
-  "/api/organizations/{organizationId}/sessions/{id}/delete-captions": {
-    "delete": {
+  "/api/organizations/{organizationId}/sessions/{id}/pause": {
+    "put": {
       "tags": ["sessions"],
-      "summary": "Delete captions of a session by ID",
+      "summary": "Pause a session by ID",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
           "name": "id",
@@ -639,30 +577,6 @@
           "schema": {
             "type": "string",
             "format": "uuid"
-          }
-        },
-        {
-          "in": "query",
-          "name": "start_time",
-          "description": "Delete captions from this time",
-          "required": false,
-          "schema": {
-            "type": "string",
-            "format": "time",
-            "example": "00:00:00",
-            "default": null
-          }
-        },
-        {
-          "in": "query",
-          "name": "end_time",
-          "description": "Delete captions to this time",
-          "required": false,
-          "schema": {
-            "type": "string",
-            "format": "time",
-            "example": "00:05:00",
-            "default": null
           }
         }
       ],
@@ -679,18 +593,235 @@
         },
         "404": {
           "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/sessions/{id}/resume": {
+    "put": {
+      "tags": ["sessions"],
+      "summary": "Resume a paused session by ID",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
         },
-        "400": {
-          "description": "Bad Request",
+        {
+          "name": "id",
+          "in": "path",
+          "description": "Session ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The session",
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "message": {
-                    "type": "string",
-                    "example": "Invalid start_time format. Expected HH:mm:ss or null"
-                  }
+                "$ref": "#/components/schemas/SessionAnswerWithCaptions"
+              }
+            }
+          }
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/sessions/{id}/clear": {
+    "put": {
+      "tags": ["sessions"],
+      "summary": "Clear the closed captions of a session by ID",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        },
+        {
+          "name": "id",
+          "in": "path",
+          "description": "Session ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The session",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionAnswerWithCaptions"
+              }
+            }
+          }
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/sessions/{id}/channels/{channelId}": {
+    "get": {
+      "tags": ["sessions"],
+      "summary": "Get a channel of a session by ID",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        },
+        {
+          "name": "id",
+          "in": "path",
+          "description": "Session ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "channelId",
+          "in": "path",
+          "description": "Channel ID",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The channel",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChannelAnswerWithCaptions"
+              }
+            }
+          }
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/sessions/public/{id}": {
+    "get": {
+      "tags": ["sessions"],
+      "summary": "Get a public session by ID or alias, without authentication. Private content is removed from the answer.",
+      "security": [],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "description": "Session ID or alias",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The public session",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionAnswerWithCaptions"
+              }
+            }
+          }
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/sessions/public/{id}/channels/{channelId}": {
+    "get": {
+      "tags": ["sessions"],
+      "summary": "Get a channel of a public session by ID, without authentication. Private content is removed from the answer.",
+      "security": [],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "description": "Session ID or alias",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "channelId",
+          "in": "path",
+          "description": "Channel ID",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The public channel",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChannelAnswerWithCaptions"
+              }
+            }
+          }
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/users/self/quickMeeting/": {
+    "get": {
+      "tags": ["sessions"],
+      "summary": "Get the quick meeting sessions owned by the current user",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "limit",
+          "description": "Maximum number of sessions in the answer",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "in": "query",
+          "name": "offset",
+          "description": "Offset from the start the number of sessions",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The list of sessions",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SessionPaginationAnswer"
                 }
               }
             }

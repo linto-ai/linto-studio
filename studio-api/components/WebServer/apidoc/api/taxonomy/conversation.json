@@ -1,38 +1,23 @@
 {
   "/api/conversations/{conversationId}/tags/{tagId}": {
-    "patch": {
+    "post": {
       "tags": ["conversations taxonomy"],
-      "summary": "Add a tag to a conversation id",
+      "summary": "Add an existing tag to a conversation",
       "parameters": [
         {
-          "name": "conversationId",
-          "in": "path",
-          "description": "The conversation id",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
-          "name": "tagId",
-          "in": "path",
-          "description": "The tag id",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/TagId"
         }
       ],
       "responses": {
-        "200": {
-          "description": "OK",
+        "201": {
+          "description": "Tag added to the conversation",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "description": "Tag added to conversation"
-                }
-              },
-              "example": {
-                "status": "OK"
+              "schema": {
+                "$ref": "#/components/schemas/Tag"
               }
             }
           }
@@ -43,8 +28,41 @@
         "401": {
           "$ref": "#/components/responses/Unauthorized"
         },
-        "409": {
-          "$ref": "#/components/responses/Conflict"
+        "415": {
+          "$ref": "#/components/responses/UnsupportedMediaType"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "patch": {
+      "tags": ["conversations taxonomy"],
+      "summary": "Add an existing tag to a conversation",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ConversationId"
+        },
+        {
+          "$ref": "#/components/parameters/TagId"
+        }
+      ],
+      "responses": {
+        "201": {
+          "description": "Tag added to the conversation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Tag"
+              }
+            }
+          }
+        },
+        "304": {
+          "$ref": "#/components/responses/NotModified"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
         },
         "415": {
           "$ref": "#/components/responses/UnsupportedMediaType"
@@ -56,21 +74,13 @@
     },
     "delete": {
       "tags": ["conversations taxonomy"],
-      "summary": "Delete a tag to a conversation id",
+      "summary": "Remove a tag from a conversation",
       "parameters": [
         {
-          "name": "conversationId",
-          "in": "path",
-          "description": "The conversation id",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
-          "name": "tagId",
-          "in": "path",
-          "description": "The tag id",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/TagId"
         }
       ],
       "responses": {
@@ -78,11 +88,13 @@
           "description": "OK",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "description": "Tag deleted from conversation"
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "description": "Tag deleted from conversation"
+                  }
                 }
               },
               "example": {
@@ -107,39 +119,94 @@
     }
   },
   "/api/conversations/{conversationId}/tags": {
-    "post": {
+    "patch": {
       "tags": ["conversations taxonomy"],
-      "summary": "Add a tag to a conversation id",
+      "summary": "Create a tag and add it to a conversation",
       "parameters": [
         {
-          "name": "conversationId",
-          "in": "path",
-          "description": "The conversation id",
-          "required": true,
-          "type": "string"
-        },
-        {
-          "name": "tagId",
-          "in": "path",
-          "description": "The tag id",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/ConversationId"
         }
       ],
-      "responses": {
-        "200": {
-          "description": "OK",
-          "content": {
-            "application/json": {
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
               "type": "object",
               "properties": {
-                "status": {
+                "name": {
                   "type": "string",
-                  "description": "Tag added to conversation"
+                  "description": "Name of the tag to create and add"
+                },
+                "categoryId": {
+                  "type": "string",
+                  "description": "Category in which the tag is created"
                 }
               },
-              "example": {
-                "status": "OK"
+              "required": ["name", "categoryId"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Tag added to the conversation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Tag"
+              }
+            }
+          }
+        },
+        "304": {
+          "$ref": "#/components/responses/NotModified"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "415": {
+          "$ref": "#/components/responses/UnsupportedMediaType"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "post": {
+      "tags": ["conversations taxonomy"],
+      "summary": "Create a tag and add it to a conversation",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ConversationId"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the tag to create and add"
+                },
+                "categoryId": {
+                  "type": "string",
+                  "description": "Category in which the tag is created"
+                }
+              },
+              "required": ["name", "categoryId"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Tag added to the conversation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Tag"
               }
             }
           }

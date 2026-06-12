@@ -23,12 +23,15 @@
         required />
     </section>
 
-    <SecurityLevelSelector v-if="enableSecurityLevel" v-model="securityLevel" />
+    <SecurityLevelSelector
+      v-if="enableSecurityLevel"
+      v-model="securityLevel"
+      :minLevel="organizationSecurityLevel" />
 
     <QuickSessionSettings
       :transcriberProfiles="transcriberProfiles"
       :transcriptionServices="transcriptionServices"
-      :securityLevel="securityLevel"
+      :securityLevel="effectiveSecurityLevel"
       :field="quickSessionSettingsField"
       source="visio"
       v-model="quickSessionSettingsField.value" />
@@ -53,6 +56,7 @@ import { bus } from "@/main.js"
 import EMPTY_FIELD from "@/const/emptyField.js"
 import { testVisioUrl } from "@/tools/fields/testVisioUrl"
 import { formsMixin } from "@/mixins/forms.js"
+import { organizationSecurityLevelMixin } from "@/mixins/organizationSecurityLevel.js"
 import generateServiceConfig from "@/tools/generateServiceConfig"
 import {
   apiCreateQuickSession,
@@ -68,7 +72,7 @@ import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
 import { getEnv } from "@/tools/getEnv"
 
 export default {
-  mixins: [formsMixin],
+  mixins: [formsMixin, organizationSecurityLevelMixin],
   props: {
     transcriberProfiles: {
       type: Array,

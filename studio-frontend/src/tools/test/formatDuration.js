@@ -1,5 +1,9 @@
 import test from "ava"
-import { formatDuration, formatTime, formatDateTime } from "../formatDuration.js"
+import {
+  formatDuration,
+  formatTime,
+  formatDateTime,
+} from "../formatDuration.js"
 
 // formatDuration tests
 test("formatDuration returns null for null input", (t) => {
@@ -60,7 +64,14 @@ test("formatDuration compact showSeconds:false with hours", (t) => {
 })
 
 test("formatDuration compact showSeconds:false with showZeroHours", (t) => {
-  t.is(formatDuration(125, { compact: true, showZeroHours: true, showSeconds: false }), "00:02")
+  t.is(
+    formatDuration(125, {
+      compact: true,
+      showZeroHours: true,
+      showSeconds: false,
+    }),
+    "00:02",
+  )
 })
 
 test("formatDuration compact showSeconds:false minutes only", (t) => {

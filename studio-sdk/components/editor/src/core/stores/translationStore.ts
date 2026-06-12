@@ -16,7 +16,10 @@ interface TranslationInit {
   turns: Turn[]
 }
 
-type Emit = <K extends keyof EditorEventMap>(event: K, payload: EditorEventMap[K]) => void
+type Emit = <K extends keyof EditorEventMap>(
+  event: K,
+  payload: EditorEventMap[K],
+) => void
 type SpeakersEnsure = (speakerId: string | null, name?: string) => void
 
 export function createTranslationStore(
@@ -100,5 +103,27 @@ export function createTranslationStore(
     return indexMap.has(turnId)
   }
 
-  return { id, languages, isSource, audio, turns, addTurn, prependTurns, updateTurn, removeTurn, updateWords, setTurns, replaceTurns, updateOrCreateTurnSilent, hasTurn }
+  function getTurn(turnId: string): Turn | undefined {
+    const index = indexMap.get(turnId)
+    if (index === undefined) return undefined
+    return turns.value[index]
+  }
+
+  return {
+    id,
+    languages,
+    isSource,
+    audio,
+    turns,
+    addTurn,
+    prependTurns,
+    updateTurn,
+    removeTurn,
+    updateWords,
+    setTurns,
+    replaceTurns,
+    updateOrCreateTurnSilent,
+    hasTurn,
+    getTurn,
+  }
 }

@@ -8,7 +8,7 @@ export default {
     },
   },
   render(h, { props }) {
-    return props.nodes;
+    return props.nodes
   },
-};
-</script> 
+}
+</script>

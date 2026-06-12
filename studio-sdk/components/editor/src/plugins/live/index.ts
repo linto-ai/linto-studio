@@ -11,6 +11,8 @@ import type {
   LiveTranslationEvent,
 } from "./types"
 import type { Turn } from "../../types/editor"
+import { CROSS_TRANSLATION_ID } from "../../core/stores"
+import { isSameLanguage } from "../../utils/isSameLanguage"
 
 export type { LivePartialEvent, LiveFinalEvent, LiveTranslationEvent }
 export type { LivePluginApi }
@@ -27,12 +29,13 @@ function finalEventToSourceTurn(event: LiveFinalEvent): Turn {
     startDate: event.startDate,
     endDate: event.endDate,
     language: event.language,
+    sourceLanguage: event.language,
   }
 }
 
 function finalEventToTranslationTurn(
   event: LiveFinalEvent,
-  tr: { text: string; language: string },
+  tr: { text: string; language: string; sourceLanguage: string },
 ): Turn {
   return {
     id: event.turnId,
@@ -44,6 +47,7 @@ function finalEventToTranslationTurn(
     startDate: event.startDate,
     endDate: event.endDate,
     language: tr.language,
+    sourceLanguage: tr.sourceLanguage,
   }
 }
 
@@ -54,30 +58,39 @@ export function createLivePlugin(): EditorPlugin {
     install(core: EditorStore) {
       const partial = shallowRef<string | null>(null)
       const hasLiveUpdate = ref(false)
+      // Segment of the last original partial. Cross mode shows each segment in
+      // the *other* language, so we only display a translated partial whose
+      // segment matches this one.
+      let lastOriginalPartialEvent: LivePartialEvent | null = null
 
       hasLiveUpdate.value = true
 
       function clearPartial(): void {
         // shallowRef detects the change on its own, no triggerRef needed
         partial.value = null
+        lastOriginalPartialEvent = null
+      }
+
+      function isTranslationTrackFor(
+        active: { languages: string[]; isSource: boolean },
+        language: string,
+      ): boolean {
+        if (active.isSource) return false
+        return active.languages.some((l) => isSameLanguage(l, language))
       }
 
       function onPartial(event: LivePartialEvent, channelId: string): void {
         if (core.activeChannelId.value !== channelId) return
 
+        lastOriginalPartialEvent = event
+
         const activeTranslation =
           core.activeChannel.value.activeTranslation.value
 
-        if (activeTranslation.isSource) {
-          if (event.text == null) return
+        // Only the original (source-language) partial flows through here.
+        // Translated partials arrive via onTranslation, one per translation.
+        if (activeTranslation.isSource && event.text != null) {
           partial.value = event.text
-        } else if (event.translations) {
-          const match = event.translations.find(
-            (t) => t.translationId === activeTranslation.id,
-          )
-          partial.value = match?.text ?? null
-        } else {
-          return
         }
       }
 
@@ -125,7 +138,10 @@ export function createLivePlugin(): EditorPlugin {
             if (trStore)
               updateOrCreateTurn(
                 trStore,
-                finalEventToTranslationTurn(event, tr),
+                finalEventToTranslationTurn(event, {
+                  ...tr,
+                  sourceLanguage: event.language,
+                }),
               )
           }
         }
@@ -177,7 +193,12 @@ export function createLivePlugin(): EditorPlugin {
               list = []
               translationTurns.set(tr.translationId, list)
             }
-            list.push(finalEventToTranslationTurn(event, tr))
+            list.push(
+              finalEventToTranslationTurn(event, {
+                ...tr,
+                sourceLanguage: event.language,
+              }),
+            )
           }
         }
         for (const [translationId, turns] of translationTurns) {
@@ -196,27 +217,42 @@ export function createLivePlugin(): EditorPlugin {
           core.activeChannel.value.activeTranslation.value
         const channel = core.activeChannel.value
 
-        if (
-          !_event.final &&
-          activeTranslation.languages.includes(_event.language)
-        ) {
-          partial.value = _event.text
-        } else if (_event.final) {
-          const trStore = channel.translations.get(_event.language)
-          if (trStore) {
-            const turn = finalEventToTranslationTurn(
-              { ..._event, words: [] },
-              _event,
-            )
-            if (trStore === activeTranslation) {
-              updateOrCreateTurn(trStore, turn)
-            } else {
-              trStore.updateOrCreateTurnSilent(turn)
+        if (!_event.final) {
+          if (activeTranslation.id === CROSS_TRANSLATION_ID) {
+            if (
+              _event.turnId === lastOriginalPartialEvent?.turnId &&
+              !isSameLanguage(_event.language, lastOriginalPartialEvent?.language)
+            ) {
+              partial.value = _event.text
             }
+          } else if (isTranslationTrackFor(activeTranslation, _event.language)) {
+            partial.value = _event.text
           }
-          if (activeTranslation.languages.includes(_event.language)) {
-            immediateClearPartial()
+          return
+        }
+
+        const trStore = channel.translations.get(_event.language)
+        if (trStore) {
+          const turn = finalEventToTranslationTurn(
+            { ..._event, words: [] },
+            _event,
+          )
+          // Emit (non-silent) when the track is visible: either it's the active
+          // translation, or cross is active and relays this track's events.
+          if (
+            trStore === activeTranslation ||
+            activeTranslation.id === CROSS_TRANSLATION_ID
+          ) {
+            updateOrCreateTurn(trStore, turn)
+          } else {
+            trStore.updateOrCreateTurnSilent(turn)
           }
+        }
+        if (
+          isTranslationTrackFor(activeTranslation, _event.language) ||
+          activeTranslation.id === CROSS_TRANSLATION_ID
+        ) {
+          immediateClearPartial()
         }
       }
 

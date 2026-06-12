@@ -123,6 +123,7 @@
               }"
               role="option"
               :aria-selected="isSelected(item)"
+              @mouseenter="highlightedIndex = index"
               @click.stop="onSelectionItemClick(item, $event)">
               <Checkbox
                 :id="getCheckboxId(index)"
@@ -154,7 +155,8 @@
               :id="getItemId(index)"
               class="popover-list__item"
               role="option"
-              :aria-selected="isSelected(item)">
+              :aria-selected="isSelected(item)"
+              @mouseenter="highlightedIndex = index">
               <Button
                 :icon="itemIcon(item)"
                 :icon-position="item.iconPosition || 'left'"
@@ -326,6 +328,14 @@ export default {
      * Selected items to display at top (useful in async mode to show current selection)
      */
     selectedItems: {
+      type: Array,
+      default: () => [],
+    },
+    /**
+     * Items always rendered at the top of the list, regardless of the search
+     * query (e.g. a "global"/"none" entry). Same shape as `items`.
+     */
+    pinnedItems: {
       type: Array,
       default: () => [],
     },
@@ -605,8 +615,8 @@ export default {
      */
     allAvailableItems() {
       if (this.asyncSearch) {
-        // In async mode, combine selectedItems with asyncItems (avoid duplicates)
-        const combined = [...this.selectedItems]
+        // In async mode, combine pinned + selectedItems with asyncItems (avoid duplicates)
+        const combined = [...this.pinnedItems, ...this.selectedItems]
         for (const item of this.asyncItems) {
           if (!combined.some((i) => this.isSame(i.id ?? i.value, item))) {
             combined.push(item)
@@ -614,7 +624,7 @@ export default {
         }
         return combined
       }
-      return this.items
+      return [...this.pinnedItems, ...this.items]
     },
     labelButton() {
       const item = this.allAvailableItems.find((item) =>
@@ -637,21 +647,31 @@ export default {
       return null
     },
     filteredItems() {
+      let base
       // Async search mode: use asyncItems directly
       if (this.asyncSearch) {
-        return this.asyncItems
+        base = this.asyncItems
+      } else if (!this.searchable || !this.searchQuery.trim()) {
+        // Static mode with no search or empty query
+        base = this.items
+      } else {
+        // Static mode with local filtering
+        const query = this.searchQuery.toLowerCase().trim()
+        base = this.items.filter((item) => {
+          const name = (item.name || item.text || "").toLowerCase()
+          const description = (item.description || "").toLowerCase()
+          return name.includes(query) || description.includes(query)
+        })
       }
-      // Static mode with no search or empty query
-      if (!this.searchable || !this.searchQuery.trim()) {
-        return this.items
+      // Pinned items always on top, regardless of the search query
+      if (this.pinnedItems.length) {
+        const rest = base.filter(
+          (item) =>
+            !this.pinnedItems.some((p) => this.isSame(p.id ?? p.value, item)),
+        )
+        return [...this.pinnedItems, ...rest]
       }
-      // Static mode with local filtering
-      const query = this.searchQuery.toLowerCase().trim()
-      return this.items.filter((item) => {
-        const name = (item.name || item.text || "").toLowerCase()
-        const description = (item.description || "").toLowerCase()
-        return name.includes(query) || description.includes(query)
-      })
+      return base
     },
     allFilteredSelected() {
       if (this.filteredItems.length === 0) return false

@@ -5,17 +5,12 @@
       "summary": "Generate subtitle for a conversation",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an conversation"
+          "$ref": "#/components/parameters/ConversationId"
         }
       ],
       "requestBody": {
         "content": {
-          "multipart/form-data": {
+          "application/json": {
             "schema": {
               "type": "object",
               "properties": {
@@ -38,9 +33,9 @@
                   "description": "Version name of the subtitle",
                   "example": "conv-1.0"
                 }
-              }
-            },
-            "required": ["version"]
+              },
+              "required": ["version"]
+            }
           }
         }
       },
@@ -66,15 +61,10 @@
     },
     "get": {
       "tags": ["conversations subtitle member"],
-      "summary": "List all subtitle version from a conversation",
+      "summary": "List all subtitle versions of a conversation",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an conversation"
+          "$ref": "#/components/parameters/ConversationId"
         }
       ],
       "responses": {
@@ -105,15 +95,10 @@
     },
     "delete": {
       "tags": ["conversations subtitle member"],
-      "summary": "Delete subtitle",
+      "summary": "Delete subtitle versions of a conversation",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an conversation"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
           "in": "query",
@@ -129,11 +114,13 @@
           "description": "OK",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "description": "Information about the conversation processus"
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Information about the conversation processus"
+                  }
                 }
               },
               "example": {
@@ -154,23 +141,23 @@
   "/api/conversations/{conversationId}/subtitle/{subtitleId}": {
     "get": {
       "tags": ["conversations subtitle member"],
-      "summary": "Get the subtitle of the conversation",
+      "summary": "Get a subtitle version of the conversation",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an conversation"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
-          "in": "path",
-          "name": "subtitleId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for the subtitle"
+          "$ref": "#/components/parameters/SubtitleId"
+        },
+        {
+          "in": "query",
+          "name": "type",
+          "required": false,
+          "description": "Subtitle output format: srt or vtt file download, JSON object when omitted",
+          "schema": {
+            "type": "string",
+            "enum": ["srt", "vtt"]
+          }
         }
       ],
       "responses": {
@@ -182,7 +169,8 @@
                 "type": "object",
                 "$ref": "#/components/schemas/ConversationSubtitle"
               }
-            }
+            },
+            "text/plain": {}
           }
         },
         "401": {
@@ -195,23 +183,13 @@
     },
     "delete": {
       "tags": ["conversations subtitle member"],
-      "summary": "Delete the subtitle",
+      "summary": "Delete a subtitle version",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an conversation"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
-          "in": "path",
-          "name": "subtitleId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for the subtitle"
+          "$ref": "#/components/parameters/SubtitleId"
         }
       ],
       "responses": {
@@ -219,11 +197,13 @@
           "description": "OK",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "description": "Information about the conversation processus"
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Information about the conversation processus"
+                  }
                 }
               },
               "example": {
@@ -245,20 +225,10 @@
       "summary": "Update the subtitle of a conversation",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an conversation"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
-          "in": "path",
-          "name": "subtitleId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for the subtitle"
+          "$ref": "#/components/parameters/SubtitleId"
         }
       ],
       "requestBody": {
@@ -275,11 +245,13 @@
           "description": "OK",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "description": "Information about the conversation processus"
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Information about the conversation processus"
+                  }
                 }
               },
               "example": {
@@ -309,25 +281,15 @@
       "summary": "Copy the desired subtitle to a new version",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an conversation"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
-          "in": "path",
-          "name": "subtitleId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for the subtitle to copy"
+          "$ref": "#/components/parameters/SubtitleId"
         }
       ],
       "requestBody": {
         "content": {
-          "multipart/form-data": {
+          "application/json": {
             "schema": {
               "type": "object",
               "properties": {
@@ -335,9 +297,9 @@
                   "description": "Newer version name that will be created.",
                   "example": "conv-1.0"
                 }
-              }
-            },
-            "required": ["version"]
+              },
+              "required": ["version"]
+            }
           }
         }
       },
@@ -367,112 +329,16 @@
       }
     }
   },
-  "/api/conversations/{conversationId}/subtitle/{subtitleId}?type=srt": {
-    "get": {
-      "tags": ["conversations subtitle member"],
-      "summary": "Get the srt subtitle of the conversation",
-      "parameters": [
-        {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an conversation"
-        },
-        {
-          "in": "path",
-          "name": "subtitleId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for the subtitle"
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "OK",
-          "content": {
-            "text/plain": {
-              "schema": {
-                "type": "string",
-                "example": "1\n00:15:47,850 --> 00:15:53,730\nDe par le volume\n\n2\n00:15:53,730 --> 00:15:56,520\nle fait ..."
-              }
-            }
-          }
-        },
-        "401": {
-          "$ref": "#/components/responses/Unauthorized"
-        },
-        "404": {
-          "$ref": "#/components/responses/NotFound"
-        }
-      }
-    }
-  },
-  "/api/conversations/{conversationId}/subtitle/{subtitleId}?type=vtt": {
-    "get": {
-      "tags": ["conversations subtitle member"],
-      "summary": "Get the vtt subtitle of the conversation",
-      "parameters": [
-        {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an conversation"
-        },
-        {
-          "in": "path",
-          "name": "subtitleId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for the subtitle"
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "OK",
-          "content": {
-            "text/plain": {
-              "schema": {
-                "type": "string",
-                "example": "WEBVTT\n\n00:00:03.660 --> 00:00:04.650\n- Quand il y\n- a quelques mois,..."
-              }
-            }
-          }
-        },
-        "401": {
-          "$ref": "#/components/responses/Unauthorized"
-        },
-        "404": {
-          "$ref": "#/components/responses/NotFound"
-        }
-      }
-    }
-  },
   "/api/conversations/{conversationId}/subtitle/{subtitleId}/screen/{screenId}": {
     "delete": {
       "tags": ["conversations subtitle member"],
-      "summary": "Remove the screen id requested",
+      "summary": "Delete the requested screen from a subtitle",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an conversation"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
-          "in": "path",
-          "name": "subtitleId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for the subtitle"
+          "$ref": "#/components/parameters/SubtitleId"
         },
         {
           "in": "path",
@@ -497,23 +363,13 @@
     },
     "patch": {
       "tags": ["conversations subtitle member"],
-      "summary": "Update the screen id requested",
+      "summary": "Update the requested screen of a subtitle",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an conversation"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
-          "in": "path",
-          "name": "subtitleId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for the subtitle"
+          "$ref": "#/components/parameters/SubtitleId"
         },
         {
           "in": "path",
@@ -553,20 +409,10 @@
       "summary": "Add a screen after or before the selected screen id",
       "parameters": [
         {
-          "in": "path",
-          "name": "conversationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an conversation"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
-          "in": "path",
-          "name": "subtitleId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for the subtitle"
+          "$ref": "#/components/parameters/SubtitleId"
         },
         {
           "in": "path",
@@ -596,7 +442,20 @@
       },
       "responses": {
         "200": {
-          "description": "OK"
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "_id": {
+                    "type": "string",
+                    "description": "Id of the created screen"
+                  }
+                }
+              }
+            }
+          }
         },
         "401": {
           "$ref": "#/components/responses/Unauthorized"

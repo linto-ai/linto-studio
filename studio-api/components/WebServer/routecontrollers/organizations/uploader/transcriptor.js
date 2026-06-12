@@ -64,9 +64,21 @@ async function transcribeReq(req, res, next) {
 async function transcribe(isSingleFile, req, res, next) {
   try {
     const userId = req.payload.data.userId
-    requireParam(req.body.name, ConversationMetadataRequire, "name param is required")
-    requireParam(req.body.lang, ConversationMetadataRequire, "lang param is required")
-    requireParam(req.body.endpoint, ConversationMetadataRequire, "serviceEndpoint param is required")
+    requireParam(
+      req.body.name,
+      ConversationMetadataRequire,
+      "name param is required",
+    )
+    requireParam(
+      req.body.lang,
+      ConversationMetadataRequire,
+      "lang param is required",
+    )
+    requireParam(
+      req.body.endpoint,
+      ConversationMetadataRequire,
+      "serviceEndpoint param is required",
+    )
 
     req.body.membersRight = isNaN(req.body.membersRight)
       ? CONVERSATION_RIGHT.READ
@@ -89,6 +101,7 @@ async function transcribe(isSingleFile, req, res, next) {
     const orgExists = await model.organizations.getByIdAndUser(
       req.params.organizationId,
       userId,
+      { bypass: req.backofficeAccess },
     )
     if (orgExists.length !== 1) throw new OrganizationNotFound()
 

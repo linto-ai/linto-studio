@@ -331,6 +331,23 @@ let router = new Router({
         },
       },
     },
+    {
+      path: "/backoffice/components",
+      name: "backoffice-components",
+      components: {
+        default: () => import("../views/components.vue"),
+        ...defaultComponents,
+      },
+      defaultProps,
+      meta: {
+        backoffice: true,
+        breadcrumb: {
+          label: "breadcrumb.components",
+          parent: "backoffice",
+          showInBreadcrumb: true,
+        },
+      },
+    },
     // PUBLIC ROUTES
     {
       path: "/interface/404",

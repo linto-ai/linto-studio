@@ -2,7 +2,7 @@
   <div class="transcript-panel flex col">
     <header class="transcript-panel__header">
       <PhIcon name="text-align-left" size="sm" />
-      <span>{{ title || $t('publish.transcript_panel.title') }}</span>
+      <span>{{ title || $t("publish.transcript_panel.title") }}</span>
     </header>
     <div class="transcript-panel__body">
       <div
@@ -10,8 +10,12 @@
         :key="turn.turn_id"
         class="transcript-panel__turn">
         <div class="transcript-panel__speaker">
-          <span class="transcript-panel__speaker-name">{{ speakersMap[turn.speaker_id] || turn.speaker_id }}</span>
-          <span class="transcript-panel__time">{{ formatTime(turnStime(turn)) }}</span>
+          <span class="transcript-panel__speaker-name">{{
+            speakersMap[turn.speaker_id] || turn.speaker_id
+          }}</span>
+          <span class="transcript-panel__time">{{
+            formatTime(turnStime(turn))
+          }}</span>
         </div>
         <p class="transcript-panel__text">{{ turn.segment }}</p>
       </div>

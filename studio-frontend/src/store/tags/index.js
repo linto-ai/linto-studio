@@ -89,7 +89,10 @@ export default {
     },
   },
   actions: {
-    async fetchTags({ commit, getters, state, rootGetters }, { folderId } = {}) {
+    async fetchTags(
+      { commit, getters, state, rootGetters },
+      { folderId } = {},
+    ) {
       // Prevent concurrent fetches
       if (state.loading) return
 

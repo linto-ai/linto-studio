@@ -64,6 +64,9 @@ export default {
     // sessionStorage.setItem("startQuickSession", false)
     // this.fetchData()
   },
+  beforeDestroy() {
+    this.$apiEventWS.unSubscribeSessionsUpdate()
+  },
   computed: {
     ...mapGetters("quickSession", [
       "quickSession",
@@ -91,7 +94,18 @@ export default {
       this.isModalSaveOpen = true
     },
   },
-  watch: {},
+  watch: {
+    "$apiEventWS.state.isConnected": {
+      handler(value) {
+        if (value) {
+          this.$apiEventWS.subscribeSessionsUpdate(
+            this.currentOrganizationScope,
+          )
+        }
+      },
+      immediate: true,
+    },
+  },
   components: {
     SessionLiveMicrophone,
     SessionLiveVisio,

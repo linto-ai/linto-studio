@@ -14,15 +14,104 @@
       }
     }
   },
-
   "/auth/oidc/token": {
     "get": {
       "tags": ["auth"],
-      "summary": "Allow to get the user token for it's OIDC login",
+      "summary": "Get the user token after an OIDC login",
       "responses": {
         "200": {
           "$ref": "#/components/responses/Authenticate"
         },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "500": {
+          "$ref": "#/components/responses/InternalServer"
+        }
+      },
+      "parameters": [
+        {
+          "in": "cookie",
+          "name": "auth_token",
+          "required": true,
+          "description": "Authentication token set by the OIDC callback",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "in": "cookie",
+          "name": "user_id",
+          "required": false,
+          "description": "User id set by the OIDC callback",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    }
+  },
+  "/auth/oidc/cb": {
+    "get": {
+      "tags": ["auth"],
+      "summary": "Callback endpoint of the configured OIDC provider. The user is redirected here after authentication, then redirected back to the application.",
+      "responses": {
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "500": {
+          "$ref": "#/components/responses/InternalServer"
+        }
+      }
+    }
+  },
+  "/auth/oidc/google/login": {
+    "get": {
+      "tags": ["auth"],
+      "summary": "Authenticate user with the Google OIDC provider. There is no success response due to the redirection to the provider.",
+      "responses": {
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "500": {
+          "$ref": "#/components/responses/InternalServer"
+        }
+      }
+    }
+  },
+  "/auth/oidc/google/cb": {
+    "get": {
+      "tags": ["auth"],
+      "summary": "Callback endpoint of the Google OIDC provider. The user is redirected here after authentication, then redirected back to the application.",
+      "responses": {
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "500": {
+          "$ref": "#/components/responses/InternalServer"
+        }
+      }
+    }
+  },
+  "/auth/oidc/github/login": {
+    "get": {
+      "tags": ["auth"],
+      "summary": "Authenticate user with the GitHub OIDC provider. There is no success response due to the redirection to the provider.",
+      "responses": {
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "500": {
+          "$ref": "#/components/responses/InternalServer"
+        }
+      }
+    }
+  },
+  "/auth/oidc/github/cb": {
+    "get": {
+      "tags": ["auth"],
+      "summary": "Callback endpoint of the GitHub OIDC provider. The user is redirected here after authentication, then redirected back to the application.",
+      "responses": {
         "401": {
           "$ref": "#/components/responses/Unauthorized"
         },

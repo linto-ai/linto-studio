@@ -8,7 +8,7 @@ test("get index when cut between two words", (t) => {
 test("get index when cut inside a word", (t) => {
   t.deepEqual(
     findIndexSplit(["hello", "world", "nice", "day"], "hello world ni"),
-    2
+    2,
   )
 })
 
@@ -19,7 +19,7 @@ test("get index when cut first word", (t) => {
 test("get index when cut on last word", (t) => {
   t.deepEqual(
     findIndexSplit(["hello", "world", "nice", "day"], "hello world nice da"),
-    3
+    3,
   )
 })
 
@@ -27,9 +27,9 @@ test("get index when some word contains spaces", (t) => {
   t.deepEqual(
     findIndexSplit(
       ["hello ?", "world", "nice day", "isn't", "it"],
-      "hello ? world nice"
+      "hello ? world nice",
     ),
-    2
+    2,
   )
 })
 
@@ -37,8 +37,8 @@ test("get index with empty words", (t) => {
   t.deepEqual(
     findIndexSplit(
       ["hello ?", "world", "", "nice day", "isn't", "it"],
-      "hello ? world nice"
+      "hello ? world nice",
     ),
-    3
+    3,
   )
 })

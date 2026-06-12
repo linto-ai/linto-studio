@@ -1,9 +1,6 @@
 import processSessionCaptions from "./processSessionCaptions.js"
 import computeSessionTurnUniqueId from "../const/computeSessionTurnUniqueId.js"
-import {
-  computeTurnStartDate,
-  computeTurnEndDate,
-} from "./computeTurnTime.js"
+import { computeTurnStartDate, computeTurnEndDate } from "./computeTurnTime.js"
 
 /**
  * Converts a live session object into an EditorDocument.

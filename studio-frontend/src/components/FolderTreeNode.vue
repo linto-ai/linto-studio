@@ -233,8 +233,12 @@ export default {
     },
 
     handleClick() {
-      this.$emit('select', this.folder._id)
-      if (!this.virtual && this.folder.children && this.folder.children.length > 0) {
+      this.$emit("select", this.folder._id)
+      if (
+        !this.virtual &&
+        this.folder.children &&
+        this.folder.children.length > 0
+      ) {
         this.expanded = true
       }
     },

@@ -1,7 +1,12 @@
 <template>
   <div
     class="chip-tag"
-    :class="[active ? 'active' : '', clickable, size, { 'mobile-view': mobileView }]"
+    :class="[
+      active ? 'active' : '',
+      clickable,
+      size,
+      { 'mobile-view': mobileView },
+    ]"
     :style="{
       borderColor: borderColor,
       backgroundColor: backgroundColor,
@@ -299,15 +304,15 @@ export default {
     border: none;
     padding: 0;
     box-sizing: border-box;
-    
+
     .chip-tag__data {
       gap: 0;
     }
-    
+
     .chip-tag__name {
       display: none;
     }
-    
+
     .chip-tag__mobile-icon {
       display: flex;
       align-items: center;
