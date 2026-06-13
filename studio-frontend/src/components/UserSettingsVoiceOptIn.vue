@@ -31,7 +31,11 @@
       <div class="voice-optin__recordings">
         <div class="flex row gap-medium align-center">
           <h4 class="flex1">
-            {{ $t("speaker_diarization.my_recordings") }}
+            {{
+              isStorageModeEmbeddings
+                ? $t("speaker_diarization.temporary_recordings")
+                : $t("speaker_diarization.my_recordings")
+            }}
           </h4>
           <Button
             v-if="hasSamples"
@@ -49,10 +53,22 @@
             :label="$t('speaker_diarization.record_voice')" />
         </div>
 
+        <p
+          v-if="isStorageModeEmbeddings"
+          class="voice-optin__recordings-note">
+          {{ $t("speaker_diarization.temporary_recordings_note") }}
+        </p>
+
         <div
           v-if="!hasSamples"
           class="voice-optin__empty">
-          <p>{{ $t("speaker_diarization.optin_no_samples") }}</p>
+          <p>
+            {{
+              isStorageModeEmbeddings
+                ? $t("speaker_diarization.optin_no_samples_embeddings")
+                : $t("speaker_diarization.optin_no_samples")
+            }}
+          </p>
         </div>
 
         <div v-else class="voice-optin__sig-list">
@@ -153,7 +169,7 @@
           <span class="voice-optin__storage-title">
             {{ $t("speaker_diarization.voiceprint_storage_mode_title") }}
           </span>
-          <FormRadio :field="storageModeField" @input="setStorageMode" />
+          <FormRadio :field="storageModeField" @input="requestStorageMode" />
           <p
             v-if="isStorageModeEmbeddings"
             class="voice-optin__storage-warning">
@@ -331,6 +347,15 @@
         @submit="deleteAllSignatures">
         <p>{{ $t("speaker_diarization.delete_all_signatures_confirm") }}</p>
       </Modal>
+
+      <!-- Confirm switching to embeddings-only (deletes the audio samples) -->
+      <Modal
+        v-model="showStorageModeModal"
+        :title="$t('speaker_diarization.voiceprint_storage_mode_confirm_title')"
+        @submit="confirmStorageMode"
+        @cancel="cancelStorageMode">
+        <p>{{ $t("speaker_diarization.voiceprint_storage_mode_confirm_body") }}</p>
+      </Modal>
     </template>
   </div>
 </template>
@@ -382,6 +407,10 @@ export default {
       recomputing: false,
       computeError: false,
       pollToken: 0,
+      // Storage-mode change confirmation (switching to embeddings deletes audio)
+      showStorageModeModal: false,
+      pendingStorageMode: null,
+      switchingStorageMode: false,
       showRecordModal: false,
       showDeleteAllModal: false,
       // Recording state
@@ -445,9 +474,6 @@ export default {
             description: this.$t(
               "speaker_diarization.voiceprint_storage_mode_audio_desc",
             ),
-            // One-way transition: once only the voiceprint is kept the audio is
-            // deleted, so we can't switch back to sample-based storage.
-            disabled: this.isStorageModeEmbeddings,
           },
           {
             name: STORAGE_MODE.EMBEDDINGS,
@@ -528,10 +554,36 @@ export default {
         })
       }
     },
-    async setStorageMode(newMode) {
+    // Radio handler: switching to embeddings-only deletes the audio, so ask for
+    // explicit confirmation; switching back to audio is non-destructive (applied
+    // directly — the user can re-record to rebuild replayable samples).
+    requestStorageMode(newMode) {
+      if (!newMode || newMode === this.voiceprintStatus.storageMode) return
+      if (
+        newMode === STORAGE_MODE.EMBEDDINGS &&
+        (this.hasSamples || this.voiceprintStatus.hasVoiceprint)
+      ) {
+        this.pendingStorageMode = newMode
+        this.showStorageModeModal = true
+      } else {
+        this.applyStorageMode(newMode)
+      }
+    },
+    confirmStorageMode() {
+      const mode = this.pendingStorageMode
+      this.showStorageModeModal = false
+      this.pendingStorageMode = null
+      if (mode) this.applyStorageMode(mode)
+    },
+    cancelStorageMode() {
+      this.showStorageModeModal = false
+      this.pendingStorageMode = null
+    },
+    async applyStorageMode(newMode) {
       if (!newMode || newMode === this.voiceprintStatus.storageMode) return
       const previous = this.voiceprintStatus.storageMode
       this.voiceprintStatus.storageMode = newMode
+      this.switchingStorageMode = true
       try {
         await apiUpdateStorageMode(newMode)
         this.$store.dispatch("system/addNotification", {
@@ -543,6 +595,8 @@ export default {
         // audio samples — reflect it with the computing state + polling.
         if (newMode === STORAGE_MODE.EMBEDDINGS && this.hasSamples) {
           this.pollVoiceprintStatus()
+        } else {
+          this.fetchData(true)
         }
       } catch (err) {
         this.voiceprintStatus.storageMode = previous
@@ -551,6 +605,8 @@ export default {
           type: "error",
           timeout: 5000,
         })
+      } finally {
+        this.switchingStorageMode = false
       }
     },
     // Poll the voiceprint status after a change that triggers a (re)compute
@@ -946,6 +1002,12 @@ export default {
     font-size: 13px;
     color: var(--text-secondary);
     margin: 0 0 0.75rem;
+  }
+
+  &__recordings-note {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin: 0.25rem 0 0.5rem;
   }
 
   &__voiceprint-label {

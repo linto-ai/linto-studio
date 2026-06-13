@@ -206,26 +206,24 @@ async function updateStorageMode(req, res, next) {
       return res.status(200).send({ storageMode: currentMode })
     }
 
-    // One-way transition: audio -> embeddings only
-    if (storageMode === STORAGE_MODE.AUDIO) {
-      throw new UserVoiceSampleError(
-        "Storage mode cannot be reverted from 'embeddings' to 'audio'",
-      )
-    }
-
+    // Reversible: switching to embeddings-only deletes the audio (the user can
+    // re-record and switch back). Switching back to audio keeps everything as-is;
+    // future samples are simply retained again.
     await model.voiceprints.upsert(SPEAKER_TYPE.USER, userId, { storageMode })
 
     let audioFilesDeleted = false
-    if (model.voiceprints.hasComputedVoiceprint(voiceprint)) {
-      // The voiceprint already exists: audio files are no longer kept
-      const samples = await model.voiceSamples.getByUserId(userId)
-      cascadeDeleteSampleFiles(samples)
-      await model.voiceSamples.deleteAllFromUser(userId)
-      audioFilesDeleted = true
-    } else {
-      // No voiceprint yet: compute it from the current samples, then the
-      // recompute purges the files (storage mode is now embeddings-only).
-      triggers.recomputeUser(userId)
+    if (storageMode === STORAGE_MODE.EMBEDDINGS) {
+      if (model.voiceprints.hasComputedVoiceprint(voiceprint)) {
+        // The voiceprint already exists: audio files are no longer kept
+        const samples = await model.voiceSamples.getByUserId(userId)
+        cascadeDeleteSampleFiles(samples)
+        await model.voiceSamples.deleteAllFromUser(userId)
+        audioFilesDeleted = true
+      } else {
+        // No voiceprint yet: compute it from the current samples, then the
+        // recompute purges the files (storage mode is now embeddings-only).
+        triggers.recomputeUser(userId)
+      }
     }
 
     res.status(200).send({

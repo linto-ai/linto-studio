@@ -97,6 +97,7 @@
             <td>
               <div class="flex gap-small">
                 <Button
+                  v-if="!embeddings"
                   :icon="
                     playingId === sig._id ? 'stop-circle' : 'play-circle'
                   "
@@ -169,6 +170,8 @@ export default {
     memberId: { type: String, default: null },
     memberName: { type: String, default: "" },
     readOnly: { type: Boolean, default: false },
+    // Embeddings-only collection: audio is deleted after compute → no replay.
+    embeddings: { type: Boolean, default: false },
   },
   data() {
     return {

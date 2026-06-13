@@ -7,6 +7,7 @@
       :collectionId="selectedCollectionId"
       :memberId="selectedMemberId"
       :memberName="selectedMemberName"
+      :embeddings="selectedCollectionEmbeddings"
       :readOnly="true"
       @back="selectedMemberId = null" />
 
@@ -15,6 +16,7 @@
       :organizationId="organizationId"
       :collectionId="selectedCollectionId"
       :labelId="selectedLabelId"
+      :embeddings="selectedCollectionEmbeddings"
       @back="selectedLabelId = null" />
 
     <SpeakerLabelCollectionDetail
@@ -144,26 +146,20 @@
             "
             class="speaker-diarization__input" />
 
-          <div class="speaker-diarization__storage-toggle">
-            <div>
-              <span class="speaker-diarization__storage-label">
-                {{ $t("speaker_diarization.voiceprint_storage_mode_embeddings") }}
-              </span>
-              <span class="speaker-diarization__storage-desc">
-                {{ $t("speaker_diarization.voiceprint_storage_mode_embeddings_desc") }}
-              </span>
-            </div>
-            <SwitchInput
-              :value="isEmbeddingsMode"
-              id="create-storage-mode-toggle"
-              @input="onCreateStorageModeToggle" />
+          <div class="speaker-diarization__storage-mode">
+            <span class="speaker-diarization__storage-label">
+              {{ $t("speaker_diarization.voiceprint_storage_mode_title") }}
+            </span>
+            <FormRadio
+              :field="collectionStorageModeField"
+              @input="setNewCollectionStorageMode" />
+            <p
+              v-if="isEmbeddingsMode"
+              class="speaker-diarization__storage-warning">
+              <ph-icon name="warning" size="sm" />
+              {{ $t("speaker_diarization.voiceprint_storage_mode_warning") }}
+            </p>
           </div>
-          <p
-            v-if="isEmbeddingsMode"
-            class="speaker-diarization__storage-warning">
-            <ph-icon name="warning" size="sm" />
-            {{ $t("speaker_diarization.voiceprint_storage_mode_warning") }}
-          </p>
         </div>
       </Modal>
 
@@ -209,6 +205,7 @@
 <script>
 import Button from "@/components/atoms/Button.vue"
 import SwitchInput from "@/components/atoms/SwitchInput.vue"
+import FormRadio from "@/components/molecules/FormRadio.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import SpeakerLabelCollectionDetail from "@/components/SpeakerLabelCollectionDetail.vue"
 import SpeakerLabelDetail from "@/components/SpeakerLabelDetail.vue"
@@ -228,6 +225,7 @@ export default {
   components: {
     Button,
     SwitchInput,
+    FormRadio,
     Modal,
     SpeakerLabelCollectionDetail,
     SpeakerLabelDetail,
@@ -266,6 +264,36 @@ export default {
         return 0
       })
     },
+    collectionStorageModeField() {
+      return {
+        value: this.newCollection.storageMode,
+        error: null,
+        options: [
+          {
+            name: STORAGE_MODE.AUDIO,
+            label: this.$t("speaker_diarization.voiceprint_storage_mode_audio"),
+            description: this.$t(
+              "speaker_diarization.voiceprint_storage_mode_audio_desc",
+            ),
+          },
+          {
+            name: STORAGE_MODE.EMBEDDINGS,
+            label: this.$t(
+              "speaker_diarization.voiceprint_storage_mode_embeddings",
+            ),
+            description: this.$t(
+              "speaker_diarization.voiceprint_storage_mode_embeddings_desc",
+            ),
+          },
+        ],
+      }
+    },
+    selectedCollectionEmbeddings() {
+      const c = this.collections.find(
+        (x) => x._id === this.selectedCollectionId,
+      )
+      return !!c && c.storageMode === STORAGE_MODE.EMBEDDINGS
+    },
   },
   watch: {
     selectedCollectionId(newVal, oldVal) {
@@ -280,10 +308,8 @@ export default {
     this.fetchCollections()
   },
   methods: {
-    onCreateStorageModeToggle(enabled) {
-      this.newCollection.storageMode = enabled
-        ? STORAGE_MODE.EMBEDDINGS
-        : STORAGE_MODE.AUDIO
+    setNewCollectionStorageMode(mode) {
+      if (mode) this.newCollection.storageMode = mode
     },
     isEmbeddingsCollection(collection) {
       return collection.storageMode === STORAGE_MODE.EMBEDDINGS
