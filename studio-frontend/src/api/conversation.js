@@ -268,6 +268,7 @@ export async function apiCreateConversation(
     securityLevel,
     serviceName,
     transcriptionConfig,
+    speakerIdentificationCollections,
     segmentCharSize,
     lang,
     endpoint,
@@ -291,6 +292,18 @@ export async function apiCreateConversation(
     formData.append("segmentCharSize", segmentCharSize)
     formData.append("lang", lang)
     formData.append("endpoint", endpoint)
+
+    // Studio collection ids for speaker identification (server validates
+    // ownership and builds the diarization speakerIdentificationConfig).
+    if (
+      Array.isArray(speakerIdentificationCollections) &&
+      speakerIdentificationCollections.length > 0
+    ) {
+      formData.append(
+        "speakerIdentificationCollections",
+        JSON.stringify(speakerIdentificationCollections),
+      )
+    }
 
     if (folderId) {
       formData.append("folderId", folderId)

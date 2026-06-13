@@ -120,6 +120,34 @@
         :id="`service-${value.name}-speakers`"
         min="0" />
     </div>
+
+    <!-- -- -- speaker identification (collections) -- -- -->
+    <div class="form-field flex col" v-if="speakerIdCapable">
+      <label>
+        {{ $t("conversation.transcription.speaker_identification_label") }}
+      </label>
+      <span
+        class="form-field__help"
+        v-if="!speakerIdCollections.loading && speakerIdCollections.list.length === 0">
+        {{ $t("conversation.transcription.speaker_identification_empty") }}
+      </span>
+      <div
+        v-else
+        class="flex col gap-xsmall speaker-id-collections"
+        role="group">
+        <label
+          v-for="collection of speakerIdCollections.list"
+          :key="collection._id"
+          class="flex row align-center gap-xsmall pointer">
+          <input
+            type="checkbox"
+            :value="collection._id"
+            v-model="speakerIdCollections.selected"
+            @change="select(null)" />
+          <span>{{ collection.name }}</span>
+        </label>
+      </div>
+    </div>
     <div class="flex1"></div>
   </fieldset>
 </template>
@@ -129,6 +157,8 @@ import ACOUSTIC from "../const/acoustic"
 import AUDIO_QUALITY from "../const/audioQuality"
 import LabeledValue from "@/components/atoms/LabeledValue.vue"
 import generateServiceConfig from "../tools/generateServiceConfig"
+import { apiGetVoiceprintCollections } from "@/api/voiceprintCollection"
+import { getEnv } from "@/tools/getEnv"
 
 export default {
   props: {
@@ -174,6 +204,7 @@ export default {
         ...EMPTY_FIELD,
         value: defaultLang,
       },
+      speakerIdCollections: { list: [], selected: [], loading: false },
     }
   },
   computed: {
@@ -200,9 +231,27 @@ export default {
         }
       })
     },
+    speakerIdFeatureEnabled() {
+      return getEnv("VUE_APP_ENABLE_SPEAKER_IDENTIFICATION") === "true"
+    },
+    // The diarization sub-service currently selected in the dropdown
+    selectedDiarizationService() {
+      const list = this.value?.sub_services?.diarization || []
+      return list.find((d) => d.service_name === this.diarization.value) || null
+    },
+    // True when the selected diarization service advertises the speaker
+    // identification capability (info.speaker_identification === true)
+    speakerIdCapable() {
+      return (
+        this.speakerIdFeatureEnabled &&
+        this.diarization.value !== "disabled" &&
+        Boolean(this.selectedDiarizationService?.info?.speaker_identification)
+      )
+    },
   },
   watch: {
     "diarization.value"() {
+      this.onDiarizationChange()
       this.select(null)
     },
     "punctuation.value"() {
@@ -245,8 +294,45 @@ export default {
           languageValue: this.hasBuiltInPunctuation
             ? this.languageField.value
             : this.value.language,
+          speakerIdentificationCollections: this.speakerIdCapable
+            ? this.speakerIdCollections.selected
+            : [],
         }),
       )
+    },
+    // When the diarization choice changes: lazily load the org collections when
+    // the chosen service is speaker-id capable, and clear the selection when
+    // identification is no longer applicable.
+    onDiarizationChange() {
+      if (this.speakerIdCapable) {
+        if (
+          this.speakerIdCollections.list.length === 0 &&
+          !this.speakerIdCollections.loading
+        ) {
+          this.fetchSpeakerIdCollections()
+        }
+      } else {
+        this.speakerIdCollections.selected = []
+      }
+    },
+    async fetchSpeakerIdCollections() {
+      const organizationId =
+        this.$store.state.organizations.currentOrganizationScope
+      if (!organizationId) return
+      this.speakerIdCollections.loading = true
+      try {
+        const collections = await apiGetVoiceprintCollections(
+          organizationId,
+          null,
+        )
+        this.speakerIdCollections.list = Array.isArray(collections)
+          ? collections
+          : []
+      } catch (err) {
+        this.speakerIdCollections.list = []
+      } finally {
+        this.speakerIdCollections.loading = false
+      }
     },
     formatLanguage(lang) {
       if (lang == "*") {

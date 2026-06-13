@@ -463,6 +463,8 @@
       "diarization_label": "Séparation des locuteurs",
       "language_label": "Langue",
       "number_of_speaker_label": "Nombre de locuteurs",
+      "speaker_identification_label": "Identifier les locuteurs avec",
+      "speaker_identification_empty": "Aucune collection de voix disponible pour cette organisation",
       "player_error": "Une erreur est survenue lors du chargement du lecteur.",
       "punctuation_disabled": "Non",
       "punctuation_label": "Ponctuation",

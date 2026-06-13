@@ -5,6 +5,7 @@ export default function generateServiceConfig(
     diarizationValue = "disabled",
     speakersNumberValue = 0,
     languageValue = (service.language || "*").split(",")[0],
+    speakerIdentificationCollections = [],
   } = {},
 ) {
   const hasBuiltInPunctuation = ["whisper", "nemo"].includes(service.model_type)
@@ -13,6 +14,11 @@ export default function generateServiceConfig(
     serviceName: service.serviceName,
     endpoint: removeLeadingSlash(service.endpoints[0].endpoint),
     lang: languageValue,
+    // Studio collection ids the server will resolve into the diarization
+    // speakerIdentificationConfig (kept out of `config`: it is a separate,
+    // server-validated form field, never trusted from the client).
+    speakerIdentificationCollections:
+      diarizationValue !== "disabled" ? speakerIdentificationCollections : [],
     config: {
       language: languageValue,
       punctuationConfig: {

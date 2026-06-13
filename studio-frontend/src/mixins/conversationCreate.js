@@ -176,6 +176,9 @@ export default {
                 transcriptionConfig: JSON.stringify(
                   this.fieldTranscriptionService.value.config,
                 ),
+                speakerIdentificationCollections:
+                  this.fieldTranscriptionService.value
+                    .speakerIdentificationCollections,
                 segmentCharSize: getEnv("VUE_APP_TURN_SIZE"),
                 lang: this.fieldTranscriptionService.value.lang,
                 endpoint: this.fieldTranscriptionService.value.endpoint,
@@ -266,6 +269,9 @@ export default {
               transcriptionConfig: JSON.stringify(
                 this.fieldTranscriptionService.value.config,
               ),
+              speakerIdentificationCollections:
+                this.fieldTranscriptionService.value
+                  .speakerIdentificationCollections,
               segmentCharSize: getEnv("VUE_APP_TURN_SIZE"),
               lang: this.fieldTranscriptionService.value.lang,
               endpoint: this.fieldTranscriptionService.value.endpoint,

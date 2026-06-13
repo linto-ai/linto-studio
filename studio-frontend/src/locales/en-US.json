@@ -462,6 +462,8 @@
       "diarization_label": "Speakers diarization",
       "language_label": "Language",
       "number_of_speaker_label": "Number of speakers",
+      "speaker_identification_label": "Identify speakers with",
+      "speaker_identification_empty": "No voice collection available for this organization",
       "player_error": "An error has occurred while initializing player.",
       "punctuation_disabled": "Disabled",
       "punctuation_label": "Punctuation",
