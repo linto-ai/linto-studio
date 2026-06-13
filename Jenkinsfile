@@ -55,6 +55,30 @@ def performBuildForFile(changedFiles, version, commit_sha) {
 
 }
 
+// Best-effort deploy of a freshly built image to the staging cluster (full CI/CD).
+// Needs a Jenkins SSH credential 'staging-deploy-ssh' (key for ubuntu@bm2-3s);
+// if absent the build still succeeds (push-only).
+def stagingDeploy(image_name, tag) {
+    try {
+        withCredentials([sshUserPrivateKey(credentialsId: 'staging-deploy-ssh', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')]) {
+            sh "ssh -i \$SSH_KEY -o StrictHostKeyChecking=no \$SSH_USER@163.114.159.33 'staging-deploy ${image_name} ${tag}'"
+        }
+    } catch (err) {
+        echo "Staging auto-deploy skipped for ${image_name}:${tag} (add the 'staging-deploy-ssh' credential to enable): ${err}"
+    }
+}
+
+// Build one studio image, push it to the private staging registry as dev-<slug>, deploy it.
+def buildStagingImage(folder_name, tag, context = '') {
+    def buildContext = context ?: "./${folder_name}"
+    def imageName = "registry.staging.linto.ai/lintoai/${folder_name}"
+    def image = docker.build(imageName, "-f ${folder_name}/Dockerfile ${buildContext}")
+    docker.withRegistry('https://registry.staging.linto.ai', 'staging-registry-credentials') {
+        image.push(tag)
+    }
+    stagingDeploy(folder_name, tag)
+}
+
 pipeline {
     agent any
     environment {
@@ -109,6 +133,22 @@ pipeline {
                     def commit_sha = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
 
                     performBuildForFile(changedFiles, 'preview-saas', commit_sha)
+                }
+            }
+        }
+
+        stage('Docker build for staging branches') {
+            when {
+                branch 'staging/*'
+            }
+            steps {
+                echo 'Building staging feature-branch images (private registry, never Docker Hub)'
+                script {
+                    def slug = env.BRANCH_NAME.replaceFirst('^staging/', '').replaceAll('[^a-zA-Z0-9]+', '-').toLowerCase()
+                    def tag = "dev-${slug}"
+                    buildStagingImage('studio-api', tag)
+                    buildStagingImage('studio-frontend', tag, '.')
+                    buildStagingImage('studio-websocket', tag)
                 }
             }
         }
