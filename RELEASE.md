@@ -1,3 +1,13 @@
+# 1.9.0
+
+_2026_06_13_
+
+- Speaker identification (voice signature management)
+  - Per-organization voiceprint collections, speaker labels and voice samples (CRUD), with org permission SPEAKER_IDENTIFICATION and consent tracking
+  - "My voice signature" user settings: samples, embeddings-only mode, per-organization opt-in
+  - Connector to the diarization/transcription service: voiceprint compute + Qdrant upsert/delete with a reconciliation queue (Mongo is source of truth)
+  - Server-side injection of selected collections into transcription requests; identified speakers shown in the editor, unidentified ones as "Unknown speaker N"
+
 # 1.8.4
 
 _2026_04_20_
