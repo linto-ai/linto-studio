@@ -138,7 +138,7 @@
     "logout": "Déconnexion",
     "email_not_verified": "Votre adresse e-mail n'est pas vérifiée. Veuillez la vérifier pour accéder à l'ensemble des fonctionnalités.",
     "speaker_identification": "Identification des locuteurs",
-    "speaker_recognition": "Reconnaissance vocale"
+    "speaker_recognition": "Ma signature vocale"
   },
   "backoffice": {
     "navigation": {

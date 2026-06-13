@@ -137,7 +137,7 @@
     "logout": "Logout",
     "email_not_verified": "Your email is not verified. Please verify your email to access all features.",
     "speaker_identification": "Speaker identification",
-    "speaker_recognition": "Speaker recognition"
+    "speaker_recognition": "My voice signature"
   },
   "backoffice": {
     "navigation": {
