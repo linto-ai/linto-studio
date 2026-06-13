@@ -69,6 +69,7 @@
             }}</span>
             <div class="flex gap-small">
               <Button
+                v-if="!isStorageModeEmbeddings"
                 :icon="
                   playingId === sig._id ? 'stop-circle' : 'play-circle'
                 "
@@ -98,40 +99,61 @@
           {{ $t("speaker_diarization.voiceprint_status_desc") }}
         </p>
 
-        <div v-if="voiceprintStatus.hasVoiceprint" class="voice-optin__voiceprint-status voice-optin__voiceprint-status--ok">
+        <!-- Voiceprint state machine: computing / syncing / error / up-to-date -->
+        <div
+          v-if="voiceprintComputing"
+          class="voice-optin__voiceprint-status voice-optin__voiceprint-status--pending">
+          <ph-icon name="circle-notch" class="voice-optin__status-spin" size="md" />
+          <div>
+            <span class="voice-optin__voiceprint-label">
+              {{ $t("speaker_diarization.voiceprint_computing") }}
+            </span>
+            <span class="voice-optin__voiceprint-hint">
+              {{ $t("speaker_diarization.voiceprint_computing_hint") }}
+            </span>
+          </div>
+        </div>
+        <div
+          v-else-if="voiceprintError"
+          class="voice-optin__voiceprint-status voice-optin__voiceprint-status--error">
+          <ph-icon name="x-circle" class="voice-optin__status-error" size="md" />
+          <div>
+            <span class="voice-optin__voiceprint-label">
+              {{ $t("speaker_diarization.voiceprint_error") }}
+            </span>
+            <span class="voice-optin__voiceprint-hint">
+              {{ $t("speaker_diarization.voiceprint_error_hint") }}
+            </span>
+          </div>
+        </div>
+        <div
+          v-else-if="voiceprintSyncing"
+          class="voice-optin__voiceprint-status voice-optin__voiceprint-status--pending">
+          <ph-icon name="circle-notch" class="voice-optin__status-spin" size="md" />
+          <span class="voice-optin__voiceprint-label">
+            {{ $t("speaker_diarization.voiceprint_syncing") }}
+          </span>
+        </div>
+        <div
+          v-else-if="voiceprintStatus.hasVoiceprint"
+          class="voice-optin__voiceprint-status voice-optin__voiceprint-status--ok">
           <ph-icon name="check-circle" class="voice-optin__status-ok" size="md" />
           <div>
             <span class="voice-optin__voiceprint-label">
               {{ $t("speaker_diarization.voiceprint_computed") }}
             </span>
-            <span v-if="voiceprintStatus.lastUpdate" class="voice-optin__voiceprint-hint">
-              {{ $t("speaker_diarization.voiceprint_last_update", { date: formatDate(voiceprintStatus.lastUpdate) }) }}
+            <span v-if="voiceprintStatus.computedAt" class="voice-optin__voiceprint-hint">
+              {{ $t("speaker_diarization.voiceprint_last_update", { date: formatDate(voiceprintStatus.computedAt) }) }}
             </span>
           </div>
         </div>
 
-        <!-- Storage mode preference -->
+        <!-- Storage mode: two mutually-exclusive options -->
         <div class="voice-optin__storage-mode">
-          <div class="voice-optin__storage-toggle">
-            <div>
-              <span class="voice-optin__storage-label">
-                {{ $t("speaker_diarization.voiceprint_storage_mode_embeddings") }}
-              </span>
-              <span class="voice-optin__storage-desc">
-                {{ $t("speaker_diarization.voiceprint_storage_mode_embeddings_desc") }}
-              </span>
-            </div>
-            <SwitchInput
-              :value="isStorageModeEmbeddings"
-              id="storage-mode-toggle"
-              @input="onStorageModeToggle" />
-          </div>
-          <p
-            v-if="isStorageModeEmbeddings && !voiceprintStatus.hasVoiceprint && hasSamples"
-            class="voice-optin__storage-pending">
-            <ph-icon name="clock" size="sm" />
-            {{ $t("speaker_diarization.voiceprint_not_computed_desc") }}
-          </p>
+          <span class="voice-optin__storage-title">
+            {{ $t("speaker_diarization.voiceprint_storage_mode_title") }}
+          </span>
+          <FormRadio :field="storageModeField" @input="setStorageMode" />
           <p
             v-if="isStorageModeEmbeddings"
             class="voice-optin__storage-warning">
@@ -316,6 +338,7 @@
 <script>
 import Button from "@/components/atoms/Button.vue"
 import SwitchInput from "@/components/atoms/SwitchInput.vue"
+import FormRadio from "@/components/molecules/FormRadio.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import Tabs from "@/components/molecules/Tabs.vue"
 import Droparea from "@/components/molecules/Droparea.vue"
@@ -346,7 +369,7 @@ function defaultVoiceprintStatus() {
 
 export default {
   name: "UserSettingsVoiceOptIn",
-  components: { Button, SwitchInput, Modal, Tabs, Droparea },
+  components: { Button, SwitchInput, FormRadio, Modal, Tabs, Droparea },
   mixins: [voiceSignaturePlaybackMixin],
   data() {
     return {
@@ -355,6 +378,10 @@ export default {
       organizations: [],
       voiceprintStatus: defaultVoiceprintStatus(),
       togglingOrgId: null,
+      // Voiceprint (re)compute tracking — drives the "computing" state + polling
+      recomputing: false,
+      computeError: false,
+      pollToken: 0,
       showRecordModal: false,
       showDeleteAllModal: false,
       // Recording state
@@ -407,13 +434,62 @@ export default {
     isStorageModeEmbeddings() {
       return this.voiceprintStatus.storageMode === STORAGE_MODE.EMBEDDINGS
     },
+    storageModeField() {
+      return {
+        value: this.voiceprintStatus.storageMode,
+        error: null,
+        options: [
+          {
+            name: STORAGE_MODE.AUDIO,
+            label: this.$t("speaker_diarization.voiceprint_storage_mode_audio"),
+            description: this.$t(
+              "speaker_diarization.voiceprint_storage_mode_audio_desc",
+            ),
+            // One-way transition: once only the voiceprint is kept the audio is
+            // deleted, so we can't switch back to sample-based storage.
+            disabled: this.isStorageModeEmbeddings,
+          },
+          {
+            name: STORAGE_MODE.EMBEDDINGS,
+            label: this.$t(
+              "speaker_diarization.voiceprint_storage_mode_embeddings",
+            ),
+            description: this.$t(
+              "speaker_diarization.voiceprint_storage_mode_embeddings_desc",
+            ),
+          },
+        ],
+      }
+    },
+    voiceprintComputing() {
+      return (
+        this.recomputing ||
+        (this.hasSamples &&
+          !this.voiceprintStatus.hasVoiceprint &&
+          !this.computeError)
+      )
+    },
+    voiceprintSyncing() {
+      return (
+        !this.recomputing &&
+        this.voiceprintStatus.hasVoiceprint &&
+        this.voiceprintStatus.syncState === "pending"
+      )
+    },
+    voiceprintError() {
+      return (
+        this.computeError ||
+        (this.voiceprintStatus.hasVoiceprint &&
+          this.voiceprintStatus.syncState === "error")
+      )
+    },
   },
   mounted() {
     this.fetchData()
   },
   methods: {
-    async fetchData() {
-      this.loading = true
+    async fetchData(silent = false) {
+      if (!silent) this.loading = true
       try {
         const [samples, orgs, vpStatus] = await Promise.all([
           apiGetUserVoiceSamples(),
@@ -428,7 +504,7 @@ export default {
       } catch (err) {
         // silent
       } finally {
-        this.loading = false
+        if (!silent) this.loading = false
       }
     },
     async deleteAllSignatures() {
@@ -452,8 +528,8 @@ export default {
         })
       }
     },
-    async onStorageModeToggle(enabled) {
-      const newMode = enabled ? STORAGE_MODE.EMBEDDINGS : STORAGE_MODE.AUDIO
+    async setStorageMode(newMode) {
+      if (!newMode || newMode === this.voiceprintStatus.storageMode) return
       const previous = this.voiceprintStatus.storageMode
       this.voiceprintStatus.storageMode = newMode
       try {
@@ -463,6 +539,11 @@ export default {
           type: "success",
           timeout: 5000,
         })
+        // Switching to embeddings-only recomputes the voiceprint then deletes the
+        // audio samples — reflect it with the computing state + polling.
+        if (newMode === STORAGE_MODE.EMBEDDINGS && this.hasSamples) {
+          this.pollVoiceprintStatus()
+        }
       } catch (err) {
         this.voiceprintStatus.storageMode = previous
         this.$store.dispatch("system/addNotification", {
@@ -470,6 +551,42 @@ export default {
           type: "error",
           timeout: 5000,
         })
+      }
+    },
+    // Poll the voiceprint status after a change that triggers a (re)compute
+    // (sample added/removed, switch to embeddings-only). Drives the
+    // "recompute in progress" state and surfaces a clear error on failure.
+    async pollVoiceprintStatus() {
+      const token = ++this.pollToken
+      this.recomputing = true
+      this.computeError = false
+      const ATTEMPTS = 20
+      const INTERVAL_MS = 3000
+      try {
+        for (let i = 0; i < ATTEMPTS; i++) {
+          await new Promise((r) => setTimeout(r, INTERVAL_MS))
+          if (token !== this.pollToken) return // superseded or unmounted
+          await this.fetchData(true)
+          if (token !== this.pollToken) return
+          const st = this.voiceprintStatus
+          if (st.hasVoiceprint && st.syncState === "error") {
+            this.computeError = true
+            return
+          }
+          // Settled: voiceprint computed & synced; in embeddings-only mode the
+          // audio samples are expected to be gone.
+          const settled =
+            st.hasVoiceprint &&
+            st.syncState === "synced" &&
+            (this.isStorageModeEmbeddings ? !this.hasSamples : true)
+          if (settled) return
+        }
+        // Timed out without producing a voiceprint
+        if (token === this.pollToken && !this.voiceprintStatus.hasVoiceprint) {
+          this.computeError = true
+        }
+      } finally {
+        if (token === this.pollToken) this.recomputing = false
       }
     },
     async toggleOrg(org, enabled) {
@@ -514,6 +631,8 @@ export default {
             type: "success",
             timeout: 5000,
           })
+          // Removing a sample recomputes the voiceprint from the remaining ones.
+          if (this.signatures.length > 0) this.pollVoiceprintStatus()
         }
       } catch (err) {
         this.$store.dispatch("system/addNotification", {
@@ -665,6 +784,10 @@ export default {
         this.resetRecordModal()
         this.showRecordModal = false
         this.signatures = await apiGetUserVoiceSamples()
+        // Adding a sample (re)computes the voiceprint server-side; poll so the UI
+        // reflects "recompute in progress" → up-to-date (and drops samples that
+        // get deleted in embeddings-only mode).
+        this.pollVoiceprintStatus()
       } catch (err) {
         this.$store.dispatch("system/addNotification", {
           message:
@@ -679,6 +802,7 @@ export default {
   },
   beforeDestroy() {
     // stopAudio() is called by the mixin's beforeDestroy
+    this.pollToken++ // cancel any in-flight voiceprint polling
     this.resetAudio()
   },
 }
@@ -806,6 +930,16 @@ export default {
       background: var(--green-soft, #e8f5e9);
       border-color: var(--green-chart, #4caf50);
     }
+
+    &--pending {
+      background: var(--primary-soft, #e3f2fd);
+      border-color: var(--primary-hard, #1976d2);
+    }
+
+    &--error {
+      background: var(--red-soft, #fdecea);
+      border-color: var(--red-chart, #d32f2f);
+    }
   }
 
   &__voiceprint-desc {
@@ -831,8 +965,24 @@ export default {
     color: var(--green-chart, #4caf50);
   }
 
+  &__status-error {
+    color: var(--red-chart, #d32f2f);
+  }
+
+  &__status-spin {
+    color: var(--primary-hard, #1976d2);
+    animation: voice-optin-spin 1s linear infinite;
+  }
+
   &__storage-mode {
     margin-top: 0.75rem;
+  }
+
+  &__storage-title {
+    display: block;
+    font-weight: 500;
+    font-size: 14px;
+    margin-bottom: 0.5rem;
   }
 
   &__storage-toggle {
@@ -1062,6 +1212,15 @@ export default {
   }
   50% {
     opacity: 0.3;
+  }
+}
+
+@keyframes voice-optin-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
 </style>
