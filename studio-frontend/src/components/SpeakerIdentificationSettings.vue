@@ -1,5 +1,40 @@
 <template>
   <div>
+    <!-- Mandatory, non-dismissable responsibility acknowledgement gate.
+         Shown every time the section is opened; blocks all management until
+         the admin explicitly accepts responsibility (or leaves). -->
+    <Modal
+      v-if="!acknowledged"
+      :value="!acknowledged"
+      :title="$t('speaker_diarization.gdpr_gate_title')"
+      :withClose="false"
+      :overlayClose="false"
+      :withActionCancel="true"
+      :textActionCancel="$t('speaker_diarization.gdpr_gate_quit')"
+      iconActionCancel="sign-out"
+      :textActionApply="
+        $t('speaker_diarization.gdpr_gate_acknowledge', { org: orgName })
+      "
+      iconActionApply="shield-check"
+      size="md"
+      @submit="acknowledgeResponsibility"
+      @cancel="quitSection">
+      <div class="speaker-diarization__gate">
+        <div class="speaker-diarization__gate-icon">
+          <ph-icon name="shield-warning" size="xl" />
+        </div>
+        <p>{{ $t("speaker_diarization.gdpr_gate_intro") }}</p>
+        <p>{{ $t("speaker_diarization.gdpr_gate_biometric") }}</p>
+        <p class="speaker-diarization__gate-emphasis">
+          {{
+            $t("speaker_diarization.gdpr_gate_responsibility", {
+              org: orgName,
+            })
+          }}
+        </p>
+      </div>
+    </Modal>
+
     <!-- Drill-down navigation -->
     <SpeakerLabelDetail
       v-if="selectedMemberId"
@@ -39,11 +74,6 @@
           variant="primary"
           icon="plus"
           :label="$t('speaker_diarization.add_collection')" />
-      </div>
-
-      <div class="speaker-diarization__warning">
-        <ph-icon name="warning" size="md" />
-        <p>{{ $t("speaker_diarization.gdpr_warning") }}</p>
       </div>
 
       <p class="speaker-diarization__description">
@@ -203,6 +233,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex"
 import Button from "@/components/atoms/Button.vue"
 import SwitchInput from "@/components/atoms/SwitchInput.vue"
 import FormRadio from "@/components/molecules/FormRadio.vue"
@@ -238,6 +269,7 @@ export default {
   },
   data() {
     return {
+      acknowledged: false,
       collections: [],
       collectionStats: {},
       loading: false,
@@ -254,6 +286,15 @@ export default {
     }
   },
   computed: {
+    ...mapGetters("organizations", {
+      currentOrganization: "getCurrentOrganization",
+    }),
+    orgName() {
+      return (
+        this.currentOrganization?.name ||
+        this.$t("speaker_diarization.gdpr_your_org")
+      )
+    },
     isEmbeddingsMode() {
       return this.isEmbeddingsCollection(this.newCollection)
     },
@@ -308,6 +349,13 @@ export default {
     this.fetchCollections()
   },
   methods: {
+    acknowledgeResponsibility() {
+      this.acknowledged = true
+    },
+    quitSection() {
+      // Refused responsibility: leave the settings entirely, no access granted.
+      this.$store.dispatch("settings/setModalOpen", false)
+    },
     setNewCollectionStorageMode(mode) {
       if (mode) this.newCollection.storageMode = mode
     },
@@ -496,6 +544,34 @@ export default {
 
 <style lang="scss" scoped>
 .speaker-diarization {
+  &__gate {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--text-primary);
+
+    p {
+      margin: 0;
+    }
+  }
+
+  &__gate-icon {
+    display: flex;
+    justify-content: center;
+    color: var(--orange-chart, #ff9800);
+    margin-bottom: 0.25rem;
+  }
+
+  &__gate-emphasis {
+    padding: 0.75rem 1rem;
+    background: var(--orange-soft, #fff3e0);
+    border-left: 3px solid var(--orange-chart, #ff9800);
+    border-radius: 4px;
+    font-weight: 500;
+  }
+
   &__warning {
     display: flex;
     align-items: flex-start;
