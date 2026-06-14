@@ -34,7 +34,7 @@ def buildDockerfile(folder_name, version, commit_sha, tagSuffix = '', context = 
         }
 
         // Notify linto-deploy after successful push (only for master branch, standard build only)
-        if (tagSuffix == '' && version != 'latest-unstable' && version != 'preview-saas') {
+        if (tagSuffix == '' && version != 'latest-unstable') {
             notifyLintoDeploy(folder_name, version, commit_sha)
         }
     }
@@ -141,21 +141,6 @@ pipeline {
                     def commit_sha = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
 
                     performBuildForFile(changedFiles, 'latest-unstable', commit_sha)
-                }
-            }
-        }
-
-        stage('Docker build for preview-saas (wip) branch') {
-            when {
-                branch 'preview-saas'
-            }
-            steps {
-                echo 'Publishing unstable'
-                script {
-                    def changedFiles = sh(returnStdout: true, script: 'git diff --name-only HEAD^ HEAD').trim()
-                    def commit_sha = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
-
-                    performBuildForFile(changedFiles, 'preview-saas', commit_sha)
                 }
             }
         }
