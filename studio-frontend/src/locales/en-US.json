@@ -1684,7 +1684,7 @@
     "gdpr_gate_intro": "LinTO Studio provides a technical tool that groups voiceprints under labels you define. The tool does not assign any identity by itself: it does not know which person a voice belongs to.",
     "gdpr_gate_biometric": "Voiceprints are biometric data. Their processing is strictly regulated and requires a valid legal basis, in particular the explicit consent of the persons concerned.",
     "gdpr_gate_responsibility": "Linking a label to an identifiable person, and then using that data, is the sole responsibility of « {org} ». It is up to you to ensure compliance (GDPR or applicable regulations): informing individuals, collecting and managing consent, retention periods, security, and the exercise of rights.",
-    "gdpr_gate_acknowledge": "I act as an administrator of « {org} » and accept this responsibility",
+    "gdpr_gate_acknowledge": "I am an administrator of « {org} » and accept this responsibility",
     "gdpr_gate_quit": "Leave",
     "add_collection": "Add collection",
     "collection_name": "Name",

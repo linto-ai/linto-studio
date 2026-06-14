@@ -150,7 +150,9 @@
       <div
         v-if="selectedTab === 'speakerIdentification'"
         class="app-settings__section">
-        <SpeakerIdentificationSettings :organizationId="organizationId" />
+        <SpeakerIdentificationSettings
+          :organizationId="organizationId"
+          @quit="leaveSpeakerIdentification" />
       </div>
       <div v-if="selectedTab === 'apiTokens'" class="app-settings__section">
         <ApiTokenSettings v-if="isAdmin" :organizationId="organizationId" />
@@ -209,6 +211,7 @@ export default {
   data() {
     return {
       selectedTab: "account-information",
+      previousTab: "account-information",
     }
   },
   computed: {
@@ -247,7 +250,18 @@ export default {
   },
   methods: {
     selectTab(tab) {
+      if (tab !== this.selectedTab) {
+        this.previousTab = this.selectedTab
+      }
       this.selectedTab = tab
+    },
+    leaveSpeakerIdentification() {
+      // Return to where the user came from, falling back to a neutral tab.
+      const fallback =
+        this.previousTab && this.previousTab !== "speakerIdentification"
+          ? this.previousTab
+          : "organization-information"
+      this.selectTab(fallback)
     },
     closeModal() {
       this.$store.dispatch("settings/setModalOpen", false)

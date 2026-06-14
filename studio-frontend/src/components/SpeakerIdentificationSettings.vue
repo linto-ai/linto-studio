@@ -16,7 +16,7 @@
         $t('speaker_diarization.gdpr_gate_acknowledge', { org: orgName })
       "
       iconActionApply="shield-check"
-      size="md"
+      size="lg"
       @submit="acknowledgeResponsibility"
       @cancel="quitSection">
       <div class="speaker-diarization__gate">
@@ -353,8 +353,9 @@ export default {
       this.acknowledged = true
     },
     quitSection() {
-      // Refused responsibility: leave the settings entirely, no access granted.
-      this.$store.dispatch("settings/setModalOpen", false)
+      // Declined responsibility: leave this section (no access granted) but
+      // keep the settings modal open so other tabs stay reachable.
+      this.$emit("quit")
     },
     setNewCollectionStorageMode(mode) {
       if (mode) this.newCollection.storageMode = mode
