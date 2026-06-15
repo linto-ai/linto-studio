@@ -35335,8 +35335,8 @@ const _sfc_main$x = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$r = "\n.transcription-panel[data-v-78258098] {\n  min-height: 0;\n  overflow: hidden;\n  background-color: var(--color-surface);\n}\n.transcription-panel[data-v-78258098]:has(.ProseMirror:focus) {\n  background-color: var(--color-background);\n}\n.transcription-panel[data-v-78258098] .ProseMirror:focus {\n  outline: 1px solid var(--color-primary);\n  background-color: var(--color-surface);\n  box-shadow: var(--shadow-sm);\n}\n.scroll-container[data-v-78258098] {\n  height: 100%;\n  overflow: auto;\n  position: relative;\n}\n.turns-container[data-v-78258098] {\n  max-width: 80ch;\n  margin-inline: auto;\n  padding: var(--spacing-lg);\n}\n.turns-container[data-v-78258098]:has(.transcription-empty) {\n  display: flex;\n  flex-direction: column;\n  min-height: 100%;\n}\n.history-loading[data-v-78258098] {\n  text-align: center;\n  padding: var(--spacing-md);\n}\n.history-loading progress[data-v-78258098] {\n  width: 120px;\n}\n.history-start[data-v-78258098] {\n  text-align: center;\n  padding: var(--spacing-md);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n}\n\n/* Resume scroll button */\n.resume-scroll-btn[data-v-78258098] {\n  position: sticky;\n  bottom: var(--spacing-lg);\n  left: 50%;\n  translate: -50% 0;\n  z-index: var(--z-sticky);\n  /* No backdrop-filter: this button is sticky inside the tall scroll\n     container, where a backdrop-filter makes WebRender allocate a render\n     target spanning the whole scroll height — multi-GB on a long transcript. */\n  background: var(--glass-background);\n  border: 1px solid var(--color-border);\n  box-shadow: var(--shadow-sm);\n}\n\n/* Transition */\n.fade-slide-enter-active[data-v-78258098],\n.fade-slide-leave-active[data-v-78258098] {\n  transition:\n    opacity 200ms ease,\n    translate 200ms ease;\n}\n.fade-slide-enter-from[data-v-78258098],\n.fade-slide-leave-to[data-v-78258098] {\n  opacity: 0;\n  translate: -50% 8px;\n}\n@media (prefers-reduced-motion: reduce) {\n.fade-slide-enter-active[data-v-78258098],\n  .fade-slide-leave-active[data-v-78258098] {\n    transition: none;\n}\n}\n@media (max-width: 767px) {\n.turns-container[data-v-78258098] {\n    padding: var(--spacing-md);\n}\n}\n";
-const TranscriptionPanel = /* @__PURE__ */ _export_sfc(_sfc_main$x, [["styles", [_style_0$r]], ["__scopeId", "data-v-78258098"]]);
+const _style_0$r = "\n.transcription-panel[data-v-3d1ad18a] {\n  min-height: 0;\n  overflow: hidden;\n  background-color: var(--color-surface);\n}\n.transcription-panel[data-v-3d1ad18a]:has(.ProseMirror:focus) {\n  background-color: var(--color-background);\n}\n.transcription-panel[data-v-3d1ad18a] .ProseMirror:focus {\n  outline: 1px solid var(--color-primary);\n  background-color: var(--color-surface);\n  box-shadow: var(--shadow-sm);\n}\n.scroll-container[data-v-3d1ad18a] {\n  height: 100%;\n  overflow: auto;\n  position: relative;\n}\n.turns-container[data-v-3d1ad18a] {\n  max-width: 80ch;\n  margin-inline: auto;\n  padding: var(--spacing-lg);\n}\n.turns-container[data-v-3d1ad18a]:has(.transcription-empty) {\n  display: flex;\n  flex-direction: column;\n  min-height: 100%;\n}\n.history-loading[data-v-3d1ad18a] {\n  text-align: center;\n  padding: var(--spacing-md);\n}\n.history-loading progress[data-v-3d1ad18a] {\n  width: 120px;\n}\n.history-start[data-v-3d1ad18a] {\n  text-align: center;\n  padding: var(--spacing-md);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n}\n\n/* Resume scroll button */\n.resume-scroll-btn[data-v-3d1ad18a] {\n  position: sticky;\n  bottom: var(--spacing-lg);\n  left: 50%;\n  translate: -50% 0;\n  z-index: var(--z-sticky);\n  /* No backdrop-filter: this button is sticky inside the tall scroll\n     container, where a backdrop-filter makes WebRender allocate a render\n     target spanning the whole scroll height — multi-GB on a long transcript. */\n  background: white !important;\n  border: 1px solid var(--color-border);\n  box-shadow: var(--shadow-sm);\n}\n\n/* Transition */\n.fade-slide-enter-active[data-v-3d1ad18a],\n.fade-slide-leave-active[data-v-3d1ad18a] {\n  transition:\n    opacity 200ms ease,\n    translate 200ms ease;\n}\n.fade-slide-enter-from[data-v-3d1ad18a],\n.fade-slide-leave-to[data-v-3d1ad18a] {\n  opacity: 0;\n  translate: -50% 8px;\n}\n@media (prefers-reduced-motion: reduce) {\n.fade-slide-enter-active[data-v-3d1ad18a],\n  .fade-slide-leave-active[data-v-3d1ad18a] {\n    transition: none;\n}\n}\n@media (max-width: 767px) {\n.turns-container[data-v-3d1ad18a] {\n    padding: var(--spacing-md);\n}\n}\n";
+const TranscriptionPanel = /* @__PURE__ */ _export_sfc(_sfc_main$x, [["styles", [_style_0$r]], ["__scopeId", "data-v-3d1ad18a"]]);
 const _hoisted_1$p = ["data-status"];
 const _hoisted_2$k = {
   key: 0,
@@ -43512,6 +43512,7 @@ function createLivePlugin() {
     }
   };
 }
+const WORD_TRACK_INTERVAL = 0.05;
 function createAudioPlugin(options = {}) {
   return {
     name: "audio",
@@ -43560,9 +43561,13 @@ function createAudioPlugin(options = {}) {
         { immediate: true }
       );
       const src = computed(() => resolvedSrc.value);
+      let lastComputeTime = Number.NEGATIVE_INFINITY;
       const stopTracker = watchEffect(() => {
         if (!isPlaying.value) return;
         const time = currentTime.value;
+        const elapsed = time - lastComputeTime;
+        if (elapsed >= 0 && elapsed < WORD_TRACK_INTERVAL) return;
+        lastComputeTime = time;
         const translation = core.activeChannel.value?.activeTranslation.value;
         if (!translation) return;
         for (const turn of translation.turns.value) {
@@ -56467,40 +56472,64 @@ const WordHighlight = Extension.create({
       const cursorSet = yCursorPluginKey.getState(editor.state);
       return !!cursorSet && cursorSet.find(turnFrom, turnTo).length > 0;
     }
+    function locateTurn(doc2, turnId) {
+      const el = editor.view.dom.querySelector(
+        `[data-turn-id="${CSS.escape(turnId)}"]`
+      );
+      if (!el) return null;
+      let pos;
+      try {
+        pos = editor.view.posAtDOM(el, 0);
+      } catch {
+        return null;
+      }
+      const clamped = Math.max(0, Math.min(pos, doc2.content.size));
+      const $pos = doc2.resolve(clamped);
+      if ($pos.depth >= 1) {
+        const node = $pos.node(1);
+        if (node.type.name === "turn" && node.attrs.id === turnId) {
+          return { contentStart: $pos.start(1), node };
+        }
+      }
+      const at = doc2.nodeAt(clamped);
+      if (at && at.type.name === "turn" && at.attrs.id === turnId) {
+        return { contentStart: clamped + 1, node: at };
+      }
+      return null;
+    }
     function computeDecorations() {
       const activeId = core.audio?.activeWordId.value;
-      const activeTurnId = core?.audio?.activeTurnId.value;
+      const activeTurnId = core.audio?.activeTurnId.value;
       if (!activeId || !activeTurnId) return DecorationSet.empty;
       const translation = core.activeChannel.value?.activeTranslation.value;
       if (!translation) return DecorationSet.empty;
+      const turn = translation.getTurn(activeTurnId);
+      if (!turn) return DecorationSet.empty;
       const doc2 = editor.state.doc;
-      let result = DecorationSet.empty;
-      doc2.forEach((node, offset2) => {
-        if (node.type.name !== "turn") return;
-        if (node.attrs.id !== activeTurnId) return;
-        const turn = translation.getTurn(node.attrs.id);
-        if (!turn) return;
-        if (hasRemoteCursorInTurn(offset2, offset2 + node.nodeSize)) return;
-        const text = node.textContent;
-        let charPos = 0;
-        for (const word2 of turn.words) {
-          const idx = text.indexOf(word2.text, charPos);
-          if (idx === -1) break;
-          if (word2.id === activeId) {
-            const from2 = offset2 + 1 + idx;
-            const to = from2 + word2.text.length;
-            result = DecorationSet.create(doc2, [
-              Decoration.inline(from2, to, {
-                class: "word--active",
-                "data-word-active": ""
-              })
-            ]);
-            return;
-          }
-          charPos = idx + word2.text.length;
+      const located = locateTurn(doc2, activeTurnId);
+      if (!located) return DecorationSet.empty;
+      const { contentStart, node } = located;
+      if (hasRemoteCursorInTurn(contentStart - 1, contentStart - 1 + node.nodeSize)) {
+        return DecorationSet.empty;
+      }
+      const text = node.textContent;
+      let charPos = 0;
+      for (const word2 of turn.words) {
+        const idx = text.indexOf(word2.text, charPos);
+        if (idx === -1) break;
+        if (word2.id === activeId) {
+          const from2 = contentStart + idx;
+          const to = from2 + word2.text.length;
+          return DecorationSet.create(doc2, [
+            Decoration.inline(from2, to, {
+              class: "word--active",
+              "data-word-active": ""
+            })
+          ]);
         }
-      });
-      return result;
+        charPos = idx + word2.text.length;
+      }
+      return DecorationSet.empty;
     }
     let unwatch = null;
     return [
@@ -56712,7 +56741,7 @@ function applyStatelessPayload(payload, translation) {
     return;
   for (const t2 of msg.turns) {
     if (!t2 || !t2.turn_id || !Array.isArray(t2.words)) continue;
-    const currentTurn = translation.turns.value.find((x2) => x2.id === t2.turn_id);
+    const currentTurn = translation.getTurn(t2.turn_id);
     if (!currentTurn) continue;
     const words = t2.words.map(mapWord);
     const wordsText = normalizeText(

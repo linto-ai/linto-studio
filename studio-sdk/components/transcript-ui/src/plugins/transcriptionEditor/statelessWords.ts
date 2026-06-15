@@ -32,7 +32,7 @@ export function applyStatelessPayload(
   for (const t of msg.turns) {
     if (!t || !t.turn_id || !Array.isArray(t.words)) continue
 
-    const currentTurn = translation.turns.value.find((x) => x.id === t.turn_id)
+    const currentTurn = translation.getTurn(t.turn_id)
     if (!currentTurn) continue
 
     const words = t.words.map(mapWord)

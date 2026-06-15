@@ -5,6 +5,15 @@ import { findActiveWord, hasWordTimestamps } from "../../utils/words"
 
 export type { AudioPluginApi }
 
+/**
+ * Minimum playback progress (in seconds of media time) between two
+ * activeWordId computations. Playback ticks ~60 Hz but the active word only
+ * changes at word boundaries (~4 Hz), so recomputing every frame is wasted
+ * work. Keep it well under a spoken word's duration so the highlight never
+ * lags perceptibly.
+ */
+const WORD_TRACK_INTERVAL = 0.05
+
 export interface AudioPluginOptions {
   /**
    * Resolves an `AudioSource` into a playable URL. Lets the host add a
@@ -93,11 +102,24 @@ export function createAudioPlugin(
 
       const src = computed(() => resolvedSrc.value)
 
-      // Single source of truth: computes activeTurnId / activeWordId on every tick.
+      // Media time of the last activeWordId computation, used to throttle.
+      // -Infinity forces a compute on the first tick after playback starts.
+      let lastComputeTime = Number.NEGATIVE_INFINITY
+
+      // Single source of truth: computes activeTurnId / activeWordId.
       // No reset to null on pause: the last known position is kept.
       const stopTracker = watchEffect(() => {
         if (!isPlaying.value) return
         const time = currentTime.value
+
+        // Throttle on media progress: skip while the playhead advanced less
+        // than WORD_TRACK_INTERVAL since the last compute (the word can't have
+        // changed). A backward jump (seek) is negative and falls through, so
+        // seeks always recompute.
+        const elapsed = time - lastComputeTime
+        if (elapsed >= 0 && elapsed < WORD_TRACK_INTERVAL) return
+        lastComputeTime = time
+
         const translation = core.activeChannel.value?.activeTranslation.value
         if (!translation) return
 

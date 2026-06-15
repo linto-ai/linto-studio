@@ -255,7 +255,7 @@ onBeforeUnmount(() => {
   /* No backdrop-filter: this button is sticky inside the tall scroll
      container, where a backdrop-filter makes WebRender allocate a render
      target spanning the whole scroll height — multi-GB on a long transcript. */
-  background: var(--glass-background);
+  background: white !important;
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-sm);
 }
