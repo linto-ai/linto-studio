@@ -131,21 +131,25 @@ export default {
       const top = ordered.filter((x) => x.order === min)
       return top.length === 1 ? top[0].s.serviceName : null
     },
-    // The currently chosen service object, matched from the selected config.
-    // Prefer a NON security-disabled model so a below-floor service never gets
-    // promoted to the prominent (auto-emitting) hero card.
+    // The currently chosen service object. An explicit user pick wins (when
+    // still accessible); otherwise default to the recommended model, else the
+    // first accessible one (lowest order). This keeps the default on the
+    // recommended model regardless of the raw API list order, and never lets a
+    // security-disabled model become the prominent hero card.
     selectedService() {
       const list = this.sortedServices
       if (!list.length) return null
-      if (this.value) {
-        const match = list.find(
-          (s) =>
-            s.serviceName === this.value.serviceName &&
-            !this.isSecurityDisabled(s),
+      const accessible = list.filter((s) => !this.isSecurityDisabled(s))
+      if (this.userPickedServiceName) {
+        const picked = accessible.find(
+          (s) => s.serviceName === this.userPickedServiceName,
         )
-        if (match) return match
+        if (picked) return picked
       }
-      return list.find((s) => !this.isSecurityDisabled(s)) || list[0]
+      const recommended = accessible.find(
+        (s) => s.serviceName === this.recommendedServiceName,
+      )
+      return recommended || accessible[0] || list[0]
     },
   },
   methods: {
@@ -177,6 +181,7 @@ export default {
     },
     onPickModel(service, config) {
       if (this.disabled || this.isSecurityDisabled(service)) return
+      this.userPickedServiceName = service.serviceName
       this.$emit("input", config)
       this.pickerOpen = false
     },
@@ -184,6 +189,9 @@ export default {
   data() {
     return {
       pickerOpen: false,
+      // Set when the user explicitly picks a model in the picker; lets the
+      // default selection track the recommended model until then.
+      userPickedServiceName: null,
     }
   },
   components: {
