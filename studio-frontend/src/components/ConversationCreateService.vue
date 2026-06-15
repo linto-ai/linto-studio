@@ -1,182 +1,183 @@
 <template>
-  <!-- TODO: Merge with serviceBox component ? -->
   <fieldset
     @click="handleClick"
-    class="flex col selectable"
-    :class="{ 'security-disabled': securityDisabled }"
+    class="flex col selectable service-card"
+    :class="{
+      'security-disabled': securityDisabled,
+      'service-card--compact': compact,
+    }"
     :selected="selected"
-    role="option"
-    :aria-selected="selected"
+    :role="compact ? 'option' : 'group'"
+    :aria-selected="compact ? selected : undefined"
     :aria-disabled="securityDisabled"
     :id="`service-${value.name}`">
-    <!-- add a form tag all around ?-->
-    <!-- <legend class="h3">{{ value.name }}</legend> -->
-    <h4 class="flex align-center service-box__title">
-      <!-- <span class="icon apply" v-if="alreadyGenerated"></span> -->
-      <span class="flex1">{{ description }}</span>
-      <!-- <img class="icon large" :src="icon" :black="disabled" /> -->
-    </h4>
-
-    <div class="form-field flex col small-padding-top">
-      <!-- <div>
-        <label>{{ $t("conversation.acoustic_label") }}</label>
-        {{ acoustic_value[value.accoustic] }}
-      </div> -->
-
-      <!-- <div>
-        <label>{{ $t("conversation.language_label") }}</label>
-        {{ language_formatted }}
-      </div> -->
-
-      <!-- <div>
-        <label>{{ $t("conversation.model_quality_label") }}</label>
-        {{ audio_quality_value[value.model_quality] }}
-      </div> -->
-    </div>
-
-    <!-- -- -- language -- -- -->
-    <div class="form-field flex col">
-      <label :for="`service-${value.name}-language`">
-        {{ $t("conversation.transcription.language_label") }}
-      </label>
-      <select
-        v-model="languageField.value"
-        :id="`service-${value.name}-language`">
-        <option v-for="lang in computeLanguageList" :value="lang.value">
-           {{ lang.label }}
-        </option>
-      </select>
-    </div>
-
-    <!-- <LabeledValue
-      v-else
-      selectLike
-      :label="$t('conversation.transcription.language_label')"
-      :value="language_formatted"></LabeledValue> -->
-
-    <!-- -- -- punctuation  -- -- -->
-    <div class="form-field flex col" v-if="isModelWithPunctuation">
-      <label :for="`service-${value.name}-punctuation`">
-        {{ $t("conversation.transcription.punctuation_label") }}
-      </label>
-      <select
-        v-model="punctuation.value"
-        :id="`service-${value.name}-punctuation`">
-        <option value="disabled">
-          {{ $t("conversation.transcription.punctuation_disabled") }}
-        </option>
-        <option
-          v-for="punctuationService of value.sub_services.punctuation"
-          :key="punctuationService.service_name"
-          :value="punctuationService.service_name">
-          {{ extractLocales(punctuationService.info) }}
-        </option>
-      </select>
-    </div>
-    <LabeledValue
-      v-else
-      selectLike
-      :label="$t('conversation.transcription.punctuation_label')"
-      :value="
-        $t('conversation.transcription.punctuation_value_whisper')
-      "></LabeledValue>
-
-    <!-- -- -- diarization -- -- -->
-    <div class="form-field flex col">
-      <label :for="`service-${value.name}-diarization`">
-        {{ $t("conversation.transcription.diarization_label") }}
-      </label>
-      <select
-        v-model="diarization.value"
-        :id="`service-${value.name}-diarization`"
-        v-if="!multiTrack">
-        <option value="disabled">
-          {{ $t("conversation.transcription.diarization_disabled") }}
-        </option>
-        <option
-          v-for="diarizationService of value.sub_services.diarization"
-          :key="diarizationService.service_name"
-          :value="diarizationService.service_name">
-          {{ extractLocales(diarizationService.info) }}
-        </option>
-      </select>
-      <select
-        v-model="diarization.value"
-        :id="`service-${value.name}-diarization`"
-        v-else>
-        <option value="disabled">One speaker per file</option>
-      </select>
-    </div>
-
-    <div class="form-field flex col" v-if="diarization.value !== 'disabled'">
-      <label :for="`service-${value.name}-speakers`">
-        {{ $t("conversation.transcription.number_of_speaker_label") }}
-      </label>
-      <input
-        type="number"
-        :disabled="diarization.value === 'disabled'"
-        placeholder="auto (experimental)"
-        v-model="speakersNumber.value"
-        :id="`service-${value.name}-speakers`"
-        min="0" />
-    </div>
-
-    <!-- -- -- speaker identification (collections) -- -- -->
-    <div class="form-field flex col" v-if="speakerIdCapable">
-      <label>
-        {{ $t("conversation.transcription.speaker_identification_label") }}
-      </label>
-      <span class="speaker-id__help">
-        {{ $t("conversation.transcription.speaker_identification_help") }}
+    <!-- -- -- header: icon + name + recommended pill + subtitle + change model -- -- -->
+    <div class="service-card__header">
+      <span class="service-card__icon">
+        <ph-icon name="waveform" weight="fill" size="md" />
       </span>
-      <div v-if="speakerIdCollections.loading" class="speaker-id__help">
-        {{ $t("conversation.transcription.speaker_identification_loading") }}
+      <div class="service-card__heading flex1">
+        <div class="service-card__title-row">
+          <span class="service-card__title">{{ description }}</span>
+          <span v-if="recommended" class="service-card__badge">
+            {{ $t("conversation.transcription.recommended_badge") }}
+          </span>
+        </div>
+        <span v-if="subtitle" class="service-card__subtitle">{{
+          subtitle
+        }}</span>
       </div>
-      <div
-        v-else-if="speakerIdCollections.list.length === 0"
-        class="speaker-id__empty">
-        {{ $t("conversation.transcription.speaker_identification_empty") }}
-      </div>
-      <div v-else class="flex col gap-xsmall speaker-id__list" role="group">
-        <!-- .stop keeps the click from bubbling to the card's @click handler,
-             whose select() calls preventDefault() and would cancel the toggle -->
-        <label
-          v-for="collection of speakerIdCollections.list"
-          :key="collection._id"
-          class="speaker-id__option"
-          :class="{
-            'speaker-id__option--selected':
-              speakerIdCollections.selected.includes(collection._id),
-          }"
-          @click.stop>
+      <Button
+        v-if="showChangeModel && !compact"
+        variant="secondary"
+        size="sm"
+        type="button"
+        icon="arrows-left-right"
+        :label="$t('conversation.transcription.change_model')"
+        @click.stop="$emit('change-model')" />
+    </div>
+
+    <!-- compact (picker) mode stops at the header -->
+    <template v-if="!compact">
+      <div class="service-card__grid">
+        <!-- -- -- language -- -- -->
+        <div class="form-field flex col">
+          <label :for="`service-${value.name}-language`">
+            {{ $t("conversation.transcription.language_label") }}
+          </label>
+          <select
+            v-model="languageField.value"
+            :id="`service-${value.name}-language`">
+            <option v-for="lang in computeLanguageList" :value="lang.value">
+              {{ lang.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- -- -- punctuation -- -- -->
+        <div class="form-field flex col">
+          <label :for="`service-${value.name}-punctuation`">
+            {{ $t("conversation.transcription.punctuation_label") }}
+          </label>
+          <select
+            v-if="isModelWithPunctuation"
+            v-model="punctuation.value"
+            :id="`service-${value.name}-punctuation`">
+            <option value="disabled">
+              {{ $t("conversation.transcription.punctuation_disabled") }}
+            </option>
+            <option
+              v-for="punctuationService of value.sub_services.punctuation"
+              :key="punctuationService.service_name"
+              :value="punctuationService.service_name">
+              {{ extractLocales(punctuationService.info) }}
+            </option>
+          </select>
+          <div v-else class="service-card__readonly">
+            <span>{{
+              $t("conversation.transcription.punctuation_value_whisper")
+            }}</span>
+            <SwitchInput
+              :value="true"
+              disabled
+              :id="`service-${value.name}-punctuation`" />
+          </div>
+        </div>
+
+        <!-- -- -- diarization (Oui / Non) -- -- -->
+        <div class="form-field flex col">
+          <label :id="`service-${value.name}-diarization-label`">
+            {{ $t("conversation.transcription.diarization_label") }}
+          </label>
+          <div
+            v-if="!multiTrack && diarizationServiceName"
+            role="group"
+            :aria-labelledby="`service-${value.name}-diarization-label`">
+            <Tabs
+              variant="inline"
+              :tabs="diarizationTabs"
+              :value="diarizationChoice"
+              @input="setDiarizationChoice" />
+          </div>
+          <div v-else class="service-card__readonly">
+            <span>{{
+              $t("conversation.transcription.diarization_single_track")
+            }}</span>
+          </div>
+        </div>
+
+        <!-- -- -- number of speakers (only when diarization is on) -- -- -->
+        <div
+          class="form-field flex col"
+          v-if="!multiTrack && diarizationChoice === 'yes'">
+          <label :for="`service-${value.name}-speakers`">
+            {{ $t("conversation.transcription.number_of_speaker_label") }}
+          </label>
           <input
-            type="checkbox"
-            class="speaker-id__checkbox"
-            :value="collection._id"
-            v-model="speakerIdCollections.selected"
-            @click.stop
-            @change="select(null)" />
-          <span class="speaker-id__body">
-            <span class="speaker-id__title">
-              {{ collection.name }}
-              <span
-                v-if="collection.type === 'organization'"
-                class="speaker-id__badge">
-                {{
-                  $t(
-                    "conversation.transcription.speaker_identification_auto_badge",
-                  )
-                }}
+            type="number"
+            placeholder="auto (experimental)"
+            v-model="speakersNumber.value"
+            :id="`service-${value.name}-speakers`"
+            min="0" />
+        </div>
+      </div>
+
+      <!-- -- -- speaker identification (collections) -- -- -->
+      <div class="form-field flex col service-card__speaker-id" v-if="speakerIdCapable">
+        <label>
+          {{ $t("conversation.transcription.speaker_identification_label") }}
+        </label>
+        <span class="speaker-id__help">
+          {{ $t("conversation.transcription.speaker_identification_help") }}
+        </span>
+        <div v-if="speakerIdCollections.loading" class="speaker-id__help">
+          {{ $t("conversation.transcription.speaker_identification_loading") }}
+        </div>
+        <div
+          v-else-if="speakerIdCollections.list.length === 0"
+          class="speaker-id__empty">
+          {{ $t("conversation.transcription.speaker_identification_empty") }}
+        </div>
+        <div v-else class="flex col gap-xsmall speaker-id__list" role="group">
+          <!-- .stop keeps the click from bubbling to the card's @click handler,
+               whose select() calls preventDefault() and would cancel the toggle -->
+          <label
+            v-for="collection of speakerIdCollections.list"
+            :key="collection._id"
+            class="speaker-id__option"
+            :class="{
+              'speaker-id__option--selected':
+                speakerIdCollections.selected.includes(collection._id),
+            }"
+            @click.stop>
+            <input
+              type="checkbox"
+              class="speaker-id__checkbox"
+              :value="collection._id"
+              v-model="speakerIdCollections.selected"
+              @click.stop
+              @change="select(null)" />
+            <span class="speaker-id__body">
+              <span class="speaker-id__title">
+                {{ collection.name }}
+                <span
+                  v-if="collection.type === 'organization'"
+                  class="speaker-id__badge">
+                  {{
+                    $t(
+                      "conversation.transcription.speaker_identification_auto_badge",
+                    )
+                  }}
+                </span>
+              </span>
+              <span v-if="collectionHint(collection)" class="speaker-id__hint">
+                {{ collectionHint(collection) }}
               </span>
             </span>
-            <span v-if="collectionHint(collection)" class="speaker-id__hint">
-              {{ collectionHint(collection) }}
-            </span>
-          </span>
-        </label>
+          </label>
+        </div>
       </div>
-    </div>
-    <div class="flex1"></div>
+    </template>
   </fieldset>
 </template>
 <script>
@@ -184,6 +185,7 @@ import EMPTY_FIELD from "../const/emptyField"
 import ACOUSTIC from "../const/acoustic"
 import AUDIO_QUALITY from "../const/audioQuality"
 import LabeledValue from "@/components/atoms/LabeledValue.vue"
+import Tabs from "@/components/molecules/Tabs.vue"
 import generateServiceConfig from "../tools/generateServiceConfig"
 import { apiGetVoiceprintCollections } from "@/api/voiceprintCollection"
 import { getEnv } from "@/tools/getEnv"
@@ -213,6 +215,21 @@ export default {
       required: false,
       default: false,
     },
+    // Show the "Recommandé" pill in the header.
+    recommended: {
+      type: Boolean,
+      default: false,
+    },
+    // Show the "Changer de modèle" button (more than one model available).
+    showChangeModel: {
+      type: Boolean,
+      default: false,
+    },
+    // Render only the header (used by the model picker list).
+    compact: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     let defaultLang
@@ -235,9 +252,25 @@ export default {
       speakerIdCollections: { list: [], selected: [], loading: false },
     }
   },
+  mounted() {
+    // Emit the current config once so the view (sticky footer summary) has the
+    // model display name + summary even before the user touches anything.
+    if (!this.compact) this.select(null)
+  },
   computed: {
     description() {
       return this.extractLocales(this.value.desc)
+    },
+    // Capability-derived one-liner under the model name.
+    subtitle() {
+      const parts = []
+      if (this.computeLanguageList.length > 1) {
+        parts.push(this.$t("conversation.transcription.model_multilingual"))
+      }
+      if ((this.value?.sub_services?.diarization || []).length > 0) {
+        parts.push(this.$t("conversation.transcription.model_diarization"))
+      }
+      return parts.join(" · ")
     },
     modelType() {
       return this.value.model_type
@@ -258,6 +291,40 @@ export default {
           label: this.formatLanguage(langCode),
         }
       })
+    },
+    // The diarization sub-service used for the "Oui" choice.
+    diarizationServiceName() {
+      const list = this.value?.sub_services?.diarization || []
+      return list[0]?.service_name || null
+    },
+    diarizationChoice() {
+      return this.diarization.value !== "disabled" ? "yes" : "no"
+    },
+    diarizationTabs() {
+      return [
+        {
+          name: "yes",
+          label: this.$t("conversation.transcription.diarization_enabled"),
+        },
+        {
+          name: "no",
+          label: this.$t("conversation.transcription.diarization_disabled"),
+        },
+      ]
+    },
+    // One-line summary surfaced in the sticky footer.
+    summaryLabel() {
+      const parts = [this.description]
+      const langValue = this.hasBuiltInPunctuation
+        ? this.languageField.value
+        : this.language
+      parts.push(this.formatLanguage(langValue))
+      parts.push(
+        !this.multiTrack && this.diarizationChoice === "yes"
+          ? this.$t("conversation.transcription.summary_diarization_on")
+          : this.$t("conversation.transcription.summary_diarization_off"),
+      )
+      return parts.filter(Boolean).join(" · ")
     },
     speakerIdFeatureEnabled() {
       return getEnv("VUE_APP_ENABLE_SPEAKER_IDENTIFICATION") === "true"
@@ -312,6 +379,11 @@ export default {
       }
       return collection.description || ""
     },
+    // Oui/Non segmented toggle for diarization.
+    setDiarizationChoice(choice) {
+      this.diarization.value =
+        choice === "yes" ? this.diarizationServiceName || "disabled" : "disabled"
+    },
     handleClick(event) {
       if (this.securityDisabled) {
         event?.preventDefault()
@@ -322,9 +394,8 @@ export default {
     },
     select(event) {
       event?.preventDefault()
-      this.$emit(
-        "select",
-        generateServiceConfig(this.value, {
+      this.$emit("select", {
+        ...generateServiceConfig(this.value, {
           punctuationValue: this.punctuation.value,
           diarizationValue: this.diarization.value,
           speakersNumberValue: this.speakersNumber.value,
@@ -335,7 +406,11 @@ export default {
             ? this.speakerIdCollections.selected
             : [],
         }),
-      )
+        // Top-level display extras for the sticky footer (ignored by the API,
+        // which only reads .config / .serviceName / .lang / .endpoint).
+        displayName: this.description,
+        summary: this.summaryLabel,
+      })
     },
     // When the diarization choice changes: lazily load the org collections when
     // the chosen service is speaker-id capable, and clear the selection when
@@ -358,10 +433,7 @@ export default {
       if (!organizationId) return
       this.speakerIdCollections.loading = true
       try {
-        const collections = await apiGetVoiceprintCollections(
-          organizationId,
-          null,
-        )
+        const collections = await apiGetVoiceprintCollections(organizationId)
         this.speakerIdCollections.list = Array.isArray(collections)
           ? collections
           : []
@@ -387,23 +459,127 @@ export default {
       }
     },
   },
-  components: { LabeledValue },
+  components: { LabeledValue, Tabs },
 }
 </script>
 
 <style lang="scss" scoped>
+.service-card {
+  gap: 1rem;
+  padding: 1.25rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+
+  &--compact {
+    gap: 0;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+  }
+
+  // Header
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  &__icon {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 8px;
+    background: var(--primary-soft);
+    color: var(--primary-color);
+  }
+
+  &__heading {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  &__title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  &__title {
+    font-size: var(--text-md);
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.1rem 0.5rem;
+    border-radius: 10px;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--primary-color);
+    background: var(--primary-soft);
+  }
+
+  &__subtitle {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+  }
+
+  // Options grid (two columns, collapses to one on narrow widths)
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem 1.25rem;
+
+    .form-field {
+      margin: 0;
+      gap: 0.35rem;
+    }
+  }
+
+  &__readonly {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    min-height: 2.25rem;
+    padding: 0 0.25rem;
+    color: var(--text-secondary);
+    font-size: var(--text-sm);
+  }
+
+  &__speaker-id {
+    margin: 0;
+    padding-top: 1rem;
+    border-top: 1px solid var(--neutral-20);
+  }
+}
+
+@container main (max-width: 720px) {
+  .service-card__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .speaker-id {
   &__help {
     font-size: 12px;
-    color: var(--text-secondary, #5a6472);
+    color: var(--text-secondary);
     margin-bottom: 0.25rem;
   }
 
   &__empty {
     font-size: 13px;
-    color: var(--text-secondary, #5a6472);
+    color: var(--text-secondary);
     padding: 0.5rem 0.75rem;
-    border: 1px dashed var(--neutral-20, #cfd6dd);
+    border: 1px dashed var(--neutral-20);
     border-radius: 6px;
   }
 
@@ -416,7 +592,7 @@ export default {
     align-items: flex-start;
     gap: 0.5rem;
     padding: 0.5rem 0.625rem;
-    border: 1px solid var(--neutral-20, #cfd6dd);
+    border: 1px solid var(--neutral-20);
     border-radius: 6px;
     cursor: pointer;
     transition:
@@ -424,12 +600,12 @@ export default {
       background 0.12s ease;
 
     &:hover {
-      border-color: var(--primary-hard, #1976d2);
+      border-color: var(--primary-color);
     }
 
     &--selected {
-      border-color: var(--primary-hard, #1976d2);
-      background: var(--primary-soft, #e3f2fd);
+      border-color: var(--primary-color);
+      background: var(--primary-soft);
     }
   }
 
@@ -451,21 +627,21 @@ export default {
     gap: 0.4rem;
     font-size: 14px;
     font-weight: 500;
-    color: var(--text-primary, #1a1a1a);
+    color: var(--text-primary);
   }
 
   &__badge {
     font-size: 11px;
     font-weight: 500;
-    color: var(--text-secondary, #5a6472);
-    background: var(--neutral-10, #eef1f4);
+    color: var(--text-secondary);
+    background: var(--neutral-10);
     border-radius: 4px;
     padding: 0.05rem 0.35rem;
   }
 
   &__hint {
     font-size: 12px;
-    color: var(--text-secondary, #5a6472);
+    color: var(--text-secondary);
   }
 }
 </style>

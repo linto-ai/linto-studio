@@ -111,4 +111,62 @@
   border-radius: 4px;
   z-index: 52;
   box-sizing: border-box;
+
+  // Left side: file name / count + model summary
+  &__summary {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+  }
+
+  &__icon {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 8px;
+    background: var(--primary-soft);
+    color: var(--primary-color);
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__file {
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__model {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+// Folder + rights, side by side
+.create-meta-row {
+  > section {
+    min-width: 220px;
+  }
+}
+
+.create-services-title {
+  margin: 0;
+}
+
+.create-services-count {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
 }
