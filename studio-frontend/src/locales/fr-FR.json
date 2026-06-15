@@ -959,6 +959,7 @@
       "session_permission": "Créer des sessions",
       "microphone_permission": "Créer des sessions microphone",
       "bot_permission": "Créer des sessions bot",
+      "speaker_identification_permission": "Identification des locuteurs",
       "update_button": "Mettre à jour les permissions"
     },
     "organization_security_level": {
