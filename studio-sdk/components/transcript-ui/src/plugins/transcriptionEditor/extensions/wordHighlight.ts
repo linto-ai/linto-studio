@@ -48,7 +48,9 @@ export const WordHighlight = Extension.create<WordHighlightOptions>({
 
     function computeDecorations(): DecorationSet {
       const activeId = core.audio?.activeWordId.value
-      if (!activeId) return DecorationSet.empty
+      const activeTurnId = core?.audio?.activeTurnId.value
+
+      if (!activeId || !activeTurnId) return DecorationSet.empty
 
       const translation = core.activeChannel.value?.activeTranslation.value
       if (!translation) return DecorationSet.empty
@@ -59,7 +61,8 @@ export const WordHighlight = Extension.create<WordHighlightOptions>({
       doc.forEach((node, offset) => {
         if (node.type.name !== "turn") return
 
-        const turn = translation.turns.value.find((t) => t.id === node.attrs.id)
+        if (node.attrs.id !== activeTurnId) return
+        const turn = translation.getTurn(node.attrs.id)
         if (!turn) return
 
         if (hasRemoteCursorInTurn(offset, offset + node.nodeSize)) return

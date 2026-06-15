@@ -32,6 +32,17 @@ export function createTiptapEditor(config: TiptapEditorConfig): Editor {
   return new Editor({
     extensions: buildExtensions(config),
     editable: !config.readOnly,
+    editorProps: {
+      attributes: {
+        // Native spellcheck over a whole multi-hour transcript freezes
+        // Firefox (it checks the entire contenteditable, ~400KB of text on
+        // a 7h document) — and flagging STT output as misspelled is noise
+        // anyway. Same reasoning for autocorrect/autocapitalize on mobile.
+        spellcheck: "false",
+        autocorrect: "off",
+        autocapitalize: "off",
+      },
+    },
   })
 }
 

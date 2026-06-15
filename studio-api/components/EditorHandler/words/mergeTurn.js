@@ -16,13 +16,21 @@ function mergeTurn(startTurn, endTurn, survivorId) {
   const base =
     survivorId === endTurn.turn_id ? endTurn : startTurn
 
-  return {
+  const merged = {
     ...base,
     turn_id: survivorId,
     words,
     segment,
     raw_segment: segment,
   }
+
+  // Turn-level times (live sessions) must span the whole merged turn:
+  // start of the first, end of the last — not the survivor's own span.
+  // Turns without turn-level times gain none.
+  if (startTurn.stime !== undefined) merged.stime = startTurn.stime
+  if (endTurn.etime !== undefined) merged.etime = endTurn.etime
+
+  return merged
 }
 
 module.exports = { mergeTurn }

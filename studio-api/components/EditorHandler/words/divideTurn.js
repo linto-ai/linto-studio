@@ -47,20 +47,51 @@ function divideTurn(turn, textBefore, textAfter, syllabic, firstTurnId, secondTu
     secondTurnWords = turn.words.slice(indexTurn + 1)
   }
 
-  return [
-    {
-      ...turn,
-      segment: textBefore,
-      words: firstTurnWords,
-      turn_id: firstTurnId,
-    },
-    {
-      ...turn,
-      segment: textAfter,
-      words: secondTurnWords,
-      turn_id: secondTurnId,
-    },
-  ]
+  const first = {
+    ...turn,
+    segment: textBefore,
+    words: firstTurnWords,
+    turn_id: firstTurnId,
+  }
+  const second = {
+    ...turn,
+    segment: textAfter,
+    words: secondTurnWords,
+    turn_id: secondTurnId,
+  }
+  adjustSplitTimes(first, second)
+  return [first, second]
+}
+
+/**
+ * Live-session turns carry turn-level stime/etime; after a split each half
+ * must span only its own words instead of inheriting the full parent span:
+ * the first half keeps the parent's start and ends at the cut, the second
+ * starts at the cut and keeps the parent's end. The cut is read from the
+ * word timestamps (splitWord already places timeCut on both fragments of a
+ * mid-word split). Turns without turn-level times are left untouched.
+ */
+function adjustSplitTimes(first, second) {
+  if (first.stime === undefined && first.etime === undefined) return
+
+  const cutEnd = lastWordEtime(first.words)
+  const cutStart = firstWordStime(second.words)
+  if (cutEnd !== undefined) first.etime = cutEnd
+  if (cutStart !== undefined) second.stime = cutStart
+}
+
+function lastWordEtime(words) {
+  for (let i = words.length - 1; i >= 0; i--) {
+    if (words[i].etime !== undefined) return words[i].etime
+  }
+  return undefined
+}
+
+function firstWordStime(words) {
+  for (const w of words) {
+    if (w.stime !== undefined) return w.stime
+  }
+  return undefined
 }
 
 function isDividedInAMiddleOfAWord(turnWords, plainWordsBefore, plainWordsAfter, index) {

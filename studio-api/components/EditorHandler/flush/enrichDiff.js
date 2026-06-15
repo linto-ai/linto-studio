@@ -113,7 +113,10 @@ function enrichDiff(oldTurns, newTurns) {
     }
 
     if (segmentEqual(oldTurn.segment, cur.segment)) {
+      // Old turn first: Mongo may carry fields the Y.Doc doesn't know
+      // (stime/etime from live sessions, ...) — editor-owned fields override.
       const t = {
+        ...oldTurn,
         ...cur,
         words: oldTurn.words || [],
         raw_segment: oldTurn.raw_segment || oldTurn.segment,
@@ -132,12 +135,17 @@ function enrichDiff(oldTurns, newTurns) {
       newWords = null
     }
     if (newWords == null) {
+      // Split on whitespace runs: never fabricate empty words from
+      // consecutive spaces in the segment.
       newWords = cur.segment
-        ? cur.segment.split(" ").map((w) => ({ word: w }))
+        ? cur.segment
+            .split(/\s+/)
+            .filter(Boolean)
+            .map((w) => ({ word: w }))
         : []
     }
 
-    const t = { ...cur, words: newWords, raw_segment: cur.segment }
+    const t = { ...oldTurn, ...cur, words: newWords, raw_segment: cur.segment }
     finalTurns.push(t)
     changedTurns.push({ turn_id: t.turn_id, words: newWords })
     dirty = true
@@ -159,8 +167,15 @@ function enrichDiff(oldTurns, newTurns) {
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
+// Whitespace runs collapse before comparison: legacy seeds built from words
+// arrays containing empty placeholder words carry double spaces, and a user
+// can type consecutive spaces — neither is a content change.
+function normalizeSegment(s) {
+  return (s || "").replace(/\s+/g, " ").trim()
+}
+
 function segmentEqual(a, b) {
-  return (a || "").trim() === (b || "").trim()
+  return normalizeSegment(a) === normalizeSegment(b)
 }
 
 function turnMetaChanged(oldTurn, newTurn) {
@@ -175,10 +190,10 @@ function turnMetaChanged(oldTurn, newTurn) {
  * concatenated segments equal oldCur.segment. Returns null if no match.
  */
 function matchSplit(newTurns, i, oldById, oldCur) {
-  const original = (oldCur.segment || "").trim()
+  const original = normalizeSegment(oldCur.segment)
   if (!original) return null
 
-  let combined = (newTurns[i].segment || "").trim()
+  let combined = normalizeSegment(newTurns[i].segment)
   if (!combined) return null
   if (combined === original) return null // not a split, just unchanged
   if (!startsWithWord(original, combined)) return null
@@ -188,7 +203,7 @@ function matchSplit(newTurns, i, oldById, oldCur) {
   while (j < newTurns.length) {
     const nxt = newTurns[j]
     if (oldById.has(nxt.turn_id)) break // would-be split fragment must be fresh
-    const nxtSeg = (nxt.segment || "").trim()
+    const nxtSeg = normalizeSegment(nxt.segment)
     if (nxtSeg) {
       const tentative = (combined + " " + nxtSeg).trim()
       if (!startsWithWord(original, tentative) && tentative !== original) break
@@ -208,10 +223,10 @@ function matchSplit(newTurns, i, oldById, oldCur) {
  * concatenated segments equal cur.segment. Returns null if no match.
  */
 function matchMerge(curSegment, oldByIndex, start, newIds) {
-  const target = (curSegment || "").trim()
+  const target = normalizeSegment(curSegment)
   if (!target) return null
 
-  let combined = (oldByIndex[start].segment || "").trim()
+  let combined = normalizeSegment(oldByIndex[start].segment)
   if (!combined) return null
   if (combined === target) return null
   if (!startsWithWord(target, combined)) return null
@@ -219,7 +234,7 @@ function matchMerge(curSegment, oldByIndex, start, newIds) {
   for (let k = 1; start + k < oldByIndex.length; k++) {
     const next = oldByIndex[start + k]
     if (newIds.has(next.turn_id)) break // not gone
-    const nextSeg = (next.segment || "").trim()
+    const nextSeg = normalizeSegment(next.segment)
     if (nextSeg) {
       const tentative = (combined + " " + nextSeg).trim()
       if (!startsWithWord(target, tentative) && tentative !== target) break
@@ -273,10 +288,19 @@ function cascadeDivide(oldTurn, candidates, syllabic) {
   return parts
 }
 
+/**
+ * `computed` derives from the old Mongo turn (divideTurn/mergeTurn spread it),
+ * so it carries fields the Y.Doc doesn't know (stime/etime, ...). Editor-owned
+ * fields from the doc (`newTurn`: speaker_id, language) must override them —
+ * e.g. a speaker change on a freshly split half — while the recomputed
+ * words/segment are reasserted last.
+ */
 function combine(newTurn, computed) {
   return {
-    ...newTurn,
     ...computed,
+    ...newTurn,
+    words: computed.words,
+    segment: computed.segment,
     raw_segment: computed.segment,
   }
 }

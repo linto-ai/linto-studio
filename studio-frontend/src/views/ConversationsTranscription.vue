@@ -48,6 +48,19 @@ import {
 const COLLAB_SYNC_TIMEOUT_MS = 20000
 const COLLAB_SYNC_POLL_MS = 80
 
+// Editor epoch per translation id, read by the collab plugin to build the
+// Hocuspocus document name (the epoch identifies the server-side CRDT
+// history lineage).
+function collectEditorEpochs(doc) {
+  const epochs = {}
+  for (const channel of doc.channels ?? []) {
+    for (const translation of channel.translations ?? []) {
+      epochs[translation.id] = translation.editorEpoch ?? 0
+    }
+  }
+  return epochs
+}
+
 export default {
   components: { LayoutV2, PublicationModal, Loading },
   props: {
@@ -66,6 +79,11 @@ export default {
       canWrite: false,
       loading: true,
       publicationModal: { open: false, jobId: null },
+      // Mutable map shared with the collab plugin: sessions read it at
+      // (re)creation, so refreshing its values + setDocument() is enough to
+      // reconnect on a new epoch. markRaw'd via core anyway; keep it plain.
+      collabEpochs: {},
+      collabReloadInFlight: false,
     }
   },
   async mounted() {
@@ -147,11 +165,16 @@ export default {
         }),
       )
 
+      Object.assign(this.collabEpochs, collectEditorEpochs(doc))
+
       core.use(
         createTranscriptionEditorPlugin({
           collab: {
             url: ws_url.toString(),
             token: getCookie("authToken"),
+            epochs: this.collabEpochs,
+            onAuthenticationFailed: (reason) =>
+              this.onCollabAuthFailed(reason),
           },
           user: {
             name: userName(this.userInfo),
@@ -223,6 +246,33 @@ export default {
       if (this.syncTimeoutTimer) {
         clearTimeout(this.syncTimeoutTimer)
         this.syncTimeoutTimer = null
+      }
+    },
+
+    // The collab server rejected the connection. The recoverable case is a
+    // stale editor epoch (conversation rewritten outside the editor):
+    // refetching gives fresh epochs, and reloading the document recreates
+    // the sessions on the new lineage. Anything else (expired token, lost
+    // access) is not recoverable from here — only log it.
+    async onCollabAuthFailed(reason) {
+      console.warn("[host] collab authentication failed:", reason)
+      if (this.collabReloadInFlight || !this.core) return
+      this.collabReloadInFlight = true
+      try {
+        const { doc } = await apiGetConversationAsDoc(this.conversationId)
+        const fresh = collectEditorEpochs(doc)
+        const changed = Object.entries(fresh).some(
+          ([id, epoch]) => this.collabEpochs[id] !== epoch,
+        )
+        if (!changed) return
+        Object.assign(this.collabEpochs, fresh)
+        this.loading = true
+        this.core.setDocument(doc)
+        this.waitForCollabSync()
+      } catch (e) {
+        console.error("[host] failed to reload after collab auth failure", e)
+      } finally {
+        this.collabReloadInFlight = false
       }
     },
 

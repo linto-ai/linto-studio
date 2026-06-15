@@ -19,6 +19,20 @@ export interface CollabOptions {
   url: string
   /** JWT token for authentication */
   token: string
+  /**
+   * Editor epoch per translation id (= conversation id), as fetched from the
+   * API. The epoch identifies the server-side CRDT history lineage and is
+   * appended to the Hocuspocus document name; the server rejects connections
+   * whose epoch is stale (history rebuilt after an external write).
+   * Missing entry defaults to 0.
+   */
+  epochs?: Record<string, number>
+  /**
+   * Called when the server rejects the connection at authentication —
+   * invalid/expired token, lost access, or stale epoch. For a stale epoch
+   * the host should refetch the document (fresh epochs) and reload it.
+   */
+  onAuthenticationFailed?: (reason: string) => void
 }
 
 export interface LocalUser {
@@ -68,14 +82,20 @@ export class CollabSession implements EditorSession {
   constructor(deps: SessionDeps, collab: CollabOptions) {
     this.deps = deps
     this.ydoc = new Doc()
+    // The epoch is part of the document identity: it pins this session (and
+    // its Y.Doc) to one server-side history lineage. Read at construction —
+    // a bumped epoch always comes with a session restart.
+    const epoch = collab.epochs?.[deps.translation.id] ?? 0
     // The server seeds the Y.Doc; the editor is created on first sync.
     this.provider = new HocuspocusProvider({
       url: collab.url,
-      name: deps.translation.id,
+      name: `${deps.translation.id}.${epoch}`,
       token: collab.token,
       document: this.ydoc,
       onSynced: () => this.handleSynced(),
       onDisconnect: () => deps.host.setConnected(false),
+      onAuthenticationFailed: ({ reason }) =>
+        collab.onAuthenticationFailed?.(reason),
       onAwarenessUpdate: ({ states }) =>
         deps.host.setUsers(mapAwarenessStates(states)),
       onStateless: ({ payload }) =>

@@ -166,10 +166,22 @@ function mergeTurnPreservingWords(
   oldTurn: Turn | undefined,
 ): Turn {
   if (!oldTurn) return newTurn
-  const oldText = oldTurn.text ?? oldTurn.words.map((w) => w.text).join(" ")
-  return newTurn.text === oldText
+  // Compare whitespace-normalized, ignoring empty placeholder words: the doc
+  // text never contains them, while stored words do — a raw join would see a
+  // phantom difference and drop the words (= timestamps) on unrelated edits.
+  const oldText =
+    oldTurn.text ??
+    oldTurn.words
+      .filter((w) => w.text !== "")
+      .map((w) => w.text)
+      .join(" ")
+  return normalizeText(newTurn.text ?? "") === normalizeText(oldText)
     ? { ...newTurn, words: oldTurn.words }
     : newTurn
+}
+
+function normalizeText(s: string): string {
+  return s.replace(/\s+/g, " ").trim()
 }
 
 function nodeToTurn(node: ProseMirrorNode): Turn {

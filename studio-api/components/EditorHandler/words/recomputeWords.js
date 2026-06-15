@@ -18,7 +18,9 @@ function recomputeWords(oldWords, newSegment, syllabic) {
     return null
   }
 
-  const trimmed = (newSegment || "").trim()
+  // Collapse whitespace runs: consecutive spaces in the segment must not
+  // produce empty plain words in the diff below.
+  const trimmed = (newSegment || "").replace(/\s+/g, " ").trim()
   const oldText = oldWords
     .filter((w) => w.word !== "" && w.word !== " ")
     .map((w) => w.word)

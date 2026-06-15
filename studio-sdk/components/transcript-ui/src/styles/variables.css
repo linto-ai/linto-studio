@@ -84,9 +84,11 @@
   --z-drawer: 51;
   --z-dropdown: 100;
 
-  /* Glass effect */
+  /* Glass effect — backdrop blur intentionally removed: each backdrop-filter
+     forces a WebRender render target, which on long transcripts (one waveform
+     region per turn, tall scroll container) balloons GPU memory to several GB
+     and freezes weaker machines. Keep the semi-opaque background only. */
   --glass-background: rgba(255, 255, 255, 0.8);
-  --glass-blur: blur(12px);
   --glass-border: rgba(255, 255, 255, 0.3);
 }
 

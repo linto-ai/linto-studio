@@ -35337,8 +35337,8 @@ ${indentedChild}`;
       };
     }
   });
-  const _style_0$r = "\n.transcription-panel[data-v-a3eca6be] {\n  min-height: 0;\n  overflow: hidden;\n  background-color: var(--color-surface);\n}\n.transcription-panel[data-v-a3eca6be]:has(.ProseMirror:focus) {\n  background-color: var(--color-background);\n}\n.transcription-panel[data-v-a3eca6be] .ProseMirror:focus {\n  outline: 1px solid var(--color-primary);\n  background-color: var(--color-surface);\n  box-shadow: var(--shadow-sm);\n}\n.scroll-container[data-v-a3eca6be] {\n  height: 100%;\n  overflow: auto;\n  position: relative;\n}\n.turns-container[data-v-a3eca6be] {\n  max-width: 80ch;\n  margin-inline: auto;\n  padding: var(--spacing-lg);\n}\n.turns-container[data-v-a3eca6be]:has(.transcription-empty) {\n  display: flex;\n  flex-direction: column;\n  min-height: 100%;\n}\n.history-loading[data-v-a3eca6be] {\n  text-align: center;\n  padding: var(--spacing-md);\n}\n.history-loading progress[data-v-a3eca6be] {\n  width: 120px;\n}\n.history-start[data-v-a3eca6be] {\n  text-align: center;\n  padding: var(--spacing-md);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n}\n\n/* Resume scroll button */\n.resume-scroll-btn[data-v-a3eca6be] {\n  position: sticky;\n  bottom: var(--spacing-lg);\n  left: 50%;\n  translate: -50% 0;\n  z-index: var(--z-sticky);\n  background: var(--glass-background);\n  backdrop-filter: var(--glass-blur);\n  -webkit-backdrop-filter: var(--glass-blur);\n  border: 1px solid var(--color-border);\n  box-shadow: var(--shadow-sm);\n}\n\n/* Transition */\n.fade-slide-enter-active[data-v-a3eca6be],\n.fade-slide-leave-active[data-v-a3eca6be] {\n  transition:\n    opacity 200ms ease,\n    translate 200ms ease;\n}\n.fade-slide-enter-from[data-v-a3eca6be],\n.fade-slide-leave-to[data-v-a3eca6be] {\n  opacity: 0;\n  translate: -50% 8px;\n}\n@media (prefers-reduced-motion: reduce) {\n.fade-slide-enter-active[data-v-a3eca6be],\n  .fade-slide-leave-active[data-v-a3eca6be] {\n    transition: none;\n}\n}\n@media (max-width: 767px) {\n.turns-container[data-v-a3eca6be] {\n    padding: var(--spacing-md);\n}\n}\n";
-  const TranscriptionPanel = /* @__PURE__ */ _export_sfc(_sfc_main$x, [["styles", [_style_0$r]], ["__scopeId", "data-v-a3eca6be"]]);
+  const _style_0$r = "\n.transcription-panel[data-v-78258098] {\n  min-height: 0;\n  overflow: hidden;\n  background-color: var(--color-surface);\n}\n.transcription-panel[data-v-78258098]:has(.ProseMirror:focus) {\n  background-color: var(--color-background);\n}\n.transcription-panel[data-v-78258098] .ProseMirror:focus {\n  outline: 1px solid var(--color-primary);\n  background-color: var(--color-surface);\n  box-shadow: var(--shadow-sm);\n}\n.scroll-container[data-v-78258098] {\n  height: 100%;\n  overflow: auto;\n  position: relative;\n}\n.turns-container[data-v-78258098] {\n  max-width: 80ch;\n  margin-inline: auto;\n  padding: var(--spacing-lg);\n}\n.turns-container[data-v-78258098]:has(.transcription-empty) {\n  display: flex;\n  flex-direction: column;\n  min-height: 100%;\n}\n.history-loading[data-v-78258098] {\n  text-align: center;\n  padding: var(--spacing-md);\n}\n.history-loading progress[data-v-78258098] {\n  width: 120px;\n}\n.history-start[data-v-78258098] {\n  text-align: center;\n  padding: var(--spacing-md);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n}\n\n/* Resume scroll button */\n.resume-scroll-btn[data-v-78258098] {\n  position: sticky;\n  bottom: var(--spacing-lg);\n  left: 50%;\n  translate: -50% 0;\n  z-index: var(--z-sticky);\n  /* No backdrop-filter: this button is sticky inside the tall scroll\n     container, where a backdrop-filter makes WebRender allocate a render\n     target spanning the whole scroll height — multi-GB on a long transcript. */\n  background: var(--glass-background);\n  border: 1px solid var(--color-border);\n  box-shadow: var(--shadow-sm);\n}\n\n/* Transition */\n.fade-slide-enter-active[data-v-78258098],\n.fade-slide-leave-active[data-v-78258098] {\n  transition:\n    opacity 200ms ease,\n    translate 200ms ease;\n}\n.fade-slide-enter-from[data-v-78258098],\n.fade-slide-leave-to[data-v-78258098] {\n  opacity: 0;\n  translate: -50% 8px;\n}\n@media (prefers-reduced-motion: reduce) {\n.fade-slide-enter-active[data-v-78258098],\n  .fade-slide-leave-active[data-v-78258098] {\n    transition: none;\n}\n}\n@media (max-width: 767px) {\n.turns-container[data-v-78258098] {\n    padding: var(--spacing-md);\n}\n}\n";
+  const TranscriptionPanel = /* @__PURE__ */ _export_sfc(_sfc_main$x, [["styles", [_style_0$r]], ["__scopeId", "data-v-78258098"]]);
   const _hoisted_1$p = ["data-status"];
   const _hoisted_2$k = {
     key: 0,
@@ -38783,8 +38783,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$i = "\n.merge-dialog[data-v-be330083] {\n  margin: auto;\n  max-width: 420px;\n  width: 90vw;\n  padding: var(--spacing-lg);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  color: var(--color-text-primary);\n  box-shadow: 0 16px 48px color-mix(in srgb, var(--color-text-primary) 20%, transparent);\n}\n.merge-dialog[data-v-be330083]::backdrop {\n  background-color: color-mix(in srgb, var(--color-text-primary) 35%, transparent);\n  backdrop-filter: blur(2px);\n}\n.merge-dialog-form[data-v-be330083] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-md);\n}\n.merge-dialog-title[data-v-be330083] {\n  margin: 0;\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n}\n.merge-dialog-description[data-v-be330083] {\n  margin: 0;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n.merge-dialog-actions[data-v-be330083] {\n  display: flex;\n  justify-content: flex-end;\n  gap: var(--spacing-sm);\n}\n";
-  const MergeDialog = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["styles", [_style_0$i]], ["__scopeId", "data-v-be330083"]]);
+  const _style_0$i = "\n.merge-dialog[data-v-e797b7aa] {\n  margin: auto;\n  max-width: 420px;\n  width: 90vw;\n  padding: var(--spacing-lg);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  color: var(--color-text-primary);\n  box-shadow: 0 16px 48px color-mix(in srgb, var(--color-text-primary) 20%, transparent);\n}\n.merge-dialog[data-v-e797b7aa]::backdrop {\n  /* No backdrop-filter: a full-viewport backdrop blur is a large WebRender\n     render target; the dim background alone is enough. */\n  background-color: color-mix(in srgb, var(--color-text-primary) 35%, transparent);\n}\n.merge-dialog-form[data-v-e797b7aa] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-md);\n}\n.merge-dialog-title[data-v-e797b7aa] {\n  margin: 0;\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n}\n.merge-dialog-description[data-v-e797b7aa] {\n  margin: 0;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n.merge-dialog-actions[data-v-e797b7aa] {\n  display: flex;\n  justify-content: flex-end;\n  gap: var(--spacing-sm);\n}\n";
+  const MergeDialog = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["styles", [_style_0$i]], ["__scopeId", "data-v-e797b7aa"]]);
   const _sfc_main$k = /* @__PURE__ */ defineComponent({
     __name: "ChannelSelector",
     props: {
@@ -42565,8 +42565,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$4 = "\n.selection-bar[data-v-1c5a7d10] {\n  flex-shrink: 0;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-xs) var(--spacing-lg);\n  background: var(--glass-background);\n  backdrop-filter: var(--glass-blur);\n  -webkit-backdrop-filter: var(--glass-blur);\n  border-bottom: 1px solid var(--color-border);\n  animation: bar-slide-down-1c5a7d10 var(--transition-duration) ease;\n}\n.selection-count[data-v-1c5a7d10] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-primary);\n}\n.selection-actions[data-v-1c5a7d10] {\n  display: flex;\n  gap: var(--spacing-xs);\n}\n@keyframes bar-slide-down-1c5a7d10 {\nfrom {\n    opacity: 0;\n    translate: 0 -4px;\n}\nto {\n    opacity: 1;\n    translate: 0 0;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.selection-bar[data-v-1c5a7d10] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.selection-bar[data-v-1c5a7d10] {\n    padding: var(--spacing-xs) var(--spacing-md);\n    flex-wrap: wrap;\n    gap: var(--spacing-xs);\n}\n}\n";
-  const SelectionActionBar = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["styles", [_style_0$4]], ["__scopeId", "data-v-1c5a7d10"]]);
+  const _style_0$4 = "\n.selection-bar[data-v-1f9dee3a] {\n  flex-shrink: 0;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-xs) var(--spacing-lg);\n  /* No backdrop-filter: it forces a WebRender backdrop render target sized to\n     the content behind, a heavy GPU-memory cost on long transcripts. The\n     semi-opaque glass background stays legible without the blur. */\n  background: var(--glass-background);\n  border-bottom: 1px solid var(--color-border);\n  animation: bar-slide-down-1f9dee3a var(--transition-duration) ease;\n}\n.selection-count[data-v-1f9dee3a] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-primary);\n}\n.selection-actions[data-v-1f9dee3a] {\n  display: flex;\n  gap: var(--spacing-xs);\n}\n@keyframes bar-slide-down-1f9dee3a {\nfrom {\n    opacity: 0;\n    translate: 0 -4px;\n}\nto {\n    opacity: 1;\n    translate: 0 0;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.selection-bar[data-v-1f9dee3a] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.selection-bar[data-v-1f9dee3a] {\n    padding: var(--spacing-xs) var(--spacing-md);\n    flex-wrap: wrap;\n    gap: var(--spacing-xs);\n}\n}\n";
+  const SelectionActionBar = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["styles", [_style_0$4]], ["__scopeId", "data-v-1f9dee3a"]]);
   const MOBILE_BREAKPOINT = "(max-width: 767px)";
   function useIsMobile() {
     const isMobile = /* @__PURE__ */ ref(false);
@@ -42862,9 +42862,11 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
   --z-drawer: 51;
   --z-dropdown: 100;
 
-  /* Glass effect */
+  /* Glass effect — backdrop blur intentionally removed: each backdrop-filter
+     forces a WebRender render target, which on long transcripts (one waveform
+     region per turn, tall scroll container) balloons GPU memory to several GB
+     and freezes weaker machines. Keep the semi-opaque background only. */
   --glass-background: rgba(255, 255, 255, 0.8);
-  --glass-blur: blur(12px);
   --glass-border: rgba(255, 255, 255, 0.3);
 }
 :host,
@@ -42986,9 +42988,12 @@ to {
 }
 
 /* Wavesurfer ::part (cannot work in scoped styles) */
+
+/* No backdrop-filter: there is one region per turn (hundreds on a long
+   transcript), and each backdrop-filter forces a separate WebRender backdrop
+   render target — on a multi-hour document this balloons GPU/GTT memory to
+   several GB and freezes weaker machines. The border/shadow alone read fine. */
 .waveform-container ::part(region) {
-  backdrop-filter: blur(0.5px);
-  -webkit-backdrop-filter: blur(0.5px);
   border-top: 2px solid var(--region-color, rgba(255, 255, 255, 0.4));
   border-bottom: 1px solid var(--region-color, rgba(255, 255, 255, 0.4));
   box-shadow:
@@ -56400,8 +56405,11 @@ ${err.toString()}`);
   }
   function mergeTurnPreservingWords(newTurn, oldTurn) {
     if (!oldTurn) return newTurn;
-    const oldText = oldTurn.text ?? oldTurn.words.map((w2) => w2.text).join(" ");
-    return newTurn.text === oldText ? { ...newTurn, words: oldTurn.words } : newTurn;
+    const oldText = oldTurn.text ?? oldTurn.words.filter((w2) => w2.text !== "").map((w2) => w2.text).join(" ");
+    return normalizeText$1(newTurn.text ?? "") === normalizeText$1(oldText) ? { ...newTurn, words: oldTurn.words } : newTurn;
+  }
+  function normalizeText$1(s2) {
+    return s2.replace(/\s+/g, " ").trim();
   }
   function nodeToTurn(node) {
     return {
@@ -56463,14 +56471,16 @@ ${err.toString()}`);
       }
       function computeDecorations() {
         const activeId = core.audio?.activeWordId.value;
-        if (!activeId) return DecorationSet.empty;
+        const activeTurnId = core?.audio?.activeTurnId.value;
+        if (!activeId || !activeTurnId) return DecorationSet.empty;
         const translation = core.activeChannel.value?.activeTranslation.value;
         if (!translation) return DecorationSet.empty;
         const doc2 = editor.state.doc;
         let result = DecorationSet.empty;
         doc2.forEach((node, offset2) => {
           if (node.type.name !== "turn") return;
-          const turn = translation.turns.value.find((t2) => t2.id === node.attrs.id);
+          if (node.attrs.id !== activeTurnId) return;
+          const turn = translation.getTurn(node.attrs.id);
           if (!turn) return;
           if (hasRemoteCursorInTurn(offset2, offset2 + node.nodeSize)) return;
           const text = node.textContent;
@@ -56646,7 +56656,18 @@ ${err.toString()}`);
   function createTiptapEditor(config) {
     return new Editor({
       extensions: buildExtensions(config),
-      editable: !config.readOnly
+      editable: !config.readOnly,
+      editorProps: {
+        attributes: {
+          // Native spellcheck over a whole multi-hour transcript freezes
+          // Firefox (it checks the entire contenteditable, ~400KB of text on
+          // a 7h document) — and flagging STT output as misspelled is noise
+          // anyway. Same reasoning for autocorrect/autocapitalize on mobile.
+          spellcheck: "false",
+          autocorrect: "off",
+          autocapitalize: "off"
+        }
+      }
     });
   }
   function buildExtensions(config) {
@@ -56716,7 +56737,8 @@ ${err.toString()}`);
     };
   }
   function turnToNode(turn) {
-    const text = turn.words.length > 0 ? turn.words.map((w2) => w2.text).join(" ") : turn.text ?? "";
+    const spokenWords = turn.words.filter((w2) => w2.text !== "");
+    const text = spokenWords.length > 0 ? spokenWords.map((w2) => w2.text).join(" ") : turn.text ?? "";
     return {
       type: "turn",
       attrs: {
@@ -56740,13 +56762,15 @@ ${err.toString()}`);
     constructor(deps, collab) {
       this.deps = deps;
       this.ydoc = new Doc();
+      const epoch = collab.epochs?.[deps.translation.id] ?? 0;
       this.provider = new HocuspocusProvider({
         url: collab.url,
-        name: deps.translation.id,
+        name: `${deps.translation.id}.${epoch}`,
         token: collab.token,
         document: this.ydoc,
         onSynced: () => this.handleSynced(),
         onDisconnect: () => deps.host.setConnected(false),
+        onAuthenticationFailed: ({ reason }) => collab.onAuthenticationFailed?.(reason),
         onAwarenessUpdate: ({ states }) => deps.host.setUsers(mapAwarenessStates(states)),
         onStateless: ({ payload }) => applyStatelessPayload(payload, deps.translation)
       });

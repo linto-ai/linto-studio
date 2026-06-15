@@ -22,6 +22,9 @@ function sourceTranslation(conv) {
     isSource: true,
     languages: convertLocaleToLanguages(conv.locale),
     turns: [],
+    // Editor CRDT history lineage id, consumed by the collab plugin
+    // (appended to the Hocuspocus document name). Not editor-model data.
+    editorEpoch: conv.editorEpoch ?? 0,
   }
   if (conv?.metadata?.audio) {
     tr.audio = {
@@ -38,6 +41,7 @@ function translation(conv) {
     isSource: false,
     languages: [conv.locale],
     turns: [],
+    editorEpoch: conv.editorEpoch ?? 0,
   }
 }
 
@@ -78,6 +82,7 @@ export async function apiGetConversationAsDoc(convId) {
     "locale",
     "metadata.transcription",
     "jobs.transcription.state",
+    "editorEpoch",
   ])
 
   let channels
@@ -90,6 +95,7 @@ export async function apiGetConversationAsDoc(convId) {
           const childTranslations = await apiGetConversationChild(child._id, [
             "_id",
             "locale",
+            "editorEpoch",
           ])
           return channel(child, [
             sourceTranslation(child),
