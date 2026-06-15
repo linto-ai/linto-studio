@@ -12,9 +12,11 @@ const {
   `${process.cwd()}/components/WebServer/error/exception/speakerIdentification`,
 )
 
-const { resolveUserSampleAudio } = require(
-  `${process.cwd()}/components/WebServer/routecontrollers/users/userVoiceOptIn`,
-)
+// NB: userVoiceOptIn.js requires this module (verifyOrgMembership), so importing
+// resolveUserSampleAudio at the top creates a circular require — whichever module
+// loads first captures a half-initialised exports of the other. userVoiceOptIn
+// loads first here, so a top-level destructure yields `undefined`. Require it
+// lazily inside the handler instead, when both modules are fully loaded.
 
 async function verifyOrgMembership(organizationId, userId) {
   const orgs = await model.organizations.getById(organizationId)
@@ -134,6 +136,9 @@ async function getOptedInMemberSampleAudio(req, res, next) {
       verifyOptIn(organizationId, userId),
     ])
 
+    const { resolveUserSampleAudio } = require(
+      `${process.cwd()}/components/WebServer/routecontrollers/users/userVoiceOptIn`,
+    )
     const filePath = await resolveUserSampleAudio(sampleId, userId)
     res.sendFile(filePath)
   } catch (err) {
