@@ -169,7 +169,10 @@
           <span class="voice-optin__storage-title">
             {{ $t("speaker_diarization.voiceprint_storage_mode_title") }}
           </span>
-          <FormRadio :field="storageModeField" @input="requestStorageMode" />
+          <FormRadio
+            :key="storageRadioKey"
+            :field="storageModeField"
+            @input="requestStorageMode" />
           <p
             v-if="isStorageModeEmbeddings"
             class="voice-optin__storage-warning">
@@ -411,6 +414,10 @@ export default {
       showStorageModeModal: false,
       pendingStorageMode: null,
       switchingStorageMode: false,
+      // Bumped to force the storage-mode radio back in sync with the committed
+      // value when a pending change is dismissed (the native radio moves on click
+      // but the model only changes once confirmed).
+      storageRadioKey: 0,
       showRecordModal: false,
       showDeleteAllModal: false,
       // Recording state
@@ -575,9 +582,13 @@ export default {
       this.pendingStorageMode = null
       if (mode) this.applyStorageMode(mode)
     },
+    // Dismissing the modal (Annuler, the X button, Escape and click-outside all
+    // route through the modal's cancel event). The native radio already moved to
+    // the unconfirmed option, so force it back to the committed value.
     cancelStorageMode() {
       this.showStorageModeModal = false
       this.pendingStorageMode = null
+      this.storageRadioKey++
     },
     async applyStorageMode(newMode) {
       if (!newMode || newMode === this.voiceprintStatus.storageMode) return

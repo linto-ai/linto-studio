@@ -72,12 +72,16 @@ async function getOptedInMembers(req, res, next) {
     await Promise.all(
       optedInUserIds.map(async (userId) => {
         try {
+          // The model layer returns the Error object (not throws) on a DB
+          // failure, so guard on Array.isArray — otherwise an Error would slip
+          // past a `.length === 0` check and blow up at `.reduce` below, which
+          // the catch would silently swallow (dropping the member from the list).
           const samples =
             await model.voiceSamples.getAudioSamplesByUserId(userId)
-          if (!samples || samples.length === 0) return
+          if (!Array.isArray(samples) || samples.length === 0) return
 
           const users = await model.users.getById(userId, true)
-          if (users.length === 0) return
+          if (!Array.isArray(users) || users.length === 0) return
           const user = users[0]
 
           const totalDuration = samples.reduce(
