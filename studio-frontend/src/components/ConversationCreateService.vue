@@ -126,25 +126,53 @@
       <label>
         {{ $t("conversation.transcription.speaker_identification_label") }}
       </label>
-      <span
-        class="form-field__help"
-        v-if="!speakerIdCollections.loading && speakerIdCollections.list.length === 0">
-        {{ $t("conversation.transcription.speaker_identification_empty") }}
+      <span class="speaker-id__help">
+        {{ $t("conversation.transcription.speaker_identification_help") }}
       </span>
+      <div v-if="speakerIdCollections.loading" class="speaker-id__help">
+        {{ $t("conversation.transcription.speaker_identification_loading") }}
+      </div>
       <div
-        v-else
-        class="flex col gap-xsmall speaker-id-collections"
-        role="group">
+        v-else-if="speakerIdCollections.list.length === 0"
+        class="speaker-id__empty">
+        {{ $t("conversation.transcription.speaker_identification_empty") }}
+      </div>
+      <div v-else class="flex col gap-xsmall speaker-id__list" role="group">
+        <!-- .stop keeps the click from bubbling to the card's @click handler,
+             whose select() calls preventDefault() and would cancel the toggle -->
         <label
           v-for="collection of speakerIdCollections.list"
           :key="collection._id"
-          class="flex row align-center gap-xsmall pointer">
+          class="speaker-id__option"
+          :class="{
+            'speaker-id__option--selected':
+              speakerIdCollections.selected.includes(collection._id),
+          }"
+          @click.stop>
           <input
             type="checkbox"
+            class="speaker-id__checkbox"
             :value="collection._id"
             v-model="speakerIdCollections.selected"
+            @click.stop
             @change="select(null)" />
-          <span>{{ collection.name }}</span>
+          <span class="speaker-id__body">
+            <span class="speaker-id__title">
+              {{ collection.name }}
+              <span
+                v-if="collection.type === 'organization'"
+                class="speaker-id__badge">
+                {{
+                  $t(
+                    "conversation.transcription.speaker_identification_auto_badge",
+                  )
+                }}
+              </span>
+            </span>
+            <span v-if="collectionHint(collection)" class="speaker-id__hint">
+              {{ collectionHint(collection) }}
+            </span>
+          </span>
         </label>
       </div>
     </div>
@@ -275,6 +303,15 @@ export default {
       const lang = this.$i18n.locale.split("-")[0] || "en"
       return value[lang] || value["en"]
     },
+    // Sub-label shown under a collection in the speaker-identification picker.
+    collectionHint(collection) {
+      if (collection.type === "organization") {
+        return this.$t(
+          "conversation.transcription.speaker_identification_org_hint",
+        )
+      }
+      return collection.description || ""
+    },
     handleClick(event) {
       if (this.securityDisabled) {
         event?.preventDefault()
@@ -353,3 +390,82 @@ export default {
   components: { LabeledValue },
 }
 </script>
+
+<style lang="scss" scoped>
+.speaker-id {
+  &__help {
+    font-size: 12px;
+    color: var(--text-secondary, #5a6472);
+    margin-bottom: 0.25rem;
+  }
+
+  &__empty {
+    font-size: 13px;
+    color: var(--text-secondary, #5a6472);
+    padding: 0.5rem 0.75rem;
+    border: 1px dashed var(--neutral-20, #cfd6dd);
+    border-radius: 6px;
+  }
+
+  &__list {
+    margin-top: 0.25rem;
+  }
+
+  &__option {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.5rem 0.625rem;
+    border: 1px solid var(--neutral-20, #cfd6dd);
+    border-radius: 6px;
+    cursor: pointer;
+    transition:
+      border-color 0.12s ease,
+      background 0.12s ease;
+
+    &:hover {
+      border-color: var(--primary-hard, #1976d2);
+    }
+
+    &--selected {
+      border-color: var(--primary-hard, #1976d2);
+      background: var(--primary-soft, #e3f2fd);
+    }
+  }
+
+  &__checkbox {
+    margin-top: 0.15rem;
+    flex: 0 0 auto;
+    cursor: pointer;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary, #1a1a1a);
+  }
+
+  &__badge {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary, #5a6472);
+    background: var(--neutral-10, #eef1f4);
+    border-radius: 4px;
+    padding: 0.05rem 0.35rem;
+  }
+
+  &__hint {
+    font-size: 12px;
+    color: var(--text-secondary, #5a6472);
+  }
+}
+</style>
