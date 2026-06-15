@@ -135,6 +135,24 @@ class VoiceSampleModel extends MongoModel {
     }
   }
 
+  // User-type samples that still hold an audio file (embeddings-only mode
+  // deletes the sample documents, so this excludes nothing extra there).
+  async getAudioSamplesByUserId(userId) {
+    try {
+      const query = {
+        type: VOICE_SAMPLE_TYPE.USER,
+        userId: userId,
+        audioFilePath: { $exists: true, $ne: null },
+      }
+      return await this.mongoRequest(query, {
+        sort: { created: -1 },
+      })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   async deleteAllFromUser(userId) {
     try {
       const query = {
