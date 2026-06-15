@@ -466,6 +466,7 @@
       "language_label": "Langue",
       "number_of_speaker_label": "Nombre de locuteurs",
       "recommended_badge": "Recommandé",
+      "security_not_accessible": "Non accessible — niveau de confidentialité insuffisant",
       "change_model": "Changer de modèle",
       "choose_model": "Choisir un modèle de transcription",
       "cancel_change_model": "Annuler",

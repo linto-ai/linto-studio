@@ -22,10 +22,22 @@
           <span v-if="recommended" class="service-card__badge">
             {{ $t("conversation.transcription.recommended_badge") }}
           </span>
+          <span
+            v-if="securityLevelEnabled"
+            class="service-card__security"
+            :class="`service-card__security--${securityLevelValue}`"
+            :title="securityLabel">
+            <ph-icon :name="securityIcon" size="xs" />
+            {{ securityLabel }}
+          </span>
         </div>
         <span v-if="subtitle" class="service-card__subtitle">{{
           subtitle
         }}</span>
+        <span v-if="securityDisabled" class="service-card__locked">
+          <ph-icon name="lock-simple" size="xs" />
+          {{ $t("conversation.transcription.security_not_accessible") }}
+        </span>
       </div>
       <Button
         v-if="showChangeModel && !compact"
@@ -189,6 +201,8 @@ import Tabs from "@/components/molecules/Tabs.vue"
 import generateServiceConfig from "../tools/generateServiceConfig"
 import { apiGetVoiceprintCollections } from "@/api/voiceprintCollection"
 import { getEnv } from "@/tools/getEnv"
+import { SECURITY_LEVEL_ICONS } from "@/const/securityLevels"
+import { normalizeSecurityLevel } from "@/tools/filterBySecurityLevel"
 
 export default {
   props: {
@@ -271,6 +285,20 @@ export default {
         parts.push(this.$t("conversation.transcription.model_diarization"))
       }
       return parts.join(" · ")
+    },
+    securityLevelEnabled() {
+      return getEnv("VUE_APP_ENABLE_SECURITY_LEVEL") === "true"
+    },
+    securityLevelValue() {
+      return normalizeSecurityLevel(this.value?.security_level)
+    },
+    securityIcon() {
+      return SECURITY_LEVEL_ICONS[this.securityLevelValue] || "shield"
+    },
+    securityLabel() {
+      return this.$t(
+        "conversation.security_level_txt." + this.securityLevelValue,
+      )
     },
     modelType() {
       return this.value.model_type
@@ -525,6 +553,39 @@ export default {
     font-weight: 600;
     color: var(--primary-color);
     background: var(--primary-soft);
+  }
+
+  // Confidentiality level chip (shield + label), color rises with sensitivity.
+  &__security {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: 10px;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    background: var(--neutral-10);
+    color: var(--text-secondary);
+
+    &--1 {
+      background: var(--warning-soft);
+      color: var(--warning-text, var(--warning-color));
+    }
+
+    &--2 {
+      background: var(--danger-soft);
+      color: var(--danger-color);
+    }
+  }
+
+  &__locked {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-top: 0.15rem;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--danger-color);
   }
 
   &__subtitle {

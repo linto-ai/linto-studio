@@ -59,10 +59,7 @@
 <script>
 import ConversationCreateService from "@/components/ConversationCreateService.vue"
 import Loading from "@/components/atoms/Loading.vue"
-import {
-  meetsSecurityLevel,
-  sortDisabledLast,
-} from "@/tools/filterBySecurityLevel"
+import { meetsSecurityLevel } from "@/tools/filterBySecurityLevel"
 
 export default {
   props: {
@@ -103,15 +100,36 @@ export default {
           .map((service) => service.serviceName),
       )
     },
+    // Accessible models first, then by ascending `order`. Stable: models with
+    // no (or an equal) order keep their registration order. Unset/invalid order
+    // is treated as +Infinity so explicitly-ordered models always come first.
     sortedServices() {
-      if (this.disabledServiceNames.size === 0) return this.serviceList
-      return sortDisabledLast(this.serviceList, (service) =>
-        this.isSecurityDisabled(service),
-      )
+      return this.serviceList
+        .map((service, index) => ({
+          service,
+          index,
+          disabled: this.isSecurityDisabled(service),
+          order: this.serviceOrder(service),
+        }))
+        .sort((a, b) => {
+          if (a.disabled !== b.disabled) return a.disabled ? 1 : -1
+          if (a.order !== b.order) return a.order - b.order
+          return a.index - b.index
+        })
+        .map((x) => x.service)
     },
-    // The recommended model = first enabled one (disabled pushed to the end).
+    // The recommended model = the single accessible model with the lowest
+    // EXPLICIT order. No explicit order anywhere, or a tie for the lowest one,
+    // means no recommendation (graceful default / graceful ties).
     recommendedServiceName() {
-      return this.sortedServices[0]?.serviceName
+      const ordered = this.serviceList
+        .filter((s) => !this.isSecurityDisabled(s))
+        .map((s) => ({ s, order: this.serviceOrder(s) }))
+        .filter((x) => Number.isFinite(x.order))
+      if (ordered.length === 0) return null
+      const min = Math.min(...ordered.map((x) => x.order))
+      const top = ordered.filter((x) => x.order === min)
+      return top.length === 1 ? top[0].s.serviceName : null
     },
     // The currently chosen service object, matched from the selected config.
     // Prefer a NON security-disabled model so a below-floor service never gets
@@ -133,6 +151,11 @@ export default {
   methods: {
     isSecurityDisabled(service) {
       return this.disabledServiceNames.has(service.serviceName)
+    },
+    // Parse the optional display order. Unset/invalid → +Infinity (sorts last).
+    serviceOrder(service) {
+      const n = parseInt(service?.order, 10)
+      return Number.isFinite(n) ? n : Number.POSITIVE_INFINITY
     },
     isRecommended(service) {
       return service && service.serviceName === this.recommendedServiceName
