@@ -97,8 +97,8 @@ SESSION_STOP_TIMEOUT_MS=15000
 
 # Socket.IO Redis Adapter (optional, for multi-instance scaling)
 # Leave SOCKETIO_REDIS_HOST empty to use default in-memory adapter
-SOCKETIO_REDIS_HOST=localhost
-SOCKETIO_REDIS_PORT=6379
+SOCKETIO_REDIS_HOST=
+SOCKETIO_REDIS_PORT=
 SOCKETIO_REDIS_PASSWORD=
 
 BROKER_HOST=localhost
