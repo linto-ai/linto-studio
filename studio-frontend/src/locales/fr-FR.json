@@ -467,6 +467,7 @@
       "number_of_speaker_label": "Nombre de locuteurs",
       "recommended_badge": "Recommandé",
       "security_not_accessible": "Non accessible — niveau de confidentialité insuffisant",
+      "no_model_for_level": "Aucun modèle ne respecte le niveau de confidentialité choisi.",
       "change_model": "Changer de modèle",
       "choose_model": "Choisir un modèle de transcription",
       "cancel_change_model": "Annuler",

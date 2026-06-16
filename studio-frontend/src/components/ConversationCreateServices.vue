@@ -17,6 +17,21 @@
         @select="onServiceConfig"
         @change-model="pickerOpen = true" />
 
+      <!-- No model meets the chosen confidentiality level -->
+      <div
+        v-else-if="!pickerOpen"
+        class="create-services__none">
+        <ph-icon name="lock-simple" size="md" />
+        <span>{{ $t("conversation.transcription.no_model_for_level") }}</span>
+        <Button
+          v-if="serviceList.length > 0"
+          variant="text"
+          size="sm"
+          type="button"
+          :label="$t('conversation.transcription.change_model')"
+          @click="pickerOpen = true" />
+      </div>
+
       <!-- Model picker (compact list, shown on "Changer de modèle") -->
       <div v-show="pickerOpen" class="create-services__picker">
         <div class="create-services__picker-header">
@@ -149,7 +164,9 @@ export default {
       const recommended = accessible.find(
         (s) => s.serviceName === this.recommendedServiceName,
       )
-      return recommended || accessible[0] || list[0]
+      // null when no model meets the chosen confidentiality level — the hero
+      // card is never a locked model; the template shows a dedicated message.
+      return recommended || accessible[0] || null
     },
   },
   methods: {
@@ -166,7 +183,8 @@ export default {
     },
     isSelectedService(service) {
       return Boolean(
-        this.value && service.serviceName === this.value.serviceName,
+        this.selectedService &&
+          service.serviceName === this.selectedService.serviceName,
       )
     },
     onServiceConfig(config) {
@@ -203,6 +221,17 @@ export default {
 
 <style lang="scss" scoped>
 .create-services {
+  &__none {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 1.25rem;
+    border: 1px dashed var(--neutral-20);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-size: var(--text-sm);
+  }
+
   &__picker {
     border: var(--border-block);
     border-radius: 8px;
