@@ -247,7 +247,14 @@
       "amazon_endpoint_label": "Région AWS",
       "amazon_endpoint_placeholder": "us-east-1",
       "voxstral_endpoint_label": "URL WebSocket globale",
-      "voxstral_endpoint_placeholder": "ws://..."
+      "voxstral_endpoint_placeholder": "ws://...",
+      "google_credentials_label": "JSON du compte de service",
+      "google_credentials_placeholder": "Collez la clé JSON du compte de service Google Cloud",
+      "google_credentials_helper": "Laissez vide pour conserver les identifiants existants.",
+      "google_credentials_load_file": "Charger depuis un fichier",
+      "google_model_label": "Modèle de reconnaissance",
+      "google_project_id_label": "ID du projet (optionnel)",
+      "google_project_id_placeholder": "Par défaut, le project_id du compte de service"
     },
     "transcriber_profile_list": {
       "title": "Profils de transcription",

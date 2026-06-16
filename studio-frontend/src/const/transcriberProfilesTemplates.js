@@ -105,6 +105,23 @@ const TRANSCRIBER_PROFILES_TEMPLATES = {
       securityLevel: SECURITY_LEVEL_PUBLIC,
     },
   },
+  google: {
+    config: {
+      type: "google",
+      name: "",
+      description: "",
+      languages: [{ candidate: "en-US" }],
+      availableTranslations: [],
+      credentials: "",
+      model: "",
+      projectId: "",
+      hasDiarization: false,
+    },
+    quickMeeting: true,
+    meta: {
+      securityLevel: SECURITY_LEVEL_PUBLIC,
+    },
+  },
   voxstral: {
     config: {
       type: "voxstral",

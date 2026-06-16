@@ -309,6 +309,9 @@ export async function apiAdminUpdateTranscriberProfile(
   if (dataCopy.config.key === "Secret key is hidden") {
     delete dataCopy.config.key
   }
+  if (dataCopy.config.credentials === "Secret credentials are hidden") {
+    delete dataCopy.config.credentials
+  }
   delete dataCopy.config.availableTranslations?.external
 
   return await sendRequest(
