@@ -28,7 +28,7 @@
           <div class="error-field" v-if="fieldTranscriptionService.error">
             {{ fieldTranscriptionService.error }}
           </div>
-          <ConversationCreateServices
+          <ServiceSelector
             :serviceList="fieldTranscriptionService.list"
             :securityLevel="securityLevel"
             v-model="fieldTranscriptionService.value" />
@@ -119,7 +119,7 @@ import {
 import SessionTranslationSelection from "@/components/SessionTranslationSelection.vue"
 import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import TranscriberProfileSelector from "@/components/TranscriberProfileSelector.vue"
-import ConversationCreateServices from "@/components/ConversationCreateServices.vue"
+import ServiceSelector from "@/components/serviceSelector/ServiceSelector.vue"
 import Chip from "@/components/atoms/Chip.vue"
 
 export default {
@@ -356,7 +356,7 @@ export default {
   components: {
     FormCheckbox,
     TranscriberProfileSelector,
-    ConversationCreateServices,
+    ServiceSelector,
     SessionTranslationSelection,
     Chip,
   },

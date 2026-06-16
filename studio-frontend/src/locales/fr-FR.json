@@ -486,7 +486,11 @@
       "player_error": "Une erreur est survenue lors du chargement du lecteur.",
       "punctuation_disabled": "Non",
       "punctuation_label": "Ponctuation",
-      "punctuation_value_whisper": "Automatique"
+      "punctuation_value_whisper": "Automatique",
+      "punctuation_enable": "Activer la ponctuation",
+      "speaker_count_auto": "Auto",
+      "speaker_count_fixed": "Fixe",
+      "speaker_identification_title": "Identification des locuteurs"
     },
     "transcription_help": {
       "help_button_label": "Aide"

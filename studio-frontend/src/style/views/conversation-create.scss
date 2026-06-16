@@ -104,13 +104,13 @@
   // area so it stays visible however tall the form grows (e.g. once the
   // speaker-identification collections expand the transcription card).
   position: sticky;
-  bottom: 0;
-  padding: 0.6rem 0;
+  bottom: 8px;
+  padding: 0.5rem;
   background-color: var(--background-primary);
-  box-shadow: 0 -4px 8px -6px rgba(0, 0, 0, 0.25);
-  border-radius: 4px;
+  box-shadow: var(--shadow-block);
   z-index: 52;
   box-sizing: border-box;
+  border: 1px solid var(--neutral-30);
 
   // Left side: file name / count + model summary
   &__summary {

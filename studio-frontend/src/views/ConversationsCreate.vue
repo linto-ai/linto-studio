@@ -87,7 +87,7 @@
           <div class="error-field" v-if="fieldTranscriptionService.error">
             {{ fieldTranscriptionService.error }}
           </div>
-          <ConversationCreateServices
+          <ServiceSelector
             :serviceList="fieldTranscriptionService.list"
             :disabled="formState === 'sending'"
             :loading="fieldTranscriptionService.loading"
@@ -163,7 +163,7 @@ import { testService } from "@/tools/fields/testService.js"
 
 import LayoutV2 from "@/layouts/v2-layout.vue"
 import ConversationCreateAudio from "@/components/ConversationCreateAudio.vue"
-import ConversationCreateServices from "@/components/ConversationCreateServices.vue"
+import ServiceSelector from "@/components/serviceSelector/ServiceSelector.vue"
 import Tabs from "@/components/molecules/Tabs.vue"
 import SessionCreateContent from "@/components/SessionCreateContent.vue"
 import QuickSessionCreateContent from "@/components/QuickSessionCreateContent.vue"
@@ -398,7 +398,7 @@ export default {
   components: {
     LayoutV2,
     ConversationCreateAudio,
-    ConversationCreateServices,
+    ServiceSelector,
     Tabs,
     SessionCreateContent,
     QuickSessionCreateContent,

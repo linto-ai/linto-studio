@@ -1,10 +1,10 @@
 <template>
-  <div class="create-services">
+  <div class="service-selector">
     <template v-if="!loading && serviceList.length > 0">
       <!-- Selected model, full configuration card. Kept mounted (v-show) while
            the picker is open so the user's options are never lost; :key forces a
            clean remount only when the chosen model actually changes. -->
-      <ConversationCreateService
+      <ServiceEditor
         v-if="selectedService"
         v-show="!pickerOpen"
         :key="selectedService.serviceName"
@@ -18,9 +18,7 @@
         @change-model="pickerOpen = true" />
 
       <!-- No model meets the chosen confidentiality level -->
-      <div
-        v-else-if="!pickerOpen"
-        class="create-services__none">
+      <div v-else-if="!pickerOpen" class="service-selector__none">
         <ph-icon name="lock-simple" size="md" />
         <span>{{ $t("conversation.transcription.no_model_for_level") }}</span>
         <Button
@@ -33,35 +31,12 @@
       </div>
 
       <!-- Model picker (compact list, shown on "Changer de modèle") -->
-      <div v-show="pickerOpen" class="create-services__picker">
-        <div class="create-services__picker-header">
-          <span class="create-services__picker-title">
-            {{ $t("conversation.transcription.choose_model") }}
-          </span>
-          <Button
-            v-if="selectedService"
-            variant="text"
-            size="sm"
-            type="button"
-            icon="x"
-            :label="$t('conversation.transcription.cancel_change_model')"
-            @click="pickerOpen = false" />
-        </div>
-        <div
-          class="create-services__picker-list"
-          role="listbox"
-          :aria-label="$t('conversation.transcription.choose_model')">
-          <ConversationCreateService
-            v-for="service in sortedServices"
-            :key="service.host"
-            compact
-            :value="service"
-            :recommended="isRecommended(service)"
-            :selected="isSelectedService(service)"
-            :securityDisabled="isSecurityDisabled(service)"
-            @select="onPickModel(service, $event)" />
-        </div>
-      </div>
+      <ServicePicker
+        v-show="pickerOpen"
+        v-model="pickedServiceName"
+        :services="pickerServices"
+        :cancellable="Boolean(selectedService)"
+        @cancel="pickerOpen = false" />
     </template>
     <div v-else-if="!loading">
       {{ $t("conversation.transcription_service_list_empty") }}
@@ -72,7 +47,8 @@
   </div>
 </template>
 <script>
-import ConversationCreateService from "@/components/ConversationCreateService.vue"
+import ServiceEditor from "./ServiceEditor.vue"
+import ServicePicker from "./ServicePicker.vue"
 import Loading from "@/components/atoms/Loading.vue"
 import { meetsSecurityLevel } from "@/tools/filterBySecurityLevel"
 
@@ -133,6 +109,29 @@ export default {
         })
         .map((x) => x.service)
     },
+    // Enriched list handed to the picker: stays purely presentational.
+    pickerServices() {
+      return this.sortedServices.map((service) => ({
+        service,
+        recommended: this.isRecommended(service),
+        disabled: this.isSecurityDisabled(service),
+      }))
+    },
+    // v-model bridge for the picker. Down: the resolved selected name (so the
+    // right row is highlighted). Up: records the user's explicit pick and closes
+    // the picker. Security-locked / unknown picks are ignored.
+    pickedServiceName: {
+      get() {
+        return this.selectedService?.serviceName ?? null
+      },
+      set(name) {
+        if (this.disabled) return
+        const service = this.serviceList.find((s) => s.serviceName === name)
+        if (!service || this.isSecurityDisabled(service)) return
+        this.userPickedServiceName = name
+        this.pickerOpen = false
+      },
+    },
     // The recommended model = the single accessible model with the lowest
     // EXPLICIT order. No explicit order anywhere, or a tie for the lowest one,
     // means no recommendation (graceful default / graceful ties).
@@ -181,27 +180,12 @@ export default {
     isRecommended(service) {
       return service && service.serviceName === this.recommendedServiceName
     },
-    isSelectedService(service) {
-      return Boolean(
-        this.selectedService &&
-          service.serviceName === this.selectedService.serviceName,
-      )
-    },
     onServiceConfig(config) {
       if (this.disabled) return
       // Never let a security-disabled hero card become the form value.
-      if (
-        this.selectedService &&
-        this.isSecurityDisabled(this.selectedService)
-      )
+      if (this.selectedService && this.isSecurityDisabled(this.selectedService))
         return
       this.$emit("input", config)
-    },
-    onPickModel(service, config) {
-      if (this.disabled || this.isSecurityDisabled(service)) return
-      this.userPickedServiceName = service.serviceName
-      this.$emit("input", config)
-      this.pickerOpen = false
     },
   },
   data() {
@@ -213,14 +197,17 @@ export default {
     }
   },
   components: {
-    ConversationCreateService,
+    ServiceEditor,
+    ServicePicker,
     Loading,
   },
 }
 </script>
-
 <style lang="scss" scoped>
-.create-services {
+.service-selector {
+  // Keep the card readable on wide screens instead of stretching full width.
+  //max-width: 680px;
+
   &__none {
     display: flex;
     align-items: center;
@@ -230,48 +217,6 @@ export default {
     border-radius: 8px;
     color: var(--text-secondary);
     font-size: var(--text-sm);
-  }
-
-  &__picker {
-    border: var(--border-block);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-
-  &__picker-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-    padding: 0.5rem 0.75rem;
-    background: var(--background-app);
-    border-bottom: 1px solid var(--neutral-20);
-  }
-
-  &__picker-title {
-    font-size: var(--text-sm);
-    font-weight: 600;
-    color: var(--text-secondary);
-  }
-
-  &__picker-list {
-    display: flex;
-    flex-direction: column;
-
-    ::v-deep .service-card--compact {
-      border: none;
-      border-radius: 0;
-      box-shadow: none;
-      border-bottom: 1px solid var(--neutral-20);
-
-      &:last-child {
-        border-bottom: none;
-      }
-
-      &[selected] {
-        background: var(--primary-soft);
-      }
-    }
   }
 }
 </style>

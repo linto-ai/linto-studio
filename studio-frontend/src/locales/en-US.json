@@ -485,7 +485,11 @@
       "player_error": "An error has occurred while initializing player.",
       "punctuation_disabled": "Disabled",
       "punctuation_label": "Punctuation",
-      "punctuation_value_whisper": "Automatic"
+      "punctuation_value_whisper": "Automatic",
+      "punctuation_enable": "Enable punctuation",
+      "speaker_count_auto": "Auto",
+      "speaker_count_fixed": "Fixed",
+      "speaker_identification_title": "Speaker identification"
     },
     "transcription_help": {
       "help_button_label": "Help"

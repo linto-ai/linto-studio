@@ -1,46 +1,19 @@
 <template>
   <fieldset
-    @click="handleClick"
-    class="flex col selectable service-card"
-    :class="{
-      'security-disabled': securityDisabled,
-      'service-card--compact': compact,
-    }"
+    class="flex col service-card"
+    :class="{ 'security-disabled': securityDisabled }"
     :selected="selected"
-    :role="compact ? 'option' : 'group'"
-    :aria-selected="compact ? selected : undefined"
+    role="group"
     :aria-disabled="securityDisabled"
     :id="`service-${value.name}`">
-    <!-- -- -- header: icon + name + recommended pill + subtitle + change model -- -- -->
+    <!-- -- -- header: shared model header + change-model action -- -- -->
     <div class="service-card__header">
-      <span class="service-card__icon">
-        <ph-icon name="waveform" weight="fill" size="md" />
-      </span>
-      <div class="service-card__heading flex1">
-        <div class="service-card__title-row">
-          <span class="service-card__title">{{ description }}</span>
-          <span v-if="recommended" class="service-card__badge">
-            {{ $t("conversation.transcription.recommended_badge") }}
-          </span>
-          <span
-            v-if="securityLevelEnabled"
-            class="service-card__security"
-            :class="`service-card__security--${securityLevelValue}`"
-            :title="securityLabel">
-            <ph-icon :name="securityIcon" size="xs" />
-            {{ securityLabel }}
-          </span>
-        </div>
-        <span v-if="subtitle" class="service-card__subtitle">{{
-          subtitle
-        }}</span>
-        <span v-if="securityDisabled" class="service-card__locked">
-          <ph-icon name="lock-simple" size="xs" />
-          {{ $t("conversation.transcription.security_not_accessible") }}
-        </span>
-      </div>
+      <ServiceHeader
+        :value="value"
+        :recommended="recommended"
+        :disabled="securityDisabled" />
       <Button
-        v-if="showChangeModel && !compact"
+        v-if="showChangeModel"
         variant="secondary"
         size="sm"
         type="button"
@@ -49,96 +22,106 @@
         @click.stop="$emit('change-model')" />
     </div>
 
-    <!-- compact (picker) mode stops at the header -->
-    <template v-if="!compact">
-      <div class="service-card__grid">
-        <!-- -- -- language -- -- -->
-        <div class="form-field flex col">
-          <label :for="`service-${value.name}-language`">
-            {{ $t("conversation.transcription.language_label") }}
-          </label>
-          <select
-            v-model="languageField.value"
-            :id="`service-${value.name}-language`">
-            <option v-for="lang in computeLanguageList" :value="lang.value">
-              {{ lang.label }}
-            </option>
-          </select>
-        </div>
+    <!-- -- -- row: language + punctuation -- -- -->
+    <div class="service-card__row">
+      <div
+        class="form-field flex col service-card__field service-card__field--language">
+        <label :for="`service-${value.name}-language`">
+          {{ $t("conversation.transcription.language_label") }}
+        </label>
+        <select
+          v-model="languageField.value"
+          :id="`service-${value.name}-language`">
+          <option v-for="lang in computeLanguageList" :value="lang.value">
+            {{ lang.label }}
+          </option>
+        </select>
+      </div>
 
-        <!-- -- -- punctuation -- -- -->
-        <div class="form-field flex col">
-          <label :for="`service-${value.name}-punctuation`">
-            {{ $t("conversation.transcription.punctuation_label") }}
-          </label>
-          <select
-            v-if="isModelWithPunctuation"
-            v-model="punctuation.value"
-            :id="`service-${value.name}-punctuation`">
-            <option value="disabled">
-              {{ $t("conversation.transcription.punctuation_disabled") }}
-            </option>
-            <option
-              v-for="punctuationService of value.sub_services.punctuation"
-              :key="punctuationService.service_name"
-              :value="punctuationService.service_name">
-              {{ extractLocales(punctuationService.info) }}
-            </option>
-          </select>
-          <div v-else class="service-card__readonly">
-            <span>{{
-              $t("conversation.transcription.punctuation_value_whisper")
-            }}</span>
-            <SwitchInput
-              :value="true"
-              disabled
-              :id="`service-${value.name}-punctuation`" />
-          </div>
+      <div class="form-field flex col service-card__field">
+        <label :for="`service-${value.name}-punctuation`">
+          {{ $t("conversation.transcription.punctuation_label") }}
+        </label>
+        <!-- built-in punctuation: read-only, no control -->
+        <div v-if="hasBuiltInPunctuation" class="service-card__locked-value">
+          <ph-icon name="lock-simple" size="xs" />
+          <span>{{
+            $t("conversation.transcription.punctuation_value_whisper")
+          }}</span>
         </div>
-
-        <!-- -- -- diarization (Oui / Non) -- -- -->
-        <div class="form-field flex col">
-          <label :id="`service-${value.name}-diarization-label`">
-            {{ $t("conversation.transcription.diarization_label") }}
-          </label>
-          <div
-            v-if="!multiTrack && diarizationServiceName"
-            role="group"
-            :aria-labelledby="`service-${value.name}-diarization-label`">
-            <Tabs
-              variant="inline"
-              :tabs="diarizationTabs"
-              :value="diarizationChoice"
-              @input="setDiarizationChoice" />
-          </div>
-          <div v-else class="service-card__readonly">
-            <span>{{
-              $t("conversation.transcription.diarization_single_track")
-            }}</span>
-          </div>
-        </div>
-
-        <!-- -- -- number of speakers (only when diarization is on) -- -- -->
-        <div
-          class="form-field flex col"
-          v-if="!multiTrack && diarizationChoice === 'yes'">
-          <label :for="`service-${value.name}-speakers`">
-            {{ $t("conversation.transcription.number_of_speaker_label") }}
-          </label>
+        <!-- toggleable punctuation: simple on/off, left-aligned with its label -->
+        <label v-else class="service-card__check">
           <input
-            type="number"
-            placeholder="auto (experimental)"
-            v-model="speakersNumber.value"
-            :id="`service-${value.name}-speakers`"
-            min="0" />
+            type="checkbox"
+            :id="`service-${value.name}-punctuation`"
+            :checked="punctuationEnabled"
+            :disabled="!canTogglePunctuation"
+            @change="punctuationEnabled = $event.target.checked" />
+          <span>{{ $t("conversation.transcription.punctuation_enable") }}</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- -- -- row: diarization + number of speakers -- -- -->
+    <div class="service-card__row">
+      <div class="form-field flex col service-card__field">
+        <label :id="`service-${value.name}-diarization-label`">
+          {{ $t("conversation.transcription.diarization_label") }}
+        </label>
+        <SegmentedControl
+          v-if="!multiTrack && diarizationServiceName"
+          :value="diarizationChoice"
+          :options="diarizationOptions"
+          :aria-label="$t('conversation.transcription.diarization_label')"
+          @input="setDiarizationChoice" />
+        <div v-else class="service-card__locked-value">
+          <span>{{
+            $t("conversation.transcription.diarization_single_track")
+          }}</span>
         </div>
       </div>
 
-      <!-- -- -- speaker identification (collections) -- -- -->
-      <div class="form-field flex col service-card__speaker-id" v-if="speakerIdCapable">
-        <label>
-          {{ $t("conversation.transcription.speaker_identification_label") }}
+      <div
+        class="form-field flex col service-card__field"
+        v-if="!multiTrack && diarizationChoice === 'yes'">
+        <label :id="`service-${value.name}-speakers-label`">
+          {{ $t("conversation.transcription.number_of_speaker_label") }}
         </label>
+        <div class="service-card__count">
+          <SegmentedControl
+            :value="speakerCountMode"
+            :options="speakerCountOptions"
+            :aria-label="
+              $t('conversation.transcription.number_of_speaker_label')
+            "
+            @input="speakerCountMode = $event" />
+          <FormInput
+            v-if="speakerCountMode === 'fixed'"
+            class="service-card__number"
+            :field="speakerCountField"
+            :input-id="`service-${value.name}-speakers`"
+            :value="String(speakerCount)"
+            @input="onSpeakerCountInput" />
+        </div>
+      </div>
+    </div>
+
+    <!-- -- -- speaker identification (master switch + collections) -- -- -->
+    <div class="service-card__speaker-id" v-if="speakerIdCapable">
+      <div class="speaker-id__head">
+        <label
+          :id="`service-${value.name}-spkid-label`"
+          :for="`service-${value.name}-spkid`"
+          class="speaker-id__title-label">
+          {{ $t("conversation.transcription.speaker_identification_title") }}
+        </label>
+        <SwitchInput
+          :value="speakerIdEnabled"
+          :id="`service-${value.name}-spkid`"
+          @input="toggleSpeakerId" />
+      </div>
+
+      <template v-if="speakerIdEnabled">
         <span class="speaker-id__help">
           {{ $t("conversation.transcription.speaker_identification_help") }}
         </span>
@@ -151,8 +134,6 @@
           {{ $t("conversation.transcription.speaker_identification_empty") }}
         </div>
         <div v-else class="flex col gap-xsmall speaker-id__list" role="group">
-          <!-- .stop keeps the click from bubbling to the card's @click handler,
-               whose select() calls preventDefault() and would cancel the toggle -->
           <label
             v-for="collection of speakerIdCollections.list"
             :key="collection._id"
@@ -160,15 +141,13 @@
             :class="{
               'speaker-id__option--selected':
                 speakerIdCollections.selected.includes(collection._id),
-            }"
-            @click.stop>
+            }">
             <input
               type="checkbox"
               class="speaker-id__checkbox"
               :value="collection._id"
               v-model="speakerIdCollections.selected"
-              @click.stop
-              @change="select(null)" />
+              @change="select()" />
             <span class="speaker-id__body">
               <span class="speaker-id__title">
                 {{ collection.name }}
@@ -188,21 +167,19 @@
             </span>
           </label>
         </div>
-      </div>
-    </template>
+      </template>
+    </div>
   </fieldset>
 </template>
 <script>
-import EMPTY_FIELD from "../const/emptyField"
-import ACOUSTIC from "../const/acoustic"
-import AUDIO_QUALITY from "../const/audioQuality"
-import LabeledValue from "@/components/atoms/LabeledValue.vue"
-import Tabs from "@/components/molecules/Tabs.vue"
-import generateServiceConfig from "../tools/generateServiceConfig"
+import EMPTY_FIELD from "../../const/emptyField"
+import ServiceHeader from "./ServiceHeader.vue"
+import SegmentedControl from "@/components/molecules/SegmentedControl.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
+import generateServiceConfig from "../../tools/generateServiceConfig"
+import pickLocale from "@/tools/extractLocales"
 import { apiGetVoiceprintCollections } from "@/api/voiceprintCollection"
 import { getEnv } from "@/tools/getEnv"
-import { SECURITY_LEVEL_ICONS } from "@/const/securityLevels"
-import { normalizeSecurityLevel } from "@/tools/filterBySecurityLevel"
 
 export default {
   props: {
@@ -239,11 +216,6 @@ export default {
       type: Boolean,
       default: false,
     },
-    // Render only the header (used by the model picker list).
-    compact: {
-      type: Boolean,
-      default: false,
-    },
   },
   data() {
     let defaultLang
@@ -257,48 +229,23 @@ export default {
       diarization: { ...EMPTY_FIELD, value: "disabled" },
       punctuation: { ...EMPTY_FIELD, value: "disabled" },
       speakersNumber: { ...EMPTY_FIELD, value: "auto" },
-      acoustic_value: ACOUSTIC((key) => this.$i18n.t(key)),
-      audio_quality_value: AUDIO_QUALITY((key) => this.$i18n.t(key)),
       languageField: {
         ...EMPTY_FIELD,
         value: defaultLang,
       },
       speakerIdCollections: { list: [], selected: [], loading: false },
+      // Master toggle for the speaker-identification block.
+      speakerIdEnabled: false,
     }
   },
   mounted() {
     // Emit the current config once so the view (sticky footer summary) has the
     // model display name + summary even before the user touches anything.
-    if (!this.compact) this.select(null)
+    this.select()
   },
   computed: {
     description() {
       return this.extractLocales(this.value.desc)
-    },
-    // Capability-derived one-liner under the model name.
-    subtitle() {
-      const parts = []
-      if (this.computeLanguageList.length > 1) {
-        parts.push(this.$t("conversation.transcription.model_multilingual"))
-      }
-      if ((this.value?.sub_services?.diarization || []).length > 0) {
-        parts.push(this.$t("conversation.transcription.model_diarization"))
-      }
-      return parts.join(" · ")
-    },
-    securityLevelEnabled() {
-      return getEnv("VUE_APP_ENABLE_SECURITY_LEVEL") === "true"
-    },
-    securityLevelValue() {
-      return normalizeSecurityLevel(this.value?.security_level)
-    },
-    securityIcon() {
-      return SECURITY_LEVEL_ICONS[this.securityLevelValue] || "shield"
-    },
-    securityLabel() {
-      return this.$t(
-        "conversation.security_level_txt." + this.securityLevelValue,
-      )
     },
     modelType() {
       return this.value.model_type
@@ -306,8 +253,31 @@ export default {
     hasBuiltInPunctuation() {
       return ["whisper", "nemo"].includes(this.modelType)
     },
-    isModelWithPunctuation() {
-      return !this.hasBuiltInPunctuation
+    // Punctuation sub-services advertised by the model (empty for built-in).
+    punctuationServices() {
+      return this.value?.sub_services?.punctuation || []
+    },
+    firstPunctuationService() {
+      return this.punctuationServices[0]?.service_name || null
+    },
+    // Can the user turn punctuation on (a sub-service exists to back it).
+    canTogglePunctuation() {
+      return (
+        !this.hasBuiltInPunctuation && Boolean(this.firstPunctuationService)
+      )
+    },
+    // On/off bridge for the punctuation checkbox. Enabling auto-picks the first
+    // available punctuation sub-service; disabling clears it.
+    punctuationEnabled: {
+      get() {
+        return this.punctuation.value !== "disabled"
+      },
+      set(on) {
+        this.punctuation.value =
+          on && this.firstPunctuationService
+            ? this.firstPunctuationService
+            : "disabled"
+      },
     },
     language() {
       return this.value?.language || "*"
@@ -328,7 +298,7 @@ export default {
     diarizationChoice() {
       return this.diarization.value !== "disabled" ? "yes" : "no"
     },
-    diarizationTabs() {
+    diarizationOptions() {
       return [
         {
           name: "yes",
@@ -339,6 +309,39 @@ export default {
           label: this.$t("conversation.transcription.diarization_disabled"),
         },
       ]
+    },
+    // Auto / fixed speaker-count toggle.
+    speakerCountOptions() {
+      return [
+        {
+          name: "auto",
+          label: this.$t("conversation.transcription.speaker_count_auto"),
+        },
+        {
+          name: "fixed",
+          label: this.$t("conversation.transcription.speaker_count_fixed"),
+        },
+      ]
+    },
+    // FormInput descriptor for the fixed speaker count (no label, min 1).
+    speakerCountField() {
+      return { type: "number", customParams: { min: 1 } }
+    },
+    // The current fixed count (defaults to 2 when not set yet).
+    speakerCount() {
+      const n = parseInt(this.speakersNumber.value, 10)
+      return Number.isFinite(n) && n > 0 ? n : 2
+    },
+    // "auto" when no positive count is set, "fixed" otherwise.
+    speakerCountMode: {
+      get() {
+        const n = parseInt(this.speakersNumber.value, 10)
+        return Number.isFinite(n) && n > 0 ? "fixed" : "auto"
+      },
+      set(mode) {
+        this.speakersNumber.value =
+          mode === "fixed" ? String(this.speakerCount) : "auto"
+      },
     },
     // One-line summary surfaced in the sticky footer.
     summaryLabel() {
@@ -375,28 +378,24 @@ export default {
   watch: {
     "diarization.value"() {
       this.onDiarizationChange()
-      this.select(null)
+      this.select()
     },
     "punctuation.value"() {
-      this.select(null)
+      this.select()
     },
     "speakersNumber.value"() {
-      this.select(null)
+      this.select()
     },
     "languageField.value"() {
-      this.select(null)
+      this.select()
     },
     multiTrack() {
       this.diarization.value = "disabled"
     },
   },
   methods: {
-    removeLeadingSlash(str) {
-      return str.replace(/^\/+/, "")
-    },
     extractLocales(value) {
-      const lang = this.$i18n.locale.split("-")[0] || "en"
-      return value[lang] || value["en"]
+      return pickLocale(value, this.$i18n.locale)
     },
     // Sub-label shown under a collection in the speaker-identification picker.
     collectionHint(collection) {
@@ -410,7 +409,33 @@ export default {
     // Oui/Non segmented toggle for diarization.
     setDiarizationChoice(choice) {
       this.diarization.value =
-        choice === "yes" ? this.diarizationServiceName || "disabled" : "disabled"
+        choice === "yes"
+          ? this.diarizationServiceName || "disabled"
+          : "disabled"
+    },
+    // FormInput emits the raw value string; clamp it to a positive integer.
+    onSpeakerCountInput(value) {
+      const n = parseInt(value, 10)
+      this.speakersNumber.value = String(
+        Number.isFinite(n) ? Math.max(1, n) : 1,
+      )
+    },
+    // Master switch for speaker identification: lazily load the collections on
+    // enable, clear the selection on disable.
+    toggleSpeakerId(enabled) {
+      this.speakerIdEnabled = enabled
+      console.log("toto", enabled)
+      if (enabled) {
+        if (
+          this.speakerIdCollections.list.length === 0 &&
+          !this.speakerIdCollections.loading
+        ) {
+          this.fetchSpeakerIdCollections()
+        }
+      } else {
+        this.speakerIdCollections.selected = []
+      }
+      this.select()
     },
     handleClick(event) {
       if (this.securityDisabled) {
@@ -430,9 +455,10 @@ export default {
           languageValue: this.hasBuiltInPunctuation
             ? this.languageField.value
             : this.value.language,
-          speakerIdentificationCollections: this.speakerIdCapable
-            ? this.speakerIdCollections.selected
-            : [],
+          speakerIdentificationCollections:
+            this.speakerIdCapable && this.speakerIdEnabled
+              ? this.speakerIdCollections.selected
+              : [],
         }),
         // Top-level display extras for the sticky footer (ignored by the API,
         // which only reads .config / .serviceName / .lang / .endpoint).
@@ -440,18 +466,11 @@ export default {
         summary: this.summaryLabel,
       })
     },
-    // When the diarization choice changes: lazily load the org collections when
-    // the chosen service is speaker-id capable, and clear the selection when
-    // identification is no longer applicable.
+    // When the diarization choice changes and identification is no longer
+    // applicable, reset its master switch and selection.
     onDiarizationChange() {
-      if (this.speakerIdCapable) {
-        if (
-          this.speakerIdCollections.list.length === 0 &&
-          !this.speakerIdCollections.loading
-        ) {
-          this.fetchSpeakerIdCollections()
-        }
-      } else {
+      if (!this.speakerIdCapable) {
+        this.speakerIdEnabled = false
         this.speakerIdCollections.selected = []
       }
     },
@@ -487,133 +506,78 @@ export default {
       }
     },
   },
-  components: { LabeledValue, Tabs },
+  components: { ServiceHeader, SegmentedControl, FormInput },
 }
 </script>
-
 <style lang="scss" scoped>
 .service-card {
-  gap: 1rem;
+  gap: 1.25rem;
   padding: 1.25rem;
-  width: 100%;
-  max-width: 100%;
+  width: fit-content;
   box-sizing: border-box;
+  border-radius: 4px;
+  border: 1px solid var(--neutral-30);
+  box-shadow: var(--box-shadow-inset);
+  background-color: var(--background-inset-section);
 
-  &--compact {
-    gap: 0;
-    padding: 0.75rem 1rem;
-    cursor: pointer;
-  }
-
-  // Header
   &__header {
     display: flex;
     align-items: flex-start;
-    gap: 0.75rem;
+    gap: 2rem;
   }
 
-  &__icon {
-    flex: 0 0 auto;
+  // Free-flowing rows: each field keeps its natural width, wraps when needed.
+  &__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 1rem 2rem;
+  }
+
+  &__field {
+    margin: 0;
+    gap: 0.4rem;
+    min-width: 0;
+
+    &--language {
+      flex: 0 1 240px;
+
+      select {
+        width: 100%;
+      }
+    }
+  }
+
+  // Read-only value (built-in punctuation, single-track diarization).
+  &__locked-value {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    width: 2.25rem;
-    height: 2.25rem;
-    border-radius: 8px;
-    background: var(--primary-soft);
-    color: var(--primary-color);
+    gap: 0.35rem;
+    min-height: 2.1rem;
+    color: var(--text-secondary);
+    font-size: var(--text-sm);
   }
 
-  &__heading {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
+  // On/off checkbox aligned left with its label.
+  &__check {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.1rem;
+    cursor: pointer;
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+
+    input {
+      cursor: pointer;
+    }
   }
 
-  &__title-row {
+  &__count {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     flex-wrap: wrap;
-  }
-
-  &__title {
-    font-size: var(--text-md);
-    font-weight: 600;
-    color: var(--text-primary);
-  }
-
-  &__badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.1rem 0.5rem;
-    border-radius: 10px;
-    font-size: var(--text-xs);
-    font-weight: 600;
-    color: var(--primary-color);
-    background: var(--primary-soft);
-  }
-
-  // Confidentiality level chip (shield + label), color rises with sensitivity.
-  &__security {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.2rem;
-    padding: 0.1rem 0.45rem;
-    border-radius: 10px;
-    font-size: var(--text-xs);
-    font-weight: 600;
-    background: var(--neutral-10);
-    color: var(--text-secondary);
-
-    &--1 {
-      background: var(--warning-soft);
-      color: var(--warning-text, var(--warning-color));
-    }
-
-    &--2 {
-      background: var(--danger-soft);
-      color: var(--danger-color);
-    }
-  }
-
-  &__locked {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    margin-top: 0.15rem;
-    font-size: var(--text-xs);
-    font-weight: 600;
-    color: var(--danger-color);
-  }
-
-  &__subtitle {
-    font-size: var(--text-sm);
-    color: var(--text-secondary);
-  }
-
-  // Options grid (two columns, collapses to one on narrow widths)
-  &__grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem 1.25rem;
-
-    .form-field {
-      margin: 0;
-      gap: 0.35rem;
-    }
-  }
-
-  &__readonly {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-    min-height: 2.25rem;
-    padding: 0 0.25rem;
-    color: var(--text-secondary);
-    font-size: var(--text-sm);
   }
 
   &__speaker-id {
@@ -623,17 +587,28 @@ export default {
   }
 }
 
-@container main (max-width: 720px) {
-  .service-card__grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
+// Fixed speaker count: a compact number input (FormInput, no label).
+.service-card__number {
+  width: 6rem;
 }
 
 .speaker-id {
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  &__title-label {
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
   &__help {
     font-size: 12px;
     color: var(--text-secondary);
-    margin-bottom: 0.25rem;
+    margin: 0.35rem 0 0.25rem;
   }
 
   &__empty {
@@ -645,7 +620,7 @@ export default {
   }
 
   &__list {
-    margin-top: 0.25rem;
+    margin-top: 0.5rem;
   }
 
   &__option {

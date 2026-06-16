@@ -92,58 +92,14 @@
       </div>
 
       <div v-else class="speaker-diarization__list">
-        <div
+        <DiarizationCollectionCard
           v-for="collection in sortedCollections"
           :key="collection._id"
-          class="speaker-diarization__card"
-          @click="selectedCollectionId = collection._id">
-          <div class="speaker-diarization__card-header">
-            <span class="speaker-diarization__card-name">
-              {{ collection.name }}
-            </span>
-            <template v-for="badge in [collectionBadge(collection)]">
-              <span
-                :key="'badge-' + collection._id"
-                class="speaker-diarization__card-badge"
-                :class="badge.cls">
-                <ph-icon :name="badge.icon" size="xs" />
-                {{ badge.label }}
-              </span>
-            </template>
-            <span
-              v-if="collection.description"
-              class="speaker-diarization__card-desc">
-              {{ collection.description }}
-            </span>
-            <div class="speaker-diarization__card-actions" @click.stop>
-              <template v-if="!isOrganizationType(collection)">
-                <Button
-                  icon="pencil-simple"
-                  variant="tertiary"
-                  iconWeight="regular"
-                  @click="startEdit(collection)" />
-                <Button
-                  icon="trash"
-                  variant="secondary"
-                  intent="destructive"
-                  iconWeight="regular"
-                  @click="confirmDelete(collection)" />
-              </template>
-            </div>
-          </div>
-          <div class="speaker-diarization__card-stats">
-            <span>
-              <ph-icon name="user" size="sm" />
-              {{ collectionStats[collection._id]?.labels || 0 }}
-              {{ $t("speaker_diarization.speakers") }}
-            </span>
-            <span>
-              <ph-icon name="waveform" size="sm" />
-              {{ collectionStats[collection._id]?.samples || 0 }}
-              {{ $t("speaker_diarization.samples") }}
-            </span>
-          </div>
-        </div>
+          :collection="collection"
+          :stats="collectionStats[collection._id]"
+          @select="selectedCollectionId = collection._id"
+          @edit="startEdit(collection)"
+          @delete="confirmDelete(collection)" />
       </div>
 
       <!-- Create collection modal -->
@@ -153,7 +109,8 @@
         :textActionApply="$t('speaker_diarization.create')"
         :disabledActionApply="!newCollection.name"
         @submit="createCollection">
-        <div class="speaker-diarization__warning speaker-diarization__warning--compact">
+        <div
+          class="speaker-diarization__warning speaker-diarization__warning--compact">
           <ph-icon name="warning" size="md" />
           <p>{{ $t("speaker_diarization.gdpr_warning") }}</p>
         </div>
@@ -162,9 +119,7 @@
           <input
             type="text"
             v-model="newCollection.name"
-            :placeholder="
-              $t('speaker_diarization.collection_name_placeholder')
-            "
+            :placeholder="$t('speaker_diarization.collection_name_placeholder')"
             class="speaker-diarization__input" />
 
           <label>{{ $t("speaker_diarization.collection_description") }}</label>
@@ -240,6 +195,7 @@ import FormRadio from "@/components/molecules/FormRadio.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import SpeakerLabelCollectionDetail from "@/components/SpeakerLabelCollectionDetail.vue"
 import SpeakerLabelDetail from "@/components/SpeakerLabelDetail.vue"
+import DiarizationCollectionCard from "@/components/DiarizationCollectionCard.vue"
 import { COLLECTION_TYPE, STORAGE_MODE } from "@/tools/voiceprintConstants.js"
 import {
   apiGetVoiceprintCollections,
@@ -260,6 +216,7 @@ export default {
     Modal,
     SpeakerLabelCollectionDetail,
     SpeakerLabelDetail,
+    DiarizationCollectionCard,
   },
   props: {
     organizationId: {
@@ -280,7 +237,11 @@ export default {
       showCreateModal: false,
       showEditModal: false,
       showDeleteModal: false,
-      newCollection: { name: "", description: "", storageMode: STORAGE_MODE.AUDIO },
+      newCollection: {
+        name: "",
+        description: "",
+        storageMode: STORAGE_MODE.AUDIO,
+      },
       editCollection: { _id: null, name: "", description: "" },
       deletingCollection: null,
     }
@@ -300,8 +261,16 @@ export default {
     },
     sortedCollections() {
       return [...this.collections].sort((a, b) => {
-        if (a.type === COLLECTION_TYPE.ORGANIZATION && b.type !== COLLECTION_TYPE.ORGANIZATION) return -1
-        if (a.type !== COLLECTION_TYPE.ORGANIZATION && b.type === COLLECTION_TYPE.ORGANIZATION) return 1
+        if (
+          a.type === COLLECTION_TYPE.ORGANIZATION &&
+          b.type !== COLLECTION_TYPE.ORGANIZATION
+        )
+          return -1
+        if (
+          a.type !== COLLECTION_TYPE.ORGANIZATION &&
+          b.type === COLLECTION_TYPE.ORGANIZATION
+        )
+          return 1
         return 0
       })
     },
@@ -362,18 +331,6 @@ export default {
     },
     isEmbeddingsCollection(collection) {
       return collection.storageMode === STORAGE_MODE.EMBEDDINGS
-    },
-    collectionBadge(collection) {
-      if (this.isOrganizationType(collection)) {
-        return { cls: "speaker-diarization__card-badge--org", icon: "users", label: this.$t("speaker_diarization.badge_auto_managed") }
-      }
-      if (this.isEmbeddingsCollection(collection)) {
-        return { cls: "speaker-diarization__card-badge--embeddings", icon: "fingerprint", label: this.$t("speaker_diarization.badge_embeddings") }
-      }
-      return { cls: "speaker-diarization__card-badge--audio", icon: "waveform", label: this.$t("speaker_diarization.badge_audio") }
-    },
-    isOrganizationType(collection) {
-      return collection.type === COLLECTION_TYPE.ORGANIZATION
     },
     async fetchCollections() {
       this.loading = true
@@ -459,13 +416,16 @@ export default {
           type: "success",
           timeout: 5000,
         })
-        this.newCollection = { name: "", description: "", storageMode: STORAGE_MODE.AUDIO }
+        this.newCollection = {
+          name: "",
+          description: "",
+          storageMode: STORAGE_MODE.AUDIO,
+        }
         this.showCreateModal = false
         this.fetchCollections()
       } catch (err) {
         this.$store.dispatch("system/addNotification", {
-          message:
-            err.message || this.$t("speaker_diarization.created_error"),
+          message: err.message || this.$t("speaker_diarization.created_error"),
           type: "error",
           timeout: 5000,
         })
@@ -626,87 +586,6 @@ export default {
     flex-direction: column;
     gap: 0.75rem;
     margin-top: 1rem;
-  }
-
-  &__card {
-    border: 1px solid var(--neutral-20);
-    border-radius: 8px;
-    padding: 1rem;
-    cursor: pointer;
-    transition: border-color 0.15s, box-shadow 0.15s;
-
-    &:hover {
-      border-color: var(--primary-hard);
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-    }
-  }
-
-  &__card-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  &__card-name {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text-primary);
-  }
-
-  &__card-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.15rem 0.5rem;
-    border-radius: 10px;
-    font-size: 11px;
-    font-weight: 600;
-    white-space: nowrap;
-
-    &--audio {
-      background: var(--blue-soft, #e3f2fd);
-      color: var(--blue-chart, #1976d2);
-    }
-
-    &--embeddings {
-      background: var(--green-soft, #e8f5e9);
-      color: var(--green-chart, #4caf50);
-    }
-
-    &--org {
-      background: var(--neutral-10, #f5f5f5);
-      color: var(--text-secondary, #666);
-    }
-  }
-
-  &__card-actions {
-    margin-left: auto;
-    display: flex;
-    gap: 0.25rem;
-  }
-
-  &__card-desc {
-    font-size: 13px;
-    color: var(--text-secondary);
-    padding-left: 0.5rem;
-    border-left: 1px solid var(--neutral-20);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  &__card-stats {
-    display: flex;
-    gap: 1rem;
-    margin-top: 0.5rem;
-    font-size: 13px;
-    color: var(--text-secondary);
-
-    span {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
   }
 
   &__form {
