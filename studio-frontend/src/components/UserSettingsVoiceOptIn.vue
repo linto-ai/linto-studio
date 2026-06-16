@@ -38,7 +38,7 @@
             }}
           </h4>
           <Button
-            v-if="hasSamples"
+            v-if="hasVoiceSignature"
             icon="trash"
             variant="secondary"
             intent="destructive"
@@ -189,7 +189,7 @@
           {{ $t("speaker_diarization.optin_orgs_description") }}
         </p>
 
-        <div v-if="!hasSamples" class="voice-optin__orgs-disabled">
+        <div v-if="!hasVoiceSignature" class="voice-optin__orgs-disabled">
           <ph-icon name="info" size="sm" />
           <span>{{ $t("speaker_diarization.optin_orgs_no_samples") }}</span>
         </div>
@@ -439,6 +439,12 @@ export default {
   computed: {
     hasSamples() {
       return this.signatures.length > 0
+    },
+    // A voice signature exists when raw samples are present OR a voiceprint has
+    // been computed. In embeddings-only mode the samples are purged after
+    // computation, so org authorization must key off the voiceprint too.
+    hasVoiceSignature() {
+      return this.hasSamples || this.voiceprintStatus.hasVoiceprint
     },
     modeTabs() {
       return [

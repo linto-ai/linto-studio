@@ -1787,7 +1787,7 @@
     "optin_no_samples": "You don't have any voice samples yet. Record or upload samples to create your voice signature.",
     "optin_orgs_title": "Authorized organizations",
     "optin_orgs_description": "Select which organizations are allowed to use your voice signature for speaker identification.",
-    "optin_orgs_empty": "You are not a member of any organization.",
+    "optin_orgs_empty": "None of your organizations have speaker identification enabled.",
     "optin_orgs_no_samples": "Add voice samples first to authorize organizations.",
     "optin_orgs_col_name": "Organization",
     "optin_orgs_col_status": "Authorized",
