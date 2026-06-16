@@ -36,11 +36,15 @@ const {
   ConversationNoFileUploaded,
   ConversationMetadataRequire,
   ConversationError,
+  ConversationSecurityLevelForbidden,
 } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
 const { OrganizationNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
+)
+const { getTranscriptionServiceByEndpoint } = require(
+  `${process.cwd()}/components/WebServer/controllers/services/utility`,
 )
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 
@@ -108,6 +112,26 @@ async function transcribe(isSingleFile, req, res, next) {
       { bypass: req.backofficeAccess },
     )
     if (orgExists.length !== 1) throw new OrganizationNotFound()
+
+    // Confidentiality is enforced server-side here — the frontend gate is only
+    // advisory. The conversation level cannot go below the organization's floor,
+    // and the chosen transcription model's security_level must meet that level.
+    req.body.securityLevel = Math.max(
+      SECURITY_LEVELS.getValueOrDefault(req.body.securityLevel),
+      SECURITY_LEVELS.getValueOrDefault(orgExists[0].securityLevel),
+    )
+    const chosenService = await getTranscriptionServiceByEndpoint(
+      req.body.endpoint,
+    )
+    if (
+      !chosenService ||
+      !SECURITY_LEVELS.isAllowed(
+        chosenService.security_level,
+        req.body.securityLevel,
+      )
+    ) {
+      throw new ConversationSecurityLevelForbidden()
+    }
 
     // Speaker identification: validate the requested collections and inject the
     // server-built config into transcriptionConfig (the client never provides

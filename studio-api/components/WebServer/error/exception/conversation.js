@@ -16,6 +16,14 @@ const SpeakerIdentificationForbidden = createException(
   403,
   "A speaker identification collection does not belong to this organization",
 )
+// The chosen transcription model's confidentiality level does not meet the
+// conversation's required level (server-side enforcement of the security gate).
+const ConversationSecurityLevelForbidden = createException(
+  "ConversationSecurityLevelForbidden",
+  "conversation",
+  403,
+  "The selected transcription model does not meet the required confidentiality level",
+)
 const ConversationNoFileUploaded = createException(
   "ConversationNoFileUploaded",
   "conversation",
@@ -159,6 +167,7 @@ module.exports = {
   ConversationNotShared,
   ConversationIdRequire,
   ConversationError,
+  ConversationSecurityLevelForbidden,
   SpeakerIdentificationForbidden,
   ConversationNotFound,
   TurnNotFound,
