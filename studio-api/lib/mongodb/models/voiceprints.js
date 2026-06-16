@@ -93,6 +93,27 @@ class VoiceprintModel extends MongoModel {
     )
   }
 
+  // Sample count / duration / last activity, falling back to the voiceprint
+  // traceability fields when raw samples are purged (embeddings-only mode).
+  sampleMetrics(samples, voiceprint) {
+    const list = Array.isArray(samples) ? samples : []
+    if (list.length > 0) {
+      return {
+        samplesCount: list.length,
+        totalDuration: list.reduce((sum, s) => sum + (s.audioDuration || 0), 0),
+        lastActivity: list[list.length - 1]?.created || null,
+      }
+    }
+    if (this.hasComputedVoiceprint(voiceprint)) {
+      return {
+        samplesCount: (voiceprint.sourceSampleIds || []).length,
+        totalDuration: voiceprint.sourceDuration || 0,
+        lastActivity: voiceprint.computedAt || null,
+      }
+    }
+    return { samplesCount: 0, totalDuration: 0, lastActivity: null }
+  }
+
   async deleteBySubject(subjectType, subjectId) {
     try {
       const query = {

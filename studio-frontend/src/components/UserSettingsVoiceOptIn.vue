@@ -440,9 +440,7 @@ export default {
     hasSamples() {
       return this.signatures.length > 0
     },
-    // A voice signature exists when raw samples are present OR a voiceprint has
-    // been computed. In embeddings-only mode the samples are purged after
-    // computation, so org authorization must key off the voiceprint too.
+    // Samples are purged in embeddings-only mode; the voiceprint still counts.
     hasVoiceSignature() {
       return this.hasSamples || this.voiceprintStatus.hasVoiceprint
     },
