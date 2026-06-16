@@ -1791,7 +1791,7 @@
     "optin_no_samples": "Vous n'avez pas encore d'échantillons vocaux. Enregistrez ou importez des échantillons pour créer votre signature vocale.",
     "optin_orgs_title": "Organisations autorisées",
     "optin_orgs_description": "Sélectionnez les organisations autorisées à utiliser votre signature vocale pour l'identification des locuteurs.",
-    "optin_orgs_empty": "Vous n'êtes membre d'aucune organisation.",
+    "optin_orgs_empty": "Aucune de vos organisations n'autorise l'identification du locuteur.",
     "optin_orgs_no_samples": "Ajoutez des échantillons vocaux pour pouvoir autoriser des organisations.",
     "optin_orgs_col_name": "Organisation",
     "optin_orgs_col_status": "Autorisée",

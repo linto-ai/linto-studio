@@ -247,17 +247,8 @@ async function getVoiceprintStatus(req, res, next) {
     const hasVoiceprint = model.voiceprints.hasComputedVoiceprint(voiceprint)
     const storageMode = model.voiceprints.getStorageMode(voiceprint)
 
-    // In embeddings-only mode the sample documents are deleted after
-    // computation: counters come from the voiceprint traceability fields
-    let audioSamplesCount = audioSamples.length
-    let totalDuration = audioSamples.reduce(
-      (sum, s) => sum + (s.audioDuration || 0),
-      0,
-    )
-    if (audioSamples.length === 0 && hasVoiceprint) {
-      audioSamplesCount = (voiceprint.sourceSampleIds || []).length
-      totalDuration = voiceprint.sourceDuration || 0
-    }
+    const { samplesCount: audioSamplesCount, totalDuration } =
+      model.voiceprints.sampleMetrics(audioSamples, voiceprint)
 
     res.status(200).send({
       hasVoiceprint,

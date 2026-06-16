@@ -12,6 +12,10 @@ const {
   `${process.cwd()}/components/WebServer/error/exception/speakerIdentification`,
 )
 
+const { SPEAKER_TYPE } = require(
+  `${process.cwd()}/lib/dao/speakerIdentification/naming`,
+)
+
 // NB: userVoiceOptIn.js requires this module (verifyOrgMembership), so importing
 // resolveUserSampleAudio at the top creates a circular require — whichever module
 // loads first captures a half-initialised exports of the other. userVoiceOptIn
@@ -72,31 +76,32 @@ async function getOptedInMembers(req, res, next) {
     await Promise.all(
       optedInUserIds.map(async (userId) => {
         try {
-          // The model layer returns the Error object (not throws) on a DB
-          // failure, so guard on Array.isArray — otherwise an Error would slip
-          // past a `.length === 0` check and blow up at `.reduce` below, which
-          // the catch would silently swallow (dropping the member from the list).
-          const samples =
-            await model.voiceSamples.getAudioSamplesByUserId(userId)
-          if (!Array.isArray(samples) || samples.length === 0) return
+          // Models resolve to an Error (not throw) on failure: normalize to [].
+          const [rawSamples, voiceprint] = await Promise.all([
+            model.voiceSamples.getAudioSamplesByUserId(userId),
+            model.voiceprints.getBySubject(SPEAKER_TYPE.USER, userId),
+          ])
+          const samples = Array.isArray(rawSamples) ? rawSamples : []
+          const hasVoiceprint =
+            model.voiceprints.hasComputedVoiceprint(voiceprint)
+
+          if (samples.length === 0 && !hasVoiceprint) return
 
           const users = await model.users.getById(userId, true)
           if (!Array.isArray(users) || users.length === 0) return
           const user = users[0]
 
-          const totalDuration = samples.reduce(
-            (sum, s) => sum + (s.audioDuration || 0),
-            0,
-          )
+          const { samplesCount, totalDuration, lastActivity } =
+            model.voiceprints.sampleMetrics(samples, voiceprint)
 
           members.push({
             userId: userId,
             name:
               `${user.firstname || ""} ${user.lastname || ""}`.trim() ||
               "Member",
-            samplesCount: samples.length,
+            samplesCount,
             totalDuration,
-            created: samples[samples.length - 1]?.created,
+            created: lastActivity,
           })
         } catch (err) {
           debug("Failed to resolve member %s: %O", userId, err)
