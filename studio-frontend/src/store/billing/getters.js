@@ -14,6 +14,17 @@ export default {
   isFree: (s, g) => g.planKey === "free_payg",
   isPremium: (s, g) => g.planKey === "premium",
   premiumPlan: (s) => s.plans.find((p) => p.planKey === "premium") || null,
+  currentPlan: (s, g) => s.plans.find((p) => p.planKey === g.planKey) || null,
+
+  // Is a capability available on the current plan? Drives UI feature-gating.
+  // boolean -> its value; enum/quota/payg present -> available (the precise
+  // value/limit is enforced server-side). Absent -> locked.
+  can: (s, g) => (capability) => {
+    const rule = g.currentPlan?.entitlements?.[capability]
+    if (!rule) return false
+    if (rule.type === "boolean") return rule.value === true
+    return true
+  },
 
   // All metered quotas as display-ready bars.
   meters: (s) => {

@@ -11,6 +11,8 @@
     "cancel": "Annuler",
     "confirm_upgrade": "Passer pro",
     "upgrade_done": "Bienvenue dans Premium !",
+    "limit_reached": "Vous avez atteint la limite de votre offre gratuite.",
+    "feature_locked": "Cette fonctionnalité est incluse dans Premium.",
     "meter": {
       "import": "Imports",
       "ai": "Analyses IA",
