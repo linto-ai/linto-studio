@@ -1,6 +1,7 @@
 <template>
   <div class="generation-timeline flex col flex1">
     <h3 class="sidebar-section-title">{{ $t("publish.generations.title") }}</h3>
+    <SaasWatermark />
 
     <!-- Loading indicator (shown alongside list, not instead of) -->
     <div v-if="loading" class="generation-loading">
@@ -88,9 +89,11 @@
 
 <script>
 import { formatDateShort } from "@/tools/formatDate.js"
+import SaasWatermark from "@/components-cloud/SaasWatermark.vue"
 
 export default {
   name: "GenerationTimeline",
+  components: { SaasWatermark },
   props: {
     generations: {
       type: Array,
