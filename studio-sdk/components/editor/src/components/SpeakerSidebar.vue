@@ -5,6 +5,7 @@ import ChannelSelector from './ChannelSelector.vue'
 import TranslationSelector from './TranslationSelector.vue'
 import { useI18n } from '../i18n'
 import { useEditorStore } from '../core'
+import { isTTSSupported } from '../utils/tts'
 import type { Speaker } from '../types/editor'
 
 defineProps<{
@@ -22,6 +23,14 @@ defineEmits<{
 
 const editor = useEditorStore()
 const { t } = useI18n()
+
+const ttsSupported = isTTSSupported()
+
+function onToggleTts(value: boolean): void {
+  if (!editor.live) return
+  if (value) editor.live.enableTTS()
+  else editor.live.disableTTS()
+}
 </script>
 
 <template>
@@ -87,6 +96,20 @@ const { t } = useI18n()
           :disabled="!editor.subtitle.isVisible.value"
         />
       </div>
+    </section>
+    <section
+      v-if="editor.live && editor.live.ttsAvailable && ttsSupported"
+      class="sidebar-section"
+    >
+      <h2 class="sidebar-title">{{ t('sidebar.voicePlayback') }}</h2>
+      <div class="subtitle-toggle">
+        <span class="subtitle-toggle-label">{{ t('voicePlayback.enable') }}</span>
+        <SwitchToggle
+          :model-value="editor.live.ttsEnabled.value"
+          @update:model-value="onToggleTts"
+        />
+      </div>
+      <p class="voice-playback-hint">{{ t('voicePlayback.description') }}</p>
     </section>
     <section v-if="speakers.length" class="sidebar-section">
       <h2 class="sidebar-title">{{ t('sidebar.speakers') }}</h2>
@@ -167,6 +190,12 @@ const { t } = useI18n()
 .subtitle-toggle-label {
   font-size: var(--font-size-sm);
   color: var(--color-text-primary);
+}
+
+.voice-playback-hint {
+  padding: 0 var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
 }
 
 .subtitle-slider {
