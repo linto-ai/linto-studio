@@ -4,6 +4,7 @@ const axios = require(`${process.cwd()}/lib/utility/axios`)
 const { storeSession } = require(
   `${process.cwd()}/components/WebServer/controllers/session/conversation.js`,
 )
+const saas = require(`${process.cwd()}/lib/saas`)
 
 module.exports = function () {
   this.sharedClient.on("message", async (topic, message) => {
@@ -46,6 +47,16 @@ module.exports = function () {
     }
 
     if (!stored) return
+
+    // SaaS metering: record the finished live session's billable duration,
+    // idempotent by sessionId. FAIL-SOFT, never blocks. No-op if plugin absent.
+    // `session` is the Session-API body (organizationId, startTime, endTime).
+    await saas.recordLive({
+      orgId: session.organizationId,
+      sessionId: session.id,
+      startTime: session.startTime,
+      endTime: session.endTime,
+    })
 
     try {
       await axios.delete(
