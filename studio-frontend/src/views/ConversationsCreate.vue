@@ -23,50 +23,58 @@
             :disabled="formState === 'sending'"
             v-model="audioFiles" />
         </div>
-        <div class="flex row gap-medium wrap create-meta-row">
+        <section>
           <!-- folder -->
-          <section class="flex1">
-            <h2>{{ $t("conversation.folder_selection_title") }}</h2>
-            <div class="form-field flex col">
-              <label class="form-label">
-                {{ $t("conversation.folder_selection_label") }}
-              </label>
-              <FolderSelector v-model="selectedFolderId" />
-            </div>
-          </section>
 
-          <!-- rights -->
-          <section class="flex1">
-            <h2>{{ $t("conversation.conversation_creation_right_title") }}</h2>
-            <div class="form-field flex col">
-              <div class="flex align-center gap-small">
-                <label class="form-label">
-                  {{ $t("conversation.conversation_creation_right_label") }}
-                </label>
+          <h2>{{ $t("conversation.folder_selection_title") }}</h2>
+
+          <div class="form-field flex col">
+            <label class="form-label">
+              {{ $t("conversation.folder_selection_label") }}
+            </label>
+            <FolderSelector v-model="selectedFolderId" />
+          </div>
+        </section>
+        <section>
+          <h2>
+            {{ $t("conversation.conversation_creation_rights_security_title") }}
+          </h2>
+          <div class="flex row gap-medium wrap">
+            <FormInput
+              auto-width
+              :field="{
+                label: $t('conversation.conversation_creation_right_label'),
+                error: null,
+              }">
+              <template #content-after-label>
                 <Tooltip
                   :text="$t('conversation.rights_info_tooltip')"
                   position="right">
                   <ph-icon name="info" size="16" />
                 </Tooltip>
-              </div>
-              <select
-                v-model="membersRight.value"
-                :disabled="selectedFolderIsPrivate">
-                <option
-                  v-for="uright in membersRight.list"
-                  :key="uright.value"
-                  :value="uright.value">
-                  {{ uright.txt }}
-                </option>
-              </select>
-            </div>
-          </section>
-        </div>
+              </template>
+              <template #custom-input="{ id }">
+                <select
+                  :id="id"
+                  style="width: 100%"
+                  v-model="membersRight.value"
+                  :disabled="selectedFolderIsPrivate">
+                  <option
+                    v-for="uright in membersRight.list"
+                    :key="uright.value"
+                    :value="uright.value">
+                    {{ uright.txt }}
+                  </option>
+                </select>
+              </template>
+            </FormInput>
 
-        <SecurityLevelSelector
-          v-if="enableSecurityLevel"
-          v-model="securityLevel"
-          :minLevel="organizationSecurityLevel" />
+            <SecurityLevelSelector
+              v-if="enableSecurityLevel"
+              v-model="securityLevel"
+              :minLevel="organizationSecurityLevel" />
+          </div>
+        </section>
 
         <!-- services -->
         <section class="flex col gap-small">
@@ -76,11 +84,9 @@
             </h2>
             <span class="create-services-count" v-if="modelCount">
               {{
-                $tc(
-                  "conversation.transcription.model_count",
-                  modelCount,
-                  { count: modelCount },
-                )
+                $tc("conversation.transcription.model_count", modelCount, {
+                  count: modelCount,
+                })
               }}
             </span>
           </div>
@@ -96,12 +102,16 @@
         </section>
 
         <div class="flex gap-small align-center conversation-create-footer">
-          <div class="conversation-create-footer__summary" v-if="audioFiles.length">
+          <div
+            class="conversation-create-footer__summary"
+            v-if="audioFiles.length">
             <span class="conversation-create-footer__icon">
               <ph-icon name="music-note" size="md" />
             </span>
             <div class="conversation-create-footer__text">
-              <span class="conversation-create-footer__file" :title="footerFileLabel">
+              <span
+                class="conversation-create-footer__file"
+                :title="footerFileLabel">
                 {{ footerFileLabel }}
               </span>
               <span
@@ -170,6 +180,7 @@ import QuickSessionCreateContent from "@/components/QuickSessionCreateContent.vu
 import VisioCreateContent from "@/components/VisioCreateContent.vue"
 import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
 import FolderSelector from "@/components/FolderSelector.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 
 export default {
   mixins: [
@@ -405,6 +416,7 @@ export default {
     VisioCreateContent,
     SecurityLevelSelector,
     FolderSelector,
+    FormInput,
   },
 }
 </script>

@@ -316,6 +316,7 @@
     "conversation_creation_right_title": "Gestion des droits",
     "conversation_creation_right_label": "Droits par défaut pour les membres de l'organisation",
     "conversation_creation_security_title": "Niveau de sécurité",
+    "conversation_creation_rights_security_title": "Droits et sécurité",
     "conversation_creation_security_label": "Niveau de sécurité du média",
     "creation_success_message": "Le média a été importé avec succès",
     "delete_modal_multiple": {

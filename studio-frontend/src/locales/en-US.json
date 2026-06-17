@@ -315,6 +315,7 @@
     "conversation_creation_right_title": "Media rights",
     "conversation_creation_right_label": "Default rights for organisation members",
     "conversation_creation_security_title": "Security level",
+    "conversation_creation_rights_security_title": "Rights and security",
     "conversation_creation_security_label": "Media security level",
     "creation_success_message": "Media successfully imported",
     "delete_modal_multiple": {

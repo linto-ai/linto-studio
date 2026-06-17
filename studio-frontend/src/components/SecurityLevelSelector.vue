@@ -1,20 +1,17 @@
 <template>
-  <section>
-    <h2>{{ $t("conversation.conversation_creation_security_title") }}</h2>
-    <div class="form-field flex col">
-      <label class="form-label">
-        {{ $t("conversation.conversation_creation_security_label") }}
-      </label>
-      <select :value="value" @change="handleChange">
-        <option
-          v-for="level in securityLevels"
-          :key="level.value"
-          :value="level.value">
-          {{ level.txt }}
-        </option>
-      </select>
-    </div>
-  </section>
+  <div class="form-field flex col">
+    <label class="form-label">
+      {{ $t("conversation.conversation_creation_security_label") }}
+    </label>
+    <select :value="value" @change="handleChange">
+      <option
+        v-for="level in securityLevels"
+        :key="level.value"
+        :value="level.value">
+        {{ level.txt }}
+      </option>
+    </select>
+  </div>
 </template>
 
 <script>

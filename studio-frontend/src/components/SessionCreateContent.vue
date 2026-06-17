@@ -59,10 +59,12 @@
         </div>
       </section>
 
-      <SecurityLevelSelector
-        v-if="enableSecurityLevel"
-        v-model="securityLevel"
-        :minLevel="organizationSecurityLevel" />
+      <section v-if="enableSecurityLevel">
+        <h2>{{ $t("conversation.conversation_creation_security_title") }}</h2>
+        <SecurityLevelSelector
+          v-model="securityLevel"
+          :minLevel="organizationSecurityLevel" />
+      </section>
 
       <!-- Channels section -->
       <section class="flex col">
