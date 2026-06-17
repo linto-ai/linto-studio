@@ -1,4 +1,29 @@
 {
+  "billing": {
+    "beta": "Public Beta",
+    "premium": "Premium",
+    "per_seat": "Per seat / month",
+    "used_of": "{used} of {total}",
+    "reset_on": "Resets on {date}",
+    "upgrade_cta": "Go Pro",
+    "upgrade_title": "Upgrade to Premium",
+    "upgrade_subtitle": "Unlock unlimited usage and team features.",
+    "cancel": "Cancel",
+    "confirm_upgrade": "Upgrade",
+    "upgrade_done": "Welcome to Premium!",
+    "meter": {
+      "import": "Imports",
+      "ai": "AI insights",
+      "live": "Live"
+    },
+    "feature": {
+      "unlimited": "Unlimited audio imports & AI insights",
+      "collaboration": "Team workspace & sharing",
+      "speaker_id": "Speaker identification",
+      "no_watermark": "No watermark, editable output",
+      "api": "API access"
+    }
+  },
   "apply": "Apply",
   "cancel": "Cancel",
   "activity_list": {
