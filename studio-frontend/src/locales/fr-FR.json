@@ -13,6 +13,7 @@
     "upgrade_done": "Bienvenue dans Premium !",
     "limit_reached": "Vous avez atteint la limite de votre offre gratuite.",
     "feature_locked": "Cette fonctionnalité est incluse dans Premium.",
+    "watermark_hint": "Sortie gratuite — passez pro pour retirer le watermark",
     "meter": {
       "import": "Imports",
       "ai": "Analyses IA",
