@@ -11,6 +11,9 @@
       <div class="upgrade-modal__badge">★ {{ $t("billing.premium") }}</div>
       <h2 class="upgrade-modal__title">{{ $t("billing.upgrade_title") }}</h2>
       <p class="upgrade-modal__sub">{{ $t("billing.upgrade_subtitle") }}</p>
+      <p v-if="contextMessage" class="upgrade-modal__context">
+        {{ contextMessage }}
+      </p>
 
       <ul class="upgrade-modal__features">
         <li>{{ $t("billing.feature.unlimited") }}</li>
@@ -45,11 +48,26 @@ import Button from "@/components/atoms/Button.vue"
 export default {
   name: "UpgradeModal",
   components: { Button },
+  props: {
+    // Optional gating detail ({ reason, capability, remaining }) when opened
+    // from a 402/403 response, to show a contextual line.
+    reason: { type: Object, default: null },
+  },
   data() {
     return { busy: false, done: false }
   },
   computed: {
     ...mapGetters("billing", ["premiumPlan"]),
+    contextMessage() {
+      if (!this.reason) return ""
+      if (this.reason.reason === "quota_exceeded") {
+        return this.$t("billing.limit_reached")
+      }
+      if (this.reason.reason === "feature_disabled") {
+        return this.$t("billing.feature_locked")
+      }
+      return ""
+    },
   },
   mounted() {
     if (!this.premiumPlan) this.fetchPlans()

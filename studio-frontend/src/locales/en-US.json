@@ -11,6 +11,8 @@
     "cancel": "Cancel",
     "confirm_upgrade": "Upgrade",
     "upgrade_done": "Welcome to Premium!",
+    "limit_reached": "You've reached your free plan limit.",
+    "feature_locked": "This feature is included in Premium.",
     "meter": {
       "import": "Imports",
       "ai": "AI insights",

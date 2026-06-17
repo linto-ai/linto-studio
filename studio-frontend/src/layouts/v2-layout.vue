@@ -3,6 +3,12 @@
     class="v2-layout"
     :class="{ 'no-sidebar': !sidebarOpen || fullscreen || !isAuthenticated }">
     <QuickSessionNotif v-if="quickSession && !isQuickSessionPage" />
+    <IsCloud>
+      <UpgradeModal
+        v-if="showSaasUpgrade"
+        :reason="saasUpgradeReason"
+        @close="showSaasUpgrade = false" />
+    </IsCloud>
     <div class="v2-layout__content">
       <div
         v-if="!fullscreen && isAuthenticated"
@@ -50,6 +56,8 @@ import Breadcrumb from "@/components/atoms/Breadcrumb.vue"
 import HeaderBar from "@/components/HeaderBar.vue"
 import LocalSwitcher from "@/components/LocalSwitcher.vue"
 import QuickSessionNotif from "@/components/QuickSessionNotif.vue"
+import IsCloud from "@/components/atoms/IsCloud.vue"
+import UpgradeModal from "@/components-cloud/UpgradeModal.vue"
 
 export default {
   props: {
@@ -81,7 +89,7 @@ export default {
     },
   },
   data() {
-    return {}
+    return { showSaasUpgrade: false, saasUpgradeReason: null }
   },
   computed: {
     isAuthenticated() {
@@ -98,7 +106,12 @@ export default {
       this.$store.dispatch("system/toggleSidebar", true)
     }
   },
-  mounted() {},
+  mounted() {
+    bus.$on("saas-upgrade-needed", this.onSaasUpgradeNeeded)
+  },
+  beforeDestroy() {
+    bus.$off("saas-upgrade-needed", this.onSaasUpgradeNeeded)
+  },
   methods: {
     closeSidebar() {
       if (!this.isMobile || !this.sidebarOpen) return
@@ -106,6 +119,10 @@ export default {
     },
     toggleSidebar() {
       this.$store.dispatch("system/toggleSidebar")
+    },
+    onSaasUpgradeNeeded(detail) {
+      this.saasUpgradeReason = detail || null
+      this.showSaasUpgrade = true
     },
   },
   components: {
@@ -115,6 +132,8 @@ export default {
     HeaderBar,
     LocalSwitcher,
     QuickSessionNotif,
+    IsCloud,
+    UpgradeModal,
   },
 }
 </script>
