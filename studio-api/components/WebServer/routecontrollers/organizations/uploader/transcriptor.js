@@ -26,6 +26,10 @@ const {
   `${process.cwd()}/components/WebServer/controllers/conversation/upload`,
 )
 
+const { getSaasServiceByEndpoint } = require(
+  `${process.cwd()}/components/WebServer/controllers/services/utility`,
+)
+
 const CONVERSATION_RIGHT = require(
   `${process.cwd()}/lib/dao/conversation/rights`,
 )
@@ -39,7 +43,7 @@ const {
 } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
-const { OrganizationNotFound } = require(
+const { OrganizationNotFound, OrganizationForbidden } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
@@ -104,6 +108,26 @@ async function transcribe(isSingleFile, req, res, next) {
       { bypass: req.backofficeAccess },
     )
     if (orgExists.length !== 1) throw new OrganizationNotFound()
+
+    // PUBLIC organizations allow every service, so skip the lookup
+    const orgSecurityLevel = SECURITY_LEVELS.getValueOrDefault(
+      orgExists[0].securityLevel,
+    )
+    if (orgSecurityLevel > SECURITY_LEVELS.PUBLIC) {
+      const transcriptionServiceInfo = await getSaasServiceByEndpoint(
+        req.body.endpoint,
+      )
+      if (
+        !SECURITY_LEVELS.isAllowed(
+          transcriptionServiceInfo?.security_level,
+          orgSecurityLevel,
+        )
+      ) {
+        throw new OrganizationForbidden(
+          "The selected transcription service security level is below the organization minimum",
+        )
+      }
+    }
 
     if (req.body.folderId && req.body.folderId !== "null") {
       const folderResult = await model.folders.getById(req.body.folderId)

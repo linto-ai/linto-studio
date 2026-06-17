@@ -3,11 +3,14 @@ const debug = require("debug")(
 )
 const logger = require(`${process.cwd()}/lib/logger/logger`)
 
-const { SessionError } = require(
+const { SessionError, SessionForbidden } = require(
   `${process.cwd()}/components/WebServer/error/exception/session`,
 )
 const { Unauthorized, UnauthorizedProxy } = require(
   `${process.cwd()}/components/WebServer/error/exception/auth`,
+)
+const SECURITY_LEVELS = require(
+  `${process.cwd()}/lib/dao/conversation/securityLevels`,
 )
 
 const { authFailLimiter } = require(
@@ -38,7 +41,11 @@ function verifyPublicSessionPassword(storedHash, inputPassword) {
 
 function ensurePasswordIfNeeded(sessionData, req) {
   if (sessionData.password && req.payload.fromPublic === true) {
-    requireParam(req.query.password, Unauthorized, "Password is required for this alias")
+    requireParam(
+      req.query.password,
+      Unauthorized,
+      "Password is required for this alias",
+    )
     if (
       !verifyPublicSessionPassword(sessionData.password, req.query.password)
     ) {
@@ -156,7 +163,8 @@ async function generatPublicToken(jsonString, req) {
 
 async function filterPrivateSessions(jsonString, req) {
   try {
-    if (ROLES.hasRoleAccess(req.userRole, ROLES.MEETING_MANAGER)) return jsonString
+    if (ROLES.hasRoleAccess(req.userRole, ROLES.MEETING_MANAGER))
+      return jsonString
 
     const body = JSON.parse(jsonString)
     const sessions = body.sessions
@@ -164,14 +172,61 @@ async function filterPrivateSessions(jsonString, req) {
 
     const userId = req.payload.data.userId
     body.sessions = sessions.filter(
-      (session) =>
-        session.visibility !== "private" || session.owner === userId,
+      (session) => session.visibility !== "private" || session.owner === userId,
     )
     body.totalItems = body.totalItems - (sessions.length - body.sessions.length)
     return JSON.stringify(body)
   } catch (err) {
     debug("Error filtering private sessions:", err)
     return jsonString
+  }
+}
+
+async function checkChannelsSecurityLevel(req, next) {
+  try {
+    const channels = req.body?.channels
+    if (!Array.isArray(channels) || channels.length === 0) return next()
+
+    const organization = await model.organizations.getById(
+      req.params.organizationId,
+    )
+    if (organization.length !== 1) throw new Unauthorized()
+
+    const orgSecurityLevel = SECURITY_LEVELS.getValueOrDefault(
+      organization[0].securityLevel,
+    )
+    // PUBLIC organizations accept every transcriber profile.
+    if (orgSecurityLevel === SECURITY_LEVELS.PUBLIC) return next()
+
+    const profiles = await axios.get(
+      process.env.SESSION_API_ENDPOINT +
+        `/transcriber_profiles?organizationId=${req.params.organizationId}`,
+    )
+    const levelByProfileId = new Map(
+      (Array.isArray(profiles) ? profiles : []).map((profile) => [
+        String(profile.id),
+        profile.meta?.securityLevel,
+      ]),
+    )
+
+    for (const channel of channels) {
+      const profileId = channel.transcriberProfileId
+      if (profileId === undefined || profileId === null) continue
+      if (
+        !SECURITY_LEVELS.isAllowed(
+          levelByProfileId.get(String(profileId)),
+          orgSecurityLevel,
+        )
+      ) {
+        throw new SessionForbidden(
+          "A selected transcriber profile security level is below the organization minimum",
+        )
+      }
+    }
+
+    next()
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -226,6 +281,7 @@ module.exports = {
   generatPublicToken,
   filterPrivateSessions,
   checkSessionMatchingOrganization,
+  checkChannelsSecurityLevel,
   cleanPublicSessionContent,
   cleanPublicChannelContent,
 }
