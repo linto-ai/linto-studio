@@ -36,6 +36,7 @@ const en: Record<keyof typeof fr, string> = {
   "sidebar.voicePlayback": "Voice playback",
   "voicePlayback.enable": "Read aloud",
   "voicePlayback.description": "Uses the browser's default speech synthesis.",
+  "voicePlayback.unavailable": "No speech synthesis voice is available in this browser.",
   "transcription.empty": "No transcription yet",
   "transcription.historyStart": "Beginning of transcription",
   "transcription.loadingHistory": "Loading\u2026",

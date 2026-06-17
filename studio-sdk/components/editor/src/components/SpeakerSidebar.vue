@@ -3,9 +3,9 @@ import SpeakerIndicator from './atoms/SpeakerIndicator.vue'
 import SwitchToggle from './atoms/SwitchToggle.vue'
 import ChannelSelector from './ChannelSelector.vue'
 import TranslationSelector from './TranslationSelector.vue'
+import { computed } from 'vue'
 import { useI18n } from '../i18n'
 import { useEditorStore } from '../core'
-import { isTTSSupported } from '../utils/tts'
 import type { Speaker } from '../types/editor'
 
 defineProps<{
@@ -24,10 +24,15 @@ defineEmits<{
 const editor = useEditorStore()
 const { t } = useI18n()
 
-const ttsSupported = isTTSSupported()
+const ttsReady = computed(() => editor.live?.ttsReady.value ?? false)
+const ttsHint = computed(() =>
+  ttsReady.value
+    ? t('voicePlayback.description')
+    : t('voicePlayback.unavailable'),
+)
 
 function onToggleTts(value: boolean): void {
-  if (!editor.live) return
+  if (!editor.live || !ttsReady.value) return
   if (value) editor.live.enableTTS()
   else editor.live.disableTTS()
 }
@@ -98,7 +103,7 @@ function onToggleTts(value: boolean): void {
       </div>
     </section>
     <section
-      v-if="editor.live && editor.live.ttsAvailable && ttsSupported"
+      v-if="editor.live && editor.live.ttsAvailable"
       class="sidebar-section"
     >
       <h2 class="sidebar-title">{{ t('sidebar.voicePlayback') }}</h2>
@@ -106,10 +111,16 @@ function onToggleTts(value: boolean): void {
         <span class="subtitle-toggle-label">{{ t('voicePlayback.enable') }}</span>
         <SwitchToggle
           :model-value="editor.live.ttsEnabled.value"
+          :disabled="!ttsReady"
           @update:model-value="onToggleTts"
         />
       </div>
-      <p class="voice-playback-hint">{{ t('voicePlayback.description') }}</p>
+      <p
+        class="voice-playback-hint"
+        :class="{ 'voice-playback-hint--warning': !ttsReady }"
+      >
+        {{ ttsHint }}
+      </p>
     </section>
     <section v-if="speakers.length" class="sidebar-section">
       <h2 class="sidebar-title">{{ t('sidebar.speakers') }}</h2>
@@ -196,6 +207,10 @@ function onToggleTts(value: boolean): void {
   padding: 0 var(--spacing-sm);
   font-size: var(--font-size-xs);
   color: var(--color-text-muted);
+}
+
+.voice-playback-hint--warning {
+  color: var(--color-danger);
 }
 
 .subtitle-slider {

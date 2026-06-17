@@ -9,6 +9,12 @@ export function isTTSSupported(): boolean {
   return TTS_SUPPORTED
 }
 
+// Whether at least one synthesis voice is installed. The list loads
+// asynchronously, so callers should also react to the "voiceschanged" event.
+export function hasVoices(): boolean {
+  return TTS_SUPPORTED && window.speechSynthesis.getVoices().length > 0
+}
+
 // Queues an utterance. Repeated calls play sequentially, so each finalized
 // turn is read in order.
 export function speakText(text: string, lang?: string | null): void {

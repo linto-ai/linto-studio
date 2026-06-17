@@ -34,6 +34,7 @@ const fr = {
   "sidebar.voicePlayback": "Lecture vocale",
   "voicePlayback.enable": "Lire à voix haute",
   "voicePlayback.description": "Utilise la synthèse vocale par défaut du navigateur.",
+  "voicePlayback.unavailable": "Aucune voix de synthèse n'est disponible dans ce navigateur.",
   "transcription.empty": "Aucune transcription pour le moment",
   "transcription.historyStart": "Début de la transcription",
   "transcription.loadingHistory": "Chargement…",

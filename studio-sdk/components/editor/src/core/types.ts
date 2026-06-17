@@ -191,6 +191,7 @@ export interface LivePluginApi {
   hasLiveUpdate: Ref<boolean>
   ttsAvailable: boolean
   ttsEnabled: Ref<boolean>
+  ttsReady: Ref<boolean>
   enableTTS(): void
   disableTTS(): void
   onPartial(event: LivePartialEventData, channelId: string): void

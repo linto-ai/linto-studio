@@ -13,7 +13,13 @@ import type {
 import type { Turn } from "../../types/editor"
 import { CROSS_TRANSLATION_ID } from "../../core/stores"
 import { isSameLanguage } from "../../utils/isSameLanguage"
-import { speakText, stopTTS, unlockTTS } from "../../utils/tts"
+import {
+  speakText,
+  stopTTS,
+  unlockTTS,
+  isTTSSupported,
+  hasVoices,
+} from "../../utils/tts"
 
 export type { LivePartialEvent, LiveFinalEvent, LiveTranslationEvent }
 export type { LivePluginApi }
@@ -67,6 +73,17 @@ export function createLivePlugin(
       // Voice playback: when enabled, finalized turns of the active channel are
       // read aloud via the browser's default speech synthesis.
       const ttsEnabled = ref(false)
+      // Runtime readiness: supported AND at least one voice installed. Voices
+      // load asynchronously, so we track the "voiceschanged" event.
+      const ttsSupported = isTTSSupported()
+      const ttsReady = ref(false)
+      function refreshTTSReady(): void {
+        ttsReady.value = hasVoices()
+      }
+      if (ttsSupported) {
+        refreshTTSReady()
+        window.speechSynthesis.addEventListener("voiceschanged", refreshTTSReady)
+      }
       // Segment of the last original partial. Cross mode shows each segment in
       // the *other* language, so we only display a translated partial whose
       // segment matches this one.
@@ -290,6 +307,7 @@ export function createLivePlugin(
         hasLiveUpdate,
         ttsAvailable,
         ttsEnabled,
+        ttsReady,
         enableTTS,
         disableTTS,
         onPartial,
@@ -318,6 +336,12 @@ export function createLivePlugin(
       return () => {
         immediateClearPartial()
         stopTTS()
+        if (ttsSupported) {
+          window.speechSynthesis.removeEventListener(
+            "voiceschanged",
+            refreshTTSReady,
+          )
+        }
         unsubChannelChange()
         unsubTranslationChange()
         unsubTranslationSync()
