@@ -315,8 +315,7 @@ export default {
       if (!this.canCreateSession) return res
 
       const loading = this.loadingSessionData
-      const quickMeetingDisabled =
-        this.transcriberProfilesQuickMeeting.length === 0 || loading
+      const quickMeetingDisabled = loading
 
       if (
         this.isAtLeastQuickMeeting &&

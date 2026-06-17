@@ -161,8 +161,6 @@ export default {
         const channels = [
           {
             name: "Main",
-            transcriberProfileId: settings.selectedProfile.id,
-            translations: settings.selectedProfile.translations ?? [],
             diarization: settings.diarization ?? false,
             keepAudio: settings.keepAudio,
             compressAudio: !settings.offlineTranscription,
@@ -173,6 +171,11 @@ export default {
             },
           },
         ]
+
+        if (settings.selectedProfile) {
+          channels[0].transcriberProfileId = settings.selectedProfile?.id
+          channels[0].translations = settings.selectedProfile?.translations
+        }
         const res = await apiCreateQuickSession(this.currentOrganizationScope, {
           channels: channels,
           meta: {

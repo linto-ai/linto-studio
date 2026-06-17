@@ -1468,6 +1468,7 @@
       "live_transcription_label": "Live transcription",
       "live_options_title": "Transcription options",
       "offline_transcription_label": "Offline transcription",
+      "only_offline_available": "Only offline transcription is available in your organisation",
       "keep_audio_disabled_because_offline": "Audio should be saved when offline transcription is enabled",
       "live_or_offline_should_be_selected": "You must select either live or offline transcription"
     },

@@ -2,9 +2,15 @@
   <div>
     <h2>{{ $t("quick_session.creation.transcription_settings_title") }}</h2>
     <!-- -- -- -- -- OFFLINE Transcription -- -- -- -- -- -->
-
+    <NotificationBanner
+      variant="info"
+      icon="info"
+      v-if="transcriberProfiles.length === 0">
+      {{ $t("quick_session.creation.only_offline_available") }}
+    </NotificationBanner>
     <section>
       <FormCheckbox
+        v-if="transcriberProfiles.length > 0"
         :field="fieldOfflineTranscription"
         v-model="fieldOfflineTranscription.value"
         switchDisplay />
@@ -38,7 +44,7 @@
 
     <!-- -- -- -- -- LIVE transcription -- -- -- -- -->
 
-    <section>
+    <section v-if="transcriberProfiles.length > 0">
       <FormCheckbox
         :field="fieldSubInStudio"
         v-model="fieldSubInStudio.value"
@@ -121,6 +127,7 @@ import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import TranscriberProfileSelector from "@/components/TranscriberProfileSelector.vue"
 import ServiceSelector from "@/components/serviceSelector/ServiceSelector.vue"
 import Chip from "@/components/atoms/Chip.vue"
+import NotificationBanner from "./atoms/NotificationBanner.vue"
 
 export default {
   props: {
@@ -180,7 +187,10 @@ export default {
       },
       fieldOfflineTranscription: {
         ...EMPTY_FIELD,
-        value: this.value.offlineTranscription ?? true,
+        value:
+          this.transcriberProfiles.length === 0
+            ? true
+            : (this.value.offlineTranscription ?? true),
         label: this.$t("quick_session.creation.offline_transcription_label"),
       },
       selectedProfile: this.value.selectedProfile,
@@ -359,6 +369,7 @@ export default {
     ServiceSelector,
     SessionTranslationSelection,
     Chip,
+    NotificationBanner,
   },
 }
 </script>

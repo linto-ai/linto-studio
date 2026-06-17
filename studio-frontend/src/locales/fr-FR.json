@@ -1462,6 +1462,7 @@
       "live_transcription_label": "Transcription en temps réel",
       "live_options_title": "Options de la transcription",
       "offline_transcription_label": "Transcription après l'enregistrement",
+      "only_offline_available": "Seule la transcription après l'enregistrement est disponible dans votre organisation",
       "keep_audio_disabled_because_offline": "L'audio doit être conservé pour permettre la transcription après l'enregistrement",
       "live_or_offline_should_be_selected": "Au moins une option de transcription doit être sélectionnée"
     },
