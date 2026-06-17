@@ -1,17 +1,35 @@
 <template>
-  <div class="notification-banner" :class="variant">
+  <div class="notification-banner" :class="[variant, `align-${align}`]">
+    <PhIcon
+      v-if="icon"
+      :name="icon"
+      class="notification-banner__icon"
+      size="sm" />
     <slot></slot>
   </div>
 </template>
 
 <script>
+import PhIcon from "@/components/atoms/PhIcon.vue"
+
 export default {
   name: "NotificationBanner",
+  components: { PhIcon },
   props: {
     variant: {
       type: String,
       default: "info",
-      validator: (v) => ["info", "warning", "success", "error"].includes(v),
+      validator: (v) =>
+        ["info", "warning", "success", "error", "neutral"].includes(v),
+    },
+    icon: {
+      type: String,
+      default: "",
+    },
+    align: {
+      type: String,
+      default: "center",
+      validator: (v) => ["center", "start"].includes(v),
     },
   },
 }
@@ -24,6 +42,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: var(--small-gap);
   box-sizing: border-box;
   color: var(--text-primary);
   padding: var(--small-gap) var(--medium-gap);
@@ -31,6 +50,27 @@ export default {
   border-radius: 4px;
   font-size: var(--text-sm);
   line-height: 1.5;
+}
+
+.notification-banner.align-center {
+  justify-content: center;
+  text-align: center;
+}
+
+.notification-banner.align-start {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.notification-banner__icon {
+  flex-shrink: 0;
+}
+
+.notification-banner.neutral {
+  border-color: var(--neutral-30);
+  color: var(--text-secondary);
+  background: var(--neutral-5);
+  border-style: dashed;
 }
 
 .notification-banner.success {
