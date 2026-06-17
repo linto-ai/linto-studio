@@ -70,11 +70,9 @@ export function createLivePlugin(
     install(core: EditorStore) {
       const partial = shallowRef<string | null>(null)
       const hasLiveUpdate = ref(false)
-      // Voice playback: when enabled, finalized turns of the active channel are
-      // read aloud via the browser's default speech synthesis.
+      // Voice playback of finalized turns (browser speech synthesis).
       const ttsEnabled = ref(false)
-      // Runtime readiness: supported AND at least one voice installed. Voices
-      // load asynchronously, so we track the "voiceschanged" event.
+      // Usable = supported AND a voice installed (voices load async).
       const ttsSupported = isTTSSupported()
       const ttsReady = ref(false)
       function refreshTTSReady(): void {
@@ -179,6 +177,7 @@ export function createLivePlugin(
 
         if (
           ttsEnabled.value &&
+          active.isSource &&
           event.text != null &&
           core.activeChannelId.value === channelId
         ) {
@@ -287,13 +286,16 @@ export function createLivePlugin(
           activeTranslation.id === CROSS_TRANSLATION_ID
         ) {
           immediateClearPartial()
+          // Read the translation in its own target language.
+          if (ttsEnabled.value && _event.text) {
+            speakText(_event.text, _event.language)
+          }
         }
       }
 
       function enableTTS(): void {
         ttsEnabled.value = true
-        // Unlock speechSynthesis from within the triggering user gesture so
-        // later, event-driven utterances are allowed to play.
+        // Unlock from within the user gesture so later playback is allowed.
         unlockTTS()
       }
 
