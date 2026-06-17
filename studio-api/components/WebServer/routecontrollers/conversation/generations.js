@@ -16,6 +16,7 @@ const {
 } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
+const saas = require(`${process.cwd()}/lib/saas`)
 
 const HEALTH_CHECK_TIMEOUT = 5000 // 5 seconds
 
@@ -143,6 +144,13 @@ async function createGeneration(req, res, next) {
     const conversationData = conversation[0]
     const organizationId = conversationData.organization?.organizationId?.toString() || null
 
+    // SaaS gate: weekly AI-insights quota (10/week on free). No-op when plugin absent.
+    await saas.enforce({
+      orgId: organizationId,
+      capability: "ai.insights.count",
+      value: 1,
+    })
+
     // Archive all previous current generations for this conversation/service
     await model.conversationGenerations.archiveAllGenerations(
       req.params.conversationId,
@@ -161,6 +169,14 @@ async function createGeneration(req, res, next) {
     }
 
     const result = await model.conversationGenerations.create(generationData)
+
+    // SaaS metering: one AI-insight action.
+    await saas.record({
+      orgId: organizationId,
+      capability: "ai.insights.count",
+      value: 1,
+      meta: { conversationId: req.params.conversationId, serviceName: serviceName || "" },
+    })
 
     // Format response
     const newGeneration = {

@@ -43,6 +43,7 @@ const { OrganizationNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
+const saas = require(`${process.cwd()}/lib/saas`)
 
 async function transcribeReq(req, res, next) {
   try {
@@ -105,6 +106,15 @@ async function transcribe(isSingleFile, req, res, next) {
     )
     if (orgExists.length !== 1) throw new OrganizationNotFound()
 
+    // SaaS gate: block import when the weekly ingestion quota is exhausted.
+    // Cheap pre-check (value:1 = "any room left?"); actual duration is recorded
+    // after the conversation is created. No-op when the plugin is absent.
+    await saas.enforce({
+      orgId: req.params.organizationId,
+      capability: "media.import.duration",
+      value: 1,
+    })
+
     if (req.body.folderId && req.body.folderId !== "null") {
       const folderResult = await model.folders.getById(req.body.folderId)
       if (folderResult.length === 0)
@@ -140,6 +150,15 @@ async function transcribe(isSingleFile, req, res, next) {
       options,
     )
     const conversation = await createConversation(processingJob, req.body)
+
+    // SaaS metering: record the real ingested audio duration (seconds).
+    await saas.record({
+      orgId: req.params.organizationId,
+      capability: "media.import.duration",
+      value: Math.round(conversation?.metadata?.audio?.duration || 0),
+      meta: { conversationId: conversation._id.toString() },
+    })
+
     res.status(201).send({
       message: "A conversation is currently being processed",
       conversationId: conversation._id.toString(),
