@@ -65,6 +65,10 @@
           @clear-selection="$emit('update:selectedMediaIds', [])" />
       </template>
 
+      <MediaTranscriptionInfo
+        v-else-if="activeTab === 'transcription'"
+        :medias="selectedMedias" />
+
       <ConversationShareContent
         v-else-if="activeTab === 'share'"
         :selectedConversations="selectedMedias"
@@ -81,6 +85,7 @@ import Button from "@/components/atoms/Button.vue"
 import Tabs from "@/components/molecules/Tabs.vue"
 import MediaExplorerRightPanelItem from "@/components/MediaExplorerRightPanelItem.vue"
 import MediaExplorerRightPanelMulti from "@/components/MediaExplorerRightPanelMulti.vue"
+import MediaTranscriptionInfo from "@/components/MediaTranscriptionInfo.vue"
 import ConversationShareContent from "@/components/conversationShare/ConversationShareContent.vue"
 import { mediaExplorerRightPanelMixin } from "@/mixins/mediaExplorerRightPanel.js"
 
@@ -92,6 +97,7 @@ export default {
     Tabs,
     MediaExplorerRightPanelItem,
     MediaExplorerRightPanelMulti,
+    MediaTranscriptionInfo,
     ConversationShareContent,
   },
   props: {
@@ -147,6 +153,11 @@ export default {
               })
             : this.$t("media_explorer.panel.overview"),
           icon: "eye",
+        },
+        {
+          name: "transcription",
+          label: this.$t("media_explorer.panel.transcription.tab_label"),
+          icon: "sliders-horizontal",
         },
         {
           name: "share",

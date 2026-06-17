@@ -49,6 +49,11 @@ const getters = {
   getCurrentOrganizationAllUsers(state) {
     return state.currentOrganizationAllUsers ?? []
   },
+  // Speaker-identification voiceprint collections for the current org.
+  // Populated lazily by `loadVoiceprintCollections`.
+  getVoiceprintCollections(state) {
+    return state.voiceprintCollections ?? []
+  },
   getUserRoleInOrganization: (state, getters, rootState, rootGetters) => {
     let organization = getters.getCurrentOrganization
     const userId = rootGetters["user/getUserId"]

@@ -21,6 +21,25 @@ const mutations = {
   setCurrentOrganizationAllUsers(state, users) {
     state.currentOrganizationAllUsers = Array.isArray(users) ? users : []
   },
+  setVoiceprintCollections(state, collections) {
+    state.voiceprintCollections = Array.isArray(collections) ? collections : []
+  },
+  updateOrCreateVoiceprintCollection(state, collection) {
+    if (!collection?._id) return
+    const index = state.voiceprintCollections.findIndex(
+      (c) => c._id === collection._id,
+    )
+    if (index === -1) {
+      state.voiceprintCollections.push(collection)
+    } else {
+      state.voiceprintCollections.splice(index, 1, collection)
+    }
+  },
+  removeVoiceprintCollection(state, collectionId) {
+    state.voiceprintCollections = state.voiceprintCollections.filter(
+      (c) => c._id !== collectionId,
+    )
+  },
   deleteOrganization(state, id) {
     delete state.organizations[id]
     state.rolesInOrganizations.delete(id)

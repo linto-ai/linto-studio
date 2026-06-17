@@ -125,28 +125,25 @@
         <span class="speaker-id__help">
           {{ $t("conversation.transcription.speaker_identification_help") }}
         </span>
-        <div v-if="speakerIdCollections.loading" class="speaker-id__help">
-          {{ $t("conversation.transcription.speaker_identification_loading") }}
-        </div>
         <div
-          v-else-if="speakerIdCollections.list.length === 0"
+          v-if="speakerIdCollectionList.length === 0"
           class="speaker-id__empty">
           {{ $t("conversation.transcription.speaker_identification_empty") }}
         </div>
         <div v-else class="flex col gap-xsmall speaker-id__list" role="group">
           <label
-            v-for="collection of speakerIdCollections.list"
+            v-for="collection of speakerIdCollectionList"
             :key="collection._id"
             class="speaker-id__option"
             :class="{
               'speaker-id__option--selected':
-                speakerIdCollections.selected.includes(collection._id),
+                speakerIdSelected.includes(collection._id),
             }">
             <input
               type="checkbox"
               class="speaker-id__checkbox"
               :value="collection._id"
-              v-model="speakerIdCollections.selected"
+              v-model="speakerIdSelected"
               @change="select()" />
             <span class="speaker-id__body">
               <span class="speaker-id__title">
@@ -177,8 +174,8 @@ import ServiceHeader from "./ServiceHeader.vue"
 import SegmentedControl from "@/components/molecules/SegmentedControl.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
 import generateServiceConfig from "../../tools/generateServiceConfig"
+import formatLanguageCode from "@/tools/formatLanguage"
 import pickLocale from "@/tools/extractLocales"
-import { apiGetVoiceprintCollections } from "@/api/voiceprintCollection"
 import { getEnv } from "@/tools/getEnv"
 
 export default {
@@ -233,7 +230,9 @@ export default {
         ...EMPTY_FIELD,
         value: defaultLang,
       },
-      speakerIdCollections: { list: [], selected: [], loading: false },
+      // Per-service selection of voiceprint collections (the list itself is
+      // shared reference data read from the store, see speakerIdCollectionList).
+      speakerIdSelected: [],
       // Master toggle for the speaker-identification block.
       speakerIdEnabled: false,
     }
@@ -374,6 +373,11 @@ export default {
         Boolean(this.selectedDiarizationService?.info?.speaker_identification)
       )
     },
+    // Shared, org-scoped reference data: eagerly loaded into the store on org
+    // change. This component is a pure consumer — it never fetches.
+    speakerIdCollectionList() {
+      return this.$store.getters["organizations/getVoiceprintCollections"]
+    },
   },
   watch: {
     "diarization.value"() {
@@ -420,20 +424,13 @@ export default {
         Number.isFinite(n) ? Math.max(1, n) : 1,
       )
     },
-    // Master switch for speaker identification: lazily load the collections on
-    // enable, clear the selection on disable.
+    // Master switch for speaker identification. The collection list is shared
+    // reference data already loaded in the store, so there is nothing to fetch
+    // here — just toggle and clear the selection on disable.
     toggleSpeakerId(enabled) {
       this.speakerIdEnabled = enabled
-      console.log("toto", enabled)
-      if (enabled) {
-        if (
-          this.speakerIdCollections.list.length === 0 &&
-          !this.speakerIdCollections.loading
-        ) {
-          this.fetchSpeakerIdCollections()
-        }
-      } else {
-        this.speakerIdCollections.selected = []
+      if (!enabled) {
+        this.speakerIdSelected = []
       }
       this.select()
     },
@@ -457,7 +454,7 @@ export default {
             : this.value.language,
           speakerIdentificationCollections:
             this.speakerIdCapable && this.speakerIdEnabled
-              ? this.speakerIdCollections.selected
+              ? this.speakerIdSelected
               : [],
         }),
         // Top-level display extras for the sticky footer (ignored by the API,
@@ -471,39 +468,14 @@ export default {
     onDiarizationChange() {
       if (!this.speakerIdCapable) {
         this.speakerIdEnabled = false
-        this.speakerIdCollections.selected = []
-      }
-    },
-    async fetchSpeakerIdCollections() {
-      const organizationId =
-        this.$store.state.organizations.currentOrganizationScope
-      if (!organizationId) return
-      this.speakerIdCollections.loading = true
-      try {
-        const collections = await apiGetVoiceprintCollections(organizationId)
-        this.speakerIdCollections.list = Array.isArray(collections)
-          ? collections
-          : []
-      } catch (err) {
-        this.speakerIdCollections.list = []
-      } finally {
-        this.speakerIdCollections.loading = false
+        this.speakerIdSelected = []
       }
     },
     formatLanguage(lang) {
-      if (lang == "*") {
-        return this.$i18n.t("lang.automatic")
-      }
-      try {
-        const languageNames = new Intl.DisplayNames([this.$i18n.locale], {
-          type: "language",
-        })
-        return languageNames
-          .of(lang)
-          .replace(/^./, (char) => char.toUpperCase())
-      } catch (error) {
-        return lang
-      }
+      return formatLanguageCode(lang, {
+        locale: this.$i18n.locale,
+        autoLabel: this.$i18n.t("lang.automatic"),
+      })
     },
   },
   components: { ServiceHeader, SegmentedControl, FormInput },

@@ -197,13 +197,7 @@ import SpeakerLabelCollectionDetail from "@/components/SpeakerLabelCollectionDet
 import SpeakerLabelDetail from "@/components/SpeakerLabelDetail.vue"
 import DiarizationCollectionCard from "@/components/DiarizationCollectionCard.vue"
 import { COLLECTION_TYPE, STORAGE_MODE } from "@/tools/voiceprintConstants.js"
-import {
-  apiGetVoiceprintCollections,
-  apiCreateVoiceprintCollection,
-  apiUpdateVoiceprintCollection,
-  apiDeleteVoiceprintCollection,
-  apiGetOptedInMembers,
-} from "@/api/voiceprintCollection.js"
+import { apiGetOptedInMembers } from "@/api/voiceprintCollection.js"
 import { apiGetSpeakerLabels } from "@/api/speakerLabel.js"
 import { apiGetVoiceSamples } from "@/api/voiceSample.js"
 
@@ -227,7 +221,6 @@ export default {
   data() {
     return {
       acknowledged: false,
-      collections: [],
       collectionStats: {},
       loading: false,
       selectedCollectionId: null,
@@ -249,6 +242,7 @@ export default {
   computed: {
     ...mapGetters("organizations", {
       currentOrganization: "getCurrentOrganization",
+      collections: "getVoiceprintCollections",
     }),
     orgName() {
       return (
@@ -335,9 +329,11 @@ export default {
     async fetchCollections() {
       this.loading = true
       try {
-        this.collections = await apiGetVoiceprintCollections(
-          this.organizationId,
-        )
+        // The collection list is shared reference data already loaded in the
+        // store (on page load / org change) and kept in sync by local CRUD —
+        // reuse it from the cache. Only the per-collection stats below need a
+        // round-trip, and they are recomputed whenever this runs.
+        await this.$store.dispatch("organizations/loadVoiceprintCollections")
         // Fetch stats (speakers + samples) for all collections in parallel
         await Promise.all(
           this.collections.map(async (col) => {
@@ -407,8 +403,8 @@ export default {
     },
     async createCollection() {
       try {
-        await apiCreateVoiceprintCollection(
-          this.organizationId,
+        await this.$store.dispatch(
+          "organizations/createVoiceprintCollection",
           this.newCollection,
         )
         this.$store.dispatch("system/addNotification", {
@@ -441,12 +437,14 @@ export default {
     },
     async saveEdit() {
       try {
-        const res = await apiUpdateVoiceprintCollection(
-          this.organizationId,
-          this.editCollection._id,
+        const res = await this.$store.dispatch(
+          "organizations/updateVoiceprintCollection",
           {
-            name: this.editCollection.name,
-            description: this.editCollection.description,
+            collectionId: this.editCollection._id,
+            payload: {
+              name: this.editCollection.name,
+              description: this.editCollection.description,
+            },
           },
         )
         if (res.status === "success") {
@@ -474,14 +472,11 @@ export default {
       if (!this.deletingCollection) return
 
       try {
-        const res = await apiDeleteVoiceprintCollection(
-          this.organizationId,
+        const res = await this.$store.dispatch(
+          "organizations/deleteVoiceprintCollection",
           this.deletingCollection._id,
         )
         if (res.status === "success") {
-          this.collections = this.collections.filter(
-            (c) => c._id !== this.deletingCollection._id,
-          )
           this.$store.dispatch("system/addNotification", {
             message: this.$t("speaker_diarization.deleted_success"),
             type: "success",

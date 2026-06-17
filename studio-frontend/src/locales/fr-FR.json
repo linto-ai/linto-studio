@@ -813,7 +813,18 @@
       "duplicate": "Créer une nouvelle copie",
       "duplicating": "Duplication en cours...",
       "duplicate_success": "Conversation dupliquée",
-      "duplicate_error": "Erreur lors de la duplication"
+      "duplicate_error": "Erreur lors de la duplication",
+      "transcription": {
+        "tab_label": "Transcription",
+        "title": "Paramètres de transcription",
+        "engine": "Moteur",
+        "normalization": "Normalisation des nombres",
+        "value_enabled": "Activée",
+        "value_disabled": "Désactivée",
+        "speakers_count": "{count} locuteur | {count} locuteurs",
+        "multiple_values": "Valeurs multiples",
+        "empty": "—"
+      }
     },
     "no_medias_selected": "Aucun média sélectionné",
     "some_medias_cannot_be_deleted": "Certains médias ne peuvent pas être supprimés",
