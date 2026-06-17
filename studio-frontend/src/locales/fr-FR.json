@@ -1,4 +1,29 @@
 {
+  "billing": {
+    "beta": "Public Beta",
+    "premium": "Premium",
+    "per_seat": "Par siège / mois",
+    "used_of": "{used} sur {total}",
+    "reset_on": "Reset le {date}",
+    "upgrade_cta": "Passer pro",
+    "upgrade_title": "Passer à Premium",
+    "upgrade_subtitle": "Débloquez l'usage illimité et les fonctions d'équipe.",
+    "cancel": "Annuler",
+    "confirm_upgrade": "Passer pro",
+    "upgrade_done": "Bienvenue dans Premium !",
+    "meter": {
+      "import": "Imports",
+      "ai": "Analyses IA",
+      "live": "Direct"
+    },
+    "feature": {
+      "unlimited": "Imports audio & analyses IA illimités",
+      "collaboration": "Espace d'équipe & partage",
+      "speaker_id": "Identification des locuteurs",
+      "no_watermark": "Sans watermark, sorties éditables",
+      "api": "Accès API"
+    }
+  },
   "apply": "Appliquer",
   "cancel": "Annuler",
   "actions": "Actions",

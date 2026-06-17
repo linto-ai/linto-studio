@@ -22,6 +22,9 @@
         :label="$t('navigation.conversation.start')"
         variant="primary"
         class="start-button" />
+      <IsCloud>
+        <SaasUsageFooter />
+      </IsCloud>
       <div class="main-footer-container">
         <footer class="main-footer" v-if="!logo">
           <div class="main-footer__powered-by">
@@ -75,6 +78,8 @@ import { logout } from "@/tools/logout"
 import MediaExplorerMenu from "@/components/MediaExplorerMenu.vue"
 import BackofficeSidebar from "@/components/BackofficeSidebar.vue"
 import MediaExplorerMenuLabels from "@/components/MediaExplorerMenuLabels.vue"
+import IsCloud from "@/components/atoms/IsCloud.vue"
+import SaasUsageFooter from "@/components-cloud/SaasUsageFooter.vue"
 
 export default {
   mixins: [orgaRoleMixin, organizationPermissionsMixin],
@@ -159,6 +164,8 @@ export default {
     MediaExplorerMenu,
     BackofficeSidebar,
     MediaExplorerMenuLabels,
+    IsCloud,
+    SaasUsageFooter,
   },
 }
 </script>
