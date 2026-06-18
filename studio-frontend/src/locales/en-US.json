@@ -54,7 +54,8 @@
     },
     "card": {
       "label": "Card details",
-      "pay": "Pay & upgrade"
+      "pay": "Pay & upgrade",
+      "init_error": "Payment form could not be loaded. Please close and try again."
     }
   },
   "apply": "Apply",

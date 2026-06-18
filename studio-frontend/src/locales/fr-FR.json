@@ -54,7 +54,8 @@
     },
     "card": {
       "label": "Coordonnées de carte",
-      "pay": "Payer & passer pro"
+      "pay": "Payer & passer pro",
+      "init_error": "Le formulaire de paiement n'a pas pu se charger. Fermez et réessayez."
     }
   },
   "apply": "Appliquer",
