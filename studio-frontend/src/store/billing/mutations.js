@@ -11,6 +11,9 @@ export default {
   setUsageByMember(state, data) {
     state.usageByMember = data || null
   },
+  setInvoices(state, invoices) {
+    state.invoices = Array.isArray(invoices) ? invoices : []
+  },
   setLoading(state, value) {
     state.loading = !!value
   },

@@ -10,6 +10,9 @@ export default {
   usage: (s) => s.usage,
   usageByMember: (s) => s.usageByMember,
   subscription: (s) => s.subscription,
+  invoices: (s) => s.invoices || [],
+  // live (direct) breakdown surfaced by the usage summary: { channels, translationLangs, byProfile }
+  liveDetail: (s) => s.usage?.live || null,
   loading: (s) => s.loading,
   planKey: (s) =>
     s.usage?.planKey || s.subscription?.planKey || "free_payg",

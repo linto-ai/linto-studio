@@ -31,6 +31,10 @@
         :currentOrganization="currentOrganization"
         :userInfo="userInfo" />
 
+      <IsCloud>
+        <SubscriptionPanel />
+      </IsCloud>
+
       <ModalDeleteOrganization
         v-if="displayDeleteModal"
         :currentOrganization="currentOrganization"
@@ -53,6 +57,8 @@ import MainContent from "@/components/MainContent.vue"
 import UpdateOrganizationForm from "@/components/UpdateOrganizationForm.vue"
 import UpdateOrganizationUsers from "@/components/UpdateOrganizationUsers.vue"
 import LayoutV2 from "@/layouts/v2-layout.vue"
+import IsCloud from "@/components/atoms/IsCloud.vue"
+import SubscriptionPanel from "@/components-cloud/SubscriptionPanel.vue"
 
 export default {
   mixins: [orgaRoleMixin],
@@ -118,6 +124,8 @@ export default {
     UpdateOrganizationForm,
     UpdateOrganizationUsers,
     LayoutV2,
+    IsCloud,
+    SubscriptionPanel,
   },
 }
 </script>
