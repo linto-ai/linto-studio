@@ -73,14 +73,45 @@
     <IsCloud>
       <MemberUsageTable />
     </IsCloud>
+
+    <!-- Explicit confirmation when a promotion adds a billable seat (premium). -->
+    <div
+      v-if="pendingPromo"
+      class="seat-promo-modal"
+      @click.self="cancelPromotion">
+      <div class="seat-promo-modal__card">
+        <div class="seat-promo-modal__badge">＋ {{ $t("billing.seat_promo.seat") }}</div>
+        <h3 class="seat-promo-modal__title">{{ $t("billing.seat_promo.title") }}</h3>
+        <p class="seat-promo-modal__msg">
+          {{
+            $t("billing.seat_promo.message", {
+              name:
+                pendingPromo.user.firstname ||
+                pendingPromo.user.email ||
+                $t("billing.seat_promo.this_member"),
+              price: seatPriceLabel,
+            })
+          }}
+        </p>
+        <p class="seat-promo-modal__prorate">{{ $t("billing.seat_promo.prorated") }}</p>
+        <div class="seat-promo-modal__actions">
+          <Button variant="secondary" @click="cancelPromotion">{{ $t("billing.cancel") }}</Button>
+          <Button variant="primary" @click="confirmPromotion">{{ $t("billing.seat_promo.confirm") }}</Button>
+        </div>
+      </div>
+    </div>
   </section>
 </template>
 <script>
+import { mapGetters } from "vuex"
 import { bus } from "@/main.js"
 import { getEnv } from "@/tools/getEnv"
 import EMPTY_FIELD from "@/const/emptyField"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
+
+const IS_MODE_CLOUD = getEnv("VUE_APP_MODE") === "cloud"
+const UPLOADER = 2 // lib/dao/organization/roles: a billable seat starts at uploader
 
 import { sortArray } from "@/tools/sortList.js"
 
@@ -132,9 +163,31 @@ export default {
       displayLeaveModal: false,
       displayRemoveUserModal: false,
       userToRemove: null,
+      // previous role per member, to detect a seat-adding promotion
+      prevRoles: Object.fromEntries(users.map((u) => [u._id, u.role])),
+      pendingPromo: null, // { user, oldRole } awaiting billing confirmation
     }
   },
   computed: {
+    ...mapGetters("billing", ["isPremium", "premiumPlan", "billingExempt"]),
+    // The org currently pays per seat (premium, not complimentary/exempt). Only
+    // then does promoting to a contributor role add a billable seat.
+    seatBilled() {
+      return IS_MODE_CLOUD && this.isPremium && !this.billingExempt
+    },
+    seatPriceLabel() {
+      const cents = this.premiumPlan?.pricing?.amountCents
+      if (!cents) return ""
+      const v = cents / 100
+      try {
+        return new Intl.NumberFormat(this.$i18n?.locale || "fr-FR", {
+          style: "currency",
+          currency: (this.premiumPlan?.pricing?.currency || "eur").toUpperCase(),
+        }).format(v)
+      } catch (e) {
+        return `${v} €`
+      }
+    },
     columns() {
       return [
         {
@@ -242,25 +295,49 @@ export default {
       return getEnv("VUE_APP_PUBLIC_MEDIA") + "/" + imgPath
     },
     async updateUserRole(user) {
-      let req = await apiUpdateUserRoleInOrganisation(
+      const oldRole = this.prevRoles[user._id] ?? user.role
+      const newRole = user.role
+      // Premium org: promoting a member to a contributor role (>= uploader) adds
+      // a billable seat. Make it explicit (prorated) before applying.
+      if (this.seatBilled && oldRole < UPLOADER && newRole >= UPLOADER) {
+        this.pendingPromo = { user, oldRole }
+        return
+      }
+      await this.applyRoleChange(user)
+    },
+    async applyRoleChange(user) {
+      const req = await apiUpdateUserRoleInOrganisation(
         this.organizationId,
         user._id,
         user.role,
-        {
-          timeout: 3000,
-          redirect: false,
-        },
+        { timeout: 3000, redirect: false },
       )
-
       if (req.status === "success") {
-        //await this.dispatchOrganization()
+        this.prevRoles = { ...this.prevRoles, [user._id]: user.role }
         this.orgaMembers = this.orgaMembers.map((member) => {
-          if (member._id === user._id) {
-            member.role = user.role
-          }
+          if (member._id === user._id) member.role = user.role
           return member
         })
+      } else {
+        this.revertRole(user)
       }
+    },
+    confirmPromotion() {
+      if (!this.pendingPromo) return
+      const { user } = this.pendingPromo
+      this.pendingPromo = null
+      this.applyRoleChange(user)
+    },
+    cancelPromotion() {
+      if (!this.pendingPromo) return
+      const { user, oldRole } = this.pendingPromo
+      this.pendingPromo = null
+      this.revertRole(user, oldRole)
+    },
+    revertRole(user, role) {
+      const back = role != null ? role : this.prevRoles[user._id]
+      const member = this.orgaMembers.find((m) => m._id === user._id)
+      if (member) member.role = back
     },
     canUpdateRole(user) {
       if (this.isBackofficePage) {
@@ -289,3 +366,49 @@ export default {
   },
 }
 </script>
+
+<style lang="scss" scoped>
+.seat-promo-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1em;
+
+  &__card {
+    background: var(--neutral-0, #fff);
+    border-radius: 10px;
+    padding: 1.5em;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  }
+  &__badge {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--primary-color);
+  }
+  &__title {
+    margin: 0.2em 0 0.4em;
+    font-size: 1.2rem;
+  }
+  &__msg {
+    color: var(--neutral-80);
+    font-size: 0.9rem;
+    margin: 0 0 0.4em;
+  }
+  &__prorate {
+    color: var(--neutral-60);
+    font-size: 0.82rem;
+    margin: 0 0 1em;
+  }
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5em;
+  }
+}
+</style>

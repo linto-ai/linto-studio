@@ -73,6 +73,14 @@
         "local-gpu": "GPU local",
         "local-standard": "Local"
       }
+    },
+    "seat_promo": {
+      "seat": "1 siège",
+      "title": "Ajouter un siège facturé ?",
+      "this_member": "ce membre",
+      "message": "Donner à {name} un rôle contributeur (uploader ou plus) ajoute 1 siège facturé à {price}/siège/mois.",
+      "prorated": "Il est proratisé sur les jours restants de la période en cours ; une rétrogradation ultérieure crédite la part non utilisée.",
+      "confirm": "Promouvoir & ajouter le siège"
     }
   },
   "apply": "Appliquer",
