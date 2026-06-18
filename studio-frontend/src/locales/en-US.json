@@ -19,6 +19,14 @@
       "ai": "AI insights",
       "live": "Live"
     },
+    "member_usage": {
+      "title": "Usage per member",
+      "seats": "{n} billable seats",
+      "member": "Member",
+      "seat": "Seat",
+      "billable": "Billable seat (role >= uploader)",
+      "empty": "No members yet."
+    },
     "feature": {
       "unlimited": "Unlimited audio imports & AI insights",
       "collaboration": "Team workspace & sharing",

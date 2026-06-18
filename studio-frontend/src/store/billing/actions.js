@@ -1,6 +1,7 @@
 import {
   apiGetPlans,
   apiGetUsage,
+  apiGetUsageByMember,
   apiGetSubscriptions,
   apiCreateSubscription,
 } from "@/api/cloud"
@@ -22,6 +23,14 @@ export default {
     const usage = await apiGetUsage(organizationId)
     if (usage) commit("setUsage", usage)
     return usage
+  },
+
+  async fetchUsageByMember({ commit, rootGetters }, orgId) {
+    const organizationId = currentOrg(rootGetters, orgId)
+    if (!organizationId) return null
+    const data = await apiGetUsageByMember(organizationId)
+    if (data) commit("setUsageByMember", data)
+    return data
   },
 
   async fetchSubscriptions({ commit, rootGetters }, orgId) {
