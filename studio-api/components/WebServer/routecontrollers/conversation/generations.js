@@ -175,6 +175,7 @@ async function createGeneration(req, res, next) {
       orgId: organizationId,
       capability: "ai.insights.count",
       value: 1,
+      userId: req.payload?.data?.userId,
       meta: { conversationId: req.params.conversationId, serviceName: serviceName || "" },
     })
 
