@@ -5,9 +5,11 @@
     color="neutral"
     class="kpi-export-dropdown">
     <template #trigger>
-      <Button icon="download-simple" variant="primary" :loading="exporting">
-        {{ $t("session_kpi.export.button") }}
-      </Button>
+      <Button
+        icon="download-simple"
+        variant="primary"
+        :loading="exporting"
+        :label="$t('session_kpi.export.button')" />
     </template>
   </PopoverList>
 </template>

@@ -175,6 +175,8 @@
       "filters": {
         "organization": "Organisation",
         "all_organizations": "Toutes les organisations",
+        "user": "Utilisateur",
+        "all_users": "Tous les utilisateurs",
         "start_date": "Du",
         "start_date_placeholder": "jj/mm/aaaa",
         "end_date": "Au",
@@ -191,8 +193,10 @@
     "organisation_list": {
       "title": "Organisations",
       "add_organisation_button": "Ajouter une organisation",
-      "personal_organizations_shown": "organisations personnelles affichées",
-      "personal_organizations_hidden": "organisations personnelles cachées",
+      "personal_organizations_shown": "Organisations personnelles affichées",
+      "personal_organizations_hidden": "Organisations personnelles cachées",
+      "personal_organization": "Organisation personnelle",
+      "group_organization": "Organisation de groupe",
       "remove_organisation_button": "Supprimer l'organisation | Supprimer les {count} organisations"
     },
     "token_list": {
@@ -263,6 +267,8 @@
       },
       "all_profiles_shown": "Tous les profils sont affichés",
       "global_profiles_shown": "Seulement les profils globaux sont affichés",
+      "private_profile": "Profil privé (propre à une organisation)",
+      "global_profile": "Profil global (partagé avec toutes les organisations)",
       "edit_button": "Modifier"
     }
   },
@@ -1235,6 +1241,7 @@
     },
     "create_page": {
       "error_message": "Une erreur est survenue lors de la création de la session",
+      "security_level_error": "Un profil de transcription sélectionné a un niveau de sécurité inférieur au minimum de l'organisation",
       "name_field": {
         "label": "Nom de la session"
       },
@@ -1681,9 +1688,7 @@
   },
   "user_selector": {
     "search_placeholder": "Rechercher un utilisateur",
-    "select_user": "Sélectionner un utilisateur",
-    "select_users": "Sélectionner des utilisateurs",
-    "users_selected": "{count} utilisateur(s) sélectionné(s)"
+    "select_user": "Sélectionner un utilisateur"
   },
   "popover_list": {
     "search": "Rechercher",

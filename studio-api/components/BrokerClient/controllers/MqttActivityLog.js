@@ -8,22 +8,22 @@ module.exports = function () {
   const getRedisClient = () =>
     this.app.components["IoHandler"]?.redisPubClient || null
 
-  const readAllChannelStates = async (keys) => {
+  const readAllChannelStates = async (entries) => {
     const result = new Map()
-    if (keys.length === 0) return result
+    if (entries.length === 0) return result
 
     const redis = getRedisClient()
     if (redis) {
+      const keys = entries.map((entry) => entry.key)
       const values = await redis.hmGet(REDIS_HASH_KEY, keys)
       keys.forEach((k, i) => result.set(k, values[i] || null))
       return result
     }
 
-    for (const key of keys) {
-      const [sessionId, channelId] = key.split(":")
+    for (const { key, session, channel } of entries) {
       const lastEvent = await model.activityLog.getLastChannelEvent(
-        sessionId,
-        channelId,
+        session.id,
+        channel.id,
       )
       result.set(
         key,
@@ -57,44 +57,41 @@ module.exports = function () {
 
     if (!Array.isArray(sessions)) return
 
-    const keys = []
+    const entries = []
     for (const session of sessions) {
       for (const channel of session.channels || []) {
-        keys.push(`${session.id}:${channel.id}`)
+        entries.push({ key: `${session.id}:${channel.id}`, session, channel })
       }
     }
 
     let stateMap
     try {
-      stateMap = await readAllChannelStates(keys)
+      stateMap = await readAllChannelStates(entries)
     } catch (err) {
       logger.error(`activityLog: failed to read channel states: ${err}`)
       return
     }
 
     const writes = new Map()
-    for (const session of sessions) {
-      for (const channel of session.channels || []) {
-        const key = `${session.id}:${channel.id}`
-        // Unknown channels default to "inactive": a first observation as
-        // active produces a mount event, slightly off in time but every
-        // subsequent transition is detected exactly.
-        const prevStatus = stateMap.get(key) ?? "inactive"
-        const newStatus = channel.streamStatus
+    for (const { key, session, channel } of entries) {
+      // Unknown channels default to "inactive": a first observation as
+      // active produces a mount event, slightly off in time but every
+      // subsequent transition is detected exactly.
+      const prevStatus = stateMap.get(key) ?? "inactive"
+      const newStatus = channel.streamStatus
 
-        if (prevStatus === newStatus) continue
+      if (prevStatus === newStatus) continue
 
-        writes.set(key, newStatus)
+      writes.set(key, newStatus)
 
-        if (newStatus === "active") {
-          LogManager.logChannelEvent(session, channel, "mount").catch((err) =>
-            logger.error(`activityLog: logChannelEvent mount failed: ${err}`),
-          )
-        } else if (prevStatus === "active") {
-          LogManager.logChannelEvent(session, channel, "unmount").catch((err) =>
-            logger.error(`activityLog: logChannelEvent unmount failed: ${err}`),
-          )
-        }
+      if (newStatus === "active") {
+        LogManager.logChannelEvent(session, channel, "mount").catch((err) =>
+          logger.error(`activityLog: logChannelEvent mount failed: ${err}`),
+        )
+      } else if (prevStatus === "active") {
+        LogManager.logChannelEvent(session, channel, "unmount").catch((err) =>
+          logger.error(`activityLog: logChannelEvent unmount failed: ${err}`),
+        )
       }
     }
 

@@ -20,7 +20,7 @@
             v-if="showPersonalOrganizations"
             @click="changeShowPersonalOrganizations"
             iconWeight="regular"
-            icon="eye"
+            icon="user"
             :label="
               $t('backoffice.organisation_list.personal_organizations_shown')
             "></Button>
@@ -28,7 +28,7 @@
             v-else
             @click="changeShowPersonalOrganizations"
             iconWeight="regular"
-            icon="eye-slash"
+            icon="users-three"
             :label="
               $t('backoffice.organisation_list.personal_organizations_hidden')
             "></Button>
@@ -53,8 +53,16 @@
         </template>
 
         <template #cell-personal="{ value }">
-          <span v-if="value" class="icon apply" />
-          <span v-else class="icon close" />
+          <span
+            v-if="value"
+            :title="$t('backoffice.organisation_list.personal_organization')">
+            <ph-icon name="user" size="md" weight="regular" />
+          </span>
+          <span
+            v-else
+            :title="$t('backoffice.organisation_list.group_organization')">
+            <ph-icon name="users-three" size="md" weight="regular" />
+          </span>
         </template>
 
         <template #cell-created="{ value, id }">
