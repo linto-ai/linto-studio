@@ -46,7 +46,8 @@
       "renews": "Renouvellement le",
       "status": "Statut",
       "cancels_at_period_end": "Résiliation en fin de période",
-      "comp": "Offert (sans facturation)",
+      "comp": "Offert",
+      "comp_hint": "Cette organisation bénéficie d'un accès offert (complet, sans facturation). Géré depuis le backoffice.",
       "admin_only": "Seul un administrateur de l'organisation peut changer l'offre.",
       "cancel_sub": "Résilier l'abonnement",
       "cancel_confirm": "Résilier en fin de période ?",
@@ -56,6 +57,22 @@
       "label": "Coordonnées de carte",
       "pay": "Payer & passer pro",
       "init_error": "Le formulaire de paiement n'a pas pu se charger. Fermez et réessayez."
+    },
+    "invoices": {
+      "title": "Factures",
+      "date": "Date",
+      "amount": "Montant",
+      "status": "Statut",
+      "download": "Télécharger"
+    },
+    "live": {
+      "channels": "{n} canal/canaux",
+      "translations": "Traduction : {langs}",
+      "profile": {
+        "external": "ASR externe",
+        "local-gpu": "GPU local",
+        "local-standard": "Local"
+      }
     }
   },
   "apply": "Appliquer",

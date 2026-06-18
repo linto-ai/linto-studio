@@ -1,5 +1,11 @@
 <template>
-  <div class="saas-usage-footer">
+  <!-- A compact usage REMINDER only. Subscription management lives in the org
+       settings page; clicking the footer takes you there. -->
+  <button
+    type="button"
+    class="saas-usage-footer"
+    :title="$t('billing.page.manage')"
+    @click="goToOrgSettings">
     <div class="saas-usage-footer__title">
       <span>{{ $t("billing.page.usage") }}</span>
       <span class="saas-usage-footer__plan" :class="{ premium: isPremium }">{{
@@ -7,65 +13,35 @@
       }}</span>
     </div>
 
-    <template v-if="isFree">
-      <div class="saas-usage-footer__meter" v-if="primaryMeter">
-        <div class="saas-usage-footer__meter-head">
-          <span class="saas-usage-footer__meter-label">{{
-            $t(primaryMeter.label)
-          }}</span>
-          <span class="saas-usage-footer__meter-value">{{
-            usedOfLimit(primaryMeter)
-          }}</span>
-        </div>
-        <div class="saas-usage-footer__bar">
-          <div
-            class="saas-usage-footer__bar-fill"
-            :class="{ full: primaryMeter.remaining <= 0 }"
-            :style="{ width: primaryMeter.percent + '%' }"></div>
-        </div>
-        <div class="saas-usage-footer__reset" v-if="primaryMeter.resetAt">
-          {{ $t("billing.reset_on", { date: formatDate(primaryMeter.resetAt) }) }}
-        </div>
+    <div class="saas-usage-footer__meter" v-if="isFree && primaryMeter">
+      <div class="saas-usage-footer__meter-head">
+        <span class="saas-usage-footer__meter-label">{{ $t(primaryMeter.label) }}</span>
+        <span class="saas-usage-footer__meter-value">{{ usedOfLimit(primaryMeter) }}</span>
       </div>
-
-      <Button
-        variant="primary"
-        size="sm"
-        block
-        class="saas-usage-footer__cta"
-        @click="showUpgrade = true">
-        {{ $t("billing.upgrade_cta") }}
-      </Button>
-    </template>
-
-    <div v-else class="saas-usage-footer__premium">
-      ★ {{ $t("billing.feature.unlimited") }}
+      <div class="saas-usage-footer__bar">
+        <div
+          class="saas-usage-footer__bar-fill"
+          :class="{ full: primaryMeter.remaining <= 0 }"
+          :style="{ width: primaryMeter.percent + '%' }"></div>
+      </div>
+      <div class="saas-usage-footer__reset" v-if="primaryMeter.resetAt">
+        {{ $t("billing.reset_on", { date: formatDate(primaryMeter.resetAt) }) }}
+      </div>
     </div>
 
-    <button
-      type="button"
-      class="saas-usage-footer__manage"
-      @click="goToBilling">
-      {{ $t("billing.page.manage") }}
-    </button>
-
-    <UpgradeModal v-if="showUpgrade" @close="showUpgrade = false" />
-  </div>
+    <div v-else-if="!isFree" class="saas-usage-footer__premium">
+      ★ {{ $t("billing.feature.unlimited") }}
+    </div>
+  </button>
 </template>
 
 <script>
 import { mapGetters, mapActions } from "vuex"
-import Button from "@/components/atoms/Button.vue"
-import UpgradeModal from "@/components-cloud/UpgradeModal.vue"
 
 export default {
   name: "SaasUsageFooter",
-  components: { Button, UpgradeModal },
-  data() {
-    return { showUpgrade: false }
-  },
   computed: {
-    ...mapGetters("billing", ["isFree", "isPremium", "primaryMeter", "meters"]),
+    ...mapGetters("billing", ["isFree", "isPremium", "primaryMeter"]),
     ...mapGetters("organizations", {
       currentOrgScope: "getCurrentOrganizationScope",
     }),
@@ -83,12 +59,15 @@ export default {
     loadBilling() {
       if (this.currentOrgScope) this.refresh(this.currentOrgScope)
     },
-    goToBilling() {
-      const params = this.currentOrgScope
-        ? { organizationId: this.currentOrgScope }
-        : {}
-      if (this.$route.name !== "billing") {
-        this.$router.push({ name: "billing", params }).catch(() => {})
+    // Subscription management lives in the org settings page.
+    goToOrgSettings() {
+      if (!this.currentOrgScope) return
+      const target = {
+        name: "organizations update",
+        params: { organizationId: this.currentOrgScope },
+      }
+      if (this.$route.name !== "organizations update") {
+        this.$router.push(target).catch(() => {})
       }
     },
     usedOfLimit(m) {
@@ -123,17 +102,29 @@ export default {
 
 <style lang="scss" scoped>
 .saas-usage-footer {
+  // reset <button> defaults — this is a full-width clickable reminder card
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
   padding: 0.75em 1em;
+  border: none;
   border-top: 1px solid var(--neutral-40);
   background-color: var(--neutral-10);
   display: flex;
   flex-direction: column;
   gap: 0.5em;
 
+  &:hover {
+    background-color: var(--neutral-20);
+  }
+
   &__title {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     justify-content: space-between;
+    gap: 0.5em;
+    flex-wrap: wrap;
     font-size: 0.72rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -179,26 +170,9 @@ export default {
     color: var(--neutral-60);
     margin-top: 0.25em;
   }
-  &__cta {
-    margin-top: 0.25em;
-  }
   &__premium {
     font-size: 0.78rem;
     color: var(--neutral-70);
-  }
-  &__manage {
-    background: none;
-    border: none;
-    padding: 0;
-    margin-top: 0.1em;
-    align-self: flex-start;
-    font-size: 0.72rem;
-    color: var(--neutral-60);
-    text-decoration: underline;
-    cursor: pointer;
-    &:hover {
-      color: var(--primary-color);
-    }
   }
 }
 </style>

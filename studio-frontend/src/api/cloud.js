@@ -72,3 +72,14 @@ export async function apiCancelSubscription(
   const res = await sendRequest(url, { method: "delete" }, {}, notif)
   return res?.data
 }
+
+// GET /cloud/invoices/:orgId -> [{ id, created, amount, currency, status, pdf, url }]
+export async function apiGetInvoices(organizationId, notif = null) {
+  const res = await sendRequest(
+    `${CLOUD_API}/invoices/${organizationId}`,
+    { method: "get" },
+    {},
+    notif,
+  )
+  return res?.data
+}

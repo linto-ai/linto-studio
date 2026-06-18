@@ -5,6 +5,7 @@ import {
   apiGetSubscriptions,
   apiCreateSubscription,
   apiCancelSubscription,
+  apiGetInvoices,
 } from "@/api/cloud"
 
 function currentOrg(rootGetters, orgId) {
@@ -32,6 +33,14 @@ export default {
     const data = await apiGetUsageByMember(organizationId)
     if (data) commit("setUsageByMember", data)
     return data
+  },
+
+  async fetchInvoices({ commit, rootGetters }, orgId) {
+    const organizationId = currentOrg(rootGetters, orgId)
+    if (!organizationId) return []
+    const invoices = await apiGetInvoices(organizationId)
+    commit("setInvoices", invoices || [])
+    return invoices
   },
 
   async fetchSubscriptions({ commit, rootGetters }, orgId) {

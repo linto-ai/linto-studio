@@ -46,16 +46,33 @@
       "renews": "Renews on",
       "status": "Status",
       "cancels_at_period_end": "Cancels at period end",
-      "comp": "Complimentary (no billing)",
       "admin_only": "Only an organization admin can change the plan.",
       "cancel_sub": "Cancel subscription",
       "cancel_confirm": "Cancel at period end?",
-      "cancel_yes": "Confirm cancel"
+      "cancel_yes": "Confirm cancel",
+      "comp": "Complimentary",
+      "comp_hint": "This organization is on a complimentary plan (full access, no billing). Managed from the backoffice."
     },
     "card": {
       "label": "Card details",
       "pay": "Pay & upgrade",
       "init_error": "Payment form could not be loaded. Please close and try again."
+    },
+    "invoices": {
+      "title": "Invoices",
+      "date": "Date",
+      "amount": "Amount",
+      "status": "Status",
+      "download": "Download"
+    },
+    "live": {
+      "channels": "{n} channel(s)",
+      "translations": "Translation: {langs}",
+      "profile": {
+        "external": "External ASR",
+        "local-gpu": "Local GPU",
+        "local-standard": "Local"
+      }
     }
   },
   "apply": "Apply",
