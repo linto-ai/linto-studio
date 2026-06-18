@@ -132,12 +132,13 @@
         </div>
         <div v-else class="flex col gap-xsmall speaker-id__list" role="group">
           <label
-            v-for="collection of speakerIdCollectionList"
+            v-for="collection of sortedSpeakerIdCollectionList"
             :key="collection._id"
             class="speaker-id__option"
             :class="{
-              'speaker-id__option--selected':
-                speakerIdSelected.includes(collection._id),
+              'speaker-id__option--selected': speakerIdSelected.includes(
+                collection._id,
+              ),
             }">
             <input
               type="checkbox"
@@ -378,6 +379,21 @@ export default {
     speakerIdCollectionList() {
       return this.$store.getters["organizations/getVoiceprintCollections"]
     },
+    // The org-wide collection(s) are applied automatically: surface them first
+    // and pre-checked. Usually a single one, but handled as a set.
+    organizationCollectionIds() {
+      return this.speakerIdCollectionList
+        .filter((collection) => collection.type === "organization")
+        .map((collection) => collection._id)
+    },
+    // Organization collections on top, the rest keeping their original order.
+    sortedSpeakerIdCollectionList() {
+      return [...this.speakerIdCollectionList].sort((a, b) => {
+        const aOrg = a.type === "organization" ? 0 : 1
+        const bOrg = b.type === "organization" ? 0 : 1
+        return aOrg - bOrg
+      })
+    },
   },
   watch: {
     "diarization.value"() {
@@ -431,6 +447,10 @@ export default {
       this.speakerIdEnabled = enabled
       if (!enabled) {
         this.speakerIdSelected = []
+      } else if (this.speakerIdSelected.length === 0) {
+        // Default to the auto-applied org collection(s), without overriding an
+        // existing user selection.
+        this.speakerIdSelected = [...this.organizationCollectionIds]
       }
       this.select()
     },
