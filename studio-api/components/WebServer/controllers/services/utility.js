@@ -20,7 +20,7 @@ async function listSaasServices(scope, securityLevel = null) {
 
     const saas_service_info = await axios.get(host)
 
-    // Filter transcription services by security level
+    // Unfiltered: security level is enforced at action time, not on listing
     for (const transcription_service of saas_service_info.transcription) {
       services.push(transcription_service)
     }
@@ -111,4 +111,24 @@ async function listLlmServices(organizationId = null, securityLevel = null) {
   }
 }
 
-module.exports = { listSaasServices, listLlmServices }
+function stripLeadingSlash(value) {
+  return typeof value === "string" ? value.replace(/^\/+/, "") : value
+}
+
+async function getSaasServiceByEndpoint(endpoint, scope = null) {
+  if (!endpoint) return null
+  const target = stripLeadingSlash(endpoint)
+  const services = await listSaasServices(scope)
+  return (
+    services.find(
+      (service) =>
+        service.serviceName === endpoint ||
+        (Array.isArray(service.endpoints) &&
+          service.endpoints.some(
+            (e) => stripLeadingSlash(e.endpoint) === target,
+          )),
+    ) || null
+  )
+}
+
+module.exports = { listSaasServices, listLlmServices, getSaasServiceByEndpoint }

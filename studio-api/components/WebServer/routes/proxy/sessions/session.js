@@ -17,6 +17,7 @@ const {
   generatPublicToken,
   filterPrivateSessions,
   checkSessionMatchingOrganization,
+  checkChannelsSecurityLevel,
 } = require(
   `${process.cwd()}/components/WebServer/controllers/session/session.js`,
 )
@@ -233,6 +234,7 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/sessions/",
             method: ["post"],
             forwardParams: proxyForwardParams,
+            executeBeforeResult: checkChannelsSecurityLevel,
           },
           {
             path: "/organizations/:organizationId/sessions/:id",
