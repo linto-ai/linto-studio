@@ -184,6 +184,26 @@ async function transcribe(isSingleFile, req, res, next) {
     )
     req.body.file_data = formData.file_data
 
+    // SaaS gate (precise): the file is now stored, so probe its real duration and
+    // REJECT up-front if it does not fit the remaining quota — before paying for
+    // the ASR. enforce() throws 402 (SaasQuotaExceeded) on overflow; that
+    // propagates to the catch below. Probing is fail-soft: if duration can't be
+    // read we keep the cheap pre-check above + the post-hoc recording.
+    let importSeconds = 0
+    try {
+      const probed = await addAudioDuration({ metadata: {} }, formData.file_data)
+      importSeconds = Math.round(probed?.metadata?.audio?.duration || 0)
+    } catch (e) {
+      debug(`import duration probe failed, skipping precise quota gate: ${e && e.message}`)
+    }
+    if (importSeconds > 0) {
+      await saas.enforce({
+        orgId: req.params.organizationId,
+        capability: "media.import.duration",
+        value: importSeconds,
+      })
+    }
+
     const processingJob = await axios.postFormData(
       transcriptionService,
       options,
