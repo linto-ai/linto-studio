@@ -23,6 +23,17 @@ export async function apiGetUsage(organizationId, notif = null) {
   return res?.data
 }
 
+// GET /cloud/usage/:orgId/members -> { planKey, seats, members: { userId: {cap:{used,events}} } }
+export async function apiGetUsageByMember(organizationId, notif = null) {
+  const res = await sendRequest(
+    `${CLOUD_API}/usage/${organizationId}/members`,
+    { method: "get" },
+    {},
+    notif,
+  )
+  return res?.data
+}
+
 // GET /cloud/subscriptions?organizationId=... -> [subscription]
 export async function apiGetSubscriptions(organizationId, notif = null) {
   const res = await sendRequest(

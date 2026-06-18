@@ -8,6 +8,7 @@ const METER_META = {
 export default {
   plans: (s) => s.plans,
   usage: (s) => s.usage,
+  usageByMember: (s) => s.usageByMember,
   loading: (s) => s.loading,
   planKey: (s) =>
     s.usage?.planKey || s.subscription?.planKey || "free_payg",

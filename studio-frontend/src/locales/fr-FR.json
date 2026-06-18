@@ -19,6 +19,14 @@
       "ai": "Analyses IA",
       "live": "Direct"
     },
+    "member_usage": {
+      "title": "Usage par membre",
+      "seats": "{n} sièges facturés",
+      "member": "Membre",
+      "seat": "Siège",
+      "billable": "Siège facturé (rôle >= uploader)",
+      "empty": "Aucun membre."
+    },
     "feature": {
       "unlimited": "Imports audio & analyses IA illimités",
       "collaboration": "Espace d'équipe & partage",

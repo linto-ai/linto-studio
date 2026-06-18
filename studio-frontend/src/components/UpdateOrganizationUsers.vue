@@ -69,6 +69,10 @@
       :user="userToRemove"
       @on-confirm="closeRemoveFromMembersModal"
       @on-cancel="closeRemoveFromMembersModal" />
+
+    <IsCloud>
+      <MemberUsageTable />
+    </IsCloud>
   </section>
 </template>
 <script>
@@ -91,6 +95,8 @@ import GenericTable from "@/components/molecules/GenericTable.vue"
 import ModalLeaveOrganization from "@/components/ModalLeaveOrganization.vue"
 import ModalRemoveUserFromOrganization from "@/components/ModalRemoveUserFromOrganization.vue"
 import OrgaRoleSelector from "@/components/molecules/OrgaRoleSelector.vue"
+import IsCloud from "@/components/atoms/IsCloud.vue"
+import MemberUsageTable from "@/components-cloud/MemberUsageTable.vue"
 
 export default {
   mixins: [orgaRoleMixin, platformRoleMixin],
@@ -278,6 +284,8 @@ export default {
     ModalLeaveOrganization,
     ModalRemoveUserFromOrganization,
     OrgaRoleSelector,
+    IsCloud,
+    MemberUsageTable,
   },
 }
 </script>

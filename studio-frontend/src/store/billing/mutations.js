@@ -8,6 +8,9 @@ export default {
   setUsage(state, usage) {
     state.usage = usage || null
   },
+  setUsageByMember(state, data) {
+    state.usageByMember = data || null
+  },
   setLoading(state, value) {
     state.loading = !!value
   },
