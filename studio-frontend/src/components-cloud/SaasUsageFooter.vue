@@ -1,8 +1,10 @@
 <template>
   <div class="saas-usage-footer">
-    <div class="saas-usage-footer__brand">
-      <span class="saas-usage-footer__brand-badge">L</span>
-      <span>LINAGORA — {{ $t("billing.beta") }}</span>
+    <div class="saas-usage-footer__title">
+      <span>{{ $t("billing.page.usage") }}</span>
+      <span class="saas-usage-footer__plan" :class="{ premium: isPremium }">{{
+        isPremium ? $t("billing.premium") : $t("billing.page.free_plan")
+      }}</span>
     </div>
 
     <template v-if="isFree">
@@ -37,9 +39,7 @@
     </template>
 
     <div v-else class="saas-usage-footer__premium">
-      <span class="saas-usage-footer__premium-badge"
-        >★ {{ $t("billing.premium") }}</span
-      >
+      ★ {{ $t("billing.feature.unlimited") }}
     </div>
 
     <button
@@ -130,24 +130,24 @@ export default {
   flex-direction: column;
   gap: 0.5em;
 
-  &__brand {
+  &__title {
     display: flex;
     align-items: center;
-    gap: 0.4em;
+    justify-content: space-between;
     font-size: 0.72rem;
-    color: var(--neutral-70);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--neutral-60);
   }
-  &__brand-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.1em;
-    height: 1.1em;
-    border-radius: 3px;
-    background: var(--primary-color);
-    color: #fff;
+  &__plan {
     font-weight: 700;
-    font-size: 0.7rem;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--neutral-70);
+    &.premium {
+      color: var(--primary-color);
+    }
   }
 
   &__meter-head {
@@ -182,10 +182,9 @@ export default {
   &__cta {
     margin-top: 0.25em;
   }
-  &__premium-badge {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--primary-color);
+  &__premium {
+    font-size: 0.78rem;
+    color: var(--neutral-70);
   }
   &__manage {
     background: none;

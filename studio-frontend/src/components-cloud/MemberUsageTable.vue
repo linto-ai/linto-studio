@@ -25,7 +25,12 @@
       <tbody>
         <tr v-for="m in rows" :key="m.userId">
           <td class="member-usage__member">
-            <UserInfoInline :userId="m.userId" :role="m.role" />
+            <UserInfoInline
+              v-if="m.user"
+              :user="m.user"
+              :userId="m.userId"
+              :role="m.role" />
+            <span v-else class="member-usage__uid">{{ m.userId }}</span>
           </td>
           <td>
             <span v-if="m.isSeat" class="member-usage__badge" :title="$t('billing.member_usage.billable')">●</span>
@@ -57,6 +62,7 @@ export default {
     ...mapGetters("billing", ["usageByMember"]),
     ...mapGetters("organizations", {
       currentOrganization: "getCurrentOrganization",
+      allUsers: "getCurrentOrganizationAllUsers",
       currentOrgScope: "getCurrentOrganizationScope",
     }),
     planLabel() {
@@ -68,10 +74,14 @@ export default {
       const members =
         (this.currentOrganization && this.currentOrganization.users) || []
       const usage = (this.usageByMember && this.usageByMember.members) || {}
+      const all = this.allUsers || []
       return members.map((m) => {
         const u = usage[m.userId] || {}
         return {
           userId: m.userId,
+          // full user object (name/avatar) resolved like every other
+          // UserInfoInline caller; undefined until allUsers loads (guarded in template).
+          user: all.find((x) => x._id === m.userId),
           role: m.role,
           isSeat: m.role >= UPLOADER,
           import: (u["media.import.duration"] || {}).used || 0,
@@ -96,8 +106,11 @@ export default {
   },
   methods: {
     ...mapActions("billing", ["fetchUsageByMember"]),
+    ...mapActions("organizations", ["loadCurrentOrganizationAllUsers"]),
     load() {
-      if (this.currentOrgScope) this.fetchUsageByMember(this.currentOrgScope)
+      if (!this.currentOrgScope) return
+      this.fetchUsageByMember(this.currentOrgScope)
+      this.loadCurrentOrganizationAllUsers()
     },
     fmtDuration(sec) {
       sec = Math.round(sec || 0)
