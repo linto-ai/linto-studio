@@ -36,20 +36,24 @@
 
       <div v-if="labels.length === 0" class="collection-detail__empty">
         <ph-icon name="user-circle" size="xl" />
-        <p>{{
-          isOrganizationCollection
-            ? $t("speaker_diarization.org_labels_empty")
-            : $t("speaker_diarization.labels_empty")
-        }}</p>
+        <p>
+          {{
+            isOrganizationCollection
+              ? $t("speaker_diarization.org_labels_empty")
+              : $t("speaker_diarization.labels_empty")
+          }}
+        </p>
       </div>
 
       <table v-else class="collection-detail__table">
         <thead>
           <tr>
             <th style="width: 30%">
-              {{ isOrganizationCollection
-                ? $t("speaker_diarization.user_name")
-                : $t("speaker_diarization.label_name") }}
+              {{
+                isOrganizationCollection
+                  ? $t("speaker_diarization.user_name")
+                  : $t("speaker_diarization.label_name")
+              }}
             </th>
             <th style="width: 12%">
               {{ $t("speaker_diarization.signatures_count") }}
@@ -89,12 +93,14 @@
             <td v-if="!isOrganizationCollection">
               <ph-icon
                 :name="label.hasVoiceprint ? 'check-circle' : 'x-circle'"
-                :class="label.hasVoiceprint ? 'collection-detail__voiceprint-yes' : 'collection-detail__voiceprint-no'"
+                :class="
+                  label.hasVoiceprint
+                    ? 'collection-detail__voiceprint-yes'
+                    : 'collection-detail__voiceprint-no'
+                "
                 size="sm" />
             </td>
-            <td>{{
-              formatAudioDuration(sampleDurations[label._id] || 0)
-            }}</td>
+            <td>{{ formatAudioDuration(sampleDurations[label._id] || 0) }}</td>
             <td>{{ formatDate(label.created) }}</td>
             <td>
               <div
@@ -142,6 +148,7 @@
     <!-- Create label modal -->
     <Modal
       v-model="showCreateLabelModal"
+      isForm
       :title="$t('speaker_diarization.create_label_title')"
       :textActionApply="$t('speaker_diarization.create')"
       :disabledActionApply="!newLabelName"
@@ -294,11 +301,9 @@ export default {
     },
     async createLabel() {
       try {
-        await apiCreateSpeakerLabel(
-          this.organizationId,
-          this.collectionId,
-          { name: this.newLabelName },
-        )
+        await apiCreateSpeakerLabel(this.organizationId, this.collectionId, {
+          name: this.newLabelName,
+        })
         this.$store.dispatch("system/addNotification", {
           message: this.$t("speaker_diarization.label_created_success"),
           type: "success",
@@ -310,8 +315,7 @@ export default {
       } catch (err) {
         this.$store.dispatch("system/addNotification", {
           message:
-            err.message ||
-            this.$t("speaker_diarization.label_created_error"),
+            err.message || this.$t("speaker_diarization.label_created_error"),
           type: "error",
           timeout: 5000,
         })

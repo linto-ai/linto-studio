@@ -105,6 +105,7 @@
       <!-- Create collection modal -->
       <Modal
         v-model="showCreateModal"
+        isForm
         :title="$t('speaker_diarization.create_collection_title')"
         :textActionApply="$t('speaker_diarization.create')"
         :disabledActionApply="!newCollection.name"
@@ -151,6 +152,7 @@
       <!-- Edit collection modal -->
       <Modal
         v-model="showEditModal"
+        isForm
         :title="$t('speaker_diarization.edit_collection_title')"
         :textActionApply="$t('speaker_diarization.save')"
         :disabledActionApply="!editCollection.name"
@@ -436,6 +438,7 @@ export default {
       this.showEditModal = true
     },
     async saveEdit() {
+      console.log("toto")
       try {
         const res = await this.$store.dispatch(
           "organizations/updateVoiceprintCollection",
