@@ -161,20 +161,5 @@ pipeline {
             }
         }
 
-        stage('Docker build for staging branches') {
-            when {
-                branch 'staging/*'
-            }
-            steps {
-                echo 'Building staging feature-branch images (private registry, never Docker Hub)'
-                script {
-                    def slug = env.BRANCH_NAME.replaceFirst('^staging/', '').replaceAll('[^a-zA-Z0-9]+', '-').toLowerCase()
-                    def tag = "dev-${slug}"
-                    buildStagingImage('studio-api', tag)
-                    buildStagingImage('studio-frontend', tag, '.')
-                    buildStagingImage('studio-websocket', tag)
-                }
-            }
-        }
     }
 }
