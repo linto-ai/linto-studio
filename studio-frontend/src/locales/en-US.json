@@ -1204,6 +1204,7 @@
     },
     "create_page": {
       "error_message": "An error occurred while creating the session",
+      "security_level_error": "A selected transcriber profile security level is below the organization minimum",
       "name_field": {
         "label": "Session name"
       },

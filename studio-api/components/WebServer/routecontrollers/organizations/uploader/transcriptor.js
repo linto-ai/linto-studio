@@ -109,7 +109,6 @@ async function transcribe(isSingleFile, req, res, next) {
     )
     if (orgExists.length !== 1) throw new OrganizationNotFound()
 
-    // PUBLIC organizations allow every service, so skip the lookup
     const orgSecurityLevel = SECURITY_LEVELS.getValueOrDefault(
       orgExists[0].securityLevel,
     )

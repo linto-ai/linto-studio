@@ -115,7 +115,6 @@ function stripLeadingSlash(value) {
   return typeof value === "string" ? value.replace(/^\/+/, "") : value
 }
 
-// Resolve a SaaS service from the endpoint sent by the frontend, or null
 async function getSaasServiceByEndpoint(endpoint, scope = null) {
   if (!endpoint) return null
   const target = stripLeadingSlash(endpoint)

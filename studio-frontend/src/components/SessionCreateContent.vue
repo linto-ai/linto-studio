@@ -585,9 +585,16 @@ export default {
             },
           })
         } else {
+          const errorCode = res.error?.response?.data?.code
+          let message = this.$i18n.t("session.create_page.error_message")
+          if (errorCode === "transcriber_profile_security_level") {
+            message = this.$i18n.t("session.create_page.security_level_error")
+          } else if (res.message) {
+            message = res.message
+          }
           bus.$emit("app_notif", {
             status: "error",
-            message: this.$i18n.t("session.create_page.error_message"),
+            message,
             timeout: null,
           })
           this.formState = "error"

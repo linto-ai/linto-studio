@@ -127,13 +127,17 @@ async function forwardSessionAlias(req, next, res) {
   }
 }
 
+function belongsToOrganizationOrShared(profile, organizationId) {
+  return (
+    profile.organizationId === organizationId || profile.organizationId === null
+  )
+}
+
 async function checkTranscriberProfileAccess(jsonString, req) {
   try {
     const transcribers = JSON.parse(jsonString)
-    const filtered = transcribers.filter(
-      (session) =>
-        session.organizationId === req.params.organizationId ||
-        session.organizationId === null,
+    const filtered = transcribers.filter((transcriber) =>
+      belongsToOrganizationOrShared(transcriber, req.params.organizationId),
     )
     return JSON.stringify(filtered)
   } catch (err) {
@@ -195,18 +199,17 @@ async function checkChannelsSecurityLevel(req, next) {
     const orgSecurityLevel = SECURITY_LEVELS.getValueOrDefault(
       organization[0].securityLevel,
     )
-    // PUBLIC organizations accept every transcriber profile.
     if (orgSecurityLevel === SECURITY_LEVELS.PUBLIC) return next()
 
     const profiles = await axios.get(
-      process.env.SESSION_API_ENDPOINT +
-        `/transcriber_profiles?organizationId=${req.params.organizationId}`,
+      process.env.SESSION_API_ENDPOINT + `/transcriber_profiles`,
     )
     const levelByProfileId = new Map(
-      (Array.isArray(profiles) ? profiles : []).map((profile) => [
-        String(profile.id),
-        profile.meta?.securityLevel,
-      ]),
+      (Array.isArray(profiles) ? profiles : [])
+        .filter((profile) =>
+          belongsToOrganizationOrShared(profile, req.params.organizationId),
+        )
+        .map((profile) => [String(profile.id), profile.meta?.securityLevel]),
     )
 
     for (const channel of channels) {
@@ -220,6 +223,7 @@ async function checkChannelsSecurityLevel(req, next) {
       ) {
         throw new SessionForbidden(
           "A selected transcriber profile security level is below the organization minimum",
+          { code: "transcriber_profile_security_level" },
         )
       }
     }
