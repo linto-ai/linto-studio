@@ -33,6 +33,24 @@
       "speaker_id": "Speaker identification",
       "no_watermark": "No watermark, editable output",
       "api": "API access"
+    },
+    "page": {
+      "manage": "Manage subscription",
+      "title": "Subscription & usage",
+      "subtitle": "Your plan, usage and team seats.",
+      "free_plan": "Free",
+      "usage": "Usage this period",
+      "your_plan": "Your plan",
+      "no_usage": "No usage recorded yet.",
+      "seats": "Billable seats",
+      "renews": "Renews on",
+      "status": "Status",
+      "cancels_at_period_end": "Cancels at period end",
+      "comp": "Complimentary (no billing)",
+      "admin_only": "Only an organization admin can change the plan.",
+      "cancel_sub": "Cancel subscription",
+      "cancel_confirm": "Cancel at period end?",
+      "cancel_yes": "Confirm cancel"
     }
   },
   "apply": "Apply",
@@ -344,6 +362,7 @@
     "transcriberProfiles": "Transcriber Profiles",
     "users": "Users",
     "userSettings": "Profile settings",
+    "billing": "Subscription",
     "processing": "Processing"
   },
   "conversation": {

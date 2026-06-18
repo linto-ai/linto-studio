@@ -42,6 +42,13 @@
       >
     </div>
 
+    <button
+      type="button"
+      class="saas-usage-footer__manage"
+      @click="goToBilling">
+      {{ $t("billing.page.manage") }}
+    </button>
+
     <UpgradeModal v-if="showUpgrade" @close="showUpgrade = false" />
   </div>
 </template>
@@ -75,6 +82,14 @@ export default {
     ...mapActions("billing", ["refresh"]),
     loadBilling() {
       if (this.currentOrgScope) this.refresh(this.currentOrgScope)
+    },
+    goToBilling() {
+      const params = this.currentOrgScope
+        ? { organizationId: this.currentOrgScope }
+        : {}
+      if (this.$route.name !== "billing") {
+        this.$router.push({ name: "billing", params }).catch(() => {})
+      }
     },
     usedOfLimit(m) {
       return this.$t("billing.used_of", {
@@ -171,6 +186,20 @@ export default {
     font-size: 0.8rem;
     font-weight: 600;
     color: var(--primary-color);
+  }
+  &__manage {
+    background: none;
+    border: none;
+    padding: 0;
+    margin-top: 0.1em;
+    align-self: flex-start;
+    font-size: 0.72rem;
+    color: var(--neutral-60);
+    text-decoration: underline;
+    cursor: pointer;
+    &:hover {
+      color: var(--primary-color);
+    }
   }
 }
 </style>

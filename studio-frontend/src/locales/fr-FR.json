@@ -33,6 +33,24 @@
       "speaker_id": "Identification des locuteurs",
       "no_watermark": "Sans watermark, sorties éditables",
       "api": "Accès API"
+    },
+    "page": {
+      "manage": "Gérer l'abonnement",
+      "title": "Abonnement & usage",
+      "subtitle": "Votre offre, votre usage et les sièges de l'équipe.",
+      "free_plan": "Gratuit",
+      "usage": "Usage de la période",
+      "your_plan": "Votre offre",
+      "no_usage": "Aucun usage enregistré pour l'instant.",
+      "seats": "Sièges facturés",
+      "renews": "Renouvellement le",
+      "status": "Statut",
+      "cancels_at_period_end": "Résiliation en fin de période",
+      "comp": "Offert (sans facturation)",
+      "admin_only": "Seul un administrateur de l'organisation peut changer l'offre.",
+      "cancel_sub": "Résilier l'abonnement",
+      "cancel_confirm": "Résilier en fin de période ?",
+      "cancel_yes": "Confirmer la résiliation"
     }
   },
   "apply": "Appliquer",
@@ -345,6 +363,7 @@
     "users": "Utilisateurs",
     "userSettings": "Paramètres utilisateur",
     "createorganization": "Créer une organisation",
+    "billing": "Abonnement",
     "processing": "En traitement"
   },
   "conversation": {
