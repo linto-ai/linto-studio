@@ -73,6 +73,14 @@
         "local-gpu": "Local GPU",
         "local-standard": "Local"
       }
+    },
+    "seat_promo": {
+      "seat": "1 seat",
+      "title": "Add a billable seat?",
+      "this_member": "this member",
+      "message": "Giving {name} a contributor role (uploader or higher) adds 1 billable seat at {price}/seat/month.",
+      "prorated": "It is prorated for the remaining days of the current billing period; a demotion later credits the unused part.",
+      "confirm": "Promote & add seat"
     }
   },
   "apply": "Apply",

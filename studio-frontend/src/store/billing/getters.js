@@ -10,6 +10,7 @@ export default {
   usage: (s) => s.usage,
   usageByMember: (s) => s.usageByMember,
   subscription: (s) => s.subscription,
+  billingExempt: (s) => !!(s.usage?.billingExempt || s.subscription?.billingExempt),
   invoices: (s) => s.invoices || [],
   // live (direct) breakdown surfaced by the usage summary: { channels, translationLangs, byProfile }
   liveDetail: (s) => s.usage?.live || null,
