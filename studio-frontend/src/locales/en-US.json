@@ -51,6 +51,10 @@
       "cancel_sub": "Cancel subscription",
       "cancel_confirm": "Cancel at period end?",
       "cancel_yes": "Confirm cancel"
+    },
+    "card": {
+      "label": "Card details",
+      "pay": "Pay & upgrade"
     }
   },
   "apply": "Apply",

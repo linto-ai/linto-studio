@@ -51,6 +51,10 @@
       "cancel_sub": "Résilier l'abonnement",
       "cancel_confirm": "Résilier en fin de période ?",
       "cancel_yes": "Confirmer la résiliation"
+    },
+    "card": {
+      "label": "Coordonnées de carte",
+      "pay": "Payer & passer pro"
     }
   },
   "apply": "Appliquer",
