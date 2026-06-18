@@ -59,6 +59,7 @@ export default {
   border: var(--border-block);
   border-radius: 8px;
   overflow: hidden;
+  max-width: 600px;
 
   &__header {
     display: flex;

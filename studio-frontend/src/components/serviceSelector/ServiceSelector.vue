@@ -7,6 +7,7 @@
       <ServiceEditor
         v-if="selectedService"
         v-show="!pickerOpen"
+        ref="editor"
         :key="selectedService.serviceName"
         :value="selectedService"
         :selected="true"
@@ -130,6 +131,10 @@ export default {
         if (!service || this.isSecurityDisabled(service)) return
         this.userPickedServiceName = name
         this.pickerOpen = false
+        // Reveal the freshly selected editor, then keep it in view while its
+        // height settles (the ResizeObserver follows until the user scrolls).
+        this.followEditor = true
+        this.$nextTick(() => this.scrollEditorIntoView())
       },
     },
     // The recommended model = the single accessible model with the lowest
@@ -169,6 +174,26 @@ export default {
     },
   },
   methods: {
+    // Bring the editor card into view. Smooth for the initial reveal, instant
+    // for the follow-up resize re-scrolls so animations don't pile up.
+    scrollEditorIntoView(behavior = "smooth") {
+      const el = this.$refs.editor?.$el
+      el?.scrollIntoView({ behavior, block: "center" })
+    },
+    // (Re)attach the ResizeObserver to the current editor element. Needed after
+    // every model switch since the `:key` remounts the component (new $el).
+    observeEditor() {
+      this.$nextTick(() => {
+        const el = this.$refs.editor?.$el
+        if (!el || !this._resizeObserver) return
+        this._resizeObserver.disconnect()
+        this._resizeObserver.observe(el)
+      })
+    },
+    // The user took over scrolling — stop auto-following the editor's height.
+    stopFollowingEditor() {
+      this.followEditor = false
+    },
     isSecurityDisabled(service) {
       return this.disabledServiceNames.has(service.serviceName)
     },
@@ -194,7 +219,25 @@ export default {
       // Set when the user explicitly picks a model in the picker; lets the
       // default selection track the recommended model until then.
       userPickedServiceName: null,
+      // While true, the ResizeObserver re-scrolls the editor into view as its
+      // height changes. Cleared on the user's first manual scroll.
+      followEditor: false,
     }
+  },
+  watch: {
+    // The editor remounts (new $el) whenever the chosen model changes.
+    "selectedService.serviceName"() {
+      this.observeEditor()
+    },
+  },
+  mounted() {
+    this._resizeObserver = new ResizeObserver(() => {
+      requestAnimationFrame(() => this.scrollEditorIntoView("auto"))
+    })
+    this.observeEditor()
+  },
+  beforeDestroy() {
+    this._resizeObserver?.disconnect()
   },
   components: {
     ServiceEditor,
