@@ -61,3 +61,14 @@ export async function apiCreateSubscription(
   )
   return res?.data
 }
+
+// DELETE /cloud/subscriptions/:id  (?immediate=true) -> updated subscription
+export async function apiCancelSubscription(
+  subscriptionId,
+  immediate = false,
+  notif = null,
+) {
+  const url = `${CLOUD_API}/subscriptions/${subscriptionId}${immediate ? "?immediate=true" : ""}`
+  const res = await sendRequest(url, { method: "delete" }, {}, notif)
+  return res?.data
+}

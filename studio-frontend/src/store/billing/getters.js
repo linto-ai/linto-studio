@@ -9,6 +9,7 @@ export default {
   plans: (s) => s.plans,
   usage: (s) => s.usage,
   usageByMember: (s) => s.usageByMember,
+  subscription: (s) => s.subscription,
   loading: (s) => s.loading,
   planKey: (s) =>
     s.usage?.planKey || s.subscription?.planKey || "free_payg",

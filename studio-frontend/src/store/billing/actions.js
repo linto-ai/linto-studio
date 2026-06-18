@@ -4,6 +4,7 @@ import {
   apiGetUsageByMember,
   apiGetSubscriptions,
   apiCreateSubscription,
+  apiCancelSubscription,
 } from "@/api/cloud"
 
 function currentOrg(rootGetters, orgId) {
@@ -67,6 +68,17 @@ export default {
     if (!organizationId) return null
     const result = await apiCreateSubscription(organizationId, planKey, seats)
     await dispatch("refresh", organizationId)
+    return result
+  },
+
+  // Cancel the org's current subscription (back to free). immediate=false ->
+  // cancel at period end (keeps premium until the period ends).
+  async cancel({ dispatch, state, rootGetters }, payload = {}) {
+    const { immediate = false, orgId } = payload
+    const sub = state.subscription
+    if (!sub || !sub._id) return null
+    const result = await apiCancelSubscription(sub._id, immediate)
+    await dispatch("refresh", currentOrg(rootGetters, orgId))
     return result
   },
 }

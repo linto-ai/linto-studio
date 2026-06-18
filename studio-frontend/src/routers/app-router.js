@@ -798,6 +798,24 @@ let router = new Router({
         },
       },
     },
+    {
+      // SaaS billing / subscription management (cloud mode only; the page
+      // renders nothing outside cloud mode and the nav link is gated by IsCloud).
+      path: "/interface/:organizationId?/billing",
+      name: "billing",
+      components: {
+        default: () => import("../views/Billing.vue"),
+        ...defaultComponents,
+      },
+      props: defaultProps,
+      meta: {
+        breadcrumb: {
+          label: "breadcrumb.billing",
+          parent: "explore",
+          showInBreadcrumb: true,
+        },
+      },
+    },
     // {
     //   path: "/interface/:organizationId?/tags/settings",
     //   name: "tags settings",
