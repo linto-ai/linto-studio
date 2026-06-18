@@ -81,6 +81,17 @@
       "message": "Giving {name} a contributor role (uploader or higher) adds 1 billable seat at {price}/seat/month.",
       "prorated": "It is prorated for the remaining days of the current billing period; a demotion later credits the unused part.",
       "confirm": "Promote & add seat"
+    },
+    "backoffice": {
+      "title": "Subscription (SaaS)",
+      "plan": "Plan",
+      "seats": "Billable seats",
+      "complete_free": "Complimentary access (complete free)",
+      "complete_free_hint": "Full Premium, unlimited everything (imports, AI, live) AND unlimited API-key usage, with no Stripe billing. For internal use or partner orgs connecting services to your platform.",
+      "enable_free": "Enable complimentary",
+      "disable_free": "Disable complimentary",
+      "set_seats": "Override seats",
+      "saved": "Saved"
     }
   },
   "apply": "Apply",

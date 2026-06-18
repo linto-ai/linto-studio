@@ -81,6 +81,17 @@
       "message": "Donner à {name} un rôle contributeur (uploader ou plus) ajoute 1 siège facturé à {price}/siège/mois.",
       "prorated": "Il est proratisé sur les jours restants de la période en cours ; une rétrogradation ultérieure crédite la part non utilisée.",
       "confirm": "Promouvoir & ajouter le siège"
+    },
+    "backoffice": {
+      "title": "Abonnement (SaaS)",
+      "plan": "Offre",
+      "seats": "Sièges facturés",
+      "complete_free": "Accès offert (complete free)",
+      "complete_free_hint": "Premium complet, tout illimité (imports, IA, direct) ET usage de la clé API illimité, sans facturation Stripe. Pour un usage interne ou des orgs partenaires qui connectent des services à ta plateforme.",
+      "enable_free": "Activer l'offert",
+      "disable_free": "Désactiver l'offert",
+      "set_seats": "Forcer les sièges",
+      "saved": "Enregistré"
     }
   },
   "apply": "Appliquer",

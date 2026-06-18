@@ -83,3 +83,39 @@ export async function apiGetInvoices(organizationId, notif = null) {
   )
   return res?.data
 }
+
+// --- Backoffice (platform sys-admin; sendRequest adds userScope=backoffice on
+// /backoffice pages) ---
+
+// GET /cloud/admin/orgs/:orgId -> { planKey, seats, billingExempt, subscription, usage }
+export async function apiAdminGetOrgBilling(organizationId, notif = null) {
+  const res = await sendRequest(
+    `${CLOUD_API}/admin/orgs/${organizationId}`,
+    { method: "get" },
+    {},
+    notif,
+  )
+  return res?.data
+}
+
+// POST /cloud/admin/orgs/:orgId/exempt { exempt } -> updated subscription
+export async function apiAdminSetExempt(organizationId, exempt, notif = null) {
+  const res = await sendRequest(
+    `${CLOUD_API}/admin/orgs/${organizationId}/exempt`,
+    { method: "post" },
+    { exempt },
+    notif,
+  )
+  return res?.data
+}
+
+// POST /cloud/admin/orgs/:orgId/seats { seats } -> { updated, seats }
+export async function apiAdminSetSeats(organizationId, seats, notif = null) {
+  const res = await sendRequest(
+    `${CLOUD_API}/admin/orgs/${organizationId}/seats`,
+    { method: "post" },
+    { seats },
+    notif,
+  )
+  return res?.data
+}
