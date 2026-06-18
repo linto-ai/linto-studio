@@ -473,7 +473,7 @@
       "choose_model": "Choisir un modèle de transcription",
       "cancel_change_model": "Annuler",
       "model_multilingual": "Multilingue",
-      "model_diarization": "Diarisation",
+      "model_diarization": "Séparation des locuteurs",
       "model_count": "{count} modèle disponible | {count} modèles disponibles",
       "file_count": "{count} fichier | {count} fichiers",
       "summary_diarization_on": "Locuteurs séparés",
@@ -1444,7 +1444,7 @@
       "active_duration": "Durée active",
       "started_at": "Début",
       "ended_at": "Fin",
-      "diarization_enabled": "Diarisation"
+      "diarization_enabled": "Séparation des locuteurs"
     },
     "timeline": {
       "title": "Chronologie d'activité",
