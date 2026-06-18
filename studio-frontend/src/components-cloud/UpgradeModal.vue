@@ -33,15 +33,22 @@
            (real Stripe). Fake/local mode skips straight to done. -->
       <div v-else-if="step === 'card'" class="upgrade-modal__card-step">
         <p class="upgrade-modal__card-label">{{ $t("billing.card.label") }}</p>
-        <div ref="cardEl" class="upgrade-modal__card-input"></div>
+        <div v-show="!cardFatal" ref="cardEl" class="upgrade-modal__card-input"></div>
         <p v-if="cardError" class="upgrade-modal__card-error">{{ cardError }}</p>
         <div class="upgrade-modal__actions">
           <Button variant="secondary" @click="$emit('close')">{{
             $t("billing.cancel")
           }}</Button>
-          <Button variant="primary" :loading="busy" @click="pay">{{
-            $t("billing.card.pay")
-          }}</Button>
+          <!-- Pay only once the card field actually mounted; if it could not be
+               initialized (Stripe.js load/mount failure) the user closes — the
+               incomplete subscription auto-expires on Stripe. -->
+          <Button
+            v-if="cardReady"
+            variant="primary"
+            :loading="busy"
+            @click="pay">
+            {{ $t("billing.card.pay") }}
+          </Button>
         </div>
       </div>
 
@@ -79,10 +86,13 @@ export default {
       stripe: null,
       cardElement: null,
       cardError: "",
+      cardReady: false, // card Element actually mounted
+      cardFatal: false, // mount failed -> no payment possible, offer close
     }
   },
   computed: {
     ...mapGetters("billing", ["premiumPlan"]),
+    ...mapGetters("organizations", { orgScope: "getCurrentOrganizationScope" }),
     contextMessage() {
       if (!this.reason) return ""
       if (this.reason.reason === "quota_exceeded") {
@@ -132,8 +142,13 @@ export default {
         this.cardElement.on("change", (e) => {
           this.cardError = e.error ? e.error.message : ""
         })
+        this.cardReady = true
       } catch (e) {
-        this.cardError = e.message || String(e)
+        // Could not initialize the card field. Do NOT claim success (the
+        // subscription is still incomplete and will auto-expire on Stripe).
+        // Surface the error and offer only Close (cardReady stays false).
+        this.cardFatal = true
+        this.cardError = e.message || this.$t("billing.card.init_error")
       }
     },
     async pay() {
@@ -150,8 +165,9 @@ export default {
           return
         }
         // Payment succeeded; the webhook (invoice.paid / subscription.updated)
-        // flips the subscription to active server-side. Refresh to reflect it.
-        await this.refresh()
+        // flips the subscription to active server-side. Refresh (explicit org)
+        // to reflect it regardless of where the modal was opened.
+        await this.refresh(this.orgScope)
         this.finishDone()
       } finally {
         this.busy = false
