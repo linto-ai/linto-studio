@@ -33,8 +33,20 @@ const { UserError } = require(
 
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
+const saas = require(`${process.cwd()}/lib/saas`)
 
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
+
+// Billable seats = org members with a role >= uploader (members below cannot
+// produce billable usage). Floored at 1 (solo owner). FAIL-SOFT; no-op if the
+// SaaS plugin is absent.
+function syncOrgSeats(organizationId, organization) {
+  const seats = Math.max(
+    1,
+    (organization.users || []).filter((u) => u.role >= ROLES.UPLOADER).length,
+  )
+  saas.syncSeats(organizationId, seats)
+}
 
 async function addUserInOrganization(req, res, next) {
   try {
@@ -98,6 +110,8 @@ async function addUserInOrganization(req, res, next) {
 
     const result = await model.organizations.update(organization)
     if (result.matchedCount === 0) throw new OrganizationError()
+
+    syncOrgSeats(req.params.organizationId, organization)
 
     const sharedUser = await model.users.getById(req.payload.data.userId)
     if (user.length === 0) {
@@ -183,6 +197,8 @@ async function updateUserFromOrganization(req, res, next) {
     if (result.matchedCount === 0)
       throw new OrganizationError("Error while updating user in organization")
 
+    syncOrgSeats(req.params.organizationId, organization)
+
     user = await model.users.getById(req.body.userId, true)
     await Mailing.organizationRightUpdate(user[0], req, organization.name)
 
@@ -223,6 +239,8 @@ async function deleteUserFromOrganization(req, res, next) {
 
     const result = await model.organizations.update(organization)
     if (result.matchedCount === 0) throw new OrganizationError()
+
+    syncOrgSeats(req.params.organizationId, organization)
 
     user = await model.users.getById(req.body.userId, true)
     await Mailing.organizationDelete(user[0], req, organization.name)

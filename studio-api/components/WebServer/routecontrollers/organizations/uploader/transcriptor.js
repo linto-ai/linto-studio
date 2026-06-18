@@ -195,6 +195,7 @@ async function transcribe(isSingleFile, req, res, next) {
       orgId: req.params.organizationId,
       capability: "media.import.duration",
       value: Math.round(conversation?.metadata?.audio?.duration || 0),
+      userId: req.payload?.data?.userId,
       meta: { conversationId: conversation._id.toString() },
     })
 

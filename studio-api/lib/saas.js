@@ -67,4 +67,34 @@ async function recordLive(args) {
   }
 }
 
-module.exports = { plugin, enabled, enforce, record, recordLive }
+// Sync the org's seat count (derived from membership) into billing. FAIL-SOFT.
+async function syncSeats(orgId, seatCount) {
+  const pp = plugin()
+  if (!pp) return
+  try {
+    return await pp.syncSeats(orgId, seatCount)
+  } catch (e) {
+    /* fail-soft */
+  }
+}
+
+// Backoffice: flag/unflag an org as comp (full premium, no billing). FAIL-SOFT.
+async function setBillingExempt(orgId, exempt) {
+  const pp = plugin()
+  if (!pp) return
+  try {
+    return await pp.setBillingExempt(orgId, exempt)
+  } catch (e) {
+    /* fail-soft */
+  }
+}
+
+module.exports = {
+  plugin,
+  enabled,
+  enforce,
+  record,
+  recordLive,
+  syncSeats,
+  setBillingExempt,
+}
