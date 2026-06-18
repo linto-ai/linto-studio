@@ -192,6 +192,8 @@
       "add_organisation_button": "Add an organisation",
       "personal_organizations_shown": "Personal organisations shown",
       "personal_organizations_hidden": "Personal organisations hidden",
+      "personal_organization": "Personal organisation",
+      "group_organization": "Group organisation",
       "remove_organisation_button": "Delete an organisation | Delete {count} organisations"
     },
     "token_list": {
@@ -262,6 +264,8 @@
       },
       "all_profiles_shown": "All profiles are shown",
       "global_profiles_shown": "Only global profiles are shown",
+      "private_profile": "Private profile (specific to one organization)",
+      "global_profile": "Global profile (shared with all organizations)",
       "edit_button": "Edit"
     }
   },

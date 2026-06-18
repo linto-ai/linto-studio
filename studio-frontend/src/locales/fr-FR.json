@@ -191,8 +191,10 @@
     "organisation_list": {
       "title": "Organisations",
       "add_organisation_button": "Ajouter une organisation",
-      "personal_organizations_shown": "organisations personnelles affichées",
-      "personal_organizations_hidden": "organisations personnelles cachées",
+      "personal_organizations_shown": "Organisations personnelles affichées",
+      "personal_organizations_hidden": "Organisations personnelles cachées",
+      "personal_organization": "Organisation personnelle",
+      "group_organization": "Organisation de groupe",
       "remove_organisation_button": "Supprimer l'organisation | Supprimer les {count} organisations"
     },
     "token_list": {
@@ -263,6 +265,8 @@
       },
       "all_profiles_shown": "Tous les profils sont affichés",
       "global_profiles_shown": "Seulement les profils globaux sont affichés",
+      "private_profile": "Profil privé (propre à une organisation)",
+      "global_profile": "Profil global (partagé avec toutes les organisations)",
       "edit_button": "Modifier"
     }
   },

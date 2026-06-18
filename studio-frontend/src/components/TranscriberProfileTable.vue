@@ -14,8 +14,16 @@
       <span class="icon work" />
     </template>
     <template #cell-organizationId="{ element }">
-      <span v-if="element.organizationId !== null" class="icon apply" />
-      <span v-else class="icon close" />
+      <span
+        v-if="element.organizationId !== null"
+        :title="$t('backoffice.transcriber_profile_list.private_profile')">
+        <ph-icon name="buildings" size="md" weight="regular" />
+      </span>
+      <span
+        v-else
+        :title="$t('backoffice.transcriber_profile_list.global_profile')">
+        <ph-icon name="globe" size="md" weight="regular" />
+      </span>
     </template>
     <template #cell-config.name="{ element }">
       <span class="clickable" @click="onEdit(element.id)">{{
