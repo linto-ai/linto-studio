@@ -96,7 +96,7 @@
           v-for="collection in sortedCollections"
           :key="collection._id"
           :collection="collection"
-          :stats="collectionStats[collection._id]"
+          :organizationId="organizationId"
           @select="selectedCollectionId = collection._id"
           @edit="startEdit(collection)"
           @delete="confirmDelete(collection)" />
@@ -199,9 +199,6 @@ import SpeakerLabelCollectionDetail from "@/components/SpeakerLabelCollectionDet
 import SpeakerLabelDetail from "@/components/SpeakerLabelDetail.vue"
 import DiarizationCollectionCard from "@/components/DiarizationCollectionCard.vue"
 import { COLLECTION_TYPE, STORAGE_MODE } from "@/tools/voiceprintConstants.js"
-import { apiGetOptedInMembers } from "@/api/voiceprintCollection.js"
-import { apiGetSpeakerLabels } from "@/api/speakerLabel.js"
-import { apiGetVoiceSamples } from "@/api/voiceSample.js"
 
 export default {
   name: "SpeakerIdentificationSettings",
@@ -223,7 +220,6 @@ export default {
   data() {
     return {
       acknowledged: false,
-      collectionStats: {},
       loading: false,
       selectedCollectionId: null,
       selectedLabelId: null,
@@ -329,63 +325,11 @@ export default {
       return collection.storageMode === STORAGE_MODE.EMBEDDINGS
     },
     async fetchCollections() {
+      // Only the collection list lives here; per-collection stats are loaded
+      // by each DiarizationCollectionCard so they stream in independently.
       this.loading = true
       try {
-        // The collection list is shared reference data already loaded in the
-        // store (on page load / org change) and kept in sync by local CRUD —
-        // reuse it from the cache. Only the per-collection stats below need a
-        // round-trip, and they are recomputed whenever this runs.
         await this.$store.dispatch("organizations/loadVoiceprintCollections")
-        // Fetch stats (speakers + samples) for all collections in parallel
-        await Promise.all(
-          this.collections.map(async (col) => {
-            try {
-              if (col.type === COLLECTION_TYPE.ORGANIZATION) {
-                const members = await apiGetOptedInMembers(
-                  this.organizationId,
-                  col._id,
-                )
-                const totalSamples = members.reduce(
-                  (sum, m) => sum + (m.samplesCount || 0),
-                  0,
-                )
-                this.$set(this.collectionStats, col._id, {
-                  labels: members.length,
-                  samples: totalSamples,
-                })
-              } else {
-                const labels = await apiGetSpeakerLabels(
-                  this.organizationId,
-                  col._id,
-                )
-                let totalSamples = 0
-                await Promise.all(
-                  labels.map(async (label) => {
-                    try {
-                      const sigs = await apiGetVoiceSamples(
-                        this.organizationId,
-                        col._id,
-                        label._id,
-                      )
-                      totalSamples += sigs.length
-                    } catch {
-                      // ignore
-                    }
-                  }),
-                )
-                this.$set(this.collectionStats, col._id, {
-                  labels: labels.length,
-                  samples: totalSamples,
-                })
-              }
-            } catch {
-              this.$set(this.collectionStats, col._id, {
-                labels: 0,
-                samples: 0,
-              })
-            }
-          }),
-        )
       } catch (err) {
         this.$store.dispatch("system/addNotification", {
           message: this.$t("speaker_diarization.fetch_error"),
@@ -438,7 +382,6 @@ export default {
       this.showEditModal = true
     },
     async saveEdit() {
-      console.log("toto")
       try {
         const res = await this.$store.dispatch(
           "organizations/updateVoiceprintCollection",

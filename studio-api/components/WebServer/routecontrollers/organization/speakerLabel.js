@@ -32,7 +32,19 @@ async function getSpeakerLabels(req, res, next) {
     const labels = await model.speakerLabels.getByCollectionId(
       req.params.collectionId,
     )
-    res.status(200).send(labels)
+
+    // Enrich each label with its number of voice samples (derived field,
+    // computed in a single aggregation rather than one query per label).
+    const counts = await model.voiceSamples.countBySpeakerLabelForCollection(
+      req.params.collectionId,
+    )
+    const countMap = new Map(counts.map((c) => [c._id.toString(), c.count]))
+    const enriched = labels.map((label) => ({
+      ...label,
+      samplesCount: countMap.get(label._id.toString()) || 0,
+    }))
+
+    res.status(200).send(enriched)
   } catch (err) {
     next(err)
   }

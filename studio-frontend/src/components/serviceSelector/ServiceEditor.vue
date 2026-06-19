@@ -130,40 +130,16 @@
           class="speaker-id__empty">
           {{ $t("conversation.transcription.speaker_identification_empty") }}
         </div>
-        <div v-else class="flex col gap-xsmall speaker-id__list" role="group">
-          <label
+        <div v-else class="flex col gap-small speaker-id__list" role="group">
+          <DiarizationCollectionCard
             v-for="collection of sortedSpeakerIdCollectionList"
             :key="collection._id"
-            class="speaker-id__option"
-            :class="{
-              'speaker-id__option--selected': speakerIdSelected.includes(
-                collection._id,
-              ),
-            }">
-            <input
-              type="checkbox"
-              class="speaker-id__checkbox"
-              :value="collection._id"
-              v-model="speakerIdSelected"
-              @change="select()" />
-            <span class="speaker-id__body">
-              <span class="speaker-id__title">
-                {{ collection.name }}
-                <span
-                  v-if="collection.type === 'organization'"
-                  class="speaker-id__badge">
-                  {{
-                    $t(
-                      "conversation.transcription.speaker_identification_auto_badge",
-                    )
-                  }}
-                </span>
-              </span>
-              <span v-if="collectionHint(collection)" class="speaker-id__hint">
-                {{ collectionHint(collection) }}
-              </span>
-            </span>
-          </label>
+            :collection="collection"
+            :organizationId="orgScope"
+            selectable
+            compact
+            :selected="speakerIdSelected.includes(collection._id)"
+            @toggle="toggleCollection(collection._id)" />
         </div>
       </template>
     </div>
@@ -174,6 +150,7 @@ import EMPTY_FIELD from "../../const/emptyField"
 import ServiceHeader from "./ServiceHeader.vue"
 import SegmentedControl from "@/components/molecules/SegmentedControl.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
+import DiarizationCollectionCard from "@/components/DiarizationCollectionCard.vue"
 import generateServiceConfig from "../../tools/generateServiceConfig"
 import formatLanguageCode from "@/tools/formatLanguage"
 import pickLocale from "@/tools/extractLocales"
@@ -379,6 +356,11 @@ export default {
     speakerIdCollectionList() {
       return this.$store.getters["organizations/getVoiceprintCollections"]
     },
+    // Current organization scope, forwarded to the collection cards so they can
+    // load their own speaker/sample stats.
+    orgScope() {
+      return this.$store.getters["organizations/getCurrentOrganizationScope"]
+    },
     // The org-wide collection(s) are applied automatically: surface them first
     // and pre-checked. Usually a single one, but handled as a set.
     organizationCollectionIds() {
@@ -417,14 +399,12 @@ export default {
     extractLocales(value) {
       return pickLocale(value, this.$i18n.locale)
     },
-    // Sub-label shown under a collection in the speaker-identification picker.
-    collectionHint(collection) {
-      if (collection.type === "organization") {
-        return this.$t(
-          "conversation.transcription.speaker_identification_org_hint",
-        )
-      }
-      return collection.description || ""
+    // Toggle a collection in/out of the per-service selection.
+    toggleCollection(collectionId) {
+      this.speakerIdSelected = this.speakerIdSelected.includes(collectionId)
+        ? this.speakerIdSelected.filter((id) => id !== collectionId)
+        : [...this.speakerIdSelected, collectionId]
+      this.select()
     },
     // Oui/Non segmented toggle for diarization.
     setDiarizationChoice(choice) {
@@ -498,7 +478,12 @@ export default {
       })
     },
   },
-  components: { ServiceHeader, SegmentedControl, FormInput },
+  components: {
+    ServiceHeader,
+    SegmentedControl,
+    FormInput,
+    DiarizationCollectionCard,
+  },
 }
 </script>
 <style lang="scss" scoped>
@@ -613,63 +598,6 @@ export default {
 
   &__list {
     margin-top: 0.5rem;
-  }
-
-  &__option {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.5rem;
-    padding: 0.5rem 0.625rem;
-    border: 1px solid var(--neutral-20);
-    border-radius: 6px;
-    cursor: pointer;
-    transition:
-      border-color 0.12s ease,
-      background 0.12s ease;
-
-    &:hover {
-      border-color: var(--primary-color);
-    }
-
-    &--selected {
-      border-color: var(--primary-color);
-      background: var(--primary-soft);
-    }
-  }
-
-  &__checkbox {
-    margin-top: 0.15rem;
-    flex: 0 0 auto;
-    cursor: pointer;
-  }
-
-  &__body {
-    display: flex;
-    flex-direction: column;
-    gap: 0.1rem;
-  }
-
-  &__title {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text-primary);
-  }
-
-  &__badge {
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    background: var(--neutral-10);
-    border-radius: 4px;
-    padding: 0.05rem 0.35rem;
-  }
-
-  &__hint {
-    font-size: 12px;
-    color: var(--text-secondary);
   }
 }
 </style>
