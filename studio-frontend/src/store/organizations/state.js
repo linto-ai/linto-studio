@@ -10,6 +10,12 @@ const state = {
   // API key. Kept separate from currentOrganization.users so that human
   // member listings (pickers, invitation UIs) stay unaffected.
   currentOrganizationAllUsers: [],
+  // Speaker-identification voiceprint collections for the current org.
+  // Loaded lazily and shared between the management UI (settings) and the
+  // media-creation service picker. Only the collection list lives here;
+  // per-collection drill-down (labels, samples, signatures) stays local to
+  // the components that need it. Reset on org change.
+  voiceprintCollections: [],
 }
 
 export default state

@@ -73,6 +73,30 @@ function initConversation(metadata, userId, job_id) {
   return conversation
 }
 
+// Detect whether speaker identification was requested for this conversation
+function speakerIdentificationRequested(conversation) {
+  const config = conversation?.metadata?.transcription?.transcriptionConfig
+  return Boolean(config?.diarizationConfig?.speakerIdentificationConfig)
+}
+
+// Map worker speaker name -> identification confidence score (Q7)
+function buildScoreMap(transcript) {
+  const scores = {}
+  if (Array.isArray(transcript.diarization_speakers)) {
+    for (const s of transcript.diarization_speakers) {
+      if (s && s.spk_id !== undefined && s.spk_id_score !== undefined) {
+        scores[s.spk_id] = s.spk_id_score
+      }
+    }
+  }
+  return scores
+}
+
+// A diarization tag that was not identified ("spk1", "spk2", ... or a raw UUID)
+function isUnidentifiedTag(name) {
+  return /^spk\d+$/i.test(name) || uuid.validate(name)
+}
+
 function transcriptionToConversation(transcript, conversation) {
   try {
     jsonTranscript = transcript
@@ -126,13 +150,30 @@ function transcriptionToConversation(transcript, conversation) {
       conversation.text.push(text_segment)
     })
 
-    let speaker_num = 1
-    conversation.speakers.map((speaker) => {
-      if (uuid.validate(speaker.speaker_name)) {
-        speaker.speaker_name = "speaker" + speaker_num
-        speaker_num++
-      }
-    })
+    if (speakerIdentificationRequested(conversation)) {
+      // Speaker identification mode: attach the confidence score to identified
+      // speakers (Q7) and rename the unidentified ones to "Unknown speaker N"
+      // (Q1). Identified speakers keep their label/member name.
+      const scores = buildScoreMap(transcript)
+      let unknown_num = 1
+      conversation.speakers.map((speaker) => {
+        if (scores[speaker.speaker_name] !== undefined) {
+          speaker.identification_score = scores[speaker.speaker_name]
+        }
+        if (isUnidentifiedTag(speaker.speaker_name)) {
+          speaker.speaker_name = "Unknown speaker " + unknown_num
+          unknown_num++
+        }
+      })
+    } else {
+      let speaker_num = 1
+      conversation.speakers.map((speaker) => {
+        if (uuid.validate(speaker.speaker_name)) {
+          speaker.speaker_name = "speaker" + speaker_num
+          speaker_num++
+        }
+      })
+    }
     return conversation
   } catch (err) {
     throw err

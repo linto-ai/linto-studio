@@ -23,9 +23,11 @@
             :disabled="formState === 'sending'"
             v-model="audioFiles" />
         </div>
-        <!-- folder -->
         <section>
+          <!-- folder -->
+
           <h2>{{ $t("conversation.folder_selection_title") }}</h2>
+
           <div class="form-field flex col">
             <label class="form-label">
               {{ $t("conversation.folder_selection_label") }}
@@ -33,46 +35,65 @@
             <FolderSelector v-model="selectedFolderId" />
           </div>
         </section>
-
-        <!-- rights -->
         <section>
-          <h2>{{ $t("conversation.conversation_creation_right_title") }}</h2>
-          <div class="form-field flex col">
-            <div class="flex align-center gap-small">
-              <label class="form-label">
-                {{ $t("conversation.conversation_creation_right_label") }}
-              </label>
-              <Tooltip
-                :text="$t('conversation.rights_info_tooltip')"
-                position="right">
-                <ph-icon name="info" size="16" />
-              </Tooltip>
-            </div>
-            <select
-              v-model="membersRight.value"
-              :disabled="selectedFolderIsPrivate">
-              <option
-                v-for="uright in membersRight.list"
-                :key="uright.value"
-                :value="uright.value">
-                {{ uright.txt }}
-              </option>
-            </select>
+          <h2>
+            {{ $t("conversation.conversation_creation_rights_security_title") }}
+          </h2>
+          <div class="flex row gap-medium wrap">
+            <FormInput
+              auto-width
+              :field="{
+                label: $t('conversation.conversation_creation_right_label'),
+                error: null,
+              }">
+              <template #content-after-label>
+                <Tooltip
+                  :text="$t('conversation.rights_info_tooltip')"
+                  position="right">
+                  <ph-icon name="info" size="16" />
+                </Tooltip>
+              </template>
+              <template #custom-input="{ id }">
+                <select
+                  :id="id"
+                  style="width: 100%"
+                  v-model="membersRight.value"
+                  :disabled="selectedFolderIsPrivate">
+                  <option
+                    v-for="uright in membersRight.list"
+                    :key="uright.value"
+                    :value="uright.value">
+                    {{ uright.txt }}
+                  </option>
+                </select>
+              </template>
+            </FormInput>
+
+            <SecurityLevelSelector
+              v-if="enableSecurityLevel"
+              v-model="securityLevel"
+              :minLevel="organizationSecurityLevel" />
           </div>
         </section>
 
-        <SecurityLevelSelector
-          v-if="enableSecurityLevel"
-          v-model="securityLevel"
-          :minLevel="organizationSecurityLevel" />
-
         <!-- services -->
         <section class="flex col gap-small">
-          <h2>{{ $t("conversation.transcription_service_title") }}</h2>
+          <div class="flex row align-center gap-small wrap">
+            <h2 class="create-services-title">
+              {{ $t("conversation.transcription_service_title") }}
+            </h2>
+            <span class="create-services-count" v-if="modelCount">
+              {{
+                $tc("conversation.transcription.model_count", modelCount, {
+                  count: modelCount,
+                })
+              }}
+            </span>
+          </div>
           <div class="error-field" v-if="fieldTranscriptionService.error">
             {{ fieldTranscriptionService.error }}
           </div>
-          <ConversationCreateServices
+          <ServiceSelector
             :serviceList="fieldTranscriptionService.list"
             :disabled="formState === 'sending'"
             :loading="fieldTranscriptionService.loading"
@@ -80,14 +101,35 @@
             v-model="fieldTranscriptionService.value" />
         </section>
 
-        <div
-          class="flex gap-small align-center conversation-create-footer"
-          style="margin-top: 1rem">
-          <div class="error-field flex1" v-if="formError">{{ formError }}</div>
-          <div v-else class="flex1"></div>
+        <div class="flex gap-small align-center conversation-create-footer">
+          <div
+            class="conversation-create-footer__summary"
+            v-if="audioFiles.length">
+            <span class="conversation-create-footer__icon">
+              <ph-icon name="music-note" size="md" />
+            </span>
+            <div class="conversation-create-footer__text">
+              <span
+                class="conversation-create-footer__file"
+                :title="footerFileLabel">
+                {{ footerFileLabel }}
+              </span>
+              <span
+                v-if="serviceSummary"
+                class="conversation-create-footer__model"
+                :title="serviceSummary">
+                {{ serviceSummary }}
+              </span>
+            </div>
+          </div>
+          <div class="flex1"></div>
+          <div class="error-field" v-if="formError">{{ formError }}</div>
           <Button
             type="submit"
             variant="primary"
+            icon="play"
+            iconWeight="fill"
+            :disabled="audioFiles.length === 0"
             :loading="formState === 'sending'"
             :label="formSubmitLabel"></Button>
         </div>
@@ -131,13 +173,14 @@ import { testService } from "@/tools/fields/testService.js"
 
 import LayoutV2 from "@/layouts/v2-layout.vue"
 import ConversationCreateAudio from "@/components/ConversationCreateAudio.vue"
-import ConversationCreateServices from "@/components/ConversationCreateServices.vue"
+import ServiceSelector from "@/components/serviceSelector/ServiceSelector.vue"
 import Tabs from "@/components/molecules/Tabs.vue"
 import SessionCreateContent from "@/components/SessionCreateContent.vue"
 import QuickSessionCreateContent from "@/components/QuickSessionCreateContent.vue"
 import VisioCreateContent from "@/components/VisioCreateContent.vue"
 import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
 import FolderSelector from "@/components/FolderSelector.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 
 export default {
   mixins: [
@@ -192,6 +235,23 @@ export default {
   computed: {
     transcriberProfilesQuickMeeting() {
       return this.transcriberProfiles.filter((t) => t.quickMeeting)
+    },
+    // Number of transcription models available (for the section subtitle).
+    modelCount() {
+      return this.fieldTranscriptionService.loading
+        ? 0
+        : this.fieldTranscriptionService.list.length
+    },
+    // Sticky-footer left side: the file name (single) or "N fichiers".
+    footerFileLabel() {
+      const count = this.audioFiles.length
+      if (count === 0) return ""
+      if (count === 1) return this.audioFiles[0].value
+      return this.$tc("conversation.transcription.file_count", count, { count })
+    },
+    // Sticky-footer model summary, emitted by the selected service card.
+    serviceSummary() {
+      return this.fieldTranscriptionService.value?.summary || ""
     },
     selectedFolderIsPrivate() {
       if (!this.selectedFolderId) return false
@@ -255,8 +315,7 @@ export default {
       if (!this.canCreateSession) return res
 
       const loading = this.loadingSessionData
-      const quickMeetingDisabled =
-        this.transcriberProfilesQuickMeeting.length === 0 || loading
+      const quickMeetingDisabled = loading
 
       if (
         this.isAtLeastQuickMeeting &&
@@ -349,13 +408,14 @@ export default {
   components: {
     LayoutV2,
     ConversationCreateAudio,
-    ConversationCreateServices,
+    ServiceSelector,
     Tabs,
     SessionCreateContent,
     QuickSessionCreateContent,
     VisioCreateContent,
     SecurityLevelSelector,
     FolderSelector,
+    FormInput,
   },
 }
 </script>

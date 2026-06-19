@@ -5,4 +5,5 @@ export const ORGANIZATION_PERMISSIONS = Object.freeze({
   MICROPHONE: 4,
   BOT: 8,
   SESSION: 16,
+  SPEAKER_IDENTIFICATION: 32,
 })

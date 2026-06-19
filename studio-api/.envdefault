@@ -23,7 +23,7 @@ DB_PASS=example
 DB_NAME=conversations
 
 # Request a specific version of the database (optional)
-DB_MIGRATION_TARGET=1.8.5
+DB_MIGRATION_TARGET=1.8.6
 
 # STT Config
 GATEWAY_SERVICES=https://<domain>
@@ -70,6 +70,28 @@ NO_REPLY_EMAIL=
 VOLUME_FOLDER=storages
 VOLUME_AUDIO_PATH=audios
 VOLUME_PROFILE_PICTURE_PATH=pictures
+VOLUME_VOICE_SIGNATURES_PATH=voice_signatures
+
+# --- Speaker identification ---
+# Master switch: mounts the speaker identification routes, starts the Qdrant
+# reconciliation worker and enables the transcription injection.
+ENABLE_SPEAKER_IDENTIFICATION=false
+# Gateway endpoint of the transcription service exposing /speaker-identification/*.
+# Leave empty to auto-discover the first diarization service advertising the
+# speaker_identification capability via GATEWAY_SERVICES/gateway/services.
+SPEAKER_ID_SERVICE_ENDPOINT=
+# Optional shared token; when set it is sent as X-Speaker-Id-Token and must
+# match SPEAKER_ID_API_TOKEN on the transcription service.
+SPEAKER_ID_API_TOKEN=
+# Version of the consent text the user validated (bump to force re-consent).
+SPEAKER_ID_CONSENT_VERSION=1
+# Reconciliation worker interval (seconds) for retrying failed Qdrant writes.
+SPEAKER_ID_SYNC_RETRY_INTERVAL=60
+# Quantitative limits (cf. docs/speaker-identification 05 §5)
+SPEAKER_ID_MAX_COLLECTIONS_PER_ORG=20
+SPEAKER_ID_MAX_LABELS_PER_COLLECTION=100
+SPEAKER_ID_MAX_SAMPLES_PER_LABEL=10
+SPEAKER_ID_MAX_TOTAL_DURATION_PER_LABEL=600
 
 DISABLE_USER_CREATION=false
 DISABLE_USER_INVITATION=false

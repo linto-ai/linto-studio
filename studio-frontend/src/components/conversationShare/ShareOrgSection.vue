@@ -1,25 +1,31 @@
 <template>
   <section class="share-org">
     <header class="share-org__header">
-      <h4 class="share-org__title">
-        {{ $t("share_menu.organization_members") }}
-        <span class="share-org__count">({{ members.length }})</span>
-      </h4>
+      <ShareSectionHeader
+        icon="users-three"
+        :title="$t('share_menu.organization_members')"
+        :count="members.length" />
 
-      <FormInput :field="defaultField">
-        <template #custom-input>
-          <RightSelect
-            :value="defaultRight"
-            :withMultiple="defaultRight === MULTIPLE_VALUE"
-            @input="$emit('update:defaultRight', $event)" />
-        </template>
-      </FormInput>
+      <div class="share-org__default">
+        <div class="share-org__default-text">
+          <span class="share-org__subtitle">
+            {{ $t("share_menu.default_right_label") }}
+          </span>
+          <span class="share-org__hint">
+            {{ $t("share_menu.applied_to_every_member") }}
+          </span>
+        </div>
+        <RightSelect
+          :value="defaultRight"
+          :withMultiple="defaultRight === MULTIPLE_VALUE"
+          @input="$emit('update:defaultRight', $event)" />
+      </div>
     </header>
 
     <div class="share-org__exceptions">
       <h5 class="share-org__subtitle">
         {{ $t("share_menu.exceptions_label") }}
-        <span class="share-org__count">({{ exceptions.length }})</span>
+        <CountBadge>{{ exceptions.length }}</CountBadge>
       </h5>
 
       <GenericTable
@@ -54,18 +60,16 @@
         </template>
       </GenericTable>
 
-      <p v-else class="share-org__empty">
+      <NotificationBanner v-else variant="neutral" align="start" icon="info">
         {{ $t("share_menu.no_exceptions") }}
-      </p>
+      </NotificationBanner>
     </div>
 
-    <details class="share-org__all" v-if="membersAtDefault.length > 0">
-      <summary class="share-org__all-summary">
-        {{
-          $t("share_menu.show_other_members", {
-            count: membersAtDefault.length,
-          })
-        }}
+    <details class="share-org__disclosure" v-if="membersAtDefault.length > 0">
+      <summary class="share-org__disclosure-summary">
+        <PhIcon name="caret-right" size="xs" class="share-org__chevron" />
+        <span>{{ $t("share_menu.other_members_label") }}</span>
+        <CountBadge>{{ membersAtDefault.length }}</CountBadge>
       </summary>
       <GenericTable
         :columns="allMembersColumns"
@@ -91,9 +95,11 @@
       </GenericTable>
     </details>
 
-    <details class="share-org__all" v-if="admins.length > 0">
-      <summary class="share-org__all-summary">
-        {{ $t("share_menu.show_admins", { count: admins.length }) }}
+    <details class="share-org__disclosure" v-if="admins.length > 0">
+      <summary class="share-org__disclosure-summary">
+        <PhIcon name="caret-right" size="xs" class="share-org__chevron" />
+        <span>{{ $t("share_menu.admins_label") }}</span>
+        <CountBadge>{{ admins.length }}</CountBadge>
       </summary>
       <GenericTable
         :columns="allMembersColumns"
@@ -117,9 +123,12 @@
 <script>
 import GenericTable from "@/components/molecules/GenericTable.vue"
 import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
-import FormInput from "@/components/molecules/FormInput.vue"
 import Loading from "@/components/atoms/Loading.vue"
 import Button from "@/components/atoms/Button.vue"
+import PhIcon from "@/components/atoms/PhIcon.vue"
+import CountBadge from "@/components/atoms/CountBadge.vue"
+import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
+import ShareSectionHeader from "./ShareSectionHeader.vue"
 import RightSelect from "./RightSelect.vue"
 import { ORGANIZATION_ROLES } from "@/const/organizationRoles.js"
 
@@ -133,9 +142,12 @@ export default {
   components: {
     GenericTable,
     UserInfoInline,
-    FormInput,
     Loading,
     Button,
+    PhIcon,
+    CountBadge,
+    NotificationBanner,
+    ShareSectionHeader,
     RightSelect,
   },
   props: {
@@ -149,9 +161,6 @@ export default {
     return { MULTIPLE_VALUE }
   },
   computed: {
-    defaultField() {
-      return { label: this.$t("share_menu.default_right_label") }
-    },
     membersAtDefault() {
       const exceptionIds = new Set(this.exceptions.map((u) => u._id))
       return this.members.filter((u) => !exceptionIds.has(u._id))
@@ -197,7 +206,7 @@ export default {
   gap: 1rem;
 
   border-radius: 4px;
-  padding: 0.5rem;
+  padding: 0.75rem;
   border: 1px solid var(--neutral-20);
   box-shadow: var(--shadow-1);
   background-color: var(--background-primary);
@@ -205,59 +214,73 @@ export default {
   &__header {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 1rem;
   }
 
-  &__title,
   &__subtitle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     margin: 0;
     color: var(--text-primary);
-  }
-
-  &__title {
-    font-size: 1rem;
-    font-weight: 600;
-  }
-
-  &__subtitle {
     font-size: 0.875rem;
     font-weight: 600;
   }
 
-  &__count {
-    color: var(--text-secondary);
+  &__default {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  &__default-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  &__hint {
+    font-size: 0.75rem;
     font-weight: 400;
+    color: var(--text-secondary);
   }
 
   &__exceptions {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--neutral-20);
   }
 
-  &__empty {
-    margin: 0;
-    font-size: 0.875rem;
-    color: var(--text-secondary);
-    font-style: italic;
-  }
-
-  &__all {
-    //border-top: 1px solid var(--neutral-20);
-    //padding-top: 0.75rem;
-  }
-
-  &__all-summary {
+  &__disclosure-summary {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     cursor: pointer;
     font-size: 0.875rem;
     font-weight: 600;
-    color: var(--text-primary);
+    color: var(--primary-color);
     padding: 0.25rem 0;
     user-select: none;
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
 
     &:hover {
-      color: var(--primary-color);
+      text-decoration: underline;
     }
+  }
+
+  &__chevron {
+    transition: transform 0.15s ease;
+  }
+
+  &__disclosure[open] &__chevron {
+    transform: rotate(90deg);
   }
 }
 </style>

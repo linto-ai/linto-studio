@@ -21,6 +21,11 @@
       :field="fieldSessionPermission"
       v-model="fieldSessionPermission.value"></FormCheckbox>
 
+    <FormCheckbox
+      v-if="speakerIdentificationEnabled"
+      :field="fieldSpeakerIdentificationPermission"
+      v-model="fieldSpeakerIdentificationPermission.value"></FormCheckbox>
+
     <div>
       <Button
         v-if="isAdmin || isSystemAdministrator"
@@ -47,6 +52,7 @@ import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 
 import EMPTY_FIELD from "@/const/emptyField"
+import { getEnv } from "@/tools/getEnv"
 
 import { apiAdminUpdateOrganisation } from "@/api/organisation.js"
 
@@ -100,8 +106,22 @@ export default {
           "organisation.organization_permissions.session_permission",
         ),
       },
+      fieldSpeakerIdentificationPermission: {
+        ...EMPTY_FIELD,
+        value: this.hasSpeakerIdentificationPermission(
+          this.currentOrganization.permissions,
+        ),
+        label: this.$t(
+          "organisation.organization_permissions.speaker_identification_permission",
+        ),
+      },
       organizationId: this.currentOrganization._id,
     }
+  },
+  computed: {
+    speakerIdentificationEnabled() {
+      return getEnv("VUE_APP_ENABLE_SPEAKER_IDENTIFICATION") === "true"
+    },
   },
   mounted() {},
   methods: {
@@ -114,6 +134,7 @@ export default {
           microphone: this.fieldMicrophonePermission.value,
           bot: this.fieldBotPermission.value,
           session: this.fieldSessionPermission.value,
+          speakerIdentification: this.fieldSpeakerIdentificationPermission.value,
         }),
       }
 

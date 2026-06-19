@@ -14,7 +14,7 @@ const DEFAULT_MEMBER_RIGHTS = RIGHTS.READ + RIGHTS.COMMENT
 const SECURITY_LEVELS = require(
   `${process.cwd()}/lib/dao/conversation/securityLevels`,
 )
-const { storeFile } = require(
+const { storeFile, STORE_TYPE } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 const {
@@ -205,7 +205,7 @@ async function initCaptionsForConversation(sessionData, name) {
             name: `${audioId}.${audioFormat}`,
             filepath: `${process.env.VOLUME_AUDIO_SESSION_PATH}/${audioId}.${audioFormat}`,
           }
-          const fileTransform = await storeFile(file, "audio_session")
+          const fileTransform = await storeFile(file, STORE_TYPE.AUDIO_SESSION)
           caption.metadata.audio = generateAudioMetadata(
             fileTransform.filename.split(".")[0],
             "mp3",

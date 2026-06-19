@@ -1,0 +1,413 @@
+{
+  "/api/organizations/{organizationId}/voiceprint-collections": {
+    "get": {
+      "tags": ["speaker identification - organization"],
+      "summary": "List voiceprint collections",
+      "description": "Returns all voiceprint collections for the organization. Automatically creates the organization-type collection if it does not exist.",
+      "parameters": [
+        { "name": "organizationId", "in": "path", "required": true, "schema": { "type": "string" }, "description": "Organization ID" }
+      ],
+      "responses": {
+        "200": {
+          "description": "List of voiceprint collections",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/VoiceprintCollection" }
+              }
+            }
+          }
+        },
+        "401": { "$ref": "#/components/responses/Unauthorized" }
+      }
+    },
+    "post": {
+      "tags": ["speaker identification - organization"],
+      "summary": "Create a voiceprint collection",
+      "parameters": [
+        { "name": "organizationId", "in": "path", "required": true, "schema": { "type": "string" }, "description": "Organization ID" }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string", "maxLength": 200 },
+                "description": { "type": "string", "maxLength": 1000 },
+                "storageMode": { "type": "string", "enum": ["audio", "embeddings"], "default": "audio" }
+              },
+              "required": ["name"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Collection created",
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/VoiceprintCollection" }
+            }
+          }
+        },
+        "400": { "$ref": "#/components/responses/BadRequest" },
+        "401": { "$ref": "#/components/responses/Unauthorized" }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/voiceprint-collections/{collectionId}": {
+    "get": {
+      "tags": ["speaker identification - organization"],
+      "summary": "Get a voiceprint collection",
+      "parameters": [
+        { "name": "organizationId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "collectionId", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "responses": {
+        "200": {
+          "description": "Collection details",
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/VoiceprintCollection" }
+            }
+          }
+        },
+        "401": { "$ref": "#/components/responses/Unauthorized" },
+        "404": { "$ref": "#/components/responses/NotFound" }
+      }
+    },
+    "patch": {
+      "tags": ["speaker identification - organization"],
+      "summary": "Update a voiceprint collection",
+      "parameters": [
+        { "name": "organizationId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "collectionId", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string", "maxLength": 200 },
+                "description": { "type": "string", "maxLength": 1000 }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": { "description": "Collection updated" },
+        "304": { "description": "Nothing to update" },
+        "401": { "$ref": "#/components/responses/Unauthorized" },
+        "404": { "$ref": "#/components/responses/NotFound" }
+      }
+    },
+    "delete": {
+      "tags": ["speaker identification - organization"],
+      "summary": "Delete a voiceprint collection",
+      "description": "Deletes the collection and cascade-deletes all labels, voice samples, and associated audio files.",
+      "parameters": [
+        { "name": "organizationId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "collectionId", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "responses": {
+        "200": { "description": "Collection deleted" },
+        "401": { "$ref": "#/components/responses/Unauthorized" },
+        "404": { "$ref": "#/components/responses/NotFound" }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/voiceprint-collections/{collectionId}/labels": {
+    "get": {
+      "tags": ["speaker identification - organization"],
+      "summary": "List labels in a collection",
+      "parameters": [
+        { "name": "organizationId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "collectionId", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "responses": {
+        "200": {
+          "description": "List of speaker labels",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/SpeakerLabel" }
+              }
+            }
+          }
+        },
+        "401": { "$ref": "#/components/responses/Unauthorized" },
+        "404": { "$ref": "#/components/responses/NotFound" }
+      }
+    },
+    "post": {
+      "tags": ["speaker identification - organization"],
+      "summary": "Create a speaker label",
+      "parameters": [
+        { "name": "organizationId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "collectionId", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string", "maxLength": 200 }
+              },
+              "required": ["name"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": { "description": "Label created" },
+        "400": { "$ref": "#/components/responses/BadRequest" },
+        "401": { "$ref": "#/components/responses/Unauthorized" },
+        "409": { "description": "Label name already exists in this collection" }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/voiceprint-collections/{collectionId}/labels/{labelId}": {
+    "get": {
+      "tags": ["speaker identification - organization"],
+      "summary": "Get a speaker label",
+      "parameters": [
+        { "name": "organizationId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "collectionId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "labelId", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "responses": {
+        "200": { "description": "Label details" },
+        "401": { "$ref": "#/components/responses/Unauthorized" },
+        "404": { "$ref": "#/components/responses/NotFound" }
+      }
+    },
+    "patch": {
+      "tags": ["speaker identification - organization"],
+      "summary": "Update a speaker label",
+      "parameters": [
+        { "name": "organizationId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "collectionId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "labelId", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string", "maxLength": 200 }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": { "description": "Label updated" },
+        "304": { "description": "Nothing to update" },
+        "401": { "$ref": "#/components/responses/Unauthorized" },
+        "404": { "$ref": "#/components/responses/NotFound" },
+        "409": { "description": "Label name already exists in this collection" }
+      }
+    },
+    "delete": {
+      "tags": ["speaker identification - organization"],
+      "summary": "Delete a speaker label",
+      "description": "Deletes the label and cascade-deletes all voice samples and audio files.",
+      "parameters": [
+        { "name": "organizationId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "collectionId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "labelId", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "responses": {
+        "200": { "description": "Label deleted" },
+        "401": { "$ref": "#/components/responses/Unauthorized" },
+        "404": { "$ref": "#/components/responses/NotFound" }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/voiceprint-collections/{collectionId}/labels/{labelId}/voice-samples": {
+    "get": {
+      "tags": ["speaker identification - organization"],
+      "summary": "List voice samples for a label",
+      "parameters": [
+        { "name": "organizationId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "collectionId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "labelId", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "responses": {
+        "200": {
+          "description": "List of voice samples",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/VoiceSample" }
+              }
+            }
+          }
+        },
+        "401": { "$ref": "#/components/responses/Unauthorized" },
+        "404": { "$ref": "#/components/responses/NotFound" }
+      }
+    },
+    "post": {
+      "tags": ["speaker identification - organization"],
+      "summary": "Upload a voice sample for a label",
+      "parameters": [
+        { "name": "organizationId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "collectionId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "labelId", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "audio": { "type": "string", "format": "binary" },
+                "audioDuration": { "type": "number" }
+              },
+              "required": ["audio"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": { "description": "Sample created" },
+        "400": { "$ref": "#/components/responses/BadRequest" },
+        "401": { "$ref": "#/components/responses/Unauthorized" },
+        "415": { "description": "Unsupported audio format" }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/voiceprint-collections/{collectionId}/labels/{labelId}/voice-samples/{voiceSampleId}": {
+    "get": {
+      "tags": ["speaker identification - organization"],
+      "summary": "Get a specific voice sample",
+      "parameters": [
+        { "name": "organizationId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "collectionId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "labelId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "voiceSampleId", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "responses": {
+        "200": { "description": "Sample details" },
+        "401": { "$ref": "#/components/responses/Unauthorized" },
+        "404": { "$ref": "#/components/responses/NotFound" }
+      }
+    },
+    "delete": {
+      "tags": ["speaker identification - organization"],
+      "summary": "Delete a voice sample",
+      "parameters": [
+        { "name": "organizationId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "collectionId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "labelId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "voiceSampleId", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "responses": {
+        "200": { "description": "Sample deleted" },
+        "401": { "$ref": "#/components/responses/Unauthorized" },
+        "404": { "$ref": "#/components/responses/NotFound" }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/voiceprint-collections/{collectionId}/labels/{labelId}/voice-samples/{voiceSampleId}/audio": {
+    "get": {
+      "tags": ["speaker identification - organization"],
+      "summary": "Stream audio file of a voice sample",
+      "parameters": [
+        { "name": "organizationId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "collectionId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "labelId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "voiceSampleId", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "responses": {
+        "200": { "description": "Audio file stream", "content": { "audio/*": {} } },
+        "401": { "$ref": "#/components/responses/Unauthorized" },
+        "404": { "$ref": "#/components/responses/NotFound" }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/voiceprint-collections/{collectionId}/opted-in-members": {
+    "get": {
+      "tags": ["speaker identification - organization"],
+      "summary": "List opted-in members",
+      "description": "Returns organization members who have opted in to share their voice signature. Only available for organization-type collections.",
+      "parameters": [
+        { "name": "organizationId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "collectionId", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "responses": {
+        "200": {
+          "description": "List of opted-in members with sample stats",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "userId": { "type": "string" },
+                    "name": { "type": "string" },
+                    "samplesCount": { "type": "integer" },
+                    "totalDuration": { "type": "number" },
+                    "created": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": { "$ref": "#/components/responses/Unauthorized" },
+        "404": { "$ref": "#/components/responses/NotFound" }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/voiceprint-collections/{collectionId}/opted-in-members/{userId}/voice-samples": {
+    "get": {
+      "tags": ["speaker identification - organization"],
+      "summary": "List voice samples of an opted-in member",
+      "parameters": [
+        { "name": "organizationId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "collectionId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "userId", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "responses": {
+        "200": {
+          "description": "List of voice samples",
+          "content": {
+            "application/json": {
+              "schema": { "type": "array", "items": { "$ref": "#/components/schemas/VoiceSample" } }
+            }
+          }
+        },
+        "401": { "$ref": "#/components/responses/Unauthorized" },
+        "404": { "$ref": "#/components/responses/NotFound" }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/voiceprint-collections/{collectionId}/opted-in-members/{userId}/voice-samples/{sampleId}/audio": {
+    "get": {
+      "tags": ["speaker identification - organization"],
+      "summary": "Stream audio of an opted-in member's voice sample",
+      "parameters": [
+        { "name": "organizationId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "collectionId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "userId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "sampleId", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "responses": {
+        "200": { "description": "Audio file stream", "content": { "audio/*": {} } },
+        "401": { "$ref": "#/components/responses/Unauthorized" },
+        "404": { "$ref": "#/components/responses/NotFound" }
+      }
+    }
+  }
+}

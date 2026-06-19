@@ -1,0 +1,14 @@
+{
+  "SpeakerLabel": {
+    "type": "object",
+    "properties": {
+      "_id": { "type": "string" },
+      "created": { "type": "string", "format": "date-time" },
+      "last_update": { "type": "string", "format": "date-time" },
+      "name": { "type": "string" },
+      "collectionId": { "type": "string" },
+      "organizationId": { "type": "string" },
+      "hasVoiceprint": { "type": "boolean" }
+    }
+  }
+}

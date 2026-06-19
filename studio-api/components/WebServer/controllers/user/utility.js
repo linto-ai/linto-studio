@@ -8,12 +8,19 @@ const CONVERSATION_RIGHTS = require(
   `${process.cwd()}/lib/dao/conversation/rights`,
 )
 
-const { deleteAudioFileIfOrphaned } = require(
+const {
+  deleteAudioFileIfOrphaned,
+  cascadeDeleteSampleFiles,
+} = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 
 const orgaUtility = require(
   `${process.cwd()}/components/WebServer/controllers/organization/utility`,
+)
+
+const triggers = require(
+  `${process.cwd()}/components/WebServer/controllers/speakerIdentification/triggers`,
 )
 
 async function getUsersListByConversation(userId, conversation, organiaztion) {
@@ -154,6 +161,27 @@ async function removeUserFromPlatform(userId) {
         }
       }),
     )
+
+    // Delete all user voice samples, audio files, voiceprint, and opt-in
+    // preferences, then remove the "user:{userId}" points from every Qdrant
+    // collection the user had opted in (RGPD cascade, cf. 04 §6).
+    try {
+      const samples = await model.voiceSamples.getByUserId(userId)
+      // Capture the opt-ins before deleting them: they tell us which
+      // Organization collections still hold the user's point.
+      const optIns = await model.voiceOptIns.getByUserId(userId)
+      cascadeDeleteSampleFiles(samples)
+      await Promise.all([
+        model.voiceSamples.deleteAllFromUser(userId),
+        model.voiceOptIns.deleteAllFromUser(userId),
+        model.voiceprints.deleteAllFromUser(userId),
+      ])
+      // Remove the "user:{userId}" point from every opted-in organization
+      // (fire-and-forget, queued on failure).
+      triggers.removeUserEverywhere(userId, optIns)
+    } catch (err) {
+      debug("Error cleaning up user voice samples:", err)
+    }
 
     return true
   } catch (error) {

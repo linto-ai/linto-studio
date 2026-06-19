@@ -59,10 +59,12 @@
         </div>
       </section>
 
-      <SecurityLevelSelector
-        v-if="enableSecurityLevel"
-        v-model="securityLevel"
-        :minLevel="organizationSecurityLevel" />
+      <section v-if="enableSecurityLevel">
+        <h2>{{ $t("conversation.conversation_creation_security_title") }}</h2>
+        <SecurityLevelSelector
+          v-model="securityLevel"
+          :minLevel="organizationSecurityLevel" />
+      </section>
 
       <!-- Channels section -->
       <section class="flex col">
@@ -117,7 +119,7 @@
         <div v-else class="flex1"></div>
         <Button
           type="button"
-          :disabled="formState === 'sending'"
+          :disabled="formState === 'sending' || startDisabled"
           variant="secondary"
           @click="saveTemplate"
           :label="$t('session.create_page.save_as_template_button')" />
@@ -125,6 +127,7 @@
         <Button
           type="submit"
           variant="primary"
+          :disabled="startDisabled"
           :loading="formState === 'sending'"
           :label="$t('session.create_page.submit_button')" />
       </div>
@@ -341,6 +344,11 @@ export default {
     },
   },
   computed: {
+    // A session needs a name and at least one channel before it can be started
+    // or saved as a template.
+    startDisabled() {
+      return !this.name.value || this.channels.length === 0
+    },
     enableSecurityLevel() {
       return getEnv("VUE_APP_ENABLE_SECURITY_LEVEL") === "true"
     },

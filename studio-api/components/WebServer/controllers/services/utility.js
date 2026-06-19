@@ -20,9 +20,19 @@ async function listSaasServices(scope, securityLevel = null) {
 
     const saas_service_info = await axios.get(host)
 
-    // Unfiltered: security level is enforced at action time, not on listing
+    // Filter transcription services by security level (a service may only be
+    // used for a conversation whose level it meets). When no level is provided
+    // (securityLevel === null), nothing is filtered out.
     for (const transcription_service of saas_service_info.transcription) {
-      services.push(transcription_service)
+      if (
+        securityLevel === null ||
+        SECURITY_LEVELS.isAllowed(
+          transcription_service.security_level,
+          securityLevel,
+        )
+      ) {
+        services.push(transcription_service)
+      }
     }
 
     // NLP services are not filtered
@@ -34,6 +44,26 @@ async function listSaasServices(scope, securityLevel = null) {
   } catch (err) {
     throw new ServiceError("Gateway service unreachable")
   }
+}
+
+// Resolve a transcription service descriptor (carrying security_level) from the
+// endpoint the client sent. Used to enforce the confidentiality gate
+// server-side. Returns null when no service exposes that endpoint.
+async function getTranscriptionServiceByEndpoint(endpoint) {
+  const services = await listSaasServices()
+  const norm = (e) =>
+    String(e || "")
+      .replace(/^\/+/, "")
+      .replace(/\/+$/, "")
+  const target = norm(endpoint)
+  if (!target) return null
+  return (
+    services.find(
+      (service) =>
+        Array.isArray(service.endpoints) &&
+        service.endpoints.some((ep) => norm(ep.endpoint) === target),
+    ) || null
+  )
 }
 
 /**
@@ -111,24 +141,8 @@ async function listLlmServices(organizationId = null, securityLevel = null) {
   }
 }
 
-function stripLeadingSlash(value) {
-  return typeof value === "string" ? value.replace(/^\/+/, "") : value
+module.exports = {
+  listSaasServices,
+  listLlmServices,
+  getTranscriptionServiceByEndpoint,
 }
-
-async function getSaasServiceByEndpoint(endpoint, scope = null) {
-  if (!endpoint) return null
-  const target = stripLeadingSlash(endpoint)
-  const services = await listSaasServices(scope)
-  return (
-    services.find(
-      (service) =>
-        service.serviceName === endpoint ||
-        (Array.isArray(service.endpoints) &&
-          service.endpoints.some(
-            (e) => stripLeadingSlash(e.endpoint) === target,
-          )),
-    ) || null
-  )
-}
-
-module.exports = { listSaasServices, listLlmServices, getSaasServiceByEndpoint }

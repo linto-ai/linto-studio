@@ -54,6 +54,30 @@ module.exports = (webServer) => {
     "/api/publication": require("./api/publication/publication")(webServer),
   }
 
+  if (process.env.ENABLE_SPEAKER_IDENTIFICATION === "true") {
+    api_routes["/api/users/self/voice"] =
+      require("./api/users/userVoiceOptIn")(webServer)
+    api_routes["/api/organizations/:organizationId/voiceprint-collections"] =
+      require("./api/organization/voiceprintCollection")(webServer)
+    api_routes[
+      "/api/organizations/:organizationId/voiceprint-collections/:collectionId/labels"
+    ] = require("./api/organization/speakerLabel")(webServer)
+    api_routes[
+      "/api/organizations/:organizationId/voiceprint-collections/:collectionId/labels/:labelId/voice-samples"
+    ] = require("./api/organization/voiceSample")(webServer)
+    api_routes[
+      "/api/organizations/:organizationId/voiceprint-collections/:collectionId/opted-in-members"
+    ] = require("./api/organization/optedInMembers")(webServer)
+    api_routes[
+      "/api/organizations/:organizationId/speaker-identification"
+    ] = require("./api/organization/speakerIdentificationStatus")(webServer)
+
+    // Start the Qdrant reconciliation worker (replays failed writes)
+    require(
+      `${process.cwd()}/components/WebServer/controllers/speakerIdentification/sync`,
+    ).start()
+  }
+
   let proxy_routes = []
   if (process.env.SESSION_API_ENDPOINT !== "") {
     proxy_routes.push(require("./proxy/sessions/session.js")(webServer))

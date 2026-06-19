@@ -141,6 +141,11 @@ export default {
       type: Boolean,
       default: false,
     },
+    // Size the field to its content instead of stretching to full width.
+    autoWidth: {
+      type: Boolean,
+      default: false,
+    },
     code: {
       type: Boolean,
       default: false,
@@ -176,6 +181,7 @@ export default {
         "form-field--disabled": this.disabled,
         "form-field--error": this.isInError,
         "form-field--with-confirmation": this.withConfirmation,
+        "form-field--auto-width": this.autoWidth,
       }
     },
     inputClasses() {
@@ -280,6 +286,11 @@ export default {
   flex-direction: column;
   gap: 0.5rem;
   width: 100%;
+
+  // Shrink to content (opt-in) instead of the default full width.
+  &--auto-width {
+    width: auto;
+  }
 
   /* Header with label */
   &__header {

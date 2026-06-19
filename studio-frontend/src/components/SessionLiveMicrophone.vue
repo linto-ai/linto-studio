@@ -28,11 +28,16 @@
     </template>
     <div class="relative flex flex1 col">
       <SessionLiveNG
+        v-if="isFirstChannelLive"
         ref="sessionLiveNG"
         :currentOrganizationScope="currentOrganizationScope"
         :session="session"
         :websocketInstance="$apiEventWS" />
-
+      <SessionChannelMicrophoneOffline
+        v-else
+        :speaking="speaking"
+        @toggleMicrophone="toggleMicrophone"
+        :isRecording="isRecording" />
       <Modal
         :withActions="false"
         :title="$t('session.microphone_setup_title')"
@@ -57,6 +62,7 @@ import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
 import SessionLiveActions from "@/components/SessionLiveActions.vue"
 
 import V2Layout from "@/layouts/v2-layout.vue"
+import SessionChannelMicrophoneOffline from "./SessionChannelMicrophoneOffline.vue"
 
 export default {
   mixins: [microphoneMixin, sessionMicrophoneMixin],
@@ -90,6 +96,9 @@ export default {
         },
       ]
     },
+    isFirstChannelLive() {
+      return this?.session?.channels?.[0]?.enableLiveTranscripts
+    },
   },
   methods: {
     startRecordFromMicrophone({ deviceId }) {
@@ -105,6 +114,7 @@ export default {
     Modal,
     SessionSetupMicrophone,
     SessionLiveActions,
+    SessionChannelMicrophoneOffline,
   },
 }
 </script>

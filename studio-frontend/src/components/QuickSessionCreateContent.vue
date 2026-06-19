@@ -19,10 +19,12 @@
         :profilesList="transcriberProfiles" />
     </section> -->
 
-    <SecurityLevelSelector
-      v-if="enableSecurityLevel"
-      v-model="securityLevel"
-      :minLevel="organizationSecurityLevel" />
+    <section v-if="enableSecurityLevel">
+      <h2>{{ $t("conversation.conversation_creation_security_title") }}</h2>
+      <SecurityLevelSelector
+        v-model="securityLevel"
+        :minLevel="organizationSecurityLevel" />
+    </section>
 
     <QuickSessionSettings
       :transcriberProfiles="transcriberProfiles"
@@ -159,8 +161,6 @@ export default {
         const channels = [
           {
             name: "Main",
-            transcriberProfileId: settings.selectedProfile.id,
-            translations: settings.selectedProfile.translations ?? [],
             diarization: settings.diarization ?? false,
             keepAudio: settings.keepAudio,
             compressAudio: !settings.offlineTranscription,
@@ -171,6 +171,11 @@ export default {
             },
           },
         ]
+
+        if (settings.selectedProfile) {
+          channels[0].transcriberProfileId = settings.selectedProfile?.id
+          channels[0].translations = settings.selectedProfile?.translations
+        }
         const res = await apiCreateQuickSession(this.currentOrganizationScope, {
           channels: channels,
           meta: {

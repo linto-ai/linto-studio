@@ -1,0 +1,267 @@
+const model = require(`${process.cwd()}/lib/mongodb/models`)
+
+const {
+  SpeakerLabelError,
+  SpeakerLabelNotFound,
+  SpeakerLabelConflict,
+  VoiceprintCollectionNotFound,
+} = require(
+  `${process.cwd()}/components/WebServer/error/exception/speakerIdentification`,
+)
+
+const { verifyOwnership, sanitizeName } = require(
+  `${process.cwd()}/components/WebServer/routecontrollers/organization/voiceprintCollection`,
+)
+const { cascadeDeleteSampleFiles, STORAGE_MODE } = require(
+  `${process.cwd()}/components/WebServer/controllers/files/store`,
+)
+const triggers = require(
+  `${process.cwd()}/components/WebServer/controllers/speakerIdentification/triggers`,
+)
+const limits = require(`${process.cwd()}/lib/dao/speakerIdentification/limits`)
+
+async function getSpeakerLabels(req, res, next) {
+  try {
+    await verifyOwnership(
+      model.voiceprintCollections,
+      req.params.collectionId,
+      req.params.organizationId,
+      VoiceprintCollectionNotFound,
+    )
+
+    const labels = await model.speakerLabels.getByCollectionId(
+      req.params.collectionId,
+    )
+
+    // Enrich each label with its number of voice samples (derived field,
+    // computed in a single aggregation rather than one query per label).
+    const counts = await model.voiceSamples.countBySpeakerLabelForCollection(
+      req.params.collectionId,
+    )
+    const countMap = new Map(counts.map((c) => [c._id.toString(), c.count]))
+    const enriched = labels.map((label) => ({
+      ...label,
+      samplesCount: countMap.get(label._id.toString()) || 0,
+    }))
+
+    res.status(200).send(enriched)
+  } catch (err) {
+    next(err)
+  }
+}
+
+async function getSpeakerLabel(req, res, next) {
+  try {
+    const label = await verifyOwnership(
+      model.speakerLabels,
+      req.params.labelId,
+      req.params.organizationId,
+      SpeakerLabelNotFound,
+    )
+    if (label.collectionId.toString() !== req.params.collectionId) {
+      throw new SpeakerLabelNotFound()
+    }
+    res.status(200).send(label)
+  } catch (err) {
+    next(err)
+  }
+}
+
+async function createSpeakerLabel(req, res, next) {
+  try {
+    const name = sanitizeName(req.body.name)
+    if (!name) {
+      throw new SpeakerLabelError("name is required (max 200 chars)")
+    }
+
+    await verifyOwnership(
+      model.voiceprintCollections,
+      req.params.collectionId,
+      req.params.organizationId,
+      VoiceprintCollectionNotFound,
+    )
+
+    const existing = await model.speakerLabels.getByCollectionIdAndName(
+      req.params.collectionId,
+      name,
+    )
+    if (existing.length > 0) {
+      throw new SpeakerLabelConflict(
+        `A speaker label "${name}" already exists in this collection`,
+      )
+    }
+
+    // Quantitative limit (07 §5 Q8)
+    const collectionLabels = await model.speakerLabels.getByCollectionId(
+      req.params.collectionId,
+    )
+    if (collectionLabels.length >= limits.maxLabelsPerCollection()) {
+      throw new SpeakerLabelError(
+        `Maximum number of speakers per collection reached (${limits.maxLabelsPerCollection()})`,
+      )
+    }
+
+    const payload = {
+      name,
+      collectionId: req.params.collectionId,
+      organizationId: req.params.organizationId,
+    }
+
+    const result = await model.speakerLabels.create(payload)
+
+    if (result.insertedCount !== 1) {
+      throw new SpeakerLabelError(
+        "Error during the creation of the speaker label",
+      )
+    }
+
+    const created = await model.speakerLabels.getById(
+      result.insertedId.toString(),
+    )
+    res.status(201).send(created[0])
+  } catch (err) {
+    next(err)
+  }
+}
+
+async function updateSpeakerLabel(req, res, next) {
+  try {
+    const doc = await verifyOwnership(
+      model.speakerLabels,
+      req.params.labelId,
+      req.params.organizationId,
+      SpeakerLabelNotFound,
+    )
+    if (doc.collectionId.toString() !== req.params.collectionId) {
+      throw new SpeakerLabelNotFound()
+    }
+
+    if (req.body.name !== undefined) {
+      const updatedName = sanitizeName(req.body.name)
+      if (!updatedName) {
+        throw new SpeakerLabelError("name is required (max 200 chars)")
+      }
+      const existing = await model.speakerLabels.getByCollectionIdAndName(
+        doc.collectionId.toString(),
+        updatedName,
+      )
+      if (
+        existing.length > 0 &&
+        existing[0]._id.toString() !== req.params.labelId
+      ) {
+        throw new SpeakerLabelConflict(
+          `A speaker label "${updatedName}" already exists in this collection`,
+        )
+      }
+      doc.name = updatedName
+    }
+
+    const result = await model.speakerLabels.update(doc)
+
+    if (result.modifiedCount === 0) {
+      res.status(304).send("Nothing to update")
+    } else {
+      const updated = await model.speakerLabels.getById(req.params.labelId)
+      // The Qdrant point payload carries the display name: re-upsert it
+      // (no-op when the label has no voiceprint yet).
+      triggers.renameLabelSpeaker(updated[0])
+      res.status(200).send(updated[0])
+    }
+  } catch (err) {
+    next(err)
+  }
+}
+
+async function deleteSpeakerLabel(req, res, next) {
+  try {
+    const label = await verifyOwnership(
+      model.speakerLabels,
+      req.params.labelId,
+      req.params.organizationId,
+      SpeakerLabelNotFound,
+    )
+    if (label.collectionId.toString() !== req.params.collectionId) {
+      throw new SpeakerLabelNotFound()
+    }
+
+    const samples = await model.voiceSamples.getBySpeakerLabelId(
+      req.params.labelId,
+    )
+    cascadeDeleteSampleFiles(samples)
+
+    await Promise.all([
+      model.voiceSamples.deleteAllFromSpeakerLabel(req.params.labelId),
+      model.speakerLabels.delete(req.params.labelId),
+    ])
+
+    // Delete the label point and its voiceprint from Qdrant.
+    triggers.deleteLabelSpeaker(label)
+
+    res.status(200).send("Speaker label deleted")
+  } catch (err) {
+    next(err)
+  }
+}
+
+// Manually recompute a label voiceprint (e.g. after a model version change).
+// Only possible when the audio samples are kept (audio storage mode).
+async function recomputeSpeakerLabel(req, res, next) {
+  try {
+    const label = await verifyOwnership(
+      model.speakerLabels,
+      req.params.labelId,
+      req.params.organizationId,
+      SpeakerLabelNotFound,
+    )
+    if (label.collectionId.toString() !== req.params.collectionId) {
+      throw new SpeakerLabelNotFound()
+    }
+
+    const collections = await model.voiceprintCollections.getById(
+      req.params.collectionId,
+    )
+    if (
+      collections.length > 0 &&
+      collections[0].storageMode === STORAGE_MODE.EMBEDDINGS
+    ) {
+      throw new SpeakerLabelConflict(
+        "Cannot recompute: this collection keeps embeddings only (no audio to recompute from)",
+      )
+    }
+
+    triggers.recomputeLabel(label)
+    res.status(202).send({ syncState: "pending" })
+  } catch (err) {
+    next(err)
+  }
+}
+
+// Delete only the voiceprint of a label (keep the label and its samples).
+async function deleteSpeakerLabelVoiceprint(req, res, next) {
+  try {
+    const label = await verifyOwnership(
+      model.speakerLabels,
+      req.params.labelId,
+      req.params.organizationId,
+      SpeakerLabelNotFound,
+    )
+    if (label.collectionId.toString() !== req.params.collectionId) {
+      throw new SpeakerLabelNotFound()
+    }
+
+    triggers.deleteLabelVoiceprint(label)
+    res.status(200).send("Speaker label voiceprint deleted")
+  } catch (err) {
+    next(err)
+  }
+}
+
+module.exports = {
+  getSpeakerLabels,
+  getSpeakerLabel,
+  createSpeakerLabel,
+  updateSpeakerLabel,
+  deleteSpeakerLabel,
+  recomputeSpeakerLabel,
+  deleteSpeakerLabelVoiceprint,
+}
