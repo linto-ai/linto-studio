@@ -108,18 +108,17 @@
 
     <!-- -- -- speaker identification (master switch + collections) -- -- -->
     <div class="service-card__speaker-id" v-if="speakerIdCapable">
-      <div class="speaker-id__head">
-        <label
+      <label class="speaker-id__head" :for="`service-${value.name}-spkid`">
+        <span
           :id="`service-${value.name}-spkid-label`"
-          :for="`service-${value.name}-spkid`"
           class="speaker-id__title-label">
           {{ $t("conversation.transcription.speaker_identification_title") }}
-        </label>
+        </span>
         <SwitchInput
           :value="speakerIdEnabled"
           :id="`service-${value.name}-spkid`"
           @input="toggleSpeakerId" />
-      </div>
+      </label>
 
       <template v-if="speakerIdEnabled">
         <span class="speaker-id__help">
