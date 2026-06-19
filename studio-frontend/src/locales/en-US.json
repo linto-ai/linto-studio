@@ -58,6 +58,17 @@
       "pay": "Pay & upgrade",
       "init_error": "Payment form could not be loaded. Please close and try again."
     },
+    "billing_profile": {
+      "label": "Billing details (shown on your invoices)",
+      "legal_name": "Company / legal name",
+      "address_line1": "Address",
+      "postal_code": "Postal code",
+      "city": "City",
+      "country": "Country",
+      "vat_id": "VAT number (optional)",
+      "continue": "Continue",
+      "error": "Could not save billing details"
+    },
     "invoices": {
       "title": "Invoices",
       "date": "Date",
@@ -123,6 +134,7 @@
       "details_label": "Details",
       "seats_unit": "seats",
       "prorated": "prorated",
+      "rows_anonymized": "rows anonymized",
       "actions": {
         "subscription_created": "Subscription created",
         "subscription_updated": "Subscription updated",
@@ -135,7 +147,9 @@
         "exempt_enabled": "Complete-free enabled",
         "exempt_disabled": "Complete-free disabled",
         "quota_exceeded": "Quota exceeded",
-        "feature_denied": "Feature blocked"
+        "feature_denied": "Feature blocked",
+        "subscription_suspended": "Subscription suspended",
+        "user_purged": "User data anonymized"
       }
     }
   },

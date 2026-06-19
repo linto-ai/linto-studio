@@ -62,6 +62,18 @@ export async function apiCreateSubscription(
   return res?.data
 }
 
+// PUT /cloud/subscriptions/billing-profile { organizationId, legalName, email?, address, vatId? }
+// Persist legal billing details on the Stripe customer (compliant invoices).
+export async function apiSetBillingProfile(organizationId, profile, notif = null) {
+  const res = await sendRequest(
+    `${CLOUD_API}/subscriptions/billing-profile`,
+    { method: "put" },
+    { organizationId, ...profile },
+    notif,
+  )
+  return res?.data
+}
+
 // DELETE /cloud/subscriptions/:id  (?immediate=true) -> updated subscription
 export async function apiCancelSubscription(
   subscriptionId,

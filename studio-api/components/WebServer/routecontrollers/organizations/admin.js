@@ -15,6 +15,8 @@ const { ConversationError } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
 
+const saas = require(`${process.cwd()}/lib/saas`)
+
 async function updateOrganization(req, res, next) {
   try {
     let organization = await model.organizations.getById(
@@ -68,6 +70,28 @@ async function deleteOrganization(req, res, next) {
     const result = await model.organizations.delete(organization._id.toString())
     if (result.deletedCount !== 1)
       throw new OrganizationError("Error when deleting organization")
+
+    // RGPD cascade (SaaS only; NO-OP in OSS build). Fail-soft: a billing/log
+    // purge failure must not abort an org deletion that already committed.
+    const orgIdStr = organization._id.toString()
+    const purge = await saas.purgeOrganization(orgIdStr)
+    if (purge) {
+      debug("saas purge org %s: %o", orgIdStr, purge)
+      // Surface a non-clean purge (e.g. a Stripe cancel that failed -> a possibly
+      // still-billable subscription for a now-deleted org) above debug level so
+      // an operator can reconcile it; the org delete itself already committed.
+      if (Array.isArray(purge.errors) && purge.errors.length) {
+        console.error(
+          `[saas] org ${orgIdStr} purge had errors (manual reconciliation may be needed):`,
+          purge.errors,
+        )
+      }
+    }
+    try {
+      await model.activityLog.deleteByOrganization(orgIdStr)
+    } catch (e) {
+      debug("activityLog.deleteByOrganization failed:", e && e.message)
+    }
 
     res.status(200).send({
       message: "Organization has been deleted",

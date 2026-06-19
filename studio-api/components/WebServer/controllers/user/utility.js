@@ -16,6 +16,12 @@ const orgaUtility = require(
   `${process.cwd()}/components/WebServer/controllers/organization/utility`,
 )
 
+const saas = require(`${process.cwd()}/lib/saas`)
+
+const { UserError } = require(
+  `${process.cwd()}/components/WebServer/error/exception/users`,
+)
+
 async function getUsersListByConversation(userId, conversation, organiaztion) {
   try {
     let isShare = false
@@ -102,6 +108,7 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
 }
 
 async function removeUserFromPlatform(userId) {
+  let outcome = true
   try {
     // Get all conversations shared with the user
     const conversations = await model.conversations.getByShare(userId)
@@ -145,6 +152,14 @@ async function removeUserFromPlatform(userId) {
           // delete orga
           const resultOrga = await model.organizations.delete(organization._id)
           if (resultOrga.deletedCount !== 1) throw new UserError()
+          // RGPD cascade for the org being removed (SaaS only; NO-OP in OSS).
+          const orgIdStr = organization._id.toString()
+          await saas.purgeOrganization(orgIdStr)
+          try {
+            await model.activityLog.deleteByOrganization(orgIdStr)
+          } catch (e) {
+            console.error("activityLog.deleteByOrganization failed:", e && e.message)
+          }
         } else if (data.adminCount > 1 || !data.isAdmin) {
           organization.users = organization.users.filter(
             (user) => user.userId !== userId,
@@ -155,11 +170,30 @@ async function removeUserFromPlatform(userId) {
       }),
     )
 
-    return true
   } catch (error) {
     console.error(error)
-    return error
+    outcome = error
   }
+
+  // RGPD erasure of the departing user's personal data runs REGARDLESS of the
+  // cascade outcome above: a partial media/org failure (or a thrown UserError)
+  // must never leave the user's PII behind in the billing ledger or the activity
+  // log. Each step is independently fail-soft (SaaS calls are NO-OP in OSS).
+  try {
+    await saas.purgeUser(userId)
+  } catch (e) {
+    console.error("saas.purgeUser failed:", e && e.message)
+  }
+  try {
+    // Anonymize rather than hard-delete: activity rows carry org-level KPIs
+    // (transcription/session counts) that must survive the member's departure;
+    // we strip the personal dimension (user.id + user.info).
+    await model.activityLog.anonymizeByUser(userId)
+  } catch (e) {
+    console.error("activityLog.anonymizeByUser failed:", e && e.message)
+  }
+
+  return outcome
 }
 
 module.exports = { getUsersListByConversation, removeUserFromPlatform }

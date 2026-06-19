@@ -89,6 +89,35 @@ async function setBillingExempt(orgId, exempt) {
   }
 }
 
+// RGPD: erase an org's billing/usage footprint (cancel its Stripe subscription,
+// drop saas_subscriptions + saas_usage_ledger rows). FAIL-SOFT, NO-OP in OSS.
+// NB: the Stripe CUSTOMER is intentionally RETAINED here (invoices have a ~10y
+// legal accounting-retention obligation). The hard-erase of the customer is an
+// INTENTIONALLY out-of-band operator action run after the retention window via
+// pp.purgeOrganization(orgId, { deleteStripeCustomer: true }) — not wired to org
+// deletion on purpose. See docs/saas/legal/RETENTION-ET-EFFACEMENT.md.
+async function purgeOrganization(orgId) {
+  const pp = plugin()
+  if (!pp) return
+  try {
+    return await pp.purgeOrganization(orgId)
+  } catch (e) {
+    /* fail-soft */
+  }
+}
+
+// RGPD: anonymize a user's footprint across the billing plugin (usage-ledger
+// userId attribution). FAIL-SOFT, NO-OP in OSS.
+async function purgeUser(userId) {
+  const pp = plugin()
+  if (!pp) return
+  try {
+    return await pp.purgeUser(userId)
+  } catch (e) {
+    /* fail-soft */
+  }
+}
+
 module.exports = {
   plugin,
   enabled,
@@ -97,4 +126,6 @@ module.exports = {
   recordLive,
   syncSeats,
   setBillingExempt,
+  purgeOrganization,
+  purgeUser,
 }
