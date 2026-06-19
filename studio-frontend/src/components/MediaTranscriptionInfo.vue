@@ -239,7 +239,9 @@ export default {
         return this.$t("media_explorer.panel.transcription.value_disabled")
       }
       const names = collections
-        .map((qdrantCollectionName) => this.collectionName(qdrantCollectionName))
+        .map((qdrantCollectionName) =>
+          this.collectionName(qdrantCollectionName),
+        )
         .filter(Boolean)
       // Configured but not resolvable (no matching collection): generic label.
       if (names.length === 0) {
@@ -254,7 +256,7 @@ export default {
       const collection = this.voiceprintCollections.find(
         (c) => c.qdrantCollectionName === qdrantCollectionName,
       )
-      return resolveDiarizationCollectionName(collection, this.$t)
+      return resolveDiarizationCollectionName(collection, (key) => this.$t(key))
     },
   },
 }

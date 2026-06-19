@@ -145,7 +145,9 @@ export default {
       return Math.max(0, this.stats.labels - this.previewNames.length)
     },
     displayName() {
-      return resolveDiarizationCollectionName(this.collection, this.$t)
+      return resolveDiarizationCollectionName(this.collection, (key) =>
+        this.$t(key),
+      )
     },
     // Type/storage-derived chip shown next to the collection name.
     badge() {
