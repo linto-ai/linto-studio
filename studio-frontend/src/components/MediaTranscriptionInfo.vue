@@ -41,6 +41,7 @@ import InfoList from "@/components/molecules/InfoList.vue"
 import ModalSessionTemplateInfo from "./ModalSessionTemplateInfo.vue"
 import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
 import formatLanguageCode from "@/tools/formatLanguage"
+import resolveDiarizationCollectionName from "@/tools/resolveDiarizationCollectionName.js"
 
 // Models that punctuate inline: punctuation is always applied regardless of
 // the punctuationConfig flag.
@@ -253,7 +254,7 @@ export default {
       const collection = this.voiceprintCollections.find(
         (c) => c.qdrantCollectionName === qdrantCollectionName,
       )
-      return collection?.name || null
+      return resolveDiarizationCollectionName(collection, this.$t)
     },
   },
 }

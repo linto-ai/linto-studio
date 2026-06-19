@@ -81,6 +81,7 @@
 <script>
 import Button from "@/components/atoms/Button.vue"
 import { COLLECTION_TYPE, STORAGE_MODE } from "@/tools/voiceprintConstants.js"
+import resolveDiarizationCollectionName from "@/tools/resolveDiarizationCollectionName.js"
 import { apiGetOptedInMembers } from "@/api/voiceprintCollection.js"
 import { apiGetSpeakerLabels } from "@/api/speakerLabel.js"
 
@@ -143,12 +144,8 @@ export default {
       if (!this.stats) return 0
       return Math.max(0, this.stats.labels - this.previewNames.length)
     },
-    // Organization collections are auto-managed, so their stored name is not
-    // meaningful to admins — show a natural, fixed label instead.
     displayName() {
-      return this.isOrganizationType
-        ? this.$t("speaker_diarization.organization_collection_name")
-        : this.collection.name
+      return resolveDiarizationCollectionName(this.collection, this.$t)
     },
     // Type/storage-derived chip shown next to the collection name.
     badge() {
