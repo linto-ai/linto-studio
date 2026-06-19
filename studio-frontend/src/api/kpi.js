@@ -86,20 +86,43 @@ function mergeKpi() {
 
 export const getAllKpiDailyMerged = mergeKpi(getAllKpiDaily)
 
-export async function apiGetPlatformKpiSeries(filters = {}) {
-  const { step = "daily", organizationId, startDate, endDate } = filters
+function buildKpiSeriesParams(filters = {}) {
+  const { step = "daily", organizationId, userId, startDate, endDate } = filters
 
   const params = { userScope: "backoffice", step }
   if (organizationId) params.organizationId = organizationId
+  if (userId) params.userId = userId
   if (startDate) params.startDate = startDate
   if (endDate) params.endDate = endDate
+
+  return params
+}
+
+export async function apiGetPlatformKpiSeries(filters = {}) {
+  const params = buildKpiSeriesParams(filters)
 
   const res = await sendRequest(
     `${BASE_API}/administration/activity/compute/series`,
     { method: "get" },
     params,
   )
-  return res?.data || { step, data: [] }
+  return res?.data || { step: params.step, data: [] }
+}
+
+/**
+ * Export the computed KPI series (dashboard data) in 'json', 'csv' or 'xls'
+ * @returns {Promise<Blob|null>} File blob for download
+ */
+export async function exportKpiSeries(format, filters = {}) {
+  const params = { ...buildKpiSeriesParams(filters), format }
+
+  const res = await sendRequest(
+    `${BASE_API}/administration/activity/compute/series/export`,
+    { method: "get", responseType: "blob" },
+    params,
+  )
+
+  return res?.data ?? null
 }
 
 /**

@@ -51,7 +51,10 @@ async function listSaasServices(scope, securityLevel = null) {
 // server-side. Returns null when no service exposes that endpoint.
 async function getTranscriptionServiceByEndpoint(endpoint) {
   const services = await listSaasServices()
-  const norm = (e) => String(e || "").replace(/^\/+/, "").replace(/\/+$/, "")
+  const norm = (e) =>
+    String(e || "")
+      .replace(/^\/+/, "")
+      .replace(/\/+$/, "")
   const target = norm(endpoint)
   if (!target) return null
   return (

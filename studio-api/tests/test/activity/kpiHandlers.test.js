@@ -159,7 +159,7 @@ describe("KPI Handlers - Date Range Functions", () => {
     })
 
     it("should allow custom number of years", async () => {
-      const result = await kpiHandlers.getLastYearsKpi(null, 3)
+      const result = await kpiHandlers.getLastYearsKpi(null, null, 3)
 
       expect(result).toHaveLength(3)
     })

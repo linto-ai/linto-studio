@@ -21,7 +21,7 @@
             v-if="showAllProfiles"
             @click="changeShowAllProfiles"
             variant="secondary"
-            icon="eye"
+            icon="buildings"
             iconWeight="regular"
             :label="
               $t('backoffice.transcriber_profile_list.all_profiles_shown')
@@ -30,7 +30,7 @@
             v-else
             @click="changeShowAllProfiles"
             variant="secondary"
-            icon="eye-slash"
+            icon="globe"
             iconWeight="regular"
             :label="
               $t('backoffice.transcriber_profile_list.global_profiles_shown')
@@ -56,8 +56,16 @@
       :initSortListDirection="sortListDirection"
       :initSortListKey="sortListKey">
       <template #cell-organizationId="{ value }">
-        <span v-if="value" class="icon apply" />
-        <span v-else class="icon close" />
+        <span
+          v-if="value"
+          :title="$t('backoffice.transcriber_profile_list.private_profile')">
+          <ph-icon name="buildings" size="md" weight="regular" />
+        </span>
+        <span
+          v-else
+          :title="$t('backoffice.transcriber_profile_list.global_profile')">
+          <ph-icon name="globe" size="md" weight="regular" />
+        </span>
       </template>
       <template #cell-config.name="{ value, id }">
         <span class="clickable" @click="editProfile(id)">{{ value }}</span>
@@ -111,6 +119,11 @@ export default {
         {
           key: "organizationId",
           label: "",
+          width: "auto",
+        },
+        {
+          key: "id",
+          label: "ID",
           width: "auto",
         },
         {

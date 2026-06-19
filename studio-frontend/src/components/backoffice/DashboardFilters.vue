@@ -32,14 +32,27 @@
       }"
       class="dashboard-controls__field">
       <template #custom-input>
-        <PopoverList
-          :items="organizationItems"
+        <OrganizationSelector
           :value="selectedOrganization"
-          @input="$emit('update:selectedOrganization', $event)"
-          searchable
-          full-width
-          :overlay="false"
-          color="neutral" />
+          :pinnedItems="organizationPinnedItems"
+          @input="$emit('update:selectedOrganization', $event)" />
+      </template>
+    </FormInput>
+
+    <!-- User Filter -->
+    <FormInput
+      :field="{
+        label: $t('backoffice.dashboard.filters.user'),
+        error: null,
+      }"
+      class="dashboard-controls__field">
+      <template #custom-input>
+        <UserSelector
+          :value="selectedUser"
+          @input="$emit('update:selectedUser', $event)"
+          :label="$t('backoffice.dashboard.filters.all_users')"
+          block
+          compact />
       </template>
     </FormInput>
 
@@ -85,15 +98,12 @@
 <script>
 import FormInput from "@/components/molecules/FormInput.vue"
 import Button from "@/components/atoms/Button.vue"
-import PopoverList from "@/components/atoms/PopoverList.vue"
+import OrganizationSelector from "@/components/molecules/OrganizationSelector.vue"
+import UserSelector from "@/components/molecules/UserSelector.vue"
 
 export default {
   name: "DashboardFilters",
   props: {
-    organizations: {
-      type: Array,
-      required: true,
-    },
     timePeriodOptions: {
       type: Array,
       required: true,
@@ -104,6 +114,10 @@ export default {
     },
     selectedOrganization: {
       type: String,
+      default: null,
+    },
+    selectedUser: {
+      type: Object,
       default: null,
     },
     startDate: {
@@ -117,33 +131,28 @@ export default {
   },
   computed: {
     hasActiveFilters() {
-      return this.selectedOrganization || this.startDate || this.endDate
+      return (
+        this.selectedOrganization ||
+        this.selectedUser ||
+        this.startDate ||
+        this.endDate
+      )
     },
     today() {
       return new Date().toISOString().split("T")[0]
     },
-    organizationItems() {
-      const allOption = {
-        id: null,
-        name: this.$t("backoffice.dashboard.filters.all_organizations"),
-      }
-      const orgItems = this.organizations.map((org) => ({
-        id: org._id,
-        name: org.name,
-      }))
-      return [allOption, ...orgItems]
-    },
-    selectedOrganizationLabel() {
-      if (!this.selectedOrganization) {
-        return this.$t("backoffice.dashboard.filters.all_organizations")
-      }
-      const org = this.organizations.find(
-        (o) => o._id === this.selectedOrganization,
-      )
-      return org?.name || this.selectedOrganization
+    organizationPinnedItems() {
+      return [
+        {
+          value: null,
+          text: this.$t("backoffice.dashboard.filters.all_organizations"),
+          icon: "buildings",
+          iconWeight: "regular",
+        },
+      ]
     },
   },
-  components: { FormInput, Button, PopoverList },
+  components: { FormInput, Button, OrganizationSelector, UserSelector },
 }
 </script>
 
