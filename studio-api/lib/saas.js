@@ -118,6 +118,31 @@ async function purgeUser(userId) {
   }
 }
 
+// Resolve an ASR backend / transcriber profile to its billing CATEGORY
+// (local-standard | local-gpu | external). Needed to gate `live.profiles`
+// (an enum keyed on category, NOT on the raw backend). Returns null in OSS.
+function categoryOf(profile) {
+  const pp = plugin()
+  if (!pp || !pp.utils || !pp.utils.profiles) return null
+  try {
+    return pp.utils.profiles.categoryOf(profile)
+  } catch (e) {
+    return null
+  }
+}
+
+// Strict: returns the category only for a recognized backend, else null (used
+// by the live-access gate to avoid treating an unknown backend as free tier).
+function categoryOfStrict(profile) {
+  const pp = plugin()
+  if (!pp || !pp.utils || !pp.utils.profiles) return null
+  try {
+    return pp.utils.profiles.categoryOfStrict(profile)
+  } catch (e) {
+    return null
+  }
+}
+
 module.exports = {
   plugin,
   enabled,
@@ -128,4 +153,6 @@ module.exports = {
   setBillingExempt,
   purgeOrganization,
   purgeUser,
+  categoryOf,
+  categoryOfStrict,
 }

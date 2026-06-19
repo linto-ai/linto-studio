@@ -21,6 +21,7 @@ const PublicToken = require(
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
+const saas = require(`${process.cwd()}/lib/saas`)
 const crypto = require("crypto")
 
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
@@ -117,6 +118,75 @@ async function forwardSessionAlias(req, next, res) {
     authFailLimiter(req, res, () => {
       next(err)
     })
+  }
+}
+
+// SaaS admission gate for live sessions: every distinct transcriber profile
+// CATEGORY (local-standard | local-gpu | external) chosen for the session must
+// be allowed by the org's plan (`live.profiles` enum). The request body carries
+// channels[].transcriberProfileId (an FK), so each is resolved to its
+// config.type via the Session-API, then mapped to a category. FAIL-SOFT on
+// resolution errors (never block a session on a transient lookup hiccup);
+// throws SaasFeatureLocked (403) only when a resolved category is off-plan.
+// NO-OP in the OSS build (saas disabled).
+async function assertLiveProfileAllowed(req) {
+  if (!saas.enabled || !saas.enabled()) return
+  const orgId = req.params.organizationId
+  // Guard against a malformed (truthy non-array) channels so the gate stays
+  // fail-soft (a bad body should reach Session-API's 400, not 500 here).
+  const channels = Array.isArray(req.body && req.body.channels)
+    ? req.body.channels
+    : []
+  const ids = [
+    ...new Set(
+      channels.map((c) => c && c.transcriberProfileId).filter((v) => v != null),
+    ),
+  ]
+  if (!orgId || ids.length === 0) return
+
+  const categories = new Set()
+  for (const id of ids) {
+    try {
+      const profile = await axios.get(
+        process.env.SESSION_API_ENDPOINT + `/transcriber_profiles/${id}`,
+      )
+      const backend = profile?.config?.type || profile?.type || null
+      if (!backend) continue
+      // STRICT resolution for the ACCESS gate: an unmapped/unknown backend (a
+      // future GPU/external engine, a typo) must NOT be treated as the cheap
+      // free tier. Unknown -> most-restricted category (external => premium-only)
+      // so a new paid backend is never silently runnable on free.
+      const cat = saas.categoryOfStrict(backend) || "external"
+      categories.add(cat)
+    } catch (e) {
+      // Could not resolve this profile -> don't block the session on it.
+      debug("live profile resolve failed for %s: %s", id, e && e.message)
+    }
+  }
+  // Deny if ANY chosen category is not on the plan (enforce throws on deny).
+  for (const category of categories) {
+    await saas.enforce({ orgId, capability: "live.profiles", value: category })
+  }
+}
+
+// executeBeforeResult hook for POST /organizations/:organizationId/sessions/.
+async function enforceLiveProfileAccess(req, next, res) {
+  try {
+    await assertLiveProfileAllowed(req)
+    next()
+  } catch (err) {
+    next(err)
+  }
+}
+
+// executeBeforeResult hook for the quickMeeting POST: gate first, then the
+// existing query-param mutation (forceQueryParams calls next()).
+async function enforceLiveProfileAccessQuickMeeting(req, next, res) {
+  try {
+    await assertLiveProfileAllowed(req)
+    forceQueryParams(req, next)
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -228,4 +298,6 @@ module.exports = {
   checkSessionMatchingOrganization,
   cleanPublicSessionContent,
   cleanPublicChannelContent,
+  enforceLiveProfileAccess,
+  enforceLiveProfileAccessQuickMeeting,
 }

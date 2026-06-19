@@ -17,6 +17,8 @@ const {
   generatPublicToken,
   filterPrivateSessions,
   checkSessionMatchingOrganization,
+  enforceLiveProfileAccess,
+  enforceLiveProfileAccessQuickMeeting,
 } = require(
   `${process.cwd()}/components/WebServer/controllers/session/session.js`,
 )
@@ -189,7 +191,9 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/quickMeeting/",
             method: ["post"],
             forwardParams: proxyForwardParams,
-            executeBeforeResult: forceQueryParams,
+            // SaaS: gate the chosen transcriber profile category (live.profiles)
+            // then run the usual query-param mutation. NO-OP in OSS.
+            executeBeforeResult: enforceLiveProfileAccessQuickMeeting,
           },
           {
             path: "/organizations/:organizationId/quickMeeting/:id",
@@ -233,6 +237,9 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/sessions/",
             method: ["post"],
             forwardParams: proxyForwardParams,
+            // SaaS: gate the chosen transcriber profile category (live.profiles)
+            // before the session is created. 403 if off-plan; NO-OP in OSS.
+            executeBeforeResult: enforceLiveProfileAccess,
           },
           {
             path: "/organizations/:organizationId/sessions/:id",
