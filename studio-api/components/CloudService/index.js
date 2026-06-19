@@ -13,6 +13,7 @@ const platform_access = require(
 )
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
+const LogManager = require(`${process.cwd()}/lib/logger/manager`)
 
 const ROLE_MAP = {
   member: ROLES.MEMBER,
@@ -105,6 +106,13 @@ class CloudService extends Component {
     this.paymentProcessor = createPaymentProcessor({
       seedOnStart: true,
       stripe: {}, // mode resolved from STRIPE_MODE / STRIPE_SECRET_KEY (fake by default)
+    })
+
+    // Product-life events (subscription lifecycle, payments, seats, comp toggle,
+    // quota/plan denials) -> studio's activity log. The plugin stays studio-
+    // agnostic: it only emits structured data; we enrich (org/user) and persist.
+    this.paymentProcessor.on("saas-event", (event) => {
+      LogManager.logSaasEvent(event)
     })
 
     // JSON API (behind studio auth guards) + Stripe webhook (raw body) routers.

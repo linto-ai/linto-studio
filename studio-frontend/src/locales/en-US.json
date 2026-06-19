@@ -115,7 +115,28 @@
       "sessions": "Sessions detailed",
       "ressources": "Resources",
       "tokens": "API key access",
-      "backoffice": "Backoffice"
+      "backoffice": "Backoffice",
+      "billing": "Billing"
+    },
+    "saas": {
+      "event_label": "Event",
+      "details_label": "Details",
+      "seats_unit": "seats",
+      "prorated": "prorated",
+      "actions": {
+        "subscription_created": "Subscription created",
+        "subscription_updated": "Subscription updated",
+        "plan_changed": "Plan changed",
+        "subscription_canceled": "Cancellation scheduled",
+        "subscription_ended": "Subscription ended",
+        "payment_succeeded": "Payment succeeded",
+        "payment_failed": "Payment failed",
+        "seats_changed": "Seats changed",
+        "exempt_enabled": "Complete-free enabled",
+        "exempt_disabled": "Complete-free disabled",
+        "quota_exceeded": "Quota exceeded",
+        "feature_denied": "Feature blocked"
+      }
     }
   },
   "session_list": {

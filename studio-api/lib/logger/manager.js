@@ -158,6 +158,20 @@ class LogManager {
     logger.log(ctx)
     if (ctx) model.activityLog.create(ctx)
   }
+
+  // Billing / SaaS product-life event emitted by the linto-saas plugin. Persisted
+  // into the activity log (activity:"saas") for the backoffice "Facturation" tab.
+  // FAIL-SOFT: a logging failure must never propagate back into billing logic.
+  static async logSaasEvent(event) {
+    try {
+      const ctx = await context.createSaasContext(event)
+      if (!ctx) return
+      logger.log(ctx)
+      await model.activityLog.create(ctx)
+    } catch (err) {
+      debug("logSaasEvent failed: %s", err && err.message)
+    }
+  }
 }
 
 module.exports = LogManager

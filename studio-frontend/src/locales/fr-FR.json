@@ -116,7 +116,28 @@
       "sessions": "Détail des sessions",
       "ressources": "Ressources",
       "tokens": "Accès aux clés d'API",
-      "backoffice": "Administration"
+      "backoffice": "Administration",
+      "billing": "Facturation"
+    },
+    "saas": {
+      "event_label": "Événement",
+      "details_label": "Détails",
+      "seats_unit": "sièges",
+      "prorated": "proratisé",
+      "actions": {
+        "subscription_created": "Souscription créée",
+        "subscription_updated": "Abonnement modifié",
+        "plan_changed": "Changement de plan",
+        "subscription_canceled": "Résiliation programmée",
+        "subscription_ended": "Abonnement terminé",
+        "payment_succeeded": "Paiement réussi",
+        "payment_failed": "Échec de paiement",
+        "seats_changed": "Sièges modifiés",
+        "exempt_enabled": "Mode offert activé",
+        "exempt_disabled": "Mode offert désactivé",
+        "quota_exceeded": "Quota dépassé",
+        "feature_denied": "Fonctionnalité bloquée"
+      }
     }
   },
   "session_list": {
