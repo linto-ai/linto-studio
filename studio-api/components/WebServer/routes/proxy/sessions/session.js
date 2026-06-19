@@ -25,6 +25,7 @@ const {
   checkSessionMatchingOrganization,
   checkTemplateMatchingOrganization,
   checkChannelsSecurityLevel,
+  withLiveProfileGate,
 } = require(
   `${process.cwd()}/components/WebServer/controllers/session/session.js`,
 )
@@ -200,7 +201,9 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/quickMeeting/",
             method: ["post"],
             forwardParams: proxyForwardParams,
-            executeBeforeResult: createQuickMeeting,
+            // SaaS gate on the chosen transcriber profile category
+            // (live.profiles), then the usual handler. NO-OP in OSS.
+            executeBeforeResult: withLiveProfileGate(createQuickMeeting),
           },
           {
             path: "/organizations/:organizationId/quickMeeting/:id",
@@ -244,7 +247,9 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/sessions/",
             method: ["post"],
             forwardParams: proxyForwardParams,
-            executeBeforeResult: checkChannelsSecurityLevel,
+            // SaaS gate on the chosen transcriber profile category
+            // (live.profiles) before the session is created. NO-OP in OSS.
+            executeBeforeResult: withLiveProfileGate(checkChannelsSecurityLevel),
           },
           {
             path: "/organizations/:organizationId/sessions/:id",

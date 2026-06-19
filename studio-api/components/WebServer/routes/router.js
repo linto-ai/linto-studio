@@ -28,6 +28,10 @@ const platform_middlewares = require(
   `${process.cwd()}/components/WebServer/middlewares/access/platform.js`,
 )
 
+const entitlement_middlewares = require(
+  `${process.cwd()}/components/WebServer/middlewares/access/entitlement.js`,
+)
+
 const { Unauthorized, UnauthorizedProxy } = require(
   `${process.cwd()}/components/WebServer/error/exception/auth`,
 )
@@ -141,6 +145,12 @@ const loadMiddlewares = (route) => {
 
   if (route.requireUserVisibility)
     middlewares.push(user_middlewares.isVisibility)
+
+  // SaaS plan gate (declarative). Appended LAST so auth + org-access middlewares
+  // have already set req.payload.data.userId / req.params.organizationId / role.
+  // NO-OP when the linto-saas plugin is absent (OSS build).
+  if (route.requireEntitlement !== undefined)
+    middlewares.push(entitlement_middlewares.build(route.requireEntitlement))
 
   return middlewares
 }
