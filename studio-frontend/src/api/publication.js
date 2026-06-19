@@ -9,6 +9,8 @@ const CLIENT_TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone
  * @param {Object} options - Optional filters
  * @param {string} [options.category] - Filter by category (e.g., "summary", "report")
  * @param {string} [options.organizationId] - Filter by organization ID
+ * @param {string} [options.serviceId] - Restrict to templates available for this service
+ *   (falls back to the global default template when the service has none linked)
  * @returns {Promise<Array>} List of templates
  */
 export async function apiGetPublicationTemplates(options = {}) {
@@ -18,6 +20,9 @@ export async function apiGetPublicationTemplates(options = {}) {
   }
   if (options.organizationId) {
     params.organization_id = options.organizationId
+  }
+  if (options.serviceId) {
+    params.service_id = options.serviceId
   }
 
   const req = await sendRequest(

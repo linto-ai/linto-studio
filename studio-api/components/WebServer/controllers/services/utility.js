@@ -74,17 +74,28 @@ async function getTranscriptionServiceByEndpoint(endpoint) {
  *   If not provided, returns all services
  * @param {string} [securityLevel] - Optional security level to filter flavors
  *   Flavors are filtered by model.security_level, services with no remaining flavors are removed
+ * @param {string} [userId] - Optional user ID; also returns services whose allowed
+ *   user list includes this user (in addition to global + org services)
  */
-async function listLlmServices(organizationId = null, securityLevel = null) {
+async function listLlmServices(
+  organizationId = null,
+  securityLevel = null,
+  userId = null,
+) {
   try {
     const gateway_services = process.env.LLM_GATEWAY_SERVICES
     debug("Security level requested:", securityLevel)
     // V2 API endpoint with pagination
     let host = gateway_services + "/api/v1/services?page=1&page_size=100"
 
-    // Add organization filter if provided
+    // Add organization filter if provided. The gateway returns global services
+    // plus those whose allowed org/user lists include the caller.
     if (organizationId) {
       host += `&organization_id=${encodeURIComponent(organizationId)}`
+    }
+    // Add user filter so services scoped to this specific user are also returned
+    if (userId) {
+      host += `&user_id=${encodeURIComponent(userId)}`
     }
 
     // Add timeout to prevent hanging if LLM Gateway is unresponsive
