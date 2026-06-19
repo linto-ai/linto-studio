@@ -1,4 +1,7 @@
+const logger = require(`${process.cwd()}/lib/logger/logger`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
+
+const saas = require(`${process.cwd()}/lib/saas`)
 
 const { OrganizationError } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
@@ -126,6 +129,24 @@ async function deleteOrganizationCascade(organizationId) {
   )
   if (resultOrga.deletedCount !== 1)
     throw new OrganizationError("Error when deleting organization")
+
+  // RGPD cascade into the SaaS plugin. Every org-deletion path goes through this
+  // helper, so this is the single purge point. Fail-soft: the org delete has
+  // already committed, a billing/log purge failure must not turn it into a 500.
+  // NO-OP in the OSS build.
+  const purge = await saas.purgeOrganization(organizationId)
+  // A non-clean purge can leave a still-billable Stripe subscription attached to
+  // a now-deleted org, so surface it above debug for manual reconciliation.
+  if (purge && Array.isArray(purge.errors) && purge.errors.length) {
+    logger.error(
+      `[saas] org ${organizationId} purge had errors (manual reconciliation may be needed): ${JSON.stringify(purge.errors)}`,
+    )
+  }
+  try {
+    await model.activityLog.deleteByOrganization(organizationId)
+  } catch (e) {
+    logger.error(`activityLog.deleteByOrganization failed for ${organizationId}: ${e && e.message}`)
+  }
 }
 
 async function getUserConversationFromOrganization(

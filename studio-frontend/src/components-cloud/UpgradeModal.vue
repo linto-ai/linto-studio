@@ -52,6 +52,59 @@
         </div>
       </div>
 
+      <!-- Billing-profile step (live mode): legal details for compliant invoices. -->
+      <div v-else-if="step === 'billing'" class="upgrade-modal__billing">
+        <p class="upgrade-modal__card-label">
+          {{ $t("billing.billing_profile.label") }}
+        </p>
+        <input
+          v-model="billing.legalName"
+          class="upgrade-modal__field"
+          :placeholder="$t('billing.billing_profile.legal_name')" />
+        <input
+          v-model="billing.address.line1"
+          class="upgrade-modal__field"
+          :placeholder="$t('billing.billing_profile.address_line1')" />
+        <div class="upgrade-modal__field-row">
+          <input
+            v-model="billing.address.postal_code"
+            class="upgrade-modal__field"
+            :placeholder="$t('billing.billing_profile.postal_code')" />
+          <input
+            v-model="billing.address.city"
+            class="upgrade-modal__field"
+            :placeholder="$t('billing.billing_profile.city')" />
+          <input
+            v-model="billing.address.country"
+            maxlength="2"
+            class="upgrade-modal__field upgrade-modal__field--country"
+            :placeholder="$t('billing.billing_profile.country')" />
+        </div>
+        <input
+          v-model="billing.vatId"
+          class="upgrade-modal__field"
+          :placeholder="$t('billing.billing_profile.vat_id')" />
+        <p v-if="billingError" class="upgrade-modal__card-error">{{ billingError }}</p>
+        <div class="upgrade-modal__actions">
+          <Button variant="secondary" @click="$emit('close')">{{
+            $t("billing.cancel")
+          }}</Button>
+          <Button
+            variant="primary"
+            :loading="busy"
+            :disabled="
+              !billing.legalName ||
+              !billing.address.line1 ||
+              !billing.address.postal_code ||
+              !billing.address.city ||
+              !billing.address.country
+            "
+            @click="submitBilling">
+            {{ $t("billing.billing_profile.continue") }}
+          </Button>
+        </div>
+      </div>
+
       <div class="upgrade-modal__actions" v-else>
         <Button variant="secondary" @click="$emit('close')">{{
           $t("billing.cancel")
@@ -81,13 +134,22 @@ export default {
     return {
       busy: false,
       done: false,
-      step: "pitch", // pitch -> (card) -> done
+      step: "pitch", // pitch -> (billing) -> (card) -> done
       clientSecret: null,
       stripe: null,
       cardElement: null,
       cardError: "",
       cardReady: false, // card Element actually mounted
       cardFatal: false, // mount failed -> no payment possible, offer close
+      // Legal billing profile (live mode only) -> pushed to the Stripe customer
+      // so invoices are compliant. Required before createSubscription when
+      // automatic_tax is on (and good practice regardless).
+      billing: {
+        legalName: "",
+        address: { line1: "", line2: "", postal_code: "", city: "", country: "FR" },
+        vatId: "",
+      },
+      billingError: "",
     }
   },
   computed: {
@@ -108,14 +170,50 @@ export default {
     if (!this.premiumPlan) this.fetchPlans()
   },
   methods: {
-    ...mapActions("billing", ["upgrade", "fetchPlans", "refresh"]),
+    ...mapActions("billing", ["upgrade", "fetchPlans", "refresh", "saveBillingProfile"]),
     async confirm() {
+      // Live mode: collect the legal billing profile BEFORE subscribing (required
+      // for compliant invoices / automatic_tax). Fake/local mode: subscribe now.
+      if (hasStripeKey()) {
+        this.step = "billing"
+        return
+      }
       this.busy = true
       try {
         const result = await this.upgrade({ planKey: "premium", seats: 1 })
         if (!result) return
+        this.finishDone()
+      } finally {
+        this.busy = false
+      }
+    },
+    async submitBilling() {
+      this.busy = true
+      this.billingError = ""
+      try {
+        // sendRequest resolves with { status: "error" } on an HTTP failure (it
+        // never throws), so a swallowed failure must NOT fall through to upgrade.
+        // The route returns { ok: true } on success -> require that explicitly.
+        const saved = await this.saveBillingProfile({
+          legalName: this.billing.legalName,
+          address: { ...this.billing.address },
+          ...(this.billing.vatId
+            ? { vatId: { type: "eu_vat", value: this.billing.vatId } }
+            : {}),
+        })
+        if (!saved || saved.ok !== true) {
+          this.billingError = this.$t("billing.billing_profile.error")
+          return
+        }
+        const result = await this.upgrade({ planKey: "premium", seats: 1 })
+        if (!result) {
+          // Subscription creation failed (also a swallowed sendRequest error);
+          // surface it instead of leaving the modal silently stuck.
+          this.billingError = this.$t("billing.billing_profile.error")
+          return
+        }
         // Real Stripe returns a clientSecret (PaymentIntent) to confirm with a
-        // card. Fake/local mode (or no publishable key) activates immediately.
+        // card; otherwise activate immediately.
         if (result.clientSecret && hasStripeKey()) {
           this.clientSecret = result.clientSecret
           this.step = "card"
@@ -124,6 +222,8 @@ export default {
         } else {
           this.finishDone()
         }
+      } catch (e) {
+        this.billingError = (e && e.message) || this.$t("billing.billing_profile.error")
       } finally {
         this.busy = false
       }
@@ -285,6 +385,25 @@ export default {
     color: var(--error-color, #e5484d);
     font-size: 0.8rem;
     margin: 0 0 0.6em;
+  }
+  &__billing {
+    margin-top: 0.5em;
+  }
+  &__field {
+    width: 100%;
+    border: 1px solid var(--neutral-40);
+    border-radius: 6px;
+    padding: 0.55em 0.6em;
+    margin-bottom: 0.5em;
+    font-size: 0.88rem;
+  }
+  &__field-row {
+    display: flex;
+    gap: 0.5em;
+  }
+  &__field--country {
+    max-width: 70px;
+    text-transform: uppercase;
   }
 }
 </style>

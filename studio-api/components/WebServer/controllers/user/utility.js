@@ -23,6 +23,8 @@ const triggers = require(
 
 const { throwIfError } = require(`${process.cwd()}/lib/utility/throwIfError`)
 
+const saas = require(`${process.cwd()}/lib/saas`)
+
 async function getUsersListByConversation(userId, conversation, organiaztion) {
   try {
     let isShare = false
@@ -162,6 +164,24 @@ async function removeUserFromPlatform(userId) {
   deletionResults.forEach(throwIfError)
   // Fire-and-forget, queued on failure
   triggers.removeUserEverywhere(userId, optIns)
+
+  // RGPD erasure of the departing user's personal data. Each step is
+  // independently fail-soft: a failure here must not leave the caller thinking
+  // the account survived, and the steps above have already committed. NO-OP in
+  // the OSS build (saas.purgeUser returns null when the plugin is absent).
+  try {
+    await saas.purgeUser(userId)
+  } catch (e) {
+    logger.error(`saas.purgeUser failed for ${userId}: ${e && e.message}`)
+  }
+  try {
+    // Anonymize rather than hard-delete: activity rows carry org-level KPIs
+    // (transcription/session counts) that must survive a member's departure. We
+    // strip only the personal dimension (user.id + user.info).
+    await model.activityLog.anonymizeByUser(userId)
+  } catch (e) {
+    logger.error(`activityLog.anonymizeByUser failed for ${userId}: ${e && e.message}`)
+  }
 }
 
 module.exports = { getUsersListByConversation, removeUserFromPlatform }

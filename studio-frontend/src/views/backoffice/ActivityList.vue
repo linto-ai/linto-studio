@@ -133,6 +133,8 @@ const SAAS_ACTION_KEY = {
   "billing.exempt.disabled": "exempt_disabled",
   "quota.exceeded": "quota_exceeded",
   "feature.denied": "feature_denied",
+  "subscription.suspended": "subscription_suspended",
+  "billing.user.purged": "user_purged",
 }
 
 const IS_CLOUD = getEnv("VUE_APP_MODE") === "cloud"
@@ -410,7 +412,12 @@ export default {
     },
     saasActionVariant(action) {
       if (action === "payment.failed") return "error"
-      if (action === "quota.exceeded" || action === "feature.denied")
+      if (
+        action === "quota.exceeded" ||
+        action === "feature.denied" ||
+        action === "subscription.suspended" ||
+        action === "billing.user.purged"
+      )
         return "warning"
       if (
         action === "subscription.canceled" ||
@@ -452,6 +459,12 @@ export default {
           }${d.unit === "seconds" ? "s" : ""}`
         case "feature.denied":
           return d.capability || ""
+        case "subscription.suspended":
+          return `${d.fromStatus || "?"} → ${d.status || "unpaid"}`
+        case "billing.user.purged":
+          return `${d.usageRowsAnonymized ?? 0} ${this.$t(
+            "activity_list.saas.rows_anonymized",
+          )}`
         default:
           return row && row.message ? row.message : ""
       }

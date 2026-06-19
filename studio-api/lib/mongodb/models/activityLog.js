@@ -212,6 +212,41 @@ class ActivityLog extends MongoModel {
     }
   }
 
+  // RGPD: drop every activity row attributed to a deleted organization.
+  async deleteByOrganization(orgaId) {
+    try {
+      return await this.mongoDeleteMany({ "organization.id": String(orgaId) })
+    } catch (error) {
+      console.error("deleteByOrganization error:", error)
+      return error
+    }
+  }
+
+  // RGPD: drop every activity row attributed to a deleted user (hard delete).
+  async deleteByUser(userId) {
+    try {
+      return await this.mongoDeleteMany({ "user.id": String(userId) })
+    } catch (error) {
+      console.error("deleteByUser error:", error)
+      return error
+    }
+  }
+
+  // RGPD: anonymize a deleted user's rows in place — strip the id + personal info
+  // but keep the row so org-level KPIs (counts/durations) stay intact.
+  async anonymizeByUser(userId) {
+    try {
+      return await this.mongoUpdateMany(
+        { "user.id": String(userId) },
+        "$set",
+        { "user.id": null, "user.info": null },
+      )
+    } catch (error) {
+      console.error("anonymizeByUser error:", error)
+      return error
+    }
+  }
+
   async getKpiLlm(orgaId, startDate, endDate, userId) {
     try {
       const matchQuery = buildActivityMatchQuery(

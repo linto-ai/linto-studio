@@ -58,6 +58,17 @@
       "pay": "Payer & passer pro",
       "init_error": "Le formulaire de paiement n'a pas pu se charger. Fermez et réessayez."
     },
+    "billing_profile": {
+      "label": "Coordonnées de facturation (affichées sur vos factures)",
+      "legal_name": "Raison sociale",
+      "address_line1": "Adresse",
+      "postal_code": "Code postal",
+      "city": "Ville",
+      "country": "Pays",
+      "vat_id": "N° de TVA (facultatif)",
+      "continue": "Continuer",
+      "error": "Impossible d'enregistrer les coordonnées de facturation"
+    },
     "invoices": {
       "title": "Factures",
       "date": "Date",
@@ -124,6 +135,7 @@
       "details_label": "Détails",
       "seats_unit": "sièges",
       "prorated": "proratisé",
+      "rows_anonymized": "lignes anonymisées",
       "actions": {
         "subscription_created": "Souscription créée",
         "subscription_updated": "Abonnement modifié",
@@ -136,7 +148,9 @@
         "exempt_enabled": "Mode offert activé",
         "exempt_disabled": "Mode offert désactivé",
         "quota_exceeded": "Quota dépassé",
-        "feature_denied": "Fonctionnalité bloquée"
+        "feature_denied": "Fonctionnalité bloquée",
+        "subscription_suspended": "Abonnement suspendu",
+        "user_purged": "Données utilisateur anonymisées"
       }
     }
   },

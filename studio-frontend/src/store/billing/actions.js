@@ -6,6 +6,7 @@ import {
   apiCreateSubscription,
   apiCancelSubscription,
   apiGetInvoices,
+  apiSetBillingProfile,
 } from "@/api/cloud"
 
 function currentOrg(rootGetters, orgId) {
@@ -67,6 +68,15 @@ export default {
     } finally {
       commit("setLoading", false)
     }
+  },
+
+  // Persist the org's legal billing profile (company name, address, VAT) on the
+  // Stripe customer so invoices are compliant. Called before upgrade in live mode.
+  async saveBillingProfile({ rootGetters }, payload = {}) {
+    const { orgId, ...profile } = payload
+    const organizationId = currentOrg(rootGetters, orgId)
+    if (!organizationId) return null
+    return apiSetBillingProfile(organizationId, profile)
   },
 
   // MVP upgrade: create a premium subscription (fake Stripe locally). Returns
