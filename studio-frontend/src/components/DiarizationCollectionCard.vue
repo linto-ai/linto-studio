@@ -47,15 +47,30 @@
       v-if="loadingStats"
       class="diarization-collection-card__stats diarization-collection-card__stats--loading">
       <span class="diarization-collection-card__stat-placeholder" />
-      <span class="diarization-collection-card__stat-placeholder" />
+      <span
+        v-if="showSamples"
+        class="diarization-collection-card__stat-placeholder" />
     </div>
     <div v-else class="diarization-collection-card__stats">
-      <span>
-        <ph-icon name="user" size="sm" />
-        {{ stats.labels }}
-        {{ $t("speaker_diarization.speakers") }}
-      </span>
-      <span>
+      <div class="diarization-collection-card__speakers">
+        <template v-if="stats.labels > 0">
+          <span
+            v-for="(name, i) in previewNames"
+            :key="i"
+            class="diarization-collection-card__chip">
+            {{ name }}
+          </span>
+          <span
+            v-if="overflowCount > 0"
+            class="diarization-collection-card__chip diarization-collection-card__chip--more">
+            +{{ overflowCount }}
+          </span>
+        </template>
+        <span v-else class="diarization-collection-card__muted">
+          {{ $t("speaker_diarization.no_speaker") }}
+        </span>
+      </div>
+      <span v-if="showSamples" class="diarization-collection-card__samples">
         <ph-icon name="waveform" size="sm" />
         {{ stats.samples }}
         {{ $t("speaker_diarization.samples") }}
@@ -96,6 +111,12 @@ export default {
       type: Boolean,
       default: false,
     },
+    // The sample count is irrelevant in some contexts (e.g. the per-service
+    // picker, where only speakers matter for selection).
+    showSamples: {
+      type: Boolean,
+      default: true,
+    },
   },
   data() {
     return {
@@ -113,6 +134,14 @@ export default {
     },
     isEmbeddings() {
       return this.collection.storageMode === STORAGE_MODE.EMBEDDINGS
+    },
+    // First few speaker names shown as chips, plus the remaining count.
+    previewNames() {
+      return (this.stats?.names || []).slice(0, 3)
+    },
+    overflowCount() {
+      if (!this.stats) return 0
+      return Math.max(0, this.stats.labels - this.previewNames.length)
     },
     // Organization collections are auto-managed, so their stored name is not
     // meaningful to admins — show a natural, fixed label instead.
@@ -160,9 +189,10 @@ export default {
         this.stats = {
           labels: entries.length,
           samples: entries.reduce((sum, e) => sum + (e.samplesCount || 0), 0),
+          names: entries.map((e) => e.name).filter(Boolean),
         }
       } catch {
-        this.stats = { labels: 0, samples: 0 }
+        this.stats = { labels: 0, samples: 0, names: [] }
       } finally {
         this.loadingStats = false
       }
@@ -266,16 +296,43 @@ export default {
 
   &__stats {
     display: flex;
-    gap: 1rem;
+    flex-direction: column;
+    gap: 0.35rem;
     margin-top: 0.5rem;
     font-size: 13px;
     color: var(--text-secondary);
+  }
 
-    span {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.25rem;
+  &__speakers {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  &__chip {
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-primary);
+    background: var(--neutral-10);
+    white-space: nowrap;
+
+    &--more {
+      color: var(--text-secondary);
     }
+  }
+
+  &__samples {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  &__muted {
+    font-style: italic;
+    color: var(--text-secondary);
   }
 
   &__stat-placeholder {

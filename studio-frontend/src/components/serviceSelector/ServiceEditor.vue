@@ -138,6 +138,7 @@
             :organizationId="orgScope"
             selectable
             compact
+            :showSamples="false"
             :selected="speakerIdSelected.includes(collection._id)"
             @toggle="toggleCollection(collection._id)" />
         </div>

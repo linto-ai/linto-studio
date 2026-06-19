@@ -1734,7 +1734,7 @@
     "collection_name_placeholder": "e.g. Board of directors",
     "collection_description": "Description",
     "collection_description_placeholder": "e.g. Members of the board of directors",
-    "speakers": "speakers",
+    "no_speaker": "No speaker",
     "samples": "samples",
     "badge_audio": "Audio",
     "badge_embeddings": "Voiceprint",

@@ -1734,7 +1734,7 @@
     "collection_name_placeholder": "ex. Conseil d'administration",
     "collection_description": "Description",
     "collection_description_placeholder": "ex. Membres du conseil d'administration",
-    "speakers": "locuteurs",
+    "no_speaker": "Aucun locuteur",
     "samples": "échantillons",
     "badge_audio": "Audio",
     "badge_embeddings": "Empreinte",
