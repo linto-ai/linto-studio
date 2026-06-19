@@ -4,6 +4,8 @@ const ACTIVITY_COLUMNS = [
   { key: "timestamp", header: "Timestamp", width: 24 },
   { key: "source", header: "Source", width: 12 },
   { key: "scope", header: "Scope", width: 14 },
+  { key: "action", header: "Event", width: 22 },
+  { key: "details", header: "Details", width: 40 },
   { key: "message", header: "Message", width: 30 },
   { key: "userId", header: "User ID", width: 26 },
   { key: "userEmail", header: "User Email", width: 28 },
@@ -28,10 +30,21 @@ function transformActivityLog(log) {
   const info = user.info || {}
   const userName = [info.firstname, info.lastname].filter(Boolean).join(" ")
 
+  // SaaS/billing rows carry a free-form `saas` payload; flatten it to a compact
+  // key=value string so the export keeps the detail without per-action columns.
+  const details = log.saas
+    ? Object.entries(log.saas)
+        .filter(([, v]) => v !== null && v !== undefined && v !== "")
+        .map(([k, v]) => `${k}=${typeof v === "object" ? JSON.stringify(v) : v}`)
+        .join(", ")
+    : ""
+
   return {
     timestamp: log.timestamp || "",
     source: log.source || "",
     scope: log.scope || "",
+    action: log.action || "",
+    details,
     message: log.message || "",
     userId: user.id || "",
     userEmail: info.email || "",

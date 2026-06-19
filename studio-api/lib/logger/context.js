@@ -396,6 +396,63 @@ class LoggerContext {
     }
   }
 
+  // SaaS / billing product-life event emitted by the linto-saas plugin
+  // (subscription lifecycle, payments, seats, comp toggle, quota/plan denials).
+  // Stored as activity:"saas", scope:"billing" so the backoffice activity log
+  // can surface it in a dedicated "Facturation" tab. Org/user enrichment is
+  // best-effort: a missing org or user must never drop the event.
+  async createSaasContext(event = {}) {
+    try {
+      const {
+        action,
+        level = DEFAULT_LEVEL,
+        organizationId,
+        actorUserId,
+        data = {},
+        message,
+        ts,
+      } = event
+
+      const context = {
+        source: "saas",
+        level,
+        scope: "billing",
+        activity: "saas",
+        action: action || "unknown",
+        saas: data || {},
+        timestamp: ts || new Date().toISOString(),
+      }
+      if (message) context.message = message
+
+      if (actorUserId) {
+        let info = null
+        try {
+          info = await storeCacheUser(actorUserId)
+        } catch (_) {
+          /* user lookup failed -> keep the id, drop the info */
+        }
+        context.user = { id: actorUserId, info: info || cache.users[actorUserId] || null }
+      }
+
+      if (organizationId) {
+        let info = null
+        try {
+          info = await storeCacheOrganization(organizationId)
+        } catch (_) {
+          /* org lookup failed -> keep the id, drop the info */
+        }
+        context.organization = {
+          id: String(organizationId),
+          info: info || cache.organizations[organizationId] || null,
+        }
+      }
+
+      return context
+    } catch (err) {
+      return logError("Error creating saas log context", err)
+    }
+  }
+
   _sanitizeTranscriberProfile(transcriberProfile) {
     if (!transcriberProfile?.config) return {}
 
