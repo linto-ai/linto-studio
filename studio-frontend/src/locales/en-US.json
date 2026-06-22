@@ -226,6 +226,7 @@
       "diarization_label": "Enable diarization",
       "options_title": "Options",
       "credentials_title": "Credentials",
+      "model_title": "Model",
       "warning_global": {
         "line_1": "This profile will be visible in all organisations."
       },
@@ -252,7 +253,14 @@
       "amazon_endpoint_label": "AWS Region",
       "amazon_endpoint_placeholder": "us-east-1",
       "voxstral_endpoint_label": "Global WebSocket URL",
-      "voxstral_endpoint_placeholder": "ws://..."
+      "voxstral_endpoint_placeholder": "ws://...",
+      "google_credentials_label": "Service account JSON",
+      "google_credentials_placeholder": "Paste your Google Cloud service account key (JSON)",
+      "google_credentials_helper": "Leave empty to keep the existing credentials.",
+      "google_credentials_load_file": "Load from file",
+      "google_model_label": "Recognition model",
+      "google_project_id_label": "Project ID (optional)",
+      "google_project_id_placeholder": "Defaults to the service account's project_id"
     },
     "transcriber_profile_list": {
       "title": "Transcriber Profiles",
