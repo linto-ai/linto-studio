@@ -62,6 +62,11 @@
     }
   }
 
+  // Number fields hold short values; don't reserve the full 10rem min-width.
+  input[type="number"] {
+    min-width: 4rem;
+  }
+
   .form-field > label:has(+ select) {
     margin-bottom: 0.5rem;
   }

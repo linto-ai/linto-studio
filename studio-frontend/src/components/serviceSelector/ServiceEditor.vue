@@ -554,7 +554,7 @@ export default {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    flex-wrap: wrap;
+    //flex-wrap: wrap;
   }
 
   &__speaker-id {
