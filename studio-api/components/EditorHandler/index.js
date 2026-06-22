@@ -497,6 +497,12 @@ class EditorHandler extends Component {
         }
       }
     } catch (err) {
+      // A DB write failure throws here: abort this flush but keep the live doc
+      // and its connections — edits stay in the Y.Doc and the next debounced
+      // flush retries. Only a genuine epoch miss (matchedCount === 0) closes
+      // connections, via _staleFlush. The model write methods must therefore
+      // throw on error, never return it (a returned Error has no matchedCount
+      // and would be misread by _staleFlush as a dead lineage).
       console.error(`Flush failed for doc=${documentName}:`, err)
     }
   }

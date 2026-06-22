@@ -2,6 +2,7 @@ export { hexToRgba } from "./color"
 export { extractLangCode } from "./extractLangCode"
 export { isSameLanguage } from "./isSameLanguage"
 export { getLanguageDisplayName, buildTranslationItems } from "./intl"
+export { renderMarkdown } from "./markdown"
 export { throttle } from "./throttle"
 export {
   formatTime,

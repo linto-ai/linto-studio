@@ -3,13 +3,19 @@ import { AudioSource } from '../../types/editor';
 export type { AudioPluginApi };
 export interface AudioPluginOptions {
     /**
-     * Résout une `AudioSource` en URL jouable. Permet à l'hôte d'ajouter un
-     * bearer token, de fetch en blob puis `URL.createObjectURL`, etc.
-     * Si absent, `source.src` est utilisé tel quel.
+     * Resolves an `AudioSource` into a playable URL. Lets the host add a
+     * bearer token, fetch as a blob then `URL.createObjectURL`, etc.
+     * When absent, `source.src` is used as is.
      *
-     * Toute URL `blob:` retournée est révoquée automatiquement au changement
-     * de source ou au destroy du plugin.
+     * Any returned `blob:` URL is revoked automatically when the source
+     * changes or the plugin is destroyed.
      */
     resolveSrc?: (source: AudioSource) => string | Promise<string>;
+    /**
+     * Resolves precomputed waveform peaks for an `AudioSource` (e.g. fetched
+     * from the API). Raw amplitude values, any scale — the player normalizes
+     * them. Return null (or throw) to fall back to client-side decoding.
+     */
+    resolveWaveform?: (source: AudioSource) => number[] | null | Promise<number[] | null>;
 }
 export declare function createAudioPlugin(options?: AudioPluginOptions): CorePlugin;

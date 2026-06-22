@@ -522,76 +522,67 @@ class ConvoModel extends MongoModel {
    * Used by the collaborative editor flush so that turn order is preserved
    * exactly as it appears in the Y.Doc (atomic single-document write).
    * With `expectedEpoch`, the write only applies if the editor epoch is
-   * unchanged — check `matchedCount` on the result.
+   * unchanged — check `matchedCount` on the result. Throws on a DB error (do
+   * not swallow it): the flush must tell a transient failure apart from an
+   * epoch miss (`matchedCount === 0`), which it cannot do from a returned Error.
    */
   async replaceTurns(conversationId, turns, expectedEpoch = null) {
-    try {
-      const query =
-        expectedEpoch === null
-          ? { _id: this.getObjectId(conversationId) }
-          : this.editorEpochQuery(conversationId, expectedEpoch)
-      const dateTime = moment().format()
-      return await this.mongoUpdateOne(query, "$set", {
-        text: turns,
-        last_update: dateTime,
-      })
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    const query =
+      expectedEpoch === null
+        ? { _id: this.getObjectId(conversationId) }
+        : this.editorEpochQuery(conversationId, expectedEpoch)
+    const dateTime = moment().format()
+    return await this.mongoUpdateOne(query, "$set", {
+      text: turns,
+      last_update: dateTime,
+    })
   }
 
   /**
    * Update specific turns in place by turn_id (caller ensures no
    * add/remove/reorder). With `expectedEpoch`, every op is filtered on the
-   * epoch — a full write yields matchedCount === turns.length + 1.
+   * epoch — a full write yields matchedCount === turns.length + 1. Throws on a
+   * DB error (do not swallow it): the flush must tell a transient failure apart
+   * from an epoch miss, which it cannot do from a returned Error.
    */
   async updateTurnsByIds(conversationId, turns, expectedEpoch = null) {
-    try {
-      const filter =
-        expectedEpoch === null
-          ? { _id: this.getObjectId(conversationId) }
-          : this.editorEpochQuery(conversationId, expectedEpoch)
-      const operations = turns.map((turn) => ({
-        updateOne: {
-          filter,
-          update: { $set: { "text.$[elem]": turn } },
-          arrayFilters: [{ "elem.turn_id": turn.turn_id }],
-        },
-      }))
-      operations.push({
-        updateOne: {
-          filter,
-          update: { $set: { last_update: moment().format() } },
-        },
-      })
-      return await this.mongoBulkWrite(operations)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    const filter =
+      expectedEpoch === null
+        ? { _id: this.getObjectId(conversationId) }
+        : this.editorEpochQuery(conversationId, expectedEpoch)
+    const operations = turns.map((turn) => ({
+      updateOne: {
+        filter,
+        update: { $set: { "text.$[elem]": turn } },
+        arrayFilters: [{ "elem.turn_id": turn.turn_id }],
+      },
+    }))
+    operations.push({
+      updateOne: {
+        filter,
+        update: { $set: { last_update: moment().format() } },
+      },
+    })
+    return await this.mongoBulkWrite(operations)
   }
 
   /**
    * Replace the speakers array on a conversation.
    * With `expectedEpoch`, the write only applies if the editor epoch is
-   * unchanged — check `matchedCount` on the result.
+   * unchanged — check `matchedCount` on the result. Throws on a DB error (do
+   * not swallow it): the flush must tell a transient failure apart from an
+   * epoch miss, which it cannot do from a returned Error.
    */
   async updateSpeakers(conversationId, speakers, expectedEpoch = null) {
-    try {
-      const query =
-        expectedEpoch === null
-          ? { _id: this.getObjectId(conversationId) }
-          : this.editorEpochQuery(conversationId, expectedEpoch)
-      const dateTime = moment().format()
-      return await this.mongoUpdateOne(query, "$set", {
-        speakers,
-        last_update: dateTime,
-      })
-    } catch (error) {
-      console.error(error)
-      return error
-    }
+    const query =
+      expectedEpoch === null
+        ? { _id: this.getObjectId(conversationId) }
+        : this.editorEpochQuery(conversationId, expectedEpoch)
+    const dateTime = moment().format()
+    return await this.mongoUpdateOne(query, "$set", {
+      speakers,
+      last_update: dateTime,
+    })
   }
 
   async updateCategory(_id, category) {

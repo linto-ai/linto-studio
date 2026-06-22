@@ -1,21 +1,29 @@
 import { Doc } from 'yjs';
-import { Core, TranslationStore } from '../../../core/types';
+import { Core, SpeakersStore, TranslationStore } from '../../../core/types';
 export declare const SPEAKERS_MAP_KEY = "speakers";
 /** Color may be absent when the server seeded the Y.Map (server doesn't persist colors). */
 export interface SpeakerData {
     name: string;
     color?: string;
 }
-export interface SetupSpeakersSyncOptions {
-    core: Core;
-    ydoc: Doc;
-    translation: TranslationStore;
-    /** When true, seed the Y.Map from core.speakers for speakers referenced
-     *  by the translation's turns (local mode only). In collab mode the server seeds. */
-    seedFromCore: boolean;
-}
 /**
- * Wires bidirectional sync between core.speakers (Vue store) and a Y.Map
- * of speakers scoped to a translation's Y.Doc. Returns a cleanup function.
+ * Seed the Y.Map from core speakers referenced by the translation's turns.
+ * Local mode only — in collab mode the server seeds the map.
  */
-export declare function setupSpeakersSync(options: SetupSpeakersSyncOptions): () => void;
+export declare function seedSpeakersMap(ydoc: Doc, translation: TranslationStore, speakers: SpeakersStore): void;
+/**
+ * Bidirectional sync between core.speakers (Vue store) and the speakers
+ * Y.Map of a translation's Y.Doc. Construction imports the current Y state
+ * into the core; destroy() releases every subscription.
+ */
+export declare class SpeakersSync {
+    private readonly core;
+    private readonly speakersMap;
+    private readonly observer;
+    private readonly offCoreEvents;
+    constructor(core: Core, ydoc: Doc);
+    destroy(): void;
+    private importFromY;
+    private applyYEvent;
+    private writeToY;
+}

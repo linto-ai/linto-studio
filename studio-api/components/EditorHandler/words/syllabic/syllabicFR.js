@@ -11,17 +11,13 @@ class SyllabicFR extends Syllabic {
   }
 
   count(term) {
-    let wordInError = false
-    let wordErrCount = 0
-    for (const wordErr of wordErrorFR) {
-      if (wordErr.indexOf(term) >= 0) {
-        wordErrCount = wordErr[1]
-        wordInError = true
-      }
-    }
-    if (wordInError) {
-      return wordErrCount
-    }
+    // The errored-words dictionary is a { word: syllableCount } map, so this is
+    // a direct O(1) lookup instead of scanning all ~52k entries per word (this
+    // runs on the API event loop during flush). The typeof guard keeps inherited
+    // Object.prototype keys (e.g. "toString") from being read as a hit; the
+    // corrected count overrides the rule-based syllabification.
+    const errCount = wordErrorFR[term]
+    if (typeof errCount === "number") return errCount
     return this.syllabify(term).length
   }
 

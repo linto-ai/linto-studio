@@ -1,22 +1,14 @@
 import { CorePlugin, TranscriptionEditorPluginApi } from '../../core/types';
+import { CollabOptions, LocalUser } from './session';
 export type { TranscriptionEditorPluginApi };
-export interface CollabOptions {
-    /** Hocuspocus WebSocket URL (e.g. "ws://localhost/ws/editor") */
-    url: string;
-    /** JWT token for authentication */
-    token: string;
-}
+export type { CollabOptions };
 export interface TranscriptionEditorOptions {
     /** Collaborative mode configuration. If absent, local-only mode. */
     collab?: CollabOptions;
     /** Name of the XmlFragment in the Y.Doc. @default "default" */
     field?: string;
     /** Local user info for cursor display. */
-    user?: {
-        name: string;
-        color: string;
-        [key: string]: unknown;
-    };
+    user?: LocalUser;
     /**
      * Read-only mode: the editor is not editable and broadcasts no cursor or
      * selection to other participants. Remote edits are still received, so the
@@ -24,7 +16,7 @@ export interface TranscriptionEditorOptions {
      */
     readOnly?: boolean;
 }
-export declare function createTranscriptionEditorPlugin(options?: TranscriptionEditorOptions): CorePlugin;
+export declare function createTranscriptionEditorPlugin({ collab, field, user, readOnly, }?: TranscriptionEditorOptions): CorePlugin;
 export { TranscriptionDocument } from './extensions/transcriptionDocument';
 export { TurnNode } from './extensions/turnNode';
 export type { TurnNodeAttributes } from './extensions/turnNode';

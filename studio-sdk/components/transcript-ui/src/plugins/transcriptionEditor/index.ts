@@ -51,6 +51,7 @@ export function createTranscriptionEditorPlugin({
       const tiptapEditor = shallowRef<Editor | undefined>(undefined)
       const users = ref<YjsUser[]>([])
       const isConnected = ref(false)
+      const error = ref<string | null>(null)
 
       // The plugin's single mutable cell. Sessions publish their reactive
       // state through `host`, never by reaching into the plugin.
@@ -82,9 +83,13 @@ export function createTranscriptionEditorPlugin({
         },
         users,
         isConnected,
+        error,
         updateUser(attrs: Record<string, unknown>) {
           Object.assign(user, attrs)
           session?.updateUser()
+        },
+        setError(message: string | null) {
+          error.value = message
         },
       }
 
@@ -97,6 +102,9 @@ export function createTranscriptionEditorPlugin({
         tiptapEditor.value = undefined
         users.value = []
         isConnected.value = false
+        // A new load starts clean: drop any error from the previous attempt so
+        // a successful reload (e.g. on a fresh epoch) hides the overlay.
+        error.value = null
 
         const translation = editableTranslation(core)
         if (!translation) return // virtual cross translation: read-only view

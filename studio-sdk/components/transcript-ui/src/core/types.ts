@@ -163,7 +163,13 @@ export interface TranscriptionEditorPluginApi {
   readonly speakersMap: import("yjs").Map<{ name: string; color?: string }> | null
   readonly users: Ref<YjsUser[]>
   readonly isConnected: Ref<boolean>
+  /** Non-null when the editor failed to load (e.g. the collab connection was
+   *  rejected for a non-recoverable reason). Surfaced as an error overlay. */
+  readonly error: Ref<string | null>
   updateUser(attrs: Record<string, unknown>): void
+  /** Set or clear the load error. Cleared automatically on the next document
+   *  load (a successful reload hides the overlay). */
+  setError(message: string | null): void
 }
 
 // ── Subtitle Plugin API ──────────────────────────────────────────────────

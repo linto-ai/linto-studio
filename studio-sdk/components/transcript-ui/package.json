@@ -34,6 +34,7 @@
     "@tiptap/vue-3": "^3.23",
     "@tiptap/y-tiptap": "^3",
     "diff": "^8.0.3",
+    "dompurify": "^3.2.4",
     "lucide-vue-next": "^0.564.0",
     "marked": "^18.0.2",
     "reka-ui": "^2.8.0",

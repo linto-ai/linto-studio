@@ -6,11 +6,11 @@ import {
   useTemplateRef,
   watch,
 } from "vue"
-import { marked } from "marked"
 import TurndownService from "turndown"
 import { gfm } from "turndown-plugin-gfm"
 import Button from "./Button.vue"
 import { useI18n } from "../../i18n"
+import { renderMarkdown } from "../../utils/markdown"
 
 const props = withDefaults(
   defineProps<{
@@ -28,8 +28,6 @@ const { t } = useI18n()
 
 // ── Markdown / HTML converters ────────────────────────────────────────
 
-marked.setOptions({ gfm: true, breaks: false, async: false })
-
 const turndown = new TurndownService({
   headingStyle: "atx",
   hr: "---",
@@ -41,8 +39,7 @@ const turndown = new TurndownService({
 turndown.use(gfm)
 
 function mdToHtml(md: string): string {
-  if (!md) return ""
-  return marked.parse(md, { async: false }) as string
+  return renderMarkdown(md)
 }
 
 function htmlToMd(html: string): string {

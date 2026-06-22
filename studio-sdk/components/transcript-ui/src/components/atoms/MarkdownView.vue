@@ -1,15 +1,12 @@
 <script setup lang="ts">
 import { computed } from "vue"
-import { marked } from "marked"
+import { renderMarkdown } from "../../utils/markdown"
 
 const props = defineProps<{
   source: string
 }>()
 
-const html = computed(() => {
-  if (!props.source) return ""
-  return marked.parse(props.source, { async: false }) as string
-})
+const html = computed(() => renderMarkdown(props.source))
 </script>
 
 <template>

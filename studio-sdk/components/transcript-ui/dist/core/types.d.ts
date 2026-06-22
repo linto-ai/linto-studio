@@ -6,6 +6,8 @@ export interface CoreCapabilities {
     speakers: "edit" | "view";
 }
 export interface CoreEventMap {
+    /** A new document was loaded via setDocument (channels rebuilt). */
+    "document:change": void;
     "channel:change": {
         channelId: string;
     };
@@ -162,9 +164,15 @@ export interface AudioPluginApi {
     currentTime: Ref<number>;
     isPlaying: Ref<boolean>;
     src: ComputedRef<string | null>;
-    /** ID du mot en cours de lecture (null si pas de timestamps de mots ou pas en lecture). */
+    /**
+     * Precomputed waveform peaks for the current source (raw amplitude values,
+     * any scale — the player normalizes). Null when unavailable: the player
+     * falls back to decoding the audio client-side.
+     */
+    waveform: Ref<number[] | null>;
+    /** Id of the word being played (null without word timestamps or when not playing). */
     activeWordId: Ref<string | null>;
-    /** ID du turn en cours de lecture (null si hors plage ou pas en lecture). */
+    /** Id of the turn being played (null when out of range or not playing). */
     activeTurnId: Ref<string | null>;
     seekTo(time: number): void;
     setSeekHandler(handler: ((time: number) => void) | null): void;
@@ -185,7 +193,13 @@ export interface TranscriptionEditorPluginApi {
     }> | null;
     readonly users: Ref<YjsUser[]>;
     readonly isConnected: Ref<boolean>;
+    /** Non-null when the editor failed to load (e.g. the collab connection was
+     *  rejected for a non-recoverable reason). Surfaced as an error overlay. */
+    readonly error: Ref<string | null>;
     updateUser(attrs: Record<string, unknown>): void;
+    /** Set or clear the load error. Cleared automatically on the next document
+     *  load (a successful reload hides the overlay). */
+    setError(message: string | null): void;
 }
 export interface WatermarkToken {
     src: string;

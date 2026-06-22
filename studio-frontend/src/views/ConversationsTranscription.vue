@@ -2,10 +2,6 @@
   <LayoutV2 noHeader>
     <div class="transcription-editor-wrapper">
       <linto-editor ref="editor" :locale="$i18n.locale" />
-      <Loading
-        v-if="loading"
-        background
-        :title="$t('conversation.loading.conversation_data')" />
     </div>
     <PublicationModal
       v-model="publicationModal.open"
@@ -39,14 +35,10 @@ import { apiGetChatStatus } from "@/api/chat"
 
 import LayoutV2 from "@/layouts/v2-layout.vue"
 import PublicationModal from "@/components/molecules/PublicationModal.vue"
-import Loading from "@/components/atoms/Loading.vue"
 import {
   apiGetAudioFileFromConversation,
   apiGetAudioWaveFormFromConversation,
 } from "@/api/conversation"
-
-const COLLAB_SYNC_TIMEOUT_MS = 20000
-const COLLAB_SYNC_POLL_MS = 80
 
 // Editor epoch per translation id, read by the collab plugin to build the
 // Hocuspocus document name (the epoch identifies the server-side CRDT
@@ -62,7 +54,7 @@ function collectEditorEpochs(doc) {
 }
 
 export default {
-  components: { LayoutV2, PublicationModal, Loading },
+  components: { LayoutV2, PublicationModal },
   props: {
     userInfo: { type: Object, required: true },
   },
@@ -73,11 +65,11 @@ export default {
       securityLevel: null,
       conversationName: "",
       core: null,
+      isDestroyed: false,
       llmDispose: null,
       chatDispose: null,
       editListeners: [],
       canWrite: false,
-      loading: true,
       publicationModal: { open: false, jobId: null },
       // Mutable map shared with the collab plugin: sessions read it at
       // (re)creation, so refreshing its values + setDocument() is enough to
@@ -89,6 +81,10 @@ export default {
   async mounted() {
     const { doc, organizationId, securityLevel, name } =
       await apiGetConversationAsDoc(this.conversationId)
+    // mounted() is async: the user can navigate away mid-await, in which case
+    // beforeDestroy already ran. Bail at every await boundary so we never wire
+    // up an editor that is no longer in the DOM (see initEditor).
+    if (this.isDestroyed) return
     this.organizationId = organizationId
     this.securityLevel = securityLevel
     this.conversationName = name
@@ -103,11 +99,12 @@ export default {
       console.error("[host] failed to fetch conversation right", e)
       this.canWrite = false
     }
+    if (this.isDestroyed) return
 
     await this.initEditor(doc)
   },
   beforeDestroy() {
-    this.clearSyncWatchers()
+    this.isDestroyed = true
     this.editListeners.forEach((fn) => fn?.())
     this.editListeners = []
     this.llmDispose?.()
@@ -138,6 +135,9 @@ export default {
     },
     async initEditor(doc) {
       const el = this.$refs.editor
+      // Torn down during the async mount: the custom element is gone, so there
+      // is nothing to wire up (and destructuring `el` would throw).
+      if (this.isDestroyed || !el) return
       const { core } = el
       const ws_url = new URL(getEnv("VUE_APP_CONVO_API"))
       ws_url.protocol = ws_url.protocol === "https:" ? "wss:" : "ws:"
@@ -173,8 +173,7 @@ export default {
             url: ws_url.toString(),
             token: getCookie("authToken"),
             epochs: this.collabEpochs,
-            onAuthenticationFailed: (reason) =>
-              this.onCollabAuthFailed(reason),
+            onAuthenticationFailed: (reason) => this.onCollabAuthFailed(reason),
           },
           user: {
             name: userName(this.userInfo),
@@ -184,6 +183,8 @@ export default {
         }),
       )
 
+      // setupLLMServices returns { dispose }; store the disposer so it matches
+      // chatDispose (a bare function) and beforeDestroy can call llmDispose().
       this.llmDispose = setupLLMServices(core, {
         conversationId: this.conversationId,
         organizationId: this.organizationId,
@@ -197,13 +198,18 @@ export default {
         openPublication: ({ jobId }) => {
           this.publicationModal = { open: true, jobId }
         },
-      })
+      }).dispose
 
       // Chat assistant: only wire it when the backend feature is enabled, so
       // the SDK's "ask" button stays disabled otherwise (core.chat absent).
       const { enabled: chatEnabled } = await apiGetChatStatus().catch(() => ({
         enabled: false,
       }))
+      // Destroyed during the await: everything below (chat, collab connection,
+      // sync timers, edit listeners) is created after beforeDestroy ran, so it
+      // would leak. llmDispose was set before the await, so beforeDestroy
+      // already disposed it; just stop here.
+      if (this.isDestroyed || !this.$refs.editor) return
       if (chatEnabled) {
         this.chatDispose = setupChat(core, {
           conversationId: this.conversationId,
@@ -211,42 +217,8 @@ export default {
       }
 
       core.setDocument(doc)
-      this.waitForCollabSync()
       this.pushTranscriptionLastUpdate()
       this.attachEditListeners()
-    },
-
-    // SDK bundles its own Vue runtime, so its `isConnected` ref isn't tracked
-    // by a host-side watch; poll it, with a timeout fallback.
-    waitForCollabSync() {
-      const isSynced = () =>
-        !!this.core?.transcriptionEditor?.isConnected?.value
-      if (isSynced()) {
-        this.loading = false
-        return
-      }
-      this.clearSyncWatchers()
-      this.syncPollTimer = setInterval(() => {
-        if (isSynced()) {
-          this.loading = false
-          this.clearSyncWatchers()
-        }
-      }, COLLAB_SYNC_POLL_MS)
-      this.syncTimeoutTimer = setTimeout(() => {
-        this.loading = false
-        this.clearSyncWatchers()
-      }, COLLAB_SYNC_TIMEOUT_MS)
-    },
-
-    clearSyncWatchers() {
-      if (this.syncPollTimer) {
-        clearInterval(this.syncPollTimer)
-        this.syncPollTimer = null
-      }
-      if (this.syncTimeoutTimer) {
-        clearTimeout(this.syncTimeoutTimer)
-        this.syncTimeoutTimer = null
-      }
     },
 
     // The collab server rejected the connection. The recoverable case is a
@@ -264,13 +236,20 @@ export default {
         const changed = Object.entries(fresh).some(
           ([id, epoch]) => this.collabEpochs[id] !== epoch,
         )
-        if (!changed) return
+        if (!changed) {
+          // Not a stale epoch: the rejection is non-recoverable (invalid
+          // document name, lost access, expired token). Surface it in the
+          // editor instead of leaving a blank canvas after the load timeout.
+          this.core.transcriptionEditor?.setError(reason)
+          return
+        }
         Object.assign(this.collabEpochs, fresh)
-        this.loading = true
+        // The editor re-shows its own loading overlay on setDocument
+        // (document:change), which also clears any prior error.
         this.core.setDocument(doc)
-        this.waitForCollabSync()
       } catch (e) {
         console.error("[host] failed to reload after collab auth failure", e)
+        this.core.transcriptionEditor?.setError(reason)
       } finally {
         this.collabReloadInFlight = false
       }

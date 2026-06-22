@@ -34,8 +34,8 @@ var LintoEditor = (function(exports) {
   const isPromise = (val) => {
     return (isObject$3(val) || isFunction$1(val)) && isFunction$1(val.then) && isFunction$1(val.catch);
   };
-  const objectToString = Object.prototype.toString;
-  const toTypeString = (value) => objectToString.call(value);
+  const objectToString$1 = Object.prototype.toString;
+  const toTypeString = (value) => objectToString$1.call(value);
   const toRawType = (value) => {
     return toTypeString(value).slice(8, -1);
   };
@@ -216,7 +216,7 @@ var LintoEditor = (function(exports) {
     return !!(val && val["__v_isRef"] === true);
   };
   const toDisplayString = (val) => {
-    return isString(val) ? val : val == null ? "" : isArray$1(val) || isObject$3(val) && (val.toString === objectToString || !isFunction$1(val.toString)) ? isRef$1(val) ? toDisplayString(val.value) : JSON.stringify(val, replacer, 2) : String(val);
+    return isString(val) ? val : val == null ? "" : isArray$1(val) || isObject$3(val) && (val.toString === objectToString$1 || !isFunction$1(val.toString)) ? isRef$1(val) ? toDisplayString(val.value) : JSON.stringify(val, replacer, 2) : String(val);
   };
   const replacer = (_key, val) => {
     if (isRef$1(val)) {
@@ -224,9 +224,9 @@ var LintoEditor = (function(exports) {
     } else if (isMap(val)) {
       return {
         [`Map(${val.size})`]: [...val.entries()].reduce(
-          (entries, [key, val2], i2) => {
-            entries[stringifySymbol(key, i2) + " =>"] = val2;
-            return entries;
+          (entries2, [key, val2], i2) => {
+            entries2[stringifySymbol(key, i2) + " =>"] = val2;
+            return entries2;
           },
           {}
         )
@@ -866,10 +866,10 @@ var LintoEditor = (function(exports) {
       });
     },
     every(fn, thisArg) {
-      return apply$1(this, "every", fn, thisArg, void 0, arguments);
+      return apply$2(this, "every", fn, thisArg, void 0, arguments);
     },
     filter(fn, thisArg) {
-      return apply$1(
+      return apply$2(
         this,
         "filter",
         fn,
@@ -879,7 +879,7 @@ var LintoEditor = (function(exports) {
       );
     },
     find(fn, thisArg) {
-      return apply$1(
+      return apply$2(
         this,
         "find",
         fn,
@@ -889,10 +889,10 @@ var LintoEditor = (function(exports) {
       );
     },
     findIndex(fn, thisArg) {
-      return apply$1(this, "findIndex", fn, thisArg, void 0, arguments);
+      return apply$2(this, "findIndex", fn, thisArg, void 0, arguments);
     },
     findLast(fn, thisArg) {
-      return apply$1(
+      return apply$2(
         this,
         "findLast",
         fn,
@@ -902,11 +902,11 @@ var LintoEditor = (function(exports) {
       );
     },
     findLastIndex(fn, thisArg) {
-      return apply$1(this, "findLastIndex", fn, thisArg, void 0, arguments);
+      return apply$2(this, "findLastIndex", fn, thisArg, void 0, arguments);
     },
     // flat, flatMap could benefit from ARRAY_ITERATE but are not straight-forward to implement
     forEach(fn, thisArg) {
-      return apply$1(this, "forEach", fn, thisArg, void 0, arguments);
+      return apply$2(this, "forEach", fn, thisArg, void 0, arguments);
     },
     includes(...args) {
       return searchProxy(this, "includes", args);
@@ -922,7 +922,7 @@ var LintoEditor = (function(exports) {
       return searchProxy(this, "lastIndexOf", args);
     },
     map(fn, thisArg) {
-      return apply$1(this, "map", fn, thisArg, void 0, arguments);
+      return apply$2(this, "map", fn, thisArg, void 0, arguments);
     },
     pop() {
       return noTracking(this, "pop");
@@ -941,7 +941,7 @@ var LintoEditor = (function(exports) {
     },
     // slice could use ARRAY_ITERATE but also seems to beg for range tracking
     some(fn, thisArg) {
-      return apply$1(this, "some", fn, thisArg, void 0, arguments);
+      return apply$2(this, "some", fn, thisArg, void 0, arguments);
     },
     splice(...args) {
       return noTracking(this, "splice", args);
@@ -978,7 +978,7 @@ var LintoEditor = (function(exports) {
     return iter;
   }
   const arrayProto = Array.prototype;
-  function apply$1(self2, method, fn, thisArg, wrappedRetFn, args) {
+  function apply$2(self2, method, fn, thisArg, wrappedRetFn, args) {
     const arr = shallowReadArray(self2);
     const needsWrap = arr !== self2 && !/* @__PURE__ */ isShallow(self2);
     const methodFn = arr[method];
@@ -6435,16 +6435,16 @@ var LintoEditor = (function(exports) {
     }
     return cloned;
   }
-  function createTextVNode(text = " ", flag = 0) {
-    return createVNode(Text$1, null, text, flag);
+  function createTextVNode(text2 = " ", flag = 0) {
+    return createVNode(Text$1, null, text2, flag);
   }
   function createStaticVNode(content, numberOfNodes) {
     const vnode = createVNode(Static, null, content);
     vnode.staticCount = numberOfNodes;
     return vnode;
   }
-  function createCommentVNode(text = "", asBlock = false) {
-    return asBlock ? (openBlock(), createBlock(Comment, null, text)) : createVNode(Comment, null, text);
+  function createCommentVNode(text2 = "", asBlock = false) {
+    return asBlock ? (openBlock(), createBlock(Comment, null, text2)) : createVNode(Comment, null, text2);
   }
   function normalizeVNode(child) {
     if (child == null || typeof child === "boolean") {
@@ -6896,13 +6896,13 @@ var LintoEditor = (function(exports) {
       }
       return el;
     },
-    createText: (text) => doc$3.createTextNode(text),
-    createComment: (text) => doc$3.createComment(text),
-    setText: (node, text) => {
-      node.nodeValue = text;
+    createText: (text2) => doc$3.createTextNode(text2),
+    createComment: (text2) => doc$3.createComment(text2),
+    setText: (node, text2) => {
+      node.nodeValue = text2;
     },
-    setElementText: (el, text) => {
-      el.textContent = text;
+    setElementText: (el, text2) => {
+      el.textContent = text2;
     },
     parentNode: (node) => node.parentNode,
     nextSibling: (node) => node.nextSibling,
@@ -8733,12 +8733,12 @@ var LintoEditor = (function(exports) {
     md: 20,
     lg: 24
   };
-  const _hoisted_1$A = {
+  const _hoisted_1$D = {
     key: 1,
     class: "editor-icon editor-icon--missing",
     "aria-hidden": "true"
   };
-  const _sfc_main$K = /* @__PURE__ */ defineComponent({
+  const _sfc_main$M = /* @__PURE__ */ defineComponent({
     __name: "EditorIcon",
     props: {
       name: { type: String },
@@ -8757,11 +8757,11 @@ var LintoEditor = (function(exports) {
           style: normalizeStyle(style2.value),
           class: normalizeClass(["editor-icon", { "editor-icon--spin": __props.spin }]),
           "aria-hidden": "true"
-        }, null, 8, ["style", "class"])) : (openBlock(), createElementBlock("span", _hoisted_1$A, "?"));
+        }, null, 8, ["style", "class"])) : (openBlock(), createElementBlock("span", _hoisted_1$D, "?"));
       };
     }
   });
-  const _style_0$B = "\n.editor-icon[data-v-210c7f09] {\n  flex-shrink: 0;\n}\n.editor-icon--missing[data-v-210c7f09] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  opacity: 0.5;\n  font-size: 1em;\n  line-height: 1;\n}\n.editor-icon--spin[data-v-210c7f09] {\n  animation: editor-icon-spin-210c7f09 1s linear infinite;\n}\n@keyframes editor-icon-spin-210c7f09 {\nto {\n    transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.editor-icon--spin[data-v-210c7f09] {\n    animation: none;\n}\n}\n";
+  const _style_0$D = "\n.editor-icon[data-v-210c7f09] {\n  flex-shrink: 0;\n}\n.editor-icon--missing[data-v-210c7f09] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  opacity: 0.5;\n  font-size: 1em;\n  line-height: 1;\n}\n.editor-icon--spin[data-v-210c7f09] {\n  animation: editor-icon-spin-210c7f09 1s linear infinite;\n}\n@keyframes editor-icon-spin-210c7f09 {\nto {\n    transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.editor-icon--spin[data-v-210c7f09] {\n    animation: none;\n}\n}\n";
   const _export_sfc = (sfc, props) => {
     const target = sfc.__vccOpts || sfc;
     for (const [key, val] of props) {
@@ -8769,13 +8769,13 @@ var LintoEditor = (function(exports) {
     }
     return target;
   };
-  const EditorIcon = /* @__PURE__ */ _export_sfc(_sfc_main$K, [["styles", [_style_0$B]], ["__scopeId", "data-v-210c7f09"]]);
-  const _hoisted_1$z = ["type", "disabled", "aria-disabled", "aria-label"];
-  const _hoisted_2$r = {
+  const EditorIcon = /* @__PURE__ */ _export_sfc(_sfc_main$M, [["styles", [_style_0$D]], ["__scopeId", "data-v-210c7f09"]]);
+  const _hoisted_1$C = ["type", "disabled", "aria-disabled", "aria-label"];
+  const _hoisted_2$t = {
     key: 3,
     class: "editor-btn__label"
   };
-  const _sfc_main$J = /* @__PURE__ */ defineComponent({
+  const _sfc_main$L = /* @__PURE__ */ defineComponent({
     __name: "Button",
     props: {
       label: { type: String },
@@ -8828,7 +8828,7 @@ var LintoEditor = (function(exports) {
             name: __props.icon,
             size: iconSize.value
           }, null, 8, ["name", "size"])) : _ctx.$slots.icon ? renderSlot(_ctx.$slots, "icon", { key: 2 }, void 0, true) : createCommentVNode("", true),
-          hasLabel.value ? (openBlock(), createElementBlock("span", _hoisted_2$r, [
+          hasLabel.value ? (openBlock(), createElementBlock("span", _hoisted_2$t, [
             renderSlot(_ctx.$slots, "default", {}, () => [
               createTextVNode(toDisplayString(__props.label), 1)
             ], true)
@@ -8838,12 +8838,12 @@ var LintoEditor = (function(exports) {
             name: __props.iconRight,
             size: iconSize.value
           }, null, 8, ["name", "size"])) : _ctx.$slots["icon-right"] ? renderSlot(_ctx.$slots, "icon-right", { key: 5 }, void 0, true) : createCommentVNode("", true)
-        ], 10, _hoisted_1$z);
+        ], 10, _hoisted_1$C);
       };
     }
   });
-  const _style_0$A = "\n.editor-btn[data-v-3b0709a9] {\n  /* Default tokens — overridden by variant/intent/size modifiers */\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-sm);\n  --btn-font-size: var(--font-size-xs);\n  --btn-height: 32px;\n  --btn-gap: var(--spacing-xs);\n\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: var(--btn-gap);\n  box-sizing: border-box;\n  height: var(--btn-height);\n  padding: var(--btn-padding-y) var(--btn-padding-x);\n  font-family: var(--font-family);\n  font-size: var(--btn-font-size);\n  font-weight: 500;\n  line-height: 1;\n  color: var(--btn-text);\n  background-color: var(--btn-bg);\n  border: 1px solid var(--btn-border-color);\n  border-radius: var(--radius-sm);\n  cursor: pointer;\n  white-space: nowrap;\n  transition:\n    background-color var(--transition-duration),\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.editor-btn[data-v-3b0709a9]:hover:not(:disabled) {\n  background-color: var(--btn-hover-bg);\n  color: var(--btn-hover-text);\n}\n.editor-btn[data-v-3b0709a9]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n\n/* Note: this rule is repeated lower in the file (after variants) to win the\n   cascade on the variant CSS vars. Keep this lightweight version for the\n   cursor and hover suppression. */\n.editor-btn[data-v-3b0709a9]:disabled {\n  cursor: not-allowed;\n}\n.editor-btn[data-v-3b0709a9]:disabled:hover {\n  background-color: var(--btn-bg);\n  color: var(--btn-text);\n}\n.editor-btn__label[data-v-3b0709a9] {\n  /* //overflow: hidden;\n  text-overflow: ellipsis; */\n  text-overflow: ellipsis;\n  text-box: cap alphabetic;\n}\n\n/* Sizes */\n.editor-btn--sm[data-v-3b0709a9] {\n  /* defaults */\n}\n.editor-btn--md[data-v-3b0709a9] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-sm);\n  --btn-height: 40px;\n}\n.editor-btn--lg[data-v-3b0709a9] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-base);\n  --btn-height: 44px;\n}\n\n/* Icon-only: square */\n.editor-btn--icon-only[data-v-3b0709a9] {\n  width: var(--btn-height);\n  padding: 0;\n}\n.editor-btn--block[data-v-3b0709a9] {\n  display: flex;\n  width: 100%;\n}\n\n/* Variants — default intent */\n.editor-btn--primary[data-v-3b0709a9] {\n  --btn-bg: var(--color-primary);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary-hover);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--secondary[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-primary);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--tertiary[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-primary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n.editor-btn--transparent[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n\n/* Destructive intent overrides */\n.editor-btn--destructive.editor-btn--primary[data-v-3b0709a9] {\n  --btn-bg: var(--color-danger);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-hover);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--destructive.editor-btn--secondary[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-danger);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--destructive.editor-btn--tertiary[data-v-3b0709a9],\n.editor-btn--destructive.editor-btn--transparent[data-v-3b0709a9] {\n  --btn-text: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-soft);\n  --btn-hover-text: var(--color-danger);\n}\n\n/* Disabled: gray-out regardless of variant. Placed after the variants so the\n   CSS var overrides win the cascade (same specificity, last declaration). */\n.editor-btn[data-v-3b0709a9]:disabled {\n  --btn-bg: var(--color-surface);\n  --btn-text: var(--color-text-muted);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface);\n  --btn-hover-text: var(--color-text-muted);\n}\n";
-  const Button = /* @__PURE__ */ _export_sfc(_sfc_main$J, [["styles", [_style_0$A]], ["__scopeId", "data-v-3b0709a9"]]);
+  const _style_0$C = "\n.editor-btn[data-v-3b0709a9] {\n  /* Default tokens — overridden by variant/intent/size modifiers */\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-sm);\n  --btn-font-size: var(--font-size-xs);\n  --btn-height: 32px;\n  --btn-gap: var(--spacing-xs);\n\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: var(--btn-gap);\n  box-sizing: border-box;\n  height: var(--btn-height);\n  padding: var(--btn-padding-y) var(--btn-padding-x);\n  font-family: var(--font-family);\n  font-size: var(--btn-font-size);\n  font-weight: 500;\n  line-height: 1;\n  color: var(--btn-text);\n  background-color: var(--btn-bg);\n  border: 1px solid var(--btn-border-color);\n  border-radius: var(--radius-sm);\n  cursor: pointer;\n  white-space: nowrap;\n  transition:\n    background-color var(--transition-duration),\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.editor-btn[data-v-3b0709a9]:hover:not(:disabled) {\n  background-color: var(--btn-hover-bg);\n  color: var(--btn-hover-text);\n}\n.editor-btn[data-v-3b0709a9]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n\n/* Note: this rule is repeated lower in the file (after variants) to win the\n   cascade on the variant CSS vars. Keep this lightweight version for the\n   cursor and hover suppression. */\n.editor-btn[data-v-3b0709a9]:disabled {\n  cursor: not-allowed;\n}\n.editor-btn[data-v-3b0709a9]:disabled:hover {\n  background-color: var(--btn-bg);\n  color: var(--btn-text);\n}\n.editor-btn__label[data-v-3b0709a9] {\n  /* //overflow: hidden;\n  text-overflow: ellipsis; */\n  text-overflow: ellipsis;\n  text-box: cap alphabetic;\n}\n\n/* Sizes */\n.editor-btn--sm[data-v-3b0709a9] {\n  /* defaults */\n}\n.editor-btn--md[data-v-3b0709a9] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-sm);\n  --btn-height: 40px;\n}\n.editor-btn--lg[data-v-3b0709a9] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-base);\n  --btn-height: 44px;\n}\n\n/* Icon-only: square */\n.editor-btn--icon-only[data-v-3b0709a9] {\n  width: var(--btn-height);\n  padding: 0;\n}\n.editor-btn--block[data-v-3b0709a9] {\n  display: flex;\n  width: 100%;\n}\n\n/* Variants — default intent */\n.editor-btn--primary[data-v-3b0709a9] {\n  --btn-bg: var(--color-primary);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary-hover);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--secondary[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-primary);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--tertiary[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-primary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n.editor-btn--transparent[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n\n/* Destructive intent overrides */\n.editor-btn--destructive.editor-btn--primary[data-v-3b0709a9] {\n  --btn-bg: var(--color-danger);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-hover);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--destructive.editor-btn--secondary[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-danger);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--destructive.editor-btn--tertiary[data-v-3b0709a9],\n.editor-btn--destructive.editor-btn--transparent[data-v-3b0709a9] {\n  --btn-text: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-soft);\n  --btn-hover-text: var(--color-danger);\n}\n\n/* Disabled: gray-out regardless of variant. Placed after the variants so the\n   CSS var overrides win the cascade (same specificity, last declaration). */\n.editor-btn[data-v-3b0709a9]:disabled {\n  --btn-bg: var(--color-surface);\n  --btn-text: var(--color-text-muted);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface);\n  --btn-hover-text: var(--color-text-muted);\n}\n";
+  const Button = /* @__PURE__ */ _export_sfc(_sfc_main$L, [["styles", [_style_0$C]], ["__scopeId", "data-v-3b0709a9"]]);
   const fr = {
     "editor.loading": "Chargement…",
     "editor.loadError": "Erreur de chargement",
@@ -9162,6 +9162,2615 @@ var LintoEditor = (function(exports) {
       };
     });
   }
+  function z() {
+    return { async: false, breaks: false, extensions: null, gfm: true, hooks: null, pedantic: false, renderer: null, silent: false, tokenizer: null, walkTokens: null };
+  }
+  var T = z();
+  function G(l2) {
+    T = l2;
+  }
+  var _ = { exec: () => null };
+  function k(l2, e2 = "") {
+    let t2 = typeof l2 == "string" ? l2 : l2.source, n2 = { replace: (s2, r2) => {
+      let i2 = typeof r2 == "string" ? r2 : r2.source;
+      return i2 = i2.replace(m$1.caret, "$1"), t2 = t2.replace(s2, i2), n2;
+    }, getRegex: () => new RegExp(t2, e2) };
+    return n2;
+  }
+  var Re = ((l2 = "") => {
+    try {
+      return !!new RegExp("(?<=1)(?<!1)" + l2);
+    } catch {
+      return false;
+    }
+  })(), m$1 = { codeRemoveIndent: /^(?: {1,4}| {0,3}\t)/gm, outputLinkReplace: /\\([\[\]])/g, indentCodeCompensation: /^(\s+)(?:```)/, beginningSpace: /^\s+/, endingHash: /#$/, startingSpaceChar: /^ /, endingSpaceChar: / $/, nonSpaceChar: /[^ ]/, newLineCharGlobal: /\n/g, tabCharGlobal: /\t/g, multipleSpaceGlobal: /\s+/g, blankLine: /^[ \t]*$/, doubleBlankLine: /\n[ \t]*\n[ \t]*$/, blockquoteStart: /^ {0,3}>/, blockquoteSetextReplace: /\n {0,3}((?:=+|-+) *)(?=\n|$)/g, blockquoteSetextReplace2: /^ {0,3}>[ \t]?/gm, listReplaceNesting: /^ {1,4}(?=( {4})*[^ ])/g, listIsTask: /^\[[ xX]\] +\S/, listReplaceTask: /^\[[ xX]\] +/, listTaskCheckbox: /\[[ xX]\]/, anyLine: /\n.*\n/, hrefBrackets: /^<(.*)>$/, tableDelimiter: /[:|]/, tableAlignChars: /^\||\| *$/g, tableRowBlankLine: /\n[ \t]*$/, tableAlignRight: /^ *-+: *$/, tableAlignCenter: /^ *:-+: *$/, tableAlignLeft: /^ *:-+ *$/, startATag: /^<a /i, endATag: /^<\/a>/i, startPreScriptTag: /^<(pre|code|kbd|script)(\s|>)/i, endPreScriptTag: /^<\/(pre|code|kbd|script)(\s|>)/i, startAngleBracket: /^</, endAngleBracket: />$/, pedanticHrefTitle: /^([^'"]*[^\s])\s+(['"])(.*)\2/, unicodeAlphaNumeric: /[\p{L}\p{N}]/u, escapeTest: /[&<>"']/, escapeReplace: /[&<>"']/g, escapeTestNoEncode: /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/, escapeReplaceNoEncode: /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/g, caret: /(^|[^\[])\^/g, percentDecode: /%25/g, findPipe: /\|/g, splitPipe: / \|/, slashPipe: /\\\|/g, carriageReturn: /\r\n|\r/g, spaceLine: /^ +$/gm, notSpaceStart: /^\S*/, endingNewline: /\n$/, listItemRegex: (l2) => new RegExp(`^( {0,3}${l2})((?:[	 ][^\\n]*)?(?:\\n|$))`), nextBulletRegex: (l2) => new RegExp(`^ {0,${Math.min(3, l2 - 1)}}(?:[*+-]|\\d{1,9}[.)])((?:[ 	][^\\n]*)?(?:\\n|$))`), hrRegex: (l2) => new RegExp(`^ {0,${Math.min(3, l2 - 1)}}((?:- *){3,}|(?:_ *){3,}|(?:\\* *){3,})(?:\\n+|$)`), fencesBeginRegex: (l2) => new RegExp(`^ {0,${Math.min(3, l2 - 1)}}(?:\`\`\`|~~~)`), headingBeginRegex: (l2) => new RegExp(`^ {0,${Math.min(3, l2 - 1)}}#`), htmlBeginRegex: (l2) => new RegExp(`^ {0,${Math.min(3, l2 - 1)}}<(?:[a-z].*>|!--)`, "i"), blockquoteBeginRegex: (l2) => new RegExp(`^ {0,${Math.min(3, l2 - 1)}}>`) }, Te = /^(?:[ \t]*(?:\n|$))+/, Oe = /^((?: {4}| {0,3}\t)[^\n]+(?:\n(?:[ \t]*(?:\n|$))*)?)+/, we = /^ {0,3}(`{3,}(?=[^`\n]*(?:\n|$))|~{3,})([^\n]*)(?:\n|$)(?:|([\s\S]*?)(?:\n|$))(?: {0,3}\1[~`]* *(?=\n|$)|$)/, I = /^ {0,3}((?:-[\t ]*){3,}|(?:_[ \t]*){3,}|(?:\*[ \t]*){3,})(?:\n+|$)/, ye = /^ {0,3}(#{1,6})(?=\s|$)(.*)(?:\n+|$)/, Q = / {0,3}(?:[*+-]|\d{1,9}[.)])/, ie$2 = /^(?!bull |blockCode|fences|blockquote|heading|html|table)((?:.|\n(?!\s*?\n|bull |blockCode|fences|blockquote|heading|html|table))+?)\n {0,3}(=+|-+) *(?:\n+|$)/, oe = k(ie$2).replace(/bull/g, Q).replace(/blockCode/g, /(?: {4}| {0,3}\t)/).replace(/fences/g, / {0,3}(?:`{3,}|~{3,})/).replace(/blockquote/g, / {0,3}>/).replace(/heading/g, / {0,3}#{1,6}/).replace(/html/g, / {0,3}<[^\n>]+>\n/).replace(/\|table/g, "").getRegex(), Pe = k(ie$2).replace(/bull/g, Q).replace(/blockCode/g, /(?: {4}| {0,3}\t)/).replace(/fences/g, / {0,3}(?:`{3,}|~{3,})/).replace(/blockquote/g, / {0,3}>/).replace(/heading/g, / {0,3}#{1,6}/).replace(/html/g, / {0,3}<[^\n>]+>\n/).replace(/table/g, / {0,3}\|?(?:[:\- ]*\|)+[\:\- ]*\n/).getRegex(), j = /^([^\n]+(?:\n(?!hr|heading|lheading|blockquote|fences|list|html|table| +\n)[^\n]+)*)/, Se = /^[^\n]+/, F = /(?!\s*\])(?:\\[\s\S]|[^\[\]\\])+/, $e = k(/^ {0,3}\[(label)\]: *(?:\n[ \t]*)?([^<\s][^\s]*|<.*?>)(?:(?: +(?:\n[ \t]*)?| *\n[ \t]*)(title))? *(?:\n+|$)/).replace("label", F).replace("title", /(?:"(?:\\"?|[^"\\])*"|'[^'\n]*(?:\n[^'\n]+)*\n?'|\([^()]*\))/).getRegex(), Le = k(/^(bull)([ \t][^\n]+?)?(?:\n|$)/).replace(/bull/g, Q).getRegex(), v$1 = "address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|search|section|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul", U = /<!--(?:-?>|[\s\S]*?(?:-->|$))/, _e = k("^ {0,3}(?:<(script|pre|style|textarea)[\\s>][\\s\\S]*?(?:</\\1>[^\\n]*\\n+|$)|comment[^\\n]*(\\n+|$)|<\\?[\\s\\S]*?(?:\\?>\\n*|$)|<![A-Z][\\s\\S]*?(?:>\\n*|$)|<!\\[CDATA\\[[\\s\\S]*?(?:\\]\\]>\\n*|$)|</?(tag)(?: +|\\n|/?>)[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$)|<(?!script|pre|style|textarea)([a-z][\\w-]*)(?:attribute)*? */?>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$)|</(?!script|pre|style|textarea)[a-z][\\w-]*\\s*>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$))", "i").replace("comment", U).replace("tag", v$1).replace("attribute", / +[a-zA-Z:_][\w.:-]*(?: *= *"[^"\n]*"| *= *'[^'\n]*'| *= *[^\s"'=<>`]+)?/).getRegex(), ae = k(j).replace("hr", I).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("|lheading", "").replace("|table", "").replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)])[ \\t]").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", v$1).getRegex(), Me = k(/^( {0,3}> ?(paragraph|[^\n]*)(?:\n|$))+/).replace("paragraph", ae).getRegex(), K$1 = { blockquote: Me, code: Oe, def: $e, fences: we, heading: ye, hr: I, html: _e, lheading: oe, list: Le, newline: Te, paragraph: ae, table: _, text: Se }, re = k("^ *([^\\n ].*)\\n {0,3}((?:\\| *)?:?-+:? *(?:\\| *:?-+:? *)*(?:\\| *)?)(?:\\n((?:(?! *\\n|hr|heading|blockquote|code|fences|list|html).*(?:\\n|$))*)\\n*|$)").replace("hr", I).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("blockquote", " {0,3}>").replace("code", "(?: {4}| {0,3}	)[^\\n]").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)])[ \\t]").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", v$1).getRegex(), ze = { ...K$1, lheading: Pe, table: re, paragraph: k(j).replace("hr", I).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("|lheading", "").replace("table", re).replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)])[ \\t]").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", v$1).getRegex() }, Ee = { ...K$1, html: k(`^ *(?:comment *(?:\\n|\\s*$)|<(tag)[\\s\\S]+?</\\1> *(?:\\n{2,}|\\s*$)|<tag(?:"[^"]*"|'[^']*'|\\s[^'"/>\\s]*)*?/?> *(?:\\n{2,}|\\s*$))`).replace("comment", U).replace(/tag/g, "(?!(?:a|em|strong|small|s|cite|q|dfn|abbr|data|time|code|var|samp|kbd|sub|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo|span|br|wbr|ins|del|img)\\b)\\w+(?!:|[^\\w\\s@]*@)\\b").getRegex(), def: /^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +(["(][^\n]+[")]))? *(?:\n+|$)/, heading: /^(#{1,6})(.*)(?:\n+|$)/, fences: _, lheading: /^(.+?)\n {0,3}(=+|-+) *(?:\n+|$)/, paragraph: k(j).replace("hr", I).replace("heading", ` *#{1,6} *[^
+]`).replace("lheading", oe).replace("|table", "").replace("blockquote", " {0,3}>").replace("|fences", "").replace("|list", "").replace("|html", "").replace("|tag", "").getRegex() }, Ae = /^\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/, Ce = /^(`+)([^`]|[^`][\s\S]*?[^`])\1(?!`)/, le = /^( {2,}|\\)\n(?!\s*$)/, Ie = /^(`+|[^`])(?:(?= {2,}\n)|[\s\S]*?(?:(?=[\\<!\[`*_]|\b_|$)|[^ ](?= {2,}\n)))/, E$1 = /[\p{P}\p{S}]/u, H = /[\s\p{P}\p{S}]/u, W = /[^\s\p{P}\p{S}]/u, Be = k(/^((?![*_])punctSpace)/, "u").replace(/punctSpace/g, H).getRegex(), ue = /(?!~)[\p{P}\p{S}]/u, De = /(?!~)[\s\p{P}\p{S}]/u, qe = /(?:[^\s\p{P}\p{S}]|~)/u, ve = k(/link|precode-code|html/, "g").replace("link", /\[(?:[^\[\]`]|(?<a>`+)[^`]+\k<a>(?!`))*?\]\((?:\\[\s\S]|[^\\\(\)]|\((?:\\[\s\S]|[^\\\(\)])*\))*\)/).replace("precode-", Re ? "(?<!`)()" : "(^^|[^`])").replace("code", /(?<b>`+)[^`]+\k<b>(?!`)/).replace("html", /<(?! )[^<>]*?>/).getRegex(), pe = /^(?:\*+(?:((?!\*)punct)|([^\s*]))?)|^_+(?:((?!_)punct)|([^\s_]))?/, He = k(pe, "u").replace(/punct/g, E$1).getRegex(), Ze = k(pe, "u").replace(/punct/g, ue).getRegex(), ce = "^[^_*]*?__[^_*]*?\\*[^_*]*?(?=__)|[^*]+(?=[^*])|(?!\\*)punct(\\*+)(?=[\\s]|$)|notPunctSpace(\\*+)(?!\\*)(?=punctSpace|$)|(?!\\*)punctSpace(\\*+)(?=notPunctSpace)|[\\s](\\*+)(?!\\*)(?=punct)|(?!\\*)punct(\\*+)(?!\\*)(?=punct)|notPunctSpace(\\*+)(?=notPunctSpace)", Ge = k(ce, "gu").replace(/notPunctSpace/g, W).replace(/punctSpace/g, H).replace(/punct/g, E$1).getRegex(), Ne = k(ce, "gu").replace(/notPunctSpace/g, qe).replace(/punctSpace/g, De).replace(/punct/g, ue).getRegex(), Qe = k("^[^_*]*?\\*\\*[^_*]*?_[^_*]*?(?=\\*\\*)|[^_]+(?=[^_])|(?!_)punct(_+)(?=[\\s]|$)|notPunctSpace(_+)(?!_)(?=punctSpace|$)|(?!_)punctSpace(_+)(?=notPunctSpace)|[\\s](_+)(?!_)(?=punct)|(?!_)punct(_+)(?!_)(?=punct)", "gu").replace(/notPunctSpace/g, W).replace(/punctSpace/g, H).replace(/punct/g, E$1).getRegex(), je = k(/^~~?(?:((?!~)punct)|[^\s~])/, "u").replace(/punct/g, E$1).getRegex(), Fe = "^[^~]+(?=[^~])|(?!~)punct(~~?)(?=[\\s]|$)|notPunctSpace(~~?)(?!~)(?=punctSpace|$)|(?!~)punctSpace(~~?)(?=notPunctSpace)|[\\s](~~?)(?!~)(?=punct)|(?!~)punct(~~?)(?!~)(?=punct)|notPunctSpace(~~?)(?=notPunctSpace)", Ue = k(Fe, "gu").replace(/notPunctSpace/g, W).replace(/punctSpace/g, H).replace(/punct/g, E$1).getRegex(), Ke = k(/\\(punct)/, "gu").replace(/punct/g, E$1).getRegex(), We = k(/^<(scheme:[^\s\x00-\x1f<>]*|email)>/).replace("scheme", /[a-zA-Z][a-zA-Z0-9+.-]{1,31}/).replace("email", /[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+(@)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(?![-_])/).getRegex(), Xe = k(U).replace("(?:-->|$)", "-->").getRegex(), Je = k("^comment|^</[a-zA-Z][\\w:-]*\\s*>|^<[a-zA-Z][\\w-]*(?:attribute)*?\\s*/?>|^<\\?[\\s\\S]*?\\?>|^<![a-zA-Z]+\\s[\\s\\S]*?>|^<!\\[CDATA\\[[\\s\\S]*?\\]\\]>").replace("comment", Xe).replace("attribute", /\s+[a-zA-Z:_][\w.:-]*(?:\s*=\s*"[^"]*"|\s*=\s*'[^']*'|\s*=\s*[^\s"'=<>`]+)?/).getRegex(), q = /(?:\[(?:\\[\s\S]|[^\[\]\\])*\]|\\[\s\S]|`+(?!`)[^`]*?`+(?!`)|``+(?=\])|[^\[\]\\`])*?/, Ve = k(/^!?\[(label)\]\(\s*(href)(?:(?:[ \t]+(?:\n[ \t]*)?|\n[ \t]*)(title))?\s*\)/).replace("label", q).replace("href", /<(?:\\.|[^\n<>\\])+>|[^ \t\n\x00-\x1f]*/).replace("title", /"(?:\\"?|[^"\\])*"|'(?:\\'?|[^'\\])*'|\((?:\\\)?|[^)\\])*\)/).getRegex(), he = k(/^!?\[(label)\]\[(ref)\]/).replace("label", q).replace("ref", F).getRegex(), ke = k(/^!?\[(ref)\](?:\[\])?/).replace("ref", F).getRegex(), Ye = k("reflink|nolink(?!\\()", "g").replace("reflink", he).replace("nolink", ke).getRegex(), se = /[hH][tT][tT][pP][sS]?|[fF][tT][pP]/, X = { _backpedal: _, anyPunctuation: Ke, autolink: We, blockSkip: ve, br: le, code: Ce, del: _, delLDelim: _, delRDelim: _, emStrongLDelim: He, emStrongRDelimAst: Ge, emStrongRDelimUnd: Qe, escape: Ae, link: Ve, nolink: ke, punctuation: Be, reflink: he, reflinkSearch: Ye, tag: Je, text: Ie, url: _ }, et = { ...X, link: k(/^!?\[(label)\]\((.*?)\)/).replace("label", q).getRegex(), reflink: k(/^!?\[(label)\]\s*\[([^\]]*)\]/).replace("label", q).getRegex() }, N = { ...X, emStrongRDelimAst: Ne, emStrongLDelim: Ze, delLDelim: je, delRDelim: Ue, url: k(/^((?:protocol):\/\/|www\.)(?:[a-zA-Z0-9\-]+\.?)+[^\s<]*|^email/).replace("protocol", se).replace("email", /[A-Za-z0-9._+-]+(@)[a-zA-Z0-9-_]+(?:\.[a-zA-Z0-9-_]*[a-zA-Z0-9])+(?![-_])/).getRegex(), _backpedal: /(?:[^?!.,:;*_'"~()&]+|\([^)]*\)|&(?![a-zA-Z0-9]+;$)|[?!.,:;*_'"~)]+(?!$))+/, del: /^(~~?)(?=[^\s~])((?:\\[\s\S]|[^\\])*?(?:\\[\s\S]|[^\s~\\]))\1(?=[^~]|$)/, text: k(/^([`~]+|[^`~])(?:(?= {2,}\n)|(?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)|[\s\S]*?(?:(?=[\\<!\[`*~_]|\b_|protocol:\/\/|www\.|$)|[^ ](?= {2,}\n)|[^a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-](?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)))/).replace("protocol", se).getRegex() }, tt = { ...N, br: k(le).replace("{2,}", "*").getRegex(), text: k(N.text).replace("\\b_", "\\b_| {2,}\\n").replace(/\{2,\}/g, "*").getRegex() }, B = { normal: K$1, gfm: ze, pedantic: Ee }, A = { normal: X, gfm: N, breaks: tt, pedantic: et };
+  var nt = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }, de = (l2) => nt[l2];
+  function O(l2, e2) {
+    if (e2) {
+      if (m$1.escapeTest.test(l2)) return l2.replace(m$1.escapeReplace, de);
+    } else if (m$1.escapeTestNoEncode.test(l2)) return l2.replace(m$1.escapeReplaceNoEncode, de);
+    return l2;
+  }
+  function J(l2) {
+    try {
+      l2 = encodeURI(l2).replace(m$1.percentDecode, "%");
+    } catch {
+      return null;
+    }
+    return l2;
+  }
+  function V(l2, e2) {
+    let t2 = l2.replace(m$1.findPipe, (r2, i2, o2) => {
+      let u2 = false, a2 = i2;
+      for (; --a2 >= 0 && o2[a2] === "\\"; ) u2 = !u2;
+      return u2 ? "|" : " |";
+    }), n2 = t2.split(m$1.splitPipe), s2 = 0;
+    if (n2[0].trim() || n2.shift(), n2.length > 0 && !n2.at(-1)?.trim() && n2.pop(), e2) if (n2.length > e2) n2.splice(e2);
+    else for (; n2.length < e2; ) n2.push("");
+    for (; s2 < n2.length; s2++) n2[s2] = n2[s2].trim().replace(m$1.slashPipe, "|");
+    return n2;
+  }
+  function $$1(l2, e2, t2) {
+    let n2 = l2.length;
+    if (n2 === 0) return "";
+    let s2 = 0;
+    for (; s2 < n2; ) {
+      let r2 = l2.charAt(n2 - s2 - 1);
+      if (r2 === e2 && true) s2++;
+      else break;
+    }
+    return l2.slice(0, n2 - s2);
+  }
+  function Y(l2) {
+    let e2 = l2.split(`
+`), t2 = e2.length - 1;
+    for (; t2 >= 0 && m$1.blankLine.test(e2[t2]); ) t2--;
+    return e2.length - t2 <= 2 ? l2 : e2.slice(0, t2 + 1).join(`
+`);
+  }
+  function ge(l2, e2) {
+    if (l2.indexOf(e2[1]) === -1) return -1;
+    let t2 = 0;
+    for (let n2 = 0; n2 < l2.length; n2++) if (l2[n2] === "\\") n2++;
+    else if (l2[n2] === e2[0]) t2++;
+    else if (l2[n2] === e2[1] && (t2--, t2 < 0)) return n2;
+    return t2 > 0 ? -2 : -1;
+  }
+  function fe(l2, e2 = 0) {
+    let t2 = e2, n2 = "";
+    for (let s2 of l2) if (s2 === "	") {
+      let r2 = 4 - t2 % 4;
+      n2 += " ".repeat(r2), t2 += r2;
+    } else n2 += s2, t2++;
+    return n2;
+  }
+  function me(l2, e2, t2, n2, s2) {
+    let r2 = e2.href, i2 = e2.title || null, o2 = l2[1].replace(s2.other.outputLinkReplace, "$1");
+    n2.state.inLink = true;
+    let u2 = { type: l2[0].charAt(0) === "!" ? "image" : "link", raw: t2, href: r2, title: i2, text: o2, tokens: n2.inlineTokens(o2) };
+    return n2.state.inLink = false, u2;
+  }
+  function rt(l2, e2, t2) {
+    let n2 = l2.match(t2.other.indentCodeCompensation);
+    if (n2 === null) return e2;
+    let s2 = n2[1];
+    return e2.split(`
+`).map((r2) => {
+      let i2 = r2.match(t2.other.beginningSpace);
+      if (i2 === null) return r2;
+      let [o2] = i2;
+      return o2.length >= s2.length ? r2.slice(s2.length) : r2;
+    }).join(`
+`);
+  }
+  var w$1 = class w {
+    options;
+    rules;
+    lexer;
+    constructor(e2) {
+      this.options = e2 || T;
+    }
+    space(e2) {
+      let t2 = this.rules.block.newline.exec(e2);
+      if (t2 && t2[0].length > 0) return { type: "space", raw: t2[0] };
+    }
+    code(e2) {
+      let t2 = this.rules.block.code.exec(e2);
+      if (t2) {
+        let n2 = this.options.pedantic ? t2[0] : Y(t2[0]), s2 = n2.replace(this.rules.other.codeRemoveIndent, "");
+        return { type: "code", raw: n2, codeBlockStyle: "indented", text: s2 };
+      }
+    }
+    fences(e2) {
+      let t2 = this.rules.block.fences.exec(e2);
+      if (t2) {
+        let n2 = t2[0], s2 = rt(n2, t2[3] || "", this.rules);
+        return { type: "code", raw: n2, lang: t2[2] ? t2[2].trim().replace(this.rules.inline.anyPunctuation, "$1") : t2[2], text: s2 };
+      }
+    }
+    heading(e2) {
+      let t2 = this.rules.block.heading.exec(e2);
+      if (t2) {
+        let n2 = t2[2].trim();
+        if (this.rules.other.endingHash.test(n2)) {
+          let s2 = $$1(n2, "#");
+          (this.options.pedantic || !s2 || this.rules.other.endingSpaceChar.test(s2)) && (n2 = s2.trim());
+        }
+        return { type: "heading", raw: $$1(t2[0], `
+`), depth: t2[1].length, text: n2, tokens: this.lexer.inline(n2) };
+      }
+    }
+    hr(e2) {
+      let t2 = this.rules.block.hr.exec(e2);
+      if (t2) return { type: "hr", raw: $$1(t2[0], `
+`) };
+    }
+    blockquote(e2) {
+      let t2 = this.rules.block.blockquote.exec(e2);
+      if (t2) {
+        let n2 = $$1(t2[0], `
+`).split(`
+`), s2 = "", r2 = "", i2 = [];
+        for (; n2.length > 0; ) {
+          let o2 = false, u2 = [], a2;
+          for (a2 = 0; a2 < n2.length; a2++) if (this.rules.other.blockquoteStart.test(n2[a2])) u2.push(n2[a2]), o2 = true;
+          else if (!o2) u2.push(n2[a2]);
+          else break;
+          n2 = n2.slice(a2);
+          let c2 = u2.join(`
+`), p2 = c2.replace(this.rules.other.blockquoteSetextReplace, `
+    $1`).replace(this.rules.other.blockquoteSetextReplace2, "");
+          s2 = s2 ? `${s2}
+${c2}` : c2, r2 = r2 ? `${r2}
+${p2}` : p2;
+          let d2 = this.lexer.state.top;
+          if (this.lexer.state.top = true, this.lexer.blockTokens(p2, i2, true), this.lexer.state.top = d2, n2.length === 0) break;
+          let h2 = i2.at(-1);
+          if (h2?.type === "code") break;
+          if (h2?.type === "blockquote") {
+            let R = h2, f2 = R.raw + `
+` + n2.join(`
+`), S2 = this.blockquote(f2);
+            i2[i2.length - 1] = S2, s2 = s2.substring(0, s2.length - R.raw.length) + S2.raw, r2 = r2.substring(0, r2.length - R.text.length) + S2.text;
+            break;
+          } else if (h2?.type === "list") {
+            let R = h2, f2 = R.raw + `
+` + n2.join(`
+`), S2 = this.list(f2);
+            i2[i2.length - 1] = S2, s2 = s2.substring(0, s2.length - h2.raw.length) + S2.raw, r2 = r2.substring(0, r2.length - R.raw.length) + S2.raw, n2 = f2.substring(i2.at(-1).raw.length).split(`
+`);
+            continue;
+          }
+        }
+        return { type: "blockquote", raw: s2, tokens: i2, text: r2 };
+      }
+    }
+    list(e2) {
+      let t2 = this.rules.block.list.exec(e2);
+      if (t2) {
+        let n2 = t2[1].trim(), s2 = n2.length > 1, r2 = { type: "list", raw: "", ordered: s2, start: s2 ? +n2.slice(0, -1) : "", loose: false, items: [] };
+        n2 = s2 ? `\\d{1,9}\\${n2.slice(-1)}` : `\\${n2}`, this.options.pedantic && (n2 = s2 ? n2 : "[*+-]");
+        let i2 = this.rules.other.listItemRegex(n2), o2 = false;
+        for (; e2; ) {
+          let a2 = false, c2 = "", p2 = "";
+          if (!(t2 = i2.exec(e2)) || this.rules.block.hr.test(e2)) break;
+          c2 = t2[0], e2 = e2.substring(c2.length);
+          let d2 = fe(t2[2].split(`
+`, 1)[0], t2[1].length), h2 = e2.split(`
+`, 1)[0], R = !d2.trim(), f2 = 0;
+          if (this.options.pedantic ? (f2 = 2, p2 = d2.trimStart()) : R ? f2 = t2[1].length + 1 : (f2 = d2.search(this.rules.other.nonSpaceChar), f2 = f2 > 4 ? 1 : f2, p2 = d2.slice(f2), f2 += t2[1].length), R && this.rules.other.blankLine.test(h2) && (c2 += h2 + `
+`, e2 = e2.substring(h2.length + 1), a2 = true), !a2) {
+            let S2 = this.rules.other.nextBulletRegex(f2), ee = this.rules.other.hrRegex(f2), te = this.rules.other.fencesBeginRegex(f2), ne = this.rules.other.headingBeginRegex(f2), xe = this.rules.other.htmlBeginRegex(f2), be = this.rules.other.blockquoteBeginRegex(f2);
+            for (; e2; ) {
+              let Z = e2.split(`
+`, 1)[0], C2;
+              if (h2 = Z, this.options.pedantic ? (h2 = h2.replace(this.rules.other.listReplaceNesting, "  "), C2 = h2) : C2 = h2.replace(this.rules.other.tabCharGlobal, "    "), te.test(h2) || ne.test(h2) || xe.test(h2) || be.test(h2) || S2.test(h2) || ee.test(h2)) break;
+              if (C2.search(this.rules.other.nonSpaceChar) >= f2 || !h2.trim()) p2 += `
+` + C2.slice(f2);
+              else {
+                if (R || d2.replace(this.rules.other.tabCharGlobal, "    ").search(this.rules.other.nonSpaceChar) >= 4 || te.test(d2) || ne.test(d2) || ee.test(d2)) break;
+                p2 += `
+` + h2;
+              }
+              R = !h2.trim(), c2 += Z + `
+`, e2 = e2.substring(Z.length + 1), d2 = C2.slice(f2);
+            }
+          }
+          r2.loose || (o2 ? r2.loose = true : this.rules.other.doubleBlankLine.test(c2) && (o2 = true)), r2.items.push({ type: "list_item", raw: c2, task: !!this.options.gfm && this.rules.other.listIsTask.test(p2), loose: false, text: p2, tokens: [] }), r2.raw += c2;
+        }
+        let u2 = r2.items.at(-1);
+        if (u2) u2.raw = u2.raw.trimEnd(), u2.text = u2.text.trimEnd();
+        else return;
+        r2.raw = r2.raw.trimEnd();
+        for (let a2 of r2.items) {
+          if (this.lexer.state.top = false, a2.tokens = this.lexer.blockTokens(a2.text, []), a2.task) {
+            if (a2.text = a2.text.replace(this.rules.other.listReplaceTask, ""), a2.tokens[0]?.type === "text" || a2.tokens[0]?.type === "paragraph") {
+              a2.tokens[0].raw = a2.tokens[0].raw.replace(this.rules.other.listReplaceTask, ""), a2.tokens[0].text = a2.tokens[0].text.replace(this.rules.other.listReplaceTask, "");
+              for (let p2 = this.lexer.inlineQueue.length - 1; p2 >= 0; p2--) if (this.rules.other.listIsTask.test(this.lexer.inlineQueue[p2].src)) {
+                this.lexer.inlineQueue[p2].src = this.lexer.inlineQueue[p2].src.replace(this.rules.other.listReplaceTask, "");
+                break;
+              }
+            }
+            let c2 = this.rules.other.listTaskCheckbox.exec(a2.raw);
+            if (c2) {
+              let p2 = { type: "checkbox", raw: c2[0] + " ", checked: c2[0] !== "[ ]" };
+              a2.checked = p2.checked, r2.loose ? a2.tokens[0] && ["paragraph", "text"].includes(a2.tokens[0].type) && "tokens" in a2.tokens[0] && a2.tokens[0].tokens ? (a2.tokens[0].raw = p2.raw + a2.tokens[0].raw, a2.tokens[0].text = p2.raw + a2.tokens[0].text, a2.tokens[0].tokens.unshift(p2)) : a2.tokens.unshift({ type: "paragraph", raw: p2.raw, text: p2.raw, tokens: [p2] }) : a2.tokens.unshift(p2);
+            }
+          }
+          if (!r2.loose) {
+            let c2 = a2.tokens.filter((d2) => d2.type === "space"), p2 = c2.length > 0 && c2.some((d2) => this.rules.other.anyLine.test(d2.raw));
+            r2.loose = p2;
+          }
+        }
+        if (r2.loose) for (let a2 of r2.items) {
+          a2.loose = true;
+          for (let c2 of a2.tokens) c2.type === "text" && (c2.type = "paragraph");
+        }
+        return r2;
+      }
+    }
+    html(e2) {
+      let t2 = this.rules.block.html.exec(e2);
+      if (t2) {
+        let n2 = Y(t2[0]);
+        return { type: "html", block: true, raw: n2, pre: t2[1] === "pre" || t2[1] === "script" || t2[1] === "style", text: n2 };
+      }
+    }
+    def(e2) {
+      let t2 = this.rules.block.def.exec(e2);
+      if (t2) {
+        let n2 = t2[1].toLowerCase().replace(this.rules.other.multipleSpaceGlobal, " "), s2 = t2[2] ? t2[2].replace(this.rules.other.hrefBrackets, "$1").replace(this.rules.inline.anyPunctuation, "$1") : "", r2 = t2[3] ? t2[3].substring(1, t2[3].length - 1).replace(this.rules.inline.anyPunctuation, "$1") : t2[3];
+        return { type: "def", tag: n2, raw: $$1(t2[0], `
+`), href: s2, title: r2 };
+      }
+    }
+    table(e2) {
+      let t2 = this.rules.block.table.exec(e2);
+      if (!t2 || !this.rules.other.tableDelimiter.test(t2[2])) return;
+      let n2 = V(t2[1]), s2 = t2[2].replace(this.rules.other.tableAlignChars, "").split("|"), r2 = t2[3]?.trim() ? t2[3].replace(this.rules.other.tableRowBlankLine, "").split(`
+`) : [], i2 = { type: "table", raw: $$1(t2[0], `
+`), header: [], align: [], rows: [] };
+      if (n2.length === s2.length) {
+        for (let o2 of s2) this.rules.other.tableAlignRight.test(o2) ? i2.align.push("right") : this.rules.other.tableAlignCenter.test(o2) ? i2.align.push("center") : this.rules.other.tableAlignLeft.test(o2) ? i2.align.push("left") : i2.align.push(null);
+        for (let o2 = 0; o2 < n2.length; o2++) i2.header.push({ text: n2[o2], tokens: this.lexer.inline(n2[o2]), header: true, align: i2.align[o2] });
+        for (let o2 of r2) i2.rows.push(V(o2, i2.header.length).map((u2, a2) => ({ text: u2, tokens: this.lexer.inline(u2), header: false, align: i2.align[a2] })));
+        return i2;
+      }
+    }
+    lheading(e2) {
+      let t2 = this.rules.block.lheading.exec(e2);
+      if (t2) {
+        let n2 = t2[1].trim();
+        return { type: "heading", raw: $$1(t2[0], `
+`), depth: t2[2].charAt(0) === "=" ? 1 : 2, text: n2, tokens: this.lexer.inline(n2) };
+      }
+    }
+    paragraph(e2) {
+      let t2 = this.rules.block.paragraph.exec(e2);
+      if (t2) {
+        let n2 = t2[1].charAt(t2[1].length - 1) === `
+` ? t2[1].slice(0, -1) : t2[1];
+        return { type: "paragraph", raw: t2[0], text: n2, tokens: this.lexer.inline(n2) };
+      }
+    }
+    text(e2) {
+      let t2 = this.rules.block.text.exec(e2);
+      if (t2) return { type: "text", raw: t2[0], text: t2[0], tokens: this.lexer.inline(t2[0]) };
+    }
+    escape(e2) {
+      let t2 = this.rules.inline.escape.exec(e2);
+      if (t2) return { type: "escape", raw: t2[0], text: t2[1] };
+    }
+    tag(e2) {
+      let t2 = this.rules.inline.tag.exec(e2);
+      if (t2) return !this.lexer.state.inLink && this.rules.other.startATag.test(t2[0]) ? this.lexer.state.inLink = true : this.lexer.state.inLink && this.rules.other.endATag.test(t2[0]) && (this.lexer.state.inLink = false), !this.lexer.state.inRawBlock && this.rules.other.startPreScriptTag.test(t2[0]) ? this.lexer.state.inRawBlock = true : this.lexer.state.inRawBlock && this.rules.other.endPreScriptTag.test(t2[0]) && (this.lexer.state.inRawBlock = false), { type: "html", raw: t2[0], inLink: this.lexer.state.inLink, inRawBlock: this.lexer.state.inRawBlock, block: false, text: t2[0] };
+    }
+    link(e2) {
+      let t2 = this.rules.inline.link.exec(e2);
+      if (t2) {
+        let n2 = t2[2].trim();
+        if (!this.options.pedantic && this.rules.other.startAngleBracket.test(n2)) {
+          if (!this.rules.other.endAngleBracket.test(n2)) return;
+          let i2 = $$1(n2.slice(0, -1), "\\");
+          if ((n2.length - i2.length) % 2 === 0) return;
+        } else {
+          let i2 = ge(t2[2], "()");
+          if (i2 === -2) return;
+          if (i2 > -1) {
+            let u2 = (t2[0].indexOf("!") === 0 ? 5 : 4) + t2[1].length + i2;
+            t2[2] = t2[2].substring(0, i2), t2[0] = t2[0].substring(0, u2).trim(), t2[3] = "";
+          }
+        }
+        let s2 = t2[2], r2 = "";
+        if (this.options.pedantic) {
+          let i2 = this.rules.other.pedanticHrefTitle.exec(s2);
+          i2 && (s2 = i2[1], r2 = i2[3]);
+        } else r2 = t2[3] ? t2[3].slice(1, -1) : "";
+        return s2 = s2.trim(), this.rules.other.startAngleBracket.test(s2) && (this.options.pedantic && !this.rules.other.endAngleBracket.test(n2) ? s2 = s2.slice(1) : s2 = s2.slice(1, -1)), me(t2, { href: s2 && s2.replace(this.rules.inline.anyPunctuation, "$1"), title: r2 && r2.replace(this.rules.inline.anyPunctuation, "$1") }, t2[0], this.lexer, this.rules);
+      }
+    }
+    reflink(e2, t2) {
+      let n2;
+      if ((n2 = this.rules.inline.reflink.exec(e2)) || (n2 = this.rules.inline.nolink.exec(e2))) {
+        let s2 = (n2[2] || n2[1]).replace(this.rules.other.multipleSpaceGlobal, " "), r2 = t2[s2.toLowerCase()];
+        if (!r2) {
+          let i2 = n2[0].charAt(0);
+          return { type: "text", raw: i2, text: i2 };
+        }
+        return me(n2, r2, n2[0], this.lexer, this.rules);
+      }
+    }
+    emStrong(e2, t2, n2 = "") {
+      let s2 = this.rules.inline.emStrongLDelim.exec(e2);
+      if (!s2 || !s2[1] && !s2[2] && !s2[3] && !s2[4] || s2[4] && n2.match(this.rules.other.unicodeAlphaNumeric)) return;
+      if (!(s2[1] || s2[3] || "") || !n2 || this.rules.inline.punctuation.exec(n2)) {
+        let i2 = [...s2[0]].length - 1, o2, u2, a2 = i2, c2 = 0, p2 = s2[0][0] === "*" ? this.rules.inline.emStrongRDelimAst : this.rules.inline.emStrongRDelimUnd;
+        for (p2.lastIndex = 0, t2 = t2.slice(-1 * e2.length + i2); (s2 = p2.exec(t2)) !== null; ) {
+          if (o2 = s2[1] || s2[2] || s2[3] || s2[4] || s2[5] || s2[6], !o2) continue;
+          if (u2 = [...o2].length, s2[3] || s2[4]) {
+            a2 += u2;
+            continue;
+          } else if ((s2[5] || s2[6]) && i2 % 3 && !((i2 + u2) % 3)) {
+            c2 += u2;
+            continue;
+          }
+          if (a2 -= u2, a2 > 0) continue;
+          u2 = Math.min(u2, u2 + a2 + c2);
+          let d2 = [...s2[0]][0].length, h2 = e2.slice(0, i2 + s2.index + d2 + u2);
+          if (Math.min(i2, u2) % 2) {
+            let f2 = h2.slice(1, -1);
+            return { type: "em", raw: h2, text: f2, tokens: this.lexer.inlineTokens(f2) };
+          }
+          let R = h2.slice(2, -2);
+          return { type: "strong", raw: h2, text: R, tokens: this.lexer.inlineTokens(R) };
+        }
+      }
+    }
+    codespan(e2) {
+      let t2 = this.rules.inline.code.exec(e2);
+      if (t2) {
+        let n2 = t2[2].replace(this.rules.other.newLineCharGlobal, " "), s2 = this.rules.other.nonSpaceChar.test(n2), r2 = this.rules.other.startingSpaceChar.test(n2) && this.rules.other.endingSpaceChar.test(n2);
+        return s2 && r2 && (n2 = n2.substring(1, n2.length - 1)), { type: "codespan", raw: t2[0], text: n2 };
+      }
+    }
+    br(e2) {
+      let t2 = this.rules.inline.br.exec(e2);
+      if (t2) return { type: "br", raw: t2[0] };
+    }
+    del(e2, t2, n2 = "") {
+      let s2 = this.rules.inline.delLDelim.exec(e2);
+      if (!s2) return;
+      if (!(s2[1] || "") || !n2 || this.rules.inline.punctuation.exec(n2)) {
+        let i2 = [...s2[0]].length - 1, o2, u2, a2 = i2, c2 = this.rules.inline.delRDelim;
+        for (c2.lastIndex = 0, t2 = t2.slice(-1 * e2.length + i2); (s2 = c2.exec(t2)) !== null; ) {
+          if (o2 = s2[1] || s2[2] || s2[3] || s2[4] || s2[5] || s2[6], !o2 || (u2 = [...o2].length, u2 !== i2)) continue;
+          if (s2[3] || s2[4]) {
+            a2 += u2;
+            continue;
+          }
+          if (a2 -= u2, a2 > 0) continue;
+          u2 = Math.min(u2, u2 + a2);
+          let p2 = [...s2[0]][0].length, d2 = e2.slice(0, i2 + s2.index + p2 + u2), h2 = d2.slice(i2, -i2);
+          return { type: "del", raw: d2, text: h2, tokens: this.lexer.inlineTokens(h2) };
+        }
+      }
+    }
+    autolink(e2) {
+      let t2 = this.rules.inline.autolink.exec(e2);
+      if (t2) {
+        let n2, s2;
+        return t2[2] === "@" ? (n2 = t2[1], s2 = "mailto:" + n2) : (n2 = t2[1], s2 = n2), { type: "link", raw: t2[0], text: n2, href: s2, tokens: [{ type: "text", raw: n2, text: n2 }] };
+      }
+    }
+    url(e2) {
+      let t2;
+      if (t2 = this.rules.inline.url.exec(e2)) {
+        let n2, s2;
+        if (t2[2] === "@") n2 = t2[0], s2 = "mailto:" + n2;
+        else {
+          let r2;
+          do
+            r2 = t2[0], t2[0] = this.rules.inline._backpedal.exec(t2[0])?.[0] ?? "";
+          while (r2 !== t2[0]);
+          n2 = t2[0], t2[1] === "www." ? s2 = "http://" + t2[0] : s2 = t2[0];
+        }
+        return { type: "link", raw: t2[0], text: n2, href: s2, tokens: [{ type: "text", raw: n2, text: n2 }] };
+      }
+    }
+    inlineText(e2) {
+      let t2 = this.rules.inline.text.exec(e2);
+      if (t2) {
+        let n2 = this.lexer.state.inRawBlock;
+        return { type: "text", raw: t2[0], text: t2[0], escaped: n2 };
+      }
+    }
+  };
+  var x = class l2 {
+    tokens;
+    options;
+    state;
+    inlineQueue;
+    tokenizer;
+    constructor(e2) {
+      this.tokens = [], this.tokens.links = /* @__PURE__ */ Object.create(null), this.options = e2 || T, this.options.tokenizer = this.options.tokenizer || new w$1(), this.tokenizer = this.options.tokenizer, this.tokenizer.options = this.options, this.tokenizer.lexer = this, this.inlineQueue = [], this.state = { inLink: false, inRawBlock: false, top: true };
+      let t2 = { other: m$1, block: B.normal, inline: A.normal };
+      this.options.pedantic ? (t2.block = B.pedantic, t2.inline = A.pedantic) : this.options.gfm && (t2.block = B.gfm, this.options.breaks ? t2.inline = A.breaks : t2.inline = A.gfm), this.tokenizer.rules = t2;
+    }
+    static get rules() {
+      return { block: B, inline: A };
+    }
+    static lex(e2, t2) {
+      return new l2(t2).lex(e2);
+    }
+    static lexInline(e2, t2) {
+      return new l2(t2).inlineTokens(e2);
+    }
+    lex(e2) {
+      e2 = e2.replace(m$1.carriageReturn, `
+`), this.blockTokens(e2, this.tokens);
+      for (let t2 = 0; t2 < this.inlineQueue.length; t2++) {
+        let n2 = this.inlineQueue[t2];
+        this.inlineTokens(n2.src, n2.tokens);
+      }
+      return this.inlineQueue = [], this.tokens;
+    }
+    blockTokens(e2, t2 = [], n2 = false) {
+      this.tokenizer.lexer = this, this.options.pedantic && (e2 = e2.replace(m$1.tabCharGlobal, "    ").replace(m$1.spaceLine, ""));
+      let s2 = 1 / 0;
+      for (; e2; ) {
+        if (e2.length < s2) s2 = e2.length;
+        else {
+          this.infiniteLoopError(e2.charCodeAt(0));
+          break;
+        }
+        let r2;
+        if (this.options.extensions?.block?.some((o2) => (r2 = o2.call({ lexer: this }, e2, t2)) ? (e2 = e2.substring(r2.raw.length), t2.push(r2), true) : false)) continue;
+        if (r2 = this.tokenizer.space(e2)) {
+          e2 = e2.substring(r2.raw.length);
+          let o2 = t2.at(-1);
+          r2.raw.length === 1 && o2 !== void 0 ? o2.raw += `
+` : t2.push(r2);
+          continue;
+        }
+        if (r2 = this.tokenizer.code(e2)) {
+          e2 = e2.substring(r2.raw.length);
+          let o2 = t2.at(-1);
+          o2?.type === "paragraph" || o2?.type === "text" ? (o2.raw += (o2.raw.endsWith(`
+`) ? "" : `
+`) + r2.raw, o2.text += `
+` + r2.text, this.inlineQueue.at(-1).src = o2.text) : t2.push(r2);
+          continue;
+        }
+        if (r2 = this.tokenizer.fences(e2)) {
+          e2 = e2.substring(r2.raw.length), t2.push(r2);
+          continue;
+        }
+        if (r2 = this.tokenizer.heading(e2)) {
+          e2 = e2.substring(r2.raw.length), t2.push(r2);
+          continue;
+        }
+        if (r2 = this.tokenizer.hr(e2)) {
+          e2 = e2.substring(r2.raw.length), t2.push(r2);
+          continue;
+        }
+        if (r2 = this.tokenizer.blockquote(e2)) {
+          e2 = e2.substring(r2.raw.length), t2.push(r2);
+          continue;
+        }
+        if (r2 = this.tokenizer.list(e2)) {
+          e2 = e2.substring(r2.raw.length), t2.push(r2);
+          continue;
+        }
+        if (r2 = this.tokenizer.html(e2)) {
+          e2 = e2.substring(r2.raw.length), t2.push(r2);
+          continue;
+        }
+        if (r2 = this.tokenizer.def(e2)) {
+          e2 = e2.substring(r2.raw.length);
+          let o2 = t2.at(-1);
+          o2?.type === "paragraph" || o2?.type === "text" ? (o2.raw += (o2.raw.endsWith(`
+`) ? "" : `
+`) + r2.raw, o2.text += `
+` + r2.raw, this.inlineQueue.at(-1).src = o2.text) : this.tokens.links[r2.tag] || (this.tokens.links[r2.tag] = { href: r2.href, title: r2.title }, t2.push(r2));
+          continue;
+        }
+        if (r2 = this.tokenizer.table(e2)) {
+          e2 = e2.substring(r2.raw.length), t2.push(r2);
+          continue;
+        }
+        if (r2 = this.tokenizer.lheading(e2)) {
+          e2 = e2.substring(r2.raw.length), t2.push(r2);
+          continue;
+        }
+        let i2 = e2;
+        if (this.options.extensions?.startBlock) {
+          let o2 = 1 / 0, u2 = e2.slice(1), a2;
+          this.options.extensions.startBlock.forEach((c2) => {
+            a2 = c2.call({ lexer: this }, u2), typeof a2 == "number" && a2 >= 0 && (o2 = Math.min(o2, a2));
+          }), o2 < 1 / 0 && o2 >= 0 && (i2 = e2.substring(0, o2 + 1));
+        }
+        if (this.state.top && (r2 = this.tokenizer.paragraph(i2))) {
+          let o2 = t2.at(-1);
+          n2 && o2?.type === "paragraph" ? (o2.raw += (o2.raw.endsWith(`
+`) ? "" : `
+`) + r2.raw, o2.text += `
+` + r2.text, this.inlineQueue.pop(), this.inlineQueue.at(-1).src = o2.text) : t2.push(r2), n2 = i2.length !== e2.length, e2 = e2.substring(r2.raw.length);
+          continue;
+        }
+        if (r2 = this.tokenizer.text(e2)) {
+          e2 = e2.substring(r2.raw.length);
+          let o2 = t2.at(-1);
+          o2?.type === "text" ? (o2.raw += (o2.raw.endsWith(`
+`) ? "" : `
+`) + r2.raw, o2.text += `
+` + r2.text, this.inlineQueue.pop(), this.inlineQueue.at(-1).src = o2.text) : t2.push(r2);
+          continue;
+        }
+        if (e2) {
+          this.infiniteLoopError(e2.charCodeAt(0));
+          break;
+        }
+      }
+      return this.state.top = true, t2;
+    }
+    inline(e2, t2 = []) {
+      return this.inlineQueue.push({ src: e2, tokens: t2 }), t2;
+    }
+    inlineTokens(e2, t2 = []) {
+      this.tokenizer.lexer = this;
+      let n2 = e2, s2 = null;
+      if (this.tokens.links) {
+        let a2 = Object.keys(this.tokens.links);
+        if (a2.length > 0) for (; (s2 = this.tokenizer.rules.inline.reflinkSearch.exec(n2)) !== null; ) a2.includes(s2[0].slice(s2[0].lastIndexOf("[") + 1, -1)) && (n2 = n2.slice(0, s2.index) + "[" + "a".repeat(s2[0].length - 2) + "]" + n2.slice(this.tokenizer.rules.inline.reflinkSearch.lastIndex));
+      }
+      for (; (s2 = this.tokenizer.rules.inline.anyPunctuation.exec(n2)) !== null; ) n2 = n2.slice(0, s2.index) + "++" + n2.slice(this.tokenizer.rules.inline.anyPunctuation.lastIndex);
+      let r2;
+      for (; (s2 = this.tokenizer.rules.inline.blockSkip.exec(n2)) !== null; ) r2 = s2[2] ? s2[2].length : 0, n2 = n2.slice(0, s2.index + r2) + "[" + "a".repeat(s2[0].length - r2 - 2) + "]" + n2.slice(this.tokenizer.rules.inline.blockSkip.lastIndex);
+      n2 = this.options.hooks?.emStrongMask?.call({ lexer: this }, n2) ?? n2;
+      let i2 = false, o2 = "", u2 = 1 / 0;
+      for (; e2; ) {
+        if (e2.length < u2) u2 = e2.length;
+        else {
+          this.infiniteLoopError(e2.charCodeAt(0));
+          break;
+        }
+        i2 || (o2 = ""), i2 = false;
+        let a2;
+        if (this.options.extensions?.inline?.some((p2) => (a2 = p2.call({ lexer: this }, e2, t2)) ? (e2 = e2.substring(a2.raw.length), t2.push(a2), true) : false)) continue;
+        if (a2 = this.tokenizer.escape(e2)) {
+          e2 = e2.substring(a2.raw.length), t2.push(a2);
+          continue;
+        }
+        if (a2 = this.tokenizer.tag(e2)) {
+          e2 = e2.substring(a2.raw.length), t2.push(a2);
+          continue;
+        }
+        if (a2 = this.tokenizer.link(e2)) {
+          e2 = e2.substring(a2.raw.length), t2.push(a2);
+          continue;
+        }
+        if (a2 = this.tokenizer.reflink(e2, this.tokens.links)) {
+          e2 = e2.substring(a2.raw.length);
+          let p2 = t2.at(-1);
+          a2.type === "text" && p2?.type === "text" ? (p2.raw += a2.raw, p2.text += a2.text) : t2.push(a2);
+          continue;
+        }
+        if (a2 = this.tokenizer.emStrong(e2, n2, o2)) {
+          e2 = e2.substring(a2.raw.length), t2.push(a2);
+          continue;
+        }
+        if (a2 = this.tokenizer.codespan(e2)) {
+          e2 = e2.substring(a2.raw.length), t2.push(a2);
+          continue;
+        }
+        if (a2 = this.tokenizer.br(e2)) {
+          e2 = e2.substring(a2.raw.length), t2.push(a2);
+          continue;
+        }
+        if (a2 = this.tokenizer.del(e2, n2, o2)) {
+          e2 = e2.substring(a2.raw.length), t2.push(a2);
+          continue;
+        }
+        if (a2 = this.tokenizer.autolink(e2)) {
+          e2 = e2.substring(a2.raw.length), t2.push(a2);
+          continue;
+        }
+        if (!this.state.inLink && (a2 = this.tokenizer.url(e2))) {
+          e2 = e2.substring(a2.raw.length), t2.push(a2);
+          continue;
+        }
+        let c2 = e2;
+        if (this.options.extensions?.startInline) {
+          let p2 = 1 / 0, d2 = e2.slice(1), h2;
+          this.options.extensions.startInline.forEach((R) => {
+            h2 = R.call({ lexer: this }, d2), typeof h2 == "number" && h2 >= 0 && (p2 = Math.min(p2, h2));
+          }), p2 < 1 / 0 && p2 >= 0 && (c2 = e2.substring(0, p2 + 1));
+        }
+        if (a2 = this.tokenizer.inlineText(c2)) {
+          e2 = e2.substring(a2.raw.length), a2.raw.slice(-1) !== "_" && (o2 = a2.raw.slice(-1)), i2 = true;
+          let p2 = t2.at(-1);
+          p2?.type === "text" ? (p2.raw += a2.raw, p2.text += a2.text) : t2.push(a2);
+          continue;
+        }
+        if (e2) {
+          this.infiniteLoopError(e2.charCodeAt(0));
+          break;
+        }
+      }
+      return t2;
+    }
+    infiniteLoopError(e2) {
+      let t2 = "Infinite loop on byte: " + e2;
+      if (this.options.silent) console.error(t2);
+      else throw new Error(t2);
+    }
+  };
+  var y$1 = class y {
+    options;
+    parser;
+    constructor(e2) {
+      this.options = e2 || T;
+    }
+    space(e2) {
+      return "";
+    }
+    code({ text: e2, lang: t2, escaped: n2 }) {
+      let s2 = (t2 || "").match(m$1.notSpaceStart)?.[0], r2 = e2.replace(m$1.endingNewline, "") + `
+`;
+      return s2 ? '<pre><code class="language-' + O(s2) + '">' + (n2 ? r2 : O(r2, true)) + `</code></pre>
+` : "<pre><code>" + (n2 ? r2 : O(r2, true)) + `</code></pre>
+`;
+    }
+    blockquote({ tokens: e2 }) {
+      return `<blockquote>
+${this.parser.parse(e2)}</blockquote>
+`;
+    }
+    html({ text: e2 }) {
+      return e2;
+    }
+    def(e2) {
+      return "";
+    }
+    heading({ tokens: e2, depth: t2 }) {
+      return `<h${t2}>${this.parser.parseInline(e2)}</h${t2}>
+`;
+    }
+    hr(e2) {
+      return `<hr>
+`;
+    }
+    list(e2) {
+      let t2 = e2.ordered, n2 = e2.start, s2 = "";
+      for (let o2 = 0; o2 < e2.items.length; o2++) {
+        let u2 = e2.items[o2];
+        s2 += this.listitem(u2);
+      }
+      let r2 = t2 ? "ol" : "ul", i2 = t2 && n2 !== 1 ? ' start="' + n2 + '"' : "";
+      return "<" + r2 + i2 + `>
+` + s2 + "</" + r2 + `>
+`;
+    }
+    listitem(e2) {
+      return `<li>${this.parser.parse(e2.tokens)}</li>
+`;
+    }
+    checkbox({ checked: e2 }) {
+      return "<input " + (e2 ? 'checked="" ' : "") + 'disabled="" type="checkbox"> ';
+    }
+    paragraph({ tokens: e2 }) {
+      return `<p>${this.parser.parseInline(e2)}</p>
+`;
+    }
+    table(e2) {
+      let t2 = "", n2 = "";
+      for (let r2 = 0; r2 < e2.header.length; r2++) n2 += this.tablecell(e2.header[r2]);
+      t2 += this.tablerow({ text: n2 });
+      let s2 = "";
+      for (let r2 = 0; r2 < e2.rows.length; r2++) {
+        let i2 = e2.rows[r2];
+        n2 = "";
+        for (let o2 = 0; o2 < i2.length; o2++) n2 += this.tablecell(i2[o2]);
+        s2 += this.tablerow({ text: n2 });
+      }
+      return s2 && (s2 = `<tbody>${s2}</tbody>`), `<table>
+<thead>
+` + t2 + `</thead>
+` + s2 + `</table>
+`;
+    }
+    tablerow({ text: e2 }) {
+      return `<tr>
+${e2}</tr>
+`;
+    }
+    tablecell(e2) {
+      let t2 = this.parser.parseInline(e2.tokens), n2 = e2.header ? "th" : "td";
+      return (e2.align ? `<${n2} align="${e2.align}">` : `<${n2}>`) + t2 + `</${n2}>
+`;
+    }
+    strong({ tokens: e2 }) {
+      return `<strong>${this.parser.parseInline(e2)}</strong>`;
+    }
+    em({ tokens: e2 }) {
+      return `<em>${this.parser.parseInline(e2)}</em>`;
+    }
+    codespan({ text: e2 }) {
+      return `<code>${O(e2, true)}</code>`;
+    }
+    br(e2) {
+      return "<br>";
+    }
+    del({ tokens: e2 }) {
+      return `<del>${this.parser.parseInline(e2)}</del>`;
+    }
+    link({ href: e2, title: t2, tokens: n2 }) {
+      let s2 = this.parser.parseInline(n2), r2 = J(e2);
+      if (r2 === null) return s2;
+      e2 = r2;
+      let i2 = '<a href="' + e2 + '"';
+      return t2 && (i2 += ' title="' + O(t2) + '"'), i2 += ">" + s2 + "</a>", i2;
+    }
+    image({ href: e2, title: t2, text: n2, tokens: s2 }) {
+      s2 && (n2 = this.parser.parseInline(s2, this.parser.textRenderer));
+      let r2 = J(e2);
+      if (r2 === null) return O(n2);
+      e2 = r2;
+      let i2 = `<img src="${e2}" alt="${O(n2)}"`;
+      return t2 && (i2 += ` title="${O(t2)}"`), i2 += ">", i2;
+    }
+    text(e2) {
+      return "tokens" in e2 && e2.tokens ? this.parser.parseInline(e2.tokens) : "escaped" in e2 && e2.escaped ? e2.text : O(e2.text);
+    }
+  };
+  var L = class {
+    strong({ text: e2 }) {
+      return e2;
+    }
+    em({ text: e2 }) {
+      return e2;
+    }
+    codespan({ text: e2 }) {
+      return e2;
+    }
+    del({ text: e2 }) {
+      return e2;
+    }
+    html({ text: e2 }) {
+      return e2;
+    }
+    text({ text: e2 }) {
+      return e2;
+    }
+    link({ text: e2 }) {
+      return "" + e2;
+    }
+    image({ text: e2 }) {
+      return "" + e2;
+    }
+    br() {
+      return "";
+    }
+    checkbox({ raw: e2 }) {
+      return e2;
+    }
+  };
+  var b$1 = class l2 {
+    options;
+    renderer;
+    textRenderer;
+    constructor(e2) {
+      this.options = e2 || T, this.options.renderer = this.options.renderer || new y$1(), this.renderer = this.options.renderer, this.renderer.options = this.options, this.renderer.parser = this, this.textRenderer = new L();
+    }
+    static parse(e2, t2) {
+      return new l2(t2).parse(e2);
+    }
+    static parseInline(e2, t2) {
+      return new l2(t2).parseInline(e2);
+    }
+    parse(e2) {
+      this.renderer.parser = this;
+      let t2 = "";
+      for (let n2 = 0; n2 < e2.length; n2++) {
+        let s2 = e2[n2];
+        if (this.options.extensions?.renderers?.[s2.type]) {
+          let i2 = s2, o2 = this.options.extensions.renderers[i2.type].call({ parser: this }, i2);
+          if (o2 !== false || !["space", "hr", "heading", "code", "table", "blockquote", "list", "html", "def", "paragraph", "text"].includes(i2.type)) {
+            t2 += o2 || "";
+            continue;
+          }
+        }
+        let r2 = s2;
+        switch (r2.type) {
+          case "space": {
+            t2 += this.renderer.space(r2);
+            break;
+          }
+          case "hr": {
+            t2 += this.renderer.hr(r2);
+            break;
+          }
+          case "heading": {
+            t2 += this.renderer.heading(r2);
+            break;
+          }
+          case "code": {
+            t2 += this.renderer.code(r2);
+            break;
+          }
+          case "table": {
+            t2 += this.renderer.table(r2);
+            break;
+          }
+          case "blockquote": {
+            t2 += this.renderer.blockquote(r2);
+            break;
+          }
+          case "list": {
+            t2 += this.renderer.list(r2);
+            break;
+          }
+          case "checkbox": {
+            t2 += this.renderer.checkbox(r2);
+            break;
+          }
+          case "html": {
+            t2 += this.renderer.html(r2);
+            break;
+          }
+          case "def": {
+            t2 += this.renderer.def(r2);
+            break;
+          }
+          case "paragraph": {
+            t2 += this.renderer.paragraph(r2);
+            break;
+          }
+          case "text": {
+            t2 += this.renderer.text(r2);
+            break;
+          }
+          default: {
+            let i2 = 'Token with "' + r2.type + '" type was not found.';
+            if (this.options.silent) return console.error(i2), "";
+            throw new Error(i2);
+          }
+        }
+      }
+      return t2;
+    }
+    parseInline(e2, t2 = this.renderer) {
+      this.renderer.parser = this;
+      let n2 = "";
+      for (let s2 = 0; s2 < e2.length; s2++) {
+        let r2 = e2[s2];
+        if (this.options.extensions?.renderers?.[r2.type]) {
+          let o2 = this.options.extensions.renderers[r2.type].call({ parser: this }, r2);
+          if (o2 !== false || !["escape", "html", "link", "image", "strong", "em", "codespan", "br", "del", "text"].includes(r2.type)) {
+            n2 += o2 || "";
+            continue;
+          }
+        }
+        let i2 = r2;
+        switch (i2.type) {
+          case "escape": {
+            n2 += t2.text(i2);
+            break;
+          }
+          case "html": {
+            n2 += t2.html(i2);
+            break;
+          }
+          case "link": {
+            n2 += t2.link(i2);
+            break;
+          }
+          case "image": {
+            n2 += t2.image(i2);
+            break;
+          }
+          case "checkbox": {
+            n2 += t2.checkbox(i2);
+            break;
+          }
+          case "strong": {
+            n2 += t2.strong(i2);
+            break;
+          }
+          case "em": {
+            n2 += t2.em(i2);
+            break;
+          }
+          case "codespan": {
+            n2 += t2.codespan(i2);
+            break;
+          }
+          case "br": {
+            n2 += t2.br(i2);
+            break;
+          }
+          case "del": {
+            n2 += t2.del(i2);
+            break;
+          }
+          case "text": {
+            n2 += t2.text(i2);
+            break;
+          }
+          default: {
+            let o2 = 'Token with "' + i2.type + '" type was not found.';
+            if (this.options.silent) return console.error(o2), "";
+            throw new Error(o2);
+          }
+        }
+      }
+      return n2;
+    }
+  };
+  var P = class {
+    options;
+    block;
+    constructor(e2) {
+      this.options = e2 || T;
+    }
+    static passThroughHooks = /* @__PURE__ */ new Set(["preprocess", "postprocess", "processAllTokens", "emStrongMask"]);
+    static passThroughHooksRespectAsync = /* @__PURE__ */ new Set(["preprocess", "postprocess", "processAllTokens"]);
+    preprocess(e2) {
+      return e2;
+    }
+    postprocess(e2) {
+      return e2;
+    }
+    processAllTokens(e2) {
+      return e2;
+    }
+    emStrongMask(e2) {
+      return e2;
+    }
+    provideLexer(e2 = this.block) {
+      return e2 ? x.lex : x.lexInline;
+    }
+    provideParser(e2 = this.block) {
+      return e2 ? b$1.parse : b$1.parseInline;
+    }
+  };
+  var D = class {
+    defaults = z();
+    options = this.setOptions;
+    parse = this.parseMarkdown(true);
+    parseInline = this.parseMarkdown(false);
+    Parser = b$1;
+    Renderer = y$1;
+    TextRenderer = L;
+    Lexer = x;
+    Tokenizer = w$1;
+    Hooks = P;
+    constructor(...e2) {
+      this.use(...e2);
+    }
+    walkTokens(e2, t2) {
+      let n2 = [];
+      for (let s2 of e2) switch (n2 = n2.concat(t2.call(this, s2)), s2.type) {
+        case "table": {
+          let r2 = s2;
+          for (let i2 of r2.header) n2 = n2.concat(this.walkTokens(i2.tokens, t2));
+          for (let i2 of r2.rows) for (let o2 of i2) n2 = n2.concat(this.walkTokens(o2.tokens, t2));
+          break;
+        }
+        case "list": {
+          let r2 = s2;
+          n2 = n2.concat(this.walkTokens(r2.items, t2));
+          break;
+        }
+        default: {
+          let r2 = s2;
+          this.defaults.extensions?.childTokens?.[r2.type] ? this.defaults.extensions.childTokens[r2.type].forEach((i2) => {
+            let o2 = r2[i2].flat(1 / 0);
+            n2 = n2.concat(this.walkTokens(o2, t2));
+          }) : r2.tokens && (n2 = n2.concat(this.walkTokens(r2.tokens, t2)));
+        }
+      }
+      return n2;
+    }
+    use(...e2) {
+      let t2 = this.defaults.extensions || { renderers: {}, childTokens: {} };
+      return e2.forEach((n2) => {
+        let s2 = { ...n2 };
+        if (s2.async = this.defaults.async || s2.async || false, n2.extensions && (n2.extensions.forEach((r2) => {
+          if (!r2.name) throw new Error("extension name required");
+          if ("renderer" in r2) {
+            let i2 = t2.renderers[r2.name];
+            i2 ? t2.renderers[r2.name] = function(...o2) {
+              let u2 = r2.renderer.apply(this, o2);
+              return u2 === false && (u2 = i2.apply(this, o2)), u2;
+            } : t2.renderers[r2.name] = r2.renderer;
+          }
+          if ("tokenizer" in r2) {
+            if (!r2.level || r2.level !== "block" && r2.level !== "inline") throw new Error("extension level must be 'block' or 'inline'");
+            let i2 = t2[r2.level];
+            i2 ? i2.unshift(r2.tokenizer) : t2[r2.level] = [r2.tokenizer], r2.start && (r2.level === "block" ? t2.startBlock ? t2.startBlock.push(r2.start) : t2.startBlock = [r2.start] : r2.level === "inline" && (t2.startInline ? t2.startInline.push(r2.start) : t2.startInline = [r2.start]));
+          }
+          "childTokens" in r2 && r2.childTokens && (t2.childTokens[r2.name] = r2.childTokens);
+        }), s2.extensions = t2), n2.renderer) {
+          let r2 = this.defaults.renderer || new y$1(this.defaults);
+          for (let i2 in n2.renderer) {
+            if (!(i2 in r2)) throw new Error(`renderer '${i2}' does not exist`);
+            if (["options", "parser"].includes(i2)) continue;
+            let o2 = i2, u2 = n2.renderer[o2], a2 = r2[o2];
+            r2[o2] = (...c2) => {
+              let p2 = u2.apply(r2, c2);
+              return p2 === false && (p2 = a2.apply(r2, c2)), p2 || "";
+            };
+          }
+          s2.renderer = r2;
+        }
+        if (n2.tokenizer) {
+          let r2 = this.defaults.tokenizer || new w$1(this.defaults);
+          for (let i2 in n2.tokenizer) {
+            if (!(i2 in r2)) throw new Error(`tokenizer '${i2}' does not exist`);
+            if (["options", "rules", "lexer"].includes(i2)) continue;
+            let o2 = i2, u2 = n2.tokenizer[o2], a2 = r2[o2];
+            r2[o2] = (...c2) => {
+              let p2 = u2.apply(r2, c2);
+              return p2 === false && (p2 = a2.apply(r2, c2)), p2;
+            };
+          }
+          s2.tokenizer = r2;
+        }
+        if (n2.hooks) {
+          let r2 = this.defaults.hooks || new P();
+          for (let i2 in n2.hooks) {
+            if (!(i2 in r2)) throw new Error(`hook '${i2}' does not exist`);
+            if (["options", "block"].includes(i2)) continue;
+            let o2 = i2, u2 = n2.hooks[o2], a2 = r2[o2];
+            P.passThroughHooks.has(i2) ? r2[o2] = (c2) => {
+              if (this.defaults.async && P.passThroughHooksRespectAsync.has(i2)) return (async () => {
+                let d2 = await u2.call(r2, c2);
+                return a2.call(r2, d2);
+              })();
+              let p2 = u2.call(r2, c2);
+              return a2.call(r2, p2);
+            } : r2[o2] = (...c2) => {
+              if (this.defaults.async) return (async () => {
+                let d2 = await u2.apply(r2, c2);
+                return d2 === false && (d2 = await a2.apply(r2, c2)), d2;
+              })();
+              let p2 = u2.apply(r2, c2);
+              return p2 === false && (p2 = a2.apply(r2, c2)), p2;
+            };
+          }
+          s2.hooks = r2;
+        }
+        if (n2.walkTokens) {
+          let r2 = this.defaults.walkTokens, i2 = n2.walkTokens;
+          s2.walkTokens = function(o2) {
+            let u2 = [];
+            return u2.push(i2.call(this, o2)), r2 && (u2 = u2.concat(r2.call(this, o2))), u2;
+          };
+        }
+        this.defaults = { ...this.defaults, ...s2 };
+      }), this;
+    }
+    setOptions(e2) {
+      return this.defaults = { ...this.defaults, ...e2 }, this;
+    }
+    lexer(e2, t2) {
+      return x.lex(e2, t2 ?? this.defaults);
+    }
+    parser(e2, t2) {
+      return b$1.parse(e2, t2 ?? this.defaults);
+    }
+    parseMarkdown(e2) {
+      return (n2, s2) => {
+        let r2 = { ...s2 }, i2 = { ...this.defaults, ...r2 }, o2 = this.onError(!!i2.silent, !!i2.async);
+        if (this.defaults.async === true && r2.async === false) return o2(new Error("marked(): The async option was set to true by an extension. Remove async: false from the parse options object to return a Promise."));
+        if (typeof n2 > "u" || n2 === null) return o2(new Error("marked(): input parameter is undefined or null"));
+        if (typeof n2 != "string") return o2(new Error("marked(): input parameter is of type " + Object.prototype.toString.call(n2) + ", string expected"));
+        if (i2.hooks && (i2.hooks.options = i2, i2.hooks.block = e2), i2.async) return (async () => {
+          let u2 = i2.hooks ? await i2.hooks.preprocess(n2) : n2, c2 = await (i2.hooks ? await i2.hooks.provideLexer(e2) : e2 ? x.lex : x.lexInline)(u2, i2), p2 = i2.hooks ? await i2.hooks.processAllTokens(c2) : c2;
+          i2.walkTokens && await Promise.all(this.walkTokens(p2, i2.walkTokens));
+          let h2 = await (i2.hooks ? await i2.hooks.provideParser(e2) : e2 ? b$1.parse : b$1.parseInline)(p2, i2);
+          return i2.hooks ? await i2.hooks.postprocess(h2) : h2;
+        })().catch(o2);
+        try {
+          i2.hooks && (n2 = i2.hooks.preprocess(n2));
+          let a2 = (i2.hooks ? i2.hooks.provideLexer(e2) : e2 ? x.lex : x.lexInline)(n2, i2);
+          i2.hooks && (a2 = i2.hooks.processAllTokens(a2)), i2.walkTokens && this.walkTokens(a2, i2.walkTokens);
+          let p2 = (i2.hooks ? i2.hooks.provideParser(e2) : e2 ? b$1.parse : b$1.parseInline)(a2, i2);
+          return i2.hooks && (p2 = i2.hooks.postprocess(p2)), p2;
+        } catch (u2) {
+          return o2(u2);
+        }
+      };
+    }
+    onError(e2, t2) {
+      return (n2) => {
+        if (n2.message += `
+Please report this to https://github.com/markedjs/marked.`, e2) {
+          let s2 = "<p>An error occurred:</p><pre>" + O(n2.message + "", true) + "</pre>";
+          return t2 ? Promise.resolve(s2) : s2;
+        }
+        if (t2) return Promise.reject(n2);
+        throw n2;
+      };
+    }
+  };
+  var M = new D();
+  function g$1(l2, e2) {
+    return M.parse(l2, e2);
+  }
+  g$1.options = g$1.setOptions = function(l2) {
+    return M.setOptions(l2), g$1.defaults = M.defaults, G(g$1.defaults), g$1;
+  };
+  g$1.getDefaults = z;
+  g$1.defaults = T;
+  g$1.use = function(...l2) {
+    return M.use(...l2), g$1.defaults = M.defaults, G(g$1.defaults), g$1;
+  };
+  g$1.walkTokens = function(l2, e2) {
+    return M.walkTokens(l2, e2);
+  };
+  g$1.parseInline = M.parseInline;
+  g$1.Parser = b$1;
+  g$1.parser = b$1.parse;
+  g$1.Renderer = y$1;
+  g$1.TextRenderer = L;
+  g$1.Lexer = x;
+  g$1.lexer = x.lex;
+  g$1.Tokenizer = w$1;
+  g$1.Hooks = P;
+  g$1.parse = g$1;
+  g$1.options;
+  g$1.setOptions;
+  g$1.use;
+  g$1.walkTokens;
+  g$1.parseInline;
+  b$1.parse;
+  x.lex;
+  function _arrayLikeToArray(r2, a2) {
+    (null == a2 || a2 > r2.length) && (a2 = r2.length);
+    for (var e2 = 0, n2 = Array(a2); e2 < a2; e2++) n2[e2] = r2[e2];
+    return n2;
+  }
+  function _arrayWithHoles(r2) {
+    if (Array.isArray(r2)) return r2;
+  }
+  function _iterableToArrayLimit(r2, l2) {
+    var t2 = null == r2 ? null : "undefined" != typeof Symbol && r2[Symbol.iterator] || r2["@@iterator"];
+    if (null != t2) {
+      var e2, n2, i2, u2, a2 = [], f2 = true, o2 = false;
+      try {
+        if (i2 = (t2 = t2.call(r2)).next, 0 === l2) ;
+        else for (; !(f2 = (e2 = i2.call(t2)).done) && (a2.push(e2.value), a2.length !== l2); f2 = true) ;
+      } catch (r3) {
+        o2 = true, n2 = r3;
+      } finally {
+        try {
+          if (!f2 && null != t2.return && (u2 = t2.return(), Object(u2) !== u2)) return;
+        } finally {
+          if (o2) throw n2;
+        }
+      }
+      return a2;
+    }
+  }
+  function _nonIterableRest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+  function _slicedToArray(r2, e2) {
+    return _arrayWithHoles(r2) || _iterableToArrayLimit(r2, e2) || _unsupportedIterableToArray(r2, e2) || _nonIterableRest();
+  }
+  function _unsupportedIterableToArray(r2, a2) {
+    if (r2) {
+      if ("string" == typeof r2) return _arrayLikeToArray(r2, a2);
+      var t2 = {}.toString.call(r2).slice(8, -1);
+      return "Object" === t2 && r2.constructor && (t2 = r2.constructor.name), "Map" === t2 || "Set" === t2 ? Array.from(r2) : "Arguments" === t2 || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t2) ? _arrayLikeToArray(r2, a2) : void 0;
+    }
+  }
+  const entries = Object.entries, setPrototypeOf = Object.setPrototypeOf, isFrozen = Object.isFrozen, getPrototypeOf = Object.getPrototypeOf, getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+  let freeze$1 = Object.freeze, seal = Object.seal, create$a = Object.create;
+  let _ref = typeof Reflect !== "undefined" && Reflect, apply$1 = _ref.apply, construct = _ref.construct;
+  if (!freeze$1) {
+    freeze$1 = function freeze2(x2) {
+      return x2;
+    };
+  }
+  if (!seal) {
+    seal = function seal2(x2) {
+      return x2;
+    };
+  }
+  if (!apply$1) {
+    apply$1 = function apply2(func, thisArg) {
+      for (var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+        args[_key - 2] = arguments[_key];
+      }
+      return func.apply(thisArg, args);
+    };
+  }
+  if (!construct) {
+    construct = function construct2(Func) {
+      for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+        args[_key2 - 1] = arguments[_key2];
+      }
+      return new Func(...args);
+    };
+  }
+  const arrayForEach = unapply(Array.prototype.forEach);
+  const arrayLastIndexOf = unapply(Array.prototype.lastIndexOf);
+  const arrayPop = unapply(Array.prototype.pop);
+  const arrayPush = unapply(Array.prototype.push);
+  const arraySplice = unapply(Array.prototype.splice);
+  const arrayIsArray = Array.isArray;
+  const stringToLowerCase = unapply(String.prototype.toLowerCase);
+  const stringToString = unapply(String.prototype.toString);
+  const stringMatch = unapply(String.prototype.match);
+  const stringReplace = unapply(String.prototype.replace);
+  const stringIndexOf = unapply(String.prototype.indexOf);
+  const stringTrim = unapply(String.prototype.trim);
+  const numberToString = unapply(Number.prototype.toString);
+  const booleanToString = unapply(Boolean.prototype.toString);
+  const bigintToString = typeof BigInt === "undefined" ? null : unapply(BigInt.prototype.toString);
+  const symbolToString = typeof Symbol === "undefined" ? null : unapply(Symbol.prototype.toString);
+  const objectHasOwnProperty = unapply(Object.prototype.hasOwnProperty);
+  const objectToString = unapply(Object.prototype.toString);
+  const regExpTest = unapply(RegExp.prototype.test);
+  const typeErrorCreate = unconstruct(TypeError);
+  function unapply(func) {
+    return function(thisArg) {
+      if (thisArg instanceof RegExp) {
+        thisArg.lastIndex = 0;
+      }
+      for (var _len3 = arguments.length, args = new Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
+        args[_key3 - 1] = arguments[_key3];
+      }
+      return apply$1(func, thisArg, args);
+    };
+  }
+  function unconstruct(Func) {
+    return function() {
+      for (var _len4 = arguments.length, args = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+        args[_key4] = arguments[_key4];
+      }
+      return construct(Func, args);
+    };
+  }
+  function addToSet(set, array) {
+    let transformCaseFunc = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : stringToLowerCase;
+    if (setPrototypeOf) {
+      setPrototypeOf(set, null);
+    }
+    if (!arrayIsArray(array)) {
+      return set;
+    }
+    let l2 = array.length;
+    while (l2--) {
+      let element = array[l2];
+      if (typeof element === "string") {
+        const lcElement = transformCaseFunc(element);
+        if (lcElement !== element) {
+          if (!isFrozen(array)) {
+            array[l2] = lcElement;
+          }
+          element = lcElement;
+        }
+      }
+      set[element] = true;
+    }
+    return set;
+  }
+  function cleanArray(array) {
+    for (let index = 0; index < array.length; index++) {
+      const isPropertyExist = objectHasOwnProperty(array, index);
+      if (!isPropertyExist) {
+        array[index] = null;
+      }
+    }
+    return array;
+  }
+  function clone(object) {
+    const newObject = create$a(null);
+    for (const _ref2 of entries(object)) {
+      var _ref3 = _slicedToArray(_ref2, 2);
+      const property = _ref3[0];
+      const value = _ref3[1];
+      const isPropertyExist = objectHasOwnProperty(object, property);
+      if (isPropertyExist) {
+        if (arrayIsArray(value)) {
+          newObject[property] = cleanArray(value);
+        } else if (value && typeof value === "object" && value.constructor === Object) {
+          newObject[property] = clone(value);
+        } else {
+          newObject[property] = value;
+        }
+      }
+    }
+    return newObject;
+  }
+  function stringifyValue(value) {
+    switch (typeof value) {
+      case "string": {
+        return value;
+      }
+      case "number": {
+        return numberToString(value);
+      }
+      case "boolean": {
+        return booleanToString(value);
+      }
+      case "bigint": {
+        return bigintToString ? bigintToString(value) : "0";
+      }
+      case "symbol": {
+        return symbolToString ? symbolToString(value) : "Symbol()";
+      }
+      case "undefined": {
+        return objectToString(value);
+      }
+      case "function":
+      case "object": {
+        if (value === null) {
+          return objectToString(value);
+        }
+        const valueAsRecord = value;
+        const valueToString = lookupGetter(valueAsRecord, "toString");
+        if (typeof valueToString === "function") {
+          const stringified = valueToString(valueAsRecord);
+          return typeof stringified === "string" ? stringified : objectToString(stringified);
+        }
+        return objectToString(value);
+      }
+      default: {
+        return objectToString(value);
+      }
+    }
+  }
+  function lookupGetter(object, prop) {
+    while (object !== null) {
+      const desc = getOwnPropertyDescriptor(object, prop);
+      if (desc) {
+        if (desc.get) {
+          return unapply(desc.get);
+        }
+        if (typeof desc.value === "function") {
+          return unapply(desc.value);
+        }
+      }
+      object = getPrototypeOf(object);
+    }
+    function fallbackValue() {
+      return null;
+    }
+    return fallbackValue;
+  }
+  function isRegex(value) {
+    try {
+      regExpTest(value, "");
+      return true;
+    } catch (_unused) {
+      return false;
+    }
+  }
+  const html$1 = freeze$1(["a", "abbr", "acronym", "address", "area", "article", "aside", "audio", "b", "bdi", "bdo", "big", "blink", "blockquote", "body", "br", "button", "canvas", "caption", "center", "cite", "code", "col", "colgroup", "content", "data", "datalist", "dd", "decorator", "del", "details", "dfn", "dialog", "dir", "div", "dl", "dt", "element", "em", "fieldset", "figcaption", "figure", "font", "footer", "form", "h1", "h2", "h3", "h4", "h5", "h6", "head", "header", "hgroup", "hr", "html", "i", "img", "input", "ins", "kbd", "label", "legend", "li", "main", "map", "mark", "marquee", "menu", "menuitem", "meter", "nav", "nobr", "ol", "optgroup", "option", "output", "p", "picture", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp", "search", "section", "select", "shadow", "slot", "small", "source", "spacer", "span", "strike", "strong", "style", "sub", "summary", "sup", "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead", "time", "tr", "track", "tt", "u", "ul", "var", "video", "wbr"]);
+  const svg$1 = freeze$1(["svg", "a", "altglyph", "altglyphdef", "altglyphitem", "animatecolor", "animatemotion", "animatetransform", "circle", "clippath", "defs", "desc", "ellipse", "enterkeyhint", "exportparts", "filter", "font", "g", "glyph", "glyphref", "hkern", "image", "inputmode", "line", "lineargradient", "marker", "mask", "metadata", "mpath", "part", "path", "pattern", "polygon", "polyline", "radialgradient", "rect", "stop", "style", "switch", "symbol", "text", "textpath", "title", "tref", "tspan", "view", "vkern"]);
+  const svgFilters = freeze$1(["feBlend", "feColorMatrix", "feComponentTransfer", "feComposite", "feConvolveMatrix", "feDiffuseLighting", "feDisplacementMap", "feDistantLight", "feDropShadow", "feFlood", "feFuncA", "feFuncB", "feFuncG", "feFuncR", "feGaussianBlur", "feImage", "feMerge", "feMergeNode", "feMorphology", "feOffset", "fePointLight", "feSpecularLighting", "feSpotLight", "feTile", "feTurbulence"]);
+  const svgDisallowed = freeze$1(["animate", "color-profile", "cursor", "discard", "font-face", "font-face-format", "font-face-name", "font-face-src", "font-face-uri", "foreignobject", "hatch", "hatchpath", "mesh", "meshgradient", "meshpatch", "meshrow", "missing-glyph", "script", "set", "solidcolor", "unknown", "use"]);
+  const mathMl$1 = freeze$1(["math", "menclose", "merror", "mfenced", "mfrac", "mglyph", "mi", "mlabeledtr", "mmultiscripts", "mn", "mo", "mover", "mpadded", "mphantom", "mroot", "mrow", "ms", "mspace", "msqrt", "mstyle", "msub", "msup", "msubsup", "mtable", "mtd", "mtext", "mtr", "munder", "munderover", "mprescripts"]);
+  const mathMlDisallowed = freeze$1(["maction", "maligngroup", "malignmark", "mlongdiv", "mscarries", "mscarry", "msgroup", "mstack", "msline", "msrow", "semantics", "annotation", "annotation-xml", "mprescripts", "none"]);
+  const text = freeze$1(["#text"]);
+  const html = freeze$1(["accept", "action", "align", "alt", "autocapitalize", "autocomplete", "autopictureinpicture", "autoplay", "background", "bgcolor", "border", "capture", "cellpadding", "cellspacing", "checked", "cite", "class", "clear", "color", "cols", "colspan", "command", "commandfor", "controls", "controlslist", "coords", "crossorigin", "datetime", "decoding", "default", "dir", "disabled", "disablepictureinpicture", "disableremoteplayback", "download", "draggable", "enctype", "enterkeyhint", "exportparts", "face", "for", "headers", "height", "hidden", "high", "href", "hreflang", "id", "inert", "inputmode", "integrity", "ismap", "kind", "label", "lang", "list", "loading", "loop", "low", "max", "maxlength", "media", "method", "min", "minlength", "multiple", "muted", "name", "nonce", "noshade", "novalidate", "nowrap", "open", "optimum", "part", "pattern", "placeholder", "playsinline", "popover", "popovertarget", "popovertargetaction", "poster", "preload", "pubdate", "radiogroup", "readonly", "rel", "required", "rev", "reversed", "role", "rows", "rowspan", "spellcheck", "scope", "selected", "shape", "size", "sizes", "slot", "span", "srclang", "start", "src", "srcset", "step", "style", "summary", "tabindex", "title", "translate", "type", "usemap", "valign", "value", "width", "wrap", "xmlns"]);
+  const svg = freeze$1(["accent-height", "accumulate", "additive", "alignment-baseline", "amplitude", "ascent", "attributename", "attributetype", "azimuth", "basefrequency", "baseline-shift", "begin", "bias", "by", "class", "clip", "clippathunits", "clip-path", "clip-rule", "color", "color-interpolation", "color-interpolation-filters", "color-profile", "color-rendering", "cx", "cy", "d", "dx", "dy", "diffuseconstant", "direction", "display", "divisor", "dur", "edgemode", "elevation", "end", "exponent", "fill", "fill-opacity", "fill-rule", "filter", "filterunits", "flood-color", "flood-opacity", "font-family", "font-size", "font-size-adjust", "font-stretch", "font-style", "font-variant", "font-weight", "fx", "fy", "g1", "g2", "glyph-name", "glyphref", "gradientunits", "gradienttransform", "height", "href", "id", "image-rendering", "in", "in2", "intercept", "k", "k1", "k2", "k3", "k4", "kerning", "keypoints", "keysplines", "keytimes", "lang", "lengthadjust", "letter-spacing", "kernelmatrix", "kernelunitlength", "lighting-color", "local", "marker-end", "marker-mid", "marker-start", "markerheight", "markerunits", "markerwidth", "maskcontentunits", "maskunits", "max", "mask", "mask-type", "media", "method", "mode", "min", "name", "numoctaves", "offset", "operator", "opacity", "order", "orient", "orientation", "origin", "overflow", "paint-order", "path", "pathlength", "patterncontentunits", "patterntransform", "patternunits", "points", "preservealpha", "preserveaspectratio", "primitiveunits", "r", "rx", "ry", "radius", "refx", "refy", "repeatcount", "repeatdur", "restart", "result", "rotate", "scale", "seed", "shape-rendering", "slope", "specularconstant", "specularexponent", "spreadmethod", "startoffset", "stddeviation", "stitchtiles", "stop-color", "stop-opacity", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke", "stroke-width", "style", "surfacescale", "systemlanguage", "tabindex", "tablevalues", "targetx", "targety", "transform", "transform-origin", "text-anchor", "text-decoration", "text-rendering", "textlength", "type", "u1", "u2", "unicode", "values", "viewbox", "visibility", "version", "vert-adv-y", "vert-origin-x", "vert-origin-y", "width", "word-spacing", "wrap", "writing-mode", "xchannelselector", "ychannelselector", "x", "x1", "x2", "xmlns", "y", "y1", "y2", "z", "zoomandpan"]);
+  const mathMl = freeze$1(["accent", "accentunder", "align", "bevelled", "close", "columnalign", "columnlines", "columnspacing", "columnspan", "denomalign", "depth", "dir", "display", "displaystyle", "encoding", "fence", "frame", "height", "href", "id", "largeop", "length", "linethickness", "lquote", "lspace", "mathbackground", "mathcolor", "mathsize", "mathvariant", "maxsize", "minsize", "movablelimits", "notation", "numalign", "open", "rowalign", "rowlines", "rowspacing", "rowspan", "rspace", "rquote", "scriptlevel", "scriptminsize", "scriptsizemultiplier", "selection", "separator", "separators", "stretchy", "subscriptshift", "supscriptshift", "symmetric", "voffset", "width", "xmlns"]);
+  const xml = freeze$1(["xlink:href", "xml:id", "xlink:title", "xml:space", "xmlns:xlink"]);
+  const MUSTACHE_EXPR = seal(/{{[\w\W]*|^[\w\W]*}}/g);
+  const ERB_EXPR = seal(/<%[\w\W]*|^[\w\W]*%>/g);
+  const TMPLIT_EXPR = seal(/\${[\w\W]*/g);
+  const DATA_ATTR = seal(/^data-[\-\w.\u00B7-\uFFFF]+$/);
+  const ARIA_ATTR = seal(/^aria-[\-\w]+$/);
+  const IS_ALLOWED_URI = seal(
+    /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp|matrix):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i
+    // eslint-disable-line no-useless-escape
+  );
+  const IS_SCRIPT_OR_DATA = seal(/^(?:\w+script|data):/i);
+  const ATTR_WHITESPACE = seal(
+    /[\u0000-\u0020\u00A0\u1680\u180E\u2000-\u2029\u205F\u3000]/g
+    // eslint-disable-line no-control-regex
+  );
+  const DOCTYPE_NAME = seal(/^html$/i);
+  const CUSTOM_ELEMENT = seal(/^[a-z][.\w]*(-[.\w]+)+$/i);
+  const ELEMENT_MARKUP_PROBE = seal(/<[/\w!]/g);
+  const COMMENT_MARKUP_PROBE = seal(/<[/\w]/g);
+  const FALLBACK_TAG_CLOSE = seal(/<\/no(script|embed|frames)/i);
+  const SELF_CLOSING_TAG = seal(/\/>/i);
+  const NODE_TYPE = {
+    element: 1,
+    attribute: 2,
+    text: 3,
+    cdataSection: 4,
+    entityReference: 5,
+    // Deprecated
+    entityNode: 6,
+    // Deprecated
+    processingInstruction: 7,
+    comment: 8,
+    document: 9,
+    documentType: 10,
+    documentFragment: 11,
+    notation: 12
+    // Deprecated
+  };
+  const getGlobal = function getGlobal2() {
+    return typeof window === "undefined" ? null : window;
+  };
+  const _createTrustedTypesPolicy = function _createTrustedTypesPolicy2(trustedTypes, purifyHostElement) {
+    if (typeof trustedTypes !== "object" || typeof trustedTypes.createPolicy !== "function") {
+      return null;
+    }
+    let suffix = null;
+    const ATTR_NAME = "data-tt-policy-suffix";
+    if (purifyHostElement && purifyHostElement.hasAttribute(ATTR_NAME)) {
+      suffix = purifyHostElement.getAttribute(ATTR_NAME);
+    }
+    const policyName = "dompurify" + (suffix ? "#" + suffix : "");
+    try {
+      return trustedTypes.createPolicy(policyName, {
+        createHTML(html2) {
+          return html2;
+        },
+        createScriptURL(scriptUrl) {
+          return scriptUrl;
+        }
+      });
+    } catch (_2) {
+      console.warn("TrustedTypes policy " + policyName + " could not be created.");
+      return null;
+    }
+  };
+  const _createHooksMap = function _createHooksMap2() {
+    return {
+      afterSanitizeAttributes: [],
+      afterSanitizeElements: [],
+      afterSanitizeShadowDOM: [],
+      beforeSanitizeAttributes: [],
+      beforeSanitizeElements: [],
+      beforeSanitizeShadowDOM: [],
+      uponSanitizeAttribute: [],
+      uponSanitizeElement: [],
+      uponSanitizeShadowNode: []
+    };
+  };
+  const _resolveSetOption = function _resolveSetOption2(cfg, key, fallback, options) {
+    return objectHasOwnProperty(cfg, key) && arrayIsArray(cfg[key]) ? addToSet(options.base ? clone(options.base) : {}, cfg[key], options.transform) : fallback;
+  };
+  function createDOMPurify() {
+    let window2 = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : getGlobal();
+    const DOMPurify = (root2) => createDOMPurify(root2);
+    DOMPurify.version = "3.4.11";
+    DOMPurify.removed = [];
+    if (!window2 || !window2.document || window2.document.nodeType !== NODE_TYPE.document || !window2.Element) {
+      DOMPurify.isSupported = false;
+      return DOMPurify;
+    }
+    let document2 = window2.document;
+    const originalDocument = document2;
+    const currentScript = originalDocument.currentScript;
+    window2.DocumentFragment;
+    const HTMLTemplateElement = window2.HTMLTemplateElement, Node2 = window2.Node, Element2 = window2.Element, NodeFilter2 = window2.NodeFilter, _window$NamedNodeMap = window2.NamedNodeMap;
+    _window$NamedNodeMap === void 0 ? window2.NamedNodeMap || window2.MozNamedAttrMap : _window$NamedNodeMap;
+    window2.HTMLFormElement;
+    const DOMParser2 = window2.DOMParser, trustedTypes = window2.trustedTypes;
+    const ElementPrototype = Element2.prototype;
+    const cloneNode = lookupGetter(ElementPrototype, "cloneNode");
+    const remove2 = lookupGetter(ElementPrototype, "remove");
+    const getNextSibling = lookupGetter(ElementPrototype, "nextSibling");
+    const getChildNodes = lookupGetter(ElementPrototype, "childNodes");
+    const getParentNode2 = lookupGetter(ElementPrototype, "parentNode");
+    const getShadowRoot = lookupGetter(ElementPrototype, "shadowRoot");
+    const getAttributes2 = lookupGetter(ElementPrototype, "attributes");
+    const getNodeType2 = Node2 && Node2.prototype ? lookupGetter(Node2.prototype, "nodeType") : null;
+    const getNodeName2 = Node2 && Node2.prototype ? lookupGetter(Node2.prototype, "nodeName") : null;
+    if (typeof HTMLTemplateElement === "function") {
+      const template = document2.createElement("template");
+      if (template.content && template.content.ownerDocument) {
+        document2 = template.content.ownerDocument;
+      }
+    }
+    let trustedTypesPolicy;
+    let emptyHTML = "";
+    let defaultTrustedTypesPolicy;
+    let defaultTrustedTypesPolicyResolved = false;
+    let IN_TRUSTED_TYPES_POLICY = 0;
+    const _assertNotInTrustedTypesPolicy = function _assertNotInTrustedTypesPolicy2() {
+      if (IN_TRUSTED_TYPES_POLICY > 0) {
+        throw typeErrorCreate('A configured TRUSTED_TYPES_POLICY callback (createHTML or createScriptURL) must not call DOMPurify.sanitize, as that causes infinite recursion. Do not pass a policy whose callbacks wrap DOMPurify as TRUSTED_TYPES_POLICY; see the "DOMPurify and Trusted Types" section of the README.');
+      }
+    };
+    const _createTrustedHTML = function _createTrustedHTML2(html2) {
+      _assertNotInTrustedTypesPolicy();
+      IN_TRUSTED_TYPES_POLICY++;
+      try {
+        return trustedTypesPolicy.createHTML(html2);
+      } finally {
+        IN_TRUSTED_TYPES_POLICY--;
+      }
+    };
+    const _createTrustedScriptURL = function _createTrustedScriptURL2(scriptUrl) {
+      _assertNotInTrustedTypesPolicy();
+      IN_TRUSTED_TYPES_POLICY++;
+      try {
+        return trustedTypesPolicy.createScriptURL(scriptUrl);
+      } finally {
+        IN_TRUSTED_TYPES_POLICY--;
+      }
+    };
+    const _getDefaultTrustedTypesPolicy = function _getDefaultTrustedTypesPolicy2() {
+      if (!defaultTrustedTypesPolicyResolved) {
+        defaultTrustedTypesPolicy = _createTrustedTypesPolicy(trustedTypes, currentScript);
+        defaultTrustedTypesPolicyResolved = true;
+      }
+      return defaultTrustedTypesPolicy;
+    };
+    const _document = document2, implementation = _document.implementation, createNodeIterator = _document.createNodeIterator, createDocumentFragment = _document.createDocumentFragment, getElementsByTagName = _document.getElementsByTagName;
+    const importNode = originalDocument.importNode;
+    let hooks = _createHooksMap();
+    DOMPurify.isSupported = typeof entries === "function" && typeof getParentNode2 === "function" && implementation && implementation.createHTMLDocument !== void 0;
+    const MUSTACHE_EXPR$1 = MUSTACHE_EXPR, ERB_EXPR$1 = ERB_EXPR, TMPLIT_EXPR$1 = TMPLIT_EXPR, DATA_ATTR$1 = DATA_ATTR, ARIA_ATTR$1 = ARIA_ATTR, IS_SCRIPT_OR_DATA$1 = IS_SCRIPT_OR_DATA, ATTR_WHITESPACE$1 = ATTR_WHITESPACE, CUSTOM_ELEMENT$1 = CUSTOM_ELEMENT;
+    let IS_ALLOWED_URI$1 = IS_ALLOWED_URI;
+    let ALLOWED_TAGS = null;
+    const DEFAULT_ALLOWED_TAGS = addToSet({}, [...html$1, ...svg$1, ...svgFilters, ...mathMl$1, ...text]);
+    let ALLOWED_ATTR = null;
+    const DEFAULT_ALLOWED_ATTR = addToSet({}, [...html, ...svg, ...mathMl, ...xml]);
+    let CUSTOM_ELEMENT_HANDLING = Object.seal(create$a(null, {
+      tagNameCheck: {
+        writable: true,
+        configurable: false,
+        enumerable: true,
+        value: null
+      },
+      attributeNameCheck: {
+        writable: true,
+        configurable: false,
+        enumerable: true,
+        value: null
+      },
+      allowCustomizedBuiltInElements: {
+        writable: true,
+        configurable: false,
+        enumerable: true,
+        value: false
+      }
+    }));
+    let FORBID_TAGS = null;
+    let FORBID_ATTR = null;
+    const EXTRA_ELEMENT_HANDLING = Object.seal(create$a(null, {
+      tagCheck: {
+        writable: true,
+        configurable: false,
+        enumerable: true,
+        value: null
+      },
+      attributeCheck: {
+        writable: true,
+        configurable: false,
+        enumerable: true,
+        value: null
+      }
+    }));
+    let ALLOW_ARIA_ATTR = true;
+    let ALLOW_DATA_ATTR = true;
+    let ALLOW_UNKNOWN_PROTOCOLS = false;
+    let ALLOW_SELF_CLOSE_IN_ATTR = true;
+    let SAFE_FOR_TEMPLATES = false;
+    let SAFE_FOR_XML = true;
+    let WHOLE_DOCUMENT = false;
+    let SET_CONFIG = false;
+    let SET_CONFIG_ALLOWED_TAGS = null;
+    let SET_CONFIG_ALLOWED_ATTR = null;
+    let FORCE_BODY = false;
+    let RETURN_DOM = false;
+    let RETURN_DOM_FRAGMENT = false;
+    let RETURN_TRUSTED_TYPE = false;
+    let SANITIZE_DOM = true;
+    let SANITIZE_NAMED_PROPS = false;
+    const SANITIZE_NAMED_PROPS_PREFIX = "user-content-";
+    let KEEP_CONTENT = true;
+    let IN_PLACE = false;
+    let USE_PROFILES = {};
+    let FORBID_CONTENTS = null;
+    const DEFAULT_FORBID_CONTENTS = addToSet({}, [
+      "annotation-xml",
+      "audio",
+      "colgroup",
+      "desc",
+      "foreignobject",
+      "head",
+      "iframe",
+      "math",
+      "mi",
+      "mn",
+      "mo",
+      "ms",
+      "mtext",
+      "noembed",
+      "noframes",
+      "noscript",
+      "plaintext",
+      "script",
+      // <selectedcontent> mirrors the selected <option>'s subtree, cloned by
+      // the UA (customizable <select>) — including any on* handlers — and the
+      // engine re-mirrors synchronously whenever a removal changes which
+      // option/selectedcontent is current, even inside DOMPurify's inert
+      // DOMParser document. Hoisting its children on removal re-inserts a fresh
+      // mirror target ahead of the walk, which the engine refills, looping
+      // forever (DoS) and amplifying output. Dropping its content on removal
+      // (rather than hoisting) breaks that cascade; the content is a duplicate
+      // of the option, which is sanitized on its own. See campaign-3 F1/F6.
+      "selectedcontent",
+      "style",
+      "svg",
+      "template",
+      "thead",
+      "title",
+      "video",
+      "xmp"
+    ]);
+    let DATA_URI_TAGS = null;
+    const DEFAULT_DATA_URI_TAGS = addToSet({}, ["audio", "video", "img", "source", "image", "track"]);
+    let URI_SAFE_ATTRIBUTES = null;
+    const DEFAULT_URI_SAFE_ATTRIBUTES = addToSet({}, ["alt", "class", "for", "id", "label", "name", "pattern", "placeholder", "role", "summary", "title", "value", "style", "xmlns"]);
+    const MATHML_NAMESPACE = "http://www.w3.org/1998/Math/MathML";
+    const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
+    const HTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
+    let NAMESPACE = HTML_NAMESPACE;
+    let IS_EMPTY_INPUT = false;
+    let ALLOWED_NAMESPACES = null;
+    const DEFAULT_ALLOWED_NAMESPACES = addToSet({}, [MATHML_NAMESPACE, SVG_NAMESPACE, HTML_NAMESPACE], stringToString);
+    const DEFAULT_MATHML_TEXT_INTEGRATION_POINTS = freeze$1(["mi", "mo", "mn", "ms", "mtext"]);
+    let MATHML_TEXT_INTEGRATION_POINTS = addToSet({}, DEFAULT_MATHML_TEXT_INTEGRATION_POINTS);
+    const DEFAULT_HTML_INTEGRATION_POINTS = freeze$1(["annotation-xml"]);
+    let HTML_INTEGRATION_POINTS = addToSet({}, DEFAULT_HTML_INTEGRATION_POINTS);
+    const COMMON_SVG_AND_HTML_ELEMENTS = addToSet({}, ["title", "style", "font", "a", "script"]);
+    let PARSER_MEDIA_TYPE = null;
+    const SUPPORTED_PARSER_MEDIA_TYPES = ["application/xhtml+xml", "text/html"];
+    const DEFAULT_PARSER_MEDIA_TYPE = "text/html";
+    let transformCaseFunc = null;
+    let CONFIG = null;
+    const formElement = document2.createElement("form");
+    const isRegexOrFunction = function isRegexOrFunction2(testValue) {
+      return testValue instanceof RegExp || testValue instanceof Function;
+    };
+    const _parseConfig = function _parseConfig2() {
+      let cfg = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
+      if (CONFIG && CONFIG === cfg) {
+        return;
+      }
+      if (!cfg || typeof cfg !== "object") {
+        cfg = {};
+      }
+      cfg = clone(cfg);
+      PARSER_MEDIA_TYPE = // eslint-disable-next-line unicorn/prefer-includes
+      SUPPORTED_PARSER_MEDIA_TYPES.indexOf(cfg.PARSER_MEDIA_TYPE) === -1 ? DEFAULT_PARSER_MEDIA_TYPE : cfg.PARSER_MEDIA_TYPE;
+      transformCaseFunc = PARSER_MEDIA_TYPE === "application/xhtml+xml" ? stringToString : stringToLowerCase;
+      ALLOWED_TAGS = _resolveSetOption(cfg, "ALLOWED_TAGS", DEFAULT_ALLOWED_TAGS, {
+        transform: transformCaseFunc
+      });
+      ALLOWED_ATTR = _resolveSetOption(cfg, "ALLOWED_ATTR", DEFAULT_ALLOWED_ATTR, {
+        transform: transformCaseFunc
+      });
+      ALLOWED_NAMESPACES = _resolveSetOption(cfg, "ALLOWED_NAMESPACES", DEFAULT_ALLOWED_NAMESPACES, {
+        transform: stringToString
+      });
+      URI_SAFE_ATTRIBUTES = _resolveSetOption(cfg, "ADD_URI_SAFE_ATTR", DEFAULT_URI_SAFE_ATTRIBUTES, {
+        transform: transformCaseFunc,
+        base: DEFAULT_URI_SAFE_ATTRIBUTES
+      });
+      DATA_URI_TAGS = _resolveSetOption(cfg, "ADD_DATA_URI_TAGS", DEFAULT_DATA_URI_TAGS, {
+        transform: transformCaseFunc,
+        base: DEFAULT_DATA_URI_TAGS
+      });
+      FORBID_CONTENTS = _resolveSetOption(cfg, "FORBID_CONTENTS", DEFAULT_FORBID_CONTENTS, {
+        transform: transformCaseFunc
+      });
+      FORBID_TAGS = _resolveSetOption(cfg, "FORBID_TAGS", clone({}), {
+        transform: transformCaseFunc
+      });
+      FORBID_ATTR = _resolveSetOption(cfg, "FORBID_ATTR", clone({}), {
+        transform: transformCaseFunc
+      });
+      USE_PROFILES = objectHasOwnProperty(cfg, "USE_PROFILES") ? cfg.USE_PROFILES && typeof cfg.USE_PROFILES === "object" ? clone(cfg.USE_PROFILES) : cfg.USE_PROFILES : false;
+      ALLOW_ARIA_ATTR = cfg.ALLOW_ARIA_ATTR !== false;
+      ALLOW_DATA_ATTR = cfg.ALLOW_DATA_ATTR !== false;
+      ALLOW_UNKNOWN_PROTOCOLS = cfg.ALLOW_UNKNOWN_PROTOCOLS || false;
+      ALLOW_SELF_CLOSE_IN_ATTR = cfg.ALLOW_SELF_CLOSE_IN_ATTR !== false;
+      SAFE_FOR_TEMPLATES = cfg.SAFE_FOR_TEMPLATES || false;
+      SAFE_FOR_XML = cfg.SAFE_FOR_XML !== false;
+      WHOLE_DOCUMENT = cfg.WHOLE_DOCUMENT || false;
+      RETURN_DOM = cfg.RETURN_DOM || false;
+      RETURN_DOM_FRAGMENT = cfg.RETURN_DOM_FRAGMENT || false;
+      RETURN_TRUSTED_TYPE = cfg.RETURN_TRUSTED_TYPE || false;
+      FORCE_BODY = cfg.FORCE_BODY || false;
+      SANITIZE_DOM = cfg.SANITIZE_DOM !== false;
+      SANITIZE_NAMED_PROPS = cfg.SANITIZE_NAMED_PROPS || false;
+      KEEP_CONTENT = cfg.KEEP_CONTENT !== false;
+      IN_PLACE = cfg.IN_PLACE || false;
+      IS_ALLOWED_URI$1 = isRegex(cfg.ALLOWED_URI_REGEXP) ? cfg.ALLOWED_URI_REGEXP : IS_ALLOWED_URI;
+      NAMESPACE = typeof cfg.NAMESPACE === "string" ? cfg.NAMESPACE : HTML_NAMESPACE;
+      MATHML_TEXT_INTEGRATION_POINTS = objectHasOwnProperty(cfg, "MATHML_TEXT_INTEGRATION_POINTS") && cfg.MATHML_TEXT_INTEGRATION_POINTS && typeof cfg.MATHML_TEXT_INTEGRATION_POINTS === "object" ? clone(cfg.MATHML_TEXT_INTEGRATION_POINTS) : addToSet({}, DEFAULT_MATHML_TEXT_INTEGRATION_POINTS);
+      HTML_INTEGRATION_POINTS = objectHasOwnProperty(cfg, "HTML_INTEGRATION_POINTS") && cfg.HTML_INTEGRATION_POINTS && typeof cfg.HTML_INTEGRATION_POINTS === "object" ? clone(cfg.HTML_INTEGRATION_POINTS) : addToSet({}, DEFAULT_HTML_INTEGRATION_POINTS);
+      const customElementHandling = objectHasOwnProperty(cfg, "CUSTOM_ELEMENT_HANDLING") && cfg.CUSTOM_ELEMENT_HANDLING && typeof cfg.CUSTOM_ELEMENT_HANDLING === "object" ? clone(cfg.CUSTOM_ELEMENT_HANDLING) : create$a(null);
+      CUSTOM_ELEMENT_HANDLING = create$a(null);
+      if (objectHasOwnProperty(customElementHandling, "tagNameCheck") && isRegexOrFunction(customElementHandling.tagNameCheck)) {
+        CUSTOM_ELEMENT_HANDLING.tagNameCheck = customElementHandling.tagNameCheck;
+      }
+      if (objectHasOwnProperty(customElementHandling, "attributeNameCheck") && isRegexOrFunction(customElementHandling.attributeNameCheck)) {
+        CUSTOM_ELEMENT_HANDLING.attributeNameCheck = customElementHandling.attributeNameCheck;
+      }
+      if (objectHasOwnProperty(customElementHandling, "allowCustomizedBuiltInElements") && typeof customElementHandling.allowCustomizedBuiltInElements === "boolean") {
+        CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements = customElementHandling.allowCustomizedBuiltInElements;
+      }
+      seal(CUSTOM_ELEMENT_HANDLING);
+      if (SAFE_FOR_TEMPLATES) {
+        ALLOW_DATA_ATTR = false;
+      }
+      if (RETURN_DOM_FRAGMENT) {
+        RETURN_DOM = true;
+      }
+      if (USE_PROFILES) {
+        ALLOWED_TAGS = addToSet({}, text);
+        ALLOWED_ATTR = create$a(null);
+        if (USE_PROFILES.html === true) {
+          addToSet(ALLOWED_TAGS, html$1);
+          addToSet(ALLOWED_ATTR, html);
+        }
+        if (USE_PROFILES.svg === true) {
+          addToSet(ALLOWED_TAGS, svg$1);
+          addToSet(ALLOWED_ATTR, svg);
+          addToSet(ALLOWED_ATTR, xml);
+        }
+        if (USE_PROFILES.svgFilters === true) {
+          addToSet(ALLOWED_TAGS, svgFilters);
+          addToSet(ALLOWED_ATTR, svg);
+          addToSet(ALLOWED_ATTR, xml);
+        }
+        if (USE_PROFILES.mathMl === true) {
+          addToSet(ALLOWED_TAGS, mathMl$1);
+          addToSet(ALLOWED_ATTR, mathMl);
+          addToSet(ALLOWED_ATTR, xml);
+        }
+      }
+      EXTRA_ELEMENT_HANDLING.tagCheck = null;
+      EXTRA_ELEMENT_HANDLING.attributeCheck = null;
+      if (objectHasOwnProperty(cfg, "ADD_TAGS")) {
+        if (typeof cfg.ADD_TAGS === "function") {
+          EXTRA_ELEMENT_HANDLING.tagCheck = cfg.ADD_TAGS;
+        } else if (arrayIsArray(cfg.ADD_TAGS)) {
+          if (ALLOWED_TAGS === DEFAULT_ALLOWED_TAGS) {
+            ALLOWED_TAGS = clone(ALLOWED_TAGS);
+          }
+          addToSet(ALLOWED_TAGS, cfg.ADD_TAGS, transformCaseFunc);
+        }
+      }
+      if (objectHasOwnProperty(cfg, "ADD_ATTR")) {
+        if (typeof cfg.ADD_ATTR === "function") {
+          EXTRA_ELEMENT_HANDLING.attributeCheck = cfg.ADD_ATTR;
+        } else if (arrayIsArray(cfg.ADD_ATTR)) {
+          if (ALLOWED_ATTR === DEFAULT_ALLOWED_ATTR) {
+            ALLOWED_ATTR = clone(ALLOWED_ATTR);
+          }
+          addToSet(ALLOWED_ATTR, cfg.ADD_ATTR, transformCaseFunc);
+        }
+      }
+      if (objectHasOwnProperty(cfg, "ADD_URI_SAFE_ATTR") && arrayIsArray(cfg.ADD_URI_SAFE_ATTR)) {
+        addToSet(URI_SAFE_ATTRIBUTES, cfg.ADD_URI_SAFE_ATTR, transformCaseFunc);
+      }
+      if (objectHasOwnProperty(cfg, "FORBID_CONTENTS") && arrayIsArray(cfg.FORBID_CONTENTS)) {
+        if (FORBID_CONTENTS === DEFAULT_FORBID_CONTENTS) {
+          FORBID_CONTENTS = clone(FORBID_CONTENTS);
+        }
+        addToSet(FORBID_CONTENTS, cfg.FORBID_CONTENTS, transformCaseFunc);
+      }
+      if (objectHasOwnProperty(cfg, "ADD_FORBID_CONTENTS") && arrayIsArray(cfg.ADD_FORBID_CONTENTS)) {
+        if (FORBID_CONTENTS === DEFAULT_FORBID_CONTENTS) {
+          FORBID_CONTENTS = clone(FORBID_CONTENTS);
+        }
+        addToSet(FORBID_CONTENTS, cfg.ADD_FORBID_CONTENTS, transformCaseFunc);
+      }
+      if (KEEP_CONTENT) {
+        ALLOWED_TAGS["#text"] = true;
+      }
+      if (WHOLE_DOCUMENT) {
+        addToSet(ALLOWED_TAGS, ["html", "head", "body"]);
+      }
+      if (ALLOWED_TAGS.table) {
+        addToSet(ALLOWED_TAGS, ["tbody"]);
+        delete FORBID_TAGS.tbody;
+      }
+      if (cfg.TRUSTED_TYPES_POLICY) {
+        if (typeof cfg.TRUSTED_TYPES_POLICY.createHTML !== "function") {
+          throw typeErrorCreate('TRUSTED_TYPES_POLICY configuration option must provide a "createHTML" hook.');
+        }
+        if (typeof cfg.TRUSTED_TYPES_POLICY.createScriptURL !== "function") {
+          throw typeErrorCreate('TRUSTED_TYPES_POLICY configuration option must provide a "createScriptURL" hook.');
+        }
+        const previousTrustedTypesPolicy = trustedTypesPolicy;
+        trustedTypesPolicy = cfg.TRUSTED_TYPES_POLICY;
+        try {
+          emptyHTML = _createTrustedHTML("");
+        } catch (error) {
+          trustedTypesPolicy = previousTrustedTypesPolicy;
+          throw error;
+        }
+      } else if (cfg.TRUSTED_TYPES_POLICY === null) {
+        trustedTypesPolicy = void 0;
+        emptyHTML = "";
+      } else {
+        if (trustedTypesPolicy === void 0) {
+          trustedTypesPolicy = _getDefaultTrustedTypesPolicy();
+        }
+        if (trustedTypesPolicy && typeof emptyHTML === "string") {
+          emptyHTML = _createTrustedHTML("");
+        }
+      }
+      if (freeze$1) {
+        freeze$1(cfg);
+      }
+      CONFIG = cfg;
+    };
+    const ALL_SVG_TAGS = addToSet({}, [...svg$1, ...svgFilters, ...svgDisallowed]);
+    const ALL_MATHML_TAGS = addToSet({}, [...mathMl$1, ...mathMlDisallowed]);
+    const _checkSvgNamespace = function _checkSvgNamespace2(tagName, parent, parentTagName) {
+      if (parent.namespaceURI === HTML_NAMESPACE) {
+        return tagName === "svg";
+      }
+      if (parent.namespaceURI === MATHML_NAMESPACE) {
+        return tagName === "svg" && (parentTagName === "annotation-xml" || MATHML_TEXT_INTEGRATION_POINTS[parentTagName]);
+      }
+      return Boolean(ALL_SVG_TAGS[tagName]);
+    };
+    const _checkMathMlNamespace = function _checkMathMlNamespace2(tagName, parent, parentTagName) {
+      if (parent.namespaceURI === HTML_NAMESPACE) {
+        return tagName === "math";
+      }
+      if (parent.namespaceURI === SVG_NAMESPACE) {
+        return tagName === "math" && HTML_INTEGRATION_POINTS[parentTagName];
+      }
+      return Boolean(ALL_MATHML_TAGS[tagName]);
+    };
+    const _checkHtmlNamespace = function _checkHtmlNamespace2(tagName, parent, parentTagName) {
+      if (parent.namespaceURI === SVG_NAMESPACE && !HTML_INTEGRATION_POINTS[parentTagName]) {
+        return false;
+      }
+      if (parent.namespaceURI === MATHML_NAMESPACE && !MATHML_TEXT_INTEGRATION_POINTS[parentTagName]) {
+        return false;
+      }
+      return !ALL_MATHML_TAGS[tagName] && (COMMON_SVG_AND_HTML_ELEMENTS[tagName] || !ALL_SVG_TAGS[tagName]);
+    };
+    const _checkValidNamespace = function _checkValidNamespace2(element) {
+      let parent = getParentNode2(element);
+      if (!parent || !parent.tagName) {
+        parent = {
+          namespaceURI: NAMESPACE,
+          tagName: "template"
+        };
+      }
+      const tagName = stringToLowerCase(element.tagName);
+      const parentTagName = stringToLowerCase(parent.tagName);
+      if (!ALLOWED_NAMESPACES[element.namespaceURI]) {
+        return false;
+      }
+      if (element.namespaceURI === SVG_NAMESPACE) {
+        return _checkSvgNamespace(tagName, parent, parentTagName);
+      }
+      if (element.namespaceURI === MATHML_NAMESPACE) {
+        return _checkMathMlNamespace(tagName, parent, parentTagName);
+      }
+      if (element.namespaceURI === HTML_NAMESPACE) {
+        return _checkHtmlNamespace(tagName, parent, parentTagName);
+      }
+      if (PARSER_MEDIA_TYPE === "application/xhtml+xml" && ALLOWED_NAMESPACES[element.namespaceURI]) {
+        return true;
+      }
+      return false;
+    };
+    const _forceRemove = function _forceRemove2(node) {
+      arrayPush(DOMPurify.removed, {
+        element: node
+      });
+      try {
+        getParentNode2(node).removeChild(node);
+      } catch (_2) {
+        remove2(node);
+        if (!getParentNode2(node)) {
+          throw typeErrorCreate("a node selected for removal could not be detached from its tree and cannot be safely returned; refusing to sanitize in place");
+        }
+      }
+    };
+    const _neutralizeRoot = function _neutralizeRoot2(root2) {
+      const childNodes = getChildNodes(root2);
+      if (childNodes) {
+        const snapshot2 = [];
+        arrayForEach(childNodes, (child) => {
+          arrayPush(snapshot2, child);
+        });
+        arrayForEach(snapshot2, (child) => {
+          try {
+            remove2(child);
+          } catch (_2) {
+          }
+        });
+      }
+      const attributes = getAttributes2(root2);
+      if (attributes) {
+        for (let i2 = attributes.length - 1; i2 >= 0; --i2) {
+          const attribute = attributes[i2];
+          const name = attribute && attribute.name;
+          if (typeof name === "string") {
+            try {
+              root2.removeAttribute(name);
+            } catch (_2) {
+            }
+          }
+        }
+      }
+    };
+    const _removeAttribute = function _removeAttribute2(name, element) {
+      try {
+        arrayPush(DOMPurify.removed, {
+          attribute: element.getAttributeNode(name),
+          from: element
+        });
+      } catch (_2) {
+        arrayPush(DOMPurify.removed, {
+          attribute: null,
+          from: element
+        });
+      }
+      element.removeAttribute(name);
+      if (name === "is") {
+        if (RETURN_DOM || RETURN_DOM_FRAGMENT) {
+          try {
+            _forceRemove(element);
+          } catch (_2) {
+          }
+        } else {
+          try {
+            element.setAttribute(name, "");
+          } catch (_2) {
+          }
+        }
+      }
+    };
+    const _stripDisallowedAttributes = function _stripDisallowedAttributes2(element) {
+      const attributes = getAttributes2(element);
+      if (!attributes) {
+        return;
+      }
+      for (let i2 = attributes.length - 1; i2 >= 0; --i2) {
+        const attribute = attributes[i2];
+        const name = attribute && attribute.name;
+        if (typeof name !== "string" || ALLOWED_ATTR[transformCaseFunc(name)]) {
+          continue;
+        }
+        try {
+          element.removeAttribute(name);
+        } catch (_2) {
+        }
+      }
+    };
+    const _neutralizeSubtree = function _neutralizeSubtree2(root2) {
+      const stack2 = [root2];
+      while (stack2.length > 0) {
+        const node = stack2.pop();
+        const nodeType = getNodeType2 ? getNodeType2(node) : node.nodeType;
+        if (nodeType === NODE_TYPE.element) {
+          _stripDisallowedAttributes(node);
+        }
+        const childNodes = getChildNodes(node);
+        if (childNodes) {
+          for (let i2 = childNodes.length - 1; i2 >= 0; --i2) {
+            stack2.push(childNodes[i2]);
+          }
+        }
+      }
+    };
+    const _initDocument = function _initDocument2(dirty) {
+      let doc2 = null;
+      let leadingWhitespace = null;
+      if (FORCE_BODY) {
+        dirty = "<remove></remove>" + dirty;
+      } else {
+        const matches2 = stringMatch(dirty, /^[\r\n\t ]+/);
+        leadingWhitespace = matches2 && matches2[0];
+      }
+      if (PARSER_MEDIA_TYPE === "application/xhtml+xml" && NAMESPACE === HTML_NAMESPACE) {
+        dirty = '<html xmlns="http://www.w3.org/1999/xhtml"><head></head><body>' + dirty + "</body></html>";
+      }
+      const dirtyPayload = trustedTypesPolicy ? _createTrustedHTML(dirty) : dirty;
+      if (NAMESPACE === HTML_NAMESPACE) {
+        try {
+          doc2 = new DOMParser2().parseFromString(dirtyPayload, PARSER_MEDIA_TYPE);
+        } catch (_2) {
+        }
+      }
+      if (!doc2 || !doc2.documentElement) {
+        doc2 = implementation.createDocument(NAMESPACE, "template", null);
+        try {
+          doc2.documentElement.innerHTML = IS_EMPTY_INPUT ? emptyHTML : dirtyPayload;
+        } catch (_2) {
+        }
+      }
+      const body = doc2.body || doc2.documentElement;
+      if (dirty && leadingWhitespace) {
+        body.insertBefore(document2.createTextNode(leadingWhitespace), body.childNodes[0] || null);
+      }
+      if (NAMESPACE === HTML_NAMESPACE) {
+        return getElementsByTagName.call(doc2, WHOLE_DOCUMENT ? "html" : "body")[0];
+      }
+      return WHOLE_DOCUMENT ? doc2.documentElement : body;
+    };
+    const _createNodeIterator = function _createNodeIterator2(root2) {
+      return createNodeIterator.call(
+        root2.ownerDocument || root2,
+        root2,
+        // eslint-disable-next-line no-bitwise
+        NodeFilter2.SHOW_ELEMENT | NodeFilter2.SHOW_COMMENT | NodeFilter2.SHOW_TEXT | NodeFilter2.SHOW_PROCESSING_INSTRUCTION | NodeFilter2.SHOW_CDATA_SECTION,
+        null
+      );
+    };
+    const _stripTemplateExpressions = function _stripTemplateExpressions2(value) {
+      value = stringReplace(value, MUSTACHE_EXPR$1, " ");
+      value = stringReplace(value, ERB_EXPR$1, " ");
+      value = stringReplace(value, TMPLIT_EXPR$1, " ");
+      return value;
+    };
+    const _scrubTemplateExpressions2 = function _scrubTemplateExpressions(node) {
+      var _node$querySelectorAl;
+      node.normalize();
+      const walker = createNodeIterator.call(
+        node.ownerDocument || node,
+        node,
+        // eslint-disable-next-line no-bitwise
+        NodeFilter2.SHOW_TEXT | NodeFilter2.SHOW_COMMENT | NodeFilter2.SHOW_CDATA_SECTION | NodeFilter2.SHOW_PROCESSING_INSTRUCTION,
+        null
+      );
+      let currentNode = walker.nextNode();
+      while (currentNode) {
+        currentNode.data = _stripTemplateExpressions(currentNode.data);
+        currentNode = walker.nextNode();
+      }
+      const templates = (_node$querySelectorAl = node.querySelectorAll) === null || _node$querySelectorAl === void 0 ? void 0 : _node$querySelectorAl.call(node, "template");
+      if (templates) {
+        arrayForEach(templates, (tmpl) => {
+          if (_isDocumentFragment(tmpl.content)) {
+            _scrubTemplateExpressions2(tmpl.content);
+          }
+        });
+      }
+    };
+    const _isClobbered = function _isClobbered2(element) {
+      const realTagName = getNodeName2 ? getNodeName2(element) : null;
+      if (typeof realTagName !== "string") {
+        return false;
+      }
+      if (transformCaseFunc(realTagName) !== "form") {
+        return false;
+      }
+      return typeof element.nodeName !== "string" || typeof element.textContent !== "string" || typeof element.removeChild !== "function" || // Realm-safe NamedNodeMap detection: equality against the cached
+      // prototype getter. Clobbered .attributes (e.g. <input name="attributes">)
+      // makes the direct read diverge from the cached read; a clean form
+      // (same-realm OR foreign-realm) has both reads pointing at the same
+      // canonical NamedNodeMap.
+      element.attributes !== getAttributes2(element) || typeof element.removeAttribute !== "function" || typeof element.setAttribute !== "function" || typeof element.namespaceURI !== "string" || typeof element.insertBefore !== "function" || typeof element.hasChildNodes !== "function" || // NodeType clobbering probe. Cached Node.prototype.nodeType getter
+      // returns the integer 1 for any Element regardless of realm; direct
+      // read on a clobbered form (e.g. <input name="nodeType">) returns
+      // the named child element. Cheap addition — nodeType is read from
+      // an internal slot, no serialization cost — and removes a residual
+      // clobbering surface used by several mXSS / PI / comment branches
+      // in _sanitizeElements that compare currentNode.nodeType directly.
+      element.nodeType !== getNodeType2(element) || // HTMLFormElement has [LegacyOverrideBuiltIns]: a descendant named
+      // "childNodes" shadows the prototype getter. Direct reads of
+      // form.childNodes from a clobbered form return the named child
+      // instead of the real NodeList, so any walk that reads it directly
+      // skips the form's real children. Compare the direct read to the
+      // cached Node.prototype getter — when the form's named-property
+      // getter intercepts the read, the two values differ and we flag
+      // the form. This catches every clobbering child type (input,
+      // select, etc.) regardless of whether the named child happens to
+      // carry a numeric .length, which a typeof-based probe would miss
+      // (e.g. HTMLSelectElement.length is a defined unsigned-long).
+      element.childNodes !== getChildNodes(element);
+    };
+    const _isDocumentFragment = function _isDocumentFragment2(value) {
+      if (!getNodeType2 || typeof value !== "object" || value === null) {
+        return false;
+      }
+      try {
+        return getNodeType2(value) === NODE_TYPE.documentFragment;
+      } catch (_2) {
+        return false;
+      }
+    };
+    const _isNode = function _isNode2(value) {
+      if (!getNodeType2 || typeof value !== "object" || value === null) {
+        return false;
+      }
+      try {
+        return typeof getNodeType2(value) === "number";
+      } catch (_2) {
+        return false;
+      }
+    };
+    function _executeHooks(hooks2, currentNode, data) {
+      if (hooks2.length === 0) {
+        return;
+      }
+      arrayForEach(hooks2, (hook) => {
+        hook.call(DOMPurify, currentNode, data, CONFIG);
+      });
+    }
+    const _isUnsafeNode = function _isUnsafeNode2(currentNode, tagName) {
+      if (SAFE_FOR_XML && currentNode.hasChildNodes() && !_isNode(currentNode.firstElementChild) && regExpTest(ELEMENT_MARKUP_PROBE, currentNode.textContent) && regExpTest(ELEMENT_MARKUP_PROBE, currentNode.innerHTML)) {
+        return true;
+      }
+      if (SAFE_FOR_XML && currentNode.namespaceURI === HTML_NAMESPACE && tagName === "style" && _isNode(currentNode.firstElementChild)) {
+        return true;
+      }
+      if (currentNode.nodeType === NODE_TYPE.processingInstruction) {
+        return true;
+      }
+      if (SAFE_FOR_XML && currentNode.nodeType === NODE_TYPE.comment && regExpTest(COMMENT_MARKUP_PROBE, currentNode.data)) {
+        return true;
+      }
+      return false;
+    };
+    const _sanitizeDisallowedNode = function _sanitizeDisallowedNode2(currentNode, tagName) {
+      if (!FORBID_TAGS[tagName] && _isBasicCustomElement(tagName)) {
+        if (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, tagName)) {
+          return false;
+        }
+        if (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(tagName)) {
+          return false;
+        }
+      }
+      if (KEEP_CONTENT && !FORBID_CONTENTS[tagName]) {
+        const parentNode2 = getParentNode2(currentNode);
+        const childNodes = getChildNodes(currentNode);
+        if (childNodes && parentNode2) {
+          const childCount = childNodes.length;
+          for (let i2 = childCount - 1; i2 >= 0; --i2) {
+            const hoisted = IN_PLACE ? childNodes[i2] : cloneNode(childNodes[i2], true);
+            parentNode2.insertBefore(hoisted, getNextSibling(currentNode));
+          }
+        }
+      }
+      _forceRemove(currentNode);
+      return true;
+    };
+    const _sanitizeElements = function _sanitizeElements2(currentNode) {
+      _executeHooks(hooks.beforeSanitizeElements, currentNode, null);
+      if (_isClobbered(currentNode)) {
+        _forceRemove(currentNode);
+        return true;
+      }
+      const tagName = transformCaseFunc(getNodeName2 ? getNodeName2(currentNode) : currentNode.nodeName);
+      _executeHooks(hooks.uponSanitizeElement, currentNode, {
+        tagName,
+        allowedTags: ALLOWED_TAGS
+      });
+      if (_isUnsafeNode(currentNode, tagName)) {
+        _forceRemove(currentNode);
+        return true;
+      }
+      if (FORBID_TAGS[tagName] || !(EXTRA_ELEMENT_HANDLING.tagCheck instanceof Function && EXTRA_ELEMENT_HANDLING.tagCheck(tagName)) && !ALLOWED_TAGS[tagName]) {
+        return _sanitizeDisallowedNode(currentNode, tagName);
+      }
+      const nt2 = getNodeType2 ? getNodeType2(currentNode) : currentNode.nodeType;
+      if (nt2 === NODE_TYPE.element && !_checkValidNamespace(currentNode)) {
+        _forceRemove(currentNode);
+        return true;
+      }
+      if ((tagName === "noscript" || tagName === "noembed" || tagName === "noframes") && regExpTest(FALLBACK_TAG_CLOSE, currentNode.innerHTML)) {
+        _forceRemove(currentNode);
+        return true;
+      }
+      if (SAFE_FOR_TEMPLATES && currentNode.nodeType === NODE_TYPE.text) {
+        const content = _stripTemplateExpressions(currentNode.textContent);
+        if (currentNode.textContent !== content) {
+          arrayPush(DOMPurify.removed, {
+            element: currentNode.cloneNode()
+          });
+          currentNode.textContent = content;
+        }
+      }
+      _executeHooks(hooks.afterSanitizeElements, currentNode, null);
+      return false;
+    };
+    const _isValidAttribute = function _isValidAttribute2(lcTag, lcName, value) {
+      if (FORBID_ATTR[lcName]) {
+        return false;
+      }
+      if (SANITIZE_DOM && (lcName === "id" || lcName === "name") && (value in document2 || value in formElement)) {
+        return false;
+      }
+      const nameIsPermitted = ALLOWED_ATTR[lcName] || EXTRA_ELEMENT_HANDLING.attributeCheck instanceof Function && EXTRA_ELEMENT_HANDLING.attributeCheck(lcName, lcTag);
+      if (ALLOW_DATA_ATTR && regExpTest(DATA_ATTR$1, lcName)) ;
+      else if (ALLOW_ARIA_ATTR && regExpTest(ARIA_ATTR$1, lcName)) ;
+      else if (!nameIsPermitted) {
+        if (
+          // First condition does a very basic check if a) it's basically a valid custom element tagname AND
+          // b) if the tagName passes whatever the user has configured for CUSTOM_ELEMENT_HANDLING.tagNameCheck
+          // and c) if the attribute name passes whatever the user has configured for CUSTOM_ELEMENT_HANDLING.attributeNameCheck
+          _isBasicCustomElement(lcTag) && (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, lcTag) || CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(lcTag)) && (CUSTOM_ELEMENT_HANDLING.attributeNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.attributeNameCheck, lcName) || CUSTOM_ELEMENT_HANDLING.attributeNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.attributeNameCheck(lcName, lcTag)) || // Alternative, second condition checks if it's an `is`-attribute, AND
+          // the value passes whatever the user has configured for CUSTOM_ELEMENT_HANDLING.tagNameCheck
+          lcName === "is" && CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements && (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, value) || CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(value))
+        ) ;
+        else {
+          return false;
+        }
+      } else if (URI_SAFE_ATTRIBUTES[lcName]) ;
+      else if (regExpTest(IS_ALLOWED_URI$1, stringReplace(value, ATTR_WHITESPACE$1, ""))) ;
+      else if ((lcName === "src" || lcName === "xlink:href" || lcName === "href") && lcTag !== "script" && stringIndexOf(value, "data:") === 0 && DATA_URI_TAGS[lcTag]) ;
+      else if (ALLOW_UNKNOWN_PROTOCOLS && !regExpTest(IS_SCRIPT_OR_DATA$1, stringReplace(value, ATTR_WHITESPACE$1, ""))) ;
+      else if (value) {
+        return false;
+      } else ;
+      return true;
+    };
+    const RESERVED_CUSTOM_ELEMENT_NAMES = addToSet({}, ["annotation-xml", "color-profile", "font-face", "font-face-format", "font-face-name", "font-face-src", "font-face-uri", "missing-glyph"]);
+    const _isBasicCustomElement = function _isBasicCustomElement2(tagName) {
+      return !RESERVED_CUSTOM_ELEMENT_NAMES[stringToLowerCase(tagName)] && regExpTest(CUSTOM_ELEMENT$1, tagName);
+    };
+    const _applyTrustedTypesToAttribute = function _applyTrustedTypesToAttribute2(lcTag, lcName, namespaceURI, value) {
+      if (trustedTypesPolicy && typeof trustedTypes === "object" && typeof trustedTypes.getAttributeType === "function" && !namespaceURI) {
+        switch (trustedTypes.getAttributeType(lcTag, lcName)) {
+          case "TrustedHTML": {
+            return _createTrustedHTML(value);
+          }
+          case "TrustedScriptURL": {
+            return _createTrustedScriptURL(value);
+          }
+        }
+      }
+      return value;
+    };
+    const _setAttributeValue = function _setAttributeValue2(currentNode, name, namespaceURI, value) {
+      try {
+        if (namespaceURI) {
+          currentNode.setAttributeNS(namespaceURI, name, value);
+        } else {
+          currentNode.setAttribute(name, value);
+        }
+        if (_isClobbered(currentNode)) {
+          _forceRemove(currentNode);
+        } else {
+          arrayPop(DOMPurify.removed);
+        }
+      } catch (_2) {
+        _removeAttribute(name, currentNode);
+      }
+    };
+    const _sanitizeAttributes = function _sanitizeAttributes2(currentNode) {
+      _executeHooks(hooks.beforeSanitizeAttributes, currentNode, null);
+      const attributes = currentNode.attributes;
+      if (!attributes || _isClobbered(currentNode)) {
+        return;
+      }
+      const hookEvent = {
+        attrName: "",
+        attrValue: "",
+        keepAttr: true,
+        allowedAttributes: ALLOWED_ATTR,
+        forceKeepAttr: void 0
+      };
+      let l2 = attributes.length;
+      const lcTag = transformCaseFunc(currentNode.nodeName);
+      while (l2--) {
+        const attr = attributes[l2];
+        const name = attr.name, namespaceURI = attr.namespaceURI, attrValue = attr.value;
+        const lcName = transformCaseFunc(name);
+        const initValue = attrValue;
+        let value = name === "value" ? initValue : stringTrim(initValue);
+        hookEvent.attrName = lcName;
+        hookEvent.attrValue = value;
+        hookEvent.keepAttr = true;
+        hookEvent.forceKeepAttr = void 0;
+        _executeHooks(hooks.uponSanitizeAttribute, currentNode, hookEvent);
+        value = hookEvent.attrValue;
+        if (SANITIZE_NAMED_PROPS && (lcName === "id" || lcName === "name") && stringIndexOf(value, SANITIZE_NAMED_PROPS_PREFIX) !== 0) {
+          _removeAttribute(name, currentNode);
+          value = SANITIZE_NAMED_PROPS_PREFIX + value;
+        }
+        if (SAFE_FOR_XML && regExpTest(/((--!?|])>)|<\/(style|script|title|xmp|textarea|noscript|iframe|noembed|noframes)/i, value)) {
+          _removeAttribute(name, currentNode);
+          continue;
+        }
+        if (lcName === "attributename" && stringMatch(value, "href")) {
+          _removeAttribute(name, currentNode);
+          continue;
+        }
+        if (hookEvent.forceKeepAttr) {
+          continue;
+        }
+        if (!hookEvent.keepAttr) {
+          _removeAttribute(name, currentNode);
+          continue;
+        }
+        if (!ALLOW_SELF_CLOSE_IN_ATTR && regExpTest(SELF_CLOSING_TAG, value)) {
+          _removeAttribute(name, currentNode);
+          continue;
+        }
+        if (SAFE_FOR_TEMPLATES) {
+          value = _stripTemplateExpressions(value);
+        }
+        if (!_isValidAttribute(lcTag, lcName, value)) {
+          _removeAttribute(name, currentNode);
+          continue;
+        }
+        value = _applyTrustedTypesToAttribute(lcTag, lcName, namespaceURI, value);
+        if (value !== initValue) {
+          _setAttributeValue(currentNode, name, namespaceURI, value);
+        }
+      }
+      _executeHooks(hooks.afterSanitizeAttributes, currentNode, null);
+    };
+    const _sanitizeShadowDOM2 = function _sanitizeShadowDOM(fragment) {
+      let shadowNode = null;
+      const shadowIterator = _createNodeIterator(fragment);
+      _executeHooks(hooks.beforeSanitizeShadowDOM, fragment, null);
+      while (shadowNode = shadowIterator.nextNode()) {
+        _executeHooks(hooks.uponSanitizeShadowNode, shadowNode, null);
+        _sanitizeElements(shadowNode);
+        _sanitizeAttributes(shadowNode);
+        if (_isDocumentFragment(shadowNode.content)) {
+          _sanitizeShadowDOM2(shadowNode.content);
+        }
+        const shadowNodeType = getNodeType2 ? getNodeType2(shadowNode) : shadowNode.nodeType;
+        if (shadowNodeType === NODE_TYPE.element) {
+          const innerSr = getShadowRoot(shadowNode);
+          if (_isDocumentFragment(innerSr)) {
+            _sanitizeAttachedShadowRoots(innerSr);
+            _sanitizeShadowDOM2(innerSr);
+          }
+        }
+      }
+      _executeHooks(hooks.afterSanitizeShadowDOM, fragment, null);
+    };
+    const _sanitizeAttachedShadowRoots = function _sanitizeAttachedShadowRoots2(root2) {
+      const stack2 = [{
+        node: root2,
+        shadow: null
+      }];
+      while (stack2.length > 0) {
+        const item = stack2.pop();
+        if (item.shadow) {
+          _sanitizeShadowDOM2(item.shadow);
+          continue;
+        }
+        const node = item.node;
+        const nodeType = getNodeType2 ? getNodeType2(node) : node.nodeType;
+        const isElement2 = nodeType === NODE_TYPE.element;
+        const childNodes = getChildNodes(node);
+        if (childNodes) {
+          for (let i2 = childNodes.length - 1; i2 >= 0; --i2) {
+            stack2.push({
+              node: childNodes[i2],
+              shadow: null
+            });
+          }
+        }
+        if (isElement2) {
+          const rootName = getNodeName2 ? getNodeName2(node) : null;
+          if (typeof rootName === "string" && transformCaseFunc(rootName) === "template") {
+            const content = node.content;
+            if (_isDocumentFragment(content)) {
+              stack2.push({
+                node: content,
+                shadow: null
+              });
+            }
+          }
+        }
+        if (isElement2) {
+          const sr = getShadowRoot(node);
+          if (_isDocumentFragment(sr)) {
+            stack2.push({
+              node: null,
+              shadow: sr
+            }, {
+              node: sr,
+              shadow: null
+            });
+          }
+        }
+      }
+    };
+    DOMPurify.sanitize = function(dirty) {
+      let cfg = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
+      let body = null;
+      let importedNode = null;
+      let currentNode = null;
+      let returnNode = null;
+      IS_EMPTY_INPUT = !dirty;
+      if (IS_EMPTY_INPUT) {
+        dirty = "<!-->";
+      }
+      if (typeof dirty !== "string" && !_isNode(dirty)) {
+        dirty = stringifyValue(dirty);
+        if (typeof dirty !== "string") {
+          throw typeErrorCreate("dirty is not a string, aborting");
+        }
+      }
+      if (!DOMPurify.isSupported) {
+        return dirty;
+      }
+      if (SET_CONFIG) {
+        ALLOWED_TAGS = SET_CONFIG_ALLOWED_TAGS;
+        ALLOWED_ATTR = SET_CONFIG_ALLOWED_ATTR;
+      } else {
+        _parseConfig(cfg);
+      }
+      if (hooks.uponSanitizeElement.length > 0 || hooks.uponSanitizeAttribute.length > 0) {
+        ALLOWED_TAGS = clone(ALLOWED_TAGS);
+      }
+      if (hooks.uponSanitizeAttribute.length > 0) {
+        ALLOWED_ATTR = clone(ALLOWED_ATTR);
+      }
+      DOMPurify.removed = [];
+      const inPlace = IN_PLACE && typeof dirty !== "string" && _isNode(dirty);
+      if (inPlace) {
+        const nn = getNodeName2 ? getNodeName2(dirty) : dirty.nodeName;
+        if (typeof nn === "string") {
+          const tagName = transformCaseFunc(nn);
+          if (!ALLOWED_TAGS[tagName] || FORBID_TAGS[tagName]) {
+            throw typeErrorCreate("root node is forbidden and cannot be sanitized in-place");
+          }
+        }
+        if (_isClobbered(dirty)) {
+          throw typeErrorCreate("root node is clobbered and cannot be sanitized in-place");
+        }
+        try {
+          _sanitizeAttachedShadowRoots(dirty);
+        } catch (error) {
+          _neutralizeRoot(dirty);
+          throw error;
+        }
+      } else if (_isNode(dirty)) {
+        body = _initDocument("<!---->");
+        importedNode = body.ownerDocument.importNode(dirty, true);
+        if (importedNode.nodeType === NODE_TYPE.element && importedNode.nodeName === "BODY") {
+          body = importedNode;
+        } else if (importedNode.nodeName === "HTML") {
+          body = importedNode;
+        } else {
+          body.appendChild(importedNode);
+        }
+        _sanitizeAttachedShadowRoots(importedNode);
+      } else {
+        if (!RETURN_DOM && !SAFE_FOR_TEMPLATES && !WHOLE_DOCUMENT && // eslint-disable-next-line unicorn/prefer-includes
+        dirty.indexOf("<") === -1) {
+          return trustedTypesPolicy && RETURN_TRUSTED_TYPE ? _createTrustedHTML(dirty) : dirty;
+        }
+        body = _initDocument(dirty);
+        if (!body) {
+          return RETURN_DOM ? null : RETURN_TRUSTED_TYPE ? emptyHTML : "";
+        }
+      }
+      if (body && FORCE_BODY) {
+        _forceRemove(body.firstChild);
+      }
+      const nodeIterator = _createNodeIterator(inPlace ? dirty : body);
+      try {
+        while (currentNode = nodeIterator.nextNode()) {
+          _sanitizeElements(currentNode);
+          _sanitizeAttributes(currentNode);
+          if (_isDocumentFragment(currentNode.content)) {
+            _sanitizeShadowDOM2(currentNode.content);
+          }
+        }
+      } catch (error) {
+        if (inPlace) {
+          _neutralizeRoot(dirty);
+        }
+        throw error;
+      }
+      if (inPlace) {
+        arrayForEach(DOMPurify.removed, (entry) => {
+          if (entry.element) {
+            _neutralizeSubtree(entry.element);
+          }
+        });
+        if (SAFE_FOR_TEMPLATES) {
+          _scrubTemplateExpressions2(dirty);
+        }
+        return dirty;
+      }
+      if (RETURN_DOM) {
+        if (SAFE_FOR_TEMPLATES) {
+          _scrubTemplateExpressions2(body);
+        }
+        if (RETURN_DOM_FRAGMENT) {
+          returnNode = createDocumentFragment.call(body.ownerDocument);
+          while (body.firstChild) {
+            returnNode.appendChild(body.firstChild);
+          }
+        } else {
+          returnNode = body;
+        }
+        if (ALLOWED_ATTR.shadowroot || ALLOWED_ATTR.shadowrootmode) {
+          returnNode = importNode.call(originalDocument, returnNode, true);
+        }
+        return returnNode;
+      }
+      let serializedHTML = WHOLE_DOCUMENT ? body.outerHTML : body.innerHTML;
+      if (WHOLE_DOCUMENT && ALLOWED_TAGS["!doctype"] && body.ownerDocument && body.ownerDocument.doctype && body.ownerDocument.doctype.name && regExpTest(DOCTYPE_NAME, body.ownerDocument.doctype.name)) {
+        serializedHTML = "<!DOCTYPE " + body.ownerDocument.doctype.name + ">\n" + serializedHTML;
+      }
+      if (SAFE_FOR_TEMPLATES) {
+        serializedHTML = _stripTemplateExpressions(serializedHTML);
+      }
+      return trustedTypesPolicy && RETURN_TRUSTED_TYPE ? _createTrustedHTML(serializedHTML) : serializedHTML;
+    };
+    DOMPurify.setConfig = function() {
+      let cfg = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
+      _parseConfig(cfg);
+      SET_CONFIG = true;
+      SET_CONFIG_ALLOWED_TAGS = ALLOWED_TAGS;
+      SET_CONFIG_ALLOWED_ATTR = ALLOWED_ATTR;
+    };
+    DOMPurify.clearConfig = function() {
+      CONFIG = null;
+      SET_CONFIG = false;
+      SET_CONFIG_ALLOWED_TAGS = null;
+      SET_CONFIG_ALLOWED_ATTR = null;
+      trustedTypesPolicy = defaultTrustedTypesPolicy;
+      emptyHTML = "";
+    };
+    DOMPurify.isValidAttribute = function(tag, attr, value) {
+      if (!CONFIG) {
+        _parseConfig({});
+      }
+      const lcTag = transformCaseFunc(tag);
+      const lcName = transformCaseFunc(attr);
+      return _isValidAttribute(lcTag, lcName, value);
+    };
+    DOMPurify.addHook = function(entryPoint, hookFunction) {
+      if (typeof hookFunction !== "function") {
+        return;
+      }
+      if (!objectHasOwnProperty(hooks, entryPoint)) {
+        return;
+      }
+      arrayPush(hooks[entryPoint], hookFunction);
+    };
+    DOMPurify.removeHook = function(entryPoint, hookFunction) {
+      if (!objectHasOwnProperty(hooks, entryPoint)) {
+        return void 0;
+      }
+      if (hookFunction !== void 0) {
+        const index = arrayLastIndexOf(hooks[entryPoint], hookFunction);
+        return index === -1 ? void 0 : arraySplice(hooks[entryPoint], index, 1)[0];
+      }
+      return arrayPop(hooks[entryPoint]);
+    };
+    DOMPurify.removeHooks = function(entryPoint) {
+      if (!objectHasOwnProperty(hooks, entryPoint)) {
+        return;
+      }
+      hooks[entryPoint] = [];
+    };
+    DOMPurify.removeAllHooks = function() {
+      hooks = _createHooksMap();
+    };
+    return DOMPurify;
+  }
+  var purify = createDOMPurify();
+  g$1.setOptions({ gfm: true, breaks: false });
+  function renderMarkdown(md) {
+    if (!md) return "";
+    const rawHtml = g$1.parse(md, { async: false });
+    return purify.sanitize(rawHtml);
+  }
   function throttle(fn, delay = 250) {
     let isThrottled = false;
     let pendingArgs = null;
@@ -9360,16 +11969,16 @@ var LintoEditor = (function(exports) {
     }
     return null;
   }
-  const _hoisted_1$y = { class: "editor-header" };
-  const _hoisted_2$q = { class: "header-main" };
-  const _hoisted_3$n = { class: "document-title" };
+  const _hoisted_1$B = { class: "editor-header" };
+  const _hoisted_2$s = { class: "header-main" };
+  const _hoisted_3$o = { class: "document-title" };
   const _hoisted_4$c = {
     key: 0,
     class: "document-meta"
   };
   const _hoisted_5$b = { class: "header-right" };
   const _hoisted_6$8 = { key: 0 };
-  const _sfc_main$I = /* @__PURE__ */ defineComponent({
+  const _sfc_main$K = /* @__PURE__ */ defineComponent({
     __name: "Header",
     props: {
       title: { type: String },
@@ -9401,9 +12010,9 @@ var LintoEditor = (function(exports) {
         ].filter(Boolean)
       );
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("header", _hoisted_1$y, [
-          createBaseVNode("div", _hoisted_2$q, [
-            createBaseVNode("h1", _hoisted_3$n, toDisplayString(formattedTitle.value), 1),
+        return openBlock(), createElementBlock("header", _hoisted_1$B, [
+          createBaseVNode("div", _hoisted_2$s, [
+            createBaseVNode("h1", _hoisted_3$o, toDisplayString(formattedTitle.value), 1),
             metaParts.value.length ? (openBlock(), createElementBlock("div", _hoisted_4$c, [
               (openBlock(true), createElementBlock(Fragment$1, null, renderList(metaParts.value, (part, i2) => {
                 return openBlock(), createElementBlock("span", {
@@ -9450,10 +12059,10 @@ var LintoEditor = (function(exports) {
       };
     }
   });
-  const _style_0$z = '\n.editor-header[data-v-cc84adfc] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-md);\n  padding: var(--spacing-sm) var(--spacing-lg);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.header-main[data-v-cc84adfc] {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  min-width: 0;\n  flex: 1;\n}\n.document-title[data-v-cc84adfc] {\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n  color: var(--color-text-primary);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  margin: 0;\n}\n.document-meta[data-v-cc84adfc] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.document-meta__part[data-v-cc84adfc] {\n  text-box: cap alphabetic;\n}\n.document-meta__part + .document-meta__part[data-v-cc84adfc]::before {\n  content: "·";\n  margin-right: var(--spacing-xs);\n}\n.header-right[data-v-cc84adfc] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  flex-shrink: 0;\n}\n@media (max-width: 767px) {\n.editor-header[data-v-cc84adfc] {\n    padding: var(--spacing-xs) var(--spacing-md);\n}\n.document-title[data-v-cc84adfc] {\n    font-size: var(--font-size-base);\n}\n}\n';
-  const Header = /* @__PURE__ */ _export_sfc(_sfc_main$I, [["styles", [_style_0$z]], ["__scopeId", "data-v-cc84adfc"]]);
-  const _hoisted_1$x = ["aria-label"];
-  const _sfc_main$H = /* @__PURE__ */ defineComponent({
+  const _style_0$B = '\n.editor-header[data-v-cc84adfc] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-md);\n  padding: var(--spacing-sm) var(--spacing-lg);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.header-main[data-v-cc84adfc] {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  min-width: 0;\n  flex: 1;\n}\n.document-title[data-v-cc84adfc] {\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n  color: var(--color-text-primary);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  margin: 0;\n}\n.document-meta[data-v-cc84adfc] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.document-meta__part[data-v-cc84adfc] {\n  text-box: cap alphabetic;\n}\n.document-meta__part + .document-meta__part[data-v-cc84adfc]::before {\n  content: "·";\n  margin-right: var(--spacing-xs);\n}\n.header-right[data-v-cc84adfc] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  flex-shrink: 0;\n}\n@media (max-width: 767px) {\n.editor-header[data-v-cc84adfc] {\n    padding: var(--spacing-xs) var(--spacing-md);\n}\n.document-title[data-v-cc84adfc] {\n    font-size: var(--font-size-base);\n}\n}\n';
+  const Header = /* @__PURE__ */ _export_sfc(_sfc_main$K, [["styles", [_style_0$B]], ["__scopeId", "data-v-cc84adfc"]]);
+  const _hoisted_1$A = ["aria-label"];
+  const _sfc_main$J = /* @__PURE__ */ defineComponent({
     __name: "Badge",
     props: {
       ariaLabel: { type: String }
@@ -9465,16 +12074,16 @@ var LintoEditor = (function(exports) {
           "aria-label": __props.ariaLabel
         }, [
           renderSlot(_ctx.$slots, "default", {}, void 0, true)
-        ], 8, _hoisted_1$x);
+        ], 8, _hoisted_1$A);
       };
     }
   });
-  const _style_0$y = "\n.editor-badge[data-v-732d4c24] {\n  display: inline-flex;\n  align-items: center;\n  padding: 2px var(--spacing-sm);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n  color: var(--color-text-muted);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border-light);\n  border-radius: var(--radius-sm);\n  white-space: nowrap;\n}\n";
-  const Badge = /* @__PURE__ */ _export_sfc(_sfc_main$H, [["styles", [_style_0$y]], ["__scopeId", "data-v-732d4c24"]]);
-  const _hoisted_1$w = ["aria-label"];
-  const _hoisted_2$p = ["aria-selected", "aria-disabled", "disabled", "onClick"];
-  const _hoisted_3$m = { class: "tab__label" };
-  const _sfc_main$G = /* @__PURE__ */ defineComponent({
+  const _style_0$A = "\n.editor-badge[data-v-732d4c24] {\n  display: inline-flex;\n  align-items: center;\n  padding: 2px var(--spacing-sm);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n  color: var(--color-text-muted);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border-light);\n  border-radius: var(--radius-sm);\n  white-space: nowrap;\n}\n";
+  const Badge = /* @__PURE__ */ _export_sfc(_sfc_main$J, [["styles", [_style_0$A]], ["__scopeId", "data-v-732d4c24"]]);
+  const _hoisted_1$z = ["aria-label"];
+  const _hoisted_2$r = ["aria-selected", "aria-disabled", "disabled", "onClick"];
+  const _hoisted_3$n = { class: "tab__label" };
+  const _sfc_main$I = /* @__PURE__ */ defineComponent({
     __name: "Tabs",
     props: {
       tabs: { type: Array },
@@ -9513,7 +12122,7 @@ var LintoEditor = (function(exports) {
                 size: 16,
                 class: "tab__icon"
               }, null, 8, ["name"])) : createCommentVNode("", true),
-              createBaseVNode("span", _hoisted_3$m, toDisplayString(tab.label), 1),
+              createBaseVNode("span", _hoisted_3$n, toDisplayString(tab.label), 1),
               tab.badge ? (openBlock(), createBlock(Badge, {
                 key: 1,
                 class: "tab__badge"
@@ -9523,14 +12132,14 @@ var LintoEditor = (function(exports) {
                 ]),
                 _: 2
               }, 1024)) : createCommentVNode("", true)
-            ], 10, _hoisted_2$p);
+            ], 10, _hoisted_2$r);
           }), 128))
-        ], 8, _hoisted_1$w);
+        ], 8, _hoisted_1$z);
       };
     }
   });
-  const _style_0$x = "\n.tabs[data-v-24f9730e] {\n  display: flex;\n  align-items: stretch;\n  gap: var(--spacing-xs);\n  padding: 0 var(--spacing-lg);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-x: auto;\n  scrollbar-width: thin;\n}\n.tab[data-v-24f9730e] {\n  all: unset;\n  box-sizing: border-box;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  height: 44px;\n  padding: 0 var(--spacing-sm);\n  font-family: var(--font-family);\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-secondary);\n  cursor: pointer;\n  white-space: nowrap;\n  border-bottom: 2px solid transparent;\n  transition:\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.tab[data-v-24f9730e]:hover:not([disabled]) {\n  color: var(--color-text-primary);\n}\n.tab[data-v-24f9730e]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: -2px;\n  border-radius: var(--radius-sm);\n}\n.tab--active[data-v-24f9730e] {\n  color: var(--color-text-primary);\n  border-bottom-color: var(--color-primary);\n}\n.tab[disabled][data-v-24f9730e] {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n.tab__icon[data-v-24f9730e] {\n  flex-shrink: 0;\n  color: currentColor;\n}\n.tab__label[data-v-24f9730e] {\n  text-box: cap alphabetic;\n}\n.tab__badge[data-v-24f9730e] {\n  margin-left: var(--spacing-xs);\n}\n";
-  const Tabs = /* @__PURE__ */ _export_sfc(_sfc_main$G, [["styles", [_style_0$x]], ["__scopeId", "data-v-24f9730e"]]);
+  const _style_0$z = "\n.tabs[data-v-24f9730e] {\n  display: flex;\n  align-items: stretch;\n  gap: var(--spacing-xs);\n  padding: 0 var(--spacing-lg);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-x: auto;\n  scrollbar-width: thin;\n}\n.tab[data-v-24f9730e] {\n  all: unset;\n  box-sizing: border-box;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  height: 44px;\n  padding: 0 var(--spacing-sm);\n  font-family: var(--font-family);\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-secondary);\n  cursor: pointer;\n  white-space: nowrap;\n  border-bottom: 2px solid transparent;\n  transition:\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.tab[data-v-24f9730e]:hover:not([disabled]) {\n  color: var(--color-text-primary);\n}\n.tab[data-v-24f9730e]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: -2px;\n  border-radius: var(--radius-sm);\n}\n.tab--active[data-v-24f9730e] {\n  color: var(--color-text-primary);\n  border-bottom-color: var(--color-primary);\n}\n.tab[disabled][data-v-24f9730e] {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n.tab__icon[data-v-24f9730e] {\n  flex-shrink: 0;\n  color: currentColor;\n}\n.tab__label[data-v-24f9730e] {\n  text-box: cap alphabetic;\n}\n.tab__badge[data-v-24f9730e] {\n  margin-left: var(--spacing-xs);\n}\n";
+  const Tabs = /* @__PURE__ */ _export_sfc(_sfc_main$I, [["styles", [_style_0$z]], ["__scopeId", "data-v-24f9730e"]]);
   const TRANSCRIPTION_TAB = "__transcription__";
   const VERBATIM_TAB = "__verbatim__";
   function createEventBus() {
@@ -10032,7 +12641,7 @@ var LintoEditor = (function(exports) {
     }
     return core;
   }
-  const _sfc_main$F = /* @__PURE__ */ defineComponent({
+  const _sfc_main$H = /* @__PURE__ */ defineComponent({
     __name: "TabBar",
     props: {
       modelValue: { type: String }
@@ -10296,8 +12905,8 @@ var LintoEditor = (function(exports) {
       scrollElement.addEventListener("scroll", handleScroll, { passive: true });
       scrollElement.addEventListener("wheel", handleWheel, { passive: true });
       let previousHeight;
-      state.resizeObserver = new ResizeObserver((entries) => {
-        const entry = entries[0];
+      state.resizeObserver = new ResizeObserver((entries2) => {
+        const entry = entries2[0];
         if (!entry)
           return;
         const { height } = entry.contentRect;
@@ -10504,8 +13113,8 @@ var LintoEditor = (function(exports) {
     };
   }
   const StickToBottomKey = /* @__PURE__ */ Symbol("StickToBottom");
-  const _hoisted_1$v = { style: { "position": "relative", "height": "100%", "width": "100%", "flex": "1", "min-height": "0" } };
-  const _sfc_main$E = /* @__PURE__ */ defineComponent({
+  const _hoisted_1$y = { style: { "position": "relative", "height": "100%", "width": "100%", "flex": "1", "min-height": "0" } };
+  const _sfc_main$G = /* @__PURE__ */ defineComponent({
     ...{ name: "StickToBottom" },
     __name: "StickToBottom",
     props: {
@@ -10569,7 +13178,7 @@ var LintoEditor = (function(exports) {
       }));
       return (_ctx, _cache) => {
         return openBlock(), createElementBlock("div", null, [
-          createBaseVNode("div", _hoisted_1$v, [
+          createBaseVNode("div", _hoisted_1$y, [
             createBaseVNode("div", {
               ref_key: "scrollRef",
               ref: scrollRef,
@@ -10595,7 +13204,7 @@ var LintoEditor = (function(exports) {
       };
     }
   });
-  const _sfc_main$D = /* @__PURE__ */ defineComponent({
+  const _sfc_main$F = /* @__PURE__ */ defineComponent({
     __name: "SpeakerIndicator",
     props: {
       color: { type: String }
@@ -10610,16 +13219,16 @@ var LintoEditor = (function(exports) {
       };
     }
   });
-  const _style_0$w = "\n.speaker-indicator[data-v-9bffeda8] {\n  display: inline-block;\n  width: 8px;\n  height: 8px;\n  border-radius: 50%;\n  flex-shrink: 0;\n}\n";
-  const SpeakerIndicator = /* @__PURE__ */ _export_sfc(_sfc_main$D, [["styles", [_style_0$w]], ["__scopeId", "data-v-9bffeda8"]]);
-  const _hoisted_1$u = { class: "speaker-label" };
-  const _hoisted_2$o = {
+  const _style_0$y = "\n.speaker-indicator[data-v-9bffeda8] {\n  display: inline-block;\n  width: 8px;\n  height: 8px;\n  border-radius: 50%;\n  flex-shrink: 0;\n}\n";
+  const SpeakerIndicator = /* @__PURE__ */ _export_sfc(_sfc_main$F, [["styles", [_style_0$y]], ["__scopeId", "data-v-9bffeda8"]]);
+  const _hoisted_1$x = { class: "speaker-label" };
+  const _hoisted_2$q = {
     key: 1,
     class: "speaker-name"
   };
-  const _hoisted_3$l = ["datetime"];
+  const _hoisted_3$m = ["datetime"];
   const _hoisted_4$b = { class: "lang" };
-  const _sfc_main$C = /* @__PURE__ */ defineComponent({
+  const _sfc_main$E = /* @__PURE__ */ defineComponent({
     __name: "SpeakerLabel",
     props: {
       speaker: { type: Object },
@@ -10651,24 +13260,24 @@ var LintoEditor = (function(exports) {
       });
       const speakerColor = computed(() => props.speaker?.color ?? "transparent");
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$u, [
+        return openBlock(), createElementBlock("div", _hoisted_1$x, [
           __props.speaker ? (openBlock(), createBlock(SpeakerIndicator, {
             key: 0,
             color: speakerColor.value
           }, null, 8, ["color"])) : createCommentVNode("", true),
-          __props.speaker ? (openBlock(), createElementBlock("span", _hoisted_2$o, toDisplayString(__props.speaker.name), 1)) : createCommentVNode("", true),
+          __props.speaker ? (openBlock(), createElementBlock("span", _hoisted_2$q, toDisplayString(__props.speaker.name), 1)) : createCommentVNode("", true),
           timestamp.value ? (openBlock(), createElementBlock("time", {
             key: 2,
             class: "timestamp",
             datetime: timestamp.value.datetime
-          }, toDisplayString(timestamp.value.text), 9, _hoisted_3$l)) : createCommentVNode("", true),
+          }, toDisplayString(timestamp.value.text), 9, _hoisted_3$m)) : createCommentVNode("", true),
           createBaseVNode("span", _hoisted_4$b, toDisplayString(languageName.value), 1)
         ]);
       };
     }
   });
-  const _style_0$v = "\n.speaker-label[data-v-b451886f] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.speaker-name[data-v-b451886f] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.timestamp[data-v-b451886f] {\n  font-size: var(--font-size-xs);\n  font-family: var(--font-family-mono);\n  color: var(--color-text-muted);\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n.lang[data-v-b451886f] {\n  font-size: var(--font-size-xs);\n  font-weight: 400;\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n";
-  const SpeakerLabel = /* @__PURE__ */ _export_sfc(_sfc_main$C, [["styles", [_style_0$v]], ["__scopeId", "data-v-b451886f"]]);
+  const _style_0$x = "\n.speaker-label[data-v-b451886f] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.speaker-name[data-v-b451886f] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.timestamp[data-v-b451886f] {\n  font-size: var(--font-size-xs);\n  font-family: var(--font-family-mono);\n  color: var(--color-text-muted);\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n.lang[data-v-b451886f] {\n  font-size: var(--font-size-xs);\n  font-weight: 400;\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n";
+  const SpeakerLabel = /* @__PURE__ */ _export_sfc(_sfc_main$E, [["styles", [_style_0$x]], ["__scopeId", "data-v-b451886f"]]);
   function serialize(o2) {
     return typeof o2 == "string" ? `'${o2}'` : new c$1().serialize(o2);
   }
@@ -11039,13 +13648,13 @@ var LintoEditor = (function(exports) {
   // @__NO_SIDE_EFFECTS__
   function useVModel(props, key, emit2, options = {}) {
     var _vm$$emit, _vm$proxy;
-    const { clone = false, passive = false, eventName, deep = false, defaultValue, shouldEmit } = options;
+    const { clone: clone2 = false, passive = false, eventName, deep = false, defaultValue, shouldEmit } = options;
     const vm = getCurrentInstance();
     const _emit = emit2 || (vm === null || vm === void 0 ? void 0 : vm.emit) || (vm === null || vm === void 0 || (_vm$$emit = vm.$emit) === null || _vm$$emit === void 0 ? void 0 : _vm$$emit.bind(vm)) || (vm === null || vm === void 0 || (_vm$proxy = vm.proxy) === null || _vm$proxy === void 0 || (_vm$proxy = _vm$proxy.$emit) === null || _vm$proxy === void 0 ? void 0 : _vm$proxy.bind(vm === null || vm === void 0 ? void 0 : vm.proxy));
     let event = eventName;
     if (!key) key = "modelValue";
     event = event || `update:${key.toString()}`;
-    const cloneFn = (val) => !clone ? val : typeof clone === "function" ? clone(val) : cloneFnJSON(val);
+    const cloneFn = (val) => !clone2 ? val : typeof clone2 === "function" ? clone2(val) : cloneFnJSON(val);
     const getValue$1 = () => isDef(props[key]) ? cloneFn(props[key]) : defaultValue;
     const triggerEmit = (value) => {
       if (shouldEmit) {
@@ -11457,10 +14066,10 @@ var LintoEditor = (function(exports) {
           width: el.offsetWidth,
           height: el.offsetHeight
         };
-        const resizeObserver = new ResizeObserver((entries) => {
-          if (!Array.isArray(entries)) return;
-          if (!entries.length) return;
-          const entry = entries[0];
+        const resizeObserver = new ResizeObserver((entries2) => {
+          if (!Array.isArray(entries2)) return;
+          if (!entries2.length) return;
+          const entry = entries2[0];
           let width$1;
           let height$1;
           if ("borderBoxSize" in entry) {
@@ -13680,11 +16289,11 @@ var LintoEditor = (function(exports) {
       y: y2
     };
   }
-  function computeCoordsFromPlacement(_ref, placement, rtl) {
+  function computeCoordsFromPlacement(_ref2, placement, rtl) {
     let {
       reference,
       floating
-    } = _ref;
+    } = _ref2;
     const sideAxis = getSideAxis(placement);
     const alignmentAxis = getAlignmentAxis(placement);
     const alignLength = getAxisLength(alignmentAxis);
@@ -14196,11 +16805,11 @@ var LintoEditor = (function(exports) {
           mainAxis: checkMainAxis = true,
           crossAxis: checkCrossAxis = false,
           limiter = {
-            fn: (_ref) => {
+            fn: (_ref2) => {
               let {
                 x: x3,
                 y: y3
-              } = _ref;
+              } = _ref2;
               return {
                 x: x3,
                 y: y3
@@ -14408,8 +17017,8 @@ var LintoEditor = (function(exports) {
     return (node == null || (_node$ownerDocument = node.ownerDocument) == null ? void 0 : _node$ownerDocument.defaultView) || window;
   }
   function getDocumentElement(node) {
-    var _ref;
-    return (_ref = (isNode$1(node) ? node.ownerDocument : node.document) || window.document) == null ? void 0 : _ref.documentElement;
+    var _ref2;
+    return (_ref2 = (isNode$1(node) ? node.ownerDocument : node.document) || window.document) == null ? void 0 : _ref2.documentElement;
   }
   function isNode$1(value) {
     if (!hasWindow()) {
@@ -14678,13 +17287,13 @@ var LintoEditor = (function(exports) {
       y: y2
     };
   }
-  function convertOffsetParentRelativeRectToViewportRelativeRect(_ref) {
+  function convertOffsetParentRelativeRectToViewportRelativeRect(_ref2) {
     let {
       elements,
       rect,
       offsetParent,
       strategy
-    } = _ref;
+    } = _ref2;
     const isFixed = strategy === "fixed";
     const documentElement = getDocumentElement(offsetParent);
     const topLayer = elements ? isTopLayer(elements.floating) : false;
@@ -14721,15 +17330,15 @@ var LintoEditor = (function(exports) {
     return Array.from(element.getClientRects());
   }
   function getDocumentRect(element) {
-    const html = getDocumentElement(element);
+    const html2 = getDocumentElement(element);
     const scroll = getNodeScroll(element);
     const body = element.ownerDocument.body;
-    const width = max$3(html.scrollWidth, html.clientWidth, body.scrollWidth, body.clientWidth);
-    const height = max$3(html.scrollHeight, html.clientHeight, body.scrollHeight, body.clientHeight);
+    const width = max$3(html2.scrollWidth, html2.clientWidth, body.scrollWidth, body.clientWidth);
+    const height = max$3(html2.scrollHeight, html2.clientHeight, body.scrollHeight, body.clientHeight);
     let x2 = -scroll.scrollLeft + getWindowScrollBarX(element);
     const y2 = -scroll.scrollTop;
     if (getComputedStyle$1(body).direction === "rtl") {
-      x2 += max$3(html.clientWidth, body.clientWidth) - width;
+      x2 += max$3(html2.clientWidth, body.clientWidth) - width;
     }
     return {
       width,
@@ -14741,10 +17350,10 @@ var LintoEditor = (function(exports) {
   const SCROLLBAR_MAX = 25;
   function getViewportRect(element, strategy) {
     const win = getWindow(element);
-    const html = getDocumentElement(element);
+    const html2 = getDocumentElement(element);
     const visualViewport = win.visualViewport;
-    let width = html.clientWidth;
-    let height = html.clientHeight;
+    let width = html2.clientWidth;
+    let height = html2.clientHeight;
     let x2 = 0;
     let y2 = 0;
     if (visualViewport) {
@@ -14756,13 +17365,13 @@ var LintoEditor = (function(exports) {
         y2 = visualViewport.offsetTop;
       }
     }
-    const windowScrollbarX = getWindowScrollBarX(html);
+    const windowScrollbarX = getWindowScrollBarX(html2);
     if (windowScrollbarX <= 0) {
-      const doc2 = html.ownerDocument;
+      const doc2 = html2.ownerDocument;
       const body = doc2.body;
       const bodyStyles = getComputedStyle(body);
       const bodyMarginInline = doc2.compatMode === "CSS1Compat" ? parseFloat(bodyStyles.marginLeft) + parseFloat(bodyStyles.marginRight) || 0 : 0;
-      const clippingStableScrollbarWidth = Math.abs(html.clientWidth - body.clientWidth - bodyMarginInline);
+      const clippingStableScrollbarWidth = Math.abs(html2.clientWidth - body.clientWidth - bodyMarginInline);
       if (clippingStableScrollbarWidth <= SCROLLBAR_MAX) {
         width -= clippingStableScrollbarWidth;
       }
@@ -14845,13 +17454,13 @@ var LintoEditor = (function(exports) {
     cache.set(element, result);
     return result;
   }
-  function getClippingRect(_ref) {
+  function getClippingRect(_ref2) {
     let {
       element,
       boundary,
       rootBoundary,
       strategy
-    } = _ref;
+    } = _ref2;
     const elementClippingAncestors = boundary === "clippingAncestors" ? isTopLayer(element) ? [] : getClippingElementAncestors(element, this._c) : [].concat(boundary);
     const clippingAncestors = [...elementClippingAncestors, rootBoundary];
     const firstClippingAncestor = clippingAncestors[0];
@@ -15031,8 +17640,8 @@ var LintoEditor = (function(exports) {
         threshold: max$3(0, min$3(1, threshold)) || 1
       };
       let isFirstUpdate = true;
-      function handleObserve(entries) {
-        const ratio = entries[0].intersectionRatio;
+      function handleObserve(entries2) {
+        const ratio = entries2[0].intersectionRatio;
         if (ratio !== threshold) {
           if (!isFirstUpdate) {
             return refresh();
@@ -15087,8 +17696,8 @@ var LintoEditor = (function(exports) {
     let reobserveFrame = -1;
     let resizeObserver = null;
     if (elementResize) {
-      resizeObserver = new ResizeObserver((_ref) => {
-        let [firstEntry] = _ref;
+      resizeObserver = new ResizeObserver((_ref2) => {
+        let [firstEntry] = _ref2;
         if (firstEntry && firstEntry.target === referenceEl && resizeObserver) {
           resizeObserver.unobserve(floating);
           cancelAnimationFrame(reobserveFrame);
@@ -16880,7 +19489,7 @@ var LintoEditor = (function(exports) {
     }
   });
   var DropdownMenuTrigger_default = DropdownMenuTrigger_vue_vue_type_script_setup_true_lang_default;
-  const _sfc_main$B = /* @__PURE__ */ defineComponent({
+  const _sfc_main$D = /* @__PURE__ */ defineComponent({
     __name: "EditorCheckbox",
     props: {
       modelValue: { type: Boolean },
@@ -16913,8 +19522,8 @@ var LintoEditor = (function(exports) {
       };
     }
   });
-  const _style_0$u = '\n.checkbox[data-v-024ee78b] {\n  all: unset;\n  width: 16px;\n  height: 16px;\n  flex-shrink: 0;\n  border: 1.5px solid var(--color-border);\n  border-radius: var(--radius-sm);\n  background-color: var(--color-surface);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  cursor: pointer;\n  transition:\n    background-color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.checkbox[data-v-024ee78b]:hover {\n  border-color: var(--color-primary);\n}\n.checkbox[data-v-024ee78b]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.checkbox[data-state="checked"][data-v-024ee78b] {\n  background-color: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.checkbox-indicator[data-v-024ee78b] {\n  color: var(--color-white, #fff);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n}\n';
-  const EditorCheckbox = /* @__PURE__ */ _export_sfc(_sfc_main$B, [["styles", [_style_0$u]], ["__scopeId", "data-v-024ee78b"]]);
+  const _style_0$w = '\n.checkbox[data-v-024ee78b] {\n  all: unset;\n  width: 16px;\n  height: 16px;\n  flex-shrink: 0;\n  border: 1.5px solid var(--color-border);\n  border-radius: var(--radius-sm);\n  background-color: var(--color-surface);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  cursor: pointer;\n  transition:\n    background-color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.checkbox[data-v-024ee78b]:hover {\n  border-color: var(--color-primary);\n}\n.checkbox[data-v-024ee78b]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.checkbox[data-state="checked"][data-v-024ee78b] {\n  background-color: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.checkbox-indicator[data-v-024ee78b] {\n  color: var(--color-white, #fff);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n}\n';
+  const EditorCheckbox = /* @__PURE__ */ _export_sfc(_sfc_main$D, [["styles", [_style_0$w]], ["__scopeId", "data-v-024ee78b"]]);
   const turnSelectionKey = /* @__PURE__ */ Symbol("turnSelection");
   function getTurnText(turn) {
     if (turn.words.length > 0) {
@@ -16963,8 +19572,8 @@ var LintoEditor = (function(exports) {
     }
     async function copyText() {
       const selected = turns.value.filter((t2) => selectedIds.has(t2.id));
-      const text = selected.map(getTurnText).join("\n\n");
-      await navigator.clipboard.writeText(text);
+      const text2 = selected.map(getTurnText).join("\n\n");
+      await navigator.clipboard.writeText(text2);
     }
     async function copyWithMetadata() {
       const selected = turns.value.filter((t2) => selectedIds.has(t2.id));
@@ -16973,9 +19582,9 @@ var LintoEditor = (function(exports) {
         const name = speaker?.name ?? "";
         const time = turn.startTime != null ? formatTime(turn.startTime) : "";
         const header = [name, time].filter(Boolean).join(" (") + (time ? ")" : "");
-        const text = getTurnText(turn);
+        const text2 = getTurnText(turn);
         return header ? `${header}
-${text}` : text;
+${text2}` : text2;
       });
       await navigator.clipboard.writeText(blocks.join("\n\n"));
     }
@@ -17023,10 +19632,10 @@ ${text}` : text;
       throw new Error("useTurnSelection() requires provideTurnSelection()");
     return sel;
   }
-  const _hoisted_1$t = ["data-turn-active", "aria-selected"];
-  const _hoisted_2$n = { class: "turn-text" };
-  const _hoisted_3$k = ["data-word-active"];
-  const _sfc_main$A = /* @__PURE__ */ defineComponent({
+  const _hoisted_1$w = ["data-turn-active", "aria-selected"];
+  const _hoisted_2$p = { class: "turn-text" };
+  const _hoisted_3$l = ["data-word-active"];
+  const _sfc_main$C = /* @__PURE__ */ defineComponent({
     __name: "TranscriptionTurn",
     props: {
       turn: { type: Object },
@@ -17105,7 +19714,7 @@ ${text}` : text;
               language: __props.turn.language
             }, null, 8, ["speaker", "start-time", "start-date", "language"])
           ])) : createCommentVNode("", true),
-          createBaseVNode("p", _hoisted_2$n, [
+          createBaseVNode("p", _hoisted_2$p, [
             hasWords.value ? (openBlock(true), createElementBlock(Fragment$1, { key: 0 }, renderList(__props.turn.words, (word2, i2) => {
               return openBlock(), createElementBlock(Fragment$1, {
                 key: word2.id
@@ -17113,50 +19722,50 @@ ${text}` : text;
                 createBaseVNode("span", {
                   class: normalizeClass({ "word--active": word2.id === activeWordId.value }),
                   "data-word-active": word2.id === activeWordId.value || void 0
-                }, toDisplayString(word2.text), 11, _hoisted_3$k),
+                }, toDisplayString(word2.text), 11, _hoisted_3$l),
                 createTextVNode(toDisplayString(i2 < __props.turn.words.length - 1 ? " " : ""), 1)
               ], 64);
             }), 128)) : __props.turn.text ? (openBlock(), createElementBlock(Fragment$1, { key: 1 }, [
               createTextVNode(toDisplayString(__props.turn.text), 1)
             ], 64)) : createCommentVNode("", true)
           ])
-        ], 14, _hoisted_1$t);
+        ], 14, _hoisted_1$w);
       };
     }
   });
-  const _style_0$t = "\n.turn[data-v-7ea6a240] {\n  padding: var(--spacing-sm) var(--spacing-lg);\n}\n.turn-header[data-v-7ea6a240] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  cursor: pointer;\n  user-select: none;\n  border-radius: var(--radius-sm);\n  padding: var(--spacing-xxs) 0;\n}\n.turn[data-v-7ea6a240]:has(.turn-header:hover) {\n  background-color: var(--color-surface-hover);\n}\n.turn-text[data-v-7ea6a240] {\n  margin-top: var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.turn--selected[data-v-7ea6a240] {\n  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);\n  border-left: 3px solid var(--color-primary);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.turn--active[data-v-7ea6a240]:not(.turn--selected) {\n  border-left: 3px solid var(--speaker-color);\n  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.word--active[data-v-7ea6a240] {\n  text-decoration: underline;\n  text-decoration-color: var(--speaker-color);\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n  color: var(--speaker-color);\n}\n.turn--partial .turn-text[data-v-7ea6a240] {\n  font-style: italic;\n  color: var(--color-text-muted);\n  animation: partial-fade-in-7ea6a240 200ms ease;\n}\n@keyframes partial-fade-in-7ea6a240 {\nfrom {\n    opacity: 0;\n}\nto {\n    opacity: 1;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.turn--partial .turn-text[data-v-7ea6a240] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.turn[data-v-7ea6a240] {\n    padding: var(--spacing-sm) var(--spacing-md);\n}\n.turn--selected[data-v-7ea6a240],\n  .turn--active[data-v-7ea6a240]:not(.turn--selected) {\n    padding-left: calc(var(--spacing-md) - 3px);\n}\n}\n";
-  const TranscriptionTurn = /* @__PURE__ */ _export_sfc(_sfc_main$A, [["styles", [_style_0$t]], ["__scopeId", "data-v-7ea6a240"]]);
-  const _sfc_main$z = {};
-  const _hoisted_1$s = {
+  const _style_0$v = "\n.turn[data-v-7ea6a240] {\n  padding: var(--spacing-sm) var(--spacing-lg);\n}\n.turn-header[data-v-7ea6a240] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  cursor: pointer;\n  user-select: none;\n  border-radius: var(--radius-sm);\n  padding: var(--spacing-xxs) 0;\n}\n.turn[data-v-7ea6a240]:has(.turn-header:hover) {\n  background-color: var(--color-surface-hover);\n}\n.turn-text[data-v-7ea6a240] {\n  margin-top: var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.turn--selected[data-v-7ea6a240] {\n  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);\n  border-left: 3px solid var(--color-primary);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.turn--active[data-v-7ea6a240]:not(.turn--selected) {\n  border-left: 3px solid var(--speaker-color);\n  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.word--active[data-v-7ea6a240] {\n  text-decoration: underline;\n  text-decoration-color: var(--speaker-color);\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n  color: var(--speaker-color);\n}\n.turn--partial .turn-text[data-v-7ea6a240] {\n  font-style: italic;\n  color: var(--color-text-muted);\n  animation: partial-fade-in-7ea6a240 200ms ease;\n}\n@keyframes partial-fade-in-7ea6a240 {\nfrom {\n    opacity: 0;\n}\nto {\n    opacity: 1;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.turn--partial .turn-text[data-v-7ea6a240] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.turn[data-v-7ea6a240] {\n    padding: var(--spacing-sm) var(--spacing-md);\n}\n.turn--selected[data-v-7ea6a240],\n  .turn--active[data-v-7ea6a240]:not(.turn--selected) {\n    padding-left: calc(var(--spacing-md) - 3px);\n}\n}\n";
+  const TranscriptionTurn = /* @__PURE__ */ _export_sfc(_sfc_main$C, [["styles", [_style_0$v]], ["__scopeId", "data-v-7ea6a240"]]);
+  const _sfc_main$B = {};
+  const _hoisted_1$v = {
     viewBox: "0 0 938 604",
     fill: "none",
     xmlns: "http://www.w3.org/2000/svg"
   };
   function _sfc_render(_ctx, _cache) {
-    return openBlock(), createElementBlock("svg", _hoisted_1$s, [..._cache[0] || (_cache[0] = [
+    return openBlock(), createElementBlock("svg", _hoisted_1$v, [..._cache[0] || (_cache[0] = [
       createStaticVNode('<polygon points="331.5,533.5 331.5,520.5 702.5,428.5 705.5,443.5" fill="#3f3d56" transform="matrix(1.8176168,0,0,1.8176168,-452.14416,-495.30213)"></polygon><polygon points="564.5,469.5 555.5,452.5 544.5,455.5 542.5,472.5" fill="#3f3d56" transform="matrix(1.8176168,0,0,1.8176168,-452.14416,-495.30213)"></polygon><path d="m 317.61655,19.99224 c 0,0 79.97514,-5.452851 101.78654,56.34612 21.81141,61.79897 72.70468,172.67359 92.69846,189.03214 19.99379,16.35855 41.80519,59.98136 38.16995,74.52229" stroke="#3f3d56" stroke-miterlimit="10" stroke-width="9.08808"></path><path d="m 329.43106,19.083431 c 0,8.532657 -9.0733,15.449743 -23.62902,15.449743 -14.55571,0 -21.8114,-6.917086 -21.8114,-15.449743 0,-8.532657 7.25569,-15.4497427 21.8114,-15.4497427 14.55572,0 23.62902,6.9170857 23.62902,15.4497427 z" fill="currentColor" style="fill:#999999;"></path><polygon points="691.5,439.5 364.5,521.5 377.5,602.5 666.5,602.5" fill="#3f3d56" transform="matrix(1.8176168,0,0,1.8176168,-456.32371,-492.51252)"></polygon>', 5)
     ])]);
   }
-  const MicrophoneIllustration = /* @__PURE__ */ _export_sfc(_sfc_main$z, [["render", _sfc_render]]);
-  const _hoisted_1$r = { class: "transcription-empty" };
-  const _hoisted_2$m = { class: "message" };
-  const _sfc_main$y = /* @__PURE__ */ defineComponent({
+  const MicrophoneIllustration = /* @__PURE__ */ _export_sfc(_sfc_main$B, [["render", _sfc_render]]);
+  const _hoisted_1$u = { class: "transcription-empty" };
+  const _hoisted_2$o = { class: "message" };
+  const _sfc_main$A = /* @__PURE__ */ defineComponent({
     __name: "TranscriptionEmpty",
     setup(__props) {
       const { t: t2 } = useI18n();
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$r, [
+        return openBlock(), createElementBlock("div", _hoisted_1$u, [
           createVNode(MicrophoneIllustration, {
             class: "illustration",
             "aria-hidden": "true"
           }),
-          createBaseVNode("p", _hoisted_2$m, toDisplayString(unref(t2)("transcription.empty")), 1)
+          createBaseVNode("p", _hoisted_2$o, toDisplayString(unref(t2)("transcription.empty")), 1)
         ]);
       };
     }
   });
-  const _style_0$s = "\n.transcription-empty[data-v-f82737e5] {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-lg);\n  padding: var(--spacing-xl);\n}\n.illustration[data-v-f82737e5] {\n  width: 180px;\n  height: auto;\n  color: var(--color-text-muted);\n  opacity: 0.5;\n}\n.message[data-v-f82737e5] {\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n  text-align: center;\n  margin: 0;\n}\n";
-  const TranscriptionEmpty = /* @__PURE__ */ _export_sfc(_sfc_main$y, [["styles", [_style_0$s]], ["__scopeId", "data-v-f82737e5"]]);
+  const _style_0$u = "\n.transcription-empty[data-v-f82737e5] {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-lg);\n  padding: var(--spacing-xl);\n}\n.illustration[data-v-f82737e5] {\n  width: 180px;\n  height: auto;\n  color: var(--color-text-muted);\n  opacity: 0.5;\n}\n.message[data-v-f82737e5] {\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n  text-align: center;\n  margin: 0;\n}\n";
+  const TranscriptionEmpty = /* @__PURE__ */ _export_sfc(_sfc_main$A, [["styles", [_style_0$u]], ["__scopeId", "data-v-f82737e5"]]);
   const SCROLL_KEYS = /* @__PURE__ */ new Set([
     "ArrowUp",
     "ArrowDown",
@@ -17449,18 +20058,18 @@ ${text}` : text;
     [`Node`](https://prosemirror.net/docs/ref/#model.Node.textBetween).
     */
     textBetween(from2, to, blockSeparator, leafText) {
-      let text = "", first2 = true;
+      let text2 = "", first2 = true;
       this.nodesBetween(from2, to, (node, pos) => {
         let nodeText = node.isText ? node.text.slice(Math.max(from2, pos) - pos, to - pos) : !node.isLeaf ? "" : leafText ? typeof leafText === "function" ? leafText(node) : leafText : node.type.spec.leafText ? node.type.spec.leafText(node) : "";
         if (node.isBlock && (node.isLeaf && nodeText || node.isTextblock) && blockSeparator) {
           if (first2)
             first2 = false;
           else
-            text += blockSeparator;
+            text2 += blockSeparator;
         }
-        text += nodeText;
+        text2 += nodeText;
       }, 0);
-      return text;
+      return text2;
     }
     /**
     Create a new fragment containing the combined content of this
@@ -18815,10 +21424,10 @@ ${text}` : text;
     mark(marks) {
       return marks == this.marks ? this : new TextNode(this.type, this.attrs, this.text, marks);
     }
-    withText(text) {
-      if (text == this.text)
+    withText(text2) {
+      if (text2 == this.text)
         return this;
-      return new TextNode(this.type, this.attrs, text, this.marks);
+      return new TextNode(this.type, this.attrs, text2, this.marks);
     }
     cut(from2 = 0, to = this.text.length) {
       if (from2 == 0 && to == this.text.length)
@@ -19628,9 +22237,9 @@ ${text}` : text;
     Create a text node in the schema. Empty text nodes are not
     allowed.
     */
-    text(text, marks) {
+    text(text2, marks) {
       let type = this.nodes.text;
-      return new TextNode(type, type.defaultAttrs, text, Mark$1.setFrom(marks));
+      return new TextNode(type, type.defaultAttrs, text2, Mark$1.setFrom(marks));
     }
     /**
     Create a mark with the given type and attributes.
@@ -19886,11 +22495,11 @@ ${text}` : text;
       if (!(this.options & OPT_PRESERVE_WS)) {
         let last2 = this.content[this.content.length - 1], m2;
         if (last2 && last2.isText && (m2 = /[ \t\r\n\u000c]+$/.exec(last2.text))) {
-          let text = last2;
+          let text2 = last2;
           if (last2.text.length == m2[0].length)
             this.content.pop();
           else
-            this.content[this.content.length - 1] = text.withText(text.text.slice(0, text.text.length - m2[0].length));
+            this.content[this.content.length - 1] = text2.withText(text2.text.slice(0, text2.text.length - m2[0].length));
         }
       }
       let content = Fragment.from(this.content);
@@ -22792,16 +25401,16 @@ ${text}` : text;
       return new AllSelection(doc2);
     }
   };
-  function findSelectionIn(doc2, node, pos, index, dir, text = false) {
+  function findSelectionIn(doc2, node, pos, index, dir, text2 = false) {
     if (node.inlineContent)
       return TextSelection.create(doc2, pos);
     for (let i2 = index - (dir > 0 ? 0 : 1); dir > 0 ? i2 < node.childCount : i2 >= 0; i2 += dir) {
       let child = node.child(i2);
       if (!child.isAtom) {
-        let inner = findSelectionIn(doc2, child, pos + dir, dir < 0 ? child.childCount : 0, dir, text);
+        let inner = findSelectionIn(doc2, child, pos + dir, dir < 0 ? child.childCount : 0, dir, text2);
         if (inner)
           return inner;
-      } else if (!text && NodeSelection.isSelectable(child)) {
+      } else if (!text2 && NodeSelection.isSelectable(child)) {
         return NodeSelection.create(doc2, pos - (dir < 0 ? child.nodeSize : 0));
       }
       pos += child.nodeSize * dir;
@@ -22949,24 +25558,24 @@ ${text}` : text;
     Replace the given range, or the selection if no range is given,
     with a text node containing the given string.
     */
-    insertText(text, from2, to) {
+    insertText(text2, from2, to) {
       let schema = this.doc.type.schema;
       if (from2 == null) {
-        if (!text)
+        if (!text2)
           return this.deleteSelection();
-        return this.replaceSelectionWith(schema.text(text), true);
+        return this.replaceSelectionWith(schema.text(text2), true);
       } else {
         if (to == null)
           to = from2;
-        if (!text)
+        if (!text2)
           return this.deleteRange(from2, to);
         let marks = this.storedMarks;
         if (!marks) {
           let $from = this.doc.resolve(from2);
           marks = to == from2 ? $from.marks() : $from.marksAcross(this.doc.resolve(to));
         }
-        this.replaceRangeWith(from2, to, schema.text(text, marks));
-        if (!this.selection.empty && this.selection.to == from2 + text.length)
+        this.replaceRangeWith(from2, to, schema.text(text2, marks));
+        if (!this.selection.empty && this.selection.to == from2 + text2.length)
           this.setSelection(Selection.near(this.selection.$to));
         return this;
       }
@@ -24072,14 +26681,14 @@ ${text}` : text;
   const ie_edge = /Edge\/(\d+)/.exec(agent);
   const ie_upto10 = /MSIE \d/.exec(agent);
   const ie_11up = /Trident\/(?:[7-9]|\d{2,})\..*rv:(\d+)/.exec(agent);
-  const ie$2 = !!(ie_upto10 || ie_11up || ie_edge);
+  const ie$1 = !!(ie_upto10 || ie_11up || ie_edge);
   const ie_version = ie_upto10 ? document.documentMode : ie_11up ? +ie_11up[1] : ie_edge ? +ie_edge[1] : 0;
-  const gecko = !ie$2 && /gecko\/(\d+)/i.test(agent);
+  const gecko = !ie$1 && /gecko\/(\d+)/i.test(agent);
   gecko && +(/Firefox\/(\d+)/.exec(agent) || [0, 0])[1];
-  const _chrome = !ie$2 && /Chrome\/(\d+)/.exec(agent);
+  const _chrome = !ie$1 && /Chrome\/(\d+)/.exec(agent);
   const chrome = !!_chrome;
   const chrome_version = _chrome ? +_chrome[1] : 0;
-  const safari = !ie$2 && !!nav && /Apple Computer/.test(nav.vendor);
+  const safari = !ie$1 && !!nav && /Apple Computer/.test(nav.vendor);
   const ios = safari && (/Mobile\/\w+/.test(agent) || !!nav && nav.maxTouchPoints > 2);
   const mac$2 = ios || (nav ? /Mac/.test(nav.platform) : false);
   const windows$1 = nav ? /Win/.test(nav.platform) : false;
@@ -24938,7 +27547,7 @@ ${text}` : text;
     get ignoreForSelection() {
       return false;
     }
-    isText(text) {
+    isText(text2) {
       return false;
     }
   }
@@ -24994,10 +27603,10 @@ ${text}` : text;
     }
   }
   class CompositionViewDesc extends ViewDesc {
-    constructor(parent, dom, textDOM, text) {
+    constructor(parent, dom, textDOM, text2) {
       super(parent, [], dom, null);
       this.textDOM = textDOM;
-      this.text = text;
+      this.text = text2;
     }
     get size() {
       return this.text.length;
@@ -25196,14 +27805,14 @@ ${text}` : text;
       if (!textNode || !this.dom.contains(textNode.parentNode))
         return null;
       if (this.node.inlineContent) {
-        let text = textNode.nodeValue;
-        let textPos = findTextInFragment(this.node.content, text, from2 - pos, to - pos);
-        return textPos < 0 ? null : { node: textNode, pos: textPos, text };
+        let text2 = textNode.nodeValue;
+        let textPos = findTextInFragment(this.node.content, text2, from2 - pos, to - pos);
+        return textPos < 0 ? null : { node: textNode, pos: textPos, text: text2 };
       } else {
         return { node: textNode, pos: -1, text: "" };
       }
     }
-    protectLocalComposition(view, { node, pos, text }) {
+    protectLocalComposition(view, { node, pos, text: text2 }) {
       if (this.getDesc(node))
         return;
       let topNode = node;
@@ -25217,9 +27826,9 @@ ${text}` : text;
         if (topNode.pmViewDesc)
           topNode.pmViewDesc = void 0;
       }
-      let desc = new CompositionViewDesc(this, topNode, node, text);
+      let desc = new CompositionViewDesc(this, topNode, node, text2);
       view.input.compositionNodes.push(desc);
-      this.children = replaceNodes(this.children, pos, pos + text.length, view, desc);
+      this.children = replaceNodes(this.children, pos, pos + text2.length, view, desc);
     }
     // If this desc must be updated to match the given node decoration,
     // do so and return true.
@@ -25329,8 +27938,8 @@ ${text}` : text;
     get domAtom() {
       return false;
     }
-    isText(text) {
-      return this.node.text == text;
+    isText(text2) {
+      return this.node.text == text2;
     }
   }
   class TrailingHackViewDesc extends ViewDesc {
@@ -25850,7 +28459,7 @@ ${text}` : text;
       dom.style.cssText = oldCSS;
     }
   }
-  function findTextInFragment(frag, text, from2, to) {
+  function findTextInFragment(frag, text2, from2, to) {
     for (let i2 = 0, pos = 0; i2 < frag.childCount && pos <= to; ) {
       let child = frag.child(i2++), childStart = pos;
       pos += child.nodeSize;
@@ -25865,12 +28474,12 @@ ${text}` : text;
         str += next2.text;
       }
       if (pos >= from2) {
-        if (pos >= to && str.slice(to - text.length - childStart, to - childStart) == text)
-          return to - text.length;
-        let found2 = childStart < to ? str.lastIndexOf(text, to - childStart - 1) : -1;
-        if (found2 >= 0 && found2 + text.length + childStart >= from2)
+        if (pos >= to && str.slice(to - text2.length - childStart, to - childStart) == text2)
+          return to - text2.length;
+        let found2 = childStart < to ? str.lastIndexOf(text2, to - childStart - 1) : -1;
+        if (found2 >= 0 && found2 + text2.length + childStart >= from2)
           return childStart + found2;
-        if (from2 == to && str.length >= to + text.length - childStart && str.slice(to - childStart, to - childStart + text.length) == text)
+        if (from2 == to && str.length >= to + text2.length - childStart && str.slice(to - childStart, to - childStart + text2.length) == text2)
           return to;
       }
     }
@@ -26036,7 +28645,7 @@ ${text}` : text;
       domSel.collapse(node.parentNode, domIndex(node) + 1);
     else
       domSel.collapse(node, 0);
-    if (!img && !view.state.selection.visible && ie$2 && ie_version <= 11) {
+    if (!img && !view.state.selection.visible && ie$1 && ie_version <= 11) {
       node.disabled = true;
       node.disabled = false;
     }
@@ -26437,34 +29046,34 @@ ${text}` : text;
     }
     if (firstChild && firstChild.nodeType == 1)
       firstChild.setAttribute("data-pm-slice", `${openStart} ${openEnd}${wrappers ? ` -${wrappers}` : ""} ${JSON.stringify(context2)}`);
-    let text = view.someProp("clipboardTextSerializer", (f2) => f2(slice, view)) || slice.content.textBetween(0, slice.content.size, "\n\n");
-    return { dom: wrap2, text, slice };
+    let text2 = view.someProp("clipboardTextSerializer", (f2) => f2(slice, view)) || slice.content.textBetween(0, slice.content.size, "\n\n");
+    return { dom: wrap2, text: text2, slice };
   }
-  function parseFromClipboard(view, text, html, plainText, $context) {
+  function parseFromClipboard(view, text2, html2, plainText, $context) {
     let inCode = $context.parent.type.spec.code;
     let dom, slice;
-    if (!html && !text)
+    if (!html2 && !text2)
       return null;
-    let asText = !!text && (plainText || inCode || !html);
+    let asText = !!text2 && (plainText || inCode || !html2);
     if (asText) {
       view.someProp("transformPastedText", (f2) => {
-        text = f2(text, inCode || plainText, view);
+        text2 = f2(text2, inCode || plainText, view);
       });
       if (inCode) {
-        slice = new Slice(Fragment.from(view.state.schema.text(text.replace(/\r\n?/g, "\n"))), 0, 0);
+        slice = new Slice(Fragment.from(view.state.schema.text(text2.replace(/\r\n?/g, "\n"))), 0, 0);
         view.someProp("transformPasted", (f2) => {
           slice = f2(slice, view, true);
         });
         return slice;
       }
-      let parsed = view.someProp("clipboardTextParser", (f2) => f2(text, $context, plainText, view));
+      let parsed = view.someProp("clipboardTextParser", (f2) => f2(text2, $context, plainText, view));
       if (parsed) {
         slice = parsed;
       } else {
         let marks = $context.marks();
         let { schema } = view.state, serializer = DOMSerializer.fromSchema(schema);
         dom = document.createElement("div");
-        text.split(/(?:\r\n?|\n)+/).forEach((block) => {
+        text2.split(/(?:\r\n?|\n)+/).forEach((block) => {
           let p2 = dom.appendChild(document.createElement("p"));
           if (block)
             p2.appendChild(serializer.serializeNode(schema.text(block, marks)));
@@ -26472,9 +29081,9 @@ ${text}` : text;
       }
     } else {
       view.someProp("transformPastedHTML", (f2) => {
-        html = f2(html, view);
+        html2 = f2(html2, view);
       });
-      dom = readHTML(html);
+      dom = readHTML(html2);
       if (webkit)
         restoreReplacedSpaces(dom);
     }
@@ -26604,23 +29213,23 @@ ${text}` : text;
     return _detachedDoc || (_detachedDoc = document.implementation.createHTMLDocument("title"));
   }
   let _policy = null;
-  function maybeWrapTrusted(html) {
+  function maybeWrapTrusted(html2) {
     let trustedTypes = window.trustedTypes;
     if (!trustedTypes)
-      return html;
+      return html2;
     if (!_policy)
       _policy = trustedTypes.defaultPolicy || trustedTypes.createPolicy("ProseMirrorClipboard", { createHTML: (s2) => s2 });
-    return _policy.createHTML(html);
+    return _policy.createHTML(html2);
   }
-  function readHTML(html) {
-    let metas = /^(\s*<meta [^>]*>)*/.exec(html);
+  function readHTML(html2) {
+    let metas = /^(\s*<meta [^>]*>)*/.exec(html2);
     if (metas)
-      html = html.slice(metas[0].length);
+      html2 = html2.slice(metas[0].length);
     let elt = detachedDoc().createElement("div");
-    let firstTag = /<([a-z][^>\s]+)/i.exec(html), wrap2;
+    let firstTag = /<([a-z][^>\s]+)/i.exec(html2), wrap2;
     if (wrap2 = firstTag && wrapMap[firstTag[1].toLowerCase()])
-      html = wrap2.map((n2) => "<" + n2 + ">").join("") + html + wrap2.map((n2) => "</" + n2 + ">").reverse().join("");
-    elt.innerHTML = maybeWrapTrusted(html);
+      html2 = wrap2.map((n2) => "<" + n2 + ">").join("") + html2 + wrap2.map((n2) => "</" + n2 + ">").reverse().join("");
+    elt.innerHTML = maybeWrapTrusted(html2);
     if (wrap2)
       for (let i2 = 0; i2 < wrap2.length; i2++)
         elt = elt.querySelector(wrap2[i2]) || elt;
@@ -26774,9 +29383,9 @@ ${text}` : text;
     }
     let sel = view.state.selection;
     if (!(sel instanceof TextSelection) || !sel.$from.sameParent(sel.$to)) {
-      let text = String.fromCharCode(event.charCode);
-      let deflt = () => view.state.tr.insertText(text).scrollIntoView();
-      if (!/[\r\n]/.test(text) && !view.someProp("handleTextInput", (f2) => f2(view, sel.$from.pos, sel.$to.pos, text, deflt)))
+      let text2 = String.fromCharCode(event.charCode);
+      let deflt = () => view.state.tr.insertText(text2).scrollIntoView();
+      if (!/[\r\n]/.test(text2) && !view.someProp("handleTextInput", (f2) => f2(view, sel.$from.pos, sel.$to.pos, text2, deflt)))
         view.dispatch(deflt());
       event.preventDefault();
     }
@@ -27147,19 +29756,19 @@ ${text}` : text;
       view.focus();
     }, 50);
   }
-  const brokenClipboardAPI = ie$2 && ie_version < 15 || ios && webkit_version < 604;
+  const brokenClipboardAPI = ie$1 && ie_version < 15 || ios && webkit_version < 604;
   handlers.copy = editHandlers.cut = (view, _event) => {
     let event = _event;
     let sel = view.state.selection, cut2 = event.type == "cut";
     if (sel.empty)
       return;
     let data = brokenClipboardAPI ? null : event.clipboardData;
-    let slice = sel.content(), { dom, text } = serializeForClipboard(view, slice);
+    let slice = sel.content(), { dom, text: text2 } = serializeForClipboard(view, slice);
     if (data) {
       event.preventDefault();
       data.clearData();
       data.setData("text/html", dom.innerHTML);
-      data.setData("text/plain", text);
+      data.setData("text/plain", text2);
     } else {
       captureCopy(view, dom);
     }
@@ -27189,8 +29798,8 @@ ${text}` : text;
         doPaste(view, target.textContent, target.innerHTML, plain, event);
     }, 50);
   }
-  function doPaste(view, text, html, preferPlain, event) {
-    let slice = parseFromClipboard(view, text, html, preferPlain, view.state.selection.$from);
+  function doPaste(view, text2, html2, preferPlain, event) {
+    let slice = parseFromClipboard(view, text2, html2, preferPlain, view.state.selection.$from);
     if (view.someProp("handlePaste", (f2) => f2(view, event, slice || Slice.empty)))
       return true;
     if (!slice)
@@ -27201,9 +29810,9 @@ ${text}` : text;
     return true;
   }
   function getText$1(clipboardData) {
-    let text = clipboardData.getData("text/plain") || clipboardData.getData("Text");
-    if (text)
-      return text;
+    let text2 = clipboardData.getData("text/plain") || clipboardData.getData("Text");
+    if (text2)
+      return text2;
     let uris = clipboardData.getData("text/uri-list");
     return uris ? uris.replace(/\r?\n/g, " ") : "";
   }
@@ -27249,13 +29858,13 @@ ${text}` : text;
         node = NodeSelection.create(view.state.doc, desc.posBefore);
     }
     let draggedSlice = (node || view.state.selection).content();
-    let { dom, text, slice } = serializeForClipboard(view, draggedSlice);
+    let { dom, text: text2, slice } = serializeForClipboard(view, draggedSlice);
     if (!event.dataTransfer.files.length || !chrome || chrome_version > 120)
       event.dataTransfer.clearData();
     event.dataTransfer.setData(brokenClipboardAPI ? "Text" : "text/html", dom.innerHTML);
     event.dataTransfer.effectAllowed = "copyMove";
     if (!brokenClipboardAPI)
-      event.dataTransfer.setData("text/plain", text);
+      event.dataTransfer.setData("text/plain", text2);
     view.dragging = new Dragging(slice, dragMoves(view, event), node);
   };
   handlers.dragend = (view) => {
@@ -28003,7 +30612,7 @@ ${text}` : text;
     attributeOldValue: true,
     subtree: true
   };
-  const useCharData = ie$2 && ie_version <= 11;
+  const useCharData = ie$1 && ie_version <= 11;
   class SelectionState {
     constructor() {
       this.anchorNode = null;
@@ -28038,7 +30647,7 @@ ${text}` : text;
       this.observer = window.MutationObserver && new window.MutationObserver((mutations) => {
         for (let i2 = 0; i2 < mutations.length; i2++)
           this.queue.push(mutations[i2]);
-        if (ie$2 && ie_version <= 11 && mutations.some((m2) => m2.type == "childList" && m2.removedNodes.length || m2.type == "characterData" && m2.oldValue.length > m2.target.nodeValue.length)) {
+        if (ie$1 && ie_version <= 11 && mutations.some((m2) => m2.type == "childList" && m2.removedNodes.length || m2.type == "characterData" && m2.oldValue.length > m2.target.nodeValue.length)) {
           this.flushSoon();
         } else if (safari && view.composing && mutations.some((m2) => m2.type == "childList" && m2.target.nodeName == "TR")) {
           view.input.badSafariComposition = true;
@@ -28107,7 +30716,7 @@ ${text}` : text;
         return;
       if (this.suppressingSelectionUpdates)
         return selectionToDOM(this.view);
-      if (ie$2 && ie_version <= 11 && !this.view.state.selection.empty) {
+      if (ie$1 && ie_version <= 11 && !this.view.state.selection.empty) {
         let sel = this.view.domSelectionRange();
         if (sel.focusNode && isEquivalentPosition(sel.focusNode, sel.focusOffset, sel.anchorNode, sel.anchorOffset))
           return this.flushSoon();
@@ -28235,7 +30844,7 @@ ${text}` : text;
         if (desc.contentDOM && desc.contentDOM != desc.dom && !desc.contentDOM.contains(mut.target))
           return { from: desc.posBefore, to: desc.posAfter };
         let prev = mut.previousSibling, next2 = mut.nextSibling;
-        if (ie$2 && ie_version <= 11 && mut.addedNodes.length) {
+        if (ie$1 && ie_version <= 11 && mut.addedNodes.length) {
           for (let i2 = 0; i2 < mut.addedNodes.length; i2++) {
             let { previousSibling, nextSibling } = mut.addedNodes[i2];
             if (!previousSibling || Array.prototype.indexOf.call(mut.addedNodes, previousSibling) < 0)
@@ -28465,7 +31074,7 @@ ${text}` : text;
         change.endA = view.state.selection.to;
       }
     }
-    if (ie$2 && ie_version <= 11 && change.endB == change.start + 1 && change.endA == change.start && change.start > parse.from && parse.doc.textBetween(change.start - parse.from - 1, change.start - parse.from + 1) == "  ") {
+    if (ie$1 && ie_version <= 11 && change.endB == change.start + 1 && change.endA == change.start && change.start > parse.from && parse.doc.textBetween(change.start - parse.from - 1, change.start - parse.from + 1) == "  ") {
       change.start--;
       change.endA--;
       change.endB--;
@@ -28499,7 +31108,7 @@ ${text}` : text;
       let tr = base2 || view.state.tr.replace(chFrom, chTo, parse.doc.slice(change.start - parse.from, change.endB - parse.from));
       if (parse.sel) {
         let sel2 = resolveSelection(view, tr.doc, parse.sel);
-        if (sel2 && !(chrome && view.composing && sel2.empty && (change.start != change.endB || view.input.lastChromeDelete < Date.now() - 100) && (sel2.head == chFrom || sel2.head == tr.mapping.map(chTo) - 1) || ie$2 && sel2.empty && sel2.head == chFrom))
+        if (sel2 && !(chrome && view.composing && sel2.empty && (change.start != change.endB || view.input.lastChromeDelete < Date.now() - 100) && (sel2.head == chFrom || sel2.head == tr.mapping.map(chTo) - 1) || ie$1 && sel2.empty && sel2.head == chFrom))
           tr.setSelection(sel2);
       }
       if (compositionID)
@@ -28509,7 +31118,7 @@ ${text}` : text;
     let markChange;
     if (inlineChange) {
       if ($from.pos == $to.pos) {
-        if (ie$2 && ie_version <= 11 && $from.parentOffset == 0) {
+        if (ie$1 && ie_version <= 11 && $from.parentOffset == 0) {
           view.domObserver.suppressSelectionUpdates();
           setTimeout(() => selectionToDOM(view), 20);
         }
@@ -28529,9 +31138,9 @@ ${text}` : text;
           tr.removeMark(chFrom, chTo, markChange.mark);
         view.dispatch(tr);
       } else if ($from.parent.child($from.index()).isText && $from.index() == $to.index() - ($to.textOffset ? 0 : 1)) {
-        let text = $from.parent.textBetween($from.parentOffset, $to.parentOffset);
-        let deflt = () => mkTr(view.state.tr.insertText(text, chFrom, chTo));
-        if (!view.someProp("handleTextInput", (f2) => f2(view, chFrom, chTo, text, deflt)))
+        let text2 = $from.parent.textBetween($from.parentOffset, $to.parentOffset);
+        let deflt = () => mkTr(view.state.tr.insertText(text2, chFrom, chTo));
+        if (!view.someProp("handleTextInput", (f2) => f2(view, chFrom, chTo, text2, deflt)))
           view.dispatch(deflt());
       } else {
         view.dispatch(mkTr());
@@ -28766,7 +31375,7 @@ ${text}` : text;
       let oldScrollPos = scroll == "preserve" && updateSel && this.dom.style.overflowAnchor == null && storeScrollPos(this);
       if (updateSel) {
         this.domObserver.stop();
-        let forceSelUpdate = updateDoc && (ie$2 || chrome) && !this.composing && !prev.selection.empty && !state.selection.empty && selectionContextChanged(prev.selection, state.selection);
+        let forceSelUpdate = updateDoc && (ie$1 || chrome) && !this.composing && !prev.selection.empty && !state.selection.empty && selectionContextChanged(prev.selection, state.selection);
         if (updateDoc) {
           let chromeKludge = chrome ? this.trackWrites = this.domSelectionRange().focusNode : null;
           if (this.composing)
@@ -28874,7 +31483,7 @@ ${text}` : text;
     Query whether the view has focus.
     */
     hasFocus() {
-      if (ie$2) {
+      if (ie$1) {
         let node = this.root.activeElement;
         if (node == this.dom)
           return true;
@@ -29006,14 +31615,14 @@ ${text}` : text;
     `event`, if given, will be passed to the
     [`handlePaste`](https://prosemirror.net/docs/ref/#view.EditorProps.handlePaste) hook.
     */
-    pasteHTML(html, event) {
-      return doPaste(this, "", html, false, event || new ClipboardEvent("paste"));
+    pasteHTML(html2, event) {
+      return doPaste(this, "", html2, false, event || new ClipboardEvent("paste"));
     }
     /**
     Run the editor's paste logic with the given plain-text input.
     */
-    pasteText(text, event) {
-      return doPaste(this, text, null, true, event || new ClipboardEvent("paste"));
+    pasteText(text2, event) {
+      return doPaste(this, text2, null, true, event || new ClipboardEvent("paste"));
     }
     /**
     Serialize the given slice as it would be if it was copied from
@@ -29228,7 +31837,7 @@ ${text}` : text;
     222: '"'
   };
   var mac$1 = typeof navigator != "undefined" && /Mac/.test(navigator.platform);
-  var ie$1 = typeof navigator != "undefined" && /MSIE \d|Trident\/(?:[7-9]|\d{2,})\..*rv:(\d+)/.exec(navigator.userAgent);
+  var ie = typeof navigator != "undefined" && /MSIE \d|Trident\/(?:[7-9]|\d{2,})\..*rv:(\d+)/.exec(navigator.userAgent);
   for (var i$2 = 0; i$2 < 10; i$2++) base[48 + i$2] = base[96 + i$2] = String(i$2);
   for (var i$2 = 1; i$2 <= 24; i$2++) base[i$2 + 111] = "F" + i$2;
   for (var i$2 = 65; i$2 <= 90; i$2++) {
@@ -29237,7 +31846,7 @@ ${text}` : text;
   }
   for (var code in base) if (!shift.hasOwnProperty(code)) shift[code] = base[code];
   function keyName(event) {
-    var ignoreKey = mac$1 && event.metaKey && event.shiftKey && !event.ctrlKey && !event.altKey || ie$1 && event.shiftKey && event.key && event.key.length == 1 || event.key == "Unidentified";
+    var ignoreKey = mac$1 && event.metaKey && event.shiftKey && !event.ctrlKey && !event.altKey || ie && event.shiftKey && event.key && event.key.length == 1 || event.key == "Unidentified";
     var name = !ignoreKey && event.key || (event.shiftKey ? shift : base)[event.keyCode] || event.key || "Unidentified";
     if (name == "Esc") name = "Escape";
     if (name == "Del") name = "Delete";
@@ -29881,8 +32490,8 @@ ${text}` : text;
       throw new Error("[tiptap error]: there is no window object available, so this function cannot be used");
     }
     const wrappedValue = `<body>${value}</body>`;
-    const html = new window.DOMParser().parseFromString(wrappedValue, "text/html").body;
-    return removeWhitespaces(html);
+    const html2 = new window.DOMParser().parseFromString(wrappedValue, "text/html").body;
+    return removeWhitespaces(html2);
   }
   function createNodeFromContent(content, schema, options) {
     if (content instanceof Node$2 || content instanceof Fragment) {
@@ -30047,13 +32656,13 @@ ${text}` : text;
         if (Array.isArray(value)) {
           newContent = value.map((v2) => v2.text || "").join("");
         } else if (value instanceof Fragment) {
-          let text = "";
+          let text2 = "";
           value.forEach((node) => {
             if (node.text) {
-              text += node.text;
+              text2 += node.text;
             }
           });
-          newContent = text;
+          newContent = text2;
         } else if (typeof value === "object" && !!value && !!value.text) {
           newContent = value.text;
         } else {
@@ -30865,16 +33474,16 @@ ${text}` : text;
   function getTextBetween(startNode, range, options) {
     const { from: from2, to } = range;
     const { blockSeparator = "\n\n", textSerializers = {} } = options || {};
-    let text = "";
+    let text2 = "";
     startNode.nodesBetween(from2, to, (node, pos, parent, index) => {
       var _a;
       if (node.isBlock && pos > from2) {
-        text += blockSeparator;
+        text2 += blockSeparator;
       }
       const textSerializer = textSerializers == null ? void 0 : textSerializers[node.type.name];
       if (textSerializer) {
         if (parent) {
-          text += textSerializer({
+          text2 += textSerializer({
             node,
             pos,
             parent,
@@ -30885,10 +33494,10 @@ ${text}` : text;
         return false;
       }
       if (node.isText) {
-        text += (_a = node == null ? void 0 : node.text) == null ? void 0 : _a.slice(Math.max(from2, pos) - pos, to - pos);
+        text2 += (_a = node == null ? void 0 : node.text) == null ? void 0 : _a.slice(Math.max(from2, pos) - pos, to - pos);
       }
     });
-    return text;
+    return text2;
   }
   function getText(node, options) {
     const range = {
@@ -31855,17 +34464,17 @@ ${text}` : text;
       this.callbacks = {};
     }
   };
-  var inputRuleMatcherHandler = (text, find2) => {
+  var inputRuleMatcherHandler = (text2, find2) => {
     if (isRegExp(find2)) {
-      return find2.exec(text);
+      return find2.exec(text2);
     }
-    const inputRuleMatch = find2(text);
+    const inputRuleMatch = find2(text2);
     if (!inputRuleMatch) {
       return null;
     }
     const result = [inputRuleMatch.text];
     result.index = inputRuleMatch.index;
-    result.input = text;
+    result.input = text2;
     result.data = inputRuleMatch.data;
     if (inputRuleMatch.replaceWith) {
       if (!inputRuleMatch.text.includes(inputRuleMatch.replaceWith)) {
@@ -31877,7 +34486,7 @@ ${text}` : text;
   };
   function run(config) {
     var _a;
-    const { editor, from: from2, to, text, rules: rules2, plugin } = config;
+    const { editor, from: from2, to, text: text2, rules: rules2, plugin } = config;
     const { view } = editor;
     if (view.composing) {
       return false;
@@ -31891,7 +34500,7 @@ ${text}` : text;
       return false;
     }
     let matched = false;
-    const textBefore = getTextContentFromNodes($from) + text;
+    const textBefore = getTextContentFromNodes($from) + text2;
     rules2.forEach((rule) => {
       if (matched) {
         return;
@@ -31906,7 +34515,7 @@ ${text}` : text;
         transaction: tr
       });
       const range = {
-        from: from2 - (match2[0].length - text.length),
+        from: from2 - (match2[0].length - text2.length),
         to
       };
       const { commands, chain, can } = new CommandManager({
@@ -31929,7 +34538,7 @@ ${text}` : text;
           transform: tr,
           from: from2,
           to,
-          text
+          text: text2
         });
       }
       view.dispatch(tr);
@@ -31953,19 +34562,19 @@ ${text}` : text;
           const isSimulatedInput = !!simulatedInputMeta;
           if (isSimulatedInput) {
             setTimeout(() => {
-              let { text } = simulatedInputMeta;
-              if (typeof text === "string") {
-                text = text;
+              let { text: text2 } = simulatedInputMeta;
+              if (typeof text2 === "string") {
+                text2 = text2;
               } else {
-                text = getHTMLFromFragment(Fragment.from(text), state.schema);
+                text2 = getHTMLFromFragment(Fragment.from(text2), state.schema);
               }
               const { from: from2 } = simulatedInputMeta;
-              const to = from2 + text.length;
+              const to = from2 + text2.length;
               run({
                 editor,
                 from: from2,
                 to,
-                text,
+                text: text2,
                 rules: rules2,
                 plugin
               });
@@ -31975,12 +34584,12 @@ ${text}` : text;
         }
       },
       props: {
-        handleTextInput(view, from2, to, text) {
+        handleTextInput(view, from2, to, text2) {
           return run({
             editor,
             from: from2,
             to,
-            text,
+            text: text2,
             rules: rules2,
             plugin
           });
@@ -32148,18 +34757,18 @@ ${text}` : text;
   function isNumber(value) {
     return typeof value === "number";
   }
-  var pasteRuleMatcherHandler = (text, find2, event) => {
+  var pasteRuleMatcherHandler = (text2, find2, event) => {
     if (isRegExp(find2)) {
-      return [...text.matchAll(find2)];
+      return [...text2.matchAll(find2)];
     }
-    const matches2 = find2(text, event);
+    const matches2 = find2(text2, event);
     if (!matches2) {
       return [];
     }
     return matches2.map((pasteRuleMatch) => {
       const result = [pasteRuleMatch.text];
       result.index = pasteRuleMatch.index;
-      result.input = text;
+      result.input = text2;
       result.data = pasteRuleMatch.data;
       if (pasteRuleMatch.replaceWith) {
         if (!pasteRuleMatch.text.includes(pasteRuleMatch.replaceWith)) {
@@ -32217,12 +34826,12 @@ ${text}` : text;
     return success;
   }
   var tiptapDragFromOtherEditor = null;
-  var createClipboardPasteEvent = (text) => {
+  var createClipboardPasteEvent = (text2) => {
     var _a;
     const event = new ClipboardEvent("paste", {
       clipboardData: new DataTransfer()
     });
-    (_a = event.clipboardData) == null ? void 0 : _a.setData("text/html", text);
+    (_a = event.clipboardData) == null ? void 0 : _a.setData("text/html", text2);
     return event;
   };
   function pasteRulesPlugin(props) {
@@ -32314,9 +34923,9 @@ ${text}` : text;
             },
             paste: (_view, event) => {
               var _a;
-              const html = (_a = event.clipboardData) == null ? void 0 : _a.getData("text/html");
+              const html2 = (_a = event.clipboardData) == null ? void 0 : _a.getData("text/html");
               pasteEvent = event;
-              isPastedFromProseMirror = !!(html == null ? void 0 : html.includes("data-pm-slice"));
+              isPastedFromProseMirror = !!(html2 == null ? void 0 : html2.includes("data-pm-slice"));
               return false;
             }
           }
@@ -32331,15 +34940,15 @@ ${text}` : text;
             return;
           }
           if (isSimulatedPaste) {
-            let { text } = simulatedPasteMeta;
-            if (typeof text === "string") {
-              text = text;
+            let { text: text2 } = simulatedPasteMeta;
+            if (typeof text2 === "string") {
+              text2 = text2;
             } else {
-              text = getHTMLFromFragment(Fragment.from(text), state.schema);
+              text2 = getHTMLFromFragment(Fragment.from(text2), state.schema);
             }
             const { from: from22 } = simulatedPasteMeta;
-            const to2 = from22 + text.length;
-            const pasteEvt = createClipboardPasteEvent(text);
+            const to2 = from22 + text2.length;
+            const pasteEvt = createClipboardPasteEvent(text2);
             return processEvent({
               rule,
               state,
@@ -32570,12 +35179,12 @@ ${text}` : text;
           if (!extensionTransform) {
             return transform;
           }
-          return (html, view) => {
-            const transformedHtml = transform(html, view);
+          return (html2, view) => {
+            const transformedHtml = transform(html2, view);
             return extensionTransform.call(context2, transformedHtml);
           };
         },
-        baseTransform || ((html) => html)
+        baseTransform || ((html2) => html2)
       );
     }
     get markViews() {
@@ -35160,12 +37769,12 @@ ${indentedChild}`;
       return new VueNodeView(normalizedComponent, props, options);
     };
   }
-  const _hoisted_1$q = { class: "transcription-panel" };
-  const _hoisted_2$l = {
+  const _hoisted_1$t = { class: "transcription-panel" };
+  const _hoisted_2$n = {
     ref: "scrollContainer",
     class: "scroll-container"
   };
-  const _hoisted_3$j = { class: "turns-container" };
+  const _hoisted_3$k = { class: "turns-container" };
   const _hoisted_4$a = {
     key: 0,
     class: "history-loading",
@@ -35175,7 +37784,7 @@ ${indentedChild}`;
     key: 1,
     class: "history-start"
   };
-  const _sfc_main$x = /* @__PURE__ */ defineComponent({
+  const _sfc_main$z = /* @__PURE__ */ defineComponent({
     __name: "TranscriptionPanel",
     props: {
       turns: { type: Array },
@@ -35187,12 +37796,12 @@ ${indentedChild}`;
       const core = useCore();
       const scrollContainerRef = useTemplateRef("scrollContainer");
       const partialTurn = computed(() => {
-        const text = core.live?.partial.value ?? null;
-        if (text === null) return null;
+        const text2 = core.live?.partial.value ?? null;
+        if (text2 === null) return null;
         return {
           id: "__partial__",
           speakerId: null,
-          text,
+          text: text2,
           words: [],
           language: core.activeChannel.value?.activeTranslation.value.languages[0] ?? "",
           startTime: void 0,
@@ -35275,9 +37884,9 @@ ${indentedChild}`;
         scrollContainerRef.value?.removeEventListener("scroll", onScrollTop);
       });
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("article", _hoisted_1$q, [
-          createBaseVNode("div", _hoisted_2$l, [
-            createBaseVNode("div", _hoisted_3$j, [
+        return openBlock(), createElementBlock("article", _hoisted_1$t, [
+          createBaseVNode("div", _hoisted_2$n, [
+            createBaseVNode("div", _hoisted_3$k, [
               isLoadingHistory.value ? (openBlock(), createElementBlock("div", _hoisted_4$a, [..._cache[2] || (_cache[2] = [
                 createBaseVNode("progress", null, null, -1)
               ])])) : createCommentVNode("", true),
@@ -35337,15 +37946,15 @@ ${indentedChild}`;
       };
     }
   });
-  const _style_0$r = "\n.transcription-panel[data-v-3d1ad18a] {\n  min-height: 0;\n  overflow: hidden;\n  background-color: var(--color-surface);\n}\n.transcription-panel[data-v-3d1ad18a]:has(.ProseMirror:focus) {\n  background-color: var(--color-background);\n}\n.transcription-panel[data-v-3d1ad18a] .ProseMirror:focus {\n  outline: 1px solid var(--color-primary);\n  background-color: var(--color-surface);\n  box-shadow: var(--shadow-sm);\n}\n.scroll-container[data-v-3d1ad18a] {\n  height: 100%;\n  overflow: auto;\n  position: relative;\n}\n.turns-container[data-v-3d1ad18a] {\n  max-width: 80ch;\n  margin-inline: auto;\n  padding: var(--spacing-lg);\n}\n.turns-container[data-v-3d1ad18a]:has(.transcription-empty) {\n  display: flex;\n  flex-direction: column;\n  min-height: 100%;\n}\n.history-loading[data-v-3d1ad18a] {\n  text-align: center;\n  padding: var(--spacing-md);\n}\n.history-loading progress[data-v-3d1ad18a] {\n  width: 120px;\n}\n.history-start[data-v-3d1ad18a] {\n  text-align: center;\n  padding: var(--spacing-md);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n}\n\n/* Resume scroll button */\n.resume-scroll-btn[data-v-3d1ad18a] {\n  position: sticky;\n  bottom: var(--spacing-lg);\n  left: 50%;\n  translate: -50% 0;\n  z-index: var(--z-sticky);\n  /* No backdrop-filter: this button is sticky inside the tall scroll\n     container, where a backdrop-filter makes WebRender allocate a render\n     target spanning the whole scroll height — multi-GB on a long transcript. */\n  background: white !important;\n  border: 1px solid var(--color-border);\n  box-shadow: var(--shadow-sm);\n}\n\n/* Transition */\n.fade-slide-enter-active[data-v-3d1ad18a],\n.fade-slide-leave-active[data-v-3d1ad18a] {\n  transition:\n    opacity 200ms ease,\n    translate 200ms ease;\n}\n.fade-slide-enter-from[data-v-3d1ad18a],\n.fade-slide-leave-to[data-v-3d1ad18a] {\n  opacity: 0;\n  translate: -50% 8px;\n}\n@media (prefers-reduced-motion: reduce) {\n.fade-slide-enter-active[data-v-3d1ad18a],\n  .fade-slide-leave-active[data-v-3d1ad18a] {\n    transition: none;\n}\n}\n@media (max-width: 767px) {\n.turns-container[data-v-3d1ad18a] {\n    padding: var(--spacing-md);\n}\n}\n";
-  const TranscriptionPanel = /* @__PURE__ */ _export_sfc(_sfc_main$x, [["styles", [_style_0$r]], ["__scopeId", "data-v-3d1ad18a"]]);
-  const _hoisted_1$p = ["data-status"];
-  const _hoisted_2$k = {
+  const _style_0$t = "\n.transcription-panel[data-v-3d1ad18a] {\n  min-height: 0;\n  overflow: hidden;\n  background-color: var(--color-surface);\n}\n.transcription-panel[data-v-3d1ad18a]:has(.ProseMirror:focus) {\n  background-color: var(--color-background);\n}\n.transcription-panel[data-v-3d1ad18a] .ProseMirror:focus {\n  outline: 1px solid var(--color-primary);\n  background-color: var(--color-surface);\n  box-shadow: var(--shadow-sm);\n}\n.scroll-container[data-v-3d1ad18a] {\n  height: 100%;\n  overflow: auto;\n  position: relative;\n}\n.turns-container[data-v-3d1ad18a] {\n  max-width: 80ch;\n  margin-inline: auto;\n  padding: var(--spacing-lg);\n}\n.turns-container[data-v-3d1ad18a]:has(.transcription-empty) {\n  display: flex;\n  flex-direction: column;\n  min-height: 100%;\n}\n.history-loading[data-v-3d1ad18a] {\n  text-align: center;\n  padding: var(--spacing-md);\n}\n.history-loading progress[data-v-3d1ad18a] {\n  width: 120px;\n}\n.history-start[data-v-3d1ad18a] {\n  text-align: center;\n  padding: var(--spacing-md);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n}\n\n/* Resume scroll button */\n.resume-scroll-btn[data-v-3d1ad18a] {\n  position: sticky;\n  bottom: var(--spacing-lg);\n  left: 50%;\n  translate: -50% 0;\n  z-index: var(--z-sticky);\n  /* No backdrop-filter: this button is sticky inside the tall scroll\n     container, where a backdrop-filter makes WebRender allocate a render\n     target spanning the whole scroll height — multi-GB on a long transcript. */\n  background: white !important;\n  border: 1px solid var(--color-border);\n  box-shadow: var(--shadow-sm);\n}\n\n/* Transition */\n.fade-slide-enter-active[data-v-3d1ad18a],\n.fade-slide-leave-active[data-v-3d1ad18a] {\n  transition:\n    opacity 200ms ease,\n    translate 200ms ease;\n}\n.fade-slide-enter-from[data-v-3d1ad18a],\n.fade-slide-leave-to[data-v-3d1ad18a] {\n  opacity: 0;\n  translate: -50% 8px;\n}\n@media (prefers-reduced-motion: reduce) {\n.fade-slide-enter-active[data-v-3d1ad18a],\n  .fade-slide-leave-active[data-v-3d1ad18a] {\n    transition: none;\n}\n}\n@media (max-width: 767px) {\n.turns-container[data-v-3d1ad18a] {\n    padding: var(--spacing-md);\n}\n}\n";
+  const TranscriptionPanel = /* @__PURE__ */ _export_sfc(_sfc_main$z, [["styles", [_style_0$t]], ["__scopeId", "data-v-3d1ad18a"]]);
+  const _hoisted_1$s = ["data-status"];
+  const _hoisted_2$m = {
     key: 0,
     class: "document-article__toolbar",
     role: "toolbar"
   };
-  const _hoisted_3$i = { class: "document-article__toolbar-left" };
+  const _hoisted_3$j = { class: "document-article__toolbar-left" };
   const _hoisted_4$9 = { class: "document-article__toolbar-center" };
   const _hoisted_5$9 = { class: "document-article__toolbar-right" };
   const _hoisted_6$7 = { class: "document-article__body" };
@@ -35366,7 +37975,7 @@ ${indentedChild}`;
     role: "alert"
   };
   const _hoisted_11$2 = { class: "document-article__error-text" };
-  const _sfc_main$w = /* @__PURE__ */ defineComponent({
+  const _sfc_main$y = /* @__PURE__ */ defineComponent({
     __name: "DocumentArticle",
     props: {
       status: { default: "done", type: String },
@@ -35391,8 +38000,8 @@ ${indentedChild}`;
           class: "document-article",
           "data-status": props.status
         }, [
-          _ctx.$slots["toolbar-left"] || _ctx.$slots["toolbar-center"] || _ctx.$slots["toolbar-right"] ? (openBlock(), createElementBlock("div", _hoisted_2$k, [
-            createBaseVNode("div", _hoisted_3$i, [
+          _ctx.$slots["toolbar-left"] || _ctx.$slots["toolbar-center"] || _ctx.$slots["toolbar-right"] ? (openBlock(), createElementBlock("div", _hoisted_2$m, [
+            createBaseVNode("div", _hoisted_3$j, [
               renderSlot(_ctx.$slots, "toolbar-left", {}, void 0, true)
             ]),
             createBaseVNode("div", _hoisted_4$9, [
@@ -35429,22 +38038,22 @@ ${indentedChild}`;
               })
             ])) : renderSlot(_ctx.$slots, "default", { key: 2 }, void 0, true)
           ])
-        ], 8, _hoisted_1$p);
+        ], 8, _hoisted_1$s);
       };
     }
   });
-  const _style_0$q = "\n.document-article[data-v-e5e27610] {\n  width: 100%;\n  max-width: 760px;\n  margin: var(--spacing-lg) auto;\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  display: flex;\n  flex-direction: column;\n}\n.document-article__toolbar[data-v-e5e27610] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  position: sticky;\n  top: 0;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md) var(--radius-md) 0 0;\n  z-index: 1;\n}\n.document-article__toolbar-left[data-v-e5e27610],\n.document-article__toolbar-right[data-v-e5e27610] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  flex-shrink: 0;\n}\n.document-article__toolbar-center[data-v-e5e27610] {\n  flex: 1;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  min-width: 0;\n}\n.document-article__body[data-v-e5e27610] {\n  flex: 1;\n  min-height: 0;\n}\n.document-article__center[data-v-e5e27610] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.document-article__center--processing[data-v-e5e27610] {\n  color: var(--color-primary);\n}\n.document-article__center--error[data-v-e5e27610] {\n  color: var(--color-danger, #d33);\n}\n.document-article__progress[data-v-e5e27610] {\n  width: min(280px, 100%);\n  height: 6px;\n}\n.document-article__progress-value[data-v-e5e27610] {\n  font-size: var(--font-size-xs);\n  font-variant-numeric: tabular-nums;\n  color: var(--color-text-muted);\n}\n.document-article__error-text[data-v-e5e27610] {\n  margin: 0;\n  max-width: 480px;\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  color: var(--color-text-secondary);\n}\n";
-  const DocumentArticle = /* @__PURE__ */ _export_sfc(_sfc_main$w, [["styles", [_style_0$q]], ["__scopeId", "data-v-e5e27610"]]);
-  const _hoisted_1$o = {
+  const _style_0$s = "\n.document-article[data-v-e5e27610] {\n  width: 100%;\n  max-width: 760px;\n  margin: var(--spacing-lg) auto;\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  display: flex;\n  flex-direction: column;\n}\n.document-article__toolbar[data-v-e5e27610] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  position: sticky;\n  top: 0;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md) var(--radius-md) 0 0;\n  z-index: 1;\n}\n.document-article__toolbar-left[data-v-e5e27610],\n.document-article__toolbar-right[data-v-e5e27610] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  flex-shrink: 0;\n}\n.document-article__toolbar-center[data-v-e5e27610] {\n  flex: 1;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  min-width: 0;\n}\n.document-article__body[data-v-e5e27610] {\n  flex: 1;\n  min-height: 0;\n}\n.document-article__center[data-v-e5e27610] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.document-article__center--processing[data-v-e5e27610] {\n  color: var(--color-primary);\n}\n.document-article__center--error[data-v-e5e27610] {\n  color: var(--color-danger, #d33);\n}\n.document-article__progress[data-v-e5e27610] {\n  width: min(280px, 100%);\n  height: 6px;\n}\n.document-article__progress-value[data-v-e5e27610] {\n  font-size: var(--font-size-xs);\n  font-variant-numeric: tabular-nums;\n  color: var(--color-text-muted);\n}\n.document-article__error-text[data-v-e5e27610] {\n  margin: 0;\n  max-width: 480px;\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  color: var(--color-text-secondary);\n}\n";
+  const DocumentArticle = /* @__PURE__ */ _export_sfc(_sfc_main$y, [["styles", [_style_0$s]], ["__scopeId", "data-v-e5e27610"]]);
+  const _hoisted_1$r = {
     key: 0,
     class: "popover-list__items"
   };
-  const _hoisted_2$j = {
+  const _hoisted_2$l = {
     key: 0,
     class: "popover-list__divider"
   };
-  const _hoisted_3$h = { class: "popover-list__footer" };
-  const _sfc_main$v = /* @__PURE__ */ defineComponent({
+  const _hoisted_3$i = { class: "popover-list__footer" };
+  const _sfc_main$x = /* @__PURE__ */ defineComponent({
     __name: "PopoverList",
     props: {
       items: { type: Array },
@@ -35497,7 +38106,7 @@ ${indentedChild}`;
                   "side-offset": __props.sideOffset
                 }, {
                   default: withCtx(() => [
-                    __props.items.length > 0 ? (openBlock(), createElementBlock("ul", _hoisted_1$o, [
+                    __props.items.length > 0 ? (openBlock(), createElementBlock("ul", _hoisted_1$r, [
                       (openBlock(true), createElementBlock(Fragment$1, null, renderList(__props.items, (item, index) => {
                         return openBlock(), createBlock(unref(DropdownMenuItem_default), {
                           key: keyFor(item, index),
@@ -35513,8 +38122,8 @@ ${indentedChild}`;
                       }), 128))
                     ])) : createCommentVNode("", true),
                     _ctx.$slots.footer ? (openBlock(), createElementBlock(Fragment$1, { key: 1 }, [
-                      __props.items.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_2$j)) : createCommentVNode("", true),
-                      createBaseVNode("div", _hoisted_3$h, [
+                      __props.items.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_2$l)) : createCommentVNode("", true),
+                      createBaseVNode("div", _hoisted_3$i, [
                         renderSlot(_ctx.$slots, "footer")
                       ])
                     ], 64)) : createCommentVNode("", true)
@@ -35530,7 +38139,7 @@ ${indentedChild}`;
       };
     }
   });
-  const _sfc_main$u = /* @__PURE__ */ defineComponent({
+  const _sfc_main$w = /* @__PURE__ */ defineComponent({
     __name: "DownloadMenu",
     props: {
       formats: { type: Array },
@@ -35546,7 +38155,7 @@ ${indentedChild}`;
         emit2("select", item.format);
       }
       return (_ctx, _cache) => {
-        return openBlock(), createBlock(_sfc_main$v, {
+        return openBlock(), createBlock(_sfc_main$x, {
           items: props.formats,
           "item-key": (f2) => f2.format,
           align: "end",
@@ -35574,9 +38183,9 @@ ${indentedChild}`;
       };
     }
   });
-  const _hoisted_1$n = { class: "verbatim-panel" };
-  const _hoisted_2$i = { class: "verbatim-panel__content" };
-  const _hoisted_3$g = { class: "verbatim-panel__header" };
+  const _hoisted_1$q = { class: "verbatim-panel" };
+  const _hoisted_2$k = { class: "verbatim-panel__content" };
+  const _hoisted_3$h = { class: "verbatim-panel__header" };
   const _hoisted_4$8 = { class: "verbatim-panel__doc-title" };
   const _hoisted_5$8 = { class: "verbatim-panel__turns" };
   const _hoisted_6$6 = { class: "verbatim-panel__turn-header" };
@@ -35590,7 +38199,7 @@ ${indentedChild}`;
     class: "verbatim-panel__meta"
   };
   const _hoisted_10$2 = { class: "verbatim-panel__text" };
-  const _sfc_main$t = /* @__PURE__ */ defineComponent({
+  const _sfc_main$v = /* @__PURE__ */ defineComponent({
     __name: "VerbatimPanel",
     setup(__props) {
       const core = useCore();
@@ -35627,20 +38236,20 @@ ${indentedChild}`;
         core.emit("verbatim:export", { format: format2 });
       }
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("section", _hoisted_1$n, [
+        return openBlock(), createElementBlock("section", _hoisted_1$q, [
           createVNode(DocumentArticle, {
             formats,
             onExport
           }, {
             "toolbar-right": withCtx(() => [
-              createVNode(_sfc_main$u, {
+              createVNode(_sfc_main$w, {
                 formats,
                 onSelect: onExport
               })
             ]),
             default: withCtx(() => [
-              createBaseVNode("article", _hoisted_2$i, [
-                createBaseVNode("header", _hoisted_3$g, [
+              createBaseVNode("article", _hoisted_2$k, [
+                createBaseVNode("header", _hoisted_3$h, [
                   createBaseVNode("h1", _hoisted_4$8, toDisplayString(title.value), 1)
                 ]),
                 createBaseVNode("ul", _hoisted_5$8, [
@@ -35678,1174 +38287,8 @@ ${indentedChild}`;
       };
     }
   });
-  const _style_0$p = "\n.verbatim-panel[data-v-3034500a] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.verbatim-panel__content[data-v-3034500a] {\n  padding: var(--spacing-md) var(--spacing-lg);\n}\n.verbatim-panel__header[data-v-3034500a] {\n  margin-bottom: var(--spacing-lg);\n  padding-bottom: var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n}\n.verbatim-panel__doc-title[data-v-3034500a] {\n  font-size: var(--font-size-xl);\n  font-weight: 700;\n  margin: 0;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__turns[data-v-3034500a] {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n}\n.verbatim-panel__turn[data-v-3034500a] {\n  display: block;\n}\n.verbatim-panel__turn-header[data-v-3034500a] {\n  margin: 0 0 var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: 1.4;\n}\n.verbatim-panel__speaker-name[data-v-3034500a] {\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__meta[data-v-3034500a] {\n  color: var(--color-text-muted);\n  font-weight: 400;\n}\n.verbatim-panel__sep[data-v-3034500a] {\n  margin: 0 0.35em;\n}\n.verbatim-panel__text[data-v-3034500a] {\n  margin: 0;\n  font-size: var(--font-size-base);\n  line-height: 1.6;\n  color: var(--color-text-primary);\n}\n@media (max-width: 767px) {\n.verbatim-panel[data-v-3034500a] {\n    padding: var(--spacing-md);\n}\n}\n";
-  const VerbatimPanel = /* @__PURE__ */ _export_sfc(_sfc_main$t, [["styles", [_style_0$p]], ["__scopeId", "data-v-3034500a"]]);
-  function z() {
-    return { async: false, breaks: false, extensions: null, gfm: true, hooks: null, pedantic: false, renderer: null, silent: false, tokenizer: null, walkTokens: null };
-  }
-  var T = z();
-  function G(l2) {
-    T = l2;
-  }
-  var _ = { exec: () => null };
-  function k(l2, e2 = "") {
-    let t2 = typeof l2 == "string" ? l2 : l2.source, n2 = { replace: (s2, r2) => {
-      let i2 = typeof r2 == "string" ? r2 : r2.source;
-      return i2 = i2.replace(m$1.caret, "$1"), t2 = t2.replace(s2, i2), n2;
-    }, getRegex: () => new RegExp(t2, e2) };
-    return n2;
-  }
-  var Re = ((l2 = "") => {
-    try {
-      return !!new RegExp("(?<=1)(?<!1)" + l2);
-    } catch {
-      return false;
-    }
-  })(), m$1 = { codeRemoveIndent: /^(?: {1,4}| {0,3}\t)/gm, outputLinkReplace: /\\([\[\]])/g, indentCodeCompensation: /^(\s+)(?:```)/, beginningSpace: /^\s+/, endingHash: /#$/, startingSpaceChar: /^ /, endingSpaceChar: / $/, nonSpaceChar: /[^ ]/, newLineCharGlobal: /\n/g, tabCharGlobal: /\t/g, multipleSpaceGlobal: /\s+/g, blankLine: /^[ \t]*$/, doubleBlankLine: /\n[ \t]*\n[ \t]*$/, blockquoteStart: /^ {0,3}>/, blockquoteSetextReplace: /\n {0,3}((?:=+|-+) *)(?=\n|$)/g, blockquoteSetextReplace2: /^ {0,3}>[ \t]?/gm, listReplaceNesting: /^ {1,4}(?=( {4})*[^ ])/g, listIsTask: /^\[[ xX]\] +\S/, listReplaceTask: /^\[[ xX]\] +/, listTaskCheckbox: /\[[ xX]\]/, anyLine: /\n.*\n/, hrefBrackets: /^<(.*)>$/, tableDelimiter: /[:|]/, tableAlignChars: /^\||\| *$/g, tableRowBlankLine: /\n[ \t]*$/, tableAlignRight: /^ *-+: *$/, tableAlignCenter: /^ *:-+: *$/, tableAlignLeft: /^ *:-+ *$/, startATag: /^<a /i, endATag: /^<\/a>/i, startPreScriptTag: /^<(pre|code|kbd|script)(\s|>)/i, endPreScriptTag: /^<\/(pre|code|kbd|script)(\s|>)/i, startAngleBracket: /^</, endAngleBracket: />$/, pedanticHrefTitle: /^([^'"]*[^\s])\s+(['"])(.*)\2/, unicodeAlphaNumeric: /[\p{L}\p{N}]/u, escapeTest: /[&<>"']/, escapeReplace: /[&<>"']/g, escapeTestNoEncode: /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/, escapeReplaceNoEncode: /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/g, caret: /(^|[^\[])\^/g, percentDecode: /%25/g, findPipe: /\|/g, splitPipe: / \|/, slashPipe: /\\\|/g, carriageReturn: /\r\n|\r/g, spaceLine: /^ +$/gm, notSpaceStart: /^\S*/, endingNewline: /\n$/, listItemRegex: (l2) => new RegExp(`^( {0,3}${l2})((?:[	 ][^\\n]*)?(?:\\n|$))`), nextBulletRegex: (l2) => new RegExp(`^ {0,${Math.min(3, l2 - 1)}}(?:[*+-]|\\d{1,9}[.)])((?:[ 	][^\\n]*)?(?:\\n|$))`), hrRegex: (l2) => new RegExp(`^ {0,${Math.min(3, l2 - 1)}}((?:- *){3,}|(?:_ *){3,}|(?:\\* *){3,})(?:\\n+|$)`), fencesBeginRegex: (l2) => new RegExp(`^ {0,${Math.min(3, l2 - 1)}}(?:\`\`\`|~~~)`), headingBeginRegex: (l2) => new RegExp(`^ {0,${Math.min(3, l2 - 1)}}#`), htmlBeginRegex: (l2) => new RegExp(`^ {0,${Math.min(3, l2 - 1)}}<(?:[a-z].*>|!--)`, "i"), blockquoteBeginRegex: (l2) => new RegExp(`^ {0,${Math.min(3, l2 - 1)}}>`) }, Te = /^(?:[ \t]*(?:\n|$))+/, Oe = /^((?: {4}| {0,3}\t)[^\n]+(?:\n(?:[ \t]*(?:\n|$))*)?)+/, we = /^ {0,3}(`{3,}(?=[^`\n]*(?:\n|$))|~{3,})([^\n]*)(?:\n|$)(?:|([\s\S]*?)(?:\n|$))(?: {0,3}\1[~`]* *(?=\n|$)|$)/, I = /^ {0,3}((?:-[\t ]*){3,}|(?:_[ \t]*){3,}|(?:\*[ \t]*){3,})(?:\n+|$)/, ye = /^ {0,3}(#{1,6})(?=\s|$)(.*)(?:\n+|$)/, Q = / {0,3}(?:[*+-]|\d{1,9}[.)])/, ie = /^(?!bull |blockCode|fences|blockquote|heading|html|table)((?:.|\n(?!\s*?\n|bull |blockCode|fences|blockquote|heading|html|table))+?)\n {0,3}(=+|-+) *(?:\n+|$)/, oe = k(ie).replace(/bull/g, Q).replace(/blockCode/g, /(?: {4}| {0,3}\t)/).replace(/fences/g, / {0,3}(?:`{3,}|~{3,})/).replace(/blockquote/g, / {0,3}>/).replace(/heading/g, / {0,3}#{1,6}/).replace(/html/g, / {0,3}<[^\n>]+>\n/).replace(/\|table/g, "").getRegex(), Pe = k(ie).replace(/bull/g, Q).replace(/blockCode/g, /(?: {4}| {0,3}\t)/).replace(/fences/g, / {0,3}(?:`{3,}|~{3,})/).replace(/blockquote/g, / {0,3}>/).replace(/heading/g, / {0,3}#{1,6}/).replace(/html/g, / {0,3}<[^\n>]+>\n/).replace(/table/g, / {0,3}\|?(?:[:\- ]*\|)+[\:\- ]*\n/).getRegex(), j = /^([^\n]+(?:\n(?!hr|heading|lheading|blockquote|fences|list|html|table| +\n)[^\n]+)*)/, Se = /^[^\n]+/, F = /(?!\s*\])(?:\\[\s\S]|[^\[\]\\])+/, $e = k(/^ {0,3}\[(label)\]: *(?:\n[ \t]*)?([^<\s][^\s]*|<.*?>)(?:(?: +(?:\n[ \t]*)?| *\n[ \t]*)(title))? *(?:\n+|$)/).replace("label", F).replace("title", /(?:"(?:\\"?|[^"\\])*"|'[^'\n]*(?:\n[^'\n]+)*\n?'|\([^()]*\))/).getRegex(), Le = k(/^(bull)([ \t][^\n]+?)?(?:\n|$)/).replace(/bull/g, Q).getRegex(), v$1 = "address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|search|section|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul", U = /<!--(?:-?>|[\s\S]*?(?:-->|$))/, _e = k("^ {0,3}(?:<(script|pre|style|textarea)[\\s>][\\s\\S]*?(?:</\\1>[^\\n]*\\n+|$)|comment[^\\n]*(\\n+|$)|<\\?[\\s\\S]*?(?:\\?>\\n*|$)|<![A-Z][\\s\\S]*?(?:>\\n*|$)|<!\\[CDATA\\[[\\s\\S]*?(?:\\]\\]>\\n*|$)|</?(tag)(?: +|\\n|/?>)[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$)|<(?!script|pre|style|textarea)([a-z][\\w-]*)(?:attribute)*? */?>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$)|</(?!script|pre|style|textarea)[a-z][\\w-]*\\s*>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$))", "i").replace("comment", U).replace("tag", v$1).replace("attribute", / +[a-zA-Z:_][\w.:-]*(?: *= *"[^"\n]*"| *= *'[^'\n]*'| *= *[^\s"'=<>`]+)?/).getRegex(), ae = k(j).replace("hr", I).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("|lheading", "").replace("|table", "").replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)])[ \\t]").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", v$1).getRegex(), Me = k(/^( {0,3}> ?(paragraph|[^\n]*)(?:\n|$))+/).replace("paragraph", ae).getRegex(), K$1 = { blockquote: Me, code: Oe, def: $e, fences: we, heading: ye, hr: I, html: _e, lheading: oe, list: Le, newline: Te, paragraph: ae, table: _, text: Se }, re = k("^ *([^\\n ].*)\\n {0,3}((?:\\| *)?:?-+:? *(?:\\| *:?-+:? *)*(?:\\| *)?)(?:\\n((?:(?! *\\n|hr|heading|blockquote|code|fences|list|html).*(?:\\n|$))*)\\n*|$)").replace("hr", I).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("blockquote", " {0,3}>").replace("code", "(?: {4}| {0,3}	)[^\\n]").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)])[ \\t]").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", v$1).getRegex(), ze = { ...K$1, lheading: Pe, table: re, paragraph: k(j).replace("hr", I).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("|lheading", "").replace("table", re).replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)])[ \\t]").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", v$1).getRegex() }, Ee = { ...K$1, html: k(`^ *(?:comment *(?:\\n|\\s*$)|<(tag)[\\s\\S]+?</\\1> *(?:\\n{2,}|\\s*$)|<tag(?:"[^"]*"|'[^']*'|\\s[^'"/>\\s]*)*?/?> *(?:\\n{2,}|\\s*$))`).replace("comment", U).replace(/tag/g, "(?!(?:a|em|strong|small|s|cite|q|dfn|abbr|data|time|code|var|samp|kbd|sub|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo|span|br|wbr|ins|del|img)\\b)\\w+(?!:|[^\\w\\s@]*@)\\b").getRegex(), def: /^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +(["(][^\n]+[")]))? *(?:\n+|$)/, heading: /^(#{1,6})(.*)(?:\n+|$)/, fences: _, lheading: /^(.+?)\n {0,3}(=+|-+) *(?:\n+|$)/, paragraph: k(j).replace("hr", I).replace("heading", ` *#{1,6} *[^
-]`).replace("lheading", oe).replace("|table", "").replace("blockquote", " {0,3}>").replace("|fences", "").replace("|list", "").replace("|html", "").replace("|tag", "").getRegex() }, Ae = /^\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/, Ce = /^(`+)([^`]|[^`][\s\S]*?[^`])\1(?!`)/, le = /^( {2,}|\\)\n(?!\s*$)/, Ie = /^(`+|[^`])(?:(?= {2,}\n)|[\s\S]*?(?:(?=[\\<!\[`*_]|\b_|$)|[^ ](?= {2,}\n)))/, E$1 = /[\p{P}\p{S}]/u, H = /[\s\p{P}\p{S}]/u, W = /[^\s\p{P}\p{S}]/u, Be = k(/^((?![*_])punctSpace)/, "u").replace(/punctSpace/g, H).getRegex(), ue = /(?!~)[\p{P}\p{S}]/u, De = /(?!~)[\s\p{P}\p{S}]/u, qe = /(?:[^\s\p{P}\p{S}]|~)/u, ve = k(/link|precode-code|html/, "g").replace("link", /\[(?:[^\[\]`]|(?<a>`+)[^`]+\k<a>(?!`))*?\]\((?:\\[\s\S]|[^\\\(\)]|\((?:\\[\s\S]|[^\\\(\)])*\))*\)/).replace("precode-", Re ? "(?<!`)()" : "(^^|[^`])").replace("code", /(?<b>`+)[^`]+\k<b>(?!`)/).replace("html", /<(?! )[^<>]*?>/).getRegex(), pe = /^(?:\*+(?:((?!\*)punct)|([^\s*]))?)|^_+(?:((?!_)punct)|([^\s_]))?/, He = k(pe, "u").replace(/punct/g, E$1).getRegex(), Ze = k(pe, "u").replace(/punct/g, ue).getRegex(), ce = "^[^_*]*?__[^_*]*?\\*[^_*]*?(?=__)|[^*]+(?=[^*])|(?!\\*)punct(\\*+)(?=[\\s]|$)|notPunctSpace(\\*+)(?!\\*)(?=punctSpace|$)|(?!\\*)punctSpace(\\*+)(?=notPunctSpace)|[\\s](\\*+)(?!\\*)(?=punct)|(?!\\*)punct(\\*+)(?!\\*)(?=punct)|notPunctSpace(\\*+)(?=notPunctSpace)", Ge = k(ce, "gu").replace(/notPunctSpace/g, W).replace(/punctSpace/g, H).replace(/punct/g, E$1).getRegex(), Ne = k(ce, "gu").replace(/notPunctSpace/g, qe).replace(/punctSpace/g, De).replace(/punct/g, ue).getRegex(), Qe = k("^[^_*]*?\\*\\*[^_*]*?_[^_*]*?(?=\\*\\*)|[^_]+(?=[^_])|(?!_)punct(_+)(?=[\\s]|$)|notPunctSpace(_+)(?!_)(?=punctSpace|$)|(?!_)punctSpace(_+)(?=notPunctSpace)|[\\s](_+)(?!_)(?=punct)|(?!_)punct(_+)(?!_)(?=punct)", "gu").replace(/notPunctSpace/g, W).replace(/punctSpace/g, H).replace(/punct/g, E$1).getRegex(), je = k(/^~~?(?:((?!~)punct)|[^\s~])/, "u").replace(/punct/g, E$1).getRegex(), Fe = "^[^~]+(?=[^~])|(?!~)punct(~~?)(?=[\\s]|$)|notPunctSpace(~~?)(?!~)(?=punctSpace|$)|(?!~)punctSpace(~~?)(?=notPunctSpace)|[\\s](~~?)(?!~)(?=punct)|(?!~)punct(~~?)(?!~)(?=punct)|notPunctSpace(~~?)(?=notPunctSpace)", Ue = k(Fe, "gu").replace(/notPunctSpace/g, W).replace(/punctSpace/g, H).replace(/punct/g, E$1).getRegex(), Ke = k(/\\(punct)/, "gu").replace(/punct/g, E$1).getRegex(), We = k(/^<(scheme:[^\s\x00-\x1f<>]*|email)>/).replace("scheme", /[a-zA-Z][a-zA-Z0-9+.-]{1,31}/).replace("email", /[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+(@)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(?![-_])/).getRegex(), Xe = k(U).replace("(?:-->|$)", "-->").getRegex(), Je = k("^comment|^</[a-zA-Z][\\w:-]*\\s*>|^<[a-zA-Z][\\w-]*(?:attribute)*?\\s*/?>|^<\\?[\\s\\S]*?\\?>|^<![a-zA-Z]+\\s[\\s\\S]*?>|^<!\\[CDATA\\[[\\s\\S]*?\\]\\]>").replace("comment", Xe).replace("attribute", /\s+[a-zA-Z:_][\w.:-]*(?:\s*=\s*"[^"]*"|\s*=\s*'[^']*'|\s*=\s*[^\s"'=<>`]+)?/).getRegex(), q = /(?:\[(?:\\[\s\S]|[^\[\]\\])*\]|\\[\s\S]|`+(?!`)[^`]*?`+(?!`)|``+(?=\])|[^\[\]\\`])*?/, Ve = k(/^!?\[(label)\]\(\s*(href)(?:(?:[ \t]+(?:\n[ \t]*)?|\n[ \t]*)(title))?\s*\)/).replace("label", q).replace("href", /<(?:\\.|[^\n<>\\])+>|[^ \t\n\x00-\x1f]*/).replace("title", /"(?:\\"?|[^"\\])*"|'(?:\\'?|[^'\\])*'|\((?:\\\)?|[^)\\])*\)/).getRegex(), he = k(/^!?\[(label)\]\[(ref)\]/).replace("label", q).replace("ref", F).getRegex(), ke = k(/^!?\[(ref)\](?:\[\])?/).replace("ref", F).getRegex(), Ye = k("reflink|nolink(?!\\()", "g").replace("reflink", he).replace("nolink", ke).getRegex(), se = /[hH][tT][tT][pP][sS]?|[fF][tT][pP]/, X = { _backpedal: _, anyPunctuation: Ke, autolink: We, blockSkip: ve, br: le, code: Ce, del: _, delLDelim: _, delRDelim: _, emStrongLDelim: He, emStrongRDelimAst: Ge, emStrongRDelimUnd: Qe, escape: Ae, link: Ve, nolink: ke, punctuation: Be, reflink: he, reflinkSearch: Ye, tag: Je, text: Ie, url: _ }, et = { ...X, link: k(/^!?\[(label)\]\((.*?)\)/).replace("label", q).getRegex(), reflink: k(/^!?\[(label)\]\s*\[([^\]]*)\]/).replace("label", q).getRegex() }, N = { ...X, emStrongRDelimAst: Ne, emStrongLDelim: Ze, delLDelim: je, delRDelim: Ue, url: k(/^((?:protocol):\/\/|www\.)(?:[a-zA-Z0-9\-]+\.?)+[^\s<]*|^email/).replace("protocol", se).replace("email", /[A-Za-z0-9._+-]+(@)[a-zA-Z0-9-_]+(?:\.[a-zA-Z0-9-_]*[a-zA-Z0-9])+(?![-_])/).getRegex(), _backpedal: /(?:[^?!.,:;*_'"~()&]+|\([^)]*\)|&(?![a-zA-Z0-9]+;$)|[?!.,:;*_'"~)]+(?!$))+/, del: /^(~~?)(?=[^\s~])((?:\\[\s\S]|[^\\])*?(?:\\[\s\S]|[^\s~\\]))\1(?=[^~]|$)/, text: k(/^([`~]+|[^`~])(?:(?= {2,}\n)|(?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)|[\s\S]*?(?:(?=[\\<!\[`*~_]|\b_|protocol:\/\/|www\.|$)|[^ ](?= {2,}\n)|[^a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-](?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)))/).replace("protocol", se).getRegex() }, tt = { ...N, br: k(le).replace("{2,}", "*").getRegex(), text: k(N.text).replace("\\b_", "\\b_| {2,}\\n").replace(/\{2,\}/g, "*").getRegex() }, B = { normal: K$1, gfm: ze, pedantic: Ee }, A = { normal: X, gfm: N, breaks: tt, pedantic: et };
-  var nt = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }, de = (l2) => nt[l2];
-  function O(l2, e2) {
-    if (e2) {
-      if (m$1.escapeTest.test(l2)) return l2.replace(m$1.escapeReplace, de);
-    } else if (m$1.escapeTestNoEncode.test(l2)) return l2.replace(m$1.escapeReplaceNoEncode, de);
-    return l2;
-  }
-  function J(l2) {
-    try {
-      l2 = encodeURI(l2).replace(m$1.percentDecode, "%");
-    } catch {
-      return null;
-    }
-    return l2;
-  }
-  function V(l2, e2) {
-    let t2 = l2.replace(m$1.findPipe, (r2, i2, o2) => {
-      let u2 = false, a2 = i2;
-      for (; --a2 >= 0 && o2[a2] === "\\"; ) u2 = !u2;
-      return u2 ? "|" : " |";
-    }), n2 = t2.split(m$1.splitPipe), s2 = 0;
-    if (n2[0].trim() || n2.shift(), n2.length > 0 && !n2.at(-1)?.trim() && n2.pop(), e2) if (n2.length > e2) n2.splice(e2);
-    else for (; n2.length < e2; ) n2.push("");
-    for (; s2 < n2.length; s2++) n2[s2] = n2[s2].trim().replace(m$1.slashPipe, "|");
-    return n2;
-  }
-  function $$1(l2, e2, t2) {
-    let n2 = l2.length;
-    if (n2 === 0) return "";
-    let s2 = 0;
-    for (; s2 < n2; ) {
-      let r2 = l2.charAt(n2 - s2 - 1);
-      if (r2 === e2 && true) s2++;
-      else break;
-    }
-    return l2.slice(0, n2 - s2);
-  }
-  function Y(l2) {
-    let e2 = l2.split(`
-`), t2 = e2.length - 1;
-    for (; t2 >= 0 && m$1.blankLine.test(e2[t2]); ) t2--;
-    return e2.length - t2 <= 2 ? l2 : e2.slice(0, t2 + 1).join(`
-`);
-  }
-  function ge(l2, e2) {
-    if (l2.indexOf(e2[1]) === -1) return -1;
-    let t2 = 0;
-    for (let n2 = 0; n2 < l2.length; n2++) if (l2[n2] === "\\") n2++;
-    else if (l2[n2] === e2[0]) t2++;
-    else if (l2[n2] === e2[1] && (t2--, t2 < 0)) return n2;
-    return t2 > 0 ? -2 : -1;
-  }
-  function fe(l2, e2 = 0) {
-    let t2 = e2, n2 = "";
-    for (let s2 of l2) if (s2 === "	") {
-      let r2 = 4 - t2 % 4;
-      n2 += " ".repeat(r2), t2 += r2;
-    } else n2 += s2, t2++;
-    return n2;
-  }
-  function me(l2, e2, t2, n2, s2) {
-    let r2 = e2.href, i2 = e2.title || null, o2 = l2[1].replace(s2.other.outputLinkReplace, "$1");
-    n2.state.inLink = true;
-    let u2 = { type: l2[0].charAt(0) === "!" ? "image" : "link", raw: t2, href: r2, title: i2, text: o2, tokens: n2.inlineTokens(o2) };
-    return n2.state.inLink = false, u2;
-  }
-  function rt(l2, e2, t2) {
-    let n2 = l2.match(t2.other.indentCodeCompensation);
-    if (n2 === null) return e2;
-    let s2 = n2[1];
-    return e2.split(`
-`).map((r2) => {
-      let i2 = r2.match(t2.other.beginningSpace);
-      if (i2 === null) return r2;
-      let [o2] = i2;
-      return o2.length >= s2.length ? r2.slice(s2.length) : r2;
-    }).join(`
-`);
-  }
-  var w$1 = class w {
-    options;
-    rules;
-    lexer;
-    constructor(e2) {
-      this.options = e2 || T;
-    }
-    space(e2) {
-      let t2 = this.rules.block.newline.exec(e2);
-      if (t2 && t2[0].length > 0) return { type: "space", raw: t2[0] };
-    }
-    code(e2) {
-      let t2 = this.rules.block.code.exec(e2);
-      if (t2) {
-        let n2 = this.options.pedantic ? t2[0] : Y(t2[0]), s2 = n2.replace(this.rules.other.codeRemoveIndent, "");
-        return { type: "code", raw: n2, codeBlockStyle: "indented", text: s2 };
-      }
-    }
-    fences(e2) {
-      let t2 = this.rules.block.fences.exec(e2);
-      if (t2) {
-        let n2 = t2[0], s2 = rt(n2, t2[3] || "", this.rules);
-        return { type: "code", raw: n2, lang: t2[2] ? t2[2].trim().replace(this.rules.inline.anyPunctuation, "$1") : t2[2], text: s2 };
-      }
-    }
-    heading(e2) {
-      let t2 = this.rules.block.heading.exec(e2);
-      if (t2) {
-        let n2 = t2[2].trim();
-        if (this.rules.other.endingHash.test(n2)) {
-          let s2 = $$1(n2, "#");
-          (this.options.pedantic || !s2 || this.rules.other.endingSpaceChar.test(s2)) && (n2 = s2.trim());
-        }
-        return { type: "heading", raw: $$1(t2[0], `
-`), depth: t2[1].length, text: n2, tokens: this.lexer.inline(n2) };
-      }
-    }
-    hr(e2) {
-      let t2 = this.rules.block.hr.exec(e2);
-      if (t2) return { type: "hr", raw: $$1(t2[0], `
-`) };
-    }
-    blockquote(e2) {
-      let t2 = this.rules.block.blockquote.exec(e2);
-      if (t2) {
-        let n2 = $$1(t2[0], `
-`).split(`
-`), s2 = "", r2 = "", i2 = [];
-        for (; n2.length > 0; ) {
-          let o2 = false, u2 = [], a2;
-          for (a2 = 0; a2 < n2.length; a2++) if (this.rules.other.blockquoteStart.test(n2[a2])) u2.push(n2[a2]), o2 = true;
-          else if (!o2) u2.push(n2[a2]);
-          else break;
-          n2 = n2.slice(a2);
-          let c2 = u2.join(`
-`), p2 = c2.replace(this.rules.other.blockquoteSetextReplace, `
-    $1`).replace(this.rules.other.blockquoteSetextReplace2, "");
-          s2 = s2 ? `${s2}
-${c2}` : c2, r2 = r2 ? `${r2}
-${p2}` : p2;
-          let d2 = this.lexer.state.top;
-          if (this.lexer.state.top = true, this.lexer.blockTokens(p2, i2, true), this.lexer.state.top = d2, n2.length === 0) break;
-          let h2 = i2.at(-1);
-          if (h2?.type === "code") break;
-          if (h2?.type === "blockquote") {
-            let R = h2, f2 = R.raw + `
-` + n2.join(`
-`), S2 = this.blockquote(f2);
-            i2[i2.length - 1] = S2, s2 = s2.substring(0, s2.length - R.raw.length) + S2.raw, r2 = r2.substring(0, r2.length - R.text.length) + S2.text;
-            break;
-          } else if (h2?.type === "list") {
-            let R = h2, f2 = R.raw + `
-` + n2.join(`
-`), S2 = this.list(f2);
-            i2[i2.length - 1] = S2, s2 = s2.substring(0, s2.length - h2.raw.length) + S2.raw, r2 = r2.substring(0, r2.length - R.raw.length) + S2.raw, n2 = f2.substring(i2.at(-1).raw.length).split(`
-`);
-            continue;
-          }
-        }
-        return { type: "blockquote", raw: s2, tokens: i2, text: r2 };
-      }
-    }
-    list(e2) {
-      let t2 = this.rules.block.list.exec(e2);
-      if (t2) {
-        let n2 = t2[1].trim(), s2 = n2.length > 1, r2 = { type: "list", raw: "", ordered: s2, start: s2 ? +n2.slice(0, -1) : "", loose: false, items: [] };
-        n2 = s2 ? `\\d{1,9}\\${n2.slice(-1)}` : `\\${n2}`, this.options.pedantic && (n2 = s2 ? n2 : "[*+-]");
-        let i2 = this.rules.other.listItemRegex(n2), o2 = false;
-        for (; e2; ) {
-          let a2 = false, c2 = "", p2 = "";
-          if (!(t2 = i2.exec(e2)) || this.rules.block.hr.test(e2)) break;
-          c2 = t2[0], e2 = e2.substring(c2.length);
-          let d2 = fe(t2[2].split(`
-`, 1)[0], t2[1].length), h2 = e2.split(`
-`, 1)[0], R = !d2.trim(), f2 = 0;
-          if (this.options.pedantic ? (f2 = 2, p2 = d2.trimStart()) : R ? f2 = t2[1].length + 1 : (f2 = d2.search(this.rules.other.nonSpaceChar), f2 = f2 > 4 ? 1 : f2, p2 = d2.slice(f2), f2 += t2[1].length), R && this.rules.other.blankLine.test(h2) && (c2 += h2 + `
-`, e2 = e2.substring(h2.length + 1), a2 = true), !a2) {
-            let S2 = this.rules.other.nextBulletRegex(f2), ee = this.rules.other.hrRegex(f2), te = this.rules.other.fencesBeginRegex(f2), ne = this.rules.other.headingBeginRegex(f2), xe = this.rules.other.htmlBeginRegex(f2), be = this.rules.other.blockquoteBeginRegex(f2);
-            for (; e2; ) {
-              let Z = e2.split(`
-`, 1)[0], C2;
-              if (h2 = Z, this.options.pedantic ? (h2 = h2.replace(this.rules.other.listReplaceNesting, "  "), C2 = h2) : C2 = h2.replace(this.rules.other.tabCharGlobal, "    "), te.test(h2) || ne.test(h2) || xe.test(h2) || be.test(h2) || S2.test(h2) || ee.test(h2)) break;
-              if (C2.search(this.rules.other.nonSpaceChar) >= f2 || !h2.trim()) p2 += `
-` + C2.slice(f2);
-              else {
-                if (R || d2.replace(this.rules.other.tabCharGlobal, "    ").search(this.rules.other.nonSpaceChar) >= 4 || te.test(d2) || ne.test(d2) || ee.test(d2)) break;
-                p2 += `
-` + h2;
-              }
-              R = !h2.trim(), c2 += Z + `
-`, e2 = e2.substring(Z.length + 1), d2 = C2.slice(f2);
-            }
-          }
-          r2.loose || (o2 ? r2.loose = true : this.rules.other.doubleBlankLine.test(c2) && (o2 = true)), r2.items.push({ type: "list_item", raw: c2, task: !!this.options.gfm && this.rules.other.listIsTask.test(p2), loose: false, text: p2, tokens: [] }), r2.raw += c2;
-        }
-        let u2 = r2.items.at(-1);
-        if (u2) u2.raw = u2.raw.trimEnd(), u2.text = u2.text.trimEnd();
-        else return;
-        r2.raw = r2.raw.trimEnd();
-        for (let a2 of r2.items) {
-          if (this.lexer.state.top = false, a2.tokens = this.lexer.blockTokens(a2.text, []), a2.task) {
-            if (a2.text = a2.text.replace(this.rules.other.listReplaceTask, ""), a2.tokens[0]?.type === "text" || a2.tokens[0]?.type === "paragraph") {
-              a2.tokens[0].raw = a2.tokens[0].raw.replace(this.rules.other.listReplaceTask, ""), a2.tokens[0].text = a2.tokens[0].text.replace(this.rules.other.listReplaceTask, "");
-              for (let p2 = this.lexer.inlineQueue.length - 1; p2 >= 0; p2--) if (this.rules.other.listIsTask.test(this.lexer.inlineQueue[p2].src)) {
-                this.lexer.inlineQueue[p2].src = this.lexer.inlineQueue[p2].src.replace(this.rules.other.listReplaceTask, "");
-                break;
-              }
-            }
-            let c2 = this.rules.other.listTaskCheckbox.exec(a2.raw);
-            if (c2) {
-              let p2 = { type: "checkbox", raw: c2[0] + " ", checked: c2[0] !== "[ ]" };
-              a2.checked = p2.checked, r2.loose ? a2.tokens[0] && ["paragraph", "text"].includes(a2.tokens[0].type) && "tokens" in a2.tokens[0] && a2.tokens[0].tokens ? (a2.tokens[0].raw = p2.raw + a2.tokens[0].raw, a2.tokens[0].text = p2.raw + a2.tokens[0].text, a2.tokens[0].tokens.unshift(p2)) : a2.tokens.unshift({ type: "paragraph", raw: p2.raw, text: p2.raw, tokens: [p2] }) : a2.tokens.unshift(p2);
-            }
-          }
-          if (!r2.loose) {
-            let c2 = a2.tokens.filter((d2) => d2.type === "space"), p2 = c2.length > 0 && c2.some((d2) => this.rules.other.anyLine.test(d2.raw));
-            r2.loose = p2;
-          }
-        }
-        if (r2.loose) for (let a2 of r2.items) {
-          a2.loose = true;
-          for (let c2 of a2.tokens) c2.type === "text" && (c2.type = "paragraph");
-        }
-        return r2;
-      }
-    }
-    html(e2) {
-      let t2 = this.rules.block.html.exec(e2);
-      if (t2) {
-        let n2 = Y(t2[0]);
-        return { type: "html", block: true, raw: n2, pre: t2[1] === "pre" || t2[1] === "script" || t2[1] === "style", text: n2 };
-      }
-    }
-    def(e2) {
-      let t2 = this.rules.block.def.exec(e2);
-      if (t2) {
-        let n2 = t2[1].toLowerCase().replace(this.rules.other.multipleSpaceGlobal, " "), s2 = t2[2] ? t2[2].replace(this.rules.other.hrefBrackets, "$1").replace(this.rules.inline.anyPunctuation, "$1") : "", r2 = t2[3] ? t2[3].substring(1, t2[3].length - 1).replace(this.rules.inline.anyPunctuation, "$1") : t2[3];
-        return { type: "def", tag: n2, raw: $$1(t2[0], `
-`), href: s2, title: r2 };
-      }
-    }
-    table(e2) {
-      let t2 = this.rules.block.table.exec(e2);
-      if (!t2 || !this.rules.other.tableDelimiter.test(t2[2])) return;
-      let n2 = V(t2[1]), s2 = t2[2].replace(this.rules.other.tableAlignChars, "").split("|"), r2 = t2[3]?.trim() ? t2[3].replace(this.rules.other.tableRowBlankLine, "").split(`
-`) : [], i2 = { type: "table", raw: $$1(t2[0], `
-`), header: [], align: [], rows: [] };
-      if (n2.length === s2.length) {
-        for (let o2 of s2) this.rules.other.tableAlignRight.test(o2) ? i2.align.push("right") : this.rules.other.tableAlignCenter.test(o2) ? i2.align.push("center") : this.rules.other.tableAlignLeft.test(o2) ? i2.align.push("left") : i2.align.push(null);
-        for (let o2 = 0; o2 < n2.length; o2++) i2.header.push({ text: n2[o2], tokens: this.lexer.inline(n2[o2]), header: true, align: i2.align[o2] });
-        for (let o2 of r2) i2.rows.push(V(o2, i2.header.length).map((u2, a2) => ({ text: u2, tokens: this.lexer.inline(u2), header: false, align: i2.align[a2] })));
-        return i2;
-      }
-    }
-    lheading(e2) {
-      let t2 = this.rules.block.lheading.exec(e2);
-      if (t2) {
-        let n2 = t2[1].trim();
-        return { type: "heading", raw: $$1(t2[0], `
-`), depth: t2[2].charAt(0) === "=" ? 1 : 2, text: n2, tokens: this.lexer.inline(n2) };
-      }
-    }
-    paragraph(e2) {
-      let t2 = this.rules.block.paragraph.exec(e2);
-      if (t2) {
-        let n2 = t2[1].charAt(t2[1].length - 1) === `
-` ? t2[1].slice(0, -1) : t2[1];
-        return { type: "paragraph", raw: t2[0], text: n2, tokens: this.lexer.inline(n2) };
-      }
-    }
-    text(e2) {
-      let t2 = this.rules.block.text.exec(e2);
-      if (t2) return { type: "text", raw: t2[0], text: t2[0], tokens: this.lexer.inline(t2[0]) };
-    }
-    escape(e2) {
-      let t2 = this.rules.inline.escape.exec(e2);
-      if (t2) return { type: "escape", raw: t2[0], text: t2[1] };
-    }
-    tag(e2) {
-      let t2 = this.rules.inline.tag.exec(e2);
-      if (t2) return !this.lexer.state.inLink && this.rules.other.startATag.test(t2[0]) ? this.lexer.state.inLink = true : this.lexer.state.inLink && this.rules.other.endATag.test(t2[0]) && (this.lexer.state.inLink = false), !this.lexer.state.inRawBlock && this.rules.other.startPreScriptTag.test(t2[0]) ? this.lexer.state.inRawBlock = true : this.lexer.state.inRawBlock && this.rules.other.endPreScriptTag.test(t2[0]) && (this.lexer.state.inRawBlock = false), { type: "html", raw: t2[0], inLink: this.lexer.state.inLink, inRawBlock: this.lexer.state.inRawBlock, block: false, text: t2[0] };
-    }
-    link(e2) {
-      let t2 = this.rules.inline.link.exec(e2);
-      if (t2) {
-        let n2 = t2[2].trim();
-        if (!this.options.pedantic && this.rules.other.startAngleBracket.test(n2)) {
-          if (!this.rules.other.endAngleBracket.test(n2)) return;
-          let i2 = $$1(n2.slice(0, -1), "\\");
-          if ((n2.length - i2.length) % 2 === 0) return;
-        } else {
-          let i2 = ge(t2[2], "()");
-          if (i2 === -2) return;
-          if (i2 > -1) {
-            let u2 = (t2[0].indexOf("!") === 0 ? 5 : 4) + t2[1].length + i2;
-            t2[2] = t2[2].substring(0, i2), t2[0] = t2[0].substring(0, u2).trim(), t2[3] = "";
-          }
-        }
-        let s2 = t2[2], r2 = "";
-        if (this.options.pedantic) {
-          let i2 = this.rules.other.pedanticHrefTitle.exec(s2);
-          i2 && (s2 = i2[1], r2 = i2[3]);
-        } else r2 = t2[3] ? t2[3].slice(1, -1) : "";
-        return s2 = s2.trim(), this.rules.other.startAngleBracket.test(s2) && (this.options.pedantic && !this.rules.other.endAngleBracket.test(n2) ? s2 = s2.slice(1) : s2 = s2.slice(1, -1)), me(t2, { href: s2 && s2.replace(this.rules.inline.anyPunctuation, "$1"), title: r2 && r2.replace(this.rules.inline.anyPunctuation, "$1") }, t2[0], this.lexer, this.rules);
-      }
-    }
-    reflink(e2, t2) {
-      let n2;
-      if ((n2 = this.rules.inline.reflink.exec(e2)) || (n2 = this.rules.inline.nolink.exec(e2))) {
-        let s2 = (n2[2] || n2[1]).replace(this.rules.other.multipleSpaceGlobal, " "), r2 = t2[s2.toLowerCase()];
-        if (!r2) {
-          let i2 = n2[0].charAt(0);
-          return { type: "text", raw: i2, text: i2 };
-        }
-        return me(n2, r2, n2[0], this.lexer, this.rules);
-      }
-    }
-    emStrong(e2, t2, n2 = "") {
-      let s2 = this.rules.inline.emStrongLDelim.exec(e2);
-      if (!s2 || !s2[1] && !s2[2] && !s2[3] && !s2[4] || s2[4] && n2.match(this.rules.other.unicodeAlphaNumeric)) return;
-      if (!(s2[1] || s2[3] || "") || !n2 || this.rules.inline.punctuation.exec(n2)) {
-        let i2 = [...s2[0]].length - 1, o2, u2, a2 = i2, c2 = 0, p2 = s2[0][0] === "*" ? this.rules.inline.emStrongRDelimAst : this.rules.inline.emStrongRDelimUnd;
-        for (p2.lastIndex = 0, t2 = t2.slice(-1 * e2.length + i2); (s2 = p2.exec(t2)) !== null; ) {
-          if (o2 = s2[1] || s2[2] || s2[3] || s2[4] || s2[5] || s2[6], !o2) continue;
-          if (u2 = [...o2].length, s2[3] || s2[4]) {
-            a2 += u2;
-            continue;
-          } else if ((s2[5] || s2[6]) && i2 % 3 && !((i2 + u2) % 3)) {
-            c2 += u2;
-            continue;
-          }
-          if (a2 -= u2, a2 > 0) continue;
-          u2 = Math.min(u2, u2 + a2 + c2);
-          let d2 = [...s2[0]][0].length, h2 = e2.slice(0, i2 + s2.index + d2 + u2);
-          if (Math.min(i2, u2) % 2) {
-            let f2 = h2.slice(1, -1);
-            return { type: "em", raw: h2, text: f2, tokens: this.lexer.inlineTokens(f2) };
-          }
-          let R = h2.slice(2, -2);
-          return { type: "strong", raw: h2, text: R, tokens: this.lexer.inlineTokens(R) };
-        }
-      }
-    }
-    codespan(e2) {
-      let t2 = this.rules.inline.code.exec(e2);
-      if (t2) {
-        let n2 = t2[2].replace(this.rules.other.newLineCharGlobal, " "), s2 = this.rules.other.nonSpaceChar.test(n2), r2 = this.rules.other.startingSpaceChar.test(n2) && this.rules.other.endingSpaceChar.test(n2);
-        return s2 && r2 && (n2 = n2.substring(1, n2.length - 1)), { type: "codespan", raw: t2[0], text: n2 };
-      }
-    }
-    br(e2) {
-      let t2 = this.rules.inline.br.exec(e2);
-      if (t2) return { type: "br", raw: t2[0] };
-    }
-    del(e2, t2, n2 = "") {
-      let s2 = this.rules.inline.delLDelim.exec(e2);
-      if (!s2) return;
-      if (!(s2[1] || "") || !n2 || this.rules.inline.punctuation.exec(n2)) {
-        let i2 = [...s2[0]].length - 1, o2, u2, a2 = i2, c2 = this.rules.inline.delRDelim;
-        for (c2.lastIndex = 0, t2 = t2.slice(-1 * e2.length + i2); (s2 = c2.exec(t2)) !== null; ) {
-          if (o2 = s2[1] || s2[2] || s2[3] || s2[4] || s2[5] || s2[6], !o2 || (u2 = [...o2].length, u2 !== i2)) continue;
-          if (s2[3] || s2[4]) {
-            a2 += u2;
-            continue;
-          }
-          if (a2 -= u2, a2 > 0) continue;
-          u2 = Math.min(u2, u2 + a2);
-          let p2 = [...s2[0]][0].length, d2 = e2.slice(0, i2 + s2.index + p2 + u2), h2 = d2.slice(i2, -i2);
-          return { type: "del", raw: d2, text: h2, tokens: this.lexer.inlineTokens(h2) };
-        }
-      }
-    }
-    autolink(e2) {
-      let t2 = this.rules.inline.autolink.exec(e2);
-      if (t2) {
-        let n2, s2;
-        return t2[2] === "@" ? (n2 = t2[1], s2 = "mailto:" + n2) : (n2 = t2[1], s2 = n2), { type: "link", raw: t2[0], text: n2, href: s2, tokens: [{ type: "text", raw: n2, text: n2 }] };
-      }
-    }
-    url(e2) {
-      let t2;
-      if (t2 = this.rules.inline.url.exec(e2)) {
-        let n2, s2;
-        if (t2[2] === "@") n2 = t2[0], s2 = "mailto:" + n2;
-        else {
-          let r2;
-          do
-            r2 = t2[0], t2[0] = this.rules.inline._backpedal.exec(t2[0])?.[0] ?? "";
-          while (r2 !== t2[0]);
-          n2 = t2[0], t2[1] === "www." ? s2 = "http://" + t2[0] : s2 = t2[0];
-        }
-        return { type: "link", raw: t2[0], text: n2, href: s2, tokens: [{ type: "text", raw: n2, text: n2 }] };
-      }
-    }
-    inlineText(e2) {
-      let t2 = this.rules.inline.text.exec(e2);
-      if (t2) {
-        let n2 = this.lexer.state.inRawBlock;
-        return { type: "text", raw: t2[0], text: t2[0], escaped: n2 };
-      }
-    }
-  };
-  var x = class l2 {
-    tokens;
-    options;
-    state;
-    inlineQueue;
-    tokenizer;
-    constructor(e2) {
-      this.tokens = [], this.tokens.links = /* @__PURE__ */ Object.create(null), this.options = e2 || T, this.options.tokenizer = this.options.tokenizer || new w$1(), this.tokenizer = this.options.tokenizer, this.tokenizer.options = this.options, this.tokenizer.lexer = this, this.inlineQueue = [], this.state = { inLink: false, inRawBlock: false, top: true };
-      let t2 = { other: m$1, block: B.normal, inline: A.normal };
-      this.options.pedantic ? (t2.block = B.pedantic, t2.inline = A.pedantic) : this.options.gfm && (t2.block = B.gfm, this.options.breaks ? t2.inline = A.breaks : t2.inline = A.gfm), this.tokenizer.rules = t2;
-    }
-    static get rules() {
-      return { block: B, inline: A };
-    }
-    static lex(e2, t2) {
-      return new l2(t2).lex(e2);
-    }
-    static lexInline(e2, t2) {
-      return new l2(t2).inlineTokens(e2);
-    }
-    lex(e2) {
-      e2 = e2.replace(m$1.carriageReturn, `
-`), this.blockTokens(e2, this.tokens);
-      for (let t2 = 0; t2 < this.inlineQueue.length; t2++) {
-        let n2 = this.inlineQueue[t2];
-        this.inlineTokens(n2.src, n2.tokens);
-      }
-      return this.inlineQueue = [], this.tokens;
-    }
-    blockTokens(e2, t2 = [], n2 = false) {
-      this.tokenizer.lexer = this, this.options.pedantic && (e2 = e2.replace(m$1.tabCharGlobal, "    ").replace(m$1.spaceLine, ""));
-      let s2 = 1 / 0;
-      for (; e2; ) {
-        if (e2.length < s2) s2 = e2.length;
-        else {
-          this.infiniteLoopError(e2.charCodeAt(0));
-          break;
-        }
-        let r2;
-        if (this.options.extensions?.block?.some((o2) => (r2 = o2.call({ lexer: this }, e2, t2)) ? (e2 = e2.substring(r2.raw.length), t2.push(r2), true) : false)) continue;
-        if (r2 = this.tokenizer.space(e2)) {
-          e2 = e2.substring(r2.raw.length);
-          let o2 = t2.at(-1);
-          r2.raw.length === 1 && o2 !== void 0 ? o2.raw += `
-` : t2.push(r2);
-          continue;
-        }
-        if (r2 = this.tokenizer.code(e2)) {
-          e2 = e2.substring(r2.raw.length);
-          let o2 = t2.at(-1);
-          o2?.type === "paragraph" || o2?.type === "text" ? (o2.raw += (o2.raw.endsWith(`
-`) ? "" : `
-`) + r2.raw, o2.text += `
-` + r2.text, this.inlineQueue.at(-1).src = o2.text) : t2.push(r2);
-          continue;
-        }
-        if (r2 = this.tokenizer.fences(e2)) {
-          e2 = e2.substring(r2.raw.length), t2.push(r2);
-          continue;
-        }
-        if (r2 = this.tokenizer.heading(e2)) {
-          e2 = e2.substring(r2.raw.length), t2.push(r2);
-          continue;
-        }
-        if (r2 = this.tokenizer.hr(e2)) {
-          e2 = e2.substring(r2.raw.length), t2.push(r2);
-          continue;
-        }
-        if (r2 = this.tokenizer.blockquote(e2)) {
-          e2 = e2.substring(r2.raw.length), t2.push(r2);
-          continue;
-        }
-        if (r2 = this.tokenizer.list(e2)) {
-          e2 = e2.substring(r2.raw.length), t2.push(r2);
-          continue;
-        }
-        if (r2 = this.tokenizer.html(e2)) {
-          e2 = e2.substring(r2.raw.length), t2.push(r2);
-          continue;
-        }
-        if (r2 = this.tokenizer.def(e2)) {
-          e2 = e2.substring(r2.raw.length);
-          let o2 = t2.at(-1);
-          o2?.type === "paragraph" || o2?.type === "text" ? (o2.raw += (o2.raw.endsWith(`
-`) ? "" : `
-`) + r2.raw, o2.text += `
-` + r2.raw, this.inlineQueue.at(-1).src = o2.text) : this.tokens.links[r2.tag] || (this.tokens.links[r2.tag] = { href: r2.href, title: r2.title }, t2.push(r2));
-          continue;
-        }
-        if (r2 = this.tokenizer.table(e2)) {
-          e2 = e2.substring(r2.raw.length), t2.push(r2);
-          continue;
-        }
-        if (r2 = this.tokenizer.lheading(e2)) {
-          e2 = e2.substring(r2.raw.length), t2.push(r2);
-          continue;
-        }
-        let i2 = e2;
-        if (this.options.extensions?.startBlock) {
-          let o2 = 1 / 0, u2 = e2.slice(1), a2;
-          this.options.extensions.startBlock.forEach((c2) => {
-            a2 = c2.call({ lexer: this }, u2), typeof a2 == "number" && a2 >= 0 && (o2 = Math.min(o2, a2));
-          }), o2 < 1 / 0 && o2 >= 0 && (i2 = e2.substring(0, o2 + 1));
-        }
-        if (this.state.top && (r2 = this.tokenizer.paragraph(i2))) {
-          let o2 = t2.at(-1);
-          n2 && o2?.type === "paragraph" ? (o2.raw += (o2.raw.endsWith(`
-`) ? "" : `
-`) + r2.raw, o2.text += `
-` + r2.text, this.inlineQueue.pop(), this.inlineQueue.at(-1).src = o2.text) : t2.push(r2), n2 = i2.length !== e2.length, e2 = e2.substring(r2.raw.length);
-          continue;
-        }
-        if (r2 = this.tokenizer.text(e2)) {
-          e2 = e2.substring(r2.raw.length);
-          let o2 = t2.at(-1);
-          o2?.type === "text" ? (o2.raw += (o2.raw.endsWith(`
-`) ? "" : `
-`) + r2.raw, o2.text += `
-` + r2.text, this.inlineQueue.pop(), this.inlineQueue.at(-1).src = o2.text) : t2.push(r2);
-          continue;
-        }
-        if (e2) {
-          this.infiniteLoopError(e2.charCodeAt(0));
-          break;
-        }
-      }
-      return this.state.top = true, t2;
-    }
-    inline(e2, t2 = []) {
-      return this.inlineQueue.push({ src: e2, tokens: t2 }), t2;
-    }
-    inlineTokens(e2, t2 = []) {
-      this.tokenizer.lexer = this;
-      let n2 = e2, s2 = null;
-      if (this.tokens.links) {
-        let a2 = Object.keys(this.tokens.links);
-        if (a2.length > 0) for (; (s2 = this.tokenizer.rules.inline.reflinkSearch.exec(n2)) !== null; ) a2.includes(s2[0].slice(s2[0].lastIndexOf("[") + 1, -1)) && (n2 = n2.slice(0, s2.index) + "[" + "a".repeat(s2[0].length - 2) + "]" + n2.slice(this.tokenizer.rules.inline.reflinkSearch.lastIndex));
-      }
-      for (; (s2 = this.tokenizer.rules.inline.anyPunctuation.exec(n2)) !== null; ) n2 = n2.slice(0, s2.index) + "++" + n2.slice(this.tokenizer.rules.inline.anyPunctuation.lastIndex);
-      let r2;
-      for (; (s2 = this.tokenizer.rules.inline.blockSkip.exec(n2)) !== null; ) r2 = s2[2] ? s2[2].length : 0, n2 = n2.slice(0, s2.index + r2) + "[" + "a".repeat(s2[0].length - r2 - 2) + "]" + n2.slice(this.tokenizer.rules.inline.blockSkip.lastIndex);
-      n2 = this.options.hooks?.emStrongMask?.call({ lexer: this }, n2) ?? n2;
-      let i2 = false, o2 = "", u2 = 1 / 0;
-      for (; e2; ) {
-        if (e2.length < u2) u2 = e2.length;
-        else {
-          this.infiniteLoopError(e2.charCodeAt(0));
-          break;
-        }
-        i2 || (o2 = ""), i2 = false;
-        let a2;
-        if (this.options.extensions?.inline?.some((p2) => (a2 = p2.call({ lexer: this }, e2, t2)) ? (e2 = e2.substring(a2.raw.length), t2.push(a2), true) : false)) continue;
-        if (a2 = this.tokenizer.escape(e2)) {
-          e2 = e2.substring(a2.raw.length), t2.push(a2);
-          continue;
-        }
-        if (a2 = this.tokenizer.tag(e2)) {
-          e2 = e2.substring(a2.raw.length), t2.push(a2);
-          continue;
-        }
-        if (a2 = this.tokenizer.link(e2)) {
-          e2 = e2.substring(a2.raw.length), t2.push(a2);
-          continue;
-        }
-        if (a2 = this.tokenizer.reflink(e2, this.tokens.links)) {
-          e2 = e2.substring(a2.raw.length);
-          let p2 = t2.at(-1);
-          a2.type === "text" && p2?.type === "text" ? (p2.raw += a2.raw, p2.text += a2.text) : t2.push(a2);
-          continue;
-        }
-        if (a2 = this.tokenizer.emStrong(e2, n2, o2)) {
-          e2 = e2.substring(a2.raw.length), t2.push(a2);
-          continue;
-        }
-        if (a2 = this.tokenizer.codespan(e2)) {
-          e2 = e2.substring(a2.raw.length), t2.push(a2);
-          continue;
-        }
-        if (a2 = this.tokenizer.br(e2)) {
-          e2 = e2.substring(a2.raw.length), t2.push(a2);
-          continue;
-        }
-        if (a2 = this.tokenizer.del(e2, n2, o2)) {
-          e2 = e2.substring(a2.raw.length), t2.push(a2);
-          continue;
-        }
-        if (a2 = this.tokenizer.autolink(e2)) {
-          e2 = e2.substring(a2.raw.length), t2.push(a2);
-          continue;
-        }
-        if (!this.state.inLink && (a2 = this.tokenizer.url(e2))) {
-          e2 = e2.substring(a2.raw.length), t2.push(a2);
-          continue;
-        }
-        let c2 = e2;
-        if (this.options.extensions?.startInline) {
-          let p2 = 1 / 0, d2 = e2.slice(1), h2;
-          this.options.extensions.startInline.forEach((R) => {
-            h2 = R.call({ lexer: this }, d2), typeof h2 == "number" && h2 >= 0 && (p2 = Math.min(p2, h2));
-          }), p2 < 1 / 0 && p2 >= 0 && (c2 = e2.substring(0, p2 + 1));
-        }
-        if (a2 = this.tokenizer.inlineText(c2)) {
-          e2 = e2.substring(a2.raw.length), a2.raw.slice(-1) !== "_" && (o2 = a2.raw.slice(-1)), i2 = true;
-          let p2 = t2.at(-1);
-          p2?.type === "text" ? (p2.raw += a2.raw, p2.text += a2.text) : t2.push(a2);
-          continue;
-        }
-        if (e2) {
-          this.infiniteLoopError(e2.charCodeAt(0));
-          break;
-        }
-      }
-      return t2;
-    }
-    infiniteLoopError(e2) {
-      let t2 = "Infinite loop on byte: " + e2;
-      if (this.options.silent) console.error(t2);
-      else throw new Error(t2);
-    }
-  };
-  var y$1 = class y {
-    options;
-    parser;
-    constructor(e2) {
-      this.options = e2 || T;
-    }
-    space(e2) {
-      return "";
-    }
-    code({ text: e2, lang: t2, escaped: n2 }) {
-      let s2 = (t2 || "").match(m$1.notSpaceStart)?.[0], r2 = e2.replace(m$1.endingNewline, "") + `
-`;
-      return s2 ? '<pre><code class="language-' + O(s2) + '">' + (n2 ? r2 : O(r2, true)) + `</code></pre>
-` : "<pre><code>" + (n2 ? r2 : O(r2, true)) + `</code></pre>
-`;
-    }
-    blockquote({ tokens: e2 }) {
-      return `<blockquote>
-${this.parser.parse(e2)}</blockquote>
-`;
-    }
-    html({ text: e2 }) {
-      return e2;
-    }
-    def(e2) {
-      return "";
-    }
-    heading({ tokens: e2, depth: t2 }) {
-      return `<h${t2}>${this.parser.parseInline(e2)}</h${t2}>
-`;
-    }
-    hr(e2) {
-      return `<hr>
-`;
-    }
-    list(e2) {
-      let t2 = e2.ordered, n2 = e2.start, s2 = "";
-      for (let o2 = 0; o2 < e2.items.length; o2++) {
-        let u2 = e2.items[o2];
-        s2 += this.listitem(u2);
-      }
-      let r2 = t2 ? "ol" : "ul", i2 = t2 && n2 !== 1 ? ' start="' + n2 + '"' : "";
-      return "<" + r2 + i2 + `>
-` + s2 + "</" + r2 + `>
-`;
-    }
-    listitem(e2) {
-      return `<li>${this.parser.parse(e2.tokens)}</li>
-`;
-    }
-    checkbox({ checked: e2 }) {
-      return "<input " + (e2 ? 'checked="" ' : "") + 'disabled="" type="checkbox"> ';
-    }
-    paragraph({ tokens: e2 }) {
-      return `<p>${this.parser.parseInline(e2)}</p>
-`;
-    }
-    table(e2) {
-      let t2 = "", n2 = "";
-      for (let r2 = 0; r2 < e2.header.length; r2++) n2 += this.tablecell(e2.header[r2]);
-      t2 += this.tablerow({ text: n2 });
-      let s2 = "";
-      for (let r2 = 0; r2 < e2.rows.length; r2++) {
-        let i2 = e2.rows[r2];
-        n2 = "";
-        for (let o2 = 0; o2 < i2.length; o2++) n2 += this.tablecell(i2[o2]);
-        s2 += this.tablerow({ text: n2 });
-      }
-      return s2 && (s2 = `<tbody>${s2}</tbody>`), `<table>
-<thead>
-` + t2 + `</thead>
-` + s2 + `</table>
-`;
-    }
-    tablerow({ text: e2 }) {
-      return `<tr>
-${e2}</tr>
-`;
-    }
-    tablecell(e2) {
-      let t2 = this.parser.parseInline(e2.tokens), n2 = e2.header ? "th" : "td";
-      return (e2.align ? `<${n2} align="${e2.align}">` : `<${n2}>`) + t2 + `</${n2}>
-`;
-    }
-    strong({ tokens: e2 }) {
-      return `<strong>${this.parser.parseInline(e2)}</strong>`;
-    }
-    em({ tokens: e2 }) {
-      return `<em>${this.parser.parseInline(e2)}</em>`;
-    }
-    codespan({ text: e2 }) {
-      return `<code>${O(e2, true)}</code>`;
-    }
-    br(e2) {
-      return "<br>";
-    }
-    del({ tokens: e2 }) {
-      return `<del>${this.parser.parseInline(e2)}</del>`;
-    }
-    link({ href: e2, title: t2, tokens: n2 }) {
-      let s2 = this.parser.parseInline(n2), r2 = J(e2);
-      if (r2 === null) return s2;
-      e2 = r2;
-      let i2 = '<a href="' + e2 + '"';
-      return t2 && (i2 += ' title="' + O(t2) + '"'), i2 += ">" + s2 + "</a>", i2;
-    }
-    image({ href: e2, title: t2, text: n2, tokens: s2 }) {
-      s2 && (n2 = this.parser.parseInline(s2, this.parser.textRenderer));
-      let r2 = J(e2);
-      if (r2 === null) return O(n2);
-      e2 = r2;
-      let i2 = `<img src="${e2}" alt="${O(n2)}"`;
-      return t2 && (i2 += ` title="${O(t2)}"`), i2 += ">", i2;
-    }
-    text(e2) {
-      return "tokens" in e2 && e2.tokens ? this.parser.parseInline(e2.tokens) : "escaped" in e2 && e2.escaped ? e2.text : O(e2.text);
-    }
-  };
-  var L = class {
-    strong({ text: e2 }) {
-      return e2;
-    }
-    em({ text: e2 }) {
-      return e2;
-    }
-    codespan({ text: e2 }) {
-      return e2;
-    }
-    del({ text: e2 }) {
-      return e2;
-    }
-    html({ text: e2 }) {
-      return e2;
-    }
-    text({ text: e2 }) {
-      return e2;
-    }
-    link({ text: e2 }) {
-      return "" + e2;
-    }
-    image({ text: e2 }) {
-      return "" + e2;
-    }
-    br() {
-      return "";
-    }
-    checkbox({ raw: e2 }) {
-      return e2;
-    }
-  };
-  var b$1 = class l2 {
-    options;
-    renderer;
-    textRenderer;
-    constructor(e2) {
-      this.options = e2 || T, this.options.renderer = this.options.renderer || new y$1(), this.renderer = this.options.renderer, this.renderer.options = this.options, this.renderer.parser = this, this.textRenderer = new L();
-    }
-    static parse(e2, t2) {
-      return new l2(t2).parse(e2);
-    }
-    static parseInline(e2, t2) {
-      return new l2(t2).parseInline(e2);
-    }
-    parse(e2) {
-      this.renderer.parser = this;
-      let t2 = "";
-      for (let n2 = 0; n2 < e2.length; n2++) {
-        let s2 = e2[n2];
-        if (this.options.extensions?.renderers?.[s2.type]) {
-          let i2 = s2, o2 = this.options.extensions.renderers[i2.type].call({ parser: this }, i2);
-          if (o2 !== false || !["space", "hr", "heading", "code", "table", "blockquote", "list", "html", "def", "paragraph", "text"].includes(i2.type)) {
-            t2 += o2 || "";
-            continue;
-          }
-        }
-        let r2 = s2;
-        switch (r2.type) {
-          case "space": {
-            t2 += this.renderer.space(r2);
-            break;
-          }
-          case "hr": {
-            t2 += this.renderer.hr(r2);
-            break;
-          }
-          case "heading": {
-            t2 += this.renderer.heading(r2);
-            break;
-          }
-          case "code": {
-            t2 += this.renderer.code(r2);
-            break;
-          }
-          case "table": {
-            t2 += this.renderer.table(r2);
-            break;
-          }
-          case "blockquote": {
-            t2 += this.renderer.blockquote(r2);
-            break;
-          }
-          case "list": {
-            t2 += this.renderer.list(r2);
-            break;
-          }
-          case "checkbox": {
-            t2 += this.renderer.checkbox(r2);
-            break;
-          }
-          case "html": {
-            t2 += this.renderer.html(r2);
-            break;
-          }
-          case "def": {
-            t2 += this.renderer.def(r2);
-            break;
-          }
-          case "paragraph": {
-            t2 += this.renderer.paragraph(r2);
-            break;
-          }
-          case "text": {
-            t2 += this.renderer.text(r2);
-            break;
-          }
-          default: {
-            let i2 = 'Token with "' + r2.type + '" type was not found.';
-            if (this.options.silent) return console.error(i2), "";
-            throw new Error(i2);
-          }
-        }
-      }
-      return t2;
-    }
-    parseInline(e2, t2 = this.renderer) {
-      this.renderer.parser = this;
-      let n2 = "";
-      for (let s2 = 0; s2 < e2.length; s2++) {
-        let r2 = e2[s2];
-        if (this.options.extensions?.renderers?.[r2.type]) {
-          let o2 = this.options.extensions.renderers[r2.type].call({ parser: this }, r2);
-          if (o2 !== false || !["escape", "html", "link", "image", "strong", "em", "codespan", "br", "del", "text"].includes(r2.type)) {
-            n2 += o2 || "";
-            continue;
-          }
-        }
-        let i2 = r2;
-        switch (i2.type) {
-          case "escape": {
-            n2 += t2.text(i2);
-            break;
-          }
-          case "html": {
-            n2 += t2.html(i2);
-            break;
-          }
-          case "link": {
-            n2 += t2.link(i2);
-            break;
-          }
-          case "image": {
-            n2 += t2.image(i2);
-            break;
-          }
-          case "checkbox": {
-            n2 += t2.checkbox(i2);
-            break;
-          }
-          case "strong": {
-            n2 += t2.strong(i2);
-            break;
-          }
-          case "em": {
-            n2 += t2.em(i2);
-            break;
-          }
-          case "codespan": {
-            n2 += t2.codespan(i2);
-            break;
-          }
-          case "br": {
-            n2 += t2.br(i2);
-            break;
-          }
-          case "del": {
-            n2 += t2.del(i2);
-            break;
-          }
-          case "text": {
-            n2 += t2.text(i2);
-            break;
-          }
-          default: {
-            let o2 = 'Token with "' + i2.type + '" type was not found.';
-            if (this.options.silent) return console.error(o2), "";
-            throw new Error(o2);
-          }
-        }
-      }
-      return n2;
-    }
-  };
-  var P = class {
-    options;
-    block;
-    constructor(e2) {
-      this.options = e2 || T;
-    }
-    static passThroughHooks = /* @__PURE__ */ new Set(["preprocess", "postprocess", "processAllTokens", "emStrongMask"]);
-    static passThroughHooksRespectAsync = /* @__PURE__ */ new Set(["preprocess", "postprocess", "processAllTokens"]);
-    preprocess(e2) {
-      return e2;
-    }
-    postprocess(e2) {
-      return e2;
-    }
-    processAllTokens(e2) {
-      return e2;
-    }
-    emStrongMask(e2) {
-      return e2;
-    }
-    provideLexer(e2 = this.block) {
-      return e2 ? x.lex : x.lexInline;
-    }
-    provideParser(e2 = this.block) {
-      return e2 ? b$1.parse : b$1.parseInline;
-    }
-  };
-  var D = class {
-    defaults = z();
-    options = this.setOptions;
-    parse = this.parseMarkdown(true);
-    parseInline = this.parseMarkdown(false);
-    Parser = b$1;
-    Renderer = y$1;
-    TextRenderer = L;
-    Lexer = x;
-    Tokenizer = w$1;
-    Hooks = P;
-    constructor(...e2) {
-      this.use(...e2);
-    }
-    walkTokens(e2, t2) {
-      let n2 = [];
-      for (let s2 of e2) switch (n2 = n2.concat(t2.call(this, s2)), s2.type) {
-        case "table": {
-          let r2 = s2;
-          for (let i2 of r2.header) n2 = n2.concat(this.walkTokens(i2.tokens, t2));
-          for (let i2 of r2.rows) for (let o2 of i2) n2 = n2.concat(this.walkTokens(o2.tokens, t2));
-          break;
-        }
-        case "list": {
-          let r2 = s2;
-          n2 = n2.concat(this.walkTokens(r2.items, t2));
-          break;
-        }
-        default: {
-          let r2 = s2;
-          this.defaults.extensions?.childTokens?.[r2.type] ? this.defaults.extensions.childTokens[r2.type].forEach((i2) => {
-            let o2 = r2[i2].flat(1 / 0);
-            n2 = n2.concat(this.walkTokens(o2, t2));
-          }) : r2.tokens && (n2 = n2.concat(this.walkTokens(r2.tokens, t2)));
-        }
-      }
-      return n2;
-    }
-    use(...e2) {
-      let t2 = this.defaults.extensions || { renderers: {}, childTokens: {} };
-      return e2.forEach((n2) => {
-        let s2 = { ...n2 };
-        if (s2.async = this.defaults.async || s2.async || false, n2.extensions && (n2.extensions.forEach((r2) => {
-          if (!r2.name) throw new Error("extension name required");
-          if ("renderer" in r2) {
-            let i2 = t2.renderers[r2.name];
-            i2 ? t2.renderers[r2.name] = function(...o2) {
-              let u2 = r2.renderer.apply(this, o2);
-              return u2 === false && (u2 = i2.apply(this, o2)), u2;
-            } : t2.renderers[r2.name] = r2.renderer;
-          }
-          if ("tokenizer" in r2) {
-            if (!r2.level || r2.level !== "block" && r2.level !== "inline") throw new Error("extension level must be 'block' or 'inline'");
-            let i2 = t2[r2.level];
-            i2 ? i2.unshift(r2.tokenizer) : t2[r2.level] = [r2.tokenizer], r2.start && (r2.level === "block" ? t2.startBlock ? t2.startBlock.push(r2.start) : t2.startBlock = [r2.start] : r2.level === "inline" && (t2.startInline ? t2.startInline.push(r2.start) : t2.startInline = [r2.start]));
-          }
-          "childTokens" in r2 && r2.childTokens && (t2.childTokens[r2.name] = r2.childTokens);
-        }), s2.extensions = t2), n2.renderer) {
-          let r2 = this.defaults.renderer || new y$1(this.defaults);
-          for (let i2 in n2.renderer) {
-            if (!(i2 in r2)) throw new Error(`renderer '${i2}' does not exist`);
-            if (["options", "parser"].includes(i2)) continue;
-            let o2 = i2, u2 = n2.renderer[o2], a2 = r2[o2];
-            r2[o2] = (...c2) => {
-              let p2 = u2.apply(r2, c2);
-              return p2 === false && (p2 = a2.apply(r2, c2)), p2 || "";
-            };
-          }
-          s2.renderer = r2;
-        }
-        if (n2.tokenizer) {
-          let r2 = this.defaults.tokenizer || new w$1(this.defaults);
-          for (let i2 in n2.tokenizer) {
-            if (!(i2 in r2)) throw new Error(`tokenizer '${i2}' does not exist`);
-            if (["options", "rules", "lexer"].includes(i2)) continue;
-            let o2 = i2, u2 = n2.tokenizer[o2], a2 = r2[o2];
-            r2[o2] = (...c2) => {
-              let p2 = u2.apply(r2, c2);
-              return p2 === false && (p2 = a2.apply(r2, c2)), p2;
-            };
-          }
-          s2.tokenizer = r2;
-        }
-        if (n2.hooks) {
-          let r2 = this.defaults.hooks || new P();
-          for (let i2 in n2.hooks) {
-            if (!(i2 in r2)) throw new Error(`hook '${i2}' does not exist`);
-            if (["options", "block"].includes(i2)) continue;
-            let o2 = i2, u2 = n2.hooks[o2], a2 = r2[o2];
-            P.passThroughHooks.has(i2) ? r2[o2] = (c2) => {
-              if (this.defaults.async && P.passThroughHooksRespectAsync.has(i2)) return (async () => {
-                let d2 = await u2.call(r2, c2);
-                return a2.call(r2, d2);
-              })();
-              let p2 = u2.call(r2, c2);
-              return a2.call(r2, p2);
-            } : r2[o2] = (...c2) => {
-              if (this.defaults.async) return (async () => {
-                let d2 = await u2.apply(r2, c2);
-                return d2 === false && (d2 = await a2.apply(r2, c2)), d2;
-              })();
-              let p2 = u2.apply(r2, c2);
-              return p2 === false && (p2 = a2.apply(r2, c2)), p2;
-            };
-          }
-          s2.hooks = r2;
-        }
-        if (n2.walkTokens) {
-          let r2 = this.defaults.walkTokens, i2 = n2.walkTokens;
-          s2.walkTokens = function(o2) {
-            let u2 = [];
-            return u2.push(i2.call(this, o2)), r2 && (u2 = u2.concat(r2.call(this, o2))), u2;
-          };
-        }
-        this.defaults = { ...this.defaults, ...s2 };
-      }), this;
-    }
-    setOptions(e2) {
-      return this.defaults = { ...this.defaults, ...e2 }, this;
-    }
-    lexer(e2, t2) {
-      return x.lex(e2, t2 ?? this.defaults);
-    }
-    parser(e2, t2) {
-      return b$1.parse(e2, t2 ?? this.defaults);
-    }
-    parseMarkdown(e2) {
-      return (n2, s2) => {
-        let r2 = { ...s2 }, i2 = { ...this.defaults, ...r2 }, o2 = this.onError(!!i2.silent, !!i2.async);
-        if (this.defaults.async === true && r2.async === false) return o2(new Error("marked(): The async option was set to true by an extension. Remove async: false from the parse options object to return a Promise."));
-        if (typeof n2 > "u" || n2 === null) return o2(new Error("marked(): input parameter is undefined or null"));
-        if (typeof n2 != "string") return o2(new Error("marked(): input parameter is of type " + Object.prototype.toString.call(n2) + ", string expected"));
-        if (i2.hooks && (i2.hooks.options = i2, i2.hooks.block = e2), i2.async) return (async () => {
-          let u2 = i2.hooks ? await i2.hooks.preprocess(n2) : n2, c2 = await (i2.hooks ? await i2.hooks.provideLexer(e2) : e2 ? x.lex : x.lexInline)(u2, i2), p2 = i2.hooks ? await i2.hooks.processAllTokens(c2) : c2;
-          i2.walkTokens && await Promise.all(this.walkTokens(p2, i2.walkTokens));
-          let h2 = await (i2.hooks ? await i2.hooks.provideParser(e2) : e2 ? b$1.parse : b$1.parseInline)(p2, i2);
-          return i2.hooks ? await i2.hooks.postprocess(h2) : h2;
-        })().catch(o2);
-        try {
-          i2.hooks && (n2 = i2.hooks.preprocess(n2));
-          let a2 = (i2.hooks ? i2.hooks.provideLexer(e2) : e2 ? x.lex : x.lexInline)(n2, i2);
-          i2.hooks && (a2 = i2.hooks.processAllTokens(a2)), i2.walkTokens && this.walkTokens(a2, i2.walkTokens);
-          let p2 = (i2.hooks ? i2.hooks.provideParser(e2) : e2 ? b$1.parse : b$1.parseInline)(a2, i2);
-          return i2.hooks && (p2 = i2.hooks.postprocess(p2)), p2;
-        } catch (u2) {
-          return o2(u2);
-        }
-      };
-    }
-    onError(e2, t2) {
-      return (n2) => {
-        if (n2.message += `
-Please report this to https://github.com/markedjs/marked.`, e2) {
-          let s2 = "<p>An error occurred:</p><pre>" + O(n2.message + "", true) + "</pre>";
-          return t2 ? Promise.resolve(s2) : s2;
-        }
-        if (t2) return Promise.reject(n2);
-        throw n2;
-      };
-    }
-  };
-  var M = new D();
-  function g$1(l2, e2) {
-    return M.parse(l2, e2);
-  }
-  g$1.options = g$1.setOptions = function(l2) {
-    return M.setOptions(l2), g$1.defaults = M.defaults, G(g$1.defaults), g$1;
-  };
-  g$1.getDefaults = z;
-  g$1.defaults = T;
-  g$1.use = function(...l2) {
-    return M.use(...l2), g$1.defaults = M.defaults, G(g$1.defaults), g$1;
-  };
-  g$1.walkTokens = function(l2, e2) {
-    return M.walkTokens(l2, e2);
-  };
-  g$1.parseInline = M.parseInline;
-  g$1.Parser = b$1;
-  g$1.parser = b$1.parse;
-  g$1.Renderer = y$1;
-  g$1.TextRenderer = L;
-  g$1.Lexer = x;
-  g$1.lexer = x.lex;
-  g$1.Tokenizer = w$1;
-  g$1.Hooks = P;
-  g$1.parse = g$1;
-  g$1.options;
-  g$1.setOptions;
-  g$1.use;
-  g$1.walkTokens;
-  g$1.parseInline;
-  b$1.parse;
-  x.lex;
+  const _style_0$r = "\n.verbatim-panel[data-v-3034500a] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.verbatim-panel__content[data-v-3034500a] {\n  padding: var(--spacing-md) var(--spacing-lg);\n}\n.verbatim-panel__header[data-v-3034500a] {\n  margin-bottom: var(--spacing-lg);\n  padding-bottom: var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n}\n.verbatim-panel__doc-title[data-v-3034500a] {\n  font-size: var(--font-size-xl);\n  font-weight: 700;\n  margin: 0;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__turns[data-v-3034500a] {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n}\n.verbatim-panel__turn[data-v-3034500a] {\n  display: block;\n}\n.verbatim-panel__turn-header[data-v-3034500a] {\n  margin: 0 0 var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: 1.4;\n}\n.verbatim-panel__speaker-name[data-v-3034500a] {\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__meta[data-v-3034500a] {\n  color: var(--color-text-muted);\n  font-weight: 400;\n}\n.verbatim-panel__sep[data-v-3034500a] {\n  margin: 0 0.35em;\n}\n.verbatim-panel__text[data-v-3034500a] {\n  margin: 0;\n  font-size: var(--font-size-base);\n  line-height: 1.6;\n  color: var(--color-text-primary);\n}\n@media (max-width: 767px) {\n.verbatim-panel[data-v-3034500a] {\n    padding: var(--spacing-md);\n}\n}\n";
+  const VerbatimPanel = /* @__PURE__ */ _export_sfc(_sfc_main$v, [["styles", [_style_0$r]], ["__scopeId", "data-v-3034500a"]]);
   function extend(destination) {
     for (var i2 = 1; i2 < arguments.length; i2++) {
       var source = arguments[i2];
@@ -37170,15 +38613,15 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     var node = next(prev, element, isPre);
     while (node !== element) {
       if (node.nodeType === 3 || node.nodeType === 4) {
-        var text = node.data.replace(/[ \r\n\t]+/g, " ");
-        if ((!prevText || / $/.test(prevText.data)) && !keepLeadingWs && text[0] === " ") {
-          text = text.substr(1);
+        var text2 = node.data.replace(/[ \r\n\t]+/g, " ");
+        if ((!prevText || / $/.test(prevText.data)) && !keepLeadingWs && text2[0] === " ") {
+          text2 = text2.substr(1);
         }
-        if (!text) {
+        if (!text2) {
           node = remove(node);
           continue;
         }
-        node.data = text;
+        node.data = text2;
         prevText = node;
       } else if (node.nodeType === 1) {
         if (isBlock2(node) || node.nodeName === "BR") {
@@ -37610,10 +39053,10 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       taskListItems
     ]);
   }
-  const _hoisted_1$m = { class: "markdown-editor" };
-  const _hoisted_2$h = ["aria-label"];
-  const _hoisted_3$f = ["contenteditable"];
-  const _sfc_main$s = /* @__PURE__ */ defineComponent({
+  const _hoisted_1$p = { class: "markdown-editor" };
+  const _hoisted_2$j = ["aria-label"];
+  const _hoisted_3$g = ["contenteditable"];
+  const _sfc_main$u = /* @__PURE__ */ defineComponent({
     __name: "MarkdownEditor",
     props: {
       modelValue: { type: String },
@@ -37624,7 +39067,6 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       const props = __props;
       const emit2 = __emit;
       const { t: t2 } = useI18n();
-      g$1.setOptions({ gfm: true, breaks: false, async: false });
       const turndown = new TurndownService({
         headingStyle: "atx",
         hr: "---",
@@ -37635,12 +39077,11 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       });
       turndown.use(gfm);
       function mdToHtml(md) {
-        if (!md) return "";
-        return g$1.parse(md, { async: false });
+        return renderMarkdown(md);
       }
-      function htmlToMd(html) {
-        if (!html) return "";
-        return turndown.turndown(html);
+      function htmlToMd(html2) {
+        if (!html2) return "";
+        return turndown.turndown(html2);
       }
       const editorRef = useTemplateRef("editorEl");
       const toolbarState = /* @__PURE__ */ reactive({
@@ -37658,10 +39099,10 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       let lastEmittedMarkdown = null;
       let emitFrame = null;
       let selectionListener = null;
-      function setHtml(html) {
+      function setHtml(html2) {
         const el = editorRef.value;
         if (!el) return;
-        el.innerHTML = html;
+        el.innerHTML = html2;
       }
       function getCurrentMarkdown() {
         const el = editorRef.value;
@@ -37687,13 +39128,13 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         e2.preventDefault();
         const clipboard = e2.clipboardData;
         if (!clipboard) return;
-        const text = clipboard.getData("text/plain");
-        if (!text) return;
-        const looksLikeMd = /^#{1,6}\s|^\s*[-*+]\s|^\s*\d+\.\s|^\s*>|```|\*\*|__|\[.*\]\(/m.test(text);
+        const text2 = clipboard.getData("text/plain");
+        if (!text2) return;
+        const looksLikeMd = /^#{1,6}\s|^\s*[-*+]\s|^\s*\d+\.\s|^\s*>|```|\*\*|__|\[.*\]\(/m.test(text2);
         if (looksLikeMd) {
-          document.execCommand("insertHTML", false, mdToHtml(text));
+          document.execCommand("insertHTML", false, mdToHtml(text2));
         } else {
-          document.execCommand("insertText", false, text);
+          document.execCommand("insertText", false, text2);
         }
       }
       function focusEditor() {
@@ -37747,10 +39188,10 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
           sel.addRange(range);
         } else {
           const range = sel.getRangeAt(0);
-          const text = range.toString() || "\n";
+          const text2 = range.toString() || "\n";
           const wrapper = document.createElement("pre");
           const code2 = document.createElement("code");
-          code2.textContent = text;
+          code2.textContent = text2;
           wrapper.appendChild(code2);
           range.deleteContents();
           range.insertNode(wrapper);
@@ -37836,7 +39277,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         }
       );
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$m, [
+        return openBlock(), createElementBlock("div", _hoisted_1$p, [
           !__props.disabled ? (openBlock(), createElementBlock("div", {
             key: 0,
             class: "markdown-editor__toolbar",
@@ -37947,7 +39388,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
               title: unref(t2)("mdToolbar.redo"),
               onClick: _cache[8] || (_cache[8] = ($event) => execCmd("redo"))
             }, null, 8, ["aria-label", "title"])
-          ], 8, _hoisted_2$h)) : createCommentVNode("", true),
+          ], 8, _hoisted_2$j)) : createCommentVNode("", true),
           createBaseVNode("div", {
             ref: "editorEl",
             class: "markdown-editor__content",
@@ -37957,21 +39398,21 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
             onPaste,
             onFocus: startSelectionListener,
             onBlur: stopSelectionListener
-          }, null, 40, _hoisted_3$f)
+          }, null, 40, _hoisted_3$g)
         ]);
       };
     }
   });
-  const _style_0$o = "\n.markdown-editor[data-v-83ab6d33] {\n  display: flex;\n  flex-direction: column;\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.markdown-editor__toolbar[data-v-83ab6d33] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-xs) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  position: sticky;\n  top: 0;\n  z-index: 1;\n}\n.markdown-editor__separator[data-v-83ab6d33] {\n  width: 1px;\n  height: 20px;\n  background-color: var(--color-border);\n  margin: 0 var(--spacing-xs);\n}\n.markdown-editor__content[data-v-83ab6d33] {\n  padding: var(--spacing-md) var(--spacing-md);\n  outline: none;\n  min-height: 200px;\n}\n.markdown-editor__content[data-v-83ab6d33] > *:first-child {\n  margin-top: 0;\n}\n.markdown-editor__content[data-v-83ab6d33] h1,\n.markdown-editor__content[data-v-83ab6d33] h2,\n.markdown-editor__content[data-v-83ab6d33] h3,\n.markdown-editor__content[data-v-83ab6d33] h4 {\n  margin: var(--spacing-lg) 0 var(--spacing-sm);\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.markdown-editor__content[data-v-83ab6d33] h1 {\n  font-size: var(--font-size-xl);\n}\n.markdown-editor__content[data-v-83ab6d33] h2 {\n  font-size: var(--font-size-lg);\n}\n.markdown-editor__content[data-v-83ab6d33] h3 {\n  font-size: var(--font-size-base);\n}\n.markdown-editor__content[data-v-83ab6d33] h4 {\n  font-size: var(--font-size-sm);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-secondary);\n}\n.markdown-editor__content[data-v-83ab6d33] p {\n  margin: 0 0 var(--spacing-md);\n}\n.markdown-editor__content[data-v-83ab6d33] ul,\n.markdown-editor__content[data-v-83ab6d33] ol {\n  margin: 0 0 var(--spacing-md);\n  padding-left: var(--spacing-lg);\n}\n.markdown-editor__content[data-v-83ab6d33] li {\n  margin: var(--spacing-xs) 0;\n}\n.markdown-editor__content[data-v-83ab6d33] blockquote {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-left: 3px solid var(--color-border);\n  color: var(--color-text-secondary);\n  font-style: italic;\n}\n.markdown-editor__content[data-v-83ab6d33] code {\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n  padding: 1px 4px;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-sm);\n}\n.markdown-editor__content[data-v-83ab6d33] pre {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n}\n.markdown-editor__content[data-v-83ab6d33] pre code {\n  padding: 0;\n  background: none;\n}\n.markdown-editor__content[data-v-83ab6d33] a {\n  color: var(--color-primary);\n  text-decoration: underline;\n}\n.markdown-editor__content[data-v-83ab6d33] hr {\n  border: 0;\n  border-top: 1px solid var(--color-border);\n  margin: var(--spacing-lg) 0;\n}\n.markdown-editor__content[data-v-83ab6d33] strong {\n  font-weight: 700;\n}\n.markdown-editor__content[data-v-83ab6d33] table {\n  border-collapse: collapse;\n  margin: var(--spacing-md) 0;\n}\n.markdown-editor__content[data-v-83ab6d33] th,\n.markdown-editor__content[data-v-83ab6d33] td {\n  border: 1px solid var(--color-border);\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.markdown-editor__content[data-v-83ab6d33] th {\n  background-color: var(--color-surface);\n  font-weight: 600;\n}\n";
-  const MarkdownEditor = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["styles", [_style_0$o]], ["__scopeId", "data-v-83ab6d33"]]);
-  const _hoisted_1$l = { class: "llm-service-panel" };
-  const _hoisted_2$g = {
+  const _style_0$q = "\n.markdown-editor[data-v-9609cac8] {\n  display: flex;\n  flex-direction: column;\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.markdown-editor__toolbar[data-v-9609cac8] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-xs) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  position: sticky;\n  top: 0;\n  z-index: 1;\n}\n.markdown-editor__separator[data-v-9609cac8] {\n  width: 1px;\n  height: 20px;\n  background-color: var(--color-border);\n  margin: 0 var(--spacing-xs);\n}\n.markdown-editor__content[data-v-9609cac8] {\n  padding: var(--spacing-md) var(--spacing-md);\n  outline: none;\n  min-height: 200px;\n}\n.markdown-editor__content[data-v-9609cac8] > *:first-child {\n  margin-top: 0;\n}\n.markdown-editor__content[data-v-9609cac8] h1,\n.markdown-editor__content[data-v-9609cac8] h2,\n.markdown-editor__content[data-v-9609cac8] h3,\n.markdown-editor__content[data-v-9609cac8] h4 {\n  margin: var(--spacing-lg) 0 var(--spacing-sm);\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.markdown-editor__content[data-v-9609cac8] h1 {\n  font-size: var(--font-size-xl);\n}\n.markdown-editor__content[data-v-9609cac8] h2 {\n  font-size: var(--font-size-lg);\n}\n.markdown-editor__content[data-v-9609cac8] h3 {\n  font-size: var(--font-size-base);\n}\n.markdown-editor__content[data-v-9609cac8] h4 {\n  font-size: var(--font-size-sm);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-secondary);\n}\n.markdown-editor__content[data-v-9609cac8] p {\n  margin: 0 0 var(--spacing-md);\n}\n.markdown-editor__content[data-v-9609cac8] ul,\n.markdown-editor__content[data-v-9609cac8] ol {\n  margin: 0 0 var(--spacing-md);\n  padding-left: var(--spacing-lg);\n}\n.markdown-editor__content[data-v-9609cac8] li {\n  margin: var(--spacing-xs) 0;\n}\n.markdown-editor__content[data-v-9609cac8] blockquote {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-left: 3px solid var(--color-border);\n  color: var(--color-text-secondary);\n  font-style: italic;\n}\n.markdown-editor__content[data-v-9609cac8] code {\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n  padding: 1px 4px;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-sm);\n}\n.markdown-editor__content[data-v-9609cac8] pre {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n}\n.markdown-editor__content[data-v-9609cac8] pre code {\n  padding: 0;\n  background: none;\n}\n.markdown-editor__content[data-v-9609cac8] a {\n  color: var(--color-primary);\n  text-decoration: underline;\n}\n.markdown-editor__content[data-v-9609cac8] hr {\n  border: 0;\n  border-top: 1px solid var(--color-border);\n  margin: var(--spacing-lg) 0;\n}\n.markdown-editor__content[data-v-9609cac8] strong {\n  font-weight: 700;\n}\n.markdown-editor__content[data-v-9609cac8] table {\n  border-collapse: collapse;\n  margin: var(--spacing-md) 0;\n}\n.markdown-editor__content[data-v-9609cac8] th,\n.markdown-editor__content[data-v-9609cac8] td {\n  border: 1px solid var(--color-border);\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.markdown-editor__content[data-v-9609cac8] th {\n  background-color: var(--color-surface);\n  font-weight: 600;\n}\n";
+  const MarkdownEditor = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["styles", [_style_0$q]], ["__scopeId", "data-v-9609cac8"]]);
+  const _hoisted_1$o = { class: "llm-service-panel" };
+  const _hoisted_2$i = {
     key: 0,
     class: "llm-service-panel__empty",
     role: "status"
   };
-  const _hoisted_3$e = { class: "llm-service-panel__empty-text" };
-  const _sfc_main$r = /* @__PURE__ */ defineComponent({
+  const _hoisted_3$f = { class: "llm-service-panel__empty-text" };
+  const _sfc_main$t = /* @__PURE__ */ defineComponent({
     __name: "LLMServicePanel",
     props: {
       service: { type: Object }
@@ -38035,7 +39476,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         });
       }
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("section", _hoisted_1$l, [
+        return openBlock(), createElementBlock("section", _hoisted_1$o, [
           createVNode(DocumentArticle, {
             status: articleStatus.value,
             progress: progress.value,
@@ -38089,8 +39530,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
               }, 8, ["disabled", "aria-label", "title"])
             ]),
             default: withCtx(() => [
-              isEmpty2.value ? (openBlock(), createElementBlock("div", _hoisted_2$g, [
-                createBaseVNode("p", _hoisted_3$e, toDisplayString(unref(t2)("llmService.empty")), 1),
+              isEmpty2.value ? (openBlock(), createElementBlock("div", _hoisted_2$i, [
+                createBaseVNode("p", _hoisted_3$f, toDisplayString(unref(t2)("llmService.empty")), 1),
                 createVNode(Button, {
                   variant: "primary",
                   icon: "sparkles",
@@ -38115,12 +39556,12 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$n = "\n.llm-service-panel[data-v-2e197000] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.llm-service-panel__status[data-v-2e197000] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n}\n.llm-service-panel__status--ok[data-v-2e197000] {\n  color: var(--color-success, #2e7d32);\n}\n.llm-service-panel__status--warn[data-v-2e197000] {\n  color: var(--color-warning, #ed6c02);\n}\n.llm-service-panel__empty[data-v-2e197000] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-2e197000] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n@media (max-width: 767px) {\n.llm-service-panel[data-v-2e197000] {\n    padding: var(--spacing-md);\n}\n}\n";
-  const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["styles", [_style_0$n]], ["__scopeId", "data-v-2e197000"]]);
-  const _hoisted_1$k = { class: "switch" };
-  const _hoisted_2$f = ["id", "checked"];
-  const _hoisted_3$d = ["for"];
-  const _sfc_main$q = /* @__PURE__ */ defineComponent({
+  const _style_0$p = "\n.llm-service-panel[data-v-2e197000] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.llm-service-panel__status[data-v-2e197000] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n}\n.llm-service-panel__status--ok[data-v-2e197000] {\n  color: var(--color-success, #2e7d32);\n}\n.llm-service-panel__status--warn[data-v-2e197000] {\n  color: var(--color-warning, #ed6c02);\n}\n.llm-service-panel__empty[data-v-2e197000] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-2e197000] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n@media (max-width: 767px) {\n.llm-service-panel[data-v-2e197000] {\n    padding: var(--spacing-md);\n}\n}\n";
+  const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$t, [["styles", [_style_0$p]], ["__scopeId", "data-v-2e197000"]]);
+  const _hoisted_1$n = { class: "switch" };
+  const _hoisted_2$h = ["id", "checked"];
+  const _hoisted_3$e = ["for"];
+  const _sfc_main$s = /* @__PURE__ */ defineComponent({
     __name: "SwitchToggle",
     props: {
       modelValue: { type: Boolean },
@@ -38132,28 +39573,28 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       const emit2 = __emit;
       const inputId = props.id ?? useId$1();
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$k, [
+        return openBlock(), createElementBlock("div", _hoisted_1$n, [
           createBaseVNode("input", {
             type: "checkbox",
             id: unref(inputId),
             checked: __props.modelValue,
             onChange: _cache[0] || (_cache[0] = ($event) => emit2("update:modelValue", $event.target.checked))
-          }, null, 40, _hoisted_2$f),
+          }, null, 40, _hoisted_2$h),
           createBaseVNode("label", { for: unref(inputId) }, [..._cache[1] || (_cache[1] = [
             createBaseVNode("div", { class: "switch-slider" }, null, -1)
-          ])], 8, _hoisted_3$d)
+          ])], 8, _hoisted_3$e)
         ]);
       };
     }
   });
-  const _style_0$m = "\n.switch[data-v-2aa0332f] {\n  display: inline-block;\n  flex-shrink: 0;\n}\n.switch input[data-v-2aa0332f] {\n  position: absolute;\n  width: 1px;\n  height: 1px;\n  padding: 0;\n  margin: -1px;\n  overflow: hidden;\n  clip-path: inset(50%);\n  white-space: nowrap;\n  border: 0;\n}\n.switch label[data-v-2aa0332f] {\n  height: 20px;\n  width: 40px;\n  display: block;\n  border: 1px solid var(--color-border);\n  border-radius: 20px;\n  cursor: pointer;\n  background-color: var(--color-border);\n  transition: background-color var(--transition-duration);\n}\n.switch .switch-slider[data-v-2aa0332f] {\n  height: 22px;\n  width: 22px;\n  border: 1px solid var(--color-border);\n  border-radius: 50%;\n  position: relative;\n  top: -2px;\n  left: -2px;\n  background-color: var(--color-white);\n  transition: left var(--transition-duration);\n}\n.switch input:checked + label[data-v-2aa0332f] {\n  background-color: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.switch input:checked + label .switch-slider[data-v-2aa0332f] {\n  left: 20px;\n  border-color: var(--color-primary);\n}\n";
-  const SwitchToggle = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["styles", [_style_0$m]], ["__scopeId", "data-v-2aa0332f"]]);
-  const _hoisted_1$j = {
+  const _style_0$o = "\n.switch[data-v-2aa0332f] {\n  display: inline-block;\n  flex-shrink: 0;\n}\n.switch input[data-v-2aa0332f] {\n  position: absolute;\n  width: 1px;\n  height: 1px;\n  padding: 0;\n  margin: -1px;\n  overflow: hidden;\n  clip-path: inset(50%);\n  white-space: nowrap;\n  border: 0;\n}\n.switch label[data-v-2aa0332f] {\n  height: 20px;\n  width: 40px;\n  display: block;\n  border: 1px solid var(--color-border);\n  border-radius: 20px;\n  cursor: pointer;\n  background-color: var(--color-border);\n  transition: background-color var(--transition-duration);\n}\n.switch .switch-slider[data-v-2aa0332f] {\n  height: 22px;\n  width: 22px;\n  border: 1px solid var(--color-border);\n  border-radius: 50%;\n  position: relative;\n  top: -2px;\n  left: -2px;\n  background-color: var(--color-white);\n  transition: left var(--transition-duration);\n}\n.switch input:checked + label[data-v-2aa0332f] {\n  background-color: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.switch input:checked + label .switch-slider[data-v-2aa0332f] {\n  left: 20px;\n  border-color: var(--color-primary);\n}\n";
+  const SwitchToggle = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["styles", [_style_0$o]], ["__scopeId", "data-v-2aa0332f"]]);
+  const _hoisted_1$m = {
     key: 0,
     class: "form-field__header"
   };
-  const _hoisted_2$e = ["for"];
-  const _hoisted_3$c = {
+  const _hoisted_2$g = ["for"];
+  const _hoisted_3$d = {
     key: 0,
     class: "form-field__required",
     "aria-hidden": "true"
@@ -38173,7 +39614,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
   };
   const _hoisted_10$1 = ["id"];
   const _hoisted_11$1 = { class: "form-field__error" };
-  const _sfc_main$p = /* @__PURE__ */ defineComponent({
+  const _sfc_main$r = /* @__PURE__ */ defineComponent({
     __name: "FormInput",
     props: {
       field: { type: Object },
@@ -38283,14 +39724,14 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         return openBlock(), createElementBlock("div", {
           class: normalizeClass(rootClasses.value)
         }, [
-          __props.field.label ? (openBlock(), createElementBlock("div", _hoisted_1$j, [
+          __props.field.label ? (openBlock(), createElementBlock("div", _hoisted_1$m, [
             createBaseVNode("label", {
               class: "form-field__label",
               for: id2.value
             }, [
               createTextVNode(toDisplayString(__props.field.label) + " ", 1),
-              isRequired.value ? (openBlock(), createElementBlock("span", _hoisted_3$c, "*")) : createCommentVNode("", true)
-            ], 8, _hoisted_2$e),
+              isRequired.value ? (openBlock(), createElementBlock("span", _hoisted_3$d, "*")) : createCommentVNode("", true)
+            ], 8, _hoisted_2$g),
             renderSlot(_ctx.$slots, "content-after-label", {}, void 0, true)
           ])) : createCommentVNode("", true),
           createBaseVNode("div", _hoisted_4$7, [
@@ -38381,10 +39822,10 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$l = "\n/* ── Root ──────────────────────────────────────────────────────────── */\n.form-field[data-v-31189879] {\n  --field-height: 40px;\n  --field-padding-x: var(--spacing-md);\n  --field-font-size: var(--font-size-sm);\n\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  width: 100%;\n}\n.form-field--sm[data-v-31189879] {\n  --field-height: 32px;\n  --field-padding-x: var(--spacing-sm);\n  --field-font-size: var(--font-size-xs);\n}\n.form-field--lg[data-v-31189879] {\n  --field-height: 44px;\n  --field-padding-x: var(--spacing-md);\n  --field-font-size: var(--font-size-base);\n}\n.form-field--disabled[data-v-31189879] {\n  opacity: 0.7;\n}\n\n/* ── Header (label row) ────────────────────────────────────────────── */\n.form-field__header[data-v-31189879] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n}\n.form-field__label[data-v-31189879] {\n  display: block;\n  margin: 0;\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  line-height: 1.2;\n  color: var(--color-text-primary);\n}\n.form-field--error .form-field__label[data-v-31189879] {\n  color: var(--color-danger);\n}\n.form-field__required[data-v-31189879] {\n  margin-left: 2px;\n  color: var(--color-danger);\n}\n\n/* ── Input wrapper ─────────────────────────────────────────────────── */\n.form-field__input-wrapper[data-v-31189879] {\n  display: flex;\n  align-items: flex-start;\n  gap: var(--spacing-sm);\n  width: 100%;\n}\n\n/* ── Input ─────────────────────────────────────────────────────────── */\n.form-field__input[data-v-31189879] {\n  flex: 1;\n  box-sizing: border-box;\n  height: var(--field-height);\n  padding: 0 var(--field-padding-x);\n  font-family: inherit;\n  font-size: var(--field-font-size);\n  line-height: 1.4;\n  color: var(--color-text-primary);\n  background-color: var(--color-background);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-sm);\n  outline: none;\n  transition:\n    border-color var(--transition-duration),\n    box-shadow var(--transition-duration);\n}\n.form-field__input[data-v-31189879]::placeholder {\n  color: var(--color-text-muted);\n  opacity: 1;\n}\n.form-field__input[data-v-31189879]:hover:not(:disabled) {\n  border-color: var(--color-text-muted);\n}\n.form-field__input[data-v-31189879]:focus-visible {\n  border-color: var(--color-primary);\n  box-shadow: 0 0 0 3px\n    color-mix(in srgb, var(--color-primary) 20%, transparent);\n}\n.form-field__input[data-v-31189879]:disabled {\n  cursor: not-allowed;\n  background-color: var(--color-surface);\n  color: var(--color-text-muted);\n}\n.form-field__input--fullwidth[data-v-31189879] {\n  width: 100%;\n  max-width: none;\n}\n.form-field__input--select[data-v-31189879] {\n  cursor: pointer;\n  appearance: auto;\n}\n.form-field__input--error[data-v-31189879] {\n  border-color: var(--color-danger);\n}\n.form-field__input--error[data-v-31189879]:focus-visible {\n  border-color: var(--color-danger);\n  box-shadow: 0 0 0 3px\n    color-mix(in srgb, var(--color-danger) 20%, transparent);\n}\n\n/* ── Confirmation actions ──────────────────────────────────────────── */\n.form-field__actions[data-v-31189879] {\n  display: flex;\n  align-items: flex-start;\n  gap: var(--spacing-xs);\n  flex-shrink: 0;\n}\n.form-field__actions--placeholder[data-v-31189879] {\n  /* Reserve space so showing the buttons doesn't shift layout. */\n  width: calc(var(--field-height) * 2 + var(--spacing-xs));\n  height: var(--field-height);\n  pointer-events: none;\n  opacity: 0;\n}\n\n/* ── Info / error ──────────────────────────────────────────────────── */\n.form-field__info[data-v-31189879] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.form-field__error[data-v-31189879] {\n  margin: 0;\n  font-size: var(--font-size-xs);\n  line-height: 1.2;\n  color: var(--color-danger);\n}\n\n/* ── Inline layout ─────────────────────────────────────────────────── */\n.form-field--inline[data-v-31189879] {\n  flex-direction: row;\n  align-items: center;\n  gap: var(--spacing-md);\n}\n.form-field--inline .form-field__header[data-v-31189879] {\n  flex-shrink: 0;\n  min-width: 120px;\n}\n.form-field--inline .form-field__input-wrapper[data-v-31189879] {\n  flex: 1;\n}\n\n/* ── Reduced motion ────────────────────────────────────────────────── */\n@media (prefers-reduced-motion: reduce) {\n.form-field__input[data-v-31189879] {\n    transition: none;\n}\n}\n";
-  const FormInput = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["styles", [_style_0$l]], ["__scopeId", "data-v-31189879"]]);
-  const _hoisted_1$i = ["disabled", "aria-label"];
-  const _sfc_main$o = /* @__PURE__ */ defineComponent({
+  const _style_0$n = "\n/* ── Root ──────────────────────────────────────────────────────────── */\n.form-field[data-v-31189879] {\n  --field-height: 40px;\n  --field-padding-x: var(--spacing-md);\n  --field-font-size: var(--font-size-sm);\n\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  width: 100%;\n}\n.form-field--sm[data-v-31189879] {\n  --field-height: 32px;\n  --field-padding-x: var(--spacing-sm);\n  --field-font-size: var(--font-size-xs);\n}\n.form-field--lg[data-v-31189879] {\n  --field-height: 44px;\n  --field-padding-x: var(--spacing-md);\n  --field-font-size: var(--font-size-base);\n}\n.form-field--disabled[data-v-31189879] {\n  opacity: 0.7;\n}\n\n/* ── Header (label row) ────────────────────────────────────────────── */\n.form-field__header[data-v-31189879] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n}\n.form-field__label[data-v-31189879] {\n  display: block;\n  margin: 0;\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  line-height: 1.2;\n  color: var(--color-text-primary);\n}\n.form-field--error .form-field__label[data-v-31189879] {\n  color: var(--color-danger);\n}\n.form-field__required[data-v-31189879] {\n  margin-left: 2px;\n  color: var(--color-danger);\n}\n\n/* ── Input wrapper ─────────────────────────────────────────────────── */\n.form-field__input-wrapper[data-v-31189879] {\n  display: flex;\n  align-items: flex-start;\n  gap: var(--spacing-sm);\n  width: 100%;\n}\n\n/* ── Input ─────────────────────────────────────────────────────────── */\n.form-field__input[data-v-31189879] {\n  flex: 1;\n  box-sizing: border-box;\n  height: var(--field-height);\n  padding: 0 var(--field-padding-x);\n  font-family: inherit;\n  font-size: var(--field-font-size);\n  line-height: 1.4;\n  color: var(--color-text-primary);\n  background-color: var(--color-background);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-sm);\n  outline: none;\n  transition:\n    border-color var(--transition-duration),\n    box-shadow var(--transition-duration);\n}\n.form-field__input[data-v-31189879]::placeholder {\n  color: var(--color-text-muted);\n  opacity: 1;\n}\n.form-field__input[data-v-31189879]:hover:not(:disabled) {\n  border-color: var(--color-text-muted);\n}\n.form-field__input[data-v-31189879]:focus-visible {\n  border-color: var(--color-primary);\n  box-shadow: 0 0 0 3px\n    color-mix(in srgb, var(--color-primary) 20%, transparent);\n}\n.form-field__input[data-v-31189879]:disabled {\n  cursor: not-allowed;\n  background-color: var(--color-surface);\n  color: var(--color-text-muted);\n}\n.form-field__input--fullwidth[data-v-31189879] {\n  width: 100%;\n  max-width: none;\n}\n.form-field__input--select[data-v-31189879] {\n  cursor: pointer;\n  appearance: auto;\n}\n.form-field__input--error[data-v-31189879] {\n  border-color: var(--color-danger);\n}\n.form-field__input--error[data-v-31189879]:focus-visible {\n  border-color: var(--color-danger);\n  box-shadow: 0 0 0 3px\n    color-mix(in srgb, var(--color-danger) 20%, transparent);\n}\n\n/* ── Confirmation actions ──────────────────────────────────────────── */\n.form-field__actions[data-v-31189879] {\n  display: flex;\n  align-items: flex-start;\n  gap: var(--spacing-xs);\n  flex-shrink: 0;\n}\n.form-field__actions--placeholder[data-v-31189879] {\n  /* Reserve space so showing the buttons doesn't shift layout. */\n  width: calc(var(--field-height) * 2 + var(--spacing-xs));\n  height: var(--field-height);\n  pointer-events: none;\n  opacity: 0;\n}\n\n/* ── Info / error ──────────────────────────────────────────────────── */\n.form-field__info[data-v-31189879] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.form-field__error[data-v-31189879] {\n  margin: 0;\n  font-size: var(--font-size-xs);\n  line-height: 1.2;\n  color: var(--color-danger);\n}\n\n/* ── Inline layout ─────────────────────────────────────────────────── */\n.form-field--inline[data-v-31189879] {\n  flex-direction: row;\n  align-items: center;\n  gap: var(--spacing-md);\n}\n.form-field--inline .form-field__header[data-v-31189879] {\n  flex-shrink: 0;\n  min-width: 120px;\n}\n.form-field--inline .form-field__input-wrapper[data-v-31189879] {\n  flex: 1;\n}\n\n/* ── Reduced motion ────────────────────────────────────────────────── */\n@media (prefers-reduced-motion: reduce) {\n.form-field__input[data-v-31189879] {\n    transition: none;\n}\n}\n";
+  const FormInput = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["styles", [_style_0$n]], ["__scopeId", "data-v-31189879"]]);
+  const _hoisted_1$l = ["disabled", "aria-label"];
+  const _sfc_main$q = /* @__PURE__ */ defineComponent({
     __name: "EditableText",
     props: {
       modelValue: { type: String },
@@ -38458,18 +39899,18 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
           disabled: __props.disabled,
           "aria-label": __props.ariaLabel,
           onClick: startEdit
-        }, toDisplayString(__props.modelValue || __props.placeholder), 9, _hoisted_1$i));
+        }, toDisplayString(__props.modelValue || __props.placeholder), 9, _hoisted_1$l));
       };
     }
   });
-  const _style_0$k = "\n.editable-text-display[data-v-511d4fb4] {\n  all: unset;\n  cursor: text;\n  text-align: left;\n  font: inherit;\n  color: inherit;\n  line-height: inherit;\n  padding: 0;\n  border: 1px solid transparent;\n  border-radius: var(--radius-sm);\n  min-width: 0;\n}\n.editable-text-display[data-v-511d4fb4]:not(:disabled):hover {\n  border-color: var(--color-border);\n}\n.editable-text-display[data-v-511d4fb4]:disabled {\n  cursor: default;\n}\n";
-  const EditableText = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["styles", [_style_0$k]], ["__scopeId", "data-v-511d4fb4"]]);
-  const _hoisted_1$h = ["disabled", "aria-current"];
-  const _hoisted_2$d = {
+  const _style_0$m = "\n.editable-text-display[data-v-511d4fb4] {\n  all: unset;\n  cursor: text;\n  text-align: left;\n  font: inherit;\n  color: inherit;\n  line-height: inherit;\n  padding: 0;\n  border: 1px solid transparent;\n  border-radius: var(--radius-sm);\n  min-width: 0;\n}\n.editable-text-display[data-v-511d4fb4]:not(:disabled):hover {\n  border-color: var(--color-border);\n}\n.editable-text-display[data-v-511d4fb4]:disabled {\n  cursor: default;\n}\n";
+  const EditableText = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["styles", [_style_0$m]], ["__scopeId", "data-v-511d4fb4"]]);
+  const _hoisted_1$k = ["disabled", "aria-current"];
+  const _hoisted_2$f = {
     key: 0,
     class: "selectable-list-item__leading"
   };
-  const _hoisted_3$b = { class: "selectable-list-item__label" };
+  const _hoisted_3$c = { class: "selectable-list-item__label" };
   const _hoisted_4$6 = {
     key: 1,
     class: "selectable-list-item__trailing"
@@ -38478,7 +39919,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     key: 0,
     class: "selectable-list-item__actions"
   };
-  const _sfc_main$n = /* @__PURE__ */ defineComponent({
+  const _sfc_main$p = /* @__PURE__ */ defineComponent({
     __name: "SelectableListItem",
     props: {
       current: { type: Boolean },
@@ -38503,10 +39944,10 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
             "aria-current": __props.current ? "true" : void 0,
             onClick: _cache[0] || (_cache[0] = ($event) => emit2("select"))
           }, [
-            _ctx.$slots.leading ? (openBlock(), createElementBlock("span", _hoisted_2$d, [
+            _ctx.$slots.leading ? (openBlock(), createElementBlock("span", _hoisted_2$f, [
               renderSlot(_ctx.$slots, "leading", {}, void 0, true)
             ])) : createCommentVNode("", true),
-            createBaseVNode("span", _hoisted_3$b, [
+            createBaseVNode("span", _hoisted_3$c, [
               renderSlot(_ctx.$slots, "default", {}, () => [
                 createTextVNode(toDisplayString(__props.label), 1)
               ], true)
@@ -38514,7 +39955,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
             _ctx.$slots.trailing ? (openBlock(), createElementBlock("span", _hoisted_4$6, [
               renderSlot(_ctx.$slots, "trailing", {}, void 0, true)
             ])) : createCommentVNode("", true)
-          ], 8, _hoisted_1$h),
+          ], 8, _hoisted_1$k),
           _ctx.$slots.actions ? (openBlock(), createElementBlock("div", _hoisted_5$6, [
             renderSlot(_ctx.$slots, "actions", {}, void 0, true)
           ])) : createCommentVNode("", true)
@@ -38522,9 +39963,9 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$j = "\n.selectable-list-item[data-v-e227a7de] {\n  position: relative;\n  display: flex;\n  border: 1px solid transparent;\n  transition:\n    background-color var(--transition-duration),\n    box-shadow var(--transition-duration);\n}\n.selectable-list-item--md[data-v-e227a7de] {\n  font-size: var(--font-size-sm);\n}\n.selectable-list-item--sm[data-v-e227a7de] {\n  font-size: var(--font-size-xs);\n}\n.selectable-list-item[data-v-e227a7de]:hover {\n  background-color: var(--color-surface-hover);\n}\n.selectable-list-item--current[data-v-e227a7de],\n.selectable-list-item--current[data-v-e227a7de]:hover {\n  background-color: color-mix(in srgb, var(--color-primary) 12%, transparent);\n  box-shadow: inset 2px 0 0 var(--color-primary);\n}\n\n/* ── The selectable button ── */\n.selectable-list-item__main[data-v-e227a7de] {\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  background: none;\n  border: none;\n  font: inherit;\n  color: var(--color-text-primary);\n  text-align: left;\n  cursor: pointer;\n}\n.selectable-list-item--md .selectable-list-item__main[data-v-e227a7de] {\n  padding: var(--spacing-sm);\n}\n.selectable-list-item--sm .selectable-list-item__main[data-v-e227a7de] {\n  padding: var(--spacing-xs) var(--spacing-sm);\n  color: var(--color-text-secondary);\n}\n.selectable-list-item__main[data-v-e227a7de]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: -2px;\n}\n.selectable-list-item__main[data-v-e227a7de]:disabled {\n  cursor: not-allowed;\n}\n.selectable-list-item--current .selectable-list-item__main[data-v-e227a7de] {\n  color: var(--color-primary);\n  font-weight: 600;\n}\n.selectable-list-item__label[data-v-e227a7de] {\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  font-variant-numeric: tabular-nums;\n}\n.selectable-list-item__leading[data-v-e227a7de],\n.selectable-list-item__trailing[data-v-e227a7de] {\n  display: inline-flex;\n  align-items: center;\n  flex-shrink: 0;\n}\n\n/* Trailing content (hints, dates) stays muted even on the active row. */\n.selectable-list-item__trailing[data-v-e227a7de] {\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n\n/* ── Trailing actions (hover / focus reveal, overlaying the row) ── */\n.selectable-list-item__actions[data-v-e227a7de] {\n  position: absolute;\n  inset-block: 0;\n  inset-inline-end: 0;\n  display: flex;\n  align-items: center;\n  gap: 2px;\n  padding-inline: var(--spacing-md) var(--spacing-xs);\n  /* Fade the label out behind the actions, matching the row surface. */\n  background: linear-gradient(\n    to right,\n    transparent,\n    var(--color-surface-hover) var(--spacing-md)\n  );\n  opacity: 0;\n  pointer-events: none;\n  transition: opacity var(--transition-duration);\n}\n.selectable-list-item:hover .selectable-list-item__actions[data-v-e227a7de],\n.selectable-list-item:focus-within .selectable-list-item__actions[data-v-e227a7de] {\n  opacity: 1;\n  pointer-events: auto;\n}\n\n/* Match the fade to the selected surface on the active row. */\n.selectable-list-item--current .selectable-list-item__actions[data-v-e227a7de] {\n  background: linear-gradient(\n    to right,\n    transparent,\n    color-mix(in srgb, var(--color-primary) 12%, var(--color-surface-hover))\n      var(--spacing-md)\n  );\n}\n@media (prefers-reduced-motion: reduce) {\n.selectable-list-item[data-v-e227a7de],\n  .selectable-list-item__actions[data-v-e227a7de] {\n    transition: none;\n}\n}\n";
-  const SelectableListItem = /* @__PURE__ */ _export_sfc(_sfc_main$n, [["styles", [_style_0$j]], ["__scopeId", "data-v-e227a7de"]]);
-  const _sfc_main$m = /* @__PURE__ */ defineComponent({
+  const _style_0$l = "\n.selectable-list-item[data-v-e227a7de] {\n  position: relative;\n  display: flex;\n  border: 1px solid transparent;\n  transition:\n    background-color var(--transition-duration),\n    box-shadow var(--transition-duration);\n}\n.selectable-list-item--md[data-v-e227a7de] {\n  font-size: var(--font-size-sm);\n}\n.selectable-list-item--sm[data-v-e227a7de] {\n  font-size: var(--font-size-xs);\n}\n.selectable-list-item[data-v-e227a7de]:hover {\n  background-color: var(--color-surface-hover);\n}\n.selectable-list-item--current[data-v-e227a7de],\n.selectable-list-item--current[data-v-e227a7de]:hover {\n  background-color: color-mix(in srgb, var(--color-primary) 12%, transparent);\n  box-shadow: inset 2px 0 0 var(--color-primary);\n}\n\n/* ── The selectable button ── */\n.selectable-list-item__main[data-v-e227a7de] {\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  background: none;\n  border: none;\n  font: inherit;\n  color: var(--color-text-primary);\n  text-align: left;\n  cursor: pointer;\n}\n.selectable-list-item--md .selectable-list-item__main[data-v-e227a7de] {\n  padding: var(--spacing-sm);\n}\n.selectable-list-item--sm .selectable-list-item__main[data-v-e227a7de] {\n  padding: var(--spacing-xs) var(--spacing-sm);\n  color: var(--color-text-secondary);\n}\n.selectable-list-item__main[data-v-e227a7de]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: -2px;\n}\n.selectable-list-item__main[data-v-e227a7de]:disabled {\n  cursor: not-allowed;\n}\n.selectable-list-item--current .selectable-list-item__main[data-v-e227a7de] {\n  color: var(--color-primary);\n  font-weight: 600;\n}\n.selectable-list-item__label[data-v-e227a7de] {\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  font-variant-numeric: tabular-nums;\n}\n.selectable-list-item__leading[data-v-e227a7de],\n.selectable-list-item__trailing[data-v-e227a7de] {\n  display: inline-flex;\n  align-items: center;\n  flex-shrink: 0;\n}\n\n/* Trailing content (hints, dates) stays muted even on the active row. */\n.selectable-list-item__trailing[data-v-e227a7de] {\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n\n/* ── Trailing actions (hover / focus reveal, overlaying the row) ── */\n.selectable-list-item__actions[data-v-e227a7de] {\n  position: absolute;\n  inset-block: 0;\n  inset-inline-end: 0;\n  display: flex;\n  align-items: center;\n  gap: 2px;\n  padding-inline: var(--spacing-md) var(--spacing-xs);\n  /* Fade the label out behind the actions, matching the row surface. */\n  background: linear-gradient(\n    to right,\n    transparent,\n    var(--color-surface-hover) var(--spacing-md)\n  );\n  opacity: 0;\n  pointer-events: none;\n  transition: opacity var(--transition-duration);\n}\n.selectable-list-item:hover .selectable-list-item__actions[data-v-e227a7de],\n.selectable-list-item:focus-within .selectable-list-item__actions[data-v-e227a7de] {\n  opacity: 1;\n  pointer-events: auto;\n}\n\n/* Match the fade to the selected surface on the active row. */\n.selectable-list-item--current .selectable-list-item__actions[data-v-e227a7de] {\n  background: linear-gradient(\n    to right,\n    transparent,\n    color-mix(in srgb, var(--color-primary) 12%, var(--color-surface-hover))\n      var(--spacing-md)\n  );\n}\n@media (prefers-reduced-motion: reduce) {\n.selectable-list-item[data-v-e227a7de],\n  .selectable-list-item__actions[data-v-e227a7de] {\n    transition: none;\n}\n}\n";
+  const SelectableListItem = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["styles", [_style_0$l]], ["__scopeId", "data-v-e227a7de"]]);
+  const _sfc_main$o = /* @__PURE__ */ defineComponent({
     __name: "SpeakerMenu",
     emits: ["merge"],
     setup(__props, { emit: __emit }) {
@@ -38537,7 +39978,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         if (action.id === "merge") emit2("merge");
       }
       return (_ctx, _cache) => {
-        return openBlock(), createBlock(_sfc_main$v, {
+        return openBlock(), createBlock(_sfc_main$x, {
           items: items.value,
           "item-key": (a2) => a2.id,
           align: "end",
@@ -38676,10 +40117,10 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       map2.delete(fromSpeakerId);
     }, origin);
   }
-  const _hoisted_1$g = { class: "merge-dialog-title" };
-  const _hoisted_2$c = { class: "merge-dialog-description" };
-  const _hoisted_3$a = { class: "merge-dialog-actions" };
-  const _sfc_main$l = /* @__PURE__ */ defineComponent({
+  const _hoisted_1$j = { class: "merge-dialog-title" };
+  const _hoisted_2$e = { class: "merge-dialog-description" };
+  const _hoisted_3$b = { class: "merge-dialog-actions" };
+  const _sfc_main$n = /* @__PURE__ */ defineComponent({
     __name: "MergeDialog",
     props: {
       open: { type: Boolean },
@@ -38744,8 +40185,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
             class: "merge-dialog-form",
             onSubmit: withModifiers(onConfirm, ["prevent"])
           }, [
-            createBaseVNode("h2", _hoisted_1$g, toDisplayString(unref(t2)("mergeDialog.title")), 1),
-            createBaseVNode("p", _hoisted_2$c, [
+            createBaseVNode("h2", _hoisted_1$j, toDisplayString(unref(t2)("mergeDialog.title")), 1),
+            createBaseVNode("p", _hoisted_2$e, [
               createBaseVNode("strong", null, toDisplayString(fromSpeaker.value.name), 1),
               createTextVNode(" · " + toDisplayString(affectedCount.value) + " " + toDisplayString(unref(t2)("mergeDialog.turnsAffected")), 1)
             ]),
@@ -38756,7 +40197,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
               modelValue: targetId.value,
               "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => targetId.value = $event)
             }, null, 8, ["field", "options", "modelValue"]),
-            createBaseVNode("div", _hoisted_3$a, [
+            createBaseVNode("div", _hoisted_3$b, [
               createVNode(Button, {
                 variant: "tertiary",
                 type: "button",
@@ -38783,9 +40224,9 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$i = "\n.merge-dialog[data-v-e797b7aa] {\n  margin: auto;\n  max-width: 420px;\n  width: 90vw;\n  padding: var(--spacing-lg);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  color: var(--color-text-primary);\n  box-shadow: 0 16px 48px color-mix(in srgb, var(--color-text-primary) 20%, transparent);\n}\n.merge-dialog[data-v-e797b7aa]::backdrop {\n  /* No backdrop-filter: a full-viewport backdrop blur is a large WebRender\n     render target; the dim background alone is enough. */\n  background-color: color-mix(in srgb, var(--color-text-primary) 35%, transparent);\n}\n.merge-dialog-form[data-v-e797b7aa] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-md);\n}\n.merge-dialog-title[data-v-e797b7aa] {\n  margin: 0;\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n}\n.merge-dialog-description[data-v-e797b7aa] {\n  margin: 0;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n.merge-dialog-actions[data-v-e797b7aa] {\n  display: flex;\n  justify-content: flex-end;\n  gap: var(--spacing-sm);\n}\n";
-  const MergeDialog = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["styles", [_style_0$i]], ["__scopeId", "data-v-e797b7aa"]]);
-  const _sfc_main$k = /* @__PURE__ */ defineComponent({
+  const _style_0$k = "\n.merge-dialog[data-v-e797b7aa] {\n  margin: auto;\n  max-width: 420px;\n  width: 90vw;\n  padding: var(--spacing-lg);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  color: var(--color-text-primary);\n  box-shadow: 0 16px 48px color-mix(in srgb, var(--color-text-primary) 20%, transparent);\n}\n.merge-dialog[data-v-e797b7aa]::backdrop {\n  /* No backdrop-filter: a full-viewport backdrop blur is a large WebRender\n     render target; the dim background alone is enough. */\n  background-color: color-mix(in srgb, var(--color-text-primary) 35%, transparent);\n}\n.merge-dialog-form[data-v-e797b7aa] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-md);\n}\n.merge-dialog-title[data-v-e797b7aa] {\n  margin: 0;\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n}\n.merge-dialog-description[data-v-e797b7aa] {\n  margin: 0;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n.merge-dialog-actions[data-v-e797b7aa] {\n  display: flex;\n  justify-content: flex-end;\n  gap: var(--spacing-sm);\n}\n";
+  const MergeDialog = /* @__PURE__ */ _export_sfc(_sfc_main$n, [["styles", [_style_0$k]], ["__scopeId", "data-v-e797b7aa"]]);
+  const _sfc_main$m = /* @__PURE__ */ defineComponent({
     __name: "ChannelSelector",
     props: {
       channels: { type: Array },
@@ -38811,7 +40252,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _sfc_main$j = /* @__PURE__ */ defineComponent({
+  const _sfc_main$l = /* @__PURE__ */ defineComponent({
     __name: "TranslationSelector",
     props: {
       translations: { type: Array },
@@ -38843,12 +40284,12 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _hoisted_1$f = { class: "speaker-sidebar" };
-  const _hoisted_2$b = {
+  const _hoisted_1$i = { class: "speaker-sidebar" };
+  const _hoisted_2$d = {
     key: 0,
     class: "sidebar-section sidebar-section--selector"
   };
-  const _hoisted_3$9 = { class: "sidebar-title" };
+  const _hoisted_3$a = { class: "sidebar-title" };
   const _hoisted_4$5 = {
     key: 1,
     class: "sidebar-section sidebar-section--selector"
@@ -38889,7 +40330,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
   };
   const _hoisted_24 = { class: "sidebar-title" };
   const _hoisted_25 = { class: "speaker-list" };
-  const _sfc_main$i = /* @__PURE__ */ defineComponent({
+  const _sfc_main$k = /* @__PURE__ */ defineComponent({
     __name: "SpeakerSidebar",
     props: {
       speakers: { type: Array },
@@ -38959,10 +40400,10 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         core.emit("llmService:selectVersion", { id: service.id, versionNumber });
       }
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("aside", _hoisted_1$f, [
-          __props.channels.length > 1 ? (openBlock(), createElementBlock("section", _hoisted_2$b, [
-            createBaseVNode("h2", _hoisted_3$9, toDisplayString(unref(t2)("sidebar.channel")), 1),
-            createVNode(_sfc_main$k, {
+        return openBlock(), createElementBlock("aside", _hoisted_1$i, [
+          __props.channels.length > 1 ? (openBlock(), createElementBlock("section", _hoisted_2$d, [
+            createBaseVNode("h2", _hoisted_3$a, toDisplayString(unref(t2)("sidebar.channel")), 1),
+            createVNode(_sfc_main$m, {
               channels: __props.channels,
               "selected-channel-id": __props.selectedChannelId,
               "onUpdate:selectedChannelId": _cache[0] || (_cache[0] = ($event) => _ctx.$emit("update:selectedChannelId", $event))
@@ -38970,7 +40411,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
           ])) : createCommentVNode("", true),
           __props.translations.length > 1 ? (openBlock(), createElementBlock("section", _hoisted_4$5, [
             createBaseVNode("h2", _hoisted_5$5, toDisplayString(unref(t2)("sidebar.translation")), 1),
-            createVNode(_sfc_main$j, {
+            createVNode(_sfc_main$l, {
               translations: __props.translations,
               "selected-translation-id": __props.selectedTranslationId,
               "onUpdate:selectedTranslationId": _cache[1] || (_cache[1] = ($event) => _ctx.$emit("update:selectedTranslationId", $event))
@@ -39099,7 +40540,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
                     "aria-label": unref(t2)("sidebar.renameSpeaker"),
                     onCommit: ($event) => onRename(speaker.id, $event)
                   }, null, 8, ["model-value", "disabled", "aria-label", "onCommit"]),
-                  canEditSpeakers.value && __props.speakers.length > 1 ? (openBlock(), createBlock(_sfc_main$m, {
+                  canEditSpeakers.value && __props.speakers.length > 1 ? (openBlock(), createBlock(_sfc_main$o, {
                     key: 0,
                     "speaker-name": speaker.name,
                     onMerge: ($event) => onOpenMerge(speaker.id)
@@ -39118,9 +40559,9 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$h = '\n.speaker-sidebar[data-v-ecd4afcf] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n  padding: var(--spacing-lg);\n  border-left: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-y: auto;\n}\n.sidebar-section[data-v-ecd4afcf] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-sm);\n}\n.sidebar-title[data-v-ecd4afcf] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-muted);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n}\n.speaker-list[data-v-ecd4afcf] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n}\n.speaker-item[data-v-ecd4afcf] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n  transition: background-color var(--transition-duration);\n}\n.speaker-item[data-v-ecd4afcf]:hover {\n  background-color: var(--color-surface-hover);\n}\n.speaker-name[data-v-ecd4afcf] {\n  flex: 1;\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-primary);\n}\n.subtitle-toggle[data-v-ecd4afcf] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n}\n.subtitle-toggle-label[data-v-ecd4afcf] {\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\n.subtitle-slider[data-v-ecd4afcf] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-sm);\n}\n.subtitle-slider-label[data-v-ecd4afcf] {\n  display: flex;\n  justify-content: space-between;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\n.subtitle-slider-value[data-v-ecd4afcf] {\n  color: var(--color-text-muted);\n  font-variant-numeric: tabular-nums;\n}\n.subtitle-slider input[type="range"][data-v-ecd4afcf] {\n  width: 100%;\n  accent-color: var(--color-primary);\n}\n.subtitle-slider input[type="range"][data-v-ecd4afcf]:disabled {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n\n/* ── History (LLM generations + versions) ──────────────────────────── */\n.sidebar-section--busy[data-v-ecd4afcf] {\n  opacity: 0.6;\n  pointer-events: none;\n}\n.history-list[data-v-ecd4afcf] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  margin: 0;\n  padding: 0;\n}\n.history-generation[data-v-ecd4afcf] {\n  display: flex;\n  flex-direction: column;\n}\n.history-generation__status--completed[data-v-ecd4afcf] {\n  color: var(--color-success, #2e7d32);\n}\n.history-generation__status--error[data-v-ecd4afcf] {\n  color: var(--color-danger, #d33);\n}\n.history-generation__status--processing[data-v-ecd4afcf],\n.history-generation__status--queued[data-v-ecd4afcf] {\n  color: var(--color-primary);\n}\n.history-version-list[data-v-ecd4afcf] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  margin: var(--spacing-xs) 0 0 var(--spacing-md);\n  padding: 0;\n  border-left: 1px solid var(--color-border);\n}\n\n/* Nudge nested version rows off the connecting border line. */\n.history-version-list[data-v-ecd4afcf] .selectable-list-item {\n  margin-left: var(--spacing-xs);\n}\n@media (max-width: 767px) {\n.speaker-sidebar[data-v-ecd4afcf] {\n    border-left: none;\n}\n.sidebar-section--selector[data-v-ecd4afcf] {\n    display: none;\n}\n}\n';
-  const SpeakerSidebar = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["styles", [_style_0$h]], ["__scopeId", "data-v-ecd4afcf"]]);
-  const _sfc_main$h = /* @__PURE__ */ defineComponent({
+  const _style_0$j = '\n.speaker-sidebar[data-v-ecd4afcf] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n  padding: var(--spacing-lg);\n  border-left: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-y: auto;\n}\n.sidebar-section[data-v-ecd4afcf] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-sm);\n}\n.sidebar-title[data-v-ecd4afcf] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-muted);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n}\n.speaker-list[data-v-ecd4afcf] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n}\n.speaker-item[data-v-ecd4afcf] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n  transition: background-color var(--transition-duration);\n}\n.speaker-item[data-v-ecd4afcf]:hover {\n  background-color: var(--color-surface-hover);\n}\n.speaker-name[data-v-ecd4afcf] {\n  flex: 1;\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-primary);\n}\n.subtitle-toggle[data-v-ecd4afcf] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n}\n.subtitle-toggle-label[data-v-ecd4afcf] {\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\n.subtitle-slider[data-v-ecd4afcf] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-sm);\n}\n.subtitle-slider-label[data-v-ecd4afcf] {\n  display: flex;\n  justify-content: space-between;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\n.subtitle-slider-value[data-v-ecd4afcf] {\n  color: var(--color-text-muted);\n  font-variant-numeric: tabular-nums;\n}\n.subtitle-slider input[type="range"][data-v-ecd4afcf] {\n  width: 100%;\n  accent-color: var(--color-primary);\n}\n.subtitle-slider input[type="range"][data-v-ecd4afcf]:disabled {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n\n/* ── History (LLM generations + versions) ──────────────────────────── */\n.sidebar-section--busy[data-v-ecd4afcf] {\n  opacity: 0.6;\n  pointer-events: none;\n}\n.history-list[data-v-ecd4afcf] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  margin: 0;\n  padding: 0;\n}\n.history-generation[data-v-ecd4afcf] {\n  display: flex;\n  flex-direction: column;\n}\n.history-generation__status--completed[data-v-ecd4afcf] {\n  color: var(--color-success, #2e7d32);\n}\n.history-generation__status--error[data-v-ecd4afcf] {\n  color: var(--color-danger, #d33);\n}\n.history-generation__status--processing[data-v-ecd4afcf],\n.history-generation__status--queued[data-v-ecd4afcf] {\n  color: var(--color-primary);\n}\n.history-version-list[data-v-ecd4afcf] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  margin: var(--spacing-xs) 0 0 var(--spacing-md);\n  padding: 0;\n  border-left: 1px solid var(--color-border);\n}\n\n/* Nudge nested version rows off the connecting border line. */\n.history-version-list[data-v-ecd4afcf] .selectable-list-item {\n  margin-left: var(--spacing-xs);\n}\n@media (max-width: 767px) {\n.speaker-sidebar[data-v-ecd4afcf] {\n    border-left: none;\n}\n.sidebar-section--selector[data-v-ecd4afcf] {\n    display: none;\n}\n}\n';
+  const SpeakerSidebar = /* @__PURE__ */ _export_sfc(_sfc_main$k, [["styles", [_style_0$j]], ["__scopeId", "data-v-ecd4afcf"]]);
+  const _sfc_main$j = /* @__PURE__ */ defineComponent({
     __name: "SidebarDrawer",
     props: {
       "open": { type: Boolean, ...{ required: true } },
@@ -39169,14 +40610,14 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _hoisted_1$e = { class: "player-controls" };
-  const _hoisted_2$a = { class: "controls-left" };
-  const _hoisted_3$8 = { class: "controls-time" };
+  const _hoisted_1$h = { class: "player-controls" };
+  const _hoisted_2$c = { class: "controls-left" };
+  const _hoisted_3$9 = { class: "controls-time" };
   const _hoisted_4$4 = { class: "time-display" };
   const _hoisted_5$4 = { class: "time-display" };
   const _hoisted_6$3 = { class: "controls-right" };
   const _hoisted_7 = ["value", "aria-label", "disabled"];
-  const _sfc_main$g = /* @__PURE__ */ defineComponent({
+  const _sfc_main$i = /* @__PURE__ */ defineComponent({
     __name: "AudioPlayerControls",
     props: {
       isPlaying: { type: Boolean },
@@ -39197,8 +40638,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         emit2("update:volume", parseFloat(target.value));
       }
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$e, [
-          createBaseVNode("div", _hoisted_2$a, [
+        return openBlock(), createElementBlock("div", _hoisted_1$h, [
+          createBaseVNode("div", _hoisted_2$c, [
             createVNode(Button, {
               variant: "transparent",
               size: "md",
@@ -39245,7 +40686,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
               _: 1
             }, 8, ["aria-label", "disabled"])
           ]),
-          createBaseVNode("div", _hoisted_3$8, [
+          createBaseVNode("div", _hoisted_3$9, [
             createBaseVNode("time", _hoisted_4$4, toDisplayString(__props.currentTime), 1),
             _cache[7] || (_cache[7] = createBaseVNode("span", { class: "time-separator" }, "/", -1)),
             createBaseVNode("time", _hoisted_5$4, toDisplayString(__props.duration), 1)
@@ -39306,8 +40747,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$g = "\n.player-controls[data-v-99f700b1] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xs) var(--spacing-lg);\n  height: 44px;\n}\n.controls-left[data-v-99f700b1] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n}\n.controls-time[data-v-99f700b1] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xxs);\n  font-family: var(--font-family-mono);\n  font-size: var(--font-size-sm);\n  color: var(--color-text-muted);\n  user-select: none;\n}\n.time-separator[data-v-99f700b1] {\n  color: var(--color-text-muted);\n  opacity: 0.5;\n}\n.controls-right[data-v-99f700b1] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  margin-left: auto;\n}\n.volume-group[data-v-99f700b1] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n}\n.volume-slider[data-v-99f700b1] {\n  width: 80px;\n  height: 4px;\n  accent-color: var(--color-primary);\n  cursor: pointer;\n}\n.volume-slider[data-v-99f700b1]:disabled {\n  opacity: 0.5;\n  cursor: default;\n}\n.play-button[data-v-99f700b1] {\n  width: 40px;\n  height: 40px;\n}\n.speed-button[data-v-99f700b1] {\n  font-size: var(--font-size-sm);\n  font-family: var(--font-family-mono);\n}\n@media (max-width: 767px) {\n.skip-button[data-v-99f700b1] {\n    display: none;\n}\n.volume-slider[data-v-99f700b1] {\n    display: none;\n}\n.player-controls[data-v-99f700b1] {\n    padding: var(--spacing-xs) var(--spacing-md);\n    gap: var(--spacing-sm);\n}\n}\n";
-  const AudioPlayerControls = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["styles", [_style_0$g]], ["__scopeId", "data-v-99f700b1"]]);
+  const _style_0$i = "\n.player-controls[data-v-99f700b1] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xs) var(--spacing-lg);\n  height: 44px;\n}\n.controls-left[data-v-99f700b1] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n}\n.controls-time[data-v-99f700b1] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xxs);\n  font-family: var(--font-family-mono);\n  font-size: var(--font-size-sm);\n  color: var(--color-text-muted);\n  user-select: none;\n}\n.time-separator[data-v-99f700b1] {\n  color: var(--color-text-muted);\n  opacity: 0.5;\n}\n.controls-right[data-v-99f700b1] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  margin-left: auto;\n}\n.volume-group[data-v-99f700b1] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n}\n.volume-slider[data-v-99f700b1] {\n  width: 80px;\n  height: 4px;\n  accent-color: var(--color-primary);\n  cursor: pointer;\n}\n.volume-slider[data-v-99f700b1]:disabled {\n  opacity: 0.5;\n  cursor: default;\n}\n.play-button[data-v-99f700b1] {\n  width: 40px;\n  height: 40px;\n}\n.speed-button[data-v-99f700b1] {\n  font-size: var(--font-size-sm);\n  font-family: var(--font-family-mono);\n}\n@media (max-width: 767px) {\n.skip-button[data-v-99f700b1] {\n    display: none;\n}\n.volume-slider[data-v-99f700b1] {\n    display: none;\n}\n.player-controls[data-v-99f700b1] {\n    padding: var(--spacing-xs) var(--spacing-md);\n    gap: var(--spacing-sm);\n}\n}\n";
+  const AudioPlayerControls = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["styles", [_style_0$i]], ["__scopeId", "data-v-99f700b1"]]);
   function t$1(t2, e2, i2, n2) {
     return new (i2 || (i2 = Promise))((function(s2, r2) {
       function o2(t3) {
@@ -41176,8 +42617,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       toggleMute
     };
   }
-  const _hoisted_1$d = { class: "audio-player" };
-  const _sfc_main$f = /* @__PURE__ */ defineComponent({
+  const _hoisted_1$g = { class: "audio-player" };
+  const _sfc_main$h = /* @__PURE__ */ defineComponent({
     __name: "AudioPlayer",
     props: {
       audioSrc: { type: String }
@@ -41207,7 +42648,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       });
       __expose({ seekTo, pause });
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("footer", _hoisted_1$d, [
+        return openBlock(), createElementBlock("footer", _hoisted_1$g, [
           createBaseVNode("div", {
             ref_key: "waveformRef",
             ref: waveformRef,
@@ -41232,8 +42673,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$f = "\n.audio-player[data-v-810ae1d6] {\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.waveform-container[data-v-810ae1d6] {\n  min-height: 32px;\n}\n.waveform-container--loading[data-v-810ae1d6] {\n  background: linear-gradient(\n    90deg,\n    var(--color-border-light, var(--color-border)) 25%,\n    var(--color-border) 50%,\n    var(--color-border-light, var(--color-border)) 75%\n  );\n  background-size: 200% 100%;\n  animation: shimmer-810ae1d6 1.5s ease-in-out infinite;\n  border-radius: var(--radius-sm);\n}\n@keyframes shimmer-810ae1d6 {\n0% {\n    background-position: 200% 0;\n}\n100% {\n    background-position: -200% 0;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.waveform-container--loading[data-v-810ae1d6] {\n    animation: none;\n}\n}\n";
-  const AudioPlayer = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["styles", [_style_0$f]], ["__scopeId", "data-v-810ae1d6"]]);
+  const _style_0$h = "\n.audio-player[data-v-810ae1d6] {\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.waveform-container[data-v-810ae1d6] {\n  min-height: 32px;\n}\n.waveform-container--loading[data-v-810ae1d6] {\n  background: linear-gradient(\n    90deg,\n    var(--color-border-light, var(--color-border)) 25%,\n    var(--color-border) 50%,\n    var(--color-border-light, var(--color-border)) 75%\n  );\n  background-size: 200% 100%;\n  animation: shimmer-810ae1d6 1.5s ease-in-out infinite;\n  border-radius: var(--radius-sm);\n}\n@keyframes shimmer-810ae1d6 {\n0% {\n    background-position: 200% 0;\n}\n100% {\n    background-position: -200% 0;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.waveform-container--loading[data-v-810ae1d6] {\n    animation: none;\n}\n}\n";
+  const AudioPlayer = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["styles", [_style_0$h]], ["__scopeId", "data-v-810ae1d6"]]);
   class Diff {
     diff(oldStr, newStr, options = {}) {
       let callback;
@@ -41540,9 +42981,9 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
   function incrementIndexes(indexes, from2, increment) {
     return indexes.map((index) => index >= from2 ? index + increment : index);
   }
-  function getIndexesWhereToCutText(text, computeIfTextIsTooLong) {
-    const splitText = text.split(" ");
-    if (!computeIfTextIsTooLong(text) || splitText.length <= 1) {
+  function getIndexesWhereToCutText(text2, computeIfTextIsTooLong) {
+    const splitText = text2.split(" ");
+    if (!computeIfTextIsTooLong(text2) || splitText.length <= 1) {
       return [];
     }
     let i2;
@@ -41618,17 +43059,17 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       const ctx = this.canvas.getContext("2d");
       ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
-    drawText(text, x2, y2) {
+    drawText(text2, x2, y2) {
       const ctx = this.canvas.getContext("2d");
       ctx.font = `${this.fontSize}px ${this.font}`;
       ctx.fillStyle = this.color;
-      ctx.fillText(text, x2 + this.paddingInline, y2);
+      ctx.fillText(text2, x2 + this.paddingInline, y2);
     }
-    drawFirstLine(text) {
-      this.drawText(text, 0, this.fontSize);
+    drawFirstLine(text2) {
+      this.drawText(text2, 0, this.fontSize);
     }
-    drawSecondLine(text) {
-      this.drawText(text, 0, this.fontSize + this.lineHeight);
+    drawSecondLine(text2) {
+      this.drawText(text2, 0, this.fontSize + this.lineHeight);
     }
     onResize() {
     }
@@ -41653,20 +43094,20 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       );
       this.draw();
     }
-    newPartial(text) {
+    newPartial(text2) {
       if (this.isResizing) return;
       this.currentState = splitPartialSubtitles(
         this.currentState,
-        text.trim(),
+        text2.trim(),
         this.computeIfTextIsTooLong.bind(this)
       );
       this.draw();
     }
-    newFinal(text) {
+    newFinal(text2) {
       if (this.isResizing) return;
       this.currentState = splitPartialSubtitles(
         this.currentState,
-        text.trim(),
+        text2.trim(),
         this.computeIfTextIsTooLong.bind(this)
       );
       this.draw();
@@ -41707,11 +43148,11 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       }
       return state.previousText.split(" ").slice(beforeLastIndex, lastIndex).join(" ");
     }
-    computeIfTextIsTooLong(text) {
+    computeIfTextIsTooLong(text2) {
       const ctx = this.canvas.getContext("2d");
       ctx.font = `${this.fontSize}px ${this.font}`;
       const maxWidth = this.canvas.width - 2 * this.paddingInline;
-      const width = ctx.measureText(text).width;
+      const width = ctx.measureText(text2).width;
       return width > maxWidth;
     }
   }
@@ -41731,14 +43172,14 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     });
     watch(
       () => core.live?.partial.value,
-      (text) => {
-        if (text && scroller) scroller.newPartial(text);
+      (text2) => {
+        if (text2 && scroller) scroller.newPartial(text2);
       }
     );
     const unsubTurnAdd = core.onActiveTranslation("turn:add", ({ turn }) => {
       if (!scroller) return;
-      const text = turn.words.length > 0 ? turn.words.map((w2) => w2.text).join(" ") : turn.text ?? "";
-      if (text) scroller.newFinal(text);
+      const text2 = turn.words.length > 0 ? turn.words.map((w2) => w2.text).join(" ") : turn.text ?? "";
+      if (text2) scroller.newFinal(text2);
     });
     function resetScroller() {
       if (!scroller) return;
@@ -41830,14 +43271,14 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     }
     return parts;
   }
-  const _hoisted_1$c = {
+  const _hoisted_1$f = {
     key: 0,
     class: "watermark",
     "aria-hidden": "true"
   };
-  const _hoisted_2$9 = ["src", "alt"];
-  const _hoisted_3$7 = { key: 1 };
-  const _sfc_main$e = /* @__PURE__ */ defineComponent({
+  const _hoisted_2$b = ["src", "alt"];
+  const _hoisted_3$8 = { key: 1 };
+  const _sfc_main$g = /* @__PURE__ */ defineComponent({
     __name: "SubtitleWatermark",
     props: {
       visible: { type: Boolean }
@@ -41852,7 +43293,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       return (_ctx, _cache) => {
         return openBlock(), createBlock(Transition, { name: "watermark" }, {
           default: withCtx(() => [
-            __props.visible && unref(watermark) ? (openBlock(), createElementBlock("div", _hoisted_1$c, [
+            __props.visible && unref(watermark) ? (openBlock(), createElementBlock("div", _hoisted_1$f, [
               (openBlock(true), createElementBlock(Fragment$1, null, renderList(parts.value, (part, i2) => {
                 return openBlock(), createElementBlock(Fragment$1, { key: i2 }, [
                   part.type === "token" ? (openBlock(), createElementBlock("img", {
@@ -41860,7 +43301,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
                     src: part.src,
                     alt: part.alt,
                     class: "watermark__img"
-                  }, null, 8, _hoisted_2$9)) : (openBlock(), createElementBlock("span", _hoisted_3$7, toDisplayString(part.value), 1))
+                  }, null, 8, _hoisted_2$b)) : (openBlock(), createElementBlock("span", _hoisted_3$8, toDisplayString(part.value), 1))
                 ], 64);
               }), 128))
             ])) : createCommentVNode("", true)
@@ -41870,10 +43311,10 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$e = "\n.watermark[data-v-b8c2ff2b] {\n  position: absolute;\n  right: var(--spacing-md, 16px);\n  bottom: 4px;\n  display: inline-flex;\n  align-items: center;\n  gap: 0.25em;\n  font-size: 1.2rem;\n  color: var(--color-white, #fff);\n  pointer-events: none;\n  line-height: 1;\n}\n.watermark__img[data-v-b8c2ff2b] {\n  height: 1em;\n  vertical-align: middle;\n}\n.watermark-enter-active[data-v-b8c2ff2b],\n.watermark-leave-active[data-v-b8c2ff2b] {\n  transition:\n    opacity 0.4s ease,\n    transform 0.4s ease;\n}\n.watermark-enter-from[data-v-b8c2ff2b],\n.watermark-leave-to[data-v-b8c2ff2b] {\n  opacity: 0;\n  transform: translate(6px, 6px);\n}\n@media (prefers-reduced-motion: reduce) {\n.watermark-enter-active[data-v-b8c2ff2b],\n  .watermark-leave-active[data-v-b8c2ff2b] {\n    transition: opacity 0.01s;\n    transform: none;\n}\n}\n";
-  const SubtitleWatermark = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["styles", [_style_0$e]], ["__scopeId", "data-v-b8c2ff2b"]]);
-  const _hoisted_1$b = ["height"];
-  const _sfc_main$d = /* @__PURE__ */ defineComponent({
+  const _style_0$g = "\n.watermark[data-v-b8c2ff2b] {\n  position: absolute;\n  right: var(--spacing-md, 16px);\n  bottom: 4px;\n  display: inline-flex;\n  align-items: center;\n  gap: 0.25em;\n  font-size: 1.2rem;\n  color: var(--color-white, #fff);\n  pointer-events: none;\n  line-height: 1;\n}\n.watermark__img[data-v-b8c2ff2b] {\n  height: 1em;\n  vertical-align: middle;\n}\n.watermark-enter-active[data-v-b8c2ff2b],\n.watermark-leave-active[data-v-b8c2ff2b] {\n  transition:\n    opacity 0.4s ease,\n    transform 0.4s ease;\n}\n.watermark-enter-from[data-v-b8c2ff2b],\n.watermark-leave-to[data-v-b8c2ff2b] {\n  opacity: 0;\n  transform: translate(6px, 6px);\n}\n@media (prefers-reduced-motion: reduce) {\n.watermark-enter-active[data-v-b8c2ff2b],\n  .watermark-leave-active[data-v-b8c2ff2b] {\n    transition: opacity 0.01s;\n    transform: none;\n}\n}\n";
+  const SubtitleWatermark = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["styles", [_style_0$g]], ["__scopeId", "data-v-b8c2ff2b"]]);
+  const _hoisted_1$e = ["height"];
+  const _sfc_main$f = /* @__PURE__ */ defineComponent({
     __name: "SubtitleBanner",
     setup(__props) {
       const core = useCore();
@@ -41907,20 +43348,20 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
             ref: "canvas",
             class: normalizeClass(["subtitle-canvas", { "subtitle-canvas--shrunk": unref(watermarkVisible) }]),
             height: canvasHeight.value
-          }, null, 10, _hoisted_1$b),
+          }, null, 10, _hoisted_1$e),
           createVNode(SubtitleWatermark, { visible: unref(watermarkVisible) }, null, 8, ["visible"])
         ], 4);
       };
     }
   });
-  const _style_0$d = "\n.subtitle-banner[data-v-1baa0a4a] {\n  position: fixed;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  flex-shrink: 0;\n  background-color: var(--color-black);\n  overflow: hidden;\n  z-index: 1001;\n}\n.subtitle-canvas[data-v-1baa0a4a] {\n  display: block;\n  width: 100%;\n  height: 100%;\n  transition: transform 0.4s ease;\n  transform-origin: top center;\n}\n.subtitle-canvas--shrunk[data-v-1baa0a4a] {\n  transform: scale(0.8) translateY(-8%);\n}\n@media (prefers-reduced-motion: reduce) {\n.subtitle-canvas[data-v-1baa0a4a] {\n    transition: none;\n}\n}\n";
-  const SubtitleBanner = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["styles", [_style_0$d]], ["__scopeId", "data-v-1baa0a4a"]]);
-  const _hoisted_1$a = {
+  const _style_0$f = "\n.subtitle-banner[data-v-1baa0a4a] {\n  position: fixed;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  flex-shrink: 0;\n  background-color: var(--color-black);\n  overflow: hidden;\n  z-index: 1001;\n}\n.subtitle-canvas[data-v-1baa0a4a] {\n  display: block;\n  width: 100%;\n  height: 100%;\n  transition: transform 0.4s ease;\n  transform-origin: top center;\n}\n.subtitle-canvas--shrunk[data-v-1baa0a4a] {\n  transform: scale(0.8) translateY(-8%);\n}\n@media (prefers-reduced-motion: reduce) {\n.subtitle-canvas[data-v-1baa0a4a] {\n    transition: none;\n}\n}\n";
+  const SubtitleBanner = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["styles", [_style_0$f]], ["__scopeId", "data-v-1baa0a4a"]]);
+  const _hoisted_1$d = {
     ref: "container",
     class: "subtitle-fullscreen"
   };
-  const _hoisted_2$8 = ["aria-label"];
-  const _sfc_main$c = /* @__PURE__ */ defineComponent({
+  const _hoisted_2$a = ["aria-label"];
+  const _sfc_main$e = /* @__PURE__ */ defineComponent({
     __name: "SubtitleFullscreen",
     setup(__props) {
       const core = useCore();
@@ -41978,14 +43419,14 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         }
       });
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$a, [
+        return openBlock(), createElementBlock("div", _hoisted_1$d, [
           createBaseVNode("button", {
             class: "subtitle-fullscreen__close",
             "aria-label": unref(t2)("subtitle.exitFullscreen"),
             onClick: close2
           }, [
             createVNode(unref(X$1), { size: 24 })
-          ], 8, _hoisted_2$8),
+          ], 8, _hoisted_2$a),
           createBaseVNode("canvas", {
             ref: "canvas",
             class: normalizeClass(["subtitle-fullscreen__canvas", { "subtitle-fullscreen__canvas--shrunk": unref(watermarkVisible) }])
@@ -41995,18 +43436,18 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$c = "\n.subtitle-fullscreen[data-v-e3ae14e0] {\n  position: relative;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 100%;\n  height: 100%;\n  background-color: var(--color-black);\n}\n.subtitle-fullscreen__close[data-v-e3ae14e0] {\n  position: absolute;\n  top: var(--spacing-md, 16px);\n  right: var(--spacing-md, 16px);\n  z-index: 1;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 40px;\n  height: 40px;\n  border: none;\n  background: rgba(255, 255, 255, 0.1);\n  color: var(--color-white);\n  border-radius: var(--radius-md, 8px);\n  cursor: pointer;\n  transition: background-color var(--transition-duration) ease;\n}\n.subtitle-fullscreen__close[data-v-e3ae14e0]:hover,\n.subtitle-fullscreen__close[data-v-e3ae14e0]:focus-visible {\n  background: rgba(255, 255, 255, 0.25);\n  outline: 2px solid rgba(255, 255, 255, 0.5);\n  outline-offset: 2px;\n}\n.subtitle-fullscreen__canvas[data-v-e3ae14e0] {\n  display: block;\n  width: 100%;\n  height: 100%;\n  transition: transform 0.4s ease;\n  transform-origin: center;\n}\n.subtitle-fullscreen__canvas--shrunk[data-v-e3ae14e0] {\n  transform: scale(0.85) translateY(-4%);\n}\n@media (prefers-reduced-motion: reduce) {\n.subtitle-fullscreen__close[data-v-e3ae14e0],\n  .subtitle-fullscreen__canvas[data-v-e3ae14e0] {\n    transition: none;\n}\n}\n";
-  const SubtitleFullscreen = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["styles", [_style_0$c]], ["__scopeId", "data-v-e3ae14e0"]]);
-  const _hoisted_1$9 = ["aria-label"];
-  const _hoisted_2$7 = { class: "chat-session-list__header" };
-  const _hoisted_3$6 = { class: "chat-session-list__title" };
+  const _style_0$e = "\n.subtitle-fullscreen[data-v-e3ae14e0] {\n  position: relative;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 100%;\n  height: 100%;\n  background-color: var(--color-black);\n}\n.subtitle-fullscreen__close[data-v-e3ae14e0] {\n  position: absolute;\n  top: var(--spacing-md, 16px);\n  right: var(--spacing-md, 16px);\n  z-index: 1;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 40px;\n  height: 40px;\n  border: none;\n  background: rgba(255, 255, 255, 0.1);\n  color: var(--color-white);\n  border-radius: var(--radius-md, 8px);\n  cursor: pointer;\n  transition: background-color var(--transition-duration) ease;\n}\n.subtitle-fullscreen__close[data-v-e3ae14e0]:hover,\n.subtitle-fullscreen__close[data-v-e3ae14e0]:focus-visible {\n  background: rgba(255, 255, 255, 0.25);\n  outline: 2px solid rgba(255, 255, 255, 0.5);\n  outline-offset: 2px;\n}\n.subtitle-fullscreen__canvas[data-v-e3ae14e0] {\n  display: block;\n  width: 100%;\n  height: 100%;\n  transition: transform 0.4s ease;\n  transform-origin: center;\n}\n.subtitle-fullscreen__canvas--shrunk[data-v-e3ae14e0] {\n  transform: scale(0.85) translateY(-4%);\n}\n@media (prefers-reduced-motion: reduce) {\n.subtitle-fullscreen__close[data-v-e3ae14e0],\n  .subtitle-fullscreen__canvas[data-v-e3ae14e0] {\n    transition: none;\n}\n}\n";
+  const SubtitleFullscreen = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["styles", [_style_0$e]], ["__scopeId", "data-v-e3ae14e0"]]);
+  const _hoisted_1$c = ["aria-label"];
+  const _hoisted_2$9 = { class: "chat-session-list__header" };
+  const _hoisted_3$7 = { class: "chat-session-list__title" };
   const _hoisted_4$3 = { class: "chat-session-list__items" };
   const _hoisted_5$3 = {
     key: 1,
     class: "chat-session-confirm"
   };
   const _hoisted_6$2 = { class: "chat-session-confirm__text" };
-  const _sfc_main$b = /* @__PURE__ */ defineComponent({
+  const _sfc_main$d = /* @__PURE__ */ defineComponent({
     __name: "ChatSessionList",
     props: {
       sessions: { type: Array },
@@ -42061,8 +43502,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
           class: "chat-session-list",
           "aria-label": unref(t2)("chat.history")
         }, [
-          createBaseVNode("header", _hoisted_2$7, [
-            createBaseVNode("h3", _hoisted_3$6, toDisplayString(unref(t2)("chat.history")), 1),
+          createBaseVNode("header", _hoisted_2$9, [
+            createBaseVNode("h3", _hoisted_3$7, toDisplayString(unref(t2)("chat.history")), 1),
             createVNode(Button, {
               icon: "plus",
               variant: "transparent",
@@ -42133,40 +43574,37 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
               ]);
             }), 128))
           ])
-        ], 8, _hoisted_1$9);
+        ], 8, _hoisted_1$c);
       };
     }
   });
-  const _style_0$b = "\n.chat-session-list[data-v-09ff9dcb] {\n  width: 200px;\n  flex-shrink: 0;\n  display: flex;\n  flex-direction: column;\n  border-right: 1px solid var(--color-border);\n  background-color: var(--color-surface-hover);\n}\n.chat-session-list__header[data-v-09ff9dcb] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-sm) var(--spacing-md);\n}\n.chat-session-list__title[data-v-09ff9dcb] {\n  margin: 0;\n  font-size: var(--font-size-xs);\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-muted);\n}\n.chat-session-list__items[data-v-09ff9dcb] {\n  flex: 1;\n  margin: 0;\n  padding: 0;\n  list-style: none;\n  overflow-y: auto;\n}\n\n/* Delete confirmation row */\n.chat-session-confirm[data-v-09ff9dcb] {\n  display: flex;\n  align-items: center;\n  gap: 2px;\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.chat-session-confirm__text[data-v-09ff9dcb] {\n  flex: 1;\n  min-width: 0;\n  font-size: var(--font-size-xs);\n  color: var(--color-danger);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n";
-  const ChatSessionList = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["styles", [_style_0$b]], ["__scopeId", "data-v-09ff9dcb"]]);
-  const _hoisted_1$8 = ["innerHTML"];
-  const _sfc_main$a = /* @__PURE__ */ defineComponent({
+  const _style_0$d = "\n.chat-session-list[data-v-09ff9dcb] {\n  width: 200px;\n  flex-shrink: 0;\n  display: flex;\n  flex-direction: column;\n  border-right: 1px solid var(--color-border);\n  background-color: var(--color-surface-hover);\n}\n.chat-session-list__header[data-v-09ff9dcb] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-sm) var(--spacing-md);\n}\n.chat-session-list__title[data-v-09ff9dcb] {\n  margin: 0;\n  font-size: var(--font-size-xs);\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-muted);\n}\n.chat-session-list__items[data-v-09ff9dcb] {\n  flex: 1;\n  margin: 0;\n  padding: 0;\n  list-style: none;\n  overflow-y: auto;\n}\n\n/* Delete confirmation row */\n.chat-session-confirm[data-v-09ff9dcb] {\n  display: flex;\n  align-items: center;\n  gap: 2px;\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.chat-session-confirm__text[data-v-09ff9dcb] {\n  flex: 1;\n  min-width: 0;\n  font-size: var(--font-size-xs);\n  color: var(--color-danger);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n";
+  const ChatSessionList = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["styles", [_style_0$d]], ["__scopeId", "data-v-09ff9dcb"]]);
+  const _hoisted_1$b = ["innerHTML"];
+  const _sfc_main$c = /* @__PURE__ */ defineComponent({
     __name: "MarkdownView",
     props: {
       source: { type: String }
     },
     setup(__props) {
       const props = __props;
-      const html = computed(() => {
-        if (!props.source) return "";
-        return g$1.parse(props.source, { async: false });
-      });
+      const html2 = computed(() => renderMarkdown(props.source));
       return (_ctx, _cache) => {
         return openBlock(), createElementBlock("div", {
           class: "markdown-view",
-          innerHTML: html.value
-        }, null, 8, _hoisted_1$8);
+          innerHTML: html2.value
+        }, null, 8, _hoisted_1$b);
       };
     }
   });
-  const _style_0$a = "\n.markdown-view[data-v-d5b7846c] {\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.markdown-view[data-v-d5b7846c] h1,\n.markdown-view[data-v-d5b7846c] h2,\n.markdown-view[data-v-d5b7846c] h3,\n.markdown-view[data-v-d5b7846c] h4 {\n  margin: var(--spacing-lg) 0 var(--spacing-sm);\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.markdown-view[data-v-d5b7846c] h1 {\n  font-size: var(--font-size-xl);\n}\n.markdown-view[data-v-d5b7846c] h2 {\n  font-size: var(--font-size-lg);\n}\n.markdown-view[data-v-d5b7846c] h3 {\n  font-size: var(--font-size-base);\n}\n.markdown-view[data-v-d5b7846c] h4 {\n  font-size: var(--font-size-sm);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-secondary);\n}\n.markdown-view[data-v-d5b7846c] p {\n  margin: 0 0 var(--spacing-md);\n}\n.markdown-view[data-v-d5b7846c] ul,\n.markdown-view[data-v-d5b7846c] ol {\n  margin: 0 0 var(--spacing-md);\n  padding-left: var(--spacing-lg);\n}\n.markdown-view[data-v-d5b7846c] li {\n  margin: var(--spacing-xs) 0;\n}\n.markdown-view[data-v-d5b7846c] blockquote {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-left: 3px solid var(--color-border);\n  color: var(--color-text-secondary);\n  font-style: italic;\n}\n.markdown-view[data-v-d5b7846c] code {\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n  padding: 1px 4px;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-sm);\n}\n.markdown-view[data-v-d5b7846c] pre {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n}\n.markdown-view[data-v-d5b7846c] pre code {\n  padding: 0;\n  background: none;\n}\n.markdown-view[data-v-d5b7846c] a {\n  color: var(--color-primary);\n  text-decoration: underline;\n}\n.markdown-view[data-v-d5b7846c] hr {\n  border: 0;\n  border-top: 1px solid var(--color-border);\n  margin: var(--spacing-lg) 0;\n}\n.markdown-view[data-v-d5b7846c] strong {\n  font-weight: 700;\n}\n.markdown-view[data-v-d5b7846c] table {\n  border-collapse: collapse;\n  margin: var(--spacing-md) 0;\n}\n.markdown-view[data-v-d5b7846c] th,\n.markdown-view[data-v-d5b7846c] td {\n  border: 1px solid var(--color-border);\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.markdown-view[data-v-d5b7846c] th {\n  background-color: var(--color-surface);\n  font-weight: 600;\n}\n";
-  const MarkdownView = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["styles", [_style_0$a]], ["__scopeId", "data-v-d5b7846c"]]);
-  const _hoisted_1$7 = {
+  const _style_0$c = "\n.markdown-view[data-v-3e3107e6] {\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.markdown-view[data-v-3e3107e6] h1,\n.markdown-view[data-v-3e3107e6] h2,\n.markdown-view[data-v-3e3107e6] h3,\n.markdown-view[data-v-3e3107e6] h4 {\n  margin: var(--spacing-lg) 0 var(--spacing-sm);\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.markdown-view[data-v-3e3107e6] h1 {\n  font-size: var(--font-size-xl);\n}\n.markdown-view[data-v-3e3107e6] h2 {\n  font-size: var(--font-size-lg);\n}\n.markdown-view[data-v-3e3107e6] h3 {\n  font-size: var(--font-size-base);\n}\n.markdown-view[data-v-3e3107e6] h4 {\n  font-size: var(--font-size-sm);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-secondary);\n}\n.markdown-view[data-v-3e3107e6] p {\n  margin: 0 0 var(--spacing-md);\n}\n.markdown-view[data-v-3e3107e6] ul,\n.markdown-view[data-v-3e3107e6] ol {\n  margin: 0 0 var(--spacing-md);\n  padding-left: var(--spacing-lg);\n}\n.markdown-view[data-v-3e3107e6] li {\n  margin: var(--spacing-xs) 0;\n}\n.markdown-view[data-v-3e3107e6] blockquote {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-left: 3px solid var(--color-border);\n  color: var(--color-text-secondary);\n  font-style: italic;\n}\n.markdown-view[data-v-3e3107e6] code {\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n  padding: 1px 4px;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-sm);\n}\n.markdown-view[data-v-3e3107e6] pre {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n}\n.markdown-view[data-v-3e3107e6] pre code {\n  padding: 0;\n  background: none;\n}\n.markdown-view[data-v-3e3107e6] a {\n  color: var(--color-primary);\n  text-decoration: underline;\n}\n.markdown-view[data-v-3e3107e6] hr {\n  border: 0;\n  border-top: 1px solid var(--color-border);\n  margin: var(--spacing-lg) 0;\n}\n.markdown-view[data-v-3e3107e6] strong {\n  font-weight: 700;\n}\n.markdown-view[data-v-3e3107e6] table {\n  border-collapse: collapse;\n  margin: var(--spacing-md) 0;\n}\n.markdown-view[data-v-3e3107e6] th,\n.markdown-view[data-v-3e3107e6] td {\n  border: 1px solid var(--color-border);\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.markdown-view[data-v-3e3107e6] th {\n  background-color: var(--color-surface);\n  font-weight: 600;\n}\n";
+  const MarkdownView = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["styles", [_style_0$c]], ["__scopeId", "data-v-3e3107e6"]]);
+  const _hoisted_1$a = {
     key: 0,
     class: "chat-message chat-message--user"
   };
-  const _hoisted_2$6 = { class: "chat-message__bubble" };
-  const _hoisted_3$5 = {
+  const _hoisted_2$8 = { class: "chat-message__bubble" };
+  const _hoisted_3$6 = {
     key: 1,
     class: "chat-message chat-message--assistant"
   };
@@ -42180,16 +43618,16 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     class: "chat-message__typing",
     "aria-hidden": "true"
   };
-  const _sfc_main$9 = /* @__PURE__ */ defineComponent({
+  const _sfc_main$b = /* @__PURE__ */ defineComponent({
     __name: "ChatMessage",
     props: {
       message: { type: Object }
     },
     setup(__props) {
       return (_ctx, _cache) => {
-        return __props.message.role === "user" ? (openBlock(), createElementBlock("div", _hoisted_1$7, [
-          createBaseVNode("div", _hoisted_2$6, toDisplayString(__props.message.content), 1)
-        ])) : (openBlock(), createElementBlock("div", _hoisted_3$5, [
+        return __props.message.role === "user" ? (openBlock(), createElementBlock("div", _hoisted_1$a, [
+          createBaseVNode("div", _hoisted_2$8, toDisplayString(__props.message.content), 1)
+        ])) : (openBlock(), createElementBlock("div", _hoisted_3$6, [
           createBaseVNode("span", _hoisted_4$2, [
             createVNode(EditorIcon, {
               name: "sparkles",
@@ -42211,15 +43649,15 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$9 = "\n.chat-message[data-v-8c489bfe] {\n  display: flex;\n}\n\n/* ── User ── */\n.chat-message--user[data-v-8c489bfe] {\n  justify-content: flex-end;\n}\n.chat-message__bubble[data-v-8c489bfe] {\n  max-width: 80%;\n  padding: var(--spacing-sm) var(--spacing-md);\n  background-color: var(--color-primary);\n  color: var(--color-white);\n  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-sm)\n    var(--radius-lg);\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  white-space: pre-wrap;\n  word-break: break-word;\n}\n\n/* ── Assistant ── */\n.chat-message--assistant[data-v-8c489bfe] {\n  gap: var(--spacing-sm);\n  align-items: flex-start;\n}\n.chat-message__marker[data-v-8c489bfe] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  flex-shrink: 0;\n  width: 24px;\n  height: 24px;\n  margin-top: 2px;\n  border-radius: var(--radius-md);\n  color: var(--color-primary);\n  background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);\n}\n.chat-message__body[data-v-8c489bfe] {\n  min-width: 0;\n  flex: 1;\n}\n.chat-message__body[data-v-8c489bfe] .markdown-view {\n  font-size: var(--font-size-sm);\n}\n.chat-message__body[data-v-8c489bfe] .markdown-view > :first-child {\n  margin-top: 0;\n}\n.chat-message__body[data-v-8c489bfe] .markdown-view > :last-child {\n  margin-bottom: 0;\n}\n\n/* ── Streaming typing indicator ── */\n.chat-message__typing[data-v-8c489bfe] {\n  display: inline-flex;\n  gap: 3px;\n  padding-top: var(--spacing-xs);\n}\n.chat-message__typing span[data-v-8c489bfe] {\n  width: 6px;\n  height: 6px;\n  border-radius: 50%;\n  background-color: var(--color-primary);\n  animation: chat-typing-8c489bfe 1.2s infinite;\n}\n.chat-message__typing span[data-v-8c489bfe]:nth-child(2) {\n  animation-delay: 0.2s;\n}\n.chat-message__typing span[data-v-8c489bfe]:nth-child(3) {\n  animation-delay: 0.4s;\n}\n@keyframes chat-typing-8c489bfe {\n0%,\n  60%,\n  100% {\n    opacity: 0.3;\n    transform: scale(0.8);\n}\n30% {\n    opacity: 1;\n    transform: scale(1);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.chat-message__typing span[data-v-8c489bfe] {\n    animation: none;\n}\n}\n";
-  const ChatMessage = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["styles", [_style_0$9]], ["__scopeId", "data-v-8c489bfe"]]);
-  const _hoisted_1$6 = { class: "chat-message-list" };
-  const _hoisted_2$5 = {
+  const _style_0$b = "\n.chat-message[data-v-8c489bfe] {\n  display: flex;\n}\n\n/* ── User ── */\n.chat-message--user[data-v-8c489bfe] {\n  justify-content: flex-end;\n}\n.chat-message__bubble[data-v-8c489bfe] {\n  max-width: 80%;\n  padding: var(--spacing-sm) var(--spacing-md);\n  background-color: var(--color-primary);\n  color: var(--color-white);\n  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-sm)\n    var(--radius-lg);\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  white-space: pre-wrap;\n  word-break: break-word;\n}\n\n/* ── Assistant ── */\n.chat-message--assistant[data-v-8c489bfe] {\n  gap: var(--spacing-sm);\n  align-items: flex-start;\n}\n.chat-message__marker[data-v-8c489bfe] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  flex-shrink: 0;\n  width: 24px;\n  height: 24px;\n  margin-top: 2px;\n  border-radius: var(--radius-md);\n  color: var(--color-primary);\n  background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);\n}\n.chat-message__body[data-v-8c489bfe] {\n  min-width: 0;\n  flex: 1;\n}\n.chat-message__body[data-v-8c489bfe] .markdown-view {\n  font-size: var(--font-size-sm);\n}\n.chat-message__body[data-v-8c489bfe] .markdown-view > :first-child {\n  margin-top: 0;\n}\n.chat-message__body[data-v-8c489bfe] .markdown-view > :last-child {\n  margin-bottom: 0;\n}\n\n/* ── Streaming typing indicator ── */\n.chat-message__typing[data-v-8c489bfe] {\n  display: inline-flex;\n  gap: 3px;\n  padding-top: var(--spacing-xs);\n}\n.chat-message__typing span[data-v-8c489bfe] {\n  width: 6px;\n  height: 6px;\n  border-radius: 50%;\n  background-color: var(--color-primary);\n  animation: chat-typing-8c489bfe 1.2s infinite;\n}\n.chat-message__typing span[data-v-8c489bfe]:nth-child(2) {\n  animation-delay: 0.2s;\n}\n.chat-message__typing span[data-v-8c489bfe]:nth-child(3) {\n  animation-delay: 0.4s;\n}\n@keyframes chat-typing-8c489bfe {\n0%,\n  60%,\n  100% {\n    opacity: 0.3;\n    transform: scale(0.8);\n}\n30% {\n    opacity: 1;\n    transform: scale(1);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.chat-message__typing span[data-v-8c489bfe] {\n    animation: none;\n}\n}\n";
+  const ChatMessage = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["styles", [_style_0$b]], ["__scopeId", "data-v-8c489bfe"]]);
+  const _hoisted_1$9 = { class: "chat-message-list" };
+  const _hoisted_2$7 = {
     key: 0,
     class: "chat-message-list__state",
     role: "status"
   };
-  const _hoisted_3$4 = { class: "sr-only" };
+  const _hoisted_3$5 = { class: "sr-only" };
   const _hoisted_4$1 = {
     key: 1,
     class: "chat-message-list__state"
@@ -42229,7 +43667,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     class: "chat-message-list__state"
   };
   const _hoisted_6 = { class: "chat-message-list__items" };
-  const _sfc_main$8 = /* @__PURE__ */ defineComponent({
+  const _sfc_main$a = /* @__PURE__ */ defineComponent({
     __name: "ChatMessageList",
     props: {
       messages: { type: Array },
@@ -42239,19 +43677,19 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     setup(__props) {
       const { t: t2 } = useI18n();
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$6, [
-          __props.isLoading ? (openBlock(), createElementBlock("div", _hoisted_2$5, [
+        return openBlock(), createElementBlock("div", _hoisted_1$9, [
+          __props.isLoading ? (openBlock(), createElementBlock("div", _hoisted_2$7, [
             createVNode(EditorIcon, {
               name: "spinner",
               size: 28,
               spin: ""
             }),
-            createBaseVNode("span", _hoisted_3$4, toDisplayString(unref(t2)("editor.loading")), 1)
+            createBaseVNode("span", _hoisted_3$5, toDisplayString(unref(t2)("editor.loading")), 1)
           ])) : !__props.hasActiveSession ? (openBlock(), createElementBlock("div", _hoisted_4$1, [
             createBaseVNode("p", null, toDisplayString(unref(t2)("chat.emptyState")), 1)
           ])) : __props.messages.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_5$1, [
             createBaseVNode("p", null, toDisplayString(unref(t2)("chat.emptyChat")), 1)
-          ])) : (openBlock(), createBlock(unref(_sfc_main$E), {
+          ])) : (openBlock(), createBlock(unref(_sfc_main$G), {
             key: 3,
             class: "chat-message-list__scroll",
             resize: "smooth",
@@ -42273,12 +43711,12 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$8 = "\n.chat-message-list[data-v-157ffe30] {\n  flex: 1;\n  min-height: 0;\n  display: flex;\n  flex-direction: column;\n}\n.chat-message-list__state[data-v-157ffe30] {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-lg);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n  text-align: center;\n}\n.chat-message-list__state[data-v-157ffe30] .editor-icon {\n  color: var(--color-primary);\n}\n.chat-message-list__scroll[data-v-157ffe30] {\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n  padding: var(--spacing-lg);\n}\n.chat-message-list__items[data-v-157ffe30] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n}\n";
-  const ChatMessageList = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["styles", [_style_0$8]], ["__scopeId", "data-v-157ffe30"]]);
-  const _hoisted_1$5 = { class: "chat-composer" };
-  const _hoisted_2$4 = ["for"];
-  const _hoisted_3$3 = ["id", "placeholder", "disabled"];
-  const _sfc_main$7 = /* @__PURE__ */ defineComponent({
+  const _style_0$a = "\n.chat-message-list[data-v-157ffe30] {\n  flex: 1;\n  min-height: 0;\n  display: flex;\n  flex-direction: column;\n}\n.chat-message-list__state[data-v-157ffe30] {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-lg);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n  text-align: center;\n}\n.chat-message-list__state[data-v-157ffe30] .editor-icon {\n  color: var(--color-primary);\n}\n.chat-message-list__scroll[data-v-157ffe30] {\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n  padding: var(--spacing-lg);\n}\n.chat-message-list__items[data-v-157ffe30] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n}\n";
+  const ChatMessageList = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["styles", [_style_0$a]], ["__scopeId", "data-v-157ffe30"]]);
+  const _hoisted_1$8 = { class: "chat-composer" };
+  const _hoisted_2$6 = ["for"];
+  const _hoisted_3$4 = ["id", "placeholder", "disabled"];
+  const _sfc_main$9 = /* @__PURE__ */ defineComponent({
     __name: "ChatComposer",
     props: {
       disabled: { type: Boolean }
@@ -42288,12 +43726,12 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       const props = __props;
       const emit2 = __emit;
       const { t: t2 } = useI18n();
-      const text = /* @__PURE__ */ ref("");
+      const text2 = /* @__PURE__ */ ref("");
       const textareaId = useId$1();
       function submit() {
-        const content = text.value.trim();
+        const content = text2.value.trim();
         if (!content || props.disabled) return;
-        text.value = "";
+        text2.value = "";
         emit2("send", content);
       }
       function onKeydown(event) {
@@ -42305,27 +43743,27 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         }
       }
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$5, [
+        return openBlock(), createElementBlock("div", _hoisted_1$8, [
           createBaseVNode("label", {
             for: unref(textareaId),
             class: "sr-only"
-          }, toDisplayString(unref(t2)("chat.placeholder")), 9, _hoisted_2$4),
+          }, toDisplayString(unref(t2)("chat.placeholder")), 9, _hoisted_2$6),
           withDirectives(createBaseVNode("textarea", {
             id: unref(textareaId),
-            "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => text.value = $event),
+            "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => text2.value = $event),
             class: "chat-composer__textarea",
             placeholder: unref(t2)("chat.placeholder"),
             disabled: __props.disabled,
             rows: "2",
             onKeydown
-          }, null, 40, _hoisted_3$3), [
-            [vModelText, text.value]
+          }, null, 40, _hoisted_3$4), [
+            [vModelText, text2.value]
           ]),
           createVNode(Button, {
             icon: "send",
             variant: "primary",
             size: "md",
-            disabled: !text.value.trim() || __props.disabled,
+            disabled: !text2.value.trim() || __props.disabled,
             "aria-label": unref(t2)("chat.send"),
             onClick: submit
           }, null, 8, ["disabled", "aria-label"])
@@ -42333,14 +43771,14 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$7 = "\n.chat-composer[data-v-3ca9d23e] {\n  display: flex;\n  align-items: flex-end;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  flex-shrink: 0;\n}\n.chat-composer__textarea[data-v-3ca9d23e] {\n  flex: 1;\n  resize: none;\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  padding: var(--spacing-sm) var(--spacing-md);\n  font-family: inherit;\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n  background-color: var(--color-surface);\n  outline: none;\n}\n.chat-composer__textarea[data-v-3ca9d23e]:focus {\n  border-color: var(--color-primary);\n}\n.chat-composer__textarea[data-v-3ca9d23e]:disabled {\n  opacity: 0.6;\n  cursor: not-allowed;\n}\n";
-  const ChatComposer = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["styles", [_style_0$7]], ["__scopeId", "data-v-3ca9d23e"]]);
-  const _hoisted_1$4 = ["aria-labelledby"];
-  const _hoisted_2$3 = { class: "chat-drawer__header" };
-  const _hoisted_3$2 = ["id"];
+  const _style_0$9 = "\n.chat-composer[data-v-3ca9d23e] {\n  display: flex;\n  align-items: flex-end;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  flex-shrink: 0;\n}\n.chat-composer__textarea[data-v-3ca9d23e] {\n  flex: 1;\n  resize: none;\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  padding: var(--spacing-sm) var(--spacing-md);\n  font-family: inherit;\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n  background-color: var(--color-surface);\n  outline: none;\n}\n.chat-composer__textarea[data-v-3ca9d23e]:focus {\n  border-color: var(--color-primary);\n}\n.chat-composer__textarea[data-v-3ca9d23e]:disabled {\n  opacity: 0.6;\n  cursor: not-allowed;\n}\n";
+  const ChatComposer = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["styles", [_style_0$9]], ["__scopeId", "data-v-3ca9d23e"]]);
+  const _hoisted_1$7 = ["aria-labelledby"];
+  const _hoisted_2$5 = { class: "chat-drawer__header" };
+  const _hoisted_3$3 = ["id"];
   const _hoisted_4 = { class: "chat-drawer__body" };
   const _hoisted_5 = { class: "chat-drawer__main" };
-  const _sfc_main$6 = /* @__PURE__ */ defineComponent({
+  const _sfc_main$8 = /* @__PURE__ */ defineComponent({
     __name: "ChatDrawer",
     setup(__props) {
       const core = useCore();
@@ -42394,7 +43832,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
                 "aria-modal": "true",
                 "aria-labelledby": unref(titleId)
               }, [
-                createBaseVNode("header", _hoisted_2$3, [
+                createBaseVNode("header", _hoisted_2$5, [
                   createBaseVNode("h2", {
                     id: unref(titleId),
                     class: "chat-drawer__title"
@@ -42404,7 +43842,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
                       size: 18
                     }),
                     createTextVNode(" " + toDisplayString(unref(t2)("chat.title")), 1)
-                  ], 8, _hoisted_3$2),
+                  ], 8, _hoisted_3$3),
                   createVNode(Button, {
                     icon: "x",
                     variant: "tertiary",
@@ -42434,7 +43872,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
                     }, null, 8, ["disabled"])
                   ])
                 ])
-              ], 8, _hoisted_1$4)
+              ], 8, _hoisted_1$7)
             ])) : createCommentVNode("", true)
           ]),
           _: 1
@@ -42442,9 +43880,9 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$6 = "\n.chat-overlay[data-v-2b0eea3a] {\n  position: fixed;\n  inset: 0;\n  z-index: var(--z-drawer);\n  background-color: rgba(0, 0, 0, 0.4);\n  display: flex;\n  justify-content: flex-end;\n}\n.chat-drawer[data-v-2b0eea3a] {\n  width: min(620px, 100vw);\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n  background-color: var(--color-surface);\n  box-shadow: var(--shadow-md);\n}\n.chat-drawer__header[data-v-2b0eea3a] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  flex-shrink: 0;\n}\n.chat-drawer__title[data-v-2b0eea3a] {\n  margin: 0;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  font-size: var(--font-size-base);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.chat-drawer__title[data-v-2b0eea3a] .editor-icon {\n  color: var(--color-primary);\n}\n.chat-drawer__body[data-v-2b0eea3a] {\n  flex: 1;\n  min-height: 0;\n  display: flex;\n}\n.chat-drawer__main[data-v-2b0eea3a] {\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n}\n\n/* ── Slide + fade transition ── */\n.chat-drawer-enter-active[data-v-2b0eea3a],\n.chat-drawer-leave-active[data-v-2b0eea3a] {\n  transition: opacity 0.2s ease;\n}\n.chat-drawer-enter-active .chat-drawer[data-v-2b0eea3a],\n.chat-drawer-leave-active .chat-drawer[data-v-2b0eea3a] {\n  transition: transform 0.25s ease;\n}\n.chat-drawer-enter-from[data-v-2b0eea3a],\n.chat-drawer-leave-to[data-v-2b0eea3a] {\n  opacity: 0;\n}\n.chat-drawer-enter-from .chat-drawer[data-v-2b0eea3a],\n.chat-drawer-leave-to .chat-drawer[data-v-2b0eea3a] {\n  transform: translateX(100%);\n}\n@media (prefers-reduced-motion: reduce) {\n.chat-drawer-enter-active[data-v-2b0eea3a],\n  .chat-drawer-leave-active[data-v-2b0eea3a],\n  .chat-drawer-enter-active .chat-drawer[data-v-2b0eea3a],\n  .chat-drawer-leave-active .chat-drawer[data-v-2b0eea3a] {\n    transition: none;\n}\n}\n";
-  const ChatDrawer = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["styles", [_style_0$6]], ["__scopeId", "data-v-2b0eea3a"]]);
-  const _sfc_main$5 = /* @__PURE__ */ defineComponent({
+  const _style_0$8 = "\n.chat-overlay[data-v-2b0eea3a] {\n  position: fixed;\n  inset: 0;\n  z-index: var(--z-drawer);\n  background-color: rgba(0, 0, 0, 0.4);\n  display: flex;\n  justify-content: flex-end;\n}\n.chat-drawer[data-v-2b0eea3a] {\n  width: min(620px, 100vw);\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n  background-color: var(--color-surface);\n  box-shadow: var(--shadow-md);\n}\n.chat-drawer__header[data-v-2b0eea3a] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  flex-shrink: 0;\n}\n.chat-drawer__title[data-v-2b0eea3a] {\n  margin: 0;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  font-size: var(--font-size-base);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.chat-drawer__title[data-v-2b0eea3a] .editor-icon {\n  color: var(--color-primary);\n}\n.chat-drawer__body[data-v-2b0eea3a] {\n  flex: 1;\n  min-height: 0;\n  display: flex;\n}\n.chat-drawer__main[data-v-2b0eea3a] {\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n}\n\n/* ── Slide + fade transition ── */\n.chat-drawer-enter-active[data-v-2b0eea3a],\n.chat-drawer-leave-active[data-v-2b0eea3a] {\n  transition: opacity 0.2s ease;\n}\n.chat-drawer-enter-active .chat-drawer[data-v-2b0eea3a],\n.chat-drawer-leave-active .chat-drawer[data-v-2b0eea3a] {\n  transition: transform 0.25s ease;\n}\n.chat-drawer-enter-from[data-v-2b0eea3a],\n.chat-drawer-leave-to[data-v-2b0eea3a] {\n  opacity: 0;\n}\n.chat-drawer-enter-from .chat-drawer[data-v-2b0eea3a],\n.chat-drawer-leave-to .chat-drawer[data-v-2b0eea3a] {\n  transform: translateX(100%);\n}\n@media (prefers-reduced-motion: reduce) {\n.chat-drawer-enter-active[data-v-2b0eea3a],\n  .chat-drawer-leave-active[data-v-2b0eea3a],\n  .chat-drawer-enter-active .chat-drawer[data-v-2b0eea3a],\n  .chat-drawer-leave-active .chat-drawer[data-v-2b0eea3a] {\n    transition: none;\n}\n}\n";
+  const ChatDrawer = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["styles", [_style_0$8]], ["__scopeId", "data-v-2b0eea3a"]]);
+  const _sfc_main$7 = /* @__PURE__ */ defineComponent({
     __name: "CopyButton",
     props: {
       icon: { default: "copy", type: String },
@@ -42512,12 +43950,12 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$5 = "\n.copy-btn--copied[data-v-0077b14e] {\n  color: var(--color-success, #2e7d32);\n}\n.copy-icon-enter-active[data-v-0077b14e],\n.copy-icon-leave-active[data-v-0077b14e] {\n  transition:\n    opacity var(--transition-duration) ease,\n    scale var(--transition-duration) ease;\n}\n.copy-icon-enter-from[data-v-0077b14e] {\n  opacity: 0;\n  scale: 0.6;\n}\n.copy-icon-leave-to[data-v-0077b14e] {\n  opacity: 0;\n  scale: 0.6;\n}\n@media (prefers-reduced-motion: reduce) {\n.copy-icon-enter-active[data-v-0077b14e],\n  .copy-icon-leave-active[data-v-0077b14e] {\n    transition: none;\n}\n}\n";
-  const CopyButton = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["styles", [_style_0$5]], ["__scopeId", "data-v-0077b14e"]]);
-  const _hoisted_1$3 = ["aria-label"];
-  const _hoisted_2$2 = { class: "selection-count" };
-  const _hoisted_3$1 = { class: "selection-actions" };
-  const _sfc_main$4 = /* @__PURE__ */ defineComponent({
+  const _style_0$7 = "\n.copy-btn--copied[data-v-0077b14e] {\n  color: var(--color-success, #2e7d32);\n}\n.copy-icon-enter-active[data-v-0077b14e],\n.copy-icon-leave-active[data-v-0077b14e] {\n  transition:\n    opacity var(--transition-duration) ease,\n    scale var(--transition-duration) ease;\n}\n.copy-icon-enter-from[data-v-0077b14e] {\n  opacity: 0;\n  scale: 0.6;\n}\n.copy-icon-leave-to[data-v-0077b14e] {\n  opacity: 0;\n  scale: 0.6;\n}\n@media (prefers-reduced-motion: reduce) {\n.copy-icon-enter-active[data-v-0077b14e],\n  .copy-icon-leave-active[data-v-0077b14e] {\n    transition: none;\n}\n}\n";
+  const CopyButton = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["styles", [_style_0$7]], ["__scopeId", "data-v-0077b14e"]]);
+  const _hoisted_1$6 = ["aria-label"];
+  const _hoisted_2$4 = { class: "selection-count" };
+  const _hoisted_3$2 = { class: "selection-actions" };
+  const _sfc_main$6 = /* @__PURE__ */ defineComponent({
     __name: "SelectionActionBar",
     setup(__props) {
       const selection = useTurnSelection();
@@ -42529,8 +43967,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
           role: "toolbar",
           "aria-label": unref(t2)("selection.count")
         }, [
-          createBaseVNode("span", _hoisted_2$2, toDisplayString(unref(selection).count.value) + " " + toDisplayString(unref(t2)("selection.count")), 1),
-          createBaseVNode("div", _hoisted_3$1, [
+          createBaseVNode("span", _hoisted_2$4, toDisplayString(unref(selection).count.value) + " " + toDisplayString(unref(t2)("selection.count")), 1),
+          createBaseVNode("div", _hoisted_3$2, [
             createVNode(CopyButton, {
               icon: "clipboard-type",
               "copy-fn": unref(selection).copyText,
@@ -42561,12 +43999,12 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
               _: 1
             })
           ])
-        ], 8, _hoisted_1$3)) : createCommentVNode("", true);
+        ], 8, _hoisted_1$6)) : createCommentVNode("", true);
       };
     }
   });
-  const _style_0$4 = "\n.selection-bar[data-v-1f9dee3a] {\n  flex-shrink: 0;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-xs) var(--spacing-lg);\n  /* No backdrop-filter: it forces a WebRender backdrop render target sized to\n     the content behind, a heavy GPU-memory cost on long transcripts. The\n     semi-opaque glass background stays legible without the blur. */\n  background: var(--glass-background);\n  border-bottom: 1px solid var(--color-border);\n  animation: bar-slide-down-1f9dee3a var(--transition-duration) ease;\n}\n.selection-count[data-v-1f9dee3a] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-primary);\n}\n.selection-actions[data-v-1f9dee3a] {\n  display: flex;\n  gap: var(--spacing-xs);\n}\n@keyframes bar-slide-down-1f9dee3a {\nfrom {\n    opacity: 0;\n    translate: 0 -4px;\n}\nto {\n    opacity: 1;\n    translate: 0 0;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.selection-bar[data-v-1f9dee3a] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.selection-bar[data-v-1f9dee3a] {\n    padding: var(--spacing-xs) var(--spacing-md);\n    flex-wrap: wrap;\n    gap: var(--spacing-xs);\n}\n}\n";
-  const SelectionActionBar = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["styles", [_style_0$4]], ["__scopeId", "data-v-1f9dee3a"]]);
+  const _style_0$6 = "\n.selection-bar[data-v-1f9dee3a] {\n  flex-shrink: 0;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-xs) var(--spacing-lg);\n  /* No backdrop-filter: it forces a WebRender backdrop render target sized to\n     the content behind, a heavy GPU-memory cost on long transcripts. The\n     semi-opaque glass background stays legible without the blur. */\n  background: var(--glass-background);\n  border-bottom: 1px solid var(--color-border);\n  animation: bar-slide-down-1f9dee3a var(--transition-duration) ease;\n}\n.selection-count[data-v-1f9dee3a] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-primary);\n}\n.selection-actions[data-v-1f9dee3a] {\n  display: flex;\n  gap: var(--spacing-xs);\n}\n@keyframes bar-slide-down-1f9dee3a {\nfrom {\n    opacity: 0;\n    translate: 0 -4px;\n}\nto {\n    opacity: 1;\n    translate: 0 0;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.selection-bar[data-v-1f9dee3a] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.selection-bar[data-v-1f9dee3a] {\n    padding: var(--spacing-xs) var(--spacing-md);\n    flex-wrap: wrap;\n    gap: var(--spacing-xs);\n}\n}\n";
+  const SelectionActionBar = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["styles", [_style_0$6]], ["__scopeId", "data-v-1f9dee3a"]]);
   const MOBILE_BREAKPOINT = "(max-width: 767px)";
   function useIsMobile() {
     const isMobile = /* @__PURE__ */ ref(false);
@@ -42584,13 +44022,13 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     });
     return { isMobile };
   }
-  const _hoisted_1$2 = { class: "editor-layout" };
-  const _hoisted_2$1 = { class: "editor-body" };
-  const _hoisted_3 = {
+  const _hoisted_1$5 = { class: "editor-layout" };
+  const _hoisted_2$3 = { class: "editor-body" };
+  const _hoisted_3$1 = {
     key: 6,
     class: "mobile-selectors"
   };
-  const _sfc_main$3 = /* @__PURE__ */ defineComponent({
+  const _sfc_main$5 = /* @__PURE__ */ defineComponent({
     __name: "Layout",
     props: {
       showHeader: { type: Boolean, default: true }
@@ -42658,7 +44096,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         core.activeChannel.value?.setActiveTranslation(translationId);
       }
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$2, [
+        return openBlock(), createElementBlock("div", _hoisted_1$5, [
           props.showHeader ? (openBlock(), createBlock(Header, {
             key: 0,
             title: unref(core).title.value,
@@ -42670,12 +44108,12 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
             onToggleSidebar: _cache[0] || (_cache[0] = ($event) => isSidebarOpen.value = !isSidebarOpen.value),
             onOpenChat: _cache[1] || (_cache[1] = ($event) => unref(core).chat?.setDrawerOpen(true))
           }, null, 8, ["title", "date", "duration", "speaker-count", "is-mobile", "can-ask"])) : createCommentVNode("", true),
-          createVNode(_sfc_main$F, {
+          createVNode(_sfc_main$H, {
             modelValue: activeTab.value,
             "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => activeTab.value = $event)
           }, null, 8, ["modelValue"]),
           showTranscription.value ? (openBlock(), createBlock(SelectionActionBar, { key: 1 })) : createCommentVNode("", true),
-          createBaseVNode("main", _hoisted_2$1, [
+          createBaseVNode("main", _hoisted_2$3, [
             showTranscription.value ? (openBlock(), createBlock(TranscriptionPanel, {
               key: 0,
               turns: activeTurns.value,
@@ -42699,7 +44137,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
               "onUpdate:selectedChannelId": onChannelChange,
               "onUpdate:selectedTranslationId": onTranslationChange
             }, null, 8, ["speakers", "channels", "selected-channel-id", "translations", "selected-translation-id", "show-speakers"])) : createCommentVNode("", true),
-            unref(isMobile) ? (openBlock(), createBlock(_sfc_main$h, {
+            unref(isMobile) ? (openBlock(), createBlock(_sfc_main$j, {
               key: 5,
               open: isSidebarOpen.value,
               "onUpdate:open": _cache[3] || (_cache[3] = ($event) => isSidebarOpen.value = $event)
@@ -42729,14 +44167,14 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
           unref(core).subtitle?.isVisible.value && !unref(isMobile) && !unref(core).subtitle.isFullscreen.value ? (openBlock(), createBlock(SubtitleBanner, { key: 3 })) : createCommentVNode("", true),
           unref(core).subtitle?.isFullscreen.value ? (openBlock(), createBlock(SubtitleFullscreen, { key: 4 })) : createCommentVNode("", true),
           unref(core).chat ? (openBlock(), createBlock(ChatDrawer, { key: 5 })) : createCommentVNode("", true),
-          unref(isMobile) && (channels.value.length > 1 || translations.value.length > 1) ? (openBlock(), createElementBlock("div", _hoisted_3, [
-            channels.value.length > 1 ? (openBlock(), createBlock(_sfc_main$k, {
+          unref(isMobile) && (channels.value.length > 1 || translations.value.length > 1) ? (openBlock(), createElementBlock("div", _hoisted_3$1, [
+            channels.value.length > 1 ? (openBlock(), createBlock(_sfc_main$m, {
               key: 0,
               channels: channels.value,
               "selected-channel-id": unref(core).activeChannelId.value,
               "onUpdate:selectedChannelId": onChannelChange
             }, null, 8, ["channels", "selected-channel-id"])) : createCommentVNode("", true),
-            translations.value.length > 1 ? (openBlock(), createBlock(_sfc_main$j, {
+            translations.value.length > 1 ? (openBlock(), createBlock(_sfc_main$l, {
               key: 1,
               translations: translations.value,
               "selected-translation-id": activeTranslationId.value,
@@ -42747,8 +44185,124 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$3 = "\n.editor-layout[data-v-5918b5b2] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: hidden;\n  background-color: var(--color-background);\n}\n.editor-body[data-v-5918b5b2] {\n  display: grid;\n  grid-template-columns: 1fr var(--sidebar-width);\n  flex: 1;\n  min-height: 0;\n}\n.mobile-selectors[data-v-5918b5b2] {\n  display: flex;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n  box-shadow: var(--shadow-md);\n  align-items: end;\n}\n.mobile-selectors[data-v-5918b5b2] > * {\n  flex: 1;\n  min-width: 0;\n}\n@media (max-width: 767px) {\n.editor-body[data-v-5918b5b2] {\n    grid-template-columns: 1fr;\n}\n}\n";
-  const Layout = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["styles", [_style_0$3]], ["__scopeId", "data-v-5918b5b2"]]);
+  const _style_0$5 = "\n.editor-layout[data-v-5918b5b2] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: hidden;\n  background-color: var(--color-background);\n}\n.editor-body[data-v-5918b5b2] {\n  display: grid;\n  grid-template-columns: 1fr var(--sidebar-width);\n  flex: 1;\n  min-height: 0;\n}\n.mobile-selectors[data-v-5918b5b2] {\n  display: flex;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n  box-shadow: var(--shadow-md);\n  align-items: end;\n}\n.mobile-selectors[data-v-5918b5b2] > * {\n  flex: 1;\n  min-width: 0;\n}\n@media (max-width: 767px) {\n.editor-body[data-v-5918b5b2] {\n    grid-template-columns: 1fr;\n}\n}\n";
+  const Layout = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["styles", [_style_0$5]], ["__scopeId", "data-v-5918b5b2"]]);
+  const _hoisted_1$4 = {
+    class: "editor-loading",
+    role: "status",
+    "aria-live": "polite"
+  };
+  const _hoisted_2$2 = { class: "editor-loading__label" };
+  const _sfc_main$4 = /* @__PURE__ */ defineComponent({
+    __name: "EditorLoadingOverlay",
+    setup(__props) {
+      const { t: t2 } = useI18n();
+      return (_ctx, _cache) => {
+        return openBlock(), createElementBlock("div", _hoisted_1$4, [
+          _cache[0] || (_cache[0] = createBaseVNode("span", {
+            class: "editor-loading__spinner",
+            "aria-hidden": "true"
+          }, null, -1)),
+          createBaseVNode("span", _hoisted_2$2, toDisplayString(unref(t2)("editor.loading")), 1)
+        ]);
+      };
+    }
+  });
+  const _style_0$4 = "\n.editor-loading[data-v-07ad7ab4] {\n  position: absolute;\n  inset: 0;\n  z-index: 20;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  /* Opaque so the half-built layout never flashes behind while collab syncs.\n     No backdrop-filter: it is banned in this package (WebRender GTT freeze). */\n  background-color: var(--color-background);\n  color: var(--color-text-secondary);\n  font-family: var(--font-family);\n  font-size: var(--font-size-sm);\n}\n.editor-loading__spinner[data-v-07ad7ab4] {\n  width: 32px;\n  height: 32px;\n  border: 3px solid var(--color-border);\n  border-top-color: var(--color-primary);\n  border-radius: 50%;\n  animation: editor-loading-spin-07ad7ab4 0.8s linear infinite;\n}\n@keyframes editor-loading-spin-07ad7ab4 {\nto {\n    transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.editor-loading__spinner[data-v-07ad7ab4] {\n    animation: none;\n}\n}\n";
+  const EditorLoadingOverlay = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["styles", [_style_0$4]], ["__scopeId", "data-v-07ad7ab4"]]);
+  const _hoisted_1$3 = {
+    class: "editor-error",
+    role: "alert"
+  };
+  const _hoisted_2$1 = { class: "editor-error__title" };
+  const _hoisted_3 = {
+    key: 0,
+    class: "editor-error__detail"
+  };
+  const _sfc_main$3 = /* @__PURE__ */ defineComponent({
+    __name: "EditorErrorOverlay",
+    props: {
+      message: { type: [String, null] }
+    },
+    setup(__props) {
+      const { t: t2 } = useI18n();
+      return (_ctx, _cache) => {
+        return openBlock(), createElementBlock("div", _hoisted_1$3, [
+          createVNode(EditorIcon, {
+            name: "warning",
+            size: 40,
+            class: "editor-error__icon"
+          }),
+          createBaseVNode("p", _hoisted_2$1, toDisplayString(unref(t2)("editor.loadError")), 1),
+          __props.message ? (openBlock(), createElementBlock("p", _hoisted_3, toDisplayString(__props.message), 1)) : createCommentVNode("", true)
+        ]);
+      };
+    }
+  });
+  const _style_0$3 = "\n.editor-error[data-v-5f00d5aa] {\n  position: absolute;\n  inset: 0;\n  z-index: 20;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-xl);\n  text-align: center;\n  /* Opaque so the half-built layout never shows behind. No backdrop-filter:\n     it is banned in this package (WebRender GTT freeze). */\n  background-color: var(--color-background);\n  font-family: var(--font-family);\n}\n.editor-error__icon[data-v-5f00d5aa] {\n  color: var(--color-danger);\n}\n.editor-error__title[data-v-5f00d5aa] {\n  margin: 0;\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.editor-error__detail[data-v-5f00d5aa] {\n  margin: 0;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-muted);\n}\n";
+  const EditorErrorOverlay = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["styles", [_style_0$3]], ["__scopeId", "data-v-5f00d5aa"]]);
+  const READY_TIMEOUT_MS = 2e4;
+  function useEditorReady(core) {
+    const isLoading = /* @__PURE__ */ ref(true);
+    const error = /* @__PURE__ */ ref(null);
+    let timer;
+    let stopStateWatch = null;
+    let awaitingSync = true;
+    function clearTimer() {
+      if (timer !== void 0) {
+        clearTimeout(timer);
+        timer = void 0;
+      }
+    }
+    function settle() {
+      awaitingSync = false;
+      isLoading.value = false;
+      clearTimer();
+    }
+    function settleIfReady() {
+      if (!awaitingSync) return;
+      const editor = core.transcriptionEditor;
+      if (!editor) {
+        if (core.channels.size > 0) settle();
+        return;
+      }
+      if (editor.isConnected.value) settle();
+    }
+    function watchEditorState() {
+      const editor = core.transcriptionEditor;
+      if (!editor || stopStateWatch) return;
+      stopStateWatch = watch(
+        [editor.isConnected, editor.error],
+        () => {
+          error.value = editor.error.value;
+          if (error.value) {
+            settle();
+            return;
+          }
+          settleIfReady();
+        },
+        { immediate: true }
+      );
+    }
+    function reset() {
+      awaitingSync = true;
+      isLoading.value = true;
+      error.value = null;
+      clearTimer();
+      timer = setTimeout(settle, READY_TIMEOUT_MS);
+      watchEditorState();
+      settleIfReady();
+    }
+    const offDocChange = core.on("document:change", reset);
+    if (core.channels.size > 0) reset();
+    onScopeDispose(() => {
+      offDocChange();
+      stopStateWatch?.();
+      clearTimer();
+    });
+    return { isLoading, error };
+  }
+  const _hoisted_1$2 = { class: "editor-root" };
   const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     __name: "WebComponent",
     props: {
@@ -42767,13 +44321,20 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       );
       const core = createCore();
       provideCore(core);
+      const { isLoading, error } = useEditorReady(core);
       onBeforeUnmount(() => core.destroy());
       __expose({ core });
       return (_ctx, _cache) => {
-        return unref(core).channels.size ? (openBlock(), createBlock(Layout, {
-          key: 0,
-          "show-header": !props.noHeader
-        }, null, 8, ["show-header"])) : createCommentVNode("", true);
+        return openBlock(), createElementBlock("div", _hoisted_1$2, [
+          unref(core).channels.size ? (openBlock(), createBlock(Layout, {
+            key: 0,
+            "show-header": !props.noHeader
+          }, null, 8, ["show-header"])) : createCommentVNode("", true),
+          unref(error) ? (openBlock(), createBlock(EditorErrorOverlay, {
+            key: 1,
+            message: unref(error)
+          }, null, 8, ["message"])) : unref(isLoading) ? (openBlock(), createBlock(EditorLoadingOverlay, { key: 2 })) : createCommentVNode("", true)
+        ]);
       };
     }
   });
@@ -43094,6 +44655,12 @@ section.turn:has([data-state="open"]) {
   pointer-events: none;
   user-select: none;
 }
+
+/* Positioning context for the absolute loading overlay. */
+.editor-root {
+  position: relative;
+  height: 100%;
+}
 `;
   const WebComponent = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["styles", [_style_0$2]]]);
   const fontsStyles = '/* Atkinson Hyperlegible Next — main font */\n@font-face {\n  font-family: "Atkinson Hyperlegible Next";\n  font-style: normal;\n  font-weight: 400;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleNext-Regular.woff2") format("woff2");\n}\n@font-face {\n  font-family: "Atkinson Hyperlegible Next";\n  font-style: normal;\n  font-weight: 500;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleNext-Medium.woff2") format("woff2");\n}\n@font-face {\n  font-family: "Atkinson Hyperlegible Next";\n  font-style: normal;\n  font-weight: 600;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleNext-SemiBold.woff2") format("woff2");\n}\n@font-face {\n  font-family: "Atkinson Hyperlegible Next";\n  font-style: normal;\n  font-weight: 700;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleNext-Bold.woff2") format("woff2");\n}\n\n/* Atkinson Hyperlegible Mono — monospace font */\n@font-face {\n  font-family: "Atkinson Hyperlegible Mono";\n  font-style: normal;\n  font-weight: 400;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleMono-Regular.woff2") format("woff2");\n}\n@font-face {\n  font-family: "Atkinson Hyperlegible Mono";\n  font-style: normal;\n  font-weight: 500;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleMono-Medium.woff2") format("woff2");\n}\n';
@@ -43156,7 +44723,7 @@ section.turn:has([data-state="open"]) {
         isCreatingNew.value = false;
       }
       return (_ctx, _cache) => {
-        return openBlock(), createBlock(_sfc_main$v, {
+        return openBlock(), createBlock(_sfc_main$x, {
           open: isOpen.value,
           "onUpdate:open": _cache[1] || (_cache[1] = ($event) => isOpen.value = $event),
           items: speakers.value,
@@ -49092,13 +50659,13 @@ ${err.toString()}`);
      *
      * @param {Iterable<readonly [string, any]>=} entries - an optional iterable to initialize the YMap
      */
-    constructor(entries) {
+    constructor(entries2) {
       super();
       this._prelimContent = null;
-      if (entries === void 0) {
+      if (entries2 === void 0) {
         this._prelimContent = /* @__PURE__ */ new Map();
       } else {
-        this._prelimContent = new Map(entries);
+        this._prelimContent = new Map(entries2);
       }
     }
     /**
@@ -49465,7 +51032,7 @@ ${err.toString()}`);
     }
     return negatedAttributes;
   };
-  const insertText = (transaction, parent, currPos, text, attributes) => {
+  const insertText = (transaction, parent, currPos, text2, attributes) => {
     currPos.currentAttributes.forEach((_val, key) => {
       if (attributes[key] === void 0) {
         attributes[key] = null;
@@ -49475,10 +51042,10 @@ ${err.toString()}`);
     const ownClientId = doc2.clientID;
     minimizeAttributeChanges(currPos, attributes);
     const negatedAttributes = insertAttributes(transaction, parent, currPos, attributes);
-    const content = text.constructor === String ? new ContentString(
+    const content = text2.constructor === String ? new ContentString(
       /** @type {string} */
-      text
-    ) : text instanceof AbstractType ? new ContentType(text) : new ContentEmbed(text);
+      text2
+    ) : text2 instanceof AbstractType ? new ContentType(text2) : new ContentEmbed(text2);
     let { left, right, index } = currPos;
     if (parent._searchMarker) {
       updateMarkerChanges(parent._searchMarker, currPos.index, content.getLength());
@@ -50004,9 +51571,9 @@ ${err.toString()}`);
      * @return {YText}
      */
     clone() {
-      const text = new YText();
-      text.applyDelta(this.toDelta());
-      return text;
+      const text2 = new YText();
+      text2.applyDelta(this.toDelta());
+      return text2;
     }
     /**
      * Creates YTextEvent and calls observers.
@@ -50201,8 +51768,8 @@ ${err.toString()}`);
      *                                    Text.
      * @public
      */
-    insert(index, text, attributes) {
-      if (text.length <= 0) {
+    insert(index, text2, attributes) {
+      if (text2.length <= 0) {
         return;
       }
       const y2 = this.doc;
@@ -50215,10 +51782,10 @@ ${err.toString()}`);
               attributes[k2] = v2;
             });
           }
-          insertText(transaction, this, pos, text, attributes);
+          insertText(transaction, this, pos, text2, attributes);
         });
       } else {
-        this._pending.push(() => this.insert(index, text, attributes));
+        this._pending.push(() => this.insert(index, text2, attributes));
       }
     }
     /**
@@ -50552,7 +52119,7 @@ ${err.toString()}`);
      * @return {string} The string representation of all children.
      */
     toString() {
-      return typeListMap(this, (xml) => xml.toString()).join("");
+      return typeListMap(this, (xml2) => xml2.toString()).join("");
     }
     /**
      * @return {string}
@@ -51064,9 +52631,9 @@ ${err.toString()}`);
      * @return {YXmlText}
      */
     clone() {
-      const text = new YXmlText();
-      text.applyDelta(this.toDelta());
-      return text;
+      const text2 = new YXmlText();
+      text2.applyDelta(this.toDelta());
+      return text2;
     }
     /**
      * Creates a Dom Element that mirrors this YXmlText.
@@ -53455,17 +55022,17 @@ ${err.toString()}`);
       return null;
     }
   };
-  const createTextNodesFromYText = (text, schema, _meta, snapshot2, prevSnapshot, computeYChange) => {
+  const createTextNodesFromYText = (text2, schema, _meta, snapshot2, prevSnapshot, computeYChange) => {
     const nodes = [];
-    const deltas = text.toDelta(snapshot2, prevSnapshot, computeYChange);
+    const deltas = text2.toDelta(snapshot2, prevSnapshot, computeYChange);
     try {
       for (let i2 = 0; i2 < deltas.length; i2++) {
         const delta = deltas[i2];
         nodes.push(schema.text(delta.insert, attributesToMarks(delta.attributes, schema)));
       }
     } catch (e2) {
-      text.doc.transact((transaction) => {
-        text._item.delete(transaction);
+      text2.doc.transact((transaction) => {
+        text2._item.delete(transaction);
       }, ySyncPluginKey);
       return null;
     }
@@ -56329,31 +57896,30 @@ ${err.toString()}`);
       return debouncedTurnNodeViewRenderer();
     }
   });
-  const storeSyncKey = new PluginKey("storeSync");
-  const MAX_DUPLICATE_REPAIR = 100;
-  const StoreSync = Extension.create({
-    name: "storeSync",
-    addProseMirrorPlugins() {
-      const { store, getTranslation } = this.options;
-      return [
-        new Plugin({
-          key: storeSyncKey,
-          appendTransaction(transactions, oldState, newState) {
-            if (oldState.doc.eq(newState.doc)) return null;
-            const isRemote = transactions.some((tr) => tr.getMeta(ySyncPluginKey));
-            if (!isRemote) {
-              const fixTr = fixTurnIds(newState);
-              if (fixTr) return fixTr;
-            }
-            const translation = getTranslation();
-            if (!translation) return null;
-            syncDocToStore(newState.doc, oldState.doc, translation, store);
-            return null;
-          }
-        })
-      ];
-    }
-  });
+  function nodeToTurn(node) {
+    return {
+      id: node.attrs.id,
+      speakerId: node.attrs.speakerId ?? null,
+      text: node.textContent || null,
+      words: [],
+      startTime: node.attrs.startTime,
+      endTime: node.attrs.endTime,
+      startDate: node.attrs.startDate,
+      endDate: node.attrs.endDate,
+      language: node.attrs.language ?? ""
+    };
+  }
+  function mergeTurnPreservingWords(newTurn, oldTurn) {
+    if (!oldTurn) return newTurn;
+    const oldText = oldTurn.text ?? oldTurn.words.filter((w2) => w2.text !== "").map((w2) => w2.text).join(" ");
+    return normalizeText$1(newTurn.text ?? "") === normalizeText$1(oldText) ? { ...newTurn, words: oldTurn.words } : newTurn;
+  }
+  function normalizeText$1(s2) {
+    return s2.replace(/\s+/g, " ").trim();
+  }
+  function hasTurnChanged(a2, b2) {
+    return a2.text !== b2.text || a2.speakerId !== b2.speakerId || a2.language !== b2.language || a2.startTime !== b2.startTime || a2.endTime !== b2.endTime || a2.words.length !== b2.words.length;
+  }
   function syncDocToStore(newDoc, oldDoc, translation, store) {
     const translationId = translation.id;
     const applyTurnNode = (newNode) => {
@@ -56395,6 +57961,9 @@ ${err.toString()}`);
       }
     });
     const oldTurnsById = new Map(translation.turns.value.map((t2) => [t2.id, t2]));
+    const orderedTurns = [];
+    const added = [];
+    const updated = [];
     const newIds = /* @__PURE__ */ new Set();
     newDoc.forEach((newNode) => {
       if (newNode.type.name !== "turn") return;
@@ -56402,45 +57971,30 @@ ${err.toString()}`);
       newIds.add(id2);
       const oldNode = oldNodesById.get(id2);
       const oldTurn = oldTurnsById.get(id2);
-      if (oldNode === newNode && oldTurn) return;
+      if (oldNode === newNode && oldTurn) {
+        orderedTurns.push(oldTurn);
+        return;
+      }
       const newTurn = nodeToTurn(newNode);
       if (!oldTurn) {
-        translation.updateOrCreateTurnSilent(newTurn);
-        store.emit("turn:add", { turn: newTurn, translationId });
+        orderedTurns.push(newTurn);
+        added.push(newTurn);
         return;
       }
       const merged = mergeTurnPreservingWords(newTurn, oldTurn);
-      if (hasTurnChanged(oldTurn, merged)) {
-        translation.updateTurn(id2, merged);
-      }
+      orderedTurns.push(merged);
+      if (hasTurnChanged(oldTurn, merged)) updated.push(merged);
     });
+    const removed = [];
     for (const [id2] of oldTurnsById) {
-      if (!newIds.has(id2)) {
-        translation.removeTurn(id2);
-      }
+      if (!newIds.has(id2)) removed.push(id2);
     }
+    translation.replaceTurns(orderedTurns);
+    for (const turn of added) store.emit("turn:add", { turn, translationId });
+    for (const turn of updated) store.emit("turn:update", { turn, translationId });
+    for (const turnId of removed) store.emit("turn:remove", { turnId, translationId });
   }
-  function mergeTurnPreservingWords(newTurn, oldTurn) {
-    if (!oldTurn) return newTurn;
-    const oldText = oldTurn.text ?? oldTurn.words.filter((w2) => w2.text !== "").map((w2) => w2.text).join(" ");
-    return normalizeText$1(newTurn.text ?? "") === normalizeText$1(oldText) ? { ...newTurn, words: oldTurn.words } : newTurn;
-  }
-  function normalizeText$1(s2) {
-    return s2.replace(/\s+/g, " ").trim();
-  }
-  function nodeToTurn(node) {
-    return {
-      id: node.attrs.id,
-      speakerId: node.attrs.speakerId ?? null,
-      text: node.textContent || null,
-      words: [],
-      startTime: node.attrs.startTime,
-      endTime: node.attrs.endTime,
-      startDate: node.attrs.startDate,
-      endDate: node.attrs.endDate,
-      language: node.attrs.language ?? ""
-    };
-  }
+  const MAX_DUPLICATE_REPAIR = 100;
   function fixTurnIds(state) {
     const seen = /* @__PURE__ */ new Set();
     const invalid = [];
@@ -56467,9 +58021,30 @@ ${err.toString()}`);
     tr.setMeta("addToHistory", false);
     return tr;
   }
-  function hasTurnChanged(a2, b2) {
-    return a2.text !== b2.text || a2.speakerId !== b2.speakerId || a2.language !== b2.language || a2.startTime !== b2.startTime || a2.endTime !== b2.endTime || a2.words.length !== b2.words.length;
-  }
+  const storeSyncKey = new PluginKey("storeSync");
+  const StoreSync = Extension.create({
+    name: "storeSync",
+    addProseMirrorPlugins() {
+      const { store, getTranslation } = this.options;
+      return [
+        new Plugin({
+          key: storeSyncKey,
+          appendTransaction(transactions, oldState, newState) {
+            if (oldState.doc.eq(newState.doc)) return null;
+            const isRemote = transactions.some((tr) => tr.getMeta(ySyncPluginKey));
+            if (!isRemote) {
+              const fixTr = fixTurnIds(newState);
+              if (fixTr) return fixTr;
+            }
+            const translation = getTranslation();
+            if (!translation) return null;
+            syncDocToStore(newState.doc, oldState.doc, translation, store);
+            return null;
+          }
+        })
+      ];
+    }
+  });
   const wordHighlightKey = new PluginKey("wordHighlight");
   const EDIT_PAUSE_MS = 1e3;
   const editingStateKey = new PluginKey("editingState");
@@ -56526,10 +58101,10 @@ ${err.toString()}`);
         if (hasRemoteCursorInTurn(contentStart - 1, contentStart - 1 + node.nodeSize)) {
           return DecorationSet.empty;
         }
-        const text = node.textContent;
+        const text2 = node.textContent;
         let charPos = 0;
         for (const word2 of turn.words) {
-          const idx = text.indexOf(word2.text, charPos);
+          const idx = text2.indexOf(word2.text, charPos);
           if (idx === -1) break;
           if (word2.id === activeId) {
             const from2 = contentStart + idx;
@@ -56653,10 +58228,10 @@ ${err.toString()}`);
               const turn = translation.turns.value.find((t2) => t2.id === turnId);
               if (!turn) return false;
               const charPos = $pos.parentOffset;
-              const text = turnNode.textContent;
+              const text2 = turnNode.textContent;
               let cursor = 0;
               for (const word2 of turn.words) {
-                const idx = text.indexOf(word2.text, cursor);
+                const idx = text2.indexOf(word2.text, cursor);
                 if (idx === -1) break;
                 const end = idx + word2.text.length;
                 if (charPos >= idx && charPos <= end) {
@@ -56779,7 +58354,7 @@ ${err.toString()}`);
   }
   function turnToNode(turn) {
     const spokenWords = turn.words.filter((w2) => w2.text !== "");
-    const text = spokenWords.length > 0 ? spokenWords.map((w2) => w2.text).join(" ") : turn.text ?? "";
+    const text2 = spokenWords.length > 0 ? spokenWords.map((w2) => w2.text).join(" ") : turn.text ?? "";
     return {
       type: "turn",
       attrs: {
@@ -56791,7 +58366,7 @@ ${err.toString()}`);
         endDate: turn.endDate,
         language: turn.language
       },
-      content: text ? [{ type: "text", text }] : void 0
+      content: text2 ? [{ type: "text", text: text2 }] : void 0
     };
   }
   class CollabSession {
@@ -56937,6 +58512,7 @@ ${err.toString()}`);
         const tiptapEditor = /* @__PURE__ */ shallowRef(void 0);
         const users = /* @__PURE__ */ ref([]);
         const isConnected = /* @__PURE__ */ ref(false);
+        const error = /* @__PURE__ */ ref(null);
         let session = null;
         const host = {
           setEditor: (editor) => {
@@ -56963,9 +58539,13 @@ ${err.toString()}`);
           },
           users,
           isConnected,
+          error,
           updateUser(attrs) {
             Object.assign(user, attrs);
             session?.updateUser();
+          },
+          setError(message) {
+            error.value = message;
           }
         };
         const restart = () => {
@@ -56974,6 +58554,7 @@ ${err.toString()}`);
           tiptapEditor.value = void 0;
           users.value = [];
           isConnected.value = false;
+          error.value = null;
           const translation = editableTranslation(core);
           if (!translation) return;
           const deps = { core, host, translation, field, readOnly };
