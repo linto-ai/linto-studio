@@ -43,6 +43,12 @@ const fr = {
   "subtitle.showWatermark": "Afficher le filigrane",
   "subtitle.pinWatermark": "Épingler le filigrane",
   "sidebar.subtitle": "Sous-titres",
+  "sidebar.voicePlayback": "Lecture vocale",
+  "voicePlayback.enable": "Lire à voix haute",
+  "voicePlayback.description":
+    "Utilise la synthèse vocale par défaut du navigateur.",
+  "voicePlayback.unavailable":
+    "Aucune voix de synthèse n'est disponible dans ce navigateur.",
   "sidebar.history": "Historique",
   "sidebar.generationLabel": "Génération {date}",
   "sidebar.versionLabel": "v{n} — {date}",

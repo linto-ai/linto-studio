@@ -1,0 +1,18 @@
+{
+  "VoiceSample": {
+    "type": "object",
+    "properties": {
+      "_id": { "type": "string" },
+      "created": { "type": "string", "format": "date-time" },
+      "last_update": { "type": "string", "format": "date-time" },
+      "type": { "type": "string", "enum": ["label", "user"] },
+      "format": { "type": "string", "enum": ["audio", "embeddings"] },
+      "audioFilePath": { "type": "string", "nullable": true },
+      "audioDuration": { "type": "number", "nullable": true },
+      "userId": { "type": "string" },
+      "speakerLabelId": { "type": "string" },
+      "collectionId": { "type": "string" },
+      "organizationId": { "type": "string" }
+    }
+  }
+}

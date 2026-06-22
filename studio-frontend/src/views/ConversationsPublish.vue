@@ -201,6 +201,7 @@
       v-model="showPublicationModal"
       :jobId="currentJobId"
       :organizationId="publicationOrganizationId"
+      :serviceId="currentServiceId"
       :conversationName="conversation?.name || 'export'"
       :versionNumber="currentVersionNumber" />
 
@@ -556,6 +557,12 @@ export default {
     currentJobId() {
       return this.currentJob?.jobId || null
     },
+    currentServiceId() {
+      // Service backing the active AI tab; used to scope the template list to
+      // the templates the admin made available for this service.
+      if (this.activeTab === "verbatim") return null
+      return this.indexedFormat[this.activeTab]?.id || null
+    },
     publicationOrganizationId() {
       return this.conversation?.organization?.organizationId || null
     },
@@ -832,6 +839,7 @@ export default {
           if (res[format] === undefined) {
             res[format] = {}
           }
+          res[format]["id"] = service.id
           res[format]["flavors"] = service.flavors
           res[format]["description"] = service.description
           res[format]["route"] = service.route

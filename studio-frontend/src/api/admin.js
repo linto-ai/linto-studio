@@ -38,32 +38,54 @@ export async function apiGetActivityLogs(
   return res?.data || { count: 0, list: [] }
 }
 
+// Maps each backoffice activity tab to its log source/scope filters.
+export const ACTIVITY_SCOPE_BY_TAB = {
+  ressources: { source: "webserver", scope: "resource" },
+  keys: { source: "webserver", scope: "tokens" },
+  backoffice: { source: "webserver", scope: "platform" },
+}
+
 export async function apiGetBackofficeActivityLogs(page = 0, args) {
   return await apiGetActivityLogs(page, {
     ...args,
-    source: "webserver",
-    scope: "platform",
+    ...ACTIVITY_SCOPE_BY_TAB.backoffice,
   })
 }
 
 export async function apiGetKeysActivityLogs(page = 0, args) {
   return await apiGetActivityLogs(page, {
     ...args,
-    source: "webserver",
-    scope: "tokens",
+    ...ACTIVITY_SCOPE_BY_TAB.keys,
   })
 }
 
 export async function apiGetHttpActivityLogs(page = 0, args) {
   return await apiGetActivityLogs(page, {
     ...args,
-    source: "webserver",
-    scope: "resource",
+    ...ACTIVITY_SCOPE_BY_TAB.ressources,
   })
 }
 
 export async function apiGetSessionActivityLogs(page = 0, args) {
   return await apiGetActivityLogs(page, { ...args, source: "socketio" })
+}
+
+export async function apiExportActivityLogs(
+  format,
+  { source, scope, userId } = {},
+) {
+  const res = await sendRequest(
+    `${BASE_API}/administration/activity/export`,
+    { method: "get", responseType: "blob" },
+    {
+      format,
+      source,
+      scope,
+      "user.id": userId,
+    },
+  )
+
+  return res?.data ?? null
 }
 
 export async function apiGetAllOrganizations(
@@ -286,6 +308,9 @@ export async function apiAdminUpdateTranscriberProfile(
   const dataCopy = structuredClone(data)
   if (dataCopy.config.key === "Secret key is hidden") {
     delete dataCopy.config.key
+  }
+  if (dataCopy.config.credentials === "Secret credentials are hidden") {
+    delete dataCopy.config.credentials
   }
   delete dataCopy.config.availableTranslations?.external
 

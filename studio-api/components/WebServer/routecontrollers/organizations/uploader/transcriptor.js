@@ -36,13 +36,21 @@ const {
   ConversationNoFileUploaded,
   ConversationMetadataRequire,
   ConversationError,
+  ConversationSecurityLevelForbidden,
 } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
 const { OrganizationNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
+const { getTranscriptionServiceByEndpoint } = require(
+  `${process.cwd()}/components/WebServer/controllers/services/utility`,
+)
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
+
+const { applySpeakerIdentification } = require(
+  `${process.cwd()}/components/WebServer/controllers/speakerIdentification/injection`,
+)
 
 async function transcribeReq(req, res, next) {
   try {
@@ -105,6 +113,36 @@ async function transcribe(isSingleFile, req, res, next) {
     )
     if (orgExists.length !== 1) throw new OrganizationNotFound()
 
+    // Confidentiality is enforced server-side here — the frontend gate is only
+    // advisory. The conversation level cannot go below the organization's floor,
+    // and the chosen transcription model's security_level must meet that level.
+    req.body.securityLevel = Math.max(
+      SECURITY_LEVELS.getValueOrDefault(req.body.securityLevel),
+      SECURITY_LEVELS.getValueOrDefault(orgExists[0].securityLevel),
+    )
+    const chosenService = await getTranscriptionServiceByEndpoint(
+      req.body.endpoint,
+    )
+    if (
+      !chosenService ||
+      !SECURITY_LEVELS.isAllowed(
+        chosenService.security_level,
+        req.body.securityLevel,
+      )
+    ) {
+      throw new ConversationSecurityLevelForbidden()
+    }
+
+    // Speaker identification: validate the requested collections and inject the
+    // server-built config into transcriptionConfig (the client never provides
+    // Qdrant collection names). Returns the security headers for the gateway.
+    const speakerId = await applySpeakerIdentification(req.body, orgExists[0])
+    req.body.transcriptionConfig = JSON.stringify(speakerId.transcriptionConfig)
+    // Keep the security headers (which may carry the shared X-Speaker-Id-Token)
+    // in a local variable: never stash them on req.body, where they could ride
+    // along into a log payload (cf. logger/context.js DELETE body capture).
+    const speakerIdHeaders = speakerId.headers
+
     if (req.body.folderId && req.body.folderId !== "null") {
       const folderResult = await model.folders.getById(req.body.folderId)
       if (folderResult.length === 0)
@@ -134,6 +172,12 @@ async function transcribe(isSingleFile, req, res, next) {
       isSingleFile,
     )
     req.body.file_data = formData.file_data
+
+    // Attach the speaker identification security headers (X-Organization-Id
+    // and optional token) when an identification config was injected.
+    if (speakerIdHeaders) {
+      options.headers = { ...options.headers, ...speakerIdHeaders }
+    }
 
     const processingJob = await axios.postFormData(
       transcriptionService,

@@ -21,10 +21,17 @@
           v-bind="{ ...$attrs, ...triggerAriaProps(open) }"
           :block="fullWidth"
           :avatar="selectedItem?.avatar"
-          :icon="selectedItem?.icon"
+          :icon="triggerIcon"
           :icon-weight="selectedItem?.iconWeight"
-          :label="labelButton"
-          class="popover-list__trigger" />
+          :label="hasSelection ? labelButton : placeholder"
+          class="popover-list__trigger">
+          <template v-if="hasSelection && $scopedSlots['trigger-content']">
+            <slot
+              name="trigger-content"
+              :selectedItem="selectedItem"
+              :label="labelButton" />
+          </template>
+        </Button>
       </slot>
     </template>
     <template #content>
@@ -123,6 +130,7 @@
               }"
               role="option"
               :aria-selected="isSelected(item)"
+              @mouseenter="highlightedIndex = index"
               @click.stop="onSelectionItemClick(item, $event)">
               <Checkbox
                 :id="getCheckboxId(index)"
@@ -154,7 +162,8 @@
               :id="getItemId(index)"
               class="popover-list__item"
               role="option"
-              :aria-selected="isSelected(item)">
+              :aria-selected="isSelected(item)"
+              @mouseenter="highlightedIndex = index">
               <Button
                 :icon="itemIcon(item)"
                 :icon-position="item.iconPosition || 'left'"
@@ -343,6 +352,20 @@ export default {
     fullWidth: {
       type: Boolean,
       default: false,
+    },
+    /**
+     * Label shown in the default trigger when nothing is selected.
+     */
+    placeholder: {
+      type: String,
+      default: null,
+    },
+    /**
+     * Icon shown in the default trigger when nothing is selected.
+     */
+    placeholderIcon: {
+      type: String,
+      default: null,
     },
   },
   emits: ["click", "update:value", "input"],
@@ -634,6 +657,25 @@ export default {
       return this.allAvailableItems.find((item) =>
         this.isSame(this.value, item),
       )
+    },
+    /**
+     * Whether the trigger currently reflects a selected value (vs the
+     * placeholder/empty state).
+     */
+    hasSelection() {
+      // An item explicitly matches the current value: covers pinned entries
+      // whose value is null (e.g. a "global" option).
+      if (this.selectedItem) return true
+      const value = this.value
+      if (Array.isArray(value)) return value.length > 0
+      return value !== null && value !== undefined && value !== ""
+    },
+    /**
+     * Icon for the default trigger: the selected item's icon, or the
+     * placeholder icon when nothing is selected.
+     */
+    triggerIcon() {
+      return this.hasSelection ? this.selectedItem?.icon : this.placeholderIcon
     },
     listboxId() {
       return `popover-list-${this.uid}`

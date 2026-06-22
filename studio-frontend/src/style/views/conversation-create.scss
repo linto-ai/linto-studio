@@ -100,15 +100,66 @@
 
 .conversation-create-footer {
   margin-top: 1rem;
-  //position: sticky;
-  bottom: 0.5rem;
-  padding: 0.25rem 0rem;
-  //border: var(--border-button);
-  //background-color: var(--background-primary);
-  //box-shadow: var(--shadow-block);
-  border-radius: 4px;
+  // Keep the submit button reachable: pin it to the bottom of the scroll
+  // area so it stays visible however tall the form grows (e.g. once the
+  // speaker-identification collections expand the transcription card).
+  position: sticky;
+  bottom: 8px;
+  padding: 0.5rem;
+  background-color: var(--background-primary);
+  box-shadow: var(--shadow-block);
   z-index: 52;
   box-sizing: border-box;
-  //width: calc(100% + 3rem);
-  //margin-left: -1.5rem;
+  border: 1px solid var(--neutral-30);
+
+  // Left side: file name / count + model summary
+  &__summary {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+  }
+
+  &__icon {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 8px;
+    background: var(--primary-soft);
+    color: var(--primary-color);
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__file {
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__model {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.create-services-title {
+  margin: 0;
+}
+
+.create-services-count {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
 }

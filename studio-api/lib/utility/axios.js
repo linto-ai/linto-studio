@@ -62,12 +62,12 @@ class Axios {
     return result
   }
 
-  async put(host, form) {
+  async put(host, form, config = {}) {
     let options = {
       ...form,
     }
     try {
-      const resp = await axios.put(host, options)
+      const resp = await axios.put(host, options, config)
       return resp.data
     } catch (error) {
       throw error

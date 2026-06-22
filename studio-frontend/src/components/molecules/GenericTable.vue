@@ -87,6 +87,13 @@ export default {
       type: Function,
       default: null,
     },
+    // Optional subset of row ids that can be selected (e.g. excluding
+    // disabled rows). Drives the header "select all" checkbox; defaults to
+    // every row.
+    selectableRowIds: {
+      type: Array,
+      default: null,
+    },
   },
   data() {
     return {}
@@ -119,6 +126,7 @@ export default {
       }
     },
     allRowIds() {
+      if (this.selectableRowIds) return this.selectableRowIds
       return this.content.map((row) => row[this.idKey])
     },
   },

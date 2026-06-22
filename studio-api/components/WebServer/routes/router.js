@@ -40,6 +40,8 @@ const permissionMiddlewareMap = {
   [PERMISSIONS.SESSION]: organization_middlewares.permissionSession,
   [PERMISSIONS.MICROPHONE]: organization_middlewares.permissionMicrophone,
   [PERMISSIONS.BOT]: organization_middlewares.permissionBot,
+  [PERMISSIONS.SPEAKER_IDENTIFICATION]:
+    organization_middlewares.permissionSpeakerIdentification,
 }
 
 const {

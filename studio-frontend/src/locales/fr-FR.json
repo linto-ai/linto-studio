@@ -80,7 +80,14 @@
     "token_expiring_soon": "Expire bientôt",
     "modal_create": {
       "title": "Créer une clé d'API",
-      "expiration_label": "Durée de validité"
+      "expiration_label": "Durée de validité",
+      "avatar_label": "Avatar (optionnel)",
+      "avatar_choose": "Choisir une image…",
+      "avatar_change": "Changer l'image",
+      "avatar_remove": "Retirer",
+      "avatar_invalid_type": "Format invalide (jpg, png, gif, bmp, webp uniquement)",
+      "avatar_too_large": "Fichier trop volumineux (5 Mo maximum)",
+      "avatar_upload_failed": "La clé d'API a été créée mais l'avatar n'a pas pu être téléversé"
     },
     "modal_delete": {
       "title": "Supprimer la clé d'API '{name}'",
@@ -129,7 +136,9 @@
     "tags": "Thématiques",
     "title": "Paramètres",
     "logout": "Déconnexion",
-    "email_not_verified": "Votre adresse e-mail n'est pas vérifiée. Veuillez la vérifier pour accéder à l'ensemble des fonctionnalités."
+    "email_not_verified": "Votre adresse e-mail n'est pas vérifiée. Veuillez la vérifier pour accéder à l'ensemble des fonctionnalités.",
+    "speaker_identification": "Identification des locuteurs",
+    "speaker_recognition": "Ma signature vocale"
   },
   "backoffice": {
     "navigation": {
@@ -166,6 +175,8 @@
       "filters": {
         "organization": "Organisation",
         "all_organizations": "Toutes les organisations",
+        "user": "Utilisateur",
+        "all_users": "Tous les utilisateurs",
         "start_date": "Du",
         "start_date_placeholder": "jj/mm/aaaa",
         "end_date": "Au",
@@ -182,8 +193,10 @@
     "organisation_list": {
       "title": "Organisations",
       "add_organisation_button": "Ajouter une organisation",
-      "personal_organizations_shown": "organisations personnelles affichées",
-      "personal_organizations_hidden": "organisations personnelles cachées",
+      "personal_organizations_shown": "Organisations personnelles affichées",
+      "personal_organizations_hidden": "Organisations personnelles cachées",
+      "personal_organization": "Organisation personnelle",
+      "group_organization": "Organisation de groupe",
       "remove_organisation_button": "Supprimer l'organisation | Supprimer les {count} organisations"
     },
     "token_list": {
@@ -214,6 +227,7 @@
       "diarization_label": "Activer la diarisation",
       "options_title": "Options",
       "credentials_title": "Identifiants",
+      "model_title": "Modèle",
       "warning_global": {
         "line_1": "Ce profil sera visible dans toutes les organisations."
       },
@@ -240,7 +254,14 @@
       "amazon_endpoint_label": "Région AWS",
       "amazon_endpoint_placeholder": "us-east-1",
       "voxstral_endpoint_label": "URL WebSocket globale",
-      "voxstral_endpoint_placeholder": "ws://..."
+      "voxstral_endpoint_placeholder": "ws://...",
+      "google_credentials_label": "JSON du compte de service",
+      "google_credentials_placeholder": "Collez la clé JSON du compte de service Google Cloud",
+      "google_credentials_helper": "Laissez vide pour conserver les identifiants existants.",
+      "google_credentials_load_file": "Charger depuis un fichier",
+      "google_model_label": "Modèle de reconnaissance",
+      "google_project_id_label": "ID du projet (optionnel)",
+      "google_project_id_placeholder": "Par défaut, le project_id du compte de service"
     },
     "transcriber_profile_list": {
       "title": "Profils de transcription",
@@ -254,6 +275,8 @@
       },
       "all_profiles_shown": "Tous les profils sont affichés",
       "global_profiles_shown": "Seulement les profils globaux sont affichés",
+      "private_profile": "Profil privé (propre à une organisation)",
+      "global_profile": "Profil global (partagé avec toutes les organisations)",
       "edit_button": "Modifier"
     }
   },
@@ -307,6 +330,7 @@
     "conversation_creation_right_title": "Gestion des droits",
     "conversation_creation_right_label": "Droits par défaut pour les membres de l'organisation",
     "conversation_creation_security_title": "Niveau de sécurité",
+    "conversation_creation_rights_security_title": "Droits et sécurité",
     "conversation_creation_security_label": "Niveau de sécurité du média",
     "creation_success_message": "Le média a été importé avec succès",
     "delete_modal_multiple": {
@@ -451,13 +475,35 @@
     },
     "transcription": {
       "diarization_disabled": "Non",
+      "diarization_enabled": "Oui",
       "diarization_label": "Séparation des locuteurs",
+      "diarization_single_track": "Un locuteur par fichier",
       "language_label": "Langue",
       "number_of_speaker_label": "Nombre de locuteurs",
+      "recommended_badge": "Recommandé",
+      "security_not_accessible": "Non accessible — niveau de confidentialité insuffisant",
+      "no_model_for_level": "Aucun modèle ne respecte le niveau de confidentialité choisi.",
+      "change_model": "Changer de modèle",
+      "choose_model": "Choisir un modèle de transcription",
+      "cancel_change_model": "Annuler",
+      "model_multilingual": "Multilingue",
+      "model_diarization": "Séparation des locuteurs",
+      "model_count": "{count} modèle disponible | {count} modèles disponibles",
+      "file_count": "{count} fichier | {count} fichiers",
+      "summary_diarization_on": "Locuteurs séparés",
+      "summary_diarization_off": "Sans séparation",
+      "speaker_identification_label": "Identifier les locuteurs avec",
+      "speaker_identification_help": "Les locuteurs détectés seront nommés automatiquement s'ils correspondent à une empreinte vocale des collections cochées.",
+      "speaker_identification_loading": "Chargement des collections…",
+      "speaker_identification_empty": "Aucune collection de voix disponible pour cette organisation",
       "player_error": "Une erreur est survenue lors du chargement du lecteur.",
       "punctuation_disabled": "Non",
       "punctuation_label": "Ponctuation",
-      "punctuation_value_whisper": "Automatique"
+      "punctuation_value_whisper": "Automatique",
+      "punctuation_enable": "Activer la ponctuation",
+      "speaker_count_auto": "Auto",
+      "speaker_count_fixed": "Fixe",
+      "speaker_identification_title": "Identification des locuteurs"
     },
     "transcription_help": {
       "help_button_label": "Aide"
@@ -779,7 +825,18 @@
       "duplicate": "Créer une nouvelle copie",
       "duplicating": "Duplication en cours...",
       "duplicate_success": "Conversation dupliquée",
-      "duplicate_error": "Erreur lors de la duplication"
+      "duplicate_error": "Erreur lors de la duplication",
+      "transcription": {
+        "tab_label": "Transcription",
+        "title": "Paramètres de transcription",
+        "engine": "Moteur",
+        "normalization": "Normalisation des nombres",
+        "value_enabled": "Activée",
+        "value_disabled": "Désactivée",
+        "speakers_count": "{count} locuteur | {count} locuteurs",
+        "multiple_values": "Valeurs multiples",
+        "empty": "—"
+      }
     },
     "no_medias_selected": "Aucun média sélectionné",
     "some_medias_cannot_be_deleted": "Certains médias ne peuvent pas être supprimés",
@@ -948,7 +1005,13 @@
       "session_permission": "Créer des sessions",
       "microphone_permission": "Créer des sessions microphone",
       "bot_permission": "Créer des sessions bot",
+      "speaker_identification_permission": "Identification des locuteurs",
       "update_button": "Mettre à jour les permissions"
+    },
+    "organization_security_level": {
+      "title": "Niveau de sécurité",
+      "label": "Niveau de sécurité minimum de l'organisation",
+      "update_button": "Mettre à jour le niveau de sécurité"
     },
     "matching_users": {
       "title": "Ajout automatique d'utilisateurs",
@@ -1184,6 +1247,7 @@
     },
     "create_page": {
       "error_message": "Une erreur est survenue lors de la création de la session",
+      "security_level_error": "Un profil de transcription sélectionné a un niveau de sécurité inférieur au minimum de l'organisation",
       "name_field": {
         "label": "Nom de la session"
       },
@@ -1299,7 +1363,8 @@
       },
       "title": "Choix des profils de transcription",
       "translation_not_available": "Non disponible",
-      "n_translations_selected": "Aucune traduction | Une traduction | {n} traductions"
+      "n_translations_selected": "Aucune traduction | Une traduction | {n} traductions",
+      "security_level_notice": "Seuls les profils de transcription d'un niveau de sécurité « {level} » ou supérieur peuvent être sélectionnés"
     },
     "settings_page": {
       "autoStart_label": "Démarrage automatique de la session",
@@ -1392,7 +1457,7 @@
       "active_duration": "Durée active",
       "started_at": "Début",
       "ended_at": "Fin",
-      "diarization_enabled": "Diarisation"
+      "diarization_enabled": "Séparation des locuteurs"
     },
     "timeline": {
       "title": "Chronologie d'activité",
@@ -1410,6 +1475,7 @@
       "live_transcription_label": "Transcription en temps réel",
       "live_options_title": "Options de la transcription",
       "offline_transcription_label": "Transcription après l'enregistrement",
+      "only_offline_available": "Seule la transcription après l'enregistrement est disponible dans votre organisation",
       "keep_audio_disabled_because_offline": "L'audio doit être conservé pour permettre la transcription après l'enregistrement",
       "live_or_offline_should_be_selected": "Au moins une option de transcription doit être sélectionnée"
     },
@@ -1489,10 +1555,14 @@
     "search_label": "Rechercher un utilisateur ou inviter par email",
     "search_placeholder": "mail@example.com",
     "default_right_label": "Droit par défaut",
+    "applied_to_every_member": "Appliqué à tous les membres",
     "exceptions_label": "Exceptions",
-    "no_exceptions": "Aucune exception : tous les membres suivent le droit par défaut.",
+    "no_exceptions": "Aucune exception — tous les membres suivent le droit par défaut.",
+    "external_empty": "Invitez des personnes extérieures à votre organisation par email ci-dessus.",
     "show_other_members": "Voir les autres membres ({count})",
+    "other_members_label": "Autres membres",
     "show_admins": "Voir les administrateurs et gestionnaires ({count})",
+    "admins_label": "Administrateurs et gestionnaires",
     "all_members_label": "Tous les membres",
     "invite_email_action": "Inviter {email} par email",
     "badge_org": "Organisation",
@@ -1624,9 +1694,7 @@
   },
   "user_selector": {
     "search_placeholder": "Rechercher un utilisateur",
-    "select_user": "Sélectionner un utilisateur",
-    "select_users": "Sélectionner des utilisateurs",
-    "users_selected": "{count} utilisateur(s) sélectionné(s)"
+    "select_user": "Sélectionner un utilisateur"
   },
   "popover_list": {
     "search": "Rechercher",
@@ -1657,5 +1725,146 @@
     "delete_confirm_inline": "Supprimer « {name} » ?",
     "error": "Une erreur est survenue",
     "streaming": "Génération de la réponse en cours..."
+  },
+  "speaker_diarization": {
+    "title": "Identification des locuteurs",
+    "description": "Gérez les collections d'empreintes vocales pour l'identification des locuteurs. Organisez les locuteurs en collections, téléversez des échantillons audio pour construire leur signature vocale, et générez des empreintes pour la reconnaissance automatique.",
+    "gdpr_warning": "LinTO Studio regroupe des empreintes vocales sous des labels que vous définissez ; il n'attribue par lui-même aucune identité. Rattacher un label à une personne réelle, puis exploiter ces données vocales, relève de la seule responsabilité de votre organisation, qui doit en garantir la conformité (RGPD ou réglementation applicable : consentement des personnes, gestion des données biométriques, conservation, etc.).",
+    "gdpr_your_org": "votre organisation",
+    "gdpr_gate_title": "Identification vocale — responsabilité de l'organisation",
+    "gdpr_gate_intro": "LinTO Studio fournit un outil technique qui regroupe des empreintes vocales sous des labels que vous définissez. L'outil n'attribue par lui-même aucune identité : il ne sait pas à quelle personne correspond une voix.",
+    "gdpr_gate_biometric": "Les empreintes vocales sont des données biométriques. Leur traitement est strictement encadré et suppose une base légale valide, notamment le consentement explicite des personnes concernées.",
+    "gdpr_gate_responsibility": "Rattacher un label à une personne identifiable, puis exploiter ces données, relève de la seule responsabilité de « {org} ». Il vous appartient d'en garantir la conformité (RGPD ou réglementation applicable) : information des personnes, recueil et gestion des consentements, durées de conservation, sécurité et exercice des droits.",
+    "gdpr_gate_acknowledge": "Je suis administrateur de « {org} » et j'accepte cette responsabilité",
+    "gdpr_gate_quit": "Quitter",
+    "add_collection": "Ajouter une collection",
+    "collection_name": "Nom",
+    "collection_name_placeholder": "ex. Conseil d'administration",
+    "collection_description": "Description",
+    "collection_description_placeholder": "ex. Membres du conseil d'administration",
+    "no_speaker": "Aucun locuteur",
+    "samples": "échantillons",
+    "badge_audio": "Audio",
+    "badge_embeddings": "Empreinte",
+    "badge_auto_managed": "Automatique",
+    "organization_collection_name": "Membres de l'organisation",
+    "actions": "Actions",
+    "loading": "Chargement...",
+    "empty": "Aucune collection. Créez-en une pour commencer l'identification des locuteurs.",
+    "fetch_error": "Une erreur est survenue lors du chargement des données",
+    "created_success": "Collection créée avec succès",
+    "created_error": "Une erreur est survenue lors de la création de la collection",
+    "updated_success": "Collection mise à jour avec succès",
+    "updated_error": "Une erreur est survenue lors de la mise à jour de la collection",
+    "deleted_success": "Collection supprimée avec succès",
+    "deleted_error": "Une erreur est survenue lors de la suppression de la collection",
+    "create_collection_title": "Créer une collection",
+    "edit_collection_title": "Modifier la collection",
+    "delete_collection_title": "Supprimer la collection",
+    "delete_collection_confirm": "Êtes-vous sûr de vouloir supprimer la collection « {name} » ? Cela supprimera également tous les labels, échantillons et empreintes vocales de cette collection.",
+    "create": "Créer",
+    "save": "Enregistrer",
+    "back_to_collections": "Retour aux collections",
+    "back_to_labels": "Retour aux labels",
+    "audio_recommendation": "Pour une identification optimale, il est recommandé de fournir 3 à 5 enregistrements par locuteur, pour un total d'environ 2 à 10 minutes d'audio.",
+    "add_label": "Ajouter un label",
+    "label_name": "Nom du label",
+    "user_name": "Nom de l'utilisateur",
+    "label_name_placeholder": "ex. Président",
+    "org_collection_notice": "Cette collection affiche les membres ayant activé la reconnaissance vocale dans leurs paramètres personnels. Leurs données vocales sont gérées par les membres eux-mêmes.",
+    "org_labels_empty": "Aucun membre n'a encore activé la reconnaissance vocale. Les membres peuvent l'activer depuis leurs paramètres personnels.",
+    "member_managed": "Géré par le membre",
+    "labels_empty": "Aucun label. Ajoutez-en un pour associer des échantillons vocaux.",
+    "signatures_count": "Échantillons",
+    "total_duration": "Durée totale",
+    "created_at": "Créé le",
+    "has_voiceprint": "Empreinte",
+    "label_created_success": "Label créé avec succès",
+    "label_created_error": "Une erreur est survenue lors de la création du label",
+    "label_updated_success": "Label mis à jour avec succès",
+    "label_updated_error": "Une erreur est survenue lors de la mise à jour du label",
+    "label_deleted_success": "Label supprimé avec succès",
+    "label_deleted_error": "Une erreur est survenue lors de la suppression du label",
+    "create_label_title": "Créer un label",
+    "delete_label_title": "Supprimer le label",
+    "delete_label_confirm": "Êtes-vous sûr de vouloir supprimer le label « {name} » ? Cela supprimera également tous les échantillons et empreintes vocales de ce label.",
+    "upload_audio": "Téléverser un audio",
+    "audio_file": "Fichier audio",
+    "duration": "Durée",
+    "signature_number": "Échantillon n°{n}",
+    "signatures_empty": "Aucun échantillon vocal. Téléversez des échantillons audio pour améliorer l'identification des locuteurs.",
+    "upload_modal_title": "Ajouter des échantillons vocaux",
+    "upload_save": "Enregistrer",
+    "upload_success": "{count} échantillon(s) vocal(aux) téléversé(s) avec succès",
+    "upload_error": "Une erreur est survenue lors du téléversement des échantillons vocaux",
+    "drop_or_browse": "Glissez-déposez des fichiers audio ici, ou parcourez",
+    "signature_deleted_success": "Échantillon vocal supprimé avec succès",
+    "signature_deleted_error": "Une erreur est survenue lors de la suppression de l'échantillon vocal",
+    "delete_signature_title": "Supprimer l'échantillon vocal",
+    "delete_signature_confirm": "Êtes-vous sûr de vouloir supprimer cet échantillon vocal ?",
+    "delete_all_signatures": "Tout supprimer",
+    "delete_all_signatures_title": "Supprimer tous les échantillons vocaux",
+    "delete_all_signatures_confirm": "Êtes-vous sûr de vouloir supprimer tous vos échantillons vocaux ? Cette action est irréversible et supprimera également votre empreinte vocale.",
+    "playback_error": "Une erreur est survenue lors de la lecture audio",
+    "optin_title": "Ma signature vocale",
+    "optin_description": "Enregistrez ou importez des échantillons vocaux pour créer votre signature vocale. Vous pouvez ensuite choisir les organisations auxquelles vous autorisez l'utilisation de votre voix pour l'identification automatique des locuteurs.",
+    "optin_data_stored_title": "Données conservées :",
+    "optin_data_stored_items": [
+      "Les échantillons audio que vous fournissez composent votre signature vocale",
+      "La durée et la date de chaque échantillon",
+      "L'empreinte vocale calculée à partir de votre signature"
+    ],
+    "optin_data_deleted_notice": "Si vous supprimez tous vos échantillons, votre signature et votre empreinte vocale seront définitivement supprimées. Vous ne serez plus identifiable dans aucune organisation.",
+    "optout_success": "Tous vos échantillons vocaux et votre empreinte vocale ont été définitivement supprimés.",
+    "optin_error": "Une erreur est survenue. Veuillez réessayer.",
+    "optin_no_samples": "Vous n'avez pas encore d'échantillons vocaux. Enregistrez ou importez des échantillons pour créer votre signature vocale.",
+    "optin_orgs_title": "Organisations autorisées",
+    "optin_orgs_description": "Sélectionnez les organisations autorisées à utiliser votre signature vocale pour l'identification des locuteurs.",
+    "optin_orgs_empty": "Aucune de vos organisations n'autorise l'identification du locuteur.",
+    "optin_orgs_no_samples": "Ajoutez des échantillons vocaux pour pouvoir autoriser des organisations.",
+    "optin_orgs_col_name": "Organisation",
+    "optin_orgs_col_status": "Autorisée",
+    "voiceprint_status_title": "Empreinte vocale",
+    "voiceprint_status_desc": "L'empreinte vocale est une donnée numérique calculée à partir de vos échantillons. Elle permet de vous identifier sans avoir besoin de conserver les fichiers audio.",
+    "voiceprint_computed": "Empreinte à jour",
+    "voiceprint_not_computed_desc": "Vos échantillons seront traités prochainement pour générer votre empreinte vocale.",
+    "voiceprint_last_update": "Dernière mise à jour : {date}",
+    "voiceprint_storage_mode_title": "Stockage de votre signature",
+    "voiceprint_storage_mode_audio": "Utiliser les échantillons pour former une signature",
+    "voiceprint_storage_mode_audio_desc": "Vos échantillons audio sont conservés (réécoutables) et constituent votre signature vocale.",
+    "voiceprint_storage_mode_embeddings": "Ne conserver que l'empreinte vocale",
+    "voiceprint_storage_mode_embeddings_desc": "Une empreinte numérique est calculée à partir de vos échantillons, puis les fichiers audio sont supprimés (non réécoutables).",
+    "voiceprint_storage_mode_warning": "Les fichiers audio ne pourront pas être récupérés. Pour améliorer la reconnaissance, de nouveaux enregistrements seront nécessaires.",
+    "voiceprint_computing": "Calcul de l'empreinte vocale en cours…",
+    "voiceprint_computing_hint": "Cela peut prendre quelques instants.",
+    "voiceprint_syncing": "Synchronisation avec vos organisations…",
+    "voiceprint_error": "Le calcul de l'empreinte vocale a échoué",
+    "voiceprint_error_hint": "Réessayez en ajoutant un nouvel échantillon. Si le problème persiste, contactez un administrateur.",
+    "voiceprint_storage_mode_updated": "Préférence mise à jour",
+    "voiceprint_storage_mode_confirm_title": "Passer en mode empreinte seule ?",
+    "voiceprint_storage_mode_confirm_body": "Vos échantillons audio seront supprimés (l'empreinte vocale, elle, est conservée). Vous pourrez réenregistrer des échantillons et revenir à ce mode à tout moment.",
+    "temporary_recordings": "Échantillons (temporaires)",
+    "temporary_recordings_note": "Ces échantillons servent uniquement à calculer votre empreinte vocale, puis sont supprimés.",
+    "optin_no_samples_embeddings": "Votre empreinte vocale est votre signature ; aucun fichier audio n'est conservé. Enregistrez un échantillon pour la (re)calculer.",
+    "my_recordings": "Mes échantillons vocaux",
+    "record_voice": "Enregistrer / Importer",
+    "record_modal_title": "Ajouter un échantillon vocal",
+    "tab_record": "Enregistrer",
+    "tab_upload": "Importer un fichier",
+    "text_to_read_label": "Lisez le texte suivant à voix haute :",
+    "change_text": "Changer de texte",
+    "recording": "Enregistrement...",
+    "recording_complete": "Enregistrement terminé",
+    "start_recording": "Commencer l'enregistrement",
+    "stop_recording": "Arrêter",
+    "re_record": "Réenregistrer",
+    "microphone_error": "Impossible d'accéder au microphone. Vérifiez les permissions de votre navigateur.",
+    "prompt_texts": [
+      "Le soleil se couche doucement derrière les montagnes, illuminant le ciel de nuances orangées et violettes. Les oiseaux chantent leurs dernières mélodies avant la tombée de la nuit paisible.",
+      "Dans cette forêt ancienne, les arbres centenaires se dressent fièrement vers le ciel. Le vent murmure à travers leurs branches, créant une symphonie naturelle qui apaise les esprits.",
+      "La mer s'étend à perte de vue, ses vagues rythmées viennent caresser le sable doré. Au loin, un voilier blanc glisse silencieusement sur les flots, porté par la brise marine.",
+      "Les rues de la vieille ville racontent des histoires d'un autre temps. Chaque pierre, chaque façade porte la mémoire des générations passées qui ont façonné ce lieu unique.",
+      "Ce matin, la rosée perle sur les pétales des fleurs du jardin. Le parfum délicat des roses se mêle à celui du café fraîchement préparé, annonçant une belle journée."
+    ]
   }
 }

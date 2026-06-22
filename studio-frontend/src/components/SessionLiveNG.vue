@@ -22,6 +22,7 @@ import {
   computeTurnStartDate,
   computeTurnEndDate,
 } from "@/tools/computeTurnTime.js"
+import { getEnv } from "@/tools/getEnv"
 import { bus } from "@/main.js"
 
 const PAGE_SIZE = 50
@@ -136,7 +137,9 @@ export default {
       const { core } = el
       this.core = markRaw(core)
 
-      this.livePlugin = createLivePlugin()
+      this.livePlugin = createLivePlugin({
+        tts: getEnv("VUE_APP_ENABLE_TTS") === "true",
+      })
       core.use(this.livePlugin)
 
       core.use(

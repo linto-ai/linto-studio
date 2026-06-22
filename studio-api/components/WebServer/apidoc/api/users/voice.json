@@ -1,0 +1,255 @@
+{
+  "/api/users/self/voice/samples": {
+    "get": {
+      "tags": ["speaker identification - user voice"],
+      "summary": "List audio samples of the authenticated user",
+      "responses": {
+        "200": {
+          "description": "List of audio samples",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/VoiceSample" }
+              }
+            }
+          }
+        },
+        "401": { "$ref": "#/components/responses/Unauthorized" }
+      }
+    },
+    "post": {
+      "tags": ["speaker identification - user voice"],
+      "summary": "Upload a voice sample",
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "audio": { "type": "string", "format": "binary" },
+                "audioDuration": { "type": "number", "description": "Duration in seconds" }
+              },
+              "required": ["audio"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Sample created",
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/VoiceSample" }
+            }
+          }
+        },
+        "400": { "$ref": "#/components/responses/BadRequest" },
+        "401": { "$ref": "#/components/responses/Unauthorized" },
+        "415": { "description": "Unsupported audio format" }
+      }
+    },
+    "delete": {
+      "tags": ["speaker identification - user voice"],
+      "summary": "Delete all voice samples and opt-in preferences",
+      "responses": {
+        "200": { "description": "All voice samples deleted" },
+        "401": { "$ref": "#/components/responses/Unauthorized" }
+      }
+    }
+  },
+  "/api/users/self/voice/samples/{id}/audio": {
+    "get": {
+      "tags": ["speaker identification - user voice"],
+      "summary": "Stream audio file of a voice sample",
+      "parameters": [
+        { "name": "id", "in": "path", "required": true, "schema": { "type": "string" }, "description": "Voice sample ID" }
+      ],
+      "responses": {
+        "200": { "description": "Audio file stream", "content": { "audio/*": {} } },
+        "401": { "$ref": "#/components/responses/Unauthorized" },
+        "404": { "$ref": "#/components/responses/NotFound" }
+      }
+    }
+  },
+  "/api/users/self/voice/samples/{id}": {
+    "delete": {
+      "tags": ["speaker identification - user voice"],
+      "summary": "Delete a specific voice sample",
+      "parameters": [
+        { "name": "id", "in": "path", "required": true, "schema": { "type": "string" }, "description": "Voice sample ID" }
+      ],
+      "responses": {
+        "200": { "description": "Voice sample deleted" },
+        "401": { "$ref": "#/components/responses/Unauthorized" },
+        "404": { "$ref": "#/components/responses/NotFound" }
+      }
+    }
+  },
+  "/api/users/self/voice/storage-mode": {
+    "patch": {
+      "tags": ["speaker identification - user voice"],
+      "summary": "Update storage mode preference (audio or embeddings)",
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "storageMode": { "type": "string", "enum": ["audio", "embeddings"] }
+              },
+              "required": ["storageMode"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Storage mode updated",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "storageMode": { "type": "string", "enum": ["audio", "embeddings"] }
+                }
+              }
+            }
+          }
+        },
+        "400": { "$ref": "#/components/responses/BadRequest" },
+        "401": { "$ref": "#/components/responses/Unauthorized" }
+      }
+    }
+  },
+  "/api/users/self/voice/voiceprint": {
+    "get": {
+      "tags": ["speaker identification - user voice"],
+      "summary": "Get voiceprint computation status",
+      "responses": {
+        "200": {
+          "description": "Voiceprint status",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "hasVoiceprint": { "type": "boolean" },
+                  "storageMode": { "type": "string", "enum": ["audio", "embeddings"] },
+                  "audioSamplesCount": { "type": "integer" },
+                  "lastUpdate": { "type": "string", "format": "date-time", "nullable": true }
+                }
+              }
+            }
+          }
+        },
+        "401": { "$ref": "#/components/responses/Unauthorized" }
+      }
+    },
+    "post": {
+      "tags": ["speaker identification - user voice"],
+      "summary": "Submit computed voiceprint embeddings (for processing service)",
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "embeddings": { "type": "array", "items": { "type": "number" }, "description": "Voiceprint embedding vector" }
+              },
+              "required": ["embeddings"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Voiceprint stored. Audio files deleted if storage mode is embeddings.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "hasVoiceprint": { "type": "boolean" },
+                  "storageMode": { "type": "string" },
+                  "audioFilesDeleted": { "type": "boolean" }
+                }
+              }
+            }
+          }
+        },
+        "400": { "$ref": "#/components/responses/BadRequest" },
+        "401": { "$ref": "#/components/responses/Unauthorized" }
+      }
+    }
+  },
+  "/api/users/self/voice/organizations": {
+    "get": {
+      "tags": ["speaker identification - user voice"],
+      "summary": "List organizations with voice opt-in status",
+      "description": "Returns all organizations the user belongs to, with a flag indicating whether the user has opted in to share their voice signature with each organization.",
+      "responses": {
+        "200": {
+          "description": "List of organizations with opt-in status",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "organizationId": { "type": "string" },
+                    "organizationName": { "type": "string" },
+                    "voiceprintEnabled": { "type": "boolean" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": { "$ref": "#/components/responses/Unauthorized" }
+      }
+    }
+  },
+  "/api/users/self/voice/organizations/{orgId}": {
+    "patch": {
+      "tags": ["speaker identification - user voice"],
+      "summary": "Toggle voice opt-in for an organization",
+      "description": "Enable or disable sharing your voice signature with a specific organization. Requires membership in the organization.",
+      "parameters": [
+        { "name": "orgId", "in": "path", "required": true, "schema": { "type": "string" }, "description": "Organization ID" }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "enabled": { "type": "boolean" }
+              },
+              "required": ["enabled"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Opt-in updated",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "organizationId": { "type": "string" },
+                  "voiceprintEnabled": { "type": "boolean" }
+                }
+              }
+            }
+          }
+        },
+        "401": { "$ref": "#/components/responses/Unauthorized" },
+        "404": { "$ref": "#/components/responses/NotFound" }
+      }
+    }
+  }
+}

@@ -5,12 +5,7 @@
       "summary": "Get all templates",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
           "in": "query",
@@ -89,12 +84,7 @@
       "summary": "Create a new template",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         }
       ],
       "requestBody": {
@@ -126,12 +116,7 @@
       "summary": "Get a template by ID",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
           "name": "id",
@@ -164,12 +149,7 @@
       "summary": "Update a template",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
           "name": "id",
@@ -208,12 +188,7 @@
       "summary": "Delete a template by ID",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
           "name": "id",

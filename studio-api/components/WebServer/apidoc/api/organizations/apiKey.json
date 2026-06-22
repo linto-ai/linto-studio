@@ -2,15 +2,10 @@
   "/api/organizations/{organizationId}/tokens/": {
     "post": {
       "tags": ["organizations admin"],
-      "summary": "Create an api key token for the organization",
+      "summary": "Create an API key token for the organization",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for the organization"
+          "$ref": "#/components/parameters/OrganizationId"
         }
       ],
       "requestBody": {
@@ -28,7 +23,7 @@
                 "expires_in": {
                   "type": "string",
                   "description": "Duration until the token expires (e.g., 5y, 30d, 12h)",
-                  "default": "30d"
+                  "default": "14d"
                 },
                 "metadata": {
                   "type": "string",
@@ -62,15 +57,10 @@
     },
     "get": {
       "tags": ["organizations admin"],
-      "summary": "Retrieve all api key id for the organization",
+      "summary": "Retrieve all API keys of the organization",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for the organization"
+          "$ref": "#/components/parameters/OrganizationId"
         }
       ],
       "responses": {
@@ -100,23 +90,13 @@
   "/api/organizations/{organizationId}/tokens/{tokenId}": {
     "put": {
       "tags": ["organizations admin"],
-      "summary": "Regenerate an api key token",
+      "summary": "Regenerate an API key token",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for the organization"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
-          "in": "path",
-          "name": "tokenId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for the api key token"
+          "$ref": "#/components/parameters/TokenId"
         }
       ],
       "requestBody": {
@@ -128,10 +108,9 @@
                 "expires_in": {
                   "type": "string",
                   "description": "Duration until the token expires (e.g., 5y, 30d, 12h)",
-                  "default": "30d"
+                  "default": "14d"
                 }
-              },
-              "required": ["role"]
+              }
             }
           }
         }
@@ -158,23 +137,13 @@
     },
     "get": {
       "tags": ["organizations admin"],
-      "summary": "Retrieve details of a specific api key token",
+      "summary": "Retrieve details of a specific API key token",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for the organization"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
-          "in": "path",
-          "name": "tokenId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for the api key"
+          "$ref": "#/components/parameters/TokenId"
         }
       ],
       "responses": {
@@ -199,29 +168,19 @@
     },
     "delete": {
       "tags": ["organizations admin"],
-      "summary": "Delete an api key user",
+      "summary": "Delete an API key",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for the organization"
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
-          "in": "path",
-          "name": "tokenId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for the api key"
+          "$ref": "#/components/parameters/TokenId"
         },
         {
           "in": "query",
           "name": "revoke",
           "required": false,
-          "description": "Allow to disable or revoke the api key. If revoke=true, it does not delete, but disables. Default to false"
+          "description": "Allow to disable or revoke the API key. If revoke=true, it does not delete, but disables. Default to false"
         }
       ],
       "responses": {
@@ -229,11 +188,13 @@
           "description": "OK",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "description": "Message"
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Message"
+                  }
                 }
               },
               "example": {
@@ -247,6 +208,48 @@
         },
         "404": {
           "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/tokens/{tokenId}/picture": {
+    "put": {
+      "tags": ["organizations admin"],
+      "summary": "Upload an avatar picture for an API key",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        },
+        {
+          "$ref": "#/components/parameters/TokenId"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "file": {
+                  "type": "string",
+                  "format": "binary",
+                  "description": "Image file (jpeg, png, ...)"
+                }
+              },
+              "required": ["file"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "415": {
+          "$ref": "#/components/responses/UnsupportedMediaType"
         }
       }
     }

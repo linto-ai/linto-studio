@@ -2,7 +2,7 @@ const MongoModel = require("../model")
 
 const VIEWER_THRESHOLD_SECONDS = 300
 
-function buildActivityMatchQuery(activity, orgaId, startDate, endDate) {
+function buildActivityMatchQuery(activity, orgaId, startDate, endDate, userId) {
   const timestampQuery = {}
 
   if (startDate) timestampQuery.$gte = startDate
@@ -12,6 +12,7 @@ function buildActivityMatchQuery(activity, orgaId, startDate, endDate) {
     $match: {
       activity,
       ...(orgaId && { "organization.id": orgaId }),
+      ...(userId && { "user.id": userId }),
       ...(Object.keys(timestampQuery).length > 0 && {
         timestamp: timestampQuery,
       }),
@@ -111,12 +112,17 @@ class ActivityLog extends MongoModel {
 
   async getLastChannelEvent(sessionId, channelId) {
     try {
+      // Stored channelIds are numeric; also accept string ids from callers
+      const channelIds = [channelId]
+      const numericChannelId = Number(channelId)
+      if (!Number.isNaN(numericChannelId)) channelIds.push(numericChannelId)
+
       const events = await this.mongoRequest(
         {
           activity: "channel",
           source: "mqtt",
           "session.sessionId": sessionId,
-          "channel.channelId": channelId,
+          "channel.channelId": { $in: channelIds },
         },
         { sort: { timestamp: -1 }, limit: 1 },
       )
@@ -201,13 +207,14 @@ class ActivityLog extends MongoModel {
     }
   }
 
-  async getKpiLlm(orgaId, startDate, endDate) {
+  async getKpiLlm(orgaId, startDate, endDate, userId) {
     try {
       const matchQuery = buildActivityMatchQuery(
         "llm",
         orgaId,
         startDate,
         endDate,
+        userId,
       )
 
       const query = [
@@ -234,13 +241,14 @@ class ActivityLog extends MongoModel {
     }
   }
 
-  async getKpiTranscription(orgaId, startDate, endDate) {
+  async getKpiTranscription(orgaId, startDate, endDate, userId) {
     try {
       const matchQuery = buildActivityMatchQuery(
         "transcription",
         orgaId,
         startDate,
         endDate,
+        userId,
       )
 
       const groupId = orgaId ? "$organization.id" : null
@@ -270,13 +278,14 @@ class ActivityLog extends MongoModel {
     }
   }
 
-  async getKpiSession(orgaId, startDate, endDate) {
+  async getKpiSession(orgaId, startDate, endDate, userId) {
     try {
       const sessionMatchQuery = buildActivityMatchQuery(
         "session",
         orgaId,
         startDate,
         endDate,
+        userId,
       )
 
       const groupId = orgaId ? "$organization.id" : null
@@ -300,16 +309,31 @@ class ActivityLog extends MongoModel {
         },
       ]
 
+      const sessionResultPromise = this.mongoAggregate(sessionQuery)
+
       // Build channel match query for totalStreamingTime
       const timestampQuery = {}
       if (startDate) timestampQuery.$gte = startDate
       if (endDate) timestampQuery.$lte = endDate
+
+      // Channel events come from mqtt and carry no user dimension, so a user
+      // filter is applied by scoping them to the sessions that user joined
+      let userSessionIds = null
+      if (userId) {
+        userSessionIds = await this.mongoDistinct(
+          "session.sessionId",
+          sessionMatchQuery.$match,
+        )
+      }
 
       const channelMatchQuery = {
         $match: {
           activity: "channel",
           source: "mqtt",
           ...(orgaId && { "organization.id": orgaId }),
+          ...(userSessionIds && {
+            "session.sessionId": { $in: userSessionIds },
+          }),
           ...(Object.keys(timestampQuery).length > 0 && {
             timestamp: timestampQuery,
           }),
@@ -335,9 +359,8 @@ class ActivityLog extends MongoModel {
         },
       ]
 
-      // Run both aggregations in parallel
       const [sessionResult, channelGroups] = await Promise.all([
-        this.mongoAggregate(sessionQuery),
+        sessionResultPromise,
         this.mongoAggregate(channelQuery),
       ])
 
@@ -355,7 +378,6 @@ class ActivityLog extends MongoModel {
         }
       }
 
-      // Merge results
       if (sessionResult.length > 0) {
         return [
           {
@@ -365,7 +387,6 @@ class ActivityLog extends MongoModel {
         ]
       }
 
-      // Return default values if no session data
       return [
         {
           totalConnections: 0,

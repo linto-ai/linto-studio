@@ -3,9 +3,10 @@ const debug = require("debug")(
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
-const { deleteAudioFileIfOrphaned } = require(
-  `${process.cwd()}/components/WebServer/controllers/files/store`,
-)
+const {
+  deleteAudioFileIfOrphaned,
+  cascadeDeleteSampleFiles,
+} = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 
 const { OrganizationError } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
@@ -13,6 +14,10 @@ const { OrganizationError } = require(
 
 const { ConversationError } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
+)
+
+const triggers = require(
+  `${process.cwd()}/components/WebServer/controllers/speakerIdentification/triggers`,
 )
 
 async function updateOrganization(req, res, next) {
@@ -64,6 +69,46 @@ async function deleteOrganization(req, res, next) {
     await model.conversationSubtitles.deleteAllFromOrga(
       organization._id.toString(),
     )
+
+    // Delete all voice samples and their audio files
+    const voiceSamples = await model.voiceSamples.getByOrganizationId(
+      organization._id.toString(),
+    )
+    cascadeDeleteSampleFiles(voiceSamples)
+
+    // Drop every Qdrant collection of the organization and delete the label
+    // voiceprints (reads collections/labels before the Mongo cascade below).
+    const [orgCollections, orgLabels] = await Promise.all([
+      model.voiceprintCollections.getByOrganizationId(
+        organization._id.toString(),
+      ),
+      model.speakerLabels.getByOrganizationId(organization._id.toString()),
+    ])
+    await triggers.dropOrganizationSpeakers(
+      organization._id.toString(),
+      orgCollections,
+      orgLabels,
+    )
+
+    // Delete all voice sample records, speaker labels, voiceprint collections,
+    // opt-ins, and any pending reconciliation ops in parallel
+    await Promise.all([
+      model.voiceSamples.deleteAllFromOrganization(
+        organization._id.toString(),
+      ),
+      model.speakerLabels.deleteAllFromOrganization(
+        organization._id.toString(),
+      ),
+      model.voiceprintCollections.deleteAllFromOrganization(
+        organization._id.toString(),
+      ),
+      model.voiceOptIns.deleteAllFromOrganization(
+        organization._id.toString(),
+      ),
+      model.speakerIdSyncOps.deleteAllFromOrganization(
+        organization._id.toString(),
+      ),
+    ])
 
     const result = await model.organizations.delete(organization._id.toString())
     if (result.deletedCount !== 1)

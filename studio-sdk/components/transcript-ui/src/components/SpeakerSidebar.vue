@@ -37,6 +37,19 @@ const { t } = useI18n()
 
 const canEditSpeakers = computed(() => core.capabilities.value.speakers === 'edit')
 
+const ttsReady = computed(() => core.live?.ttsReady.value ?? false)
+const ttsHint = computed(() =>
+  ttsReady.value
+    ? t('voicePlayback.description')
+    : t('voicePlayback.unavailable'),
+)
+
+function onToggleTts(value: boolean): void {
+  if (!core.live || !ttsReady.value) return
+  if (value) core.live.enableTTS()
+  else core.live.disableTTS()
+}
+
 const mergeOpen = ref(false)
 const mergeFromId = ref<string | null>(null)
 
@@ -169,6 +182,26 @@ function onSelectVersion(versionNumber: number): void {
           :disabled="!core.subtitle.isVisible.value"
         />
       </div>
+    </section>
+    <section
+      v-if="core.live && core.live.ttsAvailable"
+      class="sidebar-section"
+    >
+      <h2 class="sidebar-title">{{ t('sidebar.voicePlayback') }}</h2>
+      <div class="subtitle-toggle">
+        <span class="subtitle-toggle-label">{{ t('voicePlayback.enable') }}</span>
+        <SwitchToggle
+          :model-value="core.live.ttsEnabled.value"
+          :disabled="!ttsReady"
+          @update:model-value="onToggleTts"
+        />
+      </div>
+      <p
+        class="voice-playback-hint"
+        :class="{ 'voice-playback-hint--warning': !ttsReady }"
+      >
+        {{ ttsHint }}
+      </p>
     </section>
     <section
       v-if="activeService && generations.length"
@@ -313,6 +346,16 @@ function onSelectVersion(versionNumber: number): void {
 .subtitle-toggle-label {
   font-size: var(--font-size-sm);
   color: var(--color-text-primary);
+}
+
+.voice-playback-hint {
+  padding: 0 var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.voice-playback-hint--warning {
+  color: var(--color-danger);
 }
 
 .subtitle-slider {

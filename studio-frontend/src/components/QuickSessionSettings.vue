@@ -2,9 +2,15 @@
   <div>
     <h2>{{ $t("quick_session.creation.transcription_settings_title") }}</h2>
     <!-- -- -- -- -- OFFLINE Transcription -- -- -- -- -- -->
-
+    <NotificationBanner
+      variant="info"
+      icon="info"
+      v-if="transcriberProfiles.length === 0">
+      {{ $t("quick_session.creation.only_offline_available") }}
+    </NotificationBanner>
     <section>
       <FormCheckbox
+        v-if="transcriberProfiles.length > 0"
         :field="fieldOfflineTranscription"
         v-model="fieldOfflineTranscription.value"
         switchDisplay />
@@ -28,7 +34,7 @@
           <div class="error-field" v-if="fieldTranscriptionService.error">
             {{ fieldTranscriptionService.error }}
           </div>
-          <ConversationCreateServices
+          <ServiceSelector
             :serviceList="fieldTranscriptionService.list"
             :securityLevel="securityLevel"
             v-model="fieldTranscriptionService.value" />
@@ -38,7 +44,7 @@
 
     <!-- -- -- -- -- LIVE transcription -- -- -- -- -->
 
-    <section>
+    <section v-if="transcriberProfiles.length > 0">
       <FormCheckbox
         :field="fieldSubInStudio"
         v-model="fieldSubInStudio.value"
@@ -119,8 +125,9 @@ import {
 import SessionTranslationSelection from "@/components/SessionTranslationSelection.vue"
 import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import TranscriberProfileSelector from "@/components/TranscriberProfileSelector.vue"
-import ConversationCreateServices from "@/components/ConversationCreateServices.vue"
+import ServiceSelector from "@/components/serviceSelector/ServiceSelector.vue"
 import Chip from "@/components/atoms/Chip.vue"
+import NotificationBanner from "./atoms/NotificationBanner.vue"
 
 export default {
   props: {
@@ -180,7 +187,10 @@ export default {
       },
       fieldOfflineTranscription: {
         ...EMPTY_FIELD,
-        value: this.value.offlineTranscription ?? true,
+        value:
+          this.transcriberProfiles.length === 0
+            ? true
+            : (this.value.offlineTranscription ?? true),
         label: this.$t("quick_session.creation.offline_transcription_label"),
       },
       selectedProfile: this.value.selectedProfile,
@@ -356,9 +366,10 @@ export default {
   components: {
     FormCheckbox,
     TranscriberProfileSelector,
-    ConversationCreateServices,
+    ServiceSelector,
     SessionTranslationSelection,
     Chip,
+    NotificationBanner,
   },
 }
 </script>

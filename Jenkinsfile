@@ -29,8 +29,12 @@ def buildDockerfile(folder_name, version, commit_sha, tagSuffix = '', context = 
             }
         }
 
+        if (version == 'latest-unstable' && tagSuffix == '') {
+            preprodDeploy(folder_name)
+        }
+
         // Notify linto-deploy after successful push (only for master branch, standard build only)
-        if (tagSuffix == '' && version != 'latest-unstable' && version != 'preview-saas') {
+        if (tagSuffix == '' && version != 'latest-unstable') {
             notifyLintoDeploy(folder_name, version, commit_sha)
         }
     }
@@ -53,6 +57,49 @@ def performBuildForFile(changedFiles, version, commit_sha) {
         buildDockerfile('studio-websocket', version, commit_sha)
     }
 
+}
+
+// Best-effort deploy of a freshly built image to the staging cluster (full CI/CD).
+// SSH host + key come from Jenkins credentials (nothing host-specific in the repo);
+// no-op if those credentials are absent.
+def stagingDeploy(image_name, tag) {
+    try {
+        withCredentials([
+            sshUserPrivateKey(credentialsId: 'staging-deploy-ssh', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER'),
+            string(credentialsId: 'staging-deploy-host', variable: 'DEPLOY_HOST')
+        ]) {
+            sh "ssh -i \$SSH_KEY -o StrictHostKeyChecking=no \$SSH_USER@\$DEPLOY_HOST 'staging-deploy ${image_name} ${tag}'"
+        }
+    } catch (err) {
+        echo "Staging auto-deploy skipped for ${image_name} (deploy credentials absent): ${err}"
+    }
+}
+
+// Best-effort redeploy of preprod after a latest-unstable push (full CI/CD).
+// SSH host + key come from Jenkins credentials (nothing host-specific in the repo);
+// no-op if those credentials are absent.
+def preprodDeploy(image_name) {
+    try {
+        withCredentials([
+            sshUserPrivateKey(credentialsId: 'preprod-deploy-ssh', keyFileVariable: 'PP_SSH_KEY', usernameVariable: 'PP_SSH_USER'),
+            string(credentialsId: 'preprod-deploy-host', variable: 'PP_DEPLOY_HOST')
+        ]) {
+            sh "ssh -i \$PP_SSH_KEY -o StrictHostKeyChecking=no \$PP_SSH_USER@\$PP_DEPLOY_HOST 'preprod-deploy ${image_name}'"
+        }
+    } catch (err) {
+        echo "Preprod auto-deploy skipped for ${image_name} (deploy credentials absent): ${err}"
+    }
+}
+
+// Build one studio image, push it to the private staging registry as dev-<slug>, deploy it.
+def buildStagingImage(folder_name, tag, context = '') {
+    def buildContext = context ?: "./${folder_name}"
+    def imageName = "registry.staging.linto.ai/lintoai/${folder_name}"
+    def image = docker.build(imageName, "-f ${folder_name}/Dockerfile ${buildContext}")
+    docker.withRegistry('https://registry.staging.linto.ai', 'staging-registry-credentials') {
+        image.push(tag)
+    }
+    stagingDeploy(folder_name, tag)
 }
 
 pipeline {
@@ -98,19 +145,21 @@ pipeline {
             }
         }
 
-        stage('Docker build for preview-saas (wip) branch') {
+        stage('Docker build for staging branches') {
             when {
-                branch 'preview-saas'
+                branch 'staging/*'
             }
             steps {
-                echo 'Publishing unstable'
+                echo 'Building staging feature-branch images (private registry, never Docker Hub)'
                 script {
-                    def changedFiles = sh(returnStdout: true, script: 'git diff --name-only HEAD^ HEAD').trim()
-                    def commit_sha = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
-
-                    performBuildForFile(changedFiles, 'preview-saas', commit_sha)
+                    def slug = env.BRANCH_NAME.replaceFirst('^staging/', '').replaceAll('[^a-zA-Z0-9]+', '-').toLowerCase()
+                    def tag = "dev-${slug}"
+                    buildStagingImage('studio-api', tag)
+                    buildStagingImage('studio-frontend', tag, '.')
+                    buildStagingImage('studio-websocket', tag)
                 }
             }
         }
+
     }
 }

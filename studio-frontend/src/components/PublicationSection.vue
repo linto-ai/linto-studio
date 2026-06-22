@@ -263,6 +263,11 @@ export default {
       required: false,
       default: null,
     },
+    serviceId: {
+      type: String,
+      required: false,
+      default: null,
+    },
     conversationName: {
       type: String,
       required: false,
@@ -345,6 +350,12 @@ export default {
         this.loadTemplates()
       },
     },
+    serviceId: {
+      immediate: false,
+      handler() {
+        this.loadTemplates()
+      },
+    },
   },
   mounted() {
     this.loadTemplates()
@@ -363,6 +374,7 @@ export default {
       try {
         this.templates = await apiGetPublicationTemplates({
           organizationId: this.organizationId,
+          serviceId: this.serviceId,
         })
       } catch (err) {
         this.error = this.$t("publish.publication.load_error")

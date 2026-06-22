@@ -120,6 +120,11 @@ export default {
           text: "Voxstral",
           avatar: transriberImageFromtype("voxstral"),
         },
+        {
+          value: "google",
+          text: "Google",
+          avatar: transriberImageFromtype("google"),
+        },
       ],
       transcriberProfile: structuredClone(TRANSCRIBER_PROFILES_TEMPLATES.linto),
       transcriberProfileOriginal: null,

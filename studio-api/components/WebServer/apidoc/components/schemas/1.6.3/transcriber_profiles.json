@@ -79,7 +79,7 @@
     "properties": {
       "type": {
         "type": "string",
-        "enum": ["microsoft", "linto", "amazon"]
+        "enum": ["microsoft", "linto", "amazon", "google"]
       },
       "name": {
         "type": "string"
@@ -183,7 +183,7 @@
     "properties": {
       "type": {
         "type": "string",
-        "enum": ["microsoft", "linto", "amazon"]
+        "enum": ["microsoft", "linto", "amazon", "google"]
       },
       "name": {
         "type": "string"

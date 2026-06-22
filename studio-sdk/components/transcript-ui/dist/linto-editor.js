@@ -8887,6 +8887,10 @@ const fr = {
   "subtitle.showWatermark": "Afficher le filigrane",
   "subtitle.pinWatermark": "Épingler le filigrane",
   "sidebar.subtitle": "Sous-titres",
+  "sidebar.voicePlayback": "Lecture vocale",
+  "voicePlayback.enable": "Lire à voix haute",
+  "voicePlayback.description": "Utilise la synthèse vocale par défaut du navigateur.",
+  "voicePlayback.unavailable": "Aucune voix de synthèse n'est disponible dans ce navigateur.",
   "sidebar.history": "Historique",
   "sidebar.generationLabel": "Génération {date}",
   "sidebar.versionLabel": "v{n} — {date}",
@@ -9007,6 +9011,10 @@ const en = {
   "subtitle.showWatermark": "Show watermark",
   "subtitle.pinWatermark": "Pin watermark",
   "sidebar.subtitle": "Subtitles",
+  "sidebar.voicePlayback": "Voice playback",
+  "voicePlayback.enable": "Read aloud",
+  "voicePlayback.description": "Uses the browser's default speech synthesis.",
+  "voicePlayback.unavailable": "No speech synthesis voice is available in this browser.",
   "sidebar.history": "History",
   "sidebar.generationLabel": "Generation {date}",
   "sidebar.versionLabel": "v{n} — {date}",
@@ -39557,13 +39565,14 @@ const _sfc_main$t = /* @__PURE__ */ defineComponent({
 const _style_0$p = "\n.llm-service-panel[data-v-2e197000] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.llm-service-panel__status[data-v-2e197000] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n}\n.llm-service-panel__status--ok[data-v-2e197000] {\n  color: var(--color-success, #2e7d32);\n}\n.llm-service-panel__status--warn[data-v-2e197000] {\n  color: var(--color-warning, #ed6c02);\n}\n.llm-service-panel__empty[data-v-2e197000] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-2e197000] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n@media (max-width: 767px) {\n.llm-service-panel[data-v-2e197000] {\n    padding: var(--spacing-md);\n}\n}\n";
 const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$t, [["styles", [_style_0$p]], ["__scopeId", "data-v-2e197000"]]);
 const _hoisted_1$n = { class: "switch" };
-const _hoisted_2$h = ["id", "checked"];
+const _hoisted_2$h = ["id", "checked", "disabled"];
 const _hoisted_3$e = ["for"];
 const _sfc_main$s = /* @__PURE__ */ defineComponent({
   __name: "SwitchToggle",
   props: {
     modelValue: { type: Boolean },
-    id: { default: void 0, type: String }
+    id: { default: void 0, type: String },
+    disabled: { type: Boolean, default: false }
   },
   emits: ["update:modelValue"],
   setup(__props, { emit: __emit }) {
@@ -39576,6 +39585,7 @@ const _sfc_main$s = /* @__PURE__ */ defineComponent({
           type: "checkbox",
           id: unref(inputId),
           checked: __props.modelValue,
+          disabled: __props.disabled,
           onChange: _cache[0] || (_cache[0] = ($event) => emit2("update:modelValue", $event.target.checked))
         }, null, 40, _hoisted_2$h),
         createBaseVNode("label", { for: unref(inputId) }, [..._cache[1] || (_cache[1] = [
@@ -39585,8 +39595,8 @@ const _sfc_main$s = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$o = "\n.switch[data-v-2aa0332f] {\n  display: inline-block;\n  flex-shrink: 0;\n}\n.switch input[data-v-2aa0332f] {\n  position: absolute;\n  width: 1px;\n  height: 1px;\n  padding: 0;\n  margin: -1px;\n  overflow: hidden;\n  clip-path: inset(50%);\n  white-space: nowrap;\n  border: 0;\n}\n.switch label[data-v-2aa0332f] {\n  height: 20px;\n  width: 40px;\n  display: block;\n  border: 1px solid var(--color-border);\n  border-radius: 20px;\n  cursor: pointer;\n  background-color: var(--color-border);\n  transition: background-color var(--transition-duration);\n}\n.switch .switch-slider[data-v-2aa0332f] {\n  height: 22px;\n  width: 22px;\n  border: 1px solid var(--color-border);\n  border-radius: 50%;\n  position: relative;\n  top: -2px;\n  left: -2px;\n  background-color: var(--color-white);\n  transition: left var(--transition-duration);\n}\n.switch input:checked + label[data-v-2aa0332f] {\n  background-color: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.switch input:checked + label .switch-slider[data-v-2aa0332f] {\n  left: 20px;\n  border-color: var(--color-primary);\n}\n";
-const SwitchToggle = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["styles", [_style_0$o]], ["__scopeId", "data-v-2aa0332f"]]);
+const _style_0$o = "\n.switch[data-v-f1919d87] {\n  display: inline-block;\n  flex-shrink: 0;\n}\n.switch input[data-v-f1919d87] {\n  position: absolute;\n  width: 1px;\n  height: 1px;\n  padding: 0;\n  margin: -1px;\n  overflow: hidden;\n  clip-path: inset(50%);\n  white-space: nowrap;\n  border: 0;\n}\n.switch label[data-v-f1919d87] {\n  height: 20px;\n  width: 40px;\n  display: block;\n  border: 1px solid var(--color-border);\n  border-radius: 20px;\n  cursor: pointer;\n  background-color: var(--color-border);\n  transition: background-color var(--transition-duration);\n}\n.switch .switch-slider[data-v-f1919d87] {\n  height: 22px;\n  width: 22px;\n  border: 1px solid var(--color-border);\n  border-radius: 50%;\n  position: relative;\n  top: -2px;\n  left: -2px;\n  background-color: var(--color-white);\n  transition: left var(--transition-duration);\n}\n.switch input:checked + label[data-v-f1919d87] {\n  background-color: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.switch input:checked + label .switch-slider[data-v-f1919d87] {\n  left: 20px;\n  border-color: var(--color-primary);\n}\n.switch input:disabled + label[data-v-f1919d87] {\n  cursor: not-allowed;\n  opacity: 0.5;\n}\n";
+const SwitchToggle = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["styles", [_style_0$o]], ["__scopeId", "data-v-f1919d87"]]);
 const _hoisted_1$m = {
   key: 0,
   class: "form-field__header"
@@ -40314,20 +40324,27 @@ const _hoisted_16 = {
   class: "subtitle-toggle"
 };
 const _hoisted_17 = { class: "subtitle-toggle-label" };
-const _hoisted_18 = { class: "sidebar-title" };
-const _hoisted_19 = { class: "history-list" };
-const _hoisted_20 = ["datetime"];
-const _hoisted_21 = {
+const _hoisted_18 = {
+  key: 3,
+  class: "sidebar-section"
+};
+const _hoisted_19 = { class: "sidebar-title" };
+const _hoisted_20 = { class: "subtitle-toggle" };
+const _hoisted_21 = { class: "subtitle-toggle-label" };
+const _hoisted_22 = { class: "sidebar-title" };
+const _hoisted_23 = { class: "history-list" };
+const _hoisted_24 = ["datetime"];
+const _hoisted_25 = {
   key: 0,
   class: "history-version-list"
 };
-const _hoisted_22 = ["datetime"];
-const _hoisted_23 = {
-  key: 4,
+const _hoisted_26 = ["datetime"];
+const _hoisted_27 = {
+  key: 5,
   class: "sidebar-section"
 };
-const _hoisted_24 = { class: "sidebar-title" };
-const _hoisted_25 = { class: "speaker-list" };
+const _hoisted_28 = { class: "sidebar-title" };
+const _hoisted_29 = { class: "speaker-list" };
 const _sfc_main$k = /* @__PURE__ */ defineComponent({
   __name: "SpeakerSidebar",
   props: {
@@ -40343,6 +40360,15 @@ const _sfc_main$k = /* @__PURE__ */ defineComponent({
     const core = useCore();
     const { t: t2 } = useI18n();
     const canEditSpeakers = computed(() => core.capabilities.value.speakers === "edit");
+    const ttsReady = computed(() => core.live?.ttsReady.value ?? false);
+    const ttsHint = computed(
+      () => ttsReady.value ? t2("voicePlayback.description") : t2("voicePlayback.unavailable")
+    );
+    function onToggleTts(value) {
+      if (!core.live || !ttsReady.value) return;
+      if (value) core.live.enableTTS();
+      else core.live.disableTTS();
+    }
     const mergeOpen = /* @__PURE__ */ ref(false);
     const mergeFromId = /* @__PURE__ */ ref(null);
     function onRename(speakerId, newName) {
@@ -40456,12 +40482,26 @@ const _sfc_main$k = /* @__PURE__ */ defineComponent({
             }, null, 8, ["modelValue", "disabled"])
           ])) : createCommentVNode("", true)
         ])) : createCommentVNode("", true),
+        unref(core).live && unref(core).live.ttsAvailable ? (openBlock(), createElementBlock("section", _hoisted_18, [
+          createBaseVNode("h2", _hoisted_19, toDisplayString(unref(t2)("sidebar.voicePlayback")), 1),
+          createBaseVNode("div", _hoisted_20, [
+            createBaseVNode("span", _hoisted_21, toDisplayString(unref(t2)("voicePlayback.enable")), 1),
+            createVNode(SwitchToggle, {
+              "model-value": unref(core).live.ttsEnabled.value,
+              disabled: !ttsReady.value,
+              "onUpdate:modelValue": onToggleTts
+            }, null, 8, ["model-value", "disabled"])
+          ]),
+          createBaseVNode("p", {
+            class: normalizeClass(["voice-playback-hint", { "voice-playback-hint--warning": !ttsReady.value }])
+          }, toDisplayString(ttsHint.value), 3)
+        ])) : createCommentVNode("", true),
         activeService.value && generations.value.length ? (openBlock(), createElementBlock("section", {
-          key: 3,
+          key: 4,
           class: normalizeClass(["sidebar-section", { "sidebar-section--busy": serviceBusy.value }])
         }, [
-          createBaseVNode("h2", _hoisted_18, toDisplayString(unref(t2)("sidebar.history")), 1),
-          createBaseVNode("ul", _hoisted_19, [
+          createBaseVNode("h2", _hoisted_22, toDisplayString(unref(t2)("sidebar.history")), 1),
+          createBaseVNode("ul", _hoisted_23, [
             (openBlock(true), createElementBlock(Fragment$1, null, renderList(generations.value, (gen) => {
               return openBlock(), createElementBlock("li", {
                 key: gen.generationId,
@@ -40488,11 +40528,11 @@ const _sfc_main$k = /* @__PURE__ */ defineComponent({
                   default: withCtx(() => [
                     createBaseVNode("time", {
                       datetime: new Date(gen.createdAt).toISOString()
-                    }, toDisplayString(unref(dateFormat).format(gen.createdAt)), 9, _hoisted_20)
+                    }, toDisplayString(unref(dateFormat).format(gen.createdAt)), 9, _hoisted_24)
                   ]),
                   _: 2
                 }, 1032, ["current", "disabled", "onSelect"]),
-                gen.generationId === currentGenerationId.value && versions.value.length ? (openBlock(), createElementBlock("ul", _hoisted_21, [
+                gen.generationId === currentGenerationId.value && versions.value.length ? (openBlock(), createElementBlock("ul", _hoisted_25, [
                   (openBlock(true), createElementBlock(Fragment$1, null, renderList(versions.value, (v2) => {
                     return openBlock(), createElementBlock("li", {
                       key: v2.versionNumber
@@ -40506,7 +40546,7 @@ const _sfc_main$k = /* @__PURE__ */ defineComponent({
                         trailing: withCtx(() => [
                           createBaseVNode("time", {
                             datetime: new Date(v2.createdAt).toISOString()
-                          }, toDisplayString(unref(dateFormat).format(v2.createdAt)), 9, _hoisted_22)
+                          }, toDisplayString(unref(dateFormat).format(v2.createdAt)), 9, _hoisted_26)
                         ]),
                         default: withCtx(() => [
                           createTextVNode(" v" + toDisplayString(v2.versionNumber) + " ", 1)
@@ -40520,9 +40560,9 @@ const _sfc_main$k = /* @__PURE__ */ defineComponent({
             }), 128))
           ])
         ], 2)) : createCommentVNode("", true),
-        __props.showSpeakers && __props.speakers.length ? (openBlock(), createElementBlock("section", _hoisted_23, [
-          createBaseVNode("h2", _hoisted_24, toDisplayString(unref(t2)("sidebar.speakers")), 1),
-          createBaseVNode("ul", _hoisted_25, [
+        __props.showSpeakers && __props.speakers.length ? (openBlock(), createElementBlock("section", _hoisted_27, [
+          createBaseVNode("h2", _hoisted_28, toDisplayString(unref(t2)("sidebar.speakers")), 1),
+          createBaseVNode("ul", _hoisted_29, [
             (openBlock(true), createElementBlock(Fragment$1, null, renderList(__props.speakers, (speaker) => {
               return openBlock(), createElementBlock("li", {
                 key: speaker.id,
@@ -40548,7 +40588,7 @@ const _sfc_main$k = /* @__PURE__ */ defineComponent({
           ])
         ])) : createCommentVNode("", true),
         canEditSpeakers.value ? (openBlock(), createBlock(MergeDialog, {
-          key: 5,
+          key: 6,
           open: mergeOpen.value,
           "onUpdate:open": _cache[6] || (_cache[6] = ($event) => mergeOpen.value = $event),
           "from-speaker-id": mergeFromId.value
@@ -40557,8 +40597,8 @@ const _sfc_main$k = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$j = '\n.speaker-sidebar[data-v-ecd4afcf] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n  padding: var(--spacing-lg);\n  border-left: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-y: auto;\n}\n.sidebar-section[data-v-ecd4afcf] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-sm);\n}\n.sidebar-title[data-v-ecd4afcf] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-muted);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n}\n.speaker-list[data-v-ecd4afcf] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n}\n.speaker-item[data-v-ecd4afcf] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n  transition: background-color var(--transition-duration);\n}\n.speaker-item[data-v-ecd4afcf]:hover {\n  background-color: var(--color-surface-hover);\n}\n.speaker-name[data-v-ecd4afcf] {\n  flex: 1;\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-primary);\n}\n.subtitle-toggle[data-v-ecd4afcf] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n}\n.subtitle-toggle-label[data-v-ecd4afcf] {\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\n.subtitle-slider[data-v-ecd4afcf] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-sm);\n}\n.subtitle-slider-label[data-v-ecd4afcf] {\n  display: flex;\n  justify-content: space-between;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\n.subtitle-slider-value[data-v-ecd4afcf] {\n  color: var(--color-text-muted);\n  font-variant-numeric: tabular-nums;\n}\n.subtitle-slider input[type="range"][data-v-ecd4afcf] {\n  width: 100%;\n  accent-color: var(--color-primary);\n}\n.subtitle-slider input[type="range"][data-v-ecd4afcf]:disabled {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n\n/* ── History (LLM generations + versions) ──────────────────────────── */\n.sidebar-section--busy[data-v-ecd4afcf] {\n  opacity: 0.6;\n  pointer-events: none;\n}\n.history-list[data-v-ecd4afcf] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  margin: 0;\n  padding: 0;\n}\n.history-generation[data-v-ecd4afcf] {\n  display: flex;\n  flex-direction: column;\n}\n.history-generation__status--completed[data-v-ecd4afcf] {\n  color: var(--color-success, #2e7d32);\n}\n.history-generation__status--error[data-v-ecd4afcf] {\n  color: var(--color-danger, #d33);\n}\n.history-generation__status--processing[data-v-ecd4afcf],\n.history-generation__status--queued[data-v-ecd4afcf] {\n  color: var(--color-primary);\n}\n.history-version-list[data-v-ecd4afcf] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  margin: var(--spacing-xs) 0 0 var(--spacing-md);\n  padding: 0;\n  border-left: 1px solid var(--color-border);\n}\n\n/* Nudge nested version rows off the connecting border line. */\n.history-version-list[data-v-ecd4afcf] .selectable-list-item {\n  margin-left: var(--spacing-xs);\n}\n@media (max-width: 767px) {\n.speaker-sidebar[data-v-ecd4afcf] {\n    border-left: none;\n}\n.sidebar-section--selector[data-v-ecd4afcf] {\n    display: none;\n}\n}\n';
-const SpeakerSidebar = /* @__PURE__ */ _export_sfc(_sfc_main$k, [["styles", [_style_0$j]], ["__scopeId", "data-v-ecd4afcf"]]);
+const _style_0$j = '\n.speaker-sidebar[data-v-d7a1f181] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n  padding: var(--spacing-lg);\n  border-left: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-y: auto;\n}\n.sidebar-section[data-v-d7a1f181] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-sm);\n}\n.sidebar-title[data-v-d7a1f181] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-muted);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n}\n.speaker-list[data-v-d7a1f181] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n}\n.speaker-item[data-v-d7a1f181] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n  transition: background-color var(--transition-duration);\n}\n.speaker-item[data-v-d7a1f181]:hover {\n  background-color: var(--color-surface-hover);\n}\n.speaker-name[data-v-d7a1f181] {\n  flex: 1;\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-primary);\n}\n.subtitle-toggle[data-v-d7a1f181] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n}\n.subtitle-toggle-label[data-v-d7a1f181] {\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\n.voice-playback-hint[data-v-d7a1f181] {\n  padding: 0 var(--spacing-sm);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.voice-playback-hint--warning[data-v-d7a1f181] {\n  color: var(--color-danger);\n}\n.subtitle-slider[data-v-d7a1f181] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-sm);\n}\n.subtitle-slider-label[data-v-d7a1f181] {\n  display: flex;\n  justify-content: space-between;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\n.subtitle-slider-value[data-v-d7a1f181] {\n  color: var(--color-text-muted);\n  font-variant-numeric: tabular-nums;\n}\n.subtitle-slider input[type="range"][data-v-d7a1f181] {\n  width: 100%;\n  accent-color: var(--color-primary);\n}\n.subtitle-slider input[type="range"][data-v-d7a1f181]:disabled {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n\n/* ── History (LLM generations + versions) ──────────────────────────── */\n.sidebar-section--busy[data-v-d7a1f181] {\n  opacity: 0.6;\n  pointer-events: none;\n}\n.history-list[data-v-d7a1f181] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  margin: 0;\n  padding: 0;\n}\n.history-generation[data-v-d7a1f181] {\n  display: flex;\n  flex-direction: column;\n}\n.history-generation__status--completed[data-v-d7a1f181] {\n  color: var(--color-success, #2e7d32);\n}\n.history-generation__status--error[data-v-d7a1f181] {\n  color: var(--color-danger, #d33);\n}\n.history-generation__status--processing[data-v-d7a1f181],\n.history-generation__status--queued[data-v-d7a1f181] {\n  color: var(--color-primary);\n}\n.history-version-list[data-v-d7a1f181] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  margin: var(--spacing-xs) 0 0 var(--spacing-md);\n  padding: 0;\n  border-left: 1px solid var(--color-border);\n}\n\n/* Nudge nested version rows off the connecting border line. */\n.history-version-list[data-v-d7a1f181] .selectable-list-item {\n  margin-left: var(--spacing-xs);\n}\n@media (max-width: 767px) {\n.speaker-sidebar[data-v-d7a1f181] {\n    border-left: none;\n}\n.sidebar-section--selector[data-v-d7a1f181] {\n    display: none;\n}\n}\n';
+const SpeakerSidebar = /* @__PURE__ */ _export_sfc(_sfc_main$k, [["styles", [_style_0$j]], ["__scopeId", "data-v-d7a1f181"]]);
 const _sfc_main$j = /* @__PURE__ */ defineComponent({
   __name: "SidebarDrawer",
   props: {
@@ -44872,6 +44912,41 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
 });
 const _style_0 = "\n.turn[data-v-cca1719e] {\n  padding: var(--spacing-sm) var(--spacing-lg);\n  border-left: 3px solid transparent;\n\n  /* Skip layout/paint of off-screen turns on long transcripts. `auto <size>`\n     remembers each turn's real height after first render. */\n  content-visibility: auto;\n  contain-intrinsic-size: auto 56px;\n}\n.turn-text[data-v-cca1719e] {\n  margin-top: var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.turn--active[data-v-cca1719e] {\n  border-left: 3px solid var(--speaker-color);\n  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);\n}\n\n/* Matches SpeakerPopover's trigger so the placeholder looks identical. */\n.lazy-speaker-trigger[data-v-cca1719e] {\n  all: unset;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--radius-sm);\n}\n.lazy-speaker-trigger[data-v-cca1719e]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n[data-v-cca1719e] .word--active {\n  text-decoration: underline;\n  text-decoration-color: var(--speaker-color);\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n  color: var(--speaker-color);\n}\n@media (max-width: 767px) {\n.turn[data-v-cca1719e] {\n    padding: var(--spacing-sm) var(--spacing-md);\n}\n}\n";
 const TurnNodeView = /* @__PURE__ */ _export_sfc(_sfc_main, [["styles", [_style_0]], ["__scopeId", "data-v-cca1719e"]]);
+const TTS_SUPPORTED = typeof window !== "undefined" && "speechSynthesis" in window;
+function isTTSSupported() {
+  return TTS_SUPPORTED;
+}
+function hasVoices() {
+  return TTS_SUPPORTED && window.speechSynthesis.getVoices().length > 0;
+}
+function findVoice(lang) {
+  if (!TTS_SUPPORTED || !lang || lang === "*") return null;
+  const norm = lang.toLowerCase();
+  const base2 = norm.split("-")[0];
+  const voices = window.speechSynthesis.getVoices();
+  const exact = voices.find((v2) => v2.lang.toLowerCase() === norm);
+  if (exact) return exact;
+  return voices.find((v2) => v2.lang.toLowerCase().split("-")[0] === base2) ?? null;
+}
+function speakText(text2, lang) {
+  if (!isTTSSupported()) return;
+  const clean = text2.trim();
+  if (!clean) return;
+  const utterance = new SpeechSynthesisUtterance(clean);
+  const voice = lang ? findVoice(lang) : null;
+  if (voice) {
+    utterance.voice = voice;
+    utterance.lang = voice.lang;
+  }
+  window.speechSynthesis.speak(utterance);
+}
+function unlockTTS() {
+  if (!isTTSSupported()) return;
+  window.speechSynthesis.speak(new SpeechSynthesisUtterance(" "));
+}
+function stopTTS() {
+  if (isTTSSupported()) window.speechSynthesis.cancel();
+}
 function finalEventToSourceTurn(event) {
   const hasWords = event.words.length > 0;
   return {
@@ -44901,12 +44976,23 @@ function finalEventToTranslationTurn(event, tr) {
     sourceLanguage: tr.sourceLanguage
   };
 }
-function createLivePlugin() {
+function createLivePlugin(options = {}) {
+  const ttsAvailable = options.tts ?? false;
   return {
     name: "live",
     install(core) {
       const partial = /* @__PURE__ */ shallowRef(null);
       const hasLiveUpdate = /* @__PURE__ */ ref(false);
+      const ttsEnabled = /* @__PURE__ */ ref(false);
+      const ttsSupported = isTTSSupported();
+      const ttsReady = /* @__PURE__ */ ref(false);
+      function refreshTTSReady() {
+        ttsReady.value = hasVoices();
+      }
+      if (ttsSupported) {
+        refreshTTSReady();
+        window.speechSynthesis.addEventListener("voiceschanged", refreshTTSReady);
+      }
       let lastOriginalPartialEvent = null;
       hasLiveUpdate.value = true;
       function clearPartial() {
@@ -44974,6 +45060,9 @@ function createLivePlugin() {
         const active = core.activeChannel.value?.activeTranslation.value;
         if (active?.isSource) {
           immediateClearPartial();
+        }
+        if (ttsEnabled.value && active?.isSource && event.text != null && core.activeChannelId.value === channelId) {
+          speakText(event.text, event.language);
         }
       }
       function prependFinal(event, channelId) {
@@ -45055,11 +45144,27 @@ function createLivePlugin() {
         }
         if (isTranslationTrackFor(activeTranslation, _event.language) || activeTranslation.id === CROSS_TRANSLATION_ID) {
           immediateClearPartial();
+          if (ttsEnabled.value && _event.text) {
+            speakText(_event.text, _event.language);
+          }
         }
+      }
+      function enableTTS() {
+        ttsEnabled.value = true;
+        unlockTTS();
+      }
+      function disableTTS() {
+        ttsEnabled.value = false;
+        stopTTS();
       }
       const api = {
         partial,
         hasLiveUpdate,
+        ttsAvailable,
+        ttsEnabled,
+        ttsReady,
+        enableTTS,
+        disableTTS,
         onPartial,
         onFinal,
         prependFinal,
@@ -45082,6 +45187,13 @@ function createLivePlugin() {
       core.live = api;
       return () => {
         immediateClearPartial();
+        stopTTS();
+        if (ttsSupported) {
+          window.speechSynthesis.removeEventListener(
+            "voiceschanged",
+            refreshTTSReady
+          );
+        }
         unsubChannelChange();
         unsubTranslationChange();
         unsubTranslationSync();

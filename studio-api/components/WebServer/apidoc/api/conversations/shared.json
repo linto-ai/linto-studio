@@ -2,7 +2,7 @@
   "/api/conversations/shared/tags": {
     "get": {
       "tags": ["conversations"],
-      "summary": "List tags from favorites conversations of the connected user",
+      "summary": "List tags from conversations shared with the connected user",
       "parameters": [
         {
           "in": "query",
@@ -10,6 +10,36 @@
           "required": false,
           "description": "List of tags id to filter for",
           "example": "5e9b1b9b0f9b2c0017b5f1b5,5e9b1b9b0f9b2c0017b5f1b6,..."
+        },
+        {
+          "in": "query",
+          "name": "name",
+          "required": false,
+          "description": "Filter conversations by name"
+        },
+        {
+          "in": "query",
+          "name": "description",
+          "required": false,
+          "description": "Filter conversations by description"
+        },
+        {
+          "in": "query",
+          "name": "text",
+          "required": false,
+          "description": "Full-text search in conversation content"
+        },
+        {
+          "$ref": "#/components/parameters/Page"
+        },
+        {
+          "$ref": "#/components/parameters/Size"
+        },
+        {
+          "$ref": "#/components/parameters/SortField"
+        },
+        {
+          "$ref": "#/components/parameters/SortCriteria"
         }
       ],
       "responses": {
@@ -42,7 +72,7 @@
   "/api/conversations/shared/access": {
     "post": {
       "tags": ["conversations"],
-      "summary": "Add access to user from a conversation list",
+      "summary": "Add user access to a list of conversations",
       "requestBody": {
         "content": {
           "multipart/form-data": {
@@ -63,9 +93,9 @@
                   "description": "List of users id to share with their access level",
                   "$ref": "#/components/schemas/UserShared"
                 }
-              }
-            },
-            "required": ["conversations", "users"]
+              },
+              "required": ["conversations", "users"]
+            }
           }
         }
       },
@@ -94,7 +124,7 @@
     },
     "patch": {
       "tags": ["conversations"],
-      "summary": "Update access to user from a conversation list",
+      "summary": "Update user access on a list of conversations",
       "requestBody": {
         "content": {
           "multipart/form-data": {
@@ -115,9 +145,9 @@
                   "description": "List of users id to share with their access level",
                   "$ref": "#/components/schemas/UserShared"
                 }
-              }
-            },
-            "required": ["conversations", "users"]
+              },
+              "required": ["conversations", "users"]
+            }
           }
         }
       },
@@ -146,7 +176,7 @@
     },
     "delete": {
       "tags": ["conversations"],
-      "summary": "Remove access to user from a conversation list",
+      "summary": "Remove user access from a list of conversations",
       "requestBody": {
         "content": {
           "multipart/form-data": {
@@ -167,9 +197,9 @@
                   "description": "List of users id to share with their access level",
                   "$ref": "#/components/schemas/UserShared"
                 }
-              }
-            },
-            "required": ["conversations", "users"]
+              },
+              "required": ["conversations", "users"]
+            }
           }
         }
       },

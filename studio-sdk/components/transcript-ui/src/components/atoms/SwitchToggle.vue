@@ -4,8 +4,10 @@ import { useId } from 'vue'
 const props = withDefaults(defineProps<{
   modelValue: boolean
   id?: string
+  disabled?: boolean
 }>(), {
   id: undefined,
+  disabled: false,
 })
 
 const emit = defineEmits<{
@@ -21,6 +23,7 @@ const inputId = props.id ?? useId()
       type="checkbox"
       :id="inputId"
       :checked="modelValue"
+      :disabled="disabled"
       @change="emit('update:modelValue', ($event.target as HTMLInputElement).checked)"
     />
     <label :for="inputId">
@@ -78,5 +81,10 @@ const inputId = props.id ?? useId()
 .switch input:checked + label .switch-slider {
   left: 20px;
   border-color: var(--color-primary);
+}
+
+.switch input:disabled + label {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 </style>

@@ -45,6 +45,11 @@ const en: Record<keyof typeof fr, string> = {
   'subtitle.showWatermark': 'Show watermark',
   'subtitle.pinWatermark': 'Pin watermark',
   'sidebar.subtitle': 'Subtitles',
+  'sidebar.voicePlayback': 'Voice playback',
+  'voicePlayback.enable': 'Read aloud',
+  'voicePlayback.description': "Uses the browser's default speech synthesis.",
+  'voicePlayback.unavailable':
+    'No speech synthesis voice is available in this browser.',
   'sidebar.history': 'History',
   'sidebar.generationLabel': 'Generation {date}',
   'sidebar.versionLabel': 'v{n} — {date}',

@@ -22,19 +22,29 @@ export const organizationPermissionsMixin = {
     hasBotPermission(permission) {
       return this.hasPermission(permission, ORGANIZATION_PERMISSIONS.BOT)
     },
+    hasSpeakerIdentificationPermission(permission) {
+      return this.hasPermission(
+        permission,
+        ORGANIZATION_PERMISSIONS.SPEAKER_IDENTIFICATION,
+      )
+    },
     computePermissionsNumber({
       upload = false,
       summary = false,
       session = false,
       microphone = false,
       bot = false,
+      speakerIdentification = false,
     }) {
       return (
         (upload ? ORGANIZATION_PERMISSIONS.UPLOAD : 0) +
         (summary ? ORGANIZATION_PERMISSIONS.SUMMARY : 0) +
         (session ? ORGANIZATION_PERMISSIONS.SESSION : 0) +
         (microphone ? ORGANIZATION_PERMISSIONS.MICROPHONE : 0) +
-        (bot ? ORGANIZATION_PERMISSIONS.BOT : 0)
+        (bot ? ORGANIZATION_PERMISSIONS.BOT : 0) +
+        (speakerIdentification
+          ? ORGANIZATION_PERMISSIONS.SPEAKER_IDENTIFICATION
+          : 0)
       )
     },
   },

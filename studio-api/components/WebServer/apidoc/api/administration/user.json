@@ -2,17 +2,10 @@
   "/api/administration/users": {
     "post": {
       "tags": ["administration users"],
-      "summary": "Create an user",
+      "summary": "Create a user",
       "parameters": [
         {
-          "in": "query",
-          "name": "userScope",
-          "schema": {
-            "type": "string",
-            "enum": ["backoffice"]
-          },
-          "required": true,
-          "description": "Scope of the user, must be 'backoffice'"
+          "$ref": "#/components/parameters/UserScope"
         }
       ],
       "requestBody": {
@@ -79,14 +72,43 @@
       "summary": "List all users of the platform",
       "parameters": [
         {
+          "$ref": "#/components/parameters/UserScope"
+        },
+        {
           "in": "query",
-          "name": "userScope",
-          "schema": {
-            "type": "string",
-            "enum": ["backoffice"]
-          },
-          "required": true,
-          "description": "Scope of the user, must be 'backoffice'"
+          "name": "name",
+          "required": false,
+          "description": "Filter users by first name (case-insensitive)"
+        },
+        {
+          "in": "query",
+          "name": "lastname",
+          "required": false,
+          "description": "Filter users by last name (case-insensitive)"
+        },
+        {
+          "in": "query",
+          "name": "email",
+          "required": false,
+          "description": "Filter users by email (case-insensitive)"
+        },
+        {
+          "in": "query",
+          "name": "type",
+          "required": false,
+          "description": "Filter users by account type"
+        },
+        {
+          "$ref": "#/components/parameters/Page"
+        },
+        {
+          "$ref": "#/components/parameters/Size"
+        },
+        {
+          "$ref": "#/components/parameters/SortField"
+        },
+        {
+          "$ref": "#/components/parameters/SortCriteria"
         }
       ],
       "responses": {
@@ -114,14 +136,7 @@
       "summary": "Delete users by userIds",
       "parameters": [
         {
-          "in": "query",
-          "name": "userScope",
-          "schema": {
-            "type": "string",
-            "enum": ["backoffice"]
-          },
-          "required": true,
-          "description": "Scope of the user, must be 'backoffice'"
+          "$ref": "#/components/parameters/UserScope"
         }
       ],
       "requestBody": {
@@ -138,10 +153,7 @@
                   }
                 }
               },
-              "required": [
-                "634e6a0783f5db343dfc40cd",
-                "717d6b0895b5ae123dfc25ae"
-              ]
+              "required": ["userIds"]
             }
           }
         }
@@ -160,28 +172,15 @@
   "/api/administration/users/{userId}": {
     "patch": {
       "tags": ["administration users"],
-      "summary": "Update the desired userId",
+      "summary": "Update a user by ID",
       "parameters": [
         {
-          "in": "path",
-          "name": "userId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an user"
+          "$ref": "#/components/parameters/UserId"
         },
         {
-          "in": "query",
-          "name": "userScope",
-          "schema": {
-            "type": "string",
-            "enum": ["backoffice"]
-          },
-          "required": true,
-          "description": "Scope of the user, must be 'backoffice'"
+          "$ref": "#/components/parameters/UserScope"
         }
       ],
-
       "requestBody": {
         "content": {
           "multipart/form-data": {
@@ -211,7 +210,7 @@
                 "emailNotifications": {
                   "type": "object",
                   "schema": {
-                    "$ref": "#/components/schemas/EmailNotifications"
+                    "$ref": "#/components/schemas/EmailNotification"
                   },
                   "example": {
                     "conversations": {
@@ -227,6 +226,14 @@
                       "update": true
                     }
                   }
+                },
+                "role": {
+                  "type": "integer",
+                  "description": "Platform role of the user"
+                },
+                "password": {
+                  "type": "string",
+                  "description": "New password (hashed server side)"
                 }
               }
             }
@@ -265,17 +272,13 @@
   "/api/administration/users/{userId}/organizations/": {
     "get": {
       "tags": ["administration users"],
-      "summary": "List organizations where the user is part of",
+      "summary": "List the organizations the user belongs to",
       "parameters": [
         {
-          "in": "query",
-          "name": "userScope",
-          "schema": {
-            "type": "string",
-            "enum": ["backoffice"]
-          },
-          "required": true,
-          "description": "Scope of the user, must be 'backoffice'"
+          "$ref": "#/components/parameters/UserId"
+        },
+        {
+          "$ref": "#/components/parameters/UserScope"
         }
       ],
       "responses": {

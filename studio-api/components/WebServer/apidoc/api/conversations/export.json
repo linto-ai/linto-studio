@@ -1,0 +1,276 @@
+{
+  "/api/conversations/{conversationId}/export/{jobId}/content": {
+    "get": {
+      "tags": ["conversations member"],
+      "summary": "Get the content of an export job from the LLM gateway",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ConversationId"
+        },
+        {
+          "$ref": "#/components/parameters/JobId"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The job content or its processing status",
+          "content": {
+            "application/json": {}
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "503": {
+          "description": "LLM gateway unreachable"
+        }
+      }
+    }
+  },
+  "/api/conversations/{conversationId}/export/{jobId}/result": {
+    "put": {
+      "tags": ["conversations member"],
+      "summary": "Update the result of an export job. A new version is created on the LLM gateway.",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ConversationId"
+        },
+        {
+          "$ref": "#/components/parameters/JobId"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "content": {
+                  "type": "string",
+                  "description": "New content of the export result"
+                }
+              },
+              "required": ["content"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {}
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "503": {
+          "description": "LLM gateway unreachable"
+        }
+      }
+    }
+  },
+  "/api/conversations/{conversationId}/export/{jobId}/versions": {
+    "get": {
+      "tags": ["conversations member"],
+      "summary": "List all versions of an export job result",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ConversationId"
+        },
+        {
+          "$ref": "#/components/parameters/JobId"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The list of versions",
+          "content": {
+            "application/json": {}
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "503": {
+          "description": "LLM gateway unreachable"
+        }
+      }
+    }
+  },
+  "/api/conversations/{conversationId}/export/{jobId}/versions/{versionNumber}": {
+    "get": {
+      "tags": ["conversations member"],
+      "summary": "Get a specific version of an export job result",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ConversationId"
+        },
+        {
+          "$ref": "#/components/parameters/JobId"
+        },
+        {
+          "in": "path",
+          "name": "versionNumber",
+          "type": "integer",
+          "required": true,
+          "description": "Version number of the export result"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The version",
+          "content": {
+            "application/json": {}
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "503": {
+          "description": "LLM gateway unreachable"
+        }
+      }
+    },
+    "delete": {
+      "tags": ["conversations member"],
+      "summary": "Delete a specific version of an export job result",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ConversationId"
+        },
+        {
+          "$ref": "#/components/parameters/JobId"
+        },
+        {
+          "in": "path",
+          "name": "versionNumber",
+          "type": "integer",
+          "required": true,
+          "description": "Version number of the export result"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {}
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "503": {
+          "description": "LLM gateway unreachable"
+        }
+      }
+    }
+  },
+  "/api/conversations/{conversationId}/export/{jobId}/versions/{versionNumber}/restore": {
+    "post": {
+      "tags": ["conversations member"],
+      "summary": "Restore a specific version as the current export job result",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ConversationId"
+        },
+        {
+          "$ref": "#/components/parameters/JobId"
+        },
+        {
+          "in": "path",
+          "name": "versionNumber",
+          "type": "integer",
+          "required": true,
+          "description": "Version number of the export result"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {}
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "503": {
+          "description": "LLM gateway unreachable"
+        }
+      }
+    }
+  },
+  "/api/conversations/{conversationId}/export/{jobId}/document": {
+    "post": {
+      "tags": ["conversations member"],
+      "summary": "Generate a document (PDF or DOCX) from an export job result",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ConversationId"
+        },
+        {
+          "$ref": "#/components/parameters/JobId"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "format": {
+                  "type": "string",
+                  "enum": ["pdf", "docx"],
+                  "description": "Document format to generate"
+                },
+                "versionNumber": {
+                  "type": "integer",
+                  "description": "Version of the result to use (default: current version)"
+                }
+              },
+              "required": ["format"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "File download",
+          "content": {
+            "application/pdf": {},
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document": {}
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "503": {
+          "description": "LLM gateway unreachable"
+        }
+      }
+    }
+  }
+}

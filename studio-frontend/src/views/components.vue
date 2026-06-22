@@ -62,6 +62,10 @@
     <OrgaRoleSelector v-model="role" />
     <OrgaRoleSelector v-model="role" readonly />
     <div class="flex col gap-tiny">
+      <span>SegmentedControl — value: {{ segmentedValue }}</span>
+      <SegmentedControl v-model="segmentedValue" :options="segmentedOptions" />
+    </div>
+    <div class="flex col gap-tiny">
       <span>OrganizationSelector — value: {{ organizationId }}</span>
       <OrganizationSelector
         v-model="organizationId"
@@ -91,6 +95,7 @@ import DurationInput from "@/components/molecules/DurationInput.vue"
 import OrgaRoleSelector from "@/components/molecules/OrgaRoleSelector.vue"
 import OrganizationSelector from "@/components/molecules/OrganizationSelector.vue"
 import GenericTable from "@/components/molecules/GenericTable.vue"
+import SegmentedControl from "@/components/molecules/SegmentedControl.vue"
 export default {
   props: {},
   data() {
@@ -163,6 +168,12 @@ export default {
         },
       ],
       role: 1,
+      segmentedValue: "week",
+      segmentedOptions: [
+        { name: "day", label: "Jour" },
+        { name: "week", label: "Semaine" },
+        { name: "month", label: "Mois" },
+      ],
       tableContent: [
         { _id: "1", name: "Alfred", role: 1 },
         { _id: "2", name: "Quentin", role: 2 },
@@ -190,6 +201,7 @@ export default {
     OrgaRoleSelector,
     OrganizationSelector,
     GenericTable,
+    SegmentedControl,
   },
 }
 </script>

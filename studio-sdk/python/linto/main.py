@@ -11,9 +11,16 @@ class LinTO:
             base_url=base_url, token=auth_token
         )
 
-    async def transcribe(self, file, enable_diarization=True, number_of_speaker="0", language="*", enablePunctuation=True, name=f"imported file {datetime.now().isoformat()}", members_right=None):
-        args = {}
-        args["file"] = file
+    async def upload(self, file, enable_diarization=True, number_of_speaker="0", language="*", enablePunctuation=True, name=None, members_right=None):
+        """Upload a file and return its conversation_id, without polling.
+
+        Performs only the upload step. The returned conversation_id can be
+        checkpointed and later passed to poll_media() to resume waiting for
+        the transcription result without re-uploading (which would create a
+        duplicate conversation).
+        """
+        if name is None:
+            name = f"imported file {datetime.now().isoformat()}"
         res = await self.api_service.upload_file(
             file=file,
             enable_diarization=enable_diarization,
@@ -23,8 +30,41 @@ class LinTO:
             name=name,
             membersRight=members_right,
         )
-        media_id = res["conversationId"]
-        return PollingService(media_id, self.api_service)
+        return res["conversationId"]
+
+    async def get_media(self, conversation_id):
+        """One-shot fetch of a FINISHED media (no polling loop).
+
+        Use this on a resume path when the transcription is already known to be
+        done (e.g. a checkpointed step); use poll_media() when you still need to
+        wait for completion. Does NOT verify the job state — the caller must only
+        call it once completion is known. Raises on HTTP failure.
+        """
+        return await self.api_service.get_media(mediaId=conversation_id)
+
+    async def poll_media(self, conversation_id):
+        """Return a polling/resume handle for an already-created conversation.
+
+        Wraps an existing conversation_id (e.g. one returned by upload()) in a
+        PollingService that auto-starts polling and emits "done", "error" and
+        "update" events. Use this to resume after a crash/retry without
+        re-uploading the file.
+        """
+        return PollingService(conversation_id, self.api_service)
+
+    async def transcribe(self, file, enable_diarization=True, number_of_speaker="0", language="*", enablePunctuation=True, name=None, members_right=None):
+        if name is None:
+            name = f"imported file {datetime.now().isoformat()}"
+        conversation_id = await self.upload(
+            file=file,
+            enable_diarization=enable_diarization,
+            number_of_speaker=number_of_speaker,
+            language=language,
+            enablePunctuation=enablePunctuation,
+            name=name,
+            members_right=members_right,
+        )
+        return await self.poll_media(conversation_id)
 
     async def list_services(self):
         return await self.api_service.fetch_asr_services()

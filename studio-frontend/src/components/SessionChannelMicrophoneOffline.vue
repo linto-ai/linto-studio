@@ -17,10 +17,6 @@ import { bus } from "@/main.js"
 import RecordingIndicator from "@/components/molecules/RecordingIndicator.vue"
 export default {
   props: {
-    channel: {
-      type: Object,
-      required: true,
-    },
     isRecording: {
       type: Boolean,
       required: false,

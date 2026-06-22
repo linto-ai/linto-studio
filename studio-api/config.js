@@ -22,6 +22,7 @@ function configureDefaults() {
     process.env.VOLUME_AUDIO_PATH = "audios"
     process.env.VOLUME_PROFILE_PICTURE_PATH = "pictures"
     process.env.VOLUME_AUDIO_SESSION_PATH = "session_audio"
+    process.env.VOLUME_VOICE_SIGNATURES_PATH = "voice_signatures"
   } catch (e) {
     console.error(debug.namespace, e)
     process.exit(1)

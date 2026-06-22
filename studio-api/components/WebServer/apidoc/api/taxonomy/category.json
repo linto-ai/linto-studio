@@ -2,21 +2,10 @@
   "/api/conversations/{conversationId}/categories": {
     "post": {
       "tags": ["conversations taxonomy"],
-      "summary": "Create a category in an organization",
+      "summary": "Create a category in the organization of a conversation",
       "parameters": [
         {
-          "name": "conversationId",
-          "in": "path",
-          "description": "Conversation ID",
-          "required": true,
-          "type": "string"
-        },
-        {
-          "in": "query",
-          "name": "name",
-          "required": false,
-          "description": "Filter by tag name",
-          "example": "tag name"
+          "$ref": "#/components/parameters/ConversationId"
         }
       ],
       "requestBody": {
@@ -33,12 +22,7 @@
                 },
                 "type": {
                   "type": "string",
-                  "enum": [
-                    "keyword",
-                    "conversation_metadata",
-                    "conversation_text",
-                    "commentary"
-                  ]
+                  "enum": ["highlight", "conversation_metadata"]
                 }
               },
               "required": ["name", "type"]
@@ -51,11 +35,13 @@
           "description": "OK",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "description": "Category created"
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Category created"
+                  }
                 }
               },
               "example": {
@@ -77,14 +63,10 @@
     },
     "get": {
       "tags": ["conversations taxonomy"],
-      "summary": "Retrieve all categories from an conversation organization",
+      "summary": "Retrieve all categories from the organization of a conversation",
       "parameters": [
         {
-          "name": "organizationId",
-          "in": "path",
-          "description": "Organization ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
           "in": "query",
@@ -99,6 +81,16 @@
           "name": "expand",
           "required": false,
           "description": "Expand the result with their linked tags"
+        },
+        {
+          "in": "query",
+          "name": "possess",
+          "required": false,
+          "description": "With expand=true on highlight categories, only return tags present on the conversation (with their metadata)",
+          "schema": {
+            "type": "string",
+            "enum": ["true", "false"]
+          }
         }
       ],
       "responses": {
@@ -128,28 +120,20 @@
   "/api/conversations/{conversationId}/categories/{categoryId}": {
     "get": {
       "tags": ["conversations taxonomy"],
-      "summary": "Retrieve a categories from an conversation organization",
+      "summary": "Retrieve a category from the organization of a conversation",
       "parameters": [
         {
-          "name": "conversationId",
-          "in": "path",
-          "description": "Conversation ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
-          "name": "categoryId",
-          "in": "path",
-          "description": "categoryId ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/CategoryId"
         },
         {
           "in": "query",
           "name": "metadata",
           "required": false,
           "description": "Show metadata from tag related to the conversation ",
-          "example": "tag name"
+          "example": "true"
         }
       ],
       "responses": {
@@ -176,14 +160,10 @@
   "/api/conversations/{conversationId}/categories/search": {
     "get": {
       "tags": ["conversations taxonomy"],
-      "summary": "Search categories based on the specified research type",
+      "summary": "Search categories based on the specified search type",
       "parameters": [
         {
-          "name": "conversationId",
-          "in": "path",
-          "description": "Conversation ID",
-          "required": true,
-          "type": "string"
+          "$ref": "#/components/parameters/ConversationId"
         },
         {
           "in": "query",
@@ -225,7 +205,7 @@
           "name": "categoryType",
           "required": false,
           "description": "CategoryType to search, this have the priority over the tags and categories parameters",
-          "example": "highlight,conversation_metadata,conversation_text,commentary"
+          "example": "highlight,conversation_metadata"
         }
       ],
       "responses": {

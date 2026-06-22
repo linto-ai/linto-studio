@@ -2,17 +2,10 @@
   "/api/administration/tokens/": {
     "post": {
       "tags": ["administration"],
-      "summary": "Create an api key token for a backoffice user",
+      "summary": "Create an API key token for a backoffice user",
       "parameters": [
         {
-          "in": "query",
-          "name": "userScope",
-          "schema": {
-            "type": "string",
-            "enum": ["backoffice"]
-          },
-          "required": true,
-          "description": "Scope of the user, must be 'backoffice'"
+          "$ref": "#/components/parameters/UserScope"
         }
       ],
       "requestBody": {
@@ -30,7 +23,7 @@
                 "expires_in": {
                   "type": "string",
                   "description": "Duration until the token expires (e.g., 5y, 30d, 12h)",
-                  "default": "30d"
+                  "default": "14d"
                 },
                 "metadata": {
                   "type": "string",
@@ -64,17 +57,22 @@
     },
     "get": {
       "tags": ["administration"],
-      "summary": "Retrieve all api key tokens from the platform",
+      "summary": "Retrieve all API key tokens from the platform",
       "parameters": [
         {
-          "in": "query",
-          "name": "userScope",
-          "schema": {
-            "type": "string",
-            "enum": ["backoffice"]
-          },
-          "required": true,
-          "description": "Scope of the user, must be 'backoffice'"
+          "$ref": "#/components/parameters/UserScope"
+        },
+        {
+          "$ref": "#/components/parameters/Page"
+        },
+        {
+          "$ref": "#/components/parameters/Size"
+        },
+        {
+          "$ref": "#/components/parameters/SortField"
+        },
+        {
+          "$ref": "#/components/parameters/SortCriteria"
         }
       ],
       "responses": {
@@ -104,25 +102,13 @@
   "/api/administration/tokens/{tokenId}": {
     "put": {
       "tags": ["administration"],
-      "summary": "Regenerate an api key token",
+      "summary": "Regenerate an API key token",
       "parameters": [
         {
-          "in": "query",
-          "name": "userScope",
-          "schema": {
-            "type": "string",
-            "enum": ["backoffice"]
-          },
-          "required": true,
-          "description": "Scope of the user, must be 'backoffice'"
+          "$ref": "#/components/parameters/UserScope"
         },
         {
-          "in": "path",
-          "name": "tokenId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for the api key"
+          "$ref": "#/components/parameters/TokenId"
         }
       ],
       "requestBody": {
@@ -134,10 +120,9 @@
                 "expires_in": {
                   "type": "string",
                   "description": "Duration until the token expires (e.g., 5y, 30d, 12h)",
-                  "default": "30d"
+                  "default": "14d"
                 }
-              },
-              "required": ["role"]
+              }
             }
           }
         }
@@ -164,25 +149,13 @@
     },
     "get": {
       "tags": ["administration"],
-      "summary": "Retrieve details of a specific api key",
+      "summary": "Retrieve details of a specific API key",
       "parameters": [
         {
-          "in": "query",
-          "name": "userScope",
-          "schema": {
-            "type": "string",
-            "enum": ["backoffice"]
-          },
-          "required": true,
-          "description": "Scope of the user, must be 'backoffice'"
+          "$ref": "#/components/parameters/UserScope"
         },
         {
-          "in": "path",
-          "name": "tokenId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for the api key"
+          "$ref": "#/components/parameters/TokenId"
         }
       ],
       "responses": {
@@ -207,25 +180,13 @@
     },
     "delete": {
       "tags": ["administration"],
-      "summary": "Delete an api key",
+      "summary": "Delete an API key",
       "parameters": [
         {
-          "in": "query",
-          "name": "userScope",
-          "schema": {
-            "type": "string",
-            "enum": ["backoffice"]
-          },
-          "required": true,
-          "description": "Scope of the user, must be 'backoffice'"
+          "$ref": "#/components/parameters/UserScope"
         },
         {
-          "in": "path",
-          "name": "tokenId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for the api key"
+          "$ref": "#/components/parameters/TokenId"
         },
         {
           "in": "query",
@@ -239,11 +200,13 @@
           "description": "OK",
           "content": {
             "application/json": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "description": "Message"
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Message"
+                  }
                 }
               },
               "example": {

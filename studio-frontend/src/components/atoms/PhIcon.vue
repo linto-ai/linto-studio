@@ -1,6 +1,19 @@
 <template>
+  <span
+    v-if="framed"
+    class="icon-frame"
+    :class="[`icon-frame--${frameColor}`]">
+    <Icon
+      v-if="iconName"
+      :icon="iconName"
+      :width="sizePx"
+      :height="sizePx"
+      :class="['icon-svg', animation]"
+      :horizontal-flip="mirrored" />
+    <span v-else class="icon-svg missing-icon">?</span>
+  </span>
   <Icon
-    v-if="iconName"
+    v-else-if="iconName"
     :icon="iconName"
     :width="sizePx"
     :height="sizePx"
@@ -31,6 +44,9 @@ export default {
     weight: { type: String, default: "regular" },
     mirrored: { type: Boolean, default: false },
     animation: { type: String, default: "" },
+    // Wrap the icon in a rounded, soft-colored frame (badge-like).
+    framed: { type: Boolean, default: false },
+    frameColor: { type: String, default: "primary" },
   },
   computed: {
     iconName() {
@@ -109,5 +125,29 @@ export default {
 .missing-icon {
   font-size: 1.2em;
   opacity: 0.5;
+}
+
+.icon-frame {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 8px;
+  flex-shrink: 0;
+
+  &--primary {
+    background: var(--primary-soft);
+    color: var(--primary-color);
+  }
+
+  &--secondary {
+    background: var(--secondary-soft, var(--neutral-10));
+    color: var(--secondary-color);
+  }
+
+  &--neutral {
+    background: var(--neutral-10);
+    color: var(--neutral-80);
+  }
 }
 </style>

@@ -59,9 +59,12 @@
         </div>
       </section>
 
-      <SecurityLevelSelector
-        v-if="enableSecurityLevel"
-        v-model="securityLevel" />
+      <section v-if="enableSecurityLevel">
+        <h2>{{ $t("conversation.conversation_creation_security_title") }}</h2>
+        <SecurityLevelSelector
+          v-model="securityLevel"
+          :minLevel="organizationSecurityLevel" />
+      </section>
 
       <!-- Channels section -->
       <section class="flex col">
@@ -116,7 +119,7 @@
         <div v-else class="flex1"></div>
         <Button
           type="button"
-          :disabled="formState === 'sending'"
+          :disabled="formState === 'sending' || startDisabled"
           variant="secondary"
           @click="saveTemplate"
           :label="$t('session.create_page.save_as_template_button')" />
@@ -124,6 +127,7 @@
         <Button
           type="submit"
           variant="primary"
+          :disabled="startDisabled"
           :loading="formState === 'sending'"
           :label="$t('session.create_page.submit_button')" />
       </div>
@@ -136,7 +140,7 @@
     <ModalAddSessionChannels
       v-if="modalAddChannelsIsOpen"
       :transcriberProfiles="transcriberProfiles"
-      :securityLevel="securityLevel"
+      :securityLevel="effectiveSecurityLevel"
       v-model="selectedProfiles"
       @on-confirm="confirmAddSessionChannels"
       @on-cancel="closeModalAddSessionChannels" />
@@ -161,6 +165,7 @@ import EMPTY_FIELD from "@/const/emptyField"
 import { apiCreateSession, apiCreateSessionTemplate } from "@/api/session.js"
 
 import { formsMixin } from "@/mixins/forms.js"
+import { organizationSecurityLevelMixin } from "@/mixins/organizationSecurityLevel.js"
 
 import FormInput from "@/components/molecules/FormInput.vue"
 import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
@@ -177,7 +182,7 @@ import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
 import { extractTranslationLangCode } from "@/tools/translationUtils"
 
 export default {
-  mixins: [formsMixin],
+  mixins: [formsMixin, organizationSecurityLevelMixin],
   props: {
     currentOrganizationScope: {
       type: String,
@@ -328,8 +333,8 @@ export default {
 
       this.applyTemplate(this.selectedTemplate)
     },
-    securityLevel(newLevel) {
-      // Remove channels whose profile doesn't meet the new security level
+    effectiveSecurityLevel(newLevel) {
+      // Remove channels whose profile doesn't meet the effective security level
       this.channels = this.channels.filter((channel) => {
         const profile = this.transcriberProfiles.find(
           (p) => p.id === channel.profileId,
@@ -339,6 +344,11 @@ export default {
     },
   },
   computed: {
+    // A session needs a name and at least one channel before it can be started
+    // or saved as a template.
+    startDisabled() {
+      return !this.name.value || this.channels.length === 0
+    },
     enableSecurityLevel() {
       return getEnv("VUE_APP_ENABLE_SECURITY_LEVEL") === "true"
     },
@@ -583,9 +593,16 @@ export default {
             },
           })
         } else {
+          const errorCode = res.error?.response?.data?.code
+          let message = this.$i18n.t("session.create_page.error_message")
+          if (errorCode === "transcriber_profile_security_level") {
+            message = this.$i18n.t("session.create_page.security_level_error")
+          } else if (res.message) {
+            message = res.message
+          }
           bus.$emit("app_notif", {
             status: "error",
-            message: this.$i18n.t("session.create_page.error_message"),
+            message,
             timeout: null,
           })
           this.formState = "error"

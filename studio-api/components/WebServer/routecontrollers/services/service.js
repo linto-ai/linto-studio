@@ -39,9 +39,12 @@ async function getLlmServices(req, res, next) {
     // Pass organizationId and securityLevel from query params if provided
     const organizationId = req.params.organizationId || null
     const securityLevel = req.query.securityLevel || null
+    // Authenticated user, so user-scoped services are also returned
+    const userId = req.payload?.data?.userId || null
     const services = await serviceUtility.listLlmServices(
       organizationId,
       securityLevel,
+      userId,
     )
     res.status(200).send(services)
   } catch (err) {

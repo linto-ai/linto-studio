@@ -1,4 +1,4 @@
-const { storeFile } = require(
+const { storeFile, STORE_TYPE } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 const { downloadAudio } = require(
@@ -19,7 +19,7 @@ async function prepareFileFormData(files, url) {
 
     if (url) {
       const ddlFileData = await downloadAudio(url, "all")
-      file_data = await storeFile(ddlFileData, "audio")
+      file_data = await storeFile(ddlFileData, STORE_TYPE.AUDIO)
       form.append("file", fs.readFileSync(file_data.storageFilePath), {
         filename: file_data.filename,
       })
@@ -27,10 +27,10 @@ async function prepareFileFormData(files, url) {
       for (const file of files.file) {
         form.append("file", file.data, { filename: uuidv4() })
       }
-      file_data = await storeFile(files, "multi_audio")
+      file_data = await storeFile(files, STORE_TYPE.MULTI_AUDIO)
     } else if (files?.file) {
       const fileData = { ...files.file, name: utf8.decode(files.file.name) }
-      file_data = await storeFile(fileData, "audio")
+      file_data = await storeFile(fileData, STORE_TYPE.AUDIO)
       form.append("file", files.file.data, { filename: uuidv4() })
     } else {
       throw new ConversationNoFileUploaded()

@@ -17,7 +17,7 @@ const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
 const Mailing = require(`${process.cwd()}/lib/mailer/mailing`)
 const validator = require(`${process.cwd()}/lib/dao/schema/validator`)
 
-const { storeFile, defaultPicture, deleteFile, getStorageFolder } = require(
+const { storeFile, defaultPicture, deleteFile, getStorageFolder, STORE_TYPE } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 
@@ -42,6 +42,10 @@ const { populateUserToOrganization } = require(
 )
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 
+const triggers = require(
+  `${process.cwd()}/components/WebServer/controllers/speakerIdentification/triggers`,
+)
+
 async function createUser(req, res, next) {
   try {
     if (process.env.DISABLE_USER_CREATION === "true")
@@ -54,7 +58,7 @@ async function createUser(req, res, next) {
       throw new UserUnsupportedMediaType()
 
     if (req.files && Object.keys(req.files).length !== 0 && req.files.file)
-      user.img = await storeFile(req.files.file, "picture")
+      user.img = await storeFile(req.files.file, STORE_TYPE.PICTURE)
     else user.img = defaultPicture()
 
     if (!organizationName) organizationName = user.email + "'s Organization"
@@ -239,7 +243,15 @@ async function updateUser(req, res, next) {
 
     const result = await model.users.update(user)
     if (result.matchedCount === 0) throw new UserError()
-    else if (result.modifiedCount === 1)
+
+    // The display name carried by the user's Qdrant point must follow a
+    // first/last name change: re-upsert it in every opted-in organization
+    // (fire-and-forget, no-op when no voiceprint exists). cf. 07 §2.3.
+    if (req.body.firstname || req.body.lastname) {
+      triggers.renameUserSpeaker(req.payload.data.userId)
+    }
+
+    if (result.modifiedCount === 1)
       res.status(200).send({ message: "User updated" })
     else res.status(202).send()
   } catch (err) {
@@ -253,7 +265,7 @@ async function updateUserPicture(req, res, next) {
       throw new UserUnsupportedMediaType()
     const payload = {
       _id: req.payload.data.userId,
-      img: await storeFile(req.files.file, "picture"),
+      img: await storeFile(req.files.file, STORE_TYPE.PICTURE),
     }
 
     const user = await model.users.getById(req.payload.data.userId)

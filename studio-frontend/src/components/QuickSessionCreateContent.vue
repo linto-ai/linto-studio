@@ -19,12 +19,17 @@
         :profilesList="transcriberProfiles" />
     </section> -->
 
-    <SecurityLevelSelector v-if="enableSecurityLevel" v-model="securityLevel" />
+    <section v-if="enableSecurityLevel">
+      <h2>{{ $t("conversation.conversation_creation_security_title") }}</h2>
+      <SecurityLevelSelector
+        v-model="securityLevel"
+        :minLevel="organizationSecurityLevel" />
+    </section>
 
     <QuickSessionSettings
       :transcriberProfiles="transcriberProfiles"
       :transcriptionServices="transcriptionServices"
-      :securityLevel="securityLevel"
+      :securityLevel="effectiveSecurityLevel"
       :field="quickSessionSettingsField"
       source="micro"
       v-model="quickSessionSettingsField.value" />
@@ -57,6 +62,7 @@ import { testQuickSessionSettings } from "@/tools/fields/testQuickSessionSetting
 import generateServiceConfig from "@/tools/generateServiceConfig"
 
 import { formsMixin } from "@/mixins/forms.js"
+import { organizationSecurityLevelMixin } from "@/mixins/organizationSecurityLevel.js"
 
 import QuickSessionSettings from "@/components/QuickSessionSettings.vue"
 import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
@@ -66,7 +72,7 @@ import { getEnv } from "@/tools/getEnv"
 import { apiCreateQuickSession } from "@/api/session.js"
 
 export default {
-  mixins: [formsMixin],
+  mixins: [formsMixin, organizationSecurityLevelMixin],
   props: {
     transcriberProfiles: {
       type: Array,
@@ -155,8 +161,6 @@ export default {
         const channels = [
           {
             name: "Main",
-            transcriberProfileId: settings.selectedProfile.id,
-            translations: settings.selectedProfile.translations ?? [],
             diarization: settings.diarization ?? false,
             keepAudio: settings.keepAudio,
             compressAudio: !settings.offlineTranscription,
@@ -167,6 +171,11 @@ export default {
             },
           },
         ]
+
+        if (settings.selectedProfile) {
+          channels[0].transcriberProfileId = settings.selectedProfile?.id
+          channels[0].translations = settings.selectedProfile?.translations
+        }
         const res = await apiCreateQuickSession(this.currentOrganizationScope, {
           channels: channels,
           meta: {
