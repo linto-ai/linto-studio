@@ -35451,7 +35451,7 @@ const _sfc_main$v = /* @__PURE__ */ defineComponent({
     align: { default: "start", type: String },
     side: { default: "bottom", type: String },
     sideOffset: { default: 4, type: Number },
-    open: { type: Boolean }
+    open: { type: Boolean, default: void 0 }
   },
   emits: ["select", "update:open"],
   setup(__props, { emit: __emit }) {
@@ -42997,6 +42997,18 @@ to {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
     0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Turn nodes use \`content-visibility: auto\` for long-document perf, which
+   implies paint containment and clips any overflow to the turn's box. The
+   speaker popover floats out of the turn, so it gets cut off at the turn's
+   bottom edge. While its trigger is open (Reka sets data-state="open"), drop
+   the containment on that turn so the popover can overflow freely. The turn is
+   on-screen when open, so lifting content-visibility causes no layout shift.
+   Global (not scoped) because the open trigger is rendered by another
+   component, so a scoped :has() selector would not match it. */
+section.turn:has([data-state="open"]) {
+  content-visibility: visible;
 }
 
 /* Shared surface and row styles for PopoverList and similar anchored panels.

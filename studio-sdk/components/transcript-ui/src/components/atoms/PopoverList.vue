@@ -22,6 +22,7 @@ const props = withDefaults(
     align: "start",
     side: "bottom",
     sideOffset: 4,
+    open: undefined,
   },
 )
 
