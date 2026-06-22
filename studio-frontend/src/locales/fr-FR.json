@@ -221,6 +221,7 @@
       "diarization_label": "Activer la diarisation",
       "options_title": "Options",
       "credentials_title": "Identifiants",
+      "model_title": "Modèle",
       "warning_global": {
         "line_1": "Ce profil sera visible dans toutes les organisations."
       },

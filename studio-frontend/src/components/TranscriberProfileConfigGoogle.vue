@@ -29,61 +29,60 @@
         {{ $t("backoffice.transcriber_profile_detail.credentials_title") }}
       </h4>
 
-      <div class="form-field">
-        <label class="form-label">{{
-          $t("backoffice.transcriber_profile_detail.google_credentials_label")
-        }}</label>
-        <textarea
-          class="credentials-textarea"
-          rows="8"
-          :placeholder="
+      <FormInput :field="credentialsField">
+        <template #custom-input="{ id }">
+          <textarea
+            :id="id"
+            class="credentials-textarea"
+            rows="8"
+            :placeholder="credentialsField.placeholder"
+            :value="credentialsValue"
+            @input="onCredentialsInput" />
+        </template>
+        <template #content-bottom-input>
+          <span class="helper-text">{{
             $t(
-              'backoffice.transcriber_profile_detail.google_credentials_placeholder',
+              "backoffice.transcriber_profile_detail.google_credentials_helper",
             )
-          "
-          :value="credentialsValue"
-          @input="onCredentialsInput" />
-        <span class="helper-text">{{
-          $t("backoffice.transcriber_profile_detail.google_credentials_helper")
-        }}</span>
-        <div class="file-input-wrapper">
-          <input
-            ref="credentialsFile"
-            type="file"
-            accept=".json"
-            class="file-input-hidden"
-            @change="onCredentialsFileChange" />
-          <Button
-            variant="secondary"
-            size="sm"
-            icon="upload"
-            :label="
-              $t(
-                'backoffice.transcriber_profile_detail.google_credentials_load_file',
-              )
-            "
-            @click="triggerCredentialsFile" />
-        </div>
-      </div>
+          }}</span>
+          <div class="file-input-wrapper">
+            <input
+              ref="credentialsFile"
+              type="file"
+              accept=".json"
+              class="file-input-hidden"
+              @change="onCredentialsFileChange" />
+            <Button
+              variant="secondary"
+              size="sm"
+              icon="upload"
+              :label="
+                $t(
+                  'backoffice.transcriber_profile_detail.google_credentials_load_file',
+                )
+              "
+              @click="triggerCredentialsFile" />
+          </div>
+        </template>
+      </FormInput>
 
       <FormInput :field="projectIdField" v-model="localConfig.projectId" />
     </section>
 
-    <section class="options-section">
-      <h4>{{ $t("backoffice.transcriber_profile_detail.options_title") }}</h4>
-      <div class="form-field">
-        <label class="form-label">{{
-          $t("backoffice.transcriber_profile_detail.google_model_label")
-        }}</label>
-        <select v-model="localConfig.model" class="model-select">
-          <option
-            v-for="option in modelOptions"
-            :key="option.value"
-            :value="option.value">
-            {{ option.label }}
-          </option>
-        </select>
-      </div>
+    <section class="model-section">
+      <h4>{{ $t("backoffice.transcriber_profile_detail.model_title") }}</h4>
+      <FormInput :field="modelField">
+        <template #custom-input="{ id }">
+          <select :id="id" v-model="localConfig.model" class="model-select">
+            <option
+              v-for="option in modelOptions"
+              :key="option.value"
+              :value="option.value">
+              {{ option.label || option.value }}
+            </option>
+          </select>
+        </template>
+      </FormInput>
     </section>
 
     <section class="languages-section">
@@ -123,10 +122,25 @@ export default {
       supportedLanguages: GOOGLE_LANGUAGES,
       modelOptions: [
         { value: "", label: "Default" },
-        { value: "latest_long", label: "latest_long" },
-        { value: "latest_short", label: "latest_short" },
-        { value: "telephony", label: "telephony" },
+        { value: "latest_long" },
+        { value: "latest_short" },
+        { value: "telephony" },
       ],
+      modelField: {
+        label: this.$t(
+          "backoffice.transcriber_profile_detail.google_model_label",
+        ),
+        error: null,
+      },
+      credentialsField: {
+        label: this.$t(
+          "backoffice.transcriber_profile_detail.google_credentials_label",
+        ),
+        placeholder: this.$t(
+          "backoffice.transcriber_profile_detail.google_credentials_placeholder",
+        ),
+        error: null,
+      },
       nameField: {
         label: this.$t("backoffice.transcriber_profile_detail.name_label"),
         placeholder: this.$t(
@@ -229,6 +243,7 @@ export default {
 }
 
 .credentials-section,
+.model-section,
 .languages-section {
   display: flex;
   flex-direction: column;
@@ -238,10 +253,10 @@ export default {
   border-top: var(--border-block);
 }
 
-.form-field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--tiny-gap);
+/* Fill the FormInput field width like the text inputs, capped by the global
+   select max-width (instead of shrinking to the selected option). */
+.model-select {
+  flex: 1;
 }
 
 .credentials-textarea {
@@ -274,13 +289,5 @@ export default {
 
 .file-input-hidden {
   display: none;
-}
-
-.model-select {
-  padding: var(--small-gap);
-  border: var(--border-input);
-  border-radius: 4px;
-  font-size: var(--text-sm);
-  background: var(--input-background);
 }
 </style>

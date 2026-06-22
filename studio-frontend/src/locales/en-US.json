@@ -220,6 +220,7 @@
       "diarization_label": "Enable diarization",
       "options_title": "Options",
       "credentials_title": "Credentials",
+      "model_title": "Model",
       "warning_global": {
         "line_1": "This profile will be visible in all organisations."
       },
