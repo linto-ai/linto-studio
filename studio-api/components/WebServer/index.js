@@ -127,6 +127,16 @@ class WebServer extends Component {
       },
     )
 
+    // WebServer is the single owner of the HTTP 'upgrade' event. WebSocket
+    // components (IoHandler/socket.io, EditorHandler/Hocuspocus) declare a path
+    // prefix + handler via registerUpgradeHandler(); any unrouted upgrade is
+    // destroyed immediately. This makes upgrade routing explicit and
+    // deterministic instead of relying on engine.io's destroyUpgrade reaper (a
+    // 1s, internal-detail safety net), and stops abandoned upgrade sockets from
+    // leaking file descriptors.
+    this.upgradeRoutes = []
+    this._onUpgrade = this._onUpgrade.bind(this)
+
     require("./routes/router.js")(this) // Loads all defined routes
     WebServerErrorHandler.init(this) // Manage error from controllers
 
@@ -182,6 +192,53 @@ class WebServer extends Component {
 
   loadComponents(name, components) {
     this.app.components[name] = components
+  }
+
+  /**
+   * Register a WebSocket upgrade handler for a path prefix. WebSocket
+   * components call this instead of adding their own `httpServer.on("upgrade")`
+   * listener, so a single router owns all upgrade routing.
+   *
+   * @param {string} prefix - URL path prefix, e.g. "/ws/editor" or "/socket.io"
+   * @param {(req, socket, head) => void} handler - completes the upgrade
+   */
+  registerUpgradeHandler(prefix, handler) {
+    this.upgradeRoutes.push({ prefix, handler })
+    // Re-assert this router as the SOLE 'upgrade' listener. socket.io/engine.io
+    // installs its own listener when it attaches to the httpServer; dropping all
+    // listeners and re-adding ours keeps upgrade routing explicit here whatever
+    // the component load order. Idempotent — `_onUpgrade` is a stable bound fn.
+    this.httpServer.removeAllListeners("upgrade")
+    this.httpServer.on("upgrade", this._onUpgrade)
+  }
+
+  _onUpgrade(request, socket, head) {
+    // A raw upgrade socket with no 'error' listener crashes the process on a
+    // reset, so guard every socket before routing or destroying it.
+    socket.on("error", (err) => debug(`upgrade socket error: ${err.message}`))
+
+    let pathname
+    try {
+      pathname = new URL(request.url, `http://${request.headers.host}`).pathname
+    } catch (err) {
+      debug(`upgrade: malformed url, destroying socket (${err.message})`)
+      socket.destroy()
+      return
+    }
+
+    const route = this.upgradeRoutes.find((r) => pathname.startsWith(r.prefix))
+    if (!route) {
+      // No WebSocket endpoint owns this path: close it now (no reaper to rely on).
+      socket.destroy()
+      return
+    }
+
+    try {
+      route.handler(request, socket, head)
+    } catch (err) {
+      debug(`upgrade handler for ${route.prefix} threw: ${err.message}`)
+      socket.destroy()
+    }
   }
 }
 

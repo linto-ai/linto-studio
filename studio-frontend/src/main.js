@@ -15,7 +15,7 @@ import { getEnv } from "@/tools/getEnv"
 
 import Loading from "vue-loading-overlay"
 
-import { register as registerLintoEditor } from "@linto/studio-editor/webcomponent"
+import { register as registerLintoEditor } from "@linto/transcript-ui/webcomponent"
 
 import "vue-loading-overlay/dist/vue-loading.css"
 

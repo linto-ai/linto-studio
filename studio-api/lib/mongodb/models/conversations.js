@@ -1,4 +1,5 @@
 const MongoModel = require(`../model`)
+const MongoDriver = require(`../driver`)
 const debug = require("debug")("linto:lib:mongodb:models:conversations")
 const { calculateObjectSize } = require("bson")
 
@@ -46,8 +47,9 @@ class ConvoModel extends MongoModel {
   async update(payload) {
     try {
       const operator = "$set"
+      const conversationId = payload._id
       const query = {
-        _id: this.getObjectId(payload._id),
+        _id: this.getObjectId(conversationId),
       }
 
       if (payload.organizationId) delete payload.organizationId
@@ -56,7 +58,17 @@ class ConvoModel extends MongoModel {
       payload.last_update = dateTime
 
       delete payload._id
+      // Never write back a (possibly stale) epoch fetched by the caller:
+      // the epoch is only ever moved forward by bumpEditorEpoch.
+      delete payload.editorEpoch
       let mutableElements = payload
+
+      // External rewrite of editor-owned data: invalidate the editor history
+      // lineage before writing (a bump without a write is harmless, the
+      // reverse would let the editor flush clobber this write).
+      if (payload.text !== undefined || payload.speakers !== undefined) {
+        await this.bumpEditorEpoch(conversationId)
+      }
 
       return await this.mongoUpdateOne(query, operator, mutableElements)
     } catch (error) {
@@ -383,21 +395,194 @@ class ConvoModel extends MongoModel {
 
   async updateTurn(_id, text) {
     try {
-      const operator = "$set"
       const query = {
         _id: this.getObjectId(_id),
       }
       const dateTime = moment().format()
-      let mutableElements = {
-        text: [...text],
-        last_update: dateTime,
-      }
 
-      return await this.mongoUpdateOne(query, operator, mutableElements)
+      // Text rewritten outside the collaborative editor: bump the editor
+      // epoch in the same atomic op to invalidate its persisted Yjs state.
+      return await MongoDriver.constructor.db
+        .collection(this.collection)
+        .updateOne(query, {
+          $set: { text: [...text], last_update: dateTime },
+          $inc: { editorEpoch: 1 },
+        })
     } catch (error) {
       console.error(error)
       return error
     }
+  }
+
+  /**
+   * Update a single turn in-place using MongoDB positional operator.
+   * Unlike updateTurn(), this does NOT read-modify-write the whole text array.
+   */
+  async updateTurnAtomic(conversationId, turnId, newTurn) {
+    try {
+      const query = {
+        _id: this.getObjectId(conversationId),
+        "text.turn_id": turnId,
+      }
+      const dateTime = moment().format()
+      return await MongoDriver.constructor.db
+        .collection(this.collection)
+        .updateOne(query, {
+          $set: {
+            "text.$": { ...newTurn, turn_id: turnId },
+            last_update: dateTime,
+          },
+          $inc: { editorEpoch: 1 },
+        })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  /**
+   * Append a new turn to the text array atomically.
+   */
+  async addTurnAtomic(conversationId, newTurn) {
+    try {
+      const query = { _id: this.getObjectId(conversationId) }
+      const dateTime = moment().format()
+      return await MongoDriver.constructor.db
+        .collection(this.collection)
+        .updateOne(query, {
+          $push: { text: newTurn },
+          $set: { last_update: dateTime },
+          $inc: { editorEpoch: 1 },
+        })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  /**
+   * Remove a turn from the text array atomically.
+   */
+  async removeTurnAtomic(conversationId, turnId) {
+    try {
+      const query = { _id: this.getObjectId(conversationId) }
+      const dateTime = moment().format()
+      return await MongoDriver.constructor.db
+        .collection(this.collection)
+        .updateOne(query, {
+          $pull: { text: { turn_id: turnId } },
+          $set: { last_update: dateTime },
+          $inc: { editorEpoch: 1 },
+        })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  // ── Collaborative editor epoch ────────────────────────────────────────
+  //
+  // `editorEpoch` identifies the current editor CRDT history lineage of a
+  // conversation. It is compared by equality only (never ordered); a missing
+  // field is equivalent to 0 (conversations created before this feature).
+  //
+  // Two rules keep it sound under concurrency:
+  //  - every writer of `text`/`speakers` that does NOT go through the editor
+  //    flush bumps it ($inc, atomic), invalidating the persisted Yjs state;
+  //  - the editor flush never bumps it, and writes with the epoch read at
+  //    document load as an optimistic-concurrency filter (a concurrent bump
+  //    makes the flush match nothing instead of clobbering the rewrite).
+
+  /** Query matching the conversation only if its epoch is still `expectedEpoch`. */
+  editorEpochQuery(conversationId, expectedEpoch) {
+    const query = { _id: this.getObjectId(conversationId) }
+    // `$in: [0, null]` also matches documents without the field (missing ≡ 0).
+    query.editorEpoch =
+      expectedEpoch === 0 ? { $in: [0, null] } : expectedEpoch
+    return query
+  }
+
+  async bumpEditorEpoch(conversationId) {
+    try {
+      // $inc creates the field with value 1 when missing (missing ≡ 0).
+      return await MongoDriver.constructor.db
+        .collection(this.collection)
+        .updateOne(
+          { _id: this.getObjectId(conversationId) },
+          { $inc: { editorEpoch: 1 } },
+        )
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  /**
+   * Replace the entire text array on a conversation.
+   * Used by the collaborative editor flush so that turn order is preserved
+   * exactly as it appears in the Y.Doc (atomic single-document write).
+   * With `expectedEpoch`, the write only applies if the editor epoch is
+   * unchanged — check `matchedCount` on the result. Throws on a DB error (do
+   * not swallow it): the flush must tell a transient failure apart from an
+   * epoch miss (`matchedCount === 0`), which it cannot do from a returned Error.
+   */
+  async replaceTurns(conversationId, turns, expectedEpoch = null) {
+    const query =
+      expectedEpoch === null
+        ? { _id: this.getObjectId(conversationId) }
+        : this.editorEpochQuery(conversationId, expectedEpoch)
+    const dateTime = moment().format()
+    return await this.mongoUpdateOne(query, "$set", {
+      text: turns,
+      last_update: dateTime,
+    })
+  }
+
+  /**
+   * Update specific turns in place by turn_id (caller ensures no
+   * add/remove/reorder). With `expectedEpoch`, every op is filtered on the
+   * epoch — a full write yields matchedCount === turns.length + 1. Throws on a
+   * DB error (do not swallow it): the flush must tell a transient failure apart
+   * from an epoch miss, which it cannot do from a returned Error.
+   */
+  async updateTurnsByIds(conversationId, turns, expectedEpoch = null) {
+    const filter =
+      expectedEpoch === null
+        ? { _id: this.getObjectId(conversationId) }
+        : this.editorEpochQuery(conversationId, expectedEpoch)
+    const operations = turns.map((turn) => ({
+      updateOne: {
+        filter,
+        update: { $set: { "text.$[elem]": turn } },
+        arrayFilters: [{ "elem.turn_id": turn.turn_id }],
+      },
+    }))
+    operations.push({
+      updateOne: {
+        filter,
+        update: { $set: { last_update: moment().format() } },
+      },
+    })
+    return await this.mongoBulkWrite(operations)
+  }
+
+  /**
+   * Replace the speakers array on a conversation.
+   * With `expectedEpoch`, the write only applies if the editor epoch is
+   * unchanged — check `matchedCount` on the result. Throws on a DB error (do
+   * not swallow it): the flush must tell a transient failure apart from an
+   * epoch miss, which it cannot do from a returned Error.
+   */
+  async updateSpeakers(conversationId, speakers, expectedEpoch = null) {
+    const query =
+      expectedEpoch === null
+        ? { _id: this.getObjectId(conversationId) }
+        : this.editorEpochQuery(conversationId, expectedEpoch)
+    const dateTime = moment().format()
+    return await this.mongoUpdateOne(query, "$set", {
+      speakers,
+      last_update: dateTime,
+    })
   }
 
   async updateCategory(_id, category) {

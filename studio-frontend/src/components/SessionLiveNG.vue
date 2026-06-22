@@ -15,7 +15,7 @@ import {
 import {
   createLivePlugin,
   createSubtitlePlugin,
-} from "@linto/studio-editor/webcomponent"
+} from "@linto/transcript-ui/webcomponent"
 import computeSessionTurnUniqueId from "@/const/computeSessionTurnUniqueId"
 import classifySessionTurn from "@/tools/classifySessionTurn"
 import {
@@ -39,7 +39,7 @@ export default {
   data() {
     return {
       livePlugin: null,
-      editor: null,
+      core: null,
       offChannelChange: null,
       offScrollTop: null,
       offWatermarkDisplay: null,
@@ -102,7 +102,7 @@ export default {
         return
       }
 
-      const channel = this.editor.activeChannel.value
+      const channel = this.core.activeChannel.value
 
       if (!channel) {
         return
@@ -134,14 +134,15 @@ export default {
     },
     async initEditor() {
       const el = this.$refs.editor
-      const { editor } = el
-      this.editor = markRaw(editor)
+      const { core } = el
+      this.core = markRaw(core)
 
       this.livePlugin = createLivePlugin({
         tts: getEnv("VUE_APP_ENABLE_TTS") === "true",
       })
-      editor.use(this.livePlugin)
-      editor.use(
+      core.use(this.livePlugin)
+
+      core.use(
         createSubtitlePlugin({
           isVisible: this.displaySubtitles,
           watermark: {
@@ -176,7 +177,7 @@ export default {
       // Subscribe before setDocument: the banner mounts (and emits on mount) as
       // soon as channels are populated by setDocument, so the listener must
       // already be registered to catch the initial emit.
-      this.offSubtitle = editor.on(
+      this.offSubtitle = core.on(
         "subtitle:visible",
         ({ visible, height }) => {
           document.documentElement.style.setProperty(
@@ -187,20 +188,20 @@ export default {
       )
 
       const doc = sessionToEditorDocument(sessionForDoc)
-      editor.setDocument(doc)
+      core.setDocument(doc)
 
-      this.activeChannelIndex = this.editor?.activeChannelId.value ?? null
+      this.activeChannelIndex = this.core?.activeChannelId.value ?? null
 
       // Load initial page of turns
       await this.fetchTurnsPage()
 
-      this.offScrollTop = editor.on("scroll:top", () => this.fetchTurnsPage())
+      this.offScrollTop = core.on("scroll:top", () => this.fetchTurnsPage())
 
-      this.offChannelChange = editor.on("channel:change", ({ channelId }) => {
+      this.offChannelChange = core.on("channel:change", ({ channelId }) => {
         this.activeChannelIndex = channelId
         this.historyOffset = 0
 
-        const channel = this.editor.channels.get(channelId)
+        const channel = this.core.channels.get(channelId)
         if (channel) {
           channel.reset()
         }
@@ -215,7 +216,7 @@ export default {
     },
 
     async fetchTurnsPage() {
-      const channel = this.editor.activeChannel.value
+      const channel = this.core.activeChannel.value
       if (channel.isLoadingHistory.value) return
       if (!channel.hasMoreHistory.value) return
 
@@ -267,7 +268,7 @@ export default {
           defaultLanguage: this.activeChannelObj?.languages?.[0] ?? "*",
         })
         if (events.length > 0) {
-          this.editor.live.prependFinalBatch(events, this.activeChannelIndex)
+          this.core.live.prependFinalBatch(events, this.activeChannelIndex)
         }
 
         this.historyOffset += closedCaptions.length
@@ -296,7 +297,7 @@ export default {
       const type = classifySessionTurn(content, this.hasDiarization)
       if (type !== "original") return
 
-      this.editor.live.onPartial(
+      this.core.live.onPartial(
         {
           text: content.text,
           turnId: computeSessionTurnUniqueId(content),
@@ -310,7 +311,7 @@ export default {
       const type = classifySessionTurn(content, this.hasDiarization)
       if (type !== "original") return
 
-      const activeChannel = this.editor.activeChannel.value
+      const activeChannel = this.core.activeChannel.value
 
       const baseTurn = {
         turnId: computeSessionTurnUniqueId(content),
@@ -322,7 +323,7 @@ export default {
           content.lang ?? activeChannel.sourceTranslation.languages[0] ?? "*",
       }
 
-      this.editor.live.onFinal(
+      this.core.live.onFinal(
         { ...baseTurn, text: content.text },
         this.activeChannelIndex,
       )
@@ -336,7 +337,7 @@ export default {
       //       text,
       //       language: lang,
       //     }))
-      //   this.editor.live.onFinal(
+      //   this.core.live.onFinal(
       //     {
       //       ...baseTurn,
       //       translations,
@@ -348,7 +349,7 @@ export default {
     },
 
     onTranslation(content) {
-      this.editor.live.onTranslation({
+      this.core.live.onTranslation({
         turnId: computeSessionTurnUniqueId(content),
         language: content.targetLang,
         sourceLanguage: content.sourceLang,
@@ -361,7 +362,7 @@ export default {
     },
 
     showMobileSubtitles() {
-      this.editor.subtitle.enterFullscreen()
+      this.core.subtitle.enterFullscreen()
     },
 
     async patchWatermark(settings) {
@@ -387,7 +388,7 @@ export default {
     },
 
     bindWatermarkSync() {
-      const wm = this.editor.subtitle?.watermark
+      const wm = this.core.subtitle?.watermark
       if (!wm) return
 
       const patchAll = (overrides = {}) =>
@@ -400,14 +401,14 @@ export default {
           ...overrides,
         })
 
-      this.offWatermarkDisplay = this.editor.on(
+      this.offWatermarkDisplay = this.core.on(
         "watermark:display",
         ({ display }) => {
           if (this.displayWatermark === display) return
           patchAll({ display })
         },
       )
-      this.offWatermarkPin = this.editor.on("watermark:pin", ({ pinned }) => {
+      this.offWatermarkPin = this.core.on("watermark:pin", ({ pinned }) => {
         if (this.watermarkPinned === pinned) return
         patchAll({ pinned })
       })

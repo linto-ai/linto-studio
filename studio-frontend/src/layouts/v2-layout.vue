@@ -16,6 +16,7 @@
       </div>
       <main class="v2-layout__main" @click="closeSidebar">
         <HeaderBar
+          v-if="!noHeader"
           :breadcrumbItems="breadcrumbItems"
           :fullscreen="fullscreen"
           :noBreadcrumb="noBreadcrumb">
@@ -76,6 +77,10 @@ export default {
     },
     // hide the sidebar
     fullscreen: {
+      type: Boolean,
+      default: false,
+    },
+    noHeader: {
       type: Boolean,
       default: false,
     },

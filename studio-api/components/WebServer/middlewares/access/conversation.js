@@ -129,6 +129,27 @@ module.exports = {
   ) => {
     return await access(next, convId, userId, restricted, right, rightException)
   },
+  hasAccess,
+}
+
+/**
+ * Standalone predicate built on top of the Express `access()` decision tree.
+ * Returns whether `userId` holds `right` on the conversation, without any
+ * req/res/next context. Used outside Express routes (e.g. the editor handler).
+ */
+async function hasAccess(convId, userId, right, restricted = false) {
+  let granted = false
+  await access(
+    (err) => {
+      if (!err) granted = true
+    },
+    convId,
+    userId,
+    restricted,
+    right,
+    ConversationReadAccessDenied,
+  )
+  return granted
 }
 
 async function batchAccess(

@@ -1,0 +1,446 @@
+import type { ComputedRef, Ref, ShallowRef } from "vue"
+import type { AnyExtension } from "@tiptap/core"
+import type {
+  AudioSource,
+  Channel,
+  EditorDocument,
+  Speaker,
+  Turn,
+  Word,
+} from "../types/editor"
+
+// ── Capabilities ────────────────────────────────────────────────────────
+
+export interface CoreCapabilities {
+  text: "edit" | "view"
+  speakers: "edit" | "view"
+}
+
+// ── Event Map ──────────────────────────────────────────────────────────
+
+export interface CoreEventMap {
+  /** A new document was loaded via setDocument (channels rebuilt). */
+  "document:change": void
+  "channel:change": { channelId: string }
+  "translation:change": { translationId: string | null }
+  "turn:add": { turn: Turn; translationId: string }
+  "turn:update": { turn: Turn; translationId: string }
+  "turn:remove": { turnId: string; translationId: string }
+  "speaker:update": { speaker: Speaker }
+  "speaker:add": { speaker: Speaker }
+  "speaker:remove": { speakerId: string }
+  "scroll:top": { translationId: string }
+  "translation:sync": { translationId: string }
+  "channel:sync": { channelId: string }
+  "channel:reset": { channelId: string }
+  "watermark:display": { display: boolean }
+  "watermark:pin": { pinned: boolean }
+  "subtitle:visible": { visible: boolean; height: number }
+  "llmService:regenerate": { id: string }
+  "llmService:export": { id: string }
+  "llmService:active": { id: string | null }
+  "llmService:selectVersion": { id: string; versionNumber: number }
+  "llmService:saveVersion": { id: string; content: string }
+  "llmService:selectGeneration": { id: string; generationId: string }
+  "verbatim:export": { format: string }
+  "chat:loadSessions": void
+  "chat:createSession": void
+  "chat:loadSession": { sessionId: string }
+  "chat:deleteSession": { sessionId: string }
+  "chat:renameSession": { sessionId: string; title: string }
+  "chat:send": { content: string }
+  destroy: void
+}
+
+export type TurnEventKey = "turn:add" | "turn:update" | "turn:remove"
+
+// ── Stores ─────────────────────────────────────────────────────────────
+
+/** Read-only surface of a translation — satisfied by both real and virtual stores. */
+export interface ReadableTranslation {
+  readonly id: string
+  readonly languages: string[]
+  readonly isSource: boolean
+  readonly audio?: AudioSource
+  readonly turns: Readonly<Ref<Turn[]>>
+  getTurn(turnId: string): Turn | undefined
+}
+
+export interface TranslationStore extends ReadableTranslation {
+  /** Epoch ms — last time the transcription was modified (host-pushed). */
+  readonly lastModifiedAt: Ref<number | null>
+  setLastModifiedAt(ts: number | null): void
+  addTurn(turn: Turn): void
+  prependTurns(turns: Turn[]): void
+  updateTurn(turnId: string, patch: Partial<Turn>): void
+  removeTurn(turnId: string): void
+  updateWords(turnId: string, words: Word[]): void
+  setTurns(turns: Turn[]): void
+  replaceTurns(turns: Turn[]): void
+  updateOrCreateTurnSilent(turn: Turn): void
+  hasTurn(turnId: string): boolean
+  getTurn(turnId: string): Turn | undefined
+}
+
+export interface ChannelStore {
+  readonly id: string
+  readonly name: string
+  readonly description?: string
+  readonly duration: number
+  readonly translations: Map<string, TranslationStore>
+  readonly sourceTranslation: TranslationStore
+  /** Virtual bilingual "cross" translation, or null when not applicable. */
+  readonly crossTranslation: ReadableTranslation | null
+  /** Real tracks plus the cross entry when available — what the selector lists. */
+  readonly selectableTranslations: ReadableTranslation[]
+  readonly activeTranslation: ComputedRef<ReadableTranslation>
+  readonly isLoadingHistory: Ref<boolean>
+  readonly hasMoreHistory: Ref<boolean>
+  setActiveTranslation(translationId: string | null): void
+  reset(): void
+  /** Detach internal subscriptions (e.g. the cross-translation relay). */
+  dispose(): void
+}
+
+export interface SpeakersStore {
+  readonly all: Map<string, Speaker>
+  ensure(speakerId: string | null, name?: string): void
+  update(speakerId: string, patch: Partial<Omit<Speaker, "id">>): void
+  updateOrCreate(speaker: Speaker): void
+  delete(speakerId: string): void
+}
+
+// ── Plugin ─────────────────────────────────────────────────────────────
+
+export interface CorePlugin {
+  name: string
+  install(core: Core): (() => void) | void
+  /** TipTap extensions contributed by this plugin (e.g. Collaboration, CollaborationCursor) */
+  tiptapExtensions?: AnyExtension[]
+}
+
+// ── Store Options ───────────────────────────────────────────────────────
+
+export interface CoreOptions {
+  document?: EditorDocument
+  activeChannelId?: string
+  capabilities?: CoreCapabilities
+}
+
+// ── Audio Plugin API ────────────────────────────────────────────────────
+
+export interface AudioPluginApi {
+  currentTime: Ref<number>
+  isPlaying: Ref<boolean>
+  src: ComputedRef<string | null>
+  /**
+   * Precomputed waveform peaks for the current source (raw amplitude values,
+   * any scale — the player normalizes). Null when unavailable: the player
+   * falls back to decoding the audio client-side.
+   */
+  waveform: Ref<number[] | null>
+  /** Id of the word being played (null without word timestamps or when not playing). */
+  activeWordId: Ref<string | null>
+  /** Id of the turn being played (null when out of range or not playing). */
+  activeTurnId: Ref<string | null>
+  seekTo(time: number): void
+  setSeekHandler(handler: ((time: number) => void) | null): void
+  pause(): void
+  setPauseHandler(handler: (() => void) | null): void
+}
+
+// ── Transcription Editor Plugin API (TipTap rich-text editing) ──────────
+
+export interface YjsUser {
+  clientId: number
+  [key: string]: unknown
+}
+
+export interface TranscriptionEditorPluginApi {
+  readonly tiptapEditor: ShallowRef<import("@tiptap/vue-3").Editor | undefined>
+  readonly doc: import("yjs").Doc | null
+  readonly fragment: import("yjs").XmlFragment | null
+  readonly speakersMap: import("yjs").Map<{ name: string; color?: string }> | null
+  readonly users: Ref<YjsUser[]>
+  readonly isConnected: Ref<boolean>
+  /** Non-null when the editor failed to load (e.g. the collab connection was
+   *  rejected for a non-recoverable reason). Surfaced as an error overlay. */
+  readonly error: Ref<string | null>
+  updateUser(attrs: Record<string, unknown>): void
+  /** Set or clear the load error. Cleared automatically on the next document
+   *  load (a successful reload hides the overlay). */
+  setError(message: string | null): void
+}
+
+// ── Subtitle Plugin API ──────────────────────────────────────────────────
+
+export interface WatermarkToken {
+  src: string
+  alt?: string
+}
+
+export interface WatermarkPluginApi {
+  display: Ref<boolean>
+  pinned: Ref<boolean>
+  content: Ref<string>
+  frequency: Ref<number>
+  duration: Ref<number>
+  tokens: Ref<Record<string, WatermarkToken>>
+  readonly: boolean
+}
+
+export interface SubtitlePluginApi {
+  fontSize: Ref<number>
+  isVisible: Ref<boolean>
+  isFullscreen: Ref<boolean>
+  enterFullscreen(): void
+  exitFullscreen(): void
+  watermark?: WatermarkPluginApi
+}
+
+// ── LLM Services Plugin API ─────────────────────────────────────────────
+
+export type LLMServiceStatus =
+  | "idle"
+  | "queued"
+  | "processing"
+  | "complete"
+  | "error"
+
+export interface LLMServiceVersion {
+  versionNumber: number
+  createdAt: number
+}
+
+export type LLMServiceGenerationStatus =
+  | "completed"
+  | "error"
+  | "processing"
+  | "queued"
+
+export interface LLMServiceGeneration {
+  generationId: string
+  createdAt: number
+  status: LLMServiceGenerationStatus
+}
+
+export interface LLMServiceInit {
+  id: string
+  label: string
+  description?: string
+  content?: string
+  status?: LLMServiceStatus
+  progress?: number
+  phase?: string | null
+  error?: string | null
+  lastUpdate?: number | null
+  versions?: LLMServiceVersion[]
+  activeVersionNumber?: number | null
+  generations?: LLMServiceGeneration[]
+  currentGenerationId?: string | null
+}
+
+export interface LLMService {
+  readonly id: string
+  readonly label: Ref<string>
+  readonly description: Ref<string | null>
+  readonly content: Ref<string>
+  readonly status: Ref<LLMServiceStatus>
+  readonly progress: Ref<number>
+  readonly phase: Ref<string | null>
+  readonly error: Ref<string | null>
+  readonly lastUpdate: Ref<number | null>
+  readonly versions: Ref<LLMServiceVersion[]>
+  readonly activeVersionNumber: Ref<number | null>
+  readonly generations: Ref<LLMServiceGeneration[]>
+  readonly currentGenerationId: Ref<string | null>
+  readonly busy: Ref<boolean>
+  readonly dirty: Ref<boolean>
+}
+
+export interface LLMServicesPluginApi {
+  readonly list: Ref<LLMService[]>
+  readonly activeId: Ref<string | null>
+  readonly active: ComputedRef<LLMService | null>
+
+  setActive(id: string | null): void
+
+  register(init: LLMServiceInit): LLMService
+  unregister(id: string): void
+  clear(): void
+  get(id: string): LLMService | undefined
+
+  setLabel(id: string, label: string): void
+  setStatus(id: string, status: LLMServiceStatus): void
+  setProgress(id: string, percentage: number, phase?: string | null): void
+  setContent(id: string, content: string, lastUpdate?: number | null): void
+  setError(id: string, error: string | null): void
+  setVersions(id: string, versions: LLMServiceVersion[]): void
+  setActiveVersion(id: string, versionNumber: number | null): void
+  setGenerations(id: string, generations: LLMServiceGeneration[]): void
+  setCurrentGeneration(id: string, generationId: string | null): void
+  setBusy(id: string, busy: boolean): void
+  setDirty(id: string, dirty: boolean): void
+}
+
+// ── Live Plugin API ─────────────────────────────────────────────────────
+
+export interface LivePartialEventData {
+  /** Segment this partial belongs to — used to match the opposite-language
+   *  translation partial in cross mode. */
+  turnId?: string
+  text?: string
+  language: string
+}
+
+export interface LiveFinalEventData {
+  turnId: string
+  speakerId: string | null
+  text?: string
+  words: Array<{
+    id: string
+    text: string
+    startTime?: number
+    endTime?: number
+    confidence?: number
+  }>
+  startTime: number
+  endTime: number
+  startDate?: number
+  endDate?: number
+  language: string
+  translations?: Array<{
+    translationId: string
+    text: string
+    language: string
+  }>
+}
+
+export interface LiveTranslationEventData {
+  turnId: string
+  language: string
+  /** Original language of the turn (the side being translated from). */
+  sourceLanguage: string
+  text: string
+  final: boolean
+  startTime: number
+  endTime: number
+  speakerId: string | null
+}
+
+export interface LivePluginApi {
+  partial: ShallowRef<string | null>
+  hasLiveUpdate: Ref<boolean>
+  ttsAvailable: boolean
+  ttsEnabled: Ref<boolean>
+  ttsReady: Ref<boolean>
+  enableTTS(): void
+  disableTTS(): void
+  onPartial(event: LivePartialEventData, channelId: string): void
+  onFinal(event: LiveFinalEventData, channelId: string): void
+  prependFinal(event: LiveFinalEventData, channelId: string): void
+  prependFinalBatch(events: LiveFinalEventData[], channelId: string): void
+  onTranslation(event: LiveTranslationEventData): void
+}
+
+// ── Chat Plugin API ───────────────────────────────────────────────────────
+
+export type ChatRole = "user" | "assistant"
+
+export interface ChatMessage {
+  id: string
+  role: ChatRole
+  content: string
+  createdAt?: number
+  tokenCount?: number
+  /** True only for the virtual in-flight assistant message during streaming. */
+  streaming?: boolean
+}
+
+export interface ChatSession {
+  id: string
+  title: string
+}
+
+export interface ChatPluginApi {
+  // ── State (read by the UI) ──
+  readonly drawerOpen: Ref<boolean>
+  readonly sessions: Ref<ChatSession[]>
+  readonly activeSessionId: Ref<string | null>
+  readonly messages: Ref<ChatMessage[]>
+  readonly isStreaming: Ref<boolean>
+  readonly streamingContent: Ref<string>
+  readonly isLoadingSession: Ref<boolean>
+  /** messages plus the in-flight assistant message while streaming */
+  readonly allMessages: ComputedRef<ChatMessage[]>
+
+  // ── UI actions (no network) ──
+  setDrawerOpen(open: boolean): void
+
+  // ── State setters (host-pushed after network) ──
+  setSessions(sessions: ChatSession[]): void
+  setActiveSession(sessionId: string | null): void
+  setMessages(messages: ChatMessage[]): void
+  addMessage(message: ChatMessage): void
+  updateSessionTitle(sessionId: string, title: string): void
+  setLoadingSession(loading: boolean): void
+
+  // ── Streaming lifecycle ──
+  streamStart(): void
+  streamAppend(token: string): void
+  /** Finalize the streamed text as a permanent assistant message and reset. */
+  streamEnd(content: string, meta?: { tokenCount?: number }): void
+  /** Abort streaming (error/cancel) without committing a message. */
+  streamAbort(): void
+}
+
+// ── Core ────────────────────────────────────────────────────────────────
+
+export interface Core {
+  // ── State ────────────────────────────────────────────────────────────
+  readonly title: Ref<string>
+  readonly date: Ref<string | number | null>
+  readonly activeChannelId: Ref<string>
+  readonly capabilities: Ref<CoreCapabilities>
+  /** TipTap extensions collected from all plugins */
+  readonly pluginExtensions: AnyExtension[]
+
+  // ── Stores ───────────────────────────────────────────────────────────
+  readonly speakers: SpeakersStore
+  readonly channels: Map<string, ChannelStore>
+  readonly activeChannel: ComputedRef<ChannelStore | undefined>
+
+  // ── Navigation ───────────────────────────────────────────────────────
+  setDocument(doc: EditorDocument): void
+  setActiveChannel(channelId: string): void
+  setChannel(channelId: string, channel: Channel): void
+
+  // ── Scoped events ────────────────────────────────────────────────────
+  onActiveTranslation<K extends TurnEventKey>(
+    event: K,
+    handler: (payload: CoreEventMap[K]) => void,
+  ): () => void
+
+  // ── Plugin slots ─────────────────────────────────────────────────────
+  audio?: AudioPluginApi
+  transcriptionEditor?: TranscriptionEditorPluginApi
+  live?: LivePluginApi
+  subtitle?: SubtitlePluginApi
+  llmServices?: LLMServicesPluginApi
+  chat?: ChatPluginApi
+
+  // ── Events ───────────────────────────────────────────────────────────
+  on<K extends keyof CoreEventMap>(
+    event: K,
+    handler: (payload: CoreEventMap[K]) => void,
+  ): () => void
+  off<K extends keyof CoreEventMap>(
+    event: K,
+    handler: (payload: CoreEventMap[K]) => void,
+  ): void
+  emit<K extends keyof CoreEventMap>(event: K, payload: CoreEventMap[K]): void
+
+  // ── Plugins ──────────────────────────────────────────────────────────
+  use(plugin: CorePlugin): void
+  destroy(): void
+}
