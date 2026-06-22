@@ -19,7 +19,7 @@
         :field="visioLinkField"
         v-model="visioLinkField.value"
         class="fullwidth"
-        placeholder="Jitsi link"
+        :placeholder="visioPlaceholder"
         required />
     </section>
 
@@ -102,7 +102,8 @@ export default {
         value: "",
         customParams: { placeholder: "https://meet.jit.si/..." },
         label: this.$i18n.t("quick_session.setup_visio.link_label"),
-        testField: testVisioUrl,
+        // Provider-aware URL validation; rewired by the visioTypeField watcher.
+        testField: (field, t) => testVisioUrl(field, t, "jitsi"),
       },
       quickSessionSettingsField: {
         ...EMPTY_FIELD,
@@ -121,7 +122,7 @@ export default {
         },
         testField: testQuickSessionSettings,
       },
-      supportedVisioServices: ["jitsi", "bigbluebutton"],
+      supportedVisioServices: ["jitsi", "bigbluebutton", "teams", "visio"],
       securityLevel: DEFAULT_SECURITY_LEVEL,
       formSubmitLabel: this.$t("quick_session.setup_visio.join_meeting"),
       formError: null,
@@ -132,6 +133,24 @@ export default {
   computed: {
     enableSecurityLevel() {
       return getEnv("VUE_APP_ENABLE_SECURITY_LEVEL") === "true"
+    },
+    visioPlaceholder() {
+      return (
+        {
+          jitsi: "https://meet.jit.si/...",
+          bigbluebutton: "https://bbb.example.com/...",
+          teams: "https://teams.microsoft.com/l/meetup-join/...",
+          visio: "https://visio.example.com/...",
+        }[this.visioTypeField.value] || ""
+      )
+    },
+  },
+  watch: {
+    // Re-point the link field's placeholder and validation at the selected provider.
+    "visioTypeField.value"(provider) {
+      this.visioLinkField.customParams = { placeholder: this.visioPlaceholder }
+      this.visioLinkField.testField = (field, t) =>
+        testVisioUrl(field, t, provider)
     },
   },
   methods: {

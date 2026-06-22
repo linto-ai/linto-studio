@@ -1,7 +1,19 @@
 import { getEnv } from "../getEnv"
 
-export function testVisioUrl(field, t) {
-  const acceptedUrlsStrings = getEnv("VUE_APP_ACCEPTED_JITSI_URLS")
+// Per-provider URL allowlist env. An unset/empty allowlist accepts any URL
+// (the same permissive default the single-provider version had). Defaults to
+// jitsi for back-compat when no provider is passed.
+const ACCEPTED_URLS_ENV = {
+  jitsi: "VUE_APP_ACCEPTED_JITSI_URLS",
+  bigbluebutton: "VUE_APP_ACCEPTED_BBB_URLS",
+  teams: "VUE_APP_ACCEPTED_TEAMS_URLS",
+  visio: "VUE_APP_ACCEPTED_VISIO_URLS",
+}
+
+export function testVisioUrl(field, t, provider = "jitsi") {
+  const acceptedUrlsStrings = getEnv(
+    ACCEPTED_URLS_ENV[provider] || ACCEPTED_URLS_ENV.jitsi,
+  )
 
   let acceptedUrls = []
   if (acceptedUrlsStrings) {
