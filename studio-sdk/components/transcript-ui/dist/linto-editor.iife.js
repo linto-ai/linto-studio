@@ -9305,6 +9305,20 @@ var LintoEditor = (function(exports) {
       }
     }
   }
+  function normalizePeaks(data) {
+    const peaks = new Float32Array(data.length);
+    if (data.length === 0) return peaks;
+    const sorted = data.map(Math.abs).sort((a2, b2) => a2 - b2);
+    const reference = sorted[Math.floor((sorted.length - 1) * 0.98)] ?? 0;
+    if (reference === 0) return peaks;
+    const gamma = 1.5;
+    for (let i2 = 0; i2 < data.length; i2++) {
+      const value = (data[i2] ?? 0) / reference;
+      const clipped = Math.max(-1, Math.min(1, value));
+      peaks[i2] = Math.sign(clipped) * Math.abs(clipped) ** gamma;
+    }
+    return peaks;
+  }
   function renderWaveform(channels, ctx) {
     const { width, height } = ctx.canvas;
     const channel = channels[0];
@@ -9314,8 +9328,11 @@ var LintoEditor = (function(exports) {
     ctx.strokeStyle = ctx.fillStyle;
     ctx.beginPath();
     for (let i2 = 0; i2 < width; i2 += step * 2) {
-      const index = Math.floor(i2 * scale);
-      const value = Math.abs(channel[index] ?? 0);
+      const start = Math.floor(i2 * scale);
+      const end = Math.max(start + 1, Math.floor((i2 + step * 2) * scale));
+      let sum = 0;
+      for (let j2 = start; j2 < end; j2++) sum += Math.abs(channel[j2] ?? 0);
+      const value = sum / (end - start);
       let x2 = i2;
       let y2 = value * (height / 2);
       ctx.moveTo(x2, 0);
@@ -9948,6 +9965,7 @@ var LintoEditor = (function(exports) {
     function setDocument(doc2) {
       validateEditorDocument(doc2);
       buildFromDocument(doc2);
+      emit2("document:change", void 0);
     }
     function setActiveChannel(channelId) {
       if (channelId === activeChannelId.value) return;
@@ -35319,8 +35337,8 @@ ${indentedChild}`;
       };
     }
   });
-  const _style_0$r = "\n.transcription-panel[data-v-a3eca6be] {\n  min-height: 0;\n  overflow: hidden;\n  background-color: var(--color-surface);\n}\n.transcription-panel[data-v-a3eca6be]:has(.ProseMirror:focus) {\n  background-color: var(--color-background);\n}\n.transcription-panel[data-v-a3eca6be] .ProseMirror:focus {\n  outline: 1px solid var(--color-primary);\n  background-color: var(--color-surface);\n  box-shadow: var(--shadow-sm);\n}\n.scroll-container[data-v-a3eca6be] {\n  height: 100%;\n  overflow: auto;\n  position: relative;\n}\n.turns-container[data-v-a3eca6be] {\n  max-width: 80ch;\n  margin-inline: auto;\n  padding: var(--spacing-lg);\n}\n.turns-container[data-v-a3eca6be]:has(.transcription-empty) {\n  display: flex;\n  flex-direction: column;\n  min-height: 100%;\n}\n.history-loading[data-v-a3eca6be] {\n  text-align: center;\n  padding: var(--spacing-md);\n}\n.history-loading progress[data-v-a3eca6be] {\n  width: 120px;\n}\n.history-start[data-v-a3eca6be] {\n  text-align: center;\n  padding: var(--spacing-md);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n}\n\n/* Resume scroll button */\n.resume-scroll-btn[data-v-a3eca6be] {\n  position: sticky;\n  bottom: var(--spacing-lg);\n  left: 50%;\n  translate: -50% 0;\n  z-index: var(--z-sticky);\n  background: var(--glass-background);\n  backdrop-filter: var(--glass-blur);\n  -webkit-backdrop-filter: var(--glass-blur);\n  border: 1px solid var(--color-border);\n  box-shadow: var(--shadow-sm);\n}\n\n/* Transition */\n.fade-slide-enter-active[data-v-a3eca6be],\n.fade-slide-leave-active[data-v-a3eca6be] {\n  transition:\n    opacity 200ms ease,\n    translate 200ms ease;\n}\n.fade-slide-enter-from[data-v-a3eca6be],\n.fade-slide-leave-to[data-v-a3eca6be] {\n  opacity: 0;\n  translate: -50% 8px;\n}\n@media (prefers-reduced-motion: reduce) {\n.fade-slide-enter-active[data-v-a3eca6be],\n  .fade-slide-leave-active[data-v-a3eca6be] {\n    transition: none;\n}\n}\n@media (max-width: 767px) {\n.turns-container[data-v-a3eca6be] {\n    padding: var(--spacing-md);\n}\n}\n";
-  const TranscriptionPanel = /* @__PURE__ */ _export_sfc(_sfc_main$x, [["styles", [_style_0$r]], ["__scopeId", "data-v-a3eca6be"]]);
+  const _style_0$r = "\n.transcription-panel[data-v-3d1ad18a] {\n  min-height: 0;\n  overflow: hidden;\n  background-color: var(--color-surface);\n}\n.transcription-panel[data-v-3d1ad18a]:has(.ProseMirror:focus) {\n  background-color: var(--color-background);\n}\n.transcription-panel[data-v-3d1ad18a] .ProseMirror:focus {\n  outline: 1px solid var(--color-primary);\n  background-color: var(--color-surface);\n  box-shadow: var(--shadow-sm);\n}\n.scroll-container[data-v-3d1ad18a] {\n  height: 100%;\n  overflow: auto;\n  position: relative;\n}\n.turns-container[data-v-3d1ad18a] {\n  max-width: 80ch;\n  margin-inline: auto;\n  padding: var(--spacing-lg);\n}\n.turns-container[data-v-3d1ad18a]:has(.transcription-empty) {\n  display: flex;\n  flex-direction: column;\n  min-height: 100%;\n}\n.history-loading[data-v-3d1ad18a] {\n  text-align: center;\n  padding: var(--spacing-md);\n}\n.history-loading progress[data-v-3d1ad18a] {\n  width: 120px;\n}\n.history-start[data-v-3d1ad18a] {\n  text-align: center;\n  padding: var(--spacing-md);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n}\n\n/* Resume scroll button */\n.resume-scroll-btn[data-v-3d1ad18a] {\n  position: sticky;\n  bottom: var(--spacing-lg);\n  left: 50%;\n  translate: -50% 0;\n  z-index: var(--z-sticky);\n  /* No backdrop-filter: this button is sticky inside the tall scroll\n     container, where a backdrop-filter makes WebRender allocate a render\n     target spanning the whole scroll height — multi-GB on a long transcript. */\n  background: white !important;\n  border: 1px solid var(--color-border);\n  box-shadow: var(--shadow-sm);\n}\n\n/* Transition */\n.fade-slide-enter-active[data-v-3d1ad18a],\n.fade-slide-leave-active[data-v-3d1ad18a] {\n  transition:\n    opacity 200ms ease,\n    translate 200ms ease;\n}\n.fade-slide-enter-from[data-v-3d1ad18a],\n.fade-slide-leave-to[data-v-3d1ad18a] {\n  opacity: 0;\n  translate: -50% 8px;\n}\n@media (prefers-reduced-motion: reduce) {\n.fade-slide-enter-active[data-v-3d1ad18a],\n  .fade-slide-leave-active[data-v-3d1ad18a] {\n    transition: none;\n}\n}\n@media (max-width: 767px) {\n.turns-container[data-v-3d1ad18a] {\n    padding: var(--spacing-md);\n}\n}\n";
+  const TranscriptionPanel = /* @__PURE__ */ _export_sfc(_sfc_main$x, [["styles", [_style_0$r]], ["__scopeId", "data-v-3d1ad18a"]]);
   const _hoisted_1$p = ["data-status"];
   const _hoisted_2$k = {
     key: 0,
@@ -35435,7 +35453,7 @@ ${indentedChild}`;
       align: { default: "start", type: String },
       side: { default: "bottom", type: String },
       sideOffset: { default: 4, type: Number },
-      open: { type: Boolean }
+      open: { type: Boolean, default: void 0 }
     },
     emits: ["select", "update:open"],
     setup(__props, { emit: __emit }) {
@@ -35445,9 +35463,9 @@ ${indentedChild}`;
       const resolvedOpen = computed({
         get: () => {
           if (props.open !== void 0) {
-            return internalOpen.value;
+            return props.open;
           }
-          return props.open;
+          return internalOpen.value;
         },
         set: (v2) => {
           internalOpen.value = v2;
@@ -38097,8 +38115,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$n = "\n.llm-service-panel[data-v-0dbe6868] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.llm-service-panel__status[data-v-0dbe6868] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n}\n.llm-service-panel__status--ok[data-v-0dbe6868] {\n  color: var(--color-success, #2e7d32);\n}\n.llm-service-panel__status--warn[data-v-0dbe6868] {\n  color: var(--color-warning, #ed6c02);\n}\n.llm-service-panel__empty[data-v-0dbe6868] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-0dbe6868] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n@media (max-width: 767px) {\n.llm-service-panel[data-v-0dbe6868] {\n    padding: var(--spacing-md);\n}\n}\n";
-  const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["styles", [_style_0$n]], ["__scopeId", "data-v-0dbe6868"]]);
+  const _style_0$n = "\n.llm-service-panel[data-v-2e197000] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.llm-service-panel__status[data-v-2e197000] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n}\n.llm-service-panel__status--ok[data-v-2e197000] {\n  color: var(--color-success, #2e7d32);\n}\n.llm-service-panel__status--warn[data-v-2e197000] {\n  color: var(--color-warning, #ed6c02);\n}\n.llm-service-panel__empty[data-v-2e197000] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-2e197000] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n@media (max-width: 767px) {\n.llm-service-panel[data-v-2e197000] {\n    padding: var(--spacing-md);\n}\n}\n";
+  const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["styles", [_style_0$n]], ["__scopeId", "data-v-2e197000"]]);
   const _hoisted_1$k = { class: "switch" };
   const _hoisted_2$f = ["id", "checked"];
   const _hoisted_3$d = ["for"];
@@ -38765,8 +38783,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$i = "\n.merge-dialog[data-v-be330083] {\n  margin: auto;\n  max-width: 420px;\n  width: 90vw;\n  padding: var(--spacing-lg);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  color: var(--color-text-primary);\n  box-shadow: 0 16px 48px color-mix(in srgb, var(--color-text-primary) 20%, transparent);\n}\n.merge-dialog[data-v-be330083]::backdrop {\n  background-color: color-mix(in srgb, var(--color-text-primary) 35%, transparent);\n  backdrop-filter: blur(2px);\n}\n.merge-dialog-form[data-v-be330083] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-md);\n}\n.merge-dialog-title[data-v-be330083] {\n  margin: 0;\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n}\n.merge-dialog-description[data-v-be330083] {\n  margin: 0;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n.merge-dialog-actions[data-v-be330083] {\n  display: flex;\n  justify-content: flex-end;\n  gap: var(--spacing-sm);\n}\n";
-  const MergeDialog = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["styles", [_style_0$i]], ["__scopeId", "data-v-be330083"]]);
+  const _style_0$i = "\n.merge-dialog[data-v-e797b7aa] {\n  margin: auto;\n  max-width: 420px;\n  width: 90vw;\n  padding: var(--spacing-lg);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  color: var(--color-text-primary);\n  box-shadow: 0 16px 48px color-mix(in srgb, var(--color-text-primary) 20%, transparent);\n}\n.merge-dialog[data-v-e797b7aa]::backdrop {\n  /* No backdrop-filter: a full-viewport backdrop blur is a large WebRender\n     render target; the dim background alone is enough. */\n  background-color: color-mix(in srgb, var(--color-text-primary) 35%, transparent);\n}\n.merge-dialog-form[data-v-e797b7aa] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-md);\n}\n.merge-dialog-title[data-v-e797b7aa] {\n  margin: 0;\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n}\n.merge-dialog-description[data-v-e797b7aa] {\n  margin: 0;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n.merge-dialog-actions[data-v-e797b7aa] {\n  display: flex;\n  justify-content: flex-end;\n  gap: var(--spacing-sm);\n}\n";
+  const MergeDialog = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["styles", [_style_0$i]], ["__scopeId", "data-v-e797b7aa"]]);
   const _sfc_main$k = /* @__PURE__ */ defineComponent({
     __name: "ChannelSelector",
     props: {
@@ -40960,7 +40978,6 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       removeRegion(turnId);
     }
     function onSpeakerUpdate({ speaker }) {
-      console.log("plop");
       const color = hexToRgba(speaker.color, 0.25);
       for (const [, entry] of regionMap) {
         if (entry.speakerId !== speaker.id) continue;
@@ -41032,7 +41049,12 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       loadError.value = null;
       const regionsPlugin = d.create();
       regions.value = regionsPlugin;
+      const precomputed = audio.waveform.value;
+      const peaks = precomputed?.length ? [normalizePeaks(precomputed)] : void 0;
+      const channelDuration = core.activeChannel.value?.duration;
       const player = w.create({
+        peaks,
+        duration: peaks && channelDuration ? channelDuration : void 0,
         container,
         height: 32,
         waveColor: "#000000ff",
@@ -42543,8 +42565,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$4 = "\n.selection-bar[data-v-1c5a7d10] {\n  flex-shrink: 0;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-xs) var(--spacing-lg);\n  background: var(--glass-background);\n  backdrop-filter: var(--glass-blur);\n  -webkit-backdrop-filter: var(--glass-blur);\n  border-bottom: 1px solid var(--color-border);\n  animation: bar-slide-down-1c5a7d10 var(--transition-duration) ease;\n}\n.selection-count[data-v-1c5a7d10] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-primary);\n}\n.selection-actions[data-v-1c5a7d10] {\n  display: flex;\n  gap: var(--spacing-xs);\n}\n@keyframes bar-slide-down-1c5a7d10 {\nfrom {\n    opacity: 0;\n    translate: 0 -4px;\n}\nto {\n    opacity: 1;\n    translate: 0 0;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.selection-bar[data-v-1c5a7d10] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.selection-bar[data-v-1c5a7d10] {\n    padding: var(--spacing-xs) var(--spacing-md);\n    flex-wrap: wrap;\n    gap: var(--spacing-xs);\n}\n}\n";
-  const SelectionActionBar = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["styles", [_style_0$4]], ["__scopeId", "data-v-1c5a7d10"]]);
+  const _style_0$4 = "\n.selection-bar[data-v-1f9dee3a] {\n  flex-shrink: 0;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-xs) var(--spacing-lg);\n  /* No backdrop-filter: it forces a WebRender backdrop render target sized to\n     the content behind, a heavy GPU-memory cost on long transcripts. The\n     semi-opaque glass background stays legible without the blur. */\n  background: var(--glass-background);\n  border-bottom: 1px solid var(--color-border);\n  animation: bar-slide-down-1f9dee3a var(--transition-duration) ease;\n}\n.selection-count[data-v-1f9dee3a] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-primary);\n}\n.selection-actions[data-v-1f9dee3a] {\n  display: flex;\n  gap: var(--spacing-xs);\n}\n@keyframes bar-slide-down-1f9dee3a {\nfrom {\n    opacity: 0;\n    translate: 0 -4px;\n}\nto {\n    opacity: 1;\n    translate: 0 0;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.selection-bar[data-v-1f9dee3a] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.selection-bar[data-v-1f9dee3a] {\n    padding: var(--spacing-xs) var(--spacing-md);\n    flex-wrap: wrap;\n    gap: var(--spacing-xs);\n}\n}\n";
+  const SelectionActionBar = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["styles", [_style_0$4]], ["__scopeId", "data-v-1f9dee3a"]]);
   const MOBILE_BREAKPOINT = "(max-width: 767px)";
   function useIsMobile() {
     const isMobile = /* @__PURE__ */ ref(false);
@@ -42745,6 +42767,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       );
       const core = createCore();
       provideCore(core);
+      onBeforeUnmount(() => core.destroy());
       __expose({ core });
       return (_ctx, _cache) => {
         return unref(core).channels.size ? (openBlock(), createBlock(Layout, {
@@ -42839,9 +42862,11 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
   --z-drawer: 51;
   --z-dropdown: 100;
 
-  /* Glass effect */
+  /* Glass effect — backdrop blur intentionally removed: each backdrop-filter
+     forces a WebRender render target, which on long transcripts (one waveform
+     region per turn, tall scroll container) balloons GPU memory to several GB
+     and freezes weaker machines. Keep the semi-opaque background only. */
   --glass-background: rgba(255, 255, 255, 0.8);
-  --glass-blur: blur(12px);
   --glass-border: rgba(255, 255, 255, 0.3);
 }
 :host,
@@ -42963,14 +42988,29 @@ to {
 }
 
 /* Wavesurfer ::part (cannot work in scoped styles) */
+
+/* No backdrop-filter: there is one region per turn (hundreds on a long
+   transcript), and each backdrop-filter forces a separate WebRender backdrop
+   render target — on a multi-hour document this balloons GPU/GTT memory to
+   several GB and freezes weaker machines. The border/shadow alone read fine. */
 .waveform-container ::part(region) {
-  backdrop-filter: blur(0.5px);
-  -webkit-backdrop-filter: blur(0.5px);
   border-top: 2px solid var(--region-color, rgba(255, 255, 255, 0.4));
   border-bottom: 1px solid var(--region-color, rgba(255, 255, 255, 0.4));
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
     0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Turn nodes use \`content-visibility: auto\` for long-document perf, which
+   implies paint containment and clips any overflow to the turn's box. The
+   speaker popover floats out of the turn, so it gets cut off at the turn's
+   bottom edge. While its trigger is open (Reka sets data-state="open"), drop
+   the containment on that turn so the popover can overflow freely. The turn is
+   on-screen when open, so lifting content-visibility causes no layout shift.
+   Global (not scoped) because the open trigger is rendered by another
+   component, so a scoped :has() selector would not match it. */
+section.turn:has([data-state="open"]) {
+  content-visibility: visible;
 }
 
 /* Shared surface and row styles for PopoverList and similar anchored panels.
@@ -43066,13 +43106,14 @@ to {
     __name: "SpeakerPopover",
     props: {
       turnId: { type: String },
-      currentSpeakerId: { type: [String, null] }
+      currentSpeakerId: { type: [String, null] },
+      initialOpen: { type: Boolean }
     },
     setup(__props) {
       const props = __props;
       const core = useCore();
       const { t: t2 } = useI18n();
-      const isOpen = /* @__PURE__ */ ref(false);
+      const isOpen = /* @__PURE__ */ ref(props.initialOpen ?? false);
       const isCreatingNew = /* @__PURE__ */ ref(false);
       const newName = /* @__PURE__ */ ref("");
       const newInputRef = useTemplateRef("newInput");
@@ -43165,8 +43206,8 @@ to {
       };
     }
   });
-  const _style_0$1 = "\n.speaker-popover-trigger[data-v-68980c2e] {\n  all: unset;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--radius-sm);\n}\n.speaker-popover-trigger[data-v-68980c2e]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.speaker-popover-name[data-v-68980c2e] {\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n";
-  const SpeakerPopover = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["styles", [_style_0$1]], ["__scopeId", "data-v-68980c2e"]]);
+  const _style_0$1 = "\n.speaker-popover-trigger[data-v-decf6e0f] {\n  all: unset;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--radius-sm);\n}\n.speaker-popover-trigger[data-v-decf6e0f]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.speaker-popover-name[data-v-decf6e0f] {\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n";
+  const SpeakerPopover = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["styles", [_style_0$1]], ["__scopeId", "data-v-decf6e0f"]]);
   const _hoisted_1 = {
     contenteditable: "false",
     class: "turn-header"
@@ -43197,6 +43238,12 @@ to {
       const canEditSpeakers = computed(
         () => core.capabilities.value.speakers === "edit"
       );
+      const popoverMounted = /* @__PURE__ */ ref(false);
+      const openOnMount = /* @__PURE__ */ ref(false);
+      function activatePopover() {
+        openOnMount.value = true;
+        popoverMounted.value = true;
+      }
       const isTurnActive = computed(() => {
         if (!core.audio?.src.value) return false;
         const { startTime, endTime } = props.node.attrs;
@@ -43213,20 +43260,35 @@ to {
         }, {
           default: withCtx(() => [
             createBaseVNode("div", _hoisted_1, [
-              canEditSpeakers.value ? (openBlock(), createBlock(SpeakerPopover, {
-                key: 0,
-                "turn-id": __props.node.attrs.id,
-                "current-speaker-id": __props.node.attrs.speakerId
-              }, {
-                default: withCtx(() => [
+              canEditSpeakers.value ? (openBlock(), createElementBlock(Fragment$1, { key: 0 }, [
+                popoverMounted.value ? (openBlock(), createBlock(SpeakerPopover, {
+                  key: 0,
+                  "turn-id": __props.node.attrs.id,
+                  "current-speaker-id": __props.node.attrs.speakerId,
+                  "initial-open": openOnMount.value
+                }, {
+                  default: withCtx(() => [
+                    createVNode(SpeakerLabel, {
+                      speaker: speaker.value,
+                      "start-time": __props.node.attrs.startTime,
+                      language: __props.node.attrs.language
+                    }, null, 8, ["speaker", "start-time", "language"])
+                  ]),
+                  _: 1
+                }, 8, ["turn-id", "current-speaker-id", "initial-open"])) : (openBlock(), createElementBlock("button", {
+                  key: 1,
+                  type: "button",
+                  class: "lazy-speaker-trigger",
+                  onPointerenter: _cache[0] || (_cache[0] = ($event) => popoverMounted.value = true),
+                  onClick: activatePopover
+                }, [
                   createVNode(SpeakerLabel, {
                     speaker: speaker.value,
                     "start-time": __props.node.attrs.startTime,
                     language: __props.node.attrs.language
                   }, null, 8, ["speaker", "start-time", "language"])
-                ]),
-                _: 1
-              }, 8, ["turn-id", "current-speaker-id"])) : (openBlock(), createBlock(SpeakerLabel, {
+                ], 32))
+              ], 64)) : (openBlock(), createBlock(SpeakerLabel, {
                 key: 1,
                 speaker: speaker.value,
                 "start-time": __props.node.attrs.startTime,
@@ -43243,8 +43305,8 @@ to {
       };
     }
   });
-  const _style_0 = "\n.turn[data-v-b54c3232] {\n  padding: var(--spacing-sm) var(--spacing-lg);\n  border-left: 3px solid transparent;\n}\n.turn-text[data-v-b54c3232] {\n  margin-top: var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.turn--active[data-v-b54c3232] {\n  border-left: 3px solid var(--speaker-color);\n  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);\n}\n[data-v-b54c3232] .word--active {\n  text-decoration: underline;\n  text-decoration-color: var(--speaker-color);\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n  color: var(--speaker-color);\n}\n@media (max-width: 767px) {\n.turn[data-v-b54c3232] {\n    padding: var(--spacing-sm) var(--spacing-md);\n}\n}\n";
-  const TurnNodeView = /* @__PURE__ */ _export_sfc(_sfc_main, [["styles", [_style_0]], ["__scopeId", "data-v-b54c3232"]]);
+  const _style_0 = "\n.turn[data-v-cca1719e] {\n  padding: var(--spacing-sm) var(--spacing-lg);\n  border-left: 3px solid transparent;\n\n  /* Skip layout/paint of off-screen turns on long transcripts. `auto <size>`\n     remembers each turn's real height after first render. */\n  content-visibility: auto;\n  contain-intrinsic-size: auto 56px;\n}\n.turn-text[data-v-cca1719e] {\n  margin-top: var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.turn--active[data-v-cca1719e] {\n  border-left: 3px solid var(--speaker-color);\n  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);\n}\n\n/* Matches SpeakerPopover's trigger so the placeholder looks identical. */\n.lazy-speaker-trigger[data-v-cca1719e] {\n  all: unset;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--radius-sm);\n}\n.lazy-speaker-trigger[data-v-cca1719e]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n[data-v-cca1719e] .word--active {\n  text-decoration: underline;\n  text-decoration-color: var(--speaker-color);\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n  color: var(--speaker-color);\n}\n@media (max-width: 767px) {\n.turn[data-v-cca1719e] {\n    padding: var(--spacing-sm) var(--spacing-md);\n}\n}\n";
+  const TurnNodeView = /* @__PURE__ */ _export_sfc(_sfc_main, [["styles", [_style_0]], ["__scopeId", "data-v-cca1719e"]]);
   function finalEventToSourceTurn(event) {
     const hasWords = event.words.length > 0;
     return {
@@ -43464,6 +43526,7 @@ to {
       }
     };
   }
+  const WORD_TRACK_INTERVAL = 0.05;
   function createAudioPlugin(options = {}) {
     return {
       name: "audio",
@@ -43478,6 +43541,7 @@ to {
           () => core.activeChannel.value?.activeTranslation.value.audio ?? null
         );
         const resolvedSrc = /* @__PURE__ */ ref(null);
+        const waveform = /* @__PURE__ */ ref(null);
         let ownedObjectUrl = null;
         function revokeOwned() {
           if (ownedObjectUrl) {
@@ -43490,9 +43554,18 @@ to {
           async (source) => {
             revokeOwned();
             resolvedSrc.value = null;
+            waveform.value = null;
             if (!source) return;
+            const waveformPromise = options.resolveWaveform ? Promise.resolve(options.resolveWaveform(source)).catch((err) => {
+              console.warn("[audio] resolveWaveform failed", err);
+              return null;
+            }) : Promise.resolve(null);
             try {
-              const url = options.resolveSrc ? await options.resolveSrc(source) : source.src;
+              const [url, peaks] = await Promise.all([
+                options.resolveSrc ? options.resolveSrc(source) : Promise.resolve(source.src),
+                waveformPromise
+              ]);
+              waveform.value = peaks?.length ? peaks : null;
               resolvedSrc.value = url;
               if (url.startsWith("blob:")) ownedObjectUrl = url;
             } catch (err) {
@@ -43502,9 +43575,13 @@ to {
           { immediate: true }
         );
         const src = computed(() => resolvedSrc.value);
+        let lastComputeTime = Number.NEGATIVE_INFINITY;
         const stopTracker = watchEffect(() => {
           if (!isPlaying.value) return;
           const time = currentTime.value;
+          const elapsed = time - lastComputeTime;
+          if (elapsed >= 0 && elapsed < WORD_TRACK_INTERVAL) return;
+          lastComputeTime = time;
           const translation = core.activeChannel.value?.activeTranslation.value;
           if (!translation) return;
           for (const turn of translation.turns.value) {
@@ -43531,6 +43608,7 @@ to {
           currentTime,
           isPlaying,
           src,
+          waveform,
           activeWordId,
           activeTurnId,
           seekTo,
@@ -43600,6 +43678,82 @@ to {
         };
       }
     };
+  }
+  const SPEAKERS_MAP_KEY = "speakers";
+  function fallbackColor(speakerId) {
+    let h2 = 5381;
+    for (let i2 = 0; i2 < speakerId.length; i2++) {
+      h2 = (h2 << 5) + h2 ^ speakerId.charCodeAt(i2);
+    }
+    return SPEAKER_COLORS[(h2 >>> 0) % SPEAKER_COLORS.length];
+  }
+  function resolveColor(id2, data, existing) {
+    return data.color ?? existing?.color ?? fallbackColor(id2);
+  }
+  function seedSpeakersMap(ydoc, translation, speakers) {
+    const speakersMap = ydoc.getMap(SPEAKERS_MAP_KEY);
+    const used = /* @__PURE__ */ new Set();
+    for (const turn of translation.turns.value) {
+      if (turn.speakerId) used.add(turn.speakerId);
+    }
+    ydoc.transact(() => {
+      for (const id2 of used) {
+        if (speakersMap.has(id2)) continue;
+        const speaker = speakers.all.get(id2);
+        if (speaker) {
+          speakersMap.set(id2, { name: speaker.name, color: speaker.color });
+        }
+      }
+    });
+  }
+  class SpeakersSync {
+    core;
+    speakersMap;
+    observer;
+    offCoreEvents;
+    constructor(core, ydoc) {
+      this.core = core;
+      this.speakersMap = ydoc.getMap(SPEAKERS_MAP_KEY);
+      this.importFromY();
+      this.observer = (event) => this.applyYEvent(event);
+      this.speakersMap.observe(this.observer);
+      this.offCoreEvents = [
+        core.on("speaker:add", ({ speaker }) => this.writeToY(speaker)),
+        core.on("speaker:update", ({ speaker }) => this.writeToY(speaker)),
+        core.on(
+          "speaker:remove",
+          ({ speakerId }) => this.speakersMap.delete(speakerId)
+        )
+      ];
+    }
+    destroy() {
+      this.speakersMap.unobserve(this.observer);
+      this.offCoreEvents.forEach((off) => off());
+    }
+    importFromY() {
+      for (const [id2, data] of this.speakersMap.entries()) {
+        const color = resolveColor(id2, data, this.core.speakers.all.get(id2));
+        this.core.speakers.updateOrCreate({ id: id2, name: data.name, color });
+      }
+    }
+    applyYEvent(event) {
+      event.changes.keys.forEach((change, id2) => {
+        if (change.action === "delete") {
+          this.core.speakers.delete(id2);
+          return;
+        }
+        const data = this.speakersMap.get(id2);
+        if (!data) return;
+        const color = resolveColor(id2, data, this.core.speakers.all.get(id2));
+        this.core.speakers.updateOrCreate({ id: id2, name: data.name, color });
+      });
+    }
+    // speakerEquals breaks the echo loop: Y → core → speaker:update → Y.
+    writeToY(speaker) {
+      const cur = this.speakersMap.get(speaker.id);
+      if (cur && speakerEquals(cur, speaker)) return;
+      this.speakersMap.set(speaker.id, { name: speaker.name, color: speaker.color });
+    }
   }
   const create$9 = () => /* @__PURE__ */ new Map();
   const copy = (m2) => {
@@ -55910,100 +56064,6 @@ ${err.toString()}`);
       this.awareness.setLocalStateField(key, value);
     }
   }
-  function turnsToDoc(turns) {
-    return {
-      type: "doc",
-      content: turns.map((turn) => turnToNode(turn))
-    };
-  }
-  function turnToNode(turn) {
-    const text = turn.words.length > 0 ? turn.words.map((w2) => w2.text).join(" ") : turn.text ?? "";
-    return {
-      type: "turn",
-      attrs: {
-        id: turn.id,
-        speakerId: turn.speakerId,
-        startTime: turn.startTime,
-        endTime: turn.endTime,
-        startDate: turn.startDate,
-        endDate: turn.endDate,
-        language: turn.language
-      },
-      content: text ? [{ type: "text", text }] : void 0
-    };
-  }
-  function mapWord(w2) {
-    return {
-      id: w2.wid,
-      text: w2.word,
-      ...w2.stime !== void 0 && { startTime: w2.stime },
-      ...w2.etime !== void 0 && { endTime: w2.etime },
-      ...w2.confidence !== void 0 && { confidence: w2.confidence }
-    };
-  }
-  const SPEAKERS_MAP_KEY = "speakers";
-  function fallbackColor(speakerId) {
-    let h2 = 5381;
-    for (let i2 = 0; i2 < speakerId.length; i2++) {
-      h2 = (h2 << 5) + h2 ^ speakerId.charCodeAt(i2);
-    }
-    return SPEAKER_COLORS[(h2 >>> 0) % SPEAKER_COLORS.length];
-  }
-  function resolveColor(id2, data, existing) {
-    return data.color ?? existing?.color ?? fallbackColor(id2);
-  }
-  function setupSpeakersSync(options) {
-    const { core, ydoc, translation, seedFromCore } = options;
-    const speakersMap = ydoc.getMap(SPEAKERS_MAP_KEY);
-    if (seedFromCore) {
-      const used = /* @__PURE__ */ new Set();
-      for (const turn of translation.turns.value) {
-        if (turn.speakerId) used.add(turn.speakerId);
-      }
-      ydoc.transact(() => {
-        for (const id2 of used) {
-          if (speakersMap.has(id2)) continue;
-          const speaker = core.speakers.all.get(id2);
-          if (speaker) {
-            speakersMap.set(id2, { name: speaker.name, color: speaker.color });
-          }
-        }
-      });
-    }
-    for (const [id2, data] of speakersMap.entries()) {
-      const color = resolveColor(id2, data, core.speakers.all.get(id2));
-      core.speakers.updateOrCreate({ id: id2, name: data.name, color });
-    }
-    const observer = (event) => {
-      event.changes.keys.forEach((change, id2) => {
-        if (change.action === "delete") {
-          core.speakers.delete(id2);
-        } else {
-          const data = speakersMap.get(id2);
-          if (!data) return;
-          const color = resolveColor(id2, data, core.speakers.all.get(id2));
-          core.speakers.updateOrCreate({ id: id2, name: data.name, color });
-        }
-      });
-    };
-    speakersMap.observe(observer);
-    const writeToY = (speaker) => {
-      const cur = speakersMap.get(speaker.id);
-      if (cur && speakerEquals(cur, speaker)) return;
-      speakersMap.set(speaker.id, { name: speaker.name, color: speaker.color });
-    };
-    const offAdd = core.on("speaker:add", ({ speaker }) => writeToY(speaker));
-    const offUpdate = core.on("speaker:update", ({ speaker }) => writeToY(speaker));
-    const offRemove = core.on("speaker:remove", ({ speakerId }) => {
-      speakersMap.delete(speakerId);
-    });
-    return () => {
-      speakersMap.unobserve(observer);
-      offAdd();
-      offUpdate();
-      offRemove();
-    };
-  }
   function isChangeOrigin(transaction) {
     return !!transaction.getMeta(ySyncPluginKey);
   }
@@ -56194,6 +56254,35 @@ ${err.toString()}`);
     topNode: true,
     content: "turn+"
   });
+  const SELECTION_DEBOUNCE_MS = 150;
+  function debouncedTurnNodeViewRenderer() {
+    const base2 = VueNodeViewRenderer(TurnNodeView);
+    return (props) => {
+      const nodeView = base2(props);
+      const nv = nodeView;
+      const editor = nv.editor;
+      const original = nv.handleSelectionUpdate;
+      if (editor && typeof original === "function") {
+        editor.off("selectionUpdate", original);
+        let timer = null;
+        const debounced = () => {
+          if (timer) clearTimeout(timer);
+          timer = setTimeout(() => {
+            timer = null;
+            original();
+          }, SELECTION_DEBOUNCE_MS);
+        };
+        editor.on("selectionUpdate", debounced);
+        const originalDestroy = nv.destroy?.bind(nv);
+        nv.destroy = () => {
+          editor.off("selectionUpdate", debounced);
+          if (timer) clearTimeout(timer);
+          originalDestroy?.();
+        };
+      }
+      return nodeView;
+    };
+  }
   const TurnNode = Node3.create({
     name: "turn",
     group: "block",
@@ -56237,10 +56326,11 @@ ${err.toString()}`);
       };
     },
     addNodeView() {
-      return VueNodeViewRenderer(TurnNodeView);
+      return debouncedTurnNodeViewRenderer();
     }
   });
   const storeSyncKey = new PluginKey("storeSync");
+  const MAX_DUPLICATE_REPAIR = 100;
   const StoreSync = Extension.create({
     name: "storeSync",
     addProseMirrorPlugins() {
@@ -56250,11 +56340,9 @@ ${err.toString()}`);
           key: storeSyncKey,
           appendTransaction(transactions, oldState, newState) {
             if (oldState.doc.eq(newState.doc)) return null;
-            const isRemote = transactions.some(
-              (tr) => tr.getMeta(ySyncPluginKey)
-            );
+            const isRemote = transactions.some((tr) => tr.getMeta(ySyncPluginKey));
             if (!isRemote) {
-              const fixTr = fixDuplicateTurnIds(newState);
+              const fixTr = fixTurnIds(newState);
               if (fixTr) return fixTr;
             }
             const translation = getTranslation();
@@ -56268,15 +56356,45 @@ ${err.toString()}`);
   });
   function syncDocToStore(newDoc, oldDoc, translation, store) {
     const translationId = translation.id;
+    const applyTurnNode = (newNode) => {
+      const id2 = newNode.attrs.id;
+      const newTurn = nodeToTurn(newNode);
+      const oldTurn = translation.getTurn(id2);
+      if (!oldTurn) {
+        translation.updateOrCreateTurnSilent(newTurn);
+        store.emit("turn:add", { turn: newTurn, translationId });
+        return;
+      }
+      const merged = mergeTurnPreservingWords(newTurn, oldTurn);
+      if (hasTurnChanged(oldTurn, merged)) {
+        translation.updateTurn(id2, merged);
+      }
+    };
+    if (oldDoc.childCount === newDoc.childCount) {
+      const changedNodes = [];
+      let structural = false;
+      for (let i2 = 0; i2 < newDoc.childCount; i2++) {
+        const newNode = newDoc.child(i2);
+        const oldNode = oldDoc.child(i2);
+        if (newNode === oldNode) continue;
+        if (newNode.type.name !== "turn" || oldNode.type.name !== "turn" || newNode.attrs.id !== oldNode.attrs.id) {
+          structural = true;
+          break;
+        }
+        changedNodes.push(newNode);
+      }
+      if (!structural) {
+        changedNodes.forEach(applyTurnNode);
+        return;
+      }
+    }
     const oldNodesById = /* @__PURE__ */ new Map();
     oldDoc.forEach((node) => {
       if (node.type.name === "turn") {
         oldNodesById.set(node.attrs.id, node);
       }
     });
-    const oldTurnsById = new Map(
-      translation.turns.value.map((t2) => [t2.id, t2])
-    );
+    const oldTurnsById = new Map(translation.turns.value.map((t2) => [t2.id, t2]));
     const newIds = /* @__PURE__ */ new Set();
     newDoc.forEach((newNode) => {
       if (newNode.type.name !== "turn") return;
@@ -56291,8 +56409,7 @@ ${err.toString()}`);
         store.emit("turn:add", { turn: newTurn, translationId });
         return;
       }
-      const oldText = oldTurn.text ?? oldTurn.words.map((w2) => w2.text).join(" ");
-      const merged = newTurn.text === oldText ? { ...newTurn, words: oldTurn.words } : newTurn;
+      const merged = mergeTurnPreservingWords(newTurn, oldTurn);
       if (hasTurnChanged(oldTurn, merged)) {
         translation.updateTurn(id2, merged);
       }
@@ -56302,6 +56419,14 @@ ${err.toString()}`);
         translation.removeTurn(id2);
       }
     }
+  }
+  function mergeTurnPreservingWords(newTurn, oldTurn) {
+    if (!oldTurn) return newTurn;
+    const oldText = oldTurn.text ?? oldTurn.words.filter((w2) => w2.text !== "").map((w2) => w2.text).join(" ");
+    return normalizeText$1(newTurn.text ?? "") === normalizeText$1(oldText) ? { ...newTurn, words: oldTurn.words } : newTurn;
+  }
+  function normalizeText$1(s2) {
+    return s2.replace(/\s+/g, " ").trim();
   }
   function nodeToTurn(node) {
     return {
@@ -56316,22 +56441,27 @@ ${err.toString()}`);
       language: node.attrs.language ?? ""
     };
   }
-  function fixDuplicateTurnIds(state) {
+  function fixTurnIds(state) {
     const seen = /* @__PURE__ */ new Set();
-    const duplicates = [];
+    const invalid = [];
     state.doc.forEach((node, offset2) => {
       if (node.type.name !== "turn") return;
       const id2 = node.attrs.id;
-      if (!id2) return;
-      if (seen.has(id2)) {
-        duplicates.push({ pos: offset2, attrs: node.attrs });
-      } else {
-        seen.add(id2);
+      if (!id2 || seen.has(id2)) {
+        invalid.push({ pos: offset2, attrs: node.attrs });
+        return;
       }
+      seen.add(id2);
     });
-    if (duplicates.length === 0) return null;
+    if (invalid.length === 0) return null;
+    if (invalid.length > MAX_DUPLICATE_REPAIR) {
+      console.warn(
+        `[storeSync] ${invalid.length} turns with missing/duplicate ids — skipping inline repair (likely corrupt data)`
+      );
+      return null;
+    }
     const tr = state.tr;
-    for (const { pos, attrs } of duplicates) {
+    for (const { pos, attrs } of invalid) {
       tr.setNodeMarkup(pos, void 0, { ...attrs, id: crypto.randomUUID() });
     }
     tr.setMeta("addToHistory", false);
@@ -56356,38 +56486,64 @@ ${err.toString()}`);
         const cursorSet = yCursorPluginKey.getState(editor.state);
         return !!cursorSet && cursorSet.find(turnFrom, turnTo).length > 0;
       }
+      function locateTurn(doc2, turnId) {
+        const el = editor.view.dom.querySelector(
+          `[data-turn-id="${CSS.escape(turnId)}"]`
+        );
+        if (!el) return null;
+        let pos;
+        try {
+          pos = editor.view.posAtDOM(el, 0);
+        } catch {
+          return null;
+        }
+        const clamped = Math.max(0, Math.min(pos, doc2.content.size));
+        const $pos = doc2.resolve(clamped);
+        if ($pos.depth >= 1) {
+          const node = $pos.node(1);
+          if (node.type.name === "turn" && node.attrs.id === turnId) {
+            return { contentStart: $pos.start(1), node };
+          }
+        }
+        const at = doc2.nodeAt(clamped);
+        if (at && at.type.name === "turn" && at.attrs.id === turnId) {
+          return { contentStart: clamped + 1, node: at };
+        }
+        return null;
+      }
       function computeDecorations() {
         const activeId = core.audio?.activeWordId.value;
-        if (!activeId) return DecorationSet.empty;
+        const activeTurnId = core.audio?.activeTurnId.value;
+        if (!activeId || !activeTurnId) return DecorationSet.empty;
         const translation = core.activeChannel.value?.activeTranslation.value;
         if (!translation) return DecorationSet.empty;
+        const turn = translation.getTurn(activeTurnId);
+        if (!turn) return DecorationSet.empty;
         const doc2 = editor.state.doc;
-        let result = DecorationSet.empty;
-        doc2.forEach((node, offset2) => {
-          if (node.type.name !== "turn") return;
-          const turn = translation.turns.value.find((t2) => t2.id === node.attrs.id);
-          if (!turn) return;
-          if (hasRemoteCursorInTurn(offset2, offset2 + node.nodeSize)) return;
-          const text = node.textContent;
-          let charPos = 0;
-          for (const word2 of turn.words) {
-            const idx = text.indexOf(word2.text, charPos);
-            if (idx === -1) break;
-            if (word2.id === activeId) {
-              const from2 = offset2 + 1 + idx;
-              const to = from2 + word2.text.length;
-              result = DecorationSet.create(doc2, [
-                Decoration.inline(from2, to, {
-                  class: "word--active",
-                  "data-word-active": ""
-                })
-              ]);
-              return;
-            }
-            charPos = idx + word2.text.length;
+        const located = locateTurn(doc2, activeTurnId);
+        if (!located) return DecorationSet.empty;
+        const { contentStart, node } = located;
+        if (hasRemoteCursorInTurn(contentStart - 1, contentStart - 1 + node.nodeSize)) {
+          return DecorationSet.empty;
+        }
+        const text = node.textContent;
+        let charPos = 0;
+        for (const word2 of turn.words) {
+          const idx = text.indexOf(word2.text, charPos);
+          if (idx === -1) break;
+          if (word2.id === activeId) {
+            const from2 = contentStart + idx;
+            const to = from2 + word2.text.length;
+            return DecorationSet.create(doc2, [
+              Decoration.inline(from2, to, {
+                class: "word--active",
+                "data-word-active": ""
+              })
+            ]);
           }
-        });
-        return result;
+          charPos = idx + word2.text.length;
+        }
+        return DecorationSet.empty;
       }
       let unwatch = null;
       return [
@@ -56538,165 +56694,56 @@ ${err.toString()}`);
       ];
     }
   });
-  function createTranscriptionEditorPlugin(options = {}) {
-    const {
-      collab,
-      field = "default",
-      user = { name: "Anonymous", color: "#999999" }
-    } = options;
-    return {
-      name: "transcriptionEditor",
-      install(core) {
-        const tiptapEditor = /* @__PURE__ */ shallowRef(void 0);
-        const users = /* @__PURE__ */ ref([]);
-        const isConnected = /* @__PURE__ */ ref(false);
-        const cleanups = [];
-        const sessionCleanups = [];
-        let currentProvider = null;
-        let currentDoc = null;
-        const api = {
-          tiptapEditor,
-          get doc() {
-            return currentDoc;
-          },
-          get fragment() {
-            return currentDoc.getXmlFragment(field);
-          },
-          get speakersMap() {
-            return currentDoc?.getMap(SPEAKERS_MAP_KEY) ?? null;
-          },
-          users,
-          isConnected,
-          updateUser(attrs) {
-            if (currentProvider?.awareness) {
-              Object.assign(user, attrs);
-              currentProvider.awareness.setLocalStateField("user", user);
-            }
-          }
-        };
-        core.transcriptionEditor = api;
-        function destroyCurrentSession() {
-          tiptapEditor.value?.destroy();
-          tiptapEditor.value = void 0;
-          sessionCleanups.forEach((fn) => fn());
-          sessionCleanups.length = 0;
-          if (currentProvider) {
-            currentProvider.destroy();
-            currentProvider = null;
-          }
-          if (currentDoc) {
-            currentDoc.destroy();
-            currentDoc = null;
-          }
-          isConnected.value = false;
-          users.value = [];
+  function createTiptapEditor(config) {
+    return new Editor({
+      extensions: buildExtensions(config),
+      editable: !config.readOnly,
+      editorProps: {
+        attributes: {
+          // Native spellcheck over a whole multi-hour transcript freezes
+          // Firefox (it checks the entire contenteditable, ~400KB of text on
+          // a 7h document) — and flagging STT output as misspelled is noise
+          // anyway. Same reasoning for autocorrect/autocapitalize on mobile.
+          spellcheck: "false",
+          autocorrect: "off",
+          autocapitalize: "off"
         }
-        function startSession(translationId, translation) {
-          destroyCurrentSession();
-          const ydoc = new Doc();
-          currentDoc = ydoc;
-          if (collab) {
-            const provider = new HocuspocusProvider({
-              url: collab.url,
-              name: translationId,
-              token: collab.token,
-              document: ydoc,
-              onSynced() {
-                isConnected.value = true;
-              },
-              onDisconnect() {
-                isConnected.value = false;
-              },
-              onAwarenessUpdate({ states }) {
-                users.value = states.map((s2) => ({
-                  clientId: s2.clientId,
-                  ...s2.user
-                }));
-              },
-              onStateless({ payload }) {
-                applyStatelessPayload(payload, translation);
-              }
-            });
-            currentProvider = provider;
-            const stopSync = watch(
-              isConnected,
-              (synced) => {
-                if (!synced) return;
-                stopSync();
-                sessionCleanups.push(
-                  setupSpeakersSync({
-                    core,
-                    ydoc,
-                    translation,
-                    seedFromCore: false
-                  })
-                );
-                createTiptapEditor(
-                  core,
-                  options,
-                  ydoc,
-                  field,
-                  tiptapEditor,
-                  provider.awareness,
-                  cleanups
-                );
-              },
-              { immediate: true }
-            );
-            cleanups.push(stopSync);
-          } else {
-            const fragment = ydoc.getXmlFragment(field);
-            const initialContent = turnsToDoc(translation.turns.value);
-            const schema = getSchema([TranscriptionDocument, TurnNode, Text]);
-            prosemirrorJSONToYXmlFragment(schema, initialContent, fragment);
-            isConnected.value = true;
-            sessionCleanups.push(
-              setupSpeakersSync({ core, ydoc, translation, seedFromCore: true })
-            );
-            createTiptapEditor(
-              core,
-              options,
-              ydoc,
-              field,
-              tiptapEditor,
-              null,
-              cleanups
-            );
-          }
-        }
-        const stopWaiting = watch(
-          () => core.activeChannel.value,
-          (channel) => {
-            if (!channel) return;
-            stopWaiting();
-            const editableTranslation = () => {
-              const ch = core.activeChannel.value;
-              if (!ch) return void 0;
-              return ch.translations.get(ch.activeTranslation.value.id);
-            };
-            function syncSession() {
-              const store = editableTranslation();
-              if (store) startSession(store.id, store);
-              else destroyCurrentSession();
-            }
-            syncSession();
-            const stopTranslation = watch(
-              () => core.activeChannel.value?.activeTranslation.value.id,
-              syncSession
-            );
-            cleanups.push(stopTranslation);
-          },
-          { immediate: true }
-        );
-        return () => {
-          stopWaiting();
-          cleanups.forEach((fn) => fn());
-          destroyCurrentSession();
-          core.transcriptionEditor = void 0;
-        };
       }
+    });
+  }
+  function buildExtensions(config) {
+    const { core, ydoc, field, translation } = config;
+    const extensions = [
+      TranscriptionDocument,
+      TurnNode,
+      Text,
+      Collaboration.configure({ document: ydoc, field }),
+      StoreSync.configure({ store: core, getTranslation: () => translation }),
+      WordHighlight.configure({ core }),
+      ClickHandler.configure({ core }),
+      PauseOnEdit.configure({ core }),
+      ...core.pluginExtensions
+    ];
+    if (config.awareness && !config.readOnly) {
+      extensions.push(
+        CollaborationCursor.configure({
+          awareness: config.awareness,
+          user: config.user
+        })
+      );
+    }
+    return extensions;
+  }
+  function mapWord(w2) {
+    return {
+      id: w2.wid,
+      text: w2.word,
+      ...w2.stime !== void 0 && { startTime: w2.stime },
+      ...w2.etime !== void 0 && { endTime: w2.etime },
+      ...w2.confidence !== void 0 && { confidence: w2.confidence }
     };
   }
+  const REQUEST_WORDS_MESSAGE = JSON.stringify({ type: "request_words" });
   function applyStatelessPayload(payload, translation) {
     let msg;
     try {
@@ -56708,7 +56755,7 @@ ${err.toString()}`);
       return;
     for (const t2 of msg.turns) {
       if (!t2 || !t2.turn_id || !Array.isArray(t2.words)) continue;
-      const currentTurn = translation.turns.value.find((x2) => x2.id === t2.turn_id);
+      const currentTurn = translation.getTurn(t2.turn_id);
       if (!currentTurn) continue;
       const words = t2.words.map(mapWord);
       const wordsText = normalizeText(
@@ -56724,52 +56771,242 @@ ${err.toString()}`);
   function normalizeText(s2) {
     return s2.replace(/\s+/g, " ").trim();
   }
-  function createTiptapEditor(core, options, ydoc, field, tiptapEditor, awareness, cleanups) {
-    const activeTranslation = computed(() => {
-      const channel = core.activeChannel.value;
-      if (!channel) return void 0;
-      return channel.translations.get(channel.activeTranslation.value.id);
-    });
-    const extensions = [
-      TranscriptionDocument,
-      TurnNode,
-      Text,
-      Collaboration.configure({
-        document: ydoc,
-        field
-      }),
-      StoreSync.configure({
-        store: core,
-        getTranslation: () => activeTranslation.value
-      }),
-      WordHighlight.configure({ core }),
-      ClickHandler.configure({ core }),
-      PauseOnEdit.configure({ core }),
-      ...core.pluginExtensions
-    ];
-    if (awareness && !options.readOnly) {
-      extensions.push(
-        CollaborationCursor.configure({
-          awareness,
-          user: options.user ?? { name: "Anonymous", color: "#999999" }
-        })
-      );
+  function turnsToDoc(turns) {
+    return {
+      type: "doc",
+      content: turns.map((turn) => turnToNode(turn))
+    };
+  }
+  function turnToNode(turn) {
+    const spokenWords = turn.words.filter((w2) => w2.text !== "");
+    const text = spokenWords.length > 0 ? spokenWords.map((w2) => w2.text).join(" ") : turn.text ?? "";
+    return {
+      type: "turn",
+      attrs: {
+        id: turn.id,
+        speakerId: turn.speakerId,
+        startTime: turn.startTime,
+        endTime: turn.endTime,
+        startDate: turn.startDate,
+        endDate: turn.endDate,
+        language: turn.language
+      },
+      content: text ? [{ type: "text", text }] : void 0
+    };
+  }
+  class CollabSession {
+    ydoc;
+    deps;
+    provider;
+    editor = null;
+    speakersSync = null;
+    constructor(deps, collab) {
+      this.deps = deps;
+      this.ydoc = new Doc();
+      const epoch = collab.epochs?.[deps.translation.id] ?? 0;
+      this.provider = new HocuspocusProvider({
+        url: collab.url,
+        name: `${deps.translation.id}.${epoch}`,
+        token: collab.token,
+        document: this.ydoc,
+        onSynced: () => this.handleSynced(),
+        onDisconnect: () => deps.host.setConnected(false),
+        onAuthenticationFailed: ({ reason }) => collab.onAuthenticationFailed?.(reason),
+        onAwarenessUpdate: ({ states }) => deps.host.setUsers(mapAwarenessStates(states)),
+        onStateless: ({ payload }) => applyStatelessPayload(payload, deps.translation)
+      });
     }
-    tiptapEditor.value = new Editor({
-      extensions,
-      editable: !options.readOnly
-    });
-    const unsubSync = core.on("translation:sync", () => {
-      console.warn(
-        "[transcriptionEditor] translation:sync is not supported while the editor is active"
+    updateUser() {
+      this.provider.awareness?.setLocalStateField("user", this.deps.host.user);
+    }
+    destroy() {
+      this.editor?.destroy();
+      this.editor = null;
+      this.speakersSync?.destroy();
+      this.speakersSync = null;
+      this.provider.destroy();
+      this.ydoc.destroy();
+    }
+    /** Fires on every (re)sync of the provider, not just the first one. */
+    handleSynced() {
+      this.deps.host.setConnected(true);
+      if (this.editor) {
+        this.requestWords();
+        return;
+      }
+      this.createEditor();
+    }
+    createEditor() {
+      const { core, host, translation, field, readOnly } = this.deps;
+      this.speakersSync = new SpeakersSync(core, this.ydoc);
+      this.editor = createTiptapEditor({
+        core,
+        ydoc: this.ydoc,
+        field,
+        translation,
+        readOnly,
+        awareness: this.provider.awareness,
+        user: host.user
+      });
+      this.requestWordsWhenHydrated(this.editor);
+      host.setEditor(this.editor);
+    }
+    /**
+     * Words+timestamps live outside the Y.Doc and are served on demand
+     * (stateless messages). Request them only once the store holds the turns —
+     * requesting earlier would race the doc sync: applyStatelessPayload would
+     * find no matching turn and silently drop the payload.
+     *
+     * The editor is created after the provider sync, so Tiptap builds its
+     * initial state from the already-populated Y fragment during construction
+     * — no docChanged transaction is dispatched for it (StoreSync fills the
+     * store synchronously through the same path). Only an empty doc still
+     * needs to wait for a first doc-changing transaction.
+     */
+    requestWordsWhenHydrated(editor) {
+      if (isHydrated(editor)) {
+        this.requestWords();
+        return;
+      }
+      const onFirstDocChange = (props) => {
+        if (!props.transaction.docChanged) return;
+        editor.off("transaction", onFirstDocChange);
+        this.requestWords();
+      };
+      editor.on("transaction", onFirstDocChange);
+    }
+    requestWords() {
+      this.provider.sendStateless(REQUEST_WORDS_MESSAGE);
+    }
+  }
+  class LocalSession {
+    ydoc;
+    editor;
+    speakersSync;
+    constructor(deps) {
+      const { core, host, translation, field, readOnly } = deps;
+      this.ydoc = new Doc();
+      const fragment = this.ydoc.getXmlFragment(field);
+      const schema = getSchema([TranscriptionDocument, TurnNode, Text]);
+      prosemirrorJSONToYXmlFragment(
+        schema,
+        turnsToDoc(translation.turns.value),
+        fragment
       );
-    });
-    const unsubChannelSync = core.on("channel:sync", () => {
-      console.warn(
-        "[transcriptionEditor] channel:sync is not supported while the editor is active"
-      );
-    });
-    cleanups.push(unsubSync, unsubChannelSync);
+      seedSpeakersMap(this.ydoc, translation, core.speakers);
+      this.speakersSync = new SpeakersSync(core, this.ydoc);
+      this.editor = createTiptapEditor({
+        core,
+        ydoc: this.ydoc,
+        field,
+        translation,
+        readOnly,
+        awareness: null,
+        user: host.user
+      });
+      host.setEditor(this.editor);
+      host.setConnected(true);
+    }
+    updateUser() {
+    }
+    destroy() {
+      this.editor.destroy();
+      this.speakersSync.destroy();
+      this.ydoc.destroy();
+    }
+  }
+  function mapAwarenessStates(states) {
+    return states.map((s2) => ({
+      clientId: s2.clientId,
+      ...s2.user
+    }));
+  }
+  function isHydrated(editor) {
+    const firstTurn = editor.state.doc.firstChild;
+    return editor.state.doc.childCount > 1 || firstTurn?.attrs.id != null;
+  }
+  function createTranscriptionEditorPlugin({
+    collab,
+    field = "default",
+    user = { name: "Anonymous", color: "#999999" },
+    readOnly = false
+  } = {}) {
+    return {
+      name: "transcriptionEditor",
+      install(core) {
+        const tiptapEditor = /* @__PURE__ */ shallowRef(void 0);
+        const users = /* @__PURE__ */ ref([]);
+        const isConnected = /* @__PURE__ */ ref(false);
+        let session = null;
+        const host = {
+          setEditor: (editor) => {
+            tiptapEditor.value = editor;
+          },
+          setConnected: (connected) => {
+            isConnected.value = connected;
+          },
+          setUsers: (newUsers) => {
+            users.value = newUsers;
+          },
+          user
+        };
+        core.transcriptionEditor = {
+          tiptapEditor,
+          get doc() {
+            return session?.ydoc ?? null;
+          },
+          get fragment() {
+            return session?.ydoc.getXmlFragment(field) ?? null;
+          },
+          get speakersMap() {
+            return session?.ydoc.getMap(SPEAKERS_MAP_KEY) ?? null;
+          },
+          users,
+          isConnected,
+          updateUser(attrs) {
+            Object.assign(user, attrs);
+            session?.updateUser();
+          }
+        };
+        const restart = () => {
+          session?.destroy();
+          session = null;
+          tiptapEditor.value = void 0;
+          users.value = [];
+          isConnected.value = false;
+          const translation = editableTranslation(core);
+          if (!translation) return;
+          const deps = { core, host, translation, field, readOnly };
+          session = collab ? new CollabSession(deps, collab) : new LocalSession(deps);
+        };
+        const warnUnsupported = (event) => () => {
+          if (session) {
+            console.warn(
+              `[transcriptionEditor] ${event} is not supported while the editor is active`
+            );
+          }
+        };
+        const unsubscribes = [
+          core.on("document:change", restart),
+          core.on("channel:change", restart),
+          core.on("translation:change", restart),
+          core.on("translation:sync", warnUnsupported("translation:sync")),
+          core.on("channel:sync", warnUnsupported("channel:sync"))
+        ];
+        restart();
+        return () => {
+          unsubscribes.forEach((off) => off());
+          session?.destroy();
+          session = null;
+          core.transcriptionEditor = void 0;
+        };
+      }
+    };
+  }
+  function editableTranslation(core) {
+    const channel = core.activeChannel.value;
+    if (!channel) return void 0;
+    return channel.translations.get(channel.activeTranslation.value.id);
   }
   function createService(init) {
     return {

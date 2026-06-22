@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue"
+import { ref, onMounted, onBeforeUnmount } from "vue"
 import Layout from "./components/Layout.vue"
 import { mapApiDocument } from "./adapters/apiAdapter"
 import { provideI18n, type Locale } from "./i18n"
@@ -504,7 +504,7 @@ onMounted(async () => {
   }
 })
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
   if (liveTimer) clearTimeout(liveTimer)
   unsubScrollTop?.()
   core.destroy()

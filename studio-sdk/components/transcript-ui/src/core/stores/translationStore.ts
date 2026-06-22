@@ -16,7 +16,10 @@ interface TranslationInit {
   turns: Turn[]
 }
 
-type Emit = <K extends keyof CoreEventMap>(event: K, payload: CoreEventMap[K]) => void
+type Emit = <K extends keyof CoreEventMap>(
+  event: K,
+  payload: CoreEventMap[K],
+) => void
 type SpeakersEnsure = (speakerId: string | null, name?: string) => void
 
 export function createTranslationStore(

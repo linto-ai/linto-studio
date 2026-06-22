@@ -11,6 +11,7 @@ export interface WatermarkOptions {
 }
 export interface SubtitlePluginOptions {
     fontSize?: number;
+    isVisible?: boolean;
     watermark?: WatermarkOptions;
 }
 export declare function createSubtitlePlugin(options?: SubtitlePluginOptions): CorePlugin;

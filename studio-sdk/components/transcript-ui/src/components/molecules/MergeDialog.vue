@@ -118,8 +118,9 @@ function onConfirm(): void {
 }
 
 .merge-dialog::backdrop {
+  /* No backdrop-filter: a full-viewport backdrop blur is a large WebRender
+     render target; the dim background alone is enough. */
   background-color: color-mix(in srgb, var(--color-text-primary) 35%, transparent);
-  backdrop-filter: blur(2px);
 }
 
 .merge-dialog-form {

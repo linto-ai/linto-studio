@@ -16,6 +16,8 @@ export interface Turn {
     startDate?: number;
     endDate?: number;
     language: string;
+    /** Original language of the turn (the side being translated from); live-only. */
+    sourceLanguage?: string;
 }
 export interface Speaker {
     id: string;

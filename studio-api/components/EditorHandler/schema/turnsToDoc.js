@@ -12,9 +12,14 @@ function turnsToDoc(mongoTurns) {
 }
 
 function turnToNode(turn) {
+  // Empty words are intentional placeholders carrying timestamps over
+  // silences; they must never reach the text (a "" joined with spaces
+  // produces double spaces, which then diverge from `segment` and trigger
+  // spurious recomputes on every flush).
+  const spokenWords = (turn.words || []).filter((w) => w.word !== "")
   const text =
-    turn.words && turn.words.length > 0
-      ? turn.words.map((w) => w.word).join(" ")
+    spokenWords.length > 0
+      ? spokenWords.map((w) => w.word).join(" ")
       : turn.segment || ""
 
   const firstWordStime =

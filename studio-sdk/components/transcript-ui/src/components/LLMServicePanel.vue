@@ -40,9 +40,9 @@ const isEmpty = computed<boolean>(() => {
   return !content.value && versions.value.length === 0
 })
 
-// "À jour" = la version courante est postérieure à la dernière modif
-// de la transcription. Si l'une des deux dates manque, on considère "à jour"
-// par défaut (pas de signal négatif à donner).
+// "Up to date" = the current version is more recent than the transcription's
+// last edit. When either date is missing, default to up to date (no negative
+// signal to show).
 const isUpdated = computed<boolean>(() => {
   // Resolve the real backing store; the virtual cross translation isn't in the
   // map (no lastModifiedAt) → treated as up to date.

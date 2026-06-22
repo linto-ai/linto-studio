@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue"
+import { computed, ref } from "vue"
 import {
   NodeViewWrapper,
   NodeViewContent,
@@ -24,6 +24,15 @@ const canEditSpeakers = computed(
   () => core.capabilities.value.speakers === "edit",
 )
 
+// Mount the heavy Reka SpeakerPopover only on interaction (avoids thousands of
+// instances up front). openOnMount opens it on a click without a prior hover.
+const popoverMounted = ref(false)
+const openOnMount = ref(false)
+function activatePopover(): void {
+  openOnMount.value = true
+  popoverMounted.value = true
+}
+
 const isTurnActive = computed(() => {
   if (!core.audio?.src.value) return false
   const { startTime, endTime } = props.node.attrs
@@ -41,15 +50,29 @@ const isTurnActive = computed(() => {
     :style="{ '--speaker-color': speakerColor }"
     :data-turn-id="node.attrs.id">
     <div contenteditable="false" class="turn-header">
-      <SpeakerPopover
-        v-if="canEditSpeakers"
-        :turn-id="node.attrs.id"
-        :current-speaker-id="node.attrs.speakerId">
-        <SpeakerLabel
-          :speaker="speaker"
-          :start-time="node.attrs.startTime"
-          :language="node.attrs.language" />
-      </SpeakerPopover>
+      <template v-if="canEditSpeakers">
+        <SpeakerPopover
+          v-if="popoverMounted"
+          :turn-id="node.attrs.id"
+          :current-speaker-id="node.attrs.speakerId"
+          :initial-open="openOnMount">
+          <SpeakerLabel
+            :speaker="speaker"
+            :start-time="node.attrs.startTime"
+            :language="node.attrs.language" />
+        </SpeakerPopover>
+        <button
+          v-else
+          type="button"
+          class="lazy-speaker-trigger"
+          @pointerenter="popoverMounted = true"
+          @click="activatePopover">
+          <SpeakerLabel
+            :speaker="speaker"
+            :start-time="node.attrs.startTime"
+            :language="node.attrs.language" />
+        </button>
+      </template>
       <SpeakerLabel
         v-else
         :speaker="speaker"
@@ -64,6 +87,11 @@ const isTurnActive = computed(() => {
 .turn {
   padding: var(--spacing-sm) var(--spacing-lg);
   border-left: 3px solid transparent;
+
+  /* Skip layout/paint of off-screen turns on long transcripts. `auto <size>`
+     remembers each turn's real height after first render. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 56px;
 }
 
 .turn-text {
@@ -76,6 +104,20 @@ const isTurnActive = computed(() => {
 .turn--active {
   border-left: 3px solid var(--speaker-color);
   background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);
+}
+
+/* Matches SpeakerPopover's trigger so the placeholder looks identical. */
+.lazy-speaker-trigger {
+  all: unset;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--radius-sm);
+}
+
+.lazy-speaker-trigger:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 :deep(.word--active) {

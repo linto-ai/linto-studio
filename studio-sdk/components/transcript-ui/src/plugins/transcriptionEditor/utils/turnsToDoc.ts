@@ -10,8 +10,11 @@ export function turnsToDoc(turns: Turn[]): JSONContent {
 }
 
 function turnToNode(turn: Turn): JSONContent {
-  const text = turn.words.length > 0
-    ? turn.words.map((w) => w.text).join(" ")
+  // Empty words are timestamp placeholders over silences — keep them out of
+  // the text (joining them produces double spaces).
+  const spokenWords = turn.words.filter((w) => w.text !== "")
+  const text = spokenWords.length > 0
+    ? spokenWords.map((w) => w.text).join(" ")
     : turn.text ?? ""
 
   return {

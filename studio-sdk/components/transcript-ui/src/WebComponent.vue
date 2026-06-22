@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from "vue"
+import { ref, watch, onBeforeUnmount } from "vue"
 import Layout from "./components/Layout.vue"
 import { createCore, provideCore } from "./core"
 import { provideI18n, type Locale } from "./i18n"
@@ -27,6 +27,10 @@ watch(
 
 const core = createCore()
 provideCore(core)
+
+// Destroy before Vue tears down the child tree, else the live ProseMirror view
+// reconciles node views whose DOM is being removed ("nextSibling" null crash).
+onBeforeUnmount(() => core.destroy())
 
 defineExpose({ core })
 </script>

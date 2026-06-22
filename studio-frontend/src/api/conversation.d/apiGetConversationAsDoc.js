@@ -4,12 +4,27 @@ import { getEnv } from "@/tools/getEnv"
 
 const BASE_API = getEnv("VUE_APP_CONVO_API")
 
+function convertLocaleToLanguages(locales) {
+  switch (true) {
+    case typeof locales === "string":
+      return [locales]
+      break
+    case locales?.length:
+      return locales
+    default:
+      return []
+  }
+}
+
 function sourceTranslation(conv) {
   const tr = {
     id: conv._id,
     isSource: true,
-    languages: [conv.locale],
+    languages: convertLocaleToLanguages(conv.locale),
     turns: [],
+    // Editor CRDT history lineage id, consumed by the collab plugin
+    // (appended to the Hocuspocus document name). Not editor-model data.
+    editorEpoch: conv.editorEpoch ?? 0,
   }
   if (conv?.metadata?.audio) {
     tr.audio = {
@@ -26,6 +41,7 @@ function translation(conv) {
     isSource: false,
     languages: [conv.locale],
     turns: [],
+    editorEpoch: conv.editorEpoch ?? 0,
   }
 }
 
@@ -66,6 +82,7 @@ export async function apiGetConversationAsDoc(convId) {
     "locale",
     "metadata.transcription",
     "jobs.transcription.state",
+    "editorEpoch",
   ])
 
   let channels
@@ -78,6 +95,7 @@ export async function apiGetConversationAsDoc(convId) {
           const childTranslations = await apiGetConversationChild(child._id, [
             "_id",
             "locale",
+            "editorEpoch",
           ])
           return channel(child, [
             sourceTranslation(child),

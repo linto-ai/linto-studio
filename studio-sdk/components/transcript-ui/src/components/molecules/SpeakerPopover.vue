@@ -15,12 +15,14 @@ import type { Speaker } from "../../types/editor"
 const props = defineProps<{
   turnId: string
   currentSpeakerId: string | null
+  // When the popover is mounted lazily on click, open it immediately.
+  initialOpen?: boolean
 }>()
 
 const core = useCore()
 const { t } = useI18n()
 
-const isOpen = ref(false)
+const isOpen = ref(props.initialOpen ?? false)
 const isCreatingNew = ref(false)
 const newName = ref("")
 const newInputRef = useTemplateRef<{ focus: () => void }>("newInput")

@@ -24,20 +24,22 @@ function docToTurns(ydoc, field = "default") {
   if (!json || !json.content) return []
 
   return json.content
-    .filter((node) => node.type === "turn")
+    .filter((node) => node.type === "turn" && node.attrs && node.attrs.id)
     .map((node) => {
+      // Id-less turns are filtered out above (not persisted with a null id).
+      const attrs = node.attrs
       const text = (node.content || [])
         .filter((c) => c.type === "text")
         .map((c) => c.text)
         .join("")
 
       return {
-        turn_id: node.attrs.id,
-        speaker_id: node.attrs.speakerId || null,
+        turn_id: attrs.id,
+        speaker_id: attrs.speakerId || null,
         segment: text,
         raw_segment: text,
         words: [],
-        language: node.attrs.language || "",
+        language: attrs.language || "",
       }
     })
 }

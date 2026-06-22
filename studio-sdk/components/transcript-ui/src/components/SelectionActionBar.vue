@@ -41,9 +41,10 @@ const { t } = useI18n()
   align-items: center;
   justify-content: space-between;
   padding: var(--spacing-xs) var(--spacing-lg);
+  /* No backdrop-filter: it forces a WebRender backdrop render target sized to
+     the content behind, a heavy GPU-memory cost on long transcripts. The
+     semi-opaque glass background stays legible without the blur. */
   background: var(--glass-background);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
   border-bottom: 1px solid var(--color-border);
   animation: bar-slide-down var(--transition-duration) ease;
 }

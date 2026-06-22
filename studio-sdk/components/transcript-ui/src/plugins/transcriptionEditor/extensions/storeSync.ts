@@ -8,6 +8,10 @@ import type { Turn } from "../../../types/editor"
 
 const storeSyncKey = new PluginKey("storeSync")
 
+// Above this many missing/duplicate ids means corrupt data; skip the inline
+// repair (rewriting thousands of ids in one transaction freezes the tab).
+const MAX_DUPLICATE_REPAIR = 100
+
 /**
  * Flag to prevent feedback loops when the store dispatches
  * ProseMirror transactions (e.g. addTurn, setTurns).
@@ -42,25 +46,19 @@ export const StoreSync = Extension.create<StoreSyncOptions>({
           if (suppressSync) return null
           if (oldState.doc.eq(newState.doc)) return null
 
-          // Skip fixDuplicateTurnIds for remote Yjs changes:
-          // - The originating client already assigned the correct ID
-          // - Running fixDuplicateTurnIds during _typeChanged (which holds the
-          //   Yjs binding mutex) would create a PM transaction that can't sync
-          //   back to Yjs, causing PM/Yjs divergence
-          // - Generating a different UUID locally would create a Yjs attribute
-          //   conflict with the originating client's UUID
-          const isRemote = transactions.some(
-            (tr) => tr.getMeta(ySyncPluginKey),
-          )
+          // Skip on remote Yjs changes: the originating client already set the
+          // id, and reassigning under the Yjs mutex would diverge PM/Yjs.
+          const isRemote = transactions.some((tr) => tr.getMeta(ySyncPluginKey))
 
+          // Repair missing/duplicate ids on every local change: a count-preserving
+          // paste can introduce one without changing childCount. Scan is O(turns).
           if (!isRemote) {
-            const fixTr = fixDuplicateTurnIds(newState)
+            const fixTr = fixTurnIds(newState)
             if (fixTr) return fixTr
           }
 
           const translation = getTranslation()
           if (!translation) return null
-
           syncDocToStore(newState.doc, oldState.doc, translation, store)
           return null
         },
@@ -77,6 +75,48 @@ function syncDocToStore(
 ): void {
   const translationId = translation.id
 
+  const applyTurnNode = (newNode: ProseMirrorNode): void => {
+    const id = newNode.attrs.id as string
+    const newTurn = nodeToTurn(newNode)
+    const oldTurn = translation.getTurn(id)
+    if (!oldTurn) {
+      translation.updateOrCreateTurnSilent(newTurn)
+      store.emit("turn:add", { turn: newTurn, translationId })
+      return
+    }
+    const merged = mergeTurnPreservingWords(newTurn, oldTurn)
+    if (hasTurnChanged(oldTurn, merged)) {
+      translation.updateTurn(id, merged)
+    }
+  }
+
+  // Fast path: equal child count → edits in place. PM reuses node refs for
+  // unchanged subtrees, so compare by reference and touch only changed turns;
+  // any structural signal bails to the full diff below.
+  if (oldDoc.childCount === newDoc.childCount) {
+    const changedNodes: ProseMirrorNode[] = []
+    let structural = false
+    for (let i = 0; i < newDoc.childCount; i++) {
+      const newNode = newDoc.child(i)
+      const oldNode = oldDoc.child(i)
+      if (newNode === oldNode) continue
+      if (
+        newNode.type.name !== "turn" ||
+        oldNode.type.name !== "turn" ||
+        newNode.attrs.id !== oldNode.attrs.id
+      ) {
+        structural = true
+        break
+      }
+      changedNodes.push(newNode)
+    }
+    if (!structural) {
+      changedNodes.forEach(applyTurnNode)
+      return
+    }
+  }
+
+  // Fallback: a turn was added/removed/reordered — full map-based diff.
   const oldNodesById = new Map<string, ProseMirrorNode>()
   oldDoc.forEach((node) => {
     if (node.type.name === "turn") {
@@ -84,9 +124,7 @@ function syncDocToStore(
     }
   })
 
-  const oldTurnsById = new Map(
-    translation.turns.value.map((t) => [t.id, t]),
-  )
+  const oldTurnsById = new Map(translation.turns.value.map((t) => [t.id, t]))
 
   const newIds = new Set<string>()
 
@@ -98,7 +136,7 @@ function syncDocToStore(
     const oldNode = oldNodesById.get(id)
     const oldTurn = oldTurnsById.get(id)
 
-    // Fast path: PM reuses node references for unchanged sub-trees
+    // PM reuses node references for unchanged sub-trees
     if (oldNode === newNode && oldTurn) return
 
     const newTurn = nodeToTurn(newNode)
@@ -109,13 +147,7 @@ function syncDocToStore(
       return
     }
 
-    // Preserve words/timestamps if text hasn't changed
-    const oldText =
-      oldTurn.text ?? oldTurn.words.map((w) => w.text).join(" ")
-    const merged: Turn =
-      newTurn.text === oldText
-        ? { ...newTurn, words: oldTurn.words }
-        : newTurn
+    const merged = mergeTurnPreservingWords(newTurn, oldTurn)
 
     if (hasTurnChanged(oldTurn, merged)) {
       translation.updateTurn(id, merged)
@@ -127,6 +159,29 @@ function syncDocToStore(
       translation.removeTurn(id)
     }
   }
+}
+
+function mergeTurnPreservingWords(
+  newTurn: Turn,
+  oldTurn: Turn | undefined,
+): Turn {
+  if (!oldTurn) return newTurn
+  // Compare whitespace-normalized, ignoring empty placeholder words: the doc
+  // text never contains them, while stored words do — a raw join would see a
+  // phantom difference and drop the words (= timestamps) on unrelated edits.
+  const oldText =
+    oldTurn.text ??
+    oldTurn.words
+      .filter((w) => w.text !== "")
+      .map((w) => w.text)
+      .join(" ")
+  return normalizeText(newTurn.text ?? "") === normalizeText(oldText)
+    ? { ...newTurn, words: oldTurn.words }
+    : newTurn
+}
+
+function normalizeText(s: string): string {
+  return s.replace(/\s+/g, " ").trim()
 }
 
 function nodeToTurn(node: ProseMirrorNode): Turn {
@@ -143,25 +198,32 @@ function nodeToTurn(node: ProseMirrorNode): Turn {
   }
 }
 
-function fixDuplicateTurnIds(state: EditorState): Transaction | null {
+function fixTurnIds(state: EditorState): Transaction | null {
   const seen = new Set<string>()
-  const duplicates: Array<{ pos: number; attrs: Record<string, unknown> }> = []
+  // Turns with a missing (null) or duplicate id — both get a fresh id assigned.
+  const invalid: Array<{ pos: number; attrs: Record<string, unknown> }> = []
 
   state.doc.forEach((node, offset) => {
     if (node.type.name !== "turn") return
     const id = node.attrs.id as string | null
-    if (!id) return
-    if (seen.has(id)) {
-      duplicates.push({ pos: offset, attrs: node.attrs })
-    } else {
-      seen.add(id)
+    if (!id || seen.has(id)) {
+      invalid.push({ pos: offset, attrs: node.attrs })
+      return
     }
+    seen.add(id)
   })
 
-  if (duplicates.length === 0) return null
+  if (invalid.length === 0) return null
+
+  if (invalid.length > MAX_DUPLICATE_REPAIR) {
+    console.warn(
+      `[storeSync] ${invalid.length} turns with missing/duplicate ids — skipping inline repair (likely corrupt data)`,
+    )
+    return null
+  }
 
   const tr = state.tr
-  for (const { pos, attrs } of duplicates) {
+  for (const { pos, attrs } of invalid) {
     tr.setNodeMarkup(pos, undefined, { ...attrs, id: crypto.randomUUID() })
   }
   tr.setMeta("addToHistory", false)

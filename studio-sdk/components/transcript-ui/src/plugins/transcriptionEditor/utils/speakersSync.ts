@@ -1,7 +1,6 @@
-import type { Doc, YMapEvent } from "yjs"
-import type { Core } from "../../../core/types"
+import type { Doc, Map as YMap, YMapEvent } from "yjs"
+import type { Core, SpeakersStore, TranslationStore } from "../../../core/types"
 import type { Speaker } from "../../../types/editor"
-import type { TranslationStore } from "../../../core/types"
 import { speakerEquals } from "../../../core/helpers/speakerEquals"
 import { SPEAKER_COLORS } from "../../../constants/speakers"
 
@@ -29,76 +28,91 @@ function resolveColor(
   return data.color ?? existing?.color ?? fallbackColor(id)
 }
 
-export interface SetupSpeakersSyncOptions {
-  core: Core
-  ydoc: Doc
-  translation: TranslationStore
-  /** When true, seed the Y.Map from core.speakers for speakers referenced
-   *  by the translation's turns (local mode only). In collab mode the server seeds. */
-  seedFromCore: boolean
+/**
+ * Seed the Y.Map from core speakers referenced by the translation's turns.
+ * Local mode only — in collab mode the server seeds the map.
+ */
+export function seedSpeakersMap(
+  ydoc: Doc,
+  translation: TranslationStore,
+  speakers: SpeakersStore,
+): void {
+  const speakersMap = ydoc.getMap<SpeakerData>(SPEAKERS_MAP_KEY)
+
+  const used = new Set<string>()
+  for (const turn of translation.turns.value) {
+    if (turn.speakerId) used.add(turn.speakerId)
+  }
+
+  ydoc.transact(() => {
+    for (const id of used) {
+      if (speakersMap.has(id)) continue
+      const speaker = speakers.all.get(id)
+      if (speaker) {
+        speakersMap.set(id, { name: speaker.name, color: speaker.color })
+      }
+    }
+  })
 }
 
 /**
- * Wires bidirectional sync between core.speakers (Vue store) and a Y.Map
- * of speakers scoped to a translation's Y.Doc. Returns a cleanup function.
+ * Bidirectional sync between core.speakers (Vue store) and the speakers
+ * Y.Map of a translation's Y.Doc. Construction imports the current Y state
+ * into the core; destroy() releases every subscription.
  */
-export function setupSpeakersSync(
-  options: SetupSpeakersSyncOptions,
-): () => void {
-  const { core, ydoc, translation, seedFromCore } = options
-  const speakersMap = ydoc.getMap<SpeakerData>(SPEAKERS_MAP_KEY)
+export class SpeakersSync {
+  private readonly core: Core
+  private readonly speakersMap: YMap<SpeakerData>
+  private readonly observer: (event: YMapEvent<SpeakerData>) => void
+  private readonly offCoreEvents: Array<() => void>
 
-  if (seedFromCore) {
-    const used = new Set<string>()
-    for (const turn of translation.turns.value) {
-      if (turn.speakerId) used.add(turn.speakerId)
+  constructor(core: Core, ydoc: Doc) {
+    this.core = core
+    this.speakersMap = ydoc.getMap<SpeakerData>(SPEAKERS_MAP_KEY)
+
+    this.importFromY()
+
+    this.observer = (event) => this.applyYEvent(event)
+    this.speakersMap.observe(this.observer)
+
+    this.offCoreEvents = [
+      core.on("speaker:add", ({ speaker }) => this.writeToY(speaker)),
+      core.on("speaker:update", ({ speaker }) => this.writeToY(speaker)),
+      core.on("speaker:remove", ({ speakerId }) =>
+        this.speakersMap.delete(speakerId),
+      ),
+    ]
+  }
+
+  destroy(): void {
+    this.speakersMap.unobserve(this.observer)
+    this.offCoreEvents.forEach((off) => off())
+  }
+
+  private importFromY(): void {
+    for (const [id, data] of this.speakersMap.entries()) {
+      const color = resolveColor(id, data, this.core.speakers.all.get(id))
+      this.core.speakers.updateOrCreate({ id, name: data.name, color })
     }
-    ydoc.transact(() => {
-      for (const id of used) {
-        if (speakersMap.has(id)) continue
-        const speaker = core.speakers.all.get(id)
-        if (speaker) {
-          speakersMap.set(id, { name: speaker.name, color: speaker.color })
-        }
-      }
-    })
   }
 
-  for (const [id, data] of speakersMap.entries()) {
-    const color = resolveColor(id, data, core.speakers.all.get(id))
-    core.speakers.updateOrCreate({ id, name: data.name, color })
-  }
-
-  const observer = (event: YMapEvent<SpeakerData>) => {
+  private applyYEvent(event: YMapEvent<SpeakerData>): void {
     event.changes.keys.forEach((change, id) => {
       if (change.action === "delete") {
-        core.speakers.delete(id)
-      } else {
-        const data = speakersMap.get(id)
-        if (!data) return
-        const color = resolveColor(id, data, core.speakers.all.get(id))
-        core.speakers.updateOrCreate({ id, name: data.name, color })
+        this.core.speakers.delete(id)
+        return
       }
+      const data = this.speakersMap.get(id)
+      if (!data) return
+      const color = resolveColor(id, data, this.core.speakers.all.get(id))
+      this.core.speakers.updateOrCreate({ id, name: data.name, color })
     })
   }
-  speakersMap.observe(observer)
 
-  const writeToY = (speaker: Speaker) => {
-    const cur = speakersMap.get(speaker.id)
+  // speakerEquals breaks the echo loop: Y → core → speaker:update → Y.
+  private writeToY(speaker: Speaker): void {
+    const cur = this.speakersMap.get(speaker.id)
     if (cur && speakerEquals(cur, speaker)) return
-    speakersMap.set(speaker.id, { name: speaker.name, color: speaker.color })
-  }
-
-  const offAdd = core.on("speaker:add", ({ speaker }) => writeToY(speaker))
-  const offUpdate = core.on("speaker:update", ({ speaker }) => writeToY(speaker))
-  const offRemove = core.on("speaker:remove", ({ speakerId }) => {
-    speakersMap.delete(speakerId)
-  })
-
-  return () => {
-    speakersMap.unobserve(observer)
-    offAdd()
-    offUpdate()
-    offRemove()
+    this.speakersMap.set(speaker.id, { name: speaker.name, color: speaker.color })
   }
 }

@@ -2,6 +2,7 @@ import { watch } from "vue"
 import { Extension } from "@tiptap/core"
 import { Plugin, PluginKey, type EditorState } from "@tiptap/pm/state"
 import { Decoration, DecorationSet } from "@tiptap/pm/view"
+import type { Node as ProseMirrorNode } from "@tiptap/pm/model"
 import { yCursorPluginKey } from "@tiptap/y-tiptap"
 import type { Core } from "../../../core/types"
 
@@ -46,45 +47,89 @@ export const WordHighlight = Extension.create<WordHighlightOptions>({
       return !!cursorSet && cursorSet.find(turnFrom, turnTo).length > 0
     }
 
+    // Locate the active turn node without traversing the whole document.
+    // ProseMirror has no by-id node lookup, but the TurnNodeView renders a
+    // `[data-turn-id]` element, so the browser's DOM index gives us the node
+    // in O(1); posAtDOM maps it back to a doc position. `resolve` then
+    // normalizes whatever position posAtDOM returns (node boundary or content)
+    // to the enclosing turn, and we assert the id to guard against any
+    // mis-mapping. Returns the content-start position (= node start + 1).
+    function locateTurn(
+      doc: ProseMirrorNode,
+      turnId: string,
+    ): { contentStart: number; node: ProseMirrorNode } | null {
+      const el = editor.view.dom.querySelector(
+        `[data-turn-id="${CSS.escape(turnId)}"]`,
+      )
+      if (!el) return null
+
+      let pos: number
+      try {
+        pos = editor.view.posAtDOM(el as HTMLElement, 0)
+      } catch {
+        return null
+      }
+      const clamped = Math.max(0, Math.min(pos, doc.content.size))
+      const $pos = doc.resolve(clamped)
+
+      // posAtDOM landed inside the turn → the depth-1 ancestor is the turn.
+      if ($pos.depth >= 1) {
+        const node = $pos.node(1)
+        if (node.type.name === "turn" && node.attrs.id === turnId) {
+          return { contentStart: $pos.start(1), node }
+        }
+      }
+      // posAtDOM landed on the turn's opening boundary → node starts here.
+      const at = doc.nodeAt(clamped)
+      if (at && at.type.name === "turn" && at.attrs.id === turnId) {
+        return { contentStart: clamped + 1, node: at }
+      }
+      return null
+    }
+
     function computeDecorations(): DecorationSet {
       const activeId = core.audio?.activeWordId.value
-      if (!activeId) return DecorationSet.empty
+      const activeTurnId = core.audio?.activeTurnId.value
+
+      if (!activeId || !activeTurnId) return DecorationSet.empty
 
       const translation = core.activeChannel.value?.activeTranslation.value
       if (!translation) return DecorationSet.empty
 
+      const turn = translation.getTurn(activeTurnId)
+      if (!turn) return DecorationSet.empty
+
       const doc = editor.state.doc
-      let result: DecorationSet = DecorationSet.empty
+      const located = locateTurn(doc, activeTurnId)
+      if (!located) return DecorationSet.empty
+      const { contentStart, node } = located
 
-      doc.forEach((node, offset) => {
-        if (node.type.name !== "turn") return
+      // contentStart - 1 is the node's start; range = [start, start + nodeSize].
+      if (
+        hasRemoteCursorInTurn(contentStart - 1, contentStart - 1 + node.nodeSize)
+      ) {
+        return DecorationSet.empty
+      }
 
-        const turn = translation.turns.value.find((t) => t.id === node.attrs.id)
-        if (!turn) return
-
-        if (hasRemoteCursorInTurn(offset, offset + node.nodeSize)) return
-
-        const text = node.textContent
-        let charPos = 0
-        for (const word of turn.words) {
-          const idx = text.indexOf(word.text, charPos)
-          if (idx === -1) break
-          if (word.id === activeId) {
-            const from = offset + 1 + idx
-            const to = from + word.text.length
-            result = DecorationSet.create(doc, [
-              Decoration.inline(from, to, {
-                class: "word--active",
-                "data-word-active": "",
-              }),
-            ])
-            return
-          }
-          charPos = idx + word.text.length
+      const text = node.textContent
+      let charPos = 0
+      for (const word of turn.words) {
+        const idx = text.indexOf(word.text, charPos)
+        if (idx === -1) break
+        if (word.id === activeId) {
+          const from = contentStart + idx
+          const to = from + word.text.length
+          return DecorationSet.create(doc, [
+            Decoration.inline(from, to, {
+              class: "word--active",
+              "data-word-active": "",
+            }),
+          ])
         }
-      })
+        charPos = idx + word.text.length
+      }
 
-      return result
+      return DecorationSet.empty
     }
 
     let unwatch: (() => void) | null = null

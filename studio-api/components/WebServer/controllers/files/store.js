@@ -124,9 +124,13 @@ function getAudioSessionFolder() {
 async function deleteAudioFileIfOrphaned(filepath) {
   if (!filepath) return
   const model = require(`${process.cwd()}/lib/mongodb/models`)
+  const { waveformFilePath } = require(
+    `${process.cwd()}/components/WebServer/controllers/files/waveform`,
+  )
   const count = await model.conversations.countByAudioFilepath(filepath)
   if (count === 0) {
     deleteFile(`${getStorageFolder()}/${filepath}`)
+    deleteFile(waveformFilePath(`${getStorageFolder()}/${filepath}`))
   }
 }
 

@@ -1,45 +1,27 @@
-import { computed, ref, watch, shallowRef } from "vue"
-import { Doc } from "yjs"
-import { Editor, getSchema } from "@tiptap/vue-3"
-import { Text } from "@tiptap/extension-text"
-import { prosemirrorJSONToYXmlFragment } from "@tiptap/y-tiptap"
-import { HocuspocusProvider } from "@hocuspocus/provider"
+import { ref, shallowRef } from "vue"
+import type { Editor } from "@tiptap/vue-3"
 
-import { turnsToDoc } from "./utils/turnsToDoc"
-import { mapWord } from "../../adapters/apiAdapter"
-import type { ApiWord } from "../../types/api"
-import {
-  setupSpeakersSync,
-  SPEAKERS_MAP_KEY,
-  type SpeakerData,
-} from "./utils/speakersSync"
 import type {
   Core,
   CorePlugin,
   TranscriptionEditorPluginApi,
-  YjsUser,
   TranslationStore,
+  YjsUser,
 } from "../../core/types"
-
-import { Collaboration } from "@tiptap/extension-collaboration"
-import { TranscriptionDocument } from "./extensions/transcriptionDocument"
-import { TurnNode } from "./extensions/turnNode"
-import { StoreSync } from "./extensions/storeSync"
-import { WordHighlight } from "./extensions/wordHighlight"
-import { CollaborationCursor } from "./extensions/collaborationCursor"
-import { ClickHandler } from "./extensions/clickHandler"
-import { PauseOnEdit } from "./extensions/pauseOnEdit"
+import { SPEAKERS_MAP_KEY, type SpeakerData } from "./utils/speakersSync"
+import {
+  CollabSession,
+  LocalSession,
+  type CollabOptions,
+  type EditorSession,
+  type LocalUser,
+  type SessionHost,
+} from "./session"
 
 import "./cursor.css"
 
 export type { TranscriptionEditorPluginApi }
-
-export interface CollabOptions {
-  /** Hocuspocus WebSocket URL (e.g. "ws://localhost/ws/editor") */
-  url: string
-  /** JWT token for authentication */
-  token: string
-}
+export type { CollabOptions }
 
 export interface TranscriptionEditorOptions {
   /** Collaborative mode configuration. If absent, local-only mode. */
@@ -47,7 +29,7 @@ export interface TranscriptionEditorOptions {
   /** Name of the XmlFragment in the Y.Doc. @default "default" */
   field?: string
   /** Local user info for cursor display. */
-  user?: { name: string; color: string; [key: string]: unknown }
+  user?: LocalUser
   /**
    * Read-only mode: the editor is not editable and broadcasts no cursor or
    * selection to other participants. Remote edits are still received, so the
@@ -56,15 +38,12 @@ export interface TranscriptionEditorOptions {
   readOnly?: boolean
 }
 
-export function createTranscriptionEditorPlugin(
-  options: TranscriptionEditorOptions = {},
-): CorePlugin {
-  const {
-    collab,
-    field = "default",
-    user = { name: "Anonymous", color: "#999999" },
-  } = options
-
+export function createTranscriptionEditorPlugin({
+  collab,
+  field = "default",
+  user = { name: "Anonymous", color: "#999999" },
+  readOnly = false,
+}: TranscriptionEditorOptions = {}): CorePlugin {
   return {
     name: "transcriptionEditor",
 
@@ -72,293 +51,97 @@ export function createTranscriptionEditorPlugin(
       const tiptapEditor = shallowRef<Editor | undefined>(undefined)
       const users = ref<YjsUser[]>([])
       const isConnected = ref(false)
-      const cleanups: Array<() => void> = []
-      const sessionCleanups: Array<() => void> = []
 
-      // Current provider/doc state (managed internally in collab mode)
-      let currentProvider: HocuspocusProvider | null = null
-      let currentDoc: Doc | null = null
+      // The plugin's single mutable cell. Sessions publish their reactive
+      // state through `host`, never by reaching into the plugin.
+      let session: EditorSession | null = null
 
-      const api: TranscriptionEditorPluginApi = {
+      const host: SessionHost = {
+        setEditor: (editor) => {
+          tiptapEditor.value = editor
+        },
+        setConnected: (connected) => {
+          isConnected.value = connected
+        },
+        setUsers: (newUsers) => {
+          users.value = newUsers
+        },
+        user,
+      }
+
+      core.transcriptionEditor = {
         tiptapEditor,
         get doc() {
-          return currentDoc!
+          return session?.ydoc ?? null
         },
         get fragment() {
-          return currentDoc!.getXmlFragment(field)
+          return session?.ydoc.getXmlFragment(field) ?? null
         },
         get speakersMap() {
-          return currentDoc?.getMap<SpeakerData>(SPEAKERS_MAP_KEY) ?? null
+          return session?.ydoc.getMap<SpeakerData>(SPEAKERS_MAP_KEY) ?? null
         },
         users,
         isConnected,
         updateUser(attrs: Record<string, unknown>) {
-          if (currentProvider?.awareness) {
-            Object.assign(user, attrs)
-            currentProvider.awareness.setLocalStateField("user", user)
-          }
+          Object.assign(user, attrs)
+          session?.updateUser()
         },
       }
-      core.transcriptionEditor = api
 
-      function destroyCurrentSession() {
-        tiptapEditor.value?.destroy()
+      // (Re)create the session for the active translation. The state reset
+      // belongs here — the plugin owns the state, so no session variant can
+      // forget to clean up behind itself.
+      const restart = (): void => {
+        session?.destroy()
+        session = null
         tiptapEditor.value = undefined
-        sessionCleanups.forEach((fn) => fn())
-        sessionCleanups.length = 0
-        if (currentProvider) {
-          currentProvider.destroy()
-          currentProvider = null
-        }
-        if (currentDoc) {
-          currentDoc.destroy()
-          currentDoc = null
-        }
-        isConnected.value = false
         users.value = []
+        isConnected.value = false
+
+        const translation = editableTranslation(core)
+        if (!translation) return // virtual cross translation: read-only view
+        const deps = { core, host, translation, field, readOnly }
+        session = collab
+          ? new CollabSession(deps, collab)
+          : new LocalSession(deps)
       }
 
-      function startSession(
-        translationId: string,
-        translation: TranslationStore,
-      ) {
-        destroyCurrentSession()
-
-        const ydoc = new Doc()
-        currentDoc = ydoc
-
-        if (collab) {
-          // Collaborative mode: provider connects to server, server seeds the Y.Doc
-          const provider = new HocuspocusProvider({
-            url: collab.url,
-            name: translationId,
-            token: collab.token,
-            document: ydoc,
-            onSynced() {
-              isConnected.value = true
-            },
-            onDisconnect() {
-              isConnected.value = false
-            },
-            onAwarenessUpdate({ states }) {
-              users.value = states.map((s: Record<string, unknown>) => ({
-                clientId: s.clientId as number,
-                ...(s.user as Record<string, unknown> | undefined),
-              }))
-            },
-            onStateless({ payload }) {
-              applyStatelessPayload(payload, translation)
-            },
-          })
-          currentProvider = provider
-
-          // Wait for initial sync before creating editor
-          const stopSync = watch(
-            isConnected,
-            (synced) => {
-              if (!synced) return
-              stopSync()
-              sessionCleanups.push(
-                setupSpeakersSync({
-                  core,
-                  ydoc,
-                  translation,
-                  seedFromCore: false,
-                }),
-              )
-              createTiptapEditor(
-                core,
-                options,
-                ydoc,
-                field,
-                tiptapEditor,
-                provider.awareness,
-                cleanups,
-              )
-            },
-            { immediate: true },
-          )
-          cleanups.push(stopSync)
-        } else {
-          // Local mode: seed from store turns, no provider
-          const fragment = ydoc.getXmlFragment(field)
-          const initialContent = turnsToDoc(translation.turns.value)
-          const schema = getSchema([TranscriptionDocument, TurnNode, Text])
-          prosemirrorJSONToYXmlFragment(schema, initialContent, fragment)
-          isConnected.value = true
-
-          sessionCleanups.push(
-            setupSpeakersSync({ core, ydoc, translation, seedFromCore: true }),
-          )
-
-          createTiptapEditor(
-            core,
-            options,
-            ydoc,
-            field,
-            tiptapEditor,
-            null,
-            cleanups,
+      const warnUnsupported = (event: string) => (): void => {
+        if (session) {
+          console.warn(
+            `[transcriptionEditor] ${event} is not supported while the editor is active`,
           )
         }
       }
 
-      // Start session when activeChannel + activeTranslation are ready
-      const stopWaiting = watch(
-        () => core.activeChannel.value,
-        (channel) => {
-          if (!channel) return
-          stopWaiting()
+      const unsubscribes = [
+        core.on("document:change", restart),
+        core.on("channel:change", restart),
+        core.on("translation:change", restart),
+        core.on("translation:sync", warnUnsupported("translation:sync")),
+        core.on("channel:sync", warnUnsupported("channel:sync")),
+      ]
 
-          // The editable backing store for the active translation, or undefined
-          // when the active one is virtual (the cross translation) — which has
-          // no collab session and renders read-only.
-          const editableTranslation = (): TranslationStore | undefined => {
-            const ch = core.activeChannel.value
-            if (!ch) return undefined
-            return ch.translations.get(ch.activeTranslation.value.id)
-          }
-
-          function syncSession(): void {
-            const store = editableTranslation()
-            if (store) startSession(store.id, store)
-            else destroyCurrentSession()
-          }
-
-          // Start initial session (or read-only view when cross is active)
-          syncSession()
-
-          // Watch for translation changes → restart session, or tear it down
-          // when switching to the read-only cross translation
-          const stopTranslation = watch(
-            () => core.activeChannel.value?.activeTranslation.value.id,
-            syncSession,
-          )
-          cleanups.push(stopTranslation)
-        },
-        { immediate: true },
-      )
+      // The document may already be loaded when the plugin installs.
+      restart()
 
       return () => {
-        stopWaiting()
-        cleanups.forEach((fn) => fn())
-        destroyCurrentSession()
+        unsubscribes.forEach((off) => off())
+        session?.destroy()
+        session = null
         core.transcriptionEditor = undefined
       }
     },
   }
 }
 
-interface TimestampsRecalcPayload {
-  type: "timestamps_recalc"
-  turns: Array<{ turn_id: string; words: ApiWord[] }>
-}
-
-function applyStatelessPayload(
-  payload: string,
-  translation: TranslationStore,
-): void {
-  let msg: TimestampsRecalcPayload
-  try {
-    msg = JSON.parse(payload)
-  } catch {
-    return
-  }
-  if (!msg || msg.type !== "timestamps_recalc" || !Array.isArray(msg.turns))
-    return
-
-  for (const t of msg.turns) {
-    if (!t || !t.turn_id || !Array.isArray(t.words)) continue
-
-    const currentTurn = translation.turns.value.find((x) => x.id === t.turn_id)
-    if (!currentTurn) continue
-
-    const words = t.words.map(mapWord)
-
-    // Drop stale payloads: if the words don't describe the current segment
-    // (because the user kept editing while the server was recomputing), skip.
-    // The next debounce tick will resend a coherent payload.
-    const wordsText = normalizeText(
-      words
-        .filter((w) => w.text !== "")
-        .map((w) => w.text)
-        .join(" "),
-    )
-    const currentText = normalizeText(
-      currentTurn.text ?? currentTurn.words.map((w) => w.text).join(" "),
-    )
-    if (wordsText !== currentText) continue
-
-    translation.updateWords(t.turn_id, words)
-  }
-}
-
-function normalizeText(s: string): string {
-  return s.replace(/\s+/g, " ").trim()
-}
-
-function createTiptapEditor(
-  core: Core,
-  options: TranscriptionEditorOptions,
-  ydoc: Doc,
-  field: string,
-  tiptapEditor: ReturnType<typeof shallowRef<Editor | undefined>>,
-  awareness: import("y-protocols/awareness").Awareness | null,
-  cleanups: Array<() => void>,
-): void {
-  // Resolve the editable backing store; undefined for the virtual cross
-  // translation (StoreSync then no-ops, keeping the view read-only).
-  const activeTranslation = computed<TranslationStore | undefined>(() => {
-    const channel = core.activeChannel.value
-    if (!channel) return undefined
-    return channel.translations.get(channel.activeTranslation.value.id)
-  })
-
-  const extensions = [
-    TranscriptionDocument,
-    TurnNode,
-    Text,
-    Collaboration.configure({
-      document: ydoc,
-      field,
-    }),
-    StoreSync.configure({
-      store: core,
-      getTranslation: () => activeTranslation.value,
-    }),
-    WordHighlight.configure({ core }),
-    ClickHandler.configure({ core }),
-    PauseOnEdit.configure({ core }),
-    ...core.pluginExtensions,
-  ]
-
-  if (awareness && !options.readOnly) {
-    extensions.push(
-      CollaborationCursor.configure({
-        awareness,
-        user: options.user ?? { name: "Anonymous", color: "#999999" },
-      }),
-    )
-  }
-
-  tiptapEditor.value = new Editor({
-    extensions,
-    editable: !options.readOnly,
-  })
-
-  const unsubSync = core.on("translation:sync", () => {
-    console.warn(
-      "[transcriptionEditor] translation:sync is not supported while the editor is active",
-    )
-  })
-
-  const unsubChannelSync = core.on("channel:sync", () => {
-    console.warn(
-      "[transcriptionEditor] channel:sync is not supported while the editor is active",
-    )
-  })
-
-  cleanups.push(unsubSync, unsubChannelSync)
+/** The editable backing store of the active translation, or undefined when
+ *  the active one is virtual (the cross translation) — no collab session,
+ *  rendered read-only. */
+function editableTranslation(core: Core): TranslationStore | undefined {
+  const channel = core.activeChannel.value
+  if (!channel) return undefined
+  return channel.translations.get(channel.activeTranslation.value.id)
 }
 
 // Re-export internals for advanced usage

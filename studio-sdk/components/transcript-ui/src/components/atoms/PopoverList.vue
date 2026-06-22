@@ -22,6 +22,7 @@ const props = withDefaults(
     align: "start",
     side: "bottom",
     sideOffset: 4,
+    open: undefined,
   },
 )
 
@@ -33,10 +34,11 @@ const emit = defineEmits<{
 const internalOpen = ref(false)
 const resolvedOpen = computed({
   get: () => {
+    // Controlled: honour the bound `open` prop; uncontrolled: use internal state.
     if (props.open !== undefined) {
-      return internalOpen.value
+      return props.open
     }
-    return props.open
+    return internalOpen.value
   },
   set: (v) => {
     internalOpen.value = v
