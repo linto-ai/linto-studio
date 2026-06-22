@@ -87,11 +87,10 @@ export default {
   computed: {
     ...mapGetters("folders", {
       folderTree: "getFolderTree",
+      getFolderById: "getFolderById",
     }),
     targetFolder() {
-      return this.targetId
-        ? this.flatFolders.find((folder) => folder._id === this.targetId)
-        : null
+      return this.targetId ? this.getFolderById(this.targetId) : null
     },
     folderItems() {
       const items = []
@@ -118,6 +117,8 @@ export default {
         for (const node of nodes) {
           const hasChildren = node.children?.length > 0
           const expanded = hasChildren && this.expandedIds.includes(node._id)
+          let iconRight
+          if (hasChildren) iconRight = expanded ? "caret-down" : "caret-right"
           items.push({
             id: node._id,
             value: node._id,
@@ -126,13 +127,8 @@ export default {
             _private: node.visibility === "private",
             _color: node.color,
             _hasChildren: hasChildren,
-            _node: node,
             _depth: depth,
-            iconRight: hasChildren
-              ? expanded
-                ? "caret-down"
-                : "caret-right"
-              : undefined,
+            iconRight,
           })
           if (expanded) walk(node.children, depth + 1)
         }
@@ -140,21 +136,8 @@ export default {
       walk(this.folderTree, 0)
       return items
     },
-    flatFolders() {
-      const flat = []
-      const walk = (nodes) => {
-        for (const node of nodes) {
-          flat.push(node)
-          if (node.children?.length) walk(node.children)
-        }
-      }
-      walk(this.folderTree)
-      return flat
-    },
     selectedItem() {
-      const node = this.value
-        ? this.flatFolders.find((folder) => folder._id === this.value)
-        : null
+      const node = this.value ? this.getFolderById(this.value) : null
       if (!node) {
         return { name: this.$t("folders.uncategorized"), _icon: "tray" }
       }
@@ -174,8 +157,8 @@ export default {
       }
       if (item._hasChildren) {
         // A parent click expands it and targets it for the top "choose" entry.
-        this.targetId = item._node._id
-        this.toggleExpand(item._node._id)
+        this.targetId = item.id
+        this.toggleExpand(item.id)
         return
       }
       this.commit(item.value)
