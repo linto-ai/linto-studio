@@ -32,7 +32,7 @@
             <label class="form-label">
               {{ $t("conversation.folder_selection_label") }}
             </label>
-            <FolderSelector v-model="selectedFolderId" />
+            <FolderSelector v-model="selectedFolderId" :full-width="false" />
           </div>
         </section>
         <section>

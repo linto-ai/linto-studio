@@ -5,7 +5,7 @@
     :close-on-escape="closeOnEscape"
     :overlay="overlay"
     :full-width="fullWidth"
-    :content-class="isMobile ? 'popover-list__mobile' : ''"
+    :content-class="mergedContentClass"
     v-bind="$attrs"
     ref="popover"
     @input="onPopoverToggle"
@@ -367,9 +367,23 @@ export default {
       type: String,
       default: null,
     },
+    /**
+     * Extra class applied to the teleported popover content, letting a parent
+     * style the floating list (it lives outside the parent's DOM subtree).
+     */
+    contentClass: {
+      type: String,
+      default: "",
+    },
   },
-  emits: ["click", "update:value", "input"],
+  emits: ["click", "update:value", "input", "toggle"],
   methods: {
+    /**
+     * Closes the popover programmatically.
+     */
+    close() {
+      this.$refs.popover?.close()
+    },
     isSame(value, item) {
       if (typeof value === "object" && value !== null) {
         return value.id === item.id
@@ -551,6 +565,7 @@ export default {
         )
         this.highlightedIndex = selectedIndex >= 0 ? selectedIndex : 0
       }
+      this.$emit("toggle", isOpen)
     },
     onSearchKeyDown(e) {
       this.handleKeyboardNavigation(e)
@@ -623,6 +638,11 @@ export default {
   },
   computed: {
     ...mapGetters("system", ["isMobile"]),
+    mergedContentClass() {
+      return [this.contentClass, this.isMobile ? "popover-list__mobile" : ""]
+        .filter(Boolean)
+        .join(" ")
+    },
     hasSearch() {
       return this.searchable || !!this.asyncSearch
     },
@@ -722,6 +742,11 @@ export default {
     },
   },
   watch: {
+    items() {
+      // Reset highlight when the list content changes (e.g. drill-down
+      // navigation) so keyboard actions never target a stale index.
+      this.highlightedIndex = 0
+    },
     searchQuery: {
       handler(query) {
         // Reset highlight to first item when search changes

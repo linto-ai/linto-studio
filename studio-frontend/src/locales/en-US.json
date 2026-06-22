@@ -712,6 +712,7 @@
   },
   "folders": {
     "uncategorized": "Inbox",
+    "select_this_folder": "Choose “{name}”",
     "create": "Create folder",
     "create_placeholder": "Folder name...",
     "name_required": "Folder name is required",
