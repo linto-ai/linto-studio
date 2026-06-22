@@ -13,6 +13,11 @@ const { wordsDeltafromPlainDiff } = require("./wordsDeltaFromPlainDiff")
  * @returns {Array} new words[] ready to persist
  */
 function recomputeWords(oldWords, newSegment, syllabic) {
+  // TODO: all-empty oldWords (silence placeholder) + non-empty newSegment makes
+  // wordsDeltafromPlainDiff throw (empty oldWordsWithoutEmpty[0]); enrichDiff
+  // catches it but then drops the turn's timestamps and logs on a legit edit.
+  // Quick fix: `if (oldNonEmpty.length === 0) return null` for a clean fallback;
+  // richer fix: redistribute the silence span over the new words by syllables.
   if (!Array.isArray(oldWords) || oldWords.length === 0) {
     // No prior timestamps to redistribute. Caller will fall back.
     return null
