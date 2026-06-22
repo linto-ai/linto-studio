@@ -6,8 +6,8 @@ const TRANSCRIBER_PROFILES_TEMPLATES = {
   linto: {
     config: {
       type: "linto",
-      name: "linto asr name",
-      description: "asr description",
+      name: "",
+      description: "",
       languages: [
         {
           candidate: "fr-FR",
@@ -25,8 +25,8 @@ const TRANSCRIBER_PROFILES_TEMPLATES = {
   microsoft: {
     config: {
       type: "microsoft",
-      name: "microsoft asr name",
-      description: "asr description",
+      name: "",
+      description: "",
       languages: [
         {
           candidate: "en-GB",
@@ -86,8 +86,8 @@ const TRANSCRIBER_PROFILES_TEMPLATES = {
   amazon: {
     config: {
       type: "amazon",
-      name: "Amazon Transcribe",
-      description: "Amazon Transcribe with IAM Roles Anywhere",
+      name: "",
+      description: "",
       languages: [
         {
           candidate: "en-US",
@@ -125,8 +125,8 @@ const TRANSCRIBER_PROFILES_TEMPLATES = {
   voxstral: {
     config: {
       type: "voxstral",
-      name: "Voxstral (Global)",
-      description: "Mistral Voxtral Mini",
+      name: "",
+      description: "",
       endpoint: "ws://127.0.0.1:8000",
       languages: [{ candidate: "fr-FR" }, { candidate: "en-US" }],
       availableTranslations: [],
