@@ -139,11 +139,16 @@ class IoHandler extends Component {
         methods: ["GET", "POST"],
         credentials: true,
       },
-      // Allow other WebSocket handlers (e.g. EditorHandler/Hocuspocus) to coexist
-      // on the same httpServer. Without this, engine.io destroys upgrade sockets
-      // on unrecognized paths after 1s.
-      destroyUpgrade: false,
     })
+
+    // WebServer owns the single 'upgrade' router; register socket.io's engine
+    // for its own path so it coexists with EditorHandler/Hocuspocus on the same
+    // httpServer. This also drops engine.io's auto-installed upgrade listener,
+    // so its destroyUpgrade reaper is no longer involved.
+    this.app.components["WebServer"].registerUpgradeHandler(
+      "/socket.io",
+      (req, socket, head) => this.io.engine.handleUpgrade(req, socket, head),
+    )
 
     this.io.use(auth_middlewares.isAuthenticateSocket) // Used initialy to require authentication, disabling annonymous sessions
     this.io.on("connection", (socket) => {

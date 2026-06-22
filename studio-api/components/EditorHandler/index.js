@@ -123,25 +123,18 @@ class EditorHandler extends Component {
       },
     })
 
-    // WebSocket server in noServer mode for manual upgrade
+    // WebSocket server in noServer mode: WebServer's upgrade router hands us the
+    // raw socket for /ws/editor and we complete the handshake here.
     this.wss = new WebSocketServer({ noServer: true })
 
-    // IoHandler sets destroyUpgrade: false on socket.io so engine.io
-    // won't destroy upgrade sockets on unrecognized paths.
-    httpServer.on("upgrade", (request, socket, head) => {
-      try {
-        const url = new URL(request.url, `http://${request.headers.host}`)
-        if (url.pathname.startsWith("/ws/editor")) {
-          this.wss.handleUpgrade(request, socket, head, (ws) => {
-            this.hocuspocus.handleConnection(ws, request)
-          })
-        }
-        // Otherwise: engine.io / socket.io handles it
-      } catch (err) {
-        debug("upgrade error:", err.message)
-        socket.destroy()
-      }
-    })
+    this.app.components["WebServer"].registerUpgradeHandler(
+      "/ws/editor",
+      (request, socket, head) => {
+        this.wss.handleUpgrade(request, socket, head, (ws) => {
+          this.hocuspocus.handleConnection(ws, request)
+        })
+      },
+    )
 
     debug("EditorHandler ready on /ws/editor/*")
     return this.init()
