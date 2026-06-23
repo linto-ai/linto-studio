@@ -1,16 +1,30 @@
 <script setup lang="ts">
 import { computed } from "vue"
-import { renderMarkdown } from "../../utils/markdown"
+import { renderMarkdownSegments } from "../../utils/markdown"
+import CodeBlock from "./CodeBlock.vue"
 
 const props = defineProps<{
   source: string
+  streaming?: boolean
 }>()
 
-const html = computed(() => renderMarkdown(props.source))
+const segments = computed(() => renderMarkdownSegments(props.source))
 </script>
 
 <template>
-  <div class="markdown-view" v-html="html" />
+  <div class="markdown-view">
+    <template v-for="(seg, i) in segments" :key="i">
+      <div
+        v-if="seg.type === 'html'"
+        class="markdown-view__html"
+        v-html="seg.html" />
+      <CodeBlock
+        v-else
+        :code="seg.code"
+        :lang="seg.lang"
+        :streaming="streaming" />
+    </template>
+  </div>
 </template>
 
 <style scoped>
@@ -19,6 +33,22 @@ const html = computed(() => renderMarkdown(props.source))
   font-size: var(--font-size-base);
   line-height: var(--line-height);
   color: var(--color-text-primary);
+}
+
+/* No box: block children flow as direct children of .markdown-view so margin
+   collapsing keeps working across html/code segment boundaries. */
+.markdown-view__html {
+  display: contents;
+}
+
+/* Trim the outer margins of the first/last rendered block (reach through the
+   display:contents wrapper to the real content element). */
+.markdown-view > .markdown-view__html:first-child > :deep(:first-child) {
+  margin-top: 0;
+}
+
+.markdown-view > .markdown-view__html:last-child > :deep(:last-child) {
+  margin-bottom: 0;
 }
 
 .markdown-view :deep(h1),
@@ -71,7 +101,9 @@ const html = computed(() => renderMarkdown(props.source))
   font-style: italic;
 }
 
-.markdown-view :deep(code) {
+/* Inline code only — fenced blocks render via <CodeBlock>. Scoped to the html
+   wrapper so it never reaches into the CodeBlock component. */
+.markdown-view__html :deep(code) {
   font-family: var(--font-family-mono);
   font-size: 0.9em;
   padding: 1px 4px;
@@ -79,15 +111,17 @@ const html = computed(() => renderMarkdown(props.source))
   border-radius: var(--radius-sm);
 }
 
-.markdown-view :deep(pre) {
+/* Fallback for raw <pre> written as literal HTML (not fenced code). */
+.markdown-view__html :deep(pre) {
   margin: var(--spacing-md) 0;
   padding: var(--spacing-md);
   background-color: var(--color-surface);
   border-radius: var(--radius-md);
   overflow-x: auto;
+  border: 1px solid var(--color-border);
 }
 
-.markdown-view :deep(pre code) {
+.markdown-view__html :deep(pre code) {
   padding: 0;
   background: none;
 }

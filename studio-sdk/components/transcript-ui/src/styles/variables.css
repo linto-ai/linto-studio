@@ -81,8 +81,8 @@
   /* Z-index scale */
   --z-sticky: 10;
   --z-overlay: 50;
-  --z-drawer: 51;
-  --z-dropdown: 100;
+  --z-drawer: 1000;
+  --z-dropdown: 1100;
 
   /* Glass effect — backdrop blur intentionally removed: each backdrop-filter
      forces a WebRender render target, which on long transcripts (one waveform

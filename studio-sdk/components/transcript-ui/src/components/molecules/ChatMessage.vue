@@ -1,11 +1,19 @@
 <script setup lang="ts">
 import MarkdownView from "../atoms/MarkdownView.vue"
 import EditorIcon from "../atoms/EditorIcon.vue"
+import CopyButton from "../atoms/CopyButton.vue"
+import { useI18n } from "../../i18n"
 import type { ChatMessage } from "../../core/types"
 
-defineProps<{
+const props = defineProps<{
   message: ChatMessage
 }>()
+
+const { t } = useI18n()
+
+function copyContent() {
+  return navigator.clipboard.writeText(props.message.content)
+}
 </script>
 
 <template>
@@ -20,12 +28,28 @@ defineProps<{
       <EditorIcon name="sparkles" :size="16" />
     </span>
     <div class="chat-message__body">
-      <MarkdownView v-if="message.content" :source="message.content" />
+      <MarkdownView
+        v-if="message.content"
+        :source="message.content"
+        :streaming="message.streaming" />
       <div
         v-if="message.streaming"
         class="chat-message__typing"
         aria-hidden="true">
         <span></span><span></span><span></span>
+      </div>
+
+      <!-- Action bar -->
+      <div
+        v-if="!message.streaming && message.content"
+        class="chat-message__actions">
+        <CopyButton
+          variant="secondary"
+          size="sm"
+          :copy-fn="copyContent"
+          :aria-label="t('chat.copy')">
+          {{ t("chat.copy") }}
+        </CopyButton>
       </div>
     </div>
   </div>
@@ -82,12 +106,13 @@ defineProps<{
   font-size: var(--font-size-sm);
 }
 
-.chat-message__body :deep(.markdown-view > :first-child) {
-  margin-top: 0;
-}
-
-.chat-message__body :deep(.markdown-view > :last-child) {
-  margin-bottom: 0;
+/* ── Action bar ── */
+.chat-message__actions {
+  display: flex;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-xs);
+  margin-left: calc(var(--spacing-sm) * -1);
+  flex-direction: row-reverse;
 }
 
 /* ── Streaming typing indicator ── */

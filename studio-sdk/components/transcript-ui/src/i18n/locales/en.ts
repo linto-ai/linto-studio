@@ -124,6 +124,8 @@ const en: Record<keyof typeof fr, string> = {
   'chat.send': 'Send',
   'chat.emptyState': 'Ask a question about this transcript.',
   'chat.emptyChat': 'Start the conversation.',
+  'chat.copy': 'Copy',
+  'markdown.copyCode': 'Copy code',
 }
 
 export default en
