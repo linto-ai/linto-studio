@@ -111,24 +111,7 @@ export default function createMediaModule(scope, status = "done") {
         state.autoselectMedias = autoselectMedias
       },
       setMedias(state, medias) {
-        // Keep moved-out media at their original position instead of letting a
-        // reload drop them (cleared on a real context change via clearMovedOut).
-        if (!state.medias.some((m) => m._movedOut)) {
-          state.medias = medias
-          return
-        }
-        const result = [...medias]
-        state.medias.forEach((m, index) => {
-          if (m._movedOut && !result.some((n) => n._id === m._id)) {
-            result.splice(Math.min(index, result.length), 0, m)
-          }
-        })
-        state.medias = result
-      },
-      clearMovedOut(state) {
-        state.medias.forEach((m) => {
-          if (m._movedOut) Vue.delete(m, "_movedOut")
-        })
+        state.medias = medias
       },
       appendMedias(state, medias) {
         state.medias = [...state.medias, ...medias]
@@ -310,9 +293,6 @@ export default function createMediaModule(scope, status = "done") {
       },
       updateMedias({ commit }, { mediaIds, media, patch = false }) {
         commit("updateMedias", { mediaIds, media, patch })
-      },
-      clearMovedOut({ commit }) {
-        commit("clearMovedOut")
       },
       async deleteMedias(
         { commit, rootGetters, dispatch },
