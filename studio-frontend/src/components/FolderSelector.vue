@@ -1,65 +1,67 @@
 <template>
-  <div class="folder-selector" v-click-outside="closeDropdown">
-    <button
-      type="button"
-      class="folder-selector__trigger"
-      :class="{
-        'folder-selector__trigger--open': isOpen,
-        'folder-selector__trigger--readonly': readonly,
-      }"
-      @click="toggle"
-      :disabled="readonly">
-      <ph-icon :name="selectedFolder ? 'folder' : 'tray'" size="16" />
-      <span class="folder-selector__label">
-        {{ selectedFolder ? selectedFolder.name : $t("folders.uncategorized") }}
-      </span>
-      <ph-icon
-        v-if="selectedFolder && selectedFolder.visibility === 'private'"
-        name="lock-simple"
-        size="12"
-        class="folder-selector__lock" />
-      <ph-icon
-        v-if="!readonly"
-        name="caret-down"
-        size="14"
-        class="folder-selector__caret" />
-    </button>
-
-    <div v-if="isOpen" class="folder-selector__dropdown">
-      <div
-        class="folder-selector__option"
-        :class="{ 'folder-selector__option--active': !value }"
-        @click="select(null)">
-        <ph-icon name="tray" size="16" />
-        <span>{{ $t("folders.uncategorized") }}</span>
-      </div>
-      <div
-        v-for="folder in flatFolders"
-        :key="folder._id"
-        class="folder-selector__option"
-        :class="{ 'folder-selector__option--active': value === folder._id }"
-        :style="{ paddingLeft: folder.depth * 0.75 + 0.5 + 'rem' }"
-        @click="select(folder._id)">
+  <PopoverList
+    ref="popoverList"
+    :items="folderItems"
+    :value="value"
+    :full-width="fullWidth"
+    :close-on-item-click="false"
+    :close-on-click="false"
+    content-class="folder-selector__popover"
+    color="neutral"
+    @click="onItemClick"
+    @toggle="onToggle">
+    <template #trigger="{ open, ariaProps }">
+      <Button
+        v-bind="ariaProps"
+        class="popover-list__trigger"
+        :iconRight="open ? 'caret-up' : 'caret-down'"
+        :icon="selectedItem._icon"
+        :block="fullWidth"
+        :disabled="readonly"
+        variant="tertiary"
+        size="sm">
+        <span class="folder-selector__trigger-label">
+          <ph-icon
+            v-if="selectedItem._private"
+            name="lock-simple"
+            size="12"
+            class="folder-selector__item-lock" />
+          <span class="folder-selector__item-name">{{
+            selectedItem.name
+          }}</span>
+        </span>
+      </Button>
+    </template>
+    <template #item="{ item }">
+      <span
+        class="folder-selector__item"
+        :class="{
+          'folder-selector__item--select': item._action === 'select-current',
+        }"
+        :style="{ paddingLeft: item._depth * 0.85 + 'rem' }">
         <ph-icon
-          name="folder"
+          :name="item._icon"
           size="16"
-          :style="folder.color ? { color: folder.color } : {}" />
-        <span>{{ folder.name }}</span>
+          :style="item._color ? { color: item._color } : {}" />
         <ph-icon
-          v-if="folder.visibility === 'private'"
+          v-if="item._private"
           name="lock-simple"
           size="12"
-          class="folder-selector__lock" />
-      </div>
-    </div>
-  </div>
+          class="folder-selector__item-lock" />
+        <span class="folder-selector__item-name">{{ item.name }}</span>
+      </span>
+    </template>
+  </PopoverList>
 </template>
 
 <script>
 import { mapGetters } from "vuex"
+import PopoverList from "./atoms/PopoverList.vue"
+import Button from "./atoms/Button.vue"
 
 export default {
   name: "FolderSelector",
+  components: { PopoverList, Button },
   props: {
     value: {
       type: String,
@@ -69,10 +71,16 @@ export default {
       type: Boolean,
       default: false,
     },
+    fullWidth: {
+      type: Boolean,
+      default: true,
+    },
   },
   data() {
     return {
-      isOpen: false,
+      expandedIds: [],
+      // Folder targeted by a click, validated through the top "choose" entry.
+      targetId: null,
     }
   },
   computed: {
@@ -80,140 +88,186 @@ export default {
       folderTree: "getFolderTree",
       getFolderById: "getFolderById",
     }),
-    selectedFolder() {
-      if (!this.value) return null
-      return this.getFolderById(this.value)
+    targetFolder() {
+      return this.targetId ? this.getFolderById(this.targetId) : null
     },
-    flatFolders() {
-      const result = []
-      const flatten = (nodes, depth = 0) => {
+    folderItems() {
+      const items = []
+      if (this.targetFolder) {
+        items.push({
+          id: "__select__",
+          value: this.targetFolder._id,
+          name: this.$t("folders.select_this_folder", {
+            name: this.targetFolder.name,
+          }),
+          _icon: "check",
+          _action: "select-current",
+          _depth: 0,
+        })
+      }
+      items.push({
+        id: null,
+        value: null,
+        name: this.$t("folders.uncategorized"),
+        _icon: "tray",
+        _depth: 0,
+      })
+      const walk = (nodes, depth) => {
         for (const node of nodes) {
-          result.push({ ...node, depth })
-          if (node.children && node.children.length > 0) {
-            flatten(node.children, depth + 1)
-          }
+          const hasChildren = node.children?.length > 0
+          const expanded = hasChildren && this.expandedIds.includes(node._id)
+          let iconRight
+          if (hasChildren) iconRight = expanded ? "caret-down" : "caret-right"
+          items.push({
+            id: node._id,
+            value: node._id,
+            name: node.name,
+            _icon: "folder",
+            _private: node.visibility === "private",
+            _color: node.color,
+            _hasChildren: hasChildren,
+            _depth: depth,
+            iconRight,
+          })
+          if (expanded) walk(node.children, depth + 1)
         }
       }
-      flatten(this.folderTree)
-      return result
+      walk(this.folderTree, 0)
+      return items
     },
-  },
-  directives: {
-    "click-outside": {
-      bind(el, binding) {
-        el._clickOutside = (event) => {
-          if (!(el === event.target || el.contains(event.target))) {
-            binding.value()
-          }
-        }
-        document.addEventListener("click", el._clickOutside)
-      },
-      unbind(el) {
-        document.removeEventListener("click", el._clickOutside)
-      },
+    selectedItem() {
+      const node = this.value ? this.getFolderById(this.value) : null
+      if (!node) {
+        return { name: this.$t("folders.uncategorized"), _icon: "tray" }
+      }
+      return {
+        name: node.name,
+        _icon: "folder",
+        _color: node.color,
+        _private: node.visibility === "private",
+      }
     },
   },
   methods: {
-    toggle() {
-      if (this.readonly) return
-      this.isOpen = !this.isOpen
+    onItemClick(item) {
+      if (item._action === "select-current") {
+        this.commit(item.value)
+        return
+      }
+      if (item._hasChildren) {
+        // Expand + target it (selectable via the top "choose" entry).
+        this.targetId = item.id
+        this.toggleExpand(item.id)
+        return
+      }
+      this.commit(item.value)
     },
-    closeDropdown() {
-      this.isOpen = false
+    commit(value) {
+      // Clear target first so the close below doesn't re-commit it.
+      this.targetId = null
+      this.handleInput(value)
+      this.$refs.popoverList?.close()
     },
-    select(folderId) {
-      this.$emit("input", folderId)
-      this.$emit("change", folderId)
-      this.isOpen = false
+    toggleExpand(id) {
+      this.expandedIds = this.expandedIds.includes(id)
+        ? this.expandedIds.filter((expandedId) => expandedId !== id)
+        : [...this.expandedIds, id]
+    },
+    onToggle(isOpen) {
+      if (isOpen) {
+        // Expand ancestors so the current selection is visible.
+        const ancestors = this.value ? this.pathToFolder(this.value) : null
+        this.expandedIds = ancestors ? ancestors.map((node) => node._id) : []
+        this.targetId = null
+      } else if (this.targetId && this.targetId !== this.value) {
+        // Closed via outside-click after picking: commit that folder.
+        this.handleInput(this.targetId)
+        this.targetId = null
+      }
+    },
+    pathToFolder(id, nodes = this.folderTree, trail = []) {
+      for (const node of nodes) {
+        if (node._id === id) return trail
+        if (node.children?.length) {
+          const found = this.pathToFolder(id, node.children, [...trail, node])
+          if (found) return found
+        }
+      }
+      return null
+    },
+    handleInput(value) {
+      this.$emit("input", value)
+      this.$emit("change", value)
     },
   },
 }
 </script>
 
 <style lang="scss" scoped>
-.folder-selector {
-  position: relative;
-  max-width: 20rem;
-  min-width: 10rem;
+.folder-selector__item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
 
-  &__trigger {
-    display: flex;
-    align-items: center;
-    gap: 0.4em;
-    width: 100%;
-    padding: 0.4em 0.6em;
-    background: var(--background-tertiary, #f5f5f5);
-    border: 1px solid var(--neutral-20, #e0e0e0);
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.85rem;
-    color: var(--text-primary);
-    transition: border-color 0.2s;
+.folder-selector__item--select {
+  color: var(--primary-color);
+  font-weight: 500;
+}
 
-    &:hover:not(:disabled) {
-      border-color: var(--primary-color);
-    }
+.folder-selector__trigger-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+}
 
-    &--open {
-      border-color: var(--primary-color);
-    }
+.folder-selector__item-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
-    &--readonly {
-      cursor: default;
-      opacity: 0.7;
-    }
-  }
+.folder-selector__item-lock {
+  flex-shrink: 0;
+  color: var(--text-muted, #999);
+}
+</style>
 
-  &__label {
-    flex: 1;
-    text-align: left;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
+<!-- Unscoped: the popover content is teleported outside this component. -->
+<style lang="scss">
+.folder-selector__popover:not(.popover-mobile-sheet) {
+  /* Bound width so long names truncate instead of stretching the popover. */
+  max-width: 360px;
+}
 
-  &__lock {
-    flex-shrink: 0;
-    color: var(--text-muted, #999);
-  }
+.folder-selector__popover:not(.popover-mobile-sheet) [role="listbox"] {
+  max-height: 40vh;
+  overflow-y: auto;
+}
 
-  &__caret {
-    flex-shrink: 0;
-    color: var(--text-secondary);
-  }
+/* Pin the "choose" entry while the tree scrolls. */
+.folder-selector__popover
+  .popover-list__item:has(.folder-selector__item--select) {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--background-app);
+  border-bottom: 1px solid var(--neutral-20);
+}
 
-  &__dropdown {
-    position: absolute;
-    top: calc(100% + 4px);
-    left: 0;
-    right: 0;
-    background: white;
-    border: 1px solid var(--neutral-20, #e0e0e0);
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-    z-index: 20;
-    max-height: 200px;
-    overflow-y: auto;
-    padding: 0.25rem 0;
-  }
-
-  &__option {
-    display: flex;
-    align-items: center;
-    gap: 0.4em;
-    padding: 0.4em 0.5rem;
-    cursor: pointer;
-    font-size: 0.85rem;
-    color: var(--text-primary);
-
-    &:hover {
-      background-color: var(--primary-soft, #f0f0ff);
-    }
-
-    &--active {
-      background-color: var(--primary-soft, #f0f0ff);
-      font-weight: 600;
-    }
-  }
+/* Keep the "choose" text readable on the blue hover background. */
+.folder-selector__popover
+  .popover-list__item
+  .btn:hover
+  .folder-selector__item--select,
+.folder-selector__popover
+  .popover-list__item
+  .btn--hovered
+  .folder-selector__item--select {
+  color: var(--primary-contrast);
 }
 </style>

@@ -250,27 +250,10 @@ export default {
     },
 
     async handleFolderChange(folderId) {
-      if (!this.selectedMedia?._id) return
+      const mediaId = this.selectedMedia?._id
+      if (!mediaId) return
       try {
-        if (folderId) {
-          await this.$store.dispatch("folders/moveConversationsToFolder", {
-            folderId,
-            conversationIds: [this.selectedMedia._id],
-          })
-        } else {
-          await this.$store.dispatch("folders/uncategorizeConversations", {
-            conversationIds: [this.selectedMedia._id],
-          })
-        }
-        this.$store.dispatch("folders/fetchFolders")
-        // Remove moved media from current list and clear selection
-        const currentFolderId = this.$route.params.folderId
-        if (folderId !== currentFolderId) {
-          this.$store.commit(`${this.storeScope}/deleteMedias`, [
-            this.selectedMedia._id,
-          ])
-        }
-        this.$emit("clear-selection")
+        await this.moveMediasToFolder(folderId, [mediaId])
       } catch (error) {
         console.error("Folder change error:", error)
       }
