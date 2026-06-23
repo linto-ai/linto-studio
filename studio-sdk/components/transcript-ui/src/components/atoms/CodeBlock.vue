@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref, watch } from "vue"
 import CopyButton from "./CopyButton.vue"
 import { useI18n } from "../../i18n"
 
@@ -13,6 +14,26 @@ const { t } = useI18n()
 function copy() {
   return navigator.clipboard.writeText(props.code)
 }
+
+// Highlighted token markup, or null to render plain text (streaming, unknown
+// language, or before the lazy highlighter chunk has loaded).
+const highlighted = ref<string | null>(null)
+let seq = 0
+
+watch(
+  () => [props.code, props.lang, props.streaming] as const,
+  async ([code, lang, streaming]) => {
+    const run = ++seq
+    if (streaming || !code) {
+      highlighted.value = null
+      return
+    }
+    const { highlightCode } = await import("../../utils/highlight")
+    // Drop the result if another change superseded this run while awaiting.
+    if (run === seq) highlighted.value = highlightCode(code, lang ?? "")
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
@@ -24,7 +45,7 @@ function copy() {
       size="sm"
       :copy-fn="copy"
       :aria-label="t('markdown.copyCode')" />
-    <pre><code>{{ code }}</code></pre>
+    <pre><code v-if="highlighted" v-html="highlighted" /><code v-else>{{ code }}</code></pre>
   </div>
 </template>
 
