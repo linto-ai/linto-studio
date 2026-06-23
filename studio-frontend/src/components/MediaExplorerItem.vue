@@ -14,6 +14,7 @@
       'media-explorer-item--error':
         status === 'error' && filterStatus === 'processing',
       'media-explorer-item--processing': status != 'done' && status != 'error',
+      'media-explorer-item--moved-out': media._movedOut,
     }">
     <!-- Main content layout -->
     <div class="media-explorer-item__content">
@@ -498,6 +499,10 @@ export default {
 
   &--done {
     background-color: var(--primary-soft);
+  }
+
+  &--moved-out {
+    opacity: 0.45;
   }
 }
 

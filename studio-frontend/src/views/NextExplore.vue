@@ -121,6 +121,12 @@ export default {
         }
       }
     },
+    // A genuine context change (folder, search, tags, sort) discards any
+    // moved-out media kept around for an open overview, then reloads.
+    reloadFromContext() {
+      this.$store.dispatch(`${this.storeScope}/clearMovedOut`)
+      this.reloadMedias()
+    },
     async handleLoadMore() {
       this.loadingNextPage = true
       await this.$store.dispatch(`${this.storeScope}/loadNextPage`, {
@@ -140,13 +146,13 @@ export default {
     },
     $route() {
       this.$store.dispatch(`${this.storeScope}/clearSidebarFilterTagIds`)
-      this.reloadMedias()
+      this.reloadFromContext()
     },
-    search: "reloadMedias",
-    selectedTagsIds: "reloadMedias",
-    sidebarFilterTagIds: "reloadMedias",
-    sortField: "reloadMedias",
-    sortOrder: "reloadMedias",
+    search: "reloadFromContext",
+    selectedTagsIds: "reloadFromContext",
+    sidebarFilterTagIds: "reloadFromContext",
+    sortField: "reloadFromContext",
+    sortOrder: "reloadFromContext",
     "$apiEventWS.state.connexionRestored"() {
       if (this.getCurrentScope === "organization") {
         this.$apiEventWS.subscribeMediaUpdate(this.currentOrganizationScope)

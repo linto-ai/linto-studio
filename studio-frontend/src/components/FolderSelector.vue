@@ -78,7 +78,6 @@ export default {
   },
   data() {
     return {
-      // Ids of the folders currently expanded in the tree.
       expandedIds: [],
       // Folder targeted by a click, validated through the top "choose" entry.
       targetId: null,
@@ -156,7 +155,7 @@ export default {
         return
       }
       if (item._hasChildren) {
-        // A parent click expands it and targets it for the top "choose" entry.
+        // Expand + target it (selectable via the top "choose" entry).
         this.targetId = item.id
         this.toggleExpand(item.id)
         return
@@ -164,8 +163,7 @@ export default {
       this.commit(item.value)
     },
     commit(value) {
-      // Explicit selection: clear the pending target so closing the popover
-      // (via the resulting close) does not re-commit it.
+      // Clear target first so the close below doesn't re-commit it.
       this.targetId = null
       this.handleInput(value)
       this.$refs.popoverList?.close()
@@ -177,12 +175,12 @@ export default {
     },
     onToggle(isOpen) {
       if (isOpen) {
-        // Reopen with the ancestors of the current selection expanded, so it is visible.
+        // Expand ancestors so the current selection is visible.
         const ancestors = this.value ? this.pathToFolder(this.value) : null
         this.expandedIds = ancestors ? ancestors.map((node) => node._id) : []
         this.targetId = null
       } else if (this.targetId && this.targetId !== this.value) {
-        // Closed by clicking outside after picking a folder: commit that folder.
+        // Closed via outside-click after picking: commit that folder.
         this.handleInput(this.targetId)
         this.targetId = null
       }
@@ -242,8 +240,7 @@ export default {
 <!-- Unscoped: the popover content is teleported outside this component. -->
 <style lang="scss">
 .folder-selector__popover:not(.popover-mobile-sheet) {
-  /* Bound the width so long folder names truncate (ellipsis) instead of
-     stretching the popover; width is otherwise auto, sized to the content. */
+  /* Bound width so long names truncate instead of stretching the popover. */
   max-width: 360px;
 }
 
@@ -252,8 +249,7 @@ export default {
   overflow-y: auto;
 }
 
-/* Keep the single "choose this folder" entry pinned while the tree scrolls,
-   and separate it from the folder list below. */
+/* Pin the "choose" entry while the tree scrolls. */
 .folder-selector__popover
   .popover-list__item:has(.folder-selector__item--select) {
   position: sticky;
@@ -263,8 +259,7 @@ export default {
   border-bottom: 1px solid var(--neutral-20);
 }
 
-/* On hover/highlight the row turns blue; keep the "choose" text readable
-   (the --select class otherwise forces blue text over the blue background). */
+/* Keep the "choose" text readable on the blue hover background. */
 .folder-selector__popover
   .popover-list__item
   .btn:hover
