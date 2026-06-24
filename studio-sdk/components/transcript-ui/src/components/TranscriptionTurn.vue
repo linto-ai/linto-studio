@@ -143,10 +143,10 @@ function onCheckboxChange(event: MouseEvent) {
 
 .word--active {
   text-decoration: underline;
-  text-decoration-color: var(--speaker-color);
+  text-decoration-color: var(--color-primary);
   text-decoration-thickness: 2px;
   text-underline-offset: 3px;
-  color: var(--speaker-color);
+  color: var(--color-primary);
 }
 
 .turn--partial .turn-text {

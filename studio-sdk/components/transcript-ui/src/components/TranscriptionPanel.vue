@@ -201,7 +201,7 @@ onBeforeUnmount(() => {
   background-color: var(--color-surface);
 }
 
-.transcription-panel:has(.ProseMirror:focus) {
+/* .transcription-panel:has(.ProseMirror:focus) {
   background-color: var(--color-background);
 }
 
@@ -209,6 +209,14 @@ onBeforeUnmount(() => {
   outline: 1px solid var(--color-primary);
   background-color: var(--color-surface);
   box-shadow: var(--shadow-sm);
+} */
+
+.transcription-panel :deep(.ProseMirror:focus) {
+  outline: none;
+}
+
+.transcription-panel :deep(.turn--cursor) {
+  outline: 2px solid var(--color-primary);
 }
 
 .scroll-container {

@@ -13248,7 +13248,11 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       const props = __props;
       const { t: t2, locale } = useI18n();
       const languageName = computed(
-        () => getLanguageDisplayName(props.language, locale.value, t2("language.wildcard"))
+        () => getLanguageDisplayName(
+          props.language,
+          locale.value,
+          t2("language.wildcard")
+        )
       );
       const timestamp = computed(() => {
         if (props.startTime != null) {
@@ -13284,8 +13288,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$x = "\n.speaker-label[data-v-b451886f] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.speaker-name[data-v-b451886f] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.timestamp[data-v-b451886f] {\n  font-size: var(--font-size-xs);\n  font-family: var(--font-family-mono);\n  color: var(--color-text-muted);\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n.lang[data-v-b451886f] {\n  font-size: var(--font-size-xs);\n  font-weight: 400;\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n";
-  const SpeakerLabel = /* @__PURE__ */ _export_sfc(_sfc_main$E, [["styles", [_style_0$x]], ["__scopeId", "data-v-b451886f"]]);
+  const _style_0$x = "\n.speaker-label[data-v-177d13c4] {\n  display: flex;\n  border-bottom: 2px solid transparent;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.speaker-name[data-v-177d13c4] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.timestamp[data-v-177d13c4] {\n  font-size: var(--font-size-xs);\n  font-family: var(--font-family-mono);\n  color: var(--color-text-muted);\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n.lang[data-v-177d13c4] {\n  font-size: var(--font-size-xs);\n  font-weight: 400;\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n";
+  const SpeakerLabel = /* @__PURE__ */ _export_sfc(_sfc_main$E, [["styles", [_style_0$x]], ["__scopeId", "data-v-177d13c4"]]);
   function serialize(o2) {
     return typeof o2 == "string" ? `'${o2}'` : new c$1().serialize(o2);
   }
@@ -19741,8 +19745,8 @@ ${text2}` : text2;
       };
     }
   });
-  const _style_0$v = "\n.turn[data-v-7ea6a240] {\n  padding: var(--spacing-sm) var(--spacing-lg);\n}\n.turn-header[data-v-7ea6a240] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  cursor: pointer;\n  user-select: none;\n  border-radius: var(--radius-sm);\n  padding: var(--spacing-xxs) 0;\n}\n.turn[data-v-7ea6a240]:has(.turn-header:hover) {\n  background-color: var(--color-surface-hover);\n}\n.turn-text[data-v-7ea6a240] {\n  margin-top: var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.turn--selected[data-v-7ea6a240] {\n  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);\n  border-left: 3px solid var(--color-primary);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.turn--active[data-v-7ea6a240]:not(.turn--selected) {\n  border-left: 3px solid var(--speaker-color);\n  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.word--active[data-v-7ea6a240] {\n  text-decoration: underline;\n  text-decoration-color: var(--speaker-color);\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n  color: var(--speaker-color);\n}\n.turn--partial .turn-text[data-v-7ea6a240] {\n  font-style: italic;\n  color: var(--color-text-muted);\n  animation: partial-fade-in-7ea6a240 200ms ease;\n}\n@keyframes partial-fade-in-7ea6a240 {\nfrom {\n    opacity: 0;\n}\nto {\n    opacity: 1;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.turn--partial .turn-text[data-v-7ea6a240] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.turn[data-v-7ea6a240] {\n    padding: var(--spacing-sm) var(--spacing-md);\n}\n.turn--selected[data-v-7ea6a240],\n  .turn--active[data-v-7ea6a240]:not(.turn--selected) {\n    padding-left: calc(var(--spacing-md) - 3px);\n}\n}\n";
-  const TranscriptionTurn = /* @__PURE__ */ _export_sfc(_sfc_main$C, [["styles", [_style_0$v]], ["__scopeId", "data-v-7ea6a240"]]);
+  const _style_0$v = "\n.turn[data-v-e53c0469] {\n  padding: var(--spacing-sm) var(--spacing-lg);\n}\n.turn-header[data-v-e53c0469] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  cursor: pointer;\n  user-select: none;\n  border-radius: var(--radius-sm);\n  padding: var(--spacing-xxs) 0;\n}\n.turn[data-v-e53c0469]:has(.turn-header:hover) {\n  background-color: var(--color-surface-hover);\n}\n.turn-text[data-v-e53c0469] {\n  margin-top: var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.turn--selected[data-v-e53c0469] {\n  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);\n  border-left: 3px solid var(--color-primary);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.turn--active[data-v-e53c0469]:not(.turn--selected) {\n  border-left: 3px solid var(--speaker-color);\n  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.word--active[data-v-e53c0469] {\n  text-decoration: underline;\n  text-decoration-color: var(--color-primary);\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n  color: var(--color-primary);\n}\n.turn--partial .turn-text[data-v-e53c0469] {\n  font-style: italic;\n  color: var(--color-text-muted);\n  animation: partial-fade-in-e53c0469 200ms ease;\n}\n@keyframes partial-fade-in-e53c0469 {\nfrom {\n    opacity: 0;\n}\nto {\n    opacity: 1;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.turn--partial .turn-text[data-v-e53c0469] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.turn[data-v-e53c0469] {\n    padding: var(--spacing-sm) var(--spacing-md);\n}\n.turn--selected[data-v-e53c0469],\n  .turn--active[data-v-e53c0469]:not(.turn--selected) {\n    padding-left: calc(var(--spacing-md) - 3px);\n}\n}\n";
+  const TranscriptionTurn = /* @__PURE__ */ _export_sfc(_sfc_main$C, [["styles", [_style_0$v]], ["__scopeId", "data-v-e53c0469"]]);
   const _sfc_main$B = {};
   const _hoisted_1$v = {
     viewBox: "0 0 938 604",
@@ -37954,8 +37958,8 @@ ${indentedChild}`;
       };
     }
   });
-  const _style_0$t = "\n.transcription-panel[data-v-3d1ad18a] {\n  min-height: 0;\n  overflow: hidden;\n  background-color: var(--color-surface);\n}\n.transcription-panel[data-v-3d1ad18a]:has(.ProseMirror:focus) {\n  background-color: var(--color-background);\n}\n.transcription-panel[data-v-3d1ad18a] .ProseMirror:focus {\n  outline: 1px solid var(--color-primary);\n  background-color: var(--color-surface);\n  box-shadow: var(--shadow-sm);\n}\n.scroll-container[data-v-3d1ad18a] {\n  height: 100%;\n  overflow: auto;\n  position: relative;\n}\n.turns-container[data-v-3d1ad18a] {\n  max-width: 80ch;\n  margin-inline: auto;\n  padding: var(--spacing-lg);\n}\n.turns-container[data-v-3d1ad18a]:has(.transcription-empty) {\n  display: flex;\n  flex-direction: column;\n  min-height: 100%;\n}\n.history-loading[data-v-3d1ad18a] {\n  text-align: center;\n  padding: var(--spacing-md);\n}\n.history-loading progress[data-v-3d1ad18a] {\n  width: 120px;\n}\n.history-start[data-v-3d1ad18a] {\n  text-align: center;\n  padding: var(--spacing-md);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n}\n\n/* Resume scroll button */\n.resume-scroll-btn[data-v-3d1ad18a] {\n  position: sticky;\n  bottom: var(--spacing-lg);\n  left: 50%;\n  translate: -50% 0;\n  z-index: var(--z-sticky);\n  /* No backdrop-filter: this button is sticky inside the tall scroll\n     container, where a backdrop-filter makes WebRender allocate a render\n     target spanning the whole scroll height — multi-GB on a long transcript. */\n  background: white !important;\n  border: 1px solid var(--color-border);\n  box-shadow: var(--shadow-sm);\n}\n\n/* Transition */\n.fade-slide-enter-active[data-v-3d1ad18a],\n.fade-slide-leave-active[data-v-3d1ad18a] {\n  transition:\n    opacity 200ms ease,\n    translate 200ms ease;\n}\n.fade-slide-enter-from[data-v-3d1ad18a],\n.fade-slide-leave-to[data-v-3d1ad18a] {\n  opacity: 0;\n  translate: -50% 8px;\n}\n@media (prefers-reduced-motion: reduce) {\n.fade-slide-enter-active[data-v-3d1ad18a],\n  .fade-slide-leave-active[data-v-3d1ad18a] {\n    transition: none;\n}\n}\n@media (max-width: 767px) {\n.turns-container[data-v-3d1ad18a] {\n    padding: var(--spacing-md);\n}\n}\n";
-  const TranscriptionPanel = /* @__PURE__ */ _export_sfc(_sfc_main$z, [["styles", [_style_0$t]], ["__scopeId", "data-v-3d1ad18a"]]);
+  const _style_0$t = "\n.transcription-panel[data-v-17579b10] {\n  min-height: 0;\n  overflow: hidden;\n  background-color: var(--color-surface);\n}\n\n/* .transcription-panel:has(.ProseMirror:focus) {\n  background-color: var(--color-background);\n}\n\n.transcription-panel :deep(.ProseMirror:focus) {\n  outline: 1px solid var(--color-primary);\n  background-color: var(--color-surface);\n  box-shadow: var(--shadow-sm);\n} */\n.transcription-panel[data-v-17579b10] .ProseMirror:focus {\n  outline: none;\n}\n.transcription-panel[data-v-17579b10] .turn--cursor {\n  outline: 2px solid var(--color-primary);\n}\n.scroll-container[data-v-17579b10] {\n  height: 100%;\n  overflow: auto;\n  position: relative;\n}\n.turns-container[data-v-17579b10] {\n  max-width: 80ch;\n  margin-inline: auto;\n  padding: var(--spacing-lg);\n}\n.turns-container[data-v-17579b10]:has(.transcription-empty) {\n  display: flex;\n  flex-direction: column;\n  min-height: 100%;\n}\n.history-loading[data-v-17579b10] {\n  text-align: center;\n  padding: var(--spacing-md);\n}\n.history-loading progress[data-v-17579b10] {\n  width: 120px;\n}\n.history-start[data-v-17579b10] {\n  text-align: center;\n  padding: var(--spacing-md);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n}\n\n/* Resume scroll button */\n.resume-scroll-btn[data-v-17579b10] {\n  position: sticky;\n  bottom: var(--spacing-lg);\n  left: 50%;\n  translate: -50% 0;\n  z-index: var(--z-sticky);\n  /* No backdrop-filter: this button is sticky inside the tall scroll\n     container, where a backdrop-filter makes WebRender allocate a render\n     target spanning the whole scroll height — multi-GB on a long transcript. */\n  background: white !important;\n  border: 1px solid var(--color-border);\n  box-shadow: var(--shadow-sm);\n}\n\n/* Transition */\n.fade-slide-enter-active[data-v-17579b10],\n.fade-slide-leave-active[data-v-17579b10] {\n  transition:\n    opacity 200ms ease,\n    translate 200ms ease;\n}\n.fade-slide-enter-from[data-v-17579b10],\n.fade-slide-leave-to[data-v-17579b10] {\n  opacity: 0;\n  translate: -50% 8px;\n}\n@media (prefers-reduced-motion: reduce) {\n.fade-slide-enter-active[data-v-17579b10],\n  .fade-slide-leave-active[data-v-17579b10] {\n    transition: none;\n}\n}\n@media (max-width: 767px) {\n.turns-container[data-v-17579b10] {\n    padding: var(--spacing-md);\n}\n}\n";
+  const TranscriptionPanel = /* @__PURE__ */ _export_sfc(_sfc_main$z, [["styles", [_style_0$t]], ["__scopeId", "data-v-17579b10"]]);
   const _hoisted_1$s = ["data-status"];
   const _hoisted_2$m = {
     key: 0,
@@ -44912,8 +44916,8 @@ section.turn:has([data-state="open"]) {
       };
     }
   });
-  const _style_0 = "\n.turn[data-v-cca1719e] {\n  padding: var(--spacing-sm) var(--spacing-lg);\n  border-left: 3px solid transparent;\n\n  /* Skip layout/paint of off-screen turns on long transcripts. `auto <size>`\n     remembers each turn's real height after first render. */\n  content-visibility: auto;\n  contain-intrinsic-size: auto 56px;\n}\n.turn-text[data-v-cca1719e] {\n  margin-top: var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.turn--active[data-v-cca1719e] {\n  border-left: 3px solid var(--speaker-color);\n  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);\n}\n\n/* Matches SpeakerPopover's trigger so the placeholder looks identical. */\n.lazy-speaker-trigger[data-v-cca1719e] {\n  all: unset;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--radius-sm);\n}\n.lazy-speaker-trigger[data-v-cca1719e]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n[data-v-cca1719e] .word--active {\n  text-decoration: underline;\n  text-decoration-color: var(--speaker-color);\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n  color: var(--speaker-color);\n}\n@media (max-width: 767px) {\n.turn[data-v-cca1719e] {\n    padding: var(--spacing-sm) var(--spacing-md);\n}\n}\n";
-  const TurnNodeView = /* @__PURE__ */ _export_sfc(_sfc_main, [["styles", [_style_0]], ["__scopeId", "data-v-cca1719e"]]);
+  const _style_0 = "\n.turn[data-v-43c8ee4e] {\n  padding: var(--spacing-sm) var(--spacing-lg);\n  border-left: 3px solid transparent;\n\n  /* Skip layout/paint of off-screen turns on long transcripts. `auto <size>`\n     remembers each turn's real height after first render. */\n  content-visibility: auto;\n  contain-intrinsic-size: auto 56px;\n}\n.turn-text[data-v-43c8ee4e] {\n  margin-top: var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.turn--active[data-v-43c8ee4e] {\n  /* outline-left: 3px solid var(--speaker-color);\n  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);\n  border-bottom: 2px solid var(--speaker-color);\n   color: var(--speaker-color);\n   */\n  background-color: color-mix(in srgb, var(--speaker-color) 5%, transparent);\n  outline: 1px solid var(--speaker-color);\n}\n\n/* Turn currently holding the caret (set by the cursorTurn PM decoration). */\n.turn--cursor[data-v-43c8ee4e] {\n  background-color: color-mix(in srgb, var(--color-primary) 5%, transparent);\n  outline: 2px solid var(--color-primary);\n}\n\n/* Matches SpeakerPopover's trigger so the placeholder looks identical. */\n.lazy-speaker-trigger[data-v-43c8ee4e] {\n  all: unset;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--radius-sm);\n}\n.lazy-speaker-trigger[data-v-43c8ee4e]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n[data-v-43c8ee4e] .word--active {\n  text-decoration: underline;\n  text-decoration-color: var(--color-primary);\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n  color: var(--color-primary);\n}\n@media (max-width: 767px) {\n.turn[data-v-43c8ee4e] {\n    padding: var(--spacing-sm) var(--spacing-md);\n}\n}\n";
+  const TurnNodeView = /* @__PURE__ */ _export_sfc(_sfc_main, [["styles", [_style_0]], ["__scopeId", "data-v-43c8ee4e"]]);
   const TTS_SUPPORTED = typeof window !== "undefined" && "speechSynthesis" in window;
   function isTTSSupported() {
     return TTS_SUPPORTED;
@@ -58198,7 +58202,7 @@ ${err.toString()}`);
         }
         return null;
       }
-      function computeDecorations() {
+      function computeDecorations2() {
         const activeId = core.audio?.activeWordId.value;
         const activeTurnId = core.audio?.activeTurnId.value;
         if (!activeId || !activeTurnId) return DecorationSet.empty;
@@ -58260,7 +58264,7 @@ ${err.toString()}`);
               if (tr.docChanged) return DecorationSet.empty;
               if (tr.getMeta(wordHighlightKey)) {
                 if (isEditing(newState)) return old;
-                return computeDecorations();
+                return computeDecorations2();
               }
               return old;
             }
@@ -58282,6 +58286,80 @@ ${err.toString()}`);
             return {
               destroy() {
                 unwatch?.();
+              }
+            };
+          }
+        })
+      ];
+    }
+  });
+  const cursorTurnKey = new PluginKey("cursorTurn");
+  function computeDecorations(state) {
+    const { $head } = state.selection;
+    for (let depth = $head.depth; depth > 0; depth--) {
+      if ($head.node(depth).type.name === "turn") {
+        const from2 = $head.before(depth);
+        const to = $head.after(depth);
+        return DecorationSet.create(state.doc, [
+          Decoration.node(from2, to, { class: "turn--cursor" })
+        ]);
+      }
+    }
+    return DecorationSet.empty;
+  }
+  const CursorTurn = Extension.create({
+    name: "cursorTurn",
+    addProseMirrorPlugins() {
+      let pendingFocusSync = null;
+      function scheduleFocusSync(view) {
+        if (pendingFocusSync) clearTimeout(pendingFocusSync);
+        pendingFocusSync = setTimeout(() => {
+          pendingFocusSync = null;
+          if (view.isDestroyed) return;
+          view.dispatch(
+            view.state.tr.setMeta(cursorTurnKey, { focused: view.hasFocus() })
+          );
+        }, 0);
+      }
+      return [
+        new Plugin({
+          key: cursorTurnKey,
+          state: {
+            init() {
+              return { deco: DecorationSet.empty, focused: false };
+            },
+            apply(tr, old, _oldState, newState) {
+              const meta = tr.getMeta(cursorTurnKey);
+              const focused = meta ? meta.focused : old.focused;
+              if (!focused) return { deco: DecorationSet.empty, focused };
+              if (meta || tr.selectionSet || tr.docChanged) {
+                return { deco: computeDecorations(newState), focused };
+              }
+              return { deco: old.deco, focused };
+            }
+          },
+          props: {
+            decorations(state) {
+              return cursorTurnKey.getState(state)?.deco;
+            },
+            // Blur/focus don't emit transactions on their own, so turn them into
+            // meta-only transactions to drive the plugin state (deferred — see
+            // scheduleFocusSync).
+            handleDOMEvents: {
+              focus(view) {
+                scheduleFocusSync(view);
+                return false;
+              },
+              blur(view) {
+                scheduleFocusSync(view);
+                return false;
+              }
+            }
+          },
+          view() {
+            return {
+              destroy() {
+                if (pendingFocusSync) clearTimeout(pendingFocusSync);
               }
             };
           }
@@ -58407,6 +58485,7 @@ ${err.toString()}`);
       Collaboration.configure({ document: ydoc, field }),
       StoreSync.configure({ store: core, getTranslation: () => translation }),
       WordHighlight.configure({ core }),
+      CursorTurn,
       ClickHandler.configure({ core }),
       PauseOnEdit.configure({ core }),
       ...core.pluginExtensions

@@ -102,8 +102,19 @@ const isTurnActive = computed(() => {
 }
 
 .turn--active {
-  border-left: 3px solid var(--speaker-color);
+  /* outline-left: 3px solid var(--speaker-color);
   background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);
+  border-bottom: 2px solid var(--speaker-color);
+   color: var(--speaker-color);
+   */
+  background-color: color-mix(in srgb, var(--speaker-color) 5%, transparent);
+  outline: 1px solid var(--speaker-color);
+}
+
+/* Turn currently holding the caret (set by the cursorTurn PM decoration). */
+.turn--cursor {
+  background-color: color-mix(in srgb, var(--color-primary) 5%, transparent);
+  outline: 2px solid var(--color-primary);
 }
 
 /* Matches SpeakerPopover's trigger so the placeholder looks identical. */
@@ -122,10 +133,10 @@ const isTurnActive = computed(() => {
 
 :deep(.word--active) {
   text-decoration: underline;
-  text-decoration-color: var(--speaker-color);
+  text-decoration-color: var(--color-primary);
   text-decoration-thickness: 2px;
   text-underline-offset: 3px;
-  color: var(--speaker-color);
+  color: var(--color-primary);
 }
 
 @media (max-width: 767px) {
