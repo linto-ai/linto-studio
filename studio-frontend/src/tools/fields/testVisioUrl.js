@@ -22,7 +22,10 @@ export function testVisioUrl(field, t, provider = "jitsi") {
 
   field.error = null
   field.valid = false
-  field.value = field.value.toLowerCase().trim()
+  // Only trim — DO NOT lowercase: meeting URLs carry case-sensitive tokens (e.g. a
+  // Teams join passcode `?p=T2pFGitIgRzJN2MKYl`), and lowercasing them breaks the
+  // bot's join. Host-allowlist matching below is done case-insensitively instead.
+  field.value = field.value.trim()
 
   if (field.value === "") {
     field.error = t("error.required")
@@ -34,7 +37,8 @@ export function testVisioUrl(field, t, provider = "jitsi") {
     return field.valid
   }
 
-  if (acceptedUrls.some((url) => field.value.includes(url))) {
+  const lowerValue = field.value.toLowerCase()
+  if (acceptedUrls.some((url) => lowerValue.includes(url.toLowerCase()))) {
     field.valid = true
     return field.valid
   }
