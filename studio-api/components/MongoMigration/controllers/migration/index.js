@@ -2,7 +2,6 @@ const debug = require("debug")(
   `linto:components:MongoMigration:controllers:migration:index`,
 )
 
-//read all folder in version 1
 const INIT_VERSION = "0.0.0"
 
 const fs = require("fs")
@@ -13,9 +12,7 @@ module.exports = {
   async migrationProcessing(db, version) {
     try {
       const availabelVersion = fs
-        .readdirSync(
-          `${process.cwd()}/components/MongoMigration/version/`,
-        )
+        .readdirSync(`${process.cwd()}/components/MongoMigration/version/`)
         .sort(compareVersions)
 
       let desired_index = availabelVersion.indexOf(
@@ -51,16 +48,19 @@ module.exports = {
       }
 
       const version_diff = desired_index - current_index
-      if (version_diff !== 0) {
-        if (version_diff > 0) {
-          for (let i = current_index + 1; i <= desired_index; i++) {
-            await doMigration(availabelVersion[i], db, "up")
-          }
-        } else {
-          for (let i = current_index; i > desired_index; i--) {
-            await doMigration(availabelVersion[i], db, "down")
-          }
+      if (version_diff > 0) {
+        // up: reset and replay all files of each new version
+        for (let i = current_index + 1; i <= desired_index; i++) {
+          await doMigration(availabelVersion[i], db, "up", true)
         }
+      } else if (version_diff < 0) {
+        for (let i = current_index; i > desired_index; i--) {
+          await doMigration(availabelVersion[i], db, "down")
+        }
+        await resetPlayedFiles(db)
+      } else {
+        // same version: replay only files not played yet
+        await doMigration(availabelVersion[current_index], db, "up", false)
       }
     } catch (err) {
       logger.error(err)
@@ -79,7 +79,9 @@ module.exports = {
       if (versionCollection.length === 0) {
         await db.createCollection("version")
         current_version = INIT_VERSION
-        await db.collection("version").insertOne({ version: INIT_VERSION })
+        await db
+          .collection("version")
+          .insertOne({ version: INIT_VERSION, playedFiles: [] })
       } else {
         current_version = (await db.collection("version").findOne()).version
       }
@@ -108,7 +110,11 @@ function compareVersions(a, b) {
   return 0
 }
 
-async function doMigration(versionStep, db, step) {
+function resetPlayedFiles(db) {
+  return db.collection("version").updateMany({}, { $set: { playedFiles: [] } })
+}
+
+async function doMigration(versionStep, db, step, resetPlayed = false) {
   try {
     const migrationFiles = await fsPromises.readdir(
       `${process.cwd()}/components/MongoMigration/version/${versionStep}`,
@@ -117,6 +123,16 @@ async function doMigration(versionStep, db, step) {
       logger.info(`Migration ${step} to version ${versionStep}`)
     else logger.info(`Migration ${step} from version ${versionStep}`)
 
+    let playedFiles = []
+    if (step === "up") {
+      if (resetPlayed) {
+        await resetPlayedFiles(db)
+      } else {
+        const versionDoc = await db.collection("version").findOne()
+        playedFiles = (versionDoc && versionDoc.playedFiles) || []
+      }
+    }
+
     for (let j = 0; j < migrationFiles.length; j++) {
       const file = migrationFiles[j]
       const migration = require(
@@ -124,7 +140,16 @@ async function doMigration(versionStep, db, step) {
       )
 
       if (step === "up") {
+        if (playedFiles.includes(file)) {
+          logger.info(
+            `Skipping already played migration file ${versionStep}/${file}`,
+          )
+          continue
+        }
         await migration.up(db)
+        await db
+          .collection("version")
+          .updateMany({}, { $addToSet: { playedFiles: file } })
       } else if (step === "down") {
         await migration.down(db)
       } else {
