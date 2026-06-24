@@ -113,6 +113,8 @@ const en: Record<keyof typeof fr, string> = {
   'time.relative.days': '{n} d ago',
   'chat.title': 'Assistant',
   'chat.close': 'Close assistant',
+  'chat.expand': 'Expand',
+  'chat.collapse': 'Collapse',
   'chat.history': 'History',
   'chat.newChat': 'New chat',
   'chat.rename': 'Rename',

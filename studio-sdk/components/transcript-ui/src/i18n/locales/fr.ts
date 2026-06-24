@@ -112,6 +112,8 @@ const fr = {
   "time.relative.days": "il y a {n} j",
   "chat.title": "Assistant",
   "chat.close": "Fermer l'assistant",
+  "chat.expand": "Agrandir",
+  "chat.collapse": "Réduire",
   "chat.history": "Historique",
   "chat.newChat": "Nouvelle conversation",
   "chat.rename": "Renommer",

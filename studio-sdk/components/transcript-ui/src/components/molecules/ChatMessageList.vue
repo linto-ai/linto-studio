@@ -74,12 +74,14 @@ const { t } = useI18n()
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: var(--spacing-lg);
 }
 
 .chat-message-list__items {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
+  width: 100%;
+  max-width: var(--chat-content-max-width, 760px);
+  margin-inline: auto;
 }
 </style>

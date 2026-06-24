@@ -10,13 +10,17 @@ import DOMPurify from "dompurify"
 import "prismjs/components/prism-markup"
 import "prismjs/components/prism-css"
 import "prismjs/components/prism-clike"
+import "prismjs/components/prism-c"
+import "prismjs/components/prism-java"
 import "prismjs/components/prism-javascript"
+import "prismjs/components/prism-jsx"
 import "prismjs/components/prism-typescript"
 import "prismjs/components/prism-json"
 import "prismjs/components/prism-bash"
 import "prismjs/components/prism-python"
 import "prismjs/components/prism-yaml"
 import "prismjs/components/prism-sql"
+import "prismjs/components/prism-markdown"
 import "prismjs/components/prism-diff"
 
 // Markdown fence languages → Prism canonical names.
@@ -29,6 +33,7 @@ const ALIASES: Record<string, string> = {
   yml: "yaml",
   html: "markup",
   xml: "markup",
+  md: "markdown",
 }
 
 // Returns sanitized token HTML, or null when the language is unknown (caller

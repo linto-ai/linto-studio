@@ -58,6 +58,15 @@ function copyContent() {
 <style scoped>
 .chat-message {
   display: flex;
+  padding: 0 var(--spacing-lg);
+}
+
+.chat-message:first-child {
+  padding-top: var(--spacing-lg);
+}
+
+.chat-message:last-child {
+  padding-bottom: var(--spacing-lg);
 }
 
 /* ── User ── */

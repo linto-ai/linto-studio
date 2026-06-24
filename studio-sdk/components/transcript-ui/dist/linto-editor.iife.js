@@ -8488,6 +8488,12 @@ var LintoEditor = (function(exports) {
   const LoaderCircle = createLucideIcon("loader-circle", [
     ["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "13zald" }]
   ]);
+  const Maximize = createLucideIcon("maximize", [
+    ["path", { d: "M8 3H5a2 2 0 0 0-2 2v3", key: "1dcmit" }],
+    ["path", { d: "M21 8V5a2 2 0 0 0-2-2h-3", key: "1e4gt3" }],
+    ["path", { d: "M3 16v3a2 2 0 0 0 2 2h3", key: "wsl5sc" }],
+    ["path", { d: "M16 21h3a2 2 0 0 0 2-2v-3", key: "18trek" }]
+  ]);
   const MessageCircle = createLucideIcon("message-circle", [
     [
       "path",
@@ -8496,6 +8502,12 @@ var LintoEditor = (function(exports) {
         key: "1sd12s"
       }
     ]
+  ]);
+  const Minimize = createLucideIcon("minimize", [
+    ["path", { d: "M8 3v3a2 2 0 0 1-2 2H3", key: "hohbtr" }],
+    ["path", { d: "M21 8h-3a2 2 0 0 1-2-2V3", key: "5jw1f3" }],
+    ["path", { d: "M3 16h3a2 2 0 0 1 2 2v3", key: "198tvr" }],
+    ["path", { d: "M16 21v-3a2 2 0 0 1 2-2h3", key: "ph8mxp" }]
   ]);
   const Pause = createLucideIcon("pause", [
     ["rect", { x: "14", y: "3", width: "5", height: "18", rx: "1", key: "kaeet6" }],
@@ -8697,6 +8709,8 @@ var LintoEditor = (function(exports) {
     italic: Italic,
     list: List,
     "list-ordered": ListOrdered,
+    maximize: Maximize,
+    minimize: Minimize,
     pause: Pause,
     play: Play,
     quote: Quote,
@@ -8956,6 +8970,8 @@ var LintoEditor = (function(exports) {
     "time.relative.days": "il y a {n} j",
     "chat.title": "Assistant",
     "chat.close": "Fermer l'assistant",
+    "chat.expand": "Agrandir",
+    "chat.collapse": "Réduire",
     "chat.history": "Historique",
     "chat.newChat": "Nouvelle conversation",
     "chat.rename": "Renommer",
@@ -9082,6 +9098,8 @@ var LintoEditor = (function(exports) {
     "time.relative.days": "{n} d ago",
     "chat.title": "Assistant",
     "chat.close": "Close assistant",
+    "chat.expand": "Expand",
+    "chat.collapse": "Collapse",
     "chat.history": "History",
     "chat.newChat": "New chat",
     "chat.rename": "Rename",
@@ -12012,7 +12030,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     class: "document-meta"
   };
   const _hoisted_5$b = { class: "header-right" };
-  const _hoisted_6$8 = { key: 0 };
+  const _hoisted_6$9 = { key: 0 };
   const _sfc_main$L = /* @__PURE__ */ defineComponent({
     __name: "Header",
     props: {
@@ -12085,7 +12103,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
                 })
               ]),
               default: withCtx(() => [
-                !__props.isMobile ? (openBlock(), createElementBlock("span", _hoisted_6$8, toDisplayString(unref(t2)("header.ask")), 1)) : createCommentVNode("", true)
+                !__props.isMobile ? (openBlock(), createElementBlock("span", _hoisted_6$9, toDisplayString(unref(t2)("header.ask")), 1)) : createCommentVNode("", true)
               ]),
               _: 1
             }, 8, ["aria-label", "disabled"])
@@ -37992,7 +38010,7 @@ ${indentedChild}`;
   const _hoisted_3$k = { class: "document-article__toolbar-left" };
   const _hoisted_4$9 = { class: "document-article__toolbar-center" };
   const _hoisted_5$9 = { class: "document-article__toolbar-right" };
-  const _hoisted_6$7 = { class: "document-article__body" };
+  const _hoisted_6$8 = { class: "document-article__body" };
   const _hoisted_7$5 = {
     key: 0,
     class: "document-article__center document-article__center--processing",
@@ -38046,7 +38064,7 @@ ${indentedChild}`;
               renderSlot(_ctx.$slots, "toolbar-right", {}, void 0, true)
             ])
           ])) : createCommentVNode("", true),
-          createBaseVNode("div", _hoisted_6$7, [
+          createBaseVNode("div", _hoisted_6$8, [
             props.status === "processing" ? (openBlock(), createElementBlock("div", _hoisted_7$5, [
               createVNode(EditorIcon, {
                 name: "spinner",
@@ -38223,7 +38241,7 @@ ${indentedChild}`;
   const _hoisted_3$i = { class: "verbatim-panel__header" };
   const _hoisted_4$8 = { class: "verbatim-panel__doc-title" };
   const _hoisted_5$8 = { class: "verbatim-panel__turns" };
-  const _hoisted_6$6 = { class: "verbatim-panel__turn-header" };
+  const _hoisted_6$7 = { class: "verbatim-panel__turn-header" };
   const _hoisted_7$4 = { class: "verbatim-panel__speaker-name" };
   const _hoisted_8$2 = {
     key: 0,
@@ -38293,7 +38311,7 @@ ${indentedChild}`;
                       key: turn.id,
                       class: "verbatim-panel__turn"
                     }, [
-                      createBaseVNode("header", _hoisted_6$6, [
+                      createBaseVNode("header", _hoisted_6$7, [
                         createBaseVNode("strong", _hoisted_7$4, toDisplayString(speakerName(turn.speakerId)), 1),
                         turn.startTime != null ? (openBlock(), createElementBlock("span", _hoisted_8$2, [
                           _cache[0] || (_cache[0] = createBaseVNode("span", {
@@ -39638,7 +39656,7 @@ ${indentedChild}`;
   };
   const _hoisted_4$7 = { class: "form-field__input-wrapper" };
   const _hoisted_5$7 = ["id", "disabled", "required", "aria-required", "aria-invalid", "aria-describedby"];
-  const _hoisted_6$5 = ["value"];
+  const _hoisted_6$6 = ["value"];
   const _hoisted_7$3 = ["type", "id", "disabled", "readonly", "placeholder", "autocomplete", "required", "aria-required", "aria-invalid", "aria-describedby"];
   const _hoisted_8$1 = {
     key: 3,
@@ -39798,7 +39816,7 @@ ${indentedChild}`;
                 return openBlock(), createElementBlock("option", {
                   key: opt.value,
                   value: opt.value
-                }, toDisplayString(opt.label), 9, _hoisted_6$5);
+                }, toDisplayString(opt.label), 9, _hoisted_6$6);
               }), 128))
             ], 16, _hoisted_5$7)), [
               [vModelSelect, draft.value]
@@ -40332,7 +40350,7 @@ ${indentedChild}`;
     class: "sidebar-section sidebar-section--selector"
   };
   const _hoisted_5$5 = { class: "sidebar-title" };
-  const _hoisted_6$4 = {
+  const _hoisted_6$5 = {
     key: 2,
     class: "sidebar-section"
   };
@@ -40470,7 +40488,7 @@ ${indentedChild}`;
               "onUpdate:selectedTranslationId": _cache[1] || (_cache[1] = ($event) => _ctx.$emit("update:selectedTranslationId", $event))
             }, null, 8, ["translations", "selected-translation-id"])
           ])) : createCommentVNode("", true),
-          unref(core).subtitle ? (openBlock(), createElementBlock("section", _hoisted_6$4, [
+          unref(core).subtitle ? (openBlock(), createElementBlock("section", _hoisted_6$5, [
             createBaseVNode("h2", _hoisted_7$2, toDisplayString(unref(t2)("sidebar.subtitle")), 1),
             createBaseVNode("div", _hoisted_8, [
               createBaseVNode("span", _hoisted_9, toDisplayString(unref(t2)("subtitle.show")), 1),
@@ -40682,7 +40700,7 @@ ${indentedChild}`;
   const _hoisted_3$a = { class: "controls-time" };
   const _hoisted_4$4 = { class: "time-display" };
   const _hoisted_5$4 = { class: "time-display" };
-  const _hoisted_6$3 = { class: "controls-right" };
+  const _hoisted_6$4 = { class: "controls-right" };
   const _hoisted_7$1 = ["value", "aria-label", "disabled"];
   const _sfc_main$j = /* @__PURE__ */ defineComponent({
     __name: "AudioPlayerControls",
@@ -40758,7 +40776,7 @@ ${indentedChild}`;
             _cache[7] || (_cache[7] = createBaseVNode("span", { class: "time-separator" }, "/", -1)),
             createBaseVNode("time", _hoisted_5$4, toDisplayString(__props.duration), 1)
           ]),
-          createBaseVNode("div", _hoisted_6$3, [
+          createBaseVNode("div", _hoisted_6$4, [
             createBaseVNode("div", {
               class: "volume-group",
               onMouseenter: _cache[4] || (_cache[4] = ($event) => showVolumeSlider.value = true),
@@ -43513,7 +43531,7 @@ ${indentedChild}`;
     key: 1,
     class: "chat-session-confirm"
   };
-  const _hoisted_6$2 = { class: "chat-session-confirm__text" };
+  const _hoisted_6$3 = { class: "chat-session-confirm__text" };
   const _sfc_main$e = /* @__PURE__ */ defineComponent({
     __name: "ChatSessionList",
     props: {
@@ -43596,7 +43614,7 @@ ${indentedChild}`;
                   onKeydown: onRenameKeydown,
                   onBlur: confirmRename
                 }, null, 8, ["modelValue", "field"])) : deleteTargetId.value === session.id ? (openBlock(), createElementBlock("div", _hoisted_5$3, [
-                  createBaseVNode("span", _hoisted_6$2, toDisplayString(unref(t2)("chat.deleteConfirm")), 1),
+                  createBaseVNode("span", _hoisted_6$3, toDisplayString(unref(t2)("chat.deleteConfirm")), 1),
                   createVNode(Button, {
                     icon: "x",
                     variant: "transparent",
@@ -43645,8 +43663,8 @@ ${indentedChild}`;
       };
     }
   });
-  const _style_0$e = "\n.chat-session-list[data-v-09ff9dcb] {\n  width: 200px;\n  flex-shrink: 0;\n  display: flex;\n  flex-direction: column;\n  border-right: 1px solid var(--color-border);\n  background-color: var(--color-surface-hover);\n}\n.chat-session-list__header[data-v-09ff9dcb] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-sm) var(--spacing-md);\n}\n.chat-session-list__title[data-v-09ff9dcb] {\n  margin: 0;\n  font-size: var(--font-size-xs);\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-muted);\n}\n.chat-session-list__items[data-v-09ff9dcb] {\n  flex: 1;\n  margin: 0;\n  padding: 0;\n  list-style: none;\n  overflow-y: auto;\n}\n\n/* Delete confirmation row */\n.chat-session-confirm[data-v-09ff9dcb] {\n  display: flex;\n  align-items: center;\n  gap: 2px;\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.chat-session-confirm__text[data-v-09ff9dcb] {\n  flex: 1;\n  min-width: 0;\n  font-size: var(--font-size-xs);\n  color: var(--color-danger);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n";
-  const ChatSessionList = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["styles", [_style_0$e]], ["__scopeId", "data-v-09ff9dcb"]]);
+  const _style_0$e = "\n.chat-session-list[data-v-abf4cb1f] {\n  width: var(--chat-session-list-width, 200px);\n  flex-shrink: 0;\n  display: flex;\n  flex-direction: column;\n  border-right: 1px solid var(--color-border);\n  background-color: var(--color-surface-hover);\n  transition: width 0.2s ease;\n}\n@media (prefers-reduced-motion: reduce) {\n.chat-session-list[data-v-abf4cb1f] {\n    transition: none;\n}\n}\n.chat-session-list__header[data-v-abf4cb1f] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-sm) var(--spacing-md);\n}\n.chat-session-list__title[data-v-abf4cb1f] {\n  margin: 0;\n  font-size: var(--font-size-xs);\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-muted);\n}\n.chat-session-list__items[data-v-abf4cb1f] {\n  flex: 1;\n  margin: 0;\n  padding: 0;\n  list-style: none;\n  overflow-y: auto;\n}\n\n/* Delete confirmation row */\n.chat-session-confirm[data-v-abf4cb1f] {\n  display: flex;\n  align-items: center;\n  gap: 2px;\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.chat-session-confirm__text[data-v-abf4cb1f] {\n  flex: 1;\n  min-width: 0;\n  font-size: var(--font-size-xs);\n  color: var(--color-danger);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n";
+  const ChatSessionList = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["styles", [_style_0$e]], ["__scopeId", "data-v-abf4cb1f"]]);
   const _sfc_main$d = /* @__PURE__ */ defineComponent({
     __name: "CopyButton",
     props: {
@@ -43817,7 +43835,7 @@ ${indentedChild}`;
     "aria-hidden": "true"
   };
   const _hoisted_5$2 = { class: "chat-message__body" };
-  const _hoisted_6$1 = {
+  const _hoisted_6$2 = {
     key: 1,
     class: "chat-message__typing",
     "aria-hidden": "true"
@@ -43853,7 +43871,7 @@ ${indentedChild}`;
               source: __props.message.content,
               streaming: __props.message.streaming
             }, null, 8, ["source", "streaming"])) : createCommentVNode("", true),
-            __props.message.streaming ? (openBlock(), createElementBlock("div", _hoisted_6$1, [..._cache[0] || (_cache[0] = [
+            __props.message.streaming ? (openBlock(), createElementBlock("div", _hoisted_6$2, [..._cache[0] || (_cache[0] = [
               createBaseVNode("span", null, null, -1),
               createBaseVNode("span", null, null, -1),
               createBaseVNode("span", null, null, -1)
@@ -43876,8 +43894,8 @@ ${indentedChild}`;
       };
     }
   });
-  const _style_0$a = "\n.chat-message[data-v-4cff6365] {\n  display: flex;\n}\n\n/* ── User ── */\n.chat-message--user[data-v-4cff6365] {\n  justify-content: flex-end;\n}\n.chat-message__bubble[data-v-4cff6365] {\n  max-width: 80%;\n  padding: var(--spacing-sm) var(--spacing-md);\n  background-color: var(--color-primary);\n  color: var(--color-white);\n  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-sm)\n    var(--radius-lg);\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  white-space: pre-wrap;\n  word-break: break-word;\n}\n\n/* ── Assistant ── */\n.chat-message--assistant[data-v-4cff6365] {\n  gap: var(--spacing-sm);\n  align-items: flex-start;\n}\n.chat-message__marker[data-v-4cff6365] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  flex-shrink: 0;\n  width: 24px;\n  height: 24px;\n  margin-top: 2px;\n  border-radius: var(--radius-md);\n  color: var(--color-primary);\n  background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);\n}\n.chat-message__body[data-v-4cff6365] {\n  min-width: 0;\n  flex: 1;\n}\n.chat-message__body[data-v-4cff6365] .markdown-view {\n  font-size: var(--font-size-sm);\n}\n\n/* ── Action bar ── */\n.chat-message__actions[data-v-4cff6365] {\n  display: flex;\n  gap: var(--spacing-xs);\n  margin-top: var(--spacing-xs);\n  margin-left: calc(var(--spacing-sm) * -1);\n  flex-direction: row-reverse;\n}\n\n/* ── Streaming typing indicator ── */\n.chat-message__typing[data-v-4cff6365] {\n  display: inline-flex;\n  gap: 3px;\n  padding-top: var(--spacing-xs);\n}\n.chat-message__typing span[data-v-4cff6365] {\n  width: 6px;\n  height: 6px;\n  border-radius: 50%;\n  background-color: var(--color-primary);\n  animation: chat-typing-4cff6365 1.2s infinite;\n}\n.chat-message__typing span[data-v-4cff6365]:nth-child(2) {\n  animation-delay: 0.2s;\n}\n.chat-message__typing span[data-v-4cff6365]:nth-child(3) {\n  animation-delay: 0.4s;\n}\n@keyframes chat-typing-4cff6365 {\n0%,\n  60%,\n  100% {\n    opacity: 0.3;\n    transform: scale(0.8);\n}\n30% {\n    opacity: 1;\n    transform: scale(1);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.chat-message__typing span[data-v-4cff6365] {\n    animation: none;\n}\n}\n";
-  const ChatMessage = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["styles", [_style_0$a]], ["__scopeId", "data-v-4cff6365"]]);
+  const _style_0$a = "\n.chat-message[data-v-7ee16e63] {\n  display: flex;\n  padding: 0 var(--spacing-lg);\n}\n.chat-message[data-v-7ee16e63]:first-child {\n  padding-top: var(--spacing-lg);\n}\n.chat-message[data-v-7ee16e63]:last-child {\n  padding-bottom: var(--spacing-lg);\n}\n\n/* ── User ── */\n.chat-message--user[data-v-7ee16e63] {\n  justify-content: flex-end;\n}\n.chat-message__bubble[data-v-7ee16e63] {\n  max-width: 80%;\n  padding: var(--spacing-sm) var(--spacing-md);\n  background-color: var(--color-primary);\n  color: var(--color-white);\n  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-sm)\n    var(--radius-lg);\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  white-space: pre-wrap;\n  word-break: break-word;\n}\n\n/* ── Assistant ── */\n.chat-message--assistant[data-v-7ee16e63] {\n  gap: var(--spacing-sm);\n  align-items: flex-start;\n}\n.chat-message__marker[data-v-7ee16e63] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  flex-shrink: 0;\n  width: 24px;\n  height: 24px;\n  margin-top: 2px;\n  border-radius: var(--radius-md);\n  color: var(--color-primary);\n  background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);\n}\n.chat-message__body[data-v-7ee16e63] {\n  min-width: 0;\n  flex: 1;\n}\n.chat-message__body[data-v-7ee16e63] .markdown-view {\n  font-size: var(--font-size-sm);\n}\n\n/* ── Action bar ── */\n.chat-message__actions[data-v-7ee16e63] {\n  display: flex;\n  gap: var(--spacing-xs);\n  margin-top: var(--spacing-xs);\n  margin-left: calc(var(--spacing-sm) * -1);\n  flex-direction: row-reverse;\n}\n\n/* ── Streaming typing indicator ── */\n.chat-message__typing[data-v-7ee16e63] {\n  display: inline-flex;\n  gap: 3px;\n  padding-top: var(--spacing-xs);\n}\n.chat-message__typing span[data-v-7ee16e63] {\n  width: 6px;\n  height: 6px;\n  border-radius: 50%;\n  background-color: var(--color-primary);\n  animation: chat-typing-7ee16e63 1.2s infinite;\n}\n.chat-message__typing span[data-v-7ee16e63]:nth-child(2) {\n  animation-delay: 0.2s;\n}\n.chat-message__typing span[data-v-7ee16e63]:nth-child(3) {\n  animation-delay: 0.4s;\n}\n@keyframes chat-typing-7ee16e63 {\n0%,\n  60%,\n  100% {\n    opacity: 0.3;\n    transform: scale(0.8);\n}\n30% {\n    opacity: 1;\n    transform: scale(1);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.chat-message__typing span[data-v-7ee16e63] {\n    animation: none;\n}\n}\n";
+  const ChatMessage = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["styles", [_style_0$a]], ["__scopeId", "data-v-7ee16e63"]]);
   const _hoisted_1$9 = { class: "chat-message-list" };
   const _hoisted_2$7 = {
     key: 0,
@@ -43893,7 +43911,7 @@ ${indentedChild}`;
     key: 2,
     class: "chat-message-list__state"
   };
-  const _hoisted_6 = { class: "chat-message-list__items" };
+  const _hoisted_6$1 = { class: "chat-message-list__items" };
   const _sfc_main$9 = /* @__PURE__ */ defineComponent({
     __name: "ChatMessageList",
     props: {
@@ -43923,7 +43941,7 @@ ${indentedChild}`;
             initial: true
           }, {
             default: withCtx(() => [
-              createBaseVNode("div", _hoisted_6, [
+              createBaseVNode("div", _hoisted_6$1, [
                 (openBlock(true), createElementBlock(Fragment$1, null, renderList(__props.messages, (msg) => {
                   return openBlock(), createBlock(ChatMessage, {
                     key: msg.id,
@@ -43938,8 +43956,8 @@ ${indentedChild}`;
       };
     }
   });
-  const _style_0$9 = "\n.chat-message-list[data-v-157ffe30] {\n  flex: 1;\n  min-height: 0;\n  display: flex;\n  flex-direction: column;\n}\n.chat-message-list__state[data-v-157ffe30] {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-lg);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n  text-align: center;\n}\n.chat-message-list__state[data-v-157ffe30] .editor-icon {\n  color: var(--color-primary);\n}\n.chat-message-list__scroll[data-v-157ffe30] {\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n  padding: var(--spacing-lg);\n}\n.chat-message-list__items[data-v-157ffe30] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n}\n";
-  const ChatMessageList = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["styles", [_style_0$9]], ["__scopeId", "data-v-157ffe30"]]);
+  const _style_0$9 = "\n.chat-message-list[data-v-a132e63a] {\n  flex: 1;\n  min-height: 0;\n  display: flex;\n  flex-direction: column;\n}\n.chat-message-list__state[data-v-a132e63a] {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-lg);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n  text-align: center;\n}\n.chat-message-list__state[data-v-a132e63a] .editor-icon {\n  color: var(--color-primary);\n}\n.chat-message-list__scroll[data-v-a132e63a] {\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n.chat-message-list__items[data-v-a132e63a] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n  width: 100%;\n  max-width: var(--chat-content-max-width, 760px);\n  margin-inline: auto;\n}\n";
+  const ChatMessageList = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["styles", [_style_0$9]], ["__scopeId", "data-v-a132e63a"]]);
   const _hoisted_1$8 = { class: "chat-composer" };
   const _hoisted_2$6 = ["for"];
   const _hoisted_3$4 = ["id", "placeholder", "disabled"];
@@ -43998,13 +44016,14 @@ ${indentedChild}`;
       };
     }
   });
-  const _style_0$8 = "\n.chat-composer[data-v-3ca9d23e] {\n  display: flex;\n  align-items: flex-end;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  flex-shrink: 0;\n}\n.chat-composer__textarea[data-v-3ca9d23e] {\n  flex: 1;\n  resize: none;\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  padding: var(--spacing-sm) var(--spacing-md);\n  font-family: inherit;\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n  background-color: var(--color-surface);\n  outline: none;\n}\n.chat-composer__textarea[data-v-3ca9d23e]:focus {\n  border-color: var(--color-primary);\n}\n.chat-composer__textarea[data-v-3ca9d23e]:disabled {\n  opacity: 0.6;\n  cursor: not-allowed;\n}\n";
-  const ChatComposer = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["styles", [_style_0$8]], ["__scopeId", "data-v-3ca9d23e"]]);
+  const _style_0$8 = "\n.chat-composer[data-v-60bcc0a0] {\n  display: flex;\n  align-items: flex-end;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  flex-shrink: 0;\n  /* Match the message column width when the panel is expanded. */\n  width: 100%;\n  max-width: var(--chat-content-max-width, 760px);\n  margin-inline: auto;\n}\n.chat-composer__textarea[data-v-60bcc0a0] {\n  flex: 1;\n  resize: none;\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  padding: var(--spacing-sm) var(--spacing-md);\n  font-family: inherit;\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n  background-color: var(--color-surface);\n  outline: none;\n}\n.chat-composer__textarea[data-v-60bcc0a0]:focus {\n  border-color: var(--color-primary);\n}\n.chat-composer__textarea[data-v-60bcc0a0]:disabled {\n  opacity: 0.6;\n  cursor: not-allowed;\n}\n";
+  const ChatComposer = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["styles", [_style_0$8]], ["__scopeId", "data-v-60bcc0a0"]]);
   const _hoisted_1$7 = ["aria-labelledby"];
   const _hoisted_2$5 = { class: "chat-drawer__header" };
   const _hoisted_3$3 = ["id"];
-  const _hoisted_4 = { class: "chat-drawer__body" };
-  const _hoisted_5 = { class: "chat-drawer__main" };
+  const _hoisted_4 = { class: "chat-drawer__actions" };
+  const _hoisted_5 = { class: "chat-drawer__body" };
+  const _hoisted_6 = { class: "chat-drawer__main" };
   const _sfc_main$7 = /* @__PURE__ */ defineComponent({
     __name: "ChatDrawer",
     setup(__props) {
@@ -44012,8 +44031,12 @@ ${indentedChild}`;
       const { t: t2 } = useI18n();
       const chat = core.chat;
       const titleId = useId$1();
+      const expanded = /* @__PURE__ */ ref(false);
       function close2() {
         chat.setDrawerOpen(false);
+      }
+      function toggleExpanded() {
+        expanded.value = !expanded.value;
       }
       function onKeydown(event) {
         if (event.key === "Escape" && chat.drawerOpen.value) close2();
@@ -44022,6 +44045,7 @@ ${indentedChild}`;
         () => chat.drawerOpen.value,
         (open) => {
           if (open) {
+            expanded.value = false;
             core.emit("chat:loadSessions", void 0);
             window.addEventListener("keydown", onKeydown);
           } else {
@@ -44054,7 +44078,7 @@ ${indentedChild}`;
               onClick: withModifiers(close2, ["self"])
             }, [
               createBaseVNode("aside", {
-                class: "chat-drawer",
+                class: normalizeClass(["chat-drawer", { "chat-drawer--expanded": expanded.value }]),
                 role: "dialog",
                 "aria-modal": "true",
                 "aria-labelledby": unref(titleId)
@@ -44070,15 +44094,25 @@ ${indentedChild}`;
                     }),
                     createTextVNode(" " + toDisplayString(unref(t2)("chat.title")), 1)
                   ], 8, _hoisted_3$3),
-                  createVNode(Button, {
-                    icon: "x",
-                    variant: "tertiary",
-                    size: "sm",
-                    "aria-label": unref(t2)("chat.close"),
-                    onClick: close2
-                  }, null, 8, ["aria-label"])
+                  createBaseVNode("div", _hoisted_4, [
+                    createVNode(Button, {
+                      class: "chat-drawer__expand",
+                      icon: expanded.value ? "minimize" : "maximize",
+                      variant: "tertiary",
+                      size: "sm",
+                      "aria-label": expanded.value ? unref(t2)("chat.collapse") : unref(t2)("chat.expand"),
+                      onClick: toggleExpanded
+                    }, null, 8, ["icon", "aria-label"]),
+                    createVNode(Button, {
+                      icon: "x",
+                      variant: "tertiary",
+                      size: "sm",
+                      "aria-label": unref(t2)("chat.close"),
+                      onClick: close2
+                    }, null, 8, ["aria-label"])
+                  ])
                 ]),
-                createBaseVNode("div", _hoisted_4, [
+                createBaseVNode("div", _hoisted_5, [
                   createVNode(ChatSessionList, {
                     sessions: unref(chat).sessions.value,
                     "active-session-id": unref(chat).activeSessionId.value,
@@ -44087,7 +44121,7 @@ ${indentedChild}`;
                     onRename,
                     onDelete
                   }, null, 8, ["sessions", "active-session-id"]),
-                  createBaseVNode("div", _hoisted_5, [
+                  createBaseVNode("div", _hoisted_6, [
                     createVNode(ChatMessageList, {
                       messages: unref(chat).allMessages.value,
                       "has-active-session": unref(chat).activeSessionId.value !== null,
@@ -44099,7 +44133,7 @@ ${indentedChild}`;
                     }, null, 8, ["disabled"])
                   ])
                 ])
-              ], 8, _hoisted_1$7)
+              ], 10, _hoisted_1$7)
             ])) : createCommentVNode("", true)
           ]),
           _: 1
@@ -44107,8 +44141,8 @@ ${indentedChild}`;
       };
     }
   });
-  const _style_0$7 = "\n.chat-overlay[data-v-2b0eea3a] {\n  position: fixed;\n  inset: 0;\n  z-index: var(--z-drawer);\n  background-color: rgba(0, 0, 0, 0.4);\n  display: flex;\n  justify-content: flex-end;\n}\n.chat-drawer[data-v-2b0eea3a] {\n  width: min(620px, 100vw);\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n  background-color: var(--color-surface);\n  box-shadow: var(--shadow-md);\n}\n.chat-drawer__header[data-v-2b0eea3a] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  flex-shrink: 0;\n}\n.chat-drawer__title[data-v-2b0eea3a] {\n  margin: 0;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  font-size: var(--font-size-base);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.chat-drawer__title[data-v-2b0eea3a] .editor-icon {\n  color: var(--color-primary);\n}\n.chat-drawer__body[data-v-2b0eea3a] {\n  flex: 1;\n  min-height: 0;\n  display: flex;\n}\n.chat-drawer__main[data-v-2b0eea3a] {\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n}\n\n/* ── Slide + fade transition ── */\n.chat-drawer-enter-active[data-v-2b0eea3a],\n.chat-drawer-leave-active[data-v-2b0eea3a] {\n  transition: opacity 0.2s ease;\n}\n.chat-drawer-enter-active .chat-drawer[data-v-2b0eea3a],\n.chat-drawer-leave-active .chat-drawer[data-v-2b0eea3a] {\n  transition: transform 0.25s ease;\n}\n.chat-drawer-enter-from[data-v-2b0eea3a],\n.chat-drawer-leave-to[data-v-2b0eea3a] {\n  opacity: 0;\n}\n.chat-drawer-enter-from .chat-drawer[data-v-2b0eea3a],\n.chat-drawer-leave-to .chat-drawer[data-v-2b0eea3a] {\n  transform: translateX(100%);\n}\n@media (prefers-reduced-motion: reduce) {\n.chat-drawer-enter-active[data-v-2b0eea3a],\n  .chat-drawer-leave-active[data-v-2b0eea3a],\n  .chat-drawer-enter-active .chat-drawer[data-v-2b0eea3a],\n  .chat-drawer-leave-active .chat-drawer[data-v-2b0eea3a] {\n    transition: none;\n}\n}\n";
-  const ChatDrawer = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["styles", [_style_0$7]], ["__scopeId", "data-v-2b0eea3a"]]);
+  const _style_0$7 = "\n.chat-overlay[data-v-3b5af03a] {\n  position: fixed;\n  inset: 0;\n  z-index: var(--z-drawer);\n  background-color: rgba(0, 0, 0, 0.4);\n  display: flex;\n  justify-content: flex-end;\n}\n.chat-drawer[data-v-3b5af03a] {\n  /* Centered reading column for messages + composer; cascades to the child\n     components through the DOM regardless of scoped styles. */\n  --chat-content-max-width: 760px;\n  --chat-session-list-width: 200px;\n  width: min(620px, 100vw);\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n  background-color: var(--color-surface);\n  box-shadow: var(--shadow-md);\n  transition: width 0.2s ease;\n}\n\n/* Near-full-width: keeps a backdrop strip on the left so click-outside still\n   closes the panel. */\n.chat-drawer--expanded[data-v-3b5af03a] {\n  width: min(1400px, 96vw);\n  --chat-session-list-width: 300px;\n}\n.chat-drawer__header[data-v-3b5af03a] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  flex-shrink: 0;\n}\n.chat-drawer__title[data-v-3b5af03a] {\n  margin: 0;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  font-size: var(--font-size-base);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.chat-drawer__title[data-v-3b5af03a] .editor-icon {\n  color: var(--color-primary);\n}\n.chat-drawer__actions[data-v-3b5af03a] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n}\n\n/* The expand toggle is desktop-only: on phones the panel is already full-width. */\n@media (max-width: 640px) {\n.chat-drawer__expand[data-v-3b5af03a] {\n    display: none;\n}\n}\n.chat-drawer__body[data-v-3b5af03a] {\n  flex: 1;\n  min-height: 0;\n  display: flex;\n}\n.chat-drawer__main[data-v-3b5af03a] {\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n}\n\n/* ── Slide + fade transition ── */\n.chat-drawer-enter-active[data-v-3b5af03a],\n.chat-drawer-leave-active[data-v-3b5af03a] {\n  transition: opacity 0.2s ease;\n}\n.chat-drawer-enter-active .chat-drawer[data-v-3b5af03a],\n.chat-drawer-leave-active .chat-drawer[data-v-3b5af03a] {\n  transition: transform 0.25s ease;\n}\n.chat-drawer-enter-from[data-v-3b5af03a],\n.chat-drawer-leave-to[data-v-3b5af03a] {\n  opacity: 0;\n}\n.chat-drawer-enter-from .chat-drawer[data-v-3b5af03a],\n.chat-drawer-leave-to .chat-drawer[data-v-3b5af03a] {\n  transform: translateX(100%);\n}\n@media (prefers-reduced-motion: reduce) {\n.chat-drawer[data-v-3b5af03a],\n  .chat-drawer-enter-active[data-v-3b5af03a],\n  .chat-drawer-leave-active[data-v-3b5af03a],\n  .chat-drawer-enter-active .chat-drawer[data-v-3b5af03a],\n  .chat-drawer-leave-active .chat-drawer[data-v-3b5af03a] {\n    transition: none;\n}\n}\n";
+  const ChatDrawer = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["styles", [_style_0$7]], ["__scopeId", "data-v-3b5af03a"]]);
   const _hoisted_1$6 = ["aria-label"];
   const _hoisted_2$4 = { class: "selection-count" };
   const _hoisted_3$2 = { class: "selection-actions" };
@@ -61006,6 +61040,208 @@ ${err.toString()}`);
     "operator": /[<>]=?|[!=]=?=?|--?|\+\+?|&&?|\|\|?|[?*/~^%]/,
     "punctuation": /[{}[\];(),.:]/
   };
+  Prism.languages.c = Prism.languages.extend("clike", {
+    "comment": {
+      pattern: /\/\/(?:[^\r\n\\]|\\(?:\r\n?|\n|(?![\r\n])))*|\/\*[\s\S]*?(?:\*\/|$)/,
+      greedy: true
+    },
+    "string": {
+      // https://en.cppreference.com/w/c/language/string_literal
+      pattern: /"(?:\\(?:\r\n|[\s\S])|[^"\\\r\n])*"/,
+      greedy: true
+    },
+    "class-name": {
+      pattern: /(\b(?:enum|struct)\s+(?:__attribute__\s*\(\([\s\S]*?\)\)\s*)?)\w+|\b[a-z]\w*_t\b/,
+      lookbehind: true
+    },
+    "keyword": /\b(?:_Alignas|_Alignof|_Atomic|_Bool|_Complex|_Generic|_Imaginary|_Noreturn|_Static_assert|_Thread_local|__attribute__|asm|auto|break|case|char|const|continue|default|do|double|else|enum|extern|float|for|goto|if|inline|int|long|register|return|short|signed|sizeof|static|struct|switch|typedef|typeof|union|unsigned|void|volatile|while)\b/,
+    "function": /\b[a-z_]\w*(?=\s*\()/i,
+    "number": /(?:\b0x(?:[\da-f]+(?:\.[\da-f]*)?|\.[\da-f]+)(?:p[+-]?\d+)?|(?:\b\d+(?:\.\d*)?|\B\.\d+)(?:e[+-]?\d+)?)[ful]{0,4}/i,
+    "operator": />>=?|<<=?|->|([-+&|:])\1|[?:~]|[-+*/%&|^!=<>]=?/
+  });
+  Prism.languages.insertBefore("c", "string", {
+    "char": {
+      // https://en.cppreference.com/w/c/language/character_constant
+      pattern: /'(?:\\(?:\r\n|[\s\S])|[^'\\\r\n]){0,32}'/,
+      greedy: true
+    }
+  });
+  Prism.languages.insertBefore("c", "string", {
+    "macro": {
+      // allow for multiline macro definitions
+      // spaces after the # character compile fine with gcc
+      pattern: /(^[\t ]*)#\s*[a-z](?:[^\r\n\\/]|\/(?!\*)|\/\*(?:[^*]|\*(?!\/))*\*\/|\\(?:\r\n|[\s\S]))*/im,
+      lookbehind: true,
+      greedy: true,
+      alias: "property",
+      inside: {
+        "string": [
+          {
+            // highlight the path of the include statement as a string
+            pattern: /^(#\s*include\s*)<[^>]+>/,
+            lookbehind: true
+          },
+          Prism.languages.c["string"]
+        ],
+        "char": Prism.languages.c["char"],
+        "comment": Prism.languages.c["comment"],
+        "macro-name": [
+          {
+            pattern: /(^#\s*define\s+)\w+\b(?!\()/i,
+            lookbehind: true
+          },
+          {
+            pattern: /(^#\s*define\s+)\w+\b(?=\()/i,
+            lookbehind: true,
+            alias: "function"
+          }
+        ],
+        // highlight macro directives as keywords
+        "directive": {
+          pattern: /^(#\s*)[a-z]+/,
+          lookbehind: true,
+          alias: "keyword"
+        },
+        "directive-hash": /^#/,
+        "punctuation": /##|\\(?=[\r\n])/,
+        "expression": {
+          pattern: /\S[\s\S]*/,
+          inside: Prism.languages.c
+        }
+      }
+    }
+  });
+  Prism.languages.insertBefore("c", "function", {
+    // highlight predefined macros as constants
+    "constant": /\b(?:EOF|NULL|SEEK_CUR|SEEK_END|SEEK_SET|__DATE__|__FILE__|__LINE__|__TIMESTAMP__|__TIME__|__func__|stderr|stdin|stdout)\b/
+  });
+  delete Prism.languages.c["boolean"];
+  var prismJava = {};
+  var hasRequiredPrismJava;
+  function requirePrismJava() {
+    if (hasRequiredPrismJava) return prismJava;
+    hasRequiredPrismJava = 1;
+    (function(Prism2) {
+      var keywords = /\b(?:abstract|assert|boolean|break|byte|case|catch|char|class|const|continue|default|do|double|else|enum|exports|extends|final|finally|float|for|goto|if|implements|import|instanceof|int|interface|long|module|native|new|non-sealed|null|open|opens|package|permits|private|protected|provides|public|record(?!\s*[(){}[\]<>=%~.:,;?+\-*/&|^])|requires|return|sealed|short|static|strictfp|super|switch|synchronized|this|throw|throws|to|transient|transitive|try|uses|var|void|volatile|while|with|yield)\b/;
+      var classNamePrefix = /(?:[a-z]\w*\s*\.\s*)*(?:[A-Z]\w*\s*\.\s*)*/.source;
+      var className = {
+        pattern: RegExp(/(^|[^\w.])/.source + classNamePrefix + /[A-Z](?:[\d_A-Z]*[a-z]\w*)?\b/.source),
+        lookbehind: true,
+        inside: {
+          "namespace": {
+            pattern: /^[a-z]\w*(?:\s*\.\s*[a-z]\w*)*(?:\s*\.)?/,
+            inside: {
+              "punctuation": /\./
+            }
+          },
+          "punctuation": /\./
+        }
+      };
+      Prism2.languages.java = Prism2.languages.extend("clike", {
+        "string": {
+          pattern: /(^|[^\\])"(?:\\.|[^"\\\r\n])*"/,
+          lookbehind: true,
+          greedy: true
+        },
+        "class-name": [
+          className,
+          {
+            // variables, parameters, and constructor references
+            // this to support class names (or generic parameters) which do not contain a lower case letter (also works for methods)
+            pattern: RegExp(/(^|[^\w.])/.source + classNamePrefix + /[A-Z]\w*(?=\s+\w+\s*[;,=()]|\s*(?:\[[\s,]*\]\s*)?::\s*new\b)/.source),
+            lookbehind: true,
+            inside: className.inside
+          },
+          {
+            // class names based on keyword
+            // this to support class names (or generic parameters) which do not contain a lower case letter (also works for methods)
+            pattern: RegExp(/(\b(?:class|enum|extends|implements|instanceof|interface|new|record|throws)\s+)/.source + classNamePrefix + /[A-Z]\w*\b/.source),
+            lookbehind: true,
+            inside: className.inside
+          }
+        ],
+        "keyword": keywords,
+        "function": [
+          Prism2.languages.clike.function,
+          {
+            pattern: /(::\s*)[a-z_]\w*/,
+            lookbehind: true
+          }
+        ],
+        "number": /\b0b[01][01_]*L?\b|\b0x(?:\.[\da-f_p+-]+|[\da-f_]+(?:\.[\da-f_p+-]+)?)\b|(?:\b\d[\d_]*(?:\.[\d_]*)?|\B\.\d[\d_]*)(?:e[+-]?\d[\d_]*)?[dfl]?/i,
+        "operator": {
+          pattern: /(^|[^.])(?:<<=?|>>>?=?|->|--|\+\+|&&|\|\||::|[?:~]|[-+*/%&|^!=<>]=?)/m,
+          lookbehind: true
+        },
+        "constant": /\b[A-Z][A-Z_\d]+\b/
+      });
+      Prism2.languages.insertBefore("java", "string", {
+        "triple-quoted-string": {
+          // http://openjdk.java.net/jeps/355#Description
+          pattern: /"""[ \t]*[\r\n](?:(?:"|"")?(?:\\.|[^"\\]))*"""/,
+          greedy: true,
+          alias: "string"
+        },
+        "char": {
+          pattern: /'(?:\\.|[^'\\\r\n]){1,6}'/,
+          greedy: true
+        }
+      });
+      Prism2.languages.insertBefore("java", "class-name", {
+        "annotation": {
+          pattern: /(^|[^.])@\w+(?:\s*\.\s*\w+)*/,
+          lookbehind: true,
+          alias: "punctuation"
+        },
+        "generics": {
+          pattern: /<(?:[\w\s,.?]|&(?!&)|<(?:[\w\s,.?]|&(?!&)|<(?:[\w\s,.?]|&(?!&)|<(?:[\w\s,.?]|&(?!&))*>)*>)*>)*>/,
+          inside: {
+            "class-name": className,
+            "keyword": keywords,
+            "punctuation": /[<>(),.:]/,
+            "operator": /[?&|]/
+          }
+        },
+        "import": [
+          {
+            pattern: RegExp(/(\bimport\s+)/.source + classNamePrefix + /(?:[A-Z]\w*|\*)(?=\s*;)/.source),
+            lookbehind: true,
+            inside: {
+              "namespace": className.inside.namespace,
+              "punctuation": /\./,
+              "operator": /\*/,
+              "class-name": /\w+/
+            }
+          },
+          {
+            pattern: RegExp(/(\bimport\s+static\s+)/.source + classNamePrefix + /(?:\w+|\*)(?=\s*;)/.source),
+            lookbehind: true,
+            alias: "static",
+            inside: {
+              "namespace": className.inside.namespace,
+              "static": /\b\w+$/,
+              "punctuation": /\./,
+              "operator": /\*/,
+              "class-name": /\w+/
+            }
+          }
+        ],
+        "namespace": {
+          pattern: RegExp(
+            /(\b(?:exports|import(?:\s+static)?|module|open|opens|package|provides|requires|to|transitive|uses|with)\s+)(?!<keyword>)[a-z]\w*(?:\.[a-z]\w*)*\.?/.source.replace(/<keyword>/g, function() {
+              return keywords.source;
+            })
+          ),
+          lookbehind: true,
+          inside: {
+            "punctuation": /\./
+          }
+        }
+      });
+    })(Prism);
+    return prismJava;
+  }
+  requirePrismJava();
   Prism.languages.javascript = Prism.languages.extend("clike", {
     "class-name": [
       Prism.languages.clike["class-name"],
@@ -61146,6 +61382,117 @@ ${err.toString()}`);
     );
   }
   Prism.languages.js = Prism.languages.javascript;
+  (function(Prism2) {
+    var javascript = Prism2.util.clone(Prism2.languages.javascript);
+    var space = /(?:\s|\/\/.*(?!.)|\/\*(?:[^*]|\*(?!\/))\*\/)/.source;
+    var braces = /(?:\{(?:\{(?:\{[^{}]*\}|[^{}])*\}|[^{}])*\})/.source;
+    var spread = /(?:\{<S>*\.{3}(?:[^{}]|<BRACES>)*\})/.source;
+    function re2(source, flags) {
+      source = source.replace(/<S>/g, function() {
+        return space;
+      }).replace(/<BRACES>/g, function() {
+        return braces;
+      }).replace(/<SPREAD>/g, function() {
+        return spread;
+      });
+      return RegExp(source, flags);
+    }
+    spread = re2(spread).source;
+    Prism2.languages.jsx = Prism2.languages.extend("markup", javascript);
+    Prism2.languages.jsx.tag.pattern = re2(
+      /<\/?(?:[\w.:-]+(?:<S>+(?:[\w.:$-]+(?:=(?:"(?:\\[\s\S]|[^\\"])*"|'(?:\\[\s\S]|[^\\'])*'|[^\s{'"/>=]+|<BRACES>))?|<SPREAD>))*<S>*\/?)?>/.source
+    );
+    Prism2.languages.jsx.tag.inside["tag"].pattern = /^<\/?[^\s>\/]*/;
+    Prism2.languages.jsx.tag.inside["attr-value"].pattern = /=(?!\{)(?:"(?:\\[\s\S]|[^\\"])*"|'(?:\\[\s\S]|[^\\'])*'|[^\s'">]+)/;
+    Prism2.languages.jsx.tag.inside["tag"].inside["class-name"] = /^[A-Z]\w*(?:\.[A-Z]\w*)*$/;
+    Prism2.languages.jsx.tag.inside["comment"] = javascript["comment"];
+    Prism2.languages.insertBefore("inside", "attr-name", {
+      "spread": {
+        pattern: re2(/<SPREAD>/.source),
+        inside: Prism2.languages.jsx
+      }
+    }, Prism2.languages.jsx.tag);
+    Prism2.languages.insertBefore("inside", "special-attr", {
+      "script": {
+        // Allow for two levels of nesting
+        pattern: re2(/=<BRACES>/.source),
+        alias: "language-javascript",
+        inside: {
+          "script-punctuation": {
+            pattern: /^=(?=\{)/,
+            alias: "punctuation"
+          },
+          rest: Prism2.languages.jsx
+        }
+      }
+    }, Prism2.languages.jsx.tag);
+    var stringifyToken = function(token) {
+      if (!token) {
+        return "";
+      }
+      if (typeof token === "string") {
+        return token;
+      }
+      if (typeof token.content === "string") {
+        return token.content;
+      }
+      return token.content.map(stringifyToken).join("");
+    };
+    var walkTokens = function(tokens) {
+      var openedTags = [];
+      for (var i2 = 0; i2 < tokens.length; i2++) {
+        var token = tokens[i2];
+        var notTagNorBrace = false;
+        if (typeof token !== "string") {
+          if (token.type === "tag" && token.content[0] && token.content[0].type === "tag") {
+            if (token.content[0].content[0].content === "</") {
+              if (openedTags.length > 0 && openedTags[openedTags.length - 1].tagName === stringifyToken(token.content[0].content[1])) {
+                openedTags.pop();
+              }
+            } else {
+              if (token.content[token.content.length - 1].content === "/>") ;
+              else {
+                openedTags.push({
+                  tagName: stringifyToken(token.content[0].content[1]),
+                  openedBraces: 0
+                });
+              }
+            }
+          } else if (openedTags.length > 0 && token.type === "punctuation" && token.content === "{") {
+            openedTags[openedTags.length - 1].openedBraces++;
+          } else if (openedTags.length > 0 && openedTags[openedTags.length - 1].openedBraces > 0 && token.type === "punctuation" && token.content === "}") {
+            openedTags[openedTags.length - 1].openedBraces--;
+          } else {
+            notTagNorBrace = true;
+          }
+        }
+        if (notTagNorBrace || typeof token === "string") {
+          if (openedTags.length > 0 && openedTags[openedTags.length - 1].openedBraces === 0) {
+            var plainText = stringifyToken(token);
+            if (i2 < tokens.length - 1 && (typeof tokens[i2 + 1] === "string" || tokens[i2 + 1].type === "plain-text")) {
+              plainText += stringifyToken(tokens[i2 + 1]);
+              tokens.splice(i2 + 1, 1);
+            }
+            if (i2 > 0 && (typeof tokens[i2 - 1] === "string" || tokens[i2 - 1].type === "plain-text")) {
+              plainText = stringifyToken(tokens[i2 - 1]) + plainText;
+              tokens.splice(i2 - 1, 1);
+              i2--;
+            }
+            tokens[i2] = new Prism2.Token("plain-text", plainText, null, plainText);
+          }
+        }
+        if (token.content && typeof token.content !== "string") {
+          walkTokens(token.content);
+        }
+      }
+    };
+    Prism2.hooks.add("after-tokenize", function(env) {
+      if (env.language !== "jsx" && env.language !== "tsx") {
+        return;
+      }
+      walkTokens(env.tokens);
+    });
+  })(Prism);
   var prismTypescript = {};
   var hasRequiredPrismTypescript;
   function requirePrismTypescript() {
@@ -61632,6 +61979,345 @@ ${err.toString()}`);
     "punctuation": /[;[\]()`,.]/
   };
   (function(Prism2) {
+    var inner = /(?:\\.|[^\\\n\r]|(?:\n|\r\n?)(?![\r\n]))/.source;
+    function createInline(pattern) {
+      pattern = pattern.replace(/<inner>/g, function() {
+        return inner;
+      });
+      return RegExp(/((?:^|[^\\])(?:\\{2})*)/.source + "(?:" + pattern + ")");
+    }
+    var tableCell = /(?:\\.|``(?:[^`\r\n]|`(?!`))+``|`[^`\r\n]+`|[^\\|\r\n`])+/.source;
+    var tableRow = /\|?__(?:\|__)+\|?(?:(?:\n|\r\n?)|(?![\s\S]))/.source.replace(/__/g, function() {
+      return tableCell;
+    });
+    var tableLine = /\|?[ \t]*:?-{3,}:?[ \t]*(?:\|[ \t]*:?-{3,}:?[ \t]*)+\|?(?:\n|\r\n?)/.source;
+    Prism2.languages.markdown = Prism2.languages.extend("markup", {});
+    Prism2.languages.insertBefore("markdown", "prolog", {
+      "front-matter-block": {
+        pattern: /(^(?:\s*[\r\n])?)---(?!.)[\s\S]*?[\r\n]---(?!.)/,
+        lookbehind: true,
+        greedy: true,
+        inside: {
+          "punctuation": /^---|---$/,
+          "front-matter": {
+            pattern: /\S+(?:\s+\S+)*/,
+            alias: ["yaml", "language-yaml"],
+            inside: Prism2.languages.yaml
+          }
+        }
+      },
+      "blockquote": {
+        // > ...
+        pattern: /^>(?:[\t ]*>)*/m,
+        alias: "punctuation"
+      },
+      "table": {
+        pattern: RegExp("^" + tableRow + tableLine + "(?:" + tableRow + ")*", "m"),
+        inside: {
+          "table-data-rows": {
+            pattern: RegExp("^(" + tableRow + tableLine + ")(?:" + tableRow + ")*$"),
+            lookbehind: true,
+            inside: {
+              "table-data": {
+                pattern: RegExp(tableCell),
+                inside: Prism2.languages.markdown
+              },
+              "punctuation": /\|/
+            }
+          },
+          "table-line": {
+            pattern: RegExp("^(" + tableRow + ")" + tableLine + "$"),
+            lookbehind: true,
+            inside: {
+              "punctuation": /\||:?-{3,}:?/
+            }
+          },
+          "table-header-row": {
+            pattern: RegExp("^" + tableRow + "$"),
+            inside: {
+              "table-header": {
+                pattern: RegExp(tableCell),
+                alias: "important",
+                inside: Prism2.languages.markdown
+              },
+              "punctuation": /\|/
+            }
+          }
+        }
+      },
+      "code": [
+        {
+          // Prefixed by 4 spaces or 1 tab and preceded by an empty line
+          pattern: /((?:^|\n)[ \t]*\n|(?:^|\r\n?)[ \t]*\r\n?)(?: {4}|\t).+(?:(?:\n|\r\n?)(?: {4}|\t).+)*/,
+          lookbehind: true,
+          alias: "keyword"
+        },
+        {
+          // ```optional language
+          // code block
+          // ```
+          pattern: /^```[\s\S]*?^```$/m,
+          greedy: true,
+          inside: {
+            "code-block": {
+              pattern: /^(```.*(?:\n|\r\n?))[\s\S]+?(?=(?:\n|\r\n?)^```$)/m,
+              lookbehind: true
+            },
+            "code-language": {
+              pattern: /^(```).+/,
+              lookbehind: true
+            },
+            "punctuation": /```/
+          }
+        }
+      ],
+      "title": [
+        {
+          // title 1
+          // =======
+          // title 2
+          // -------
+          pattern: /\S.*(?:\n|\r\n?)(?:==+|--+)(?=[ \t]*$)/m,
+          alias: "important",
+          inside: {
+            punctuation: /==+$|--+$/
+          }
+        },
+        {
+          // # title 1
+          // ###### title 6
+          pattern: /(^\s*)#.+/m,
+          lookbehind: true,
+          alias: "important",
+          inside: {
+            punctuation: /^#+|#+$/
+          }
+        }
+      ],
+      "hr": {
+        // ***
+        // ---
+        // * * *
+        // -----------
+        pattern: /(^\s*)([*-])(?:[\t ]*\2){2,}(?=\s*$)/m,
+        lookbehind: true,
+        alias: "punctuation"
+      },
+      "list": {
+        // * item
+        // + item
+        // - item
+        // 1. item
+        pattern: /(^\s*)(?:[*+-]|\d+\.)(?=[\t ].)/m,
+        lookbehind: true,
+        alias: "punctuation"
+      },
+      "url-reference": {
+        // [id]: http://example.com "Optional title"
+        // [id]: http://example.com 'Optional title'
+        // [id]: http://example.com (Optional title)
+        // [id]: <http://example.com> "Optional title"
+        pattern: /!?\[[^\]]+\]:[\t ]+(?:\S+|<(?:\\.|[^>\\])+>)(?:[\t ]+(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\((?:\\.|[^)\\])*\)))?/,
+        inside: {
+          "variable": {
+            pattern: /^(!?\[)[^\]]+/,
+            lookbehind: true
+          },
+          "string": /(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\((?:\\.|[^)\\])*\))$/,
+          "punctuation": /^[\[\]!:]|[<>]/
+        },
+        alias: "url"
+      },
+      "bold": {
+        // **strong**
+        // __strong__
+        // allow one nested instance of italic text using the same delimiter
+        pattern: createInline(/\b__(?:(?!_)<inner>|_(?:(?!_)<inner>)+_)+__\b|\*\*(?:(?!\*)<inner>|\*(?:(?!\*)<inner>)+\*)+\*\*/.source),
+        lookbehind: true,
+        greedy: true,
+        inside: {
+          "content": {
+            pattern: /(^..)[\s\S]+(?=..$)/,
+            lookbehind: true,
+            inside: {}
+            // see below
+          },
+          "punctuation": /\*\*|__/
+        }
+      },
+      "italic": {
+        // *em*
+        // _em_
+        // allow one nested instance of bold text using the same delimiter
+        pattern: createInline(/\b_(?:(?!_)<inner>|__(?:(?!_)<inner>)+__)+_\b|\*(?:(?!\*)<inner>|\*\*(?:(?!\*)<inner>)+\*\*)+\*/.source),
+        lookbehind: true,
+        greedy: true,
+        inside: {
+          "content": {
+            pattern: /(^.)[\s\S]+(?=.$)/,
+            lookbehind: true,
+            inside: {}
+            // see below
+          },
+          "punctuation": /[*_]/
+        }
+      },
+      "strike": {
+        // ~~strike through~~
+        // ~strike~
+        // eslint-disable-next-line regexp/strict
+        pattern: createInline(/(~~?)(?:(?!~)<inner>)+\2/.source),
+        lookbehind: true,
+        greedy: true,
+        inside: {
+          "content": {
+            pattern: /(^~~?)[\s\S]+(?=\1$)/,
+            lookbehind: true,
+            inside: {}
+            // see below
+          },
+          "punctuation": /~~?/
+        }
+      },
+      "code-snippet": {
+        // `code`
+        // ``code``
+        pattern: /(^|[^\\`])(?:``[^`\r\n]+(?:`[^`\r\n]+)*``(?!`)|`[^`\r\n]+`(?!`))/,
+        lookbehind: true,
+        greedy: true,
+        alias: ["code", "keyword"]
+      },
+      "url": {
+        // [example](http://example.com "Optional title")
+        // [example][id]
+        // [example] [id]
+        pattern: createInline(/!?\[(?:(?!\])<inner>)+\](?:\([^\s)]+(?:[\t ]+"(?:\\.|[^"\\])*")?\)|[ \t]?\[(?:(?!\])<inner>)+\])/.source),
+        lookbehind: true,
+        greedy: true,
+        inside: {
+          "operator": /^!/,
+          "content": {
+            pattern: /(^\[)[^\]]+(?=\])/,
+            lookbehind: true,
+            inside: {}
+            // see below
+          },
+          "variable": {
+            pattern: /(^\][ \t]?\[)[^\]]+(?=\]$)/,
+            lookbehind: true
+          },
+          "url": {
+            pattern: /(^\]\()[^\s)]+/,
+            lookbehind: true
+          },
+          "string": {
+            pattern: /(^[ \t]+)"(?:\\.|[^"\\])*"(?=\)$)/,
+            lookbehind: true
+          }
+        }
+      }
+    });
+    ["url", "bold", "italic", "strike"].forEach(function(token) {
+      ["url", "bold", "italic", "strike", "code-snippet"].forEach(function(inside) {
+        if (token !== inside) {
+          Prism2.languages.markdown[token].inside.content.inside[inside] = Prism2.languages.markdown[inside];
+        }
+      });
+    });
+    Prism2.hooks.add("after-tokenize", function(env) {
+      if (env.language !== "markdown" && env.language !== "md") {
+        return;
+      }
+      function walkTokens(tokens) {
+        if (!tokens || typeof tokens === "string") {
+          return;
+        }
+        for (var i2 = 0, l2 = tokens.length; i2 < l2; i2++) {
+          var token = tokens[i2];
+          if (token.type !== "code") {
+            walkTokens(token.content);
+            continue;
+          }
+          var codeLang = token.content[1];
+          var codeBlock = token.content[3];
+          if (codeLang && codeBlock && codeLang.type === "code-language" && codeBlock.type === "code-block" && typeof codeLang.content === "string") {
+            var lang = codeLang.content.replace(/\b#/g, "sharp").replace(/\b\+\+/g, "pp");
+            lang = (/[a-z][\w-]*/i.exec(lang) || [""])[0].toLowerCase();
+            var alias = "language-" + lang;
+            if (!codeBlock.alias) {
+              codeBlock.alias = [alias];
+            } else if (typeof codeBlock.alias === "string") {
+              codeBlock.alias = [codeBlock.alias, alias];
+            } else {
+              codeBlock.alias.push(alias);
+            }
+          }
+        }
+      }
+      walkTokens(env.tokens);
+    });
+    Prism2.hooks.add("wrap", function(env) {
+      if (env.type !== "code-block") {
+        return;
+      }
+      var codeLang = "";
+      for (var i2 = 0, l2 = env.classes.length; i2 < l2; i2++) {
+        var cls = env.classes[i2];
+        var match2 = /language-(.+)/.exec(cls);
+        if (match2) {
+          codeLang = match2[1];
+          break;
+        }
+      }
+      var grammar = Prism2.languages[codeLang];
+      if (!grammar) {
+        if (codeLang && codeLang !== "none" && Prism2.plugins.autoloader) {
+          var id2 = "md-" + (/* @__PURE__ */ new Date()).valueOf() + "-" + Math.floor(Math.random() * 1e16);
+          env.attributes["id"] = id2;
+          Prism2.plugins.autoloader.loadLanguages(codeLang, function() {
+            var ele = document.getElementById(id2);
+            if (ele) {
+              ele.innerHTML = Prism2.highlight(ele.textContent, Prism2.languages[codeLang], codeLang);
+            }
+          });
+        }
+      } else {
+        env.content = Prism2.highlight(textContent(env.content), grammar, codeLang);
+      }
+    });
+    var tagPattern = RegExp(Prism2.languages.markup.tag.pattern.source, "gi");
+    var KNOWN_ENTITY_NAMES = {
+      "amp": "&",
+      "lt": "<",
+      "gt": ">",
+      "quot": '"'
+    };
+    var fromCodePoint = String.fromCodePoint || String.fromCharCode;
+    function textContent(html2) {
+      var text2 = html2.replace(tagPattern, "");
+      text2 = text2.replace(/&(\w{1,8}|#x?[\da-f]{1,8});/gi, function(m2, code2) {
+        code2 = code2.toLowerCase();
+        if (code2[0] === "#") {
+          var value;
+          if (code2[1] === "x") {
+            value = parseInt(code2.slice(2), 16);
+          } else {
+            value = Number(code2.slice(1));
+          }
+          return fromCodePoint(value);
+        } else {
+          var known = KNOWN_ENTITY_NAMES[code2];
+          if (known) {
+            return known;
+          }
+          return m2;
+        }
+      });
+      return text2;
+    }
+    Prism2.languages.md = Prism2.languages.markdown;
+  })(Prism);
+  (function(Prism2) {
     Prism2.languages.diff = {
       "coord": [
         // Match all kinds of coord lines (prefixed by "+++", "---" or "***").
@@ -61687,7 +62373,8 @@ ${err.toString()}`);
     py: "python",
     yml: "yaml",
     html: "markup",
-    xml: "markup"
+    xml: "markup",
+    md: "markdown"
   };
   function highlightCode(code2, lang) {
     const name = ALIASES[lang] ?? lang;
