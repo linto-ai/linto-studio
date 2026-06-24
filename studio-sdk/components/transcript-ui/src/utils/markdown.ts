@@ -1,4 +1,5 @@
 import { marked } from "marked"
+import type { Token, TokensList } from "marked"
 import DOMPurify from "dompurify"
 
 // Shared markdown renderer for MarkdownView (v-html) and MarkdownEditor
@@ -14,4 +15,42 @@ export function renderMarkdown(md: string): string {
   if (!md) return ""
   const rawHtml = marked.parse(md, { async: false }) as string
   return DOMPurify.sanitize(rawHtml)
+}
+
+// Code blocks are extracted as their own segments so the view can render them
+// with a real Vue component (copy button, etc.) instead of inert v-html. Every
+// other run of block tokens is parsed back to sanitized HTML as before.
+export type MarkdownSegment =
+  | { type: "html"; html: string }
+  | { type: "code"; code: string; lang: string }
+
+export function renderMarkdownSegments(md: string): MarkdownSegment[] {
+  if (!md) return []
+
+  const tokens = marked.lexer(md)
+  const segments: MarkdownSegment[] = []
+  let buffer: Token[] = []
+
+  // Reference-link definitions ([x][ref] … [ref]: url) live on tokens.links,
+  // not on individual tokens. Each sliced group must carry them over or
+  // reference links break when re-parsed in isolation.
+  const flush = () => {
+    if (buffer.length === 0) return
+    const group = buffer as TokensList
+    group.links = tokens.links
+    segments.push({ type: "html", html: DOMPurify.sanitize(marked.parser(group)) })
+    buffer = []
+  }
+
+  for (const token of tokens) {
+    if (token.type === "code") {
+      flush()
+      segments.push({ type: "code", code: token.text, lang: token.lang ?? "" })
+    } else {
+      buffer.push(token)
+    }
+  }
+  flush()
+
+  return segments
 }

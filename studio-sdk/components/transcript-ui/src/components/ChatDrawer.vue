@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch, onUnmounted, useId } from "vue"
+import { ref, watch, onUnmounted, useId } from "vue"
 import { useCore } from "../core"
 import { useI18n } from "../i18n"
 import Button from "./atoms/Button.vue"
@@ -14,8 +14,16 @@ const { t } = useI18n()
 const chat = core.chat!
 const titleId = useId()
 
+// Local-only: widens the panel to a near-full-width modal (desktop). Resets
+// every time the drawer is reopened.
+const expanded = ref(false)
+
 function close(): void {
   chat.setDrawerOpen(false)
+}
+
+function toggleExpanded(): void {
+  expanded.value = !expanded.value
 }
 
 function onKeydown(event: KeyboardEvent): void {
@@ -26,6 +34,7 @@ watch(
   () => chat.drawerOpen.value,
   (open) => {
     if (open) {
+      expanded.value = false
       core.emit("chat:loadSessions", undefined)
       window.addEventListener("keydown", onKeydown)
     } else {
@@ -61,6 +70,7 @@ function onSend(content: string): void {
       @click.self="close">
       <aside
         class="chat-drawer"
+        :class="{ 'chat-drawer--expanded': expanded }"
         role="dialog"
         aria-modal="true"
         :aria-labelledby="titleId">
@@ -69,12 +79,21 @@ function onSend(content: string): void {
             <EditorIcon name="sparkles" :size="18" />
             {{ t("chat.title") }}
           </h2>
-          <Button
-            icon="x"
-            variant="tertiary"
-            size="sm"
-            :aria-label="t('chat.close')"
-            @click="close" />
+          <div class="chat-drawer__actions">
+            <Button
+              class="chat-drawer__expand"
+              :icon="expanded ? 'minimize' : 'maximize'"
+              variant="tertiary"
+              size="sm"
+              :aria-label="expanded ? t('chat.collapse') : t('chat.expand')"
+              @click="toggleExpanded" />
+            <Button
+              icon="x"
+              variant="tertiary"
+              size="sm"
+              :aria-label="t('chat.close')"
+              @click="close" />
+          </div>
         </header>
 
         <div class="chat-drawer__body">
@@ -112,12 +131,24 @@ function onSend(content: string): void {
 }
 
 .chat-drawer {
+  /* Centered reading column for messages + composer; cascades to the child
+     components through the DOM regardless of scoped styles. */
+  --chat-content-max-width: 760px;
+  --chat-session-list-width: 200px;
   width: min(620px, 100vw);
   height: 100%;
   display: flex;
   flex-direction: column;
   background-color: var(--color-surface);
   box-shadow: var(--shadow-md);
+  transition: width 0.2s ease;
+}
+
+/* Near-full-width: keeps a backdrop strip on the left so click-outside still
+   closes the panel. */
+.chat-drawer--expanded {
+  width: min(1400px, 96vw);
+  --chat-session-list-width: 300px;
 }
 
 .chat-drawer__header {
@@ -143,6 +174,19 @@ function onSend(content: string): void {
 
 .chat-drawer__title :deep(.editor-icon) {
   color: var(--color-primary);
+}
+
+.chat-drawer__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+/* The expand toggle is desktop-only: on phones the panel is already full-width. */
+@media (max-width: 640px) {
+  .chat-drawer__expand {
+    display: none;
+  }
 }
 
 .chat-drawer__body {
@@ -180,6 +224,7 @@ function onSend(content: string): void {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .chat-drawer,
   .chat-drawer-enter-active,
   .chat-drawer-leave-active,
   .chat-drawer-enter-active .chat-drawer,
