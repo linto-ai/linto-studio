@@ -1,8 +1,6 @@
 import { getEnv } from "../getEnv"
 
-// Per-provider URL allowlist env. An unset/empty allowlist accepts any URL
-// (the same permissive default the single-provider version had). Defaults to
-// jitsi for back-compat when no provider is passed.
+// Per-provider URL allowlist env; an unset/empty allowlist accepts any URL.
 const ACCEPTED_URLS_ENV = {
   jitsi: "VUE_APP_ACCEPTED_JITSI_URLS",
   bigbluebutton: "VUE_APP_ACCEPTED_BBB_URLS",
@@ -22,9 +20,9 @@ export function testVisioUrl(field, t, provider = "jitsi") {
 
   field.error = null
   field.valid = false
-  // Only trim — DO NOT lowercase: meeting URLs carry case-sensitive tokens (e.g. a
-  // Teams join passcode `?p=T2pFGitIgRzJN2MKYl`), and lowercasing them breaks the
-  // bot's join. Host-allowlist matching below is done case-insensitively instead.
+  // Only trim, never lowercase: meeting URLs carry case-sensitive tokens (e.g. a
+  // Teams join passcode) that the bot needs intact. Allowlist matching below is
+  // done case-insensitively instead.
   field.value = field.value.trim()
 
   if (field.value === "") {
