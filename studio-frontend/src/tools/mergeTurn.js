@@ -27,5 +27,7 @@ export function mergeTurn(startTurn, endTurn) {
 }
 
 function generateID() {
-  return process.env["TEST"] ? "id" : uuidv4()
+  return typeof process !== "undefined" && process.env?.["TEST"]
+    ? "id"
+    : uuidv4()
 }
