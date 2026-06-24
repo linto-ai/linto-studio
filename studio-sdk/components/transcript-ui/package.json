@@ -37,6 +37,7 @@
     "dompurify": "^3.2.4",
     "lucide-vue-next": "^0.564.0",
     "marked": "^18.0.2",
+    "prismjs": "^1.30.0",
     "reka-ui": "^2.8.0",
     "turndown": "^7.2.4",
     "turndown-plugin-gfm": "^1.0.2",
@@ -47,6 +48,7 @@
   "devDependencies": {
     "@types/diff": "^8.0.0",
     "@types/node": "^24.10.1",
+    "@types/prismjs": "^1.26.6",
     "@types/turndown": "^5.0.6",
     "@vitejs/plugin-vue": "^6.0.2",
     "@vue/tsconfig": "^0.8.1",
