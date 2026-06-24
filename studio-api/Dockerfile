@@ -36,9 +36,7 @@ RUN pip3 install --break-system-packages --upgrade yt-dlp && \
   cp config/bin/yt-dlp_linux /usr/local/bin/yt-dlp 2>/dev/null || true
 
 RUN npm install -g npm@11.6.2 && \
-  npm ci --omit=dev && \
-  rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
-         /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack
+  npm ci --omit=dev
 
 # Set up cron job
 RUN chmod 0644 config/cron/backup-cron && \
