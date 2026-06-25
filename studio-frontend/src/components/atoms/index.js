@@ -30,6 +30,7 @@ import ButtonRoller from "./ButtonRoller.vue"
 import InputSelector from "./InputSelector.vue"
 import TextInput from "./TextInput.vue"
 import FilterChip from "./FilterChip.vue"
+import InputItem from "./InputItem.vue"
 import CopyButton from "./CopyButton.vue"
 import FavoriteStar from "./FavoriteStar.vue"
 
@@ -66,6 +67,7 @@ const components = [
   InputSelector,
   TextInput,
   FilterChip,
+  InputItem,
   CopyButton,
   FavoriteStar,
 ]
