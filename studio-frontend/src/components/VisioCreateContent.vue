@@ -1,26 +1,37 @@
 <template>
   <form @submit="createSession">
-    <section>
-      <div class="form-field flex col">
-        <label for="type-visio-selector">
-          {{ visioTypeField.label }}
-        </label>
-        <select v-model="visioTypeField.value" id="type-visio-selector">
-          <option
-            v-for="service in supportedVisioServices"
-            :key="service"
-            :value="service">
-            {{ service }}
-          </option>
-        </select>
-      </div>
-
+    <section class="flex col gap-small visio-setup">
       <FormInput
         :field="visioLinkField"
         v-model="visioLinkField.value"
-        class="fullwidth"
-        placeholder="Jitsi link"
-        required />
+        :inputFullWidth="true" />
+
+      <div class="form-field flex col gap-small">
+        <label>{{ visioTypeField.label }}</label>
+        <div class="flex gap-small wrap">
+          <FilterChip
+            v-for="provider in visioProviders"
+            :key="provider.value"
+            :label="provider.label"
+            :icon="provider.icon"
+            :image="provider.image"
+            :chipValue="provider.value"
+            :disabled="!isLinkFilled"
+            v-model="visioTypeField.value" />
+        </div>
+      </div>
+
+      <NotificationBanner
+        variant="warning"
+        icon="info"
+        align="start"
+        v-if="visioTypeField.value">
+        <span>
+          <strong>{{ visioHelper.title }}</strong>
+          <br />
+          {{ visioHelper.description }}
+        </span>
+      </NotificationBanner>
     </section>
 
     <section v-if="enableSecurityLevel">
@@ -70,6 +81,7 @@ import { testQuickSessionSettings } from "@/tools/fields/testQuickSessionSetting
 import FormInput from "@/components/molecules/FormInput.vue"
 import QuickSessionSettings from "@/components/QuickSessionSettings.vue"
 import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
+import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
 import { getEnv } from "@/tools/getEnv"
 
@@ -94,15 +106,16 @@ export default {
       fields: ["visioLinkField", "quickSessionSettingsField"],
       visioTypeField: {
         ...EMPTY_FIELD,
-        value: "jitsi",
+        value: null,
         label: this.$i18n.t("quick_session.setup_visio.type_label"),
       },
       visioLinkField: {
         ...EMPTY_FIELD,
         value: "",
-        customParams: { placeholder: "https://meet.jit.si/..." },
+        placeholder: "https://meet.jit.si/...",
         label: this.$i18n.t("quick_session.setup_visio.link_label"),
         testField: testVisioUrl,
+        leadingIcon: "link",
       },
       quickSessionSettingsField: {
         ...EMPTY_FIELD,
@@ -121,7 +134,24 @@ export default {
         },
         testField: testQuickSessionSettings,
       },
-      supportedVisioServices: ["jitsi", "bigbluebutton"],
+      // `image` is left empty for now: custom logos will be added later and
+      // take precedence over the placeholder phosphor `icon`.
+      visioProviders: [
+        { value: "jitsi", label: "Jitsi", icon: "video-camera", image: "" },
+        {
+          value: "bigbluebutton",
+          label: "BigBlueButton",
+          icon: "presentation",
+          image: "",
+        },
+        {
+          value: "msteams",
+          label: "Microsoft Teams",
+          icon: "users-three",
+          image: "",
+        },
+        { value: "autre", label: "Autre", icon: "globe", image: "" },
+      ],
       securityLevel: DEFAULT_SECURITY_LEVEL,
       formSubmitLabel: this.$t("quick_session.setup_visio.join_meeting"),
       formError: null,
@@ -132,6 +162,17 @@ export default {
   computed: {
     enableSecurityLevel() {
       return getEnv("VUE_APP_ENABLE_SECURITY_LEVEL") === "true"
+    },
+    isLinkFilled() {
+      return (this.visioLinkField.value ?? "").trim().length > 0
+    },
+    // Placeholder helper, copy to be defined (possibly per provider).
+    visioHelper() {
+      return {
+        title: "Autorisez l'accès invité",
+        description:
+          "Vérifiez que les invités peuvent rejoindre sans approbation manuelle. Le bot se connecte comme un participant standard.",
+      }
     },
   },
   methods: {
@@ -204,6 +245,13 @@ export default {
     FormInput,
     QuickSessionSettings,
     SecurityLevelSelector,
+    NotificationBanner,
   },
 }
 </script>
+
+<style lang="scss" scoped>
+.visio-setup {
+  max-width: 550px;
+}
+</style>
