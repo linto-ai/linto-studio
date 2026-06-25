@@ -10,6 +10,10 @@ _2026_06_13_
 - Voice playback
   - Listen to finalized live transcription turns with browser text-to-speech
   - Automatic voice selection per segment language, with fallback to a default voice
+- Transcription
+  - Google ASR transcriber profile management
+  - Reworked transcription creation UX with model recommendations
+  - Per-model confidentiality level, enforced server-side
 - Live session viewer
   - Cross-language subtitles on the new live interface
   - Keep the screen awake during a live session
@@ -17,11 +21,17 @@ _2026_06_13_
 - Improve color contrast and screen-reader support
 - Session management
   - Filter sessions by security level
+  - Enforce the organization security level on service and session actions
   - Running sessions can now be paused and reset to a state with no captions
   - Capture the final transcription before stopping a session
+- Publication
+  - Scope export templates per service
+- Media explorer
+  - Navigable folder tree in the folder selector
+  - Grey out moved media instead of removing them from the list
 - Backoffice
   - Export KPI series and activity logs as CSV, JSON or XLSX, with user filtering
-- Show session template information in the media overview
+- Show session template and transcription information in the media overview
 - API keys
   - Media uploaded via an API key is now attributed to that key instead of being shown as 'private user'.
   - API keys now support having an avatar.
