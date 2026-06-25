@@ -1,11 +1,7 @@
 <template>
   <label class="filter-chip" :class="{ 'filter-chip--disabled': disabled }">
     <img v-if="image" :src="image" alt="" class="filter-chip__image" />
-    <PhIcon
-      v-else-if="icon"
-      :name="icon"
-      size="sm"
-      class="filter-chip__icon" />
+    <PhIcon v-else-if="icon" :name="icon" size="sm" class="filter-chip__icon" />
     <span class="filter-chip__label">
       {{ label }}
     </span>
@@ -28,7 +24,7 @@ export default {
   props: {
     value: {
       type: [String, Object, Number],
-      required: true,
+      default: null,
     },
     chipValue: {
       type: [String, Object, Number],
@@ -115,7 +111,9 @@ export default {
 
 .filter-chip:has(input[type="radio"]:checked) {
   border-color: var(--primary-color);
+  outline: 1px solid var(--primary-color);
   color: var(--primary-color);
+  background-color: var(--primary-soft);
 }
 
 .filter-chip--disabled {

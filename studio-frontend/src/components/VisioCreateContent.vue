@@ -16,7 +16,7 @@
             :icon="provider.icon"
             :image="provider.image"
             :chipValue="provider.value"
-            :disabled="!isLinkFilled"
+            :disabled="!isUrlValid"
             v-model="visioTypeField.value" />
         </div>
       </div>
@@ -26,14 +26,11 @@
         icon="info"
         align="start"
         v-if="visioTypeField.value">
-        <span>
-          <strong>{{ visioHelper.title }}</strong>
-          <br />
-          {{ visioHelper.description }}
-        </span>
+        <span>{{ visioHelper }}</span>
       </NotificationBanner>
     </section>
 
+    <div class="visio-divider"></div>
     <section v-if="enableSecurityLevel">
       <h2>{{ $t("conversation.conversation_creation_security_title") }}</h2>
       <SecurityLevelSelector
@@ -59,6 +56,7 @@
         type="submit"
         variant="primary"
         :loading="formState === 'sending'"
+        :disabled="!canSubmit"
         :label="formSubmitLabel"></Button>
     </div>
   </form>
@@ -68,6 +66,8 @@ import { bus } from "@/main.js"
 
 import EMPTY_FIELD from "@/const/emptyField.js"
 import { testVisioUrl } from "@/tools/fields/testVisioUrl"
+import { isValidUrl } from "@/tools/isValidUrl"
+import { inferVisioProvider } from "@/tools/inferVisioProvider"
 import { formsMixin } from "@/mixins/forms.js"
 import { organizationSecurityLevelMixin } from "@/mixins/organizationSecurityLevel.js"
 import generateServiceConfig from "@/tools/generateServiceConfig"
@@ -137,20 +137,30 @@ export default {
       // `image` is left empty for now: custom logos will be added later and
       // take precedence over the placeholder phosphor `icon`.
       visioProviders: [
-        { value: "jitsi", label: "Jitsi", icon: "video-camera", image: "" },
+        {
+          value: "jitsi",
+          label: "Jitsi",
+          //icon: "video-camera",
+          image: "/img/logo-visio/jitsi.png",
+        },
         {
           value: "bigbluebutton",
           label: "BigBlueButton",
-          icon: "presentation",
-          image: "",
+          //icon: "presentation",
+          image: "/img/logo-visio/BigBlueButton.png",
         },
         {
-          value: "msteams",
+          value: "teams",
           label: "Microsoft Teams",
           icon: "users-three",
-          image: "",
+          image: "/img/logo-visio/teams.png",
         },
-        { value: "autre", label: "Autre", icon: "globe", image: "" },
+        {
+          value: "visio",
+          label: "Visio",
+          icon: "globe",
+          image: "/img/logo-visio/visio.png",
+        },
       ],
       securityLevel: DEFAULT_SECURITY_LEVEL,
       formSubmitLabel: this.$t("quick_session.setup_visio.join_meeting"),
@@ -163,19 +173,36 @@ export default {
     enableSecurityLevel() {
       return getEnv("VUE_APP_ENABLE_SECURITY_LEVEL") === "true"
     },
-    isLinkFilled() {
-      return (this.visioLinkField.value ?? "").trim().length > 0
+    isUrlValid() {
+      return isValidUrl(this.visioLinkField.value)
     },
-    // Placeholder helper, copy to be defined (possibly per provider).
+    canSubmit() {
+      return this.isUrlValid && !!this.visioTypeField.value
+    },
+    // Localized per-provider guidance shown once a provider is selected.
     visioHelper() {
-      return {
-        title: "Autorisez l'accès invité",
-        description:
-          "Vérifiez que les invités peuvent rejoindre sans approbation manuelle. Le bot se connecte comme un participant standard.",
-      }
+      const provider = this.visioTypeField.value
+      return provider
+        ? this.$t(`quick_session.setup_visio.helper.${provider}`)
+        : ""
+    },
+  },
+  watch: {
+    // Re-infer the provider only when the URL changes, so a manual chip
+    // selection sticks for a given URL. Inference never clobbers a manual
+    // choice: it only applies when it confidently matches a provider.
+    "visioLinkField.value"() {
+      this.inferProvider()
     },
   },
   methods: {
+    async inferProvider() {
+      if (!this.isUrlValid) return
+      const provider = await inferVisioProvider(this.visioLinkField.value)
+      if (provider) {
+        this.visioTypeField.value = provider
+      }
+    },
     async createSession(event) {
       event?.preventDefault()
       if (this.testFields()) {
@@ -253,5 +280,11 @@ export default {
 <style lang="scss" scoped>
 .visio-setup {
   max-width: 550px;
+  margin: auto;
+}
+
+.visio-divider {
+  border-bottom: 1px solid var(--neutral-30);
+  margin-top: 1rem;
 }
 </style>
