@@ -1,12 +1,3 @@
-# 1.8.6
-
-_2026_06_26_
-
-- Bug fixes
-  - Fix word-level playback highlighting on the first transcription segment. A word starting at exactly `stime=0` was treated as having no timestamp (falsy-zero check), disabling current-word highlighting for the first segment. Exposed by the STT update that no longer drops the start of the audio (first word now legitimately starts at 0).
-
----
-
 # 1.8.5
 
 _2026_06_13_
