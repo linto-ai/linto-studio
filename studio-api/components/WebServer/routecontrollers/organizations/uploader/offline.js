@@ -86,15 +86,21 @@ async function injectSpeakerIdentification(conversation) {
     return {}
   }
 
-  const speakerId = await applySpeakerIdentification(
-    {
-      transcriptionConfig: transcription.transcriptionConfig,
-      speakerIdentificationCollections: collections,
-    },
-    organizations[0],
-  )
-  transcription.transcriptionConfig = speakerId.transcriptionConfig
-  return speakerId.headers
+  try {
+    const speakerId = await applySpeakerIdentification(
+      {
+        transcriptionConfig: transcription.transcriptionConfig,
+        speakerIdentificationCollections: collections,
+      },
+      organizations[0],
+    )
+    transcription.transcriptionConfig = speakerId.transcriptionConfig
+    return speakerId.headers
+  } catch (err) {
+    // Speaker identification failures must not abort the transcription.
+    debug("Speaker identification skipped: %s", err.message)
+    return {}
+  }
 }
 
 async function sessionReq(conversationId) {

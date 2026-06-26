@@ -1,5 +1,6 @@
 const debug = require("debug")("linto:app")
 const ora = require("ora")
+const fs = require("fs")
 
 class App {
   constructor() {
@@ -39,6 +40,14 @@ class App {
 
   async use(componentFolderName) {
     let spinner = ora(`Registering component : ${componentFolderName}`).start()
+
+    // Skip unknown components instead of aborting startup.
+    if (!fs.existsSync(`${__dirname}/components/${componentFolderName}`)) {
+      return spinner.warn(
+        `Skipping ${componentFolderName} - this component does not exist`,
+      )
+    }
+
     try {
       // Component dependency injections with inversion of control based on events emitted between components
       // Component is an async singleton - requiring it returns a reference to an instance

@@ -180,6 +180,9 @@ export default {
           channels: channels,
           meta: {
             securityLevel: this.securityLevel,
+            speakerIdentificationCollections:
+              settings.transcriptionService?.speakerIdentificationCollections ??
+              [],
           },
         })
 
