@@ -428,7 +428,7 @@ export default {
 
       // Find current page
       for (const page of this.turnPages) {
-        const startTime = page[0].words[0].stime || page[0].stime
+        const startTime = page[0].words[0].stime ?? page[0].stime
         const lastTurn = page.slice(-1)[0]
         const lastWord = lastTurn.words.slice(-1)[0]
         const endTime = lastWord.etime || lastTurn.etime
@@ -443,7 +443,7 @@ export default {
       // Find current Turn
       for (let turn of this.turnPages[this.currentPageNb]) {
         if (
-          turn.words[0].stime &&
+          turn.words[0].stime != null &&
           time >= turn.words[0].stime &&
           time <= turn.words[turn.words.length - 1].etime
         ) {
