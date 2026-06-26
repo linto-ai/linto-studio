@@ -28,9 +28,9 @@ import IsMobile from "./IsMobile.vue"
 import IsDesktop from "./IsDesktop.vue"
 import ButtonRoller from "./ButtonRoller.vue"
 import InputSelector from "./InputSelector.vue"
-import LabelInput from "./LabelInput.vue"
 import TextInput from "./TextInput.vue"
 import FilterChip from "./FilterChip.vue"
+import InputItem from "./InputItem.vue"
 import CopyButton from "./CopyButton.vue"
 import FavoriteStar from "./FavoriteStar.vue"
 
@@ -65,9 +65,9 @@ const components = [
   IsDesktop,
   ButtonRoller,
   InputSelector,
-  LabelInput,
   TextInput,
   FilterChip,
+  InputItem,
   CopyButton,
   FavoriteStar,
 ]

@@ -7,7 +7,13 @@
       :tabs="tabs"
       v-model="currentTab"
       variant="secondary"
-      style="padding-bottom: 0.5rem" />
+      style="padding-bottom: 0.5rem">
+      <template #end>
+        <KpiExportDropdown
+          :exportFn="exportActivityFn"
+          :filenamePrefix="activityFilenamePrefix" />
+      </template>
+    </Tabs>
     <SessionsKpi
       v-if="currentTab === 'sessions_kpi'"
       :organizationId="selectedOrganization">
@@ -72,12 +78,15 @@
 </template>
 <script>
 import { bus } from "@/main.js"
+import { exportKpiSessions } from "@/api/kpi"
 import {
   apiGetHttpActivityLogs,
   apiGetSessionActivityLogs,
   apiGetBackofficeActivityLogs,
   apiGetKeysActivityLogs,
   apiGetAllOrganizations,
+  apiExportActivityLogs,
+  ACTIVITY_SCOPE_BY_TAB,
 } from "@/api/admin.js"
 
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
@@ -92,6 +101,7 @@ import UserSelector from "@/components/molecules/UserSelector.vue"
 import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 import SessionsKpi from "@/components/SessionsKpi.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
+import KpiExportDropdown from "@/components/KpiExportDropdown.vue"
 import { timeToHMS } from "@/tools/timeToHMS"
 
 export default {
@@ -271,6 +281,11 @@ export default {
           break
       }
     },
+    activityFilenamePrefix() {
+      return this.currentTab === "sessions_kpi"
+        ? "kpi-sessions"
+        : `activity-${this.currentTab}`
+    },
   },
   watch: {
     currentTab() {
@@ -297,6 +312,20 @@ export default {
       const res = await apiGetAllOrganizations(0, { pageSize: 1000 })
       this.organizations = res.list || []
     },
+    exportActivityFn(format) {
+      if (this.currentTab === "sessions_kpi") {
+        return exportKpiSessions(format, {
+          organizationId: this.selectedOrganization,
+        })
+      }
+
+      const scope = ACTIVITY_SCOPE_BY_TAB[this.currentTab] || {}
+      return apiExportActivityLogs(format, {
+        source: scope.source,
+        scope: scope.scope,
+        userId: this.selecteduser?._id,
+      })
+    },
   },
   components: {
     MainContentBackoffice,
@@ -311,6 +340,7 @@ export default {
     UserInfoInline,
     SessionsKpi,
     FormInput,
+    KpiExportDropdown,
   },
 }
 </script>

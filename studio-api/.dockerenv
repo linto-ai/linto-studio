@@ -12,7 +12,7 @@ DB_NAME=conversations
 DB_REQUIRE_LOGIN=false
 
 # Request a specific version of the database (optional)
-DB_MIGRATION_TARGET=1.6.1
+DB_MIGRATION_TARGET=1.8.6
 DEFAULT_USER_ROLE=1
 
 # STT Config
@@ -21,6 +21,11 @@ GATEWAY_SERVICES=https://api.linto.ai
 # NLP Service
 NLP_SERVICES=<nlp_service_host>
 NLP_METHOD=frequencies,textrank
+
+# Socket.IO Redis Adapter (optional)
+SOCKETIO_REDIS_HOST=
+SOCKETIO_REDIS_PORT=
+SOCKETIO_REDIS_PASSWORD=
 
 # Cross domain accessibility
 CORS_ENABLED=true
@@ -49,6 +54,31 @@ NO_REPLY_EMAIL=
 VOLUME_FOLDER=storages
 VOLUME_AUDIO_PATH=audios
 VOLUME_PROFILE_PICTURE_PATH=pictures
+VOLUME_VOICE_SIGNATURES_PATH=voice_signatures
+
+# Speaker identification
+ENABLE_SPEAKER_IDENTIFICATION=false
+
+SPEAKER_ID_SERVICE_ENDPOINT=
+SPEAKER_ID_API_TOKEN=
+
+# Optional tuning / quotas
+# SPEAKER_ID_CONSENT_VERSION=1
+# SPEAKER_ID_SYNC_RETRY_INTERVAL=60
+# SPEAKER_ID_MAX_COLLECTIONS_PER_ORG=20
+# SPEAKER_ID_MAX_LABELS_PER_COLLECTION=100
+# SPEAKER_ID_MAX_SAMPLES_PER_LABEL=10
+# SPEAKER_ID_MAX_TOTAL_DURATION_PER_LABEL=600
+
+# Disable user invitation
+DISABLE_USER_INVITATION=false
+
+# Max time studio-api waits for the session stop drain barrier
+SESSION_STOP_TIMEOUT_MS=15000
 
 EXPORT_TEMPLATE=default
-ORGANIZATION_DEFAULT_PERMISSIONS=upload,summary,session
+EXPORT_DISCLAIMER=
+ORGANIZATION_DEFAULT_PERMISSIONS=upload,summary,session,microphone,bot
+
+SUPER_ADMIN_EMAIL=admin@mail.com
+SUPER_ADMIN_PWD=superadminpassword

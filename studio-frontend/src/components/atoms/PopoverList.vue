@@ -5,7 +5,7 @@
     :close-on-escape="closeOnEscape"
     :overlay="overlay"
     :full-width="fullWidth"
-    :content-class="isMobile ? 'popover-list__mobile' : ''"
+    :content-class="mergedContentClass"
     v-bind="$attrs"
     ref="popover"
     @input="onPopoverToggle"
@@ -21,10 +21,17 @@
           v-bind="{ ...$attrs, ...triggerAriaProps(open) }"
           :block="fullWidth"
           :avatar="selectedItem?.avatar"
-          :icon="selectedItem?.icon"
+          :icon="triggerIcon"
           :icon-weight="selectedItem?.iconWeight"
-          :label="labelButton"
-          class="popover-list__trigger" />
+          :label="hasSelection ? labelButton : placeholder"
+          class="popover-list__trigger">
+          <template v-if="hasSelection && $scopedSlots['trigger-content']">
+            <slot
+              name="trigger-content"
+              :selectedItem="selectedItem"
+              :label="labelButton" />
+          </template>
+        </Button>
       </slot>
     </template>
     <template #content>
@@ -123,6 +130,7 @@
               }"
               role="option"
               :aria-selected="isSelected(item)"
+              @mouseenter="highlightedIndex = index"
               @click.stop="onSelectionItemClick(item, $event)">
               <Checkbox
                 :id="getCheckboxId(index)"
@@ -154,7 +162,8 @@
               :id="getItemId(index)"
               class="popover-list__item"
               role="option"
-              :aria-selected="isSelected(item)">
+              :aria-selected="isSelected(item)"
+              @mouseenter="highlightedIndex = index">
               <Button
                 :icon="itemIcon(item)"
                 :icon-position="item.iconPosition || 'left'"
@@ -330,15 +339,51 @@ export default {
       default: () => [],
     },
     /**
+     * Items always rendered at the top of the list, regardless of the search
+     * query (e.g. a "global"/"none" entry). Same shape as `items`.
+     */
+    pinnedItems: {
+      type: Array,
+      default: () => [],
+    },
+    /**
      * If true, the popover will take the full width of the trigger element.
      */
     fullWidth: {
       type: Boolean,
       default: false,
     },
+    /**
+     * Label shown in the default trigger when nothing is selected.
+     */
+    placeholder: {
+      type: String,
+      default: null,
+    },
+    /**
+     * Icon shown in the default trigger when nothing is selected.
+     */
+    placeholderIcon: {
+      type: String,
+      default: null,
+    },
+    /**
+     * Extra class applied to the teleported popover content, letting a parent
+     * style the floating list (it lives outside the parent's DOM subtree).
+     */
+    contentClass: {
+      type: String,
+      default: "",
+    },
   },
-  emits: ["click", "update:value", "input"],
+  emits: ["click", "update:value", "input", "toggle"],
   methods: {
+    /**
+     * Closes the popover programmatically.
+     */
+    close() {
+      this.$refs.popover?.close()
+    },
     isSame(value, item) {
       if (typeof value === "object" && value !== null) {
         return value.id === item.id
@@ -520,6 +565,7 @@ export default {
         )
         this.highlightedIndex = selectedIndex >= 0 ? selectedIndex : 0
       }
+      this.$emit("toggle", isOpen)
     },
     onSearchKeyDown(e) {
       this.handleKeyboardNavigation(e)
@@ -592,6 +638,11 @@ export default {
   },
   computed: {
     ...mapGetters("system", ["isMobile"]),
+    mergedContentClass() {
+      return [this.contentClass, this.isMobile ? "popover-list__mobile" : ""]
+        .filter(Boolean)
+        .join(" ")
+    },
     hasSearch() {
       return this.searchable || !!this.asyncSearch
     },
@@ -605,8 +656,8 @@ export default {
      */
     allAvailableItems() {
       if (this.asyncSearch) {
-        // In async mode, combine selectedItems with asyncItems (avoid duplicates)
-        const combined = [...this.selectedItems]
+        // In async mode, combine pinned + selectedItems with asyncItems (avoid duplicates)
+        const combined = [...this.pinnedItems, ...this.selectedItems]
         for (const item of this.asyncItems) {
           if (!combined.some((i) => this.isSame(i.id ?? i.value, item))) {
             combined.push(item)
@@ -614,7 +665,7 @@ export default {
         }
         return combined
       }
-      return this.items
+      return [...this.pinnedItems, ...this.items]
     },
     labelButton() {
       const item = this.allAvailableItems.find((item) =>
@@ -627,6 +678,25 @@ export default {
         this.isSame(this.value, item),
       )
     },
+    /**
+     * Whether the trigger currently reflects a selected value (vs the
+     * placeholder/empty state).
+     */
+    hasSelection() {
+      // An item explicitly matches the current value: covers pinned entries
+      // whose value is null (e.g. a "global" option).
+      if (this.selectedItem) return true
+      const value = this.value
+      if (Array.isArray(value)) return value.length > 0
+      return value !== null && value !== undefined && value !== ""
+    },
+    /**
+     * Icon for the default trigger: the selected item's icon, or the
+     * placeholder icon when nothing is selected.
+     */
+    triggerIcon() {
+      return this.hasSelection ? this.selectedItem?.icon : this.placeholderIcon
+    },
     listboxId() {
       return `popover-list-${this.uid}`
     },
@@ -637,21 +707,31 @@ export default {
       return null
     },
     filteredItems() {
+      let base
       // Async search mode: use asyncItems directly
       if (this.asyncSearch) {
-        return this.asyncItems
+        base = this.asyncItems
+      } else if (!this.searchable || !this.searchQuery.trim()) {
+        // Static mode with no search or empty query
+        base = this.items
+      } else {
+        // Static mode with local filtering
+        const query = this.searchQuery.toLowerCase().trim()
+        base = this.items.filter((item) => {
+          const name = (item.name || item.text || "").toLowerCase()
+          const description = (item.description || "").toLowerCase()
+          return name.includes(query) || description.includes(query)
+        })
       }
-      // Static mode with no search or empty query
-      if (!this.searchable || !this.searchQuery.trim()) {
-        return this.items
+      // Pinned items always on top, regardless of the search query
+      if (this.pinnedItems.length) {
+        const rest = base.filter(
+          (item) =>
+            !this.pinnedItems.some((p) => this.isSame(p.id ?? p.value, item)),
+        )
+        return [...this.pinnedItems, ...rest]
       }
-      // Static mode with local filtering
-      const query = this.searchQuery.toLowerCase().trim()
-      return this.items.filter((item) => {
-        const name = (item.name || item.text || "").toLowerCase()
-        const description = (item.description || "").toLowerCase()
-        return name.includes(query) || description.includes(query)
-      })
+      return base
     },
     allFilteredSelected() {
       if (this.filteredItems.length === 0) return false
@@ -662,6 +742,11 @@ export default {
     },
   },
   watch: {
+    items() {
+      // Reset highlight when the list content changes (e.g. drill-down
+      // navigation) so keyboard actions never target a stale index.
+      this.highlightedIndex = 0
+    },
     searchQuery: {
       handler(query) {
         // Reset highlight to first item when search changes

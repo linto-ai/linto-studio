@@ -149,10 +149,9 @@ export default {
   display: grid;
   grid-template-columns: 1fr 1fr auto;
   gap: var(--small-gap);
-  font-size: var(--text-xs);
-  font-weight: 500;
-  color: var(--text-secondary);
-  text-transform: uppercase;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 .editor-header.no-endpoint {

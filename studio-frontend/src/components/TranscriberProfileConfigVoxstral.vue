@@ -4,11 +4,6 @@
 
     <FormInput :field="descriptionField" v-model="localConfig.description" />
 
-    <section class="endpoint-section">
-      <h4>{{ $t("backoffice.transcriber_profile_detail.voxstral_endpoint_label") }}</h4>
-      <FormInput :field="endpointField" v-model="localConfig.endpoint" />
-    </section>
-
     <section class="options-section">
       <h4>{{ $t("backoffice.transcriber_profile_detail.options_title") }}</h4>
       <FormCheckbox
@@ -27,6 +22,15 @@
           label: $t('backoffice.transcriber_profile_detail.diarization_label'),
           value: localConfig.hasDiarization,
         }" />
+    </section>
+
+    <section class="endpoint-section">
+      <h4>
+        {{
+          $t("backoffice.transcriber_profile_detail.voxstral_endpoint_label")
+        }}
+      </h4>
+      <FormInput :field="endpointField" v-model="localConfig.endpoint" />
     </section>
 
     <section class="languages-section">

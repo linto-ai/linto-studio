@@ -58,7 +58,7 @@ export default {
   padding: var(--medium-gap);
   background: var(--neutral-100);
   color: var(--neutral-30);
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", monospace;
   font-size: var(--text-sm);
   line-height: 1.6;
   border: none;

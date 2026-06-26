@@ -7,7 +7,10 @@
  * @param {boolean} options.showSeconds - Show seconds (default: true)
  * @returns {string|null} Formatted duration string or null if invalid input
  */
-export function formatDuration(seconds, { compact = false, showZeroHours = false, showSeconds = true } = {}) {
+export function formatDuration(
+  seconds,
+  { compact = false, showZeroHours = false, showSeconds = true } = {},
+) {
   if (seconds == null || isNaN(seconds) || seconds < 0) {
     return null
   }
@@ -37,6 +40,16 @@ export function formatDuration(seconds, { compact = false, showZeroHours = false
   }
 
   return parts.join(" ")
+}
+
+/**
+ * Formats a duration in compact format, returning "-" for null/zero values.
+ * Convenience wrapper used by speaker diarization components.
+ * @param {number} seconds - The duration in seconds
+ * @returns {string} Formatted duration or "-"
+ */
+export function formatCompactDuration(seconds) {
+  return formatDuration(seconds, { compact: true }) || "-"
 }
 
 /**

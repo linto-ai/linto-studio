@@ -98,6 +98,20 @@ async function requestAPIV2(req, query, content, conversationExport, conversatio
   // Pass organization ID to LLM Gateway
   if (organizationId) {
     formData.append("organization_id", organizationId)
+    try {
+      const orga = (await model.organizations.getById(organizationId))[0]
+      if (orga?.name) {
+        formData.append("organization_name", orga.name)
+      }
+    } catch (err) {
+      appLogger.warn(
+        `[LLM V2] Could not resolve organization name for ${organizationId}: ${err.message}`,
+      )
+    }
+  }
+
+  if (conversation?.name) {
+    formData.append("conversation_name", conversation.name)
   }
 
   // Add context metadata as JSON string

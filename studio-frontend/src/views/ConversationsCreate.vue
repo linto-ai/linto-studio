@@ -23,68 +23,113 @@
             :disabled="formState === 'sending'"
             v-model="audioFiles" />
         </div>
-        <!-- folder -->
         <section>
+          <!-- folder -->
+
           <h2>{{ $t("conversation.folder_selection_title") }}</h2>
+
           <div class="form-field flex col">
             <label class="form-label">
               {{ $t("conversation.folder_selection_label") }}
             </label>
-            <FolderSelector v-model="selectedFolderId" />
+            <FolderSelector v-model="selectedFolderId" :full-width="false" />
           </div>
         </section>
-
-        <!-- rights -->
         <section>
-          <h2>{{ $t("conversation.conversation_creation_right_title") }}</h2>
-          <div class="form-field flex col">
-            <div class="flex align-center gap-small">
-              <label class="form-label">
-                {{ $t("conversation.conversation_creation_right_label") }}
-              </label>
-              <Tooltip
-                :text="$t('conversation.rights_info_tooltip')"
-                position="right">
-                <ph-icon name="info" size="16" />
-              </Tooltip>
-            </div>
-            <select
-              v-model="membersRight.value"
-              :disabled="selectedFolderIsPrivate">
-              <option
-                v-for="uright in membersRight.list"
-                :key="uright.value"
-                :value="uright.value">
-                {{ uright.txt }}
-              </option>
-            </select>
+          <h2>
+            {{ $t("conversation.conversation_creation_rights_security_title") }}
+          </h2>
+          <div class="flex row gap-medium wrap">
+            <FormInput
+              auto-width
+              :field="{
+                label: $t('conversation.conversation_creation_right_label'),
+                error: null,
+              }">
+              <template #content-after-label>
+                <Tooltip
+                  :text="$t('conversation.rights_info_tooltip')"
+                  position="right">
+                  <ph-icon name="info" size="16" />
+                </Tooltip>
+              </template>
+              <template #custom-input="{ id }">
+                <select
+                  :id="id"
+                  style="width: 100%"
+                  v-model="membersRight.value"
+                  :disabled="selectedFolderIsPrivate">
+                  <option
+                    v-for="uright in membersRight.list"
+                    :key="uright.value"
+                    :value="uright.value">
+                    {{ uright.txt }}
+                  </option>
+                </select>
+              </template>
+            </FormInput>
+
+            <SecurityLevelSelector
+              v-if="enableSecurityLevel"
+              v-model="securityLevel"
+              :minLevel="organizationSecurityLevel" />
           </div>
         </section>
-
-        <SecurityLevelSelector v-if="enableSecurityLevel" v-model="securityLevel" />
 
         <!-- services -->
         <section class="flex col gap-small">
-          <h2>{{ $t("conversation.transcription_service_title") }}</h2>
+          <div class="flex row align-center gap-small wrap">
+            <h2 class="create-services-title">
+              {{ $t("conversation.transcription_service_title") }}
+            </h2>
+            <span class="create-services-count" v-if="modelCount">
+              {{
+                $tc("conversation.transcription.model_count", modelCount, {
+                  count: modelCount,
+                })
+              }}
+            </span>
+          </div>
           <div class="error-field" v-if="fieldTranscriptionService.error">
             {{ fieldTranscriptionService.error }}
           </div>
-          <ConversationCreateServices
+          <ServiceSelector
             :serviceList="fieldTranscriptionService.list"
             :disabled="formState === 'sending'"
             :loading="fieldTranscriptionService.loading"
-            :securityLevel="securityLevel"
+            :securityLevel="effectiveSecurityLevel"
             v-model="fieldTranscriptionService.value" />
         </section>
 
-        <div
-          class="flex gap-small align-center conversation-create-footer"
-          style="margin-top: 1rem">
-          <div class="error-field flex1" v-if="formError">{{ formError }}</div>
-          <div v-else class="flex1"></div>
+        <div class="flex gap-small align-center conversation-create-footer">
+          <div
+            class="conversation-create-footer__summary"
+            v-if="audioFiles.length">
+            <span class="conversation-create-footer__icon">
+              <ph-icon name="music-note" size="md" />
+            </span>
+            <div class="conversation-create-footer__text">
+              <span
+                class="conversation-create-footer__file"
+                :title="footerFileLabel">
+                {{ footerFileLabel }}
+              </span>
+              <span
+                v-if="serviceSummary"
+                class="conversation-create-footer__model"
+                :title="serviceSummary">
+                {{ serviceSummary }}
+              </span>
+            </div>
+          </div>
+          <div class="flex1"></div>
+          <div class="error-field" v-if="formError">{{ formError }}</div>
           <Button
             type="submit"
             variant="primary"
+            icon="play"
+            iconWeight="fill"
+            :disabled="audioFiles.length === 0"
             :loading="formState === 'sending'"
             :label="formSubmitLabel"></Button>
         </div>
@@ -106,7 +151,8 @@
         v-if="currentTab === 'session' && !loadingSessionData"
         :sessionTemplates="sessionTemplates"
         :transcriberProfiles="transcriberProfiles"
-        :currentOrganizationScope="currentOrganizationScope" />
+        :currentOrganizationScope="currentOrganizationScope"
+        :preloadTemplateId="preloadTemplateId" />
     </div>
   </LayoutV2>
 </template>
@@ -116,6 +162,7 @@ import { getEnv } from "@/tools/getEnv.js"
 import ConversationCreateMixin from "@/mixins/conversationCreate.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
+import { organizationSecurityLevelMixin } from "@/mixins/organizationSecurityLevel.js"
 
 import {
   apiGetTranscriberProfilesByOrganization,
@@ -126,19 +173,21 @@ import { testService } from "@/tools/fields/testService.js"
 
 import LayoutV2 from "@/layouts/v2-layout.vue"
 import ConversationCreateAudio from "@/components/ConversationCreateAudio.vue"
-import ConversationCreateServices from "@/components/ConversationCreateServices.vue"
+import ServiceSelector from "@/components/serviceSelector/ServiceSelector.vue"
 import Tabs from "@/components/molecules/Tabs.vue"
 import SessionCreateContent from "@/components/SessionCreateContent.vue"
 import QuickSessionCreateContent from "@/components/QuickSessionCreateContent.vue"
 import VisioCreateContent from "@/components/VisioCreateContent.vue"
 import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
 import FolderSelector from "@/components/FolderSelector.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 
 export default {
   mixins: [
     ConversationCreateMixin,
     orgaRoleMixin,
     organizationPermissionsMixin,
+    organizationSecurityLevelMixin,
   ],
   props: {
     userInfo: {
@@ -172,15 +221,37 @@ export default {
     }
   },
   async created() {
-    if (this.mainTabs.length > 0) {
-      this.currentTab = this.mainTabs[0].name
-    } else {
+    if (this.mainTabs.length === 0) {
       this.$router.push({ name: "not_found" })
+      return
+    }
+    const sessionTab = this.mainTabs.find((tab) => tab.name === "session")
+    if (this.preloadTemplateId && sessionTab) {
+      this.currentTab = sessionTab.name
+    } else {
+      this.currentTab = this.mainTabs[0].name
     }
   },
   computed: {
     transcriberProfilesQuickMeeting() {
       return this.transcriberProfiles.filter((t) => t.quickMeeting)
+    },
+    // Number of transcription models available (for the section subtitle).
+    modelCount() {
+      return this.fieldTranscriptionService.loading
+        ? 0
+        : this.fieldTranscriptionService.list.length
+    },
+    // Sticky-footer left side: the file name (single) or "N fichiers".
+    footerFileLabel() {
+      const count = this.audioFiles.length
+      if (count === 0) return ""
+      if (count === 1) return this.audioFiles[0].value
+      return this.$tc("conversation.transcription.file_count", count, { count })
+    },
+    // Sticky-footer model summary, emitted by the selected service card.
+    serviceSummary() {
+      return this.fieldTranscriptionService.value?.summary || ""
     },
     selectedFolderIsPrivate() {
       if (!this.selectedFolderId) return false
@@ -198,7 +269,17 @@ export default {
     canCreateSession() {
       const enableSession = getEnv("VUE_APP_ENABLE_SESSION") === "true"
 
-      return enableSession && this.canSessionInCurrentOrganization
+      // True when the org has at least one session-related permission
+      // (SESSION, MICROPHONE, or BOT). Each tab is gated by its own permission below.
+      return (
+        enableSession &&
+        (this.canSessionInCurrentOrganization ||
+          this.canMicrophoneInCurrentOrganization ||
+          this.canBotInCurrentOrganization)
+      )
+    },
+    preloadTemplateId() {
+      return this.$route.query.template ?? null
     },
     loadingSessionData() {
       return (
@@ -231,32 +312,40 @@ export default {
         )
       }
 
-      if (this.canCreateSession) {
-        const loading = this.loadingSessionData
-        if (this.isAtLeastQuickMeeting) {
-          res.push({
-            name: "live",
-            label: this.$t("conversation_creation.tabs.quick_meeting"),
-            icon: "microphone",
-            disabled:
-              this.transcriberProfilesQuickMeeting.length === 0 || loading,
-          })
-          res.push({
-            name: "visio",
-            label: this.$t("conversation_creation.tabs.visio"),
-            icon: "webcam",
-            disabled:
-              this.transcriberProfilesQuickMeeting.length === 0 || loading,
-          })
-        }
-        if (this.isAtLeastMeetingManager) {
-          res.push({
-            name: "session",
-            label: this.$i18n.t("conversation_creation.tabs.session"),
-            icon: "plugs-connected",
-            disabled: this.transcriberProfiles.length === 0 || loading,
-          })
-        }
+      if (!this.canCreateSession) return res
+
+      const loading = this.loadingSessionData
+      const quickMeetingDisabled = loading
+
+      if (
+        this.isAtLeastQuickMeeting &&
+        this.canMicrophoneInCurrentOrganization
+      ) {
+        res.push({
+          name: "live",
+          label: this.$t("conversation_creation.tabs.quick_meeting"),
+          icon: "microphone",
+          disabled: quickMeetingDisabled,
+        })
+      }
+      if (this.isAtLeastQuickMeeting && this.canBotInCurrentOrganization) {
+        res.push({
+          name: "visio",
+          label: this.$t("conversation_creation.tabs.visio"),
+          icon: "webcam",
+          disabled: quickMeetingDisabled,
+        })
+      }
+      if (
+        this.isAtLeastMeetingManager &&
+        this.canSessionInCurrentOrganization
+      ) {
+        res.push({
+          name: "session",
+          label: this.$i18n.t("conversation_creation.tabs.session"),
+          icon: "plugs-connected",
+          disabled: this.transcriberProfiles.length === 0 || loading,
+        })
       }
 
       return res
@@ -319,13 +408,14 @@ export default {
   components: {
     LayoutV2,
     ConversationCreateAudio,
-    ConversationCreateServices,
+    ServiceSelector,
     Tabs,
     SessionCreateContent,
     QuickSessionCreateContent,
     VisioCreateContent,
     SecurityLevelSelector,
     FolderSelector,
+    FormInput,
   },
 }
 </script>

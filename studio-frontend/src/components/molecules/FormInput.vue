@@ -18,15 +18,17 @@
         :is="code ? 'pre' : 'div'"
         v-else-if="readonly && editValue"
         class="form-field__readonly"
+        :class="{ 'form-field__readonly--fit-content': readonlyFitContent }"
         >{{ editValue }}</component
       >
       <div
         v-else-if="readonly && !editValue"
-        class="form-field__readonly empty">
+        class="form-field__readonly empty"
+        :class="{ 'form-field__readonly--fit-content': readonlyFitContent }">
         {{ $t("form_field.empty_value") }}
       </div>
       <input
-        v-else-if="!textarea"
+        v-else-if="!textarea && !hasPrefix"
         :class="inputClasses"
         :type="type"
         :disabled="disabled"
@@ -39,6 +41,29 @@
         @change="onChange"
         @keydown="keydown"
         v-bind="field.customParams" />
+      <InputItem
+        v-else-if="!textarea"
+        :input-id="id"
+        :disabled="disabled"
+        :error="isInError"
+        :fullwidth="!!inputFullWidth">
+        <template #prefix>
+          <PhIcon :name="field.leadingIcon" />
+        </template>
+        <input
+          :class="inputClasses"
+          :type="type"
+          :disabled="disabled"
+          :id="id"
+          :autocomplete="autocomplete"
+          :placeholder="placeholder"
+          ref="input"
+          v-model="editValue"
+          @input="onInput"
+          @change="onChange"
+          @keydown="keydown"
+          v-bind="field.customParams" />
+      </InputItem>
       <textarea
         v-else
         :class="textareaClasses"
@@ -88,6 +113,8 @@
 import { Fragment } from "vue-fragment"
 import LabeledValue from "@/components/atoms/LabeledValue.vue"
 import Button from "@/components/atoms/Button.vue"
+import InputItem from "@/components/atoms/InputItem.vue"
+import PhIcon from "@/components/atoms/PhIcon.vue"
 import { generateId } from "@/tools/generateId.js"
 export default {
   props: {
@@ -131,7 +158,16 @@ export default {
       type: Boolean,
       default: false,
     },
+    readonlyFitContent: {
+      type: Boolean,
+      default: false,
+    },
     inline: {
+      type: Boolean,
+      default: false,
+    },
+    // Size the field to its content instead of stretching to full width.
+    autoWidth: {
       type: Boolean,
       default: false,
     },
@@ -170,6 +206,7 @@ export default {
         "form-field--disabled": this.disabled,
         "form-field--error": this.isInError,
         "form-field--with-confirmation": this.withConfirmation,
+        "form-field--auto-width": this.autoWidth,
       }
     },
     inputClasses() {
@@ -178,6 +215,8 @@ export default {
         "form-field__input--fullwidth": this.inputFullWidth,
         "form-field__input--disabled": this.disabled,
         "form-field__input--error": this.isInError,
+        // Marks the input for InputItem's strip when a leading prefix is shown.
+        "input-box__input": this.hasPrefix,
       }
     },
     textareaClasses() {
@@ -190,6 +229,11 @@ export default {
     },
     isInError() {
       return this.field.error !== null && this.field.error !== undefined
+    },
+    // A leading icon (input prefix) is requested via the field descriptor.
+    // Only the plain text-input branch supports it (not textarea/readonly).
+    hasPrefix() {
+      return !!this.field.leadingIcon
     },
   },
   watch: {
@@ -264,7 +308,7 @@ export default {
       }
     },
   },
-  components: { Fragment, LabeledValue, Button },
+  components: { Fragment, LabeledValue, Button, InputItem, PhIcon },
 }
 </script>
 
@@ -274,6 +318,11 @@ export default {
   flex-direction: column;
   gap: 0.5rem;
   width: 100%;
+
+  // Shrink to content (opt-in) instead of the default full width.
+  &--auto-width {
+    width: auto;
+  }
 
   /* Header with label */
   &__header {
@@ -301,6 +350,10 @@ export default {
 
     &.empty {
       font-style: italic;
+    }
+
+    &--fit-content {
+      flex: 0 1 auto;
     }
   }
 
@@ -490,9 +543,9 @@ export default {
     }
   }
 
-  &--disabled {
-    opacity: 0.7;
-  }
+  // &--disabled {
+  //   opacity: 0.7;
+  // }
 
   &--error {
     .form-field__label {

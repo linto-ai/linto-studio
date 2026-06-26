@@ -3,7 +3,7 @@ import AppEditorHighlightDescToolbox from "@/components/AppEditorHighlightDescTo
 
 export default async function highlightRange(
   { range, category },
-  { functionToHighlightWord = highlightWord, functionArgs = [] } = {}
+  { functionToHighlightWord = highlightWord, functionArgs = [] } = {},
 ) {
   // AppEditorHighlightDescToolbox
   const color = category.color || "yellow"
@@ -23,7 +23,7 @@ export default async function highlightRange(
       category,
       this.$i18n,
       { isLastWord: true, isFirstWord: true },
-      ...functionArgs
+      ...functionArgs,
     )
     startWord.setAttribute("highlighted--last-word", "true")
   } else {
@@ -35,7 +35,7 @@ export default async function highlightRange(
         category,
         this.$i18n,
         { isLastWord: false, isFirstWord },
-        ...functionArgs
+        ...functionArgs,
       )
       isFirstWord = false
       startWord = startWord.nextSibling
@@ -47,7 +47,7 @@ export default async function highlightRange(
       category,
       this.$i18n,
       { isLastWord: true, isFirstWord: false },
-      ...functionArgs
+      ...functionArgs,
     )
   }
 
@@ -61,7 +61,7 @@ function highlightWord(
   category,
   i18n,
   { isLastWord = false, isFirstWord = false } = {},
-  isFromHighlight = true
+  isFromHighlight = true,
 ) {
   const wordHasToolbox = word.querySelector(".conversation-highlight-toolbox")
 

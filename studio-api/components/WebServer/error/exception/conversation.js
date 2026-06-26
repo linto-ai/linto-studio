@@ -7,6 +7,23 @@ const ConversationError = createException(
   400,
   "Error during the operation",
 )
+// Speaker identification: a requested collection does not belong to the
+// organization (contractual 403, cf. docs/speaker-identification 05 §2.2.3,
+// 07 §4.2). Other speaker-id validation errors stay 400 (ConversationError).
+const SpeakerIdentificationForbidden = createException(
+  "SpeakerIdentificationForbidden",
+  "conversation",
+  403,
+  "A speaker identification collection does not belong to this organization",
+)
+// The chosen transcription model's confidentiality level does not meet the
+// conversation's required level (server-side enforcement of the security gate).
+const ConversationSecurityLevelForbidden = createException(
+  "ConversationSecurityLevelForbidden",
+  "conversation",
+  403,
+  "The selected transcription model does not meet the required confidentiality level",
+)
 const ConversationNoFileUploaded = createException(
   "ConversationNoFileUploaded",
   "conversation",
@@ -150,6 +167,8 @@ module.exports = {
   ConversationNotShared,
   ConversationIdRequire,
   ConversationError,
+  ConversationSecurityLevelForbidden,
+  SpeakerIdentificationForbidden,
   ConversationNotFound,
   TurnNotFound,
   SubtitleUnsupportedMediaType,

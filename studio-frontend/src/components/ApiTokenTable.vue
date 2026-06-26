@@ -10,7 +10,14 @@
       idKey="userId"
       @list_sort_by="sortBy">
       <template #cell-firstname="{ element }">
-        {{ element.firstname }}
+        <div class="flex gap-small align-center">
+          <Avatar
+            color="#dadada"
+            size="sm"
+            :text="(element.firstname || '?').substring(0, 1)"
+            :src="element.avatarSrc" />
+          <span>{{ element.firstname }}</span>
+        </div>
       </template>
       <template #cell-organizationRole="{ element }">
         <OrgaRoleSelector v-model="element.organizationRole" readonly />
@@ -76,6 +83,7 @@
 
 <script>
 import { apiGetToken } from "@/api/token"
+import Avatar from "@/components/atoms/Avatar.vue"
 import Chip from "@/components/atoms/Chip.vue"
 import GenericTable from "@/components/molecules/GenericTable.vue"
 import OrgaRoleSelector from "./molecules/OrgaRoleSelector.vue"
@@ -84,6 +92,7 @@ import ModalRenewToken from "./ModalRenewToken.vue"
 import ModalViewToken from "./ModalViewToken.vue"
 import { formatDateLocale } from "@/tools/formatDate"
 import { isTokenExpiringSoon } from "@/tools/isTokenExpiringSoon"
+import userAvatar from "@/tools/userAvatar"
 
 export default {
   props: {
@@ -124,11 +133,31 @@ export default {
   computed: {
     columns() {
       return [
-        { key: "firstname", label: this.$t("api_tokens_settings.token_name_label"), width: "1fr" },
-        { key: "organizationRole", label: this.$t("api_tokens_settings.token_role_label"), width: "auto" },
-        { key: "createdAt", label: this.$t("api_tokens_settings.token_creation_date_label"), width: "auto" },
-        { key: "expiresAt", label: this.$t("api_tokens_settings.token_expiration_date_label"), width: "auto" },
-        { key: "actions", label: this.$t("api_tokens_settings.token_actions_label"), width: "auto" },
+        {
+          key: "firstname",
+          label: this.$t("api_tokens_settings.token_name_label"),
+          width: "1fr",
+        },
+        {
+          key: "organizationRole",
+          label: this.$t("api_tokens_settings.token_role_label"),
+          width: "auto",
+        },
+        {
+          key: "createdAt",
+          label: this.$t("api_tokens_settings.token_creation_date_label"),
+          width: "auto",
+        },
+        {
+          key: "expiresAt",
+          label: this.$t("api_tokens_settings.token_expiration_date_label"),
+          width: "auto",
+        },
+        {
+          key: "actions",
+          label: this.$t("api_tokens_settings.token_actions_label"),
+          width: "auto",
+        },
       ]
     },
     decoratedTokens() {
@@ -136,6 +165,11 @@ export default {
       return this.tokenList.map((token) => ({
         ...token,
         expiringSoon: isTokenExpiringSoon(token, now),
+        // Precompute the avatar URL once per list change instead of on
+        // every row re-render. Null when the API key has no custom picture
+        // so the Avatar component falls back to its initial rather than
+        // the generic default user picture.
+        avatarSrc: token?.img ? userAvatar(token) : null,
       }))
     },
   },
@@ -198,6 +232,7 @@ export default {
     },
   },
   components: {
+    Avatar,
     Chip,
     GenericTable,
     OrgaRoleSelector,

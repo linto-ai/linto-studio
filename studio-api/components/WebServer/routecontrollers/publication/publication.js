@@ -39,22 +39,40 @@ async function getTemplates(req, res, next) {
     // Get authenticated user's ID from JWT payload
     const authenticatedUserId = req.payload?.data?.userId
 
-    // Build query params for hierarchical visibility
-    const params = new URLSearchParams()
-    params.append("include_system", "true")
+    // When a service_id is provided, return only the templates the admin made
+    // available for that service (falls back to the global default if none are
+    // linked). Otherwise return all templates visible to the org/user.
+    let url
+    if (req.query.service_id) {
+      const params = new URLSearchParams()
+      if (req.query.organization_id) {
+        params.append("organization_id", req.query.organization_id)
+      }
+      if (authenticatedUserId) {
+        params.append("user_id", authenticatedUserId)
+      }
+      url = `${baseUrl}/api/v1/services/${encodeURIComponent(
+        req.query.service_id,
+      )}/templates?${params.toString()}`
+    } else {
+      // Build query params for hierarchical visibility
+      const params = new URLSearchParams()
+      params.append("include_system", "true")
 
-    // Add organization_id if provided (to get org-scoped templates)
-    if (req.query.organization_id) {
-      params.append("organization_id", req.query.organization_id)
+      // Add organization_id if provided (to get org-scoped templates)
+      if (req.query.organization_id) {
+        params.append("organization_id", req.query.organization_id)
+      }
+
+      // Add user_id for authenticated user (to get user-scoped templates)
+      if (authenticatedUserId) {
+        params.append("user_id", authenticatedUserId)
+      }
+
+      // CORRECT endpoint: /api/v1/document-templates (NOT /api/v1/templates)
+      url = `${baseUrl}/api/v1/document-templates?${params.toString()}`
     }
 
-    // Add user_id for authenticated user (to get user-scoped templates)
-    if (authenticatedUserId) {
-      params.append("user_id", authenticatedUserId)
-    }
-
-    // CORRECT endpoint: /api/v1/document-templates (NOT /api/v1/templates)
-    const url = `${baseUrl}/api/v1/document-templates?${params.toString()}`
     const response = await axios.get(url, { timeout: 5000 })
 
     // Return with status wrapper, preserve all fields from LLM Gateway (including name_fr, name_en, etc.)

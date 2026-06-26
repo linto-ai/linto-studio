@@ -11,19 +11,60 @@ class LinTO:
             base_url=base_url, token=auth_token
         )
 
-    async def transcribe(self, file, enable_diarization=True, number_of_speaker="0", language="*", enablePunctuation=True, name=f"imported file {datetime.now().isoformat()}"):
-        args = {}
-        args["file"] = file
+    async def upload(self, file, enable_diarization=True, number_of_speaker="0", language="*", enablePunctuation=True, name=None, members_right=None):
+        """Upload a file and return its conversation_id, without polling.
+
+        Performs only the upload step. The returned conversation_id can be
+        checkpointed and later passed to poll_media() to resume waiting for
+        the transcription result without re-uploading (which would create a
+        duplicate conversation).
+        """
+        if name is None:
+            name = f"imported file {datetime.now().isoformat()}"
         res = await self.api_service.upload_file(
+            file=file,
+            enable_diarization=enable_diarization,
+            number_of_speaker=number_of_speaker,
+            lang=language,
+            enablePunctuation=enablePunctuation,
+            name=name,
+            membersRight=members_right,
+        )
+        return res["conversationId"]
+
+    async def get_media(self, conversation_id):
+        """One-shot fetch of a FINISHED media (no polling loop).
+
+        Use this on a resume path when the transcription is already known to be
+        done (e.g. a checkpointed step); use poll_media() when you still need to
+        wait for completion. Does NOT verify the job state — the caller must only
+        call it once completion is known. Raises on HTTP failure.
+        """
+        return await self.api_service.get_media(mediaId=conversation_id)
+
+    async def poll_media(self, conversation_id):
+        """Return a polling/resume handle for an already-created conversation.
+
+        Wraps an existing conversation_id (e.g. one returned by upload()) in a
+        PollingService that auto-starts polling and emits "done", "error" and
+        "update" events. Use this to resume after a crash/retry without
+        re-uploading the file.
+        """
+        return PollingService(conversation_id, self.api_service)
+
+    async def transcribe(self, file, enable_diarization=True, number_of_speaker="0", language="*", enablePunctuation=True, name=None, members_right=None):
+        if name is None:
+            name = f"imported file {datetime.now().isoformat()}"
+        conversation_id = await self.upload(
             file=file,
             enable_diarization=enable_diarization,
             number_of_speaker=number_of_speaker,
             language=language,
             enablePunctuation=enablePunctuation,
-            name=name
+            name=name,
+            members_right=members_right,
         )
-        media_id = res["conversationId"]
-        return PollingService(media_id, self.api_service)
+        return await self.poll_media(conversation_id)
 
     async def list_services(self):
         return await self.api_service.fetch_asr_services()
@@ -59,13 +100,14 @@ class LinTO:
             jobId=job_id,
         )
 
-    async def share_conversation(self, conversation_id, email, right=1):
+    async def share_conversation(self, conversation_id, email, right=1, notify=True):
         """Share a conversation with a user by email (READ access by default).
 
-        LinTO Studio sends the notification email automatically.
+        By default LinTO Studio sends the notification email automatically.
+        Pass notify=False to suppress it.
         """
         return await self.api_service.share_conversation(
-            conversationId=conversation_id, email=email, right=right
+            conversationId=conversation_id, email=email, right=right, notify=notify,
         )
 
     async def search_users(self, search):
@@ -101,7 +143,6 @@ class LinTO:
         await self.update_conversation(conversation_id, {
             "owner": user_id,
             "sharedWithUsers": [],
-            "organization": {"customRights": []},
         })
         return user_id
 
@@ -129,4 +170,113 @@ class LinTO:
             format=format,
             templateId=template_id,
             versionNumber=version_number,
+        )
+
+    # --- Taxonomy: categories, tags, folders ---
+
+    async def list_categories(self):
+        """List categories of the current organization."""
+        return await self.api_service.list_categories()
+
+    async def list_tags(self, category_id):
+        """List tags of a category."""
+        return await self.api_service.list_tags(categoryId=category_id)
+
+    async def create_tag(self, category_id, name, color=None, emoji=None):
+        """Create a tag inside a category. Returns the created tag dict."""
+        return await self.api_service.create_tag(
+            categoryId=category_id, name=name, color=color, emoji=emoji
+        )
+
+    async def ensure_tag(self, name, category_name="tags", color=None, emoji=None):
+        """Return tag id for `name` in category `category_name`, creating both if needed.
+
+        Defaults to the built-in "tags" category whose entries surface as
+        tag chips on media cards. Falls back to the first available category
+        when `category_name` is missing. Returns None if no category exists.
+        """
+        categories = await self.list_categories()
+        if not isinstance(categories, list) or not categories:
+            return None
+
+        cat = None
+        for c in categories:
+            if str(c.get("name", "")).lower() == category_name.lower():
+                cat = c
+                break
+        if cat is None:
+            cat = categories[0]
+        category_id = str(cat.get("_id") or cat.get("id") or "")
+        if not category_id:
+            return None
+
+        tags = await self.list_tags(category_id)
+        if isinstance(tags, list):
+            for t in tags:
+                if str(t.get("name", "")).lower() == name.lower():
+                    return str(t.get("_id") or t.get("id") or "")
+
+        created = await self.create_tag(
+            category_id=category_id, name=name, color=color, emoji=emoji
+        )
+        if isinstance(created, dict):
+            return str(created.get("_id") or created.get("id") or "") or None
+        return None
+
+    async def add_conversation_tag(self, conversation_id, tag_id):
+        """Append a tag to a conversation, preserving existing tags."""
+        if not tag_id:
+            return None
+        conv = await self.api_service.get_conversation(
+            conversationId=conversation_id
+        )
+        existing = []
+        if isinstance(conv, dict):
+            raw = conv.get("tags") or []
+            if isinstance(raw, list):
+                existing = [str(t) for t in raw if t]
+        if tag_id in existing:
+            return existing
+        new_tags = existing + [tag_id]
+        await self.update_conversation(conversation_id, {"tags": new_tags})
+        return new_tags
+
+    async def list_folders(self):
+        """List folders of the current organization."""
+        return await self.api_service.list_folders()
+
+    async def create_folder(self, name, parent_id=None, color=None, emoji=None, visibility="public"):
+        """Create a folder. Returns the created folder dict."""
+        return await self.api_service.create_folder(
+            name=name, parentId=parent_id, color=color, emoji=emoji,
+            visibility=visibility,
+        )
+
+    async def ensure_folder(self, name, parent_id=None, visibility="public"):
+        """Return folder id for `name` (root level by default), creating it if needed.
+
+        When created with visibility='private', the service account becomes
+        the folder owner and conversations moved into it get
+        membersRight=UNDEFINED — invisible to org members below MAINTAINER.
+        """
+        folders = await self.list_folders()
+        if isinstance(folders, list):
+            for f in folders:
+                if (
+                    str(f.get("name", "")).lower() == name.lower()
+                    and (f.get("parentId") or None) == parent_id
+                ):
+                    return str(f.get("_id") or f.get("id") or "")
+
+        created = await self.create_folder(
+            name=name, parent_id=parent_id, visibility=visibility,
+        )
+        if isinstance(created, dict):
+            return str(created.get("_id") or created.get("id") or "") or None
+        return None
+
+    async def move_to_folder(self, folder_id, conversation_id):
+        """Move a conversation into a folder."""
+        return await self.api_service.move_conversation_to_folder(
+            folderId=folder_id, conversationId=conversation_id
         )

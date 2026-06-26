@@ -2,17 +2,10 @@
   "/api/services": {
     "get": {
       "tags": ["services"],
-      "summary": "Get all runing services based of the gateway api",
+      "summary": "List all running services from the gateway API",
       "parameters": [
         {
-          "name": "securityLevel",
-          "in": "query",
-          "required": false,
-          "description": "Filter transcription services by security level. 0 = Publicly available, 1 = Commission use, 2 = Sensitive non-classified. Services without security_level are treated as 0.",
-          "schema": {
-            "type": "integer",
-            "enum": [0, 1, 2]
-          }
+          "$ref": "#/components/parameters/SecurityLevel"
         }
       ],
       "responses": {
@@ -35,7 +28,7 @@
   "/api/services/{scope}": {
     "get": {
       "tags": ["services"],
-      "summary": "Get all runing services based of the gateway api",
+      "summary": "List all running services from the gateway API",
       "parameters": [
         {
           "name": "scope",
@@ -46,14 +39,7 @@
           }
         },
         {
-          "name": "securityLevel",
-          "in": "query",
-          "required": false,
-          "description": "Filter transcription services by security level. 0 = Publicly available, 1 = Commission use, 2 = Sensitive non-classified. Services without security_level are treated as 0.",
-          "schema": {
-            "type": "integer",
-            "enum": [0, 1, 2]
-          }
+          "$ref": "#/components/parameters/SecurityLevel"
         }
       ],
       "responses": {
@@ -76,26 +62,13 @@
   "/api/services/{organizationId}/llm": {
     "get": {
       "tags": ["services"],
-      "summary": "Get all llm service listed",
+      "summary": "List the LLM services available to the organization",
       "parameters": [
         {
-          "name": "organizationId",
-          "in": "query",
-          "required": false,
-          "description": "Filter services by organization ID",
-          "schema": {
-            "type": "string"
-          }
+          "$ref": "#/components/parameters/OrganizationId"
         },
         {
-          "name": "securityLevel",
-          "in": "query",
-          "required": false,
-          "description": "Filter flavors by security level. 0 = Publicly available, 1 = Commission use, 2 = Sensitive non-classified. Flavors without model.security_level are treated as 0. Services with no remaining flavors are excluded.",
-          "schema": {
-            "type": "integer",
-            "enum": [0, 1, 2]
-          }
+          "$ref": "#/components/parameters/SecurityLevel"
         }
       ],
       "responses": {

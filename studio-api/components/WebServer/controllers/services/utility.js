@@ -20,9 +20,19 @@ async function listSaasServices(scope, securityLevel = null) {
 
     const saas_service_info = await axios.get(host)
 
-    // Filter transcription services by security level
+    // Filter transcription services by security level (a service may only be
+    // used for a conversation whose level it meets). When no level is provided
+    // (securityLevel === null), nothing is filtered out.
     for (const transcription_service of saas_service_info.transcription) {
-      services.push(transcription_service)
+      if (
+        securityLevel === null ||
+        SECURITY_LEVELS.isAllowed(
+          transcription_service.security_level,
+          securityLevel,
+        )
+      ) {
+        services.push(transcription_service)
+      }
     }
 
     // NLP services are not filtered
@@ -36,6 +46,26 @@ async function listSaasServices(scope, securityLevel = null) {
   }
 }
 
+// Resolve a transcription service descriptor (carrying security_level) from the
+// endpoint the client sent. Used to enforce the confidentiality gate
+// server-side. Returns null when no service exposes that endpoint.
+async function getTranscriptionServiceByEndpoint(endpoint) {
+  const services = await listSaasServices()
+  const norm = (e) =>
+    String(e || "")
+      .replace(/^\/+/, "")
+      .replace(/\/+$/, "")
+  const target = norm(endpoint)
+  if (!target) return null
+  return (
+    services.find(
+      (service) =>
+        Array.isArray(service.endpoints) &&
+        service.endpoints.some((ep) => norm(ep.endpoint) === target),
+    ) || null
+  )
+}
+
 /**
  * List LLM services from LLM Gateway V2
  * V2 API uses /api/v1/services with pagination
@@ -44,17 +74,28 @@ async function listSaasServices(scope, securityLevel = null) {
  *   If not provided, returns all services
  * @param {string} [securityLevel] - Optional security level to filter flavors
  *   Flavors are filtered by model.security_level, services with no remaining flavors are removed
+ * @param {string} [userId] - Optional user ID; also returns services whose allowed
+ *   user list includes this user (in addition to global + org services)
  */
-async function listLlmServices(organizationId = null, securityLevel = null) {
+async function listLlmServices(
+  organizationId = null,
+  securityLevel = null,
+  userId = null,
+) {
   try {
     const gateway_services = process.env.LLM_GATEWAY_SERVICES
     debug("Security level requested:", securityLevel)
     // V2 API endpoint with pagination
     let host = gateway_services + "/api/v1/services?page=1&page_size=100"
 
-    // Add organization filter if provided
+    // Add organization filter if provided. The gateway returns global services
+    // plus those whose allowed org/user lists include the caller.
     if (organizationId) {
       host += `&organization_id=${encodeURIComponent(organizationId)}`
+    }
+    // Add user filter so services scoped to this specific user are also returned
+    if (userId) {
+      host += `&user_id=${encodeURIComponent(userId)}`
     }
 
     // Add timeout to prevent hanging if LLM Gateway is unresponsive
@@ -111,4 +152,8 @@ async function listLlmServices(organizationId = null, securityLevel = null) {
   }
 }
 
-module.exports = { listSaasServices, listLlmServices }
+module.exports = {
+  listSaasServices,
+  listLlmServices,
+  getTranscriptionServiceByEndpoint,
+}

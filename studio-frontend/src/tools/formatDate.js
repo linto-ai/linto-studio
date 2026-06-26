@@ -21,7 +21,10 @@ export function timeAgo(date) {
 }
 
 export function formatTimestamp() {
-  return new Date().toISOString().replace(/[-T:.Z]/g, "").slice(0, 14)
+  return new Date()
+    .toISOString()
+    .replace(/[-T:.Z]/g, "")
+    .slice(0, 14)
 }
 
 export function formatDateTime(dateString) {
@@ -53,4 +56,14 @@ export function formatDateShort(dateString) {
     minute: "2-digit",
     hour12: false,
   })
+}
+
+/**
+ * Formats a date string using formatDateShort, returning "-" for empty/null values.
+ * Convenience wrapper for display in table cells.
+ * @param {string} dateString - ISO date string
+ * @returns {string} Formatted date or "-"
+ */
+export function formatDateOrDash(dateString) {
+  return formatDateShort(dateString) || "-"
 }

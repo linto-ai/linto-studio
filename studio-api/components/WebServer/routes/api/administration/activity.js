@@ -8,7 +8,9 @@ const {
   getKpiBySession,
   refreshSessionKpi,
   getKpiSeries,
+  exportKpiSeries,
   exportKpiSessions,
+  exportActivity,
 } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/administration/activity.js`,
 )
@@ -23,6 +25,13 @@ module.exports = (webserver) => {
       controller: getActivity,
     },
     {
+      path: "/activity/export",
+      method: "get",
+      requireAuth: true,
+      requireSuperAdmin: true,
+      controller: exportActivity,
+    },
+    {
       path: "/activity/compute",
       method: "get",
       requireAuth: true,
@@ -35,6 +44,13 @@ module.exports = (webserver) => {
       requireAuth: true,
       requireSuperAdmin: true,
       controller: getKpiSeries,
+    },
+    {
+      path: "/activity/compute/series/export",
+      method: "get",
+      requireAuth: true,
+      requireSuperAdmin: true,
+      controller: exportKpiSeries,
     },
     {
       path: "/activity/session",

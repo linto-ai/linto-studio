@@ -17,7 +17,8 @@ RUN npm run build
 # Stage 3: Serve with nginx (rootless)
 FROM nginx:alpine
 
-RUN rm -f /etc/nginx/conf.d/default.conf
+RUN apk upgrade --no-cache && \
+    rm -f /etc/nginx/conf.d/default.conf
 
 COPY --from=builder --chown=nginx:nginx /app/studio-frontend/dist /usr/share/nginx/html
 COPY --from=builder --chown=nginx:nginx /app/studio-frontend/config/nginx/nginx.conf /etc/nginx/nginx.conf

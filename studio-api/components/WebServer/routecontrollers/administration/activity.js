@@ -4,6 +4,23 @@ const debug = require("debug")(
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const kpiHandler = require("../../controllers/activity/kpiHandlers")
 const kpiExport = require("../../controllers/activity/kpiExport")
+const kpiSeriesExport = require("../../controllers/activity/kpiSeriesExport")
+const activityExport = require("../../controllers/activity/activityExport")
+const exportResponse = require("../../controllers/activity/exportResponse")
+
+/**
+ * Validate an optional date range. Sends a 400 response and returns true when
+ * startDate is after endDate.
+ */
+function isInvalidDateRange(startDate, endDate, res) {
+  if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+    res.status(400).json({
+      error: "Invalid date range: startDate must be before endDate",
+    })
+    return true
+  }
+  return false
+}
 
 async function getActivity(req, res, next) {
   try {
@@ -114,28 +131,53 @@ async function refreshSessionKpi(req, res, next) {
   }
 }
 
+async function fetchKpiSeries(query) {
+  const { step, organizationId, userId, startDate, endDate } = query
+  const granularity = step || "daily"
+  const data = await kpiHandler.getKpiByDateRange(
+    organizationId,
+    startDate,
+    endDate,
+    granularity,
+    userId,
+  )
+  return { granularity, data }
+}
+
 async function getKpiSeries(req, res, next) {
   try {
-    const { step, organizationId, startDate, endDate } = req.query
+    const { startDate, endDate } = req.query
 
-    // Validate date range if both dates are provided
-    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
-      return res.status(400).json({
-        error: "Invalid date range: startDate must be before endDate",
-      })
-    }
+    if (isInvalidDateRange(startDate, endDate, res)) return
 
-    const granularity = step || "daily"
-    const result = await kpiHandler.getKpiByDateRange(
-      organizationId,
-      startDate,
-      endDate,
-      granularity,
-    )
+    const { granularity, data } = await fetchKpiSeries(req.query)
 
     res.status(200).json({
       step: granularity,
-      data: result,
+      data,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
+async function exportKpiSeries(req, res, next) {
+  try {
+    const { format, startDate, endDate } = req.query
+
+    if (exportResponse.isInvalidFormat(format, res)) return
+    if (isInvalidDateRange(startDate, endDate, res)) return
+
+    const { granularity, data: series } = await fetchKpiSeries(req.query)
+
+    const dateStr = new Date().toISOString().split("T")[0]
+
+    return await exportResponse.sendExport(res, format, {
+      filename: `kpi-series-${granularity}-${dateStr}`,
+      list: series,
+      toRows: (list) => list.map(kpiSeriesExport.transformSeriesPoint),
+      generateCsv: kpiSeriesExport.generateCsv,
+      generateXlsx: kpiSeriesExport.generateXlsx,
     })
   } catch (err) {
     next(err)
@@ -146,22 +188,9 @@ async function exportKpiSessions(req, res, next) {
   try {
     const { format, organizationId, startDate, endDate } = req.query
 
-    // Validate format
-    const validFormats = ["json", "csv", "xls"]
-    if (!format || !validFormats.includes(format)) {
-      return res.status(400).json({
-        error: `Invalid format. Must be one of: ${validFormats.join(", ")}`,
-      })
-    }
+    if (exportResponse.isInvalidFormat(format, res)) return
+    if (isInvalidDateRange(startDate, endDate, res)) return
 
-    // Validate date range if both provided
-    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
-      return res.status(400).json({
-        error: "Invalid date range: startDate must be before endDate",
-      })
-    }
-
-    // Build query params
     const queryParams = {}
     if (organizationId) queryParams.organizationId = organizationId
     if (startDate) queryParams.startDate = startDate
@@ -174,50 +203,48 @@ async function exportKpiSessions(req, res, next) {
       page: 0,
     })
 
-    // Generate filename with current date
     const dateStr = new Date().toISOString().split("T")[0]
-    const filename = `kpi-sessions-${dateStr}`
 
-    // Return appropriate format
-    switch (format) {
-      case "json":
-        // Return raw database data for JSON
-        res.setHeader("Content-Type", "application/json")
-        res.setHeader(
-          "Content-Disposition",
-          `attachment; filename="${filename}.json"`,
-        )
-        return res.json(sessionKpiList.list)
+    return await exportResponse.sendExport(res, format, {
+      filename: `kpi-sessions-${dateStr}`,
+      list: sessionKpiList.list,
+      // Flatten since each session may have multiple channel rows
+      toRows: (list) => list.flatMap(kpiExport.transformSessionData),
+      generateCsv: kpiExport.generateCsv,
+      generateXlsx: kpiExport.generateXlsx,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
 
-      case "csv":
-        // Transform data (flatten since each session may have multiple channel rows)
-        const csvData = sessionKpiList.list.flatMap(
-          kpiExport.transformSessionData,
-        )
-        const csvContent = kpiExport.generateCsv(csvData)
-        res.setHeader("Content-Type", "text/csv; charset=utf-8")
-        res.setHeader(
-          "Content-Disposition",
-          `attachment; filename="${filename}.csv"`,
-        )
-        return res.send(csvContent)
+async function exportActivity(req, res, next) {
+  try {
+    const { format } = req.query
 
-      case "xls":
-        // Transform data (flatten since each session may have multiple channel rows)
-        const xlsData = sessionKpiList.list.flatMap(
-          kpiExport.transformSessionData,
-        )
-        const xlsxBuffer = await kpiExport.generateXlsx(xlsData)
-        res.setHeader(
-          "Content-Type",
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        )
-        res.setHeader(
-          "Content-Disposition",
-          `attachment; filename="${filename}.xlsx"`,
-        )
-        return res.send(Buffer.from(xlsxBuffer))
-    }
+    if (exportResponse.isInvalidFormat(format, res)) return
+
+    // Forward the same filters as the list endpoint (source, scope, user.id...),
+    // dropping pagination so the export contains the full matching dataset.
+    const filters = { ...req.query }
+    delete filters.format
+
+    const activity = await model.activityLog.getAll({
+      ...filters,
+      size: 10000, // Large limit for export
+      page: 0,
+    })
+
+    const dateStr = new Date().toISOString().split("T")[0]
+    const scopeLabel = req.query.scope || req.query.source || "activity"
+
+    return await exportResponse.sendExport(res, format, {
+      filename: `activity-${scopeLabel}-${dateStr}`,
+      list: activity?.list || [],
+      toRows: (list) => list.map(activityExport.transformActivityLog),
+      generateCsv: activityExport.generateCsv,
+      generateXlsx: activityExport.generateXlsx,
+    })
   } catch (err) {
     next(err)
   }
@@ -229,5 +256,7 @@ module.exports = {
   getKpiBySession,
   refreshSessionKpi,
   getKpiSeries,
+  exportKpiSeries,
   exportKpiSessions,
+  exportActivity,
 }

@@ -16,7 +16,10 @@
     <div v-else-if="error" class="publication-error">
       <span class="icon warning"></span>
       <span>{{ error }}</span>
-      <Button variant="secondary" @click="loadTemplates" :label="$t('common.retry')" />
+      <Button
+        variant="secondary"
+        @click="loadTemplates"
+        :label="$t('common.retry')" />
     </div>
 
     <!-- Content (even when templates.length === 0, we show create card) -->
@@ -144,13 +147,24 @@
             <template v-if="newTemplate.file">
               <span class="icon document file-icon"></span>
               <span class="file-name">{{ newTemplate.file.name }}</span>
-              <span class="file-size">({{ formatFileSize(newTemplate.file.size) }})</span>
-              <button type="button" class="file-remove" @click.stop="removeFile">×</button>
+              <span class="file-size"
+                >({{ formatFileSize(newTemplate.file.size) }})</span
+              >
+              <button
+                type="button"
+                class="file-remove"
+                @click.stop="removeFile">
+                ×
+              </button>
             </template>
             <template v-else>
               <span class="icon upload upload-icon"></span>
-              <span class="upload-text">{{ $t("publish.publication.drop_file") }}</span>
-              <span class="upload-hint">{{ $t("publish.publication.or_click") }}</span>
+              <span class="upload-text">{{
+                $t("publish.publication.drop_file")
+              }}</span>
+              <span class="upload-hint">{{
+                $t("publish.publication.or_click")
+              }}</span>
             </template>
           </div>
           <p class="field-hint" v-html="templateFormatHint"></p>
@@ -161,14 +175,18 @@
           <input
             type="text"
             v-model="newTemplate.name_fr"
-            :placeholder="$t('publish.publication.template_name_placeholder')" />
+            :placeholder="
+              $t('publish.publication.template_name_placeholder')
+            " />
         </div>
 
         <div class="form-field">
           <label>{{ $t("publish.publication.template_description") }}</label>
           <textarea
             v-model="newTemplate.description_fr"
-            :placeholder="$t('publish.publication.template_description_placeholder')"
+            :placeholder="
+              $t('publish.publication.template_description_placeholder')
+            "
             rows="2"></textarea>
         </div>
 
@@ -176,14 +194,24 @@
           <label>{{ $t("publish.publication.template_scope") }}</label>
           <div class="scope-options">
             <label class="scope-option">
-              <input type="radio" v-model="newTemplate.scope" value="personal" />
+              <input
+                type="radio"
+                v-model="newTemplate.scope"
+                value="personal" />
               <span>{{ $t("publish.publication.scope_personal") }}</span>
-              <span class="scope-hint">{{ $t("publish.publication.scope_personal_hint") }}</span>
+              <span class="scope-hint">{{
+                $t("publish.publication.scope_personal_hint")
+              }}</span>
             </label>
             <label class="scope-option">
-              <input type="radio" v-model="newTemplate.scope" value="organization" />
+              <input
+                type="radio"
+                v-model="newTemplate.scope"
+                value="organization" />
               <span>{{ $t("publish.publication.scope_organization") }}</span>
-              <span class="scope-hint">{{ $t("publish.publication.scope_organization_hint") }}</span>
+              <span class="scope-hint">{{
+                $t("publish.publication.scope_organization_hint")
+              }}</span>
             </label>
           </div>
         </div>
@@ -195,7 +223,11 @@
           :disabled="!canUpload || uploading"
           type="button"
           :icon="uploading ? 'spinner-gap' : 'check'"
-          :label="uploading ? $t('common.uploading') : $t('publish.publication.upload_button')" />
+          :label="
+            uploading
+              ? $t('common.uploading')
+              : $t('publish.publication.upload_button')
+          " />
       </template>
     </Modal>
   </div>
@@ -227,6 +259,11 @@ export default {
       default: null,
     },
     organizationId: {
+      type: String,
+      required: false,
+      default: null,
+    },
+    serviceId: {
       type: String,
       required: false,
       default: null,
@@ -313,6 +350,12 @@ export default {
         this.loadTemplates()
       },
     },
+    serviceId: {
+      immediate: false,
+      handler() {
+        this.loadTemplates()
+      },
+    },
   },
   mounted() {
     this.loadTemplates()
@@ -331,6 +374,7 @@ export default {
       try {
         this.templates = await apiGetPublicationTemplates({
           organizationId: this.organizationId,
+          serviceId: this.serviceId,
         })
       } catch (err) {
         this.error = this.$t("publish.publication.load_error")

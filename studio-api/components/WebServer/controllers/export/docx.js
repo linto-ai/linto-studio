@@ -104,6 +104,8 @@ async function generateVerbatimDocx(query, conversation, metadata) {
     )
   }
 
+  const disclaimer = process.env.EXPORT_DISCLAIMER || ""
+
   const doc = new Document({
     creator: "LinTO Studio",
     title: title,
@@ -124,6 +126,13 @@ async function generateVerbatimDocx(query, conversation, metadata) {
         footers: {
           default: new Footer({
             children: [
+              ...(disclaimer ? [new Paragraph({
+                children: [
+                  new TextRun({ text: disclaimer, size: 14, color: "999999", italics: true }),
+                ],
+                alignment: AlignmentType.CENTER,
+                spacing: { after: 60 },
+              })] : []),
               new Paragraph({
                 alignment: AlignmentType.CENTER,
                 children: [

@@ -22,6 +22,8 @@ import {
   computeTurnStartDate,
   computeTurnEndDate,
 } from "@/tools/computeTurnTime.js"
+import { getEnv } from "@/tools/getEnv"
+import { bus } from "@/main.js"
 
 const PAGE_SIZE = 50
 
@@ -32,6 +34,7 @@ export default {
     websocketInstance: { type: Object, required: true },
     isFromPublicLink: { type: Boolean, default: false },
     currentOrganizationScope: { type: String, required: false, default: null },
+    displaySubtitles: { type: Boolean, default: false },
   },
   data() {
     return {
@@ -72,6 +75,10 @@ export default {
     this.initEditor()
     this.aquireWakeLock()
     document.addEventListener("visibilitychange", this.renewWakeLock)
+    bus.$on(
+      `websocket/orga_${this.currentOrganizationScope}_session_cleared`,
+      this.clear,
+    )
   },
   beforeDestroy() {
     this.offChannelChange?.()
@@ -84,8 +91,26 @@ export default {
     this.websocketInstance.unSubscribeSessionRoom()
     this.releaseWakeLock()
     document.removeEventListener("visibilitychange", this.renewWakeLock)
+    bus.$off(
+      `websocket/orga_${this.currentOrganizationScope}_session_cleared`,
+      this.clear,
+    )
   },
   methods: {
+    clear(sessionId) {
+      if (sessionId != this.session.id) {
+        return
+      }
+
+      const channel = this.editor.activeChannel.value
+
+      if (!channel) {
+        return
+      }
+
+      this.historyOffset = 0
+      channel.reset()
+    },
     async renewWakeLock() {
       if (this.wakeLock) {
         await this.wakeLock.release()
@@ -112,11 +137,13 @@ export default {
       const { editor } = el
       this.editor = markRaw(editor)
 
-      this.livePlugin = createLivePlugin()
+      this.livePlugin = createLivePlugin({
+        tts: getEnv("VUE_APP_ENABLE_TTS") === "true",
+      })
       editor.use(this.livePlugin)
-
       editor.use(
         createSubtitlePlugin({
+          isVisible: this.displaySubtitles,
           watermark: {
             display: this.displayWatermark,
             pinned: this.watermarkPinned,
@@ -149,12 +176,15 @@ export default {
       // Subscribe before setDocument: the banner mounts (and emits on mount) as
       // soon as channels are populated by setDocument, so the listener must
       // already be registered to catch the initial emit.
-      this.offSubtitle = editor.on("subtitle:visible", ({ visible, height }) => {
-        document.documentElement.style.setProperty(
-          "--subtitle-reserve",
-          (visible ? height : 0) + "px",
-        )
-      })
+      this.offSubtitle = editor.on(
+        "subtitle:visible",
+        ({ visible, height }) => {
+          document.documentElement.style.setProperty(
+            "--subtitle-reserve",
+            (visible ? height : 0) + "px",
+          )
+        },
+      )
 
       const doc = sessionToEditorDocument(sessionForDoc)
       editor.setDocument(doc)
@@ -267,7 +297,11 @@ export default {
       if (type !== "original") return
 
       this.editor.live.onPartial(
-        { text: content.text },
+        {
+          text: content.text,
+          turnId: computeSessionTurnUniqueId(content),
+          language: content.lang,
+        },
         this.activeChannelIndex,
       )
     },
@@ -317,6 +351,7 @@ export default {
       this.editor.live.onTranslation({
         turnId: computeSessionTurnUniqueId(content),
         language: content.targetLang,
+        sourceLanguage: content.sourceLang,
         text: content.text,
         final: content.final,
         startDate: computeTurnStartDate(content),

@@ -63,3 +63,6 @@ class PollingService(EventEmitter):
         except asyncio.CancelledError:
             logging.debug("job cancelled")
             pass
+        except Exception as exc:  # noqa: BLE001 - surface the failure to the awaiter
+            await self.emit("exception", exc)
+            self.stop()

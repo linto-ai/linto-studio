@@ -19,16 +19,23 @@ export function buildTranslationItems(
   locale: string,
   originalLabel: string,
   wildcardLabel = "*",
+  bilingualLabel = "",
 ): { value: string; label: string }[] {
   const sorted = [...translations].sort(
     (a, b) => Number(b.isSource) - Number(a.isSource),
   )
-  return sorted.map((tr) => ({
-    value: tr.id,
-    label: tr.isSource
-      ? originalLabel
-      : tr.languages
-          .map((code) => getLanguageDisplayName(code, locale, wildcardLabel, false))
-          .join(", "),
-  }))
+  return sorted.map((tr) => {
+    // The virtual cross translation is the only non-source track with >1 language.
+    const isBilingual = !tr.isSource && tr.languages.length > 1
+    return {
+      value: tr.id,
+      label: tr.isSource
+        ? originalLabel
+        : isBilingual && bilingualLabel
+          ? bilingualLabel
+          : tr.languages
+              .map((code) => getLanguageDisplayName(code, locale, wildcardLabel, false))
+              .join(", "),
+    }
+  })
 }

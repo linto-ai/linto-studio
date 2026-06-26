@@ -33,6 +33,12 @@
           v-model="l_transcriberProfile.config"
           :quickMeeting="l_transcriberProfile.quickMeeting"
           @update:quickMeeting="l_transcriberProfile.quickMeeting = $event" />
+
+        <TranscriberProfileConfigGoogle
+          v-if="currentType === 'google'"
+          v-model="l_transcriberProfile.config"
+          :quickMeeting="l_transcriberProfile.quickMeeting"
+          @update:quickMeeting="l_transcriberProfile.quickMeeting = $event" />
       </Panel>
 
       <!-- Right: JSON editor -->
@@ -54,6 +60,7 @@ import TranscriberProfileConfigLinto from "@/components/TranscriberProfileConfig
 import TranscriberProfileConfigMicrosoft from "@/components/TranscriberProfileConfigMicrosoft.vue"
 import TranscriberProfileConfigAmazon from "@/components/TranscriberProfileConfigAmazon.vue"
 import TranscriberProfileConfigVoxstral from "@/components/TranscriberProfileConfigVoxstral.vue"
+import TranscriberProfileConfigGoogle from "@/components/TranscriberProfileConfigGoogle.vue"
 
 export default {
   props: {
@@ -74,6 +81,7 @@ export default {
         microsoft: "Microsoft",
         amazon: "Amazon",
         voxstral: "Voxstral",
+        google: "Google",
       },
       l_transcriberProfile: {
         ...structuredClone(this.transcriberProfile),
@@ -168,6 +176,7 @@ export default {
     TranscriberProfileConfigMicrosoft,
     TranscriberProfileConfigAmazon,
     TranscriberProfileConfigVoxstral,
+    TranscriberProfileConfigGoogle,
   },
 }
 </script>

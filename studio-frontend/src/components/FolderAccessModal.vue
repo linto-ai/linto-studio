@@ -22,7 +22,9 @@
         </label>
       </div>
 
-      <div v-if="showForceOption" class="folder-access-modal__warning folder-access-modal__warning--blocked">
+      <div
+        v-if="showForceOption"
+        class="folder-access-modal__warning folder-access-modal__warning--blocked">
         <p class="folder-access-modal__force-text">
           {{ $t("folders.visibility_parent_private_force") }}
         </p>
@@ -39,7 +41,9 @@
         {{ $t("folders.visibility_warning") }}
       </p>
 
-      <p v-if="isPrivate && hasPrivateAncestor" class="folder-access-modal__warning folder-access-modal__warning--info">
+      <p
+        v-if="isPrivate && hasPrivateAncestor"
+        class="folder-access-modal__warning folder-access-modal__warning--info">
         {{ $t("folders.members_propagate_to_parents") }}
       </p>
 
@@ -98,7 +102,9 @@ export default {
     }),
     parentIsPrivate() {
       if (!this.folder.parentId) return false
-      const parent = this.$store.getters["folders/getFolderById"](this.folder.parentId)
+      const parent = this.$store.getters["folders/getFolderById"](
+        this.folder.parentId,
+      )
       return parent && parent.visibility === "private"
     },
     hasPrivateAncestor() {
@@ -205,7 +211,6 @@ export default {
       width: 0;
       height: 0;
     }
-
   }
 
   &__slider {
@@ -295,6 +300,5 @@ export default {
     color: var(--text-secondary);
     margin: 0;
   }
-
 }
 </style>

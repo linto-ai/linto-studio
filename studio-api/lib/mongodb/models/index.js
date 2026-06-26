@@ -17,7 +17,13 @@ module.exports = {
   sessionData: require("./sessionData.js"),
   tags: require("./tags.js"),
   tokens: require("./tokens.js"),
+  voiceOptIns: require("./voiceOptIns.js"),
+  voiceprintCollections: require("./voiceprintCollections.js"),
+  voiceprints: require("./voiceprints.js"),
+  speakerIdSyncOps: require("./speakerIdSyncOps.js"),
+  speakerLabels: require("./speakerLabels.js"),
   users: require("./users.js"),
+  voiceSamples: require("./voiceSamples.js"),
   search: {
     conversations: require("./search/conversations.js"),
     tags: require("./search/tags.js"),

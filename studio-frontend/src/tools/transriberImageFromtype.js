@@ -8,6 +8,8 @@ export default function transriberImageFromtype(type) {
       return "/img/amazon.svg"
     case "voxstral":
       return "/img/voxstral.svg"
+    case "google":
+      return "/img/google.png"
     default:
       return "/img/question.svg"
   }

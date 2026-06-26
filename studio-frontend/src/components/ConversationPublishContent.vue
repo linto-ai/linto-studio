@@ -18,34 +18,34 @@
       v-else-if="status === 'complete' && markdownContent"
       class="publish-main__content publish__markdown-wrapper flex col flex1">
       <!-- Editor Header with Save Button -->
-      <div
-        class="publish-editor-header flex align-center justify-between">
+      <div class="publish-editor-header flex align-center justify-between">
         <div class="flex align-center gap-small">
-          <span
-            v-if="hasChanges"
-            class="unsaved-indicator">
+          <span v-if="hasChanges" class="unsaved-indicator">
             {{ $t("publish.editor.unsaved_changes") }}
           </span>
         </div>
         <div class="flex align-center gap-small">
-        <Button
-          v-if="canShowTranscript"
-          :variant="showTranscript ? 'primary' : 'secondary'"
-          icon="columns"
-          size="sm"
-          :label="$t('publish.editor.side_by_side')"
-          @click="$emit('toggle-transcript')" />
-        <Button
-          v-if="hasChanges"
-          variant="primary"
-          icon="floppy-disk"
-          size="sm"
-          :label="$t('publish.editor.save_version')"
-          @click="$emit('save-version')" />
+          <Button
+            v-if="canShowTranscript"
+            :variant="showTranscript ? 'primary' : 'secondary'"
+            icon="columns"
+            size="sm"
+            :label="$t('publish.editor.side_by_side')"
+            @click="$emit('toggle-transcript')" />
+          <Button
+            v-if="hasChanges"
+            variant="primary"
+            icon="floppy-disk"
+            size="sm"
+            :label="$t('publish.editor.save_version')"
+            @click="$emit('save-version')" />
         </div>
       </div>
       <!-- Tiptap WYSIWYG editor (always rendered, editable when allowed) -->
-      <div id="markdown-editor-container" class="flex col flex1" style="min-height: 0">
+      <div
+        id="markdown-editor-container"
+        class="flex col flex1"
+        style="min-height: 0">
         <MarkdownEditor
           ref="markdownEditor"
           :value="editableContent"
@@ -158,7 +158,10 @@ export default {
       const key = `publish.phase.${this.phase}`
       const translated = this.$t(key)
       if (translated === key) {
-        return this.phase.charAt(0).toUpperCase() + this.phase.slice(1).replace(/_/g, ' ')
+        return (
+          this.phase.charAt(0).toUpperCase() +
+          this.phase.slice(1).replace(/_/g, " ")
+        )
       }
       return translated
     },
@@ -188,14 +191,13 @@ export default {
     },
     stripMarkdownFences(content) {
       if (!content) return content
-      return content.replace(/^`{3,}(?:markdown|md)?\s*\n/i, '').replace(/\n`{3,}\s*$/i, '')
+      return content
+        .replace(/^`{3,}(?:markdown|md)?\s*\n/i, "")
+        .replace(/\n`{3,}\s*$/i, "")
     },
     onContentChange(content) {
       this.editableContent = content
-      if (
-        this.contentInitialized &&
-        content !== this.originalContent
-      ) {
+      if (this.contentInitialized && content !== this.originalContent) {
         this.hasUserEdited = true
       }
       this.$emit("content-change", content)

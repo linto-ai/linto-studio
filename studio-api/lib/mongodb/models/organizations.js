@@ -1,7 +1,8 @@
-const debug = require("debug")(
-  "linto:lib:mongodb:models:organizations",
-)
+const debug = require("debug")("linto:lib:mongodb:models:organizations")
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
+const SECURITY_LEVELS = require(
+  `${process.cwd()}/lib/dao/conversation/securityLevels`,
+)
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
 const COLOR = require(`${process.cwd()}/lib/dao/organization/color`)
 
@@ -29,6 +30,9 @@ class OrganizationModel extends MongoModel {
       payload.created = dateTime
       payload.last_update = dateTime
       payload.personal = false
+      payload.securityLevel = SECURITY_LEVELS.getValueOrDefault(
+        payload.securityLevel,
+      )
 
       const result = await this.mongoInsert(payload)
 
@@ -83,6 +87,9 @@ class OrganizationModel extends MongoModel {
       payload.last_update = dateTime
 
       payload.permissions = DEFAULT_PERMISSION // We don't allow user to set permissions orga permissions
+      payload.securityLevel = SECURITY_LEVELS.getValueOrDefault(
+        payload.securityLevel,
+      )
 
       const result = await this.mongoInsert(payload)
 
@@ -107,6 +114,9 @@ class OrganizationModel extends MongoModel {
       const dateTime = moment().format()
       payload.created = dateTime
       payload.last_update = dateTime
+      payload.securityLevel = SECURITY_LEVELS.getValueOrDefault(
+        payload.securityLevel,
+      )
       const result = await this.mongoInsert(payload)
       return result
     } catch (error) {
@@ -180,8 +190,15 @@ class OrganizationModel extends MongoModel {
     }
   }
 
-  async getByIdAndUser(orgaId, userId) {
+  async getByIdAndUser(orgaId, userId, options = {}) {
     try {
+      const { bypass = false } = options
+      if (bypass) {
+        return await this.mongoRequest(
+          { _id: this.getObjectId(orgaId) },
+          public_projection,
+        )
+      }
       const query = {
         _id: this.getObjectId(orgaId),
         users: {
@@ -221,9 +238,8 @@ class OrganizationModel extends MongoModel {
       if (organizations.length === 0) return organizations
 
       const orgIds = organizations.map((o) => o._id.toString())
-      const allCategories = await categoriesModel.getSystemCategoriesByOrgIds(
-        orgIds,
-      )
+      const allCategories =
+        await categoriesModel.getSystemCategoriesByOrgIds(orgIds)
 
       const categoriesByOrg = new Map()
       for (const cat of allCategories) {
@@ -253,6 +269,7 @@ class OrganizationModel extends MongoModel {
       }
       if (payload.organizationId) delete payload.organizationId
       delete payload.permissions
+      delete payload.securityLevel // security level is backoffice-only
       delete payload._id
       payload.last_update = moment().format()
 

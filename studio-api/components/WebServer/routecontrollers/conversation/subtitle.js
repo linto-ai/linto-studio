@@ -26,6 +26,30 @@ const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 const MAX_CHAR_PER_SEGMENT = 80
 const MIN_CHAR_PER_SEGMENT = 20
 
+// Session conversations store turn-level timing but their words carry no
+// stime/etime. Interpolate per-word timing over the turn boundaries so the
+// generated subtitles keep distinct, increasing timestamps instead of zeros.
+function ensureWordTimings(segment) {
+  const words = segment.words
+  if (!words || words.length === 0) return
+
+  const hasMissingTiming = words.some(
+    (word) => word.stime === undefined || word.etime === undefined,
+  )
+  if (!hasMissingTiming) return
+
+  const turnStart = typeof segment.stime === "number" ? segment.stime : 0
+  const turnEnd = typeof segment.etime === "number" ? segment.etime : turnStart
+  const span = turnEnd - turnStart
+
+  words.forEach((word, index) => {
+    if (word.stime === undefined)
+      word.stime = turnStart + (span * index) / words.length
+    if (word.etime === undefined)
+      word.etime = turnStart + (span * (index + 1)) / words.length
+  })
+}
+
 function splitSubtitles(conv, query) {
   let screenCharSize = undefined
   let screenMaxDuration = undefined
@@ -48,6 +72,7 @@ function splitSubtitles(conv, query) {
   let segment = ""
 
   conv.text.map((conv_seg) => {
+    ensureWordTimings(conv_seg)
     for (let i = 0; i < conv_seg.words.length; i++) {
       const word = conv_seg.words[i].word
 
@@ -252,7 +277,11 @@ function splitStringIntoLines(inputString, screenLines) {
 
 async function generateSubtitle(req, res, next) {
   try {
-    requireParam(req.body.version, SubtitleUnsupportedMediaType, "Version name is required")
+    requireParam(
+      req.body.version,
+      SubtitleUnsupportedMediaType,
+      "Version name is required",
+    )
 
     const conversationId = req.params.conversationId
 

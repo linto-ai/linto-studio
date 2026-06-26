@@ -13,3 +13,8 @@ VUE_APP_MODE="cloud"
 VUE_APP_SESSION_WS=http://localhost:8001/
 VUE_APP_SESSION_WS_PATH=/socket.io/
 VUE_APP_ENABLE_WATERMARK=true
+# Disable user invitation
+VUE_APP_DISABLE_USER_INVITATION=false
+# Speaker identification / TTS
+VUE_APP_ENABLE_SPEAKER_IDENTIFICATION=false
+VUE_APP_ENABLE_TTS=false

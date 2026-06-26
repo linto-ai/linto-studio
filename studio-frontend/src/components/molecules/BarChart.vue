@@ -130,7 +130,10 @@ export default {
                 size: 11,
               },
               padding: 8,
-              callback: (value) => this.valueFormatter ? this.valueFormatter(value) : value.toLocaleString(this.currentLocale),
+              callback: (value) =>
+                this.valueFormatter
+                  ? this.valueFormatter(value)
+                  : value.toLocaleString(this.currentLocale),
             },
           },
         },

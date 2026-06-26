@@ -3,14 +3,5 @@
 export type {
   LivePartialEventData as LivePartialEvent,
   LiveFinalEventData as LiveFinalEvent,
+  LiveTranslationEventData as LiveTranslationEvent,
 } from "../../core/types"
-
-export interface LiveTranslationEvent {
-  turnId: string
-  language: string
-  text: string
-  final: boolean
-  startTime: number
-  endTime: number
-  speakerId: string | null
-}

@@ -1,18 +1,20 @@
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
-const {
-  UserNotFound,
-  UserUnsupportedMediaType,
-} = require(`${process.cwd()}/components/WebServer/error/exception/users`)
+const { UserNotFound, UserUnsupportedMediaType } = require(
+  `${process.cwd()}/components/WebServer/error/exception/users`,
+)
 
-const {
-  OrganizationNotFound,
-} = require(
+const { OrganizationNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
+)
+
+const { denyBackofficeAccess } = require(
+  `${process.cwd()}/components/WebServer/middlewares/access/organization`,
 )
 
 async function setDefaultOrganization(req, res, next) {
   try {
+    denyBackofficeAccess(req)
     const userId = req.payload.data.userId
     const { organizationId } = req.body
 
@@ -39,6 +41,7 @@ async function setDefaultOrganization(req, res, next) {
 
 async function unsetDefaultOrganization(req, res, next) {
   try {
+    denyBackofficeAccess(req)
     const userId = req.payload.data.userId
 
     const result = await model.users.update({

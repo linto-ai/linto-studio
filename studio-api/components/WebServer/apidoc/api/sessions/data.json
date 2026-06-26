@@ -5,12 +5,19 @@
       "summary": "List all session data",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
+        },
+        {
+          "in": "query",
+          "name": "sessionId",
+          "required": false,
+          "description": "Filter by session id"
+        },
+        {
+          "in": "query",
+          "name": "name",
+          "required": false,
+          "description": "Filter by name"
         }
       ],
       "responses": {
@@ -31,15 +38,10 @@
     },
     "post": {
       "tags": ["sessions data"],
-      "summary": "Create a sessuib data",
+      "summary": "Create a session data",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         }
       ],
       "requestBody": {
@@ -58,7 +60,7 @@
                   "type": "string"
                 }
               },
-              "required": []
+              "required": ["sessionId"]
             }
           }
         }
@@ -81,7 +83,8 @@
         "415": {
           "$ref": "#/components/responses/UnsupportedMediaType"
         }
-      }
+      },
+      "description": "At least one of name or password must be provided along with sessionId."
     }
   },
   "/api/organizations/{organizationId}/sessions/data/{id}": {
@@ -98,12 +101,7 @@
           "description": "uuid string identifier for an session alias"
         },
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         }
       ],
       "responses": {
@@ -124,7 +122,7 @@
     },
     "delete": {
       "tags": ["sessions data"],
-      "summary": "Delete an session data by ID",
+      "summary": "Delete a session data by ID",
       "parameters": [
         {
           "in": "path",
@@ -135,12 +133,7 @@
           "description": "uuid string identifier for an session alias"
         },
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         }
       ],
       "responses": {
@@ -157,7 +150,7 @@
     },
     "put": {
       "tags": ["sessions data"],
-      "summary": "Update an session data by ID",
+      "summary": "Update a session data by ID",
       "parameters": [
         {
           "in": "path",
@@ -168,12 +161,7 @@
           "description": "uuid string identifier for an session alias"
         },
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         }
       ],
       "requestBody": {
@@ -224,12 +212,7 @@
           "description": "uuid string identifier for an session alias"
         },
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
+          "$ref": "#/components/parameters/OrganizationId"
         }
       ],
       "responses": {

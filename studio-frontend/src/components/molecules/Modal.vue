@@ -165,6 +165,10 @@ export default {
       e?.preventDefault()
     },
     apply(e) {
+      if (this.disabledActionApply) {
+        e?.preventDefault()
+        return
+      }
       this.$emit("submit", e)
       this.$emit("on-confirm", e)
       this.$emit("confirm", e)

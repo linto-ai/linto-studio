@@ -15,7 +15,7 @@
         </div>
 
         <!-- Media description -->
-        <div class="media-section">
+        <div class="media-section media-section--description">
           <FormInput
             inputFullWidth
             :field="descriptionField"
@@ -24,45 +24,6 @@
             textarea
             with-confirmation
             @on-confirm="handleDescriptionUpdate" />
-        </div>
-
-        <!-- Media duration -->
-        <div
-          class="media-section"
-          v-if="reactiveSelectedMedia?.metadata?.audio?.duration">
-          <h4 class="section-title">
-            {{ $t("media_explorer.panel.duration") }}
-          </h4>
-          <p class="section-content">
-            <TimeDuration
-              :duration="reactiveSelectedMedia.metadata?.audio?.duration" />
-          </p>
-        </div>
-
-        <!-- Media creation date -->
-        <div class="media-section" v-if="reactiveSelectedMedia?.created">
-          <h4 class="section-title">
-            {{ $t("media_explorer.panel.created") }}
-          </h4>
-          <p class="section-content">
-            {{
-              formatDate(reactiveSelectedMedia.created, {
-                month: "long",
-                hour: "2-digit",
-                minute: "2-digit",
-              })
-            }}
-          </p>
-        </div>
-
-        <!-- Media duration (alternative) -->
-        <div class="media-section" v-if="reactiveSelectedMedia?.metadata?.au">
-          <h4 class="section-title">
-            {{ $t("media_explorer.panel.duration") }}
-          </h4>
-          <p class="section-content">
-            {{ formatDuration(reactiveSelectedMedia.duration) }}
-          </p>
         </div>
 
         <!-- Media tags -->
@@ -100,22 +61,6 @@
             :value="reactiveSelectedMedia?.folderId || null"
             :readonly="readOnly || isProcessing"
             @change="handleFolderChange" />
-        </div>
-
-        <!-- Media metadata -->
-        <div v-if="false" class="media-section">
-          <h4 class="section-title">
-            {{ $t("media_explorer.panel.metadata") }}
-          </h4>
-          <div class="metadata-grid">
-            <div
-              v-for="(value, key) in reactiveSelectedMedia?.metadata"
-              :key="key"
-              class="metadata-item">
-              <span class="metadata-key">{{ key }}:</span>
-              <span class="metadata-value">{{ value }}</span>
-            </div>
-          </div>
         </div>
 
         <!-- Actions section -->
@@ -159,9 +104,6 @@
             {{ $t("media_explorer.panel.danger_zone") }}
           </h4>
           <div class="actions-container">
-            <ConversationShareMultiple
-              :selectedConversations="[reactiveSelectedMedia || selectedMedia]"
-              :currentOrganizationScope="currentOrganizationScope" />
             <Button
               @click="handleDelete"
               :label="$t('media_explorer.delete')"
@@ -185,7 +127,6 @@
 <script>
 import { mediaScopeMixin } from "@/mixins/mediaScope"
 
-import TimeDuration from "@/components/atoms/TimeDuration.vue"
 import InputSelector from "@/components/atoms/InputSelector.vue"
 import ChipTag from "@/components/atoms/ChipTag.vue"
 import Button from "@/components/atoms/Button.vue"
@@ -193,7 +134,6 @@ import ModalDeleteConversations from "./ModalDeleteConversations.vue"
 import { mediaExplorerRightPanelMixin } from "@/mixins/mediaExplorerRightPanel.js"
 import FormInput from "@/components/molecules/FormInput.vue"
 import EMPTY_FIELD from "@/const/emptyField"
-import ConversationShareMultiple from "./ConversationShareMultiple.vue"
 import FolderSelector from "./FolderSelector.vue"
 import { mapGetters } from "vuex"
 
@@ -201,13 +141,11 @@ export default {
   name: "MediaExplorerRightPanelItem",
   mixins: [mediaExplorerRightPanelMixin, mediaScopeMixin],
   components: {
-    TimeDuration,
     InputSelector,
     ChipTag,
     Button,
     ModalDeleteConversations,
     FormInput,
-    ConversationShareMultiple,
     FolderSelector,
   },
   props: {
@@ -241,7 +179,6 @@ export default {
   },
   computed: {
     ...mapGetters("organizations", {
-      currentOrganizationScope: "getCurrentOrganizationScope",
       getCurrentScope: "getCurrentScope",
     }),
     reactiveSelectedMedia() {
@@ -313,27 +250,10 @@ export default {
     },
 
     async handleFolderChange(folderId) {
-      if (!this.selectedMedia?._id) return
+      const mediaId = this.selectedMedia?._id
+      if (!mediaId) return
       try {
-        if (folderId) {
-          await this.$store.dispatch("folders/moveConversationsToFolder", {
-            folderId,
-            conversationIds: [this.selectedMedia._id],
-          })
-        } else {
-          await this.$store.dispatch("folders/uncategorizeConversations", {
-            conversationIds: [this.selectedMedia._id],
-          })
-        }
-        this.$store.dispatch("folders/fetchFolders")
-        // Remove moved media from current list and clear selection
-        const currentFolderId = this.$route.params.folderId
-        if (folderId !== currentFolderId) {
-          this.$store.commit(`${this.storeScope}/deleteMedias`, [
-            this.selectedMedia._id,
-          ])
-        }
-        this.$emit("clear-selection")
+        await this.moveMediasToFolder(folderId, [mediaId])
       } catch (error) {
         console.error("Folder change error:", error)
       }
@@ -508,6 +428,12 @@ export default {
   gap: 0.5rem;
 }
 
+.media-section--description :deep(.form-field__textarea) {
+  min-height: 2.75rem;
+  max-height: 2.75rem;
+  resize: none;
+}
+
 .section-title {
   display: block;
   font-weight: 600;
@@ -515,13 +441,6 @@ export default {
   color: var(--text-primary, #222);
   line-height: 1.2;
   margin: 0;
-}
-
-.section-content {
-  margin: 0;
-  font-size: 0.95rem;
-  color: var(--text-primary, #000);
-  line-height: 1.4;
 }
 
 .tags-container {
@@ -540,33 +459,6 @@ export default {
   font-size: 0.875rem;
   color: var(--text-secondary, #666);
   font-style: italic;
-}
-
-.metadata-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.metadata-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  padding: 0.5rem;
-  background-color: var(--background-tertiary, #f0f0f0);
-  border-radius: var(--border-radius-sm, 4px);
-}
-
-.metadata-key {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text-secondary, #666);
-}
-
-.metadata-value {
-  font-size: 0.9rem;
-  color: var(--text-primary, #000);
-  word-break: break-word;
 }
 
 .actions-container {

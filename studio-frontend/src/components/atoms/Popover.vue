@@ -338,6 +338,9 @@ export default {
       clearTimeout(this.hoverTimeout)
       this.hoverTimeout = null
     }
+    popupManager.unregister(this)
+    window.removeEventListener("resize", this.updatePopoverPosition)
+    window.removeEventListener("scroll", this.updatePopoverPosition, true)
     this.toggle(false)
   },
 }

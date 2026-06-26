@@ -7,10 +7,9 @@
     <template #trigger>
       <Button
         icon="download-simple"
-        variant="secondary"
-        :loading="exporting">
-        {{ $t("session_kpi.export.button") }}
-      </Button>
+        variant="primary"
+        :loading="exporting"
+        :label="$t('session_kpi.export.button')" />
     </template>
   </PopoverList>
 </template>
@@ -36,6 +35,16 @@ export default {
     endDate: {
       type: String,
       default: null,
+    },
+    // Optional custom export function (format) => Promise<Blob>.
+    // When provided, it replaces the default KPI session export.
+    exportFn: {
+      type: Function,
+      default: null,
+    },
+    filenamePrefix: {
+      type: String,
+      default: "kpi-sessions",
     },
   },
   data() {
@@ -63,11 +72,13 @@ export default {
       this.exporting = true
 
       try {
-        const blob = await exportKpiSessions(format, {
-          organizationId: this.organizationId,
-          startDate: this.startDate,
-          endDate: this.endDate,
-        })
+        const blob = this.exportFn
+          ? await this.exportFn(format)
+          : await exportKpiSessions(format, {
+              organizationId: this.organizationId,
+              startDate: this.startDate,
+              endDate: this.endDate,
+            })
 
         if (!blob) {
           this.showError(this.$t("session_kpi.export.error"))
@@ -77,7 +88,7 @@ export default {
         // Create download link
         const dateStr = new Date().toISOString().split("T")[0]
         const extension = format === "xls" ? "xlsx" : format
-        const filename = `kpi-sessions-${dateStr}.${extension}`
+        const filename = `${this.filenamePrefix}-${dateStr}.${extension}`
 
         const url = URL.createObjectURL(blob)
         const link = document.createElement("a")

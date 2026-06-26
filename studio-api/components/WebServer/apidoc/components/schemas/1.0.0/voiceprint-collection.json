@@ -1,0 +1,15 @@
+{
+  "VoiceprintCollection": {
+    "type": "object",
+    "properties": {
+      "_id": { "type": "string" },
+      "created": { "type": "string", "format": "date-time" },
+      "last_update": { "type": "string", "format": "date-time" },
+      "name": { "type": "string" },
+      "description": { "type": "string" },
+      "organizationId": { "type": "string" },
+      "type": { "type": "string", "enum": ["custom", "organization"] },
+      "storageMode": { "type": "string", "enum": ["audio", "embeddings"] }
+    }
+  }
+}

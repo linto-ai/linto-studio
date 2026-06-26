@@ -21,7 +21,12 @@
         "401": {
           "$ref": "#/components/responses/Unauthorized"
         }
-      }
+      },
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/UserScope"
+        }
+      ]
     }
   }
 }

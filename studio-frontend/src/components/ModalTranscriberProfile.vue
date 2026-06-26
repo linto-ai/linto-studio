@@ -13,22 +13,20 @@
         <Tooltip :text="$t('modal_transcriber_profile.type_tooltip')">
           <div class="header-selector">
             <!-- <ph-icon name="microphone" size="sm" /> -->
-            <PopoverList
-              :items="typeItems"
-              v-model="currentType"
-              size="sm" />
+            <PopoverList :items="typeItems" v-model="currentType" size="sm" />
           </div>
         </Tooltip>
         <Tooltip :text="$t('modal_transcriber_profile.organization_tooltip')">
           <div class="header-selector">
             <!-- <ph-icon name="buildings" size="sm" /> -->
-            <PopoverList
-              :items="organizationItems"
+            <OrganizationSelector
               v-model="selectedOrganizationId"
-              size="sm" />
+              :pinnedItems="organizationPinnedItems" />
           </div>
         </Tooltip>
-        <Tooltip v-if="enableSecurityLevel" :text="$t('modal_transcriber_profile.security_level_tooltip')">
+        <Tooltip
+          v-if="enableSecurityLevel"
+          :text="$t('modal_transcriber_profile.security_level_tooltip')">
           <div class="header-selector">
             <!-- <ph-icon :name="securityLevelIcon" size="sm" /> -->
             <PopoverList
@@ -63,6 +61,7 @@
 import Modal from "@/components/molecules/Modal.vue"
 import TranscriberProfileEditor from "@/components/TranscriberProfileEditor.vue"
 import PopoverList from "@/components/atoms/PopoverList.vue"
+import OrganizationSelector from "@/components/molecules/OrganizationSelector.vue"
 import Tooltip from "@/components/atoms/Tooltip.vue"
 import Button from "@/components/atoms/Button.vue"
 import TRANSCRIBER_PROFILES_TEMPLATES from "@/const/transcriberProfilesTemplates"
@@ -78,7 +77,6 @@ import {
   apiAdminUpdateAmazonTranscriberProfile,
   apiAdminDeleteTranscriberProfile,
   apiAdminGetTranscriberProfilesById,
-  apiGetAllOrganizations,
 } from "@/api/admin.js"
 import { bus } from "@/main.js"
 import transriberImageFromtype from "@/tools/transriberImageFromtype"
@@ -100,7 +98,6 @@ export default {
   data() {
     return {
       loading: false,
-      organizations: [],
       selectedOrganizationId: this.organizationId,
       typeItems: [
         {
@@ -122,6 +119,11 @@ export default {
           value: "voxstral",
           text: "Voxstral",
           avatar: transriberImageFromtype("voxstral"),
+        },
+        {
+          value: "google",
+          text: "Google",
+          avatar: transriberImageFromtype("google"),
         },
       ],
       transcriberProfile: structuredClone(TRANSCRIBER_PROFILES_TEMPLATES.linto),
@@ -149,24 +151,14 @@ export default {
         ? this.$t("modal_transcriber_profile.action_btn_edit")
         : this.$t("modal_transcriber_profile.action_btn_create")
     },
-    organizationItems() {
-      const items = [
+    organizationPinnedItems() {
+      return [
         {
           value: null,
           text: this.$t("modal_transcriber_profile.platform_global"),
           icon: "globe-hemisphere-west",
-          //iconWeight: "regular",
         },
       ]
-      this.organizations.forEach((org) => {
-        items.push({
-          value: org._id,
-          text: org.name,
-          icon: "buildings",
-          iconWeight: "regular",
-        })
-      })
-      return items
     },
     currentType: {
       get() {
@@ -211,21 +203,13 @@ export default {
     },
   },
   async mounted() {
-    this.loading = true
-    await this.fetchOrganizations()
     if (this.isEditMode) {
+      this.loading = true
       await this.fetchTranscriberProfile()
+      this.loading = false
     }
-    this.loading = false
   },
   methods: {
-    async fetchOrganizations() {
-      const res = await apiGetAllOrganizations(0, {
-        pageSize: 1000,
-        hidePersonal: true,
-      })
-      this.organizations = res.list || []
-    },
     async fetchTranscriberProfile() {
       const req = await apiAdminGetTranscriberProfilesById(
         this.transcriberProfileId,
@@ -329,6 +313,7 @@ export default {
     Modal,
     TranscriberProfileEditor,
     PopoverList,
+    OrganizationSelector,
     Tooltip,
     Button,
   },

@@ -15,7 +15,7 @@ const CONVERSATION_RIGHT = require(
 const SECURITY_LEVELS = require(
   `${process.cwd()}/lib/dao/conversation/securityLevels`,
 )
-const { storeFile } = require(
+const { storeFile, STORE_TYPE } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 
@@ -37,7 +37,7 @@ async function addFileToConv(conversation, req) {
       ...req.files.file,
       name: utf8.decode(req.files.file.name),
     }
-    let file_data = await storeFile(fileData, "audio")
+    let file_data = await storeFile(fileData, STORE_TYPE.AUDIO)
     conversation = await addFileMetadataToConversation(conversation, file_data)
   }
 
@@ -64,8 +64,16 @@ async function importConv(req, res) {
 
     delete conversation._id
 
-    requireParam(conversation.name, ConversationMetadataRequire, "Conversation name key is required")
-    requireParam(conversation.locale, ConversationMetadataRequire, "Conversation locale key is required")
+    requireParam(
+      conversation.name,
+      ConversationMetadataRequire,
+      "Conversation name key is required",
+    )
+    requireParam(
+      conversation.locale,
+      ConversationMetadataRequire,
+      "Conversation locale key is required",
+    )
 
     if (!conversation?.organization) {
       conversation.organization = {}
@@ -90,9 +98,21 @@ async function importConv(req, res) {
 }
 
 async function importTranscription(req, res) {
-  requireParam(req.body.name, ConversationMetadataRequire, "name param is required")
-  requireParam(req.body.lang, ConversationMetadataRequire, "lang param is required")
-  requireParam(req.body.transcription, ConversationMetadataRequire, "transcription param is required")
+  requireParam(
+    req.body.name,
+    ConversationMetadataRequire,
+    "name param is required",
+  )
+  requireParam(
+    req.body.lang,
+    ConversationMetadataRequire,
+    "lang param is required",
+  )
+  requireParam(
+    req.body.transcription,
+    ConversationMetadataRequire,
+    "transcription param is required",
+  )
   if (!req.body.membersRight) req.body.membersRight = CONVERSATION_RIGHT.READ
 
   // Parse securityLevel from string (FormData sends strings)
@@ -145,6 +165,7 @@ async function importConversation(req, res, next) {
     const organization = await model.organizations.getByIdAndUser(
       req.params.organizationId,
       req.payload.data.userId,
+      { bypass: req.backofficeAccess },
     )
     if (organization.length !== 1)
       throw new ConversationError(

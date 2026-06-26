@@ -1,0 +1,12 @@
+{
+  "CategoryType": {
+    "type": "string",
+    "enum": ["highlight", "conversation_metadata"]
+  },
+  "example": {
+    "KEYWORD": "keyword",
+    "CONVERSATION_METADATA": "conversation_metadata",
+    "CONVERSATION_TEXT": "conversation_text",
+    "COMMENTARY": "commentary"
+  }
+}

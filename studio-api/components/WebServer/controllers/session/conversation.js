@@ -1,6 +1,7 @@
 const debug = require("debug")(
   `linto:components:WebServer:controllers:session:conversation`,
 )
+const logger = require(`${process.cwd()}/lib/logger/logger`)
 
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 
@@ -13,10 +14,13 @@ const DEFAULT_MEMBER_RIGHTS = RIGHTS.READ + RIGHTS.COMMENT
 const SECURITY_LEVELS = require(
   `${process.cwd()}/lib/dao/conversation/securityLevels`,
 )
-const { storeFile } = require(
+const { storeFile, STORE_TYPE } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
-const { processChannelCaptions } = require("./channelCaptions")
+const {
+  processChannelCaptions,
+  dedupeClosedCaptionsBySegmentId,
+} = require("./channelCaptions")
 
 const { SessionError } = require(
   `${process.cwd()}/components/WebServer/error/exception/session`,
@@ -57,6 +61,9 @@ function initConversationMultiChannel(
         channel_start_time: session.startTime,
         channel_end_time: session.endTime,
       },
+      ...(session.meta?.["@template"]
+        ? { template: session.meta["@template"] }
+        : {}),
     },
     jobs: {
       transcription: { state: "done" },
@@ -112,13 +119,19 @@ async function initCaptionsForConversation(sessionData, name) {
           )
 
           caption.metadata.audio = generateAudioMetadata(audioId, audioFormat)
-          const { serviceName, endpoint, lang, config } =
-            channel.meta.transcriptionService
+          const {
+            serviceName,
+            endpoint,
+            lang,
+            config,
+            speakerIdentificationCollections,
+          } = channel.meta.transcriptionService
           caption.metadata.transcription = {
             serviceName,
             endpoint,
             lang,
             transcriptionConfig: config,
+            speakerIdentificationCollections,
           }
           caption.jobs.transcription.state = "waiting"
           captions.push(caption)
@@ -145,6 +158,16 @@ async function initCaptionsForConversation(sessionData, name) {
         name,
         session.channels.length,
       )
+
+      // Dual-recognizer sessions may emit two closedCaptions lines per
+      // segmentId (one with the locutor, one with translations). Collapse
+      // them so the translation merge below and processChannelCaptions are
+      // deterministic and never produce duplicate turns.
+      if (Array.isArray(channel.closedCaptions)) {
+        channel.closedCaptions = dedupeClosedCaptionsBySegmentId(
+          channel.closedCaptions,
+        )
+      }
 
       if (channel.translatedCaptions) {
         for (const segmentTranslations of Object.values(
@@ -188,7 +211,7 @@ async function initCaptionsForConversation(sessionData, name) {
             name: `${audioId}.${audioFormat}`,
             filepath: `${process.env.VOLUME_AUDIO_SESSION_PATH}/${audioId}.${audioFormat}`,
           }
-          const fileTransform = await storeFile(file, "audio_session")
+          const fileTransform = await storeFile(file, STORE_TYPE.AUDIO_SESSION)
           caption.metadata.audio = generateAudioMetadata(
             fileTransform.filename.split(".")[0],
             "mp3",
@@ -247,6 +270,9 @@ function initializeCaption(
         channel_end_time: session.endTime,
       },
       normalize: { filter: {} },
+      ...(session.meta?.["@template"]
+        ? { template: session.meta["@template"] }
+        : {}),
     },
     sharedWithUsers: [],
     description: "",
@@ -275,7 +301,12 @@ async function storeSession(session, name = undefined) {
     let conversationMemory = []
     const { canonicalCount, translationCount } = countCaptions(captions)
 
-    if (canonicalCount === 0) return
+    if (canonicalCount === 0) {
+      logger.warn(
+        `storeSession: session ${session.id} has no canonical captions after filtering — nothing stored`,
+      )
+      return
+    }
 
     const result =
       canonicalCount === 1
@@ -437,19 +468,57 @@ async function storeProxyResponse(session) {
   }
 }
 
-async function storeSessionFromStop(req, next) {
-  try {
-    const session = await axios.get(
-      process.env.SESSION_API_ENDPOINT + `/sessions/${req.params.id}`,
-    )
-    let result = await storeSession(session, req.query.name)
+const SESSION_STOP_TIMEOUT_MS =
+  parseInt(process.env.SESSION_STOP_TIMEOUT_MS, 10) || 15000
 
-    if (this.app.components.IoHandler !== undefined) {
-      this.app.components.IoHandler.emit("new_conversation_from_session", {
+// Stop (waitFinal drain barrier) before reading, so the GET sees every
+// committed caption. Older Session APIs ignore waitFinal — never worse.
+async function stopSessionAndFetch(sessionId) {
+  try {
+    await axios.put(
+      process.env.SESSION_API_ENDPOINT +
+        `/sessions/${sessionId}/stop?force=true&waitFinal=true`,
+      {},
+      { timeout: SESSION_STOP_TIMEOUT_MS },
+    )
+  } catch (err) {
+    logger.warn(
+      `stopSessionAndFetch: stop failed for session ${sessionId}, reading as-is: ${err?.message || err}`,
+    )
+  }
+  return await axios.get(
+    process.env.SESSION_API_ENDPOINT + `/sessions/${sessionId}`,
+  )
+}
+
+// Emit the new-conversation event, or warn when nothing was stored.
+function emitConversationFromSession(ioHandler, session, result, sessionId, label) {
+  if (result) {
+    if (ioHandler !== undefined) {
+      ioHandler.emit("new_conversation_from_session", {
         organizationId: session.organizationId,
         ...result,
       })
     }
+  } else {
+    logger.warn(
+      `${label} ${sessionId} stopped with no storable captions — no conversation created`,
+    )
+  }
+}
+
+async function storeSessionFromStop(req, next) {
+  try {
+    const session = await stopSessionAndFetch(req.params.id)
+    let result = await storeSession(session, req.query.name)
+
+    emitConversationFromSession(
+      this.app.components.IoHandler,
+      session,
+      result,
+      req.params.id,
+      "Session",
+    )
     model.sessionData.deleteByOrganizationAndSession(
       session.organizationId,
       req.params.id,
@@ -466,18 +535,21 @@ async function storeQuickMeetingFromStop(req, next) {
     if (req.query.trash === "true") {
       next()
     } else {
-      const session = await axios.get(
-        process.env.SESSION_API_ENDPOINT + `/sessions/${req.params.id}`,
+      const sessionCheck = await axios.get(
+        process.env.SESSION_API_ENDPOINT +
+          `/sessions/${req.params.id}?withCaptions=false`,
       )
-      if (session.owner === req.payload.data.userId) {
+      if (sessionCheck.owner === req.payload.data.userId) {
+        const session = await stopSessionAndFetch(req.params.id)
         let result = await storeSession(session, req.query.name)
 
-        if (this.app.components.IoHandler !== undefined) {
-          this.app.components.IoHandler.emit("new_conversation_from_session", {
-            organizationId: session.organizationId,
-            ...result,
-          })
-        }
+        emitConversationFromSession(
+          this.app.components.IoHandler,
+          session,
+          result,
+          req.params.id,
+          "Quick meeting",
+        )
         next()
       } else {
         throw new SessionError(
@@ -495,4 +567,5 @@ module.exports = {
   storeSession,
   storeSessionFromStop,
   storeQuickMeetingFromStop,
+  initCaptionsForConversation,
 }

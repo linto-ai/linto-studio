@@ -21,7 +21,7 @@
             v-if="showAllProfiles"
             @click="changeShowAllProfiles"
             variant="secondary"
-            icon="eye"
+            icon="buildings"
             iconWeight="regular"
             :label="
               $t('backoffice.transcriber_profile_list.all_profiles_shown')
@@ -30,7 +30,7 @@
             v-else
             @click="changeShowAllProfiles"
             variant="secondary"
-            icon="eye-slash"
+            icon="globe"
             iconWeight="regular"
             :label="
               $t('backoffice.transcriber_profile_list.global_profiles_shown')
@@ -56,8 +56,16 @@
       :initSortListDirection="sortListDirection"
       :initSortListKey="sortListKey">
       <template #cell-organizationId="{ value }">
-        <span v-if="value" class="icon apply" />
-        <span v-else class="icon close" />
+        <span
+          v-if="value"
+          :title="$t('backoffice.transcriber_profile_list.private_profile')">
+          <ph-icon name="buildings" size="md" weight="regular" />
+        </span>
+        <span
+          v-else
+          :title="$t('backoffice.transcriber_profile_list.global_profile')">
+          <ph-icon name="globe" size="md" weight="regular" />
+        </span>
       </template>
       <template #cell-config.name="{ value, id }">
         <span class="clickable" @click="editProfile(id)">{{ value }}</span>
@@ -114,6 +122,11 @@ export default {
           width: "auto",
         },
         {
+          key: "id",
+          label: "ID",
+          width: "auto",
+        },
+        {
           key: "config.name",
           label: this.$t("session.profile_selector.labels.name"),
           width: "1fr",
@@ -148,12 +161,19 @@ export default {
     changeShowAllProfiles() {
       this.showAllProfiles = !this.showAllProfiles
     },
-    async fetchTranscriberProfiles(pageNumber, { sortField, sortOrder, showAllProfiles }) {
+    async fetchTranscriberProfiles(
+      pageNumber,
+      { sortField, sortOrder, showAllProfiles },
+    ) {
       const allProfiles = await apiAdminGetTranscriberProfiles()
       let filtered = showAllProfiles
         ? allProfiles
         : allProfiles.filter((t) => !t.organizationId)
-      filtered = sortArray(filtered, sortField, sortOrder === 1 ? "asc" : "desc")
+      filtered = sortArray(
+        filtered,
+        sortField,
+        sortOrder === 1 ? "asc" : "desc",
+      )
       return { list: filtered, count: filtered.length }
     },
     showModalCreateTranscriberProfile() {

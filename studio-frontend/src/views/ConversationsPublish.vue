@@ -75,13 +75,20 @@
     <div class="action-cards" v-if="conversation && conversation._id">
       <router-link
         class="action-card"
-        :to="{ name: 'conversations transcription', params: { conversationId: conversation._id } }">
+        :to="{
+          name: 'conversations transcription',
+          params: { conversationId: conversation._id },
+        }">
         <div class="action-card__icon action-card__icon--transcription">
           <PhIcon name="text-align-left" size="lg" />
         </div>
         <div class="action-card__content">
-          <span class="action-card__title">{{ $t('breadcrumb.transcription') }}</span>
-          <span class="action-card__description">{{ $t('conversation.back_to_transcription') }}</span>
+          <span class="action-card__title">{{
+            $t("breadcrumb.transcription")
+          }}</span>
+          <span class="action-card__description">{{
+            $t("conversation.back_to_transcription")
+          }}</span>
         </div>
         <PhIcon name="caret-right" size="sm" class="action-card__arrow" />
       </router-link>
@@ -90,8 +97,10 @@
           <PhIcon name="chat-text" size="lg" />
         </div>
         <div class="action-card__content">
-          <span class="action-card__title">{{ $t('chat.start') }}</span>
-          <span class="action-card__description">{{ $t('chat.description') }}</span>
+          <span class="action-card__title">{{ $t("chat.start") }}</span>
+          <span class="action-card__description">{{
+            $t("chat.description")
+          }}</span>
         </div>
         <PhIcon name="caret-right" size="sm" class="action-card__arrow" />
       </button>
@@ -108,8 +117,12 @@
               <PhIcon name="download" size="lg" />
             </div>
             <div class="action-card__content">
-              <span class="action-card__title">{{ $t('publish.action_cards.download') }}</span>
-              <span class="action-card__description">{{ $t('publish.action_cards.download_description') }}</span>
+              <span class="action-card__title">{{
+                $t("publish.action_cards.download")
+              }}</span>
+              <span class="action-card__description">{{
+                $t("publish.action_cards.download_description")
+              }}</span>
             </div>
             <PhIcon name="caret-down" size="sm" class="action-card__arrow" />
           </div>
@@ -125,17 +138,25 @@
           <PhIcon name="share-network" size="lg" />
         </div>
         <div class="action-card__content">
-          <span class="action-card__title">{{ $t('publish.action_cards.publication') }}</span>
-          <span class="action-card__description">{{ $t('publish.action_cards.publication_description') }}</span>
+          <span class="action-card__title">{{
+            $t("publish.action_cards.publication")
+          }}</span>
+          <span class="action-card__description">{{
+            $t("publish.action_cards.publication_description")
+          }}</span>
         </div>
         <PhIcon name="caret-right" size="sm" class="action-card__arrow" />
       </button>
-
     </div>
 
-    <div class="publish-split-wrapper" :class="{ 'publish-split-wrapper--split': showTranscript }" v-if="dataLoaded">
+    <div
+      class="publish-split-wrapper"
+      :class="{ 'publish-split-wrapper--split': showTranscript }"
+      v-if="dataLoaded">
       <!-- Verbatim: show transcript directly -->
-      <div v-if="activeTab === 'verbatim'" class="publish-main-container flex col">
+      <div
+        v-if="activeTab === 'verbatim'"
+        class="publish-main-container flex col">
         <TranscriptPanel
           class="publish-verbatim-page"
           :title="conversation.name"
@@ -145,21 +166,26 @@
 
       <!-- AI service tabs: show ConversationPublishContent (left side) -->
       <div v-else class="publish-main-container flex col">
-      <ConversationPublishContent
-        ref="publishContent"
-        :markdownContent="markdownContent"
-        :status="currentStatus"
-        :blobUrl="blobUrl"
-        :pdfPercentage="generationPercentage"
-        :phase="generationPhase"
-        :editable="isEditableOutput"
-        :errorMessage="currentJobError"
-        :showTranscript="showTranscript"
-        :canShowTranscript="activeTab && activeTab !== 'verbatim' && conversation.text && conversation.text.length > 0"
-        @content-change="onContentChange"
-        @retry="reloadGeneration"
-        @save-version="saveVersion"
-        @toggle-transcript="showTranscript = !showTranscript" />
+        <ConversationPublishContent
+          ref="publishContent"
+          :markdownContent="markdownContent"
+          :status="currentStatus"
+          :blobUrl="blobUrl"
+          :pdfPercentage="generationPercentage"
+          :phase="generationPhase"
+          :editable="isEditableOutput"
+          :errorMessage="currentJobError"
+          :showTranscript="showTranscript"
+          :canShowTranscript="
+            activeTab &&
+            activeTab !== 'verbatim' &&
+            conversation.text &&
+            conversation.text.length > 0
+          "
+          @content-change="onContentChange"
+          @retry="reloadGeneration"
+          @save-version="saveVersion"
+          @toggle-transcript="showTranscript = !showTranscript" />
       </div>
 
       <!-- Split transcript panel (right side, AI service tabs only) -->
@@ -180,6 +206,7 @@
         <PublicationSection
           :jobId="currentJobId"
           :organizationId="publicationOrganizationId"
+          :serviceId="currentServiceId"
           :conversationName="conversation?.name || 'export'"
           :versionNumber="currentVersionNumber"
           hideHeader
@@ -336,7 +363,7 @@ export default {
       // Automatically select and load the latest version
       await this.selectLatestVersion()
       // Hide transcript panel when switching to verbatim
-      if (newVal === 'verbatim') {
+      if (newVal === "verbatim") {
         this.showTranscript = false
       }
     },
@@ -538,6 +565,12 @@ export default {
     },
     currentJobId() {
       return this.currentJob?.jobId || null
+    },
+    currentServiceId() {
+      // Service backing the active AI tab; used to scope the template list to
+      // the templates the admin made available for this service.
+      if (this.activeTab === "verbatim") return null
+      return this.indexedFormat[this.activeTab]?.id || null
     },
     publicationOrganizationId() {
       return this.conversation?.organization?.organizationId || null
@@ -815,6 +848,7 @@ export default {
           if (res[format] === undefined) {
             res[format] = {}
           }
+          res[format]["id"] = service.id
           res[format]["flavors"] = service.flavors
           res[format]["description"] = service.description
           res[format]["route"] = service.route
@@ -1144,11 +1178,7 @@ export default {
     // Generation methods
     async loadGenerations() {
       const serviceId = this.selectedRoute || this.activeTab
-      if (
-        !this.conversationId ||
-        this.activeTab === "verbatim" ||
-        !serviceId
-      ) {
+      if (!this.conversationId || this.activeTab === "verbatim" || !serviceId) {
         this.generations = []
         this.currentGenerationId = null
         return
@@ -1293,7 +1323,9 @@ export default {
             this.markdownContent = null
             // Remove the job entry so returning to this tab won't auto-regenerate
             const serviceId = this.selectedRoute || this.activeTab
-            const jobIndex = this.jobsList.findIndex((j) => j.format === serviceId)
+            const jobIndex = this.jobsList.findIndex(
+              (j) => j.format === serviceId,
+            )
             if (jobIndex !== -1) {
               this.jobsList.splice(jobIndex, 1)
             }
@@ -1557,7 +1589,9 @@ export default {
   text-decoration: none;
   color: inherit;
   cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
   font-family: inherit;
   font-size: inherit;
   text-align: left;

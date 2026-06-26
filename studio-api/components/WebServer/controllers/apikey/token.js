@@ -114,6 +114,7 @@ async function listApiKey(idList, orgaRoles = undefined) {
     firstname: true,
     lastname: true,
     role: true,
+    img: true,
     tokenCreatedAt: true,
     tokenExpiresAt: true,
   }

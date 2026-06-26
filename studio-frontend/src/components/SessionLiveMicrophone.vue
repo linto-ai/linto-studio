@@ -11,19 +11,14 @@
         </IsMobile>
 
         <div class="flex1"></div>
-        <Button
-          v-if="!isRecording"
-          icon="play"
-          @click="startMicrophone"
-          :label="$t('quick_session.live.start_microphone_button')"
-          size="sm"
-          variant="secondary" />
-        <Button
-          v-else
-          icon="pause"
-          @click="pauseMicrophone"
-          :label="$t('quick_session.live.mute_microphone_button')"
-          size="sm" />
+        <SessionLiveActions
+          :session="session"
+          :showStop="false"
+          :showDelete="false"
+          :fakeStatus="isRecording ? 'active' : 'paused'"
+          @paused="pauseMicrophone"
+          @resumed="startMicrophone"
+          @cleared="$emit('onSessionUpdated')" />
         <Button
           @click="$emit('onSave')"
           variant="primary"
@@ -33,11 +28,16 @@
     </template>
     <div class="relative flex flex1 col">
       <SessionLiveNG
+        v-if="isFirstChannelLive"
         ref="sessionLiveNG"
         :currentOrganizationScope="currentOrganizationScope"
         :session="session"
         :websocketInstance="$apiEventWS" />
-
+      <SessionChannelMicrophoneOffline
+        v-else
+        :speaking="speaking"
+        @toggleMicrophone="toggleMicrophone"
+        :isRecording="isRecording" />
       <Modal
         :withActions="false"
         :title="$t('session.microphone_setup_title')"
@@ -59,8 +59,10 @@ import { sessionMicrophoneMixin } from "@/mixins/sessionMicrophone.js"
 import SessionLiveNG from "@/components/SessionLiveNG.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
+import SessionLiveActions from "@/components/SessionLiveActions.vue"
 
 import V2Layout from "@/layouts/v2-layout.vue"
+import SessionChannelMicrophoneOffline from "./SessionChannelMicrophoneOffline.vue"
 
 export default {
   mixins: [microphoneMixin, sessionMicrophoneMixin],
@@ -94,6 +96,9 @@ export default {
         },
       ]
     },
+    isFirstChannelLive() {
+      return this?.session?.channels?.[0]?.enableLiveTranscripts
+    },
   },
   methods: {
     startRecordFromMicrophone({ deviceId }) {
@@ -108,6 +113,8 @@ export default {
     V2Layout,
     Modal,
     SessionSetupMicrophone,
+    SessionLiveActions,
+    SessionChannelMicrophoneOffline,
   },
 }
 </script>

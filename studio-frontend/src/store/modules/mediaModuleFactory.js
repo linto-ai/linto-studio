@@ -11,6 +11,23 @@ import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
 import Vue from "vue"
 import { bus } from "@/main.js"
 
+function applyMediaUpdate(state, mediaId, media, patch) {
+  const newValueFor = (idx, list) =>
+    patch ? { ...list[idx], ...media } : media
+
+  const idx = state.medias.findIndex((m) => m._id === mediaId)
+  if (idx !== -1) Vue.set(state.medias, idx, newValueFor(idx, state.medias))
+
+  const selectedIdx = state.selectedMedias.findIndex((m) => m._id === mediaId)
+  if (selectedIdx !== -1) {
+    Vue.set(
+      state.selectedMedias,
+      selectedIdx,
+      newValueFor(selectedIdx, state.selectedMedias),
+    )
+  }
+}
+
 export default function createMediaModule(scope, status = "done") {
   return {
     namespaced: true,
@@ -130,20 +147,12 @@ export default function createMediaModule(scope, status = "done") {
         state.pagination = { page, hasMore }
       },
       updateMedia(state, { mediaId, media, patch = false }) {
-        const idx = state.medias.findIndex((m) => m._id === mediaId)
-        const newValue = patch ? { ...state.medias[idx], ...media } : media
-
-        if (idx !== -1) {
-          // Use Vue.set to ensure reactivity
-          Vue.set(state.medias, idx, newValue)
-        }
-
-        const selectedIdx = state.selectedMedias.findIndex(
-          (m) => m._id === mediaId,
+        applyMediaUpdate(state, mediaId, media, patch)
+      },
+      updateMedias(state, { mediaIds, media, patch = false }) {
+        mediaIds.forEach((mediaId) =>
+          applyMediaUpdate(state, mediaId, media, patch),
         )
-        if (selectedIdx !== -1) {
-          Vue.set(state.selectedMedias, selectedIdx, newValue)
-        }
       },
       deleteMedias(state, mediaIds) {
         state.medias = state.medias.filter((m) => !mediaIds.includes(m._id))
@@ -164,7 +173,9 @@ export default function createMediaModule(scope, status = "done") {
       },
       toggleSidebarFilterTagId(state, id) {
         if (state.sidebarFilterTagIds.includes(id)) {
-          state.sidebarFilterTagIds = state.sidebarFilterTagIds.filter((t) => t !== id)
+          state.sidebarFilterTagIds = state.sidebarFilterTagIds.filter(
+            (t) => t !== id,
+          )
         } else {
           state.sidebarFilterTagIds = [...state.sidebarFilterTagIds, id]
         }
@@ -279,6 +290,9 @@ export default function createMediaModule(scope, status = "done") {
       },
       updateMedia({ commit }, { mediaId, media, patch = false }) {
         commit("updateMedia", { mediaId, media, patch })
+      },
+      updateMedias({ commit }, { mediaIds, media, patch = false }) {
+        commit("updateMedias", { mediaIds, media, patch })
       },
       async deleteMedias(
         { commit, rootGetters, dispatch },

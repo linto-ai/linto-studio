@@ -16,12 +16,45 @@
         v-model="descriptionField.value"
         textarea
         :readonly="!canEdit" />
+      <div v-if="templateName" class="form-field flex col">
+        <label class="form-label">
+          {{ $t("media_explorer.panel.template_label") }}
+        </label>
+        <div class="flex align-center gap-small">
+          <span>{{ templateName }}</span>
+          <Button
+            v-if="templateId"
+            variant="secondary"
+            icon="eye"
+            size="sm"
+            :label="$t('media_explorer.panel.show_template_button')"
+            @click="showTemplateInfo = true" />
+          <Button
+            v-if="canSessionInCurrentOrganization"
+            variant="secondary"
+            icon="plus"
+            size="sm"
+            :label="$t('media_explorer.panel.use_template_button')"
+            :to="{
+              name: 'conversations create',
+              params: { organizationId: organizationId },
+              query: { template: templateId },
+            }" />
+        </div>
+        <ModalSessionTemplateInfo
+          v-if="templateId"
+          v-model="showTemplateInfo"
+          :templateId="templateId"
+          :organizationId="organizationId" />
+      </div>
       <Button
         v-if="canEdit"
         type="submit"
         variant="primary"
         icon="check"
-        :label="$t('conversation_overview.main_information.update_information_button')" />
+        :label="
+          $t('conversation_overview.main_information.update_information_button')
+        " />
     </section>
   </form>
 </template>
@@ -34,11 +67,14 @@ import { testName } from "@/tools/fields/testName"
 
 import { formsMixin } from "@/mixins/forms.js"
 import { conversationModelMixin } from "@/mixins/conversationModel.js"
+import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
 
 import FormInput from "@/components/molecules/FormInput.vue"
+import ModalSessionTemplateInfo from "@/components/ModalSessionTemplateInfo.vue"
 
 export default {
-  mixins: [formsMixin, conversationModelMixin],
+  mixins: [formsMixin, conversationModelMixin, organizationPermissionsMixin],
+  components: { ModalSessionTemplateInfo },
   props: {
     conversation: {
       type: Object,
@@ -73,10 +109,32 @@ export default {
         ),
       },
       fields: ["nameField", "descriptionField"],
+      showTemplateInfo: false,
     }
   },
   mounted() {
     this.initFields()
+  },
+  computed: {
+    template() {
+      return (
+        this.conversation?.metadata?.template ??
+        this.rootConversation?.metadata?.template ??
+        null
+      )
+    },
+    templateName() {
+      return this.template?.name ?? null
+    },
+    templateId() {
+      return this.template?.id ?? null
+    },
+    organizationId() {
+      return (
+        this.conversation?.organization?.organizationId ??
+        this.rootConversation?.organization?.organizationId
+      )
+    },
   },
   methods: {
     initFields() {

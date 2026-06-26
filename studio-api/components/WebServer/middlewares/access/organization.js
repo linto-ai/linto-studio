@@ -25,6 +25,14 @@ async function isSystemAdmin(req) {
   return false
 }
 
+function denyBackofficeAccess(req) {
+  if (req.backofficeAccess) {
+    throw new OrganizationForbidden(
+      "Self-action not available in backoffice mode",
+    )
+  }
+}
+
 module.exports = {
   asAdminAccess: async (req, res, next) => {
     if (await isSystemAdmin(req)) return next()
@@ -98,10 +106,20 @@ module.exports = {
   permissionSession: async (req, res, next) => {
     await permissionAccess(req, res, next, PERMISSIONS.SESSION)
   },
+  permissionMicrophone: async (req, res, next) => {
+    await permissionAccess(req, res, next, PERMISSIONS.MICROPHONE)
+  },
+  permissionBot: async (req, res, next) => {
+    await permissionAccess(req, res, next, PERMISSIONS.BOT)
+  },
+  permissionSpeakerIdentification: async (req, res, next) => {
+    await permissionAccess(req, res, next, PERMISSIONS.SPEAKER_IDENTIFICATION)
+  },
   sessionSocketAccess: async (session, userId) => {
     return await sessionSocketAccess(session, userId, ROLES.MEMBER)
   },
   checkSocketOrganizationAccess,
+  denyBackofficeAccess,
 }
 
 async function permissionAccess(req, res, next, access) {

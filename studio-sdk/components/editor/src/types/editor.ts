@@ -18,6 +18,10 @@ export interface Turn {
   startDate?: number // Unix timestamp in seconds — wall-clock fallback when startTime is absent
   endDate?: number
   language: string
+  /** Original language of the turn. For a translation it differs from `language`;
+   *  for the original it equals `language`. Lets the cross view pick the side
+   *  opposite the original without depending on event ordering. */
+  sourceLanguage?: string
 }
 
 export interface Speaker {

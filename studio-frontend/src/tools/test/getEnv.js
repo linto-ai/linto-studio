@@ -17,7 +17,10 @@ function getEnv(envKey) {
   const vueEnvKey = envKey.startsWith("VUE_APP_") ? envKey : `VUE_APP_${envKey}`
 
   // Runtime config (Docker)
-  if (typeof window !== 'undefined' && window.VUE_APP_CONFIG?.[vueEnvKey] !== undefined) {
+  if (
+    typeof window !== "undefined" &&
+    window.VUE_APP_CONFIG?.[vueEnvKey] !== undefined
+  ) {
     return window.VUE_APP_CONFIG[vueEnvKey]
   }
 
@@ -40,7 +43,7 @@ function getEnv(envKey) {
 test("getEnv returns value from window.VUE_APP_CONFIG when set", (t) => {
   // Setup: set runtime config
   global.window.VUE_APP_CONFIG = {
-    VUE_APP_TEST_VALUE: "runtime_value"
+    VUE_APP_TEST_VALUE: "runtime_value",
   }
 
   const result = getEnv("VUE_APP_TEST_VALUE")
@@ -53,7 +56,7 @@ test("getEnv returns value from window.VUE_APP_CONFIG when set", (t) => {
 // Test: getEnv works with short key format (without VUE_APP_ prefix)
 test("getEnv works with short key format", (t) => {
   global.window.VUE_APP_CONFIG = {
-    VUE_APP_SHORT_KEY: "short_key_value"
+    VUE_APP_SHORT_KEY: "short_key_value",
   }
 
   const result = getEnv("SHORT_KEY")
@@ -90,7 +93,7 @@ test("getEnv returns DEFAULTENV value as last resort", (t) => {
 // Test: getEnv prioritizes window config over process.env
 test("getEnv prioritizes window config over process.env", (t) => {
   global.window.VUE_APP_CONFIG = {
-    VUE_APP_PRIORITY_TEST: "window_value"
+    VUE_APP_PRIORITY_TEST: "window_value",
   }
   process.env.VUE_APP_PRIORITY_TEST = "process_value"
 
@@ -112,7 +115,7 @@ test("getEnv returns undefined for non-existent keys", (t) => {
 // Test: getEnv handles empty string values correctly
 test("getEnv handles empty string values correctly", (t) => {
   global.window.VUE_APP_CONFIG = {
-    VUE_APP_EMPTY_STRING: ""
+    VUE_APP_EMPTY_STRING: "",
   }
 
   // Empty string is a valid value, should not fall back
@@ -126,7 +129,7 @@ test("getEnv handles empty string values correctly", (t) => {
 test("getEnv handles boolean-like string values", (t) => {
   global.window.VUE_APP_CONFIG = {
     VUE_APP_BOOL_TRUE: "true",
-    VUE_APP_BOOL_FALSE: "false"
+    VUE_APP_BOOL_FALSE: "false",
   }
 
   const trueResult = getEnv("VUE_APP_BOOL_TRUE")

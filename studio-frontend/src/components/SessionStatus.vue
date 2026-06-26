@@ -11,6 +11,15 @@
     </span>
 
     <span
+      class="session-on-air session-on-air--paused flex align-center gap-small"
+      v-else-if="isPaused">
+      <span v-if="!small">[</span>
+      <PhIcon name="pause" size="sm" />
+      <span v-if="!small">Paused</span>
+      <span v-if="!small">]</span>
+    </span>
+
+    <span
       class="session-on-air session-on-air--off flex align-center gap-small"
       v-else-if="isStarted">
       <span v-if="!small">[</span>
@@ -53,6 +62,8 @@ export default {
           return "save-cloud"
         case this.isActive:
           return "record"
+        case this.isPaused:
+          return "pause"
         case this.isStarted:
           return "pause"
         default:
@@ -65,6 +76,8 @@ export default {
           return this.$t("session.sessions_status.terminated")
         case this.isActive:
           return this.$t("session.sessions_status.active")
+        case this.isPaused:
+          return this.$t("session.sessions_status.paused")
         case this.isStarted:
           return this.$t("session.sessions_status.pending")
         default:
@@ -122,6 +135,10 @@ export default {
 
 .session-on-air.session-on-air--off {
   color: #62111e;
+}
+
+.session-on-air.session-on-air--paused {
+  color: var(--text-primary);
 }
 
 .session-status__name {

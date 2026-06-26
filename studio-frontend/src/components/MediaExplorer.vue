@@ -46,9 +46,7 @@
           <Loading v-if="loading && !pageIsLoading" />
           <div v-if="!loading">
             <!-- Empty state -->
-            <div
-              v-if="medias.length === 0"
-              class="media-explorer__body__empty">
+            <div v-if="medias.length === 0" class="media-explorer__body__empty">
               <slot name="empty">
                 <div class="empty-state">
                   <p>Aucun média trouvé</p>
@@ -181,7 +179,13 @@ export default {
       selectedMediaIds: [],
     }
   },
-  mounted() {},
+  mounted() {
+    // Lazily load M2M-augmented users so the owner of a media created by
+    // an API key (e.g. an automated Meet transcription) can be resolved
+    // with its real name and avatar instead of falling back to
+    // "Private user" + the default picture.
+    this.$store.dispatch("organizations/loadCurrentOrganizationAllUsers")
+  },
   beforeDestroy() {
     this.cleanupObserver()
   },

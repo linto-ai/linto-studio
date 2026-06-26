@@ -46,8 +46,8 @@ export function wordsDeltafromPlainDiff(newText, words, plainDiff, syllabic) {
           numberWordsAdded,
           words,
           newWordsPlain,
-          syllabic
-        )
+          syllabic,
+        ),
       )
     } else {
       delta = delta.concat(insertEmptyWord(change, words))
@@ -85,18 +85,18 @@ function insertWordsObject(
   numberWordsAdded,
   words,
   newWordsPlain,
-  syllabic
+  syllabic,
 ) {
   const insert = []
   const interval = getTimestampInterval(
     words,
     positionDel,
-    positionDel + numberWordsDeleted - 1
+    positionDel + numberWordsDeleted - 1,
   )
 
   const syllabesCount = countSyllabsFromPlainWordsList(
     newWordsPlain.slice(positionAdd, positionAdd + numberWordsAdded),
-    syllabic
+    syllabic,
   )
 
   const syllabeDuration = (interval.etime - interval.stime) / syllabesCount
@@ -105,7 +105,8 @@ function insertWordsObject(
   for (let i = 0; i < numberWordsAdded; i = i + 1) {
     const currentPlainWord = newWordsPlain[positionAdd + i]
     const etime = simplifyNumber(
-      stime + syllabeDuration * countSyllabsFromWord(currentPlainWord, syllabic)
+      stime +
+        syllabeDuration * countSyllabsFromWord(currentPlainWord, syllabic),
     )
     insert.push({
       stime,
@@ -221,7 +222,7 @@ function deleteChangeWithEmptyWord(change, words) {
   const numberOfEmptyWordBeforeDelete = numberOfemptyWordBetween(
     words,
     positionDel - 1,
-    positionDel
+    positionDel,
   )
 
   if (
@@ -246,5 +247,7 @@ function deleteChangeWithEmptyWord(change, words) {
 }
 
 function generateID() {
-  return import.meta.env?.TEST ? "id" : uuidv4()
+  return typeof process !== "undefined" && process.env?.["TEST"]
+    ? "id"
+    : uuidv4()
 }

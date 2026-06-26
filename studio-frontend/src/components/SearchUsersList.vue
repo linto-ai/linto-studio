@@ -52,9 +52,7 @@ export default {
     availableUsers() {
       if (this.searchMemberValue.length > 0) {
         return this.searchUsersList
-          .filter(
-            (user) => this.includeSelf || user._id !== this.userInfo._id,
-          )
+          .filter((user) => this.includeSelf || user._id !== this.userInfo._id)
           .map((user) => {
             const existingUserIndex = this.currentUser.findIndex(
               (usr) => usr._id === user._id,

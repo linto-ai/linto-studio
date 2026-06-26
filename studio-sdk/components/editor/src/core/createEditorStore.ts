@@ -60,6 +60,7 @@ export function createEditorStore(options: EditorStoreOptions = {}): EditorStore
   function buildFromDocument(doc: EditorDocument): void {
     title.value = doc.title
     speakersInternal.clear()
+    for (const channel of channels.values()) channel.dispose()
     channels.clear()
 
     for (const spkRef of ensureDocumentSpeakers(doc)) {
@@ -67,7 +68,7 @@ export function createEditorStore(options: EditorStoreOptions = {}): EditorStore
     }
 
     for (const ch of doc.channels) {
-      channels.set(ch.id, createChannelStore(ch, emit, speakers.ensure))
+      channels.set(ch.id, createChannelStore(ch, emit, on, speakers.ensure))
     }
 
     if (channels.size > 0 && !channels.has(activeChannelId.value)) {
@@ -97,7 +98,8 @@ export function createEditorStore(options: EditorStoreOptions = {}): EditorStore
       ensureSpeakersFromTurns(translation.turns, speakers.ensure)
     }
 
-    channels.set(channelId, createChannelStore(channel, emit, speakers.ensure))
+    channels.get(channelId)?.dispose()
+    channels.set(channelId, createChannelStore(channel, emit, on, speakers.ensure))
     emit("channel:sync", { channelId })
   }
 
@@ -118,6 +120,7 @@ export function createEditorStore(options: EditorStoreOptions = {}): EditorStore
     emit("destroy", undefined as never)
     cleanups.forEach((fn) => fn())
     cleanups.length = 0
+    for (const channel of channels.values()) channel.dispose()
     clearEvents()
   }
 

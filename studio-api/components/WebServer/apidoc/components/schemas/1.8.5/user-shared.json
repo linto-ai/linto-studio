@@ -1,0 +1,44 @@
+{
+  "UserShared": {
+    "type": "object",
+    "properties": {
+      "users": {
+        "type": "array",
+        "description": "JSON-encoded array of users to share with",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The user id"
+            },
+            "email": {
+              "type": "string",
+              "description": "The user email"
+            },
+            "right": {
+              "type": "integer",
+              "description": "Access right level to grant to the user"
+            }
+          }
+        }
+      }
+    },
+    "example": {
+      "users": [
+        {
+          "id": "64930e7dca6260263d8c9870",
+          "right": 2
+        },
+        {
+          "id": "64522abafd98b64154a70dd4",
+          "right": 3
+        },
+        {
+          "email": "pifex61401@quipas.com",
+          "right": 3
+        }
+      ]
+    }
+  }
+}

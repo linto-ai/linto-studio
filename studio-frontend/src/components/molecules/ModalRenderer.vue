@@ -9,6 +9,7 @@
       :style="{ zIndex: zIndex + 1 }"
       @submit.prevent="isForm ? apply() : null"
       ref="modalContent"
+      tabindex="-1"
       @click.stop>
       <div class="modal-header flex row align-center justify-between">
         <div class="flex col">
@@ -195,7 +196,7 @@ export default {
     this.previouslyFocused = document.activeElement
     // Focus first focusable element after render
     this.$nextTick(() => {
-      this.focusFirstElement()
+      this.focusModal()
     })
     // Add keydown listener for focus trap
     document.addEventListener("keydown", this.handleKeyDown)
@@ -204,24 +205,44 @@ export default {
     // Remove keydown listener
     document.removeEventListener("keydown", this.handleKeyDown)
     // Restore focus to previously focused element
-    if (this.previouslyFocused && typeof this.previouslyFocused.focus === "function") {
+    if (
+      this.previouslyFocused &&
+      typeof this.previouslyFocused.focus === "function"
+    ) {
       this.previouslyFocused.focus()
     }
   },
   methods: {
-    getFocusableElements() {
+    getFocusableElements(root) {
       const selector =
         'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled])'
-      const modal = this.$refs.modalContent
-      if (!modal) return []
-      return Array.from(modal.querySelectorAll(selector)).filter(
-        (el) => el.offsetParent !== null
+      const scope = root || this.$refs.modalContent
+      if (!scope) return []
+      return Array.from(scope.querySelectorAll(selector)).filter(
+        (el) => el.offsetParent !== null,
       )
     },
-    focusFirstElement() {
-      const elements = this.getFocusableElements()
-      if (elements.length > 0) {
-        elements[0].focus()
+    focusModal() {
+      const modal = this.$refs.modalContent
+      if (!modal) return
+      // Form modals: focus the first field inside the body so pressing Enter
+      // triggers the form's implicit submission (validate + close). The close
+      // button lives in the header and is intentionally skipped.
+      if (this.isForm) {
+        const body = modal.querySelector(".modal-body")
+        const firstField = body ? this.getFocusableElements(body)[0] : null
+        if (firstField) {
+          firstField.focus()
+          return
+        }
+      }
+      // Non-form modals (or a form with no focusable field): focus the dialog
+      // container itself (tabindex="-1"). Focusing the first control would land
+      // on the close button (first in DOM order), so Enter right after open
+      // would close the modal. WAI-ARIA dialog pattern: focus the dialog, then
+      // Tab reaches the first control.
+      if (typeof modal.focus === "function") {
+        modal.focus()
       }
     },
     handleKeyDown(event) {
@@ -435,6 +456,7 @@ now, let's copy them over.
 
 .modal-body {
   border-top: 1px solid var(--neutral-20);
+  border-bottom: 1px solid var(--neutral-20);
   background: var(--primary-soft);
   padding: 1em;
   overflow-y: auto;

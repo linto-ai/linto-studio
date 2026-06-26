@@ -1,9 +1,4 @@
-export const PERMISSIONS = Object.freeze({
-  UNDEFINED: 0,
-  UPLOAD: 1,
-  SUMMARY: 2,
-  SESSION: 4,
-})
+import { ORGANIZATION_PERMISSIONS } from "@/const/organizationPermissions"
 
 export const organizationPermissionsMixin = {
   methods: {
@@ -13,23 +8,43 @@ export const organizationPermissionsMixin = {
     hasPermission: (userRight, desiredRight) =>
       (userRight & desiredRight) == desiredRight,
     hasUploadPermission(permission) {
-      return this.hasPermission(permission, PERMISSIONS.UPLOAD)
+      return this.hasPermission(permission, ORGANIZATION_PERMISSIONS.UPLOAD)
     },
     hasSummaryPermission(permission) {
-      return this.hasPermission(permission, PERMISSIONS.SUMMARY)
+      return this.hasPermission(permission, ORGANIZATION_PERMISSIONS.SUMMARY)
     },
     hasSessionPermission(permission) {
-      return this.hasPermission(permission, PERMISSIONS.SESSION)
+      return this.hasPermission(permission, ORGANIZATION_PERMISSIONS.SESSION)
+    },
+    hasMicrophonePermission(permission) {
+      return this.hasPermission(permission, ORGANIZATION_PERMISSIONS.MICROPHONE)
+    },
+    hasBotPermission(permission) {
+      return this.hasPermission(permission, ORGANIZATION_PERMISSIONS.BOT)
+    },
+    hasSpeakerIdentificationPermission(permission) {
+      return this.hasPermission(
+        permission,
+        ORGANIZATION_PERMISSIONS.SPEAKER_IDENTIFICATION,
+      )
     },
     computePermissionsNumber({
       upload = false,
       summary = false,
       session = false,
+      microphone = false,
+      bot = false,
+      speakerIdentification = false,
     }) {
       return (
-        (upload ? PERMISSIONS.UPLOAD : 0) +
-        (summary ? PERMISSIONS.SUMMARY : 0) +
-        (session ? PERMISSIONS.SESSION : 0)
+        (upload ? ORGANIZATION_PERMISSIONS.UPLOAD : 0) +
+        (summary ? ORGANIZATION_PERMISSIONS.SUMMARY : 0) +
+        (session ? ORGANIZATION_PERMISSIONS.SESSION : 0) +
+        (microphone ? ORGANIZATION_PERMISSIONS.MICROPHONE : 0) +
+        (bot ? ORGANIZATION_PERMISSIONS.BOT : 0) +
+        (speakerIdentification
+          ? ORGANIZATION_PERMISSIONS.SPEAKER_IDENTIFICATION
+          : 0)
       )
     },
   },
@@ -46,6 +61,20 @@ export const organizationPermissionsMixin = {
     },
     canSessionInCurrentOrganization() {
       return this.hasSessionPermission(this.organizationPermissions)
+    },
+    canMicrophoneInCurrentOrganization() {
+      return this.hasMicrophonePermission(this.organizationPermissions)
+    },
+    canBotInCurrentOrganization() {
+      return this.hasBotPermission(this.organizationPermissions)
+    },
+    canStartConversationInCurrentOrganization() {
+      return (
+        this.canUploadInCurrentOrganization ||
+        this.canSessionInCurrentOrganization ||
+        this.canMicrophoneInCurrentOrganization ||
+        this.canBotInCurrentOrganization
+      )
     },
   },
 }

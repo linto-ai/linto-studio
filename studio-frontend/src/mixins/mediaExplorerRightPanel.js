@@ -74,6 +74,28 @@ export const mediaExplorerRightPanelMixin = {
       }
     },
 
+    // Move (or uncategorize if folderId is null), then keep the medias flagged
+    // moved-out (greyed) instead of removing them so an open overview stays put.
+    async moveMediasToFolder(folderId, mediaIds) {
+      if (!mediaIds.length) return
+      if (folderId) {
+        await this.$store.dispatch("folders/moveConversationsToFolder", {
+          folderId,
+          conversationIds: mediaIds,
+        })
+      } else {
+        await this.$store.dispatch("folders/uncategorizeConversations", {
+          conversationIds: mediaIds,
+        })
+      }
+      this.$store.dispatch("folders/fetchFolders")
+      this.$store.dispatch(`${this.storeScope}/updateMedias`, {
+        mediaIds,
+        media: { folderId: folderId || null, _movedOut: true },
+        patch: true,
+      })
+    },
+
     // Common tag handling methods
     async createAndAddTag(tag, mediaId) {
       const newTag = await this.$store.dispatch("tags/createTag", tag)
