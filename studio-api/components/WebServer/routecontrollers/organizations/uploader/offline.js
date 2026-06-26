@@ -73,7 +73,6 @@ async function injectSpeakerIdentification(conversation) {
   const transcription = conversation.metadata.transcription
   const collections = transcription.speakerIdentificationCollections
   if (!Array.isArray(collections) || collections.length === 0) {
-    debug("No speaker identification collections on the conversation")
     return {}
   }
 
@@ -96,7 +95,6 @@ async function injectSpeakerIdentification(conversation) {
       organizations[0],
     )
     transcription.transcriptionConfig = speakerId.transcriptionConfig
-    debug("Speaker identification applied for %o", collections)
     return speakerId.headers
   } catch (err) {
     // A speaker identification failure must not abort the transcription.
