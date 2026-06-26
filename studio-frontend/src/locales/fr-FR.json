@@ -1505,7 +1505,13 @@
       "link_label": "URL de la visioconférence",
       "display_transcription_in_visio_label": "Afficher les sous-titres dans la visioconférence",
       "join_meeting": "Rejoindre la visioconférence",
-      "bot_lang_label": "Langue d'affichage dans la visioconférence"
+      "bot_lang_label": "Langue d'affichage dans la visioconférence",
+      "helper": {
+        "jitsi": "Le bot rejoint automatiquement, aucune action requise.",
+        "bigbluebutton": "Le bot rejoint comme invité ; un modérateur doit l'admettre si la salle exige une approbation.",
+        "teams": "La réunion doit être publique ; le bot arrive dans le hall d'attente et doit être admis manuellement par un participant.",
+        "visio": "Le bot se connecte comme participant standard ; vérifiez que l'accès invité est autorisé sans approbation."
+      }
     },
     "live": {
       "default_name": "Enregistrement sans titre",

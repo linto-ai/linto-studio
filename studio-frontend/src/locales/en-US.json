@@ -1511,7 +1511,13 @@
       "link_label": "URL",
       "display_transcription_in_visio_label": "Display subtitles in the videoconference",
       "join_meeting": "Join the meeting",
-      "bot_lang_label": "Choose language used for videoconference subtitle"
+      "bot_lang_label": "Choose language used for videoconference subtitle",
+      "helper": {
+        "jitsi": "The bot joins automatically, no action required.",
+        "bigbluebutton": "The bot joins as a guest; a moderator must admit it if the room requires approval.",
+        "teams": "The meeting must be public; the bot lands in the lobby and must be admitted manually by a participant.",
+        "visio": "The bot connects as a standard participant; make sure guest access is allowed without approval."
+      }
     },
     "live": {
       "default_name": "Untitled record",

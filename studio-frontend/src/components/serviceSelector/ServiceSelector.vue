@@ -131,9 +131,7 @@ export default {
         if (!service || this.isSecurityDisabled(service)) return
         this.userPickedServiceName = name
         this.pickerOpen = false
-        // Reveal the freshly selected editor, then keep it in view while its
-        // height settles (the ResizeObserver follows until the user scrolls).
-        this.followEditor = true
+        // Reveal the freshly selected editor.
         this.$nextTick(() => this.scrollEditorIntoView())
       },
     },
@@ -187,12 +185,11 @@ export default {
         const el = this.$refs.editor?.$el
         if (!el || !this._resizeObserver) return
         this._resizeObserver.disconnect()
+        // observe() emits a synthetic callback immediately on attach; skip it so
+        // we don't auto-scroll just because the editor (re)mounted.
+        this._skipNextResize = true
         this._resizeObserver.observe(el)
       })
-    },
-    // The user took over scrolling — stop auto-following the editor's height.
-    stopFollowingEditor() {
-      this.followEditor = false
     },
     isSecurityDisabled(service) {
       return this.disabledServiceNames.has(service.serviceName)
@@ -219,9 +216,6 @@ export default {
       // Set when the user explicitly picks a model in the picker; lets the
       // default selection track the recommended model until then.
       userPickedServiceName: null,
-      // While true, the ResizeObserver re-scrolls the editor into view as its
-      // height changes. Cleared on the user's first manual scroll.
-      followEditor: false,
     }
   },
   watch: {
@@ -232,9 +226,13 @@ export default {
   },
   mounted() {
     this._resizeObserver = new ResizeObserver(() => {
+      // Consume the synthetic first callback fired right after observe().
+      if (this._skipNextResize) {
+        this._skipNextResize = false
+        return
+      }
       requestAnimationFrame(() => this.scrollEditorIntoView("auto"))
     })
-    this.observeEditor()
   },
   beforeDestroy() {
     this._resizeObserver?.disconnect()

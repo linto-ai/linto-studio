@@ -59,7 +59,11 @@ function getTranscriptionService(endpoint, isSingleFile) {
   return `${process.env.GATEWAY_SERVICES}/${endpoint}${isSingleFile ? "/transcribe" : "/transcribe-multi"}`
 }
 
-async function prepareTranscriptionRequest(conversation, isSingleFile) {
+async function prepareTranscriptionRequest(
+  conversation,
+  isSingleFile,
+  headers = {},
+) {
   const filePath = `${process.cwd()}/${process.env.VOLUME_FOLDER}/${conversation.metadata.audio.filepath}`
   const fileBuffer = fs.readFileSync(filePath)
   const form = new FormData()
@@ -73,10 +77,16 @@ async function prepareTranscriptionRequest(conversation, isSingleFile) {
     form,
     conversation.metadata.transcription.transcriptionConfig,
     isSingleFile,
+    headers,
   )
 }
 
-function prepareRequest(form, transcriptionConfig, isSingleFile = true) {
+function prepareRequest(
+  form,
+  transcriptionConfig,
+  isSingleFile = true,
+  headers = {},
+) {
   const configKey = isSingleFile
     ? "transcriptionConfig"
     : "multiTranscriptionConfig"
@@ -91,6 +101,7 @@ function prepareRequest(form, transcriptionConfig, isSingleFile = true) {
     headers: {
       "Content-Type": "multipart/form-data",
       accept: "application/json",
+      ...headers,
     },
     formData: form,
     encoding: null,

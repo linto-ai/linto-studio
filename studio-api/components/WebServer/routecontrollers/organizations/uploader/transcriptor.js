@@ -170,14 +170,9 @@ async function transcribe(isSingleFile, req, res, next) {
       formData.form,
       req.body.transcriptionConfig,
       isSingleFile,
+      speakerIdHeaders,
     )
     req.body.file_data = formData.file_data
-
-    // Attach the speaker identification security headers (X-Organization-Id
-    // and optional token) when an identification config was injected.
-    if (speakerIdHeaders) {
-      options.headers = { ...options.headers, ...speakerIdHeaders }
-    }
 
     const processingJob = await axios.postFormData(
       transcriptionService,

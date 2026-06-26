@@ -119,13 +119,19 @@ async function initCaptionsForConversation(sessionData, name) {
           )
 
           caption.metadata.audio = generateAudioMetadata(audioId, audioFormat)
-          const { serviceName, endpoint, lang, config } =
-            channel.meta.transcriptionService
+          const {
+            serviceName,
+            endpoint,
+            lang,
+            config,
+            speakerIdentificationCollections,
+          } = channel.meta.transcriptionService
           caption.metadata.transcription = {
             serviceName,
             endpoint,
             lang,
             transcriptionConfig: config,
+            speakerIdentificationCollections,
           }
           caption.jobs.transcription.state = "waiting"
           captions.push(caption)
