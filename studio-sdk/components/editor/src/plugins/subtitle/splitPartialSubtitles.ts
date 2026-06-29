@@ -79,33 +79,39 @@ export default function splitPartialSubtitles(
     }
   }
 
-  const lineStarts = [0, ...newCutPositions]
-  const extraCutPositions: number[] = []
+  // The scroller only ever displays the last two lines, so we only keep those
+  // two inside the canvas.
+  const lineText = (from: number, to?: number): string =>
+    newTextSplitBySpace.slice(from, to).join(" ")
 
-  for (let i = 0; i < lineStarts.length; i++) {
-    const lineStart = lineStarts[i]!
-    const lineEnd =
-      i + 1 < lineStarts.length ? lineStarts[i + 1]! : newTextSplitBySpace.length
-    const line = newTextSplitBySpace.slice(lineStart, lineEnd).join(" ")
+  // Step 1 — keep the second-to-last (first visible) line inside the canvas. If a
+  // widened word pushed it off the edge, move the last cut earlier so the
+  // overflowing tail flows down into the last line; the head stays in place. We
+  // trigger on the overflow threshold but cut at the normal one, leaving a margin
+  // before it can overflow again (hysteresis, avoids re-cutting on every partial).
+  if (computeIfTextOverflows && newCutPositions.length > 0) {
+    const lastIndex = newCutPositions.length - 1
+    const lineStart = lastIndex > 0 ? newCutPositions[lastIndex - 1]! : 0
+    const secondToLastLine = lineText(lineStart, newCutPositions[lastIndex]!)
 
-    // The last line is still being built, so it is cut as soon as it passes the
-    // normal limit. Earlier lines already have stable boundaries: we only re-cut
-    // them when an overflow predicate is provided and the line exceeds it (e.g. a
-    // widened word pushed the line off the canvas).
-    const isLastLine = i === lineStarts.length - 1
-    const needsCut = isLastLine
-      ? computeIfTextIsTooLong(line)
-      : (computeIfTextOverflows?.(line) ?? false)
-    if (!needsCut) continue
-
-    const cuts = getIndexesWhereToCutText(line, computeIfTextIsTooLong)
-    extraCutPositions.push(...cuts.map((index) => index + lineStart))
+    if (computeIfTextOverflows(secondToLastLine)) {
+      const [headCut] = getIndexesWhereToCutText(
+        secondToLastLine,
+        computeIfTextIsTooLong,
+      )
+      // headCut is undefined for a single unsplittable word: leave it as is.
+      if (headCut !== undefined) newCutPositions[lastIndex] = lineStart + headCut
+    }
   }
 
-  if (extraCutPositions.length > 0) {
-    newCutPositions = [...newCutPositions, ...extraCutPositions].sort(
-      (a, b) => a - b,
-    )
+  // Step 2 — cut the last line if it is too long, including the words step 1 may
+  // have just pushed down. This is the normal live-growth cut.
+  const lastLineStart =
+    newCutPositions.length > 0 ? newCutPositions[newCutPositions.length - 1]! : 0
+  const lastLine = lineText(lastLineStart)
+  if (computeIfTextIsTooLong(lastLine)) {
+    const cuts = getIndexesWhereToCutText(lastLine, computeIfTextIsTooLong)
+    newCutPositions = newCutPositions.concat(cuts.map((i) => i + lastLineStart))
   }
 
   return {

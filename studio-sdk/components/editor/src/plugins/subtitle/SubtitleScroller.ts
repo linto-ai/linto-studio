@@ -189,10 +189,9 @@ export class SubtitleScroller extends SubtitleDrawer {
     return this.textWidth(text) > this.canvas.width - 2 * this.paddingInline
   }
 
-  // Overflow threshold: the text is drawn at x = paddingInline, so it leaves the
-  // canvas once its width exceeds canvas.width - paddingInline. Spilling into the
-  // inline margin is tolerated; going past this means an already-cut line must be
-  // re-cut.
+  // Overflow threshold: the text is drawn at x = paddingInline, so it reaches the
+  // canvas edge once its width exceeds canvas.width - paddingInline. Spilling into
+  // the inline margin is tolerated; going past this re-cuts an already-shown line.
   private computeIfTextOverflows(text: string): boolean {
     return this.textWidth(text) > this.canvas.width - this.paddingInline
   }

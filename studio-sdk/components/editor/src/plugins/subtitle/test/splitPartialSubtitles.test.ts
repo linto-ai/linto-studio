@@ -113,3 +113,68 @@ describe("splitPartialSubtitles — cut shifting on edits", () => {
     ])
   })
 })
+
+// The overflow predicate is char-based here, standing in for pixel width:
+//   tooLong  = normal cut threshold  (canvas.width - 2 * paddingInline)
+//   overflows = canvas edge / overflow (canvas.width - paddingInline)
+// The gap between 11 and 15 is the inline margin a line may spill into.
+describe("splitPartialSubtitles — overflow on the second-to-last line", () => {
+  const tooLong = (t: string) => t.length > 11
+  const overflows = (t: string) => t.length > 15
+
+  const indexesAfter = (
+    prev: string,
+    prevIndexes: number[],
+    next: string,
+  ): number[] =>
+    splitPartialSubtitles(
+      { previousText: prev, previousIndexes: prevIndexes },
+      next,
+      tooLong,
+      overflows,
+    ).previousIndexes
+
+  it("pushes the overflowing tail down and keeps the head when the last line has room", () => {
+    // "ddd" -> "dddd" makes line 1 leave the canvas; its tail flows down and the
+    // head ("aaa bbb ccc") stays in place.
+    expect(indexesAfter("aaa bbb ccc ddd z", [4], "aaa bbb ccc dddd z")).toEqual([
+      3,
+    ])
+  })
+
+  it("tolerates a line that only spills into the inline margin (no re-cut)", () => {
+    // line 1 is 13 chars: past the soft limit (11) but within the hard one (15).
+    expect(indexesAfter("aaaa bbbb ccc z", [3], "aaaa bbbb ccc z")).toEqual([3])
+  })
+
+  it("scrolls when the last line is full and cannot absorb the pushed-down word", () => {
+    expect(
+      indexesAfter("aaa bbb ccc ddd xxx yyy", [4], "aaa bbb ccc dddd xxx yyy"),
+    ).toEqual([3, 5])
+  })
+
+  it("leaves an unsplittable wide word in place", () => {
+    expect(
+      indexesAfter("wordwordwordword z", [1], "wordwordwordword z"),
+    ).toEqual([1])
+  })
+
+  it("does nothing when no line overflows", () => {
+    expect(indexesAfter("aa bb cc z", [3], "aa bb cc z")).toEqual([3])
+  })
+
+  it("worked example: pushes the head down then re-cuts the rest", () => {
+    // "mot2" widens to "mot2222" and "mot7" is appended:
+    //   mot1 mot2 mot3 | mot4 mot5 mot6
+    //   -> mot1 mot2222 | mot3 mot4 mot5 | mot6 mot7
+    const soft = (t: string) => t.length > 14
+    const hard = (t: string) => t.length > 16
+    const res = splitPartialSubtitles(
+      { previousText: "mot1 mot2 mot3 mot4 mot5 mot6", previousIndexes: [3] },
+      "mot1 mot2222 mot3 mot4 mot5 mot6 mot7",
+      soft,
+      hard,
+    )
+    expect(res.previousIndexes).toEqual([2, 5])
+  })
+})
