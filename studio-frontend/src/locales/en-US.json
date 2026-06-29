@@ -1548,6 +1548,18 @@
         "title": "A recording is pending",
         "continue_button": "Resume recording"
       }
+    },
+    "placeholder": {
+      "audio": {
+        "title": "A recording is already pending",
+        "subtitle": "You can only have one recording at a time. Resume or end the pending one to start a new recording.",
+        "continue_button": "Resume recording"
+      },
+      "visio": {
+        "title": "A videoconference is already being recorded",
+        "subtitle": "You can only record one videoconference at a time. Show the transcript or end the current recording to start a new one.",
+        "continue_button": "Show transcript"
+      }
     }
   },
   "share_menu": {

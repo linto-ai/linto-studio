@@ -1542,6 +1542,18 @@
       "title": "Sauvegarder l'enregistrement",
       "name": "Nom",
       "confirm": "Enregistrer"
+    },
+    "placeholder": {
+      "audio": {
+        "title": "Un enregistrement est déjà en attente",
+        "subtitle": "Vous ne pouvez avoir qu'un seul enregistrement à la fois. Reprenez ou terminez celui en attente pour en démarrer un nouveau.",
+        "continue_button": "Reprendre l'enregistrement"
+      },
+      "visio": {
+        "title": "Une visioconférence est déjà en cours d'enregistrement",
+        "subtitle": "Vous ne pouvez enregistrer qu'une seule visioconférence à la fois. Affichez la transcription ou terminez l'enregistrement en cours pour en démarrer un nouveau.",
+        "continue_button": "Afficher la transcription"
+      }
     }
   },
   "share_menu": {
