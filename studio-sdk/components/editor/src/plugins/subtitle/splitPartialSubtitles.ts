@@ -26,6 +26,7 @@ export default function splitPartialSubtitles(
   { previousText, previousIndexes: oldCutPositions }: SubtitleState,
   newText: string,
   computeIfTextIsTooLong: (text: string) => boolean,
+  computeIfTextOverflows?: (text: string) => boolean,
 ): SubtitleState {
   if (!newText) {
     return { previousText, previousIndexes: oldCutPositions }
@@ -78,19 +79,33 @@ export default function splitPartialSubtitles(
     }
   }
 
-  const lastLinePosition = newCutPositions.length > 0
-    ? newCutPositions[newCutPositions.length - 1]!
-    : 0
-  const lastLine = newTextSplitBySpace.slice(lastLinePosition).join(" ")
-  if (computeIfTextIsTooLong(lastLine)) {
-    const cutPositionsForLastLine = getIndexesWhereToCutText(
-      lastLine,
-      computeIfTextIsTooLong,
+  const lineStarts = [0, ...newCutPositions]
+  const extraCutPositions: number[] = []
+
+  for (let i = 0; i < lineStarts.length; i++) {
+    const lineStart = lineStarts[i]!
+    const lineEnd =
+      i + 1 < lineStarts.length ? lineStarts[i + 1]! : newTextSplitBySpace.length
+    const line = newTextSplitBySpace.slice(lineStart, lineEnd).join(" ")
+
+    // The last line is still being built, so it is cut as soon as it passes the
+    // normal limit. Earlier lines already have stable boundaries: we only re-cut
+    // them when an overflow predicate is provided and the line exceeds it (e.g. a
+    // widened word pushed the line off the canvas).
+    const isLastLine = i === lineStarts.length - 1
+    const needsCut = isLastLine
+      ? computeIfTextIsTooLong(line)
+      : (computeIfTextOverflows?.(line) ?? false)
+    if (!needsCut) continue
+
+    const cuts = getIndexesWhereToCutText(line, computeIfTextIsTooLong)
+    extraCutPositions.push(...cuts.map((index) => index + lineStart))
+  }
+
+  if (extraCutPositions.length > 0) {
+    newCutPositions = [...newCutPositions, ...extraCutPositions].sort(
+      (a, b) => a - b,
     )
-    const cutPositionsForLastLineIncremented = cutPositionsForLastLine.map(
-      (index) => index + lastLinePosition,
-    )
-    newCutPositions = newCutPositions.concat(cutPositionsForLastLineIncremented)
   }
 
   return {
@@ -104,27 +119,23 @@ function detectReplacements(diffList: DiffEntry[]): DiffWithReplacements {
 
   for (let i = 0; i < diffList.length; i++) {
     const currentDiff = diffList[i]!
-    if (!currentDiff.removed) {
+    const nextDiff = diffList[i + 1]
+
+    // A replacement is a removed block immediately followed by an added one.
+    const isReplacement = currentDiff.removed && nextDiff?.added
+
+    if (isReplacement) {
+      result.push({
+        replaced: true,
+        removed: true,
+        added: true,
+        countRemoved: currentDiff.count,
+        countAdded: nextDiff!.count,
+      })
+      i++ // skip the added block, already merged into this replacement
+    } else {
       result.push(currentDiff)
-      continue
     }
-
-    if (i + 1 < diffList.length) {
-      const nextDiff = diffList[i + 1]!
-      if (nextDiff.added) {
-        result.push({
-          replaced: true,
-          removed: currentDiff.removed ?? false,
-          added: nextDiff.added ?? false,
-          countRemoved: currentDiff.count,
-          countAdded: nextDiff.count,
-        })
-        i++
-        continue
-      }
-    }
-
-    result.push(currentDiff)
   }
 
   return result

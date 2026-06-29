@@ -109,6 +109,7 @@ export class SubtitleScroller extends SubtitleDrawer {
       this.currentState,
       currentText.trim(),
       this.computeIfTextIsTooLong.bind(this),
+      this.computeIfTextOverflows.bind(this),
     )
     this.draw()
   }
@@ -119,6 +120,7 @@ export class SubtitleScroller extends SubtitleDrawer {
       this.currentState,
       text.trim(),
       this.computeIfTextIsTooLong.bind(this),
+      this.computeIfTextOverflows.bind(this),
     )
     this.draw()
   }
@@ -129,6 +131,7 @@ export class SubtitleScroller extends SubtitleDrawer {
       this.currentState,
       text.trim(),
       this.computeIfTextIsTooLong.bind(this),
+      this.computeIfTextOverflows.bind(this),
     )
     this.draw()
     this.resetState()
@@ -175,11 +178,22 @@ export class SubtitleScroller extends SubtitleDrawer {
     return state.previousText.split(" ").slice(beforeLastIndex, lastIndex).join(" ")
   }
 
-  private computeIfTextIsTooLong(text: string): boolean {
+  private textWidth(text: string): number {
     const ctx = this.canvas.getContext("2d")!
     ctx.font = `${this.fontSize}px ${this.font}`
-    const maxWidth = this.canvas.width - 2 * this.paddingInline
-    const width = ctx.measureText(text).width
-    return width > maxWidth
+    return ctx.measureText(text).width
+  }
+
+  // Normal cut threshold: keeps both inline margins free.
+  private computeIfTextIsTooLong(text: string): boolean {
+    return this.textWidth(text) > this.canvas.width - 2 * this.paddingInline
+  }
+
+  // Overflow threshold: the text is drawn at x = paddingInline, so it leaves the
+  // canvas once its width exceeds canvas.width - paddingInline. Spilling into the
+  // inline margin is tolerated; going past this means an already-cut line must be
+  // re-cut.
+  private computeIfTextOverflows(text: string): boolean {
+    return this.textWidth(text) > this.canvas.width - this.paddingInline
   }
 }
