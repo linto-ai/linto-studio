@@ -9,6 +9,10 @@ const debugWS = customDebug("Websocket:AudioStream:debug")
 const RECONNECT_BASE_DELAY = 1000
 const RECONNECT_MAX_DELAY = 8000
 const MAX_RECONNECT_ATTEMPTS = 6
+// Max wait for the server ack after the socket opens. Without it a socket that
+// opens but never acks would leave the connect/reconnect promise pending
+// forever, stalling the bounded retry loop.
+const ACK_TIMEOUT = 8000
 
 // Websocket to session transcriber to send audio
 export default class AudioStreamWebSocket {
@@ -138,9 +142,9 @@ export default class AudioStreamWebSocket {
   async changeChannel(channel, newConfig) {
     this.channel = channel
 
-    if (this.state.isConnected) {
-      this.close()
-    }
+    // Always tear down first: this also cancels an in-flight reconnection loop
+    // (which runs while isConnected is false), avoiding a zombie loop.
+    this.close()
 
     let config = this.currentConfig
     if (newConfig) {
@@ -162,6 +166,11 @@ export default class AudioStreamWebSocket {
       return
     }
 
+    // Drop any lingering socket (e.g. one left open after an invalid ack)
+    // before opening a new one. Detach handlers first so its close does not
+    // re-enter the reconnection logic.
+    this.discardSocket()
+
     this.intentionalClose = false
     // While reconnecting we keep connexionLost/notif state across attempts.
     if (!this.state.reconnecting) {
@@ -177,20 +186,25 @@ export default class AudioStreamWebSocket {
         reject("No websocket url")
         return
       }
-      this.socket = new WebSocket(url)
-      this.socket.onopen = () => {
+      const socket = new WebSocket(url)
+      this.socket = socket
+      socket.onopen = () => {
+        // Ignore events from a socket that is no longer the current one.
+        if (socket !== this.socket) return
         debugWS("connected to websocket server")
         this.state.isConnected = true
         resolve()
       }
-      this.socket.onerror = (event) => {
+      socket.onerror = (event) => {
+        if (socket !== this.socket) return
         debugWS("websocket error", event)
         this.state.isConnected = false
         this.handleConnexionLost()
         // No-op if the connection promise already resolved.
         reject("websocket error")
       }
-      this.socket.onclose = () => {
+      socket.onclose = () => {
+        if (socket !== this.socket) return
         debugWS("websocket closed")
         this.state.isConnected = false
         this.state.receivedACK = false
@@ -205,16 +219,32 @@ export default class AudioStreamWebSocket {
     return new Promise((resolve, reject) => {
       this.connect()
         .then(() => {
-          this.socket.send(JSON.stringify(config))
-          this.socket.onmessage = (event) => {
+          const socket = this.socket
+          socket.send(JSON.stringify(config))
+
+          const ackTimer = setTimeout(() => {
+            debugWS("ack timeout")
+            socket.close()
+            reject("ack timeout")
+          }, ACK_TIMEOUT)
+
+          socket.onmessage = (event) => {
+            // Ignore messages from a socket that is no longer the current one.
+            if (socket !== this.socket) return
             const msg = JSON.parse(event.data)
             if (msg.type === "ack") {
+              clearTimeout(ackTimer)
+              // Handshake done: stop handling messages so a later non-ack
+              // message can't close this (upstream-only) socket.
+              socket.onmessage = null
               debugWS("ack received")
               this.state.receivedACK = true
               this.hadSuccessfulConnection = true
               resolve()
             } else {
+              clearTimeout(ackTimer)
               debugWS("ack not received", msg)
+              socket.close()
               reject("ack not received")
             }
           }
@@ -224,6 +254,20 @@ export default class AudioStreamWebSocket {
           reject(err)
         })
     })
+  }
+
+  // Detach handlers and close any current socket without re-triggering the
+  // connexion-lost logic.
+  discardSocket() {
+    if (!this.socket) {
+      return
+    }
+    this.socket.onopen = null
+    this.socket.onerror = null
+    this.socket.onclose = null
+    this.socket.onmessage = null
+    this.socket.close()
+    this.socket = null
   }
 
   send(data) {
