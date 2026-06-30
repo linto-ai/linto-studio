@@ -17,6 +17,7 @@
       :sortListDirection="sortDirection"
       :loading="loading"
       @handleTokenRenew="handleTokenRenew"
+      @handleTokenUpdated="handleTokenUpdated"
       @list_sort_by="handleSort"
       @delete-token="deleteToken"
       @input="updateSelectedTokens" />
@@ -92,6 +93,9 @@ export default {
       this.sortTokens()
     },
     handleTokenRenew() {
+      this.fetchTokens()
+    },
+    handleTokenUpdated() {
       this.fetchTokens()
     },
     sortTokens() {

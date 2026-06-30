@@ -89,6 +89,12 @@
       "avatar_too_large": "Fichier trop volumineux (5 Mo maximum)",
       "avatar_upload_failed": "La clé d'API a été créée mais l'avatar n'a pas pu être téléversé"
     },
+    "modal_edit": {
+      "title": "Éditer la clé d'API",
+      "name_required": "Le nom est requis",
+      "update_success": "Clé d'API mise à jour",
+      "update_error": "La clé d'API n'a pas pu être mise à jour"
+    },
     "modal_delete": {
       "title": "Supprimer la clé d'API '{name}'",
       "content": "Êtes-vous sûr de vouloir supprimer la clé d'API {name} ?"

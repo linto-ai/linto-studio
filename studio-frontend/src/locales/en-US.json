@@ -88,6 +88,12 @@
       "avatar_too_large": "File too large (5 MB maximum)",
       "avatar_upload_failed": "The API key was created but the avatar could not be uploaded"
     },
+    "modal_edit": {
+      "title": "Edit API key",
+      "name_required": "Name is required",
+      "update_success": "API key updated",
+      "update_error": "The API key could not be updated"
+    },
     "modal_delete": {
       "title": "Delete API token {name}",
       "content": "Are you sure you want to delete the token {name}?"
