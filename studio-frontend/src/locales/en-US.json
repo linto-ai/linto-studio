@@ -1705,6 +1705,7 @@
   },
   "websocket": {
     "disconnected": "Content not updated, check your internet connection",
+    "audio_stream_lost": "Transcription interrupted, audio is no longer being transmitted. Check your internet connection.",
     "lost_connexion": "Connection lost, attempting to reconnect...",
     "restored": "Connection restored"
   },

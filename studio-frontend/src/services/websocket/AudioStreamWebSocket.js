@@ -1,5 +1,7 @@
 import Vue from "vue"
 import { customDebug } from "../../tools/customDebug"
+import store from "@/store/index.js"
+import i18n from "@/i18n"
 
 const debugWS = customDebug("Websocket:AudioStream:debug")
 
@@ -9,11 +11,33 @@ export default class AudioStreamWebSocket {
     this.state = Vue.observable({
       isConnected: false,
       receivedACK: false,
+      connexionLost: false,
     })
 
     this.socket = null
     this.channel = null
     this.currentConfig = null
+    // Tells apart a close() we triggered (stop recording, channel change)
+    // from a network drop, so we only notify on the latter.
+    this.intentionalClose = false
+  }
+
+  clearNotifs() {
+    store.dispatch("system/removeNotificationById", "websocket-error")
+  }
+
+  handleConnexionLost() {
+    if (this.intentionalClose) {
+      return
+    }
+    this.state.connexionLost = true
+    this.clearNotifs()
+    store.dispatch("system/addNotification", {
+      id: "websocket-error",
+      message: i18n.t("websocket.audio_stream_lost"),
+      timeout: 0,
+      type: "error",
+    })
   }
 
   async changeChannel(channel, newConfig) {
@@ -43,6 +67,10 @@ export default class AudioStreamWebSocket {
       return
     }
 
+    this.intentionalClose = false
+    this.state.connexionLost = false
+    this.clearNotifs()
+
     return new Promise((resolve, reject) => {
       const url = this.channel?.streamEndpoints?.ws
       if (!url) {
@@ -55,6 +83,20 @@ export default class AudioStreamWebSocket {
         debugWS("connected to websocket server")
         this.state.isConnected = true
         resolve()
+      }
+      this.socket.onerror = (event) => {
+        debugWS("websocket error", event)
+        this.state.isConnected = false
+        this.handleConnexionLost()
+        // No-op if the connection promise already resolved.
+        reject("websocket error")
+      }
+      this.socket.onclose = () => {
+        debugWS("websocket closed")
+        this.state.isConnected = false
+        this.state.receivedACK = false
+        this.handleConnexionLost()
+        reject("websocket closed")
       }
     })
   }
@@ -93,10 +135,13 @@ export default class AudioStreamWebSocket {
   }
 
   close() {
+    this.intentionalClose = true
+    this.clearNotifs()
     if (this.socket) {
       this.socket.close()
     }
     this.state.isConnected = false
     this.state.receivedACK = false
+    this.state.connexionLost = false
   }
 }

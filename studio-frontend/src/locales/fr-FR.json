@@ -1699,6 +1699,7 @@
   },
   "websocket": {
     "disconnected": "Le contenu n'est plus synchronisé. Veuillez vérifier votre connexion internet.",
+    "audio_stream_lost": "Transcription interrompue, l'audio n'est plus transmis. Vérifiez votre connexion internet.",
     "lost_connexion": "Connexion interrompue, tentative de reconnexion en cours...",
     "restored": "Connexion restaurée"
   },
