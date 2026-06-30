@@ -51,7 +51,8 @@
       @close="modalOrgSelector = false" />
 
     <!-- Personnel -->
-    <div class="media-explorer-menu__item media-explorer-menu__item--section">
+    <div
+      class="media-explorer-menu__item media-explorer-menu__item--section media-explorer-menu__item--label">
       <ph-icon name="user" size="20" />
       <span>{{ $t("navigation.sections.personal") }}</span>
     </div>
@@ -270,6 +271,14 @@ export default {
       font-weight: 600;
       padding-top: 0.25rem;
       padding-bottom: 0.25rem;
+    }
+
+    &--label {
+      cursor: default;
+
+      &:hover {
+        background-color: transparent;
+      }
     }
 
     &__org-info {

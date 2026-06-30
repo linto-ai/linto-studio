@@ -53,16 +53,18 @@
         </template>
 
         <template #cell-personal="{ value }">
-          <span
-            v-if="value"
-            :title="$t('backoffice.organisation_list.personal_organization')">
-            <ph-icon name="user" size="md" weight="regular" />
-          </span>
-          <span
-            v-else
-            :title="$t('backoffice.organisation_list.group_organization')">
-            <ph-icon name="users-three" size="md" weight="regular" />
-          </span>
+          <Tooltip
+            :text="
+              value
+                ? $t('backoffice.organisation_list.personal_organization')
+                : $t('backoffice.organisation_list.group_organization')
+            "
+            position="bottom">
+            <Avatar
+              :icon="value ? 'user' : 'users-three'"
+              color="neutral-10"
+              size="md" />
+          </Tooltip>
         </template>
 
         <template #cell-created="{ value, id }">

@@ -4,7 +4,6 @@
     :value="value"
     :selectedItems="selectedItems"
     :pinnedItems="pinnedItems"
-    :minSearchLength="0"
     :searchPlaceholder="searchPlaceholder"
     selection
     :overlay="false"
