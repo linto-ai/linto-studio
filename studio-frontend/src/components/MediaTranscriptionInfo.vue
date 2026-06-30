@@ -1,6 +1,7 @@
 <template>
   <div class="media-transcription-info flex col flex1">
     <InfoList
+      v-if="rows.length"
       :title="$t('media_explorer.panel.transcription.title')"
       :rows="rows">
       <!-- Template row actions (Voir / Utiliser ce modèle). -->
@@ -25,6 +26,8 @@
       </template>
     </InfoList>
 
+    <MediaSessionInfo v-if="medias.length === 1" :media="medias[0]" />
+
     <ModalSessionTemplateInfo
       v-if="templateDisplay && templateDisplay.id"
       v-model="showTemplateInfo"
@@ -38,9 +41,10 @@ import { mapGetters } from "vuex"
 
 import Button from "@/components/atoms/Button.vue"
 import InfoList from "@/components/molecules/InfoList.vue"
+import MediaSessionInfo from "./MediaSessionInfo.vue"
 import ModalSessionTemplateInfo from "./ModalSessionTemplateInfo.vue"
 import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
-import formatLanguageCode from "@/tools/formatLanguage"
+import { formatLanguageMixin } from "@/mixins/formatLanguage"
 import resolveDiarizationCollectionName from "@/tools/resolveDiarizationCollectionName.js"
 
 // Models that punctuate inline: punctuation is always applied regardless of
@@ -58,8 +62,8 @@ function valuesEqual(a, b) {
 
 export default {
   name: "MediaTranscriptionInfo",
-  mixins: [organizationPermissionsMixin],
-  components: { Button, InfoList, ModalSessionTemplateInfo },
+  mixins: [organizationPermissionsMixin, formatLanguageMixin],
+  components: { Button, InfoList, MediaSessionInfo, ModalSessionTemplateInfo },
   props: {
     // One or more medias. Single media renders its values; multiple medias
     // collapse each field to a common value or the "multiple values" sentinel.
@@ -81,7 +85,7 @@ export default {
     // Each field knows its icon, label and how to read one media. Rows reduce
     // these across the selection.
     fieldDefs() {
-      return [
+      const defs = [
         {
           id: "engine",
           icon: "sparkle",
@@ -124,6 +128,11 @@ export default {
           get: (m) => this.formatIdentification(m),
         },
       ]
+      // Session media show the language in MediaSessionInfo.
+      if (this.isSessionMedia) {
+        return defs.filter((def) => def.id !== "language")
+      }
+      return defs
     },
     paramRows() {
       const empty = this.$t("media_explorer.panel.transcription.empty")
@@ -147,7 +156,11 @@ export default {
     // The template, when present, is the leading row of the same list; its
     // actions are injected through the `actions-template` slot.
     rows() {
-      if (!this.templateDisplay) return this.paramRows
+      const params =
+        !this.isSessionMedia || this.sessionHasTranscription
+          ? this.paramRows
+          : []
+      if (!this.templateDisplay) return params
       return [
         {
           id: "template",
@@ -156,7 +169,7 @@ export default {
           value: this.templateDisplay.name,
           muted: this.templateDisplay.multiple,
         },
-        ...this.paramRows,
+        ...params,
       ]
     },
     // Collapses the template across the selection: a common template shows its
@@ -185,6 +198,17 @@ export default {
         multiple: false,
       }
     },
+    isSessionMedia() {
+      return (
+        this.medias.length === 1 &&
+        (this.medias[0]?.metadata?.session?.channels?.length ?? 0) > 0
+      )
+    },
+    sessionHasTranscription() {
+      if (!this.isSessionMedia) return false
+      const transcription = this.medias[0]?.metadata?.transcription
+      return !!(transcription?.endpoint || transcription?.transcriptionConfig)
+    },
   },
   methods: {
     config(media) {
@@ -194,12 +218,6 @@ export default {
     // is often "*" (auto-detect), which is not what we want to display.
     resolvedLanguage(media) {
       return media?.locale || this.config(media)?.language || null
-    },
-    formatLanguage(lang) {
-      return formatLanguageCode(lang, {
-        locale: this.$i18n.locale,
-        autoLabel: this.$t("lang.automatic"),
-      })
     },
     formatBool(value) {
       return value

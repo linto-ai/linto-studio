@@ -849,6 +849,14 @@
         "speakers_count": "{count} speaker | {count} speakers",
         "multiple_values": "Multiple values",
         "empty": "—"
+      },
+      "session": {
+        "title": "Session channels",
+        "channel": "Channel",
+        "name": "Name",
+        "languages": "Languages",
+        "translations": "Translations",
+        "no_translations": "None"
       }
     },
     "no_medias_selected": "No media selected",

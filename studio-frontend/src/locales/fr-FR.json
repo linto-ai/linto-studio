@@ -843,6 +843,14 @@
         "speakers_count": "{count} locuteur | {count} locuteurs",
         "multiple_values": "Valeurs multiples",
         "empty": "—"
+      },
+      "session": {
+        "title": "Canaux de la session",
+        "channel": "Canal",
+        "name": "Nom",
+        "languages": "Langues",
+        "translations": "Traductions",
+        "no_translations": "Aucune"
       }
     },
     "no_medias_selected": "Aucun média sélectionné",
