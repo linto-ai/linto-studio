@@ -28,7 +28,7 @@
     <FormInput :field="fieldInputReadonly" readonly />
     <FormInput :field="dateTimeInput" />
 
-    <h3>FormInput — leading icon (field.leadingIcon)</h3>
+    <h3>FormInput - leading icon (field.leadingIcon)</h3>
     <FormInput :field="fieldInputIcon" :inputFullWidth="true" />
     <FormInput :field="fieldInputIconError" :inputFullWidth="true" />
     <FormInput :field="fieldInputIconDisabled" disabled :inputFullWidth="true" />
@@ -67,11 +67,11 @@
     <OrgaRoleSelector v-model="role" />
     <OrgaRoleSelector v-model="role" readonly />
     <div class="flex col gap-tiny">
-      <span>SegmentedControl — value: {{ segmentedValue }}</span>
+      <span>SegmentedControl - value: {{ segmentedValue }}</span>
       <SegmentedControl v-model="segmentedValue" :options="segmentedOptions" />
     </div>
     <div class="flex col gap-tiny">
-      <span>OrganizationSelector — value: {{ organizationId }}</span>
+      <span>OrganizationSelector - value: {{ organizationId }}</span>
       <OrganizationSelector
         v-model="organizationId"
         :pinnedItems="organizationPinnedItems"

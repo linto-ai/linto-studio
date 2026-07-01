@@ -320,7 +320,7 @@ async function storeSession(session, name = undefined) {
 
     if (canonicalCount === 0) {
       logger.warn(
-        `storeSession: session ${session.id} has no canonical captions after filtering — nothing stored`,
+        `storeSession: session ${session.id} has no canonical captions after filtering, nothing stored`,
       )
       return
     }
@@ -530,7 +530,7 @@ function emitConversationFromSession(ioHandler, session, result, sessionId, labe
     }
   } else {
     logger.warn(
-      `${label} ${sessionId} stopped with no storable captions — no conversation created`,
+      `${label} ${sessionId} stopped with no storable captions, no conversation created`,
     )
   }
 }

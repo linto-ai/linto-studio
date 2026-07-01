@@ -487,7 +487,7 @@
       "language_label": "Langue",
       "number_of_speaker_label": "Nombre de locuteurs",
       "recommended_badge": "Recommandé",
-      "security_not_accessible": "Non accessible — niveau de confidentialité insuffisant",
+      "security_not_accessible": "Non accessible : niveau de confidentialité insuffisant",
       "no_model_for_level": "Aucun modèle ne respecte le niveau de confidentialité choisi.",
       "change_model": "Changer de modèle",
       "choose_model": "Choisir un modèle de transcription",
@@ -842,7 +842,7 @@
         "value_disabled": "Désactivée",
         "speakers_count": "{count} locuteur | {count} locuteurs",
         "multiple_values": "Valeurs multiples",
-        "empty": "—"
+        "empty": "-"
       },
       "session": {
         "title": "Canaux de la session",
@@ -1590,7 +1590,7 @@
     "default_right_label": "Droit par défaut",
     "applied_to_every_member": "Appliqué à tous les membres",
     "exceptions_label": "Exceptions",
-    "no_exceptions": "Aucune exception — tous les membres suivent le droit par défaut.",
+    "no_exceptions": "Aucune exception. Tous les membres suivent le droit par défaut.",
     "external_empty": "Invitez des personnes extérieures à votre organisation par email ci-dessus.",
     "show_other_members": "Voir les autres membres ({count})",
     "other_members_label": "Autres membres",
@@ -1763,7 +1763,7 @@
     "description": "Gérez les collections d'empreintes vocales pour l'identification des locuteurs. Organisez les locuteurs en collections, téléversez des échantillons audio pour construire leur signature vocale, et générez des empreintes pour la reconnaissance automatique.",
     "gdpr_warning": "LinTO Studio regroupe des empreintes vocales sous des labels que vous définissez ; il n'attribue par lui-même aucune identité. Rattacher un label à une personne réelle, puis exploiter ces données vocales, relève de la seule responsabilité de votre organisation, qui doit en garantir la conformité (RGPD ou réglementation applicable : consentement des personnes, gestion des données biométriques, conservation, etc.).",
     "gdpr_your_org": "votre organisation",
-    "gdpr_gate_title": "Identification vocale — responsabilité de l'organisation",
+    "gdpr_gate_title": "Identification vocale - responsabilité de l'organisation",
     "gdpr_gate_intro": "LinTO Studio fournit un outil technique qui regroupe des empreintes vocales sous des labels que vous définissez. L'outil n'attribue par lui-même aucune identité : il ne sait pas à quelle personne correspond une voix.",
     "gdpr_gate_biometric": "Les empreintes vocales sont des données biométriques. Leur traitement est strictement encadré et suppose une base légale valide, notamment le consentement explicite des personnes concernées.",
     "gdpr_gate_responsibility": "Rattacher un label à une personne identifiable, puis exploiter ces données, relève de la seule responsabilité de « {org} ». Il vous appartient d'en garantir la conformité (RGPD ou réglementation applicable) : information des personnes, recueil et gestion des consentements, durées de conservation, sécurité et exercice des droits.",

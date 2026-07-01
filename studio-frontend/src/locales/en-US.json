@@ -486,7 +486,7 @@
       "language_label": "Language",
       "number_of_speaker_label": "Number of speakers",
       "recommended_badge": "Recommended",
-      "security_not_accessible": "Not available — insufficient confidentiality level",
+      "security_not_accessible": "Not available: insufficient confidentiality level",
       "no_model_for_level": "No model meets the selected confidentiality level.",
       "change_model": "Change model",
       "choose_model": "Choose a transcription model",
@@ -848,7 +848,7 @@
         "value_disabled": "Disabled",
         "speakers_count": "{count} speaker | {count} speakers",
         "multiple_values": "Multiple values",
-        "empty": "—"
+        "empty": "-"
       },
       "session": {
         "title": "Session channels",
@@ -1596,7 +1596,7 @@
     "default_right_label": "Default right",
     "applied_to_every_member": "Applied to every member",
     "exceptions_label": "Exceptions",
-    "no_exceptions": "No exceptions — every member uses the default right.",
+    "no_exceptions": "No exceptions. Every member uses the default right.",
     "external_empty": "Invite people outside your organization by email above.",
     "show_other_members": "Show other members ({count})",
     "other_members_label": "Other members",
@@ -1763,7 +1763,7 @@
     "description": "Manage voiceprint collections for speaker identification. Organize speakers into collections, upload audio samples to build their voice signature, and generate voiceprints for automatic recognition.",
     "gdpr_warning": "LinTO Studio groups voiceprints under labels you define; it does not assign any identity by itself. Linking a label to a real person, and then processing that voice data, is the sole responsibility of your organization, which must ensure compliance (GDPR or applicable regulations: consent of individuals, biometric data management, retention, etc.).",
     "gdpr_your_org": "your organization",
-    "gdpr_gate_title": "Voice identification — organization responsibility",
+    "gdpr_gate_title": "Voice identification - organization responsibility",
     "gdpr_gate_intro": "LinTO Studio provides a technical tool that groups voiceprints under labels you define. The tool does not assign any identity by itself: it does not know which person a voice belongs to.",
     "gdpr_gate_biometric": "Voiceprints are biometric data. Their processing is strictly regulated and requires a valid legal basis, in particular the explicit consent of the persons concerned.",
     "gdpr_gate_responsibility": "Linking a label to an identifiable person, and then using that data, is the sole responsibility of « {org} ». It is up to you to ensure compliance (GDPR or applicable regulations): informing individuals, collecting and managing consent, retention periods, security, and the exercise of rights.",
