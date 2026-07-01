@@ -1,13 +1,11 @@
 <template>
   <div>
-    <!-- Mandatory, non-dismissable responsibility acknowledgement gate.
-         Shown every time the section is opened; blocks all management until
-         the admin explicitly accepts responsibility (or leaves). -->
+    <!-- Responsibility acknowledgement gate, shown every time the section is
+         opened; blocks all management until the admin accepts (or leaves). -->
     <Modal
       v-if="!acknowledged"
       :value="!acknowledged"
       :title="$t('speaker_diarization.gdpr_gate_title')"
-      :withClose="false"
       :overlayClose="false"
       :withActionCancel="true"
       :textActionCancel="$t('speaker_diarization.gdpr_gate_quit')"

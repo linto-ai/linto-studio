@@ -18,6 +18,7 @@
     <div class="burger-menu__footer-section">
       <ButtonRoller
         v-if="
+          !backoffice &&
           isAtLeastUploader &&
           canStartConversationInCurrentOrganization &&
           $route.name !== 'conversations create'

@@ -62,6 +62,17 @@ export async function apiRenewToken(organizationId, tokenId, { expiration }) {
   return res
 }
 
+export async function apiUpdateToken(organizationId, tokenId, { name }) {
+  const res = await sendRequest(
+    `${BASE_API}/organizations/${organizationId}/tokens/${tokenId}`,
+    { method: "patch" },
+    { name },
+    null,
+  )
+
+  return res
+}
+
 /**
  * Upload (or replace) the avatar of an API key.
  * The file is sent as multipart/form-data on field `file`.
@@ -73,6 +84,15 @@ export async function apiUpdateTokenPicture(organizationId, tokenId, file) {
     `${BASE_API}/organizations/${organizationId}/tokens/${tokenId}/picture`,
     "put",
     formData,
+    null,
+  )
+}
+
+export async function apiDeleteTokenPicture(organizationId, tokenId) {
+  return await sendRequest(
+    `${BASE_API}/organizations/${organizationId}/tokens/${tokenId}/picture`,
+    { method: "delete" },
+    {},
     null,
   )
 }

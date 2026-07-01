@@ -33,7 +33,7 @@ export default {
   components: {},
   computed: {
     _value() {
-      return this.transformValue(this.value) ?? "—"
+      return this.transformValue(this.value) ?? "–"
     },
   },
 }

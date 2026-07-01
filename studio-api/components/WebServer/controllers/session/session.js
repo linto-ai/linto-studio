@@ -3,7 +3,7 @@ const debug = require("debug")(
 )
 const logger = require(`${process.cwd()}/lib/logger/logger`)
 
-const { SessionError, SessionForbidden } = require(
+const { SessionError, SessionForbidden, SessionConflict } = require(
   `${process.cwd()}/components/WebServer/error/exception/session`,
 )
 const { Unauthorized, UnauthorizedProxy } = require(
@@ -64,17 +64,21 @@ async function afterProxyAccess(jsonString, req) {
   }
 }
 
+function quickMeetingName(userId) {
+  return "@" + userId
+}
+
 async function forceQueryParams(req, next) {
   try {
     if (req.body && Object.keys(req.body).length !== 0) {
-      req.body.name = "@" + req.payload.data.userId
+      req.body.name = quickMeetingName(req.payload.data.userId)
       req.body.visibility = "user"
       req.query.organizationId = req.params.organizationId || ""
 
       if (req.body.channel && req.body.channels.length === 1)
         throw new SessionError("Channel is required")
     } else {
-      req.query.searchName = "@" + req.payload.data.userId || ""
+      req.query.searchName = quickMeetingName(req.payload.data.userId)
       req.query.organizationId = req.params.organizationId || ""
     }
 
@@ -82,6 +86,28 @@ async function forceQueryParams(req, next) {
   } catch (err) {
     next(err)
   }
+}
+
+const QUICK_MEETING_LIVE_STATUSES = ["ready", "active", "paused", "on_schedule"]
+
+async function createQuickMeeting(req, next) {
+  const name = quickMeetingName(req.payload.data.userId)
+  const url =
+    `${process.env.SESSION_API_ENDPOINT}/sessions` +
+    `?visibility=user&statusList=${QUICK_MEETING_LIVE_STATUSES.join(",")}` +
+    `&searchName=${encodeURIComponent(name)}&limit=1`
+
+  try {
+    const result = await axios.get(url)
+    if (result?.totalItems > 0) {
+      return next(new SessionConflict("A quick meeting is already running"))
+    }
+  } catch (err) {
+    // Best-effort guard: a failed lookup must not block a legitimate creation.
+    logger.warn(`Quick meeting duplicate check failed: ${err.message}`)
+  }
+
+  return forceQueryParams(req, next)
 }
 
 async function forwardSessionAliasPublic(req, next, res) {
@@ -278,6 +304,7 @@ function cleanPublicChannelContent(jsonString) {
 
 module.exports = {
   forceQueryParams,
+  createQuickMeeting,
   forwardSessionAlias,
   forwardSessionAliasPublic,
   checkTranscriberProfileAccess,

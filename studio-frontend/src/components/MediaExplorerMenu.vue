@@ -51,7 +51,8 @@
       @close="modalOrgSelector = false" />
 
     <!-- Personnel -->
-    <div class="media-explorer-menu__item media-explorer-menu__item--section">
+    <div
+      class="media-explorer-menu__item media-explorer-menu__item--section media-explorer-menu__item--label">
       <ph-icon name="user" size="20" />
       <span>{{ $t("navigation.sections.personal") }}</span>
     </div>
@@ -72,7 +73,7 @@
       </ul>
     </div>
 
-    <MediaExplorerMenuLabels v-if="isExplorePage" />
+    <MediaExplorerMenuLabels v-if="showTagLabels" />
   </div>
 </template>
 
@@ -98,6 +99,7 @@ export default {
   data() {
     return {
       modalOrgSelector: false,
+      leavingExplore: false,
     }
   },
   computed: {
@@ -160,6 +162,11 @@ export default {
     isExplorePage() {
       return this.$route.name?.startsWith("explore")
     },
+    showTagLabels() {
+      return (
+        this.isExplorePage && !this.leavingExplore && !this.isProcessingActive
+      )
+    },
     processingFolder() {
       return {
         _id: "processing",
@@ -186,11 +193,16 @@ export default {
       this.selectFolder(undefined)
     },
     handleSessionsClick() {
+      this.leavingExplore = true
       this.clearSearch()
-      this.$router.push({
-        name: "sessionsList",
-        params: { organizationId: this.getCurrentOrganizationScope },
-      })
+      this.$router
+        .push({
+          name: "sessionsList",
+          params: { organizationId: this.getCurrentOrganizationScope },
+        })
+        .catch(() => {
+          this.leavingExplore = false
+        })
     },
     handleFavoritesClick() {
       this.clearSearch()
@@ -270,6 +282,14 @@ export default {
       font-weight: 600;
       padding-top: 0.25rem;
       padding-bottom: 0.25rem;
+    }
+
+    &--label {
+      cursor: default;
+
+      &:hover {
+        background-color: transparent;
+      }
     }
 
     &__org-info {
