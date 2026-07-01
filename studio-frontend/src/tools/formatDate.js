@@ -38,7 +38,7 @@ export function formatDateTime(dateString) {
   })
 }
 
-export function formatDateLocale(dateString, fallback = "-") {
+export function formatDateLocale(dateString, fallback = "–") {
   if (!dateString) return fallback
   const d = new Date(dateString)
   if (isNaN(d.getTime())) return fallback
