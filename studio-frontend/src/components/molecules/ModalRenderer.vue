@@ -134,6 +134,8 @@ export default {
     size: { type: String, default: "md" },
     overlay: { type: Boolean, default: true },
     overlayClose: { type: Boolean, default: false },
+    // Trigger the cancel action on Escape even when the close button is hidden.
+    cancelOnEscape: { type: Boolean, default: false },
     textActionApply: { type: String, default: i18n.t("modal.apply") },
     textActionCancel: { type: String, default: i18n.t("modal.cancel") },
     textActionDelete: { type: String, default: "Delete" },
@@ -288,7 +290,7 @@ export default {
       }
     },
     closeOnEscape() {
-      if (this.withClose) {
+      if (this.withClose || this.cancelOnEscape) {
         this.controller.cancel()
       }
     },

@@ -9,6 +9,7 @@
       :title="$t('speaker_diarization.gdpr_gate_title')"
       :withClose="false"
       :overlayClose="false"
+      :cancelOnEscape="true"
       :withActionCancel="true"
       :textActionCancel="$t('speaker_diarization.gdpr_gate_quit')"
       iconActionCancel="sign-out"
