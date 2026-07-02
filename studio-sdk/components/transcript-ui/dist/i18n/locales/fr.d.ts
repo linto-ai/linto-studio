@@ -43,6 +43,10 @@ declare const fr: {
     readonly "subtitle.showWatermark": "Afficher le filigrane";
     readonly "subtitle.pinWatermark": "Épingler le filigrane";
     readonly "sidebar.subtitle": "Sous-titres";
+    readonly "sidebar.voicePlayback": "Lecture vocale";
+    readonly "voicePlayback.enable": "Lire à voix haute";
+    readonly "voicePlayback.description": "Utilise la synthèse vocale par défaut du navigateur.";
+    readonly "voicePlayback.unavailable": "Aucune voix de synthèse n'est disponible dans ce navigateur.";
     readonly "sidebar.history": "Historique";
     readonly "sidebar.generationLabel": "Génération {date}";
     readonly "sidebar.versionLabel": "v{n} — {date}";
@@ -106,6 +110,8 @@ declare const fr: {
     readonly "time.relative.days": "il y a {n} j";
     readonly "chat.title": "Assistant";
     readonly "chat.close": "Fermer l'assistant";
+    readonly "chat.expand": "Agrandir";
+    readonly "chat.collapse": "Réduire";
     readonly "chat.history": "Historique";
     readonly "chat.newChat": "Nouvelle conversation";
     readonly "chat.rename": "Renommer";
@@ -117,5 +123,7 @@ declare const fr: {
     readonly "chat.send": "Envoyer";
     readonly "chat.emptyState": "Pose une question sur cette transcription.";
     readonly "chat.emptyChat": "Démarre la conversation.";
+    readonly "chat.copy": "Copier";
+    readonly "markdown.copyCode": "Copier le code";
 };
 export default fr;

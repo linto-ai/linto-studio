@@ -1,22 +1,22 @@
 const { getSyllabic } = require("../words/syllabic")
-const { recomputeWords } = require("../words/recomputeWords")
-const { divideTurn } = require("../words/divideTurn")
-const { mergeTurn } = require("../words/mergeTurn")
+const { interpolateWordTimes } = require("../words/interpolate")
+const debug = require("debug")("linto:components:EditorHandler:enrichDiff")
+debug.inspectOpts.depth = null
+debug.inspectOpts.maxArrayLength = null
 
 /**
- * Build the full new turns[] (ordered as in the Y.Doc, words+timestamps
- * preserved/recomputed) by classifying each new turn against the last-flushed
- * Mongo state.
+ * Build the full new turns[] (ordered as in the Y.Doc, with timestamps) by
+ * mapping each doc word to the last-flushed Mongo state BY wid.
  *
- * Cases handled per new turn:
- *  - id matches old, segment unchanged → keep old words, copy meta.
- *  - id matches old, segment changed → recomputeWords (syllabic heuristic).
- *  - id matches old, segment shrunk and one or more brand-new ids follow whose
- *    concat matches the original segment → split (1→N), divideTurn cascade.
- *  - id matches old, segment is concat of old[i..i+k] segments → merge (N→1).
- *  - new id with no split signal → fresh turn with empty words.
- *
- * Old turns absent from the new list (and not consumed by a merge) are dropped.
+ * Word identity now lives in the doc (the `word` mark carries the wid), so this
+ * is a pure identity mapping — no text-diff, no split/merge detection:
+ *  - wid known & text unchanged → keep the old timestamp verbatim (anchor).
+ *  - wid known & text changed (mid-word split, typo, glued merge) → the old
+ *    span becomes a redistribution budget, filled by syllables.
+ *  - wid unknown (front-minted new word) → interpolate from neighbours.
+ *  - old wid absent from the doc → dropped.
+ * Turn merge/split falls out for free: a word keeps its timestamp regardless of
+ * which turn node now holds its wid.
  *
  * @returns {{
  *   finalTurns: Array,           // ordered, ready to $set Mongo
@@ -25,284 +25,188 @@ const { mergeTurn } = require("../words/mergeTurn")
  * }}
  */
 function enrichDiff(oldTurns, newTurns) {
-  const oldById = new Map(oldTurns.map((t) => [t.turn_id, t]))
-  const oldByIndex = oldTurns
-  const oldIndexById = new Map(oldTurns.map((t, idx) => [t.turn_id, idx]))
-  const newIds = new Set(newTurns.map((t) => t.turn_id))
+  // wid is globally unique, so index every old word by wid regardless of turn.
+  // Keep the FIRST word for a given wid: a duplicate wid (front minting
+  // collision, or a copy/paste of a marked run before the client reconciles)
+  // must not silently remap an earlier word's timing onto a later one.
+  const oldWordByWid = new Map()
+  const oldTurnById = new Map()
+  for (const t of oldTurns) {
+    oldTurnById.set(t.turn_id, t)
+    for (const w of t.words || []) {
+      if (w.wid && !oldWordByWid.has(w.wid)) oldWordByWid.set(w.wid, w)
+    }
+  }
 
-  // Stores Pass 1/2 output keyed by new-turn index, so Pass 3 can reinsert
-  // them at their position in Y.Doc order.
-  const produced = new Map()
-  const consumedOldIds = new Set()
+  // A wid may be consumed at most once across the whole flush (guards against a
+  // duplicate wid in the doc mapping two doc words onto the same old timing).
+  const claimedWids = new Set()
   const changedTurns = []
   let dirty = false
 
-  // ── Pass 1: detect splits (1 old → N new, N >= 2) ───────────────────────
-  for (let i = 0; i < newTurns.length; i++) {
-    if (produced.has(i)) continue
-    const cur = newTurns[i]
-    const oldCur = oldById.get(cur.turn_id)
-    if (!oldCur) continue
-    if (segmentEqual(cur.segment, oldCur.segment)) continue
+  const finalTurns = newTurns.map((nt) => {
+    const oldTurn = oldTurnById.get(nt.turn_id)
+    const syllabic = getSyllabic(nt.language || (oldTurn && oldTurn.language))
 
-    const splitMatch = matchSplit(newTurns, i, oldById, oldCur)
-    if (!splitMatch) continue
+    // Text-fallback pool: this turn's old words, consumed in order by matching
+    // text when a doc word's wid is unknown. Legacy transcripts have Mongo words
+    // with NO wid, so the reseed mints fresh wids that can't match by id — this
+    // recovers their real timing by text instead of destroying it by
+    // interpolating over the whole turn span.
+    const oldWords = (oldTurn && oldTurn.words) || []
+    const textConsumed = new Set()
+    // Precompute O(1) lookups so the per-word mapping stays O(W) per turn (a
+    // per-word indexOf/scan would be O(W^2), heavy on long turns): old word
+    // reference -> index, and text -> indices of TIMED old words (for the
+    // legacy text-fallback).
+    const oldIndexByRef = new Map()
+    const oldTimedByText = new Map()
+    for (let i = 0; i < oldWords.length; i++) {
+      const ow = oldWords[i]
+      oldIndexByRef.set(ow, i)
+      if (ow.stime != null) {
+        const q = oldTimedByText.get(ow.word)
+        if (q) q.push(i)
+        else oldTimedByText.set(ow.word, [i])
+      }
+    }
 
-    const candidates = splitMatch.indices.map((idx) => newTurns[idx])
-    const syllabic = getSyllabic(oldCur.language || cur.language)
-    const parts = cascadeDivide(oldCur, candidates, syllabic)
-
-    parts.forEach((part, k) => {
-      const finalTurn = combine(candidates[k], part)
-      produced.set(splitMatch.indices[k], finalTurn)
-      changedTurns.push({ turn_id: finalTurn.turn_id, words: finalTurn.words })
+    const words = nt.words.map((nw) => {
+      const old =
+        nw.wid && !claimedWids.has(nw.wid) ? oldWordByWid.get(nw.wid) : undefined
+      if (old) {
+        claimedWids.add(nw.wid)
+        // Also consume it from the text pool so a duplicate wid can't recover
+        // the same old timing twice.
+        const oi = oldIndexByRef.get(old)
+        if (oi !== undefined) textConsumed.add(oi)
+        // Anchor: identity + text unchanged → keep exact timing verbatim.
+        if (old.word === nw.word) return { ...old, word: nw.word }
+        // Known wid, text changed → old span is a redistribution budget.
+        return {
+          wid: nw.wid,
+          word: nw.word,
+          _flex: true,
+          _budgetStime: old.stime,
+          _budgetEtime: old.etime,
+        }
+      }
+      // Unknown (or duplicate) wid → recover timing by matching text within the
+      // same old turn (only from a timed word). Preserves legacy timestamps.
+      const q = oldTimedByText.get(nw.word)
+      if (q) {
+        for (const idx of q) {
+          if (textConsumed.has(idx)) continue
+          textConsumed.add(idx)
+          return { ...oldWords[idx], wid: nw.wid, word: nw.word }
+        }
+      }
+      // Truly new word → interpolate from neighbours.
+      return { wid: nw.wid, word: nw.word, _flex: true }
     })
-    consumedOldIds.add(oldCur.turn_id)
-    dirty = true
-  }
 
-  // ── Pass 2: detect merges (N old → 1 new, N >= 2) ───────────────────────
-  for (let i = 0; i < newTurns.length; i++) {
-    if (produced.has(i)) continue
-    const cur = newTurns[i]
-    const oldCur = oldById.get(cur.turn_id)
-    if (!oldCur) continue
-    if (segmentEqual(cur.segment, oldCur.segment)) continue
+    interpolateWordTimes(words, oldTurn, syllabic)
 
-    const oldCurIdx = oldIndexById.get(oldCur.turn_id)
-    if (oldCurIdx === undefined) continue
-
-    const mergeMatch = matchMerge(cur.segment, oldByIndex, oldCurIdx, newIds)
-    if (!mergeMatch) continue
-
-    let merged = oldCur
-    for (let k = oldCurIdx + 1; k <= oldCurIdx + mergeMatch.count; k++) {
-      merged = mergeTurn(merged, oldByIndex[k], cur.turn_id)
-      consumedOldIds.add(oldByIndex[k].turn_id)
-    }
-    consumedOldIds.add(oldCur.turn_id)
-
-    const finalTurn = combine(cur, merged)
-    finalTurn.segment = cur.segment
-    finalTurn.raw_segment = cur.segment
-
-    produced.set(i, finalTurn)
-    changedTurns.push({ turn_id: finalTurn.turn_id, words: finalTurn.words })
-    dirty = true
-  }
-
-  // ── Pass 3: classic per-turn classification, walking in Y.Doc order ─────
-  const finalTurns = []
-  for (let i = 0; i < newTurns.length; i++) {
-    const fromPass12 = produced.get(i)
-    if (fromPass12) {
-      finalTurns.push(fromPass12)
-      continue
+    // Reference-stability: reuse the old words array when nothing changed so
+    // turnPersistDiffers (a reference compare on words) reports no change.
+    let finalWords = words
+    let wordsChanged = true
+    if (oldTurn && sameWords(oldTurn.words, words)) {
+      finalWords = oldTurn.words
+      wordsChanged = false
     }
 
-    const cur = newTurns[i]
-    const oldTurn = oldById.get(cur.turn_id)
+    const finalTurn = {
+      ...(oldTurn || {}),
+      turn_id: nt.turn_id,
+      speaker_id: nt.speaker_id ?? null,
+      language: nt.language || "",
+      segment: nt.segment,
+      raw_segment: nt.segment,
+      words: finalWords,
+    }
+    // Turn-level times: prefer the first/last DEFINED word time; else fall back
+    // to the doc's turn attrs (nt), else keep the old turn's (already spread).
+    // Never overwrite with undefined — some ASR output has no per-word timing,
+    // only turn-level times, and a flush must not destroy them.
+    const wStime = firstStime(finalWords)
+    const wEtime = lastEtime(finalWords)
+    const stime = wStime ?? nt.stime ?? (oldTurn && oldTurn.stime)
+    const etime = wEtime ?? nt.etime ?? (oldTurn && oldTurn.etime)
+    if (stime != null) finalTurn.stime = stime
+    if (etime != null) finalTurn.etime = etime
 
-    if (!oldTurn) {
-      // Fresh turn with no split signal: empty words.
-      const t = { ...cur, words: [], raw_segment: cur.segment }
-      finalTurns.push(t)
-      changedTurns.push({ turn_id: t.turn_id, words: [] })
+    if (wordsChanged) {
+      changedTurns.push({ turn_id: finalTurn.turn_id, words: finalWords })
+    }
+    if (!oldTurn || wordsChanged || turnMetaChanged(oldTurn, nt)) {
       dirty = true
-      continue
     }
+    return finalTurn
+  })
 
-    if (segmentEqual(oldTurn.segment, cur.segment)) {
-      // Old turn first: Mongo may carry fields the Y.Doc doesn't know
-      // (stime/etime from live sessions, ...) — editor-owned fields override.
-      const t = {
-        ...oldTurn,
-        ...cur,
-        words: oldTurn.words || [],
-        raw_segment: oldTurn.raw_segment || oldTurn.segment,
-      }
-      finalTurns.push(t)
-      if (turnMetaChanged(oldTurn, cur)) dirty = true
-      continue
-    }
-
-    const syllabic = getSyllabic(cur.language || oldTurn.language)
-    let newWords
-    try {
-      newWords = recomputeWords(oldTurn.words || [], cur.segment, syllabic)
-    } catch (err) {
-      console.error(`recomputeWords failed for turn ${cur.turn_id}:`, err)
-      newWords = null
-    }
-    if (newWords == null) {
-      // Split on whitespace runs: never fabricate empty words from
-      // consecutive spaces in the segment.
-      newWords = cur.segment
-        ? cur.segment
-            .split(/\s+/)
-            .filter(Boolean)
-            .map((w) => ({ word: w }))
-        : []
-    }
-
-    const t = { ...oldTurn, ...cur, words: newWords, raw_segment: cur.segment }
-    finalTurns.push(t)
-    changedTurns.push({ turn_id: t.turn_id, words: newWords })
-    dirty = true
-  }
-
-  // Detect pure deletions (old turns absent, not consumed by merge).
+  // Structural change (add / remove / reorder / merge / split) → dirty.
   if (!dirty) {
-    for (const oldTurn of oldByIndex) {
-      if (consumedOldIds.has(oldTurn.turn_id)) continue
-      if (!newIds.has(oldTurn.turn_id)) {
-        dirty = true
-        break
+    if (oldTurns.length !== finalTurns.length) {
+      dirty = true
+    } else {
+      for (let i = 0; i < finalTurns.length; i++) {
+        if (oldTurns[i].turn_id !== finalTurns[i].turn_id) {
+          dirty = true
+          break
+        }
       }
     }
   }
+
+  debug(
+    "enrichDiff: %d old -> %d new turns, dirty=%s, changed=%d",
+    oldTurns.length,
+    newTurns.length,
+    dirty,
+    changedTurns.length,
+  )
 
   return { finalTurns, changedTurns, hasChanges: dirty }
 }
 
-// ── Helpers ────────────────────────────────────────────────────────────────
-
-// Whitespace runs collapse before comparison: legacy seeds built from words
-// arrays containing empty placeholder words carry double spaces, and a user
-// can type consecutive spaces — neither is a content change.
-function normalizeSegment(s) {
-  return (s || "").replace(/\s+/g, " ").trim()
+// Word lists equal when same length and every wid/word/stime/etime matches.
+// Old turns may still carry empty (silence) placeholder words from before the
+// migration; those make the length differ and force one clean rewrite.
+function sameWords(a, b) {
+  if (!Array.isArray(a) || a.length !== b.length) return false
+  for (let i = 0; i < a.length; i++) {
+    if (
+      a[i].wid !== b[i].wid ||
+      a[i].word !== b[i].word ||
+      a[i].stime !== b[i].stime ||
+      a[i].etime !== b[i].etime
+    ) {
+      return false
+    }
+  }
+  return true
 }
 
-function segmentEqual(a, b) {
-  return normalizeSegment(a) === normalizeSegment(b)
+// First/last DEFINED word time — robust to words with no timestamp (sparse or
+// fully absent when the ASR computed no per-word timing).
+function firstStime(words) {
+  for (const w of words) if (w.stime != null) return w.stime
+  return undefined
+}
+function lastEtime(words) {
+  for (let i = words.length - 1; i >= 0; i--) {
+    if (words[i].etime != null) return words[i].etime
+  }
+  return undefined
 }
 
 function turnMetaChanged(oldTurn, newTurn) {
   return (
-    oldTurn.speaker_id !== newTurn.speaker_id ||
-    (oldTurn.language || "") !== (newTurn.language || "")
+    (oldTurn.speaker_id ?? null) !== (newTurn.speaker_id ?? null) ||
+    (oldTurn.language || "") !== (newTurn.language || "") ||
+    (oldTurn.segment ?? "") !== (newTurn.segment ?? "")
   )
-}
-
-/**
- * Walk forward from index i in newTurns absorbing fresh ids until the
- * concatenated segments equal oldCur.segment. Returns null if no match.
- */
-function matchSplit(newTurns, i, oldById, oldCur) {
-  const original = normalizeSegment(oldCur.segment)
-  if (!original) return null
-
-  let combined = normalizeSegment(newTurns[i].segment)
-  if (!combined) return null
-  if (combined === original) return null // not a split, just unchanged
-  if (!startsWithWord(original, combined)) return null
-
-  const indices = [i]
-  let j = i + 1
-  while (j < newTurns.length) {
-    const nxt = newTurns[j]
-    if (oldById.has(nxt.turn_id)) break // would-be split fragment must be fresh
-    const nxtSeg = normalizeSegment(nxt.segment)
-    if (nxtSeg) {
-      const tentative = (combined + " " + nxtSeg).trim()
-      if (!startsWithWord(original, tentative) && tentative !== original) break
-      combined = tentative
-    }
-    indices.push(j)
-    if (combined === original) {
-      return indices.length >= 2 ? { indices } : null
-    }
-    j++
-  }
-  return null
-}
-
-/**
- * Walk forward from oldByIndex[start+1] absorbing disappeared ids until the
- * concatenated segments equal cur.segment. Returns null if no match.
- */
-function matchMerge(curSegment, oldByIndex, start, newIds) {
-  const target = normalizeSegment(curSegment)
-  if (!target) return null
-
-  let combined = normalizeSegment(oldByIndex[start].segment)
-  if (!combined) return null
-  if (combined === target) return null
-  if (!startsWithWord(target, combined)) return null
-
-  for (let k = 1; start + k < oldByIndex.length; k++) {
-    const next = oldByIndex[start + k]
-    if (newIds.has(next.turn_id)) break // not gone
-    const nextSeg = normalizeSegment(next.segment)
-    if (nextSeg) {
-      const tentative = (combined + " " + nextSeg).trim()
-      if (!startsWithWord(target, tentative) && tentative !== target) break
-      combined = tentative
-    }
-    if (combined === target) return { count: k }
-  }
-  return null
-}
-
-// Whitespace-tolerant prefix check on word boundaries.
-function startsWithWord(haystack, needle) {
-  if (haystack === needle) return true
-  return haystack.startsWith(needle + " ")
-}
-
-/**
- * Apply divideTurn iteratively to split oldTurn into N parts following the
- * candidate segments. Each cut redistributes timestamps via the syllabic
- * heuristic; the last part receives whatever words remain.
- */
-function cascadeDivide(oldTurn, candidates, syllabic) {
-  const parts = []
-  let remaining = oldTurn
-
-  for (let k = 0; k < candidates.length - 1; k++) {
-    const cur = candidates[k]
-    const nextSegment = candidates
-      .slice(k + 1)
-      .map((c) => (c.segment || "").trim())
-      .filter(Boolean)
-      .join(" ")
-
-    const [first, second] = divideTurn(
-      remaining,
-      cur.segment || "",
-      nextSegment,
-      syllabic,
-      cur.turn_id,
-      candidates[k + 1].turn_id,
-    )
-    parts.push(first)
-    remaining = second
-  }
-  const last = candidates[candidates.length - 1]
-  parts.push({
-    ...remaining,
-    segment: last.segment || "",
-    turn_id: last.turn_id,
-  })
-  return parts
-}
-
-/**
- * `computed` derives from the old Mongo turn (divideTurn/mergeTurn spread it),
- * so it carries fields the Y.Doc doesn't know (stime/etime, ...). Editor-owned
- * fields from the doc (`newTurn`: speaker_id, language) must override them —
- * e.g. a speaker change on a freshly split half — while the recomputed
- * words/segment are reasserted last.
- */
-function combine(newTurn, computed) {
-  return {
-    ...computed,
-    ...newTurn,
-    words: computed.words,
-    segment: computed.segment,
-    raw_segment: computed.segment,
-  }
 }
 
 module.exports = { enrichDiff }

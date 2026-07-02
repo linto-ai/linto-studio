@@ -1,7 +1,7 @@
 import { ref, computed, watch, watchEffect } from "vue"
 import type { Core, CorePlugin, AudioPluginApi } from "../../core/types"
 import type { AudioSource } from "../../types/editor"
-import { findActiveWord, hasWordTimestamps } from "../../utils/words"
+import { findActiveWord, firstWordStart, lastWordEnd } from "../../utils/words"
 
 export type { AudioPluginApi }
 
@@ -109,31 +109,42 @@ export function createAudioPlugin(
       // Single source of truth: computes activeTurnId / activeWordId.
       // No reset to null on pause: the last known position is kept.
       const stopTracker = watchEffect(() => {
-        if (!isPlaying.value) return
+        // Read BOTH refs unconditionally so the effect tracks currentTime even
+        // while paused — otherwise seeking/scrubbing (e.g. clicking a word)
+        // while paused would never move the highlight.
         const time = currentTime.value
+        const playing = isPlaying.value
 
-        // Throttle on media progress: skip while the playhead advanced less
-        // than WORD_TRACK_INTERVAL since the last compute (the word can't have
-        // changed). A backward jump (seek) is negative and falls through, so
-        // seeks always recompute.
-        const elapsed = time - lastComputeTime
-        if (elapsed >= 0 && elapsed < WORD_TRACK_INTERVAL) return
+        // Throttle only during continuous playback (the word can't have changed
+        // within WORD_TRACK_INTERVAL). A backward jump is negative and falls
+        // through; while paused, any seek recomputes.
+        if (playing) {
+          const elapsed = time - lastComputeTime
+          if (elapsed >= 0 && elapsed < WORD_TRACK_INTERVAL) return
+        }
         lastComputeTime = time
 
         const translation = core.activeChannel.value?.activeTranslation.value
         if (!translation) return
 
         for (const turn of translation.turns.value) {
-          if (
-            turn.startTime != null &&
-            turn.endTime != null &&
-            time >= turn.startTime &&
-            time <= turn.endTime
-          ) {
+          // Derive the turn's span from its words: after a split, the turn
+          // attrs go stale (the first half keeps the whole original span, the
+          // second half has none), which would overlap and pick the wrong turn.
+          // The words carry the correct per-wid timestamps, so trust them and
+          // only fall back to the turn attrs for word-less (live) turns.
+          // First/last DEFINED word times: robust to words with no timestamp
+          // (freshly typed, or split/merge products) sitting anywhere, and to
+          // the stale turn attrs after a split. Fall back to the turn attrs for
+          // fully word-less (live text-only) turns.
+          const words = turn.words
+          const start = firstWordStart(words) ?? turn.startTime
+          const end = lastWordEnd(words) ?? turn.endTime
+          if (start != null && end != null && time >= start && time <= end) {
             activeTurnId.value = turn.id
-            activeWordId.value = hasWordTimestamps(turn.words)
-              ? findActiveWord(turn.words, time)
-              : null
+            // Returns null when no timestamped word matches (e.g. the playhead
+            // sits over an untimed, just-typed word) — no stale highlight.
+            activeWordId.value = findActiveWord(words, time)
             return
           }
         }

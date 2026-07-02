@@ -15,7 +15,11 @@ const props = defineProps<{
 const { t, locale } = useI18n()
 
 const languageName = computed(() =>
-  utils.getLanguageDisplayName(props.language, locale.value, t("language.wildcard")),
+  utils.getLanguageDisplayName(
+    props.language,
+    locale.value,
+    t("language.wildcard"),
+  ),
 )
 
 const timestamp = computed<{ text: string; datetime: string } | null>(() => {
@@ -35,7 +39,7 @@ const timestamp = computed<{ text: string; datetime: string } | null>(() => {
   return null
 })
 
-const speakerColor = computed(() => props.speaker?.color ?? 'transparent')
+const speakerColor = computed(() => props.speaker?.color ?? "transparent")
 </script>
 
 <template>
@@ -52,6 +56,7 @@ const speakerColor = computed(() => props.speaker?.color ?? 'transparent')
 <style scoped>
 .speaker-label {
   display: flex;
+  border-bottom: 2px solid transparent;
   align-items: center;
   gap: var(--spacing-sm);
 }

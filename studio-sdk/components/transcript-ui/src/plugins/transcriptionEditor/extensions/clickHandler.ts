@@ -6,6 +6,9 @@ export interface ClickHandlerOptions {
   core: Core
 }
 
+// Rewind this many seconds before the clicked word so the user hears the lead-in.
+const REWIND_SECONDS = 0.3
+
 export const ClickHandler = Extension.create<ClickHandlerOptions>({
   name: "clickHandler",
 
@@ -31,26 +34,28 @@ export const ClickHandler = Extension.create<ClickHandlerOptions>({
             const turn = translation.turns.value.find((t) => t.id === turnId)
             if (!turn) return false
 
-            // parentOffset = char index within the turn's text content
-            // (inverse mapping of what wordHighlight.ts does)
+            // Locate the clicked word by char offset to get its start time,
+            // falling back to the turn start. (parentOffset = char index within
+            // the turn's text content.)
             const charPos = $pos.parentOffset
             const text = turnNode.textContent
-
+            let target = turn.startTime
             let cursor = 0
             for (const word of turn.words) {
               const idx = text.indexOf(word.text, cursor)
               if (idx === -1) break
               const end = idx + word.text.length
               if (charPos >= idx && charPos <= end) {
-                if (word.startTime) {
-                  core.audio?.seekTo(word.startTime)
-                } else if (turn.startTime) {
-                  core.audio?.seekTo(turn.startTime)
-                }
-                core.audio?.pause()
-                return false
+                if (word.startTime != null) target = word.startTime
+                break
               }
               cursor = end
+            }
+
+            // Pause and rewind a second before the clicked position for context.
+            core.audio?.pause()
+            if (target != null) {
+              core.audio?.seekTo(Math.max(0, target - REWIND_SECONDS))
             }
             return false
           },

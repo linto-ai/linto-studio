@@ -24,8 +24,17 @@ export function useFollowPlayback(
     const container = scrollContainer.value
     if (!container || !isFollowing.value) return
 
+    const wordId = core.audio?.activeWordId.value
     const turnId = core.audio?.activeTurnId.value
     const target =
+      // Editor: the active word is its `[data-wid]` span (highlight is CSS-only,
+      // so there is no `[data-word-active]` element there anymore).
+      (wordId
+        ? container.querySelector<HTMLElement>(
+            `[data-wid="${wordId.replace(/["\\]/g, "\\$&")}"]`,
+          )
+        : null) ??
+      // Non-editor list view still tags the active word this way.
       container.querySelector<HTMLElement>("[data-word-active]") ??
       (turnId
         ? container.querySelector<HTMLElement>(`[data-turn-id="${turnId}"]`)

@@ -13,6 +13,7 @@ import { applyStatelessPayload, REQUEST_WORDS_MESSAGE } from "./statelessWords"
 import { turnsToDoc } from "./utils/turnsToDoc"
 import { TranscriptionDocument } from "./extensions/transcriptionDocument"
 import { TurnNode } from "./extensions/turnNode"
+import { WordMark } from "./extensions/wordMark"
 
 export interface CollabOptions {
   /** Hocuspocus WebSocket URL (e.g. "ws://localhost/ws/editor") */
@@ -185,7 +186,7 @@ export class LocalSession implements EditorSession {
 
     // No provider: seed the Y.Doc from the store turns.
     const fragment = this.ydoc.getXmlFragment(field)
-    const schema = getSchema([TranscriptionDocument, TurnNode, Text])
+    const schema = getSchema([TranscriptionDocument, TurnNode, WordMark, Text])
     prosemirrorJSONToYXmlFragment(
       schema,
       turnsToDoc(translation.turns.value),

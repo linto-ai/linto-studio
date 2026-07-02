@@ -1,4 +1,4 @@
-import { L, c, a, b, d, e, f, r } from "./webcomponent-BvbafKCl.js";
+import { L, c, a, b, d, e, f, r } from "./webcomponent-DX60A-MH.js";
 export {
   L as LintoEditor,
   c as createAudioPlugin,

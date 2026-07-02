@@ -8,8 +8,10 @@ import type { AnyExtension } from "@tiptap/core"
 import type { Core, TranslationStore } from "../../core/types"
 import { TranscriptionDocument } from "./extensions/transcriptionDocument"
 import { TurnNode } from "./extensions/turnNode"
+import { WordMark } from "./extensions/wordMark"
 import { StoreSync } from "./extensions/storeSync"
 import { WordHighlight } from "./extensions/wordHighlight"
+import { CursorTurn } from "./extensions/cursorTurn"
 import { CollaborationCursor } from "./extensions/collaborationCursor"
 import { ClickHandler } from "./extensions/clickHandler"
 import { PauseOnEdit } from "./extensions/pauseOnEdit"
@@ -52,10 +54,12 @@ function buildExtensions(config: TiptapEditorConfig): AnyExtension[] {
   const extensions: AnyExtension[] = [
     TranscriptionDocument,
     TurnNode,
+    WordMark,
     Text,
     Collaboration.configure({ document: ydoc, field }),
     StoreSync.configure({ store: core, getTranslation: () => translation }),
     WordHighlight.configure({ core }),
+    CursorTurn,
     ClickHandler.configure({ core }),
     PauseOnEdit.configure({ core }),
     ...core.pluginExtensions,
