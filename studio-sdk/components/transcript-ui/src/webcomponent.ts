@@ -1,6 +1,9 @@
 import { defineCustomElement } from "vue"
 import WebComponent from "./WebComponent.vue"
 import fontsStyles from "./styles/fonts.css?inline"
+// Classic Prism theme for code-block highlighting. Pulled as a string so it can
+// be injected into the Shadow DOM (global CSS doesn't cross the boundary).
+import prismTheme from "prismjs/themes/prism.css?inline"
 
 // Components rendered through Tiptap's VueNodeViewRenderer (TurnNodeView)
 // and their descendants don't get their scoped styles injected into the
@@ -21,6 +24,7 @@ function getComponentStyles(comp: unknown): string[] {
 const wc = WebComponent as unknown as { styles?: string[] }
 wc.styles = [
   ...(wc.styles ?? []),
+  prismTheme,
   ...getComponentStyles(TurnNodeView),
   ...getComponentStyles(SpeakerLabel),
   ...getComponentStyles(SpeakerPopover),

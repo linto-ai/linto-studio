@@ -151,12 +151,19 @@ function confirmDelete(): void {
 
 <style scoped>
 .chat-session-list {
-  width: 200px;
+  width: var(--chat-session-list-width, 200px);
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   border-right: 1px solid var(--color-border);
   background-color: var(--color-surface-hover);
+  transition: width 0.2s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-session-list {
+    transition: none;
+  }
 }
 
 .chat-session-list__header {

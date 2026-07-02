@@ -112,6 +112,8 @@ const fr = {
   "time.relative.days": "il y a {n} j",
   "chat.title": "Assistant",
   "chat.close": "Fermer l'assistant",
+  "chat.expand": "Agrandir",
+  "chat.collapse": "Réduire",
   "chat.history": "Historique",
   "chat.newChat": "Nouvelle conversation",
   "chat.rename": "Renommer",
@@ -123,6 +125,8 @@ const fr = {
   "chat.send": "Envoyer",
   "chat.emptyState": "Pose une question sur cette transcription.",
   "chat.emptyChat": "Démarre la conversation.",
+  "chat.copy": "Copier",
+  "markdown.copyCode": "Copier le code",
 } as const
 
 export default fr

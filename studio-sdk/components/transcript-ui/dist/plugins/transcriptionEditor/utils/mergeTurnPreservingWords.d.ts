@@ -1,10 +1,10 @@
 import { Turn } from '../../../types/editor';
 /**
- * Merge a freshly-extracted turn with the stored one, keeping the stored words
- * (= timestamps) when the text is unchanged.
+ * Merge a freshly-extracted turn (word identities from the doc, no timestamps)
+ * with the stored one, carrying over each surviving word's timestamps BY wid.
  *
- * Compare whitespace-normalized, ignoring empty placeholder words: the doc text
- * never contains them, while stored words do — a raw join would see a phantom
- * difference and drop the words (= timestamps) on unrelated edits.
+ * Word identity is authoritative in the doc, so this is a per-wid merge — not a
+ * text comparison. Words new to the doc (just typed, or the far half of a split)
+ * keep no timestamp until the server broadcasts one for their wid.
  */
 export declare function mergeTurnPreservingWords(newTurn: Turn, oldTurn: Turn | undefined): Turn;

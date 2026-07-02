@@ -2,7 +2,10 @@ import { Node as ProseMirrorNode } from '@tiptap/pm/model';
 import { Turn } from '../../../types/editor';
 /**
  * Convert a single ProseMirror "turn" node into a Turn.
- * Only the text + attributes are extracted — words/timestamps live outside
- * ProseMirror and must be merged from backend metadata separately.
+ *
+ * Word IDENTITY is read from the inline `word` mark on each text node (wid →
+ * Word.id); timestamps are NOT in the doc — they are merged in separately, by
+ * wid, from the server (mergeTurnPreservingWords for locally-known words,
+ * applyStatelessPayload for freshly recomputed ones).
  */
 export declare function nodeToTurn(node: ProseMirrorNode): Turn;

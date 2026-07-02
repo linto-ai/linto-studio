@@ -63,6 +63,10 @@ function onKeydown(event: KeyboardEvent): void {
   padding: var(--spacing-md);
   border-top: 1px solid var(--color-border);
   flex-shrink: 0;
+  /* Match the message column width when the panel is expanded. */
+  width: 100%;
+  max-width: var(--chat-content-max-width, 760px);
+  margin-inline: auto;
 }
 
 .chat-composer__textarea {

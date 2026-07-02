@@ -329,6 +329,11 @@ export interface LiveTranslationEventData {
 export interface LivePluginApi {
     partial: ShallowRef<string | null>;
     hasLiveUpdate: Ref<boolean>;
+    ttsAvailable: boolean;
+    ttsEnabled: Ref<boolean>;
+    ttsReady: Ref<boolean>;
+    enableTTS(): void;
+    disableTTS(): void;
     onPartial(event: LivePartialEventData, channelId: string): void;
     onFinal(event: LiveFinalEventData, channelId: string): void;
     prependFinal(event: LiveFinalEventData, channelId: string): void;

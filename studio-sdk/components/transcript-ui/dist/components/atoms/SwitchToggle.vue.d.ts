@@ -1,6 +1,7 @@
 type __VLS_Props = {
     modelValue: boolean;
     id?: string;
+    disabled?: boolean;
 };
 declare const _default: import('vue').DefineComponent<__VLS_Props, {}, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {
     "update:modelValue": (value: boolean) => any;
@@ -8,5 +9,6 @@ declare const _default: import('vue').DefineComponent<__VLS_Props, {}, {}, {}, {
     "onUpdate:modelValue"?: ((value: boolean) => any) | undefined;
 }>, {
     id: string;
+    disabled: boolean;
 }, {}, {}, {}, string, import('vue').ComponentProvideOptions, false, {}, HTMLDivElement>;
 export default _default;
