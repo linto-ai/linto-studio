@@ -141,7 +141,7 @@ export default {
       const { core } = el
       const ws_url = new URL(getEnv("VUE_APP_CONVO_API"))
       ws_url.protocol = ws_url.protocol === "https:" ? "wss:" : "ws:"
-      ws_url.pathname = "/ws/editor"
+      ws_url.pathname = ws_url.pathname.replace(/\/api$/, "/ws/editor")
       this.core = markRaw(core)
       core.use(
         createAudioPlugin({
