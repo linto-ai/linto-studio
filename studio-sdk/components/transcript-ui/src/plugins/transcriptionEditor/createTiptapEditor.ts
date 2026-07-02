@@ -8,6 +8,7 @@ import type { AnyExtension } from "@tiptap/core"
 import type { Core, TranslationStore } from "../../core/types"
 import { TranscriptionDocument } from "./extensions/transcriptionDocument"
 import { TurnNode } from "./extensions/turnNode"
+import { WordMark } from "./extensions/wordMark"
 import { StoreSync } from "./extensions/storeSync"
 import { WordHighlight } from "./extensions/wordHighlight"
 import { CursorTurn } from "./extensions/cursorTurn"
@@ -53,6 +54,7 @@ function buildExtensions(config: TiptapEditorConfig): AnyExtension[] {
   const extensions: AnyExtension[] = [
     TranscriptionDocument,
     TurnNode,
+    WordMark,
     Text,
     Collaboration.configure({ document: ydoc, field }),
     StoreSync.configure({ store: core, getTranslation: () => translation }),

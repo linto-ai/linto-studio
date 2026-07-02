@@ -1,11 +1,13 @@
 import { mapWord } from "../../adapters/apiAdapter"
 import type { ApiWord } from "../../types/api"
 import type { TranslationStore } from "../../core/types"
+import type { Word } from "../../types/editor"
 
 /**
- * Words+timestamps live outside the Y.Doc (which carries segments only) and
+ * Timestamps live outside the Y.Doc (which carries word identity + text) and
  * travel through Hocuspocus stateless messages: the client sends
- * REQUEST_WORDS_MESSAGE, the server answers with `timestamps_recalc` chunks.
+ * REQUEST_WORDS_MESSAGE, the server answers with `timestamps_recalc` chunks
+ * keyed by wid.
  */
 export const REQUEST_WORDS_MESSAGE = JSON.stringify({ type: "request_words" })
 
@@ -34,27 +36,32 @@ export function applyStatelessPayload(
 
     const currentTurn = translation.getTurn(t.turn_id)
     if (!currentTurn) continue
+    // The doc owns the word list (it seeds the store's words). If the turn has
+    // none it is a text-only turn (or not yet seeded) — do NOT adopt the
+    // server's list, which would resurrect deleted words or wipe the text via
+    // updateTurnWords setting text:null.
+    if (currentTurn.words.length === 0) continue
 
-    const words = t.words.map(mapWord)
+    // Merge timestamps BY wid, no text gate: a payload for a word still present
+    // applies even if the surrounding text changed since the flush. Words the
+    // doc no longer has (deleted, or belonging to another turn now) are ignored.
+    const incoming = new Map<string, Word>()
+    for (const aw of t.words) {
+      const w = mapWord(aw)
+      incoming.set(w.id, w)
+    }
 
-    // Drop stale payloads: if the words don't describe the current segment
-    // (because the user kept editing while the server was recomputing), skip.
-    // The next debounce tick will resend a coherent payload.
-    const wordsText = normalizeText(
-      words
-        .filter((w) => w.text !== "")
-        .map((w) => w.text)
-        .join(" "),
-    )
-    const currentText = normalizeText(
-      currentTurn.text ?? currentTurn.words.map((w) => w.text).join(" "),
-    )
-    if (wordsText !== currentText) continue
+    const merged = currentTurn.words.map((w) => {
+      const inc = incoming.get(w.id)
+      if (!inc) return w
+      return {
+        ...w,
+        ...(inc.startTime !== undefined && { startTime: inc.startTime }),
+        ...(inc.endTime !== undefined && { endTime: inc.endTime }),
+        ...(inc.confidence !== undefined && { confidence: inc.confidence }),
+      }
+    })
 
-    translation.updateWords(t.turn_id, words)
+    translation.updateWords(t.turn_id, merged)
   }
-}
-
-function normalizeText(s: string): string {
-  return s.replace(/\s+/g, " ").trim()
 }

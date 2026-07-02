@@ -11963,12 +11963,23 @@ function renderWaveform(channels, ctx) {
   ctx.closePath();
 }
 function hasWordTimestamps(words) {
-  return words.length > 0 && words[0].startTime !== void 0;
+  return words.some((w3) => w3.startTime != null);
+}
+function firstWordStart(words) {
+  for (const w3 of words) if (w3.startTime != null) return w3.startTime;
+  return void 0;
+}
+function lastWordEnd(words) {
+  for (let i2 = words.length - 1; i2 >= 0; i2--) {
+    const e3 = words[i2].endTime;
+    if (e3 != null) return e3;
+  }
+  return void 0;
 }
 const ACTIVE_WORD_MARGIN = 1;
 function findActiveWord(words, time) {
-  if (!hasWordTimestamps(words)) return null;
   for (const word2 of words) {
+    if (word2.startTime == null || word2.endTime == null) continue;
     if (word2.startTime - ACTIVE_WORD_MARGIN <= time && time <= word2.endTime) {
       return word2.id;
     }
@@ -19795,8 +19806,16 @@ function useFollowPlayback(scrollContainer) {
   function scrollToActive() {
     const container = scrollContainer.value;
     if (!container || !isFollowing.value) return;
+    const wordId = core.audio?.activeWordId.value;
     const turnId = core.audio?.activeTurnId.value;
-    const target = container.querySelector("[data-word-active]") ?? (turnId ? container.querySelector(`[data-turn-id="${turnId}"]`) : null);
+    const target = (
+      // Editor: the active word is its `[data-wid]` span (highlight is CSS-only,
+      // so there is no `[data-word-active]` element there anymore).
+      (wordId ? container.querySelector(
+        `[data-wid="${wordId.replace(/["\\]/g, "\\$&")}"]`
+      ) : null) ?? // Non-editor list view still tags the active word this way.
+      container.querySelector("[data-word-active]") ?? (turnId ? container.querySelector(`[data-turn-id="${turnId}"]`) : null)
+    );
     if (!target) return;
     target.scrollIntoView({
       behavior: prefersReducedMotion ? "instant" : "smooth",
@@ -39849,7 +39868,7 @@ const _sfc_main$q = /* @__PURE__ */ defineComponent({
   setup(__props, { emit: __emit }) {
     const props = __props;
     const emit2 = __emit;
-    const isEditing2 = /* @__PURE__ */ ref(false);
+    const isEditing = /* @__PURE__ */ ref(false);
     const draft = /* @__PURE__ */ ref(props.modelValue);
     const inputRef = useTemplateRef("input");
     const field = computed(() => ({
@@ -39859,28 +39878,28 @@ const _sfc_main$q = /* @__PURE__ */ defineComponent({
     watch(
       () => props.modelValue,
       (v2) => {
-        if (!isEditing2.value) draft.value = v2;
+        if (!isEditing.value) draft.value = v2;
       }
     );
     async function startEdit() {
       if (props.disabled) return;
       draft.value = props.modelValue;
-      isEditing2.value = true;
+      isEditing.value = true;
       await nextTick();
       inputRef.value?.focus();
       inputRef.value?.select();
     }
     function commit() {
-      if (!isEditing2.value) return;
+      if (!isEditing.value) return;
       const trimmed = draft.value.trim();
-      isEditing2.value = false;
+      isEditing.value = false;
       if (!trimmed || trimmed === props.modelValue) return;
       emit2("update:modelValue", trimmed);
       emit2("commit", trimmed);
     }
     function cancel() {
-      if (!isEditing2.value) return;
-      isEditing2.value = false;
+      if (!isEditing.value) return;
+      isEditing.value = false;
       draft.value = props.modelValue;
       emit2("cancel");
     }
@@ -39894,7 +39913,7 @@ const _sfc_main$q = /* @__PURE__ */ defineComponent({
       }
     }
     return (_ctx, _cache) => {
-      return isEditing2.value ? (openBlock(), createBlock(FormInput, {
+      return isEditing.value ? (openBlock(), createBlock(FormInput, {
         key: 0,
         ref: "input",
         modelValue: draft.value,
@@ -45258,17 +45277,22 @@ function createAudioPlugin(options = {}) {
       const src = computed(() => resolvedSrc.value);
       let lastComputeTime = Number.NEGATIVE_INFINITY;
       const stopTracker = watchEffect(() => {
-        if (!isPlaying.value) return;
         const time = currentTime.value;
-        const elapsed = time - lastComputeTime;
-        if (elapsed >= 0 && elapsed < WORD_TRACK_INTERVAL) return;
+        const playing = isPlaying.value;
+        if (playing) {
+          const elapsed = time - lastComputeTime;
+          if (elapsed >= 0 && elapsed < WORD_TRACK_INTERVAL) return;
+        }
         lastComputeTime = time;
         const translation = core.activeChannel.value?.activeTranslation.value;
         if (!translation) return;
         for (const turn of translation.turns.value) {
-          if (turn.startTime != null && turn.endTime != null && time >= turn.startTime && time <= turn.endTime) {
+          const words = turn.words;
+          const start = firstWordStart(words) ?? turn.startTime;
+          const end = lastWordEnd(words) ?? turn.endTime;
+          if (start != null && end != null && time >= start && time <= end) {
             activeTurnId.value = turn.id;
-            activeWordId.value = hasWordTimestamps(turn.words) ? findActiveWord(turn.words, time) : null;
+            activeWordId.value = findActiveWord(words, time);
             return;
           }
         }
@@ -58010,12 +58034,40 @@ const TurnNode = Node3.create({
     return debouncedTurnNodeViewRenderer();
   }
 });
+const WordMark = Mark2.create({
+  name: "word",
+  inclusive: true,
+  addAttributes() {
+    return {
+      wid: {
+        default: null,
+        parseHTML: (element) => element.getAttribute("data-wid"),
+        renderHTML: (attributes) => attributes.wid ? { "data-wid": String(attributes.wid) } : {}
+      }
+    };
+  },
+  parseHTML() {
+    return [{ tag: "span[data-wid]" }];
+  },
+  renderHTML({ HTMLAttributes }) {
+    return ["span", mergeAttributes(HTMLAttributes), 0];
+  }
+});
 function nodeToTurn(node) {
+  const words = [];
+  node.forEach((child) => {
+    if (!child.isText) return;
+    const wordMark = child.marks.find((m2) => m2.type.name === "word");
+    if (wordMark && wordMark.attrs.wid) {
+      words.push({ id: wordMark.attrs.wid, text: child.text ?? "" });
+    }
+  });
   return {
     id: node.attrs.id,
     speakerId: node.attrs.speakerId ?? null,
-    text: node.textContent || null,
-    words: [],
+    // text is the source only for a word-less (live text-only) turn.
+    text: words.length > 0 ? null : node.textContent || null,
+    words,
     startTime: node.attrs.startTime,
     endTime: node.attrs.endTime,
     startDate: node.attrs.startDate,
@@ -58024,15 +58076,37 @@ function nodeToTurn(node) {
   };
 }
 function mergeTurnPreservingWords(newTurn, oldTurn) {
-  if (!oldTurn) return newTurn;
-  const oldText = oldTurn.text ?? oldTurn.words.filter((w3) => w3.text !== "").map((w3) => w3.text).join(" ");
-  return normalizeText$1(newTurn.text ?? "") === normalizeText$1(oldText) ? { ...newTurn, words: oldTurn.words } : newTurn;
-}
-function normalizeText$1(s2) {
-  return s2.replace(/\s+/g, " ").trim();
+  if (!oldTurn || newTurn.words.length === 0) return newTurn;
+  const oldByWid = new Map(oldTurn.words.map((w3) => [w3.id, w3]));
+  const words = newTurn.words.map((w3) => {
+    const old = oldByWid.get(w3.id);
+    if (!old) return w3;
+    return {
+      ...w3,
+      ...old.startTime !== void 0 && { startTime: old.startTime },
+      ...old.endTime !== void 0 && { endTime: old.endTime },
+      ...old.confidence !== void 0 && { confidence: old.confidence }
+    };
+  });
+  const wStart = firstWordStart(words);
+  const wEnd = lastWordEnd(words);
+  return {
+    ...newTurn,
+    words,
+    startTime: wStart ?? newTurn.startTime,
+    endTime: wEnd ?? newTurn.endTime
+  };
 }
 function hasTurnChanged(a2, b2) {
-  return a2.text !== b2.text || a2.speakerId !== b2.speakerId || a2.language !== b2.language || a2.startTime !== b2.startTime || a2.endTime !== b2.endTime || a2.words.length !== b2.words.length;
+  if (a2.text !== b2.text || a2.speakerId !== b2.speakerId || a2.language !== b2.language || a2.startTime !== b2.startTime || a2.endTime !== b2.endTime || a2.words.length !== b2.words.length) {
+    return true;
+  }
+  for (let i2 = 0; i2 < a2.words.length; i2++) {
+    const x2 = a2.words[i2];
+    const y3 = b2.words[i2];
+    if (x2.id !== y3.id || x2.text !== y3.text) return true;
+  }
+  return false;
 }
 function syncDocToStore(newDoc, oldDoc, translation, store) {
   const translationId = translation.id;
@@ -58135,7 +58209,125 @@ function fixTurnIds(state) {
   tr.setMeta("addToHistory", false);
   return tr;
 }
+const MAX_MARK_OPS = 5e3;
+function fixWordMarks(state, transactions) {
+  const wordMarkType = state.schema.marks.word;
+  if (!wordMarkType) return null;
+  let from2 = Infinity;
+  let to = -Infinity;
+  for (const tr2 of transactions) {
+    for (const map2 of tr2.mapping.maps) {
+      map2.forEach((_oldStart, _oldEnd, newStart, newEnd) => {
+        if (newStart < from2) from2 = newStart;
+        if (newEnd > to) to = newEnd;
+      });
+    }
+  }
+  if (to < from2) {
+    const $from = state.selection.$from;
+    for (let d2 = $from.depth; d2 > 0; d2--) {
+      if ($from.node(d2).type.name === "turn") {
+        from2 = $from.before(d2);
+        to = $from.after(d2);
+        break;
+      }
+    }
+    if (to < from2) return null;
+  }
+  from2 = Math.max(0, from2);
+  to = Math.min(state.doc.content.size, to);
+  const turns = [];
+  state.doc.nodesBetween(from2, to, (node, pos) => {
+    if (node.type.name === "turn") {
+      turns.push({ node, pos });
+      return false;
+    }
+    return true;
+  });
+  const ops = [];
+  const assigned = /* @__PURE__ */ new Set();
+  for (const { node: turn, pos: turnPos } of turns) {
+    const contentStart = turnPos + 1;
+    const text2 = turn.textContent;
+    if (!text2) continue;
+    const charWid = new Array(text2.length).fill(null);
+    let off = 0;
+    turn.forEach((child) => {
+      if (child.isText) {
+        const wm = child.marks.find((m22) => m22.type === wordMarkType);
+        const wid = wm ? wm.attrs.wid : null;
+        const len = child.text ? child.text.length : 0;
+        for (let k2 = 0; k2 < len; k2++) charWid[off + k2] = wid;
+        off += len;
+      } else {
+        off += child.nodeSize;
+      }
+    });
+    let cursor = 0;
+    const re2 = /\S+/g;
+    let m2;
+    while ((m2 = re2.exec(text2)) !== null) {
+      const s2 = m2.index;
+      const e3 = m2.index + m2[0].length;
+      if (s2 > cursor && rangeHasWid(charWid, cursor, s2)) {
+        ops.push({ kind: "clear", from: contentStart + cursor, to: contentStart + s2 });
+      }
+      cursor = e3;
+      const firstWid = charWid[s2];
+      const chosen = firstWid && !assigned.has(firstWid) ? firstWid : crypto.randomUUID();
+      assigned.add(chosen);
+      if (!rangeUniform(charWid, s2, e3, chosen)) {
+        ops.push({ kind: "mark", from: contentStart + s2, to: contentStart + e3, wid: chosen });
+      }
+    }
+    if (cursor < text2.length && rangeHasWid(charWid, cursor, text2.length)) {
+      ops.push({ kind: "clear", from: contentStart + cursor, to: contentStart + text2.length });
+    }
+  }
+  if (ops.length === 0) return null;
+  if (ops.length > MAX_MARK_OPS) {
+    console.warn(
+      `[storeSync] ${ops.length} word-mark repairs — skipping inline fix (likely bulk load)`
+    );
+    return null;
+  }
+  const tr = state.tr;
+  for (const op of ops) {
+    if (op.kind === "mark") {
+      tr.addMark(op.from, op.to, wordMarkType.create({ wid: op.wid }));
+    } else {
+      tr.removeMark(op.from, op.to, wordMarkType);
+    }
+  }
+  tr.setMeta("addToHistory", false);
+  return tr;
+}
+function rangeHasWid(charWid, a2, b2) {
+  for (let i2 = a2; i2 < b2; i2++) if (charWid[i2]) return true;
+  return false;
+}
+function rangeUniform(charWid, a2, b2, wid) {
+  for (let i2 = a2; i2 < b2; i2++) if (charWid[i2] !== wid) return false;
+  return true;
+}
 const storeSyncKey = new PluginKey("storeSync");
+function mayAffectTurnIds(transactions, oldState, newState) {
+  if (oldState.doc.childCount !== newState.doc.childCount) return true;
+  for (const tr of transactions) {
+    for (const step of tr.steps) {
+      const slice = step.slice;
+      if (slice && sliceHasTurn(slice)) return true;
+    }
+  }
+  return false;
+}
+function sliceHasTurn(slice) {
+  let found2 = false;
+  slice.content.forEach((node) => {
+    if (node.type.name === "turn") found2 = true;
+  });
+  return found2;
+}
 const StoreSync = Extension.create({
   name: "storeSync",
   addProseMirrorPlugins() {
@@ -58147,8 +58339,14 @@ const StoreSync = Extension.create({
           if (oldState.doc.eq(newState.doc)) return null;
           const isRemote = transactions.some((tr) => tr.getMeta(ySyncPluginKey));
           if (!isRemote) {
-            const fixTr = fixTurnIds(newState);
+            const fixTr = mayAffectTurnIds(transactions, oldState, newState) ? fixTurnIds(newState) : null;
+            const markTr = fixWordMarks(newState, transactions);
+            if (fixTr && markTr) {
+              for (const step of markTr.steps) fixTr.step(step);
+              return fixTr;
+            }
             if (fixTr) return fixTr;
+            if (markTr) return markTr;
           }
           const translation = getTranslation();
           if (!translation) return null;
@@ -58160,130 +58358,32 @@ const StoreSync = Extension.create({
   }
 });
 const wordHighlightKey = new PluginKey("wordHighlight");
-const EDIT_PAUSE_MS = 1e3;
-const editingStateKey = new PluginKey("editingState");
-function isEditing(state) {
-  const s2 = editingStateKey.getState(state);
-  return !!s2 && Date.now() < s2.editingUntil;
-}
+const ACTIVE_STYLE = "text-decoration:underline;text-decoration-color:var(--color-primary);text-decoration-thickness:2px;text-underline-offset:3px;color:var(--color-primary)";
 const WordHighlight = Extension.create({
   name: "wordHighlight",
   addProseMirrorPlugins() {
     const { core } = this.options;
-    const editor = this.editor;
-    function hasRemoteCursorInTurn(turnFrom, turnTo) {
-      const cursorSet = yCursorPluginKey.getState(editor.state);
-      return !!cursorSet && cursorSet.find(turnFrom, turnTo).length > 0;
-    }
-    function locateTurn(doc2, turnId) {
-      const el = editor.view.dom.querySelector(
-        `[data-turn-id="${CSS.escape(turnId)}"]`
-      );
-      if (!el) return null;
-      let pos;
-      try {
-        pos = editor.view.posAtDOM(el, 0);
-      } catch {
-        return null;
-      }
-      const clamped = Math.max(0, Math.min(pos, doc2.content.size));
-      const $pos = doc2.resolve(clamped);
-      if ($pos.depth >= 1) {
-        const node = $pos.node(1);
-        if (node.type.name === "turn" && node.attrs.id === turnId) {
-          return { contentStart: $pos.start(1), node };
-        }
-      }
-      const at = doc2.nodeAt(clamped);
-      if (at && at.type.name === "turn" && at.attrs.id === turnId) {
-        return { contentStart: clamped + 1, node: at };
-      }
-      return null;
-    }
-    function computeDecorations2() {
-      const activeId = core.audio?.activeWordId.value;
-      const activeTurnId = core.audio?.activeTurnId.value;
-      if (!activeId || !activeTurnId) return DecorationSet.empty;
-      const translation = core.activeChannel.value?.activeTranslation.value;
-      if (!translation) return DecorationSet.empty;
-      const turn = translation.getTurn(activeTurnId);
-      if (!turn) return DecorationSet.empty;
-      const doc2 = editor.state.doc;
-      const located = locateTurn(doc2, activeTurnId);
-      if (!located) return DecorationSet.empty;
-      const { contentStart, node } = located;
-      if (hasRemoteCursorInTurn(contentStart - 1, contentStart - 1 + node.nodeSize)) {
-        return DecorationSet.empty;
-      }
-      const text2 = node.textContent;
-      let charPos = 0;
-      for (const word2 of turn.words) {
-        const idx = text2.indexOf(word2.text, charPos);
-        if (idx === -1) break;
-        if (word2.id === activeId) {
-          const from2 = contentStart + idx;
-          const to = from2 + word2.text.length;
-          return DecorationSet.create(doc2, [
-            Decoration.inline(from2, to, {
-              class: "word--active",
-              "data-word-active": ""
-            })
-          ]);
-        }
-        charPos = idx + word2.text.length;
-      }
-      return DecorationSet.empty;
-    }
-    let unwatch = null;
     return [
-      // Must be registered before wordHighlight: wordHighlight's `apply`
-      // reads `isEditing(newState)` and relies on this state being fresh.
-      new Plugin({
-        key: editingStateKey,
-        state: {
-          init() {
-            return { editingUntil: 0 };
-          },
-          apply(tr, old) {
-            if (tr.docChanged) {
-              return { editingUntil: Date.now() + EDIT_PAUSE_MS };
-            }
-            return old;
-          }
-        }
-      }),
       new Plugin({
         key: wordHighlightKey,
-        state: {
-          init() {
-            return DecorationSet.empty;
-          },
-          apply(tr, old, _oldState, newState) {
-            if (tr.docChanged) return DecorationSet.empty;
-            if (tr.getMeta(wordHighlightKey)) {
-              if (isEditing(newState)) return old;
-              return computeDecorations2();
-            }
-            return old;
-          }
-        },
-        props: {
-          decorations(state) {
-            return wordHighlightKey.getState(state);
-          }
-        },
-        view() {
-          unwatch = watch(
-            () => core.audio?.activeWordId.value,
-            () => {
-              if (isEditing(editor.state)) return;
-              const tr = editor.state.tr.setMeta(wordHighlightKey, true);
-              editor.view.dispatch(tr);
-            }
-          );
+        view(view) {
+          const style2 = document.createElement("style");
+          const attach = () => {
+            const root2 = view.dom.getRootNode();
+            const container = root2 instanceof ShadowRoot ? root2 : view.dom.ownerDocument.head;
+            if (style2.parentNode !== container) container.appendChild(style2);
+          };
+          const render2 = () => {
+            attach();
+            const id2 = core.audio?.activeWordId.value;
+            style2.textContent = id2 ? `[data-wid="${escapeAttr(id2)}"]{${ACTIVE_STYLE}}` : "";
+          };
+          const unwatch = watch(() => core.audio?.activeWordId.value, render2);
+          render2();
           return {
             destroy() {
-              unwatch?.();
+              unwatch();
+              style2.remove();
             }
           };
         }
@@ -58291,6 +58391,9 @@ const WordHighlight = Extension.create({
     ];
   }
 });
+function escapeAttr(value) {
+  return value.replace(/["\\]/g, "\\$&");
+}
 const cursorTurnKey = new PluginKey("cursorTurn");
 function computeDecorations(state) {
   const { $head } = state.selection;
@@ -58397,6 +58500,7 @@ function buildCursor(cache, user, clientId) {
   label.textContent = String(user.name ?? "Anonymous");
   return cursor;
 }
+const REWIND_SECONDS = 0.3;
 const ClickHandler = Extension.create({
   name: "clickHandler",
   addProseMirrorPlugins() {
@@ -58417,21 +58521,21 @@ const ClickHandler = Extension.create({
             if (!turn) return false;
             const charPos = $pos.parentOffset;
             const text2 = turnNode.textContent;
+            let target = turn.startTime;
             let cursor = 0;
             for (const word2 of turn.words) {
               const idx = text2.indexOf(word2.text, cursor);
               if (idx === -1) break;
               const end = idx + word2.text.length;
               if (charPos >= idx && charPos <= end) {
-                if (word2.startTime) {
-                  core.audio?.seekTo(word2.startTime);
-                } else if (turn.startTime) {
-                  core.audio?.seekTo(turn.startTime);
-                }
-                core.audio?.pause();
-                return false;
+                if (word2.startTime != null) target = word2.startTime;
+                break;
               }
               cursor = end;
+            }
+            core.audio?.pause();
+            if (target != null) {
+              core.audio?.seekTo(Math.max(0, target - REWIND_SECONDS));
             }
             return false;
           }
@@ -58479,6 +58583,7 @@ function buildExtensions(config) {
   const extensions = [
     TranscriptionDocument,
     TurnNode,
+    WordMark,
     Text,
     Collaboration.configure({ document: ydoc, field }),
     StoreSync.configure({ store: core, getTranslation: () => translation }),
@@ -58521,19 +58626,24 @@ function applyStatelessPayload(payload, translation) {
     if (!t2 || !t2.turn_id || !Array.isArray(t2.words)) continue;
     const currentTurn = translation.getTurn(t2.turn_id);
     if (!currentTurn) continue;
-    const words = t2.words.map(mapWord);
-    const wordsText = normalizeText(
-      words.filter((w3) => w3.text !== "").map((w3) => w3.text).join(" ")
-    );
-    const currentText = normalizeText(
-      currentTurn.text ?? currentTurn.words.map((w3) => w3.text).join(" ")
-    );
-    if (wordsText !== currentText) continue;
-    translation.updateWords(t2.turn_id, words);
+    if (currentTurn.words.length === 0) continue;
+    const incoming = /* @__PURE__ */ new Map();
+    for (const aw of t2.words) {
+      const w3 = mapWord(aw);
+      incoming.set(w3.id, w3);
+    }
+    const merged = currentTurn.words.map((w3) => {
+      const inc = incoming.get(w3.id);
+      if (!inc) return w3;
+      return {
+        ...w3,
+        ...inc.startTime !== void 0 && { startTime: inc.startTime },
+        ...inc.endTime !== void 0 && { endTime: inc.endTime },
+        ...inc.confidence !== void 0 && { confidence: inc.confidence }
+      };
+    });
+    translation.updateWords(t2.turn_id, merged);
   }
-}
-function normalizeText(s2) {
-  return s2.replace(/\s+/g, " ").trim();
 }
 function turnsToDoc(turns) {
   return {
@@ -58542,8 +58652,22 @@ function turnsToDoc(turns) {
   };
 }
 function turnToNode(turn) {
-  const spokenWords = turn.words.filter((w3) => w3.text !== "");
-  const text2 = spokenWords.length > 0 ? spokenWords.map((w3) => w3.text).join(" ") : turn.text ?? "";
+  const spokenWords = turn.words.filter((w3) => (w3.text ?? "").trim() !== "");
+  let content;
+  if (spokenWords.length > 0) {
+    content = [];
+    spokenWords.forEach((w3, i2) => {
+      if (i2 > 0) content.push({ type: "text", text: " " });
+      content.push({
+        type: "text",
+        text: w3.text,
+        // Each spoken word carries its identity (wid = Word.id) as a mark.
+        marks: [{ type: "word", attrs: { wid: w3.id || crypto.randomUUID() } }]
+      });
+    });
+  } else if (turn.text) {
+    content = [{ type: "text", text: turn.text }];
+  }
   return {
     type: "turn",
     attrs: {
@@ -58555,7 +58679,7 @@ function turnToNode(turn) {
       endDate: turn.endDate,
       language: turn.language
     },
-    content: text2 ? [{ type: "text", text: text2 }] : void 0
+    content
   };
 }
 class CollabSession {
@@ -58651,7 +58775,7 @@ class LocalSession {
     const { core, host, translation, field, readOnly } = deps;
     this.ydoc = new Doc();
     const fragment = this.ydoc.getXmlFragment(field);
-    const schema = getSchema([TranscriptionDocument, TurnNode, Text]);
+    const schema = getSchema([TranscriptionDocument, TurnNode, WordMark, Text]);
     prosemirrorJSONToYXmlFragment(
       schema,
       turnsToDoc(translation.turns.value),

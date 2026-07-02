@@ -1,13 +1,7 @@
 const Y = require("yjs")
-const { getSchema } = require("@tiptap/core")
 const { prosemirrorJSONToYXmlFragment } = require("@tiptap/y-tiptap")
-const { TranscriptionDocument } = require("./transcriptionDocument")
-const { TurnNode } = require("./turnNode")
-const { Text } = require("@tiptap/extension-text")
+const { schema } = require("./serverSchema")
 const { turnsToDoc } = require("./turnsToDoc")
-
-const extensions = [TranscriptionDocument, TurnNode, Text]
-const schema = getSchema(extensions)
 
 // Seed via a throwaway doc with a FIXED client id so every replica emits
 // byte-identical ops the CRDT dedupes (else concurrent loads double the doc).
