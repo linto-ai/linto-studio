@@ -85,7 +85,7 @@ export default {
       }
       await this.reloadMedias()
     },
-    onConversationFolderChanged({ fromFolderId, toFolderId }) {
+    onConversationFolderChanged({ conversationIds, fromFolderId, toFolderId }) {
       const current = this.effectiveFolderId
       const affected =
         current === undefined ||
@@ -95,13 +95,22 @@ export default {
       if (!affected) return
       clearTimeout(this._folderChangedTimer)
       this._folderChangedTimer = setTimeout(() => {
-        this.reloadMedias()
+        // Our own move is already greyed in place: skip the reload so the
+        // infinite-scroll list isn't truncated and the greying stays.
+        const medias = this.$store.getters[`${this.storeScope}/all`]
+        const isOwnMove =
+          conversationIds?.length &&
+          conversationIds.every((id) =>
+            medias.some((m) => m._id === id && m._movedOut),
+          )
+        if (isOwnMove) return
+        this.reloadMedias({ silent: true })
       }, 300)
     },
-    async reloadMedias() {
+    async reloadMedias({ silent = false } = {}) {
       this._abortCtrl?.abort()
       const ctrl = (this._abortCtrl = new AbortController())
-      this.loading = true
+      if (!silent) this.loading = true
       this.$store.dispatch(
         "organizations/setCurrentFilterStatus",
         this.processing ? "processing" : "done",
@@ -115,7 +124,7 @@ export default {
         if (ctrl.signal.aborted) return
         throw e
       } finally {
-        if (!ctrl.signal.aborted) {
+        if (!ctrl.signal.aborted && !silent) {
           this.loading = false
           this.$store.dispatch("system/setIsLoading", false)
         }

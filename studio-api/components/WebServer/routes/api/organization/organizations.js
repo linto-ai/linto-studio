@@ -31,7 +31,9 @@ const {
   getApiKey,
   refreshApiKey,
   deleteApiKey,
+  updateApiKey,
   updateApiKeyPicture,
+  deleteApiKeyPicture,
 } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/organizations/apiKey.js`,
 )
@@ -204,11 +206,25 @@ module.exports = (webserver) => {
       controller: deleteApiKey,
     },
     {
+      path: "/:organizationId/tokens/:tokenId",
+      method: "patch",
+      requireAuth: true,
+      requireOrganizationAdminAccess: true,
+      controller: updateApiKey,
+    },
+    {
       path: "/:organizationId/tokens/:tokenId/picture",
       method: "put",
       requireAuth: true,
       requireOrganizationAdminAccess: true,
       controller: updateApiKeyPicture,
+    },
+    {
+      path: "/:organizationId/tokens/:tokenId/picture",
+      method: "delete",
+      requireAuth: true,
+      requireOrganizationAdminAccess: true,
+      controller: deleteApiKeyPicture,
     },
   ]
 }

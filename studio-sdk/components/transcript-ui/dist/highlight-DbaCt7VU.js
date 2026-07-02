@@ -1,4 +1,4 @@
-import { p as purify } from "./webcomponent-DX60A-MH.js";
+import { p as purify } from "./webcomponent-CTMkK7PN.js";
 var commonjsGlobal = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};
 function getDefaultExportFromCjs(x) {
   return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, "default") ? x["default"] : x;
@@ -3069,4 +3069,4 @@ function highlightCode(code, lang) {
 export {
   highlightCode
 };
-//# sourceMappingURL=highlight-QG4uEdNk.js.map
+//# sourceMappingURL=highlight-DbaCt7VU.js.map

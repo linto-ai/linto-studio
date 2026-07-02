@@ -56,16 +56,18 @@
       :initSortListDirection="sortListDirection"
       :initSortListKey="sortListKey">
       <template #cell-organizationId="{ value }">
-        <span
-          v-if="value"
-          :title="$t('backoffice.transcriber_profile_list.private_profile')">
-          <ph-icon name="buildings" size="md" weight="regular" />
-        </span>
-        <span
-          v-else
-          :title="$t('backoffice.transcriber_profile_list.global_profile')">
-          <ph-icon name="globe" size="md" weight="regular" />
-        </span>
+        <Tooltip
+          :text="
+            value
+              ? $t('backoffice.transcriber_profile_list.private_profile')
+              : $t('backoffice.transcriber_profile_list.global_profile')
+          "
+          position="bottom">
+          <Avatar
+            :icon="value ? 'buildings' : 'globe'"
+            color="neutral-10"
+            size="md" />
+        </Tooltip>
       </template>
       <template #cell-config.name="{ value, id }">
         <span class="clickable" @click="editProfile(id)">{{ value }}</span>

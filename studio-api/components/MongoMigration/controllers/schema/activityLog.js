@@ -8,9 +8,21 @@ module.exports = async function (db, collectionName) {
     if (!collectionName) return
     const collection = db.collection(collectionName)
 
+    await collection.createIndex({ timestamp: 1 })
+
+    // TTL on a Date field (timestamp is a String, so a TTL there is a no-op).
+    await collection.createIndex({ expireAt: 1 }, { expireAfterSeconds: 0 })
+
+    // Backs ActivityLog.getLastChannelEvent (equalities first, sort last).
     await collection.createIndex(
-      { timestamp: 1 },
-      { expireAfterSeconds: 60 * 60 * 24 * 365 }, // 1 year in ms
+      {
+        "session.sessionId": 1,
+        "channel.channelId": 1,
+        activity: 1,
+        source: 1,
+        timestamp: -1,
+      },
+      { name: "channel_activity_lookup" },
     )
 
     await collection.createIndex({ "http.status": 1 })
@@ -37,7 +49,6 @@ module.exports = async function (db, collectionName) {
       "user.id": 1,
       "session.sessionId": 1,
     })
-
   } catch (error) {
     logger.error("Error creating collection:", error)
   }

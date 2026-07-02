@@ -114,6 +114,14 @@ function setup_user() {
 setup_user
 
 script="$@"
+
+# npm is not shipped in the runtime image; resolve "npm start" to its underlying command
+case "$script" in
+"npm start" | "npm run start")
+    script="node src/app.js"
+    ;;
+esac
+
 echo "RUNNING : $script"
 
 eval "gosu $USER_NAME $script"

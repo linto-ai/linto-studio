@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "type": "module",
   "license": "AGPL-3.0",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -19,7 +21,8 @@
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
     "build:wc": "vue-tsc -b && vite build --config vite.config.wc.ts",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "bun test"
   },
   "peerDependencies": {
     "vue": "^3.5.0"

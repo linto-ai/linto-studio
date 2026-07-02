@@ -18,7 +18,9 @@
             icon="key"
             size="sm"
             class="modal-switch-org__list__item__avatar" />
-          <div class="modal-switch-org__list__item__name flex flex1">
+          <div
+            class="modal-switch-org__list__item__name flex flex1"
+            :class="{ current: isBackofficePage }">
             <div class="modal-switch-org__list__item__name__text flex1">
               {{ $t("modal_switch_org.backoffice") }}
             </div>

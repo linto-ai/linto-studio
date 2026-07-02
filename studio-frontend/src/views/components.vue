@@ -27,6 +27,11 @@
     <FormInput :field="fieldInputDisabled" disabled />
     <FormInput :field="fieldInputReadonly" readonly />
     <FormInput :field="dateTimeInput" />
+
+    <h3>FormInput - leading icon (field.leadingIcon)</h3>
+    <FormInput :field="fieldInputIcon" :inputFullWidth="true" />
+    <FormInput :field="fieldInputIconError" :inputFullWidth="true" />
+    <FormInput :field="fieldInputIconDisabled" disabled :inputFullWidth="true" />
     <DurationInput :field="fieldDuration" v-model="fieldDuration.value" />
     <PopoverList :items="popoverItems" v-model="popoverValue" class="relative">
       <!-- <template #trigger="{ open }">
@@ -62,11 +67,11 @@
     <OrgaRoleSelector v-model="role" />
     <OrgaRoleSelector v-model="role" readonly />
     <div class="flex col gap-tiny">
-      <span>SegmentedControl — value: {{ segmentedValue }}</span>
+      <span>SegmentedControl - value: {{ segmentedValue }}</span>
       <SegmentedControl v-model="segmentedValue" :options="segmentedOptions" />
     </div>
     <div class="flex col gap-tiny">
-      <span>OrganizationSelector — value: {{ organizationId }}</span>
+      <span>OrganizationSelector - value: {{ organizationId }}</span>
       <OrganizationSelector
         v-model="organizationId"
         :pinnedItems="organizationPinnedItems"
@@ -117,6 +122,25 @@ export default {
         label: "Type your name",
         error: null,
         value: "i'm read only",
+      },
+      fieldInputIcon: {
+        ...EMPTY_FIELD,
+        label: "Lien de la visioconférence",
+        placeholder: "https://meet.jit.si/...",
+        leadingIcon: "link",
+      },
+      fieldInputIconError: {
+        ...EMPTY_FIELD,
+        label: "Lien de la visioconférence",
+        placeholder: "https://meet.jit.si/...",
+        leadingIcon: "link",
+        error: "Lien invalide",
+      },
+      fieldInputIconDisabled: {
+        ...EMPTY_FIELD,
+        label: "Lien de la visioconférence",
+        value: "https://meet.jit.si/LinagoraWeeklySync",
+        leadingIcon: "link",
       },
       dateTimeInput: {
         ...EMPTY_FIELD,

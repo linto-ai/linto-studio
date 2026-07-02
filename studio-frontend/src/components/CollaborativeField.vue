@@ -213,8 +213,8 @@ export default {
       }
       if (this.turnWords) {
         const words = this.turnWords.filter((word) => word.words !== "")
-        const stime = words[wordIndex - 1]?.stime || words[0].stime
-        if (stime) {
+        const stime = words[wordIndex - 1]?.stime ?? words[0].stime
+        if (stime != null) {
           bus.$emit("player_set_time", { stime })
         }
       }

@@ -17,6 +17,10 @@ const { addFileMetadataToConversation } = require(
   `${process.cwd()}/components/WebServer/controllers/conversation/generator`,
 )
 
+const { applySpeakerIdentification } = require(
+  `${process.cwd()}/components/WebServer/controllers/speakerIdentification/injection`,
+)
+
 const fs = require("fs")
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
@@ -26,7 +30,14 @@ async function offline(conversation, isConversation = true) {
       conversation.metadata.transcription.endpoint,
       true,
     )
-    const options = await prepareTranscriptionRequest(conversation, true)
+
+    // Inject the server-built speaker identification config, as in transcriptor.js
+    const speakerIdHeaders = await injectSpeakerIdentification(conversation)
+    const options = await prepareTranscriptionRequest(
+      conversation,
+      true,
+      speakerIdHeaders,
+    )
     const processingJob = await axios.postFormData(
       transcriptionService,
       options,
@@ -55,6 +66,40 @@ async function offline(conversation, isConversation = true) {
     return conversation
   } catch (err) {
     throw err
+  }
+}
+
+async function injectSpeakerIdentification(conversation) {
+  const transcription = conversation.metadata.transcription
+  const collections = transcription.speakerIdentificationCollections
+  if (!Array.isArray(collections) || collections.length === 0) {
+    return {}
+  }
+
+  const organizationId = conversation.organization?.organizationId
+  if (!organizationId) {
+    return {}
+  }
+
+  const organizations = await model.organizations.getById(organizationId)
+  if (!Array.isArray(organizations) || organizations.length !== 1) {
+    return {}
+  }
+
+  try {
+    const speakerId = await applySpeakerIdentification(
+      {
+        transcriptionConfig: transcription.transcriptionConfig,
+        speakerIdentificationCollections: collections,
+      },
+      organizations[0],
+    )
+    transcription.transcriptionConfig = speakerId.transcriptionConfig
+    return speakerId.headers
+  } catch (err) {
+    // A speaker identification failure must not abort the transcription.
+    debug("Speaker identification skipped: %s", err.message)
+    return {}
   }
 }
 

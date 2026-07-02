@@ -133,6 +133,14 @@ while [ "$1" != "" ]; do
     shift
 done
 
+# npm is not shipped in the runtime image; resolve "npm start" to its underlying command
+case "$script" in
+"npm start" | "npm run start")
+    export NODE_ENV="${NODE_ENV:-production}"
+    script="node app.js"
+    ;;
+esac
+
 setup_user
 
 echo "RUNNING : $script"

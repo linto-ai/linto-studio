@@ -5,7 +5,7 @@
     :close-on-escape="closeOnEscape"
     :overlay="overlay"
     :full-width="fullWidth"
-    :content-class="isMobile ? 'popover-list__mobile' : ''"
+    :content-class="mergedContentClass"
     v-bind="$attrs"
     ref="popover"
     @input="onPopoverToggle"
@@ -77,37 +77,35 @@
             <Loading block :background="false" />
           </div>
 
-          <!-- Async mode: no search yet, show selected items + hint -->
+          <!-- Async mode: no query yet, show current selection -->
           <template
-            v-else-if="asyncSearch && searchQuery.length < minSearchLength">
-            <template v-if="selectedItems.length > 0 && selection">
-              <div
-                v-for="(item, index) in selectedItems"
-                :key="'selected-' + (item.id ?? item.value ?? index)"
-                class="popover-list__item popover-list__item--selection"
-                role="option"
-                :aria-selected="true"
-                @click.stop="onSelectionItemClick(item, $event)">
-                <Checkbox
-                  :id="getCheckboxId('selected-' + index)"
-                  :value="true"
-                  @input="toggleSelection(item)"
-                  class="popover-list__checkbox" />
-                <label
-                  :for="getCheckboxId('selected-' + index)"
-                  class="popover-list__checkbox-label">
-                  <slot name="item" :item="item">
-                    <span class="popover-list__item__name">{{
-                      item.name || item.text
-                    }}</span>
-                  </slot>
-                </label>
-              </div>
-            </template>
-            <div class="popover-list__empty">
-              {{
-                $t("popover_list.min_characters", { count: minSearchLength })
-              }}
+            v-else-if="
+              asyncSearch &&
+              !searchQuery &&
+              selectedItems.length > 0 &&
+              selection
+            ">
+            <div
+              v-for="(item, index) in selectedItems"
+              :key="'selected-' + (item.id ?? item.value ?? index)"
+              class="popover-list__item popover-list__item--selection"
+              role="option"
+              :aria-selected="true"
+              @click.stop="onSelectionItemClick(item, $event)">
+              <Checkbox
+                :id="getCheckboxId('selected-' + index)"
+                :value="true"
+                @input="toggleSelection(item)"
+                class="popover-list__checkbox" />
+              <label
+                :for="getCheckboxId('selected-' + index)"
+                class="popover-list__checkbox-label">
+                <slot name="item" :item="item">
+                  <span class="popover-list__item__name">{{
+                    item.name || item.text
+                  }}</span>
+                </slot>
+              </label>
             </div>
           </template>
 
@@ -325,13 +323,6 @@ export default {
       default: null,
     },
     /**
-     * Minimum characters before triggering async search
-     */
-    minSearchLength: {
-      type: Number,
-      default: 2,
-    },
-    /**
      * Selected items to display at top (useful in async mode to show current selection)
      */
     selectedItems: {
@@ -367,9 +358,23 @@ export default {
       type: String,
       default: null,
     },
+    /**
+     * Extra class applied to the teleported popover content, letting a parent
+     * style the floating list (it lives outside the parent's DOM subtree).
+     */
+    contentClass: {
+      type: String,
+      default: "",
+    },
   },
-  emits: ["click", "update:value", "input"],
+  emits: ["click", "update:value", "input", "toggle"],
   methods: {
+    /**
+     * Closes the popover programmatically.
+     */
+    close() {
+      this.$refs.popover?.close()
+    },
     isSame(value, item) {
       if (typeof value === "object" && value !== null) {
         return value.id === item.id
@@ -551,6 +556,7 @@ export default {
         )
         this.highlightedIndex = selectedIndex >= 0 ? selectedIndex : 0
       }
+      this.$emit("toggle", isOpen)
     },
     onSearchKeyDown(e) {
       this.handleKeyboardNavigation(e)
@@ -623,6 +629,11 @@ export default {
   },
   computed: {
     ...mapGetters("system", ["isMobile"]),
+    mergedContentClass() {
+      return [this.contentClass, this.isMobile ? "popover-list__mobile" : ""]
+        .filter(Boolean)
+        .join(" ")
+    },
     hasSearch() {
       return this.searchable || !!this.asyncSearch
     },
@@ -722,6 +733,11 @@ export default {
     },
   },
   watch: {
+    items() {
+      // Reset highlight when the list content changes (e.g. drill-down
+      // navigation) so keyboard actions never target a stale index.
+      this.highlightedIndex = 0
+    },
     searchQuery: {
       handler(query) {
         // Reset highlight to first item when search changes
@@ -729,7 +745,7 @@ export default {
 
         // Trigger async search if provided
         if (this.asyncSearch) {
-          if (query.length >= this.minSearchLength) {
+          if (query) {
             this.performAsyncSearch(query)
           } else {
             this.asyncItems = []

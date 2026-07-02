@@ -372,29 +372,12 @@ export default {
 
     async handleBulkFolderChange(folderId) {
       if (this.selectedMedias.length === 0) return
-
       try {
-        const conversationIds = this.selectedMedias.map((m) => m._id)
-
-        if (folderId) {
-          await this.$store.dispatch("folders/moveConversationsToFolder", {
-            folderId,
-            conversationIds,
-          })
-        } else {
-          await this.$store.dispatch("folders/uncategorizeConversations", {
-            conversationIds,
-          })
-        }
-
+        await this.moveMediasToFolder(
+          folderId,
+          this.selectedMedias.map((m) => m._id),
+        )
         this.bulkFolderId = folderId
-        this.$store.dispatch("folders/fetchFolders")
-        // Remove moved medias from current list and clear selection
-        const currentFolderId = this.$route.params.folderId
-        if (folderId !== currentFolderId) {
-          this.$store.commit(`${this.storeScope}/deleteMedias`, conversationIds)
-        }
-        this.$emit("update:selectedMediaIds", [])
       } catch (error) {
         console.error("Bulk folder move error:", error)
       }

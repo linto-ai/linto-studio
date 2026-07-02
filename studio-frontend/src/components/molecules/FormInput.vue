@@ -28,7 +28,7 @@
         {{ $t("form_field.empty_value") }}
       </div>
       <input
-        v-else-if="!textarea"
+        v-else-if="!textarea && !hasPrefix"
         :class="inputClasses"
         :type="type"
         :disabled="disabled"
@@ -41,6 +41,29 @@
         @change="onChange"
         @keydown="keydown"
         v-bind="field.customParams" />
+      <InputItem
+        v-else-if="!textarea"
+        :input-id="id"
+        :disabled="disabled"
+        :error="isInError"
+        :fullwidth="!!inputFullWidth">
+        <template #prefix>
+          <PhIcon :name="field.leadingIcon" />
+        </template>
+        <input
+          :class="inputClasses"
+          :type="type"
+          :disabled="disabled"
+          :id="id"
+          :autocomplete="autocomplete"
+          :placeholder="placeholder"
+          ref="input"
+          v-model="editValue"
+          @input="onInput"
+          @change="onChange"
+          @keydown="keydown"
+          v-bind="field.customParams" />
+      </InputItem>
       <textarea
         v-else
         :class="textareaClasses"
@@ -90,6 +113,8 @@
 import { Fragment } from "vue-fragment"
 import LabeledValue from "@/components/atoms/LabeledValue.vue"
 import Button from "@/components/atoms/Button.vue"
+import InputItem from "@/components/atoms/InputItem.vue"
+import PhIcon from "@/components/atoms/PhIcon.vue"
 import { generateId } from "@/tools/generateId.js"
 export default {
   props: {
@@ -190,6 +215,8 @@ export default {
         "form-field__input--fullwidth": this.inputFullWidth,
         "form-field__input--disabled": this.disabled,
         "form-field__input--error": this.isInError,
+        // Marks the input for InputItem's strip when a leading prefix is shown.
+        "input-box__input": this.hasPrefix,
       }
     },
     textareaClasses() {
@@ -202,6 +229,11 @@ export default {
     },
     isInError() {
       return this.field.error !== null && this.field.error !== undefined
+    },
+    // A leading icon (input prefix) is requested via the field descriptor.
+    // Only the plain text-input branch supports it (not textarea/readonly).
+    hasPrefix() {
+      return !!this.field.leadingIcon
     },
   },
   watch: {
@@ -276,7 +308,7 @@ export default {
       }
     },
   },
-  components: { Fragment, LabeledValue, Button },
+  components: { Fragment, LabeledValue, Button, InputItem, PhIcon },
 }
 </script>
 

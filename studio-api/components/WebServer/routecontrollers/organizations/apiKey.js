@@ -219,11 +219,50 @@ async function updateApiKeyPicture(req, res, next) {
   }
 }
 
+async function updateApiKey(req, res, next) {
+  try {
+    const name = typeof req.body.name === "string" ? req.body.name.trim() : ""
+    if (!name) throw new UserError("Name is required")
+
+    await checkTokenBelongsToOrganization(req.params)
+
+    const result = await model.users.update({
+      _id: req.params.tokenId,
+      firstname: name,
+    })
+    if (result.matchedCount === 0) throw new UserError("API key not updated")
+
+    res.status(200).send({ message: "API key updated", name })
+  } catch (err) {
+    next(err)
+  }
+}
+
+async function deleteApiKeyPicture(req, res, next) {
+  try {
+    const { user } = await checkTokenBelongsToOrganization(req.params)
+
+    deletePictureIfCustom(user.img)
+
+    const result = await model.users.update({
+      _id: req.params.tokenId,
+      img: null,
+    })
+    if (result.matchedCount === 0) throw new UserError("API key not updated")
+
+    res.status(200).send({ message: "API key picture removed" })
+  } catch (err) {
+    next(err)
+  }
+}
+
 module.exports = {
   createApiKey,
   listApiKeyFromOrga,
   refreshApiKey,
   getApiKey,
   deleteApiKey,
+  updateApiKey,
   updateApiKeyPicture,
+  deleteApiKeyPicture,
 }

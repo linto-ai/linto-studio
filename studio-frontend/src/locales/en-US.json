@@ -88,6 +88,12 @@
       "avatar_too_large": "File too large (5 MB maximum)",
       "avatar_upload_failed": "The API key was created but the avatar could not be uploaded"
     },
+    "modal_edit": {
+      "title": "Edit API key",
+      "name_required": "Name is required",
+      "update_success": "API key updated",
+      "update_error": "The API key could not be updated"
+    },
     "modal_delete": {
       "title": "Delete API token {name}",
       "content": "Are you sure you want to delete the token {name}?"
@@ -480,7 +486,7 @@
       "language_label": "Language",
       "number_of_speaker_label": "Number of speakers",
       "recommended_badge": "Recommended",
-      "security_not_accessible": "Not available — insufficient confidentiality level",
+      "security_not_accessible": "Not available: insufficient confidentiality level",
       "no_model_for_level": "No model meets the selected confidentiality level.",
       "change_model": "Change model",
       "choose_model": "Choose a transcription model",
@@ -712,6 +718,7 @@
   },
   "folders": {
     "uncategorized": "Inbox",
+    "select_this_folder": "Choose “{name}”",
     "create": "Create folder",
     "create_placeholder": "Folder name...",
     "name_required": "Folder name is required",
@@ -841,7 +848,15 @@
         "value_disabled": "Disabled",
         "speakers_count": "{count} speaker | {count} speakers",
         "multiple_values": "Multiple values",
-        "empty": "—"
+        "empty": "-"
+      },
+      "session": {
+        "title": "Session channels",
+        "channel": "Channel",
+        "name": "Name",
+        "languages": "Languages",
+        "translations": "Translations",
+        "no_translations": "None"
       }
     },
     "no_medias_selected": "No media selected",
@@ -1510,7 +1525,13 @@
       "link_label": "URL",
       "display_transcription_in_visio_label": "Display subtitles in the videoconference",
       "join_meeting": "Join the meeting",
-      "bot_lang_label": "Choose language used for videoconference subtitle"
+      "bot_lang_label": "Choose language used for videoconference subtitle",
+      "helper": {
+        "jitsi": "The bot joins automatically, no action required.",
+        "bigbluebutton": "The bot joins as a guest; a moderator must admit it if the room requires approval.",
+        "teams": "The meeting must be public; the bot lands in the lobby and must be admitted manually by a participant.",
+        "visio": "The bot connects as a standard participant; make sure guest access is allowed without approval."
+      }
     },
     "live": {
       "default_name": "Untitled record",
@@ -1541,6 +1562,18 @@
         "title": "A recording is pending",
         "continue_button": "Resume recording"
       }
+    },
+    "placeholder": {
+      "audio": {
+        "title": "A recording is already pending",
+        "subtitle": "You can only have one recording at a time. Resume or end the pending one to start a new recording.",
+        "continue_button": "Resume recording"
+      },
+      "visio": {
+        "title": "A videoconference is already being recorded",
+        "subtitle": "You can only record one videoconference at a time. Show the transcript or end the current recording to start a new one.",
+        "continue_button": "Show transcript"
+      }
     }
   },
   "share_menu": {
@@ -1563,7 +1596,7 @@
     "default_right_label": "Default right",
     "applied_to_every_member": "Applied to every member",
     "exceptions_label": "Exceptions",
-    "no_exceptions": "No exceptions — every member uses the default right.",
+    "no_exceptions": "No exceptions. Every member uses the default right.",
     "external_empty": "Invite people outside your organization by email above.",
     "show_other_members": "Show other members ({count})",
     "other_members_label": "Other members",
@@ -1686,6 +1719,7 @@
   },
   "websocket": {
     "disconnected": "Content not updated, check your internet connection",
+    "audio_stream_lost": "Transcription interrupted, audio is no longer being transmitted. Check your internet connection.",
     "lost_connexion": "Connection lost, attempting to reconnect...",
     "restored": "Connection restored"
   },
@@ -1706,7 +1740,6 @@
     "search": "Search",
     "search_placeholder": "Search...",
     "no_results": "No results",
-    "min_characters": "{count} characters minimum",
     "select_all": "Select all"
   },
   "actions": "Actions",
@@ -1731,7 +1764,7 @@
     "description": "Manage voiceprint collections for speaker identification. Organize speakers into collections, upload audio samples to build their voice signature, and generate voiceprints for automatic recognition.",
     "gdpr_warning": "LinTO Studio groups voiceprints under labels you define; it does not assign any identity by itself. Linking a label to a real person, and then processing that voice data, is the sole responsibility of your organization, which must ensure compliance (GDPR or applicable regulations: consent of individuals, biometric data management, retention, etc.).",
     "gdpr_your_org": "your organization",
-    "gdpr_gate_title": "Voice identification — organization responsibility",
+    "gdpr_gate_title": "Voice identification - organization responsibility",
     "gdpr_gate_intro": "LinTO Studio provides a technical tool that groups voiceprints under labels you define. The tool does not assign any identity by itself: it does not know which person a voice belongs to.",
     "gdpr_gate_biometric": "Voiceprints are biometric data. Their processing is strictly regulated and requires a valid legal basis, in particular the explicit consent of the persons concerned.",
     "gdpr_gate_responsibility": "Linking a label to an identifiable person, and then using that data, is the sole responsibility of « {org} ». It is up to you to ensure compliance (GDPR or applicable regulations): informing individuals, collecting and managing consent, retention periods, security, and the exercise of rights.",

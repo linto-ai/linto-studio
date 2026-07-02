@@ -95,5 +95,7 @@ function simplifyNumber(number) {
 }
 
 function generateID() {
-  return import.meta.env?.TEST ? "id" : uuidv4()
+  return typeof process !== "undefined" && process.env?.["TEST"]
+    ? "id"
+    : uuidv4()
 }

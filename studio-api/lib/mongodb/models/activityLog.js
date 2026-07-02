@@ -1,6 +1,7 @@
 const MongoModel = require("../model")
 
 const VIEWER_THRESHOLD_SECONDS = 300
+const ONE_YEAR_MS = 1000 * 60 * 60 * 24 * 365
 
 function buildActivityMatchQuery(activity, orgaId, startDate, endDate, userId) {
   const timestampQuery = {}
@@ -27,6 +28,10 @@ class ActivityLog extends MongoModel {
 
   async create(payload) {
     try {
+      // TTL field for the expireAt index.
+      if (payload && typeof payload === "object" && payload.expireAt == null) {
+        payload.expireAt = new Date(Date.now() + ONE_YEAR_MS)
+      }
       return await this.mongoInsert(payload)
     } catch (error) {
       console.error(error)

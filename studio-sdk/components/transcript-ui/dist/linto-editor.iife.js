@@ -42998,7 +42998,7 @@ ${indentedChild}`;
   function diffArrays(oldArr, newArr, options) {
     return arrayDiff.diff(oldArr, newArr, options);
   }
-  function splitPartialSubtitles({ previousText, previousIndexes: oldCutPositions }, newText, computeIfTextIsTooLong) {
+  function splitPartialSubtitles({ previousText, previousIndexes: oldCutPositions }, newText, computeIfTextIsTooLong, computeIfTextOverflows) {
     if (!newText) {
       return { previousText, previousIndexes: oldCutPositions };
     }
@@ -43043,17 +43043,24 @@ ${indentedChild}`;
         wordIndex += d2.count;
       }
     }
-    const lastLinePosition = newCutPositions.length > 0 ? newCutPositions[newCutPositions.length - 1] : 0;
-    const lastLine = newTextSplitBySpace.slice(lastLinePosition).join(" ");
+    const lineText = (from2, to) => newTextSplitBySpace.slice(from2, to).join(" ");
+    if (computeIfTextOverflows && newCutPositions.length > 0) {
+      const lastIndex = newCutPositions.length - 1;
+      const lineStart = lastIndex > 0 ? newCutPositions[lastIndex - 1] : 0;
+      const secondToLastLine = lineText(lineStart, newCutPositions[lastIndex]);
+      if (computeIfTextOverflows(secondToLastLine)) {
+        const [headCut] = getIndexesWhereToCutText(
+          secondToLastLine,
+          computeIfTextIsTooLong
+        );
+        if (headCut !== void 0) newCutPositions[lastIndex] = lineStart + headCut;
+      }
+    }
+    const lastLineStart = newCutPositions.length > 0 ? newCutPositions[newCutPositions.length - 1] : 0;
+    const lastLine = lineText(lastLineStart);
     if (computeIfTextIsTooLong(lastLine)) {
-      const cutPositionsForLastLine = getIndexesWhereToCutText(
-        lastLine,
-        computeIfTextIsTooLong
-      );
-      const cutPositionsForLastLineIncremented = cutPositionsForLastLine.map(
-        (index) => index + lastLinePosition
-      );
-      newCutPositions = newCutPositions.concat(cutPositionsForLastLineIncremented);
+      const cuts = getIndexesWhereToCutText(lastLine, computeIfTextIsTooLong);
+      newCutPositions = newCutPositions.concat(cuts.map((i2) => i2 + lastLineStart));
     }
     return {
       previousIndexes: newCutPositions,
@@ -43064,25 +43071,20 @@ ${indentedChild}`;
     const result = [];
     for (let i2 = 0; i2 < diffList.length; i2++) {
       const currentDiff = diffList[i2];
-      if (!currentDiff.removed) {
+      const nextDiff = diffList[i2 + 1];
+      const isReplacement = currentDiff.removed && nextDiff?.added;
+      if (isReplacement) {
+        result.push({
+          replaced: true,
+          removed: true,
+          added: true,
+          countRemoved: currentDiff.count,
+          countAdded: nextDiff.count
+        });
+        i2++;
+      } else {
         result.push(currentDiff);
-        continue;
       }
-      if (i2 + 1 < diffList.length) {
-        const nextDiff = diffList[i2 + 1];
-        if (nextDiff.added) {
-          result.push({
-            replaced: true,
-            removed: currentDiff.removed ?? false,
-            added: nextDiff.added ?? false,
-            countRemoved: currentDiff.count,
-            countAdded: nextDiff.count
-          });
-          i2++;
-          continue;
-        }
-      }
-      result.push(currentDiff);
     }
     return result;
   }
@@ -43198,7 +43200,8 @@ ${indentedChild}`;
       this.currentState = splitPartialSubtitles(
         this.currentState,
         currentText.trim(),
-        this.computeIfTextIsTooLong.bind(this)
+        this.computeIfTextIsTooLong.bind(this),
+        this.computeIfTextOverflows.bind(this)
       );
       this.draw();
     }
@@ -43207,7 +43210,8 @@ ${indentedChild}`;
       this.currentState = splitPartialSubtitles(
         this.currentState,
         text2.trim(),
-        this.computeIfTextIsTooLong.bind(this)
+        this.computeIfTextIsTooLong.bind(this),
+        this.computeIfTextOverflows.bind(this)
       );
       this.draw();
     }
@@ -43216,7 +43220,8 @@ ${indentedChild}`;
       this.currentState = splitPartialSubtitles(
         this.currentState,
         text2.trim(),
-        this.computeIfTextIsTooLong.bind(this)
+        this.computeIfTextIsTooLong.bind(this),
+        this.computeIfTextOverflows.bind(this)
       );
       this.draw();
       this.resetState();
@@ -43256,12 +43261,20 @@ ${indentedChild}`;
       }
       return state.previousText.split(" ").slice(beforeLastIndex, lastIndex).join(" ");
     }
-    computeIfTextIsTooLong(text2) {
+    textWidth(text2) {
       const ctx = this.canvas.getContext("2d");
       ctx.font = `${this.fontSize}px ${this.font}`;
-      const maxWidth = this.canvas.width - 2 * this.paddingInline;
-      const width = ctx.measureText(text2).width;
-      return width > maxWidth;
+      return ctx.measureText(text2).width;
+    }
+    // Normal cut threshold: keeps both inline margins free.
+    computeIfTextIsTooLong(text2) {
+      return this.textWidth(text2) > this.canvas.width - 2 * this.paddingInline;
+    }
+    // Overflow threshold: the text is drawn at x = paddingInline, so it reaches the
+    // canvas edge once its width exceeds canvas.width - paddingInline. Spilling into
+    // the inline margin is tolerated; going past this re-cuts an already-shown line.
+    computeIfTextOverflows(text2) {
+      return this.textWidth(text2) > this.canvas.width - this.paddingInline;
     }
   }
   function useSubtitleScroller(options) {

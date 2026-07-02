@@ -1,7 +1,17 @@
 import { getEnv } from "../getEnv"
 
-export function testVisioUrl(field, t) {
-  const acceptedUrlsStrings = getEnv("VUE_APP_ACCEPTED_JITSI_URLS")
+// Per-provider URL allowlist env; an unset/empty allowlist accepts any URL.
+const ACCEPTED_URLS_ENV = {
+  jitsi: "VUE_APP_ACCEPTED_JITSI_URLS",
+  bigbluebutton: "VUE_APP_ACCEPTED_BBB_URLS",
+  teams: "VUE_APP_ACCEPTED_TEAMS_URLS",
+  visio: "VUE_APP_ACCEPTED_VISIO_URLS",
+}
+
+export function testVisioUrl(field, t, provider = "jitsi") {
+  const acceptedUrlsStrings = getEnv(
+    ACCEPTED_URLS_ENV[provider] || ACCEPTED_URLS_ENV.jitsi,
+  )
 
   let acceptedUrls = []
   if (acceptedUrlsStrings) {
@@ -10,7 +20,10 @@ export function testVisioUrl(field, t) {
 
   field.error = null
   field.valid = false
-  field.value = field.value.toLowerCase().trim()
+  // Only trim, never lowercase: meeting URLs carry case-sensitive tokens (e.g. a
+  // Teams join passcode) that the bot needs intact. Allowlist matching below is
+  // done case-insensitively instead.
+  field.value = field.value.trim()
 
   if (field.value === "") {
     field.error = t("error.required")
@@ -22,7 +35,8 @@ export function testVisioUrl(field, t) {
     return field.valid
   }
 
-  if (acceptedUrls.some((url) => field.value.includes(url))) {
+  const lowerValue = field.value.toLowerCase()
+  if (acceptedUrls.some((url) => lowerValue.includes(url.toLowerCase()))) {
     field.valid = true
     return field.valid
   }
