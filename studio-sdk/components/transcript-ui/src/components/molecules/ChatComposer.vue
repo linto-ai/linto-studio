@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, useId } from "vue"
+import { ref, useId, onMounted, useTemplateRef } from "vue"
 import Button from "../atoms/Button.vue"
 import { useI18n } from "../../i18n"
 
@@ -10,6 +10,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   send: [content: string]
 }>()
+
+const textarea = useTemplateRef<HTMLTextAreaElement>("chat-composer__textarea")
 
 const { t } = useI18n()
 const text = ref("")
@@ -32,6 +34,10 @@ function onKeydown(event: KeyboardEvent): void {
     submit()
   }
 }
+
+onMounted(() => {
+  textarea.value?.focus()
+})
 </script>
 
 <template>
@@ -44,6 +50,7 @@ function onKeydown(event: KeyboardEvent): void {
       :placeholder="t('chat.placeholder')"
       :disabled="disabled"
       rows="2"
+      ref="chat-composer__textarea"
       @keydown="onKeydown" />
     <Button
       icon="send"

@@ -43976,6 +43976,7 @@ ${indentedChild}`;
     setup(__props, { emit: __emit }) {
       const props = __props;
       const emit2 = __emit;
+      const textarea = useTemplateRef("chat-composer__textarea");
       const { t: t2 } = useI18n();
       const text2 = /* @__PURE__ */ ref("");
       const textareaId = useId$1();
@@ -43993,6 +43994,9 @@ ${indentedChild}`;
           submit();
         }
       }
+      onMounted(() => {
+        textarea.value?.focus();
+      });
       return (_ctx, _cache) => {
         return openBlock(), createElementBlock("div", _hoisted_1$8, [
           createBaseVNode("label", {
@@ -44006,6 +44010,7 @@ ${indentedChild}`;
             placeholder: unref(t2)("chat.placeholder"),
             disabled: __props.disabled,
             rows: "2",
+            ref: "chat-composer__textarea",
             onKeydown
           }, null, 40, _hoisted_3$4), [
             [vModelText, text2.value]
@@ -44022,8 +44027,8 @@ ${indentedChild}`;
       };
     }
   });
-  const _style_0$8 = "\n.chat-composer[data-v-60bcc0a0] {\n  display: flex;\n  align-items: flex-end;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  flex-shrink: 0;\n  /* Match the message column width when the panel is expanded. */\n  width: 100%;\n  max-width: var(--chat-content-max-width, 760px);\n  margin-inline: auto;\n}\n.chat-composer__textarea[data-v-60bcc0a0] {\n  flex: 1;\n  resize: none;\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  padding: var(--spacing-sm) var(--spacing-md);\n  font-family: inherit;\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n  background-color: var(--color-surface);\n  outline: none;\n}\n.chat-composer__textarea[data-v-60bcc0a0]:focus {\n  border-color: var(--color-primary);\n}\n.chat-composer__textarea[data-v-60bcc0a0]:disabled {\n  opacity: 0.6;\n  cursor: not-allowed;\n}\n";
-  const ChatComposer = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["styles", [_style_0$8]], ["__scopeId", "data-v-60bcc0a0"]]);
+  const _style_0$8 = "\n.chat-composer[data-v-846654fe] {\n  display: flex;\n  align-items: flex-end;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  flex-shrink: 0;\n  /* Match the message column width when the panel is expanded. */\n  width: 100%;\n  max-width: var(--chat-content-max-width, 760px);\n  margin-inline: auto;\n}\n.chat-composer__textarea[data-v-846654fe] {\n  flex: 1;\n  resize: none;\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  padding: var(--spacing-sm) var(--spacing-md);\n  font-family: inherit;\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n  background-color: var(--color-surface);\n  outline: none;\n}\n.chat-composer__textarea[data-v-846654fe]:focus {\n  border-color: var(--color-primary);\n}\n.chat-composer__textarea[data-v-846654fe]:disabled {\n  opacity: 0.6;\n  cursor: not-allowed;\n}\n";
+  const ChatComposer = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["styles", [_style_0$8]], ["__scopeId", "data-v-846654fe"]]);
   const _hoisted_1$7 = ["aria-labelledby"];
   const _hoisted_2$5 = { class: "chat-drawer__header" };
   const _hoisted_3$3 = ["id"];

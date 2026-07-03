@@ -1,4 +1,4 @@
-import { L, c, a, b, d, e, f, r } from "./webcomponent-COXOBXw1.js";
+import { L, c, a, b, d, e, f, r } from "./webcomponent-BjZOnPR7.js";
 export {
   L as LintoEditor,
   c as createAudioPlugin,
