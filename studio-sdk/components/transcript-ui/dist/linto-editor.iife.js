@@ -38022,8 +38022,8 @@ ${indentedChild}`;
       };
     }
   });
-  const _style_0$u = "\n.transcription-panel[data-v-17579b10] {\n  min-height: 0;\n  overflow: hidden;\n  background-color: var(--color-surface);\n}\n\n/* .transcription-panel:has(.ProseMirror:focus) {\n  background-color: var(--color-background);\n}\n\n.transcription-panel :deep(.ProseMirror:focus) {\n  outline: 1px solid var(--color-primary);\n  background-color: var(--color-surface);\n  box-shadow: var(--shadow-sm);\n} */\n.transcription-panel[data-v-17579b10] .ProseMirror:focus {\n  outline: none;\n}\n.transcription-panel[data-v-17579b10] .turn--cursor {\n  outline: 2px solid var(--color-primary);\n}\n.scroll-container[data-v-17579b10] {\n  height: 100%;\n  overflow: auto;\n  position: relative;\n}\n.turns-container[data-v-17579b10] {\n  max-width: 80ch;\n  margin-inline: auto;\n  padding: var(--spacing-lg);\n}\n.turns-container[data-v-17579b10]:has(.transcription-empty) {\n  display: flex;\n  flex-direction: column;\n  min-height: 100%;\n}\n.history-loading[data-v-17579b10] {\n  text-align: center;\n  padding: var(--spacing-md);\n}\n.history-loading progress[data-v-17579b10] {\n  width: 120px;\n}\n.history-start[data-v-17579b10] {\n  text-align: center;\n  padding: var(--spacing-md);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n}\n\n/* Resume scroll button */\n.resume-scroll-btn[data-v-17579b10] {\n  position: sticky;\n  bottom: var(--spacing-lg);\n  left: 50%;\n  translate: -50% 0;\n  z-index: var(--z-sticky);\n  /* No backdrop-filter: this button is sticky inside the tall scroll\n     container, where a backdrop-filter makes WebRender allocate a render\n     target spanning the whole scroll height — multi-GB on a long transcript. */\n  background: white !important;\n  border: 1px solid var(--color-border);\n  box-shadow: var(--shadow-sm);\n}\n\n/* Transition */\n.fade-slide-enter-active[data-v-17579b10],\n.fade-slide-leave-active[data-v-17579b10] {\n  transition:\n    opacity 200ms ease,\n    translate 200ms ease;\n}\n.fade-slide-enter-from[data-v-17579b10],\n.fade-slide-leave-to[data-v-17579b10] {\n  opacity: 0;\n  translate: -50% 8px;\n}\n@media (prefers-reduced-motion: reduce) {\n.fade-slide-enter-active[data-v-17579b10],\n  .fade-slide-leave-active[data-v-17579b10] {\n    transition: none;\n}\n}\n@media (max-width: 767px) {\n.turns-container[data-v-17579b10] {\n    padding: var(--spacing-md);\n}\n}\n";
-  const TranscriptionPanel = /* @__PURE__ */ _export_sfc(_sfc_main$A, [["styles", [_style_0$u]], ["__scopeId", "data-v-17579b10"]]);
+  const _style_0$u = "\n.transcription-panel[data-v-273b45f1] {\n  min-height: 0;\n  overflow: hidden;\n  background-color: var(--color-surface);\n}\n\n/* .transcription-panel:has(.ProseMirror:focus) {\n  background-color: var(--color-background);\n}\n\n.transcription-panel :deep(.ProseMirror:focus) {\n  outline: 1px solid var(--color-primary);\n  background-color: var(--color-surface);\n  box-shadow: var(--shadow-sm);\n} */\n.transcription-panel[data-v-273b45f1] .ProseMirror:focus {\n  outline: none;\n}\n\n/* Turn holding the caret — the cursorTurn extension adds `turn--cursor`. */\n.transcription-panel[data-v-273b45f1] .turn--cursor {\n  outline: 2px solid var(--color-primary);\n}\n.scroll-container[data-v-273b45f1] {\n  height: 100%;\n  overflow: auto;\n  position: relative;\n}\n.turns-container[data-v-273b45f1] {\n  max-width: 80ch;\n  margin-inline: auto;\n  padding: var(--spacing-lg);\n}\n.turns-container[data-v-273b45f1]:has(.transcription-empty) {\n  display: flex;\n  flex-direction: column;\n  min-height: 100%;\n}\n.history-loading[data-v-273b45f1] {\n  text-align: center;\n  padding: var(--spacing-md);\n}\n.history-loading progress[data-v-273b45f1] {\n  width: 120px;\n}\n.history-start[data-v-273b45f1] {\n  text-align: center;\n  padding: var(--spacing-md);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n}\n\n/* Resume scroll button */\n.resume-scroll-btn[data-v-273b45f1] {\n  position: sticky;\n  bottom: var(--spacing-lg);\n  left: 50%;\n  translate: -50% 0;\n  z-index: var(--z-sticky);\n  /* No backdrop-filter: this button is sticky inside the tall scroll\n     container, where a backdrop-filter makes WebRender allocate a render\n     target spanning the whole scroll height — multi-GB on a long transcript. */\n  background: white !important;\n  border: 1px solid var(--color-border);\n  box-shadow: var(--shadow-sm);\n}\n\n/* Transition */\n.fade-slide-enter-active[data-v-273b45f1],\n.fade-slide-leave-active[data-v-273b45f1] {\n  transition:\n    opacity 200ms ease,\n    translate 200ms ease;\n}\n.fade-slide-enter-from[data-v-273b45f1],\n.fade-slide-leave-to[data-v-273b45f1] {\n  opacity: 0;\n  translate: -50% 8px;\n}\n@media (prefers-reduced-motion: reduce) {\n.fade-slide-enter-active[data-v-273b45f1],\n  .fade-slide-leave-active[data-v-273b45f1] {\n    transition: none;\n}\n}\n@media (max-width: 767px) {\n.turns-container[data-v-273b45f1] {\n    padding: var(--spacing-md);\n}\n}\n";
+  const TranscriptionPanel = /* @__PURE__ */ _export_sfc(_sfc_main$A, [["styles", [_style_0$u]], ["__scopeId", "data-v-273b45f1"]]);
   const _hoisted_1$t = ["data-status"];
   const _hoisted_2$o = {
     key: 0,
@@ -40077,6 +40077,10 @@ ${indentedChild}`;
       };
     }
   });
+  const KEEP_IN_HISTORY = "transcriptionEditor/keepInHistory";
+  function keepsHistory(transactions) {
+    return transactions.some((tr) => tr.getMeta(KEEP_IN_HISTORY) === true);
+  }
   function pickColor(core) {
     const size2 = core.speakers.all.size;
     return SPEAKER_COLORS[size2 % SPEAKER_COLORS.length];
@@ -40110,17 +40114,11 @@ ${indentedChild}`;
     if (!existing || !trimmed || trimmed === existing.name) return;
     const map2 = core.transcriptionEditor?.speakersMap;
     if (map2 && map2.doc) {
-      const origin = {
-        type: "speaker:rename",
-        speakerId,
-        from: existing.name,
-        to: trimmed
-      };
       map2.doc.transact(() => {
         const cur = map2.get(speakerId);
         if (!cur) return;
         map2.set(speakerId, { ...cur, name: trimmed });
-      }, origin);
+      });
     } else {
       core.speakers.update(speakerId, { name: trimmed });
     }
@@ -40132,19 +40130,9 @@ ${indentedChild}`;
     if (pos === null) return;
     const currentSpeakerId = editor.state.doc.nodeAt(pos)?.attrs.speakerId ?? null;
     if (currentSpeakerId === newSpeakerId) return;
-    const origin = {
-      type: "turn:reassign",
-      turnId,
-      from: currentSpeakerId,
-      to: newSpeakerId
-    };
-    const ydoc = core.transcriptionEditor?.doc;
-    const apply2 = () => {
-      const tr = editor.state.tr.setNodeAttribute(pos, "speakerId", newSpeakerId);
-      editor.view.dispatch(tr);
-    };
-    if (ydoc) ydoc.transact(apply2, origin);
-    else apply2();
+    editor.view.dispatch(
+      editor.state.tr.setNodeAttribute(pos, "speakerId", newSpeakerId).setMeta(KEEP_IN_HISTORY, true)
+    );
   }
   function createSpeakerAndAssign(core, turnId, name) {
     const trimmed = name.trim();
@@ -40156,18 +40144,8 @@ ${indentedChild}`;
     const pos = findTurnPos(editor, turnId);
     if (pos === null) return null;
     const newId = crypto.randomUUID();
-    const color = pickColor(core);
-    const origin = {
-      type: "speaker:create-and-assign",
-      speakerId: newId,
-      name: trimmed,
-      turnId
-    };
-    ydoc.transact(() => {
-      map2.set(newId, { name: trimmed, color });
-      const tr = editor.state.tr.setNodeAttribute(pos, "speakerId", newId);
-      editor.view.dispatch(tr);
-    }, origin);
+    ydoc.transact(() => map2.set(newId, { name: trimmed, color: pickColor(core) }));
+    editor.view.dispatch(editor.state.tr.setNodeAttribute(pos, "speakerId", newId));
     return newId;
   }
   function mergeSpeakers(core, fromSpeakerId, toSpeakerId) {
@@ -40178,22 +40156,14 @@ ${indentedChild}`;
     if (!editor || !map2 || !ydoc) return;
     if (!map2.has(fromSpeakerId) || !map2.has(toSpeakerId)) return;
     const hits = findTurnPositionsBySpeaker(editor, fromSpeakerId);
-    const origin = {
-      type: "speaker:merge",
-      from: fromSpeakerId,
-      to: toSpeakerId,
-      affectedTurnIds: hits.map((h2) => h2.turnId)
-    };
-    ydoc.transact(() => {
-      if (hits.length > 0) {
-        let tr = editor.state.tr;
-        for (const hit of hits) {
-          tr = tr.setNodeAttribute(hit.pos, "speakerId", toSpeakerId);
-        }
-        editor.view.dispatch(tr);
+    if (hits.length > 0) {
+      let tr = editor.state.tr;
+      for (const hit of hits) {
+        tr = tr.setNodeAttribute(hit.pos, "speakerId", toSpeakerId);
       }
-      map2.delete(fromSpeakerId);
-    }, origin);
+      editor.view.dispatch(tr);
+    }
+    ydoc.transact(() => map2.delete(fromSpeakerId));
   }
   const _hoisted_1$k = { class: "merge-dialog-title" };
   const _hoisted_2$g = { class: "merge-dialog-description" };
@@ -45240,8 +45210,8 @@ pre[class*="language-"] {
       };
     }
   });
-  const _style_0 = "\n.turn[data-v-43c8ee4e] {\n  padding: var(--spacing-sm) var(--spacing-lg);\n  border-left: 3px solid transparent;\n\n  /* Skip layout/paint of off-screen turns on long transcripts. `auto <size>`\n     remembers each turn's real height after first render. */\n  content-visibility: auto;\n  contain-intrinsic-size: auto 56px;\n}\n.turn-text[data-v-43c8ee4e] {\n  margin-top: var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.turn--active[data-v-43c8ee4e] {\n  /* outline-left: 3px solid var(--speaker-color);\n  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);\n  border-bottom: 2px solid var(--speaker-color);\n   color: var(--speaker-color);\n   */\n  background-color: color-mix(in srgb, var(--speaker-color) 5%, transparent);\n  outline: 1px solid var(--speaker-color);\n}\n\n/* Turn currently holding the caret (set by the cursorTurn PM decoration). */\n.turn--cursor[data-v-43c8ee4e] {\n  background-color: color-mix(in srgb, var(--color-primary) 5%, transparent);\n  outline: 2px solid var(--color-primary);\n}\n\n/* Matches SpeakerPopover's trigger so the placeholder looks identical. */\n.lazy-speaker-trigger[data-v-43c8ee4e] {\n  all: unset;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--radius-sm);\n}\n.lazy-speaker-trigger[data-v-43c8ee4e]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n[data-v-43c8ee4e] .word--active {\n  text-decoration: underline;\n  text-decoration-color: var(--color-primary);\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n  color: var(--color-primary);\n}\n@media (max-width: 767px) {\n.turn[data-v-43c8ee4e] {\n    padding: var(--spacing-sm) var(--spacing-md);\n}\n}\n";
-  const TurnNodeView = /* @__PURE__ */ _export_sfc(_sfc_main, [["styles", [_style_0]], ["__scopeId", "data-v-43c8ee4e"]]);
+  const _style_0 = "\n.turn[data-v-d428825e] {\n  padding: var(--spacing-sm) var(--spacing-lg);\n  border-left: 3px solid transparent;\n\n  /* Skip layout/paint of off-screen turns on long transcripts. `auto <size>`\n     remembers each turn's real height after first render. */\n  content-visibility: auto;\n  contain-intrinsic-size: auto 56px;\n}\n.turn-text[data-v-d428825e] {\n  margin-top: var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.turn--active[data-v-d428825e] {\n  /* outline-left: 3px solid var(--speaker-color);\n  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);\n  border-bottom: 2px solid var(--speaker-color);\n   color: var(--speaker-color);\n   */\n  background-color: color-mix(in srgb, var(--speaker-color) 5%, transparent);\n  outline: 1px solid var(--speaker-color);\n}\n\n/* The caret's turn gets a `turn--cursor` class from the cursorTurn extension;\n   it's styled in TranscriptionPanel.vue. */\n\n/* Matches SpeakerPopover's trigger so the placeholder looks identical. */\n.lazy-speaker-trigger[data-v-d428825e] {\n  all: unset;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--radius-sm);\n}\n.lazy-speaker-trigger[data-v-d428825e]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n[data-v-d428825e] .word--active {\n  text-decoration: underline;\n  text-decoration-color: var(--color-primary);\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n  color: var(--color-primary);\n}\n@media (max-width: 767px) {\n.turn[data-v-d428825e] {\n    padding: var(--spacing-sm) var(--spacing-md);\n}\n}\n";
+  const TurnNodeView = /* @__PURE__ */ _export_sfc(_sfc_main, [["styles", [_style_0]], ["__scopeId", "data-v-d428825e"]]);
   const TTS_SUPPORTED = typeof window !== "undefined" && "speechSynthesis" in window;
   function isTTSSupported() {
     return TTS_SUPPORTED;
@@ -58513,7 +58483,6 @@ ${err.toString()}`);
     for (const { pos, attrs } of invalid) {
       tr.setNodeMarkup(pos, void 0, { ...attrs, id: crypto.randomUUID() });
     }
-    tr.setMeta("addToHistory", false);
     return tr;
   }
   const MAX_MARK_OPS = 5e3;
@@ -58606,7 +58575,6 @@ ${err.toString()}`);
         tr.removeMark(op.from, op.to, wordMarkType);
       }
     }
-    tr.setMeta("addToHistory", false);
     return tr;
   }
   function rangeHasWid(charWid, a2, b2) {
@@ -58618,6 +58586,7 @@ ${err.toString()}`);
     return true;
   }
   const storeSyncKey = new PluginKey("storeSync");
+  const NORMALIZED = "transcriptionEditor/storeSyncNormalized";
   function mayAffectTurnIds(transactions, oldState, newState) {
     if (oldState.doc.childCount !== newState.doc.childCount) return true;
     for (const tr of transactions) {
@@ -58639,26 +58608,35 @@ ${err.toString()}`);
     name: "storeSync",
     addProseMirrorPlugins() {
       const { store, getTranslation } = this.options;
+      const mirror = (newState, oldState) => {
+        const translation = getTranslation();
+        if (translation) {
+          syncDocToStore(newState.doc, oldState.doc, translation, store);
+        }
+      };
       return [
         new Plugin({
           key: storeSyncKey,
           appendTransaction(transactions, oldState, newState) {
             if (oldState.doc.eq(newState.doc)) return null;
-            const isRemote = transactions.some((tr) => tr.getMeta(ySyncPluginKey));
-            if (!isRemote) {
-              const fixTr = mayAffectTurnIds(transactions, oldState, newState) ? fixTurnIds(newState) : null;
-              const markTr = fixWordMarks(newState, transactions);
-              if (fixTr && markTr) {
-                for (const step of markTr.steps) fixTr.step(step);
-                return fixTr;
-              }
-              if (fixTr) return fixTr;
-              if (markTr) return markTr;
+            if (transactions.some((tr2) => tr2.getMeta(NORMALIZED))) {
+              mirror(newState, oldState);
+              return null;
             }
-            const translation = getTranslation();
-            if (!translation) return null;
-            syncDocToStore(newState.doc, oldState.doc, translation, store);
-            return null;
+            const isRemote = transactions.some((tr2) => tr2.getMeta(ySyncPluginKey));
+            if (isRemote) {
+              mirror(newState, oldState);
+              return null;
+            }
+            const tr = newState.tr;
+            const fixTr = mayAffectTurnIds(transactions, oldState, newState) ? fixTurnIds(newState) : null;
+            if (fixTr) for (const step of fixTr.steps) tr.step(step);
+            const markTr = fixWordMarks(newState, transactions);
+            if (markTr) for (const step of markTr.steps) tr.step(step);
+            if (!keepsHistory(transactions)) tr.setMeta("addToHistory", false);
+            tr.setMeta(NORMALIZED, true);
+            tr.setStoredMarks(newState.storedMarks);
+            return tr;
           }
         })
       ];
@@ -58706,10 +58684,10 @@ ${err.toString()}`);
     const { $head } = state.selection;
     for (let depth = $head.depth; depth > 0; depth--) {
       if ($head.node(depth).type.name === "turn") {
-        const from2 = $head.before(depth);
-        const to = $head.after(depth);
         return DecorationSet.create(state.doc, [
-          Decoration.node(from2, to, { class: "turn--cursor" })
+          Decoration.node($head.before(depth), $head.after(depth), {
+            class: "turn--cursor"
+          })
         ]);
       }
     }
@@ -58718,59 +58696,49 @@ ${err.toString()}`);
   const CursorTurn = Extension.create({
     name: "cursorTurn",
     addProseMirrorPlugins() {
-      let pendingFocusSync = null;
-      function scheduleFocusSync(view) {
-        if (pendingFocusSync) clearTimeout(pendingFocusSync);
-        pendingFocusSync = setTimeout(() => {
-          pendingFocusSync = null;
-          if (view.isDestroyed) return;
-          view.dispatch(
-            view.state.tr.setMeta(cursorTurnKey, { focused: view.hasFocus() })
-          );
+      let pending = null;
+      const syncFocus = (view) => {
+        if (pending) clearTimeout(pending);
+        pending = setTimeout(() => {
+          pending = null;
+          if (!view.isDestroyed) {
+            view.dispatch(view.state.tr.setMeta(cursorTurnKey, view.hasFocus()));
+          }
         }, 0);
-      }
+      };
       return [
         new Plugin({
           key: cursorTurnKey,
           state: {
-            init() {
-              return { deco: DecorationSet.empty, focused: false };
-            },
-            apply(tr, old, _oldState, newState) {
-              const meta = tr.getMeta(cursorTurnKey);
-              const focused = meta ? meta.focused : old.focused;
+            init: () => ({ deco: DecorationSet.empty, focused: false }),
+            apply(tr, prev, _oldState, newState) {
+              const focus2 = tr.getMeta(cursorTurnKey);
+              const focused = focus2 ?? prev.focused;
               if (!focused) return { deco: DecorationSet.empty, focused };
-              if (meta || tr.selectionSet || tr.docChanged) {
+              if (focus2 !== void 0 || tr.selectionSet || tr.docChanged) {
                 return { deco: computeDecorations(newState), focused };
               }
-              return { deco: old.deco, focused };
+              return { deco: prev.deco, focused };
             }
           },
           props: {
-            decorations(state) {
-              return cursorTurnKey.getState(state)?.deco;
-            },
-            // Blur/focus don't emit transactions on their own, so turn them into
-            // meta-only transactions to drive the plugin state (deferred — see
-            // scheduleFocusSync).
+            decorations: (state) => cursorTurnKey.getState(state)?.deco,
             handleDOMEvents: {
-              focus(view) {
-                scheduleFocusSync(view);
+              focus: (view) => {
+                syncFocus(view);
                 return false;
               },
-              blur(view) {
-                scheduleFocusSync(view);
+              blur: (view) => {
+                syncFocus(view);
                 return false;
               }
             }
           },
-          view() {
-            return {
-              destroy() {
-                if (pendingFocusSync) clearTimeout(pendingFocusSync);
-              }
-            };
-          }
+          view: () => ({
+            destroy() {
+              if (pending) clearTimeout(pending);
+            }
+          })
         })
       ];
     }

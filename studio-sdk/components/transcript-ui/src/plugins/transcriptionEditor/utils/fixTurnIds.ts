@@ -6,8 +6,9 @@ const MAX_DUPLICATE_REPAIR = 100
 
 /**
  * Assign a fresh id to every turn with a missing (null) or duplicate id.
- * Returns a history-less transaction, or null when there is nothing to repair
- * (or the doc looks corrupt — too many to fix inline).
+ * Returns a repair transaction (its steps only; storeSync owns history/dispatch),
+ * or null when there is nothing to repair (or the doc looks corrupt — too many
+ * to fix inline).
  */
 export function fixTurnIds(state: EditorState): Transaction | null {
   const seen = new Set<string>()
@@ -36,6 +37,6 @@ export function fixTurnIds(state: EditorState): Transaction | null {
   for (const { pos, attrs } of invalid) {
     tr.setNodeMarkup(pos, undefined, { ...attrs, id: crypto.randomUUID() })
   }
-  tr.setMeta("addToHistory", false)
+  // History scope is applied centrally by storeSync — see historyPolicy.
   return tr
 }

@@ -111,11 +111,8 @@ const isTurnActive = computed(() => {
   outline: 1px solid var(--speaker-color);
 }
 
-/* Turn currently holding the caret (set by the cursorTurn PM decoration). */
-.turn--cursor {
-  background-color: color-mix(in srgb, var(--color-primary) 5%, transparent);
-  outline: 2px solid var(--color-primary);
-}
+/* The caret's turn gets a `turn--cursor` class from the cursorTurn extension;
+   it's styled in TranscriptionPanel.vue. */
 
 /* Matches SpeakerPopover's trigger so the placeholder looks identical. */
 .lazy-speaker-trigger {

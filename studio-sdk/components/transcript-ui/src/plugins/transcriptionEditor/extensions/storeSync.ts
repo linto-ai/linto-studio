@@ -7,8 +7,14 @@ import type { Core, TranslationStore } from "../../../core/types"
 import { syncDocToStore } from "../utils/syncDocToStore"
 import { fixTurnIds } from "../utils/fixTurnIds"
 import { fixWordMarks } from "../utils/fixWordMarks"
+import { keepsHistory } from "../utils/historyPolicy"
 
 const storeSyncKey = new PluginKey("storeSync")
+
+// Marks storeSync's own follow-up transaction. When it comes back around, the
+// repairs are already in the doc, so we mirror to the store instead of
+// reprocessing (see appendTransaction).
+const NORMALIZED = "transcriptionEditor/storeSyncNormalized"
 
 /**
  * fixTurnIds scans the whole document (O(turns)); running it on every keystroke
@@ -68,6 +74,13 @@ export const StoreSync = Extension.create<StoreSyncOptions>({
   addProseMirrorPlugins() {
     const { store, getTranslation } = this.options
 
+    const mirror = (newState: EditorState, oldState: EditorState): void => {
+      const translation = getTranslation()
+      if (translation) {
+        syncDocToStore(newState.doc, oldState.doc, translation, store)
+      }
+    }
+
     return [
       new Plugin({
         key: storeSyncKey,
@@ -75,38 +88,53 @@ export const StoreSync = Extension.create<StoreSyncOptions>({
           if (suppressSync) return null
           if (oldState.doc.eq(newState.doc)) return null
 
-          // Skip on remote Yjs changes: the originating client already set the
-          // id, and reassigning under the Yjs mutex would diverge PM/Yjs.
-          const isRemote = transactions.some((tr) => tr.getMeta(ySyncPluginKey))
-
-          // Repair missing/duplicate turn ids and mint wids for freshly typed
-          // words on every local change before mirroring (remote changes were
-          // already normalized by the originating client). Run BOTH in one
-          // pass: returning the id fix early would drop this transaction's
-          // changed range, so a turn edited in the same transaction that also
-          // needed an id fix would never get its word marks (its typed text
-          // would flush with no wid and be lost). Id fixes are attr-only and
-          // word fixes are mark-only, both computed from newState — disjoint,
-          // so their steps compose into one transaction.
-          if (!isRemote) {
-            // Only scan for id fixes when the turn structure may have changed
-            // (keeps plain typing O(1) instead of O(turns) on long docs).
-            const fixTr = mayAffectTurnIds(transactions, oldState, newState)
-              ? fixTurnIds(newState)
-              : null
-            const markTr = fixWordMarks(newState, transactions)
-            if (fixTr && markTr) {
-              for (const step of markTr.steps) fixTr.step(step)
-              return fixTr
-            }
-            if (fixTr) return fixTr
-            if (markTr) return markTr
+          // Second pass: our own follow-up (repairs + history flag) has been
+          // applied, so the doc is normalized — mirror it and stop. Deferring
+          // the mirror to here matters: the store seeds its words from the doc's
+          // wids, which only exist once the repair marks are applied.
+          if (transactions.some((tr) => tr.getMeta(NORMALIZED))) {
+            mirror(newState, oldState)
+            return null
           }
 
-          const translation = getTranslation()
-          if (!translation) return null
-          syncDocToStore(newState.doc, oldState.doc, translation, store)
-          return null
+          // Remote Yjs changes are already normalized by their origin client and
+          // never enter our local undo history — just mirror them. Repairing
+          // them under the Yjs mutex would diverge PM/Yjs.
+          const isRemote = transactions.some((tr) => tr.getMeta(ySyncPluginKey))
+          if (isRemote) {
+            mirror(newState, oldState)
+            return null
+          }
+
+          // First pass on a local edit: repair the invariants and set the
+          // undo-history scope in ONE follow-up transaction.
+          const tr = newState.tr
+
+          // Repair missing/duplicate turn ids and mint wids for freshly typed
+          // words. Both are computed from newState and disjoint (id fixes are
+          // attr-only, word fixes are mark-only), so their steps compose into
+          // this one transaction. Only scan for id fixes when the turn structure
+          // may have changed (keeps plain typing O(1), not O(turns), on long docs).
+          const fixTr = mayAffectTurnIds(transactions, oldState, newState)
+            ? fixTurnIds(newState)
+            : null
+          if (fixTr) for (const step of fixTr.steps) tr.step(step)
+          const markTr = fixWordMarks(newState, transactions)
+          if (markTr) for (const step of markTr.steps) tr.step(step)
+
+          // Word/text edits are not undoable; only speaker changes (tagged) are.
+          // Uniform capture keeps the yUndo stack in sync with the Y.Doc — see
+          // historyPolicy.
+          if (!keepsHistory(transactions)) tr.setMeta("addToHistory", false)
+          tr.setMeta(NORMALIZED, true)
+          // A mark-repair step clears the transaction's stored marks. Without
+          // restoring them, the inclusive `word` mark wouldn't carry to the next
+          // keystroke — visible only when editing the LAST word of a turn, where
+          // there's no following text to infer the mark from, so the next letter
+          // lands unmarked in a stray empty span. Keep the mark cursor the base
+          // edit established.
+          tr.setStoredMarks(newState.storedMarks)
+          return tr
         },
       }),
     ]

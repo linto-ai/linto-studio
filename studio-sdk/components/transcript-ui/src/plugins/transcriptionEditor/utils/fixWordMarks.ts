@@ -27,8 +27,9 @@ type MarkOp =
  *
  * Only the turns overlapping the range changed by `transactions` are scanned
  * (with a selection-turn fallback for mark-only re-runs), so cost is
- * proportional to the edit, not to the transcript length. Returns a
- * history-less transaction, or null when nothing needs repair.
+ * proportional to the edit, not to the transcript length. Returns a repair
+ * transaction (its steps only; storeSync owns history/dispatch), or null when
+ * nothing needs repair.
  */
 export function fixWordMarks(
   state: EditorState,
@@ -151,12 +152,8 @@ export function fixWordMarks(
       tr.removeMark(op.from, op.to, wordMarkType)
     }
   }
-  // Out-of-history: keeping the repair in the Yjs undo stack made redo→undo
-  // leave an orphaned split fragment (the edit + repair are two transactions
-  // grouped fragilely). Until the repair is made atomic with the triggering
-  // keystroke, keep it out of history (wid-structural edits are then not
-  // individually undoable, but nothing corrupts).
-  tr.setMeta("addToHistory", false)
+  // The undo-history scope is applied centrally by storeSync, which folds these
+  // steps into its follow-up transaction — see historyPolicy.
   return tr
 }
 

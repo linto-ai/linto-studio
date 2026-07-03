@@ -1,40 +1,7 @@
 import type { Editor } from "@tiptap/vue-3"
 import type { Core } from "../../../core/types"
 import { SPEAKER_COLORS } from "../../../constants/speakers"
-
-export interface RenameSpeakerOrigin {
-  type: "speaker:rename"
-  speakerId: string
-  from: string
-  to: string
-}
-
-export interface ReassignTurnOrigin {
-  type: "turn:reassign"
-  turnId: string
-  from: string | null
-  to: string
-}
-
-export interface CreateAndAssignOrigin {
-  type: "speaker:create-and-assign"
-  speakerId: string
-  name: string
-  turnId: string
-}
-
-export interface MergeSpeakersOrigin {
-  type: "speaker:merge"
-  from: string
-  to: string
-  affectedTurnIds: string[]
-}
-
-export type SpeakerActionOrigin =
-  | RenameSpeakerOrigin
-  | ReassignTurnOrigin
-  | CreateAndAssignOrigin
-  | MergeSpeakersOrigin
+import { KEEP_IN_HISTORY } from "./historyPolicy"
 
 function pickColor(core: Core): string {
   const size = core.speakers.all.size
@@ -81,17 +48,11 @@ export function renameSpeaker(
 
   const map = core.transcriptionEditor?.speakersMap
   if (map && map.doc) {
-    const origin: RenameSpeakerOrigin = {
-      type: "speaker:rename",
-      speakerId,
-      from: existing.name,
-      to: trimmed,
-    }
     map.doc.transact(() => {
       const cur = map.get(speakerId)
       if (!cur) return
       map.set(speakerId, { ...cur, name: trimmed })
-    }, origin)
+    })
   } else {
     core.speakers.update(speakerId, { name: trimmed })
   }
@@ -109,19 +70,14 @@ export function switchTurnSpeaker(
   const currentSpeakerId = editor.state.doc.nodeAt(pos)?.attrs.speakerId ?? null
   if (currentSpeakerId === newSpeakerId) return
 
-  const origin: ReassignTurnOrigin = {
-    type: "turn:reassign",
-    turnId,
-    from: currentSpeakerId,
-    to: newSpeakerId,
-  }
-  const ydoc = core.transcriptionEditor?.doc
-  const apply = () => {
-    const tr = editor.state.tr.setNodeAttribute(pos, "speakerId", newSpeakerId)
-    editor.view.dispatch(tr)
-  }
-  if (ydoc) ydoc.transact(apply, origin)
-  else apply()
+  // Dispatch straight through ySync — never nested in ydoc.transact, which would
+  // defeat ySync's echo-suppression and force a whole-document re-render.
+  // Tagged keepInHistory so reassigning a turn's speaker is undoable.
+  editor.view.dispatch(
+    editor.state.tr
+      .setNodeAttribute(pos, "speakerId", newSpeakerId)
+      .setMeta(KEEP_IN_HISTORY, true),
+  )
 }
 
 export function createSpeakerAndAssign(
@@ -139,18 +95,12 @@ export function createSpeakerAndAssign(
   if (pos === null) return null
 
   const newId = crypto.randomUUID()
-  const color = pickColor(core)
-  const origin: CreateAndAssignOrigin = {
-    type: "speaker:create-and-assign",
-    speakerId: newId,
-    name: trimmed,
-    turnId,
-  }
-  ydoc.transact(() => {
-    map.set(newId, { name: trimmed, color })
-    const tr = editor.state.tr.setNodeAttribute(pos, "speakerId", newId)
-    editor.view.dispatch(tr)
-  }, origin)
+  // Create the speaker in the map first, then point the turn at it through
+  // ySync — two separate top-level writes so the PM dispatch is never nested in
+  // ydoc.transact. Not tagged keepInHistory: creating a speaker mutates the
+  // speakers map, which the editor's undo history doesn't cover.
+  ydoc.transact(() => map.set(newId, { name: trimmed, color: pickColor(core) }))
+  editor.view.dispatch(editor.state.tr.setNodeAttribute(pos, "speakerId", newId))
   return newId
 }
 
@@ -167,20 +117,16 @@ export function mergeSpeakers(
   if (!map.has(fromSpeakerId) || !map.has(toSpeakerId)) return
 
   const hits = findTurnPositionsBySpeaker(editor, fromSpeakerId)
-  const origin: MergeSpeakersOrigin = {
-    type: "speaker:merge",
-    from: fromSpeakerId,
-    to: toSpeakerId,
-    affectedTurnIds: hits.map((h) => h.turnId),
-  }
-  ydoc.transact(() => {
-    if (hits.length > 0) {
-      let tr = editor.state.tr
-      for (const hit of hits) {
-        tr = tr.setNodeAttribute(hit.pos, "speakerId", toSpeakerId)
-      }
-      editor.view.dispatch(tr)
+  // Point every affected turn at the surviving speaker (through ySync, not
+  // nested in ydoc.transact), THEN drop the merged-away speaker — in that order,
+  // so no turn ever references a deleted speaker. Not tagged keepInHistory:
+  // merging mutates the speakers map, outside the editor's undo history.
+  if (hits.length > 0) {
+    let tr = editor.state.tr
+    for (const hit of hits) {
+      tr = tr.setNodeAttribute(hit.pos, "speakerId", toSpeakerId)
     }
-    map.delete(fromSpeakerId)
-  }, origin)
+    editor.view.dispatch(tr)
+  }
+  ydoc.transact(() => map.delete(fromSpeakerId))
 }

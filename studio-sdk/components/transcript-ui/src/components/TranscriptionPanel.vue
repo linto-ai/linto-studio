@@ -215,6 +215,7 @@ onBeforeUnmount(() => {
   outline: none;
 }
 
+/* Turn holding the caret — the cursorTurn extension adds `turn--cursor`. */
 .transcription-panel :deep(.turn--cursor) {
   outline: 2px solid var(--color-primary);
 }
