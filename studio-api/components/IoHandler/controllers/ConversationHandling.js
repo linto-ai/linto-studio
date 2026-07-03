@@ -2,78 +2,99 @@ const debug = require("debug")(
   "linto:components:IoHandler:controllers:ConversationHandling",
 )
 
-const MAX_ATTEMPTS = 1000
-
+const model = require(`${process.cwd()}/lib/mongodb/models`)
 const { fetchJob } = require(
   `${process.cwd()}/components/WebServer/controllers/job/fetchHandler`,
 )
 
-function watchConversation(io, conversations, attempts = 0, delay = 10000) {
+// `io` must be replica-local (io.local.to(orgaId))
+function watchConversation(io, orgaId, delay = 10000) {
   let timeoutId = null
-  let activeSet = new Set(conversations.map((c) => c._id.toString()))
+  let stopped = false
+  // Previous tick's list, to catch transitions persisted by someone else
+  let pendingIds = new Set()
 
-  async function loop(convs, attempt) {
+  function emitIfTerminal(convId, state) {
+    if (state === "done" || state === "error") {
+      io.emit(`conversation_processing_${state}`, convId)
+      return true
+    }
+    return false
+  }
+
+  // Notify the final state of conversations gone from the processing list.
+  // Returns the ids to retry when their state could not be read.
+  async function notifyDisappeared(convIds) {
+    if (convIds.length === 0) return []
+
+    const conversations = await model.conversations.getConvsListByIds(convIds, {
+      _id: 1,
+      jobs: 1,
+    })
+    if (!Array.isArray(conversations)) return convIds
+
+    for (const conversation of conversations) {
+      emitIfTerminal(
+        conversation._id.toString(),
+        conversation?.jobs?.transcription?.state,
+      )
+    }
+    return []
+  }
+
+  async function loop() {
     try {
-      let activeConversations = []
-      for (const conversation of convs) {
+      const processing =
+        await model.conversations.listProcessingConversations(orgaId)
+      const processingList = Array.isArray(processing) ? processing : []
+
+      const stillProcessing = []
+      const seenIds = new Set()
+      for (const conversation of processingList) {
         const convId = conversation._id.toString()
-
-        // Conversation is not in activeSet, skipping
-
-        if (!activeSet.has(convId)) continue
+        seenIds.add(convId)
 
         const result = await fetchJob(convId, conversation.jobs)
+        const state = result?.conv_job?.transcription?.state
 
-        if (result?.conv_job?.transcription?.state === "done") {
-          io.emit(`conversation_processing_done`, result.conv_id)
-          activeSet.delete(convId)
-        } else if (result?.conv_job?.transcription?.state === "error") {
-          io.emit(`conversation_processing_error`, result.conv_id)
-          activeSet.delete(convId)
+        if (emitIfTerminal(convId, state)) {
+          pendingIds.delete(convId)
         } else {
-          let conv = { ...conversation, jobs: result?.conv_job }
-          activeConversations.push(conv)
+          stillProcessing.push({
+            ...conversation,
+            jobs: result?.conv_job ?? conversation.jobs,
+          })
         }
       }
 
-      if (activeConversations.length === 0) {
-        return
-      }
-      if (attempt >= MAX_ATTEMPTS) {
-        return
+      const disappearedIds = [...pendingIds].filter((id) => !seenIds.has(id))
+      const retryIds = await notifyDisappeared(disappearedIds)
+
+      pendingIds = new Set(stillProcessing.map((c) => c._id.toString()))
+      for (const convId of retryIds) {
+        pendingIds.add(convId)
       }
 
-      io.emit("conversation_processing", activeConversations)
-      timeoutId = setTimeout(
-        () => loop(activeConversations, attempt + 1),
-        delay,
-      )
+      if (stillProcessing.length > 0) {
+        io.emit("conversation_processing", stillProcessing)
+      }
     } catch (err) {
       debug("Error while fetching conversation jobs", err)
-      return
+    } finally {
+      if (!stopped) {
+        timeoutId = setTimeout(loop, delay)
+      }
     }
   }
 
-  // Start the processing loop of fetching the conversations status
-  loop(conversations, attempts)
+  loop()
 
   return {
-    getId: () => timeoutId,
     stop: () => {
+      stopped = true
       if (timeoutId) clearTimeout(timeoutId)
     },
-    remove: (convId) => {
-      activeSet.delete(convId.toString())
-    },
   }
 }
 
-// Called when a new conversation is added to refresh the interval
-function refreshInterval(io, watcher, conversations) {
-  if (watcher && typeof watcher.stop === "function") {
-    watcher.stop()
-  }
-  return watchConversation(io, conversations)
-}
-
-module.exports = { watchConversation, refreshInterval }
+module.exports = { watchConversation }
