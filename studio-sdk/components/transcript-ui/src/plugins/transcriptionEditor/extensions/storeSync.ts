@@ -127,12 +127,9 @@ export const StoreSync = Extension.create<StoreSyncOptions>({
           // historyPolicy.
           if (!keepsHistory(transactions)) tr.setMeta("addToHistory", false)
           tr.setMeta(NORMALIZED, true)
-          // A mark-repair step clears the transaction's stored marks. Without
-          // restoring them, the inclusive `word` mark wouldn't carry to the next
-          // keystroke — visible only when editing the LAST word of a turn, where
-          // there's no following text to infer the mark from, so the next letter
-          // lands unmarked in a stray empty span. Keep the mark cursor the base
-          // edit established.
+          // A mark-repair step clears the transaction's stored marks; keep the
+          // mark cursor the base edit established so the inclusive `word` mark
+          // carries to the next keystroke.
           tr.setStoredMarks(newState.storedMarks)
           return tr
         },
