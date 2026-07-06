@@ -1,15 +1,6 @@
-import type { ApiDocument, ApiWord } from '../types/api'
-import type { EditorDocument, Speaker, Turn, Word } from '../types/editor'
-
-export function mapWord(w: ApiWord): Word {
-  return {
-    id: w.wid,
-    text: w.word,
-    ...(w.stime !== undefined && { startTime: w.stime }),
-    ...(w.etime !== undefined && { endTime: w.etime }),
-    ...(w.confidence !== undefined && { confidence: w.confidence }),
-  }
-}
+import type { ApiDocument } from '../types/api'
+import type { EditorDocument, Speaker, Turn } from '../types/editor'
+import { wordsFromApi } from '../utils/turnWords'
 
 export function mapApiDocument(raw: ApiDocument): EditorDocument {
   const speakers = new Map<string, Speaker>()
@@ -23,7 +14,9 @@ export function mapApiDocument(raw: ApiDocument): EditorDocument {
   }
 
   const turns: Turn[] = raw.text.map((t) => {
-    const words = t.words.map(mapWord)
+    // Positional identity + local offsets (single-space layout matching the
+    // doc seed); the wire wid is ignored by the editor.
+    const words = wordsFromApi(t.turn_id, t.words)
     const startTime = words[0]?.startTime ?? t.stime
     const endTime = words.length > 0
       ? (words[words.length - 1]!.endTime ?? t.etime)

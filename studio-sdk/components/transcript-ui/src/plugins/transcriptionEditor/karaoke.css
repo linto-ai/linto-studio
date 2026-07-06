@@ -1,0 +1,12 @@
+/* Active-word karaoke highlight, rendered through the CSS Custom Highlight
+ * API (see wordHighlight.ts) — no node, no class, no decoration in the
+ * content. Only highlight-applicable properties work here (color,
+ * background-color, text-decoration family, text-shadow). */
+
+::highlight(transcript-active-word) {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-decoration-color: var(--color-primary);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}

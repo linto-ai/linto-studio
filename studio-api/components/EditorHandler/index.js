@@ -16,10 +16,22 @@ const CONVERSATION_RIGHTS = require(
 )
 const { seedYDoc } = require("./schema/seedYDoc")
 const { seedSpeakers } = require("./schema/seedSpeakers")
-const { docToTurns } = require("./schema/docToTurns")
 const { docToSpeakers } = require("./schema/docToSpeakers")
+const { docToTurnsLegacy } = require("./schema/legacy/docToTurnsLegacy")
 const { enrichDiff } = require("./flush/enrichDiff")
 const { speakersChanged } = require("./flush/speakersDiff")
+const { WordsState } = require("./wordsState/wordsState")
+const { attachTurnIdMinter } = require("./turnIds")
+const { getSyllabic } = require("./words/syllabic")
+
+// Editor schema generation. 1 = word marks (wid) in the doc; 2 = plain text,
+// words/timestamps owned by the WordsState. A persisted state written with an
+// older generation is migrated at load (read once with the legacy schema,
+// flushed to Mongo, epoch bumped) — never replayed into a new-schema lineage.
+const SCHEMA_GEN = 2
+
+// The Y.XmlFragment field the editor binds to (client Collaboration.field).
+const FRAGMENT_FIELD = "default"
 
 // Document names are "<conversationId>.<editorEpoch>". The epoch makes the
 // CRDT history lineage part of the document identity: a client holding a
@@ -43,23 +55,40 @@ function binaryToUint8(state) {
 }
 
 // Words+timestamps live outside the Y.Doc; delivered as a stateless message.
+// Turns whose server-minted id hasn't landed yet are skipped — the next
+// flush broadcasts them (the minter converges within a microtask anyway).
 function buildWordsPayload(turns) {
   return (turns || [])
-    .filter((t) => Array.isArray(t.words) && t.words.length > 0)
+    .filter((t) => t.turn_id && Array.isArray(t.words) && t.words.length > 0)
     .map((t) => ({ turn_id: t.turn_id, words: t.words }))
 }
 
 const EMPTY_WORDS = []
 
-// Words compared by reference: enrichDiff reuses the old array when a turn is
-// unchanged and allocates a new one when it recomputes (O(1), no false miss).
+// Element-wise word comparison (word text + timing). The WordsState
+// serializes fresh arrays every flush, so reference comparison is gone —
+// O(words) per flush at the store debounce cadence is negligible.
+function wordsDiffer(a = EMPTY_WORDS, b = EMPTY_WORDS) {
+  if (a.length !== b.length) return true
+  for (let i = 0; i < a.length; i++) {
+    if (
+      a[i].word !== b[i].word ||
+      a[i].stime !== b[i].stime ||
+      a[i].etime !== b[i].etime
+    ) {
+      return true
+    }
+  }
+  return false
+}
+
 function turnPersistDiffers(a, b) {
   return (
     (a.segment ?? "") !== (b.segment ?? "") ||
     (a.raw_segment ?? "") !== (b.raw_segment ?? "") ||
     (a.speaker_id ?? null) !== (b.speaker_id ?? null) ||
     (a.language ?? "") !== (b.language ?? "") ||
-    (a.words ?? EMPTY_WORDS) !== (b.words ?? EMPTY_WORDS)
+    wordsDiffer(a.words, b.words)
   )
 }
 
@@ -286,6 +315,23 @@ class EditorHandler extends Component {
     const storedState =
       stored && stored.epoch === epoch ? binaryToUint8(stored.state) : null
 
+    // A persisted state written with an older schema generation (word marks
+    // in the doc) cannot be replayed into a plain-text lineage: migrate it —
+    // flush its content to Mongo through the legacy read path, bump the
+    // epoch, and abort this load. The client reconnects, gets the
+    // stale-epoch rejection, refetches and rebuilds on a fresh plain-text
+    // lineage seeded from the migrated turns.
+    if (storedState && (stored.gen ?? 1) < SCHEMA_GEN) {
+      await this._migrateLegacyState(
+        conversationId,
+        epoch,
+        storedState,
+        turns,
+        documentName,
+      )
+      throw new Error("Editor schema migrated — stale epoch")
+    }
+
     if (storedState) {
       // Replay the persisted CRDT state: the history lineage stays
       // continuous, so clients reconnecting with an older replica of the
@@ -303,9 +349,85 @@ class EditorHandler extends Component {
 
     // Epoch this in-memory doc belongs to; flush writes are guarded with it.
     document.lintoEpoch = epoch
-    // One-shot seed consumed by the first words request (avoids re-reading `text`).
-    document.lintoWordsSeed = buildWordsPayload(turns)
+
+    // Per-replica companion state: words+timestamps derived from the doc.
+    // Hydrated by alignment (the persisted state may be AHEAD of the last
+    // Mongo flush — the invariant is state >= text), then kept up to date by
+    // the hot path on every Yjs transaction. The observers live and die with
+    // the document instance.
+    const fragment = document.getXmlFragment(FRAGMENT_FIELD)
+    const words = new WordsState(fragment)
+    words.hydrate(turns)
+    fragment.observeDeep((events) => {
+      try {
+        words.applyEvents(events)
+      } catch (err) {
+        // A half-applied batch can leave one turn's mirror corrupt, and later
+        // batches only self-check the turns THEY touch — heal everything now
+        // so the next flush persists doc-accurate text.
+        console.error(`WordsState apply failed for doc=${documentName}:`, err)
+        try {
+          words.realignAll()
+        } catch (realignErr) {
+          console.error(
+            `WordsState realign failed for doc=${documentName}:`,
+            realignErr,
+          )
+        }
+      }
+    })
+    document.lintoWords = words
+
+    // The server is the only turn-id minter in collab: fresh splits arrive
+    // with a null id, pasted turns with a duplicated one — both repaired here.
+    attachTurnIdMinter(fragment)
+
     return document
+  }
+
+  // One-shot generation migration: read the old (word-mark) state with the
+  // legacy schema, merge its text/wids with Mongo's timestamps through the
+  // legacy wid mapping (enrichDiff — kept alive for exactly this), persist,
+  // and bump the epoch so every lineage participant rebuilds on plain text.
+  async _migrateLegacyState(
+    conversationId,
+    epoch,
+    storedState,
+    mongoTurns,
+    documentName,
+  ) {
+    debug(`migrating gen-1 editor state for doc=${documentName}`)
+    try {
+      const legacyDoc = new Y.Doc()
+      Y.applyUpdate(legacyDoc, storedState)
+      const legacyTurns = docToTurnsLegacy(legacyDoc)
+      legacyDoc.destroy()
+
+      const { finalTurns, hasChanges } = enrichDiff(mongoTurns, legacyTurns)
+      if (hasChanges) {
+        // Epoch-guarded: if another replica migrated concurrently (epoch
+        // already bumped), this write is inert and the bump below is a
+        // harmless second increment.
+        await model.conversations.replaceTurns(
+          conversationId,
+          finalTurns,
+          epoch,
+        )
+      }
+    } catch (err) {
+      // Migration read failed: Mongo keeps the last flushed text (the state
+      // may have been ahead by at most one debounce window). Proceed with the
+      // bump — staying on a dead generation would brick the document.
+      console.error(
+        `Legacy state migration failed for doc=${documentName}:`,
+        err,
+      )
+    }
+    // Epoch-guarded: if another replica migrated this conversation
+    // concurrently, its bump already moved the epoch — bumping again would
+    // kill the freshly migrated lineage (and up to a debounce window of
+    // edits on it).
+    await model.conversations.bumpEditorEpoch(conversationId, epoch)
   }
 
   async _onStateless({ payload, documentName, document, connection }) {
@@ -324,24 +446,12 @@ class EditorHandler extends Component {
     if (!msg || msg.type !== "request_words") return
 
     try {
-      let turnsWithWords = document?.lintoWordsSeed
-
-      if (turnsWithWords) {
-        // Consume the one-shot seed (first request after a cold load).
-        delete document.lintoWordsSeed
-      } else {
-        // Later joiner: read fresh so words reflect edits since load.
-        const conversationId = parseDocumentName(documentName)?.conversationId
-        if (!conversationId) return
-        const conversation = await model.conversations.getById(
-          conversationId,
-          ["text"],
-        )
-        if (!conversation || conversation.length !== 1) return
-        turnsWithWords = buildWordsPayload(conversation[0].text || [])
-      }
-
-      if (!turnsWithWords || turnsWithWords.length === 0) return
+      // Served from the live WordsState: this replica opened the doc, so its
+      // state is hydrated and current (fresher than Mongo between flushes).
+      const words = document?.lintoWords
+      if (!words) return
+      const turnsWithWords = buildWordsPayload(words.serialize())
+      if (turnsWithWords.length === 0) return
 
       await this._sendTimestampsChunked(
         connection,
@@ -399,17 +509,29 @@ class EditorHandler extends Component {
       speaker_name: s.speaker_name,
     }))
 
-    // Synchronous block: turns, speakers and binary state are all extracted
-    // from the exact same Y.Doc snapshot (no await in between), so the
-    // persisted state never lags behind the turns written below.
-    const newTurns = docToTurns(document)
+    const words = document.lintoWords
+    if (!words) {
+      debug(`onStoreDocument: doc=${documentName} has no WordsState, skipping`)
+      return
+    }
+
+    // Synchronous block: the retime, the serialized turns, the speakers and
+    // the binary state are all extracted from the exact same Y.Doc snapshot
+    // (no await in between), so the persisted state never lags behind the
+    // turns written below. The retime is the debounced path of the
+    // WordsState: re-tokenize the dirty turns, re-time them (retimeTurn),
+    // and hand back the changed turns for the broadcast.
+    const changedTurns = words.hasDirty() ? words.retimeDirty(getSyllabic) : []
+    const finalTurns = words.serialize()
     const newSpeakers = docToSpeakers(document)
     const yState = Buffer.from(Y.encodeStateAsUpdate(document))
 
-    const { finalTurns, changedTurns, hasChanges } = enrichDiff(
-      oldTurns,
-      newTurns,
-    )
+    // Persist-visible changes only: a retime whose result is byte-identical
+    // to Mongo (edit-then-revert within the debounce, hydrate-dirty no-op)
+    // must not trigger a full rewrite of a 1h+ conversation.
+    const hasChanges =
+      oldTurns.length !== finalTurns.length ||
+      finalTurns.some((t, i) => turnPersistDiffers(oldTurns[i], t))
     const speakersDirty = speakersChanged(oldSpeakers, newSpeakers)
 
     try {
@@ -422,6 +544,7 @@ class EditorHandler extends Component {
         conversationId,
         epoch,
         yState,
+        SCHEMA_GEN,
       )
       if (typeof stateResult?.matchedCount !== "number") {
         // State write failed: abort the flush, Mongo keeps the previous
@@ -475,12 +598,19 @@ class EditorHandler extends Component {
         `Flushed doc=${documentName}: ${writeMode} changed=${changedTurns.length} speakers=${speakersDirty ? "Y" : "N"}`,
       )
 
-      if (changedTurns.length > 0) {
+      // Broadcast only turns whose timings actually moved vs Mongo — a
+      // retimed-but-identical turn is noise for every connected client.
+      const oldById = new Map(oldTurns.map((t) => [t.turn_id, t]))
+      const broadcastTurns = buildWordsPayload(changedTurns).filter((t) => {
+        const old = oldById.get(t.turn_id)
+        return !old || wordsDiffer(old.words, t.words)
+      })
+      if (broadcastTurns.length > 0) {
         try {
           document.broadcastStateless(
             JSON.stringify({
               type: "timestamps_recalc",
-              turns: changedTurns,
+              turns: broadcastTurns,
             }),
           )
         } catch (err) {

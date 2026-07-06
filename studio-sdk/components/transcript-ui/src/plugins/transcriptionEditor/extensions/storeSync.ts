@@ -6,7 +6,6 @@ import { ySyncPluginKey } from "@tiptap/y-tiptap"
 import type { Core, TranslationStore } from "../../../core/types"
 import { syncDocToStore } from "../utils/syncDocToStore"
 import { fixTurnIds } from "../utils/fixTurnIds"
-import { fixWordMarks } from "../utils/fixWordMarks"
 import { keepsHistory } from "../utils/historyPolicy"
 
 const storeSyncKey = new PluginKey("storeSync")
@@ -66,13 +65,17 @@ export function withSuppressedSync(fn: () => void): void {
 export interface StoreSyncOptions {
   store: Core
   getTranslation: () => TranslationStore | undefined
+  /** Mint turn ids client-side (LocalSession only). In collab the SERVER
+   *  observes new turn elements and writes the id attribute — the client
+   *  tolerates a transiently null id instead of minting a competing one. */
+  mintTurnIds: boolean
 }
 
 export const StoreSync = Extension.create<StoreSyncOptions>({
   name: "storeSync",
 
   addProseMirrorPlugins() {
-    const { store, getTranslation } = this.options
+    const { store, getTranslation, mintTurnIds } = this.options
 
     const mirror = (newState: EditorState, oldState: EditorState): void => {
       const translation = getTranslation()
@@ -88,49 +91,45 @@ export const StoreSync = Extension.create<StoreSyncOptions>({
           if (suppressSync) return null
           if (oldState.doc.eq(newState.doc)) return null
 
-          // Second pass: our own follow-up (repairs + history flag) has been
-          // applied, so the doc is normalized — mirror it and stop. Deferring
-          // the mirror to here matters: the store seeds its words from the doc's
-          // wids, which only exist once the repair marks are applied.
-          if (transactions.some((tr) => tr.getMeta(NORMALIZED))) {
-            mirror(newState, oldState)
-            return null
-          }
+          // Re-entrancy guard. NOTE: prosemirror-state never re-invokes a
+          // plugin's appendTransaction with its OWN appended transaction
+          // (applyTransaction marks it as seen past its own output), so a
+          // "second pass" mirror here would be unreachable dead code — the
+          // guard only matters if another plugin's append chain loops back.
+          if (transactions.some((tr) => tr.getMeta(NORMALIZED))) return null
 
-          // Remote Yjs changes are already normalized by their origin client and
-          // never enter our local undo history — just mirror them. Repairing
-          // them under the Yjs mutex would diverge PM/Yjs.
+          // Remote Yjs changes never enter our local undo history — just
+          // mirror them. Repairing them under the Yjs mutex would diverge
+          // PM/Yjs.
           const isRemote = transactions.some((tr) => tr.getMeta(ySyncPluginKey))
           if (isRemote) {
             mirror(newState, oldState)
             return null
           }
 
-          // First pass on a local edit: repair the invariants and set the
-          // undo-history scope in ONE follow-up transaction.
+          // Local edit: repair invariants (local mode only — the server mints
+          // ids in collab), set the undo-history scope, and mirror the
+          // NORMALIZED doc to the store IN THIS SAME PASS (tr.doc already
+          // reflects the repair steps).
           const tr = newState.tr
 
-          // Repair missing/duplicate turn ids and mint wids for freshly typed
-          // words. Both are computed from newState and disjoint (id fixes are
-          // attr-only, word fixes are mark-only), so their steps compose into
-          // this one transaction. Only scan for id fixes when the turn structure
-          // may have changed (keeps plain typing O(1), not O(turns), on long docs).
-          const fixTr = mayAffectTurnIds(transactions, oldState, newState)
-            ? fixTurnIds(newState)
-            : null
+          const fixTr =
+            mintTurnIds && mayAffectTurnIds(transactions, oldState, newState)
+              ? fixTurnIds(newState)
+              : null
           if (fixTr) for (const step of fixTr.steps) tr.step(step)
-          const markTr = fixWordMarks(newState, transactions)
-          if (markTr) for (const step of markTr.steps) tr.step(step)
 
-          // Word/text edits are not undoable; only speaker changes (tagged) are.
-          // Uniform capture keeps the yUndo stack in sync with the Y.Doc — see
-          // historyPolicy.
+          // Word/text edits are not undoable; only speaker changes (tagged)
+          // are. Uniform capture keeps the yUndo stack in sync with the Y.Doc
+          // — see historyPolicy.
           if (!keepsHistory(transactions)) tr.setMeta("addToHistory", false)
           tr.setMeta(NORMALIZED, true)
-          // A mark-repair step clears the transaction's stored marks; keep the
-          // mark cursor the base edit established so the inclusive `word` mark
-          // carries to the next keystroke.
-          tr.setStoredMarks(newState.storedMarks)
+
+          const translation = getTranslation()
+          if (translation) {
+            syncDocToStore(tr.doc, oldState.doc, translation, store)
+          }
+
           return tr
         },
       }),

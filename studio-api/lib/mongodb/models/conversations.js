@@ -502,15 +502,20 @@ class ConvoModel extends MongoModel {
     return query
   }
 
-  async bumpEditorEpoch(conversationId) {
+  async bumpEditorEpoch(conversationId, expectedEpoch = null) {
     try {
       // $inc creates the field with value 1 when missing (missing ≡ 0).
+      // With `expectedEpoch`, the bump only applies while the epoch is still
+      // the expected one (matchedCount === 0 otherwise) — concurrent bumpers
+      // (e.g. two replicas migrating the same legacy state) move the epoch
+      // exactly once instead of killing each other's fresh lineage.
+      const query =
+        expectedEpoch === null
+          ? { _id: this.getObjectId(conversationId) }
+          : this.editorEpochQuery(conversationId, expectedEpoch)
       return await MongoDriver.constructor.db
         .collection(this.collection)
-        .updateOne(
-          { _id: this.getObjectId(conversationId) },
-          { $inc: { editorEpoch: 1 } },
-        )
+        .updateOne(query, { $inc: { editorEpoch: 1 } })
     } catch (error) {
       console.error(error)
       return error

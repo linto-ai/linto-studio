@@ -1,5 +1,6 @@
 import { ref, watch, onMounted, onBeforeUnmount, type Ref } from "vue"
 import { useCore } from "../core"
+import { activeWordRange } from "../utils/wordRange"
 
 const SCROLL_KEYS = new Set([
   "ArrowUp",
@@ -24,26 +25,32 @@ export function useFollowPlayback(
     const container = scrollContainer.value
     if (!container || !isFollowing.value) return
 
+    const behavior: ScrollBehavior = prefersReducedMotion ? "instant" : "smooth"
+
+    // Editor: the active word is located as a character Range (the plain-text
+    // doc has no per-word element) — center its rect in the container.
     const wordId = core.audio?.activeWordId.value
+    if (wordId) {
+      const range = activeWordRange(container, core, wordId)
+      const rect = range?.getBoundingClientRect()
+      if (rect && (rect.height > 0 || rect.width > 0)) {
+        const containerRect = container.getBoundingClientRect()
+        const delta =
+          rect.top + rect.height / 2 - (containerRect.top + container.clientHeight / 2)
+        container.scrollBy({ top: delta, behavior })
+        return
+      }
+    }
+
     const turnId = core.audio?.activeTurnId.value
     const target =
-      // Editor: the active word is its `[data-wid]` span (highlight is CSS-only,
-      // so there is no `[data-word-active]` element there anymore).
-      (wordId
-        ? container.querySelector<HTMLElement>(
-            `[data-wid="${wordId.replace(/["\\]/g, "\\$&")}"]`,
-          )
-        : null) ??
       // Non-editor list view still tags the active word this way.
       container.querySelector<HTMLElement>("[data-word-active]") ??
       (turnId
         ? container.querySelector<HTMLElement>(`[data-turn-id="${turnId}"]`)
         : null)
     if (!target) return
-    target.scrollIntoView({
-      behavior: prefersReducedMotion ? "instant" : "smooth",
-      block: "center",
-    })
+    target.scrollIntoView({ behavior, block: "center" })
   }
 
   // Follow the active word (works with the editor + word timestamps)

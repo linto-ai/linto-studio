@@ -22,7 +22,10 @@ export function syncDocToStore(
   const translationId = translation.id
 
   const applyTurnNode = (newNode: ProseMirrorNode): void => {
-    const id = newNode.attrs.id as string
+    const id = newNode.attrs.id as string | null
+    // A turn without an id is waiting for the server-minted one (fresh split);
+    // it enters the store when the id attribute lands (next transaction).
+    if (!id) return
     const newTurn = nodeToTurn(newNode)
     const oldTurn = translation.getTurn(id)
     if (!oldTurn) {
@@ -84,7 +87,10 @@ export function syncDocToStore(
 
   newDoc.forEach((newNode) => {
     if (newNode.type.name !== "turn") return
-    const id = newNode.attrs.id as string
+    const id = newNode.attrs.id as string | null
+    // Not yet identified (server-minted id in flight): keep it out of the
+    // store until the id attribute lands.
+    if (!id) return
     newIds.add(id)
 
     const oldNode = oldNodesById.get(id)

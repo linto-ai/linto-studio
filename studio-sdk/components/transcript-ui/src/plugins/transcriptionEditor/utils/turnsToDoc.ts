@@ -1,7 +1,8 @@
 import type { Turn } from "../../../types/editor"
 import type { JSONContent } from "@tiptap/core"
 
-/** Convert a Turn[] array into TipTap-compatible JSON content. */
+/** Convert a Turn[] array into TipTap-compatible JSON content (plain text —
+ *  the document carries no word marks; words/timestamps live in the store). */
 export function turnsToDoc(turns: Turn[]): JSONContent {
   return {
     type: "doc",
@@ -10,30 +11,19 @@ export function turnsToDoc(turns: Turn[]): JSONContent {
 }
 
 function turnToNode(turn: Turn): JSONContent {
-  // Empty words are timestamp placeholders over silences; they have no text
-  // token to host a mark, so they never enter the doc. The silence gap is
-  // implicit in the neighbouring words' start/end times.
-  // Trim, not `!== ""`: a whitespace-only word carries no identifiable text —
-  // if it entered the doc, fixWordMarks would strip its (whitespace) mark and
-  // lose its wid. Treat it like an empty placeholder.
+  // Empty/whitespace-only words are timestamp placeholders over silences; the
+  // silence gap is implicit in the neighbouring words' start/end times.
   const spokenWords = turn.words.filter((w) => (w.text ?? "").trim() !== "")
 
-  let content: JSONContent[] | undefined
-  if (spokenWords.length > 0) {
-    content = []
-    spokenWords.forEach((w, i) => {
-      if (i > 0) content!.push({ type: "text", text: " " })
-      content!.push({
-        type: "text",
-        text: w.text,
-        // Each spoken word carries its identity (wid = Word.id) as a mark.
-        marks: [{ type: "word", attrs: { wid: w.id || crypto.randomUUID() } }],
-      })
-    })
-  } else if (turn.text) {
-    // No words[] (live text-only turn): plain text; the client mints wids on edit.
-    content = [{ type: "text", text: turn.text }]
-  }
+  // Whitespace invariant (same as the server's turnsToDoc): single spaces,
+  // no leading/trailing whitespace — offsets derived by tokenization on both
+  // sides stay aligned. Normalized on BOTH branches: store words normally
+  // come token-clean from layoutWords, but live adapters may not guarantee it.
+  const raw =
+    spokenWords.length > 0
+      ? spokenWords.map((w) => w.text).join(" ")
+      : (turn.text ?? "")
+  const text = raw.replace(/\s+/g, " ").trim()
 
   return {
     type: "turn",
@@ -46,6 +36,6 @@ function turnToNode(turn: Turn): JSONContent {
       endDate: turn.endDate,
       language: turn.language,
     },
-    content,
+    content: text ? [{ type: "text", text }] : undefined,
   }
 }

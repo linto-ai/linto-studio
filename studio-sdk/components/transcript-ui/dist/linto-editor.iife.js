@@ -19834,6 +19834,95 @@ ${text2}` : text2;
   });
   const _style_0$v = "\n.transcription-empty[data-v-f82737e5] {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-lg);\n  padding: var(--spacing-xl);\n}\n.illustration[data-v-f82737e5] {\n  width: 180px;\n  height: auto;\n  color: var(--color-text-muted);\n  opacity: 0.5;\n}\n.message[data-v-f82737e5] {\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n  text-align: center;\n  margin: 0;\n}\n";
   const TranscriptionEmpty = /* @__PURE__ */ _export_sfc(_sfc_main$B, [["styles", [_style_0$v]], ["__scopeId", "data-v-f82737e5"]]);
+  const TOKEN_RE$1 = /\S+/g;
+  function tokenize(text2) {
+    const tokens = [];
+    if (!text2) return tokens;
+    TOKEN_RE$1.lastIndex = 0;
+    let m2;
+    while ((m2 = TOKEN_RE$1.exec(text2)) !== null) {
+      tokens.push({
+        text: m2[0],
+        charStart: m2.index,
+        charEnd: m2.index + m2[0].length
+      });
+    }
+    return tokens;
+  }
+  function wordId(turnId, index) {
+    return `${turnId}#${index}`;
+  }
+  function parseWordId(id2) {
+    const sep = id2.lastIndexOf("#");
+    if (sep <= 0) return null;
+    const index = Number(id2.slice(sep + 1));
+    if (!Number.isInteger(index) || index < 0) return null;
+    return { turnId: id2.slice(0, sep), index };
+  }
+  function wordsFromText(turnId, text2) {
+    return tokenize(text2).map((t2, i2) => ({
+      id: wordId(turnId, i2),
+      text: t2.text,
+      charStart: t2.charStart,
+      charEnd: t2.charEnd
+    }));
+  }
+  function carryWordTimes(next2, prev) {
+    const max2 = Math.min(next2.length, prev.length);
+    let prefix = 0;
+    while (prefix < max2 && next2[prefix].text === prev[prefix].text) prefix++;
+    let suffix = 0;
+    while (suffix < max2 - prefix && next2[next2.length - 1 - suffix].text === prev[prev.length - 1 - suffix].text) {
+      suffix++;
+    }
+    return next2.map((w2, i2) => {
+      const from2 = i2 < prefix ? prev[i2] : i2 >= next2.length - suffix ? prev[prev.length - (next2.length - i2)] : void 0;
+      if (!from2) return w2;
+      return {
+        ...w2,
+        ...from2.startTime !== void 0 && { startTime: from2.startTime },
+        ...from2.endTime !== void 0 && { endTime: from2.endTime },
+        ...from2.confidence !== void 0 && { confidence: from2.confidence }
+      };
+    });
+  }
+  function activeWordRange(root2, core, wordId2) {
+    const parsed = parseWordId(wordId2);
+    if (!parsed) return null;
+    const translation = core.activeChannel.value?.activeTranslation.value;
+    const turn = translation?.turns.value.find((t2) => t2.id === parsed.turnId);
+    if (!turn) return null;
+    return findWordRange(root2, turn, parsed.index);
+  }
+  function findWordRange(root2, turn, index) {
+    const word2 = turn.words[index];
+    if (!word2 || word2.charStart == null || word2.charEnd == null) return null;
+    const container = root2.querySelector(
+      `[data-turn-id="${cssEscape(turn.id)}"] .turn-text`
+    );
+    if (!container) return null;
+    const range = document.createRange();
+    let offset2 = 0;
+    let startSet = false;
+    const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      const len = node.nodeValue?.length ?? 0;
+      if (!startSet && word2.charStart < offset2 + len) {
+        range.setStart(node, word2.charStart - offset2);
+        startSet = true;
+      }
+      if (word2.charEnd <= offset2 + len) {
+        if (!startSet) return null;
+        range.setEnd(node, word2.charEnd - offset2);
+        return range;
+      }
+      offset2 += len;
+    }
+    return null;
+  }
+  function cssEscape(value) {
+    return typeof CSS !== "undefined" && CSS.escape ? CSS.escape(value) : value.replace(/["\\]/g, "\\$&");
+  }
   const SCROLL_KEYS = /* @__PURE__ */ new Set([
     "ArrowUp",
     "ArrowDown",
@@ -19853,21 +19942,25 @@ ${text2}` : text2;
     function scrollToActive() {
       const container = scrollContainer.value;
       if (!container || !isFollowing.value) return;
-      const wordId = core.audio?.activeWordId.value;
+      const behavior = prefersReducedMotion ? "instant" : "smooth";
+      const wordId2 = core.audio?.activeWordId.value;
+      if (wordId2) {
+        const range = activeWordRange(container, core, wordId2);
+        const rect = range?.getBoundingClientRect();
+        if (rect && (rect.height > 0 || rect.width > 0)) {
+          const containerRect = container.getBoundingClientRect();
+          const delta = rect.top + rect.height / 2 - (containerRect.top + container.clientHeight / 2);
+          container.scrollBy({ top: delta, behavior });
+          return;
+        }
+      }
       const turnId = core.audio?.activeTurnId.value;
       const target = (
-        // Editor: the active word is its `[data-wid]` span (highlight is CSS-only,
-        // so there is no `[data-word-active]` element there anymore).
-        (wordId ? container.querySelector(
-          `[data-wid="${wordId.replace(/["\\]/g, "\\$&")}"]`
-        ) : null) ?? // Non-editor list view still tags the active word this way.
+        // Non-editor list view still tags the active word this way.
         container.querySelector("[data-word-active]") ?? (turnId ? container.querySelector(`[data-turn-id="${turnId}"]`) : null)
       );
       if (!target) return;
-      target.scrollIntoView({
-        behavior: prefersReducedMotion ? "instant" : "smooth",
-        block: "center"
-      });
+      target.scrollIntoView({ behavior, block: "center" });
     }
     watch(
       () => core.audio?.activeWordId.value,
@@ -32191,7 +32284,7 @@ ${text2}` : text2;
     selectTextblockStart: () => selectTextblockStart,
     setContent: () => setContent,
     setMark: () => setMark,
-    setMeta: () => setMeta$1,
+    setMeta: () => setMeta,
     setNode: () => setNode,
     setNodeSelection: () => setNodeSelection,
     setTextDirection: () => setTextDirection,
@@ -33789,7 +33882,7 @@ ${text2}` : text2;
     return group.split(" ").includes("list");
   }
   function isNodeEmpty(node, {
-    checkChildren = true,
+    checkChildren: checkChildren2 = true,
     ignoreWhitespace = false
   } = {}) {
     var _a;
@@ -33810,13 +33903,13 @@ ${text2}` : text2;
     if (node.content.childCount === 0) {
       return true;
     }
-    if (checkChildren) {
+    if (checkChildren2) {
       let isContentEmpty = true;
       node.content.forEach((childNode) => {
         if (isContentEmpty === false) {
           return;
         }
-        if (!isNodeEmpty(childNode, { ignoreWhitespace, checkChildren })) {
+        if (!isNodeEmpty(childNode, { ignoreWhitespace, checkChildren: checkChildren2 })) {
           isContentEmpty = false;
         }
       });
@@ -33940,7 +34033,7 @@ ${text2}` : text2;
     }
     return canSetMark(state, tr, type);
   };
-  var setMeta$1 = (key, value) => ({ tr }) => {
+  var setMeta = (key, value) => ({ tr }) => {
     tr.setMeta(key, value);
     return true;
   };
@@ -44835,13 +44928,21 @@ section.turn:has([data-state="open"]) {
 .popover-list__footer {
   padding: var(--spacing-xs);
 }
-.collaboration-cursor__caret {
-  position: relative;
-  border-left: 2px solid;
-  margin-left: -1px;
-  margin-right: -1px;
+
+/* Remote collaboration cursors, rendered as an overlay OUTSIDE the
+ * contenteditable (see collaborationCursor.ts) — nothing here lives inside
+ * turn content. */
+.collaboration-cursor__overlay {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
   pointer-events: none;
-  word-break: normal;
+  z-index: 1;
+}
+.collaboration-cursor__caret {
+  position: absolute;
+  width: 0;
+  border-left: 2px solid;
 }
 .collaboration-cursor__label {
   position: absolute;
@@ -44854,8 +44955,24 @@ section.turn:has([data-state="open"]) {
   border-radius: var(--radius-sm, 4px) var(--radius-sm, 4px) var(--radius-sm, 4px) 0;
   color: white;
   white-space: nowrap;
-  pointer-events: none;
   user-select: none;
+}
+.collaboration-cursor__selection {
+  position: absolute;
+  opacity: 0.25;
+  border-radius: 2px;
+}
+
+/* Active-word karaoke highlight, rendered through the CSS Custom Highlight
+ * API (see wordHighlight.ts) — no node, no class, no decoration in the
+ * content. Only highlight-applicable properties work here (color,
+ * background-color, text-decoration family, text-shadow). */
+::highlight(transcript-active-word) {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-decoration-color: var(--color-primary);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
 }
 
 /* Positioning context for the absolute loading overlay. */
@@ -55780,31 +55897,6 @@ ${err.toString()}`);
     }, ySyncPluginKey);
   };
   const matchNodeName = (yElement, pNode) => !(pNode instanceof Array) && yElement.nodeName === pNode.type.name;
-  let viewsToUpdate = null;
-  const updateMetas = () => {
-    const ups = (
-      /** @type {Map<EditorView, Map<any, any>>} */
-      viewsToUpdate
-    );
-    viewsToUpdate = null;
-    ups.forEach((metas, view) => {
-      const tr = view.state.tr;
-      const syncState = ySyncPluginKey.getState(view.state);
-      if (syncState && syncState.binding && !syncState.binding.isDestroyed) {
-        metas.forEach((val, key) => {
-          tr.setMeta(key, val);
-        });
-        view.dispatch(tr);
-      }
-    });
-  };
-  const setMeta = (view, key, value) => {
-    if (!viewsToUpdate) {
-      viewsToUpdate = /* @__PURE__ */ new Map();
-      timeout(0, updateMetas);
-    }
-    setIfUndefined$1(viewsToUpdate, view, create$9).set(key, value);
-  };
   const absolutePositionToRelativePosition = (pos, type, mapping) => {
     if (pos === 0) {
       return createRelativePositionFromTypeIndex(type, 0, -1);
@@ -55965,180 +56057,6 @@ ${err.toString()}`);
     const doc2 = Node$2.fromJSON(schema, state);
     return prosemirrorToYXmlFragment(doc2, xmlFragment);
   }
-  const defaultAwarenessStateFilter = (currentClientId, userClientId, _user) => currentClientId !== userClientId;
-  const defaultCursorBuilder = (user) => {
-    const cursor = document.createElement("span");
-    cursor.classList.add("ProseMirror-yjs-cursor");
-    cursor.setAttribute("style", `border-color: ${user.color}`);
-    const userDiv = document.createElement("div");
-    userDiv.setAttribute("style", `background-color: ${user.color}`);
-    userDiv.insertBefore(document.createTextNode(user.name), null);
-    const nonbreakingSpace1 = document.createTextNode("⁠");
-    const nonbreakingSpace2 = document.createTextNode("⁠");
-    cursor.insertBefore(nonbreakingSpace1, null);
-    cursor.insertBefore(userDiv, null);
-    cursor.insertBefore(nonbreakingSpace2, null);
-    return cursor;
-  };
-  const defaultSelectionBuilder = (user) => {
-    return {
-      style: `background-color: ${user.color}70`,
-      class: "ProseMirror-yjs-selection"
-    };
-  };
-  const rxValidColor = /^#[0-9a-fA-F]{6}$/;
-  const createDecorations = (state, awareness, awarenessFilter, createCursor, createSelection) => {
-    const ystate = ySyncPluginKey.getState(state);
-    if (ystate == null || ystate.doc == null || ystate.binding == null) {
-      return DecorationSet.create(state.doc, []);
-    }
-    const y2 = ystate.doc;
-    const decorations = [];
-    if (ystate.snapshot != null || ystate.prevSnapshot != null || ystate.binding.mapping.size === 0) {
-      return DecorationSet.create(state.doc, []);
-    }
-    awareness.getStates().forEach((aw, clientId) => {
-      if (!awarenessFilter(y2.clientID, clientId, aw)) {
-        return;
-      }
-      if (aw.cursor != null) {
-        const user = aw.user || {};
-        if (user.color == null) {
-          user.color = "#ffa500";
-        } else if (!rxValidColor.test(user.color)) {
-          console.warn("A user uses an unsupported color format", user);
-        }
-        if (user.name == null) {
-          user.name = `User: ${clientId}`;
-        }
-        let anchor = relativePositionToAbsolutePosition(
-          y2,
-          ystate.type,
-          createRelativePositionFromJSON(aw.cursor.anchor),
-          ystate.binding.mapping
-        );
-        let head = relativePositionToAbsolutePosition(
-          y2,
-          ystate.type,
-          createRelativePositionFromJSON(aw.cursor.head),
-          ystate.binding.mapping
-        );
-        if (anchor !== null && head !== null) {
-          const maxsize = max$2(state.doc.content.size - 1, 0);
-          anchor = min$2(anchor, maxsize);
-          head = min$2(head, maxsize);
-          decorations.push(
-            Decoration.widget(head, () => createCursor(user, clientId), {
-              key: clientId + "",
-              side: 10
-            })
-          );
-          const from2 = min$2(anchor, head);
-          const to = max$2(anchor, head);
-          decorations.push(
-            Decoration.inline(from2, to, createSelection(user, clientId), {
-              inclusiveEnd: true,
-              inclusiveStart: false
-            })
-          );
-        }
-      }
-    });
-    return DecorationSet.create(state.doc, decorations);
-  };
-  const yCursorPlugin = (awareness, {
-    awarenessStateFilter = defaultAwarenessStateFilter,
-    cursorBuilder = defaultCursorBuilder,
-    selectionBuilder = defaultSelectionBuilder,
-    getSelection: getSelection2 = (state) => state.selection
-  } = {}, cursorStateField = "cursor") => new Plugin({
-    key: yCursorPluginKey,
-    state: {
-      init(_2, state) {
-        return createDecorations(
-          state,
-          awareness,
-          awarenessStateFilter,
-          cursorBuilder,
-          selectionBuilder
-        );
-      },
-      apply(tr, prevState, _oldState, newState) {
-        const ystate = ySyncPluginKey.getState(newState);
-        const yCursorState = tr.getMeta(yCursorPluginKey);
-        if (ystate && ystate.isChangeOrigin || yCursorState && yCursorState.awarenessUpdated) {
-          return createDecorations(
-            newState,
-            awareness,
-            awarenessStateFilter,
-            cursorBuilder,
-            selectionBuilder
-          );
-        }
-        return prevState.map(tr.mapping, tr.doc);
-      }
-    },
-    props: {
-      decorations: (state) => {
-        return yCursorPluginKey.getState(state);
-      }
-    },
-    view: (view) => {
-      const awarenessListener = () => {
-        if (view.docView) {
-          setMeta(view, yCursorPluginKey, { awarenessUpdated: true });
-        }
-      };
-      const updateCursorInfo = () => {
-        const ystate = ySyncPluginKey.getState(view.state);
-        const current = awareness.getLocalState() || {};
-        if (view.hasFocus()) {
-          const selection = getSelection2(view.state);
-          const anchor = absolutePositionToRelativePosition(
-            selection.anchor,
-            ystate.type,
-            ystate.binding.mapping
-          );
-          const head = absolutePositionToRelativePosition(
-            selection.head,
-            ystate.type,
-            ystate.binding.mapping
-          );
-          if (current.cursor == null || !compareRelativePositions(
-            createRelativePositionFromJSON(current.cursor.anchor),
-            anchor
-          ) || !compareRelativePositions(
-            createRelativePositionFromJSON(current.cursor.head),
-            head
-          )) {
-            awareness.setLocalStateField(cursorStateField, {
-              anchor,
-              head
-            });
-          }
-        } else if (current.cursor != null && relativePositionToAbsolutePosition(
-          ystate.doc,
-          ystate.type,
-          createRelativePositionFromJSON(current.cursor.anchor),
-          ystate.binding.mapping
-        ) !== null) {
-          awareness.setLocalStateField(cursorStateField, null);
-        }
-      };
-      awareness.on("change", awarenessListener);
-      view.dom.addEventListener("focusin", updateCursorInfo);
-      view.dom.addEventListener("focusout", updateCursorInfo);
-      return {
-        update: updateCursorInfo,
-        destroy: () => {
-          view.dom.removeEventListener("focusin", updateCursorInfo);
-          view.dom.removeEventListener("focusout", updateCursorInfo);
-          awareness.off("change", awarenessListener);
-          awareness.setLocalStateField(cursorStateField, null);
-        }
-      };
-    }
-  });
   const undo = (state) => {
     const undoManager = yUndoPluginKey.getState(state).undoManager;
     if (undoManager != null) {
@@ -58316,39 +58234,15 @@ ${err.toString()}`);
       return debouncedTurnNodeViewRenderer();
     }
   });
-  const WordMark = Mark.create({
-    name: "word",
-    inclusive: true,
-    addAttributes() {
-      return {
-        wid: {
-          default: null,
-          parseHTML: (element) => element.getAttribute("data-wid"),
-          renderHTML: (attributes) => attributes.wid ? { "data-wid": String(attributes.wid) } : {}
-        }
-      };
-    },
-    parseHTML() {
-      return [{ tag: "span[data-wid]" }];
-    },
-    renderHTML({ HTMLAttributes }) {
-      return ["span", mergeAttributes(HTMLAttributes), 0];
-    }
-  });
   function nodeToTurn(node) {
-    const words = [];
-    node.forEach((child) => {
-      if (!child.isText) return;
-      const wordMark = child.marks.find((m2) => m2.type.name === "word");
-      if (wordMark && wordMark.attrs.wid) {
-        words.push({ id: wordMark.attrs.wid, text: child.text ?? "" });
-      }
-    });
+    const id2 = node.attrs.id ?? "";
+    const text2 = node.textContent;
+    const words = wordsFromText(id2, text2);
     return {
-      id: node.attrs.id,
+      id: id2,
       speakerId: node.attrs.speakerId ?? null,
       // text is the source only for a word-less (live text-only) turn.
-      text: words.length > 0 ? null : node.textContent || null,
+      text: words.length > 0 ? null : text2 || null,
       words,
       startTime: node.attrs.startTime,
       endTime: node.attrs.endTime,
@@ -58359,17 +58253,7 @@ ${err.toString()}`);
   }
   function mergeTurnPreservingWords(newTurn, oldTurn) {
     if (!oldTurn || newTurn.words.length === 0) return newTurn;
-    const oldByWid = new Map(oldTurn.words.map((w2) => [w2.id, w2]));
-    const words = newTurn.words.map((w2) => {
-      const old = oldByWid.get(w2.id);
-      if (!old) return w2;
-      return {
-        ...w2,
-        ...old.startTime !== void 0 && { startTime: old.startTime },
-        ...old.endTime !== void 0 && { endTime: old.endTime },
-        ...old.confidence !== void 0 && { confidence: old.confidence }
-      };
-    });
+    const words = carryWordTimes(newTurn.words, oldTurn.words);
     const wStart = firstWordStart(words);
     const wEnd = lastWordEnd(words);
     return {
@@ -58386,7 +58270,9 @@ ${err.toString()}`);
     for (let i2 = 0; i2 < a2.words.length; i2++) {
       const x2 = a2.words[i2];
       const y2 = b2.words[i2];
-      if (x2.id !== y2.id || x2.text !== y2.text) return true;
+      if (x2.id !== y2.id || x2.text !== y2.text || x2.charStart !== y2.charStart) {
+        return true;
+      }
     }
     return false;
   }
@@ -58394,6 +58280,7 @@ ${err.toString()}`);
     const translationId = translation.id;
     const applyTurnNode = (newNode) => {
       const id2 = newNode.attrs.id;
+      if (!id2) return;
       const newTurn = nodeToTurn(newNode);
       const oldTurn = translation.getTurn(id2);
       if (!oldTurn) {
@@ -58438,6 +58325,7 @@ ${err.toString()}`);
     newDoc.forEach((newNode) => {
       if (newNode.type.name !== "turn") return;
       const id2 = newNode.attrs.id;
+      if (!id2) return;
       newIds.add(id2);
       const oldNode = oldNodesById.get(id2);
       const oldTurn = oldTurnsById.get(id2);
@@ -58490,106 +58378,6 @@ ${err.toString()}`);
     }
     return tr;
   }
-  const MAX_MARK_OPS = 5e3;
-  function fixWordMarks(state, transactions) {
-    const wordMarkType = state.schema.marks.word;
-    if (!wordMarkType) return null;
-    let from2 = Infinity;
-    let to = -Infinity;
-    for (const tr2 of transactions) {
-      for (const map2 of tr2.mapping.maps) {
-        map2.forEach((_oldStart, _oldEnd, newStart, newEnd) => {
-          if (newStart < from2) from2 = newStart;
-          if (newEnd > to) to = newEnd;
-        });
-      }
-    }
-    if (to < from2) {
-      const $from = state.selection.$from;
-      for (let d2 = $from.depth; d2 > 0; d2--) {
-        if ($from.node(d2).type.name === "turn") {
-          from2 = $from.before(d2);
-          to = $from.after(d2);
-          break;
-        }
-      }
-      if (to < from2) return null;
-    }
-    from2 = Math.max(0, from2);
-    to = Math.min(state.doc.content.size, to);
-    const turns = [];
-    state.doc.nodesBetween(from2, to, (node, pos) => {
-      if (node.type.name === "turn") {
-        turns.push({ node, pos });
-        return false;
-      }
-      return true;
-    });
-    const ops = [];
-    const assigned = /* @__PURE__ */ new Set();
-    for (const { node: turn, pos: turnPos } of turns) {
-      const contentStart = turnPos + 1;
-      const text2 = turn.textContent;
-      if (!text2) continue;
-      const charWid = new Array(text2.length).fill(null);
-      let off = 0;
-      turn.forEach((child) => {
-        if (child.isText) {
-          const wm = child.marks.find((m22) => m22.type === wordMarkType);
-          const wid = wm ? wm.attrs.wid : null;
-          const len = child.text ? child.text.length : 0;
-          for (let k2 = 0; k2 < len; k2++) charWid[off + k2] = wid;
-          off += len;
-        } else {
-          off += child.nodeSize;
-        }
-      });
-      let cursor = 0;
-      const re2 = /\S+/g;
-      let m2;
-      while ((m2 = re2.exec(text2)) !== null) {
-        const s2 = m2.index;
-        const e2 = m2.index + m2[0].length;
-        if (s2 > cursor && rangeHasWid(charWid, cursor, s2)) {
-          ops.push({ kind: "clear", from: contentStart + cursor, to: contentStart + s2 });
-        }
-        cursor = e2;
-        const firstWid = charWid[s2];
-        const chosen = firstWid && !assigned.has(firstWid) ? firstWid : crypto.randomUUID();
-        assigned.add(chosen);
-        if (!rangeUniform(charWid, s2, e2, chosen)) {
-          ops.push({ kind: "mark", from: contentStart + s2, to: contentStart + e2, wid: chosen });
-        }
-      }
-      if (cursor < text2.length && rangeHasWid(charWid, cursor, text2.length)) {
-        ops.push({ kind: "clear", from: contentStart + cursor, to: contentStart + text2.length });
-      }
-    }
-    if (ops.length === 0) return null;
-    if (ops.length > MAX_MARK_OPS) {
-      console.warn(
-        `[storeSync] ${ops.length} word-mark repairs — skipping inline fix (likely bulk load)`
-      );
-      return null;
-    }
-    const tr = state.tr;
-    for (const op of ops) {
-      if (op.kind === "mark") {
-        tr.addMark(op.from, op.to, wordMarkType.create({ wid: op.wid }));
-      } else {
-        tr.removeMark(op.from, op.to, wordMarkType);
-      }
-    }
-    return tr;
-  }
-  function rangeHasWid(charWid, a2, b2) {
-    for (let i2 = a2; i2 < b2; i2++) if (charWid[i2]) return true;
-    return false;
-  }
-  function rangeUniform(charWid, a2, b2, wid) {
-    for (let i2 = a2; i2 < b2; i2++) if (charWid[i2] !== wid) return false;
-    return true;
-  }
   const storeSyncKey = new PluginKey("storeSync");
   const NORMALIZED = "transcriptionEditor/storeSyncNormalized";
   function mayAffectTurnIds(transactions, oldState, newState) {
@@ -58612,7 +58400,7 @@ ${err.toString()}`);
   const StoreSync = Extension.create({
     name: "storeSync",
     addProseMirrorPlugins() {
-      const { store, getTranslation } = this.options;
+      const { store, getTranslation, mintTurnIds } = this.options;
       const mirror = (newState, oldState) => {
         const translation = getTranslation();
         if (translation) {
@@ -58624,23 +58412,21 @@ ${err.toString()}`);
           key: storeSyncKey,
           appendTransaction(transactions, oldState, newState) {
             if (oldState.doc.eq(newState.doc)) return null;
-            if (transactions.some((tr2) => tr2.getMeta(NORMALIZED))) {
-              mirror(newState, oldState);
-              return null;
-            }
+            if (transactions.some((tr2) => tr2.getMeta(NORMALIZED))) return null;
             const isRemote = transactions.some((tr2) => tr2.getMeta(ySyncPluginKey));
             if (isRemote) {
               mirror(newState, oldState);
               return null;
             }
             const tr = newState.tr;
-            const fixTr = mayAffectTurnIds(transactions, oldState, newState) ? fixTurnIds(newState) : null;
+            const fixTr = mintTurnIds && mayAffectTurnIds(transactions, oldState, newState) ? fixTurnIds(newState) : null;
             if (fixTr) for (const step of fixTr.steps) tr.step(step);
-            const markTr = fixWordMarks(newState, transactions);
-            if (markTr) for (const step of markTr.steps) tr.step(step);
             if (!keepsHistory(transactions)) tr.setMeta("addToHistory", false);
             tr.setMeta(NORMALIZED, true);
-            tr.setStoredMarks(newState.storedMarks);
+            const translation = getTranslation();
+            if (translation) {
+              syncDocToStore(tr.doc, oldState.doc, translation, store);
+            }
             return tr;
           }
         })
@@ -58648,7 +58434,7 @@ ${err.toString()}`);
     }
   });
   const wordHighlightKey = new PluginKey("wordHighlight");
-  const ACTIVE_STYLE = "text-decoration:underline;text-decoration-color:var(--color-primary);text-decoration-thickness:2px;text-underline-offset:3px;color:var(--color-primary)";
+  const ACTIVE_WORD_HIGHLIGHT = "transcript-active-word";
   const WordHighlight = Extension.create({
     name: "wordHighlight",
     addProseMirrorPlugins() {
@@ -58657,23 +58443,34 @@ ${err.toString()}`);
         new Plugin({
           key: wordHighlightKey,
           view(view) {
-            const style2 = document.createElement("style");
-            const attach = () => {
-              const root2 = view.dom.getRootNode();
-              const container = root2 instanceof ShadowRoot ? root2 : view.dom.ownerDocument.head;
-              if (style2.parentNode !== container) container.appendChild(style2);
+            const supported = typeof CSS !== "undefined" && "highlights" in CSS;
+            if (!supported) return {};
+            let current = null;
+            const clear = () => {
+              if (current && CSS.highlights.get(ACTIVE_WORD_HIGHLIGHT) === current) {
+                CSS.highlights.delete(ACTIVE_WORD_HIGHLIGHT);
+              }
+              current = null;
             };
             const render2 = () => {
-              attach();
               const id2 = core.audio?.activeWordId.value;
-              style2.textContent = id2 ? `[data-wid="${escapeAttr(id2)}"]{${ACTIVE_STYLE}}` : "";
+              const range = id2 ? activeWordRange(view.dom, core, id2) : null;
+              if (range) {
+                current = new Highlight(range);
+                CSS.highlights.set(ACTIVE_WORD_HIGHLIGHT, current);
+              } else {
+                clear();
+              }
             };
             const unwatch = watch(() => core.audio?.activeWordId.value, render2);
             render2();
             return {
+              // Re-resolve after every editor update: a doc change can replace
+              // the text nodes the current Range points into.
+              update: render2,
               destroy() {
                 unwatch();
-                style2.remove();
+                clear();
               }
             };
           }
@@ -58681,9 +58478,6 @@ ${err.toString()}`);
       ];
     }
   });
-  function escapeAttr(value) {
-    return value.replace(/["\\]/g, "\\$&");
-  }
   const cursorTurnKey = new PluginKey("cursorTurn");
   function computeDecorations(state) {
     const { $head } = state.selection;
@@ -58748,37 +58542,221 @@ ${err.toString()}`);
       ];
     }
   });
+  const remoteCursorOverlayKey = new PluginKey("remoteCursorOverlay");
   const CollaborationCursor = Extension.create(
     {
       name: "collaborationCursor",
       addProseMirrorPlugins() {
         const { awareness, user } = this.options;
         awareness.setLocalStateField("user", user);
-        const cursorCache = /* @__PURE__ */ new Map();
         return [
-          yCursorPlugin(awareness, {
-            cursorBuilder: (u2, id2) => buildCursor(cursorCache, u2, id2)
+          new Plugin({
+            key: remoteCursorOverlayKey,
+            view: (view) => new RemoteCursorOverlay(view, awareness)
           })
         ];
       }
     }
   );
-  function buildCursor(cache, user, clientId) {
-    let cursor = cache.get(clientId);
-    if (!cursor) {
-      cursor = document.createElement("span");
-      cursor.classList.add("collaboration-cursor__caret");
-      const label2 = document.createElement("div");
-      label2.classList.add("collaboration-cursor__label");
-      cursor.appendChild(label2);
-      cache.set(clientId, cursor);
+  const MAX_SELECTION_RECTS = 200;
+  class RemoteCursorOverlay {
+    view;
+    awareness;
+    overlay;
+    rafHandle = null;
+    onAwarenessChange = () => this.schedule();
+    onFocusChange = () => {
+      this.publishLocalCursor();
+      this.schedule();
+    };
+    constructor(view, awareness) {
+      this.view = view;
+      this.awareness = awareness;
+      this.overlay = document.createElement("div");
+      this.overlay.className = "collaboration-cursor__overlay";
+      awareness.on("change", this.onAwarenessChange);
+      view.dom.addEventListener("focusin", this.onFocusChange);
+      view.dom.addEventListener("focusout", this.onFocusChange);
+      this.schedule();
     }
-    const color = String(user.color ?? "#999");
-    cursor.style.borderColor = color;
-    const label = cursor.firstElementChild;
-    label.style.backgroundColor = color;
-    label.textContent = String(user.name ?? "Anonymous");
-    return cursor;
+    /**
+     * Keep the overlay attached to view.dom's CURRENT parent, and make that
+     * parent the containing block. Must run at render time, not construction:
+     * the editor is created detached and EditorContent later MOVES view.dom
+     * (and its siblings) into its own div — an overlay attached (and a
+     * position:relative applied) at construction would target the discarded
+     * original parent, leaving the scroll container as containing block and
+     * clipping every caret below the first viewport (inset:0 + overflow
+     * hidden).
+     */
+    ensureAttached() {
+      const parent = this.view.dom.parentElement;
+      if (!parent) return false;
+      if (this.overlay.parentElement !== parent) parent.appendChild(this.overlay);
+      if (getComputedStyle(parent).position === "static") {
+        parent.style.position = "relative";
+      }
+      return true;
+    }
+    /** PluginView hook: runs after every dispatched transaction — keeps the
+     *  published local cursor and the remote overlay in sync with reflows. */
+    update() {
+      this.publishLocalCursor();
+      this.schedule();
+    }
+    destroy() {
+      if (this.rafHandle !== null) cancelAnimationFrame(this.rafHandle);
+      this.awareness.off("change", this.onAwarenessChange);
+      this.view.dom.removeEventListener("focusin", this.onFocusChange);
+      this.view.dom.removeEventListener("focusout", this.onFocusChange);
+      this.awareness.setLocalStateField("cursor", null);
+      this.overlay.remove();
+    }
+    /** Coalesce renders: awareness churns on every keystroke of every peer, and
+     *  positioning reads layout (coordsAtPos) — one paint per frame is enough. */
+    schedule() {
+      if (this.rafHandle !== null) return;
+      this.rafHandle = requestAnimationFrame(() => {
+        this.rafHandle = null;
+        this.render();
+      });
+    }
+    // ── Publishing (same wire format as yCursorPlugin) ─────────────────────
+    publishLocalCursor() {
+      const ystate = this.syncState();
+      if (!ystate?.binding) return;
+      const current = this.awareness.getLocalState() ?? {};
+      if (this.view.hasFocus()) {
+        const selection = this.view.state.selection;
+        const anchor = absolutePositionToRelativePosition(
+          selection.anchor,
+          ystate.type,
+          ystate.binding.mapping
+        );
+        const head = absolutePositionToRelativePosition(
+          selection.head,
+          ystate.type,
+          ystate.binding.mapping
+        );
+        if (current.cursor == null || !compareRelativePositions(
+          createRelativePositionFromJSON(current.cursor.anchor),
+          anchor
+        ) || !compareRelativePositions(
+          createRelativePositionFromJSON(current.cursor.head),
+          head
+        )) {
+          this.awareness.setLocalStateField("cursor", { anchor, head });
+        }
+      } else if (current.cursor != null && relativePositionToAbsolutePosition(
+        ystate.doc,
+        ystate.type,
+        createRelativePositionFromJSON(current.cursor.anchor),
+        ystate.binding.mapping
+      ) !== null) {
+        this.awareness.setLocalStateField("cursor", null);
+      }
+    }
+    // ── Rendering ──────────────────────────────────────────────────────────
+    render() {
+      if (!this.ensureAttached()) return;
+      const cursors = this.remoteCursors();
+      const parentRect = this.overlay.getBoundingClientRect();
+      const nodes = [];
+      for (const cursor of cursors) {
+        this.renderSelection(cursor, parentRect, nodes);
+        this.renderCaret(cursor, parentRect, nodes);
+      }
+      this.overlay.replaceChildren(...nodes);
+    }
+    remoteCursors() {
+      const ystate = this.syncState();
+      if (!ystate?.binding) return [];
+      if (ystate.snapshot != null || ystate.prevSnapshot != null) return [];
+      const cursors = [];
+      const docSize = this.view.state.doc.content.size;
+      this.awareness.getStates().forEach((state, clientId) => {
+        if (clientId === this.awareness.clientID) return;
+        const aw = state;
+        if (aw.cursor == null) return;
+        const anchor = this.resolvePosition(ystate, aw.cursor.anchor, docSize);
+        const head = this.resolvePosition(ystate, aw.cursor.head, docSize);
+        if (anchor === null || head === null) return;
+        cursors.push({
+          clientId,
+          name: aw.user?.name ?? `User ${clientId}`,
+          color: aw.user?.color ?? "#999",
+          anchor,
+          head
+        });
+      });
+      return cursors;
+    }
+    resolvePosition(ystate, relJson, docSize) {
+      try {
+        const abs2 = relativePositionToAbsolutePosition(
+          ystate.doc,
+          ystate.type,
+          createRelativePositionFromJSON(relJson),
+          ystate.binding.mapping
+        );
+        if (abs2 === null) return null;
+        return Math.max(0, Math.min(abs2, docSize));
+      } catch {
+        return null;
+      }
+    }
+    renderCaret(cursor, parentRect, nodes) {
+      let coords;
+      try {
+        coords = this.view.coordsAtPos(cursor.head);
+      } catch {
+        return;
+      }
+      const caret = document.createElement("div");
+      caret.className = "collaboration-cursor__caret";
+      caret.style.borderColor = cursor.color;
+      caret.style.left = `${coords.left - parentRect.left}px`;
+      caret.style.top = `${coords.top - parentRect.top}px`;
+      caret.style.height = `${coords.bottom - coords.top}px`;
+      const label = document.createElement("div");
+      label.className = "collaboration-cursor__label";
+      label.style.backgroundColor = cursor.color;
+      label.textContent = cursor.name;
+      caret.appendChild(label);
+      nodes.push(caret);
+    }
+    renderSelection(cursor, parentRect, nodes) {
+      const from2 = Math.min(cursor.anchor, cursor.head);
+      const to = Math.max(cursor.anchor, cursor.head);
+      if (from2 === to) return;
+      let rects;
+      try {
+        const start = this.view.domAtPos(from2);
+        const end = this.view.domAtPos(to);
+        const range = document.createRange();
+        range.setStart(start.node, start.offset);
+        range.setEnd(end.node, end.offset);
+        rects = range.getClientRects();
+      } catch {
+        return;
+      }
+      const count2 = Math.min(rects.length, MAX_SELECTION_RECTS);
+      for (let i2 = 0; i2 < count2; i2++) {
+        const rect = rects[i2];
+        if (!rect || rect.width === 0 || rect.height === 0) continue;
+        const box = document.createElement("div");
+        box.className = "collaboration-cursor__selection";
+        box.style.backgroundColor = cursor.color;
+        box.style.left = `${rect.left - parentRect.left}px`;
+        box.style.top = `${rect.top - parentRect.top}px`;
+        box.style.width = `${rect.width}px`;
+        box.style.height = `${rect.height}px`;
+        nodes.push(box);
+      }
+    }
+    syncState() {
+      return ySyncPluginKey.getState(this.view.state) ?? null;
+    }
   }
   const REWIND_SECONDS = 0.3;
   const ClickHandler = Extension.create({
@@ -58800,18 +58778,13 @@ ${err.toString()}`);
               const turn = translation.turns.value.find((t2) => t2.id === turnId);
               if (!turn) return false;
               const charPos = $pos.parentOffset;
-              const text2 = turnNode.textContent;
               let target = turn.startTime;
-              let cursor = 0;
               for (const word2 of turn.words) {
-                const idx = text2.indexOf(word2.text, cursor);
-                if (idx === -1) break;
-                const end = idx + word2.text.length;
-                if (charPos >= idx && charPos <= end) {
+                if (word2.charStart == null || word2.charEnd == null) continue;
+                if (charPos >= word2.charStart && charPos <= word2.charEnd) {
                   if (word2.startTime != null) target = word2.startTime;
                   break;
                 }
-                cursor = end;
               }
               core.audio?.pause();
               if (target != null) {
@@ -58841,6 +58814,675 @@ ${err.toString()}`);
       ];
     }
   });
+  const safeTextInputKey = new PluginKey("safeTextInput");
+  const SAFE_TEXT_INPUT_META = "transcriptionEditor/safeTextInput";
+  const SafeTextInput = Extension.create({
+    name: "safeTextInput",
+    addProseMirrorPlugins() {
+      return [
+        new Plugin({
+          key: safeTextInputKey,
+          props: {
+            handleDOMEvents: {
+              beforeinput: (view, event) => handleBeforeInput(view, event)
+            }
+          }
+        })
+      ];
+    }
+  });
+  const DELETE_INPUT_TYPES = /* @__PURE__ */ new Set([
+    "deleteContent",
+    "deleteContentBackward",
+    "deleteContentForward",
+    "deleteWordBackward",
+    "deleteWordForward",
+    "deleteSoftLineBackward",
+    "deleteSoftLineForward",
+    "deleteEntireSoftLine",
+    "deleteHardLineBackward",
+    "deleteHardLineForward"
+  ]);
+  const INSERT_INPUT_TYPES = /* @__PURE__ */ new Set(["insertText", "insertReplacementText"]);
+  function handleBeforeInput(view, event) {
+    const input = event;
+    const isDelete = DELETE_INPUT_TYPES.has(input.inputType);
+    const isInsert = INSERT_INPUT_TYPES.has(input.inputType);
+    if (!isDelete && !isInsert) return false;
+    if (!view.editable || view.composing || input.isComposing) return false;
+    const range = mapTargetRange(view, input);
+    if (!range) return false;
+    if (isDelete) {
+      if (range.from >= range.to) return false;
+      event.preventDefault();
+      view.dispatch(
+        view.state.tr.deleteRange(range.from, range.to).setMeta(SAFE_TEXT_INPUT_META, true).scrollIntoView()
+      );
+      return true;
+    }
+    const text2 = input.data ?? input.dataTransfer?.getData("text/plain") ?? "";
+    if (!text2) return false;
+    event.preventDefault();
+    view.dispatch(
+      view.state.tr.insertText(text2, range.from, range.to).setMeta(SAFE_TEXT_INPUT_META, true).scrollIntoView()
+    );
+    return true;
+  }
+  function mapTargetRange(view, input) {
+    const staticRanges = input.getTargetRanges?.() ?? [];
+    if (staticRanges.length === 0) {
+      const { from: from22, to: to2 } = view.state.selection;
+      return { from: from22, to: to2 };
+    }
+    let from2 = Infinity;
+    let to = -Infinity;
+    for (const range of staticRanges) {
+      try {
+        const start = view.posAtDOM(range.startContainer, range.startOffset);
+        const end = view.posAtDOM(range.endContainer, range.endOffset);
+        from2 = Math.min(from2, start, end);
+        to = Math.max(to, start, end);
+      } catch {
+        return null;
+      }
+    }
+    from2 = Math.max(0, from2);
+    to = Math.min(view.state.doc.content.size, to);
+    return from2 <= to ? { from: from2, to } : null;
+  }
+  const viewCrashRecoveryKey = new PluginKey("viewCrashRecovery");
+  const ViewCrashRecovery = Extension.create({
+    name: "viewCrashRecovery",
+    addProseMirrorPlugins() {
+      const { onCrash } = this.options;
+      return [
+        new Plugin({
+          key: viewCrashRecoveryKey,
+          view: (view) => new RecoveryView(view, onCrash)
+        })
+      ];
+    }
+  });
+  const PATCHED_METHODS$1 = ["updateState", "update"];
+  class RecoveryView {
+    view;
+    wrappers = /* @__PURE__ */ new Map();
+    triggered = false;
+    /** This extension must be registered LAST so this wrapper is outermost —
+     *  the debug recorder's own wrapper (when active) records the crash and
+     *  rethrows; this one catches it and swallows it, since the whole view is
+     *  about to be replaced anyway. */
+    constructor(view, onCrash) {
+      this.view = view;
+      const patchable = view;
+      for (const method of PATCHED_METHODS$1) {
+        const original = patchable[method].bind(view);
+        const wrapper = (...args) => {
+          try {
+            original(...args);
+          } catch (error) {
+            if (!this.triggered) {
+              this.triggered = true;
+              console.error(
+                "[transcriptionEditor] editor view crashed while rendering — rebuilding it",
+                error
+              );
+              setTimeout(onCrash, 0);
+            }
+          }
+        };
+        this.wrappers.set(method, wrapper);
+        patchable[method] = wrapper;
+      }
+    }
+    destroy() {
+      const patchable = this.view;
+      for (const method of PATCHED_METHODS$1) {
+        if (patchable[method] === this.wrappers.get(method)) {
+          delete patchable[method];
+        }
+      }
+    }
+  }
+  class RingBuffer {
+    items = [];
+    start = 0;
+    capacity;
+    constructor(capacity) {
+      this.capacity = capacity;
+    }
+    push(item) {
+      if (this.items.length < this.capacity) {
+        this.items.push(item);
+        return;
+      }
+      this.items[this.start] = item;
+      this.start = (this.start + 1) % this.capacity;
+    }
+    /** Entries in insertion order (oldest first). */
+    toArray() {
+      return [...this.items.slice(this.start), ...this.items.slice(0, this.start)];
+    }
+    clear() {
+      this.items.length = 0;
+      this.start = 0;
+    }
+  }
+  function checkDescIntegrity(view) {
+    if (!view.dom.isConnected) return [];
+    const docView = view.docView;
+    const violations = [];
+    if (docView) walk(docView, null, violations);
+    return violations;
+  }
+  function walk(desc, turnId, out) {
+    if (desc.node?.type.name === "turn") {
+      turnId = typeof desc.node.attrs.id === "string" ? desc.node.attrs.id : null;
+    }
+    if (desc.contentDOM && desc.children.length > 0) {
+      checkChildren(desc, desc.contentDOM, turnId, out);
+    }
+    for (const child of desc.children) walk(child, turnId, out);
+  }
+  function checkChildren(desc, content, turnId, out) {
+    const before = out.length;
+    if (!content.isConnected) {
+      out.push({
+        kind: "disconnected-content",
+        turnId,
+        detail: describeNode(content)
+      });
+    }
+    const known = /* @__PURE__ */ new Set();
+    let prevDom = null;
+    for (const child of desc.children) {
+      if (known.has(child.dom)) {
+        out.push({
+          kind: "duplicate-dom",
+          turnId,
+          detail: describeNode(child.dom)
+        });
+        continue;
+      }
+      known.add(child.dom);
+      if (child.dom.parentNode !== content) {
+        out.push({
+          kind: "misparented-child",
+          turnId,
+          detail: `${describeNode(child.dom)} expected under ${describeNode(content)}, ` + (child.dom.parentNode ? `actually under ${describeNode(child.dom.parentNode)}` : "actually detached")
+        });
+        continue;
+      }
+      if (prevDom) {
+        const pos = prevDom.compareDocumentPosition(child.dom);
+        if (!(pos & Node.DOCUMENT_POSITION_FOLLOWING)) {
+          out.push({
+            kind: "order-mismatch",
+            turnId,
+            detail: `${describeNode(child.dom)} does not follow ${describeNode(prevDom)}`
+          });
+        }
+      }
+      prevDom = child.dom;
+    }
+    for (const node of Array.from(content.childNodes)) {
+      if (known.has(node)) continue;
+      if (node.pmViewDesc) continue;
+      out.push({ kind: "foreign-node", turnId, detail: describeNode(node) });
+    }
+    if (out.length > before) {
+      out.push({
+        kind: "parent-snapshot",
+        turnId,
+        detail: `descs=[${desc.children.map((c2) => describeNode(c2.dom)).join(" ")}] dom=[${Array.from(content.childNodes).map(describeNode).join(" ")}]`
+      });
+    }
+  }
+  function describeNode(node) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      return `#text "${(node.nodeValue ?? "").slice(0, 30)}"`;
+    }
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      const el = node;
+      const wid = el.getAttribute("data-wid");
+      const cls = typeof el.className === "string" && el.className ? `.${el.className.trim().split(/\s+/).join(".")}` : "";
+      return `<${el.nodeName.toLowerCase()}${cls}${wid ? ` data-wid="${wid}"` : ""}>`;
+    }
+    return node.nodeName;
+  }
+  const LOG_PREFIX = "[transcript-ui debug]";
+  const LS_KEY = "transcript-ui:debug";
+  function resolveDebugFlags(options) {
+    return {
+      enabled: options.debug || lsFlag(LS_KEY),
+      disableRemoteCursors: options.debugDisableRemoteCursors || lsFlag(`${LS_KEY}:no-remote-cursors`),
+      disableCursorTurn: options.debugDisableCursorTurn || lsFlag(`${LS_KEY}:no-cursor-turn`)
+    };
+  }
+  function lsFlag(key) {
+    try {
+      const value = localStorage.getItem(key);
+      return value !== null && value !== "0" && value !== "false";
+    } catch {
+      return false;
+    }
+  }
+  const CRASH_SIGNATURE = /nodeType|nextSibling|pmViewDesc|readDOMChange/;
+  class FlightRecorder {
+    events = new RingBuffer(500);
+    firstError = null;
+    integrityAlarmed = false;
+    lastViolationFingerprint = "";
+    integrityProbe = null;
+    crashProbe = null;
+    onWindowError = (event) => {
+      const evt = {
+        t: Date.now(),
+        kind: "window-error",
+        data: {
+          message: event.message,
+          source: `${event.filename}:${event.lineno}`,
+          isFirstErrorOfSession: this.firstError === null
+        }
+      };
+      if (!this.firstError) this.firstError = evt;
+      this.events.push(evt);
+      if (CRASH_SIGNATURE.test(event.message)) {
+        this.crashProbe?.();
+        console.error(
+          `${LOG_PREFIX} readDOMChange-family crash caught — flight dump:`,
+          this.dump()
+        );
+      }
+    };
+    constructor() {
+      window.addEventListener("error", this.onWindowError, true);
+      window.__transcriptUiDebug = { dump: () => this.dump() };
+      this.record("recorder-started", {});
+      console.info(
+        `${LOG_PREFIX} sync flight recorder ON — dump via window.__transcriptUiDebug.dump()`
+      );
+    }
+    destroy() {
+      window.removeEventListener("error", this.onWindowError, true);
+      delete window.__transcriptUiDebug;
+    }
+    record(kind, data = {}) {
+      this.events.push({ t: Date.now(), kind, data });
+    }
+    /** Registered by the live editor view so dump() can re-check integrity. */
+    setIntegrityProbe(probe) {
+      this.integrityProbe = probe;
+    }
+    /** Registered by the live editor view: drains its pending spy mutations
+     *  and snapshots integrity the instant a crash-signature error fires. */
+    setCrashProbe(probe) {
+      this.crashProbe = probe;
+    }
+    recordViolations(violations, context2) {
+      const fingerprint = violations.map((v2) => `${v2.kind}|${v2.turnId}|${v2.detail}`).join("\n");
+      if (fingerprint === this.lastViolationFingerprint) return;
+      this.lastViolationFingerprint = fingerprint;
+      if (violations.length === 0) {
+        this.record("integrity-recovered", { context: context2 });
+        return;
+      }
+      this.record("integrity-violation", { context: context2, violations });
+      if (!this.integrityAlarmed) {
+        this.integrityAlarmed = true;
+        console.error(
+          `${LOG_PREFIX} FIRST viewDesc↔DOM integrity violation (the desync a later readDOMChange flush crashes on) — flight dump:`,
+          this.dump()
+        );
+      }
+    }
+    dump() {
+      return {
+        userAgent: navigator.userAgent,
+        firstError: this.firstError,
+        integrity: this.integrityProbe ? this.integrityProbe() : null,
+        events: this.events.toArray()
+      };
+    }
+  }
+  const syncDebugKey = new PluginKey("syncDebug");
+  class RecordingDOMParser extends DOMParser$1 {
+    recorder = null;
+    static forDebug(schema, recorder) {
+      const parser = new RecordingDOMParser(
+        schema,
+        DOMParser$1.fromSchema(schema).rules
+      );
+      parser.recorder = recorder;
+      return parser;
+    }
+    parse(dom, options) {
+      try {
+        return super.parse(dom, options);
+      } catch (error) {
+        this.recorder?.record("dom-parse-crashed", {
+          error: String(error),
+          from: options?.from,
+          to: options?.to,
+          topNode: options?.topNode?.type.name,
+          childCount: dom.childNodes.length,
+          parent: describeNode(dom),
+          walk: walkLikeAddAll(dom, options?.from, options?.to)
+        });
+        throw error;
+      }
+    }
+  }
+  function walkLikeAddAll(parent, startIndex, endIndex) {
+    const start = startIndex ? parent.childNodes[startIndex] : parent.firstChild;
+    const end = endIndex == null ? null : parent.childNodes[endIndex] ?? null;
+    const visited = [];
+    const base2 = {
+      start: start ? describeNode(start) : String(start),
+      end: end ? describeNode(end) : String(end)
+    };
+    let dom = start ?? null;
+    for (let steps = 0; steps < 300; steps++) {
+      if (dom == end) {
+        return { verdict: "terminates", ...base2, visited: visited.slice(0, 20) };
+      }
+      if (dom === null) {
+        return {
+          verdict: "WALKED PAST LAST SIBLING INTO NULL (end never met)",
+          ...base2,
+          visited: visited.slice(-20)
+        };
+      }
+      visited.push(describeNode(dom));
+      dom = dom.nextSibling;
+    }
+    return {
+      verdict: "no termination within 300 steps",
+      ...base2,
+      visited: visited.slice(-20)
+    };
+  }
+  const SyncDebug = Extension.create({
+    name: "syncDebug",
+    addProseMirrorPlugins() {
+      const { recorder } = this.options;
+      const domParser = RecordingDOMParser.forDebug(
+        this.editor.schema,
+        recorder
+      );
+      return [
+        new Plugin({
+          key: syncDebugKey,
+          props: { domParser },
+          state: {
+            init: () => null,
+            apply: (tr, prev, _oldState, newState) => {
+              recorder.record("transaction", summarizeTransaction(tr, newState));
+              return prev;
+            }
+          },
+          view: (view) => new SyncDebugView(view, recorder)
+        })
+      ];
+    }
+  });
+  function summarizeTransaction(tr, state) {
+    return {
+      remote: tr.getMeta(ySyncPluginKey) !== void 0,
+      awareness: tr.getMeta(yCursorPluginKey) !== void 0,
+      // Literal duplicated from storeSync.ts (private constant there).
+      normalized: tr.getMeta("transcriptionEditor/storeSyncNormalized") === true,
+      addToHistory: tr.getMeta("addToHistory"),
+      // Every meta key names the transaction's author (plugin-keyed metas
+      // stringify as "pluginName$") — identifies otherwise-anonymous empty
+      // transactions. Private field, debug-only read.
+      metaKeys: Object.keys(
+        tr.meta
+      ),
+      steps: tr.steps.length,
+      docChanged: tr.docChanged,
+      selectionSet: tr.selectionSet,
+      docSize: state.doc.content.size,
+      selection: `${state.selection.from}-${state.selection.to}`
+    };
+  }
+  const INTEGRITY_THROTTLE_MS = 300;
+  const SMALL_DOC_SIZE = 2e4;
+  const PATCHED_METHODS = ["updateState", "update"];
+  class SyncDebugView {
+    view;
+    recorder;
+    observer;
+    /** > 0 while ProseMirror itself is updating the DOM: mutations seen then
+     *  are PM's own and are not recorded. */
+    pmUpdateDepth = 0;
+    lastCheck = 0;
+    pendingCheck = null;
+    lastRemoteSelections = 0;
+    restoreHandleDOMChange = null;
+    constructor(view, recorder) {
+      this.view = view;
+      this.recorder = recorder;
+      const patchable = view;
+      for (const method of PATCHED_METHODS) {
+        const original = patchable[method].bind(view);
+        patchable[method] = (...args) => {
+          if (this.pmUpdateDepth === 0) {
+            this.onMutations(this.observer.takeRecords());
+          }
+          this.pmUpdateDepth++;
+          try {
+            original(...args);
+          } catch (error) {
+            this.recorder.record("pm-update-crashed", { error: String(error) });
+            this.onMutations(this.observer.takeRecords(), true);
+            throw error;
+          } finally {
+            this.pmUpdateDepth--;
+            if (this.pmUpdateDepth === 0) {
+              this.observer.takeRecords();
+              this.scheduleIntegrityCheck("pm-window-close");
+            }
+          }
+        };
+      }
+      this.observer = new MutationObserver((records) => {
+        if (this.pmUpdateDepth === 0) this.onMutations(records);
+      });
+      this.observer.observe(view.dom, {
+        subtree: true,
+        childList: true,
+        characterData: true
+      });
+      const observerHost = view;
+      const domObserver = observerHost.domObserver;
+      const originalHandle = domObserver?.handleDOMChange?.bind(domObserver);
+      if (domObserver && originalHandle) {
+        this.restoreHandleDOMChange = () => {
+          domObserver.handleDOMChange = originalHandle;
+        };
+        domObserver.handleDOMChange = (...args) => {
+          try {
+            originalHandle(...args);
+          } catch (error) {
+            this.recorder.record("readDOMChange-crashed", {
+              from: args[0],
+              to: args[1],
+              typeOver: args[2],
+              error: String(error),
+              parseDiag: this.diagnoseParseRange(args[0], args[1])
+            });
+            throw error;
+          }
+        };
+      }
+      view.dom.addEventListener("keydown", this.onKeydown, true);
+      view.dom.addEventListener("beforeinput", this.onBeforeInput, true);
+      recorder.setIntegrityProbe(
+        () => view.isDestroyed ? [] : checkDescIntegrity(view)
+      );
+      recorder.setCrashProbe(() => {
+        this.onMutations(this.observer.takeRecords(), true);
+        this.runIntegrityCheck("crash");
+      });
+      recorder.record("editor-view-created", {});
+    }
+    /** Replay readDOMChange's range widening + parseRange to expose the DOM
+     *  offsets the crashed parse was about to iterate with. Read-only. */
+    diagnoseParseRange(from2, to) {
+      try {
+        if (typeof from2 !== "number" || typeof to !== "number" || from2 < 0) {
+          return { skipped: `non-range change (${String(from2)}, ${String(to)})` };
+        }
+        const doc2 = this.view.state.doc;
+        const $before = doc2.resolve(from2);
+        const shared = $before.sharedDepth(to);
+        const wFrom = $before.before(shared + 1);
+        const wTo = doc2.resolve(to).after(shared + 1);
+        const docView = this.view.docView;
+        const r2 = docView.parseRange(wFrom, wTo);
+        return {
+          widened: `${wFrom}-${wTo}`,
+          parsed: `${r2.from}-${r2.to}`,
+          fromOffset: r2.fromOffset,
+          toOffset: r2.toOffset,
+          childCount: r2.node.childNodes.length,
+          parent: describeNode(r2.node),
+          // The nodes addAll would walk between the offsets — names the
+          // inversion when fromOffset/toOffset cross.
+          childrenAround: Array.from(r2.node.childNodes).slice(
+            Math.max(0, Math.min(r2.fromOffset, r2.toOffset) - 2),
+            Math.max(r2.fromOffset, r2.toOffset) + 2
+          ).map(describeNode)
+        };
+      } catch (error) {
+        return { failed: String(error) };
+      }
+    }
+    onKeydown = (event) => {
+      if (event.key.length > 1) {
+        this.recorder.record("keydown", { key: event.key });
+      }
+    };
+    onBeforeInput = (event) => {
+      const inputType = event.inputType;
+      if (inputType === "insertText") return;
+      this.recorder.record("beforeinput", {
+        inputType,
+        composing: this.view.composing
+      });
+    };
+    update(view, prevState) {
+      this.trackRemoteSelections(view);
+      if (view.state.doc !== prevState.doc) {
+        this.scheduleIntegrityCheck("doc-change");
+      }
+    }
+    destroy() {
+      this.observer.disconnect();
+      if (this.pendingCheck) clearTimeout(this.pendingCheck);
+      this.restoreHandleDOMChange?.();
+      this.view.dom.removeEventListener("keydown", this.onKeydown, true);
+      this.view.dom.removeEventListener("beforeinput", this.onBeforeInput, true);
+      const patchable = this.view;
+      for (const method of PATCHED_METHODS) delete patchable[method];
+      this.recorder.setIntegrityProbe(null);
+      this.recorder.setCrashProbe(null);
+      this.recorder.record("editor-view-destroyed", {});
+    }
+    /** yCursorPlugin renders remote SELECTIONS as inline decorations inside
+     *  turn content — the exact decoration shape wordHighlight.ts documents as
+     *  crashing PM reconciliation. Log when they appear/disappear so crashes
+     *  can be correlated with a collaborator selecting text. */
+    trackRemoteSelections(view) {
+      const decoSet = yCursorPluginKey.getState(view.state);
+      if (!decoSet) return;
+      const decorations = decoSet.find();
+      const selections = decorations.filter((d2) => d2.from !== d2.to).length;
+      if (selections !== this.lastRemoteSelections) {
+        this.recorder.record("remote-selection-decorations", {
+          inlineSelections: selections,
+          totalDecorations: decorations.length
+        });
+        this.lastRemoteSelections = selections;
+        this.scheduleIntegrityCheck("remote-selection-change");
+      }
+    }
+    scheduleIntegrityCheck(context2) {
+      if (this.view.state.doc.content.size <= SMALL_DOC_SIZE) {
+        this.runIntegrityCheck(context2);
+        return;
+      }
+      const elapsed = Date.now() - this.lastCheck;
+      if (elapsed >= INTEGRITY_THROTTLE_MS) {
+        this.runIntegrityCheck(context2);
+        return;
+      }
+      if (this.pendingCheck) return;
+      this.pendingCheck = setTimeout(() => {
+        this.pendingCheck = null;
+        this.runIntegrityCheck(`${context2} (deferred)`);
+      }, INTEGRITY_THROTTLE_MS - elapsed);
+    }
+    runIntegrityCheck(context2) {
+      this.lastCheck = Date.now();
+      if (this.view.isDestroyed) return;
+      this.recorder.recordViolations(checkDescIntegrity(this.view), context2);
+    }
+    /** `force` records everything (crash evidence): no caret-turn exemption,
+     *  tagged so PM-window mutations are distinguishable in the timeline. */
+    onMutations(records, force = false) {
+      if (records.length === 0) return;
+      const caretTurnId = this.caretTurnId();
+      for (const record of records) {
+        const turnText = closestTurnText(record.target);
+        if (record.type === "characterData") {
+          if (!turnText && !force) continue;
+          const turnId = turnText ? turnIdOf(turnText) : null;
+          if (!force && turnId !== null && turnId === caretTurnId) continue;
+          this.recorder.record("dom-mutation", {
+            type: "characterData",
+            forced: force,
+            turnId,
+            caretTurnId,
+            composing: this.view.composing,
+            target: describeNode(record.target)
+          });
+          continue;
+        }
+        this.recorder.record("dom-mutation", {
+          type: "childList",
+          forced: force,
+          inTurnContent: turnText !== null,
+          turnId: turnText ? turnIdOf(turnText) : turnIdOf(record.target),
+          caretTurnId,
+          composing: this.view.composing,
+          target: describeNode(record.target),
+          added: Array.from(record.addedNodes).map(describeNode),
+          removed: Array.from(record.removedNodes).map(describeNode)
+        });
+        if (turnText) this.scheduleIntegrityCheck("external-content-mutation");
+      }
+    }
+    caretTurnId() {
+      const { $head } = this.view.state.selection;
+      for (let depth = $head.depth; depth > 0; depth--) {
+        const node = $head.node(depth);
+        if (node.type.name === "turn") {
+          return typeof node.attrs.id === "string" ? node.attrs.id : null;
+        }
+      }
+      return null;
+    }
+  }
+  function closestTurnText(node) {
+    const el = node instanceof Element ? node : node.parentElement;
+    return el?.closest("[data-node-view-content]") ?? null;
+  }
+  function turnIdOf(node) {
+    const el = node instanceof Element ? node : node.parentElement;
+    return el?.closest("[data-turn-id]")?.getAttribute("data-turn-id") ?? null;
+  }
   function createTiptapEditor(config) {
     return new Editor({
       extensions: buildExtensions(config),
@@ -58859,21 +59501,28 @@ ${err.toString()}`);
     });
   }
   function buildExtensions(config) {
-    const { core, ydoc, field, translation } = config;
+    const { core, ydoc, field, translation, debugFlags, recorder } = config;
     const extensions = [
       TranscriptionDocument,
       TurnNode,
-      WordMark,
       Text,
       Collaboration.configure({ document: ydoc, field }),
-      StoreSync.configure({ store: core, getTranslation: () => translation }),
+      StoreSync.configure({
+        store: core,
+        getTranslation: () => translation,
+        mintTurnIds: config.mintTurnIds
+      }),
+      SafeTextInput,
       WordHighlight.configure({ core }),
-      CursorTurn,
+      // Debug kill-switch: CursorTurn is the only in-house PM decoration (node
+      // decoration on the turn wrapper) — dropping it isolates its role in the
+      // readDOMChange crash family.
+      ...debugFlags?.disableCursorTurn ? [] : [CursorTurn],
       ClickHandler.configure({ core }),
       PauseOnEdit.configure({ core }),
       ...core.pluginExtensions
     ];
-    if (config.awareness && !config.readOnly) {
+    if (config.awareness && !config.readOnly && !debugFlags?.disableRemoteCursors) {
       extensions.push(
         CollaborationCursor.configure({
           awareness: config.awareness,
@@ -58881,16 +59530,19 @@ ${err.toString()}`);
         })
       );
     }
+    if (recorder) {
+      recorder.record("editor-created", {
+        readOnly: config.readOnly,
+        collab: config.awareness !== null,
+        disableRemoteCursors: debugFlags?.disableRemoteCursors ?? false,
+        disableCursorTurn: debugFlags?.disableCursorTurn ?? false
+      });
+      extensions.push(SyncDebug.configure({ recorder }));
+    }
+    if (config.onViewCrash) {
+      extensions.push(ViewCrashRecovery.configure({ onCrash: config.onViewCrash }));
+    }
     return extensions;
-  }
-  function mapWord(w2) {
-    return {
-      id: w2.wid,
-      text: w2.word,
-      ...w2.stime !== void 0 && { startTime: w2.stime },
-      ...w2.etime !== void 0 && { endTime: w2.etime },
-      ...w2.confidence !== void 0 && { confidence: w2.confidence }
-    };
   }
   const REQUEST_WORDS_MESSAGE = JSON.stringify({ type: "request_words" });
   function applyStatelessPayload(payload, translation) {
@@ -58907,18 +59559,15 @@ ${err.toString()}`);
       const currentTurn = translation.getTurn(t2.turn_id);
       if (!currentTurn) continue;
       if (currentTurn.words.length === 0) continue;
-      const incoming = /* @__PURE__ */ new Map();
-      for (const aw of t2.words) {
-        const w2 = mapWord(aw);
-        incoming.set(w2.id, w2);
-      }
-      const merged = currentTurn.words.map((w2) => {
-        const inc = incoming.get(w2.id);
-        if (!inc) return w2;
+      const incoming = t2.words.filter((w2) => (w2.word ?? "").trim() !== "");
+      if (incoming.length !== currentTurn.words.length) continue;
+      const merged = currentTurn.words.map((w2, i2) => {
+        const inc = incoming[i2];
+        if (inc.word !== w2.text) return w2;
         return {
           ...w2,
-          ...inc.startTime !== void 0 && { startTime: inc.startTime },
-          ...inc.endTime !== void 0 && { endTime: inc.endTime },
+          ...inc.stime !== void 0 && { startTime: inc.stime },
+          ...inc.etime !== void 0 && { endTime: inc.etime },
           ...inc.confidence !== void 0 && { confidence: inc.confidence }
         };
       });
@@ -58933,21 +59582,8 @@ ${err.toString()}`);
   }
   function turnToNode(turn) {
     const spokenWords = turn.words.filter((w2) => (w2.text ?? "").trim() !== "");
-    let content;
-    if (spokenWords.length > 0) {
-      content = [];
-      spokenWords.forEach((w2, i2) => {
-        if (i2 > 0) content.push({ type: "text", text: " " });
-        content.push({
-          type: "text",
-          text: w2.text,
-          // Each spoken word carries its identity (wid = Word.id) as a mark.
-          marks: [{ type: "word", attrs: { wid: w2.id || crypto.randomUUID() } }]
-        });
-      });
-    } else if (turn.text) {
-      content = [{ type: "text", text: turn.text }];
-    }
+    const raw = spokenWords.length > 0 ? spokenWords.map((w2) => w2.text).join(" ") : turn.text ?? "";
+    const text2 = raw.replace(/\s+/g, " ").trim();
     return {
       type: "turn",
       attrs: {
@@ -58959,8 +59595,19 @@ ${err.toString()}`);
         endDate: turn.endDate,
         language: turn.language
       },
-      content
+      content: text2 ? [{ type: "text", text: text2 }] : void 0
     };
+  }
+  const MAX_REBUILDS = 3;
+  const REBUILD_WINDOW_MS = 3e4;
+  function allowRebuild(timestamps) {
+    const now = Date.now();
+    while (timestamps.length > 0 && now - timestamps[0] > REBUILD_WINDOW_MS) {
+      timestamps.shift();
+    }
+    if (timestamps.length >= MAX_REBUILDS) return false;
+    timestamps.push(now);
+    return true;
   }
   class CollabSession {
     ydoc;
@@ -58968,26 +59615,46 @@ ${err.toString()}`);
     provider;
     editor = null;
     speakersSync = null;
+    destroyed = false;
+    rebuilds = [];
     constructor(deps, collab) {
       this.deps = deps;
       this.ydoc = new Doc();
       const epoch = collab.epochs?.[deps.translation.id] ?? 0;
+      const recorder = deps.recorder;
+      recorder?.record("collab-session-created", {
+        document: `${deps.translation.id}.${epoch}`,
+        readOnly: deps.readOnly
+      });
       this.provider = new HocuspocusProvider({
         url: collab.url,
         name: `${deps.translation.id}.${epoch}`,
         token: collab.token,
         document: this.ydoc,
         onSynced: () => this.handleSynced(),
-        onDisconnect: () => deps.host.setConnected(false),
-        onAuthenticationFailed: ({ reason }) => collab.onAuthenticationFailed?.(reason),
-        onAwarenessUpdate: ({ states }) => deps.host.setUsers(mapAwarenessStates(states)),
-        onStateless: ({ payload }) => applyStatelessPayload(payload, deps.translation)
+        onDisconnect: () => {
+          recorder?.record("provider-disconnected", {});
+          deps.host.setConnected(false);
+        },
+        onAuthenticationFailed: ({ reason }) => {
+          recorder?.record("auth-failed", { reason });
+          collab.onAuthenticationFailed?.(reason);
+        },
+        onAwarenessUpdate: ({ states }) => {
+          recorder?.record("awareness-update", { users: states.length });
+          deps.host.setUsers(mapAwarenessStates(states));
+        },
+        onStateless: ({ payload }) => {
+          recorder?.record("stateless-received", { size: payload.length });
+          applyStatelessPayload(payload, deps.translation);
+        }
       });
     }
     updateUser() {
       this.provider.awareness?.setLocalStateField("user", this.deps.host.user);
     }
     destroy() {
+      this.destroyed = true;
       this.editor?.destroy();
       this.editor = null;
       this.speakersSync?.destroy();
@@ -58997,6 +59664,9 @@ ${err.toString()}`);
     }
     /** Fires on every (re)sync of the provider, not just the first one. */
     handleSynced() {
+      this.deps.recorder?.record("provider-synced", {
+        resync: this.editor !== null
+      });
       this.deps.host.setConnected(true);
       if (this.editor) {
         this.requestWords();
@@ -59005,19 +59675,45 @@ ${err.toString()}`);
       this.createEditor();
     }
     createEditor() {
-      const { core, host, translation, field, readOnly } = this.deps;
-      this.speakersSync = new SpeakersSync(core, this.ydoc);
+      const { core, host, translation, field, readOnly, debugFlags, recorder } = this.deps;
+      if (!this.speakersSync) this.speakersSync = new SpeakersSync(core, this.ydoc);
       this.editor = createTiptapEditor({
         core,
         ydoc: this.ydoc,
         field,
         translation,
         readOnly,
+        // The server observes new turn elements and mints their ids.
+        mintTurnIds: false,
         awareness: this.provider.awareness,
-        user: host.user
+        user: host.user,
+        debugFlags,
+        recorder,
+        onViewCrash: () => this.rebuildEditor()
       });
       this.requestWordsWhenHydrated(this.editor);
       host.setEditor(this.editor);
+    }
+    /** View-crash recovery: the PM state and Y.Doc are still consistent, only
+     *  the view's desc↔DOM tree is corrupted — rebuild the editor on the same
+     *  Y.Doc (provider and speakersSync survive untouched). Capped: a
+     *  deterministic crash gives up with an error instead of storming. */
+    rebuildEditor() {
+      if (this.destroyed || !this.editor) return;
+      this.deps.recorder?.record("view-crash-rebuild", {});
+      this.editor.destroy();
+      this.editor = null;
+      this.deps.host.setEditor(void 0);
+      if (!allowRebuild(this.rebuilds)) {
+        console.error(
+          "[transcriptionEditor] editor keeps crashing after rebuild — giving up"
+        );
+        this.deps.core.transcriptionEditor?.setError(
+          "The editor crashed repeatedly. Reload the page to continue."
+        );
+        return;
+      }
+      this.createEditor();
     }
     /**
      * Words+timestamps live outside the Y.Doc and are served on demand
@@ -59049,13 +59745,18 @@ ${err.toString()}`);
   }
   class LocalSession {
     ydoc;
+    deps;
     editor;
     speakersSync;
+    destroyed = false;
+    rebuilds = [];
     constructor(deps) {
-      const { core, host, translation, field, readOnly } = deps;
+      const { core, host, translation, field, recorder } = deps;
+      this.deps = deps;
+      recorder?.record("local-session-created", { readOnly: deps.readOnly });
       this.ydoc = new Doc();
       const fragment = this.ydoc.getXmlFragment(field);
-      const schema = getSchema([TranscriptionDocument, TurnNode, WordMark, Text]);
+      const schema = getSchema([TranscriptionDocument, TurnNode, Text]);
       prosemirrorJSONToYXmlFragment(
         schema,
         turnsToDoc(translation.turns.value),
@@ -59063,21 +59764,49 @@ ${err.toString()}`);
       );
       seedSpeakersMap(this.ydoc, translation, core.speakers);
       this.speakersSync = new SpeakersSync(core, this.ydoc);
-      this.editor = createTiptapEditor({
+      this.editor = this.createEditor();
+      host.setConnected(true);
+    }
+    createEditor() {
+      const { core, host, translation, field, readOnly, debugFlags, recorder } = this.deps;
+      const editor = createTiptapEditor({
         core,
         ydoc: this.ydoc,
         field,
         translation,
         readOnly,
+        // No server in local mode: the client mints turn ids itself.
+        mintTurnIds: true,
         awareness: null,
-        user: host.user
+        user: host.user,
+        debugFlags,
+        recorder,
+        onViewCrash: () => this.rebuildEditor()
       });
-      host.setEditor(this.editor);
-      host.setConnected(true);
+      host.setEditor(editor);
+      return editor;
+    }
+    /** View-crash recovery — see CollabSession.rebuildEditor. */
+    rebuildEditor() {
+      if (this.destroyed) return;
+      this.deps.recorder?.record("view-crash-rebuild", {});
+      this.editor.destroy();
+      this.deps.host.setEditor(void 0);
+      if (!allowRebuild(this.rebuilds)) {
+        console.error(
+          "[transcriptionEditor] editor keeps crashing after rebuild — giving up"
+        );
+        this.deps.core.transcriptionEditor?.setError(
+          "The editor crashed repeatedly. Reload the page to continue."
+        );
+        return;
+      }
+      this.editor = this.createEditor();
     }
     updateUser() {
     }
     destroy() {
+      this.destroyed = true;
       this.editor.destroy();
       this.speakersSync.destroy();
       this.ydoc.destroy();
@@ -59097,7 +59826,10 @@ ${err.toString()}`);
     collab,
     field = "default",
     user = { name: "Anonymous", color: "#999999" },
-    readOnly = false
+    readOnly = false,
+    debug = false,
+    debugDisableRemoteCursors = false,
+    debugDisableCursorTurn = false
   } = {}) {
     return {
       name: "transcriptionEditor",
@@ -59106,6 +59838,12 @@ ${err.toString()}`);
         const users = /* @__PURE__ */ ref([]);
         const isConnected = /* @__PURE__ */ ref(false);
         const error = /* @__PURE__ */ ref(null);
+        const debugFlags = resolveDebugFlags({
+          debug,
+          debugDisableRemoteCursors,
+          debugDisableCursorTurn
+        });
+        const recorder = debugFlags.enabled ? new FlightRecorder() : null;
         let session = null;
         const host = {
           setEditor: (editor) => {
@@ -59139,9 +59877,11 @@ ${err.toString()}`);
           },
           setError(message) {
             error.value = message;
-          }
+          },
+          debugDump: recorder ? () => recorder.dump() : void 0
         };
-        const restart = () => {
+        const restart = (trigger2) => {
+          recorder?.record("session-restart", { trigger: trigger2 });
           session?.destroy();
           session = null;
           tiptapEditor.value = void 0;
@@ -59150,7 +59890,15 @@ ${err.toString()}`);
           error.value = null;
           const translation = editableTranslation(core);
           if (!translation) return;
-          const deps = { core, host, translation, field, readOnly };
+          const deps = {
+            core,
+            host,
+            translation,
+            field,
+            readOnly,
+            debugFlags,
+            recorder
+          };
           session = collab ? new CollabSession(deps, collab) : new LocalSession(deps);
         };
         const warnUnsupported = (event) => () => {
@@ -59161,17 +59909,18 @@ ${err.toString()}`);
           }
         };
         const unsubscribes = [
-          core.on("document:change", restart),
-          core.on("channel:change", restart),
-          core.on("translation:change", restart),
+          core.on("document:change", () => restart("document:change")),
+          core.on("channel:change", () => restart("channel:change")),
+          core.on("translation:change", () => restart("translation:change")),
           core.on("translation:sync", warnUnsupported("translation:sync")),
           core.on("channel:sync", warnUnsupported("channel:sync"))
         ];
-        restart();
+        restart("install");
         return () => {
           unsubscribes.forEach((off) => off());
           session?.destroy();
           session = null;
+          recorder?.destroy();
           core.transcriptionEditor = void 0;
         };
       }

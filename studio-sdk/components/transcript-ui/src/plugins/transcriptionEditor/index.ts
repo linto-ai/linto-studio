@@ -17,8 +17,10 @@ import {
   type LocalUser,
   type SessionHost,
 } from "./session"
+import { FlightRecorder, resolveDebugFlags } from "./debug/syncFlightRecorder"
 
 import "./cursor.css"
+import "./karaoke.css"
 
 export type { TranscriptionEditorPluginApi }
 export type { CollabOptions }
@@ -36,6 +38,19 @@ export interface TranscriptionEditorOptions {
    * user keeps seeing others work. @default false
    */
   readOnly?: boolean
+  /**
+   * Sync flight recorder: records the transaction/mutation timeline and
+   * checks viewDesc↔DOM integrity to diagnose the readDOMChange crash
+   * family. Also enabled by localStorage["transcript-ui:debug"] = "1"
+   * (no host redeploy needed). Dump via core.transcriptionEditor.debugDump().
+   */
+  debug?: boolean
+  /** Debug kill-switch: drop remote carets/selections (CollaborationCursor).
+   *  localStorage["transcript-ui:debug:no-remote-cursors"] also works. */
+  debugDisableRemoteCursors?: boolean
+  /** Debug kill-switch: drop the CursorTurn decoration.
+   *  localStorage["transcript-ui:debug:no-cursor-turn"] also works. */
+  debugDisableCursorTurn?: boolean
 }
 
 export function createTranscriptionEditorPlugin({
@@ -43,6 +58,9 @@ export function createTranscriptionEditorPlugin({
   field = "default",
   user = { name: "Anonymous", color: "#999999" },
   readOnly = false,
+  debug = false,
+  debugDisableRemoteCursors = false,
+  debugDisableCursorTurn = false,
 }: TranscriptionEditorOptions = {}): CorePlugin {
   return {
     name: "transcriptionEditor",
@@ -52,6 +70,13 @@ export function createTranscriptionEditorPlugin({
       const users = ref<YjsUser[]>([])
       const isConnected = ref(false)
       const error = ref<string | null>(null)
+
+      const debugFlags = resolveDebugFlags({
+        debug,
+        debugDisableRemoteCursors,
+        debugDisableCursorTurn,
+      })
+      const recorder = debugFlags.enabled ? new FlightRecorder() : null
 
       // The plugin's single mutable cell. Sessions publish their reactive
       // state through `host`, never by reaching into the plugin.
@@ -91,12 +116,14 @@ export function createTranscriptionEditorPlugin({
         setError(message: string | null) {
           error.value = message
         },
+        debugDump: recorder ? () => recorder.dump() : undefined,
       }
 
       // (Re)create the session for the active translation. The state reset
       // belongs here — the plugin owns the state, so no session variant can
       // forget to clean up behind itself.
-      const restart = (): void => {
+      const restart = (trigger: string): void => {
+        recorder?.record("session-restart", { trigger })
         session?.destroy()
         session = null
         tiptapEditor.value = undefined
@@ -108,7 +135,15 @@ export function createTranscriptionEditorPlugin({
 
         const translation = editableTranslation(core)
         if (!translation) return // virtual cross translation: read-only view
-        const deps = { core, host, translation, field, readOnly }
+        const deps = {
+          core,
+          host,
+          translation,
+          field,
+          readOnly,
+          debugFlags,
+          recorder,
+        }
         session = collab
           ? new CollabSession(deps, collab)
           : new LocalSession(deps)
@@ -123,20 +158,21 @@ export function createTranscriptionEditorPlugin({
       }
 
       const unsubscribes = [
-        core.on("document:change", restart),
-        core.on("channel:change", restart),
-        core.on("translation:change", restart),
+        core.on("document:change", () => restart("document:change")),
+        core.on("channel:change", () => restart("channel:change")),
+        core.on("translation:change", () => restart("translation:change")),
         core.on("translation:sync", warnUnsupported("translation:sync")),
         core.on("channel:sync", warnUnsupported("channel:sync")),
       ]
 
       // The document may already be loaded when the plugin installs.
-      restart()
+      restart("install")
 
       return () => {
         unsubscribes.forEach((off) => off())
         session?.destroy()
         session = null
+        recorder?.destroy()
         core.transcriptionEditor = undefined
       }
     },

@@ -18,7 +18,12 @@ export function hasTurnChanged(a: Turn, b: Turn): boolean {
   for (let i = 0; i < a.words.length; i++) {
     const x = a.words[i]!
     const y = b.words[i]!
-    if (x.id !== y.id || x.text !== y.text) return true
+    // charStart too: typing in an earlier word shifts later words' offsets
+    // while their id/text stay equal — the store must still refresh them
+    // (karaoke/click anchor on offsets).
+    if (x.id !== y.id || x.text !== y.text || x.charStart !== y.charStart) {
+      return true
+    }
   }
   return false
 }

@@ -5,12 +5,15 @@ import type { Transaction } from "@tiptap/pm/state"
  *
  * **Word/text edits are deliberately NOT undoable; only speaker changes are.**
  *
- * Why: enforcing the word-identity invariant (see fixWordMarks) means a
- * token-creating edit and its mark repair are written to the Y.Doc together but
- * cannot be captured as a single yUndo StackItem. Previously the repair alone
- * was flagged `addToHistory:false`, which left *some* edits undoable and others
- * not — an undo stack that diverged from the Y.Doc. Undo (or a remote change)
- * then reconciled a turn ProseMirror could no longer map, crashing renderDescs.
+ * Why (HISTORICAL — from the word-mark era): enforcing the word-identity
+ * invariant (the deleted fixWordMarks) meant a token-creating edit and its
+ * mark repair were written to the Y.Doc together but could not be captured as
+ * a single yUndo StackItem. Repair-only exclusion left *some* edits undoable
+ * and others not — an undo stack diverging from the Y.Doc; undo (or a remote
+ * change) then reconciled a turn ProseMirror could no longer map, crashing
+ * renderDescs. The document is plain text now (no repairs), so re-enabling
+ * text undo is likely SAFE — but that is a separate, deliberate decision, not
+ * a side effect of the plain-text migration.
  *
  * Dropping ALL text edits from history makes capture uniform, so the doc can
  * never diverge and stays valid at every instant. Speaker changes are

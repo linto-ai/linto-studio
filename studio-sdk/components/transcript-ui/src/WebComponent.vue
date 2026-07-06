@@ -58,6 +58,7 @@ defineExpose({ core })
 @import "./styles/base.css";
 @import "./styles/popover-list.css";
 @import "./plugins/transcriptionEditor/cursor.css";
+@import "./plugins/transcriptionEditor/karaoke.css";
 
 /* Positioning context for the absolute loading overlay. */
 .editor-root {

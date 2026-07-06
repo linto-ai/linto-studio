@@ -34,22 +34,17 @@ export const ClickHandler = Extension.create<ClickHandlerOptions>({
             const turn = translation.turns.value.find((t) => t.id === turnId)
             if (!turn) return false
 
-            // Locate the clicked word by char offset to get its start time,
-            // falling back to the turn start. (parentOffset = char index within
-            // the turn's text content.)
+            // Locate the clicked word by char offset (store words carry their
+            // tokenized offsets), falling back to the turn start.
+            // (parentOffset = char index within the turn's text content.)
             const charPos = $pos.parentOffset
-            const text = turnNode.textContent
             let target = turn.startTime
-            let cursor = 0
             for (const word of turn.words) {
-              const idx = text.indexOf(word.text, cursor)
-              if (idx === -1) break
-              const end = idx + word.text.length
-              if (charPos >= idx && charPos <= end) {
+              if (word.charStart == null || word.charEnd == null) continue
+              if (charPos >= word.charStart && charPos <= word.charEnd) {
                 if (word.startTime != null) target = word.startTime
                 break
               }
-              cursor = end
             }
 
             // Pause and rewind a second before the clicked position for context.

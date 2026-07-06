@@ -170,6 +170,10 @@ export interface TranscriptionEditorPluginApi {
   /** Set or clear the load error. Cleared automatically on the next document
    *  load (a successful reload hides the overlay). */
   setError(message: string | null): void
+  /** Present only when the sync flight recorder is enabled (debug option or
+   *  localStorage["transcript-ui:debug"]): returns the recorded timeline +
+   *  a fresh viewDesc↔DOM integrity report. Debug-only, shape not stable. */
+  debugDump?: () => unknown
 }
 
 // ── Subtitle Plugin API ──────────────────────────────────────────────────

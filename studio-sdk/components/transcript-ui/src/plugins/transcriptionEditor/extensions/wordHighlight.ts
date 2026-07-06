@@ -2,32 +2,27 @@ import { watch } from "vue"
 import { Extension } from "@tiptap/core"
 import { Plugin, PluginKey } from "@tiptap/pm/state"
 import type { Core } from "../../../core/types"
+import { activeWordRange } from "../../../utils/wordRange"
 
 const wordHighlightKey = new PluginKey("wordHighlight")
 
-// Mirror of the .word--active rule in TurnNodeView.vue.
-const ACTIVE_STYLE =
-  "text-decoration:underline;" +
-  "text-decoration-color:var(--color-primary);" +
-  "text-decoration-thickness:2px;" +
-  "text-underline-offset:3px;" +
-  "color:var(--color-primary)"
+/** Registered highlight name — styled by ::highlight(...) in karaoke.css. */
+export const ACTIVE_WORD_HIGHLIGHT = "transcript-active-word"
 
 export interface WordHighlightOptions {
   core: Core
 }
 
 /**
- * Highlight the word currently being played by injecting a single CSS rule
- * targeting its `[data-wid]` span — NOT a ProseMirror decoration.
+ * Highlight the word currently being played with the CSS Custom Highlight
+ * API: a Range over the word's characters registered in CSS.highlights,
+ * styled by `::highlight(transcript-active-word)`.
  *
- * Each word already renders as `<span data-wid>` (the `word` mark) and wids are
- * globally unique, so a one-line stylesheet `[data-wid="X"]{…}` highlights
- * exactly the active word. This deliberately avoids ProseMirror decorations:
- * an inline decoration over the marked spans raced PM's DOM reconciliation and
- * crashed updateChildren ("can't access property nextSibling, dom is null") on
- * merged/edited turns during playback. Pure CSS never dispatches a transaction
- * and never touches the desc tree, so it cannot trigger that crash.
+ * ZERO nodes and ZERO decorations enter the content — the project rule "never
+ * put anything inside turn content" is what ended the renderDescs crash
+ * family, and a Highlight is a read-only view over existing text nodes. The
+ * doc being plain text, the word is located by store char offsets (see
+ * wordRange.ts). Unsupported browsers simply get no karaoke highlight.
  */
 export const WordHighlight = Extension.create<WordHighlightOptions>({
   name: "wordHighlight",
@@ -39,35 +34,44 @@ export const WordHighlight = Extension.create<WordHighlightOptions>({
       new Plugin({
         key: wordHighlightKey,
         view(view) {
-          const style = document.createElement("style")
+          const supported =
+            typeof CSS !== "undefined" && "highlights" in CSS
+          if (!supported) return {}
 
-          // The editor is created detached, then mounted into the component's
-          // shadow root. A style appended at setup time would land in the
-          // document head and never pierce the shadow DOM, so (re)attach it to
-          // the editor's CURRENT root on every render — by playback time the
-          // editor is mounted and the root is the shadow root holding the spans.
-          const attach = (): void => {
-            const root = view.dom.getRootNode()
-            const container =
-              root instanceof ShadowRoot ? root : view.dom.ownerDocument.head
-            if (style.parentNode !== container) container.appendChild(style)
+          // The registry is DOCUMENT-global while this plugin view is
+          // per-editor: only ever delete the entry when it is the one THIS
+          // instance registered, or a dying editor (session restart, crash
+          // rebuild, second web component) would clobber the live one's
+          // highlight.
+          let current: Highlight | null = null
+          const clear = (): void => {
+            if (current && CSS.highlights.get(ACTIVE_WORD_HIGHLIGHT) === current) {
+              CSS.highlights.delete(ACTIVE_WORD_HIGHLIGHT)
+            }
+            current = null
           }
 
           const render = (): void => {
-            attach()
             const id = core.audio?.activeWordId.value
-            style.textContent = id
-              ? `[data-wid="${escapeAttr(id)}"]{${ACTIVE_STYLE}}`
-              : ""
+            const range = id ? activeWordRange(view.dom, core, id) : null
+            if (range) {
+              current = new Highlight(range)
+              CSS.highlights.set(ACTIVE_WORD_HIGHLIGHT, current)
+            } else {
+              clear()
+            }
           }
 
           const unwatch = watch(() => core.audio?.activeWordId.value, render)
           render()
 
           return {
+            // Re-resolve after every editor update: a doc change can replace
+            // the text nodes the current Range points into.
+            update: render,
             destroy() {
               unwatch()
-              style.remove()
+              clear()
             },
           }
         },
@@ -75,9 +79,3 @@ export const WordHighlight = Extension.create<WordHighlightOptions>({
     ]
   },
 })
-
-// Escape for use inside a `[data-wid="…"]` attribute-value selector. wids are
-// uuids (no special chars), but stay safe against quotes/backslashes.
-function escapeAttr(value: string): string {
-  return value.replace(/["\\]/g, "\\$&")
-}

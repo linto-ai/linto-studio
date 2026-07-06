@@ -1,20 +1,22 @@
 import type { WhisperXDocument, WhisperXWord } from '../types/whisperx'
 import type { EditorDocument, Speaker, Turn, Word } from '../types/editor'
+import { layoutWords } from '../utils/turnWords'
 
-let wordCounter = 0
-
-function mapWord(w: WhisperXWord): Word {
-  return {
-    id: `w_${wordCounter++}`,
-    text: w.word,
-    startTime: w.start,
-    endTime: w.end,
-    confidence: w.score,
-  }
+/** Positional identity + offsets over the single-space layout the doc is
+ *  seeded with — same convention as wordsFromApi. */
+function mapWords(turnId: string, whisperWords: WhisperXWord[]): Word[] {
+  return layoutWords(
+    turnId,
+    whisperWords.map((w) => ({
+      text: w.word ?? '',
+      startTime: w.start,
+      endTime: w.end,
+      confidence: w.score,
+    })),
+  )
 }
 
 export function mapWhisperXDocument(raw: WhisperXDocument): EditorDocument {
-  wordCounter = 0
   const speakers = new Map<string, Speaker>()
 
   // Collect unique speakers from segments
@@ -31,7 +33,7 @@ export function mapWhisperXDocument(raw: WhisperXDocument): EditorDocument {
   const language = raw.language ?? 'fr'
 
   const turns: Turn[] = raw.segments.map((seg, i) => {
-    const words = seg.words.map(mapWord)
+    const words = mapWords(`turn_${i}`, seg.words)
 
     return {
       id: `turn_${i}`,

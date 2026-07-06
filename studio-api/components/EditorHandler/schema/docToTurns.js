@@ -4,14 +4,15 @@ const { schema } = require("./serverSchema")
 /**
  * Extract turns from a Y.Doc in MongoDB format.
  *
- * Converts Y.XmlFragment → ProseMirror JSON → MongoDB-format turns[]. Word
- * IDENTITY is read from the inline `word` mark on each text node; timestamps
- * are NOT in the doc (filled by enrichDiff from the last-flushed Mongo state,
- * keyed by wid). Words here carry only { wid, word }.
+ * Converts Y.XmlFragment → ProseMirror JSON → turns[]. Turns carry PLAIN
+ * TEXT: the segment is the concatenation of the turn's text children. Words
+ * and timestamps are NOT in the doc — they are owned by WordsState, aligned
+ * to the segment by tokenization (see words/tokenize.js), so there is no
+ * `words` field here.
  *
  * @param {import("yjs").Doc} ydoc
  * @param {string} field - Y.XmlFragment field name
- * @returns {{ turn_id: string, speaker_id: string|null, segment: string, raw_segment: string, words: {wid:string, word:string}[], language: string }[]}
+ * @returns {{ turn_id: string, speaker_id: string|null, segment: string, raw_segment: string, language: string, stime?: number, etime?: number }[]}
  */
 function docToTurns(ydoc, field = "default") {
   const fragment = ydoc.getXmlFragment(field)
@@ -24,15 +25,10 @@ function docToTurns(ydoc, field = "default") {
     .map((node) => {
       const attrs = node.attrs
       let segment = ""
-      const words = []
 
       for (const child of node.content || []) {
         if (child.type !== "text") continue
         segment += child.text
-        const wordMark = (child.marks || []).find((m) => m.type === "word")
-        if (wordMark && wordMark.attrs && wordMark.attrs.wid) {
-          words.push({ wid: wordMark.attrs.wid, word: child.text })
-        }
       }
 
       const turn = {
@@ -40,7 +36,6 @@ function docToTurns(ydoc, field = "default") {
         speaker_id: attrs.speakerId || null,
         segment,
         raw_segment: segment,
-        words,
         language: attrs.language || "",
       }
       // Turn-level times (stime/etime): the source of truth when words carry no

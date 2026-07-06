@@ -39,13 +39,23 @@ class EditorStateModel extends MongoModel {
    * @param {string} conversationId
    * @param {number} epoch - editorEpoch the state belongs to
    * @param {Buffer} state - Y.encodeStateAsUpdate output
+   * @param {number} gen - editor schema generation the state was written with
+   *   (1 = word marks in the doc, 2 = plain text). A stored state whose gen is
+   *   below the server's current one is migrated at load (read with the legacy
+   *   schema, flushed, epoch bumped) instead of being replayed.
    */
-  async set(conversationId, epoch, state) {
+  async set(conversationId, epoch, state, gen) {
+    // gen is REQUIRED: a plain-text state accidentally tagged gen-1 would be
+    // "migrated" through the legacy word-mark reader at next load and wipe
+    // every word timestamp of the conversation.
+    if (!Number.isInteger(gen)) {
+      throw new Error("editorStates.set requires an integer schema generation")
+    }
     const query = { conversationId: conversationId.toString() }
     return await this.mongoUpdateOne(
       query,
       "$set",
-      { epoch, state, last_update: moment().format() },
+      { epoch, state, gen, last_update: moment().format() },
       { upsert: true },
     )
   }

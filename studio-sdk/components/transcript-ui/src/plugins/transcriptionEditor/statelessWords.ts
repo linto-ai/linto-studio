@@ -1,13 +1,12 @@
-import { mapWord } from "../../adapters/apiAdapter"
 import type { ApiWord } from "../../types/api"
 import type { TranslationStore } from "../../core/types"
-import type { Word } from "../../types/editor"
 
 /**
- * Timestamps live outside the Y.Doc (which carries word identity + text) and
+ * Timestamps live outside the Y.Doc (which carries plain text only) and
  * travel through Hocuspocus stateless messages: the client sends
- * REQUEST_WORDS_MESSAGE, the server answers with `timestamps_recalc` chunks
- * keyed by wid.
+ * REQUEST_WORDS_MESSAGE, the server answers with `timestamps_recalc` chunks —
+ * per turn, an ORDERED token list (the business format), no wids, no offsets.
+ * Alignment is positional: the i-th payload token times the i-th local token.
  */
 export const REQUEST_WORDS_MESSAGE = JSON.stringify({ type: "request_words" })
 
@@ -36,28 +35,27 @@ export function applyStatelessPayload(
 
     const currentTurn = translation.getTurn(t.turn_id)
     if (!currentTurn) continue
-    // The doc owns the word list (it seeds the store's words). If the turn has
-    // none it is a text-only turn (or not yet seeded) — do NOT adopt the
-    // server's list, which would resurrect deleted words or wipe the text via
-    // updateTurnWords setting text:null.
+    // The doc owns the word list (tokenized text seeds the store's words). A
+    // word-less turn is text-only (live) or not yet mirrored — nothing to time.
     if (currentTurn.words.length === 0) continue
 
-    // Merge timestamps BY wid, no text gate: a payload for a word still present
-    // applies even if the surrounding text changed since the flush. Words the
-    // doc no longer has (deleted, or belonging to another turn now) are ignored.
-    const incoming = new Map<string, Word>()
-    for (const aw of t.words) {
-      const w = mapWord(aw)
-      incoming.set(w.id, w)
-    }
+    // Placeholder (whitespace-only) payload words never enter the doc — drop
+    // them so indices line up with the tokenized text.
+    const incoming = t.words.filter((w) => (w.word ?? "").trim() !== "")
 
-    const merged = currentTurn.words.map((w) => {
-      const inc = incoming.get(w.id)
-      if (!inc) return w
+    // A token-count mismatch means a local edit is in flight: the server will
+    // re-flush and re-broadcast right after — skip rather than mistime.
+    if (incoming.length !== currentTurn.words.length) continue
+
+    const merged = currentTurn.words.map((w, i) => {
+      const inc = incoming[i]!
+      // Per-token drift gate: same count but different text at this index —
+      // keep the local word untimed rather than borrowing a wrong timing.
+      if (inc.word !== w.text) return w
       return {
         ...w,
-        ...(inc.startTime !== undefined && { startTime: inc.startTime }),
-        ...(inc.endTime !== undefined && { endTime: inc.endTime }),
+        ...(inc.stime !== undefined && { startTime: inc.stime }),
+        ...(inc.etime !== undefined && { endTime: inc.etime }),
         ...(inc.confidence !== undefined && { confidence: inc.confidence }),
       }
     })

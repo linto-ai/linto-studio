@@ -1,12 +1,14 @@
-const { v4: uuidv4 } = require("uuid")
-
 /**
  * Convert MongoDB-format turns[] into TipTap-compatible JSON content.
  *
- * MongoDB turn shape: { turn_id, speaker_id, segment, words: [{ wid, word, stime, etime }], language }
- * Output: ProseMirror JSON. Each spoken word becomes a text node wearing the
- * `word` mark { wid }, separated by unmarked space text nodes — so word
- * identity (wid) lives in the doc. Timestamps stay out of the doc.
+ * MongoDB turn shape: { turn_id, speaker_id, segment, words: [{ word, stime, etime }], language }
+ * Output: ProseMirror JSON. Each turn holds PLAIN TEXT: the spoken words
+ * joined by single spaces (or the segment when there are no words). Word
+ * identity and timestamps stay out of the doc — they live in WordsState/Mongo,
+ * aligned to the text by tokenization.
+ *
+ * Whitespace invariant: seeded text never has leading/trailing whitespace nor
+ * runs of multiple spaces, so client and server tokenize it identically.
  */
 function turnsToDoc(mongoTurns) {
   return {
@@ -15,33 +17,26 @@ function turnsToDoc(mongoTurns) {
   }
 }
 
+// Collapse any whitespace run (incl. non-breaking spaces) to a single space.
+function normalizeWhitespace(text) {
+  return text.replace(/\s+/g, " ").trim()
+}
+
 function turnToNode(turn) {
-  // Empty words are timestamp placeholders over silences; they have no text
-  // token to host a mark, so they never enter the doc. The silence gap is
-  // implicit in the neighbouring words' stime/etime.
-  // Trim, not `!== ""`: a whitespace-only word has no identifiable text and
-  // would lose its mark/wid on the client; treat it like an empty placeholder.
+  // Empty words are timestamp placeholders over silences; they carry no text.
+  // The silence gap is implicit in the neighbouring words' stime/etime.
   const spokenWords = (turn.words || []).filter(
     (w) => (w.word || "").trim() !== "",
   )
 
-  let content
+  let text = ""
   if (spokenWords.length > 0) {
-    content = []
-    spokenWords.forEach((w, i) => {
-      if (i > 0) content.push({ type: "text", text: " " })
-      content.push({
-        type: "text",
-        text: w.word,
-        // Legacy words may lack a wid — mint one so the doc invariant
-        // (one word mark = one unique wid) holds from the first seed.
-        marks: [{ type: "word", attrs: { wid: w.wid || uuidv4() } }],
-      })
-    })
+    text = normalizeWhitespace(spokenWords.map((w) => w.word).join(" "))
   } else if (turn.segment) {
-    // No words[] (legacy turn): seed plain text; the client mints wids on edit.
-    content = [{ type: "text", text: turn.segment }]
+    // No words[] (legacy turn): seed the segment as-is, normalized.
+    text = normalizeWhitespace(turn.segment)
   }
+  const content = text !== "" ? [{ type: "text", text }] : undefined
 
   const firstWordStime =
     turn.words && turn.words.length > 0 ? turn.words[0]?.stime : null

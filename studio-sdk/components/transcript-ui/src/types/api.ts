@@ -1,7 +1,9 @@
 /** Types mirroring the backend API JSON format */
 
 export interface ApiWord {
-  wid: string
+  /** Legacy identity — still present in Mongo/REST payloads for other
+   *  consumers, ignored by the editor (words align by token index). */
+  wid?: string
   stime?: number
   etime?: number
   word: string
