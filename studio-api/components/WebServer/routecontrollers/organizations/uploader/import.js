@@ -177,10 +177,9 @@ async function importConversation(req, res, next) {
     if (req.query.type === "conversation") await importConv(req, res)
     else if (req.query.type === "transcription")
       await importTranscription(req, res)
-    else if (req.query.type === "srt") await importSrt(req, res)
     else if (req.query.type)
       throw new ConversationError(
-        `Query param type ${req.query.type} is not supported, Supported type are : conversation, transcription, srt`,
+        `Query param type ${req.query.type} is not supported, Supported type are : conversation, transcription`,
       )
     else throw new ConversationError("Query param type is required")
   } catch (err) {
