@@ -462,7 +462,7 @@ class ConvoModel extends MongoModel {
         },
       }
       return await this.mongoUpdateMany(query, operator, values)
-    } catch (err) {
+    } catch (error) {
       console.error(error)
       return error
     }

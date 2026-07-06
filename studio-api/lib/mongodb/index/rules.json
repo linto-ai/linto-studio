@@ -1,4 +1,16 @@
 {
+  "users": [
+    {
+      "email": 1
+    },
+    {
+      "verifiedEmail": 1
+    },
+    {
+      "authLink.magicId": 1
+    }
+  ],
+
   "categories": [
     {
       "name": 1,
