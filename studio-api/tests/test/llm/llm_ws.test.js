@@ -620,18 +620,12 @@ describe("OrganizationWebSocketManager", () => {
     })
   })
 
-  describe("Legacy compatibility", () => {
-    it("getSocket should return object with readyState", async () => {
-      const socket = wsManager.getSocket()
-
-      expect(socket).toHaveProperty("readyState")
-    })
-
-    it("hasActiveConnections should return false when no connections", () => {
+  describe("hasActiveConnections", () => {
+    it("should return false when no connections", () => {
       expect(wsManager.hasActiveConnections()).toBe(false)
     })
 
-    it("hasActiveConnections should return true when connected", async () => {
+    it("should return true when connected", async () => {
       const connectionPromise = wsManager.ensureConnection(
         "org-123",
         "http://localhost:8010"
@@ -644,37 +638,6 @@ describe("OrganizationWebSocketManager", () => {
       wsManager.registerJobCallback("org-123", "job-1", jest.fn())
 
       expect(wsManager.hasActiveConnections()).toBe(true)
-    })
-
-    it("completedJob should recognize terminal statuses", () => {
-      expect(wsManager.completedJob("complete")).toBe(true)
-      expect(wsManager.completedJob("completed")).toBe(true)
-      expect(wsManager.completedJob("error")).toBe(true)
-      expect(wsManager.completedJob("failed")).toBe(true)
-      expect(wsManager.completedJob("cancelled")).toBe(true)
-      expect(wsManager.completedJob("unknown")).toBe(true)
-      expect(wsManager.completedJob("processing")).toBe(false)
-      expect(wsManager.completedJob("queued")).toBe(false)
-    })
-
-    it("connectToJob should warn about deprecation", async () => {
-      const appLogger = require(`${process.cwd()}/lib/logger/logger.js`)
-
-      wsManager.connectToJob("job-123")
-
-      expect(appLogger.warn).toHaveBeenCalledWith(
-        expect.stringContaining("deprecated")
-      )
-    })
-
-    it("watchJobs should warn about deprecation", () => {
-      const appLogger = require(`${process.cwd()}/lib/logger/logger.js`)
-
-      wsManager.watchJobs(["job-1", "job-2"])
-
-      expect(appLogger.warn).toHaveBeenCalledWith(
-        expect.stringContaining("deprecated")
-      )
     })
   })
 

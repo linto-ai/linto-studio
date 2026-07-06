@@ -1484,6 +1484,14 @@ export default {
       }
 
       if (jobIndex !== -1) {
+        // Completion events can arrive more than once
+        if (
+          this.jobsList[jobIndex].status === "complete" &&
+          this.jobsList[jobIndex].jobId === update.jobId
+        ) {
+          return
+        }
+
         this.$set(this.jobsList, jobIndex, {
           ...this.jobsList[jobIndex],
           jobId: update.jobId,
