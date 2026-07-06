@@ -142,13 +142,13 @@ export default {
   computed: {
     columns() {
       const cols = []
-      if (this.from === "formCreateSession" || this.from === "templateInfo") {
-        cols.push({
-          key: "type",
-          label: this.$t("session.channels_list.labels.type"),
-          width: "auto",
-        })
-      }
+      // if (this.from === "formCreateSession" || this.from === "templateInfo") {
+      //   cols.push({
+      //     key: "type",
+      //     label: this.$t("session.channels_list.labels.type"),
+      //     width: "auto",
+      //   })
+      // }
       cols.push({
         key: "name",
         label: this.$t("session.channels_list.labels.name"),

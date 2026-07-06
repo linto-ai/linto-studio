@@ -114,11 +114,11 @@ export default {
   computed: {
     columns() {
       return [
-        {
-          key: "config.type",
-          label: this.$t("session.profile_selector.labels.type"),
-          width: "auto",
-        },
+        //{
+        //  key: "config.type",
+        //  label: this.$t("session.profile_selector.labels.type"),
+        //  width: "auto",
+        //},
         {
           key: "config.name",
           label: this.$t("session.profile_selector.labels.name"),
