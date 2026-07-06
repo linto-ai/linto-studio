@@ -420,6 +420,7 @@ class UsersModel extends MongoModel {
 
   async getByMagicId(magicId, serverAccess = false) {
     try {
+      if (typeof magicId !== "string") return []
       const query = { "authLink.magicId": magicId }
       if (serverAccess) return await this.mongoRequest(query)
       else return await this.mongoRequest(query, public_projection)
@@ -442,6 +443,7 @@ class UsersModel extends MongoModel {
   }
   async getTokenByEmail(email) {
     try {
+      if (typeof email !== "string") return []
       const query = { email }
       return await this.mongoRequest(query)
     } catch (error) {
