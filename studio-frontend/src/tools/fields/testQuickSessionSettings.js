@@ -18,13 +18,13 @@ export function testQuickSessionSettings(field, t) {
     }
   }
 
-  if (value?.offlineTranscription) {
-    if (!value?.transcriptionService) {
-      field.error = t("conversation.transcription_service_error")
-      field.valid = false
-      return false
-    }
-  }
+  // if (value?.offlineTranscription) {
+  //   if (!value?.transcriptionService) {
+  //     field.error = t("conversation.transcription_service_error")
+  //     field.valid = false
+  //     return false
+  //   }
+  // }
 
   return field.valid
 }

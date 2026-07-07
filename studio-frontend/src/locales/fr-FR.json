@@ -1533,8 +1533,8 @@
       "status_recording": "Enregistrement du microphone en cours",
       "status_muted": "Enregistrement du microphone en pause",
       "save_button": "Terminer l'enregistrement",
-      "start_microphone_button": "Reprendre l'enregistrement",
-      "mute_microphone_button": "Mettre en pause l'enregistrement"
+      "start_microphone_button": "Réactiver le micro",
+      "mute_microphone_button": "Couper le micro"
     },
     "live_visio": {
       "default_name": "Réunion {type} sans titre",
@@ -1711,11 +1711,38 @@
     "next_button_title": "Semaine suivante",
     "main_label": "Semaine {weekNumber} de {year} ({startDate} - {endDate})"
   },
+  "microphone_status": {
+    "recording": "Enregistrement",
+    "muted": "Micro coupé",
+    "connecting": "Connexion…",
+    "reconnecting": "Reconnexion…",
+    "connection_lost": "Audio interrompu",
+    "mic_lost": "Micro perdu",
+    "mic_interrupted": "Micro interrompu",
+    "restored_toast": "Micro rétabli",
+    "action_retry": "Réessayer",
+    "action_reconfigure": "Reconfigurer le micro",
+    "banner": {
+      "connection_lost": "La connexion audio est perdue — votre voix n'est plus transcrite.",
+      "mic_lost": "Le microphone ne répond plus (débranché ou permission retirée).",
+      "mic_interrupted": "Micro suspendu par le système, reprise automatique dès qu'il est rendu."
+    },
+    "description": {
+      "recording": "Votre voix est enregistrée.",
+      "muted": "Aucun audio n'est capté ni transmis.",
+      "connecting": "Établissement de la connexion audio…",
+      "reconnecting": "Connexion perdue, reprise automatique en cours. L'audio émis pendant la coupure n'est pas transmis.",
+      "connection_lost": "Impossible de rétablir la connexion. L'enregistrement est arrêté.",
+      "mic_lost": "Le microphone ne répond plus (débranché ou permission retirée).",
+      "mic_interrupted": "Le système a suspendu le micro, reprise automatique dès qu'il est rendu."
+    }
+  },
   "websocket": {
     "disconnected": "Le contenu n'est plus synchronisé. Veuillez vérifier votre connexion internet.",
     "audio_stream_lost": "Transcription interrompue, l'audio n'est plus transmis. Vérifiez votre connexion internet.",
     "lost_connexion": "Connexion interrompue, tentative de reconnexion en cours...",
-    "restored": "Connexion restaurée"
+    "restored": "Connexion restaurée",
+    "live_feed_interrupted": "Flux de transcription interrompu, reconnexion en cours — l'affichage n'est plus à jour."
   },
   "input_selector": {
     "search_tags": "Rechercher une thématique...",

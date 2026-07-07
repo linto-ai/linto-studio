@@ -10,6 +10,7 @@ export const microphoneMixin = {
       mic: null,
       vad: null,
       speaking: false,
+      p_closed: false,
     }
   },
   mounted() {},
@@ -22,6 +23,12 @@ export const microphoneMixin = {
       if (!WebVoiceSDK) {
         console.warn("WebVoiceSDK disabled - microphone features unavailable")
         return
+      }
+      if (this.mic) {
+        // Re-setup (e.g. "reconfigure microphone" recovery): release the
+        // previous pipeline first, otherwise the old mic/worker keep running
+        // orphaned, duplicate frames and blind the frame watchdog.
+        this.p_close()
       }
       this.recorder = new WebVoiceSDK.Recorder()
       this.downSampler = new WebVoiceSDK.DownSampler({
@@ -37,8 +44,11 @@ export const microphoneMixin = {
         timeAfterStop: 1000,
       })
       this.vad.addEventListener("speakingStatus", this.p_onVadEvent.bind(this))
+      // A fresh pipeline is alive: re-arm the destroy guard.
+      this.p_closed = false
     },
     p_close() {
+      this.p_closed = true
       if (this?.vad) {
         this.vad.removeEventListener("speakingStatus", this.p_onVadEvent)
         if (this?.vad?.stop) {
@@ -48,6 +58,10 @@ export const microphoneMixin = {
 
       if (this?.mic?.stop) {
         this.mic.stop()
+      }
+
+      if (this.downSampler) {
+        this.downSampler?.stop()
       }
 
       if (this?.recorder?.stop) {
@@ -76,9 +90,45 @@ export const microphoneMixin = {
         noiseSuppression: false,
         autoGainControl: true,
       })
+      if (this.p_closed) {
+        this.mic.stop()
+        throw new Error("microphone setup aborted: component destroyed")
+      }
+      this.p_watchMicTrack()
+
       await this.vad.stop()
       this.vad.start(this.mic)
       this.microphoneWorked = false
+    },
+    p_watchMicTrack() {
+      const track = this.mic.stream?.getAudioTracks?.()[0]
+      if (!track) {
+        return
+      }
+      // track.stop() (normal teardown) never fires "ended": these handlers
+      // only catch external causes (device unplugged, permission revoked,
+      // system interruption). Property assignment so the handlers die with
+      // the track, no removal bookkeeping needed.
+      track.onended = () => this.p_onMicTrackLost("ended")
+      track.onmute = () => this.p_onMicTrackLost("mute")
+      track.onunmute = () => this.p_onMicTrackRestored()
+    },
+    p_onMicTrackLost(reason) {
+      if (this.p_closed) {
+        return
+      }
+      this.speaking = false
+      if (this.onMicrophoneLost) {
+        this.onMicrophoneLost(reason)
+      }
+    },
+    p_onMicTrackRestored() {
+      if (this.p_closed) {
+        return
+      }
+      if (this.onMicrophoneRestored) {
+        this.onMicrophoneRestored()
+      }
     },
   },
 }

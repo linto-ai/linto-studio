@@ -1717,11 +1717,38 @@
     "next_button_title": "Next week",
     "main_label": "Week {weekNumber} of {year} ({startDate} - {endDate})"
   },
+  "microphone_status": {
+    "recording": "Recording",
+    "muted": "Microphone muted",
+    "connecting": "Connecting…",
+    "reconnecting": "Reconnecting…",
+    "connection_lost": "Audio interrupted",
+    "mic_lost": "Microphone lost",
+    "mic_interrupted": "Microphone interrupted",
+    "restored_toast": "Microphone restored",
+    "action_retry": "Retry",
+    "action_reconfigure": "Reconfigure microphone",
+    "banner": {
+      "connection_lost": "Audio connection lost — your voice is no longer transcribed.",
+      "mic_lost": "The microphone is not responding (unplugged or permission revoked).",
+      "mic_interrupted": "Microphone suspended by the system, resumes automatically when released."
+    },
+    "description": {
+      "recording": "Your voice is being recorded.",
+      "muted": "No audio is captured or transmitted.",
+      "connecting": "Establishing the audio connection…",
+      "reconnecting": "Connection lost, resuming automatically. Audio spoken during the outage is not transmitted.",
+      "connection_lost": "Could not restore the connection. Recording is stopped.",
+      "mic_lost": "The microphone is not responding (unplugged or permission revoked).",
+      "mic_interrupted": "The system suspended the microphone, resumes automatically when released."
+    }
+  },
   "websocket": {
     "disconnected": "Content not updated, check your internet connection",
     "audio_stream_lost": "Transcription interrupted, audio is no longer being transmitted. Check your internet connection.",
     "lost_connexion": "Connection lost, attempting to reconnect...",
-    "restored": "Connection restored"
+    "restored": "Connection restored",
+    "live_feed_interrupted": "Live transcription feed interrupted, reconnecting — the display is no longer up to date."
   },
   "input_selector": {
     "search_tags": "Search topics...",

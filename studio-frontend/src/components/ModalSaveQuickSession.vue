@@ -3,6 +3,7 @@
     :title="$t('quick_session.modal_save.title')"
     v-model="isOpen"
     @submit="save"
+    @on-cancel="$emit('cancel')"
     isForm
     :textActionApply="$t('quick_session.modal_save.confirm')">
     <FormInput :field="nameField" v-model="nameField.value" />

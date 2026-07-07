@@ -1,7 +1,7 @@
 <template>
   <div class="flex gap-small align-center session-live-actions">
     <!-- Pause -->
-    <IsMobile v-if="isActive">
+    <IsMobile v-if="showPauseResume && isActive">
       <Button
         @click="onPause"
         :disabled="busy || disablePauseResume"
@@ -21,7 +21,7 @@
     </IsMobile>
 
     <!-- Resume -->
-    <IsMobile v-else-if="isPaused">
+    <IsMobile v-else-if="showPauseResume && isPaused">
       <Button
         @click="onResume"
         :disabled="busy || disablePauseResume"
@@ -166,6 +166,7 @@ export default {
     },
     showStop: { type: Boolean, default: true },
     showDelete: { type: Boolean, default: true },
+    showPauseResume: { type: Boolean, default: true },
     fakeStatus: { type: String, default: null },
     disablePauseResume: { type: Boolean, default: false },
   },

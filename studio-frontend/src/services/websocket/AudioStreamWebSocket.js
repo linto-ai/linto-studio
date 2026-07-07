@@ -22,6 +22,10 @@ export default class AudioStreamWebSocket {
       receivedACK: false,
       connexionLost: false,
       reconnecting: false,
+      // All reconnect attempts exhausted: terminal until an explicit retry.
+      // Persistent UI (status chip / recovery banner) is driven by this state,
+      // not by notifications.
+      gaveUp: false,
     })
 
     this.socket = null
@@ -37,36 +41,11 @@ export default class AudioStreamWebSocket {
     this.reconnectTimer = null
   }
 
-  clearNotifs() {
-    store.dispatch("system/removeNotificationById", "websocket-error")
-    store.dispatch("system/removeNotificationById", "websocket-reconnecting")
-  }
-
-  notifyReconnecting() {
-    this.clearNotifs()
-    store.dispatch("system/addNotification", {
-      id: "websocket-reconnecting",
-      message: i18n.t("websocket.lost_connexion"),
-      timeout: 0,
-      type: "warning",
-    })
-  }
-
+  // Transition toast only — persistent states live in the status UI.
   notifyRestored() {
-    this.clearNotifs()
     store.dispatch("system/addNotification", {
       message: i18n.t("websocket.restored"),
       type: "success",
-    })
-  }
-
-  notifyGaveUp() {
-    this.clearNotifs()
-    store.dispatch("system/addNotification", {
-      id: "websocket-error",
-      message: i18n.t("websocket.audio_stream_lost"),
-      timeout: 0,
-      type: "error",
     })
   }
 
@@ -85,17 +64,15 @@ export default class AudioStreamWebSocket {
 
     if (this.hadSuccessfulConnection) {
       this.scheduleReconnect()
-    } else {
-      // Initial connection never succeeded: surface the error and let the
-      // caller (setupRecording) handle the rejected connect promise.
-      this.notifyGaveUp()
     }
+    // Initial connection never succeeded: the rejected connect promise is
+    // classified by the caller (setupRecording / retryAudioConnection).
   }
 
   scheduleReconnect() {
     this.state.reconnecting = true
+    this.state.gaveUp = false
     this.reconnectAttempts = 0
-    this.notifyReconnecting()
     this.tryReconnect()
   }
 
@@ -104,7 +81,9 @@ export default class AudioStreamWebSocket {
       return
     }
     this.reconnectAttempts++
-    debugWS(`reconnect attempt ${this.reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS}`)
+    debugWS(
+      `reconnect attempt ${this.reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS}`,
+    )
 
     this.connectWithConfig(this.currentConfig)
       .then(() => this.handleReconnected())
@@ -135,8 +114,8 @@ export default class AudioStreamWebSocket {
   handleReconnectFailed() {
     debugWS("reconnection failed, giving up")
     this.state.reconnecting = false
+    this.state.gaveUp = true
     this.hadSuccessfulConnection = false
-    this.notifyGaveUp()
   }
 
   async changeChannel(channel, newConfig) {
@@ -172,11 +151,11 @@ export default class AudioStreamWebSocket {
     this.discardSocket()
 
     this.intentionalClose = false
-    // While reconnecting we keep connexionLost/notif state across attempts.
+    // While reconnecting we keep connexionLost state across attempts.
     if (!this.state.reconnecting) {
       this.state.connexionLost = false
+      this.state.gaveUp = false
       this.hadSuccessfulConnection = false
-      this.clearNotifs()
     }
 
     return new Promise((resolve, reject) => {
@@ -271,7 +250,7 @@ export default class AudioStreamWebSocket {
   }
 
   send(data) {
-    if (this.state.isConnected) {
+    if (this.state.receivedACK) {
       this.socket.send(data)
     } else {
       debugWS("trying to send data without connection to websocket server")
@@ -281,11 +260,11 @@ export default class AudioStreamWebSocket {
   close() {
     this.intentionalClose = true
     this.state.reconnecting = false
+    this.state.gaveUp = false
     if (this.reconnectTimer) {
       clearTimeout(this.reconnectTimer)
       this.reconnectTimer = null
     }
-    this.clearNotifs()
     if (this.socket) {
       this.socket.close()
     }

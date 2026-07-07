@@ -131,11 +131,10 @@ export default class ApiEventWebSocket {
     this.state.connexionRestored = false
     this.clearNotifs()
 
-    // "io server disconnect" is a Socket.IO built-in reason
-    // emitted when the server calls socket.disconnect()
-    if (reason === "io server disconnect") {
-      return
-    }
+    // NOTE: on "io server disconnect" (server called socket.disconnect(),
+    // e.g. a rolling restart) socket.io does NOT auto-reconnect, so the
+    // manual connect() below is the only recovery path — do not early-return
+    // here or the socket dies silently forever.
 
     store.dispatch("system/addNotification", {
       id: "websocket-disconnected",
