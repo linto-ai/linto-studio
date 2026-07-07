@@ -4,6 +4,8 @@
  * nowhere else (cf. docs/speaker-identification 04 §4).
  */
 
+const { escapeRegex } = require(`${process.cwd()}/lib/utility/escapeRegex`)
+
 const SPEAKER_TYPE = Object.freeze({
   USER: "user",
   LABEL: "label",
@@ -51,16 +53,6 @@ function displayName(user) {
     user.email ||
     ""
   )
-}
-
-/**
- * Escape a string for safe inclusion in a regular expression
- * (used for case-insensitive name uniqueness lookups).
- * @param {string} str
- * @returns {string}
- */
-function escapeRegex(str) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
 }
 
 module.exports = {

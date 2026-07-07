@@ -5,6 +5,7 @@ const SECURITY_LEVELS = require(
 )
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
 const COLOR = require(`${process.cwd()}/lib/dao/organization/color`)
+const { escapeRegex } = require(`${process.cwd()}/lib/utility/escapeRegex`)
 
 const DEFAULT_PERMISSION = require(
   `${process.cwd()}/lib/dao/organization/permissions`,
@@ -150,13 +151,13 @@ class OrganizationModel extends MongoModel {
       let query = {}
       if (filter.name) {
         query.name = {
-          $regex: filter.name,
+          $regex: escapeRegex(filter.name),
           $options: "i",
         }
       }
       if (filter.matchingMail) {
         query.matchingMail = {
-          $regex: filter.matchingMail,
+          $regex: escapeRegex(filter.matchingMail),
           $options: "i",
         }
       }

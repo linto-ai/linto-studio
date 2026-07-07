@@ -6,6 +6,7 @@ const moment = require("moment")
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const TYPE = require(`${process.cwd()}/lib/dao/conversation/types`)
+const { escapeRegex } = require(`${process.cwd()}/lib/utility/escapeRegex`)
 
 const BSON_MAX_SIZE = 16 * 1024 * 1024
 class ConvoModel extends MongoModel {
@@ -195,14 +196,14 @@ class ConvoModel extends MongoModel {
 
       if (filter?.name) {
         query.name = {
-          $regex: filter.name,
+          $regex: escapeRegex(filter.name),
           $options: "i",
         }
       }
 
       if (filter?.description) {
         query.description = {
-          $regex: filter.description,
+          $regex: escapeRegex(filter.description),
           $options: "i",
         }
       }
@@ -215,7 +216,7 @@ class ConvoModel extends MongoModel {
 
       if (filter?.text) {
         query["text.raw_segment"] = {
-          $regex: filter.text,
+          $regex: escapeRegex(filter.text),
           $options: "i",
         }
       }
@@ -582,13 +583,16 @@ class ConvoModel extends MongoModel {
 
       if (filter?.name) {
         searchConditions.push({
-          name: { $regex: filter.name, $options: "i" },
+          name: { $regex: escapeRegex(filter.name), $options: "i" },
         })
       }
 
       if (filter?.text) {
         searchConditions.push({
-          "text.raw_segment": { $regex: filter.text, $options: "i" },
+          "text.raw_segment": {
+            $regex: escapeRegex(filter.text),
+            $options: "i",
+          },
         })
       }
 
@@ -689,13 +693,13 @@ class ConvoModel extends MongoModel {
       const searchConditions = []
       if (filter?.name) {
         searchConditions.push({
-          name: { $regex: filter.name, $options: "i" },
+          name: { $regex: escapeRegex(filter.name), $options: "i" },
         })
       }
       if (filter?.text) {
         searchConditions.push({
           "text.raw_segment": {
-            $regex: filter.text,
+            $regex: escapeRegex(filter.text),
             $options: "i",
           },
         })
@@ -741,12 +745,15 @@ class ConvoModel extends MongoModel {
       const favSearch = []
       if (filter?.text) {
         favSearch.push({
-          "text.raw_segment": { $regex: filter.text, $options: "i" },
+          "text.raw_segment": {
+            $regex: escapeRegex(filter.text),
+            $options: "i",
+          },
         })
       }
       if (filter?.name) {
         favSearch.push({
-          name: { $regex: filter.name, $options: "i" },
+          name: { $regex: escapeRegex(filter.name), $options: "i" },
         })
       }
       if (favSearch.length > 0) {
@@ -826,10 +833,15 @@ class ConvoModel extends MongoModel {
 
       const accSearch = []
       if (filter?.name)
-        accSearch.push({ name: { $regex: filter.name, $options: "i" } })
+        accSearch.push({
+          name: { $regex: escapeRegex(filter.name), $options: "i" },
+        })
       if (filter?.text)
         accSearch.push({
-          "text.raw_segment": { $regex: filter.text, $options: "i" },
+          "text.raw_segment": {
+            $regex: escapeRegex(filter.text),
+            $options: "i",
+          },
         })
       if (accSearch.length > 0) query.$and = [{ $or: accSearch }]
 

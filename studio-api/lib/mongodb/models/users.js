@@ -9,6 +9,7 @@ const moment = require("moment")
 const VALIDITY_DATE = require(
   `${process.cwd()}/lib/dao/validityDate/validityDate.js`,
 )
+const { escapeRegex } = require(`${process.cwd()}/lib/utility/escapeRegex`)
 
 const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
 const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
@@ -224,28 +225,28 @@ class UsersModel extends MongoModel {
 
       if (filter.name) {
         query.name = {
-          $regex: filter.name,
+          $regex: escapeRegex(filter.name),
           $options: "i",
         }
       }
 
       if (filter.lastname) {
         query.lastname = {
-          $regex: filter.lastname,
+          $regex: escapeRegex(filter.lastname),
           $options: "i",
         }
       }
 
       if (filter.email) {
         query.email = {
-          $regex: filter.email,
+          $regex: escapeRegex(filter.email),
           $options: "i",
         }
       }
 
       if (filter.type) {
         query.type = {
-          $regex: filter.type,
+          $regex: escapeRegex(filter.type),
           $options: "i",
         }
       }
