@@ -22,10 +22,7 @@ const { fetchJob } = require(
   `${process.cwd()}/components/WebServer/controllers/job/fetchHandler`,
 )
 
-const {
-  ConversationNotFound,
-  ConversationError,
-} = require(
+const { ConversationNotFound, ConversationError } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
 
@@ -52,13 +49,16 @@ async function deleteConversation(req, res, next) {
     await model.conversationSubtitles.deleteAllFromConv(
       req.params.conversationId,
     )
+    // Remove the categories auto-generated scope to this conversation and their tags.
     const categoryList = await model.categories.getByScope(
       req.params.conversationId,
     )
-    for (const category of categoryList) {
-      model.categories.delete(category._id)
-      model.tags.deleteAllFromCategory(category._id.toString())
-    }
+    await Promise.all(
+      categoryList.flatMap((category) => [
+        model.categories.delete(category._id),
+        model.tags.deleteAllFromCategory(category._id.toString()),
+      ]),
+    )
 
     res.status(200).send({
       message: "Conversation has been deleted",
