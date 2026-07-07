@@ -1658,7 +1658,8 @@
     },
     "profile_avatar": {
       "profile_image_button": "Choose a file",
-      "update_picture_button": "Update picture"
+      "update_picture_button": "Update picture",
+      "notif_unsupported_type": "Unsupported image format, use a png, jpg or webp image"
     },
     "role_section": {
       "title": "Platform role",

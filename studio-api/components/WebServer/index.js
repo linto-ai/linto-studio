@@ -115,6 +115,13 @@ class WebServer extends Component {
       "/media/pictures",
       express.static(
         `${process.env.VOLUME_FOLDER}/${process.env.VOLUME_PROFILE_PICTURE_PATH}`,
+        {
+          // Uploaded files must never execute in the application origin.
+          setHeaders: (res) => {
+            res.setHeader("X-Content-Type-Options", "nosniff")
+            res.setHeader("Content-Security-Policy", "default-src 'none'")
+          },
+        },
       ),
     )
 
