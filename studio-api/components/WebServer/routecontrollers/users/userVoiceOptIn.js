@@ -31,7 +31,7 @@ const { SPEAKER_TYPE } = require(
 const limits = require(`${process.cwd()}/lib/dao/speakerIdentification/limits`)
 
 const { verifyOrgMembership } = require(
-  `${process.cwd()}/components/WebServer/routecontrollers/organization/optedInMembers`,
+  `${process.cwd()}/components/WebServer/routecontrollers/organizations/speaker/optedInMembers`,
 )
 
 const triggers = require(

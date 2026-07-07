@@ -17,7 +17,7 @@ const {
 )
 
 const { verifyOwnership } = require(
-  `${process.cwd()}/components/WebServer/routecontrollers/organization/voiceprintCollection`,
+  `${process.cwd()}/components/WebServer/routecontrollers/organizations/speaker/voiceprintCollection`,
 )
 const triggers = require(
   `${process.cwd()}/components/WebServer/controllers/speakerIdentification/triggers`,
