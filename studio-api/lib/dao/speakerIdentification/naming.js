@@ -4,8 +4,6 @@
  * nowhere else (cf. docs/speaker-identification 04 §4).
  */
 
-const { escapeRegex } = require(`${process.cwd()}/lib/utility/escapeRegex`)
-
 const SPEAKER_TYPE = Object.freeze({
   USER: "user",
   LABEL: "label",
@@ -63,5 +61,4 @@ module.exports = {
   qdrantCollectionName,
   speakerRef,
   displayName,
-  escapeRegex,
 }

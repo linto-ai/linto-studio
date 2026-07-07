@@ -2,7 +2,7 @@ const debug = require("debug")(
   "linto:lib:mongodb:models:sessionData",
 )
 const MongoModel = require(`../model`)
-const { escapeRegex } = require(`${process.cwd()}/lib/utility/escapeRegex`)
+const { regexContains } = require(`${process.cwd()}/lib/utility/escapeRegex`)
 
 class SessionData extends MongoModel {
   constructor() {
@@ -44,7 +44,7 @@ class SessionData extends MongoModel {
         delete query.id
       }
       if (query.name && queryMatching) {
-        query.name = { $regex: escapeRegex(query.name), $options: "i" }
+        query.name = regexContains(query.name)
       }
       return await this.mongoRequest(query)
     } catch (error) {

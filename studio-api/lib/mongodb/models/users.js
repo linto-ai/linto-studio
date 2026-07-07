@@ -9,7 +9,7 @@ const moment = require("moment")
 const VALIDITY_DATE = require(
   `${process.cwd()}/lib/dao/validityDate/validityDate.js`,
 )
-const { escapeRegex } = require(`${process.cwd()}/lib/utility/escapeRegex`)
+const { regexContains } = require(`${process.cwd()}/lib/utility/escapeRegex`)
 
 const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
 const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
@@ -224,31 +224,19 @@ class UsersModel extends MongoModel {
       let query = {}
 
       if (filter.name) {
-        query.name = {
-          $regex: escapeRegex(filter.name),
-          $options: "i",
-        }
+        query.name = regexContains(filter.name)
       }
 
       if (filter.lastname) {
-        query.lastname = {
-          $regex: escapeRegex(filter.lastname),
-          $options: "i",
-        }
+        query.lastname = regexContains(filter.lastname)
       }
 
       if (filter.email) {
-        query.email = {
-          $regex: escapeRegex(filter.email),
-          $options: "i",
-        }
+        query.email = regexContains(filter.email)
       }
 
       if (filter.type) {
-        query.type = {
-          $regex: escapeRegex(filter.type),
-          $options: "i",
-        }
+        query.type = regexContains(filter.type)
       }
 
       if (!filter) return await this.mongoRequest(query, personal_projection)
@@ -337,6 +325,7 @@ class UsersModel extends MongoModel {
 
   async getByEmail(email, serverAccess = false) {
     try {
+      if (typeof email !== "string") return []
       const query = {
         $or: [{ email }, { verifiedEmail: { $in: [email] } }],
       }

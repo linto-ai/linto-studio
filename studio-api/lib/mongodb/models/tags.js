@@ -4,7 +4,7 @@ const debug = require("debug")(
 const MongoModel = require(`../model`)
 const COLOR = require(`${process.cwd()}/lib/dao/organization/color`)
 const DEFAULT_TAGS = require(`${process.cwd()}/config/tags`)
-const { escapeRegex } = require(`${process.cwd()}/lib/utility/escapeRegex`)
+const { regexContains } = require(`${process.cwd()}/lib/utility/escapeRegex`)
 
 const moment = require("moment")
 
@@ -105,10 +105,7 @@ class TagModel extends MongoModel {
         organizationId: this.getObjectId(properties.organizationId),
       }
       if (properties.name) {
-        query.name = {
-          $regex: escapeRegex(properties.name),
-          $options: "i",
-        }
+        query.name = regexContains(properties.name)
       }
       if (properties.color) {
         query.color = properties.color
@@ -195,10 +192,7 @@ class TagModel extends MongoModel {
         },
       }
       if (name) {
-        query.name = {
-          $regex: escapeRegex(name),
-          $options: "i",
-        }
+        query.name = regexContains(name)
       }
       return await this.mongoRequest(query)
     } catch (error) {
@@ -220,10 +214,7 @@ class TagModel extends MongoModel {
         },
       }
       if (name) {
-        query.name = {
-          $regex: escapeRegex(name),
-          $options: "i",
-        }
+        query.name = regexContains(name)
       }
 
       return await this.mongoRequest(query)

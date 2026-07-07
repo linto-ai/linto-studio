@@ -3,7 +3,7 @@ const MongoModel = require(`../model`)
 
 const moment = require("moment")
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
-const { escapeRegex } = require(`${process.cwd()}/lib/utility/escapeRegex`)
+const { regexContains } = require(`${process.cwd()}/lib/utility/escapeRegex`)
 
 // A category is attached to a "scope" through its scopeId. The scope can be
 // either an organization (scopeId = organizationId, for org-wide categories)
@@ -107,10 +107,7 @@ class CategoryModel extends MongoModel {
     try {
       let query = {
         scopeId: scopeId,
-        name: {
-          $regex: escapeRegex(name),
-          $options: "i",
-        },
+        name: regexContains(name),
       }
 
       return await this.mongoRequest(query)
