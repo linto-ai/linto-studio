@@ -6,7 +6,16 @@
         :sessionLoaded="sessionLoaded"
         :name="name"
         :session="session"
-        :showActions="isAtLeastMeetingManager && !isFromPublicLink">
+        :showActions="isAtLeastMeetingManager && !isFromPublicLink"
+        @paused="pauseMicrophone"
+        @resumed="startMicrophone">
+        <template #before-actions>
+          <MicrophoneStatus
+            v-if="microphoneStatus !== 'idle'"
+            :status="microphoneStatus"
+            :speaking="speaking" />
+        </template>
+
         <IsMobile>
           <div class="flex gap-small">
             <Button
@@ -44,44 +53,20 @@
       </SessionHeader>
     </template>
 
-    <template v-slot:sidebar v-if="useMicrophone && sessionLoaded">
-      <SessionLiveMicrophoneStatus
-        style="margin-top: 1rem"
-        @toggle-microphone="toggleMicrophone"
-        :speaking="speaking"
-        :isRecording="isRecording"
-        :channelWebsocket="channelAudioWebsocket" />
-      <div
-        class="session-microphone-status__channel"
-        v-if="useMicrophone && currentChannelMicrophone">
-        {{
-          $t("session.record_to_chanel_name_info", {
-            name: currentChannelMicrophone.name,
-          })
-        }}
-      </div>
-      <IsMobile>
-        <!-- <template #desktop>
-          <SessionLiveToolbar
-            v-if="sessionLoaded"
-            :channels="channels"
-            :qualifiedForCrossSubtitles="qualifiedForCrossSubtitles"
-            v-bind:selectedTranslation.sync="selectedTranslation"
-            v-bind:displayLiveTranscription.sync="displayLiveTranscription"
-            v-bind:displaySubtitles.sync="displaySubtitles"
-            v-bind:fontSize.sync="fontSize"
-            v-bind:selectedChannel.sync="selectedChannel"
-            :watermarkContent="watermarkContent"
-            :watermarkDuration="watermarkDuration"
-            :watermarkFrequency="watermarkFrequency"
-            :displayWatermark="displayWatermark"
-            :watermarkPinned="watermarkPinned"
-            @updateWatermarkSettings="syncWatermarkSettings" />
-        </template> -->
-      </IsMobile>
-    </template>
-
     <div class="relative flex flex1 col">
+      <MicrophoneStatusBanner
+        :status="microphoneStatus"
+        @retry="retryAudioConnection"
+        @reconfigure="showMicrophoneSetup = true" />
+      <NotificationBanner
+        v-if="liveFeedInterrupted"
+        variant="warning"
+        icon="wifi-slash"
+        align="start"
+        role="alert">
+        {{ $t("websocket.live_feed_interrupted") }}
+      </NotificationBanner>
+
       <!-- <SessionNotStarted v-if="isPending" /> -->
 
       <Loading v-if="!sessionLoaded || !selectedChannel" />
@@ -130,17 +115,18 @@ import { mapGetters } from "vuex"
 
 import { sessionMixin } from "@/mixins/session.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole"
-import { microphoneMixin } from "@/mixins/microphone.js"
 import { sessionMicrophoneMixin } from "@/mixins/sessionMicrophone.js"
 
 import { getEnv } from "@/tools/getEnv"
 import { isQualifiedForCrossSubtitles } from "@/tools/translationUtils.js"
 
 import Loading from "@/components/atoms/Loading.vue"
+import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 import SessionEnded from "@/components/SessionEnded.vue"
 import Modal from "@/components/molecules/Modal.vue"
+import MicrophoneStatus from "@/components/molecules/MicrophoneStatus.vue"
+import MicrophoneStatusBanner from "@/components/molecules/MicrophoneStatusBanner.vue"
 import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
-import SessionLiveMicrophoneStatus from "@/components/SessionLiveMicrophoneStatus.vue"
 import SessionHeader from "@/components/SessionHeader.vue"
 import LayoutV2 from "@/layouts/v2-layout.vue"
 import SessionDropdownChannelSelector from "@/components-mobile/SessionDropdownChannelSelector.vue"
@@ -149,12 +135,7 @@ import FormInput from "@/components/molecules/FormInput.vue"
 import SessionLiveNG from "@/components/SessionLiveNG.vue"
 
 export default {
-  mixins: [
-    sessionMixin,
-    orgaRoleMixin,
-    microphoneMixin,
-    sessionMicrophoneMixin,
-  ],
+  mixins: [sessionMixin, orgaRoleMixin, sessionMicrophoneMixin],
   props: {},
   data() {
     const {
@@ -175,7 +156,6 @@ export default {
       deviceId: null,
       showMicrophoneSetup: false,
       showSubtitlesFullscreen: false,
-      currentChannelMicrophone: null,
     }
   },
   created() {
@@ -220,15 +200,18 @@ export default {
     startRecordFromMicrophone({ deviceId }) {
       this.showMicrophoneSetup = false
       this.deviceId = deviceId
-      this.currentChannelMicrophone = this.selectedChannel
       this.initMicrophone()
       this.setupRecording(this.selectedChannel)
       this.updateUrl()
     },
     cancelRecordSettings() {
       this.showMicrophoneSetup = false
-      this.useMicrophone = false
-      this.updateUrl()
+      // Only drop microphone mode when nothing was recording yet: cancelling
+      // a REconfiguration must not kill the running pipeline.
+      if (!this.microphoneStarted) {
+        this.useMicrophone = false
+        this.updateUrl()
+      }
     },
     showMobileSubtitles() {
       this.$refs["sessionLiveNG"].showMobileSubtitles()
@@ -239,6 +222,14 @@ export default {
     },
   },
   computed: {
+    liveFeedInterrupted() {
+      return (
+        this.sessionLoaded &&
+        !this.isTerminated &&
+        this.websocketInstance &&
+        !this.websocketInstance.state.isConnected
+      )
+    },
     qualifiedForCrossSubtitles() {
       return isQualifiedForCrossSubtitles(
         this.selectedChannel.translations,
@@ -251,10 +242,12 @@ export default {
   components: {
     LayoutV2,
     Loading,
+    NotificationBanner,
     SessionEnded,
     Modal,
+    MicrophoneStatus,
+    MicrophoneStatusBanner,
     SessionSetupMicrophone,
-    SessionLiveMicrophoneStatus,
     SessionDropdownChannelSelector,
     SessionHeader,
     FormInput,

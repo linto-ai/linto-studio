@@ -210,6 +210,67 @@
           "$ref": "#/components/responses/NotFound"
         }
       }
+    },
+    "patch": {
+      "tags": ["organizations admin"],
+      "summary": "Update an API key name",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        },
+        {
+          "$ref": "#/components/parameters/TokenId"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "New display name of the API key"
+                }
+              },
+              "required": ["name"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "message": "API key updated",
+                "name": "my secret key"
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
     }
   },
   "/api/organizations/{organizationId}/tokens/{tokenId}/picture": {
@@ -250,6 +311,44 @@
         },
         "415": {
           "$ref": "#/components/responses/UnsupportedMediaType"
+        }
+      }
+    },
+    "delete": {
+      "tags": ["organizations admin"],
+      "summary": "Remove the avatar picture of an API key",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        },
+        {
+          "$ref": "#/components/parameters/TokenId"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "message": "API key picture removed"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
         }
       }
     }

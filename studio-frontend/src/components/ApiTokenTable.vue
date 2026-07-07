@@ -41,6 +41,11 @@
       <template #cell-actions="{ element }">
         <div class="flex gap-small">
           <Button
+            icon="pencil"
+            variant="tertiary"
+            @click="openEditModal(element)"
+            iconWeight="regular" />
+          <Button
             icon="eye"
             variant="tertiary"
             @click="openViewModal(element)"
@@ -78,6 +83,13 @@
       :organizationId="organizationId"
       @handleTokenRenew="$emit('handleTokenRenew')"
       @close="closeRenewModal" />
+    <ModalEditToken
+      v-if="selectedToken"
+      v-model="showEditModal"
+      :token="selectedToken"
+      :organizationId="organizationId"
+      @handleTokenUpdated="onTokenUpdated"
+      @close="closeEditModal" />
   </div>
 </template>
 
@@ -90,6 +102,7 @@ import OrgaRoleSelector from "./molecules/OrgaRoleSelector.vue"
 import ModalDeleteToken from "./ModalDeleteToken.vue"
 import ModalRenewToken from "./ModalRenewToken.vue"
 import ModalViewToken from "./ModalViewToken.vue"
+import ModalEditToken from "./ModalEditToken.vue"
 import { formatDateLocale } from "@/tools/formatDate"
 import { isTokenExpiringSoon } from "@/tools/isTokenExpiringSoon"
 import userAvatar from "@/tools/userAvatar"
@@ -127,6 +140,7 @@ export default {
       showViewModal: false,
       showDeleteModal: false,
       showRenewModal: false,
+      showEditModal: false,
       selectedToken: null,
     }
   },
@@ -195,6 +209,10 @@ export default {
       this.selectedToken = token
       this.showRenewModal = true
     },
+    openEditModal(token) {
+      this.selectedToken = token
+      this.showEditModal = true
+    },
     closeViewModal() {
       this.showViewModal = false
       this.selectedToken = null
@@ -206,6 +224,14 @@ export default {
     closeRenewModal() {
       this.showRenewModal = false
       this.selectedToken = null
+    },
+    closeEditModal() {
+      this.showEditModal = false
+      this.selectedToken = null
+    },
+    onTokenUpdated() {
+      this.$emit("handleTokenUpdated")
+      this.closeEditModal()
     },
     confirmDelete(tokenId) {
       this.$emit("delete-token", tokenId)
@@ -239,6 +265,7 @@ export default {
     ModalViewToken,
     ModalDeleteToken,
     ModalRenewToken,
+    ModalEditToken,
   },
 }
 </script>

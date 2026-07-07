@@ -4,20 +4,29 @@
       <div
         class="flex1 flex gap-medium align-center"
         style="margin-right: 0.5rem">
-        <IsMobile>
-          <template #desktop
-            ><StatusLed :on="speaking && isRecording"
-          /></template>
-        </IsMobile>
+        <MicrophoneStatus
+          v-if="microphoneStatus !== 'idle'"
+          :status="microphoneStatus"
+          :speaking="speaking" />
 
         <div class="flex1"></div>
+        <Button
+          @click="toggleMute"
+          variant="secondary"
+          size="sm"
+          :icon="wantsRecording ? 'microphone' : 'microphone-slash'"
+          :aria-pressed="String(!wantsRecording)"
+          :label="
+            wantsRecording
+              ? $t('quick_session.live.mute_microphone_button')
+              : $t('quick_session.live.start_microphone_button')
+          " />
         <SessionLiveActions
           :session="session"
           :showStop="false"
           :showDelete="false"
-          :fakeStatus="isRecording ? 'active' : 'paused'"
-          @paused="pauseMicrophone"
-          @resumed="startMicrophone"
+          :showPauseResume="false"
+          fakeStatus="active"
           @cleared="$emit('onSessionUpdated')" />
         <Button
           @click="$emit('onSave')"
@@ -27,17 +36,24 @@
       </div>
     </template>
     <div class="relative flex flex1 col">
-      <SessionLiveNG
-        v-if="isFirstChannelLive"
-        ref="sessionLiveNG"
-        :currentOrganizationScope="currentOrganizationScope"
-        :session="session"
-        :websocketInstance="$apiEventWS" />
-      <SessionChannelMicrophoneOffline
-        v-else
+      <template v-if="isFirstChannelLive">
+        <MicrophoneStatusBanner
+          :status="microphoneStatus"
+          @retry="retryAudioConnection"
+          @reconfigure="showMicrophoneSetup = true" />
+        <SessionLiveNG
+          ref="sessionLiveNG"
+          :currentOrganizationScope="currentOrganizationScope"
+          :session="session"
+          :websocketInstance="$apiEventWS" />
+      </template>
+      <MicrophonePlaceholder
+        v-else-if="microphoneStatus !== 'idle'"
+        :status="microphoneStatus"
         :speaking="speaking"
-        @toggleMicrophone="toggleMicrophone"
-        :isRecording="isRecording" />
+        @toggle="toggleMute"
+        @retry="retryAudioConnection"
+        @reconfigure="showMicrophoneSetup = true" />
       <Modal
         :withActions="false"
         :title="$t('session.microphone_setup_title')"
@@ -53,19 +69,20 @@
   </V2Layout>
 </template>
 <script>
-import { microphoneMixin } from "@/mixins/microphone.js"
 import { sessionMicrophoneMixin } from "@/mixins/sessionMicrophone.js"
 
 import SessionLiveNG from "@/components/SessionLiveNG.vue"
 import Modal from "@/components/molecules/Modal.vue"
+import MicrophoneStatus from "@/components/molecules/MicrophoneStatus.vue"
+import MicrophoneStatusBanner from "@/components/molecules/MicrophoneStatusBanner.vue"
+import MicrophonePlaceholder from "@/components/molecules/MicrophonePlaceholder.vue"
 import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
 import SessionLiveActions from "@/components/SessionLiveActions.vue"
 
 import V2Layout from "@/layouts/v2-layout.vue"
-import SessionChannelMicrophoneOffline from "./SessionChannelMicrophoneOffline.vue"
 
 export default {
-  mixins: [microphoneMixin, sessionMicrophoneMixin],
+  mixins: [sessionMicrophoneMixin],
   props: {
     session: {
       type: Object,
@@ -101,6 +118,13 @@ export default {
     },
   },
   methods: {
+    toggleMute() {
+      if (this.wantsRecording) {
+        this.pauseMicrophone()
+      } else {
+        this.startMicrophone()
+      }
+    },
     startRecordFromMicrophone({ deviceId }) {
       this.showMicrophoneSetup = false
       this.deviceId = deviceId
@@ -112,9 +136,11 @@ export default {
     SessionLiveNG,
     V2Layout,
     Modal,
+    MicrophoneStatus,
+    MicrophoneStatusBanner,
+    MicrophonePlaceholder,
     SessionSetupMicrophone,
     SessionLiveActions,
-    SessionChannelMicrophoneOffline,
   },
 }
 </script>

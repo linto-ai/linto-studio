@@ -26,7 +26,11 @@ class BrokerClient extends Component {
       (roomId) => `transcriber/out/${roomId}/final/translations`,
     ]
 
-    this.mainStaticSubs = [`system/out/sessions/statuses`]
+    // Non-shared: every replica receives the message. Use for UI fan-out.
+    this.mainStaticSubs = [
+      `system/out/sessions/statuses`,
+      `system/out/sessions/cleared`,
+    ]
 
     this.mainClient = new MqttClient({
       pub: `studio-api`,
@@ -53,13 +57,12 @@ class BrokerClient extends Component {
       }
     })
 
-    // Separate client for $share/ subscriptions: a single MQTT client
-    // subscribing to both shared and non-shared filters on the same topic
-    // would receive each message twice.
+    // Shared ($share/): the broker delivers each message to exactly one replica.
+    // Use only for side-effects that must run once, never for UI fan-out.
+    // Kept on a separate client so the same topic is not received twice.
     this.sharedSubs = [
       `$share/studio-api/system/out/sessions/statuses`,
       `$share/studio-api/system/out/sessions/ended`,
-      `$share/studio-api/system/out/sessions/cleared`,
     ]
     this.sharedClient = new MqttClient({
       subs: this.sharedSubs,

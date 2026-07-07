@@ -44,6 +44,11 @@ class OrganizationWebSocketManager {
     if (!OrganizationWebSocketManager.instance) {
       // organization_id -> { ws: WebSocket, activeJobs: Set<jobId>, callbacks: Map<jobId, callback> }
       this.connections = new Map()
+      this._lastBroadcastSignature = new Map()
+      this._convInfoByJobId = new Map()
+      // In-flight job callbacks preserved across connection drops
+      this._orphanedCallbacks = new Map()
+      this._reconnectAttempts = new Map()
       OrganizationWebSocketManager.instance = this
     }
     return OrganizationWebSocketManager.instance
@@ -86,17 +91,23 @@ class OrganizationWebSocketManager {
     }
 
     const existing = this.connections.get(organizationId)
-    if (existing && existing.ws && existing.ws.readyState === WebSocket.OPEN) {
-      debug(`Already connected to organization ${organizationId}`)
-      return
+    if (existing && existing.ws) {
+      if (existing.ws.readyState === WebSocket.OPEN) {
+        debug(`Already connected to organization ${organizationId}`)
+        return
+      }
+      // Connection attempt already in flight: share it
+      if (existing.ws.readyState === WebSocket.CONNECTING && existing.connectPromise) {
+        debug(`Connection to organization ${organizationId} already in progress, waiting for it`)
+        return existing.connectPromise
+      }
     }
 
-    // Clean up any stale connection
+    // Tear down a stale socket so it cannot broadcast as an orphan.
     if (existing) {
-      this._cleanupConnection(organizationId)
+      this._destroyConnection(organizationId)
     }
 
-    // Create new connection
     await this._createConnection(organizationId, baseUrl)
   }
 
@@ -104,23 +115,32 @@ class OrganizationWebSocketManager {
    * Create a new WebSocket connection for an organization
    */
   async _createConnection(organizationId, baseUrl) {
-    return new Promise((resolve, reject) => {
-      const wsUrl = `${this._getWsBaseUrl(baseUrl)}/ws/jobs?organization_id=${organizationId}`
-      debug(`Creating WebSocket connection to: ${wsUrl}`)
+    const wsUrl = `${this._getWsBaseUrl(baseUrl)}/ws/jobs?organization_id=${organizationId}`
+    debug(`Creating WebSocket connection to: ${wsUrl}`)
 
-      const ws = new WebSocket(wsUrl)
+    const ws = new WebSocket(wsUrl)
 
-      const connectionData = {
-        ws: ws,
-        baseUrl: baseUrl, // Store for HTTP fallback
-        activeJobs: new Set(),
-        callbacks: new Map(),
-        pendingJobs: new Set(), // Jobs submitted but not yet seen in snapshot
-        snapshotReceived: false, // Track if initial snapshot has been processed
+    const connectionData = {
+      ws: ws,
+      baseUrl: baseUrl, // Store for HTTP fallback
+      activeJobs: new Set(),
+      callbacks: new Map(),
+      pendingJobs: new Set(), // Jobs submitted but not yet seen in snapshot
+      snapshotReceived: false, // Track if initial snapshot has been processed
+    }
+
+    // Resume orphaned jobs: the snapshot or HTTP fallback re-delivers their state
+    const orphaned = this._orphanedCallbacks.get(organizationId)
+    if (orphaned) {
+      this._orphanedCallbacks.delete(organizationId)
+      for (const [jobId, callback] of orphaned) {
+        connectionData.callbacks.set(jobId, callback)
+        connectionData.pendingJobs.add(jobId)
       }
+    }
 
-      this.connections.set(organizationId, connectionData)
-
+    // Shared by concurrent ensureConnection callers
+    connectionData.connectPromise = new Promise((resolve, reject) => {
       const connectionTimeout = setTimeout(() => {
         if (ws.readyState !== WebSocket.OPEN) {
           ws.close()
@@ -130,6 +150,7 @@ class OrganizationWebSocketManager {
 
       ws.on("open", () => {
         clearTimeout(connectionTimeout)
+        this._reconnectAttempts.delete(organizationId)
         appLogger.info(`[LLM WS] Connected to organization ${organizationId}`)
         resolve()
       })
@@ -141,16 +162,45 @@ class OrganizationWebSocketManager {
       ws.on("close", (code) => {
         clearTimeout(connectionTimeout)
         appLogger.info(`[LLM WS] Disconnected from organization ${organizationId} (code: ${code})`)
-        this._cleanupConnection(organizationId)
+        this._forgetConnection(organizationId, connectionData)
+        this._scheduleReconnect(organizationId, baseUrl)
       })
 
       ws.on("error", (error) => {
         clearTimeout(connectionTimeout)
         appLogger.error(`[LLM WS] Error for organization ${organizationId}: ${error.message}`)
-        this._cleanupConnection(organizationId)
+        this._forgetConnection(organizationId, connectionData)
+        this._scheduleReconnect(organizationId, baseUrl)
         reject(error)
       })
     })
+
+    this.connections.set(organizationId, connectionData)
+
+    return connectionData.connectPromise
+  }
+
+  /**
+   * Reconnect while orphaned jobs are waiting so their updates keep flowing
+   */
+  _scheduleReconnect(organizationId, baseUrl) {
+    if (!this._orphanedCallbacks.has(organizationId)) return
+
+    const attempts = this._reconnectAttempts.get(organizationId) || 0
+    if (attempts >= 5) {
+      appLogger.warn(`[LLM WS] Giving up reconnecting to organization ${organizationId}; in-flight jobs will resume on the next connection`)
+      return
+    }
+    this._reconnectAttempts.set(organizationId, attempts + 1)
+
+    const timer = setTimeout(() => {
+      if (!this._orphanedCallbacks.has(organizationId)) return
+      if (this.connections.has(organizationId)) return
+      this.ensureConnection(organizationId, baseUrl).catch((err) => {
+        appLogger.error(`[LLM WS] Reconnect to organization ${organizationId} failed: ${err.message}`)
+      })
+    }, 5000)
+    if (typeof timer.unref === "function") timer.unref()
   }
 
   /**
@@ -245,16 +295,12 @@ class OrganizationWebSocketManager {
       // Invoke callback for each job in snapshot (initial state)
       const callback = conn.callbacks.get(job.job_id)
       if (callback) {
-        try {
-          callback({
-            job_id: job.job_id,
-            status: job.status,
-            progress: job.progress,
-            timestamp: message.timestamp,
-          })
-        } catch (err) {
-          appLogger.error(`[LLM WS] Error in callback for job ${job.job_id}: ${err.message}`)
-        }
+        this._deliverUpdate(organizationId, callback, {
+          job_id: job.job_id,
+          status: job.status,
+          progress: job.progress,
+          timestamp: message.timestamp,
+        })
       }
     }
 
@@ -301,14 +347,8 @@ class OrganizationWebSocketManager {
           timestamp: new Date().toISOString(),
         }
 
-        // Invoke callback
-        try {
-          callback(update)
-        } catch (err) {
-          appLogger.error(`[LLM WS] Error in callback for job ${jobId}: ${err.message}`)
-        }
+        this._deliverUpdate(organizationId, callback, update)
 
-        // Update connection state
         const conn = this.connections.get(organizationId)
         if (conn) {
           conn.pendingJobs.delete(jobId)
@@ -321,16 +361,12 @@ class OrganizationWebSocketManager {
     } catch (err) {
       appLogger.error(`[LLM WS] Failed to fetch job status for ${jobId}: ${err.message}`)
       // Mark as error if we can't fetch status
-      try {
-        callback({
-          job_id: jobId,
-          status: "failed",
-          error: `Failed to fetch job status: ${err.message}`,
-          timestamp: new Date().toISOString(),
-        })
-      } catch (cbErr) {
-        appLogger.error(`[LLM WS] Error in error callback for job ${jobId}: ${cbErr.message}`)
-      }
+      this._deliverUpdate(organizationId, callback, {
+        job_id: jobId,
+        status: "failed",
+        error: `Failed to fetch job status: ${err.message}`,
+        timestamp: new Date().toISOString(),
+      })
     }
   }
 
@@ -355,46 +391,104 @@ class OrganizationWebSocketManager {
       conn.activeJobs.add(jobId)
     }
 
-    // Invoke callback for this job
+    // Every replica gets every org job; only the callback owner broadcasts
     const callback = conn.callbacks.get(jobId)
     if (callback) {
-      try {
-        callback(message)
-      } catch (err) {
-        appLogger.error(`[LLM WS] Error in callback for job ${jobId}: ${err.message}`)
-      }
+      this._deliverUpdate(organizationId, callback, message)
 
-      // Clean up callback if job is complete
       if (OrganizationWebSocketManager.TERMINAL_STATES.includes(message.status)) {
         conn.callbacks.delete(jobId)
       }
     }
 
-    // Look up conversationId and service info from database to include in broadcast
-    let conversationId = null
-    let serviceName = null
-    let serviceFormat = null
+    this._checkAndCloseIfEmpty(organizationId)
+  }
+
+  /**
+   * Invoke a job callback safely, then broadcast the update to the frontend.
+   */
+  _deliverUpdate(organizationId, callback, update) {
     try {
-      const convExports = await model.conversationExport.getByJobId(jobId)
-      debug(`[LLM WS] Lookup for job ${jobId}: found ${convExports?.length || 0} records`)
-      if (convExports && convExports.length > 0) {
-        const convExport = convExports[0]
-        conversationId = convExport.convId
-        serviceName = convExport.serviceName || convExport.format
-        serviceFormat = convExport.format
-        debug(`[LLM WS] Found conversationId: ${conversationId}, serviceName: ${serviceName} for job ${jobId}`)
-      } else {
-        debug(`[LLM WS] No conversationExport found for job ${jobId}`)
-      }
+      callback(update)
     } catch (err) {
-      debug(`[LLM WS] Could not look up conversationId for job ${jobId}: ${err.message}`)
+      appLogger.error(`[LLM WS] Error in callback for job ${update.job_id}: ${err.message}`)
+    }
+    this._lookupAndBroadcast(organizationId, update)
+  }
+
+  /**
+   * True if this update differs from the job's last broadcast, and records it.
+   */
+  _isNewBroadcast(message) {
+    // Progress differs across delivery paths, so terminal states dedup on status alone
+    let signature = message.status
+    if (!OrganizationWebSocketManager.TERMINAL_STATES.includes(message.status)) {
+      signature += `|${message.progress?.percentage ?? ""}|${message.progress?.phase ?? ""}`
     }
 
-    // Broadcast to studio-websocket for real-time frontend updates
-    this._broadcastToWebsocket(organizationId, message, conversationId, serviceName, serviceFormat)
+    if (this._lastBroadcastSignature.get(message.job_id) === signature) {
+      return false
+    }
+    if (this._lastBroadcastSignature.size >= 1000) {
+      this._lastBroadcastSignature.delete(this._lastBroadcastSignature.keys().next().value)
+    }
+    // Delete first so a live job's entry does not age toward the eviction head
+    this._lastBroadcastSignature.delete(message.job_id)
+    this._lastBroadcastSignature.set(message.job_id, signature)
+    return true
+  }
 
-    // Check if we should close the connection
-    this._checkAndCloseIfEmpty(organizationId)
+  /**
+   * Look up the job's conversation/service info and broadcast the update.
+   */
+  async _lookupAndBroadcast(organizationId, message) {
+    if (!this._isNewBroadcast(message)) {
+      debug(`[LLM WS] Skipping duplicate broadcast for job ${message.job_id} (status ${message.status})`)
+      return
+    }
+
+    let retryable = false
+    let convInfo = this._convInfoByJobId.get(message.job_id)
+    if (!convInfo) {
+      convInfo = { conversationId: null, serviceName: null, serviceFormat: null }
+      try {
+        const convExports = await model.conversationExport.getByJobId(message.job_id)
+        if (convExports instanceof Error) throw convExports
+        debug(`[LLM WS] Lookup for job ${message.job_id}: found ${convExports?.length || 0} records`)
+        if (convExports && convExports.length > 0) {
+          const convExport = convExports[0]
+          convInfo = {
+            conversationId: convExport.convId,
+            serviceName: convExport.serviceName || convExport.format,
+            serviceFormat: convExport.format,
+          }
+          if (this._convInfoByJobId.size >= 1000) {
+            this._convInfoByJobId.delete(this._convInfoByJobId.keys().next().value)
+          }
+          this._convInfoByJobId.set(message.job_id, convInfo)
+          debug(`[LLM WS] Found conversationId: ${convInfo.conversationId}, serviceName: ${convInfo.serviceName} for job ${message.job_id}`)
+        } else {
+          debug(`[LLM WS] No conversationExport found for job ${message.job_id}`)
+        }
+      } catch (err) {
+        retryable = true
+        debug(`[LLM WS] Could not look up conversationId for job ${message.job_id}: ${err.message}`)
+      }
+    }
+
+    try {
+      await this._broadcastToWebsocket(organizationId, message, convInfo.conversationId, convInfo.serviceName, convInfo.serviceFormat)
+    } catch (err) {
+      retryable = true
+      debug(`[LLM WS] Failed to broadcast job ${message.job_id}: ${err.message}`)
+    }
+
+    if (retryable) {
+      // Clear the signature so a redelivery can repair a degraded or failed broadcast
+      this._lastBroadcastSignature.delete(message.job_id)
+    } else if (OrganizationWebSocketManager.TERMINAL_STATES.includes(message.status)) {
+      this._convInfoByJobId.delete(message.job_id)
+    }
   }
 
   /**
@@ -449,27 +543,43 @@ class OrganizationWebSocketManager {
     }
 
     appLogger.info(`[LLM WS] No active jobs for organization ${organizationId}, closing connection`)
-    this._closeConnection(organizationId)
+    this._destroyConnection(organizationId)
   }
 
-  /**
-   * Close WebSocket connection for an organization
-   */
-  _closeConnection(organizationId) {
-    const conn = this.connections.get(organizationId)
-    if (conn && conn.ws) {
-      if (conn.ws.readyState === WebSocket.OPEN) {
-        conn.ws.close(1000, "No active jobs")
+  // Detach listeners and forget conn, unless a newer one replaced it
+  _forgetConnection(organizationId, conn) {
+    // typeof guards: test ws mocks are not EventEmitters
+    if (typeof conn?.ws?.removeAllListeners === "function") {
+      conn.ws.removeAllListeners()
+      // Keep an error sink: a listener-less "error" event crashes the process
+      conn.ws.on("error", () => {})
+    }
+    if (this.connections.get(organizationId) === conn) {
+      this.connections.delete(organizationId)
+    }
+    // Preserve in-flight jobs so the next connection can resume them
+    if (conn?.callbacks?.size > 0) {
+      let stash = this._orphanedCallbacks.get(organizationId)
+      if (!stash) {
+        stash = new Map()
+        this._orphanedCallbacks.set(organizationId, stash)
+      }
+      for (const [jobId, callback] of conn.callbacks) {
+        stash.set(jobId, callback)
       }
     }
-    this._cleanupConnection(organizationId)
   }
 
-  /**
-   * Clean up connection data for an organization
-   */
-  _cleanupConnection(organizationId) {
-    this.connections.delete(organizationId)
+  // Detach first so the close handler does not fire
+  _destroyConnection(organizationId) {
+    const conn = this.connections.get(organizationId)
+    if (!conn) return
+
+    const ws = conn.ws
+    this._forgetConnection(organizationId, conn)
+    if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
+      ws.close(1000, "No active jobs")
+    }
   }
 
   /**
@@ -483,19 +593,6 @@ class OrganizationWebSocketManager {
       }
     }
     return false
-  }
-
-  /**
-   * Get the number of active connections
-   */
-  getActiveConnectionCount() {
-    let count = 0
-    for (const [, conn] of this.connections) {
-      if (conn.ws && conn.ws.readyState === WebSocket.OPEN) {
-        count++
-      }
-    }
-    return count
   }
 
   /**
@@ -516,81 +613,11 @@ class OrganizationWebSocketManager {
    */
   closeAll() {
     for (const [organizationId] of this.connections) {
-      this._closeConnection(organizationId)
+      this._destroyConnection(organizationId)
     }
     appLogger.info(`[LLM WS] All connections closed`)
   }
 
-  // ===============================
-  // Legacy Compatibility Methods
-  // ===============================
-
-  /**
-   * Legacy compatibility: watchingList property
-   * Returns a set of all active job IDs
-   */
-  get watchingList() {
-    return this.getAllActiveJobs()
-  }
-
-  /**
-   * Legacy compatibility: getSocket()
-   * Returns a dummy object for backward compatibility
-   */
-  getSocket() {
-    return {
-      readyState: this.hasActiveConnections() ? WebSocket.OPEN : WebSocket.CLOSED,
-    }
-  }
-
-  /**
-   * Legacy compatibility: getSocketState()
-   */
-  getSocketState() {
-    return this.hasActiveConnections() ? WebSocket.OPEN : WebSocket.CLOSED
-  }
-
-  /**
-   * Legacy compatibility: connectToJob()
-   * Note: This no longer works without organization context
-   * Jobs must be watched via ensureConnection + registerJobCallback
-   */
-  connectToJob(jobId) {
-    appLogger.warn(`[LLM WS] connectToJob() is deprecated. Use ensureConnection() + registerJobCallback() with organization ID`)
-    return null
-  }
-
-  /**
-   * Legacy compatibility: sendMessage()
-   * Deprecated - use organization-scoped methods
-   */
-  sendMessage(jobIds) {
-    appLogger.warn(`[LLM WS] sendMessage() is deprecated. Use ensureConnection() + registerJobCallback() with organization ID`)
-  }
-
-  /**
-   * Legacy compatibility: watchJobs()
-   * Deprecated - use organization-scoped methods
-   */
-  watchJobs(jobIds) {
-    appLogger.warn(`[LLM WS] watchJobs() is deprecated. Use ensureConnection() + registerJobCallback() with organization ID`)
-  }
-
-  /**
-   * Legacy compatibility: areJobsInWatchingList()
-   */
-  areJobsInWatchingList(jobIds) {
-    const allJobs = this.getAllActiveJobs()
-    return jobIds.every((jobId) => allJobs.has(jobId))
-  }
-
-  /**
-   * Legacy compatibility: completedJob()
-   */
-  completedJob(status) {
-    const terminalStatuses = ["complete", "completed", "error", "failed", "cancelled", "unknown"]
-    return terminalStatuses.includes(status)
-  }
 }
 
 const singleton = new OrganizationWebSocketManager()

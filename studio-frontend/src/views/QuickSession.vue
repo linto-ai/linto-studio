@@ -20,7 +20,8 @@
     </SessionLiveMicrophone>
     <ModalSaveQuickSession
       v-model="isModalSaveOpen"
-      :placeholder="defaultName" />
+      :placeholder="defaultName"
+      @cancel="onSaveModalCancel" />
   </div>
 </template>
 <script>
@@ -58,6 +59,8 @@ export default {
       isSavingSession: false,
       isModalSaveOpen: false,
       defaultName: "",
+      // Recording intent captured when the save modal opens, restored on cancel
+      micWasRecordingBeforeSave: false,
     }
   },
   mounted() {
@@ -85,13 +88,24 @@ export default {
         this.defaultName = this.$t("quick_session.live_visio.default_name", {
           type: this.quickSessionBot.provider,
         })
+        this.micWasRecordingBeforeSave = false
       } else {
         this.defaultName = this.$t("quick_session.live.default_name")
+        // Freeze the microphone while the user names the session; this is
+        // NOT a session pause — restored as-is if the modal is cancelled.
+        this.micWasRecordingBeforeSave =
+          this.$refs.sessionLiveMicrophone.wantsRecording
         this.$refs.sessionLiveMicrophone.pauseMicrophone()
       }
 
       this.isSavingSession = true
       this.isModalSaveOpen = true
+    },
+    onSaveModalCancel() {
+      this.isSavingSession = false
+      if (this.micWasRecordingBeforeSave && this.$refs.sessionLiveMicrophone) {
+        this.$refs.sessionLiveMicrophone.startMicrophone()
+      }
     },
   },
   watch: {

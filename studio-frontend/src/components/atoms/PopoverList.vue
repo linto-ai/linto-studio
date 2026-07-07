@@ -77,37 +77,35 @@
             <Loading block :background="false" />
           </div>
 
-          <!-- Async mode: no search yet, show selected items + hint -->
+          <!-- Async mode: no query yet, show current selection -->
           <template
-            v-else-if="asyncSearch && searchQuery.length < minSearchLength">
-            <template v-if="selectedItems.length > 0 && selection">
-              <div
-                v-for="(item, index) in selectedItems"
-                :key="'selected-' + (item.id ?? item.value ?? index)"
-                class="popover-list__item popover-list__item--selection"
-                role="option"
-                :aria-selected="true"
-                @click.stop="onSelectionItemClick(item, $event)">
-                <Checkbox
-                  :id="getCheckboxId('selected-' + index)"
-                  :value="true"
-                  @input="toggleSelection(item)"
-                  class="popover-list__checkbox" />
-                <label
-                  :for="getCheckboxId('selected-' + index)"
-                  class="popover-list__checkbox-label">
-                  <slot name="item" :item="item">
-                    <span class="popover-list__item__name">{{
-                      item.name || item.text
-                    }}</span>
-                  </slot>
-                </label>
-              </div>
-            </template>
-            <div class="popover-list__empty">
-              {{
-                $t("popover_list.min_characters", { count: minSearchLength })
-              }}
+            v-else-if="
+              asyncSearch &&
+              !searchQuery &&
+              selectedItems.length > 0 &&
+              selection
+            ">
+            <div
+              v-for="(item, index) in selectedItems"
+              :key="'selected-' + (item.id ?? item.value ?? index)"
+              class="popover-list__item popover-list__item--selection"
+              role="option"
+              :aria-selected="true"
+              @click.stop="onSelectionItemClick(item, $event)">
+              <Checkbox
+                :id="getCheckboxId('selected-' + index)"
+                :value="true"
+                @input="toggleSelection(item)"
+                class="popover-list__checkbox" />
+              <label
+                :for="getCheckboxId('selected-' + index)"
+                class="popover-list__checkbox-label">
+                <slot name="item" :item="item">
+                  <span class="popover-list__item__name">{{
+                    item.name || item.text
+                  }}</span>
+                </slot>
+              </label>
             </div>
           </template>
 
@@ -323,13 +321,6 @@ export default {
     asyncSearch: {
       type: Function,
       default: null,
-    },
-    /**
-     * Minimum characters before triggering async search
-     */
-    minSearchLength: {
-      type: Number,
-      default: 2,
     },
     /**
      * Selected items to display at top (useful in async mode to show current selection)
@@ -754,7 +745,7 @@ export default {
 
         // Trigger async search if provided
         if (this.asyncSearch) {
-          if (query.length >= this.minSearchLength) {
+          if (query) {
             this.performAsyncSearch(query)
           } else {
             this.asyncItems = []

@@ -8,6 +8,7 @@ const { storeSessionFromStop, storeQuickMeetingFromStop } = require(
 )
 const {
   forceQueryParams,
+  createQuickMeeting,
   forwardSessionAlias,
   forwardSessionAliasPublic,
   checkTranscriberProfileAccess,
@@ -190,7 +191,7 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/quickMeeting/",
             method: ["post"],
             forwardParams: proxyForwardParams,
-            executeBeforeResult: forceQueryParams,
+            executeBeforeResult: createQuickMeeting,
           },
           {
             path: "/organizations/:organizationId/quickMeeting/:id",

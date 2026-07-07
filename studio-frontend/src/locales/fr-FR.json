@@ -89,6 +89,12 @@
       "avatar_too_large": "Fichier trop volumineux (5 Mo maximum)",
       "avatar_upload_failed": "La clé d'API a été créée mais l'avatar n'a pas pu être téléversé"
     },
+    "modal_edit": {
+      "title": "Éditer la clé d'API",
+      "name_required": "Le nom est requis",
+      "update_success": "Clé d'API mise à jour",
+      "update_error": "La clé d'API n'a pas pu être mise à jour"
+    },
     "modal_delete": {
       "title": "Supprimer la clé d'API '{name}'",
       "content": "Êtes-vous sûr de vouloir supprimer la clé d'API {name} ?"
@@ -481,7 +487,7 @@
       "language_label": "Langue",
       "number_of_speaker_label": "Nombre de locuteurs",
       "recommended_badge": "Recommandé",
-      "security_not_accessible": "Non accessible — niveau de confidentialité insuffisant",
+      "security_not_accessible": "Non accessible : niveau de confidentialité insuffisant",
       "no_model_for_level": "Aucun modèle ne respecte le niveau de confidentialité choisi.",
       "change_model": "Changer de modèle",
       "choose_model": "Choisir un modèle de transcription",
@@ -836,7 +842,15 @@
         "value_disabled": "Désactivée",
         "speakers_count": "{count} locuteur | {count} locuteurs",
         "multiple_values": "Valeurs multiples",
-        "empty": "—"
+        "empty": "-"
+      },
+      "session": {
+        "title": "Canaux de la session",
+        "channel": "Canal",
+        "name": "Nom",
+        "languages": "Langues",
+        "translations": "Traductions",
+        "no_translations": "Aucune"
       }
     },
     "no_medias_selected": "Aucun média sélectionné",
@@ -1519,8 +1533,8 @@
       "status_recording": "Enregistrement du microphone en cours",
       "status_muted": "Enregistrement du microphone en pause",
       "save_button": "Terminer l'enregistrement",
-      "start_microphone_button": "Reprendre l'enregistrement",
-      "mute_microphone_button": "Mettre en pause l'enregistrement"
+      "start_microphone_button": "Réactiver le micro",
+      "mute_microphone_button": "Couper le micro"
     },
     "live_visio": {
       "default_name": "Réunion {type} sans titre",
@@ -1542,6 +1556,18 @@
       "title": "Sauvegarder l'enregistrement",
       "name": "Nom",
       "confirm": "Enregistrer"
+    },
+    "placeholder": {
+      "audio": {
+        "title": "Un enregistrement est déjà en attente",
+        "subtitle": "Vous ne pouvez avoir qu'un seul enregistrement à la fois. Reprenez ou terminez celui en attente pour en démarrer un nouveau.",
+        "continue_button": "Reprendre l'enregistrement"
+      },
+      "visio": {
+        "title": "Une visioconférence est déjà en cours d'enregistrement",
+        "subtitle": "Vous ne pouvez enregistrer qu'une seule visioconférence à la fois. Affichez la transcription ou terminez l'enregistrement en cours pour en démarrer un nouveau.",
+        "continue_button": "Afficher la transcription"
+      }
     }
   },
   "share_menu": {
@@ -1564,7 +1590,7 @@
     "default_right_label": "Droit par défaut",
     "applied_to_every_member": "Appliqué à tous les membres",
     "exceptions_label": "Exceptions",
-    "no_exceptions": "Aucune exception — tous les membres suivent le droit par défaut.",
+    "no_exceptions": "Aucune exception. Tous les membres suivent le droit par défaut.",
     "external_empty": "Invitez des personnes extérieures à votre organisation par email ci-dessus.",
     "show_other_members": "Voir les autres membres ({count})",
     "other_members_label": "Autres membres",
@@ -1685,10 +1711,38 @@
     "next_button_title": "Semaine suivante",
     "main_label": "Semaine {weekNumber} de {year} ({startDate} - {endDate})"
   },
+  "microphone_status": {
+    "recording": "Enregistrement",
+    "muted": "Micro coupé",
+    "connecting": "Connexion…",
+    "reconnecting": "Reconnexion…",
+    "connection_lost": "Audio interrompu",
+    "mic_lost": "Micro perdu",
+    "mic_interrupted": "Micro interrompu",
+    "restored_toast": "Micro rétabli",
+    "action_retry": "Réessayer",
+    "action_reconfigure": "Reconfigurer le micro",
+    "banner": {
+      "connection_lost": "La connexion audio est perdue — votre voix n'est plus transcrite.",
+      "mic_lost": "Le microphone ne répond plus (débranché ou permission retirée).",
+      "mic_interrupted": "Micro suspendu par le système, reprise automatique dès qu'il est rendu."
+    },
+    "description": {
+      "recording": "Votre voix est enregistrée.",
+      "muted": "Aucun audio n'est capté ni transmis.",
+      "connecting": "Établissement de la connexion audio…",
+      "reconnecting": "Connexion perdue, reprise automatique en cours. L'audio émis pendant la coupure n'est pas transmis.",
+      "connection_lost": "Impossible de rétablir la connexion. L'enregistrement est arrêté.",
+      "mic_lost": "Le microphone ne répond plus (débranché ou permission retirée).",
+      "mic_interrupted": "Le système a suspendu le micro, reprise automatique dès qu'il est rendu."
+    }
+  },
   "websocket": {
     "disconnected": "Le contenu n'est plus synchronisé. Veuillez vérifier votre connexion internet.",
+    "audio_stream_lost": "Transcription interrompue, l'audio n'est plus transmis. Vérifiez votre connexion internet.",
     "lost_connexion": "Connexion interrompue, tentative de reconnexion en cours...",
-    "restored": "Connexion restaurée"
+    "restored": "Connexion restaurée",
+    "live_feed_interrupted": "Flux de transcription interrompu, reconnexion en cours — l'affichage n'est plus à jour."
   },
   "input_selector": {
     "search_tags": "Rechercher une thématique...",
@@ -1707,7 +1761,6 @@
     "search": "Rechercher",
     "search_placeholder": "Rechercher...",
     "no_results": "Aucun résultat",
-    "min_characters": "{count} caractères minimum",
     "select_all": "Tout sélectionner"
   },
   "duration_input": {
@@ -1738,7 +1791,7 @@
     "description": "Gérez les collections d'empreintes vocales pour l'identification des locuteurs. Organisez les locuteurs en collections, téléversez des échantillons audio pour construire leur signature vocale, et générez des empreintes pour la reconnaissance automatique.",
     "gdpr_warning": "LinTO Studio regroupe des empreintes vocales sous des labels que vous définissez ; il n'attribue par lui-même aucune identité. Rattacher un label à une personne réelle, puis exploiter ces données vocales, relève de la seule responsabilité de votre organisation, qui doit en garantir la conformité (RGPD ou réglementation applicable : consentement des personnes, gestion des données biométriques, conservation, etc.).",
     "gdpr_your_org": "votre organisation",
-    "gdpr_gate_title": "Identification vocale — responsabilité de l'organisation",
+    "gdpr_gate_title": "Identification vocale - responsabilité de l'organisation",
     "gdpr_gate_intro": "LinTO Studio fournit un outil technique qui regroupe des empreintes vocales sous des labels que vous définissez. L'outil n'attribue par lui-même aucune identité : il ne sait pas à quelle personne correspond une voix.",
     "gdpr_gate_biometric": "Les empreintes vocales sont des données biométriques. Leur traitement est strictement encadré et suppose une base légale valide, notamment le consentement explicite des personnes concernées.",
     "gdpr_gate_responsibility": "Rattacher un label à une personne identifiable, puis exploiter ces données, relève de la seule responsabilité de « {org} ». Il vous appartient d'en garantir la conformité (RGPD ou réglementation applicable) : information des personnes, recueil et gestion des consentements, durées de conservation, sécurité et exercice des droits.",

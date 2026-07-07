@@ -49,6 +49,9 @@ export default {
       historyOffset: 0,
       usePublicEndpoint: false,
       wakeLock: null,
+      // Distinguishes the first connect from a reconnect in the isConnected
+      // watcher: only a reconnect needs a content resync.
+      wsWasConnected: false,
     }
   },
   computed: {
@@ -64,11 +67,18 @@ export default {
     },
   },
   watch: {
+    // Covers both the first connect (socket not ready at mount) and every
+    // reconnect (isConnected goes false on disconnect). connexionRestored is
+    // redundant here: it is only ever set in the same connect handler that
+    // flips isConnected back to true.
     "websocketInstance.state.isConnected"(connected) {
-      if (connected) this.subscribeToWebsocket()
-    },
-    "websocketInstance.state.connexionRestored"(restored) {
-      if (restored) this.subscribeToWebsocket()
+      if (!connected) return
+      const isReconnect = this.wsWasConnected
+      this.wsWasConnected = true
+      this.subscribeToWebsocket()
+      if (isReconnect) {
+        this.resyncAfterReconnect()
+      }
     },
   },
   mounted() {
@@ -210,8 +220,25 @@ export default {
       })
 
       if (this.websocketInstance.state.isConnected) {
+        this.wsWasConnected = true
         this.subscribeToWebsocket()
       }
+    },
+
+    // Finals emitted while the socket was down are lost (the server does not
+    // replay missed room events): reset the channel and reload the latest
+    // page — same pattern as channel:change and clear().
+    resyncAfterReconnect() {
+      const channel = this.editor?.activeChannel?.value
+      if (!channel) {
+        return
+      }
+      this.historyOffset = 0
+      // Explicit: the user may have scrolled to the very top before the
+      // outage, and fetchTurnsPage early-returns when hasMoreHistory is off.
+      channel.hasMoreHistory.value = true
+      channel.reset()
+      this.fetchTurnsPage()
     },
 
     async fetchTurnsPage() {

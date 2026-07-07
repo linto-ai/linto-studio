@@ -8,6 +8,8 @@
       withText
       class="flex1" />
 
+    <slot name="before-actions"></slot>
+
     <SessionLiveActions
       v-if="sessionLoaded && session && showActions"
       :session="session"

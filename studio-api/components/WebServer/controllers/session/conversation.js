@@ -34,6 +34,18 @@ function getMembersRightFromVisibility(visibility) {
   return visibility === "private" ? RIGHTS.UNDEFINED : DEFAULT_MEMBER_RIGHTS
 }
 
+function extractTranslationTarget(translation) {
+  return typeof translation === "string" ? translation : translation.target
+}
+
+function buildSessionChannels(session) {
+  return (session.channels || []).map((channel) => ({
+    name: channel.name,
+    languages: channel.languages || [],
+    translations: (channel.translations || []).map(extractTranslationTarget),
+  }))
+}
+
 function initConversationMultiChannel(
   session,
   name = undefined,
@@ -60,6 +72,9 @@ function initConversationMultiChannel(
         channel_count: session.channels.length,
         channel_start_time: session.startTime,
         channel_end_time: session.endTime,
+      },
+      session: {
+        channels: buildSessionChannels(session),
       },
       ...(session.meta?.["@template"]
         ? { template: session.meta["@template"] }
@@ -189,8 +204,7 @@ async function initCaptionsForConversation(sessionData, name) {
       processChannelCaptions(channel, caption, true)
 
       for (const translation of channel.translations || []) {
-        const targetLang =
-          typeof translation === "string" ? translation : translation.target
+        const targetLang = extractTranslationTarget(translation)
         const tlCaption = initializeCaption(
           session,
           channel,
@@ -269,6 +283,9 @@ function initializeCaption(
         channel_start_time: session.startTime,
         channel_end_time: session.endTime,
       },
+      session: {
+        channels: buildSessionChannels(session),
+      },
       normalize: { filter: {} },
       ...(session.meta?.["@template"]
         ? { template: session.meta["@template"] }
@@ -303,7 +320,7 @@ async function storeSession(session, name = undefined) {
 
     if (canonicalCount === 0) {
       logger.warn(
-        `storeSession: session ${session.id} has no canonical captions after filtering — nothing stored`,
+        `storeSession: session ${session.id} has no canonical captions after filtering, nothing stored`,
       )
       return
     }
@@ -377,6 +394,17 @@ async function storeMultiChannelConversation(
   conversationMemory,
 ) {
   const main_conversation = initConversationMultiChannel(session, name)
+  // Single-channel sessions keep the offline transcription on a child caption;
+  // mirror it onto the canonical parent.
+  if (session.channels.length === 1) {
+    const transcribed = captions.find(
+      (caption) => caption.metadata?.transcription,
+    )
+    if (transcribed) {
+      main_conversation.metadata.transcription =
+        transcribed.metadata.transcription
+    }
+  }
   const offlineList = []
   for (let caption of captions) {
     if (caption.type.mode === TYPES.TRANSLATION) continue
@@ -502,7 +530,7 @@ function emitConversationFromSession(ioHandler, session, result, sessionId, labe
     }
   } else {
     logger.warn(
-      `${label} ${sessionId} stopped with no storable captions — no conversation created`,
+      `${label} ${sessionId} stopped with no storable captions, no conversation created`,
     )
   }
 }

@@ -3,8 +3,6 @@ import {
   apiGetSession,
   apiStartSession,
   apiStopSession,
-  apiPauseSession,
-  apiResumeSession,
   apiClearSession,
   apiDeleteSession,
   apiGetPublicSession,
@@ -78,9 +76,6 @@ export const sessionMixin = {
   beforeDestroy() {
     //this.$apiEventWS.unSubscribeSessionsUpdate()
     bus.$off(`websocket/orga_${this.sessionOrganizationId}_session_update`)
-    if (this.isFromPublicLink) {
-      this.currentChannelMicrophone?.close()
-    }
   },
   methods: {
     async fecthSessionWithPassword() {
@@ -183,56 +178,6 @@ export const sessionMixin = {
       //await this.fetchSession()
       this.isStoping = false
     },
-    async pauseSession() {
-      this.isPausing = true
-      const res = await apiPauseSession(this.organizationId, this.id)
-
-      if (res.status === "error") {
-        console.error("Error pausing session", res)
-        bus.$emit("app_notif", {
-          status: "error",
-          message: this.$i18n.t(
-            "session.detail_page.pause_session_error_message",
-          ),
-          timeout: null,
-        })
-        this.isPausing = false
-        return
-      }
-
-      bus.$emit("app_notif", {
-        status: "success",
-        message: this.$i18n.t("session.detail_page.pause_session_success"),
-        timeout: null,
-      })
-      await this.fetchSession()
-      this.isPausing = false
-    },
-    async resumeSession() {
-      this.isResuming = true
-      const res = await apiResumeSession(this.organizationId, this.id)
-
-      if (res.status === "error") {
-        console.error("Error resuming session", res)
-        bus.$emit("app_notif", {
-          status: "error",
-          message: this.$i18n.t(
-            "session.detail_page.resume_session_error_message",
-          ),
-          timeout: null,
-        })
-        this.isResuming = false
-        return
-      }
-
-      bus.$emit("app_notif", {
-        status: "success",
-        message: this.$i18n.t("session.detail_page.resume_session_success"),
-        timeout: null,
-      })
-      await this.fetchSession()
-      this.isResuming = false
-    },
     async clearSession() {
       this.isClearing = true
       const res = await apiClearSession(this.organizationId, this.id)
@@ -284,10 +229,11 @@ export const sessionMixin = {
     },
     subscribeToWebsocket() {
       this.websocketInstance.subscribeSessionsUpdate(this.sessionOrganizationId)
-      bus.$on(
-        `websocket/orga_${this.sessionOrganizationId}_session_update`,
-        this.onSessionUpdateEvent.bind(this),
-      )
+      // Runs again on every websocket reconnect: deduplicate the bus handler
+      // (Vue methods are instance-bound, so the reference is stable).
+      const event = `websocket/orga_${this.sessionOrganizationId}_session_update`
+      bus.$off(event, this.onSessionUpdateEvent)
+      bus.$on(event, this.onSessionUpdateEvent)
     },
     onSessionUpdateEvent(value) {
       for (const updatedSession of value.updated) {

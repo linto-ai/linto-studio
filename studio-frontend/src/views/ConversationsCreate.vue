@@ -135,14 +135,16 @@
         </div>
       </form>
 
+      <QuickSessionPlaceholder v-if="showQuickSessionPlaceholder" />
+
       <QuickSessionCreateContent
-        v-if="currentTab === 'live' && !loadingSessionData"
+        v-if="currentTab === 'live' && !loadingSessionData && !quickSession"
         :transcriberProfiles="transcriberProfilesQuickMeeting"
         :currentOrganizationScope="currentOrganizationScope"
         :transcriptionServices="fieldTranscriptionService.list" />
 
       <VisioCreateContent
-        v-if="currentTab === 'visio' && !loadingSessionData"
+        v-if="currentTab === 'visio' && !loadingSessionData && !quickSession"
         :transcriberProfiles="transcriberProfilesQuickMeeting"
         :transcriptionServices="fieldTranscriptionService.list"
         :currentOrganizationScope="currentOrganizationScope" />
@@ -157,6 +159,8 @@
   </LayoutV2>
 </template>
 <script>
+import { mapGetters } from "vuex"
+
 import { getEnv } from "@/tools/getEnv.js"
 
 import ConversationCreateMixin from "@/mixins/conversationCreate.js"
@@ -177,6 +181,7 @@ import ServiceSelector from "@/components/serviceSelector/ServiceSelector.vue"
 import Tabs from "@/components/molecules/Tabs.vue"
 import SessionCreateContent from "@/components/SessionCreateContent.vue"
 import QuickSessionCreateContent from "@/components/QuickSessionCreateContent.vue"
+import QuickSessionPlaceholder from "@/components/QuickSessionPlaceholder.vue"
 import VisioCreateContent from "@/components/VisioCreateContent.vue"
 import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
 import FolderSelector from "@/components/FolderSelector.vue"
@@ -350,6 +355,16 @@ export default {
 
       return res
     },
+    // A user can only have one quick session at a time: when one already
+    // exists, the live/visio creation forms are replaced by a placeholder.
+    showQuickSessionPlaceholder() {
+      return (
+        (this.currentTab === "live" || this.currentTab === "visio") &&
+        !this.loadingSessionData &&
+        !!this.quickSession
+      )
+    },
+    ...mapGetters("quickSession", ["quickSession"]),
   },
   methods: {
     createConversation(event) {
@@ -412,6 +427,7 @@ export default {
     Tabs,
     SessionCreateContent,
     QuickSessionCreateContent,
+    QuickSessionPlaceholder,
     VisioCreateContent,
     SecurityLevelSelector,
     FolderSelector,
