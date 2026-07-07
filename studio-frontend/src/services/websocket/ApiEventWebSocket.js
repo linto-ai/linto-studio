@@ -234,6 +234,9 @@ export default class ApiEventWebSocket {
       this.socket.off(
         `orga_${this.currentSessionOrganizationId}_session_update`,
       )
+      this.socket.off(
+        `orga_${this.currentSessionOrganizationId}_session_cleared`,
+      )
     }
   }
 
