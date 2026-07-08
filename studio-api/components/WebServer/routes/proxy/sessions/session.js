@@ -3,6 +3,11 @@ const proxyForwardParams = [
   { "body.organizationId": "params.organizationId" },
 ]
 
+const proxyListForwardParams = [
+  ...proxyForwardParams,
+  { "query.organizationId": "params.organizationId" },
+]
+
 const { storeSessionFromStop, storeQuickMeetingFromStop } = require(
   `${process.cwd()}/components/WebServer/controllers/session/conversation.js`,
 )
@@ -70,7 +75,7 @@ module.exports = (webServer) => {
           {
             path: "/organizations/:organizationId/templates",
             method: ["get"],
-            forwardParams: proxyForwardParams,
+            forwardParams: proxyListForwardParams,
           },
           {
             path: "/organizations/:organizationId/templates",
