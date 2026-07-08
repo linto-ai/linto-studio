@@ -91,21 +91,13 @@ export default {
   position: relative;
 }
 
-/* Sonar ring (ported from the late RecordingIndicator): a ring radiating
-   outward while fading, driven by the VAD. transform/opacity only — the
-   original animated padding (layout on every frame). */
-.microphone-placeholder__circle::after {
-  content: "";
-  position: absolute;
-  inset: -8px;
-  border-radius: 50%;
-  border: 8px solid color-mix(in srgb, var(--red-chart) 25%, transparent);
-  opacity: 0;
-  pointer-events: none;
-}
-
+/* Sonar ring (spirit of the late RecordingIndicator): a ring radiating
+   outward while fading, driven by the VAD. box-shadow instead of a scaled
+   pseudo-element — a transform grows the scroll overflow region and Chrome
+   then shows scrollbars on the container; box-shadow neither affects layout
+   nor scroll overflow. */
 .microphone-placeholder--recording.microphone-placeholder--speaking
-  .microphone-placeholder__circle::after {
+  .microphone-placeholder__circle {
   animation: microphone-placeholder-sonar 1.5s infinite;
 }
 
@@ -164,18 +156,15 @@ export default {
 
 @keyframes microphone-placeholder-sonar {
   0% {
-    transform: scale(1);
-    opacity: 1;
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--red-chart) 35%, transparent);
   }
   100% {
-    transform: scale(1.35);
-    opacity: 0;
+    box-shadow: 0 0 0 18px transparent;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .microphone-placeholder__circle,
-  .microphone-placeholder__circle::after {
+  .microphone-placeholder__circle {
     animation: none !important;
   }
 }
