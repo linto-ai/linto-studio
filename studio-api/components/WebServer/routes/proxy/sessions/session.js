@@ -23,6 +23,7 @@ const {
   generatPublicToken,
   filterPrivateSessions,
   checkSessionMatchingOrganization,
+  checkTemplateMatchingOrganization,
   checkChannelsSecurityLevel,
 } = require(
   `${process.cwd()}/components/WebServer/controllers/session/session.js`,
@@ -86,16 +87,19 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/templates/:id",
             method: ["get"],
             forwardParams: proxyForwardParams,
+            executeAfterResult: [afterProxyAccess],
           },
           {
             path: "/organizations/:organizationId/templates/:id",
             method: ["put"],
             forwardParams: proxyForwardParams,
+            executeBeforeResult: checkTemplateMatchingOrganization,
           },
           {
             path: "/organizations/:organizationId/templates/:id",
             method: ["delete"],
             forwardParams: proxyForwardParams,
+            executeBeforeResult: checkTemplateMatchingOrganization,
           },
         ],
         requireAuth: true,
