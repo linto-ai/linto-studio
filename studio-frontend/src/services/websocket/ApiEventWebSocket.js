@@ -5,12 +5,23 @@ import { bus } from "@/main"
 import { getCookie } from "@/tools/getCookie"
 import { getEnv } from "@/tools/getEnv"
 import store from "@/store/index.js"
-import i18n from "@/i18n"
 import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
 import { generateId } from "@/tools/generateId"
 
 const socketioUrl = getEnv("VUE_APP_SESSION_WS")
 const socketioPath = getEnv("VUE_APP_SESSION_WS_PATH")
+
+// After this many failed attempts socket.io gives up: status becomes
+// "failed" and the user has to trigger retry() manually (status dot/banner).
+const RECONNECTION_ATTEMPTS = 10
+
+export const WEBSOCKET_STATUS = Object.freeze({
+  IDLE: "idle",
+  CONNECTING: "connecting",
+  CONNECTED: "connected",
+  RECONNECTING: "reconnecting",
+  FAILED: "failed",
+})
 
 const VISITOR_ID_KEY = "linto_visitor_id"
 function getVisitorId() {
@@ -27,10 +38,10 @@ const debugWSMedia = customDebug("Websocket:Media:debug")
 export default class ApiEventWebSocket {
   constructor() {
     this.state = Vue.observable({
+      status: WEBSOCKET_STATUS.IDLE,
+      // Derived from status, kept as a plain flag because many components
+      // watch it ("websocketInstance.state.isConnected").
       isConnected: false,
-      connexionLost: false,
-      connexionError: false,
-      connexionRestored: false,
     })
 
     this.socket = null
@@ -38,12 +49,18 @@ export default class ApiEventWebSocket {
     this.currentSessionOrganizationId = null
     this.test = false
     this.textPartialForTest = ""
-    this.retryAfterKO = 0
     this.currentToken = null
+    // Stable references so removeEventListener actually removes them.
+    this.handleVisibilityChange = this.handleVisibilityChange.bind(this)
+    this.handleNetworkOnline = this.handleNetworkOnline.bind(this)
+  }
+
+  setStatus(status) {
+    this.state.status = status
+    this.state.isConnected = status === WEBSOCKET_STATUS.CONNECTED
   }
 
   connect(token, { isPublic = false } = {}) {
-    this.clearNotifs()
     if (this.state.isConnected) {
       debugWSSession("already connected to socket.io server")
       return Promise.resolve()
@@ -51,8 +68,9 @@ export default class ApiEventWebSocket {
 
     const userToken = token ?? this.currentToken ?? getCookie("authToken")
     this.currentToken = userToken
+    this.setStatus(WEBSOCKET_STATUS.CONNECTING)
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const transports = getEnv("VUE_APP_WEBSOCKET_TRANSPORTS").split(",")
       const auth = { token: userToken }
       if (isPublic) auth.visitorId = getVisitorId()
@@ -61,16 +79,13 @@ export default class ApiEventWebSocket {
         path: socketioPath,
         auth,
         transports: transports,
+        reconnectionAttempts: RECONNECTION_ATTEMPTS,
       })
 
       this.socket.on("connect", (msg) => {
         debugWSSession("connected to socket.io server", msg)
-        this.state.isConnected = true
+        this.setStatus(WEBSOCKET_STATUS.CONNECTED)
         this.subscribeFolderUpdate()
-
-        if (this.state.connexionLost) {
-          this.handleConnexionRestored()
-        }
 
         resolve()
       })
@@ -79,87 +94,102 @@ export default class ApiEventWebSocket {
         this.handleDisconnection(reason)
       })
 
-      this.socket.on("connect_error", () => {
-        this.handleError()
+      this.socket.on("connect_error", (error) => {
+        debugWSSession("connection error to socket.io server", error)
+        // Handshake rejected by the server middleware (e.g. expired or
+        // invalid token): socket.io destroys the namespace socket and will
+        // never retry on its own (socket.active becomes false), so without
+        // this the status would stay "connecting" forever with no indicator.
+        // Network-level errors keep socket.active === true and are handled
+        // by the manager reconnection cycle (reconnect_attempt/failed).
+        if (!this.socket.active) {
+          this.setStatus(WEBSOCKET_STATUS.FAILED)
+        }
       })
 
-      this.socket.on("connect_timeout", () => {
-        this.handleError()
+      // Manager-level events drive the reconnection state machine: they
+      // fire for both the initial connection and post-disconnect retries.
+      this.socket.io.on("reconnect_attempt", () => {
+        this.setStatus(WEBSOCKET_STATUS.RECONNECTING)
+      })
+
+      this.socket.io.on("reconnect_failed", () => {
+        debugWSSession("reconnection failed, giving up")
+        this.setStatus(WEBSOCKET_STATUS.FAILED)
       })
 
       document.removeEventListener(
         "visibilitychange",
-        this.handleVisibilityChange.bind(this),
+        this.handleVisibilityChange,
       )
+      document.addEventListener("visibilitychange", this.handleVisibilityChange)
 
-      document.addEventListener(
-        "visibilitychange",
-        this.handleVisibilityChange.bind(this),
-      )
+      window.removeEventListener("online", this.handleNetworkOnline)
+      window.addEventListener("online", this.handleNetworkOnline)
     })
   }
 
   handleVisibilityChange() {
-    if (document.visibilityState === "visible") {
-      if (this.state.isConnected && !this.socket.connected) {
-        this.handleDisconnection()
-      }
+    if (document.visibilityState !== "visible") return
+
+    // The reconnection budget was exhausted while the tab was hidden:
+    // coming back to the tab is the natural moment to try again.
+    if (this.state.status === WEBSOCKET_STATUS.FAILED) {
+      this.retry()
+      return
+    }
+
+    // Silent death: the socket dropped while the tab was hidden and the
+    // "disconnect" event was never processed (throttled/suspended tab).
+    if (this.state.isConnected && !this.socket.connected) {
+      this.handleDisconnection()
     }
   }
 
-  clearNotifs() {
-    store.dispatch("system/removeNotificationById", "websocket-error")
-    store.dispatch("system/removeNotificationById", "websocket-disconnected")
-  }
-
-  handleError() {
-    debugWSSession("connection error to socket.io server")
-    this.clearNotifs()
-    store.dispatch("system/addNotification", {
-      id: "websocket-error",
-      message: i18n.t("websocket.disconnected"),
-      timeout: 0,
-      type: "error",
-    })
+  handleNetworkOnline() {
+    if (this.state.status === WEBSOCKET_STATUS.FAILED) {
+      this.retry()
+    }
   }
 
   handleDisconnection(reason) {
     debugWSSession("disconnected from socket.io server, reason:", reason)
-    this.state.connexionLost = true
-    this.state.isConnected = false
-    this.isConnectedToSessionBroker = false
-    this.state.connexionRestored = false
-    this.clearNotifs()
+
+    if (reason === "io client disconnect") {
+      // Deliberate close() on our side: do not resurrect the socket.
+      this.setStatus(WEBSOCKET_STATUS.IDLE)
+      return
+    }
+
+    this.setStatus(WEBSOCKET_STATUS.RECONNECTING)
 
     // NOTE: on "io server disconnect" (server called socket.disconnect(),
     // e.g. a rolling restart) socket.io does NOT auto-reconnect, so the
     // manual connect() below is the only recovery path — do not early-return
     // here or the socket dies silently forever.
-
-    store.dispatch("system/addNotification", {
-      id: "websocket-disconnected",
-      message: i18n.t("websocket.lost_connexion"),
-      timeout: 0,
-      type: "warning",
-    })
-
     setTimeout(() => {
-      this.socket.connect()
+      if (!this.socket.connected) {
+        this.socket.connect()
+      }
     }, 1000)
   }
 
-  handleConnexionRestored() {
-    this.clearNotifs()
-    this.state.connexionRestored = true
-    store.dispatch("system/addNotification", {
-      message: i18n.t("websocket.restored"),
-      type: "success",
-    })
+  // Manual reconnection, triggered by the user once the status is "failed"
+  // (the automatic cycle gave up after RECONNECTION_ATTEMPTS).
+  retry() {
+    if (!this.socket) return
+    this.setStatus(WEBSOCKET_STATUS.RECONNECTING)
+    this.socket.connect()
   }
 
   close() {
+    document.removeEventListener(
+      "visibilitychange",
+      this.handleVisibilityChange,
+    )
+    window.removeEventListener("online", this.handleNetworkOnline)
     this.socket.close()
-    this.state.isConnected = false
+    this.setStatus(WEBSOCKET_STATUS.IDLE)
   }
 
   subscribeSessionRoom(

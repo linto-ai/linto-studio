@@ -54,19 +54,6 @@
     </template>
 
     <div class="relative flex flex1 col">
-      <MicrophoneStatusBanner
-        :status="microphoneStatus"
-        @retry="retryAudioConnection"
-        @reconfigure="showMicrophoneSetup = true" />
-      <NotificationBanner
-        v-if="liveFeedInterrupted"
-        variant="warning"
-        icon="wifi-slash"
-        align="start"
-        role="alert">
-        {{ $t("websocket.live_feed_interrupted") }}
-      </NotificationBanner>
-
       <!-- <SessionNotStarted v-if="isPending" /> -->
 
       <Loading v-if="!sessionLoaded || !selectedChannel" />
@@ -83,7 +70,10 @@
         :currentOrganizationScope="currentOrganizationScope"
         :websocketInstance="websocketInstance"
         :displaySubtitles="displaySubtitles"
-        :isFromPublicLink="isFromPublicLink" />
+        :isFromPublicLink="isFromPublicLink"
+        :microphoneStatus="microphoneStatus"
+        @retry-microphone="retryAudioConnection"
+        @reconfigure-microphone="showMicrophoneSetup = true" />
 
       <Modal
         :withActions="false"
@@ -121,11 +111,9 @@ import { getEnv } from "@/tools/getEnv"
 import { isQualifiedForCrossSubtitles } from "@/tools/translationUtils.js"
 
 import Loading from "@/components/atoms/Loading.vue"
-import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 import SessionEnded from "@/components/SessionEnded.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import MicrophoneStatus from "@/components/molecules/MicrophoneStatus.vue"
-import MicrophoneStatusBanner from "@/components/molecules/MicrophoneStatusBanner.vue"
 import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
 import SessionHeader from "@/components/SessionHeader.vue"
 import LayoutV2 from "@/layouts/v2-layout.vue"
@@ -222,14 +210,6 @@ export default {
     },
   },
   computed: {
-    liveFeedInterrupted() {
-      return (
-        this.sessionLoaded &&
-        !this.isTerminated &&
-        this.websocketInstance &&
-        !this.websocketInstance.state.isConnected
-      )
-    },
     qualifiedForCrossSubtitles() {
       return isQualifiedForCrossSubtitles(
         this.selectedChannel.translations,
@@ -242,11 +222,9 @@ export default {
   components: {
     LayoutV2,
     Loading,
-    NotificationBanner,
     SessionEnded,
     Modal,
     MicrophoneStatus,
-    MicrophoneStatusBanner,
     SessionSetupMicrophone,
     SessionDropdownChannelSelector,
     SessionHeader,

@@ -1738,11 +1738,15 @@
     }
   },
   "websocket": {
-    "disconnected": "Le contenu n'est plus synchronisé. Veuillez vérifier votre connexion internet.",
     "audio_stream_lost": "Transcription interrompue, l'audio n'est plus transmis. Vérifiez votre connexion internet.",
-    "lost_connexion": "Connexion interrompue, tentative de reconnexion en cours...",
     "restored": "Connexion restaurée",
-    "live_feed_interrupted": "Flux de transcription interrompu, reconnexion en cours — l'affichage n'est plus à jour."
+    "reconnecting": "Connexion interrompue, reconnexion en cours…",
+    "reconnect_failed": "Connexion perdue — cliquer pour réessayer",
+    "label_reconnecting": "Reconnexion…",
+    "label_failed": "Connexion perdue",
+    "live_feed_interrupted": "Flux de transcription interrompu, reconnexion en cours — l'affichage n'est plus à jour.",
+    "live_feed_failed": "La connexion est perdue, le direct est interrompu.",
+    "action_retry": "Réessayer"
   },
   "input_selector": {
     "search_tags": "Rechercher une thématique...",
