@@ -52,26 +52,20 @@
 import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 import MicrophoneStatusBanner from "@/components/molecules/MicrophoneStatusBanner.vue"
 import { resolveSessionBanner } from "@/tools/resolveSessionBanner.js"
-
-const RESTORED_FLASH_DURATION = 3000
+import { createRestoredFlashMixin } from "@/mixins/restoredFlash.js"
 
 // Single banner slot for a live session view: websocket outage first,
 // microphone trouble second (see resolveSessionBanner for the rationale).
 export default {
   name: "SessionStatusBanner",
   components: { NotificationBanner, MicrophoneStatusBanner },
+  mixins: [createRestoredFlashMixin("websocketStatus", 3000)],
   props: {
     // ApiEventWebSocket status: idle | connecting | connected | reconnecting | failed
     websocketStatus: { type: String, required: true },
     // microphoneStatus value from sessionMicrophoneMixin ("idle" when the
     // view has no microphone at all).
     microphoneStatus: { type: String, default: "idle" },
-  },
-  data() {
-    return {
-      showRestored: false,
-      restoredTimer: null,
-    }
   },
   computed: {
     banner() {
@@ -81,32 +75,6 @@ export default {
       )
       if (banner) return banner
       return this.showRestored ? "websocket_restored" : null
-    },
-  },
-  watch: {
-    websocketStatus(newStatus, oldStatus) {
-      this.clearRestoredTimer()
-      const wasRecovering =
-        oldStatus === "reconnecting" || oldStatus === "failed"
-      if (newStatus === "connected" && wasRecovering) {
-        this.showRestored = true
-        this.restoredTimer = setTimeout(() => {
-          this.showRestored = false
-        }, RESTORED_FLASH_DURATION)
-      } else {
-        this.showRestored = false
-      }
-    },
-  },
-  beforeDestroy() {
-    this.clearRestoredTimer()
-  },
-  methods: {
-    clearRestoredTimer() {
-      if (this.restoredTimer) {
-        clearTimeout(this.restoredTimer)
-        this.restoredTimer = null
-      }
     },
   },
 }

@@ -33,7 +33,6 @@ import FilterChip from "./FilterChip.vue"
 import InputItem from "./InputItem.vue"
 import CopyButton from "./CopyButton.vue"
 import FavoriteStar from "./FavoriteStar.vue"
-import WebsocketStatusDot from "./WebsocketStatusDot.vue"
 
 const components = [
   Avatar,
@@ -71,7 +70,6 @@ const components = [
   InputItem,
   CopyButton,
   FavoriteStar,
-  WebsocketStatusDot,
 ]
 
 const validateComponents = (c) =>

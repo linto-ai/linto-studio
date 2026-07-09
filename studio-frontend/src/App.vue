@@ -40,6 +40,7 @@ import { getEnv } from "@/tools/getEnv"
 import AppSettingsModal from "@/components/AppSettingsModal.vue"
 import PopupHost from "@/components/PopupHost.vue"
 import AppNotifications from "@/components/AppNotifications.vue"
+import WebsocketStatusDot from "@/components/atoms/WebsocketStatusDot.vue"
 
 import "@/style/style.scss"
 
@@ -133,6 +134,7 @@ export default {
     AppSettingsModal,
     PopupHost,
     AppNotifications,
+    WebsocketStatusDot,
   },
 }
 </script>

@@ -33,22 +33,15 @@
 
 <script>
 import PhIcon from "@/components/atoms/PhIcon.vue"
-
-const RESTORED_FLASH_DURATION = 2000
+import { createRestoredFlashMixin } from "@/mixins/restoredFlash.js"
 
 export default {
   name: "WebsocketStatusDot",
   components: { PhIcon },
+  mixins: [createRestoredFlashMixin("status", 2000)],
   props: {
     // ApiEventWebSocket status: idle | connecting | connected | reconnecting | failed
     status: { type: String, required: true },
-  },
-  data() {
-    return {
-      showRestored: false,
-      restoredTimer: null,
-      //status: "connected",
-    }
   },
   computed: {
     visible() {
@@ -57,32 +50,6 @@ export default {
         this.status === "failed" ||
         this.showRestored
       )
-    },
-  },
-  watch: {
-    status(newStatus, oldStatus) {
-      this.clearRestoredTimer()
-      const wasRecovering =
-        oldStatus === "reconnecting" || oldStatus === "failed"
-      if (newStatus === "connected" && wasRecovering) {
-        this.showRestored = true
-        this.restoredTimer = setTimeout(() => {
-          this.showRestored = false
-        }, RESTORED_FLASH_DURATION)
-      } else {
-        this.showRestored = false
-      }
-    },
-  },
-  beforeDestroy() {
-    this.clearRestoredTimer()
-  },
-  methods: {
-    clearRestoredTimer() {
-      if (this.restoredTimer) {
-        clearTimeout(this.restoredTimer)
-        this.restoredTimer = null
-      }
     },
   },
 }
@@ -105,7 +72,7 @@ export default {
   border-radius: 20px;
   border: 1px solid var(--neutral-40);
   background: var(--background-primary);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-4);
   padding: 0 14px;
 
   &--reconnecting {

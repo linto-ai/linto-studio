@@ -39,8 +39,6 @@ export default class ApiEventWebSocket {
   constructor() {
     this.state = Vue.observable({
       status: WEBSOCKET_STATUS.IDLE,
-      // Attempt number of the current reconnection cycle (0 when connected).
-      retryCount: 0,
       // Derived from status, kept as a plain flag because many components
       // watch it ("websocketInstance.state.isConnected").
       isConnected: false,
@@ -52,16 +50,14 @@ export default class ApiEventWebSocket {
     this.test = false
     this.textPartialForTest = ""
     this.currentToken = null
-    // Stable reference so removeEventListener actually removes it.
+    // Stable references so removeEventListener actually removes them.
     this.handleVisibilityChange = this.handleVisibilityChange.bind(this)
+    this.handleNetworkOnline = this.handleNetworkOnline.bind(this)
   }
 
   setStatus(status) {
     this.state.status = status
     this.state.isConnected = status === WEBSOCKET_STATUS.CONNECTED
-    if (status === WEBSOCKET_STATUS.CONNECTED) {
-      this.state.retryCount = 0
-    }
   }
 
   connect(token, { isPublic = false } = {}) {
@@ -100,13 +96,21 @@ export default class ApiEventWebSocket {
 
       this.socket.on("connect_error", (error) => {
         debugWSSession("connection error to socket.io server", error)
+        // Handshake rejected by the server middleware (e.g. expired or
+        // invalid token): socket.io destroys the namespace socket and will
+        // never retry on its own (socket.active becomes false), so without
+        // this the status would stay "connecting" forever with no indicator.
+        // Network-level errors keep socket.active === true and are handled
+        // by the manager reconnection cycle (reconnect_attempt/failed).
+        if (!this.socket.active) {
+          this.setStatus(WEBSOCKET_STATUS.FAILED)
+        }
       })
 
       // Manager-level events drive the reconnection state machine: they
       // fire for both the initial connection and post-disconnect retries.
-      this.socket.io.on("reconnect_attempt", (attempt) => {
+      this.socket.io.on("reconnect_attempt", () => {
         this.setStatus(WEBSOCKET_STATUS.RECONNECTING)
-        this.state.retryCount = attempt
       })
 
       this.socket.io.on("reconnect_failed", () => {
@@ -118,16 +122,33 @@ export default class ApiEventWebSocket {
         "visibilitychange",
         this.handleVisibilityChange,
       )
-
       document.addEventListener("visibilitychange", this.handleVisibilityChange)
+
+      window.removeEventListener("online", this.handleNetworkOnline)
+      window.addEventListener("online", this.handleNetworkOnline)
     })
   }
 
   handleVisibilityChange() {
-    if (document.visibilityState === "visible") {
-      if (this.state.isConnected && !this.socket.connected) {
-        this.handleDisconnection()
-      }
+    if (document.visibilityState !== "visible") return
+
+    // The reconnection budget was exhausted while the tab was hidden:
+    // coming back to the tab is the natural moment to try again.
+    if (this.state.status === WEBSOCKET_STATUS.FAILED) {
+      this.retry()
+      return
+    }
+
+    // Silent death: the socket dropped while the tab was hidden and the
+    // "disconnect" event was never processed (throttled/suspended tab).
+    if (this.state.isConnected && !this.socket.connected) {
+      this.handleDisconnection()
+    }
+  }
+
+  handleNetworkOnline() {
+    if (this.state.status === WEBSOCKET_STATUS.FAILED) {
+      this.retry()
     }
   }
 
@@ -158,7 +179,6 @@ export default class ApiEventWebSocket {
   retry() {
     if (!this.socket) return
     this.setStatus(WEBSOCKET_STATUS.RECONNECTING)
-    this.state.retryCount = 0
     this.socket.connect()
   }
 
@@ -167,6 +187,7 @@ export default class ApiEventWebSocket {
       "visibilitychange",
       this.handleVisibilityChange,
     )
+    window.removeEventListener("online", this.handleNetworkOnline)
     this.socket.close()
     this.setStatus(WEBSOCKET_STATUS.IDLE)
   }
