@@ -1742,6 +1742,8 @@
     "restored": "Connexion restaurée",
     "reconnecting": "Connexion interrompue, reconnexion en cours…",
     "reconnect_failed": "Connexion perdue — cliquer pour réessayer",
+    "label_reconnecting": "Reconnexion…",
+    "label_failed": "Connexion perdue",
     "live_feed_interrupted": "Flux de transcription interrompu, reconnexion en cours — l'affichage n'est plus à jour.",
     "live_feed_failed": "La connexion est perdue, le direct est interrompu.",
     "action_retry": "Réessayer"

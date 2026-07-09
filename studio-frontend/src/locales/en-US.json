@@ -1748,6 +1748,8 @@
     "restored": "Connection restored",
     "reconnecting": "Connection interrupted, reconnecting…",
     "reconnect_failed": "Connection lost — click to retry",
+    "label_reconnecting": "Reconnecting…",
+    "label_failed": "Connection lost",
     "live_feed_interrupted": "Live transcription feed interrupted, reconnecting — the display is no longer up to date.",
     "live_feed_failed": "Connection lost — the live feed is stopped.",
     "action_retry": "Retry"
