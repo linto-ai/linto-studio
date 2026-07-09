@@ -21,6 +21,9 @@
       <AppSettingsModal />
       <PopupHost />
       <AppNotifications />
+      <WebsocketStatusDot
+        :status="$apiEventWS.state.status"
+        @retry="$apiEventWS.retry()" />
     </div>
   </div>
 </template>

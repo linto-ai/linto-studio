@@ -26,8 +26,7 @@
 
 <script>
 import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
-
-const BANNER_STATUSES = ["connection_lost", "mic_lost", "mic_interrupted"]
+import { MICROPHONE_BANNER_STATUSES } from "@/tools/resolveSessionBanner.js"
 
 export default {
   name: "MicrophoneStatusBanner",
@@ -38,7 +37,7 @@ export default {
   },
   computed: {
     visible() {
-      return BANNER_STATUSES.includes(this.status)
+      return MICROPHONE_BANNER_STATUSES.includes(this.status)
     },
     variant() {
       return this.status === "mic_interrupted" ? "warning" : "error"

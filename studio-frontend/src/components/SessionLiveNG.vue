@@ -1,5 +1,13 @@
 <template>
-  <linto-editor ref="editor" :locale="$i18n.locale.split('-')[0]" no-header />
+  <div class="session-live-ng flex col flex1">
+    <SessionStatusBanner
+      :websocketStatus="websocketInstance.state.status"
+      :microphoneStatus="microphoneStatus"
+      @retry-websocket="websocketInstance.retry()"
+      @retry-microphone="$emit('retry-microphone')"
+      @reconfigure-microphone="$emit('reconfigure-microphone')" />
+    <linto-editor ref="editor" :locale="$i18n.locale.split('-')[0]" no-header />
+  </div>
 </template>
 
 <script>
@@ -24,17 +32,21 @@ import {
 } from "@/tools/computeTurnTime.js"
 import { getEnv } from "@/tools/getEnv"
 import { bus } from "@/main.js"
+import SessionStatusBanner from "@/components/molecules/SessionStatusBanner.vue"
 
 const PAGE_SIZE = 50
 
 export default {
   mixins: [sessionModelMixin],
+  components: { SessionStatusBanner },
   props: {
     session: { type: Object, required: true },
     websocketInstance: { type: Object, required: true },
     isFromPublicLink: { type: Boolean, default: false },
     currentOrganizationScope: { type: String, required: false, default: null },
     displaySubtitles: { type: Boolean, default: false },
+    // Forwarded to the status banner; "idle" when the host has no microphone.
+    microphoneStatus: { type: String, default: "idle" },
   },
   data() {
     return {
@@ -68,9 +80,8 @@ export default {
   },
   watch: {
     // Covers both the first connect (socket not ready at mount) and every
-    // reconnect (isConnected goes false on disconnect). connexionRestored is
-    // redundant here: it is only ever set in the same connect handler that
-    // flips isConnected back to true.
+    // reconnect (isConnected goes false on disconnect); isConnected is kept
+    // in sync with state.status by the ApiEventWebSocket state machine.
     "websocketInstance.state.isConnected"(connected) {
       if (!connected) return
       const isReconnect = this.wsWasConnected
@@ -462,6 +473,10 @@ export default {
 </script>
 
 <style scoped>
+.session-live-ng {
+  min-height: 0;
+}
+
 linto-editor {
   display: block;
   flex: 1;

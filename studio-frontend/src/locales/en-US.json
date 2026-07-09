@@ -1744,11 +1744,13 @@
     }
   },
   "websocket": {
-    "disconnected": "Content not updated, check your internet connection",
     "audio_stream_lost": "Transcription interrupted, audio is no longer being transmitted. Check your internet connection.",
-    "lost_connexion": "Connection lost, attempting to reconnect...",
     "restored": "Connection restored",
-    "live_feed_interrupted": "Live transcription feed interrupted, reconnecting — the display is no longer up to date."
+    "reconnecting": "Connection interrupted, reconnecting…",
+    "reconnect_failed": "Connection lost — click to retry",
+    "live_feed_interrupted": "Live transcription feed interrupted, reconnecting — the display is no longer up to date.",
+    "live_feed_failed": "Connection lost — the live feed is stopped.",
+    "action_retry": "Retry"
   },
   "input_selector": {
     "search_tags": "Search topics...",
