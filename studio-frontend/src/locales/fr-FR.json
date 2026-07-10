@@ -1652,7 +1652,8 @@
     },
     "profile_avatar": {
       "profile_image_button": "Choisir une image",
-      "update_picture_button": "Mettre à jour"
+      "update_picture_button": "Mettre à jour",
+      "notif_unsupported_type": "Format d'image non pris en charge, utilisez une image png, jpg ou webp"
     },
     "role_section": {
       "title": "Rôle d'administration",

@@ -1,5 +1,5 @@
 const { getSpeakerIdentificationStatus } = require(
-  `${process.cwd()}/components/WebServer/routecontrollers/organization/speakerIdentificationStatus.js`,
+  `${process.cwd()}/components/WebServer/routecontrollers/organizations/speaker/speakerIdentificationStatus.js`,
 )
 
 const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)

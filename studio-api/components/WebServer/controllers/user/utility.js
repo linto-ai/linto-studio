@@ -8,6 +8,10 @@ const CONVERSATION_RIGHTS = require(
   `${process.cwd()}/lib/dao/conversation/rights`,
 )
 
+const { UserError } = require(
+  `${process.cwd()}/components/WebServer/error/exception/users`,
+)
+
 const {
   deleteAudioFileIfOrphaned,
   cascadeDeleteSampleFiles,

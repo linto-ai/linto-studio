@@ -5,7 +5,7 @@ const {
   updateVoiceprintCollection,
   deleteVoiceprintCollection,
 } = require(
-  `${process.cwd()}/components/WebServer/routecontrollers/organization/voiceprintCollection.js`,
+  `${process.cwd()}/components/WebServer/routecontrollers/organizations/speaker/voiceprintCollection.js`,
 )
 
 const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)

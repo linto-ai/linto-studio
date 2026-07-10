@@ -251,10 +251,7 @@ function generateVtt(subtitle_data) {
       " --> " +
       secondsToSRT(subtitle.etime, "vtt") +
       "\n"
-    subtitle.text.map((text) => {
-      vtt += "- " + text + "\n"
-    })
-    vtt += "\n"
+    vtt += subtitle.text.join("\n") + "\n\n"
   })
   return vtt
 }

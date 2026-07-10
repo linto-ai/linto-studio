@@ -9,6 +9,7 @@ const moment = require("moment")
 const VALIDITY_DATE = require(
   `${process.cwd()}/lib/dao/validityDate/validityDate.js`,
 )
+const { regexContains } = require(`${process.cwd()}/lib/utility/escapeRegex`)
 
 const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
 const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
@@ -223,31 +224,19 @@ class UsersModel extends MongoModel {
       let query = {}
 
       if (filter.name) {
-        query.name = {
-          $regex: filter.name,
-          $options: "i",
-        }
+        query.name = regexContains(filter.name)
       }
 
       if (filter.lastname) {
-        query.lastname = {
-          $regex: filter.lastname,
-          $options: "i",
-        }
+        query.lastname = regexContains(filter.lastname)
       }
 
       if (filter.email) {
-        query.email = {
-          $regex: filter.email,
-          $options: "i",
-        }
+        query.email = regexContains(filter.email)
       }
 
       if (filter.type) {
-        query.type = {
-          $regex: filter.type,
-          $options: "i",
-        }
+        query.type = regexContains(filter.type)
       }
 
       if (!filter) return await this.mongoRequest(query, personal_projection)
@@ -336,6 +325,7 @@ class UsersModel extends MongoModel {
 
   async getByEmail(email, serverAccess = false) {
     try {
+      if (typeof email !== "string") return []
       const query = {
         $or: [{ email }, { verifiedEmail: { $in: [email] } }],
       }
@@ -420,6 +410,7 @@ class UsersModel extends MongoModel {
 
   async getByMagicId(magicId, serverAccess = false) {
     try {
+      if (typeof magicId !== "string") return []
       const query = { "authLink.magicId": magicId }
       if (serverAccess) return await this.mongoRequest(query)
       else return await this.mongoRequest(query, public_projection)
@@ -442,6 +433,7 @@ class UsersModel extends MongoModel {
   }
   async getTokenByEmail(email) {
     try {
+      if (typeof email !== "string") return []
       const query = { email }
       return await this.mongoRequest(query)
     } catch (error) {

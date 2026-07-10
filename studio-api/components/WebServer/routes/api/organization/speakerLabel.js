@@ -7,7 +7,7 @@ const {
   recomputeSpeakerLabel,
   deleteSpeakerLabelVoiceprint,
 } = require(
-  `${process.cwd()}/components/WebServer/routecontrollers/organization/speakerLabel.js`,
+  `${process.cwd()}/components/WebServer/routecontrollers/organizations/speaker/speakerLabel.js`,
 )
 
 const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
