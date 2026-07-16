@@ -1,14 +1,9 @@
 import { mapActions, mapGetters } from "vuex"
 import i18n from "@/i18n"
-
-const ROLES = {
-  UNDEFINED: 0,
-  USER: 1,
-  ORGANIZATION_INITIATOR: 2,
-  SESSION_OPERATOR: 4,
-  SYSTEM_ADMINISTRATOR: 8,
-  SUPER_ADMINISTRATOR: 16,
-}
+import {
+  PLATFORM_ROLES as ROLES,
+  hasPlatformRole,
+} from "@/const/platformRoles.js"
 
 const PLATFORM_ROLES = [
   {
@@ -41,21 +36,19 @@ const PLATFORM_ROLES = [
 export const platformRoleMixin = {
   methods: {
     roleIsUser(role) {
-      return (role & ROLES.USER) == ROLES.USER
+      return hasPlatformRole(role, ROLES.USER)
     },
     roleIsOrganizationInitiator(role) {
-      return (
-        (role & ROLES.ORGANIZATION_INITIATOR) == ROLES.ORGANIZATION_INITIATOR
-      )
+      return hasPlatformRole(role, ROLES.ORGANIZATION_INITIATOR)
     },
     roleIsSessionOperator(role) {
-      return (role & ROLES.SESSION_OPERATOR) == ROLES.SESSION_OPERATOR
+      return hasPlatformRole(role, ROLES.SESSION_OPERATOR)
     },
     roleIsSystemAdministrator(role) {
-      return (role & ROLES.SYSTEM_ADMINISTRATOR) == ROLES.SYSTEM_ADMINISTRATOR
+      return hasPlatformRole(role, ROLES.SYSTEM_ADMINISTRATOR)
     },
     roleIsSuperAdministrator(role) {
-      return (role & ROLES.SUPER_ADMINISTRATOR) == ROLES.SUPER_ADMINISTRATOR
+      return hasPlatformRole(role, ROLES.SUPER_ADMINISTRATOR)
     },
     // roles is an object with keys: USER, SESSION_OPERATOR, SYSTEM_ADMINISTRATOR, SUPER_ADMINISTRATOR and values: true or false
     computeRoleValue(roles) {

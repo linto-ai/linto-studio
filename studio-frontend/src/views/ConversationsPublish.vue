@@ -280,6 +280,8 @@ import {
   apiDeleteExportVersion,
 } from "@/api/service.js"
 
+import { mapGetters } from "vuex"
+
 import getDescriptionByLanguage from "@/tools/getDescriptionByLanguage.js"
 import { filterLLMServicesBySecurityLevel } from "@/tools/filterBySecurityLevel.js"
 
@@ -397,9 +399,7 @@ export default {
     chatEnabled() {
       return this.$store.state.chat.enabled
     },
-    isImpersonating() {
-      return this.$store.getters["system/isImpersonating"]
-    },
+    ...mapGetters("system", ["isImpersonating"]),
     currentOrganizationScope() {
       return this.$store.getters["organizations/getCurrentOrganizationScope"]
     },

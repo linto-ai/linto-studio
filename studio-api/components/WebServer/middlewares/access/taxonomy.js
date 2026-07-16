@@ -28,8 +28,8 @@ const {
 module.exports = {
   asReadTaxonomyAccess: async (req, res, next) => {
     if (
-      (await platformAccess.isSystemAdministrator(req)) &&
-      req.method === "GET"
+      req.method === "GET" &&
+      (await platformAccess.isSystemAdministrator(req))
     )
       next()
     else if (req.params.conversationId)

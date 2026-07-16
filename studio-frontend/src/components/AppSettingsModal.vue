@@ -57,24 +57,28 @@
               </a>
             </li> -->
           </ul>
-          <h4 v-if="!isImpersonating">{{ orgaName }}</h4>
+          <template v-if="!isImpersonating">
+            <h4>{{ orgaName }}</h4>
 
-          <ul v-if="!isImpersonating">
-            <li :class="{ active: selectedTab === 'organization-information' }">
-              <a href="#" @click="selectTab('organization-information')">
-                <ph-icon name="info" weight="bold"></ph-icon>
-                <span>{{
-                  $t("app_settings_modal.organization_information")
-                }}</span>
-              </a>
-            </li>
-            <li :class="{ active: selectedTab === 'members' }">
-              <a href="#" @click="selectTab('members')">
-                <ph-icon name="users" weight="bold"></ph-icon>
-                <span>{{ $t("app_settings_modal.organization_members") }}</span>
-              </a>
-            </li>
-            <!-- <is-cloud>
+            <ul>
+              <li
+                :class="{ active: selectedTab === 'organization-information' }">
+                <a href="#" @click="selectTab('organization-information')">
+                  <ph-icon name="info" weight="bold"></ph-icon>
+                  <span>{{
+                    $t("app_settings_modal.organization_information")
+                  }}</span>
+                </a>
+              </li>
+              <li :class="{ active: selectedTab === 'members' }">
+                <a href="#" @click="selectTab('members')">
+                  <ph-icon name="users" weight="bold"></ph-icon>
+                  <span>{{
+                    $t("app_settings_modal.organization_members")
+                  }}</span>
+                </a>
+              </li>
+              <!-- <is-cloud>
               <li :class="{ active: selectedTab === 'billing' }">
                 <a href="#" @click="selectTab('billing')">
                   <ph-icon name="credit-card" weight="bold"></ph-icon>
@@ -82,29 +86,32 @@
                 </a>
               </li>
             </is-cloud> -->
-            <li :class="{ active: selectedTab === 'tags' }">
-              <a href="#" @click="selectTab('tags')">
-                <ph-icon name="tag" weight="bold"></ph-icon>
-                <span>{{ $t("app_settings_modal.tags") }}</span>
-              </a>
-            </li>
-            <li
-              v-if="speakerIdentificationEnabled"
-              :class="{ active: selectedTab === 'speakerIdentification' }">
-              <a href="#" @click="selectTab('speakerIdentification')">
-                <ph-icon name="microphone" weight="bold"></ph-icon>
-                <span>{{
-                  $t("app_settings_modal.speaker_identification")
-                }}</span>
-              </a>
-            </li>
-            <li :class="{ active: selectedTab === 'apiTokens' }" v-if="isAdmin">
-              <a href="#" @click="selectTab('apiTokens')">
-                <ph-icon name="key" weight="bold"></ph-icon>
-                <span>{{ $t("app_settings_modal.api_tokens") }}</span>
-              </a>
-            </li>
-          </ul>
+              <li :class="{ active: selectedTab === 'tags' }">
+                <a href="#" @click="selectTab('tags')">
+                  <ph-icon name="tag" weight="bold"></ph-icon>
+                  <span>{{ $t("app_settings_modal.tags") }}</span>
+                </a>
+              </li>
+              <li
+                v-if="speakerIdentificationEnabled"
+                :class="{ active: selectedTab === 'speakerIdentification' }">
+                <a href="#" @click="selectTab('speakerIdentification')">
+                  <ph-icon name="microphone" weight="bold"></ph-icon>
+                  <span>{{
+                    $t("app_settings_modal.speaker_identification")
+                  }}</span>
+                </a>
+              </li>
+              <li
+                :class="{ active: selectedTab === 'apiTokens' }"
+                v-if="isAdmin">
+                <a href="#" @click="selectTab('apiTokens')">
+                  <ph-icon name="key" weight="bold"></ph-icon>
+                  <span>{{ $t("app_settings_modal.api_tokens") }}</span>
+                </a>
+              </li>
+            </ul>
+          </template>
         </div>
         <div>
           <Button
@@ -134,38 +141,35 @@
         class="app-settings__section">
         <UserSettingsVoiceOptIn v-if="isAuthenticated" />
       </div>
-      <div
-        v-if="selectedTab === 'tags' && !isImpersonating"
-        class="app-settings__section">
-        <TagManagement />
-      </div>
       <div v-if="selectedTab === 'preferences'" class="app-settings__section">
         <UserSettingsPreferences />
       </div>
 
-      <div
-        v-if="selectedTab === 'organization-information' && !isImpersonating"
-        class="app-settings__section">
-        <UpdateOrganizationForm :currentOrganization="currentOrganization" />
-        <UpdateOrganizationDeletion
-          v-if="isAdmin"
-          :currentOrganization="currentOrganization" />
-      </div>
-      <div
-        v-if="selectedTab === 'members' && !isImpersonating"
-        class="app-settings__section">
-        <UpdateOrganizationUsers
-          :currentOrganization="currentOrganization"
-          :userInfo="user" />
-      </div>
-
-      <div
-        v-if="selectedTab === 'speakerIdentification' && !isImpersonating"
-        class="app-settings__section">
-        <SpeakerIdentificationSettings
-          :organizationId="organizationId"
-          @quit="leaveSpeakerIdentification" />
-      </div>
+      <template v-if="!isImpersonating">
+        <div v-if="selectedTab === 'tags'" class="app-settings__section">
+          <TagManagement />
+        </div>
+        <div
+          v-if="selectedTab === 'organization-information'"
+          class="app-settings__section">
+          <UpdateOrganizationForm :currentOrganization="currentOrganization" />
+          <UpdateOrganizationDeletion
+            v-if="isAdmin"
+            :currentOrganization="currentOrganization" />
+        </div>
+        <div v-if="selectedTab === 'members'" class="app-settings__section">
+          <UpdateOrganizationUsers
+            :currentOrganization="currentOrganization"
+            :userInfo="user" />
+        </div>
+        <div
+          v-if="selectedTab === 'speakerIdentification'"
+          class="app-settings__section">
+          <SpeakerIdentificationSettings
+            :organizationId="organizationId"
+            @quit="leaveSpeakerIdentification" />
+        </div>
+      </template>
       <div v-if="selectedTab === 'apiTokens'" class="app-settings__section">
         <ApiTokenSettings v-if="isAdmin" :organizationId="organizationId" />
       </div>

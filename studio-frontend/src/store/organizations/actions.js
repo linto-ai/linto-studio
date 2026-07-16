@@ -14,7 +14,6 @@ import { getEnv } from "@/tools/getEnv"
 import store from "@/store/index.js"
 import createMediaModule from "../modules/mediaModuleFactory"
 import { setCookie } from "@/tools/setCookie"
-import { getImpersonatedOrgId } from "@/tools/impersonation.js"
 
 const actions = {
   async fetchOrganizations({ commit, rootGetters }) {
@@ -39,7 +38,7 @@ const actions = {
     return req
   },
   async setCurrentOrganizationScope(
-    { commit, dispatch, state },
+    { commit, dispatch, state, rootGetters },
     organizationId,
   ) {
     // This action also runs on same-org navigations (router guard), so guard
@@ -50,7 +49,7 @@ const actions = {
     const scope = `organizations/${organizationId}/conversations`
 
     // Keep the admin's own default organization untouched while impersonating
-    if (!getImpersonatedOrgId()) {
+    if (!rootGetters["system/isImpersonating"]) {
       setCookie("organizationScope", organizationId, 365)
     }
 

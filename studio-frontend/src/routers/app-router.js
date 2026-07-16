@@ -12,10 +12,7 @@ import { logout } from "../tools/logout"
 import { resetCookie } from "../tools/resetCookie"
 import { customDebug } from "@/tools/customDebug.js"
 import { generateId } from "@/tools/generateId.js"
-import {
-  getImpersonatedOrgId,
-  clearImpersonatedOrgId,
-} from "@/tools/impersonation.js"
+import { isAtLeastSystemAdministrator } from "@/const/platformRoles.js"
 
 const defaultComponents = {}
 
@@ -30,18 +27,8 @@ const defaultProps = {
 
 Vue.use(Router)
 
-const SYSTEM_ADMINISTRATOR_ROLE = 8
-const SUPER_ADMINISTRATOR_ROLE = 16
-
-function isPlatformAdministrator(platformRole) {
-  return (
-    (platformRole & SYSTEM_ADMINISTRATOR_ROLE) === SYSTEM_ADMINISTRATOR_ROLE ||
-    (platformRole & SUPER_ADMINISTRATOR_ROLE) === SUPER_ADMINISTRATOR_ROLE
-  )
-}
-
 function syncImpersonationState(to) {
-  const impersonatedOrgId = getImpersonatedOrgId()
+  const impersonatedOrgId = store.getters["system/impersonatedOrganizationId"]
   if (!impersonatedOrgId) return
 
   const platformRole = store.getters["user/getUserPlatformRole"]
@@ -49,9 +36,8 @@ function syncImpersonationState(to) {
     to.meta?.backoffice ||
     (to.params.organizationId && to.params.organizationId !== impersonatedOrgId)
 
-  if (!isPlatformAdministrator(platformRole) || leavesImpersonatedOrg) {
-    clearImpersonatedOrgId()
-    store.commit("system/setImpersonatedOrganizationId", null)
+  if (!isAtLeastSystemAdministrator(platformRole) || leavesImpersonatedOrg) {
+    store.dispatch("system/stopImpersonation")
   }
 }
 

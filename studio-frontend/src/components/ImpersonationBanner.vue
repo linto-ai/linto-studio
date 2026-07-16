@@ -18,24 +18,25 @@
 </template>
 <script>
 import { mapGetters } from "vuex"
+import { orgDisplayName } from "@/tools/orgDisplayName.js"
 
 export default {
   computed: {
     ...mapGetters("system", ["impersonatedOrganizationId"]),
+    ...mapGetters("user", { userId: "getUserId" }),
     ...mapGetters("organizations", {
       currentOrganization: "getCurrentOrganization",
     }),
     organizationName() {
-      return this.currentOrganization?.name || ""
+      return orgDisplayName(this.currentOrganization, this.userId)
     },
   },
   methods: {
-    async exitImpersonation() {
-      const organizationId = this.impersonatedOrganizationId
-      await this.$store.dispatch("system/stopImpersonation")
+    exitImpersonation() {
+      // navigating to a backoffice route clears the impersonation state
       this.$router.push({
         name: "backoffice-organizationDetail",
-        params: { organizationId },
+        params: { organizationId: this.impersonatedOrganizationId },
       })
     },
   },

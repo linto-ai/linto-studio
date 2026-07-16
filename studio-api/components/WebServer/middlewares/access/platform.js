@@ -32,6 +32,7 @@ module.exports = {
   isSessionOperator: (req) => checkAccess(req, ROLE.SESSION_OPERATOR),
   isOrganizationInitiator: (req) =>
     checkAccess(req, ROLE.ORGANIZATION_INITIATOR),
+  isReadOnlyScope,
 }
 
 async function checkAccess(req, role) {
@@ -61,9 +62,13 @@ async function checkAccess(req, role) {
   }
 }
 
+// scope sent during organization impersonation: read bypasses only
+function isReadOnlyScope(req) {
+  return req.query.userScope === "backoffice-readonly"
+}
+
 function grantBackofficeAccess(req) {
   req.backofficeAccess = true
-  // scope sent during organization impersonation: read bypasses only
-  req.backofficeReadOnly = req.query.userScope === "backoffice-readonly"
+  req.backofficeReadOnly = isReadOnlyScope(req)
   req.userRole = ORGANIZATION_ROLE.ADMIN
 }

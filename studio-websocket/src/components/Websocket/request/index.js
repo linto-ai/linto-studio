@@ -14,7 +14,7 @@ async function sendRequest(url, params, data, headers, userToken) {
       // GET only: lets impersonating admins read, inert for other tokens
       req = await axios.get(url, {
         ...params,
-        params: { ...(data || {}), userScope: "backoffice-readonly" },
+        params: { ...data, userScope: "backoffice-readonly" },
         headers: {
           ...headers,
           Authorization: `Bearer ${userToken}`,
