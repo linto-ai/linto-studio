@@ -12,6 +12,10 @@ import { logout } from "../tools/logout"
 import { resetCookie } from "../tools/resetCookie"
 import { customDebug } from "@/tools/customDebug.js"
 import { generateId } from "@/tools/generateId.js"
+import {
+  getImpersonatedOrgId,
+  clearImpersonatedOrgId,
+} from "@/tools/impersonation.js"
 
 const defaultComponents = {}
 
@@ -25,6 +29,31 @@ const defaultProps = {
 }
 
 Vue.use(Router)
+
+const SYSTEM_ADMINISTRATOR_ROLE = 8
+const SUPER_ADMINISTRATOR_ROLE = 16
+
+function isPlatformAdministrator(platformRole) {
+  return (
+    (platformRole & SYSTEM_ADMINISTRATOR_ROLE) === SYSTEM_ADMINISTRATOR_ROLE ||
+    (platformRole & SUPER_ADMINISTRATOR_ROLE) === SUPER_ADMINISTRATOR_ROLE
+  )
+}
+
+function syncImpersonationState(to) {
+  const impersonatedOrgId = getImpersonatedOrgId()
+  if (!impersonatedOrgId) return
+
+  const platformRole = store.getters["user/getUserPlatformRole"]
+  const leavesImpersonatedOrg =
+    to.meta?.backoffice ||
+    (to.params.organizationId && to.params.organizationId !== impersonatedOrgId)
+
+  if (!isPlatformAdministrator(platformRole) || leavesImpersonatedOrg) {
+    clearImpersonatedOrgId()
+    store.commit("system/setImpersonatedOrganizationId", null)
+  }
+}
 
 function handleGenericScope(to) {
   if (to.meta.favorites) {
@@ -79,10 +108,25 @@ const authGuards = {
   async handleOrganizationScope(to, next) {
     const defaultOrganizationId =
       store.getters["organizations/getDefaultOrganizationId"]
+    const impersonatedOrganizationId =
+      store.getters["system/impersonatedOrganizationId"]
 
     // handle generic scope
 
     if (!to.meta?.userPage && !to.meta?.backoffice) {
+      if (
+        impersonatedOrganizationId &&
+        to.params.organizationId === impersonatedOrganizationId
+      ) {
+        // the impersonated org is absent from the user's organization list
+        await store.dispatch(
+          "organizations/setCurrentOrganizationScope",
+          impersonatedOrganizationId,
+        )
+        handleGenericScope(to)
+        return { redirect: false }
+      }
+
       if (
         !to.params.organizationId ||
         store.getters["organizations/getOrganizationById"](
@@ -95,7 +139,8 @@ const authGuards = {
             ...to,
             params: {
               ...to.params,
-              organizationId: defaultOrganizationId,
+              organizationId:
+                impersonatedOrganizationId || defaultOrganizationId,
             },
           },
         }
@@ -110,7 +155,7 @@ const authGuards = {
     } else {
       store.dispatch(
         "organizations/setCurrentOrganizationScope",
-        defaultOrganizationId,
+        impersonatedOrganizationId || defaultOrganizationId,
       )
       handleGenericScope(to)
       return { redirect: false }
@@ -903,8 +948,13 @@ router.beforeEach(async (to, from, next) => {
     await store.dispatch("organizations/fetchOrganizations")
     routerDebug("Organizations fetched")
 
+    syncImpersonationState(to)
+
     // Check if user has organizations
-    if (store.getters["organizations/getOrganizationLength"] === 0) {
+    if (
+      store.getters["organizations/getOrganizationLength"] === 0 &&
+      !store.getters["system/isImpersonating"]
+    ) {
       routerDebug("No organization")
 
       const platformRole = store.getters["user/getUserPlatformRole"]

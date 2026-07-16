@@ -10,10 +10,11 @@ const BASE_API = process.env.CONVO_API
 async function sendRequest(url, params, data, headers, userToken) {
   try {
     let req = null
-    if (params.method === "get") {
+    if (params.method?.toLowerCase() === "get") {
+      // GET only: lets impersonating admins read, inert for other tokens
       req = await axios.get(url, {
         ...params,
-        params: data,
+        params: { ...(data || {}), userScope: "backoffice-readonly" },
         headers: {
           ...headers,
           Authorization: `Bearer ${userToken}`,
@@ -433,11 +434,7 @@ export async function apiSubscribeLlmJob(
  * @param {string} jobId - Job ID
  * @param {string} userToken - User token
  */
-export async function apiUnsubscribeLlmJob(
-  conversationId,
-  jobId,
-  userToken,
-) {
+export async function apiUnsubscribeLlmJob(conversationId, jobId, userToken) {
   return await sendRequest(
     `${BASE_API}/internal/llm/unsubscribe`,
     { method: "post" },

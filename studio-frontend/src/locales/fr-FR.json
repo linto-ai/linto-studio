@@ -203,7 +203,8 @@
       "personal_organizations_hidden": "Organisations personnelles cachées",
       "personal_organization": "Organisation personnelle",
       "group_organization": "Organisation de groupe",
-      "remove_organisation_button": "Supprimer l'organisation | Supprimer les {count} organisations"
+      "remove_organisation_button": "Supprimer l'organisation | Supprimer les {count} organisations",
+      "view_as_button_label": "Voir en tant que"
     },
     "token_list": {
       "title": "Clés d'API",
@@ -645,6 +646,10 @@
   },
   "highlights_name": {
     "keyword": "Mots clés"
+  },
+  "impersonation": {
+    "banner": "Vous consultez l'organisation {name} en lecture seule",
+    "exit_button_label": "Revenir au backoffice"
   },
   "invite_user": {
     "add_user": "Ajouter l'utilisateur",
@@ -1107,6 +1112,9 @@
     "is_updated": "Le compte rendu est à jour avec la transcription",
     "queued": {
       "title": "Le compte rendu est en attente de traitement"
+    },
+    "empty": {
+      "title": "Aucun document n'a été généré pour ce média"
     },
     "reload_document": "Regénérer le document",
     "tabs": {

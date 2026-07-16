@@ -42,7 +42,9 @@
                 <span>{{ $t("app_settings_modal.notifications") }}</span>
               </a>
             </li>
-            <li v-if="speakerIdentificationEnabled" :class="{ active: selectedTab === 'speakerRecognition' }">
+            <li
+              v-if="speakerIdentificationEnabled"
+              :class="{ active: selectedTab === 'speakerRecognition' }">
               <a href="#" @click="selectTab('speakerRecognition')">
                 <ph-icon name="waveform" weight="bold"></ph-icon>
                 <span>{{ $t("app_settings_modal.speaker_recognition") }}</span>
@@ -55,9 +57,9 @@
               </a>
             </li> -->
           </ul>
-          <h4>{{ orgaName }}</h4>
+          <h4 v-if="!isImpersonating">{{ orgaName }}</h4>
 
-          <ul>
+          <ul v-if="!isImpersonating">
             <li :class="{ active: selectedTab === 'organization-information' }">
               <a href="#" @click="selectTab('organization-information')">
                 <ph-icon name="info" weight="bold"></ph-icon>
@@ -86,10 +88,14 @@
                 <span>{{ $t("app_settings_modal.tags") }}</span>
               </a>
             </li>
-            <li v-if="speakerIdentificationEnabled" :class="{ active: selectedTab === 'speakerIdentification' }">
+            <li
+              v-if="speakerIdentificationEnabled"
+              :class="{ active: selectedTab === 'speakerIdentification' }">
               <a href="#" @click="selectTab('speakerIdentification')">
                 <ph-icon name="microphone" weight="bold"></ph-icon>
-                <span>{{ $t("app_settings_modal.speaker_identification") }}</span>
+                <span>{{
+                  $t("app_settings_modal.speaker_identification")
+                }}</span>
               </a>
             </li>
             <li :class="{ active: selectedTab === 'apiTokens' }" v-if="isAdmin">
@@ -123,10 +129,14 @@
       <div v-if="selectedTab === 'notifications'" class="app-settings__section">
         <UserSettingsNotifications :userInfo="user" v-if="isAuthenticated" />
       </div>
-      <div v-if="selectedTab === 'speakerRecognition'" class="app-settings__section">
+      <div
+        v-if="selectedTab === 'speakerRecognition'"
+        class="app-settings__section">
         <UserSettingsVoiceOptIn v-if="isAuthenticated" />
       </div>
-      <div v-if="selectedTab === 'tags'" class="app-settings__section">
+      <div
+        v-if="selectedTab === 'tags' && !isImpersonating"
+        class="app-settings__section">
         <TagManagement />
       </div>
       <div v-if="selectedTab === 'preferences'" class="app-settings__section">
@@ -134,21 +144,23 @@
       </div>
 
       <div
-        v-if="selectedTab === 'organization-information'"
+        v-if="selectedTab === 'organization-information' && !isImpersonating"
         class="app-settings__section">
         <UpdateOrganizationForm :currentOrganization="currentOrganization" />
         <UpdateOrganizationDeletion
           v-if="isAdmin"
           :currentOrganization="currentOrganization" />
       </div>
-      <div v-if="selectedTab === 'members'" class="app-settings__section">
+      <div
+        v-if="selectedTab === 'members' && !isImpersonating"
+        class="app-settings__section">
         <UpdateOrganizationUsers
           :currentOrganization="currentOrganization"
           :userInfo="user" />
       </div>
 
       <div
-        v-if="selectedTab === 'speakerIdentification'"
+        v-if="selectedTab === 'speakerIdentification' && !isImpersonating"
         class="app-settings__section">
         <SpeakerIdentificationSettings
           :organizationId="organizationId"
@@ -223,7 +235,7 @@ export default {
       currentOrganization: "getCurrentOrganization",
       organizationId: "getCurrentOrganizationScope",
     }),
-    ...mapGetters("system", ["isMobile"]),
+    ...mapGetters("system", ["isMobile", "isImpersonating"]),
     speakerIdentificationEnabled() {
       return getEnv("VUE_APP_ENABLE_SPEAKER_IDENTIFICATION") === "true"
     },

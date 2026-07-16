@@ -27,7 +27,11 @@ const {
 
 module.exports = {
   asReadTaxonomyAccess: async (req, res, next) => {
-    if (await platformAccess.isSystemAdministrator(req)) next()
+    if (
+      (await platformAccess.isSystemAdministrator(req)) &&
+      req.method === "GET"
+    )
+      next()
     else if (req.params.conversationId)
       await conversation.access(
         req,
@@ -49,8 +53,7 @@ module.exports = {
       )
   },
   asWriteTaxonomyAccess: async (req, res, next) => {
-    if (await platformAccess.isSystemAdministrator(req)) next()
-    else if (req.params.conversationId)
+    if (req.params.conversationId)
       await conversation.access(
         req,
         next,
@@ -71,8 +74,7 @@ module.exports = {
       )
   },
   asDeleteTaxonomyAccess: async (req, res, next) => {
-    if (await platformAccess.isSystemAdministrator(req)) next()
-    else if (req.params.organizationId)
+    if (req.params.organizationId)
       await organization.access(
         req,
         next,

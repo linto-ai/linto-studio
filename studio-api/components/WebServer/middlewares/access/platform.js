@@ -44,7 +44,10 @@ async function checkAccess(req, role) {
     if (userRole && ROLE.hasPlatformRoleAccess(userRole, role)) {
       if (ROLE.ORGANIZATION_INITIATOR === role) {
         return true
-      } else if (req.query.userScope === "backoffice") {
+      } else if (
+        req.query.userScope === "backoffice" ||
+        req.query.userScope === "backoffice-readonly"
+      ) {
         grantBackofficeAccess(req)
         return true
       } else {
@@ -60,5 +63,7 @@ async function checkAccess(req, role) {
 
 function grantBackofficeAccess(req) {
   req.backofficeAccess = true
+  // scope sent during organization impersonation: read bypasses only
+  req.backofficeReadOnly = req.query.userScope === "backoffice-readonly"
   req.userRole = ORGANIZATION_ROLE.ADMIN
 }

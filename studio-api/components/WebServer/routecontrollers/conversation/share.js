@@ -41,7 +41,9 @@ async function getRightsByConversation(req, res, next) {
       conversation[0],
     )
 
-    if (req.payload.data.userId === conversation[0].owner) {
+    if (req.backofficeAccess) {
+      data.right = RIGHTS.READ
+    } else if (req.payload.data.userId === conversation[0].owner) {
       data.right = RIGHTS.adminRight()
     }
     res.status(200).send(data)
@@ -104,7 +106,8 @@ async function updateConversationRights(req, res, next) {
         let sharedBy = await model.users.getById(req.payload.data.userId)
 
         if (sharedBy.length !== 1) throw new UserNotFound()
-        const sharedByEmail = sharedBy[0].email || sharedBy[0].firstname || "LinTO Studio"
+        const sharedByEmail =
+          sharedBy[0].email || sharedBy[0].firstname || "LinTO Studio"
         await Mailing.conversationRightUpdate(
           user,
           req,
@@ -117,7 +120,8 @@ async function updateConversationRights(req, res, next) {
     if (!isUpdated) {
       let sharedBy = await model.users.getById(req.payload.data.userId)
       if (sharedBy.length !== 1) throw new UserNotFound()
-      const sharedByEmail = sharedBy[0].email || sharedBy[0].firstname || "LinTO Studio"
+      const sharedByEmail =
+        sharedBy[0].email || sharedBy[0].firstname || "LinTO Studio"
 
       if (req.body.notify !== false) {
         Mailing.conversationShared(
@@ -181,7 +185,8 @@ async function inviteNewUser(req, res, next) {
       // Share conversation to created user
       const sharedBy = await model.users.getById(req.payload.data.userId)
       if (sharedBy.length !== 1) throw new UserNotFound()
-      const sharedByEmail = sharedBy[0].email || sharedBy[0].firstname || "LinTO Studio"
+      const sharedByEmail =
+        sharedBy[0].email || sharedBy[0].firstname || "LinTO Studio"
       if (req.body.notify !== false) {
         await Mailing.conversationSharedNewUser(
           email,

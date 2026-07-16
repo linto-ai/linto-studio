@@ -4,6 +4,12 @@
       <div class="flex1 flex align-center gap-small">
         <h1 v-if="organization" class="flex1">{{ organization.name }}</h1>
         <Button
+          @click="viewAsOrganization"
+          variant="tertiary"
+          icon="eye"
+          style="white-space: nowrap"
+          :label="$t('backoffice.organisation_list.view_as_button_label')" />
+        <Button
           :to="{
             name: 'backoffice-activityList',
             query: { tab: 'sessions_kpi', org: organizationId },
@@ -124,6 +130,16 @@ export default {
     },
     confirmDeletion() {
       this.$router.push({ name: "backoffice-organizationList" })
+    },
+    async viewAsOrganization() {
+      await this.$store.dispatch(
+        "system/startImpersonation",
+        this.organizationId,
+      )
+      this.$router.push({
+        name: "explore",
+        params: { organizationId: this.organizationId },
+      })
     },
   },
   components: {

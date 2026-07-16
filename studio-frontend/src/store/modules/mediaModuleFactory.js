@@ -8,6 +8,7 @@ import {
 } from "@/api/conversation"
 import i18n from "@/i18n"
 import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
+import USER_RIGHTS from "@/const/userRights"
 import Vue from "vue"
 import { bus } from "@/main.js"
 
@@ -65,6 +66,10 @@ export default function createMediaModule(scope, status = "done") {
       },
       getSelfMediaRight(state, getters, rootState, rootGetters) {
         return (id) => {
+          if (rootGetters["system/isImpersonating"]) {
+            return USER_RIGHTS.READ
+          }
+
           const conv = getters.getMediaById(id)
           if (!conv) {
             return 0

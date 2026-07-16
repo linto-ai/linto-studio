@@ -29,6 +29,7 @@
             class="media-explorer-item__checkbox" />
         </div>
         <FavoriteStar
+          v-if="!isImpersonating"
           :value="isFavorite"
           :title="$t('media_explorer.favorite')"
           @input="toggleFavorite" />
@@ -226,6 +227,7 @@ export default {
       currentOrganizationAllUsers: "getCurrentOrganizationAllUsers",
       currentOrganization: "getCurrentOrganization",
     }),
+    ...mapGetters("system", ["isImpersonating"]),
 
     enableSecurityLevel() {
       return getEnv("VUE_APP_ENABLE_SECURITY_LEVEL") === "true"
@@ -249,22 +251,28 @@ export default {
     },
 
     actionsItems() {
-      return [
-        {
-          id: "edit",
-          name: this.$t("media_explorer.line.edit_transcription"),
-          icon: "pencil",
-          color: "primary",
-          to: {
-            name: "conversations transcription",
-            params: {
-              conversationId: this.reactiveMedia._id,
-              organizationId: this.organizationId,
-            },
-            query: this.searchValue ? { search: this.searchValue } : {},
+      const transcriptionItem = {
+        id: "edit",
+        name: this.$t("media_explorer.line.edit_transcription"),
+        icon: "pencil",
+        color: "primary",
+        to: {
+          name: "conversations transcription",
+          params: {
+            conversationId: this.reactiveMedia._id,
+            organizationId: this.organizationId,
           },
-          disabled: this.status !== "done",
+          query: this.searchValue ? { search: this.searchValue } : {},
         },
+        disabled: this.status !== "done",
+      }
+
+      if (this.isImpersonating) {
+        return [transcriptionItem]
+      }
+
+      return [
+        transcriptionItem,
         {
           id: "subtitles",
           name: this.$t("media_explorer.line.edit_subtitles"),

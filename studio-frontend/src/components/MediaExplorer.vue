@@ -16,7 +16,9 @@
         :selected-media-ids.sync="selectedMediaIds">
         <template #actions>
           <IsMobile>
-            <div class="flex gap-small" v-if="selectedMedias.length > 0">
+            <div
+              class="flex gap-small"
+              v-if="selectedMedias.length > 0 && !isImpersonating">
               <ConversationShareMultiple
                 :selectedConversations="selectedMedias"
                 :currentOrganizationScope="currentOrganizationScope"
@@ -141,6 +143,7 @@ export default {
       currentOrganizationScope: "getCurrentOrganizationScope",
     }),
     ...mapGetters("system", { pageIsLoading: "isLoading" }),
+    ...mapGetters("system", ["isImpersonating"]),
     selectedMedias() {
       return this.medias.filter((m) => this.selectedMediaIds.includes(m._id))
     },

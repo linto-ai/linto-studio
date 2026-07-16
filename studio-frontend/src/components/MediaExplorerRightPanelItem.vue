@@ -82,6 +82,7 @@
               }}
             </Button>
             <Button
+              v-if="!isImpersonating"
               @click="handleDuplicate"
               :loading="duplicateLoading"
               :disabled="isProcessing"
@@ -181,6 +182,7 @@ export default {
     ...mapGetters("organizations", {
       getCurrentScope: "getCurrentScope",
     }),
+    ...mapGetters("system", ["isImpersonating"]),
     reactiveSelectedMedia() {
       return this.selectedMedia
     },

@@ -83,6 +83,11 @@
 
         <template #cell-actions="{ id }">
           <Button
+            @click="viewAsOrganization(id)"
+            variant="secondary"
+            icon="eye"
+            :label="$t('backoffice.organisation_list.view_as_button_label')" />
+          <Button
             @click="$router.push(orgDetailRoute(id))"
             variant="secondary"
             icon="pencil"
@@ -177,6 +182,10 @@ export default {
         name: "backoffice-organizationDetail",
         params: { organizationId },
       }
+    },
+    async viewAsOrganization(organizationId) {
+      await this.$store.dispatch("system/startImpersonation", organizationId)
+      this.$router.push({ name: "explore", params: { organizationId } })
     },
     changeShowPersonalOrganizations() {
       this.showPersonalOrganizations = !this.showPersonalOrganizations

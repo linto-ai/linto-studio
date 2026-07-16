@@ -1,6 +1,7 @@
 import axios from "axios"
 import { bus } from "@/main.js"
 import { getCookie } from "./getCookie"
+import { getImpersonatedOrgId } from "./impersonation.js"
 
 export async function sendRequest(
   url,
@@ -16,6 +17,8 @@ export async function sendRequest(
   const defaultQueryParams = {}
   if (isBackOfficePage) {
     defaultQueryParams["userScope"] = "backoffice"
+  } else if (getImpersonatedOrgId()) {
+    defaultQueryParams["userScope"] = "backoffice-readonly"
   }
 
   // Get authorization token

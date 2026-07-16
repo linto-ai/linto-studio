@@ -14,6 +14,7 @@ import { getEnv } from "@/tools/getEnv"
 import store from "@/store/index.js"
 import createMediaModule from "../modules/mediaModuleFactory"
 import { setCookie } from "@/tools/setCookie"
+import { getImpersonatedOrgId } from "@/tools/impersonation.js"
 
 const actions = {
   async fetchOrganizations({ commit, rootGetters }) {
@@ -48,7 +49,10 @@ const actions = {
 
     const scope = `organizations/${organizationId}/conversations`
 
-    setCookie("organizationScope", organizationId, 365)
+    // Keep the admin's own default organization untouched while impersonating
+    if (!getImpersonatedOrgId()) {
+      setCookie("organizationScope", organizationId, 365)
+    }
 
     if (!store.hasModule(`${organizationId}/done/conversations`)) {
       store.registerModule(
@@ -176,7 +180,10 @@ const actions = {
   },
   async deleteVoiceprintCollection({ commit, state }, collectionId) {
     const organizationId = state.currentOrganizationScope
-    const res = await apiDeleteVoiceprintCollection(organizationId, collectionId)
+    const res = await apiDeleteVoiceprintCollection(
+      organizationId,
+      collectionId,
+    )
     if (res.status === "success") {
       commit("removeVoiceprintCollection", collectionId)
     }

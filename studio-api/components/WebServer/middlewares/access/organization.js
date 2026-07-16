@@ -19,6 +19,9 @@ const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
 
 async function isSystemAdmin(req) {
   if (await platformAccess.isSystemAdministrator(req)) {
+    if (req.backofficeReadOnly && req.method !== "GET") {
+      return false
+    }
     req.userRole = ROLES.ADMIN
     return true
   }
