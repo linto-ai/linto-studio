@@ -1,6 +1,8 @@
 import axios from "axios"
 import Debug from "debug"
 
+import { isReadOnlyToken, READ_ONLY_SCOPE } from "../tools/impersonation.js"
+
 const errorDebug = Debug("Websocket:error:request")
 const debug = Debug("Websocket:debug:request:debug")
 const info = Debug("Websocket:debug:request:info")
@@ -11,10 +13,14 @@ async function sendRequest(url, params, data, headers, userToken) {
   try {
     let req = null
     if (params.method?.toLowerCase() === "get") {
-      // GET only: lets impersonating admins read, inert for other tokens
+      // impersonating admins need the read-only scope to be granted reads;
+      // GET only so the scope can never enable a write
+      const query = isReadOnlyToken(userToken)
+        ? { ...data, userScope: READ_ONLY_SCOPE }
+        : data
       req = await axios.get(url, {
         ...params,
-        params: { ...data, userScope: "backoffice-readonly" },
+        params: query,
         headers: {
           ...headers,
           Authorization: `Bearer ${userToken}`,

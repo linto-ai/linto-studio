@@ -41,7 +41,7 @@ async function getRightsByConversation(req, res, next) {
       conversation[0],
     )
 
-    if (req.backofficeAccess) {
+    if (req.backofficeReadOnly) {
       data.right = RIGHTS.READ
     } else if (req.payload.data.userId === conversation[0].owner) {
       data.right = RIGHTS.adminRight()
