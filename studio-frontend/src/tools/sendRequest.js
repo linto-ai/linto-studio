@@ -1,7 +1,7 @@
 import axios from "axios"
 import { bus } from "@/main.js"
 import { getCookie } from "./getCookie"
-import { getImpersonatedOrgId } from "./impersonation.js"
+import { getImpersonatedOrgId } from "./getImpersonatedOrgId.js"
 
 export async function sendRequest(
   url,

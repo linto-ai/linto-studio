@@ -22,7 +22,7 @@ import { orgDisplayName } from "@/tools/orgDisplayName.js"
 
 export default {
   computed: {
-    ...mapGetters("system", ["impersonatedOrganizationId"]),
+    ...mapGetters("organizations", ["impersonatedOrganizationId"]),
     ...mapGetters("user", { userId: "getUserId" }),
     ...mapGetters("organizations", {
       currentOrganization: "getCurrentOrganization",

@@ -1,5 +1,5 @@
 import EditorWorker from "../workers/collaboration-worker"
-import { getImpersonatedOrgId } from "./impersonation.js"
+import { getImpersonatedOrgId } from "./getImpersonatedOrgId.js"
 
 export function workerSendMessage(action, params) {
   EditorWorker.workerSingleton.sendMessage(action, params)

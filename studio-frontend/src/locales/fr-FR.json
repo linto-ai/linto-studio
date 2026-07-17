@@ -203,8 +203,7 @@
       "personal_organizations_hidden": "Organisations personnelles cachées",
       "personal_organization": "Organisation personnelle",
       "group_organization": "Organisation de groupe",
-      "remove_organisation_button": "Supprimer l'organisation | Supprimer les {count} organisations",
-      "view_as_button_label": "Voir en tant que"
+      "remove_organisation_button": "Supprimer l'organisation | Supprimer les {count} organisations"
     },
     "token_list": {
       "title": "Clés d'API",
@@ -649,6 +648,7 @@
   },
   "impersonation": {
     "banner": "Vous consultez l'organisation {name} en lecture seule",
+    "browse_button_label": "Parcourir",
     "exit_button_label": "Revenir au backoffice"
   },
   "invite_user": {

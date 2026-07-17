@@ -82,16 +82,18 @@
         </template>
 
         <template #cell-actions="{ id }">
-          <Button
-            @click="viewAsOrganization(id)"
-            variant="secondary"
-            icon="eye"
-            :label="$t('backoffice.organisation_list.view_as_button_label')" />
-          <Button
-            @click="$router.push(orgDetailRoute(id))"
-            variant="secondary"
-            icon="pencil"
-            :label="$t('orga_table.edit_button_label')" />
+          <div class="flex gap-small">
+            <Button
+              @click="viewAsOrganization(id)"
+              variant="secondary"
+              icon="eye"
+              :label="$t('impersonation.browse_button_label')" />
+            <Button
+              @click="$router.push(orgDetailRoute(id))"
+              variant="secondary"
+              icon="pencil"
+              :label="$t('orga_table.edit_button_label')" />
+          </div>
         </template>
       </GenericTableRequest>
     </div>

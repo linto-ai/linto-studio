@@ -8,7 +8,7 @@
           variant="tertiary"
           icon="eye"
           style="white-space: nowrap"
-          :label="$t('backoffice.organisation_list.view_as_button_label')" />
+          :label="$t('impersonation.browse_button_label')" />
         <Button
           :to="{
             name: 'backoffice-activityList',

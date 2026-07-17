@@ -202,8 +202,7 @@
       "personal_organizations_hidden": "Personal organisations hidden",
       "personal_organization": "Personal organisation",
       "group_organization": "Group organisation",
-      "remove_organisation_button": "Delete an organisation | Delete {count} organisations",
-      "view_as_button_label": "View as"
+      "remove_organisation_button": "Delete an organisation | Delete {count} organisations"
     },
     "token_list": {
       "title": "API Keys",
@@ -655,6 +654,7 @@
   },
   "impersonation": {
     "banner": "You are viewing organization {name} in read-only mode",
+    "browse_button_label": "Browse",
     "exit_button_label": "Back to backoffice"
   },
   "invite_user": {

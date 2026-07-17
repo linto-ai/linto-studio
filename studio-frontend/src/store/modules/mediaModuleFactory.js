@@ -66,7 +66,7 @@ export default function createMediaModule(scope, status = "done") {
       },
       getSelfMediaRight(state, getters, rootState, rootGetters) {
         return (id) => {
-          if (rootGetters["system/isImpersonating"]) {
+          if (rootGetters["organizations/isImpersonatingCurrentOrganization"]) {
             return USER_RIGHTS.READ
           }
 

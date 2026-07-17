@@ -14,6 +14,8 @@ import { getEnv } from "@/tools/getEnv"
 import store from "@/store/index.js"
 import createMediaModule from "../modules/mediaModuleFactory"
 import { setCookie } from "@/tools/setCookie"
+import { setImpersonatedOrgId } from "@/tools/setImpersonatedOrgId.js"
+import { clearImpersonatedOrgId } from "@/tools/clearImpersonatedOrgId.js"
 
 const actions = {
   async fetchOrganizations({ commit, rootGetters }) {
@@ -38,7 +40,7 @@ const actions = {
     return req
   },
   async setCurrentOrganizationScope(
-    { commit, dispatch, state, rootGetters },
+    { commit, dispatch, state },
     organizationId,
   ) {
     // This action also runs on same-org navigations (router guard), so guard
@@ -49,7 +51,7 @@ const actions = {
     const scope = `organizations/${organizationId}/conversations`
 
     // Keep the admin's own default organization untouched while impersonating
-    if (!rootGetters["system/isImpersonating"]) {
+    if (!state.impersonatedOrganizationId) {
       setCookie("organizationScope", organizationId, 365)
     }
 
@@ -96,6 +98,14 @@ const actions = {
   },
   async setCurrentFilterStatus({ commit }, status) {
     commit("setCurrentFilterStatus", status)
+  },
+  startImpersonation({ commit }, organizationId) {
+    setImpersonatedOrgId(organizationId)
+    commit("setImpersonatedOrganizationId", organizationId)
+  },
+  stopImpersonation({ commit }) {
+    clearImpersonatedOrgId()
+    commit("setImpersonatedOrganizationId", null)
   },
   /**
    * Load the current organization with M2M users (API keys) included in

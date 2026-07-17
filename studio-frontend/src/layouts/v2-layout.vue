@@ -2,7 +2,8 @@
   <div
     class="v2-layout"
     :class="{ 'no-sidebar': !sidebarOpen || fullscreen || !isAuthenticated }">
-    <ImpersonationBanner v-if="isImpersonating && !backoffice" />
+    <ImpersonationBanner
+      v-if="isImpersonatingCurrentOrganization && !backoffice" />
     <QuickSessionNotif v-if="quickSession && !isQuickSessionPage" />
     <div class="v2-layout__content">
       <div
@@ -92,7 +93,8 @@ export default {
     isQuickSessionPage() {
       return this.$route.name === "quick session"
     },
-    ...mapGetters("system", ["sidebarOpen", "isMobile", "isImpersonating"]),
+    ...mapGetters("system", ["sidebarOpen", "isMobile"]),
+    ...mapGetters("organizations", ["isImpersonatingCurrentOrganization"]),
     ...mapGetters("quickSession", ["quickSession"]),
   },
   beforeMount() {

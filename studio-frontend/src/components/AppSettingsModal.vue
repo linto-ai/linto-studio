@@ -57,7 +57,7 @@
               </a>
             </li> -->
           </ul>
-          <template v-if="!isImpersonating">
+          <template v-if="!isImpersonatingCurrentOrganization">
             <h4>{{ orgaName }}</h4>
 
             <ul>
@@ -145,7 +145,7 @@
         <UserSettingsPreferences />
       </div>
 
-      <template v-if="!isImpersonating">
+      <template v-if="!isImpersonatingCurrentOrganization">
         <div v-if="selectedTab === 'tags'" class="app-settings__section">
           <TagManagement />
         </div>
@@ -239,7 +239,8 @@ export default {
       currentOrganization: "getCurrentOrganization",
       organizationId: "getCurrentOrganizationScope",
     }),
-    ...mapGetters("system", ["isMobile", "isImpersonating"]),
+    ...mapGetters("system", ["isMobile"]),
+    ...mapGetters("organizations", ["isImpersonatingCurrentOrganization"]),
     speakerIdentificationEnabled() {
       return getEnv("VUE_APP_ENABLE_SPEAKER_IDENTIFICATION") === "true"
     },

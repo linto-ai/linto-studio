@@ -39,7 +39,7 @@
             v-if="
               activeTab !== 'verbatim' &&
               (!isUpdated || isAdmin) &&
-              !isImpersonating
+              !isImpersonatingCurrentOrganization
             "
             variant="secondary"
             icon="arrow-clockwise"
@@ -111,7 +111,7 @@
 
       <!-- Verbatim tab: Download card with PopoverList -->
       <PopoverList
-        v-if="activeTab === 'verbatim' && !isImpersonating"
+        v-if="activeTab === 'verbatim' && !isImpersonatingCurrentOrganization"
         :items="optionsExport"
         closeOnItemClick
         @click="exportConv">
@@ -135,7 +135,11 @@
 
       <!-- AI Service tab: Publication card -->
       <button
-        v-else-if="activeTab && activeTab !== 'verbatim' && !isImpersonating"
+        v-else-if="
+          activeTab &&
+          activeTab !== 'verbatim' &&
+          !isImpersonatingCurrentOrganization
+        "
         class="action-card"
         @click="showPublicationModal = true">
         <div class="action-card__icon action-card__icon--publish">
@@ -177,7 +181,7 @@
           :blobUrl="blobUrl"
           :pdfPercentage="generationPercentage"
           :phase="generationPhase"
-          :editable="isEditableOutput && !isImpersonating"
+          :editable="isEditableOutput && !isImpersonatingCurrentOrganization"
           :errorMessage="currentJobError"
           :showTranscript="showTranscript"
           :canShowTranscript="
@@ -399,7 +403,7 @@ export default {
     chatEnabled() {
       return this.$store.state.chat.enabled
     },
-    ...mapGetters("system", ["isImpersonating"]),
+    ...mapGetters("organizations", ["isImpersonatingCurrentOrganization"]),
     currentOrganizationScope() {
       return this.$store.getters["organizations/getCurrentOrganizationScope"]
     },
@@ -520,7 +524,7 @@ export default {
         return "complete"
       }
       // impersonation cannot start a generation: avoid an endless "queued"
-      if (!this.currentJob && this.isImpersonating) {
+      if (!this.currentJob && this.isImpersonatingCurrentOrganization) {
         return "empty"
       }
       return this?.currentJob?.status || "queued"
@@ -936,7 +940,7 @@ export default {
       }
 
       // everything below can trigger a generation
-      if (this.isImpersonating) {
+      if (this.isImpersonatingCurrentOrganization) {
         return
       }
 

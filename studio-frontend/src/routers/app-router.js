@@ -12,7 +12,7 @@ import { logout } from "../tools/logout"
 import { resetCookie } from "../tools/resetCookie"
 import { customDebug } from "@/tools/customDebug.js"
 import { generateId } from "@/tools/generateId.js"
-import { isAtLeastSystemAdministrator } from "@/const/platformRoles.js"
+import { isAtLeastSystemAdministrator } from "@/tools/platformRoles.js"
 
 const defaultComponents = {}
 
@@ -28,7 +28,7 @@ const defaultProps = {
 Vue.use(Router)
 
 function syncImpersonationState(to) {
-  const impersonatedOrgId = store.getters["system/impersonatedOrganizationId"]
+  const impersonatedOrgId = store.getters["organizations/impersonatedOrganizationId"]
   if (!impersonatedOrgId) return
 
   const platformRole = store.getters["user/getUserPlatformRole"]
@@ -37,7 +37,7 @@ function syncImpersonationState(to) {
     (to.params.organizationId && to.params.organizationId !== impersonatedOrgId)
 
   if (!isAtLeastSystemAdministrator(platformRole) || leavesImpersonatedOrg) {
-    store.dispatch("system/stopImpersonation")
+    store.dispatch("organizations/stopImpersonation")
   }
 }
 
@@ -95,7 +95,7 @@ const authGuards = {
     const defaultOrganizationId =
       store.getters["organizations/getDefaultOrganizationId"]
     const impersonatedOrganizationId =
-      store.getters["system/impersonatedOrganizationId"]
+      store.getters["organizations/impersonatedOrganizationId"]
 
     // handle generic scope
 
@@ -937,9 +937,10 @@ router.beforeEach(async (to, from, next) => {
     syncImpersonationState(to)
 
     // Check if user has organizations
+    // (raw id, not the getter: the impersonated org scope is not set yet here)
     if (
       store.getters["organizations/getOrganizationLength"] === 0 &&
-      !store.getters["system/isImpersonating"]
+      !store.getters["organizations/impersonatedOrganizationId"]
     ) {
       routerDebug("No organization")
 

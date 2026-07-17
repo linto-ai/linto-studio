@@ -29,7 +29,7 @@
             class="media-explorer-item__checkbox" />
         </div>
         <FavoriteStar
-          v-if="!isImpersonating"
+          v-if="!isImpersonatingCurrentOrganization"
           :value="isFavorite"
           :title="$t('media_explorer.favorite')"
           @input="toggleFavorite" />
@@ -227,7 +227,7 @@ export default {
       currentOrganizationAllUsers: "getCurrentOrganizationAllUsers",
       currentOrganization: "getCurrentOrganization",
     }),
-    ...mapGetters("system", ["isImpersonating"]),
+    ...mapGetters("organizations", ["isImpersonatingCurrentOrganization"]),
 
     enableSecurityLevel() {
       return getEnv("VUE_APP_ENABLE_SECURITY_LEVEL") === "true"
@@ -267,7 +267,7 @@ export default {
         disabled: this.status !== "done",
       }
 
-      if (this.isImpersonating) {
+      if (this.isImpersonatingCurrentOrganization) {
         return [transcriptionItem]
       }
 

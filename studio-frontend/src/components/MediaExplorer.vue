@@ -18,7 +18,9 @@
           <IsMobile>
             <div
               class="flex gap-small"
-              v-if="selectedMedias.length > 0 && !isImpersonating">
+              v-if="
+                selectedMedias.length > 0 && !isImpersonatingCurrentOrganization
+              ">
               <ConversationShareMultiple
                 :selectedConversations="selectedMedias"
                 :currentOrganizationScope="currentOrganizationScope"
@@ -143,7 +145,7 @@ export default {
       currentOrganizationScope: "getCurrentOrganizationScope",
     }),
     ...mapGetters("system", { pageIsLoading: "isLoading" }),
-    ...mapGetters("system", ["isImpersonating"]),
+    ...mapGetters("organizations", ["isImpersonatingCurrentOrganization"]),
     selectedMedias() {
       return this.medias.filter((m) => this.selectedMediaIds.includes(m._id))
     },

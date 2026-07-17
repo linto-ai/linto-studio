@@ -1,9 +1,4 @@
 import IsMobile from "../../components/atoms/IsMobile.vue"
-import {
-  getImpersonatedOrgId,
-  setImpersonatedOrgId,
-  clearImpersonatedOrgId,
-} from "../../tools/impersonation.js"
 
 const state = {
   /**
@@ -24,9 +19,6 @@ const state = {
   sidebarOpen: undefined,
   isMobile: undefined,
   isLoading: false,
-
-  // organization viewed read-only by an admin, null when not impersonating
-  impersonatedOrganizationId: getImpersonatedOrgId() || null,
 }
 
 const mutations = {
@@ -60,9 +52,6 @@ const mutations = {
   },
   setIsLoading(state, isLoading) {
     state.isLoading = isLoading
-  },
-  setImpersonatedOrganizationId(state, organizationId) {
-    state.impersonatedOrganizationId = organizationId
   },
 }
 
@@ -106,14 +95,6 @@ const actions = {
   setIsLoading({ commit }, isLoading) {
     commit("setIsLoading", isLoading)
   },
-  startImpersonation({ commit }, organizationId) {
-    setImpersonatedOrgId(organizationId)
-    commit("setImpersonatedOrganizationId", organizationId)
-  },
-  stopImpersonation({ commit }) {
-    clearImpersonatedOrgId()
-    commit("setImpersonatedOrganizationId", null)
-  },
 }
 
 const getters = {
@@ -122,8 +103,6 @@ const getters = {
   isMobile: (state) => state.isMobile,
   isDesktop: (state) => !state.isMobile,
   isLoading: (state) => state.isLoading,
-  impersonatedOrganizationId: (state) => state.impersonatedOrganizationId,
-  isImpersonating: (state) => !!state.impersonatedOrganizationId,
 }
 
 export default {
