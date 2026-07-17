@@ -28,6 +28,10 @@ DB_MIGRATION_TARGET=1.8.5
 # STT Config
 GATEWAY_SERVICES=https://<domain>
 
+# Default segment resize for transcription results, request values take precedence
+DEFAULT_SEGMENT_CHAR_SIZE=2000
+DEFAULT_SEGMENT_WORD_SIZE=
+
 # LLM Gateway V2 Config
 # HTTP API endpoint (e.g., http://localhost:8010)
 LLM_GATEWAY_SERVICES=
