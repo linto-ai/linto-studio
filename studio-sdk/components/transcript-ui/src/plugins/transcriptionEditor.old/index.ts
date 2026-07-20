@@ -5,7 +5,7 @@ import type {
   Core,
   CorePlugin,
   TranscriptionEditorPluginApi,
-  TranslationStore,
+  TurnStore,
   YjsUser,
 } from "../../core/types"
 import { SPEAKERS_MAP_KEY, type SpeakerData } from "./utils/speakersSync"
@@ -27,7 +27,7 @@ export type { CollabOptions }
 
 export interface TranscriptionEditorOptions {
   /** Collaborative mode configuration. If absent, local-only mode. */
-  collab?: CollabOptions
+  collabOptions?: CollabOptions
   /** Name of the XmlFragment in the Y.Doc. @default "default" */
   field?: string
   /** Local user info for cursor display. */
@@ -54,7 +54,7 @@ export interface TranscriptionEditorOptions {
 }
 
 export function createTranscriptionEditorPlugin({
-  collab,
+  collabOptions,
   field = "default",
   user = { name: "Anonymous", color: "#999999" },
   readOnly = false,
@@ -133,19 +133,19 @@ export function createTranscriptionEditorPlugin({
         // a successful reload (e.g. on a fresh epoch) hides the overlay.
         error.value = null
 
-        const translation = editableTranslation(core)
-        if (!translation) return // virtual cross translation: read-only view
+        const turnStore = editableTranslation(core)
+        if (!turnStore) return // virtual cross translation: read-only view
         const deps = {
           core,
           host,
-          translation,
+          turnStore,
           field,
           readOnly,
           debugFlags,
           recorder,
         }
-        session = collab
-          ? new CollabSession(deps, collab)
+        session = collabOptions
+          ? new CollabSession(deps, collabOptions)
           : new LocalSession(deps)
       }
 
@@ -179,10 +179,11 @@ export function createTranscriptionEditorPlugin({
   }
 }
 
-/** The editable backing store of the active translation, or undefined when
+/** The editable turn store backing the active translation, or undefined when
  *  the active one is virtual (the cross translation) — no collab session,
- *  rendered read-only. */
-function editableTranslation(core: Core): TranslationStore | undefined {
+ *  rendered read-only. This is the boundary where the channel's taxonomy
+ *  (translations) is narrowed to the role the editor consumes (turns). */
+function editableTranslation(core: Core): TurnStore | undefined {
   const channel = core.activeChannel.value
   if (!channel) return undefined
   return channel.translations.get(channel.activeTranslation.value.id)

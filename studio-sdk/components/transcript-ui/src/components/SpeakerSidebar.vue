@@ -11,16 +11,16 @@ import ChannelSelector from './ChannelSelector.vue'
 import TranslationSelector from './TranslationSelector.vue'
 import { useI18n } from '../i18n'
 import { useCore } from '../core'
-import { renameSpeaker } from '../plugins/transcriptionEditor/utils/speakerActions'
+import { renameSpeaker } from '../core/helpers'
 import type { Speaker } from '../types/editor'
-import type { LLMServiceGenerationStatus } from '../core'
+import type { LLMServiceGenerationStatus, TranslationInfo } from '../core'
 
 withDefaults(
   defineProps<{
     speakers: Speaker[]
     channels: { id: string; name: string }[]
     selectedChannelId: string
-    translations: { id: string; languages: string[]; isSource: boolean }[]
+    translations: TranslationInfo[]
     selectedTranslationId: string
     showSpeakers?: boolean
   }>(),

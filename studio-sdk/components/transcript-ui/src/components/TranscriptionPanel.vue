@@ -17,7 +17,6 @@ import { useI18n } from "../i18n"
 import { useFollowPlayback } from "../composables/useFollowPlayback"
 import { throttle } from "../utils"
 import type { Turn, Speaker } from "../types/editor"
-import { EditorContent } from "@tiptap/vue-3"
 const props = defineProps<{
   turns: Turn[]
   speakers: Map<string, Speaker>
@@ -40,10 +39,6 @@ const partialTurn = computed(() => {
     startTime: undefined,
     endTime: undefined,
   } as Turn
-})
-
-const tiptapEditor = computed(() => {
-  return core.transcriptionEditor?.tiptapEditor.value!
 })
 
 const hasLiveUpdate = computed(() => core.live?.hasLiveUpdate.value ?? false)
@@ -69,7 +64,6 @@ const { isFollowing, resumeFollow } = useFollowPlayback(scrollContainerRef)
 const { scrollRef, contentRef, isAtBottom, scrollToBottom } = useStickToBottom()
 
 onMounted(() => {
-  if (core.transcriptionEditor) return
   scrollRef.value = scrollContainerRef.value
   contentRef.value =
     scrollContainerRef.value?.querySelector(".turns-container") ?? null
@@ -158,9 +152,7 @@ onBeforeUnmount(() => {
         <TranscriptionEmpty
           v-if="turns.length === 0 && !isLoadingHistory && !partialTurn"
           class="transcription-empty" />
-        <EditorContent v-if="tiptapEditor" :editor="tiptapEditor" />
         <TranscriptionTurn
-          v-else
           v-for="(turn, i) in turns"
           v-memo="[
             turn,
@@ -199,25 +191,6 @@ onBeforeUnmount(() => {
   min-height: 0;
   overflow: hidden;
   background-color: var(--color-surface);
-}
-
-/* .transcription-panel:has(.ProseMirror:focus) {
-  background-color: var(--color-background);
-}
-
-.transcription-panel :deep(.ProseMirror:focus) {
-  outline: 1px solid var(--color-primary);
-  background-color: var(--color-surface);
-  box-shadow: var(--shadow-sm);
-} */
-
-.transcription-panel :deep(.ProseMirror:focus) {
-  outline: none;
-}
-
-/* Turn holding the caret — the cursorTurn extension adds `turn--cursor`. */
-.transcription-panel :deep(.turn--cursor) {
-  outline: 2px solid var(--color-primary);
 }
 
 .scroll-container {

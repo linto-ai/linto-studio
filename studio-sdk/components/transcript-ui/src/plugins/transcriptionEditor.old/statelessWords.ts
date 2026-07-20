@@ -1,5 +1,5 @@
 import type { ApiWord } from "../../types/api"
-import type { TranslationStore } from "../../core/types"
+import type { TurnStore } from "../../core/types"
 
 /**
  * Timestamps live outside the Y.Doc (which carries plain text only) and
@@ -15,11 +15,11 @@ interface TimestampsRecalcPayload {
   turns: Array<{ turn_id: string; words: ApiWord[] }>
 }
 
-/** Apply a `timestamps_recalc` payload to the translation store. Unknown or
+/** Apply a `timestamps_recalc` payload to the turn store. Unknown or
  *  malformed payloads are ignored. */
 export function applyStatelessPayload(
   payload: string,
-  translation: TranslationStore,
+  turnStore: TurnStore,
 ): void {
   let msg: TimestampsRecalcPayload
   try {
@@ -33,7 +33,7 @@ export function applyStatelessPayload(
   for (const t of msg.turns) {
     if (!t || !t.turn_id || !Array.isArray(t.words)) continue
 
-    const currentTurn = translation.getTurn(t.turn_id)
+    const currentTurn = turnStore.getTurn(t.turn_id)
     if (!currentTurn) continue
     // The doc owns the word list (tokenized text seeds the store's words). A
     // word-less turn is text-only (live) or not yet mirrored — nothing to time.
@@ -60,6 +60,6 @@ export function applyStatelessPayload(
       }
     })
 
-    translation.updateWords(t.turn_id, merged)
+    turnStore.updateWords(t.turn_id, merged)
   }
 }

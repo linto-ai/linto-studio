@@ -1,5 +1,4 @@
 import type { ComputedRef, Ref, ShallowRef } from "vue"
-import type { AnyExtension } from "@tiptap/core"
 import type {
   AudioSource,
   Channel,
@@ -56,17 +55,27 @@ export type TurnEventKey = "turn:add" | "turn:update" | "turn:remove"
 
 // ── Stores ─────────────────────────────────────────────────────────────
 
-/** Read-only surface of a translation — satisfied by both real and virtual stores. */
-export interface ReadableTranslation {
+/** Which language track this is, within its channel — the "translation-ness"
+ *  of a turn list. Consumers that only route or label tracks (live plugin,
+ *  selectors) depend on this, never on the turns. */
+export interface TranslationInfo {
   readonly id: string
   readonly languages: string[]
   readonly isSource: boolean
+}
+
+/** Read-only surface of a translation — satisfied by both real and virtual stores. */
+export interface ReadableTranslation extends TranslationInfo {
   readonly audio?: AudioSource
   readonly turns: Readonly<Ref<Turn[]>>
   getTurn(turnId: string): Turn | undefined
 }
 
-export interface TranslationStore extends ReadableTranslation {
+/** Mutable ordered list of speech turns, identified. What the transcription
+ *  editor edits — it doesn't know (or care) which language track it is. */
+export interface TurnStore {
+  readonly id: string
+  readonly turns: Readonly<Ref<Turn[]>>
   /** Epoch ms — last time the transcription was modified (host-pushed). */
   readonly lastModifiedAt: Ref<number | null>
   setLastModifiedAt(ts: number | null): void
@@ -81,6 +90,9 @@ export interface TranslationStore extends ReadableTranslation {
   hasTurn(turnId: string): boolean
   getTurn(turnId: string): Turn | undefined
 }
+
+/** A channel's language track: a turn store situated by its track info. */
+export interface TranslationStore extends TurnStore, ReadableTranslation {}
 
 export interface ChannelStore {
   readonly id: string
@@ -115,8 +127,6 @@ export interface SpeakersStore {
 export interface CorePlugin {
   name: string
   install(core: Core): (() => void) | void
-  /** TipTap extensions contributed by this plugin (e.g. Collaboration, CollaborationCursor) */
-  tiptapExtensions?: AnyExtension[]
 }
 
 // ── Store Options ───────────────────────────────────────────────────────
@@ -147,33 +157,6 @@ export interface AudioPluginApi {
   setSeekHandler(handler: ((time: number) => void) | null): void
   pause(): void
   setPauseHandler(handler: (() => void) | null): void
-}
-
-// ── Transcription Editor Plugin API (TipTap rich-text editing) ──────────
-
-export interface YjsUser {
-  clientId: number
-  [key: string]: unknown
-}
-
-export interface TranscriptionEditorPluginApi {
-  readonly tiptapEditor: ShallowRef<import("@tiptap/vue-3").Editor | undefined>
-  readonly doc: import("yjs").Doc | null
-  readonly fragment: import("yjs").XmlFragment | null
-  readonly speakersMap: import("yjs").Map<{ name: string; color?: string }> | null
-  readonly users: Ref<YjsUser[]>
-  readonly isConnected: Ref<boolean>
-  /** Non-null when the editor failed to load (e.g. the collab connection was
-   *  rejected for a non-recoverable reason). Surfaced as an error overlay. */
-  readonly error: Ref<string | null>
-  updateUser(attrs: Record<string, unknown>): void
-  /** Set or clear the load error. Cleared automatically on the next document
-   *  load (a successful reload hides the overlay). */
-  setError(message: string | null): void
-  /** Present only when the sync flight recorder is enabled (debug option or
-   *  localStorage["transcript-ui:debug"]): returns the recorded timeline +
-   *  a fresh viewDesc↔DOM integrity report. Debug-only, shape not stable. */
-  debugDump?: () => unknown
 }
 
 // ── Subtitle Plugin API ──────────────────────────────────────────────────
@@ -406,8 +389,6 @@ export interface Core {
   readonly date: Ref<string | number | null>
   readonly activeChannelId: Ref<string>
   readonly capabilities: Ref<CoreCapabilities>
-  /** TipTap extensions collected from all plugins */
-  readonly pluginExtensions: AnyExtension[]
 
   // ── Stores ───────────────────────────────────────────────────────────
   readonly speakers: SpeakersStore
@@ -427,7 +408,6 @@ export interface Core {
 
   // ── Plugin slots ─────────────────────────────────────────────────────
   audio?: AudioPluginApi
-  transcriptionEditor?: TranscriptionEditorPluginApi
   live?: LivePluginApi
   subtitle?: SubtitlePluginApi
   llmServices?: LLMServicesPluginApi

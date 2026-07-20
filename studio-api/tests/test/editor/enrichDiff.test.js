@@ -243,9 +243,9 @@ describe("enrichDiff (wid mapping)", () => {
   })
 
   // Legacy transcripts (transcribed before per-word wid): Mongo words have real
-  // timing but NO wid; the migration reseed mints fresh wids that can't match by
+  // timing but NO wid; the migration reseed generates fresh wids that can't match by
   // id. Timing must be recovered by TEXT, not destroyed by interpolation.
-  test("legacy words without wid: timing recovered by text when reseed mints fresh wids", () => {
+  test("legacy words without wid: timing recovered by text when reseed generates fresh wids", () => {
     const old = [
       {
         turn_id: "t1",

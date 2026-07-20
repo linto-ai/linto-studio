@@ -3,9 +3,10 @@ import { computed } from "vue"
 import FormInput from "./molecules/FormInput.vue"
 import { useI18n } from "../i18n"
 import { buildTranslationItems } from "../utils/intl"
+import type { TranslationInfo } from "../core/types"
 
 const props = defineProps<{
-  translations: { id: string; languages: string[]; isSource: boolean }[]
+  translations: TranslationInfo[]
   selectedTranslationId: string
 }>()
 

@@ -21,22 +21,22 @@ function round2(n) {
  *    produce the new word timings for broadcast + Mongo flush.
  *
  * The caller owns the observer lifecycle: attach
- * `fragment.observeDeep((events) => state.applyEvents(events))` itself.
+ * `turnsFragment.observeDeep((events) => state.applyEvents(events))` itself.
  *
- * Records are keyed by the turn Y.XmlElement INSTANCE (stable within a doc);
- * order always comes from the fragment. The `id` attribute is only read
+ * Mirrors are keyed by the turn Y.XmlElement INSTANCE (stable within a doc);
+ * order always comes from the turnsFragment. The `id` attribute is only read
  * lazily at retime/serialize time (it may transiently be null until the
- * server mints one).
+ * server assigns one).
  *
  * Word entry shape (offsets in UTF-16 code units, relative to the turn text):
  *   { text, charStart, charEnd, stime, etime, wid, confidence }
  */
 class WordsState {
-  /** @param {import("yjs").XmlFragment} fragment */
-  constructor(fragment) {
-    this.fragment = fragment
+  /** @param {import("yjs").XmlFragment} turnsFragment */
+  constructor(turnsFragment) {
+    this.turnsFragment = turnsFragment
     /** @type {Map<import("yjs").XmlElement, object>} */
-    this.records = new Map()
+    this.turnMirrors = new Map()
   }
 
   /**
@@ -48,37 +48,37 @@ class WordsState {
    * @param {Array<{turn_id, speaker_id, segment, language, stime, etime, words}>} mongoTurns
    */
   hydrate(mongoTurns) {
-    this.records = new Map()
-    const byId = new Map()
-    for (const t of mongoTurns || []) byId.set(t.turn_id, t)
+    this.turnMirrors = new Map()
+    const mongoTurnsById = new Map()
+    for (const t of mongoTurns || []) mongoTurnsById.set(t.turn_id, t)
 
     // A Mongo turn feeds at most ONE element: without this, the positional
-    // fallback could hand a turn already claimed by its id-match to a second
+    // fallback could hand a turn already consumed by its id-match to a second
     // element, duplicating wids/timings.
-    const claimed = new Set()
+    const consumedTurns = new Set()
 
-    const elements = this._turnElements()
-    for (let i = 0; i < elements.length; i++) {
-      const element = elements[i]
-      const id = element.getAttribute("id")
+    const yjsTurnElements = extractTurnElements(this.turnsFragment)
+    for (let i = 0; i < yjsTurnElements.length; i++) {
+      const yjsTurn = yjsTurnElements[i]
+      const id = yjsTurn.getAttribute("id")
       const positional = (mongoTurns || [])[i]
       const candidate =
-        (id != null ? byId.get(id) : undefined) ??
-        (positional && !claimed.has(positional) ? positional : undefined)
+        (id != null ? mongoTurnsById.get(id) : undefined) ??
+        (positional && !consumedTurns.has(positional) ? positional : undefined)
       const mongoTurn =
-        candidate && !claimed.has(candidate) ? candidate : undefined
+        candidate && !consumedTurns.has(candidate) ? candidate : undefined
 
-      const text = getElementText(element)
+      const text = getElementText(yjsTurn)
       if (!mongoTurn) {
-        this.records.set(element, makeRecord(text))
+        this.turnMirrors.set(yjsTurn, makeTurnMirror(text))
         continue
       }
-      claimed.add(mongoTurn)
+      consumedTurns.add(mongoTurn)
 
       const tokens = tokenize(text)
       const oldWords = mongoTurn.words || []
       const carried = alignWords(tokens, oldWords)
-      this.records.set(element, {
+      this.turnMirrors.set(yjsTurn, {
         text,
         words: carried,
         language: mongoTurn.language || null,
@@ -104,32 +104,32 @@ class WordsState {
    */
   applyEvents(events) {
     const removedTexts = [] // [{ text, words }] — words offsets relative to text
-    const insertedTexts = [] // [{ turn, record, text, at }]
+    const insertedTexts = [] // [{ turn, mirror, text, at }]
     const touched = new Set() // turn elements to self-check
     let childrenChanged = false
 
     for (const event of events) {
       const target = event.target
 
-      if (target === this.fragment) {
+      if (target === this.turnsFragment) {
         childrenChanged = true
         continue
       }
 
       if (target instanceof Y.XmlText) {
         const turn = this._owningTurn(target)
-        const record = turn ? this.records.get(turn) : undefined
+        const mirror = turn ? this.turnMirrors.get(turn) : undefined
         // Unknown turn: added in this batch, handled structurally below.
-        if (!record) continue
+        if (!mirror) continue
         this._applyTextDelta(
           turn,
-          record,
+          mirror,
           target,
           event.delta,
           removedTexts,
           insertedTexts,
         )
-        record.dirty = true
+        mirror.dirty = true
         touched.add(turn)
         continue
       }
@@ -137,8 +137,8 @@ class WordsState {
       // Turn element event: attribute changes need nothing (id/speakerId are
       // read lazily); a change to the element's own CHILD list (anomalous
       // shape) invalidates the mirror — the self-check below realigns it.
-      if (event.childListChanged && this.records.has(target)) {
-        this.records.get(target).dirty = true
+      if (event.childListChanged && this.turnMirrors.has(target)) {
+        this.turnMirrors.get(target).dirty = true
         touched.add(target)
       }
     }
@@ -152,8 +152,8 @@ class WordsState {
 
   /** @returns {boolean} any turn pending retime? */
   hasDirty() {
-    for (const record of this.records.values()) {
-      if (record.dirty) return true
+    for (const mirror of this.turnMirrors.values()) {
+      if (mirror.dirty) return true
     }
     return false
   }
@@ -167,24 +167,24 @@ class WordsState {
    *
    * @param {(language: string) => object} getSyllabic
    * @returns {Array<{turn_id: string|null, words: Array}>} changed turns —
-   *   turns still waiting for a server-minted id come back with turn_id null
+   *   turns still waiting for a server-assigned id come back with turn_id null
    */
   retimeDirty(getSyllabic) {
     const changed = []
-    for (const element of this._turnElements()) {
-      const record = this.records.get(element)
-      if (!record || !record.dirty) continue
+    for (const element of extractTurnElements(this.turnsFragment)) {
+      const mirror = this.turnMirrors.get(element)
+      if (!mirror || !mirror.dirty) continue
 
-      const tokens = tokenize(record.text)
-      const identities = tokenIdentities(tokens, record.words)
+      const tokens = tokenize(mirror.text)
+      const identities = tokenIdentities(tokens, mirror.words)
       const retimed = retimeTurn(
         tokens,
-        record.words,
-        { stime: record.stime, etime: record.etime },
-        getSyllabic(turnLanguage(element, record)),
+        mirror.words,
+        { stime: mirror.stime, etime: mirror.etime },
+        getSyllabic(turnLanguage(element, mirror)),
       )
 
-      record.words = retimed.map((w, i) => {
+      mirror.words = retimed.map((w, i) => {
         const kept = identities[i]
         return {
           text: w.word,
@@ -197,19 +197,19 @@ class WordsState {
         }
       })
 
-      const first = record.words.find((w) => w.stime != null)
-      if (first) record.stime = first.stime
-      for (let i = record.words.length - 1; i >= 0; i--) {
-        if (record.words[i].etime != null) {
-          record.etime = record.words[i].etime
+      const first = mirror.words.find((w) => w.stime != null)
+      if (first) mirror.stime = first.stime
+      for (let i = mirror.words.length - 1; i >= 0; i--) {
+        if (mirror.words[i].etime != null) {
+          mirror.etime = mirror.words[i].etime
           break
         }
       }
-      record.dirty = false
+      mirror.dirty = false
 
       changed.push({
         turn_id: element.getAttribute("id") ?? null,
-        words: record.words.map(wireWord),
+        words: mirror.words.map(wireWord),
       })
     }
     return changed
@@ -224,46 +224,46 @@ class WordsState {
    * @returns {Array<{turn_id, speaker_id, segment, raw_segment, language, stime, etime, words}>}
    */
   serialize() {
-    return this._turnElements().map((element) => {
-      let record = this.records.get(element)
-      if (!record) {
+    return extractTurnElements(this.turnsFragment).map((element) => {
+      let mirror = this.turnMirrors.get(element)
+      if (!mirror) {
         // Defensive: an element never seen (observer not yet attached).
-        record = makeRecord(getElementText(element))
-        this.records.set(element, record)
+        mirror = makeTurnMirror(getElementText(element))
+        this.turnMirrors.set(element, mirror)
       }
       return {
-        ...(record.mongo || {}),
+        ...(mirror.mongo || {}),
         turn_id: element.getAttribute("id") ?? null,
         speaker_id: element.getAttribute("speakerId") ?? null,
-        segment: record.text,
+        segment: mirror.text,
         // Same rule as the previous flush (enrichDiff): raw_segment follows
         // the edited text — consumers (search, REST merge) regex/concat it.
-        raw_segment: record.text,
-        language: turnLanguage(element, record),
-        stime: record.stime,
-        etime: record.etime,
-        words: record.words.map(wireWord),
+        raw_segment: mirror.text,
+        language: turnLanguage(element, mirror),
+        stime: mirror.stime,
+        etime: mirror.etime,
+        words: mirror.words.map(wireWord),
       }
     })
   }
 
   /**
-   * Recovery: realign every record whose mirror diverged from the doc (used
+   * Recovery: realign every mirror whose mirror diverged from the doc (used
    * after an applyEvents exception — a half-applied batch may leave one turn's
    * mirror corrupt, and later batches only self-check the turns THEY touch).
    */
   realignAll() {
-    this._selfCheck(new Set(this._turnElements()))
+    this._selfCheck(new Set(extractTurnElements(this.turnsFragment)))
   }
 
   // --- Hot-path internals ---
 
   /**
-   * Apply one Y.Text delta to a turn record: splice the mirror, shift/extend/
+   * Apply one Y.Text delta to a turn mirror: splice the mirror, shift/extend/
    * shrink word offsets, capture removed text+words and inserted text for the
    * batch's split/merge correlation.
    */
-  _applyTextDelta(turn, record, target, delta, removedTexts, insertedTexts) {
+  _applyTextDelta(turn, mirror, target, delta, removedTexts, insertedTexts) {
     // Offset of this text node within the whole turn text (0 in the normal
     // single-XmlText shape). Uses current sibling lengths: if a sibling also
     // changed in this batch the mirror may drift — the self-check heals it.
@@ -281,7 +281,7 @@ class WordsState {
         const str = typeof op.insert === "string" ? op.insert : ""
         if (!str) continue
         const len = str.length
-        for (const entry of record.words) {
+        for (const entry of mirror.words) {
           if (entry.charStart >= cursor) {
             // At an entry boundary the insertion belongs to no entry (gap).
             entry.charStart += len
@@ -291,10 +291,10 @@ class WordsState {
             entry.charEnd += len
           }
         }
-        record.text =
-          record.text.slice(0, cursor) + str + record.text.slice(cursor)
+        mirror.text =
+          mirror.text.slice(0, cursor) + str + mirror.text.slice(cursor)
         if (str.trim() !== "") {
-          insertedTexts.push({ turn, record, text: str, at: cursor })
+          insertedTexts.push({ turn, mirror, text: str, at: cursor })
         }
         cursor += len
         continue
@@ -304,10 +304,10 @@ class WordsState {
         const n = op.delete
         const delEnd = cursor + n
         // Yjs deltas don't carry deleted content: capture it from the mirror.
-        const removedStr = record.text.slice(cursor, delEnd)
+        const removedStr = mirror.text.slice(cursor, delEnd)
         const removedWords = []
         const kept = []
-        for (const entry of record.words) {
+        for (const entry of mirror.words) {
           if (entry.charEnd <= cursor) {
             kept.push(entry)
           } else if (entry.charStart >= delEnd) {
@@ -329,45 +329,45 @@ class WordsState {
             kept.push(entry)
           }
         }
-        record.words = kept
+        mirror.words = kept
         if (removedStr.trim() !== "") {
           removedTexts.push({ text: removedStr, words: removedWords })
         }
-        record.text = record.text.slice(0, cursor) + record.text.slice(delEnd)
+        mirror.text = mirror.text.slice(0, cursor) + mirror.text.slice(delEnd)
       }
     }
   }
 
   /**
-   * Diff the fragment children against known records: capture removed turns
-   * into removedTexts, create records for added turns and try to adopt a
+   * Diff the turnsFragment children against known turnMirrors: capture removed turns
+   * into removedTexts, create turnMirrors for added turns and try to adopt a
    * same-batch removed chunk (turn split / re-creation move-matching).
    */
   _reconcileChildren(removedTexts, touched) {
-    const current = new Set(this._turnElements())
+    const current = new Set(extractTurnElements(this.turnsFragment))
 
-    for (const [element, record] of [...this.records]) {
+    for (const [element, mirror] of [...this.turnMirrors]) {
       if (current.has(element)) continue
-      if (record.text.trim() !== "") {
-        removedTexts.push({ text: record.text, words: record.words })
+      if (mirror.text.trim() !== "") {
+        removedTexts.push({ text: mirror.text, words: mirror.words })
       }
-      this.records.delete(element)
+      this.turnMirrors.delete(element)
     }
 
     for (const element of current) {
-      if (this.records.has(element)) continue
-      const record = makeRecord(getElementText(element))
-      this.records.set(element, record)
+      if (this.turnMirrors.has(element)) continue
+      const mirror = makeTurnMirror(getElementText(element))
+      this.turnMirrors.set(element, mirror)
       touched.add(element)
 
-      const tokens = tokenize(record.text)
+      const tokens = tokenize(mirror.text)
       if (tokens.length === 0) continue
       for (let i = 0; i < removedTexts.length; i++) {
         const removed = removedTexts[i]
         const removedTokens = tokenize(removed.text)
         if (!sameTokenTexts(tokens, removedTokens)) continue
         // Same words, new home: adopt timings, offsets from the new tokens.
-        record.words = transferWords(removed.words, removedTokens, tokens, 0)
+        mirror.words = transferWords(removed.words, removedTokens, tokens, 0)
         removedTexts.splice(i, 1)
         break
       }
@@ -384,7 +384,7 @@ class WordsState {
     for (const ins of insertedTexts) {
       if (removedTexts.length === 0) return
       // The turn may have been removed later in the same batch.
-      if (this.records.get(ins.turn) !== ins.record) continue
+      if (this.turnMirrors.get(ins.turn) !== ins.mirror) continue
 
       const insTokens = tokenize(ins.text)
       if (insTokens.length === 0) continue
@@ -399,7 +399,7 @@ class WordsState {
           insTokens,
           ins.at,
         )
-        ins.record.words = ins.record.words
+        ins.mirror.words = ins.mirror.words
           .concat(grafted)
           .sort((a, b) => a.charStart - b.charStart)
         removedTexts.splice(i, 1)
@@ -415,45 +415,48 @@ class WordsState {
    */
   _selfCheck(touched) {
     for (const turn of touched) {
-      const record = this.records.get(turn)
-      if (!record) continue // removed in the same batch
+      const mirror = this.turnMirrors.get(turn)
+      if (!mirror) continue // removed in the same batch
       const actual = getElementText(turn)
-      if (record.text === actual) continue
+      if (mirror.text === actual) continue
 
       console.warn(
-        `WordsState: mirror out of sync with doc text (mirror=${record.text.length} chars, doc=${actual.length} chars), realigning turn`,
+        `WordsState: mirror out of sync with doc text (mirror=${mirror.text.length} chars, doc=${actual.length} chars), realigning turn`,
       )
-      const oldWords = record.words.map((e) => ({
+      const oldWords = mirror.words.map((e) => ({
         word: e.text,
         stime: e.stime,
         etime: e.etime,
         wid: e.wid,
         confidence: e.confidence,
       }))
-      record.words = alignWords(tokenize(actual), oldWords)
-      record.text = actual
-      record.dirty = true
+      mirror.words = alignWords(tokenize(actual), oldWords)
+      mirror.text = actual
+      mirror.dirty = true
     }
   }
 
   // --- Helpers ---
 
-  /** Fragment children that are turn elements, in document order. */
-  _turnElements() {
-    return this.fragment.toArray().filter((c) => c instanceof Y.XmlElement)
-  }
-
-  /** Climb from an event target to the fragment child that contains it. */
+  /** Climb from an event target to the turnsFragment child that contains it. */
   _owningTurn(target) {
     let node = target
-    while (node && node.parent && node.parent !== this.fragment) {
+    while (node && node.parent && node.parent !== this.turnsFragment) {
       node = node.parent
     }
-    return node && node.parent === this.fragment ? node : null
+    return node && node.parent === this.turnsFragment ? node : null
   }
 }
 
-function makeRecord(text) {
+/** Extract the turns from the fragment, in document order. By schema every
+ *  element child of the fragment IS a turn (doc = turn+); the filter only
+ *  discards bare text nodes at root level, which Yjs (schema-less) doesn't
+ *  prevent. Computes a fresh array on every call. */
+function extractTurnElements(turnsFragment) {
+  return turnsFragment.toArray().filter((c) => c instanceof Y.XmlElement)
+}
+
+function makeTurnMirror(text) {
   return {
     text,
     words: [],
@@ -468,8 +471,8 @@ function makeRecord(text) {
 /** A turn's language: the live doc attribute wins (a ProseMirror split copies
  *  node attrs onto the new turn), then the hydrated Mongo value, then French
  *  (the syllabic default). */
-function turnLanguage(element, record) {
-  return element.getAttribute("language") || record.language || "fr"
+function turnLanguage(element, mirror) {
+  return element.getAttribute("language") || mirror.language || "fr"
 }
 
 /** A turn's plain text: all its XmlText children concatenated in order,

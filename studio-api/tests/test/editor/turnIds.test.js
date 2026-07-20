@@ -1,6 +1,6 @@
 const Y = require("yjs")
 const {
-  attachTurnIdMinter,
+  attachTurnIdAuthority,
 } = require(`${process.cwd()}/components/EditorHandler/turnIds`)
 
 function makeTurn(text, id) {
@@ -16,12 +16,12 @@ function flushMicrotasks() {
   return new Promise((resolve) => setTimeout(resolve, 0))
 }
 
-describe("attachTurnIdMinter", () => {
-  test("mints an id for a turn inserted without one", async () => {
+describe("attachTurnIdAuthority", () => {
+  test("assigns an id to a turn inserted without one", async () => {
     const doc = new Y.Doc()
     const fragment = doc.getXmlFragment("default")
     fragment.insert(0, [makeTurn("bonjour", "turn-1")])
-    const detach = attachTurnIdMinter(fragment)
+    const detach = attachTurnIdAuthority(fragment)
 
     fragment.insert(1, [makeTurn("tout le monde")])
     await flushMicrotasks()
@@ -37,7 +37,7 @@ describe("attachTurnIdMinter", () => {
     const doc = new Y.Doc()
     const fragment = doc.getXmlFragment("default")
     fragment.insert(0, [makeTurn("original", "dup")])
-    const detach = attachTurnIdMinter(fragment)
+    const detach = attachTurnIdAuthority(fragment)
 
     fragment.insert(1, [makeTurn("copy", "dup")])
     await flushMicrotasks()
@@ -53,12 +53,12 @@ describe("attachTurnIdMinter", () => {
     const doc = new Y.Doc()
     const fragment = doc.getXmlFragment("default")
     fragment.insert(0, [makeTurn("sans id")])
-    const detach = attachTurnIdMinter(fragment)
+    const detach = attachTurnIdAuthority(fragment)
     // Attach-time repair is synchronous.
     const id = fragment.get(0).getAttribute("id")
     expect(id).toBeTruthy()
 
-    // A text edit inside the turn must not re-mint.
+    // A text edit inside the turn must not re-assign.
     fragment.get(0).get(0).insert(0, "x")
     await flushMicrotasks()
     expect(fragment.get(0).getAttribute("id")).toBe(id)

@@ -3,7 +3,7 @@ import { Plugin, PluginKey, type EditorState } from "@tiptap/pm/state"
 import type { Transaction } from "@tiptap/pm/state"
 import type { Slice } from "@tiptap/pm/model"
 import { ySyncPluginKey } from "@tiptap/y-tiptap"
-import type { Core, TranslationStore } from "../../../core/types"
+import type { Core, TurnStore } from "../../../core/types"
 import { syncDocToStore } from "../utils/syncDocToStore"
 import { fixTurnIds } from "../utils/fixTurnIds"
 import { keepsHistory } from "../utils/historyPolicy"
@@ -64,24 +64,24 @@ export function withSuppressedSync(fn: () => void): void {
 
 export interface StoreSyncOptions {
   store: Core
-  getTranslation: () => TranslationStore | undefined
-  /** Mint turn ids client-side (LocalSession only). In collab the SERVER
-   *  observes new turn elements and writes the id attribute — the client
-   *  tolerates a transiently null id instead of minting a competing one. */
-  mintTurnIds: boolean
+  /** The edited turn store — fixed for the editor's lifetime (a turn-store
+   *  change always goes through a full session restart). */
+  turnStore: TurnStore
+  /** Who assigns/repairs turn ids. "client": this editor runs the fixTurnIds
+   *  pass on local edits (local mode). "server": the server observes new turn
+   *  elements and writes the id attribute — this client tolerates a
+   *  transiently null id instead of writing a competing one. */
+  turnIdAuthority: "client" | "server"
 }
 
 export const StoreSync = Extension.create<StoreSyncOptions>({
   name: "storeSync",
 
   addProseMirrorPlugins() {
-    const { store, getTranslation, mintTurnIds } = this.options
+    const { store, turnStore, turnIdAuthority } = this.options
 
     const mirror = (newState: EditorState, oldState: EditorState): void => {
-      const translation = getTranslation()
-      if (translation) {
-        syncDocToStore(newState.doc, oldState.doc, translation, store)
-      }
+      syncDocToStore(newState.doc, oldState.doc, turnStore, store)
     }
 
     return [
@@ -107,14 +107,15 @@ export const StoreSync = Extension.create<StoreSyncOptions>({
             return null
           }
 
-          // Local edit: repair invariants (local mode only — the server mints
-          // ids in collab), set the undo-history scope, and mirror the
-          // NORMALIZED doc to the store IN THIS SAME PASS (tr.doc already
-          // reflects the repair steps).
+          // Local edit: repair invariants (when this client is the id
+          // authority — in collab the server repairs ids), set the
+          // undo-history scope, and mirror the NORMALIZED doc to the store IN
+          // THIS SAME PASS (tr.doc already reflects the repair steps).
           const tr = newState.tr
 
           const fixTr =
-            mintTurnIds && mayAffectTurnIds(transactions, oldState, newState)
+            turnIdAuthority === "client" &&
+            mayAffectTurnIds(transactions, oldState, newState)
               ? fixTurnIds(newState)
               : null
           if (fixTr) for (const step of fixTr.steps) tr.step(step)
@@ -125,10 +126,7 @@ export const StoreSync = Extension.create<StoreSyncOptions>({
           if (!keepsHistory(transactions)) tr.setMeta("addToHistory", false)
           tr.setMeta(NORMALIZED, true)
 
-          const translation = getTranslation()
-          if (translation) {
-            syncDocToStore(tr.doc, oldState.doc, translation, store)
-          }
+          syncDocToStore(tr.doc, oldState.doc, turnStore, store)
 
           return tr
         },

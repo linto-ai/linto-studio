@@ -1,5 +1,5 @@
 import type { Doc, Map as YMap, YMapEvent } from "yjs"
-import type { Core, SpeakersStore, TranslationStore } from "../../../core/types"
+import type { Core, SpeakersStore, TurnStore } from "../../../core/types"
 import type { Speaker } from "../../../types/editor"
 import { speakerEquals } from "../../../core/helpers/speakerEquals"
 import { SPEAKER_COLORS } from "../../../constants/speakers"
@@ -29,18 +29,18 @@ function resolveColor(
 }
 
 /**
- * Seed the Y.Map from core speakers referenced by the translation's turns.
+ * Seed the Y.Map from core speakers referenced by the store's turns.
  * Local mode only — in collab mode the server seeds the map.
  */
 export function seedSpeakersMap(
   ydoc: Doc,
-  translation: TranslationStore,
+  turnStore: TurnStore,
   speakers: SpeakersStore,
 ): void {
   const speakersMap = ydoc.getMap<SpeakerData>(SPEAKERS_MAP_KEY)
 
   const used = new Set<string>()
-  for (const turn of translation.turns.value) {
+  for (const turn of turnStore.turns.value) {
     if (turn.speakerId) used.add(turn.speakerId)
   }
 
@@ -57,7 +57,7 @@ export function seedSpeakersMap(
 
 /**
  * Bidirectional sync between core.speakers (Vue store) and the speakers
- * Y.Map of a translation's Y.Doc. Construction imports the current Y state
+ * Y.Map of a session's Y.Doc. Construction imports the current Y state
  * into the core; destroy() releases every subscription.
  */
 export class SpeakersSync {

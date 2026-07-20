@@ -11,7 +11,7 @@ import { wordsFromText } from "../../../utils/turnWords"
  * (mergeTurnPreservingWords) and refreshed by the server's timestamps_recalc
  * broadcasts (applyStatelessPayload).
  *
- * A turn whose id is still null (freshly split, waiting for the server-minted
+ * A turn whose id is still null (freshly split, waiting for the server-assigned
  * id) yields an empty-id Turn — callers skip those before mirroring.
  */
 export function nodeToTurn(node: ProseMirrorNode): Turn {

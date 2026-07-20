@@ -6,10 +6,7 @@ import Button from "../atoms/Button.vue"
 import FormInput, { type FormField } from "./FormInput.vue"
 import { useCore } from "../../core"
 import { useI18n } from "../../i18n"
-import {
-  switchTurnSpeaker,
-  createSpeakerAndAssign,
-} from "../../plugins/transcriptionEditor/utils/speakerActions"
+import { switchTurnSpeaker, createSpeakerAndAssign } from "../../core/helpers"
 import type { Speaker } from "../../types/editor"
 
 const props = defineProps<{

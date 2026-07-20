@@ -1,12 +1,12 @@
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model"
-import type { Core, TranslationStore } from "../../../core/types"
+import type { Core, TurnStore } from "../../../core/types"
 import type { Turn } from "../../../types/editor"
 import { nodeToTurn } from "./nodeToTurn"
 import { mergeTurnPreservingWords } from "./mergeTurnPreservingWords"
 import { hasTurnChanged } from "./hasTurnChanged"
 
 /**
- * Mirror a ProseMirror document change into the translation store.
+ * Mirror a ProseMirror document change into the turn store.
  *
  * Fast path (equal child count, same ids in place): edit only the changed turns
  * in place. Fallback (a turn was added/removed/reordered): rebuild the store
@@ -16,26 +16,26 @@ import { hasTurnChanged } from "./hasTurnChanged"
 export function syncDocToStore(
   newDoc: ProseMirrorNode,
   oldDoc: ProseMirrorNode,
-  translation: TranslationStore,
+  turnStore: TurnStore,
   store: Core,
 ): void {
-  const translationId = translation.id
+  const translationId = turnStore.id
 
   const applyTurnNode = (newNode: ProseMirrorNode): void => {
     const id = newNode.attrs.id as string | null
-    // A turn without an id is waiting for the server-minted one (fresh split);
+    // A turn without an id is waiting for the server-assigned one (fresh split);
     // it enters the store when the id attribute lands (next transaction).
     if (!id) return
     const newTurn = nodeToTurn(newNode)
-    const oldTurn = translation.getTurn(id)
+    const oldTurn = turnStore.getTurn(id)
     if (!oldTurn) {
-      translation.updateOrCreateTurnSilent(newTurn)
+      turnStore.updateOrCreateTurnSilent(newTurn)
       store.emit("turn:add", { turn: newTurn, translationId })
       return
     }
     const merged = mergeTurnPreservingWords(newTurn, oldTurn)
     if (hasTurnChanged(oldTurn, merged)) {
-      translation.updateTurn(id, merged)
+      turnStore.updateTurn(id, merged)
     }
   }
 
@@ -78,7 +78,7 @@ export function syncDocToStore(
     }
   })
 
-  const oldTurnsById = new Map(translation.turns.value.map((t) => [t.id, t]))
+  const oldTurnsById = new Map(turnStore.turns.value.map((t) => [t.id, t]))
 
   const orderedTurns: Turn[] = []
   const added: Turn[] = []
@@ -88,7 +88,7 @@ export function syncDocToStore(
   newDoc.forEach((newNode) => {
     if (newNode.type.name !== "turn") return
     const id = newNode.attrs.id as string | null
-    // Not yet identified (server-minted id in flight): keep it out of the
+    // Not yet identified (server-assigned id in flight): keep it out of the
     // store until the id attribute lands.
     if (!id) return
     newIds.add(id)
@@ -123,7 +123,7 @@ export function syncDocToStore(
 
   // One silent reorder/replace (no translation:sync → no warnUnsupported),
   // then granular events so listeners react exactly as with the old per-turn path.
-  translation.replaceTurns(orderedTurns)
+  turnStore.replaceTurns(orderedTurns)
   for (const turn of added) store.emit("turn:add", { turn, translationId })
   for (const turn of updated) store.emit("turn:update", { turn, translationId })
   for (const turnId of removed) store.emit("turn:remove", { turnId, translationId })

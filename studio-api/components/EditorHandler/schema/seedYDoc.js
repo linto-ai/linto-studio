@@ -8,8 +8,8 @@ const { turnsToDoc } = require("./turnsToDoc")
 const SEED_CLIENT_ID = 0
 
 function seedYDoc(ydoc, mongoTurns, field = "default") {
-  const fragment = ydoc.getXmlFragment(field)
-  if (fragment.length > 0) return // Already seeded
+  const turnsFragment = ydoc.getXmlFragment(field)
+  if (turnsFragment.length > 0) return // Already seeded
 
   if (!mongoTurns || mongoTurns.length === 0) return
 

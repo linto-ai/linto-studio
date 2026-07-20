@@ -13,7 +13,7 @@ debug.inspectOpts.maxArrayLength = null
  *  - wid known & text unchanged → keep the old timestamp verbatim (anchor).
  *  - wid known & text changed (mid-word split, typo, glued merge) → the old
  *    span becomes a redistribution budget, filled by syllables.
- *  - wid unknown (front-minted new word) → interpolate from neighbours.
+ *  - wid unknown (client-generated new word) → interpolate from neighbours.
  *  - old wid absent from the doc → dropped.
  * Turn merge/split falls out for free: a word keeps its timestamp regardless of
  * which turn node now holds its wid.
@@ -26,7 +26,7 @@ debug.inspectOpts.maxArrayLength = null
  */
 function enrichDiff(oldTurns, newTurns) {
   // wid is globally unique, so index every old word by wid regardless of turn.
-  // Keep the FIRST word for a given wid: a duplicate wid (front minting
+  // Keep the FIRST word for a given wid: a duplicate wid (client id-generation
   // collision, or a copy/paste of a marked run before the client reconciles)
   // must not silently remap an earlier word's timing onto a later one.
   const oldWordByWid = new Map()
@@ -50,7 +50,7 @@ function enrichDiff(oldTurns, newTurns) {
 
     // Text-fallback pool: this turn's old words, consumed in order by matching
     // text when a doc word's wid is unknown. Legacy transcripts have Mongo words
-    // with NO wid, so the reseed mints fresh wids that can't match by id — this
+    // with NO wid, so the reseed generates fresh wids that can't match by id — this
     // recovers their real timing by text instead of destroying it by
     // interpolating over the whole turn span.
     const oldWords = (oldTurn && oldTurn.words) || []

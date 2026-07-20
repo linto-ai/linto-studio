@@ -5,7 +5,7 @@ import type { Doc } from "yjs"
 import type { Awareness } from "y-protocols/awareness"
 import type { AnyExtension } from "@tiptap/core"
 
-import type { Core, TranslationStore } from "../../core/types"
+import type { Core, TurnStore } from "../../core/types"
 import { TranscriptionDocument } from "./extensions/transcriptionDocument"
 import { TurnNode } from "./extensions/turnNode"
 import { StoreSync } from "./extensions/storeSync"
@@ -26,11 +26,11 @@ export interface TiptapEditorConfig {
   core: Core
   ydoc: Doc
   field: string
-  /** The session's translation — fixed for the editor's lifetime. */
-  translation: TranslationStore
+  /** The session's turn store — fixed for the editor's lifetime. */
+  turnStore: TurnStore
   readOnly: boolean
-  /** Mint turn ids client-side (local mode); in collab the server mints. */
-  mintTurnIds: boolean
+  /** Who assigns/repairs turn ids: the client (local mode) or the server (collab). */
+  turnIdAuthority: "client" | "server"
   /** Remote cursors; null in local mode. */
   awareness: Awareness | null
   user: { name: string; color: string; [key: string]: unknown }
@@ -63,7 +63,7 @@ export function createTiptapEditor(config: TiptapEditorConfig): Editor {
 }
 
 function buildExtensions(config: TiptapEditorConfig): AnyExtension[] {
-  const { core, ydoc, field, translation, debugFlags, recorder } = config
+  const { core, ydoc, field, turnStore, debugFlags, recorder } = config
 
   const extensions: AnyExtension[] = [
     TranscriptionDocument,
@@ -72,8 +72,8 @@ function buildExtensions(config: TiptapEditorConfig): AnyExtension[] {
     Collaboration.configure({ document: ydoc, field }),
     StoreSync.configure({
       store: core,
-      getTranslation: () => translation,
-      mintTurnIds: config.mintTurnIds,
+      turnStore,
+      turnIdAuthority: config.turnIdAuthority,
     }),
     SafeTextInput,
     WordHighlight.configure({ core }),

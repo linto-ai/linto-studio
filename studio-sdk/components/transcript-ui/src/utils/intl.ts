@@ -1,3 +1,5 @@
+import type { TranslationInfo } from "../core/types"
+
 export function getLanguageDisplayName(
   code: string,
   locale: string,
@@ -15,7 +17,7 @@ export function getLanguageDisplayName(
 }
 
 export function buildTranslationItems(
-  translations: { id: string; languages: string[]; isSource: boolean }[],
+  translations: TranslationInfo[],
   locale: string,
   originalLabel: string,
   wildcardLabel = "*",

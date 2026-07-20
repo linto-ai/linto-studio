@@ -228,7 +228,7 @@ describe("WordsState", () => {
     const { state, doc, fragment } = baseSetup()
 
     // The y-prosemirror shape of a split: the tail leaves turn A's text and a
-    // new turn element (no server-minted id yet) appears with exactly it.
+    // new turn element (no server-assigned id yet) appears with exactly it.
     doc.transact(() => {
       turnText(fragment, 0).delete(12, 9) // " le monde"
       fragment.insert(1, [makeTurn({ speakerId: "spk1", text: "le monde" })])
@@ -346,7 +346,7 @@ describe("WordsState", () => {
       const { state, fragment } = baseSetup()
 
       // Poke the internals: the mirror no longer matches the doc.
-      state.records.get(fragment.get(0)).text = "corrompu"
+      state.turnMirrors.get(fragment.get(0)).text = "corrompu"
 
       turnText(fragment, 0).insert(21, "x") // any edit triggers the self-check
 

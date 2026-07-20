@@ -169,7 +169,7 @@ export default {
 
       core.use(
         createTranscriptionEditorPlugin({
-          collab: {
+          collabOptions: {
             url: ws_url.toString(),
             token: getCookie("authToken"),
             epochs: this.collabEpochs,

@@ -15,8 +15,8 @@ const { schema } = require("./serverSchema")
  * @returns {{ turn_id: string, speaker_id: string|null, segment: string, raw_segment: string, language: string, stime?: number, etime?: number }[]}
  */
 function docToTurns(ydoc, field = "default") {
-  const fragment = ydoc.getXmlFragment(field)
-  const json = yXmlFragmentToProsemirrorJSON(fragment, schema)
+  const turnsFragment = ydoc.getXmlFragment(field)
+  const json = yXmlFragmentToProsemirrorJSON(turnsFragment, schema)
 
   if (!json || !json.content) return []
 
