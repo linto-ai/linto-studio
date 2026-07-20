@@ -195,6 +195,28 @@ class StudioApiService:
         url = f"{self.base_api_url}/organizations/{org_id}/voiceprint-collections"
         return await self._send_request("GET", url, **kwargs)
 
+    @with_token
+    @with_organization_id
+    async def get_voiceprint_collection(self, collectionId, **kwargs):
+        """Fetch a single voiceprint collection (group) by id."""
+        org_id = kwargs["organizationId"]
+        url = (
+            f"{self.base_api_url}/organizations/{org_id}"
+            f"/voiceprint-collections/{collectionId}"
+        )
+        return await self._send_request("GET", url, **kwargs)
+
+    @with_token
+    @with_organization_id
+    async def get_speaker_identification_status(self, **kwargs):
+        """Get the organization's speaker identification status.
+
+        Returns enabled / reachable / modelId / dim / syncPending.
+        """
+        org_id = kwargs["organizationId"]
+        url = f"{self.base_api_url}/organizations/{org_id}/speaker-identification/status"
+        return await self._send_request("GET", url, **kwargs)
+
     # --- LLM / Summary methods ---
 
     @with_token

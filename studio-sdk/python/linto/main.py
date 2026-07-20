@@ -316,3 +316,32 @@ class LinTO:
             if collection.get("type") == "organization":
                 return str(collection.get("_id") or collection.get("id") or "") or None
         return None
+
+    async def get_voiceprint_collection(self, collection_id):
+        """Fetch a single voiceprint collection (group) by id."""
+        return await self.api_service.get_voiceprint_collection(
+            collectionId=collection_id
+        )
+
+    async def get_voiceprint_collection_id_by_name(self, name):
+        """Return the id of the voiceprint collection (group) named `name`, or None.
+
+        Case-insensitive match over list_voiceprint_collections(). Use this to
+        select a custom group by name for speaker identification, then pass the
+        id to upload(speaker_collection_ids=[...]).
+        """
+        collections = await self.list_voiceprint_collections()
+        if not isinstance(collections, list):
+            return None
+        for collection in collections:
+            if str(collection.get("name", "")).lower() == name.lower():
+                return str(collection.get("_id") or collection.get("id") or "") or None
+        return None
+
+    async def get_speaker_identification_status(self):
+        """Return the organization's speaker identification status.
+
+        Dict with enabled / reachable / modelId / dim / syncPending — handy to
+        check availability before requesting identification.
+        """
+        return await self.api_service.get_speaker_identification_status()
