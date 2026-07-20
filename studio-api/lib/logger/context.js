@@ -186,6 +186,15 @@ class LoggerContext {
           },
           info: cache.users[userId],
         }
+
+        const adminId = req.payload.data.adminId
+        if (adminId) {
+          await storeCacheUser(adminId)
+          context.user.impersonatedBy = {
+            id: adminId,
+            info: cache.users[adminId],
+          }
+        }
       }
       if (req?.params?.organizationId) {
         const organizationId = req.params.organizationId

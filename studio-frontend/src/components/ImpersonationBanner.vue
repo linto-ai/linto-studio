@@ -1,12 +1,8 @@
 <template>
   <div class="impersonation-banner flex gap-small align-center">
-    <ph-icon name="eye" />
+    <ph-icon :name="isImpersonatingUser ? 'user-switch' : 'eye'" />
     <div class="flex1 impersonation-banner__title">
-      {{
-        $t("impersonation.banner", {
-          name: organizationName,
-        })
-      }}
+      {{ bannerText }}
     </div>
     <Button
       @click="exitImpersonation"
@@ -19,20 +15,34 @@
 <script>
 import { mapGetters } from "vuex"
 import { orgDisplayName } from "@/tools/orgDisplayName.js"
+import { userName } from "@/tools/userName.js"
 
 export default {
   computed: {
+    ...mapGetters("system", ["isImpersonatingUser"]),
     ...mapGetters("organizations", ["impersonatedOrganizationId"]),
-    ...mapGetters("user", { userId: "getUserId" }),
+    ...mapGetters("user", { userId: "getUserId", userInfos: "getUserInfos" }),
     ...mapGetters("organizations", {
       currentOrganization: "getCurrentOrganization",
     }),
     organizationName() {
       return orgDisplayName(this.currentOrganization, this.userId)
     },
+    bannerText() {
+      if (this.isImpersonatingUser) {
+        return this.$t("impersonation.user_banner", {
+          name: userName(this.userInfos),
+        })
+      }
+      return this.$t("impersonation.banner", { name: this.organizationName })
+    },
   },
   methods: {
     exitImpersonation() {
+      if (this.isImpersonatingUser) {
+        this.$store.dispatch("system/stopUserImpersonation")
+        return
+      }
       // navigating to a backoffice route clears the impersonation state
       this.$router.push({
         name: "backoffice-organizationDetail",

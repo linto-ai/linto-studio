@@ -7,5 +7,12 @@ export const impersonationMixin = {
       )
       this.$router.push({ name: "explore", params: { organizationId } })
     },
+    async impersonateUser(userId) {
+      try {
+        await this.$store.dispatch("system/startUserImpersonation", userId)
+      } catch (err) {
+        this.$store.dispatch("system/showError", err.message)
+      }
+    },
   },
 }

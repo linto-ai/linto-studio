@@ -655,7 +655,10 @@
   "impersonation": {
     "banner": "You are viewing organization {name} in read-only mode",
     "browse_button_label": "Browse",
-    "exit_button_label": "Back to backoffice"
+    "exit_button_label": "Back to backoffice",
+    "log_label": "Impersonated by {name}",
+    "user_banner": "You are logged in as {name}",
+    "user_button_label": "Log in as"
   },
   "invite_user": {
     "add_user": "Add user",

@@ -1,6 +1,19 @@
 import IsMobile from "../../components/atoms/IsMobile.vue"
+import {
+  getImpersonatorSession,
+  setImpersonatorSession,
+  clearImpersonatorSession,
+  isImpersonatingUser,
+} from "@/tools/userImpersonation.js"
+import { getCookie } from "@/tools/getCookie"
+import { setCookie } from "@/tools/setCookie"
+import { clearImpersonatedOrgId } from "@/tools/clearImpersonatedOrgId.js"
+import { apiImpersonateUser } from "@/api/user.js"
 
 const state = {
+  // set once at bootstrap; start/stop impersonation reloads the app
+  isImpersonatingUser: isImpersonatingUser(),
+
   /**
    * Notifications are used to display messages to the user.
    * @property {Array} notifications - A notification object
@@ -95,6 +108,41 @@ const actions = {
   setIsLoading({ commit }, isLoading) {
     commit("setIsLoading", isLoading)
   },
+  async startUserImpersonation(_, userId) {
+    const res = await apiImpersonateUser(userId)
+    if (res?.status !== "success" || !res.data?.auth_token) {
+      throw new Error(res?.message || "Unable to impersonate user")
+    }
+
+    // org and user impersonation are mutually exclusive
+    clearImpersonatedOrgId()
+
+    setImpersonatorSession({
+      userId: getCookie("userId"),
+      authToken: getCookie("authToken"),
+      refreshToken: getCookie("refreshToken"),
+    })
+
+    setCookie("userId", res.data.user_id, 7)
+    setCookie("authToken", res.data.auth_token, 7)
+    // impersonation token is short lived and not refreshable
+    setCookie("refreshToken", null, null)
+    setCookie("cm_orga_scope", null, null)
+
+    // full reload re-bootstraps the app as the impersonated user
+    window.location.href = "/"
+  },
+  stopUserImpersonation() {
+    const session = getImpersonatorSession()
+    if (session) {
+      setCookie("userId", session.userId, 7)
+      setCookie("authToken", session.authToken, 7)
+      setCookie("refreshToken", session.refreshToken, 14)
+      setCookie("cm_orga_scope", null, null)
+    }
+    clearImpersonatorSession()
+    window.location.href = "/backoffice/users"
+  },
 }
 
 const getters = {
@@ -103,6 +151,7 @@ const getters = {
   isMobile: (state) => state.isMobile,
   isDesktop: (state) => !state.isMobile,
   isLoading: (state) => state.isLoading,
+  isImpersonatingUser: (state) => state.isImpersonatingUser,
 }
 
 export default {

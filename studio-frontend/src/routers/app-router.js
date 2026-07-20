@@ -28,7 +28,8 @@ const defaultProps = {
 Vue.use(Router)
 
 function syncImpersonationState(to) {
-  const impersonatedOrgId = store.getters["organizations/impersonatedOrganizationId"]
+  const impersonatedOrgId =
+    store.getters["organizations/impersonatedOrganizationId"]
   if (!impersonatedOrgId) return
 
   const platformRole = store.getters["user/getUserPlatformRole"]
@@ -940,7 +941,8 @@ router.beforeEach(async (to, from, next) => {
     // (raw id, not the getter: the impersonated org scope is not set yet here)
     if (
       store.getters["organizations/getOrganizationLength"] === 0 &&
-      !store.getters["organizations/impersonatedOrganizationId"]
+      !store.getters["organizations/impersonatedOrganizationId"] &&
+      !store.getters["system/isImpersonatingUser"]
     ) {
       routerDebug("No organization")
 
