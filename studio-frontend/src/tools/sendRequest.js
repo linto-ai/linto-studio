@@ -21,7 +21,6 @@ export async function sendRequest(
     defaultQueryParams["userScope"] = "backoffice-readonly"
   }
 
-  // Get authorization token
   const userToken = getCookie("authToken")
   try {
     let req = null

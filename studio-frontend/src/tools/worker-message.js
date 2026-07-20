@@ -23,8 +23,6 @@ export function workerConnect(
 
 export function workerDisconnect() {
   workerSendMessage("disconnect")
-
-  //setTimeout(EditorWorker.workerSingleton.terminate(), 2000)
 }
 
 export function workerListener() {

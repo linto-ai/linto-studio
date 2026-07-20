@@ -31,7 +31,6 @@ export function isAtLeastSystemAdministrator(role) {
   return roleIsSystemAdministrator(role) || roleIsSuperAdministrator(role)
 }
 
-// roles is an object with PLATFORM_ROLES keys and boolean values
 export function computeRoleValue(roles) {
   let roleValue = 0
   for (const key in roles) {

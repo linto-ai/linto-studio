@@ -937,8 +937,7 @@ router.beforeEach(async (to, from, next) => {
 
     syncImpersonationState(to)
 
-    // Check if user has organizations
-    // (raw id, not the getter: the impersonated org scope is not set yet here)
+    // raw id, not the getter: the impersonated org scope is not set yet here
     if (
       store.getters["organizations/getOrganizationLength"] === 0 &&
       !store.getters["organizations/impersonatedOrganizationId"] &&

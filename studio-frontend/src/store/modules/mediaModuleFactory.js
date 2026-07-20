@@ -1,5 +1,3 @@
-// store/modules/mediaModuleFactory.js
-
 import {
   apiGetGenericConversationsList,
   apiGetGenericConversationsCount,

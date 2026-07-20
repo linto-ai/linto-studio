@@ -36,7 +36,6 @@ const state = {
 
 const mutations = {
   addNotification(state, notification) {
-    // Add unique ID and default values
     const notificationWithDefaults = {
       id: Date.now() + Math.random(),
       type: "info",

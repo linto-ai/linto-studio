@@ -16,16 +16,6 @@ export async function apiGetOrganizationById(
   return getOrganization?.data
 }
 
-// export async function getPublicOrganizationById(organizationId, notif) {
-//   const getOrganization = await sendRequest(
-//     `${BASE_API}/organizations/${organizationId}/public`,
-//     { method: "get" },
-//     null,
-//     notif
-//   )
-//   return getOrganization?.data
-// }
-
 export async function apiGetUserOrganizations(notif) {
   const getUserOrganizations = await sendRequest(
     `${BASE_API}/organizations`,
