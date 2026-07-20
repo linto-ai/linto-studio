@@ -24,6 +24,11 @@ function getVisitorId() {
 
 const debugWSSession = customDebug("Websocket:Session:debug")
 const debugWSMedia = customDebug("Websocket:Media:debug")
+const debugWSEditor = customDebug("Websocket:Editor:debug")
+
+// Ack timeout for editor commands — past this, the save is reported failed
+// (the edit stays applied locally; server broadcasts reconcile later).
+const EDITOR_ACK_TIMEOUT_MS = 5000
 export default class ApiEventWebSocket {
   constructor() {
     this.state = Vue.observable({
@@ -35,6 +40,7 @@ export default class ApiEventWebSocket {
 
     this.socket = null
     this.currentChannelId = null
+    this.currentEditorConversationId = null
     this.currentSessionOrganizationId = null
     this.test = false
     this.textPartialForTest = ""
@@ -67,6 +73,11 @@ export default class ApiEventWebSocket {
         debugWSSession("connected to socket.io server", msg)
         this.state.isConnected = true
         this.subscribeFolderUpdate()
+
+        // Editor room membership does not survive a reconnection: re-join.
+        if (this.currentEditorConversationId) {
+          this.joinEditorRoom(this.currentEditorConversationId)
+        }
 
         if (this.state.connexionLost) {
           this.handleConnexionRestored()
@@ -161,6 +172,48 @@ export default class ApiEventWebSocket {
   close() {
     this.socket.close()
     this.state.isConnected = false
+  }
+
+  // ── Transcription editor (lock+save model, see "Editor v2" design) ──
+  // The room is the PARENT conversation (one join per open editor view, and
+  // it covers cross-translation mode); every mutation payload carries the
+  // translationId — the child conversation actually edited.
+
+  joinEditorRoom(conversationId) {
+    if (!this.socket) return
+    this.currentEditorConversationId = conversationId
+    this.socket.emit("editor:join", conversationId, (ack) => {
+      debugWSEditor("editor:join ack", ack)
+    })
+  }
+
+  leaveEditorRoom() {
+    if (!this.socket || !this.currentEditorConversationId) return
+    this.socket.emit("editor:leave", this.currentEditorConversationId)
+    this.currentEditorConversationId = null
+  }
+
+  saveEditorTurn({ translationId, turnId, text }) {
+    if (!this.socket) {
+      return Promise.resolve({ ok: false, reason: "disconnected" })
+    }
+    return new Promise((resolve) => {
+      this.socket
+        .timeout(EDITOR_ACK_TIMEOUT_MS)
+        .emit(
+          "editor:update_turn",
+          { translationId, turnId, text },
+          (timeoutErr, ack) => {
+            if (timeoutErr) {
+              debugWSEditor("editor:update_turn ack timeout", { turnId })
+              resolve({ ok: false, reason: "timeout" })
+              return
+            }
+            debugWSEditor("editor:update_turn ack", ack)
+            resolve(ack ?? { ok: false, reason: "no_ack" })
+          },
+        )
+    })
   }
 
   subscribeSessionRoom(

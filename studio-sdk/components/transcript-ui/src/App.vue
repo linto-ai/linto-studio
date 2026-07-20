@@ -5,6 +5,7 @@ import { mapApiDocument } from "./adapters/apiAdapter"
 import { provideI18n, type Locale } from "./i18n"
 import { createCore, provideCore } from "./core"
 import { createAudioPlugin } from "./plugins/audio"
+import { createTranscriptionEditorPlugin } from "./plugins/transcriptionEditor"
 import { createLLMServicesPlugin } from "./plugins/llmServices"
 import { createChatPlugin } from "./plugins/chat"
 import type { ChatMessage, ChatSession } from "./core/types"
@@ -21,6 +22,7 @@ const { t } = provideI18n(locale)
 
 const core = createCore()
 core.use(createAudioPlugin())
+core.use(createTranscriptionEditorPlugin())
 core.use(createLLMServicesPlugin())
 core.use(createChatPlugin())
 //core.use(createLivePlugin())

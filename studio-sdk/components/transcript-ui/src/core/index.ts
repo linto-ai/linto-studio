@@ -14,6 +14,7 @@ export type {
   ChannelStore,
   SpeakersStore,
   AudioPluginApi,
+  TranscriptionEditorPluginApi,
   LivePluginApi,
   SubtitlePluginApi,
   LLMService,

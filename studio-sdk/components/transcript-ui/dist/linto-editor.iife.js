@@ -8747,12 +8747,12 @@ var LintoEditor = (function(exports) {
     md: 20,
     lg: 24
   };
-  const _hoisted_1$D = {
+  const _hoisted_1$E = {
     key: 1,
     class: "editor-icon editor-icon--missing",
     "aria-hidden": "true"
   };
-  const _sfc_main$M = /* @__PURE__ */ defineComponent({
+  const _sfc_main$N = /* @__PURE__ */ defineComponent({
     __name: "EditorIcon",
     props: {
       name: { type: String },
@@ -8771,11 +8771,11 @@ var LintoEditor = (function(exports) {
           style: normalizeStyle(style.value),
           class: normalizeClass(["editor-icon", { "editor-icon--spin": __props.spin }]),
           "aria-hidden": "true"
-        }, null, 8, ["style", "class"])) : (openBlock(), createElementBlock("span", _hoisted_1$D, "?"));
+        }, null, 8, ["style", "class"])) : (openBlock(), createElementBlock("span", _hoisted_1$E, "?"));
       };
     }
   });
-  const _style_0$D = "\n.editor-icon[data-v-210c7f09] {\n  flex-shrink: 0;\n}\n.editor-icon--missing[data-v-210c7f09] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  opacity: 0.5;\n  font-size: 1em;\n  line-height: 1;\n}\n.editor-icon--spin[data-v-210c7f09] {\n  animation: editor-icon-spin-210c7f09 1s linear infinite;\n}\n@keyframes editor-icon-spin-210c7f09 {\nto {\n    transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.editor-icon--spin[data-v-210c7f09] {\n    animation: none;\n}\n}\n";
+  const _style_0$E = "\n.editor-icon[data-v-210c7f09] {\n  flex-shrink: 0;\n}\n.editor-icon--missing[data-v-210c7f09] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  opacity: 0.5;\n  font-size: 1em;\n  line-height: 1;\n}\n.editor-icon--spin[data-v-210c7f09] {\n  animation: editor-icon-spin-210c7f09 1s linear infinite;\n}\n@keyframes editor-icon-spin-210c7f09 {\nto {\n    transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.editor-icon--spin[data-v-210c7f09] {\n    animation: none;\n}\n}\n";
   const _export_sfc = (sfc, props) => {
     const target = sfc.__vccOpts || sfc;
     for (const [key, val] of props) {
@@ -8783,13 +8783,13 @@ var LintoEditor = (function(exports) {
     }
     return target;
   };
-  const EditorIcon = /* @__PURE__ */ _export_sfc(_sfc_main$M, [["styles", [_style_0$D]], ["__scopeId", "data-v-210c7f09"]]);
-  const _hoisted_1$C = ["type", "disabled", "aria-disabled", "aria-label"];
+  const EditorIcon = /* @__PURE__ */ _export_sfc(_sfc_main$N, [["styles", [_style_0$E]], ["__scopeId", "data-v-210c7f09"]]);
+  const _hoisted_1$D = ["type", "disabled", "aria-disabled", "aria-label"];
   const _hoisted_2$v = {
     key: 3,
     class: "editor-btn__label"
   };
-  const _sfc_main$L = /* @__PURE__ */ defineComponent({
+  const _sfc_main$M = /* @__PURE__ */ defineComponent({
     __name: "Button",
     props: {
       label: { type: String },
@@ -8852,12 +8852,12 @@ var LintoEditor = (function(exports) {
             name: __props.iconRight,
             size: iconSize.value
           }, null, 8, ["name", "size"])) : _ctx.$slots["icon-right"] ? renderSlot(_ctx.$slots, "icon-right", { key: 5 }, void 0, true) : createCommentVNode("", true)
-        ], 10, _hoisted_1$C);
+        ], 10, _hoisted_1$D);
       };
     }
   });
-  const _style_0$C = "\n.editor-btn[data-v-3b0709a9] {\n  /* Default tokens — overridden by variant/intent/size modifiers */\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-sm);\n  --btn-font-size: var(--font-size-xs);\n  --btn-height: 32px;\n  --btn-gap: var(--spacing-xs);\n\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: var(--btn-gap);\n  box-sizing: border-box;\n  height: var(--btn-height);\n  padding: var(--btn-padding-y) var(--btn-padding-x);\n  font-family: var(--font-family);\n  font-size: var(--btn-font-size);\n  font-weight: 500;\n  line-height: 1;\n  color: var(--btn-text);\n  background-color: var(--btn-bg);\n  border: 1px solid var(--btn-border-color);\n  border-radius: var(--radius-sm);\n  cursor: pointer;\n  white-space: nowrap;\n  transition:\n    background-color var(--transition-duration),\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.editor-btn[data-v-3b0709a9]:hover:not(:disabled) {\n  background-color: var(--btn-hover-bg);\n  color: var(--btn-hover-text);\n}\n.editor-btn[data-v-3b0709a9]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n\n/* Note: this rule is repeated lower in the file (after variants) to win the\n   cascade on the variant CSS vars. Keep this lightweight version for the\n   cursor and hover suppression. */\n.editor-btn[data-v-3b0709a9]:disabled {\n  cursor: not-allowed;\n}\n.editor-btn[data-v-3b0709a9]:disabled:hover {\n  background-color: var(--btn-bg);\n  color: var(--btn-text);\n}\n.editor-btn__label[data-v-3b0709a9] {\n  /* //overflow: hidden;\n  text-overflow: ellipsis; */\n  text-overflow: ellipsis;\n  text-box: cap alphabetic;\n}\n\n/* Sizes */\n.editor-btn--sm[data-v-3b0709a9] {\n  /* defaults */\n}\n.editor-btn--md[data-v-3b0709a9] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-sm);\n  --btn-height: 40px;\n}\n.editor-btn--lg[data-v-3b0709a9] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-base);\n  --btn-height: 44px;\n}\n\n/* Icon-only: square */\n.editor-btn--icon-only[data-v-3b0709a9] {\n  width: var(--btn-height);\n  padding: 0;\n}\n.editor-btn--block[data-v-3b0709a9] {\n  display: flex;\n  width: 100%;\n}\n\n/* Variants — default intent */\n.editor-btn--primary[data-v-3b0709a9] {\n  --btn-bg: var(--color-primary);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary-hover);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--secondary[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-primary);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--tertiary[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-primary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n.editor-btn--transparent[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n\n/* Destructive intent overrides */\n.editor-btn--destructive.editor-btn--primary[data-v-3b0709a9] {\n  --btn-bg: var(--color-danger);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-hover);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--destructive.editor-btn--secondary[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-danger);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--destructive.editor-btn--tertiary[data-v-3b0709a9],\n.editor-btn--destructive.editor-btn--transparent[data-v-3b0709a9] {\n  --btn-text: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-soft);\n  --btn-hover-text: var(--color-danger);\n}\n\n/* Disabled: gray-out regardless of variant. Placed after the variants so the\n   CSS var overrides win the cascade (same specificity, last declaration). */\n.editor-btn[data-v-3b0709a9]:disabled {\n  --btn-bg: var(--color-surface);\n  --btn-text: var(--color-text-muted);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface);\n  --btn-hover-text: var(--color-text-muted);\n}\n";
-  const Button = /* @__PURE__ */ _export_sfc(_sfc_main$L, [["styles", [_style_0$C]], ["__scopeId", "data-v-3b0709a9"]]);
+  const _style_0$D = "\n.editor-btn[data-v-3b0709a9] {\n  /* Default tokens — overridden by variant/intent/size modifiers */\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-sm);\n  --btn-font-size: var(--font-size-xs);\n  --btn-height: 32px;\n  --btn-gap: var(--spacing-xs);\n\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: var(--btn-gap);\n  box-sizing: border-box;\n  height: var(--btn-height);\n  padding: var(--btn-padding-y) var(--btn-padding-x);\n  font-family: var(--font-family);\n  font-size: var(--btn-font-size);\n  font-weight: 500;\n  line-height: 1;\n  color: var(--btn-text);\n  background-color: var(--btn-bg);\n  border: 1px solid var(--btn-border-color);\n  border-radius: var(--radius-sm);\n  cursor: pointer;\n  white-space: nowrap;\n  transition:\n    background-color var(--transition-duration),\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.editor-btn[data-v-3b0709a9]:hover:not(:disabled) {\n  background-color: var(--btn-hover-bg);\n  color: var(--btn-hover-text);\n}\n.editor-btn[data-v-3b0709a9]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n\n/* Note: this rule is repeated lower in the file (after variants) to win the\n   cascade on the variant CSS vars. Keep this lightweight version for the\n   cursor and hover suppression. */\n.editor-btn[data-v-3b0709a9]:disabled {\n  cursor: not-allowed;\n}\n.editor-btn[data-v-3b0709a9]:disabled:hover {\n  background-color: var(--btn-bg);\n  color: var(--btn-text);\n}\n.editor-btn__label[data-v-3b0709a9] {\n  /* //overflow: hidden;\n  text-overflow: ellipsis; */\n  text-overflow: ellipsis;\n  text-box: cap alphabetic;\n}\n\n/* Sizes */\n.editor-btn--sm[data-v-3b0709a9] {\n  /* defaults */\n}\n.editor-btn--md[data-v-3b0709a9] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-sm);\n  --btn-height: 40px;\n}\n.editor-btn--lg[data-v-3b0709a9] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-base);\n  --btn-height: 44px;\n}\n\n/* Icon-only: square */\n.editor-btn--icon-only[data-v-3b0709a9] {\n  width: var(--btn-height);\n  padding: 0;\n}\n.editor-btn--block[data-v-3b0709a9] {\n  display: flex;\n  width: 100%;\n}\n\n/* Variants — default intent */\n.editor-btn--primary[data-v-3b0709a9] {\n  --btn-bg: var(--color-primary);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary-hover);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--secondary[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-primary);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--tertiary[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-primary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n.editor-btn--transparent[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n\n/* Destructive intent overrides */\n.editor-btn--destructive.editor-btn--primary[data-v-3b0709a9] {\n  --btn-bg: var(--color-danger);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-hover);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--destructive.editor-btn--secondary[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-danger);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--destructive.editor-btn--tertiary[data-v-3b0709a9],\n.editor-btn--destructive.editor-btn--transparent[data-v-3b0709a9] {\n  --btn-text: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-soft);\n  --btn-hover-text: var(--color-danger);\n}\n\n/* Disabled: gray-out regardless of variant. Placed after the variants so the\n   CSS var overrides win the cascade (same specificity, last declaration). */\n.editor-btn[data-v-3b0709a9]:disabled {\n  --btn-bg: var(--color-surface);\n  --btn-text: var(--color-text-muted);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface);\n  --btn-hover-text: var(--color-text-muted);\n}\n";
+  const Button = /* @__PURE__ */ _export_sfc(_sfc_main$M, [["styles", [_style_0$D]], ["__scopeId", "data-v-3b0709a9"]]);
   const fr = {
     "editor.loading": "Chargement…",
     "editor.loadError": "Erreur de chargement",
@@ -8916,6 +8916,10 @@ var LintoEditor = (function(exports) {
     "sidebar.statusQueued": "En attente",
     "transcription.empty": "Aucune transcription pour le moment",
     "transcription.historyStart": "Début de la transcription",
+    "transcription.editTurn": "Modifier le texte",
+    "transcription.saveEdit": "Enregistrer la modification",
+    "transcription.cancelEdit": "Annuler la modification",
+    "transcription.turnEditor": "Texte du tour de parole (Entrée pour enregistrer, Échap pour annuler)",
     "transcription.loadingHistory": "Chargement…",
     "selection.count": "sélectionné(s)",
     "selection.copyText": "Copier le texte",
@@ -9044,6 +9048,10 @@ var LintoEditor = (function(exports) {
     "sidebar.statusQueued": "Queued",
     "transcription.empty": "No transcription yet",
     "transcription.historyStart": "Beginning of transcription",
+    "transcription.editTurn": "Edit text",
+    "transcription.saveEdit": "Save edit",
+    "transcription.cancelEdit": "Cancel edit",
+    "transcription.turnEditor": "Turn text (Enter to save, Escape to cancel)",
     "transcription.loadingHistory": "Loading…",
     "selection.count": "selected",
     "selection.copyText": "Copy text",
@@ -12033,16 +12041,16 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     }
     return null;
   }
-  const _hoisted_1$B = { class: "editor-header" };
+  const _hoisted_1$C = { class: "editor-header" };
   const _hoisted_2$u = { class: "header-main" };
   const _hoisted_3$p = { class: "document-title" };
-  const _hoisted_4$c = {
+  const _hoisted_4$d = {
     key: 0,
     class: "document-meta"
   };
   const _hoisted_5$b = { class: "header-right" };
   const _hoisted_6$9 = { key: 0 };
-  const _sfc_main$K = /* @__PURE__ */ defineComponent({
+  const _sfc_main$L = /* @__PURE__ */ defineComponent({
     __name: "Header",
     props: {
       title: { type: String },
@@ -12074,10 +12082,10 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         ].filter(Boolean)
       );
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("header", _hoisted_1$B, [
+        return openBlock(), createElementBlock("header", _hoisted_1$C, [
           createBaseVNode("div", _hoisted_2$u, [
             createBaseVNode("h1", _hoisted_3$p, toDisplayString(formattedTitle.value), 1),
-            metaParts.value.length ? (openBlock(), createElementBlock("div", _hoisted_4$c, [
+            metaParts.value.length ? (openBlock(), createElementBlock("div", _hoisted_4$d, [
               (openBlock(true), createElementBlock(Fragment, null, renderList(metaParts.value, (part, i2) => {
                 return openBlock(), createElementBlock("span", {
                   key: i2,
@@ -12123,10 +12131,10 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$B = '\n.editor-header[data-v-cc84adfc] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-md);\n  padding: var(--spacing-sm) var(--spacing-lg);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.header-main[data-v-cc84adfc] {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  min-width: 0;\n  flex: 1;\n}\n.document-title[data-v-cc84adfc] {\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n  color: var(--color-text-primary);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  margin: 0;\n}\n.document-meta[data-v-cc84adfc] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.document-meta__part[data-v-cc84adfc] {\n  text-box: cap alphabetic;\n}\n.document-meta__part + .document-meta__part[data-v-cc84adfc]::before {\n  content: "·";\n  margin-right: var(--spacing-xs);\n}\n.header-right[data-v-cc84adfc] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  flex-shrink: 0;\n}\n@media (max-width: 767px) {\n.editor-header[data-v-cc84adfc] {\n    padding: var(--spacing-xs) var(--spacing-md);\n}\n.document-title[data-v-cc84adfc] {\n    font-size: var(--font-size-base);\n}\n}\n';
-  const Header = /* @__PURE__ */ _export_sfc(_sfc_main$K, [["styles", [_style_0$B]], ["__scopeId", "data-v-cc84adfc"]]);
-  const _hoisted_1$A = ["aria-label"];
-  const _sfc_main$J = /* @__PURE__ */ defineComponent({
+  const _style_0$C = '\n.editor-header[data-v-cc84adfc] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-md);\n  padding: var(--spacing-sm) var(--spacing-lg);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.header-main[data-v-cc84adfc] {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  min-width: 0;\n  flex: 1;\n}\n.document-title[data-v-cc84adfc] {\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n  color: var(--color-text-primary);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  margin: 0;\n}\n.document-meta[data-v-cc84adfc] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.document-meta__part[data-v-cc84adfc] {\n  text-box: cap alphabetic;\n}\n.document-meta__part + .document-meta__part[data-v-cc84adfc]::before {\n  content: "·";\n  margin-right: var(--spacing-xs);\n}\n.header-right[data-v-cc84adfc] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  flex-shrink: 0;\n}\n@media (max-width: 767px) {\n.editor-header[data-v-cc84adfc] {\n    padding: var(--spacing-xs) var(--spacing-md);\n}\n.document-title[data-v-cc84adfc] {\n    font-size: var(--font-size-base);\n}\n}\n';
+  const Header = /* @__PURE__ */ _export_sfc(_sfc_main$L, [["styles", [_style_0$C]], ["__scopeId", "data-v-cc84adfc"]]);
+  const _hoisted_1$B = ["aria-label"];
+  const _sfc_main$K = /* @__PURE__ */ defineComponent({
     __name: "Badge",
     props: {
       ariaLabel: { type: String }
@@ -12138,16 +12146,16 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
           "aria-label": __props.ariaLabel
         }, [
           renderSlot(_ctx.$slots, "default", {}, void 0, true)
-        ], 8, _hoisted_1$A);
+        ], 8, _hoisted_1$B);
       };
     }
   });
-  const _style_0$A = "\n.editor-badge[data-v-732d4c24] {\n  display: inline-flex;\n  align-items: center;\n  padding: 2px var(--spacing-sm);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n  color: var(--color-text-muted);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border-light);\n  border-radius: var(--radius-sm);\n  white-space: nowrap;\n}\n";
-  const Badge = /* @__PURE__ */ _export_sfc(_sfc_main$J, [["styles", [_style_0$A]], ["__scopeId", "data-v-732d4c24"]]);
-  const _hoisted_1$z = ["aria-label"];
+  const _style_0$B = "\n.editor-badge[data-v-732d4c24] {\n  display: inline-flex;\n  align-items: center;\n  padding: 2px var(--spacing-sm);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n  color: var(--color-text-muted);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border-light);\n  border-radius: var(--radius-sm);\n  white-space: nowrap;\n}\n";
+  const Badge = /* @__PURE__ */ _export_sfc(_sfc_main$K, [["styles", [_style_0$B]], ["__scopeId", "data-v-732d4c24"]]);
+  const _hoisted_1$A = ["aria-label"];
   const _hoisted_2$t = ["aria-selected", "aria-disabled", "disabled", "onClick"];
   const _hoisted_3$o = { class: "tab__label" };
-  const _sfc_main$I = /* @__PURE__ */ defineComponent({
+  const _sfc_main$J = /* @__PURE__ */ defineComponent({
     __name: "Tabs",
     props: {
       tabs: { type: Array },
@@ -12198,12 +12206,12 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
               }, 1024)) : createCommentVNode("", true)
             ], 10, _hoisted_2$t);
           }), 128))
-        ], 8, _hoisted_1$z);
+        ], 8, _hoisted_1$A);
       };
     }
   });
-  const _style_0$z = "\n.tabs[data-v-24f9730e] {\n  display: flex;\n  align-items: stretch;\n  gap: var(--spacing-xs);\n  padding: 0 var(--spacing-lg);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-x: auto;\n  scrollbar-width: thin;\n}\n.tab[data-v-24f9730e] {\n  all: unset;\n  box-sizing: border-box;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  height: 44px;\n  padding: 0 var(--spacing-sm);\n  font-family: var(--font-family);\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-secondary);\n  cursor: pointer;\n  white-space: nowrap;\n  border-bottom: 2px solid transparent;\n  transition:\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.tab[data-v-24f9730e]:hover:not([disabled]) {\n  color: var(--color-text-primary);\n}\n.tab[data-v-24f9730e]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: -2px;\n  border-radius: var(--radius-sm);\n}\n.tab--active[data-v-24f9730e] {\n  color: var(--color-text-primary);\n  border-bottom-color: var(--color-primary);\n}\n.tab[disabled][data-v-24f9730e] {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n.tab__icon[data-v-24f9730e] {\n  flex-shrink: 0;\n  color: currentColor;\n}\n.tab__label[data-v-24f9730e] {\n  text-box: cap alphabetic;\n}\n.tab__badge[data-v-24f9730e] {\n  margin-left: var(--spacing-xs);\n}\n";
-  const Tabs = /* @__PURE__ */ _export_sfc(_sfc_main$I, [["styles", [_style_0$z]], ["__scopeId", "data-v-24f9730e"]]);
+  const _style_0$A = "\n.tabs[data-v-24f9730e] {\n  display: flex;\n  align-items: stretch;\n  gap: var(--spacing-xs);\n  padding: 0 var(--spacing-lg);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-x: auto;\n  scrollbar-width: thin;\n}\n.tab[data-v-24f9730e] {\n  all: unset;\n  box-sizing: border-box;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  height: 44px;\n  padding: 0 var(--spacing-sm);\n  font-family: var(--font-family);\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-secondary);\n  cursor: pointer;\n  white-space: nowrap;\n  border-bottom: 2px solid transparent;\n  transition:\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.tab[data-v-24f9730e]:hover:not([disabled]) {\n  color: var(--color-text-primary);\n}\n.tab[data-v-24f9730e]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: -2px;\n  border-radius: var(--radius-sm);\n}\n.tab--active[data-v-24f9730e] {\n  color: var(--color-text-primary);\n  border-bottom-color: var(--color-primary);\n}\n.tab[disabled][data-v-24f9730e] {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n.tab__icon[data-v-24f9730e] {\n  flex-shrink: 0;\n  color: currentColor;\n}\n.tab__label[data-v-24f9730e] {\n  text-box: cap alphabetic;\n}\n.tab__badge[data-v-24f9730e] {\n  margin-left: var(--spacing-xs);\n}\n";
+  const Tabs = /* @__PURE__ */ _export_sfc(_sfc_main$J, [["styles", [_style_0$A]], ["__scopeId", "data-v-24f9730e"]]);
   const TRANSCRIPTION_TAB = "__transcription__";
   const VERBATIM_TAB = "__verbatim__";
   function createEventBus() {
@@ -12700,7 +12708,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     }
     return core;
   }
-  const _sfc_main$H = /* @__PURE__ */ defineComponent({
+  const _sfc_main$I = /* @__PURE__ */ defineComponent({
     __name: "TabBar",
     props: {
       modelValue: { type: String }
@@ -13172,8 +13180,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     };
   }
   const StickToBottomKey = /* @__PURE__ */ Symbol("StickToBottom");
-  const _hoisted_1$y = { style: { "position": "relative", "height": "100%", "width": "100%", "flex": "1", "min-height": "0" } };
-  const _sfc_main$G = /* @__PURE__ */ defineComponent({
+  const _hoisted_1$z = { style: { "position": "relative", "height": "100%", "width": "100%", "flex": "1", "min-height": "0" } };
+  const _sfc_main$H = /* @__PURE__ */ defineComponent({
     ...{ name: "StickToBottom" },
     __name: "StickToBottom",
     props: {
@@ -13237,7 +13245,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       }));
       return (_ctx, _cache) => {
         return openBlock(), createElementBlock("div", null, [
-          createBaseVNode("div", _hoisted_1$y, [
+          createBaseVNode("div", _hoisted_1$z, [
             createBaseVNode("div", {
               ref_key: "scrollRef",
               ref: scrollRef,
@@ -13263,7 +13271,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _sfc_main$F = /* @__PURE__ */ defineComponent({
+  const _sfc_main$G = /* @__PURE__ */ defineComponent({
     __name: "SpeakerIndicator",
     props: {
       color: { type: String }
@@ -13278,16 +13286,16 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$y = "\n.speaker-indicator[data-v-9bffeda8] {\n  display: inline-block;\n  width: 8px;\n  height: 8px;\n  border-radius: 50%;\n  flex-shrink: 0;\n}\n";
-  const SpeakerIndicator = /* @__PURE__ */ _export_sfc(_sfc_main$F, [["styles", [_style_0$y]], ["__scopeId", "data-v-9bffeda8"]]);
-  const _hoisted_1$x = { class: "speaker-label" };
+  const _style_0$z = "\n.speaker-indicator[data-v-9bffeda8] {\n  display: inline-block;\n  width: 8px;\n  height: 8px;\n  border-radius: 50%;\n  flex-shrink: 0;\n}\n";
+  const SpeakerIndicator = /* @__PURE__ */ _export_sfc(_sfc_main$G, [["styles", [_style_0$z]], ["__scopeId", "data-v-9bffeda8"]]);
+  const _hoisted_1$y = { class: "speaker-label" };
   const _hoisted_2$s = {
     key: 1,
     class: "speaker-name"
   };
   const _hoisted_3$n = ["datetime"];
-  const _hoisted_4$b = { class: "lang" };
-  const _sfc_main$E = /* @__PURE__ */ defineComponent({
+  const _hoisted_4$c = { class: "lang" };
+  const _sfc_main$F = /* @__PURE__ */ defineComponent({
     __name: "SpeakerLabel",
     props: {
       speaker: { type: Object },
@@ -13323,7 +13331,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       });
       const speakerColor = computed(() => props.speaker?.color ?? "transparent");
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$x, [
+        return openBlock(), createElementBlock("div", _hoisted_1$y, [
           __props.speaker ? (openBlock(), createBlock(SpeakerIndicator, {
             key: 0,
             color: speakerColor.value
@@ -13334,13 +13342,13 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
             class: "timestamp",
             datetime: timestamp.value.datetime
           }, toDisplayString(timestamp.value.text), 9, _hoisted_3$n)) : createCommentVNode("", true),
-          createBaseVNode("span", _hoisted_4$b, toDisplayString(languageName.value), 1)
+          createBaseVNode("span", _hoisted_4$c, toDisplayString(languageName.value), 1)
         ]);
       };
     }
   });
-  const _style_0$x = "\n.speaker-label[data-v-177d13c4] {\n  display: flex;\n  border-bottom: 2px solid transparent;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.speaker-name[data-v-177d13c4] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.timestamp[data-v-177d13c4] {\n  font-size: var(--font-size-xs);\n  font-family: var(--font-family-mono);\n  color: var(--color-text-muted);\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n.lang[data-v-177d13c4] {\n  font-size: var(--font-size-xs);\n  font-weight: 400;\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n";
-  const SpeakerLabel = /* @__PURE__ */ _export_sfc(_sfc_main$E, [["styles", [_style_0$x]], ["__scopeId", "data-v-177d13c4"]]);
+  const _style_0$y = "\n.speaker-label[data-v-177d13c4] {\n  display: flex;\n  border-bottom: 2px solid transparent;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.speaker-name[data-v-177d13c4] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.timestamp[data-v-177d13c4] {\n  font-size: var(--font-size-xs);\n  font-family: var(--font-family-mono);\n  color: var(--color-text-muted);\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n.lang[data-v-177d13c4] {\n  font-size: var(--font-size-xs);\n  font-weight: 400;\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n";
+  const SpeakerLabel = /* @__PURE__ */ _export_sfc(_sfc_main$F, [["styles", [_style_0$y]], ["__scopeId", "data-v-177d13c4"]]);
   function serialize(o2) {
     return typeof o2 == "string" ? `'${o2}'` : new c$1().serialize(o2);
   }
@@ -19552,7 +19560,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     }
   });
   var DropdownMenuTrigger_default = DropdownMenuTrigger_vue_vue_type_script_setup_true_lang_default;
-  const _sfc_main$D = /* @__PURE__ */ defineComponent({
+  const _sfc_main$E = /* @__PURE__ */ defineComponent({
     __name: "EditorCheckbox",
     props: {
       modelValue: { type: Boolean },
@@ -19585,8 +19593,127 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$w = '\n.checkbox[data-v-024ee78b] {\n  all: unset;\n  width: 16px;\n  height: 16px;\n  flex-shrink: 0;\n  border: 1.5px solid var(--color-border);\n  border-radius: var(--radius-sm);\n  background-color: var(--color-surface);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  cursor: pointer;\n  transition:\n    background-color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.checkbox[data-v-024ee78b]:hover {\n  border-color: var(--color-primary);\n}\n.checkbox[data-v-024ee78b]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.checkbox[data-state="checked"][data-v-024ee78b] {\n  background-color: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.checkbox-indicator[data-v-024ee78b] {\n  color: var(--color-white, #fff);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n}\n';
-  const EditorCheckbox = /* @__PURE__ */ _export_sfc(_sfc_main$D, [["styles", [_style_0$w]], ["__scopeId", "data-v-024ee78b"]]);
+  const _style_0$x = '\n.checkbox[data-v-024ee78b] {\n  all: unset;\n  width: 16px;\n  height: 16px;\n  flex-shrink: 0;\n  border: 1.5px solid var(--color-border);\n  border-radius: var(--radius-sm);\n  background-color: var(--color-surface);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  cursor: pointer;\n  transition:\n    background-color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.checkbox[data-v-024ee78b]:hover {\n  border-color: var(--color-primary);\n}\n.checkbox[data-v-024ee78b]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.checkbox[data-state="checked"][data-v-024ee78b] {\n  background-color: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.checkbox-indicator[data-v-024ee78b] {\n  color: var(--color-white, #fff);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n}\n';
+  const EditorCheckbox = /* @__PURE__ */ _export_sfc(_sfc_main$E, [["styles", [_style_0$x]], ["__scopeId", "data-v-024ee78b"]]);
+  const TEXT_NODE$1 = 3;
+  function placeCaretAt(element, offset2) {
+    element.focus();
+    const textNode = element.firstChild;
+    if (!textNode || textNode.nodeType !== TEXT_NODE$1) return;
+    const clamped = Math.max(0, Math.min(offset2, textNode.nodeValue?.length ?? 0));
+    const range = element.ownerDocument.createRange();
+    range.setStart(textNode, clamped);
+    range.collapse(true);
+    const selection = element.ownerDocument.defaultView?.getSelection();
+    if (!selection) return;
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+  const TEXT_NODE = 3;
+  function computeTextOffsetInContainer(container, target, offsetInTarget) {
+    if (target.nodeType === TEXT_NODE) {
+      return textLengthBefore(container, target) + offsetInTarget;
+    }
+    const child = target.childNodes[offsetInTarget];
+    if (child) return textLengthBefore(container, child);
+    return textLengthUnder(target) + textLengthBefore(container, target);
+  }
+  function textLengthBefore(container, stop) {
+    let length = 0;
+    let reached = false;
+    function walk(node) {
+      if (reached || node === stop) {
+        reached = true;
+        return;
+      }
+      if (node.nodeType === TEXT_NODE) {
+        length += node.nodeValue?.length ?? 0;
+        return;
+      }
+      for (const child of Array.from(node.childNodes)) {
+        walk(child);
+        if (reached) return;
+      }
+    }
+    walk(container);
+    return length;
+  }
+  function textLengthUnder(node) {
+    if (node.nodeType === TEXT_NODE) return node.nodeValue?.length ?? 0;
+    let length = 0;
+    for (const child of Array.from(node.childNodes)) {
+      length += textLengthUnder(child);
+    }
+    return length;
+  }
+  function computeSelectionOffset(container) {
+    const selection = container.ownerDocument.getSelection();
+    if (!selection || selection.rangeCount === 0) return null;
+    const node = selection.focusNode;
+    if (!node || !container.contains(node)) return null;
+    return computeTextOffsetInContainer(container, node, selection.focusOffset);
+  }
+  const _hoisted_1$x = ["aria-label", "textContent"];
+  const _sfc_main$D = /* @__PURE__ */ defineComponent({
+    __name: "TurnTextEditor",
+    props: {
+      text: { type: String },
+      caretOffset: { type: Number }
+    },
+    emits: ["save", "cancel", "split"],
+    setup(__props, { expose: __expose, emit: __emit }) {
+      const props = __props;
+      const emit2 = __emit;
+      const { t: t2 } = useI18n();
+      const editableRef = useTemplateRef("editable");
+      let settled = false;
+      onMounted(() => {
+        const el = editableRef.value;
+        if (!el) return;
+        placeCaretAt(el, props.caretOffset ?? props.text.length);
+      });
+      function getText() {
+        return editableRef.value?.innerText ?? "";
+      }
+      __expose({ getText });
+      function settle(emitOutcome) {
+        if (settled) return;
+        settled = true;
+        emitOutcome();
+      }
+      function onKeydown(event) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          const el = editableRef.value;
+          const text2 = getText();
+          const offset2 = (el && computeSelectionOffset(el)) ?? text2.length;
+          settle(() => emit2("split", text2, offset2));
+        } else if (event.key === "Escape") {
+          event.preventDefault();
+          settle(() => emit2("cancel"));
+        }
+      }
+      function onBlur() {
+        settle(() => emit2("save", getText()));
+      }
+      return (_ctx, _cache) => {
+        return openBlock(), createElementBlock("p", {
+          ref: "editable",
+          class: "turn-text-editor",
+          contenteditable: "plaintext-only",
+          role: "textbox",
+          "aria-multiline": "false",
+          "aria-label": unref(t2)("transcription.turnEditor"),
+          spellcheck: "true",
+          onKeydown,
+          onBlur,
+          textContent: toDisplayString(__props.text)
+        }, null, 40, _hoisted_1$x);
+      };
+    }
+  });
+  const _style_0$w = "\n.turn-text-editor[data-v-89d2dec3] {\n  margin: 0;\n  white-space: pre-wrap;\n  overflow-wrap: anywhere;\n  cursor: text;\n  outline: 2px solid var(--color-primary);\n  border-radius: var(--radius-sm);\n  background-color: var(--color-surface);\n  padding: 0;\n}\n";
+  const TurnTextEditor = /* @__PURE__ */ _export_sfc(_sfc_main$D, [["styles", [_style_0$w]], ["__scopeId", "data-v-89d2dec3"]]);
   const turnSelectionKey = /* @__PURE__ */ Symbol("turnSelection");
   function getTurnText(turn) {
     if (turn.words.length > 0) {
@@ -19695,9 +19822,32 @@ ${text2}` : text2;
       throw new Error("useTurnSelection() requires provideTurnSelection()");
     return sel;
   }
+  function computeTurnPlainText(turn) {
+    if (turn.words.length > 0) return turn.words.map((w2) => w2.text).join(" ");
+    return turn.text ?? "";
+  }
+  function resolveCaretPoint(doc2, x2, y2) {
+    if (typeof doc2.caretPositionFromPoint === "function") {
+      const position = doc2.caretPositionFromPoint(x2, y2);
+      if (!position) return null;
+      return { node: position.offsetNode, offset: position.offset };
+    }
+    const range = doc2.caretRangeFromPoint?.(x2, y2);
+    if (!range) return null;
+    return { node: range.startContainer, offset: range.startOffset };
+  }
+  function computeCaretOffsetFromPoint(container, x2, y2) {
+    const point = resolveCaretPoint(container.ownerDocument, x2, y2);
+    if (!point || !container.contains(point.node)) return null;
+    return computeTextOffsetInContainer(container, point.node, point.offset);
+  }
   const _hoisted_1$w = ["data-turn-active", "aria-selected"];
-  const _hoisted_2$r = { class: "turn-text" };
-  const _hoisted_3$m = ["data-word-active"];
+  const _hoisted_2$r = {
+    key: 1,
+    class: "turn-edit-actions"
+  };
+  const _hoisted_3$m = ["role", "tabindex", "aria-label"];
+  const _hoisted_4$b = ["data-word-active"];
   const _sfc_main$C = /* @__PURE__ */ defineComponent({
     __name: "TranscriptionTurn",
     props: {
@@ -19734,7 +19884,51 @@ ${text2}` : text2;
         const key = isSelected.value ? "selection.deselect" : "selection.select";
         return t2(key).replace("{name}", name);
       });
+      const canEditText = computed(
+        () => core.transcriptionEditor !== void 0 && core.capabilities.value.text === "edit" && !props.partial && !props.live
+      );
+      const isEditing = computed(
+        () => core.transcriptionEditor?.editingTurnId.value === props.turn.id
+      );
+      const plainText = computed(() => computeTurnPlainText(props.turn));
+      const editorRef = useTemplateRef("editor");
+      function onTextClick(event) {
+        if (!canEditText.value) return;
+        const container = event.currentTarget;
+        const offset2 = computeCaretOffsetFromPoint(
+          container,
+          event.clientX,
+          event.clientY
+        );
+        core.transcriptionEditor.beginEdit(
+          props.turn.id,
+          offset2 ?? plainText.value.length
+        );
+      }
+      function onTextKeydown(event) {
+        if (!canEditText.value || event.key !== "Enter") return;
+        event.preventDefault();
+        core.transcriptionEditor.beginEdit(props.turn.id, 0);
+      }
+      function onEditorSave(text2) {
+        core.transcriptionEditor.saveTurn(text2);
+      }
+      function onEditorCancel() {
+        core.transcriptionEditor.cancelEdit();
+      }
+      function onEditorSplit(text2, offset2) {
+        core.transcriptionEditor.splitTurn(text2, offset2);
+      }
+      function onValidateClick() {
+        core.transcriptionEditor.saveTurn(
+          editorRef.value?.getText() ?? plainText.value
+        );
+      }
+      function onCancelClick() {
+        core.transcriptionEditor.cancelEdit();
+      }
       function onHeaderClick(event) {
+        if (isEditing.value) return;
         if (event.shiftKey) {
           selection.selectRange(props.turn.id);
         } else {
@@ -19775,9 +19969,46 @@ ${text2}` : text2;
               "start-time": __props.turn.startTime,
               "start-date": __props.turn.startDate,
               language: __props.turn.language
-            }, null, 8, ["speaker", "start-time", "start-date", "language"])
+            }, null, 8, ["speaker", "start-time", "start-date", "language"]),
+            isEditing.value ? (openBlock(), createElementBlock("div", _hoisted_2$r, [
+              createVNode(Button, {
+                size: "sm",
+                variant: "tertiary",
+                icon: "x",
+                "aria-label": unref(t2)("transcription.cancelEdit"),
+                onMousedown: _cache[0] || (_cache[0] = withModifiers(() => {
+                }, ["prevent"])),
+                onClick: withModifiers(onCancelClick, ["stop"])
+              }, null, 8, ["aria-label"]),
+              createVNode(Button, {
+                size: "sm",
+                variant: "primary",
+                icon: "check",
+                "aria-label": unref(t2)("transcription.saveEdit"),
+                onMousedown: _cache[1] || (_cache[1] = withModifiers(() => {
+                }, ["prevent"])),
+                onClick: withModifiers(onValidateClick, ["stop"])
+              }, null, 8, ["aria-label"])
+            ])) : createCommentVNode("", true)
           ])) : createCommentVNode("", true),
-          createBaseVNode("p", _hoisted_2$r, [
+          isEditing.value ? (openBlock(), createBlock(TurnTextEditor, {
+            key: 1,
+            ref: "editor",
+            text: plainText.value,
+            "caret-offset": unref(core).transcriptionEditor?.editingCaretOffset.value,
+            class: "turn-text",
+            onSave: onEditorSave,
+            onCancel: onEditorCancel,
+            onSplit: onEditorSplit
+          }, null, 8, ["text", "caret-offset"])) : (openBlock(), createElementBlock("p", {
+            key: 2,
+            class: normalizeClass(["turn-text", { "turn-text--editable": canEditText.value }]),
+            role: canEditText.value ? "button" : void 0,
+            tabindex: canEditText.value ? 0 : void 0,
+            "aria-label": canEditText.value ? unref(t2)("transcription.editTurn") : void 0,
+            onClick: onTextClick,
+            onKeydown: onTextKeydown
+          }, [
             hasWords.value ? (openBlock(true), createElementBlock(Fragment, { key: 0 }, renderList(__props.turn.words, (word, i2) => {
               return openBlock(), createElementBlock(Fragment, {
                 key: word.id
@@ -19785,19 +20016,19 @@ ${text2}` : text2;
                 createBaseVNode("span", {
                   class: normalizeClass({ "word--active": word.id === activeWordId.value }),
                   "data-word-active": word.id === activeWordId.value || void 0
-                }, toDisplayString(word.text), 11, _hoisted_3$m),
+                }, toDisplayString(word.text), 11, _hoisted_4$b),
                 createTextVNode(toDisplayString(i2 < __props.turn.words.length - 1 ? " " : ""), 1)
               ], 64);
             }), 128)) : __props.turn.text ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [
               createTextVNode(toDisplayString(__props.turn.text), 1)
             ], 64)) : createCommentVNode("", true)
-          ])
+          ], 42, _hoisted_3$m))
         ], 14, _hoisted_1$w);
       };
     }
   });
-  const _style_0$v = "\n.turn[data-v-e53c0469] {\n  padding: var(--spacing-sm) var(--spacing-lg);\n}\n.turn-header[data-v-e53c0469] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  cursor: pointer;\n  user-select: none;\n  border-radius: var(--radius-sm);\n  padding: var(--spacing-xxs) 0;\n}\n.turn[data-v-e53c0469]:has(.turn-header:hover) {\n  background-color: var(--color-surface-hover);\n}\n.turn-text[data-v-e53c0469] {\n  margin-top: var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.turn--selected[data-v-e53c0469] {\n  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);\n  border-left: 3px solid var(--color-primary);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.turn--active[data-v-e53c0469]:not(.turn--selected) {\n  border-left: 3px solid var(--speaker-color);\n  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.word--active[data-v-e53c0469] {\n  text-decoration: underline;\n  text-decoration-color: var(--color-primary);\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n  color: var(--color-primary);\n}\n.turn--partial .turn-text[data-v-e53c0469] {\n  font-style: italic;\n  color: var(--color-text-muted);\n  animation: partial-fade-in-e53c0469 200ms ease;\n}\n@keyframes partial-fade-in-e53c0469 {\nfrom {\n    opacity: 0;\n}\nto {\n    opacity: 1;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.turn--partial .turn-text[data-v-e53c0469] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.turn[data-v-e53c0469] {\n    padding: var(--spacing-sm) var(--spacing-md);\n}\n.turn--selected[data-v-e53c0469],\n  .turn--active[data-v-e53c0469]:not(.turn--selected) {\n    padding-left: calc(var(--spacing-md) - 3px);\n}\n}\n";
-  const TranscriptionTurn = /* @__PURE__ */ _export_sfc(_sfc_main$C, [["styles", [_style_0$v]], ["__scopeId", "data-v-e53c0469"]]);
+  const _style_0$v = "\n.turn[data-v-8f1901ee] {\n  padding: var(--spacing-sm) var(--spacing-lg);\n}\n.turn-header[data-v-8f1901ee] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  cursor: pointer;\n  user-select: none;\n  border-radius: var(--radius-sm);\n  padding: var(--spacing-xxs) 0;\n  /* Reserve the edit-actions height (Button sm) so entering/leaving edit\n     mode never shifts the layout. */\n  min-height: 36px;\n}\n.turn-edit-actions[data-v-8f1901ee] {\n  margin-left: auto;\n  display: flex;\n  gap: var(--spacing-xs);\n}\n.turn[data-v-8f1901ee]:has(.turn-header:hover) {\n  background-color: var(--color-surface-hover);\n}\n.turn-text[data-v-8f1901ee] {\n  margin-top: var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.turn-text--editable[data-v-8f1901ee] {\n  cursor: text;\n}\n.turn-text--editable[data-v-8f1901ee]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  border-radius: var(--radius-sm);\n}\n.turn--selected[data-v-8f1901ee] {\n  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);\n  border-left: 3px solid var(--color-primary);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.turn--active[data-v-8f1901ee]:not(.turn--selected) {\n  border-left: 3px solid var(--speaker-color);\n  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.word--active[data-v-8f1901ee] {\n  text-decoration: underline;\n  text-decoration-color: var(--color-primary);\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n  color: var(--color-primary);\n}\n.turn--partial .turn-text[data-v-8f1901ee] {\n  font-style: italic;\n  color: var(--color-text-muted);\n  animation: partial-fade-in-8f1901ee 200ms ease;\n}\n@keyframes partial-fade-in-8f1901ee {\nfrom {\n    opacity: 0;\n}\nto {\n    opacity: 1;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.turn--partial .turn-text[data-v-8f1901ee] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.turn[data-v-8f1901ee] {\n    padding: var(--spacing-sm) var(--spacing-md);\n}\n.turn--selected[data-v-8f1901ee],\n  .turn--active[data-v-8f1901ee]:not(.turn--selected) {\n    padding-left: calc(var(--spacing-md) - 3px);\n}\n}\n";
+  const TranscriptionTurn = /* @__PURE__ */ _export_sfc(_sfc_main$C, [["styles", [_style_0$v]], ["__scopeId", "data-v-8f1901ee"]]);
   const _sfc_main$B = {};
   const _hoisted_1$v = {
     viewBox: "0 0 938 604",
@@ -19829,15 +20060,62 @@ ${text2}` : text2;
   });
   const _style_0$u = "\n.transcription-empty[data-v-f82737e5] {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-lg);\n  padding: var(--spacing-xl);\n}\n.illustration[data-v-f82737e5] {\n  width: 180px;\n  height: auto;\n  color: var(--color-text-muted);\n  opacity: 0.5;\n}\n.message[data-v-f82737e5] {\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n  text-align: center;\n  margin: 0;\n}\n";
   const TranscriptionEmpty = /* @__PURE__ */ _export_sfc(_sfc_main$A, [["styles", [_style_0$u]], ["__scopeId", "data-v-f82737e5"]]);
+  function wordId(turnId, index) {
+    return `${turnId}#${index}`;
+  }
   function parseWordId(id) {
     const sep = id.lastIndexOf("#");
     if (sep <= 0) return null;
-    const index = Number(id.slice(sep + 1));
+    const raw = id.slice(sep + 1);
+    if (raw === "") return null;
+    const index = Number(raw);
     if (!Number.isInteger(index) || index < 0) return null;
     return { turnId: id.slice(0, sep), index };
   }
-  function activeWordRange(root2, core, wordId) {
-    const parsed = parseWordId(wordId);
+  const TOKEN_RE$1 = /\S+/g;
+  function tokenize(text2) {
+    const tokens = [];
+    if (!text2) return tokens;
+    TOKEN_RE$1.lastIndex = 0;
+    let m2;
+    while ((m2 = TOKEN_RE$1.exec(text2)) !== null) {
+      tokens.push({
+        text: m2[0],
+        charStart: m2.index,
+        charEnd: m2.index + m2[0].length
+      });
+    }
+    return tokens;
+  }
+  function wordsFromText(turnId, text2) {
+    return tokenize(text2).map((t2, i2) => ({
+      id: wordId(turnId, i2),
+      text: t2.text,
+      charStart: t2.charStart,
+      charEnd: t2.charEnd
+    }));
+  }
+  function carryWordTimes(next2, prev) {
+    const max2 = Math.min(next2.length, prev.length);
+    let prefix = 0;
+    while (prefix < max2 && next2[prefix].text === prev[prefix].text) prefix++;
+    let suffix = 0;
+    while (suffix < max2 - prefix && next2[next2.length - 1 - suffix].text === prev[prev.length - 1 - suffix].text) {
+      suffix++;
+    }
+    return next2.map((w2, i2) => {
+      const from = i2 < prefix ? prev[i2] : i2 >= next2.length - suffix ? prev[prev.length - (next2.length - i2)] : void 0;
+      if (!from) return w2;
+      return {
+        ...w2,
+        ...from.startTime !== void 0 && { startTime: from.startTime },
+        ...from.endTime !== void 0 && { endTime: from.endTime },
+        ...from.confidence !== void 0 && { confidence: from.confidence }
+      };
+    });
+  }
+  function activeWordRange(root2, core, wordId2) {
+    const parsed = parseWordId(wordId2);
     if (!parsed) return null;
     const translation = core.activeChannel.value?.activeTranslation.value;
     const turn = translation?.turns.value.find((t2) => t2.id === parsed.turnId);
@@ -19893,9 +20171,9 @@ ${text2}` : text2;
       const container = scrollContainer.value;
       if (!container || !isFollowing.value) return;
       const behavior = prefersReducedMotion ? "instant" : "smooth";
-      const wordId = core.audio?.activeWordId.value;
-      if (wordId) {
-        const range = activeWordRange(container, core, wordId);
+      const wordId2 = core.audio?.activeWordId.value;
+      if (wordId2) {
+        const range = activeWordRange(container, core, wordId2);
         const rect = range?.getBoundingClientRect();
         if (rect && (rect.height > 0 || rect.width > 0)) {
           const containerRect = container.getBoundingClientRect();
@@ -20118,15 +20396,13 @@ ${text2}` : text2;
                 showResumeButton.value ? (openBlock(), createBlock(Button, {
                   key: 0,
                   size: "sm",
+                  icon: "arrow-down",
                   class: "resume-scroll-btn",
                   "aria-label": unref(t2)("transcription.resumeScroll"),
                   onClick: onResumeClick
                 }, {
-                  icon: withCtx(() => [
-                    createVNode(unref(ArrowDown), { size: 14 })
-                  ]),
                   default: withCtx(() => [
-                    createTextVNode(" " + toDisplayString(unref(t2)("transcription.resumeScroll")), 1)
+                    createTextVNode(toDisplayString(unref(t2)("transcription.resumeScroll")), 1)
                   ]),
                   _: 1
                 }, 8, ["aria-label"])) : createCommentVNode("", true)
@@ -20138,8 +20414,8 @@ ${text2}` : text2;
       };
     }
   });
-  const _style_0$t = "\n.transcription-panel[data-v-95f0fed1] {\n  min-height: 0;\n  overflow: hidden;\n  background-color: var(--color-surface);\n}\n.scroll-container[data-v-95f0fed1] {\n  height: 100%;\n  overflow: auto;\n  position: relative;\n}\n.turns-container[data-v-95f0fed1] {\n  max-width: 80ch;\n  margin-inline: auto;\n  padding: var(--spacing-lg);\n}\n.turns-container[data-v-95f0fed1]:has(.transcription-empty) {\n  display: flex;\n  flex-direction: column;\n  min-height: 100%;\n}\n.history-loading[data-v-95f0fed1] {\n  text-align: center;\n  padding: var(--spacing-md);\n}\n.history-loading progress[data-v-95f0fed1] {\n  width: 120px;\n}\n.history-start[data-v-95f0fed1] {\n  text-align: center;\n  padding: var(--spacing-md);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n}\n\n/* Resume scroll button */\n.resume-scroll-btn[data-v-95f0fed1] {\n  position: sticky;\n  bottom: var(--spacing-lg);\n  left: 50%;\n  translate: -50% 0;\n  z-index: var(--z-sticky);\n  /* No backdrop-filter: this button is sticky inside the tall scroll\n     container, where a backdrop-filter makes WebRender allocate a render\n     target spanning the whole scroll height — multi-GB on a long transcript. */\n  background: white !important;\n  border: 1px solid var(--color-border);\n  box-shadow: var(--shadow-sm);\n}\n\n/* Transition */\n.fade-slide-enter-active[data-v-95f0fed1],\n.fade-slide-leave-active[data-v-95f0fed1] {\n  transition:\n    opacity 200ms ease,\n    translate 200ms ease;\n}\n.fade-slide-enter-from[data-v-95f0fed1],\n.fade-slide-leave-to[data-v-95f0fed1] {\n  opacity: 0;\n  translate: -50% 8px;\n}\n@media (prefers-reduced-motion: reduce) {\n.fade-slide-enter-active[data-v-95f0fed1],\n  .fade-slide-leave-active[data-v-95f0fed1] {\n    transition: none;\n}\n}\n@media (max-width: 767px) {\n.turns-container[data-v-95f0fed1] {\n    padding: var(--spacing-md);\n}\n}\n";
-  const TranscriptionPanel = /* @__PURE__ */ _export_sfc(_sfc_main$z, [["styles", [_style_0$t]], ["__scopeId", "data-v-95f0fed1"]]);
+  const _style_0$t = "\n.transcription-panel[data-v-fd6b9cde] {\n  min-height: 0;\n  overflow: hidden;\n  background-color: var(--color-surface);\n}\n.scroll-container[data-v-fd6b9cde] {\n  height: 100%;\n  overflow: auto;\n  position: relative;\n}\n.turns-container[data-v-fd6b9cde] {\n  max-width: 80ch;\n  margin-inline: auto;\n  padding: var(--spacing-lg);\n}\n.turns-container[data-v-fd6b9cde]:has(.transcription-empty) {\n  display: flex;\n  flex-direction: column;\n  min-height: 100%;\n}\n.history-loading[data-v-fd6b9cde] {\n  text-align: center;\n  padding: var(--spacing-md);\n}\n.history-loading progress[data-v-fd6b9cde] {\n  width: 120px;\n}\n.history-start[data-v-fd6b9cde] {\n  text-align: center;\n  padding: var(--spacing-md);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n}\n\n/* Resume scroll button */\n.resume-scroll-btn[data-v-fd6b9cde] {\n  position: sticky;\n  bottom: var(--spacing-lg);\n  left: 50%;\n  translate: -50% 0;\n  z-index: var(--z-sticky);\n  /* No backdrop-filter: this button is sticky inside the tall scroll\n     container, where a backdrop-filter makes WebRender allocate a render\n     target spanning the whole scroll height — multi-GB on a long transcript. */\n  background: white !important;\n  border: 1px solid var(--color-border);\n  box-shadow: var(--shadow-sm);\n}\n\n/* Transition */\n.fade-slide-enter-active[data-v-fd6b9cde],\n.fade-slide-leave-active[data-v-fd6b9cde] {\n  transition:\n    opacity 200ms ease,\n    translate 200ms ease;\n}\n.fade-slide-enter-from[data-v-fd6b9cde],\n.fade-slide-leave-to[data-v-fd6b9cde] {\n  opacity: 0;\n  translate: -50% 8px;\n}\n@media (prefers-reduced-motion: reduce) {\n.fade-slide-enter-active[data-v-fd6b9cde],\n  .fade-slide-leave-active[data-v-fd6b9cde] {\n    transition: none;\n}\n}\n@media (max-width: 767px) {\n.turns-container[data-v-fd6b9cde] {\n    padding: var(--spacing-md);\n}\n}\n";
+  const TranscriptionPanel = /* @__PURE__ */ _export_sfc(_sfc_main$z, [["styles", [_style_0$t]], ["__scopeId", "data-v-fd6b9cde"]]);
   const _hoisted_1$s = ["data-status"];
   const _hoisted_2$o = {
     key: 0,
@@ -26011,7 +26287,7 @@ ${text2}` : text2;
             createBaseVNode("p", null, toDisplayString(unref(t2)("chat.emptyState")), 1)
           ])) : __props.messages.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_5$1, [
             createBaseVNode("p", null, toDisplayString(unref(t2)("chat.emptyChat")), 1)
-          ])) : (openBlock(), createBlock(unref(_sfc_main$G), {
+          ])) : (openBlock(), createBlock(unref(_sfc_main$H), {
             key: 3,
             class: "chat-message-list__scroll",
             resize: "smooth",
@@ -26381,7 +26657,7 @@ ${text2}` : text2;
             onToggleSidebar: _cache[0] || (_cache[0] = ($event) => isSidebarOpen.value = !isSidebarOpen.value),
             onOpenChat: _cache[1] || (_cache[1] = ($event) => unref(core).chat?.setDrawerOpen(true))
           }, null, 8, ["title", "date", "duration", "speaker-count", "is-mobile", "can-ask"])) : createCommentVNode("", true),
-          createVNode(_sfc_main$H, {
+          createVNode(_sfc_main$I, {
             modelValue: activeTab.value,
             "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => activeTab.value = $event)
           }, null, 8, ["modelValue"]),
@@ -27585,6 +27861,76 @@ pre[class*="language-"] {
           unwatchers.forEach((stop) => stop());
           core.subtitle = void 0;
         };
+      }
+    };
+  }
+  function createTranscriptionEditorPlugin(options = {}) {
+    return {
+      name: "transcriptionEditor",
+      install(core) {
+        const editingTurnId = /* @__PURE__ */ ref(null);
+        const editingCaretOffset = /* @__PURE__ */ ref(0);
+        function getActiveTranslationStore() {
+          const channel = core.activeChannel.value;
+          if (!channel) return void 0;
+          return channel.translations.get(channel.activeTranslation.value.id);
+        }
+        function beginEdit(turnId, caretOffset = 0) {
+          if (core.capabilities.value.text !== "edit") return;
+          if (!getActiveTranslationStore()?.hasTurn(turnId)) return;
+          editingTurnId.value = turnId;
+          editingCaretOffset.value = caretOffset;
+        }
+        function cancelEdit() {
+          editingTurnId.value = null;
+        }
+        function pushToHost(payload) {
+          if (!options.saveTurn) return;
+          options.saveTurn(payload).then(
+            (ack) => {
+              if (!ack?.ok) {
+                console.error(
+                  `[transcriptionEditor] save rejected for turn ${payload.turnId}: ${ack?.reason ?? "unknown"}`
+                );
+              }
+            },
+            (err) => {
+              console.error(
+                `[transcriptionEditor] save failed for turn ${payload.turnId}:`,
+                err
+              );
+            }
+          );
+        }
+        function saveTurn(text2) {
+          const turnId = editingTurnId.value;
+          if (turnId === null) return;
+          editingTurnId.value = null;
+          const store = getActiveTranslationStore();
+          const turn = store?.getTurn(turnId);
+          if (!store || !turn) return;
+          const normalized = text2.replace(/\s+/g, " ").trim();
+          if (normalized === computeTurnPlainText(turn)) return;
+          const words = carryWordTimes(wordsFromText(turnId, normalized), turn.words);
+          store.updateTurn(turnId, {
+            // Turn contract: text carries the content only when words is empty.
+            text: words.length > 0 ? null : normalized,
+            words
+          });
+          pushToHost({ translationId: store.id, turnId, text: normalized });
+        }
+        function splitTurn(text2, _offset) {
+          saveTurn(text2);
+        }
+        const api = {
+          editingTurnId,
+          editingCaretOffset,
+          beginEdit,
+          cancelEdit,
+          saveTurn,
+          splitTurn
+        };
+        core.transcriptionEditor = api;
       }
     };
   }
@@ -30978,6 +31324,7 @@ pre[class*="language-"] {
   exports.createLLMServicesPlugin = createLLMServicesPlugin;
   exports.createLivePlugin = createLivePlugin;
   exports.createSubtitlePlugin = createSubtitlePlugin;
+  exports.createTranscriptionEditorPlugin = createTranscriptionEditorPlugin;
   exports.register = register;
   Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
   return exports;

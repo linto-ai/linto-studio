@@ -11,7 +11,6 @@ import { useStickToBottom } from "vue-stick-to-bottom"
 import TranscriptionTurn from "./TranscriptionTurn.vue"
 import TranscriptionEmpty from "./TranscriptionEmpty.vue"
 import Button from "./atoms/Button.vue"
-import { ArrowDown } from "lucide-vue-next"
 import { useCore } from "../core"
 import { useI18n } from "../i18n"
 import { useFollowPlayback } from "../composables/useFollowPlayback"
@@ -175,10 +174,10 @@ onBeforeUnmount(() => {
         <Button
           v-if="showResumeButton"
           size="sm"
+          icon="arrow-down"
           class="resume-scroll-btn"
           :aria-label="t('transcription.resumeScroll')"
           @click="onResumeClick">
-          <template #icon><ArrowDown :size="14" /></template>
           {{ t("transcription.resumeScroll") }}
         </Button>
       </Transition>

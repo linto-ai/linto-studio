@@ -1,4 +1,4 @@
-import { L, c, a, b, d, e, r } from "./webcomponent-nN0GbYT3.js";
+import { L, c, a, b, d, e, f, r } from "./webcomponent-B3Z8uOg-.js";
 export {
   L as LintoEditor,
   c as createAudioPlugin,
@@ -6,6 +6,7 @@ export {
   b as createLLMServicesPlugin,
   d as createLivePlugin,
   e as createSubtitlePlugin,
+  f as createTranscriptionEditorPlugin,
   r as register
 };
 //# sourceMappingURL=linto-editor.js.map

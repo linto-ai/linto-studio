@@ -159,6 +159,22 @@ export interface AudioPluginApi {
   setPauseHandler(handler: (() => void) | null): void
 }
 
+// ── Transcription Editor Plugin API (lock+save per-turn editing) ─────────
+
+export interface TranscriptionEditorPluginApi {
+  /** Turn currently being edited (single-turn editing), null when none. */
+  readonly editingTurnId: Ref<string | null>
+  /** Caret offset requested for the editor when it opens. */
+  readonly editingCaretOffset: Ref<number>
+  beginEdit(turnId: string, caretOffset?: number): void
+  cancelEdit(): void
+  /** Commit the edited text for the turn being edited and leave edit mode. */
+  saveTurn(text: string): void
+  /** Commit the edited text, then split the turn at `offset` (Enter gesture).
+   *  The split itself lands with the server round-trip. */
+  splitTurn(text: string, offset: number): void
+}
+
 // ── Subtitle Plugin API ──────────────────────────────────────────────────
 
 export interface WatermarkToken {
@@ -408,6 +424,7 @@ export interface Core {
 
   // ── Plugin slots ─────────────────────────────────────────────────────
   audio?: AudioPluginApi
+  transcriptionEditor?: TranscriptionEditorPluginApi
   live?: LivePluginApi
   subtitle?: SubtitlePluginApi
   llmServices?: LLMServicesPluginApi

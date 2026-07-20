@@ -13,9 +13,6 @@
 <script>
 import { markRaw } from "vue"
 
-import { getCookie } from "@/tools/getCookie"
-import { getEnv } from "@/tools/getEnv"
-import { userName } from "@/tools/userName"
 import USER_RIGHTS from "@/const/userRights.js"
 
 import { apiGetConversationAsDoc } from "@/api/conversation.d/apiGetConversationAsDoc.js"
@@ -40,19 +37,6 @@ import {
   apiGetAudioWaveFormFromConversation,
 } from "@/api/conversation"
 
-// Editor epoch per translation id, read by the collab plugin to build the
-// Hocuspocus document name (the epoch identifies the server-side CRDT
-// history lineage).
-function collectEditorEpochs(doc) {
-  const epochs = {}
-  for (const channel of doc.channels ?? []) {
-    for (const translation of channel.translations ?? []) {
-      epochs[translation.id] = translation.editorEpoch ?? 0
-    }
-  }
-  return epochs
-}
-
 export default {
   components: { LayoutV2, PublicationModal },
   props: {
@@ -71,11 +55,6 @@ export default {
       editListeners: [],
       canWrite: false,
       publicationModal: { open: false, jobId: null },
-      // Mutable map shared with the collab plugin: sessions read it at
-      // (re)creation, so refreshing its values + setDocument() is enough to
-      // reconnect on a new epoch. markRaw'd via core anyway; keep it plain.
-      collabEpochs: {},
-      collabReloadInFlight: false,
     }
   },
   async mounted() {
@@ -111,37 +90,15 @@ export default {
     this.llmDispose = null
     this.chatDispose?.()
     this.chatDispose = null
+    this.$apiEventWS.leaveEditorRoom()
   },
   methods: {
-    // Stable cursor color derived from the user id so each collaborator keeps
-    // a consistent, distinct color across sessions.
-    cursorColor(id) {
-      const palette = [
-        "#E57373",
-        "#64B5F6",
-        "#81C784",
-        "#FFB74D",
-        "#BA68C8",
-        "#4DB6AC",
-        "#F06292",
-        "#A1887F",
-      ]
-      const str = String(id || "")
-      let hash = 0
-      for (let i = 0; i < str.length; i++) {
-        hash = (hash * 31 + str.charCodeAt(i)) | 0
-      }
-      return palette[Math.abs(hash) % palette.length]
-    },
     async initEditor(doc) {
       const el = this.$refs.editor
       // Torn down during the async mount: the custom element is gone, so there
       // is nothing to wire up (and destructuring `el` would throw).
       if (this.isDestroyed || !el) return
       const { core } = el
-      const ws_url = new URL(getEnv("VUE_APP_CONVO_API"))
-      ws_url.protocol = ws_url.protocol === "https:" ? "wss:" : "ws:"
-      ws_url.pathname = ws_url.pathname.replace(/\/api$/, "/ws/editor")
       this.core = markRaw(core)
       core.use(
         createAudioPlugin({
@@ -165,23 +122,16 @@ export default {
         }),
       )
 
-      Object.assign(this.collabEpochs, collectEditorEpochs(doc))
-
+      // Lock+save editor: mutations go through the shared socket.io
+      // connection (see "Editor v2" design); the room is joined below.
       core.use(
         createTranscriptionEditorPlugin({
-          collabOptions: {
-            url: ws_url.toString(),
-            token: getCookie("authToken"),
-            epochs: this.collabEpochs,
-            onAuthenticationFailed: (reason) => this.onCollabAuthFailed(reason),
-          },
-          user: {
-            name: userName(this.userInfo),
-            color: this.cursorColor(this.userInfo._id),
-          },
-          readOnly: !this.canWrite,
+          saveTurn: (payload) => this.$apiEventWS.saveEditorTurn(payload),
         }),
       )
+      const mode = this.canWrite ? "edit" : "view"
+      core.capabilities.value = { text: mode, speakers: mode }
+      this.$apiEventWS.joinEditorRoom(this.conversationId)
 
       // setupLLMServices returns { dispose }; store the disposer so it matches
       // chatDispose (a bare function) and beforeDestroy can call llmDispose().
@@ -219,40 +169,6 @@ export default {
       core.setDocument(doc)
       this.pushTranscriptionLastUpdate()
       this.attachEditListeners()
-    },
-
-    // The collab server rejected the connection. The recoverable case is a
-    // stale editor epoch (conversation rewritten outside the editor):
-    // refetching gives fresh epochs, and reloading the document recreates
-    // the sessions on the new lineage. Anything else (expired token, lost
-    // access) is not recoverable from here — only log it.
-    async onCollabAuthFailed(reason) {
-      console.warn("[host] collab authentication failed:", reason)
-      if (this.collabReloadInFlight || !this.core) return
-      this.collabReloadInFlight = true
-      try {
-        const { doc } = await apiGetConversationAsDoc(this.conversationId)
-        const fresh = collectEditorEpochs(doc)
-        const changed = Object.entries(fresh).some(
-          ([id, epoch]) => this.collabEpochs[id] !== epoch,
-        )
-        if (!changed) {
-          // Not a stale epoch: the rejection is non-recoverable (invalid
-          // document name, lost access, expired token). Surface it in the
-          // editor instead of leaving a blank canvas after the load timeout.
-          this.core.transcriptionEditor?.setError(reason)
-          return
-        }
-        Object.assign(this.collabEpochs, fresh)
-        // The editor re-shows its own loading overlay on setDocument
-        // (document:change), which also clears any prior error.
-        this.core.setDocument(doc)
-      } catch (e) {
-        console.error("[host] failed to reload after collab auth failure", e)
-        this.core.transcriptionEditor?.setError(reason)
-      } finally {
-        this.collabReloadInFlight = false
-      }
     },
 
     async pushTranscriptionLastUpdate() {
