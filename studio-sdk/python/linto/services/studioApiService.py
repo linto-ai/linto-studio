@@ -165,7 +165,35 @@ class StudioApiService:
         if kwargs.get("membersRight") is not None:
             form.add_field("membersRight", str(int(kwargs["membersRight"])))
 
+        # Speaker identification (org-level): forward the requested voiceprint
+        # collection ids so studio-api runs identification during diarization.
+        # Guarded on diarization being *effectively* enabled — with_upload_config
+        # downgrades enableDiarization to False when no diarization worker is
+        # available, and the backend rejects the whole upload when collections
+        # are sent without diarization.
+        collections = kwargs.get("speakerIdentificationCollections")
+        if collections and kwargs["transcriptionConfig"].get(
+            "diarizationConfig", {}
+        ).get("enableDiarization") is True:
+            form.add_field(
+                "speakerIdentificationCollections", json.dumps(list(collections))
+            )
+
         return await self._send_request("POST", url, data=form, token=kwargs["token"])
+
+    # --- Speaker identification methods ---
+
+    @with_token
+    @with_organization_id
+    async def list_voiceprint_collections(self, **kwargs):
+        """List the organization's voiceprint collections.
+
+        The backend auto-creates and includes the org-level "Organization"
+        collection (type == "organization") on this call.
+        """
+        org_id = kwargs["organizationId"]
+        url = f"{self.base_api_url}/organizations/{org_id}/voiceprint-collections"
+        return await self._send_request("GET", url, **kwargs)
 
     # --- LLM / Summary methods ---
 
