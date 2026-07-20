@@ -652,7 +652,7 @@
     "exit_button_label": "Revenir au backoffice",
     "log_label": "Effectué par {name}",
     "user_banner": "Vous êtes connecté en tant que {name}",
-    "user_button_label": "Se connecter en tant que"
+    "user_button_label": "Emprunter l'identité"
   },
   "invite_user": {
     "add_user": "Ajouter l'utilisateur",
