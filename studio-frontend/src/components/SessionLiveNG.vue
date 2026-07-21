@@ -41,6 +41,7 @@ export default {
   components: { SessionStatusBanner },
   props: {
     session: { type: Object, required: true },
+    initialChannelId: { type: [String, Number], default: null },
     websocketInstance: { type: Object, required: true },
     isFromPublicLink: { type: Boolean, default: false },
     currentOrganizationScope: { type: String, required: false, default: null },
@@ -210,9 +211,16 @@ export default {
       const doc = sessionToEditorDocument(sessionForDoc)
       editor.setDocument(doc)
 
+      // Apply before the channel:change listener is registered so the
+      // initial selection does not trigger a channel reset and refetch.
+      const initialId =
+        this.initialChannelId != null ? String(this.initialChannelId) : null
+      if (initialId && editor.channels.has(initialId)) {
+        editor.setActiveChannel(initialId)
+      }
+
       this.activeChannelIndex = this.editor?.activeChannelId.value ?? null
 
-      // Load initial page of turns
       await this.fetchTurnsPage()
 
       this.offScrollTop = editor.on("scroll:top", () => this.fetchTurnsPage())
@@ -364,25 +372,6 @@ export default {
         { ...baseTurn, text: content.text },
         this.activeChannelIndex,
       )
-
-      // } else {
-      //   // could be deleted (old format)
-      //   const translations = Object.entries(content.translations || {})
-      //     .filter(([, text]) => text)
-      //     .map(([lang, text]) => ({
-      //       translationId: lang,
-      //       text,
-      //       language: lang,
-      //     }))
-      //   this.editor.live.onFinal(
-      //     {
-      //       ...baseTurn,
-      //       translations,
-      //       text: type == "both" ? content.text : null,
-      //     },
-      //     this.activeChannelIndex,
-      //   )
-      // }
     },
 
     onTranslation(content) {

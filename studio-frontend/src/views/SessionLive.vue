@@ -42,20 +42,10 @@
               icon="gear" />
           </template>
         </IsMobile>
-        <!-- <template v-slot:right-button-desktop>
-          
-        </template>
-        <template v-slot:right-button-mobile>
-          <div class="flex gap-small">
-            
-          </div>
-        </template> -->
       </SessionHeader>
     </template>
 
     <div class="relative flex flex1 col">
-      <!-- <SessionNotStarted v-if="isPending" /> -->
-
       <Loading v-if="!sessionLoaded || !selectedChannel" />
 
       <SessionEnded
@@ -67,6 +57,7 @@
         v-else
         ref="sessionLiveNG"
         :session="session"
+        :initialChannelId="selectedChannel.id"
         :currentOrganizationScope="currentOrganizationScope"
         :websocketInstance="websocketInstance"
         :displaySubtitles="displaySubtitles"
@@ -178,7 +169,6 @@ export default {
   },
   methods: {
     updateUrl() {
-      // add liveTranscription and subtitles to url and selectedChannel
       history.pushState(
         {},
         "",
