@@ -1,7 +1,7 @@
 <template>
   <label
     class="droparea flex1 flex col justify-center align-center"
-    for="fileInput"
+    :for="inputId"
     @dragenter.prevent
     @dragover.prevent
     @dragleave.prevent
@@ -9,13 +9,13 @@
     <div class="droparea__description">
       <slot></slot>
       <div class="defaultOption">
-        <div for="fileInput" class="droparea__label">
+        <div class="droparea__label">
           {{ $t("droparea.openFileExplorer") }}
         </div>
         <input
           type="file"
           class="hidden"
-          id="fileInput"
+          :id="inputId"
           ref="input"
           :accept="acceptString"
           :multiple="multiple"
@@ -25,6 +25,11 @@
   </label>
 </template>
 <script>
+// Per-instance id so multiple Dropareas mounted at once (e.g. the conversation
+// create dropzone and the speaker-identification modal) never share the same
+// file input.
+let dropareaUid = 0
+
 export default {
   props: {
     accepts: {
@@ -39,6 +44,11 @@ export default {
       type: Function,
       default: null,
     },
+  },
+  data() {
+    return {
+      inputId: `droparea-file-input-${dropareaUid++}`,
+    }
   },
   computed: {
     acceptString() {
@@ -78,7 +88,7 @@ export default {
     },
     async handleInputChange(e) {
       e.stopPropagation()
-      let input = document.getElementById("fileInput")
+      let input = this.$refs.input
       if (input.files.length > 0) {
         if (await this.checkFilesValidity(input.files)) {
           this.$emit("drop", input.files)
