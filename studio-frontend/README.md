@@ -28,8 +28,8 @@ Copy _.envTemplate_ file as _.env_
 - VUE_APP_WEBSOCKET_SERVER: url of the websocket (see https://github.com/linto-ai/platform-conversation-manager-websocket.git)
 - VUE_APP_WEBSOCKET_PATH: path of the websocket (if empty, will be /socket.io)
 - VUE_APP_MULTIFILE: activate support for multifile conversation (not well supported)
-- VUE_APP_TURN_SIZE: number max of characters by turn
 - VUE_APP_TURN_PER_PAGE: number max of turn per page
+- VUE_APP_MAX_MERGED_TURN_SIZE: number max of characters allowed when merging two turns in the editor
 
 ### Run
 

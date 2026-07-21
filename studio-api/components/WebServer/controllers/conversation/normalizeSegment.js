@@ -82,9 +82,23 @@ function cleanSegment(segment) {
   return segment.replace(" ', ", "'").replace(/' /g, "'")
 }
 
+function applySegmentFilterDefaults(filter = {}) {
+  const defaults = {
+    segmentCharSize: parseInt(process.env.DEFAULT_SEGMENT_CHAR_SIZE, 10),
+    segmentWordSize: parseInt(process.env.DEFAULT_SEGMENT_WORD_SIZE, 10),
+  }
+
+  for (const key of Object.keys(defaults)) {
+    if (!filter[key] && defaults[key] > 0) filter[key] = defaults[key]
+  }
+  return filter
+}
+
 function segmentNormalizeText(transcription, lang, filter = undefined) {
   if (transcription === undefined) throw new Error("Transcription was empty")
   else if (lang === undefined) throw new Error("Langue was empty")
+
+  filter = applySegmentFilterDefaults(filter)
 
   for (let seg of transcription.segments) {
     seg.segment = cleanSegment(seg.segment)

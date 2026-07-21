@@ -44,8 +44,8 @@
 <script>
 import { bus } from "@/main.js"
 import uuidv4 from "uuid/v4.js"
-import { getEnv } from "@/tools/getEnv"
 
+import { getEnv } from "@/tools/getEnv"
 import { workerSendMessage } from "@/tools/worker-message.js"
 import findExpressionInWordsList from "@/tools/findExpressionInWordsList.js"
 import getWordsRangeFromTagMetadata from "@/tools/getWordsRangeFromTagMetadata.js"
@@ -497,10 +497,14 @@ export default {
         return
       }
 
+      const maxMergedTurnSize = parseInt(
+        getEnv("VUE_APP_MAX_MERGED_TURN_SIZE"),
+        10,
+      )
       const baseTurnTextLength = baseTurn.segment.length
       const nextTurnTextLength = this.turns[baseTurnIndex + 1].segment.length
       const totalTextLenght = baseTurnTextLength + nextTurnTextLength
-      if (totalTextLenght >= getEnv("VUE_APP_TURN_SIZE") * 2) {
+      if (totalTextLenght >= maxMergedTurnSize) {
         bus.$emit("app_notif", {
           status: "error",
           message: this.$t("conversation.turn_cant_merge"),
