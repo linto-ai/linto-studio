@@ -130,6 +130,7 @@ export default {
         const successCount = results.filter(
           (r) => r.status === "fulfilled",
         ).length
+        const failureCount = results.length - successCount
 
         if (successCount > 0) {
           this.$store.dispatch("system/addNotification", {
@@ -142,9 +143,22 @@ export default {
           this.resetAll()
           this.$emit("created")
           this.$emit("input", false)
-        } else {
+        }
+
+        if (failureCount > 0) {
+          const failureMessages = [
+            ...new Set(
+              results
+                .filter((r) => r.status === "rejected")
+                .map((r) => r.reason?.message)
+                .filter(Boolean),
+            ),
+          ]
           this.$store.dispatch("system/addNotification", {
-            message: this.$t("speaker_diarization.upload_error"),
+            message:
+              failureMessages.length > 0
+                ? failureMessages.join("\n")
+                : this.$t("speaker_diarization.upload_error"),
             type: "error",
             timeout: 5000,
           })

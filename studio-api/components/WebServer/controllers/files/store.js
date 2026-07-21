@@ -195,6 +195,9 @@ const ALLOWED_AUDIO_TYPES = [
   "audio/ogg",
   "audio/flac",
   "audio/mp4",
+  "audio/x-m4a",
+  "audio/m4a",
+  "audio/aac",
 ]
 const ALLOWED_AUDIO_TYPES_STR = ALLOWED_AUDIO_TYPES.join(", ")
 
