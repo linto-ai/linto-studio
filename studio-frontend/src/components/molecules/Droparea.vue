@@ -25,16 +25,13 @@
   </label>
 </template>
 <script>
-// Per-instance id so multiple Dropareas mounted at once (e.g. the conversation
-// create dropzone and the speaker-identification modal) never share the same
-// file input.
-let dropareaUid = 0
+import { generateId } from "@/tools/generateId"
 
 export default {
   props: {
     accepts: {
       type: Array,
-      default: [],
+      default: () => [],
     },
     multiple: {
       type: Boolean,
@@ -47,7 +44,7 @@ export default {
   },
   data() {
     return {
-      inputId: `droparea-file-input-${dropareaUid++}`,
+      inputId: `droparea-file-input-${generateId()}`,
     }
   },
   computed: {
