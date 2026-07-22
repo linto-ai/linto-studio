@@ -36,7 +36,11 @@
           </div>
           <!-- Show regenerate button only when document is outdated OR user is admin -->
           <Button
-            v-if="activeTab !== 'verbatim' && (!isUpdated || isAdmin)"
+            v-if="
+              activeTab !== 'verbatim' &&
+              (!isUpdated || isAdmin) &&
+              !isImpersonatingCurrentOrganization
+            "
             variant="secondary"
             icon="arrow-clockwise"
             block
@@ -107,7 +111,7 @@
 
       <!-- Verbatim tab: Download card with PopoverList -->
       <PopoverList
-        v-if="activeTab === 'verbatim'"
+        v-if="activeTab === 'verbatim' && !isImpersonatingCurrentOrganization"
         :items="optionsExport"
         closeOnItemClick
         @click="exportConv">
@@ -131,7 +135,11 @@
 
       <!-- AI Service tab: Publication card -->
       <button
-        v-else-if="activeTab && activeTab !== 'verbatim'"
+        v-else-if="
+          activeTab &&
+          activeTab !== 'verbatim' &&
+          !isImpersonatingCurrentOrganization
+        "
         class="action-card"
         @click="showPublicationModal = true">
         <div class="action-card__icon action-card__icon--publish">
@@ -173,7 +181,7 @@
           :blobUrl="blobUrl"
           :pdfPercentage="generationPercentage"
           :phase="generationPhase"
-          :editable="isEditableOutput"
+          :editable="isEditableOutput && !isImpersonatingCurrentOrganization"
           :errorMessage="currentJobError"
           :showTranscript="showTranscript"
           :canShowTranscript="
@@ -275,6 +283,8 @@ import {
   apiDeleteGeneration,
   apiDeleteExportVersion,
 } from "@/api/service.js"
+
+import { mapGetters } from "vuex"
 
 import getDescriptionByLanguage from "@/tools/getDescriptionByLanguage.js"
 import { filterLLMServicesBySecurityLevel } from "@/tools/filterBySecurityLevel.js"
@@ -393,6 +403,7 @@ export default {
     chatEnabled() {
       return this.$store.state.chat.enabled
     },
+    ...mapGetters("organizations", ["isImpersonatingCurrentOrganization"]),
     currentOrganizationScope() {
       return this.$store.getters["organizations/getCurrentOrganizationScope"]
     },
@@ -511,6 +522,10 @@ export default {
     currentStatus() {
       if (this.blobUrl) {
         return "complete"
+      }
+      // impersonation cannot start a generation: avoid an endless "queued"
+      if (!this.currentJob && this.isImpersonatingCurrentOrganization) {
+        return "empty"
       }
       return this?.currentJob?.status || "queued"
     },
@@ -922,6 +937,11 @@ export default {
           // Continue with the original apiGetGenericFileFromConversation
           // This handles cases where the new endpoint isn't available yet
         }
+      }
+
+      // everything below can trigger a generation
+      if (this.isImpersonatingCurrentOrganization) {
+        return
       }
 
       // For non-editable outputs (PDF, DOCX) or when regenerating, use existing flow

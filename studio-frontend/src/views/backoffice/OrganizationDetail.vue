@@ -4,6 +4,12 @@
       <div class="flex1 flex align-center gap-small">
         <h1 v-if="organization" class="flex1">{{ organization.name }}</h1>
         <Button
+          @click="viewAsOrganization(organizationId)"
+          variant="tertiary"
+          icon="eye"
+          style="white-space: nowrap"
+          :label="$t('impersonation.browse_button_label')" />
+        <Button
           :to="{
             name: 'backoffice-activityList',
             query: { tab: 'sessions_kpi', org: organizationId },
@@ -67,6 +73,7 @@ import { getEnv } from "@/tools/getEnv"
 
 import { apiGetOrganizationById } from "@/api/organisation.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
+import { impersonationMixin } from "@/mixins/impersonation.js"
 
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import UpdateOrganizationForm from "@/components/UpdateOrganizationForm.vue"
@@ -80,7 +87,7 @@ import ApiTokenSettings from "@/components/ApiTokenSettings.vue"
 import Button from "@/components/atoms/Button.vue"
 
 export default {
-  mixins: [platformRoleMixin],
+  mixins: [platformRoleMixin, impersonationMixin],
   props: {
     userInfo: {
       type: Object,

@@ -15,6 +15,9 @@ const mutations = {
   setCurrentOrganizationScope(state, organizationId) {
     state.currentOrganizationScope = organizationId
   },
+  setImpersonatedOrganizationId(state, organizationId) {
+    state.impersonatedOrganizationId = organizationId
+  },
   setCurrentOrganization(state, organization) {
     state.currentOrganization = organization
   },

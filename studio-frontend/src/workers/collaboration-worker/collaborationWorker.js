@@ -79,13 +79,20 @@ function connect(event) {
   userToken = event.data?.params?.userToken
   userId = event.data?.params?.userId
   conversationFormat = event.data?.params?.conversationFormat
+  const userScope = event.data?.params?.userScope
   infoWorker("Worker connected")
   //TODO: syncronise our offline changes
 
   // Connect to socket server
   shouldDisconnect = false
   socket = io(workerConfig.VUE_APP_WEBSOCKET_SERVER, {
-    query: { conversationId, userToken, userId, conversationFormat },
+    query: {
+      conversationId,
+      userToken,
+      userId,
+      conversationFormat,
+      ...(userScope ? { userScope } : {}),
+    },
     path: workerConfig.VUE_APP_WEBSOCKET_PATH,
     transports: ["websocket"],
   })

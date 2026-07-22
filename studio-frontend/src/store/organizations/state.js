@@ -1,6 +1,10 @@
+import { getImpersonatedOrgId } from "@/tools/getImpersonatedOrgId.js"
+
 const state = {
   organizations: {}, // key: organizationId, value: organization
   currentOrganizationScope: null, // orgaId
+  // organization viewed read-only by an admin, null when not impersonating
+  impersonatedOrganizationId: getImpersonatedOrgId(),
   rolesInOrganizations: {}, // {organizationId: {myrole: number, users: {userId: {role: number}}}, otherOrgaId: {...}}
   currentOrganization: null,
   currentScope: null, // "organization" or "favorites" or "shared"

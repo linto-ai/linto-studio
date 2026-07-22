@@ -1,4 +1,5 @@
 import { getCookie } from "@/tools/getCookie"
+import { logout } from "@/tools/logout"
 import {
   apiGetPersonalUserInfo,
   apiUpdateUserInfo,
@@ -33,8 +34,8 @@ const actions = {
   },
   async login({ commit }, payload) {},
   async logout({ commit, dispatch }) {
-    document.cookie =
-      "authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
+    // the caller handles the reload (see AppSettingsModal)
+    logout({ redirect: false })
     dispatch("resetState")
     commit(
       "system/addNotification",

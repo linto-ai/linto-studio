@@ -652,6 +652,14 @@
   "highlights_name": {
     "keyword": "Keywords"
   },
+  "impersonation": {
+    "banner": "You are viewing organization {name} in read-only mode",
+    "browse_button_label": "Browse",
+    "exit_button_label": "Back to backoffice",
+    "log_label": "Impersonated by {name}",
+    "user_banner": "You are logged in as {name}",
+    "user_button_label": "Log in as"
+  },
   "invite_user": {
     "add_user": "Add user",
     "button": "Invite user",
@@ -1113,6 +1121,9 @@
     "is_updated": "The report is up to date with the transcript",
     "queued": {
       "title": "The report is waiting to be generated"
+    },
+    "empty": {
+      "title": "No document has been generated for this media"
     },
     "reload_document": "Regenerate the report",
     "tabs": {

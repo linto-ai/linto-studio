@@ -17,6 +17,13 @@
       <div v-if="roleLabel" class="user-info-inline__role">
         {{ roleLabel }}
       </div>
+      <div
+        v-if="impersonatorLabel"
+        class="user-info-inline__impersonated-by text-cut"
+        :title="impersonatorLabel">
+        <ph-icon name="user-switch" size="xs" />
+        {{ impersonatorLabel }}
+      </div>
     </div>
     <div v-else>-</div>
     <slot></slot>
@@ -32,11 +39,18 @@ export default {
     user: { required: false },
     external: { required: false, default: false },
     role: { type: Number, default: null },
+    impersonatedBy: { type: Object, default: null },
     showImage: {
       default: true,
     },
   },
   computed: {
+    impersonatorLabel() {
+      if (!this.impersonatedBy) return ""
+      const info = this.impersonatedBy.info
+      const name = info?.email || this.impersonatedBy.id
+      return this.$t("impersonation.log_label", { name })
+    },
     roleLabel() {
       if (this.role == null) return ""
       if (
