@@ -43,7 +43,11 @@ export async function apiCreateVoiceSample(
     notif,
     { "Content-Type": "multipart/form-data" },
   )
-  if (requestRes.status === "error") throw new Error(requestRes.message)
+  if (requestRes.status === "error") {
+    const error = new Error(requestRes.message)
+    error.status = requestRes.error?.response?.status
+    throw error
+  }
   return requestRes.data
 }
 
