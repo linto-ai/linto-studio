@@ -2,5 +2,5 @@
 export const IMPERSONATED_ORGANIZATION_STORAGE_KEY =
   "impersonatedOrganizationId"
 
-// localStorage key holding the admin's own session while impersonating a user
-export const IMPERSONATOR_SESSION_STORAGE_KEY = "impersonatorSession"
+// localStorage key holding the admin's own auth cookies while impersonating a user
+export const ORIGINAL_AUTH_STORAGE_KEY = "originalAuth"

@@ -1,23 +1,20 @@
-import { IMPERSONATOR_SESSION_STORAGE_KEY } from "@/const/impersonation.js"
+import { ORIGINAL_AUTH_STORAGE_KEY } from "@/const/impersonation.js"
 
-// localStorage: the cookie swap is browser-wide, the saved session must be too
+// localStorage: the cookie swap is browser-wide, the saved auth must be too
 
-export function getImpersonatorSession() {
-  const raw = localStorage.getItem(IMPERSONATOR_SESSION_STORAGE_KEY)
+export function getOriginalAuth() {
+  const raw = localStorage.getItem(ORIGINAL_AUTH_STORAGE_KEY)
   return raw ? JSON.parse(raw) : null
 }
 
-export function setImpersonatorSession(session) {
-  localStorage.setItem(
-    IMPERSONATOR_SESSION_STORAGE_KEY,
-    JSON.stringify(session),
-  )
+export function saveOriginalAuth(auth) {
+  localStorage.setItem(ORIGINAL_AUTH_STORAGE_KEY, JSON.stringify(auth))
 }
 
-export function clearImpersonatorSession() {
-  localStorage.removeItem(IMPERSONATOR_SESSION_STORAGE_KEY)
+export function clearOriginalAuth() {
+  localStorage.removeItem(ORIGINAL_AUTH_STORAGE_KEY)
 }
 
 export function isImpersonatingUser() {
-  return getImpersonatorSession() !== null
+  return getOriginalAuth() !== null
 }

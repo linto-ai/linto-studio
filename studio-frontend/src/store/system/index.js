@@ -1,8 +1,8 @@
 import IsMobile from "../../components/atoms/IsMobile.vue"
 import {
-  getImpersonatorSession,
-  setImpersonatorSession,
-  clearImpersonatorSession,
+  getOriginalAuth,
+  saveOriginalAuth,
+  clearOriginalAuth,
   isImpersonatingUser,
 } from "@/tools/userImpersonation.js"
 import { getCookie } from "@/tools/getCookie"
@@ -116,7 +116,7 @@ const actions = {
     // org and user impersonation are mutually exclusive
     clearImpersonatedOrgId()
 
-    setImpersonatorSession({
+    saveOriginalAuth({
       userId: getCookie("userId"),
       authToken: getCookie("authToken"),
       refreshToken: getCookie("refreshToken"),
@@ -132,14 +132,14 @@ const actions = {
     window.location.href = "/"
   },
   stopUserImpersonation() {
-    const session = getImpersonatorSession()
-    if (session) {
-      setCookie("userId", session.userId, 7)
-      setCookie("authToken", session.authToken, 7)
-      setCookie("refreshToken", session.refreshToken, 14)
+    const auth = getOriginalAuth()
+    if (auth) {
+      setCookie("userId", auth.userId, 7)
+      setCookie("authToken", auth.authToken, 7)
+      setCookie("refreshToken", auth.refreshToken, 14)
       setCookie("cm_orga_scope", null, null)
     }
-    clearImpersonatorSession()
+    clearOriginalAuth()
     window.location.href = "/backoffice/users"
   },
 }
