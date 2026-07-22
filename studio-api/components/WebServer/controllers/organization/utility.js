@@ -1,13 +1,18 @@
-const debug = require("debug")(
-  "linto:components:WebServer:controllers:organization:utility",
-)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const { OrganizationError } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
-const { ConversationNotFound } = require(
+const { ConversationError, ConversationNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
+)
+
+const { deleteAudioFileIfOrphaned, cascadeDeleteSampleFiles } = require(
+  `${process.cwd()}/components/WebServer/controllers/files/store`,
+)
+
+const triggers = require(
+  `${process.cwd()}/components/WebServer/controllers/speakerIdentification/triggers`,
 )
 
 const RIGHT = require(`${process.cwd()}/lib/dao/conversation/rights`)
@@ -32,6 +37,94 @@ function countAdmin(organization, userId) {
     isAdmin,
     otherAdmin,
   }
+}
+
+async function deleteCategoriesFromScope(scopeId) {
+  const categories = await model.categories.getByScope(scopeId)
+  if (categories instanceof Error) throw categories
+
+  await Promise.all(
+    categories.map(async (category) => {
+      const tagsResult = await model.tags.deleteAllFromCategory(
+        category._id.toString(),
+      )
+      if (tagsResult instanceof Error) throw tagsResult
+      const categoryResult = await model.categories.delete(category._id)
+      if (categoryResult instanceof Error) throw categoryResult
+    }),
+  )
+}
+
+// Audio file, record, subtitles, then scoped categories and tags
+async function deleteConversationCascade(conversation) {
+  if (conversation.metadata?.audio?.filepath) {
+    await deleteAudioFileIfOrphaned(conversation.metadata.audio.filepath)
+  }
+
+  const resultConvo = await model.conversations.delete(conversation._id)
+  if (resultConvo instanceof Error) throw resultConvo
+  if (resultConvo.deletedCount !== 1)
+    throw new ConversationError("Error when deleting conversation")
+
+  const subtitlesResult = await model.conversationSubtitles.deleteAllFromConv(
+    conversation._id.toString(),
+  )
+  if (subtitlesResult instanceof Error) throw subtitlesResult
+
+  await deleteCategoriesFromScope(conversation._id.toString())
+}
+
+// Deletion order matters: media, taxonomy, organization-scoped speaker
+// identification, then the organization record
+async function deleteOrganizationCascade(organizationId) {
+  const conversations = await model.conversations.getByOrga(organizationId)
+  if (conversations instanceof Error) throw conversations
+
+  await Promise.all(
+    conversations.map((conversation) =>
+      deleteConversationCascade(conversation),
+    ),
+  )
+
+  // Sweeps subtitles of conversations getByOrga does not return
+  const subtitlesResult =
+    await model.conversationSubtitles.deleteAllFromOrga(organizationId)
+  if (subtitlesResult instanceof Error) throw subtitlesResult
+
+  await deleteCategoriesFromScope(organizationId)
+
+  const [orgSamples, orgCollections, orgLabels] = await Promise.all([
+    model.voiceSamples.getByOrganizationId(organizationId),
+    model.voiceprintCollections.getByOrganizationId(organizationId),
+    model.speakerLabels.getByOrganizationId(organizationId),
+  ])
+  if (orgSamples instanceof Error) throw orgSamples
+  if (orgCollections instanceof Error) throw orgCollections
+  if (orgLabels instanceof Error) throw orgLabels
+  cascadeDeleteSampleFiles(orgSamples)
+
+  // Must run before the Mongo deletes below remove collections and labels
+  await triggers.dropOrganizationSpeakers(
+    organizationId,
+    orgCollections,
+    orgLabels,
+  )
+
+  const speakerIdResults = await Promise.all([
+    model.voiceSamples.deleteAllFromOrganization(organizationId),
+    model.speakerLabels.deleteAllFromOrganization(organizationId),
+    model.voiceprintCollections.deleteAllFromOrganization(organizationId),
+    model.voiceOptIns.deleteAllFromOrganization(organizationId),
+    model.speakerIdSyncOps.deleteAllFromOrganization(organizationId),
+  ])
+  for (const result of speakerIdResults) {
+    if (result instanceof Error) throw result
+  }
+
+  const resultOrga = await model.organizations.delete(organizationId)
+  if (resultOrga instanceof Error) throw resultOrga
+  if (resultOrga.deletedCount !== 1)
+    throw new OrganizationError("Error when deleting organization")
 }
 
 async function getUserConversationFromOrganization(
@@ -127,6 +220,9 @@ async function addM2mUserToOrganization(orgaId, m2m_id, role = ROLES.MEMBER) {
 module.exports = {
   getOrgaIdFromReq,
   countAdmin,
+  deleteCategoriesFromScope,
+  deleteConversationCascade,
+  deleteOrganizationCascade,
   getUserConversationFromOrganization,
   populateUserToOrganization,
   addM2mUserToOrganization,

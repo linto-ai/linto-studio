@@ -1,6 +1,3 @@
-const debug = require("debug")(
-  "linto:components:WebServer:controllers:user:utility",
-)
 const logger = require(`${process.cwd()}/lib/logger/logger`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
@@ -12,10 +9,7 @@ const { UserError } = require(
   `${process.cwd()}/components/WebServer/error/exception/users`,
 )
 
-const {
-  deleteAudioFileIfOrphaned,
-  cascadeDeleteSampleFiles,
-} = require(
+const { cascadeDeleteSampleFiles } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 
@@ -113,85 +107,60 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
 }
 
 async function removeUserFromPlatform(userId) {
-  try {
-    // Get all conversations shared with the user
-    const conversations = await model.conversations.getByShare(userId)
+  const conversations = await model.conversations.getByShare(userId)
+  if (conversations instanceof Error) throw conversations
 
-    // Remove the user from the sharedWithUsers array
-    await Promise.all(
-      conversations.map(async (conversation) => {
-        conversation.sharedWithUsers = conversation.sharedWithUsers.filter(
+  await Promise.all(
+    conversations.map(async (conversation) => {
+      conversation.sharedWithUsers = conversation.sharedWithUsers.filter(
+        (user) => user.userId !== userId,
+      )
+
+      const resultConvoUpdate = await model.conversations.update(conversation)
+      if (resultConvoUpdate instanceof Error) throw resultConvoUpdate
+      if (resultConvoUpdate.matchedCount === 0) throw new UserError()
+    }),
+  )
+
+  const organizations = await model.organizations.listSelf(userId)
+  if (organizations instanceof Error) throw organizations
+
+  await Promise.all(
+    organizations.map(async (organization) => {
+      const data = orgaUtility.countAdmin(organization, userId)
+      if (data.adminCount === 1 && data.isAdmin) {
+        await orgaUtility.deleteOrganizationCascade(organization._id.toString())
+      } else if (data.adminCount > 1 || !data.isAdmin) {
+        organization.users = organization.users.filter(
           (user) => user.userId !== userId,
         )
+        let resultOperation = await model.organizations.update(organization)
+        if (resultOperation instanceof Error) throw resultOperation
+        if (resultOperation.matchedCount === 0) throw new UserError()
+      }
+    }),
+  )
 
-        // Update the conversation
-        const resultConvoUpdate = await model.conversations.update(conversation)
-        if (resultConvoUpdate.matchedCount === 0) throw new UserError()
-      }),
-    )
-
-    // Get all organizations the user is part of
-    const organizations = await model.organizations.listSelf(userId)
-    await Promise.all(
-      organizations.map(async (organization) => {
-        const data = orgaUtility.countAdmin(organization, userId)
-        if (data.adminCount === 1 && data.isAdmin) {
-          const conversations = await model.conversations.getByOrga(
-            organization._id,
-          )
-          await Promise.all(
-            conversations.map(async (conversation) => {
-              if (conversation.metadata?.audio?.filepath) {
-                await deleteAudioFileIfOrphaned(
-                  conversation.metadata.audio.filepath,
-                )
-              }
-
-              const resultConvo = await model.conversations.delete(
-                conversation._id,
-              )
-              if (resultConvo.deletedCount !== 1) throw new UserError()
-            }),
-          )
-          // delete orga
-          const resultOrga = await model.organizations.delete(organization._id)
-          if (resultOrga.deletedCount !== 1) throw new UserError()
-        } else if (data.adminCount > 1 || !data.isAdmin) {
-          organization.users = organization.users.filter(
-            (user) => user.userId !== userId,
-          )
-          let resultOperation = await model.organizations.update(organization)
-          if (resultOperation.matchedCount === 0) throw new UserError()
-        }
-      }),
-    )
-
-    // Delete all user voice samples, audio files, voiceprint, and opt-in
-    // preferences, then remove the "user:{userId}" points from every Qdrant
-    // collection the user had opted in (RGPD cascade, cf. 04 §6).
-    try {
-      const samples = await model.voiceSamples.getByUserId(userId)
-      // Capture the opt-ins before deleting them: they tell us which
-      // Organization collections still hold the user's point.
-      const optIns = await model.voiceOptIns.getByUserId(userId)
-      cascadeDeleteSampleFiles(samples)
-      await Promise.all([
-        model.voiceSamples.deleteAllFromUser(userId),
-        model.voiceOptIns.deleteAllFromUser(userId),
-        model.voiceprints.deleteAllFromUser(userId),
-      ])
-      // Remove the "user:{userId}" point from every opted-in organization
-      // (fire-and-forget, queued on failure).
-      triggers.removeUserEverywhere(userId, optIns)
-    } catch (err) {
-      debug("Error cleaning up user voice samples:", err)
-    }
-
-    return true
-  } catch (error) {
-    console.error(error)
-    return error
-  }
+  // RGPD cascade. Opt-ins are read before deletion: they list the Qdrant
+  // collections still holding the user's point.
+  const [samples, optIns] = await Promise.all([
+    model.voiceSamples.getByUserId(userId),
+    model.voiceOptIns.getByUserId(userId),
+  ])
+  if (samples instanceof Error) throw samples
+  if (optIns instanceof Error) throw optIns
+  cascadeDeleteSampleFiles(samples)
+  const [samplesDeletion, optInsDeletion, voiceprintsDeletion] =
+    await Promise.all([
+      model.voiceSamples.deleteAllFromUser(userId),
+      model.voiceOptIns.deleteAllFromUser(userId),
+      model.voiceprints.deleteAllFromUser(userId),
+    ])
+  if (samplesDeletion instanceof Error) throw samplesDeletion
+  if (optInsDeletion instanceof Error) throw optInsDeletion
+  if (voiceprintsDeletion instanceof Error) throw voiceprintsDeletion
+  // Fire-and-forget, queued on failure
+  triggers.removeUserEverywhere(userId, optIns)
 }
 
 module.exports = { getUsersListByConversation, removeUserFromPlatform }
