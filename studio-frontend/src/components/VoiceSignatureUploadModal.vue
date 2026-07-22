@@ -49,6 +49,10 @@ import { apiCreateVoiceSample } from "@/api/voiceSample.js"
 import { formatCompactDuration } from "@/tools/formatDuration.js"
 import { audioDuration } from "@/tools/audioDuration.js"
 
+const UPLOAD_ERROR_KEYS_BY_STATUS = {
+  415: "speaker_diarization.upload_error_unsupported_format",
+}
+
 export default {
   name: "VoiceSignatureUploadModal",
   components: { Modal, Button, Droparea },
@@ -130,21 +134,36 @@ export default {
         const successCount = results.filter(
           (r) => r.status === "fulfilled",
         ).length
+        const failureCount = results.length - successCount
 
         if (successCount > 0) {
           this.$store.dispatch("system/addNotification", {
-            message: this.$t("speaker_diarization.upload_success", {
-              count: successCount,
-            }),
+            message: this.$tc(
+              "speaker_diarization.upload_success",
+              successCount,
+              { count: successCount },
+            ),
             type: "success",
             timeout: 5000,
           })
           this.resetAll()
           this.$emit("created")
           this.$emit("input", false)
-        } else {
+        }
+
+        if (failureCount > 0) {
+          const firstFailure = results.find(
+            (r) => r.status === "rejected",
+          ).reason
+          const detailKey = UPLOAD_ERROR_KEYS_BY_STATUS[firstFailure?.status]
+          const detail = detailKey ? this.$t(detailKey) : firstFailure?.message
           this.$store.dispatch("system/addNotification", {
-            message: this.$t("speaker_diarization.upload_error"),
+            message: detail
+              ? this.$tc("speaker_diarization.upload_error_count", failureCount, {
+                  count: failureCount,
+                  message: detail,
+                })
+              : this.$t("speaker_diarization.upload_error"),
             type: "error",
             timeout: 5000,
           })

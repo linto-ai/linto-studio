@@ -1,15 +1,4 @@
-function createException(name, type, status, defaultMessage) {
-  return class extends Error {
-    constructor(message, err) {
-      super()
-      this.name = name
-      this.type = type
-      this.status = status
-      this.message = message || defaultMessage
-      if (err) this.err = err
-    }
-  }
-}
+const { createException } = require("./base")
 
 // Speaker label exceptions
 const SpeakerLabelError = createException("SpeakerLabelError", "speakerLabel", 400, "Speaker label error")
