@@ -27,7 +27,11 @@ const {
 
 module.exports = {
   asReadAccess: async (req, res, next) => {
-    if (await platformAccess.isSystemAdministrator(req)) next()
+    if (
+      req.method === "GET" &&
+      (await platformAccess.isSystemAdministrator(req))
+    )
+      next()
     else
       await access(
         next,
@@ -39,66 +43,55 @@ module.exports = {
       ) // ORGA MEMBER
   },
   asCommentAccess: async (req, res, next) => {
-    if (await platformAccess.isSystemAdministrator(req)) next()
-    else
-      await access(
-        next,
-        req.params.conversationId,
-        req.payload.data.userId,
-        false,
-        CONVERSATION_RIGHTS.COMMENT,
-        ConversationReadAccessDenied,
-      ) // ORGA MAINTENER
+    await access(
+      next,
+      req.params.conversationId,
+      req.payload.data.userId,
+      false,
+      CONVERSATION_RIGHTS.COMMENT,
+      ConversationReadAccessDenied,
+    ) // ORGA MAINTENER
   },
   asWriteAccess: async (req, res, next) => {
-    if (await platformAccess.isSystemAdministrator(req)) next()
-    else
-      await access(
-        next,
-        req.params.conversationId,
-        req.payload.data.userId,
-        false,
-        CONVERSATION_RIGHTS.WRITE,
-        ConversationWriteAccessDenied,
-      ) // ORGA MAINTENER
+    await access(
+      next,
+      req.params.conversationId,
+      req.payload.data.userId,
+      false,
+      CONVERSATION_RIGHTS.WRITE,
+      ConversationWriteAccessDenied,
+    ) // ORGA MAINTENER
   },
   asDeleteAccess: async (req, res, next) => {
-    if (await platformAccess.isSystemAdministrator(req)) next()
-    else
-      await access(
-        next,
-        req.params.conversationId,
-        req.payload.data.userId,
-        true,
-        CONVERSATION_RIGHTS.DELETE,
-        ConversationDeleteAccessDenied,
-      ) // ORGA MAINTENER
+    await access(
+      next,
+      req.params.conversationId,
+      req.payload.data.userId,
+      true,
+      CONVERSATION_RIGHTS.DELETE,
+      ConversationDeleteAccessDenied,
+    ) // ORGA MAINTENER
   },
   asShareAccess: async (req, res, next) => {
-    if (await platformAccess.isSystemAdministrator(req)) next()
-    else
-      await access(
-        next,
-        req.params.conversationId,
-        req.payload.data.userId,
-        false,
-        CONVERSATION_RIGHTS.SHARE,
-        ConversationShareAccessDenied,
-      )
+    await access(
+      next,
+      req.params.conversationId,
+      req.payload.data.userId,
+      false,
+      CONVERSATION_RIGHTS.SHARE,
+      ConversationShareAccessDenied,
+    )
   },
   asShareBatchAccess: async (req, res, next) => {
-    if (await platformAccess.isSystemAdministrator(req)) next()
-    else {
-      await batchAccess(
-        next,
-        req.body.conversations,
-        req.payload.data.userId,
-        false,
-        CONVERSATION_RIGHTS.SHARE,
-        ORGANIZATION_ROLES.MAINTAINER,
-        ConversationShareAccessDenied,
-      )
-    }
+    await batchAccess(
+      next,
+      req.body.conversations,
+      req.payload.data.userId,
+      false,
+      CONVERSATION_RIGHTS.SHARE,
+      ORGANIZATION_ROLES.MAINTAINER,
+      ConversationShareAccessDenied,
+    )
   },
   batchAccess: async (
     req,

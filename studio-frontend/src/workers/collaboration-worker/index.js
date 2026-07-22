@@ -30,7 +30,7 @@ class WorkerSingleton {
     this.getWorker().terminate()
   }
 
-  connect(conversationId, userToken, userId, conversationFormat) {
+  connect(conversationId, userToken, userId, conversationFormat, userScope) {
     if (this.isTerminated) {
       this.worker = new Worker(
         new URL("./collaborationWorker.js", import.meta.url),
@@ -45,6 +45,7 @@ class WorkerSingleton {
         userToken,
         userId,
         conversationFormat,
+        userScope,
         config: {
           VUE_APP_DEBUG: getEnv("VUE_APP_DEBUG"),
           VUE_APP_WEBSOCKET_SERVER: getEnv("VUE_APP_WEBSOCKET_SERVER"),

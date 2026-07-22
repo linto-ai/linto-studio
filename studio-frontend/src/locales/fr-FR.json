@@ -646,6 +646,14 @@
   "highlights_name": {
     "keyword": "Mots clés"
   },
+  "impersonation": {
+    "banner": "Vous consultez l'organisation {name} en lecture seule",
+    "browse_button_label": "Parcourir",
+    "exit_button_label": "Revenir au backoffice",
+    "log_label": "Effectué par {name}",
+    "user_banner": "Vous êtes connecté en tant que {name}",
+    "user_button_label": "Emprunter l'identité"
+  },
   "invite_user": {
     "add_user": "Ajouter l'utilisateur",
     "button": "Inviter un utilisateur",
@@ -1107,6 +1115,9 @@
     "is_updated": "Le compte rendu est à jour avec la transcription",
     "queued": {
       "title": "Le compte rendu est en attente de traitement"
+    },
+    "empty": {
+      "title": "Aucun document n'a été généré pour ce média"
     },
     "reload_document": "Regénérer le document",
     "tabs": {

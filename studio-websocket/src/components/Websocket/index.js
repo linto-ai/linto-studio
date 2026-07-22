@@ -19,6 +19,11 @@ import updateSubtitlesController from "./controllers/updateSubtitlesController.j
 import hightLightController from "./controllers/highLightController.js"
 import addScreenController from "./controllers/addScreenController.js"
 import { apiDeleteTagFromConversation } from "./request/index.js"
+import {
+  READ_ONLY_SCOPE,
+  registerReadOnlyToken,
+  releaseReadOnlyToken,
+} from "./tools/impersonation.js"
 
 const info = Debug("Websocket:info")
 const debug = Debug("Websocket:debug:websocket")
@@ -42,19 +47,40 @@ export default class Websocket extends Component {
     this.app.io.on("connection", async (socket) => {
       try {
         debug("Socket CONNECTED")
-        await this.initConversation(socket)
+
+        // Connection opened by an admin impersonating an organization:
+        // its token gets read-only API access, and mutating events are dropped.
+        const isReadOnly = socket.handshake.query.userScope === READ_ONLY_SCOPE
+        if (isReadOnly) {
+          registerReadOnlyToken(socket.handshake.query.userToken)
+        }
+
+        const onWriteEvent = (event, handler) => {
+          socket.on(event, (data) => {
+            if (isReadOnly) {
+              debug(`${event} event ignored: read-only connection`)
+              return
+            }
+            handler(data)
+          })
+        }
 
         socket.on("disconnect", () => {
           debug("Socket DISCONNECTED")
+          if (isReadOnly) {
+            releaseReadOnlyToken(socket.handshake.query.userToken)
+          }
         })
 
+        await this.initConversation(socket)
+
         // Update user rights (share/members)
-        socket.on("update_users_rights", async (data) => {
+        onWriteEvent("update_users_rights", async (data) => {
           debug("update_users_rights event received")
           updateUserRightsController.bind(socket)(data)
         })
 
-        socket.on("conversation_update", async (data) => {
+        onWriteEvent("conversation_update", async (data) => {
           debug("conversation_update event received")
           updateConversationController.bind(socket)(data)
         })
@@ -118,7 +144,7 @@ export default class Websocket extends Component {
           })
         })
 
-        socket.on("generate_subtitles", async (data) => {
+        onWriteEvent("generate_subtitles", async (data) => {
           try {
             let newVersion = await SubtitleHelper.generateSubtitle(
               data.conversationId,
@@ -134,7 +160,7 @@ export default class Websocket extends Component {
             socket.emit("api_error", error)
           }
         })
-        socket.on("copy_subtitles", async (data) => {
+        onWriteEvent("copy_subtitles", async (data) => {
           try {
             let newVersion = await SubtitleHelper.copySubtitle(
               data.conversationId,
@@ -151,7 +177,7 @@ export default class Websocket extends Component {
             socket.emit("api_error", error)
           }
         })
-        socket.on("delete_subtitles", async (data) => {
+        onWriteEvent("delete_subtitles", async (data) => {
           try {
             SubtitleHelper.deleteSubtitle(
               data.conversationId,
@@ -167,14 +193,14 @@ export default class Websocket extends Component {
             socket.emit("api_error", error)
           }
         })
-        socket.on("screen_update", (data) => {
+        onWriteEvent("screen_update", (data) => {
           debug("screen_update received")
           updateSubtitlesController.bind(socket)(data)
         })
-        socket.on("add_screen", (data) => {
+        onWriteEvent("add_screen", (data) => {
           addScreenController.bind(socket)(data, this.app.io)
         })
-        socket.on("remove_tag_from_conversation", (data) => {
+        onWriteEvent("remove_tag_from_conversation", (data) => {
           debug("remove_tag_from_conversation received")
           const room = `conversation/${data.conversationId}`
 

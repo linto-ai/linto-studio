@@ -32,6 +32,7 @@ module.exports = {
   isSessionOperator: (req) => checkAccess(req, ROLE.SESSION_OPERATOR),
   isOrganizationInitiator: (req) =>
     checkAccess(req, ROLE.ORGANIZATION_INITIATOR),
+  isReadOnlyScope,
 }
 
 async function checkAccess(req, role) {
@@ -42,13 +43,17 @@ async function checkAccess(req, role) {
 
     const userRole = user[0].role
     if (userRole && ROLE.hasPlatformRoleAccess(userRole, role)) {
-      if (ROLE.ORGANIZATION_INITIATOR === role) {
-        return true
-      } else if (req.query.userScope === "backoffice") {
-        grantBackofficeAccess(req)
-        return true
-      } else {
-        return false
+      switch (true) {
+        case ROLE.ORGANIZATION_INITIATOR === role:
+          return true
+
+        case isReadOnlyScope(req) && req.method === "GET":
+        case req.query.userScope === "backoffice":
+          grantBackofficeAccess(req)
+          return true
+
+        default:
+          return false
       }
     }
 
@@ -58,7 +63,13 @@ async function checkAccess(req, role) {
   }
 }
 
+// scope sent during organization impersonation: read bypasses only
+function isReadOnlyScope(req) {
+  return req.query.userScope === "backoffice-readonly"
+}
+
 function grantBackofficeAccess(req) {
   req.backofficeAccess = true
+  req.backofficeReadOnly = isReadOnlyScope(req)
   req.userRole = ORGANIZATION_ROLE.ADMIN
 }

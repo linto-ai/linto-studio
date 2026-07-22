@@ -61,6 +61,15 @@
       <Loading />
     </div>
     <div
+      v-else-if="status === 'empty'"
+      class="publish-main__progress flex col center-text align-center flex1 justify-center">
+      <h2 class="center-text">{{ $t("publish.empty.title") }}</h2>
+      <img
+        src="/img/compass_illustration.svg"
+        alt="empty"
+        class="illustration" />
+    </div>
+    <div
       v-else-if="
         status === 'queued' ||
         pdfPercentage === 'Processing 0%' ||

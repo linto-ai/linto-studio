@@ -1,4 +1,6 @@
 const Mail = require("nodemailer/lib/mailer")
+const randomstring = require("randomstring")
+const ms = require("ms")
 
 const debug = require("debug")(
   "linto:components:WebServer:routecontrollers:users:users",
@@ -32,6 +34,7 @@ const { OrganizationConflict } = require(
 const {
   UserConflict,
   UserError,
+  UserForbidden,
   UserNotFound,
   UserUnsupportedMediaType,
   GenerateMagicLinkError,
@@ -410,7 +413,7 @@ async function generateExtendedAuthToken(req, res, next) {
     const user = await model.users.getById(req.payload.data.userId, true)
     if (user.length !== 1) throw new UserNotFound()
 
-    const token_salt = require("randomstring").generate(12)
+    const token_salt = randomstring.generate(12)
     let token = await model.tokens.insert(user[0]._id, token_salt)
 
     let tokenData = {
@@ -430,6 +433,46 @@ async function generateExtendedAuthToken(req, res, next) {
   }
 }
 
+const IMPERSONATION_TOKEN_EXPIRATION =
+  process.env.IMPERSONATION_TOKEN_DAYS_TIME || "1h"
+
+async function impersonateUser(req, res, next) {
+  try {
+    const adminId = req.payload.data.userId
+    const target = await model.users.getById(req.params.userId, true)
+    if (target.length !== 1) throw new UserNotFound()
+
+    if (ROLE.hasPlatformRoleAccess(target[0].role, ROLE.SYSTEM_ADMINISTRATOR))
+      throw new UserForbidden()
+
+    const token_salt = randomstring.generate(12)
+    const token = await model.tokens.insert(
+      target[0]._id,
+      token_salt,
+      ms(IMPERSONATION_TOKEN_EXPIRATION),
+    )
+
+    // impersonatedBy keeps the acting admin attributable for audit
+    const tokenData = {
+      salt: token_salt,
+      tokenId: token.insertedId,
+      email: target[0].email,
+      userId: target[0]._id,
+      role: target[0].role,
+      impersonatedBy: adminId,
+    }
+
+    res.status(200).json(
+      TokenGenerator(tokenData, {
+        refresh: false,
+        expires_in: IMPERSONATION_TOKEN_EXPIRATION,
+      }),
+    )
+  } catch (error) {
+    next(error)
+  }
+}
+
 module.exports = {
   listUser,
   searchUser,
@@ -444,4 +487,5 @@ module.exports = {
   sendVerificationEmail,
   resendVerificationEmail,
   generateExtendedAuthToken,
+  impersonateUser,
 }
