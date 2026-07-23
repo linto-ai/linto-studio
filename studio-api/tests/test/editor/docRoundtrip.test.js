@@ -11,7 +11,7 @@ const {
 } = require(`${process.cwd()}/components/EditorHandler/schema/docToTurns`)
 const {
   tokenize,
-} = require(`${process.cwd()}/components/EditorHandler/words/tokenize`)
+} = require(`${process.cwd()}/components/EditorHandler2/utils/tokenize`)
 
 describe("doc <-> turns round-trip (plain text)", () => {
   test("text and attrs survive; no words and no timestamps in the doc", () => {

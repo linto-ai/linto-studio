@@ -1,8 +1,8 @@
 const Y = require("yjs")
 const { randomUUID } = require("crypto")
-const { tokenize } = require("../words/tokenize")
-const { retimeTurn } = require("../words/retimeTurn")
-const { alignWords } = require("./align")
+const { tokenize } = require("../../EditorHandler2/utils/tokenize")
+const { retimeTurn } = require("../../EditorHandler2/utils/retimeTurn")
+const { alignWords } = require("../../EditorHandler2/utils/align")
 
 function round2(n) {
   return parseFloat(n.toFixed(2))

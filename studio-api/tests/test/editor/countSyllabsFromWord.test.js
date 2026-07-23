@@ -1,7 +1,7 @@
 const {
   countSyllabsFromWord,
-} = require(`${process.cwd()}/components/EditorHandler/words/countSyllabsFromWord`)
-const SyllabicFR = require(`${process.cwd()}/components/EditorHandler/words/syllabic/syllabicFR`)
+} = require(`${process.cwd()}/components/EditorHandler2/utils/countSyllabsFromWord`)
+const SyllabicFR = require(`${process.cwd()}/components/EditorHandler2/utils/syllabic/syllabicFR`)
 
 const syllabicFr = new SyllabicFR("fr-FR")
 

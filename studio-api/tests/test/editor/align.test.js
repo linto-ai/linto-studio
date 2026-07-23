@@ -1,9 +1,9 @@
 const {
   alignWords,
-} = require(`${process.cwd()}/components/EditorHandler/wordsState/align`)
+} = require(`${process.cwd()}/components/EditorHandler2/utils/align`)
 const {
   tokenize,
-} = require(`${process.cwd()}/components/EditorHandler/words/tokenize`)
+} = require(`${process.cwd()}/components/EditorHandler2/utils/tokenize`)
 
 function words(spec) {
   return spec.map(([word, stime, etime], i) => ({

@@ -1,7 +1,7 @@
 const {
   interpolateWordTimes,
-} = require(`${process.cwd()}/components/EditorHandler/words/interpolate`)
-const SyllabicFR = require(`${process.cwd()}/components/EditorHandler/words/syllabic/syllabicFR`)
+} = require(`${process.cwd()}/components/EditorHandler2/utils/interpolate`)
+const SyllabicFR = require(`${process.cwd()}/components/EditorHandler2/utils/syllabic/syllabicFR`)
 
 const syllabicFr = new SyllabicFR("fr-FR")
 

@@ -1,10 +1,10 @@
 const {
   retimeTurn,
-} = require(`${process.cwd()}/components/EditorHandler/words/retimeTurn`)
+} = require(`${process.cwd()}/components/EditorHandler2/utils/retimeTurn`)
 const {
   tokenize,
-} = require(`${process.cwd()}/components/EditorHandler/words/tokenize`)
-const SyllabicFR = require(`${process.cwd()}/components/EditorHandler/words/syllabic/syllabicFR`)
+} = require(`${process.cwd()}/components/EditorHandler2/utils/tokenize`)
+const SyllabicFR = require(`${process.cwd()}/components/EditorHandler2/utils/syllabic/syllabicFR`)
 
 const syllabicFr = new SyllabicFR("fr-FR")
 

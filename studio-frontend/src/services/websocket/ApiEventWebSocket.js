@@ -194,12 +194,20 @@ export default class ApiEventWebSocket {
         this.editorHandlers?.onTurnLocked?.(lock)
       this._editorTurnUnlocked = (ref) =>
         this.editorHandlers?.onTurnUnlocked?.(ref)
+      this._editorTurnUpdated = (update) =>
+        this.editorHandlers?.onTurnUpdated?.(update)
+      this._editorTurnSplit = (split) =>
+        this.editorHandlers?.onTurnSplit?.(split)
     }
     // off before on: joinEditorRoom re-runs on reconnection.
     this.socket.off("editor:turn_locked", this._editorTurnLocked)
     this.socket.off("editor:turn_unlocked", this._editorTurnUnlocked)
+    this.socket.off("editor:turn_updated", this._editorTurnUpdated)
+    this.socket.off("editor:turn_split", this._editorTurnSplit)
     this.socket.on("editor:turn_locked", this._editorTurnLocked)
     this.socket.on("editor:turn_unlocked", this._editorTurnUnlocked)
+    this.socket.on("editor:turn_updated", this._editorTurnUpdated)
+    this.socket.on("editor:turn_split", this._editorTurnSplit)
 
     this.socket.emit("editor:join", conversationId, (ack) => {
       debugWSEditor("editor:join ack", ack)
@@ -211,6 +219,8 @@ export default class ApiEventWebSocket {
     if (!this.socket || !this.currentEditorConversationId) return
     this.socket.off("editor:turn_locked", this._editorTurnLocked)
     this.socket.off("editor:turn_unlocked", this._editorTurnUnlocked)
+    this.socket.off("editor:turn_updated", this._editorTurnUpdated)
+    this.socket.off("editor:turn_split", this._editorTurnSplit)
     this.socket.emit("editor:leave", this.currentEditorConversationId)
     this.currentEditorConversationId = null
     this.editorHandlers = null
@@ -235,6 +245,14 @@ export default class ApiEventWebSocket {
     return this._emitEditorCommand("editor:unlock_turn", {
       translationId,
       turnId,
+    })
+  }
+
+  splitEditorTurn({ translationId, turnId, offset }) {
+    return this._emitEditorCommand("editor:split_turn", {
+      translationId,
+      turnId,
+      offset,
     })
   }
 

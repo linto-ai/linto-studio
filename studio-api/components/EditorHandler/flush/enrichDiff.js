@@ -1,5 +1,5 @@
-const { getSyllabic } = require("../words/syllabic")
-const { interpolateWordTimes } = require("../words/interpolate")
+const { getSyllabic } = require("../../EditorHandler2/utils/syllabic")
+const { interpolateWordTimes } = require("../../EditorHandler2/utils/interpolate")
 const debug = require("debug")("linto:components:EditorHandler:enrichDiff")
 debug.inspectOpts.depth = null
 debug.inspectOpts.maxArrayLength = null

@@ -169,6 +169,41 @@ export interface TurnLock {
   userName: string
 }
 
+/** A saved turn, as broadcast by the server (editor:turn_updated): the
+ *  retimed truth. Words are consumed positionally (no wid on the wire). */
+export interface TurnUpdate {
+  translationId: string
+  turnId: string
+  text: string
+  words: Array<{
+    word: string
+    stime?: number
+    etime?: number
+    confidence?: number
+  }>
+  stime?: number
+  etime?: number
+  /** Per-translation edit version — carried, not consumed yet (resync lot). */
+  version?: number
+}
+
+/** A turn split in two, as broadcast by the server (editor:turn_split). */
+export interface TurnSplit {
+  translationId: string
+  originalTurnId: string
+  /** The two halves, in order — the left one keeps the original turn id. */
+  turns: Array<{
+    turnId: string
+    text: string
+    words: TurnUpdate["words"]
+    stime?: number
+    etime?: number
+    speakerId: string | null
+    language: string
+  }>
+  version?: number
+}
+
 export interface TranscriptionEditorPluginApi {
   /** Turn currently being edited (single-turn editing), null when none. */
   readonly editingTurnId: Ref<string | null>
@@ -183,6 +218,12 @@ export interface TranscriptionEditorPluginApi {
   /** Commit the edited text, then split the turn at `offset` (Enter gesture).
    *  The split itself lands with the server round-trip. */
   splitTurn(text: string, offset: number): void
+
+  // ── Server sync (host-pushed from broadcasts) ──
+  /** Apply a saved turn broadcast by the server (any track, any author). */
+  applyTurnUpdate(update: TurnUpdate): void
+  /** Apply a turn split broadcast by the server. */
+  applyTurnSplit(split: TurnSplit): void
 
   // ── Locks (host-pushed from server broadcasts; UI pulls per turn) ──
   /** Lock held on a turn of the ACTIVE translation, if any. */

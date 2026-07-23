@@ -27943,196 +27943,363 @@ pre[class*="language-"] {
       }
     };
   }
-  const HEARTBEAT_INTERVAL_MS = 15e3;
+  class LockHeartbeat {
+    intervalMs;
+    timer;
+    constructor(intervalMs) {
+      this.intervalMs = intervalMs;
+    }
+    start(beat) {
+      this.stop();
+      this.timer = setInterval(beat, this.intervalMs);
+    }
+    stop() {
+      if (this.timer !== void 0) {
+        clearInterval(this.timer);
+        this.timer = void 0;
+      }
+    }
+  }
   function computeLockKey(translationId, turnId) {
     return `${translationId}/${turnId}`;
+  }
+  function getActiveTranslationStore(core) {
+    const channel = core.activeChannel.value;
+    if (!channel) return void 0;
+    return channel.translations.get(channel.activeTranslation.value.id);
+  }
+  function getTurnLock(state, turnId) {
+    const channel = state.core.activeChannel.value;
+    if (!channel) return void 0;
+    return state.locks.get(
+      computeLockKey(channel.activeTranslation.value.id, turnId)
+    );
+  }
+  function setLocks(state, all) {
+    state.locks.clear();
+    for (const lock of all) setTurnLock(state, lock);
+  }
+  function setTurnLock(state, lock) {
+    state.locks.set(computeLockKey(lock.translationId, lock.turnId), {
+      userId: lock.userId,
+      userName: lock.userName
+    });
+  }
+  function clearTurnLock(state, ref2) {
+    state.locks.delete(computeLockKey(ref2.translationId, ref2.turnId));
+  }
+  function exitEditMode(state) {
+    const target = state.editingRef;
+    state.editingTurnId.value = null;
+    state.editingRef = null;
+    state.heartbeat.stop();
+    if (target) {
+      state.locks.delete(computeLockKey(target.translationId, target.turnId));
+    }
+    return target;
+  }
+  async function pushUnlock(options, target) {
+    try {
+      await options.unlockTurn?.(target);
+    } catch (err) {
+      console.error("[transcriptionEditor] unlock failed:", err);
+    }
+  }
+  function cancelEdit(state) {
+    const target = exitEditMode(state);
+    if (target) void pushUnlock(state.options, target);
+  }
+  async function refreshLock(state, target) {
+    try {
+      const ack = await state.options.lockTurn(target);
+      if (!ack?.ok) exitAfterLockLoss(state, target, ack?.reason);
+    } catch (err) {
+      console.error("[transcriptionEditor] heartbeat failed:", err);
+    }
+  }
+  function exitAfterLockLoss(state, target, reason) {
+    if (!state.editingRef || state.editingRef.turnId !== target.turnId) return;
+    console.error(
+      `[transcriptionEditor] lock lost on turn ${target.turnId}: ${reason ?? "unknown"}`
+    );
+    state.editingTurnId.value = null;
+    state.editingRef = null;
+    state.heartbeat.stop();
+  }
+  async function beginEdit(state, turnId, caretOffset = 0) {
+    if (state.core.capabilities.value.text !== "edit") return;
+    if (state.lockPending) return;
+    if (state.editingTurnId.value === turnId) return;
+    const store = getActiveTranslationStore(state.core);
+    if (!store?.hasTurn(turnId)) return;
+    if (state.locks.has(computeLockKey(store.id, turnId))) return;
+    if (state.editingTurnId.value !== null) cancelEdit(state);
+    const target = { translationId: store.id, turnId };
+    if (state.options.lockTurn) {
+      state.lockPending = true;
+      try {
+        const ack = await state.options.lockTurn(target);
+        if (!ack?.ok) {
+          if (ack?.holder) setTurnLock(state, { ...target, ...ack.holder });
+          return;
+        }
+      } catch (err) {
+        console.error("[transcriptionEditor] lock request failed:", err);
+        return;
+      } finally {
+        state.lockPending = false;
+      }
+    }
+    state.editingRef = target;
+    state.editingTurnId.value = turnId;
+    state.editingCaretOffset.value = caretOffset;
+    if (state.options.lockTurn) {
+      state.heartbeat.start(() => void refreshLock(state, target));
+    }
+  }
+  function computeUpdatedTurnFields(turnId, text2, oldWords) {
+    const words = carryWordTimes(wordsFromText(turnId, text2), oldWords);
+    return { text: words.length > 0 ? null : text2, words };
+  }
+  async function pushSaveThenUnlock(options, payload) {
+    try {
+      const ack = await options.saveTurn?.(payload);
+      if (ack && !ack.ok) {
+        console.error(
+          `[transcriptionEditor] save rejected for turn ${payload.turnId}: ${ack.reason ?? "unknown"}`
+        );
+      }
+    } catch (err) {
+      console.error(
+        `[transcriptionEditor] save failed for turn ${payload.turnId}:`,
+        err
+      );
+    }
+    await pushUnlock(options, {
+      translationId: payload.translationId,
+      turnId: payload.turnId
+    });
+  }
+  function saveTurn(state, text2) {
+    const turnId = state.editingTurnId.value;
+    if (turnId === null) return;
+    const target = exitEditMode(state);
+    const store = getActiveTranslationStore(state.core);
+    const turn = store?.getTurn(turnId);
+    if (!store || !turn) {
+      if (target) void pushUnlock(state.options, target);
+      return;
+    }
+    const normalized = text2.replace(/\s+/g, " ").trim();
+    if (normalized === computeTurnPlainText(turn)) {
+      if (target) void pushUnlock(state.options, target);
+      return;
+    }
+    store.updateTurn(
+      turnId,
+      computeUpdatedTurnFields(turnId, normalized, turn.words)
+    );
+    void pushSaveThenUnlock(state.options, {
+      translationId: store.id,
+      turnId,
+      text: normalized
+    });
+  }
+  function computeOffsetInNormalizedText(raw, offset2) {
+    const prefix = raw.slice(0, Math.max(0, offset2));
+    const normalizedPrefix = prefix.replace(/\s+/g, " ").replace(/^\s/, "");
+    const normalizedLength = raw.replace(/\s+/g, " ").trim().length;
+    return Math.min(normalizedPrefix.length, normalizedLength);
+  }
+  async function pushSplitSequence(options, payload) {
+    const target = { translationId: payload.translationId, turnId: payload.turnId };
+    try {
+      if (payload.textChanged) {
+        const saveAck = await options.saveTurn?.({
+          translationId: payload.translationId,
+          turnId: payload.turnId,
+          text: payload.text
+        });
+        if (saveAck && !saveAck.ok) {
+          console.error(
+            `[transcriptionEditor] save rejected before split (turn ${payload.turnId}): ${saveAck.reason ?? "unknown"} — split aborted`
+          );
+          await pushUnlock(options, target);
+          return;
+        }
+      }
+      const splitPayload = {
+        translationId: payload.translationId,
+        turnId: payload.turnId,
+        offset: payload.offset
+      };
+      const splitAck = await options.splitTurn?.(splitPayload);
+      if (splitAck && !splitAck.ok) {
+        console.error(
+          `[transcriptionEditor] split rejected for turn ${payload.turnId}: ${splitAck.reason ?? "unknown"}`
+        );
+      }
+    } catch (err) {
+      console.error(
+        `[transcriptionEditor] split sequence failed for turn ${payload.turnId}:`,
+        err
+      );
+    }
+    await pushUnlock(options, target);
+  }
+  function splitTurn(state, text2, offset2) {
+    const turnId = state.editingTurnId.value;
+    if (turnId === null) return;
+    const target = exitEditMode(state);
+    const store = getActiveTranslationStore(state.core);
+    const turn = store?.getTurn(turnId);
+    if (!store || !turn) {
+      if (target) void pushUnlock(state.options, target);
+      return;
+    }
+    const normalized = text2.replace(/\s+/g, " ").trim();
+    const textChanged = normalized !== computeTurnPlainText(turn);
+    if (textChanged) {
+      store.updateTurn(
+        turnId,
+        computeUpdatedTurnFields(turnId, normalized, turn.words)
+      );
+    }
+    const normalizedOffset = computeOffsetInNormalizedText(text2, offset2);
+    if (normalizedOffset <= 0 || normalizedOffset >= normalized.length) {
+      if (textChanged) {
+        void pushSaveThenUnlock(state.options, {
+          translationId: store.id,
+          turnId,
+          text: normalized
+        });
+      } else if (target) {
+        void pushUnlock(state.options, target);
+      }
+      return;
+    }
+    void pushSplitSequence(state.options, {
+      translationId: store.id,
+      turnId,
+      text: normalized,
+      offset: normalizedOffset,
+      textChanged
+    });
+  }
+  function findTranslationStore(core, translationId) {
+    for (const channel of core.channels.values()) {
+      const store = channel.translations.get(translationId);
+      if (store) return store;
+    }
+    return void 0;
+  }
+  function applyTurnUpdate(state, update) {
+    if (state.editingRef && state.editingRef.turnId === update.turnId && state.editingRef.translationId === update.translationId) {
+      return;
+    }
+    const store = findTranslationStore(state.core, update.translationId);
+    if (!store || !store.hasTurn(update.turnId)) return;
+    const words = wordsFromApi(update.turnId, update.words);
+    store.updateTurn(update.turnId, {
+      // Turn contract: text carries the content only when words is empty.
+      text: words.length > 0 ? null : update.text,
+      words,
+      ...update.stime !== void 0 && { startTime: update.stime },
+      ...update.etime !== void 0 && { endTime: update.etime }
+    });
+  }
+  function toStoreTurn(wire) {
+    const words = wordsFromApi(wire.turnId, wire.words);
+    return {
+      id: wire.turnId,
+      speakerId: wire.speakerId ?? null,
+      // Turn contract: text carries the content only when words is empty.
+      text: words.length > 0 ? null : wire.text,
+      words,
+      ...wire.stime !== void 0 && { startTime: wire.stime },
+      ...wire.etime !== void 0 && { endTime: wire.etime },
+      language: wire.language ?? ""
+    };
+  }
+  function applyTurnSplit(state, split) {
+    if (state.editingRef && state.editingRef.turnId === split.originalTurnId && state.editingRef.translationId === split.translationId) {
+      return;
+    }
+    const store = findTranslationStore(state.core, split.translationId);
+    if (!store || !store.hasTurn(split.originalTurnId)) return;
+    const halves = split.turns.map(toStoreTurn);
+    store.setTurns(
+      store.turns.value.flatMap(
+        (turn) => turn.id === split.originalTurnId ? halves : [turn]
+      )
+    );
+  }
+  const HEARTBEAT_INTERVAL_MS = 15e3;
+  class EditorSession {
+    core;
+    options;
+    editingTurnId = /* @__PURE__ */ ref(null);
+    editingCaretOffset = /* @__PURE__ */ ref(0);
+    locks = /* @__PURE__ */ shallowReactive(/* @__PURE__ */ new Map());
+    editingRef = null;
+    lockPending = false;
+    heartbeat = new LockHeartbeat(HEARTBEAT_INTERVAL_MS);
+    constructor(core, options) {
+      this.core = core;
+      this.options = options;
+    }
+    beginEdit(turnId, caretOffset) {
+      return beginEdit(this, turnId, caretOffset);
+    }
+    cancelEdit() {
+      cancelEdit(this);
+    }
+    saveTurn(text2) {
+      saveTurn(this, text2);
+    }
+    splitTurn(text2, offset2) {
+      splitTurn(this, text2, offset2);
+    }
+    applyTurnUpdate(update) {
+      applyTurnUpdate(this, update);
+    }
+    applyTurnSplit(split) {
+      applyTurnSplit(this, split);
+    }
+    getTurnLock(turnId) {
+      return getTurnLock(this, turnId);
+    }
+    setLocks(locks) {
+      setLocks(this, locks);
+    }
+    setTurnLock(lock) {
+      setTurnLock(this, lock);
+    }
+    clearTurnLock(ref2) {
+      clearTurnLock(this, ref2);
+    }
+    /** Back to idle: document reload — the edit in progress and the known
+     *  locks belong to the previous document (the join re-ack reseeds them). */
+    reset() {
+      this.editingTurnId.value = null;
+      this.editingRef = null;
+      this.heartbeat.stop();
+      this.locks.clear();
+    }
+    destroy() {
+      this.heartbeat.stop();
+    }
   }
   function createTranscriptionEditorPlugin(options = {}) {
     return {
       name: "transcriptionEditor",
       install(core) {
-        const editingTurnId = /* @__PURE__ */ ref(null);
-        const editingCaretOffset = /* @__PURE__ */ ref(0);
-        const locks = /* @__PURE__ */ shallowReactive(
-          /* @__PURE__ */ new Map()
-        );
-        let editingRef = null;
-        let lockPending = false;
-        let heartbeatTimer;
-        function getActiveTranslationStore() {
-          const channel = core.activeChannel.value;
-          if (!channel) return void 0;
-          return channel.translations.get(channel.activeTranslation.value.id);
-        }
-        function getTurnLock(turnId) {
-          const channel = core.activeChannel.value;
-          if (!channel) return void 0;
-          return locks.get(
-            computeLockKey(channel.activeTranslation.value.id, turnId)
-          );
-        }
-        function setLocks(all) {
-          locks.clear();
-          for (const lock of all) setTurnLock(lock);
-        }
-        function setTurnLock(lock) {
-          locks.set(computeLockKey(lock.translationId, lock.turnId), {
-            userId: lock.userId,
-            userName: lock.userName
-          });
-        }
-        function clearTurnLock(ref2) {
-          locks.delete(computeLockKey(ref2.translationId, ref2.turnId));
-        }
-        function stopHeartbeat() {
-          if (heartbeatTimer !== void 0) {
-            clearInterval(heartbeatTimer);
-            heartbeatTimer = void 0;
-          }
-        }
-        function startHeartbeat(target) {
-          stopHeartbeat();
-          if (!options.lockTurn) return;
-          heartbeatTimer = setInterval(() => {
-            void refreshLock(target);
-          }, HEARTBEAT_INTERVAL_MS);
-        }
-        async function refreshLock(target) {
-          try {
-            const ack = await options.lockTurn(target);
-            if (!ack?.ok) exitEditAfterLockLoss(target, ack?.reason);
-          } catch (err) {
-            console.error("[transcriptionEditor] heartbeat failed:", err);
-          }
-        }
-        function exitEditAfterLockLoss(target, reason) {
-          if (!editingRef || editingRef.turnId !== target.turnId) return;
-          console.error(
-            `[transcriptionEditor] lock lost on turn ${target.turnId}: ${reason ?? "unknown"}`
-          );
-          editingTurnId.value = null;
-          editingRef = null;
-          stopHeartbeat();
-        }
-        async function pushUnlock(target) {
-          try {
-            await options.unlockTurn?.(target);
-          } catch (err) {
-            console.error("[transcriptionEditor] unlock failed:", err);
-          }
-        }
-        async function pushSaveThenUnlock(payload) {
-          try {
-            const ack = await options.saveTurn?.(payload);
-            if (ack && !ack.ok) {
-              console.error(
-                `[transcriptionEditor] save rejected for turn ${payload.turnId}: ${ack.reason ?? "unknown"}`
-              );
-            }
-          } catch (err) {
-            console.error(
-              `[transcriptionEditor] save failed for turn ${payload.turnId}:`,
-              err
-            );
-          }
-          await pushUnlock({
-            translationId: payload.translationId,
-            turnId: payload.turnId
-          });
-        }
-        async function beginEdit(turnId, caretOffset = 0) {
-          if (core.capabilities.value.text !== "edit") return;
-          if (lockPending) return;
-          if (editingTurnId.value === turnId) return;
-          const store = getActiveTranslationStore();
-          if (!store?.hasTurn(turnId)) return;
-          if (locks.has(computeLockKey(store.id, turnId))) return;
-          if (editingTurnId.value !== null) cancelEdit();
-          const target = { translationId: store.id, turnId };
-          if (options.lockTurn) {
-            lockPending = true;
-            try {
-              const ack = await options.lockTurn(target);
-              if (!ack?.ok) {
-                if (ack?.holder) setTurnLock({ ...target, ...ack.holder });
-                return;
-              }
-            } catch (err) {
-              console.error("[transcriptionEditor] lock request failed:", err);
-              return;
-            } finally {
-              lockPending = false;
-            }
-          }
-          editingRef = target;
-          editingTurnId.value = turnId;
-          editingCaretOffset.value = caretOffset;
-          startHeartbeat(target);
-        }
-        function exitEditMode() {
-          const target = editingRef;
-          editingTurnId.value = null;
-          editingRef = null;
-          stopHeartbeat();
-          if (target) clearTurnLock(target);
-          return target;
-        }
-        function cancelEdit() {
-          const target = exitEditMode();
-          if (target) void pushUnlock(target);
-        }
-        function saveTurn(text2) {
-          const turnId = editingTurnId.value;
-          if (turnId === null) return;
-          const target = exitEditMode();
-          const store = getActiveTranslationStore();
-          const turn = store?.getTurn(turnId);
-          if (!store || !turn) {
-            if (target) void pushUnlock(target);
-            return;
-          }
-          const normalized = text2.replace(/\s+/g, " ").trim();
-          if (normalized === computeTurnPlainText(turn)) {
-            if (target) void pushUnlock(target);
-            return;
-          }
-          const words = carryWordTimes(wordsFromText(turnId, normalized), turn.words);
-          store.updateTurn(turnId, {
-            // Turn contract: text carries the content only when words is empty.
-            text: words.length > 0 ? null : normalized,
-            words
-          });
-          void pushSaveThenUnlock({
-            translationId: store.id,
-            turnId,
-            text: normalized
-          });
-        }
-        function splitTurn(text2, _offset) {
-          saveTurn(text2);
-        }
-        const offDocChange = core.on("document:change", () => {
-          editingTurnId.value = null;
-          editingRef = null;
-          stopHeartbeat();
-          locks.clear();
-        });
-        const api = {
-          editingTurnId,
-          editingCaretOffset,
-          beginEdit,
-          cancelEdit,
-          saveTurn,
-          splitTurn,
-          getTurnLock,
-          setLocks,
-          setTurnLock,
-          clearTurnLock
-        };
-        core.transcriptionEditor = api;
+        const session = new EditorSession(core, options);
+        core.transcriptionEditor = session;
+        const offDocChange = core.on("document:change", () => session.reset());
         return () => {
           offDocChange();
-          stopHeartbeat();
+          session.destroy();
         };
       }
     };

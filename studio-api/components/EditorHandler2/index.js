@@ -6,11 +6,13 @@ const { onLeave } = require("./handlers/onLeave")
 const { onUpdateTurn } = require("./handlers/onUpdateTurn")
 const { onLockTurn } = require("./handlers/onLockTurn")
 const { onUnlockTurn } = require("./handlers/onUnlockTurn")
+const { onSplitTurn } = require("./handlers/onSplitTurn")
 const { onDisconnect } = require("./handlers/onDisconnect")
 const { requireLock } = require("./handlers/requireLock")
 
 // Mutations run only for the lock holder (decorated once at module level).
 const onUpdateTurnLocked = requireLock(onUpdateTurn)
+const onSplitTurnLocked = requireLock(onSplitTurn)
 
 // PoC of the lock+save editor (see Notion "Editor v2"): rides on IoHandler's
 // socket.io server, one room per PARENT conversation; mutation payloads carry
@@ -38,6 +40,9 @@ class EditorHandler2 extends Component {
     )
     socket.on("editor:update_turn", (payload, ack) =>
       onUpdateTurnLocked({ io, socket }, payload, ack),
+    )
+    socket.on("editor:split_turn", (payload, ack) =>
+      onSplitTurnLocked({ io, socket }, payload, ack),
     )
     socket.on("editor:lock_turn", (payload, ack) =>
       onLockTurn({ io, socket }, payload, ack),

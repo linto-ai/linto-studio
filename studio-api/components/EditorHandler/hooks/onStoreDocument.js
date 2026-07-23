@@ -7,7 +7,7 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const { docToSpeakers } = require("../schema/docToSpeakers")
 const { SCHEMA_GEN } = require("../schema/generation")
 const { speakersChanged } = require("../flush/speakersDiff")
-const { getSyllabic } = require("../words/syllabic")
+const { getSyllabic } = require("../../EditorHandler2/utils/syllabic")
 const { parseDocumentName } = require("../utils/parseDocumentName")
 const { buildWordsPayload } = require("../utils/buildWordsPayload")
 

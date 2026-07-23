@@ -1,3 +1,7 @@
+// onUpdateTurn → computeRetimedTurn → getSyllabic loads the ESM-only
+// `syllable` package Jest can't transform (fr path is self-contained).
+jest.mock("syllable", () => ({ syllable: () => 1 }))
+
 jest.mock(
   `${process.cwd()}/components/WebServer/config/passport/middleware`,
   () => ({ checkSocket: jest.fn() }),
@@ -9,6 +13,11 @@ jest.mock(
 jest.mock(`${process.cwd()}/lib/mongodb/models`, () => ({
   users: { getById: jest.fn() },
   editorLocks: { listByParent: jest.fn(), releaseAllForSocket: jest.fn() },
+  conversations: {
+    getById: jest.fn(),
+    updateEditorTurn: jest.fn(),
+    splitEditorTurn: jest.fn(),
+  },
 }))
 
 const auth = require(
@@ -30,6 +39,9 @@ const { onLeave } = require(
 )
 const { onUpdateTurn } = require(
   `${process.cwd()}/components/EditorHandler2/handlers/onUpdateTurn`,
+)
+const { onSplitTurn } = require(
+  `${process.cwd()}/components/EditorHandler2/handlers/onSplitTurn`,
 )
 
 function makeCtx() {
@@ -191,10 +203,183 @@ describe("onLeave", () => {
 })
 
 describe("onUpdateTurn", () => {
-  test("acks ok (PoC: no persistence)", () => {
+  const PAYLOAD = {
+    parentId: "conv-1",
+    translationId: "tr-1",
+    turnId: "turn-1",
+    text: "Bonjour  tous le monde ",
+  }
+  const OLD_TURN = {
+    turn_id: "turn-1",
+    language: "fr",
+    stime: 0,
+    etime: 2,
+    words: [
+      { wid: "w-1", word: "Bonjour", stime: 0, etime: 0.8 },
+      { wid: "w-2", word: "tout", stime: 0.9, etime: 1.1 },
+      { wid: "w-3", word: "le", stime: 1.2, etime: 1.3 },
+      { wid: "w-4", word: "monde", stime: 1.4, etime: 1.8 },
+    ],
+  }
+
+  test("retimes, persists (version bumped) and broadcasts the wire turn", async () => {
+    model.conversations.getById.mockResolvedValue([{ text: [OLD_TURN] }])
+    model.conversations.updateEditorTurn.mockResolvedValue({ version: 7 })
     const ctx = makeCtx()
     const ack = jest.fn()
-    onUpdateTurn(ctx, { translationId: "tr-1", turnId: "t-1", text: "x" }, ack)
-    expect(ack).toHaveBeenCalledWith({ ok: true })
+
+    await onUpdateTurn(ctx, PAYLOAD, ack)
+
+    // Normalized text (whitespace contract) reaches the persist layer.
+    const [convId, turnId, retimed] =
+      model.conversations.updateEditorTurn.mock.calls[0]
+    expect(convId).toBe("tr-1")
+    expect(turnId).toBe("turn-1")
+    expect(retimed.segment).toBe("Bonjour tous le monde")
+    expect(retimed.words).toHaveLength(4)
+
+    expect(ctx.io.to).toHaveBeenCalledWith("editor/conv-1")
+    const [event, broadcast] = ctx.emit.mock.calls[0]
+    expect(event).toBe("editor:turn_updated")
+    expect(broadcast.translationId).toBe("tr-1")
+    expect(broadcast.turnId).toBe("turn-1")
+    expect(broadcast.text).toBe("Bonjour tous le monde")
+    expect(broadcast.version).toBe(7)
+    // No wid on the wire: clients consume words positionally.
+    expect(broadcast.words.every((w) => !("wid" in w))).toBe(true)
+    expect(broadcast.words[0]).toMatchObject({ word: "Bonjour", stime: 0 })
+
+    expect(ack).toHaveBeenCalledWith({ ok: true, version: 7 })
+  })
+
+  test("acks a conflict when the turn no longer exists", async () => {
+    model.conversations.getById.mockResolvedValue([{ text: [] }])
+    const ctx = makeCtx()
+    const ack = jest.fn()
+
+    await onUpdateTurn(ctx, PAYLOAD, ack)
+
+    expect(model.conversations.updateEditorTurn).not.toHaveBeenCalled()
+    expect(ctx.emit).not.toHaveBeenCalled()
+    expect(ack).toHaveBeenCalledWith({ ok: false, reason: "conflict" })
+  })
+
+  test("acks a conflict when the write matched nothing (vanished meanwhile)", async () => {
+    model.conversations.getById.mockResolvedValue([{ text: [OLD_TURN] }])
+    model.conversations.updateEditorTurn.mockResolvedValue(null)
+    const ctx = makeCtx()
+    const ack = jest.fn()
+
+    await onUpdateTurn(ctx, PAYLOAD, ack)
+
+    expect(ctx.emit).not.toHaveBeenCalled()
+    expect(ack).toHaveBeenCalledWith({ ok: false, reason: "conflict" })
+  })
+
+  test("rejects a payload without parentId or text", async () => {
+    const ctx = makeCtx()
+    const ack = jest.fn()
+
+    await onUpdateTurn(ctx, { translationId: "tr-1", turnId: "turn-1" }, ack)
+
+    expect(model.conversations.getById).not.toHaveBeenCalled()
+    expect(ack).toHaveBeenCalledWith({ ok: false, reason: "invalid_payload" })
+  })
+
+  test("acks an error instead of throwing when the DB write fails", async () => {
+    model.conversations.getById.mockResolvedValue([{ text: [OLD_TURN] }])
+    model.conversations.updateEditorTurn.mockRejectedValue(
+      new Error("mongo down"),
+    )
+    const ctx = makeCtx()
+    const ack = jest.fn()
+
+    await onUpdateTurn(ctx, PAYLOAD, ack)
+
+    expect(ack).toHaveBeenCalledWith({ ok: false, reason: "error" })
+  })
+})
+
+describe("onSplitTurn", () => {
+  const PAYLOAD = {
+    parentId: "conv-1",
+    translationId: "tr-1",
+    turnId: "turn-1",
+    offset: 12,
+  }
+  const OLD_TURN = {
+    turn_id: "turn-1",
+    speaker_id: "spk-1",
+    language: "fr",
+    segment: "Bonjour tout le monde",
+    words: [
+      { wid: "w-1", word: "Bonjour", stime: 0, etime: 0.8 },
+      { wid: "w-2", word: "tout", stime: 0.9, etime: 1.1 },
+      { wid: "w-3", word: "le", stime: 1.2, etime: 1.3 },
+      { wid: "w-4", word: "monde", stime: 1.4, etime: 1.8 },
+    ],
+  }
+
+  test("splits, persists and broadcasts both wire halves", async () => {
+    model.conversations.getById.mockResolvedValue([{ text: [OLD_TURN] }])
+    model.conversations.splitEditorTurn.mockResolvedValue({ version: 4 })
+    const ctx = makeCtx()
+    const ack = jest.fn()
+
+    await onSplitTurn(ctx, PAYLOAD, ack)
+
+    const [convId, turnId, left, right] =
+      model.conversations.splitEditorTurn.mock.calls[0]
+    expect(convId).toBe("tr-1")
+    expect(turnId).toBe("turn-1")
+    expect(left.segment).toBe("Bonjour tout")
+    expect(right.segment).toBe("le monde")
+
+    expect(ctx.io.to).toHaveBeenCalledWith("editor/conv-1")
+    const [event, broadcast] = ctx.emit.mock.calls[0]
+    expect(event).toBe("editor:turn_split")
+    expect(broadcast.originalTurnId).toBe("turn-1")
+    expect(broadcast.turns).toHaveLength(2)
+    expect(broadcast.turns[0]).toMatchObject({
+      turnId: "turn-1",
+      text: "Bonjour tout",
+      speakerId: "spk-1",
+      language: "fr",
+    })
+    expect(broadcast.turns[1].turnId).not.toBe("turn-1")
+    expect(broadcast.turns[1].words.every((w) => !("wid" in w))).toBe(true)
+    expect(broadcast.version).toBe(4)
+    expect(ack).toHaveBeenCalledWith({ ok: true, version: 4 })
+  })
+
+  test("refuses a border offset (empty half)", async () => {
+    model.conversations.getById.mockResolvedValue([{ text: [OLD_TURN] }])
+    const ctx = makeCtx()
+    const ack = jest.fn()
+
+    await onSplitTurn(ctx, { ...PAYLOAD, offset: 0 }, ack)
+
+    expect(model.conversations.splitEditorTurn).not.toHaveBeenCalled()
+    expect(ack).toHaveBeenCalledWith({ ok: false, reason: "invalid_offset" })
+  })
+
+  test("acks a conflict when the turn vanished", async () => {
+    model.conversations.getById.mockResolvedValue([{ text: [] }])
+    const ctx = makeCtx()
+    const ack = jest.fn()
+
+    await onSplitTurn(ctx, PAYLOAD, ack)
+
+    expect(ack).toHaveBeenCalledWith({ ok: false, reason: "conflict" })
+  })
+
+  test("rejects a payload without offset", async () => {
+    const ctx = makeCtx()
+    const ack = jest.fn()
+
+    await onSplitTurn(ctx, { ...PAYLOAD, offset: undefined }, ack)
+
+    expect(model.conversations.getById).not.toHaveBeenCalled()
+    expect(ack).toHaveBeenCalledWith({ ok: false, reason: "invalid_payload" })
   })
 })

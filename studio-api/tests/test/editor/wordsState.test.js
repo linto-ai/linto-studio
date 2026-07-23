@@ -6,7 +6,7 @@ const {
 } = require(`${process.cwd()}/components/EditorHandler/wordsState/wordsState`)
 // Not words/syllabic/index.js: its EN variant imports the ESM-only `syllable`
 // package, which Jest can't parse. The FR fallback is all these tests need.
-const SyllabicFR = require(`${process.cwd()}/components/EditorHandler/words/syllabic/syllabicFR`)
+const SyllabicFR = require(`${process.cwd()}/components/EditorHandler2/utils/syllabic/syllabicFR`)
 
 const syllabicFr = new SyllabicFR("fr-FR")
 const getSyllabic = () => syllabicFr

@@ -578,6 +578,94 @@ class ConvoModel extends MongoModel {
    * not swallow it): the flush must tell a transient failure apart from an
    * epoch miss, which it cannot do from a returned Error.
    */
+  /**
+   * Targeted save of ONE edited turn (lock+save editor). Field-level $set so
+   * the fields this write doesn't own survive untouched (raw_segment keeps
+   * the original ASR text, lang, future additions), and editorVersion is
+   * incremented IN THE SAME atomic write — a broadcast can never announce a
+   * version the data doesn't have. Throws on DB error (the handler tells
+   * transient failures apart from a vanished turn).
+   * @returns {Promise<{version: number}|null>} null when the conversation or
+   *   the turn no longer exists.
+   */
+  async updateEditorTurn(
+    conversationId,
+    turnId,
+    { segment, words, stime, etime },
+  ) {
+    const set = {
+      "text.$.segment": segment,
+      "text.$.words": words,
+      last_update: moment().format(),
+    }
+    if (stime !== undefined) set["text.$.stime"] = stime
+    if (etime !== undefined) set["text.$.etime"] = etime
+
+    const result = await MongoDriver.constructor.db
+      .collection(this.collection)
+      .findOneAndUpdate(
+        { _id: this.getObjectId(conversationId), "text.turn_id": turnId },
+        { $set: set, $inc: { editorVersion: 1 } },
+        {
+          returnDocument: "after",
+          projection: { editorVersion: 1 },
+          includeResultMetadata: false,
+        },
+      )
+    return result ? { version: result.editorVersion } : null
+  }
+
+  /**
+   * Replace ONE turn by its two halves, in place (lock+save editor split).
+   * Aggregation-pipeline update: one atomic write recomputes the array
+   * ($indexOfArray + $concatArrays) AND bumps editorVersion — the filter on
+   * "text.turn_id" guarantees the index exists at write time. Throws on DB
+   * error.
+   * @returns {Promise<{version: number}|null>} null when the conversation or
+   *   the turn no longer exists.
+   */
+  async splitEditorTurn(conversationId, turnId, leftTurn, rightTurn) {
+    const result = await MongoDriver.constructor.db
+      .collection(this.collection)
+      .findOneAndUpdate(
+        { _id: this.getObjectId(conversationId), "text.turn_id": turnId },
+        [
+          {
+            $set: {
+              text: {
+                $let: {
+                  vars: { idx: { $indexOfArray: ["$text.turn_id", turnId] } },
+                  in: {
+                    $concatArrays: [
+                      { $slice: ["$text", "$$idx"] },
+                      [leftTurn, rightTurn],
+                      // Position past the end yields [] — $size keeps the
+                      // count argument positive (0 would be rejected).
+                      {
+                        $slice: [
+                          "$text",
+                          { $add: ["$$idx", 1] },
+                          { $size: "$text" },
+                        ],
+                      },
+                    ],
+                  },
+                },
+              },
+              editorVersion: { $add: [{ $ifNull: ["$editorVersion", 0] }, 1] },
+              last_update: moment().format(),
+            },
+          },
+        ],
+        {
+          returnDocument: "after",
+          projection: { editorVersion: 1 },
+          includeResultMetadata: false,
+        },
+      )
+    return result ? { version: result.editorVersion } : null
+  }
+
   async updateSpeakers(conversationId, speakers, expectedEpoch = null) {
     const query =
       expectedEpoch === null
