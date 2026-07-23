@@ -20095,6 +20095,39 @@ ${text2}` : text2;
       charEnd: t2.charEnd
     }));
   }
+  function layoutWords(turnId, source) {
+    const out = [];
+    let cursor = 0;
+    for (const src of source) {
+      for (const part of (src.text ?? "").split(/\s+/)) {
+        if (!part) continue;
+        const charStart = cursor;
+        const charEnd = charStart + part.length;
+        cursor = charEnd + 1;
+        out.push({
+          id: wordId(turnId, out.length),
+          text: part,
+          charStart,
+          charEnd,
+          ...src.startTime !== void 0 && { startTime: src.startTime },
+          ...src.endTime !== void 0 && { endTime: src.endTime },
+          ...src.confidence !== void 0 && { confidence: src.confidence }
+        });
+      }
+    }
+    return out;
+  }
+  function wordsFromApi(turnId, apiWords) {
+    return layoutWords(
+      turnId,
+      apiWords.map((w2) => ({
+        text: w2.word ?? "",
+        ...w2.stime !== void 0 && { startTime: w2.stime },
+        ...w2.etime !== void 0 && { endTime: w2.etime },
+        ...w2.confidence !== void 0 && { confidence: w2.confidence }
+      }))
+    );
+  }
   function carryWordTimes(next2, prev) {
     const max2 = Math.min(next2.length, prev.length);
     let prefix = 0;
@@ -28220,6 +28253,22 @@ pre[class*="language-"] {
       }
     };
   }
+  function mapApiTurns(apiTurns) {
+    return apiTurns.map((t2) => {
+      const words = wordsFromApi(t2.turn_id, t2.words);
+      const startTime = words[0]?.startTime ?? t2.stime;
+      const endTime = words.length > 0 ? words[words.length - 1].endTime ?? t2.etime : t2.etime;
+      return {
+        id: t2.turn_id,
+        speakerId: t2.speaker_id || null,
+        text: words.length > 0 ? null : t2.segment,
+        words,
+        ...startTime !== void 0 && { startTime },
+        ...endTime !== void 0 && { endTime },
+        language: t2.language
+      };
+    });
+  }
   function getComponentStyles(comp) {
     return comp.styles ?? [];
   }
@@ -31325,6 +31374,7 @@ pre[class*="language-"] {
   exports.createLivePlugin = createLivePlugin;
   exports.createSubtitlePlugin = createSubtitlePlugin;
   exports.createTranscriptionEditorPlugin = createTranscriptionEditorPlugin;
+  exports.mapApiTurns = mapApiTurns;
   exports.register = register;
   Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
   return exports;

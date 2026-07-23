@@ -1,10 +1,20 @@
 const debug = require("debug")("linto:components:EditorHandler2")
 const Component = require("../component.js")
-const { computeEditorRoomName } = require("./utils/computeEditorRoomName")
+
+const { onJoin } = require("./handlers/onJoin")
+const { onLeave } = require("./handlers/onLeave")
+const { onUpdateTurn } = require("./handlers/onUpdateTurn")
+const { onLockTurn } = require("./handlers/onLockTurn")
+const { onUnlockTurn } = require("./handlers/onUnlockTurn")
+const { onDisconnect } = require("./handlers/onDisconnect")
+const { requireLock } = require("./handlers/requireLock")
+
+// Mutations run only for the lock holder (decorated once at module level).
+const onUpdateTurnLocked = requireLock(onUpdateTurn)
 
 // PoC of the lock+save editor (see Notion "Editor v2"): rides on IoHandler's
-// socket.io server, one room per conversation. For now: log incoming editor
-// events and ack them — no lock, no persistence yet.
+// socket.io server, one room per PARENT conversation; mutation payloads carry
+// the translationId (child conversation). One file per handler in handlers/.
 class EditorHandler2 extends Component {
   constructor(app) {
     super(app, "IoHandler")
@@ -19,27 +29,23 @@ class EditorHandler2 extends Component {
   }
 
   bindEditorEvents(socket) {
-    socket.on("editor:join", (conversationId, ack) => {
-      debug(`editor:join conv=${conversationId} socket=${socket.id}`)
-      socket.join(computeEditorRoomName(conversationId))
-      if (typeof ack === "function") {
-        ack({ ok: true, locks: [], users: [], version: 0 })
-      }
-    })
-
-    socket.on("editor:leave", (conversationId) => {
-      debug(`editor:leave conv=${conversationId} socket=${socket.id}`)
-      socket.leave(computeEditorRoomName(conversationId))
-    })
-
-    socket.on("editor:update_turn", (payload, ack) => {
-      debug(
-        `editor:update_turn socket=${socket.id} payload=${JSON.stringify(payload)}`,
-      )
-      if (typeof ack === "function") {
-        ack({ ok: true })
-      }
-    })
+    const io = this.io
+    socket.on("editor:join", (conversationId, ack) =>
+      onJoin({ socket }, conversationId, ack),
+    )
+    socket.on("editor:leave", (conversationId) =>
+      onLeave({ io, socket }, conversationId),
+    )
+    socket.on("editor:update_turn", (payload, ack) =>
+      onUpdateTurnLocked({ io, socket }, payload, ack),
+    )
+    socket.on("editor:lock_turn", (payload, ack) =>
+      onLockTurn({ io, socket }, payload, ack),
+    )
+    socket.on("editor:unlock_turn", (payload, ack) =>
+      onUnlockTurn({ io, socket }, payload, ack),
+    )
+    socket.on("disconnect", () => onDisconnect({ io, socket }))
   }
 }
 

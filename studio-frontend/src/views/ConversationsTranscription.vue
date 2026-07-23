@@ -17,6 +17,7 @@ import USER_RIGHTS from "@/const/userRights.js"
 
 import { apiGetConversationAsDoc } from "@/api/conversation.d/apiGetConversationAsDoc.js"
 import {
+  apiGetConversationById,
   apiGetConversationLastUpdate,
   apiGetUserRightFromConversation,
 } from "@/api/conversation"
@@ -24,6 +25,7 @@ import {
 import {
   createTranscriptionEditorPlugin,
   createAudioPlugin,
+  mapApiTurns,
 } from "@linto/transcript-ui/webcomponent"
 
 import { setupLLMServices } from "@/services/llmServicesIntegration"
@@ -169,6 +171,51 @@ export default {
       core.setDocument(doc)
       this.pushTranscriptionLastUpdate()
       this.attachEditListeners()
+
+      // The REST skeleton carries no content: turns and speakers are loaded
+      // per translation, lazily — now for the active one, then on every
+      // track/channel switch.
+      this.attachTranslationLoader()
+      this.loadActiveTranslation()
+    },
+
+    // A translation's content is its child conversation's text+speakers.
+    // Already-loaded tracks are kept as-is (turns present = trivial cache).
+    async loadActiveTranslation() {
+      const channel = this.core?.activeChannel?.value
+      if (!channel) return
+      const translation = channel.translations.get(
+        channel.activeTranslation.value.id,
+      )
+      if (!translation || translation.turns.value.length > 0) return
+
+      channel.isLoadingHistory.value = true
+      try {
+        const conv = await apiGetConversationById(
+          translation.id,
+          ["text", "speakers"].toString(),
+        )
+        if (this.isDestroyed || !conv) return
+        for (const s of conv.speakers ?? []) {
+          this.core.speakers.ensure(s.speaker_id, s.speaker_name)
+        }
+        translation.setTurns(mapApiTurns(conv.text ?? []))
+        // Whole content arrives in one fetch: mark the history complete so
+        // the panel shows its "beginning of transcription" boundary.
+        channel.hasMoreHistory.value = false
+      } catch (err) {
+        console.error("[host] failed to load translation content", err)
+      } finally {
+        channel.isLoadingHistory.value = false
+      }
+    },
+
+    attachTranslationLoader() {
+      const load = () => this.loadActiveTranslation()
+      this.editListeners.push(
+        this.core.on("translation:change", load),
+        this.core.on("channel:change", load),
+      )
     },
 
     async pushTranscriptionLastUpdate() {

@@ -44,6 +44,7 @@ export { createChatPlugin } from './plugins/chat'
 
 // Adapter API LinTO
 export { mapApiDocument } from './adapters/apiAdapter'
+export { mapApiTurns } from './adapters/mapApiTurns'
 
 // Adapter WhisperX
 export { mapWhisperXDocument } from './adapters/whisperXAdapter'
