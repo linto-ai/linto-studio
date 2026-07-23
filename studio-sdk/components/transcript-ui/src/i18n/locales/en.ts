@@ -63,6 +63,7 @@ const en: Record<keyof typeof fr, string> = {
   'transcription.saveEdit': 'Save edit',
   'transcription.lockedBy': 'Being edited by {name}',
   'transcription.mergeTurns': 'Merge with previous turn',
+  'speaker.unknown': 'Unknown speaker',
   'transcription.cancelEdit': 'Cancel edit',
   'transcription.turnEditor': 'Turn text (Enter to save, Escape to cancel)',
   'transcription.loadingHistory': 'Loading…',

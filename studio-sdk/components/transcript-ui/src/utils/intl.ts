@@ -6,6 +6,8 @@ export function getLanguageDisplayName(
   wildcardLabel = "*",
   stripRegion = true,
 ): string {
+  // Some backend turns carry no language at all — an empty name hides the chip.
+  if (!code) return ""
   if (code === "*") return wildcardLabel
   const lookup = stripRegion ? (code.split("-")[0] ?? code) : code
   try {

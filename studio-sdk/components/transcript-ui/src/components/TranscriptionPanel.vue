@@ -63,6 +63,9 @@ const { isFollowing, resumeFollow } = useFollowPlayback(scrollContainerRef)
 const { scrollRef, contentRef, isAtBottom, scrollToBottom } = useStickToBottom()
 
 onMounted(() => {
+  // Stick-to-bottom is a LIVE feature (follow the incoming feed) — the
+  // editor must open at the top, not scrolled to the end.
+  if (!core.live) return
   scrollRef.value = scrollContainerRef.value
   contentRef.value =
     scrollContainerRef.value?.querySelector(".turns-container") ?? null

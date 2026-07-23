@@ -12,6 +12,7 @@ import { useI18n } from "../i18n"
 import * as utils from "../utils"
 import { computeTurnPlainText } from "../utils/computeTurnPlainText"
 import { computeCaretOffsetFromPoint } from "../utils/computeCaretOffsetFromPoint"
+import { findWordAtOffset } from "../utils/findWordAtOffset"
 import type { Turn, Speaker } from "../types/editor"
 
 const props = defineProps<{
@@ -92,17 +93,33 @@ const plainText = computed(() => computeTurnPlainText(props.turn))
 const editorRef = useTemplateRef<InstanceType<typeof TurnTextEditor>>("editor")
 
 function onTextClick(event: MouseEvent) {
-  if (!isTextInteractive.value) return
   const container = event.currentTarget as HTMLElement
   const offset = computeCaretOffsetFromPoint(
     container,
     event.clientX,
     event.clientY,
   )
+
+  seekToClickedWord(offset)
+
+  if (!isTextInteractive.value) return
   void core.transcriptionEditor!.beginEdit(
     props.turn.id,
     offset ?? plainText.value.length,
   )
+}
+
+// Clicking a word cues the audio there, paused — a reading feature, active
+// in every mode (viewer included). Untimed word (freshly edited zone) or
+// text-only turn: fall back to the turn start; no time at all: no seek.
+function seekToClickedWord(offset: number | null) {
+  if (!core.audio) return
+  const word =
+    offset !== null ? findWordAtOffset(props.turn.words, offset) : undefined
+  const time = word?.startTime ?? props.turn.startTime
+  if (time == null) return
+  core.audio.seekTo(time)
+  core.audio.pause()
 }
 
 function onTextKeydown(event: KeyboardEvent) {

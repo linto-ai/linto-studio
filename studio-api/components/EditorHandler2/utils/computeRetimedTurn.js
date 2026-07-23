@@ -30,12 +30,22 @@ function computeRetimedTurn(oldTurn, text) {
   const tokens = tokenize(text)
   const oldWords = oldTurn.words || []
   const carried = alignWords(tokens, oldWords)
-  const retimed = retimeTurn(
-    tokens,
-    carried,
-    { stime: oldTurn.stime, etime: oldTurn.etime },
-    getSyllabic(oldTurn.language || oldTurn.lang),
-  )
+
+  // No timing basis at all (no timed word, no turn-level times): interpolate
+  // would fabricate stime/etime = 0 on every word — persist untimed words
+  // instead, the turn stays honestly text-only.
+  const hasTimingBasis =
+    oldTurn.stime != null ||
+    oldTurn.etime != null ||
+    carried.some((e) => e.stime != null || e.etime != null)
+  const retimed = hasTimingBasis
+    ? retimeTurn(
+        tokens,
+        carried,
+        { stime: oldTurn.stime, etime: oldTurn.etime },
+        getSyllabic(oldTurn.language || oldTurn.lang),
+      )
+    : tokens.map((token) => ({ word: token.text }))
 
   // Carried entries sit exactly on their token's offsets: charStart is the
   // identity bridge between a retimed token and the old word it came from.

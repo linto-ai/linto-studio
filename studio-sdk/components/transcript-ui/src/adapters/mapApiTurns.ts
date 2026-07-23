@@ -25,7 +25,8 @@ export function mapApiTurns(apiTurns: ApiTurn[]): Turn[] {
       words,
       ...(startTime !== undefined && { startTime }),
       ...(endTime !== undefined && { endTime }),
-      language: t.language,
+      // The ApiTurn type says required; real payloads disagree.
+      language: t.language ?? "",
     }
   })
 }

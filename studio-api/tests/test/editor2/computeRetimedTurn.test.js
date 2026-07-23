@@ -89,3 +89,29 @@ describe("computeRetimedTurn", () => {
     expect(result.etime).toBe(1.8)
   })
 })
+
+describe("computeRetimedTurn — no timing basis", () => {
+  test("a turn with no timed word and no turn-level times stays untimed", () => {
+    const result = computeRetimedTurn(
+      { turn_id: "t", language: "fr", words: [] },
+      "du texte sans aucun temps",
+    )
+    expect(result.words).toHaveLength(5)
+    for (const word of result.words) {
+      expect("stime" in word).toBe(false)
+      expect("etime" in word).toBe(false)
+      expect(word.wid).toBeDefined()
+    }
+    expect("stime" in result).toBe(false)
+    expect("etime" in result).toBe(false)
+  })
+
+  test("turn-level times alone are enough of a basis (linear spread)", () => {
+    const result = computeRetimedTurn(
+      { turn_id: "t", language: "fr", stime: 10, etime: 12, words: [] },
+      "deux mots",
+    )
+    expect(result.words[0].stime).toBe(10)
+    expect(result.words[1].etime).toBe(12)
+  })
+})

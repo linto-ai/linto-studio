@@ -4,9 +4,9 @@ import Button from "../atoms/Button.vue"
 import { useCore } from "../../core"
 import { useI18n } from "../../i18n"
 
-// Always-visible merge control between two adjacent turns. Hidden when either
-// turn is locked (the lock badge already tells why) — the server ack stays
-// the authority on races.
+// Always-visible merge control between two adjacent turns. A lock on either
+// side DISABLES it (the layout must not jump, and the lock badge tells why);
+// the server ack stays the authority on races.
 const props = defineProps<{
   firstTurnId: string
   secondTurnId: string
@@ -15,12 +15,16 @@ const props = defineProps<{
 const core = useCore()
 const { t } = useI18n()
 
-const canMerge = computed(
+const canShow = computed(
   () =>
     core.transcriptionEditor !== undefined &&
-    core.capabilities.value.text === "edit" &&
-    !core.transcriptionEditor.getTurnLock(props.firstTurnId) &&
-    !core.transcriptionEditor.getTurnLock(props.secondTurnId),
+    core.capabilities.value.text === "edit",
+)
+
+const isDisabled = computed(
+  () =>
+    !!core.transcriptionEditor?.getTurnLock(props.firstTurnId) ||
+    !!core.transcriptionEditor?.getTurnLock(props.secondTurnId),
 )
 
 function onMergeClick() {
@@ -29,11 +33,12 @@ function onMergeClick() {
 </script>
 
 <template>
-  <div v-if="canMerge" class="merge-turns">
+  <div v-if="canShow" class="merge-turns">
     <Button
       size="sm"
       variant="transparent"
       icon="merge"
+      :disabled="isDisabled"
       :aria-label="t('transcription.mergeTurns')"
       @click.stop="onMergeClick" />
   </div>

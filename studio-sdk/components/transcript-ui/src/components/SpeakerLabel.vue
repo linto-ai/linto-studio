@@ -40,16 +40,26 @@ const timestamp = computed<{ text: string; datetime: string } | null>(() => {
 })
 
 const speakerColor = computed(() => props.speaker?.color ?? "transparent")
+
+// A turn always shows a speaker: unnamed ones get an explicit placeholder
+// (assignment lands with the speakers iteration).
+const displayName = computed(
+  () => props.speaker?.name ?? t("speaker.unknown"),
+)
 </script>
 
 <template>
   <div class="speaker-label">
     <SpeakerIndicator v-if="speaker" :color="speakerColor" />
-    <span v-if="speaker" class="speaker-name">{{ speaker.name }}</span>
+    <span
+      class="speaker-name"
+      :class="{ 'speaker-name--unknown': !speaker }"
+      >{{ displayName }}</span
+    >
     <time v-if="timestamp" class="timestamp" :datetime="timestamp.datetime">{{
       timestamp.text
     }}</time>
-    <span class="lang">{{ languageName }}</span>
+    <span v-if="languageName" class="lang">{{ languageName }}</span>
   </div>
 </template>
 
@@ -65,6 +75,12 @@ const speakerColor = computed(() => props.speaker?.color ?? "transparent")
   font-size: var(--font-size-sm);
   font-weight: 600;
   color: var(--color-text-primary);
+}
+
+.speaker-name--unknown {
+  font-weight: 400;
+  font-style: italic;
+  color: var(--color-text-muted);
 }
 
 .timestamp {
