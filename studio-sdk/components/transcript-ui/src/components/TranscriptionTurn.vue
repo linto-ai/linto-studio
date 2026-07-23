@@ -5,6 +5,7 @@ import Button from "./atoms/Button.vue"
 import EditorCheckbox from "./atoms/EditorCheckbox.vue"
 import UserAvatar from "./atoms/UserAvatar.vue"
 import TurnTextEditor from "./molecules/TurnTextEditor.vue"
+import MergeTurnsButton from "./molecules/MergeTurnsButton.vue"
 import { useCore } from "../core"
 import { useTurnSelection } from "../composables/useTurnSelection"
 import { useI18n } from "../i18n"
@@ -18,6 +19,8 @@ const props = defineProps<{
   speaker?: Speaker
   partial?: boolean
   live?: boolean
+  /** Id of the preceding turn — hosts the merge control above this turn. */
+  previousTurnId?: string
 }>()
 
 const core = useCore()
@@ -163,6 +166,10 @@ function onCheckboxChange(event: MouseEvent) {
     :data-turn-active="isTurnActive || partial || live || undefined"
     :style="{ '--speaker-color': speakerColor }"
     :aria-selected="selection.hasSelection.value ? isSelected : undefined">
+    <MergeTurnsButton
+      v-if="previousTurnId && !partial && !live"
+      :first-turn-id="previousTurnId"
+      :second-turn-id="turn.id" />
     <div v-if="!partial" class="turn-header" @click="onHeaderClick">
       <EditorCheckbox
         v-if="selection.hasSelection.value"

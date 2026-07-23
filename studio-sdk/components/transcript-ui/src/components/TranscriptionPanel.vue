@@ -157,12 +157,14 @@ onBeforeUnmount(() => {
             turn,
             speakers.get(turn.speakerId ?? ''),
             hasLiveUpdate && !partialTurn && i === turns.length - 1,
+            turns[i - 1]?.id,
           ]"
           :data-turn-id="turn.id"
           :key="turn.id"
           :turn="turn"
           :speaker="turn.speakerId ? speakers.get(turn.speakerId) : undefined"
-          :live="hasLiveUpdate && !partialTurn && i === turns.length - 1" />
+          :live="hasLiveUpdate && !partialTurn && i === turns.length - 1"
+          :previous-turn-id="turns[i - 1]?.id" />
         <TranscriptionTurn
           v-if="partialTurn"
           key="__partial__"

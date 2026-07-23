@@ -7,6 +7,7 @@ const { onUpdateTurn } = require("./handlers/onUpdateTurn")
 const { onLockTurn } = require("./handlers/onLockTurn")
 const { onUnlockTurn } = require("./handlers/onUnlockTurn")
 const { onSplitTurn } = require("./handlers/onSplitTurn")
+const { onMergeTurns } = require("./handlers/onMergeTurns")
 const { onDisconnect } = require("./handlers/onDisconnect")
 const { requireLock } = require("./handlers/requireLock")
 
@@ -43,6 +44,10 @@ class EditorHandler2 extends Component {
     )
     socket.on("editor:split_turn", (payload, ack) =>
       onSplitTurnLocked({ io, socket }, payload, ack),
+    )
+    // NOT lock-decorated: the merge requires both turns FREE (see handler).
+    socket.on("editor:merge_turns", (payload, ack) =>
+      onMergeTurns({ io, socket }, payload, ack),
     )
     socket.on("editor:lock_turn", (payload, ack) =>
       onLockTurn({ io, socket }, payload, ack),

@@ -666,6 +666,73 @@ class ConvoModel extends MongoModel {
     return result ? { version: result.editorVersion } : null
   }
 
+  /**
+   * Replace two ADJACENT turns by their merged result (lock+save editor).
+   * The adjacency is part of the FILTER ($expr): if the array changed since
+   * the caller's check (a concurrent split/merge), nothing matches and
+   * nothing is written — the atomic counterpart of the handler's read.
+   * Throws on DB error.
+   * @returns {Promise<{version: number}|null>} null when the pair is gone or
+   *   no longer adjacent.
+   */
+  async mergeEditorTurns(conversationId, firstTurnId, secondTurnId, mergedTurn) {
+    const adjacencyExpr = {
+      $let: {
+        vars: { idx: { $indexOfArray: ["$text.turn_id", firstTurnId] } },
+        in: {
+          $and: [
+            { $gte: ["$$idx", 0] },
+            {
+              $eq: [
+                { $arrayElemAt: ["$text.turn_id", { $add: ["$$idx", 1] }] },
+                secondTurnId,
+              ],
+            },
+          ],
+        },
+      },
+    }
+    const result = await MongoDriver.constructor.db
+      .collection(this.collection)
+      .findOneAndUpdate(
+        { _id: this.getObjectId(conversationId), $expr: adjacencyExpr },
+        [
+          {
+            $set: {
+              text: {
+                $let: {
+                  vars: { idx: { $indexOfArray: ["$text.turn_id", firstTurnId] } },
+                  in: {
+                    $concatArrays: [
+                      { $slice: ["$text", "$$idx"] },
+                      [mergedTurn],
+                      // Position past the end yields [] — $size keeps the
+                      // count argument positive (0 would be rejected).
+                      {
+                        $slice: [
+                          "$text",
+                          { $add: ["$$idx", 2] },
+                          { $size: "$text" },
+                        ],
+                      },
+                    ],
+                  },
+                },
+              },
+              editorVersion: { $add: [{ $ifNull: ["$editorVersion", 0] }, 1] },
+              last_update: moment().format(),
+            },
+          },
+        ],
+        {
+          returnDocument: "after",
+          projection: { editorVersion: 1 },
+          includeResultMetadata: false,
+        },
+      )
+    return result ? { version: result.editorVersion } : null
+  }
+
   async updateSpeakers(conversationId, speakers, expectedEpoch = null) {
     const query =
       expectedEpoch === null

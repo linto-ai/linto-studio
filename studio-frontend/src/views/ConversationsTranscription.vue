@@ -132,6 +132,7 @@ export default {
           lockTurn: (payload) => this.$apiEventWS.lockEditorTurn(payload),
           unlockTurn: (payload) => this.$apiEventWS.unlockEditorTurn(payload),
           splitTurn: (payload) => this.$apiEventWS.splitEditorTurn(payload),
+          mergeTurns: (payload) => this.$apiEventWS.mergeEditorTurns(payload),
         }),
       )
       const mode = this.canWrite ? "edit" : "view"
@@ -147,6 +148,8 @@ export default {
         onTurnUpdated: (update) =>
           core.transcriptionEditor?.applyTurnUpdate(update),
         onTurnSplit: (split) => core.transcriptionEditor?.applyTurnSplit(split),
+        onTurnsMerged: (merge) =>
+          core.transcriptionEditor?.applyTurnsMerged(merge),
       })
 
       // setupLLMServices returns { dispose }; store the disposer so it matches

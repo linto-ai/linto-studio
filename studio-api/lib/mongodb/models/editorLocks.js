@@ -123,6 +123,18 @@ class EditorLocksModel extends MongoModel {
     return locks
   }
 
+  /** Live locks on specific turns of a track — the merge refusal check
+   *  (a merge requires BOTH turns free, requester included). */
+  async findLiveLocks(translationId, turnIds) {
+    return await this.getCollection()
+      .find({
+        translationId,
+        turnId: { $in: turnIds },
+        expiresAt: { $gt: new Date() },
+      })
+      .toArray()
+  }
+
   /** Live locks of a whole conversation (all tracks) — the join ack. */
   async listByParent(parentId) {
     return await this.getCollection()

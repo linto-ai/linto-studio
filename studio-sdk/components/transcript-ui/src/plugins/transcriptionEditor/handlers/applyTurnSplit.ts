@@ -1,22 +1,7 @@
 import type { TurnSplit } from "../../../core/types"
-import type { Turn } from "../../../types/editor"
 import type { EditorPluginState } from "../types"
-import { wordsFromApi } from "../../../utils/turnWords"
 import { findTranslationStore } from "../tools/findTranslationStore"
-
-function toStoreTurn(wire: TurnSplit["turns"][number]): Turn {
-  const words = wordsFromApi(wire.turnId, wire.words)
-  return {
-    id: wire.turnId,
-    speakerId: wire.speakerId ?? null,
-    // Turn contract: text carries the content only when words is empty.
-    text: words.length > 0 ? null : wire.text,
-    words,
-    ...(wire.stime !== undefined && { startTime: wire.stime }),
-    ...(wire.etime !== undefined && { endTime: wire.etime }),
-    language: wire.language ?? "",
-  }
-}
+import { toStoreTurn } from "../tools/toStoreTurn"
 
 /** Apply a turn split broadcast by the server: replace the original turn by
  *  its two halves, in place. */

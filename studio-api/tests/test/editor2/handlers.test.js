@@ -12,11 +12,16 @@ jest.mock(
 )
 jest.mock(`${process.cwd()}/lib/mongodb/models`, () => ({
   users: { getById: jest.fn() },
-  editorLocks: { listByParent: jest.fn(), releaseAllForSocket: jest.fn() },
+  editorLocks: {
+    listByParent: jest.fn(),
+    releaseAllForSocket: jest.fn(),
+    findLiveLocks: jest.fn(),
+  },
   conversations: {
     getById: jest.fn(),
     updateEditorTurn: jest.fn(),
     splitEditorTurn: jest.fn(),
+    mergeEditorTurns: jest.fn(),
   },
 }))
 
@@ -42,6 +47,9 @@ const { onUpdateTurn } = require(
 )
 const { onSplitTurn } = require(
   `${process.cwd()}/components/EditorHandler2/handlers/onSplitTurn`,
+)
+const { onMergeTurns } = require(
+  `${process.cwd()}/components/EditorHandler2/handlers/onMergeTurns`,
 )
 
 function makeCtx() {
@@ -381,5 +389,144 @@ describe("onSplitTurn", () => {
 
     expect(model.conversations.getById).not.toHaveBeenCalled()
     expect(ack).toHaveBeenCalledWith({ ok: false, reason: "invalid_payload" })
+  })
+})
+
+describe("onMergeTurns", () => {
+  const PAYLOAD = {
+    parentId: "conv-1",
+    translationId: "tr-1",
+    firstTurnId: "turn-1",
+    secondTurnId: "turn-2",
+  }
+  const FIRST = {
+    turn_id: "turn-1",
+    speaker_id: "spk-1",
+    language: "fr",
+    segment: "Bonjour tout le monde",
+    words: [
+      { wid: "w-1", word: "Bonjour", stime: 0, etime: 0.8 },
+      { wid: "w-2", word: "tout", stime: 0.9, etime: 1.1 },
+      { wid: "w-3", word: "le", stime: 1.2, etime: 1.3 },
+      { wid: "w-4", word: "monde", stime: 1.4, etime: 1.8 },
+    ],
+  }
+  const SECOND = {
+    turn_id: "turn-2",
+    speaker_id: "spk-2",
+    language: "fr",
+    segment: "Oui",
+    words: [{ wid: "w-5", word: "Oui", stime: 2, etime: 2.4 }],
+  }
+
+  function joinedCtx() {
+    const ctx = makeCtx()
+    ctx.socket.data.editorUser = { userId: "user-1", userName: "Marie" }
+    return ctx
+  }
+
+  test("merges free adjacent turns, persists and broadcasts", async () => {
+    access.hasAccess.mockResolvedValue(true)
+    model.editorLocks.findLiveLocks.mockResolvedValue([])
+    model.conversations.getById.mockResolvedValue([{ text: [FIRST, SECOND] }])
+    model.conversations.mergeEditorTurns.mockResolvedValue({ version: 9 })
+    const ctx = joinedCtx()
+    const ack = jest.fn()
+
+    await onMergeTurns(ctx, PAYLOAD, ack)
+
+    expect(access.hasAccess).toHaveBeenCalledWith(
+      "tr-1",
+      "user-1",
+      CONVERSATION_RIGHTS.WRITE,
+    )
+    const [convId, firstId, secondId, merged] =
+      model.conversations.mergeEditorTurns.mock.calls[0]
+    expect([convId, firstId, secondId]).toEqual(["tr-1", "turn-1", "turn-2"])
+    // The larger turn (turn-1) provides the attributes.
+    expect(merged.turn_id).toBe("turn-1")
+    expect(merged.speaker_id).toBe("spk-1")
+    expect(merged.segment).toBe("Bonjour tout le monde Oui")
+
+    const [event, broadcast] = ctx.emit.mock.calls[0]
+    expect(event).toBe("editor:turns_merged")
+    expect(broadcast.mergedTurnId).toBe("turn-1")
+    expect(broadcast.removedTurnId).toBe("turn-2")
+    expect(broadcast.turn.words.every((w) => !("wid" in w))).toBe(true)
+    expect(broadcast.version).toBe(9)
+    expect(ack).toHaveBeenCalledWith({ ok: true, version: 9 })
+  })
+
+  test("refuses when either turn is locked — requester included", async () => {
+    access.hasAccess.mockResolvedValue(true)
+    model.editorLocks.findLiveLocks.mockResolvedValue([
+      {
+        turnId: "turn-1",
+        userId: "user-1",
+        userName: "Marie",
+        socketId: "sock-1",
+      },
+    ])
+    const ctx = joinedCtx()
+    const ack = jest.fn()
+
+    await onMergeTurns(ctx, PAYLOAD, ack)
+
+    expect(model.conversations.mergeEditorTurns).not.toHaveBeenCalled()
+    expect(ack).toHaveBeenCalledWith({
+      ok: false,
+      reason: "locked",
+      holder: { userId: "user-1", userName: "Marie" },
+    })
+  })
+
+  test("refuses non-adjacent turns", async () => {
+    access.hasAccess.mockResolvedValue(true)
+    model.editorLocks.findLiveLocks.mockResolvedValue([])
+    model.conversations.getById.mockResolvedValue([
+      { text: [FIRST, { turn_id: "turn-x", segment: "", words: [] }, SECOND] },
+    ])
+    const ctx = joinedCtx()
+    const ack = jest.fn()
+
+    await onMergeTurns(ctx, PAYLOAD, ack)
+
+    expect(model.conversations.mergeEditorTurns).not.toHaveBeenCalled()
+    expect(ack).toHaveBeenCalledWith({ ok: false, reason: "not_adjacent" })
+  })
+
+  test("refuses without WRITE access", async () => {
+    access.hasAccess.mockResolvedValue(false)
+    const ctx = joinedCtx()
+    const ack = jest.fn()
+
+    await onMergeTurns(ctx, PAYLOAD, ack)
+
+    expect(model.editorLocks.findLiveLocks).not.toHaveBeenCalled()
+    expect(ack).toHaveBeenCalledWith({ ok: false, reason: "forbidden" })
+  })
+
+  test("requires a prior join", async () => {
+    const ctx = makeCtx()
+    const ack = jest.fn()
+
+    await onMergeTurns(ctx, PAYLOAD, ack)
+
+    expect(access.hasAccess).not.toHaveBeenCalled()
+    expect(ack).toHaveBeenCalledWith({ ok: false, reason: "unauthorized" })
+  })
+
+  test("acks a conflict when the atomic write matched nothing", async () => {
+    access.hasAccess.mockResolvedValue(true)
+    model.editorLocks.findLiveLocks.mockResolvedValue([])
+    model.conversations.getById.mockResolvedValue([{ text: [FIRST, SECOND] }])
+    model.conversations.mergeEditorTurns.mockResolvedValue(null)
+    const ctx = joinedCtx()
+    const ack = jest.fn()
+
+    await onMergeTurns(ctx, PAYLOAD, ack)
+
+    expect(ctx.emit).not.toHaveBeenCalled()
+    expect(ack).toHaveBeenCalledWith({ ok: false, reason: "conflict" })
   })
 })

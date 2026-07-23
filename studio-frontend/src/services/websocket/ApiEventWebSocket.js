@@ -198,16 +198,20 @@ export default class ApiEventWebSocket {
         this.editorHandlers?.onTurnUpdated?.(update)
       this._editorTurnSplit = (split) =>
         this.editorHandlers?.onTurnSplit?.(split)
+      this._editorTurnsMerged = (merge) =>
+        this.editorHandlers?.onTurnsMerged?.(merge)
     }
     // off before on: joinEditorRoom re-runs on reconnection.
     this.socket.off("editor:turn_locked", this._editorTurnLocked)
     this.socket.off("editor:turn_unlocked", this._editorTurnUnlocked)
     this.socket.off("editor:turn_updated", this._editorTurnUpdated)
     this.socket.off("editor:turn_split", this._editorTurnSplit)
+    this.socket.off("editor:turns_merged", this._editorTurnsMerged)
     this.socket.on("editor:turn_locked", this._editorTurnLocked)
     this.socket.on("editor:turn_unlocked", this._editorTurnUnlocked)
     this.socket.on("editor:turn_updated", this._editorTurnUpdated)
     this.socket.on("editor:turn_split", this._editorTurnSplit)
+    this.socket.on("editor:turns_merged", this._editorTurnsMerged)
 
     this.socket.emit("editor:join", conversationId, (ack) => {
       debugWSEditor("editor:join ack", ack)
@@ -221,6 +225,7 @@ export default class ApiEventWebSocket {
     this.socket.off("editor:turn_unlocked", this._editorTurnUnlocked)
     this.socket.off("editor:turn_updated", this._editorTurnUpdated)
     this.socket.off("editor:turn_split", this._editorTurnSplit)
+    this.socket.off("editor:turns_merged", this._editorTurnsMerged)
     this.socket.emit("editor:leave", this.currentEditorConversationId)
     this.currentEditorConversationId = null
     this.editorHandlers = null
@@ -245,6 +250,14 @@ export default class ApiEventWebSocket {
     return this._emitEditorCommand("editor:unlock_turn", {
       translationId,
       turnId,
+    })
+  }
+
+  mergeEditorTurns({ translationId, firstTurnId, secondTurnId }) {
+    return this._emitEditorCommand("editor:merge_turns", {
+      translationId,
+      firstTurnId,
+      secondTurnId,
     })
   }
 

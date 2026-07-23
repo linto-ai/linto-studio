@@ -3,6 +3,7 @@ const { tokenize } = require("./tokenize")
 const { alignWords } = require("./align")
 const { retimeTurn } = require("./retimeTurn")
 const { getSyllabic } = require("./syllabic")
+const { firstDefinedTime, lastDefinedTime } = require("./turnTimes")
 
 function round2(n) {
   return parseFloat(n.toFixed(2))
@@ -51,8 +52,8 @@ function computeRetimedTurn(oldTurn, text) {
   })
 
   const result = { segment: text, words }
-  const stime = firstDefined(words, "stime") ?? oldTurn.stime
-  const etime = lastDefined(words, "etime") ?? oldTurn.etime
+  const stime = firstDefinedTime(words, "stime") ?? oldTurn.stime
+  const etime = lastDefinedTime(words, "etime") ?? oldTurn.etime
   // Never overwrite turn-level times with undefined — some ASR output has no
   // per-word timing, only turn-level times, and a save must not destroy them.
   if (stime != null) result.stime = stime
@@ -60,16 +61,5 @@ function computeRetimedTurn(oldTurn, text) {
   return result
 }
 
-function firstDefined(words, field) {
-  for (const w of words) if (w[field] != null) return w[field]
-  return undefined
-}
-
-function lastDefined(words, field) {
-  for (let i = words.length - 1; i >= 0; i--) {
-    if (words[i][field] != null) return words[i][field]
-  }
-  return undefined
-}
 
 module.exports = { computeRetimedTurn }

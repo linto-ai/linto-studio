@@ -1,5 +1,10 @@
 const { randomUUID } = require("crypto")
 const { computeWordLayout } = require("./computeWordLayout")
+const {
+  firstDefinedTime,
+  lastDefinedTime,
+  assignTurnTimes,
+} = require("./turnTimes")
 
 function round2(n) {
   return parseFloat(n.toFixed(2))
@@ -17,27 +22,6 @@ function makeWord(text, src) {
   if (src.etime != null) word.etime = src.etime
   if (src.confidence != null) word.confidence = src.confidence
   return word
-}
-
-function firstDefined(words, field) {
-  for (const w of words) if (w[field] != null) return w[field]
-  return undefined
-}
-
-function lastDefined(words, field) {
-  for (let i = words.length - 1; i >= 0; i--) {
-    if (words[i][field] != null) return words[i][field]
-  }
-  return undefined
-}
-
-/** Replace a turn's stime/etime (spread from the original) with the halves'
- *  own bounds — never writing null/undefined. */
-function assignTurnTimes(turn, stime, etime) {
-  delete turn.stime
-  delete turn.etime
-  if (stime != null) turn.stime = stime
-  if (etime != null) turn.etime = etime
 }
 
 /**
@@ -107,8 +91,8 @@ function computeSplitTurns(turn, offset) {
   }
   assignTurnTimes(
     left,
-    firstDefined(leftWords, "stime") ?? turn.stime,
-    lastDefined(leftWords, "etime") ?? proportionalCut ?? turn.etime,
+    firstDefinedTime(leftWords, "stime") ?? turn.stime,
+    lastDefinedTime(leftWords, "etime") ?? proportionalCut ?? turn.etime,
   )
 
   const right = {
@@ -120,8 +104,8 @@ function computeSplitTurns(turn, offset) {
   }
   assignTurnTimes(
     right,
-    firstDefined(rightWords, "stime") ?? proportionalCut ?? turn.stime,
-    lastDefined(rightWords, "etime") ?? turn.etime,
+    firstDefinedTime(rightWords, "stime") ?? proportionalCut ?? turn.stime,
+    lastDefinedTime(rightWords, "etime") ?? turn.etime,
   )
 
   return { left, right }

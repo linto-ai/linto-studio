@@ -61,6 +61,7 @@ const fr = {
   "transcription.editTurn": "Modifier le texte",
   "transcription.saveEdit": "Enregistrer la modification",
   "transcription.lockedBy": "En cours de modification par {name}",
+  "transcription.mergeTurns": "Fusionner avec le tour précédent",
   "transcription.cancelEdit": "Annuler la modification",
   "transcription.turnEditor": "Texte du tour de parole (Entrée pour enregistrer, Échap pour annuler)",
   "transcription.loadingHistory": "Chargement…",

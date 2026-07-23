@@ -417,6 +417,117 @@ describe("createTranscriptionEditorPlugin — applyTurnSplit", () => {
   })
 })
 
+describe("createTranscriptionEditorPlugin — mergeTurns", () => {
+  it("pushes the merge for two free turns of the active track", async () => {
+    let payload: unknown
+    const core = makeEditorCore({
+      mergeTurns: async (p) => {
+        payload = p
+        return { ok: true }
+      },
+    })
+
+    core.transcriptionEditor!.mergeTurns("turn-1", "turn-2")
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    expect(payload).toEqual({
+      translationId: "tr-1",
+      firstTurnId: "turn-1",
+      secondTurnId: "turn-2",
+    })
+  })
+
+  it("refuses locally when either turn is locked (own lock included)", async () => {
+    let called = 0
+    const core = makeEditorCore({
+      mergeTurns: async () => {
+        called++
+        return { ok: true }
+      },
+    })
+    core.transcriptionEditor!.setTurnLock({
+      translationId: "tr-1",
+      turnId: "turn-2",
+      userId: "user-2",
+      userName: "Thomas",
+    })
+
+    core.transcriptionEditor!.mergeTurns("turn-1", "turn-2")
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    expect(called).toBe(0)
+  })
+
+  it("ignores unknown turns", async () => {
+    let called = 0
+    const core = makeEditorCore({
+      mergeTurns: async () => {
+        called++
+        return { ok: true }
+      },
+    })
+
+    core.transcriptionEditor!.mergeTurns("turn-1", "turn-404")
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    expect(called).toBe(0)
+  })
+})
+
+describe("createTranscriptionEditorPlugin — applyTurnsMerged", () => {
+  const MERGE = {
+    translationId: "tr-1",
+    mergedTurnId: "turn-2",
+    removedTurnId: "turn-1",
+    turn: {
+      turnId: "turn-2",
+      text: "texte fusionné complet",
+      words: [
+        { word: "texte", stime: 0, etime: 1 },
+        { word: "fusionné", stime: 1, etime: 2 },
+        { word: "complet", stime: 2, etime: 3 },
+      ],
+      stime: 0,
+      etime: 3,
+      speakerId: "spk-2",
+      language: "fr",
+    },
+    version: 6,
+  }
+
+  it("replaces the surviving turn and drops the other", () => {
+    const core = makeEditorCore()
+    core.transcriptionEditor!.applyTurnsMerged(MERGE)
+
+    const turns = core.activeChannel.value!.sourceTranslation.turns.value
+    expect(turns.map((t) => t.id)).toEqual(["turn-2", "turn-3"])
+    const merged = core.activeChannel.value!.sourceTranslation.getTurn("turn-2")!
+    expect(merged.words.map((w) => w.id)).toEqual([
+      "turn-2#0",
+      "turn-2#1",
+      "turn-2#2",
+    ])
+    expect(merged.speakerId).toBe("spk-2")
+    expect(merged.endTime).toBe(3)
+  })
+
+  it("ignores a merge for an unknown turn or an unloaded track", () => {
+    const core = makeEditorCore()
+    core.transcriptionEditor!.applyTurnsMerged({
+      ...MERGE,
+      mergedTurnId: "turn-404",
+    })
+    core.transcriptionEditor!.applyTurnsMerged({
+      ...MERGE,
+      translationId: "tr-unloaded",
+    })
+
+    expect(
+      core.activeChannel.value!.sourceTranslation.turns.value,
+    ).toHaveLength(3)
+  })
+})
+
 describe("createTranscriptionEditorPlugin — locks state", () => {
   it("setLocks replaces the whole map; getTurnLock resolves the active track", () => {
     const core = makeEditorCore()

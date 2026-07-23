@@ -3,19 +3,7 @@ const debug = require("debug")("linto:components:EditorHandler2:onSplitTurn")
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const { computeSplitTurns } = require("../utils/computeSplitTurns")
 const { computeEditorRoomName } = require("../utils/computeEditorRoomName")
-const { toWireWords } = require("../utils/toWireWords")
-
-function toWireTurn(turn) {
-  return {
-    turnId: turn.turn_id,
-    text: turn.segment,
-    words: toWireWords(turn.words),
-    stime: turn.stime,
-    etime: turn.etime,
-    speakerId: turn.speaker_id ?? null,
-    language: turn.language || "",
-  }
-}
+const { toWireTurn } = require("../utils/toWireTurn")
 
 /**
  * Split a turn at a character offset of its saved text (the client sequences

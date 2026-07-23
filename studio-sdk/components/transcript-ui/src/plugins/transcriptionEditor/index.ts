@@ -5,6 +5,7 @@ import type {
   TranscriptionEditorPluginApi,
   TurnLock,
   TurnSplit,
+  TurnsMerged,
   TurnUpdate,
 } from "../../core/types"
 import type {
@@ -19,6 +20,8 @@ import { saveTurn as saveTurnHandler } from "./handlers/saveTurn"
 import { splitTurn as splitTurnHandler } from "./handlers/splitTurn"
 import { applyTurnUpdate as applyTurnUpdateHandler } from "./handlers/applyTurnUpdate"
 import { applyTurnSplit as applyTurnSplitHandler } from "./handlers/applyTurnSplit"
+import { mergeTurns as mergeTurnsHandler } from "./handlers/mergeTurns"
+import { applyTurnsMerged as applyTurnsMergedHandler } from "./handlers/applyTurnsMerged"
 import {
   getTurnLock as getTurnLockHandler,
   setLocks as setLocksHandler,
@@ -78,6 +81,14 @@ class EditorSession implements EditorPluginState, TranscriptionEditorPluginApi {
 
   applyTurnSplit(split: TurnSplit): void {
     applyTurnSplitHandler(this, split)
+  }
+
+  mergeTurns(firstTurnId: string, secondTurnId: string): void {
+    mergeTurnsHandler(this, firstTurnId, secondTurnId)
+  }
+
+  applyTurnsMerged(merge: TurnsMerged): void {
+    applyTurnsMergedHandler(this, merge)
   }
 
   getTurnLock(turnId: string) {

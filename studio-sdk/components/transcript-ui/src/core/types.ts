@@ -187,20 +187,33 @@ export interface TurnUpdate {
   version?: number
 }
 
+/** A full turn as carried by structural broadcasts (turn_split, turns_merged). */
+export interface WireTurn {
+  turnId: string
+  text: string
+  words: TurnUpdate["words"]
+  stime?: number
+  etime?: number
+  speakerId: string | null
+  language: string
+}
+
 /** A turn split in two, as broadcast by the server (editor:turn_split). */
 export interface TurnSplit {
   translationId: string
   originalTurnId: string
   /** The two halves, in order — the left one keeps the original turn id. */
-  turns: Array<{
-    turnId: string
-    text: string
-    words: TurnUpdate["words"]
-    stime?: number
-    etime?: number
-    speakerId: string | null
-    language: string
-  }>
+  turns: WireTurn[]
+  version?: number
+}
+
+/** Two adjacent turns merged, as broadcast by the server (editor:turns_merged). */
+export interface TurnsMerged {
+  translationId: string
+  /** Id the merged turn carries — the LARGER source turn's id. */
+  mergedTurnId: string
+  removedTurnId: string
+  turn: WireTurn
   version?: number
 }
 
@@ -218,12 +231,17 @@ export interface TranscriptionEditorPluginApi {
   /** Commit the edited text, then split the turn at `offset` (Enter gesture).
    *  The split itself lands with the server round-trip. */
   splitTurn(text: string, offset: number): void
+  /** Merge two ADJACENT turns of the active track (both must be lock-free —
+   *  the merge button between turns). Applied at the server broadcast. */
+  mergeTurns(firstTurnId: string, secondTurnId: string): void
 
   // ── Server sync (host-pushed from broadcasts) ──
   /** Apply a saved turn broadcast by the server (any track, any author). */
   applyTurnUpdate(update: TurnUpdate): void
   /** Apply a turn split broadcast by the server. */
   applyTurnSplit(split: TurnSplit): void
+  /** Apply a merge broadcast by the server. */
+  applyTurnsMerged(merge: TurnsMerged): void
 
   // ── Locks (host-pushed from server broadcasts; UI pulls per turn) ──
   /** Lock held on a turn of the ACTIVE translation, if any. */

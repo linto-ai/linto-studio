@@ -21,6 +21,13 @@ export interface TranscriptionEditorSplitPayload {
   offset: number
 }
 
+export interface TranscriptionEditorMergePayload {
+  translationId: string
+  /** Document order — the server checks second follows first immediately. */
+  firstTurnId: string
+  secondTurnId: string
+}
+
 export interface TranscriptionEditorOptions {
   /**
    * Host-provided commit: push a saved turn to the backend. The edit is
@@ -50,6 +57,14 @@ export interface TranscriptionEditorOptions {
    */
   splitTurn?: (
     payload: TranscriptionEditorSplitPayload,
+  ) => Promise<{ ok: boolean; reason?: string }>
+  /**
+   * Merge two adjacent turns. Requires BOTH turns lock-free server-side
+   * (requester included) — the button only shows on free turns, the ack is
+   * the authority. Applied at the turns_merged broadcast.
+   */
+  mergeTurns?: (
+    payload: TranscriptionEditorMergePayload,
   ) => Promise<{ ok: boolean; reason?: string }>
 }
 
