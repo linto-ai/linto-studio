@@ -161,18 +161,36 @@ export interface AudioPluginApi {
 
 // ── Transcription Editor Plugin API (lock+save per-turn editing) ─────────
 
+/** A held edit lock, as broadcast by the server. */
+export interface TurnLock {
+  translationId: string
+  turnId: string
+  userId: string
+  userName: string
+}
+
 export interface TranscriptionEditorPluginApi {
   /** Turn currently being edited (single-turn editing), null when none. */
   readonly editingTurnId: Ref<string | null>
   /** Caret offset requested for the editor when it opens. */
   readonly editingCaretOffset: Ref<number>
-  beginEdit(turnId: string, caretOffset?: number): void
+  /** Enter edit mode — resolves once the lock is granted (or refused: the
+   *  edit mode is simply not entered). */
+  beginEdit(turnId: string, caretOffset?: number): Promise<void>
   cancelEdit(): void
   /** Commit the edited text for the turn being edited and leave edit mode. */
   saveTurn(text: string): void
   /** Commit the edited text, then split the turn at `offset` (Enter gesture).
    *  The split itself lands with the server round-trip. */
   splitTurn(text: string, offset: number): void
+
+  // ── Locks (host-pushed from server broadcasts; UI pulls per turn) ──
+  /** Lock held on a turn of the ACTIVE translation, if any. */
+  getTurnLock(turnId: string): { userId: string; userName: string } | undefined
+  /** Full replacement — join ack and reconnection re-ack. */
+  setLocks(locks: TurnLock[]): void
+  setTurnLock(lock: TurnLock): void
+  clearTurnLock(ref: { translationId: string; turnId: string }): void
 }
 
 // ── Subtitle Plugin API ──────────────────────────────────────────────────

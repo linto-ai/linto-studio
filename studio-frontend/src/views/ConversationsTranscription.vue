@@ -129,11 +129,21 @@ export default {
       core.use(
         createTranscriptionEditorPlugin({
           saveTurn: (payload) => this.$apiEventWS.saveEditorTurn(payload),
+          lockTurn: (payload) => this.$apiEventWS.lockEditorTurn(payload),
+          unlockTurn: (payload) => this.$apiEventWS.unlockEditorTurn(payload),
         }),
       )
       const mode = this.canWrite ? "edit" : "view"
       core.capabilities.value = { text: mode, speakers: mode }
-      this.$apiEventWS.joinEditorRoom(this.conversationId)
+      // Lock state flows one way: server broadcasts → plugin setters. The
+      // join ack (and every reconnection re-ack) reseeds the whole map.
+      this.$apiEventWS.joinEditorRoom(this.conversationId, {
+        onJoined: (ack) => {
+          if (ack?.ok) core.transcriptionEditor?.setLocks(ack.locks ?? [])
+        },
+        onTurnLocked: (lock) => core.transcriptionEditor?.setTurnLock(lock),
+        onTurnUnlocked: (ref) => core.transcriptionEditor?.clearTurnLock(ref),
+      })
 
       // setupLLMServices returns { dispose }; store the disposer so it matches
       // chatDispose (a bare function) and beforeDestroy can call llmDispose().

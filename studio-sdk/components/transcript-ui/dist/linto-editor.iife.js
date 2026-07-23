@@ -8747,12 +8747,12 @@ var LintoEditor = (function(exports) {
     md: 20,
     lg: 24
   };
-  const _hoisted_1$E = {
+  const _hoisted_1$F = {
     key: 1,
     class: "editor-icon editor-icon--missing",
     "aria-hidden": "true"
   };
-  const _sfc_main$N = /* @__PURE__ */ defineComponent({
+  const _sfc_main$O = /* @__PURE__ */ defineComponent({
     __name: "EditorIcon",
     props: {
       name: { type: String },
@@ -8771,11 +8771,11 @@ var LintoEditor = (function(exports) {
           style: normalizeStyle(style.value),
           class: normalizeClass(["editor-icon", { "editor-icon--spin": __props.spin }]),
           "aria-hidden": "true"
-        }, null, 8, ["style", "class"])) : (openBlock(), createElementBlock("span", _hoisted_1$E, "?"));
+        }, null, 8, ["style", "class"])) : (openBlock(), createElementBlock("span", _hoisted_1$F, "?"));
       };
     }
   });
-  const _style_0$E = "\n.editor-icon[data-v-210c7f09] {\n  flex-shrink: 0;\n}\n.editor-icon--missing[data-v-210c7f09] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  opacity: 0.5;\n  font-size: 1em;\n  line-height: 1;\n}\n.editor-icon--spin[data-v-210c7f09] {\n  animation: editor-icon-spin-210c7f09 1s linear infinite;\n}\n@keyframes editor-icon-spin-210c7f09 {\nto {\n    transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.editor-icon--spin[data-v-210c7f09] {\n    animation: none;\n}\n}\n";
+  const _style_0$F = "\n.editor-icon[data-v-210c7f09] {\n  flex-shrink: 0;\n}\n.editor-icon--missing[data-v-210c7f09] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  opacity: 0.5;\n  font-size: 1em;\n  line-height: 1;\n}\n.editor-icon--spin[data-v-210c7f09] {\n  animation: editor-icon-spin-210c7f09 1s linear infinite;\n}\n@keyframes editor-icon-spin-210c7f09 {\nto {\n    transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.editor-icon--spin[data-v-210c7f09] {\n    animation: none;\n}\n}\n";
   const _export_sfc = (sfc, props) => {
     const target = sfc.__vccOpts || sfc;
     for (const [key, val] of props) {
@@ -8783,13 +8783,13 @@ var LintoEditor = (function(exports) {
     }
     return target;
   };
-  const EditorIcon = /* @__PURE__ */ _export_sfc(_sfc_main$N, [["styles", [_style_0$E]], ["__scopeId", "data-v-210c7f09"]]);
-  const _hoisted_1$D = ["type", "disabled", "aria-disabled", "aria-label"];
+  const EditorIcon = /* @__PURE__ */ _export_sfc(_sfc_main$O, [["styles", [_style_0$F]], ["__scopeId", "data-v-210c7f09"]]);
+  const _hoisted_1$E = ["type", "disabled", "aria-disabled", "aria-label"];
   const _hoisted_2$v = {
     key: 3,
     class: "editor-btn__label"
   };
-  const _sfc_main$M = /* @__PURE__ */ defineComponent({
+  const _sfc_main$N = /* @__PURE__ */ defineComponent({
     __name: "Button",
     props: {
       label: { type: String },
@@ -8852,12 +8852,12 @@ var LintoEditor = (function(exports) {
             name: __props.iconRight,
             size: iconSize.value
           }, null, 8, ["name", "size"])) : _ctx.$slots["icon-right"] ? renderSlot(_ctx.$slots, "icon-right", { key: 5 }, void 0, true) : createCommentVNode("", true)
-        ], 10, _hoisted_1$D);
+        ], 10, _hoisted_1$E);
       };
     }
   });
-  const _style_0$D = "\n.editor-btn[data-v-3b0709a9] {\n  /* Default tokens — overridden by variant/intent/size modifiers */\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-sm);\n  --btn-font-size: var(--font-size-xs);\n  --btn-height: 32px;\n  --btn-gap: var(--spacing-xs);\n\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: var(--btn-gap);\n  box-sizing: border-box;\n  height: var(--btn-height);\n  padding: var(--btn-padding-y) var(--btn-padding-x);\n  font-family: var(--font-family);\n  font-size: var(--btn-font-size);\n  font-weight: 500;\n  line-height: 1;\n  color: var(--btn-text);\n  background-color: var(--btn-bg);\n  border: 1px solid var(--btn-border-color);\n  border-radius: var(--radius-sm);\n  cursor: pointer;\n  white-space: nowrap;\n  transition:\n    background-color var(--transition-duration),\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.editor-btn[data-v-3b0709a9]:hover:not(:disabled) {\n  background-color: var(--btn-hover-bg);\n  color: var(--btn-hover-text);\n}\n.editor-btn[data-v-3b0709a9]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n\n/* Note: this rule is repeated lower in the file (after variants) to win the\n   cascade on the variant CSS vars. Keep this lightweight version for the\n   cursor and hover suppression. */\n.editor-btn[data-v-3b0709a9]:disabled {\n  cursor: not-allowed;\n}\n.editor-btn[data-v-3b0709a9]:disabled:hover {\n  background-color: var(--btn-bg);\n  color: var(--btn-text);\n}\n.editor-btn__label[data-v-3b0709a9] {\n  /* //overflow: hidden;\n  text-overflow: ellipsis; */\n  text-overflow: ellipsis;\n  text-box: cap alphabetic;\n}\n\n/* Sizes */\n.editor-btn--sm[data-v-3b0709a9] {\n  /* defaults */\n}\n.editor-btn--md[data-v-3b0709a9] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-sm);\n  --btn-height: 40px;\n}\n.editor-btn--lg[data-v-3b0709a9] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-base);\n  --btn-height: 44px;\n}\n\n/* Icon-only: square */\n.editor-btn--icon-only[data-v-3b0709a9] {\n  width: var(--btn-height);\n  padding: 0;\n}\n.editor-btn--block[data-v-3b0709a9] {\n  display: flex;\n  width: 100%;\n}\n\n/* Variants — default intent */\n.editor-btn--primary[data-v-3b0709a9] {\n  --btn-bg: var(--color-primary);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary-hover);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--secondary[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-primary);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--tertiary[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-primary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n.editor-btn--transparent[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n\n/* Destructive intent overrides */\n.editor-btn--destructive.editor-btn--primary[data-v-3b0709a9] {\n  --btn-bg: var(--color-danger);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-hover);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--destructive.editor-btn--secondary[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-danger);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--destructive.editor-btn--tertiary[data-v-3b0709a9],\n.editor-btn--destructive.editor-btn--transparent[data-v-3b0709a9] {\n  --btn-text: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-soft);\n  --btn-hover-text: var(--color-danger);\n}\n\n/* Disabled: gray-out regardless of variant. Placed after the variants so the\n   CSS var overrides win the cascade (same specificity, last declaration). */\n.editor-btn[data-v-3b0709a9]:disabled {\n  --btn-bg: var(--color-surface);\n  --btn-text: var(--color-text-muted);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface);\n  --btn-hover-text: var(--color-text-muted);\n}\n";
-  const Button = /* @__PURE__ */ _export_sfc(_sfc_main$M, [["styles", [_style_0$D]], ["__scopeId", "data-v-3b0709a9"]]);
+  const _style_0$E = "\n.editor-btn[data-v-3b0709a9] {\n  /* Default tokens — overridden by variant/intent/size modifiers */\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-sm);\n  --btn-font-size: var(--font-size-xs);\n  --btn-height: 32px;\n  --btn-gap: var(--spacing-xs);\n\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: var(--btn-gap);\n  box-sizing: border-box;\n  height: var(--btn-height);\n  padding: var(--btn-padding-y) var(--btn-padding-x);\n  font-family: var(--font-family);\n  font-size: var(--btn-font-size);\n  font-weight: 500;\n  line-height: 1;\n  color: var(--btn-text);\n  background-color: var(--btn-bg);\n  border: 1px solid var(--btn-border-color);\n  border-radius: var(--radius-sm);\n  cursor: pointer;\n  white-space: nowrap;\n  transition:\n    background-color var(--transition-duration),\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.editor-btn[data-v-3b0709a9]:hover:not(:disabled) {\n  background-color: var(--btn-hover-bg);\n  color: var(--btn-hover-text);\n}\n.editor-btn[data-v-3b0709a9]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n\n/* Note: this rule is repeated lower in the file (after variants) to win the\n   cascade on the variant CSS vars. Keep this lightweight version for the\n   cursor and hover suppression. */\n.editor-btn[data-v-3b0709a9]:disabled {\n  cursor: not-allowed;\n}\n.editor-btn[data-v-3b0709a9]:disabled:hover {\n  background-color: var(--btn-bg);\n  color: var(--btn-text);\n}\n.editor-btn__label[data-v-3b0709a9] {\n  /* //overflow: hidden;\n  text-overflow: ellipsis; */\n  text-overflow: ellipsis;\n  text-box: cap alphabetic;\n}\n\n/* Sizes */\n.editor-btn--sm[data-v-3b0709a9] {\n  /* defaults */\n}\n.editor-btn--md[data-v-3b0709a9] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-sm);\n  --btn-height: 40px;\n}\n.editor-btn--lg[data-v-3b0709a9] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-base);\n  --btn-height: 44px;\n}\n\n/* Icon-only: square */\n.editor-btn--icon-only[data-v-3b0709a9] {\n  width: var(--btn-height);\n  padding: 0;\n}\n.editor-btn--block[data-v-3b0709a9] {\n  display: flex;\n  width: 100%;\n}\n\n/* Variants — default intent */\n.editor-btn--primary[data-v-3b0709a9] {\n  --btn-bg: var(--color-primary);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary-hover);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--secondary[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-primary);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--tertiary[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-primary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n.editor-btn--transparent[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n\n/* Destructive intent overrides */\n.editor-btn--destructive.editor-btn--primary[data-v-3b0709a9] {\n  --btn-bg: var(--color-danger);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-hover);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--destructive.editor-btn--secondary[data-v-3b0709a9] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-danger);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--destructive.editor-btn--tertiary[data-v-3b0709a9],\n.editor-btn--destructive.editor-btn--transparent[data-v-3b0709a9] {\n  --btn-text: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-soft);\n  --btn-hover-text: var(--color-danger);\n}\n\n/* Disabled: gray-out regardless of variant. Placed after the variants so the\n   CSS var overrides win the cascade (same specificity, last declaration). */\n.editor-btn[data-v-3b0709a9]:disabled {\n  --btn-bg: var(--color-surface);\n  --btn-text: var(--color-text-muted);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface);\n  --btn-hover-text: var(--color-text-muted);\n}\n";
+  const Button = /* @__PURE__ */ _export_sfc(_sfc_main$N, [["styles", [_style_0$E]], ["__scopeId", "data-v-3b0709a9"]]);
   const fr = {
     "editor.loading": "Chargement…",
     "editor.loadError": "Erreur de chargement",
@@ -8918,6 +8918,7 @@ var LintoEditor = (function(exports) {
     "transcription.historyStart": "Début de la transcription",
     "transcription.editTurn": "Modifier le texte",
     "transcription.saveEdit": "Enregistrer la modification",
+    "transcription.lockedBy": "En cours de modification par {name}",
     "transcription.cancelEdit": "Annuler la modification",
     "transcription.turnEditor": "Texte du tour de parole (Entrée pour enregistrer, Échap pour annuler)",
     "transcription.loadingHistory": "Chargement…",
@@ -9050,6 +9051,7 @@ var LintoEditor = (function(exports) {
     "transcription.historyStart": "Beginning of transcription",
     "transcription.editTurn": "Edit text",
     "transcription.saveEdit": "Save edit",
+    "transcription.lockedBy": "Being edited by {name}",
     "transcription.cancelEdit": "Cancel edit",
     "transcription.turnEditor": "Turn text (Enter to save, Escape to cancel)",
     "transcription.loadingHistory": "Loading…",
@@ -12041,7 +12043,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     }
     return null;
   }
-  const _hoisted_1$C = { class: "editor-header" };
+  const _hoisted_1$D = { class: "editor-header" };
   const _hoisted_2$u = { class: "header-main" };
   const _hoisted_3$p = { class: "document-title" };
   const _hoisted_4$d = {
@@ -12050,7 +12052,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
   };
   const _hoisted_5$b = { class: "header-right" };
   const _hoisted_6$9 = { key: 0 };
-  const _sfc_main$L = /* @__PURE__ */ defineComponent({
+  const _sfc_main$M = /* @__PURE__ */ defineComponent({
     __name: "Header",
     props: {
       title: { type: String },
@@ -12082,7 +12084,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         ].filter(Boolean)
       );
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("header", _hoisted_1$C, [
+        return openBlock(), createElementBlock("header", _hoisted_1$D, [
           createBaseVNode("div", _hoisted_2$u, [
             createBaseVNode("h1", _hoisted_3$p, toDisplayString(formattedTitle.value), 1),
             metaParts.value.length ? (openBlock(), createElementBlock("div", _hoisted_4$d, [
@@ -12131,10 +12133,10 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$C = '\n.editor-header[data-v-cc84adfc] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-md);\n  padding: var(--spacing-sm) var(--spacing-lg);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.header-main[data-v-cc84adfc] {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  min-width: 0;\n  flex: 1;\n}\n.document-title[data-v-cc84adfc] {\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n  color: var(--color-text-primary);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  margin: 0;\n}\n.document-meta[data-v-cc84adfc] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.document-meta__part[data-v-cc84adfc] {\n  text-box: cap alphabetic;\n}\n.document-meta__part + .document-meta__part[data-v-cc84adfc]::before {\n  content: "·";\n  margin-right: var(--spacing-xs);\n}\n.header-right[data-v-cc84adfc] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  flex-shrink: 0;\n}\n@media (max-width: 767px) {\n.editor-header[data-v-cc84adfc] {\n    padding: var(--spacing-xs) var(--spacing-md);\n}\n.document-title[data-v-cc84adfc] {\n    font-size: var(--font-size-base);\n}\n}\n';
-  const Header = /* @__PURE__ */ _export_sfc(_sfc_main$L, [["styles", [_style_0$C]], ["__scopeId", "data-v-cc84adfc"]]);
-  const _hoisted_1$B = ["aria-label"];
-  const _sfc_main$K = /* @__PURE__ */ defineComponent({
+  const _style_0$D = '\n.editor-header[data-v-cc84adfc] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-md);\n  padding: var(--spacing-sm) var(--spacing-lg);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.header-main[data-v-cc84adfc] {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  min-width: 0;\n  flex: 1;\n}\n.document-title[data-v-cc84adfc] {\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n  color: var(--color-text-primary);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  margin: 0;\n}\n.document-meta[data-v-cc84adfc] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.document-meta__part[data-v-cc84adfc] {\n  text-box: cap alphabetic;\n}\n.document-meta__part + .document-meta__part[data-v-cc84adfc]::before {\n  content: "·";\n  margin-right: var(--spacing-xs);\n}\n.header-right[data-v-cc84adfc] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  flex-shrink: 0;\n}\n@media (max-width: 767px) {\n.editor-header[data-v-cc84adfc] {\n    padding: var(--spacing-xs) var(--spacing-md);\n}\n.document-title[data-v-cc84adfc] {\n    font-size: var(--font-size-base);\n}\n}\n';
+  const Header = /* @__PURE__ */ _export_sfc(_sfc_main$M, [["styles", [_style_0$D]], ["__scopeId", "data-v-cc84adfc"]]);
+  const _hoisted_1$C = ["aria-label"];
+  const _sfc_main$L = /* @__PURE__ */ defineComponent({
     __name: "Badge",
     props: {
       ariaLabel: { type: String }
@@ -12146,16 +12148,16 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
           "aria-label": __props.ariaLabel
         }, [
           renderSlot(_ctx.$slots, "default", {}, void 0, true)
-        ], 8, _hoisted_1$B);
+        ], 8, _hoisted_1$C);
       };
     }
   });
-  const _style_0$B = "\n.editor-badge[data-v-732d4c24] {\n  display: inline-flex;\n  align-items: center;\n  padding: 2px var(--spacing-sm);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n  color: var(--color-text-muted);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border-light);\n  border-radius: var(--radius-sm);\n  white-space: nowrap;\n}\n";
-  const Badge = /* @__PURE__ */ _export_sfc(_sfc_main$K, [["styles", [_style_0$B]], ["__scopeId", "data-v-732d4c24"]]);
-  const _hoisted_1$A = ["aria-label"];
+  const _style_0$C = "\n.editor-badge[data-v-732d4c24] {\n  display: inline-flex;\n  align-items: center;\n  padding: 2px var(--spacing-sm);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n  color: var(--color-text-muted);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border-light);\n  border-radius: var(--radius-sm);\n  white-space: nowrap;\n}\n";
+  const Badge = /* @__PURE__ */ _export_sfc(_sfc_main$L, [["styles", [_style_0$C]], ["__scopeId", "data-v-732d4c24"]]);
+  const _hoisted_1$B = ["aria-label"];
   const _hoisted_2$t = ["aria-selected", "aria-disabled", "disabled", "onClick"];
   const _hoisted_3$o = { class: "tab__label" };
-  const _sfc_main$J = /* @__PURE__ */ defineComponent({
+  const _sfc_main$K = /* @__PURE__ */ defineComponent({
     __name: "Tabs",
     props: {
       tabs: { type: Array },
@@ -12206,12 +12208,12 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
               }, 1024)) : createCommentVNode("", true)
             ], 10, _hoisted_2$t);
           }), 128))
-        ], 8, _hoisted_1$A);
+        ], 8, _hoisted_1$B);
       };
     }
   });
-  const _style_0$A = "\n.tabs[data-v-24f9730e] {\n  display: flex;\n  align-items: stretch;\n  gap: var(--spacing-xs);\n  padding: 0 var(--spacing-lg);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-x: auto;\n  scrollbar-width: thin;\n}\n.tab[data-v-24f9730e] {\n  all: unset;\n  box-sizing: border-box;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  height: 44px;\n  padding: 0 var(--spacing-sm);\n  font-family: var(--font-family);\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-secondary);\n  cursor: pointer;\n  white-space: nowrap;\n  border-bottom: 2px solid transparent;\n  transition:\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.tab[data-v-24f9730e]:hover:not([disabled]) {\n  color: var(--color-text-primary);\n}\n.tab[data-v-24f9730e]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: -2px;\n  border-radius: var(--radius-sm);\n}\n.tab--active[data-v-24f9730e] {\n  color: var(--color-text-primary);\n  border-bottom-color: var(--color-primary);\n}\n.tab[disabled][data-v-24f9730e] {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n.tab__icon[data-v-24f9730e] {\n  flex-shrink: 0;\n  color: currentColor;\n}\n.tab__label[data-v-24f9730e] {\n  text-box: cap alphabetic;\n}\n.tab__badge[data-v-24f9730e] {\n  margin-left: var(--spacing-xs);\n}\n";
-  const Tabs = /* @__PURE__ */ _export_sfc(_sfc_main$J, [["styles", [_style_0$A]], ["__scopeId", "data-v-24f9730e"]]);
+  const _style_0$B = "\n.tabs[data-v-24f9730e] {\n  display: flex;\n  align-items: stretch;\n  gap: var(--spacing-xs);\n  padding: 0 var(--spacing-lg);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-x: auto;\n  scrollbar-width: thin;\n}\n.tab[data-v-24f9730e] {\n  all: unset;\n  box-sizing: border-box;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  height: 44px;\n  padding: 0 var(--spacing-sm);\n  font-family: var(--font-family);\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-secondary);\n  cursor: pointer;\n  white-space: nowrap;\n  border-bottom: 2px solid transparent;\n  transition:\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.tab[data-v-24f9730e]:hover:not([disabled]) {\n  color: var(--color-text-primary);\n}\n.tab[data-v-24f9730e]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: -2px;\n  border-radius: var(--radius-sm);\n}\n.tab--active[data-v-24f9730e] {\n  color: var(--color-text-primary);\n  border-bottom-color: var(--color-primary);\n}\n.tab[disabled][data-v-24f9730e] {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n.tab__icon[data-v-24f9730e] {\n  flex-shrink: 0;\n  color: currentColor;\n}\n.tab__label[data-v-24f9730e] {\n  text-box: cap alphabetic;\n}\n.tab__badge[data-v-24f9730e] {\n  margin-left: var(--spacing-xs);\n}\n";
+  const Tabs = /* @__PURE__ */ _export_sfc(_sfc_main$K, [["styles", [_style_0$B]], ["__scopeId", "data-v-24f9730e"]]);
   const TRANSCRIPTION_TAB = "__transcription__";
   const VERBATIM_TAB = "__verbatim__";
   function createEventBus() {
@@ -12708,7 +12710,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     }
     return core;
   }
-  const _sfc_main$I = /* @__PURE__ */ defineComponent({
+  const _sfc_main$J = /* @__PURE__ */ defineComponent({
     __name: "TabBar",
     props: {
       modelValue: { type: String }
@@ -13180,8 +13182,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     };
   }
   const StickToBottomKey = /* @__PURE__ */ Symbol("StickToBottom");
-  const _hoisted_1$z = { style: { "position": "relative", "height": "100%", "width": "100%", "flex": "1", "min-height": "0" } };
-  const _sfc_main$H = /* @__PURE__ */ defineComponent({
+  const _hoisted_1$A = { style: { "position": "relative", "height": "100%", "width": "100%", "flex": "1", "min-height": "0" } };
+  const _sfc_main$I = /* @__PURE__ */ defineComponent({
     ...{ name: "StickToBottom" },
     __name: "StickToBottom",
     props: {
@@ -13245,7 +13247,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       }));
       return (_ctx, _cache) => {
         return openBlock(), createElementBlock("div", null, [
-          createBaseVNode("div", _hoisted_1$z, [
+          createBaseVNode("div", _hoisted_1$A, [
             createBaseVNode("div", {
               ref_key: "scrollRef",
               ref: scrollRef,
@@ -13271,7 +13273,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _sfc_main$G = /* @__PURE__ */ defineComponent({
+  const _sfc_main$H = /* @__PURE__ */ defineComponent({
     __name: "SpeakerIndicator",
     props: {
       color: { type: String }
@@ -13286,16 +13288,16 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$z = "\n.speaker-indicator[data-v-9bffeda8] {\n  display: inline-block;\n  width: 8px;\n  height: 8px;\n  border-radius: 50%;\n  flex-shrink: 0;\n}\n";
-  const SpeakerIndicator = /* @__PURE__ */ _export_sfc(_sfc_main$G, [["styles", [_style_0$z]], ["__scopeId", "data-v-9bffeda8"]]);
-  const _hoisted_1$y = { class: "speaker-label" };
+  const _style_0$A = "\n.speaker-indicator[data-v-9bffeda8] {\n  display: inline-block;\n  width: 8px;\n  height: 8px;\n  border-radius: 50%;\n  flex-shrink: 0;\n}\n";
+  const SpeakerIndicator = /* @__PURE__ */ _export_sfc(_sfc_main$H, [["styles", [_style_0$A]], ["__scopeId", "data-v-9bffeda8"]]);
+  const _hoisted_1$z = { class: "speaker-label" };
   const _hoisted_2$s = {
     key: 1,
     class: "speaker-name"
   };
   const _hoisted_3$n = ["datetime"];
   const _hoisted_4$c = { class: "lang" };
-  const _sfc_main$F = /* @__PURE__ */ defineComponent({
+  const _sfc_main$G = /* @__PURE__ */ defineComponent({
     __name: "SpeakerLabel",
     props: {
       speaker: { type: Object },
@@ -13331,7 +13333,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       });
       const speakerColor = computed(() => props.speaker?.color ?? "transparent");
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$y, [
+        return openBlock(), createElementBlock("div", _hoisted_1$z, [
           __props.speaker ? (openBlock(), createBlock(SpeakerIndicator, {
             key: 0,
             color: speakerColor.value
@@ -13347,8 +13349,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$y = "\n.speaker-label[data-v-177d13c4] {\n  display: flex;\n  border-bottom: 2px solid transparent;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.speaker-name[data-v-177d13c4] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.timestamp[data-v-177d13c4] {\n  font-size: var(--font-size-xs);\n  font-family: var(--font-family-mono);\n  color: var(--color-text-muted);\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n.lang[data-v-177d13c4] {\n  font-size: var(--font-size-xs);\n  font-weight: 400;\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n";
-  const SpeakerLabel = /* @__PURE__ */ _export_sfc(_sfc_main$F, [["styles", [_style_0$y]], ["__scopeId", "data-v-177d13c4"]]);
+  const _style_0$z = "\n.speaker-label[data-v-177d13c4] {\n  display: flex;\n  border-bottom: 2px solid transparent;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.speaker-name[data-v-177d13c4] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.timestamp[data-v-177d13c4] {\n  font-size: var(--font-size-xs);\n  font-family: var(--font-family-mono);\n  color: var(--color-text-muted);\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n.lang[data-v-177d13c4] {\n  font-size: var(--font-size-xs);\n  font-weight: 400;\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n";
+  const SpeakerLabel = /* @__PURE__ */ _export_sfc(_sfc_main$G, [["styles", [_style_0$z]], ["__scopeId", "data-v-177d13c4"]]);
   function serialize(o2) {
     return typeof o2 == "string" ? `'${o2}'` : new c$1().serialize(o2);
   }
@@ -19560,7 +19562,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     }
   });
   var DropdownMenuTrigger_default = DropdownMenuTrigger_vue_vue_type_script_setup_true_lang_default;
-  const _sfc_main$E = /* @__PURE__ */ defineComponent({
+  const _sfc_main$F = /* @__PURE__ */ defineComponent({
     __name: "EditorCheckbox",
     props: {
       modelValue: { type: Boolean },
@@ -19593,8 +19595,36 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$x = '\n.checkbox[data-v-024ee78b] {\n  all: unset;\n  width: 16px;\n  height: 16px;\n  flex-shrink: 0;\n  border: 1.5px solid var(--color-border);\n  border-radius: var(--radius-sm);\n  background-color: var(--color-surface);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  cursor: pointer;\n  transition:\n    background-color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.checkbox[data-v-024ee78b]:hover {\n  border-color: var(--color-primary);\n}\n.checkbox[data-v-024ee78b]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.checkbox[data-state="checked"][data-v-024ee78b] {\n  background-color: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.checkbox-indicator[data-v-024ee78b] {\n  color: var(--color-white, #fff);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n}\n';
-  const EditorCheckbox = /* @__PURE__ */ _export_sfc(_sfc_main$E, [["styles", [_style_0$x]], ["__scopeId", "data-v-024ee78b"]]);
+  const _style_0$y = '\n.checkbox[data-v-024ee78b] {\n  all: unset;\n  width: 16px;\n  height: 16px;\n  flex-shrink: 0;\n  border: 1.5px solid var(--color-border);\n  border-radius: var(--radius-sm);\n  background-color: var(--color-surface);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  cursor: pointer;\n  transition:\n    background-color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.checkbox[data-v-024ee78b]:hover {\n  border-color: var(--color-primary);\n}\n.checkbox[data-v-024ee78b]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.checkbox[data-state="checked"][data-v-024ee78b] {\n  background-color: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.checkbox-indicator[data-v-024ee78b] {\n  color: var(--color-white, #fff);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n}\n';
+  const EditorCheckbox = /* @__PURE__ */ _export_sfc(_sfc_main$F, [["styles", [_style_0$y]], ["__scopeId", "data-v-024ee78b"]]);
+  function computeInitials(name) {
+    const words = name.trim().split(/\s+/).filter(Boolean);
+    if (words.length === 0) return "?";
+    return words.slice(0, 2).map((w2) => w2[0].toUpperCase()).join("");
+  }
+  const _hoisted_1$y = ["title", "aria-label"];
+  const _sfc_main$E = /* @__PURE__ */ defineComponent({
+    __name: "UserAvatar",
+    props: {
+      name: { type: String },
+      label: { type: String }
+    },
+    setup(__props) {
+      const props = __props;
+      const initials = computed(() => computeInitials(props.name));
+      const title = computed(() => props.label ?? props.name);
+      return (_ctx, _cache) => {
+        return openBlock(), createElementBlock("span", {
+          class: "user-avatar",
+          role: "img",
+          title: title.value,
+          "aria-label": title.value
+        }, toDisplayString(initials.value), 9, _hoisted_1$y);
+      };
+    }
+  });
+  const _style_0$x = "\n.user-avatar[data-v-b8c5d31d] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 24px;\n  height: 24px;\n  border-radius: 50%;\n  background-color: var(--color-primary);\n  color: var(--color-white);\n  font-size: var(--font-size-xs);\n  font-weight: 600;\n  user-select: none;\n  cursor: default;\n}\n";
+  const UserAvatar = /* @__PURE__ */ _export_sfc(_sfc_main$E, [["styles", [_style_0$x]], ["__scopeId", "data-v-b8c5d31d"]]);
   const TEXT_NODE$1 = 3;
   function placeCaretAt(element, offset2) {
     element.focus();
@@ -19846,7 +19876,7 @@ ${text2}` : text2;
     key: 1,
     class: "turn-edit-actions"
   };
-  const _hoisted_3$m = ["role", "tabindex", "aria-label"];
+  const _hoisted_3$m = ["role", "tabindex", "aria-label", "aria-disabled"];
   const _hoisted_4$b = ["data-word-active"];
   const _sfc_main$C = /* @__PURE__ */ defineComponent({
     __name: "TranscriptionTurn",
@@ -19890,25 +19920,32 @@ ${text2}` : text2;
       const isEditing = computed(
         () => core.transcriptionEditor?.editingTurnId.value === props.turn.id
       );
+      const turnLock = computed(
+        () => isEditing.value ? void 0 : core.transcriptionEditor?.getTurnLock(props.turn.id)
+      );
+      const lockedByLabel = computed(
+        () => turnLock.value ? t2("transcription.lockedBy").replace("{name}", turnLock.value.userName) : ""
+      );
+      const isTextInteractive = computed(() => canEditText.value && !turnLock.value);
       const plainText = computed(() => computeTurnPlainText(props.turn));
       const editorRef = useTemplateRef("editor");
       function onTextClick(event) {
-        if (!canEditText.value) return;
+        if (!isTextInteractive.value) return;
         const container = event.currentTarget;
         const offset2 = computeCaretOffsetFromPoint(
           container,
           event.clientX,
           event.clientY
         );
-        core.transcriptionEditor.beginEdit(
+        void core.transcriptionEditor.beginEdit(
           props.turn.id,
           offset2 ?? plainText.value.length
         );
       }
       function onTextKeydown(event) {
-        if (!canEditText.value || event.key !== "Enter") return;
+        if (!isTextInteractive.value || event.key !== "Enter") return;
         event.preventDefault();
-        core.transcriptionEditor.beginEdit(props.turn.id, 0);
+        void core.transcriptionEditor.beginEdit(props.turn.id, 0);
       }
       function onEditorSave(text2) {
         core.transcriptionEditor.saveTurn(text2);
@@ -19970,25 +20007,33 @@ ${text2}` : text2;
               "start-date": __props.turn.startDate,
               language: __props.turn.language
             }, null, 8, ["speaker", "start-time", "start-date", "language"]),
-            isEditing.value ? (openBlock(), createElementBlock("div", _hoisted_2$r, [
-              createVNode(Button, {
-                size: "sm",
-                variant: "tertiary",
-                icon: "x",
-                "aria-label": unref(t2)("transcription.cancelEdit"),
-                onMousedown: _cache[0] || (_cache[0] = withModifiers(() => {
-                }, ["prevent"])),
-                onClick: withModifiers(onCancelClick, ["stop"])
-              }, null, 8, ["aria-label"]),
-              createVNode(Button, {
-                size: "sm",
-                variant: "primary",
-                icon: "check",
-                "aria-label": unref(t2)("transcription.saveEdit"),
-                onMousedown: _cache[1] || (_cache[1] = withModifiers(() => {
-                }, ["prevent"])),
-                onClick: withModifiers(onValidateClick, ["stop"])
-              }, null, 8, ["aria-label"])
+            isEditing.value || turnLock.value ? (openBlock(), createElementBlock("div", _hoisted_2$r, [
+              isEditing.value ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
+                createVNode(Button, {
+                  size: "sm",
+                  variant: "tertiary",
+                  icon: "x",
+                  "aria-label": unref(t2)("transcription.cancelEdit"),
+                  onMousedown: _cache[0] || (_cache[0] = withModifiers(() => {
+                  }, ["prevent"])),
+                  onClick: withModifiers(onCancelClick, ["stop"])
+                }, null, 8, ["aria-label"]),
+                createVNode(Button, {
+                  size: "sm",
+                  variant: "primary",
+                  icon: "check",
+                  "aria-label": unref(t2)("transcription.saveEdit"),
+                  onMousedown: _cache[1] || (_cache[1] = withModifiers(() => {
+                  }, ["prevent"])),
+                  onClick: withModifiers(onValidateClick, ["stop"])
+                }, null, 8, ["aria-label"])
+              ], 64)) : (openBlock(), createBlock(UserAvatar, {
+                key: 1,
+                name: turnLock.value.userName,
+                label: lockedByLabel.value,
+                onClick: _cache[2] || (_cache[2] = withModifiers(() => {
+                }, ["stop"]))
+              }, null, 8, ["name", "label"]))
             ])) : createCommentVNode("", true)
           ])) : createCommentVNode("", true),
           isEditing.value ? (openBlock(), createBlock(TurnTextEditor, {
@@ -20002,10 +20047,11 @@ ${text2}` : text2;
             onSplit: onEditorSplit
           }, null, 8, ["text", "caret-offset"])) : (openBlock(), createElementBlock("p", {
             key: 2,
-            class: normalizeClass(["turn-text", { "turn-text--editable": canEditText.value }]),
-            role: canEditText.value ? "button" : void 0,
-            tabindex: canEditText.value ? 0 : void 0,
-            "aria-label": canEditText.value ? unref(t2)("transcription.editTurn") : void 0,
+            class: normalizeClass(["turn-text", { "turn-text--editable": isTextInteractive.value }]),
+            role: isTextInteractive.value ? "button" : void 0,
+            tabindex: isTextInteractive.value ? 0 : void 0,
+            "aria-label": isTextInteractive.value ? unref(t2)("transcription.editTurn") : void 0,
+            "aria-disabled": canEditText.value && turnLock.value ? true : void 0,
             onClick: onTextClick,
             onKeydown: onTextKeydown
           }, [
@@ -20027,8 +20073,8 @@ ${text2}` : text2;
       };
     }
   });
-  const _style_0$v = "\n.turn[data-v-8f1901ee] {\n  padding: var(--spacing-sm) var(--spacing-lg);\n}\n.turn-header[data-v-8f1901ee] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  cursor: pointer;\n  user-select: none;\n  border-radius: var(--radius-sm);\n  padding: var(--spacing-xxs) 0;\n  /* Reserve the edit-actions height (Button sm) so entering/leaving edit\n     mode never shifts the layout. */\n  min-height: 36px;\n}\n.turn-edit-actions[data-v-8f1901ee] {\n  margin-left: auto;\n  display: flex;\n  gap: var(--spacing-xs);\n}\n.turn[data-v-8f1901ee]:has(.turn-header:hover) {\n  background-color: var(--color-surface-hover);\n}\n.turn-text[data-v-8f1901ee] {\n  margin-top: var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.turn-text--editable[data-v-8f1901ee] {\n  cursor: text;\n}\n.turn-text--editable[data-v-8f1901ee]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  border-radius: var(--radius-sm);\n}\n.turn--selected[data-v-8f1901ee] {\n  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);\n  border-left: 3px solid var(--color-primary);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.turn--active[data-v-8f1901ee]:not(.turn--selected) {\n  border-left: 3px solid var(--speaker-color);\n  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.word--active[data-v-8f1901ee] {\n  text-decoration: underline;\n  text-decoration-color: var(--color-primary);\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n  color: var(--color-primary);\n}\n.turn--partial .turn-text[data-v-8f1901ee] {\n  font-style: italic;\n  color: var(--color-text-muted);\n  animation: partial-fade-in-8f1901ee 200ms ease;\n}\n@keyframes partial-fade-in-8f1901ee {\nfrom {\n    opacity: 0;\n}\nto {\n    opacity: 1;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.turn--partial .turn-text[data-v-8f1901ee] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.turn[data-v-8f1901ee] {\n    padding: var(--spacing-sm) var(--spacing-md);\n}\n.turn--selected[data-v-8f1901ee],\n  .turn--active[data-v-8f1901ee]:not(.turn--selected) {\n    padding-left: calc(var(--spacing-md) - 3px);\n}\n}\n";
-  const TranscriptionTurn = /* @__PURE__ */ _export_sfc(_sfc_main$C, [["styles", [_style_0$v]], ["__scopeId", "data-v-8f1901ee"]]);
+  const _style_0$v = "\n.turn[data-v-dc941064] {\n  padding: var(--spacing-sm) var(--spacing-lg);\n}\n.turn-header[data-v-dc941064] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  cursor: pointer;\n  user-select: none;\n  border-radius: var(--radius-sm);\n  padding: var(--spacing-xxs) 0;\n  /* Reserve the edit-actions height (Button sm) so entering/leaving edit\n     mode never shifts the layout. */\n  min-height: 36px;\n}\n.turn-edit-actions[data-v-dc941064] {\n  margin-left: auto;\n  display: flex;\n  gap: var(--spacing-xs);\n}\n.turn[data-v-dc941064]:has(.turn-header:hover) {\n  background-color: var(--color-surface-hover);\n}\n.turn-text[data-v-dc941064] {\n  margin-top: var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.turn-text--editable[data-v-dc941064] {\n  cursor: text;\n}\n.turn-text--editable[data-v-dc941064]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  border-radius: var(--radius-sm);\n}\n.turn--selected[data-v-dc941064] {\n  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);\n  border-left: 3px solid var(--color-primary);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.turn--active[data-v-dc941064]:not(.turn--selected) {\n  border-left: 3px solid var(--speaker-color);\n  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.word--active[data-v-dc941064] {\n  text-decoration: underline;\n  text-decoration-color: var(--color-primary);\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n  color: var(--color-primary);\n}\n.turn--partial .turn-text[data-v-dc941064] {\n  font-style: italic;\n  color: var(--color-text-muted);\n  animation: partial-fade-in-dc941064 200ms ease;\n}\n@keyframes partial-fade-in-dc941064 {\nfrom {\n    opacity: 0;\n}\nto {\n    opacity: 1;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.turn--partial .turn-text[data-v-dc941064] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.turn[data-v-dc941064] {\n    padding: var(--spacing-sm) var(--spacing-md);\n}\n.turn--selected[data-v-dc941064],\n  .turn--active[data-v-dc941064]:not(.turn--selected) {\n    padding-left: calc(var(--spacing-md) - 3px);\n}\n}\n";
+  const TranscriptionTurn = /* @__PURE__ */ _export_sfc(_sfc_main$C, [["styles", [_style_0$v]], ["__scopeId", "data-v-dc941064"]]);
   const _sfc_main$B = {};
   const _hoisted_1$v = {
     viewBox: "0 0 938 604",
@@ -26320,7 +26366,7 @@ ${text2}` : text2;
             createBaseVNode("p", null, toDisplayString(unref(t2)("chat.emptyState")), 1)
           ])) : __props.messages.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_5$1, [
             createBaseVNode("p", null, toDisplayString(unref(t2)("chat.emptyChat")), 1)
-          ])) : (openBlock(), createBlock(unref(_sfc_main$H), {
+          ])) : (openBlock(), createBlock(unref(_sfc_main$I), {
             key: 3,
             class: "chat-message-list__scroll",
             resize: "smooth",
@@ -26690,7 +26736,7 @@ ${text2}` : text2;
             onToggleSidebar: _cache[0] || (_cache[0] = ($event) => isSidebarOpen.value = !isSidebarOpen.value),
             onOpenChat: _cache[1] || (_cache[1] = ($event) => unref(core).chat?.setDrawerOpen(true))
           }, null, 8, ["title", "date", "duration", "speaker-count", "is-mobile", "can-ask"])) : createCommentVNode("", true),
-          createVNode(_sfc_main$I, {
+          createVNode(_sfc_main$J, {
             modelValue: activeTab.value,
             "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => activeTab.value = $event)
           }, null, 8, ["modelValue"]),
@@ -27897,73 +27943,197 @@ pre[class*="language-"] {
       }
     };
   }
+  const HEARTBEAT_INTERVAL_MS = 15e3;
+  function computeLockKey(translationId, turnId) {
+    return `${translationId}/${turnId}`;
+  }
   function createTranscriptionEditorPlugin(options = {}) {
     return {
       name: "transcriptionEditor",
       install(core) {
         const editingTurnId = /* @__PURE__ */ ref(null);
         const editingCaretOffset = /* @__PURE__ */ ref(0);
+        const locks = /* @__PURE__ */ shallowReactive(
+          /* @__PURE__ */ new Map()
+        );
+        let editingRef = null;
+        let lockPending = false;
+        let heartbeatTimer;
         function getActiveTranslationStore() {
           const channel = core.activeChannel.value;
           if (!channel) return void 0;
           return channel.translations.get(channel.activeTranslation.value.id);
         }
-        function beginEdit(turnId, caretOffset = 0) {
-          if (core.capabilities.value.text !== "edit") return;
-          if (!getActiveTranslationStore()?.hasTurn(turnId)) return;
-          editingTurnId.value = turnId;
-          editingCaretOffset.value = caretOffset;
+        function getTurnLock(turnId) {
+          const channel = core.activeChannel.value;
+          if (!channel) return void 0;
+          return locks.get(
+            computeLockKey(channel.activeTranslation.value.id, turnId)
+          );
         }
-        function cancelEdit() {
+        function setLocks(all) {
+          locks.clear();
+          for (const lock of all) setTurnLock(lock);
+        }
+        function setTurnLock(lock) {
+          locks.set(computeLockKey(lock.translationId, lock.turnId), {
+            userId: lock.userId,
+            userName: lock.userName
+          });
+        }
+        function clearTurnLock(ref2) {
+          locks.delete(computeLockKey(ref2.translationId, ref2.turnId));
+        }
+        function stopHeartbeat() {
+          if (heartbeatTimer !== void 0) {
+            clearInterval(heartbeatTimer);
+            heartbeatTimer = void 0;
+          }
+        }
+        function startHeartbeat(target) {
+          stopHeartbeat();
+          if (!options.lockTurn) return;
+          heartbeatTimer = setInterval(() => {
+            void refreshLock(target);
+          }, HEARTBEAT_INTERVAL_MS);
+        }
+        async function refreshLock(target) {
+          try {
+            const ack = await options.lockTurn(target);
+            if (!ack?.ok) exitEditAfterLockLoss(target, ack?.reason);
+          } catch (err) {
+            console.error("[transcriptionEditor] heartbeat failed:", err);
+          }
+        }
+        function exitEditAfterLockLoss(target, reason) {
+          if (!editingRef || editingRef.turnId !== target.turnId) return;
+          console.error(
+            `[transcriptionEditor] lock lost on turn ${target.turnId}: ${reason ?? "unknown"}`
+          );
           editingTurnId.value = null;
+          editingRef = null;
+          stopHeartbeat();
         }
-        function pushToHost(payload) {
-          if (!options.saveTurn) return;
-          options.saveTurn(payload).then(
-            (ack) => {
-              if (!ack?.ok) {
-                console.error(
-                  `[transcriptionEditor] save rejected for turn ${payload.turnId}: ${ack?.reason ?? "unknown"}`
-                );
-              }
-            },
-            (err) => {
+        async function pushUnlock(target) {
+          try {
+            await options.unlockTurn?.(target);
+          } catch (err) {
+            console.error("[transcriptionEditor] unlock failed:", err);
+          }
+        }
+        async function pushSaveThenUnlock(payload) {
+          try {
+            const ack = await options.saveTurn?.(payload);
+            if (ack && !ack.ok) {
               console.error(
-                `[transcriptionEditor] save failed for turn ${payload.turnId}:`,
-                err
+                `[transcriptionEditor] save rejected for turn ${payload.turnId}: ${ack.reason ?? "unknown"}`
               );
             }
-          );
+          } catch (err) {
+            console.error(
+              `[transcriptionEditor] save failed for turn ${payload.turnId}:`,
+              err
+            );
+          }
+          await pushUnlock({
+            translationId: payload.translationId,
+            turnId: payload.turnId
+          });
+        }
+        async function beginEdit(turnId, caretOffset = 0) {
+          if (core.capabilities.value.text !== "edit") return;
+          if (lockPending) return;
+          if (editingTurnId.value === turnId) return;
+          const store = getActiveTranslationStore();
+          if (!store?.hasTurn(turnId)) return;
+          if (locks.has(computeLockKey(store.id, turnId))) return;
+          if (editingTurnId.value !== null) cancelEdit();
+          const target = { translationId: store.id, turnId };
+          if (options.lockTurn) {
+            lockPending = true;
+            try {
+              const ack = await options.lockTurn(target);
+              if (!ack?.ok) {
+                if (ack?.holder) setTurnLock({ ...target, ...ack.holder });
+                return;
+              }
+            } catch (err) {
+              console.error("[transcriptionEditor] lock request failed:", err);
+              return;
+            } finally {
+              lockPending = false;
+            }
+          }
+          editingRef = target;
+          editingTurnId.value = turnId;
+          editingCaretOffset.value = caretOffset;
+          startHeartbeat(target);
+        }
+        function exitEditMode() {
+          const target = editingRef;
+          editingTurnId.value = null;
+          editingRef = null;
+          stopHeartbeat();
+          if (target) clearTurnLock(target);
+          return target;
+        }
+        function cancelEdit() {
+          const target = exitEditMode();
+          if (target) void pushUnlock(target);
         }
         function saveTurn(text2) {
           const turnId = editingTurnId.value;
           if (turnId === null) return;
-          editingTurnId.value = null;
+          const target = exitEditMode();
           const store = getActiveTranslationStore();
           const turn = store?.getTurn(turnId);
-          if (!store || !turn) return;
+          if (!store || !turn) {
+            if (target) void pushUnlock(target);
+            return;
+          }
           const normalized = text2.replace(/\s+/g, " ").trim();
-          if (normalized === computeTurnPlainText(turn)) return;
+          if (normalized === computeTurnPlainText(turn)) {
+            if (target) void pushUnlock(target);
+            return;
+          }
           const words = carryWordTimes(wordsFromText(turnId, normalized), turn.words);
           store.updateTurn(turnId, {
             // Turn contract: text carries the content only when words is empty.
             text: words.length > 0 ? null : normalized,
             words
           });
-          pushToHost({ translationId: store.id, turnId, text: normalized });
+          void pushSaveThenUnlock({
+            translationId: store.id,
+            turnId,
+            text: normalized
+          });
         }
         function splitTurn(text2, _offset) {
           saveTurn(text2);
         }
+        const offDocChange = core.on("document:change", () => {
+          editingTurnId.value = null;
+          editingRef = null;
+          stopHeartbeat();
+          locks.clear();
+        });
         const api = {
           editingTurnId,
           editingCaretOffset,
           beginEdit,
           cancelEdit,
           saveTurn,
-          splitTurn
+          splitTurn,
+          getTurnLock,
+          setLocks,
+          setTurnLock,
+          clearTurnLock
         };
         core.transcriptionEditor = api;
+        return () => {
+          offDocChange();
+          stopHeartbeat();
+        };
       }
     };
   }

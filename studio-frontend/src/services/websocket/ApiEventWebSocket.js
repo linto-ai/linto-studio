@@ -41,6 +41,7 @@ export default class ApiEventWebSocket {
     this.socket = null
     this.currentChannelId = null
     this.currentEditorConversationId = null
+    this.editorHandlers = null
     this.currentSessionOrganizationId = null
     this.test = false
     this.textPartialForTest = ""
@@ -75,8 +76,12 @@ export default class ApiEventWebSocket {
         this.subscribeFolderUpdate()
 
         // Editor room membership does not survive a reconnection: re-join.
+        // The fresh join ack re-seeds the locks state through onJoined.
         if (this.currentEditorConversationId) {
-          this.joinEditorRoom(this.currentEditorConversationId)
+          this.joinEditorRoom(
+            this.currentEditorConversationId,
+            this.editorHandlers ?? {},
+          )
         }
 
         if (this.state.connexionLost) {
@@ -175,44 +180,86 @@ export default class ApiEventWebSocket {
   }
 
   // ── Transcription editor (lock+save model, see "Editor v2" design) ──
-  // The room is the PARENT conversation (one join per open editor view, and
-  // it covers cross-translation mode); every mutation payload carries the
-  // translationId — the child conversation actually edited.
+  // The room is the PARENT conversation (one join per open editor view);
+  // every mutation payload carries the translationId — the child
+  // conversation actually edited — and is enriched here with the parentId.
 
-  joinEditorRoom(conversationId) {
+  joinEditorRoom(conversationId, handlers = {}) {
     if (!this.socket) return
     this.currentEditorConversationId = conversationId
+    this.editorHandlers = handlers
+
+    if (!this._editorTurnLocked) {
+      this._editorTurnLocked = (lock) =>
+        this.editorHandlers?.onTurnLocked?.(lock)
+      this._editorTurnUnlocked = (ref) =>
+        this.editorHandlers?.onTurnUnlocked?.(ref)
+    }
+    // off before on: joinEditorRoom re-runs on reconnection.
+    this.socket.off("editor:turn_locked", this._editorTurnLocked)
+    this.socket.off("editor:turn_unlocked", this._editorTurnUnlocked)
+    this.socket.on("editor:turn_locked", this._editorTurnLocked)
+    this.socket.on("editor:turn_unlocked", this._editorTurnUnlocked)
+
     this.socket.emit("editor:join", conversationId, (ack) => {
       debugWSEditor("editor:join ack", ack)
+      this.editorHandlers?.onJoined?.(ack)
     })
   }
 
   leaveEditorRoom() {
     if (!this.socket || !this.currentEditorConversationId) return
+    this.socket.off("editor:turn_locked", this._editorTurnLocked)
+    this.socket.off("editor:turn_unlocked", this._editorTurnUnlocked)
     this.socket.emit("editor:leave", this.currentEditorConversationId)
     this.currentEditorConversationId = null
+    this.editorHandlers = null
   }
 
   saveEditorTurn({ translationId, turnId, text }) {
+    return this._emitEditorCommand("editor:update_turn", {
+      translationId,
+      turnId,
+      text,
+    })
+  }
+
+  lockEditorTurn({ translationId, turnId }) {
+    return this._emitEditorCommand("editor:lock_turn", {
+      translationId,
+      turnId,
+    })
+  }
+
+  unlockEditorTurn({ translationId, turnId }) {
+    return this._emitEditorCommand("editor:unlock_turn", {
+      translationId,
+      turnId,
+    })
+  }
+
+  // Ack-based editor command: parentId enriched from the joined conversation,
+  // ack timeout resolved as a failure instead of a hanging promise.
+  _emitEditorCommand(event, payload) {
     if (!this.socket) {
       return Promise.resolve({ ok: false, reason: "disconnected" })
+    }
+    const fullPayload = {
+      ...payload,
+      parentId: this.currentEditorConversationId,
     }
     return new Promise((resolve) => {
       this.socket
         .timeout(EDITOR_ACK_TIMEOUT_MS)
-        .emit(
-          "editor:update_turn",
-          { translationId, turnId, text },
-          (timeoutErr, ack) => {
-            if (timeoutErr) {
-              debugWSEditor("editor:update_turn ack timeout", { turnId })
-              resolve({ ok: false, reason: "timeout" })
-              return
-            }
-            debugWSEditor("editor:update_turn ack", ack)
-            resolve(ack ?? { ok: false, reason: "no_ack" })
-          },
-        )
+        .emit(event, fullPayload, (timeoutErr, ack) => {
+          if (timeoutErr) {
+            debugWSEditor(`${event} ack timeout`, payload)
+            resolve({ ok: false, reason: "timeout" })
+            return
+          }
+          debugWSEditor(`${event} ack`, ack)
+          resolve(ack ?? { ok: false, reason: "no_ack" })
+        })
     })
   }
 

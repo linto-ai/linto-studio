@@ -60,6 +60,7 @@ const fr = {
   "transcription.historyStart": "Début de la transcription",
   "transcription.editTurn": "Modifier le texte",
   "transcription.saveEdit": "Enregistrer la modification",
+  "transcription.lockedBy": "En cours de modification par {name}",
   "transcription.cancelEdit": "Annuler la modification",
   "transcription.turnEditor": "Texte du tour de parole (Entrée pour enregistrer, Échap pour annuler)",
   "transcription.loadingHistory": "Chargement…",

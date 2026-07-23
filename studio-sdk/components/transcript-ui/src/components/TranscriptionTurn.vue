@@ -3,6 +3,7 @@ import { computed, useTemplateRef } from "vue"
 import SpeakerLabel from "./SpeakerLabel.vue"
 import Button from "./atoms/Button.vue"
 import EditorCheckbox from "./atoms/EditorCheckbox.vue"
+import UserAvatar from "./atoms/UserAvatar.vue"
 import TurnTextEditor from "./molecules/TurnTextEditor.vue"
 import { useCore } from "../core"
 import { useTurnSelection } from "../composables/useTurnSelection"
@@ -66,28 +67,45 @@ const isEditing = computed(
   () => core.transcriptionEditor?.editingTurnId.value === props.turn.id,
 )
 
+// Lock held by someone else: the plugin stores own locks too, but the turn
+// being edited HERE renders the editor instead — so any visible lock is
+// "another session" by construction (including the same user's other tab).
+const turnLock = computed(() =>
+  isEditing.value
+    ? undefined
+    : core.transcriptionEditor?.getTurnLock(props.turn.id),
+)
+
+const lockedByLabel = computed(() =>
+  turnLock.value
+    ? t("transcription.lockedBy").replace("{name}", turnLock.value.userName)
+    : "",
+)
+
+const isTextInteractive = computed(() => canEditText.value && !turnLock.value)
+
 const plainText = computed(() => computeTurnPlainText(props.turn))
 
 const editorRef = useTemplateRef<InstanceType<typeof TurnTextEditor>>("editor")
 
 function onTextClick(event: MouseEvent) {
-  if (!canEditText.value) return
+  if (!isTextInteractive.value) return
   const container = event.currentTarget as HTMLElement
   const offset = computeCaretOffsetFromPoint(
     container,
     event.clientX,
     event.clientY,
   )
-  core.transcriptionEditor!.beginEdit(
+  void core.transcriptionEditor!.beginEdit(
     props.turn.id,
     offset ?? plainText.value.length,
   )
 }
 
 function onTextKeydown(event: KeyboardEvent) {
-  if (!canEditText.value || event.key !== "Enter") return
+  if (!isTextInteractive.value || event.key !== "Enter") return
   event.preventDefault()
-  core.transcriptionEditor!.beginEdit(props.turn.id, 0)
+  void core.transcriptionEditor!.beginEdit(props.turn.id, 0)
 }
 
 function onEditorSave(text: string) {
@@ -156,21 +174,28 @@ function onCheckboxChange(event: MouseEvent) {
         :start-time="turn.startTime"
         :start-date="turn.startDate"
         :language="turn.language" />
-      <div v-if="isEditing" class="turn-edit-actions">
-        <Button
-          size="sm"
-          variant="tertiary"
-          icon="x"
-          :aria-label="t('transcription.cancelEdit')"
-          @mousedown.prevent
-          @click.stop="onCancelClick" />
-        <Button
-          size="sm"
-          variant="primary"
-          icon="check"
-          :aria-label="t('transcription.saveEdit')"
-          @mousedown.prevent
-          @click.stop="onValidateClick" />
+      <div v-if="isEditing || turnLock" class="turn-edit-actions">
+        <template v-if="isEditing">
+          <Button
+            size="sm"
+            variant="tertiary"
+            icon="x"
+            :aria-label="t('transcription.cancelEdit')"
+            @mousedown.prevent
+            @click.stop="onCancelClick" />
+          <Button
+            size="sm"
+            variant="primary"
+            icon="check"
+            :aria-label="t('transcription.saveEdit')"
+            @mousedown.prevent
+            @click.stop="onValidateClick" />
+        </template>
+        <UserAvatar
+          v-else
+          :name="turnLock!.userName"
+          :label="lockedByLabel"
+          @click.stop />
       </div>
     </div>
     <TurnTextEditor
@@ -185,10 +210,11 @@ function onCheckboxChange(event: MouseEvent) {
     <p
       v-else
       class="turn-text"
-      :class="{ 'turn-text--editable': canEditText }"
-      :role="canEditText ? 'button' : undefined"
-      :tabindex="canEditText ? 0 : undefined"
-      :aria-label="canEditText ? t('transcription.editTurn') : undefined"
+      :class="{ 'turn-text--editable': isTextInteractive }"
+      :role="isTextInteractive ? 'button' : undefined"
+      :tabindex="isTextInteractive ? 0 : undefined"
+      :aria-label="isTextInteractive ? t('transcription.editTurn') : undefined"
+      :aria-disabled="canEditText && turnLock ? true : undefined"
       @click="onTextClick"
       @keydown="onTextKeydown">
       <template v-if="hasWords">
