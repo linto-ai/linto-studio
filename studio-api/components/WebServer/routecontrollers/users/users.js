@@ -442,7 +442,11 @@ async function impersonateUser(req, res, next) {
     const target = await model.users.getById(req.params.userId, true)
     if (target.length !== 1) throw new UserNotFound()
 
-    if (ROLE.hasPlatformRoleAccess(target[0].role, ROLE.SYSTEM_ADMINISTRATOR))
+    // no impersonation of an administrative account: bits are independent, check both
+    if (
+      ROLE.hasPlatformRoleAccess(target[0].role, ROLE.SYSTEM_ADMINISTRATOR) ||
+      ROLE.hasPlatformRoleAccess(target[0].role, ROLE.SUPER_ADMINISTRATOR)
+    )
       throw new UserForbidden()
 
     const token_salt = randomstring.generate(12)
