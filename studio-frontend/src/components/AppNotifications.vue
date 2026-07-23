@@ -10,12 +10,9 @@
         :class="[
           'notification',
           `notification--${notification.type || 'info'}`,
-          { 'notification--closable': notification.closable },
-        ]">
-        <div class="notification__icon">
-          <i :class="getNotificationIcon(notification.type)"></i>
-        </div>
-
+          { 'notification--closable': notification.closable !== false },
+        ]"
+        @click="onNotificationClick(notification)">
         <div class="notification__content">
           <p class="notification__message">{{ notification.message }}</p>
         </div>
@@ -23,9 +20,10 @@
         <button
           v-if="notification.closable !== false"
           class="notification__close"
-          @click="closeNotification(notification)"
+          :aria-label="$t('modal.close')"
+          @click.stop="closeNotification(notification)"
           type="button">
-          <i class="ph-icon-x"></i>
+          <PhIcon name="x" size="xs" />
         </button>
       </div>
     </transition-group>
@@ -35,8 +33,11 @@
 <script>
 import { mapGetters, mapMutations } from "vuex"
 
+import PhIcon from "@/components/atoms/PhIcon.vue"
+
 export default {
   name: "AppNotifications",
+  components: { PhIcon },
   data() {
     return {
       timers: new Map(),
@@ -76,6 +77,12 @@ export default {
       this.removeNotification(notification)
     },
 
+    onNotificationClick(notification) {
+      if (notification.closable !== false) {
+        this.closeNotification(notification)
+      }
+    },
+
     setAutoCloseTimer(notification) {
       if (notification.timeout && notification.timeout > 0) {
         const timer = setTimeout(() => {
@@ -92,16 +99,6 @@ export default {
         clearTimeout(timer)
         this.timers.delete(notificationId)
       }
-    },
-
-    getNotificationIcon(type) {
-      const icons = {
-        success: "ph-icon-check-circle",
-        error: "ph-icon-x-circle",
-        warning: "ph-icon-warning-circle",
-        info: "ph-icon-info",
-      }
-      return icons[type] || icons.info
     },
   },
 
@@ -142,45 +139,24 @@ export default {
   min-width: 300px;
   max-width: 400px;
 
+  &--closable {
+    cursor: pointer;
+  }
+
   &--success {
     border-left: 4px solid var(--success-color, #10b981);
-
-    .notification__icon {
-      color: var(--success-color, #10b981);
-    }
   }
 
   &--error {
     border-left: 4px solid var(--danger-color, #ef4444);
-
-    .notification__icon {
-      color: var(--danger-color, #ef4444);
-    }
   }
 
   &--warning {
     border-left: 4px solid var(--warning-color, #f59e0b);
-
-    .notification__icon {
-      color: var(--warning-color, #f59e0b);
-    }
   }
 
   &--info {
     border-left: 4px solid var(--info-color, #3b82f6);
-
-    .notification__icon {
-      color: var(--info-color, #3b82f6);
-    }
-  }
-}
-
-.notification__icon {
-  flex-shrink: 0;
-  margin-top: 2px;
-
-  i {
-    font-size: 18px;
   }
 }
 
@@ -210,10 +186,6 @@ export default {
   &:hover {
     background: var(--neutral-20);
     color: var(--neutral-80);
-  }
-
-  i {
-    font-size: 14px;
   }
 }
 
