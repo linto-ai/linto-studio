@@ -68,7 +68,7 @@ describe("Publication Feature - API Contract Conformance", () => {
 
       mockAxios.get.mockResolvedValue(mockLLMGatewayResponse)
 
-      const mockReq = { query: {} }
+      const mockReq = { query: {}, params: { organizationId: "org-uuid-123" } }
       const mockRes = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
@@ -94,7 +94,7 @@ describe("Publication Feature - API Contract Conformance", () => {
       const mockResponse = []
       mockAxios.get.mockResolvedValue(mockResponse)
 
-      const mockReq = { query: {} }
+      const mockReq = { query: {}, params: { organizationId: "org-uuid-123" } }
       const mockRes = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
@@ -114,11 +114,14 @@ describe("Publication Feature - API Contract Conformance", () => {
       )
     })
 
-    it("[CONTRACT] should pass organization_id query parameter when provided", async () => {
+    it("[CONTRACT] should scope the listing to the organization from the path", async () => {
       const mockResponse = []
       mockAxios.get.mockResolvedValue(mockResponse)
 
-      const mockReq = { query: { organization_id: "org-uuid-123" } }
+      const mockReq = {
+        query: { organization_id: "untrusted-org-id" },
+        params: { organizationId: "org-uuid-123" },
+      }
       const mockRes = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
@@ -128,6 +131,11 @@ describe("Publication Feature - API Contract Conformance", () => {
 
       expect(mockAxios.get).toHaveBeenCalledWith(
         expect.stringContaining("organization_id=org-uuid-123"),
+        expect.any(Object)
+      )
+      // Should NOT use a client-supplied query value
+      expect(mockAxios.get).not.toHaveBeenCalledWith(
+        expect.stringContaining("organization_id=untrusted-org-id"),
         expect.any(Object)
       )
     })
@@ -140,6 +148,7 @@ describe("Publication Feature - API Contract Conformance", () => {
       // Query param user_id should be ignored - JWT payload is used instead
       const mockReq = {
         query: { user_id: "untrusted-user-id" },
+        params: { organizationId: "org-uuid-123" },
         payload: { data: { userId: "jwt-authenticated-user-123" } }
       }
       const mockRes = {
@@ -165,7 +174,7 @@ describe("Publication Feature - API Contract Conformance", () => {
       const mockResponse = []
       mockAxios.get.mockResolvedValue(mockResponse)
 
-      const mockReq = { query: {} }
+      const mockReq = { query: {}, params: { organizationId: "org-uuid-123" } }
       const mockRes = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
@@ -185,7 +194,10 @@ describe("Publication Feature - API Contract Conformance", () => {
       const mockResponse = []
       mockAxios.get.mockResolvedValue(mockResponse)
 
-      const mockReq = { query: { include_system: "false" } }
+      const mockReq = {
+        query: { include_system: "false" },
+        params: { organizationId: "org-uuid-123" },
+      }
       const mockRes = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
@@ -209,7 +221,7 @@ describe("Publication Feature - API Contract Conformance", () => {
         `${process.cwd()}/components/WebServer/routecontrollers/publication/publication.js`
       )
 
-      const mockReq = { query: {} }
+      const mockReq = { query: {}, params: { organizationId: "org-uuid-123" } }
       const mockRes = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
@@ -230,7 +242,7 @@ describe("Publication Feature - API Contract Conformance", () => {
     it("[CONTRACT] should call next with error on LLM Gateway connection failure", async () => {
       mockAxios.get.mockRejectedValue(new Error("Connection refused"))
 
-      const mockReq = { query: {} }
+      const mockReq = { query: {}, params: { organizationId: "org-uuid-123" } }
       const mockRes = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
@@ -261,7 +273,7 @@ describe("Publication Feature - API Contract Conformance", () => {
       ]
       mockAxios.get.mockResolvedValue(mockResponse)
 
-      const mockReq = { query: {} }
+      const mockReq = { query: {}, params: { organizationId: "org-uuid-123" } }
       const mockRes = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
@@ -621,7 +633,7 @@ describe("Publication Feature - API Contract Conformance", () => {
       const mockResponse = [{ id: "1", name_fr: "Test", name_en: "Test" }]
       mockAxios.get.mockResolvedValue(mockResponse)
 
-      const mockReq = { query: {} }
+      const mockReq = { query: {}, params: { organizationId: "org-uuid-123" } }
       const mockRes = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
@@ -662,7 +674,7 @@ describe("Publication Feature - API Contract Conformance", () => {
         `${process.cwd()}/components/WebServer/routecontrollers/publication/publication.js`
       )
 
-      const mockReq = { query: {} }
+      const mockReq = { query: {}, params: { organizationId: "org-uuid-123" } }
       const mockRes = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
@@ -692,19 +704,22 @@ describe("Publication Routes Configuration", () => {
     expect(routeConfig).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          path: "/templates",
+          path: "/organizations/:organizationId/templates",
           method: "get",
           requireAuth: true,
+          requireOrganizationMemberAccess: true,
         }),
         expect.objectContaining({
-          path: "/templates/:templateId/placeholders",
+          path: "/organizations/:organizationId/templates/:templateId/placeholders",
           method: "get",
           requireAuth: true,
+          requireOrganizationMemberAccess: true,
         }),
         expect.objectContaining({
-          path: "/:jobId/export/:format",
+          path: "/conversations/:conversationId/jobs/:jobId/export/:format",
           method: "get",
           requireAuth: true,
+          requireConversationReadAccess: true,
         }),
       ])
     )

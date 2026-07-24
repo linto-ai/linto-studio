@@ -214,6 +214,7 @@
         <PublicationSection
           :jobId="currentJobId"
           :organizationId="publicationOrganizationId"
+          :conversationId="conversation?._id"
           :serviceId="currentServiceId"
           :conversationName="conversation?.name || 'export'"
           :versionNumber="currentVersionNumber"
