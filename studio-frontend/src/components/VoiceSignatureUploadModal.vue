@@ -157,21 +157,25 @@ export default {
           ).reason
           const detailKey = UPLOAD_ERROR_KEYS_BY_STATUS[firstFailure?.status]
           const detail = detailKey ? this.$t(detailKey) : firstFailure?.message
+          let message
+          if (detail) {
+            message = this.$tc(
+              "speaker_diarization.upload_error_count",
+              failureCount,
+              { count: failureCount, message: detail },
+            )
+          } else {
+            message = this.$t("speaker_diarization.upload_error")
+          }
           this.$store.dispatch("system/addNotification", {
-            message: detail
-              ? this.$tc("speaker_diarization.upload_error_count", failureCount, {
-                  count: failureCount,
-                  message: detail,
-                })
-              : this.$t("speaker_diarization.upload_error"),
+            message,
             type: "error",
             timeout: 5000,
           })
         }
       } catch (err) {
         this.$store.dispatch("system/addNotification", {
-          message:
-            err.message || this.$t("speaker_diarization.upload_error"),
+          message: err.message || this.$t("speaker_diarization.upload_error"),
           type: "error",
           timeout: 5000,
         })

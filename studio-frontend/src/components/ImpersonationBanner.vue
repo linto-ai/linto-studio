@@ -20,9 +20,9 @@ import { userName } from "@/tools/userName.js"
 export default {
   computed: {
     ...mapGetters("system", ["isImpersonatingUser"]),
-    ...mapGetters("organizations", ["impersonatedOrganizationId"]),
     ...mapGetters("user", { userId: "getUserId", userInfos: "getUserInfos" }),
     ...mapGetters("organizations", {
+      impersonatedOrganizationId: "impersonatedOrganizationId",
       currentOrganization: "getCurrentOrganization",
     }),
     organizationName() {

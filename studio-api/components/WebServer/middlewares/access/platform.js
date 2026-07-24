@@ -43,17 +43,14 @@ async function checkAccess(req, role) {
 
     const userRole = user[0].role
     if (userRole && ROLE.hasPlatformRoleAccess(userRole, role)) {
-      switch (true) {
-        case ROLE.ORGANIZATION_INITIATOR === role:
-          return true
+      if (role === ROLE.ORGANIZATION_INITIATOR) return true
 
-        case isReadOnlyScope(req) && req.method === "GET":
-        case req.query.userScope === "backoffice":
-          grantBackofficeAccess(req)
-          return true
-
-        default:
-          return false
+      if (
+        req.query.userScope === "backoffice" ||
+        (isReadOnlyScope(req) && req.method === "GET")
+      ) {
+        grantBackofficeAccess(req)
+        return true
       }
     }
 

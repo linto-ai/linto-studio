@@ -19,6 +19,8 @@ const RIGHT = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
 
+const { throwIfError } = require(`${process.cwd()}/lib/utility/throwIfError`)
+
 function countAdmin(organization, userId) {
   let adminCount = 0
   let isAdmin = false
@@ -40,17 +42,15 @@ function countAdmin(organization, userId) {
 }
 
 async function deleteCategoriesFromScope(scopeId) {
-  const categories = await model.categories.getByScope(scopeId)
-  if (categories instanceof Error) throw categories
+  const categories = throwIfError(await model.categories.getByScope(scopeId))
 
   await Promise.all(
     categories.map(async (category) => {
-      const tagsResult = await model.tags.deleteAllFromCategory(
-        category._id.toString(),
-      )
-      if (tagsResult instanceof Error) throw tagsResult
-      const categoryResult = await model.categories.delete(category._id)
-      if (categoryResult instanceof Error) throw categoryResult
+      const results = await Promise.all([
+        model.tags.deleteAllFromCategory(category._id.toString()),
+        model.categories.delete(category._id),
+      ])
+      results.forEach(throwIfError)
     }),
   )
 }
@@ -61,15 +61,17 @@ async function deleteConversationCascade(conversation) {
     await deleteAudioFileIfOrphaned(conversation.metadata.audio.filepath)
   }
 
-  const resultConvo = await model.conversations.delete(conversation._id)
-  if (resultConvo instanceof Error) throw resultConvo
+  const resultConvo = throwIfError(
+    await model.conversations.delete(conversation._id),
+  )
   if (resultConvo.deletedCount !== 1)
     throw new ConversationError("Error when deleting conversation")
 
-  const subtitlesResult = await model.conversationSubtitles.deleteAllFromConv(
-    conversation._id.toString(),
+  throwIfError(
+    await model.conversationSubtitles.deleteAllFromConv(
+      conversation._id.toString(),
+    ),
   )
-  if (subtitlesResult instanceof Error) throw subtitlesResult
 
   await deleteCategoriesFromScope(conversation._id.toString())
 }
@@ -77,8 +79,9 @@ async function deleteConversationCascade(conversation) {
 // Deletion order matters: media, taxonomy, organization-scoped speaker
 // identification, then the organization record
 async function deleteOrganizationCascade(organizationId) {
-  const conversations = await model.conversations.getByOrga(organizationId)
-  if (conversations instanceof Error) throw conversations
+  const conversations = throwIfError(
+    await model.conversations.getByOrga(organizationId),
+  )
 
   await Promise.all(
     conversations.map((conversation) =>
@@ -87,20 +90,19 @@ async function deleteOrganizationCascade(organizationId) {
   )
 
   // Sweeps subtitles of conversations getByOrga does not return
-  const subtitlesResult =
-    await model.conversationSubtitles.deleteAllFromOrga(organizationId)
-  if (subtitlesResult instanceof Error) throw subtitlesResult
+  throwIfError(
+    await model.conversationSubtitles.deleteAllFromOrga(organizationId),
+  )
 
   await deleteCategoriesFromScope(organizationId)
 
-  const [orgSamples, orgCollections, orgLabels] = await Promise.all([
-    model.voiceSamples.getByOrganizationId(organizationId),
-    model.voiceprintCollections.getByOrganizationId(organizationId),
-    model.speakerLabels.getByOrganizationId(organizationId),
-  ])
-  if (orgSamples instanceof Error) throw orgSamples
-  if (orgCollections instanceof Error) throw orgCollections
-  if (orgLabels instanceof Error) throw orgLabels
+  const [orgSamples, orgCollections, orgLabels] = (
+    await Promise.all([
+      model.voiceSamples.getByOrganizationId(organizationId),
+      model.voiceprintCollections.getByOrganizationId(organizationId),
+      model.speakerLabels.getByOrganizationId(organizationId),
+    ])
+  ).map(throwIfError)
   cascadeDeleteSampleFiles(orgSamples)
 
   // Must run before the Mongo deletes below remove collections and labels
@@ -117,12 +119,11 @@ async function deleteOrganizationCascade(organizationId) {
     model.voiceOptIns.deleteAllFromOrganization(organizationId),
     model.speakerIdSyncOps.deleteAllFromOrganization(organizationId),
   ])
-  for (const result of speakerIdResults) {
-    if (result instanceof Error) throw result
-  }
+  speakerIdResults.forEach(throwIfError)
 
-  const resultOrga = await model.organizations.delete(organizationId)
-  if (resultOrga instanceof Error) throw resultOrga
+  const resultOrga = throwIfError(
+    await model.organizations.delete(organizationId),
+  )
   if (resultOrga.deletedCount !== 1)
     throw new OrganizationError("Error when deleting organization")
 }

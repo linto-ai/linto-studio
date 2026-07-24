@@ -21,6 +21,8 @@ const triggers = require(
   `${process.cwd()}/components/WebServer/controllers/speakerIdentification/triggers`,
 )
 
+const { throwIfError } = require(`${process.cwd()}/lib/utility/throwIfError`)
+
 async function getUsersListByConversation(userId, conversation, organiaztion) {
   try {
     let isShare = false
@@ -107,8 +109,9 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
 }
 
 async function removeUserFromPlatform(userId) {
-  const conversations = await model.conversations.getByShare(userId)
-  if (conversations instanceof Error) throw conversations
+  const conversations = throwIfError(
+    await model.conversations.getByShare(userId),
+  )
 
   await Promise.all(
     conversations.map(async (conversation) => {
@@ -116,14 +119,14 @@ async function removeUserFromPlatform(userId) {
         (user) => user.userId !== userId,
       )
 
-      const resultConvoUpdate = await model.conversations.update(conversation)
-      if (resultConvoUpdate instanceof Error) throw resultConvoUpdate
+      const resultConvoUpdate = throwIfError(
+        await model.conversations.update(conversation),
+      )
       if (resultConvoUpdate.matchedCount === 0) throw new UserError()
     }),
   )
 
-  const organizations = await model.organizations.listSelf(userId)
-  if (organizations instanceof Error) throw organizations
+  const organizations = throwIfError(await model.organizations.listSelf(userId))
 
   await Promise.all(
     organizations.map(async (organization) => {
@@ -134,8 +137,9 @@ async function removeUserFromPlatform(userId) {
         organization.users = organization.users.filter(
           (user) => user.userId !== userId,
         )
-        let resultOperation = await model.organizations.update(organization)
-        if (resultOperation instanceof Error) throw resultOperation
+        const resultOperation = throwIfError(
+          await model.organizations.update(organization),
+        )
         if (resultOperation.matchedCount === 0) throw new UserError()
       }
     }),
@@ -143,22 +147,19 @@ async function removeUserFromPlatform(userId) {
 
   // RGPD cascade. Opt-ins are read before deletion: they list the Qdrant
   // collections still holding the user's point.
-  const [samples, optIns] = await Promise.all([
-    model.voiceSamples.getByUserId(userId),
-    model.voiceOptIns.getByUserId(userId),
-  ])
-  if (samples instanceof Error) throw samples
-  if (optIns instanceof Error) throw optIns
-  cascadeDeleteSampleFiles(samples)
-  const [samplesDeletion, optInsDeletion, voiceprintsDeletion] =
+  const [samples, optIns] = (
     await Promise.all([
-      model.voiceSamples.deleteAllFromUser(userId),
-      model.voiceOptIns.deleteAllFromUser(userId),
-      model.voiceprints.deleteAllFromUser(userId),
+      model.voiceSamples.getByUserId(userId),
+      model.voiceOptIns.getByUserId(userId),
     ])
-  if (samplesDeletion instanceof Error) throw samplesDeletion
-  if (optInsDeletion instanceof Error) throw optInsDeletion
-  if (voiceprintsDeletion instanceof Error) throw voiceprintsDeletion
+  ).map(throwIfError)
+  cascadeDeleteSampleFiles(samples)
+  const deletionResults = await Promise.all([
+    model.voiceSamples.deleteAllFromUser(userId),
+    model.voiceOptIns.deleteAllFromUser(userId),
+    model.voiceprints.deleteAllFromUser(userId),
+  ])
+  deletionResults.forEach(throwIfError)
   // Fire-and-forget, queued on failure
   triggers.removeUserEverywhere(userId, optIns)
 }

@@ -10,7 +10,7 @@
         :class="[
           'notification',
           `notification--${notification.type || 'info'}`,
-          { 'notification--closable': notification.closable !== false },
+          { 'notification--closable': isClosable(notification) },
         ]"
         @click="onNotificationClick(notification)">
         <div class="notification__content">
@@ -18,7 +18,7 @@
         </div>
 
         <button
-          v-if="notification.closable !== false"
+          v-if="isClosable(notification)"
           class="notification__close"
           :aria-label="$t('modal.close')"
           @click.stop="closeNotification(notification)"
@@ -72,13 +72,17 @@ export default {
   methods: {
     ...mapMutations("system", ["removeNotification"]),
 
+    isClosable(notification) {
+      return notification.closable !== false
+    },
+
     closeNotification(notification) {
       this.clearTimer(notification.id)
       this.removeNotification(notification)
     },
 
     onNotificationClick(notification) {
-      if (notification.closable !== false) {
+      if (this.isClosable(notification)) {
         this.closeNotification(notification)
       }
     },
