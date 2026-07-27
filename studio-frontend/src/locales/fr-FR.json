@@ -292,7 +292,7 @@
     "createConversation": "Importer un média",
     "createOrganization": "Créer une organisation",
     "createSession": "Créer une session",
-    "explore": "Inbox",
+    "explore": "Médias",
     "favorites": "Favoris",
     "organizations": "Organisations",
     "publish": "Publication",
@@ -928,7 +928,7 @@
       "start": "Transcrire"
     },
     "tabs": {
-      "explore": "Inbox",
+      "explore": "Médias",
       "favorites": "Favoris",
       "sessions": "Transcription en direct",
       "shared": "Partages reçus",

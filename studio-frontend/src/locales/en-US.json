@@ -292,7 +292,7 @@
     "createorganization": "Create an organisation",
     "createOrganization": "Create an organisation",
     "createSession": "Create a session",
-    "explore": "Inbox",
+    "explore": "Media",
     "favorites": "Favourites",
     "organizations": "Organisations",
     "publish": "Publish",
@@ -946,7 +946,7 @@
       "my_space": "My space"
     },
     "tabs": {
-      "explore": "Inbox",
+      "explore": "Media",
       "favorites": "Favourites",
       "sessions": "Live transcriptions",
       "shared": "Shared with me",
