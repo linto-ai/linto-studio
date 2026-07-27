@@ -12,6 +12,7 @@ import {
   apiAddConversationToFavorites,
 } from "@/api/conversation"
 import { state as defaultState } from "./state"
+import i18n from "@/i18n"
 
 const actions = {
   resetState({ state }) {
@@ -40,7 +41,7 @@ const actions = {
     commit(
       "system/addNotification",
       {
-        message: "You have been logged out",
+        message: i18n.t("user_notifications.logged_out"),
         type: "success",
       },
       { root: true },
@@ -71,7 +72,7 @@ const actions = {
       commit(
         "system/addNotification",
         {
-          message: "User profile picture updated successfully",
+          message: i18n.t("user_notifications.profile_picture_updated"),
           type: "success",
         },
         { root: true },
@@ -99,7 +100,7 @@ const actions = {
       commit(
         "system/addNotification",
         {
-          message: "Error toggling favorite organization",
+          message: i18n.t("user_notifications.error_favorite_organization"),
           type: "error",
         },
         { root: true },
@@ -120,7 +121,7 @@ const actions = {
       commit(
         "system/addNotification",
         {
-          message: "Error toggling conversation favorite status",
+          message: i18n.t("user_notifications.error_favorite_conversation"),
           type: "error",
         },
         { root: true },
@@ -134,7 +135,7 @@ const actions = {
       commit(
         "system/addNotification",
         {
-          message: "Conversation added to favorites successfully",
+          message: i18n.t("user_notifications.conversation_added_to_favorites"),
           type: "success",
         },
         { root: true },
@@ -148,7 +149,9 @@ const actions = {
       commit(
         "system/addNotification",
         {
-          message: "Conversation removed from favorites successfully",
+          message: i18n.t(
+            "user_notifications.conversation_removed_from_favorites",
+          ),
           type: "success",
         },
         { root: true },

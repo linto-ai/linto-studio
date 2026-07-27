@@ -252,7 +252,7 @@ export default function createMediaModule(scope, status = "done") {
             "system/addNotification",
             {
               type: "error",
-              message: "Error fetching medias",
+              message: i18n.t("media_explorer.error_fetching"),
             },
             { root: true },
           )
@@ -317,7 +317,7 @@ export default function createMediaModule(scope, status = "done") {
             "system/addNotification",
             {
               type: "error",
-              message: "Error deleting medias",
+              message: i18n.t("media_explorer.error_deleting"),
             },
             { root: true },
           )

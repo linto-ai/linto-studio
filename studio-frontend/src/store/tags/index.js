@@ -305,7 +305,7 @@ export default {
         commit(
           "system/addNotification",
           {
-            message: "Error deleting tag",
+            message: i18n.t("manage_tags.error_deleting_tag"),
             type: "error",
           },
           { root: true },
@@ -350,7 +350,7 @@ export default {
         commit(
           "system/addNotification",
           {
-            message: "Error adding tag to media",
+            message: i18n.t("manage_tags.error_adding_tag_to_media"),
             type: "error",
           },
           { root: true },
@@ -387,7 +387,7 @@ export default {
         commit(
           "system/addNotification",
           {
-            message: "Error removing tag from media",
+            message: i18n.t("manage_tags.error_removing_tag_from_media"),
             type: "error",
           },
           { root: true },

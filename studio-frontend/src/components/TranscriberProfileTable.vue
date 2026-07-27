@@ -45,7 +45,7 @@
         @click="onEdit(element.id)"
         variant="secondary"
         icon="pencil"
-        label="Edit" />
+        :label="$t('common.edit')" />
     </template>
   </GenericTable>
 </template>
