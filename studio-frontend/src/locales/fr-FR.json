@@ -773,6 +773,7 @@
     "tag_update_notification": "Thématique mise à jour",
     "error_creating_tag": "Erreur lors de la création de la thématique",
     "error_updating_tag": "Erreur lors de la mise à jour de la thématique",
+    "error_tag_name_exists": "Une thématique portant ce nom existe déjà",
     "error_deleting_tag": "Erreur lors de la suppression de la thématique",
     "error_adding_tag_to_media": "Erreur lors de l'ajout de la thématique au média",
     "error_removing_tag_from_media": "Erreur lors du retrait de la thématique du média",
@@ -1252,8 +1253,7 @@
     "cancel": "Annuler",
     "delete": "Supprimer",
     "uploading": "Import en cours...",
-    "loading": "Chargement...",
-    "edit": "Modifier"
+    "loading": "Chargement..."
   },
   "session": {
     "sessions_status": {

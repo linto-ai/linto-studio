@@ -228,7 +228,10 @@ export default {
         commit(
           "system/addNotification",
           {
-            message: i18n.t("manage_tags.error_creating_tag"),
+            message:
+              error.status === 409
+                ? i18n.t("manage_tags.error_tag_name_exists")
+                : i18n.t("manage_tags.error_creating_tag"),
             type: "error",
           },
           { root: true },
@@ -269,7 +272,10 @@ export default {
         commit(
           "system/addNotification",
           {
-            message: i18n.t("manage_tags.error_updating_tag"),
+            message:
+              error.status === 409
+                ? i18n.t("manage_tags.error_tag_name_exists")
+                : i18n.t("manage_tags.error_updating_tag"),
             type: "error",
           },
           { root: true },

@@ -779,6 +779,7 @@
     "tag_update_notification": "Topic updated",
     "error_creating_tag": "Error creating topic",
     "error_updating_tag": "Error updating topic",
+    "error_tag_name_exists": "A topic with this name already exists",
     "error_deleting_tag": "Error deleting topic",
     "error_adding_tag_to_media": "Error adding topic to media",
     "error_removing_tag_from_media": "Error removing topic from media",
@@ -1258,8 +1259,7 @@
     "cancel": "Cancel",
     "delete": "Delete",
     "uploading": "Uploading...",
-    "loading": "Loading...",
-    "edit": "Edit"
+    "loading": "Loading..."
   },
   "session": {
     "sessions_status": {
