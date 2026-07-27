@@ -230,9 +230,10 @@ class IoHandler extends Component {
         this.removeSocketFromMedia(orgaId, socket)
       })
 
-      socket.on("disconnect", () => {
+      socket.on("disconnect", (reason) => {
         LogManager.logSocketEvent(socket, {
           action: SOCKET_EVENTS.DISCONNECT,
+          reason,
           from: "socket",
         })
         this.searchAndRemoveSocketFromRooms(socket)

@@ -263,6 +263,9 @@ class LoggerContext {
         case SOCKET_EVENTS.LEAVE:
         case SOCKET_EVENTS.DISCONNECT:
           context.socket.lastLeftAt = context.timestamp
+          if (socketEvent.reason) {
+            context.socket.disconnectReason = socketEvent.reason
+          }
           break
       }
 
