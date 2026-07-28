@@ -32,7 +32,6 @@ module.exports = (webserver) => {
                 .status(404)
                 .send({ message: "Error on fetching the audio file" })
             } else if (req.query.mediatype === "json") {
-              // Precomputed waveform peaks, generated and cached on first request
               const waveformPath = await getOrCreateWaveform(filePath)
               res.setHeader("Content-Type", "application/json")
               res.sendFile(waveformPath)

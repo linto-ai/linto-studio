@@ -122,26 +122,21 @@ module.exports = {
   ) => {
     return await access(next, convId, userId, restricted, right, rightException)
   },
-  hasAccess,
-}
-
-/**
- * Same decision tree as the Express access() middleware, usable without
- * req/res/next context (e.g. the editor handler).
- */
-async function hasAccess(convId, userId, right, restricted = false) {
-  let granted = false
-  await access(
-    (err) => {
-      if (!err) granted = true
-    },
-    convId,
-    userId,
-    restricted,
-    right,
-    ConversationReadAccessDenied,
-  )
-  return granted
+  // Same decision tree as access(), usable without req/res/next context
+  hasAccess: async (convId, userId, right, restricted = false) => {
+    let granted = false
+    await access(
+      (err) => {
+        if (!err) granted = true
+      },
+      convId,
+      userId,
+      restricted,
+      right,
+      ConversationReadAccessDenied,
+    )
+    return granted
+  },
 }
 
 async function batchAccess(

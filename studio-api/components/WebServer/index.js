@@ -54,13 +54,13 @@ class WebServer extends Component {
 
     if (corsOptions) {
       this.express.use(CORS(corsOptions))
-      this.express.options("*", CORS(corsOptions)) // allow cors settings to be enable for all routes
+      this.express.options("*", CORS(corsOptions))
     }
 
     const cookieMiddleware = cookieSession({
       name: "oidc",
       keys: [process.env.WEBSERVER_SESSION_SECRET],
-      maxAge: 5 * 60 * 1000, // 5 min,
+      maxAge: 5 * 60 * 1000,
       sameSite: "lax",
       secure: true,
       httpOnly: true,
@@ -141,7 +141,7 @@ class WebServer extends Component {
     require("./routes/router.js")(this) // Loads all defined routes
     WebServerErrorHandler.init(this) // Manage error from controllers
 
-    // Initialize LLM WebSocket manager with app reference for IoHandler access
+    // The LLM WebSocket manager needs the app reference to reach IoHandler.
     const organizationWsManager = require("./controllers/llm/llm_ws")
     organizationWsManager.setApp(app)
 
@@ -151,7 +151,6 @@ class WebServer extends Component {
       api_host = process.env.WEBSERVER_SWAGGER_HTTP_HOST
     if (process.env.WEBSERVER_HTTP_PORT)
       api_host += ":" + process.env.WEBSERVER_HTTP_PORT
-    // if (process.env.WEBSERVER_SWAGGER_API_PATH) api_host += '/' + process.env.WEBSERVER_SWAGGER_API_PATH
     if (process.env.WEBSERVER_SWAGGER_API_PATH)
       base_path = "/" + process.env.WEBSERVER_SWAGGER_API_PATH
 
@@ -170,7 +169,6 @@ class WebServer extends Component {
         `${process.cwd()}/components/WebServer/apidoc/components/schemas/`,
       )
       for (let version of availabelVersion) {
-        // availabelVersion.forEach(version => {
         swaggerDocument.definition.components.schemas = {
           ...swaggerDocument.definition.components.schemas,
           ...require(`./apidoc/components/schemas/${version}/index.js`),
