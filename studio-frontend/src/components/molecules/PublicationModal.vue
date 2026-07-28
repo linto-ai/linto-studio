@@ -7,6 +7,7 @@
     <template #content>
       <PublicationSection
         :jobId="jobId"
+        :conversationId="conversationId"
         :organizationId="organizationId"
         :serviceId="serviceId"
         :conversationName="conversationName"
@@ -27,6 +28,7 @@ export default {
   props: {
     value: { type: Boolean, default: false },
     jobId: { type: String, default: null },
+    conversationId: { type: String, default: null },
     organizationId: { type: String, default: null },
     serviceId: { type: String, default: null },
     conversationName: { type: String, default: "export" },

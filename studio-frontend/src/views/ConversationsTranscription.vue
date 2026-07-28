@@ -6,6 +6,7 @@
     <PublicationModal
       v-model="publicationModal.open"
       :jobId="publicationModal.jobId"
+      :conversationId="conversationId"
       :organizationId="organizationId"
       :conversationName="conversationName" />
   </LayoutV2>

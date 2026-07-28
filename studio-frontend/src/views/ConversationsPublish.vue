@@ -208,6 +208,7 @@
     <PublicationModal
       v-model="showPublicationModal"
       :jobId="currentJobId"
+      :conversationId="conversationId"
       :organizationId="publicationOrganizationId"
       :serviceId="currentServiceId"
       :conversationName="conversation?.name || 'export'"
