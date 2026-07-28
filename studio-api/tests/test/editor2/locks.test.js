@@ -18,17 +18,23 @@ const CONVERSATION_RIGHTS = require(
   `${process.cwd()}/lib/dao/conversation/rights`,
 )
 
-const { onLockTurn } = require(
-  `${process.cwd()}/components/EditorHandler2/handlers/onLockTurn`,
+const { requireWrite } = require(
+  `${process.cwd()}/components/EditorHandler/decorators/requireWrite`,
 )
+const { onLockTurn: rawOnLockTurn } = require(
+  `${process.cwd()}/components/EditorHandler/handlers/onLockTurn`,
+)
+// Production wiring: lock_turn goes through requireWrite (heartbeat = the
+// WRITE re-check), so the composed handler is what gets tested here.
+const onLockTurn = requireWrite(rawOnLockTurn)
 const { onUnlockTurn } = require(
-  `${process.cwd()}/components/EditorHandler2/handlers/onUnlockTurn`,
+  `${process.cwd()}/components/EditorHandler/handlers/onUnlockTurn`,
 )
 const { onDisconnect } = require(
-  `${process.cwd()}/components/EditorHandler2/handlers/onDisconnect`,
+  `${process.cwd()}/components/EditorHandler/handlers/onDisconnect`,
 )
 
-const PAYLOAD = { parentId: "conv-1", translationId: "tr-1", turnId: "turn-1" }
+const PAYLOAD = { translationId: "tr-1", turnId: "turn-1" }
 
 function makeCtx({ joined = true } = {}) {
   const emit = jest.fn()
@@ -38,7 +44,10 @@ function makeCtx({ joined = true } = {}) {
     socket: {
       id: "sock-1",
       data: joined
-        ? { editorUser: { userId: "user-1", userName: "Marie Dupont" } }
+        ? {
+            editorUser: { userId: "user-1", userName: "Marie Dupont" },
+            editorParentId: "conv-1",
+          }
         : {},
       join: jest.fn(),
       leave: jest.fn(),
@@ -147,7 +156,9 @@ describe("onLockTurn", () => {
     const ctx = makeCtx()
     const ack = jest.fn()
 
-    await onLockTurn(ctx, { parentId: "conv-1", turnId: "turn-1" }, ack)
+    // Missing turnId passes requireWrite (translationId ok) and exercises
+    // the handler's own payload validation.
+    await onLockTurn(ctx, { translationId: "tr-1" }, ack)
 
     expect(ack).toHaveBeenCalledWith({ ok: false, reason: "invalid_payload" })
   })
@@ -195,15 +206,6 @@ describe("onUnlockTurn", () => {
     expect(ack).toHaveBeenCalledWith({ ok: false, reason: "not_lock_owner" })
   })
 
-  test("requires a prior join", async () => {
-    const ctx = makeCtx({ joined: false })
-    const ack = jest.fn()
-
-    await onUnlockTurn(ctx, PAYLOAD, ack)
-
-    expect(model.editorLocks.release).not.toHaveBeenCalled()
-    expect(ack).toHaveBeenCalledWith({ ok: false, reason: "unauthorized" })
-  })
 })
 
 describe("onDisconnect", () => {

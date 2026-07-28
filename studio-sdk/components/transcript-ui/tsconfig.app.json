@@ -16,7 +16,6 @@
   "exclude": [
     "src/**/test/**",
     "src/**/*.test.ts",
-    "src/**/*.spec.ts",
-    "src/plugins/transcriptionEditor.old/**"
+    "src/**/*.spec.ts"
   ]
 }

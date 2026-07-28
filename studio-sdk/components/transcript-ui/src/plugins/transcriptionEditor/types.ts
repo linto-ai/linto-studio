@@ -21,6 +21,26 @@ export interface TranscriptionEditorSplitPayload {
   offset: number
 }
 
+export interface TranscriptionEditorTurnSpeakerPayload {
+  translationId: string
+  turnId: string
+  /** Exactly one of the two: assign an existing speaker, or create by name. */
+  speakerId?: string
+  speakerName?: string
+}
+
+export interface TranscriptionEditorRenameSpeakerPayload {
+  translationId: string
+  speakerId: string
+  name: string
+}
+
+export interface TranscriptionEditorReplaceSpeakerPayload {
+  translationId: string
+  fromSpeakerId: string
+  toSpeakerId: string
+}
+
 export interface TranscriptionEditorMergePayload {
   translationId: string
   /** Document order — the server checks second follows first immediately. */
@@ -59,6 +79,14 @@ export interface TranscriptionEditorOptions {
     payload: TranscriptionEditorSplitPayload,
   ) => Promise<{ ok: boolean; reason?: string }>
   /**
+   * Remove a turn — triggered by committing an emptied text (there is no
+   * delete button: the gesture IS the deletion). The server refuses the
+   * track's last turn. Applied at the turn_deleted broadcast.
+   */
+  deleteTurn?: (
+    payload: TranscriptionEditorLockPayload,
+  ) => Promise<{ ok: boolean; reason?: string }>
+  /**
    * Merge two adjacent turns. Requires BOTH turns lock-free server-side
    * (requester included) — the button only shows on free turns, the ack is
    * the authority. Applied at the turns_merged broadcast.
@@ -66,6 +94,23 @@ export interface TranscriptionEditorOptions {
   mergeTurns?: (
     payload: TranscriptionEditorMergePayload,
   ) => Promise<{ ok: boolean; reason?: string }>
+  // ── Speakers (no lock — atomic, last-write-wins; applied at broadcast) ──
+  updateTurnSpeaker?: (
+    payload: TranscriptionEditorTurnSpeakerPayload,
+  ) => Promise<{ ok: boolean; reason?: string }>
+  renameSpeaker?: (
+    payload: TranscriptionEditorRenameSpeakerPayload,
+  ) => Promise<{ ok: boolean; reason?: string }>
+  replaceSpeaker?: (
+    payload: TranscriptionEditorReplaceSpeakerPayload,
+  ) => Promise<{ ok: boolean; reason?: string }>
+  /**
+   * Reload a track's content from the backend — called when a version gap
+   * is detected (missed broadcasts) or when the reconnection re-ack says
+   * the track went stale. Must re-push the fetched content AND its version
+   * (setTranslationVersion) into the plugin.
+   */
+  refetchTranslation?: (translationId: string) => Promise<void>
 }
 
 // ── Internal ────────────────────────────────────────────────────────────
@@ -93,4 +138,10 @@ export interface EditorPluginState {
    *  is pending must not start a second edit. */
   lockPending: boolean
   heartbeat: LockHeartbeat
+  /** Per-track edit version of the LOADED content (host-pushed with each
+   *  content fetch). Broadcasts are gap-checked against it. */
+  versions: Map<string, number>
+  /** Tracks with a refetch in flight — a burst of gapped broadcasts must
+   *  trigger one reload, not one per broadcast. */
+  pendingRefetches: Set<string>
 }

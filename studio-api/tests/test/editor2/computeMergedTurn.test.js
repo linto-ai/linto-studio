@@ -1,5 +1,5 @@
 const { computeMergedTurn } = require(
-  `${process.cwd()}/components/EditorHandler2/utils/computeMergedTurn`,
+  `${process.cwd()}/components/EditorHandler/utils/computeMergedTurn`,
 )
 
 const SHORT = {

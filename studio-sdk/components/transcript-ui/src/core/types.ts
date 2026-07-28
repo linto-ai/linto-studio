@@ -217,6 +217,42 @@ export interface TurnsMerged {
   version?: number
 }
 
+/** A turn removed (the client committed an emptied text), as broadcast by
+ *  the server (editor:turn_deleted). The GC consequence rides along. */
+export interface TurnDeleted {
+  translationId: string
+  turnId: string
+  removedSpeakerId?: string
+  version?: number
+}
+
+/** A turn pointed at a (possibly freshly created) speaker, as broadcast by
+ *  the server (editor:turn_speaker_updated). The GC consequence rides along:
+ *  removedSpeakerId is set when the previous speaker lost its last turn. */
+export interface TurnSpeakerUpdated {
+  translationId: string
+  turnId: string
+  speaker: { id: string; name: string }
+  removedSpeakerId?: string
+  version?: number
+}
+
+export interface SpeakerRenamed {
+  translationId: string
+  speakerId: string
+  name: string
+  version?: number
+}
+
+/** From-speaker replaced by to-speaker on every turn — its removal is
+ *  implied (it references nothing afterwards). */
+export interface SpeakerReplaced {
+  translationId: string
+  fromSpeakerId: string
+  toSpeakerId: string
+  version?: number
+}
+
 export interface TranscriptionEditorPluginApi {
   /** Turn currently being edited (single-turn editing), null when none. */
   readonly editingTurnId: Ref<string | null>
@@ -235,6 +271,17 @@ export interface TranscriptionEditorPluginApi {
    *  the merge button between turns). Applied at the server broadcast. */
   mergeTurns(firstTurnId: string, secondTurnId: string): void
 
+  // ── Speakers (no lock: atomic ops, last-write-wins) ──
+  /** Point a turn at an existing speaker (speakerId) or create-and-assign
+   *  one (speakerName) — exactly one of the two. */
+  updateTurnSpeaker(
+    turnId: string,
+    target: { speakerId?: string; speakerName?: string },
+  ): void
+  renameSpeaker(speakerId: string, name: string): void
+  /** Reassign every turn of a speaker to another (speaker merge). */
+  replaceSpeaker(fromSpeakerId: string, toSpeakerId: string): void
+
   // ── Server sync (host-pushed from broadcasts) ──
   /** Apply a saved turn broadcast by the server (any track, any author). */
   applyTurnUpdate(update: TurnUpdate): void
@@ -242,6 +289,19 @@ export interface TranscriptionEditorPluginApi {
   applyTurnSplit(split: TurnSplit): void
   /** Apply a merge broadcast by the server. */
   applyTurnsMerged(merge: TurnsMerged): void
+  /** Apply a deletion broadcast by the server. */
+  applyTurnDeleted(deleted: TurnDeleted): void
+
+  // ── Versions (resync safety net) ──
+  /** Baseline: the version the track's freshly fetched content corresponds
+   *  to — host-pushed together with the content (same backend read). */
+  setTranslationVersion(translationId: string, version: number): void
+  /** Reconnection check (join re-ack): refetch every loaded track the
+   *  server says is ahead of what we hold. */
+  reconcileVersions(versions: Record<string, number>): void
+  applyTurnSpeakerUpdated(update: TurnSpeakerUpdated): void
+  applySpeakerRenamed(renamed: SpeakerRenamed): void
+  applySpeakerReplaced(replaced: SpeakerReplaced): void
 
   // ── Locks (host-pushed from server broadcasts; UI pulls per turn) ──
   /** Lock held on a turn of the ACTIVE translation, if any. */

@@ -3,7 +3,11 @@ import type {
   Core,
   CorePlugin,
   TranscriptionEditorPluginApi,
+  SpeakerRenamed,
+  SpeakerReplaced,
+  TurnDeleted,
   TurnLock,
+  TurnSpeakerUpdated,
   TurnSplit,
   TurnsMerged,
   TurnUpdate,
@@ -22,12 +26,23 @@ import { applyTurnUpdate as applyTurnUpdateHandler } from "./handlers/applyTurnU
 import { applyTurnSplit as applyTurnSplitHandler } from "./handlers/applyTurnSplit"
 import { mergeTurns as mergeTurnsHandler } from "./handlers/mergeTurns"
 import { applyTurnsMerged as applyTurnsMergedHandler } from "./handlers/applyTurnsMerged"
+import { applyTurnDeleted as applyTurnDeletedHandler } from "./handlers/applyTurnDeleted"
+import { updateTurnSpeaker as updateTurnSpeakerHandler } from "./handlers/updateTurnSpeaker"
+import { renameSpeaker as renameSpeakerHandler } from "./handlers/renameSpeaker"
+import { replaceSpeaker as replaceSpeakerHandler } from "./handlers/replaceSpeaker"
+import { applyTurnSpeakerUpdated as applyTurnSpeakerUpdatedHandler } from "./handlers/applyTurnSpeakerUpdated"
+import { applySpeakerRenamed as applySpeakerRenamedHandler } from "./handlers/applySpeakerRenamed"
+import { applySpeakerReplaced as applySpeakerReplacedHandler } from "./handlers/applySpeakerReplaced"
 import {
   getTurnLock as getTurnLockHandler,
   setLocks as setLocksHandler,
   setTurnLock as setTurnLockHandler,
   clearTurnLock as clearTurnLockHandler,
 } from "./handlers/locksState"
+import {
+  setTranslationVersion as setTranslationVersionHandler,
+  reconcileVersions as reconcileVersionsHandler,
+} from "./handlers/versionsState"
 
 export type {
   TranscriptionEditorOptions,
@@ -42,7 +57,7 @@ const HEARTBEAT_INTERVAL_MS = 15000
  * One editing session on a document: the plugin's state (EditorPluginState)
  * and its API in a single object. Methods delegate to handlers/ — each one a
  * file receiving `this` as its explicit first parameter, tools/ holding the
- * stateless how (mirrors the server-side EditorHandler2 structure).
+ * stateless how (mirrors the server-side EditorHandler structure).
  */
 class EditorSession implements EditorPluginState, TranscriptionEditorPluginApi {
   core: Core
@@ -53,6 +68,8 @@ class EditorSession implements EditorPluginState, TranscriptionEditorPluginApi {
   editingRef: TranscriptionEditorLockPayload | null = null
   lockPending = false
   heartbeat = new LockHeartbeat(HEARTBEAT_INTERVAL_MS)
+  versions = new Map<string, number>()
+  pendingRefetches = new Set<string>()
 
   constructor(core: Core, options: TranscriptionEditorOptions) {
     this.core = core
@@ -91,6 +108,45 @@ class EditorSession implements EditorPluginState, TranscriptionEditorPluginApi {
     applyTurnsMergedHandler(this, merge)
   }
 
+  applyTurnDeleted(deleted: TurnDeleted): void {
+    applyTurnDeletedHandler(this, deleted)
+  }
+
+  setTranslationVersion(translationId: string, version: number): void {
+    setTranslationVersionHandler(this, translationId, version)
+  }
+
+  reconcileVersions(versions: Record<string, number>): void {
+    reconcileVersionsHandler(this, versions)
+  }
+
+  updateTurnSpeaker(
+    turnId: string,
+    target: { speakerId?: string; speakerName?: string },
+  ): void {
+    updateTurnSpeakerHandler(this, turnId, target)
+  }
+
+  renameSpeaker(speakerId: string, name: string): void {
+    renameSpeakerHandler(this, speakerId, name)
+  }
+
+  replaceSpeaker(fromSpeakerId: string, toSpeakerId: string): void {
+    replaceSpeakerHandler(this, fromSpeakerId, toSpeakerId)
+  }
+
+  applyTurnSpeakerUpdated(update: TurnSpeakerUpdated): void {
+    applyTurnSpeakerUpdatedHandler(this, update)
+  }
+
+  applySpeakerRenamed(renamed: SpeakerRenamed): void {
+    applySpeakerRenamedHandler(this, renamed)
+  }
+
+  applySpeakerReplaced(replaced: SpeakerReplaced): void {
+    applySpeakerReplacedHandler(this, replaced)
+  }
+
   getTurnLock(turnId: string) {
     return getTurnLockHandler(this, turnId)
   }
@@ -114,6 +170,8 @@ class EditorSession implements EditorPluginState, TranscriptionEditorPluginApi {
     this.editingRef = null
     this.heartbeat.stop()
     this.locks.clear()
+    this.versions.clear()
+    this.pendingRefetches.clear()
   }
 
   destroy(): void {

@@ -22,6 +22,8 @@ jest.mock(`${process.cwd()}/lib/mongodb/models`, () => ({
     updateEditorTurn: jest.fn(),
     splitEditorTurn: jest.fn(),
     mergeEditorTurns: jest.fn(),
+    deleteEditorTurn: jest.fn(),
+    getFamilyEditorVersions: jest.fn(),
   },
 }))
 
@@ -37,27 +39,41 @@ const CONVERSATION_RIGHTS = require(
 )
 
 const { onJoin } = require(
-  `${process.cwd()}/components/EditorHandler2/handlers/onJoin`,
+  `${process.cwd()}/components/EditorHandler/handlers/onJoin`,
 )
 const { onLeave } = require(
-  `${process.cwd()}/components/EditorHandler2/handlers/onLeave`,
+  `${process.cwd()}/components/EditorHandler/handlers/onLeave`,
 )
 const { onUpdateTurn } = require(
-  `${process.cwd()}/components/EditorHandler2/handlers/onUpdateTurn`,
+  `${process.cwd()}/components/EditorHandler/handlers/onUpdateTurn`,
 )
 const { onSplitTurn } = require(
-  `${process.cwd()}/components/EditorHandler2/handlers/onSplitTurn`,
+  `${process.cwd()}/components/EditorHandler/handlers/onSplitTurn`,
 )
-const { onMergeTurns } = require(
-  `${process.cwd()}/components/EditorHandler2/handlers/onMergeTurns`,
+const { onDeleteTurn } = require(
+  `${process.cwd()}/components/EditorHandler/handlers/onDeleteTurn`,
 )
+const { requireWrite } = require(
+  `${process.cwd()}/components/EditorHandler/decorators/requireWrite`,
+)
+const { onMergeTurns: rawOnMergeTurns } = require(
+  `${process.cwd()}/components/EditorHandler/handlers/onMergeTurns`,
+)
+// Production wiring: merge carries no lock, WRITE comes from requireWrite.
+const onMergeTurns = requireWrite(rawOnMergeTurns)
 
 function makeCtx() {
   const emit = jest.fn()
   return {
     emit,
     io: { to: jest.fn(() => ({ emit })) },
-    socket: { id: "sock-1", data: {}, join: jest.fn(), leave: jest.fn() },
+    socket: {
+      id: "sock-1",
+      // Mutation handlers derive the broadcast room from the joined parent.
+      data: { editorParentId: "conv-1" },
+      join: jest.fn(),
+      leave: jest.fn(),
+    },
   }
 }
 
@@ -68,6 +84,7 @@ function authorizeUser() {
     { firstname: "Marie", lastname: "Dupont" },
   ])
   model.editorLocks.listByParent.mockResolvedValue([])
+  model.conversations.getFamilyEditorVersions.mockResolvedValue({})
 }
 
 beforeEach(() => {
@@ -88,6 +105,10 @@ describe("onJoin", () => {
         expiresAt: new Date(),
       },
     ])
+    model.conversations.getFamilyEditorVersions.mockResolvedValue({
+      "conv-1": 3,
+      "tr-1": 7,
+    })
     const ctx = makeCtx()
     const ack = jest.fn()
 
@@ -103,6 +124,8 @@ describe("onJoin", () => {
       userId: "user-1",
       userName: "Marie Dupont",
     })
+    expect(ctx.socket.data.editorParentId).toBe("conv-1")
+    expect(ctx.socket.data.editorFamily).toEqual(new Set(["conv-1", "tr-1"]))
     expect(ack).toHaveBeenCalledWith({
       ok: true,
       locks: [
@@ -114,7 +137,7 @@ describe("onJoin", () => {
         },
       ],
       users: [],
-      version: 0,
+      versions: { "conv-1": 3, "tr-1": 7 },
     })
   })
 
@@ -177,6 +200,7 @@ describe("onLeave", () => {
     ])
     const ctx = makeCtx()
     ctx.socket.data.editorUser = { userId: "user-1", userName: "Marie" }
+    ctx.socket.data.editorFamily = new Set(["conv-1", "tr-1"])
 
     await onLeave(ctx, "conv-1")
 
@@ -196,6 +220,9 @@ describe("onLeave", () => {
       userId: "user-1",
       userName: "Marie",
     })
+    // The parent/family ARE view-scoped: cleared on leave.
+    expect(ctx.socket.data.editorParentId).toBeUndefined()
+    expect(ctx.socket.data.editorFamily).toBeUndefined()
   })
 
   test("still leaves the room when the lock cleanup fails", async () => {
@@ -212,7 +239,6 @@ describe("onLeave", () => {
 
 describe("onUpdateTurn", () => {
   const PAYLOAD = {
-    parentId: "conv-1",
     translationId: "tr-1",
     turnId: "turn-1",
     text: "Bonjour  tous le monde ",
@@ -284,7 +310,7 @@ describe("onUpdateTurn", () => {
     expect(ack).toHaveBeenCalledWith({ ok: false, reason: "conflict" })
   })
 
-  test("rejects a payload without parentId or text", async () => {
+  test("rejects a payload without text", async () => {
     const ctx = makeCtx()
     const ack = jest.fn()
 
@@ -310,7 +336,6 @@ describe("onUpdateTurn", () => {
 
 describe("onSplitTurn", () => {
   const PAYLOAD = {
-    parentId: "conv-1",
     translationId: "tr-1",
     turnId: "turn-1",
     offset: 12,
@@ -394,7 +419,6 @@ describe("onSplitTurn", () => {
 
 describe("onMergeTurns", () => {
   const PAYLOAD = {
-    parentId: "conv-1",
     translationId: "tr-1",
     firstTurnId: "turn-1",
     secondTurnId: "turn-2",
@@ -528,5 +552,73 @@ describe("onMergeTurns", () => {
 
     expect(ctx.emit).not.toHaveBeenCalled()
     expect(ack).toHaveBeenCalledWith({ ok: false, reason: "conflict" })
+  })
+})
+
+describe("onDeleteTurn", () => {
+  const PAYLOAD = { translationId: "tr-1", turnId: "turn-2" }
+  const TURNS = [
+    { turn_id: "turn-1", speaker_id: "spk-1", segment: "a", words: [] },
+    { turn_id: "turn-2", speaker_id: "spk-2", segment: "b", words: [] },
+    { turn_id: "turn-3", speaker_id: "spk-1", segment: "c", words: [] },
+  ]
+
+  test("deletes, predicts the speaker GC and broadcasts", async () => {
+    model.conversations.getById.mockResolvedValue([{ text: TURNS }])
+    model.conversations.deleteEditorTurn.mockResolvedValue({ version: 11 })
+    const ctx = makeCtx()
+    const ack = jest.fn()
+
+    await onDeleteTurn(ctx, PAYLOAD, ack)
+
+    expect(model.conversations.deleteEditorTurn).toHaveBeenCalledWith(
+      "tr-1",
+      "turn-2",
+    )
+    // turn-2 was spk-2's only turn: its removal rides the broadcast.
+    expect(ctx.io.to).toHaveBeenCalledWith("editor/conv-1")
+    expect(ctx.emit).toHaveBeenCalledWith("editor:turn_deleted", {
+      translationId: "tr-1",
+      turnId: "turn-2",
+      removedSpeakerId: "spk-2",
+      version: 11,
+    })
+    expect(ack).toHaveBeenCalledWith({ ok: true, version: 11 })
+  })
+
+  test("no speaker GC when the speaker still has other turns", async () => {
+    model.conversations.getById.mockResolvedValue([{ text: TURNS }])
+    model.conversations.deleteEditorTurn.mockResolvedValue({ version: 12 })
+    const ctx = makeCtx()
+
+    await onDeleteTurn(ctx, { ...PAYLOAD, turnId: "turn-1" }, jest.fn())
+
+    const [, broadcast] = ctx.emit.mock.calls[0]
+    expect("removedSpeakerId" in broadcast).toBe(false)
+  })
+
+  test("refuses to delete the track's last turn", async () => {
+    model.conversations.getById.mockResolvedValue([{ text: [TURNS[1]] }])
+    const ctx = makeCtx()
+    const ack = jest.fn()
+
+    await onDeleteTurn(ctx, PAYLOAD, ack)
+
+    expect(model.conversations.deleteEditorTurn).not.toHaveBeenCalled()
+    expect(ack).toHaveBeenCalledWith({ ok: false, reason: "last_turn" })
+  })
+
+  test("acks a conflict when the turn vanished (read or write)", async () => {
+    model.conversations.getById.mockResolvedValue([{ text: [TURNS[0], TURNS[2]] }])
+    const ctx = makeCtx()
+    const ack1 = jest.fn()
+    await onDeleteTurn(ctx, PAYLOAD, ack1)
+    expect(ack1).toHaveBeenCalledWith({ ok: false, reason: "conflict" })
+
+    model.conversations.getById.mockResolvedValue([{ text: TURNS }])
+    model.conversations.deleteEditorTurn.mockResolvedValue(null)
+    const ack2 = jest.fn()
+    await onDeleteTurn(ctx, PAYLOAD, ack2)
+    expect(ack2).toHaveBeenCalledWith({ ok: false, reason: "conflict" })
   })
 })

@@ -1,5 +1,6 @@
 import type { TurnsMerged } from "../../../core/types"
 import type { EditorPluginState } from "../types"
+import { trackBroadcastVersion } from "../tools/trackBroadcastVersion"
 import { findTranslationStore } from "../tools/findTranslationStore"
 import { toStoreTurn } from "../tools/toStoreTurn"
 
@@ -9,6 +10,9 @@ export function applyTurnsMerged(
   state: EditorPluginState,
   merge: TurnsMerged,
 ): void {
+  // Version gate: stale broadcasts are skipped, a gap triggers a refetch.
+  if (!trackBroadcastVersion(state, merge.translationId, merge.version)) return
+
   // Server-side both turns were lock-free, but stay defensive: never rewrite
   // under the user's caret.
   if (
@@ -33,4 +37,16 @@ export function applyTurnsMerged(
       return [turn]
     }),
   )
+
+  // setTurns emits no turn events (it is also the loading path, which must
+  // stay silent): emit them here so hosts see the merge as an edit — e.g.
+  // to flag the generated summary as outdated.
+  state.core.emit("turn:update", {
+    turn: mergedTurn,
+    translationId: merge.translationId,
+  })
+  state.core.emit("turn:remove", {
+    turnId: merge.removedTurnId,
+    translationId: merge.translationId,
+  })
 }

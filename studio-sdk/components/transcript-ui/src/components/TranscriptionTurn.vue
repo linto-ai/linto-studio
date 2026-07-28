@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { computed, useTemplateRef } from "vue"
+import { computed, ref, useTemplateRef } from "vue"
 import SpeakerLabel from "./SpeakerLabel.vue"
 import Button from "./atoms/Button.vue"
 import EditorCheckbox from "./atoms/EditorCheckbox.vue"
 import UserAvatar from "./atoms/UserAvatar.vue"
 import TurnTextEditor from "./molecules/TurnTextEditor.vue"
 import MergeTurnsButton from "./molecules/MergeTurnsButton.vue"
+import SpeakerPopover from "./molecules/SpeakerPopover.vue"
 import { useCore } from "../core"
 import { useTurnSelection } from "../composables/useTurnSelection"
 import { useI18n } from "../i18n"
@@ -152,6 +153,23 @@ function onCancelClick() {
   core.transcriptionEditor!.cancelEdit()
 }
 
+// ── Speaker assignment (SpeakerPopover, mounted lazily on first click:
+// hundreds of turns must not each carry a popover instance) ────────────
+
+const canEditSpeakers = computed(
+  () =>
+    core.transcriptionEditor !== undefined &&
+    core.capabilities.value.speakers === "edit" &&
+    !props.partial &&
+    !props.live,
+)
+
+const speakerPopoverMounted = ref(false)
+
+function onSpeakerClick() {
+  speakerPopoverMounted.value = true
+}
+
 function onHeaderClick(event: MouseEvent) {
   // Selecting the turn being edited makes no sense — the header hosts the
   // save/cancel actions while editing.
@@ -193,7 +211,32 @@ function onCheckboxChange(event: MouseEvent) {
         :model-value="isSelected"
         :aria-label="checkboxLabel"
         @click.stop="onCheckboxChange" />
+      <SpeakerPopover
+        v-if="speakerPopoverMounted"
+        :turn-id="turn.id"
+        :current-speaker-id="turn.speakerId"
+        initial-open>
+        <SpeakerLabel
+          :speaker="speaker"
+          :start-time="turn.startTime"
+          :start-date="turn.startDate"
+          :language="turn.language"
+          interactive />
+      </SpeakerPopover>
+      <button
+        v-else-if="canEditSpeakers"
+        type="button"
+        class="speaker-trigger"
+        @click.stop="onSpeakerClick">
+        <SpeakerLabel
+          :speaker="speaker"
+          :start-time="turn.startTime"
+          :start-date="turn.startDate"
+          :language="turn.language"
+          interactive />
+      </button>
       <SpeakerLabel
+        v-else
         :speaker="speaker"
         :start-time="turn.startTime"
         :start-date="turn.startDate"
@@ -277,6 +320,20 @@ function onCheckboxChange(event: MouseEvent) {
   margin-left: auto;
   display: flex;
   gap: var(--spacing-xs);
+}
+
+/* Same reset as the popover's own trigger: the label IS the button. */
+.speaker-trigger {
+  all: unset;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--radius-sm);
+}
+
+.speaker-trigger:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 .turn:has(.turn-header:hover) {

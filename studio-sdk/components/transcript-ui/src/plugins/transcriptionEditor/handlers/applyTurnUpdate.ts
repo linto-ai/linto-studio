@@ -1,5 +1,6 @@
 import type { TurnUpdate } from "../../../core/types"
 import type { EditorPluginState } from "../types"
+import { trackBroadcastVersion } from "../tools/trackBroadcastVersion"
 import { wordsFromApi } from "../../../utils/turnWords"
 import { findTranslationStore } from "../tools/findTranslationStore"
 
@@ -8,6 +9,9 @@ export function applyTurnUpdate(
   state: EditorPluginState,
   update: TurnUpdate,
 ): void {
+  // Version gate: stale broadcasts are skipped, a gap triggers a refetch.
+  if (!trackBroadcastVersion(state, update.translationId, update.version)) return
+
   // Never rewrite under the user's caret: applying would re-render the
   // contenteditable's text and destroy the typing in progress. The next save
   // recomputes server-side anyway. (Compared on the exact edit — turn ids

@@ -36,7 +36,7 @@ function onMergeClick() {
   <div v-if="canShow" class="merge-turns">
     <Button
       size="sm"
-      variant="transparent"
+      variant="inverse"
       icon="merge"
       :disabled="isDisabled"
       :aria-label="t('transcription.mergeTurns')"
@@ -53,6 +53,5 @@ function onMergeClick() {
 /* Compact: the control sits in the gap between turns without inflating it. */
 .merge-turns :deep(.editor-btn) {
   --btn-height: 22px;
-  color: var(--color-text-muted);
 }
 </style>

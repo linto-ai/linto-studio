@@ -47,7 +47,15 @@ async function startCreatingNew(): Promise<void> {
 
 function onPickExisting(speaker: Speaker): void {
   if (speaker.id !== props.currentSpeakerId) {
-    switchTurnSpeaker(core, props.turnId, speaker.id)
+    // Through the plugin when present (server round-trip, applied at the
+    // broadcast); direct store helper otherwise (plugin-less embeds).
+    if (core.transcriptionEditor) {
+      core.transcriptionEditor.updateTurnSpeaker(props.turnId, {
+        speakerId: speaker.id,
+      })
+    } else {
+      switchTurnSpeaker(core, props.turnId, speaker.id)
+    }
   }
   isOpen.value = false
 }
@@ -58,7 +66,13 @@ function submitNew(): void {
     isCreatingNew.value = false
     return
   }
-  createSpeakerAndAssign(core, props.turnId, trimmed)
+  if (core.transcriptionEditor) {
+    core.transcriptionEditor.updateTurnSpeaker(props.turnId, {
+      speakerName: trimmed,
+    })
+  } else {
+    createSpeakerAndAssign(core, props.turnId, trimmed)
+  }
   isOpen.value = false
 }
 

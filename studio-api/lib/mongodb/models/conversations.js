@@ -58,17 +58,7 @@ class ConvoModel extends MongoModel {
       payload.last_update = dateTime
 
       delete payload._id
-      // Never write back a (possibly stale) epoch fetched by the caller:
-      // the epoch is only ever moved forward by bumpEditorEpoch.
-      delete payload.editorEpoch
       let mutableElements = payload
-
-      // External rewrite of editor-owned data: invalidate the editor history
-      // lineage before writing (a bump without a write is harmless, the
-      // reverse would let the editor flush clobber this write).
-      if (payload.text !== undefined || payload.speakers !== undefined) {
-        await this.bumpEditorEpoch(conversationId)
-      }
 
       return await this.mongoUpdateOne(query, operator, mutableElements)
     } catch (error) {
@@ -400,13 +390,10 @@ class ConvoModel extends MongoModel {
       }
       const dateTime = moment().format()
 
-      // Text rewritten outside the collaborative editor: bump the editor
-      // epoch in the same atomic op to invalidate its persisted Yjs state.
       return await MongoDriver.constructor.db
         .collection(this.collection)
         .updateOne(query, {
           $set: { text: [...text], last_update: dateTime },
-          $inc: { editorEpoch: 1 },
         })
     } catch (error) {
       console.error(error)
@@ -415,169 +402,52 @@ class ConvoModel extends MongoModel {
   }
 
   /**
-   * Update a single turn in-place using MongoDB positional operator.
-   * Unlike updateTurn(), this does NOT read-modify-write the whole text array.
+   * editorVersion of a conversation and its whole family (children and
+   * grandchildren — the topology is canonical → channels → translations, or
+   * canonical → translations). The editor join ack ships this map so a
+   * reconnecting client can detect which loaded tracks went stale during
+   * the disconnection. Missing field ≡ 0. Throws on DB error.
+   * @returns {Promise<Record<string, number>>} conversationId → editorVersion
    */
-  async updateTurnAtomic(conversationId, turnId, newTurn) {
-    try {
-      const query = {
-        _id: this.getObjectId(conversationId),
-        "text.turn_id": turnId,
+  async getFamilyEditorVersions(conversationId) {
+    const collection = MongoDriver.constructor.db.collection(this.collection)
+    const projection = { editorVersion: 1, "type.child_conversations": 1 }
+
+    const parent = await collection.findOne(
+      { _id: this.getObjectId(conversationId) },
+      { projection },
+    )
+    if (!parent) return {}
+    const versions = { [conversationId]: parent.editorVersion ?? 0 }
+
+    const childIds = parent.type?.child_conversations ?? []
+    if (childIds.length === 0) return versions
+    const children = await collection
+      .find(
+        { _id: { $in: childIds.map((id) => this.getObjectId(id)) } },
+        { projection },
+      )
+      .toArray()
+
+    const grandchildIds = []
+    for (const child of children) {
+      versions[child._id.toString()] = child.editorVersion ?? 0
+      grandchildIds.push(...(child.type?.child_conversations ?? []))
+    }
+    if (grandchildIds.length > 0) {
+      const grandchildren = await collection
+        .find(
+          { _id: { $in: grandchildIds.map((id) => this.getObjectId(id)) } },
+          { projection: { editorVersion: 1 } },
+        )
+        .toArray()
+      for (const grandchild of grandchildren) {
+        versions[grandchild._id.toString()] = grandchild.editorVersion ?? 0
       }
-      const dateTime = moment().format()
-      return await MongoDriver.constructor.db
-        .collection(this.collection)
-        .updateOne(query, {
-          $set: {
-            "text.$": { ...newTurn, turn_id: turnId },
-            last_update: dateTime,
-          },
-          $inc: { editorEpoch: 1 },
-        })
-    } catch (error) {
-      console.error(error)
-      return error
     }
+    return versions
   }
 
-  /**
-   * Append a new turn to the text array atomically.
-   */
-  async addTurnAtomic(conversationId, newTurn) {
-    try {
-      const query = { _id: this.getObjectId(conversationId) }
-      const dateTime = moment().format()
-      return await MongoDriver.constructor.db
-        .collection(this.collection)
-        .updateOne(query, {
-          $push: { text: newTurn },
-          $set: { last_update: dateTime },
-          $inc: { editorEpoch: 1 },
-        })
-    } catch (error) {
-      console.error(error)
-      return error
-    }
-  }
-
-  /**
-   * Remove a turn from the text array atomically.
-   */
-  async removeTurnAtomic(conversationId, turnId) {
-    try {
-      const query = { _id: this.getObjectId(conversationId) }
-      const dateTime = moment().format()
-      return await MongoDriver.constructor.db
-        .collection(this.collection)
-        .updateOne(query, {
-          $pull: { text: { turn_id: turnId } },
-          $set: { last_update: dateTime },
-          $inc: { editorEpoch: 1 },
-        })
-    } catch (error) {
-      console.error(error)
-      return error
-    }
-  }
-
-  // ── Collaborative editor epoch ────────────────────────────────────────
-  //
-  // `editorEpoch` identifies the current editor CRDT history lineage of a
-  // conversation. It is compared by equality only (never ordered); a missing
-  // field is equivalent to 0 (conversations created before this feature).
-  //
-  // Two rules keep it sound under concurrency:
-  //  - every writer of `text`/`speakers` that does NOT go through the editor
-  //    flush bumps it ($inc, atomic), invalidating the persisted Yjs state;
-  //  - the editor flush never bumps it, and writes with the epoch read at
-  //    document load as an optimistic-concurrency filter (a concurrent bump
-  //    makes the flush match nothing instead of clobbering the rewrite).
-
-  /** Query matching the conversation only if its epoch is still `expectedEpoch`. */
-  editorEpochQuery(conversationId, expectedEpoch) {
-    const query = { _id: this.getObjectId(conversationId) }
-    // `$in: [0, null]` also matches documents without the field (missing ≡ 0).
-    query.editorEpoch =
-      expectedEpoch === 0 ? { $in: [0, null] } : expectedEpoch
-    return query
-  }
-
-  async bumpEditorEpoch(conversationId, expectedEpoch = null) {
-    try {
-      // $inc creates the field with value 1 when missing (missing ≡ 0).
-      // With `expectedEpoch`, the bump only applies while the epoch is still
-      // the expected one (matchedCount === 0 otherwise) — concurrent bumpers
-      // (e.g. two replicas migrating the same legacy state) move the epoch
-      // exactly once instead of killing each other's fresh lineage.
-      const query =
-        expectedEpoch === null
-          ? { _id: this.getObjectId(conversationId) }
-          : this.editorEpochQuery(conversationId, expectedEpoch)
-      return await MongoDriver.constructor.db
-        .collection(this.collection)
-        .updateOne(query, { $inc: { editorEpoch: 1 } })
-    } catch (error) {
-      console.error(error)
-      return error
-    }
-  }
-
-  /**
-   * Replace the entire text array on a conversation.
-   * Used by the collaborative editor flush so that turn order is preserved
-   * exactly as it appears in the Y.Doc (atomic single-document write).
-   * With `expectedEpoch`, the write only applies if the editor epoch is
-   * unchanged — check `matchedCount` on the result. Throws on a DB error (do
-   * not swallow it): the flush must tell a transient failure apart from an
-   * epoch miss (`matchedCount === 0`), which it cannot do from a returned Error.
-   */
-  async replaceTurns(conversationId, turns, expectedEpoch = null) {
-    const query =
-      expectedEpoch === null
-        ? { _id: this.getObjectId(conversationId) }
-        : this.editorEpochQuery(conversationId, expectedEpoch)
-    const dateTime = moment().format()
-    return await this.mongoUpdateOne(query, "$set", {
-      text: turns,
-      last_update: dateTime,
-    })
-  }
-
-  /**
-   * Update specific turns in place by turn_id (caller ensures no
-   * add/remove/reorder). With `expectedEpoch`, every op is filtered on the
-   * epoch — a full write yields matchedCount === turns.length + 1. Throws on a
-   * DB error (do not swallow it): the flush must tell a transient failure apart
-   * from an epoch miss, which it cannot do from a returned Error.
-   */
-  async updateTurnsByIds(conversationId, turns, expectedEpoch = null) {
-    const filter =
-      expectedEpoch === null
-        ? { _id: this.getObjectId(conversationId) }
-        : this.editorEpochQuery(conversationId, expectedEpoch)
-    const operations = turns.map((turn) => ({
-      updateOne: {
-        filter,
-        update: { $set: { "text.$[elem]": turn } },
-        arrayFilters: [{ "elem.turn_id": turn.turn_id }],
-      },
-    }))
-    operations.push({
-      updateOne: {
-        filter,
-        update: { $set: { last_update: moment().format() } },
-      },
-    })
-    return await this.mongoBulkWrite(operations)
-  }
-
-  /**
-   * Replace the speakers array on a conversation.
-   * With `expectedEpoch`, the write only applies if the editor epoch is
-   * unchanged — check `matchedCount` on the result. Throws on a DB error (do
-   * not swallow it): the flush must tell a transient failure apart from an
-   * epoch miss, which it cannot do from a returned Error.
-   */
   /**
    * Targeted save of ONE edited turn (lock+save editor). Field-level $set so
    * the fields this write doesn't own survive untouched (raw_segment keeps
@@ -733,16 +603,240 @@ class ConvoModel extends MongoModel {
     return result ? { version: result.editorVersion } : null
   }
 
-  async updateSpeakers(conversationId, speakers, expectedEpoch = null) {
-    const query =
-      expectedEpoch === null
-        ? { _id: this.getObjectId(conversationId) }
-        : this.editorEpochQuery(conversationId, expectedEpoch)
-    const dateTime = moment().format()
-    return await this.mongoUpdateOne(query, "$set", {
-      speakers,
-      last_update: dateTime,
-    })
+  /**
+   * Point a turn at a speaker (existing or freshly minted), in ONE atomic
+   * pipeline that also maintains the speakers array: the speaker is added
+   * when new, and any speaker no longer referenced by the text is dropped
+   * (GC — "a speaker exists as long as it is assigned"). editorVersion is
+   * bumped in the same write. Throws on DB error.
+   * @param {{speaker_id: string, speaker_name: string}} speaker
+   * @returns {Promise<{version: number}|null>} null when the conversation or
+   *   the turn no longer exists.
+   */
+  async updateEditorTurnSpeaker(conversationId, turnId, speaker) {
+    const result = await MongoDriver.constructor.db
+      .collection(this.collection)
+      .findOneAndUpdate(
+        { _id: this.getObjectId(conversationId), "text.turn_id": turnId },
+        [
+          {
+            $set: {
+              text: {
+                $map: {
+                  input: "$text",
+                  as: "t",
+                  in: {
+                    $cond: [
+                      { $eq: ["$$t.turn_id", turnId] },
+                      {
+                        $mergeObjects: [
+                          "$$t",
+                          { speaker_id: speaker.speaker_id },
+                        ],
+                      },
+                      "$$t",
+                    ],
+                  },
+                },
+              },
+            },
+          },
+          {
+            // Runs on the UPDATED text (pipeline stages are sequential):
+            // ensure the new speaker, then keep only referenced speakers.
+            $set: {
+              speakers: {
+                $filter: {
+                  input: {
+                    $concatArrays: [
+                      { $ifNull: ["$speakers", []] },
+                      {
+                        $cond: [
+                          {
+                            $in: [
+                              speaker.speaker_id,
+                              { $ifNull: ["$speakers.speaker_id", []] },
+                            ],
+                          },
+                          [],
+                          [speaker],
+                        ],
+                      },
+                    ],
+                  },
+                  as: "s",
+                  cond: { $in: ["$$s.speaker_id", "$text.speaker_id"] },
+                },
+              },
+            },
+          },
+          {
+            $set: {
+              editorVersion: { $add: [{ $ifNull: ["$editorVersion", 0] }, 1] },
+              last_update: moment().format(),
+            },
+          },
+        ],
+        {
+          returnDocument: "after",
+          projection: { editorVersion: 1 },
+          includeResultMetadata: false,
+        },
+      )
+    return result ? { version: result.editorVersion } : null
+  }
+
+  /**
+   * Remove ONE turn (lock+save editor — triggered by committing an emptied
+   * text). One atomic pipeline: the turn is filtered out of text, speakers
+   * no longer referenced are dropped (GC), editorVersion bumped. The filter
+   * requires a SECOND turn to exist ("text.1") — a track never goes empty,
+   * the last turn cannot be deleted. Throws on DB error.
+   * @returns {Promise<{version: number}|null>} null when the conversation or
+   *   the turn no longer exists — or when it is the track's last turn.
+   */
+  async deleteEditorTurn(conversationId, turnId) {
+    const result = await MongoDriver.constructor.db
+      .collection(this.collection)
+      .findOneAndUpdate(
+        {
+          _id: this.getObjectId(conversationId),
+          "text.turn_id": turnId,
+          "text.1": { $exists: true },
+        },
+        [
+          {
+            $set: {
+              text: {
+                $filter: {
+                  input: "$text",
+                  as: "t",
+                  cond: { $ne: ["$$t.turn_id", turnId] },
+                },
+              },
+            },
+          },
+          {
+            // Runs on the UPDATED text: drop speakers referencing nothing.
+            $set: {
+              speakers: {
+                $filter: {
+                  input: { $ifNull: ["$speakers", []] },
+                  as: "s",
+                  cond: { $in: ["$$s.speaker_id", "$text.speaker_id"] },
+                },
+              },
+            },
+          },
+          {
+            $set: {
+              editorVersion: { $add: [{ $ifNull: ["$editorVersion", 0] }, 1] },
+              last_update: moment().format(),
+            },
+          },
+        ],
+        {
+          returnDocument: "after",
+          projection: { editorVersion: 1 },
+          includeResultMetadata: false,
+        },
+      )
+    return result ? { version: result.editorVersion } : null
+  }
+
+  /**
+   * Rename a speaker of ONE conversation (track). editorVersion bumped in
+   * the same write. Throws on DB error.
+   * @returns {Promise<{version: number}|null>} null when the conversation or
+   *   the speaker no longer exists.
+   */
+  async renameEditorSpeaker(conversationId, speakerId, name) {
+    const result = await MongoDriver.constructor.db
+      .collection(this.collection)
+      .findOneAndUpdate(
+        {
+          _id: this.getObjectId(conversationId),
+          "speakers.speaker_id": speakerId,
+        },
+        {
+          $set: {
+            "speakers.$.speaker_name": name,
+            last_update: moment().format(),
+          },
+          $inc: { editorVersion: 1 },
+        },
+        {
+          returnDocument: "after",
+          projection: { editorVersion: 1 },
+          includeResultMetadata: false,
+        },
+      )
+    return result ? { version: result.editorVersion } : null
+  }
+
+  /**
+   * Reassign every turn of a speaker to another and drop the replaced
+   * speaker (it references nothing by construction afterwards) — one atomic
+   * pipeline, editorVersion bumped in the same write. Throws on DB error.
+   * @returns {Promise<{version: number}|null>} null when the conversation or
+   *   either speaker no longer exists.
+   */
+  async replaceEditorSpeaker(conversationId, fromSpeakerId, toSpeakerId) {
+    const result = await MongoDriver.constructor.db
+      .collection(this.collection)
+      .findOneAndUpdate(
+        {
+          _id: this.getObjectId(conversationId),
+          $and: [
+            { speakers: { $elemMatch: { speaker_id: fromSpeakerId } } },
+            { speakers: { $elemMatch: { speaker_id: toSpeakerId } } },
+          ],
+        },
+        [
+          {
+            $set: {
+              text: {
+                $map: {
+                  input: "$text",
+                  as: "t",
+                  in: {
+                    $cond: [
+                      { $eq: ["$$t.speaker_id", fromSpeakerId] },
+                      {
+                        $mergeObjects: ["$$t", { speaker_id: toSpeakerId }],
+                      },
+                      "$$t",
+                    ],
+                  },
+                },
+              },
+            },
+          },
+          {
+            $set: {
+              speakers: {
+                $filter: {
+                  input: { $ifNull: ["$speakers", []] },
+                  as: "s",
+                  cond: { $ne: ["$$s.speaker_id", fromSpeakerId] },
+                },
+              },
+            },
+          },
+          {
+            $set: {
+              editorVersion: { $add: [{ $ifNull: ["$editorVersion", 0] }, 1] },
+              last_update: moment().format(),
+            },
+          },
+        ],
+        {
+          returnDocument: "after",
+          projection: { editorVersion: 1 },
+          includeResultMetadata: false,
+        },
+      )
+    return result ? { version: result.editorVersion } : null
   }
 
   async updateCategory(_id, category) {

@@ -1,5 +1,6 @@
 import type { TurnSplit } from "../../../core/types"
 import type { EditorPluginState } from "../types"
+import { trackBroadcastVersion } from "../tools/trackBroadcastVersion"
 import { findTranslationStore } from "../tools/findTranslationStore"
 import { toStoreTurn } from "../tools/toStoreTurn"
 
@@ -9,6 +10,9 @@ export function applyTurnSplit(
   state: EditorPluginState,
   split: TurnSplit,
 ): void {
+  // Version gate: stale broadcasts are skipped, a gap triggers a refetch.
+  if (!trackBroadcastVersion(state, split.translationId, split.version)) return
+
   // The lock makes a concurrent edit of the split turn impossible, but stay
   // defensive: never rewrite under the user's caret.
   if (
@@ -30,4 +34,21 @@ export function applyTurnSplit(
       turn.id === split.originalTurnId ? halves : [turn],
     ),
   )
+
+  // setTurns emits no turn events (it is also the loading path, which must
+  // stay silent): emit them here so hosts see the split as an edit — e.g.
+  // to flag the generated summary as outdated.
+  for (const half of halves) {
+    if (half.id === split.originalTurnId) {
+      state.core.emit("turn:update", {
+        turn: half,
+        translationId: split.translationId,
+      })
+    } else {
+      state.core.emit("turn:add", {
+        turn: half,
+        translationId: split.translationId,
+      })
+    }
+  }
 }

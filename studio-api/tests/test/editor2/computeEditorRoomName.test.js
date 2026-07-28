@@ -1,5 +1,5 @@
 const { computeEditorRoomName } = require(
-  `${process.cwd()}/components/EditorHandler2/utils/computeEditorRoomName`,
+  `${process.cwd()}/components/EditorHandler/utils/computeEditorRoomName`,
 )
 
 describe("computeEditorRoomName", () => {

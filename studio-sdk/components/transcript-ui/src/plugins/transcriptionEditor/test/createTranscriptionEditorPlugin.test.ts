@@ -400,6 +400,17 @@ describe("createTranscriptionEditorPlugin — applyTurnSplit", () => {
     expect(right.speakerId).toBe("spk-2")
   })
 
+  it("emits the edit events setTurns stays silent about", () => {
+    const core = makeEditorCore()
+    const events: string[] = []
+    core.on("turn:update", ({ turn }) => events.push(`update:${turn.id}`))
+    core.on("turn:add", ({ turn }) => events.push(`add:${turn.id}`))
+
+    core.transcriptionEditor!.applyTurnSplit(SPLIT)
+
+    expect(events).toEqual(["update:turn-2", "add:turn-new"])
+  })
+
   it("ignores a split for an unknown turn or an unloaded track", () => {
     const core = makeEditorCore()
     core.transcriptionEditor!.applyTurnSplit({
@@ -511,6 +522,17 @@ describe("createTranscriptionEditorPlugin — applyTurnsMerged", () => {
     expect(merged.endTime).toBe(3)
   })
 
+  it("emits the edit events setTurns stays silent about", () => {
+    const core = makeEditorCore()
+    const events: string[] = []
+    core.on("turn:update", ({ turn }) => events.push(`update:${turn.id}`))
+    core.on("turn:remove", ({ turnId }) => events.push(`remove:${turnId}`))
+
+    core.transcriptionEditor!.applyTurnsMerged(MERGE)
+
+    expect(events).toEqual(["update:turn-2", "remove:turn-1"])
+  })
+
   it("ignores a merge for an unknown turn or an unloaded track", () => {
     const core = makeEditorCore()
     core.transcriptionEditor!.applyTurnsMerged({
@@ -525,6 +547,365 @@ describe("createTranscriptionEditorPlugin — applyTurnsMerged", () => {
     expect(
       core.activeChannel.value!.sourceTranslation.turns.value,
     ).toHaveLength(3)
+  })
+})
+
+describe("createTranscriptionEditorPlugin — emptied turn means deletion", () => {
+  it("deletes then unlocks when an emptied text is committed", async () => {
+    const order: string[] = []
+    let deletePayload: unknown
+    const core = makeEditorCore({
+      lockTurn: async () => GRANTED,
+      saveTurn: async () => {
+        order.push("save")
+        return { ok: true }
+      },
+      deleteTurn: async (p) => {
+        order.push("delete")
+        deletePayload = p
+        return { ok: true }
+      },
+      unlockTurn: async () => {
+        order.push("unlock")
+        return { ok: true }
+      },
+    })
+
+    await core.transcriptionEditor!.beginEdit("turn-2")
+    core.transcriptionEditor!.saveTurn("   ")
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    expect(order).toEqual(["delete", "unlock"])
+    expect(deletePayload).toEqual({ translationId: "tr-1", turnId: "turn-2" })
+    // No local application: the turn_deleted broadcast is the single path.
+    expect(core.activeChannel.value!.sourceTranslation.turns.value).toHaveLength(3)
+  })
+
+  it("reverts instead of deleting the track's LAST turn", async () => {
+    const order: string[] = []
+    const core = makeEditorCore({
+      lockTurn: async () => GRANTED,
+      deleteTurn: async () => {
+        order.push("delete")
+        return { ok: true }
+      },
+      unlockTurn: async () => {
+        order.push("unlock")
+        return { ok: true }
+      },
+    })
+    const store = core.activeChannel.value!.sourceTranslation
+    store.setTurns([store.getTurn("turn-1")!])
+
+    await core.transcriptionEditor!.beginEdit("turn-1")
+    core.transcriptionEditor!.saveTurn("")
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    expect(order).toEqual(["unlock"])
+    expect(store.turns.value).toHaveLength(1)
+    expect(store.getTurn("turn-1")?.text).toBe("text of turn-1")
+  })
+
+  it("applies the deletion locally without a host handler", async () => {
+    const core = makeEditorCore()
+    await core.transcriptionEditor!.beginEdit("turn-2")
+    core.transcriptionEditor!.saveTurn("")
+
+    const turns = core.activeChannel.value!.sourceTranslation.turns.value
+    expect(turns.map((t) => t.id)).toEqual(["turn-1", "turn-3"])
+  })
+
+  it("Enter on an emptied turn deletes too (no split)", async () => {
+    const order: string[] = []
+    const core = makeEditorCore({
+      lockTurn: async () => GRANTED,
+      deleteTurn: async () => {
+        order.push("delete")
+        return { ok: true }
+      },
+      splitTurn: async () => {
+        order.push("split")
+        return { ok: true }
+      },
+      unlockTurn: async () => {
+        order.push("unlock")
+        return { ok: true }
+      },
+    })
+
+    await core.transcriptionEditor!.beginEdit("turn-2")
+    core.transcriptionEditor!.splitTurn("  ", 1)
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    expect(order).toEqual(["delete", "unlock"])
+  })
+})
+
+describe("createTranscriptionEditorPlugin — applyTurnDeleted", () => {
+  it("removes the turn and GCs the orphaned speaker", () => {
+    const core = makeEditorCore()
+    core.transcriptionEditor!.applyTurnDeleted({
+      translationId: "tr-1",
+      turnId: "turn-2",
+      removedSpeakerId: "spk-2",
+      version: 8,
+    })
+
+    const turns = core.activeChannel.value!.sourceTranslation.turns.value
+    expect(turns.map((t) => t.id)).toEqual(["turn-1", "turn-3"])
+    expect(core.speakers.all.has("spk-2")).toBe(false)
+  })
+
+  it("ignores unknown turns and unloaded tracks", () => {
+    const core = makeEditorCore()
+    core.transcriptionEditor!.applyTurnDeleted({
+      translationId: "tr-1",
+      turnId: "turn-404",
+    })
+    core.transcriptionEditor!.applyTurnDeleted({
+      translationId: "tr-unloaded",
+      turnId: "turn-2",
+    })
+    expect(
+      core.activeChannel.value!.sourceTranslation.turns.value,
+    ).toHaveLength(3)
+  })
+})
+
+describe("createTranscriptionEditorPlugin — speaker commands", () => {
+  it("pushes update_turn_speaker with the active track id (existing speaker)", async () => {
+    let payload: unknown
+    const core = makeEditorCore({
+      updateTurnSpeaker: async (p) => {
+        payload = p
+        return { ok: true }
+      },
+    })
+
+    core.transcriptionEditor!.updateTurnSpeaker("turn-1", {
+      speakerId: "spk-2",
+    })
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    expect(payload).toEqual({
+      translationId: "tr-1",
+      turnId: "turn-1",
+      speakerId: "spk-2",
+    })
+  })
+
+  it("pushes the trimmed name for a creation, and refuses ambiguous targets", async () => {
+    const payloads: unknown[] = []
+    const core = makeEditorCore({
+      updateTurnSpeaker: async (p) => {
+        payloads.push(p)
+        return { ok: true }
+      },
+    })
+
+    core.transcriptionEditor!.updateTurnSpeaker("turn-1", {
+      speakerName: "  Julie ",
+    })
+    core.transcriptionEditor!.updateTurnSpeaker("turn-1", {
+      speakerId: "spk-2",
+      speakerName: "Julie",
+    })
+    core.transcriptionEditor!.updateTurnSpeaker("turn-1", {})
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    expect(payloads).toEqual([
+      { translationId: "tr-1", turnId: "turn-1", speakerName: "Julie" },
+    ])
+  })
+
+  it("applies locally without a host handler (local-only mode)", () => {
+    const core = makeEditorCore()
+    core.transcriptionEditor!.updateTurnSpeaker("turn-1", {
+      speakerId: "spk-2",
+    })
+    expect(
+      core.activeChannel.value!.sourceTranslation.getTurn("turn-1")?.speakerId,
+    ).toBe("spk-2")
+
+    core.transcriptionEditor!.renameSpeaker("spk-2", "Thomas B.")
+    expect(core.speakers.all.get("spk-2")?.name).toBe("Thomas B.")
+  })
+
+  it("pushes rename and replace with the active track id", async () => {
+    const calls: Array<[string, unknown]> = []
+    const core = makeEditorCore({
+      renameSpeaker: async (p) => {
+        calls.push(["rename", p])
+        return { ok: true }
+      },
+      replaceSpeaker: async (p) => {
+        calls.push(["replace", p])
+        return { ok: true }
+      },
+    })
+
+    core.transcriptionEditor!.renameSpeaker("spk-1", " Marie D. ")
+    core.transcriptionEditor!.replaceSpeaker("spk-1", "spk-2")
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    expect(calls).toEqual([
+      [
+        "rename",
+        { translationId: "tr-1", speakerId: "spk-1", name: "Marie D." },
+      ],
+      [
+        "replace",
+        { translationId: "tr-1", fromSpeakerId: "spk-1", toSpeakerId: "spk-2" },
+      ],
+    ])
+    // With handlers, nothing is applied locally (broadcast is the only path).
+    expect(core.speakers.all.get("spk-1")?.name).toBe("Marie")
+  })
+})
+
+describe("createTranscriptionEditorPlugin — speaker applies", () => {
+  it("applyTurnSpeakerUpdated assigns, ensures the speaker and GCs the orphan", () => {
+    const core = makeEditorCore()
+    // turn-2 is spk-2's only turn: reassigning it orphans spk-2.
+    core.transcriptionEditor!.applyTurnSpeakerUpdated({
+      translationId: "tr-1",
+      turnId: "turn-2",
+      speaker: { id: "spk-new", name: "Julie" },
+      removedSpeakerId: "spk-2",
+      version: 4,
+    })
+
+    expect(
+      core.activeChannel.value!.sourceTranslation.getTurn("turn-2")?.speakerId,
+    ).toBe("spk-new")
+    expect(core.speakers.all.get("spk-new")?.name).toBe("Julie")
+    expect(core.speakers.all.has("spk-2")).toBe(false)
+  })
+
+  it("keeps a 'removed' speaker still referenced by a loaded track", () => {
+    const core = makeEditorCore()
+    // spk-1 holds turn-1 AND turn-3: a per-track removal must not drop it
+    // from the global store while a loaded track still references it.
+    core.transcriptionEditor!.applyTurnSpeakerUpdated({
+      translationId: "tr-1",
+      turnId: "turn-1",
+      speaker: { id: "spk-2", name: "Thomas" },
+      removedSpeakerId: "spk-1",
+      version: 5,
+    })
+
+    expect(core.speakers.all.has("spk-1")).toBe(true)
+  })
+
+  it("applySpeakerRenamed updates the global store", () => {
+    const core = makeEditorCore()
+    core.transcriptionEditor!.applySpeakerRenamed({
+      translationId: "tr-1",
+      speakerId: "spk-1",
+      name: "Marie Dupont",
+      version: 6,
+    })
+    expect(core.speakers.all.get("spk-1")?.name).toBe("Marie Dupont")
+  })
+
+  it("applySpeakerReplaced reassigns the track's turns and drops the source", () => {
+    const core = makeEditorCore()
+    core.transcriptionEditor!.applySpeakerReplaced({
+      translationId: "tr-1",
+      fromSpeakerId: "spk-1",
+      toSpeakerId: "spk-2",
+      version: 7,
+    })
+
+    const turns = core.activeChannel.value!.sourceTranslation.turns.value
+    expect(turns.every((t) => t.speakerId === "spk-2")).toBe(true)
+    expect(core.speakers.all.has("spk-1")).toBe(false)
+  })
+})
+
+describe("createTranscriptionEditorPlugin — version safety net", () => {
+  function makeUpdate(version: number) {
+    return {
+      translationId: "tr-1",
+      turnId: "turn-1",
+      text: "texte serveur",
+      words: [{ word: "texte" }, { word: "serveur" }],
+      version,
+    }
+  }
+
+  it("applies sequential versions and skips stale broadcasts", () => {
+    const core = makeEditorCore()
+    core.transcriptionEditor!.setTranslationVersion("tr-1", 5)
+
+    // v6: nominal — applied.
+    core.transcriptionEditor!.applyTurnUpdate(makeUpdate(6))
+    const turn = core.activeChannel.value!.sourceTranslation.getTurn("turn-1")!
+    expect(turn.words.map((w) => w.text)).toEqual(["texte", "serveur"])
+
+    // v6 again (duplicate) and v4 (old): skipped.
+    core.transcriptionEditor!.applyTurnUpdate({
+      ...makeUpdate(6),
+      text: "doublon",
+      words: [{ word: "doublon" }],
+    })
+    expect(
+      core.activeChannel.value!.sourceTranslation.getTurn("turn-1")!.words[0]!
+        .text,
+    ).toBe("texte")
+  })
+
+  it("a version gap skips the apply and asks the host to refetch — once", async () => {
+    const refetched: string[] = []
+    const core = makeEditorCore({
+      refetchTranslation: async (translationId) => {
+        refetched.push(translationId)
+      },
+    })
+    core.transcriptionEditor!.setTranslationVersion("tr-1", 5)
+
+    // v8 and v9 arrive after missed v6/v7: one refetch, no application.
+    core.transcriptionEditor!.applyTurnUpdate(makeUpdate(8))
+    core.transcriptionEditor!.applyTurnUpdate(makeUpdate(9))
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    expect(refetched).toEqual(["tr-1"])
+    expect(
+      core.activeChannel.value!.sourceTranslation.getTurn("turn-1")!.words,
+    ).toEqual([])
+  })
+
+  it("untracked tracks apply as before (no baseline yet)", () => {
+    const core = makeEditorCore()
+    core.transcriptionEditor!.applyTurnUpdate(makeUpdate(42))
+    expect(
+      core.activeChannel.value!.sourceTranslation.getTurn("turn-1")!.words,
+    ).toHaveLength(2)
+  })
+
+  it("reconcileVersions refetches only the loaded tracks that went stale", async () => {
+    const refetched: string[] = []
+    const core = makeEditorCore({
+      refetchTranslation: async (translationId) => {
+        refetched.push(translationId)
+      },
+    })
+    core.transcriptionEditor!.setTranslationVersion("tr-1", 5)
+
+    core.transcriptionEditor!.reconcileVersions({
+      "tr-1": 9, // loaded and stale → refetch
+      "tr-OTHER": 4, // never loaded → ignored
+      "conv-parent": 2, // not a track we hold → ignored
+    })
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    expect(refetched).toEqual(["tr-1"])
+
+    // Up to date: nothing happens.
+    core.transcriptionEditor!.setTranslationVersion("tr-1", 9)
+    core.transcriptionEditor!.reconcileVersions({ "tr-1": 9 })
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(refetched).toEqual(["tr-1"])
   })
 })
 

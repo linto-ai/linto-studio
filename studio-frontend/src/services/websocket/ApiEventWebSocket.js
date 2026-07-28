@@ -182,7 +182,7 @@ export default class ApiEventWebSocket {
   // ── Transcription editor (lock+save model, see "Editor v2" design) ──
   // The room is the PARENT conversation (one join per open editor view);
   // every mutation payload carries the translationId — the child
-  // conversation actually edited — and is enriched here with the parentId.
+  // conversation actually edited. The parent is known server-side (join).
 
   joinEditorRoom(conversationId, handlers = {}) {
     if (!this.socket) return
@@ -200,6 +200,14 @@ export default class ApiEventWebSocket {
         this.editorHandlers?.onTurnSplit?.(split)
       this._editorTurnsMerged = (merge) =>
         this.editorHandlers?.onTurnsMerged?.(merge)
+      this._editorTurnDeleted = (deleted) =>
+        this.editorHandlers?.onTurnDeleted?.(deleted)
+      this._editorTurnSpeakerUpdated = (update) =>
+        this.editorHandlers?.onTurnSpeakerUpdated?.(update)
+      this._editorSpeakerRenamed = (renamed) =>
+        this.editorHandlers?.onSpeakerRenamed?.(renamed)
+      this._editorSpeakerReplaced = (replaced) =>
+        this.editorHandlers?.onSpeakerReplaced?.(replaced)
     }
     // off before on: joinEditorRoom re-runs on reconnection.
     this.socket.off("editor:turn_locked", this._editorTurnLocked)
@@ -207,11 +215,19 @@ export default class ApiEventWebSocket {
     this.socket.off("editor:turn_updated", this._editorTurnUpdated)
     this.socket.off("editor:turn_split", this._editorTurnSplit)
     this.socket.off("editor:turns_merged", this._editorTurnsMerged)
+    this.socket.off("editor:turn_deleted", this._editorTurnDeleted)
+    this.socket.off("editor:turn_speaker_updated", this._editorTurnSpeakerUpdated)
+    this.socket.off("editor:speaker_renamed", this._editorSpeakerRenamed)
+    this.socket.off("editor:speaker_replaced", this._editorSpeakerReplaced)
     this.socket.on("editor:turn_locked", this._editorTurnLocked)
     this.socket.on("editor:turn_unlocked", this._editorTurnUnlocked)
     this.socket.on("editor:turn_updated", this._editorTurnUpdated)
     this.socket.on("editor:turn_split", this._editorTurnSplit)
     this.socket.on("editor:turns_merged", this._editorTurnsMerged)
+    this.socket.on("editor:turn_deleted", this._editorTurnDeleted)
+    this.socket.on("editor:turn_speaker_updated", this._editorTurnSpeakerUpdated)
+    this.socket.on("editor:speaker_renamed", this._editorSpeakerRenamed)
+    this.socket.on("editor:speaker_replaced", this._editorSpeakerReplaced)
 
     this.socket.emit("editor:join", conversationId, (ack) => {
       debugWSEditor("editor:join ack", ack)
@@ -226,6 +242,10 @@ export default class ApiEventWebSocket {
     this.socket.off("editor:turn_updated", this._editorTurnUpdated)
     this.socket.off("editor:turn_split", this._editorTurnSplit)
     this.socket.off("editor:turns_merged", this._editorTurnsMerged)
+    this.socket.off("editor:turn_deleted", this._editorTurnDeleted)
+    this.socket.off("editor:turn_speaker_updated", this._editorTurnSpeakerUpdated)
+    this.socket.off("editor:speaker_renamed", this._editorSpeakerRenamed)
+    this.socket.off("editor:speaker_replaced", this._editorSpeakerReplaced)
     this.socket.emit("editor:leave", this.currentEditorConversationId)
     this.currentEditorConversationId = null
     this.editorHandlers = null
@@ -253,6 +273,38 @@ export default class ApiEventWebSocket {
     })
   }
 
+  deleteEditorTurn({ translationId, turnId }) {
+    return this._emitEditorCommand("editor:delete_turn", {
+      translationId,
+      turnId,
+    })
+  }
+
+  updateEditorTurnSpeaker({ translationId, turnId, speakerId, speakerName }) {
+    return this._emitEditorCommand("editor:update_turn_speaker", {
+      translationId,
+      turnId,
+      speakerId,
+      speakerName,
+    })
+  }
+
+  renameEditorSpeaker({ translationId, speakerId, name }) {
+    return this._emitEditorCommand("editor:rename_speaker", {
+      translationId,
+      speakerId,
+      name,
+    })
+  }
+
+  replaceEditorSpeaker({ translationId, fromSpeakerId, toSpeakerId }) {
+    return this._emitEditorCommand("editor:replace_speaker", {
+      translationId,
+      fromSpeakerId,
+      toSpeakerId,
+    })
+  }
+
   mergeEditorTurns({ translationId, firstTurnId, secondTurnId }) {
     return this._emitEditorCommand("editor:merge_turns", {
       translationId,
@@ -269,20 +321,16 @@ export default class ApiEventWebSocket {
     })
   }
 
-  // Ack-based editor command: parentId enriched from the joined conversation,
-  // ack timeout resolved as a failure instead of a hanging promise.
+  // Ack-based editor command: ack timeout resolved as a failure instead
+  // of a hanging promise.
   _emitEditorCommand(event, payload) {
     if (!this.socket) {
       return Promise.resolve({ ok: false, reason: "disconnected" })
     }
-    const fullPayload = {
-      ...payload,
-      parentId: this.currentEditorConversationId,
-    }
     return new Promise((resolve) => {
       this.socket
         .timeout(EDITOR_ACK_TIMEOUT_MS)
-        .emit(event, fullPayload, (timeoutErr, ack) => {
+        .emit(event, payload, (timeoutErr, ack) => {
           if (timeoutErr) {
             debugWSEditor(`${event} ack timeout`, payload)
             resolve({ ok: false, reason: "timeout" })

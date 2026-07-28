@@ -1,5 +1,5 @@
 const { computeSplitTurns } = require(
-  `${process.cwd()}/components/EditorHandler2/utils/computeSplitTurns`,
+  `${process.cwd()}/components/EditorHandler/utils/computeSplitTurns`,
 )
 
 // Derived text: "Bonjour tout le monde" — offsets: Bonjour[0,7] tout[8,12]

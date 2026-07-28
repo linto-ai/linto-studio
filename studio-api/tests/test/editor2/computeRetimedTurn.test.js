@@ -4,7 +4,7 @@
 jest.mock("syllable", () => ({ syllable: () => 1 }))
 
 const { computeRetimedTurn } = require(
-  `${process.cwd()}/components/EditorHandler2/utils/computeRetimedTurn`,
+  `${process.cwd()}/components/EditorHandler/utils/computeRetimedTurn`,
 )
 
 const OLD_TURN = {

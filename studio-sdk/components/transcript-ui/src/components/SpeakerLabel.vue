@@ -10,6 +10,9 @@ const props = defineProps<{
   startTime?: number
   startDate?: number
   language: string
+  /** The label is wrapped in a clickable trigger (speaker assignment):
+   *  show the hover affordance on the name. */
+  interactive?: boolean
 }>()
 
 const { t, locale } = useI18n()
@@ -43,19 +46,17 @@ const speakerColor = computed(() => props.speaker?.color ?? "transparent")
 
 // A turn always shows a speaker: unnamed ones get an explicit placeholder
 // (assignment lands with the speakers iteration).
-const displayName = computed(
-  () => props.speaker?.name ?? t("speaker.unknown"),
-)
+const displayName = computed(() => props.speaker?.name ?? t("speaker.unknown"))
 </script>
 
 <template>
-  <div class="speaker-label">
+  <div
+    class="speaker-label"
+    :class="{ 'speaker-label--interactive': interactive }">
     <SpeakerIndicator v-if="speaker" :color="speakerColor" />
-    <span
-      class="speaker-name"
-      :class="{ 'speaker-name--unknown': !speaker }"
-      >{{ displayName }}</span
-    >
+    <span class="speaker-name" :class="{ 'speaker-name--unknown': !speaker }">{{
+      displayName
+    }}</span>
     <time v-if="timestamp" class="timestamp" :datetime="timestamp.datetime">{{
       timestamp.text
     }}</time>
@@ -81,6 +82,10 @@ const displayName = computed(
   font-weight: 400;
   font-style: italic;
   color: var(--color-text-muted);
+}
+
+.speaker-label--interactive:hover .speaker-name {
+  text-decoration: underline;
 }
 
 .timestamp {

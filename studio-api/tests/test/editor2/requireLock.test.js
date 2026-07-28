@@ -4,10 +4,10 @@ jest.mock(`${process.cwd()}/lib/mongodb/models`, () => ({
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const { requireLock } = require(
-  `${process.cwd()}/components/EditorHandler2/handlers/requireLock`,
+  `${process.cwd()}/components/EditorHandler/decorators/requireLock`,
 )
 
-const PAYLOAD = { parentId: "conv-1", translationId: "tr-1", turnId: "turn-1" }
+const PAYLOAD = { translationId: "tr-1", turnId: "turn-1" }
 
 function makeCtx() {
   return { io: {}, socket: { id: "sock-1", data: {} } }

@@ -8,7 +8,7 @@ const props = withDefaults(
     label?: string
     icon?: string
     iconRight?: string
-    variant?: "primary" | "secondary" | "tertiary" | "transparent"
+    variant?: "primary" | "secondary" | "tertiary" | "transparent" | "inverse"
     intent?: "default" | "destructive"
     size?: "sm" | "md" | "lg"
     disabled?: boolean
@@ -201,6 +201,17 @@ const classes = computed(() => [
   --btn-hover-text: var(--color-text-primary);
 }
 
+/* Literal theme inversion: background = the theme's text color and
+   vice-versa — high contrast in both light and dark themes without
+   borrowing the primary color's semantics. */
+.editor-btn--inverse {
+  --btn-bg: var(--color-text-primary);
+  --btn-text: var(--color-background);
+  --btn-border-color: transparent;
+  --btn-hover-bg: var(--color-text-secondary);
+  --btn-hover-text: var(--color-background);
+}
+
 /* Destructive intent overrides */
 .editor-btn--destructive.editor-btn--primary {
   --btn-bg: var(--color-danger);
@@ -233,5 +244,21 @@ const classes = computed(() => [
   --btn-border-color: var(--color-border);
   --btn-hover-bg: var(--color-surface);
   --btn-hover-text: var(--color-text-muted);
+}
+
+/* The transparent variant has no chrome when enabled — disabling it must not
+   ADD a box; the muted text alone carries the disabled signal. */
+.editor-btn--transparent:disabled {
+  --btn-bg: transparent;
+  --btn-border-color: transparent;
+  --btn-hover-bg: transparent;
+}
+
+/* Inverse stays a filled, borderless chip when disabled — dimmed, but the
+   silhouette must not change. */
+.editor-btn--inverse:disabled {
+  --btn-bg: var(--color-surface-hover);
+  --btn-border-color: transparent;
+  --btn-hover-bg: var(--color-surface-hover);
 }
 </style>

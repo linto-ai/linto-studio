@@ -133,6 +133,15 @@ export default {
           unlockTurn: (payload) => this.$apiEventWS.unlockEditorTurn(payload),
           splitTurn: (payload) => this.$apiEventWS.splitEditorTurn(payload),
           mergeTurns: (payload) => this.$apiEventWS.mergeEditorTurns(payload),
+          deleteTurn: (payload) => this.$apiEventWS.deleteEditorTurn(payload),
+          updateTurnSpeaker: (payload) =>
+            this.$apiEventWS.updateEditorTurnSpeaker(payload),
+          renameSpeaker: (payload) =>
+            this.$apiEventWS.renameEditorSpeaker(payload),
+          replaceSpeaker: (payload) =>
+            this.$apiEventWS.replaceEditorSpeaker(payload),
+          refetchTranslation: (translationId) =>
+            this.refetchTranslation(translationId),
         }),
       )
       const mode = this.canWrite ? "edit" : "view"
@@ -141,7 +150,11 @@ export default {
       // join ack (and every reconnection re-ack) reseeds the whole map.
       this.$apiEventWS.joinEditorRoom(this.conversationId, {
         onJoined: (ack) => {
-          if (ack?.ok) core.transcriptionEditor?.setLocks(ack.locks ?? [])
+          if (!ack?.ok) return
+          core.transcriptionEditor?.setLocks(ack.locks ?? [])
+          // Reconnection: any loaded track the server says is ahead gets
+          // refetched — the whole point of the version safety net.
+          core.transcriptionEditor?.reconcileVersions(ack.versions ?? {})
         },
         onTurnLocked: (lock) => core.transcriptionEditor?.setTurnLock(lock),
         onTurnUnlocked: (ref) => core.transcriptionEditor?.clearTurnLock(ref),
@@ -150,6 +163,14 @@ export default {
         onTurnSplit: (split) => core.transcriptionEditor?.applyTurnSplit(split),
         onTurnsMerged: (merge) =>
           core.transcriptionEditor?.applyTurnsMerged(merge),
+        onTurnDeleted: (deleted) =>
+          core.transcriptionEditor?.applyTurnDeleted(deleted),
+        onTurnSpeakerUpdated: (update) =>
+          core.transcriptionEditor?.applyTurnSpeakerUpdated(update),
+        onSpeakerRenamed: (renamed) =>
+          core.transcriptionEditor?.applySpeakerRenamed(renamed),
+        onSpeakerReplaced: (replaced) =>
+          core.transcriptionEditor?.applySpeakerReplaced(replaced),
       })
 
       // setupLLMServices returns { dispose }; store the disposer so it matches
@@ -205,18 +226,40 @@ export default {
         channel.activeTranslation.value.id,
       )
       if (!translation || translation.turns.value.length > 0) return
+      await this.fetchTranslationContent(channel, translation)
+    },
 
+    // Version-gap or reconnection resync: reload the track unconditionally.
+    async refetchTranslation(translationId) {
+      const core = this.core
+      if (!core) return
+      for (const channel of core.channels.values()) {
+        const translation = channel.translations.get(translationId)
+        if (translation) {
+          await this.fetchTranslationContent(channel, translation)
+          return
+        }
+      }
+    },
+
+    async fetchTranslationContent(channel, translation) {
       channel.isLoadingHistory.value = true
       try {
+        // editorVersion fetched WITH the content (same backend read): the
+        // version baseline always matches what is displayed.
         const conv = await apiGetConversationById(
           translation.id,
-          ["text", "speakers"].toString(),
+          ["text", "speakers", "editorVersion"].toString(),
         )
         if (this.isDestroyed || !conv) return
         for (const s of conv.speakers ?? []) {
           this.core.speakers.ensure(s.speaker_id, s.speaker_name)
         }
         translation.setTurns(mapApiTurns(conv.text ?? []))
+        this.core.transcriptionEditor?.setTranslationVersion(
+          translation.id,
+          conv.editorVersion ?? 0,
+        )
         // Whole content arrives in one fetch: mark the history complete so
         // the panel shows its "beginning of transcription" boundary.
         channel.hasMoreHistory.value = false

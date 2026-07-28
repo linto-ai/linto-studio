@@ -1,4 +1,5 @@
 import type { EditorPluginState } from "../types"
+import { saveTurn } from "./saveTurn"
 import { computeTurnPlainText } from "../../../utils/computeTurnPlainText"
 import { computeOffsetInNormalizedText } from "../tools/computeOffsetInNormalizedText"
 import { computeUpdatedTurnFields } from "../tools/computeUpdatedTurnFields"
@@ -19,6 +20,13 @@ export function splitTurn(
   text: string,
   offset: number,
 ): void {
+  // Enter on an emptied turn is a commit, not a split: saveTurn owns the
+  // emptied-means-deleted rule (and its last-turn guard).
+  if (text.replace(/\s+/g, " ").trim() === "") {
+    saveTurn(state, text)
+    return
+  }
+
   const turnId = state.editingTurnId.value
   if (turnId === null) return
   const target = exitEditMode(state)

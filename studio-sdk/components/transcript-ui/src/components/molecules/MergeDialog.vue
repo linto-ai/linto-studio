@@ -63,7 +63,13 @@ function onClose(): void {
 
 function onConfirm(): void {
   if (!props.fromSpeakerId || !targetId.value) return
-  mergeSpeakers(core, props.fromSpeakerId, targetId.value)
+  // Through the plugin when present (server round-trip, applied at the
+  // broadcast); direct store helper otherwise (plugin-less embeds).
+  if (core.transcriptionEditor) {
+    core.transcriptionEditor.replaceSpeaker(props.fromSpeakerId, targetId.value)
+  } else {
+    mergeSpeakers(core, props.fromSpeakerId, targetId.value)
+  }
   emit("update:open", false)
 }
 </script>
