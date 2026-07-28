@@ -42,11 +42,11 @@ declare const _default: __VLS_WithTemplateSlots<import('vue').DefineComponent<{
 }, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {
     input: (value: string) => any;
     "update:modelValue": (value: string) => any;
-    keydown: (event: KeyboardEvent) => any;
-    blur: (event: FocusEvent) => any;
     focus: (event: FocusEvent) => any;
     "on-confirm": () => any;
     "on-cancel": () => any;
+    keydown: (event: KeyboardEvent) => any;
+    blur: (event: FocusEvent) => any;
 }, string, import('vue').PublicProps, Readonly<{
     field: FormField;
     modelValue?: string;
@@ -68,11 +68,11 @@ declare const _default: __VLS_WithTemplateSlots<import('vue').DefineComponent<{
 }> & Readonly<{
     onInput?: ((value: string) => any) | undefined;
     "onUpdate:modelValue"?: ((value: string) => any) | undefined;
-    onKeydown?: ((event: KeyboardEvent) => any) | undefined;
-    onBlur?: ((event: FocusEvent) => any) | undefined;
     onFocus?: ((event: FocusEvent) => any) | undefined;
     "onOn-confirm"?: (() => any) | undefined;
     "onOn-cancel"?: (() => any) | undefined;
+    onKeydown?: ((event: KeyboardEvent) => any) | undefined;
+    onBlur?: ((event: FocusEvent) => any) | undefined;
 }>, {
     size: "sm" | "md" | "lg";
 }, {}, {}, {}, string, import('vue').ComponentProvideOptions, false, {

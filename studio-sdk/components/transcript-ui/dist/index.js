@@ -1,18 +1,19 @@
-import { D as r, L as i, c as t, a as s, b as o, d as u, e as c, f as n, g as l, m as d, h as m, i as p, j as g, u as v, v as P } from "./index-BhkXrh9O.js";
+import { D as r, L as i, c as s, a as t, b as o, d as u, e as n, f as c, g as p, m as l, h as m, i as d, j as g, k as v, u as P, v as D } from "./index-BgBKoXKv.js";
 export {
   r as DocumentValidationError,
   i as Layout,
-  t as createAudioPlugin,
-  s as createChatPlugin,
+  s as createAudioPlugin,
+  t as createChatPlugin,
   o as createCore,
   u as createLLMServicesPlugin,
-  c as createLivePlugin,
-  n as createSubtitlePlugin,
-  l as createTranscriptionEditorPlugin,
-  d as mapApiDocument,
-  m as mapWhisperXDocument,
-  p as provideCore,
-  g as provideI18n,
-  v as useCore,
-  P as validateEditorDocument
+  n as createLivePlugin,
+  c as createSubtitlePlugin,
+  p as createTranscriptionEditorPlugin,
+  l as mapApiDocument,
+  m as mapApiTurns,
+  d as mapWhisperXDocument,
+  g as provideCore,
+  v as provideI18n,
+  P as useCore,
+  D as validateEditorDocument
 };

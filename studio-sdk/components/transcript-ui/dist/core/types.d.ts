@@ -1,5 +1,4 @@
 import { ComputedRef, Ref, ShallowRef } from 'vue';
-import { AnyExtension } from '@tiptap/core';
 import { AudioSource, Channel, EditorDocument, Speaker, Turn, Word } from '../types/editor';
 export interface CoreCapabilities {
     text: "edit" | "view";
@@ -99,16 +98,25 @@ export interface CoreEventMap {
     destroy: void;
 }
 export type TurnEventKey = "turn:add" | "turn:update" | "turn:remove";
-/** Read-only surface of a translation — satisfied by both real and virtual stores. */
-export interface ReadableTranslation {
+/** Which language track this is, within its channel — the "translation-ness"
+ *  of a turn list. Consumers that only route or label tracks (live plugin,
+ *  selectors) depend on this, never on the turns. */
+export interface TranslationInfo {
     readonly id: string;
     readonly languages: string[];
     readonly isSource: boolean;
+}
+/** Read-only surface of a translation — satisfied by both real and virtual stores. */
+export interface ReadableTranslation extends TranslationInfo {
     readonly audio?: AudioSource;
     readonly turns: Readonly<Ref<Turn[]>>;
     getTurn(turnId: string): Turn | undefined;
 }
-export interface TranslationStore extends ReadableTranslation {
+/** Mutable ordered list of speech turns, identified. What the transcription
+ *  editor edits — it doesn't know (or care) which language track it is. */
+export interface TurnStore {
+    readonly id: string;
+    readonly turns: Readonly<Ref<Turn[]>>;
     /** Epoch ms — last time the transcription was modified (host-pushed). */
     readonly lastModifiedAt: Ref<number | null>;
     setLastModifiedAt(ts: number | null): void;
@@ -122,6 +130,9 @@ export interface TranslationStore extends ReadableTranslation {
     updateOrCreateTurnSilent(turn: Turn): void;
     hasTurn(turnId: string): boolean;
     getTurn(turnId: string): Turn | undefined;
+}
+/** A channel's language track: a turn store situated by its track info. */
+export interface TranslationStore extends TurnStore, ReadableTranslation {
 }
 export interface ChannelStore {
     readonly id: string;
@@ -152,8 +163,6 @@ export interface SpeakersStore {
 export interface CorePlugin {
     name: string;
     install(core: Core): (() => void) | void;
-    /** TipTap extensions contributed by this plugin (e.g. Collaboration, CollaborationCursor) */
-    tiptapExtensions?: AnyExtension[];
 }
 export interface CoreOptions {
     document?: EditorDocument;
@@ -179,27 +188,147 @@ export interface AudioPluginApi {
     pause(): void;
     setPauseHandler(handler: (() => void) | null): void;
 }
-export interface YjsUser {
-    clientId: number;
-    [key: string]: unknown;
+/** A held edit lock, as broadcast by the server. */
+export interface TurnLock {
+    translationId: string;
+    turnId: string;
+    userId: string;
+    userName: string;
+}
+/** A saved turn, as broadcast by the server (editor:turn_updated): the
+ *  retimed truth. Words are consumed positionally (no wid on the wire). */
+export interface TurnUpdate {
+    translationId: string;
+    turnId: string;
+    text: string;
+    words: Array<{
+        word: string;
+        stime?: number;
+        etime?: number;
+        confidence?: number;
+    }>;
+    stime?: number;
+    etime?: number;
+    /** Per-translation edit version — carried, not consumed yet (resync lot). */
+    version?: number;
+}
+/** A full turn as carried by structural broadcasts (turn_split, turns_merged). */
+export interface WireTurn {
+    turnId: string;
+    text: string;
+    words: TurnUpdate["words"];
+    stime?: number;
+    etime?: number;
+    speakerId: string | null;
+    language: string;
+}
+/** A turn split in two, as broadcast by the server (editor:turn_split). */
+export interface TurnSplit {
+    translationId: string;
+    originalTurnId: string;
+    /** The two halves, in order — the left one keeps the original turn id. */
+    turns: WireTurn[];
+    version?: number;
+}
+/** Two adjacent turns merged, as broadcast by the server (editor:turns_merged). */
+export interface TurnsMerged {
+    translationId: string;
+    /** Id the merged turn carries — the LARGER source turn's id. */
+    mergedTurnId: string;
+    removedTurnId: string;
+    turn: WireTurn;
+    version?: number;
+}
+/** A turn removed (the client committed an emptied text), as broadcast by
+ *  the server (editor:turn_deleted). The GC consequence rides along. */
+export interface TurnDeleted {
+    translationId: string;
+    turnId: string;
+    removedSpeakerId?: string;
+    version?: number;
+}
+/** A turn pointed at a (possibly freshly created) speaker, as broadcast by
+ *  the server (editor:turn_speaker_updated). The GC consequence rides along:
+ *  removedSpeakerId is set when the previous speaker lost its last turn. */
+export interface TurnSpeakerUpdated {
+    translationId: string;
+    turnId: string;
+    speaker: {
+        id: string;
+        name: string;
+    };
+    removedSpeakerId?: string;
+    version?: number;
+}
+export interface SpeakerRenamed {
+    translationId: string;
+    speakerId: string;
+    name: string;
+    version?: number;
+}
+/** From-speaker replaced by to-speaker on every turn — its removal is
+ *  implied (it references nothing afterwards). */
+export interface SpeakerReplaced {
+    translationId: string;
+    fromSpeakerId: string;
+    toSpeakerId: string;
+    version?: number;
 }
 export interface TranscriptionEditorPluginApi {
-    readonly tiptapEditor: ShallowRef<import('@tiptap/vue-3').Editor | undefined>;
-    readonly doc: import('yjs').Doc | null;
-    readonly fragment: import('yjs').XmlFragment | null;
-    readonly speakersMap: import('yjs').Map<{
-        name: string;
-        color?: string;
-    }> | null;
-    readonly users: Ref<YjsUser[]>;
-    readonly isConnected: Ref<boolean>;
-    /** Non-null when the editor failed to load (e.g. the collab connection was
-     *  rejected for a non-recoverable reason). Surfaced as an error overlay. */
-    readonly error: Ref<string | null>;
-    updateUser(attrs: Record<string, unknown>): void;
-    /** Set or clear the load error. Cleared automatically on the next document
-     *  load (a successful reload hides the overlay). */
-    setError(message: string | null): void;
+    /** Turn currently being edited (single-turn editing), null when none. */
+    readonly editingTurnId: Ref<string | null>;
+    /** Caret offset requested for the editor when it opens. */
+    readonly editingCaretOffset: Ref<number>;
+    /** Enter edit mode — resolves once the lock is granted (or refused: the
+     *  edit mode is simply not entered). */
+    beginEdit(turnId: string, caretOffset?: number): Promise<void>;
+    cancelEdit(): void;
+    /** Commit the edited text for the turn being edited and leave edit mode. */
+    saveTurn(text: string): void;
+    /** Commit the edited text, then split the turn at `offset` (Enter gesture).
+     *  The split itself lands with the server round-trip. */
+    splitTurn(text: string, offset: number): void;
+    /** Merge two ADJACENT turns of the active track (both must be lock-free —
+     *  the merge button between turns). Applied at the server broadcast. */
+    mergeTurns(firstTurnId: string, secondTurnId: string): void;
+    /** Point a turn at an existing speaker (speakerId) or create-and-assign
+     *  one (speakerName) — exactly one of the two. */
+    updateTurnSpeaker(turnId: string, target: {
+        speakerId?: string;
+        speakerName?: string;
+    }): void;
+    renameSpeaker(speakerId: string, name: string): void;
+    /** Reassign every turn of a speaker to another (speaker merge). */
+    replaceSpeaker(fromSpeakerId: string, toSpeakerId: string): void;
+    /** Apply a saved turn broadcast by the server (any track, any author). */
+    applyTurnUpdate(update: TurnUpdate): void;
+    /** Apply a turn split broadcast by the server. */
+    applyTurnSplit(split: TurnSplit): void;
+    /** Apply a merge broadcast by the server. */
+    applyTurnsMerged(merge: TurnsMerged): void;
+    /** Apply a deletion broadcast by the server. */
+    applyTurnDeleted(deleted: TurnDeleted): void;
+    /** Baseline: the version the track's freshly fetched content corresponds
+     *  to — host-pushed together with the content (same backend read). */
+    setTranslationVersion(translationId: string, version: number): void;
+    /** Reconnection check (join re-ack): refetch every loaded track the
+     *  server says is ahead of what we hold. */
+    reconcileVersions(versions: Record<string, number>): void;
+    applyTurnSpeakerUpdated(update: TurnSpeakerUpdated): void;
+    applySpeakerRenamed(renamed: SpeakerRenamed): void;
+    applySpeakerReplaced(replaced: SpeakerReplaced): void;
+    /** Lock held on a turn of the ACTIVE translation, if any. */
+    getTurnLock(turnId: string): {
+        userId: string;
+        userName: string;
+    } | undefined;
+    /** Full replacement — join ack and reconnection re-ack. */
+    setLocks(locks: TurnLock[]): void;
+    setTurnLock(lock: TurnLock): void;
+    clearTurnLock(ref: {
+        translationId: string;
+        turnId: string;
+    }): void;
 }
 export interface WatermarkToken {
     src: string;
@@ -385,8 +514,6 @@ export interface Core {
     readonly date: Ref<string | number | null>;
     readonly activeChannelId: Ref<string>;
     readonly capabilities: Ref<CoreCapabilities>;
-    /** TipTap extensions collected from all plugins */
-    readonly pluginExtensions: AnyExtension[];
     readonly speakers: SpeakersStore;
     readonly channels: Map<string, ChannelStore>;
     readonly activeChannel: ComputedRef<ChannelStore | undefined>;

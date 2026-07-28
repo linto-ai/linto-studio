@@ -1,7 +1,13 @@
 /** Internal editor types — backend-agnostic */
 export interface Word {
+    /** Derived, positional: `${turnId}#${index}`. Recomputed on every text
+     *  change — an opaque key for consumers, never persisted. */
     id: string;
     text: string;
+    /** Offsets into the turn's plain text (UTF-16 code units), derived locally
+     *  by tokenization — the karaoke/click/follow anchor. */
+    charStart?: number;
+    charEnd?: number;
     startTime?: number;
     endTime?: number;
     confidence?: number;

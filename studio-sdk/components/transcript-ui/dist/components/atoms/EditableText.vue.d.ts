@@ -40,11 +40,11 @@ declare const _default: import('vue').DefineComponent<__VLS_Props, {}, {}, {}, {
             readonly inputId?: string | undefined;
             readonly onInput?: ((value: string) => any) | undefined;
             readonly "onUpdate:modelValue"?: ((value: string) => any) | undefined;
-            readonly onKeydown?: ((event: KeyboardEvent) => any) | undefined;
-            readonly onBlur?: ((event: FocusEvent) => any) | undefined;
             readonly onFocus?: ((event: FocusEvent) => any) | undefined;
             readonly "onOn-confirm"?: (() => any) | undefined;
             readonly "onOn-cancel"?: (() => any) | undefined;
+            readonly onKeydown?: ((event: KeyboardEvent) => any) | undefined;
+            readonly onBlur?: ((event: FocusEvent) => any) | undefined;
         } & import('vue').VNodeProps & import('vue').AllowedComponentProps & import('vue').ComponentCustomProps;
         $attrs: {
             [x: string]: unknown;
@@ -60,7 +60,7 @@ declare const _default: import('vue').DefineComponent<__VLS_Props, {}, {}, {}, {
         $root: import('vue').ComponentPublicInstance | null;
         $parent: import('vue').ComponentPublicInstance | null;
         $host: Element | null;
-        $emit: ((event: "input", value: string) => void) & ((event: "update:modelValue", value: string) => void) & ((event: "keydown", event: KeyboardEvent) => void) & ((event: "blur", event: FocusEvent) => void) & ((event: "focus", event: FocusEvent) => void) & ((event: "on-confirm") => void) & ((event: "on-cancel") => void);
+        $emit: ((event: "input", value: string) => void) & ((event: "update:modelValue", value: string) => void) & ((event: "focus", event: FocusEvent) => void) & ((event: "on-confirm") => void) & ((event: "on-cancel") => void) & ((event: "keydown", event: KeyboardEvent) => void) & ((event: "blur", event: FocusEvent) => void);
         $el: HTMLDivElement;
         $options: import('vue').ComponentOptionsBase<Readonly<{
             field: FormField;
@@ -83,11 +83,11 @@ declare const _default: import('vue').DefineComponent<__VLS_Props, {}, {}, {}, {
         }> & Readonly<{
             onInput?: ((value: string) => any) | undefined;
             "onUpdate:modelValue"?: ((value: string) => any) | undefined;
-            onKeydown?: ((event: KeyboardEvent) => any) | undefined;
-            onBlur?: ((event: FocusEvent) => any) | undefined;
             onFocus?: ((event: FocusEvent) => any) | undefined;
             "onOn-confirm"?: (() => any) | undefined;
             "onOn-cancel"?: (() => any) | undefined;
+            onKeydown?: ((event: KeyboardEvent) => any) | undefined;
+            onBlur?: ((event: FocusEvent) => any) | undefined;
         }>, {
             focus: () => void | undefined;
             blur: () => void | undefined;
@@ -95,11 +95,11 @@ declare const _default: import('vue').DefineComponent<__VLS_Props, {}, {}, {}, {
         }, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {
             input: (value: string) => any;
             "update:modelValue": (value: string) => any;
-            keydown: (event: KeyboardEvent) => any;
-            blur: (event: FocusEvent) => any;
             focus: (event: FocusEvent) => any;
             "on-confirm": () => any;
             "on-cancel": () => any;
+            keydown: (event: KeyboardEvent) => any;
+            blur: (event: FocusEvent) => any;
         }, string, {
             size: "sm" | "md" | "lg";
         }, {}, string, {}, import('vue').GlobalComponents, import('vue').GlobalDirectives, string, import('vue').ComponentProvideOptions> & {
@@ -145,12 +145,12 @@ declare const _default: import('vue').DefineComponent<__VLS_Props, {}, {}, {}, {
     }> & Readonly<{
         onInput?: ((value: string) => any) | undefined;
         "onUpdate:modelValue"?: ((value: string) => any) | undefined;
-        onKeydown?: ((event: KeyboardEvent) => any) | undefined;
-        onBlur?: ((event: FocusEvent) => any) | undefined;
         onFocus?: ((event: FocusEvent) => any) | undefined;
         "onOn-confirm"?: (() => any) | undefined;
         "onOn-cancel"?: (() => any) | undefined;
-    }>, "size" | "select" | "blur" | "focus"> & import('vue').ShallowUnwrapRef<{
+        onKeydown?: ((event: KeyboardEvent) => any) | undefined;
+        onBlur?: ((event: FocusEvent) => any) | undefined;
+    }>, "size" | "select" | "focus" | "blur"> & import('vue').ShallowUnwrapRef<{
         focus: () => void | undefined;
         blur: () => void | undefined;
         select: () => void | undefined;

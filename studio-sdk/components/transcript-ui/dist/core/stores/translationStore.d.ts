@@ -1,9 +1,6 @@
 import { AudioSource, Turn } from '../../types/editor';
-import { CoreEventMap, TranslationStore } from '../types';
-interface TranslationInit {
-    id: string;
-    languages: string[];
-    isSource: boolean;
+import { CoreEventMap, TranslationInfo, TranslationStore } from '../types';
+interface TranslationInit extends TranslationInfo {
     audio?: AudioSource;
     turns: Turn[];
 }

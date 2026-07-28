@@ -8,3 +8,8 @@ export { removeTurn } from './removeTurn';
 export { updateTurnWords } from './updateTurnWords';
 export { ensureDocumentSpeakers } from './ensureDocumentSpeakers';
 export { ensureSpeakersFromTurns } from './ensureSpeakersFromTurns';
+export { renameSpeaker } from './renameSpeaker';
+export { switchTurnSpeaker } from './switchTurnSpeaker';
+export { createSpeakerAndAssign } from './createSpeakerAndAssign';
+export { mergeSpeakers } from './mergeSpeakers';
+export { countTurnsForSpeaker } from './countTurnsForSpeaker';

@@ -35,6 +35,8 @@ export declare class SubtitleScroller extends SubtitleDrawer {
     private draw;
     private getLastLineOfState;
     private getSecondLastLineOfState;
+    private textWidth;
     private computeIfTextIsTooLong;
+    private computeIfTextOverflows;
 }
 export {};

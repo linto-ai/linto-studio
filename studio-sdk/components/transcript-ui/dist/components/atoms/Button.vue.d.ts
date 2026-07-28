@@ -2,7 +2,7 @@ type __VLS_Props = {
     label?: string;
     icon?: string;
     iconRight?: string;
-    variant?: "primary" | "secondary" | "tertiary" | "transparent";
+    variant?: "primary" | "secondary" | "tertiary" | "transparent" | "inverse";
     intent?: "default" | "destructive";
     size?: "sm" | "md" | "lg";
     disabled?: boolean;
@@ -25,7 +25,7 @@ type __VLS_TemplateResult = ReturnType<typeof __VLS_template>;
 declare const __VLS_component: import('vue').DefineComponent<__VLS_Props, {}, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {}, string, import('vue').PublicProps, Readonly<__VLS_Props> & Readonly<{}>, {
     size: "sm" | "md" | "lg";
     type: "button" | "submit";
-    variant: "primary" | "secondary" | "tertiary" | "transparent";
+    variant: "primary" | "secondary" | "tertiary" | "transparent" | "inverse";
     intent: "default" | "destructive";
     disabled: boolean;
     loading: boolean;

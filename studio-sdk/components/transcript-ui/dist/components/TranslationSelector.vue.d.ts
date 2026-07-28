@@ -1,9 +1,6 @@
+import { TranslationInfo } from '../core/types';
 type __VLS_Props = {
-    translations: {
-        id: string;
-        languages: string[];
-        isSource: boolean;
-    }[];
+    translations: TranslationInfo[];
     selectedTranslationId: string;
 };
 declare const _default: import('vue').DefineComponent<__VLS_Props, {}, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {

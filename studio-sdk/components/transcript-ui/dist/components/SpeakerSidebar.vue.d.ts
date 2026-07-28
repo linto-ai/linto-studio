@@ -1,4 +1,5 @@
 import { Speaker } from '../types/editor';
+import { TranslationInfo } from '../core';
 type __VLS_Props = {
     speakers: Speaker[];
     channels: {
@@ -6,11 +7,7 @@ type __VLS_Props = {
         name: string;
     }[];
     selectedChannelId: string;
-    translations: {
-        id: string;
-        languages: string[];
-        isSource: boolean;
-    }[];
+    translations: TranslationInfo[];
     selectedTranslationId: string;
     showSpeakers?: boolean;
 };

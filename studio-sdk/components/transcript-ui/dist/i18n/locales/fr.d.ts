@@ -56,6 +56,13 @@ declare const fr: {
     readonly "sidebar.statusQueued": "En attente";
     readonly "transcription.empty": "Aucune transcription pour le moment";
     readonly "transcription.historyStart": "Début de la transcription";
+    readonly "transcription.editTurn": "Modifier le texte";
+    readonly "transcription.saveEdit": "Enregistrer la modification";
+    readonly "transcription.lockedBy": "En cours de modification par {name}";
+    readonly "transcription.mergeTurns": "Fusionner avec le tour précédent";
+    readonly "speaker.unknown": "Intervenant non connu";
+    readonly "transcription.cancelEdit": "Annuler la modification";
+    readonly "transcription.turnEditor": "Texte du tour de parole (Entrée pour enregistrer, Échap pour annuler)";
     readonly "transcription.loadingHistory": "Chargement…";
     readonly "selection.count": "sélectionné(s)";
     readonly "selection.copyText": "Copier le texte";
