@@ -90,3 +90,12 @@ export async function sendRequest(
     return { status: "error", error, message: errMsg }
   }
 }
+
+export function throwIfError(requestRes) {
+  if (requestRes.status === "error") {
+    const error = new Error(requestRes.message)
+    error.status = requestRes.error?.response?.status
+    throw error
+  }
+  return requestRes
+}

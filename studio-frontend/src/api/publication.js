@@ -6,9 +6,9 @@ const CLIENT_TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone
 
 /**
  * Get all publication templates from the API
- * @param {Object} options - Optional filters
+ * @param {Object} options - Filters
+ * @param {string} options.organizationId - Organization owning the templates
  * @param {string} [options.category] - Filter by category (e.g., "summary", "report")
- * @param {string} [options.organizationId] - Filter by organization ID
  * @param {string} [options.serviceId] - Restrict to templates available for this service
  *   (falls back to the global default template when the service has none linked)
  * @returns {Promise<Array>} List of templates
@@ -18,15 +18,12 @@ export async function apiGetPublicationTemplates(options = {}) {
   if (options.category) {
     params.category = options.category
   }
-  if (options.organizationId) {
-    params.organization_id = options.organizationId
-  }
   if (options.serviceId) {
     params.service_id = options.serviceId
   }
 
   const req = await sendRequest(
-    `${BASE_API}/publication/templates`,
+    `${BASE_API}/publication/organizations/${options.organizationId}/templates`,
     { method: "get" },
     params,
     null,
@@ -41,26 +38,8 @@ export async function apiGetPublicationTemplates(options = {}) {
 }
 
 /**
- * Get placeholders for a specific template
- * @param {string} templateId - The template ID
- * @returns {Promise<Object|null>} Template placeholders or null
- */
-export async function apiGetTemplatePlaceholders(templateId) {
-  const req = await sendRequest(
-    `${BASE_API}/publication/templates/${templateId}/placeholders`,
-    { method: "get" },
-    {},
-    null,
-  )
-
-  if (req.status === "success") {
-    return req.data
-  }
-  return null
-}
-
-/**
  * Export a document using a template
+ * @param {string} conversationId - Conversation the job belongs to
  * @param {string} jobId - The LLM Gateway job ID
  * @param {string} format - Export format ('pdf' or 'docx')
  * @param {Object} [options] - Optional parameters
@@ -69,7 +48,12 @@ export async function apiGetTemplatePlaceholders(templateId) {
  * @param {number} [options.versionNumber] - Version number to export (uses current if not provided)
  * @returns {Promise<Blob|null>} Document blob or null
  */
-export async function apiExportWithTemplate(jobId, format, options = {}) {
+export async function apiExportWithTemplate(
+  conversationId,
+  jobId,
+  format,
+  options = {},
+) {
   const params = {}
   if (options.templateId) {
     params.templateId = options.templateId
@@ -83,35 +67,8 @@ export async function apiExportWithTemplate(jobId, format, options = {}) {
   params.timezone = CLIENT_TIMEZONE
 
   const req = await sendRequest(
-    `${BASE_API}/publication/${jobId}/export/${format}`,
+    `${BASE_API}/publication/conversations/${conversationId}/jobs/${jobId}/export/${format}`,
     { method: "get", responseType: "blob" },
-    params,
-    null,
-  )
-
-  if (req.status === "success") {
-    return req.data
-  }
-  return null
-}
-
-/**
- * Get HTML preview of a document using a template
- * @param {string} jobId - The LLM Gateway job ID
- * @param {Object} [options] - Optional parameters
- * @param {string} [options.templateId] - Template ID to use for preview
- * @returns {Promise<string|null>} HTML string or null
- */
-export async function apiGetHtmlPreview(jobId, options = {}) {
-  const params = {}
-  if (options.templateId) {
-    params.templateId = options.templateId
-  }
-
-  // Use sendRequest without blob responseType for HTML
-  const req = await sendRequest(
-    `${BASE_API}/publication/${jobId}/export/html`,
-    { method: "get" },
     params,
     null,
   )
@@ -130,7 +87,7 @@ export async function apiGetHtmlPreview(jobId, options = {}) {
  * @param {string} [options.name_en] - English name
  * @param {string} [options.description_fr] - French description
  * @param {string} [options.description_en] - English description
- * @param {string} [options.organization_id] - Organization ID for org-scoped template
+ * @param {string} options.organization_id - Organization owning the template
  * @param {string} [options.user_id] - User ID for user-scoped template
  * @returns {Promise<Object|null>} Created template or null
  */
@@ -148,15 +105,12 @@ export async function apiUploadPublicationTemplate(options) {
   if (options.description_en) {
     formData.append("description_en", options.description_en)
   }
-  if (options.organization_id) {
-    formData.append("organization_id", options.organization_id)
-  }
   if (options.scope) {
     formData.append("scope", options.scope)
   }
 
   const req = await sendRequest(
-    `${BASE_API}/publication/templates`,
+    `${BASE_API}/publication/organizations/${options.organization_id}/templates`,
     { method: "post" },
     formData,
     null,
@@ -177,12 +131,13 @@ export async function apiCreatePublicationTemplate(templateData) {
 
 /**
  * Delete a publication template
+ * @param {string} organizationId - Organization owning the template
  * @param {string} templateId - The template ID to delete
  * @returns {Promise<boolean>} True if deleted successfully
  */
-export async function apiDeletePublicationTemplate(templateId) {
+export async function apiDeletePublicationTemplate(organizationId, templateId) {
   const req = await sendRequest(
-    `${BASE_API}/publication/templates/${templateId}`,
+    `${BASE_API}/publication/organizations/${organizationId}/templates/${templateId}`,
     { method: "delete" },
     {},
     null,

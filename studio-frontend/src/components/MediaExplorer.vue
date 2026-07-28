@@ -53,7 +53,7 @@
             <div v-if="medias.length === 0" class="media-explorer__body__empty">
               <slot name="empty">
                 <div class="empty-state">
-                  <p>Aucun média trouvé</p>
+                  <p>{{ $t("media_explorer.no_media_found") }}</p>
                 </div>
               </slot>
             </div>

@@ -46,7 +46,6 @@ async function createSuperUser(req, res, next) {
       throw new UserUnsupportedMediaType()
     user.img = defaultPicture()
 
-    //convert user.role to a number
     user.role = parseInt(user.role)
 
     if (!ROLE.isValid(user.role))
@@ -132,13 +131,14 @@ async function deleteUser(req, res, next) {
         )
     }
 
+    // Each user record is deleted only after its own cascade succeeded,
+    // so a mid-list failure stays retryable
     for (const userId of req.body.userIds) {
       await userUtility.removeUserFromPlatform(userId)
-    }
 
-    const result = await model.users.deleteMany(req.body.userIds)
-    if (result.deletedCount !== req.body.userIds.length)
-      throw new UserError("User not deleted")
+      const result = await model.users.delete(userId)
+      if (result.deletedCount !== 1) throw new UserError("User not deleted")
+    }
 
     return res.status(200).send({ message: "User deleted" })
   } catch (err) {

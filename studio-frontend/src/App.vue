@@ -107,7 +107,7 @@ export default {
         message: data.message,
         type: data.status,
         timeout: data.timeout ?? 5000,
-        closable: data.cantBeClosed ?? true,
+        closable: !(data.cantBeClosed ?? false),
       })
     })
 

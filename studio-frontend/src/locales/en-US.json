@@ -292,7 +292,7 @@
     "createorganization": "Create an organisation",
     "createOrganization": "Create an organisation",
     "createSession": "Create a session",
-    "explore": "Inbox",
+    "explore": "Media",
     "favorites": "Favourites",
     "organizations": "Organisations",
     "publish": "Publish",
@@ -779,14 +779,30 @@
     "tag_update_notification": "Topic updated",
     "error_creating_tag": "Error creating topic",
     "error_updating_tag": "Error updating topic",
+    "error_tag_name_exists": "A topic with this name already exists",
+    "error_deleting_tag": "Error deleting topic",
+    "error_adding_tag_to_media": "Error adding topic to media",
+    "error_removing_tag_from_media": "Error removing topic from media",
     "tag_delete_notification": "Topic deleted"
   },
   "modal_delete_tag": {
     "title": "Delete topic '{name}'",
     "message": "Are you sure you want to delete this topic?"
   },
+  "user_notifications": {
+    "logged_out": "You have been logged out",
+    "profile_picture_updated": "Profile picture updated",
+    "error_favorite_organization": "Error updating favourite organisations",
+    "error_favorite_conversation": "Error updating favourites",
+    "conversation_added_to_favorites": "Media added to favourites",
+    "conversation_removed_from_favorites": "Media removed from favourites"
+  },
   "media_explorer": {
     "favorite": "Favourite",
+    "no_media": "No media",
+    "no_media_found": "No media found",
+    "error_fetching": "Error fetching media",
+    "error_deleting": "Error deleting media",
     "source": {
       "media": "Source: audio file",
       "live": "Source: live"
@@ -946,7 +962,7 @@
       "my_space": "My space"
     },
     "tabs": {
-      "explore": "Inbox",
+      "explore": "Media",
       "favorites": "Favourites",
       "sessions": "Live transcriptions",
       "shared": "Shared with me",
@@ -1242,7 +1258,8 @@
     "retry": "Retry",
     "cancel": "Cancel",
     "delete": "Delete",
-    "uploading": "Uploading..."
+    "uploading": "Uploading...",
+    "loading": "Loading..."
   },
   "session": {
     "sessions_status": {

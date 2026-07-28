@@ -292,7 +292,7 @@
     "createConversation": "Importer un média",
     "createOrganization": "Créer une organisation",
     "createSession": "Créer une session",
-    "explore": "Inbox",
+    "explore": "Médias",
     "favorites": "Favoris",
     "organizations": "Organisations",
     "publish": "Publication",
@@ -773,14 +773,30 @@
     "tag_update_notification": "Thématique mise à jour",
     "error_creating_tag": "Erreur lors de la création de la thématique",
     "error_updating_tag": "Erreur lors de la mise à jour de la thématique",
+    "error_tag_name_exists": "Une thématique portant ce nom existe déjà",
+    "error_deleting_tag": "Erreur lors de la suppression de la thématique",
+    "error_adding_tag_to_media": "Erreur lors de l'ajout de la thématique au média",
+    "error_removing_tag_from_media": "Erreur lors du retrait de la thématique du média",
     "tag_delete_notification": "Thématique supprimée"
   },
   "modal_delete_tag": {
     "title": "Supprimer la thématique '{name}'",
     "message": "Êtes-vous sûr de vouloir supprimer cette thématique ?"
   },
+  "user_notifications": {
+    "logged_out": "Vous avez été déconnecté",
+    "profile_picture_updated": "Photo de profil mise à jour",
+    "error_favorite_organization": "Erreur lors de la mise à jour des organisations favorites",
+    "error_favorite_conversation": "Erreur lors de la mise à jour des favoris",
+    "conversation_added_to_favorites": "Média ajouté aux favoris",
+    "conversation_removed_from_favorites": "Média retiré des favoris"
+  },
   "media_explorer": {
     "favorite": "Favoris",
+    "no_media": "Aucun média",
+    "no_media_found": "Aucun média trouvé",
+    "error_fetching": "Erreur lors de la récupération des médias",
+    "error_deleting": "Erreur lors de la suppression des médias",
     "source": {
       "media": "Source : fichier audio",
       "live": "Source : transcription en direct"
@@ -928,7 +944,7 @@
       "start": "Transcrire"
     },
     "tabs": {
-      "explore": "Inbox",
+      "explore": "Médias",
       "favorites": "Favoris",
       "sessions": "Transcription en direct",
       "shared": "Partages reçus",
@@ -1236,7 +1252,8 @@
     "retry": "Réessayer",
     "cancel": "Annuler",
     "delete": "Supprimer",
-    "uploading": "Import en cours..."
+    "uploading": "Import en cours...",
+    "loading": "Chargement..."
   },
   "session": {
     "sessions_status": {

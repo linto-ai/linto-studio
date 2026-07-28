@@ -170,9 +170,14 @@ export default {
 
       if (categoryIdSource === this.category._id) return
 
-      await apiUpdateTag(this.scopeId, tagId, {
-        categoryId: this.category._id,
-      })
+      try {
+        await apiUpdateTag(this.scopeId, tagId, {
+          categoryId: this.category._id,
+        })
+      } catch (error) {
+        console.error("Error moving tag to category:", error)
+        return
+      }
       bus.$emit("tag-category-changed", {
         categoryIdTarget: this.category._id,
       })

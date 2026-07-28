@@ -82,7 +82,6 @@
 
 <script>
 import { mapState } from "vuex"
-import MediaExplorerFormTag from "@/components/MediaExplorerFormTag.vue"
 import Alert from "@/components/atoms/Alert.vue"
 import ChipTag from "@/components/atoms/ChipTag.vue"
 import ColorPicker from "@/components/molecules/ColorPicker.vue"
@@ -91,7 +90,6 @@ import EmojiPicker from "@/components/molecules/EmojiPicker.vue"
 export default {
   name: "TagManagement",
   components: {
-    MediaExplorerFormTag,
     ColorPicker,
     TagManagementDescriptionLine,
     EmojiPicker,
@@ -169,7 +167,7 @@ export default {
     createNewTag() {
       this.onSubmit(this.modalTagEdit)
       this.newTag = {
-        name: "Type your tag name here",
+        name: this.$t("manage_tags.placeholder_new_tag_name"),
         color: "blue",
       }
       this.newTagKey = this.newTagKey + 1

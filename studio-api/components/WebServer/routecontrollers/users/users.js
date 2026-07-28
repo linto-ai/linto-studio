@@ -251,9 +251,7 @@ async function updateUser(req, res, next) {
     const result = await model.users.update(user)
     if (result.matchedCount === 0) throw new UserError()
 
-    // The display name carried by the user's Qdrant point must follow a
-    // first/last name change: re-upsert it in every opted-in organization
-    // (fire-and-forget, no-op when no voiceprint exists). cf. 07 §2.3.
+    // Propagate the name change to the user's Qdrant points (fire-and-forget)
     if (req.body.firstname || req.body.lastname) {
       triggers.renameUserSpeaker(req.payload.data.userId)
     }
@@ -377,18 +375,12 @@ async function resendVerificationEmail(req, res, next) {
 async function deleteUser(req, res, next) {
   try {
     const userId = req.payload.data.userId
-    let removeMedia = await userUtility.removeUserFromPlatform(userId)
+    await userUtility.removeUserFromPlatform(userId)
 
-    if (removeMedia) {
-      const result = await model.users.delete(userId)
-      if (result.deletedCount !== 1) throw new UserError()
+    const result = await model.users.delete(userId)
+    if (result.deletedCount !== 1) throw new UserError()
 
-      res.status(200).send({ message: "User deleted" })
-    } else {
-      throw new UserError(
-        "Unable to delete the user, please contact an administrator",
-      )
-    }
+    res.status(200).send({ message: "User deleted" })
   } catch (err) {
     next(err)
   }
@@ -424,7 +416,6 @@ async function generateExtendedAuthToken(req, res, next) {
     const token_salt = randomstring.generate(12)
     let token = await model.tokens.insert(user[0]._id, token_salt)
 
-    // Data stored in the token
     let tokenData = {
       salt: token_salt,
       tokenId: token.insertedId,
@@ -451,7 +442,11 @@ async function impersonateUser(req, res, next) {
     const target = await model.users.getById(req.params.userId, true)
     if (target.length !== 1) throw new UserNotFound()
 
-    if (ROLE.hasPlatformRoleAccess(target[0].role, ROLE.SYSTEM_ADMINISTRATOR))
+    // no impersonation of an administrative account: bits are independent, check both
+    if (
+      ROLE.hasPlatformRoleAccess(target[0].role, ROLE.SYSTEM_ADMINISTRATOR) ||
+      ROLE.hasPlatformRoleAccess(target[0].role, ROLE.SUPER_ADMINISTRATOR)
+    )
       throw new UserForbidden()
 
     const token_salt = randomstring.generate(12)

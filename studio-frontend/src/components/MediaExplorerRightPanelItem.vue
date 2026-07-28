@@ -179,10 +179,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters("organizations", {
-      getCurrentScope: "getCurrentScope",
-    }),
-    ...mapGetters("organizations", ["isImpersonatingCurrentOrganization"]),
+    ...mapGetters("organizations", [
+      "getCurrentScope",
+      "isImpersonatingCurrentOrganization",
+    ]),
     reactiveSelectedMedia() {
       return this.selectedMedia
     },

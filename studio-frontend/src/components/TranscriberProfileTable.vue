@@ -45,7 +45,7 @@
         @click="onEdit(element.id)"
         variant="secondary"
         icon="pencil"
-        label="Edit" />
+        :label="$t('backoffice.transcriber_profile_list.edit_button')" />
     </template>
   </GenericTable>
 </template>
