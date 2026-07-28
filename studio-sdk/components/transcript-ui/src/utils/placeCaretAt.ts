@@ -1,3 +1,5 @@
+import { getShadowAwareSelection } from "./shadowAwareSelection"
+
 const TEXT_NODE = 3
 
 /**
@@ -14,7 +16,7 @@ export function placeCaretAt(element: HTMLElement, offset: number): void {
   range.setStart(textNode, clamped)
   range.collapse(true)
 
-  const selection = element.ownerDocument.defaultView?.getSelection()
+  const selection = getShadowAwareSelection(element)
   if (!selection) return
   selection.removeAllRanges()
   selection.addRange(range)

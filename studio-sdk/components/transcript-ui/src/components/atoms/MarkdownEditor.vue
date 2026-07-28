@@ -11,6 +11,7 @@ import { gfm } from "turndown-plugin-gfm"
 import Button from "./Button.vue"
 import { useI18n } from "../../i18n"
 import { renderMarkdown } from "../../utils/markdown"
+import { getShadowAwareSelection } from "../../utils/shadowAwareSelection"
 
 const props = withDefaults(
   defineProps<{
@@ -134,7 +135,7 @@ function execCmd(command: string): void {
 
 function toggleBlock(tag: "H1" | "H2" | "H3"): void {
   focusEditor()
-  const sel = window.getSelection()
+  const sel = getShadowAwareSelection(editorRef.value)
   const inBlock = sel?.rangeCount && findAncestor(sel.anchorNode, tag)
   document.execCommand("formatBlock", false, inBlock ? "P" : tag)
   updateToolbarState()
@@ -143,7 +144,7 @@ function toggleBlock(tag: "H1" | "H2" | "H3"): void {
 
 function toggleBlockquote(): void {
   focusEditor()
-  const sel = window.getSelection()
+  const sel = getShadowAwareSelection(editorRef.value)
   if (!sel || !sel.rangeCount) return
 
   const block = getParentBlock(sel.anchorNode)
@@ -163,7 +164,7 @@ function toggleBlockquote(): void {
 
 function toggleCodeBlock(): void {
   focusEditor()
-  const sel = window.getSelection()
+  const sel = getShadowAwareSelection(editorRef.value)
   if (!sel || !sel.rangeCount) return
 
   const pre = findAncestor(sel.anchorNode, "PRE")
@@ -225,7 +226,7 @@ function updateToolbarState(): void {
 }
 
 function isInAncestor(tag: string): boolean {
-  const sel = window.getSelection()
+  const sel = getShadowAwareSelection(editorRef.value)
   if (!sel || !sel.rangeCount) return false
   return !!findAncestor(sel.anchorNode, tag)
 }
