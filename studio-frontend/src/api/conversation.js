@@ -269,7 +269,6 @@ export async function apiCreateConversation(
     serviceName,
     transcriptionConfig,
     speakerIdentificationCollections,
-    segmentCharSize,
     lang,
     endpoint,
     tracks,
@@ -289,7 +288,6 @@ export async function apiCreateConversation(
     formData.append("securityLevel", securityLevel)
     formData.append("serviceName", serviceName)
     formData.append("transcriptionConfig", transcriptionConfig)
-    formData.append("segmentCharSize", segmentCharSize)
     formData.append("lang", lang)
     formData.append("endpoint", endpoint)
 

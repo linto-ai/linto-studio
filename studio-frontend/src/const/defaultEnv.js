@@ -19,4 +19,5 @@ export default {
     "Transcription by LinTO.ai $linto Open Source AI by $linagora",
   VUE_APP_MODE: "basic",
   VUE_APP_ENABLE_SECURITY_LEVEL: "false",
+  VUE_APP_MAX_MERGED_TURN_SIZE: "4000",
 }

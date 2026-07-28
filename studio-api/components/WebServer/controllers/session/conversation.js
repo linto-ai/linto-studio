@@ -34,6 +34,16 @@ function getMembersRightFromVisibility(visibility) {
   return visibility === "private" ? RIGHTS.UNDEFINED : DEFAULT_MEMBER_RIGHTS
 }
 
+function extractSegmentFilter(transcriptionService) {
+  const filter = {}
+  const charSize = parseInt(transcriptionService.segmentCharSize, 10)
+  const wordSize = parseInt(transcriptionService.segmentWordSize, 10)
+
+  if (charSize > 0) filter.segmentCharSize = charSize
+  if (wordSize > 0) filter.segmentWordSize = wordSize
+  return filter
+}
+
 function extractTranslationTarget(translation) {
   return typeof translation === "string" ? translation : translation.target
 }
@@ -148,6 +158,9 @@ async function initCaptionsForConversation(sessionData, name) {
             transcriptionConfig: config,
             speakerIdentificationCollections,
           }
+          caption.metadata.normalize.filter = extractSegmentFilter(
+            channel.meta.transcriptionService,
+          )
           caption.jobs.transcription.state = "waiting"
           captions.push(caption)
 
@@ -520,7 +533,13 @@ async function stopSessionAndFetch(sessionId) {
 }
 
 // Emit the new-conversation event, or warn when nothing was stored.
-function emitConversationFromSession(ioHandler, session, result, sessionId, label) {
+function emitConversationFromSession(
+  ioHandler,
+  session,
+  result,
+  sessionId,
+  label,
+) {
   if (result) {
     if (ioHandler !== undefined) {
       ioHandler.emit("new_conversation_from_session", {

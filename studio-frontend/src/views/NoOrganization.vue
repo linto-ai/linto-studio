@@ -4,7 +4,7 @@
       id="app-login"
       class="flex col"
       @submit="createOrganisation"
-      v-if="isAtLeastOrganizationInitiator">
+      v-if="isOrganizationInitiator">
       <h2>{{ $t("no_orga.can_create.title") }}</h2>
       <p>{{ $t("no_orga.can_create.subtitle") }}</p>
       <FormInput
@@ -79,6 +79,6 @@ export default {
       }
     },
   },
-  components: { Fragment, FormInput, platformRoleMixin },
+  components: { Fragment, FormInput },
 }
 </script>

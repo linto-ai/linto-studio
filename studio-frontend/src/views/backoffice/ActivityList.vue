@@ -65,11 +65,12 @@
           <FormatedUrl :url="value" v-if="value" />
         </template>
 
-        <template #cell-user.info="{ value }">
+        <template #cell-user.info="{ value, element }">
           <UserInfoInline
             :user="value"
             :userId="value._id"
             v-if="value"
+            :impersonatedBy="element.user?.impersonatedBy"
             :showImage="false" />
         </template>
       </GenericTableRequest>

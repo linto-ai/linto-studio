@@ -16,7 +16,11 @@
         :selected-media-ids.sync="selectedMediaIds">
         <template #actions>
           <IsMobile>
-            <div class="flex gap-small" v-if="selectedMedias.length > 0">
+            <div
+              class="flex gap-small"
+              v-if="
+                selectedMedias.length > 0 && !isImpersonatingCurrentOrganization
+              ">
               <ConversationShareMultiple
                 :selectedConversations="selectedMedias"
                 :currentOrganizationScope="currentOrganizationScope"
@@ -49,7 +53,7 @@
             <div v-if="medias.length === 0" class="media-explorer__body__empty">
               <slot name="empty">
                 <div class="empty-state">
-                  <p>Aucun média trouvé</p>
+                  <p>{{ $t("media_explorer.no_media_found") }}</p>
                 </div>
               </slot>
             </div>
@@ -141,6 +145,7 @@ export default {
       currentOrganizationScope: "getCurrentOrganizationScope",
     }),
     ...mapGetters("system", { pageIsLoading: "isLoading" }),
+    ...mapGetters("organizations", ["isImpersonatingCurrentOrganization"]),
     selectedMedias() {
       return this.medias.filter((m) => this.selectedMediaIds.includes(m._id))
     },

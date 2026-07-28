@@ -2,6 +2,11 @@
   <div
     class="v2-layout"
     :class="{ 'no-sidebar': !sidebarOpen || fullscreen || !isAuthenticated }">
+    <ImpersonationBanner
+      v-if="
+        (isImpersonatingCurrentOrganization || isImpersonatingUser) &&
+        !backoffice
+      " />
     <QuickSessionNotif v-if="quickSession && !isQuickSessionPage" />
     <div class="v2-layout__content">
       <div
@@ -51,6 +56,7 @@ import Breadcrumb from "@/components/atoms/Breadcrumb.vue"
 import HeaderBar from "@/components/HeaderBar.vue"
 import LocalSwitcher from "@/components/LocalSwitcher.vue"
 import QuickSessionNotif from "@/components/QuickSessionNotif.vue"
+import ImpersonationBanner from "@/components/ImpersonationBanner.vue"
 
 export default {
   props: {
@@ -95,7 +101,8 @@ export default {
     isQuickSessionPage() {
       return this.$route.name === "quick session"
     },
-    ...mapGetters("system", ["sidebarOpen", "isMobile"]),
+    ...mapGetters("system", ["sidebarOpen", "isMobile", "isImpersonatingUser"]),
+    ...mapGetters("organizations", ["isImpersonatingCurrentOrganization"]),
     ...mapGetters("quickSession", ["quickSession"]),
   },
   beforeMount() {
@@ -120,6 +127,7 @@ export default {
     HeaderBar,
     LocalSwitcher,
     QuickSessionNotif,
+    ImpersonationBanner,
   },
 }
 </script>

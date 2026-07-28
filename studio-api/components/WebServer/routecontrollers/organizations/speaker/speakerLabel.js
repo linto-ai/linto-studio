@@ -10,7 +10,7 @@ const {
 )
 
 const { verifyOwnership, sanitizeName } = require(
-  `${process.cwd()}/components/WebServer/routecontrollers/organization/voiceprintCollection`,
+  `${process.cwd()}/components/WebServer/routecontrollers/organizations/speaker/voiceprintCollection`,
 )
 const { cascadeDeleteSampleFiles, STORAGE_MODE } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,

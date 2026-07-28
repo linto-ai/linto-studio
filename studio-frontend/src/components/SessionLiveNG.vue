@@ -1,5 +1,13 @@
 <template>
-  <linto-editor ref="editor" :locale="$i18n.locale.split('-')[0]" no-header />
+  <div class="session-live-ng flex col flex1">
+    <SessionStatusBanner
+      :websocketStatus="websocketInstance.state.status"
+      :microphoneStatus="microphoneStatus"
+      @retry-websocket="websocketInstance.retry()"
+      @retry-microphone="$emit('retry-microphone')"
+      @reconfigure-microphone="$emit('reconfigure-microphone')" />
+    <linto-editor ref="editor" :locale="$i18n.locale.split('-')[0]" no-header />
+  </div>
 </template>
 
 <script>
@@ -24,17 +32,22 @@ import {
 } from "@/tools/computeTurnTime.js"
 import { getEnv } from "@/tools/getEnv"
 import { bus } from "@/main.js"
+import SessionStatusBanner from "@/components/molecules/SessionStatusBanner.vue"
 
 const PAGE_SIZE = 50
 
 export default {
   mixins: [sessionModelMixin],
+  components: { SessionStatusBanner },
   props: {
     session: { type: Object, required: true },
+    initialChannelId: { type: [String, Number], default: null },
     websocketInstance: { type: Object, required: true },
     isFromPublicLink: { type: Boolean, default: false },
     currentOrganizationScope: { type: String, required: false, default: null },
     displaySubtitles: { type: Boolean, default: false },
+    // Forwarded to the status banner; "idle" when the host has no microphone.
+    microphoneStatus: { type: String, default: "idle" },
   },
   data() {
     return {
@@ -49,6 +62,9 @@ export default {
       historyOffset: 0,
       usePublicEndpoint: false,
       wakeLock: null,
+      // Distinguishes the first connect from a reconnect in the isConnected
+      // watcher: only a reconnect needs a content resync.
+      wsWasConnected: false,
     }
   },
   computed: {
@@ -64,11 +80,17 @@ export default {
     },
   },
   watch: {
+    // Covers both the first connect (socket not ready at mount) and every
+    // reconnect (isConnected goes false on disconnect); isConnected is kept
+    // in sync with state.status by the ApiEventWebSocket state machine.
     "websocketInstance.state.isConnected"(connected) {
-      if (connected) this.subscribeToWebsocket()
-    },
-    "websocketInstance.state.connexionRestored"(restored) {
-      if (restored) this.subscribeToWebsocket()
+      if (!connected) return
+      const isReconnect = this.wsWasConnected
+      this.wsWasConnected = true
+      this.subscribeToWebsocket()
+      if (isReconnect) {
+        this.resyncAfterReconnect()
+      }
     },
   },
   mounted() {
@@ -177,22 +199,26 @@ export default {
       // Subscribe before setDocument: the banner mounts (and emits on mount) as
       // soon as channels are populated by setDocument, so the listener must
       // already be registered to catch the initial emit.
-      this.offSubtitle = core.on(
-        "subtitle:visible",
-        ({ visible, height }) => {
-          document.documentElement.style.setProperty(
-            "--subtitle-reserve",
-            (visible ? height : 0) + "px",
-          )
-        },
-      )
+      this.offSubtitle = core.on("subtitle:visible", ({ visible, height }) => {
+        document.documentElement.style.setProperty(
+          "--subtitle-reserve",
+          (visible ? height : 0) + "px",
+        )
+      })
 
       const doc = sessionToEditorDocument(sessionForDoc)
       core.setDocument(doc)
 
-      this.activeChannelIndex = this.core?.activeChannelId.value ?? null
+      // Apply before the channel:change listener is registered so the
+      // initial selection does not trigger a channel reset and refetch.
+      const initialId =
+        this.initialChannelId != null ? String(this.initialChannelId) : null
+      if (initialId && editor.channels.has(initialId)) {
+        editor.setActiveChannel(initialId)
+      }
 
-      // Load initial page of turns
+      this.activeChannelIndex = this.editor?.activeChannelId.value ?? null
+
       await this.fetchTurnsPage()
 
       this.offScrollTop = core.on("scroll:top", () => this.fetchTurnsPage())
@@ -211,8 +237,25 @@ export default {
       })
 
       if (this.websocketInstance.state.isConnected) {
+        this.wsWasConnected = true
         this.subscribeToWebsocket()
       }
+    },
+
+    // Finals emitted while the socket was down are lost (the server does not
+    // replay missed room events): reset the channel and reload the latest
+    // page — same pattern as channel:change and clear().
+    resyncAfterReconnect() {
+      const channel = this.editor?.activeChannel?.value
+      if (!channel) {
+        return
+      }
+      this.historyOffset = 0
+      // Explicit: the user may have scrolled to the very top before the
+      // outage, and fetchTurnsPage early-returns when hasMoreHistory is off.
+      channel.hasMoreHistory.value = true
+      channel.reset()
+      this.fetchTurnsPage()
     },
 
     async fetchTurnsPage() {
@@ -327,25 +370,6 @@ export default {
         { ...baseTurn, text: content.text },
         this.activeChannelIndex,
       )
-
-      // } else {
-      //   // could be deleted (old format)
-      //   const translations = Object.entries(content.translations || {})
-      //     .filter(([, text]) => text)
-      //     .map(([lang, text]) => ({
-      //       translationId: lang,
-      //       text,
-      //       language: lang,
-      //     }))
-      //   this.core.live.onFinal(
-      //     {
-      //       ...baseTurn,
-      //       translations,
-      //       text: type == "both" ? content.text : null,
-      //     },
-      //     this.activeChannelIndex,
-      //   )
-      // }
     },
 
     onTranslation(content) {
@@ -436,6 +460,10 @@ export default {
 </script>
 
 <style scoped>
+.session-live-ng {
+  min-height: 0;
+}
+
 linto-editor {
   display: block;
   flex: 1;

@@ -15,33 +15,38 @@ const {
 module.exports = (webserver) => {
   return [
     {
-      path: "/templates",
+      path: "/organizations/:organizationId/templates",
       method: "get",
       requireAuth: true,
+      requireOrganizationMemberAccess: true,
       controller: getTemplates,
     },
     {
-      path: "/templates",
+      path: "/organizations/:organizationId/templates",
       method: "post",
       requireAuth: true,
+      requireOrganizationMemberAccess: true,
       controller: createTemplate,
     },
     {
-      path: "/templates/:templateId",
+      path: "/organizations/:organizationId/templates/:templateId",
       method: "delete",
       requireAuth: true,
+      requireOrganizationMemberAccess: true,
       controller: deleteTemplate,
     },
     {
-      path: "/templates/:templateId/placeholders",
+      path: "/organizations/:organizationId/templates/:templateId/placeholders",
       method: "get",
       requireAuth: true,
+      requireOrganizationMemberAccess: true,
       controller: getTemplatePlaceholders,
     },
     {
-      path: "/:jobId/export/:format",
+      path: "/conversations/:conversationId/jobs/:jobId/export/:format",
       method: "get",
       requireAuth: true,
+      requireConversationReadAccess: true,
       controller: exportWithTemplate,
     },
   ]

@@ -11,13 +11,19 @@ class LinTO:
             base_url=base_url, token=auth_token
         )
 
-    async def upload(self, file, enable_diarization=True, number_of_speaker="0", language="*", enablePunctuation=True, name=None, members_right=None):
+    async def upload(self, file, enable_diarization=True, number_of_speaker="0", language="*", enablePunctuation=True, name=None, members_right=None, speaker_collection_ids=None):
         """Upload a file and return its conversation_id, without polling.
 
         Performs only the upload step. The returned conversation_id can be
         checkpointed and later passed to poll_media() to resume waiting for
         the transcription result without re-uploading (which would create a
         duplicate conversation).
+
+        Pass speaker_collection_ids (a list of voiceprint collection ids) to run
+        speaker identification during diarization; identified members' names
+        then populate speaker_name in the transcript. Use
+        get_org_voiceprint_collection_id() to obtain the organization-level
+        collection. Ignored unless diarization is effectively enabled.
         """
         if name is None:
             name = f"imported file {datetime.now().isoformat()}"
@@ -29,6 +35,7 @@ class LinTO:
             enablePunctuation=enablePunctuation,
             name=name,
             membersRight=members_right,
+            speakerIdentificationCollections=speaker_collection_ids,
         )
         return res["conversationId"]
 
@@ -52,7 +59,7 @@ class LinTO:
         """
         return PollingService(conversation_id, self.api_service)
 
-    async def transcribe(self, file, enable_diarization=True, number_of_speaker="0", language="*", enablePunctuation=True, name=None, members_right=None):
+    async def transcribe(self, file, enable_diarization=True, number_of_speaker="0", language="*", enablePunctuation=True, name=None, members_right=None, speaker_collection_ids=None):
         if name is None:
             name = f"imported file {datetime.now().isoformat()}"
         conversation_id = await self.upload(
@@ -63,6 +70,7 @@ class LinTO:
             enablePunctuation=enablePunctuation,
             name=name,
             members_right=members_right,
+            speaker_collection_ids=speaker_collection_ids,
         )
         return await self.poll_media(conversation_id)
 
@@ -280,3 +288,60 @@ class LinTO:
         return await self.api_service.move_conversation_to_folder(
             folderId=folder_id, conversationId=conversation_id
         )
+
+    # --- Speaker identification ---
+
+    async def list_voiceprint_collections(self):
+        """List the organization's voiceprint collections.
+
+        The org-level "Organization" collection (type "organization") is
+        auto-created and included by the backend on this call.
+        """
+        return await self.api_service.list_voiceprint_collections()
+
+    async def get_org_voiceprint_collection_id(self):
+        """Return the id of the organization's default voiceprint collection.
+
+        Speaker identification at organization scope targets a single collection
+        of type "organization" that holds every opted-in member's voiceprint —
+        no custom group selection. Returns its id, or None when the org has no
+        such collection. Raises on HTTP failure (e.g. the org lacks the
+        speaker-identification permission), so the caller can choose to
+        soft-fail.
+        """
+        collections = await self.list_voiceprint_collections()
+        if not isinstance(collections, list):
+            return None
+        for collection in collections:
+            if collection.get("type") == "organization":
+                return str(collection.get("_id") or collection.get("id") or "") or None
+        return None
+
+    async def get_voiceprint_collection(self, collection_id):
+        """Fetch a single voiceprint collection (group) by id."""
+        return await self.api_service.get_voiceprint_collection(
+            collectionId=collection_id
+        )
+
+    async def get_voiceprint_collection_id_by_name(self, name):
+        """Return the id of the voiceprint collection (group) named `name`, or None.
+
+        Case-insensitive match over list_voiceprint_collections(). Use this to
+        select a custom group by name for speaker identification, then pass the
+        id to upload(speaker_collection_ids=[...]).
+        """
+        collections = await self.list_voiceprint_collections()
+        if not isinstance(collections, list):
+            return None
+        for collection in collections:
+            if str(collection.get("name", "")).lower() == name.lower():
+                return str(collection.get("_id") or collection.get("id") or "") or None
+        return None
+
+    async def get_speaker_identification_status(self):
+        """Return the organization's speaker identification status.
+
+        Dict with enabled / reachable / modelId / dim / syncPending — handy to
+        check availability before requesting identification.
+        """
+        return await self.api_service.get_speaker_identification_status()

@@ -14,6 +14,8 @@ import { getEnv } from "@/tools/getEnv"
 import store from "@/store/index.js"
 import createMediaModule from "../modules/mediaModuleFactory"
 import { setCookie } from "@/tools/setCookie"
+import { setImpersonatedOrgId } from "@/tools/setImpersonatedOrgId.js"
+import { clearImpersonatedOrgId } from "@/tools/clearImpersonatedOrgId.js"
 
 const actions = {
   async fetchOrganizations({ commit, rootGetters }) {
@@ -48,7 +50,10 @@ const actions = {
 
     const scope = `organizations/${organizationId}/conversations`
 
-    setCookie("organizationScope", organizationId, 365)
+    // Keep the admin's own default organization untouched while impersonating
+    if (!state.impersonatedOrganizationId) {
+      setCookie("organizationScope", organizationId, 365)
+    }
 
     if (!store.hasModule(`${organizationId}/done/conversations`)) {
       store.registerModule(
@@ -93,6 +98,14 @@ const actions = {
   },
   async setCurrentFilterStatus({ commit }, status) {
     commit("setCurrentFilterStatus", status)
+  },
+  startImpersonation({ commit }, organizationId) {
+    setImpersonatedOrgId(organizationId)
+    commit("setImpersonatedOrganizationId", organizationId)
+  },
+  stopImpersonation({ commit }) {
+    clearImpersonatedOrgId()
+    commit("setImpersonatedOrganizationId", null)
   },
   /**
    * Load the current organization with M2M users (API keys) included in
@@ -176,7 +189,10 @@ const actions = {
   },
   async deleteVoiceprintCollection({ commit, state }, collectionId) {
     const organizationId = state.currentOrganizationScope
-    const res = await apiDeleteVoiceprintCollection(organizationId, collectionId)
+    const res = await apiDeleteVoiceprintCollection(
+      organizationId,
+      collectionId,
+    )
     if (res.status === "success") {
       commit("removeVoiceprintCollection", collectionId)
     }

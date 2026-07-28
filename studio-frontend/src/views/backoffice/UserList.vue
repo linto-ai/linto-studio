@@ -53,11 +53,18 @@
         </template>
 
         <template #cell-actions="{ id }">
-          <Button
-            @click="$router.push(userDetailRoute(id))"
-            variant="secondary"
-            icon="pencil"
-            :label="$t('user_table.edit_button_label')" />
+          <div class="flex gap-small">
+            <Button
+              @click="impersonateUser(id)"
+              variant="secondary"
+              icon="user-switch"
+              :label="$t('impersonation.user_button_label')" />
+            <Button
+              @click="$router.push(userDetailRoute(id))"
+              variant="secondary"
+              icon="pencil"
+              :label="$t('user_table.edit_button_label')" />
+          </div>
         </template>
       </GenericTableRequest>
     </div>
@@ -76,6 +83,7 @@
 </template>
 <script>
 import { platformRoleMixin } from "@/mixins/platformRole.js"
+import { impersonationMixin } from "@/mixins/impersonation.js"
 import { apiGetAllUsers } from "@/api/admin.js"
 
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
@@ -85,7 +93,7 @@ import ModalDeleteUsers from "@/components/ModalDeleteUsers.vue"
 import ModalCreateUser from "@/components/ModalCreateUser.vue"
 
 export default {
-  mixins: [platformRoleMixin],
+  mixins: [platformRoleMixin, impersonationMixin],
   data() {
     return {
       selectedUsers: [],

@@ -52,22 +52,18 @@ async function subscribeToJob(data, io) {
 
   debug(`Subscribing to LLM updates for org ${organizationId}${conversationId ? `, conv ${conversationId}` : ""}`)
 
-  // Join the organization room
-  const orgRoom = `llm/${organizationId}`
-  socket.join(orgRoom)
-
   // Track subscription
   if (!socketSubscriptions.has(socket.id)) {
     socketSubscriptions.set(socket.id, new Set())
   }
-  socketSubscriptions.get(socket.id).add(orgRoom)
 
-  // If conversationId provided, also join conversation-specific room
+  // Never join both rooms: broadcasts target both
+  let room = `llm/${organizationId}`
   if (conversationId) {
-    const convRoom = `llm/${organizationId}/${conversationId}`
-    socket.join(convRoom)
-    socketSubscriptions.get(socket.id).add(convRoom)
+    room = `llm/${organizationId}/${conversationId}`
   }
+  socket.join(room)
+  socketSubscriptions.get(socket.id).add(room)
 
   debug(`Socket ${socket.id} joined LLM rooms for org ${organizationId}`)
 }
@@ -134,13 +130,12 @@ function broadcastJobUpdate(io, update) {
     eventName = "llm:job:error"
   }
 
-  // Broadcast to organization room
-  io.to(orgRoom).emit(eventName, update)
-
-  // Also broadcast to conversation-specific room if available
+  // Target both rooms; a socket only ever joins one (see subscribeToJob).
+  let emitter = io.to(orgRoom)
   if (convRoom) {
-    io.to(convRoom).emit(eventName, update)
+    emitter = emitter.to(convRoom)
   }
+  emitter.emit(eventName, update)
 }
 
 /**

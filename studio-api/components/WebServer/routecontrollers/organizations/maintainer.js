@@ -9,9 +9,6 @@ const orgaUtility = require(
   `${process.cwd()}/components/WebServer/controllers/organization/utility`,
 )
 
-const { deleteAudioFileIfOrphaned } = require(
-  `${process.cwd()}/components/WebServer/controllers/files/store`,
-)
 const { updateChildConversation } = require(
   `${process.cwd()}/components/WebServer/controllers/conversation/child`,
 )
@@ -67,7 +64,6 @@ async function addUserInOrganization(req, res, next) {
         email: req.body.email,
       })
 
-      // Create new user personal organization
       if (createdUser.insertedCount !== 1) throw new UserError()
       userId = createdUser.insertedId.toString()
       const invitedUser = await model.users.getById(userId, true)
@@ -262,25 +258,7 @@ async function deleteConversationFromOrganization(req, res, next) {
     for (let conv of conversations.list) {
       await updateChildConversation(conv, "DELETE")
 
-      const result = await model.conversations.delete(conv._id)
-      if (result.deletedCount !== 1)
-        throw new ConversationError(
-          "Error when deleting conversation ",
-          conv._id,
-        )
-
-      if (conv?.metadata?.audio) {
-        await deleteAudioFileIfOrphaned(conv.metadata.audio.filepath)
-      }
-
-      await model.conversationSubtitles.deleteAllFromConv(conv._id.toString())
-      const categoryList = await model.categories.getByScope(
-        conv._id.toString(),
-      )
-      for (const category of categoryList) {
-        model.categories.delete(category._id)
-        model.tags.deleteAllFromCategory(category._id.toString())
-      }
+      await orgaUtility.deleteConversationCascade(conv)
 
       if (this?.app?.components?.IoHandler) {
         this.app.components.IoHandler.emit(

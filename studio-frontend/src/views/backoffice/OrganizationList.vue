@@ -82,11 +82,18 @@
         </template>
 
         <template #cell-actions="{ id }">
-          <Button
-            @click="$router.push(orgDetailRoute(id))"
-            variant="secondary"
-            icon="pencil"
-            :label="$t('orga_table.edit_button_label')" />
+          <div class="flex gap-small">
+            <Button
+              @click="viewAsOrganization(id)"
+              variant="secondary"
+              icon="eye"
+              :label="$t('impersonation.browse_button_label')" />
+            <Button
+              @click="$router.push(orgDetailRoute(id))"
+              variant="secondary"
+              icon="pencil"
+              :label="$t('orga_table.edit_button_label')" />
+          </div>
         </template>
       </GenericTableRequest>
     </div>
@@ -108,6 +115,7 @@
 </template>
 <script>
 import { platformRoleMixin } from "@/mixins/platformRole.js"
+import { impersonationMixin } from "@/mixins/impersonation.js"
 import { apiGetAllOrganizations } from "@/api/admin.js"
 
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
@@ -117,7 +125,7 @@ import ModalCreateOrganization from "@/components/ModalCreateOrganization.vue"
 import ModalDeleteMultipleOrganizations from "@/components/ModalDeleteMultipleOrganizations.vue"
 
 export default {
-  mixins: [platformRoleMixin],
+  mixins: [platformRoleMixin, impersonationMixin],
   data() {
     return {
       selectedOrganizations: [],

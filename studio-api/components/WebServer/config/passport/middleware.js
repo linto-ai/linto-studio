@@ -25,8 +25,6 @@ const {
 } = require(`${process.cwd()}/components/WebServer/error/exception/auth`)
 const refreshToken = require("./token/refresh")
 
-const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
-
 PROVIDER.loadEnabledStrategies()
 
 const authenticateUser = (strategy, req, res, next) => {
@@ -129,13 +127,8 @@ module.exports = {
         },
       }
 
-      if (req.query.impersonateUser) {
-        const user = await model.users.getById(tokenData.data.userId, true)
-        // We need to check if the user is a super admin
-        if (user[0].role >= ROLE.SYSTEM_ADMINISTRATOR) {
-          req.payload.data.adminId = tokenData.data.userId
-          req.payload.data.userId = req.query.impersonateUser
-        }
+      if (tokenData.data.impersonatedBy) {
+        req.payload.data.adminId = tokenData.data.impersonatedBy
       }
       next()
     },

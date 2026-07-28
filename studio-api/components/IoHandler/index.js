@@ -13,7 +13,7 @@ const SOCKET_EVENTS = require(`${process.cwd()}/lib/dao/log/socketEvent`)
 const { diffSessions, groupSessionsByOrg } = require(
   `${process.cwd()}/components/IoHandler/controllers/SessionHandling`,
 )
-const { watchConversation, refreshInterval } = require(
+const { watchConversation } = require(
   `${process.cwd()}/components/IoHandler/controllers/ConversationHandling`,
 )
 
@@ -239,9 +239,10 @@ class IoHandler extends Component {
         this.removeSocketFromMedia(orgaId, socket)
       })
 
-      socket.on("disconnect", () => {
+      socket.on("disconnect", (reason) => {
         LogManager.logSocketEvent(socket, {
           action: SOCKET_EVENTS.DISCONNECT,
+          reason,
           from: "socket",
         })
         this.searchAndRemoveSocketFromRooms(socket)
@@ -287,8 +288,7 @@ class IoHandler extends Component {
                   debug(
                     `[LLM] Public session user joined room for org ${organizationId}`,
                   )
-                  const orgRoom = `llm/${organizationId}`
-                  socket.join(orgRoom)
+                  this.joinLlmRoom(socket, organizationId, conversationId)
                   return
                 }
               }
@@ -301,17 +301,7 @@ class IoHandler extends Component {
           return
         }
 
-        // Join organization-level LLM room
-        const orgRoom = `llm/${organizationId}`
-        socket.join(orgRoom)
-        debug(`Socket ${socket.id} joined LLM room ${orgRoom}`)
-
-        // Join conversation-specific room if provided
-        if (conversationId) {
-          const convRoom = `llm/${organizationId}/${conversationId}`
-          socket.join(convRoom)
-          debug(`Socket ${socket.id} joined LLM room ${convRoom}`)
-        }
+        this.joinLlmRoom(socket, organizationId, conversationId)
       })
 
       socket.on("llm:leave", (data) => {
@@ -362,7 +352,8 @@ class IoHandler extends Component {
         if (!connected || disconnected) return
         disconnected = true
         LogManager.logSystemEvent(
-          `Redis ${label} connection lost (${err.message}), falling back to in-memory adapter`,
+          `Redis ${label} connection lost (${err.message}), falling back to in-memory adapter: cross-replica socket.io delivery is now DISABLED on this replica until restart`,
+          { level: "error" },
         )
         const { Adapter } = require("socket.io-adapter")
         this.io.adapter(Adapter)
@@ -386,7 +377,8 @@ class IoHandler extends Component {
       if (pubClient) pubClient.disconnect().catch(() => {})
       if (subClient) subClient.disconnect().catch(() => {})
       LogManager.logSystemEvent(
-        `Failed to connect to Redis at ${redisHost}:${redisPort}, falling back to in-memory adapter: ${err.message}`,
+        `Failed to connect to Redis at ${redisHost}:${redisPort} (${err.message}), falling back to in-memory adapter: SOCKETIO_REDIS_HOST is set but unreachable, cross-replica socket.io delivery is DISABLED on this replica`,
+        { level: "error" },
       )
     }
   }
@@ -394,6 +386,16 @@ class IoHandler extends Component {
   async init() {
     await this.setupRedisAdapter()
     return super.init()
+  }
+
+  // Never join both rooms: broadcasts target both
+  joinLlmRoom(socket, organizationId, conversationId) {
+    let room = `llm/${organizationId}`
+    if (conversationId) {
+      room = `llm/${organizationId}/${conversationId}`
+    }
+    socket.join(room)
+    debug(`Socket ${socket.id} joined LLM room ${room}`)
   }
 
   async addSocketInMedia(orgaId, socket) {
@@ -404,21 +406,20 @@ class IoHandler extends Component {
       this.medias[orgaId] = new Set().add(socket.id)
     }
 
-    let listProcessingConversations =
-      await model.conversations.listProcessingConversations(orgaId)
-    // Step 2 : if none, do nothing
-    if (listProcessingConversations?.length === 0) {
-      return
-    }
-    this.io.local
-      .to(orgaId)
-      .emit("conversation_processing", listProcessingConversations)
-
+    // One watcher per org, stopped when the last socket leaves
     if (this.memoryMedias[orgaId] === undefined) {
       this.memoryMedias[orgaId] = watchConversation(
         this.io.local.to(orgaId),
-        listProcessingConversations,
+        orgaId,
       )
+      return
+    }
+
+    // Watcher already running: send the joining socket its initial list
+    const listProcessingConversations =
+      await model.conversations.listProcessingConversations(orgaId)
+    if (listProcessingConversations?.length > 0) {
+      socket.emit("conversation_processing", listProcessingConversations)
     }
   }
 
@@ -538,33 +539,14 @@ class IoHandler extends Component {
     this.sessionsCache = sessions
   }
 
-  async notify_conversation_action(action, orgaId, message) {
+  notify_conversation_action(action, orgaId, message) {
     this.io.to(orgaId).emit(`conversation_${action}`, message)
-
-    if (this.medias.hasOwnProperty(orgaId)) {
-      if (action === "deleted") {
-        try {
-          if (this.memoryMedias[orgaId] !== undefined)
-            this.memoryMedias[orgaId].remove(message.id)
-        } catch (err) {}
-      } else {
-        let processConv =
-          await model.conversations.listProcessingConversations(orgaId)
-
-        this.memoryMedias[orgaId] = refreshInterval(
-          this.io.local.to(orgaId),
-          this.memoryMedias[orgaId],
-          processConv,
-        )
-      }
-    }
   }
 
   async notify_sessions_created(orgaId, session) {
     if (session.insertedId === undefined) {
       return
     }
-    ;["owner", "sharedWithUsers", "organization"]
 
     const conversation = await model.conversations.getById(session.insertedId, [
       "_id",
@@ -573,21 +555,6 @@ class IoHandler extends Component {
       "jobs",
     ])
     this.io.to(orgaId).emit(`conversation_created`, conversation[0])
-
-    if (this.medias.hasOwnProperty(orgaId)) {
-      if (
-        conversation[0]?.type?.child_conversations?.length >= 1 ||
-        conversation[0]?.jobs?.transcription?.state !== "done"
-      ) {
-        let processConv =
-          await model.conversations.listProcessingConversations(orgaId)
-        this.memoryMedias[orgaId] = refreshInterval(
-          this.io.local.to(orgaId),
-          this.memoryMedias[orgaId],
-          processConv,
-        )
-      }
-    }
   }
 
   brokerOk(message = "Broker connection established") {
@@ -633,17 +600,16 @@ class IoHandler extends Component {
       eventName = "llm:job:error"
     }
 
-    // Broadcast to organization room
+    // A socket is in exactly one of these rooms (see joinLlmRoom)
     const orgRoom = `llm/${organizationId}`
-    this.io.to(orgRoom).emit(eventName, update)
-    debug(`Broadcasted ${eventName} to room ${orgRoom} for job ${jobId}`)
-
-    // Also broadcast to conversation-specific room if available
+    let emitter = this.io.to(orgRoom)
     if (conversationId) {
-      const convRoom = `llm/${organizationId}/${conversationId}`
-      this.io.to(convRoom).emit(eventName, update)
-      debug(`Broadcasted ${eventName} to room ${convRoom} for job ${jobId}`)
+      emitter = emitter.to(`llm/${organizationId}/${conversationId}`)
     }
+    emitter.emit(eventName, update)
+    debug(
+      `Broadcasted ${eventName} for job ${jobId} (org ${organizationId}${conversationId ? `, conv ${conversationId}` : ""})`,
+    )
   }
 }
 

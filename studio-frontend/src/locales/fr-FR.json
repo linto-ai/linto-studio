@@ -292,7 +292,7 @@
     "createConversation": "Importer un média",
     "createOrganization": "Créer une organisation",
     "createSession": "Créer une session",
-    "explore": "Inbox",
+    "explore": "Médias",
     "favorites": "Favoris",
     "organizations": "Organisations",
     "publish": "Publication",
@@ -646,6 +646,14 @@
   "highlights_name": {
     "keyword": "Mots clés"
   },
+  "impersonation": {
+    "banner": "Vous consultez l'organisation {name} en lecture seule",
+    "browse_button_label": "Parcourir",
+    "exit_button_label": "Revenir au backoffice",
+    "log_label": "Effectué par {name}",
+    "user_banner": "Vous êtes connecté en tant que {name}",
+    "user_button_label": "Emprunter l'identité"
+  },
   "invite_user": {
     "add_user": "Ajouter l'utilisateur",
     "button": "Inviter un utilisateur",
@@ -765,14 +773,30 @@
     "tag_update_notification": "Thématique mise à jour",
     "error_creating_tag": "Erreur lors de la création de la thématique",
     "error_updating_tag": "Erreur lors de la mise à jour de la thématique",
+    "error_tag_name_exists": "Une thématique portant ce nom existe déjà",
+    "error_deleting_tag": "Erreur lors de la suppression de la thématique",
+    "error_adding_tag_to_media": "Erreur lors de l'ajout de la thématique au média",
+    "error_removing_tag_from_media": "Erreur lors du retrait de la thématique du média",
     "tag_delete_notification": "Thématique supprimée"
   },
   "modal_delete_tag": {
     "title": "Supprimer la thématique '{name}'",
     "message": "Êtes-vous sûr de vouloir supprimer cette thématique ?"
   },
+  "user_notifications": {
+    "logged_out": "Vous avez été déconnecté",
+    "profile_picture_updated": "Photo de profil mise à jour",
+    "error_favorite_organization": "Erreur lors de la mise à jour des organisations favorites",
+    "error_favorite_conversation": "Erreur lors de la mise à jour des favoris",
+    "conversation_added_to_favorites": "Média ajouté aux favoris",
+    "conversation_removed_from_favorites": "Média retiré des favoris"
+  },
   "media_explorer": {
     "favorite": "Favoris",
+    "no_media": "Aucun média",
+    "no_media_found": "Aucun média trouvé",
+    "error_fetching": "Erreur lors de la récupération des médias",
+    "error_deleting": "Erreur lors de la suppression des médias",
     "source": {
       "media": "Source : fichier audio",
       "live": "Source : transcription en direct"
@@ -920,7 +944,7 @@
       "start": "Transcrire"
     },
     "tabs": {
-      "explore": "Inbox",
+      "explore": "Médias",
       "favorites": "Favoris",
       "sessions": "Transcription en direct",
       "shared": "Partages reçus",
@@ -1108,6 +1132,9 @@
     "queued": {
       "title": "Le compte rendu est en attente de traitement"
     },
+    "empty": {
+      "title": "Aucun document n'a été généré pour ce média"
+    },
     "reload_document": "Regénérer le document",
     "tabs": {
       "automatic_summary": "Résumé automatique",
@@ -1225,7 +1252,8 @@
     "retry": "Réessayer",
     "cancel": "Annuler",
     "delete": "Supprimer",
-    "uploading": "Import en cours..."
+    "uploading": "Import en cours...",
+    "loading": "Chargement..."
   },
   "session": {
     "sessions_status": {
@@ -1533,8 +1561,8 @@
       "status_recording": "Enregistrement du microphone en cours",
       "status_muted": "Enregistrement du microphone en pause",
       "save_button": "Terminer l'enregistrement",
-      "start_microphone_button": "Reprendre l'enregistrement",
-      "mute_microphone_button": "Mettre en pause l'enregistrement"
+      "start_microphone_button": "Réactiver le micro",
+      "mute_microphone_button": "Couper le micro"
     },
     "live_visio": {
       "default_name": "Réunion {type} sans titre",
@@ -1652,7 +1680,8 @@
     },
     "profile_avatar": {
       "profile_image_button": "Choisir une image",
-      "update_picture_button": "Mettre à jour"
+      "update_picture_button": "Mettre à jour",
+      "notif_unsupported_type": "Format d'image non pris en charge, utilisez une image png, jpg ou webp"
     },
     "role_section": {
       "title": "Rôle d'administration",
@@ -1711,11 +1740,42 @@
     "next_button_title": "Semaine suivante",
     "main_label": "Semaine {weekNumber} de {year} ({startDate} - {endDate})"
   },
+  "microphone_status": {
+    "recording": "Enregistrement",
+    "muted": "Micro coupé",
+    "connecting": "Connexion…",
+    "reconnecting": "Reconnexion…",
+    "connection_lost": "Audio interrompu",
+    "mic_lost": "Micro perdu",
+    "mic_interrupted": "Micro interrompu",
+    "restored_toast": "Micro rétabli",
+    "action_retry": "Réessayer",
+    "action_reconfigure": "Reconfigurer le micro",
+    "banner": {
+      "connection_lost": "La connexion audio est perdue — votre voix n'est plus transcrite.",
+      "mic_lost": "Le microphone ne répond plus (débranché ou permission retirée).",
+      "mic_interrupted": "Micro suspendu par le système, reprise automatique dès qu'il est rendu."
+    },
+    "description": {
+      "recording": "Votre voix est enregistrée.",
+      "muted": "Aucun audio n'est capté ni transmis.",
+      "connecting": "Établissement de la connexion audio…",
+      "reconnecting": "Connexion perdue, reprise automatique en cours. L'audio émis pendant la coupure n'est pas transmis.",
+      "connection_lost": "Impossible de rétablir la connexion. L'enregistrement est arrêté.",
+      "mic_lost": "Le microphone ne répond plus (débranché ou permission retirée).",
+      "mic_interrupted": "Le système a suspendu le micro, reprise automatique dès qu'il est rendu."
+    }
+  },
   "websocket": {
-    "disconnected": "Le contenu n'est plus synchronisé. Veuillez vérifier votre connexion internet.",
     "audio_stream_lost": "Transcription interrompue, l'audio n'est plus transmis. Vérifiez votre connexion internet.",
-    "lost_connexion": "Connexion interrompue, tentative de reconnexion en cours...",
-    "restored": "Connexion restaurée"
+    "restored": "Connexion restaurée",
+    "reconnecting": "Connexion interrompue, reconnexion en cours…",
+    "reconnect_failed": "Connexion perdue — cliquer pour réessayer",
+    "label_reconnecting": "Reconnexion…",
+    "label_failed": "Connexion perdue",
+    "live_feed_interrupted": "Flux de transcription interrompu, reconnexion en cours — l'affichage n'est plus à jour.",
+    "live_feed_failed": "La connexion est perdue, le direct est interrompu.",
+    "action_retry": "Réessayer"
   },
   "input_selector": {
     "search_tags": "Rechercher une thématique...",
@@ -1828,8 +1888,10 @@
     "signatures_empty": "Aucun échantillon vocal. Téléversez des échantillons audio pour améliorer l'identification des locuteurs.",
     "upload_modal_title": "Ajouter des échantillons vocaux",
     "upload_save": "Enregistrer",
-    "upload_success": "{count} échantillon(s) vocal(aux) téléversé(s) avec succès",
+    "upload_success": "1 échantillon vocal téléversé avec succès | {count} échantillons vocaux téléversés avec succès",
     "upload_error": "Une erreur est survenue lors du téléversement des échantillons vocaux",
+    "upload_error_count": "1 fichier n'a pas pu être envoyé : {message} | {count} fichiers n'ont pas pu être envoyés : {message}",
+    "upload_error_unsupported_format": "format de fichier non supporté",
     "drop_or_browse": "Glissez-déposez des fichiers audio ici, ou parcourez",
     "signature_deleted_success": "Échantillon vocal supprimé avec succès",
     "signature_deleted_error": "Une erreur est survenue lors de la suppression de l'échantillon vocal",

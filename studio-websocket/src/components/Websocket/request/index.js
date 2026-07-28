@@ -1,6 +1,8 @@
 import axios from "axios"
 import Debug from "debug"
 
+import { isReadOnlyToken, READ_ONLY_SCOPE } from "../tools/impersonation.js"
+
 const errorDebug = Debug("Websocket:error:request")
 const debug = Debug("Websocket:debug:request:debug")
 const info = Debug("Websocket:debug:request:info")
@@ -10,10 +12,15 @@ const BASE_API = process.env.CONVO_API
 async function sendRequest(url, params, data, headers, userToken) {
   try {
     let req = null
-    if (params.method === "get") {
+    if (params.method?.toLowerCase() === "get") {
+      // impersonating admins need the read-only scope to be granted reads;
+      // GET only so the scope can never enable a write
+      const query = isReadOnlyToken(userToken)
+        ? { ...data, userScope: READ_ONLY_SCOPE }
+        : data
       req = await axios.get(url, {
         ...params,
-        params: data,
+        params: query,
         headers: {
           ...headers,
           Authorization: `Bearer ${userToken}`,
@@ -433,11 +440,7 @@ export async function apiSubscribeLlmJob(
  * @param {string} jobId - Job ID
  * @param {string} userToken - User token
  */
-export async function apiUnsubscribeLlmJob(
-  conversationId,
-  jobId,
-  userToken,
-) {
+export async function apiUnsubscribeLlmJob(conversationId, jobId, userToken) {
   return await sendRequest(
     `${BASE_API}/internal/llm/unsubscribe`,
     { method: "post" },

@@ -9,11 +9,11 @@ const userUtility = require(
   `${process.cwd()}/components/WebServer/controllers/user/utility`,
 )
 
-const { deleteAudioFileIfOrphaned } = require(
-  `${process.cwd()}/components/WebServer/controllers/files/store`,
-)
 const { updateChildConversation } = require(
   `${process.cwd()}/components/WebServer/controllers/conversation/child`,
+)
+const orgaUtility = require(
+  `${process.cwd()}/components/WebServer/controllers/organization/utility`,
 )
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
@@ -22,10 +22,7 @@ const { fetchJob } = require(
   `${process.cwd()}/components/WebServer/controllers/job/fetchHandler`,
 )
 
-const {
-  ConversationNotFound,
-  ConversationError,
-} = require(
+const { ConversationNotFound, ConversationError } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
 
@@ -41,24 +38,7 @@ async function deleteConversation(req, res, next) {
 
     await updateChildConversation(conversation[0], "DELETE")
 
-    const result = await model.conversations.delete(req.params.conversationId)
-    if (result.deletedCount !== 1)
-      throw new ConversationError("Error when deleting conversation")
-
-    if (conversation[0]?.metadata?.audio) {
-      await deleteAudioFileIfOrphaned(conversation[0].metadata.audio.filepath)
-    }
-    // delete also all subtitle related to that conversation
-    await model.conversationSubtitles.deleteAllFromConv(
-      req.params.conversationId,
-    )
-    const categoryList = await model.categories.getByScope(
-      req.params.conversationId,
-    )
-    for (const category of categoryList) {
-      model.categories.delete(category._id)
-      model.tags.deleteAllFromCategory(category._id.toString())
-    }
+    await orgaUtility.deleteConversationCascade(conversation[0])
 
     res.status(200).send({
       message: "Conversation has been deleted",

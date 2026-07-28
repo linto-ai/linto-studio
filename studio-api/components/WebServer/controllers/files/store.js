@@ -7,6 +7,9 @@ const path = require("path")
 const { transformAudio, mergeAudio, mergeChannel } = require(
   `${process.cwd()}/components/WebServer/controllers/files/transform`,
 )
+const { FileUnsupportedMediaType } = require(
+  `${process.cwd()}/components/WebServer/error/exception/file`,
+)
 
 /*
 ffmpeg -i in.whatever -vn -ar 16000 -ac 1 -b:a 96k out.mp3
@@ -42,6 +45,27 @@ const SYNC_STATE = Object.freeze({
   ERROR: "error",
 })
 
+const IMAGE_MAGIC_NUMBERS = [
+  {
+    extension: ".png",
+    offset: 0,
+    bytes: Buffer.from([0x89, 0x50, 0x4e, 0x47]),
+  },
+  { extension: ".jpg", offset: 0, bytes: Buffer.from([0xff, 0xd8, 0xff]) },
+  { extension: ".webp", offset: 8, bytes: Buffer.from("WEBP") },
+]
+
+// Detect the image type from its content, the client file name cannot be trusted.
+function detectImageExtension(data) {
+  const match = IMAGE_MAGIC_NUMBERS.find(
+    (magic) =>
+      data.length >= magic.offset + magic.bytes.length &&
+      data
+        .subarray(magic.offset, magic.offset + magic.bytes.length)
+        .equals(magic.bytes),
+  )
+  return match?.extension
+}
 
 async function storeFile(files, type = STORE_TYPE.AUDIO, name = undefined) {
   try {
@@ -49,7 +73,12 @@ async function storeFile(files, type = STORE_TYPE.AUDIO, name = undefined) {
     if (name !== undefined) fileName = name
 
     if (type === STORE_TYPE.PICTURE) {
-      const fileExtension = path.extname(files.name)
+      const fileExtension = detectImageExtension(files.data)
+      if (!fileExtension) {
+        throw new FileUnsupportedMediaType(
+          "Picture must be a png, jpg or webp image",
+        )
+      }
 
       fs.writeFileSync(
         `${getStorageFolder()}/${getPictureFolder()}/${fileName}${fileExtension}`,
@@ -166,6 +195,9 @@ const ALLOWED_AUDIO_TYPES = [
   "audio/ogg",
   "audio/flac",
   "audio/mp4",
+  "audio/x-m4a",
+  "audio/m4a",
+  "audio/aac",
 ]
 const ALLOWED_AUDIO_TYPES_STR = ALLOWED_AUDIO_TYPES.join(", ")
 
