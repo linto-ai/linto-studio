@@ -11,13 +11,11 @@ import { useStickToBottom } from "vue-stick-to-bottom"
 import TranscriptionTurn from "./TranscriptionTurn.vue"
 import TranscriptionEmpty from "./TranscriptionEmpty.vue"
 import Button from "./atoms/Button.vue"
-import { ArrowDown } from "lucide-vue-next"
 import { useCore } from "../core"
 import { useI18n } from "../i18n"
 import { useFollowPlayback } from "../composables/useFollowPlayback"
 import { throttle } from "../utils"
 import type { Turn, Speaker } from "../types/editor"
-import { EditorContent } from "@tiptap/vue-3"
 const props = defineProps<{
   turns: Turn[]
   speakers: Map<string, Speaker>
@@ -40,10 +38,6 @@ const partialTurn = computed(() => {
     startTime: undefined,
     endTime: undefined,
   } as Turn
-})
-
-const tiptapEditor = computed(() => {
-  return core.transcriptionEditor?.tiptapEditor.value!
 })
 
 const hasLiveUpdate = computed(() => core.live?.hasLiveUpdate.value ?? false)
@@ -69,7 +63,9 @@ const { isFollowing, resumeFollow } = useFollowPlayback(scrollContainerRef)
 const { scrollRef, contentRef, isAtBottom, scrollToBottom } = useStickToBottom()
 
 onMounted(() => {
-  if (core.transcriptionEditor) return
+  // Stick-to-bottom is a LIVE feature (follow the incoming feed) — the
+  // editor must open at the top, not scrolled to the end.
+  if (!core.live) return
   scrollRef.value = scrollContainerRef.value
   contentRef.value =
     scrollContainerRef.value?.querySelector(".turns-container") ?? null
@@ -158,20 +154,20 @@ onBeforeUnmount(() => {
         <TranscriptionEmpty
           v-if="turns.length === 0 && !isLoadingHistory && !partialTurn"
           class="transcription-empty" />
-        <EditorContent v-if="tiptapEditor" :editor="tiptapEditor" />
         <TranscriptionTurn
-          v-else
           v-for="(turn, i) in turns"
           v-memo="[
             turn,
             speakers.get(turn.speakerId ?? ''),
             hasLiveUpdate && !partialTurn && i === turns.length - 1,
+            turns[i - 1]?.id,
           ]"
           :data-turn-id="turn.id"
           :key="turn.id"
           :turn="turn"
           :speaker="turn.speakerId ? speakers.get(turn.speakerId) : undefined"
-          :live="hasLiveUpdate && !partialTurn && i === turns.length - 1" />
+          :live="hasLiveUpdate && !partialTurn && i === turns.length - 1"
+          :previous-turn-id="turns[i - 1]?.id" />
         <TranscriptionTurn
           v-if="partialTurn"
           key="__partial__"
@@ -183,10 +179,10 @@ onBeforeUnmount(() => {
         <Button
           v-if="showResumeButton"
           size="sm"
+          icon="arrow-down"
           class="resume-scroll-btn"
           :aria-label="t('transcription.resumeScroll')"
           @click="onResumeClick">
-          <template #icon><ArrowDown :size="14" /></template>
           {{ t("transcription.resumeScroll") }}
         </Button>
       </Transition>
@@ -199,25 +195,6 @@ onBeforeUnmount(() => {
   min-height: 0;
   overflow: hidden;
   background-color: var(--color-surface);
-}
-
-/* .transcription-panel:has(.ProseMirror:focus) {
-  background-color: var(--color-background);
-}
-
-.transcription-panel :deep(.ProseMirror:focus) {
-  outline: 1px solid var(--color-primary);
-  background-color: var(--color-surface);
-  box-shadow: var(--shadow-sm);
-} */
-
-.transcription-panel :deep(.ProseMirror:focus) {
-  outline: none;
-}
-
-/* Turn holding the caret — the cursorTurn extension adds `turn--cursor`. */
-.transcription-panel :deep(.turn--cursor) {
-  outline: 2px solid var(--color-primary);
 }
 
 .scroll-container {

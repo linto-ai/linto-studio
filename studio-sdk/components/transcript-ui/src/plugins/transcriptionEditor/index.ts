@@ -1,198 +1,205 @@
-import { ref, shallowRef } from "vue"
-import type { Editor } from "@tiptap/vue-3"
-
+import { ref, shallowReactive } from "vue"
 import type {
   Core,
   CorePlugin,
   TranscriptionEditorPluginApi,
-  TranslationStore,
-  YjsUser,
+  SpeakerRenamed,
+  SpeakerReplaced,
+  TurnDeleted,
+  TurnLock,
+  TurnSpeakerUpdated,
+  TurnSplit,
+  TurnsMerged,
+  TurnUpdate,
 } from "../../core/types"
-import { SPEAKERS_MAP_KEY, type SpeakerData } from "./utils/speakersSync"
+import type {
+  EditorPluginState,
+  TranscriptionEditorLockPayload,
+  TranscriptionEditorOptions,
+} from "./types"
+import { LockHeartbeat } from "./tools/LockHeartbeat"
+import { beginEdit as beginEditHandler } from "./handlers/beginEdit"
+import { cancelEdit as cancelEditHandler } from "./handlers/cancelEdit"
+import { saveTurn as saveTurnHandler } from "./handlers/saveTurn"
+import { splitTurn as splitTurnHandler } from "./handlers/splitTurn"
+import { applyTurnUpdate as applyTurnUpdateHandler } from "./handlers/applyTurnUpdate"
+import { applyTurnSplit as applyTurnSplitHandler } from "./handlers/applyTurnSplit"
+import { mergeTurns as mergeTurnsHandler } from "./handlers/mergeTurns"
+import { applyTurnsMerged as applyTurnsMergedHandler } from "./handlers/applyTurnsMerged"
+import { applyTurnDeleted as applyTurnDeletedHandler } from "./handlers/applyTurnDeleted"
+import { updateTurnSpeaker as updateTurnSpeakerHandler } from "./handlers/updateTurnSpeaker"
+import { renameSpeaker as renameSpeakerHandler } from "./handlers/renameSpeaker"
+import { replaceSpeaker as replaceSpeakerHandler } from "./handlers/replaceSpeaker"
+import { applyTurnSpeakerUpdated as applyTurnSpeakerUpdatedHandler } from "./handlers/applyTurnSpeakerUpdated"
+import { applySpeakerRenamed as applySpeakerRenamedHandler } from "./handlers/applySpeakerRenamed"
+import { applySpeakerReplaced as applySpeakerReplacedHandler } from "./handlers/applySpeakerReplaced"
 import {
-  CollabSession,
-  LocalSession,
-  type CollabOptions,
-  type EditorSession,
-  type LocalUser,
-  type SessionHost,
-} from "./session"
-import { FlightRecorder, resolveDebugFlags } from "./debug/syncFlightRecorder"
+  getTurnLock as getTurnLockHandler,
+  setLocks as setLocksHandler,
+  setTurnLock as setTurnLockHandler,
+  clearTurnLock as clearTurnLockHandler,
+} from "./handlers/locksState"
+import {
+  setTranslationVersion as setTranslationVersionHandler,
+  reconcileVersions as reconcileVersionsHandler,
+} from "./handlers/versionsState"
 
-import "./cursor.css"
-import "./karaoke.css"
+export type {
+  TranscriptionEditorOptions,
+  TranscriptionEditorSavePayload,
+  TranscriptionEditorLockPayload,
+} from "./types"
 
-export type { TranscriptionEditorPluginApi }
-export type { CollabOptions }
+// Client beat cadence; the server TTL is 45s — three missed beats lose the lock.
+const HEARTBEAT_INTERVAL_MS = 15000
 
-export interface TranscriptionEditorOptions {
-  /** Collaborative mode configuration. If absent, local-only mode. */
-  collab?: CollabOptions
-  /** Name of the XmlFragment in the Y.Doc. @default "default" */
-  field?: string
-  /** Local user info for cursor display. */
-  user?: LocalUser
-  /**
-   * Read-only mode: the editor is not editable and broadcasts no cursor or
-   * selection to other participants. Remote edits are still received, so the
-   * user keeps seeing others work. @default false
-   */
-  readOnly?: boolean
-  /**
-   * Sync flight recorder: records the transaction/mutation timeline and
-   * checks viewDesc↔DOM integrity to diagnose the readDOMChange crash
-   * family. Also enabled by localStorage["transcript-ui:debug"] = "1"
-   * (no host redeploy needed). Dump via core.transcriptionEditor.debugDump().
-   */
-  debug?: boolean
-  /** Debug kill-switch: drop remote carets/selections (CollaborationCursor).
-   *  localStorage["transcript-ui:debug:no-remote-cursors"] also works. */
-  debugDisableRemoteCursors?: boolean
-  /** Debug kill-switch: drop the CursorTurn decoration.
-   *  localStorage["transcript-ui:debug:no-cursor-turn"] also works. */
-  debugDisableCursorTurn?: boolean
+/**
+ * One editing session on a document: the plugin's state (EditorPluginState)
+ * and its API in a single object. Methods delegate to handlers/ — each one a
+ * file receiving `this` as its explicit first parameter, tools/ holding the
+ * stateless how (mirrors the server-side EditorHandler structure).
+ */
+class EditorSession implements EditorPluginState, TranscriptionEditorPluginApi {
+  core: Core
+  options: TranscriptionEditorOptions
+  editingTurnId = ref<string | null>(null)
+  editingCaretOffset = ref(0)
+  locks = shallowReactive(new Map<string, { userId: string; userName: string }>())
+  editingRef: TranscriptionEditorLockPayload | null = null
+  lockPending = false
+  heartbeat = new LockHeartbeat(HEARTBEAT_INTERVAL_MS)
+  versions = new Map<string, number>()
+  pendingRefetches = new Set<string>()
+
+  constructor(core: Core, options: TranscriptionEditorOptions) {
+    this.core = core
+    this.options = options
+  }
+
+  beginEdit(turnId: string, caretOffset?: number): Promise<void> {
+    return beginEditHandler(this, turnId, caretOffset)
+  }
+
+  cancelEdit(): void {
+    cancelEditHandler(this)
+  }
+
+  saveTurn(text: string): void {
+    saveTurnHandler(this, text)
+  }
+
+  splitTurn(text: string, offset: number): void {
+    splitTurnHandler(this, text, offset)
+  }
+
+  applyTurnUpdate(update: TurnUpdate): void {
+    applyTurnUpdateHandler(this, update)
+  }
+
+  applyTurnSplit(split: TurnSplit): void {
+    applyTurnSplitHandler(this, split)
+  }
+
+  mergeTurns(firstTurnId: string, secondTurnId: string): void {
+    mergeTurnsHandler(this, firstTurnId, secondTurnId)
+  }
+
+  applyTurnsMerged(merge: TurnsMerged): void {
+    applyTurnsMergedHandler(this, merge)
+  }
+
+  applyTurnDeleted(deleted: TurnDeleted): void {
+    applyTurnDeletedHandler(this, deleted)
+  }
+
+  setTranslationVersion(translationId: string, version: number): void {
+    setTranslationVersionHandler(this, translationId, version)
+  }
+
+  reconcileVersions(versions: Record<string, number>): void {
+    reconcileVersionsHandler(this, versions)
+  }
+
+  updateTurnSpeaker(
+    turnId: string,
+    target: { speakerId?: string; speakerName?: string },
+  ): void {
+    updateTurnSpeakerHandler(this, turnId, target)
+  }
+
+  renameSpeaker(speakerId: string, name: string): void {
+    renameSpeakerHandler(this, speakerId, name)
+  }
+
+  replaceSpeaker(fromSpeakerId: string, toSpeakerId: string): void {
+    replaceSpeakerHandler(this, fromSpeakerId, toSpeakerId)
+  }
+
+  applyTurnSpeakerUpdated(update: TurnSpeakerUpdated): void {
+    applyTurnSpeakerUpdatedHandler(this, update)
+  }
+
+  applySpeakerRenamed(renamed: SpeakerRenamed): void {
+    applySpeakerRenamedHandler(this, renamed)
+  }
+
+  applySpeakerReplaced(replaced: SpeakerReplaced): void {
+    applySpeakerReplacedHandler(this, replaced)
+  }
+
+  getTurnLock(turnId: string) {
+    return getTurnLockHandler(this, turnId)
+  }
+
+  setLocks(locks: TurnLock[]): void {
+    setLocksHandler(this, locks)
+  }
+
+  setTurnLock(lock: TurnLock): void {
+    setTurnLockHandler(this, lock)
+  }
+
+  clearTurnLock(ref: TranscriptionEditorLockPayload): void {
+    clearTurnLockHandler(this, ref)
+  }
+
+  /** Back to idle: document reload — the edit in progress and the known
+   *  locks belong to the previous document (the join re-ack reseeds them). */
+  reset(): void {
+    this.editingTurnId.value = null
+    this.editingRef = null
+    this.heartbeat.stop()
+    this.locks.clear()
+    this.versions.clear()
+    this.pendingRefetches.clear()
+  }
+
+  destroy(): void {
+    this.heartbeat.stop()
+  }
 }
 
-export function createTranscriptionEditorPlugin({
-  collab,
-  field = "default",
-  user = { name: "Anonymous", color: "#999999" },
-  readOnly = false,
-  debug = false,
-  debugDisableRemoteCursors = false,
-  debugDisableCursorTurn = false,
-}: TranscriptionEditorOptions = {}): CorePlugin {
+/**
+ * Per-turn plain-text editing (the lock+save model — see the "Editor v2"
+ * design). One turn is edited at a time; entering edit mode acquires a
+ * server-side lock, leaving it (save/cancel) releases it. Without host
+ * handlers the plugin runs local-only (dev harness, viewer).
+ */
+export function createTranscriptionEditorPlugin(
+  options: TranscriptionEditorOptions = {},
+): CorePlugin {
   return {
     name: "transcriptionEditor",
-
     install(core: Core) {
-      const tiptapEditor = shallowRef<Editor | undefined>(undefined)
-      const users = ref<YjsUser[]>([])
-      const isConnected = ref(false)
-      const error = ref<string | null>(null)
+      const session = new EditorSession(core, options)
+      core.transcriptionEditor = session
 
-      const debugFlags = resolveDebugFlags({
-        debug,
-        debugDisableRemoteCursors,
-        debugDisableCursorTurn,
-      })
-      const recorder = debugFlags.enabled ? new FlightRecorder() : null
-
-      // The plugin's single mutable cell. Sessions publish their reactive
-      // state through `host`, never by reaching into the plugin.
-      let session: EditorSession | null = null
-
-      const host: SessionHost = {
-        setEditor: (editor) => {
-          tiptapEditor.value = editor
-        },
-        setConnected: (connected) => {
-          isConnected.value = connected
-        },
-        setUsers: (newUsers) => {
-          users.value = newUsers
-        },
-        user,
-      }
-
-      core.transcriptionEditor = {
-        tiptapEditor,
-        get doc() {
-          return session?.ydoc ?? null
-        },
-        get fragment() {
-          return session?.ydoc.getXmlFragment(field) ?? null
-        },
-        get speakersMap() {
-          return session?.ydoc.getMap<SpeakerData>(SPEAKERS_MAP_KEY) ?? null
-        },
-        users,
-        isConnected,
-        error,
-        updateUser(attrs: Record<string, unknown>) {
-          Object.assign(user, attrs)
-          session?.updateUser()
-        },
-        setError(message: string | null) {
-          error.value = message
-        },
-        debugDump: recorder ? () => recorder.dump() : undefined,
-      }
-
-      // (Re)create the session for the active translation. The state reset
-      // belongs here — the plugin owns the state, so no session variant can
-      // forget to clean up behind itself.
-      const restart = (trigger: string): void => {
-        recorder?.record("session-restart", { trigger })
-        session?.destroy()
-        session = null
-        tiptapEditor.value = undefined
-        users.value = []
-        isConnected.value = false
-        // A new load starts clean: drop any error from the previous attempt so
-        // a successful reload (e.g. on a fresh epoch) hides the overlay.
-        error.value = null
-
-        const translation = editableTranslation(core)
-        if (!translation) return // virtual cross translation: read-only view
-        const deps = {
-          core,
-          host,
-          translation,
-          field,
-          readOnly,
-          debugFlags,
-          recorder,
-        }
-        session = collab
-          ? new CollabSession(deps, collab)
-          : new LocalSession(deps)
-      }
-
-      const warnUnsupported = (event: string) => (): void => {
-        if (session) {
-          console.warn(
-            `[transcriptionEditor] ${event} is not supported while the editor is active`,
-          )
-        }
-      }
-
-      const unsubscribes = [
-        core.on("document:change", () => restart("document:change")),
-        core.on("channel:change", () => restart("channel:change")),
-        core.on("translation:change", () => restart("translation:change")),
-        core.on("translation:sync", warnUnsupported("translation:sync")),
-        core.on("channel:sync", warnUnsupported("channel:sync")),
-      ]
-
-      // The document may already be loaded when the plugin installs.
-      restart("install")
+      const offDocChange = core.on("document:change", () => session.reset())
 
       return () => {
-        unsubscribes.forEach((off) => off())
-        session?.destroy()
-        session = null
-        recorder?.destroy()
-        core.transcriptionEditor = undefined
+        offDocChange()
+        session.destroy()
       }
     },
   }
 }
-
-/** The editable backing store of the active translation, or undefined when
- *  the active one is virtual (the cross translation) — no collab session,
- *  rendered read-only. */
-function editableTranslation(core: Core): TranslationStore | undefined {
-  const channel = core.activeChannel.value
-  if (!channel) return undefined
-  return channel.translations.get(channel.activeTranslation.value.id)
-}
-
-// Re-export internals for advanced usage
-export { TranscriptionDocument } from "./extensions/transcriptionDocument"
-export { TurnNode } from "./extensions/turnNode"
-export type { TurnNodeAttributes } from "./extensions/turnNode"
-export { StoreSync, withSuppressedSync } from "./extensions/storeSync"
-export { CollaborationCursor } from "./extensions/collaborationCursor"
-export { turnsToDoc } from "./utils/turnsToDoc"
-export { docToTurns } from "./utils/docToTurns"

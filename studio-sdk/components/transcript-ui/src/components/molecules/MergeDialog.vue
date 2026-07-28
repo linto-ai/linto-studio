@@ -4,10 +4,7 @@ import Button from "../atoms/Button.vue"
 import FormInput from "./FormInput.vue"
 import { useCore } from "../../core"
 import { useI18n } from "../../i18n"
-import {
-  countTurnsForSpeaker,
-  mergeSpeakers,
-} from "../../plugins/transcriptionEditor/utils/speakerActions"
+import { countTurnsForSpeaker, mergeSpeakers } from "../../core/helpers"
 
 const props = defineProps<{
   open: boolean
@@ -44,9 +41,8 @@ const targetField = computed(() => ({
 }))
 
 const affectedCount = computed(() => {
-  const editor = core.transcriptionEditor?.tiptapEditor.value
-  if (!editor || !props.fromSpeakerId) return 0
-  return countTurnsForSpeaker(editor, props.fromSpeakerId)
+  if (!props.fromSpeakerId) return 0
+  return countTurnsForSpeaker(core, props.fromSpeakerId)
 })
 
 watch(
@@ -67,7 +63,13 @@ function onClose(): void {
 
 function onConfirm(): void {
   if (!props.fromSpeakerId || !targetId.value) return
-  mergeSpeakers(core, props.fromSpeakerId, targetId.value)
+  // Through the plugin when present (server round-trip, applied at the
+  // broadcast); direct store helper otherwise (plugin-less embeds).
+  if (core.transcriptionEditor) {
+    core.transcriptionEditor.replaceSpeaker(props.fromSpeakerId, targetId.value)
+  } else {
+    mergeSpeakers(core, props.fromSpeakerId, targetId.value)
+  }
   emit("update:open", false)
 }
 </script>

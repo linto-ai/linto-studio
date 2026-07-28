@@ -142,8 +142,8 @@ class IoHandler extends Component {
     })
 
     // WebServer owns the single 'upgrade' router; register socket.io's engine
-    // for its own path so it coexists with EditorHandler/Hocuspocus on the same
-    // httpServer. This also drops engine.io's auto-installed upgrade listener,
+    // for its own path on the shared httpServer. This also drops engine.io's
+    // auto-installed upgrade listener,
     // so its destroyUpgrade reaper is no longer involved.
     this.app.components["WebServer"].registerUpgradeHandler(
       "/socket.io",

@@ -128,7 +128,7 @@ class WebServer extends Component {
     )
 
     // WebServer is the single owner of the HTTP 'upgrade' event. WebSocket
-    // components (IoHandler/socket.io, EditorHandler/Hocuspocus) declare a path
+    // components (IoHandler/socket.io) declare a path
     // prefix + handler via registerUpgradeHandler(); any unrouted upgrade is
     // destroyed immediately. This makes upgrade routing explicit and
     // deterministic instead of relying on engine.io's destroyUpgrade reaper (a

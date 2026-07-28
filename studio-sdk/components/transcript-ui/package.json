@@ -28,14 +28,6 @@
     "vue": "^3.5.0"
   },
   "dependencies": {
-    "@hocuspocus/provider": "^3.4.4",
-    "@tiptap/core": "^3.23",
-    "@tiptap/extension-collaboration": "^3.23",
-    "@tiptap/extension-history": "^3.23",
-    "@tiptap/pm": "^3.23",
-    "@tiptap/starter-kit": "^3.23",
-    "@tiptap/vue-3": "^3.23",
-    "@tiptap/y-tiptap": "^3",
     "diff": "^8.0.3",
     "dompurify": "^3.2.4",
     "lucide-vue-next": "^0.564.0",
@@ -45,8 +37,7 @@
     "turndown": "^7.2.4",
     "turndown-plugin-gfm": "^1.0.2",
     "vue-stick-to-bottom": "^1.0.0",
-    "wavesurfer.js": "^7.12.1",
-    "yjs": "^13.6.30"
+    "wavesurfer.js": "^7.12.1"
   },
   "devDependencies": {
     "@types/diff": "^8.0.0",
@@ -59,8 +50,6 @@
     "vite": "^7.3.1",
     "vite-plugin-dts": "^4.5.4",
     "vue": "^3.5.25",
-    "vue-tsc": "^3.1.5",
-    "y-protocols": "^1.0.7",
-    "y-websocket": "^3.0.0"
+    "vue-tsc": "^3.1.5"
   }
 }

@@ -1,9 +1,13 @@
+import type { TranslationInfo } from "../core/types"
+
 export function getLanguageDisplayName(
   code: string,
   locale: string,
   wildcardLabel = "*",
   stripRegion = true,
 ): string {
+  // Some backend turns carry no language at all — an empty name hides the chip.
+  if (!code) return ""
   if (code === "*") return wildcardLabel
   const lookup = stripRegion ? (code.split("-")[0] ?? code) : code
   try {
@@ -15,7 +19,7 @@ export function getLanguageDisplayName(
 }
 
 export function buildTranslationItems(
-  translations: { id: string; languages: string[]; isSource: boolean }[],
+  translations: TranslationInfo[],
   locale: string,
   originalLabel: string,
   wildcardLabel = "*",

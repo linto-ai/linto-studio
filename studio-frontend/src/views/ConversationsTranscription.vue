@@ -13,13 +13,11 @@
 <script>
 import { markRaw } from "vue"
 
-import { getCookie } from "@/tools/getCookie"
-import { getEnv } from "@/tools/getEnv"
-import { userName } from "@/tools/userName"
 import USER_RIGHTS from "@/const/userRights.js"
 
 import { apiGetConversationAsDoc } from "@/api/conversation.d/apiGetConversationAsDoc.js"
 import {
+  apiGetConversationById,
   apiGetConversationLastUpdate,
   apiGetUserRightFromConversation,
 } from "@/api/conversation"
@@ -27,6 +25,7 @@ import {
 import {
   createTranscriptionEditorPlugin,
   createAudioPlugin,
+  mapApiTurns,
 } from "@linto/transcript-ui/webcomponent"
 
 import { setupLLMServices } from "@/services/llmServicesIntegration"
@@ -39,19 +38,6 @@ import {
   apiGetAudioFileFromConversation,
   apiGetAudioWaveFormFromConversation,
 } from "@/api/conversation"
-
-// Editor epoch per translation id, read by the collab plugin to build the
-// Hocuspocus document name (the epoch identifies the server-side CRDT
-// history lineage).
-function collectEditorEpochs(doc) {
-  const epochs = {}
-  for (const channel of doc.channels ?? []) {
-    for (const translation of channel.translations ?? []) {
-      epochs[translation.id] = translation.editorEpoch ?? 0
-    }
-  }
-  return epochs
-}
 
 export default {
   components: { LayoutV2, PublicationModal },
@@ -71,11 +57,6 @@ export default {
       editListeners: [],
       canWrite: false,
       publicationModal: { open: false, jobId: null },
-      // Mutable map shared with the collab plugin: sessions read it at
-      // (re)creation, so refreshing its values + setDocument() is enough to
-      // reconnect on a new epoch. markRaw'd via core anyway; keep it plain.
-      collabEpochs: {},
-      collabReloadInFlight: false,
     }
   },
   async mounted() {
@@ -111,37 +92,15 @@ export default {
     this.llmDispose = null
     this.chatDispose?.()
     this.chatDispose = null
+    this.$apiEventWS.leaveEditorRoom()
   },
   methods: {
-    // Stable cursor color derived from the user id so each collaborator keeps
-    // a consistent, distinct color across sessions.
-    cursorColor(id) {
-      const palette = [
-        "#E57373",
-        "#64B5F6",
-        "#81C784",
-        "#FFB74D",
-        "#BA68C8",
-        "#4DB6AC",
-        "#F06292",
-        "#A1887F",
-      ]
-      const str = String(id || "")
-      let hash = 0
-      for (let i = 0; i < str.length; i++) {
-        hash = (hash * 31 + str.charCodeAt(i)) | 0
-      }
-      return palette[Math.abs(hash) % palette.length]
-    },
     async initEditor(doc) {
       const el = this.$refs.editor
       // Torn down during the async mount: the custom element is gone, so there
       // is nothing to wire up (and destructuring `el` would throw).
       if (this.isDestroyed || !el) return
       const { core } = el
-      const ws_url = new URL(getEnv("VUE_APP_CONVO_API"))
-      ws_url.protocol = ws_url.protocol === "https:" ? "wss:" : "ws:"
-      ws_url.pathname = ws_url.pathname.replace(/\/api$/, "/ws/editor")
       this.core = markRaw(core)
       core.use(
         createAudioPlugin({
@@ -165,23 +124,54 @@ export default {
         }),
       )
 
-      Object.assign(this.collabEpochs, collectEditorEpochs(doc))
-
+      // Lock+save editor: mutations go through the shared socket.io
+      // connection (see "Editor v2" design); the room is joined below.
       core.use(
         createTranscriptionEditorPlugin({
-          collab: {
-            url: ws_url.toString(),
-            token: getCookie("authToken"),
-            epochs: this.collabEpochs,
-            onAuthenticationFailed: (reason) => this.onCollabAuthFailed(reason),
-          },
-          user: {
-            name: userName(this.userInfo),
-            color: this.cursorColor(this.userInfo._id),
-          },
-          readOnly: !this.canWrite,
+          saveTurn: (payload) => this.$apiEventWS.saveEditorTurn(payload),
+          lockTurn: (payload) => this.$apiEventWS.lockEditorTurn(payload),
+          unlockTurn: (payload) => this.$apiEventWS.unlockEditorTurn(payload),
+          splitTurn: (payload) => this.$apiEventWS.splitEditorTurn(payload),
+          mergeTurns: (payload) => this.$apiEventWS.mergeEditorTurns(payload),
+          deleteTurn: (payload) => this.$apiEventWS.deleteEditorTurn(payload),
+          updateTurnSpeaker: (payload) =>
+            this.$apiEventWS.updateEditorTurnSpeaker(payload),
+          renameSpeaker: (payload) =>
+            this.$apiEventWS.renameEditorSpeaker(payload),
+          replaceSpeaker: (payload) =>
+            this.$apiEventWS.replaceEditorSpeaker(payload),
+          refetchTranslation: (translationId) =>
+            this.refetchTranslation(translationId),
         }),
       )
+      const mode = this.canWrite ? "edit" : "view"
+      core.capabilities.value = { text: mode, speakers: mode }
+      // Lock state flows one way: server broadcasts → plugin setters. The
+      // join ack (and every reconnection re-ack) reseeds the whole map.
+      this.$apiEventWS.joinEditorRoom(this.conversationId, {
+        onJoined: (ack) => {
+          if (!ack?.ok) return
+          core.transcriptionEditor?.setLocks(ack.locks ?? [])
+          // Reconnection: any loaded track the server says is ahead gets
+          // refetched — the whole point of the version safety net.
+          core.transcriptionEditor?.reconcileVersions(ack.versions ?? {})
+        },
+        onTurnLocked: (lock) => core.transcriptionEditor?.setTurnLock(lock),
+        onTurnUnlocked: (ref) => core.transcriptionEditor?.clearTurnLock(ref),
+        onTurnUpdated: (update) =>
+          core.transcriptionEditor?.applyTurnUpdate(update),
+        onTurnSplit: (split) => core.transcriptionEditor?.applyTurnSplit(split),
+        onTurnsMerged: (merge) =>
+          core.transcriptionEditor?.applyTurnsMerged(merge),
+        onTurnDeleted: (deleted) =>
+          core.transcriptionEditor?.applyTurnDeleted(deleted),
+        onTurnSpeakerUpdated: (update) =>
+          core.transcriptionEditor?.applyTurnSpeakerUpdated(update),
+        onSpeakerRenamed: (renamed) =>
+          core.transcriptionEditor?.applySpeakerRenamed(renamed),
+        onSpeakerReplaced: (replaced) =>
+          core.transcriptionEditor?.applySpeakerReplaced(replaced),
+      })
 
       // setupLLMServices returns { dispose }; store the disposer so it matches
       // chatDispose (a bare function) and beforeDestroy can call llmDispose().
@@ -219,40 +209,73 @@ export default {
       core.setDocument(doc)
       this.pushTranscriptionLastUpdate()
       this.attachEditListeners()
+
+      // The REST skeleton carries no content: turns and speakers are loaded
+      // per translation, lazily — now for the active one, then on every
+      // track/channel switch.
+      this.attachTranslationLoader()
+      this.loadActiveTranslation()
     },
 
-    // The collab server rejected the connection. The recoverable case is a
-    // stale editor epoch (conversation rewritten outside the editor):
-    // refetching gives fresh epochs, and reloading the document recreates
-    // the sessions on the new lineage. Anything else (expired token, lost
-    // access) is not recoverable from here — only log it.
-    async onCollabAuthFailed(reason) {
-      console.warn("[host] collab authentication failed:", reason)
-      if (this.collabReloadInFlight || !this.core) return
-      this.collabReloadInFlight = true
-      try {
-        const { doc } = await apiGetConversationAsDoc(this.conversationId)
-        const fresh = collectEditorEpochs(doc)
-        const changed = Object.entries(fresh).some(
-          ([id, epoch]) => this.collabEpochs[id] !== epoch,
-        )
-        if (!changed) {
-          // Not a stale epoch: the rejection is non-recoverable (invalid
-          // document name, lost access, expired token). Surface it in the
-          // editor instead of leaving a blank canvas after the load timeout.
-          this.core.transcriptionEditor?.setError(reason)
+    // A translation's content is its child conversation's text+speakers.
+    // Already-loaded tracks are kept as-is (turns present = trivial cache).
+    async loadActiveTranslation() {
+      const channel = this.core?.activeChannel?.value
+      if (!channel) return
+      const translation = channel.translations.get(
+        channel.activeTranslation.value.id,
+      )
+      if (!translation || translation.turns.value.length > 0) return
+      await this.fetchTranslationContent(channel, translation)
+    },
+
+    // Version-gap or reconnection resync: reload the track unconditionally.
+    async refetchTranslation(translationId) {
+      const core = this.core
+      if (!core) return
+      for (const channel of core.channels.values()) {
+        const translation = channel.translations.get(translationId)
+        if (translation) {
+          await this.fetchTranslationContent(channel, translation)
           return
         }
-        Object.assign(this.collabEpochs, fresh)
-        // The editor re-shows its own loading overlay on setDocument
-        // (document:change), which also clears any prior error.
-        this.core.setDocument(doc)
-      } catch (e) {
-        console.error("[host] failed to reload after collab auth failure", e)
-        this.core.transcriptionEditor?.setError(reason)
-      } finally {
-        this.collabReloadInFlight = false
       }
+    },
+
+    async fetchTranslationContent(channel, translation) {
+      channel.isLoadingHistory.value = true
+      try {
+        // editorVersion fetched WITH the content (same backend read): the
+        // version baseline always matches what is displayed.
+        const conv = await apiGetConversationById(
+          translation.id,
+          ["text", "speakers", "editorVersion"].toString(),
+        )
+        if (this.isDestroyed || !conv) return
+        for (const s of conv.speakers ?? []) {
+          this.core.speakers.ensure(s.speaker_id, s.speaker_name)
+        }
+        translation.setTurns(mapApiTurns(conv.text ?? []))
+        this.core.transcriptionEditor?.setTranslationVersion(
+          translation.id,
+          conv.editorVersion ?? 0,
+        )
+        // Whole content arrives in one fetch: mark the history complete so
+        // the panel shows its "beginning of transcription" boundary.
+        channel.hasMoreHistory.value = false
+      } catch (err) {
+        console.error("[host] failed to load translation content", err)
+      } finally {
+        channel.isLoadingHistory.value = false
+      }
+    },
+
+    attachTranslationLoader() {
+      const load = () => this.loadActiveTranslation()
+      this.editListeners.push(
+        this.core.on("translation:change", load),
+        this.core.on("channel:change", load),
+      )
     },
 
     async pushTranscriptionLastUpdate() {

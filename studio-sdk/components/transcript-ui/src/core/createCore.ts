@@ -110,12 +110,8 @@ export function createCore(options: CoreOptions = {}): Core {
   // ── Plugins ────────────────────────────────────────────────────────
 
   const cleanups: Array<() => void> = []
-  const pluginExtensions: import("@tiptap/core").AnyExtension[] = []
 
   function use(plugin: CorePlugin): void {
-    if (plugin.tiptapExtensions) {
-      pluginExtensions.push(...plugin.tiptapExtensions)
-    }
     const cleanup = plugin.install(core)
     if (cleanup) cleanups.push(cleanup)
   }
@@ -141,7 +137,6 @@ export function createCore(options: CoreOptions = {}): Core {
     date,
     activeChannelId,
     capabilities,
-    pluginExtensions,
     speakers,
     channels,
     activeChannel,

@@ -5,11 +5,9 @@ import fontsStyles from "./styles/fonts.css?inline"
 // be injected into the Shadow DOM (global CSS doesn't cross the boundary).
 import prismTheme from "prismjs/themes/prism.css?inline"
 
-// Components rendered through Tiptap's VueNodeViewRenderer (TurnNodeView)
-// and their descendants don't get their scoped styles injected into the
-// Shadow DOM automatically. Collect them manually and append them to the
-// SFC's `styles` array.
-import TurnNodeView from "./plugins/transcriptionEditor/components/TurnNodeView.vue"
+// Components rendered outside the SFC tree (popovers, dialogs) don't get
+// their scoped styles injected into the Shadow DOM automatically. Collect
+// them manually and append them to the SFC's `styles` array.
 import SpeakerLabel from "./components/SpeakerLabel.vue"
 import SpeakerPopover from "./components/molecules/SpeakerPopover.vue"
 import FormInput from "./components/molecules/FormInput.vue"
@@ -25,7 +23,6 @@ const wc = WebComponent as unknown as { styles?: string[] }
 wc.styles = [
   ...(wc.styles ?? []),
   prismTheme,
-  ...getComponentStyles(TurnNodeView),
   ...getComponentStyles(SpeakerLabel),
   ...getComponentStyles(SpeakerPopover),
   ...getComponentStyles(FormInput),
@@ -45,21 +42,8 @@ function injectFonts(): void {
   document.head.appendChild(style)
 }
 
-// ProseMirror/y-prosemirror call `editorView._root.createRange()`,
-// which doesn't exist on ShadowRoot — delegate to `document`.
-function patchShadowRoot(): void {
-  if (typeof ShadowRoot === "undefined") return
-  const proto = ShadowRoot.prototype as ShadowRoot & {
-    createRange?: () => Range
-  }
-  if (typeof proto.createRange !== "function") {
-    proto.createRange = () => document.createRange()
-  }
-}
-
 export function register(tagName = "linto-editor") {
   injectFonts()
-  patchShadowRoot()
   customElements.define(tagName, LintoEditor)
 }
 
@@ -71,3 +55,4 @@ export { createSubtitlePlugin } from "./plugins/subtitle"
 export { createTranscriptionEditorPlugin } from "./plugins/transcriptionEditor"
 export { createLLMServicesPlugin } from "./plugins/llmServices"
 export { createChatPlugin } from "./plugins/chat"
+export { mapApiTurns } from "./adapters/mapApiTurns"

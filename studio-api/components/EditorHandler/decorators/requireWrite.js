@@ -1,0 +1,49 @@
+const debug = require("debug")("linto:components:EditorHandler:requireWrite")
+
+const access = require(
+  `${process.cwd()}/components/WebServer/middlewares/access/conversation`,
+)
+const CONVERSATION_RIGHTS = require(
+  `${process.cwd()}/lib/dao/conversation/rights`,
+)
+
+/**
+ * Handler decorator for mutations WITHOUT a lock (speaker ops, merge): the
+ * socket must have joined (identity on socket.data) and hold WRITE access on
+ * the edited track (payload.translationId) — the check requireLock performs
+ * implicitly through the lock acquisition.
+ */
+function requireWrite(handler) {
+  return async function writeCheckedHandler({ io, socket }, payload, ack) {
+    const reply = typeof ack === "function" ? ack : () => {}
+    try {
+      const editorUser = socket.data.editorUser
+      if (!editorUser) {
+        return reply({ ok: false, reason: "unauthorized" })
+      }
+      const { translationId } = payload || {}
+      if (!translationId) {
+        return reply({ ok: false, reason: "invalid_payload" })
+      }
+
+      const canWrite = await access.hasAccess(
+        translationId,
+        editorUser.userId,
+        CONVERSATION_RIGHTS.WRITE,
+      )
+      if (!canWrite) {
+        debug(
+          `mutation refused (forbidden) translation=${translationId} user=${editorUser.userId}`,
+        )
+        return reply({ ok: false, reason: "forbidden" })
+      }
+
+      return await handler({ io, socket }, payload, ack)
+    } catch (err) {
+      debug(`write check failed: ${err.message}`)
+      reply({ ok: false, reason: "error" })
+    }
+  }
+}
+
+module.exports = { requireWrite }

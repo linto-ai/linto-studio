@@ -6,10 +6,7 @@ import Button from "../atoms/Button.vue"
 import FormInput, { type FormField } from "./FormInput.vue"
 import { useCore } from "../../core"
 import { useI18n } from "../../i18n"
-import {
-  switchTurnSpeaker,
-  createSpeakerAndAssign,
-} from "../../plugins/transcriptionEditor/utils/speakerActions"
+import { switchTurnSpeaker, createSpeakerAndAssign } from "../../core/helpers"
 import type { Speaker } from "../../types/editor"
 
 const props = defineProps<{
@@ -50,7 +47,15 @@ async function startCreatingNew(): Promise<void> {
 
 function onPickExisting(speaker: Speaker): void {
   if (speaker.id !== props.currentSpeakerId) {
-    switchTurnSpeaker(core, props.turnId, speaker.id)
+    // Through the plugin when present (server round-trip, applied at the
+    // broadcast); direct store helper otherwise (plugin-less embeds).
+    if (core.transcriptionEditor) {
+      core.transcriptionEditor.updateTurnSpeaker(props.turnId, {
+        speakerId: speaker.id,
+      })
+    } else {
+      switchTurnSpeaker(core, props.turnId, speaker.id)
+    }
   }
   isOpen.value = false
 }
@@ -61,7 +66,13 @@ function submitNew(): void {
     isCreatingNew.value = false
     return
   }
-  createSpeakerAndAssign(core, props.turnId, trimmed)
+  if (core.transcriptionEditor) {
+    core.transcriptionEditor.updateTurnSpeaker(props.turnId, {
+      speakerName: trimmed,
+    })
+  } else {
+    createSpeakerAndAssign(core, props.turnId, trimmed)
+  }
   isOpen.value = false
 }
 

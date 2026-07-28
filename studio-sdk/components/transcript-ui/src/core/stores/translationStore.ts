@@ -1,6 +1,6 @@
 import { ref, shallowRef } from "vue"
 import type { AudioSource, Turn, Word } from "../../types/editor"
-import type { CoreEventMap, TranslationStore } from "../types"
+import type { CoreEventMap, TranslationInfo, TranslationStore } from "../types"
 import { insertTurn } from "../helpers/insertTurn"
 import { prependTurns as prependTurnsHelper } from "../helpers/prependTurns"
 import { patchTurn } from "../helpers/patchTurn"
@@ -8,10 +8,7 @@ import { removeTurn as removeTurnHelper } from "../helpers/removeTurn"
 import { updateTurnWords } from "../helpers/updateTurnWords"
 import { ensureSpeakersFromTurns } from "../helpers/ensureSpeakersFromTurns"
 
-interface TranslationInit {
-  id: string
-  languages: string[]
-  isSource: boolean
+interface TranslationInit extends TranslationInfo {
   audio?: AudioSource
   turns: Turn[]
 }

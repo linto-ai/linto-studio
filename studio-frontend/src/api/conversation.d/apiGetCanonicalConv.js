@@ -9,7 +9,6 @@ const PROJECTION = {
   metadata: 1,
   organization: 1,
   securityLevel: 1,
-  editorEpoch: 1,
 }
 
 export async function apiGetCanonicalConv(convId) {

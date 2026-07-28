@@ -1,6 +1,6 @@
 import type { ApiDocument } from '../types/api'
-import type { EditorDocument, Speaker, Turn } from '../types/editor'
-import { wordsFromApi } from '../utils/turnWords'
+import type { EditorDocument, Speaker } from '../types/editor'
+import { mapApiTurns } from './mapApiTurns'
 
 export function mapApiDocument(raw: ApiDocument): EditorDocument {
   const speakers = new Map<string, Speaker>()
@@ -13,25 +13,7 @@ export function mapApiDocument(raw: ApiDocument): EditorDocument {
     })
   }
 
-  const turns: Turn[] = raw.text.map((t) => {
-    // Positional identity + local offsets (single-space layout matching the
-    // doc seed); the wire wid is ignored by the editor.
-    const words = wordsFromApi(t.turn_id, t.words)
-    const startTime = words[0]?.startTime ?? t.stime
-    const endTime = words.length > 0
-      ? (words[words.length - 1]!.endTime ?? t.etime)
-      : t.etime
-
-    return {
-      id: t.turn_id,
-      speakerId: t.speaker_id || null,
-      text: words.length > 0 ? null : t.segment,
-      words,
-      ...(startTime !== undefined && { startTime }),
-      ...(endTime !== undefined && { endTime }),
-      language: t.language,
-    }
-  })
+  const turns = mapApiTurns(raw.text)
 
   const sourceLanguage = raw.metadata.transcription.lang ?? raw.text[0]?.language ?? 'fr'
 

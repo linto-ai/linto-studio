@@ -7,7 +7,7 @@ module.exports = {
   conversationGenerations: require("./conversationGenerations.js"),
   conversationSubtitles: require("./conversationSubtitles.js"),
   conversations: require("./conversations.js"),
-  editorStates: require("./editorStates.js"),
+  editorLocks: require("./editorLocks.js"),
   favorites: require("./favorites.js"),
   folders: require("./folders.js"),
   kpi: {

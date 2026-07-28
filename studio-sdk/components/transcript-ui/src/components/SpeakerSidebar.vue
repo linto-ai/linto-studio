@@ -1,26 +1,26 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import SpeakerIndicator from './atoms/SpeakerIndicator.vue'
-import SwitchToggle from './atoms/SwitchToggle.vue'
-import EditableText from './atoms/EditableText.vue'
-import SelectableListItem from './atoms/SelectableListItem.vue'
-import EditorIcon from './atoms/EditorIcon.vue'
-import SpeakerMenu from './molecules/SpeakerMenu.vue'
-import MergeDialog from './molecules/MergeDialog.vue'
-import ChannelSelector from './ChannelSelector.vue'
-import TranslationSelector from './TranslationSelector.vue'
-import { useI18n } from '../i18n'
-import { useCore } from '../core'
-import { renameSpeaker } from '../plugins/transcriptionEditor/utils/speakerActions'
-import type { Speaker } from '../types/editor'
-import type { LLMServiceGenerationStatus } from '../core'
+import { computed, ref } from "vue"
+import SpeakerIndicator from "./atoms/SpeakerIndicator.vue"
+import SwitchToggle from "./atoms/SwitchToggle.vue"
+import EditableText from "./atoms/EditableText.vue"
+import SelectableListItem from "./atoms/SelectableListItem.vue"
+import EditorIcon from "./atoms/EditorIcon.vue"
+import SpeakerMenu from "./molecules/SpeakerMenu.vue"
+import MergeDialog from "./molecules/MergeDialog.vue"
+import ChannelSelector from "./ChannelSelector.vue"
+import TranslationSelector from "./TranslationSelector.vue"
+import { useI18n } from "../i18n"
+import { useCore } from "../core"
+import { renameSpeaker } from "../core/helpers"
+import type { Speaker } from "../types/editor"
+import type { LLMServiceGenerationStatus, TranslationInfo } from "../core"
 
 withDefaults(
   defineProps<{
     speakers: Speaker[]
     channels: { id: string; name: string }[]
     selectedChannelId: string
-    translations: { id: string; languages: string[]; isSource: boolean }[]
+    translations: TranslationInfo[]
     selectedTranslationId: string
     showSpeakers?: boolean
   }>(),
@@ -28,20 +28,22 @@ withDefaults(
 )
 
 defineEmits<{
-  'update:selectedChannelId': [id: string]
-  'update:selectedTranslationId': [id: string]
+  "update:selectedChannelId": [id: string]
+  "update:selectedTranslationId": [id: string]
 }>()
 
 const core = useCore()
 const { t } = useI18n()
 
-const canEditSpeakers = computed(() => core.capabilities.value.speakers === 'edit')
+const canEditSpeakers = computed(
+  () => core.capabilities.value.speakers === "edit",
+)
 
 const ttsReady = computed(() => core.live?.ttsReady.value ?? false)
 const ttsHint = computed(() =>
   ttsReady.value
-    ? t('voicePlayback.description')
-    : t('voicePlayback.unavailable'),
+    ? t("voicePlayback.description")
+    : t("voicePlayback.unavailable"),
 )
 
 function onToggleTts(value: boolean): void {
@@ -54,7 +56,13 @@ const mergeOpen = ref(false)
 const mergeFromId = ref<string | null>(null)
 
 function onRename(speakerId: string, newName: string): void {
-  renameSpeaker(core, speakerId, newName)
+  // Through the plugin when present (server round-trip, applied at the
+  // broadcast); direct store helper otherwise (plugin-less embeds).
+  if (core.transcriptionEditor) {
+    core.transcriptionEditor.renameSpeaker(speakerId, newName)
+  } else {
+    renameSpeaker(core, speakerId, newName)
+  }
 }
 
 function onOpenMerge(speakerId: string): void {
@@ -67,8 +75,8 @@ function onOpenMerge(speakerId: string): void {
 const activeService = computed(() => core.llmServices?.active.value ?? null)
 
 const dateFormat = new Intl.DateTimeFormat(undefined, {
-  dateStyle: 'short',
-  timeStyle: 'short',
+  dateStyle: "short",
+  timeStyle: "short",
 })
 
 const generations = computed(() => {
@@ -90,16 +98,16 @@ const activeVersionNumber = computed(
 const serviceBusy = computed(() => activeService.value?.busy.value ?? false)
 
 function statusIconName(status: LLMServiceGenerationStatus): string {
-  if (status === 'completed') return 'check'
-  if (status === 'error') return 'x'
-  return 'spinner'
+  if (status === "completed") return "check"
+  if (status === "error") return "x"
+  return "spinner"
 }
 
 function statusLabel(status: LLMServiceGenerationStatus): string {
-  if (status === 'completed') return t('sidebar.statusCompleted')
-  if (status === 'error') return t('sidebar.statusError')
-  if (status === 'processing') return t('sidebar.statusProcessing')
-  return t('sidebar.statusQueued')
+  if (status === "completed") return t("sidebar.statusCompleted")
+  if (status === "error") return t("sidebar.statusError")
+  if (status === "processing") return t("sidebar.statusProcessing")
+  return t("sidebar.statusQueued")
 }
 
 function onSelectGeneration(generationId: string): void {
@@ -107,7 +115,7 @@ function onSelectGeneration(generationId: string): void {
   if (generationId === currentGenerationId.value) return
   const service = activeService.value
   if (!service) return
-  core.emit('llmService:selectGeneration', { id: service.id, generationId })
+  core.emit("llmService:selectGeneration", { id: service.id, generationId })
 }
 
 function onSelectVersion(versionNumber: number): void {
@@ -115,38 +123,46 @@ function onSelectVersion(versionNumber: number): void {
   if (versionNumber === activeVersionNumber.value) return
   const service = activeService.value
   if (!service) return
-  core.emit('llmService:selectVersion', { id: service.id, versionNumber })
+  core.emit("llmService:selectVersion", { id: service.id, versionNumber })
 }
 </script>
 
 <template>
   <aside class="speaker-sidebar">
-    <section v-if="channels.length > 1" class="sidebar-section sidebar-section--selector">
-      <h2 class="sidebar-title">{{ t('sidebar.channel') }}</h2>
+    <section
+      v-if="channels.length > 1"
+      class="sidebar-section sidebar-section--selector">
+      <h2 class="sidebar-title">{{ t("sidebar.channel") }}</h2>
       <ChannelSelector
         :channels="channels"
         :selected-channel-id="selectedChannelId"
-        @update:selected-channel-id="$emit('update:selectedChannelId', $event)"
-      />
+        @update:selected-channel-id="
+          $emit('update:selectedChannelId', $event)
+        " />
     </section>
-    <section v-if="translations.length > 1" class="sidebar-section sidebar-section--selector">
-      <h2 class="sidebar-title">{{ t('sidebar.translation') }}</h2>
+    <section
+      v-if="translations.length > 1"
+      class="sidebar-section sidebar-section--selector">
+      <h2 class="sidebar-title">{{ t("sidebar.translation") }}</h2>
       <TranslationSelector
         :translations="translations"
         :selected-translation-id="selectedTranslationId"
-        @update:selected-translation-id="$emit('update:selectedTranslationId', $event)"
-      />
+        @update:selected-translation-id="
+          $emit('update:selectedTranslationId', $event)
+        " />
     </section>
     <section v-if="core.subtitle" class="sidebar-section">
-      <h2 class="sidebar-title">{{ t('sidebar.subtitle') }}</h2>
+      <h2 class="sidebar-title">{{ t("sidebar.subtitle") }}</h2>
       <div class="subtitle-toggle">
-        <span class="subtitle-toggle-label">{{ t('subtitle.show') }}</span>
+        <span class="subtitle-toggle-label">{{ t("subtitle.show") }}</span>
         <SwitchToggle v-model="core.subtitle.isVisible.value" />
       </div>
       <label class="subtitle-slider">
         <span class="subtitle-slider-label">
-          {{ t('subtitle.fontSize') }}
-          <span class="subtitle-slider-value">{{ core.subtitle.fontSize.value }}px</span>
+          {{ t("subtitle.fontSize") }}
+          <span class="subtitle-slider-value"
+            >{{ core.subtitle.fontSize.value }}px</span
+          >
         </span>
         <input
           type="range"
@@ -155,18 +171,21 @@ function onSelectVersion(versionNumber: number): void {
           :step="2"
           :value="core.subtitle.fontSize.value"
           :disabled="!core.subtitle.isVisible.value"
-          @input="core.subtitle!.fontSize.value = Number(($event.target as HTMLInputElement).value)"
-        />
+          @input="
+            core.subtitle!.fontSize.value = Number(
+              ($event.target as HTMLInputElement).value,
+            )
+          " />
       </label>
       <div
         v-if="core.subtitle.watermark && !core.subtitle.watermark.readonly"
-        class="subtitle-toggle"
-      >
-        <span class="subtitle-toggle-label">{{ t('subtitle.showWatermark') }}</span>
+        class="subtitle-toggle">
+        <span class="subtitle-toggle-label">{{
+          t("subtitle.showWatermark")
+        }}</span>
         <SwitchToggle
           v-model="core.subtitle.watermark.display.value"
-          :disabled="!core.subtitle.isVisible.value"
-        />
+          :disabled="!core.subtitle.isVisible.value" />
       </div>
       <div
         v-if="
@@ -174,32 +193,29 @@ function onSelectVersion(versionNumber: number): void {
           !core.subtitle.watermark.readonly &&
           core.subtitle.watermark.display.value
         "
-        class="subtitle-toggle"
-      >
-        <span class="subtitle-toggle-label">{{ t('subtitle.pinWatermark') }}</span>
+        class="subtitle-toggle">
+        <span class="subtitle-toggle-label">{{
+          t("subtitle.pinWatermark")
+        }}</span>
         <SwitchToggle
           v-model="core.subtitle.watermark.pinned.value"
-          :disabled="!core.subtitle.isVisible.value"
-        />
+          :disabled="!core.subtitle.isVisible.value" />
       </div>
     </section>
-    <section
-      v-if="core.live && core.live.ttsAvailable"
-      class="sidebar-section"
-    >
-      <h2 class="sidebar-title">{{ t('sidebar.voicePlayback') }}</h2>
+    <section v-if="core.live && core.live.ttsAvailable" class="sidebar-section">
+      <h2 class="sidebar-title">{{ t("sidebar.voicePlayback") }}</h2>
       <div class="subtitle-toggle">
-        <span class="subtitle-toggle-label">{{ t('voicePlayback.enable') }}</span>
+        <span class="subtitle-toggle-label">{{
+          t("voicePlayback.enable")
+        }}</span>
         <SwitchToggle
           :model-value="core.live.ttsEnabled.value"
           :disabled="!ttsReady"
-          @update:model-value="onToggleTts"
-        />
+          @update:model-value="onToggleTts" />
       </div>
       <p
         class="voice-playback-hint"
-        :class="{ 'voice-playback-hint--warning': !ttsReady }"
-      >
+        :class="{ 'voice-playback-hint--warning': !ttsReady }">
         {{ ttsHint }}
       </p>
     </section>
@@ -207,7 +223,7 @@ function onSelectVersion(versionNumber: number): void {
       v-if="activeService && generations.length"
       class="sidebar-section"
       :class="{ 'sidebar-section--busy': serviceBusy }">
-      <h2 class="sidebar-title">{{ t('sidebar.history') }}</h2>
+      <h2 class="sidebar-title">{{ t("sidebar.history") }}</h2>
       <ul class="history-list">
         <li
           v-for="gen in generations"
@@ -255,26 +271,22 @@ function onSelectVersion(versionNumber: number): void {
       </ul>
     </section>
     <section v-if="showSpeakers && speakers.length" class="sidebar-section">
-      <h2 class="sidebar-title">{{ t('sidebar.speakers') }}</h2>
+      <h2 class="sidebar-title">{{ t("sidebar.speakers") }}</h2>
       <ul class="speaker-list">
-      <li
-        v-for="speaker in speakers"
-        :key="speaker.id"
-        class="speaker-item"
-      >
-        <SpeakerIndicator :color="speaker.color" />
-        <EditableText
-          class="speaker-name"
-          :model-value="speaker.name"
-          :disabled="!canEditSpeakers"
-          :aria-label="t('sidebar.renameSpeaker')"
-          @commit="onRename(speaker.id, $event)" />
-        <SpeakerMenu
-          v-if="canEditSpeakers && speakers.length > 1"
-          :speaker-name="speaker.name"
-          @merge="onOpenMerge(speaker.id)" />
-      </li>
-    </ul>
+        <li v-for="speaker in speakers" :key="speaker.id" class="speaker-item">
+          <SpeakerIndicator :color="speaker.color" />
+          <EditableText
+            class="speaker-name"
+            :model-value="speaker.name"
+            :disabled="!canEditSpeakers"
+            :aria-label="t('sidebar.renameSpeaker')"
+            @commit="onRename(speaker.id, $event)" />
+          <SpeakerMenu
+            v-if="canEditSpeakers && speakers.length > 1"
+            :speaker-name="speaker.name"
+            @merge="onOpenMerge(speaker.id)" />
+        </li>
+      </ul>
     </section>
     <MergeDialog
       v-if="canEditSpeakers"

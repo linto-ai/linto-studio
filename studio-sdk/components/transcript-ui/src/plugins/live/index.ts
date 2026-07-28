@@ -3,6 +3,7 @@ import type {
   Core,
   CorePlugin,
   LivePluginApi,
+  TranslationInfo,
   TranslationStore,
 } from "../../core/types"
 import type {
@@ -96,7 +97,7 @@ export function createLivePlugin(
       }
 
       function isTranslationTrackFor(
-        active: { languages: string[]; isSource: boolean },
+        active: TranslationInfo,
         language: string,
       ): boolean {
         if (active.isSource) return false

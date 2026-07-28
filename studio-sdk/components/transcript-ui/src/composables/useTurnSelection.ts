@@ -49,7 +49,15 @@ export function provideTurnSelection(
     return selectedIds.has(turnId)
   }
 
+  // Selection mode (multi-turn copy) and the editor don't coexist: with the
+  // transcriptionEditor plugin loaded, clicks belong to editing (text) and
+  // speaker assignment (header) — selection never starts.
+  function isSelectionDisabled(): boolean {
+    return core.transcriptionEditor !== undefined
+  }
+
   function toggle(turnId: string) {
+    if (isSelectionDisabled()) return
     if (selectedIds.has(turnId)) {
       selectedIds.delete(turnId)
     } else {
@@ -59,6 +67,7 @@ export function provideTurnSelection(
   }
 
   function selectRange(turnId: string) {
+    if (isSelectionDisabled()) return
     if (lastToggledId === null) {
       toggle(turnId)
       return
