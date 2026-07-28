@@ -1,12 +1,10 @@
 const debug = require("debug")(
-  `linto:components:MongoMigration:version:1.8.7:editorLocks`,
+  `linto:components:MongoMigration:version:1.8.6:editorLocks`,
 )
 
-// Per-turn edit locks of the lock+save editor (Editor v2).
-// - The unique index IS the lock: concurrent acquires resolve by
-//   duplicate-key error, never by a read-then-write race.
-// - The TTL index is garbage collection only — expiry correctness relies on
-//   comparing expiresAt to now in every query (lazy expiry).
+// Per-turn edit locks: the unique index is the lock (concurrent acquires
+// resolve by duplicate-key error). The TTL index is garbage collection only,
+// every query must compare expiresAt to now itself (lazy expiry).
 module.exports = {
   async up(db) {
     const collection = db.collection("editorLocks")

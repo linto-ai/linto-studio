@@ -242,9 +242,8 @@ async function generateRefreshSecretFromHeaders(req, token) {
 }
 
 /**
- * Verify an authenticated user JWT standalone (without socket.io or Express
- * context). Rejects public session tokens. Returns the verified token data
- * { userId, tokenId, role, ... } or null.
+ * Verify a user JWT without socket.io or Express context. Rejects public
+ * session tokens. Returns the verified token data or null.
  */
 async function verifyAuthToken(token) {
   if (!token) return null

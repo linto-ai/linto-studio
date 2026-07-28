@@ -6,9 +6,7 @@ const fileUpload = require("express-fileupload")
 const passport = require("passport")
 const bodyParser = require("body-parser")
 const bytes = require("bytes")
-const {
-  ConversationFileTooLarge,
-} = require("./error/exception/conversation")
+const { ConversationFileTooLarge } = require("./error/exception/conversation")
 const WebServerErrorHandler = require("./error/handler")
 const cookieParser = require("cookie-parser")
 const cookieSession = require("cookie-session")
@@ -134,13 +132,9 @@ class WebServer extends Component {
       },
     )
 
-    // WebServer is the single owner of the HTTP 'upgrade' event. WebSocket
-    // components (IoHandler/socket.io) declare a path
-    // prefix + handler via registerUpgradeHandler(); any unrouted upgrade is
-    // destroyed immediately. This makes upgrade routing explicit and
-    // deterministic instead of relying on engine.io's destroyUpgrade reaper (a
-    // 1s, internal-detail safety net), and stops abandoned upgrade sockets from
-    // leaking file descriptors.
+    // Single owner of the HTTP 'upgrade' event: WebSocket components register
+    // a path prefix via registerUpgradeHandler(), any unrouted upgrade is
+    // destroyed immediately (no leaked sockets).
     this.upgradeRoutes = []
     this._onUpgrade = this._onUpgrade.bind(this)
 
@@ -202,19 +196,13 @@ class WebServer extends Component {
   }
 
   /**
-   * Register a WebSocket upgrade handler for a path prefix. WebSocket
-   * components call this instead of adding their own `httpServer.on("upgrade")`
-   * listener, so a single router owns all upgrade routing.
-   *
-   * @param {string} prefix - URL path prefix, e.g. "/ws/editor" or "/socket.io"
-   * @param {(req, socket, head) => void} handler - completes the upgrade
+   * Register a WebSocket upgrade handler for a path prefix (e.g. "/socket.io").
+   * Components call this instead of adding their own 'upgrade' listener.
    */
   registerUpgradeHandler(prefix, handler) {
     this.upgradeRoutes.push({ prefix, handler })
-    // Re-assert this router as the SOLE 'upgrade' listener. socket.io/engine.io
-    // installs its own listener when it attaches to the httpServer; dropping all
-    // listeners and re-adding ours keeps upgrade routing explicit here whatever
-    // the component load order. Idempotent — `_onUpgrade` is a stable bound fn.
+    // Drop any listener engine.io auto-installed and re-assert this router as
+    // the sole 'upgrade' listener, whatever the component load order.
     this.httpServer.removeAllListeners("upgrade")
     this.httpServer.on("upgrade", this._onUpgrade)
   }

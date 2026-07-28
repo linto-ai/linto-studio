@@ -126,9 +126,8 @@ module.exports = {
 }
 
 /**
- * Standalone predicate built on top of the Express `access()` decision tree.
- * Returns whether `userId` holds `right` on the conversation, without any
- * req/res/next context. Used outside Express routes (e.g. the editor handler).
+ * Same decision tree as the Express access() middleware, usable without
+ * req/res/next context (e.g. the editor handler).
  */
 async function hasAccess(convId, userId, right, restricted = false) {
   let granted = false

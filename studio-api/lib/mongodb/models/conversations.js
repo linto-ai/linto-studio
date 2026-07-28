@@ -394,12 +394,8 @@ class ConvoModel extends MongoModel {
   }
 
   /**
-   * editorVersion of a conversation and its whole family (children and
-   * grandchildren — the topology is canonical → channels → translations, or
-   * canonical → translations). The editor join ack ships this map so a
-   * reconnecting client can detect which loaded tracks went stale during
-   * the disconnection. Missing field ≡ 0. Throws on DB error.
-   * @returns {Promise<Record<string, number>>} conversationId → editorVersion
+   * editorVersion of a conversation and its children/grandchildren, keyed by
+   * conversationId. Missing field means 0. Throws on DB error.
    */
   async getFamilyEditorVersions(conversationId) {
     const collection = MongoDriver.constructor.db.collection(this.collection)
@@ -441,14 +437,9 @@ class ConvoModel extends MongoModel {
   }
 
   /**
-   * Targeted save of ONE edited turn (lock+save editor). Field-level $set so
-   * the fields this write doesn't own survive untouched (raw_segment keeps
-   * the original ASR text, lang, future additions), and editorVersion is
-   * incremented IN THE SAME atomic write — a broadcast can never announce a
-   * version the data doesn't have. Throws on DB error (the handler tells
-   * transient failures apart from a vanished turn).
-   * @returns {Promise<{version: number}|null>} null when the conversation or
-   *   the turn no longer exists.
+   * Save one edited turn. Field-level $set so fields this write doesn't own
+   * (raw_segment, lang) survive, and editorVersion is bumped in the same
+   * atomic write. Returns null when the conversation or turn no longer exists.
    */
   async updateEditorTurn(
     conversationId,
@@ -478,13 +469,9 @@ class ConvoModel extends MongoModel {
   }
 
   /**
-   * Replace ONE turn by its two halves, in place (lock+save editor split).
-   * Aggregation-pipeline update: one atomic write recomputes the array
-   * ($indexOfArray + $concatArrays) AND bumps editorVersion — the filter on
-   * "text.turn_id" guarantees the index exists at write time. Throws on DB
-   * error.
-   * @returns {Promise<{version: number}|null>} null when the conversation or
-   *   the turn no longer exists.
+   * Replace one turn by its two halves in a single atomic pipeline update
+   * that also bumps editorVersion. Returns null when the conversation or
+   * turn no longer exists.
    */
   async splitEditorTurn(conversationId, turnId, leftTurn, rightTurn) {
     const result = await MongoDriver.constructor.db
@@ -500,12 +487,11 @@ class ConvoModel extends MongoModel {
                   in: {
                     $concatArrays: [
                       { $slice: ["$text", "$$idx"] },
-                      // $literal: transcribed text can start with "$" — store
-                      // the turns verbatim instead of evaluating them as
-                      // aggregation expressions (a "$500" word would vanish).
+                      // $literal: transcribed text can start with "$", store
+                      // it verbatim.
                       { $literal: [leftTurn, rightTurn] },
-                      // Position past the end yields [] — $size keeps the
-                      // count argument positive (0 would be rejected).
+                      // Position past the end yields []; $size keeps the
+                      // count argument positive.
                       {
                         $slice: [
                           "$text",
@@ -532,15 +518,16 @@ class ConvoModel extends MongoModel {
   }
 
   /**
-   * Replace two ADJACENT turns by their merged result (lock+save editor).
-   * The adjacency is part of the FILTER ($expr): if the array changed since
-   * the caller's check (a concurrent split/merge), nothing matches and
-   * nothing is written — the atomic counterpart of the handler's read.
-   * Throws on DB error.
-   * @returns {Promise<{version: number}|null>} null when the pair is gone or
-   *   no longer adjacent.
+   * Replace two adjacent turns by their merged result. Adjacency is part of
+   * the filter ($expr): if the array changed concurrently nothing is written.
+   * Returns null when the pair is gone or no longer adjacent.
    */
-  async mergeEditorTurns(conversationId, firstTurnId, secondTurnId, mergedTurn) {
+  async mergeEditorTurns(
+    conversationId,
+    firstTurnId,
+    secondTurnId,
+    mergedTurn,
+  ) {
     const adjacencyExpr = {
       $let: {
         vars: { idx: { $indexOfArray: ["$text.turn_id", firstTurnId] } },
@@ -566,16 +553,17 @@ class ConvoModel extends MongoModel {
             $set: {
               text: {
                 $let: {
-                  vars: { idx: { $indexOfArray: ["$text.turn_id", firstTurnId] } },
+                  vars: {
+                    idx: { $indexOfArray: ["$text.turn_id", firstTurnId] },
+                  },
                   in: {
                     $concatArrays: [
                       { $slice: ["$text", "$$idx"] },
-                      // $literal: transcribed text can start with "$" — store
-                      // the turn verbatim instead of evaluating it as an
-                      // aggregation expression (a "$500" word would vanish).
+                      // $literal: transcribed text can start with "$", store
+                      // it verbatim.
                       { $literal: [mergedTurn] },
-                      // Position past the end yields [] — $size keeps the
-                      // count argument positive (0 would be rejected).
+                      // Position past the end yields []; $size keeps the
+                      // count argument positive.
                       {
                         $slice: [
                           "$text",
@@ -602,14 +590,10 @@ class ConvoModel extends MongoModel {
   }
 
   /**
-   * Point a turn at a speaker (existing or freshly minted), in ONE atomic
-   * pipeline that also maintains the speakers array: the speaker is added
-   * when new, and any speaker no longer referenced by the text is dropped
-   * (GC — "a speaker exists as long as it is assigned"). editorVersion is
-   * bumped in the same write. Throws on DB error.
-   * @param {{speaker_id: string, speaker_name: string}} speaker
-   * @returns {Promise<{version: number}|null>} null when the conversation or
-   *   the turn no longer exists.
+   * Assign a speaker to a turn in one atomic pipeline that also maintains
+   * the speakers array (added when new, dropped when no longer referenced)
+   * and bumps editorVersion. Returns null when the conversation or turn no
+   * longer exists.
    */
   async updateEditorTurnSpeaker(conversationId, turnId, speaker) {
     const result = await MongoDriver.constructor.db
@@ -641,8 +625,8 @@ class ConvoModel extends MongoModel {
             },
           },
           {
-            // Runs on the UPDATED text (pipeline stages are sequential):
-            // ensure the new speaker, then keep only referenced speakers.
+            // Runs on the updated text: ensure the new speaker, then keep
+            // only referenced speakers.
             $set: {
               speakers: {
                 $filter: {
@@ -658,8 +642,8 @@ class ConvoModel extends MongoModel {
                             ],
                           },
                           [],
-                          // $literal: speaker_name is user input and can
-                          // start with "$" — store it verbatim.
+                          // $literal: speaker_name is user input, store it
+                          // verbatim.
                           { $literal: [speaker] },
                         ],
                       },
@@ -688,13 +672,9 @@ class ConvoModel extends MongoModel {
   }
 
   /**
-   * Remove ONE turn (lock+save editor — triggered by committing an emptied
-   * text). One atomic pipeline: the turn is filtered out of text, speakers
-   * no longer referenced are dropped (GC), editorVersion bumped. The filter
-   * requires a SECOND turn to exist ("text.1") — a track never goes empty,
-   * the last turn cannot be deleted. Throws on DB error.
-   * @returns {Promise<{version: number}|null>} null when the conversation or
-   *   the turn no longer exists — or when it is the track's last turn.
+   * Remove one turn and drop unreferenced speakers, atomically. The filter
+   * requires a second turn to exist: the track's last turn cannot be deleted.
+   * Returns null when the conversation or turn is gone, or on the last turn.
    */
   async deleteEditorTurn(conversationId, turnId) {
     const result = await MongoDriver.constructor.db
@@ -777,10 +757,8 @@ class ConvoModel extends MongoModel {
 
   /**
    * Reassign every turn of a speaker to another and drop the replaced
-   * speaker (it references nothing by construction afterwards) — one atomic
-   * pipeline, editorVersion bumped in the same write. Throws on DB error.
-   * @returns {Promise<{version: number}|null>} null when the conversation or
-   *   either speaker no longer exists.
+   * speaker, in one atomic pipeline that also bumps editorVersion. Returns
+   * null when the conversation or either speaker no longer exists.
    */
   async replaceEditorSpeaker(conversationId, fromSpeakerId, toSpeakerId) {
     const result = await MongoDriver.constructor.db

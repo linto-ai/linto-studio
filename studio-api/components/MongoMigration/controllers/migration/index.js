@@ -121,10 +121,7 @@ async function doMigration(versionStep, db, step, resetPlayed = false) {
         `${process.cwd()}/components/MongoMigration/version/${versionStep}`,
       )
     ).sort((a, b) => {
-      // readdir order is filesystem-dependent. Run version.js LAST: it is the
-      // only completion marker, so a crash mid-step must leave the step
-      // un-stamped (it re-runs) rather than marked done before its sibling data
-      // migrations applied. Other files run in a stable alphabetical order.
+      // Assure that version.js is always played last
       if (a === "version.js") return 1
       if (b === "version.js") return -1
       return a.localeCompare(b)

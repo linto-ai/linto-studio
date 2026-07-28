@@ -141,10 +141,8 @@ class IoHandler extends Component {
       },
     })
 
-    // WebServer owns the single 'upgrade' router; register socket.io's engine
-    // for its own path on the shared httpServer. This also drops engine.io's
-    // auto-installed upgrade listener,
-    // so its destroyUpgrade reaper is no longer involved.
+    // Register socket.io's engine on WebServer's shared upgrade router; this
+    // also drops engine.io's auto-installed upgrade listener.
     this.app.components["WebServer"].registerUpgradeHandler(
       "/socket.io",
       (req, socket, head) => this.io.engine.handleUpgrade(req, socket, head),

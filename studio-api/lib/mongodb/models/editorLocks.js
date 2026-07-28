@@ -2,22 +2,16 @@ const MongoModel = require(`../model`)
 const MongoDriver = require(`../driver`)
 
 /**
- * Per-turn edit locks for the lock+save editor (see "Editor v2" design).
- *
- * One document per held lock, keyed { translationId, turnId } — the language
- * track (child conversation) is the locking scope, so two users editing the
- * same turn on different tracks don't conflict. parentId is denormalized so
- * the join ack can list a whole conversation's locks and disconnect cleanup
- * can address the right room, without parent lookups.
- *
- * Expiry is LAZY: `expiresAt` compared to now is the truth everywhere; the
- * TTL index only garbage-collects (its ~60s sweep cadence is irrelevant to
- * correctness). The unique index IS the lock: a concurrent acquire loses by
- * duplicate-key error, never by a read-then-write race.
+ * Per-turn edit locks, one document per held lock keyed { translationId,
+ * turnId }: the language track is the locking scope. parentId is denormalized
+ * to list a conversation's locks without parent lookups. The unique index is
+ * the lock (concurrent acquires lose by duplicate-key error); the TTL index is
+ * garbage collection only, every query must compare expiresAt itself (lazy
+ * expiry).
  */
 
-// Server-side lock lifetime. The client re-emits lock_turn (acquire-or-
-// refresh) about every 15s while editing — 3 missed beats lose the lock.
+// Server-side lock lifetime; the client refreshes about every 15s while
+// editing, 3 missed beats lose the lock.
 const LOCK_TTL_MS = 45000
 
 class EditorLocksModel extends MongoModel {
@@ -30,12 +24,9 @@ class EditorLocksModel extends MongoModel {
   }
 
   /**
-   * Acquire-or-refresh, atomically (the client heartbeats through this).
-   * @returns {Promise<{acquired: true, refreshed: boolean}
-   *   | {acquired: false, holder: object|null}>}
-   *   `refreshed` — the caller already held it (no broadcast needed).
-   *   `holder` — the live lock's owner; null when it vanished between the
-   *   conflict and the read (caller treats it as retryable).
+   * Acquire-or-refresh, atomically. Returns {acquired, refreshed} on success
+   * (refreshed: the caller already held it), {acquired: false, holder} on
+   * conflict (holder null when the lock vanished in between: retryable).
    */
   async acquire(
     { parentId, translationId, turnId, userId, socketId, userName },
@@ -71,8 +62,7 @@ class EditorLocksModel extends MongoModel {
         refreshed: previous !== null && previous.socketId === socketId,
       }
     } catch (error) {
-      // Live lock held by another socket: the filter matched nothing, the
-      // upsert insert hit the unique index.
+      // Live lock held by another socket: the upsert hit the unique index.
       if (error?.code === 11000) {
         const holder = await this.getCollection().findOne({
           translationId,
@@ -84,8 +74,6 @@ class EditorLocksModel extends MongoModel {
     }
   }
 
-  /** Does this socket hold a LIVE lock on the turn? (lazy expiry: an expired
-   *  document is no lock, even before the TTL sweep collects it). */
   async isHeldBy(translationId, turnId, socketId) {
     const lock = await this.getCollection().findOne({
       translationId,
@@ -96,7 +84,6 @@ class EditorLocksModel extends MongoModel {
     return lock !== null
   }
 
-  /** Release the caller's own lock. @returns {Promise<boolean>} released? */
   async release(translationId, turnId, socketId) {
     const result = await this.getCollection().deleteOne({
       translationId,
@@ -107,12 +94,9 @@ class EditorLocksModel extends MongoModel {
   }
 
   /**
-   * Release every lock held by a socket — on disconnect, or scoped to one
-   * conversation on editor:leave (the app socket outlives the editor view).
-   * @param {string} socketId
-   * @param {{parentId?: string}} [scope] - narrow the release to one parent
-   * @returns {Promise<object[]>} the released lock documents — the caller
-   *   broadcasts one turn_unlocked per document to its parent's room.
+   * Release every lock held by a socket, optionally scoped to one parent
+   * conversation. Returns the released lock documents so the caller can
+   * broadcast one turn_unlocked per document.
    */
   async releaseAllForSocket(socketId, { parentId } = {}) {
     const filter = parentId ? { socketId, parentId } : { socketId }
@@ -123,8 +107,6 @@ class EditorLocksModel extends MongoModel {
     return locks
   }
 
-  /** Live locks on specific turns of a track — the merge refusal check
-   *  (a merge requires BOTH turns free, requester included). */
   async findLiveLocks(translationId, turnIds) {
     return await this.getCollection()
       .find({
@@ -135,7 +117,6 @@ class EditorLocksModel extends MongoModel {
       .toArray()
   }
 
-  /** Live locks of a whole conversation (all tracks) — the join ack. */
   async listByParent(parentId) {
     return await this.getCollection()
       .find({ parentId, expiresAt: { $gt: new Date() } })
