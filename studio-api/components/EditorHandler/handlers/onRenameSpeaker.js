@@ -10,7 +10,9 @@ async function onRenameSpeaker({ io, socket }, payload, ack) {
   try {
     const { translationId, speakerId } = payload || {}
     const name = (payload?.name ?? "").trim()
-    if (!speakerId || !name) {
+    // typeof: a non-string id would reach the query filter as an operator
+    // object ({$gt: ""} renames whatever speaker comes first).
+    if (typeof speakerId !== "string" || !speakerId || !name) {
       return reply({ ok: false, reason: "invalid_payload" })
     }
     const parentId = socket.data.editorParentId

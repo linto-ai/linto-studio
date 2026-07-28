@@ -13,7 +13,15 @@ async function onReplaceSpeaker({ io, socket }, payload, ack) {
   const reply = typeof ack === "function" ? ack : () => {}
   try {
     const { translationId, fromSpeakerId, toSpeakerId } = payload || {}
-    if (!fromSpeakerId || !toSpeakerId || fromSpeakerId === toSpeakerId) {
+    // typeof: a non-string id would reach the pipeline as an expression and
+    // be stored as the turns' speaker_id, dropping the replaced speaker.
+    if (
+      typeof fromSpeakerId !== "string" ||
+      typeof toSpeakerId !== "string" ||
+      !fromSpeakerId ||
+      !toSpeakerId ||
+      fromSpeakerId === toSpeakerId
+    ) {
       return reply({ ok: false, reason: "invalid_payload" })
     }
     const parentId = socket.data.editorParentId

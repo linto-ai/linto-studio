@@ -500,7 +500,10 @@ class ConvoModel extends MongoModel {
                   in: {
                     $concatArrays: [
                       { $slice: ["$text", "$$idx"] },
-                      [leftTurn, rightTurn],
+                      // $literal: transcribed text can start with "$" — store
+                      // the turns verbatim instead of evaluating them as
+                      // aggregation expressions (a "$500" word would vanish).
+                      { $literal: [leftTurn, rightTurn] },
                       // Position past the end yields [] — $size keeps the
                       // count argument positive (0 would be rejected).
                       {
@@ -567,7 +570,10 @@ class ConvoModel extends MongoModel {
                   in: {
                     $concatArrays: [
                       { $slice: ["$text", "$$idx"] },
-                      [mergedTurn],
+                      // $literal: transcribed text can start with "$" — store
+                      // the turn verbatim instead of evaluating it as an
+                      // aggregation expression (a "$500" word would vanish).
+                      { $literal: [mergedTurn] },
                       // Position past the end yields [] — $size keeps the
                       // count argument positive (0 would be rejected).
                       {
@@ -623,7 +629,8 @@ class ConvoModel extends MongoModel {
                       {
                         $mergeObjects: [
                           "$$t",
-                          { speaker_id: speaker.speaker_id },
+                          // $literal: never evaluate the injected id.
+                          { $literal: { speaker_id: speaker.speaker_id } },
                         ],
                       },
                       "$$t",
@@ -651,7 +658,9 @@ class ConvoModel extends MongoModel {
                             ],
                           },
                           [],
-                          [speaker],
+                          // $literal: speaker_name is user input and can
+                          // start with "$" — store it verbatim.
+                          { $literal: [speaker] },
                         ],
                       },
                     ],
@@ -795,7 +804,11 @@ class ConvoModel extends MongoModel {
                     $cond: [
                       { $eq: ["$$t.speaker_id", fromSpeakerId] },
                       {
-                        $mergeObjects: ["$$t", { speaker_id: toSpeakerId }],
+                        $mergeObjects: [
+                          "$$t",
+                          // $literal: never evaluate the injected id.
+                          { $literal: { speaker_id: toSpeakerId } },
+                        ],
                       },
                       "$$t",
                     ],
