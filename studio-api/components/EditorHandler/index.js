@@ -17,29 +17,25 @@ const { requireFamily } = require("./decorators/requireFamily")
 const { requireLock } = require("./decorators/requireLock")
 const { requireWrite } = require("./decorators/requireWrite")
 
-// Uniform rights policy, auditable here and nowhere else. Every mutation
-// goes through requireFamily (the payload's track must belong to the joined
-// conversation — and it gives handlers the broadcast room via
-// socket.data.editorParentId), then requireWrite (rights live on the edited
-// track), then requireLock where holding the turn's lock is mandatory.
-// lock_turn IS the heartbeat: requireWrite re-checks WRITE on every beat.
-// merge takes no requireLock — it needs both turns FREE (see handler).
-// unlock_turn deliberately skips requireWrite: a user whose right was
-// revoked mid-edit must still release their own lock (socket-scoped
-// release, mutates nothing).
+// prettier-ignore
 const onUpdateTurnGuarded = requireFamily(requireWrite(requireLock(onUpdateTurn)))
+// prettier-ignore
 const onSplitTurnGuarded = requireFamily(requireWrite(requireLock(onSplitTurn)))
+// prettier-ignore
 const onDeleteTurnGuarded = requireFamily(requireWrite(requireLock(onDeleteTurn)))
+// prettier-ignore
 const onMergeTurnsGuarded = requireFamily(requireWrite(onMergeTurns))
+// prettier-ignore
 const onLockTurnGuarded = requireFamily(requireWrite(onLockTurn))
+// prettier-ignores
 const onUnlockTurnGuarded = requireFamily(onUnlockTurn)
+// prettier-ignore
 const onUpdateTurnSpeakerGuarded = requireFamily(requireWrite(onUpdateTurnSpeaker))
+// prettier-ignore
 const onRenameSpeakerGuarded = requireFamily(requireWrite(onRenameSpeaker))
+// prettier-ignore
 const onReplaceSpeakerGuarded = requireFamily(requireWrite(onReplaceSpeaker))
 
-// PoC of the lock+save editor (see Notion "Editor v2"): rides on IoHandler's
-// socket.io server, one room per PARENT conversation; mutation payloads carry
-// the translationId (child conversation). One file per handler in handlers/.
 class EditorHandler extends Component {
   constructor(app) {
     super(app, "IoHandler")
