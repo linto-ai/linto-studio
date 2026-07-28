@@ -3,8 +3,7 @@ const debug = require("debug")("linto:components:EditorHandler:onRenameSpeaker")
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const { computeEditorRoomName } = require("../utils/computeEditorRoomName")
 
-// Rename a speaker of one track. No lock (atomic, LWW) — decorated
-// requireWrite.
+// No lock (atomic, last-write-wins); WRITE comes from requireWrite.
 async function onRenameSpeaker({ io, socket }, payload, ack) {
   const reply = typeof ack === "function" ? ack : () => {}
   try {
@@ -17,7 +16,7 @@ async function onRenameSpeaker({ io, socket }, payload, ack) {
     }
     const parentId = socket.data.editorParentId
 
-    const updated = await model.conversations.renameEditorSpeaker(
+    const updated = await model.conversationEditor.renameEditorSpeaker(
       translationId,
       speakerId,
       name,

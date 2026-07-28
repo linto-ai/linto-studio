@@ -3,6 +3,7 @@ module.exports = {
   categories: require("./categories.js"),
   chatMessages: require("./chatMessages.js"),
   chatSessions: require("./chatSessions.js"),
+  conversationEditor: require("./conversationEditor.js"),
   conversationExport: require("./conversationExport.js"),
   conversationGenerations: require("./conversationGenerations.js"),
   conversationSubtitles: require("./conversationSubtitles.js"),

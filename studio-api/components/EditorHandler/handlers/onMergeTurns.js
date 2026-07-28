@@ -6,11 +6,9 @@ const { computeEditorRoomName } = require("../utils/computeEditorRoomName")
 const { toWireTurn } = require("../utils/toWireTurn")
 
 /**
- * Merge two adjacent turns. The one mutation with INVERTED lock semantics:
- * it requires both turns to be FREE — requester included (no requireLock;
- * join + WRITE come from requireFamily/requireWrite upstream). The ms
- * between the lock check and the write are an accepted race; the adjacency
- * itself is re-checked atomically by the write's filter.
+ * Merge two adjacent turns. Inverted lock semantics: both turns must be
+ * FREE, requester included (no requireLock). The adjacency is re-checked
+ * atomically by the write's filter.
  */
 async function onMergeTurns({ io, socket }, payload, ack) {
   const reply = typeof ack === "function" ? ack : () => {}
@@ -53,7 +51,7 @@ async function onMergeTurns({ io, socket }, payload, ack) {
     }
 
     const merged = computeMergedTurn(firstTurn, secondTurn)
-    const updated = await model.conversations.mergeEditorTurns(
+    const updated = await model.conversationEditor.mergeEditorTurns(
       translationId,
       firstTurnId,
       secondTurnId,

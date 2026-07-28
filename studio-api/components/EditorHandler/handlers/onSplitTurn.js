@@ -6,10 +6,9 @@ const { computeEditorRoomName } = require("../utils/computeEditorRoomName")
 const { toWireTurn } = require("../utils/toWireTurn")
 
 /**
- * Split a turn at a character offset of its saved text (the client sequences
- * save THEN split, so the offset targets the state both sides agree on).
- * Deterministic — no retime; the split itself is computeSplitTurns.
- * Lock ownership is enforced by the requireLock decorator.
+ * Split a turn at a character offset of its saved text (the client saves
+ * before splitting, so the offset targets a state both sides agree on).
+ * Lock ownership comes from requireLock.
  */
 async function onSplitTurn({ io, socket }, payload, ack) {
   const reply = typeof ack === "function" ? ack : () => {}
@@ -38,7 +37,7 @@ async function onSplitTurn({ io, socket }, payload, ack) {
       return reply({ ok: false, reason: "invalid_offset" })
     }
 
-    const updated = await model.conversations.splitEditorTurn(
+    const updated = await model.conversationEditor.splitEditorTurn(
       translationId,
       turnId,
       split.left,

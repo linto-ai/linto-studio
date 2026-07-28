@@ -5,6 +5,8 @@ jest.mock(
 jest.mock(`${process.cwd()}/lib/mongodb/models`, () => ({
   conversations: {
     getById: jest.fn(),
+  },
+  conversationEditor: {
     updateEditorTurnSpeaker: jest.fn(),
     renameEditorSpeaker: jest.fn(),
     replaceEditorSpeaker: jest.fn(),
@@ -106,7 +108,7 @@ describe("onUpdateTurnSpeaker", () => {
 
   test("assigns an existing speaker and predicts the GC of the orphaned one", async () => {
     model.conversations.getById.mockResolvedValue([CONV])
-    model.conversations.updateEditorTurnSpeaker.mockResolvedValue({
+    model.conversationEditor.updateEditorTurnSpeaker.mockResolvedValue({
       version: 3,
     })
     const ctx = makeCtx()
@@ -115,7 +117,7 @@ describe("onUpdateTurnSpeaker", () => {
     // turn-2 was spk-2's ONLY turn: assigning spk-1 orphans spk-2.
     await onUpdateTurnSpeaker(ctx, { ...BASE, speakerId: "spk-1" }, ack)
 
-    expect(model.conversations.updateEditorTurnSpeaker).toHaveBeenCalledWith(
+    expect(model.conversationEditor.updateEditorTurnSpeaker).toHaveBeenCalledWith(
       "tr-1",
       "turn-2",
       { speaker_id: "spk-1", speaker_name: "Marie" },
@@ -134,7 +136,7 @@ describe("onUpdateTurnSpeaker", () => {
 
   test("no GC when the previous speaker still has turns", async () => {
     model.conversations.getById.mockResolvedValue([CONV])
-    model.conversations.updateEditorTurnSpeaker.mockResolvedValue({
+    model.conversationEditor.updateEditorTurnSpeaker.mockResolvedValue({
       version: 4,
     })
     const ctx = makeCtx()
@@ -152,7 +154,7 @@ describe("onUpdateTurnSpeaker", () => {
 
   test("creates-and-assigns from a name (server-minted id)", async () => {
     model.conversations.getById.mockResolvedValue([CONV])
-    model.conversations.updateEditorTurnSpeaker.mockResolvedValue({
+    model.conversationEditor.updateEditorTurnSpeaker.mockResolvedValue({
       version: 5,
     })
     const ctx = makeCtx()
@@ -161,7 +163,7 @@ describe("onUpdateTurnSpeaker", () => {
     await onUpdateTurnSpeaker(ctx, { ...BASE, speakerName: " Julie " }, ack)
 
     const [, , speaker] =
-      model.conversations.updateEditorTurnSpeaker.mock.calls[0]
+      model.conversationEditor.updateEditorTurnSpeaker.mock.calls[0]
     expect(speaker.speaker_name).toBe("Julie")
     expect(speaker.speaker_id).toBeDefined()
     expect(speaker.speaker_id).not.toBe("spk-1")
@@ -176,7 +178,7 @@ describe("onUpdateTurnSpeaker", () => {
 
     await onUpdateTurnSpeaker(ctx, { ...BASE, speakerId: "spk-2" }, ack)
 
-    expect(model.conversations.updateEditorTurnSpeaker).not.toHaveBeenCalled()
+    expect(model.conversationEditor.updateEditorTurnSpeaker).not.toHaveBeenCalled()
     expect(ctx.emit).not.toHaveBeenCalled()
     expect(ack).toHaveBeenCalledWith({ ok: true })
   })
@@ -205,7 +207,7 @@ describe("onUpdateTurnSpeaker", () => {
 
 describe("onRenameSpeaker", () => {
   test("renames (trimmed) and broadcasts", async () => {
-    model.conversations.renameEditorSpeaker.mockResolvedValue({ version: 6 })
+    model.conversationEditor.renameEditorSpeaker.mockResolvedValue({ version: 6 })
     const ctx = makeCtx()
     const ack = jest.fn()
 
@@ -215,7 +217,7 @@ describe("onRenameSpeaker", () => {
       ack,
     )
 
-    expect(model.conversations.renameEditorSpeaker).toHaveBeenCalledWith(
+    expect(model.conversationEditor.renameEditorSpeaker).toHaveBeenCalledWith(
       "tr-1",
       "spk-1",
       "Marie D.",
@@ -239,7 +241,7 @@ describe("onRenameSpeaker", () => {
     )
     expect(ack1).toHaveBeenCalledWith({ ok: false, reason: "invalid_payload" })
 
-    model.conversations.renameEditorSpeaker.mockResolvedValue(null)
+    model.conversationEditor.renameEditorSpeaker.mockResolvedValue(null)
     const ack2 = jest.fn()
     await onRenameSpeaker(
       ctx,
@@ -252,7 +254,7 @@ describe("onRenameSpeaker", () => {
 
 describe("onReplaceSpeaker", () => {
   test("replaces and broadcasts (removal implied)", async () => {
-    model.conversations.replaceEditorSpeaker.mockResolvedValue({ version: 7 })
+    model.conversationEditor.replaceEditorSpeaker.mockResolvedValue({ version: 7 })
     const ctx = makeCtx()
     const ack = jest.fn()
 
@@ -262,7 +264,7 @@ describe("onReplaceSpeaker", () => {
       ack,
     )
 
-    expect(model.conversations.replaceEditorSpeaker).toHaveBeenCalledWith(
+    expect(model.conversationEditor.replaceEditorSpeaker).toHaveBeenCalledWith(
       "tr-1",
       "spk-1",
       "spk-2",
@@ -286,7 +288,7 @@ describe("onReplaceSpeaker", () => {
     )
     expect(ack1).toHaveBeenCalledWith({ ok: false, reason: "invalid_payload" })
 
-    model.conversations.replaceEditorSpeaker.mockResolvedValue(null)
+    model.conversationEditor.replaceEditorSpeaker.mockResolvedValue(null)
     const ack2 = jest.fn()
     await onReplaceSpeaker(
       ctx,

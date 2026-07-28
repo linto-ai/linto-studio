@@ -4,12 +4,9 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const { computeEditorRoomName } = require("../utils/computeEditorRoomName")
 
 /**
- * Remove a turn — the client triggers this by committing an emptied text
- * (there is no delete button: the gesture IS the deletion). Lock ownership
- * is enforced by the requireLock decorator; the track's LAST turn is never
- * deleted (a track never goes empty). The GC consequence rides the
- * broadcast (removedSpeakerId), the atomic write's filter-GC stays the
- * authority.
+ * Remove a turn; the client triggers this by committing an emptied text
+ * (no delete button). The track's last turn is never deleted. Lock
+ * ownership comes from requireLock.
  */
 async function onDeleteTurn({ io, socket }, payload, ack) {
   const reply = typeof ack === "function" ? ack : () => {}
@@ -41,7 +38,7 @@ async function onDeleteTurn({ io, socket }, payload, ack) {
         ? speakerId
         : undefined
 
-    const updated = await model.conversations.deleteEditorTurn(
+    const updated = await model.conversationEditor.deleteEditorTurn(
       translationId,
       turnId,
     )

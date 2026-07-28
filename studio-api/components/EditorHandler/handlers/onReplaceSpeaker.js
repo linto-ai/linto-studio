@@ -5,10 +5,8 @@ const debug = require("debug")(
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const { computeEditorRoomName } = require("../utils/computeEditorRoomName")
 
-// Reassign every turn of a speaker to another (speaker merge). The replaced
-// speaker disappears by construction — its removal is implied by the
-// broadcast, no separate event. No lock (atomic, LWW) — decorated
-// requireWrite.
+// Speaker merge: the replaced speaker's removal is implied by the broadcast,
+// no separate event. No lock (atomic, last-write-wins).
 async function onReplaceSpeaker({ io, socket }, payload, ack) {
   const reply = typeof ack === "function" ? ack : () => {}
   try {
@@ -26,7 +24,7 @@ async function onReplaceSpeaker({ io, socket }, payload, ack) {
     }
     const parentId = socket.data.editorParentId
 
-    const updated = await model.conversations.replaceEditorSpeaker(
+    const updated = await model.conversationEditor.replaceEditorSpeaker(
       translationId,
       fromSpeakerId,
       toSpeakerId,

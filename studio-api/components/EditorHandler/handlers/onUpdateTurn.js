@@ -6,12 +6,9 @@ const { computeEditorRoomName } = require("../utils/computeEditorRoomName")
 const { toWireWords } = require("../utils/toWireWords")
 
 /**
- * Real save of an edited turn: retime (LCS anchors + syllabic interpolation),
- * targeted persist with an atomic version bump, broadcast to the room.
- *
- * Lock ownership is enforced by the requireLock decorator; the few ms between
- * that check and the write are an accepted race — a harmful overwrite would
- * need another socket to lock AND save inside that window.
+ * Save an edited turn: retime, atomic persist + version bump, broadcast.
+ * Lock ownership comes from requireLock; the ms between that check and the
+ * write are an accepted race.
  */
 async function onUpdateTurn({ io, socket }, payload, ack) {
   const reply = typeof ack === "function" ? ack : () => {}
@@ -40,7 +37,7 @@ async function onUpdateTurn({ io, socket }, payload, ack) {
     }
 
     const retimed = computeRetimedTurn(oldTurn, normalized)
-    const updated = await model.conversations.updateEditorTurn(
+    const updated = await model.conversationEditor.updateEditorTurn(
       translationId,
       turnId,
       retimed,

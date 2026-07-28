@@ -19,6 +19,8 @@ jest.mock(`${process.cwd()}/lib/mongodb/models`, () => ({
   },
   conversations: {
     getById: jest.fn(),
+  },
+  conversationEditor: {
     updateEditorTurn: jest.fn(),
     splitEditorTurn: jest.fn(),
     mergeEditorTurns: jest.fn(),
@@ -84,7 +86,7 @@ function authorizeUser() {
     { firstname: "Marie", lastname: "Dupont" },
   ])
   model.editorLocks.listByParent.mockResolvedValue([])
-  model.conversations.getFamilyEditorVersions.mockResolvedValue({})
+  model.conversationEditor.getFamilyEditorVersions.mockResolvedValue({})
 }
 
 beforeEach(() => {
@@ -105,7 +107,7 @@ describe("onJoin", () => {
         expiresAt: new Date(),
       },
     ])
-    model.conversations.getFamilyEditorVersions.mockResolvedValue({
+    model.conversationEditor.getFamilyEditorVersions.mockResolvedValue({
       "conv-1": 3,
       "tr-1": 7,
     })
@@ -258,7 +260,7 @@ describe("onUpdateTurn", () => {
 
   test("retimes, persists (version bumped) and broadcasts the wire turn", async () => {
     model.conversations.getById.mockResolvedValue([{ text: [OLD_TURN] }])
-    model.conversations.updateEditorTurn.mockResolvedValue({ version: 7 })
+    model.conversationEditor.updateEditorTurn.mockResolvedValue({ version: 7 })
     const ctx = makeCtx()
     const ack = jest.fn()
 
@@ -266,7 +268,7 @@ describe("onUpdateTurn", () => {
 
     // Normalized text (whitespace contract) reaches the persist layer.
     const [convId, turnId, retimed] =
-      model.conversations.updateEditorTurn.mock.calls[0]
+      model.conversationEditor.updateEditorTurn.mock.calls[0]
     expect(convId).toBe("tr-1")
     expect(turnId).toBe("turn-1")
     expect(retimed.segment).toBe("Bonjour tous le monde")
@@ -293,14 +295,14 @@ describe("onUpdateTurn", () => {
 
     await onUpdateTurn(ctx, PAYLOAD, ack)
 
-    expect(model.conversations.updateEditorTurn).not.toHaveBeenCalled()
+    expect(model.conversationEditor.updateEditorTurn).not.toHaveBeenCalled()
     expect(ctx.emit).not.toHaveBeenCalled()
     expect(ack).toHaveBeenCalledWith({ ok: false, reason: "conflict" })
   })
 
   test("acks a conflict when the write matched nothing (vanished meanwhile)", async () => {
     model.conversations.getById.mockResolvedValue([{ text: [OLD_TURN] }])
-    model.conversations.updateEditorTurn.mockResolvedValue(null)
+    model.conversationEditor.updateEditorTurn.mockResolvedValue(null)
     const ctx = makeCtx()
     const ack = jest.fn()
 
@@ -322,7 +324,7 @@ describe("onUpdateTurn", () => {
 
   test("acks an error instead of throwing when the DB write fails", async () => {
     model.conversations.getById.mockResolvedValue([{ text: [OLD_TURN] }])
-    model.conversations.updateEditorTurn.mockRejectedValue(
+    model.conversationEditor.updateEditorTurn.mockRejectedValue(
       new Error("mongo down"),
     )
     const ctx = makeCtx()
@@ -355,14 +357,14 @@ describe("onSplitTurn", () => {
 
   test("splits, persists and broadcasts both wire halves", async () => {
     model.conversations.getById.mockResolvedValue([{ text: [OLD_TURN] }])
-    model.conversations.splitEditorTurn.mockResolvedValue({ version: 4 })
+    model.conversationEditor.splitEditorTurn.mockResolvedValue({ version: 4 })
     const ctx = makeCtx()
     const ack = jest.fn()
 
     await onSplitTurn(ctx, PAYLOAD, ack)
 
     const [convId, turnId, left, right] =
-      model.conversations.splitEditorTurn.mock.calls[0]
+      model.conversationEditor.splitEditorTurn.mock.calls[0]
     expect(convId).toBe("tr-1")
     expect(turnId).toBe("turn-1")
     expect(left.segment).toBe("Bonjour tout")
@@ -392,7 +394,7 @@ describe("onSplitTurn", () => {
 
     await onSplitTurn(ctx, { ...PAYLOAD, offset: 0 }, ack)
 
-    expect(model.conversations.splitEditorTurn).not.toHaveBeenCalled()
+    expect(model.conversationEditor.splitEditorTurn).not.toHaveBeenCalled()
     expect(ack).toHaveBeenCalledWith({ ok: false, reason: "invalid_offset" })
   })
 
@@ -453,7 +455,7 @@ describe("onMergeTurns", () => {
     access.hasAccess.mockResolvedValue(true)
     model.editorLocks.findLiveLocks.mockResolvedValue([])
     model.conversations.getById.mockResolvedValue([{ text: [FIRST, SECOND] }])
-    model.conversations.mergeEditorTurns.mockResolvedValue({ version: 9 })
+    model.conversationEditor.mergeEditorTurns.mockResolvedValue({ version: 9 })
     const ctx = joinedCtx()
     const ack = jest.fn()
 
@@ -465,7 +467,7 @@ describe("onMergeTurns", () => {
       CONVERSATION_RIGHTS.WRITE,
     )
     const [convId, firstId, secondId, merged] =
-      model.conversations.mergeEditorTurns.mock.calls[0]
+      model.conversationEditor.mergeEditorTurns.mock.calls[0]
     expect([convId, firstId, secondId]).toEqual(["tr-1", "turn-1", "turn-2"])
     // The larger turn (turn-1) provides the attributes.
     expect(merged.turn_id).toBe("turn-1")
@@ -496,7 +498,7 @@ describe("onMergeTurns", () => {
 
     await onMergeTurns(ctx, PAYLOAD, ack)
 
-    expect(model.conversations.mergeEditorTurns).not.toHaveBeenCalled()
+    expect(model.conversationEditor.mergeEditorTurns).not.toHaveBeenCalled()
     expect(ack).toHaveBeenCalledWith({
       ok: false,
       reason: "locked",
@@ -515,7 +517,7 @@ describe("onMergeTurns", () => {
 
     await onMergeTurns(ctx, PAYLOAD, ack)
 
-    expect(model.conversations.mergeEditorTurns).not.toHaveBeenCalled()
+    expect(model.conversationEditor.mergeEditorTurns).not.toHaveBeenCalled()
     expect(ack).toHaveBeenCalledWith({ ok: false, reason: "not_adjacent" })
   })
 
@@ -544,7 +546,7 @@ describe("onMergeTurns", () => {
     access.hasAccess.mockResolvedValue(true)
     model.editorLocks.findLiveLocks.mockResolvedValue([])
     model.conversations.getById.mockResolvedValue([{ text: [FIRST, SECOND] }])
-    model.conversations.mergeEditorTurns.mockResolvedValue(null)
+    model.conversationEditor.mergeEditorTurns.mockResolvedValue(null)
     const ctx = joinedCtx()
     const ack = jest.fn()
 
@@ -565,13 +567,13 @@ describe("onDeleteTurn", () => {
 
   test("deletes, predicts the speaker GC and broadcasts", async () => {
     model.conversations.getById.mockResolvedValue([{ text: TURNS }])
-    model.conversations.deleteEditorTurn.mockResolvedValue({ version: 11 })
+    model.conversationEditor.deleteEditorTurn.mockResolvedValue({ version: 11 })
     const ctx = makeCtx()
     const ack = jest.fn()
 
     await onDeleteTurn(ctx, PAYLOAD, ack)
 
-    expect(model.conversations.deleteEditorTurn).toHaveBeenCalledWith(
+    expect(model.conversationEditor.deleteEditorTurn).toHaveBeenCalledWith(
       "tr-1",
       "turn-2",
     )
@@ -588,7 +590,7 @@ describe("onDeleteTurn", () => {
 
   test("no speaker GC when the speaker still has other turns", async () => {
     model.conversations.getById.mockResolvedValue([{ text: TURNS }])
-    model.conversations.deleteEditorTurn.mockResolvedValue({ version: 12 })
+    model.conversationEditor.deleteEditorTurn.mockResolvedValue({ version: 12 })
     const ctx = makeCtx()
 
     await onDeleteTurn(ctx, { ...PAYLOAD, turnId: "turn-1" }, jest.fn())
@@ -604,7 +606,7 @@ describe("onDeleteTurn", () => {
 
     await onDeleteTurn(ctx, PAYLOAD, ack)
 
-    expect(model.conversations.deleteEditorTurn).not.toHaveBeenCalled()
+    expect(model.conversationEditor.deleteEditorTurn).not.toHaveBeenCalled()
     expect(ack).toHaveBeenCalledWith({ ok: false, reason: "last_turn" })
   })
 
@@ -616,7 +618,7 @@ describe("onDeleteTurn", () => {
     expect(ack1).toHaveBeenCalledWith({ ok: false, reason: "conflict" })
 
     model.conversations.getById.mockResolvedValue([{ text: TURNS }])
-    model.conversations.deleteEditorTurn.mockResolvedValue(null)
+    model.conversationEditor.deleteEditorTurn.mockResolvedValue(null)
     const ack2 = jest.fn()
     await onDeleteTurn(ctx, PAYLOAD, ack2)
     expect(ack2).toHaveBeenCalledWith({ ok: false, reason: "conflict" })

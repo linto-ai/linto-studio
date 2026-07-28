@@ -19,8 +19,8 @@ jest.mock(`${process.cwd()}/lib/mongodb/driver`, () => ({
   },
 }))
 
-const conversations = require(
-  `${process.cwd()}/lib/mongodb/models/conversations`,
+const conversationEditor = require(
+  `${process.cwd()}/lib/mongodb/models/conversationEditor`,
 )
 
 function doc(id, editorVersion, childIds) {
@@ -42,7 +42,7 @@ beforeEach(() => {
   jest.clearAllMocks()
 })
 
-describe("conversations.getFamilyEditorVersions", () => {
+describe("conversationEditor.getFamilyEditorVersions", () => {
   test("walks parent → children → grandchildren, missing versions ≡ 0", async () => {
     mockCollection.findOne.mockResolvedValue(doc("parent", 2, ["ch-1", "ch-2"]))
     mockFindReturning([
@@ -50,7 +50,7 @@ describe("conversations.getFamilyEditorVersions", () => {
       [doc("tr-1", 9)],
     ])
 
-    const versions = await conversations.getFamilyEditorVersions("parent")
+    const versions = await conversationEditor.getFamilyEditorVersions("parent")
 
     expect(versions).toEqual({ parent: 2, "ch-1": 5, "ch-2": 0, "tr-1": 9 })
   })
@@ -58,7 +58,7 @@ describe("conversations.getFamilyEditorVersions", () => {
   test("a childless conversation returns just itself, one query", async () => {
     mockCollection.findOne.mockResolvedValue(doc("solo", 4))
 
-    const versions = await conversations.getFamilyEditorVersions("solo")
+    const versions = await conversationEditor.getFamilyEditorVersions("solo")
 
     expect(versions).toEqual({ solo: 4 })
     expect(mockCollection.find).not.toHaveBeenCalled()
@@ -67,7 +67,7 @@ describe("conversations.getFamilyEditorVersions", () => {
   test("an unknown conversation returns an empty map", async () => {
     mockCollection.findOne.mockResolvedValue(null)
     await expect(
-      conversations.getFamilyEditorVersions("ghost"),
+      conversationEditor.getFamilyEditorVersions("ghost"),
     ).resolves.toEqual({})
   })
 })

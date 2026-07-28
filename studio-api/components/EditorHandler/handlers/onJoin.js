@@ -12,8 +12,8 @@ const CONVERSATION_RIGHTS = require(
 )
 const { computeEditorRoomName } = require("../utils/computeEditorRoomName")
 
-// The name shown to other participants ("Marie is editing") — resolved
-// server-side so a client can't spoof it.
+// Name shown to other participants; resolved server-side so a client
+// can't spoof it.
 async function resolveUserName(userId) {
   const users = await model.users.getById(userId)
   const user = Array.isArray(users) ? users[0] : null
@@ -30,19 +30,14 @@ function wireLock(lock) {
   }
 }
 
-// Joining the editor room requires READ access on the conversation: the room
-// only carries broadcasts. WRITE is enforced per mutation (lock_turn checks
-// it on every acquire/refresh) — no write right is granted for the session
-// here, so a revoked right needs no room eviction.
-//
-// The verified identity is cached on socket.data: a socket's identity can't
-// change (token-bound), only its RIGHTS can — and those are re-checked per
-// mutation.
+// Joining requires READ only (the room carries broadcasts); WRITE is
+// re-checked per mutation, so a revoked right needs no room eviction.
+// The identity cached on socket.data is token-bound and can't change.
 async function onJoin({ socket }, conversationId, ack) {
   const reply = typeof ack === "function" ? ack : () => {}
   try {
     const user = await auth.checkSocket(socket)
-    // Public session tokens authenticate without a userId — the editor is
+    // Public session tokens authenticate without a userId; the editor is
     // for identified users only.
     if (!user || !user.isAuth || !user.userId) {
       debug(`join denied (unauthorized) socket=${socket.id}`)
@@ -61,12 +56,10 @@ async function onJoin({ socket }, conversationId, ack) {
       return reply({ ok: false, reason: "forbidden" })
     }
 
-    // Per-track editorVersions: the reconnection re-ack lets the client
-    // detect which loaded tracks went stale and refetch just those. Its keys
-    // ARE the conversation family — cached on the socket, they bound every
-    // later mutation (requireFamily) and give handlers the broadcast room.
+    // Per-track editorVersions let a reconnecting client refetch stale
+    // tracks; the keys are the family, cached to bound later mutations.
     const versions =
-      await model.conversations.getFamilyEditorVersions(conversationId)
+      await model.conversationEditor.getFamilyEditorVersions(conversationId)
 
     socket.data.editorUser = {
       userId: user.userId,

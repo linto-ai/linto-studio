@@ -7,14 +7,9 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const { computeEditorRoomName } = require("../utils/computeEditorRoomName")
 
 /**
- * Point a turn at a speaker: an existing one (speakerId) or a freshly minted
- * one (speakerName — "a speaker is created by assigning it"). No lock: the
- * op is atomic and last-write-wins (decorated requireWrite).
- *
- * The broadcast carries the GC consequence (removedSpeakerId) when the
- * turn's previous speaker lost its last assignment — predicted from the
- * pre-read, the atomic write's filter-GC stays the authority (accepted
- * ms-window, TOCTOU family).
+ * Point a turn at an existing speaker (speakerId) or create one by assigning
+ * it (speakerName). No lock (atomic, last-write-wins). The broadcast carries
+ * removedSpeakerId when the previous speaker lost its last assignment.
  */
 async function onUpdateTurnSpeaker({ io, socket }, payload, ack) {
   const reply = typeof ack === "function" ? ack : () => {}
@@ -70,7 +65,7 @@ async function onUpdateTurnSpeaker({ io, socket }, payload, ack) {
         ? previous
         : undefined
 
-    const updated = await model.conversations.updateEditorTurnSpeaker(
+    const updated = await model.conversationEditor.updateEditorTurnSpeaker(
       translationId,
       turnId,
       speaker,
