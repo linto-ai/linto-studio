@@ -30,25 +30,6 @@
         </div>
       </header>
 
-      <div
-        class="flex panel-header-actions"
-        v-if="!isMultiMode && activeTab === 'overview'">
-        <!-- Actions for single media (edition etc...)-->
-        <div class="button-group" ref="panelActions">
-          <Button
-            v-for="action in singleMediaActions"
-            :key="action.id"
-            :to="action.to"
-            :label="action.label"
-            :icon="action.icon"
-            size="xs"
-            variant="secondary"
-            :disabled="action.disabled"
-            :color="action.color || 'primary'"
-            @click="handleActionClick(action)" />
-        </div>
-      </div>
-
       <template v-if="activeTab === 'overview'">
         <!-- Multi-selection mode -->
         <MediaExplorerRightPanelMulti
@@ -137,7 +118,6 @@ export default {
   data() {
     return {
       panelWidth: this.initialWidth,
-      panelActionWidth: 0,
       isResizing: false,
       startX: 0,
       startWidth: 0,
@@ -182,61 +162,15 @@ export default {
 
       if (this.selectedMedias.length > 0) return this.selectedMedias[0]
     },
-
-    singleMediaActions() {
-      if (!this.selectedMediaForOverview) return []
-
-      const mediaId = this.selectedMediaForOverview._id
-      const orgId = this.currentOrganizationScope
-      const status = this.selectedMediaForOverview?.jobs?.transcription?.state
-      return [
-        {
-          id: "edit",
-          label: this.$t("media_explorer.line.edit_transcription"),
-          icon: "pencil",
-          to: {
-            name: "conversations transcription",
-            params: { conversationId: mediaId, organizationId: orgId },
-          },
-          disabled: status !== "done",
-        },
-        {
-          id: "subtitles",
-          label: this.$t("media_explorer.line.edit_subtitles"),
-          icon: "closed-captioning",
-          to: {
-            name: "conversations subtitles",
-            params: { conversationId: mediaId, organizationId: orgId },
-          },
-          disabled: status !== "done",
-        },
-        // {
-        //   id: "delete",
-        //   label: this.$t("media_explorer.line.delete"),
-        //   icon: "trash",
-        //   color: "tertiary",
-        // },
-      ]
-    },
   },
   mounted() {
     const savedWidth = localStorage.getItem("mediaExplorerPanelWidth")
-
-    if (this.$refs.panelActions) {
-      this.panelActionWidth = Array.from(
-        this.$refs.panelActions.childNodes,
-      ).reduce((acc, el) => acc + el.clientWidth, 16)
-    }
 
     if (savedWidth) {
       const width = parseInt(savedWidth)
       if (width >= this.minWidth && width <= this.maxWidth) {
         this.panelWidth = width
       }
-    }
-
-    if (this.panelWidth < this.panelActionWidth) {
-      this.panelWidth = this.panelActionWidth
     }
 
     this.$emit("resize", this.panelWidth)
@@ -276,7 +210,6 @@ export default {
       this.panelWidth = Math.max(
         this.minWidth,
         Math.min(this.maxWidth, newWidth),
-        this.panelActionWidth,
       )
 
       this.$emit("resize", this.panelWidth)
@@ -301,13 +234,6 @@ export default {
       this.$emit("resize", this.panelWidth)
     },
 
-    handleActionClick(action) {
-      switch (action.id) {
-        case "delete":
-          this.handleDelete()
-          break
-      }
-    },
     handleDelete() {
       // Validate that we have selected medias to delete
       if (!this.selectedMedias || this.selectedMedias.length === 0) {

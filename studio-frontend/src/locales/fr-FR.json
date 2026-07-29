@@ -824,6 +824,8 @@
     "share": "Partager",
     "panel": {
       "overview": "Aperçu du média",
+      "open_media": "Ouvrir le média",
+      "open_media_hint": "Transcription, résumé et export",
       "title": "Titre",
       "title_updated": "Titre mis à jour",
       "description": "Description",
@@ -859,7 +861,7 @@
       "duplicate_success": "Conversation dupliquée",
       "duplicate_error": "Erreur lors de la duplication",
       "transcription": {
-        "tab_label": "Transcription",
+        "tab_label": "Paramètres",
         "title": "Paramètres de transcription",
         "engine": "Moteur",
         "normalization": "Normalisation des nombres",
