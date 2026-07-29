@@ -802,6 +802,7 @@
       "live": "Source : transcription en direct"
     },
     "line": {
+      "details": "Ouvrir les détails",
       "edit_transcription": "Transcription",
       "edit_subtitles": "Sous-titres",
       "export": "Publication",

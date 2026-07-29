@@ -808,6 +808,7 @@
       "live": "Source: live"
     },
     "line": {
+      "details": "Open details",
       "edit_transcription": "Transcription",
       "edit_subtitles": "Subtitles",
       "export": "Publish",

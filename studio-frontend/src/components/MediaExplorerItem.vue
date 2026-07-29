@@ -251,6 +251,13 @@ export default {
     },
 
     actionsItems() {
+      const detailsItem = {
+        id: "details",
+        name: this.$t("media_explorer.line.details"),
+        icon: "info",
+        color: "primary",
+      }
+
       const transcriptionItem = {
         id: "edit",
         name: this.$t("media_explorer.line.edit_transcription"),
@@ -268,10 +275,11 @@ export default {
       }
 
       if (this.isImpersonatingCurrentOrganization) {
-        return [transcriptionItem]
+        return [detailsItem, transcriptionItem]
       }
 
       return [
+        detailsItem,
         transcriptionItem,
         {
           id: "subtitles",
@@ -287,6 +295,12 @@ export default {
             query: this.searchValue ? { search: this.searchValue } : {},
           },
           disabled: this.status !== "done",
+        },
+        {
+          id: "share",
+          name: this.$t("share_menu.button"),
+          icon: "share-network",
+          color: "primary",
         },
         {
           id: "duplicate",
@@ -403,6 +417,12 @@ export default {
 
     handleActionClick(action) {
       switch (action.id) {
+        case "details":
+          this.$emit("details", this.media._id)
+          break
+        case "share":
+          this.$emit("share", this.media._id)
+          break
         case "duplicate":
           this.handleDuplicate()
           break

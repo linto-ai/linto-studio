@@ -20,7 +20,7 @@
             :tabs="tabs"
             :value="activeTab"
             variant="secondary"
-            @input="activeTab = $event"
+            @input="$emit('update:activeTab', $event)"
             class="panel-tabs flex1" />
           <Button
             icon="x"
@@ -128,6 +128,11 @@ export default {
       type: Array,
       default: () => [],
     },
+    // Controlled by the parent (use with .sync): which tab is displayed
+    activeTab: {
+      type: String,
+      default: "overview",
+    },
   },
   data() {
     return {
@@ -138,7 +143,6 @@ export default {
       startWidth: 0,
       showDeleteModal: false,
       isDeleting: false,
-      activeTab: "overview",
     }
   },
   computed: {
@@ -213,11 +217,6 @@ export default {
         //   color: "tertiary",
         // },
       ]
-    },
-  },
-  watch: {
-    selectedMediaIds() {
-      this.activeTab = "overview"
     },
   },
   mounted() {
