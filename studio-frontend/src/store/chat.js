@@ -117,7 +117,7 @@ export default {
       await apiUpdateChatSessionTitle(state.scope, sessionId, title)
       commit("UPDATE_SESSION_TITLE", { sessionId, title })
     },
-    async sendMessage({ commit, state, dispatch }, { content, mode, lang }) {
+    async sendMessage({ commit, state, dispatch }, { content }) {
       // Auto-name session from first user message
       const isFirstMessage = state.messages.length === 0
       const sessionId = state.activeSessionId
@@ -140,7 +140,7 @@ export default {
       await apiSendChatMessage(
         state.scope,
         state.activeSessionId,
-        { content, mode, lang },
+        { content },
         {
           onToken(token) {
             commit("APPEND_STREAMING_CONTENT", token)
@@ -162,21 +162,6 @@ export default {
           },
         },
       )
-    },
-    async requestCatchup(
-      { commit, state, dispatch },
-      { scope, content, lang },
-    ) {
-      if (state.isStreaming) return
-      commit("SET_SCOPE", scope)
-      commit("SET_DRAWER_OPEN", true)
-      try {
-        await dispatch("createSession")
-      } catch (err) {
-        console.error("Failed to create catchup session:", err)
-        return
-      }
-      await dispatch("sendMessage", { content, mode: "catchup", lang })
     },
     async openDrawer({ commit, dispatch }, scope) {
       commit("SET_SCOPE", scope)

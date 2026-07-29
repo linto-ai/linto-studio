@@ -9,11 +9,13 @@ import type { ChatSession } from "../../core/types"
 const props = defineProps<{
   sessions: ChatSession[]
   activeSessionId: string | null
+  canCatchup?: boolean
 }>()
 
 const emit = defineEmits<{
   select: [sessionId: string]
   create: []
+  catchup: []
   rename: [sessionId: string, title: string]
   delete: [sessionId: string]
 }>()
@@ -75,12 +77,22 @@ function confirmDelete(): void {
   <nav class="chat-session-list" :aria-label="t('chat.history')">
     <header class="chat-session-list__header">
       <h3 class="chat-session-list__title">{{ t("chat.history") }}</h3>
-      <Button
-        icon="plus"
-        variant="transparent"
-        size="sm"
-        :aria-label="t('chat.newChat')"
-        @click="emit('create')" />
+      <div class="chat-session-list__actions">
+        <Button
+          v-if="canCatchup"
+          icon="sparkles"
+          variant="transparent"
+          size="sm"
+          :aria-label="t('chat.catchup')"
+          :title="t('chat.catchup')"
+          @click="emit('catchup')" />
+        <Button
+          icon="plus"
+          variant="transparent"
+          size="sm"
+          :aria-label="t('chat.newChat')"
+          @click="emit('create')" />
+      </div>
     </header>
 
     <ul class="chat-session-list__items">
@@ -171,6 +183,11 @@ function confirmDelete(): void {
   align-items: center;
   justify-content: space-between;
   padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.chat-session-list__actions {
+  display: flex;
+  gap: var(--spacing-xs);
 }
 
 .chat-session-list__title {

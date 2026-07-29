@@ -51,6 +51,9 @@ function onSelect(sessionId: string): void {
 function onCreate(): void {
   core.emit("chat:createSession", undefined)
 }
+function onCatchup(): void {
+  core.emit("chat:catchup", undefined)
+}
 function onRename(sessionId: string, title: string): void {
   core.emit("chat:renameSession", { sessionId, title })
 }
@@ -100,8 +103,10 @@ function onSend(content: string): void {
           <ChatSessionList
             :sessions="chat.sessions.value"
             :active-session-id="chat.activeSessionId.value"
+            :can-catchup="chat.catchupEnabled"
             @select="onSelect"
             @create="onCreate"
+            @catchup="onCatchup"
             @rename="onRename"
             @delete="onDelete" />
 

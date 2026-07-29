@@ -48,6 +48,7 @@ export interface CoreEventMap {
   "chat:deleteSession": { sessionId: string }
   "chat:renameSession": { sessionId: string; title: string }
   "chat:send": { content: string }
+  "chat:catchup": void
   destroy: void
 }
 
@@ -513,6 +514,8 @@ export interface ChatPluginApi {
   readonly isLoadingSession: Ref<boolean>
   /** messages plus the in-flight assistant message while streaming */
   readonly allMessages: ComputedRef<ChatMessage[]>
+  /** host opted into the catchup affordance (live sessions) */
+  readonly catchupEnabled: boolean
 
   // ── UI actions (no network) ──
   setDrawerOpen(open: boolean): void

@@ -79,6 +79,7 @@
         :displaySubtitles="displaySubtitles"
         :isFromPublicLink="isFromPublicLink"
         :microphoneStatus="microphoneStatus"
+        :catchupScope="catchupScope"
         @retry-microphone="retryAudioConnection"
         @reconfigure-microphone="showMicrophoneSetup = true" />
 
@@ -104,8 +105,6 @@
         :title="$t('session.password_modal.title')">
         <FormInput :field="passwordField" v-model="passwordField.value" />
       </Modal>
-
-      <ChatDrawer />
     </div>
   </LayoutV2>
 </template>
@@ -130,7 +129,6 @@ import SessionDropdownChannelSelector from "@/components-mobile/SessionDropdownC
 import IsMobile from "@/components/atoms/IsMobile.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
 import SessionLiveNG from "@/components/SessionLiveNG.vue"
-import ChatDrawer from "@/components/ChatDrawer.vue"
 
 export default {
   mixins: [sessionMixin, orgaRoleMixin, sessionMicrophoneMixin],
@@ -219,16 +217,7 @@ export default {
       this.showSubtitlesFullscreen = true
     },
     openCatchup() {
-      this.$store.dispatch("chat/requestCatchup", {
-        scope: {
-          kind: "session",
-          organizationId: this.currentOrganizationScope,
-          sessionId: this.session.id,
-          channelId: this.selectedChannel?.id ?? null,
-        },
-        content: this.$t("chat.catchup_request_message"),
-        lang: this.$i18n.locale,
-      })
+      this.$refs.sessionLiveNG?.openCatchup()
     },
     closeSubtitleFullscreen() {
       this.showSubtitlesFullscreen = false
@@ -254,6 +243,14 @@ export default {
         this.catchupEnabled
       )
     },
+    catchupScope() {
+      if (!this.canCatchup) return null
+      return {
+        kind: "session",
+        organizationId: this.currentOrganizationScope,
+        sessionId: this.session.id,
+      }
+    },
   },
   components: {
     LayoutV2,
@@ -266,7 +263,6 @@ export default {
     SessionHeader,
     FormInput,
     SessionLiveNG,
-    ChatDrawer,
   },
 }
 </script>

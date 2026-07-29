@@ -18,7 +18,12 @@ const STREAMING_MESSAGE_ID = "__streaming__"
  * the host listens, performs the HTTP/SSE calls, and pushes results back
  * through the setters below. Mirrors the `llmServices` plugin design.
  */
-export function createChatPlugin(): CorePlugin {
+export interface ChatPluginOptions {
+  /** Show the catchup action in the drawer (emits `chat:catchup`). */
+  catchup?: boolean
+}
+
+export function createChatPlugin(options: ChatPluginOptions = {}): CorePlugin {
   return {
     name: "chat",
 
@@ -57,6 +62,7 @@ export function createChatPlugin(): CorePlugin {
         streamingContent,
         isLoadingSession,
         allMessages,
+        catchupEnabled: !!options.catchup,
 
         setDrawerOpen(open) {
           drawerOpen.value = open

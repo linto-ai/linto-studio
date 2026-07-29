@@ -23,7 +23,9 @@ import {
 import {
   createLivePlugin,
   createSubtitlePlugin,
+  createLLMServicesPlugin,
 } from "@linto/transcript-ui/webcomponent"
+import { setupChat } from "@/services/chatIntegration"
 import computeSessionTurnUniqueId from "@/const/computeSessionTurnUniqueId"
 import classifySessionTurn from "@/tools/classifySessionTurn"
 import {
@@ -48,11 +50,15 @@ export default {
     displaySubtitles: { type: Boolean, default: false },
     // Forwarded to the status banner; "idle" when the host has no microphone.
     microphoneStatus: { type: String, default: "idle" },
+    // Non-null enables the session chat (catchup); becomes available once
+    // the parent has checked feature availability.
+    catchupScope: { type: Object, default: null },
   },
   data() {
     return {
       livePlugin: null,
       core: null,
+      chatHandle: null,
       offChannelChange: null,
       offScrollTop: null,
       offWatermarkDisplay: null,
@@ -92,6 +98,9 @@ export default {
         this.resyncAfterReconnect()
       }
     },
+    catchupScope() {
+      this.setupSessionChat()
+    },
   },
   mounted() {
     this.initEditor()
@@ -103,6 +112,7 @@ export default {
     )
   },
   beforeDestroy() {
+    this.chatHandle?.dispose()
     this.offChannelChange?.()
     this.offScrollTop?.()
     this.offSubtitle?.()
@@ -163,6 +173,7 @@ export default {
         tts: getEnv("VUE_APP_ENABLE_TTS") === "true",
       })
       core.use(this.livePlugin)
+      core.use(createLLMServicesPlugin())
 
       core.use(
         createSubtitlePlugin({
@@ -240,6 +251,25 @@ export default {
         this.wsWasConnected = true
         this.subscribeToWebsocket()
       }
+
+      this.setupSessionChat()
+    },
+
+    setupSessionChat() {
+      if (this.chatHandle || !this.core || !this.catchupScope) return
+      this.chatHandle = markRaw(
+        setupChat(this.core, {
+          scope: this.catchupScope,
+          catchup: {
+            content: this.$t("chat.catchup_request_message"),
+            lang: this.$i18n.locale,
+          },
+        }),
+      )
+    },
+
+    openCatchup() {
+      this.chatHandle?.openCatchup()
     },
 
     // Finals emitted while the socket was down are lost (the server does not

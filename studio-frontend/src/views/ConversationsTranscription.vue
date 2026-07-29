@@ -203,8 +203,8 @@ export default {
       if (this.isDestroyed || !this.$refs.editor) return
       if (chatEnabled) {
         this.chatDispose = setupChat(core, {
-          conversationId: this.conversationId,
-        })
+          scope: { kind: "conversation", conversationId: this.conversationId },
+        }).dispose
       }
 
       core.setDocument(doc)
