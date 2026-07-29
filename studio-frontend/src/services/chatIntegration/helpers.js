@@ -2,12 +2,6 @@
 // chat plugin shape (core.chat.*). The SDK is agnostic: it uses `id`, the API
 // returns `_id`.
 
-export function truncateTitle(text, maxLen = 30) {
-  const trimmed = text.trim()
-  if (trimmed.length <= maxLen) return trimmed
-  return trimmed.slice(0, maxLen).trimEnd() + "..."
-}
-
 export function mapSession(session) {
   return { id: session._id, title: session.title }
 }

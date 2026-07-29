@@ -1817,7 +1817,9 @@
     "delete_session": "Delete",
     "delete_confirm_inline": "Delete \"{name}\"?",
     "error": "An error occurred",
-    "streaming": "Generating response..."
+    "streaming": "Generating response...",
+    "catchup_button": "Catch me up",
+    "catchup_request_message": "I just joined, catch me up on what has been said so far."
   },
   "speaker_diarization": {
     "title": "Speaker identification",

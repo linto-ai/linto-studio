@@ -19,6 +19,14 @@
         <IsMobile>
           <div class="flex gap-small">
             <Button
+              v-if="canCatchup"
+              @click="openCatchup"
+              variant="secondary"
+              :aria-label="$t('chat.catchup_button')"
+              :title="$t('chat.catchup_button')"
+              icon="sparkle" />
+
+            <Button
               v-if="isAtLeastMeetingManager && !isFromPublicLink"
               :to="settingsRoute"
               variant="primary"
@@ -33,6 +41,14 @@
           </div>
 
           <template #desktop>
+            <Button
+              v-if="canCatchup"
+              @click="openCatchup"
+              variant="secondary"
+              size="sm"
+              :label="$t('chat.catchup_button')"
+              icon="sparkle" />
+
             <Button
               v-if="isAtLeastMeetingManager && !isFromPublicLink"
               :to="settingsRoute"
@@ -88,11 +104,13 @@
         :title="$t('session.password_modal.title')">
         <FormInput :field="passwordField" v-model="passwordField.value" />
       </Modal>
+
+      <ChatDrawer />
     </div>
   </LayoutV2>
 </template>
 <script>
-import { mapGetters } from "vuex"
+import { mapGetters, mapState } from "vuex"
 
 import { sessionMixin } from "@/mixins/session.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole"
@@ -112,6 +130,7 @@ import SessionDropdownChannelSelector from "@/components-mobile/SessionDropdownC
 import IsMobile from "@/components/atoms/IsMobile.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
 import SessionLiveNG from "@/components/SessionLiveNG.vue"
+import ChatDrawer from "@/components/ChatDrawer.vue"
 
 export default {
   mixins: [sessionMixin, orgaRoleMixin, sessionMicrophoneMixin],
@@ -142,7 +161,11 @@ export default {
     // if not started, redirect to home
     // if stopped, redirect to conversation
   },
-  mounted() {},
+  mounted() {
+    if (this.isAuthenticated) {
+      this.$store.dispatch("chat/checkAvailability")
+    }
+  },
   watch: {
     sessionLoaded() {
       if (this.sessionLoaded) {
@@ -195,6 +218,18 @@ export default {
       this.$refs["sessionLiveNG"].showMobileSubtitles()
       this.showSubtitlesFullscreen = true
     },
+    openCatchup() {
+      this.$store.dispatch("chat/requestCatchup", {
+        scope: {
+          kind: "session",
+          organizationId: this.currentOrganizationScope,
+          sessionId: this.session.id,
+          channelId: this.selectedChannel?.id ?? null,
+        },
+        content: this.$t("chat.catchup_request_message"),
+        lang: this.$i18n.locale,
+      })
+    },
     closeSubtitleFullscreen() {
       this.showSubtitlesFullscreen = false
     },
@@ -208,6 +243,17 @@ export default {
     },
     ...mapGetters("system", ["isMobile"]),
     ...mapGetters("user", ["isAuthenticated"]),
+    ...mapState("chat", ["catchupEnabled"]),
+    canCatchup() {
+      return (
+        this.sessionLoaded &&
+        !this.isTerminated &&
+        this.isAuthenticated &&
+        !this.isFromPublicLink &&
+        !!this.currentOrganizationScope &&
+        this.catchupEnabled
+      )
+    },
   },
   components: {
     LayoutV2,
@@ -220,6 +266,7 @@ export default {
     SessionHeader,
     FormInput,
     SessionLiveNG,
+    ChatDrawer,
   },
 }
 </script>

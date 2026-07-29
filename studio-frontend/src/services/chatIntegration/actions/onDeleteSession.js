@@ -1,14 +1,14 @@
 import { apiDeleteChatSession, apiListChatSessions } from "@/api/chat"
 import { mapSession } from "../helpers"
 
-export async function onDeleteSession({ core, conversationId }, sessionId) {
-  const ok = await apiDeleteChatSession(conversationId, sessionId)
+export async function onDeleteSession({ core, scope }, sessionId) {
+  const ok = await apiDeleteChatSession(scope, sessionId)
   if (!ok) {
     console.error("[chat] delete session failed")
     return
   }
   const wasActive = core.chat.activeSessionId.value === sessionId
-  const sessions = await apiListChatSessions(conversationId)
+  const sessions = await apiListChatSessions(scope)
   core.chat.setSessions(sessions.map(mapSession))
   if (wasActive) {
     core.chat.setActiveSession(null)

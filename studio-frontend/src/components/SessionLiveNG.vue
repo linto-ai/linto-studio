@@ -213,11 +213,11 @@ export default {
       // initial selection does not trigger a channel reset and refetch.
       const initialId =
         this.initialChannelId != null ? String(this.initialChannelId) : null
-      if (initialId && editor.channels.has(initialId)) {
-        editor.setActiveChannel(initialId)
+      if (initialId && core.channels.has(initialId)) {
+        core.setActiveChannel(initialId)
       }
 
-      this.activeChannelIndex = this.editor?.activeChannelId.value ?? null
+      this.activeChannelIndex = this.core?.activeChannelId.value ?? null
 
       await this.fetchTurnsPage()
 
@@ -246,7 +246,7 @@ export default {
     // replay missed room events): reset the channel and reload the latest
     // page — same pattern as channel:change and clear().
     resyncAfterReconnect() {
-      const channel = this.editor?.activeChannel?.value
+      const channel = this.core?.activeChannel?.value
       if (!channel) {
         return
       }

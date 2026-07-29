@@ -7,28 +7,27 @@ import {
   apiSendChatMessage,
   apiGetChatStatus,
 } from "@/api/chat"
-
-function truncateTitle(text, maxLen = 30) {
-  const trimmed = text.trim()
-  if (trimmed.length <= maxLen) return trimmed
-  return trimmed.slice(0, maxLen).trimEnd() + "..."
-}
+import { truncateTitle } from "@/tools/truncateTitle"
 
 export default {
   namespaced: true,
   state: {
     enabled: false,
+    catchupEnabled: false,
     sessions: [],
     activeSessionId: null,
     messages: [],
     isStreaming: false,
     streamingContent: "",
     drawerOpen: false,
-    conversationId: null,
+    scope: null,
   },
   mutations: {
     SET_ENABLED(state, val) {
       state.enabled = val
+    },
+    SET_CATCHUP_ENABLED(state, val) {
+      state.catchupEnabled = val
     },
     SET_SESSIONS(state, sessions) {
       state.sessions = sessions
@@ -54,8 +53,8 @@ export default {
     SET_DRAWER_OPEN(state, val) {
       state.drawerOpen = val
     },
-    SET_CONVERSATION_ID(state, val) {
-      state.conversationId = val
+    SET_SCOPE(state, scope) {
+      state.scope = scope
     },
     UPDATE_SESSION_TITLE(state, { sessionId, title }) {
       const session = state.sessions.find((s) => s._id === sessionId)
@@ -65,33 +64,39 @@ export default {
   actions: {
     async checkAvailability({ commit }) {
       try {
-        const { enabled } = await apiGetChatStatus()
+        const { enabled, catchupEnabled } = await apiGetChatStatus()
         commit("SET_ENABLED", !!enabled)
+        commit("SET_CATCHUP_ENABLED", !!catchupEnabled)
       } catch (e) {
         commit("SET_ENABLED", false)
+        commit("SET_CATCHUP_ENABLED", false)
       }
     },
     async loadSessions({ commit, state, dispatch }) {
-      const sessions = await apiListChatSessions(state.conversationId)
+      const sessions = await apiListChatSessions(state.scope)
       commit("SET_SESSIONS", sessions)
       if (!state.activeSessionId && sessions.length > 0) {
         await dispatch("loadSession", sessions[0]._id)
       }
     },
     async createSession({ commit, state, dispatch }) {
-      const session = await apiCreateChatSession(state.conversationId)
-      await dispatch("loadSessions")
+      const session = await apiCreateChatSession(state.scope)
       commit("SET_ACTIVE_SESSION", session._id)
       commit("SET_MESSAGES", [])
+      // Sidebar refresh off the critical path: the first message can stream
+      // without waiting for the list round trip
+      dispatch("loadSessions").catch((e) =>
+        console.error("Failed to load chat sessions:", e),
+      )
       return session
     },
     async loadSession({ commit, state }, sessionId) {
-      const session = await apiGetChatSession(state.conversationId, sessionId)
+      const session = await apiGetChatSession(state.scope, sessionId)
       commit("SET_ACTIVE_SESSION", sessionId)
       commit("SET_MESSAGES", session.messages || [])
     },
     async deleteSession({ commit, state, dispatch }, sessionId) {
-      const result = await apiDeleteChatSession(state.conversationId, sessionId)
+      const result = await apiDeleteChatSession(state.scope, sessionId)
       if (!result) {
         console.error("Failed to delete chat session")
         return
@@ -108,11 +113,11 @@ export default {
         }
       }
     },
-    async renameSession({ state, commit, dispatch }, { sessionId, title }) {
-      await apiUpdateChatSessionTitle(state.conversationId, sessionId, title)
+    async renameSession({ state, commit }, { sessionId, title }) {
+      await apiUpdateChatSessionTitle(state.scope, sessionId, title)
       commit("UPDATE_SESSION_TITLE", { sessionId, title })
     },
-    async sendMessage({ commit, state, dispatch }, content) {
+    async sendMessage({ commit, state, dispatch }, { content, mode, lang }) {
       // Auto-name session from first user message
       const isFirstMessage = state.messages.length === 0
       const sessionId = state.activeSessionId
@@ -133,9 +138,9 @@ export default {
       }
 
       await apiSendChatMessage(
-        state.conversationId,
+        state.scope,
         state.activeSessionId,
-        content,
+        { content, mode, lang },
         {
           onToken(token) {
             commit("APPEND_STREAMING_CONTENT", token)
@@ -158,8 +163,23 @@ export default {
         },
       )
     },
-    async openDrawer({ commit, dispatch }, conversationId) {
-      commit("SET_CONVERSATION_ID", conversationId)
+    async requestCatchup(
+      { commit, state, dispatch },
+      { scope, content, lang },
+    ) {
+      if (state.isStreaming) return
+      commit("SET_SCOPE", scope)
+      commit("SET_DRAWER_OPEN", true)
+      try {
+        await dispatch("createSession")
+      } catch (err) {
+        console.error("Failed to create catchup session:", err)
+        return
+      }
+      await dispatch("sendMessage", { content, mode: "catchup", lang })
+    },
+    async openDrawer({ commit, dispatch }, scope) {
+      commit("SET_SCOPE", scope)
       commit("SET_ACTIVE_SESSION", null)
       commit("SET_MESSAGES", [])
       commit("SET_DRAWER_OPEN", true)

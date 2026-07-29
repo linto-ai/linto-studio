@@ -43,6 +43,37 @@ class ChatMessageModel extends MongoModel {
     }
   }
 
+  async getLastBySession(sessionId, limit) {
+    try {
+      const messages = await this.mongoRequest(
+        { sessionId: sessionId.toString() },
+        { sort: { created_at: -1 }, limit },
+      )
+      return messages.reverse()
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async countBySessions(sessionIds) {
+    try {
+      if (!sessionIds || sessionIds.length === 0) return {}
+      const results = await this.mongoAggregate([
+        { $match: { sessionId: { $in: sessionIds } } },
+        { $group: { _id: "$sessionId", count: { $sum: 1 } } },
+      ])
+      const counts = {}
+      for (const r of results) {
+        counts[r._id] = r.count
+      }
+      return counts
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   async deleteBySession(sessionId) {
     try {
       return await this.mongoDeleteMany({

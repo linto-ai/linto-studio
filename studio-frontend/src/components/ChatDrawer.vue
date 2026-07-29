@@ -175,12 +175,6 @@ import PhIcon from "@/components/atoms/PhIcon.vue"
 export default {
   name: "ChatDrawer",
   components: { Button, PhIcon },
-  props: {
-    conversationId: {
-      type: String,
-      required: true,
-    },
-  },
   data() {
     return {
       inputText: "",
@@ -199,13 +193,10 @@ export default {
     ...mapGetters("chat", ["allMessages"]),
   },
   watch: {
-    allMessages: {
-      handler() {
-        this.$nextTick(() => {
-          this.scrollToBottom()
-        })
-      },
-      deep: true,
+    allMessages() {
+      this.$nextTick(() => {
+        this.scrollToBottom()
+      })
     },
   },
   methods: {
@@ -282,7 +273,7 @@ export default {
         }
       }
 
-      await this.sendMessage(text)
+      await this.sendMessage({ content: text })
     },
     scrollToBottom() {
       const container = this.$refs.messageContainer

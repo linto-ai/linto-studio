@@ -35,8 +35,11 @@ DEFAULT_SEGMENT_WORD_SIZE=
 # LLM Gateway V2 Config
 # HTTP API endpoint (e.g., http://localhost:8010)
 LLM_GATEWAY_SERVICES=
-# Chat service ID from LLM Gateway (required for chat feature)
+# Chat service from LLM Gateway (required for chat feature): ID, name or route
 LLM_CHAT_SERVICE_ID=
+# Chat service used for live session catchup: ID, name or route
+# (e.g. session-catchup); falls back to LLM_CHAT_SERVICE_ID when empty
+LLM_CATCHUP_SERVICE_ID=
 # WebSocket URL is automatically derived from LLM_GATEWAY_SERVICES
 # (http://localhost:8010 -> ws://localhost:8010)
 # V2 WebSocket endpoints:

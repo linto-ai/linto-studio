@@ -4,24 +4,32 @@ import { getCookie } from "@/tools/getCookie"
 
 const BASE_API = getEnv("VUE_APP_CONVO_API")
 
+function chatSessionsUrl(scope) {
+  if (scope.kind === "session") {
+    return `${BASE_API}/organizations/${scope.organizationId}/sessions/${scope.sessionId}/chat/sessions`
+  }
+  return `${BASE_API}/conversations/${scope.conversationId}/chat/sessions`
+}
+
 /**
- * Check if chat feature is enabled on the backend
+ * Check if chat and catchup features are enabled on the backend
  */
 export async function apiGetChatStatus() {
   const req = await sendRequest(`${BASE_API}/chat/status`, { method: "get" })
   if (req.status === "success") return req.data
-  return { enabled: false }
+  return { enabled: false, catchupEnabled: false }
 }
 
 /**
- * Create a new chat session for a conversation
+ * Create a new chat session
  */
-export async function apiCreateChatSession(conversationId, flavorId = null) {
+export async function apiCreateChatSession(scope, flavorId = null) {
   const body = {}
   if (flavorId) body.flavorId = flavorId
+  if (scope.channelId != null) body.channelId = scope.channelId
 
   const req = await sendRequest(
-    `${BASE_API}/conversations/${conversationId}/chat/sessions`,
+    chatSessionsUrl(scope),
     { method: "post" },
     body,
   )
@@ -30,13 +38,10 @@ export async function apiCreateChatSession(conversationId, flavorId = null) {
 }
 
 /**
- * List all chat sessions for a conversation (current user)
+ * List all chat sessions in a scope (current user)
  */
-export async function apiListChatSessions(conversationId) {
-  const req = await sendRequest(
-    `${BASE_API}/conversations/${conversationId}/chat/sessions`,
-    { method: "get" },
-  )
+export async function apiListChatSessions(scope) {
+  const req = await sendRequest(chatSessionsUrl(scope), { method: "get" })
   if (req.status === "success") return req.data
   return []
 }
@@ -44,11 +49,10 @@ export async function apiListChatSessions(conversationId) {
 /**
  * Get a chat session with all messages
  */
-export async function apiGetChatSession(conversationId, sessionId) {
-  const req = await sendRequest(
-    `${BASE_API}/conversations/${conversationId}/chat/sessions/${sessionId}`,
-    { method: "get" },
-  )
+export async function apiGetChatSession(scope, sessionId) {
+  const req = await sendRequest(`${chatSessionsUrl(scope)}/${sessionId}`, {
+    method: "get",
+  })
   if (req.status === "success") return req.data
   throw new Error(req.message || "Failed to get chat session")
 }
@@ -56,13 +60,9 @@ export async function apiGetChatSession(conversationId, sessionId) {
 /**
  * Update a chat session title
  */
-export async function apiUpdateChatSessionTitle(
-  conversationId,
-  sessionId,
-  title,
-) {
+export async function apiUpdateChatSessionTitle(scope, sessionId, title) {
   const req = await sendRequest(
-    `${BASE_API}/conversations/${conversationId}/chat/sessions/${sessionId}`,
+    `${chatSessionsUrl(scope)}/${sessionId}`,
     { method: "patch" },
     { title },
   )
@@ -73,26 +73,26 @@ export async function apiUpdateChatSessionTitle(
 /**
  * Delete a chat session and all its messages
  */
-export async function apiDeleteChatSession(conversationId, sessionId) {
-  const req = await sendRequest(
-    `${BASE_API}/conversations/${conversationId}/chat/sessions/${sessionId}`,
-    { method: "delete" },
-  )
+export async function apiDeleteChatSession(scope, sessionId) {
+  const req = await sendRequest(`${chatSessionsUrl(scope)}/${sessionId}`, {
+    method: "delete",
+  })
   return req.status === "success"
 }
 
 /**
  * Send a chat message with SSE streaming.
  * Uses native fetch (not axios) for streaming support.
+ * The conversation backend ignores mode and lang.
  */
 export async function apiSendChatMessage(
-  conversationId,
+  scope,
   sessionId,
-  content,
+  { content, mode, lang },
   { onToken, onDone, onError },
 ) {
   const userToken = getCookie("authToken")
-  const url = `${BASE_API}/conversations/${conversationId}/chat/sessions/${sessionId}/messages`
+  const url = `${chatSessionsUrl(scope)}/${sessionId}/messages`
 
   try {
     const response = await fetch(url, {
@@ -101,7 +101,7 @@ export async function apiSendChatMessage(
         "Content-Type": "application/json",
         Authorization: `Bearer ${userToken}`,
       },
-      body: JSON.stringify({ content }),
+      body: JSON.stringify({ content, mode, lang }),
     })
 
     if (!response.ok) {

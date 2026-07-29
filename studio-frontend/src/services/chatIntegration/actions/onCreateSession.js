@@ -1,10 +1,10 @@
 import { apiCreateChatSession, apiListChatSessions } from "@/api/chat"
 import { mapSession } from "../helpers"
 
-export async function onCreateSession({ core, conversationId }) {
+export async function onCreateSession({ core, scope }) {
   try {
-    const session = await apiCreateChatSession(conversationId)
-    const sessions = await apiListChatSessions(conversationId)
+    const session = await apiCreateChatSession(scope)
+    const sessions = await apiListChatSessions(scope)
     core.chat.setSessions(sessions.map(mapSession))
     core.chat.setActiveSession(session._id)
     core.chat.setMessages([])

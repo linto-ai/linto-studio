@@ -10,6 +10,7 @@ const FormData = require("form-data")
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const appLogger = require(`${process.cwd()}/lib/logger/logger.js`)
+const { UUID_V4_PATTERN } = require(`${process.cwd()}/lib/utility/uuid.js`)
 
 /**
  * Generate plain text from conversation turns
@@ -262,6 +263,11 @@ async function handleJobUpdate(jobId, update) {
  */
 async function resolveServiceId(serviceIdentifier) {
   const baseUrl = process.env.LLM_GATEWAY_SERVICES
+
+  // Already an ID, no need to list services
+  if (UUID_V4_PATTERN.test(serviceIdentifier)) {
+    return serviceIdentifier
+  }
 
   try {
     // Try to find service by name or route
@@ -544,6 +550,7 @@ module.exports = {
   generateText,
   request,
   requestAPIV2,
+  resolveServiceId,
   pollingLlm: processJobWithWebSocket,
   initWebSocketConnection,
   getSocketStatus,

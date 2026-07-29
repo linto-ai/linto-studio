@@ -25,9 +25,7 @@
       v-if="websocketError"
       :closable="false"></Alert>
 
-    <ChatDrawer
-      v-if="conversation && conversation._id"
-      :conversationId="conversation._id.toString()" />
+    <ChatDrawer />
   </V2Layout>
   <div
     v-else-if="dataLoaded && status != 'done' && status != 'error'"

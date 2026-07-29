@@ -19,7 +19,7 @@ import { onSend } from "./actions/onSend"
 export function setupChat(core, { conversationId }) {
   core.use(createChatPlugin())
 
-  const ctx = { core, conversationId }
+  const ctx = { core, scope: { kind: "conversation", conversationId } }
 
   const unsub = [
     core.on("chat:loadSessions", () => onLoadSessions(ctx)),
