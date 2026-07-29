@@ -141,6 +141,13 @@ class IoHandler extends Component {
       },
     })
 
+    // Register socket.io's engine on WebServer's shared upgrade router; this
+    // also drops engine.io's auto-installed upgrade listener.
+    this.app.components["WebServer"].registerUpgradeHandler(
+      "/socket.io",
+      (req, socket, head) => this.io.engine.handleUpgrade(req, socket, head),
+    )
+
     this.io.use(auth_middlewares.isAuthenticateSocket) // Used initialy to require authentication, disabling annonymous sessions
     this.io.on("connection", (socket) => {
       LogManager.logSocketEvent(socket, {

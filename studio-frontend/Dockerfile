@@ -1,7 +1,7 @@
 # Stage 1: Install dependencies (recreate monorepo structure so file:.. resolves)
 FROM node:22.14.0 AS deps
 WORKDIR /app
-COPY studio-sdk/components/editor studio-sdk/components/editor
+COPY studio-sdk/components/transcript-ui studio-sdk/components/transcript-ui
 COPY studio-frontend/package*.json studio-frontend/
 WORKDIR /app/studio-frontend
 RUN npm ci

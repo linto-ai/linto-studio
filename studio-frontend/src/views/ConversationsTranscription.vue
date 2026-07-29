@@ -1,576 +1,347 @@
 <template>
-  <MainContentConversation
-    :conversation="conversation"
-    :breadcrumbItems="breadcrumbItems"
-    :status="status"
-    :dataLoaded="dataLoaded"
-    :error="error"
-    sidebar>
-    <template v-slot:sidebar>
-      <div>
-        <div
-          class="form-field flex col medium-margin gap-medium"
-          v-if="
-            (channels && channels.length > 0) ||
-            (translations && translations.length > 0)
-          ">
-          <AppEditorChannelsSelector
-            v-if="channels && channels.length > 0"
-            :channels="channels"
-            v-model="selectedChannel" />
-          <AppEditorTranslationSelector
-            v-if="translations && translations.length > 0"
-            :translations="translations"
-            v-model="selectedTranslation" />
-        </div>
-
-        <div class="form-field flex col medium-margin">
-          <label for="transcription-search">{{
-            $t("app_editor_search.label")
-          }}</label>
-          <div class="flex gap-small">
-            <input
-              class="flex1"
-              @keydown="($event) => $event.stopPropagation()"
-              type="search"
-              id="transcription-search"
-              v-model="transcriptionSearch" />
-            <Button
-              :title="
-                $t('conversation.search_in_transcription.exact_word_match')
-              "
-              :variant="exactMatching ? 'primary' : 'secondary'"
-              @click="toggleExactMatching"
-              icon="equals" />
-
-            <Button
-              v-if="transcriptionSearch"
-              variant="secondary"
-              intent="destructive"
-              :title="$t('conversation.search_in_transcription.clear_search')"
-              @click="resetSearch"
-              icon="x" />
-          </div>
-
-          <SearchResultPaginator
-            class="small-padding-top"
-            v-if="numberFound"
-            :numberFound="numberFound"
-            :selectedIndexResult="selectedIndexResult"
-            @previousResult="previousResult"
-            @nextResult="nextResult" />
-        </div>
-        <HighlightsList
-          v-if="status === 'done' && experimental_highlight"
-          :conversation="conversation"
-          :hightlightsCategories="hightlightsCategories"
-          :hightlightsCategoriesVisibility="hightlightsCategoriesVisibility"
-          @hide-category="onHideCategory"
-          @show-category="onShowCategory"
-          @delete-tag="onDeleteTag"
-          @clickOnTag="onClickOnTag"
-          :conversationId="conversation._id">
-          <template v-slot:content-under-tag="slotProps">
-            <SearchResultPaginator
-              v-if="slotProps.tag._id === searchedHighlightId"
-              :numberFound="totalHighlightResult"
-              :selectedIndexResult="currentHighlightResult"
-              @previousResult="onPreviousHighlightSearch(slotProps.tag)"
-              @nextResult="onNextHighlightSearch(slotProps.tag)" />
-          </template>
-        </HighlightsList>
-      </div>
-    </template>
-
-    <div class="action-cards" v-if="conversation && conversation._id">
-      <router-link
-        class="action-card"
-        :to="{
-          name: 'conversations publish',
-          params: { conversationId: conversation._id },
-        }">
-        <div class="action-card__icon action-card__icon--publish">
-          <PhIcon name="file-text" size="lg" />
-        </div>
-        <div class="action-card__content">
-          <span class="action-card__title">{{
-            $t("conversation.publish_document")
-          }}</span>
-          <span class="action-card__description">{{
-            $t("conversation.publish_document_description")
-          }}</span>
-        </div>
-        <PhIcon name="caret-right" size="sm" class="action-card__arrow" />
-      </router-link>
-      <button class="action-card" @click="openChat" v-if="chatEnabled">
-        <div class="action-card__icon action-card__icon--chat">
-          <PhIcon name="chat-text" size="lg" />
-        </div>
-        <div class="action-card__content">
-          <span class="action-card__title">{{ $t("chat.start") }}</span>
-          <span class="action-card__description">{{
-            $t("chat.description")
-          }}</span>
-        </div>
-        <PhIcon name="caret-right" size="sm" class="action-card__arrow" />
-      </button>
+  <LayoutV2 noHeader>
+    <div class="transcription-editor-wrapper">
+      <linto-editor ref="editor" :locale="$i18n.locale" />
     </div>
-
-    <div class="flex flex1">
-      <AppEditor
-        :conversation="conversation"
-        :rootConversation="rootConversation"
-        :channelId="selectedChannel"
-        :usersConnected="usersConnected"
-        :focusFields="focusFields"
-        :conversationUsers="conversationUsers"
-        :userInfo="userInfo"
-        :turnPages="turnPages"
-        :turns="turns"
-        :canEdit="canEdit"
-        :hightlightsCategories="hightlightsCategories"
-        :hightlightsCategoriesVisibility="hightlightsCategoriesVisibility"
-        @newHighlight="handleNewHighlight"
-        @foundExpression="onFoundExpression"
-        @updateSelectedResult="onUpdateSelectedResult"
-        @updateSelectedHighlight="onUpdateSelectedHighlight"
-        ref="editor"
-        v-if="status === 'done'"></AppEditor>
-    </div>
-
-    <ModalDeleteTagHighlight
-      v-if="showDeleteModal"
+    <PublicationModal
+      v-model="publicationModal.open"
+      :jobId="publicationModal.jobId"
       :conversationId="conversationId"
-      :tag="tagToDelete"
-      @on-cancel="onCancelDeleteTag"
-      @on-confirm="onConfirmDeleteTag" />
-
-    <AppEditorMetadataModal
-      v-if="showMetadataModal"
-      @on-cancel="cancelMetadata"
-      @on-confirm="setMetadata" />
-  </MainContentConversation>
+      :organizationId="organizationId"
+      :conversationName="conversationName" />
+  </LayoutV2>
 </template>
 <script>
-import { formatTimestamp } from "@/tools/formatDate.js"
-import { nextTick } from "vue"
+import { markRaw } from "vue"
 
-import { bus } from "@/main.js"
-import { getEnv } from "@/tools/getEnv"
-import { apiPostMetadata, apiUpdateMetadata } from "@/api/metadata.js"
-import findExpressionInWordsList from "@/tools/findExpressionInWordsList.js"
+import USER_RIGHTS from "@/const/userRights.js"
 
-import { conversationMixin } from "@/mixins/conversation.js"
+import { apiGetConversationAsDoc } from "@/api/conversation.d/apiGetConversationAsDoc.js"
+import {
+  apiGetConversationById,
+  apiGetConversationLastUpdate,
+  apiGetUserRightFromConversation,
+} from "@/api/conversation"
 
-import AppEditor from "@/components/AppEditor.vue"
-import MainContentConversation from "@/components/MainContentConversation.vue"
-import HighlightsList from "@/components/HighlightsList.vue"
-import ModalDeleteTagHighlight from "@/components/ModalDeleteTagHighlight.vue"
-import AppEditorMetadataModal from "@/components/AppEditorMetadataModal.vue"
-import SearchResultPaginator from "@/components/SearchResultPaginator.vue"
-import AppEditorChannelsSelector from "@/components/AppEditorChannelsSelector.vue"
-import AppEditorTranslationSelector from "../components/AppEditorTranslationSelector.vue"
-import PhIcon from "@/components/atoms/PhIcon.vue"
+import {
+  createTranscriptionEditorPlugin,
+  createAudioPlugin,
+  mapApiTurns,
+} from "@linto/transcript-ui/webcomponent"
+
+import { setupLLMServices } from "@/services/llmServicesIntegration"
+import { setupChat } from "@/services/chatIntegration"
+import { apiGetChatStatus } from "@/api/chat"
+
+import LayoutV2 from "@/layouts/v2-layout.vue"
+import PublicationModal from "@/components/molecules/PublicationModal.vue"
+import {
+  apiGetAudioFileFromConversation,
+  apiGetAudioWaveFormFromConversation,
+} from "@/api/conversation"
 
 export default {
-  mixins: [conversationMixin],
+  components: { LayoutV2, PublicationModal },
+  props: {
+    userInfo: { type: Object, required: true },
+  },
   data() {
     return {
-      selfUrl: (convId) => `/interface/conversations/${convId}/transcription`,
-      helperVisible: false,
-      status: null,
-      showDeleteModal: false,
-      tagToDelete: null,
-      showMetadataModal: false,
-      metadataModalData: null,
-      transcriptionSearch: "",
-      numberFound: 0,
-      selectedIndexResult: 0,
-      exactMatching: false,
-      searchedHighlightId: null,
-      currentHighlightResult: 0,
-      totalHighlightResult: 0,
-      turnsIndexedByid: {},
-      turns: [],
-      turnPages: [],
-      pendingSearchFromUrl: null,
+      conversationId: this.$route.params.conversationId,
+      organizationId: null,
+      securityLevel: null,
+      conversationName: "",
+      core: null,
+      isDestroyed: false,
+      llmDispose: null,
+      chatDispose: null,
+      editListeners: [],
+      canWrite: false,
+      publicationModal: { open: false, jobId: null },
     }
   },
-  mounted() {
-    this.$store.dispatch("chat/checkAvailability")
+  async mounted() {
+    const { doc, organizationId, securityLevel, name } =
+      await apiGetConversationAsDoc(this.conversationId)
+    // mounted() is async: the user can navigate away mid-await, in which case
+    // beforeDestroy already ran. Bail at every await boundary so we never wire
+    // up an editor that is no longer in the DOM (see initEditor).
+    if (this.isDestroyed) return
+    this.organizationId = organizationId
+    this.securityLevel = securityLevel
+    this.conversationName = name
 
-    bus.$on("open-metadata-modal", (data) => {
-      this.showMetadataModal = true
-      this.metadataModalData = data
-    })
+    // A failure here must not block the editor: degrade to read-only.
+    try {
+      const { right } = await apiGetUserRightFromConversation(
+        this.conversationId,
+      )
+      this.canWrite = USER_RIGHTS.hasRightAccess(right, USER_RIGHTS.WRITE)
+    } catch (e) {
+      console.error("[host] failed to fetch conversation right", e)
+      this.canWrite = false
+    }
+    if (this.isDestroyed) return
 
-    bus.$on("segment_updated", (data) => {
-      this.turnsIndexedByid[data.turnId].segment = data.value
-    })
-
-    bus.$on("words_updated", (data) => {
-      this.turnsIndexedByid[data.turnId].words = data.value
-    })
-
-    bus.$on("turn_speaker_update", (data) => {
-      this.turnsIndexedByid[data.turnId].speaker_id = data.value
-    })
-
-    bus.$on("refresh_turns", () => {
-      this.setupTurns()
-    })
-
-    // Apply search from URL parameter if present
-    this.applySearchFromUrl()
+    await this.initEditor(doc)
   },
   beforeDestroy() {
-    bus.$off("open-metadata-modal")
-    bus.$off("segment_updated")
-    bus.$off("words_updated")
-    bus.$off("refresh_turns")
-    bus.$off("turn_speaker_update")
-  },
-  watch: {
-    dataLoaded(newVal, oldVal) {
-      if (newVal) {
-        this.status = this.computeStatus(this.conversation?.jobs?.transcription)
-      }
-    },
-    status(newVal, oldVal) {
-      if (newVal === "done" && this.pendingSearchFromUrl) {
-        this.$nextTick(() => {
-          this.transcriptionSearch = this.pendingSearchFromUrl
-          this.pendingSearchFromUrl = null
-        })
-      }
-    },
-    transcriptionSearch(newVal, oldVal) {
-      if (newVal != oldVal) {
-        bus.$emit("player-pause")
-        if (this.$refs.editor) {
-          this.$refs.editor.searchInTranscription(newVal, this.exactMatching)
-        }
-      }
-    },
-  },
-  computed: {
-    chatEnabled() {
-      return this.$store.state.chat.enabled
-    },
-    experimental_highlight() {
-      return getEnv("VUE_APP_EXPERIMENTAL_HIGHLIGHT") === "true"
-    },
-    conversationListRoute() {
-      return { name: "inbox", hash: "#previous" }
-    },
-    dataLoaded() {
-      return this.conversationLoaded
-    },
-    exportFileTitle() {
-      return `${this.conversation.name.replace(/\s/g, "_")}_${formatTimestamp()}`
-    },
-    breadcrumbItems() {
-      return [
-        {
-          label: this.rootConversation?.name ?? "",
-        },
-      ]
-    },
+    this.isDestroyed = true
+    this.editListeners.forEach((fn) => fn?.())
+    this.editListeners = []
+    this.llmDispose?.()
+    this.llmDispose = null
+    this.chatDispose?.()
+    this.chatDispose = null
+    this.$apiEventWS.leaveEditorRoom()
   },
   methods: {
-    openChat() {
-      if (this.conversation && this.conversation._id) {
-        this.$store.dispatch(
-          "chat/openDrawer",
-          this.conversation._id.toString(),
-        )
-      }
-    },
-    initConversationHook() {
-      this.setupTurns()
-    },
-    setupTurns() {
-      this.turnPages = [[]]
-      this.turnsIndexedByid = {}
-      this.turns = []
-
-      let currentPage = 0
-      let nbCaracters = 0
-      let nbTurns = 0
-      this.turnPages[currentPage] = []
-
-      for (let shadowTurn of this.conversation.text) {
-        if (shadowTurn.words.length === 0) {
-          continue
-        }
-        const turn = structuredClone(shadowTurn)
-        this.turnsIndexedByid[turn.turn_id] = turn
-        this.turns.push(turn)
-
-        // Split the turns in pages
-        this.turnPages[currentPage].push(turn)
-        nbCaracters += turn.segment.length
-        if (nbCaracters > parseInt(getEnv("VUE_APP_MAX_CARACTERS_PER_PAGE"))) {
-          nbCaracters = 0
-          nbTurns = 0
-          currentPage += 1
-          this.turnPages[currentPage] = []
-        }
-        nbTurns += 1
-        if (nbTurns > parseInt(getEnv("VUE_APP_TURN_PER_PAGE"))) {
-          nbCaracters = 0
-          nbTurns = 0
-          currentPage += 1
-          this.turnPages[currentPage] = []
-        }
-      }
-
-      if (this.turnPages.at(-1).length === 0) {
-        this.turnPages.pop()
-      }
-    },
-    onClickOnTag(tag) {
-      this.$refs.editor.nextHighlightSearch(tag._id)
-    },
-    onNextHighlightSearch(tag) {
-      this.$refs.editor.nextHighlightSearch(tag._id)
-    },
-    onPreviousHighlightSearch(tag) {
-      this.$refs.editor.previousHighlightSearch(tag._id)
-    },
-    onFoundExpression(number) {
-      this.numberFound = number
-    },
-    onUpdateSelectedResult(number) {
-      this.selectedIndexResult = number
-    },
-    nextResult() {
-      this.$refs.editor.nextResultFound()
-    },
-    previousResult() {
-      this.$refs.editor.previousResultFound()
-    },
-    cancelMetadata() {
-      this.showMetadataModal = false
-    },
-    async setMetadata(fields, schema) {
-      this.showMetadataModal = false
-      apiPostMetadata(
-        this.conversationId,
-        this.metadataModalData.tag._id,
-        schema.name,
-        fields.reduce(
-          (obj, field) => ({ ...obj, [field.key]: field.value }),
-          {},
-        ),
+    async initEditor(doc) {
+      const el = this.$refs.editor
+      // Torn down during the async mount: the custom element is gone, so there
+      // is nothing to wire up (and destructuring `el` would throw).
+      if (this.isDestroyed || !el) return
+      const { core } = el
+      this.core = markRaw(core)
+      core.use(
+        createAudioPlugin({
+          resolveSrc: async (source) => {
+            const res = await apiGetAudioFileFromConversation(source.src, false)
+            if (res?.status !== "success" || !res.data || res.data.size === 0) {
+              throw new Error("Audio unavailable")
+            }
+            return URL.createObjectURL(res.data)
+          },
+          resolveWaveform: async (source) => {
+            const res = await apiGetAudioWaveFormFromConversation(
+              source.src,
+              false,
+            )
+            if (res?.status !== "success" || !Array.isArray(res.data?.data)) {
+              return null
+            }
+            return res.data.data
+          },
+        }),
       )
-      // Todo: only update the right metadata
-      await this.fetchHightlightsCategories(this.conversationId)
-      //bus.$emit("set-metadata", fields)
-    },
-    showHelper() {
-      this.helperVisible = true
-    },
-    closeHelper() {
-      this.helperVisible = false
-    },
-    onHideCategory(categoryId) {
-      this.hightlightsCategoriesVisibility = {
-        ...this.hightlightsCategoriesVisibility,
-        [categoryId]: false,
-      }
-    },
-    onShowCategory(categoryId) {
-      this.hightlightsCategoriesVisibility = {
-        ...this.hightlightsCategoriesVisibility,
-        [categoryId]: true,
-      }
-    },
-    onDeleteTag(tag) {
-      this.tagToDelete = tag
-      this.showDeleteModal = true
-    },
-    onCancelDeleteTag() {
-      this.showDeleteModal = false
-    },
-    onConfirmDeleteTag() {
-      this.showDeleteModal = false
-    },
-    async handleNewHighlight({ tag, wordsSelected }) {
-      const metadata = (tag.metadata ?? []).filter((m) => m.schema == "words")
-      let post = false
-      let ranges = []
-      let metadataId = null
 
-      if (metadata.length == 0) {
-        post = true
-      } else {
-        ranges = metadata[0]?.value?.range_id ?? []
-        metadataId = metadata[0]._id
-      }
-
-      ranges.push({
-        startId: wordsSelected[0].wid,
-        endId: wordsSelected[wordsSelected.length - 1].wid,
+      // Lock+save editor: mutations go through the shared socket.io
+      // connection (see "Editor v2" design); the room is joined below.
+      core.use(
+        createTranscriptionEditorPlugin({
+          saveTurn: (payload) => this.$apiEventWS.saveEditorTurn(payload),
+          lockTurn: (payload) => this.$apiEventWS.lockEditorTurn(payload),
+          unlockTurn: (payload) => this.$apiEventWS.unlockEditorTurn(payload),
+          splitTurn: (payload) => this.$apiEventWS.splitEditorTurn(payload),
+          mergeTurns: (payload) => this.$apiEventWS.mergeEditorTurns(payload),
+          deleteTurn: (payload) => this.$apiEventWS.deleteEditorTurn(payload),
+          updateTurnSpeaker: (payload) =>
+            this.$apiEventWS.updateEditorTurnSpeaker(payload),
+          renameSpeaker: (payload) =>
+            this.$apiEventWS.renameEditorSpeaker(payload),
+          replaceSpeaker: (payload) =>
+            this.$apiEventWS.replaceEditorSpeaker(payload),
+          refetchTranslation: (translationId) =>
+            this.refetchTranslation(translationId),
+        }),
+      )
+      const mode = this.canWrite ? "edit" : "view"
+      core.capabilities.value = { text: mode, speakers: mode }
+      // Lock state flows one way: server broadcasts → plugin setters. The
+      // join ack (and every reconnection re-ack) reseeds the whole map.
+      this.$apiEventWS.joinEditorRoom(this.conversationId, {
+        onJoined: (ack) => {
+          if (!ack?.ok) return
+          core.transcriptionEditor?.setLocks(ack.locks ?? [])
+          // Reconnection: any loaded track the server says is ahead gets
+          // refetched — the whole point of the version safety net.
+          core.transcriptionEditor?.reconcileVersions(ack.versions ?? {})
+        },
+        onTurnLocked: (lock) => core.transcriptionEditor?.setTurnLock(lock),
+        onTurnUnlocked: (ref) => core.transcriptionEditor?.clearTurnLock(ref),
+        onTurnUpdated: (update) =>
+          core.transcriptionEditor?.applyTurnUpdate(update),
+        onTurnSplit: (split) => core.transcriptionEditor?.applyTurnSplit(split),
+        onTurnsMerged: (merge) =>
+          core.transcriptionEditor?.applyTurnsMerged(merge),
+        onTurnDeleted: (deleted) =>
+          core.transcriptionEditor?.applyTurnDeleted(deleted),
+        onTurnSpeakerUpdated: (update) =>
+          core.transcriptionEditor?.applyTurnSpeakerUpdated(update),
+        onSpeakerRenamed: (renamed) =>
+          core.transcriptionEditor?.applySpeakerRenamed(renamed),
+        onSpeakerReplaced: (replaced) =>
+          core.transcriptionEditor?.applySpeakerReplaced(replaced),
       })
 
-      if (post) {
-        await apiPostMetadata(this.conversationId, tag._id, "words", {
-          range_id: ranges,
-        })
-      } else {
-        await apiUpdateMetadata(this.conversationId, tag._id, metadataId, {
-          range_id: ranges,
+      // setupLLMServices returns { dispose }; store the disposer so it matches
+      // chatDispose (a bare function) and beforeDestroy can call llmDispose().
+      this.llmDispose = setupLLMServices(core, {
+        conversationId: this.conversationId,
+        organizationId: this.organizationId,
+        securityLevel: this.securityLevel,
+        conversationName: this.conversationName,
+        apiEventWS: this.$apiEventWS,
+        locale: this.$i18n.locale,
+        t: (key, params) => this.$t(key, params),
+        notify: (type, message) =>
+          this.$store.dispatch("system/addNotification", { type, message }),
+        openPublication: ({ jobId }) => {
+          this.publicationModal = { open: true, jobId }
+        },
+      }).dispose
+
+      // Chat assistant: only wire it when the backend feature is enabled, so
+      // the SDK's "ask" button stays disabled otherwise (core.chat absent).
+      const { enabled: chatEnabled } = await apiGetChatStatus().catch(() => ({
+        enabled: false,
+      }))
+      // Destroyed during the await: everything below (chat, collab connection,
+      // sync timers, edit listeners) is created after beforeDestroy ran, so it
+      // would leak. llmDispose was set before the await, so beforeDestroy
+      // already disposed it; just stop here.
+      if (this.isDestroyed || !this.$refs.editor) return
+      if (chatEnabled) {
+        this.chatDispose = setupChat(core, {
+          conversationId: this.conversationId,
         })
       }
 
-      // reload highlights ?
-      await this.fetchHightlightsCategories(this.conversationId)
-      await nextTick()
-      this.hightlightsCategoriesVisibility = {
-        ...this.hightlightsCategoriesVisibility,
-        [tag.categoryId]: true,
-      }
+      core.setDocument(doc)
+      this.pushTranscriptionLastUpdate()
+      this.attachEditListeners()
+
+      // The REST skeleton carries no content: turns and speakers are loaded
+      // per translation, lazily — now for the active one, then on every
+      // track/channel switch.
+      this.attachTranslationLoader()
+      this.loadActiveTranslation()
     },
-    toggleExactMatching() {
-      this.exactMatching = !this.exactMatching
-      this.$refs.editor.searchInTranscription(
-        this.transcriptionSearch,
-        this.exactMatching,
+
+    // A translation's content is its child conversation's text+speakers.
+    // Already-loaded tracks are kept as-is (turns present = trivial cache).
+    async loadActiveTranslation() {
+      const channel = this.core?.activeChannel?.value
+      if (!channel) return
+      const translation = channel.translations.get(
+        channel.activeTranslation.value.id,
       )
+      if (!translation || translation.turns.value.length > 0) return
+      await this.fetchTranslationContent(channel, translation)
     },
-    resetSearch() {
-      this.transcriptionSearch = ""
-      this.numberFound = 0
-      this.selectedIndexResult = 0
-      this.$refs.editor.searchInTranscription("")
-    },
-    onUpdateSelectedHighlight({ tagId, total, current }) {
-      this.searchedHighlightId = tagId
-      this.currentHighlightResult = current
-      this.totalHighlightResult = total
-    },
-    applySearchFromUrl() {
-      const urlParams = new URLSearchParams(window.location.search)
-      const searchTerm = urlParams.get("search")
-      if (searchTerm) {
-        if (this.status === "done") {
-          this.$nextTick(() => {
-            this.transcriptionSearch = searchTerm
-          })
-        } else {
-          this.pendingSearchFromUrl = searchTerm
+
+    // Version-gap or reconnection resync: reload the track unconditionally.
+    async refetchTranslation(translationId) {
+      const core = this.core
+      if (!core) return
+      for (const channel of core.channels.values()) {
+        const translation = channel.translations.get(translationId)
+        if (translation) {
+          await this.fetchTranslationContent(channel, translation)
+          return
         }
       }
     },
-  },
-  components: {
-    AppEditor,
-    MainContentConversation,
-    HighlightsList,
-    ModalDeleteTagHighlight,
-    AppEditorMetadataModal,
-    SearchResultPaginator,
-    AppEditorChannelsSelector,
-    AppEditorTranslationSelector,
-    PhIcon,
+
+    async fetchTranslationContent(channel, translation) {
+      channel.isLoadingHistory.value = true
+      try {
+        // editorVersion fetched WITH the content (same backend read): the
+        // version baseline always matches what is displayed.
+        const conv = await apiGetConversationById(
+          translation.id,
+          ["text", "speakers", "editorVersion"].toString(),
+        )
+        if (this.isDestroyed || !conv) return
+        for (const s of conv.speakers ?? []) {
+          this.core.speakers.ensure(s.speaker_id, s.speaker_name)
+        }
+        translation.setTurns(mapApiTurns(conv.text ?? []))
+        this.core.transcriptionEditor?.setTranslationVersion(
+          translation.id,
+          conv.editorVersion ?? 0,
+        )
+        // Whole content arrives in one fetch: mark the history complete so
+        // the panel shows its "beginning of transcription" boundary.
+        channel.hasMoreHistory.value = false
+      } catch (err) {
+        console.error("[host] failed to load translation content", err)
+      } finally {
+        channel.isLoadingHistory.value = false
+      }
+    },
+
+    attachTranslationLoader() {
+      const load = () => this.loadActiveTranslation()
+      this.editListeners.push(
+        this.core.on("translation:change", load),
+        this.core.on("channel:change", load),
+      )
+    },
+
+    async pushTranscriptionLastUpdate() {
+      try {
+        const res = await apiGetConversationLastUpdate(this.conversationId)
+        const lastUpdate = res?.last_update
+        if (!lastUpdate) return
+        const ts = new Date(lastUpdate).getTime()
+        if (!Number.isFinite(ts)) return
+        this.markTranscriptionEdited(ts)
+      } catch (e) {
+        console.error("[host] failed to fetch conversation last update", e)
+      }
+    },
+
+    // Pushes a "last modified" timestamp to the active translation so the
+    // SDK can drive the "compte rendu obsolète" status. Triggered by:
+    //   - initial fetch (server-side timestamp at mount)
+    //   - every local edit event (turn:* / speaker:*)
+    markTranscriptionEdited(ts) {
+      const translation =
+        this.core?.activeChannel?.value?.activeTranslation?.value
+      translation?.setLastModifiedAt(ts ?? Date.now())
+    },
+
+    attachEditListeners() {
+      const core = this.core
+      if (!core) return
+      const bump = () => this.markTranscriptionEdited()
+      this.editListeners = [
+        core.on("turn:add", bump),
+        core.on("turn:update", bump),
+        core.on("turn:remove", bump),
+        core.on("speaker:add", bump),
+        core.on("speaker:update", bump),
+        core.on("speaker:remove", bump),
+      ]
+    },
   },
 }
 </script>
 
-<style lang="scss" scoped>
-.action-cards {
+<style scoped>
+.transcription-editor-wrapper {
+  position: relative;
   display: flex;
-  gap: 12px;
-  padding: 16px 24px 8px;
-}
-
-.action-card {
   flex: 1;
-  min-width: 0;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border-radius: 10px;
-  border: 1px solid var(--neutral-20);
-  background: var(--background-primary);
-  text-decoration: none;
-  color: inherit;
-  cursor: pointer;
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
-  font-family: inherit;
-  font-size: inherit;
-  text-align: left;
-
-  &:hover {
-    border-color: var(--primary-color);
-    box-shadow: var(--shadow-2);
-  }
-
-  &__icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    flex-shrink: 0;
-
-    &--publish {
-      background-color: var(--primary-soft);
-      color: var(--primary-color);
-    }
-
-    &--chat {
-      background-color: #fff3e0;
-      color: #e65100;
-    }
-  }
-
-  &__content {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-width: 0;
-  }
-
-  &__title {
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: var(--text-primary);
-  }
-
-  &__description {
-    font-size: 0.8rem;
-    color: var(--dark-70);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  &__arrow {
-    flex-shrink: 0;
-    color: var(--dark-70);
-    transition: transform 0.2s ease;
-  }
-
-  &:hover &__arrow {
-    transform: translateX(2px);
-  }
+  min-height: 0;
 }
 
-@media (max-width: 800px) {
-  .action-cards {
-    flex-direction: column;
-    padding: 12px 12px 4px;
+linto-editor {
+  display: block;
+  flex: 1;
+  min-height: 0;
 
-    .action-card {
-      width: 100%;
-    }
-  }
+  /* Map host theme variables to editor tokens */
+  --color-primary: var(--primary-color);
+  --color-primary-hover: var(--primary-color);
+  --color-background: var(--background-app);
+  --color-surface: var(--background-primary);
+  --color-surface-hover: var(--neutral-20);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--neutral-60);
+  --color-border: var(--neutral-30);
+  --color-border-light: var(--neutral-20);
 }
 </style>

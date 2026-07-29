@@ -4,9 +4,8 @@ const debug = require("debug")(
 
 const logger = require(`${process.cwd()}/lib/logger/logger`)
 
-// Org listings filter on organization.organizationId (+ type.mode); the existing
-// conversation indexes only carry organizationId as a secondary key, so those
-// queries full-scan the collection. This prefixed index removes that scan.
+// Org listings filter on organization.organizationId + type.mode; without
+// this prefixed index those queries full-scan the collection.
 const INDEX_KEYS = { "organization.organizationId": 1, "type.mode": 1 }
 
 module.exports = {

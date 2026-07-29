@@ -205,23 +205,14 @@
     </div>
 
     <!-- Publication Templates Modal -->
-    <Modal
+    <PublicationModal
       v-model="showPublicationModal"
-      :title="$t('publish.publication.title')"
-      :withActions="false"
-      size="lg">
-      <template #content>
-        <PublicationSection
-          :jobId="currentJobId"
-          :organizationId="publicationOrganizationId"
-          :conversationId="conversation?._id"
-          :serviceId="currentServiceId"
-          :conversationName="conversation?.name || 'export'"
-          :versionNumber="currentVersionNumber"
-          hideHeader
-          @preview-close="showPublicationModal = false" />
-      </template>
-    </Modal>
+      :jobId="currentJobId"
+      :conversationId="conversationId"
+      :organizationId="publicationOrganizationId"
+      :serviceId="currentServiceId"
+      :conversationName="conversation?.name || 'export'"
+      :versionNumber="currentVersionNumber" />
 
     <!-- Regenerate Confirmation Modal -->
     <Modal
@@ -297,7 +288,7 @@ import AppEditorTranslationSelector from "@/components/AppEditorTranslationSelec
 import PopoverList from "@/components/atoms/PopoverList.vue"
 import GenerationTimeline from "@/components/GenerationTimeline.vue"
 import AIServiceMenu from "@/components/AIServiceMenu.vue"
-import PublicationSection from "@/components/PublicationSection.vue"
+import PublicationModal from "@/components/molecules/PublicationModal.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import Button from "@/components/atoms/Button.vue"
 import PhIcon from "@/components/atoms/PhIcon.vue"
@@ -1582,7 +1573,7 @@ export default {
     PopoverList,
     GenerationTimeline,
     AIServiceMenu,
-    PublicationSection,
+    PublicationModal,
     Modal,
     Button,
     PhIcon,

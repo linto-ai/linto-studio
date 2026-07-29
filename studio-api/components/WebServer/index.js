@@ -6,9 +6,7 @@ const fileUpload = require("express-fileupload")
 const passport = require("passport")
 const bodyParser = require("body-parser")
 const bytes = require("bytes")
-const {
-  ConversationFileTooLarge,
-} = require("./error/exception/conversation")
+const { ConversationFileTooLarge } = require("./error/exception/conversation")
 const WebServerErrorHandler = require("./error/handler")
 const cookieParser = require("cookie-parser")
 const cookieSession = require("cookie-session")
@@ -56,13 +54,13 @@ class WebServer extends Component {
 
     if (corsOptions) {
       this.express.use(CORS(corsOptions))
-      this.express.options("*", CORS(corsOptions)) // allow cors settings to be enable for all routes
+      this.express.options("*", CORS(corsOptions))
     }
 
     const cookieMiddleware = cookieSession({
       name: "oidc",
       keys: [process.env.WEBSERVER_SESSION_SECRET],
-      maxAge: 5 * 60 * 1000, // 5 min,
+      maxAge: 5 * 60 * 1000,
       sameSite: "lax",
       secure: true,
       httpOnly: true,
@@ -134,10 +132,16 @@ class WebServer extends Component {
       },
     )
 
+    // Single owner of the HTTP 'upgrade' event: WebSocket components register
+    // a path prefix via registerUpgradeHandler(), any unrouted upgrade is
+    // destroyed immediately (no leaked sockets).
+    this.upgradeRoutes = []
+    this._onUpgrade = this._onUpgrade.bind(this)
+
     require("./routes/router.js")(this) // Loads all defined routes
     WebServerErrorHandler.init(this) // Manage error from controllers
 
-    // Initialize LLM WebSocket manager with app reference for IoHandler access
+    // The LLM WebSocket manager needs the app reference to reach IoHandler.
     const organizationWsManager = require("./controllers/llm/llm_ws")
     organizationWsManager.setApp(app)
 
@@ -147,7 +151,6 @@ class WebServer extends Component {
       api_host = process.env.WEBSERVER_SWAGGER_HTTP_HOST
     if (process.env.WEBSERVER_HTTP_PORT)
       api_host += ":" + process.env.WEBSERVER_HTTP_PORT
-    // if (process.env.WEBSERVER_SWAGGER_API_PATH) api_host += '/' + process.env.WEBSERVER_SWAGGER_API_PATH
     if (process.env.WEBSERVER_SWAGGER_API_PATH)
       base_path = "/" + process.env.WEBSERVER_SWAGGER_API_PATH
 
@@ -166,7 +169,6 @@ class WebServer extends Component {
         `${process.cwd()}/components/WebServer/apidoc/components/schemas/`,
       )
       for (let version of availabelVersion) {
-        // availabelVersion.forEach(version => {
         swaggerDocument.definition.components.schemas = {
           ...swaggerDocument.definition.components.schemas,
           ...require(`./apidoc/components/schemas/${version}/index.js`),
@@ -189,6 +191,47 @@ class WebServer extends Component {
 
   loadComponents(name, components) {
     this.app.components[name] = components
+  }
+
+  /**
+   * Register a WebSocket upgrade handler for a path prefix (e.g. "/socket.io").
+   * Components call this instead of adding their own 'upgrade' listener.
+   */
+  registerUpgradeHandler(prefix, handler) {
+    this.upgradeRoutes.push({ prefix, handler })
+    // Drop any listener engine.io auto-installed and re-assert this router as
+    // the sole 'upgrade' listener, whatever the component load order.
+    this.httpServer.removeAllListeners("upgrade")
+    this.httpServer.on("upgrade", this._onUpgrade)
+  }
+
+  _onUpgrade(request, socket, head) {
+    // A raw upgrade socket with no 'error' listener crashes the process on a
+    // reset, so guard every socket before routing or destroying it.
+    socket.on("error", (err) => debug(`upgrade socket error: ${err.message}`))
+
+    let pathname
+    try {
+      pathname = new URL(request.url, `http://${request.headers.host}`).pathname
+    } catch (err) {
+      debug(`upgrade: malformed url, destroying socket (${err.message})`)
+      socket.destroy()
+      return
+    }
+
+    const route = this.upgradeRoutes.find((r) => pathname.startsWith(r.prefix))
+    if (!route) {
+      // No WebSocket endpoint owns this path: close it now (no reaper to rely on).
+      socket.destroy()
+      return
+    }
+
+    try {
+      route.handler(request, socket, head)
+    } catch (err) {
+      debug(`upgrade handler for ${route.prefix} threw: ${err.message}`)
+      socket.destroy()
+    }
   }
 }
 

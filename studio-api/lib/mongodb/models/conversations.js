@@ -1,4 +1,5 @@
 const MongoModel = require(`../model`)
+const MongoDriver = require(`../driver`)
 const debug = require("debug")("linto:lib:mongodb:models:conversations")
 const { calculateObjectSize } = require("bson")
 
@@ -47,8 +48,9 @@ class ConvoModel extends MongoModel {
   async update(payload) {
     try {
       const operator = "$set"
+      const conversationId = payload._id
       const query = {
-        _id: this.getObjectId(payload._id),
+        _id: this.getObjectId(conversationId),
       }
 
       if (payload.organizationId) delete payload.organizationId
@@ -375,17 +377,16 @@ class ConvoModel extends MongoModel {
 
   async updateTurn(_id, text) {
     try {
-      const operator = "$set"
       const query = {
         _id: this.getObjectId(_id),
       }
       const dateTime = moment().format()
-      let mutableElements = {
-        text: [...text],
-        last_update: dateTime,
-      }
 
-      return await this.mongoUpdateOne(query, operator, mutableElements)
+      return await MongoDriver.constructor.db
+        .collection(this.collection)
+        .updateOne(query, {
+          $set: { text: [...text], last_update: dateTime },
+        })
     } catch (error) {
       console.error(error)
       return error

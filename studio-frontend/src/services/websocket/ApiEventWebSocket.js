@@ -35,6 +35,11 @@ function getVisitorId() {
 
 const debugWSSession = customDebug("Websocket:Session:debug")
 const debugWSMedia = customDebug("Websocket:Media:debug")
+const debugWSEditor = customDebug("Websocket:Editor:debug")
+
+// Ack timeout for editor commands — past this, the save is reported failed
+// (the edit stays applied locally; server broadcasts reconcile later).
+const EDITOR_ACK_TIMEOUT_MS = 5000
 export default class ApiEventWebSocket {
   constructor() {
     this.state = Vue.observable({
@@ -46,6 +51,8 @@ export default class ApiEventWebSocket {
 
     this.socket = null
     this.currentChannelId = null
+    this.currentEditorConversationId = null
+    this.editorHandlers = null
     this.currentSessionOrganizationId = null
     this.test = false
     this.textPartialForTest = ""
@@ -86,6 +93,15 @@ export default class ApiEventWebSocket {
         debugWSSession("connected to socket.io server", msg)
         this.setStatus(WEBSOCKET_STATUS.CONNECTED)
         this.subscribeFolderUpdate()
+
+        // Editor room membership does not survive a reconnection: re-join.
+        // The fresh join ack re-seeds the locks state through onJoined.
+        if (this.currentEditorConversationId) {
+          this.joinEditorRoom(
+            this.currentEditorConversationId,
+            this.editorHandlers ?? {},
+          )
+        }
 
         resolve()
       })
@@ -190,6 +206,169 @@ export default class ApiEventWebSocket {
     window.removeEventListener("online", this.handleNetworkOnline)
     this.socket.close()
     this.setStatus(WEBSOCKET_STATUS.IDLE)
+  }
+
+  // ── Transcription editor (lock+save model, see "Editor v2" design) ──
+  // The room is the PARENT conversation (one join per open editor view);
+  // every mutation payload carries the translationId — the child
+  // conversation actually edited. The parent is known server-side (join).
+
+  joinEditorRoom(conversationId, handlers = {}) {
+    if (!this.socket) return
+    this.currentEditorConversationId = conversationId
+    this.editorHandlers = handlers
+
+    if (!this._editorTurnLocked) {
+      this._editorTurnLocked = (lock) =>
+        this.editorHandlers?.onTurnLocked?.(lock)
+      this._editorTurnUnlocked = (ref) =>
+        this.editorHandlers?.onTurnUnlocked?.(ref)
+      this._editorTurnUpdated = (update) =>
+        this.editorHandlers?.onTurnUpdated?.(update)
+      this._editorTurnSplit = (split) =>
+        this.editorHandlers?.onTurnSplit?.(split)
+      this._editorTurnsMerged = (merge) =>
+        this.editorHandlers?.onTurnsMerged?.(merge)
+      this._editorTurnDeleted = (deleted) =>
+        this.editorHandlers?.onTurnDeleted?.(deleted)
+      this._editorTurnSpeakerUpdated = (update) =>
+        this.editorHandlers?.onTurnSpeakerUpdated?.(update)
+      this._editorSpeakerRenamed = (renamed) =>
+        this.editorHandlers?.onSpeakerRenamed?.(renamed)
+      this._editorSpeakerReplaced = (replaced) =>
+        this.editorHandlers?.onSpeakerReplaced?.(replaced)
+    }
+    // off before on: joinEditorRoom re-runs on reconnection.
+    this.socket.off("editor:turn_locked", this._editorTurnLocked)
+    this.socket.off("editor:turn_unlocked", this._editorTurnUnlocked)
+    this.socket.off("editor:turn_updated", this._editorTurnUpdated)
+    this.socket.off("editor:turn_split", this._editorTurnSplit)
+    this.socket.off("editor:turns_merged", this._editorTurnsMerged)
+    this.socket.off("editor:turn_deleted", this._editorTurnDeleted)
+    this.socket.off("editor:turn_speaker_updated", this._editorTurnSpeakerUpdated)
+    this.socket.off("editor:speaker_renamed", this._editorSpeakerRenamed)
+    this.socket.off("editor:speaker_replaced", this._editorSpeakerReplaced)
+    this.socket.on("editor:turn_locked", this._editorTurnLocked)
+    this.socket.on("editor:turn_unlocked", this._editorTurnUnlocked)
+    this.socket.on("editor:turn_updated", this._editorTurnUpdated)
+    this.socket.on("editor:turn_split", this._editorTurnSplit)
+    this.socket.on("editor:turns_merged", this._editorTurnsMerged)
+    this.socket.on("editor:turn_deleted", this._editorTurnDeleted)
+    this.socket.on("editor:turn_speaker_updated", this._editorTurnSpeakerUpdated)
+    this.socket.on("editor:speaker_renamed", this._editorSpeakerRenamed)
+    this.socket.on("editor:speaker_replaced", this._editorSpeakerReplaced)
+
+    this.socket.emit("editor:join", conversationId, (ack) => {
+      debugWSEditor("editor:join ack", ack)
+      this.editorHandlers?.onJoined?.(ack)
+    })
+  }
+
+  leaveEditorRoom() {
+    if (!this.socket || !this.currentEditorConversationId) return
+    this.socket.off("editor:turn_locked", this._editorTurnLocked)
+    this.socket.off("editor:turn_unlocked", this._editorTurnUnlocked)
+    this.socket.off("editor:turn_updated", this._editorTurnUpdated)
+    this.socket.off("editor:turn_split", this._editorTurnSplit)
+    this.socket.off("editor:turns_merged", this._editorTurnsMerged)
+    this.socket.off("editor:turn_deleted", this._editorTurnDeleted)
+    this.socket.off("editor:turn_speaker_updated", this._editorTurnSpeakerUpdated)
+    this.socket.off("editor:speaker_renamed", this._editorSpeakerRenamed)
+    this.socket.off("editor:speaker_replaced", this._editorSpeakerReplaced)
+    this.socket.emit("editor:leave", this.currentEditorConversationId)
+    this.currentEditorConversationId = null
+    this.editorHandlers = null
+  }
+
+  saveEditorTurn({ translationId, turnId, text }) {
+    return this._emitEditorCommand("editor:update_turn", {
+      translationId,
+      turnId,
+      text,
+    })
+  }
+
+  lockEditorTurn({ translationId, turnId }) {
+    return this._emitEditorCommand("editor:lock_turn", {
+      translationId,
+      turnId,
+    })
+  }
+
+  unlockEditorTurn({ translationId, turnId }) {
+    return this._emitEditorCommand("editor:unlock_turn", {
+      translationId,
+      turnId,
+    })
+  }
+
+  deleteEditorTurn({ translationId, turnId }) {
+    return this._emitEditorCommand("editor:delete_turn", {
+      translationId,
+      turnId,
+    })
+  }
+
+  updateEditorTurnSpeaker({ translationId, turnId, speakerId, speakerName }) {
+    return this._emitEditorCommand("editor:update_turn_speaker", {
+      translationId,
+      turnId,
+      speakerId,
+      speakerName,
+    })
+  }
+
+  renameEditorSpeaker({ translationId, speakerId, name }) {
+    return this._emitEditorCommand("editor:rename_speaker", {
+      translationId,
+      speakerId,
+      name,
+    })
+  }
+
+  replaceEditorSpeaker({ translationId, fromSpeakerId, toSpeakerId }) {
+    return this._emitEditorCommand("editor:replace_speaker", {
+      translationId,
+      fromSpeakerId,
+      toSpeakerId,
+    })
+  }
+
+  mergeEditorTurns({ translationId, firstTurnId, secondTurnId }) {
+    return this._emitEditorCommand("editor:merge_turns", {
+      translationId,
+      firstTurnId,
+      secondTurnId,
+    })
+  }
+
+  splitEditorTurn({ translationId, turnId, offset }) {
+    return this._emitEditorCommand("editor:split_turn", {
+      translationId,
+      turnId,
+      offset,
+    })
+  }
+
+  // Ack-based editor command: ack timeout resolved as a failure instead
+  // of a hanging promise.
+  _emitEditorCommand(event, payload) {
+    if (!this.socket) {
+      return Promise.resolve({ ok: false, reason: "disconnected" })
+    }
+    return new Promise((resolve) => {
+      this.socket
+        .timeout(EDITOR_ACK_TIMEOUT_MS)
+        .emit(event, payload, (timeoutErr, ack) => {
+          if (timeoutErr) {
+            debugWSEditor(`${event} ack timeout`, payload)
+            resolve({ ok: false, reason: "timeout" })
+            return
+          }
+          debugWSEditor(`${event} ack`, ack)
+          resolve(ack ?? { ok: false, reason: "no_ack" })
+        })
+    })
   }
 
   subscribeSessionRoom(
