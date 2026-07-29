@@ -124,7 +124,7 @@ const en: Record<keyof typeof fr, string> = {
   'chat.collapse': 'Collapse',
   'chat.history': 'History',
   'chat.newChat': 'New chat',
-  'chat.catchup': 'Catch me up',
+  'chat.catchup': 'New catch-up',
   'chat.rename': 'Rename',
   'chat.deleteSession': 'Delete',
   'chat.deleteConfirm': 'Delete?',

@@ -50,9 +50,8 @@ export default {
     displaySubtitles: { type: Boolean, default: false },
     // Forwarded to the status banner; "idle" when the host has no microphone.
     microphoneStatus: { type: String, default: "idle" },
-    // Non-null enables the session chat (catchup); becomes available once
-    // the parent has checked feature availability.
-    catchupScope: { type: Object, default: null },
+    // Turns true once the parent has checked feature availability
+    catchupEnabled: { type: Boolean, default: false },
   },
   data() {
     return {
@@ -98,7 +97,7 @@ export default {
         this.resyncAfterReconnect()
       }
     },
-    catchupScope() {
+    catchupEnabled() {
       this.setupSessionChat()
     },
   },
@@ -228,7 +227,7 @@ export default {
         core.setActiveChannel(initialId)
       }
 
-      this.activeChannelIndex = this.core?.activeChannelId.value ?? null
+      this.activeChannelIndex = core.activeChannelId.value ?? null
 
       await this.fetchTurnsPage()
 
@@ -256,10 +255,14 @@ export default {
     },
 
     setupSessionChat() {
-      if (this.chatHandle || !this.core || !this.catchupScope) return
+      if (this.chatHandle || !this.core || !this.catchupEnabled) return
       this.chatHandle = markRaw(
         setupChat(this.core, {
-          scope: this.catchupScope,
+          scope: {
+            kind: "session",
+            organizationId: this.currentOrganizationScope,
+            sessionId: this.session.id,
+          },
           catchup: {
             content: this.$t("chat.catchup_request_message"),
             lang: this.$i18n.locale,

@@ -1,4 +1,4 @@
-import { autoNameThread } from "./autoNameThread"
+import { truncateTitle } from "@/tools/truncateTitle"
 import { createThread } from "./createThread"
 import { streamAssistantReply } from "./streamAssistantReply"
 
@@ -6,10 +6,9 @@ export async function onCatchup(ctx) {
   const { core, catchup } = ctx
   if (core.chat.isStreaming.value) return
 
-  const sessionId = await createThread(ctx)
+  const sessionId = await createThread(ctx, truncateTitle(catchup.content))
   if (!sessionId) return
 
-  autoNameThread(ctx, sessionId, catchup.content)
   await streamAssistantReply(ctx, sessionId, {
     content: catchup.content,
     mode: "catchup",

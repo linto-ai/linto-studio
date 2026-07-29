@@ -1,9 +1,7 @@
-// Mapping + small helpers between the API shape (api/chat.js) and the SDK
-// chat plugin shape (core.chat.*). The SDK is agnostic: it uses `id`, the API
-// returns `_id`.
+// Maps API shapes (_id) to the SDK chat plugin shapes (id)
 
 export function mapSession(session) {
-  return { id: session._id, title: session.title }
+  return { id: session._id, title: session.title, channelId: session.channelId }
 }
 
 export function mapMessage(message, index) {

@@ -23,9 +23,9 @@ export async function apiGetChatStatus() {
 /**
  * Create a new chat session
  */
-export async function apiCreateChatSession(scope, flavorId = null) {
+export async function apiCreateChatSession(scope, { title } = {}) {
   const body = {}
-  if (flavorId) body.flavorId = flavorId
+  if (title) body.title = title
   if (scope.channelId != null) body.channelId = scope.channelId
 
   const req = await sendRequest(

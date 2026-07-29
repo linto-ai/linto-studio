@@ -1,11 +1,6 @@
-// Glue between the SDK core and the host app for the chat assistant:
-// - installs the (state-only) chat plugin on the core
-// - listens to the UI intents (chat:* events) emitted by the SDK drawer
-// - performs the REST / SSE calls (api/chat.js) and pushes results back
-//   through core.chat.*
-//
-// All work lives in actions/. This file only wires deps together. Mirrors
-// services/llmServicesIntegration/index.js.
+// Host glue for the SDK chat drawer: listens to the chat:* intents, does
+// the REST/SSE calls (api/chat.js) and pushes results back through
+// core.chat.*. All work lives in actions/; this file only wires.
 
 import { createChatPlugin } from "@linto/transcript-ui/webcomponent"
 
@@ -17,9 +12,8 @@ import { onRenameSession } from "./actions/onRenameSession"
 import { onSend } from "./actions/onSend"
 import { onCatchup } from "./actions/onCatchup"
 
-// scope: { kind: "conversation", conversationId } or
-//        { kind: "session", organizationId, sessionId }
-// catchup (optional): { content, lang } — enables the drawer catchup action.
+// scope: {kind:"conversation",conversationId} | {kind:"session",organizationId,sessionId}
+// catchup (optional): { content, lang } — enables the drawer catchup action
 export function setupChat(core, { scope: initialScope, catchup }) {
   core.use(createChatPlugin({ catchup: !!catchup }))
 
@@ -57,15 +51,19 @@ export function setupChat(core, { scope: initialScope, catchup }) {
     unsub.forEach((fn) => fn?.())
   }
 
-  // Reopen the latest existing thread, or start a briefing when none exists.
+  // Reopen the watched channel's latest thread, else start a briefing
   async function openCatchup() {
     const chat = core.chat
     chat.setDrawerOpen(true)
     if (chat.activeSessionId.value) return
 
     const sessions = await onLoadSessions(ctx)
-    if (sessions.length > 0) {
-      await onLoadSession(ctx, sessions[0].id)
+    const thread =
+      scope.channelId == null
+        ? sessions[0]
+        : sessions.find((s) => String(s.channelId) === String(scope.channelId))
+    if (thread) {
+      await onLoadSession(ctx, thread.id)
     } else {
       await onCatchup(ctx)
     }

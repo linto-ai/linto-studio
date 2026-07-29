@@ -11,9 +11,8 @@ const {
   MAX_MESSAGE_CHARS,
   MAX_TITLE_CHARS,
   resolveChatFlavor,
-  sseInit,
   sseError,
-  streamChatCompletion,
+  streamAndPersistReply,
 } = require(
   `${process.cwd()}/components/WebServer/controllers/llm/chatCompletions.js`,
 )
@@ -65,9 +64,8 @@ async function loadLatestSummary(conversationId) {
 }
 
 /**
- * Load the chat session and verify ownership and conversation scoping.
- * Returns { session } on success, { status, error } otherwise. The
- * conversation-mismatch answer is a 404 on CRUD but a 403 on sendMessage.
+ * Verify ownership and scoping; { session } or { status, error }.
+ * Conversation mismatch answers 404 on CRUD but 403 on sendMessage.
  */
 async function loadOwnedSession(
   req,
@@ -261,20 +259,20 @@ async function sendMessage(req, res, next) {
       return res.status(400).json({ error: "Message too long" })
     }
 
-    // Ownership checks before any write
-    const { session, status, error } = await loadOwnedSession(req, {
-      status: 403,
-      error: "Session does not belong to this conversation",
-    })
-    if (!session) {
-      return res.status(status).json({ error })
-    }
-
-    const [conversations, summary, history] = await Promise.all([
-      model.conversations.getById(conversationId),
+    // All reads: the ownership verdict lands before anything is written
+    const [owned, conversations, summary, history] = await Promise.all([
+      loadOwnedSession(req, {
+        status: 403,
+        error: "Session does not belong to this conversation",
+      }),
+      model.conversations.getById(conversationId, ["name", "text", "speakers"]),
       loadLatestSummary(conversationId),
       model.chatMessages.getLastBySession(sessionId, HISTORY_CONTEXT_MESSAGES),
     ])
+    const { session, status, error } = owned
+    if (!session) {
+      return res.status(status).json({ error })
+    }
 
     if (!conversations || conversations.length === 0) {
       throw new ConversationNotFound()
@@ -287,19 +285,12 @@ async function sendMessage(req, res, next) {
       { role: "user", content: content.trim() },
     ]
 
-    await model.chatMessages.create({
+    // Settled by streamAndPersistReply, off the time-to-first-token path
+    const userMessageWrite = model.chatMessages.create({
       sessionId,
       role: "user",
       content: content.trim(),
     })
-
-    sseInit(res)
-
-    if (!session.flavorId) {
-      sseError(res, "Chat not configured: no flavor")
-      res.end()
-      return
-    }
 
     const gatewayPayload = {
       flavor_id: session.flavorId,
@@ -315,19 +306,12 @@ async function sendMessage(req, res, next) {
       organization_id: session.organizationId || undefined,
     }
 
-    const result = await streamChatCompletion(res, gatewayPayload)
-
-    if (result?.assistantContent) {
-      await model.chatMessages.create({
-        sessionId,
-        role: "assistant",
-        content: result.assistantContent,
-        tokenCount: result.tokenCount,
-      })
-      await model.chatSessions.touch(sessionId)
-    }
-
-    res.end()
+    await streamAndPersistReply(res, {
+      chatSessionId: sessionId,
+      flavorId: session.flavorId,
+      gatewayPayload,
+      pendingWrites: [userMessageWrite],
+    })
   } catch (error) {
     if (res.headersSent) {
       sseError(res, "Internal error")

@@ -1,12 +1,11 @@
 import { apiCreateChatSession } from "@/api/chat"
 import { mapSession } from "../helpers"
 
-// The POST response already carries the created thread: prepend it instead
-// of refetching the list. Returns the new thread id, or null on failure.
-export async function createThread({ core, scope }) {
+// Prepends the POST response instead of refetching; returns the id or null
+export async function createThread({ core, scope }, title) {
   const chat = core.chat
   try {
-    const session = await apiCreateChatSession(scope)
+    const session = await apiCreateChatSession(scope, { title })
     chat.setActiveSession(session._id)
     chat.setMessages([])
     chat.setSessions([mapSession(session), ...chat.sessions.value])

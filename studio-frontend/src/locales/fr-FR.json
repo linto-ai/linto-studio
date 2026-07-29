@@ -1804,20 +1804,6 @@
     "y": "Année | Années"
   },
   "chat": {
-    "title": "Chat",
-    "start": "Démarrer un chat",
-    "description": "Posez vos questions sur cette conversation",
-    "new_chat": "Nouveau chat",
-    "send": "Envoyer",
-    "placeholder": "Posez une question sur cette conversation...",
-    "history": "Historique",
-    "empty_state": "Posez une question pour démarrer la conversation",
-    "empty_chat": "Posez votre première question",
-    "rename": "Renommer",
-    "delete_session": "Supprimer",
-    "delete_confirm_inline": "Supprimer « {name} » ?",
-    "error": "Une erreur est survenue",
-    "streaming": "Génération de la réponse en cours...",
     "catchup_button": "Rattraper la session",
     "catchup_request_message": "Je viens de rejoindre, résume-moi ce qui s'est dit jusqu'ici."
   },

@@ -8985,7 +8985,7 @@ const fr = {
   "chat.collapse": "Réduire",
   "chat.history": "Historique",
   "chat.newChat": "Nouvelle conversation",
-  "chat.catchup": "Rattraper la session",
+  "chat.catchup": "Nouveau rattrapage",
   "chat.rename": "Renommer",
   "chat.deleteSession": "Supprimer",
   "chat.deleteConfirm": "Supprimer ?",
@@ -9121,7 +9121,7 @@ const en = {
   "chat.collapse": "Collapse",
   "chat.history": "History",
   "chat.newChat": "New chat",
-  "chat.catchup": "Catch me up",
+  "chat.catchup": "New catch-up",
   "chat.rename": "Rename",
   "chat.deleteSession": "Delete",
   "chat.deleteConfirm": "Delete?",
@@ -26568,7 +26568,7 @@ const _sfc_main$a = /* @__PURE__ */ defineComponent({
           highlighted.value = null;
           return;
         }
-        const { highlightCode } = await import("./highlight-DwDPbcoW.js");
+        const { highlightCode } = await import("./highlight-p07PpfWU.js");
         if (run === seq) highlighted.value = highlightCode(code, lang ?? "");
       },
       { immediate: true }
@@ -29203,4 +29203,4 @@ export {
   purify as p,
   register as r
 };
-//# sourceMappingURL=webcomponent-D4sWPsAp.js.map
+//# sourceMappingURL=webcomponent-C9KKdEc0.js.map

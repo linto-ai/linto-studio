@@ -123,7 +123,7 @@ const fr = {
   "chat.collapse": "Réduire",
   "chat.history": "Historique",
   "chat.newChat": "Nouvelle conversation",
-  "chat.catchup": "Rattraper la session",
+  "chat.catchup": "Nouveau rattrapage",
   "chat.rename": "Renommer",
   "chat.deleteSession": "Supprimer",
   "chat.deleteConfirm": "Supprimer ?",

@@ -31,7 +31,6 @@ import {
 
 import { setupLLMServices } from "@/services/llmServicesIntegration"
 import { setupChat } from "@/services/chatIntegration"
-import { apiGetChatStatus } from "@/api/chat"
 
 import LayoutV2 from "@/layouts/v2-layout.vue"
 import PublicationModal from "@/components/molecules/PublicationModal.vue"
@@ -193,15 +192,13 @@ export default {
 
       // Chat assistant: only wire it when the backend feature is enabled, so
       // the SDK's "ask" button stays disabled otherwise (core.chat absent).
-      const { enabled: chatEnabled } = await apiGetChatStatus().catch(() => ({
-        enabled: false,
-      }))
+      await this.$store.dispatch("chat/checkAvailability")
       // Destroyed during the await: everything below (chat, collab connection,
       // sync timers, edit listeners) is created after beforeDestroy ran, so it
       // would leak. llmDispose was set before the await, so beforeDestroy
       // already disposed it; just stop here.
       if (this.isDestroyed || !this.$refs.editor) return
-      if (chatEnabled) {
+      if (this.$store.state.chat.enabled) {
         this.chatDispose = setupChat(core, {
           scope: { kind: "conversation", conversationId: this.conversationId },
         }).dispose

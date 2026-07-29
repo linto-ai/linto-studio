@@ -4,12 +4,12 @@ const debug = require("debug")(
 
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 const appLogger = require(`${process.cwd()}/lib/logger/logger.js`)
+const model = require(`${process.cwd()}/lib/mongodb/models`)
 const { resolveServiceId } = require(
   `${process.cwd()}/components/WebServer/controllers/llm/index.js`,
 )
 
-// Last N stored messages sent as LLM context; one slot is reserved for the
-// incoming user message (50 messages per request in total)
+// One request = 49 context messages + the incoming user message
 const HISTORY_CONTEXT_MESSAGES = 49
 const MAX_MESSAGE_CHARS = 50000
 const MAX_TITLE_CHARS = 200
@@ -26,11 +26,8 @@ function catchupServiceId() {
   return process.env.LLM_CATCHUP_SERVICE_ID?.trim()
 }
 
-/**
- * Resolve the default flavor ID for a chat service (id, name or route)
- * Throws on misconfiguration so callers can return explicit errors
- */
-async function resolveDefaultFlavor(serviceIdentifier) {
+/** Default flavor of a service (id, name or route); throws on misconfiguration */
+async function resolveDefaultFlavor(serviceIdentifier, { timeout } = {}) {
   const baseUrl = gatewayUrl()
   if (!baseUrl) throw new Error("LLM_GATEWAY_SERVICES not configured")
   if (!serviceIdentifier) throw new Error("Chat service not configured")
@@ -38,6 +35,7 @@ async function resolveDefaultFlavor(serviceIdentifier) {
   const serviceId = await resolveServiceId(serviceIdentifier)
   const flavorsResp = await axios.get(
     `${baseUrl}/api/v1/services/${serviceId}/flavors`,
+    { timeout },
   )
   const items = flavorsResp?.items || flavorsResp
   const flavors = Array.isArray(items) ? items : []
@@ -56,10 +54,7 @@ function resolveChatFlavor() {
   return resolveDefaultFlavor(chatServiceId())
 }
 
-/**
- * Resolve the flavor for catchup chats: dedicated catchup service first,
- * generic chat service as fallback
- */
+/** Dedicated catchup service first, generic chat service as fallback */
 async function resolveCatchupFlavor() {
   const catchupId = catchupServiceId()
   if (catchupId) {
@@ -86,9 +81,8 @@ function sseError(res, message) {
 }
 
 /**
- * Stream a chat completion from the LLM Gateway to the client over SSE.
- * Never calls res.end(); callers own the response lifecycle.
- * Returns { assistantContent, tokenCount } or null on gateway error.
+ * Relay the gateway completion stream over SSE; never calls res.end().
+ * Returns { assistantContent, tokenCount }, or null on gateway error.
  */
 async function streamChatCompletion(res, gatewayPayload) {
   const baseUrl = gatewayUrl()
@@ -149,28 +143,48 @@ async function streamChatCompletion(res, gatewayPayload) {
   return { assistantContent, tokenCount }
 }
 
-/**
- * Check that a chat service is usable: service resolvable, active, with at
- * least one active flavor
- */
+// Mirrors thread creation: never advertise a service createSession would 503 on
 async function probeService(serviceIdentifier) {
-  const baseUrl = gatewayUrl()
-  if (!baseUrl || !serviceIdentifier) return false
-
   try {
-    const serviceId = await resolveServiceId(serviceIdentifier)
-    const response = await axios.get(
-      `${baseUrl}/api/v1/services/${serviceId}`,
-      { timeout: 3000 },
-    )
-    const serviceActive = response?.is_active !== false
-    const hasActiveFlavor = (response?.flavors || []).some(
-      (f) => f.is_active !== false,
-    )
-    return serviceActive && hasActiveFlavor
+    await resolveDefaultFlavor(serviceIdentifier, { timeout: 3000 })
+    return true
   } catch {
     return false
   }
+}
+
+/**
+ * Shared SSE tail: stream, then persist the assistant reply and bump the
+ * thread. pendingWrites (e.g. the user row) settle before the response ends.
+ */
+async function streamAndPersistReply(
+  res,
+  { chatSessionId, flavorId, gatewayPayload, pendingWrites = [] },
+) {
+  sseInit(res)
+
+  if (!flavorId) {
+    sseError(res, "Chat not configured: no flavor")
+    res.end()
+    return
+  }
+
+  const result = await streamChatCompletion(res, gatewayPayload)
+
+  await Promise.all(pendingWrites)
+  if (result?.assistantContent) {
+    await Promise.all([
+      model.chatMessages.create({
+        sessionId: chatSessionId,
+        role: "assistant",
+        content: result.assistantContent,
+        tokenCount: result.tokenCount,
+      }),
+      model.chatSessions.touch(chatSessionId),
+    ])
+  }
+
+  res.end()
 }
 
 /**
@@ -199,6 +213,6 @@ module.exports = {
   sseInit,
   sseError,
   streamChatCompletion,
-  probeService,
+  streamAndPersistReply,
   chatStatus,
 }

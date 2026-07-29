@@ -11,13 +11,12 @@ const {
   MAX_MESSAGE_CHARS,
   MAX_TITLE_CHARS,
   resolveCatchupFlavor,
-  sseInit,
   sseError,
-  streamChatCompletion,
+  streamAndPersistReply,
 } = require(
   `${process.cwd()}/components/WebServer/controllers/llm/chatCompletions.js`,
 )
-const { dedupeClosedCaptionsBySegmentId } = require(
+const { dedupeClosedCaptionsBySegmentId, DEFAULT_SPEAKER_NAME } = require(
   `${process.cwd()}/components/WebServer/controllers/session/channelCaptions.js`,
 )
 
@@ -68,10 +67,7 @@ function hasLiveSessionAccess(liveSession, req) {
   return true
 }
 
-/**
- * Load the chat thread and verify ownership and scoping.
- * Returns null on any mismatch so callers answer a uniform 404.
- */
+/** Null on any ownership/scoping mismatch, for a uniform 404 */
 async function loadOwnedThread(req) {
   const { sessionId, chatSessionId, organizationId } = req.params
   const threads = await model.chatSessions.getById(chatSessionId)
@@ -106,7 +102,7 @@ function buildSessionTranscript(captions, sessionStartTime) {
     if (caption.locutor === "bot") continue
     if (!caption.text) continue
 
-    const speaker = caption.locutor || "Unknown speaker"
+    const speaker = caption.locutor || DEFAULT_SPEAKER_NAME
     let prefix = ""
     if (startMs && caption.astart) {
       const minutes = minutesBetween(
@@ -130,10 +126,17 @@ function buildSessionTranscript(captions, sessionStartTime) {
   return lines.slice(firstKept).join("\n")
 }
 
+// Whitelisted: `lang` is request-body text interpolated into the prompt
+const BRIEFING_LANGUAGES = { fr: "French", en: "English" }
+
+function briefingLanguage(lang) {
+  if (typeof lang !== "string") return null
+  return BRIEFING_LANGUAGES[lang.slice(0, 2).toLowerCase()] || null
+}
+
 /**
- * Briefing prompt sent in place of the user's catchup message. Redundant
- * with the dedicated gateway service's system prompt on purpose: it keeps
- * the briefing structured when falling back to the generic chat service.
+ * Deliberately redundant with the dedicated service's system prompt: keeps
+ * the briefing structured on the generic-chat fallback.
  */
 function buildCatchupPrompt(liveSession, lang) {
   const startMs = liveSession.startTime
@@ -142,8 +145,9 @@ function buildCatchupPrompt(liveSession, lang) {
   const started = startMs
     ? ` (started ${minutesBetween(startMs, Date.now())} minutes ago)`
     : ""
-  const langLine = lang
-    ? `Write the briefing in ${lang}.`
+  const languageName = briefingLanguage(lang)
+  const langLine = languageName
+    ? `Write the briefing in ${languageName}.`
     : "Write the briefing in the main language of the transcript."
 
   return [
@@ -342,12 +346,20 @@ async function sendMessage(req, res, next) {
       return res.status(400).json({ error: "Message too long" })
     }
 
-    const [thread, liveSession, history] = await Promise.all([
-      loadOwnedThread(req),
+    // Captions overlap the session fetch by chaining on the thread promise;
+    // an unauthorized request wastes at most that one read.
+    const threadPromise = loadOwnedThread(req)
+    const [thread, liveSession, history, captions] = await Promise.all([
+      threadPromise,
       fetchLiveSession(sessionId),
       model.chatMessages.getLastBySession(
         chatSessionId,
         HISTORY_CONTEXT_MESSAGES,
+      ),
+      threadPromise.then((t) =>
+        t
+          ? fetchChannelCaptions(sessionId, t.channelId, CAPTIONS_FETCH_LIMIT)
+          : [],
       ),
     ])
     if (!thread) {
@@ -365,12 +377,6 @@ async function sendMessage(req, res, next) {
       return res.status(400).json({ error: "Unknown channel" })
     }
 
-    const captions = await fetchChannelCaptions(
-      sessionId,
-      channel.id,
-      CAPTIONS_FETCH_LIMIT,
-    )
-
     // The full catchup prompt is sent to the LLM but never stored nor shown:
     // the thread keeps the short message the user actually sent
     const displayContent =
@@ -384,19 +390,12 @@ async function sendMessage(req, res, next) {
       { role: "user", content: outgoingContent },
     ]
 
-    await model.chatMessages.create({
+    // Settled by streamAndPersistReply, off the time-to-first-token path
+    const userMessageWrite = model.chatMessages.create({
       sessionId: chatSessionId,
       role: "user",
       content: displayContent,
     })
-
-    sseInit(res)
-
-    if (!thread.flavorId) {
-      sseError(res, "Chat not configured: no flavor")
-      res.end()
-      return
-    }
 
     const transcript = buildSessionTranscript(captions, liveSession.startTime)
 
@@ -415,19 +414,12 @@ async function sendMessage(req, res, next) {
       organization_id: thread.organizationId || undefined,
     }
 
-    const result = await streamChatCompletion(res, gatewayPayload)
-
-    if (result?.assistantContent) {
-      await model.chatMessages.create({
-        sessionId: chatSessionId,
-        role: "assistant",
-        content: result.assistantContent,
-        tokenCount: result.tokenCount,
-      })
-      await model.chatSessions.touch(chatSessionId)
-    }
-
-    res.end()
+    await streamAndPersistReply(res, {
+      chatSessionId,
+      flavorId: thread.flavorId,
+      gatewayPayload,
+      pendingWrites: [userMessageWrite],
+    })
   } catch (error) {
     if (res.headersSent) {
       sseError(res, "Internal error")

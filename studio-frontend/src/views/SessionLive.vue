@@ -79,7 +79,7 @@
         :displaySubtitles="displaySubtitles"
         :isFromPublicLink="isFromPublicLink"
         :microphoneStatus="microphoneStatus"
-        :catchupScope="catchupScope"
+        :catchupEnabled="canCatchup"
         @retry-microphone="retryAudioConnection"
         @reconfigure-microphone="showMicrophoneSetup = true" />
 
@@ -160,7 +160,8 @@ export default {
     // if stopped, redirect to conversation
   },
   mounted() {
-    if (this.isAuthenticated) {
+    // Org members only: the catchup button cannot appear outside an org scope
+    if (this.isAuthenticated && this.currentOrganizationScope) {
       this.$store.dispatch("chat/checkAvailability")
     }
   },
@@ -242,14 +243,6 @@ export default {
         !!this.currentOrganizationScope &&
         this.catchupEnabled
       )
-    },
-    catchupScope() {
-      if (!this.canCatchup) return null
-      return {
-        kind: "session",
-        organizationId: this.currentOrganizationScope,
-        sessionId: this.session.id,
-      }
     },
   },
   components: {
