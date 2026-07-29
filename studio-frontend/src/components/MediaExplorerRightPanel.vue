@@ -206,16 +206,6 @@ export default {
           },
           disabled: status !== "done",
         },
-        {
-          id: "export",
-          label: this.$t("media_explorer.line.export"),
-          icon: "export",
-          to: {
-            name: "conversations publish",
-            params: { conversationId: mediaId, organizationId: orgId },
-          },
-          disabled: status !== "done",
-        },
         // {
         //   id: "delete",
         //   label: this.$t("media_explorer.line.delete"),

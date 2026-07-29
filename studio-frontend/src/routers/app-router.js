@@ -633,23 +633,12 @@ let router = new Router({
       },
     },
     {
+      // legacy overview page removed: keep old bookmarks working
       path: "/interface/:organizationId?/conversations/:conversationId",
-      name: "conversations overview",
-      components: {
-        default: () => import("../views/ConversationsOverview.vue"),
-        ...componentsWithoutHeader,
-      },
-      props: defaultProps,
-      meta: {
-        conversationDetailPage: true,
-        breadcrumb: {
-          label: "",
-          parent: "explore",
-          dynamic: true,
-          entity: "conversation",
-          showInBreadcrumb: true,
-        },
-      },
+      redirect: (to) => ({
+        name: "conversations transcription",
+        params: to.params,
+      }),
     },
     {
       path: "/interface/:organizationId?/conversations/:conversationId/transcription",
@@ -663,7 +652,7 @@ let router = new Router({
         conversationDetailPage: true,
         breadcrumb: {
           label: "breadcrumb.transcription",
-          parent: "conversations overview",
+          parent: "explore",
           showInBreadcrumb: true,
         },
       },
@@ -680,7 +669,7 @@ let router = new Router({
         conversationDetailPage: true,
         breadcrumb: {
           label: "breadcrumb.subtitles",
-          parent: "conversations overview",
+          parent: "explore",
           showInBreadcrumb: true,
         },
       },
@@ -697,26 +686,9 @@ let router = new Router({
         conversationDetailPage: true,
         breadcrumb: {
           label: "",
-          parent: "conversations overview",
+          parent: "explore",
           dynamic: true,
           entity: "subtitle",
-          showInBreadcrumb: true,
-        },
-      },
-    },
-    {
-      path: "/interface/:organizationId?/conversations/:conversationId/publish",
-      name: "conversations publish",
-      components: {
-        default: () => import("../views/ConversationsPublish.vue"),
-        ...componentsWithoutHeader,
-      },
-      props: defaultProps,
-      meta: {
-        conversationDetailPage: true,
-        breadcrumb: {
-          label: "breadcrumb.publish",
-          parent: "conversations overview",
           showInBreadcrumb: true,
         },
       },

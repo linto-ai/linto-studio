@@ -289,20 +289,6 @@ export default {
           disabled: this.status !== "done",
         },
         {
-          id: "export",
-          name: this.$t("media_explorer.line.export"),
-          icon: "export",
-          color: "primary",
-          to: {
-            name: "conversations publish",
-            params: {
-              conversationId: this.reactiveMedia._id,
-              organizationId: this.organizationId,
-            },
-          },
-          disabled: this.status !== "done",
-        },
-        {
           id: "duplicate",
           name: this.$t("media_explorer.line.duplicate"),
           icon: "copy",

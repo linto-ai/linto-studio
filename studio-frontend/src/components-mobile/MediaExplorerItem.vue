@@ -185,11 +185,6 @@ export default {
           icon: "subtitles",
         },
         {
-          id: "export",
-          name: this.$t("media_explorer.line.export"),
-          icon: "file",
-        },
-        {
           id: "delete",
           name: this.$t("media_explorer.line.delete"),
           icon: "trash",
@@ -218,9 +213,6 @@ export default {
         case "subtitles":
           this.handleSubtitles()
           break
-        case "export":
-          this.handleExport()
-          break
         case "delete":
           this.handleDelete()
           break
@@ -244,15 +236,6 @@ export default {
           organizationId: this.organizationId,
         },
         query: this.searchValue ? { search: this.searchValue } : {},
-      })
-    },
-    handleExport() {
-      this.$router.push({
-        name: "conversations publish",
-        params: {
-          conversationId: this.media._id,
-          organizationId: this.organizationId,
-        },
       })
     },
     handleDelete() {
