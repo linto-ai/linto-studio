@@ -361,6 +361,22 @@ export async function apiGetConversationById(
   return getConversation?.data
 }
 
+// The API only honors projections through `key` (comma-separated field
+// names) + `projection` (0 to exclude them, 1 to select them)
+export async function apiGetConversationByIdExcluding(
+  conversationId,
+  excludedFields,
+  notif,
+) {
+  const getConversation = await sendRequest(
+    `${BASE_API}/conversations/${conversationId}`,
+    { method: "get" },
+    { key: excludedFields.toString(), projection: 0 },
+    notif,
+  )
+  return getConversation?.data
+}
+
 export async function apiGetConversationLastUpdate(conversationId, notif) {
   const getConversation = await sendRequest(
     `${BASE_API}/conversations/${conversationId}`,

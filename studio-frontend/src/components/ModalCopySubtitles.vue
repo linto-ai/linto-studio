@@ -17,10 +17,15 @@ import Modal from "@/components/molecules/Modal.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
 import { formsMixin } from "@/mixins/forms.js"
 import { testName } from "../tools/fields/testName"
-import { workerSendMessage } from "../tools/worker-message"
+import { apiCopySubtitle } from "../api/subtitle.js"
+import { bus } from "@/main.js"
 export default {
   mixins: [formsMixin],
   props: {
+    conversationId: {
+      type: String,
+      required: true,
+    },
     subtitleId: {
       type: String,
       required: true,
@@ -46,14 +51,23 @@ export default {
     selectionChange(value) {
       this.selectedOptionValue = value
     },
-    generateSubtitles() {
+    async generateSubtitles() {
       if (this.testFields()) {
-        workerSendMessage("copy_subtitles", {
-          subtitleId: this.subtitleId,
-          data: {
-            version: this.versionName.value,
-          },
-        })
+        const res = await apiCopySubtitle(
+          this.conversationId,
+          this.subtitleId,
+          this.versionName.value,
+        )
+        if (res?.status === "success") {
+          bus.$emit("subtitle_versions_refresh")
+        } else {
+          bus.$emit("app_notif", {
+            status: "error",
+            message: res?.message,
+            timeout: null,
+            redirect: false,
+          })
+        }
         this.$emit("on-close")
       }
     },

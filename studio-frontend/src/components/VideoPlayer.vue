@@ -60,11 +60,6 @@ export default {
       }
     },
   },
-  beforeDestroy() {
-    if (this.videoLoaded) {
-      URL.revokeObjectURL(this.videoUrl)
-    }
-  },
   mounted() {
     bus.$on("screen-enter", this.handleScreenEnter)
     bus.$on("screen-leave", this.handleScreenLeave)
@@ -72,6 +67,9 @@ export default {
   beforeDestroy() {
     bus.$off("screen-enter", this.handleScreenEnter)
     bus.$off("screen-leave", this.handleScreenLeave)
+    if (this.videoLoaded) {
+      URL.revokeObjectURL(this.videoUrl)
+    }
   },
   methods: {
     handleScreenEnter(screen_id) {

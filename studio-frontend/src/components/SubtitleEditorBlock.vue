@@ -39,7 +39,6 @@
   </div>
 </template>
 <script>
-import CollaborativeField from "@/components/CollaborativeField.vue"
 import { bus } from "@/main.js"
 import { timeToHMS } from "../tools/timeToHMS"
 export default {
@@ -127,9 +126,6 @@ export default {
       },
       immediate: false,
     },
-  },
-  components: {
-    CollaborativeField,
   },
 }
 </script>

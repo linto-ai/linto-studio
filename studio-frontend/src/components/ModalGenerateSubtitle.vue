@@ -39,9 +39,16 @@ import FormInput from "@/components/molecules/FormInput.vue"
 import { formsMixin } from "@/mixins/forms.js"
 import { testName } from "../tools/fields/testName"
 import CustomSelect from "@/components/molecules/CustomSelect.vue"
-import { workerSendMessage } from "../tools/worker-message"
+import { apiGenerateSubtitle } from "../api/subtitle.js"
+import { bus } from "@/main.js"
 export default {
   mixins: [formsMixin],
+  props: {
+    conversationId: {
+      type: String,
+      required: true,
+    },
+  },
   data() {
     return {
       versionName: {
@@ -117,19 +124,25 @@ export default {
     selectionChange(value) {
       this.selectedOptionValue = value
     },
-    generateSubtitles() {
+    async generateSubtitles() {
       if (this.testFields()) {
-        workerSendMessage("generate_subtitles", {
-          data: {
-            screenCharSize: this.maxLength.value,
-            screenMaxDuration:
-              this.maxDuration.value === "0"
-                ? undefined
-                : this.maxDuration.value,
-            screenLines: this.selectedOptionValue,
-            version: this.versionName.value,
-          },
+        const res = await apiGenerateSubtitle(this.conversationId, {
+          screenCharSize: this.maxLength.value,
+          screenMaxDuration:
+            this.maxDuration.value === "0" ? undefined : this.maxDuration.value,
+          screenLines: this.selectedOptionValue,
+          version: this.versionName.value,
         })
+        if (res?.status === "success") {
+          bus.$emit("subtitle_versions_refresh")
+        } else {
+          bus.$emit("app_notif", {
+            status: "error",
+            message: res?.message,
+            timeout: null,
+            redirect: false,
+          })
+        }
         this.$emit("on-close")
       }
     },

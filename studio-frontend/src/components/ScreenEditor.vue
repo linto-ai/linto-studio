@@ -7,10 +7,6 @@
         :label="$t('conversation.subtitles.screens.previous_screen')"
         :screen="prev"
         :can-edit="canEdit"
-        :conversation-id="conversationId"
-        :conversation-users="conversationUsers"
-        :focusFields="focusFields"
-        :users-connected="usersConnected"
         @click="seekTo(prev.stime)">
       </ScreenEditorBox>
     </div>
@@ -27,10 +23,6 @@
         :screen="selectedScreen"
         :can-edit="canEdit"
         is-current
-        :conversation-id="conversationId"
-        :conversation-users="conversationUsers"
-        :focusFields="focusFields"
-        :users-connected="usersConnected"
         @textUpdate="textUpdate">
       </ScreenEditorBox>
     </div>
@@ -47,10 +39,6 @@
         :label="$t('conversation.subtitles.screens.next_screen')"
         :screen="next"
         :can-edit="canEdit"
-        :conversation-id="conversationId"
-        :conversation-users="conversationUsers"
-        :focusFields="focusFields"
-        :users-connected="usersConnected"
         @click="seekTo(next.stime)">
       </ScreenEditorBox>
     </div>
@@ -74,23 +62,6 @@ export default {
     },
     canEdit: {
       type: Boolean,
-      required: true,
-    },
-    conversationId: {
-      type: String,
-      required: true,
-    },
-    conversationUsers: {
-      type: Array,
-      required: true,
-      default: () => [],
-    },
-    usersConnected: {
-      type: Array,
-      default: () => [],
-    },
-    focusFields: {
-      type: Object,
       required: true,
     },
     previousScreenId: {

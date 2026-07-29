@@ -28,13 +28,11 @@
     </template>
     <SubtitleEditor
       v-if="screens"
+      :key="subtitleId"
       :conversation="conversation"
       :userInfo="userInfo"
       :blocks="screens"
       :canEdit="canEdit"
-      :conversation-users="conversationUsers"
-      :users-connected="usersConnected"
-      :focusFields="focusFields"
       @deleteScreen="deleteScreen"
       @updateScreen="updateScreen"
       @mergeScreen="mergeScreen"
@@ -46,8 +44,13 @@
 <script>
 import { bus } from "../main"
 
-import { workerSendMessage } from "@/tools/worker-message.js"
 import { apiGetFileFromConversationSubtitle } from "@/api/conversation.js"
+import {
+  apiUpdateScreen,
+  apiAddScreen,
+  apiDeleteScreen,
+} from "@/api/subtitle.js"
+import { computeScreenWords } from "@/tools/computeScreenWords.js"
 
 import { subtitleMixin } from "@/mixins/subtitle.js"
 
@@ -65,6 +68,14 @@ export default {
     }
   },
   watch: {
+    // The route keeps the same name when switching versions, so the view is
+    // not remounted: reload the subtitle when the id changes
+    "$route.params.subtitleId"(newId) {
+      if (newId && newId !== this.subtitleId) {
+        this.subtitleId = newId
+        this.loadSubtitle(newId)
+      }
+    },
     conversationLoaded(newVal, oldVal) {
       if (newVal) {
         this.subtitleVersions = this.conversation?.subtitleVersions || []
@@ -78,7 +89,7 @@ export default {
           this.status = this.computeStatus(
             this.conversation?.jobs?.transcription,
           )
-          workerSendMessage("get_subtitle", { subtitleId: this.subtitleId })
+          this.loadSubtitle(this.subtitleId)
         }
       }
     },
@@ -158,22 +169,38 @@ export default {
         link.click()
       }
     },
-    updateScreen(screen_id, stime, etime) {
+    notifyApiError(res) {
+      bus.$emit("app_notif", {
+        status: "error",
+        message: res?.message,
+        timeout: null,
+        redirect: false,
+      })
+    },
+    async updateScreen(screen_id, stime, etime) {
       let block = this.screens?.get(screen_id)
       if (block) {
         block.screen.stime = stime
         block.screen.etime = etime
         this.screens.set(screen_id, block)
-        workerSendMessage("update_screen", {
-          screen: block.screen,
-        })
+        const res = await apiUpdateScreen(
+          this.conversationId,
+          this.subtitleId,
+          block.screen,
+        )
+        if (res?.status === "error") this.notifyApiError(res)
       }
     },
-    deleteScreen(screenId) {
+    async deleteScreen(screenId) {
       this.screens.delete(screenId)
-      workerSendMessage("delete_screen", { screenId })
+      const res = await apiDeleteScreen(
+        this.conversationId,
+        this.subtitleId,
+        screenId,
+      )
+      if (res?.status === "error") this.notifyApiError(res)
     },
-    mergeScreen(keptScreenId, deletedScreenId) {
+    async mergeScreen(keptScreenId, deletedScreenId) {
       let keptScreen = this.screens.get(keptScreenId)
       let deletedScreen = this.screens.get(deletedScreenId)
       let newLineNumber =
@@ -192,7 +219,24 @@ export default {
         keptScreen.next === deletedScreenId ||
         keptScreen.prev === deletedScreenId
       ) {
-        workerSendMessage("merge_screens", { keptScreenId, deletedScreenId })
+        const deleteAfter = keptScreen.next === deletedScreenId
+        this.screens.merge(keptScreenId, deleteAfter)
+        bus.$emit("merge_screen", {
+          screenId: keptScreenId,
+          deletedId: deletedScreenId,
+        })
+        const updateRes = await apiUpdateScreen(
+          this.conversationId,
+          this.subtitleId,
+          keptScreen.screen,
+        )
+        if (updateRes?.status === "error") this.notifyApiError(updateRes)
+        const deleteRes = await apiDeleteScreen(
+          this.conversationId,
+          this.subtitleId,
+          deletedScreenId,
+        )
+        if (deleteRes?.status === "error") this.notifyApiError(deleteRes)
       } else {
         bus.$emit("app_notif", {
           status: "error",
@@ -204,7 +248,7 @@ export default {
         })
       }
     },
-    addScreen(screen_id, after = true) {
+    async addScreen(screen_id, after = true) {
       let stime, etime
       let currentScreen = this.screens.get(screen_id)
       let audio = this.conversation.metadata?.audio
@@ -236,7 +280,21 @@ export default {
           words: [],
           turn_id: currentScreen.screen.turn_id,
         }
-        workerSendMessage("add_screen", { after, screen_id, newScreen })
+        // The API mints the screen_id and returns it as _id
+        const res = await apiAddScreen(
+          this.conversationId,
+          this.subtitleId,
+          screen_id,
+          newScreen,
+          after ? "after" : "before",
+        )
+        if (res?.status === "success") {
+          const addedScreen = { ...newScreen, screen_id: res.data._id }
+          this.screens.add(screen_id, addedScreen, after)
+          bus.$emit("add_screen", { newScreen: addedScreen })
+        } else {
+          this.notifyApiError(res)
+        }
       }
     },
     loadNewSubtitles(id) {
@@ -250,14 +308,22 @@ export default {
         })
       }
     },
-    textUpdate(screenId, text) {
+    async textUpdate(screenId, text) {
       let block = this.screens.get(screenId)
       if (block) {
         block.screen.text = text.split("\n").map((line) => line.trim())
-        workerSendMessage("screen_edit_text", {
-          screenId: screenId,
-          newText: text,
-        })
+        // Keep word timings consistent with the edited text
+        block.screen.words = computeScreenWords(
+          block.screen.text,
+          block.screen.stime,
+          block.screen.etime,
+        )
+        const res = await apiUpdateScreen(
+          this.conversationId,
+          this.subtitleId,
+          block.screen,
+        )
+        if (res?.status === "error") this.notifyApiError(res)
       }
     },
   },
