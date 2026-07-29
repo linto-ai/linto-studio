@@ -7,7 +7,7 @@ const TEXT_NODE = 3
  * `offset` (clamped). Falls back to a plain focus when the element is empty.
  */
 export function placeCaretAt(element: HTMLElement, offset: number): void {
-  element.focus()
+  element.focus({ preventScroll: true })
   const textNode = element.firstChild
   if (!textNode || textNode.nodeType !== TEXT_NODE) return
 

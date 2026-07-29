@@ -8831,7 +8831,7 @@ function Wl(n) {
 }
 const hg = 3;
 function mg(n, e) {
-  n.focus();
+  n.focus({ preventScroll: !0 });
   const t = n.firstChild;
   if (!t || t.nodeType !== hg) return;
   const r = Math.max(0, Math.min(e, t.nodeValue?.length ?? 0)), i = n.ownerDocument.createRange();
@@ -14500,7 +14500,7 @@ const lk = {
           i.value = null;
           return;
         }
-        const { highlightCode: c } = await import("./highlight-BjZ00gXZ.js");
+        const { highlightCode: c } = await import("./highlight-DteWi6M8.js");
         l === s && (i.value = c(o, a ?? ""));
       },
       { immediate: !0 }

@@ -19669,7 +19669,7 @@ function getShadowRootSelection(root2) {
 }
 const TEXT_NODE$1 = 3;
 function placeCaretAt(element, offset2) {
-  element.focus();
+  element.focus({ preventScroll: true });
   const textNode = element.firstChild;
   if (!textNode || textNode.nodeType !== TEXT_NODE$1) return;
   const clamped = Math.max(0, Math.min(offset2, textNode.nodeValue?.length ?? 0));
@@ -26484,7 +26484,7 @@ const _sfc_main$a = /* @__PURE__ */ defineComponent({
           highlighted.value = null;
           return;
         }
-        const { highlightCode } = await import("./highlight-8iPK9FF3.js");
+        const { highlightCode } = await import("./highlight-BT6gHr6X.js");
         if (run === seq) highlighted.value = highlightCode(code, lang ?? "");
       },
       { immediate: true }
@@ -29113,4 +29113,4 @@ export {
   purify as p,
   register as r
 };
-//# sourceMappingURL=webcomponent-D-u8tDZ9.js.map
+//# sourceMappingURL=webcomponent-CfVvVwNK.js.map

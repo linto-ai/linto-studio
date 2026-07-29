@@ -19671,7 +19671,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
   }
   const TEXT_NODE$1 = 3;
   function placeCaretAt(element, offset2) {
-    element.focus();
+    element.focus({ preventScroll: true });
     const textNode = element.firstChild;
     if (!textNode || textNode.nodeType !== TEXT_NODE$1) return;
     const clamped = Math.max(0, Math.min(offset2, textNode.nodeValue?.length ?? 0));
