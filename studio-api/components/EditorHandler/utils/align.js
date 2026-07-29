@@ -1,27 +1,11 @@
 /**
- * Hydration/recovery alignment: match a turn's CURRENT tokens against its
- * last known word list (Mongo shape, ordered, no offsets) and carry each
- * matched word's timing/identity onto the token that still holds it.
- *
- * Matching is a longest common subsequence over token/word TEXTS (exact
- * string equality). Unmatched tokens get NO entry: retimeTurn later treats
- * them as "typed" and interpolates. Unmatched old words simply vanish.
- *
- * For pathological inputs the quadratic LCS is skipped: beyond MAX_LCS_CELLS
- * a cheap anchor walk matches the common prefix and common suffix and leaves
- * the middle unmatched — bounded cost, degraded (but safe) recovery.
+ * LCS over token/word texts (exact equality) carries each matched old word's
+ * timing/identity onto its token; unmatched tokens interpolate later. Beyond
+ * MAX_LCS_CELLS, falls back to prefix+suffix anchors (bounded, degraded).
  */
 
 const MAX_LCS_CELLS = 4_000_000 // ~2000 x 2000 tokens
 
-/**
- * @param {Array<{text: string, charStart: number, charEnd: number}>} tokens
- *   from tokenize(text)
- * @param {Array<{word: string, stime?: number, etime?: number, wid?: string, confidence?: number}>} oldWords
- *   ordered, Mongo shape
- * @returns {Array<{text, charStart, charEnd, stime, etime, wid, confidence}>}
- *   carried entries for retimeTurn, one per MATCHED token, in token order
- */
 function alignWords(tokens, oldWords) {
   const n = tokens.length
   const m = oldWords.length

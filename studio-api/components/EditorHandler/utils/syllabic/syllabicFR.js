@@ -11,11 +11,8 @@ class SyllabicFR extends Syllabic {
   }
 
   count(term) {
-    // The errored-words dictionary is a { word: syllableCount } map, so this is
-    // a direct O(1) lookup instead of scanning all ~52k entries per word (this
-    // runs on the API event loop during flush). The typeof guard keeps inherited
-    // Object.prototype keys (e.g. "toString") from being read as a hit; the
-    // corrected count overrides the rule-based syllabification.
+    // O(1) lookup in the ~52k-entry map (hot path); typeof guards inherited
+    // Object.prototype keys. A hit overrides the rule-based count.
     const errCount = wordErrorFR[term]
     if (typeof errCount === "number") return errCount
     return this.syllabify(term).length

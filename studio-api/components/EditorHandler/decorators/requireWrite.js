@@ -8,10 +8,8 @@ const CONVERSATION_RIGHTS = require(
 )
 
 /**
- * Handler decorator for mutations WITHOUT a lock (speaker ops, merge): the
- * socket must have joined (identity on socket.data) and hold WRITE access on
- * the edited track (payload.translationId) — the check requireLock performs
- * implicitly through the lock acquisition.
+ * Decorator for lock-less mutations: the socket must have joined and hold
+ * WRITE access on payload.translationId.
  */
 function requireWrite(handler) {
   return async function writeCheckedHandler({ io, socket }, payload, ack) {

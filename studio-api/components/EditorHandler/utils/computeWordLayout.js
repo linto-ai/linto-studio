@@ -1,11 +1,6 @@
 /**
- * Lay Mongo words out on the turn's DERIVED plain text — the single-space
- * layout shared with every client (their computeTurnPlainText). A word
- * carrying internal whitespace is split into its parts (each keeping the
- * source timing); silence placeholders (empty words) yield nothing.
- *
- * @param {Array<{wid?: string, word: string, stime?: number, etime?: number, confidence?: number}>} words
- * @returns {Array<{text, charStart, charEnd, wid?, stime?, etime?, confidence?}>}
+ * Lay Mongo words on the derived single-space text (shared with the clients'
+ * computeTurnPlainText); multi-part words split, empty (silence) words drop.
  */
 function computeWordLayout(words) {
   const out = []

@@ -4,9 +4,8 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const { computeEditorRoomName } = require("../utils/computeEditorRoomName")
 
 /**
- * Remove a turn; the client triggers this by committing an emptied text
- * (no delete button). The track's last turn is never deleted. Lock
- * ownership comes from requireLock.
+ * Remove a turn (triggered by committing an emptied text); the track's last
+ * turn is never deleted.
  */
 async function onDeleteTurn({ io, socket }, payload, ack) {
   const reply = typeof ack === "function" ? ack : () => {}

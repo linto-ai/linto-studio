@@ -3,10 +3,8 @@ const debug = require("debug")("linto:components:EditorHandler:requireLock")
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 /**
- * Handler decorator: the wrapped mutation only runs when the emitting socket
- * holds a LIVE lock on the turn its payload targets ({translationId, turnId}).
- * Enforces the edit contract server-side — a client that lost its lock (TTL,
- * revocation, other tab) gets `not_lock_owner` instead of a silent write.
+ * Decorator: the emitting socket must hold a LIVE lock on the targeted turn,
+ * else `not_lock_owner` (lost lock: TTL, revocation, other tab).
  */
 function requireLock(handler) {
   return async function lockedHandler({ io, socket }, payload, ack) {

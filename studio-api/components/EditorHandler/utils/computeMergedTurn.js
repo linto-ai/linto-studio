@@ -12,17 +12,9 @@ function deriveText(turn) {
 }
 
 /**
- * Merge two ADJACENT turns (document order: first then second) into one.
- * Deterministic, no retime: texts and words concatenate verbatim, turn-level
- * times are the outer bounds.
- *
- * The LARGER turn (derived-text character length, first wins ties) provides
- * every attribute — id, speaker, language, foreign fields: merging a short
- * interjection into a long turn must not relabel the whole result.
- *
- * @param {object} firstTurn - Mongo turn, document order
- * @param {object} secondTurn
- * @returns {object} the merged Mongo turn
+ * Merge two adjacent turns: texts/words concatenate, times are outer bounds.
+ * The larger turn (derived-text length, first wins ties) provides id, speaker
+ * and every other attribute.
  */
 function computeMergedTurn(firstTurn, secondTurn) {
   const firstText = deriveText(firstTurn)

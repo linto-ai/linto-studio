@@ -5,25 +5,9 @@ function round2(n) {
 }
 
 /**
- * Fill stime/etime for FLEX words — words whose timing is unknown because they
- * were just typed, or because a known word's text changed (a mid-word split or
- * an edit), in which case the known word's OLD span is a redistribution budget.
- *
- * Anchors (known words whose text is unchanged) keep their exact timing. Each
- * maximal run of FLEX words is filled by distributing its available [start,end]
- * span proportionally to syllables — the only place the syllabic heuristic is
- * still needed once identity is carried by wid.
- *
- * Zone bounds (in priority order):
- *  - start: previous anchor's etime, else the earliest FLEX budget start, else
- *    the turn start, else 0.
- *  - end:   next anchor's stime, else the latest FLEX budget end, else the turn
- *    end, else start (degenerate zero-length).
- *
- * @param {Array<{word, stime?, etime?, _flex?, _budgetStime?, _budgetEtime?}>} words
- * @param {{stime?, etime?}|undefined} turn - turn-level fallback bounds
- * @param {object} syllabic
- * @returns {Array} the same words array, timings filled, temp fields stripped
+ * Fill stime/etime for _flex words: each flex run's window (prev anchor etime /
+ * next anchor stime, else budgets, else turn bounds, else 0) is distributed
+ * proportionally to syllables. Mutates words and strips the temp fields.
  */
 function interpolateWordTimes(words, turn, syllabic) {
   let i = 0

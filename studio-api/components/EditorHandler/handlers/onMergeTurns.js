@@ -6,9 +6,8 @@ const { computeEditorRoomName } = require("../utils/computeEditorRoomName")
 const { toWireTurn } = require("../utils/toWireTurn")
 
 /**
- * Merge two adjacent turns. Inverted lock semantics: both turns must be
- * FREE, requester included (no requireLock). The adjacency is re-checked
- * atomically by the write's filter.
+ * Merge two adjacent turns. Inverted lock semantics: both turns must be FREE,
+ * requester included; adjacency is re-checked atomically by the write filter.
  */
 async function onMergeTurns({ io, socket }, payload, ack) {
   const reply = typeof ack === "function" ? ack : () => {}

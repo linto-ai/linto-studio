@@ -1,16 +1,8 @@
 const debug = require("debug")("linto:components:EditorHandler:requireFamily")
 
 /**
- * Handler decorator: the mutation's translationId must belong to the
- * conversation FAMILY the socket joined (parent + children + grandchildren,
- * frozen on socket.data at join time). Closes the spoofing vector where a
- * payload targets another conversation's room, and lets handlers derive the
- * broadcast room from socket.data.editorParentId instead of trusting the
- * payload.
- *
- * The family is frozen at join: a track created mid-session (new translation
- * job) needs a re-join to become editable — acceptable, structure changes
- * are rare and page-level.
+ * Decorator: payload.translationId must be in the family frozen on socket.data
+ * at join (spoofing guard); a track created mid-session needs a re-join.
  */
 function requireFamily(handler) {
   return async function familyCheckedHandler({ io, socket }, payload, ack) {

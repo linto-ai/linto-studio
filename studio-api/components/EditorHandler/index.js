@@ -27,7 +27,7 @@ const onDeleteTurnGuarded = requireFamily(requireWrite(requireLock(onDeleteTurn)
 const onMergeTurnsGuarded = requireFamily(requireWrite(onMergeTurns))
 // prettier-ignore
 const onLockTurnGuarded = requireFamily(requireWrite(onLockTurn))
-// prettier-ignores
+// prettier-ignore
 const onUnlockTurnGuarded = requireFamily(onUnlockTurn)
 // prettier-ignore
 const onUpdateTurnSpeakerGuarded = requireFamily(requireWrite(onUpdateTurnSpeaker))

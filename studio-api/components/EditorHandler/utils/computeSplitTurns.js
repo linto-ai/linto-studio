@@ -25,22 +25,9 @@ function makeWord(text, src) {
 }
 
 /**
- * Split a Mongo turn in two at a character offset of its DERIVED plain text
- * (single-space layout — the offset space shared with the clients).
- *
- * Deterministic by construction, no retime:
- *  - words partition at the offset; a STRADDLED word is cut in two, its span
- *    divided proportionally to the character position (left keeps the wid,
- *    right is minted);
- *  - the left half keeps the original turn_id, the right half is minted;
- *  - turn-level times: word bounds first, else the proportional cut of the
- *    original turn's span (wordless turns get the same rule, one level up);
- *  - fields this module doesn't own are spread into BOTH halves.
- *
- * @param {object} turn - Mongo turn
- * @param {number} offset - character offset, strictly inside the text
- * @returns {{left: object, right: object}|null} null when the offset would
- *   produce an empty half (borders, empty turn) — the caller refuses.
+ * Split a Mongo turn at a character offset of its derived single-space text.
+ * Deterministic, no retime: a straddled word/span is cut proportionally (left
+ * keeps the ids, right is minted); null when a half would come out empty.
  */
 function computeSplitTurns(turn, offset) {
   const laid = computeWordLayout(turn.words)

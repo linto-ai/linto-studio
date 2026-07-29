@@ -3,9 +3,8 @@ const debug = require("debug")("linto:components:EditorHandler:onUnlockTurn")
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const { computeEditorRoomName } = require("../utils/computeEditorRoomName")
 
-// Release is socket-scoped in the model: a socket can only release its own
-// lock, so NO requireWrite — a user whose right was revoked mid-edit must
-// still be able to release (join guaranteed by requireFamily upstream).
+// Release is socket-scoped in the model, so NO requireWrite: a right revoked
+// mid-edit must still allow release (join guaranteed by requireFamily).
 async function onUnlockTurn({ io, socket }, payload, ack) {
   const reply = typeof ack === "function" ? ack : () => {}
   try {

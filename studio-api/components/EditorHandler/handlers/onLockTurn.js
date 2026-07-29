@@ -4,16 +4,13 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const { computeEditorRoomName } = require("../utils/computeEditorRoomName")
 
 /**
- * Acquire-or-refresh a turn lock. Idempotent: the client re-emits it every
- * ~15s while editing (this IS the heartbeat). Wrapped in requireWrite at
- * the composition site, so WRITE access is re-checked on every beat — a
- * revoked right surfaces within one beat as a forbidden ack.
- * turn_locked is broadcast only on a genuine acquisition (not refreshes).
+ * Acquire-or-refresh a turn lock; re-emitted every ~15s (the heartbeat), so
+ * requireWrite re-checks on each beat. Broadcast only on genuine acquisition.
  */
 async function onLockTurn({ io, socket }, payload, ack) {
   const reply = typeof ack === "function" ? ack : () => {}
   try {
-    // Join + WRITE guaranteed by requireFamily/requireWrite upstream.
+    // Join guaranteed by requireFamily upstream.
     const editorUser = socket.data.editorUser
     const { translationId, turnId } = payload || {}
     if (!turnId) {

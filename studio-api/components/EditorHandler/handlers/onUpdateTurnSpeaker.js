@@ -7,9 +7,8 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const { computeEditorRoomName } = require("../utils/computeEditorRoomName")
 
 /**
- * Point a turn at an existing speaker (speakerId) or create one by assigning
- * it (speakerName). No lock (atomic, last-write-wins). The broadcast carries
- * removedSpeakerId when the previous speaker lost its last assignment.
+ * Point a turn at an existing speaker (speakerId) or create one (speakerName).
+ * No lock; removedSpeakerId when the previous speaker lost its last assignment.
  */
 async function onUpdateTurnSpeaker({ io, socket }, payload, ack) {
   const reply = typeof ack === "function" ? ack : () => {}

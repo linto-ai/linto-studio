@@ -7,8 +7,7 @@ const { toWireTurn } = require("../utils/toWireTurn")
 
 /**
  * Split a turn at a character offset of its saved text (the client saves
- * before splitting, so the offset targets a state both sides agree on).
- * Lock ownership comes from requireLock.
+ * before splitting, so both sides agree on the offset space).
  */
 async function onSplitTurn({ io, socket }, payload, ack) {
   const reply = typeof ack === "function" ? ack : () => {}

@@ -1,4 +1,3 @@
-// Rules for french language
 const rules = [
   "(?=vc)ccv(?=gg)",
   "\\bvvc\\b",

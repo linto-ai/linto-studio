@@ -7,8 +7,7 @@ const { toWireWords } = require("../utils/toWireWords")
 
 /**
  * Save an edited turn: retime, atomic persist + version bump, broadcast.
- * Lock ownership comes from requireLock; the ms between that check and the
- * write are an accepted race.
+ * The ms between requireLock's check and the write are an accepted race.
  */
 async function onUpdateTurn({ io, socket }, payload, ack) {
   const reply = typeof ack === "function" ? ack : () => {}

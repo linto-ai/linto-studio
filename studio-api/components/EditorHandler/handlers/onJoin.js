@@ -30,9 +30,8 @@ function wireLock(lock) {
   }
 }
 
-// Joining requires READ only (the room carries broadcasts); WRITE is
+// READ suffices to join (the room only carries broadcasts); WRITE is
 // re-checked per mutation, so a revoked right needs no room eviction.
-// The identity cached on socket.data is token-bound and can't change.
 async function onJoin({ socket }, conversationId, ack) {
   const reply = typeof ack === "function" ? ack : () => {}
   try {
