@@ -11,6 +11,7 @@ const { resolveServiceId } = require(
 
 // One request = 49 context messages + the incoming user message
 const HISTORY_CONTEXT_MESSAGES = 49
+const HISTORY_CONTEXT_MAX_CHARS = 100000
 const MAX_MESSAGE_CHARS = 50000
 const MAX_TITLE_CHARS = 200
 
@@ -32,13 +33,14 @@ async function resolveDefaultFlavor(serviceIdentifier, { timeout } = {}) {
   if (!baseUrl) throw new Error("LLM_GATEWAY_SERVICES not configured")
   if (!serviceIdentifier) throw new Error("Chat service not configured")
 
-  const serviceId = await resolveServiceId(serviceIdentifier)
-  const flavorsResp = await axios.get(
-    `${baseUrl}/api/v1/services/${serviceId}/flavors`,
-    { timeout },
-  )
-  const items = flavorsResp?.items || flavorsResp
-  const flavors = Array.isArray(items) ? items : []
+  const serviceId = await resolveServiceId(serviceIdentifier, { timeout })
+  const service = await axios.get(`${baseUrl}/api/v1/services/${serviceId}`, {
+    timeout,
+  })
+  if (service?.is_active === false) {
+    throw new Error(`Chat service ${serviceIdentifier} is inactive`)
+  }
+  const flavors = Array.isArray(service?.flavors) ? service.flavors : []
 
   const flavor =
     flavors.find((f) => f.is_default && f.is_active) ||
@@ -108,6 +110,9 @@ async function streamChatCompletion(res, gatewayPayload) {
   const decoder = new TextDecoder()
 
   let buffer = ""
+  // Survives chunk boundaries: an "event:" line may arrive in a different
+  // read than its "data:" line
+  let eventType = null
   while (true) {
     const { done, value } = await reader.read()
     if (done) break
@@ -117,7 +122,6 @@ async function streamChatCompletion(res, gatewayPayload) {
     const lines = buffer.split("\n")
     buffer = lines.pop() // Keep incomplete line
 
-    let eventType = null
     for (const line of lines) {
       if (line.startsWith("event: ")) {
         eventType = line.slice(7).trim()
@@ -143,6 +147,19 @@ async function streamChatCompletion(res, gatewayPayload) {
   return { assistantContent, tokenCount }
 }
 
+// Newest-first char budget on the outbound history; result stays chronological
+function buildContextMessages(history, userContent) {
+  const messages = [{ role: "user", content: userContent }]
+  let total = userContent.length
+  for (let i = history.length - 1; i >= 0; i--) {
+    const entry = history[i]
+    total += entry.content.length
+    if (total > HISTORY_CONTEXT_MAX_CHARS) break
+    messages.unshift({ role: entry.role, content: entry.content })
+  }
+  return messages
+}
+
 // Mirrors thread creation: never advertise a service createSession would 503 on
 async function probeService(serviceIdentifier) {
   try {
@@ -161,30 +178,34 @@ async function streamAndPersistReply(
   res,
   { chatSessionId, flavorId, gatewayPayload, pendingWrites = [] },
 ) {
-  sseInit(res)
+  try {
+    sseInit(res)
 
-  if (!flavorId) {
-    sseError(res, "Chat not configured: no flavor")
+    if (!flavorId) {
+      sseError(res, "Chat not configured: no flavor")
+      res.end()
+      return
+    }
+
+    const result = await streamChatCompletion(res, gatewayPayload)
+
+    if (result?.assistantContent) {
+      await Promise.all([
+        model.chatMessages.create({
+          sessionId: chatSessionId,
+          role: "assistant",
+          content: result.assistantContent,
+          tokenCount: result.tokenCount,
+        }),
+        model.chatSessions.touch(chatSessionId),
+      ])
+    }
+
     res.end()
-    return
+  } finally {
+    // Every exit path settles the caller's writes (no unhandled rejection)
+    await Promise.allSettled(pendingWrites)
   }
-
-  const result = await streamChatCompletion(res, gatewayPayload)
-
-  await Promise.all(pendingWrites)
-  if (result?.assistantContent) {
-    await Promise.all([
-      model.chatMessages.create({
-        sessionId: chatSessionId,
-        role: "assistant",
-        content: result.assistantContent,
-        tokenCount: result.tokenCount,
-      }),
-      model.chatSessions.touch(chatSessionId),
-    ])
-  }
-
-  res.end()
 }
 
 /**
@@ -208,6 +229,7 @@ module.exports = {
   HISTORY_CONTEXT_MESSAGES,
   MAX_MESSAGE_CHARS,
   MAX_TITLE_CHARS,
+  buildContextMessages,
   resolveChatFlavor,
   resolveCatchupFlavor,
   sseInit,

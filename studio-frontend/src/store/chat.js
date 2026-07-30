@@ -17,16 +17,16 @@ export default {
   },
   actions: {
     // Deployment-static flags: fetched once, shared by every view.
-    // A failed fetch resets the memo so the next mount retries.
+    // A failed check (null) resets the memo so the next mount retries.
     checkAvailability({ commit }) {
       if (!statusPromise) {
-        statusPromise = apiGetChatStatus().then(
-          (status) => commit("SET_AVAILABILITY", status || {}),
-          (error) => {
-            console.error("Chat status check failed:", error)
+        statusPromise = apiGetChatStatus().then((status) => {
+          if (!status) {
             statusPromise = null
-          },
-        )
+            return
+          }
+          commit("SET_AVAILABILITY", status)
+        })
       }
       return statusPromise
     },

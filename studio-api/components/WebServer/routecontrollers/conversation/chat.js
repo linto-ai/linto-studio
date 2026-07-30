@@ -10,6 +10,7 @@ const {
   HISTORY_CONTEXT_MESSAGES,
   MAX_MESSAGE_CHARS,
   MAX_TITLE_CHARS,
+  buildContextMessages,
   resolveChatFlavor,
   sseError,
   streamAndPersistReply,
@@ -280,10 +281,7 @@ async function sendMessage(req, res, next) {
     const conversation = conversations[0]
     const transcript = buildTranscriptText(conversation)
 
-    const llmMessages = [
-      ...history.map((m) => ({ role: m.role, content: m.content })),
-      { role: "user", content: content.trim() },
-    ]
+    const llmMessages = buildContextMessages(history, content.trim())
 
     // Settled by streamAndPersistReply, off the time-to-first-token path
     const userMessageWrite = model.chatMessages.create({

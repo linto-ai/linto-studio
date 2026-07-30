@@ -12,12 +12,13 @@ function chatSessionsUrl(scope) {
 }
 
 /**
- * Check if chat and catchup features are enabled on the backend
+ * Chat and catchup availability; null when the check itself failed
+ * (network/API error), so callers can retry instead of caching "disabled"
  */
 export async function apiGetChatStatus() {
   const req = await sendRequest(`${BASE_API}/chat/status`, { method: "get" })
-  if (req.status === "success") return req.data
-  return { enabled: false, catchupEnabled: false }
+  if (req?.status === "success") return req.data
+  return null
 }
 
 /**
@@ -113,6 +114,9 @@ export async function apiSendChatMessage(
     const reader = response.body.getReader()
     const decoder = new TextDecoder()
     let buffer = ""
+    // Survives chunk boundaries: an "event:" line may arrive in a different
+    // read than its "data:" line
+    let eventType = null
 
     while (true) {
       const { done, value } = await reader.read()
@@ -122,7 +126,6 @@ export async function apiSendChatMessage(
       const lines = buffer.split("\n")
       buffer = lines.pop()
 
-      let eventType = null
       for (const line of lines) {
         if (line.startsWith("event: ")) {
           eventType = line.slice(7).trim()

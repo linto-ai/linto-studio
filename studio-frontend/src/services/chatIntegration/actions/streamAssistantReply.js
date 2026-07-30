@@ -17,22 +17,31 @@ export async function streamAssistantReply(
 
   // Local accumulator → passed to streamEnd (avoids relying on shared state).
   let accumulated = ""
-  await apiSendChatMessage(
-    scope,
-    sessionId,
-    { content, mode, lang },
-    {
-      onToken(token) {
-        accumulated += token
-        chat.streamAppend(token)
+  try {
+    await apiSendChatMessage(
+      scope,
+      sessionId,
+      { content, mode, lang },
+      {
+        onToken(token) {
+          accumulated += token
+          chat.streamAppend(token)
+        },
+        onDone(data) {
+          chat.streamEnd(accumulated, { tokenCount: data?.usage?.total_tokens })
+        },
+        onError(err) {
+          console.error("[chat] stream error", err)
+          chat.streamAbort()
+        },
       },
-      onDone(data) {
-        chat.streamEnd(accumulated, { tokenCount: data?.usage?.total_tokens })
-      },
-      onError(err) {
-        console.error("[chat] stream error", err)
-        chat.streamAbort()
-      },
-    },
-  )
+    )
+  } finally {
+    // Stream closed without a terminal event: commit what arrived so the
+    // composer never stays locked
+    if (chat.isStreaming.value) {
+      if (accumulated) chat.streamEnd(accumulated)
+      else chat.streamAbort()
+    }
+  }
 }

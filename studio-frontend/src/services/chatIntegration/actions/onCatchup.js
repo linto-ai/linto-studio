@@ -4,14 +4,21 @@ import { streamAssistantReply } from "./streamAssistantReply"
 
 export async function onCatchup(ctx) {
   const { core, catchup } = ctx
-  if (core.chat.isStreaming.value) return
+  // turnInFlight covers the window before streamStart flips isStreaming,
+  // where a double click would otherwise create two threads
+  if (core.chat.isStreaming.value || ctx.turnInFlight) return
 
-  const sessionId = await createThread(ctx, truncateTitle(catchup.content))
-  if (!sessionId) return
+  ctx.turnInFlight = true
+  try {
+    const sessionId = await createThread(ctx, truncateTitle(catchup.content))
+    if (!sessionId) return
 
-  await streamAssistantReply(ctx, sessionId, {
-    content: catchup.content,
-    mode: "catchup",
-    lang: catchup.lang,
-  })
+    await streamAssistantReply(ctx, sessionId, {
+      content: catchup.content,
+      mode: "catchup",
+      lang: catchup.lang,
+    })
+  } finally {
+    ctx.turnInFlight = false
+  }
 }

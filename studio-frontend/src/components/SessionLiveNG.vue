@@ -23,7 +23,6 @@ import {
 import {
   createLivePlugin,
   createSubtitlePlugin,
-  createLLMServicesPlugin,
 } from "@linto/transcript-ui/webcomponent"
 import { setupChat } from "@/services/chatIntegration"
 import computeSessionTurnUniqueId from "@/const/computeSessionTurnUniqueId"
@@ -172,7 +171,6 @@ export default {
         tts: getEnv("VUE_APP_ENABLE_TTS") === "true",
       })
       core.use(this.livePlugin)
-      core.use(createLLMServicesPlugin())
 
       core.use(
         createSubtitlePlugin({

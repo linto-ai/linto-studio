@@ -1,6 +1,4 @@
-const debug = require("debug")(
-  "linto:lib:mongodb:models:chatSessions",
-)
+const debug = require("debug")("linto:lib:mongodb:models:chatSessions")
 const MongoModel = require(`../model`)
 
 /**

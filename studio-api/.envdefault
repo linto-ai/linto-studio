@@ -38,7 +38,8 @@ LLM_GATEWAY_SERVICES=
 # Chat service from LLM Gateway (required for chat feature): ID, name or route
 LLM_CHAT_SERVICE_ID=
 # Chat service used for live session catchup: ID, name or route
-# (e.g. session-catchup); falls back to LLM_CHAT_SERVICE_ID when empty
+# (e.g. session-catchup). Must be set for the catchup UI to appear;
+# at request time an unreachable service falls back to LLM_CHAT_SERVICE_ID
 LLM_CATCHUP_SERVICE_ID=
 # WebSocket URL is automatically derived from LLM_GATEWAY_SERVICES
 # (http://localhost:8010 -> ws://localhost:8010)

@@ -13,7 +13,7 @@ import { onSend } from "./actions/onSend"
 import { onCatchup } from "./actions/onCatchup"
 
 // scope: {kind:"conversation",conversationId} | {kind:"session",organizationId,sessionId}
-// catchup (optional): { content, lang } — enables the drawer catchup action
+// catchup (optional): { content, lang }, enables the drawer catchup action
 export function setupChat(core, { scope: initialScope, catchup }) {
   core.use(createChatPlugin({ catchup: !!catchup }))
 
@@ -51,17 +51,27 @@ export function setupChat(core, { scope: initialScope, catchup }) {
     unsub.forEach((fn) => fn?.())
   }
 
+  function matchesChannel(thread) {
+    if (!thread) return false
+    return (
+      scope.channelId == null ||
+      String(thread.channelId) === String(scope.channelId)
+    )
+  }
+
   // Reopen the watched channel's latest thread, else start a briefing
   async function openCatchup() {
     const chat = core.chat
     chat.setDrawerOpen(true)
-    if (chat.activeSessionId.value) return
+    if (ctx.turnInFlight) return
+
+    const active = chat.sessions.value.find(
+      (s) => s.id === chat.activeSessionId.value,
+    )
+    if (matchesChannel(active)) return
 
     const sessions = await onLoadSessions(ctx)
-    const thread =
-      scope.channelId == null
-        ? sessions[0]
-        : sessions.find((s) => String(s.channelId) === String(scope.channelId))
+    const thread = sessions.find(matchesChannel)
     if (thread) {
       await onLoadSession(ctx, thread.id)
     } else {
