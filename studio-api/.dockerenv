@@ -80,5 +80,5 @@ EXPORT_TEMPLATE=default
 EXPORT_DISCLAIMER=
 ORGANIZATION_DEFAULT_PERMISSIONS=upload,summary,session,microphone,bot
 
-SUPER_ADMIN_EMAIL=admin@mail.com
-SUPER_ADMIN_PWD=superadminpassword
+SUPER_ADMIN_EMAIL=
+SUPER_ADMIN_PWD=

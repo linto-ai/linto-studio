@@ -80,9 +80,11 @@ BROKER_PROTOCOL=mqtt
 The superuser has an administrative access to the back office, which includes managing organization creation, assigning default permissions, and overseeing users within organizations. To set up a superuser, configure the following environment variables in your `.env` file:
 
 ```bash
-SUPER_ADMIN_EMAIL=superadmin@mail.fr
-SUPER_ADMIN_PWD=superadminpassword
+SUPER_ADMIN_EMAIL=
+SUPER_ADMIN_PWD=
 ```
+
+Both variables are shipped empty. The account is created on startup only when the two of them hold a value, and is skipped when the email already exists. Pick your own email and a strong password, never a value copied from an example or from another deployment.
 
 The superuser will have the authority to define organization-wide settings, manage user roles and can monitore all live sessions.
 

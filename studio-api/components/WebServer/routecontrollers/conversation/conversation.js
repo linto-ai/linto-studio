@@ -55,9 +55,12 @@ async function updateConversation(req, res, next) {
     )
     if (conversation.length !== 1) throw new ConversationNotFound()
 
+    // Ownership transfer is not part of a conversation update
+    const { owner, ...updatableFields } = req.body
+
     const conv = {
       _id: req.params.conversationId,
-      ...req.body,
+      ...updatableFields,
     }
 
     const result = await model.conversations.update(conv)
