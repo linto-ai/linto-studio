@@ -24,7 +24,7 @@ import {
   createLivePlugin,
   createSubtitlePlugin,
 } from "@linto/transcript-ui/webcomponent"
-import { setupChat } from "@/services/chatIntegration"
+import { ChatIntegration } from "@/services/chatIntegration"
 import computeSessionTurnUniqueId from "@/const/computeSessionTurnUniqueId"
 import classifySessionTurn from "@/tools/classifySessionTurn"
 import {
@@ -255,22 +255,24 @@ export default {
     setupSessionChat() {
       if (this.chatHandle || !this.core || !this.catchupEnabled) return
       this.chatHandle = markRaw(
-        setupChat(this.core, {
+        new ChatIntegration(this.core, {
           scope: {
             kind: "session",
             organizationId: this.currentOrganizationScope,
             sessionId: this.session.id,
           },
-          catchup: {
-            content: this.$t("chat.catchup_request_message"),
-            lang: this.$i18n.locale,
-          },
         }),
       )
     },
 
+    // mode/lang are wire fields for the session backend, which builds the
+    // real catchup prompt server-side; the content is only the displayed
+    // user message.
     openCatchup() {
-      this.chatHandle?.openCatchup()
+      this.chatHandle?.openWithPrompt(this.$t("chat.catchup_request_message"), {
+        mode: "catchup",
+        lang: this.$i18n.locale,
+      })
     },
 
     // Finals emitted while the socket was down are lost (the server does not

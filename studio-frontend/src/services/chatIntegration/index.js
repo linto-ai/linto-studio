@@ -1,83 +1,67 @@
 // Host glue for the SDK chat drawer: listens to the chat:* intents, does
 // the REST/SSE calls (api/chat.js) and pushes results back through
-// core.chat.*. All work lives in actions/; this file only wires.
+// core.chat.*.
 
 import { createChatPlugin } from "@linto/transcript-ui/webcomponent"
 
-import { onLoadSessions } from "./actions/onLoadSessions"
-import { onLoadSession } from "./actions/onLoadSession"
-import { createThread } from "./actions/createThread"
-import { onDeleteSession } from "./actions/onDeleteSession"
-import { onRenameSession } from "./actions/onRenameSession"
-import { onSend } from "./actions/onSend"
-import { onCatchup } from "./actions/onCatchup"
+import { loadDiscussions } from "./actions/loadDiscussions"
+import { loadDiscussionMessages } from "./actions/loadDiscussionMessages"
+import { createDiscussion } from "./actions/createDiscussion"
+import { deleteDiscussion } from "./actions/deleteDiscussion"
+import { renameDiscussion } from "./actions/renameDiscussion"
+import { sendMessage } from "./actions/sendMessage"
+import { startDiscussion } from "./actions/startDiscussion"
+import { autoNameDiscussion } from "./actions/autoNameDiscussion"
+import { streamAssistantReply } from "./actions/streamAssistantReply"
 
 // scope: {kind:"conversation",conversationId} | {kind:"session",organizationId,sessionId}
-// catchup (optional): { content, lang }, enables the drawer catchup action
-export function setupChat(core, { scope: initialScope, catchup }) {
-  core.use(createChatPlugin({ catchup: !!catchup }))
+export class ChatIntegration {
+  constructor(core, { scope }) {
+    this.core = core
+    // for api call could be {kind: session | conversation, id}
+    this.scope = { ...scope }
+    // In-flight guards, read and written by the actions
+    this.turnInFlight = false
+    this.discussionsInFlight = null
 
-  const scope = { ...initialScope }
-  const ctx = { core, scope, catchup }
+    this.loadDiscussions = loadDiscussions.bind(this)
+    this.loadDiscussionMessages = loadDiscussionMessages.bind(this)
+    this.createDiscussion = createDiscussion.bind(this)
+    this.deleteDiscussion = deleteDiscussion.bind(this)
+    this.renameDiscussion = renameDiscussion.bind(this)
+    this.sendMessage = sendMessage.bind(this)
+    this.startDiscussion = startDiscussion.bind(this)
+    this.autoNameDiscussion = autoNameDiscussion.bind(this)
+    this.streamAssistantReply = streamAssistantReply.bind(this)
 
-  const unsub = [
-    core.on("chat:loadSessions", () => onLoadSessions(ctx)),
-    core.on("chat:loadSession", ({ sessionId }) =>
-      onLoadSession(ctx, sessionId),
-    ),
-    core.on("chat:createSession", () => createThread(ctx)),
-    core.on("chat:deleteSession", ({ sessionId }) =>
-      onDeleteSession(ctx, sessionId),
-    ),
-    core.on("chat:renameSession", ({ sessionId, title }) =>
-      onRenameSession(ctx, sessionId, title),
-    ),
-    core.on("chat:send", ({ content }) => onSend(ctx, content)),
-    core.on("chat:catchup", () => onCatchup(ctx)),
-  ]
+    core.use(createChatPlugin())
 
-  // Threads are pinned to a channel at creation; follow the channel the
-  // user is watching so new threads target it.
-  if (scope.kind === "session") {
-    scope.channelId = core.activeChannelId.value || null
-    unsub.push(
-      core.on("channel:change", ({ channelId }) => {
-        scope.channelId = channelId
-      }),
-    )
+    this.unsubscribes = [
+      core.on("chat:loadDiscussions", () => this.loadDiscussions()),
+      core.on("chat:loadDiscussionMessages", ({ discussionId }) =>
+        this.loadDiscussionMessages(discussionId),
+      ),
+      core.on("chat:createDiscussion", () => this.createDiscussion()),
+      core.on("chat:deleteDiscussion", ({ discussionId }) =>
+        this.deleteDiscussion(discussionId),
+      ),
+      core.on("chat:renameDiscussion", ({ discussionId, title }) =>
+        this.renameDiscussion(discussionId, title),
+      ),
+      core.on("chat:send", ({ content }) => this.sendMessage(content)),
+    ]
   }
 
-  function dispose() {
-    unsub.forEach((fn) => fn?.())
+  dispose() {
+    this.unsubscribes.forEach((fn) => fn?.())
+    this.unsubscribes = []
   }
 
-  function matchesChannel(thread) {
-    if (!thread) return false
-    return (
-      scope.channelId == null ||
-      String(thread.channelId) === String(scope.channelId)
-    )
+  // Open the drawer and start a fresh discussion seeded with a prerecorded
+  // prompt. requestArgs (e.g. { mode, lang }) is forwarded opaque down to
+  // the api layer, which owns the wire fields.
+  async openWithPrompt(prompt, requestArgs) {
+    this.core.chat.setDrawerOpen(true)
+    await this.startDiscussion(prompt, requestArgs)
   }
-
-  // Reopen the watched channel's latest thread, else start a briefing
-  async function openCatchup() {
-    const chat = core.chat
-    chat.setDrawerOpen(true)
-    if (ctx.turnInFlight) return
-
-    const active = chat.sessions.value.find(
-      (s) => s.id === chat.activeSessionId.value,
-    )
-    if (matchesChannel(active)) return
-
-    const sessions = await onLoadSessions(ctx)
-    const thread = sessions.find(matchesChannel)
-    if (thread) {
-      await onLoadSession(ctx, thread.id)
-    } else {
-      await onCatchup(ctx)
-    }
-  }
-
-  return { dispose, openCatchup }
 }

@@ -30,7 +30,7 @@ import {
 } from "@linto/transcript-ui/webcomponent"
 
 import { setupLLMServices } from "@/services/llmServicesIntegration"
-import { setupChat } from "@/services/chatIntegration"
+import { ChatIntegration } from "@/services/chatIntegration"
 
 import LayoutV2 from "@/layouts/v2-layout.vue"
 import PublicationModal from "@/components/molecules/PublicationModal.vue"
@@ -199,9 +199,10 @@ export default {
       // already disposed it; just stop here.
       if (this.isDestroyed || !this.$refs.editor) return
       if (this.$store.state.chat.enabled) {
-        this.chatDispose = setupChat(core, {
+        const chat = new ChatIntegration(core, {
           scope: { kind: "conversation", conversationId: this.conversationId },
-        }).dispose
+        })
+        this.chatDispose = () => chat.dispose()
       }
 
       core.setDocument(doc)

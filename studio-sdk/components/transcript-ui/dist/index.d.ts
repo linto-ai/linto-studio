@@ -1,5 +1,5 @@
 export { createCore, provideCore, useCore, } from './core';
-export type { Core, CorePlugin, CoreEventMap, CoreOptions, CoreCapabilities, TranslationStore, ChannelStore, SpeakersStore, AudioPluginApi, TranscriptionEditorPluginApi, LivePluginApi, SubtitlePluginApi, LLMService, LLMServiceInit, LLMServiceStatus, LLMServicesPluginApi, ChatRole, ChatMessage, ChatSession, ChatPluginApi, } from './core';
+export type { Core, CorePlugin, CoreEventMap, CoreOptions, CoreCapabilities, TranslationStore, ChannelStore, SpeakersStore, AudioPluginApi, TranscriptionEditorPluginApi, LivePluginApi, SubtitlePluginApi, LLMService, LLMServiceInit, LLMServiceStatus, LLMServicesPluginApi, ChatRole, ChatMessage, ChatDiscussion, ChatPluginApi, } from './core';
 export { default as Layout } from './components/Layout.vue';
 export { createAudioPlugin } from './plugins/audio';
 export type { AudioPluginOptions } from './plugins/audio';

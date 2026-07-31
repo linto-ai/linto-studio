@@ -1,7 +1,12 @@
-// Maps API shapes (_id) to the SDK chat plugin shapes (id)
+// Maps API shapes (_id) to the SDK chat plugin shapes (id).
+// The wire still calls a discussion a "session".
 
-export function mapSession(session) {
-  return { id: session._id, title: session.title, channelId: session.channelId }
+export function mapDiscussion(apiSession) {
+  return {
+    id: apiSession._id,
+    title: apiSession.title,
+    channelId: apiSession.channelId,
+  }
 }
 
 export function mapMessage(message, index) {

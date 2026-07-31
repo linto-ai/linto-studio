@@ -8,7 +8,7 @@ import { createAudioPlugin } from "./plugins/audio"
 import { createTranscriptionEditorPlugin } from "./plugins/transcriptionEditor"
 import { createLLMServicesPlugin } from "./plugins/llmServices"
 import { createChatPlugin } from "./plugins/chat"
-import type { ChatMessage, ChatSession } from "./core/types"
+import type { ChatMessage, ChatDiscussion } from "./core/types"
 //import { createLivePlugin } from "./plugins/live"
 //import { createSubtitlePlugin } from "./plugins/subtitle"
 import type { LivePartialEvent, LiveFinalEvent } from "./plugins/live"
@@ -38,14 +38,14 @@ provideCore(core)
 if (core.chat) {
   const chat = core.chat
 
-  interface MockSession {
-    session: ChatSession
+  interface MockDiscussion {
+    discussion: ChatDiscussion
     messages: ChatMessage[]
   }
 
-  const db: MockSession[] = [
+  const db: MockDiscussion[] = [
     {
-      session: { id: "s1", title: "Résumé de la réunion" },
+      discussion: { id: "s1", title: "Résumé de la réunion" },
       messages: [
         {
           id: "m1",
@@ -65,7 +65,7 @@ if (core.chat) {
       ],
     },
     {
-      session: { id: "s2", title: "Questions sur le budget" },
+      discussion: { id: "s2", title: "Questions sur le budget" },
       messages: [],
     },
   ]
@@ -88,7 +88,9 @@ if (core.chat) {
     const tick = (): void => {
       if (i >= tokens.length) {
         chat.streamEnd(REPLY_MARKDOWN, { tokenCount: tokens.length })
-        const active = db.find((d) => d.session.id === chat.activeSessionId.value)
+        const active = db.find(
+          (d) => d.discussion.id === chat.activeDiscussionId.value,
+        )
         if (active) {
           active.messages.push({
             id: newId("a"),
@@ -105,64 +107,66 @@ if (core.chat) {
     setTimeout(tick, 300)
   }
 
-  core.on("chat:loadSessions", () => {
-    chat.setSessions(db.map((d) => d.session))
+  core.on("chat:loadDiscussions", () => {
+    chat.setDiscussions(db.map((d) => d.discussion))
   })
 
-  core.on("chat:loadSession", ({ sessionId }) => {
-    chat.setActiveSession(sessionId)
-    chat.setLoadingSession(true)
+  core.on("chat:loadDiscussionMessages", ({ discussionId }) => {
+    chat.setActiveDiscussion(discussionId)
+    chat.setLoadingDiscussion(true)
     // Simulate the history fetch latency so the spinner is visible.
     setTimeout(() => {
-      const entry = db.find((d) => d.session.id === sessionId)
+      const entry = db.find((d) => d.discussion.id === discussionId)
       chat.setMessages(entry ? [...entry.messages] : [])
-      chat.setLoadingSession(false)
+      chat.setLoadingDiscussion(false)
     }, 600)
   })
 
-  core.on("chat:createSession", () => {
-    const entry: MockSession = {
-      session: { id: newId("s"), title: "Nouvelle conversation" },
+  core.on("chat:createDiscussion", () => {
+    const entry: MockDiscussion = {
+      discussion: { id: newId("s"), title: "Nouvelle conversation" },
       messages: [],
     }
     db.unshift(entry)
-    chat.setSessions(db.map((d) => d.session))
-    chat.setActiveSession(entry.session.id)
+    chat.setDiscussions(db.map((d) => d.discussion))
+    chat.setActiveDiscussion(entry.discussion.id)
     chat.setMessages([])
   })
 
-  core.on("chat:renameSession", ({ sessionId, title }) => {
-    const entry = db.find((d) => d.session.id === sessionId)
-    if (entry) entry.session.title = title
-    chat.updateSessionTitle(sessionId, title)
+  core.on("chat:renameDiscussion", ({ discussionId, title }) => {
+    const entry = db.find((d) => d.discussion.id === discussionId)
+    if (entry) entry.discussion.title = title
+    chat.updateDiscussionTitle(discussionId, title)
   })
 
-  core.on("chat:deleteSession", ({ sessionId }) => {
-    const idx = db.findIndex((d) => d.session.id === sessionId)
+  core.on("chat:deleteDiscussion", ({ discussionId }) => {
+    const idx = db.findIndex((d) => d.discussion.id === discussionId)
     if (idx !== -1) db.splice(idx, 1)
-    chat.setSessions(db.map((d) => d.session))
-    if (chat.activeSessionId.value === sessionId) {
-      chat.setActiveSession(null)
+    chat.setDiscussions(db.map((d) => d.discussion))
+    if (chat.activeDiscussionId.value === discussionId) {
+      chat.setActiveDiscussion(null)
       chat.setMessages([])
     }
   })
 
   core.on("chat:send", ({ content }) => {
-    // Create a session on first send if none is active.
-    let entry = db.find((d) => d.session.id === chat.activeSessionId.value)
+    // Create a discussion on first send if none is active.
+    let entry = db.find(
+      (d) => d.discussion.id === chat.activeDiscussionId.value,
+    )
     if (!entry) {
       entry = {
-        session: { id: newId("s"), title: content.slice(0, 30) },
+        discussion: { id: newId("s"), title: content.slice(0, 30) },
         messages: [],
       }
       db.unshift(entry)
-      chat.setSessions(db.map((d) => d.session))
-      chat.setActiveSession(entry.session.id)
+      chat.setDiscussions(db.map((d) => d.discussion))
+      chat.setActiveDiscussion(entry.discussion.id)
       chat.setMessages([])
     } else if (entry.messages.length === 0) {
-      // Auto-name the session from the first user message.
-      entry.session.title = content.slice(0, 30)
-      chat.updateSessionTitle(entry.session.id, entry.session.title)
+      // Auto-name the discussion from the first user message.
+      entry.discussion.title = content.slice(0, 30)
+      chat.updateDiscussionTitle(entry.discussion.id, entry.discussion.title)
     }
 
     const userMessage: ChatMessage = {

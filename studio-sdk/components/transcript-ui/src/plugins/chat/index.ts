@@ -3,38 +3,33 @@ import type {
   Core,
   CorePlugin,
   ChatMessage,
-  ChatSession,
+  ChatDiscussion,
   ChatPluginApi,
 } from "../../core/types"
 
-export type { ChatMessage, ChatSession, ChatPluginApi }
+export type { ChatMessage, ChatDiscussion, ChatPluginApi }
 
 const STREAMING_MESSAGE_ID = "__streaming__"
 
 /**
  * Chat plugin — state container only, no network.
  *
- * The UI emits intents (`chat:send`, `chat:loadSession`, …) via `core.emit`,
+ * The UI emits intents (`chat:send`, `chat:loadDiscussions`, …) via `core.emit`,
  * the host listens, performs the HTTP/SSE calls, and pushes results back
  * through the setters below. Mirrors the `llmServices` plugin design.
  */
-export interface ChatPluginOptions {
-  /** Show the catchup action in the drawer (emits `chat:catchup`). */
-  catchup?: boolean
-}
-
-export function createChatPlugin(options: ChatPluginOptions = {}): CorePlugin {
+export function createChatPlugin(): CorePlugin {
   return {
     name: "chat",
 
     install(core: Core) {
       const drawerOpen = ref(false)
-      const sessions = ref<ChatSession[]>([])
-      const activeSessionId = ref<string | null>(null)
+      const discussions = ref<ChatDiscussion[]>([])
+      const activeDiscussionId = ref<string | null>(null)
       const messages = ref<ChatMessage[]>([])
       const isStreaming = ref(false)
       const streamingContent = ref("")
-      const isLoadingSession = ref(false)
+      const isLoadingDiscussion = ref(false)
 
       // Local counter for client-side message ids (host messages carry their own).
       let seq = 0
@@ -55,23 +50,22 @@ export function createChatPlugin(options: ChatPluginOptions = {}): CorePlugin {
 
       const api: ChatPluginApi = {
         drawerOpen,
-        sessions,
-        activeSessionId,
+        discussions,
+        activeDiscussionId,
         messages,
         isStreaming,
         streamingContent,
-        isLoadingSession,
+        isLoadingDiscussion,
         allMessages,
-        catchupEnabled: !!options.catchup,
 
         setDrawerOpen(open) {
           drawerOpen.value = open
         },
-        setSessions(next) {
-          sessions.value = next
+        setDiscussions(next) {
+          discussions.value = next
         },
-        setActiveSession(sessionId) {
-          activeSessionId.value = sessionId
+        setActiveDiscussion(discussionId) {
+          activeDiscussionId.value = discussionId
         },
         setMessages(next) {
           messages.value = next
@@ -79,12 +73,12 @@ export function createChatPlugin(options: ChatPluginOptions = {}): CorePlugin {
         addMessage(message) {
           messages.value = [...messages.value, message]
         },
-        updateSessionTitle(sessionId, title) {
-          const session = sessions.value.find((s) => s.id === sessionId)
-          if (session) session.title = title
+        updateDiscussionTitle(discussionId, title) {
+          const discussion = discussions.value.find((d) => d.id === discussionId)
+          if (discussion) discussion.title = title
         },
-        setLoadingSession(loading) {
-          isLoadingSession.value = loading
+        setLoadingDiscussion(loading) {
+          isLoadingDiscussion.value = loading
         },
 
         streamStart() {
@@ -116,12 +110,12 @@ export function createChatPlugin(options: ChatPluginOptions = {}): CorePlugin {
       core.chat = api
 
       return () => {
-        sessions.value = []
+        discussions.value = []
         messages.value = []
-        activeSessionId.value = null
+        activeDiscussionId.value = null
         isStreaming.value = false
         streamingContent.value = ""
-        isLoadingSession.value = false
+        isLoadingDiscussion.value = false
         drawerOpen.value = false
         core.chat = undefined
       }
