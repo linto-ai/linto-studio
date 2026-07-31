@@ -35,7 +35,7 @@ export default defineConfig({
         output: {
           manualChunks: {
             'vendor-vue': ['vue', 'vue-router', 'vuex', 'vue-i18n'],
-            'vendor-editor': ['yjs', 'wavesurfer.js', 'socket.io-client', 'marked', 'turndown', 'turndown-plugin-gfm'],
+            'vendor-editor': ['wavesurfer.js', 'socket.io-client'],
             'vendor-utils': ['axios', 'debug', 'uuid'],
           },
         },
@@ -63,13 +63,9 @@ export default defineConfig({
         'vue-i18n',
         'axios',
         'socket.io-client',
-        'yjs',
         'wavesurfer.js',
         'debug',
         'uuid',
-        'marked',
-        'turndown',
-        'turndown-plugin-gfm',
       ],
     },
 })

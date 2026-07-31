@@ -3,6 +3,19 @@
     <!-- Media overview content -->
     <div class="panel-body">
       <div class="media-overview">
+        <!-- Primary entry point: the media workspace -->
+        <div class="media-section media-section--open">
+          <Button
+            :to="transcriptionRoute"
+            :disabled="isProcessing"
+            icon="arrow-right"
+            variant="primary"
+            :label="$t('media_explorer.panel.open_media')" />
+          <span class="open-media-hint">
+            {{ $t("media_explorer.panel.open_media_hint") }}
+          </span>
+        </div>
+
         <!-- Media title -->
         <div class="media-section">
           <FormInput
@@ -95,6 +108,13 @@
                   : $t("media_explorer.panel.duplicate")
               }}
             </Button>
+            <Button
+              :to="subtitlesRoute"
+              :disabled="isProcessing"
+              icon="closed-captioning"
+              variant="secondary"
+              size="sm"
+              :label="$t('media_explorer.line.edit_subtitles')" />
           </div>
         </div>
 
@@ -181,10 +201,29 @@ export default {
   computed: {
     ...mapGetters("organizations", [
       "getCurrentScope",
+      "getCurrentOrganization",
       "isImpersonatingCurrentOrganization",
     ]),
     reactiveSelectedMedia() {
       return this.selectedMedia
+    },
+    transcriptionRoute() {
+      return {
+        name: "conversations transcription",
+        params: {
+          conversationId: this.reactiveSelectedMedia?._id,
+          organizationId: this.getCurrentOrganization?._id,
+        },
+      }
+    },
+    subtitlesRoute() {
+      return {
+        name: "conversations subtitles",
+        params: {
+          conversationId: this.reactiveSelectedMedia?._id,
+          organizationId: this.getCurrentOrganization?._id,
+        },
+      }
     },
     isProcessing() {
       const state = this.reactiveSelectedMedia?.jobs?.transcription?.state
@@ -434,6 +473,20 @@ export default {
   min-height: 2.75rem;
   max-height: 2.75rem;
   resize: none;
+}
+
+.media-section--open {
+  gap: 0.25rem;
+}
+
+/* btn-base sets align-self: center, which centers the button in this flex column */
+.media-section--open :deep(.btn) {
+  align-self: flex-start;
+}
+
+.open-media-hint {
+  font-size: 0.8125rem;
+  color: var(--text-secondary, #666);
 }
 
 .section-title {

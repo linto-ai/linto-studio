@@ -25,10 +25,15 @@
   </Modal>
 </template>
 <script>
-import { workerSendMessage } from "../tools/worker-message"
+import { apiDeleteSubtitles } from "../api/subtitle.js"
+import { bus } from "@/main.js"
 import Modal from "@/components/molecules/Modal.vue"
 export default {
   props: {
+    conversationId: {
+      type: String,
+      required: true,
+    },
     subtitleIds: {
       type: Array, // String Array
       required: true,
@@ -49,9 +54,20 @@ export default {
   methods: {
     async deleteSubtitle() {
       if (this.subtitleIds.length > 0) {
-        workerSendMessage("delete_subtitles", {
-          subtitleIds: this.subtitleIds,
-        })
+        const res = await apiDeleteSubtitles(
+          this.conversationId,
+          this.subtitleIds,
+        )
+        if (res?.status === "success") {
+          bus.$emit("subtitle_versions_deleted", this.subtitleIds)
+        } else {
+          bus.$emit("app_notif", {
+            status: "error",
+            message: res?.message,
+            timeout: null,
+            redirect: false,
+          })
+        }
       }
       this.$emit("on-close")
     },

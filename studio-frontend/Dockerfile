@@ -1,5 +1,5 @@
 # Stage 1: Install dependencies (recreate monorepo structure so file:.. resolves)
-FROM node:22.14.0 AS deps
+FROM node:22.22.0 AS deps
 WORKDIR /app
 COPY studio-sdk/components/transcript-ui studio-sdk/components/transcript-ui
 COPY studio-frontend/package*.json studio-frontend/
@@ -7,7 +7,7 @@ WORKDIR /app/studio-frontend
 RUN npm ci
 
 # Stage 2: Build the Vue.js application
-FROM node:22.14.0 AS builder
+FROM node:22.22.0 AS builder
 WORKDIR /app
 COPY --from=deps /app /app
 COPY studio-frontend/ /app/studio-frontend/

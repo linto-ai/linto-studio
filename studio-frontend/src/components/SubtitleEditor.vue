@@ -23,10 +23,6 @@
         :user-info="userInfo"
         :screens="blocks"
         :can-edit="canEdit"
-        :conversation-id="conversation._id"
-        :conversation-users="conversationUsers"
-        :focusFields="focusFields"
-        :users-connected="usersConnected"
         :previousScreenId="previousScreenId"
         :playingScreenId="playingScreenId"
         :nextScreenId="nextScreenId"
@@ -67,19 +63,6 @@ export default {
     },
     blocks: {
       type: ScreenList,
-      required: true,
-    },
-    conversationUsers: {
-      type: Array,
-      required: true,
-      default: () => [],
-    },
-    usersConnected: {
-      type: Array,
-      default: () => [],
-    },
-    focusFields: {
-      type: Object,
       required: true,
     },
   },

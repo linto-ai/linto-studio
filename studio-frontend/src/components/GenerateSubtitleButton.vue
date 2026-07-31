@@ -17,6 +17,7 @@
     </button> -->
     <ModalGenerateSubtitle
       v-if="generate"
+      :conversationId="conversationId"
       @on-close="closeGenerateModal"></ModalGenerateSubtitle>
   </div>
 </template>
@@ -26,6 +27,10 @@ export default {
   props: {
     canEdit: {
       type: Boolean,
+      required: true,
+    },
+    conversationId: {
+      type: String,
       required: true,
     },
   },
