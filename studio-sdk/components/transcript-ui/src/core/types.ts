@@ -1,4 +1,4 @@
-import type { ComputedRef, Ref, ShallowRef } from "vue"
+import type { Component, ComputedRef, Ref, ShallowRef } from "vue"
 import type {
   AudioSource,
   Channel,
@@ -124,9 +124,23 @@ export interface SpeakersStore {
 
 // ── Plugin ─────────────────────────────────────────────────────────────
 
+/**
+ * Named UI extension points Layout owns and knows how to place. A plugin
+ * fills in the slots it's relevant to; Layout renders whatever lands there
+ * via `<component :is>`, still deciding on its own when each slot shows.
+ */
+export type UISlot =
+  | "player"
+  | "chatDrawer"
+  | "subtitleBanner"
+  | "subtitleFullscreen"
+  | "llmServicePanel"
+
 export interface CorePlugin {
   name: string
   install(core: Core): (() => void) | void
+  /** Vue components this plugin contributes to Layout's named slots. */
+  components?: Partial<Record<UISlot, Component>>
 }
 
 // ── Store Options ───────────────────────────────────────────────────────
@@ -566,6 +580,10 @@ export interface Core {
   subtitle?: SubtitlePluginApi
   llmServices?: LLMServicesPluginApi
   chat?: ChatPluginApi
+
+  // ── Plugin UI ────────────────────────────────────────────────────────
+  /** Components registered by installed plugins, keyed by UI slot. */
+  readonly components: Partial<Record<UISlot, Component>>
 
   // ── Events ───────────────────────────────────────────────────────────
   on<K extends keyof CoreEventMap>(

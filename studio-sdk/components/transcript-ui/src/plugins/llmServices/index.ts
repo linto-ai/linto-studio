@@ -9,6 +9,7 @@ import type {
   LLMServiceGeneration,
   LLMServicesPluginApi,
 } from "../../core/types"
+import LLMServicePanel from "./LLMServicePanel.vue"
 
 export type {
   LLMService,
@@ -18,6 +19,7 @@ export type {
   LLMServiceGeneration,
   LLMServicesPluginApi,
 }
+export { LLMServicePanel }
 
 interface InternalLLMService {
   readonly id: string
@@ -67,6 +69,7 @@ function clampProgress(value: number): number {
 export function createLLMServicesPlugin(): CorePlugin {
   return {
     name: "llmServices",
+    components: { llmServicePanel: LLMServicePanel },
 
     install(core: Core) {
       const services = new Map<string, InternalLLMService>()

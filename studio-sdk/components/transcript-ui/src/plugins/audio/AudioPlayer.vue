@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, toRef } from 'vue'
 import AudioPlayerControls from './AudioPlayerControls.vue'
-import { useAudioPlayer } from '../composables/useAudioPlayer'
+import { useAudioPlayer } from './useAudioPlayer'
 
 const props = defineProps<{
   audioSrc?: string

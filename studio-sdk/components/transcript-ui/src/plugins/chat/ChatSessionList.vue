@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, computed } from "vue"
-import Button from "../atoms/Button.vue"
-import SelectableListItem from "../atoms/SelectableListItem.vue"
-import FormInput, { type FormField } from "./FormInput.vue"
+import Button from "../../components/atoms/Button.vue"
+import SelectableListItem from "../../components/atoms/SelectableListItem.vue"
+import FormInput, { type FormField } from "../../components/molecules/FormInput.vue"
 import { useI18n } from "../../i18n"
 import type { ChatSession } from "../../core/types"
 

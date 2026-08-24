@@ -412,8 +412,8 @@ function startLiveSimulation(channelId: string) {
 onMounted(async () => {
   try {
     const [r1, r2] = await Promise.all([
-      fetch("/test.json"),
-      fetch("/test2.json"),
+      fetch("/public/projet-libre-openstreetmap.json"),
+      fetch("/public/projet-libre-openstreetmap_whisperx.json"),
     ])
     const [raw1, raw2]: [ApiDocument, WhisperXDocument] = await Promise.all([
       r1.json(),
@@ -454,7 +454,7 @@ onMounted(async () => {
       translations: [
         {
           ...sourceTr1,
-          audio: { src: "/chat-gpt-dans-le-texte.mp3" },
+          audio: { src: "/public/projet-libre-openstreetmap.mp3" },
           isSource: true,
         },
         //{ ...sourceTr1, isSource: true },

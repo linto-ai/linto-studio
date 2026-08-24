@@ -1,6 +1,8 @@
 import { CorePlugin, AudioPluginApi } from '../../core/types';
 import { AudioSource } from '../../types/editor';
+import { default as AudioPlayer } from './AudioPlayer.vue';
 export type { AudioPluginApi };
+export { AudioPlayer };
 export interface AudioPluginOptions {
     /**
      * Resolves an `AudioSource` into a playable URL. Lets the host add a

@@ -36,6 +36,7 @@
     "reka-ui": "^2.8.0",
     "turndown": "^7.2.4",
     "turndown-plugin-gfm": "^1.0.2",
+    "vite-plugin-node-polyfills": "^0.28.0",
     "vue-stick-to-bottom": "^1.0.0",
     "wavesurfer.js": "^7.12.1"
   },

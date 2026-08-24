@@ -1,4 +1,4 @@
-import { ComputedRef, Ref, ShallowRef } from 'vue';
+import { Component, ComputedRef, Ref, ShallowRef } from 'vue';
 import { AudioSource, Channel, EditorDocument, Speaker, Turn, Word } from '../types/editor';
 export interface CoreCapabilities {
     text: "edit" | "view";
@@ -160,9 +160,17 @@ export interface SpeakersStore {
     updateOrCreate(speaker: Speaker): void;
     delete(speakerId: string): void;
 }
+/**
+ * Named UI extension points Layout owns and knows how to place. A plugin
+ * fills in the slots it's relevant to; Layout renders whatever lands there
+ * via `<component :is>`, still deciding on its own when each slot shows.
+ */
+export type UISlot = "player" | "chatDrawer" | "subtitleBanner" | "subtitleFullscreen" | "llmServicePanel";
 export interface CorePlugin {
     name: string;
     install(core: Core): (() => void) | void;
+    /** Vue components this plugin contributes to Layout's named slots. */
+    components?: Partial<Record<UISlot, Component>>;
 }
 export interface CoreOptions {
     document?: EditorDocument;
@@ -527,6 +535,8 @@ export interface Core {
     subtitle?: SubtitlePluginApi;
     llmServices?: LLMServicesPluginApi;
     chat?: ChatPluginApi;
+    /** Components registered by installed plugins, keyed by UI slot. */
+    readonly components: Partial<Record<UISlot, Component>>;
     on<K extends keyof CoreEventMap>(event: K, handler: (payload: CoreEventMap[K]) => void): () => void;
     off<K extends keyof CoreEventMap>(event: K, handler: (payload: CoreEventMap[K]) => void): void;
     emit<K extends keyof CoreEventMap>(event: K, payload: CoreEventMap[K]): void;

@@ -1,4 +1,4 @@
-import { ref, computed, shallowReactive } from "vue"
+import { ref, computed, shallowReactive, type Component } from "vue"
 import type { Channel, EditorDocument } from "../types/editor"
 import type {
   Core,
@@ -7,6 +7,7 @@ import type {
   CoreCapabilities,
   CorePlugin,
   TurnEventKey,
+  UISlot,
 } from "./types"
 import { createEventBus } from "./modules/eventBus"
 import { createSpeakersStore } from "./stores/speakersStore"
@@ -38,6 +39,10 @@ export function createCore(options: CoreOptions = {}): Core {
   // ── Channels ───────────────────────────────────────────────────────
 
   const channels = shallowReactive(new Map<string, ChannelStore>())
+
+  // ── Plugin UI ──────────────────────────────────────────────────────
+
+  const components = shallowReactive<Partial<Record<UISlot, Component>>>({})
 
   const activeChannel = computed<ChannelStore | undefined>(() =>
     channels.get(activeChannelId.value) ?? [...channels.values()][0],
@@ -112,6 +117,7 @@ export function createCore(options: CoreOptions = {}): Core {
   const cleanups: Array<() => void> = []
 
   function use(plugin: CorePlugin): void {
+    if (plugin.components) Object.assign(components, plugin.components)
     const cleanup = plugin.install(core)
     if (cleanup) cleanups.push(cleanup)
   }
@@ -140,6 +146,7 @@ export function createCore(options: CoreOptions = {}): Core {
     speakers,
     channels,
     activeChannel,
+    components,
     onActiveTranslation,
     setDocument,
     setActiveChannel,

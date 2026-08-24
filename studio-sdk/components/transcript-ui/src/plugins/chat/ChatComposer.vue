@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, useId, onMounted, useTemplateRef } from "vue"
-import Button from "../atoms/Button.vue"
+import Button from "../../components/atoms/Button.vue"
 import { useI18n } from "../../i18n"
 
 const props = defineProps<{

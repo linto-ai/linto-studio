@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue"
-import MarkdownEditor from "./atoms/MarkdownEditor.vue"
-import Button from "./atoms/Button.vue"
-import EditorIcon from "./atoms/EditorIcon.vue"
+import MarkdownEditor from "../../components/atoms/MarkdownEditor.vue"
+import Button from "../../components/atoms/Button.vue"
+import EditorIcon from "../../components/atoms/EditorIcon.vue"
 import DocumentArticle, {
   type DocumentArticleStatus,
-} from "./molecules/DocumentArticle.vue"
-import { useI18n } from "../i18n"
-import { useCore } from "../core"
-import type { LLMService } from "../core"
+} from "../../components/molecules/DocumentArticle.vue"
+import { useI18n } from "../../i18n"
+import { useCore } from "../../core"
+import type { LLMService } from "../../core"
 
 const props = defineProps<{
   service: LLMService

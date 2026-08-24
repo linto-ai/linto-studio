@@ -1,5 +1,7 @@
 import { CorePlugin, ChatMessage, ChatSession, ChatPluginApi } from '../../core/types';
+import { default as ChatDrawer } from './ChatDrawer.vue';
 export type { ChatMessage, ChatSession, ChatPluginApi };
+export { ChatDrawer };
 /**
  * Chat plugin — state container only, no network.
  *

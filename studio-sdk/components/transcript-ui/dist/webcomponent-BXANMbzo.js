@@ -8243,7 +8243,7 @@ const withKeys = (fn, modifiers) => {
     }
     const eventKey = hyphenate(event.key);
     if (modifiers.some(
-      (k2) => k2 === eventKey || keyNames[k2] === eventKey
+      (k) => k === eventKey || keyNames[k] === eventKey
     )) {
       return fn(event);
     }
@@ -8756,7 +8756,7 @@ const _hoisted_1$G = {
   class: "editor-icon editor-icon--missing",
   "aria-hidden": "true"
 };
-const _sfc_main$P = /* @__PURE__ */ defineComponent({
+const _sfc_main$O = /* @__PURE__ */ defineComponent({
   __name: "EditorIcon",
   props: {
     name: { type: String },
@@ -8787,13 +8787,13 @@ const _export_sfc = (sfc, props) => {
   }
   return target;
 };
-const EditorIcon = /* @__PURE__ */ _export_sfc(_sfc_main$P, [["styles", [_style_0$G]], ["__scopeId", "data-v-210c7f09"]]);
+const EditorIcon = /* @__PURE__ */ _export_sfc(_sfc_main$O, [["styles", [_style_0$G]], ["__scopeId", "data-v-210c7f09"]]);
 const _hoisted_1$F = ["type", "disabled", "aria-disabled", "aria-label"];
 const _hoisted_2$v = {
   key: 3,
   class: "editor-btn__label"
 };
-const _sfc_main$O = /* @__PURE__ */ defineComponent({
+const _sfc_main$N = /* @__PURE__ */ defineComponent({
   __name: "Button",
   props: {
     label: { type: String },
@@ -8861,7 +8861,7 @@ const _sfc_main$O = /* @__PURE__ */ defineComponent({
   }
 });
 const _style_0$F = "\n.editor-btn[data-v-d554746d] {\n  /* Default tokens — overridden by variant/intent/size modifiers */\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-sm);\n  --btn-font-size: var(--font-size-xs);\n  --btn-height: 32px;\n  --btn-gap: var(--spacing-xs);\n\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: var(--btn-gap);\n  box-sizing: border-box;\n  height: var(--btn-height);\n  padding: var(--btn-padding-y) var(--btn-padding-x);\n  font-family: var(--font-family);\n  font-size: var(--btn-font-size);\n  font-weight: 500;\n  line-height: 1;\n  color: var(--btn-text);\n  background-color: var(--btn-bg);\n  border: 1px solid var(--btn-border-color);\n  border-radius: var(--radius-sm);\n  cursor: pointer;\n  white-space: nowrap;\n  transition:\n    background-color var(--transition-duration),\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.editor-btn[data-v-d554746d]:hover:not(:disabled) {\n  background-color: var(--btn-hover-bg);\n  color: var(--btn-hover-text);\n}\n.editor-btn[data-v-d554746d]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n\n/* Note: this rule is repeated lower in the file (after variants) to win the\n   cascade on the variant CSS vars. Keep this lightweight version for the\n   cursor and hover suppression. */\n.editor-btn[data-v-d554746d]:disabled {\n  cursor: not-allowed;\n}\n.editor-btn[data-v-d554746d]:disabled:hover {\n  background-color: var(--btn-bg);\n  color: var(--btn-text);\n}\n.editor-btn__label[data-v-d554746d] {\n  /* //overflow: hidden;\n  text-overflow: ellipsis; */\n  text-overflow: ellipsis;\n  text-box: cap alphabetic;\n}\n\n/* Sizes */\n.editor-btn--sm[data-v-d554746d] {\n  /* defaults */\n}\n.editor-btn--md[data-v-d554746d] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-sm);\n  --btn-height: 40px;\n}\n.editor-btn--lg[data-v-d554746d] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-base);\n  --btn-height: 44px;\n}\n\n/* Icon-only: square */\n.editor-btn--icon-only[data-v-d554746d] {\n  width: var(--btn-height);\n  padding: 0;\n}\n.editor-btn--block[data-v-d554746d] {\n  display: flex;\n  width: 100%;\n}\n\n/* Variants — default intent */\n.editor-btn--primary[data-v-d554746d] {\n  --btn-bg: var(--color-primary);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary-hover);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--secondary[data-v-d554746d] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-primary);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--tertiary[data-v-d554746d] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-primary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n.editor-btn--transparent[data-v-d554746d] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n\n/* Literal theme inversion: background = the theme's text color and\n   vice-versa — high contrast in both light and dark themes without\n   borrowing the primary color's semantics. */\n.editor-btn--inverse[data-v-d554746d] {\n  --btn-bg: var(--color-text-primary);\n  --btn-text: var(--color-background);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-text-secondary);\n  --btn-hover-text: var(--color-background);\n}\n\n/* Destructive intent overrides */\n.editor-btn--destructive.editor-btn--primary[data-v-d554746d] {\n  --btn-bg: var(--color-danger);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-hover);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--destructive.editor-btn--secondary[data-v-d554746d] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-danger);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--destructive.editor-btn--tertiary[data-v-d554746d],\n.editor-btn--destructive.editor-btn--transparent[data-v-d554746d] {\n  --btn-text: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-soft);\n  --btn-hover-text: var(--color-danger);\n}\n\n/* Disabled: gray-out regardless of variant. Placed after the variants so the\n   CSS var overrides win the cascade (same specificity, last declaration). */\n.editor-btn[data-v-d554746d]:disabled {\n  --btn-bg: var(--color-surface);\n  --btn-text: var(--color-text-muted);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface);\n  --btn-hover-text: var(--color-text-muted);\n}\n\n/* The transparent variant has no chrome when enabled — disabling it must not\n   ADD a box; the muted text alone carries the disabled signal. */\n.editor-btn--transparent[data-v-d554746d]:disabled {\n  --btn-bg: transparent;\n  --btn-border-color: transparent;\n  --btn-hover-bg: transparent;\n}\n\n/* Inverse stays a filled, borderless chip when disabled — dimmed, but the\n   silhouette must not change. */\n.editor-btn--inverse[data-v-d554746d]:disabled {\n  --btn-bg: var(--color-surface-hover);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-surface-hover);\n}\n";
-const Button = /* @__PURE__ */ _export_sfc(_sfc_main$O, [["styles", [_style_0$F]], ["__scopeId", "data-v-d554746d"]]);
+const Button = /* @__PURE__ */ _export_sfc(_sfc_main$N, [["styles", [_style_0$F]], ["__scopeId", "data-v-d554746d"]]);
 const fr = {
   "editor.loading": "Chargement…",
   "editor.loadError": "Erreur de chargement",
@@ -9211,37 +9211,44 @@ function buildTranslationItems(translations, locale, originalLabel, wildcardLabe
     };
   });
 }
-function z() {
+function C$1() {
   return { async: false, breaks: false, extensions: null, gfm: true, hooks: null, pedantic: false, renderer: null, silent: false, tokenizer: null, walkTokens: null };
 }
-var T = z();
-function G(l4) {
-  T = l4;
+var R = C$1();
+function j(l4) {
+  R = l4;
 }
-var _ = { exec: () => null };
-function k(l4, e3 = "") {
+var z = { exec: () => null };
+function A(l4) {
+  let e3 = [];
+  return (t2) => {
+    let n2 = Math.max(0, Math.min(3, t2 - 1)), s2 = e3[n2];
+    return s2 || (s2 = l4(n2), e3[n2] = s2), s2;
+  };
+}
+function d$2(l4, e3 = "") {
   let t2 = typeof l4 == "string" ? l4 : l4.source, n2 = { replace: (s2, r2) => {
     let i2 = typeof r2 == "string" ? r2 : r2.source;
     return i2 = i2.replace(m$1.caret, "$1"), t2 = t2.replace(s2, i2), n2;
   }, getRegex: () => new RegExp(t2, e3) };
   return n2;
 }
-var Re = ((l4 = "") => {
+var Te = ((l4 = "") => {
   try {
     return !!new RegExp("(?<=1)(?<!1)" + l4);
   } catch {
     return false;
   }
-})(), m$1 = { codeRemoveIndent: /^(?: {1,4}| {0,3}\t)/gm, outputLinkReplace: /\\([\[\]])/g, indentCodeCompensation: /^(\s+)(?:```)/, beginningSpace: /^\s+/, endingHash: /#$/, startingSpaceChar: /^ /, endingSpaceChar: / $/, nonSpaceChar: /[^ ]/, newLineCharGlobal: /\n/g, tabCharGlobal: /\t/g, multipleSpaceGlobal: /\s+/g, blankLine: /^[ \t]*$/, doubleBlankLine: /\n[ \t]*\n[ \t]*$/, blockquoteStart: /^ {0,3}>/, blockquoteSetextReplace: /\n {0,3}((?:=+|-+) *)(?=\n|$)/g, blockquoteSetextReplace2: /^ {0,3}>[ \t]?/gm, listReplaceNesting: /^ {1,4}(?=( {4})*[^ ])/g, listIsTask: /^\[[ xX]\] +\S/, listReplaceTask: /^\[[ xX]\] +/, listTaskCheckbox: /\[[ xX]\]/, anyLine: /\n.*\n/, hrefBrackets: /^<(.*)>$/, tableDelimiter: /[:|]/, tableAlignChars: /^\||\| *$/g, tableRowBlankLine: /\n[ \t]*$/, tableAlignRight: /^ *-+: *$/, tableAlignCenter: /^ *:-+: *$/, tableAlignLeft: /^ *:-+ *$/, startATag: /^<a /i, endATag: /^<\/a>/i, startPreScriptTag: /^<(pre|code|kbd|script)(\s|>)/i, endPreScriptTag: /^<\/(pre|code|kbd|script)(\s|>)/i, startAngleBracket: /^</, endAngleBracket: />$/, pedanticHrefTitle: /^([^'"]*[^\s])\s+(['"])(.*)\2/, unicodeAlphaNumeric: /[\p{L}\p{N}]/u, escapeTest: /[&<>"']/, escapeReplace: /[&<>"']/g, escapeTestNoEncode: /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/, escapeReplaceNoEncode: /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/g, caret: /(^|[^\[])\^/g, percentDecode: /%25/g, findPipe: /\|/g, splitPipe: / \|/, slashPipe: /\\\|/g, carriageReturn: /\r\n|\r/g, spaceLine: /^ +$/gm, notSpaceStart: /^\S*/, endingNewline: /\n$/, listItemRegex: (l4) => new RegExp(`^( {0,3}${l4})((?:[	 ][^\\n]*)?(?:\\n|$))`), nextBulletRegex: (l4) => new RegExp(`^ {0,${Math.min(3, l4 - 1)}}(?:[*+-]|\\d{1,9}[.)])((?:[ 	][^\\n]*)?(?:\\n|$))`), hrRegex: (l4) => new RegExp(`^ {0,${Math.min(3, l4 - 1)}}((?:- *){3,}|(?:_ *){3,}|(?:\\* *){3,})(?:\\n+|$)`), fencesBeginRegex: (l4) => new RegExp(`^ {0,${Math.min(3, l4 - 1)}}(?:\`\`\`|~~~)`), headingBeginRegex: (l4) => new RegExp(`^ {0,${Math.min(3, l4 - 1)}}#`), htmlBeginRegex: (l4) => new RegExp(`^ {0,${Math.min(3, l4 - 1)}}<(?:[a-z].*>|!--)`, "i"), blockquoteBeginRegex: (l4) => new RegExp(`^ {0,${Math.min(3, l4 - 1)}}>`) }, Te = /^(?:[ \t]*(?:\n|$))+/, Oe = /^((?: {4}| {0,3}\t)[^\n]+(?:\n(?:[ \t]*(?:\n|$))*)?)+/, we = /^ {0,3}(`{3,}(?=[^`\n]*(?:\n|$))|~{3,})([^\n]*)(?:\n|$)(?:|([\s\S]*?)(?:\n|$))(?: {0,3}\1[~`]* *(?=\n|$)|$)/, I = /^ {0,3}((?:-[\t ]*){3,}|(?:_[ \t]*){3,}|(?:\*[ \t]*){3,})(?:\n+|$)/, ye = /^ {0,3}(#{1,6})(?=\s|$)(.*)(?:\n+|$)/, Q = / {0,3}(?:[*+-]|\d{1,9}[.)])/, ie = /^(?!bull |blockCode|fences|blockquote|heading|html|table)((?:.|\n(?!\s*?\n|bull |blockCode|fences|blockquote|heading|html|table))+?)\n {0,3}(=+|-+) *(?:\n+|$)/, oe = k(ie).replace(/bull/g, Q).replace(/blockCode/g, /(?: {4}| {0,3}\t)/).replace(/fences/g, / {0,3}(?:`{3,}|~{3,})/).replace(/blockquote/g, / {0,3}>/).replace(/heading/g, / {0,3}#{1,6}/).replace(/html/g, / {0,3}<[^\n>]+>\n/).replace(/\|table/g, "").getRegex(), Pe = k(ie).replace(/bull/g, Q).replace(/blockCode/g, /(?: {4}| {0,3}\t)/).replace(/fences/g, / {0,3}(?:`{3,}|~{3,})/).replace(/blockquote/g, / {0,3}>/).replace(/heading/g, / {0,3}#{1,6}/).replace(/html/g, / {0,3}<[^\n>]+>\n/).replace(/table/g, / {0,3}\|?(?:[:\- ]*\|)+[\:\- ]*\n/).getRegex(), j = /^([^\n]+(?:\n(?!hr|heading|lheading|blockquote|fences|list|html|table| +\n)[^\n]+)*)/, Se = /^[^\n]+/, F = /(?!\s*\])(?:\\[\s\S]|[^\[\]\\])+/, $e = k(/^ {0,3}\[(label)\]: *(?:\n[ \t]*)?([^<\s][^\s]*|<.*?>)(?:(?: +(?:\n[ \t]*)?| *\n[ \t]*)(title))? *(?:\n+|$)/).replace("label", F).replace("title", /(?:"(?:\\"?|[^"\\])*"|'[^'\n]*(?:\n[^'\n]+)*\n?'|\([^()]*\))/).getRegex(), Le = k(/^(bull)([ \t][^\n]+?)?(?:\n|$)/).replace(/bull/g, Q).getRegex(), v$1 = "address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|search|section|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul", U = /<!--(?:-?>|[\s\S]*?(?:-->|$))/, _e = k("^ {0,3}(?:<(script|pre|style|textarea)[\\s>][\\s\\S]*?(?:</\\1>[^\\n]*\\n+|$)|comment[^\\n]*(\\n+|$)|<\\?[\\s\\S]*?(?:\\?>\\n*|$)|<![A-Z][\\s\\S]*?(?:>\\n*|$)|<!\\[CDATA\\[[\\s\\S]*?(?:\\]\\]>\\n*|$)|</?(tag)(?: +|\\n|/?>)[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$)|<(?!script|pre|style|textarea)([a-z][\\w-]*)(?:attribute)*? */?>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$)|</(?!script|pre|style|textarea)[a-z][\\w-]*\\s*>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$))", "i").replace("comment", U).replace("tag", v$1).replace("attribute", / +[a-zA-Z:_][\w.:-]*(?: *= *"[^"\n]*"| *= *'[^'\n]*'| *= *[^\s"'=<>`]+)?/).getRegex(), ae = k(j).replace("hr", I).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("|lheading", "").replace("|table", "").replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)])[ \\t]").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", v$1).getRegex(), Me = k(/^( {0,3}> ?(paragraph|[^\n]*)(?:\n|$))+/).replace("paragraph", ae).getRegex(), K = { blockquote: Me, code: Oe, def: $e, fences: we, heading: ye, hr: I, html: _e, lheading: oe, list: Le, newline: Te, paragraph: ae, table: _, text: Se }, re = k("^ *([^\\n ].*)\\n {0,3}((?:\\| *)?:?-+:? *(?:\\| *:?-+:? *)*(?:\\| *)?)(?:\\n((?:(?! *\\n|hr|heading|blockquote|code|fences|list|html).*(?:\\n|$))*)\\n*|$)").replace("hr", I).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("blockquote", " {0,3}>").replace("code", "(?: {4}| {0,3}	)[^\\n]").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)])[ \\t]").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", v$1).getRegex(), ze = { ...K, lheading: Pe, table: re, paragraph: k(j).replace("hr", I).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("|lheading", "").replace("table", re).replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)])[ \\t]").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", v$1).getRegex() }, Ee = { ...K, html: k(`^ *(?:comment *(?:\\n|\\s*$)|<(tag)[\\s\\S]+?</\\1> *(?:\\n{2,}|\\s*$)|<tag(?:"[^"]*"|'[^']*'|\\s[^'"/>\\s]*)*?/?> *(?:\\n{2,}|\\s*$))`).replace("comment", U).replace(/tag/g, "(?!(?:a|em|strong|small|s|cite|q|dfn|abbr|data|time|code|var|samp|kbd|sub|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo|span|br|wbr|ins|del|img)\\b)\\w+(?!:|[^\\w\\s@]*@)\\b").getRegex(), def: /^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +(["(][^\n]+[")]))? *(?:\n+|$)/, heading: /^(#{1,6})(.*)(?:\n+|$)/, fences: _, lheading: /^(.+?)\n {0,3}(=+|-+) *(?:\n+|$)/, paragraph: k(j).replace("hr", I).replace("heading", ` *#{1,6} *[^
-]`).replace("lheading", oe).replace("|table", "").replace("blockquote", " {0,3}>").replace("|fences", "").replace("|list", "").replace("|html", "").replace("|tag", "").getRegex() }, Ae = /^\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/, Ce = /^(`+)([^`]|[^`][\s\S]*?[^`])\1(?!`)/, le = /^( {2,}|\\)\n(?!\s*$)/, Ie = /^(`+|[^`])(?:(?= {2,}\n)|[\s\S]*?(?:(?=[\\<!\[`*_]|\b_|$)|[^ ](?= {2,}\n)))/, E$1 = /[\p{P}\p{S}]/u, H = /[\s\p{P}\p{S}]/u, W = /[^\s\p{P}\p{S}]/u, Be = k(/^((?![*_])punctSpace)/, "u").replace(/punctSpace/g, H).getRegex(), ue = /(?!~)[\p{P}\p{S}]/u, De = /(?!~)[\s\p{P}\p{S}]/u, qe = /(?:[^\s\p{P}\p{S}]|~)/u, ve = k(/link|precode-code|html/, "g").replace("link", /\[(?:[^\[\]`]|(?<a>`+)[^`]+\k<a>(?!`))*?\]\((?:\\[\s\S]|[^\\\(\)]|\((?:\\[\s\S]|[^\\\(\)])*\))*\)/).replace("precode-", Re ? "(?<!`)()" : "(^^|[^`])").replace("code", /(?<b>`+)[^`]+\k<b>(?!`)/).replace("html", /<(?! )[^<>]*?>/).getRegex(), pe = /^(?:\*+(?:((?!\*)punct)|([^\s*]))?)|^_+(?:((?!_)punct)|([^\s_]))?/, He = k(pe, "u").replace(/punct/g, E$1).getRegex(), Ze = k(pe, "u").replace(/punct/g, ue).getRegex(), ce = "^[^_*]*?__[^_*]*?\\*[^_*]*?(?=__)|[^*]+(?=[^*])|(?!\\*)punct(\\*+)(?=[\\s]|$)|notPunctSpace(\\*+)(?!\\*)(?=punctSpace|$)|(?!\\*)punctSpace(\\*+)(?=notPunctSpace)|[\\s](\\*+)(?!\\*)(?=punct)|(?!\\*)punct(\\*+)(?!\\*)(?=punct)|notPunctSpace(\\*+)(?=notPunctSpace)", Ge = k(ce, "gu").replace(/notPunctSpace/g, W).replace(/punctSpace/g, H).replace(/punct/g, E$1).getRegex(), Ne = k(ce, "gu").replace(/notPunctSpace/g, qe).replace(/punctSpace/g, De).replace(/punct/g, ue).getRegex(), Qe = k("^[^_*]*?\\*\\*[^_*]*?_[^_*]*?(?=\\*\\*)|[^_]+(?=[^_])|(?!_)punct(_+)(?=[\\s]|$)|notPunctSpace(_+)(?!_)(?=punctSpace|$)|(?!_)punctSpace(_+)(?=notPunctSpace)|[\\s](_+)(?!_)(?=punct)|(?!_)punct(_+)(?!_)(?=punct)", "gu").replace(/notPunctSpace/g, W).replace(/punctSpace/g, H).replace(/punct/g, E$1).getRegex(), je = k(/^~~?(?:((?!~)punct)|[^\s~])/, "u").replace(/punct/g, E$1).getRegex(), Fe = "^[^~]+(?=[^~])|(?!~)punct(~~?)(?=[\\s]|$)|notPunctSpace(~~?)(?!~)(?=punctSpace|$)|(?!~)punctSpace(~~?)(?=notPunctSpace)|[\\s](~~?)(?!~)(?=punct)|(?!~)punct(~~?)(?!~)(?=punct)|notPunctSpace(~~?)(?=notPunctSpace)", Ue = k(Fe, "gu").replace(/notPunctSpace/g, W).replace(/punctSpace/g, H).replace(/punct/g, E$1).getRegex(), Ke = k(/\\(punct)/, "gu").replace(/punct/g, E$1).getRegex(), We = k(/^<(scheme:[^\s\x00-\x1f<>]*|email)>/).replace("scheme", /[a-zA-Z][a-zA-Z0-9+.-]{1,31}/).replace("email", /[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+(@)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(?![-_])/).getRegex(), Xe = k(U).replace("(?:-->|$)", "-->").getRegex(), Je = k("^comment|^</[a-zA-Z][\\w:-]*\\s*>|^<[a-zA-Z][\\w-]*(?:attribute)*?\\s*/?>|^<\\?[\\s\\S]*?\\?>|^<![a-zA-Z]+\\s[\\s\\S]*?>|^<!\\[CDATA\\[[\\s\\S]*?\\]\\]>").replace("comment", Xe).replace("attribute", /\s+[a-zA-Z:_][\w.:-]*(?:\s*=\s*"[^"]*"|\s*=\s*'[^']*'|\s*=\s*[^\s"'=<>`]+)?/).getRegex(), q = /(?:\[(?:\\[\s\S]|[^\[\]\\])*\]|\\[\s\S]|`+(?!`)[^`]*?`+(?!`)|``+(?=\])|[^\[\]\\`])*?/, Ve = k(/^!?\[(label)\]\(\s*(href)(?:(?:[ \t]+(?:\n[ \t]*)?|\n[ \t]*)(title))?\s*\)/).replace("label", q).replace("href", /<(?:\\.|[^\n<>\\])+>|[^ \t\n\x00-\x1f]*/).replace("title", /"(?:\\"?|[^"\\])*"|'(?:\\'?|[^'\\])*'|\((?:\\\)?|[^)\\])*\)/).getRegex(), he = k(/^!?\[(label)\]\[(ref)\]/).replace("label", q).replace("ref", F).getRegex(), ke = k(/^!?\[(ref)\](?:\[\])?/).replace("ref", F).getRegex(), Ye = k("reflink|nolink(?!\\()", "g").replace("reflink", he).replace("nolink", ke).getRegex(), se = /[hH][tT][tT][pP][sS]?|[fF][tT][pP]/, X = { _backpedal: _, anyPunctuation: Ke, autolink: We, blockSkip: ve, br: le, code: Ce, del: _, delLDelim: _, delRDelim: _, emStrongLDelim: He, emStrongRDelimAst: Ge, emStrongRDelimUnd: Qe, escape: Ae, link: Ve, nolink: ke, punctuation: Be, reflink: he, reflinkSearch: Ye, tag: Je, text: Ie, url: _ }, et = { ...X, link: k(/^!?\[(label)\]\((.*?)\)/).replace("label", q).getRegex(), reflink: k(/^!?\[(label)\]\s*\[([^\]]*)\]/).replace("label", q).getRegex() }, N = { ...X, emStrongRDelimAst: Ne, emStrongLDelim: Ze, delLDelim: je, delRDelim: Ue, url: k(/^((?:protocol):\/\/|www\.)(?:[a-zA-Z0-9\-]+\.?)+[^\s<]*|^email/).replace("protocol", se).replace("email", /[A-Za-z0-9._+-]+(@)[a-zA-Z0-9-_]+(?:\.[a-zA-Z0-9-_]*[a-zA-Z0-9])+(?![-_])/).getRegex(), _backpedal: /(?:[^?!.,:;*_'"~()&]+|\([^)]*\)|&(?![a-zA-Z0-9]+;$)|[?!.,:;*_'"~)]+(?!$))+/, del: /^(~~?)(?=[^\s~])((?:\\[\s\S]|[^\\])*?(?:\\[\s\S]|[^\s~\\]))\1(?=[^~]|$)/, text: k(/^([`~]+|[^`~])(?:(?= {2,}\n)|(?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)|[\s\S]*?(?:(?=[\\<!\[`*~_]|\b_|protocol:\/\/|www\.|$)|[^ ](?= {2,}\n)|[^a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-](?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)))/).replace("protocol", se).getRegex() }, tt = { ...N, br: k(le).replace("{2,}", "*").getRegex(), text: k(N.text).replace("\\b_", "\\b_| {2,}\\n").replace(/\{2,\}/g, "*").getRegex() }, B = { normal: K, gfm: ze, pedantic: Ee }, A = { normal: X, gfm: N, breaks: tt, pedantic: et };
-var nt = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }, de = (l4) => nt[l4];
+})(), m$1 = { codeRemoveIndent: /^(?: {1,4}| {0,3}\t)/gm, outputLinkReplace: /\\([\[\]])/g, indentCodeCompensation: /^(\s+)(?:```)/, beginningSpace: /^\s+/, endingHash: /#$/, startingSpaceChar: /^ /, endingSpaceChar: / $/, nonSpaceChar: /[^ ]/, newLineCharGlobal: /\n/g, tabCharGlobal: /\t/g, multipleSpaceGlobal: /\s+/g, blankLine: /^[ \t]*$/, doubleBlankLine: /\n[ \t]*\n[ \t]*$/, blockquoteStart: /^ {0,3}>/, blockquoteSetextReplace: /\n {0,3}((?:=+|-+) *)(?=\n|$)/g, blockquoteSetextReplace2: /^ {0,3}>[ \t]?/gm, listReplaceNesting: /^ {1,4}(?=( {4})*[^ ])/g, listIsTask: /^\[[ xX]\] +\S/, listReplaceTask: /^\[[ xX]\] +/, listTaskCheckbox: /\[[ xX]\]/, anyLine: /\n.*\n/, hrefBrackets: /^<(.*)>$/, tableDelimiter: /[:|]/, tableAlignChars: /^\||\| *$/g, tableRowBlankLine: /\n[ \t]*$/, tableAlignRight: /^ *-+: *$/, tableAlignCenter: /^ *:-+: *$/, tableAlignLeft: /^ *:-+ *$/, startATag: /^<a /i, endATag: /^<\/a>/i, startPreScriptTag: /^<(pre|code|kbd|script)(\s|>)/i, endPreScriptTag: /^<\/(pre|code|kbd|script)(\s|>)/i, startAngleBracket: /^</, endAngleBracket: />$/, pedanticHrefTitle: /^([^'"]*[^\s])\s+(['"])(.*)\2/, unicodeAlphaNumeric: /[\p{L}\p{N}]/u, escapeTest: /[&<>"']/, escapeReplace: /[&<>"']/g, escapeTestNoEncode: /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/, escapeReplaceNoEncode: /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/g, caret: /(^|[^\[])\^/g, percentDecode: /%25/g, findPipe: /\|/g, splitPipe: / \|/, slashPipe: /\\\|/g, carriageReturn: /\r\n|\r/g, spaceLine: /^ +$/gm, notSpaceStart: /^\S*/, endingNewline: /\n$/, listItemRegex: (l4) => new RegExp(`^( {0,3}${l4})((?:[	 ][^\\n]*)?(?:\\n|$))`), nextBulletRegex: A((l4) => new RegExp(`^ {0,${l4}}(?:[*+-]|\\d{1,9}[.)])((?:[ 	][^\\n]*)?(?:\\n|$))`)), hrRegex: A((l4) => new RegExp(`^ {0,${l4}}((?:- *){3,}|(?:_ *){3,}|(?:\\* *){3,})(?:\\n+|$)`)), fencesBeginRegex: A((l4) => new RegExp(`^ {0,${l4}}(?:\`\`\`|~~~)`)), headingBeginRegex: A((l4) => new RegExp(`^ {0,${l4}}#`)), htmlBeginRegex: A((l4) => new RegExp(`^ {0,${l4}}<(?:[a-z].*>|!--)`, "i")), blockquoteBeginRegex: A((l4) => new RegExp(`^ {0,${l4}}>`)) }, Oe = /^(?:[ \t]*(?:\n|$))+/, we = /^((?: {4}| {0,3}\t)[^\n]+(?:\n(?:[ \t]*(?:\n|$))*)?)+/, ye = /^ {0,3}(`{3,}(?=[^`\n]*(?:\n|$))|~{3,})([^\n]*)(?:\n|$)(?:|([\s\S]*?)(?:\n|$))(?: {0,3}\1[~`]* *(?=\n|$)|$)/, q = /^ {0,3}((?:-[\t ]*){3,}|(?:_[ \t]*){3,}|(?:\*[ \t]*){3,})(?:\n+|$)/, Pe = /^ {0,3}(#{1,6})(?=\s|$)(.*)(?:\n+|$)/, U = / {0,3}(?:[*+-]|\d{1,9}[.)])/, oe = /^(?!bull |blockCode|fences|blockquote|heading|html|table)((?:.|\n(?!\s*?\n|bull |blockCode|fences|blockquote|heading|html|table))+?)\n {0,3}(=+|-+) *(?:\n+|$)/, ae = d$2(oe).replace(/bull/g, U).replace(/blockCode/g, /(?: {4}| {0,3}\t)/).replace(/fences/g, / {0,3}(?:`{3,}|~{3,})/).replace(/blockquote/g, / {0,3}>/).replace(/heading/g, / {0,3}#{1,6}(?:\s|$)/).replace(/html/g, / {0,3}<[^\n>]+>\n/).replace(/\|table/g, "").getRegex(), Se = d$2(oe).replace(/bull/g, U).replace(/blockCode/g, /(?: {4}| {0,3}\t)/).replace(/fences/g, / {0,3}(?:`{3,}|~{3,})/).replace(/blockquote/g, / {0,3}>/).replace(/heading/g, / {0,3}#{1,6}(?:\s|$)/).replace(/html/g, / {0,3}<[^\n>]+>\n/).replace(/table/g, / {0,3}\|?(?:[:\- ]*\|)+[\:\- ]*\n/).getRegex(), K = /^([^\n]+(?:\n(?!hr|heading|lheading|blockquote|fences|list|html|table|[ \t]+\n)[^\n]+)*)/, _e = /^[^\n]+/, W = /(?!\s*\])(?:\\[\s\S]|[^\[\]\\])+/, $e = d$2(/^ {0,3}\[(label)\]: *(?:\n[ \t]*)?([^<\s][^\s]*|<.*?>)(?:(?: +(?:\n[ \t]*)?| *\n[ \t]*)(title))? *(?:\n+|$)/).replace("label", W).replace("title", /(?:"(?:\\"?|[^"\\])*"|'[^'\n]*(?:\n[^'\n]+)*\n?'|\([^()]*\))/).getRegex(), Le = d$2(/^(bull)([ \t][^\n]*?)?(?:\n|$)/).replace(/bull/g, U).getRegex(), Q = "address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|search|section|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul", X = /<!--(?:-?>|[\s\S]*?(?:-->|$))/, Me = d$2("^ {0,3}(?:<(script|pre|style|textarea)[\\s>][\\s\\S]*?(?:</\\1>[^\\n]*\\n*|$)|comment[^\\n]*(\\n+|$)|<\\?[\\s\\S]*?(?:\\?>[^\\n]*\\n*|$)|<![A-Z][\\s\\S]*?(?:>[^\\n]*\\n*|$)|<!\\[CDATA\\[[\\s\\S]*?(?:\\]\\]>[^\\n]*\\n*|$)|</?(tag)(?: +|\\n|/?>)[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$)|<(?!script|pre|style|textarea)([a-z][\\w-]*)(?:attribute)*? */?>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$)|</(?!script|pre|style|textarea)[a-z][\\w-]*\\s*>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$))", "i").replace("comment", X).replace("tag", Q).replace("attribute", / +[a-zA-Z:_][\w.:-]*(?: *= *"[^"\n]*"| *= *'[^'\n]*'| *= *[^\s"'=<>`]+)?/).getRegex(), le = (l4) => d$2(K).replace("hr", q).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("|lheading", "").replace("|table", "").replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*(?:\\n|$))|~~~)[^\\n]*(?:\\n|$)").replace("list", l4).replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", Q).getRegex(), ze = le(/ {0,3}(?:[*+-]|1[.)])[ \t]+[^ \t\n]/), Ee = le(/ {0,3}(?:[*+-]|\d{1,9}[.)])(?:[ \t]|\n|$)/), Ce = d$2(/^( {0,3}> ?(paragraph|[^\n]*)(?:\n|$))+/).replace("paragraph", Ee).getRegex(), J = { blockquote: Ce, code: we, def: $e, fences: ye, heading: Pe, hr: q, html: Me, lheading: ae, list: Le, newline: Oe, paragraph: ze, table: z, text: _e }, se = d$2("^ *([^\\n ].*)\\n {0,3}((?:\\| *)?:?-+:? *(?:\\| *:?-+:? *)*(?:\\| *)?)(?:\\n((?:(?! *\\n|hr|heading|blockquote|code|fences|list|html).*(?:\\n|$))*)\\n*|$)").replace("hr", q).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("blockquote", " {0,3}>").replace("code", "(?: {4}| {0,3}	)[^\\n]").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*(?:\\n|$))|~~~)[^\\n]*(?:\\n|$)").replace("list", " {0,3}(?:[*+-]|1[.)])[ \\t]").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", Q).getRegex(), Ae = { ...J, lheading: Se, table: se, paragraph: d$2(K).replace("hr", q).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("|lheading", "").replace("table", se).replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*(?:\\n|$))|~~~)[^\\n]*(?:\\n|$)").replace("list", " {0,3}(?:[*+-]|1[.)])[ \\t]+[^ \\t\\n]").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", Q).getRegex() }, Ie = { ...J, html: d$2(`^ *(?:comment *(?:\\n|\\s*$)|<(tag)[\\s\\S]+?</\\1> *(?:\\n{2,}|\\s*$)|<tag(?:"[^"]*"|'[^']*'|\\s[^'"/>\\s]*)*?/?> *(?:\\n{2,}|\\s*$))`).replace("comment", X).replace(/tag/g, "(?!(?:a|em|strong|small|s|cite|q|dfn|abbr|data|time|code|var|samp|kbd|sub|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo|span|br|wbr|ins|del|img)\\b)\\w+(?!:|[^\\w\\s@]*@)\\b").getRegex(), def: /^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +(["(][^\n]+[")]))? *(?:\n+|$)/, heading: /^(#{1,6})(.*)(?:\n+|$)/, fences: z, lheading: /^(.+?)\n {0,3}(=+|-+) *(?:\n+|$)/, paragraph: d$2(K).replace("hr", q).replace("heading", ` *#{1,6} *[^
+]`).replace("lheading", ae).replace("|table", "").replace("blockquote", " {0,3}>").replace("|fences", "").replace("|list", "").replace("|html", "").replace("|tag", "").getRegex() }, Be = /^\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/, De = /^(`+)([^`]|[^`][\s\S]*?[^`])\1(?!`)/, pe = /^( {2,}|\\)\n(?!\s*$)/, qe = /^(`+|[^`])(?:(?= {2,}\n)|[\s\S]*?(?:(?=[\\<!\[`*_]|\b_|$)|[^ ](?= {2,}\n)))/, _ = /[\p{P}\p{S}]/u, I = /[\s\p{P}\p{S}]/u, v$1 = /[^\s\p{P}\p{S}]/u, ve = d$2(/^((?![*_])punctSpace)/, "u").replace(/punctSpace/g, I).getRegex(), He = /[\p{Pi}\p{Ps}"']/u, ue = /(?!~)[\p{P}\p{S}]/u, Ze = /(?!~)[\s\p{P}\p{S}]/u, Ge = /(?:[^\s\p{P}\p{S}]|~)/u, Qe = d$2(/link|precode-code|html/, "g").replace("link", /\[(?:[^\[\]`]|(?<a>`+)[^`]+\k<a>(?!`))*?\]\((?:\\[\s\S]|[^\\\(\)]|\((?:\\[\s\S]|[^\\\(\)])*\))*\)/).replace("precode-", Te ? "(?<!`)()" : "(^^|[^`])").replace("code", /(?<b>`+)[^`]+\k<b>(?!`)/).replace("html", /<(?! )[^<>]*?>/).getRegex(), ce = /^(?:\*+(?:((?!\*)punct)|([^\s*]))?)|^_+(?:((?!_)punct)|([^\s_]))?/, Ne = d$2(ce, "u").replace(/punct/g, _).getRegex(), je = d$2(ce, "u").replace(/punct/g, ue).getRegex(), Fe = /^(?:\*+(?:((?!\*)(?!openQuote)punct)|([^\s*]))?)|^_+(?:((?!_)(?!openQuote)punct)|([^\s_]))?/, Ue = d$2(Fe, "u").replace(/openQuote/g, He).replace(/punct/g, _).getRegex(), he = "^[^_*]*?__[^_*]*?\\*[^_*]*?(?=__)|[^*]+(?=[^*])|(?!\\*)punct(\\*+)(?=[\\s]|$)|notPunctSpace(\\*+)(?!\\*)(?=punctSpace|$)|(?!\\*)punctSpace(\\*+)(?=notPunctSpace)|[\\s](\\*+)(?!\\*)(?=punct)|(?!\\*)punct(\\*+)(?!\\*)(?=punct)|notPunctSpace(\\*+)(?=notPunctSpace)", Ke = d$2(he, "gu").replace(/notPunctSpace/g, v$1).replace(/punctSpace/g, I).replace(/punct/g, _).getRegex(), We = d$2(he, "gu").replace(/notPunctSpace/g, Ge).replace(/punctSpace/g, Ze).replace(/punct/g, ue).getRegex(), Xe = "^[^_*]*?__[^_*]*?\\*[^_*]*?(?=__)|[^*]+(?=[^*])|(?!\\*)punct(\\*+)(?=[\\s]|$)|notPunctSpace(\\*+)(?!\\*)(?=punctSpace|$)|(?!\\*)[\\s](\\*+)(?=notPunctSpace)|[\\s](\\*+)(?!\\*)(?=punct)|(?!\\*)punct(\\*+)(?!\\*)(?=punct)|(?:(?!\\*)punct|notPunctSpace)(\\*+)(?!\\*)(?=notPunctSpace)", Je = d$2(Xe, "gu").replace(/notPunctSpace/g, v$1).replace(/punctSpace/g, I).replace(/punct/g, _).getRegex(), Ve = d$2("^[^_*]*?\\*\\*[^_*]*?_[^_*]*?(?=\\*\\*)|[^_]+(?=[^_])|(?!_)punct(_+)(?=[\\s]|$)|notPunctSpace(_+)(?!_)(?=punctSpace|$)|(?!_)punctSpace(_+)(?=notPunctSpace)|[\\s](_+)(?!_)(?=punct)|(?!_)punct(_+)(?!_)(?=punct)", "gu").replace(/notPunctSpace/g, v$1).replace(/punctSpace/g, I).replace(/punct/g, _).getRegex(), Ye = "^[^_*]*?\\*\\*[^_*]*?_[^_*]*?(?=\\*\\*)|[^_]+(?=[^_])|(?!_)punct(_+)(?=[\\s]|$)|notPunctSpace(_+)(?!_)(?=punctSpace|$)|(?!_)[\\s](_+)(?=notPunctSpace)|[\\s](_+)(?!_)(?=punct)|(?!_)punct(_+)(?!_)(?=punct)|(?:(?!_)punct|notPunctSpace)(_+)(?!_)(?=notPunctSpace)", et = d$2(Ye, "gu").replace(/notPunctSpace/g, v$1).replace(/punctSpace/g, I).replace(/punct/g, _).getRegex(), tt = d$2(/^~~?(?:((?!~)punct)|[^\s~])/, "u").replace(/punct/g, _).getRegex(), nt = "^[^~]+(?=[^~])|(?!~)punct(~~?)(?=[\\s]|$)|notPunctSpace(~~?)(?!~)(?=punctSpace|$)|(?!~)punctSpace(~~?)(?=notPunctSpace)|[\\s](~~?)(?!~)(?=punct)|(?!~)punct(~~?)(?!~)(?=punct)|notPunctSpace(~~?)(?=notPunctSpace)", rt = d$2(nt, "gu").replace(/notPunctSpace/g, v$1).replace(/punctSpace/g, I).replace(/punct/g, _).getRegex(), st = d$2(/\\(punct)/, "gu").replace(/punct/g, _).getRegex(), it = d$2(/^<(scheme:[^\s\x00-\x1f<>]*|email)>/).replace("scheme", /[a-zA-Z][a-zA-Z0-9+.-]{1,31}/).replace("email", /[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+(@)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(?![-_])/).getRegex(), ot = d$2(X).replace("(?:-->|$)", "-->").getRegex(), at = d$2("^comment|^</[a-zA-Z][\\w:-]*\\s*>|^<[a-zA-Z][\\w-]*(?:attribute)*?\\s*/?>|^<\\?[\\s\\S]*?\\?>|^<![a-zA-Z]+\\s[\\s\\S]*?>|^<!\\[CDATA\\[[\\s\\S]*?\\]\\]>").replace("comment", ot).replace("attribute", /\s+[a-zA-Z:_][\w.:-]*(?:\s*=\s*"[^"]*"|\s*=\s*'[^']*'|\s*=\s*[^\s"'=<>`]+)?/).getRegex(), G = /(?:\[(?:\\[\s\S]|[^\[\]\\])*\]|\\[\s\S]|`+(?!`)[^`]*?`+(?!`)|``+(?=\])|[^\[\]\\`])*?/, lt = d$2(/^!?\[(label)\]\(\s*(href)(?:(?:[ \t]+(?:\n[ \t]*)?|\n[ \t]*)(title))?\s*\)/).replace("label", G).replace("href", /<(?:\\.|[^\n<>\\])+>|[^ \t\n\x00-\x1f]+|(?=\))/).replace("title", /"(?:\\"?|[^"\\])*"|'(?:\\'?|[^'\\])*'|\((?:\\\)?|[^)\\])*\)/).getRegex(), de = d$2(/^!?\[(label)\]\[(ref)\]/).replace("label", G).replace("ref", W).getRegex(), ke = d$2(/^!?\[(ref)\](?:\[\])?/).replace("ref", W).getRegex(), pt = d$2("reflink|nolink(?!\\()", "g").replace("reflink", de).replace("nolink", ke).getRegex(), ie = /[hH][tT][tT][pP][sS]?|[fF][tT][pP]/, V = { _backpedal: z, anyPunctuation: st, autolink: it, blockSkip: Qe, br: pe, code: De, del: z, delLDelim: z, delRDelim: z, emStrongLDelim: Ne, emStrongRDelimAst: Ke, emStrongRDelimUnd: Ve, escape: Be, link: lt, nolink: ke, punctuation: ve, reflink: de, reflinkSearch: pt, tag: at, text: qe, url: z }, ut = { ...V, emStrongLDelim: Ue, emStrongRDelimAst: Je, emStrongRDelimUnd: et, link: d$2(/^!?\[(label)\]\((.*?)\)/).replace("label", G).getRegex(), reflink: d$2(/^!?\[(label)\]\s*\[([^\]]*)\]/).replace("label", G).getRegex() }, F = { ...V, emStrongRDelimAst: We, emStrongLDelim: je, delLDelim: tt, delRDelim: rt, url: d$2(/^((?:protocol):\/\/|www\.)(?:[a-zA-Z0-9\-]+\.?)+[^\s<]*|^email/).replace("protocol", ie).replace("email", /[A-Za-z0-9._+-]+(@)[a-zA-Z0-9-_]+(?:\.[a-zA-Z0-9-_]*[a-zA-Z0-9])+(?![-_])/).getRegex(), _backpedal: /(?:[^?!.,:;*_'"~()&]+|\([^)]*\)|&(?![a-zA-Z0-9]+;$)|[?!.,:;*_'"~)]+(?!$))+/, del: /^(~~?)(?=[^\s~])((?:\\[\s\S]|[^\\])*?(?:\\[\s\S]|[^\s~\\]))\1(?=[^~]|$)/, text: d$2(/^(`+|~+|[^`~])(?:(?=[`~])|(?= {2,}\n)|(?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)|[\s\S]*?(?:(?=[\\<!\[`*~_]|\b_|protocol:\/\/|www\.|$)|[^ ](?= {2,}\n)|[^a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-](?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)))/).replace("protocol", ie).getRegex() }, ct = { ...F, br: d$2(pe).replace("{2,}", "*").getRegex(), text: d$2(F.text).replace("\\b_", "\\b_| {2,}\\n").replace(/\{2,\}/g, "*").getRegex() }, H = { normal: J, gfm: Ae, pedantic: Ie }, B = { normal: V, gfm: F, breaks: ct, pedantic: ut };
+var ht = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }, ge = (l4) => ht[l4];
 function O(l4, e3) {
   if (e3) {
-    if (m$1.escapeTest.test(l4)) return l4.replace(m$1.escapeReplace, de);
-  } else if (m$1.escapeTestNoEncode.test(l4)) return l4.replace(m$1.escapeReplaceNoEncode, de);
+    if (m$1.escapeTest.test(l4)) return l4.replace(m$1.escapeReplace, ge);
+  } else if (m$1.escapeTestNoEncode.test(l4)) return l4.replace(m$1.escapeReplaceNoEncode, ge);
   return l4;
 }
-function J(l4) {
+function Y(l4) {
   try {
     l4 = encodeURI(l4).replace(m$1.percentDecode, "%");
   } catch {
@@ -9249,11 +9256,11 @@ function J(l4) {
   }
   return l4;
 }
-function V(l4, e3) {
+function ee(l4, e3) {
   let t2 = l4.replace(m$1.findPipe, (r2, i2, o2) => {
-    let u2 = false, a2 = i2;
-    for (; --a2 >= 0 && o2[a2] === "\\"; ) u2 = !u2;
-    return u2 ? "|" : " |";
+    let p2 = false, a2 = i2;
+    for (; --a2 >= 0 && o2[a2] === "\\"; ) p2 = !p2;
+    return p2 ? "|" : " |";
   }), n2 = t2.split(m$1.splitPipe), s2 = 0;
   if (n2[0].trim() || n2.shift(), n2.length > 0 && !n2.at(-1)?.trim() && n2.pop(), e3) if (n2.length > e3) n2.splice(e3);
   else for (; n2.length < e3; ) n2.push("");
@@ -9271,14 +9278,14 @@ function $(l4, e3, t2) {
   }
   return l4.slice(0, n2 - s2);
 }
-function Y(l4) {
+function te(l4) {
   let e3 = l4.split(`
 `), t2 = e3.length - 1;
   for (; t2 >= 0 && m$1.blankLine.test(e3[t2]); ) t2--;
   return e3.length - t2 <= 2 ? l4 : e3.slice(0, t2 + 1).join(`
 `);
 }
-function ge(l4, e3) {
+function fe(l4, e3) {
   if (l4.indexOf(e3[1]) === -1) return -1;
   let t2 = 0;
   for (let n2 = 0; n2 < l4.length; n2++) if (l4[n2] === "\\") n2++;
@@ -9286,7 +9293,7 @@ function ge(l4, e3) {
   else if (l4[n2] === e3[1] && (t2--, t2 < 0)) return n2;
   return t2 > 0 ? -2 : -1;
 }
-function fe(l4, e3 = 0) {
+function me(l4, e3 = 0) {
   let t2 = e3, n2 = "";
   for (let s2 of l4) if (s2 === "	") {
     let r2 = 4 - t2 % 4;
@@ -9294,13 +9301,13 @@ function fe(l4, e3 = 0) {
   } else n2 += s2, t2++;
   return n2;
 }
-function me(l4, e3, t2, n2, s2) {
+function xe(l4, e3, t2, n2, s2) {
   let r2 = e3.href, i2 = e3.title || null, o2 = l4[1].replace(s2.other.outputLinkReplace, "$1");
   n2.state.inLink = true;
-  let u2 = { type: l4[0].charAt(0) === "!" ? "image" : "link", raw: t2, href: r2, title: i2, text: o2, tokens: n2.inlineTokens(o2) };
-  return n2.state.inLink = false, u2;
+  let p2 = { type: l4[0].charAt(0) === "!" ? "image" : "link", raw: t2, href: r2, title: i2, text: o2, tokens: n2.inlineTokens(o2) };
+  return n2.state.inLink = false, p2;
 }
-function rt(l4, e3, t2) {
+function dt(l4, e3, t2) {
   let n2 = l4.match(t2.other.indentCodeCompensation);
   if (n2 === null) return e3;
   let s2 = n2[1];
@@ -9313,12 +9320,12 @@ function rt(l4, e3, t2) {
   }).join(`
 `);
 }
-var w$1 = class w {
+var y$1 = class y {
   options;
   rules;
   lexer;
   constructor(e3) {
-    this.options = e3 || T;
+    this.options = e3 || R;
   }
   space(e3) {
     let t2 = this.rules.block.newline.exec(e3);
@@ -9327,14 +9334,14 @@ var w$1 = class w {
   code(e3) {
     let t2 = this.rules.block.code.exec(e3);
     if (t2) {
-      let n2 = this.options.pedantic ? t2[0] : Y(t2[0]), s2 = n2.replace(this.rules.other.codeRemoveIndent, "");
+      let n2 = this.options.pedantic ? t2[0] : te(t2[0]), s2 = n2.replace(this.rules.other.codeRemoveIndent, "");
       return { type: "code", raw: n2, codeBlockStyle: "indented", text: s2 };
     }
   }
   fences(e3) {
     let t2 = this.rules.block.fences.exec(e3);
     if (t2) {
-      let n2 = t2[0], s2 = rt(n2, t2[3] || "", this.rules);
+      let n2 = t2[0], s2 = dt(n2, t2[3] || "", this.rules);
       return { type: "code", raw: n2, lang: t2[2] ? t2[2].trim().replace(this.rules.inline.anyPunctuation, "$1") : t2[2], text: s2 };
     }
   }
@@ -9362,32 +9369,33 @@ var w$1 = class w {
 `).split(`
 `), s2 = "", r2 = "", i2 = [];
       for (; n2.length > 0; ) {
-        let o2 = false, u2 = [], a2;
-        for (a2 = 0; a2 < n2.length; a2++) if (this.rules.other.blockquoteStart.test(n2[a2])) u2.push(n2[a2]), o2 = true;
-        else if (!o2) u2.push(n2[a2]);
+        let o2 = false, p2 = [], a2;
+        for (a2 = 0; a2 < n2.length; a2++) if (this.rules.other.blockquoteStart.test(n2[a2])) p2.push(n2[a2]), o2 = true;
+        else if (!o2) p2.push(n2[a2]);
         else break;
         n2 = n2.slice(a2);
-        let c2 = u2.join(`
-`), p2 = c2.replace(this.rules.other.blockquoteSetextReplace, `
+        let u2 = p2.join(`
+`), c2 = u2.replace(this.rules.other.blockquoteSetextReplace, `
     $1`).replace(this.rules.other.blockquoteSetextReplace2, "");
         s2 = s2 ? `${s2}
-${c2}` : c2, r2 = r2 ? `${r2}
-${p2}` : p2;
-        let d2 = this.lexer.state.top;
-        if (this.lexer.state.top = true, this.lexer.blockTokens(p2, i2, true), this.lexer.state.top = d2, n2.length === 0) break;
-        let h2 = i2.at(-1);
-        if (h2?.type === "code") break;
-        if (h2?.type === "blockquote") {
-          let R = h2, f2 = R.raw + `
-` + n2.join(`
-`), S2 = this.blockquote(f2);
-          i2[i2.length - 1] = S2, s2 = s2.substring(0, s2.length - R.raw.length) + S2.raw, r2 = r2.substring(0, r2.length - R.text.length) + S2.text;
+${u2}` : u2, r2 = r2 ? `${r2}
+${c2}` : c2;
+        let h2 = this.lexer.state.top;
+        if (this.lexer.state.top = true, this.lexer.blockTokens(c2, i2, true), this.lexer.state.top = h2, n2.length === 0) break;
+        let k = i2.at(-1);
+        if (k?.type === "code") break;
+        if (k?.type === "blockquote") {
+          let T = k, g2 = n2.join(`
+`), w2 = T.raw + `
+` + g2.replace(this.rules.other.blockquoteSetextReplace2, ""), M = this.blockquote(w2);
+          i2[i2.length - 1] = M, s2 = `${s2}
+${g2}`, r2 = r2.substring(0, r2.length - T.text.length) + M.text;
           break;
-        } else if (h2?.type === "list") {
-          let R = h2, f2 = R.raw + `
+        } else if (k?.type === "list") {
+          let T = k, g2 = T.raw + `
 ` + n2.join(`
-`), S2 = this.list(f2);
-          i2[i2.length - 1] = S2, s2 = s2.substring(0, s2.length - h2.raw.length) + S2.raw, r2 = r2.substring(0, r2.length - R.raw.length) + S2.raw, n2 = f2.substring(i2.at(-1).raw.length).split(`
+`), w2 = this.list(g2);
+          i2[i2.length - 1] = w2, s2 = s2.substring(0, s2.length - k.raw.length) + w2.raw, r2 = r2.substring(0, r2.length - T.raw.length) + w2.raw, n2 = g2.substring(i2.at(-1).raw.length).split(`
 `);
           continue;
         }
@@ -9402,59 +9410,58 @@ ${p2}` : p2;
       n2 = s2 ? `\\d{1,9}\\${n2.slice(-1)}` : `\\${n2}`, this.options.pedantic && (n2 = s2 ? n2 : "[*+-]");
       let i2 = this.rules.other.listItemRegex(n2), o2 = false;
       for (; e3; ) {
-        let a2 = false, c2 = "", p2 = "";
+        let a2 = false, u2 = "", c2 = "";
         if (!(t2 = i2.exec(e3)) || this.rules.block.hr.test(e3)) break;
-        c2 = t2[0], e3 = e3.substring(c2.length);
-        let d2 = fe(t2[2].split(`
-`, 1)[0], t2[1].length), h2 = e3.split(`
-`, 1)[0], R = !d2.trim(), f2 = 0;
-        if (this.options.pedantic ? (f2 = 2, p2 = d2.trimStart()) : R ? f2 = t2[1].length + 1 : (f2 = d2.search(this.rules.other.nonSpaceChar), f2 = f2 > 4 ? 1 : f2, p2 = d2.slice(f2), f2 += t2[1].length), R && this.rules.other.blankLine.test(h2) && (c2 += h2 + `
-`, e3 = e3.substring(h2.length + 1), a2 = true), !a2) {
-          let S2 = this.rules.other.nextBulletRegex(f2), ee = this.rules.other.hrRegex(f2), te = this.rules.other.fencesBeginRegex(f2), ne = this.rules.other.headingBeginRegex(f2), xe = this.rules.other.htmlBeginRegex(f2), be = this.rules.other.blockquoteBeginRegex(f2);
+        u2 = t2[0], e3 = e3.substring(u2.length);
+        let h2 = me(t2[2].split(`
+`, 1)[0], t2[1].length), k = e3.split(`
+`, 1)[0], T = !h2.trim(), g2 = 0;
+        if (this.options.pedantic ? (g2 = 2, c2 = h2.trimStart()) : T ? g2 = t2[1].length + 1 : (g2 = h2.search(this.rules.other.nonSpaceChar), g2 = g2 > 4 ? 1 : g2, c2 = h2.slice(g2), g2 += t2[1].length), T && this.rules.other.blankLine.test(k) && (u2 += k + `
+`, e3 = e3.substring(k.length + 1), a2 = true), !a2) {
+          let w2 = this.rules.other.nextBulletRegex(g2), M = this.rules.other.hrRegex(g2), ne = this.rules.other.fencesBeginRegex(g2), re = this.rules.other.headingBeginRegex(g2), be = this.rules.other.htmlBeginRegex(g2), Re = this.rules.other.blockquoteBeginRegex(g2);
           for (; e3; ) {
-            let Z = e3.split(`
-`, 1)[0], C2;
-            if (h2 = Z, this.options.pedantic ? (h2 = h2.replace(this.rules.other.listReplaceNesting, "  "), C2 = h2) : C2 = h2.replace(this.rules.other.tabCharGlobal, "    "), te.test(h2) || ne.test(h2) || xe.test(h2) || be.test(h2) || S2.test(h2) || ee.test(h2)) break;
-            if (C2.search(this.rules.other.nonSpaceChar) >= f2 || !h2.trim()) p2 += `
-` + C2.slice(f2);
+            let N = e3.split(`
+`, 1)[0], D;
+            if (k = N, this.options.pedantic ? (k = k.replace(this.rules.other.listReplaceNesting, "  "), D = k) : D = k.replace(this.rules.other.tabCharGlobal, "    "), ne.test(k) || re.test(k) || be.test(k) || Re.test(k) || w2.test(k) || M.test(k)) break;
+            if (D.search(this.rules.other.nonSpaceChar) >= g2 || !k.trim()) c2 += `
+` + D.slice(g2);
             else {
-              if (R || d2.replace(this.rules.other.tabCharGlobal, "    ").search(this.rules.other.nonSpaceChar) >= 4 || te.test(d2) || ne.test(d2) || ee.test(d2)) break;
-              p2 += `
-` + h2;
+              if (T || h2.replace(this.rules.other.tabCharGlobal, "    ").search(this.rules.other.nonSpaceChar) >= 4 || ne.test(h2) || re.test(h2) || M.test(h2)) break;
+              c2 += `
+` + k;
             }
-            R = !h2.trim(), c2 += Z + `
-`, e3 = e3.substring(Z.length + 1), d2 = C2.slice(f2);
+            T = !k.trim(), u2 += N + `
+`, e3 = e3.substring(N.length + 1), h2 = D.slice(g2);
           }
         }
-        r2.loose || (o2 ? r2.loose = true : this.rules.other.doubleBlankLine.test(c2) && (o2 = true)), r2.items.push({ type: "list_item", raw: c2, task: !!this.options.gfm && this.rules.other.listIsTask.test(p2), loose: false, text: p2, tokens: [] }), r2.raw += c2;
+        r2.loose || (o2 ? r2.loose = true : this.rules.other.doubleBlankLine.test(u2) && (o2 = true)), r2.items.push({ type: "list_item", raw: u2, task: !!this.options.gfm && this.rules.other.listIsTask.test(c2), loose: false, text: c2, tokens: [] }), r2.raw += u2;
       }
-      let u2 = r2.items.at(-1);
-      if (u2) u2.raw = u2.raw.trimEnd(), u2.text = u2.text.trimEnd();
+      let p2 = r2.items.at(-1);
+      if (p2) p2.raw = p2.raw.trimEnd(), p2.text = p2.text.trimEnd();
       else return;
       r2.raw = r2.raw.trimEnd();
+      for (let a2 of r2.items) if (this.lexer.state.top = false, a2.tokens = this.lexer.blockTokens(a2.text, []), !r2.loose) {
+        let u2 = a2.tokens.filter((h2) => h2.type === "space"), c2 = u2.length > 0 && u2.some((h2) => this.rules.other.anyLine.test(h2.raw));
+        r2.loose = c2;
+      }
       for (let a2 of r2.items) {
-        if (this.lexer.state.top = false, a2.tokens = this.lexer.blockTokens(a2.text, []), a2.task) {
-          if (a2.text = a2.text.replace(this.rules.other.listReplaceTask, ""), a2.tokens[0]?.type === "text" || a2.tokens[0]?.type === "paragraph") {
-            a2.tokens[0].raw = a2.tokens[0].raw.replace(this.rules.other.listReplaceTask, ""), a2.tokens[0].text = a2.tokens[0].text.replace(this.rules.other.listReplaceTask, "");
-            for (let p2 = this.lexer.inlineQueue.length - 1; p2 >= 0; p2--) if (this.rules.other.listIsTask.test(this.lexer.inlineQueue[p2].src)) {
-              this.lexer.inlineQueue[p2].src = this.lexer.inlineQueue[p2].src.replace(this.rules.other.listReplaceTask, "");
-              break;
-            }
+        let u2 = a2.tokens[0];
+        if (a2.task && (u2?.type === "text" || u2?.type === "paragraph")) {
+          a2.text = a2.text.replace(this.rules.other.listReplaceTask, ""), u2.raw = u2.raw.replace(this.rules.other.listReplaceTask, ""), u2.text = u2.text.replace(this.rules.other.listReplaceTask, "");
+          for (let h2 = this.lexer.inlineQueue.length - 1; h2 >= 0; h2--) if (this.rules.other.listIsTask.test(this.lexer.inlineQueue[h2].src)) {
+            this.lexer.inlineQueue[h2].src = this.lexer.inlineQueue[h2].src.replace(this.rules.other.listReplaceTask, "");
+            break;
           }
           let c2 = this.rules.other.listTaskCheckbox.exec(a2.raw);
           if (c2) {
-            let p2 = { type: "checkbox", raw: c2[0] + " ", checked: c2[0] !== "[ ]" };
-            a2.checked = p2.checked, r2.loose ? a2.tokens[0] && ["paragraph", "text"].includes(a2.tokens[0].type) && "tokens" in a2.tokens[0] && a2.tokens[0].tokens ? (a2.tokens[0].raw = p2.raw + a2.tokens[0].raw, a2.tokens[0].text = p2.raw + a2.tokens[0].text, a2.tokens[0].tokens.unshift(p2)) : a2.tokens.unshift({ type: "paragraph", raw: p2.raw, text: p2.raw, tokens: [p2] }) : a2.tokens.unshift(p2);
+            let h2 = { type: "checkbox", raw: c2[0] + " ", checked: c2[0] !== "[ ]" };
+            a2.checked = h2.checked, r2.loose ? a2.tokens[0] && ["paragraph", "text"].includes(a2.tokens[0].type) && "tokens" in a2.tokens[0] && a2.tokens[0].tokens ? (a2.tokens[0].raw = h2.raw + a2.tokens[0].raw, a2.tokens[0].text = h2.raw + a2.tokens[0].text, a2.tokens[0].tokens.unshift(h2)) : a2.tokens.unshift({ type: "paragraph", raw: h2.raw, text: h2.raw, tokens: [h2] }) : a2.tokens.unshift(h2);
           }
-        }
-        if (!r2.loose) {
-          let c2 = a2.tokens.filter((d2) => d2.type === "space"), p2 = c2.length > 0 && c2.some((d2) => this.rules.other.anyLine.test(d2.raw));
-          r2.loose = p2;
-        }
+        } else a2.task && (a2.task = false);
       }
       if (r2.loose) for (let a2 of r2.items) {
         a2.loose = true;
-        for (let c2 of a2.tokens) c2.type === "text" && (c2.type = "paragraph");
+        for (let u2 of a2.tokens) u2.type === "text" && (u2.type = "paragraph");
       }
       return r2;
     }
@@ -9462,7 +9469,7 @@ ${p2}` : p2;
   html(e3) {
     let t2 = this.rules.block.html.exec(e3);
     if (t2) {
-      let n2 = Y(t2[0]);
+      let n2 = te(t2[0]);
       return { type: "html", block: true, raw: n2, pre: t2[1] === "pre" || t2[1] === "script" || t2[1] === "style", text: n2 };
     }
   }
@@ -9477,13 +9484,13 @@ ${p2}` : p2;
   table(e3) {
     let t2 = this.rules.block.table.exec(e3);
     if (!t2 || !this.rules.other.tableDelimiter.test(t2[2])) return;
-    let n2 = V(t2[1]), s2 = t2[2].replace(this.rules.other.tableAlignChars, "").split("|"), r2 = t2[3]?.trim() ? t2[3].replace(this.rules.other.tableRowBlankLine, "").split(`
+    let n2 = ee(t2[1]), s2 = t2[2].replace(this.rules.other.tableAlignChars, "").split("|"), r2 = t2[3]?.trim() ? t2[3].replace(this.rules.other.tableRowBlankLine, "").split(`
 `) : [], i2 = { type: "table", raw: $(t2[0], `
 `), header: [], align: [], rows: [] };
     if (n2.length === s2.length) {
       for (let o2 of s2) this.rules.other.tableAlignRight.test(o2) ? i2.align.push("right") : this.rules.other.tableAlignCenter.test(o2) ? i2.align.push("center") : this.rules.other.tableAlignLeft.test(o2) ? i2.align.push("left") : i2.align.push(null);
       for (let o2 = 0; o2 < n2.length; o2++) i2.header.push({ text: n2[o2], tokens: this.lexer.inline(n2[o2]), header: true, align: i2.align[o2] });
-      for (let o2 of r2) i2.rows.push(V(o2, i2.header.length).map((u2, a2) => ({ text: u2, tokens: this.lexer.inline(u2), header: false, align: i2.align[a2] })));
+      for (let o2 of r2) i2.rows.push(ee(o2, i2.header.length).map((p2, a2) => ({ text: p2, tokens: this.lexer.inline(p2), header: false, align: i2.align[a2] })));
       return i2;
     }
   }
@@ -9524,11 +9531,11 @@ ${p2}` : p2;
         let i2 = $(n2.slice(0, -1), "\\");
         if ((n2.length - i2.length) % 2 === 0) return;
       } else {
-        let i2 = ge(t2[2], "()");
+        let i2 = fe(t2[2], "()");
         if (i2 === -2) return;
         if (i2 > -1) {
-          let u2 = (t2[0].indexOf("!") === 0 ? 5 : 4) + t2[1].length + i2;
-          t2[2] = t2[2].substring(0, i2), t2[0] = t2[0].substring(0, u2).trim(), t2[3] = "";
+          let p2 = (t2[0].indexOf("!") === 0 ? 5 : 4) + t2[1].length + i2;
+          t2[2] = t2[2].substring(0, i2), t2[0] = t2[0].substring(0, p2).trim(), t2[3] = "";
         }
       }
       let s2 = t2[2], r2 = "";
@@ -9536,7 +9543,7 @@ ${p2}` : p2;
         let i2 = this.rules.other.pedanticHrefTitle.exec(s2);
         i2 && (s2 = i2[1], r2 = i2[3]);
       } else r2 = t2[3] ? t2[3].slice(1, -1) : "";
-      return s2 = s2.trim(), this.rules.other.startAngleBracket.test(s2) && (this.options.pedantic && !this.rules.other.endAngleBracket.test(n2) ? s2 = s2.slice(1) : s2 = s2.slice(1, -1)), me(t2, { href: s2 && s2.replace(this.rules.inline.anyPunctuation, "$1"), title: r2 && r2.replace(this.rules.inline.anyPunctuation, "$1") }, t2[0], this.lexer, this.rules);
+      return s2 = s2.trim(), this.rules.other.startAngleBracket.test(s2) && (this.options.pedantic && !this.rules.other.endAngleBracket.test(n2) ? s2 = s2.slice(1) : s2 = s2.slice(1, -1)), xe(t2, { href: s2 && s2.replace(this.rules.inline.anyPunctuation, "$1"), title: r2 && r2.replace(this.rules.inline.anyPunctuation, "$1") }, t2[0], this.lexer, this.rules);
     }
   }
   reflink(e3, t2) {
@@ -9547,32 +9554,35 @@ ${p2}` : p2;
         let i2 = n2[0].charAt(0);
         return { type: "text", raw: i2, text: i2 };
       }
-      return me(n2, r2, n2[0], this.lexer, this.rules);
+      return xe(n2, r2, n2[0], this.lexer, this.rules);
     }
   }
   emStrong(e3, t2, n2 = "") {
     let s2 = this.rules.inline.emStrongLDelim.exec(e3);
     if (!s2 || !s2[1] && !s2[2] && !s2[3] && !s2[4] || s2[4] && n2.match(this.rules.other.unicodeAlphaNumeric)) return;
     if (!(s2[1] || s2[3] || "") || !n2 || this.rules.inline.punctuation.exec(n2)) {
-      let i2 = [...s2[0]].length - 1, o2, u2, a2 = i2, c2 = 0, p2 = s2[0][0] === "*" ? this.rules.inline.emStrongRDelimAst : this.rules.inline.emStrongRDelimUnd;
-      for (p2.lastIndex = 0, t2 = t2.slice(-1 * e3.length + i2); (s2 = p2.exec(t2)) !== null; ) {
+      let i2 = [...s2[0]].length - 1, o2, p2, a2 = i2, u2 = 0, c2 = s2[0][0], h2 = n2 === c2, k = c2 === "*" ? this.rules.inline.emStrongRDelimAst : this.rules.inline.emStrongRDelimUnd;
+      for (k.lastIndex = 0, t2 = t2.slice(-1 * e3.length + i2); (s2 = k.exec(t2)) !== null; ) {
         if (o2 = s2[1] || s2[2] || s2[3] || s2[4] || s2[5] || s2[6], !o2) continue;
-        if (u2 = [...o2].length, s2[3] || s2[4]) {
-          a2 += u2;
+        if (p2 = [...o2].length, s2[3] || s2[4]) {
+          a2 += p2;
           continue;
-        } else if ((s2[5] || s2[6]) && i2 % 3 && !((i2 + u2) % 3)) {
-          c2 += u2;
-          continue;
+        } else if (s2[5] || s2[6]) {
+          if (i2 % 3 && !((i2 + p2) % 3)) {
+            u2 += p2;
+            continue;
+          }
+          if (h2) break;
         }
-        if (a2 -= u2, a2 > 0) continue;
-        u2 = Math.min(u2, u2 + a2 + c2);
-        let d2 = [...s2[0]][0].length, h2 = e3.slice(0, i2 + s2.index + d2 + u2);
-        if (Math.min(i2, u2) % 2) {
-          let f2 = h2.slice(1, -1);
-          return { type: "em", raw: h2, text: f2, tokens: this.lexer.inlineTokens(f2) };
+        if (a2 -= p2, a2 > 0) continue;
+        p2 = Math.min(p2, p2 + a2 + u2);
+        let T = [...s2[0]][0].length, g2 = e3.slice(0, i2 + s2.index + T + p2);
+        if (Math.min(i2, p2) % 2) {
+          let M = g2.slice(1, -1);
+          return { type: "em", raw: g2, text: M, tokens: this.lexer.inlineTokens(M) };
         }
-        let R = h2.slice(2, -2);
-        return { type: "strong", raw: h2, text: R, tokens: this.lexer.inlineTokens(R) };
+        let w2 = g2.slice(2, -2);
+        return { type: "strong", raw: g2, text: w2, tokens: this.lexer.inlineTokens(w2) };
       }
     }
   }
@@ -9591,17 +9601,17 @@ ${p2}` : p2;
     let s2 = this.rules.inline.delLDelim.exec(e3);
     if (!s2) return;
     if (!(s2[1] || "") || !n2 || this.rules.inline.punctuation.exec(n2)) {
-      let i2 = [...s2[0]].length - 1, o2, u2, a2 = i2, c2 = this.rules.inline.delRDelim;
-      for (c2.lastIndex = 0, t2 = t2.slice(-1 * e3.length + i2); (s2 = c2.exec(t2)) !== null; ) {
-        if (o2 = s2[1] || s2[2] || s2[3] || s2[4] || s2[5] || s2[6], !o2 || (u2 = [...o2].length, u2 !== i2)) continue;
+      let i2 = [...s2[0]].length - 1, o2, p2, a2 = i2, u2 = this.rules.inline.delRDelim;
+      for (u2.lastIndex = 0, t2 = t2.slice(-1 * e3.length + i2); (s2 = u2.exec(t2)) !== null; ) {
+        if (o2 = s2[1] || s2[2] || s2[3] || s2[4] || s2[5] || s2[6], !o2 || (p2 = [...o2].length, p2 !== i2)) continue;
         if (s2[3] || s2[4]) {
-          a2 += u2;
+          a2 += p2;
           continue;
         }
-        if (a2 -= u2, a2 > 0) continue;
-        u2 = Math.min(u2, u2 + a2);
-        let p2 = [...s2[0]][0].length, d2 = e3.slice(0, i2 + s2.index + p2 + u2), h2 = d2.slice(i2, -i2);
-        return { type: "del", raw: d2, text: h2, tokens: this.lexer.inlineTokens(h2) };
+        if (a2 -= p2, a2 > 0) continue;
+        p2 = Math.min(p2, p2 + a2);
+        let c2 = [...s2[0]][0].length, h2 = e3.slice(0, i2 + s2.index + c2 + p2), k = h2.slice(i2, -i2);
+        return { type: "del", raw: h2, text: k, tokens: this.lexer.inlineTokens(k) };
       }
     }
   }
@@ -9642,12 +9652,12 @@ var x = class l {
   inlineQueue;
   tokenizer;
   constructor(e3) {
-    this.tokens = [], this.tokens.links = /* @__PURE__ */ Object.create(null), this.options = e3 || T, this.options.tokenizer = this.options.tokenizer || new w$1(), this.tokenizer = this.options.tokenizer, this.tokenizer.options = this.options, this.tokenizer.lexer = this, this.inlineQueue = [], this.state = { inLink: false, inRawBlock: false, top: true };
-    let t2 = { other: m$1, block: B.normal, inline: A.normal };
-    this.options.pedantic ? (t2.block = B.pedantic, t2.inline = A.pedantic) : this.options.gfm && (t2.block = B.gfm, this.options.breaks ? t2.inline = A.breaks : t2.inline = A.gfm), this.tokenizer.rules = t2;
+    this.tokens = [], this.tokens.links = /* @__PURE__ */ Object.create(null), this.options = e3 || R, this.options.tokenizer = this.options.tokenizer || new y$1(), this.tokenizer = this.options.tokenizer, this.tokenizer.options = this.options, this.tokenizer.lexer = this, this.inlineQueue = [], this.state = { inLink: false, inRawBlock: false, top: true };
+    let t2 = { other: m$1, block: H.normal, inline: B.normal };
+    this.options.pedantic ? (t2.block = H.pedantic, t2.inline = B.pedantic) : this.options.gfm && (t2.block = H.gfm, this.options.breaks ? t2.inline = B.breaks : t2.inline = B.gfm), this.tokenizer.rules = t2;
   }
   static get rules() {
-    return { block: B, inline: A };
+    return { block: H, inline: B };
   }
   static lex(e3, t2) {
     return new l(t2).lex(e3);
@@ -9734,9 +9744,9 @@ var x = class l {
       }
       let i2 = e3;
       if (this.options.extensions?.startBlock) {
-        let o2 = 1 / 0, u2 = e3.slice(1), a2;
-        this.options.extensions.startBlock.forEach((c2) => {
-          a2 = c2.call({ lexer: this }, u2), typeof a2 == "number" && a2 >= 0 && (o2 = Math.min(o2, a2));
+        let o2 = 1 / 0, p2 = e3.slice(1), a2;
+        this.options.extensions.startBlock.forEach((u2) => {
+          a2 = u2.call({ lexer: this }, p2), typeof a2 == "number" && a2 >= 0 && (o2 = Math.min(o2, a2));
         }), o2 < 1 / 0 && o2 >= 0 && (i2 = e3.substring(0, o2 + 1));
       }
       if (this.state.top && (r2 = this.tokenizer.paragraph(i2))) {
@@ -9768,78 +9778,78 @@ var x = class l {
   }
   inlineTokens(e3, t2 = []) {
     this.tokenizer.lexer = this;
-    let n2 = e3, s2 = null;
+    let n2 = e3;
     if (this.tokens.links) {
-      let a2 = Object.keys(this.tokens.links);
-      if (a2.length > 0) for (; (s2 = this.tokenizer.rules.inline.reflinkSearch.exec(n2)) !== null; ) a2.includes(s2[0].slice(s2[0].lastIndexOf("[") + 1, -1)) && (n2 = n2.slice(0, s2.index) + "[" + "a".repeat(s2[0].length - 2) + "]" + n2.slice(this.tokenizer.rules.inline.reflinkSearch.lastIndex));
+      let o2 = Object.keys(this.tokens.links);
+      o2.length > 0 && (n2 = n2.replace(this.tokenizer.rules.inline.reflinkSearch, (p2) => o2.includes(p2.slice(p2.lastIndexOf("[") + 1, -1)) ? "[" + "a".repeat(p2.length - 2) + "]" : p2));
     }
-    for (; (s2 = this.tokenizer.rules.inline.anyPunctuation.exec(n2)) !== null; ) n2 = n2.slice(0, s2.index) + "++" + n2.slice(this.tokenizer.rules.inline.anyPunctuation.lastIndex);
-    let r2;
-    for (; (s2 = this.tokenizer.rules.inline.blockSkip.exec(n2)) !== null; ) r2 = s2[2] ? s2[2].length : 0, n2 = n2.slice(0, s2.index + r2) + "[" + "a".repeat(s2[0].length - r2 - 2) + "]" + n2.slice(this.tokenizer.rules.inline.blockSkip.lastIndex);
-    n2 = this.options.hooks?.emStrongMask?.call({ lexer: this }, n2) ?? n2;
-    let i2 = false, o2 = "", u2 = 1 / 0;
+    n2 = n2.replace(this.tokenizer.rules.inline.anyPunctuation, (o2) => "+".repeat(o2.length)), n2 = n2.replace(this.tokenizer.rules.inline.blockSkip, (o2, p2, a2) => {
+      let u2 = a2 ? a2.length : 0;
+      return o2.slice(0, u2) + "[" + "a".repeat(o2.length - u2 - 2) + "]";
+    }), n2 = this.options.hooks?.emStrongMask?.call({ lexer: this }, n2) ?? n2;
+    let s2 = false, r2 = "", i2 = 1 / 0;
     for (; e3; ) {
-      if (e3.length < u2) u2 = e3.length;
+      if (e3.length < i2) i2 = e3.length;
       else {
         this.infiniteLoopError(e3.charCodeAt(0));
         break;
       }
-      i2 || (o2 = ""), i2 = false;
-      let a2;
-      if (this.options.extensions?.inline?.some((p2) => (a2 = p2.call({ lexer: this }, e3, t2)) ? (e3 = e3.substring(a2.raw.length), t2.push(a2), true) : false)) continue;
-      if (a2 = this.tokenizer.escape(e3)) {
-        e3 = e3.substring(a2.raw.length), t2.push(a2);
+      s2 || (r2 = ""), s2 = false;
+      let o2;
+      if (this.options.extensions?.inline?.some((a2) => (o2 = a2.call({ lexer: this }, e3, t2)) ? (e3 = e3.substring(o2.raw.length), t2.push(o2), true) : false)) continue;
+      if (o2 = this.tokenizer.escape(e3)) {
+        e3 = e3.substring(o2.raw.length), t2.push(o2);
         continue;
       }
-      if (a2 = this.tokenizer.tag(e3)) {
-        e3 = e3.substring(a2.raw.length), t2.push(a2);
+      if (o2 = this.tokenizer.tag(e3)) {
+        e3 = e3.substring(o2.raw.length), t2.push(o2);
         continue;
       }
-      if (a2 = this.tokenizer.link(e3)) {
-        e3 = e3.substring(a2.raw.length), t2.push(a2);
+      if (o2 = this.tokenizer.link(e3)) {
+        e3 = e3.substring(o2.raw.length), t2.push(o2);
         continue;
       }
-      if (a2 = this.tokenizer.reflink(e3, this.tokens.links)) {
-        e3 = e3.substring(a2.raw.length);
-        let p2 = t2.at(-1);
-        a2.type === "text" && p2?.type === "text" ? (p2.raw += a2.raw, p2.text += a2.text) : t2.push(a2);
+      if (o2 = this.tokenizer.reflink(e3, this.tokens.links)) {
+        e3 = e3.substring(o2.raw.length);
+        let a2 = t2.at(-1);
+        o2.type === "text" && a2?.type === "text" ? (a2.raw += o2.raw, a2.text += o2.text) : t2.push(o2);
         continue;
       }
-      if (a2 = this.tokenizer.emStrong(e3, n2, o2)) {
-        e3 = e3.substring(a2.raw.length), t2.push(a2);
+      if (o2 = this.tokenizer.emStrong(e3, n2, r2)) {
+        e3 = e3.substring(o2.raw.length), t2.push(o2);
         continue;
       }
-      if (a2 = this.tokenizer.codespan(e3)) {
-        e3 = e3.substring(a2.raw.length), t2.push(a2);
+      if (o2 = this.tokenizer.codespan(e3)) {
+        e3 = e3.substring(o2.raw.length), t2.push(o2);
         continue;
       }
-      if (a2 = this.tokenizer.br(e3)) {
-        e3 = e3.substring(a2.raw.length), t2.push(a2);
+      if (o2 = this.tokenizer.br(e3)) {
+        e3 = e3.substring(o2.raw.length), t2.push(o2);
         continue;
       }
-      if (a2 = this.tokenizer.del(e3, n2, o2)) {
-        e3 = e3.substring(a2.raw.length), t2.push(a2);
+      if (o2 = this.tokenizer.del(e3, n2, r2)) {
+        e3 = e3.substring(o2.raw.length), t2.push(o2);
         continue;
       }
-      if (a2 = this.tokenizer.autolink(e3)) {
-        e3 = e3.substring(a2.raw.length), t2.push(a2);
+      if (o2 = this.tokenizer.autolink(e3)) {
+        e3 = e3.substring(o2.raw.length), t2.push(o2);
         continue;
       }
-      if (!this.state.inLink && (a2 = this.tokenizer.url(e3))) {
-        e3 = e3.substring(a2.raw.length), t2.push(a2);
+      if (!this.state.inLink && (o2 = this.tokenizer.url(e3))) {
+        e3 = e3.substring(o2.raw.length), t2.push(o2);
         continue;
       }
-      let c2 = e3;
+      let p2 = e3;
       if (this.options.extensions?.startInline) {
-        let p2 = 1 / 0, d2 = e3.slice(1), h2;
-        this.options.extensions.startInline.forEach((R) => {
-          h2 = R.call({ lexer: this }, d2), typeof h2 == "number" && h2 >= 0 && (p2 = Math.min(p2, h2));
-        }), p2 < 1 / 0 && p2 >= 0 && (c2 = e3.substring(0, p2 + 1));
+        let a2 = 1 / 0, u2 = e3.slice(1), c2;
+        this.options.extensions.startInline.forEach((h2) => {
+          c2 = h2.call({ lexer: this }, u2), typeof c2 == "number" && c2 >= 0 && (a2 = Math.min(a2, c2));
+        }), a2 < 1 / 0 && a2 >= 0 && (p2 = e3.substring(0, a2 + 1));
       }
-      if (a2 = this.tokenizer.inlineText(c2)) {
-        e3 = e3.substring(a2.raw.length), a2.raw.slice(-1) !== "_" && (o2 = a2.raw.slice(-1)), i2 = true;
-        let p2 = t2.at(-1);
-        p2?.type === "text" ? (p2.raw += a2.raw, p2.text += a2.text) : t2.push(a2);
+      if (o2 = this.tokenizer.inlineText(p2)) {
+        e3 = e3.substring(o2.raw.length), o2.raw.slice(-1) !== "_" && (r2 = o2.raw.slice(-1)), s2 = true;
+        let a2 = t2.at(-1);
+        a2?.type === "text" ? (a2.raw += o2.raw, a2.text += o2.text) : t2.push(o2);
         continue;
       }
       if (e3) {
@@ -9855,11 +9865,11 @@ var x = class l {
     else throw new Error(t2);
   }
 };
-var y$1 = class y {
+var P = class {
   options;
   parser;
   constructor(e3) {
-    this.options = e3 || T;
+    this.options = e3 || R;
   }
   space(e3) {
     return "";
@@ -9893,8 +9903,8 @@ ${this.parser.parse(e3)}</blockquote>
   list(e3) {
     let t2 = e3.ordered, n2 = e3.start, s2 = "";
     for (let o2 = 0; o2 < e3.items.length; o2++) {
-      let u2 = e3.items[o2];
-      s2 += this.listitem(u2);
+      let p2 = e3.items[o2];
+      s2 += this.listitem(p2);
     }
     let r2 = t2 ? "ol" : "ul", i2 = t2 && n2 !== 1 ? ' start="' + n2 + '"' : "";
     return "<" + r2 + i2 + `>
@@ -9955,7 +9965,7 @@ ${e3}</tr>
     return `<del>${this.parser.parseInline(e3)}</del>`;
   }
   link({ href: e3, title: t2, tokens: n2 }) {
-    let s2 = this.parser.parseInline(n2), r2 = J(e3);
+    let s2 = this.parser.parseInline(n2), r2 = Y(e3);
     if (r2 === null) return s2;
     e3 = r2;
     let i2 = '<a href="' + e3 + '"';
@@ -9963,7 +9973,7 @@ ${e3}</tr>
   }
   image({ href: e3, title: t2, text: n2, tokens: s2 }) {
     s2 && (n2 = this.parser.parseInline(s2, this.parser.textRenderer));
-    let r2 = J(e3);
+    let r2 = Y(e3);
     if (r2 === null) return O(n2);
     e3 = r2;
     let i2 = `<img src="${e3}" alt="${O(n2)}"`;
@@ -10010,7 +10020,7 @@ var b$1 = class l2 {
   renderer;
   textRenderer;
   constructor(e3) {
-    this.options = e3 || T, this.options.renderer = this.options.renderer || new y$1(), this.renderer = this.options.renderer, this.renderer.options = this.options, this.renderer.parser = this, this.textRenderer = new L();
+    this.options = e3 || R, this.options.renderer = this.options.renderer || new P(), this.renderer = this.options.renderer, this.renderer.options = this.options, this.renderer.parser = this, this.textRenderer = new L();
   }
   static parse(e3, t2) {
     return new l2(t2).parse(e3);
@@ -10025,7 +10035,7 @@ var b$1 = class l2 {
       let s2 = e3[n2];
       if (this.options.extensions?.renderers?.[s2.type]) {
         let i2 = s2, o2 = this.options.extensions.renderers[i2.type].call({ parser: this }, i2);
-        if (o2 !== false || !["space", "hr", "heading", "code", "table", "blockquote", "list", "html", "def", "paragraph", "text"].includes(i2.type)) {
+        if (o2 !== false || !["space", "hr", "heading", "code", "table", "blockquote", "list", "checkbox", "html", "def", "paragraph", "text"].includes(i2.type)) {
           t2 += o2 || "";
           continue;
         }
@@ -10096,7 +10106,7 @@ var b$1 = class l2 {
       let r2 = e3[s2];
       if (this.options.extensions?.renderers?.[r2.type]) {
         let o2 = this.options.extensions.renderers[r2.type].call({ parser: this }, r2);
-        if (o2 !== false || !["escape", "html", "link", "image", "strong", "em", "codespan", "br", "del", "text"].includes(r2.type)) {
+        if (o2 !== false || !["escape", "html", "link", "image", "checkbox", "strong", "em", "codespan", "br", "del", "text"].includes(r2.type)) {
           n2 += o2 || "";
           continue;
         }
@@ -10157,11 +10167,11 @@ var b$1 = class l2 {
     return n2;
   }
 };
-var P = class {
+var S$1 = class S {
   options;
   block;
   constructor(e3) {
-    this.options = e3 || T;
+    this.options = e3 || R;
   }
   static passThroughHooks = /* @__PURE__ */ new Set(["preprocess", "postprocess", "processAllTokens", "emStrongMask"]);
   static passThroughHooksRespectAsync = /* @__PURE__ */ new Set(["preprocess", "postprocess", "processAllTokens"]);
@@ -10184,17 +10194,17 @@ var P = class {
     return e3 ? b$1.parse : b$1.parseInline;
   }
 };
-var D = class {
-  defaults = z();
+var Z = class {
+  defaults = C$1();
   options = this.setOptions;
   parse = this.parseMarkdown(true);
   parseInline = this.parseMarkdown(false);
   Parser = b$1;
-  Renderer = y$1;
+  Renderer = P;
   TextRenderer = L;
   Lexer = x;
-  Tokenizer = w$1;
-  Hooks = P;
+  Tokenizer = y$1;
+  Hooks = S$1;
   constructor(...e3) {
     this.use(...e3);
   }
@@ -10231,8 +10241,8 @@ var D = class {
         if ("renderer" in r2) {
           let i2 = t2.renderers[r2.name];
           i2 ? t2.renderers[r2.name] = function(...o2) {
-            let u2 = r2.renderer.apply(this, o2);
-            return u2 === false && (u2 = i2.apply(this, o2)), u2;
+            let p2 = r2.renderer.apply(this, o2);
+            return p2 === false && (p2 = i2.apply(this, o2)), p2;
           } : t2.renderers[r2.name] = r2.renderer;
         }
         if ("tokenizer" in r2) {
@@ -10242,51 +10252,51 @@ var D = class {
         }
         "childTokens" in r2 && r2.childTokens && (t2.childTokens[r2.name] = r2.childTokens);
       }), s2.extensions = t2), n2.renderer) {
-        let r2 = this.defaults.renderer || new y$1(this.defaults);
+        let r2 = this.defaults.renderer || new P(this.defaults);
         for (let i2 in n2.renderer) {
           if (!(i2 in r2)) throw new Error(`renderer '${i2}' does not exist`);
           if (["options", "parser"].includes(i2)) continue;
-          let o2 = i2, u2 = n2.renderer[o2], a2 = r2[o2];
-          r2[o2] = (...c2) => {
-            let p2 = u2.apply(r2, c2);
-            return p2 === false && (p2 = a2.apply(r2, c2)), p2 || "";
+          let o2 = i2, p2 = n2.renderer[o2], a2 = r2[o2];
+          r2[o2] = (...u2) => {
+            let c2 = p2.apply(r2, u2);
+            return c2 === false && (c2 = a2.apply(r2, u2)), c2 || "";
           };
         }
         s2.renderer = r2;
       }
       if (n2.tokenizer) {
-        let r2 = this.defaults.tokenizer || new w$1(this.defaults);
+        let r2 = this.defaults.tokenizer || new y$1(this.defaults);
         for (let i2 in n2.tokenizer) {
           if (!(i2 in r2)) throw new Error(`tokenizer '${i2}' does not exist`);
           if (["options", "rules", "lexer"].includes(i2)) continue;
-          let o2 = i2, u2 = n2.tokenizer[o2], a2 = r2[o2];
-          r2[o2] = (...c2) => {
-            let p2 = u2.apply(r2, c2);
-            return p2 === false && (p2 = a2.apply(r2, c2)), p2;
+          let o2 = i2, p2 = n2.tokenizer[o2], a2 = r2[o2];
+          r2[o2] = (...u2) => {
+            let c2 = p2.apply(r2, u2);
+            return c2 === false && (c2 = a2.apply(r2, u2)), c2;
           };
         }
         s2.tokenizer = r2;
       }
       if (n2.hooks) {
-        let r2 = this.defaults.hooks || new P();
+        let r2 = this.defaults.hooks || new S$1();
         for (let i2 in n2.hooks) {
           if (!(i2 in r2)) throw new Error(`hook '${i2}' does not exist`);
           if (["options", "block"].includes(i2)) continue;
-          let o2 = i2, u2 = n2.hooks[o2], a2 = r2[o2];
-          P.passThroughHooks.has(i2) ? r2[o2] = (c2) => {
-            if (this.defaults.async && P.passThroughHooksRespectAsync.has(i2)) return (async () => {
-              let d2 = await u2.call(r2, c2);
-              return a2.call(r2, d2);
+          let o2 = i2, p2 = n2.hooks[o2], a2 = r2[o2];
+          S$1.passThroughHooks.has(i2) ? r2[o2] = (u2) => {
+            if (this.defaults.async && S$1.passThroughHooksRespectAsync.has(i2)) return (async () => {
+              let h2 = await p2.call(r2, u2);
+              return a2.call(r2, h2);
             })();
-            let p2 = u2.call(r2, c2);
-            return a2.call(r2, p2);
-          } : r2[o2] = (...c2) => {
+            let c2 = p2.call(r2, u2);
+            return a2.call(r2, c2);
+          } : r2[o2] = (...u2) => {
             if (this.defaults.async) return (async () => {
-              let d2 = await u2.apply(r2, c2);
-              return d2 === false && (d2 = await a2.apply(r2, c2)), d2;
+              let h2 = await p2.apply(r2, u2);
+              return h2 === false && (h2 = await a2.apply(r2, u2)), h2;
             })();
-            let p2 = u2.apply(r2, c2);
-            return p2 === false && (p2 = a2.apply(r2, c2)), p2;
+            let c2 = p2.apply(r2, u2);
+            return c2 === false && (c2 = a2.apply(r2, u2)), c2;
           };
         }
         s2.hooks = r2;
@@ -10294,8 +10304,8 @@ var D = class {
       if (n2.walkTokens) {
         let r2 = this.defaults.walkTokens, i2 = n2.walkTokens;
         s2.walkTokens = function(o2) {
-          let u2 = [];
-          return u2.push(i2.call(this, o2)), r2 && (u2 = u2.concat(r2.call(this, o2))), u2;
+          let p2 = [];
+          return p2.push(i2.call(this, o2)), r2 && (p2 = p2.concat(r2.call(this, o2))), p2;
         };
       }
       this.defaults = { ...this.defaults, ...s2 };
@@ -10317,19 +10327,19 @@ var D = class {
       if (typeof n2 > "u" || n2 === null) return o2(new Error("marked(): input parameter is undefined or null"));
       if (typeof n2 != "string") return o2(new Error("marked(): input parameter is of type " + Object.prototype.toString.call(n2) + ", string expected"));
       if (i2.hooks && (i2.hooks.options = i2, i2.hooks.block = e3), i2.async) return (async () => {
-        let u2 = i2.hooks ? await i2.hooks.preprocess(n2) : n2, c2 = await (i2.hooks ? await i2.hooks.provideLexer(e3) : e3 ? x.lex : x.lexInline)(u2, i2), p2 = i2.hooks ? await i2.hooks.processAllTokens(c2) : c2;
-        i2.walkTokens && await Promise.all(this.walkTokens(p2, i2.walkTokens));
-        let h2 = await (i2.hooks ? await i2.hooks.provideParser(e3) : e3 ? b$1.parse : b$1.parseInline)(p2, i2);
-        return i2.hooks ? await i2.hooks.postprocess(h2) : h2;
+        let p2 = i2.hooks ? await i2.hooks.preprocess(n2) : n2, u2 = await (i2.hooks ? await i2.hooks.provideLexer(e3) : e3 ? x.lex : x.lexInline)(p2, i2), c2 = i2.hooks ? await i2.hooks.processAllTokens(u2) : u2;
+        i2.walkTokens && await Promise.all(this.walkTokens(c2, i2.walkTokens));
+        let k = await (i2.hooks ? await i2.hooks.provideParser(e3) : e3 ? b$1.parse : b$1.parseInline)(c2, i2);
+        return i2.hooks ? await i2.hooks.postprocess(k) : k;
       })().catch(o2);
       try {
         i2.hooks && (n2 = i2.hooks.preprocess(n2));
         let a2 = (i2.hooks ? i2.hooks.provideLexer(e3) : e3 ? x.lex : x.lexInline)(n2, i2);
         i2.hooks && (a2 = i2.hooks.processAllTokens(a2)), i2.walkTokens && this.walkTokens(a2, i2.walkTokens);
-        let p2 = (i2.hooks ? i2.hooks.provideParser(e3) : e3 ? b$1.parse : b$1.parseInline)(a2, i2);
-        return i2.hooks && (p2 = i2.hooks.postprocess(p2)), p2;
-      } catch (u2) {
-        return o2(u2);
+        let c2 = (i2.hooks ? i2.hooks.provideParser(e3) : e3 ? b$1.parse : b$1.parseInline)(a2, i2);
+        return i2.hooks && (c2 = i2.hooks.postprocess(c2)), c2;
+      } catch (p2) {
+        return o2(p2);
       }
     };
   }
@@ -10345,36 +10355,36 @@ Please report this to https://github.com/markedjs/marked.`, e3) {
     };
   }
 };
-var M = new D();
-function g$1(l4, e3) {
-  return M.parse(l4, e3);
+var E$1 = new Z();
+function f$1(l4, e3) {
+  return E$1.parse(l4, e3);
 }
-g$1.options = g$1.setOptions = function(l4) {
-  return M.setOptions(l4), g$1.defaults = M.defaults, G(g$1.defaults), g$1;
+f$1.options = f$1.setOptions = function(l4) {
+  return E$1.setOptions(l4), f$1.defaults = E$1.defaults, j(f$1.defaults), f$1;
 };
-g$1.getDefaults = z;
-g$1.defaults = T;
-g$1.use = function(...l4) {
-  return M.use(...l4), g$1.defaults = M.defaults, G(g$1.defaults), g$1;
+f$1.getDefaults = C$1;
+f$1.defaults = R;
+function kt(...l4) {
+  return E$1.use(...l4), f$1.defaults = E$1.defaults, j(f$1.defaults), f$1;
+}
+f$1.use = kt;
+f$1.walkTokens = function(l4, e3) {
+  return E$1.walkTokens(l4, e3);
 };
-g$1.walkTokens = function(l4, e3) {
-  return M.walkTokens(l4, e3);
-};
-g$1.parseInline = M.parseInline;
-g$1.Parser = b$1;
-g$1.parser = b$1.parse;
-g$1.Renderer = y$1;
-g$1.TextRenderer = L;
-g$1.Lexer = x;
-g$1.lexer = x.lex;
-g$1.Tokenizer = w$1;
-g$1.Hooks = P;
-g$1.parse = g$1;
-g$1.options;
-g$1.setOptions;
-g$1.use;
-g$1.walkTokens;
-g$1.parseInline;
+f$1.parseInline = E$1.parseInline;
+f$1.Parser = b$1;
+f$1.parser = b$1.parse;
+f$1.Renderer = P;
+f$1.TextRenderer = L;
+f$1.Lexer = x;
+f$1.lexer = x.lex;
+f$1.Tokenizer = y$1;
+f$1.Hooks = S$1;
+f$1.parse = f$1;
+f$1.options;
+f$1.setOptions;
+f$1.walkTokens;
+f$1.parseInline;
 b$1.parse;
 x.lex;
 function _arrayLikeToArray(r2, a2) {
@@ -10609,7 +10619,7 @@ const mathMl$1 = freeze(["math", "menclose", "merror", "mfenced", "mfrac", "mgly
 const mathMlDisallowed = freeze(["maction", "maligngroup", "malignmark", "mlongdiv", "mscarries", "mscarry", "msgroup", "mstack", "msline", "msrow", "semantics", "annotation", "annotation-xml", "mprescripts", "none"]);
 const text = freeze(["#text"]);
 const html = freeze(["accept", "action", "align", "alt", "autocapitalize", "autocomplete", "autopictureinpicture", "autoplay", "background", "bgcolor", "border", "capture", "cellpadding", "cellspacing", "checked", "cite", "class", "clear", "color", "cols", "colspan", "command", "commandfor", "controls", "controlslist", "coords", "crossorigin", "datetime", "decoding", "default", "dir", "disabled", "disablepictureinpicture", "disableremoteplayback", "download", "draggable", "enctype", "enterkeyhint", "exportparts", "face", "for", "headers", "height", "hidden", "high", "href", "hreflang", "id", "inert", "inputmode", "integrity", "ismap", "kind", "label", "lang", "list", "loading", "loop", "low", "max", "maxlength", "media", "method", "min", "minlength", "multiple", "muted", "name", "nonce", "noshade", "novalidate", "nowrap", "open", "optimum", "part", "pattern", "placeholder", "playsinline", "popover", "popovertarget", "popovertargetaction", "poster", "preload", "pubdate", "radiogroup", "readonly", "rel", "required", "rev", "reversed", "role", "rows", "rowspan", "spellcheck", "scope", "selected", "shape", "size", "sizes", "slot", "span", "srclang", "start", "src", "srcset", "step", "style", "summary", "tabindex", "title", "translate", "type", "usemap", "valign", "value", "width", "wrap", "xmlns"]);
-const svg = freeze(["accent-height", "accumulate", "additive", "alignment-baseline", "amplitude", "ascent", "attributename", "attributetype", "azimuth", "basefrequency", "baseline-shift", "begin", "bias", "by", "class", "clip", "clippathunits", "clip-path", "clip-rule", "color", "color-interpolation", "color-interpolation-filters", "color-profile", "color-rendering", "cx", "cy", "d", "dx", "dy", "diffuseconstant", "direction", "display", "divisor", "dur", "edgemode", "elevation", "end", "exponent", "fill", "fill-opacity", "fill-rule", "filter", "filterunits", "flood-color", "flood-opacity", "font-family", "font-size", "font-size-adjust", "font-stretch", "font-style", "font-variant", "font-weight", "fx", "fy", "g1", "g2", "glyph-name", "glyphref", "gradientunits", "gradienttransform", "height", "href", "id", "image-rendering", "in", "in2", "intercept", "k", "k1", "k2", "k3", "k4", "kerning", "keypoints", "keysplines", "keytimes", "lang", "lengthadjust", "letter-spacing", "kernelmatrix", "kernelunitlength", "lighting-color", "local", "marker-end", "marker-mid", "marker-start", "markerheight", "markerunits", "markerwidth", "maskcontentunits", "maskunits", "max", "mask", "mask-type", "media", "method", "mode", "min", "name", "numoctaves", "offset", "operator", "opacity", "order", "orient", "orientation", "origin", "overflow", "paint-order", "path", "pathlength", "patterncontentunits", "patterntransform", "patternunits", "points", "preservealpha", "preserveaspectratio", "primitiveunits", "r", "rx", "ry", "radius", "refx", "refy", "repeatcount", "repeatdur", "restart", "result", "rotate", "scale", "seed", "shape-rendering", "slope", "specularconstant", "specularexponent", "spreadmethod", "startoffset", "stddeviation", "stitchtiles", "stop-color", "stop-opacity", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke", "stroke-width", "style", "surfacescale", "systemlanguage", "tabindex", "tablevalues", "targetx", "targety", "transform", "transform-origin", "text-anchor", "text-decoration", "text-rendering", "textlength", "type", "u1", "u2", "unicode", "values", "viewbox", "visibility", "version", "vert-adv-y", "vert-origin-x", "vert-origin-y", "width", "word-spacing", "wrap", "writing-mode", "xchannelselector", "ychannelselector", "x", "x1", "x2", "xmlns", "y", "y1", "y2", "z", "zoomandpan"]);
+const svg = freeze(["accent-height", "accumulate", "additive", "alignment-baseline", "amplitude", "ascent", "attributename", "attributetype", "azimuth", "basefrequency", "baseline-shift", "begin", "bias", "by", "class", "clip", "clippathunits", "clip-path", "clip-rule", "color", "color-interpolation", "color-interpolation-filters", "color-profile", "color-rendering", "cx", "cy", "d", "dx", "dy", "diffuseconstant", "direction", "display", "divisor", "dominant-baseline", "dur", "edgemode", "elevation", "end", "exponent", "fill", "fill-opacity", "fill-rule", "filter", "filterunits", "flood-color", "flood-opacity", "font-family", "font-size", "font-size-adjust", "font-stretch", "font-style", "font-variant", "font-weight", "fx", "fy", "g1", "g2", "glyph-name", "glyphref", "gradientunits", "gradienttransform", "height", "href", "id", "image-rendering", "in", "in2", "intercept", "k", "k1", "k2", "k3", "k4", "kerning", "keypoints", "keysplines", "keytimes", "lang", "lengthadjust", "letter-spacing", "kernelmatrix", "kernelunitlength", "lighting-color", "local", "marker-end", "marker-mid", "marker-start", "markerheight", "markerunits", "markerwidth", "maskcontentunits", "maskunits", "max", "mask", "mask-type", "media", "method", "mode", "min", "name", "numoctaves", "offset", "operator", "opacity", "order", "orient", "orientation", "origin", "overflow", "paint-order", "path", "pathlength", "patterncontentunits", "patterntransform", "patternunits", "pointer-events", "points", "preservealpha", "preserveaspectratio", "primitiveunits", "r", "rx", "ry", "radius", "refx", "refy", "repeatcount", "repeatdur", "restart", "result", "rotate", "scale", "seed", "shape-rendering", "slope", "specularconstant", "specularexponent", "spreadmethod", "startoffset", "stddeviation", "stitchtiles", "stop-color", "stop-opacity", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke", "stroke-width", "style", "surfacescale", "systemlanguage", "tabindex", "tablevalues", "targetx", "targety", "transform", "transform-origin", "text-anchor", "text-decoration", "text-orientation", "text-rendering", "textlength", "type", "u1", "u2", "unicode", "values", "vector-effect", "viewbox", "visibility", "version", "vert-adv-y", "vert-origin-x", "vert-origin-y", "width", "word-spacing", "wrap", "writing-mode", "xchannelselector", "ychannelselector", "x", "x1", "x2", "xmlns", "y", "y1", "y2", "z", "zoomandpan"]);
 const mathMl = freeze(["accent", "accentunder", "align", "bevelled", "close", "columnalign", "columnlines", "columnspacing", "columnspan", "denomalign", "depth", "dir", "display", "displaystyle", "encoding", "fence", "frame", "height", "href", "id", "largeop", "length", "linethickness", "lquote", "lspace", "mathbackground", "mathcolor", "mathsize", "mathvariant", "maxsize", "minsize", "movablelimits", "notation", "numalign", "open", "rowalign", "rowlines", "rowspacing", "rowspan", "rspace", "rquote", "scriptlevel", "scriptminsize", "scriptsizemultiplier", "selection", "separator", "separators", "stretchy", "subscriptshift", "supscriptshift", "symmetric", "voffset", "width", "xmlns"]);
 const xml = freeze(["xlink:href", "xml:id", "xlink:title", "xml:space", "xmlns:xlink"]);
 const MUSTACHE_EXPR = seal(/{{[\w\W]*|^[\w\W]*}}/g);
@@ -10649,6 +10659,15 @@ const NODE_TYPE = {
   notation: 12
   // Deprecated
 };
+const LITERAL_TEXT_ELEMENT_NAMES = ["style", "script", "xmp", "iframe", "noembed", "noframes", "plaintext", "noscript"];
+const LITERAL_TEXT_ELEMENTS = freeze(addToSet({}, LITERAL_TEXT_ELEMENT_NAMES));
+const LITERAL_TEXT_CLOSE = (function() {
+  const map = {};
+  arrayForEach(LITERAL_TEXT_ELEMENT_NAMES, (name) => {
+    map[name] = seal(new RegExp("</" + name + "(?=[\\t\\n\\f\\r />])", "i"));
+  });
+  return freeze(map);
+})();
 const getGlobal = function getGlobal2() {
   return typeof window === "undefined" ? null : window;
 };
@@ -10692,10 +10711,14 @@ const _createHooksMap = function _createHooksMap2() {
 const _resolveSetOption = function _resolveSetOption2(cfg, key, fallback, options) {
   return objectHasOwnProperty(cfg, key) && arrayIsArray(cfg[key]) ? addToSet(options.base ? clone(options.base) : {}, cfg[key], options.transform) : fallback;
 };
+const _resolveObjectOption = function _resolveObjectOption2(cfg, key, makeFallback) {
+  const value = objectHasOwnProperty(cfg, key) ? cfg[key] : void 0;
+  return value && typeof value === "object" ? clone(value) : makeFallback();
+};
 function createDOMPurify() {
   let window2 = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : getGlobal();
   const DOMPurify = (root2) => createDOMPurify(root2);
-  DOMPurify.version = "3.4.11";
+  DOMPurify.version = "3.4.14";
   DOMPurify.removed = [];
   if (!window2 || !window2.document || window2.document.nodeType !== NODE_TYPE.document || !window2.Element) {
     DOMPurify.isSupported = false;
@@ -10719,6 +10742,13 @@ function createDOMPurify() {
   const getAttributes = lookupGetter(ElementPrototype, "attributes");
   const getNodeType = Node2 && Node2.prototype ? lookupGetter(Node2.prototype, "nodeType") : null;
   const getNodeName2 = Node2 && Node2.prototype ? lookupGetter(Node2.prototype, "nodeName") : null;
+  const getOwnerDocument = Node2 && Node2.prototype ? lookupGetter(Node2.prototype, "ownerDocument") : null;
+  const _readNodeType = function _readNodeType2(node) {
+    return getNodeType ? getNodeType(node) : node.nodeType;
+  };
+  const _readNodeName = function _readNodeName2(node) {
+    return getNodeName2 ? getNodeName2(node) : node.nodeName;
+  };
   if (typeof HTMLTemplateElement === "function") {
     const template = document2.createElement("template");
     if (template.content && template.content.ownerDocument) {
@@ -10945,9 +10975,19 @@ function createDOMPurify() {
     IN_PLACE = cfg.IN_PLACE || false;
     IS_ALLOWED_URI$1 = isRegex(cfg.ALLOWED_URI_REGEXP) ? cfg.ALLOWED_URI_REGEXP : IS_ALLOWED_URI;
     NAMESPACE = typeof cfg.NAMESPACE === "string" ? cfg.NAMESPACE : HTML_NAMESPACE;
-    MATHML_TEXT_INTEGRATION_POINTS = objectHasOwnProperty(cfg, "MATHML_TEXT_INTEGRATION_POINTS") && cfg.MATHML_TEXT_INTEGRATION_POINTS && typeof cfg.MATHML_TEXT_INTEGRATION_POINTS === "object" ? clone(cfg.MATHML_TEXT_INTEGRATION_POINTS) : addToSet({}, DEFAULT_MATHML_TEXT_INTEGRATION_POINTS);
-    HTML_INTEGRATION_POINTS = objectHasOwnProperty(cfg, "HTML_INTEGRATION_POINTS") && cfg.HTML_INTEGRATION_POINTS && typeof cfg.HTML_INTEGRATION_POINTS === "object" ? clone(cfg.HTML_INTEGRATION_POINTS) : addToSet({}, DEFAULT_HTML_INTEGRATION_POINTS);
-    const customElementHandling = objectHasOwnProperty(cfg, "CUSTOM_ELEMENT_HANDLING") && cfg.CUSTOM_ELEMENT_HANDLING && typeof cfg.CUSTOM_ELEMENT_HANDLING === "object" ? clone(cfg.CUSTOM_ELEMENT_HANDLING) : create(null);
+    MATHML_TEXT_INTEGRATION_POINTS = _resolveObjectOption(
+      cfg,
+      "MATHML_TEXT_INTEGRATION_POINTS",
+      () => addToSet({}, DEFAULT_MATHML_TEXT_INTEGRATION_POINTS)
+      // Default built-in map
+    );
+    HTML_INTEGRATION_POINTS = _resolveObjectOption(
+      cfg,
+      "HTML_INTEGRATION_POINTS",
+      () => addToSet({}, DEFAULT_HTML_INTEGRATION_POINTS)
+      // Default built-in map
+    );
+    const customElementHandling = _resolveObjectOption(cfg, "CUSTOM_ELEMENT_HANDLING", () => create(null));
     CUSTOM_ELEMENT_HANDLING = create(null);
     if (objectHasOwnProperty(customElementHandling, "tagNameCheck") && isRegexOrFunction(customElementHandling.tagNameCheck)) {
       CUSTOM_ELEMENT_HANDLING.tagNameCheck = customElementHandling.tagNameCheck;
@@ -11009,15 +11049,6 @@ function createDOMPurify() {
         }
         addToSet(ALLOWED_ATTR, cfg.ADD_ATTR, transformCaseFunc);
       }
-    }
-    if (objectHasOwnProperty(cfg, "ADD_URI_SAFE_ATTR") && arrayIsArray(cfg.ADD_URI_SAFE_ATTR)) {
-      addToSet(URI_SAFE_ATTRIBUTES, cfg.ADD_URI_SAFE_ATTR, transformCaseFunc);
-    }
-    if (objectHasOwnProperty(cfg, "FORBID_CONTENTS") && arrayIsArray(cfg.FORBID_CONTENTS)) {
-      if (FORBID_CONTENTS === DEFAULT_FORBID_CONTENTS) {
-        FORBID_CONTENTS = clone(FORBID_CONTENTS);
-      }
-      addToSet(FORBID_CONTENTS, cfg.FORBID_CONTENTS, transformCaseFunc);
     }
     if (objectHasOwnProperty(cfg, "ADD_FORBID_CONTENTS") && arrayIsArray(cfg.ADD_FORBID_CONTENTS)) {
       if (FORBID_CONTENTS === DEFAULT_FORBID_CONTENTS) {
@@ -11135,7 +11166,18 @@ function createDOMPurify() {
       }
     }
   };
+  const _stripAttributeNode = function _stripAttributeNode2(element, attribute, name) {
+    try {
+      element.removeAttributeNode(attribute);
+    } catch (_2) {
+      try {
+        element.removeAttribute(name);
+      } catch (_3) {
+      }
+    }
+  };
   const _neutralizeRoot = function _neutralizeRoot2(root2) {
+    _neutralizeSubtree(root2);
     const childNodes = getChildNodes(root2);
     if (childNodes) {
       const snapshot = [];
@@ -11155,27 +11197,35 @@ function createDOMPurify() {
         const attribute = attributes[i2];
         const name = attribute && attribute.name;
         if (typeof name === "string") {
-          try {
-            root2.removeAttribute(name);
-          } catch (_2) {
-          }
+          _stripAttributeNode(root2, attribute, name);
         }
       }
     }
   };
-  const _removeAttribute = function _removeAttribute2(name, element) {
-    try {
-      arrayPush(DOMPurify.removed, {
-        attribute: element.getAttributeNode(name),
-        from: element
-      });
-    } catch (_2) {
-      arrayPush(DOMPurify.removed, {
-        attribute: null,
-        from: element
-      });
+  const _removeAttribute = function _removeAttribute2(name, element, attr) {
+    if (!attr) {
+      try {
+        attr = element.getAttributeNode(name);
+      } catch (_2) {
+        attr = null;
+      }
     }
-    element.removeAttribute(name);
+    arrayPush(DOMPurify.removed, {
+      attribute: attr || null,
+      from: element
+    });
+    try {
+      if (attr) {
+        element.removeAttributeNode(attr);
+      } else {
+        element.removeAttribute(name);
+      }
+    } catch (_2) {
+      try {
+        element.removeAttribute(name);
+      } catch (_3) {
+      }
+    }
     if (name === "is") {
       if (RETURN_DOM || RETURN_DOM_FRAGMENT) {
         try {
@@ -11201,19 +11251,61 @@ function createDOMPurify() {
       if (typeof name !== "string" || ALLOWED_ATTR[transformCaseFunc(name)]) {
         continue;
       }
-      try {
-        element.removeAttribute(name);
-      } catch (_2) {
-      }
+      _stripAttributeNode(element, attribute, name);
     }
   };
   const _neutralizeSubtree = function _neutralizeSubtree2(root2) {
     const stack2 = [root2];
     while (stack2.length > 0) {
       const node = stack2.pop();
-      const nodeType = getNodeType ? getNodeType(node) : node.nodeType;
+      const nodeType = _readNodeType(node);
       if (nodeType === NODE_TYPE.element) {
         _stripDisallowedAttributes(node);
+      }
+      const childNodes = getChildNodes(node);
+      if (childNodes) {
+        for (let i2 = childNodes.length - 1; i2 >= 0; --i2) {
+          stack2.push(childNodes[i2]);
+        }
+      }
+    }
+  };
+  const _isPatchLinkageAttribute = function _isPatchLinkageAttribute2(lcName, lcTag) {
+    if (!SAFE_FOR_XML) {
+      return false;
+    }
+    if (lcName === "patchsrc") {
+      return true;
+    }
+    return lcName === "for" && lcTag !== "label" && lcTag !== "output";
+  };
+  const _neutralizePatchLinkage = function _neutralizePatchLinkage2(root2) {
+    if (!SAFE_FOR_XML) {
+      return;
+    }
+    const stack2 = [root2];
+    while (stack2.length > 0) {
+      const node = stack2.pop();
+      const nodeType = _readNodeType(node);
+      if (nodeType === NODE_TYPE.processingInstruction || nodeType === NODE_TYPE.comment && regExpTest(COMMENT_MARKUP_PROBE, node.data)) {
+        try {
+          remove2(node);
+        } catch (_2) {
+        }
+        continue;
+      }
+      if (nodeType === NODE_TYPE.element) {
+        const element = node;
+        const lcTag = transformCaseFunc(_readNodeName(node));
+        try {
+          if (element.hasAttribute && element.hasAttribute("patchsrc")) {
+            element.removeAttribute("patchsrc");
+          }
+          if (element.hasAttribute && element.hasAttribute("for") && _isPatchLinkageAttribute("for", lcTag)) {
+            element.removeAttribute("for");
+          }
+        } catch (_2) {
+        }
       }
       const childNodes = getChildNodes(node);
       if (childNodes) {
@@ -11259,8 +11351,9 @@ function createDOMPurify() {
     return WHOLE_DOCUMENT ? doc2.documentElement : body;
   };
   const _createNodeIterator = function _createNodeIterator2(root2) {
+    const doc2 = getOwnerDocument ? getOwnerDocument(root2) : root2.ownerDocument;
     return createNodeIterator.call(
-      root2.ownerDocument || root2,
+      doc2 || root2,
       root2,
       // eslint-disable-next-line no-bitwise
       NodeFilter2.SHOW_ELEMENT | NodeFilter2.SHOW_COMMENT | NodeFilter2.SHOW_TEXT | NodeFilter2.SHOW_PROCESSING_INSTRUCTION | NodeFilter2.SHOW_CDATA_SECTION,
@@ -11276,8 +11369,9 @@ function createDOMPurify() {
   const _scrubTemplateExpressions2 = function _scrubTemplateExpressions(node) {
     var _node$querySelectorAl;
     node.normalize();
+    const doc2 = getOwnerDocument ? getOwnerDocument(node) : node.ownerDocument;
     const walker = createNodeIterator.call(
-      node.ownerDocument || node,
+      doc2 || node,
       node,
       // eslint-disable-next-line no-bitwise
       NodeFilter2.SHOW_TEXT | NodeFilter2.SHOW_COMMENT | NodeFilter2.SHOW_CDATA_SECTION | NodeFilter2.SHOW_PROCESSING_INSTRUCTION,
@@ -11362,7 +11456,7 @@ function createDOMPurify() {
     if (SAFE_FOR_XML && currentNode.hasChildNodes() && !_isNode(currentNode.firstElementChild) && regExpTest(ELEMENT_MARKUP_PROBE, currentNode.textContent) && regExpTest(ELEMENT_MARKUP_PROBE, currentNode.innerHTML)) {
       return true;
     }
-    if (SAFE_FOR_XML && currentNode.namespaceURI === HTML_NAMESPACE && tagName === "style" && _isNode(currentNode.firstElementChild)) {
+    if (SAFE_FOR_XML && currentNode.namespaceURI === HTML_NAMESPACE && LITERAL_TEXT_ELEMENTS[tagName] && (_isNode(currentNode.firstElementChild) || typeof currentNode.textContent === "string" && regExpTest(LITERAL_TEXT_CLOSE[tagName], currentNode.textContent))) {
       return true;
     }
     if (currentNode.nodeType === NODE_TYPE.processingInstruction) {
@@ -11373,14 +11467,21 @@ function createDOMPurify() {
     }
     return false;
   };
-  const _sanitizeDisallowedNode = function _sanitizeDisallowedNode2(currentNode, tagName) {
-    if (!FORBID_TAGS[tagName] && _isBasicCustomElement(tagName)) {
-      if (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, tagName)) {
-        return false;
+  const _matchesNameCheck = function _matchesNameCheck2(check, name) {
+    if (check instanceof RegExp) {
+      return regExpTest(check, name);
+    }
+    if (check instanceof Function) {
+      for (var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+        args[_key - 2] = arguments[_key];
       }
-      if (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(tagName)) {
-        return false;
-      }
+      return Boolean(check(name, ...args));
+    }
+    return false;
+  };
+  const _sanitizeDisallowedNode = function _sanitizeDisallowedNode2(currentNode, tagName, root2) {
+    if (!FORBID_TAGS[tagName] && _isBasicCustomElement(tagName) && _matchesNameCheck(CUSTOM_ELEMENT_HANDLING.tagNameCheck, tagName)) {
+      return false;
     }
     if (KEEP_CONTENT && !FORBID_CONTENTS[tagName]) {
       const parentNode = getParentNode2(currentNode);
@@ -11388,7 +11489,7 @@ function createDOMPurify() {
       if (childNodes && parentNode) {
         const childCount = childNodes.length;
         for (let i2 = childCount - 1; i2 >= 0; --i2) {
-          const hoisted = IN_PLACE ? childNodes[i2] : cloneNode(childNodes[i2], true);
+          const hoisted = currentNode === root2 ? cloneNode(childNodes[i2], true) : childNodes[i2];
           parentNode.insertBefore(hoisted, getNextSibling(currentNode));
         }
       }
@@ -11396,25 +11497,51 @@ function createDOMPurify() {
     _forceRemove(currentNode);
     return true;
   };
-  const _sanitizeElements = function _sanitizeElements2(currentNode) {
+  const _forkSharedAllowlist = function _forkSharedAllowlist2(hookList, set, defaultSet, setConfigSet) {
+    if (hookList.length === 0) {
+      return set;
+    }
+    return set === defaultSet || set === setConfigSet ? clone(set) : set;
+  };
+  const _handleHookDetachedNode = function _handleHookDetachedNode2(currentNode, root2) {
+    if (currentNode === root2 || getParentNode2(currentNode) !== null) {
+      return false;
+    }
+    if (IN_PLACE) {
+      _neutralizeSubtree(currentNode);
+    }
+    return true;
+  };
+  const _sanitizeElements = function _sanitizeElements2(currentNode, root2) {
     _executeHooks(hooks.beforeSanitizeElements, currentNode, null);
+    if (_handleHookDetachedNode(currentNode, root2)) {
+      return true;
+    }
     if (_isClobbered(currentNode)) {
       _forceRemove(currentNode);
       return true;
     }
-    const tagName = transformCaseFunc(getNodeName2 ? getNodeName2(currentNode) : currentNode.nodeName);
+    const tagName = transformCaseFunc(_readNodeName(currentNode));
+    ALLOWED_TAGS = _forkSharedAllowlist(hooks.uponSanitizeElement, ALLOWED_TAGS, DEFAULT_ALLOWED_TAGS, SET_CONFIG_ALLOWED_TAGS);
     _executeHooks(hooks.uponSanitizeElement, currentNode, {
       tagName,
       allowedTags: ALLOWED_TAGS
     });
+    if (_handleHookDetachedNode(currentNode, root2)) {
+      return true;
+    }
     if (_isUnsafeNode(currentNode, tagName)) {
       _forceRemove(currentNode);
       return true;
     }
     if (FORBID_TAGS[tagName] || !(EXTRA_ELEMENT_HANDLING.tagCheck instanceof Function && EXTRA_ELEMENT_HANDLING.tagCheck(tagName)) && !ALLOWED_TAGS[tagName]) {
-      return _sanitizeDisallowedNode(currentNode, tagName);
+      const removed = _sanitizeDisallowedNode(currentNode, tagName, root2);
+      if (removed === false) {
+        _executeHooks(hooks.afterSanitizeElements, currentNode, null);
+      }
+      return removed;
     }
-    const nt2 = getNodeType ? getNodeType(currentNode) : currentNode.nodeType;
+    const nt2 = _readNodeType(currentNode);
     if (nt2 === NODE_TYPE.element && !_checkValidNamespace(currentNode)) {
       _forceRemove(currentNode);
       return true;
@@ -11439,32 +11566,43 @@ function createDOMPurify() {
     if (FORBID_ATTR[lcName]) {
       return false;
     }
+    if (_isPatchLinkageAttribute(lcName, lcTag)) {
+      return false;
+    }
     if (SANITIZE_DOM && (lcName === "id" || lcName === "name") && (value in document2 || value in formElement)) {
       return false;
     }
     const nameIsPermitted = ALLOWED_ATTR[lcName] || EXTRA_ELEMENT_HANDLING.attributeCheck instanceof Function && EXTRA_ELEMENT_HANDLING.attributeCheck(lcName, lcTag);
-    if (ALLOW_DATA_ATTR && regExpTest(DATA_ATTR$1, lcName)) ;
-    else if (ALLOW_ARIA_ATTR && regExpTest(ARIA_ATTR$1, lcName)) ;
-    else if (!nameIsPermitted) {
-      if (
-        // First condition does a very basic check if a) it's basically a valid custom element tagname AND
-        // b) if the tagName passes whatever the user has configured for CUSTOM_ELEMENT_HANDLING.tagNameCheck
-        // and c) if the attribute name passes whatever the user has configured for CUSTOM_ELEMENT_HANDLING.attributeNameCheck
-        _isBasicCustomElement(lcTag) && (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, lcTag) || CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(lcTag)) && (CUSTOM_ELEMENT_HANDLING.attributeNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.attributeNameCheck, lcName) || CUSTOM_ELEMENT_HANDLING.attributeNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.attributeNameCheck(lcName, lcTag)) || // Alternative, second condition checks if it's an `is`-attribute, AND
-        // the value passes whatever the user has configured for CUSTOM_ELEMENT_HANDLING.tagNameCheck
-        lcName === "is" && CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements && (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, value) || CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(value))
-      ) ;
-      else {
-        return false;
-      }
-    } else if (URI_SAFE_ATTRIBUTES[lcName]) ;
-    else if (regExpTest(IS_ALLOWED_URI$1, stringReplace(value, ATTR_WHITESPACE$1, ""))) ;
-    else if ((lcName === "src" || lcName === "xlink:href" || lcName === "href") && lcTag !== "script" && stringIndexOf(value, "data:") === 0 && DATA_URI_TAGS[lcTag]) ;
-    else if (ALLOW_UNKNOWN_PROTOCOLS && !regExpTest(IS_SCRIPT_OR_DATA$1, stringReplace(value, ATTR_WHITESPACE$1, ""))) ;
-    else if (value) {
-      return false;
-    } else ;
-    return true;
+    if (ALLOW_DATA_ATTR && regExpTest(DATA_ATTR$1, lcName)) {
+      return true;
+    }
+    if (ALLOW_ARIA_ATTR && regExpTest(ARIA_ATTR$1, lcName)) {
+      return true;
+    }
+    if (!nameIsPermitted) {
+      return (
+        // Condition a) covers a basically valid custom element tag name whose
+        // tag passes the configured tagNameCheck and whose attribute name
+        // passes the configured attributeNameCheck ...
+        _isBasicCustomElement(lcTag) && _matchesNameCheck(CUSTOM_ELEMENT_HANDLING.tagNameCheck, lcTag) && _matchesNameCheck(CUSTOM_ELEMENT_HANDLING.attributeNameCheck, lcName, lcTag) || // Condition b) covers an `is` attribute whose value passes the
+        // configured tagNameCheck while customized built-in elements are
+        // allowed.
+        lcName === "is" && CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements && _matchesNameCheck(CUSTOM_ELEMENT_HANDLING.tagNameCheck, value)
+      );
+    }
+    if (URI_SAFE_ATTRIBUTES[lcName]) {
+      return true;
+    }
+    if (regExpTest(IS_ALLOWED_URI$1, stringReplace(value, ATTR_WHITESPACE$1, ""))) {
+      return true;
+    }
+    if ((lcName === "src" || lcName === "xlink:href" || lcName === "href") && lcTag !== "script" && stringIndexOf(value, "data:") === 0 && DATA_URI_TAGS[lcTag]) {
+      return true;
+    }
+    if (ALLOW_UNKNOWN_PROTOCOLS && !regExpTest(IS_SCRIPT_OR_DATA$1, stringReplace(value, ATTR_WHITESPACE$1, ""))) {
+      return true;
+    }
+    return !value;
   };
   const RESERVED_CUSTOM_ELEMENT_NAMES = addToSet({}, ["annotation-xml", "color-profile", "font-face", "font-face-format", "font-face-name", "font-face-src", "font-face-uri", "missing-glyph"]);
   const _isBasicCustomElement = function _isBasicCustomElement2(tagName) {
@@ -11505,6 +11643,7 @@ function createDOMPurify() {
     if (!attributes || _isClobbered(currentNode)) {
       return;
     }
+    ALLOWED_ATTR = _forkSharedAllowlist(hooks.uponSanitizeAttribute, ALLOWED_ATTR, DEFAULT_ALLOWED_ATTR, SET_CONFIG_ALLOWED_ATTR);
     const hookEvent = {
       attrName: "",
       attrValue: "",
@@ -11527,33 +11666,33 @@ function createDOMPurify() {
       _executeHooks(hooks.uponSanitizeAttribute, currentNode, hookEvent);
       value = hookEvent.attrValue;
       if (SANITIZE_NAMED_PROPS && (lcName === "id" || lcName === "name") && stringIndexOf(value, SANITIZE_NAMED_PROPS_PREFIX) !== 0) {
-        _removeAttribute(name, currentNode);
+        _removeAttribute(name, currentNode, attr);
         value = SANITIZE_NAMED_PROPS_PREFIX + value;
       }
       if (SAFE_FOR_XML && regExpTest(/((--!?|])>)|<\/(style|script|title|xmp|textarea|noscript|iframe|noembed|noframes)/i, value)) {
-        _removeAttribute(name, currentNode);
+        _removeAttribute(name, currentNode, attr);
         continue;
       }
       if (lcName === "attributename" && stringMatch(value, "href")) {
-        _removeAttribute(name, currentNode);
+        _removeAttribute(name, currentNode, attr);
         continue;
       }
       if (hookEvent.forceKeepAttr) {
         continue;
       }
       if (!hookEvent.keepAttr) {
-        _removeAttribute(name, currentNode);
+        _removeAttribute(name, currentNode, attr);
         continue;
       }
       if (!ALLOW_SELF_CLOSE_IN_ATTR && regExpTest(SELF_CLOSING_TAG, value)) {
-        _removeAttribute(name, currentNode);
+        _removeAttribute(name, currentNode, attr);
         continue;
       }
       if (SAFE_FOR_TEMPLATES) {
         value = _stripTemplateExpressions(value);
       }
       if (!_isValidAttribute(lcTag, lcName, value)) {
-        _removeAttribute(name, currentNode);
+        _removeAttribute(name, currentNode, attr);
         continue;
       }
       value = _applyTrustedTypesToAttribute(lcTag, lcName, namespaceURI, value);
@@ -11569,13 +11708,12 @@ function createDOMPurify() {
     _executeHooks(hooks.beforeSanitizeShadowDOM, fragment, null);
     while (shadowNode = shadowIterator.nextNode()) {
       _executeHooks(hooks.uponSanitizeShadowNode, shadowNode, null);
-      _sanitizeElements(shadowNode);
+      _sanitizeElements(shadowNode, fragment);
       _sanitizeAttributes(shadowNode);
       if (_isDocumentFragment(shadowNode.content)) {
         _sanitizeShadowDOM2(shadowNode.content);
       }
-      const shadowNodeType = getNodeType ? getNodeType(shadowNode) : shadowNode.nodeType;
-      if (shadowNodeType === NODE_TYPE.element) {
+      if (_readNodeType(shadowNode) === NODE_TYPE.element) {
         const innerSr = getShadowRoot(shadowNode);
         if (_isDocumentFragment(innerSr)) {
           _sanitizeAttachedShadowRoots(innerSr);
@@ -11597,7 +11735,7 @@ function createDOMPurify() {
         continue;
       }
       const node = item.node;
-      const nodeType = getNodeType ? getNodeType(node) : node.nodeType;
+      const nodeType = _readNodeType(node);
       const isElement2 = nodeType === NODE_TYPE.element;
       const childNodes = getChildNodes(node);
       if (childNodes) {
@@ -11668,14 +11806,17 @@ function createDOMPurify() {
     DOMPurify.removed = [];
     const inPlace = IN_PLACE && typeof dirty !== "string" && _isNode(dirty);
     if (inPlace) {
-      const nn = getNodeName2 ? getNodeName2(dirty) : dirty.nodeName;
+      _neutralizePatchLinkage(dirty);
+      const nn = _readNodeName(dirty);
       if (typeof nn === "string") {
         const tagName = transformCaseFunc(nn);
         if (!ALLOWED_TAGS[tagName] || FORBID_TAGS[tagName]) {
+          _neutralizeRoot(dirty);
           throw typeErrorCreate("root node is forbidden and cannot be sanitized in-place");
         }
       }
       if (_isClobbered(dirty)) {
+        _neutralizeRoot(dirty);
         throw typeErrorCreate("root node is clobbered and cannot be sanitized in-place");
       }
       try {
@@ -11708,10 +11849,11 @@ function createDOMPurify() {
     if (body && FORCE_BODY) {
       _forceRemove(body.firstChild);
     }
-    const nodeIterator = _createNodeIterator(inPlace ? dirty : body);
+    const walkRoot = inPlace ? dirty : body;
     try {
+      const nodeIterator = _createNodeIterator(walkRoot);
       while (currentNode = nodeIterator.nextNode()) {
-        _sanitizeElements(currentNode);
+        _sanitizeElements(currentNode, walkRoot);
         _sanitizeAttributes(currentNode);
         if (_isDocumentFragment(currentNode.content)) {
           _sanitizeShadowDOM2(currentNode.content);
@@ -11720,6 +11862,11 @@ function createDOMPurify() {
     } catch (error) {
       if (inPlace) {
         _neutralizeRoot(dirty);
+        arrayForEach(DOMPurify.removed, (entry) => {
+          if (entry.element) {
+            _neutralizeSubtree(entry.element);
+          }
+        });
       }
       throw error;
     }
@@ -11814,22 +11961,22 @@ function createDOMPurify() {
   return DOMPurify;
 }
 var purify = createDOMPurify();
-g$1.setOptions({ gfm: true, breaks: false });
+f$1.setOptions({ gfm: true, breaks: false });
 function renderMarkdown(md) {
   if (!md) return "";
-  const rawHtml = g$1.parse(md, { async: false });
+  const rawHtml = f$1.parse(md, { async: false });
   return purify.sanitize(rawHtml);
 }
 function renderMarkdownSegments(md) {
   if (!md) return [];
-  const tokens = g$1.lexer(md);
+  const tokens = f$1.lexer(md);
   const segments = [];
   let buffer = [];
   const flush = () => {
     if (buffer.length === 0) return;
     const group = buffer;
     group.links = tokens.links;
-    segments.push({ type: "html", html: purify.sanitize(g$1.parser(group)) });
+    segments.push({ type: "html", html: purify.sanitize(f$1.parser(group)) });
     buffer = [];
   };
   for (const token of tokens) {
@@ -12029,10 +12176,10 @@ function renderWaveform(channels, ctx) {
   ctx.closePath();
 }
 function hasWordTimestamps(words) {
-  return words.some((w3) => w3.startTime != null);
+  return words.some((w2) => w2.startTime != null);
 }
 function firstWordStart(words) {
-  for (const w3 of words) if (w3.startTime != null) return w3.startTime;
+  for (const w2 of words) if (w2.startTime != null) return w2.startTime;
   return void 0;
 }
 function lastWordEnd(words) {
@@ -12061,7 +12208,7 @@ const _hoisted_4$c = {
 };
 const _hoisted_5$b = { class: "header-right" };
 const _hoisted_6$9 = { key: 0 };
-const _sfc_main$N = /* @__PURE__ */ defineComponent({
+const _sfc_main$M = /* @__PURE__ */ defineComponent({
   __name: "Header",
   props: {
     title: { type: String },
@@ -12143,9 +12290,9 @@ const _sfc_main$N = /* @__PURE__ */ defineComponent({
   }
 });
 const _style_0$E = '\n.editor-header[data-v-cc84adfc] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-md);\n  padding: var(--spacing-sm) var(--spacing-lg);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.header-main[data-v-cc84adfc] {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  min-width: 0;\n  flex: 1;\n}\n.document-title[data-v-cc84adfc] {\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n  color: var(--color-text-primary);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  margin: 0;\n}\n.document-meta[data-v-cc84adfc] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.document-meta__part[data-v-cc84adfc] {\n  text-box: cap alphabetic;\n}\n.document-meta__part + .document-meta__part[data-v-cc84adfc]::before {\n  content: "·";\n  margin-right: var(--spacing-xs);\n}\n.header-right[data-v-cc84adfc] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  flex-shrink: 0;\n}\n@media (max-width: 767px) {\n.editor-header[data-v-cc84adfc] {\n    padding: var(--spacing-xs) var(--spacing-md);\n}\n.document-title[data-v-cc84adfc] {\n    font-size: var(--font-size-base);\n}\n}\n';
-const Header = /* @__PURE__ */ _export_sfc(_sfc_main$N, [["styles", [_style_0$E]], ["__scopeId", "data-v-cc84adfc"]]);
+const Header = /* @__PURE__ */ _export_sfc(_sfc_main$M, [["styles", [_style_0$E]], ["__scopeId", "data-v-cc84adfc"]]);
 const _hoisted_1$D = ["aria-label"];
-const _sfc_main$M = /* @__PURE__ */ defineComponent({
+const _sfc_main$L = /* @__PURE__ */ defineComponent({
   __name: "Badge",
   props: {
     ariaLabel: { type: String }
@@ -12162,11 +12309,11 @@ const _sfc_main$M = /* @__PURE__ */ defineComponent({
   }
 });
 const _style_0$D = "\n.editor-badge[data-v-732d4c24] {\n  display: inline-flex;\n  align-items: center;\n  padding: 2px var(--spacing-sm);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n  color: var(--color-text-muted);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border-light);\n  border-radius: var(--radius-sm);\n  white-space: nowrap;\n}\n";
-const Badge = /* @__PURE__ */ _export_sfc(_sfc_main$M, [["styles", [_style_0$D]], ["__scopeId", "data-v-732d4c24"]]);
+const Badge = /* @__PURE__ */ _export_sfc(_sfc_main$L, [["styles", [_style_0$D]], ["__scopeId", "data-v-732d4c24"]]);
 const _hoisted_1$C = ["aria-label"];
 const _hoisted_2$t = ["aria-selected", "aria-disabled", "disabled", "onClick"];
 const _hoisted_3$n = { class: "tab__label" };
-const _sfc_main$L = /* @__PURE__ */ defineComponent({
+const _sfc_main$K = /* @__PURE__ */ defineComponent({
   __name: "Tabs",
   props: {
     tabs: { type: Array },
@@ -12222,7 +12369,7 @@ const _sfc_main$L = /* @__PURE__ */ defineComponent({
   }
 });
 const _style_0$C = "\n.tabs[data-v-24f9730e] {\n  display: flex;\n  align-items: stretch;\n  gap: var(--spacing-xs);\n  padding: 0 var(--spacing-lg);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-x: auto;\n  scrollbar-width: thin;\n}\n.tab[data-v-24f9730e] {\n  all: unset;\n  box-sizing: border-box;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  height: 44px;\n  padding: 0 var(--spacing-sm);\n  font-family: var(--font-family);\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-secondary);\n  cursor: pointer;\n  white-space: nowrap;\n  border-bottom: 2px solid transparent;\n  transition:\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.tab[data-v-24f9730e]:hover:not([disabled]) {\n  color: var(--color-text-primary);\n}\n.tab[data-v-24f9730e]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: -2px;\n  border-radius: var(--radius-sm);\n}\n.tab--active[data-v-24f9730e] {\n  color: var(--color-text-primary);\n  border-bottom-color: var(--color-primary);\n}\n.tab[disabled][data-v-24f9730e] {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n.tab__icon[data-v-24f9730e] {\n  flex-shrink: 0;\n  color: currentColor;\n}\n.tab__label[data-v-24f9730e] {\n  text-box: cap alphabetic;\n}\n.tab__badge[data-v-24f9730e] {\n  margin-left: var(--spacing-xs);\n}\n";
-const Tabs = /* @__PURE__ */ _export_sfc(_sfc_main$L, [["styles", [_style_0$C]], ["__scopeId", "data-v-24f9730e"]]);
+const Tabs = /* @__PURE__ */ _export_sfc(_sfc_main$K, [["styles", [_style_0$C]], ["__scopeId", "data-v-24f9730e"]]);
 const TRANSCRIPTION_TAB = "__transcription__";
 const VERBATIM_TAB = "__verbatim__";
 function createEventBus() {
@@ -12627,6 +12774,7 @@ function createCore(options = {}) {
   const speakersInternal = createSpeakersStore(emit2);
   const speakers = speakersInternal;
   const channels = /* @__PURE__ */ shallowReactive(/* @__PURE__ */ new Map());
+  const components = /* @__PURE__ */ shallowReactive({});
   const activeChannel = computed(
     () => channels.get(activeChannelId.value) ?? [...channels.values()][0]
   );
@@ -12675,6 +12823,7 @@ function createCore(options = {}) {
   }
   const cleanups = [];
   function use(plugin) {
+    if (plugin.components) Object.assign(components, plugin.components);
     const cleanup = plugin.install(core);
     if (cleanup) cleanups.push(cleanup);
   }
@@ -12696,6 +12845,7 @@ function createCore(options = {}) {
     speakers,
     channels,
     activeChannel,
+    components,
     onActiveTranslation,
     setDocument,
     setActiveChannel,
@@ -12719,7 +12869,7 @@ function useCore() {
   }
   return core;
 }
-const _sfc_main$K = /* @__PURE__ */ defineComponent({
+const _sfc_main$J = /* @__PURE__ */ defineComponent({
   __name: "TabBar",
   props: {
     modelValue: { type: String }
@@ -12764,21 +12914,19 @@ const _sfc_main$K = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const DEFAULT_SPRING_ANIMATION = {
+var DEFAULT_SPRING_ANIMATION = {
   damping: 0.7,
   stiffness: 0.05,
   mass: 1.25
 };
-const STICK_TO_BOTTOM_OFFSET_PX = 70;
-const SIXTY_FPS_INTERVAL_MS = 1e3 / 60;
-const RETAIN_ANIMATION_DURATION_MS = 350;
-let mouseDown = false;
-let globalMouseListenersReady = false;
+var STICK_TO_BOTTOM_OFFSET_PX = 70;
+var SIXTY_FPS_INTERVAL_MS = 1e3 / 60;
+var RETAIN_ANIMATION_DURATION_MS = 350;
+var mouseDown = false;
+var globalMouseListenersReady = false;
 function ensureGlobalMouseListeners() {
-  if (globalMouseListenersReady)
-    return;
-  if (typeof document === "undefined")
-    return;
+  if (globalMouseListenersReady) return;
+  if (typeof document === "undefined") return;
   document.addEventListener("mousedown", () => {
     mouseDown = true;
   });
@@ -12790,7 +12938,7 @@ function ensureGlobalMouseListeners() {
   });
   globalMouseListenersReady = true;
 }
-const animationCache = /* @__PURE__ */ new Map();
+var animationCache = /* @__PURE__ */ new Map();
 function mergeAnimations(...animations) {
   const result = {
     damping: DEFAULT_SPRING_ANIMATION.damping,
@@ -12803,18 +12951,14 @@ function mergeAnimations(...animations) {
       instant = true;
       continue;
     }
-    if (typeof animation !== "object" || !animation) {
-      continue;
-    }
+    if (typeof animation !== "object" || !animation) continue;
     instant = false;
     result.damping = animation.damping ?? result.damping;
     result.stiffness = animation.stiffness ?? result.stiffness;
     result.mass = animation.mass ?? result.mass;
   }
   const key = JSON.stringify(result);
-  if (!animationCache.has(key)) {
-    animationCache.set(key, Object.freeze({ ...result }));
-  }
+  if (!animationCache.has(key)) animationCache.set(key, Object.freeze({ ...result }));
   return instant ? "instant" : animationCache.get(key);
 }
 function createStickToBottomEngine(initialOptions = {}) {
@@ -12844,46 +12988,35 @@ function createStickToBottomEngine(initialOptions = {}) {
     return state.scrollElement?.scrollTop ?? 0;
   }
   function setScrollTop(value) {
-    if (!state.scrollElement)
-      return;
+    if (!state.scrollElement) return;
     state.scrollElement.scrollTop = value;
     state.ignoreScrollToTop = state.scrollElement.scrollTop;
   }
   function getTargetScrollTop() {
     const el = state.scrollElement;
     const content = state.contentElement;
-    if (!el || !content)
-      return 0;
+    if (!el || !content) return 0;
     return el.scrollHeight - 1 - el.clientHeight;
   }
   let lastCalculation;
   function getCalculatedTargetScrollTop() {
     const el = state.scrollElement;
     const content = state.contentElement;
-    if (!el || !content)
-      return 0;
+    if (!el || !content) return 0;
     const target = getTargetScrollTop();
-    if (!options.targetScrollTop)
-      return target;
-    if (lastCalculation?.targetScrollTop === target) {
-      return lastCalculation.calculatedScrollTop;
-    }
-    const calculated = Math.max(
-      Math.min(
-        options.targetScrollTop(target, {
-          scrollElement: el,
-          contentElement: content
-        }),
-        target
-      ),
-      0
-    );
-    lastCalculation = { targetScrollTop: target, calculatedScrollTop: calculated };
-    if (typeof requestAnimationFrame !== "undefined") {
-      requestAnimationFrame(() => {
-        lastCalculation = void 0;
-      });
-    }
+    if (!options.targetScrollTop) return target;
+    if (lastCalculation?.targetScrollTop === target) return lastCalculation.calculatedScrollTop;
+    const calculated = Math.max(Math.min(options.targetScrollTop(target, {
+      scrollElement: el,
+      contentElement: content
+    }), target), 0);
+    lastCalculation = {
+      targetScrollTop: target,
+      calculatedScrollTop: calculated
+    };
+    if (typeof requestAnimationFrame !== "undefined") requestAnimationFrame(() => {
+      lastCalculation = void 0;
+    });
     return calculated;
   }
   function getScrollDifference() {
@@ -12905,36 +13038,27 @@ function createStickToBottomEngine(initialOptions = {}) {
     notify();
   }
   function isSelecting() {
-    if (!mouseDown)
-      return false;
-    if (typeof window === "undefined")
-      return false;
+    if (!mouseDown) return false;
+    if (typeof window === "undefined") return false;
     const selection = window.getSelection?.();
-    if (!selection || !selection.rangeCount)
-      return false;
+    if (!selection || !selection.rangeCount) return false;
     const range = selection.getRangeAt(0);
     const scroll = state.scrollElement;
-    if (!scroll)
-      return false;
+    if (!scroll) return false;
     const node = range.commonAncestorContainer;
     return !!(node && (scroll.contains(node) || node.contains(scroll)));
   }
   const handleScroll = (ev) => {
-    if (ev.target !== state.scrollElement)
-      return;
+    if (ev.target !== state.scrollElement) return;
     const scrollTop = getScrollTop();
     const ignoreScrollToTop = state.ignoreScrollToTop;
     let lastScrollTop = state.lastScrollTop ?? scrollTop;
     state.lastScrollTop = scrollTop;
     state.ignoreScrollToTop = void 0;
-    if (ignoreScrollToTop && ignoreScrollToTop > scrollTop) {
-      lastScrollTop = ignoreScrollToTop;
-    }
+    if (ignoreScrollToTop && ignoreScrollToTop > scrollTop) lastScrollTop = ignoreScrollToTop;
     setIsNearBottom(computeIsNearBottom());
     setTimeout(() => {
-      if (state.resizeDifference || scrollTop === ignoreScrollToTop) {
-        return;
-      }
+      if (state.resizeDifference || scrollTop === ignoreScrollToTop) return;
       if (isSelecting()) {
         setEscapedFromLock(true);
         setIsAtBottom(false);
@@ -12950,22 +13074,16 @@ function createStickToBottomEngine(initialOptions = {}) {
         setEscapedFromLock(true);
         setIsAtBottom(false);
       }
-      if (isScrollingDown) {
-        setEscapedFromLock(false);
-      }
-      if (!state.escapedFromLock && computeIsNearBottom()) {
-        setIsAtBottom(true);
-      }
+      if (isScrollingDown) setEscapedFromLock(false);
+      if (!state.escapedFromLock && computeIsNearBottom()) setIsAtBottom(true);
     }, 1);
   };
   const handleWheel = (ev) => {
     const scroll = state.scrollElement;
-    if (!scroll)
-      return;
+    if (!scroll) return;
     let element = ev.target;
     while (element && !["scroll", "auto"].includes(getComputedStyle(element).overflow)) {
-      if (!element.parentElement)
-        return;
+      if (!element.parentElement) return;
       element = element.parentElement;
     }
     if (element === scroll && ev.deltaY < 0 && scroll.scrollHeight > scroll.clientHeight && !state.animation?.ignoreEscapes) {
@@ -12977,50 +13095,36 @@ function createStickToBottomEngine(initialOptions = {}) {
     detach();
     state.scrollElement = scrollElement;
     state.contentElement = contentElement;
-    if (getComputedStyle(scrollElement).overflow === "visible") {
-      scrollElement.style.overflow = "auto";
-    }
+    if (getComputedStyle(scrollElement).overflow === "visible") scrollElement.style.overflow = "auto";
     scrollElement.addEventListener("scroll", handleScroll, { passive: true });
     scrollElement.addEventListener("wheel", handleWheel, { passive: true });
     let previousHeight;
     state.resizeObserver = new ResizeObserver((entries2) => {
       const entry = entries2[0];
-      if (!entry)
-        return;
+      if (!entry) return;
       const { height } = entry.contentRect;
       const difference = height - (previousHeight ?? height);
       state.resizeDifference = difference;
-      if (getScrollTop() > getTargetScrollTop()) {
-        setScrollTop(getTargetScrollTop());
-      }
+      if (getScrollTop() > getTargetScrollTop()) setScrollTop(getTargetScrollTop());
       setIsNearBottom(computeIsNearBottom());
       if (difference >= 0) {
-        const animation = mergeAnimations(
-          options,
-          previousHeight ? options.resize : options.initial
-        );
+        const animation = mergeAnimations(options, previousHeight ? options.resize : options.initial);
         scrollToBottom({
           animation,
           wait: true,
           preserveScrollPosition: true,
           duration: animation === "instant" ? void 0 : RETAIN_ANIMATION_DURATION_MS
         });
-      } else {
-        if (computeIsNearBottom()) {
-          setEscapedFromLock(false);
-          setIsAtBottom(true);
-        }
+      } else if (computeIsNearBottom()) {
+        setEscapedFromLock(false);
+        setIsAtBottom(true);
       }
       previousHeight = height;
-      if (typeof requestAnimationFrame !== "undefined") {
-        requestAnimationFrame(() => {
-          setTimeout(() => {
-            if (state.resizeDifference === difference) {
-              state.resizeDifference = 0;
-            }
-          }, 1);
-        });
-      }
+      if (typeof requestAnimationFrame !== "undefined") requestAnimationFrame(() => {
+        setTimeout(() => {
+          if (state.resizeDifference === difference) state.resizeDifference = 0;
+        }, 1);
+      });
     });
     state.resizeObserver.observe(contentElement);
   }
@@ -13039,25 +13143,23 @@ function createStickToBottomEngine(initialOptions = {}) {
     listeners.clear();
   }
   function setOptions(next2) {
-    options = { ...options, ...next2 };
+    options = {
+      ...options,
+      ...next2
+    };
   }
   function scrollToBottom(scrollOptions = {}) {
     const opts = typeof scrollOptions === "string" ? { animation: scrollOptions } : scrollOptions;
-    if (!opts.preserveScrollPosition) {
-      setIsAtBottom(true);
-    }
+    if (!opts.preserveScrollPosition) setIsAtBottom(true);
     const waitElapsed = Date.now() + (Number(opts.wait) || 0);
     const behavior = mergeAnimations(options, opts.animation);
     const { ignoreEscapes = false } = opts;
     let durationElapsed;
     let startTarget = getCalculatedTargetScrollTop();
-    if (opts.duration instanceof Promise) {
-      opts.duration.finally(() => {
-        durationElapsed = Date.now();
-      });
-    } else {
-      durationElapsed = waitElapsed + (opts.duration ?? 0);
-    }
+    if (opts.duration instanceof Promise) opts.duration.finally(() => {
+      durationElapsed = Date.now();
+    });
+    else durationElapsed = waitElapsed + (opts.duration ?? 0);
     const next2 = async () => {
       const promise = new Promise((resolve2) => {
         if (typeof requestAnimationFrame === "undefined") {
@@ -13073,16 +13175,14 @@ function createStickToBottomEngine(initialOptions = {}) {
         const scrollTop = getScrollTop();
         const tick = typeof performance !== "undefined" ? performance.now() : Date.now();
         const tickDelta = (tick - (state.lastTick ?? tick)) / SIXTY_FPS_INTERVAL_MS;
-        state.animation ||= { behavior, promise, ignoreEscapes };
-        if (state.animation.behavior === behavior) {
-          state.lastTick = tick;
-        }
-        if (isSelecting()) {
-          return next2();
-        }
-        if (waitElapsed > Date.now()) {
-          return next2();
-        }
+        state.animation ||= {
+          behavior,
+          promise,
+          ignoreEscapes
+        };
+        if (state.animation.behavior === behavior) state.lastTick = tick;
+        if (isSelecting()) return next2();
+        if (waitElapsed > Date.now()) return next2();
         if (scrollTop < Math.min(startTarget, getCalculatedTargetScrollTop())) {
           if (state.animation?.behavior === behavior) {
             if (behavior === "instant") {
@@ -13094,9 +13194,7 @@ function createStickToBottomEngine(initialOptions = {}) {
             state.accumulated += state.velocity * tickDelta;
             const before = getScrollTop();
             setScrollTop(before + state.accumulated);
-            if (getScrollTop() !== before) {
-              state.accumulated = 0;
-            }
+            if (getScrollTop() !== before) state.accumulated = 0;
           }
           return next2();
         }
@@ -13105,33 +13203,25 @@ function createStickToBottomEngine(initialOptions = {}) {
           return next2();
         }
         state.animation = void 0;
-        if (getScrollTop() < getCalculatedTargetScrollTop()) {
-          return scrollToBottom({
-            animation: mergeAnimations(options, options.resize),
-            ignoreEscapes,
-            duration: Math.max(0, durationElapsed - Date.now()) || void 0
-          });
-        }
+        if (getScrollTop() < getCalculatedTargetScrollTop()) return scrollToBottom({
+          animation: mergeAnimations(options, options.resize),
+          ignoreEscapes,
+          duration: Math.max(0, durationElapsed - Date.now()) || void 0
+        });
         return state.isAtBottom;
       });
       return promise.then((isAtBottom) => {
-        if (typeof requestAnimationFrame !== "undefined") {
-          requestAnimationFrame(() => {
-            if (!state.animation) {
-              state.lastTick = void 0;
-              state.velocity = 0;
-            }
-          });
-        }
+        if (typeof requestAnimationFrame !== "undefined") requestAnimationFrame(() => {
+          if (!state.animation) {
+            state.lastTick = void 0;
+            state.velocity = 0;
+          }
+        });
         return isAtBottom;
       });
     };
-    if (opts.wait !== true) {
-      state.animation = void 0;
-    }
-    if (state.animation?.behavior === behavior) {
-      return state.animation.promise;
-    }
+    if (opts.wait !== true) state.animation = void 0;
+    if (state.animation?.behavior === behavior) return state.animation.promise;
     return next2();
   }
   const stopScroll = () => {
@@ -13162,8 +13252,7 @@ function useStickToBottom(options = {}) {
   const engine = createStickToBottomEngine(options);
   let unsubscribe = null;
   watchEffect((onCleanup) => {
-    if (!scrollRef.value || !contentRef.value)
-      return;
+    if (!scrollRef.value || !contentRef.value) return;
     engine.attach(scrollRef.value, contentRef.value);
     unsubscribe = engine.onChange((s2) => {
       isAtBottom.value = s2.isAtBottom;
@@ -13190,10 +13279,16 @@ function useStickToBottom(options = {}) {
     setOptions: (next2) => engine.setOptions(next2)
   };
 }
-const StickToBottomKey = /* @__PURE__ */ Symbol("StickToBottom");
-const _hoisted_1$B = { style: { "position": "relative", "height": "100%", "width": "100%", "flex": "1", "min-height": "0" } };
-const _sfc_main$J = /* @__PURE__ */ defineComponent({
-  ...{ name: "StickToBottom" },
+var StickToBottomKey = /* @__PURE__ */ Symbol("StickToBottom");
+var _hoisted_1$B = { style: {
+  "position": "relative",
+  "height": "100%",
+  "width": "100%",
+  "flex": "1",
+  "min-height": "0"
+} };
+var StickToBottom_default = /* @__PURE__ */ defineComponent({
+  name: "StickToBottom",
   __name: "StickToBottom",
   props: {
     resize: {},
@@ -13225,27 +13320,23 @@ const _sfc_main$J = /* @__PURE__ */ defineComponent({
     };
     provide(StickToBottomKey, context2);
     __expose(context2);
-    watch(
-      () => [
-        props.resize,
-        props.initial,
-        props.damping,
-        props.stiffness,
-        props.mass,
-        props.targetScrollTop
-      ],
-      () => {
-        setOptions({
-          resize: props.resize,
-          initial: props.initial,
-          targetScrollTop: props.targetScrollTop,
-          damping: props.damping,
-          stiffness: props.stiffness,
-          mass: props.mass
-        });
-      },
-      { flush: "post" }
-    );
+    watch(() => [
+      props.resize,
+      props.initial,
+      props.damping,
+      props.stiffness,
+      props.mass,
+      props.targetScrollTop
+    ], () => {
+      setOptions({
+        resize: props.resize,
+        initial: props.initial,
+        targetScrollTop: props.targetScrollTop,
+        damping: props.damping,
+        stiffness: props.stiffness,
+        mass: props.mass
+      });
+    }, { flush: "post" });
     const overflowAnchor = computed(() => props.anchor ?? "auto");
     const slotProps = computed(() => ({
       isAtBottom: isAtBottom.value,
@@ -13255,30 +13346,20 @@ const _sfc_main$J = /* @__PURE__ */ defineComponent({
       stopScroll
     }));
     return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("div", null, [
-        createBaseVNode("div", _hoisted_1$B, [
-          createBaseVNode("div", {
-            ref_key: "scrollRef",
-            ref: scrollRef,
-            style: normalizeStyle({
-              "overflow-anchor": overflowAnchor.value,
-              "overflow": "auto",
-              "height": "100%",
-              "width": "100%",
-              "scrollbar-gutter": "stable both-edges"
-            })
-          }, [
-            createBaseVNode("div", {
-              ref_key: "contentRef",
-              ref: contentRef
-            }, [
-              renderSlot(_ctx.$slots, "default", normalizeProps(guardReactiveProps(slotProps.value)))
-            ], 512)
-          ], 4),
-          renderSlot(_ctx.$slots, "overlay", normalizeProps(guardReactiveProps(slotProps.value)))
-        ]),
-        renderSlot(_ctx.$slots, "after", normalizeProps(guardReactiveProps(slotProps.value)))
-      ]);
+      return openBlock(), createElementBlock("div", null, [createBaseVNode("div", _hoisted_1$B, [createBaseVNode("div", {
+        ref_key: "scrollRef",
+        ref: scrollRef,
+        style: normalizeStyle({
+          "overflow-anchor": overflowAnchor.value,
+          "overflow": "auto",
+          "height": "100%",
+          "width": "100%",
+          "scrollbar-gutter": "stable both-edges"
+        })
+      }, [createBaseVNode("div", {
+        ref_key: "contentRef",
+        ref: contentRef
+      }, [renderSlot(_ctx.$slots, "default", normalizeProps(guardReactiveProps(slotProps.value)))], 512)], 4), renderSlot(_ctx.$slots, "overlay", normalizeProps(guardReactiveProps(slotProps.value)))]), renderSlot(_ctx.$slots, "after", normalizeProps(guardReactiveProps(slotProps.value)))]);
     };
   }
 });
@@ -19613,7 +19694,7 @@ const EditorCheckbox = /* @__PURE__ */ _export_sfc(_sfc_main$G, [["styles", [_st
 function computeInitials(name) {
   const words = name.trim().split(/\s+/).filter(Boolean);
   if (words.length === 0) return "?";
-  return words.slice(0, 2).map((w3) => w3[0].toUpperCase()).join("");
+  return words.slice(0, 2).map((w2) => w2[0].toUpperCase()).join("");
 }
 const _hoisted_1$z = ["title", "aria-label"];
 const _sfc_main$F = /* @__PURE__ */ defineComponent({
@@ -20323,7 +20404,7 @@ const SpeakerPopover = /* @__PURE__ */ _export_sfc(_sfc_main$A, [["styles", [_st
 const turnSelectionKey = /* @__PURE__ */ Symbol("turnSelection");
 function getTurnText(turn) {
   if (turn.words.length > 0) {
-    return turn.words.map((w3) => w3.text).join(" ");
+    return turn.words.map((w2) => w2.text).join(" ");
   }
   return turn.text ?? "";
 }
@@ -20434,7 +20515,7 @@ function useTurnSelection() {
   return sel;
 }
 function computeTurnPlainText(turn) {
-  if (turn.words.length > 0) return turn.words.map((w3) => w3.text).join(" ");
+  if (turn.words.length > 0) return turn.words.map((w2) => w2.text).join(" ");
   return turn.text ?? "";
 }
 function collectShadowRoots(node) {
@@ -20466,7 +20547,7 @@ function computeCaretOffsetFromPoint(container, x2, y3) {
 }
 function findWordAtOffset(words, offset2) {
   return words.find(
-    (w3) => w3.charStart != null && w3.charEnd != null && w3.charStart <= offset2 && offset2 < w3.charEnd
+    (w2) => w2.charStart != null && w2.charEnd != null && w2.charStart <= offset2 && offset2 < w2.charEnd
   );
 }
 const _hoisted_1$t = ["data-turn-active", "aria-selected"];
@@ -20816,11 +20897,11 @@ function layoutWords(turnId, source) {
 function wordsFromApi(turnId, apiWords) {
   return layoutWords(
     turnId,
-    apiWords.map((w3) => ({
-      text: w3.word ?? "",
-      ...w3.stime !== void 0 && { startTime: w3.stime },
-      ...w3.etime !== void 0 && { endTime: w3.etime },
-      ...w3.confidence !== void 0 && { confidence: w3.confidence }
+    apiWords.map((w2) => ({
+      text: w2.word ?? "",
+      ...w2.stime !== void 0 && { startTime: w2.stime },
+      ...w2.etime !== void 0 && { endTime: w2.etime },
+      ...w2.confidence !== void 0 && { confidence: w2.confidence }
     }))
   );
 }
@@ -20832,11 +20913,11 @@ function carryWordTimes(next2, prev) {
   while (suffix < max2 - prefix && next2[next2.length - 1 - suffix].text === prev[prev.length - 1 - suffix].text) {
     suffix++;
   }
-  return next2.map((w3, i2) => {
+  return next2.map((w2, i2) => {
     const from = i2 < prefix ? prev[i2] : i2 >= next2.length - suffix ? prev[prev.length - (next2.length - i2)] : void 0;
-    if (!from) return w3;
+    if (!from) return w2;
     return {
-      ...w3,
+      ...w2,
       ...from.startTime !== void 0 && { startTime: from.startTime },
       ...from.endTime !== void 0 && { endTime: from.endTime },
       ...from.confidence !== void 0 && { confidence: from.confidence }
@@ -21334,7 +21415,7 @@ const _sfc_main$t = /* @__PURE__ */ defineComponent({
     }
     function turnText(turn) {
       if (turn.text != null) return turn.text;
-      return turn.words.map((w3) => w3.text).join(" ");
+      return turn.words.map((w2) => w2.text).join(" ");
     }
     function onExport(format2) {
       if (!format2) return;
@@ -21394,1279 +21475,10 @@ const _sfc_main$t = /* @__PURE__ */ defineComponent({
 });
 const _style_0$p = "\n.verbatim-panel[data-v-3034500a] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.verbatim-panel__content[data-v-3034500a] {\n  padding: var(--spacing-md) var(--spacing-lg);\n}\n.verbatim-panel__header[data-v-3034500a] {\n  margin-bottom: var(--spacing-lg);\n  padding-bottom: var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n}\n.verbatim-panel__doc-title[data-v-3034500a] {\n  font-size: var(--font-size-xl);\n  font-weight: 700;\n  margin: 0;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__turns[data-v-3034500a] {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n}\n.verbatim-panel__turn[data-v-3034500a] {\n  display: block;\n}\n.verbatim-panel__turn-header[data-v-3034500a] {\n  margin: 0 0 var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: 1.4;\n}\n.verbatim-panel__speaker-name[data-v-3034500a] {\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__meta[data-v-3034500a] {\n  color: var(--color-text-muted);\n  font-weight: 400;\n}\n.verbatim-panel__sep[data-v-3034500a] {\n  margin: 0 0.35em;\n}\n.verbatim-panel__text[data-v-3034500a] {\n  margin: 0;\n  font-size: var(--font-size-base);\n  line-height: 1.6;\n  color: var(--color-text-primary);\n}\n@media (max-width: 767px) {\n.verbatim-panel[data-v-3034500a] {\n    padding: var(--spacing-md);\n}\n}\n";
 const VerbatimPanel = /* @__PURE__ */ _export_sfc(_sfc_main$t, [["styles", [_style_0$p]], ["__scopeId", "data-v-3034500a"]]);
-function extend(destination) {
-  for (var i2 = 1; i2 < arguments.length; i2++) {
-    var source = arguments[i2];
-    for (var key in source) {
-      if (Object.prototype.hasOwnProperty.call(source, key)) destination[key] = source[key];
-    }
-  }
-  return destination;
-}
-function repeat(character, count2) {
-  return Array(count2 + 1).join(character);
-}
-function trimLeadingNewlines(string) {
-  return string.replace(/^\n*/, "");
-}
-function trimTrailingNewlines(string) {
-  var indexEnd = string.length;
-  while (indexEnd > 0 && string[indexEnd - 1] === "\n") indexEnd--;
-  return string.substring(0, indexEnd);
-}
-function trimNewlines(string) {
-  return trimTrailingNewlines(trimLeadingNewlines(string));
-}
-var blockElements = ["ADDRESS", "ARTICLE", "ASIDE", "AUDIO", "BLOCKQUOTE", "BODY", "CANVAS", "CENTER", "DD", "DIR", "DIV", "DL", "DT", "FIELDSET", "FIGCAPTION", "FIGURE", "FOOTER", "FORM", "FRAMESET", "H1", "H2", "H3", "H4", "H5", "H6", "HEADER", "HGROUP", "HR", "HTML", "ISINDEX", "LI", "MAIN", "MENU", "NAV", "NOFRAMES", "NOSCRIPT", "OL", "OUTPUT", "P", "PRE", "SECTION", "TABLE", "TBODY", "TD", "TFOOT", "TH", "THEAD", "TR", "UL"];
-function isBlock(node) {
-  return is(node, blockElements);
-}
-var voidElements = ["AREA", "BASE", "BR", "COL", "COMMAND", "EMBED", "HR", "IMG", "INPUT", "KEYGEN", "LINK", "META", "PARAM", "SOURCE", "TRACK", "WBR"];
-function isVoid(node) {
-  return is(node, voidElements);
-}
-function hasVoid(node) {
-  return has(node, voidElements);
-}
-var meaningfulWhenBlankElements = ["A", "TABLE", "THEAD", "TBODY", "TFOOT", "TH", "TD", "IFRAME", "SCRIPT", "AUDIO", "VIDEO"];
-function isMeaningfulWhenBlank(node) {
-  return is(node, meaningfulWhenBlankElements);
-}
-function hasMeaningfulWhenBlank(node) {
-  return has(node, meaningfulWhenBlankElements);
-}
-function is(node, tagNames) {
-  return tagNames.indexOf(node.nodeName) >= 0;
-}
-function has(node, tagNames) {
-  return node.getElementsByTagName && tagNames.some(function(tagName) {
-    return node.getElementsByTagName(tagName).length;
-  });
-}
-var markdownEscapes = [[/\\/g, "\\\\"], [/\*/g, "\\*"], [/^-/g, "\\-"], [/^\+ /g, "\\+ "], [/^(=+)/g, "\\$1"], [/^(#{1,6}) /g, "\\$1 "], [/`/g, "\\`"], [/^~~~/g, "\\~~~"], [/\[/g, "\\["], [/\]/g, "\\]"], [/^>/g, "\\>"], [/_/g, "\\_"], [/^(\d+)\. /g, "$1\\. "]];
-function escapeMarkdown(string) {
-  return markdownEscapes.reduce(function(accumulator, escape) {
-    return accumulator.replace(escape[0], escape[1]);
-  }, string);
-}
-var rules$1 = {};
-rules$1.paragraph = {
-  filter: "p",
-  replacement: function(content) {
-    return "\n\n" + content + "\n\n";
-  }
-};
-rules$1.lineBreak = {
-  filter: "br",
-  replacement: function(content, node, options) {
-    return options.br + "\n";
-  }
-};
-rules$1.heading = {
-  filter: ["h1", "h2", "h3", "h4", "h5", "h6"],
-  replacement: function(content, node, options) {
-    var hLevel = Number(node.nodeName.charAt(1));
-    if (options.headingStyle === "setext" && hLevel < 3) {
-      var underline = repeat(hLevel === 1 ? "=" : "-", content.length);
-      return "\n\n" + content + "\n" + underline + "\n\n";
-    } else {
-      return "\n\n" + repeat("#", hLevel) + " " + content + "\n\n";
-    }
-  }
-};
-rules$1.blockquote = {
-  filter: "blockquote",
-  replacement: function(content) {
-    content = trimNewlines(content).replace(/^/gm, "> ");
-    return "\n\n" + content + "\n\n";
-  }
-};
-rules$1.list = {
-  filter: ["ul", "ol"],
-  replacement: function(content, node) {
-    var parent = node.parentNode;
-    if (parent.nodeName === "LI" && parent.lastElementChild === node) {
-      return "\n" + content;
-    } else {
-      return "\n\n" + content + "\n\n";
-    }
-  }
-};
-rules$1.listItem = {
-  filter: "li",
-  replacement: function(content, node, options) {
-    var prefix = options.bulletListMarker + "   ";
-    var parent = node.parentNode;
-    if (parent.nodeName === "OL") {
-      var start = parent.getAttribute("start");
-      var index = Array.prototype.indexOf.call(parent.children, node);
-      prefix = (start ? Number(start) + index : index + 1) + ".  ";
-    }
-    var isParagraph = /\n$/.test(content);
-    content = trimNewlines(content) + (isParagraph ? "\n" : "");
-    content = content.replace(/\n/gm, "\n" + " ".repeat(prefix.length));
-    return prefix + content + (node.nextSibling ? "\n" : "");
-  }
-};
-rules$1.indentedCodeBlock = {
-  filter: function(node, options) {
-    return options.codeBlockStyle === "indented" && node.nodeName === "PRE" && node.firstChild && node.firstChild.nodeName === "CODE";
-  },
-  replacement: function(content, node, options) {
-    return "\n\n    " + node.firstChild.textContent.replace(/\n/g, "\n    ") + "\n\n";
-  }
-};
-rules$1.fencedCodeBlock = {
-  filter: function(node, options) {
-    return options.codeBlockStyle === "fenced" && node.nodeName === "PRE" && node.firstChild && node.firstChild.nodeName === "CODE";
-  },
-  replacement: function(content, node, options) {
-    var className = node.firstChild.getAttribute("class") || "";
-    var language = (className.match(/language-(\S+)/) || [null, ""])[1];
-    var code = node.firstChild.textContent;
-    var fenceChar = options.fence.charAt(0);
-    var fenceSize = 3;
-    var fenceInCodeRegex = new RegExp("^" + fenceChar + "{3,}", "gm");
-    var match;
-    while (match = fenceInCodeRegex.exec(code)) {
-      if (match[0].length >= fenceSize) {
-        fenceSize = match[0].length + 1;
-      }
-    }
-    var fence = repeat(fenceChar, fenceSize);
-    return "\n\n" + fence + language + "\n" + code.replace(/\n$/, "") + "\n" + fence + "\n\n";
-  }
-};
-rules$1.horizontalRule = {
-  filter: "hr",
-  replacement: function(content, node, options) {
-    return "\n\n" + options.hr + "\n\n";
-  }
-};
-rules$1.inlineLink = {
-  filter: function(node, options) {
-    return options.linkStyle === "inlined" && node.nodeName === "A" && node.getAttribute("href");
-  },
-  replacement: function(content, node) {
-    var href = escapeLinkDestination(node.getAttribute("href"));
-    var title = escapeLinkTitle(cleanAttribute(node.getAttribute("title")));
-    var titlePart = title ? ' "' + title + '"' : "";
-    return "[" + content + "](" + href + titlePart + ")";
-  }
-};
-rules$1.referenceLink = {
-  filter: function(node, options) {
-    return options.linkStyle === "referenced" && node.nodeName === "A" && node.getAttribute("href");
-  },
-  replacement: function(content, node, options) {
-    var href = escapeLinkDestination(node.getAttribute("href"));
-    var title = cleanAttribute(node.getAttribute("title"));
-    if (title) title = ' "' + escapeLinkTitle(title) + '"';
-    var replacement;
-    var reference;
-    switch (options.linkReferenceStyle) {
-      case "collapsed":
-        replacement = "[" + content + "][]";
-        reference = "[" + content + "]: " + href + title;
-        break;
-      case "shortcut":
-        replacement = "[" + content + "]";
-        reference = "[" + content + "]: " + href + title;
-        break;
-      default:
-        var id = this.references.length + 1;
-        replacement = "[" + content + "][" + id + "]";
-        reference = "[" + id + "]: " + href + title;
-    }
-    this.references.push(reference);
-    return replacement;
-  },
-  references: [],
-  append: function(options) {
-    var references = "";
-    if (this.references.length) {
-      references = "\n\n" + this.references.join("\n") + "\n\n";
-      this.references = [];
-    }
-    return references;
-  }
-};
-rules$1.emphasis = {
-  filter: ["em", "i"],
-  replacement: function(content, node, options) {
-    if (!content.trim()) return "";
-    return options.emDelimiter + content + options.emDelimiter;
-  }
-};
-rules$1.strong = {
-  filter: ["strong", "b"],
-  replacement: function(content, node, options) {
-    if (!content.trim()) return "";
-    return options.strongDelimiter + content + options.strongDelimiter;
-  }
-};
-rules$1.code = {
-  filter: function(node) {
-    var hasSiblings = node.previousSibling || node.nextSibling;
-    var isCodeBlock = node.parentNode.nodeName === "PRE" && !hasSiblings;
-    return node.nodeName === "CODE" && !isCodeBlock;
-  },
-  replacement: function(content) {
-    if (!content) return "";
-    content = content.replace(/\r?\n|\r/g, " ");
-    var extraSpace = /^`|^ .*?[^ ].* $|`$/.test(content) ? " " : "";
-    var delimiter = "`";
-    var matches = content.match(/`+/gm) || [];
-    while (matches.indexOf(delimiter) !== -1) delimiter = delimiter + "`";
-    return delimiter + extraSpace + content + extraSpace + delimiter;
-  }
-};
-rules$1.image = {
-  filter: "img",
-  replacement: function(content, node) {
-    var alt = escapeMarkdown(cleanAttribute(node.getAttribute("alt")));
-    var src = escapeLinkDestination(node.getAttribute("src") || "");
-    var title = cleanAttribute(node.getAttribute("title"));
-    var titlePart = title ? ' "' + escapeLinkTitle(title) + '"' : "";
-    return src ? "![" + alt + "](" + src + titlePart + ")" : "";
-  }
-};
-function cleanAttribute(attribute) {
-  return attribute ? attribute.replace(/(\n+\s*)+/g, "\n") : "";
-}
-function escapeLinkDestination(destination) {
-  var escaped = destination.replace(/([<>()])/g, "\\$1");
-  return escaped.indexOf(" ") >= 0 ? "<" + escaped + ">" : escaped;
-}
-function escapeLinkTitle(title) {
-  return title.replace(/"/g, '\\"');
-}
-function Rules(options) {
-  this.options = options;
-  this._keep = [];
-  this._remove = [];
-  this.blankRule = {
-    replacement: options.blankReplacement
-  };
-  this.keepReplacement = options.keepReplacement;
-  this.defaultRule = {
-    replacement: options.defaultReplacement
-  };
-  this.array = [];
-  for (var key in options.rules) this.array.push(options.rules[key]);
-}
-Rules.prototype = {
-  add: function(key, rule) {
-    this.array.unshift(rule);
-  },
-  keep: function(filter) {
-    this._keep.unshift({
-      filter,
-      replacement: this.keepReplacement
-    });
-  },
-  remove: function(filter) {
-    this._remove.unshift({
-      filter,
-      replacement: function() {
-        return "";
-      }
-    });
-  },
-  forNode: function(node) {
-    if (node.isBlank) return this.blankRule;
-    var rule;
-    if (rule = findRule(this.array, node, this.options)) return rule;
-    if (rule = findRule(this._keep, node, this.options)) return rule;
-    if (rule = findRule(this._remove, node, this.options)) return rule;
-    return this.defaultRule;
-  },
-  forEach: function(fn) {
-    for (var i2 = 0; i2 < this.array.length; i2++) fn(this.array[i2], i2);
-  }
-};
-function findRule(rules2, node, options) {
-  for (var i2 = 0; i2 < rules2.length; i2++) {
-    var rule = rules2[i2];
-    if (filterValue(rule, node, options)) return rule;
-  }
-  return void 0;
-}
-function filterValue(rule, node, options) {
-  var filter = rule.filter;
-  if (typeof filter === "string") {
-    if (filter === node.nodeName.toLowerCase()) return true;
-  } else if (Array.isArray(filter)) {
-    if (filter.indexOf(node.nodeName.toLowerCase()) > -1) return true;
-  } else if (typeof filter === "function") {
-    if (filter.call(rule, node, options)) return true;
-  } else {
-    throw new TypeError("`filter` needs to be a string, array, or function");
-  }
-}
-function collapseWhitespace(options) {
-  var element = options.element;
-  var isBlock2 = options.isBlock;
-  var isVoid2 = options.isVoid;
-  var isPre = options.isPre || function(node2) {
-    return node2.nodeName === "PRE";
-  };
-  if (!element.firstChild || isPre(element)) return;
-  var prevText = null;
-  var keepLeadingWs = false;
-  var prev = null;
-  var node = next(prev, element, isPre);
-  while (node !== element) {
-    if (node.nodeType === 3 || node.nodeType === 4) {
-      var text2 = node.data.replace(/[ \r\n\t]+/g, " ");
-      if ((!prevText || / $/.test(prevText.data)) && !keepLeadingWs && text2[0] === " ") {
-        text2 = text2.substr(1);
-      }
-      if (!text2) {
-        node = remove(node);
-        continue;
-      }
-      node.data = text2;
-      prevText = node;
-    } else if (node.nodeType === 1) {
-      if (isBlock2(node) || node.nodeName === "BR") {
-        if (prevText) {
-          prevText.data = prevText.data.replace(/ $/, "");
-        }
-        prevText = null;
-        keepLeadingWs = false;
-      } else if (isVoid2(node) || isPre(node)) {
-        prevText = null;
-        keepLeadingWs = true;
-      } else if (prevText) {
-        keepLeadingWs = false;
-      }
-    } else {
-      node = remove(node);
-      continue;
-    }
-    var nextNode = next(prev, node, isPre);
-    prev = node;
-    node = nextNode;
-  }
-  if (prevText) {
-    prevText.data = prevText.data.replace(/ $/, "");
-    if (!prevText.data) {
-      remove(prevText);
-    }
-  }
-}
-function remove(node) {
-  var next2 = node.nextSibling || node.parentNode;
-  node.parentNode.removeChild(node);
-  return next2;
-}
-function next(prev, current, isPre) {
-  if (prev && prev.parentNode === current || isPre(current)) {
-    return current.nextSibling || current.parentNode;
-  }
-  return current.firstChild || current.nextSibling || current.parentNode;
-}
-var root = typeof window !== "undefined" ? window : {};
-function canParseHTMLNatively() {
-  var Parser = root.DOMParser;
-  var canParse = false;
-  try {
-    if (new Parser().parseFromString("", "text/html")) {
-      canParse = true;
-    }
-  } catch (e3) {
-  }
-  return canParse;
-}
-function createHTMLParser() {
-  var Parser = function() {
-  };
-  {
-    if (shouldUseActiveX()) {
-      Parser.prototype.parseFromString = function(string) {
-        var doc2 = new window.ActiveXObject("htmlfile");
-        doc2.designMode = "on";
-        doc2.open();
-        doc2.write(string);
-        doc2.close();
-        return doc2;
-      };
-    } else {
-      Parser.prototype.parseFromString = function(string) {
-        var doc2 = document.implementation.createHTMLDocument("");
-        doc2.open();
-        doc2.write(string);
-        doc2.close();
-        return doc2;
-      };
-    }
-  }
-  return Parser;
-}
-function shouldUseActiveX() {
-  var useActiveX = false;
-  try {
-    document.implementation.createHTMLDocument("").open();
-  } catch (e3) {
-    if (root.ActiveXObject) useActiveX = true;
-  }
-  return useActiveX;
-}
-var HTMLParser = canParseHTMLNatively() ? root.DOMParser : createHTMLParser();
-function RootNode(input, options) {
-  var root2;
-  if (typeof input === "string") {
-    var doc2 = htmlParser().parseFromString(
-      // DOM parsers arrange elements in the <head> and <body>.
-      // Wrapping in a custom element ensures elements are reliably arranged in
-      // a single element.
-      '<x-turndown id="turndown-root">' + input + "</x-turndown>",
-      "text/html"
-    );
-    root2 = doc2.getElementById("turndown-root");
-  } else {
-    root2 = input.cloneNode(true);
-  }
-  collapseWhitespace({
-    element: root2,
-    isBlock,
-    isVoid,
-    isPre: options.preformattedCode ? isPreOrCode : null
-  });
-  return root2;
-}
-var _htmlParser;
-function htmlParser() {
-  _htmlParser = _htmlParser || new HTMLParser();
-  return _htmlParser;
-}
-function isPreOrCode(node) {
-  return node.nodeName === "PRE" || node.nodeName === "CODE";
-}
-function Node$1(node, options) {
-  node.isBlock = isBlock(node);
-  node.isCode = node.nodeName === "CODE" || node.parentNode.isCode;
-  node.isBlank = isBlank(node);
-  node.flankingWhitespace = flankingWhitespace(node, options);
-  return node;
-}
-function isBlank(node) {
-  return !isVoid(node) && !isMeaningfulWhenBlank(node) && /^\s*$/i.test(node.textContent) && !hasVoid(node) && !hasMeaningfulWhenBlank(node);
-}
-function flankingWhitespace(node, options) {
-  if (node.isBlock || options.preformattedCode && node.isCode) {
-    return {
-      leading: "",
-      trailing: ""
-    };
-  }
-  var edges = edgeWhitespace(node.textContent);
-  if (edges.leadingAscii && isFlankedByWhitespace("left", node, options)) {
-    edges.leading = edges.leadingNonAscii;
-  }
-  if (edges.trailingAscii && isFlankedByWhitespace("right", node, options)) {
-    edges.trailing = edges.trailingNonAscii;
-  }
-  return {
-    leading: edges.leading,
-    trailing: edges.trailing
-  };
-}
-function edgeWhitespace(string) {
-  var m2 = string.match(/^(([ \t\r\n]*)(\s*))(?:(?=\S)[\s\S]*\S)?((\s*?)([ \t\r\n]*))$/);
-  return {
-    leading: m2[1],
-    // whole string for whitespace-only strings
-    leadingAscii: m2[2],
-    leadingNonAscii: m2[3],
-    trailing: m2[4],
-    // empty for whitespace-only strings
-    trailingNonAscii: m2[5],
-    trailingAscii: m2[6]
-  };
-}
-function isFlankedByWhitespace(side, node, options) {
-  var sibling;
-  var regExp;
-  var isFlanked;
-  if (side === "left") {
-    sibling = node.previousSibling;
-    regExp = / $/;
-  } else {
-    sibling = node.nextSibling;
-    regExp = /^ /;
-  }
-  if (sibling) {
-    if (sibling.nodeType === 3) {
-      isFlanked = regExp.test(sibling.nodeValue);
-    } else if (options.preformattedCode && sibling.nodeName === "CODE") {
-      isFlanked = false;
-    } else if (sibling.nodeType === 1 && !isBlock(sibling)) {
-      isFlanked = regExp.test(sibling.textContent);
-    }
-  }
-  return isFlanked;
-}
-var reduce = Array.prototype.reduce;
-function TurndownService(options) {
-  if (!(this instanceof TurndownService)) return new TurndownService(options);
-  var defaults = {
-    rules: rules$1,
-    headingStyle: "setext",
-    hr: "* * *",
-    bulletListMarker: "*",
-    codeBlockStyle: "indented",
-    fence: "```",
-    emDelimiter: "_",
-    strongDelimiter: "**",
-    linkStyle: "inlined",
-    linkReferenceStyle: "full",
-    br: "  ",
-    preformattedCode: false,
-    blankReplacement: function(content, node) {
-      return node.isBlock ? "\n\n" : "";
-    },
-    keepReplacement: function(content, node) {
-      return node.isBlock ? "\n\n" + node.outerHTML + "\n\n" : node.outerHTML;
-    },
-    defaultReplacement: function(content, node) {
-      return node.isBlock ? "\n\n" + content + "\n\n" : content;
-    }
-  };
-  this.options = extend({}, defaults, options);
-  this.rules = new Rules(this.options);
-}
-TurndownService.prototype = {
-  /**
-   * The entry point for converting a string or DOM node to Markdown
-   * @public
-   * @param {String|HTMLElement} input The string or DOM node to convert
-   * @returns A Markdown representation of the input
-   * @type String
-   */
-  turndown: function(input) {
-    if (!canConvert(input)) {
-      throw new TypeError(input + " is not a string, or an element/document/fragment node.");
-    }
-    if (input === "") return "";
-    var output = process.call(this, new RootNode(input, this.options));
-    return postProcess.call(this, output);
-  },
-  /**
-   * Add one or more plugins
-   * @public
-   * @param {Function|Array} plugin The plugin or array of plugins to add
-   * @returns The Turndown instance for chaining
-   * @type Object
-   */
-  use: function(plugin) {
-    if (Array.isArray(plugin)) {
-      for (var i2 = 0; i2 < plugin.length; i2++) this.use(plugin[i2]);
-    } else if (typeof plugin === "function") {
-      plugin(this);
-    } else {
-      throw new TypeError("plugin must be a Function or an Array of Functions");
-    }
-    return this;
-  },
-  /**
-   * Adds a rule
-   * @public
-   * @param {String} key The unique key of the rule
-   * @param {Object} rule The rule
-   * @returns The Turndown instance for chaining
-   * @type Object
-   */
-  addRule: function(key, rule) {
-    this.rules.add(key, rule);
-    return this;
-  },
-  /**
-   * Keep a node (as HTML) that matches the filter
-   * @public
-   * @param {String|Array|Function} filter The unique key of the rule
-   * @returns The Turndown instance for chaining
-   * @type Object
-   */
-  keep: function(filter) {
-    this.rules.keep(filter);
-    return this;
-  },
-  /**
-   * Remove a node that matches the filter
-   * @public
-   * @param {String|Array|Function} filter The unique key of the rule
-   * @returns The Turndown instance for chaining
-   * @type Object
-   */
-  remove: function(filter) {
-    this.rules.remove(filter);
-    return this;
-  },
-  /**
-   * Escapes Markdown syntax
-   * @public
-   * @param {String} string The string to escape
-   * @returns A string with Markdown syntax escaped
-   * @type String
-   */
-  escape: function(string) {
-    return escapeMarkdown(string);
-  }
-};
-function process(parentNode) {
-  var self2 = this;
-  return reduce.call(parentNode.childNodes, function(output, node) {
-    node = new Node$1(node, self2.options);
-    var replacement = "";
-    if (node.nodeType === 3) {
-      replacement = node.isCode ? node.nodeValue : self2.escape(node.nodeValue);
-    } else if (node.nodeType === 1) {
-      replacement = replacementForNode.call(self2, node);
-    }
-    return join(output, replacement);
-  }, "");
-}
-function postProcess(output) {
-  var self2 = this;
-  this.rules.forEach(function(rule) {
-    if (typeof rule.append === "function") {
-      output = join(output, rule.append(self2.options));
-    }
-  });
-  return output.replace(/^[\t\r\n]+/, "").replace(/[\t\r\n\s]+$/, "");
-}
-function replacementForNode(node) {
-  var rule = this.rules.forNode(node);
-  var content = process.call(this, node);
-  var whitespace = node.flankingWhitespace;
-  if (whitespace.leading || whitespace.trailing) content = content.trim();
-  return whitespace.leading + rule.replacement(content, node, this.options) + whitespace.trailing;
-}
-function join(output, replacement) {
-  var s1 = trimTrailingNewlines(output);
-  var s2 = trimLeadingNewlines(replacement);
-  var nls = Math.max(output.length - s1.length, replacement.length - s2.length);
-  var separator = "\n\n".substring(0, nls);
-  return s1 + separator + s2;
-}
-function canConvert(input) {
-  return input != null && (typeof input === "string" || input.nodeType && (input.nodeType === 1 || input.nodeType === 9 || input.nodeType === 11));
-}
-var highlightRegExp = /highlight-(?:text|source)-([a-z0-9]+)/;
-function highlightedCodeBlock(turndownService) {
-  turndownService.addRule("highlightedCodeBlock", {
-    filter: function(node) {
-      var firstChild = node.firstChild;
-      return node.nodeName === "DIV" && highlightRegExp.test(node.className) && firstChild && firstChild.nodeName === "PRE";
-    },
-    replacement: function(content, node, options) {
-      var className = node.className || "";
-      var language = (className.match(highlightRegExp) || [null, ""])[1];
-      return "\n\n" + options.fence + language + "\n" + node.firstChild.textContent + "\n" + options.fence + "\n\n";
-    }
-  });
-}
-function strikethrough(turndownService) {
-  turndownService.addRule("strikethrough", {
-    filter: ["del", "s", "strike"],
-    replacement: function(content) {
-      return "~" + content + "~";
-    }
-  });
-}
-var indexOf = Array.prototype.indexOf;
-var every = Array.prototype.every;
-var rules = {};
-rules.tableCell = {
-  filter: ["th", "td"],
-  replacement: function(content, node) {
-    return cell(content, node);
-  }
-};
-rules.tableRow = {
-  filter: "tr",
-  replacement: function(content, node) {
-    var borderCells = "";
-    var alignMap = { left: ":--", right: "--:", center: ":-:" };
-    if (isHeadingRow(node)) {
-      for (var i2 = 0; i2 < node.childNodes.length; i2++) {
-        var border = "---";
-        var align = (node.childNodes[i2].getAttribute("align") || "").toLowerCase();
-        if (align) border = alignMap[align] || border;
-        borderCells += cell(border, node.childNodes[i2]);
-      }
-    }
-    return "\n" + content + (borderCells ? "\n" + borderCells : "");
-  }
-};
-rules.table = {
-  // Only convert tables with a heading row.
-  // Tables with no heading row are kept using `keep` (see below).
-  filter: function(node) {
-    return node.nodeName === "TABLE" && isHeadingRow(node.rows[0]);
-  },
-  replacement: function(content) {
-    content = content.replace("\n\n", "\n");
-    return "\n\n" + content + "\n\n";
-  }
-};
-rules.tableSection = {
-  filter: ["thead", "tbody", "tfoot"],
-  replacement: function(content) {
-    return content;
-  }
-};
-function isHeadingRow(tr) {
-  var parentNode = tr.parentNode;
-  return parentNode.nodeName === "THEAD" || parentNode.firstChild === tr && (parentNode.nodeName === "TABLE" || isFirstTbody(parentNode)) && every.call(tr.childNodes, function(n2) {
-    return n2.nodeName === "TH";
-  });
-}
-function isFirstTbody(element) {
-  var previousSibling = element.previousSibling;
-  return element.nodeName === "TBODY" && (!previousSibling || previousSibling.nodeName === "THEAD" && /^\s*$/i.test(previousSibling.textContent));
-}
-function cell(content, node) {
-  var index = indexOf.call(node.parentNode.childNodes, node);
-  var prefix = " ";
-  if (index === 0) prefix = "| ";
-  return prefix + content + " |";
-}
-function tables(turndownService) {
-  turndownService.keep(function(node) {
-    return node.nodeName === "TABLE" && !isHeadingRow(node.rows[0]);
-  });
-  for (var key in rules) turndownService.addRule(key, rules[key]);
-}
-function taskListItems(turndownService) {
-  turndownService.addRule("taskListItems", {
-    filter: function(node) {
-      return node.type === "checkbox" && node.parentNode.nodeName === "LI";
-    },
-    replacement: function(content, node) {
-      return (node.checked ? "[x]" : "[ ]") + " ";
-    }
-  });
-}
-function gfm(turndownService) {
-  turndownService.use([
-    highlightedCodeBlock,
-    strikethrough,
-    tables,
-    taskListItems
-  ]);
-}
-const _hoisted_1$n = { class: "markdown-editor" };
-const _hoisted_2$j = ["aria-label"];
-const _hoisted_3$g = ["contenteditable"];
+const _hoisted_1$n = { class: "switch" };
+const _hoisted_2$j = ["id", "checked", "disabled"];
+const _hoisted_3$g = ["for"];
 const _sfc_main$s = /* @__PURE__ */ defineComponent({
-  __name: "MarkdownEditor",
-  props: {
-    modelValue: { type: String },
-    disabled: { type: Boolean, default: false }
-  },
-  emits: ["update:modelValue"],
-  setup(__props, { emit: __emit }) {
-    const props = __props;
-    const emit2 = __emit;
-    const { t: t2 } = useI18n();
-    const turndown = new TurndownService({
-      headingStyle: "atx",
-      hr: "---",
-      bulletListMarker: "-",
-      codeBlockStyle: "fenced",
-      emDelimiter: "*",
-      strongDelimiter: "**"
-    });
-    turndown.use(gfm);
-    function mdToHtml(md) {
-      return renderMarkdown(md);
-    }
-    function htmlToMd(html2) {
-      if (!html2) return "";
-      return turndown.turndown(html2);
-    }
-    const editorRef = useTemplateRef("editorEl");
-    const toolbarState = /* @__PURE__ */ reactive({
-      bold: false,
-      italic: false,
-      strike: false,
-      h1: false,
-      h2: false,
-      h3: false,
-      bulletList: false,
-      orderedList: false,
-      blockquote: false,
-      codeBlock: false
-    });
-    let lastEmittedMarkdown = null;
-    let emitFrame = null;
-    let selectionListener = null;
-    function setHtml(html2) {
-      const el = editorRef.value;
-      if (!el) return;
-      el.innerHTML = html2;
-    }
-    function getCurrentMarkdown() {
-      const el = editorRef.value;
-      if (!el) return "";
-      return htmlToMd(el.innerHTML);
-    }
-    function onInput() {
-      if (emitFrame !== null) cancelAnimationFrame(emitFrame);
-      emitFrame = requestAnimationFrame(() => {
-        emitFrame = null;
-        const md = getCurrentMarkdown();
-        lastEmittedMarkdown = md;
-        if (md !== props.modelValue) emit2("update:modelValue", md);
-      });
-    }
-    function onKeydown(e3) {
-      if (e3.key === "Enter" && e3.shiftKey) {
-        e3.preventDefault();
-        document.execCommand("insertLineBreak");
-      }
-    }
-    function onPaste(e3) {
-      e3.preventDefault();
-      const clipboard = e3.clipboardData;
-      if (!clipboard) return;
-      const text2 = clipboard.getData("text/plain");
-      if (!text2) return;
-      const looksLikeMd = /^#{1,6}\s|^\s*[-*+]\s|^\s*\d+\.\s|^\s*>|```|\*\*|__|\[.*\]\(/m.test(text2);
-      if (looksLikeMd) {
-        document.execCommand("insertHTML", false, mdToHtml(text2));
-      } else {
-        document.execCommand("insertText", false, text2);
-      }
-    }
-    function focusEditor() {
-      editorRef.value?.focus();
-    }
-    function execCmd(command) {
-      focusEditor();
-      document.execCommand(command);
-      updateToolbarState();
-      onInput();
-    }
-    function toggleBlock(tag) {
-      focusEditor();
-      const sel = getShadowAwareSelection(editorRef.value);
-      const inBlock = sel?.rangeCount && findAncestor(sel.anchorNode, tag);
-      document.execCommand("formatBlock", false, inBlock ? "P" : tag);
-      updateToolbarState();
-      onInput();
-    }
-    function toggleBlockquote() {
-      focusEditor();
-      const sel = getShadowAwareSelection(editorRef.value);
-      if (!sel || !sel.rangeCount) return;
-      const block = getParentBlock(sel.anchorNode);
-      if (block && block.tagName === "BLOCKQUOTE") {
-        const parent = block.parentNode;
-        if (!parent) return;
-        while (block.firstChild) {
-          parent.insertBefore(block.firstChild, block);
-        }
-        parent.removeChild(block);
-      } else {
-        document.execCommand("formatBlock", false, "BLOCKQUOTE");
-      }
-      updateToolbarState();
-      onInput();
-    }
-    function toggleCodeBlock() {
-      focusEditor();
-      const sel = getShadowAwareSelection(editorRef.value);
-      if (!sel || !sel.rangeCount) return;
-      const pre = findAncestor(sel.anchorNode, "PRE");
-      if (pre) {
-        const p2 = document.createElement("p");
-        p2.textContent = pre.textContent ?? "";
-        pre.parentNode?.replaceChild(p2, pre);
-        const range = document.createRange();
-        range.selectNodeContents(p2);
-        range.collapse(false);
-        sel.removeAllRanges();
-        sel.addRange(range);
-      } else {
-        const range = sel.getRangeAt(0);
-        const text2 = range.toString() || "\n";
-        const wrapper = document.createElement("pre");
-        const code = document.createElement("code");
-        code.textContent = text2;
-        wrapper.appendChild(code);
-        range.deleteContents();
-        range.insertNode(wrapper);
-        const newRange = document.createRange();
-        newRange.setStartAfter(wrapper);
-        newRange.collapse(true);
-        sel.removeAllRanges();
-        sel.addRange(newRange);
-      }
-      updateToolbarState();
-      onInput();
-    }
-    function startSelectionListener() {
-      if (selectionListener) return;
-      selectionListener = () => updateToolbarState();
-      document.addEventListener("selectionchange", selectionListener);
-      updateToolbarState();
-    }
-    function stopSelectionListener() {
-      if (selectionListener) {
-        document.removeEventListener("selectionchange", selectionListener);
-        selectionListener = null;
-      }
-    }
-    function updateToolbarState() {
-      toolbarState.bold = document.queryCommandState("bold");
-      toolbarState.italic = document.queryCommandState("italic");
-      toolbarState.strike = document.queryCommandState("strikeThrough");
-      toolbarState.h1 = isInAncestor("H1");
-      toolbarState.h2 = isInAncestor("H2");
-      toolbarState.h3 = isInAncestor("H3");
-      toolbarState.bulletList = document.queryCommandState("insertUnorderedList");
-      toolbarState.orderedList = document.queryCommandState("insertOrderedList");
-      toolbarState.blockquote = isInAncestor("BLOCKQUOTE");
-      toolbarState.codeBlock = isInAncestor("PRE");
-    }
-    function isInAncestor(tag) {
-      const sel = getShadowAwareSelection(editorRef.value);
-      if (!sel || !sel.rangeCount) return false;
-      return !!findAncestor(sel.anchorNode, tag);
-    }
-    function getParentBlock(node) {
-      const el = editorRef.value;
-      let n2 = node;
-      while (n2 && n2 !== el) {
-        if (n2.nodeType === 1 && /^(P|H[1-6]|BLOCKQUOTE|PRE|UL|OL|LI|DIV)$/.test(
-          n2.tagName
-        )) {
-          return n2;
-        }
-        n2 = n2.parentNode;
-      }
-      return null;
-    }
-    function findAncestor(node, tag) {
-      const el = editorRef.value;
-      let n2 = node;
-      while (n2 && n2 !== el) {
-        if (n2.nodeType === 1 && n2.tagName === tag) {
-          return n2;
-        }
-        n2 = n2.parentNode;
-      }
-      return null;
-    }
-    function variantFor(active) {
-      return active ? "secondary" : "tertiary";
-    }
-    onMounted(() => {
-      setHtml(mdToHtml(props.modelValue || ""));
-    });
-    onBeforeUnmount(() => {
-      stopSelectionListener();
-      if (emitFrame !== null) cancelAnimationFrame(emitFrame);
-    });
-    watch(
-      () => props.modelValue,
-      (next2) => {
-        if (next2 === lastEmittedMarkdown) return;
-        if (next2 === getCurrentMarkdown()) return;
-        setHtml(mdToHtml(next2 || ""));
-        lastEmittedMarkdown = null;
-      }
-    );
-    return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("div", _hoisted_1$n, [
-        !__props.disabled ? (openBlock(), createElementBlock("div", {
-          key: 0,
-          class: "markdown-editor__toolbar",
-          role: "toolbar",
-          "aria-label": unref(t2)("mdToolbar.label")
-        }, [
-          createVNode(Button, {
-            size: "sm",
-            variant: variantFor(toolbarState.h1),
-            icon: "heading-1",
-            "aria-label": unref(t2)("mdToolbar.h1"),
-            title: unref(t2)("mdToolbar.h1"),
-            onClick: _cache[0] || (_cache[0] = ($event) => toggleBlock("H1"))
-          }, null, 8, ["variant", "aria-label", "title"]),
-          createVNode(Button, {
-            size: "sm",
-            variant: variantFor(toolbarState.h2),
-            icon: "heading-2",
-            "aria-label": unref(t2)("mdToolbar.h2"),
-            title: unref(t2)("mdToolbar.h2"),
-            onClick: _cache[1] || (_cache[1] = ($event) => toggleBlock("H2"))
-          }, null, 8, ["variant", "aria-label", "title"]),
-          createVNode(Button, {
-            size: "sm",
-            variant: variantFor(toolbarState.h3),
-            icon: "heading-3",
-            "aria-label": unref(t2)("mdToolbar.h3"),
-            title: unref(t2)("mdToolbar.h3"),
-            onClick: _cache[2] || (_cache[2] = ($event) => toggleBlock("H3"))
-          }, null, 8, ["variant", "aria-label", "title"]),
-          _cache[9] || (_cache[9] = createBaseVNode("span", {
-            class: "markdown-editor__separator",
-            "aria-hidden": "true"
-          }, null, -1)),
-          createVNode(Button, {
-            size: "sm",
-            variant: variantFor(toolbarState.bold),
-            icon: "bold",
-            "aria-label": unref(t2)("mdToolbar.bold"),
-            title: unref(t2)("mdToolbar.bold"),
-            onClick: _cache[3] || (_cache[3] = ($event) => execCmd("bold"))
-          }, null, 8, ["variant", "aria-label", "title"]),
-          createVNode(Button, {
-            size: "sm",
-            variant: variantFor(toolbarState.italic),
-            icon: "italic",
-            "aria-label": unref(t2)("mdToolbar.italic"),
-            title: unref(t2)("mdToolbar.italic"),
-            onClick: _cache[4] || (_cache[4] = ($event) => execCmd("italic"))
-          }, null, 8, ["variant", "aria-label", "title"]),
-          _cache[10] || (_cache[10] = createBaseVNode("span", {
-            class: "markdown-editor__separator",
-            "aria-hidden": "true"
-          }, null, -1)),
-          createVNode(Button, {
-            size: "sm",
-            variant: variantFor(toolbarState.bulletList),
-            icon: "list",
-            "aria-label": unref(t2)("mdToolbar.bulletList"),
-            title: unref(t2)("mdToolbar.bulletList"),
-            onClick: _cache[5] || (_cache[5] = ($event) => execCmd("insertUnorderedList"))
-          }, null, 8, ["variant", "aria-label", "title"]),
-          createVNode(Button, {
-            size: "sm",
-            variant: variantFor(toolbarState.orderedList),
-            icon: "list-ordered",
-            "aria-label": unref(t2)("mdToolbar.orderedList"),
-            title: unref(t2)("mdToolbar.orderedList"),
-            onClick: _cache[6] || (_cache[6] = ($event) => execCmd("insertOrderedList"))
-          }, null, 8, ["variant", "aria-label", "title"]),
-          createVNode(Button, {
-            size: "sm",
-            variant: variantFor(toolbarState.blockquote),
-            icon: "quote",
-            "aria-label": unref(t2)("mdToolbar.quote"),
-            title: unref(t2)("mdToolbar.quote"),
-            onClick: toggleBlockquote
-          }, null, 8, ["variant", "aria-label", "title"]),
-          _cache[11] || (_cache[11] = createBaseVNode("span", {
-            class: "markdown-editor__separator",
-            "aria-hidden": "true"
-          }, null, -1)),
-          createVNode(Button, {
-            size: "sm",
-            variant: variantFor(toolbarState.codeBlock),
-            icon: "code-block",
-            "aria-label": unref(t2)("mdToolbar.codeBlock"),
-            title: unref(t2)("mdToolbar.codeBlock"),
-            onClick: toggleCodeBlock
-          }, null, 8, ["variant", "aria-label", "title"]),
-          _cache[12] || (_cache[12] = createBaseVNode("span", {
-            class: "markdown-editor__separator",
-            "aria-hidden": "true"
-          }, null, -1)),
-          createVNode(Button, {
-            size: "sm",
-            variant: "tertiary",
-            icon: "undo",
-            "aria-label": unref(t2)("mdToolbar.undo"),
-            title: unref(t2)("mdToolbar.undo"),
-            onClick: _cache[7] || (_cache[7] = ($event) => execCmd("undo"))
-          }, null, 8, ["aria-label", "title"]),
-          createVNode(Button, {
-            size: "sm",
-            variant: "tertiary",
-            icon: "redo",
-            "aria-label": unref(t2)("mdToolbar.redo"),
-            title: unref(t2)("mdToolbar.redo"),
-            onClick: _cache[8] || (_cache[8] = ($event) => execCmd("redo"))
-          }, null, 8, ["aria-label", "title"])
-        ], 8, _hoisted_2$j)) : createCommentVNode("", true),
-        createBaseVNode("div", {
-          ref: "editorEl",
-          class: "markdown-editor__content",
-          contenteditable: !__props.disabled,
-          onInput,
-          onKeydown,
-          onPaste,
-          onFocus: startSelectionListener,
-          onBlur: stopSelectionListener
-        }, null, 40, _hoisted_3$g)
-      ]);
-    };
-  }
-});
-const _style_0$o = "\n.markdown-editor[data-v-356dd429] {\n  display: flex;\n  flex-direction: column;\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.markdown-editor__toolbar[data-v-356dd429] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-xs) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  position: sticky;\n  top: 0;\n  z-index: 1;\n}\n.markdown-editor__separator[data-v-356dd429] {\n  width: 1px;\n  height: 20px;\n  background-color: var(--color-border);\n  margin: 0 var(--spacing-xs);\n}\n.markdown-editor__content[data-v-356dd429] {\n  padding: var(--spacing-md) var(--spacing-md);\n  outline: none;\n  min-height: 200px;\n}\n.markdown-editor__content[data-v-356dd429] > *:first-child {\n  margin-top: 0;\n}\n.markdown-editor__content[data-v-356dd429] h1,\n.markdown-editor__content[data-v-356dd429] h2,\n.markdown-editor__content[data-v-356dd429] h3,\n.markdown-editor__content[data-v-356dd429] h4 {\n  margin: var(--spacing-lg) 0 var(--spacing-sm);\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.markdown-editor__content[data-v-356dd429] h1 {\n  font-size: var(--font-size-xl);\n}\n.markdown-editor__content[data-v-356dd429] h2 {\n  font-size: var(--font-size-lg);\n}\n.markdown-editor__content[data-v-356dd429] h3 {\n  font-size: var(--font-size-base);\n}\n.markdown-editor__content[data-v-356dd429] h4 {\n  font-size: var(--font-size-sm);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-secondary);\n}\n.markdown-editor__content[data-v-356dd429] p {\n  margin: 0 0 var(--spacing-md);\n}\n.markdown-editor__content[data-v-356dd429] ul,\n.markdown-editor__content[data-v-356dd429] ol {\n  margin: 0 0 var(--spacing-md);\n  padding-left: var(--spacing-lg);\n}\n.markdown-editor__content[data-v-356dd429] li {\n  margin: var(--spacing-xs) 0;\n}\n.markdown-editor__content[data-v-356dd429] blockquote {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-left: 3px solid var(--color-border);\n  color: var(--color-text-secondary);\n  font-style: italic;\n}\n.markdown-editor__content[data-v-356dd429] code {\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n  padding: 1px 4px;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-sm);\n}\n.markdown-editor__content[data-v-356dd429] pre {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n}\n.markdown-editor__content[data-v-356dd429] pre code {\n  padding: 0;\n  background: none;\n}\n.markdown-editor__content[data-v-356dd429] a {\n  color: var(--color-primary);\n  text-decoration: underline;\n}\n.markdown-editor__content[data-v-356dd429] hr {\n  border: 0;\n  border-top: 1px solid var(--color-border);\n  margin: var(--spacing-lg) 0;\n}\n.markdown-editor__content[data-v-356dd429] strong {\n  font-weight: 700;\n}\n.markdown-editor__content[data-v-356dd429] table {\n  border-collapse: collapse;\n  margin: var(--spacing-md) 0;\n}\n.markdown-editor__content[data-v-356dd429] th,\n.markdown-editor__content[data-v-356dd429] td {\n  border: 1px solid var(--color-border);\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.markdown-editor__content[data-v-356dd429] th {\n  background-color: var(--color-surface);\n  font-weight: 600;\n}\n";
-const MarkdownEditor = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["styles", [_style_0$o]], ["__scopeId", "data-v-356dd429"]]);
-const _hoisted_1$m = { class: "llm-service-panel" };
-const _hoisted_2$i = {
-  key: 0,
-  class: "llm-service-panel__empty",
-  role: "status"
-};
-const _hoisted_3$f = { class: "llm-service-panel__empty-text" };
-const _sfc_main$r = /* @__PURE__ */ defineComponent({
-  __name: "LLMServicePanel",
-  props: {
-    service: { type: Object }
-  },
-  setup(__props) {
-    const props = __props;
-    const core = useCore();
-    const { t: t2 } = useI18n();
-    const articleStatus = computed(() => {
-      const s2 = props.service.status.value;
-      if (s2 === "queued" || s2 === "processing") return "processing";
-      if (s2 === "error") return "error";
-      return "done";
-    });
-    const progress = computed(() => props.service.progress.value);
-    const content = computed(() => props.service.content.value);
-    const busy = computed(() => props.service.busy.value);
-    const dirty = computed(() => props.service.dirty.value);
-    const versions = computed(() => props.service.versions.value);
-    const activeVersionNumber = computed(
-      () => props.service.activeVersionNumber.value
-    );
-    const isEmpty = computed(() => {
-      if (articleStatus.value !== "done") return false;
-      return !content.value && versions.value.length === 0;
-    });
-    const isUpdated = computed(() => {
-      const channel = core.activeChannel.value;
-      const activeId = channel?.activeTranslation.value.id;
-      const realStore = activeId ? channel?.translations.get(activeId) : void 0;
-      const transcriptionLastModified = realStore?.lastModifiedAt.value ?? null;
-      if (transcriptionLastModified == null) return true;
-      const activeVersion = versions.value.find(
-        (v2) => v2.versionNumber === activeVersionNumber.value
-      );
-      const versionTs = activeVersion?.createdAt ?? props.service.lastUpdate.value;
-      if (versionTs == null) return true;
-      return versionTs >= transcriptionLastModified;
-    });
-    const draft = /* @__PURE__ */ ref(content.value);
-    watch(content, (next2) => {
-      draft.value = next2;
-      core.llmServices?.setDirty(props.service.id, false);
-    });
-    watch(draft, (next2) => {
-      const isDirty2 = next2 !== content.value;
-      if (props.service.dirty.value !== isDirty2) {
-        core.llmServices?.setDirty(props.service.id, isDirty2);
-      }
-    });
-    function onRegenerate() {
-      core.emit("llmService:regenerate", { id: props.service.id });
-    }
-    function onExport() {
-      core.emit("llmService:export", { id: props.service.id });
-    }
-    function onSave() {
-      core.emit("llmService:saveVersion", {
-        id: props.service.id,
-        content: draft.value
-      });
-    }
-    return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("section", _hoisted_1$m, [
-        createVNode(DocumentArticle, {
-          status: articleStatus.value,
-          progress: progress.value,
-          onRetry: onRegenerate
-        }, {
-          "toolbar-left": withCtx(() => [
-            createVNode(Button, {
-              variant: "primary",
-              icon: "save",
-              disabled: !dirty.value || busy.value,
-              "aria-label": unref(t2)("llmService.save"),
-              title: unref(t2)("llmService.save"),
-              onClick: onSave
-            }, null, 8, ["disabled", "aria-label", "title"]),
-            createVNode(Button, {
-              variant: "secondary",
-              icon: "refresh-cw",
-              loading: articleStatus.value === "processing",
-              disabled: isUpdated.value || busy.value || articleStatus.value === "processing",
-              "aria-label": unref(t2)("llmService.regenerate"),
-              title: unref(t2)("llmService.regenerate"),
-              onClick: onRegenerate
-            }, null, 8, ["loading", "disabled", "aria-label", "title"])
-          ]),
-          "toolbar-center": withCtx(() => [
-            createBaseVNode("span", {
-              class: normalizeClass(["llm-service-panel__status", [
-                isUpdated.value ? "llm-service-panel__status--ok" : "llm-service-panel__status--warn"
-              ]])
-            }, [
-              createVNode(EditorIcon, {
-                name: isUpdated.value ? "check" : "warning",
-                size: 14
-              }, null, 8, ["name"]),
-              createBaseVNode("span", null, toDisplayString(isUpdated.value ? unref(t2)("llmService.statusUpdated") : unref(t2)("llmService.statusOutdated")), 1)
-            ], 2)
-          ]),
-          "toolbar-right": withCtx(() => [
-            createVNode(Button, {
-              variant: "primary",
-              icon: "download",
-              disabled: articleStatus.value === "processing",
-              "aria-label": unref(t2)("llmService.download"),
-              title: unref(t2)("llmService.download"),
-              onClick: onExport
-            }, {
-              default: withCtx(() => [
-                createTextVNode(toDisplayString(unref(t2)("llmService.download")), 1)
-              ]),
-              _: 1
-            }, 8, ["disabled", "aria-label", "title"])
-          ]),
-          default: withCtx(() => [
-            isEmpty.value ? (openBlock(), createElementBlock("div", _hoisted_2$i, [
-              createBaseVNode("p", _hoisted_3$f, toDisplayString(unref(t2)("llmService.empty")), 1),
-              createVNode(Button, {
-                variant: "primary",
-                icon: "sparkles",
-                disabled: busy.value,
-                onClick: onRegenerate
-              }, {
-                default: withCtx(() => [
-                  createTextVNode(toDisplayString(unref(t2)("llmService.generate")), 1)
-                ]),
-                _: 1
-              }, 8, ["disabled"])
-            ])) : (openBlock(), createBlock(MarkdownEditor, {
-              key: 1,
-              modelValue: draft.value,
-              "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => draft.value = $event),
-              disabled: busy.value
-            }, null, 8, ["modelValue", "disabled"]))
-          ]),
-          _: 1
-        }, 8, ["status", "progress"])
-      ]);
-    };
-  }
-});
-const _style_0$n = "\n.llm-service-panel[data-v-2e197000] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.llm-service-panel__status[data-v-2e197000] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n}\n.llm-service-panel__status--ok[data-v-2e197000] {\n  color: var(--color-success, #2e7d32);\n}\n.llm-service-panel__status--warn[data-v-2e197000] {\n  color: var(--color-warning, #ed6c02);\n}\n.llm-service-panel__empty[data-v-2e197000] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-2e197000] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n@media (max-width: 767px) {\n.llm-service-panel[data-v-2e197000] {\n    padding: var(--spacing-md);\n}\n}\n";
-const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["styles", [_style_0$n]], ["__scopeId", "data-v-2e197000"]]);
-const _hoisted_1$l = { class: "switch" };
-const _hoisted_2$h = ["id", "checked", "disabled"];
-const _hoisted_3$e = ["for"];
-const _sfc_main$q = /* @__PURE__ */ defineComponent({
   __name: "SwitchToggle",
   props: {
     modelValue: { type: Boolean },
@@ -22679,25 +21491,25 @@ const _sfc_main$q = /* @__PURE__ */ defineComponent({
     const emit2 = __emit;
     const inputId = props.id ?? useId$1();
     return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("div", _hoisted_1$l, [
+      return openBlock(), createElementBlock("div", _hoisted_1$n, [
         createBaseVNode("input", {
           type: "checkbox",
           id: unref(inputId),
           checked: __props.modelValue,
           disabled: __props.disabled,
           onChange: _cache[0] || (_cache[0] = ($event) => emit2("update:modelValue", $event.target.checked))
-        }, null, 40, _hoisted_2$h),
+        }, null, 40, _hoisted_2$j),
         createBaseVNode("label", { for: unref(inputId) }, [..._cache[1] || (_cache[1] = [
           createBaseVNode("div", { class: "switch-slider" }, null, -1)
-        ])], 8, _hoisted_3$e)
+        ])], 8, _hoisted_3$g)
       ]);
     };
   }
 });
-const _style_0$m = "\n.switch[data-v-f1919d87] {\n  display: inline-block;\n  flex-shrink: 0;\n}\n.switch input[data-v-f1919d87] {\n  position: absolute;\n  width: 1px;\n  height: 1px;\n  padding: 0;\n  margin: -1px;\n  overflow: hidden;\n  clip-path: inset(50%);\n  white-space: nowrap;\n  border: 0;\n}\n.switch label[data-v-f1919d87] {\n  height: 20px;\n  width: 40px;\n  display: block;\n  border: 1px solid var(--color-border);\n  border-radius: 20px;\n  cursor: pointer;\n  background-color: var(--color-border);\n  transition: background-color var(--transition-duration);\n}\n.switch .switch-slider[data-v-f1919d87] {\n  height: 22px;\n  width: 22px;\n  border: 1px solid var(--color-border);\n  border-radius: 50%;\n  position: relative;\n  top: -2px;\n  left: -2px;\n  background-color: var(--color-white);\n  transition: left var(--transition-duration);\n}\n.switch input:checked + label[data-v-f1919d87] {\n  background-color: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.switch input:checked + label .switch-slider[data-v-f1919d87] {\n  left: 20px;\n  border-color: var(--color-primary);\n}\n.switch input:disabled + label[data-v-f1919d87] {\n  cursor: not-allowed;\n  opacity: 0.5;\n}\n";
-const SwitchToggle = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["styles", [_style_0$m]], ["__scopeId", "data-v-f1919d87"]]);
-const _hoisted_1$k = ["disabled", "aria-label"];
-const _sfc_main$p = /* @__PURE__ */ defineComponent({
+const _style_0$o = "\n.switch[data-v-f1919d87] {\n  display: inline-block;\n  flex-shrink: 0;\n}\n.switch input[data-v-f1919d87] {\n  position: absolute;\n  width: 1px;\n  height: 1px;\n  padding: 0;\n  margin: -1px;\n  overflow: hidden;\n  clip-path: inset(50%);\n  white-space: nowrap;\n  border: 0;\n}\n.switch label[data-v-f1919d87] {\n  height: 20px;\n  width: 40px;\n  display: block;\n  border: 1px solid var(--color-border);\n  border-radius: 20px;\n  cursor: pointer;\n  background-color: var(--color-border);\n  transition: background-color var(--transition-duration);\n}\n.switch .switch-slider[data-v-f1919d87] {\n  height: 22px;\n  width: 22px;\n  border: 1px solid var(--color-border);\n  border-radius: 50%;\n  position: relative;\n  top: -2px;\n  left: -2px;\n  background-color: var(--color-white);\n  transition: left var(--transition-duration);\n}\n.switch input:checked + label[data-v-f1919d87] {\n  background-color: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.switch input:checked + label .switch-slider[data-v-f1919d87] {\n  left: 20px;\n  border-color: var(--color-primary);\n}\n.switch input:disabled + label[data-v-f1919d87] {\n  cursor: not-allowed;\n  opacity: 0.5;\n}\n";
+const SwitchToggle = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["styles", [_style_0$o]], ["__scopeId", "data-v-f1919d87"]]);
+const _hoisted_1$m = ["disabled", "aria-label"];
+const _sfc_main$r = /* @__PURE__ */ defineComponent({
   __name: "EditableText",
   props: {
     modelValue: { type: String },
@@ -22771,18 +21583,18 @@ const _sfc_main$p = /* @__PURE__ */ defineComponent({
         disabled: __props.disabled,
         "aria-label": __props.ariaLabel,
         onClick: startEdit
-      }, toDisplayString(__props.modelValue || __props.placeholder), 9, _hoisted_1$k));
+      }, toDisplayString(__props.modelValue || __props.placeholder), 9, _hoisted_1$m));
     };
   }
 });
-const _style_0$l = "\n.editable-text-display[data-v-511d4fb4] {\n  all: unset;\n  cursor: text;\n  text-align: left;\n  font: inherit;\n  color: inherit;\n  line-height: inherit;\n  padding: 0;\n  border: 1px solid transparent;\n  border-radius: var(--radius-sm);\n  min-width: 0;\n}\n.editable-text-display[data-v-511d4fb4]:not(:disabled):hover {\n  border-color: var(--color-border);\n}\n.editable-text-display[data-v-511d4fb4]:disabled {\n  cursor: default;\n}\n";
-const EditableText = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["styles", [_style_0$l]], ["__scopeId", "data-v-511d4fb4"]]);
-const _hoisted_1$j = ["disabled", "aria-current"];
-const _hoisted_2$g = {
+const _style_0$n = "\n.editable-text-display[data-v-511d4fb4] {\n  all: unset;\n  cursor: text;\n  text-align: left;\n  font: inherit;\n  color: inherit;\n  line-height: inherit;\n  padding: 0;\n  border: 1px solid transparent;\n  border-radius: var(--radius-sm);\n  min-width: 0;\n}\n.editable-text-display[data-v-511d4fb4]:not(:disabled):hover {\n  border-color: var(--color-border);\n}\n.editable-text-display[data-v-511d4fb4]:disabled {\n  cursor: default;\n}\n";
+const EditableText = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["styles", [_style_0$n]], ["__scopeId", "data-v-511d4fb4"]]);
+const _hoisted_1$l = ["disabled", "aria-current"];
+const _hoisted_2$i = {
   key: 0,
   class: "selectable-list-item__leading"
 };
-const _hoisted_3$d = { class: "selectable-list-item__label" };
+const _hoisted_3$f = { class: "selectable-list-item__label" };
 const _hoisted_4$6 = {
   key: 1,
   class: "selectable-list-item__trailing"
@@ -22791,7 +21603,7 @@ const _hoisted_5$6 = {
   key: 0,
   class: "selectable-list-item__actions"
 };
-const _sfc_main$o = /* @__PURE__ */ defineComponent({
+const _sfc_main$q = /* @__PURE__ */ defineComponent({
   __name: "SelectableListItem",
   props: {
     current: { type: Boolean },
@@ -22816,10 +21628,10 @@ const _sfc_main$o = /* @__PURE__ */ defineComponent({
           "aria-current": __props.current ? "true" : void 0,
           onClick: _cache[0] || (_cache[0] = ($event) => emit2("select"))
         }, [
-          _ctx.$slots.leading ? (openBlock(), createElementBlock("span", _hoisted_2$g, [
+          _ctx.$slots.leading ? (openBlock(), createElementBlock("span", _hoisted_2$i, [
             renderSlot(_ctx.$slots, "leading", {}, void 0, true)
           ])) : createCommentVNode("", true),
-          createBaseVNode("span", _hoisted_3$d, [
+          createBaseVNode("span", _hoisted_3$f, [
             renderSlot(_ctx.$slots, "default", {}, () => [
               createTextVNode(toDisplayString(__props.label), 1)
             ], true)
@@ -22827,7 +21639,7 @@ const _sfc_main$o = /* @__PURE__ */ defineComponent({
           _ctx.$slots.trailing ? (openBlock(), createElementBlock("span", _hoisted_4$6, [
             renderSlot(_ctx.$slots, "trailing", {}, void 0, true)
           ])) : createCommentVNode("", true)
-        ], 8, _hoisted_1$j),
+        ], 8, _hoisted_1$l),
         _ctx.$slots.actions ? (openBlock(), createElementBlock("div", _hoisted_5$6, [
           renderSlot(_ctx.$slots, "actions", {}, void 0, true)
         ])) : createCommentVNode("", true)
@@ -22835,9 +21647,9 @@ const _sfc_main$o = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$k = "\n.selectable-list-item[data-v-e227a7de] {\n  position: relative;\n  display: flex;\n  border: 1px solid transparent;\n  transition:\n    background-color var(--transition-duration),\n    box-shadow var(--transition-duration);\n}\n.selectable-list-item--md[data-v-e227a7de] {\n  font-size: var(--font-size-sm);\n}\n.selectable-list-item--sm[data-v-e227a7de] {\n  font-size: var(--font-size-xs);\n}\n.selectable-list-item[data-v-e227a7de]:hover {\n  background-color: var(--color-surface-hover);\n}\n.selectable-list-item--current[data-v-e227a7de],\n.selectable-list-item--current[data-v-e227a7de]:hover {\n  background-color: color-mix(in srgb, var(--color-primary) 12%, transparent);\n  box-shadow: inset 2px 0 0 var(--color-primary);\n}\n\n/* ── The selectable button ── */\n.selectable-list-item__main[data-v-e227a7de] {\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  background: none;\n  border: none;\n  font: inherit;\n  color: var(--color-text-primary);\n  text-align: left;\n  cursor: pointer;\n}\n.selectable-list-item--md .selectable-list-item__main[data-v-e227a7de] {\n  padding: var(--spacing-sm);\n}\n.selectable-list-item--sm .selectable-list-item__main[data-v-e227a7de] {\n  padding: var(--spacing-xs) var(--spacing-sm);\n  color: var(--color-text-secondary);\n}\n.selectable-list-item__main[data-v-e227a7de]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: -2px;\n}\n.selectable-list-item__main[data-v-e227a7de]:disabled {\n  cursor: not-allowed;\n}\n.selectable-list-item--current .selectable-list-item__main[data-v-e227a7de] {\n  color: var(--color-primary);\n  font-weight: 600;\n}\n.selectable-list-item__label[data-v-e227a7de] {\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  font-variant-numeric: tabular-nums;\n}\n.selectable-list-item__leading[data-v-e227a7de],\n.selectable-list-item__trailing[data-v-e227a7de] {\n  display: inline-flex;\n  align-items: center;\n  flex-shrink: 0;\n}\n\n/* Trailing content (hints, dates) stays muted even on the active row. */\n.selectable-list-item__trailing[data-v-e227a7de] {\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n\n/* ── Trailing actions (hover / focus reveal, overlaying the row) ── */\n.selectable-list-item__actions[data-v-e227a7de] {\n  position: absolute;\n  inset-block: 0;\n  inset-inline-end: 0;\n  display: flex;\n  align-items: center;\n  gap: 2px;\n  padding-inline: var(--spacing-md) var(--spacing-xs);\n  /* Fade the label out behind the actions, matching the row surface. */\n  background: linear-gradient(\n    to right,\n    transparent,\n    var(--color-surface-hover) var(--spacing-md)\n  );\n  opacity: 0;\n  pointer-events: none;\n  transition: opacity var(--transition-duration);\n}\n.selectable-list-item:hover .selectable-list-item__actions[data-v-e227a7de],\n.selectable-list-item:focus-within .selectable-list-item__actions[data-v-e227a7de] {\n  opacity: 1;\n  pointer-events: auto;\n}\n\n/* Match the fade to the selected surface on the active row. */\n.selectable-list-item--current .selectable-list-item__actions[data-v-e227a7de] {\n  background: linear-gradient(\n    to right,\n    transparent,\n    color-mix(in srgb, var(--color-primary) 12%, var(--color-surface-hover))\n      var(--spacing-md)\n  );\n}\n@media (prefers-reduced-motion: reduce) {\n.selectable-list-item[data-v-e227a7de],\n  .selectable-list-item__actions[data-v-e227a7de] {\n    transition: none;\n}\n}\n";
-const SelectableListItem = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["styles", [_style_0$k]], ["__scopeId", "data-v-e227a7de"]]);
-const _sfc_main$n = /* @__PURE__ */ defineComponent({
+const _style_0$m = "\n.selectable-list-item[data-v-e227a7de] {\n  position: relative;\n  display: flex;\n  border: 1px solid transparent;\n  transition:\n    background-color var(--transition-duration),\n    box-shadow var(--transition-duration);\n}\n.selectable-list-item--md[data-v-e227a7de] {\n  font-size: var(--font-size-sm);\n}\n.selectable-list-item--sm[data-v-e227a7de] {\n  font-size: var(--font-size-xs);\n}\n.selectable-list-item[data-v-e227a7de]:hover {\n  background-color: var(--color-surface-hover);\n}\n.selectable-list-item--current[data-v-e227a7de],\n.selectable-list-item--current[data-v-e227a7de]:hover {\n  background-color: color-mix(in srgb, var(--color-primary) 12%, transparent);\n  box-shadow: inset 2px 0 0 var(--color-primary);\n}\n\n/* ── The selectable button ── */\n.selectable-list-item__main[data-v-e227a7de] {\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  background: none;\n  border: none;\n  font: inherit;\n  color: var(--color-text-primary);\n  text-align: left;\n  cursor: pointer;\n}\n.selectable-list-item--md .selectable-list-item__main[data-v-e227a7de] {\n  padding: var(--spacing-sm);\n}\n.selectable-list-item--sm .selectable-list-item__main[data-v-e227a7de] {\n  padding: var(--spacing-xs) var(--spacing-sm);\n  color: var(--color-text-secondary);\n}\n.selectable-list-item__main[data-v-e227a7de]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: -2px;\n}\n.selectable-list-item__main[data-v-e227a7de]:disabled {\n  cursor: not-allowed;\n}\n.selectable-list-item--current .selectable-list-item__main[data-v-e227a7de] {\n  color: var(--color-primary);\n  font-weight: 600;\n}\n.selectable-list-item__label[data-v-e227a7de] {\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  font-variant-numeric: tabular-nums;\n}\n.selectable-list-item__leading[data-v-e227a7de],\n.selectable-list-item__trailing[data-v-e227a7de] {\n  display: inline-flex;\n  align-items: center;\n  flex-shrink: 0;\n}\n\n/* Trailing content (hints, dates) stays muted even on the active row. */\n.selectable-list-item__trailing[data-v-e227a7de] {\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n\n/* ── Trailing actions (hover / focus reveal, overlaying the row) ── */\n.selectable-list-item__actions[data-v-e227a7de] {\n  position: absolute;\n  inset-block: 0;\n  inset-inline-end: 0;\n  display: flex;\n  align-items: center;\n  gap: 2px;\n  padding-inline: var(--spacing-md) var(--spacing-xs);\n  /* Fade the label out behind the actions, matching the row surface. */\n  background: linear-gradient(\n    to right,\n    transparent,\n    var(--color-surface-hover) var(--spacing-md)\n  );\n  opacity: 0;\n  pointer-events: none;\n  transition: opacity var(--transition-duration);\n}\n.selectable-list-item:hover .selectable-list-item__actions[data-v-e227a7de],\n.selectable-list-item:focus-within .selectable-list-item__actions[data-v-e227a7de] {\n  opacity: 1;\n  pointer-events: auto;\n}\n\n/* Match the fade to the selected surface on the active row. */\n.selectable-list-item--current .selectable-list-item__actions[data-v-e227a7de] {\n  background: linear-gradient(\n    to right,\n    transparent,\n    color-mix(in srgb, var(--color-primary) 12%, var(--color-surface-hover))\n      var(--spacing-md)\n  );\n}\n@media (prefers-reduced-motion: reduce) {\n.selectable-list-item[data-v-e227a7de],\n  .selectable-list-item__actions[data-v-e227a7de] {\n    transition: none;\n}\n}\n";
+const SelectableListItem = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["styles", [_style_0$m]], ["__scopeId", "data-v-e227a7de"]]);
+const _sfc_main$p = /* @__PURE__ */ defineComponent({
   __name: "SpeakerMenu",
   emits: ["merge"],
   setup(__props, { emit: __emit }) {
@@ -22871,10 +21683,10 @@ const _sfc_main$n = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _hoisted_1$i = { class: "merge-dialog-title" };
-const _hoisted_2$f = { class: "merge-dialog-description" };
-const _hoisted_3$c = { class: "merge-dialog-actions" };
-const _sfc_main$m = /* @__PURE__ */ defineComponent({
+const _hoisted_1$k = { class: "merge-dialog-title" };
+const _hoisted_2$h = { class: "merge-dialog-description" };
+const _hoisted_3$e = { class: "merge-dialog-actions" };
+const _sfc_main$o = /* @__PURE__ */ defineComponent({
   __name: "MergeDialog",
   props: {
     open: { type: Boolean },
@@ -22942,8 +21754,8 @@ const _sfc_main$m = /* @__PURE__ */ defineComponent({
           class: "merge-dialog-form",
           onSubmit: withModifiers(onConfirm, ["prevent"])
         }, [
-          createBaseVNode("h2", _hoisted_1$i, toDisplayString(unref(t2)("mergeDialog.title")), 1),
-          createBaseVNode("p", _hoisted_2$f, [
+          createBaseVNode("h2", _hoisted_1$k, toDisplayString(unref(t2)("mergeDialog.title")), 1),
+          createBaseVNode("p", _hoisted_2$h, [
             createBaseVNode("strong", null, toDisplayString(fromSpeaker.value.name), 1),
             createTextVNode(" · " + toDisplayString(affectedCount.value) + " " + toDisplayString(unref(t2)("mergeDialog.turnsAffected")), 1)
           ]),
@@ -22954,7 +21766,7 @@ const _sfc_main$m = /* @__PURE__ */ defineComponent({
             modelValue: targetId.value,
             "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => targetId.value = $event)
           }, null, 8, ["field", "options", "modelValue"]),
-          createBaseVNode("div", _hoisted_3$c, [
+          createBaseVNode("div", _hoisted_3$e, [
             createVNode(Button, {
               variant: "tertiary",
               type: "button",
@@ -22981,9 +21793,9 @@ const _sfc_main$m = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$j = "\n.merge-dialog[data-v-695cbbe8] {\n  margin: auto;\n  max-width: 420px;\n  width: 90vw;\n  padding: var(--spacing-lg);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  color: var(--color-text-primary);\n  box-shadow: 0 16px 48px color-mix(in srgb, var(--color-text-primary) 20%, transparent);\n}\n.merge-dialog[data-v-695cbbe8]::backdrop {\n  /* No backdrop-filter: a full-viewport backdrop blur is a large WebRender\n     render target; the dim background alone is enough. */\n  background-color: color-mix(in srgb, var(--color-text-primary) 35%, transparent);\n}\n.merge-dialog-form[data-v-695cbbe8] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-md);\n}\n.merge-dialog-title[data-v-695cbbe8] {\n  margin: 0;\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n}\n.merge-dialog-description[data-v-695cbbe8] {\n  margin: 0;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n.merge-dialog-actions[data-v-695cbbe8] {\n  display: flex;\n  justify-content: flex-end;\n  gap: var(--spacing-sm);\n}\n";
-const MergeDialog = /* @__PURE__ */ _export_sfc(_sfc_main$m, [["styles", [_style_0$j]], ["__scopeId", "data-v-695cbbe8"]]);
-const _sfc_main$l = /* @__PURE__ */ defineComponent({
+const _style_0$l = "\n.merge-dialog[data-v-695cbbe8] {\n  margin: auto;\n  max-width: 420px;\n  width: 90vw;\n  padding: var(--spacing-lg);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  color: var(--color-text-primary);\n  box-shadow: 0 16px 48px color-mix(in srgb, var(--color-text-primary) 20%, transparent);\n}\n.merge-dialog[data-v-695cbbe8]::backdrop {\n  /* No backdrop-filter: a full-viewport backdrop blur is a large WebRender\n     render target; the dim background alone is enough. */\n  background-color: color-mix(in srgb, var(--color-text-primary) 35%, transparent);\n}\n.merge-dialog-form[data-v-695cbbe8] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-md);\n}\n.merge-dialog-title[data-v-695cbbe8] {\n  margin: 0;\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n}\n.merge-dialog-description[data-v-695cbbe8] {\n  margin: 0;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n.merge-dialog-actions[data-v-695cbbe8] {\n  display: flex;\n  justify-content: flex-end;\n  gap: var(--spacing-sm);\n}\n";
+const MergeDialog = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["styles", [_style_0$l]], ["__scopeId", "data-v-695cbbe8"]]);
+const _sfc_main$n = /* @__PURE__ */ defineComponent({
   __name: "ChannelSelector",
   props: {
     channels: { type: Array },
@@ -23009,7 +21821,7 @@ const _sfc_main$l = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _sfc_main$k = /* @__PURE__ */ defineComponent({
+const _sfc_main$m = /* @__PURE__ */ defineComponent({
   __name: "TranslationSelector",
   props: {
     translations: { type: Array },
@@ -23041,12 +21853,12 @@ const _sfc_main$k = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _hoisted_1$h = { class: "speaker-sidebar" };
-const _hoisted_2$e = {
+const _hoisted_1$j = { class: "speaker-sidebar" };
+const _hoisted_2$g = {
   key: 0,
   class: "sidebar-section sidebar-section--selector"
 };
-const _hoisted_3$b = { class: "sidebar-title" };
+const _hoisted_3$d = { class: "sidebar-title" };
 const _hoisted_4$5 = {
   key: 1,
   class: "sidebar-section sidebar-section--selector"
@@ -23094,7 +21906,7 @@ const _hoisted_27 = {
 };
 const _hoisted_28 = { class: "sidebar-title" };
 const _hoisted_29 = { class: "speaker-list" };
-const _sfc_main$j = /* @__PURE__ */ defineComponent({
+const _sfc_main$l = /* @__PURE__ */ defineComponent({
   __name: "SpeakerSidebar",
   props: {
     speakers: { type: Array },
@@ -23179,10 +21991,10 @@ const _sfc_main$j = /* @__PURE__ */ defineComponent({
       core.emit("llmService:selectVersion", { id: service.id, versionNumber });
     }
     return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("aside", _hoisted_1$h, [
-        __props.channels.length > 1 ? (openBlock(), createElementBlock("section", _hoisted_2$e, [
-          createBaseVNode("h2", _hoisted_3$b, toDisplayString(unref(t2)("sidebar.channel")), 1),
-          createVNode(_sfc_main$l, {
+      return openBlock(), createElementBlock("aside", _hoisted_1$j, [
+        __props.channels.length > 1 ? (openBlock(), createElementBlock("section", _hoisted_2$g, [
+          createBaseVNode("h2", _hoisted_3$d, toDisplayString(unref(t2)("sidebar.channel")), 1),
+          createVNode(_sfc_main$n, {
             channels: __props.channels,
             "selected-channel-id": __props.selectedChannelId,
             "onUpdate:selectedChannelId": _cache[0] || (_cache[0] = ($event) => _ctx.$emit("update:selectedChannelId", $event))
@@ -23190,7 +22002,7 @@ const _sfc_main$j = /* @__PURE__ */ defineComponent({
         ])) : createCommentVNode("", true),
         __props.translations.length > 1 ? (openBlock(), createElementBlock("section", _hoisted_4$5, [
           createBaseVNode("h2", _hoisted_5$5, toDisplayString(unref(t2)("sidebar.translation")), 1),
-          createVNode(_sfc_main$k, {
+          createVNode(_sfc_main$m, {
             translations: __props.translations,
             "selected-translation-id": __props.selectedTranslationId,
             "onUpdate:selectedTranslationId": _cache[1] || (_cache[1] = ($event) => _ctx.$emit("update:selectedTranslationId", $event))
@@ -23335,7 +22147,7 @@ const _sfc_main$j = /* @__PURE__ */ defineComponent({
                   "aria-label": unref(t2)("sidebar.renameSpeaker"),
                   onCommit: ($event) => onRename(speaker.id, $event)
                 }, null, 8, ["model-value", "disabled", "aria-label", "onCommit"]),
-                canEditSpeakers.value && __props.speakers.length > 1 ? (openBlock(), createBlock(_sfc_main$n, {
+                canEditSpeakers.value && __props.speakers.length > 1 ? (openBlock(), createBlock(_sfc_main$p, {
                   key: 0,
                   "speaker-name": speaker.name,
                   onMerge: ($event) => onOpenMerge(speaker.id)
@@ -23354,9 +22166,9 @@ const _sfc_main$j = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$i = '\n.speaker-sidebar[data-v-4d0d9571] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n  padding: var(--spacing-lg);\n  border-left: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-y: auto;\n}\n.sidebar-section[data-v-4d0d9571] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-sm);\n}\n.sidebar-title[data-v-4d0d9571] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-muted);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n}\n.speaker-list[data-v-4d0d9571] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n}\n.speaker-item[data-v-4d0d9571] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n  transition: background-color var(--transition-duration);\n}\n.speaker-item[data-v-4d0d9571]:hover {\n  background-color: var(--color-surface-hover);\n}\n.speaker-name[data-v-4d0d9571] {\n  flex: 1;\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-primary);\n}\n.subtitle-toggle[data-v-4d0d9571] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n}\n.subtitle-toggle-label[data-v-4d0d9571] {\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\n.voice-playback-hint[data-v-4d0d9571] {\n  padding: 0 var(--spacing-sm);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.voice-playback-hint--warning[data-v-4d0d9571] {\n  color: var(--color-danger);\n}\n.subtitle-slider[data-v-4d0d9571] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-sm);\n}\n.subtitle-slider-label[data-v-4d0d9571] {\n  display: flex;\n  justify-content: space-between;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\n.subtitle-slider-value[data-v-4d0d9571] {\n  color: var(--color-text-muted);\n  font-variant-numeric: tabular-nums;\n}\n.subtitle-slider input[type="range"][data-v-4d0d9571] {\n  width: 100%;\n  accent-color: var(--color-primary);\n}\n.subtitle-slider input[type="range"][data-v-4d0d9571]:disabled {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n\n/* ── History (LLM generations + versions) ──────────────────────────── */\n.sidebar-section--busy[data-v-4d0d9571] {\n  opacity: 0.6;\n  pointer-events: none;\n}\n.history-list[data-v-4d0d9571] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  margin: 0;\n  padding: 0;\n}\n.history-generation[data-v-4d0d9571] {\n  display: flex;\n  flex-direction: column;\n}\n.history-generation__status--completed[data-v-4d0d9571] {\n  color: var(--color-success, #2e7d32);\n}\n.history-generation__status--error[data-v-4d0d9571] {\n  color: var(--color-danger, #d33);\n}\n.history-generation__status--processing[data-v-4d0d9571],\n.history-generation__status--queued[data-v-4d0d9571] {\n  color: var(--color-primary);\n}\n.history-version-list[data-v-4d0d9571] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  margin: var(--spacing-xs) 0 0 var(--spacing-md);\n  padding: 0;\n  border-left: 1px solid var(--color-border);\n}\n\n/* Nudge nested version rows off the connecting border line. */\n.history-version-list[data-v-4d0d9571] .selectable-list-item {\n  margin-left: var(--spacing-xs);\n}\n@media (max-width: 767px) {\n.speaker-sidebar[data-v-4d0d9571] {\n    border-left: none;\n}\n.sidebar-section--selector[data-v-4d0d9571] {\n    display: none;\n}\n}\n';
-const SpeakerSidebar = /* @__PURE__ */ _export_sfc(_sfc_main$j, [["styles", [_style_0$i]], ["__scopeId", "data-v-4d0d9571"]]);
-const _sfc_main$i = /* @__PURE__ */ defineComponent({
+const _style_0$k = '\n.speaker-sidebar[data-v-4d0d9571] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n  padding: var(--spacing-lg);\n  border-left: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-y: auto;\n}\n.sidebar-section[data-v-4d0d9571] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-sm);\n}\n.sidebar-title[data-v-4d0d9571] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-muted);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n}\n.speaker-list[data-v-4d0d9571] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n}\n.speaker-item[data-v-4d0d9571] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n  transition: background-color var(--transition-duration);\n}\n.speaker-item[data-v-4d0d9571]:hover {\n  background-color: var(--color-surface-hover);\n}\n.speaker-name[data-v-4d0d9571] {\n  flex: 1;\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-primary);\n}\n.subtitle-toggle[data-v-4d0d9571] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n}\n.subtitle-toggle-label[data-v-4d0d9571] {\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\n.voice-playback-hint[data-v-4d0d9571] {\n  padding: 0 var(--spacing-sm);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.voice-playback-hint--warning[data-v-4d0d9571] {\n  color: var(--color-danger);\n}\n.subtitle-slider[data-v-4d0d9571] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-sm);\n}\n.subtitle-slider-label[data-v-4d0d9571] {\n  display: flex;\n  justify-content: space-between;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\n.subtitle-slider-value[data-v-4d0d9571] {\n  color: var(--color-text-muted);\n  font-variant-numeric: tabular-nums;\n}\n.subtitle-slider input[type="range"][data-v-4d0d9571] {\n  width: 100%;\n  accent-color: var(--color-primary);\n}\n.subtitle-slider input[type="range"][data-v-4d0d9571]:disabled {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n\n/* ── History (LLM generations + versions) ──────────────────────────── */\n.sidebar-section--busy[data-v-4d0d9571] {\n  opacity: 0.6;\n  pointer-events: none;\n}\n.history-list[data-v-4d0d9571] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  margin: 0;\n  padding: 0;\n}\n.history-generation[data-v-4d0d9571] {\n  display: flex;\n  flex-direction: column;\n}\n.history-generation__status--completed[data-v-4d0d9571] {\n  color: var(--color-success, #2e7d32);\n}\n.history-generation__status--error[data-v-4d0d9571] {\n  color: var(--color-danger, #d33);\n}\n.history-generation__status--processing[data-v-4d0d9571],\n.history-generation__status--queued[data-v-4d0d9571] {\n  color: var(--color-primary);\n}\n.history-version-list[data-v-4d0d9571] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  margin: var(--spacing-xs) 0 0 var(--spacing-md);\n  padding: 0;\n  border-left: 1px solid var(--color-border);\n}\n\n/* Nudge nested version rows off the connecting border line. */\n.history-version-list[data-v-4d0d9571] .selectable-list-item {\n  margin-left: var(--spacing-xs);\n}\n@media (max-width: 767px) {\n.speaker-sidebar[data-v-4d0d9571] {\n    border-left: none;\n}\n.sidebar-section--selector[data-v-4d0d9571] {\n    display: none;\n}\n}\n';
+const SpeakerSidebar = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["styles", [_style_0$k]], ["__scopeId", "data-v-4d0d9571"]]);
+const _sfc_main$k = /* @__PURE__ */ defineComponent({
   __name: "SidebarDrawer",
   props: {
     "open": { type: Boolean, ...{ required: true } },
@@ -23405,14 +22217,1176 @@ const _sfc_main$i = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _hoisted_1$g = { class: "player-controls" };
-const _hoisted_2$d = { class: "controls-left" };
-const _hoisted_3$a = { class: "controls-time" };
+const _sfc_main$j = /* @__PURE__ */ defineComponent({
+  __name: "CopyButton",
+  props: {
+    icon: { default: "copy", type: String },
+    copyFn: { type: Function },
+    variant: { type: String },
+    size: { type: String },
+    disabled: { type: Boolean },
+    block: { type: Boolean },
+    ariaLabel: { type: String }
+  },
+  setup(__props, { expose: __expose }) {
+    const props = __props;
+    const copied = /* @__PURE__ */ ref(false);
+    let timer;
+    async function onClick() {
+      if (copied.value) return;
+      try {
+        await props.copyFn();
+        copied.value = true;
+        timer = setTimeout(() => {
+          copied.value = false;
+        }, 2e3);
+      } catch (e3) {
+        console.error(e3);
+      }
+    }
+    __expose({
+      reset: () => {
+        copied.value = false;
+        clearTimeout(timer);
+      }
+    });
+    const currentIconName = computed(() => copied.value ? "check" : props.icon);
+    const iconSize = computed(() => ICON_SIZES[props.size ?? "sm"]);
+    return (_ctx, _cache) => {
+      return openBlock(), createBlock(Button, {
+        variant: __props.variant,
+        size: __props.size,
+        disabled: __props.disabled,
+        block: __props.block,
+        "aria-label": __props.ariaLabel,
+        class: normalizeClass({ "copy-btn--copied": copied.value }),
+        onClick
+      }, {
+        icon: withCtx(() => [
+          createVNode(Transition, {
+            name: "copy-icon",
+            mode: "out-in"
+          }, {
+            default: withCtx(() => [
+              (openBlock(), createBlock(EditorIcon, {
+                key: currentIconName.value,
+                name: currentIconName.value,
+                size: iconSize.value
+              }, null, 8, ["name", "size"]))
+            ]),
+            _: 1
+          })
+        ]),
+        default: withCtx(() => [
+          renderSlot(_ctx.$slots, "default", {}, void 0, true)
+        ]),
+        _: 3
+      }, 8, ["variant", "size", "disabled", "block", "aria-label", "class"]);
+    };
+  }
+});
+const _style_0$j = "\n.copy-btn--copied[data-v-0077b14e] {\n  color: var(--color-success, #2e7d32);\n}\n.copy-icon-enter-active[data-v-0077b14e],\n.copy-icon-leave-active[data-v-0077b14e] {\n  transition:\n    opacity var(--transition-duration) ease,\n    scale var(--transition-duration) ease;\n}\n.copy-icon-enter-from[data-v-0077b14e] {\n  opacity: 0;\n  scale: 0.6;\n}\n.copy-icon-leave-to[data-v-0077b14e] {\n  opacity: 0;\n  scale: 0.6;\n}\n@media (prefers-reduced-motion: reduce) {\n.copy-icon-enter-active[data-v-0077b14e],\n  .copy-icon-leave-active[data-v-0077b14e] {\n    transition: none;\n}\n}\n";
+const CopyButton = /* @__PURE__ */ _export_sfc(_sfc_main$j, [["styles", [_style_0$j]], ["__scopeId", "data-v-0077b14e"]]);
+const _hoisted_1$i = ["aria-label"];
+const _hoisted_2$f = { class: "selection-count" };
+const _hoisted_3$c = { class: "selection-actions" };
+const _sfc_main$i = /* @__PURE__ */ defineComponent({
+  __name: "SelectionActionBar",
+  setup(__props) {
+    const selection = useTurnSelection();
+    const { t: t2 } = useI18n();
+    return (_ctx, _cache) => {
+      return unref(selection).hasSelection.value ? (openBlock(), createElementBlock("div", {
+        key: 0,
+        class: "selection-bar",
+        role: "toolbar",
+        "aria-label": unref(t2)("selection.count")
+      }, [
+        createBaseVNode("span", _hoisted_2$f, toDisplayString(unref(selection).count.value) + " " + toDisplayString(unref(t2)("selection.count")), 1),
+        createBaseVNode("div", _hoisted_3$c, [
+          createVNode(CopyButton, {
+            icon: "clipboard-type",
+            "copy-fn": unref(selection).copyText,
+            variant: "secondary"
+          }, {
+            default: withCtx(() => [
+              createTextVNode(toDisplayString(unref(t2)("selection.copyText")), 1)
+            ]),
+            _: 1
+          }, 8, ["copy-fn"]),
+          createVNode(CopyButton, {
+            icon: "clipboard-list",
+            "copy-fn": unref(selection).copyWithMetadata
+          }, {
+            default: withCtx(() => [
+              createTextVNode(toDisplayString(unref(t2)("selection.copyWithMetadata")), 1)
+            ]),
+            _: 1
+          }, 8, ["copy-fn"]),
+          createVNode(Button, {
+            variant: "transparent",
+            icon: "x",
+            onClick: _cache[0] || (_cache[0] = ($event) => unref(selection).clear())
+          }, {
+            default: withCtx(() => [
+              createTextVNode(toDisplayString(unref(t2)("selection.cancel")), 1)
+            ]),
+            _: 1
+          })
+        ])
+      ], 8, _hoisted_1$i)) : createCommentVNode("", true);
+    };
+  }
+});
+const _style_0$i = "\n.selection-bar[data-v-1f9dee3a] {\n  flex-shrink: 0;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-xs) var(--spacing-lg);\n  /* No backdrop-filter: it forces a WebRender backdrop render target sized to\n     the content behind, a heavy GPU-memory cost on long transcripts. The\n     semi-opaque glass background stays legible without the blur. */\n  background: var(--glass-background);\n  border-bottom: 1px solid var(--color-border);\n  animation: bar-slide-down-1f9dee3a var(--transition-duration) ease;\n}\n.selection-count[data-v-1f9dee3a] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-primary);\n}\n.selection-actions[data-v-1f9dee3a] {\n  display: flex;\n  gap: var(--spacing-xs);\n}\n@keyframes bar-slide-down-1f9dee3a {\nfrom {\n    opacity: 0;\n    translate: 0 -4px;\n}\nto {\n    opacity: 1;\n    translate: 0 0;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.selection-bar[data-v-1f9dee3a] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.selection-bar[data-v-1f9dee3a] {\n    padding: var(--spacing-xs) var(--spacing-md);\n    flex-wrap: wrap;\n    gap: var(--spacing-xs);\n}\n}\n";
+const SelectionActionBar = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["styles", [_style_0$i]], ["__scopeId", "data-v-1f9dee3a"]]);
+const MOBILE_BREAKPOINT = "(max-width: 767px)";
+function useIsMobile() {
+  const isMobile = /* @__PURE__ */ ref(false);
+  let mql = null;
+  function onChange(e3) {
+    isMobile.value = e3.matches;
+  }
+  onMounted(() => {
+    mql = window.matchMedia(MOBILE_BREAKPOINT);
+    isMobile.value = mql.matches;
+    mql.addEventListener("change", onChange);
+  });
+  onBeforeUnmount(() => {
+    mql?.removeEventListener("change", onChange);
+  });
+  return { isMobile };
+}
+const _hoisted_1$h = { class: "editor-layout" };
+const _hoisted_2$e = { class: "editor-body" };
+const _hoisted_3$b = {
+  key: 6,
+  class: "mobile-selectors"
+};
+const _sfc_main$h = /* @__PURE__ */ defineComponent({
+  __name: "Layout",
+  props: {
+    showHeader: { type: Boolean, default: true }
+  },
+  setup(__props) {
+    const props = __props;
+    const core = useCore();
+    const { isMobile } = useIsMobile();
+    const isSidebarOpen = /* @__PURE__ */ ref(false);
+    const activeTab = /* @__PURE__ */ ref(TRANSCRIPTION_TAB);
+    const activeTurns = computed(
+      () => core.activeChannel.value?.activeTranslation.value.turns.value ?? []
+    );
+    const speakers = core.speakers.all;
+    provideTurnSelection(activeTurns, speakers, core);
+    const channels = computed(() => [...core.channels.values()]);
+    const translations = computed(
+      () => core.activeChannel.value?.selectableTranslations ?? []
+    );
+    const activeTranslationId = computed(
+      () => core.activeChannel.value?.activeTranslation.value.id ?? ""
+    );
+    const speakerList = computed(() => Array.from(speakers.values()));
+    const showTranscription = computed(() => activeTab.value === TRANSCRIPTION_TAB);
+    const showVerbatim = computed(() => activeTab.value === VERBATIM_TAB);
+    const activeService = computed(() => {
+      if (showTranscription.value || showVerbatim.value) return null;
+      return core.llmServices?.get(activeTab.value) ?? null;
+    });
+    watch(activeTab, (id) => {
+      if (!core.llmServices) return;
+      if (id === TRANSCRIPTION_TAB || id === VERBATIM_TAB) {
+        core.llmServices.setActive(null);
+      } else {
+        core.llmServices.setActive(id);
+      }
+    });
+    watch(
+      () => core.llmServices?.list.value.map((s2) => s2.id).join("|"),
+      () => {
+        if (activeTab.value !== TRANSCRIPTION_TAB && activeTab.value !== VERBATIM_TAB && !core.llmServices?.get(activeTab.value)) {
+          activeTab.value = TRANSCRIPTION_TAB;
+        }
+      }
+    );
+    watch(
+      () => core.activeChannelId.value,
+      () => {
+        core.audio?.pause();
+        if (core.audio) {
+          core.audio.currentTime.value = 0;
+          core.audio.isPlaying.value = false;
+        }
+        isSidebarOpen.value = false;
+      }
+    );
+    watch(showTranscription, (visible) => {
+      if (!visible) core.audio?.pause();
+    });
+    function onChannelChange(channelId) {
+      core.setActiveChannel(channelId);
+    }
+    function onTranslationChange(translationId) {
+      core.activeChannel.value?.setActiveTranslation(translationId);
+    }
+    return (_ctx, _cache) => {
+      return openBlock(), createElementBlock("div", _hoisted_1$h, [
+        props.showHeader ? (openBlock(), createBlock(Header, {
+          key: 0,
+          title: unref(core).title.value,
+          date: unref(core).date.value,
+          duration: unref(core).activeChannel.value?.duration ?? 0,
+          "speaker-count": unref(speakers).size,
+          "is-mobile": unref(isMobile),
+          "can-ask": !!unref(core).chat,
+          onToggleSidebar: _cache[0] || (_cache[0] = ($event) => isSidebarOpen.value = !isSidebarOpen.value),
+          onOpenChat: _cache[1] || (_cache[1] = ($event) => unref(core).chat?.setDrawerOpen(true))
+        }, null, 8, ["title", "date", "duration", "speaker-count", "is-mobile", "can-ask"])) : createCommentVNode("", true),
+        createVNode(_sfc_main$J, {
+          modelValue: activeTab.value,
+          "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => activeTab.value = $event)
+        }, null, 8, ["modelValue"]),
+        showTranscription.value ? (openBlock(), createBlock(SelectionActionBar, { key: 1 })) : createCommentVNode("", true),
+        createBaseVNode("main", _hoisted_2$e, [
+          showTranscription.value ? (openBlock(), createBlock(TranscriptionPanel, {
+            key: 0,
+            turns: activeTurns.value,
+            speakers: unref(speakers)
+          }, null, 8, ["turns", "speakers"])) : showVerbatim.value ? (openBlock(), createBlock(VerbatimPanel, { key: 1 })) : activeService.value ? (openBlock(), createBlock(resolveDynamicComponent(unref(core).components.llmServicePanel), {
+            key: activeService.value.id,
+            service: activeService.value
+          }, null, 8, ["service"])) : (openBlock(), createBlock(TranscriptionPanel, {
+            key: 3,
+            turns: activeTurns.value,
+            speakers: unref(speakers)
+          }, null, 8, ["turns", "speakers"])),
+          !unref(isMobile) ? (openBlock(), createBlock(SpeakerSidebar, {
+            key: 4,
+            speakers: speakerList.value,
+            channels: channels.value,
+            "selected-channel-id": unref(core).activeChannelId.value,
+            translations: translations.value,
+            "selected-translation-id": activeTranslationId.value,
+            "show-speakers": showTranscription.value,
+            "onUpdate:selectedChannelId": onChannelChange,
+            "onUpdate:selectedTranslationId": onTranslationChange
+          }, null, 8, ["speakers", "channels", "selected-channel-id", "translations", "selected-translation-id", "show-speakers"])) : createCommentVNode("", true),
+          unref(isMobile) ? (openBlock(), createBlock(_sfc_main$k, {
+            key: 5,
+            open: isSidebarOpen.value,
+            "onUpdate:open": _cache[3] || (_cache[3] = ($event) => isSidebarOpen.value = $event)
+          }, {
+            default: withCtx(() => [
+              createVNode(SpeakerSidebar, {
+                speakers: speakerList.value,
+                channels: channels.value,
+                "selected-channel-id": unref(core).activeChannelId.value,
+                translations: translations.value,
+                "selected-translation-id": activeTranslationId.value,
+                "show-speakers": showTranscription.value,
+                "onUpdate:selectedChannelId": onChannelChange,
+                "onUpdate:selectedTranslationId": onTranslationChange
+              }, null, 8, ["speakers", "channels", "selected-channel-id", "translations", "selected-translation-id", "show-speakers"])
+            ]),
+            _: 1
+          }, 8, ["open"])) : createCommentVNode("", true)
+        ]),
+        unref(core).audio?.src.value ? withDirectives((openBlock(), createBlock(resolveDynamicComponent(unref(core).components.player), {
+          key: 2,
+          "audio-src": unref(core).audio.src.value
+        }, null, 8, ["audio-src"])), [
+          [vShow, showTranscription.value]
+        ]) : createCommentVNode("", true),
+        unref(core).subtitle?.isVisible.value && !unref(isMobile) && !unref(core).subtitle.isFullscreen.value ? (openBlock(), createBlock(resolveDynamicComponent(unref(core).components.subtitleBanner), { key: 3 })) : createCommentVNode("", true),
+        unref(core).subtitle?.isFullscreen.value ? (openBlock(), createBlock(resolveDynamicComponent(unref(core).components.subtitleFullscreen), { key: 4 })) : createCommentVNode("", true),
+        unref(core).chat ? (openBlock(), createBlock(resolveDynamicComponent(unref(core).components.chatDrawer), { key: 5 })) : createCommentVNode("", true),
+        unref(isMobile) && (channels.value.length > 1 || translations.value.length > 1) ? (openBlock(), createElementBlock("div", _hoisted_3$b, [
+          channels.value.length > 1 ? (openBlock(), createBlock(_sfc_main$n, {
+            key: 0,
+            channels: channels.value,
+            "selected-channel-id": unref(core).activeChannelId.value,
+            "onUpdate:selectedChannelId": onChannelChange
+          }, null, 8, ["channels", "selected-channel-id"])) : createCommentVNode("", true),
+          translations.value.length > 1 ? (openBlock(), createBlock(_sfc_main$m, {
+            key: 1,
+            translations: translations.value,
+            "selected-translation-id": activeTranslationId.value,
+            "onUpdate:selectedTranslationId": onTranslationChange
+          }, null, 8, ["translations", "selected-translation-id"])) : createCommentVNode("", true)
+        ])) : createCommentVNode("", true)
+      ]);
+    };
+  }
+});
+const _style_0$h = "\n.editor-layout[data-v-88a8e0cd] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: hidden;\n  background-color: var(--color-background);\n}\n.editor-body[data-v-88a8e0cd] {\n  display: grid;\n  grid-template-columns: 1fr var(--sidebar-width);\n  flex: 1;\n  min-height: 0;\n}\n.mobile-selectors[data-v-88a8e0cd] {\n  display: flex;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n  box-shadow: var(--shadow-md);\n  align-items: end;\n}\n.mobile-selectors[data-v-88a8e0cd] > * {\n  flex: 1;\n  min-width: 0;\n}\n@media (max-width: 767px) {\n.editor-body[data-v-88a8e0cd] {\n    grid-template-columns: 1fr;\n}\n}\n";
+const Layout = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["styles", [_style_0$h]], ["__scopeId", "data-v-88a8e0cd"]]);
+const _hoisted_1$g = {
+  class: "editor-loading",
+  role: "status",
+  "aria-live": "polite"
+};
+const _hoisted_2$d = { class: "editor-loading__label" };
+const _sfc_main$g = /* @__PURE__ */ defineComponent({
+  __name: "EditorLoadingOverlay",
+  setup(__props) {
+    const { t: t2 } = useI18n();
+    return (_ctx, _cache) => {
+      return openBlock(), createElementBlock("div", _hoisted_1$g, [
+        _cache[0] || (_cache[0] = createBaseVNode("span", {
+          class: "editor-loading__spinner",
+          "aria-hidden": "true"
+        }, null, -1)),
+        createBaseVNode("span", _hoisted_2$d, toDisplayString(unref(t2)("editor.loading")), 1)
+      ]);
+    };
+  }
+});
+const _style_0$g = "\n.editor-loading[data-v-07ad7ab4] {\n  position: absolute;\n  inset: 0;\n  z-index: 20;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  /* Opaque so the half-built layout never flashes behind while collab syncs.\n     No backdrop-filter: it is banned in this package (WebRender GTT freeze). */\n  background-color: var(--color-background);\n  color: var(--color-text-secondary);\n  font-family: var(--font-family);\n  font-size: var(--font-size-sm);\n}\n.editor-loading__spinner[data-v-07ad7ab4] {\n  width: 32px;\n  height: 32px;\n  border: 3px solid var(--color-border);\n  border-top-color: var(--color-primary);\n  border-radius: 50%;\n  animation: editor-loading-spin-07ad7ab4 0.8s linear infinite;\n}\n@keyframes editor-loading-spin-07ad7ab4 {\nto {\n    transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.editor-loading__spinner[data-v-07ad7ab4] {\n    animation: none;\n}\n}\n";
+const EditorLoadingOverlay = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["styles", [_style_0$g]], ["__scopeId", "data-v-07ad7ab4"]]);
+const _hoisted_1$f = {
+  class: "editor-error",
+  role: "alert"
+};
+const _hoisted_2$c = { class: "editor-error__title" };
+const _hoisted_3$a = {
+  key: 0,
+  class: "editor-error__detail"
+};
+const _sfc_main$f = /* @__PURE__ */ defineComponent({
+  __name: "EditorErrorOverlay",
+  props: {
+    message: { type: [String, null] }
+  },
+  setup(__props) {
+    const { t: t2 } = useI18n();
+    return (_ctx, _cache) => {
+      return openBlock(), createElementBlock("div", _hoisted_1$f, [
+        createVNode(EditorIcon, {
+          name: "warning",
+          size: 40,
+          class: "editor-error__icon"
+        }),
+        createBaseVNode("p", _hoisted_2$c, toDisplayString(unref(t2)("editor.loadError")), 1),
+        __props.message ? (openBlock(), createElementBlock("p", _hoisted_3$a, toDisplayString(__props.message), 1)) : createCommentVNode("", true)
+      ]);
+    };
+  }
+});
+const _style_0$f = "\n.editor-error[data-v-5f00d5aa] {\n  position: absolute;\n  inset: 0;\n  z-index: 20;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-xl);\n  text-align: center;\n  /* Opaque so the half-built layout never shows behind. No backdrop-filter:\n     it is banned in this package (WebRender GTT freeze). */\n  background-color: var(--color-background);\n  font-family: var(--font-family);\n}\n.editor-error__icon[data-v-5f00d5aa] {\n  color: var(--color-danger);\n}\n.editor-error__title[data-v-5f00d5aa] {\n  margin: 0;\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.editor-error__detail[data-v-5f00d5aa] {\n  margin: 0;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-muted);\n}\n";
+const EditorErrorOverlay = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["styles", [_style_0$f]], ["__scopeId", "data-v-5f00d5aa"]]);
+const READY_TIMEOUT_MS = 2e4;
+function useEditorReady(core) {
+  const isLoading = /* @__PURE__ */ ref(true);
+  const error = /* @__PURE__ */ ref(null);
+  let timer;
+  function clearTimer() {
+    if (timer !== void 0) {
+      clearTimeout(timer);
+      timer = void 0;
+    }
+  }
+  function settle() {
+    isLoading.value = false;
+    clearTimer();
+  }
+  function reset() {
+    error.value = null;
+    if (core.channels.size > 0) {
+      settle();
+      return;
+    }
+    isLoading.value = true;
+    clearTimer();
+    timer = setTimeout(settle, READY_TIMEOUT_MS);
+  }
+  const offDocChange = core.on("document:change", reset);
+  reset();
+  onScopeDispose(() => {
+    offDocChange();
+    clearTimer();
+  });
+  return { isLoading, error };
+}
+const _hoisted_1$e = { class: "editor-root" };
+const _sfc_main$e = /* @__PURE__ */ defineComponent({
+  __name: "WebComponent",
+  props: {
+    locale: { default: "fr", type: String },
+    noHeader: { type: Boolean, default: false }
+  },
+  setup(__props, { expose: __expose }) {
+    const props = __props;
+    const locale = /* @__PURE__ */ ref(props.locale);
+    provideI18n(locale);
+    watch(
+      () => props.locale,
+      (val) => {
+        locale.value = val;
+      }
+    );
+    const core = createCore();
+    provideCore(core);
+    const { isLoading, error } = useEditorReady(core);
+    onBeforeUnmount(() => core.destroy());
+    __expose({ core });
+    return (_ctx, _cache) => {
+      return openBlock(), createElementBlock("div", _hoisted_1$e, [
+        unref(core).channels.size ? (openBlock(), createBlock(Layout, {
+          key: 0,
+          "show-header": !props.noHeader
+        }, null, 8, ["show-header"])) : createCommentVNode("", true),
+        unref(error) ? (openBlock(), createBlock(EditorErrorOverlay, {
+          key: 1,
+          message: unref(error)
+        }, null, 8, ["message"])) : unref(isLoading) ? (openBlock(), createBlock(EditorLoadingOverlay, { key: 2 })) : createCommentVNode("", true)
+      ]);
+    };
+  }
+});
+const _style_0$e = `/*
+ * Design tokens
+ *
+ * Public theming API — these CSS custom properties can be overridden from
+ * outside the web component by setting them on the <linto-editor> element:
+ *
+ *   linto-editor {
+ *     --color-primary: #e63946;
+ *     --color-background: #fafafa;
+ *   }
+ *
+ * Colors:
+ *   --color-primary          Accent / brand color
+ *   --color-primary-hover    Primary hover state
+ *   --color-background       Page background
+ *   --color-surface          Cards, panels, player
+ *   --color-surface-hover    Hover on surfaces
+ *   --color-text-primary     Main text
+ *   --color-text-secondary   Secondary text (timestamps…)
+ *   --color-text-muted       Muted text (labels)
+ *   --color-border           Borders
+ *   --color-border-light     Light borders
+ *
+ * Typography, spacing, radius, and shadows are also overridable.
+ */
+:root,
+:host {
+  /* Colors — light theme */
+  --color-background: #f8f9fa;
+  --color-surface: #ffffff;
+  --color-surface-hover: #f1f3f5;
+  --color-text-primary: #1a1d21;
+  --color-text-secondary: #495057;
+  --color-text-muted: #6c757d;
+  --color-primary: #4263eb;
+  --color-primary-hover: #3b5bdb;
+  --color-border: #dee2e6;
+  --color-border-light: #e9ecef;
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-danger: #e53935;
+  --color-danger-hover: #c62828;
+  --color-danger-soft: #fdecea;
+
+  /* Typography */
+  --font-family:
+    "Atkinson Hyperlegible Next", system-ui, -apple-system, sans-serif;
+  --font-family-mono: "Atkinson Hyperlegible Mono", ui-monospace, monospace;
+  --font-size-xs: 0.875rem;
+  --font-size-sm: 1rem;
+  --font-size-base: 1.125rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.75rem;
+  --line-height: 1.6;
+
+  /* Spacing */
+  --spacing-xxs: 0.125rem;
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Layout */
+  --sidebar-width: 300px;
+  --header-height: 56px;
+
+  /* Shadows */
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
+
+  /* Transitions */
+  --transition-duration: 150ms;
+
+  /* Z-index scale */
+  --z-sticky: 10;
+  --z-overlay: 50;
+  --z-drawer: 1000;
+  --z-dropdown: 1100;
+
+  /* Glass effect — backdrop blur intentionally removed: each backdrop-filter
+     forces a WebRender render target, which on long transcripts (one waveform
+     region per turn, tall scroll container) balloons GPU memory to several GB
+     and freezes weaker machines. Keep the semi-opaque background only. */
+  --glass-background: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.3);
+}
+:host,
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height);
+  color: var(--color-text-primary);
+  background-color: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+:host {
+  display: block;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Dev mode SPA (ignored in Shadow DOM — these elements don't exist) */
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+#app {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Overlay (shared by sidebar drawer + sheet select) */
+.editor-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: var(--z-overlay);
+  animation: overlay-fade-in 200ms ease;
+}
+
+/* Drawer mobile (sidebar) */
+.sidebar-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(320px, 85vw);
+  z-index: var(--z-drawer);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-md);
+  animation: drawer-slide-in 250ms ease;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.sidebar-close {
+  position: absolute;
+  top: var(--spacing-sm);
+  right: var(--spacing-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: none;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  z-index: 1;
+}
+.sidebar-close:hover {
+  background-color: var(--color-surface-hover);
+  color: var(--color-text-primary);
+}
+
+/* Keyframes */
+@keyframes overlay-fade-in {
+from {
+    opacity: 0;
+}
+to {
+    opacity: 1;
+}
+}
+@keyframes drawer-slide-in {
+from {
+    translate: 100% 0;
+}
+to {
+    translate: 0 0;
+}
+}
+@media (prefers-reduced-motion: reduce) {
+.editor-overlay,
+  .sidebar-drawer {
+    animation: none;
+}
+}
+
+/* Wavesurfer ::part (cannot work in scoped styles) */
+
+/* No backdrop-filter: there is one region per turn (hundreds on a long
+   transcript), and each backdrop-filter forces a separate WebRender backdrop
+   render target — on a multi-hour document this balloons GPU/GTT memory to
+   several GB and freezes weaker machines. The border/shadow alone read fine. */
+.waveform-container ::part(region) {
+  border-top: 2px solid var(--region-color, rgba(255, 255, 255, 0.4));
+  border-bottom: 1px solid var(--region-color, rgba(255, 255, 255, 0.4));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Turn nodes use \`content-visibility: auto\` for long-document perf, which
+   implies paint containment and clips any overflow to the turn's box. The
+   speaker popover floats out of the turn, so it gets cut off at the turn's
+   bottom edge. While its trigger is open (Reka sets data-state="open"), drop
+   the containment on that turn so the popover can overflow freely. The turn is
+   on-screen when open, so lifting content-visibility causes no layout shift.
+   Global (not scoped) because the open trigger is rendered by another
+   component, so a scoped :has() selector would not match it. */
+section.turn:has([data-state="open"]) {
+  content-visibility: visible;
+}
+
+/* Shared surface and row styles for PopoverList and similar anchored panels.
+   Kept global because Reka portals render outside the component's scoped
+   CSS boundary. */
+.popover-list {
+  min-width: 180px;
+  padding: var(--spacing-xs);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px
+    color-mix(in srgb, var(--color-text-primary) 15%, transparent);
+  z-index: 50;
+}
+.popover-list__items {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  max-height: 280px;
+  overflow-y: auto;
+}
+.popover-list__item {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+.popover-list__item:hover,
+.popover-list__item[data-highlighted] {
+  background-color: var(--color-surface-hover);
+}
+.popover-list__item:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+.popover-list__item--current {
+  background-color: color-mix(
+    in srgb,
+    var(--color-primary) 10%,
+    transparent
+  );
+}
+.popover-list__divider {
+  height: 1px;
+  background-color: var(--color-border);
+  margin: var(--spacing-xs) 0;
+}
+.popover-list__footer {
+  padding: var(--spacing-xs);
+}
+
+/* Positioning context for the absolute loading overlay. */
+.editor-root {
+  position: relative;
+  height: 100%;
+}
+`;
+const WebComponent = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["styles", [_style_0$e]]]);
+const fontsStyles = '/* Atkinson Hyperlegible Next — main font */\n@font-face {\n  font-family: "Atkinson Hyperlegible Next";\n  font-style: normal;\n  font-weight: 400;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleNext-Regular.woff2") format("woff2");\n}\n@font-face {\n  font-family: "Atkinson Hyperlegible Next";\n  font-style: normal;\n  font-weight: 500;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleNext-Medium.woff2") format("woff2");\n}\n@font-face {\n  font-family: "Atkinson Hyperlegible Next";\n  font-style: normal;\n  font-weight: 600;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleNext-SemiBold.woff2") format("woff2");\n}\n@font-face {\n  font-family: "Atkinson Hyperlegible Next";\n  font-style: normal;\n  font-weight: 700;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleNext-Bold.woff2") format("woff2");\n}\n\n/* Atkinson Hyperlegible Mono — monospace font */\n@font-face {\n  font-family: "Atkinson Hyperlegible Mono";\n  font-style: normal;\n  font-weight: 400;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleMono-Regular.woff2") format("woff2");\n}\n@font-face {\n  font-family: "Atkinson Hyperlegible Mono";\n  font-style: normal;\n  font-weight: 500;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleMono-Medium.woff2") format("woff2");\n}\n';
+const prismTheme = `/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+`;
+const TTS_SUPPORTED = typeof window !== "undefined" && "speechSynthesis" in window;
+function isTTSSupported() {
+  return TTS_SUPPORTED;
+}
+function hasVoices() {
+  return TTS_SUPPORTED && window.speechSynthesis.getVoices().length > 0;
+}
+function findVoice(lang) {
+  if (!TTS_SUPPORTED || !lang || lang === "*") return null;
+  const norm = lang.toLowerCase();
+  const base = norm.split("-")[0];
+  const voices = window.speechSynthesis.getVoices();
+  const exact = voices.find((v2) => v2.lang.toLowerCase() === norm);
+  if (exact) return exact;
+  return voices.find((v2) => v2.lang.toLowerCase().split("-")[0] === base) ?? null;
+}
+function speakText(text2, lang) {
+  if (!isTTSSupported()) return;
+  const clean = text2.trim();
+  if (!clean) return;
+  const utterance = new SpeechSynthesisUtterance(clean);
+  const voice = lang ? findVoice(lang) : null;
+  if (voice) {
+    utterance.voice = voice;
+    utterance.lang = voice.lang;
+  }
+  window.speechSynthesis.speak(utterance);
+}
+function unlockTTS() {
+  if (!isTTSSupported()) return;
+  window.speechSynthesis.speak(new SpeechSynthesisUtterance(" "));
+}
+function stopTTS() {
+  if (isTTSSupported()) window.speechSynthesis.cancel();
+}
+function finalEventToSourceTurn(event) {
+  const hasWords = event.words.length > 0;
+  return {
+    id: event.turnId,
+    speakerId: event.speakerId,
+    text: hasWords ? null : event.text ?? null,
+    words: event.words,
+    startTime: event.startTime,
+    endTime: event.endTime,
+    startDate: event.startDate,
+    endDate: event.endDate,
+    language: event.language,
+    sourceLanguage: event.language
+  };
+}
+function finalEventToTranslationTurn(event, tr) {
+  return {
+    id: event.turnId,
+    speakerId: event.speakerId,
+    text: tr.text,
+    words: [],
+    startTime: event.startTime,
+    endTime: event.endTime,
+    startDate: event.startDate,
+    endDate: event.endDate,
+    language: tr.language,
+    sourceLanguage: tr.sourceLanguage
+  };
+}
+function createLivePlugin(options = {}) {
+  const ttsAvailable = options.tts ?? false;
+  return {
+    name: "live",
+    install(core) {
+      const partial = /* @__PURE__ */ shallowRef(null);
+      const hasLiveUpdate = /* @__PURE__ */ ref(false);
+      const ttsEnabled = /* @__PURE__ */ ref(false);
+      const ttsSupported = isTTSSupported();
+      const ttsReady = /* @__PURE__ */ ref(false);
+      function refreshTTSReady() {
+        ttsReady.value = hasVoices();
+      }
+      if (ttsSupported) {
+        refreshTTSReady();
+        window.speechSynthesis.addEventListener("voiceschanged", refreshTTSReady);
+      }
+      let lastOriginalPartialEvent = null;
+      hasLiveUpdate.value = true;
+      function clearPartial() {
+        partial.value = null;
+        lastOriginalPartialEvent = null;
+      }
+      function isTranslationTrackFor(active, language) {
+        if (active.isSource) return false;
+        return active.languages.some((l4) => isSameLanguage(l4, language));
+      }
+      function onPartial(event, channelId) {
+        if (core.activeChannelId.value !== channelId) return;
+        const channel = core.activeChannel.value;
+        if (!channel) return;
+        lastOriginalPartialEvent = event;
+        const activeTranslation = channel.activeTranslation.value;
+        if (activeTranslation.isSource && event.text != null) {
+          partial.value = event.text;
+        }
+      }
+      let clearPartialTimeout = null;
+      function deferredClearPartial() {
+        if (clearPartialTimeout !== null) return;
+        clearPartialTimeout = setTimeout(() => {
+          clearPartialTimeout = null;
+          clearPartial();
+        }, 150);
+      }
+      function cancelDeferredClear() {
+        if (clearPartialTimeout !== null) {
+          clearTimeout(clearPartialTimeout);
+          clearPartialTimeout = null;
+        }
+      }
+      function updateOrCreateTurn(store, turn) {
+        if (store.hasTurn(turn.id)) store.updateTurn(turn.id, turn);
+        else store.addTurn(turn);
+      }
+      function onFinal(event, channelId) {
+        if (event.speakerId) core.speakers.ensure(event.speakerId);
+        const channel = core.channels.get(channelId);
+        if (!channel) {
+          immediateClearPartial();
+          return;
+        }
+        if (event.text != null) {
+          updateOrCreateTurn(
+            channel.sourceTranslation,
+            finalEventToSourceTurn(event)
+          );
+        }
+        if (event.translations) {
+          for (const tr of event.translations) {
+            const trStore = channel.translations.get(tr.translationId);
+            if (trStore)
+              updateOrCreateTurn(
+                trStore,
+                finalEventToTranslationTurn(event, {
+                  ...tr,
+                  sourceLanguage: event.language
+                })
+              );
+          }
+        }
+        const active = core.activeChannel.value?.activeTranslation.value;
+        if (active?.isSource) {
+          immediateClearPartial();
+        }
+        if (ttsEnabled.value && active?.isSource && event.text != null && core.activeChannelId.value === channelId) {
+          speakText(event.text, event.language);
+        }
+      }
+      function prependFinal(event, channelId) {
+        prependFinalBatch([event], channelId);
+      }
+      function prependFinalBatch(events, channelId) {
+        const channel = core.channels.get(channelId);
+        if (!channel) return;
+        const seen = /* @__PURE__ */ new Set();
+        for (const event of events) {
+          if (event.speakerId && !seen.has(event.speakerId)) {
+            seen.add(event.speakerId);
+            core.speakers.ensure(event.speakerId);
+          }
+        }
+        const sourceTurns = [];
+        for (const event of events) {
+          if (event.text != null) {
+            sourceTurns.push(finalEventToSourceTurn(event));
+          }
+        }
+        if (sourceTurns.length > 0) {
+          channel.sourceTranslation.prependTurns(sourceTurns);
+        }
+        const translationTurns = /* @__PURE__ */ new Map();
+        for (const event of events) {
+          if (!event.translations) continue;
+          for (const tr of event.translations) {
+            let list = translationTurns.get(tr.translationId);
+            if (!list) {
+              list = [];
+              translationTurns.set(tr.translationId, list);
+            }
+            list.push(
+              finalEventToTranslationTurn(event, {
+                ...tr,
+                sourceLanguage: event.language
+              })
+            );
+          }
+        }
+        for (const [translationId, turns] of translationTurns) {
+          const trStore = channel.translations.get(translationId);
+          if (trStore) trStore.prependTurns(turns);
+        }
+      }
+      function immediateClearPartial() {
+        cancelDeferredClear();
+        clearPartial();
+      }
+      function onTranslation(_event) {
+        const channel = core.activeChannel.value;
+        if (!channel) return;
+        const activeTranslation = channel.activeTranslation.value;
+        if (!_event.final) {
+          if (activeTranslation.id === CROSS_TRANSLATION_ID) {
+            if (_event.turnId === lastOriginalPartialEvent?.turnId && !isSameLanguage(
+              _event.language,
+              lastOriginalPartialEvent?.language
+            )) {
+              partial.value = _event.text;
+            }
+          } else if (isTranslationTrackFor(activeTranslation, _event.language)) {
+            partial.value = _event.text;
+          }
+          return;
+        }
+        const trStore = channel.translations.get(_event.language);
+        if (trStore) {
+          const turn = finalEventToTranslationTurn(
+            { ..._event },
+            _event
+          );
+          if (trStore === activeTranslation || activeTranslation.id === CROSS_TRANSLATION_ID) {
+            updateOrCreateTurn(trStore, turn);
+          } else {
+            trStore.updateOrCreateTurnSilent(turn);
+          }
+        }
+        if (isTranslationTrackFor(activeTranslation, _event.language) || activeTranslation.id === CROSS_TRANSLATION_ID) {
+          immediateClearPartial();
+          if (ttsEnabled.value && _event.text) {
+            speakText(_event.text, _event.language);
+          }
+        }
+      }
+      function enableTTS() {
+        ttsEnabled.value = true;
+        unlockTTS();
+      }
+      function disableTTS() {
+        ttsEnabled.value = false;
+        stopTTS();
+      }
+      const api = {
+        partial,
+        hasLiveUpdate,
+        ttsAvailable,
+        ttsEnabled,
+        ttsReady,
+        enableTTS,
+        disableTTS,
+        onPartial,
+        onFinal,
+        prependFinal,
+        prependFinalBatch,
+        onTranslation
+      };
+      const unsubChannelChange = core.on(
+        "channel:change",
+        immediateClearPartial
+      );
+      const unsubTranslationChange = core.on(
+        "translation:change",
+        immediateClearPartial
+      );
+      const unsubTranslationSync = core.on(
+        "translation:sync",
+        deferredClearPartial
+      );
+      const unsubChannelSync = core.on("channel:sync", deferredClearPartial);
+      core.live = api;
+      return () => {
+        immediateClearPartial();
+        stopTTS();
+        if (ttsSupported) {
+          window.speechSynthesis.removeEventListener(
+            "voiceschanged",
+            refreshTTSReady
+          );
+        }
+        unsubChannelChange();
+        unsubTranslationChange();
+        unsubTranslationSync();
+        unsubChannelSync();
+        core.live = void 0;
+      };
+    }
+  };
+}
+const _hoisted_1$d = { class: "player-controls" };
+const _hoisted_2$b = { class: "controls-left" };
+const _hoisted_3$9 = { class: "controls-time" };
 const _hoisted_4$4 = { class: "time-display" };
 const _hoisted_5$4 = { class: "time-display" };
 const _hoisted_6$4 = { class: "controls-right" };
 const _hoisted_7$1 = ["value", "aria-label", "disabled"];
-const _sfc_main$h = /* @__PURE__ */ defineComponent({
+const _sfc_main$d = /* @__PURE__ */ defineComponent({
   __name: "AudioPlayerControls",
   props: {
     isPlaying: { type: Boolean },
@@ -23433,8 +23407,8 @@ const _sfc_main$h = /* @__PURE__ */ defineComponent({
       emit2("update:volume", parseFloat(target.value));
     }
     return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("div", _hoisted_1$g, [
-        createBaseVNode("div", _hoisted_2$d, [
+      return openBlock(), createElementBlock("div", _hoisted_1$d, [
+        createBaseVNode("div", _hoisted_2$b, [
           createVNode(Button, {
             variant: "transparent",
             size: "md",
@@ -23481,7 +23455,7 @@ const _sfc_main$h = /* @__PURE__ */ defineComponent({
             _: 1
           }, 8, ["aria-label", "disabled"])
         ]),
-        createBaseVNode("div", _hoisted_3$a, [
+        createBaseVNode("div", _hoisted_3$9, [
           createBaseVNode("time", _hoisted_4$4, toDisplayString(__props.currentTime), 1),
           _cache[7] || (_cache[7] = createBaseVNode("span", { class: "time-separator" }, "/", -1)),
           createBaseVNode("time", _hoisted_5$4, toDisplayString(__props.duration), 1)
@@ -23542,8 +23516,8 @@ const _sfc_main$h = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$h = "\n.player-controls[data-v-99f700b1] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xs) var(--spacing-lg);\n  height: 44px;\n}\n.controls-left[data-v-99f700b1] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n}\n.controls-time[data-v-99f700b1] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xxs);\n  font-family: var(--font-family-mono);\n  font-size: var(--font-size-sm);\n  color: var(--color-text-muted);\n  user-select: none;\n}\n.time-separator[data-v-99f700b1] {\n  color: var(--color-text-muted);\n  opacity: 0.5;\n}\n.controls-right[data-v-99f700b1] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  margin-left: auto;\n}\n.volume-group[data-v-99f700b1] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n}\n.volume-slider[data-v-99f700b1] {\n  width: 80px;\n  height: 4px;\n  accent-color: var(--color-primary);\n  cursor: pointer;\n}\n.volume-slider[data-v-99f700b1]:disabled {\n  opacity: 0.5;\n  cursor: default;\n}\n.play-button[data-v-99f700b1] {\n  width: 40px;\n  height: 40px;\n}\n.speed-button[data-v-99f700b1] {\n  font-size: var(--font-size-sm);\n  font-family: var(--font-family-mono);\n}\n@media (max-width: 767px) {\n.skip-button[data-v-99f700b1] {\n    display: none;\n}\n.volume-slider[data-v-99f700b1] {\n    display: none;\n}\n.player-controls[data-v-99f700b1] {\n    padding: var(--spacing-xs) var(--spacing-md);\n    gap: var(--spacing-sm);\n}\n}\n";
-const AudioPlayerControls = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["styles", [_style_0$h]], ["__scopeId", "data-v-99f700b1"]]);
+const _style_0$d = "\n.player-controls[data-v-c1fa47b1] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xs) var(--spacing-lg);\n  height: 44px;\n}\n.controls-left[data-v-c1fa47b1] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n}\n.controls-time[data-v-c1fa47b1] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xxs);\n  font-family: var(--font-family-mono);\n  font-size: var(--font-size-sm);\n  color: var(--color-text-muted);\n  user-select: none;\n}\n.time-separator[data-v-c1fa47b1] {\n  color: var(--color-text-muted);\n  opacity: 0.5;\n}\n.controls-right[data-v-c1fa47b1] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  margin-left: auto;\n}\n.volume-group[data-v-c1fa47b1] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n}\n.volume-slider[data-v-c1fa47b1] {\n  width: 80px;\n  height: 4px;\n  accent-color: var(--color-primary);\n  cursor: pointer;\n}\n.volume-slider[data-v-c1fa47b1]:disabled {\n  opacity: 0.5;\n  cursor: default;\n}\n.play-button[data-v-c1fa47b1] {\n  width: 40px;\n  height: 40px;\n}\n.speed-button[data-v-c1fa47b1] {\n  font-size: var(--font-size-sm);\n  font-family: var(--font-family-mono);\n}\n@media (max-width: 767px) {\n.skip-button[data-v-c1fa47b1] {\n    display: none;\n}\n.volume-slider[data-v-c1fa47b1] {\n    display: none;\n}\n.player-controls[data-v-c1fa47b1] {\n    padding: var(--spacing-xs) var(--spacing-md);\n    gap: var(--spacing-sm);\n}\n}\n";
+const AudioPlayerControls = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["styles", [_style_0$d]], ["__scopeId", "data-v-c1fa47b1"]]);
 function t$1(t2, e3, i2, n2) {
   return new (i2 || (i2 = Promise))((function(s2, r2) {
     function o2(t3) {
@@ -24310,7 +24284,7 @@ class C extends e$1 {
     this.stop();
   }
 }
-class S extends e$1 {
+class S2 extends e$1 {
   constructor(t2 = new AudioContext()) {
     super(), this.bufferNode = null, this.playStartTime = 0, this.playedDuration = 0, this._muted = false, this._playbackRate = 1, this._duration = void 0, this.buffer = null, this.currentSrc = "", this.paused = true, this.crossOrigin = null, this.seeking = false, this.autoplay = false, this.addEventListener = this.on, this.removeEventListener = this.un, this.audioContext = t2, this.gainNode = this.audioContext.createGain(), this.gainNode.connect(this.audioContext.destination);
   }
@@ -24431,9 +24405,9 @@ class S extends e$1 {
   }
 }
 const E = { waveColor: "#999", progressColor: "#555", cursorWidth: 1, minPxPerSec: 0, fillParent: true, interact: true, dragToSeek: false, autoScroll: true, autoCenter: true, sampleRate: 8e3 };
-class w2 extends u {
+class w extends u {
   static create(t2) {
-    return new w2(t2);
+    return new w(t2);
   }
   getState() {
     return this.wavesurferState;
@@ -24442,12 +24416,12 @@ class w2 extends u {
     return this.renderer;
   }
   constructor(t2) {
-    const e3 = t2.media || ("WebAudio" === t2.backend ? new S() : void 0);
+    const e3 = t2.media || ("WebAudio" === t2.backend ? new S2() : void 0);
     super({ media: e3, mediaControls: t2.mediaControls, autoplay: t2.autoplay, playbackRate: t2.audioRate }), this.plugins = [], this.decodedData = null, this.stopAtPosition = null, this.subscriptions = [], this.mediaSubscriptions = [], this.abortController = null, this.reactiveCleanups = [], this.options = Object.assign({}, E, t2);
     const { state: i2, actions: n2 } = (function(t3) {
       var e4, i3, n3, s3, r3, o2;
-      const h2 = null !== (e4 = null == t3 ? void 0 : t3.currentTime) && void 0 !== e4 ? e4 : a$1(0), u2 = null !== (i3 = null == t3 ? void 0 : t3.duration) && void 0 !== i3 ? i3 : a$1(0), c2 = null !== (n3 = null == t3 ? void 0 : t3.isPlaying) && void 0 !== n3 ? n3 : a$1(false), d2 = null !== (s3 = null == t3 ? void 0 : t3.isSeeking) && void 0 !== s3 ? s3 : a$1(false), p2 = null !== (r3 = null == t3 ? void 0 : t3.volume) && void 0 !== r3 ? r3 : a$1(1), m2 = null !== (o2 = null == t3 ? void 0 : t3.playbackRate) && void 0 !== o2 ? o2 : a$1(1), g2 = a$1(null), v2 = a$1(null), f2 = a$1(""), b2 = a$1(0), y3 = a$1(0), C2 = l$1((() => !c2.value), [c2]), S2 = l$1((() => null !== g2.value), [g2]), E2 = l$1((() => S2.value && u2.value > 0), [S2, u2]), w3 = l$1((() => h2.value), [h2]), P2 = l$1((() => u2.value > 0 ? h2.value / u2.value : 0), [h2, u2]);
-      return { state: { currentTime: h2, duration: u2, isPlaying: c2, isPaused: C2, isSeeking: d2, volume: p2, playbackRate: m2, audioBuffer: g2, peaks: v2, url: f2, zoom: b2, scrollPosition: y3, canPlay: S2, isReady: E2, progress: w3, progressPercent: P2 }, actions: { setCurrentTime: (t4) => {
+      const h2 = null !== (e4 = null == t3 ? void 0 : t3.currentTime) && void 0 !== e4 ? e4 : a$1(0), u2 = null !== (i3 = null == t3 ? void 0 : t3.duration) && void 0 !== i3 ? i3 : a$1(0), c2 = null !== (n3 = null == t3 ? void 0 : t3.isPlaying) && void 0 !== n3 ? n3 : a$1(false), d2 = null !== (s3 = null == t3 ? void 0 : t3.isSeeking) && void 0 !== s3 ? s3 : a$1(false), p2 = null !== (r3 = null == t3 ? void 0 : t3.volume) && void 0 !== r3 ? r3 : a$1(1), m2 = null !== (o2 = null == t3 ? void 0 : t3.playbackRate) && void 0 !== o2 ? o2 : a$1(1), g2 = a$1(null), v2 = a$1(null), f2 = a$1(""), b2 = a$1(0), y3 = a$1(0), C2 = l$1((() => !c2.value), [c2]), S3 = l$1((() => null !== g2.value), [g2]), E2 = l$1((() => S3.value && u2.value > 0), [S3, u2]), w2 = l$1((() => h2.value), [h2]), P2 = l$1((() => u2.value > 0 ? h2.value / u2.value : 0), [h2, u2]);
+      return { state: { currentTime: h2, duration: u2, isPlaying: c2, isPaused: C2, isSeeking: d2, volume: p2, playbackRate: m2, audioBuffer: g2, peaks: v2, url: f2, zoom: b2, scrollPosition: y3, canPlay: S3, isReady: E2, progress: w2, progressPercent: P2 }, actions: { setCurrentTime: (t4) => {
         const e5 = Math.max(0, Math.min(u2.value || 1 / 0, t4));
         h2.set(e5);
       }, setDuration: (t4) => {
@@ -24640,7 +24614,7 @@ class w2 extends u {
       }));
       if (!e3 && !n2) {
         const t3 = this.getMediaElement();
-        t3 instanceof S && (t3.duration = a2);
+        t3 instanceof S2 && (t3.duration = a2);
       }
       if (s2) this.decodedData = i$1.createBuffer(s2, a2 || 0);
       else if (n2) {
@@ -24712,7 +24686,7 @@ class w2 extends u {
     return t$1(this, void 0, void 0, (function* () {
       null != e3 && this.setTime(e3);
       const t2 = yield n2.play.call(this);
-      return null != i2 && (this.media instanceof S ? this.media.stopAt(i2) : this.stopAtPosition = i2), t2;
+      return null != i2 && (this.media instanceof S2 ? this.media.stopAt(i2) : this.stopAtPosition = i2), t2;
     }));
   }
   playPause() {
@@ -24742,7 +24716,7 @@ class w2 extends u {
     this.emit("destroy"), null === (t2 = this.abortController) || void 0 === t2 || t2.abort(), this.plugins.forEach(((t3) => t3.destroy())), this.subscriptions.forEach(((t3) => t3())), this.unsubscribePlayerEvents(), this.reactiveCleanups.forEach(((t3) => t3())), this.reactiveCleanups = [], this.timer.destroy(), this.renderer.destroy(), super.destroy();
   }
 }
-w2.BasePlugin = class extends e$1 {
+w.BasePlugin = class extends e$1 {
   constructor(t2) {
     super(), this.subscriptions = [], this.isDestroyed = false, this.options = t2;
   }
@@ -24754,7 +24728,7 @@ w2.BasePlugin = class extends e$1 {
   destroy() {
     this.emit("destroy"), this.subscriptions.forEach(((t2) => t2())), this.subscriptions = [], this.isDestroyed = true, this.wavesurfer = void 0;
   }
-}, w2.dom = r$1;
+}, w.dom = r$1;
 class t {
   constructor() {
     this.listeners = {};
@@ -25288,7 +25262,7 @@ function useAudioPlayer(options) {
     const precomputed = audio.waveform.value;
     const peaks = precomputed?.length ? [normalizePeaks(precomputed)] : void 0;
     const channelDuration = core.activeChannel.value?.duration;
-    const player = w2.create({
+    const player = w.create({
       peaks,
       duration: peaks && channelDuration ? channelDuration : void 0,
       container,
@@ -25412,8 +25386,8 @@ function useAudioPlayer(options) {
     toggleMute
   };
 }
-const _hoisted_1$f = { class: "audio-player" };
-const _sfc_main$g = /* @__PURE__ */ defineComponent({
+const _hoisted_1$c = { class: "audio-player" };
+const _sfc_main$c = /* @__PURE__ */ defineComponent({
   __name: "AudioPlayer",
   props: {
     audioSrc: { type: String }
@@ -25443,7 +25417,7 @@ const _sfc_main$g = /* @__PURE__ */ defineComponent({
     });
     __expose({ seekTo, pause });
     return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("footer", _hoisted_1$f, [
+      return openBlock(), createElementBlock("footer", _hoisted_1$c, [
         createBaseVNode("div", {
           ref_key: "waveformRef",
           ref: waveformRef,
@@ -25468,8 +25442,114 @@ const _sfc_main$g = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$g = "\n.audio-player[data-v-810ae1d6] {\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.waveform-container[data-v-810ae1d6] {\n  min-height: 32px;\n}\n.waveform-container--loading[data-v-810ae1d6] {\n  background: linear-gradient(\n    90deg,\n    var(--color-border-light, var(--color-border)) 25%,\n    var(--color-border) 50%,\n    var(--color-border-light, var(--color-border)) 75%\n  );\n  background-size: 200% 100%;\n  animation: shimmer-810ae1d6 1.5s ease-in-out infinite;\n  border-radius: var(--radius-sm);\n}\n@keyframes shimmer-810ae1d6 {\n0% {\n    background-position: 200% 0;\n}\n100% {\n    background-position: -200% 0;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.waveform-container--loading[data-v-810ae1d6] {\n    animation: none;\n}\n}\n";
-const AudioPlayer = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["styles", [_style_0$g]], ["__scopeId", "data-v-810ae1d6"]]);
+const _style_0$c = "\n.audio-player[data-v-59f8e5c5] {\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.waveform-container[data-v-59f8e5c5] {\n  min-height: 32px;\n}\n.waveform-container--loading[data-v-59f8e5c5] {\n  background: linear-gradient(\n    90deg,\n    var(--color-border-light, var(--color-border)) 25%,\n    var(--color-border) 50%,\n    var(--color-border-light, var(--color-border)) 75%\n  );\n  background-size: 200% 100%;\n  animation: shimmer-59f8e5c5 1.5s ease-in-out infinite;\n  border-radius: var(--radius-sm);\n}\n@keyframes shimmer-59f8e5c5 {\n0% {\n    background-position: 200% 0;\n}\n100% {\n    background-position: -200% 0;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.waveform-container--loading[data-v-59f8e5c5] {\n    animation: none;\n}\n}\n";
+const AudioPlayer = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["styles", [_style_0$c]], ["__scopeId", "data-v-59f8e5c5"]]);
+const WORD_TRACK_INTERVAL = 0.05;
+function createAudioPlugin(options = {}) {
+  return {
+    name: "audio",
+    components: { player: AudioPlayer },
+    install(core) {
+      const currentTime = /* @__PURE__ */ ref(0);
+      const isPlaying = /* @__PURE__ */ ref(false);
+      const activeWordId = /* @__PURE__ */ ref(null);
+      const activeTurnId = /* @__PURE__ */ ref(null);
+      let seekHandler = null;
+      let pauseHandler = null;
+      const rawSource = computed(
+        () => core.activeChannel.value?.activeTranslation.value.audio ?? null
+      );
+      const resolvedSrc = /* @__PURE__ */ ref(null);
+      const waveform = /* @__PURE__ */ ref(null);
+      let ownedObjectUrl = null;
+      function revokeOwned() {
+        if (ownedObjectUrl) {
+          URL.revokeObjectURL(ownedObjectUrl);
+          ownedObjectUrl = null;
+        }
+      }
+      const stopSourceWatch = watch(
+        rawSource,
+        async (source) => {
+          revokeOwned();
+          resolvedSrc.value = null;
+          waveform.value = null;
+          if (!source) return;
+          const waveformPromise = options.resolveWaveform ? Promise.resolve(options.resolveWaveform(source)).catch((err) => {
+            console.warn("[audio] resolveWaveform failed", err);
+            return null;
+          }) : Promise.resolve(null);
+          try {
+            const [url, peaks] = await Promise.all([
+              options.resolveSrc ? options.resolveSrc(source) : Promise.resolve(source.src),
+              waveformPromise
+            ]);
+            waveform.value = peaks?.length ? peaks : null;
+            resolvedSrc.value = url;
+            if (url.startsWith("blob:")) ownedObjectUrl = url;
+          } catch (err) {
+            console.error("[audio] resolveSrc failed", err);
+          }
+        },
+        { immediate: true }
+      );
+      const src = computed(() => resolvedSrc.value);
+      let lastComputeTime = Number.NEGATIVE_INFINITY;
+      const stopTracker = watchEffect(() => {
+        const time = currentTime.value;
+        const playing = isPlaying.value;
+        if (playing) {
+          const elapsed = time - lastComputeTime;
+          if (elapsed >= 0 && elapsed < WORD_TRACK_INTERVAL) return;
+        }
+        lastComputeTime = time;
+        const translation = core.activeChannel.value?.activeTranslation.value;
+        if (!translation) return;
+        for (const turn of translation.turns.value) {
+          const words = turn.words;
+          const start = firstWordStart(words) ?? turn.startTime;
+          const end = lastWordEnd(words) ?? turn.endTime;
+          if (start != null && end != null && time >= start && time <= end) {
+            activeTurnId.value = turn.id;
+            activeWordId.value = findActiveWord(words, time);
+            return;
+          }
+        }
+      });
+      function seekTo(time) {
+        seekHandler?.(time);
+      }
+      function setSeekHandler(fn) {
+        seekHandler = fn;
+      }
+      function pause() {
+        pauseHandler?.();
+      }
+      function setPauseHandler(fn) {
+        pauseHandler = fn;
+      }
+      const api = {
+        currentTime,
+        isPlaying,
+        src,
+        waveform,
+        activeWordId,
+        activeTurnId,
+        seekTo,
+        setSeekHandler,
+        pause,
+        setPauseHandler
+      };
+      core.audio = api;
+      return () => {
+        stopSourceWatch();
+        stopTracker();
+        revokeOwned();
+        core.audio = void 0;
+      };
+    }
+  };
+}
 class Diff {
   diff(oldStr, newStr, options = {}) {
     let callback;
@@ -25986,7 +26066,7 @@ function useSubtitleScroller(options) {
   );
   const unsubTurnAdd = core.onActiveTranslation("turn:add", ({ turn }) => {
     if (!scroller) return;
-    const text2 = turn.words.length > 0 ? turn.words.map((w3) => w3.text).join(" ") : turn.text ?? "";
+    const text2 = turn.words.length > 0 ? turn.words.map((w2) => w2.text).join(" ") : turn.text ?? "";
     if (text2) scroller.newFinal(text2);
   });
   function resetScroller() {
@@ -26079,14 +26159,14 @@ function parseWatermark(content, tokens) {
   }
   return parts;
 }
-const _hoisted_1$e = {
+const _hoisted_1$b = {
   key: 0,
   class: "watermark",
   "aria-hidden": "true"
 };
-const _hoisted_2$c = ["src", "alt"];
-const _hoisted_3$9 = { key: 1 };
-const _sfc_main$f = /* @__PURE__ */ defineComponent({
+const _hoisted_2$a = ["src", "alt"];
+const _hoisted_3$8 = { key: 1 };
+const _sfc_main$b = /* @__PURE__ */ defineComponent({
   __name: "SubtitleWatermark",
   props: {
     visible: { type: Boolean }
@@ -26101,7 +26181,7 @@ const _sfc_main$f = /* @__PURE__ */ defineComponent({
     return (_ctx, _cache) => {
       return openBlock(), createBlock(Transition, { name: "watermark" }, {
         default: withCtx(() => [
-          __props.visible && unref(watermark) ? (openBlock(), createElementBlock("div", _hoisted_1$e, [
+          __props.visible && unref(watermark) ? (openBlock(), createElementBlock("div", _hoisted_1$b, [
             (openBlock(true), createElementBlock(Fragment, null, renderList(parts.value, (part, i2) => {
               return openBlock(), createElementBlock(Fragment, { key: i2 }, [
                 part.type === "token" ? (openBlock(), createElementBlock("img", {
@@ -26109,7 +26189,7 @@ const _sfc_main$f = /* @__PURE__ */ defineComponent({
                   src: part.src,
                   alt: part.alt,
                   class: "watermark__img"
-                }, null, 8, _hoisted_2$c)) : (openBlock(), createElementBlock("span", _hoisted_3$9, toDisplayString(part.value), 1))
+                }, null, 8, _hoisted_2$a)) : (openBlock(), createElementBlock("span", _hoisted_3$8, toDisplayString(part.value), 1))
               ], 64);
             }), 128))
           ])) : createCommentVNode("", true)
@@ -26119,10 +26199,10 @@ const _sfc_main$f = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$f = "\n.watermark[data-v-b8c2ff2b] {\n  position: absolute;\n  right: var(--spacing-md, 16px);\n  bottom: 4px;\n  display: inline-flex;\n  align-items: center;\n  gap: 0.25em;\n  font-size: 1.2rem;\n  color: var(--color-white, #fff);\n  pointer-events: none;\n  line-height: 1;\n}\n.watermark__img[data-v-b8c2ff2b] {\n  height: 1em;\n  vertical-align: middle;\n}\n.watermark-enter-active[data-v-b8c2ff2b],\n.watermark-leave-active[data-v-b8c2ff2b] {\n  transition:\n    opacity 0.4s ease,\n    transform 0.4s ease;\n}\n.watermark-enter-from[data-v-b8c2ff2b],\n.watermark-leave-to[data-v-b8c2ff2b] {\n  opacity: 0;\n  transform: translate(6px, 6px);\n}\n@media (prefers-reduced-motion: reduce) {\n.watermark-enter-active[data-v-b8c2ff2b],\n  .watermark-leave-active[data-v-b8c2ff2b] {\n    transition: opacity 0.01s;\n    transform: none;\n}\n}\n";
-const SubtitleWatermark = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["styles", [_style_0$f]], ["__scopeId", "data-v-b8c2ff2b"]]);
-const _hoisted_1$d = ["height"];
-const _sfc_main$e = /* @__PURE__ */ defineComponent({
+const _style_0$b = "\n.watermark[data-v-b8c2ff2b] {\n  position: absolute;\n  right: var(--spacing-md, 16px);\n  bottom: 4px;\n  display: inline-flex;\n  align-items: center;\n  gap: 0.25em;\n  font-size: 1.2rem;\n  color: var(--color-white, #fff);\n  pointer-events: none;\n  line-height: 1;\n}\n.watermark__img[data-v-b8c2ff2b] {\n  height: 1em;\n  vertical-align: middle;\n}\n.watermark-enter-active[data-v-b8c2ff2b],\n.watermark-leave-active[data-v-b8c2ff2b] {\n  transition:\n    opacity 0.4s ease,\n    transform 0.4s ease;\n}\n.watermark-enter-from[data-v-b8c2ff2b],\n.watermark-leave-to[data-v-b8c2ff2b] {\n  opacity: 0;\n  transform: translate(6px, 6px);\n}\n@media (prefers-reduced-motion: reduce) {\n.watermark-enter-active[data-v-b8c2ff2b],\n  .watermark-leave-active[data-v-b8c2ff2b] {\n    transition: opacity 0.01s;\n    transform: none;\n}\n}\n";
+const SubtitleWatermark = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["styles", [_style_0$b]], ["__scopeId", "data-v-b8c2ff2b"]]);
+const _hoisted_1$a = ["height"];
+const _sfc_main$a = /* @__PURE__ */ defineComponent({
   __name: "SubtitleBanner",
   setup(__props) {
     const core = useCore();
@@ -26156,20 +26236,20 @@ const _sfc_main$e = /* @__PURE__ */ defineComponent({
           ref: "canvas",
           class: normalizeClass(["subtitle-canvas", { "subtitle-canvas--shrunk": unref(watermarkVisible) }]),
           height: canvasHeight.value
-        }, null, 10, _hoisted_1$d),
+        }, null, 10, _hoisted_1$a),
         createVNode(SubtitleWatermark, { visible: unref(watermarkVisible) }, null, 8, ["visible"])
       ], 4);
     };
   }
 });
-const _style_0$e = "\n.subtitle-banner[data-v-1baa0a4a] {\n  position: fixed;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  flex-shrink: 0;\n  background-color: var(--color-black);\n  overflow: hidden;\n  z-index: 1001;\n}\n.subtitle-canvas[data-v-1baa0a4a] {\n  display: block;\n  width: 100%;\n  height: 100%;\n  transition: transform 0.4s ease;\n  transform-origin: top center;\n}\n.subtitle-canvas--shrunk[data-v-1baa0a4a] {\n  transform: scale(0.8) translateY(-8%);\n}\n@media (prefers-reduced-motion: reduce) {\n.subtitle-canvas[data-v-1baa0a4a] {\n    transition: none;\n}\n}\n";
-const SubtitleBanner = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["styles", [_style_0$e]], ["__scopeId", "data-v-1baa0a4a"]]);
-const _hoisted_1$c = {
+const _style_0$a = "\n.subtitle-banner[data-v-d1406d58] {\n  position: fixed;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  flex-shrink: 0;\n  background-color: var(--color-black);\n  overflow: hidden;\n  z-index: 1001;\n}\n.subtitle-canvas[data-v-d1406d58] {\n  display: block;\n  width: 100%;\n  height: 100%;\n  transition: transform 0.4s ease;\n  transform-origin: top center;\n}\n.subtitle-canvas--shrunk[data-v-d1406d58] {\n  transform: scale(0.8) translateY(-8%);\n}\n@media (prefers-reduced-motion: reduce) {\n.subtitle-canvas[data-v-d1406d58] {\n    transition: none;\n}\n}\n";
+const SubtitleBanner = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["styles", [_style_0$a]], ["__scopeId", "data-v-d1406d58"]]);
+const _hoisted_1$9 = {
   ref: "container",
   class: "subtitle-fullscreen"
 };
-const _hoisted_2$b = ["aria-label"];
-const _sfc_main$d = /* @__PURE__ */ defineComponent({
+const _hoisted_2$9 = ["aria-label"];
+const _sfc_main$9 = /* @__PURE__ */ defineComponent({
   __name: "SubtitleFullscreen",
   setup(__props) {
     const core = useCore();
@@ -26227,14 +26307,14 @@ const _sfc_main$d = /* @__PURE__ */ defineComponent({
       }
     });
     return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("div", _hoisted_1$c, [
+      return openBlock(), createElementBlock("div", _hoisted_1$9, [
         createBaseVNode("button", {
           class: "subtitle-fullscreen__close",
           "aria-label": unref(t2)("subtitle.exitFullscreen"),
           onClick: close
         }, [
           createVNode(unref(X$1), { size: 24 })
-        ], 8, _hoisted_2$b),
+        ], 8, _hoisted_2$9),
         createBaseVNode("canvas", {
           ref: "canvas",
           class: normalizeClass(["subtitle-fullscreen__canvas", { "subtitle-fullscreen__canvas--shrunk": unref(watermarkVisible) }])
@@ -26244,1835 +26324,12 @@ const _sfc_main$d = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$d = "\n.subtitle-fullscreen[data-v-e3ae14e0] {\n  position: relative;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 100%;\n  height: 100%;\n  background-color: var(--color-black);\n}\n.subtitle-fullscreen__close[data-v-e3ae14e0] {\n  position: absolute;\n  top: var(--spacing-md, 16px);\n  right: var(--spacing-md, 16px);\n  z-index: 1;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 40px;\n  height: 40px;\n  border: none;\n  background: rgba(255, 255, 255, 0.1);\n  color: var(--color-white);\n  border-radius: var(--radius-md, 8px);\n  cursor: pointer;\n  transition: background-color var(--transition-duration) ease;\n}\n.subtitle-fullscreen__close[data-v-e3ae14e0]:hover,\n.subtitle-fullscreen__close[data-v-e3ae14e0]:focus-visible {\n  background: rgba(255, 255, 255, 0.25);\n  outline: 2px solid rgba(255, 255, 255, 0.5);\n  outline-offset: 2px;\n}\n.subtitle-fullscreen__canvas[data-v-e3ae14e0] {\n  display: block;\n  width: 100%;\n  height: 100%;\n  transition: transform 0.4s ease;\n  transform-origin: center;\n}\n.subtitle-fullscreen__canvas--shrunk[data-v-e3ae14e0] {\n  transform: scale(0.85) translateY(-4%);\n}\n@media (prefers-reduced-motion: reduce) {\n.subtitle-fullscreen__close[data-v-e3ae14e0],\n  .subtitle-fullscreen__canvas[data-v-e3ae14e0] {\n    transition: none;\n}\n}\n";
-const SubtitleFullscreen = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["styles", [_style_0$d]], ["__scopeId", "data-v-e3ae14e0"]]);
-const _hoisted_1$b = ["aria-label"];
-const _hoisted_2$a = { class: "chat-session-list__header" };
-const _hoisted_3$8 = { class: "chat-session-list__title" };
-const _hoisted_4$3 = { class: "chat-session-list__items" };
-const _hoisted_5$3 = {
-  key: 1,
-  class: "chat-session-confirm"
-};
-const _hoisted_6$3 = { class: "chat-session-confirm__text" };
-const _sfc_main$c = /* @__PURE__ */ defineComponent({
-  __name: "ChatSessionList",
-  props: {
-    sessions: { type: Array },
-    activeSessionId: { type: [String, null] }
-  },
-  emits: ["select", "create", "rename", "delete"],
-  setup(__props, { emit: __emit }) {
-    const props = __props;
-    const emit2 = __emit;
-    const { t: t2 } = useI18n();
-    const renamingId = /* @__PURE__ */ ref(null);
-    const renameValue = /* @__PURE__ */ ref("");
-    const deleteTargetId = /* @__PURE__ */ ref(null);
-    const renameField = computed(() => ({
-      customParams: { "aria-label": t2("chat.rename") }
-    }));
-    function startRename(session) {
-      deleteTargetId.value = null;
-      renameValue.value = session.title;
-      renamingId.value = session.id;
-    }
-    function confirmRename() {
-      const id = renamingId.value;
-      if (!id) return;
-      renamingId.value = null;
-      const title = renameValue.value.trim();
-      const current = props.sessions.find((s2) => s2.id === id);
-      if (title && title !== current?.title) emit2("rename", id, title);
-    }
-    function cancelRename() {
-      renamingId.value = null;
-    }
-    function onRenameKeydown(event) {
-      event.stopPropagation();
-      if (event.key === "Enter") confirmRename();
-      else if (event.key === "Escape") cancelRename();
-    }
-    function requestDelete(sessionId) {
-      deleteTargetId.value = sessionId;
-    }
-    function cancelDelete() {
-      deleteTargetId.value = null;
-    }
-    function confirmDelete() {
-      const id = deleteTargetId.value;
-      if (!id) return;
-      deleteTargetId.value = null;
-      emit2("delete", id);
-    }
-    return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("nav", {
-        class: "chat-session-list",
-        "aria-label": unref(t2)("chat.history")
-      }, [
-        createBaseVNode("header", _hoisted_2$a, [
-          createBaseVNode("h3", _hoisted_3$8, toDisplayString(unref(t2)("chat.history")), 1),
-          createVNode(Button, {
-            icon: "plus",
-            variant: "transparent",
-            size: "sm",
-            "aria-label": unref(t2)("chat.newChat"),
-            onClick: _cache[0] || (_cache[0] = ($event) => emit2("create"))
-          }, null, 8, ["aria-label"])
-        ]),
-        createBaseVNode("ul", _hoisted_4$3, [
-          (openBlock(true), createElementBlock(Fragment, null, renderList(__props.sessions, (session) => {
-            return openBlock(), createElementBlock("li", {
-              key: session.id,
-              class: "chat-session-item"
-            }, [
-              renamingId.value === session.id ? (openBlock(), createBlock(FormInput, {
-                key: 0,
-                modelValue: renameValue.value,
-                "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => renameValue.value = $event),
-                field: renameField.value,
-                focus: true,
-                "full-width": "",
-                size: "sm",
-                onKeydown: onRenameKeydown,
-                onBlur: confirmRename
-              }, null, 8, ["modelValue", "field"])) : deleteTargetId.value === session.id ? (openBlock(), createElementBlock("div", _hoisted_5$3, [
-                createBaseVNode("span", _hoisted_6$3, toDisplayString(unref(t2)("chat.deleteConfirm")), 1),
-                createVNode(Button, {
-                  icon: "x",
-                  variant: "transparent",
-                  size: "sm",
-                  "aria-label": unref(t2)("chat.cancel"),
-                  onClick: cancelDelete
-                }, null, 8, ["aria-label"]),
-                createVNode(Button, {
-                  icon: "check",
-                  variant: "transparent",
-                  intent: "destructive",
-                  size: "sm",
-                  "aria-label": unref(t2)("chat.confirmDelete"),
-                  onClick: confirmDelete
-                }, null, 8, ["aria-label"])
-              ])) : (openBlock(), createBlock(SelectableListItem, {
-                key: 2,
-                current: session.id === __props.activeSessionId,
-                label: session.title,
-                title: session.title,
-                onSelect: ($event) => emit2("select", session.id)
-              }, {
-                actions: withCtx(() => [
-                  createVNode(Button, {
-                    icon: "pencil",
-                    variant: "transparent",
-                    size: "sm",
-                    "aria-label": unref(t2)("chat.rename"),
-                    onClick: ($event) => startRename(session)
-                  }, null, 8, ["aria-label", "onClick"]),
-                  createVNode(Button, {
-                    icon: "trash",
-                    variant: "transparent",
-                    intent: "destructive",
-                    size: "sm",
-                    "aria-label": unref(t2)("chat.deleteSession"),
-                    onClick: ($event) => requestDelete(session.id)
-                  }, null, 8, ["aria-label", "onClick"])
-                ]),
-                _: 2
-              }, 1032, ["current", "label", "title", "onSelect"]))
-            ]);
-          }), 128))
-        ])
-      ], 8, _hoisted_1$b);
-    };
-  }
-});
-const _style_0$c = "\n.chat-session-list[data-v-abf4cb1f] {\n  width: var(--chat-session-list-width, 200px);\n  flex-shrink: 0;\n  display: flex;\n  flex-direction: column;\n  border-right: 1px solid var(--color-border);\n  background-color: var(--color-surface-hover);\n  transition: width 0.2s ease;\n}\n@media (prefers-reduced-motion: reduce) {\n.chat-session-list[data-v-abf4cb1f] {\n    transition: none;\n}\n}\n.chat-session-list__header[data-v-abf4cb1f] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-sm) var(--spacing-md);\n}\n.chat-session-list__title[data-v-abf4cb1f] {\n  margin: 0;\n  font-size: var(--font-size-xs);\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-muted);\n}\n.chat-session-list__items[data-v-abf4cb1f] {\n  flex: 1;\n  margin: 0;\n  padding: 0;\n  list-style: none;\n  overflow-y: auto;\n}\n\n/* Delete confirmation row */\n.chat-session-confirm[data-v-abf4cb1f] {\n  display: flex;\n  align-items: center;\n  gap: 2px;\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.chat-session-confirm__text[data-v-abf4cb1f] {\n  flex: 1;\n  min-width: 0;\n  font-size: var(--font-size-xs);\n  color: var(--color-danger);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n";
-const ChatSessionList = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["styles", [_style_0$c]], ["__scopeId", "data-v-abf4cb1f"]]);
-const _sfc_main$b = /* @__PURE__ */ defineComponent({
-  __name: "CopyButton",
-  props: {
-    icon: { default: "copy", type: String },
-    copyFn: { type: Function },
-    variant: { type: String },
-    size: { type: String },
-    disabled: { type: Boolean },
-    block: { type: Boolean },
-    ariaLabel: { type: String }
-  },
-  setup(__props, { expose: __expose }) {
-    const props = __props;
-    const copied = /* @__PURE__ */ ref(false);
-    let timer;
-    async function onClick() {
-      if (copied.value) return;
-      try {
-        await props.copyFn();
-        copied.value = true;
-        timer = setTimeout(() => {
-          copied.value = false;
-        }, 2e3);
-      } catch (e3) {
-        console.error(e3);
-      }
-    }
-    __expose({
-      reset: () => {
-        copied.value = false;
-        clearTimeout(timer);
-      }
-    });
-    const currentIconName = computed(() => copied.value ? "check" : props.icon);
-    const iconSize = computed(() => ICON_SIZES[props.size ?? "sm"]);
-    return (_ctx, _cache) => {
-      return openBlock(), createBlock(Button, {
-        variant: __props.variant,
-        size: __props.size,
-        disabled: __props.disabled,
-        block: __props.block,
-        "aria-label": __props.ariaLabel,
-        class: normalizeClass({ "copy-btn--copied": copied.value }),
-        onClick
-      }, {
-        icon: withCtx(() => [
-          createVNode(Transition, {
-            name: "copy-icon",
-            mode: "out-in"
-          }, {
-            default: withCtx(() => [
-              (openBlock(), createBlock(EditorIcon, {
-                key: currentIconName.value,
-                name: currentIconName.value,
-                size: iconSize.value
-              }, null, 8, ["name", "size"]))
-            ]),
-            _: 1
-          })
-        ]),
-        default: withCtx(() => [
-          renderSlot(_ctx.$slots, "default", {}, void 0, true)
-        ]),
-        _: 3
-      }, 8, ["variant", "size", "disabled", "block", "aria-label", "class"]);
-    };
-  }
-});
-const _style_0$b = "\n.copy-btn--copied[data-v-0077b14e] {\n  color: var(--color-success, #2e7d32);\n}\n.copy-icon-enter-active[data-v-0077b14e],\n.copy-icon-leave-active[data-v-0077b14e] {\n  transition:\n    opacity var(--transition-duration) ease,\n    scale var(--transition-duration) ease;\n}\n.copy-icon-enter-from[data-v-0077b14e] {\n  opacity: 0;\n  scale: 0.6;\n}\n.copy-icon-leave-to[data-v-0077b14e] {\n  opacity: 0;\n  scale: 0.6;\n}\n@media (prefers-reduced-motion: reduce) {\n.copy-icon-enter-active[data-v-0077b14e],\n  .copy-icon-leave-active[data-v-0077b14e] {\n    transition: none;\n}\n}\n";
-const CopyButton = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["styles", [_style_0$b]], ["__scopeId", "data-v-0077b14e"]]);
-const _hoisted_1$a = { class: "code-block" };
-const _hoisted_2$9 = ["innerHTML"];
-const _hoisted_3$7 = { key: 1 };
-const _sfc_main$a = /* @__PURE__ */ defineComponent({
-  __name: "CodeBlock",
-  props: {
-    code: { type: String },
-    lang: { type: String },
-    streaming: { type: Boolean }
-  },
-  setup(__props) {
-    const props = __props;
-    const { t: t2 } = useI18n();
-    function copy() {
-      return navigator.clipboard.writeText(props.code);
-    }
-    const highlighted = /* @__PURE__ */ ref(null);
-    let seq = 0;
-    watch(
-      () => [props.code, props.lang, props.streaming],
-      async ([code, lang, streaming]) => {
-        const run = ++seq;
-        if (streaming || !code) {
-          highlighted.value = null;
-          return;
-        }
-        const { highlightCode } = await import("./highlight-BT6gHr6X.js");
-        if (run === seq) highlighted.value = highlightCode(code, lang ?? "");
-      },
-      { immediate: true }
-    );
-    return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("div", _hoisted_1$a, [
-        !__props.streaming ? (openBlock(), createBlock(CopyButton, {
-          key: 0,
-          class: "code-block__copy",
-          variant: "transparent",
-          size: "sm",
-          "copy-fn": copy,
-          "aria-label": unref(t2)("markdown.copyCode")
-        }, null, 8, ["aria-label"])) : createCommentVNode("", true),
-        createBaseVNode("pre", null, [
-          highlighted.value ? (openBlock(), createElementBlock("code", {
-            key: 0,
-            innerHTML: highlighted.value
-          }, null, 8, _hoisted_2$9)) : (openBlock(), createElementBlock("code", _hoisted_3$7, toDisplayString(__props.code), 1))
-        ])
-      ]);
-    };
-  }
-});
-const _style_0$a = "\n.code-block[data-v-42abac84] {\n  position: relative;\n}\n.code-block__copy[data-v-42abac84] {\n  position: absolute;\n  top: var(--spacing-xs);\n  right: var(--spacing-xs);\n  opacity: 0;\n  transition: opacity 0.15s ease;\n}\n.code-block:hover .code-block__copy[data-v-42abac84],\n.code-block:focus-within .code-block__copy[data-v-42abac84] {\n  opacity: 1;\n}\n.code-block pre[data-v-42abac84] {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n  border: 1px solid var(--color-border);\n}\n.code-block pre code[data-v-42abac84] {\n  padding: 0;\n  background: none;\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n}\n@media (prefers-reduced-motion: reduce) {\n.code-block__copy[data-v-42abac84] {\n    transition: none;\n}\n}\n";
-const CodeBlock = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["styles", [_style_0$a]], ["__scopeId", "data-v-42abac84"]]);
-const _hoisted_1$9 = { class: "markdown-view" };
-const _hoisted_2$8 = ["innerHTML"];
-const _sfc_main$9 = /* @__PURE__ */ defineComponent({
-  __name: "MarkdownView",
-  props: {
-    source: { type: String },
-    streaming: { type: Boolean }
-  },
-  setup(__props) {
-    const props = __props;
-    const segments = computed(() => renderMarkdownSegments(props.source));
-    return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("div", _hoisted_1$9, [
-        (openBlock(true), createElementBlock(Fragment, null, renderList(segments.value, (seg, i2) => {
-          return openBlock(), createElementBlock(Fragment, { key: i2 }, [
-            seg.type === "html" ? (openBlock(), createElementBlock("div", {
-              key: 0,
-              class: "markdown-view__html",
-              innerHTML: seg.html
-            }, null, 8, _hoisted_2$8)) : (openBlock(), createBlock(CodeBlock, {
-              key: 1,
-              code: seg.code,
-              lang: seg.lang,
-              streaming: __props.streaming
-            }, null, 8, ["code", "lang", "streaming"]))
-          ], 64);
-        }), 128))
-      ]);
-    };
-  }
-});
-const _style_0$9 = "\n.markdown-view[data-v-89c2c4e6] {\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n\n/* No box: block children flow as direct children of .markdown-view so margin\n   collapsing keeps working across html/code segment boundaries. */\n.markdown-view__html[data-v-89c2c4e6] {\n  display: contents;\n}\n\n/* Trim the outer margins of the first/last rendered block (reach through the\n   display:contents wrapper to the real content element). */\n.markdown-view > .markdown-view__html[data-v-89c2c4e6]:first-child >  :first-child {\n  margin-top: 0;\n}\n.markdown-view > .markdown-view__html[data-v-89c2c4e6]:last-child >  :last-child {\n  margin-bottom: 0;\n}\n.markdown-view[data-v-89c2c4e6] h1,\n.markdown-view[data-v-89c2c4e6] h2,\n.markdown-view[data-v-89c2c4e6] h3,\n.markdown-view[data-v-89c2c4e6] h4 {\n  margin: var(--spacing-lg) 0 var(--spacing-sm);\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.markdown-view[data-v-89c2c4e6] h1 {\n  font-size: var(--font-size-xl);\n}\n.markdown-view[data-v-89c2c4e6] h2 {\n  font-size: var(--font-size-lg);\n}\n.markdown-view[data-v-89c2c4e6] h3 {\n  font-size: var(--font-size-base);\n}\n.markdown-view[data-v-89c2c4e6] h4 {\n  font-size: var(--font-size-sm);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-secondary);\n}\n.markdown-view[data-v-89c2c4e6] p {\n  margin: 0 0 var(--spacing-md);\n}\n.markdown-view[data-v-89c2c4e6] ul,\n.markdown-view[data-v-89c2c4e6] ol {\n  margin: 0 0 var(--spacing-md);\n  padding-left: var(--spacing-lg);\n}\n.markdown-view[data-v-89c2c4e6] li {\n  margin: var(--spacing-xs) 0;\n}\n.markdown-view[data-v-89c2c4e6] blockquote {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-left: 3px solid var(--color-border);\n  color: var(--color-text-secondary);\n  font-style: italic;\n}\n\n/* Inline code only — fenced blocks render via <CodeBlock>. Scoped to the html\n   wrapper so it never reaches into the CodeBlock component. */\n.markdown-view__html[data-v-89c2c4e6] code {\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n  padding: 1px 4px;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-sm);\n}\n\n/* Fallback for raw <pre> written as literal HTML (not fenced code). */\n.markdown-view__html[data-v-89c2c4e6] pre {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n  border: 1px solid var(--color-border);\n}\n.markdown-view__html[data-v-89c2c4e6] pre code {\n  padding: 0;\n  background: none;\n}\n.markdown-view[data-v-89c2c4e6] a {\n  color: var(--color-primary);\n  text-decoration: underline;\n}\n.markdown-view[data-v-89c2c4e6] hr {\n  border: 0;\n  border-top: 1px solid var(--color-border);\n  margin: var(--spacing-lg) 0;\n}\n.markdown-view[data-v-89c2c4e6] strong {\n  font-weight: 700;\n}\n.markdown-view[data-v-89c2c4e6] table {\n  border-collapse: collapse;\n  margin: var(--spacing-md) 0;\n}\n.markdown-view[data-v-89c2c4e6] th,\n.markdown-view[data-v-89c2c4e6] td {\n  border: 1px solid var(--color-border);\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.markdown-view[data-v-89c2c4e6] th {\n  background-color: var(--color-surface);\n  font-weight: 600;\n}\n";
-const MarkdownView = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["styles", [_style_0$9]], ["__scopeId", "data-v-89c2c4e6"]]);
-const _hoisted_1$8 = {
-  key: 0,
-  class: "chat-message chat-message--user"
-};
-const _hoisted_2$7 = { class: "chat-message__bubble" };
-const _hoisted_3$6 = {
-  key: 1,
-  class: "chat-message chat-message--assistant"
-};
-const _hoisted_4$2 = {
-  class: "chat-message__marker",
-  "aria-hidden": "true"
-};
-const _hoisted_5$2 = { class: "chat-message__body" };
-const _hoisted_6$2 = {
-  key: 1,
-  class: "chat-message__typing",
-  "aria-hidden": "true"
-};
-const _hoisted_7 = {
-  key: 2,
-  class: "chat-message__actions"
-};
-const _sfc_main$8 = /* @__PURE__ */ defineComponent({
-  __name: "ChatMessage",
-  props: {
-    message: { type: Object }
-  },
-  setup(__props) {
-    const props = __props;
-    const { t: t2 } = useI18n();
-    function copyContent() {
-      return navigator.clipboard.writeText(props.message.content);
-    }
-    return (_ctx, _cache) => {
-      return __props.message.role === "user" ? (openBlock(), createElementBlock("div", _hoisted_1$8, [
-        createBaseVNode("div", _hoisted_2$7, toDisplayString(__props.message.content), 1)
-      ])) : (openBlock(), createElementBlock("div", _hoisted_3$6, [
-        createBaseVNode("span", _hoisted_4$2, [
-          createVNode(EditorIcon, {
-            name: "sparkles",
-            size: 16
-          })
-        ]),
-        createBaseVNode("div", _hoisted_5$2, [
-          __props.message.content ? (openBlock(), createBlock(MarkdownView, {
-            key: 0,
-            source: __props.message.content,
-            streaming: __props.message.streaming
-          }, null, 8, ["source", "streaming"])) : createCommentVNode("", true),
-          __props.message.streaming ? (openBlock(), createElementBlock("div", _hoisted_6$2, [..._cache[0] || (_cache[0] = [
-            createBaseVNode("span", null, null, -1),
-            createBaseVNode("span", null, null, -1),
-            createBaseVNode("span", null, null, -1)
-          ])])) : createCommentVNode("", true),
-          !__props.message.streaming && __props.message.content ? (openBlock(), createElementBlock("div", _hoisted_7, [
-            createVNode(CopyButton, {
-              variant: "secondary",
-              size: "sm",
-              "copy-fn": copyContent,
-              "aria-label": unref(t2)("chat.copy")
-            }, {
-              default: withCtx(() => [
-                createTextVNode(toDisplayString(unref(t2)("chat.copy")), 1)
-              ]),
-              _: 1
-            }, 8, ["aria-label"])
-          ])) : createCommentVNode("", true)
-        ])
-      ]));
-    };
-  }
-});
-const _style_0$8 = "\n.chat-message[data-v-7ee16e63] {\n  display: flex;\n  padding: 0 var(--spacing-lg);\n}\n.chat-message[data-v-7ee16e63]:first-child {\n  padding-top: var(--spacing-lg);\n}\n.chat-message[data-v-7ee16e63]:last-child {\n  padding-bottom: var(--spacing-lg);\n}\n\n/* ── User ── */\n.chat-message--user[data-v-7ee16e63] {\n  justify-content: flex-end;\n}\n.chat-message__bubble[data-v-7ee16e63] {\n  max-width: 80%;\n  padding: var(--spacing-sm) var(--spacing-md);\n  background-color: var(--color-primary);\n  color: var(--color-white);\n  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-sm)\n    var(--radius-lg);\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  white-space: pre-wrap;\n  word-break: break-word;\n}\n\n/* ── Assistant ── */\n.chat-message--assistant[data-v-7ee16e63] {\n  gap: var(--spacing-sm);\n  align-items: flex-start;\n}\n.chat-message__marker[data-v-7ee16e63] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  flex-shrink: 0;\n  width: 24px;\n  height: 24px;\n  margin-top: 2px;\n  border-radius: var(--radius-md);\n  color: var(--color-primary);\n  background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);\n}\n.chat-message__body[data-v-7ee16e63] {\n  min-width: 0;\n  flex: 1;\n}\n.chat-message__body[data-v-7ee16e63] .markdown-view {\n  font-size: var(--font-size-sm);\n}\n\n/* ── Action bar ── */\n.chat-message__actions[data-v-7ee16e63] {\n  display: flex;\n  gap: var(--spacing-xs);\n  margin-top: var(--spacing-xs);\n  margin-left: calc(var(--spacing-sm) * -1);\n  flex-direction: row-reverse;\n}\n\n/* ── Streaming typing indicator ── */\n.chat-message__typing[data-v-7ee16e63] {\n  display: inline-flex;\n  gap: 3px;\n  padding-top: var(--spacing-xs);\n}\n.chat-message__typing span[data-v-7ee16e63] {\n  width: 6px;\n  height: 6px;\n  border-radius: 50%;\n  background-color: var(--color-primary);\n  animation: chat-typing-7ee16e63 1.2s infinite;\n}\n.chat-message__typing span[data-v-7ee16e63]:nth-child(2) {\n  animation-delay: 0.2s;\n}\n.chat-message__typing span[data-v-7ee16e63]:nth-child(3) {\n  animation-delay: 0.4s;\n}\n@keyframes chat-typing-7ee16e63 {\n0%,\n  60%,\n  100% {\n    opacity: 0.3;\n    transform: scale(0.8);\n}\n30% {\n    opacity: 1;\n    transform: scale(1);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.chat-message__typing span[data-v-7ee16e63] {\n    animation: none;\n}\n}\n";
-const ChatMessage = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["styles", [_style_0$8]], ["__scopeId", "data-v-7ee16e63"]]);
-const _hoisted_1$7 = { class: "chat-message-list" };
-const _hoisted_2$6 = {
-  key: 0,
-  class: "chat-message-list__state",
-  role: "status"
-};
-const _hoisted_3$5 = { class: "sr-only" };
-const _hoisted_4$1 = {
-  key: 1,
-  class: "chat-message-list__state"
-};
-const _hoisted_5$1 = {
-  key: 2,
-  class: "chat-message-list__state"
-};
-const _hoisted_6$1 = { class: "chat-message-list__items" };
-const _sfc_main$7 = /* @__PURE__ */ defineComponent({
-  __name: "ChatMessageList",
-  props: {
-    messages: { type: Array },
-    hasActiveSession: { type: Boolean },
-    isLoading: { type: Boolean }
-  },
-  setup(__props) {
-    const { t: t2 } = useI18n();
-    return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("div", _hoisted_1$7, [
-        __props.isLoading ? (openBlock(), createElementBlock("div", _hoisted_2$6, [
-          createVNode(EditorIcon, {
-            name: "spinner",
-            size: 28,
-            spin: ""
-          }),
-          createBaseVNode("span", _hoisted_3$5, toDisplayString(unref(t2)("editor.loading")), 1)
-        ])) : !__props.hasActiveSession ? (openBlock(), createElementBlock("div", _hoisted_4$1, [
-          createBaseVNode("p", null, toDisplayString(unref(t2)("chat.emptyState")), 1)
-        ])) : __props.messages.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_5$1, [
-          createBaseVNode("p", null, toDisplayString(unref(t2)("chat.emptyChat")), 1)
-        ])) : (openBlock(), createBlock(unref(_sfc_main$J), {
-          key: 3,
-          class: "chat-message-list__scroll",
-          resize: "smooth",
-          initial: true
-        }, {
-          default: withCtx(() => [
-            createBaseVNode("div", _hoisted_6$1, [
-              (openBlock(true), createElementBlock(Fragment, null, renderList(__props.messages, (msg) => {
-                return openBlock(), createBlock(ChatMessage, {
-                  key: msg.id,
-                  message: msg
-                }, null, 8, ["message"]);
-              }), 128))
-            ])
-          ]),
-          _: 1
-        }))
-      ]);
-    };
-  }
-});
-const _style_0$7 = "\n.chat-message-list[data-v-a132e63a] {\n  flex: 1;\n  min-height: 0;\n  display: flex;\n  flex-direction: column;\n}\n.chat-message-list__state[data-v-a132e63a] {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-lg);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n  text-align: center;\n}\n.chat-message-list__state[data-v-a132e63a] .editor-icon {\n  color: var(--color-primary);\n}\n.chat-message-list__scroll[data-v-a132e63a] {\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n.chat-message-list__items[data-v-a132e63a] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n  width: 100%;\n  max-width: var(--chat-content-max-width, 760px);\n  margin-inline: auto;\n}\n";
-const ChatMessageList = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["styles", [_style_0$7]], ["__scopeId", "data-v-a132e63a"]]);
-const _hoisted_1$6 = { class: "chat-composer" };
-const _hoisted_2$5 = ["for"];
-const _hoisted_3$4 = ["id", "placeholder", "disabled"];
-const _sfc_main$6 = /* @__PURE__ */ defineComponent({
-  __name: "ChatComposer",
-  props: {
-    disabled: { type: Boolean }
-  },
-  emits: ["send"],
-  setup(__props, { emit: __emit }) {
-    const props = __props;
-    const emit2 = __emit;
-    const textarea = useTemplateRef("chat-composer__textarea");
-    const { t: t2 } = useI18n();
-    const text2 = /* @__PURE__ */ ref("");
-    const textareaId = useId$1();
-    function submit() {
-      const content = text2.value.trim();
-      if (!content || props.disabled) return;
-      text2.value = "";
-      emit2("send", content);
-    }
-    function onKeydown(event) {
-      if (event.key === "Escape") return;
-      event.stopPropagation();
-      if (event.key === "Enter" && !event.shiftKey) {
-        event.preventDefault();
-        submit();
-      }
-    }
-    onMounted(() => {
-      textarea.value?.focus();
-    });
-    return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("div", _hoisted_1$6, [
-        createBaseVNode("label", {
-          for: unref(textareaId),
-          class: "sr-only"
-        }, toDisplayString(unref(t2)("chat.placeholder")), 9, _hoisted_2$5),
-        withDirectives(createBaseVNode("textarea", {
-          id: unref(textareaId),
-          "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => text2.value = $event),
-          class: "chat-composer__textarea",
-          placeholder: unref(t2)("chat.placeholder"),
-          disabled: __props.disabled,
-          rows: "2",
-          ref: "chat-composer__textarea",
-          onKeydown
-        }, null, 40, _hoisted_3$4), [
-          [vModelText, text2.value]
-        ]),
-        createVNode(Button, {
-          icon: "send",
-          variant: "primary",
-          size: "md",
-          disabled: !text2.value.trim() || __props.disabled,
-          "aria-label": unref(t2)("chat.send"),
-          onClick: submit
-        }, null, 8, ["disabled", "aria-label"])
-      ]);
-    };
-  }
-});
-const _style_0$6 = "\n.chat-composer[data-v-846654fe] {\n  display: flex;\n  align-items: flex-end;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  flex-shrink: 0;\n  /* Match the message column width when the panel is expanded. */\n  width: 100%;\n  max-width: var(--chat-content-max-width, 760px);\n  margin-inline: auto;\n}\n.chat-composer__textarea[data-v-846654fe] {\n  flex: 1;\n  resize: none;\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  padding: var(--spacing-sm) var(--spacing-md);\n  font-family: inherit;\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n  background-color: var(--color-surface);\n  outline: none;\n}\n.chat-composer__textarea[data-v-846654fe]:focus {\n  border-color: var(--color-primary);\n}\n.chat-composer__textarea[data-v-846654fe]:disabled {\n  opacity: 0.6;\n  cursor: not-allowed;\n}\n";
-const ChatComposer = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["styles", [_style_0$6]], ["__scopeId", "data-v-846654fe"]]);
-const _hoisted_1$5 = ["aria-labelledby"];
-const _hoisted_2$4 = { class: "chat-drawer__header" };
-const _hoisted_3$3 = ["id"];
-const _hoisted_4 = { class: "chat-drawer__actions" };
-const _hoisted_5 = { class: "chat-drawer__body" };
-const _hoisted_6 = { class: "chat-drawer__main" };
-const _sfc_main$5 = /* @__PURE__ */ defineComponent({
-  __name: "ChatDrawer",
-  setup(__props) {
-    const core = useCore();
-    const { t: t2 } = useI18n();
-    const chat = core.chat;
-    const titleId = useId$1();
-    const expanded = /* @__PURE__ */ ref(false);
-    function close() {
-      chat.setDrawerOpen(false);
-    }
-    function toggleExpanded() {
-      expanded.value = !expanded.value;
-    }
-    function onKeydown(event) {
-      if (event.key === "Escape" && chat.drawerOpen.value) close();
-    }
-    watch(
-      () => chat.drawerOpen.value,
-      (open) => {
-        if (open) {
-          expanded.value = false;
-          core.emit("chat:loadSessions", void 0);
-          window.addEventListener("keydown", onKeydown);
-        } else {
-          window.removeEventListener("keydown", onKeydown);
-        }
-      }
-    );
-    onUnmounted(() => window.removeEventListener("keydown", onKeydown));
-    function onSelect(sessionId) {
-      core.emit("chat:loadSession", { sessionId });
-    }
-    function onCreate() {
-      core.emit("chat:createSession", void 0);
-    }
-    function onRename(sessionId, title) {
-      core.emit("chat:renameSession", { sessionId, title });
-    }
-    function onDelete(sessionId) {
-      core.emit("chat:deleteSession", { sessionId });
-    }
-    function onSend(content) {
-      core.emit("chat:send", { content });
-    }
-    return (_ctx, _cache) => {
-      return openBlock(), createBlock(Transition, { name: "chat-drawer" }, {
-        default: withCtx(() => [
-          unref(chat).drawerOpen.value ? (openBlock(), createElementBlock("div", {
-            key: 0,
-            class: "chat-overlay",
-            onClick: withModifiers(close, ["self"])
-          }, [
-            createBaseVNode("aside", {
-              class: normalizeClass(["chat-drawer", { "chat-drawer--expanded": expanded.value }]),
-              role: "dialog",
-              "aria-modal": "true",
-              "aria-labelledby": unref(titleId)
-            }, [
-              createBaseVNode("header", _hoisted_2$4, [
-                createBaseVNode("h2", {
-                  id: unref(titleId),
-                  class: "chat-drawer__title"
-                }, [
-                  createVNode(EditorIcon, {
-                    name: "sparkles",
-                    size: 18
-                  }),
-                  createTextVNode(" " + toDisplayString(unref(t2)("chat.title")), 1)
-                ], 8, _hoisted_3$3),
-                createBaseVNode("div", _hoisted_4, [
-                  createVNode(Button, {
-                    class: "chat-drawer__expand",
-                    icon: expanded.value ? "minimize" : "maximize",
-                    variant: "tertiary",
-                    size: "sm",
-                    "aria-label": expanded.value ? unref(t2)("chat.collapse") : unref(t2)("chat.expand"),
-                    onClick: toggleExpanded
-                  }, null, 8, ["icon", "aria-label"]),
-                  createVNode(Button, {
-                    icon: "x",
-                    variant: "tertiary",
-                    size: "sm",
-                    "aria-label": unref(t2)("chat.close"),
-                    onClick: close
-                  }, null, 8, ["aria-label"])
-                ])
-              ]),
-              createBaseVNode("div", _hoisted_5, [
-                createVNode(ChatSessionList, {
-                  sessions: unref(chat).sessions.value,
-                  "active-session-id": unref(chat).activeSessionId.value,
-                  onSelect,
-                  onCreate,
-                  onRename,
-                  onDelete
-                }, null, 8, ["sessions", "active-session-id"]),
-                createBaseVNode("div", _hoisted_6, [
-                  createVNode(ChatMessageList, {
-                    messages: unref(chat).allMessages.value,
-                    "has-active-session": unref(chat).activeSessionId.value !== null,
-                    "is-loading": unref(chat).isLoadingSession.value
-                  }, null, 8, ["messages", "has-active-session", "is-loading"]),
-                  createVNode(ChatComposer, {
-                    disabled: unref(chat).isStreaming.value || unref(chat).isLoadingSession.value,
-                    onSend
-                  }, null, 8, ["disabled"])
-                ])
-              ])
-            ], 10, _hoisted_1$5)
-          ])) : createCommentVNode("", true)
-        ]),
-        _: 1
-      });
-    };
-  }
-});
-const _style_0$5 = "\n.chat-overlay[data-v-3b5af03a] {\n  position: fixed;\n  inset: 0;\n  z-index: var(--z-drawer);\n  background-color: rgba(0, 0, 0, 0.4);\n  display: flex;\n  justify-content: flex-end;\n}\n.chat-drawer[data-v-3b5af03a] {\n  /* Centered reading column for messages + composer; cascades to the child\n     components through the DOM regardless of scoped styles. */\n  --chat-content-max-width: 760px;\n  --chat-session-list-width: 200px;\n  width: min(620px, 100vw);\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n  background-color: var(--color-surface);\n  box-shadow: var(--shadow-md);\n  transition: width 0.2s ease;\n}\n\n/* Near-full-width: keeps a backdrop strip on the left so click-outside still\n   closes the panel. */\n.chat-drawer--expanded[data-v-3b5af03a] {\n  width: min(1400px, 96vw);\n  --chat-session-list-width: 300px;\n}\n.chat-drawer__header[data-v-3b5af03a] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  flex-shrink: 0;\n}\n.chat-drawer__title[data-v-3b5af03a] {\n  margin: 0;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  font-size: var(--font-size-base);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.chat-drawer__title[data-v-3b5af03a] .editor-icon {\n  color: var(--color-primary);\n}\n.chat-drawer__actions[data-v-3b5af03a] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n}\n\n/* The expand toggle is desktop-only: on phones the panel is already full-width. */\n@media (max-width: 640px) {\n.chat-drawer__expand[data-v-3b5af03a] {\n    display: none;\n}\n}\n.chat-drawer__body[data-v-3b5af03a] {\n  flex: 1;\n  min-height: 0;\n  display: flex;\n}\n.chat-drawer__main[data-v-3b5af03a] {\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n}\n\n/* ── Slide + fade transition ── */\n.chat-drawer-enter-active[data-v-3b5af03a],\n.chat-drawer-leave-active[data-v-3b5af03a] {\n  transition: opacity 0.2s ease;\n}\n.chat-drawer-enter-active .chat-drawer[data-v-3b5af03a],\n.chat-drawer-leave-active .chat-drawer[data-v-3b5af03a] {\n  transition: transform 0.25s ease;\n}\n.chat-drawer-enter-from[data-v-3b5af03a],\n.chat-drawer-leave-to[data-v-3b5af03a] {\n  opacity: 0;\n}\n.chat-drawer-enter-from .chat-drawer[data-v-3b5af03a],\n.chat-drawer-leave-to .chat-drawer[data-v-3b5af03a] {\n  transform: translateX(100%);\n}\n@media (prefers-reduced-motion: reduce) {\n.chat-drawer[data-v-3b5af03a],\n  .chat-drawer-enter-active[data-v-3b5af03a],\n  .chat-drawer-leave-active[data-v-3b5af03a],\n  .chat-drawer-enter-active .chat-drawer[data-v-3b5af03a],\n  .chat-drawer-leave-active .chat-drawer[data-v-3b5af03a] {\n    transition: none;\n}\n}\n";
-const ChatDrawer = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["styles", [_style_0$5]], ["__scopeId", "data-v-3b5af03a"]]);
-const _hoisted_1$4 = ["aria-label"];
-const _hoisted_2$3 = { class: "selection-count" };
-const _hoisted_3$2 = { class: "selection-actions" };
-const _sfc_main$4 = /* @__PURE__ */ defineComponent({
-  __name: "SelectionActionBar",
-  setup(__props) {
-    const selection = useTurnSelection();
-    const { t: t2 } = useI18n();
-    return (_ctx, _cache) => {
-      return unref(selection).hasSelection.value ? (openBlock(), createElementBlock("div", {
-        key: 0,
-        class: "selection-bar",
-        role: "toolbar",
-        "aria-label": unref(t2)("selection.count")
-      }, [
-        createBaseVNode("span", _hoisted_2$3, toDisplayString(unref(selection).count.value) + " " + toDisplayString(unref(t2)("selection.count")), 1),
-        createBaseVNode("div", _hoisted_3$2, [
-          createVNode(CopyButton, {
-            icon: "clipboard-type",
-            "copy-fn": unref(selection).copyText,
-            variant: "secondary"
-          }, {
-            default: withCtx(() => [
-              createTextVNode(toDisplayString(unref(t2)("selection.copyText")), 1)
-            ]),
-            _: 1
-          }, 8, ["copy-fn"]),
-          createVNode(CopyButton, {
-            icon: "clipboard-list",
-            "copy-fn": unref(selection).copyWithMetadata
-          }, {
-            default: withCtx(() => [
-              createTextVNode(toDisplayString(unref(t2)("selection.copyWithMetadata")), 1)
-            ]),
-            _: 1
-          }, 8, ["copy-fn"]),
-          createVNode(Button, {
-            variant: "transparent",
-            icon: "x",
-            onClick: _cache[0] || (_cache[0] = ($event) => unref(selection).clear())
-          }, {
-            default: withCtx(() => [
-              createTextVNode(toDisplayString(unref(t2)("selection.cancel")), 1)
-            ]),
-            _: 1
-          })
-        ])
-      ], 8, _hoisted_1$4)) : createCommentVNode("", true);
-    };
-  }
-});
-const _style_0$4 = "\n.selection-bar[data-v-1f9dee3a] {\n  flex-shrink: 0;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-xs) var(--spacing-lg);\n  /* No backdrop-filter: it forces a WebRender backdrop render target sized to\n     the content behind, a heavy GPU-memory cost on long transcripts. The\n     semi-opaque glass background stays legible without the blur. */\n  background: var(--glass-background);\n  border-bottom: 1px solid var(--color-border);\n  animation: bar-slide-down-1f9dee3a var(--transition-duration) ease;\n}\n.selection-count[data-v-1f9dee3a] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-primary);\n}\n.selection-actions[data-v-1f9dee3a] {\n  display: flex;\n  gap: var(--spacing-xs);\n}\n@keyframes bar-slide-down-1f9dee3a {\nfrom {\n    opacity: 0;\n    translate: 0 -4px;\n}\nto {\n    opacity: 1;\n    translate: 0 0;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.selection-bar[data-v-1f9dee3a] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.selection-bar[data-v-1f9dee3a] {\n    padding: var(--spacing-xs) var(--spacing-md);\n    flex-wrap: wrap;\n    gap: var(--spacing-xs);\n}\n}\n";
-const SelectionActionBar = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["styles", [_style_0$4]], ["__scopeId", "data-v-1f9dee3a"]]);
-const MOBILE_BREAKPOINT = "(max-width: 767px)";
-function useIsMobile() {
-  const isMobile = /* @__PURE__ */ ref(false);
-  let mql = null;
-  function onChange(e3) {
-    isMobile.value = e3.matches;
-  }
-  onMounted(() => {
-    mql = window.matchMedia(MOBILE_BREAKPOINT);
-    isMobile.value = mql.matches;
-    mql.addEventListener("change", onChange);
-  });
-  onBeforeUnmount(() => {
-    mql?.removeEventListener("change", onChange);
-  });
-  return { isMobile };
-}
-const _hoisted_1$3 = { class: "editor-layout" };
-const _hoisted_2$2 = { class: "editor-body" };
-const _hoisted_3$1 = {
-  key: 6,
-  class: "mobile-selectors"
-};
-const _sfc_main$3 = /* @__PURE__ */ defineComponent({
-  __name: "Layout",
-  props: {
-    showHeader: { type: Boolean, default: true }
-  },
-  setup(__props) {
-    const props = __props;
-    const core = useCore();
-    const { isMobile } = useIsMobile();
-    const isSidebarOpen = /* @__PURE__ */ ref(false);
-    const activeTab = /* @__PURE__ */ ref(TRANSCRIPTION_TAB);
-    const activeTurns = computed(
-      () => core.activeChannel.value?.activeTranslation.value.turns.value ?? []
-    );
-    const speakers = core.speakers.all;
-    provideTurnSelection(activeTurns, speakers, core);
-    const channels = computed(() => [...core.channels.values()]);
-    const translations = computed(
-      () => core.activeChannel.value?.selectableTranslations ?? []
-    );
-    const activeTranslationId = computed(
-      () => core.activeChannel.value?.activeTranslation.value.id ?? ""
-    );
-    const speakerList = computed(() => Array.from(speakers.values()));
-    const showTranscription = computed(() => activeTab.value === TRANSCRIPTION_TAB);
-    const showVerbatim = computed(() => activeTab.value === VERBATIM_TAB);
-    const activeService = computed(() => {
-      if (showTranscription.value || showVerbatim.value) return null;
-      return core.llmServices?.get(activeTab.value) ?? null;
-    });
-    watch(activeTab, (id) => {
-      if (!core.llmServices) return;
-      if (id === TRANSCRIPTION_TAB || id === VERBATIM_TAB) {
-        core.llmServices.setActive(null);
-      } else {
-        core.llmServices.setActive(id);
-      }
-    });
-    watch(
-      () => core.llmServices?.list.value.map((s2) => s2.id).join("|"),
-      () => {
-        if (activeTab.value !== TRANSCRIPTION_TAB && activeTab.value !== VERBATIM_TAB && !core.llmServices?.get(activeTab.value)) {
-          activeTab.value = TRANSCRIPTION_TAB;
-        }
-      }
-    );
-    const audioPlayerRef = useTemplateRef("audioPlayer");
-    watch(
-      () => core.activeChannelId.value,
-      () => {
-        audioPlayerRef.value?.pause();
-        if (core.audio) {
-          core.audio.currentTime.value = 0;
-          core.audio.isPlaying.value = false;
-        }
-        isSidebarOpen.value = false;
-      }
-    );
-    watch(showTranscription, (visible) => {
-      if (!visible) audioPlayerRef.value?.pause();
-    });
-    function onChannelChange(channelId) {
-      core.setActiveChannel(channelId);
-    }
-    function onTranslationChange(translationId) {
-      core.activeChannel.value?.setActiveTranslation(translationId);
-    }
-    return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("div", _hoisted_1$3, [
-        props.showHeader ? (openBlock(), createBlock(Header, {
-          key: 0,
-          title: unref(core).title.value,
-          date: unref(core).date.value,
-          duration: unref(core).activeChannel.value?.duration ?? 0,
-          "speaker-count": unref(speakers).size,
-          "is-mobile": unref(isMobile),
-          "can-ask": !!unref(core).chat,
-          onToggleSidebar: _cache[0] || (_cache[0] = ($event) => isSidebarOpen.value = !isSidebarOpen.value),
-          onOpenChat: _cache[1] || (_cache[1] = ($event) => unref(core).chat?.setDrawerOpen(true))
-        }, null, 8, ["title", "date", "duration", "speaker-count", "is-mobile", "can-ask"])) : createCommentVNode("", true),
-        createVNode(_sfc_main$K, {
-          modelValue: activeTab.value,
-          "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => activeTab.value = $event)
-        }, null, 8, ["modelValue"]),
-        showTranscription.value ? (openBlock(), createBlock(SelectionActionBar, { key: 1 })) : createCommentVNode("", true),
-        createBaseVNode("main", _hoisted_2$2, [
-          showTranscription.value ? (openBlock(), createBlock(TranscriptionPanel, {
-            key: 0,
-            turns: activeTurns.value,
-            speakers: unref(speakers)
-          }, null, 8, ["turns", "speakers"])) : showVerbatim.value ? (openBlock(), createBlock(VerbatimPanel, { key: 1 })) : activeService.value ? (openBlock(), createBlock(LLMServicePanel, {
-            key: activeService.value.id,
-            service: activeService.value
-          }, null, 8, ["service"])) : (openBlock(), createBlock(TranscriptionPanel, {
-            key: 3,
-            turns: activeTurns.value,
-            speakers: unref(speakers)
-          }, null, 8, ["turns", "speakers"])),
-          !unref(isMobile) ? (openBlock(), createBlock(SpeakerSidebar, {
-            key: 4,
-            speakers: speakerList.value,
-            channels: channels.value,
-            "selected-channel-id": unref(core).activeChannelId.value,
-            translations: translations.value,
-            "selected-translation-id": activeTranslationId.value,
-            "show-speakers": showTranscription.value,
-            "onUpdate:selectedChannelId": onChannelChange,
-            "onUpdate:selectedTranslationId": onTranslationChange
-          }, null, 8, ["speakers", "channels", "selected-channel-id", "translations", "selected-translation-id", "show-speakers"])) : createCommentVNode("", true),
-          unref(isMobile) ? (openBlock(), createBlock(_sfc_main$i, {
-            key: 5,
-            open: isSidebarOpen.value,
-            "onUpdate:open": _cache[3] || (_cache[3] = ($event) => isSidebarOpen.value = $event)
-          }, {
-            default: withCtx(() => [
-              createVNode(SpeakerSidebar, {
-                speakers: speakerList.value,
-                channels: channels.value,
-                "selected-channel-id": unref(core).activeChannelId.value,
-                translations: translations.value,
-                "selected-translation-id": activeTranslationId.value,
-                "show-speakers": showTranscription.value,
-                "onUpdate:selectedChannelId": onChannelChange,
-                "onUpdate:selectedTranslationId": onTranslationChange
-              }, null, 8, ["speakers", "channels", "selected-channel-id", "translations", "selected-translation-id", "show-speakers"])
-            ]),
-            _: 1
-          }, 8, ["open"])) : createCommentVNode("", true)
-        ]),
-        unref(core).audio?.src.value ? withDirectives((openBlock(), createBlock(AudioPlayer, {
-          key: 2,
-          ref: "audioPlayer",
-          "audio-src": unref(core).audio.src.value
-        }, null, 8, ["audio-src"])), [
-          [vShow, showTranscription.value]
-        ]) : createCommentVNode("", true),
-        unref(core).subtitle?.isVisible.value && !unref(isMobile) && !unref(core).subtitle.isFullscreen.value ? (openBlock(), createBlock(SubtitleBanner, { key: 3 })) : createCommentVNode("", true),
-        unref(core).subtitle?.isFullscreen.value ? (openBlock(), createBlock(SubtitleFullscreen, { key: 4 })) : createCommentVNode("", true),
-        unref(core).chat ? (openBlock(), createBlock(ChatDrawer, { key: 5 })) : createCommentVNode("", true),
-        unref(isMobile) && (channels.value.length > 1 || translations.value.length > 1) ? (openBlock(), createElementBlock("div", _hoisted_3$1, [
-          channels.value.length > 1 ? (openBlock(), createBlock(_sfc_main$l, {
-            key: 0,
-            channels: channels.value,
-            "selected-channel-id": unref(core).activeChannelId.value,
-            "onUpdate:selectedChannelId": onChannelChange
-          }, null, 8, ["channels", "selected-channel-id"])) : createCommentVNode("", true),
-          translations.value.length > 1 ? (openBlock(), createBlock(_sfc_main$k, {
-            key: 1,
-            translations: translations.value,
-            "selected-translation-id": activeTranslationId.value,
-            "onUpdate:selectedTranslationId": onTranslationChange
-          }, null, 8, ["translations", "selected-translation-id"])) : createCommentVNode("", true)
-        ])) : createCommentVNode("", true)
-      ]);
-    };
-  }
-});
-const _style_0$3 = "\n.editor-layout[data-v-5918b5b2] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: hidden;\n  background-color: var(--color-background);\n}\n.editor-body[data-v-5918b5b2] {\n  display: grid;\n  grid-template-columns: 1fr var(--sidebar-width);\n  flex: 1;\n  min-height: 0;\n}\n.mobile-selectors[data-v-5918b5b2] {\n  display: flex;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n  box-shadow: var(--shadow-md);\n  align-items: end;\n}\n.mobile-selectors[data-v-5918b5b2] > * {\n  flex: 1;\n  min-width: 0;\n}\n@media (max-width: 767px) {\n.editor-body[data-v-5918b5b2] {\n    grid-template-columns: 1fr;\n}\n}\n";
-const Layout = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["styles", [_style_0$3]], ["__scopeId", "data-v-5918b5b2"]]);
-const _hoisted_1$2 = {
-  class: "editor-loading",
-  role: "status",
-  "aria-live": "polite"
-};
-const _hoisted_2$1 = { class: "editor-loading__label" };
-const _sfc_main$2 = /* @__PURE__ */ defineComponent({
-  __name: "EditorLoadingOverlay",
-  setup(__props) {
-    const { t: t2 } = useI18n();
-    return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("div", _hoisted_1$2, [
-        _cache[0] || (_cache[0] = createBaseVNode("span", {
-          class: "editor-loading__spinner",
-          "aria-hidden": "true"
-        }, null, -1)),
-        createBaseVNode("span", _hoisted_2$1, toDisplayString(unref(t2)("editor.loading")), 1)
-      ]);
-    };
-  }
-});
-const _style_0$2 = "\n.editor-loading[data-v-07ad7ab4] {\n  position: absolute;\n  inset: 0;\n  z-index: 20;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  /* Opaque so the half-built layout never flashes behind while collab syncs.\n     No backdrop-filter: it is banned in this package (WebRender GTT freeze). */\n  background-color: var(--color-background);\n  color: var(--color-text-secondary);\n  font-family: var(--font-family);\n  font-size: var(--font-size-sm);\n}\n.editor-loading__spinner[data-v-07ad7ab4] {\n  width: 32px;\n  height: 32px;\n  border: 3px solid var(--color-border);\n  border-top-color: var(--color-primary);\n  border-radius: 50%;\n  animation: editor-loading-spin-07ad7ab4 0.8s linear infinite;\n}\n@keyframes editor-loading-spin-07ad7ab4 {\nto {\n    transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.editor-loading__spinner[data-v-07ad7ab4] {\n    animation: none;\n}\n}\n";
-const EditorLoadingOverlay = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["styles", [_style_0$2]], ["__scopeId", "data-v-07ad7ab4"]]);
-const _hoisted_1$1 = {
-  class: "editor-error",
-  role: "alert"
-};
-const _hoisted_2 = { class: "editor-error__title" };
-const _hoisted_3 = {
-  key: 0,
-  class: "editor-error__detail"
-};
-const _sfc_main$1 = /* @__PURE__ */ defineComponent({
-  __name: "EditorErrorOverlay",
-  props: {
-    message: { type: [String, null] }
-  },
-  setup(__props) {
-    const { t: t2 } = useI18n();
-    return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("div", _hoisted_1$1, [
-        createVNode(EditorIcon, {
-          name: "warning",
-          size: 40,
-          class: "editor-error__icon"
-        }),
-        createBaseVNode("p", _hoisted_2, toDisplayString(unref(t2)("editor.loadError")), 1),
-        __props.message ? (openBlock(), createElementBlock("p", _hoisted_3, toDisplayString(__props.message), 1)) : createCommentVNode("", true)
-      ]);
-    };
-  }
-});
-const _style_0$1 = "\n.editor-error[data-v-5f00d5aa] {\n  position: absolute;\n  inset: 0;\n  z-index: 20;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-xl);\n  text-align: center;\n  /* Opaque so the half-built layout never shows behind. No backdrop-filter:\n     it is banned in this package (WebRender GTT freeze). */\n  background-color: var(--color-background);\n  font-family: var(--font-family);\n}\n.editor-error__icon[data-v-5f00d5aa] {\n  color: var(--color-danger);\n}\n.editor-error__title[data-v-5f00d5aa] {\n  margin: 0;\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.editor-error__detail[data-v-5f00d5aa] {\n  margin: 0;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-muted);\n}\n";
-const EditorErrorOverlay = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["styles", [_style_0$1]], ["__scopeId", "data-v-5f00d5aa"]]);
-const READY_TIMEOUT_MS = 2e4;
-function useEditorReady(core) {
-  const isLoading = /* @__PURE__ */ ref(true);
-  const error = /* @__PURE__ */ ref(null);
-  let timer;
-  function clearTimer() {
-    if (timer !== void 0) {
-      clearTimeout(timer);
-      timer = void 0;
-    }
-  }
-  function settle() {
-    isLoading.value = false;
-    clearTimer();
-  }
-  function reset() {
-    error.value = null;
-    if (core.channels.size > 0) {
-      settle();
-      return;
-    }
-    isLoading.value = true;
-    clearTimer();
-    timer = setTimeout(settle, READY_TIMEOUT_MS);
-  }
-  const offDocChange = core.on("document:change", reset);
-  reset();
-  onScopeDispose(() => {
-    offDocChange();
-    clearTimer();
-  });
-  return { isLoading, error };
-}
-const _hoisted_1 = { class: "editor-root" };
-const _sfc_main = /* @__PURE__ */ defineComponent({
-  __name: "WebComponent",
-  props: {
-    locale: { default: "fr", type: String },
-    noHeader: { type: Boolean, default: false }
-  },
-  setup(__props, { expose: __expose }) {
-    const props = __props;
-    const locale = /* @__PURE__ */ ref(props.locale);
-    provideI18n(locale);
-    watch(
-      () => props.locale,
-      (val) => {
-        locale.value = val;
-      }
-    );
-    const core = createCore();
-    provideCore(core);
-    const { isLoading, error } = useEditorReady(core);
-    onBeforeUnmount(() => core.destroy());
-    __expose({ core });
-    return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("div", _hoisted_1, [
-        unref(core).channels.size ? (openBlock(), createBlock(Layout, {
-          key: 0,
-          "show-header": !props.noHeader
-        }, null, 8, ["show-header"])) : createCommentVNode("", true),
-        unref(error) ? (openBlock(), createBlock(EditorErrorOverlay, {
-          key: 1,
-          message: unref(error)
-        }, null, 8, ["message"])) : unref(isLoading) ? (openBlock(), createBlock(EditorLoadingOverlay, { key: 2 })) : createCommentVNode("", true)
-      ]);
-    };
-  }
-});
-const _style_0 = `/*
- * Design tokens
- *
- * Public theming API — these CSS custom properties can be overridden from
- * outside the web component by setting them on the <linto-editor> element:
- *
- *   linto-editor {
- *     --color-primary: #e63946;
- *     --color-background: #fafafa;
- *   }
- *
- * Colors:
- *   --color-primary          Accent / brand color
- *   --color-primary-hover    Primary hover state
- *   --color-background       Page background
- *   --color-surface          Cards, panels, player
- *   --color-surface-hover    Hover on surfaces
- *   --color-text-primary     Main text
- *   --color-text-secondary   Secondary text (timestamps…)
- *   --color-text-muted       Muted text (labels)
- *   --color-border           Borders
- *   --color-border-light     Light borders
- *
- * Typography, spacing, radius, and shadows are also overridable.
- */
-:root,
-:host {
-  /* Colors — light theme */
-  --color-background: #f8f9fa;
-  --color-surface: #ffffff;
-  --color-surface-hover: #f1f3f5;
-  --color-text-primary: #1a1d21;
-  --color-text-secondary: #495057;
-  --color-text-muted: #6c757d;
-  --color-primary: #4263eb;
-  --color-primary-hover: #3b5bdb;
-  --color-border: #dee2e6;
-  --color-border-light: #e9ecef;
-  --color-white: #ffffff;
-  --color-black: #000000;
-  --color-danger: #e53935;
-  --color-danger-hover: #c62828;
-  --color-danger-soft: #fdecea;
-
-  /* Typography */
-  --font-family:
-    "Atkinson Hyperlegible Next", system-ui, -apple-system, sans-serif;
-  --font-family-mono: "Atkinson Hyperlegible Mono", ui-monospace, monospace;
-  --font-size-xs: 0.875rem;
-  --font-size-sm: 1rem;
-  --font-size-base: 1.125rem;
-  --font-size-lg: 1.25rem;
-  --font-size-xl: 1.75rem;
-  --line-height: 1.6;
-
-  /* Spacing */
-  --spacing-xxs: 0.125rem;
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
-
-  /* Radius */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-
-  /* Layout */
-  --sidebar-width: 300px;
-  --header-height: 56px;
-
-  /* Shadows */
-  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
-
-  /* Transitions */
-  --transition-duration: 150ms;
-
-  /* Z-index scale */
-  --z-sticky: 10;
-  --z-overlay: 50;
-  --z-drawer: 1000;
-  --z-dropdown: 1100;
-
-  /* Glass effect — backdrop blur intentionally removed: each backdrop-filter
-     forces a WebRender render target, which on long transcripts (one waveform
-     region per turn, tall scroll container) balloons GPU memory to several GB
-     and freezes weaker machines. Keep the semi-opaque background only. */
-  --glass-background: rgba(255, 255, 255, 0.8);
-  --glass-border: rgba(255, 255, 255, 0.3);
-}
-:host,
-body {
-  font-family: var(--font-family);
-  font-size: var(--font-size-base);
-  line-height: var(--line-height);
-  color: var(--color-text-primary);
-  background-color: var(--color-background);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-:host {
-  display: block;
-  height: 100%;
-  overflow: hidden;
-}
-
-/* Reset */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-/* Dev mode SPA (ignored in Shadow DOM — these elements don't exist) */
-html,
-body {
-  height: 100%;
-  overflow: hidden;
-}
-#app {
-  height: 100%;
-  overflow: hidden;
-}
-
-/* Utility */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
-}
-
-/* Overlay (shared by sidebar drawer + sheet select) */
-.editor-overlay {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.4);
-  z-index: var(--z-overlay);
-  animation: overlay-fade-in 200ms ease;
-}
-
-/* Drawer mobile (sidebar) */
-.sidebar-drawer {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: min(320px, 85vw);
-  z-index: var(--z-drawer);
-  background-color: var(--color-surface);
-  box-shadow: var(--shadow-md);
-  animation: drawer-slide-in 250ms ease;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-}
-.sidebar-close {
-  position: absolute;
-  top: var(--spacing-sm);
-  right: var(--spacing-sm);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border: none;
-  background: none;
-  color: var(--color-text-muted);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  z-index: 1;
-}
-.sidebar-close:hover {
-  background-color: var(--color-surface-hover);
-  color: var(--color-text-primary);
-}
-
-/* Keyframes */
-@keyframes overlay-fade-in {
-from {
-    opacity: 0;
-}
-to {
-    opacity: 1;
-}
-}
-@keyframes drawer-slide-in {
-from {
-    translate: 100% 0;
-}
-to {
-    translate: 0 0;
-}
-}
-@media (prefers-reduced-motion: reduce) {
-.editor-overlay,
-  .sidebar-drawer {
-    animation: none;
-}
-}
-
-/* Wavesurfer ::part (cannot work in scoped styles) */
-
-/* No backdrop-filter: there is one region per turn (hundreds on a long
-   transcript), and each backdrop-filter forces a separate WebRender backdrop
-   render target — on a multi-hour document this balloons GPU/GTT memory to
-   several GB and freezes weaker machines. The border/shadow alone read fine. */
-.waveform-container ::part(region) {
-  border-top: 2px solid var(--region-color, rgba(255, 255, 255, 0.4));
-  border-bottom: 1px solid var(--region-color, rgba(255, 255, 255, 0.4));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    0 1px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Turn nodes use \`content-visibility: auto\` for long-document perf, which
-   implies paint containment and clips any overflow to the turn's box. The
-   speaker popover floats out of the turn, so it gets cut off at the turn's
-   bottom edge. While its trigger is open (Reka sets data-state="open"), drop
-   the containment on that turn so the popover can overflow freely. The turn is
-   on-screen when open, so lifting content-visibility causes no layout shift.
-   Global (not scoped) because the open trigger is rendered by another
-   component, so a scoped :has() selector would not match it. */
-section.turn:has([data-state="open"]) {
-  content-visibility: visible;
-}
-
-/* Shared surface and row styles for PopoverList and similar anchored panels.
-   Kept global because Reka portals render outside the component's scoped
-   CSS boundary. */
-.popover-list {
-  min-width: 180px;
-  padding: var(--spacing-xs);
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  box-shadow: 0 8px 24px
-    color-mix(in srgb, var(--color-text-primary) 15%, transparent);
-  z-index: 50;
-}
-.popover-list__items {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  margin: 0;
-  padding: 0;
-  max-height: 280px;
-  overflow-y: auto;
-}
-.popover-list__item {
-  all: unset;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  width: 100%;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--radius-sm);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-primary);
-  cursor: pointer;
-}
-.popover-list__item:hover,
-.popover-list__item[data-highlighted] {
-  background-color: var(--color-surface-hover);
-}
-.popover-list__item:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: -2px;
-}
-.popover-list__item--current {
-  background-color: color-mix(
-    in srgb,
-    var(--color-primary) 10%,
-    transparent
-  );
-}
-.popover-list__divider {
-  height: 1px;
-  background-color: var(--color-border);
-  margin: var(--spacing-xs) 0;
-}
-.popover-list__footer {
-  padding: var(--spacing-xs);
-}
-
-/* Positioning context for the absolute loading overlay. */
-.editor-root {
-  position: relative;
-  height: 100%;
-}
-`;
-const WebComponent = /* @__PURE__ */ _export_sfc(_sfc_main, [["styles", [_style_0]]]);
-const fontsStyles = '/* Atkinson Hyperlegible Next — main font */\n@font-face {\n  font-family: "Atkinson Hyperlegible Next";\n  font-style: normal;\n  font-weight: 400;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleNext-Regular.woff2") format("woff2");\n}\n@font-face {\n  font-family: "Atkinson Hyperlegible Next";\n  font-style: normal;\n  font-weight: 500;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleNext-Medium.woff2") format("woff2");\n}\n@font-face {\n  font-family: "Atkinson Hyperlegible Next";\n  font-style: normal;\n  font-weight: 600;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleNext-SemiBold.woff2") format("woff2");\n}\n@font-face {\n  font-family: "Atkinson Hyperlegible Next";\n  font-style: normal;\n  font-weight: 700;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleNext-Bold.woff2") format("woff2");\n}\n\n/* Atkinson Hyperlegible Mono — monospace font */\n@font-face {\n  font-family: "Atkinson Hyperlegible Mono";\n  font-style: normal;\n  font-weight: 400;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleMono-Regular.woff2") format("woff2");\n}\n@font-face {\n  font-family: "Atkinson Hyperlegible Mono";\n  font-style: normal;\n  font-weight: 500;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleMono-Medium.woff2") format("woff2");\n}\n';
-const prismTheme = `/**
- * prism.js default theme for JavaScript, CSS and HTML
- * Based on dabblet (http://dabblet.com)
- * @author Lea Verou
- */
-
-code[class*="language-"],
-pre[class*="language-"] {
-	color: black;
-	background: none;
-	text-shadow: 0 1px white;
-	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-	font-size: 1em;
-	text-align: left;
-	white-space: pre;
-	word-spacing: normal;
-	word-break: normal;
-	word-wrap: normal;
-	line-height: 1.5;
-
-	-moz-tab-size: 4;
-	-o-tab-size: 4;
-	tab-size: 4;
-
-	-webkit-hyphens: none;
-	-moz-hyphens: none;
-	-ms-hyphens: none;
-	hyphens: none;
-}
-
-pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
-code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
-	text-shadow: none;
-	background: #b3d4fc;
-}
-
-pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
-code[class*="language-"]::selection, code[class*="language-"] ::selection {
-	text-shadow: none;
-	background: #b3d4fc;
-}
-
-@media print {
-	code[class*="language-"],
-	pre[class*="language-"] {
-		text-shadow: none;
-	}
-}
-
-/* Code blocks */
-pre[class*="language-"] {
-	padding: 1em;
-	margin: .5em 0;
-	overflow: auto;
-}
-
-:not(pre) > code[class*="language-"],
-pre[class*="language-"] {
-	background: #f5f2f0;
-}
-
-/* Inline code */
-:not(pre) > code[class*="language-"] {
-	padding: .1em;
-	border-radius: .3em;
-	white-space: normal;
-}
-
-.token.comment,
-.token.prolog,
-.token.doctype,
-.token.cdata {
-	color: slategray;
-}
-
-.token.punctuation {
-	color: #999;
-}
-
-.token.namespace {
-	opacity: .7;
-}
-
-.token.property,
-.token.tag,
-.token.boolean,
-.token.number,
-.token.constant,
-.token.symbol,
-.token.deleted {
-	color: #905;
-}
-
-.token.selector,
-.token.attr-name,
-.token.string,
-.token.char,
-.token.builtin,
-.token.inserted {
-	color: #690;
-}
-
-.token.operator,
-.token.entity,
-.token.url,
-.language-css .token.string,
-.style .token.string {
-	color: #9a6e3a;
-	/* This background color was intended by the author of this theme. */
-	background: hsla(0, 0%, 100%, .5);
-}
-
-.token.atrule,
-.token.attr-value,
-.token.keyword {
-	color: #07a;
-}
-
-.token.function,
-.token.class-name {
-	color: #DD4A68;
-}
-
-.token.regex,
-.token.important,
-.token.variable {
-	color: #e90;
-}
-
-.token.important,
-.token.bold {
-	font-weight: bold;
-}
-.token.italic {
-	font-style: italic;
-}
-
-.token.entity {
-	cursor: help;
-}
-`;
-const TTS_SUPPORTED = typeof window !== "undefined" && "speechSynthesis" in window;
-function isTTSSupported() {
-  return TTS_SUPPORTED;
-}
-function hasVoices() {
-  return TTS_SUPPORTED && window.speechSynthesis.getVoices().length > 0;
-}
-function findVoice(lang) {
-  if (!TTS_SUPPORTED || !lang || lang === "*") return null;
-  const norm = lang.toLowerCase();
-  const base = norm.split("-")[0];
-  const voices = window.speechSynthesis.getVoices();
-  const exact = voices.find((v2) => v2.lang.toLowerCase() === norm);
-  if (exact) return exact;
-  return voices.find((v2) => v2.lang.toLowerCase().split("-")[0] === base) ?? null;
-}
-function speakText(text2, lang) {
-  if (!isTTSSupported()) return;
-  const clean = text2.trim();
-  if (!clean) return;
-  const utterance = new SpeechSynthesisUtterance(clean);
-  const voice = lang ? findVoice(lang) : null;
-  if (voice) {
-    utterance.voice = voice;
-    utterance.lang = voice.lang;
-  }
-  window.speechSynthesis.speak(utterance);
-}
-function unlockTTS() {
-  if (!isTTSSupported()) return;
-  window.speechSynthesis.speak(new SpeechSynthesisUtterance(" "));
-}
-function stopTTS() {
-  if (isTTSSupported()) window.speechSynthesis.cancel();
-}
-function finalEventToSourceTurn(event) {
-  const hasWords = event.words.length > 0;
-  return {
-    id: event.turnId,
-    speakerId: event.speakerId,
-    text: hasWords ? null : event.text ?? null,
-    words: event.words,
-    startTime: event.startTime,
-    endTime: event.endTime,
-    startDate: event.startDate,
-    endDate: event.endDate,
-    language: event.language,
-    sourceLanguage: event.language
-  };
-}
-function finalEventToTranslationTurn(event, tr) {
-  return {
-    id: event.turnId,
-    speakerId: event.speakerId,
-    text: tr.text,
-    words: [],
-    startTime: event.startTime,
-    endTime: event.endTime,
-    startDate: event.startDate,
-    endDate: event.endDate,
-    language: tr.language,
-    sourceLanguage: tr.sourceLanguage
-  };
-}
-function createLivePlugin(options = {}) {
-  const ttsAvailable = options.tts ?? false;
-  return {
-    name: "live",
-    install(core) {
-      const partial = /* @__PURE__ */ shallowRef(null);
-      const hasLiveUpdate = /* @__PURE__ */ ref(false);
-      const ttsEnabled = /* @__PURE__ */ ref(false);
-      const ttsSupported = isTTSSupported();
-      const ttsReady = /* @__PURE__ */ ref(false);
-      function refreshTTSReady() {
-        ttsReady.value = hasVoices();
-      }
-      if (ttsSupported) {
-        refreshTTSReady();
-        window.speechSynthesis.addEventListener("voiceschanged", refreshTTSReady);
-      }
-      let lastOriginalPartialEvent = null;
-      hasLiveUpdate.value = true;
-      function clearPartial() {
-        partial.value = null;
-        lastOriginalPartialEvent = null;
-      }
-      function isTranslationTrackFor(active, language) {
-        if (active.isSource) return false;
-        return active.languages.some((l4) => isSameLanguage(l4, language));
-      }
-      function onPartial(event, channelId) {
-        if (core.activeChannelId.value !== channelId) return;
-        const channel = core.activeChannel.value;
-        if (!channel) return;
-        lastOriginalPartialEvent = event;
-        const activeTranslation = channel.activeTranslation.value;
-        if (activeTranslation.isSource && event.text != null) {
-          partial.value = event.text;
-        }
-      }
-      let clearPartialTimeout = null;
-      function deferredClearPartial() {
-        if (clearPartialTimeout !== null) return;
-        clearPartialTimeout = setTimeout(() => {
-          clearPartialTimeout = null;
-          clearPartial();
-        }, 150);
-      }
-      function cancelDeferredClear() {
-        if (clearPartialTimeout !== null) {
-          clearTimeout(clearPartialTimeout);
-          clearPartialTimeout = null;
-        }
-      }
-      function updateOrCreateTurn(store, turn) {
-        if (store.hasTurn(turn.id)) store.updateTurn(turn.id, turn);
-        else store.addTurn(turn);
-      }
-      function onFinal(event, channelId) {
-        if (event.speakerId) core.speakers.ensure(event.speakerId);
-        const channel = core.channels.get(channelId);
-        if (!channel) {
-          immediateClearPartial();
-          return;
-        }
-        if (event.text != null) {
-          updateOrCreateTurn(
-            channel.sourceTranslation,
-            finalEventToSourceTurn(event)
-          );
-        }
-        if (event.translations) {
-          for (const tr of event.translations) {
-            const trStore = channel.translations.get(tr.translationId);
-            if (trStore)
-              updateOrCreateTurn(
-                trStore,
-                finalEventToTranslationTurn(event, {
-                  ...tr,
-                  sourceLanguage: event.language
-                })
-              );
-          }
-        }
-        const active = core.activeChannel.value?.activeTranslation.value;
-        if (active?.isSource) {
-          immediateClearPartial();
-        }
-        if (ttsEnabled.value && active?.isSource && event.text != null && core.activeChannelId.value === channelId) {
-          speakText(event.text, event.language);
-        }
-      }
-      function prependFinal(event, channelId) {
-        prependFinalBatch([event], channelId);
-      }
-      function prependFinalBatch(events, channelId) {
-        const channel = core.channels.get(channelId);
-        if (!channel) return;
-        const seen = /* @__PURE__ */ new Set();
-        for (const event of events) {
-          if (event.speakerId && !seen.has(event.speakerId)) {
-            seen.add(event.speakerId);
-            core.speakers.ensure(event.speakerId);
-          }
-        }
-        const sourceTurns = [];
-        for (const event of events) {
-          if (event.text != null) {
-            sourceTurns.push(finalEventToSourceTurn(event));
-          }
-        }
-        if (sourceTurns.length > 0) {
-          channel.sourceTranslation.prependTurns(sourceTurns);
-        }
-        const translationTurns = /* @__PURE__ */ new Map();
-        for (const event of events) {
-          if (!event.translations) continue;
-          for (const tr of event.translations) {
-            let list = translationTurns.get(tr.translationId);
-            if (!list) {
-              list = [];
-              translationTurns.set(tr.translationId, list);
-            }
-            list.push(
-              finalEventToTranslationTurn(event, {
-                ...tr,
-                sourceLanguage: event.language
-              })
-            );
-          }
-        }
-        for (const [translationId, turns] of translationTurns) {
-          const trStore = channel.translations.get(translationId);
-          if (trStore) trStore.prependTurns(turns);
-        }
-      }
-      function immediateClearPartial() {
-        cancelDeferredClear();
-        clearPartial();
-      }
-      function onTranslation(_event) {
-        const channel = core.activeChannel.value;
-        if (!channel) return;
-        const activeTranslation = channel.activeTranslation.value;
-        if (!_event.final) {
-          if (activeTranslation.id === CROSS_TRANSLATION_ID) {
-            if (_event.turnId === lastOriginalPartialEvent?.turnId && !isSameLanguage(
-              _event.language,
-              lastOriginalPartialEvent?.language
-            )) {
-              partial.value = _event.text;
-            }
-          } else if (isTranslationTrackFor(activeTranslation, _event.language)) {
-            partial.value = _event.text;
-          }
-          return;
-        }
-        const trStore = channel.translations.get(_event.language);
-        if (trStore) {
-          const turn = finalEventToTranslationTurn(
-            { ..._event },
-            _event
-          );
-          if (trStore === activeTranslation || activeTranslation.id === CROSS_TRANSLATION_ID) {
-            updateOrCreateTurn(trStore, turn);
-          } else {
-            trStore.updateOrCreateTurnSilent(turn);
-          }
-        }
-        if (isTranslationTrackFor(activeTranslation, _event.language) || activeTranslation.id === CROSS_TRANSLATION_ID) {
-          immediateClearPartial();
-          if (ttsEnabled.value && _event.text) {
-            speakText(_event.text, _event.language);
-          }
-        }
-      }
-      function enableTTS() {
-        ttsEnabled.value = true;
-        unlockTTS();
-      }
-      function disableTTS() {
-        ttsEnabled.value = false;
-        stopTTS();
-      }
-      const api = {
-        partial,
-        hasLiveUpdate,
-        ttsAvailable,
-        ttsEnabled,
-        ttsReady,
-        enableTTS,
-        disableTTS,
-        onPartial,
-        onFinal,
-        prependFinal,
-        prependFinalBatch,
-        onTranslation
-      };
-      const unsubChannelChange = core.on(
-        "channel:change",
-        immediateClearPartial
-      );
-      const unsubTranslationChange = core.on(
-        "translation:change",
-        immediateClearPartial
-      );
-      const unsubTranslationSync = core.on(
-        "translation:sync",
-        deferredClearPartial
-      );
-      const unsubChannelSync = core.on("channel:sync", deferredClearPartial);
-      core.live = api;
-      return () => {
-        immediateClearPartial();
-        stopTTS();
-        if (ttsSupported) {
-          window.speechSynthesis.removeEventListener(
-            "voiceschanged",
-            refreshTTSReady
-          );
-        }
-        unsubChannelChange();
-        unsubTranslationChange();
-        unsubTranslationSync();
-        unsubChannelSync();
-        core.live = void 0;
-      };
-    }
-  };
-}
-const WORD_TRACK_INTERVAL = 0.05;
-function createAudioPlugin(options = {}) {
-  return {
-    name: "audio",
-    install(core) {
-      const currentTime = /* @__PURE__ */ ref(0);
-      const isPlaying = /* @__PURE__ */ ref(false);
-      const activeWordId = /* @__PURE__ */ ref(null);
-      const activeTurnId = /* @__PURE__ */ ref(null);
-      let seekHandler = null;
-      let pauseHandler = null;
-      const rawSource = computed(
-        () => core.activeChannel.value?.activeTranslation.value.audio ?? null
-      );
-      const resolvedSrc = /* @__PURE__ */ ref(null);
-      const waveform = /* @__PURE__ */ ref(null);
-      let ownedObjectUrl = null;
-      function revokeOwned() {
-        if (ownedObjectUrl) {
-          URL.revokeObjectURL(ownedObjectUrl);
-          ownedObjectUrl = null;
-        }
-      }
-      const stopSourceWatch = watch(
-        rawSource,
-        async (source) => {
-          revokeOwned();
-          resolvedSrc.value = null;
-          waveform.value = null;
-          if (!source) return;
-          const waveformPromise = options.resolveWaveform ? Promise.resolve(options.resolveWaveform(source)).catch((err) => {
-            console.warn("[audio] resolveWaveform failed", err);
-            return null;
-          }) : Promise.resolve(null);
-          try {
-            const [url, peaks] = await Promise.all([
-              options.resolveSrc ? options.resolveSrc(source) : Promise.resolve(source.src),
-              waveformPromise
-            ]);
-            waveform.value = peaks?.length ? peaks : null;
-            resolvedSrc.value = url;
-            if (url.startsWith("blob:")) ownedObjectUrl = url;
-          } catch (err) {
-            console.error("[audio] resolveSrc failed", err);
-          }
-        },
-        { immediate: true }
-      );
-      const src = computed(() => resolvedSrc.value);
-      let lastComputeTime = Number.NEGATIVE_INFINITY;
-      const stopTracker = watchEffect(() => {
-        const time = currentTime.value;
-        const playing = isPlaying.value;
-        if (playing) {
-          const elapsed = time - lastComputeTime;
-          if (elapsed >= 0 && elapsed < WORD_TRACK_INTERVAL) return;
-        }
-        lastComputeTime = time;
-        const translation = core.activeChannel.value?.activeTranslation.value;
-        if (!translation) return;
-        for (const turn of translation.turns.value) {
-          const words = turn.words;
-          const start = firstWordStart(words) ?? turn.startTime;
-          const end = lastWordEnd(words) ?? turn.endTime;
-          if (start != null && end != null && time >= start && time <= end) {
-            activeTurnId.value = turn.id;
-            activeWordId.value = findActiveWord(words, time);
-            return;
-          }
-        }
-      });
-      function seekTo(time) {
-        seekHandler?.(time);
-      }
-      function setSeekHandler(fn) {
-        seekHandler = fn;
-      }
-      function pause() {
-        pauseHandler?.();
-      }
-      function setPauseHandler(fn) {
-        pauseHandler = fn;
-      }
-      const api = {
-        currentTime,
-        isPlaying,
-        src,
-        waveform,
-        activeWordId,
-        activeTurnId,
-        seekTo,
-        setSeekHandler,
-        pause,
-        setPauseHandler
-      };
-      core.audio = api;
-      return () => {
-        stopSourceWatch();
-        stopTracker();
-        revokeOwned();
-        core.audio = void 0;
-      };
-    }
-  };
-}
+const _style_0$9 = "\n.subtitle-fullscreen[data-v-cd7dc651] {\n  position: relative;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 100%;\n  height: 100%;\n  background-color: var(--color-black);\n}\n.subtitle-fullscreen__close[data-v-cd7dc651] {\n  position: absolute;\n  top: var(--spacing-md, 16px);\n  right: var(--spacing-md, 16px);\n  z-index: 1;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 40px;\n  height: 40px;\n  border: none;\n  background: rgba(255, 255, 255, 0.1);\n  color: var(--color-white);\n  border-radius: var(--radius-md, 8px);\n  cursor: pointer;\n  transition: background-color var(--transition-duration) ease;\n}\n.subtitle-fullscreen__close[data-v-cd7dc651]:hover,\n.subtitle-fullscreen__close[data-v-cd7dc651]:focus-visible {\n  background: rgba(255, 255, 255, 0.25);\n  outline: 2px solid rgba(255, 255, 255, 0.5);\n  outline-offset: 2px;\n}\n.subtitle-fullscreen__canvas[data-v-cd7dc651] {\n  display: block;\n  width: 100%;\n  height: 100%;\n  transition: transform 0.4s ease;\n  transform-origin: center;\n}\n.subtitle-fullscreen__canvas--shrunk[data-v-cd7dc651] {\n  transform: scale(0.85) translateY(-4%);\n}\n@media (prefers-reduced-motion: reduce) {\n.subtitle-fullscreen__close[data-v-cd7dc651],\n  .subtitle-fullscreen__canvas[data-v-cd7dc651] {\n    transition: none;\n}\n}\n";
+const SubtitleFullscreen = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["styles", [_style_0$9]], ["__scopeId", "data-v-cd7dc651"]]);
 function createSubtitlePlugin(options = {}) {
   return {
     name: "subtitle",
+    components: { subtitleBanner: SubtitleBanner, subtitleFullscreen: SubtitleFullscreen },
     install(core) {
       const fontSize = /* @__PURE__ */ ref(options.fontSize ?? 40);
       const isVisible = /* @__PURE__ */ ref(options.isVisible ?? false);
@@ -28080,15 +26337,15 @@ function createSubtitlePlugin(options = {}) {
       let watermark;
       const unwatchers = [];
       if (options.watermark) {
-        const w3 = options.watermark;
+        const w2 = options.watermark;
         watermark = {
-          display: /* @__PURE__ */ ref(w3.display ?? false),
-          pinned: /* @__PURE__ */ ref(w3.pinned ?? false),
-          content: /* @__PURE__ */ ref(w3.content ?? ""),
-          frequency: /* @__PURE__ */ ref(w3.frequency ?? 30),
-          duration: /* @__PURE__ */ ref(w3.duration ?? 5),
-          tokens: /* @__PURE__ */ ref(w3.tokens ?? {}),
-          readonly: w3.readonly ?? false
+          display: /* @__PURE__ */ ref(w2.display ?? false),
+          pinned: /* @__PURE__ */ ref(w2.pinned ?? false),
+          content: /* @__PURE__ */ ref(w2.content ?? ""),
+          frequency: /* @__PURE__ */ ref(w2.frequency ?? 30),
+          duration: /* @__PURE__ */ ref(w2.duration ?? 5),
+          tokens: /* @__PURE__ */ ref(w2.tokens ?? {}),
+          readonly: w2.readonly ?? false
         };
         unwatchers.push(
           watch(
@@ -28771,6 +27028,1275 @@ function createTranscriptionEditorPlugin(options = {}) {
     }
   };
 }
+function extend(destination) {
+  for (var i2 = 1; i2 < arguments.length; i2++) {
+    var source = arguments[i2];
+    for (var key in source) {
+      if (Object.prototype.hasOwnProperty.call(source, key)) destination[key] = source[key];
+    }
+  }
+  return destination;
+}
+function repeat(character, count2) {
+  return Array(count2 + 1).join(character);
+}
+function trimLeadingNewlines(string) {
+  return string.replace(/^\n*/, "");
+}
+function trimTrailingNewlines(string) {
+  var indexEnd = string.length;
+  while (indexEnd > 0 && string[indexEnd - 1] === "\n") indexEnd--;
+  return string.substring(0, indexEnd);
+}
+function trimNewlines(string) {
+  return trimTrailingNewlines(trimLeadingNewlines(string));
+}
+var blockElements = ["ADDRESS", "ARTICLE", "ASIDE", "AUDIO", "BLOCKQUOTE", "BODY", "CANVAS", "CENTER", "DD", "DIR", "DIV", "DL", "DT", "FIELDSET", "FIGCAPTION", "FIGURE", "FOOTER", "FORM", "FRAMESET", "H1", "H2", "H3", "H4", "H5", "H6", "HEADER", "HGROUP", "HR", "HTML", "ISINDEX", "LI", "MAIN", "MENU", "NAV", "NOFRAMES", "NOSCRIPT", "OL", "OUTPUT", "P", "PRE", "SECTION", "TABLE", "TBODY", "TD", "TFOOT", "TH", "THEAD", "TR", "UL"];
+function isBlock(node) {
+  return is(node, blockElements);
+}
+var voidElements = ["AREA", "BASE", "BR", "COL", "COMMAND", "EMBED", "HR", "IMG", "INPUT", "KEYGEN", "LINK", "META", "PARAM", "SOURCE", "TRACK", "WBR"];
+function isVoid(node) {
+  return is(node, voidElements);
+}
+function hasVoid(node) {
+  return has(node, voidElements);
+}
+var meaningfulWhenBlankElements = ["A", "TABLE", "THEAD", "TBODY", "TFOOT", "TH", "TD", "IFRAME", "SCRIPT", "AUDIO", "VIDEO"];
+function isMeaningfulWhenBlank(node) {
+  return is(node, meaningfulWhenBlankElements);
+}
+function hasMeaningfulWhenBlank(node) {
+  return has(node, meaningfulWhenBlankElements);
+}
+function is(node, tagNames) {
+  return tagNames.indexOf(node.nodeName) >= 0;
+}
+function has(node, tagNames) {
+  return node.getElementsByTagName && tagNames.some(function(tagName) {
+    return node.getElementsByTagName(tagName).length;
+  });
+}
+var markdownEscapes = [[/\\/g, "\\\\"], [/\*/g, "\\*"], [/^-/g, "\\-"], [/^\+ /g, "\\+ "], [/^(=+)/g, "\\$1"], [/^(#{1,6}) /g, "\\$1 "], [/`/g, "\\`"], [/^~~~/g, "\\~~~"], [/\[/g, "\\["], [/\]/g, "\\]"], [/^>/g, "\\>"], [/_/g, "\\_"], [/^(\d+)\. /g, "$1\\. "]];
+function escapeMarkdown(string) {
+  return markdownEscapes.reduce(function(accumulator, escape) {
+    return accumulator.replace(escape[0], escape[1]);
+  }, string);
+}
+var rules$1 = {};
+rules$1.paragraph = {
+  filter: "p",
+  replacement: function(content) {
+    return "\n\n" + content + "\n\n";
+  }
+};
+rules$1.lineBreak = {
+  filter: "br",
+  replacement: function(content, node, options) {
+    return options.br + "\n";
+  }
+};
+rules$1.heading = {
+  filter: ["h1", "h2", "h3", "h4", "h5", "h6"],
+  replacement: function(content, node, options) {
+    var hLevel = Number(node.nodeName.charAt(1));
+    if (options.headingStyle === "setext" && hLevel < 3) {
+      var underline = repeat(hLevel === 1 ? "=" : "-", content.length);
+      return "\n\n" + content + "\n" + underline + "\n\n";
+    } else {
+      return "\n\n" + repeat("#", hLevel) + " " + content + "\n\n";
+    }
+  }
+};
+rules$1.blockquote = {
+  filter: "blockquote",
+  replacement: function(content) {
+    content = trimNewlines(content).replace(/^/gm, "> ");
+    return "\n\n" + content + "\n\n";
+  }
+};
+rules$1.list = {
+  filter: ["ul", "ol"],
+  replacement: function(content, node) {
+    var parent = node.parentNode;
+    if (parent.nodeName === "LI" && parent.lastElementChild === node) {
+      return "\n" + content;
+    } else {
+      return "\n\n" + content + "\n\n";
+    }
+  }
+};
+rules$1.listItem = {
+  filter: "li",
+  replacement: function(content, node, options) {
+    var prefix = options.bulletListMarker + "   ";
+    var parent = node.parentNode;
+    if (parent.nodeName === "OL") {
+      var start = parent.getAttribute("start");
+      var index = Array.prototype.indexOf.call(parent.children, node);
+      prefix = (start ? Number(start) + index : index + 1) + ".  ";
+    }
+    var isParagraph = /\n$/.test(content);
+    content = trimNewlines(content) + (isParagraph ? "\n" : "");
+    content = content.replace(/\n/gm, "\n" + " ".repeat(prefix.length));
+    return prefix + content + (node.nextSibling ? "\n" : "");
+  }
+};
+rules$1.indentedCodeBlock = {
+  filter: function(node, options) {
+    return options.codeBlockStyle === "indented" && node.nodeName === "PRE" && node.firstChild && node.firstChild.nodeName === "CODE";
+  },
+  replacement: function(content, node, options) {
+    return "\n\n    " + node.firstChild.textContent.replace(/\n/g, "\n    ") + "\n\n";
+  }
+};
+rules$1.fencedCodeBlock = {
+  filter: function(node, options) {
+    return options.codeBlockStyle === "fenced" && node.nodeName === "PRE" && node.firstChild && node.firstChild.nodeName === "CODE";
+  },
+  replacement: function(content, node, options) {
+    var className = node.firstChild.getAttribute("class") || "";
+    var language = (className.match(/language-(\S+)/) || [null, ""])[1];
+    var code = node.firstChild.textContent;
+    var fenceChar = options.fence.charAt(0);
+    var fenceSize = 3;
+    var fenceInCodeRegex = new RegExp("^" + fenceChar + "{3,}", "gm");
+    var match;
+    while (match = fenceInCodeRegex.exec(code)) {
+      if (match[0].length >= fenceSize) {
+        fenceSize = match[0].length + 1;
+      }
+    }
+    var fence = repeat(fenceChar, fenceSize);
+    return "\n\n" + fence + language + "\n" + code.replace(/\n$/, "") + "\n" + fence + "\n\n";
+  }
+};
+rules$1.horizontalRule = {
+  filter: "hr",
+  replacement: function(content, node, options) {
+    return "\n\n" + options.hr + "\n\n";
+  }
+};
+rules$1.inlineLink = {
+  filter: function(node, options) {
+    return options.linkStyle === "inlined" && node.nodeName === "A" && node.getAttribute("href");
+  },
+  replacement: function(content, node) {
+    var href = escapeLinkDestination(node.getAttribute("href"));
+    var title = escapeLinkTitle(cleanAttribute(node.getAttribute("title")));
+    var titlePart = title ? ' "' + title + '"' : "";
+    return "[" + content + "](" + href + titlePart + ")";
+  }
+};
+rules$1.referenceLink = {
+  filter: function(node, options) {
+    return options.linkStyle === "referenced" && node.nodeName === "A" && node.getAttribute("href");
+  },
+  replacement: function(content, node, options) {
+    var href = escapeLinkDestination(node.getAttribute("href"));
+    var title = cleanAttribute(node.getAttribute("title"));
+    if (title) title = ' "' + escapeLinkTitle(title) + '"';
+    var replacement;
+    var reference;
+    switch (options.linkReferenceStyle) {
+      case "collapsed":
+        replacement = "[" + content + "][]";
+        reference = "[" + content + "]: " + href + title;
+        break;
+      case "shortcut":
+        replacement = "[" + content + "]";
+        reference = "[" + content + "]: " + href + title;
+        break;
+      default:
+        var id = this.references.length + 1;
+        replacement = "[" + content + "][" + id + "]";
+        reference = "[" + id + "]: " + href + title;
+    }
+    this.references.push(reference);
+    return replacement;
+  },
+  references: [],
+  append: function(options) {
+    var references = "";
+    if (this.references.length) {
+      references = "\n\n" + this.references.join("\n") + "\n\n";
+      this.references = [];
+    }
+    return references;
+  }
+};
+rules$1.emphasis = {
+  filter: ["em", "i"],
+  replacement: function(content, node, options) {
+    if (!content.trim()) return "";
+    return options.emDelimiter + content + options.emDelimiter;
+  }
+};
+rules$1.strong = {
+  filter: ["strong", "b"],
+  replacement: function(content, node, options) {
+    if (!content.trim()) return "";
+    return options.strongDelimiter + content + options.strongDelimiter;
+  }
+};
+rules$1.code = {
+  filter: function(node) {
+    var hasSiblings = node.previousSibling || node.nextSibling;
+    var isCodeBlock = node.parentNode.nodeName === "PRE" && !hasSiblings;
+    return node.nodeName === "CODE" && !isCodeBlock;
+  },
+  replacement: function(content) {
+    if (!content) return "";
+    content = content.replace(/\r?\n|\r/g, " ");
+    var extraSpace = /^`|^ .*?[^ ].* $|`$/.test(content) ? " " : "";
+    var delimiter = "`";
+    var matches = content.match(/`+/gm) || [];
+    while (matches.indexOf(delimiter) !== -1) delimiter = delimiter + "`";
+    return delimiter + extraSpace + content + extraSpace + delimiter;
+  }
+};
+rules$1.image = {
+  filter: "img",
+  replacement: function(content, node) {
+    var alt = escapeMarkdown(cleanAttribute(node.getAttribute("alt")));
+    var src = escapeLinkDestination(node.getAttribute("src") || "");
+    var title = cleanAttribute(node.getAttribute("title"));
+    var titlePart = title ? ' "' + escapeLinkTitle(title) + '"' : "";
+    return src ? "![" + alt + "](" + src + titlePart + ")" : "";
+  }
+};
+function cleanAttribute(attribute) {
+  return attribute ? attribute.replace(/(\n+\s*)+/g, "\n") : "";
+}
+function escapeLinkDestination(destination) {
+  var escaped = destination.replace(/([<>()])/g, "\\$1");
+  return escaped.indexOf(" ") >= 0 ? "<" + escaped + ">" : escaped;
+}
+function escapeLinkTitle(title) {
+  return title.replace(/"/g, '\\"');
+}
+function Rules(options) {
+  this.options = options;
+  this._keep = [];
+  this._remove = [];
+  this.blankRule = {
+    replacement: options.blankReplacement
+  };
+  this.keepReplacement = options.keepReplacement;
+  this.defaultRule = {
+    replacement: options.defaultReplacement
+  };
+  this.array = [];
+  for (var key in options.rules) this.array.push(options.rules[key]);
+}
+Rules.prototype = {
+  add: function(key, rule) {
+    this.array.unshift(rule);
+  },
+  keep: function(filter) {
+    this._keep.unshift({
+      filter,
+      replacement: this.keepReplacement
+    });
+  },
+  remove: function(filter) {
+    this._remove.unshift({
+      filter,
+      replacement: function() {
+        return "";
+      }
+    });
+  },
+  forNode: function(node) {
+    if (node.isBlank) return this.blankRule;
+    var rule;
+    if (rule = findRule(this.array, node, this.options)) return rule;
+    if (rule = findRule(this._keep, node, this.options)) return rule;
+    if (rule = findRule(this._remove, node, this.options)) return rule;
+    return this.defaultRule;
+  },
+  forEach: function(fn) {
+    for (var i2 = 0; i2 < this.array.length; i2++) fn(this.array[i2], i2);
+  }
+};
+function findRule(rules2, node, options) {
+  for (var i2 = 0; i2 < rules2.length; i2++) {
+    var rule = rules2[i2];
+    if (filterValue(rule, node, options)) return rule;
+  }
+  return void 0;
+}
+function filterValue(rule, node, options) {
+  var filter = rule.filter;
+  if (typeof filter === "string") {
+    if (filter === node.nodeName.toLowerCase()) return true;
+  } else if (Array.isArray(filter)) {
+    if (filter.indexOf(node.nodeName.toLowerCase()) > -1) return true;
+  } else if (typeof filter === "function") {
+    if (filter.call(rule, node, options)) return true;
+  } else {
+    throw new TypeError("`filter` needs to be a string, array, or function");
+  }
+}
+function collapseWhitespace(options) {
+  var element = options.element;
+  var isBlock2 = options.isBlock;
+  var isVoid2 = options.isVoid;
+  var isPre = options.isPre || function(node2) {
+    return node2.nodeName === "PRE";
+  };
+  if (!element.firstChild || isPre(element)) return;
+  var prevText = null;
+  var keepLeadingWs = false;
+  var prev = null;
+  var node = next(prev, element, isPre);
+  while (node !== element) {
+    if (node.nodeType === 3 || node.nodeType === 4) {
+      var text2 = node.data.replace(/[ \r\n\t]+/g, " ");
+      if ((!prevText || / $/.test(prevText.data)) && !keepLeadingWs && text2[0] === " ") {
+        text2 = text2.substr(1);
+      }
+      if (!text2) {
+        node = remove(node);
+        continue;
+      }
+      node.data = text2;
+      prevText = node;
+    } else if (node.nodeType === 1) {
+      if (isBlock2(node) || node.nodeName === "BR") {
+        if (prevText) {
+          prevText.data = prevText.data.replace(/ $/, "");
+        }
+        prevText = null;
+        keepLeadingWs = false;
+      } else if (isVoid2(node) || isPre(node)) {
+        prevText = null;
+        keepLeadingWs = true;
+      } else if (prevText) {
+        keepLeadingWs = false;
+      }
+    } else {
+      node = remove(node);
+      continue;
+    }
+    var nextNode = next(prev, node, isPre);
+    prev = node;
+    node = nextNode;
+  }
+  if (prevText) {
+    prevText.data = prevText.data.replace(/ $/, "");
+    if (!prevText.data) {
+      remove(prevText);
+    }
+  }
+}
+function remove(node) {
+  var next2 = node.nextSibling || node.parentNode;
+  node.parentNode.removeChild(node);
+  return next2;
+}
+function next(prev, current, isPre) {
+  if (prev && prev.parentNode === current || isPre(current)) {
+    return current.nextSibling || current.parentNode;
+  }
+  return current.firstChild || current.nextSibling || current.parentNode;
+}
+var root = typeof window !== "undefined" ? window : {};
+function canParseHTMLNatively() {
+  var Parser = root.DOMParser;
+  var canParse = false;
+  try {
+    if (new Parser().parseFromString("", "text/html")) {
+      canParse = true;
+    }
+  } catch (e3) {
+  }
+  return canParse;
+}
+function createHTMLParser() {
+  var Parser = function() {
+  };
+  {
+    if (shouldUseActiveX()) {
+      Parser.prototype.parseFromString = function(string) {
+        var doc2 = new window.ActiveXObject("htmlfile");
+        doc2.designMode = "on";
+        doc2.open();
+        doc2.write(string);
+        doc2.close();
+        return doc2;
+      };
+    } else {
+      Parser.prototype.parseFromString = function(string) {
+        var doc2 = document.implementation.createHTMLDocument("");
+        doc2.open();
+        doc2.write(string);
+        doc2.close();
+        return doc2;
+      };
+    }
+  }
+  return Parser;
+}
+function shouldUseActiveX() {
+  var useActiveX = false;
+  try {
+    document.implementation.createHTMLDocument("").open();
+  } catch (e3) {
+    if (root.ActiveXObject) useActiveX = true;
+  }
+  return useActiveX;
+}
+var HTMLParser = canParseHTMLNatively() ? root.DOMParser : createHTMLParser();
+function RootNode(input, options) {
+  var root2;
+  if (typeof input === "string") {
+    var doc2 = htmlParser().parseFromString(
+      // DOM parsers arrange elements in the <head> and <body>.
+      // Wrapping in a custom element ensures elements are reliably arranged in
+      // a single element.
+      '<x-turndown id="turndown-root">' + input + "</x-turndown>",
+      "text/html"
+    );
+    root2 = doc2.getElementById("turndown-root");
+  } else {
+    root2 = input.cloneNode(true);
+  }
+  collapseWhitespace({
+    element: root2,
+    isBlock,
+    isVoid,
+    isPre: options.preformattedCode ? isPreOrCode : null
+  });
+  return root2;
+}
+var _htmlParser;
+function htmlParser() {
+  _htmlParser = _htmlParser || new HTMLParser();
+  return _htmlParser;
+}
+function isPreOrCode(node) {
+  return node.nodeName === "PRE" || node.nodeName === "CODE";
+}
+function Node$1(node, options) {
+  node.isBlock = isBlock(node);
+  node.isCode = node.nodeName === "CODE" || node.parentNode.isCode;
+  node.isBlank = isBlank(node);
+  node.flankingWhitespace = flankingWhitespace(node, options);
+  return node;
+}
+function isBlank(node) {
+  return !isVoid(node) && !isMeaningfulWhenBlank(node) && /^\s*$/i.test(node.textContent) && !hasVoid(node) && !hasMeaningfulWhenBlank(node);
+}
+function flankingWhitespace(node, options) {
+  if (node.isBlock || options.preformattedCode && node.isCode) {
+    return {
+      leading: "",
+      trailing: ""
+    };
+  }
+  var edges = edgeWhitespace(node.textContent);
+  if (edges.leadingAscii && isFlankedByWhitespace("left", node, options)) {
+    edges.leading = edges.leadingNonAscii;
+  }
+  if (edges.trailingAscii && isFlankedByWhitespace("right", node, options)) {
+    edges.trailing = edges.trailingNonAscii;
+  }
+  return {
+    leading: edges.leading,
+    trailing: edges.trailing
+  };
+}
+function edgeWhitespace(string) {
+  var m2 = string.match(/^(([ \t\r\n]*)(\s*))(?:(?=\S)[\s\S]*\S)?((\s*?)([ \t\r\n]*))$/);
+  return {
+    leading: m2[1],
+    // whole string for whitespace-only strings
+    leadingAscii: m2[2],
+    leadingNonAscii: m2[3],
+    trailing: m2[4],
+    // empty for whitespace-only strings
+    trailingNonAscii: m2[5],
+    trailingAscii: m2[6]
+  };
+}
+function isFlankedByWhitespace(side, node, options) {
+  var sibling;
+  var regExp;
+  var isFlanked;
+  if (side === "left") {
+    sibling = node.previousSibling;
+    regExp = / $/;
+  } else {
+    sibling = node.nextSibling;
+    regExp = /^ /;
+  }
+  if (sibling) {
+    if (sibling.nodeType === 3) {
+      isFlanked = regExp.test(sibling.nodeValue);
+    } else if (options.preformattedCode && sibling.nodeName === "CODE") {
+      isFlanked = false;
+    } else if (sibling.nodeType === 1 && !isBlock(sibling)) {
+      isFlanked = regExp.test(sibling.textContent);
+    }
+  }
+  return isFlanked;
+}
+var reduce = Array.prototype.reduce;
+function TurndownService(options) {
+  if (!(this instanceof TurndownService)) return new TurndownService(options);
+  var defaults = {
+    rules: rules$1,
+    headingStyle: "setext",
+    hr: "* * *",
+    bulletListMarker: "*",
+    codeBlockStyle: "indented",
+    fence: "```",
+    emDelimiter: "_",
+    strongDelimiter: "**",
+    linkStyle: "inlined",
+    linkReferenceStyle: "full",
+    br: "  ",
+    preformattedCode: false,
+    blankReplacement: function(content, node) {
+      return node.isBlock ? "\n\n" : "";
+    },
+    keepReplacement: function(content, node) {
+      return node.isBlock ? "\n\n" + node.outerHTML + "\n\n" : node.outerHTML;
+    },
+    defaultReplacement: function(content, node) {
+      return node.isBlock ? "\n\n" + content + "\n\n" : content;
+    }
+  };
+  this.options = extend({}, defaults, options);
+  this.rules = new Rules(this.options);
+}
+TurndownService.prototype = {
+  /**
+   * The entry point for converting a string or DOM node to Markdown
+   * @public
+   * @param {String|HTMLElement} input The string or DOM node to convert
+   * @returns A Markdown representation of the input
+   * @type String
+   */
+  turndown: function(input) {
+    if (!canConvert(input)) {
+      throw new TypeError(input + " is not a string, or an element/document/fragment node.");
+    }
+    if (input === "") return "";
+    var output = process.call(this, new RootNode(input, this.options));
+    return postProcess.call(this, output);
+  },
+  /**
+   * Add one or more plugins
+   * @public
+   * @param {Function|Array} plugin The plugin or array of plugins to add
+   * @returns The Turndown instance for chaining
+   * @type Object
+   */
+  use: function(plugin) {
+    if (Array.isArray(plugin)) {
+      for (var i2 = 0; i2 < plugin.length; i2++) this.use(plugin[i2]);
+    } else if (typeof plugin === "function") {
+      plugin(this);
+    } else {
+      throw new TypeError("plugin must be a Function or an Array of Functions");
+    }
+    return this;
+  },
+  /**
+   * Adds a rule
+   * @public
+   * @param {String} key The unique key of the rule
+   * @param {Object} rule The rule
+   * @returns The Turndown instance for chaining
+   * @type Object
+   */
+  addRule: function(key, rule) {
+    this.rules.add(key, rule);
+    return this;
+  },
+  /**
+   * Keep a node (as HTML) that matches the filter
+   * @public
+   * @param {String|Array|Function} filter The unique key of the rule
+   * @returns The Turndown instance for chaining
+   * @type Object
+   */
+  keep: function(filter) {
+    this.rules.keep(filter);
+    return this;
+  },
+  /**
+   * Remove a node that matches the filter
+   * @public
+   * @param {String|Array|Function} filter The unique key of the rule
+   * @returns The Turndown instance for chaining
+   * @type Object
+   */
+  remove: function(filter) {
+    this.rules.remove(filter);
+    return this;
+  },
+  /**
+   * Escapes Markdown syntax
+   * @public
+   * @param {String} string The string to escape
+   * @returns A string with Markdown syntax escaped
+   * @type String
+   */
+  escape: function(string) {
+    return escapeMarkdown(string);
+  }
+};
+function process(parentNode) {
+  var self2 = this;
+  return reduce.call(parentNode.childNodes, function(output, node) {
+    node = new Node$1(node, self2.options);
+    var replacement = "";
+    if (node.nodeType === 3) {
+      replacement = node.isCode ? node.nodeValue : self2.escape(node.nodeValue);
+    } else if (node.nodeType === 1) {
+      replacement = replacementForNode.call(self2, node);
+    }
+    return join(output, replacement);
+  }, "");
+}
+function postProcess(output) {
+  var self2 = this;
+  this.rules.forEach(function(rule) {
+    if (typeof rule.append === "function") {
+      output = join(output, rule.append(self2.options));
+    }
+  });
+  return output.replace(/^[\t\r\n]+/, "").replace(/[\t\r\n\s]+$/, "");
+}
+function replacementForNode(node) {
+  var rule = this.rules.forNode(node);
+  var content = process.call(this, node);
+  var whitespace = node.flankingWhitespace;
+  if (whitespace.leading || whitespace.trailing) content = content.trim();
+  return whitespace.leading + rule.replacement(content, node, this.options) + whitespace.trailing;
+}
+function join(output, replacement) {
+  var s1 = trimTrailingNewlines(output);
+  var s2 = trimLeadingNewlines(replacement);
+  var nls = Math.max(output.length - s1.length, replacement.length - s2.length);
+  var separator = "\n\n".substring(0, nls);
+  return s1 + separator + s2;
+}
+function canConvert(input) {
+  return input != null && (typeof input === "string" || input.nodeType && (input.nodeType === 1 || input.nodeType === 9 || input.nodeType === 11));
+}
+var highlightRegExp = /highlight-(?:text|source)-([a-z0-9]+)/;
+function highlightedCodeBlock(turndownService) {
+  turndownService.addRule("highlightedCodeBlock", {
+    filter: function(node) {
+      var firstChild = node.firstChild;
+      return node.nodeName === "DIV" && highlightRegExp.test(node.className) && firstChild && firstChild.nodeName === "PRE";
+    },
+    replacement: function(content, node, options) {
+      var className = node.className || "";
+      var language = (className.match(highlightRegExp) || [null, ""])[1];
+      return "\n\n" + options.fence + language + "\n" + node.firstChild.textContent + "\n" + options.fence + "\n\n";
+    }
+  });
+}
+function strikethrough(turndownService) {
+  turndownService.addRule("strikethrough", {
+    filter: ["del", "s", "strike"],
+    replacement: function(content) {
+      return "~" + content + "~";
+    }
+  });
+}
+var indexOf = Array.prototype.indexOf;
+var every = Array.prototype.every;
+var rules = {};
+rules.tableCell = {
+  filter: ["th", "td"],
+  replacement: function(content, node) {
+    return cell(content, node);
+  }
+};
+rules.tableRow = {
+  filter: "tr",
+  replacement: function(content, node) {
+    var borderCells = "";
+    var alignMap = { left: ":--", right: "--:", center: ":-:" };
+    if (isHeadingRow(node)) {
+      for (var i2 = 0; i2 < node.childNodes.length; i2++) {
+        var border = "---";
+        var align = (node.childNodes[i2].getAttribute("align") || "").toLowerCase();
+        if (align) border = alignMap[align] || border;
+        borderCells += cell(border, node.childNodes[i2]);
+      }
+    }
+    return "\n" + content + (borderCells ? "\n" + borderCells : "");
+  }
+};
+rules.table = {
+  // Only convert tables with a heading row.
+  // Tables with no heading row are kept using `keep` (see below).
+  filter: function(node) {
+    return node.nodeName === "TABLE" && isHeadingRow(node.rows[0]);
+  },
+  replacement: function(content) {
+    content = content.replace("\n\n", "\n");
+    return "\n\n" + content + "\n\n";
+  }
+};
+rules.tableSection = {
+  filter: ["thead", "tbody", "tfoot"],
+  replacement: function(content) {
+    return content;
+  }
+};
+function isHeadingRow(tr) {
+  var parentNode = tr.parentNode;
+  return parentNode.nodeName === "THEAD" || parentNode.firstChild === tr && (parentNode.nodeName === "TABLE" || isFirstTbody(parentNode)) && every.call(tr.childNodes, function(n2) {
+    return n2.nodeName === "TH";
+  });
+}
+function isFirstTbody(element) {
+  var previousSibling = element.previousSibling;
+  return element.nodeName === "TBODY" && (!previousSibling || previousSibling.nodeName === "THEAD" && /^\s*$/i.test(previousSibling.textContent));
+}
+function cell(content, node) {
+  var index = indexOf.call(node.parentNode.childNodes, node);
+  var prefix = " ";
+  if (index === 0) prefix = "| ";
+  return prefix + content + " |";
+}
+function tables(turndownService) {
+  turndownService.keep(function(node) {
+    return node.nodeName === "TABLE" && !isHeadingRow(node.rows[0]);
+  });
+  for (var key in rules) turndownService.addRule(key, rules[key]);
+}
+function taskListItems(turndownService) {
+  turndownService.addRule("taskListItems", {
+    filter: function(node) {
+      return node.type === "checkbox" && node.parentNode.nodeName === "LI";
+    },
+    replacement: function(content, node) {
+      return (node.checked ? "[x]" : "[ ]") + " ";
+    }
+  });
+}
+function gfm(turndownService) {
+  turndownService.use([
+    highlightedCodeBlock,
+    strikethrough,
+    tables,
+    taskListItems
+  ]);
+}
+const _hoisted_1$8 = { class: "markdown-editor" };
+const _hoisted_2$8 = ["aria-label"];
+const _hoisted_3$7 = ["contenteditable"];
+const _sfc_main$8 = /* @__PURE__ */ defineComponent({
+  __name: "MarkdownEditor",
+  props: {
+    modelValue: { type: String },
+    disabled: { type: Boolean, default: false }
+  },
+  emits: ["update:modelValue"],
+  setup(__props, { emit: __emit }) {
+    const props = __props;
+    const emit2 = __emit;
+    const { t: t2 } = useI18n();
+    const turndown = new TurndownService({
+      headingStyle: "atx",
+      hr: "---",
+      bulletListMarker: "-",
+      codeBlockStyle: "fenced",
+      emDelimiter: "*",
+      strongDelimiter: "**"
+    });
+    turndown.use(gfm);
+    function mdToHtml(md) {
+      return renderMarkdown(md);
+    }
+    function htmlToMd(html2) {
+      if (!html2) return "";
+      return turndown.turndown(html2);
+    }
+    const editorRef = useTemplateRef("editorEl");
+    const toolbarState = /* @__PURE__ */ reactive({
+      bold: false,
+      italic: false,
+      strike: false,
+      h1: false,
+      h2: false,
+      h3: false,
+      bulletList: false,
+      orderedList: false,
+      blockquote: false,
+      codeBlock: false
+    });
+    let lastEmittedMarkdown = null;
+    let emitFrame = null;
+    let selectionListener = null;
+    function setHtml(html2) {
+      const el = editorRef.value;
+      if (!el) return;
+      el.innerHTML = html2;
+    }
+    function getCurrentMarkdown() {
+      const el = editorRef.value;
+      if (!el) return "";
+      return htmlToMd(el.innerHTML);
+    }
+    function onInput() {
+      if (emitFrame !== null) cancelAnimationFrame(emitFrame);
+      emitFrame = requestAnimationFrame(() => {
+        emitFrame = null;
+        const md = getCurrentMarkdown();
+        lastEmittedMarkdown = md;
+        if (md !== props.modelValue) emit2("update:modelValue", md);
+      });
+    }
+    function onKeydown(e3) {
+      if (e3.key === "Enter" && e3.shiftKey) {
+        e3.preventDefault();
+        document.execCommand("insertLineBreak");
+      }
+    }
+    function onPaste(e3) {
+      e3.preventDefault();
+      const clipboard = e3.clipboardData;
+      if (!clipboard) return;
+      const text2 = clipboard.getData("text/plain");
+      if (!text2) return;
+      const looksLikeMd = /^#{1,6}\s|^\s*[-*+]\s|^\s*\d+\.\s|^\s*>|```|\*\*|__|\[.*\]\(/m.test(text2);
+      if (looksLikeMd) {
+        document.execCommand("insertHTML", false, mdToHtml(text2));
+      } else {
+        document.execCommand("insertText", false, text2);
+      }
+    }
+    function focusEditor() {
+      editorRef.value?.focus();
+    }
+    function execCmd(command) {
+      focusEditor();
+      document.execCommand(command);
+      updateToolbarState();
+      onInput();
+    }
+    function toggleBlock(tag) {
+      focusEditor();
+      const sel = getShadowAwareSelection(editorRef.value);
+      const inBlock = sel?.rangeCount && findAncestor(sel.anchorNode, tag);
+      document.execCommand("formatBlock", false, inBlock ? "P" : tag);
+      updateToolbarState();
+      onInput();
+    }
+    function toggleBlockquote() {
+      focusEditor();
+      const sel = getShadowAwareSelection(editorRef.value);
+      if (!sel || !sel.rangeCount) return;
+      const block = getParentBlock(sel.anchorNode);
+      if (block && block.tagName === "BLOCKQUOTE") {
+        const parent = block.parentNode;
+        if (!parent) return;
+        while (block.firstChild) {
+          parent.insertBefore(block.firstChild, block);
+        }
+        parent.removeChild(block);
+      } else {
+        document.execCommand("formatBlock", false, "BLOCKQUOTE");
+      }
+      updateToolbarState();
+      onInput();
+    }
+    function toggleCodeBlock() {
+      focusEditor();
+      const sel = getShadowAwareSelection(editorRef.value);
+      if (!sel || !sel.rangeCount) return;
+      const pre = findAncestor(sel.anchorNode, "PRE");
+      if (pre) {
+        const p2 = document.createElement("p");
+        p2.textContent = pre.textContent ?? "";
+        pre.parentNode?.replaceChild(p2, pre);
+        const range = document.createRange();
+        range.selectNodeContents(p2);
+        range.collapse(false);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      } else {
+        const range = sel.getRangeAt(0);
+        const text2 = range.toString() || "\n";
+        const wrapper = document.createElement("pre");
+        const code = document.createElement("code");
+        code.textContent = text2;
+        wrapper.appendChild(code);
+        range.deleteContents();
+        range.insertNode(wrapper);
+        const newRange = document.createRange();
+        newRange.setStartAfter(wrapper);
+        newRange.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(newRange);
+      }
+      updateToolbarState();
+      onInput();
+    }
+    function startSelectionListener() {
+      if (selectionListener) return;
+      selectionListener = () => updateToolbarState();
+      document.addEventListener("selectionchange", selectionListener);
+      updateToolbarState();
+    }
+    function stopSelectionListener() {
+      if (selectionListener) {
+        document.removeEventListener("selectionchange", selectionListener);
+        selectionListener = null;
+      }
+    }
+    function updateToolbarState() {
+      toolbarState.bold = document.queryCommandState("bold");
+      toolbarState.italic = document.queryCommandState("italic");
+      toolbarState.strike = document.queryCommandState("strikeThrough");
+      toolbarState.h1 = isInAncestor("H1");
+      toolbarState.h2 = isInAncestor("H2");
+      toolbarState.h3 = isInAncestor("H3");
+      toolbarState.bulletList = document.queryCommandState("insertUnorderedList");
+      toolbarState.orderedList = document.queryCommandState("insertOrderedList");
+      toolbarState.blockquote = isInAncestor("BLOCKQUOTE");
+      toolbarState.codeBlock = isInAncestor("PRE");
+    }
+    function isInAncestor(tag) {
+      const sel = getShadowAwareSelection(editorRef.value);
+      if (!sel || !sel.rangeCount) return false;
+      return !!findAncestor(sel.anchorNode, tag);
+    }
+    function getParentBlock(node) {
+      const el = editorRef.value;
+      let n2 = node;
+      while (n2 && n2 !== el) {
+        if (n2.nodeType === 1 && /^(P|H[1-6]|BLOCKQUOTE|PRE|UL|OL|LI|DIV)$/.test(
+          n2.tagName
+        )) {
+          return n2;
+        }
+        n2 = n2.parentNode;
+      }
+      return null;
+    }
+    function findAncestor(node, tag) {
+      const el = editorRef.value;
+      let n2 = node;
+      while (n2 && n2 !== el) {
+        if (n2.nodeType === 1 && n2.tagName === tag) {
+          return n2;
+        }
+        n2 = n2.parentNode;
+      }
+      return null;
+    }
+    function variantFor(active) {
+      return active ? "secondary" : "tertiary";
+    }
+    onMounted(() => {
+      setHtml(mdToHtml(props.modelValue || ""));
+    });
+    onBeforeUnmount(() => {
+      stopSelectionListener();
+      if (emitFrame !== null) cancelAnimationFrame(emitFrame);
+    });
+    watch(
+      () => props.modelValue,
+      (next2) => {
+        if (next2 === lastEmittedMarkdown) return;
+        if (next2 === getCurrentMarkdown()) return;
+        setHtml(mdToHtml(next2 || ""));
+        lastEmittedMarkdown = null;
+      }
+    );
+    return (_ctx, _cache) => {
+      return openBlock(), createElementBlock("div", _hoisted_1$8, [
+        !__props.disabled ? (openBlock(), createElementBlock("div", {
+          key: 0,
+          class: "markdown-editor__toolbar",
+          role: "toolbar",
+          "aria-label": unref(t2)("mdToolbar.label")
+        }, [
+          createVNode(Button, {
+            size: "sm",
+            variant: variantFor(toolbarState.h1),
+            icon: "heading-1",
+            "aria-label": unref(t2)("mdToolbar.h1"),
+            title: unref(t2)("mdToolbar.h1"),
+            onClick: _cache[0] || (_cache[0] = ($event) => toggleBlock("H1"))
+          }, null, 8, ["variant", "aria-label", "title"]),
+          createVNode(Button, {
+            size: "sm",
+            variant: variantFor(toolbarState.h2),
+            icon: "heading-2",
+            "aria-label": unref(t2)("mdToolbar.h2"),
+            title: unref(t2)("mdToolbar.h2"),
+            onClick: _cache[1] || (_cache[1] = ($event) => toggleBlock("H2"))
+          }, null, 8, ["variant", "aria-label", "title"]),
+          createVNode(Button, {
+            size: "sm",
+            variant: variantFor(toolbarState.h3),
+            icon: "heading-3",
+            "aria-label": unref(t2)("mdToolbar.h3"),
+            title: unref(t2)("mdToolbar.h3"),
+            onClick: _cache[2] || (_cache[2] = ($event) => toggleBlock("H3"))
+          }, null, 8, ["variant", "aria-label", "title"]),
+          _cache[9] || (_cache[9] = createBaseVNode("span", {
+            class: "markdown-editor__separator",
+            "aria-hidden": "true"
+          }, null, -1)),
+          createVNode(Button, {
+            size: "sm",
+            variant: variantFor(toolbarState.bold),
+            icon: "bold",
+            "aria-label": unref(t2)("mdToolbar.bold"),
+            title: unref(t2)("mdToolbar.bold"),
+            onClick: _cache[3] || (_cache[3] = ($event) => execCmd("bold"))
+          }, null, 8, ["variant", "aria-label", "title"]),
+          createVNode(Button, {
+            size: "sm",
+            variant: variantFor(toolbarState.italic),
+            icon: "italic",
+            "aria-label": unref(t2)("mdToolbar.italic"),
+            title: unref(t2)("mdToolbar.italic"),
+            onClick: _cache[4] || (_cache[4] = ($event) => execCmd("italic"))
+          }, null, 8, ["variant", "aria-label", "title"]),
+          _cache[10] || (_cache[10] = createBaseVNode("span", {
+            class: "markdown-editor__separator",
+            "aria-hidden": "true"
+          }, null, -1)),
+          createVNode(Button, {
+            size: "sm",
+            variant: variantFor(toolbarState.bulletList),
+            icon: "list",
+            "aria-label": unref(t2)("mdToolbar.bulletList"),
+            title: unref(t2)("mdToolbar.bulletList"),
+            onClick: _cache[5] || (_cache[5] = ($event) => execCmd("insertUnorderedList"))
+          }, null, 8, ["variant", "aria-label", "title"]),
+          createVNode(Button, {
+            size: "sm",
+            variant: variantFor(toolbarState.orderedList),
+            icon: "list-ordered",
+            "aria-label": unref(t2)("mdToolbar.orderedList"),
+            title: unref(t2)("mdToolbar.orderedList"),
+            onClick: _cache[6] || (_cache[6] = ($event) => execCmd("insertOrderedList"))
+          }, null, 8, ["variant", "aria-label", "title"]),
+          createVNode(Button, {
+            size: "sm",
+            variant: variantFor(toolbarState.blockquote),
+            icon: "quote",
+            "aria-label": unref(t2)("mdToolbar.quote"),
+            title: unref(t2)("mdToolbar.quote"),
+            onClick: toggleBlockquote
+          }, null, 8, ["variant", "aria-label", "title"]),
+          _cache[11] || (_cache[11] = createBaseVNode("span", {
+            class: "markdown-editor__separator",
+            "aria-hidden": "true"
+          }, null, -1)),
+          createVNode(Button, {
+            size: "sm",
+            variant: variantFor(toolbarState.codeBlock),
+            icon: "code-block",
+            "aria-label": unref(t2)("mdToolbar.codeBlock"),
+            title: unref(t2)("mdToolbar.codeBlock"),
+            onClick: toggleCodeBlock
+          }, null, 8, ["variant", "aria-label", "title"]),
+          _cache[12] || (_cache[12] = createBaseVNode("span", {
+            class: "markdown-editor__separator",
+            "aria-hidden": "true"
+          }, null, -1)),
+          createVNode(Button, {
+            size: "sm",
+            variant: "tertiary",
+            icon: "undo",
+            "aria-label": unref(t2)("mdToolbar.undo"),
+            title: unref(t2)("mdToolbar.undo"),
+            onClick: _cache[7] || (_cache[7] = ($event) => execCmd("undo"))
+          }, null, 8, ["aria-label", "title"]),
+          createVNode(Button, {
+            size: "sm",
+            variant: "tertiary",
+            icon: "redo",
+            "aria-label": unref(t2)("mdToolbar.redo"),
+            title: unref(t2)("mdToolbar.redo"),
+            onClick: _cache[8] || (_cache[8] = ($event) => execCmd("redo"))
+          }, null, 8, ["aria-label", "title"])
+        ], 8, _hoisted_2$8)) : createCommentVNode("", true),
+        createBaseVNode("div", {
+          ref: "editorEl",
+          class: "markdown-editor__content",
+          contenteditable: !__props.disabled,
+          onInput,
+          onKeydown,
+          onPaste,
+          onFocus: startSelectionListener,
+          onBlur: stopSelectionListener
+        }, null, 40, _hoisted_3$7)
+      ]);
+    };
+  }
+});
+const _style_0$8 = "\n.markdown-editor[data-v-356dd429] {\n  display: flex;\n  flex-direction: column;\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.markdown-editor__toolbar[data-v-356dd429] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-xs) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  position: sticky;\n  top: 0;\n  z-index: 1;\n}\n.markdown-editor__separator[data-v-356dd429] {\n  width: 1px;\n  height: 20px;\n  background-color: var(--color-border);\n  margin: 0 var(--spacing-xs);\n}\n.markdown-editor__content[data-v-356dd429] {\n  padding: var(--spacing-md) var(--spacing-md);\n  outline: none;\n  min-height: 200px;\n}\n.markdown-editor__content[data-v-356dd429] > *:first-child {\n  margin-top: 0;\n}\n.markdown-editor__content[data-v-356dd429] h1,\n.markdown-editor__content[data-v-356dd429] h2,\n.markdown-editor__content[data-v-356dd429] h3,\n.markdown-editor__content[data-v-356dd429] h4 {\n  margin: var(--spacing-lg) 0 var(--spacing-sm);\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.markdown-editor__content[data-v-356dd429] h1 {\n  font-size: var(--font-size-xl);\n}\n.markdown-editor__content[data-v-356dd429] h2 {\n  font-size: var(--font-size-lg);\n}\n.markdown-editor__content[data-v-356dd429] h3 {\n  font-size: var(--font-size-base);\n}\n.markdown-editor__content[data-v-356dd429] h4 {\n  font-size: var(--font-size-sm);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-secondary);\n}\n.markdown-editor__content[data-v-356dd429] p {\n  margin: 0 0 var(--spacing-md);\n}\n.markdown-editor__content[data-v-356dd429] ul,\n.markdown-editor__content[data-v-356dd429] ol {\n  margin: 0 0 var(--spacing-md);\n  padding-left: var(--spacing-lg);\n}\n.markdown-editor__content[data-v-356dd429] li {\n  margin: var(--spacing-xs) 0;\n}\n.markdown-editor__content[data-v-356dd429] blockquote {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-left: 3px solid var(--color-border);\n  color: var(--color-text-secondary);\n  font-style: italic;\n}\n.markdown-editor__content[data-v-356dd429] code {\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n  padding: 1px 4px;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-sm);\n}\n.markdown-editor__content[data-v-356dd429] pre {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n}\n.markdown-editor__content[data-v-356dd429] pre code {\n  padding: 0;\n  background: none;\n}\n.markdown-editor__content[data-v-356dd429] a {\n  color: var(--color-primary);\n  text-decoration: underline;\n}\n.markdown-editor__content[data-v-356dd429] hr {\n  border: 0;\n  border-top: 1px solid var(--color-border);\n  margin: var(--spacing-lg) 0;\n}\n.markdown-editor__content[data-v-356dd429] strong {\n  font-weight: 700;\n}\n.markdown-editor__content[data-v-356dd429] table {\n  border-collapse: collapse;\n  margin: var(--spacing-md) 0;\n}\n.markdown-editor__content[data-v-356dd429] th,\n.markdown-editor__content[data-v-356dd429] td {\n  border: 1px solid var(--color-border);\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.markdown-editor__content[data-v-356dd429] th {\n  background-color: var(--color-surface);\n  font-weight: 600;\n}\n";
+const MarkdownEditor = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["styles", [_style_0$8]], ["__scopeId", "data-v-356dd429"]]);
+const _hoisted_1$7 = { class: "llm-service-panel" };
+const _hoisted_2$7 = {
+  key: 0,
+  class: "llm-service-panel__empty",
+  role: "status"
+};
+const _hoisted_3$6 = { class: "llm-service-panel__empty-text" };
+const _sfc_main$7 = /* @__PURE__ */ defineComponent({
+  __name: "LLMServicePanel",
+  props: {
+    service: { type: Object }
+  },
+  setup(__props) {
+    const props = __props;
+    const core = useCore();
+    const { t: t2 } = useI18n();
+    const articleStatus = computed(() => {
+      const s2 = props.service.status.value;
+      if (s2 === "queued" || s2 === "processing") return "processing";
+      if (s2 === "error") return "error";
+      return "done";
+    });
+    const progress = computed(() => props.service.progress.value);
+    const content = computed(() => props.service.content.value);
+    const busy = computed(() => props.service.busy.value);
+    const dirty = computed(() => props.service.dirty.value);
+    const versions = computed(() => props.service.versions.value);
+    const activeVersionNumber = computed(
+      () => props.service.activeVersionNumber.value
+    );
+    const isEmpty = computed(() => {
+      if (articleStatus.value !== "done") return false;
+      return !content.value && versions.value.length === 0;
+    });
+    const isUpdated = computed(() => {
+      const channel = core.activeChannel.value;
+      const activeId = channel?.activeTranslation.value.id;
+      const realStore = activeId ? channel?.translations.get(activeId) : void 0;
+      const transcriptionLastModified = realStore?.lastModifiedAt.value ?? null;
+      if (transcriptionLastModified == null) return true;
+      const activeVersion = versions.value.find(
+        (v2) => v2.versionNumber === activeVersionNumber.value
+      );
+      const versionTs = activeVersion?.createdAt ?? props.service.lastUpdate.value;
+      if (versionTs == null) return true;
+      return versionTs >= transcriptionLastModified;
+    });
+    const draft = /* @__PURE__ */ ref(content.value);
+    watch(content, (next2) => {
+      draft.value = next2;
+      core.llmServices?.setDirty(props.service.id, false);
+    });
+    watch(draft, (next2) => {
+      const isDirty2 = next2 !== content.value;
+      if (props.service.dirty.value !== isDirty2) {
+        core.llmServices?.setDirty(props.service.id, isDirty2);
+      }
+    });
+    function onRegenerate() {
+      core.emit("llmService:regenerate", { id: props.service.id });
+    }
+    function onExport() {
+      core.emit("llmService:export", { id: props.service.id });
+    }
+    function onSave() {
+      core.emit("llmService:saveVersion", {
+        id: props.service.id,
+        content: draft.value
+      });
+    }
+    return (_ctx, _cache) => {
+      return openBlock(), createElementBlock("section", _hoisted_1$7, [
+        createVNode(DocumentArticle, {
+          status: articleStatus.value,
+          progress: progress.value,
+          onRetry: onRegenerate
+        }, {
+          "toolbar-left": withCtx(() => [
+            createVNode(Button, {
+              variant: "primary",
+              icon: "save",
+              disabled: !dirty.value || busy.value,
+              "aria-label": unref(t2)("llmService.save"),
+              title: unref(t2)("llmService.save"),
+              onClick: onSave
+            }, null, 8, ["disabled", "aria-label", "title"]),
+            createVNode(Button, {
+              variant: "secondary",
+              icon: "refresh-cw",
+              loading: articleStatus.value === "processing",
+              disabled: isUpdated.value || busy.value || articleStatus.value === "processing",
+              "aria-label": unref(t2)("llmService.regenerate"),
+              title: unref(t2)("llmService.regenerate"),
+              onClick: onRegenerate
+            }, null, 8, ["loading", "disabled", "aria-label", "title"])
+          ]),
+          "toolbar-center": withCtx(() => [
+            createBaseVNode("span", {
+              class: normalizeClass(["llm-service-panel__status", [
+                isUpdated.value ? "llm-service-panel__status--ok" : "llm-service-panel__status--warn"
+              ]])
+            }, [
+              createVNode(EditorIcon, {
+                name: isUpdated.value ? "check" : "warning",
+                size: 14
+              }, null, 8, ["name"]),
+              createBaseVNode("span", null, toDisplayString(isUpdated.value ? unref(t2)("llmService.statusUpdated") : unref(t2)("llmService.statusOutdated")), 1)
+            ], 2)
+          ]),
+          "toolbar-right": withCtx(() => [
+            createVNode(Button, {
+              variant: "primary",
+              icon: "download",
+              disabled: articleStatus.value === "processing",
+              "aria-label": unref(t2)("llmService.download"),
+              title: unref(t2)("llmService.download"),
+              onClick: onExport
+            }, {
+              default: withCtx(() => [
+                createTextVNode(toDisplayString(unref(t2)("llmService.download")), 1)
+              ]),
+              _: 1
+            }, 8, ["disabled", "aria-label", "title"])
+          ]),
+          default: withCtx(() => [
+            isEmpty.value ? (openBlock(), createElementBlock("div", _hoisted_2$7, [
+              createBaseVNode("p", _hoisted_3$6, toDisplayString(unref(t2)("llmService.empty")), 1),
+              createVNode(Button, {
+                variant: "primary",
+                icon: "sparkles",
+                disabled: busy.value,
+                onClick: onRegenerate
+              }, {
+                default: withCtx(() => [
+                  createTextVNode(toDisplayString(unref(t2)("llmService.generate")), 1)
+                ]),
+                _: 1
+              }, 8, ["disabled"])
+            ])) : (openBlock(), createBlock(MarkdownEditor, {
+              key: 1,
+              modelValue: draft.value,
+              "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => draft.value = $event),
+              disabled: busy.value
+            }, null, 8, ["modelValue", "disabled"]))
+          ]),
+          _: 1
+        }, 8, ["status", "progress"])
+      ]);
+    };
+  }
+});
+const _style_0$7 = "\n.llm-service-panel[data-v-3d3f7483] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.llm-service-panel__status[data-v-3d3f7483] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n}\n.llm-service-panel__status--ok[data-v-3d3f7483] {\n  color: var(--color-success, #2e7d32);\n}\n.llm-service-panel__status--warn[data-v-3d3f7483] {\n  color: var(--color-warning, #ed6c02);\n}\n.llm-service-panel__empty[data-v-3d3f7483] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-3d3f7483] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n@media (max-width: 767px) {\n.llm-service-panel[data-v-3d3f7483] {\n    padding: var(--spacing-md);\n}\n}\n";
+const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["styles", [_style_0$7]], ["__scopeId", "data-v-3d3f7483"]]);
 function createService(init) {
   return {
     id: init.id,
@@ -28799,6 +28325,7 @@ function clampProgress(value) {
 function createLLMServicesPlugin() {
   return {
     name: "llmServices",
+    components: { llmServicePanel: LLMServicePanel },
     install(core) {
       const services = /* @__PURE__ */ new Map();
       const list = /* @__PURE__ */ shallowRef([]);
@@ -28961,10 +28488,566 @@ function createLLMServicesPlugin() {
     }
   };
 }
+const _hoisted_1$6 = ["aria-label"];
+const _hoisted_2$6 = { class: "chat-session-list__header" };
+const _hoisted_3$5 = { class: "chat-session-list__title" };
+const _hoisted_4$3 = { class: "chat-session-list__items" };
+const _hoisted_5$3 = {
+  key: 1,
+  class: "chat-session-confirm"
+};
+const _hoisted_6$3 = { class: "chat-session-confirm__text" };
+const _sfc_main$6 = /* @__PURE__ */ defineComponent({
+  __name: "ChatSessionList",
+  props: {
+    sessions: { type: Array },
+    activeSessionId: { type: [String, null] }
+  },
+  emits: ["select", "create", "rename", "delete"],
+  setup(__props, { emit: __emit }) {
+    const props = __props;
+    const emit2 = __emit;
+    const { t: t2 } = useI18n();
+    const renamingId = /* @__PURE__ */ ref(null);
+    const renameValue = /* @__PURE__ */ ref("");
+    const deleteTargetId = /* @__PURE__ */ ref(null);
+    const renameField = computed(() => ({
+      customParams: { "aria-label": t2("chat.rename") }
+    }));
+    function startRename(session) {
+      deleteTargetId.value = null;
+      renameValue.value = session.title;
+      renamingId.value = session.id;
+    }
+    function confirmRename() {
+      const id = renamingId.value;
+      if (!id) return;
+      renamingId.value = null;
+      const title = renameValue.value.trim();
+      const current = props.sessions.find((s2) => s2.id === id);
+      if (title && title !== current?.title) emit2("rename", id, title);
+    }
+    function cancelRename() {
+      renamingId.value = null;
+    }
+    function onRenameKeydown(event) {
+      event.stopPropagation();
+      if (event.key === "Enter") confirmRename();
+      else if (event.key === "Escape") cancelRename();
+    }
+    function requestDelete(sessionId) {
+      deleteTargetId.value = sessionId;
+    }
+    function cancelDelete() {
+      deleteTargetId.value = null;
+    }
+    function confirmDelete() {
+      const id = deleteTargetId.value;
+      if (!id) return;
+      deleteTargetId.value = null;
+      emit2("delete", id);
+    }
+    return (_ctx, _cache) => {
+      return openBlock(), createElementBlock("nav", {
+        class: "chat-session-list",
+        "aria-label": unref(t2)("chat.history")
+      }, [
+        createBaseVNode("header", _hoisted_2$6, [
+          createBaseVNode("h3", _hoisted_3$5, toDisplayString(unref(t2)("chat.history")), 1),
+          createVNode(Button, {
+            icon: "plus",
+            variant: "transparent",
+            size: "sm",
+            "aria-label": unref(t2)("chat.newChat"),
+            onClick: _cache[0] || (_cache[0] = ($event) => emit2("create"))
+          }, null, 8, ["aria-label"])
+        ]),
+        createBaseVNode("ul", _hoisted_4$3, [
+          (openBlock(true), createElementBlock(Fragment, null, renderList(__props.sessions, (session) => {
+            return openBlock(), createElementBlock("li", {
+              key: session.id,
+              class: "chat-session-item"
+            }, [
+              renamingId.value === session.id ? (openBlock(), createBlock(FormInput, {
+                key: 0,
+                modelValue: renameValue.value,
+                "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => renameValue.value = $event),
+                field: renameField.value,
+                focus: true,
+                "full-width": "",
+                size: "sm",
+                onKeydown: onRenameKeydown,
+                onBlur: confirmRename
+              }, null, 8, ["modelValue", "field"])) : deleteTargetId.value === session.id ? (openBlock(), createElementBlock("div", _hoisted_5$3, [
+                createBaseVNode("span", _hoisted_6$3, toDisplayString(unref(t2)("chat.deleteConfirm")), 1),
+                createVNode(Button, {
+                  icon: "x",
+                  variant: "transparent",
+                  size: "sm",
+                  "aria-label": unref(t2)("chat.cancel"),
+                  onClick: cancelDelete
+                }, null, 8, ["aria-label"]),
+                createVNode(Button, {
+                  icon: "check",
+                  variant: "transparent",
+                  intent: "destructive",
+                  size: "sm",
+                  "aria-label": unref(t2)("chat.confirmDelete"),
+                  onClick: confirmDelete
+                }, null, 8, ["aria-label"])
+              ])) : (openBlock(), createBlock(SelectableListItem, {
+                key: 2,
+                current: session.id === __props.activeSessionId,
+                label: session.title,
+                title: session.title,
+                onSelect: ($event) => emit2("select", session.id)
+              }, {
+                actions: withCtx(() => [
+                  createVNode(Button, {
+                    icon: "pencil",
+                    variant: "transparent",
+                    size: "sm",
+                    "aria-label": unref(t2)("chat.rename"),
+                    onClick: ($event) => startRename(session)
+                  }, null, 8, ["aria-label", "onClick"]),
+                  createVNode(Button, {
+                    icon: "trash",
+                    variant: "transparent",
+                    intent: "destructive",
+                    size: "sm",
+                    "aria-label": unref(t2)("chat.deleteSession"),
+                    onClick: ($event) => requestDelete(session.id)
+                  }, null, 8, ["aria-label", "onClick"])
+                ]),
+                _: 2
+              }, 1032, ["current", "label", "title", "onSelect"]))
+            ]);
+          }), 128))
+        ])
+      ], 8, _hoisted_1$6);
+    };
+  }
+});
+const _style_0$6 = "\n.chat-session-list[data-v-d023026c] {\n  width: var(--chat-session-list-width, 200px);\n  flex-shrink: 0;\n  display: flex;\n  flex-direction: column;\n  border-right: 1px solid var(--color-border);\n  background-color: var(--color-surface-hover);\n  transition: width 0.2s ease;\n}\n@media (prefers-reduced-motion: reduce) {\n.chat-session-list[data-v-d023026c] {\n    transition: none;\n}\n}\n.chat-session-list__header[data-v-d023026c] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-sm) var(--spacing-md);\n}\n.chat-session-list__title[data-v-d023026c] {\n  margin: 0;\n  font-size: var(--font-size-xs);\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-muted);\n}\n.chat-session-list__items[data-v-d023026c] {\n  flex: 1;\n  margin: 0;\n  padding: 0;\n  list-style: none;\n  overflow-y: auto;\n}\n\n/* Delete confirmation row */\n.chat-session-confirm[data-v-d023026c] {\n  display: flex;\n  align-items: center;\n  gap: 2px;\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.chat-session-confirm__text[data-v-d023026c] {\n  flex: 1;\n  min-width: 0;\n  font-size: var(--font-size-xs);\n  color: var(--color-danger);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n";
+const ChatSessionList = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["styles", [_style_0$6]], ["__scopeId", "data-v-d023026c"]]);
+const _hoisted_1$5 = { class: "code-block" };
+const _hoisted_2$5 = ["innerHTML"];
+const _hoisted_3$4 = { key: 1 };
+const _sfc_main$5 = /* @__PURE__ */ defineComponent({
+  __name: "CodeBlock",
+  props: {
+    code: { type: String },
+    lang: { type: String },
+    streaming: { type: Boolean }
+  },
+  setup(__props) {
+    const props = __props;
+    const { t: t2 } = useI18n();
+    function copy() {
+      return navigator.clipboard.writeText(props.code);
+    }
+    const highlighted = /* @__PURE__ */ ref(null);
+    let seq = 0;
+    watch(
+      () => [props.code, props.lang, props.streaming],
+      async ([code, lang, streaming]) => {
+        const run = ++seq;
+        if (streaming || !code) {
+          highlighted.value = null;
+          return;
+        }
+        const { highlightCode } = await import("./highlight-n8qJwqm3.js");
+        if (run === seq) highlighted.value = highlightCode(code, lang ?? "");
+      },
+      { immediate: true }
+    );
+    return (_ctx, _cache) => {
+      return openBlock(), createElementBlock("div", _hoisted_1$5, [
+        !__props.streaming ? (openBlock(), createBlock(CopyButton, {
+          key: 0,
+          class: "code-block__copy",
+          variant: "transparent",
+          size: "sm",
+          "copy-fn": copy,
+          "aria-label": unref(t2)("markdown.copyCode")
+        }, null, 8, ["aria-label"])) : createCommentVNode("", true),
+        createBaseVNode("pre", null, [
+          highlighted.value ? (openBlock(), createElementBlock("code", {
+            key: 0,
+            innerHTML: highlighted.value
+          }, null, 8, _hoisted_2$5)) : (openBlock(), createElementBlock("code", _hoisted_3$4, toDisplayString(__props.code), 1))
+        ])
+      ]);
+    };
+  }
+});
+const _style_0$5 = "\n.code-block[data-v-42abac84] {\n  position: relative;\n}\n.code-block__copy[data-v-42abac84] {\n  position: absolute;\n  top: var(--spacing-xs);\n  right: var(--spacing-xs);\n  opacity: 0;\n  transition: opacity 0.15s ease;\n}\n.code-block:hover .code-block__copy[data-v-42abac84],\n.code-block:focus-within .code-block__copy[data-v-42abac84] {\n  opacity: 1;\n}\n.code-block pre[data-v-42abac84] {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n  border: 1px solid var(--color-border);\n}\n.code-block pre code[data-v-42abac84] {\n  padding: 0;\n  background: none;\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n}\n@media (prefers-reduced-motion: reduce) {\n.code-block__copy[data-v-42abac84] {\n    transition: none;\n}\n}\n";
+const CodeBlock = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["styles", [_style_0$5]], ["__scopeId", "data-v-42abac84"]]);
+const _hoisted_1$4 = { class: "markdown-view" };
+const _hoisted_2$4 = ["innerHTML"];
+const _sfc_main$4 = /* @__PURE__ */ defineComponent({
+  __name: "MarkdownView",
+  props: {
+    source: { type: String },
+    streaming: { type: Boolean }
+  },
+  setup(__props) {
+    const props = __props;
+    const segments = computed(() => renderMarkdownSegments(props.source));
+    return (_ctx, _cache) => {
+      return openBlock(), createElementBlock("div", _hoisted_1$4, [
+        (openBlock(true), createElementBlock(Fragment, null, renderList(segments.value, (seg, i2) => {
+          return openBlock(), createElementBlock(Fragment, { key: i2 }, [
+            seg.type === "html" ? (openBlock(), createElementBlock("div", {
+              key: 0,
+              class: "markdown-view__html",
+              innerHTML: seg.html
+            }, null, 8, _hoisted_2$4)) : (openBlock(), createBlock(CodeBlock, {
+              key: 1,
+              code: seg.code,
+              lang: seg.lang,
+              streaming: __props.streaming
+            }, null, 8, ["code", "lang", "streaming"]))
+          ], 64);
+        }), 128))
+      ]);
+    };
+  }
+});
+const _style_0$4 = "\n.markdown-view[data-v-89c2c4e6] {\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n\n/* No box: block children flow as direct children of .markdown-view so margin\n   collapsing keeps working across html/code segment boundaries. */\n.markdown-view__html[data-v-89c2c4e6] {\n  display: contents;\n}\n\n/* Trim the outer margins of the first/last rendered block (reach through the\n   display:contents wrapper to the real content element). */\n.markdown-view > .markdown-view__html[data-v-89c2c4e6]:first-child >  :first-child {\n  margin-top: 0;\n}\n.markdown-view > .markdown-view__html[data-v-89c2c4e6]:last-child >  :last-child {\n  margin-bottom: 0;\n}\n.markdown-view[data-v-89c2c4e6] h1,\n.markdown-view[data-v-89c2c4e6] h2,\n.markdown-view[data-v-89c2c4e6] h3,\n.markdown-view[data-v-89c2c4e6] h4 {\n  margin: var(--spacing-lg) 0 var(--spacing-sm);\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.markdown-view[data-v-89c2c4e6] h1 {\n  font-size: var(--font-size-xl);\n}\n.markdown-view[data-v-89c2c4e6] h2 {\n  font-size: var(--font-size-lg);\n}\n.markdown-view[data-v-89c2c4e6] h3 {\n  font-size: var(--font-size-base);\n}\n.markdown-view[data-v-89c2c4e6] h4 {\n  font-size: var(--font-size-sm);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-secondary);\n}\n.markdown-view[data-v-89c2c4e6] p {\n  margin: 0 0 var(--spacing-md);\n}\n.markdown-view[data-v-89c2c4e6] ul,\n.markdown-view[data-v-89c2c4e6] ol {\n  margin: 0 0 var(--spacing-md);\n  padding-left: var(--spacing-lg);\n}\n.markdown-view[data-v-89c2c4e6] li {\n  margin: var(--spacing-xs) 0;\n}\n.markdown-view[data-v-89c2c4e6] blockquote {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-left: 3px solid var(--color-border);\n  color: var(--color-text-secondary);\n  font-style: italic;\n}\n\n/* Inline code only — fenced blocks render via <CodeBlock>. Scoped to the html\n   wrapper so it never reaches into the CodeBlock component. */\n.markdown-view__html[data-v-89c2c4e6] code {\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n  padding: 1px 4px;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-sm);\n}\n\n/* Fallback for raw <pre> written as literal HTML (not fenced code). */\n.markdown-view__html[data-v-89c2c4e6] pre {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n  border: 1px solid var(--color-border);\n}\n.markdown-view__html[data-v-89c2c4e6] pre code {\n  padding: 0;\n  background: none;\n}\n.markdown-view[data-v-89c2c4e6] a {\n  color: var(--color-primary);\n  text-decoration: underline;\n}\n.markdown-view[data-v-89c2c4e6] hr {\n  border: 0;\n  border-top: 1px solid var(--color-border);\n  margin: var(--spacing-lg) 0;\n}\n.markdown-view[data-v-89c2c4e6] strong {\n  font-weight: 700;\n}\n.markdown-view[data-v-89c2c4e6] table {\n  border-collapse: collapse;\n  margin: var(--spacing-md) 0;\n}\n.markdown-view[data-v-89c2c4e6] th,\n.markdown-view[data-v-89c2c4e6] td {\n  border: 1px solid var(--color-border);\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.markdown-view[data-v-89c2c4e6] th {\n  background-color: var(--color-surface);\n  font-weight: 600;\n}\n";
+const MarkdownView = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["styles", [_style_0$4]], ["__scopeId", "data-v-89c2c4e6"]]);
+const _hoisted_1$3 = {
+  key: 0,
+  class: "chat-message chat-message--user"
+};
+const _hoisted_2$3 = { class: "chat-message__bubble" };
+const _hoisted_3$3 = {
+  key: 1,
+  class: "chat-message chat-message--assistant"
+};
+const _hoisted_4$2 = {
+  class: "chat-message__marker",
+  "aria-hidden": "true"
+};
+const _hoisted_5$2 = { class: "chat-message__body" };
+const _hoisted_6$2 = {
+  key: 1,
+  class: "chat-message__typing",
+  "aria-hidden": "true"
+};
+const _hoisted_7 = {
+  key: 2,
+  class: "chat-message__actions"
+};
+const _sfc_main$3 = /* @__PURE__ */ defineComponent({
+  __name: "ChatMessage",
+  props: {
+    message: { type: Object }
+  },
+  setup(__props) {
+    const props = __props;
+    const { t: t2 } = useI18n();
+    function copyContent() {
+      return navigator.clipboard.writeText(props.message.content);
+    }
+    return (_ctx, _cache) => {
+      return __props.message.role === "user" ? (openBlock(), createElementBlock("div", _hoisted_1$3, [
+        createBaseVNode("div", _hoisted_2$3, toDisplayString(__props.message.content), 1)
+      ])) : (openBlock(), createElementBlock("div", _hoisted_3$3, [
+        createBaseVNode("span", _hoisted_4$2, [
+          createVNode(EditorIcon, {
+            name: "sparkles",
+            size: 16
+          })
+        ]),
+        createBaseVNode("div", _hoisted_5$2, [
+          __props.message.content ? (openBlock(), createBlock(MarkdownView, {
+            key: 0,
+            source: __props.message.content,
+            streaming: __props.message.streaming
+          }, null, 8, ["source", "streaming"])) : createCommentVNode("", true),
+          __props.message.streaming ? (openBlock(), createElementBlock("div", _hoisted_6$2, [..._cache[0] || (_cache[0] = [
+            createBaseVNode("span", null, null, -1),
+            createBaseVNode("span", null, null, -1),
+            createBaseVNode("span", null, null, -1)
+          ])])) : createCommentVNode("", true),
+          !__props.message.streaming && __props.message.content ? (openBlock(), createElementBlock("div", _hoisted_7, [
+            createVNode(CopyButton, {
+              variant: "secondary",
+              size: "sm",
+              "copy-fn": copyContent,
+              "aria-label": unref(t2)("chat.copy")
+            }, {
+              default: withCtx(() => [
+                createTextVNode(toDisplayString(unref(t2)("chat.copy")), 1)
+              ]),
+              _: 1
+            }, 8, ["aria-label"])
+          ])) : createCommentVNode("", true)
+        ])
+      ]));
+    };
+  }
+});
+const _style_0$3 = "\n.chat-message[data-v-949425ba] {\n  display: flex;\n  padding: 0 var(--spacing-lg);\n}\n.chat-message[data-v-949425ba]:first-child {\n  padding-top: var(--spacing-lg);\n}\n.chat-message[data-v-949425ba]:last-child {\n  padding-bottom: var(--spacing-lg);\n}\n\n/* ── User ── */\n.chat-message--user[data-v-949425ba] {\n  justify-content: flex-end;\n}\n.chat-message__bubble[data-v-949425ba] {\n  max-width: 80%;\n  padding: var(--spacing-sm) var(--spacing-md);\n  background-color: var(--color-primary);\n  color: var(--color-white);\n  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-sm)\n    var(--radius-lg);\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  white-space: pre-wrap;\n  word-break: break-word;\n}\n\n/* ── Assistant ── */\n.chat-message--assistant[data-v-949425ba] {\n  gap: var(--spacing-sm);\n  align-items: flex-start;\n}\n.chat-message__marker[data-v-949425ba] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  flex-shrink: 0;\n  width: 24px;\n  height: 24px;\n  margin-top: 2px;\n  border-radius: var(--radius-md);\n  color: var(--color-primary);\n  background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);\n}\n.chat-message__body[data-v-949425ba] {\n  min-width: 0;\n  flex: 1;\n}\n.chat-message__body[data-v-949425ba] .markdown-view {\n  font-size: var(--font-size-sm);\n}\n\n/* ── Action bar ── */\n.chat-message__actions[data-v-949425ba] {\n  display: flex;\n  gap: var(--spacing-xs);\n  margin-top: var(--spacing-xs);\n  margin-left: calc(var(--spacing-sm) * -1);\n  flex-direction: row-reverse;\n}\n\n/* ── Streaming typing indicator ── */\n.chat-message__typing[data-v-949425ba] {\n  display: inline-flex;\n  gap: 3px;\n  padding-top: var(--spacing-xs);\n}\n.chat-message__typing span[data-v-949425ba] {\n  width: 6px;\n  height: 6px;\n  border-radius: 50%;\n  background-color: var(--color-primary);\n  animation: chat-typing-949425ba 1.2s infinite;\n}\n.chat-message__typing span[data-v-949425ba]:nth-child(2) {\n  animation-delay: 0.2s;\n}\n.chat-message__typing span[data-v-949425ba]:nth-child(3) {\n  animation-delay: 0.4s;\n}\n@keyframes chat-typing-949425ba {\n0%,\n  60%,\n  100% {\n    opacity: 0.3;\n    transform: scale(0.8);\n}\n30% {\n    opacity: 1;\n    transform: scale(1);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.chat-message__typing span[data-v-949425ba] {\n    animation: none;\n}\n}\n";
+const ChatMessage = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["styles", [_style_0$3]], ["__scopeId", "data-v-949425ba"]]);
+const _hoisted_1$2 = { class: "chat-message-list" };
+const _hoisted_2$2 = {
+  key: 0,
+  class: "chat-message-list__state",
+  role: "status"
+};
+const _hoisted_3$2 = { class: "sr-only" };
+const _hoisted_4$1 = {
+  key: 1,
+  class: "chat-message-list__state"
+};
+const _hoisted_5$1 = {
+  key: 2,
+  class: "chat-message-list__state"
+};
+const _hoisted_6$1 = { class: "chat-message-list__items" };
+const _sfc_main$2 = /* @__PURE__ */ defineComponent({
+  __name: "ChatMessageList",
+  props: {
+    messages: { type: Array },
+    hasActiveSession: { type: Boolean },
+    isLoading: { type: Boolean }
+  },
+  setup(__props) {
+    const { t: t2 } = useI18n();
+    return (_ctx, _cache) => {
+      return openBlock(), createElementBlock("div", _hoisted_1$2, [
+        __props.isLoading ? (openBlock(), createElementBlock("div", _hoisted_2$2, [
+          createVNode(EditorIcon, {
+            name: "spinner",
+            size: 28,
+            spin: ""
+          }),
+          createBaseVNode("span", _hoisted_3$2, toDisplayString(unref(t2)("editor.loading")), 1)
+        ])) : !__props.hasActiveSession ? (openBlock(), createElementBlock("div", _hoisted_4$1, [
+          createBaseVNode("p", null, toDisplayString(unref(t2)("chat.emptyState")), 1)
+        ])) : __props.messages.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_5$1, [
+          createBaseVNode("p", null, toDisplayString(unref(t2)("chat.emptyChat")), 1)
+        ])) : (openBlock(), createBlock(unref(StickToBottom_default), {
+          key: 3,
+          class: "chat-message-list__scroll",
+          resize: "smooth",
+          initial: true
+        }, {
+          default: withCtx(() => [
+            createBaseVNode("div", _hoisted_6$1, [
+              (openBlock(true), createElementBlock(Fragment, null, renderList(__props.messages, (msg) => {
+                return openBlock(), createBlock(ChatMessage, {
+                  key: msg.id,
+                  message: msg
+                }, null, 8, ["message"]);
+              }), 128))
+            ])
+          ]),
+          _: 1
+        }))
+      ]);
+    };
+  }
+});
+const _style_0$2 = "\n.chat-message-list[data-v-5e9c3599] {\n  flex: 1;\n  min-height: 0;\n  display: flex;\n  flex-direction: column;\n}\n.chat-message-list__state[data-v-5e9c3599] {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-lg);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n  text-align: center;\n}\n.chat-message-list__state[data-v-5e9c3599] .editor-icon {\n  color: var(--color-primary);\n}\n.chat-message-list__scroll[data-v-5e9c3599] {\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n.chat-message-list__items[data-v-5e9c3599] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n  width: 100%;\n  max-width: var(--chat-content-max-width, 760px);\n  margin-inline: auto;\n}\n";
+const ChatMessageList = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["styles", [_style_0$2]], ["__scopeId", "data-v-5e9c3599"]]);
+const _hoisted_1$1 = { class: "chat-composer" };
+const _hoisted_2$1 = ["for"];
+const _hoisted_3$1 = ["id", "placeholder", "disabled"];
+const _sfc_main$1 = /* @__PURE__ */ defineComponent({
+  __name: "ChatComposer",
+  props: {
+    disabled: { type: Boolean }
+  },
+  emits: ["send"],
+  setup(__props, { emit: __emit }) {
+    const props = __props;
+    const emit2 = __emit;
+    const textarea = useTemplateRef("chat-composer__textarea");
+    const { t: t2 } = useI18n();
+    const text2 = /* @__PURE__ */ ref("");
+    const textareaId = useId$1();
+    function submit() {
+      const content = text2.value.trim();
+      if (!content || props.disabled) return;
+      text2.value = "";
+      emit2("send", content);
+    }
+    function onKeydown(event) {
+      if (event.key === "Escape") return;
+      event.stopPropagation();
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        submit();
+      }
+    }
+    onMounted(() => {
+      textarea.value?.focus();
+    });
+    return (_ctx, _cache) => {
+      return openBlock(), createElementBlock("div", _hoisted_1$1, [
+        createBaseVNode("label", {
+          for: unref(textareaId),
+          class: "sr-only"
+        }, toDisplayString(unref(t2)("chat.placeholder")), 9, _hoisted_2$1),
+        withDirectives(createBaseVNode("textarea", {
+          id: unref(textareaId),
+          "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => text2.value = $event),
+          class: "chat-composer__textarea",
+          placeholder: unref(t2)("chat.placeholder"),
+          disabled: __props.disabled,
+          rows: "2",
+          ref: "chat-composer__textarea",
+          onKeydown
+        }, null, 40, _hoisted_3$1), [
+          [vModelText, text2.value]
+        ]),
+        createVNode(Button, {
+          icon: "send",
+          variant: "primary",
+          size: "md",
+          disabled: !text2.value.trim() || __props.disabled,
+          "aria-label": unref(t2)("chat.send"),
+          onClick: submit
+        }, null, 8, ["disabled", "aria-label"])
+      ]);
+    };
+  }
+});
+const _style_0$1 = "\n.chat-composer[data-v-47dca7c5] {\n  display: flex;\n  align-items: flex-end;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  flex-shrink: 0;\n  /* Match the message column width when the panel is expanded. */\n  width: 100%;\n  max-width: var(--chat-content-max-width, 760px);\n  margin-inline: auto;\n}\n.chat-composer__textarea[data-v-47dca7c5] {\n  flex: 1;\n  resize: none;\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  padding: var(--spacing-sm) var(--spacing-md);\n  font-family: inherit;\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n  background-color: var(--color-surface);\n  outline: none;\n}\n.chat-composer__textarea[data-v-47dca7c5]:focus {\n  border-color: var(--color-primary);\n}\n.chat-composer__textarea[data-v-47dca7c5]:disabled {\n  opacity: 0.6;\n  cursor: not-allowed;\n}\n";
+const ChatComposer = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["styles", [_style_0$1]], ["__scopeId", "data-v-47dca7c5"]]);
+const _hoisted_1 = ["aria-labelledby"];
+const _hoisted_2 = { class: "chat-drawer__header" };
+const _hoisted_3 = ["id"];
+const _hoisted_4 = { class: "chat-drawer__actions" };
+const _hoisted_5 = { class: "chat-drawer__body" };
+const _hoisted_6 = { class: "chat-drawer__main" };
+const _sfc_main = /* @__PURE__ */ defineComponent({
+  __name: "ChatDrawer",
+  setup(__props) {
+    const core = useCore();
+    const { t: t2 } = useI18n();
+    const chat = core.chat;
+    const titleId = useId$1();
+    const expanded = /* @__PURE__ */ ref(false);
+    function close() {
+      chat.setDrawerOpen(false);
+    }
+    function toggleExpanded() {
+      expanded.value = !expanded.value;
+    }
+    function onKeydown(event) {
+      if (event.key === "Escape" && chat.drawerOpen.value) close();
+    }
+    watch(
+      () => chat.drawerOpen.value,
+      (open) => {
+        if (open) {
+          expanded.value = false;
+          core.emit("chat:loadSessions", void 0);
+          window.addEventListener("keydown", onKeydown);
+        } else {
+          window.removeEventListener("keydown", onKeydown);
+        }
+      }
+    );
+    onUnmounted(() => window.removeEventListener("keydown", onKeydown));
+    function onSelect(sessionId) {
+      core.emit("chat:loadSession", { sessionId });
+    }
+    function onCreate() {
+      core.emit("chat:createSession", void 0);
+    }
+    function onRename(sessionId, title) {
+      core.emit("chat:renameSession", { sessionId, title });
+    }
+    function onDelete(sessionId) {
+      core.emit("chat:deleteSession", { sessionId });
+    }
+    function onSend(content) {
+      core.emit("chat:send", { content });
+    }
+    return (_ctx, _cache) => {
+      return openBlock(), createBlock(Transition, { name: "chat-drawer" }, {
+        default: withCtx(() => [
+          unref(chat).drawerOpen.value ? (openBlock(), createElementBlock("div", {
+            key: 0,
+            class: "chat-overlay",
+            onClick: withModifiers(close, ["self"])
+          }, [
+            createBaseVNode("aside", {
+              class: normalizeClass(["chat-drawer", { "chat-drawer--expanded": expanded.value }]),
+              role: "dialog",
+              "aria-modal": "true",
+              "aria-labelledby": unref(titleId)
+            }, [
+              createBaseVNode("header", _hoisted_2, [
+                createBaseVNode("h2", {
+                  id: unref(titleId),
+                  class: "chat-drawer__title"
+                }, [
+                  createVNode(EditorIcon, {
+                    name: "sparkles",
+                    size: 18
+                  }),
+                  createTextVNode(" " + toDisplayString(unref(t2)("chat.title")), 1)
+                ], 8, _hoisted_3),
+                createBaseVNode("div", _hoisted_4, [
+                  createVNode(Button, {
+                    class: "chat-drawer__expand",
+                    icon: expanded.value ? "minimize" : "maximize",
+                    variant: "tertiary",
+                    size: "sm",
+                    "aria-label": expanded.value ? unref(t2)("chat.collapse") : unref(t2)("chat.expand"),
+                    onClick: toggleExpanded
+                  }, null, 8, ["icon", "aria-label"]),
+                  createVNode(Button, {
+                    icon: "x",
+                    variant: "tertiary",
+                    size: "sm",
+                    "aria-label": unref(t2)("chat.close"),
+                    onClick: close
+                  }, null, 8, ["aria-label"])
+                ])
+              ]),
+              createBaseVNode("div", _hoisted_5, [
+                createVNode(ChatSessionList, {
+                  sessions: unref(chat).sessions.value,
+                  "active-session-id": unref(chat).activeSessionId.value,
+                  onSelect,
+                  onCreate,
+                  onRename,
+                  onDelete
+                }, null, 8, ["sessions", "active-session-id"]),
+                createBaseVNode("div", _hoisted_6, [
+                  createVNode(ChatMessageList, {
+                    messages: unref(chat).allMessages.value,
+                    "has-active-session": unref(chat).activeSessionId.value !== null,
+                    "is-loading": unref(chat).isLoadingSession.value
+                  }, null, 8, ["messages", "has-active-session", "is-loading"]),
+                  createVNode(ChatComposer, {
+                    disabled: unref(chat).isStreaming.value || unref(chat).isLoadingSession.value,
+                    onSend
+                  }, null, 8, ["disabled"])
+                ])
+              ])
+            ], 10, _hoisted_1)
+          ])) : createCommentVNode("", true)
+        ]),
+        _: 1
+      });
+    };
+  }
+});
+const _style_0 = "\n.chat-overlay[data-v-d1ddd36c] {\n  position: fixed;\n  inset: 0;\n  z-index: var(--z-drawer);\n  background-color: rgba(0, 0, 0, 0.4);\n  display: flex;\n  justify-content: flex-end;\n}\n.chat-drawer[data-v-d1ddd36c] {\n  /* Centered reading column for messages + composer; cascades to the child\n     components through the DOM regardless of scoped styles. */\n  --chat-content-max-width: 760px;\n  --chat-session-list-width: 200px;\n  width: min(620px, 100vw);\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n  background-color: var(--color-surface);\n  box-shadow: var(--shadow-md);\n  transition: width 0.2s ease;\n}\n\n/* Near-full-width: keeps a backdrop strip on the left so click-outside still\n   closes the panel. */\n.chat-drawer--expanded[data-v-d1ddd36c] {\n  width: min(1400px, 96vw);\n  --chat-session-list-width: 300px;\n}\n.chat-drawer__header[data-v-d1ddd36c] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  flex-shrink: 0;\n}\n.chat-drawer__title[data-v-d1ddd36c] {\n  margin: 0;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  font-size: var(--font-size-base);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.chat-drawer__title[data-v-d1ddd36c] .editor-icon {\n  color: var(--color-primary);\n}\n.chat-drawer__actions[data-v-d1ddd36c] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n}\n\n/* The expand toggle is desktop-only: on phones the panel is already full-width. */\n@media (max-width: 640px) {\n.chat-drawer__expand[data-v-d1ddd36c] {\n    display: none;\n}\n}\n.chat-drawer__body[data-v-d1ddd36c] {\n  flex: 1;\n  min-height: 0;\n  display: flex;\n}\n.chat-drawer__main[data-v-d1ddd36c] {\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n}\n\n/* ── Slide + fade transition ── */\n.chat-drawer-enter-active[data-v-d1ddd36c],\n.chat-drawer-leave-active[data-v-d1ddd36c] {\n  transition: opacity 0.2s ease;\n}\n.chat-drawer-enter-active .chat-drawer[data-v-d1ddd36c],\n.chat-drawer-leave-active .chat-drawer[data-v-d1ddd36c] {\n  transition: transform 0.25s ease;\n}\n.chat-drawer-enter-from[data-v-d1ddd36c],\n.chat-drawer-leave-to[data-v-d1ddd36c] {\n  opacity: 0;\n}\n.chat-drawer-enter-from .chat-drawer[data-v-d1ddd36c],\n.chat-drawer-leave-to .chat-drawer[data-v-d1ddd36c] {\n  transform: translateX(100%);\n}\n@media (prefers-reduced-motion: reduce) {\n.chat-drawer[data-v-d1ddd36c],\n  .chat-drawer-enter-active[data-v-d1ddd36c],\n  .chat-drawer-leave-active[data-v-d1ddd36c],\n  .chat-drawer-enter-active .chat-drawer[data-v-d1ddd36c],\n  .chat-drawer-leave-active .chat-drawer[data-v-d1ddd36c] {\n    transition: none;\n}\n}\n";
+const ChatDrawer = /* @__PURE__ */ _export_sfc(_sfc_main, [["styles", [_style_0]], ["__scopeId", "data-v-d1ddd36c"]]);
 const STREAMING_MESSAGE_ID = "__streaming__";
 function createChatPlugin() {
   return {
     name: "chat",
+    components: { chatDrawer: ChatDrawer },
     install(core) {
       const drawerOpen = /* @__PURE__ */ ref(false);
       const sessions = /* @__PURE__ */ ref([]);
@@ -29113,4 +29196,4 @@ export {
   purify as p,
   register as r
 };
-//# sourceMappingURL=webcomponent-CfVvVwNK.js.map
+//# sourceMappingURL=webcomponent-BXANMbzo.js.map

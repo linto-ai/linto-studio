@@ -2,8 +2,10 @@ import { ref, computed, watch, watchEffect } from "vue"
 import type { Core, CorePlugin, AudioPluginApi } from "../../core/types"
 import type { AudioSource } from "../../types/editor"
 import { findActiveWord, firstWordStart, lastWordEnd } from "../../utils/words"
+import AudioPlayer from "./AudioPlayer.vue"
 
 export type { AudioPluginApi }
+export { AudioPlayer }
 
 /**
  * Minimum playback progress (in seconds of media time) between two
@@ -40,6 +42,7 @@ export function createAudioPlugin(
 ): CorePlugin {
   return {
     name: "audio",
+    components: { player: AudioPlayer },
 
     install(core: Core) {
       const currentTime = ref(0)

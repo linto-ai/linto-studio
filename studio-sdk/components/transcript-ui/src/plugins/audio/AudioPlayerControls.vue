@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX } from 'lucide-vue-next'
-import Button from './atoms/Button.vue'
-import { useI18n } from '../i18n'
+import Button from '../../components/atoms/Button.vue'
+import { useI18n } from '../../i18n'
 
 defineProps<{
   isPlaying: boolean

@@ -10,10 +10,10 @@ import WaveSurfer from "wavesurfer.js"
 import RegionsPlugin, {
   type Region,
 } from "wavesurfer.js/dist/plugins/regions.esm.js"
-import * as utils from "../utils"
-import { useCore } from "../core"
-import type { CoreEventMap } from "../core"
-import type { Turn } from "../types/editor"
+import * as utils from "../../utils"
+import { useCore } from "../../core"
+import type { CoreEventMap } from "../../core"
+import type { Turn } from "../../types/editor"
 
 export interface UseAudioPlayerOptions {
   containerRef: Ref<HTMLElement | null>

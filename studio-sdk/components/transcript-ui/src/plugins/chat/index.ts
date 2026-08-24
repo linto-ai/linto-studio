@@ -6,8 +6,10 @@ import type {
   ChatSession,
   ChatPluginApi,
 } from "../../core/types"
+import ChatDrawer from "./ChatDrawer.vue"
 
 export type { ChatMessage, ChatSession, ChatPluginApi }
+export { ChatDrawer }
 
 const STREAMING_MESSAGE_ID = "__streaming__"
 
@@ -21,6 +23,7 @@ const STREAMING_MESSAGE_ID = "__streaming__"
 export function createChatPlugin(): CorePlugin {
   return {
     name: "chat",
+    components: { chatDrawer: ChatDrawer },
 
     install(core: Core) {
       const drawerOpen = ref(false)

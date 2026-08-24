@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import MarkdownView from "../atoms/MarkdownView.vue"
-import EditorIcon from "../atoms/EditorIcon.vue"
-import CopyButton from "../atoms/CopyButton.vue"
+import MarkdownView from "../../components/atoms/MarkdownView.vue"
+import EditorIcon from "../../components/atoms/EditorIcon.vue"
+import CopyButton from "../../components/atoms/CopyButton.vue"
 import { useI18n } from "../../i18n"
 import type { ChatMessage } from "../../core/types"
 

@@ -6,8 +6,11 @@ import type {
   WatermarkPluginApi,
   WatermarkToken,
 } from "../../core/types"
+import SubtitleBanner from "./SubtitleBanner.vue"
+import SubtitleFullscreen from "./SubtitleFullscreen.vue"
 
 export type { SubtitlePluginApi, WatermarkPluginApi, WatermarkToken }
+export { SubtitleBanner, SubtitleFullscreen }
 
 export interface WatermarkOptions {
   display?: boolean
@@ -30,6 +33,7 @@ export function createSubtitlePlugin(
 ): CorePlugin {
   return {
     name: "subtitle",
+    components: { subtitleBanner: SubtitleBanner, subtitleFullscreen: SubtitleFullscreen },
 
     install(core: Core) {
       const fontSize = ref(options.fontSize ?? 40)

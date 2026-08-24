@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { StickToBottom } from "vue-stick-to-bottom"
 import ChatMessage from "./ChatMessage.vue"
-import EditorIcon from "../atoms/EditorIcon.vue"
+import EditorIcon from "../../components/atoms/EditorIcon.vue"
 import { useI18n } from "../../i18n"
 import type { ChatMessage as ChatMessageType } from "../../core/types"
 

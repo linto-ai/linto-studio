@@ -1,17 +1,12 @@
 <script setup lang="ts">
-import { computed, ref, useTemplateRef, watch } from "vue"
+import { computed, ref, watch } from "vue"
 import Header from "./Header.vue"
 import TabBar from "./TabBar.vue"
 import { TRANSCRIPTION_TAB, VERBATIM_TAB } from "./TabBar.constants"
 import TranscriptionPanel from "./TranscriptionPanel.vue"
 import VerbatimPanel from "./VerbatimPanel.vue"
-import LLMServicePanel from "./LLMServicePanel.vue"
 import SpeakerSidebar from "./SpeakerSidebar.vue"
 import SidebarDrawer from "./SidebarDrawer.vue"
-import AudioPlayer from "./AudioPlayer.vue"
-import SubtitleBanner from "./SubtitleBanner.vue"
-import SubtitleFullscreen from "./SubtitleFullscreen.vue"
-import ChatDrawer from "./ChatDrawer.vue"
 import ChannelSelector from "./ChannelSelector.vue"
 import TranslationSelector from "./TranslationSelector.vue"
 import SelectionActionBar from "./SelectionActionBar.vue"
@@ -79,13 +74,10 @@ watch(
   },
 )
 
-const audioPlayerRef =
-  useTemplateRef<InstanceType<typeof AudioPlayer>>("audioPlayer")
-
 watch(
   () => core.activeChannelId.value,
   () => {
-    audioPlayerRef.value?.pause()
+    core.audio?.pause()
     if (core.audio) {
       core.audio.currentTime.value = 0
       core.audio.isPlaying.value = false
@@ -95,7 +87,7 @@ watch(
 )
 
 watch(showTranscription, (visible) => {
-  if (!visible) audioPlayerRef.value?.pause()
+  if (!visible) core.audio?.pause()
 })
 
 function onChannelChange(channelId: string) {
@@ -127,7 +119,8 @@ function onTranslationChange(translationId: string) {
         :turns="activeTurns"
         :speakers="speakers" />
       <VerbatimPanel v-else-if="showVerbatim" />
-      <LLMServicePanel
+      <component
+        :is="core.components.llmServicePanel"
         v-else-if="activeService"
         :key="activeService.id"
         :service="activeService" />
@@ -155,19 +148,22 @@ function onTranslationChange(translationId: string) {
           @update:selected-translation-id="onTranslationChange" />
       </SidebarDrawer>
     </main>
-    <AudioPlayer
+    <component
+      :is="core.components.player"
       v-if="core.audio?.src.value"
       v-show="showTranscription"
-      ref="audioPlayer"
       :audio-src="core.audio.src.value" />
-    <SubtitleBanner
+    <component
+      :is="core.components.subtitleBanner"
       v-if="
         core.subtitle?.isVisible.value &&
         !isMobile &&
         !core.subtitle.isFullscreen.value
       " />
-    <SubtitleFullscreen v-if="core.subtitle?.isFullscreen.value" />
-    <ChatDrawer v-if="core.chat" />
+    <component
+      :is="core.components.subtitleFullscreen"
+      v-if="core.subtitle?.isFullscreen.value" />
+    <component :is="core.components.chatDrawer" v-if="core.chat" />
     <div
       v-if="isMobile && (channels.length > 1 || translations.length > 1)"
       class="mobile-selectors">

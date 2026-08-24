@@ -1,4 +1,4 @@
-import { LLMService } from '../core';
+import { LLMService } from '../../core';
 type __VLS_Props = {
     service: LLMService;
 };

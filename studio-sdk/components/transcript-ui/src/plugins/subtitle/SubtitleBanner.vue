@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, useTemplateRef, watch } from "vue"
-import { useCore } from "../core"
-import { useSubtitleScroller } from "../composables/useSubtitleScroller"
-import { useWatermarkCycle } from "../plugins/subtitle/useWatermarkCycle"
-import SubtitleWatermark from "../plugins/subtitle/SubtitleWatermark.vue"
+import { useCore } from "../../core"
+import { useSubtitleScroller } from "./useSubtitleScroller"
+import { useWatermarkCycle } from "./useWatermarkCycle"
+import SubtitleWatermark from "./SubtitleWatermark.vue"
 
 const core = useCore()
 const canvasRef = useTemplateRef<HTMLCanvasElement>("canvas")

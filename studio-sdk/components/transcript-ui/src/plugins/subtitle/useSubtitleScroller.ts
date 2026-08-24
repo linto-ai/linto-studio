@@ -1,6 +1,6 @@
 import { onMounted, onUnmounted, watch, type ComputedRef, type Ref } from "vue"
-import { useCore } from "../core"
-import { SubtitleScroller } from "../plugins/subtitle/SubtitleScroller"
+import { useCore } from "../../core"
+import { SubtitleScroller } from "./SubtitleScroller"
 
 interface UseSubtitleScrollerOptions {
   canvasRef: Readonly<Ref<HTMLCanvasElement | null>>

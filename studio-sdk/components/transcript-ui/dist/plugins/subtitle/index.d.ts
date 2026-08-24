@@ -1,5 +1,8 @@
 import { CorePlugin, SubtitlePluginApi, WatermarkPluginApi, WatermarkToken } from '../../core/types';
+import { default as SubtitleBanner } from './SubtitleBanner.vue';
+import { default as SubtitleFullscreen } from './SubtitleFullscreen.vue';
 export type { SubtitlePluginApi, WatermarkPluginApi, WatermarkToken };
+export { SubtitleBanner, SubtitleFullscreen };
 export interface WatermarkOptions {
     display?: boolean;
     pinned?: boolean;

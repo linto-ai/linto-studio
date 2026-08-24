@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, useTemplateRef } from "vue"
 import { X } from "lucide-vue-next"
-import { useCore } from "../core"
-import { useI18n } from "../i18n"
-import { useSubtitleScroller } from "../composables/useSubtitleScroller"
-import { useWatermarkCycle } from "../plugins/subtitle/useWatermarkCycle"
-import SubtitleWatermark from "../plugins/subtitle/SubtitleWatermark.vue"
+import { useCore } from "../../core"
+import { useI18n } from "../../i18n"
+import { useSubtitleScroller } from "./useSubtitleScroller"
+import { useWatermarkCycle } from "./useWatermarkCycle"
+import SubtitleWatermark from "./SubtitleWatermark.vue"
 
 const core = useCore()
 const { t } = useI18n()

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref, watch, onUnmounted, useId } from "vue"
-import { useCore } from "../core"
-import { useI18n } from "../i18n"
-import Button from "./atoms/Button.vue"
-import EditorIcon from "./atoms/EditorIcon.vue"
-import ChatSessionList from "./molecules/ChatSessionList.vue"
-import ChatMessageList from "./molecules/ChatMessageList.vue"
-import ChatComposer from "./molecules/ChatComposer.vue"
+import { useCore } from "../../core"
+import { useI18n } from "../../i18n"
+import Button from "../../components/atoms/Button.vue"
+import EditorIcon from "../../components/atoms/EditorIcon.vue"
+import ChatSessionList from "./ChatSessionList.vue"
+import ChatMessageList from "./ChatMessageList.vue"
+import ChatComposer from "./ChatComposer.vue"
 
 const core = useCore()
 const { t } = useI18n()
