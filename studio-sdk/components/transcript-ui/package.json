@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "type": "module",
   "license": "AGPL-3.0",
+  "workspaces": [
+    "packages/*"
+  ],
   "files": [
     "dist"
   ],
@@ -13,38 +16,25 @@
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
-    },
-    "./style.css": "./dist/style.css",
-    "./webcomponent": "./dist/linto-editor.js"
+    }
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "bun run --cwd packages/playground dev",
     "build": "vue-tsc -b && vite build",
-    "build:wc": "vue-tsc -b && vite build --config vite.config.wc.ts",
-    "preview": "vite preview",
+    "build:wc": "bun run --cwd packages/webcomponent build",
+    "preview": "bun run --cwd packages/playground preview",
     "test": "bun test"
   },
   "peerDependencies": {
     "vue": "^3.5.0"
   },
   "dependencies": {
-    "diff": "^8.0.3",
-    "dompurify": "^3.2.4",
-    "lucide-vue-next": "^0.564.0",
-    "marked": "^18.0.2",
-    "prismjs": "^1.30.0",
-    "reka-ui": "^2.8.0",
-    "turndown": "^7.2.4",
-    "turndown-plugin-gfm": "^1.0.2",
-    "vite-plugin-node-polyfills": "^0.28.0",
-    "vue-stick-to-bottom": "^1.0.0",
-    "wavesurfer.js": "^7.12.1"
+    "@linto/transcript-ui-core": "workspace:*",
+    "@linto/transcript-ui-i18n": "workspace:*",
+    "@linto/transcript-ui-ui": "workspace:*"
   },
   "devDependencies": {
-    "@types/diff": "^8.0.0",
     "@types/node": "^24.10.1",
-    "@types/prismjs": "^1.26.6",
-    "@types/turndown": "^5.0.6",
     "@vitejs/plugin-vue": "^6.0.2",
     "@vue/tsconfig": "^0.8.1",
     "typescript": "~5.9.3",

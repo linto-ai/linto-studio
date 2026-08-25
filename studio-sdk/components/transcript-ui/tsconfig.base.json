@@ -1,0 +1,25 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
+  "compilerOptions": {
+    "types": ["vite/client"],
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true,
+    "paths": {
+      "@linto/transcript-ui-i18n": ["./packages/i18n/src/index.ts"],
+      "@linto/transcript-ui-ui": ["./packages/ui/src/index.ts"],
+      "@linto/transcript-ui-core": ["./packages/core/src/index.ts"],
+      "@linto/transcript-ui-core/test-utils": ["./packages/core/src/core/helpers/test/makeTestCore.ts"],
+      "@linto/transcript-ui-plugin-audio": ["./packages/plugin-audio/src/index.ts"],
+      "@linto/transcript-ui-plugin-chat": ["./packages/plugin-chat/src/index.ts"],
+      "@linto/transcript-ui-plugin-llm-services": ["./packages/plugin-llm-services/src/index.ts"],
+      "@linto/transcript-ui-plugin-subtitle": ["./packages/plugin-subtitle/src/index.ts"],
+      "@linto/transcript-ui-plugin-live": ["./packages/plugin-live/src/index.ts"],
+      "@linto/transcript-ui-plugin-transcription-editor": ["./packages/plugin-transcription-editor/src/index.ts"],
+      "@linto/transcript-ui-webcomponent": ["./packages/webcomponent/src/index.ts"]
+    }
+  }
+}

@@ -1,0 +1,89 @@
+import { ref, watch } from "vue"
+import type {
+  Core,
+  CorePlugin,
+  SubtitlePluginApi,
+  WatermarkPluginApi,
+  WatermarkToken,
+} from "@linto/transcript-ui-core"
+import SubtitleBanner from "./SubtitleBanner.vue"
+import SubtitleFullscreen from "./SubtitleFullscreen.vue"
+
+export type { SubtitlePluginApi, WatermarkPluginApi, WatermarkToken }
+export { SubtitleBanner, SubtitleFullscreen }
+
+export interface WatermarkOptions {
+  display?: boolean
+  pinned?: boolean
+  content?: string
+  frequency?: number
+  duration?: number
+  tokens?: Record<string, WatermarkToken>
+  readonly?: boolean
+}
+
+export interface SubtitlePluginOptions {
+  fontSize?: number
+  isVisible?: boolean
+  watermark?: WatermarkOptions
+}
+
+export function createSubtitlePlugin(
+  options: SubtitlePluginOptions = {},
+): CorePlugin {
+  return {
+    name: "subtitle",
+    components: { subtitleBanner: SubtitleBanner, subtitleFullscreen: SubtitleFullscreen },
+
+    install(core: Core) {
+      const fontSize = ref(options.fontSize ?? 40)
+      const isVisible = ref(options.isVisible ?? false)
+      const isFullscreen = ref(false)
+
+      let watermark: WatermarkPluginApi | undefined
+      const unwatchers: Array<() => void> = []
+      if (options.watermark) {
+        const w = options.watermark
+        watermark = {
+          display: ref(w.display ?? false),
+          pinned: ref(w.pinned ?? false),
+          content: ref(w.content ?? ""),
+          frequency: ref(w.frequency ?? 30),
+          duration: ref(w.duration ?? 5),
+          tokens: ref(w.tokens ?? {}),
+          readonly: w.readonly ?? false,
+        }
+        unwatchers.push(
+          watch(watermark.display, (display) =>
+            core.emit("watermark:display", { display }),
+          ),
+          watch(watermark.pinned, (pinned) =>
+            core.emit("watermark:pin", { pinned }),
+          ),
+        )
+      }
+
+      const api: SubtitlePluginApi = {
+        fontSize,
+        isVisible,
+        isFullscreen,
+        enterFullscreen() {
+          isFullscreen.value = true
+        },
+        exitFullscreen() {
+          isFullscreen.value = false
+        },
+        watermark,
+      }
+
+      core.subtitle = api
+
+      return () => {
+        isVisible.value = false
+        isFullscreen.value = false
+        unwatchers.forEach((stop) => stop())
+        core.subtitle = undefined
+      }
+    },
+  }
+}

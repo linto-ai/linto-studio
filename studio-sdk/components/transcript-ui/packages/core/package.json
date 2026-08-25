@@ -1,0 +1,20 @@
+{
+  "name": "@linto/transcript-ui-core",
+  "version": "0.1.0",
+  "type": "module",
+  "license": "AGPL-3.0",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./test-utils": "./src/core/helpers/test/makeTestCore.ts"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.0"
+  },
+  "dependencies": {
+    "@linto/transcript-ui-i18n": "workspace:*",
+    "@linto/transcript-ui-ui": "workspace:*",
+    "vue-stick-to-bottom": "^1.0.0"
+  }
+}

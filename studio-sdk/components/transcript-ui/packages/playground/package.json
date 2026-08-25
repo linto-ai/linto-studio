@@ -1,0 +1,31 @@
+{
+  "name": "@linto/transcript-ui-playground",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "AGPL-3.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@linto/transcript-ui-core": "workspace:*",
+    "@linto/transcript-ui-i18n": "workspace:*",
+    "@linto/transcript-ui-ui": "workspace:*",
+    "@linto/transcript-ui-plugin-audio": "workspace:*",
+    "@linto/transcript-ui-plugin-chat": "workspace:*",
+    "@linto/transcript-ui-plugin-live": "workspace:*",
+    "@linto/transcript-ui-plugin-llm-services": "workspace:*",
+    "@linto/transcript-ui-plugin-subtitle": "workspace:*",
+    "@linto/transcript-ui-plugin-transcription-editor": "workspace:*",
+    "prismjs": "^1.30.0",
+    "vue": "^3.5.25"
+  },
+  "devDependencies": {
+    "@types/prismjs": "^1.26.6",
+    "@vitejs/plugin-vue": "^6.0.2",
+    "vite": "^7.3.1",
+    "vue-tsc": "^3.1.5"
+  }
+}

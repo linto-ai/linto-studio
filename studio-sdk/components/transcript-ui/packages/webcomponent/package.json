@@ -1,0 +1,40 @@
+{
+  "name": "@linto/transcript-ui-webcomponent",
+  "version": "0.1.0",
+  "type": "module",
+  "license": "AGPL-3.0",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/linto-editor.js",
+  "module": "./dist/linto-editor.js",
+  "exports": {
+    ".": {
+      "import": "./dist/linto-editor.js"
+    }
+  },
+  "scripts": {
+    "build": "vue-tsc -b && vite build"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.0"
+  },
+  "dependencies": {
+    "@linto/transcript-ui-core": "workspace:*",
+    "@linto/transcript-ui-i18n": "workspace:*",
+    "@linto/transcript-ui-ui": "workspace:*",
+    "@linto/transcript-ui-plugin-audio": "workspace:*",
+    "@linto/transcript-ui-plugin-chat": "workspace:*",
+    "@linto/transcript-ui-plugin-live": "workspace:*",
+    "@linto/transcript-ui-plugin-llm-services": "workspace:*",
+    "@linto/transcript-ui-plugin-subtitle": "workspace:*",
+    "@linto/transcript-ui-plugin-transcription-editor": "workspace:*",
+    "prismjs": "^1.30.0"
+  },
+  "devDependencies": {
+    "@types/prismjs": "^1.26.6",
+    "@vitejs/plugin-vue": "^6.0.2",
+    "vite": "^7.3.1",
+    "vue-tsc": "^3.1.5"
+  }
+}

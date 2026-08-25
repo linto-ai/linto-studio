@@ -10,8 +10,10 @@ lerna-debug.log*
 node_modules
 dist-ssr
 *.local
-# publish the webcomponent build
-!dist 
+# publish the built packages (root lean bundle + webcomponent) — anchored so
+# it doesn't also resurrect throwaway build output like packages/playground/dist
+!/dist
+!/packages/webcomponent/dist
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

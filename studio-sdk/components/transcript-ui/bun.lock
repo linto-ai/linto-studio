@@ -5,7 +5,144 @@
     "": {
       "name": "editor",
       "dependencies": {
+        "@linto/transcript-ui-core": "workspace:*",
+        "@linto/transcript-ui-i18n": "workspace:*",
+        "@linto/transcript-ui-ui": "workspace:*",
+      },
+      "devDependencies": {
+        "@types/node": "^24.10.1",
+        "@vitejs/plugin-vue": "^6.0.2",
+        "@vue/tsconfig": "^0.8.1",
+        "typescript": "~5.9.3",
+        "vite": "^7.3.1",
+        "vite-plugin-dts": "^4.5.4",
+        "vue": "^3.5.25",
+        "vue-tsc": "^3.1.5",
+      },
+      "peerDependencies": {
+        "vue": "^3.5.0",
+      },
+    },
+    "packages/core": {
+      "name": "@linto/transcript-ui-core",
+      "version": "0.1.0",
+      "dependencies": {
+        "@linto/transcript-ui-i18n": "workspace:*",
+        "@linto/transcript-ui-ui": "workspace:*",
+        "vue-stick-to-bottom": "^1.0.0",
+      },
+      "peerDependencies": {
+        "vue": "^3.5.0",
+      },
+    },
+    "packages/i18n": {
+      "name": "@linto/transcript-ui-i18n",
+      "version": "0.1.0",
+      "peerDependencies": {
+        "vue": "^3.5.0",
+      },
+    },
+    "packages/playground": {
+      "name": "@linto/transcript-ui-playground",
+      "version": "0.1.0",
+      "dependencies": {
+        "@linto/transcript-ui-core": "workspace:*",
+        "@linto/transcript-ui-i18n": "workspace:*",
+        "@linto/transcript-ui-plugin-audio": "workspace:*",
+        "@linto/transcript-ui-plugin-chat": "workspace:*",
+        "@linto/transcript-ui-plugin-live": "workspace:*",
+        "@linto/transcript-ui-plugin-llm-services": "workspace:*",
+        "@linto/transcript-ui-plugin-subtitle": "workspace:*",
+        "@linto/transcript-ui-plugin-transcription-editor": "workspace:*",
+        "@linto/transcript-ui-ui": "workspace:*",
+        "prismjs": "^1.30.0",
+        "vue": "^3.5.25",
+      },
+      "devDependencies": {
+        "@types/prismjs": "^1.26.6",
+        "@vitejs/plugin-vue": "^6.0.2",
+        "vite": "^7.3.1",
+        "vue-tsc": "^3.1.5",
+      },
+    },
+    "packages/plugin-audio": {
+      "name": "@linto/transcript-ui-plugin-audio",
+      "version": "0.1.0",
+      "dependencies": {
+        "@linto/transcript-ui-core": "workspace:*",
+        "@linto/transcript-ui-i18n": "workspace:*",
+        "@linto/transcript-ui-ui": "workspace:*",
+        "wavesurfer.js": "^7.12.1",
+      },
+      "peerDependencies": {
+        "vue": "^3.5.0",
+      },
+    },
+    "packages/plugin-chat": {
+      "name": "@linto/transcript-ui-plugin-chat",
+      "version": "0.1.0",
+      "dependencies": {
+        "@linto/transcript-ui-core": "workspace:*",
+        "@linto/transcript-ui-i18n": "workspace:*",
+        "@linto/transcript-ui-ui": "workspace:*",
+        "vue-stick-to-bottom": "^1.0.0",
+      },
+      "peerDependencies": {
+        "vue": "^3.5.0",
+      },
+    },
+    "packages/plugin-live": {
+      "name": "@linto/transcript-ui-plugin-live",
+      "version": "0.1.0",
+      "dependencies": {
+        "@linto/transcript-ui-core": "workspace:*",
+      },
+      "peerDependencies": {
+        "vue": "^3.5.0",
+      },
+    },
+    "packages/plugin-llm-services": {
+      "name": "@linto/transcript-ui-plugin-llm-services",
+      "version": "0.1.0",
+      "dependencies": {
+        "@linto/transcript-ui-core": "workspace:*",
+        "@linto/transcript-ui-i18n": "workspace:*",
+        "@linto/transcript-ui-ui": "workspace:*",
+      },
+      "peerDependencies": {
+        "vue": "^3.5.0",
+      },
+    },
+    "packages/plugin-subtitle": {
+      "name": "@linto/transcript-ui-plugin-subtitle",
+      "version": "0.1.0",
+      "dependencies": {
+        "@linto/transcript-ui-core": "workspace:*",
+        "@linto/transcript-ui-i18n": "workspace:*",
         "diff": "^8.0.3",
+      },
+      "devDependencies": {
+        "@types/diff": "^8.0.0",
+      },
+      "peerDependencies": {
+        "vue": "^3.5.0",
+      },
+    },
+    "packages/plugin-transcription-editor": {
+      "name": "@linto/transcript-ui-plugin-transcription-editor",
+      "version": "0.1.0",
+      "dependencies": {
+        "@linto/transcript-ui-core": "workspace:*",
+      },
+      "peerDependencies": {
+        "vue": "^3.5.0",
+      },
+    },
+    "packages/ui": {
+      "name": "@linto/transcript-ui-ui",
+      "version": "0.1.0",
+      "dependencies": {
+        "@linto/transcript-ui-i18n": "workspace:*",
         "dompurify": "^3.2.4",
         "lucide-vue-next": "^0.564.0",
         "marked": "^18.0.2",
@@ -13,20 +150,34 @@
         "reka-ui": "^2.8.0",
         "turndown": "^7.2.4",
         "turndown-plugin-gfm": "^1.0.2",
-        "vue-stick-to-bottom": "^1.0.0",
-        "wavesurfer.js": "^7.12.1",
       },
       "devDependencies": {
-        "@types/diff": "^8.0.0",
-        "@types/node": "^24.10.1",
         "@types/prismjs": "^1.26.6",
         "@types/turndown": "^5.0.6",
+      },
+      "peerDependencies": {
+        "vue": "^3.5.0",
+      },
+    },
+    "packages/webcomponent": {
+      "name": "@linto/transcript-ui-webcomponent",
+      "version": "0.1.0",
+      "dependencies": {
+        "@linto/transcript-ui-core": "workspace:*",
+        "@linto/transcript-ui-i18n": "workspace:*",
+        "@linto/transcript-ui-plugin-audio": "workspace:*",
+        "@linto/transcript-ui-plugin-chat": "workspace:*",
+        "@linto/transcript-ui-plugin-live": "workspace:*",
+        "@linto/transcript-ui-plugin-llm-services": "workspace:*",
+        "@linto/transcript-ui-plugin-subtitle": "workspace:*",
+        "@linto/transcript-ui-plugin-transcription-editor": "workspace:*",
+        "@linto/transcript-ui-ui": "workspace:*",
+        "prismjs": "^1.30.0",
+      },
+      "devDependencies": {
+        "@types/prismjs": "^1.26.6",
         "@vitejs/plugin-vue": "^6.0.2",
-        "@vue/tsconfig": "^0.8.1",
-        "typescript": "~5.9.3",
         "vite": "^7.3.1",
-        "vite-plugin-dts": "^4.5.4",
-        "vue": "^3.5.25",
         "vue-tsc": "^3.1.5",
       },
       "peerDependencies": {
@@ -112,6 +263,28 @@
     "@isaacs/brace-expansion": ["@isaacs/brace-expansion@5.0.1", "", { "dependencies": { "@isaacs/balanced-match": "^4.0.1" } }, "sha512-WMz71T1JS624nWj2n2fnYAuPovhv7EUhk69R6i9dsVyzxt5eM3bjwvgk9L+APE1TRscGysAVMANkB0jh0LQZrQ=="],
 
     "@jridgewell/sourcemap-codec": ["@jridgewell/sourcemap-codec@1.5.5", "", {}, "sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og=="],
+
+    "@linto/transcript-ui-core": ["@linto/transcript-ui-core@workspace:packages/core"],
+
+    "@linto/transcript-ui-i18n": ["@linto/transcript-ui-i18n@workspace:packages/i18n"],
+
+    "@linto/transcript-ui-playground": ["@linto/transcript-ui-playground@workspace:packages/playground"],
+
+    "@linto/transcript-ui-plugin-audio": ["@linto/transcript-ui-plugin-audio@workspace:packages/plugin-audio"],
+
+    "@linto/transcript-ui-plugin-chat": ["@linto/transcript-ui-plugin-chat@workspace:packages/plugin-chat"],
+
+    "@linto/transcript-ui-plugin-live": ["@linto/transcript-ui-plugin-live@workspace:packages/plugin-live"],
+
+    "@linto/transcript-ui-plugin-llm-services": ["@linto/transcript-ui-plugin-llm-services@workspace:packages/plugin-llm-services"],
+
+    "@linto/transcript-ui-plugin-subtitle": ["@linto/transcript-ui-plugin-subtitle@workspace:packages/plugin-subtitle"],
+
+    "@linto/transcript-ui-plugin-transcription-editor": ["@linto/transcript-ui-plugin-transcription-editor@workspace:packages/plugin-transcription-editor"],
+
+    "@linto/transcript-ui-ui": ["@linto/transcript-ui-ui@workspace:packages/ui"],
+
+    "@linto/transcript-ui-webcomponent": ["@linto/transcript-ui-webcomponent@workspace:packages/webcomponent"],
 
     "@microsoft/api-extractor": ["@microsoft/api-extractor@7.57.1", "", { "dependencies": { "@microsoft/api-extractor-model": "7.33.1", "@microsoft/tsdoc": "~0.16.0", "@microsoft/tsdoc-config": "~0.18.0", "@rushstack/node-core-library": "5.20.1", "@rushstack/rig-package": "0.7.1", "@rushstack/terminal": "0.22.1", "@rushstack/ts-command-line": "5.3.1", "diff": "~8.0.2", "lodash": "~4.17.23", "minimatch": "10.1.2", "resolve": "~1.22.1", "semver": "~7.5.4", "source-map": "~0.6.1", "typescript": "5.8.2" }, "bin": { "api-extractor": "bin/api-extractor" } }, "sha512-rTHuqQeI38kNgUoWNlCNrAJWgRA7s48DNZcMyPkQvTzb33EQL/a0FA8S1IAXh9133NG4/cJ19trXtBZSwZndsw=="],
 
