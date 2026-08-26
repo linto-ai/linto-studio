@@ -10218,8 +10218,133 @@ var LintoEditor = (function(exports) {
       };
     }
   });
-  const _style_0$C = "\n.code-block[data-v-9b1f3e0b] {\n  position: relative;\n}\n.code-block__copy[data-v-9b1f3e0b] {\n  position: absolute;\n  top: var(--spacing-xs);\n  right: var(--spacing-xs);\n  opacity: 0;\n  transition: opacity 0.15s ease;\n}\n.code-block:hover .code-block__copy[data-v-9b1f3e0b],\n.code-block:focus-within .code-block__copy[data-v-9b1f3e0b] {\n  opacity: 1;\n}\n.code-block pre[data-v-9b1f3e0b] {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n  border: 1px solid var(--color-border);\n}\n.code-block pre code[data-v-9b1f3e0b] {\n  padding: 0;\n  background: none;\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n}\n@media (prefers-reduced-motion: reduce) {\n.code-block__copy[data-v-9b1f3e0b] {\n    transition: none;\n}\n}\n";
-  const CodeBlock = /* @__PURE__ */ _export_sfc(_sfc_main$L, [["styles", [_style_0$C]], ["__scopeId", "data-v-9b1f3e0b"]]);
+  const _style_0$C = "\n.code-block[data-v-825f5d9d] {\n  position: relative;\n}\n.code-block__copy[data-v-825f5d9d] {\n  position: absolute;\n  top: var(--spacing-xs);\n  right: var(--spacing-xs);\n  opacity: 0;\n  transition: opacity 0.15s ease;\n}\n.code-block:hover .code-block__copy[data-v-825f5d9d],\n.code-block:focus-within .code-block__copy[data-v-825f5d9d] {\n  opacity: 1;\n}\n.code-block pre[data-v-825f5d9d] {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n  border: 1px solid var(--color-border);\n}\n.code-block pre code[data-v-825f5d9d] {\n  padding: 0;\n  background: none;\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n}\n@media (prefers-reduced-motion: reduce) {\n.code-block__copy[data-v-825f5d9d] {\n    transition: none;\n}\n}\n";
+  const _style_1 = `/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+@media print {
+code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+.token.punctuation {
+	color: #999;
+}
+.token.namespace {
+	opacity: .7;
+}
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+.token.entity {
+	cursor: help;
+}
+`;
+  const CodeBlock = /* @__PURE__ */ _export_sfc(_sfc_main$L, [["styles", [_style_0$C, _style_1]], ["__scopeId", "data-v-825f5d9d"]]);
   const _hoisted_1$C = {
     key: 0,
     class: "form-field__header"
@@ -23819,26 +23944,9 @@ ${text2}` : text2;
     });
     return { isLoading, error };
   }
-  function mapApiTurns(apiTurns) {
-    return apiTurns.map((t2) => {
-      const words = wordsFromApi$2(t2.turn_id, t2.words);
-      const startTime = words[0]?.startTime ?? t2.stime;
-      const endTime = words.length > 0 ? words[words.length - 1].endTime ?? t2.etime : t2.etime;
-      return {
-        id: t2.turn_id,
-        speakerId: t2.speaker_id || null,
-        text: words.length > 0 ? null : t2.segment,
-        words,
-        ...startTime !== void 0 && { startTime },
-        ...endTime !== void 0 && { endTime },
-        // The ApiTurn type says required; real payloads disagree.
-        language: t2.language ?? ""
-      };
-    });
-  }
   const _hoisted_1$b = { class: "editor-root" };
   const _sfc_main$b = /* @__PURE__ */ defineComponent({
-    __name: "WebComponent",
+    __name: "TranscriptUI",
     props: {
       locale: { default: "fr", type: String },
       noHeader: { type: Boolean, default: false }
@@ -23860,19 +23968,63 @@ ${text2}` : text2;
       __expose({ core });
       return (_ctx, _cache) => {
         return openBlock(), createElementBlock("div", _hoisted_1$b, [
-          unref(core).channels.size ? (openBlock(), createBlock(unref(Layout), {
+          unref(core).channels.size ? (openBlock(), createBlock(Layout, {
             key: 0,
             "show-header": !props.noHeader
           }, null, 8, ["show-header"])) : createCommentVNode("", true),
-          unref(error) ? (openBlock(), createBlock(unref(EditorErrorOverlay), {
+          unref(error) ? (openBlock(), createBlock(EditorErrorOverlay, {
             key: 1,
             message: unref(error)
-          }, null, 8, ["message"])) : unref(isLoading) ? (openBlock(), createBlock(unref(EditorLoadingOverlay), { key: 2 })) : createCommentVNode("", true)
+          }, null, 8, ["message"])) : unref(isLoading) ? (openBlock(), createBlock(EditorLoadingOverlay, { key: 2 })) : createCommentVNode("", true)
         ]);
       };
     }
   });
-  const _style_0$b = `/*
+  const _style_0$b = `/* Atkinson Hyperlegible Next — main font */
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/AtkinsonHyperlegibleNext-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/AtkinsonHyperlegibleNext-Medium.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/AtkinsonHyperlegibleNext-SemiBold.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/AtkinsonHyperlegibleNext-Bold.woff2") format("woff2");
+}
+/* Atkinson Hyperlegible Mono — monospace font */
+@font-face {
+  font-family: "Atkinson Hyperlegible Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/AtkinsonHyperlegibleMono-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Mono";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/AtkinsonHyperlegibleMono-Medium.woff2") format("woff2");
+}
+/*
  * Design tokens
  *
  * Public theming API — these CSS custom properties can be overridden from
@@ -23979,7 +24131,6 @@ body {
   height: 100%;
   overflow: hidden;
 }
-
 /* Reset */
 *,
 *::before,
@@ -23988,7 +24139,6 @@ body {
   margin: 0;
   padding: 0;
 }
-
 /* Dev mode SPA (ignored in Shadow DOM — these elements don't exist) */
 html,
 body {
@@ -23999,7 +24149,6 @@ body {
   height: 100%;
   overflow: hidden;
 }
-
 /* Utility */
 .sr-only {
   position: absolute;
@@ -24012,7 +24161,6 @@ body {
   white-space: nowrap;
   border-width: 0;
 }
-
 /* Overlay (shared by sidebar drawer + sheet select) */
 .editor-overlay {
   position: fixed;
@@ -24021,7 +24169,6 @@ body {
   z-index: var(--z-overlay);
   animation: overlay-fade-in 200ms ease;
 }
-
 /* Drawer mobile (sidebar) */
 .sidebar-drawer {
   position: fixed;
@@ -24057,7 +24204,6 @@ body {
   background-color: var(--color-surface-hover);
   color: var(--color-text-primary);
 }
-
 /* Keyframes */
 @keyframes overlay-fade-in {
 from {
@@ -24081,9 +24227,7 @@ to {
     animation: none;
 }
 }
-
 /* Wavesurfer ::part (cannot work in scoped styles) */
-
 /* No backdrop-filter: there is one region per turn (hundreds on a long
    transcript), and each backdrop-filter forces a separate WebRender backdrop
    render target — on a multi-hour document this balloons GPU/GTT memory to
@@ -24095,7 +24239,6 @@ to {
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
     0 1px 4px rgba(0, 0, 0, 0.1);
 }
-
 /* Turn nodes use \`content-visibility: auto\` for long-document perf, which
    implies paint containment and clips any overflow to the turn's box. The
    speaker popover floats out of the turn, so it gets cut off at the turn's
@@ -24107,7 +24250,6 @@ to {
 section.turn:has([data-state="open"]) {
   content-visibility: visible;
 }
-
 /* Shared surface and row styles for PopoverList and similar anchored panels.
    Kept global because Reka portals render outside the component's scoped
    CSS boundary. */
@@ -24167,156 +24309,30 @@ section.turn:has([data-state="open"]) {
 .popover-list__footer {
   padding: var(--spacing-xs);
 }
-
 /* Positioning context for the absolute loading overlay. */
 .editor-root {
   position: relative;
   height: 100%;
 }
 `;
-  const WebComponent = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["styles", [_style_0$b]]]);
-  const fontsStyles = '/* Atkinson Hyperlegible Next — main font */\n@font-face {\n  font-family: "Atkinson Hyperlegible Next";\n  font-style: normal;\n  font-weight: 400;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleNext-Regular.woff2") format("woff2");\n}\n@font-face {\n  font-family: "Atkinson Hyperlegible Next";\n  font-style: normal;\n  font-weight: 500;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleNext-Medium.woff2") format("woff2");\n}\n@font-face {\n  font-family: "Atkinson Hyperlegible Next";\n  font-style: normal;\n  font-weight: 600;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleNext-SemiBold.woff2") format("woff2");\n}\n@font-face {\n  font-family: "Atkinson Hyperlegible Next";\n  font-style: normal;\n  font-weight: 700;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleNext-Bold.woff2") format("woff2");\n}\n\n/* Atkinson Hyperlegible Mono — monospace font */\n@font-face {\n  font-family: "Atkinson Hyperlegible Mono";\n  font-style: normal;\n  font-weight: 400;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleMono-Regular.woff2") format("woff2");\n}\n@font-face {\n  font-family: "Atkinson Hyperlegible Mono";\n  font-style: normal;\n  font-weight: 500;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleMono-Medium.woff2") format("woff2");\n}\n';
-  const prismTheme = `/**
- * prism.js default theme for JavaScript, CSS and HTML
- * Based on dabblet (http://dabblet.com)
- * @author Lea Verou
- */
-
-code[class*="language-"],
-pre[class*="language-"] {
-	color: black;
-	background: none;
-	text-shadow: 0 1px white;
-	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-	font-size: 1em;
-	text-align: left;
-	white-space: pre;
-	word-spacing: normal;
-	word-break: normal;
-	word-wrap: normal;
-	line-height: 1.5;
-
-	-moz-tab-size: 4;
-	-o-tab-size: 4;
-	tab-size: 4;
-
-	-webkit-hyphens: none;
-	-moz-hyphens: none;
-	-ms-hyphens: none;
-	hyphens: none;
-}
-
-pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
-code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
-	text-shadow: none;
-	background: #b3d4fc;
-}
-
-pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
-code[class*="language-"]::selection, code[class*="language-"] ::selection {
-	text-shadow: none;
-	background: #b3d4fc;
-}
-
-@media print {
-	code[class*="language-"],
-	pre[class*="language-"] {
-		text-shadow: none;
-	}
-}
-
-/* Code blocks */
-pre[class*="language-"] {
-	padding: 1em;
-	margin: .5em 0;
-	overflow: auto;
-}
-
-:not(pre) > code[class*="language-"],
-pre[class*="language-"] {
-	background: #f5f2f0;
-}
-
-/* Inline code */
-:not(pre) > code[class*="language-"] {
-	padding: .1em;
-	border-radius: .3em;
-	white-space: normal;
-}
-
-.token.comment,
-.token.prolog,
-.token.doctype,
-.token.cdata {
-	color: slategray;
-}
-
-.token.punctuation {
-	color: #999;
-}
-
-.token.namespace {
-	opacity: .7;
-}
-
-.token.property,
-.token.tag,
-.token.boolean,
-.token.number,
-.token.constant,
-.token.symbol,
-.token.deleted {
-	color: #905;
-}
-
-.token.selector,
-.token.attr-name,
-.token.string,
-.token.char,
-.token.builtin,
-.token.inserted {
-	color: #690;
-}
-
-.token.operator,
-.token.entity,
-.token.url,
-.language-css .token.string,
-.style .token.string {
-	color: #9a6e3a;
-	/* This background color was intended by the author of this theme. */
-	background: hsla(0, 0%, 100%, .5);
-}
-
-.token.atrule,
-.token.attr-value,
-.token.keyword {
-	color: #07a;
-}
-
-.token.function,
-.token.class-name {
-	color: #DD4A68;
-}
-
-.token.regex,
-.token.important,
-.token.variable {
-	color: #e90;
-}
-
-.token.important,
-.token.bold {
-	font-weight: bold;
-}
-.token.italic {
-	font-style: italic;
-}
-
-.token.entity {
-	cursor: help;
-}
-`;
+  const TranscriptUI = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["styles", [_style_0$b]]]);
+  function mapApiTurns(apiTurns) {
+    return apiTurns.map((t2) => {
+      const words = wordsFromApi$2(t2.turn_id, t2.words);
+      const startTime = words[0]?.startTime ?? t2.stime;
+      const endTime = words.length > 0 ? words[words.length - 1].endTime ?? t2.etime : t2.etime;
+      return {
+        id: t2.turn_id,
+        speakerId: t2.speaker_id || null,
+        text: words.length > 0 ? null : t2.segment,
+        words,
+        ...startTime !== void 0 && { startTime },
+        ...endTime !== void 0 && { endTime },
+        // The ApiTurn type says required; real payloads disagree.
+        language: t2.language ?? ""
+      };
+    });
+  }
   const { isSameLanguage, speakText, stopTTS, unlockTTS, isTTSSupported, hasVoices } = utils;
   function finalEventToSourceTurn(event) {
     const hasWords = event.words.length > 0;
@@ -29145,10 +29161,9 @@ pre[class*="language-"] {
   function getComponentStyles(comp) {
     return comp.styles ?? [];
   }
-  const wc = WebComponent;
+  const wc = TranscriptUI;
   wc.styles = [
     ...wc.styles ?? [],
-    prismTheme,
     ...getComponentStyles(SpeakerLabel),
     ...getComponentStyles(SpeakerPopover),
     ...getComponentStyles(FormInput),
@@ -29156,17 +29171,8 @@ pre[class*="language-"] {
     ...getComponentStyles(Badge),
     ...getComponentStyles(Button)
   ];
-  const LintoEditor2 = /* @__PURE__ */ defineCustomElement(WebComponent);
-  function injectFonts() {
-    const id = "linto-editor-fonts";
-    if (document.getElementById(id)) return;
-    const style = document.createElement("style");
-    style.id = id;
-    style.textContent = fontsStyles;
-    document.head.appendChild(style);
-  }
+  const LintoEditor2 = /* @__PURE__ */ defineCustomElement(TranscriptUI);
   function register(tagName = "linto-editor") {
-    injectFonts();
     customElements.define(tagName, LintoEditor2);
   }
   var commonjsGlobal = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};

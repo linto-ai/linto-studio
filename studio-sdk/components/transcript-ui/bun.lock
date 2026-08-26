@@ -162,7 +162,7 @@
     "packages/webcomponent": {
       "name": "@linto/transcript-ui-webcomponent",
       "version": "0.1.0",
-      "dependencies": {
+      "devDependencies": {
         "@linto/transcript-ui-core": "workspace:*",
         "@linto/transcript-ui-i18n": "workspace:*",
         "@linto/transcript-ui-plugin-audio": "workspace:*",
@@ -172,16 +172,12 @@
         "@linto/transcript-ui-plugin-subtitle": "workspace:*",
         "@linto/transcript-ui-plugin-transcription-editor": "workspace:*",
         "@linto/transcript-ui-ui": "workspace:*",
-        "prismjs": "^1.30.0",
-      },
-      "devDependencies": {
         "@types/prismjs": "^1.26.6",
         "@vitejs/plugin-vue": "^6.0.2",
+        "prismjs": "^1.30.0",
         "vite": "^7.3.1",
+        "vue": "^3.5.25",
         "vue-tsc": "^3.1.5",
-      },
-      "peerDependencies": {
-        "vue": "^3.5.0",
       },
     },
   },

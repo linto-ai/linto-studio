@@ -10,6 +10,8 @@ lerna-debug.log*
 node_modules
 dist-ssr
 *.local
+# tarballs from scripts/pack-all.sh
+/.pack
 # publish the built packages (root lean bundle + webcomponent) — anchored so
 # it doesn't also resurrect throwaway build output like packages/playground/dist
 !/dist

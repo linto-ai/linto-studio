@@ -89,3 +89,10 @@ watch(
   }
 }
 </style>
+
+<!-- Not scoped: Prism generates plain, unscoped `.token.*` spans via
+     innerHTML, so a scoped style's data-v-xxx attribute selector would never
+     match them. -->
+<style>
+@import "prismjs/themes/prism.css";
+</style>

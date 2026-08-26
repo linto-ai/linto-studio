@@ -16,10 +16,7 @@
   "scripts": {
     "build": "vue-tsc -b && vite build"
   },
-  "peerDependencies": {
-    "vue": "^3.5.0"
-  },
-  "dependencies": {
+  "devDependencies": {
     "@linto/transcript-ui-core": "workspace:*",
     "@linto/transcript-ui-i18n": "workspace:*",
     "@linto/transcript-ui-ui": "workspace:*",
@@ -29,9 +26,8 @@
     "@linto/transcript-ui-plugin-llm-services": "workspace:*",
     "@linto/transcript-ui-plugin-subtitle": "workspace:*",
     "@linto/transcript-ui-plugin-transcription-editor": "workspace:*",
-    "prismjs": "^1.30.0"
-  },
-  "devDependencies": {
+    "prismjs": "^1.30.0",
+    "vue": "^3.5.25",
     "@types/prismjs": "^1.26.6",
     "@vitejs/plugin-vue": "^6.0.2",
     "vite": "^7.3.1",

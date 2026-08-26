@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from "vue"
+import { onMounted, onBeforeUnmount, useTemplateRef } from "vue"
 import {
-  Layout,
+  TranscriptUI,
   mapApiDocument,
   mapWhisperXDocument,
-  createCore,
-  provideCore,
+  type Core,
   type ChatMessage,
   type ChatSession,
   type ApiDocument,
@@ -13,7 +12,6 @@ import {
   type Speaker,
   type WhisperXDocument,
 } from "@linto/transcript-ui-core"
-import { provideI18n, type Locale } from "@linto/transcript-ui-i18n"
 import { createAudioPlugin } from "@linto/transcript-ui-plugin-audio"
 import { createTranscriptionEditorPlugin } from "@linto/transcript-ui-plugin-transcription-editor"
 import { createLLMServicesPlugin } from "@linto/transcript-ui-plugin-llm-services"
@@ -22,17 +20,11 @@ import { createChatPlugin } from "@linto/transcript-ui-plugin-chat"
 //import { createSubtitlePlugin } from "@linto/transcript-ui-plugin-subtitle"
 import type { LivePartialEvent, LiveFinalEvent } from "@linto/transcript-ui-plugin-live"
 
-const locale = ref<Locale>("fr")
-const { t } = provideI18n(locale)
-
-const core = createCore()
-core.use(createAudioPlugin())
-core.use(createTranscriptionEditorPlugin())
-core.use(createLLMServicesPlugin())
-core.use(createChatPlugin())
-//core.use(createLivePlugin())
-//core.use(createSubtitlePlugin())
-provideCore(core)
+// TranscriptUI owns its core (creation, i18n, loading/error overlay,
+// destroy-on-unmount) — we just reach into it once mounted to activate
+// plugins and load the demo document.
+const editorRef = useTemplateRef<InstanceType<typeof TranscriptUI>>("editor")
+let core!: Core
 
 // ── Mock chat integration (simulates the host: REST + SSE) ────────────
 //
@@ -40,7 +32,8 @@ provideCore(core)
 // Here we fake an in-memory "DB" and a token-by-token streamed reply so the
 // drawer can be exercised end to end.
 
-if (core.chat) {
+function setupChatMock(): void {
+  if (!core.chat) return
   const chat = core.chat
 
   interface MockSession {
@@ -194,7 +187,9 @@ const KEYPOINTS_MARKDOWN = `# Points clés
 - **Risque** : revoir le schéma d'invalidation si on choisit le cache distribué (~2 semaines)
 `
 
-if (core.llmServices) {
+function setupLLMMock(): void {
+  if (!core.llmServices) return
+
   // Register with EMPTY content first — content arrives later via setContent.
   // This mirrors the host's flow (gateway fetch after mount) and may
   // reproduce the list-toggle ghost bug.
@@ -218,40 +213,31 @@ if (core.llmServices) {
     core.llmServices?.setContent("compte-rendu", SUMMARY_MARKDOWN, Date.now())
     core.llmServices?.setContent("points-cles", KEYPOINTS_MARKDOWN, Date.now())
   }, 300)
+
+  core.on("llmService:regenerate", ({ id }) => {
+    if (!core.llmServices) return
+    console.log("[demo] regenerate", id)
+    core.llmServices.setStatus(id, "processing")
+    let progress = 0
+    const interval = setInterval(() => {
+      progress += 15
+      if (progress >= 100) {
+        clearInterval(interval)
+        core.llmServices?.setContent(
+          id,
+          `${id === "compte-rendu" ? SUMMARY_MARKDOWN : KEYPOINTS_MARKDOWN}\n\n*Régénéré ${new Date().toLocaleTimeString()}*`,
+        )
+        core.llmServices?.setStatus(id, "complete")
+      } else {
+        core.llmServices?.setProgress(id, progress, "analyzing")
+      }
+    }, 400)
+  })
+
+  core.on("llmService:export", ({ id }) => {
+    console.log("[demo] export", id)
+  })
 }
-
-core.on("llmService:regenerate", ({ id }) => {
-  if (!core.llmServices) return
-  console.log("[demo] regenerate", id)
-  core.llmServices.setStatus(id, "processing")
-  let progress = 0
-  const interval = setInterval(() => {
-    progress += 15
-    if (progress >= 100) {
-      clearInterval(interval)
-      core.llmServices?.setContent(
-        id,
-        `${id === "compte-rendu" ? SUMMARY_MARKDOWN : KEYPOINTS_MARKDOWN}\n\n*Régénéré ${new Date().toLocaleTimeString()}*`,
-      )
-      core.llmServices?.setStatus(id, "complete")
-    } else {
-      core.llmServices?.setProgress(id, progress, "analyzing")
-    }
-  }, 400)
-})
-
-core.on("llmService:export", ({ id }) => {
-  console.log("[demo] export", id)
-})
-
-core.on("verbatim:export", ({ format }) => {
-  console.log("[demo] verbatim export", format)
-})
-
-const error = ref<string | null>(null)
-const loading = ref(true)
-
-// ── Live POC: simulate partials + finals ──────────────────────────────
 
 // ── History simulation ───────────────────────────────────────────────
 
@@ -412,9 +398,24 @@ function startLiveSimulation(channelId: string) {
   liveTimer = setTimeout(simulateSentence, 500)
 }
 
-// ── Load document then start simulation ───────────────────────────────
+// ── Activate plugins, then load the demo document ─────────────────────
 
 onMounted(async () => {
+  core = editorRef.value!.core
+
+  core.use(createAudioPlugin())
+  core.use(createTranscriptionEditorPlugin())
+  core.use(createLLMServicesPlugin())
+  core.use(createChatPlugin())
+  //core.use(createLivePlugin())
+  //core.use(createSubtitlePlugin())
+
+  setupChatMock()
+  setupLLMMock()
+  core.on("verbatim:export", ({ format }) => {
+    console.log("[demo] verbatim export", format)
+  })
+
   try {
     const [r1, r2] = await Promise.all([
       fetch("/projet-libre-openstreetmap.json"),
@@ -498,46 +499,25 @@ onMounted(async () => {
       speakers,
       channels: [ch1, ch2],
     })
-    loading.value = false
 
     // Start live simulation on channel 1
     startLiveSimulation("ch-1")
     startHistorySimulation()
   } catch (e) {
-    error.value = e instanceof Error ? e.message : t("editor.loadError")
-    loading.value = false
+    // TranscriptUI doesn't yet expose a way to report a load failure into
+    // its own error overlay (Core has no "report error" entry point) — this
+    // is a dev fixture, so console is enough for now.
+    console.error("[playground] failed to load the demo document", e)
   }
 })
 
 onBeforeUnmount(() => {
   if (liveTimer) clearTimeout(liveTimer)
   unsubScrollTop?.()
-  core.destroy()
+  // core.destroy() is TranscriptUI's own responsibility, not ours.
 })
 </script>
 
 <template>
-  <div v-if="error" class="error-state">
-    <p>{{ error }}</p>
-  </div>
-  <div v-else-if="loading" class="loading-state">
-    <p>{{ t("editor.loading") }}</p>
-  </div>
-  <Layout v-else />
+  <TranscriptUI ref="editor" locale="fr" />
 </template>
-
-<style scoped>
-.loading-state,
-.error-state {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  font-size: var(--font-size-lg);
-  color: var(--color-text-muted);
-}
-
-.error-state {
-  color: #e53935;
-}
-</style>

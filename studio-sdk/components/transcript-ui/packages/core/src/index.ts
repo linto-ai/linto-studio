@@ -50,12 +50,17 @@ export type {
   ChatPluginApi,
 } from './core'
 
-// Composant principal
+// Composant "clé en main" — crée son propre core, fournit l'i18n, gère
+// loading/error, rend Layout. C'est lui qu'on branche dans un hôte (Web
+// Component ou app Vue directe) sans réimplémenter cette plomberie.
+export { default as TranscriptUI } from './components/TranscriptUI.vue'
+
+// Composant principal (rendu par TranscriptUI ; utile seul pour qui gère
+// déjà son propre core/i18n/loading)
 export { default as Layout } from './components/Layout.vue'
 
-// Composants utilisés par le wrapper Web Component
-export { default as EditorLoadingOverlay } from './components/EditorLoadingOverlay.vue'
-export { default as EditorErrorOverlay } from './components/EditorErrorOverlay.vue'
+// Composants utilisés par le wrapper Web Component pour l'injection de
+// styles dans le Shadow DOM
 export { default as SpeakerLabel } from './components/SpeakerLabel.vue'
 export { default as SpeakerPopover } from './components/molecules/SpeakerPopover.vue'
 export { useEditorReady } from './composables/useEditorReady'

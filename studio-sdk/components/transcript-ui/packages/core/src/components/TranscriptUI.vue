@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import { ref, watch, onBeforeUnmount } from "vue"
-import {
-  Layout,
-  EditorLoadingOverlay,
-  EditorErrorOverlay,
-  createCore,
-  provideCore,
-  useEditorReady,
-} from "@linto/transcript-ui-core"
+import Layout from "./Layout.vue"
+import EditorLoadingOverlay from "./EditorLoadingOverlay.vue"
+import EditorErrorOverlay from "./EditorErrorOverlay.vue"
+import { createCore } from "../core/createCore"
+import { provideCore } from "../core/useCore"
+import { useEditorReady } from "../composables/useEditorReady"
 import { provideI18n, type Locale } from "@linto/transcript-ui-i18n"
 
 const props = withDefaults(
@@ -57,6 +55,7 @@ defineExpose({ core })
 </template>
 
 <style lang="css">
+@import "@linto/transcript-ui-ui/styles/fonts.css";
 @import "@linto/transcript-ui-ui/styles/variables.css";
 @import "@linto/transcript-ui-ui/styles/base.css";
 @import "@linto/transcript-ui-ui/styles/popover-list.css";
