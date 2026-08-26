@@ -1,12 +1,16 @@
 # @linto/transcript-ui
 
+
 A Vue 3 component for displaying and interacting with a **transcript** — an ordered list of speech turns, each attributed to a speaker. On its own it's a read-only viewer; a plugin system adds everything else on top: a collaborative editing mode, a live transcription mode, and hooks for LLM services (summaries, chat).
 
 It ships two built-in adapters, so a document can come from either:
 - the LinTO Studio API format
 - WhisperX output
 
-It's used in production inside [LinTO Studio](https://github.com/linto-ai/linto-studio) — this package lives in that same repository.
+
+![screenshot of linto.app](screenshot.jpg)
+
+It's used in production inside [LinTO Studio](https://github.com/linto-ai/linto-studio) — this package lives in that same repository — and integrated into other projects too, e.g. [LinTO-Nextcloud](https://github.com/tjiho/LinTO-Nextcloud).
 
 ## Packages
 
