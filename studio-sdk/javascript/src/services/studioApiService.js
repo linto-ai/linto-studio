@@ -201,6 +201,57 @@ export class StudioApiService {
     return res
   }
 
+  // -- Live session / quick-meeting / bot control --
+  //
+  // The methods below drive a LIVE meeting-bot flow (the Visio/Meet integration):
+  // list the org's quickMeeting ASR profiles, create/stop a quick-meeting
+  // session, patch its meta (e.g. inject a native bot join token), and
+  // start/stop a meeting bot. They are thin wrappers over the studio-api proxy
+  // routes `/api/organizations/{org}/...` and are authenticated as the CURRENT
+  // USER (the token passed to the SDK), so a browser can own the whole flow.
+
+  async listTranscriberProfiles(args = {}) {
+    return await this.#withToken(
+      this.#withOrganizationId(this.#listTranscriberProfiles.bind(this))
+    )(args)
+  }
+
+  async createQuickMeeting(args = {}) {
+    return await this.#withToken(
+      this.#withOrganizationId(this.#createQuickMeeting.bind(this))
+    )(args)
+  }
+
+  async stopQuickMeeting(args = {}) {
+    return await this.#withToken(
+      this.#withOrganizationId(this.#stopQuickMeeting.bind(this))
+    )(args)
+  }
+
+  async patchSession(args = {}) {
+    return await this.#withToken(
+      this.#withOrganizationId(this.#patchSession.bind(this))
+    )(args)
+  }
+
+  async startBot(args = {}) {
+    return await this.#withToken(
+      this.#withOrganizationId(this.#startBot.bind(this))
+    )(args)
+  }
+
+  async stopBot(args = {}) {
+    return await this.#withToken(
+      this.#withOrganizationId(this.#stopBot.bind(this))
+    )(args)
+  }
+
+  async listConversations(args = {}) {
+    return await this.#withToken(
+      this.#withOrganizationId(this.#listConversations.bind(this))
+    )(args)
+  }
+
   // -- Decorators --
 
   #withOrganizationId(method) {
@@ -295,6 +346,98 @@ export class StudioApiService {
     })
 
     return await sendRequest(req)
+  }
+
+  // -- Live session / quick-meeting / bot control (private API calls) --
+
+  async #listTranscriberProfiles({ token, organizationId, quickMeeting = true }) {
+    const query = buildQuery({ quickMeeting: quickMeeting ? "true" : undefined })
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/transcriber_profiles${query}`,
+      "GET",
+      { token }
+    )
+    const res = await sendRequest(req)
+    // The proxy may answer a bare list or an envelope — normalize to a list.
+    if (Array.isArray(res)) return res
+    return res?.transcriber_profiles || res?.list || []
+  }
+
+  async #createQuickMeeting({ token, organizationId, channels, meta }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/quickMeeting/`,
+      "POST",
+      { token, channels, ...(meta !== undefined ? { meta } : {}) }
+    )
+    return await sendRequest(req)
+  }
+
+  async #stopQuickMeeting({
+    token,
+    organizationId,
+    sessionId,
+    name,
+    force = true,
+    trash = false,
+  }) {
+    const query = buildQuery({
+      force: force ? "true" : undefined,
+      trash: trash ? "true" : undefined,
+      name,
+    })
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/quickMeeting/${sessionId}${query}`,
+      "DELETE",
+      { token }
+    )
+    return await sendRequest(req)
+  }
+
+  async #patchSession({ token, organizationId, sessionId, data }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/sessions/${sessionId}`,
+      "PATCH",
+      { token, ...(data || {}) }
+    )
+    return await sendRequest(req)
+  }
+
+  async #startBot({
+    token,
+    organizationId,
+    url,
+    channelId,
+    provider = "visio",
+    enableDisplaySub = false,
+    subSource = "original",
+  }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/bots`,
+      "POST",
+      { token, url, channelId, provider, enableDisplaySub, subSource }
+    )
+    return await sendRequest(req)
+  }
+
+  async #stopBot({ token, organizationId, botId }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/bots/${botId}`,
+      "DELETE",
+      { token }
+    )
+    return await sendRequest(req)
+  }
+
+  async #listConversations({ token, organizationId, name }) {
+    const query = buildQuery({ name })
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/conversations${query}`,
+      "GET",
+      { token }
+    )
+    const res = await sendRequest(req)
+    if (Array.isArray(res)) return res
+    return res?.conversations || res?.list || []
   }
 
   async #uploadFile({
@@ -629,4 +772,14 @@ export function generateServiceConfig(
 
 function removeLeadingSlash(str) {
   return str.replace(/^\/+/, "")
+}
+
+// Build a `?a=1&b=2` query string, skipping null/undefined/empty values.
+export function buildQuery(params) {
+  const usp = new URLSearchParams()
+  for (const [k, v] of Object.entries(params || {})) {
+    if (v !== undefined && v !== null && v !== "") usp.append(k, String(v))
+  }
+  const s = usp.toString()
+  return s ? `?${s}` : ""
 }
