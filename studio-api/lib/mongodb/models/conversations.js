@@ -601,8 +601,8 @@ class ConvoModel extends MongoModel {
         query.$and = [{ $or: searchConditions }]
       }
 
-      if (userRole === ROLES.MEMBER) {
-        // A member can only see conversation where he has access
+      if (userRole < ROLES.MAINTAINER) {
+        // Below maintainer, only conversations where the user has access
         query["$or"][1]["organization.membersRight"] = {
           $bitsAnySet: desiredAccess,
         }
@@ -666,8 +666,8 @@ class ConvoModel extends MongoModel {
         ],
       }
 
-      if (userRole === ROLES.MEMBER) {
-        // A member can only see conversation where he has access
+      if (userRole < ROLES.MAINTAINER) {
+        // Below maintainer, only conversations where the user has access
         query["$or"][1]["organization.membersRight"] = {
           $bitsAnySet: desiredAccess,
         }
@@ -802,8 +802,8 @@ class ConvoModel extends MongoModel {
           },
         })
 
-        if (userRole === ROLES.MEMBER)
-          // A member can only see conversation where he has access
+        if (userRole < ROLES.MAINTAINER)
+          // Below maintainer, only conversations where the user has access
           query["$or"][2]["organization.membersRight"] = {
             $bitsAnySet: desiredAccess,
           }
